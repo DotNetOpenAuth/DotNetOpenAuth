@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<project name="Janrain OpenId/Yadis" default="build" basedir=".">
+  <description>
+    Build Libraries of OpenId/Yadis enabling ASP.Net applications.
+  </description>
+  <property name="debug" value="true" overwrite="false" />
+  <target name="clean" description="remove all generated files">
+    <delete file="bin/Janrain.dll" failonerror="false" />
+    <delete file="bin/Janrain.dll.mdb" failonerror="false" />
+    <delete file="bin/Janrain.Test.dll" failonerror="false" />
+    <delete file="bin/Janrain.Test.dll.mdb" failonerror="false" />
+  </target>
+  <target name="build" description="compiles the source code"
+          depends="bin/Janrain.dll,bin/Janrain.Test.dll" />
+  <target name="bin/Janrain.dll">
+    <booc target="library" output="bin/Janrain.dll" debug="${debug}">
+      <sources>
+        <include name="openid/*.boo" />
+        <include name="openid/consumer/*.boo" />
+        <include name="openid/server/*.boo" />
+        <include name="openid/store/*.boo" />
+        <include name="yadis/*.boo" />
+      </sources>
+      <references>
+        <include name="System.Web.dll" />
+        <include name="Mono.Security.dll" />
+      </references>
+    </booc>
+  </target>
+  
+  <target name="bin/Janrain.Test.dll">
+    <booc target="library" output="bin/Janrain.Test.dll" debug="${debug}">
+      <sources>
+        <include name="openid/*.boo" />
+        <include name="openid/consumer/*.boo" />
+        <include name="openid/server/*.boo" />
+        <include name="openid/store/*.boo" />
+        <include name="yadis/*.boo" />
+        <include name="test/openid/test_*.boo" />
+        <include name="test/yadis/test_*.boo" />
+      </sources>
+      <references>
+        <include name="System.Web.dll" />
+        <include name="Mono.Security.dll" />
+      </references>
+    </booc>
+  </target>
+  <!-- <target name="test" description="runs unit tests"
+          depends="bin/Janrain.Test.dll">
+    <nunit2>
+      <formatter type="Plain" />
+      <test assemblyname="bin/Janrain.Test.dll" />
+    </nunit2>
+  </target> -->
+</project> 
