@@ -84,7 +84,6 @@ class TrustRootTests:
             i += 2
 
         return tests
-
     
     [SetUp]
     def SetUp():
