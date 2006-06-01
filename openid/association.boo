@@ -70,7 +70,8 @@ abstract class Association(ICloneable):
             raise NotSupportedException(
                 String.Format('Unknown Association type: {0}', assoc_type))
 
-    abstract def SignDict(fields as (string), data as IDictionary, prefix as string) as string:
+    abstract def SignDict(fields as (string), data as NameValueCollection,
+                          prefix as string) as string:
         pass
 
     abstract def Sign(l as NameValueCollection) as (byte):
@@ -131,7 +132,7 @@ class HMACSHA1Association(Association):
         val = val ^ self.Expires.ToFileTimeUtc()
         return cast(int, val)
 
-    override def SignDict(fields as (string), data as IDictionary,
+    override def SignDict(fields as (string), data as NameValueCollection,
                           prefix as string):
         l = NameValueCollection()
         for field as string in fields:

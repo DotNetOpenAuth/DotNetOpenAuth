@@ -1,6 +1,7 @@
 namespace Janrain.OpenId.Server
 
 import System
+import System.Collections
 import System.Collections.Specialized
 import System.Security.Cryptography
 import Janrain.OpenId
@@ -52,7 +53,10 @@ class Signatory:
             assoc = self.CreateAssociation(true)
 
         response.Fields['assoc_handle'] = assoc.Handle
-        sig = assoc.SignDict(response.Signed, response.Fields, '')
+        nvc = NameValueCollection()
+        for pair as DictionaryEntry in response.Fields:
+            nvc.Add(pair.Key, pair.Value)
+        sig = assoc.SignDict(response.Signed, nvc, '')
         signed = String.Join(',', response.Signed)
         response.Fields['sig'] = sig
         response.Fields['signed'] = signed

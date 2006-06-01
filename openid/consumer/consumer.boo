@@ -1,7 +1,8 @@
 namespace Janrain.OpenId.Consumer
 
 import System
-import System.Collections
+#import System.Collections
+import System.Collections.Specialized
 #import System.Text
 #import System.Net
 #import System.IO
@@ -71,7 +72,7 @@ class Consumer:
         self.session[self.TokenKey] = auth_req.Token
         return auth_req
 
-    def Complete(query as IDictionary):
+    def Complete(query as NameValueCollection):
         token = self.session[TokenKey]
         if token is null:
             raise FailureException(null, 'No session state found')

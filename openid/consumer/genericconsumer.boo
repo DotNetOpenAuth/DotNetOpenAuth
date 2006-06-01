@@ -33,7 +33,7 @@ class GenericConsumer:
         return request
 
 
-    def Complete(query as IDictionary, token as string):
+    def Complete(query as NameValueCollection, token as string):
         mode as string = query['openid.mode']
         if mode is null:
             mode = "<no mode specified>"
@@ -93,7 +93,7 @@ class GenericConsumer:
 
             return null
 
-    private def DoIdRes(query as IDictionary, consumer_id as Uri,
+    private def DoIdRes(query as NameValueCollection, consumer_id as Uri,
                         server_id as Uri, server_url as Uri):
         
         getRequired = do(key as string):
@@ -103,7 +103,7 @@ class GenericConsumer:
                 raise FailureException(consumer_id, msg)
             return val
 
-        user_setup_url as string = query['openid.user_setup_url']
+        user_setup_url = query['openid.user_setup_url']
         if user_setup_url is not null:
             raise SetupNeededException(consumer_id, Uri(user_setup_url))
 
@@ -140,7 +140,7 @@ class GenericConsumer:
         return ConsumerResponse(consumer_id, query, signed)
 
 
-    private def CheckAuth(query as IDictionary, server_url as Uri):
+    private def CheckAuth(query as NameValueCollection, server_url as Uri):
         request = CreateCheckAuthRequest(query)
         if request is null:
             return false
@@ -152,7 +152,7 @@ class GenericConsumer:
         return ProcessCheckAuthResponse(response, server_url)
 
 
-    private def CreateCheckAuthRequest(query as IDictionary):
+    private def CreateCheckAuthRequest(query as NameValueCollection):
         signed = query['openid.signed']
         if signed is null:
             #XXX: oidutil.log('No signature present; checkAuth aborted')
@@ -164,10 +164,9 @@ class GenericConsumer:
         signed_array = /,/.Split(signed) + whitelist
 
         check_args = NameValueCollection()
-        for pair as DictionaryEntry in query:
-            key = cast(string, pair.Key)
+        for key as string in query:
             if key.StartsWith('openid.') and key[7:] in signed_array:
-                check_args.Add(key, pair.Value)
+                check_args.Add(key, query[key])
 
         check_args['openid.mode'] = 'check_authentication'
         return check_args

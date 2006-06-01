@@ -2,6 +2,7 @@ namespace Janrain.OpenId.Consumer
 
 import System
 import System.Collections
+import System.Collections.Specialized
 
 
 class ConsumerResponse:
@@ -14,7 +15,7 @@ class ConsumerResponse:
         get:
             return Uri(self.signed_args['openid.return_to'], true)
 
-    def constructor(identity_url as Uri, query as IDictionary,
+    def constructor(identity_url as Uri, query as NameValueCollection,
                     signed as string):
         self.identity_url = identity_url
         self.signed_args = {}

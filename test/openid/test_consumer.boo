@@ -261,11 +261,11 @@ public class ConsumerTestSuite:
                  'openid.assoc_handle': test_handle}
         assoc as Association = store.GetAssociation(server_url, test_handle)
         sig = assoc.SignDict(
-            (of string: 'mode', 'return_to', 'identity'), query, 'openid.')
+            (of string: 'mode', 'return_to', 'identity'), dictToNVC(query), 'openid.')
 
         query.Add('openid.sig', sig)
         query.Add('openid.signed', 'mode,return_to,identity')
-        result = consumer.Complete(query, request.Token)
+        result = consumer.Complete(dictToNVC(query), request.Token)
         Assert.AreEqual(
             result.IdentityUrl.AbsoluteUri, user_url.AbsoluteUri,
             "identity_url:${result.IdentityUrl}\nuser_url:${user_url}")
