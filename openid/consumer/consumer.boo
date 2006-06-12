@@ -62,7 +62,8 @@ class Consumer:
         self.consumer = GenericConsumer(store, SimpleFetcher())
     
     def Begin(openid_url as Uri):
-        endpoint = self.manager.GetNextService(openid_url, SessionKeyPrefix)
+        endpoint = self.manager.GetNextService(openid_url,
+                                               self.SessionKeyPrefix)
         if endpoint is null:
             raise FailureException(null, 'No openid endpoint found')
         return BeginWithoutDiscovery(endpoint)
