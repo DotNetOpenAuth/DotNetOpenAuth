@@ -100,7 +100,7 @@ class ByteParser:
     private static htmlRe = TagMatcher('html')
     private static headRe = TagMatcher('head', *(of string: 'body'))
     private static entityRe = Regex('&(?<entity>amp|lt|gt|quot);')
-    private static xmlDeclRe = Regex("^<\\?xml\\b(?<attrs>.+)\\?>", flags)
+    private static xmlDeclRe = Regex('^<\\?xml\\b(?<attrs>.+)\\?>', flags)
     private static attrRe = Regex("""
 # Must start with a sequence of word-characters, followed by an equals sign
 (?<attrname>(\w|-)+)=
@@ -123,13 +123,13 @@ class ByteParser:
         
         
     static def XmlEncoding(data as (byte), length as int,
-                                  encoding as Encoding):
+                           encoding as Encoding):
         if encoding is null:
             encoding = UTF8Encoding.UTF8
 
         xml = encoding.GetString(data, 0, length)
-
         declMo = xmlDeclRe.Match(xml)
+
         if declMo.Success:
             attrs_group = declMo.Groups["attrs"]
             attrs = NameValueCollection()
@@ -140,6 +140,8 @@ class ByteParser:
                     break
                 if attrMo.Groups['attrname'].Value.ToLower() == "encoding":
                     return attrMo.Groups['attrval'].Value
+
+                attrMo = attrMo.NextMatch()
 
         return null
 
