@@ -15,8 +15,8 @@ namespace Janrain.OpenId.Consumer.Asp
     public class ConsumerHttpModule : IHttpModule
     {
         public void Init( HttpApplication context )
-        {
-            context.AuthenticateRequest += new 
+        {   
+            context.AcquireRequestState += new 
                     EventHandler(this.AuthenticateRequest);
         }
 
