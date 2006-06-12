@@ -61,5 +61,3 @@ class KVUtil:
                     dict[parts[0].Trim()] = parts[1].Trim()
         return dict
 
-#for de as DictionaryEntry in KVUtil.KVToDict(Encoding.ASCII.GetBytes(" x:y z\n")):
-#    print de.Key, de.Value
