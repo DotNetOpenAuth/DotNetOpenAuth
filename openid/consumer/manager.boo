@@ -14,7 +14,6 @@ class ServiceEndpointManager:
     def GetNextService(openid_url as Uri, prefix as string):
         key = prefix + openid_url.AbsoluteUri
         endpoints as (ServiceEndpoint) = self.session[key]
-        
         if endpoints is null:
             endpoints = GetServiceEndpoints(openid_url)
             if endpoints is null:
@@ -53,7 +52,7 @@ class ServiceEndpointManager:
                         identity_url, result.ResponseText))
             except e as ArgumentException:
                 pass
-        
+
         if len(endpoints) > 0:
             return array(ServiceEndpoint, endpoints)
 
