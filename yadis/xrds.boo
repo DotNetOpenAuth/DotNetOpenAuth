@@ -127,7 +127,7 @@ class Xrd:
     def constructor(text as string):
         #stream = MemoryStream(resp.data, 0, resp.length)
         xmldoc = XmlDocument()
-        xmldoc.Load(text)
+        xmldoc.LoadXml(text)
         xmlns_manager = XmlNamespaceManager(xmldoc.NameTable)
         xmlns_manager.AddNamespace('xrds', XRDS_NAMESPACE)
         xmlns_manager.AddNamespace('xrd', XRD_NAMESPACE)
