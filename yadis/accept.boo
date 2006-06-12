@@ -129,12 +129,3 @@ class AcceptHeader:
         accepted = Parse(accept_header)
         preferred = matchTypes(accepted, have_types)
         return [mtype for mtype, _ in preferred]
-
-# for x, y, z in AcceptHeader.Parse(AcceptHeader.Generate(("application/foo", 0.2), ("application/zif", 0.8), ("application/foo", 0.8), "application/bar")):
-#     #print x, y, z
-#     pass
-
-
-# acceptable = AcceptHeader.Parse('text/html, text/plain; q=0.5')
-# for k, v in AcceptHeader.matchTypes(acceptable, ['text/plain', 'text/html', 'image/jpeg']):
-#     print k, v
