@@ -29,7 +29,7 @@ namespace Janrain.OpenId.Consumer.Asp
             Consumer consumer =  new Consumer(Session,
                 MemoryStore.GetInstance());
 
-            if (Request.Url.AbsolutePath != "/login.aspx")
+            if (! Request.Url.AbsolutePath.EndsWith("/login.aspx"))
                 return;
 
             if (Request.HttpMethod.ToLower() == "post")
