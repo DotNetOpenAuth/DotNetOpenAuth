@@ -79,7 +79,8 @@ class GenericConsumer:
         body = ASCIIEncoding.ASCII.GetBytes(UriUtil.CreateQueryString(args))
 
         try:
-            return self.fetcher.Post(server_url, body)
+            resp = self.fetcher.Post(server_url, body)
+            return KVUtil.KVToDict(resp.data)
         except e as FetchException:
             if e.response is null:
                 # XXX: log network failure
@@ -174,9 +175,9 @@ class GenericConsumer:
 
     private def ProcessCheckAuthResponse(response as IDictionary,
                                          server_url as Uri):
-        is_valid as string = response['is_valid']
+        is_valid = response['is_valid']
         if is_valid == 'true':
-            invalidate_handle as string = response['invalidate_handle']
+            invalidate_handle = response['invalidate_handle']
             if invalidate_handle is not null:
                 self.store.RemoveAssociation(server_url, invalidate_handle)
             
@@ -287,10 +288,8 @@ class GenericConsumer:
         def constructor(key as string):
             super('Query missing key: ${key}')
 
-    protected def ParseAssociation(resp as FetchResponse, dh as DiffieHellman,
+    protected def ParseAssociation(results as IDictionary, dh as DiffieHellman,
                                    server_url as Uri):
-        results = KVUtil.KVToDict(resp.data)
-
         getParameter = do(key as string):
             val as string = results[key]
             if val is null:
