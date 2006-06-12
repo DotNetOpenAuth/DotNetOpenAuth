@@ -100,10 +100,10 @@ class ServiceNode(XrdNode, IComparable):
 
     def UriNodes():
         uri_node_list = []
-        uri_nodes = self.node.SelectNodes('./xrd:Uri', self.xmlns_manager)
-        for uri_node as XmlNode in uri_nodes:
-            uri_node_list.Add(
-                UriNode(self, uri_node, self.xmldoc, self.xmlns_manager))
+        uri_nodes = self.node.SelectNodes('./xrd:URI', self.xmlns_manager)
+        for xml_node as XmlNode in uri_nodes:
+            uri_node = UriNode(self, xml_node, self.xmldoc, self.xmlns_manager)
+            uri_node_list.Add(uri_node)
         
         return array(UriNode, uri_node_list)
 
@@ -125,7 +125,6 @@ class Xrd:
     xmlns_manager as XmlNamespaceManager
 
     def constructor(text as string):
-        #stream = MemoryStream(resp.data, 0, resp.length)
         xmldoc = XmlDocument()
         xmldoc.LoadXml(text)
         xmlns_manager = XmlNamespaceManager(xmldoc.NameTable)
@@ -143,9 +142,10 @@ class Xrd:
         return array(ServiceNode, service_node_list)
 
     def UriNodes():
-        uri_nodes as (UriNode) = (,)
-        for service_node in ServiceNodes():
-            uri_nodes += service_node.UriNodes()
+        uri_nodes as (UriNode) = (of UriNode:,)
+        for service_node as ServiceNode in ServiceNodes():
+            xs = service_node.UriNodes()
+            uri_nodes += xs
 
         Array.Sort(uri_nodes)
         return uri_nodes
