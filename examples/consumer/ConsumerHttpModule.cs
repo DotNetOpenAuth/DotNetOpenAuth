@@ -84,8 +84,10 @@ namespace Janrain.OpenId.Consumer.Asp
                     Context.Items.Add("errmsg", fe.ToString());
                 }
             }
-
-            Context.Items.Add("errmsg", "Please enter a valid url.");
+            else
+            {
+                Context.Items.Add("errmsg", "Please enter a valid url.");
+            }
         }
 
         public void Dispose()
