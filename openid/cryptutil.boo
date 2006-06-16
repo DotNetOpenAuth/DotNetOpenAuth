@@ -54,7 +54,8 @@ class CryptUtil:
 
     private static def EnsurePositive(inputBytes as (byte)):
         # XXX : if len < 1 : throw error
-        if inputBytes[0] > 127:
+        i as int = Convert.ToInt32(inputBytes[0].ToString())
+        if (i > 127):
             temp as (byte) = array(byte, (inputBytes.Length + 1))
             temp[0] = 0
             inputBytes.CopyTo(temp, 1)

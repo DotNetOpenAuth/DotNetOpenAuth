@@ -19,8 +19,8 @@ class Yadis:
     static def MetaYadisLoc(html as string):
         for attrs as NameValueCollection in ByteParser.HeadTagAttrs(
             html, "meta"):
-            http_equiv as string = attrs.Get("http-equiv")
-            if http_equiv != HEADER_NAME.ToLower():
+            http_equiv = attrs["http-equiv"]
+            if http_equiv.ToLower() != HEADER_NAME.ToLower():
                 continue
 
             value as string = attrs.Get("content")
@@ -55,6 +55,8 @@ class Yadis:
             try:
                 yadis_loc = Uri(yadis_loc_str)
             except why as UriFormatException:
+                yadis_loc = null
+            except why as ArgumentNullException:
                 yadis_loc = null
 
             if (yadis_loc is null and
@@ -101,9 +103,14 @@ class DiscoveryResult:
                     final_resp as FetchResponse):
         self.request_uri = request_uri
         self.normalized_uri = init_resp.FinalUri
-        self.content_type = final_resp.ContentType
-        self.response_text = final_resp.Body
-        if init_resp is not final_resp:
+        if final_resp is null:
+            self.content_type = init_resp.ContentType
+            self.response_text = init_resp.Body
+        else:
+            self.content_type = final_resp.ContentType
+            self.response_text = final_resp.Body
+            
+        if init_resp is not final_resp and final_resp is not null:
             self.yadis_location = final_resp.RequestUri
 
 

@@ -29,7 +29,7 @@ class Encoder:
             wr = WebResponse(code, null, response.EncodeToKVForm())
         elif encode_as == EncodingType.ENCODE_URL:
             headers = NameValueCollection()
-            headers.Add('location', response.EncodeToUrl().AbsoluteUri)
+            headers.Add('Location', response.EncodeToUrl().AbsoluteUri)
             wr = WebResponse(HttpCode.HTTP_REDIRECT, headers, array(byte, 0))
         else:
             # Can't encode this to a protocol message.  You should probably

@@ -42,7 +42,7 @@ class KVUtil:
     static def DictToKV(dict as IDictionary):
         data = NameValueCollection()
         for pair as DictionaryEntry in dict:
-            data.Add(pair.Key, pair.Value)
+            data.Add(pair.Key.ToString(), pair.Value.ToString())
         return SeqToKV(data, false)
 
     static def KVToDict(data as (byte)) as IDictionary:

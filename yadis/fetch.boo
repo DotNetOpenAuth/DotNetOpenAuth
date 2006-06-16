@@ -95,16 +95,16 @@ class FetchRequest:
             encoding = Encoding.GetEncoding(DEFAULT_HTML_ENCODING)
 
         html = encoding.GetString(data, 0, length)
-        for attrs as NameValueCollection in ByteParser.HeadTagAttrs(html, "meta"):
-            http_equiv as string = attrs.Get("http-equiv")
-            if http_equiv != "content-type":
+        attrs_array = ByteParser.HeadTagAttrs(html, "meta")
+        for attrs as NameValueCollection in attrs_array:
+            http_equiv = attrs["http-equiv"]
+            if http_equiv.ToLower() != "content-type":
                 continue
 
             content as string = attrs.Get("content")
             if content is null:
                 continue
 
-            return content
             return ContentType(content)
 
         return null
@@ -131,6 +131,8 @@ class FetchRequest:
         try:
             enc = Encoding.GetEncoding(enc_name)
         except why as NotSupportedException:
+            enc = Encoding.GetEncoding(default_enc_name)
+        except why as ArgumentNullException:
             enc = Encoding.GetEncoding(default_enc_name)
 
         str = enc.GetString(body, 0, len(body))

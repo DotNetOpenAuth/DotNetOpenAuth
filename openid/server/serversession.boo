@@ -72,7 +72,6 @@ class DiffieHellmanServerSession(ServerSession):
             raise ProtocolException(
                 query, "consumer_pubkey isn't properly base64ed")
         
-
     override def Answer(secret as (byte)):
         mac_key = CryptUtil.SHA1XorSecret(self.dh, self.consumer_pubkey, secret)
         nvc = NameValueCollection()

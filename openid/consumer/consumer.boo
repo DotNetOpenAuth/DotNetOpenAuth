@@ -1,12 +1,7 @@
 namespace Janrain.OpenId.Consumer
 
 import System
-#import System.Collections
 import System.Collections.Specialized
-#import System.Text
-#import System.Net
-#import System.IO
-#import System.Security.Cryptography
 import System.Web.SessionState
 import Janrain.OpenId
 import Janrain.OpenId.Store

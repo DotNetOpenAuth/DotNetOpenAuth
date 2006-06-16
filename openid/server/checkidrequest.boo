@@ -30,17 +30,20 @@ class MalformedTrustRoot(ProtocolException):
 
 
 class CheckIdRequest(AssociatedRequest):
-    internal identity as Uri
+    [Getter(Immediate)]
+    internal immediate as bool
+
+    [Getter(TrustRoot)]
     internal trust_root as string
+    
+    [Getter(IdentityUrl)]
+    internal identity as Uri
 
     [Getter(Mode)]
     internal mode as string
 
     [Getter(ReturnTo)]
     internal return_to as Uri
-
-    internal immediate as bool
-
 
     def constructor(identity as Uri, return_to as Uri, trust_root as string,
                     immediate as bool, assoc_handle as string):
@@ -67,7 +70,7 @@ class CheckIdRequest(AssociatedRequest):
             raise UntrustedReturnUrl(null, self.return_to, self.trust_root)
 
     def constructor(query as NameValueCollection):
-        mode = query['openid.mode']
+        mode as string = query['openid.mode']
         if mode == "checkid_immediate":
             self.immediate = true
             self.mode = "checkid_immediate"
@@ -118,6 +121,7 @@ class CheckIdRequest(AssociatedRequest):
             return tr.ValidateUrl(self.return_to)
 
     def Answer(allow as bool, server_url as Uri):
+        mode as string
         if allow or self.immediate:
             mode = 'id_res'
         else:

@@ -201,5 +201,5 @@ class ByteParser:
             result.Add(attrs)
             tagMo = tagMo.NextMatch()
 
-        return result.ToArray()  as (NameValueCollection)
+        return result.ToArray()
 
