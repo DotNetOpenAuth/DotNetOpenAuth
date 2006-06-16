@@ -1,0 +1,28 @@
+
+Running examples
+==============
+
+Most of the testing for this library has been done using mono and
+xsp. To try out either the server or the consumer using xsp just
+change to the example directory and type xsp. That should be it to
+start the server.
+
+
+Consumer
+-------
+
+To try out the consumer, just visit the host and port listed by xsp in
+your web browser. Then type in an openid url to test out. 
+
+Server
+-----
+
+Let's say the server example is running at localhost on port
+8080. You'll need to use a consumer on your local network to test it
+out (or bind the server to a public address). Then you'll type
+http://localhost:8080/user/user1 into the consumer. The user name is
+"user1" and the password is "test". To change these or add more users,
+take a look at web.config in the server example directory.  
+
+The server example currently doesn't remember sites you have approved
+before, so checkid_immediate mode will always return a setup url.
