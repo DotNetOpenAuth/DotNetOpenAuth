@@ -15,8 +15,6 @@
     public void OnClick_SignOut (Object src, EventArgs args)
     {
         FormsAuthentication.SignOut();
-	Console.WriteLine("Redirecting to: {0}",
-            Request.UrlReferrer.ToString());
         Response.Redirect(Request.UrlReferrer.ToString());
     }
 </script>
