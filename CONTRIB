@@ -1,0 +1,10 @@
+We'd love to get bug fixes and improvements from you. We use darcs
+(http://abridgegame.org/darcs/) for source control. To send us a
+patch, use:
+
+    darcs record
+
+and send it to us using:
+
+    darcs send dev@lists.openidenabled.com
+
