@@ -1,0 +1,46 @@
+This is the .Net OpenID library.
+
+Getting Started
+============
+
+This release comes with libraries precompiled. To use the libraries in
+an ASP.Net application, copy the dlls into ${YOUR_PROJECT}/bin. For
+examples of integrating the libraries into ASP, take a look at the
+consumer and server example web applications in the examples
+directory. See the README file in that directory for more information
+on running the examples.
+
+
+Building
+=======
+
+Should you need to recompile the libraries, you will need the NAnt
+(http://) build system and the Boo compiler
+(http://boo.codehaus.org/). Some examples of using the boo compiler
+with NAnt can be found here: http://boo.codehaus.org/Nant+Tasks. To
+use the boo compiler with NAnt, you will need to copy
+Boo.NAnt.Tasks.dll into your NAnt lib directory. Though the library is
+written in Boo, all of the examples are written in C# since most
+projects trying to integrate this library probably won't be written in
+Boo. Once your environment is set up, you should be able to type:
+
+    nant
+
+Take a look at openid.build to choose a specific target to build.
+
+
+DOCUMENTATION
+=============
+
+Currently, there is no documentation with this release (coming soon!),
+but you can find the documentation for the python version of the
+openid library at http://www.openidenabled.com as well as a general
+overview of openid at http://openid.net.
+
+
+CONTACT
+=======
+
+Send bug reports, suggestions, comments, and questions to
+dev@lists.openidenabled.com.
+
