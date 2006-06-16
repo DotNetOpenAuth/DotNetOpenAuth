@@ -13,7 +13,7 @@
     <delete file="examples/consumer/bin/Janrain.dll.mdb" failonerror="false" />
   </target>
   <target name="build" description="compiles the source code"
-          depends="bin/Janrain.dll,bin/Janrain.Test.dll,consumer_example" />
+          depends="bin/Janrain.dll,bin/Janrain.Test.dll,consumer_example,server_example" />
   <target name="bin/Janrain.dll">
     <booc target="library" output="bin/Janrain.dll" debug="${debug}">
       <sources>
@@ -57,6 +57,24 @@
          debug="${debug}">
       <sources>
         <include name="examples/consumer/ConsumerHttpModule.cs" />
+      </sources>
+      <references>
+        <include name="System.Web.dll" />
+        <include name="bin/Janrain.dll" />
+      </references>
+    </csc>
+  </target>
+  <target name="server_example" depends="bin/Janrain.dll">
+    <copy file="bin/Janrain.dll" tofile="examples/server/bin/Janrain.dll" />
+    <copy file="bin/Janrain.dll.mdb"
+          tofile="examples/server/bin/Janrain.Test.dll.mdb" />
+    <copy file="Boo.Lang.dll" tofile="examples/server/bin/Boo.Lang.dll" />
+    <csc target="library"
+         output="examples/server/bin/Janrain.OpenId.Server.Asp.dll"
+         debug="${debug}">
+      <sources>
+        <include name="examples/server/ServerHttpModule.cs" />
+        <include name="examples/server/OpenIdServerPage.cs" />
       </sources>
       <references>
         <include name="System.Web.dll" />
