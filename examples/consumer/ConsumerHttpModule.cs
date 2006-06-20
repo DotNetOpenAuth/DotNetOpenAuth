@@ -64,6 +64,10 @@ namespace Janrain.OpenId.Consumer.Asp
                             trustRoot, returnTo, AuthRequest.Mode.SETUP);
                         Response.Redirect(redirectUrl.AbsoluteUri);
                     }
+                    catch (FailureException fexc)
+                    {
+                        Context.Items.Add("errmsg", fexc.Message);
+                    }
                     catch (Exception fe)
                     {
                         Context.Items.Add("errmsg", fe.ToString());
@@ -78,6 +82,10 @@ namespace Janrain.OpenId.Consumer.Asp
                         Request.QueryString);
                     FormsAuthentication.RedirectFromLoginPage(
                         resp.IdentityUrl.AbsoluteUri, false);
+                }
+                catch (FailureException fexc)
+                {
+                    Context.Items.Add("errmsg", fexc.Message);
                 }
                 catch (Exception fe)
                 {
