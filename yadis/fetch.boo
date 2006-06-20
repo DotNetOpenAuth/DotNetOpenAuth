@@ -98,7 +98,7 @@ class FetchRequest:
         attrs_array = ByteParser.HeadTagAttrs(html, "meta")
         for attrs as NameValueCollection in attrs_array:
             http_equiv = attrs["http-equiv"]
-            if http_equiv.ToLower() != "content-type":
+            if http_equiv is null or http_equiv.ToLower() != "content-type":
                 continue
 
             content as string = attrs.Get("content")

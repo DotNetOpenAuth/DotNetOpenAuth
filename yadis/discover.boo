@@ -20,7 +20,7 @@ class Yadis:
         for attrs as NameValueCollection in ByteParser.HeadTagAttrs(
             html, "meta"):
             http_equiv = attrs["http-equiv"]
-            if http_equiv.ToLower() != HEADER_NAME.ToLower():
+            if http_equiv is null or http_equiv.ToLower() != HEADER_NAME.ToLower():
                 continue
 
             value as string = attrs.Get("content")
