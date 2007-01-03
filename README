@@ -15,19 +15,25 @@ Building
 =======
 
 Should you need to recompile the libraries, you will need the NAnt
-(http://) build system and the Boo compiler
+(http://nant.sourceforge.net/) build system and the Boo compiler
 (http://boo.codehaus.org/). Some examples of using the boo compiler
 with NAnt can be found here: http://boo.codehaus.org/Nant+Tasks. To
 use the boo compiler with NAnt, you will need to copy
-Boo.NAnt.Tasks.dll into your NAnt lib directory. Though the library is
-written in Boo, all of the examples are written in C# since most
-projects trying to integrate this library probably won't be written in
-Boo. Once your environment is set up, you should be able to type:
+Boo.NAnt.Tasks.dll into your NAnt lib directory. 
+
+Though the library is written in Boo, all of the examples are written 
+in C# since most projects trying to integrate this library probably 
+won't be written in Boo. Once your environment is set up, you should 
+be able to type:
 
     nant
 
 Take a look at openid.build to choose a specific target to build.
 
+If building under Windows you get this error from NAnt:
+	[loadtasks] Failure scanning "C:\Users\andarno\Downloads\nant-0.85\bin\Boo.NAnt.Tasks.dll" for extensions. Unable
+	to load one or more of the requested types. Retrieve the LoaderExceptions property for more information.
+Try running NAnt under Mono running on Windows.
 
 DOCUMENTATION
 =============
