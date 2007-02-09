@@ -9,11 +9,17 @@
     <delete file="bin/Janrain.dll.mdb" failonerror="false" />
     <delete file="bin/Janrain.Test.dll" failonerror="false" />
     <delete file="bin/Janrain.Test.dll.mdb" failonerror="false" />
+    <delete file="bin/NerdBank.OpenId.AspNet.dll" failonerror="false" />
+    <delete file="bin/NerdBank.OpenId.AspNet.xml" failonerror="false" />
+    <delete file="bin/NerdBank.OpenId.AspNet.dll.mdb" failonerror="false" />
+    <delete file="obj/NerdBank.Openid.Strings.resources" failonerror="false" />
+    <!--Don't delete this file until resgen can regenerate it.-->
+    <!--<delete file="obj/NerdBank.Openid.Strings.cs" failonerror="false" />-->
     <delete file="examples/consumer/bin/Janrain.dll" failonerror="false" />
     <delete file="examples/consumer/bin/Janrain.dll.mdb" failonerror="false" />
   </target>
   <target name="build" description="compiles the source code"
-          depends="bin/Janrain.dll,bin/Janrain.Test.dll,consumer_example,server_example" />
+          depends="bin/Janrain.dll,bin/Janrain.Test.dll,bin/NerdBank.OpenId.AspNet.dll,consumer_example,server_example" />
   <target name="bin/Janrain.dll">
     <booc target="library" output="bin/Janrain.dll" debug="${debug}">
       <sources>
@@ -46,6 +52,35 @@
         <include name="Mono.Security.dll" />
       </references>
     </booc>
+  </target>
+  <target name="obj/NerdBank.OpenId.Strings.resources">
+    <resgen input="aspnet/Strings.txt" output="obj/NerdBank.OpenId.Strings.resources" />
+  </target>
+  <target name="obj/NerdBank.OpenId.Strings.cs" depends="obj/NerdBank.OpenId.Strings.resources">
+    <!--Not supported by Mono resgen tool-->
+    <!--<resgen input="obj/NerdBank.OpenId.Strings.resources" output="obj/NerdBank.OpenId.Strings.cs" />-->
+    <echo message="Updating the type-safe resource class must be done manually using Microsoft's resgen.exe tool." />
+  </target>
+  <target name="bin/NerdBank.OpenId.AspNet.dll" depends="bin/Janrain.dll,obj/NerdBank.OpenId.Strings.resources,obj/NerdBank.OpenId.Strings.cs">
+    <csc target="library"
+         output="bin/NerdBank.OpenId.AspNet.dll"
+         doc="bin/NerdBank.OpenId.AspNet.xml" 
+         define="Mono" 
+	       debug="${debug}">
+      <sources>
+        <include name="aspnet/OpenIdTextBox.cs" />
+        <include name="aspnet/OpenIdLogin.cs" />
+        <include name="obj/NerdBank.OpenId.Strings.cs" />
+      </sources>
+      <resources>
+        <include name="obj/NerdBank.OpenId.Strings.resources" />
+      </resources>
+      <references>
+        <include name="bin/Janrain.dll" />
+        <include name="System.Web.dll" />
+        <include name="System.Drawing.dll" />
+      </references>
+    </csc>
   </target>
   <target name="consumer_example" depends="bin/Janrain.dll">
     <copy file="bin/Janrain.dll" tofile="examples/consumer/bin/Janrain.dll" />
