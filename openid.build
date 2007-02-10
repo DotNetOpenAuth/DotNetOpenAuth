@@ -82,7 +82,7 @@
       </references>
     </csc>
   </target>
-  <target name="consumer_example" depends="bin/Janrain.dll">
+  <target name="consumer_example" depends="bin/Janrain.dll,bin/NerdBank.OpenId.AspNet.dll">
     <copy file="bin/Janrain.dll" tofile="examples/consumer/bin/Janrain.dll" />
     <copy file="bin/Janrain.dll.mdb"
           tofile="examples/consumer/bin/Janrain.Test.dll.mdb" />
