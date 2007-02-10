@@ -24,6 +24,8 @@ namespace NerdBank.OpenId
 		Panel panel;
 		Button loginButton;
 		HtmlGenericControl label;
+		RequiredFieldValidator requiredValidator;
+		RegularExpressionValidator uriFormatValidator;
 		Label examplePrefixLabel;
 		Label exampleUrlLabel;
 		HyperLink registerLink;
@@ -72,6 +74,7 @@ namespace NerdBank.OpenId
 			loginButton.Text = buttonTextDefault;
 			loginButton.ToolTip = buttonToolTipDefault;
 			loginButton.Click += new EventHandler(loginButton_Click);
+			loginButton.ValidationGroup = validationGroupDefault;
 #if !Mono
 			panel.DefaultButton = loginButton.ID;
 #endif
@@ -85,6 +88,19 @@ namespace NerdBank.OpenId
 			cell = new TableCell();
 			cell.Style[HtmlTextWriterStyle.Color] = "gray";
 			cell.Style[HtmlTextWriterStyle.FontSize] = "smaller";
+			requiredValidator = new RequiredFieldValidator();
+			requiredValidator.ErrorMessage = requiredTextDefault + requiredTextSuffix;
+			requiredValidator.Display = ValidatorDisplay.Dynamic;
+			requiredValidator.ControlToValidate = WrappedTextBox.ID;
+			requiredValidator.ValidationGroup = validationGroupDefault;
+			cell.Controls.Add(requiredValidator);
+			uriFormatValidator = new RegularExpressionValidator();
+			uriFormatValidator.ErrorMessage = uriFormatTextDefault + requiredTextSuffix;
+			uriFormatValidator.ValidationExpression = @"http(s)?://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?";
+			uriFormatValidator.Display = ValidatorDisplay.Dynamic;
+			uriFormatValidator.ControlToValidate = WrappedTextBox.ID;
+			uriFormatValidator.ValidationGroup = validationGroupDefault;
+			cell.Controls.Add(uriFormatValidator);
 			examplePrefixLabel = new Label();
 			examplePrefixLabel.Text = examplePrefixDefault;
 			cell.Controls.Add(examplePrefixLabel);
@@ -152,6 +168,29 @@ namespace NerdBank.OpenId
 			set { exampleUrlLabel.Text = value; }
 		}
 
+		const string requiredTextSuffix = "<br/>";
+		const string requiredTextDefault = "Provide an OpenID first.";
+		[Bindable(true)]
+		[Category("Appearance")]
+		[DefaultValue(requiredTextDefault)]
+		[Localizable(true)]
+		public string RequiredText
+		{
+			get { return requiredValidator.Text.Substring(requiredValidator.Text.Length - requiredTextSuffix.Length); }
+			set { requiredValidator.Text = value + requiredTextSuffix; }
+		}
+
+		const string uriFormatTextDefault = "Invalid OpenID URL.";
+		[Bindable(true)]
+		[Category("Appearance")]
+		[DefaultValue(uriFormatTextDefault)]
+		[Localizable(true)]
+		public string UriFormatText
+		{
+			get { return uriFormatValidator.Text.Substring(uriFormatValidator.Text.Length - requiredTextSuffix.Length); }
+			set { uriFormatValidator.Text = value + requiredTextSuffix; }
+		}
+
 		const string registerTextDefault = "register";
 		[Bindable(true)]
 		[Category("Appearance")]
@@ -204,7 +243,19 @@ namespace NerdBank.OpenId
 		public string ButtonToolTip
 		{
 			get { return loginButton.ToolTip; }
-			set { loginButton.ToolTip = value;
+			set { loginButton.ToolTip = value; }
+		}
+
+		const string validationGroupDefault = "OpenIdLogin";
+		[Category("Behavior")]
+		[DefaultValue(validationGroupDefault)]
+		public string ValidationGroup
+		{
+			get { return requiredValidator.ValidationGroup; }
+			set
+			{
+				requiredValidator.ValidationGroup = value;
+				loginButton.ValidationGroup = value;
 			}
 		}
 		#endregion
@@ -212,6 +263,7 @@ namespace NerdBank.OpenId
 		#region Event handlers
 		void loginButton_Click(object sender, EventArgs e)
 		{
+			if (!Page.IsValid) return;
 			if (OnLoggingIn(new Uri(Text)))
 				Login();
 		}
