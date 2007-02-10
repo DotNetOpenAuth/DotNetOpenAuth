@@ -68,6 +68,7 @@
          define="Mono" 
 	       debug="${debug}">
       <sources>
+        <include name="aspnet/AssemblyInfo.cs" />
         <include name="aspnet/OpenIdTextBox.cs" />
         <include name="aspnet/OpenIdLogin.cs" />
         <include name="obj/NerdBank.OpenId.Strings.cs" />
