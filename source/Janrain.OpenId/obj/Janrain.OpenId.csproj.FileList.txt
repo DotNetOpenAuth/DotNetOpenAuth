@@ -1,0 +1,5 @@
+obj\Debug\ResolveAssemblyReference.cache
+bin\Debug\Janrain.OpenId.dll
+bin\Debug\Janrain.OpenId.pdb
+obj\Debug\Janrain.OpenId.dll
+obj\Debug\Janrain.OpenId.pdb
