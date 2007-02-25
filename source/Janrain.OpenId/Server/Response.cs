@@ -6,7 +6,7 @@ using Janrain.OpenId;
 
 namespace Janrain.OpenId.Server
 {
-    class Response : IEncodable
+    public class Response : IEncodable
     {
 
         #region Private Members
@@ -145,7 +145,7 @@ namespace Janrain.OpenId.Server
             UriBuilder builder = new UriBuilder(checkidreq.ReturnTo);
             Util.AppendQueryArgs(ref builder, nvc);
 
-            return new Uri(builder.ToString(), true);
+            return new Uri(builder.ToString());
         }
 
         public byte[] EncodeToKVForm()

@@ -68,7 +68,7 @@ namespace Janrain.OpenId.Server
             UriBuilder builder = new UriBuilder(return_to);
             Util.AppendQueryArgs(ref builder, q);
 
-            return new Uri(builder.ToString(), true);
+            return new Uri(builder.ToString());
         }
 
         public byte[] EncodeToKVForm()
