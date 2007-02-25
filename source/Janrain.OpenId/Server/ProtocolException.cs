@@ -7,13 +7,24 @@ namespace Janrain.OpenId.Server
 {
     public class ProtocolException : ApplicationException, IEncodable
     {
+
+        #region Private Members
+
         private NameValueCollection _query = new NameValueCollection();
+
+        #endregion
+
+        #region Constructor(s)
 
         public ProtocolException(NameValueCollection query, string text)
             : base(text)
         {
             _query = query;
         }
+
+        #endregion
+
+        #region Properties
 
         public bool HasReturnTo
         {
@@ -22,6 +33,8 @@ namespace Janrain.OpenId.Server
                 return (_query["openid.return_to"] != null);
             }
         }
+
+        #endregion
 
         #region IEncodable Members
 
@@ -82,5 +95,6 @@ namespace Janrain.OpenId.Server
         }
 
         #endregion
+
     }
 }

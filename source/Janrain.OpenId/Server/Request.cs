@@ -12,7 +12,7 @@ namespace Janrain.OpenId.Server
 
     }
 
-    // Move this ABC out to it's own file
+    // TODO Move this ABC out to it's own file
     public abstract class AssociatedRequest : Request
     {
 

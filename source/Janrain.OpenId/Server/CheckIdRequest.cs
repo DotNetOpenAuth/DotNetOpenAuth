@@ -5,10 +5,19 @@ using System.Text;
 
 namespace Janrain.OpenId.Server
 {
+
+    // TODO Move this out to it's own file
     public class UntrustedReturnUrl : ProtocolException
     {
+
+        #region Private Members
+
         private Uri _return_to;
         private string _trust_root;
+
+        #endregion
+
+        #region Constructor(s)
 
         public UntrustedReturnUrl(NameValueCollection query, Uri return_to, string trust_root)
             : base(query, "return_to " + return_to.AbsoluteUri + " not under trust_root " + trust_root)
@@ -16,34 +25,62 @@ namespace Janrain.OpenId.Server
             _return_to = return_to;
             _trust_root = trust_root;
         }
+
+        #endregion
+
     }
 
+    // TODO Move this out to it's own file
     public class MalformedReturnUrl : ProtocolException
     {
+
+        #region Private Members
+
         private string _return_to;
+
+        #endregion
+
+        #region Constructor(s)
 
         public MalformedReturnUrl(NameValueCollection query, string return_to)
             : base(query, "")
         {
             _return_to = return_to;
         }
+
+        #endregion
+
     }
 
+    // TODO Move this out to it's own file
     public class MalformedTrustRoot : ProtocolException
     {
+
+        #region Constructor(s)
+
         public MalformedTrustRoot(NameValueCollection query, string text)
             : base(query, text)
         {
         }
+
+        #endregion
+
     }
 
     public class CheckIdRequest : AssociatedRequest
     {
+
+        #region Private Members
+
         private bool _immediate;
         private string _trust_root;
         private Uri _identity;
         private string _mode;
         private Uri _return_to;
+
+        #endregion
+
+        #region Constructor(s)
 
         public CheckIdRequest(Uri identity, Uri return_to, string trust_root, bool immediate, string assoc_handle)
         {
@@ -133,6 +170,24 @@ namespace Janrain.OpenId.Server
 
         }
 
+        #endregion
+
+        #region Private Methods
+
+        private string GetField(NameValueCollection query, string field)
+        {
+            string value = query.Get("openid." + field);
+
+            if (value == null)
+                throw new ProtocolException(query, "Missing required field " + field);
+
+            return value;
+        }
+
+        #endregion
+
+        #region Public Methods
+
         public Response Answer(bool allow, Uri server_url)
         {
             string mode;
@@ -208,16 +263,6 @@ namespace Janrain.OpenId.Server
             return new Uri(builder.ToString());
         }
 
-        private string GetField(NameValueCollection query, string field)
-        {
-            string value = query.Get("openid." + field);
-
-            if (value == null)
-                throw new ProtocolException(query, "Missing required field " + field);
-
-            return value;
-        }
-
         public bool TrustRootValid
         {
             get
@@ -233,6 +278,10 @@ namespace Janrain.OpenId.Server
                 return tr.ValidateUrl(_return_to);
             }
         }
+
+        #endregion
+
+        #region Properties
 
         public bool Immediate
         {
@@ -254,9 +303,16 @@ namespace Janrain.OpenId.Server
             get { return _return_to; }
         }
 
+        #endregion
+
+        #region Inherited Properties
+
         public override string Mode
         {
-            get { throw new Exception("The method or operation is not implemented."); }
+            get { return _mode; }
         }
+
+        #endregion
+
     }
 }

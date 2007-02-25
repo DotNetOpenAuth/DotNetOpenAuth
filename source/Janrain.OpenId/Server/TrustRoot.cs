@@ -6,6 +6,9 @@ namespace Janrain.OpenId.Server
 {
     public class TrustRoot
     {
+
+        #region Private Members
+
         private static Regex _tr_regex = new Regex("^(?<scheme>https?)://((?<wildcard>\\*)|(?<wildcard>\\*\\.)?(?<host>[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*)\\.?)(:(?<port>[0-9]+))?(?<path>(/.*|$))");
         private static string[] _top_level_domains =    {"com", "edu", "gov", "int", "mil", "net", "org", "biz", "info", "name", "museum", "coop", "aero", "ac", "ad", "ae", "" +
                                                         "af", "ag", "ai", "al", "am", "an", "ao", "aq", "ar", "as", "at", "au", "aw", "az", "ba", "bb", "bd", "be", "bf", "bg", "bh", "bi", "bj", "" +
@@ -25,6 +28,10 @@ namespace Janrain.OpenId.Server
         private string _host;
         private int _port;
         private string _path;
+
+        #endregion
+
+        #region Constructor(s)
 
         public TrustRoot(string unparsed)
         {
@@ -54,6 +61,46 @@ namespace Janrain.OpenId.Server
                 throw new ArgumentException(unparsed + " does not appear to be a valid TrustRoot");
             }
         }
+
+        #endregion
+
+        #region Properties
+
+        public bool IsSane
+        {
+            get
+            {
+                if (_host == "localhost")
+                    return true;
+
+                string[] host_parts = _host.Split('.');
+
+                string tld = host_parts[host_parts.Length - 1];
+
+                if (!Util.InArray(_top_level_domains, tld))
+                    return false;
+
+                if (tld.Length == 2)
+                {
+                    if (host_parts.Length == 1)
+                        return false;
+
+                    if (host_parts[host_parts.Length - 2].Length <= 3)
+                        return host_parts.Length > 2;
+
+                }
+                else
+                {
+                    return host_parts.Length > 1;
+                }
+
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region Methods
 
         public bool ValidateUrl(Uri url)
         {
@@ -102,36 +149,7 @@ namespace Janrain.OpenId.Server
             return (allowed.IndexOf(_path[_path.Length - 1]) >= 0  || allowed.IndexOf(url.PathAndQuery[path_len]) >= 0);
         }
 
-        public bool IsSane
-        {
-            get
-            {
-                if (_host == "localhost")
-                    return true;
+        #endregion
 
-                string[] host_parts = _host.Split('.');
-
-                string tld = host_parts[host_parts.Length - 1];
-
-                if (!Util.InArray(_top_level_domains, tld))
-                    return false;
-
-                if (tld.Length == 2)
-                {
-                    if (host_parts.Length == 1)
-                        return false;
-
-                    if (host_parts[host_parts.Length - 2].Length <= 3)
-                        return host_parts.Length > 2;
-
-                }
-                else
-                {
-                    return host_parts.Length > 1;
-                }
-
-                return false;
-            }
-        }
     }
 }
