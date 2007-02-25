@@ -79,6 +79,16 @@ namespace Janrain.OpenId
             }
         }
 
+        public long ExpiresIn
+        {
+            get
+            {
+                TimeSpan time = this.Expires.ToUniversalTime().Subtract(DateTime.UtcNow);
+
+                return (long)time.Seconds;
+            }
+        }
+
         #endregion
 
         #region Abstract Methods
