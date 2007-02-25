@@ -65,6 +65,8 @@ namespace Janrain.OpenId.Store
 
         #endregion
 
+        #region Methods
+
         public static MemoryStore GetInstance()
         {
             return local_instance;
@@ -157,6 +159,8 @@ namespace Janrain.OpenId.Store
             }
         }
 
+        #endregion
+
         #region IAssociationStore Members
 
         byte[] IAssociationStore.AuthKey
@@ -214,16 +218,29 @@ namespace Janrain.OpenId.Store
         }
 
         #endregion
+
     }
 
+    // TODO Move this class out to it's own file
     public class ServerAssocs
     {
+
+        #region Private Members
+
         private Hashtable assocs;
+
+        #endregion
+
+        #region Constructor(s)
 
         public ServerAssocs()
         {
             this.assocs = new Hashtable();
         }
+
+        #endregion
+
+        #region Methods
 
         public void Set(Association assoc)
         {
@@ -261,6 +278,8 @@ namespace Janrain.OpenId.Store
 
             return best;
         }
+
+        #endregion
 
     }
    

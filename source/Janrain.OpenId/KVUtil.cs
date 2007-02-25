@@ -10,9 +10,15 @@ namespace Janrain.OpenId
     public class KVUtil
     {
 
+        #region Constructor(s)
+
         public KVUtil()
         {
         }
+
+        #endregion
+
+        #region Methods
 
         private static void Error(string message, bool strict)
         {
@@ -82,6 +88,8 @@ namespace Janrain.OpenId
             }
             return dict;
         }
+
+        #endregion
 
     }
 }

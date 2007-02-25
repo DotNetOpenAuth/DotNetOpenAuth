@@ -98,6 +98,8 @@ namespace Janrain.OpenId
 
         #endregion
 
+        #region Methods
+
         public virtual byte[] Serialize()
         {
             Dictionary<string, string> dict = new Dictionary<string,string>();
@@ -127,10 +129,15 @@ namespace Janrain.OpenId
                 throw new NotSupportedException("Unknown association type: " + assoc_type);
         }
 
+        #endregion
+
     }
 
+    // TODO Move this class out to it's own file
     public class HMACSHA1Association : Association
     {
+
+        #region Constructor(s)
 
         public HMACSHA1Association(string handle, byte[] secret, TimeSpan expiresIn)
         {
@@ -150,6 +157,10 @@ namespace Janrain.OpenId
             seconds = Convert.ToInt32(kvpairs["expires_in"]);
             this._expiresIn = new TimeSpan(0, 0, seconds);
         }
+
+        #endregion
+
+        #region Methods
 
         public override string AssociationType()
         {
@@ -221,5 +232,8 @@ namespace Janrain.OpenId
             hmac.Clear();
             return hash;
         }
+
+        #endregion
+
     }
 }

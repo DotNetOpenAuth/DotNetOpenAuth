@@ -9,6 +9,7 @@ namespace Janrain.OpenId
 {
     public class CryptUtil
     {
+
         #region Member Variables
 
         public static byte[] DEFAULT_GEN = {2};
@@ -123,7 +124,6 @@ namespace Janrain.OpenId
         }
 
         #endregion
-
 
     }
 }

@@ -51,13 +51,18 @@
     <Compile Include="DiffieHellman\mono\SequentialSearchPrimeGeneratorBase.cs" />
     <Compile Include="KVUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="store\IAssociationStore.cs" />
-    <Compile Include="store\MemoryStore.cs" />
+    <Compile Include="Server\CheckIdRequest.cs" />
+    <Compile Include="Server\IEncodable.cs" />
+    <Compile Include="Server\ProtocolException.cs" />
+    <Compile Include="Server\Request.cs" />
+    <Compile Include="Server\Response.cs" />
+    <Compile Include="Server\TrustRoot.cs" />
+    <Compile Include="Store\IAssociationStore.cs" />
+    <Compile Include="Store\MemoryStore.cs" />
     <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="consumer\" />
-    <Folder Include="server\" />
+    <Folder Include="Consumer\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -6,10 +6,10 @@ using System.Web;
 
 namespace Janrain.OpenId
 {
-    public class Util
+    public static class Util
     {
 
-        private Util() { }
+        #region NormalizeUri(string uriStr)
 
         public static Uri NormalizeUri(string uriStr)
         {
@@ -22,6 +22,10 @@ namespace Janrain.OpenId
 
             return bldr.Uri;
         }
+
+        #endregion
+
+        #region CreateQueryString(NameValueCollection args)
 
         public static string CreateQueryString(NameValueCollection args)
         {
@@ -37,6 +41,10 @@ namespace Janrain.OpenId
 
             return String.Join("&", parts);
         }
+
+        #endregion
+
+        #region AppendQueryArg(ref UriBuilder builder, string key, string value)
 
         public static void AppendQueryArg(ref UriBuilder builder, string key, string value)
         {
@@ -54,6 +62,10 @@ namespace Janrain.OpenId
 
         }
 
+        #endregion
+
+        #region AppendQueryArgs(ref UriBuilder builder, NameValueCollection args)
+
         public static void AppendQueryArgs(ref UriBuilder builder, NameValueCollection args)
         {
             if (args.Count > 0)
@@ -69,6 +81,21 @@ namespace Janrain.OpenId
                 builder.Query = qs;
             }
         }
+
+        #endregion
+
+        #region InArray(string[] array, string valueToFind)
+
+        public static bool InArray(string[] array, string valueToFind)
+        {
+            foreach (string val in array)
+            {
+                if (val == valueToFind) return true;
+            }
+            return false;
+        }
+
+        #endregion
 
     }
 }

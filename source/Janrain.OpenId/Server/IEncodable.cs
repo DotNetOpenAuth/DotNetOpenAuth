@@ -5,6 +5,7 @@ using System.Text;
 namespace Janrain.OpenId.Server
 {
 
+    // TODO Move this enum out to it's own file
     public enum EncodingType
     {
         ENCODE_NONE,
