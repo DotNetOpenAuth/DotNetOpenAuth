@@ -1,5 +1,0 @@
-obj\Debug\ResolveAssemblyReference.cache
-bin\Debug\DiffieHellman.dll
-bin\Debug\DiffieHellman.pdb
-obj\Debug\DiffieHellman.dll
-obj\Debug\DiffieHellman.pdb
