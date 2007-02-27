@@ -6,67 +6,6 @@ using System.Text;
 namespace Janrain.OpenId.Server
 {
 
-    // TODO Move this out to it's own file
-    public class UntrustedReturnUrl : ProtocolException
-    {
-
-        #region Private Members
-
-        private Uri _return_to;
-        private string _trust_root;
-
-        #endregion
-
-        #region Constructor(s)
-
-        public UntrustedReturnUrl(NameValueCollection query, Uri return_to, string trust_root)
-            : base(query, "return_to " + return_to.AbsoluteUri + " not under trust_root " + trust_root)
-        {
-            _return_to = return_to;
-            _trust_root = trust_root;
-        }
-
-        #endregion
-
-    }
-
-    // TODO Move this out to it's own file
-    public class MalformedReturnUrl : ProtocolException
-    {
-
-        #region Private Members
-
-        private string _return_to;
-
-        #endregion
-
-        #region Constructor(s)
-
-        public MalformedReturnUrl(NameValueCollection query, string return_to)
-            : base(query, "")
-        {
-            _return_to = return_to;
-        }
-
-        #endregion
-
-    }
-
-    // TODO Move this out to it's own file
-    public class MalformedTrustRoot : ProtocolException
-    {
-
-        #region Constructor(s)
-
-        public MalformedTrustRoot(NameValueCollection query, string text)
-            : base(query, text)
-        {
-        }
-
-        #endregion
-
-    }
-
     public class CheckIdRequest : AssociatedRequest
     {
 
@@ -244,7 +183,7 @@ namespace Janrain.OpenId.Server
                 q.Add("openid.assoc_handle", this.AssocHandle);
 
             UriBuilder builder = new UriBuilder(server_url);
-            Util.AppendQueryArgs(ref builder, q);
+            UriUtil.AppendQueryArgs(ref builder, q);
 
             return new Uri(builder.ToString());
         }
@@ -258,7 +197,7 @@ namespace Janrain.OpenId.Server
             NameValueCollection args = new NameValueCollection();
 
             args.Add("openid.mode", "cancel");
-            Util.AppendQueryArgs(ref builder, args);
+            UriUtil.AppendQueryArgs(ref builder, args);
 
             return new Uri(builder.ToString());
         }

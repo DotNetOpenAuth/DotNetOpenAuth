@@ -6,7 +6,7 @@ using System.Web;
 
 namespace Janrain.OpenId
 {
-    public static class Util
+    public static class UriUtil
     {
 
         #region NormalizeUri(string uriStr)
@@ -84,8 +84,12 @@ namespace Janrain.OpenId
 
         #endregion
 
-        #region InArray(string[] array, string valueToFind)
+    }
 
+    internal static class Util
+    {
+        #region InArray(string[] array, string valueToFind)
+            
         public static bool InArray(string[] array, string valueToFind)
         {
             foreach (string val in array)
@@ -94,8 +98,7 @@ namespace Janrain.OpenId
             }
             return false;
         }
-
         #endregion
-
     }
+
 }

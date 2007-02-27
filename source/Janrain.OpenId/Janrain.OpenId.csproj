@@ -40,6 +40,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Association.cs" />
+    <Compile Include="Consumer\AuthRequest.cs" />
+    <Compile Include="Consumer\ServiceEndpoint.cs" />
     <Compile Include="CryptUtil.cs" />
     <Compile Include="KVUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -48,6 +50,8 @@
     <Compile Include="Server\CheckIdRequest.cs" />
     <Compile Include="Server\Codec.cs" />
     <Compile Include="Server\IEncodable.cs" />
+    <Compile Include="Server\MalformedReturnUrl.cs" />
+    <Compile Include="Server\MalformedTrustRoot.cs" />
     <Compile Include="Server\ProtocolException.cs" />
     <Compile Include="Server\Request.cs" />
     <Compile Include="Server\Response.cs" />
@@ -55,13 +59,16 @@
     <Compile Include="Server\ServerSession.cs" />
     <Compile Include="Server\Signatory.cs" />
     <Compile Include="Server\TrustRoot.cs" />
+    <Compile Include="Server\UntrustedReturnUrl.cs" />
     <Compile Include="Server\WebResponse.cs" />
     <Compile Include="Store\IAssociationStore.cs" />
     <Compile Include="Store\MemoryStore.cs" />
     <Compile Include="Util.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Consumer\" />
+    <Compile Include="Yadis\ServiceNode.cs" />
+    <Compile Include="Yadis\TypeNode.cs" />
+    <Compile Include="Yadis\UriNode.cs" />
+    <Compile Include="Yadis\Xrd.cs" />
+    <Compile Include="Yadis\XrdNode.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -143,7 +143,7 @@ namespace Janrain.OpenId.Server
 
             CheckIdRequest checkidreq = (CheckIdRequest)this.Request;
             UriBuilder builder = new UriBuilder(checkidreq.ReturnTo);
-            Util.AppendQueryArgs(ref builder, nvc);
+            UriUtil.AppendQueryArgs(ref builder, nvc);
 
             return new Uri(builder.ToString());
         }
