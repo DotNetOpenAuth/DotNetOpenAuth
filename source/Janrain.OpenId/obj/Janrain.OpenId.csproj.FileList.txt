@@ -3,3 +3,5 @@ bin\Debug\Janrain.OpenId.dll
 bin\Debug\Janrain.OpenId.pdb
 obj\Debug\Janrain.OpenId.dll
 obj\Debug\Janrain.OpenId.pdb
+bin\Debug\DiffieHellman.dll
+bin\Debug\DiffieHellman.pdb
