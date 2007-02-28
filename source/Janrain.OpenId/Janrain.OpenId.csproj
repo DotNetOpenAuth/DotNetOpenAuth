@@ -64,11 +64,17 @@
     <Compile Include="Store\IAssociationStore.cs" />
     <Compile Include="Store\MemoryStore.cs" />
     <Compile Include="Util.cs" />
+    <Compile Include="Yadis\AcceptHeader.cs" />
+    <Compile Include="Yadis\ByteParser.cs" />
+    <Compile Include="Yadis\ContentType.cs" />
+    <Compile Include="Yadis\FetchRequest.cs" />
+    <Compile Include="Yadis\FetchResponse.cs" />
     <Compile Include="Yadis\ServiceNode.cs" />
     <Compile Include="Yadis\TypeNode.cs" />
     <Compile Include="Yadis\UriNode.cs" />
     <Compile Include="Yadis\Xrd.cs" />
     <Compile Include="Yadis\XrdNode.cs" />
+    <Compile Include="Yadis\Yadis.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
