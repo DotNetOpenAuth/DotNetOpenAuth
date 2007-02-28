@@ -1,0 +1,9 @@
+bin\Debug\OpenIdTests.dll
+bin\Debug\OpenIdTests.pdb
+obj\Debug\ResolveAssemblyReference.cache
+obj\Debug\OpenIdTests.dll
+obj\Debug\OpenIdTests.pdb
+bin\Debug\Janrain.OpenId.dll
+bin\Debug\DiffieHellman.dll
+bin\Debug\DiffieHellman.pdb
+bin\Debug\Janrain.OpenId.pdb
