@@ -203,6 +203,7 @@ namespace Janrain.OpenId
 
         public override int GetHashCode()
         {
+
             HMACSHA1 hmac = new HMACSHA1(this.Secret);
             CryptoStream cs = new CryptoStream(Stream.Null, hmac, CryptoStreamMode.Write);
             byte[] hbytes = ASCIIEncoding.ASCII.GetBytes(this.Handle);
@@ -216,15 +217,16 @@ namespace Janrain.OpenId
             long val = 0;
             for (int i = 0; i < hash.Length; i++)
             {
-                val = val ^ (long) hash[i];
+                val = val ^ (long)hash[i];
             }
             val = val ^ this.Expires.ToFileTimeUtc();
 
-            return Convert.ToInt32(val);
+            return (int) val;
         }
 
         public override string SignDict(string[] fields, NameValueCollection data, string prefix)
         {
+            
             NameValueCollection l = new NameValueCollection();
 
             foreach (string field in fields)
