@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="AssocationTestSuite.cs" />
     <Compile Include="DiffieHellmanTestSuite.cs" />
+    <Compile Include="KVUtilTestSuite.cs" />
     <Compile Include="MemoryStoreTestSuite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
