@@ -16,8 +16,7 @@ namespace OpenIdTests
             TimeSpan expiresIn = new TimeSpan(0, 0, 600);
             string handle = "handle";
             byte[] secret = ASCIIEncoding.ASCII.GetBytes("secret");
-            
-            
+                        
             Association assoc = new HMACSHA1Association(handle, secret, expiresIn);
 
             byte[] s = assoc.Serialize();
