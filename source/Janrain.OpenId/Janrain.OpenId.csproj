@@ -29,10 +29,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DiffieHellman, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\DiffieHellman\bin\Debug\DiffieHellman.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Web" />
@@ -43,6 +39,18 @@
     <Compile Include="Consumer\AuthRequest.cs" />
     <Compile Include="Consumer\ServiceEndpoint.cs" />
     <Compile Include="CryptUtil.cs" />
+    <Compile Include="DiffieHellman\DHKeyGeneration.cs" />
+    <Compile Include="DiffieHellman\DHParameters.cs" />
+    <Compile Include="DiffieHellman\DiffieHellman.cs" />
+    <Compile Include="DiffieHellman\DiffieHellmanManaged.cs" />
+    <Compile Include="DiffieHellman\mono\BigInteger.cs" />
+    <Compile Include="DiffieHellman\mono\ConfidenceFactor.cs" />
+    <Compile Include="DiffieHellman\mono\MiniParser.cs" />
+    <Compile Include="DiffieHellman\mono\NextPrimeFinder.cs" />
+    <Compile Include="DiffieHellman\mono\PrimalityTests.cs" />
+    <Compile Include="DiffieHellman\mono\PrimeGeneratorBase.cs" />
+    <Compile Include="DiffieHellman\mono\SecurityParser.cs" />
+    <Compile Include="DiffieHellman\mono\SequentialSearchPrimeGeneratorBase.cs" />
     <Compile Include="KVUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Server\AssociateRequest.cs" />
