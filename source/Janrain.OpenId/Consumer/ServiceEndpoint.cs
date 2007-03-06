@@ -7,7 +7,7 @@ using Janrain.Yadis;
 
 namespace Janrain.OpenId.Consumer
 {
-    class ServiceEndpoint
+    public class ServiceEndpoint
     {
         public static readonly Uri OPENID_1_0_NS = new Uri("http://openid.net/xmlns/1.0");
         public static readonly Uri OPENID_1_2_TYPE = new Uri("http://openid.net/signon/1.2");

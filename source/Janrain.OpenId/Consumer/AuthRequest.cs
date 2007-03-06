@@ -6,7 +6,7 @@ using System.Collections.Specialized;
 
 namespace Janrain.OpenId.Consumer
 {
-    class AuthRequest
+    public class AuthRequest
     {
         public enum Mode
         {
