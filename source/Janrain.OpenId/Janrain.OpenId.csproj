@@ -45,6 +45,8 @@
     <Compile Include="Consumer\FetchResponse.cs" />
     <Compile Include="Consumer\GenericConsumer.cs" />
     <Compile Include="Consumer\Manager.cs" />
+    <Compile Include="Consumer\OpenIdLogin.cs" />
+    <Compile Include="Consumer\OpenIdTextBox.cs" />
     <Compile Include="Consumer\ServiceEndpoint.cs" />
     <Compile Include="Consumer\SimpleFetcher.cs" />
     <Compile Include="CryptUtil.cs" />
@@ -80,6 +82,11 @@
     <Compile Include="Server\WebResponse.cs" />
     <Compile Include="Store\IAssociationStore.cs" />
     <Compile Include="Store\MemoryStore.cs" />
+    <Compile Include="Strings.Designer.cs">
+      <DependentUpon>Strings.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
     <Compile Include="Util.cs" />
     <Compile Include="Yadis\AcceptHeader.cs" />
     <Compile Include="Yadis\ByteParser.cs" />
@@ -92,6 +99,13 @@
     <Compile Include="Yadis\Xrd.cs" />
     <Compile Include="Yadis\XrdNode.cs" />
     <Compile Include="Yadis\Yadis.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Strings.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
