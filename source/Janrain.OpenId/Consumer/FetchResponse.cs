@@ -14,7 +14,11 @@ namespace Janrain.OpenId.Consumer
 
 		public FetchResponse(HttpStatusCode code, Uri finalUri, string charset, byte[] data, int length)
 		{
-			throw new System.NotImplementedException();
+			this.code = code;
+			this.finalUri = finalUri;
+			this.data = data;
+			this.length = length;
+			this.charset = charset;
 		}
 	}
 }

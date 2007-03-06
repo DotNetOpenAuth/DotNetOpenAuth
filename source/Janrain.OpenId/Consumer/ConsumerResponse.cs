@@ -7,15 +7,48 @@ namespace Janrain.OpenId.Consumer
 	public class ConsumerResponse
 	{
 		Uri identity_url;
-		public Uri IdentityUrl { get { throw new NotImplementedException(); } }
+		public Uri IdentityUrl
+		{
+			get { return identity_url; }
+		}
 
 		IDictionary signed_args;
 
-		public Uri ReturnTo { get { throw new NotImplementedException(); } }
+		public Uri ReturnTo
+		{
+			get { return new Uri((string)this.signed_args["openid.return_to"], true); }
+		}
 
-		static ConsumerResponse() { throw new NotImplementedException(); }
-		public ConsumerResponse(Uri identity_url, NameValueCollection query, string signed) { throw new NotImplementedException(); }
-		public IDictionary ExtensionResponse(string prefix) { throw new NotImplementedException(); }
+		public ConsumerResponse(Uri identity_url, NameValueCollection query, string signed)
+		{
+			this.identity_url = identity_url;
+			this.signed_args = new Hashtable();
+			foreach (string field_name in signed.Split(','))
+			{
+				string field_name2 = "openid." + field_name;
+				string val = query[field_name2];
+				if (val == null)
+					val = String.Empty;
+				this.signed_args[field_name2] = val;
+			}
+		}
+		public IDictionary ExtensionResponse(string prefix)
+		{
+			Hashtable response = new Hashtable();
+			prefix = "openid." + prefix + ".";
+			int prefix_len = prefix.Length;
+			foreach (DictionaryEntry pair in this.signed_args)
+			{
+				string k = (string)pair.Key;
+				if (k.StartsWith(prefix))
+				{
+					string response_key = k.Substring(prefix_len);
+					response[response_key] = pair.Value;
+				}
+			}
+
+			return response;
+		}
 
 	}
 }
