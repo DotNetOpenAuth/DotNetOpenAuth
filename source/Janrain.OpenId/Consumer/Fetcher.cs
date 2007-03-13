@@ -42,6 +42,7 @@ namespace Janrain.OpenId.Consumer
 			}
 			return offset;
 		}
+		
 		protected static FetchResponse GetResponse(HttpWebResponse resp, uint maxRead)
 		{
 			byte[] data = null;
@@ -49,12 +50,16 @@ namespace Janrain.OpenId.Consumer
 			return new FetchResponse(resp.StatusCode, resp.ResponseUri,
 					resp.CharacterSet, data, length);
 		}
+		
 		public abstract FetchResponse Get(Uri uri, uint maxRead);
+		
 		public virtual FetchResponse Get(Uri uri)
 		{
 			return Get(uri, MAX_BYTES);
 		}
+
 		public abstract FetchResponse Post(Uri uri, byte[] body, uint maxRead);
+
 		public virtual FetchResponse Post(Uri uri, byte[] body)
 		{
 			return Post(uri, body, MAX_BYTES);

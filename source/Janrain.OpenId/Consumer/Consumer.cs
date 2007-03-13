@@ -82,8 +82,7 @@ namespace Janrain.OpenId.Consumer
 
 		public AuthRequest Begin(Uri openid_url)
 		{
-			ServiceEndpoint endpoint = this.manager.GetNextService(openid_url,
-																this.SessionKeyPrefix);
+			ServiceEndpoint endpoint = this.manager.GetNextService(openid_url, this.SessionKeyPrefix);
 			if (endpoint == null)
 				throw new FailureException(null, "No openid endpoint found");
 			return BeginWithoutDiscovery(endpoint);

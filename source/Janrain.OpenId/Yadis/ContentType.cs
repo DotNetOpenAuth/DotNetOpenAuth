@@ -34,10 +34,10 @@ namespace Janrain.Yadis
             this.type = this.type.Trim();
             this.subType = this.subType.Trim();
 
-            string[] whatsLeft = new string[parts.Length-1];
-            parts.CopyTo(parts,1);
-            foreach(string param in whatsLeft)
+            for(int i=1; i<parts.Length; i++)
             {
+				string param = parts[i];
+
                 string k;
                 string v;
                 try
@@ -50,6 +50,7 @@ namespace Janrain.Yadis
                 {
                     throw new ArgumentException(message);
                 }
+
                 this.parameters[k.Trim()] = v.Trim();
             }
         }

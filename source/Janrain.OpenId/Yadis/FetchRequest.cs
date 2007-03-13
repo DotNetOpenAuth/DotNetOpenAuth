@@ -70,7 +70,7 @@ namespace Janrain.Yadis
             //TODO: I totally factored out ReadBytes, but this whole response section needs
             // to be more .NET-y. The framework does a LOT of this stuff for us for free...
             string data = String.Empty;
-            using(StreamReader b = new StreamReader(responseStream, encoding))
+			using (StreamReader b = new StreamReader(responseStream, encoding ?? Encoding.GetEncoding("ISO-8859-1")))
             {
                 data = b.ReadToEnd();
             }

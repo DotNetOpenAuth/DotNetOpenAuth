@@ -28,10 +28,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DiffieHellman, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Janrain.OpenId\bin\Debug\DiffieHellman.dll</HintPath>
-    </Reference>
     <Reference Include="Janrain.OpenId, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Janrain.OpenId\bin\Debug\Janrain.OpenId.dll</HintPath>
@@ -47,9 +43,11 @@
     <Compile Include="KVUtilTestSuite.cs" />
     <Compile Include="MemoryStoreTestSuite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TrustRootTestSuite.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="dhpriv.txt" />
+    <Content Include="trustroot.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
