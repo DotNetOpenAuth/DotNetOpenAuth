@@ -43,5 +43,16 @@ namespace Janrain.OpenId.Server
 
         #endregion
 
+        public Request DecodeRequest(NameValueCollection query)
+        {
+            return Decoder.Decode(query);
+        }
+
+        public WebResponse EncodeResponse(IEncodable response)
+        {
+            return this._encoder.Encode(response);
+        }
+        
+
     }
 }

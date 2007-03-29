@@ -129,6 +129,7 @@ namespace Janrain.OpenId
             this.Handle = handle;
             this.key = secret;
             this.Issued = UNIX_EPOCH.Add(new TimeSpan(0, 0, Convert.ToInt32((DateTime.Now - UNIX_EPOCH).TotalSeconds)));
+            this.expiresIn = expiresIn;
         }
 
         public HMACSHA1Association(IDictionary kvpairs)

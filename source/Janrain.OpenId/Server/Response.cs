@@ -44,7 +44,7 @@ namespace Janrain.OpenId.Server
 
         public string[] Signed
         {
-            get { return (string[]) _signed.ToArray(); }
+            get { return (string[])_signed.ToArray(typeof(string)); }
         }
 
         public bool NeedsSigning

@@ -14,6 +14,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.UI.HtmlControls;
 using System.Web.Security;
+using Janrain.OpenId.RegistrationExtension;
 
 namespace NerdBank.OpenId.Consumer
 {
@@ -94,12 +95,13 @@ namespace NerdBank.OpenId.Consumer
 			requiredValidator.ControlToValidate = WrappedTextBox.ID;
 			requiredValidator.ValidationGroup = validationGroupDefault;
 			cell.Controls.Add(requiredValidator);
-			uriFormatValidator = new RegularExpressionValidator();
-			uriFormatValidator.ErrorMessage = uriFormatTextDefault + requiredTextSuffix;
-			uriFormatValidator.ValidationExpression = @"http(s)?://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?";
-			uriFormatValidator.Display = ValidatorDisplay.Dynamic;
-			uriFormatValidator.ControlToValidate = WrappedTextBox.ID;
-			uriFormatValidator.ValidationGroup = validationGroupDefault;
+            uriFormatValidator = new RegularExpressionValidator();
+            uriFormatValidator.ErrorMessage = uriFormatTextDefault + requiredTextSuffix;
+            uriFormatValidator.ValidationExpression = @"http(s)?://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?";
+            uriFormatValidator.Enabled = false;
+            uriFormatValidator.Display = ValidatorDisplay.Dynamic;
+            uriFormatValidator.ControlToValidate = WrappedTextBox.ID;
+            uriFormatValidator.ValidationGroup = validationGroupDefault;
 			cell.Controls.Add(uriFormatValidator);
 			examplePrefixLabel = new Label();
 			examplePrefixLabel.Text = examplePrefixDefault;
@@ -276,7 +278,7 @@ namespace NerdBank.OpenId.Consumer
 		{
 			EventHandler<OpenIdTextBox.OpenIdEventArgs> loggingIn = LoggingIn;
 			OpenIdTextBox.OpenIdEventArgs args = new OpenIdTextBox.OpenIdEventArgs(openIdUri,
-				OpenIdTextBox.OpenIdProfileFields.Empty);
+				OpenIdProfileFields.Empty);
 			if (loggingIn != null)
 				loggingIn(this, args);
 			return !args.Cancel;

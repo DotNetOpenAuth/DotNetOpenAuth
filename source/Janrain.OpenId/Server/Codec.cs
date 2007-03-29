@@ -156,8 +156,10 @@ namespace Janrain.OpenId.Server
             NameValueCollection myquery = new NameValueCollection();
             foreach (string key in query)
             {
-                if (key.StartsWith("openid."))
-                    myquery[key] = query[key];
+                if (!String.IsNullOrEmpty(key))
+                {
+                    if (key.StartsWith("openid.")) { myquery[key] = query[key];}                     
+                }
             }
 
             if (myquery.Count == 0) return null;

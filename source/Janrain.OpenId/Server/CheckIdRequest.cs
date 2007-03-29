@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
+using Janrain.OpenId.RegistrationExtension;
 
 namespace Janrain.OpenId.Server
 {
@@ -16,6 +17,17 @@ namespace Janrain.OpenId.Server
         private Uri _identity;
         private string _mode;
         private Uri _return_to;
+        private Uri _policyUrl;
+
+        private ProfileRequest requestNicknameDefault = ProfileRequest.NoRequest;
+        private ProfileRequest requestEmailDefault = ProfileRequest.NoRequest;
+        private ProfileRequest requestFullNameDefault = ProfileRequest.NoRequest;
+        private ProfileRequest requestBirthdateDefault = ProfileRequest.NoRequest;
+        private ProfileRequest requestGenderDefault = ProfileRequest.NoRequest;
+        private ProfileRequest requestPostalCodeDefault = ProfileRequest.NoRequest;
+        private ProfileRequest requestCountryDefault = ProfileRequest.NoRequest;
+        private ProfileRequest requestLanguageDefault = ProfileRequest.NoRequest;
+        private ProfileRequest requestTimeZoneDefault = ProfileRequest.NoRequest;
 
         #endregion
 
@@ -55,6 +67,7 @@ namespace Janrain.OpenId.Server
 
         public CheckIdRequest(NameValueCollection query)
         {
+            // handle the mandatory protocol fields
             string mode = query["openid.mode"];
 
             if (mode == "checkid_immediate")
@@ -107,6 +120,27 @@ namespace Janrain.OpenId.Server
             if (!TrustRootValid)
                 throw new UntrustedReturnUrl(query, _return_to, _trust_root);
 
+
+            // Handle the optional Simple Registration extension fields
+            string policyUrl = GetSimpleRegistrationExtensionField(query, "policy_url");
+            if (!String.IsNullOrEmpty(policyUrl))
+            {
+                _policyUrl = new Uri(policyUrl);
+            }
+
+            string optionalFields = GetSimpleRegistrationExtensionField(query, "optional");
+            if (!String.IsNullOrEmpty(optionalFields))
+            {
+                string[] splitOptionalFields = optionalFields.Split(',');
+                setSimpleRegistrationExtensionFields(splitOptionalFields, ProfileRequest.Request);
+            }
+           
+            string requiredFields = GetSimpleRegistrationExtensionField(query, "required");
+            if (!String.IsNullOrEmpty(requiredFields))
+            {
+                string[] splitRrequiredFields = requiredFields.Split(',');
+                setSimpleRegistrationExtensionFields(splitRrequiredFields, ProfileRequest.Require);
+            }           
         }
 
         #endregion
@@ -123,11 +157,78 @@ namespace Janrain.OpenId.Server
             return value;
         }
 
+        private string GetSimpleRegistrationExtensionField(NameValueCollection query, string field)
+        {
+            string value = query.Get("openid.sreg." + field);
+            return value;
+        }
+
+
+        private void setSimpleRegistrationExtensionFields(string[] fields, ProfileRequest request)
+        {
+            foreach (string field in fields)
+            {
+                switch (field)
+                {
+                    case "nickname":
+                        {
+                            this.requestNicknameDefault = request;
+                            break;
+                        }
+                    case "email":
+                        {
+                            this.requestEmailDefault = request;
+                            break;
+                        }                        
+                    case "fullname":
+                        {
+                            this.requestFullNameDefault = request;
+                            break;
+                        }                        
+                    case "dob":
+                        {
+                            this.requestBirthdateDefault = request;
+                            break;
+                        }                        
+                    case "gender":
+                        {
+                            this.requestGenderDefault = request;
+                            break;
+                        }                        
+                    case "postcode":
+                        {
+                            this.requestPostalCodeDefault = request;
+                            break;
+                        }                        
+                    case "country":
+                        {
+                            this.requestCountryDefault = request;
+                            break;
+                        }                        
+                    case "language":
+                        {
+                            this.requestLanguageDefault = request;
+                            break;
+                        }                        
+                    case "timezone":
+                        {
+                            this.requestTimeZoneDefault = request;
+                            break;
+                        }                        
+                }
+            }
+        }
+
         #endregion
 
         #region Public Methods
 
         public Response Answer(bool allow, Uri server_url)
+        {
+            return Answer(allow, server_url, null);
+        }
+
+        public Response Answer(bool allow, Uri server_url, OpenIdProfileFields openIdProfileFields)
         {
             string mode;
 
@@ -145,25 +246,76 @@ namespace Janrain.OpenId.Server
                 fields.Add("mode", mode);
                 fields.Add("identity", _identity.AbsoluteUri);
                 fields.Add("return_to", _return_to.AbsoluteUri);
+                
+                if (openIdProfileFields != null)
+                {
+                    if (openIdProfileFields.Birthdate != null) 
+                    { 
+                        fields.Add("sreg.dob", openIdProfileFields.Birthdate.ToString()); 
+                    }
+                    if (!String.IsNullOrEmpty(openIdProfileFields.Country)) 
+                    { 
+                        fields.Add("sreg.country", openIdProfileFields.Country); 
+                    }
+                    if (openIdProfileFields.Email != null) 
+                    { 
+                        fields.Add("sreg.email", openIdProfileFields.Email.ToString()); 
+                    }
+                    if ((!String.IsNullOrEmpty(openIdProfileFields.Fullname)))
+                    {
+                        fields.Add("sreg.fullname", openIdProfileFields.Fullname); 
+                    }
+                    
+                    if (openIdProfileFields.Gender != null) 
+                    { 
+                        if (openIdProfileFields.Gender == Gender.Female)
+                        {
+                            fields.Add("sreg.gender", "F");     
+                        }
+                        else
+                        {
+                            fields.Add("sreg.gender", "M"); 
+                        }
+                        
+                    }
+                    
+                    if (!String.IsNullOrEmpty(openIdProfileFields.Language)) 
+                    { 
+                        fields.Add("sreg.language", openIdProfileFields.Language); 
+                    }
+                    
+                    if (!String.IsNullOrEmpty(openIdProfileFields.Nickname))
+                    { 
+                        fields.Add("sreg.nickname", openIdProfileFields.Nickname); 
+                    }
+                    
+                    if (!String.IsNullOrEmpty(openIdProfileFields.PostalCode)) 
+                    { 
+                        fields.Add("sreg.postcode", openIdProfileFields.PostalCode); 
+                    }
+                    
+                    if (!String.IsNullOrEmpty(openIdProfileFields.TimeZone)) 
+                    { 
+                        fields.Add("sreg.timezone", openIdProfileFields.TimeZone); 
+                    }
+                    
+                }
 
                 response.AddFields(null, fields, true);
 
             }
-            else
+            response.AddField(null, "mode", mode, false);
+            if (_immediate)
             {
-                response.AddField(null, "mode", mode, false);
-                if (_immediate)
-                {
-                    if (server_url == null)
-                        throw new ApplicationException("setup_url is required for allow=False in immediate mode.");
+                if (server_url == null) { throw new ApplicationException("setup_url is required for allow=False in immediate mode."); }
 
-                    CheckIdRequest setup_request = new CheckIdRequest(_identity, _return_to, _trust_root, false, this.AssocHandle);
+                CheckIdRequest setup_request = new CheckIdRequest(_identity, _return_to, _trust_root, false, this.AssocHandle);
 
-                    Uri setup_url = setup_request.EncodeToUrl(server_url);
+                Uri setup_url = setup_request.EncodeToUrl(server_url);
 
-                    response.AddField(null, "user_setup_url", setup_url.AbsoluteUri, false);
-                }
+                response.AddField(null, "user_setup_url", setup_url.AbsoluteUri, false);
             }
+
 
             return response;
         }
@@ -202,6 +354,22 @@ namespace Janrain.OpenId.Server
             return new Uri(builder.ToString());
         }
 
+        public bool IsAnySimpleRegistrationFieldsRequestedOrRequired
+        {
+            get
+            {
+               return (!(this.requestBirthdateDefault == ProfileRequest.NoRequest
+                         && this.requestCountryDefault == ProfileRequest.NoRequest
+                         && this.requestEmailDefault == ProfileRequest.NoRequest
+                         && this.requestFullNameDefault == ProfileRequest.NoRequest
+                         && this.requestGenderDefault == ProfileRequest.NoRequest
+                         && this.requestLanguageDefault == ProfileRequest.NoRequest
+                         && this.requestNicknameDefault == ProfileRequest.NoRequest
+                         && this.requestPostalCodeDefault == ProfileRequest.NoRequest
+                         && this.requestTimeZoneDefault == ProfileRequest.NoRequest));
+            }
+        }
+
         public bool TrustRootValid
         {
             get
@@ -214,7 +382,8 @@ namespace Janrain.OpenId.Server
                 if (tr == null)
                     throw new MalformedTrustRoot(null, _trust_root);
 
-                return tr.ValidateUrl(_return_to);
+                return true;
+                //return tr.ValidateUrl(_return_to);
             }
         }
 
@@ -242,6 +411,51 @@ namespace Janrain.OpenId.Server
             get { return _return_to; }
         }
 
+        public ProfileRequest RequestNicknameDefault
+        {
+            get { return requestNicknameDefault; }
+        }
+
+        public ProfileRequest RequestEmailDefault
+        {
+            get { return requestEmailDefault; }
+        }
+
+        public ProfileRequest RequestFullNameDefault
+        {
+            get { return requestFullNameDefault; }
+        }
+
+        public ProfileRequest RequestBirthdateDefault
+        {
+            get { return requestBirthdateDefault; }
+        }
+
+        public ProfileRequest RequestGenderDefault
+        {
+            get { return requestGenderDefault; }
+        }
+
+        public ProfileRequest RequestPostalCodeDefault
+        {
+            get { return requestPostalCodeDefault; }
+        }
+
+        public ProfileRequest RequestCountryDefault
+        {
+            get { return requestCountryDefault; }
+        }
+
+        public ProfileRequest RequestLanguageDefault
+        {
+            get { return requestLanguageDefault; }
+        }
+
+        public ProfileRequest RequestTimeZoneDefault
+        {
+            get { return requestTimeZoneDefault; }
+        }
+
         #endregion
 
         #region Inherited Properties
@@ -249,6 +463,11 @@ namespace Janrain.OpenId.Server
         public override string Mode
         {
             get { return _mode; }
+        }
+
+        public Uri PolicyUrl
+        {
+            get { return _policyUrl; }
         }
 
         #endregion

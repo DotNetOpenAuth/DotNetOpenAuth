@@ -91,17 +91,26 @@ namespace Janrain.OpenId.Server
 
                 throw new ProtocolException(query, "If non-default modulus or generator is supplied, both must be supplied. Missing: " + missing);
             }
-
-            if (dh_modulus != "" || dh_gen != "")
+            
+            if (!String.IsNullOrEmpty(dh_modulus) || !String.IsNullOrEmpty(dh_gen))
             {
                 try
                 {
-                    dh_modulus_bytes = Convert.FromBase64String(dh_modulus);
+                    dh_modulus_bytes = Convert.FromBase64String(dh_modulus);                    
                 }
                 catch (FormatException)
                 {
                     throw new ProtocolException(query, "dh_modulus isn't properly base64ed");
                 }
+
+                try
+                {
+                    dh_gen_bytes = Convert.FromBase64String(dh_gen);
+                }
+                catch (FormatException)
+                {
+                    throw new ProtocolException(query, "dh_gen isn't properly base64ed");
+                }                
             }
             else
             {

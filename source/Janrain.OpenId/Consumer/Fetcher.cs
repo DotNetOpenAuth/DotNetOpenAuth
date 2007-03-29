@@ -14,33 +14,38 @@ namespace Janrain.OpenId.Consumer
 		{
 			MemoryStream ms = null;
 			Stream stream = resp.GetResponseStream();
-			int length = (int)resp.ContentLength;
-			bool nolength = (length == (-1));
-			int size = (nolength ? 8192 : length);
-			if (nolength)
-				ms = new MemoryStream();
+		    
+		    
+		    buffer = Util.ReadAndClose(stream);
+		    return buffer.Length;
+		    
+            //int length = (int)resp.ContentLength;
+            //bool nolength = (length == (-1));
+            //int size = (nolength ? 8192 : length);
+            //if (nolength)
+            //    ms = new MemoryStream();
 
-			size = Math.Min(size, (int)max_bytes);
-			int nread = 0;
-			int offset = 0;
-			buffer = new byte[size];
-			while ((nread = stream.Read(buffer, offset, size)) != 0)
-			{
-				if (nolength)
-					ms.Write(buffer, 0, nread);
-				else
-				{
-					size -= nread;
-					offset += nread;
-				}
-			}
+            //size = Math.Min(size, (int)max_bytes);
+            //int nread = 0;
+            //int offset = 0;
+            //buffer = new byte[size];
+            //while ((nread = stream.Read(buffer, offset, size)) != 0)
+            //{
+            //    if (nolength)
+            //        ms.Write(buffer, 0, nread);
+            //    else
+            //    {
+            //        size -= nread;
+            //        offset += nread;
+            //    }
+            //}
 
-			if (nolength)
-			{
-				buffer = ms.ToArray();
-				offset = buffer.Length;
-			}
-			return offset;
+            //if (nolength)
+            //{
+            //    buffer = ms.ToArray();
+            //    offset = buffer.Length;
+            //}
+            //return offset;
 		}
 		
 		protected static FetchResponse GetResponse(HttpWebResponse resp, uint maxRead)

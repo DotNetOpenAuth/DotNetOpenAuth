@@ -21,7 +21,16 @@ using System.Web.UI.WebControls;
 
 using Janrain.OpenId;
 using Janrain.OpenId.Consumer;
+using Janrain.OpenId.RegistrationExtension;
 using Janrain.OpenId.Store;
+
+namespace NerdBank.OpenId.RegistrationExtension
+{
+}
+
+namespace Janrain.OpenId.RegistrationExtension
+{
+}
 
 namespace NerdBank.OpenId.Consumer
 {
@@ -103,14 +112,7 @@ namespace NerdBank.OpenId.Consumer
 			set { WrappedTextBox.Columns = value; }
 		}
 
-		public enum ProfileRequest
-		{
-			NoRequest,
-			Request,
-			Require,
-		}
-
-		const string requestNicknameViewStateKey = "RequestNickname";
+	    const string requestNicknameViewStateKey = "RequestNickname";
 		const ProfileRequest requestNicknameDefault = ProfileRequest.NoRequest;
 		[Bindable(true)]
 		[Category("Profile")]
@@ -133,7 +135,7 @@ namespace NerdBank.OpenId.Consumer
 		}
 
 		const string requestFullNameViewStateKey = "RequestFullName";
-		const ProfileRequest requestFullNameDefault = ProfileRequest.NoRequest;
+        const ProfileRequest requestFullNameDefault = ProfileRequest.NoRequest;
 		[Bindable(true)]
 		[Category("Profile")]
 		[DefaultValue(requestFullNameDefault)]
@@ -304,6 +306,7 @@ namespace NerdBank.OpenId.Consumer
 		{
 			base.OnLoad(e);
 
+		    
 			try
 			{
 				if (!Page.IsPostBack && Page.Request.QueryString["openid.mode"] != null)
@@ -348,12 +351,12 @@ namespace NerdBank.OpenId.Consumer
 			string trustRoot = builder.ToString();
 
 			// Build the return_to URL
-			builder = new UriBuilder(Page.Request.Url.AbsoluteUri);
-			NameValueCollection col = new NameValueCollection();
+			builder = new UriBuilder(Page.Request.Url.AbsoluteUri);			
 			if (!string.IsNullOrEmpty(Page.Request.QueryString["ReturnUrl"]))
-				col["ReturnUrl"] = Page.Request.QueryString["ReturnUrl"];
-			builder.Query = UriUtil.CreateQueryString(col);
-			Uri returnTo = new Uri(builder.ToString(), true);
+			{
+			    builder.Query = "ReturnUrl=" + Page.Request.QueryString["ReturnUrl"];
+			}			
+			Uri returnTo = new Uri(builder.ToString());
 
 			Uri redirectUrl = request.CreateRedirect(trustRoot, returnTo, AuthRequest.Mode.SETUP);
 			Page.Response.Redirect(redirectUrl.AbsoluteUri);
@@ -361,17 +364,15 @@ namespace NerdBank.OpenId.Consumer
 
 		void addProfileArgs(AuthRequest request)
 		{
-			request.ExtraArgs.Add("openid.sreg.required",
-				string.Join(",", assembleProfileFields(ProfileRequest.Require)));
-			request.ExtraArgs.Add("openid.sreg.optional",
-				string.Join(",", assembleProfileFields(ProfileRequest.Request)));
+			request.ExtraArgs.Add("openid.sreg.required", string.Join(",", assembleProfileFields(ProfileRequest.Require)));
+			request.ExtraArgs.Add("openid.sreg.optional", string.Join(",", assembleProfileFields(ProfileRequest.Request)));
 			request.ExtraArgs.Add("openid.sreg.policy_url", PolicyUrl);
 		}
 
 		string[] assembleProfileFields(ProfileRequest level)
 		{
 			List<string> fields = new List<string>(10);
-			if (RequestNickname == level)
+			if (RequestNickname == level) 
 				fields.Add("nickname");
 			if (RequestEmail == level)
 				fields.Add("email");
@@ -397,9 +398,8 @@ namespace NerdBank.OpenId.Consumer
 			OpenIdProfileFields fields = new OpenIdProfileFields();
 			if (RequestNickname > ProfileRequest.NoRequest)
 				fields.Nickname = queryString["openid.sreg.nickname"];
-			if (RequestEmail > ProfileRequest.NoRequest &&
-				!string.IsNullOrEmpty(queryString["openid.sreg.email"]))
-				fields.Email = new MailAddress(queryString["openid.sreg.email"]);
+			if (RequestEmail > ProfileRequest.NoRequest)
+				fields.Email = queryString["openid.sreg.email"];
 			if (RequestFullName > ProfileRequest.NoRequest)
 				fields.Fullname = queryString["openid.sreg.fullname"];
 			if (RequestBirthdate > ProfileRequest.NoRequest)
@@ -436,88 +436,7 @@ namespace NerdBank.OpenId.Consumer
 			return fields;
 		}
 
-		public enum Gender
-		{
-			Male,
-			Female,
-		}
-
-		public struct OpenIdProfileFields
-		{
-			internal static OpenIdProfileFields Empty = new OpenIdProfileFields();
-
-			private string nickname;
-			public string Nickname
-			{
-				get { return nickname; }
-				set { nickname = value; }
-			}
-
-			private MailAddress email;
-			public MailAddress Email
-			{
-				get { return email; }
-				set { email = value; }
-			}
-
-			private string fullName;
-			public string Fullname
-			{
-				get { return fullName; }
-				set { fullName = value; }
-			}
-
-			private DateTime? birthdate;
-			public DateTime? Birthdate
-			{
-				get { return birthdate; }
-				set { birthdate = value; }
-			}
-
-			private Gender? gender;
-			public Gender? Gender
-			{
-				get { return gender; }
-				set { gender = value; }
-			}
-
-			private string postalCode;
-			public string PostalCode
-			{
-				get { return postalCode; }
-				set { postalCode = value; }
-			}
-
-			private string country;
-			public string Country
-			{
-				get { return country; }
-				set { country = value; }
-			}
-
-			private string language;
-			public string Language
-			{
-				get { return language; }
-				set { language = value; }
-			}
-
-			private CultureInfo culture;
-			public CultureInfo Culture
-			{
-				get { return culture; }
-				set { culture = value; }
-			}
-
-			private string timeZone;
-			public string TimeZone
-			{
-				get { return timeZone; }
-				set { timeZone = value; }
-			}
-		}
-
-		#region Events
+	    #region Events
 		public class OpenIdEventArgs : EventArgs
 		{
 			public OpenIdEventArgs(Uri openIdUri, OpenIdProfileFields profileFields)

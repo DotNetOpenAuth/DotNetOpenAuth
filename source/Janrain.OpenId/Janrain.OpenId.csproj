@@ -43,12 +43,16 @@
     <Compile Include="Consumer\Fetcher.cs" />
     <Compile Include="Consumer\FetchException.cs" />
     <Compile Include="Consumer\FetchResponse.cs" />
+    <Compile Include="RegistrationExtension\Gender.cs" />
     <Compile Include="Consumer\GenericConsumer.cs" />
     <Compile Include="Consumer\Manager.cs" />
     <Compile Include="Consumer\OpenIdLogin.cs" />
+    <Compile Include="RegistrationExtension\OpenIdProfileFields.cs" />
     <Compile Include="Consumer\OpenIdTextBox.cs" />
+    <Compile Include="RegistrationExtension\ProfileRequest.cs" />
     <Compile Include="Consumer\ServiceEndpoint.cs" />
     <Compile Include="Consumer\SimpleFetcher.cs" />
+    <Compile Include="Consumer\Util.cs" />
     <Compile Include="CryptUtil.cs" />
     <Compile Include="DiffieHellman\DHKeyGeneration.cs" />
     <Compile Include="DiffieHellman\DHParameters.cs" />
