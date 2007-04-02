@@ -23,7 +23,11 @@ namespace Janrain.OpenId.Store
 
 		#region Constructor(s)
 
-		private MemoryStore() { }
+		private MemoryStore()
+		{
+
+	    
+		}
 
 		#endregion
 

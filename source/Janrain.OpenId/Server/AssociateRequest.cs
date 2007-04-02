@@ -50,6 +50,19 @@ namespace Janrain.OpenId.Server
 
         public Response Answer(Association assoc)
         {
+
+            #region  Trace
+            if (TraceUtil.Switch.TraceInfo)
+            {
+                TraceUtil.ServerTrace("Start processing response for AssociateRequest");
+                if (TraceUtil.Switch.TraceVerbose)
+                {
+                    TraceUtil.ServerTrace("Association to be sent follows:");
+                    TraceUtil.ServerTrace(assoc.ToString());
+                }
+            }
+            #endregion
+
             Response response = new Response(this);
 
             response.Fields["expires_in"] = assoc.ExpiresIn;
@@ -63,12 +76,32 @@ namespace Janrain.OpenId.Server
             }
 
             if (_session.SessionType != "plaintext")
+            {
                 response.Fields["session_type"] = _session.SessionType;
+            }
+
+            #region  Trace
+            if (TraceUtil.Switch.TraceInfo)
+            {
+                TraceUtil.ServerTrace("End processing response for AssociateRequest. AssociateRequest response successfully created. ");
+                if (TraceUtil.Switch.TraceVerbose)
+                {
+                    TraceUtil.ServerTrace("Response follows. ");
+                    TraceUtil.ServerTrace(response.ToString());
+                }                
+            }
+            #endregion
 
             return response;
         }
 
         #endregion
+
+        public override string ToString()
+        {
+            string returnString = "AssociateRequest._assoc_type = {0}";
+            return base.ToString() + Environment.NewLine  + String.Format(returnString, _assoc_type);
+        }
 
     }
 }

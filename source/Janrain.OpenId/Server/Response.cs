@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
 using Janrain.OpenId;
+using Janrain.OpenId.Consumer;
 
 namespace Janrain.OpenId.Server
 {
@@ -154,6 +155,17 @@ namespace Janrain.OpenId.Server
         }
 
         #endregion
+
+        public override string ToString()
+        {
+            string returnString = String.Format("Response.NeedsSigning = {0}", this.NeedsSigning);             
+            foreach (string key in Fields.Keys)
+            {
+                returnString += Environment.NewLine +  String.Format("ResponseField[{0}] = '{1}'", key, Fields[key]);
+            }
+            return returnString;            
+        }               
+
 
     }
 }

@@ -22,7 +22,7 @@ namespace Janrain.OpenId.Server
         #region Constructor(s)
 
         public Signatory(IAssociationStore store)
-        {
+        {           
             if (store == null)
                 throw new ArgumentNullException("store");
 
@@ -35,6 +35,13 @@ namespace Janrain.OpenId.Server
 
         public void Sign(Response response)
         {
+            #region  Trace
+            if (TraceUtil.Switch.TraceInfo)
+            {
+                TraceUtil.ServerTrace(String.Format("Digitally sign the response."));
+            }
+            #endregion        	
+            
             NameValueCollection nvc = new NameValueCollection();
             Association assoc;
             string assoc_handle = ((AssociatedRequest)response.Request).AssocHandle;
@@ -45,13 +52,30 @@ namespace Janrain.OpenId.Server
 
                 if (assoc == null)
                 {
+                    #region  Trace
+                    if (TraceUtil.Switch.TraceInfo)
+                    {
+                        TraceUtil.ServerTrace(String.Format("No assocaiton found with assoc_handle. Setting invalidate_handle and creating new Association."));
+                    }
+                    #endregion      
+                    
                     response.Fields["invalidate_handle"] = assoc_handle;
                     assoc = this.CreateAssociation(true);
+                }
+                else
+                {
+                    #region  Trace
+                    if (TraceUtil.Switch.TraceInfo)
+                    {
+                        TraceUtil.ServerTrace(String.Format("No association found."));
+                    }
+                    #endregion                          
                 }
             }
             else
             {
                 assoc = this.CreateAssociation(true);
+                TraceUtil.ServerTrace(String.Format("No assoc_handle supplied. Creating new assocation."));
             }
 
             response.Fields["assoc_handle"] = assoc.Handle;
@@ -67,24 +91,91 @@ namespace Janrain.OpenId.Server
             response.Fields["sig"] = sig;
             response.Fields["signed"] = signed;
 
+            #region  Trace
+            if (TraceUtil.Switch.TraceInfo)
+            {
+                TraceUtil.ServerTrace(String.Format("Digital signature successfully created"));
+            }
+            #endregion        	            
+
         }
 
         public virtual bool Verify(string assoc_handle, string sig, NameValueCollection signed_pairs)
         {
+            #region  Trace
+            if (TraceUtil.Switch.TraceInfo)
+            {
+                TraceUtil.ServerTrace(String.Format("Start signature verification for assoc_handle = '{0}'", assoc_handle));
+            }
+            #endregion        	    
+            
             Association assoc = this.GetAssociation(assoc_handle, true);
+            
             string expected_sig;
 
-
             if (assoc == null)
+            {
+                #region  Trace
+                if (TraceUtil.Switch.TraceInfo)
+                {
+                    TraceUtil.ServerTrace("End signature verification. Signature verification failed. No matching association handle found ");
+                }
+                #endregion                      
+                
                 return false;
+            }
+            else
+            {                
+                #region  Trace
+                if (TraceUtil.Switch.TraceInfo)
+                {
+                    TraceUtil.ServerTrace("Found matching association handle. ");
+                }
+                if (TraceUtil.Switch.TraceVerbose)
+                {
+                    TraceUtil.ServerTrace(assoc.ToString());
+                }
+                
+                #endregion                       
+            }
+
+            #region  Trace
+            if (TraceUtil.Switch.TraceInfo)
+            {
+                TraceUtil.ServerTrace("Matching association found ");
+            }
+            #endregion                    
 
             expected_sig = CryptUtil.ToBase64String(assoc.Sign(signed_pairs));
+
+            #region  Trace
+            if (TraceUtil.Switch.TraceInfo)
+            {
+                TraceUtil.ServerTrace(String.Format("Expected signature is '{0}'. Actual signature is '{1}' ", expected_sig, sig));
+                
+                if (sig == expected_sig)
+                {
+                    TraceUtil.ServerTrace("End signature verification. Signature verification passed");    
+                }
+                else
+                {
+                    TraceUtil.ServerTrace("End signature verification. Signature verification failed");    
+                }
+            }
+            #endregion                    
 
             return (sig == expected_sig);
         }
 
         public virtual Association CreateAssociation(bool dumb)
         {
+            #region  Trace
+            if (TraceUtil.Switch.TraceInfo)
+            {
+                TraceUtil.ServerTrace(String.Format("Start Create Association. InDumbMode = {0}", dumb));
+            }
+            #endregion
+            
             RNGCryptoServiceProvider generator = new RNGCryptoServiceProvider();
             Uri key;
             byte[] secret = new byte[20];
@@ -114,13 +205,26 @@ namespace Janrain.OpenId.Server
 
             _store.StoreAssociation(key, assoc);
 
+            #region  Trace
+            if (TraceUtil.Switch.TraceInfo)
+            {                
+                TraceUtil.ServerTrace(String.Format("End Create Association. Association successfully created. key = '{0}', handle = '{1}' ", key, handle));
+            }
+            #endregion            
+
             return assoc;
         }
 
         public virtual Association GetAssociation(string assoc_handle, bool dumb)
         {
+            #region  Trace
+            if (TraceUtil.Switch.TraceInfo)
+            {
+                TraceUtil.ServerTrace(String.Format("Start get association from store '{0}'.", assoc_handle));
+            }
+            #endregion     
+            
             Uri key;
-
 
             if (assoc_handle == null)
                 throw new ArgumentNullException("assoc_handle");
@@ -133,15 +237,30 @@ namespace Janrain.OpenId.Server
             Association assoc = _store.GetAssociation(key, assoc_handle);
             if (assoc != null && assoc.ExpiresIn <= 0)
             {
+                TraceUtil.ServerTrace("Association expired or not in store. Trying to remove association if it still exists.");
                 _store.RemoveAssociation(key, assoc_handle);
                 assoc = null;
             }
 
+            #region  Trace
+            if (TraceUtil.Switch.TraceInfo)
+            {
+                TraceUtil.ServerTrace(String.Format("End get association from store '{0}'. Association found? =  {1}", assoc_handle, (assoc != null).ToString().ToUpper()));
+            }
+            #endregion                 
+            
             return assoc;
         }
 
         public virtual void Invalidate(string assoc_handle, bool dumb)
         {
+            #region  Trace
+            if (TraceUtil.Switch.TraceInfo)
+            {
+                TraceUtil.ServerTrace(String.Format("Start invalidate association '{0}'.", assoc_handle));
+            }
+            #endregion        	    
+            
             Uri key;
 
 
@@ -151,6 +270,13 @@ namespace Janrain.OpenId.Server
                 key = _normal_key;
 
             _store.RemoveAssociation(key, assoc_handle);
+
+            #region  Trace
+            if (TraceUtil.Switch.TraceInfo)
+            {                
+                TraceUtil.ServerTrace(String.Format("End invalidate association '{0}'.", assoc_handle));
+            }
+            #endregion        	            
         }
 
         #endregion

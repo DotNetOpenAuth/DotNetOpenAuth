@@ -35,7 +35,7 @@ public partial class user : System.Web.UI.Page
             UriBuilder builder = new UriBuilder(Request.Url);
             builder.Path = Response.ApplyAppPathModifier("~/server.aspx");
             builder.Query = null;
-            builder.Port = 79;
+            builder.Port =  Convert.ToInt32(ConfigurationManager.AppSettings["ServerPort"]);
             builder.Fragment = null;
             return builder.ToString();
         }
@@ -60,7 +60,7 @@ public partial class user : System.Web.UI.Page
             UriBuilder builder = new UriBuilder(Request.Url);
             builder.Path = Response.ApplyAppPathModifier("~/xrds.aspx");
             builder.Query = null;
-            builder.Port = 79;
+            builder.Port = Convert.ToInt32(ConfigurationManager.AppSettings["ServerPort"]); ;
             builder.Fragment = null;
             return builder.ToString();
         }

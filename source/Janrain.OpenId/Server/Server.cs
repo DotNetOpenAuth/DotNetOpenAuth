@@ -21,6 +21,8 @@ namespace Janrain.OpenId.Server
 
         public Server(IAssociationStore store)
         {
+  
+            
             _store = store;
             _signatory = new Signatory(store);
             _encoder = new SigningEncoder(_signatory);
@@ -30,15 +32,18 @@ namespace Janrain.OpenId.Server
 
         #region Methods
 
-        public Response HandleRequest(CheckAuthRequest request)
+        public Response HandleRequest(CheckAuthRequest request)        
         {
-            return request.Answer(_signatory);
+            Response response =  request.Answer(_signatory);
+            return response;
+            
         }
 
         public Response HandleRequest(AssociateRequest request)
         {
             Association assoc = _signatory.CreateAssociation(false);
-            return request.Answer(assoc);
+            Response response = request.Answer(assoc);
+            return response;
         }
 
         #endregion
@@ -50,6 +55,13 @@ namespace Janrain.OpenId.Server
 
         public WebResponse EncodeResponse(IEncodable response)
         {
+            #region  Trace
+            if (TraceUtil.Switch.TraceInfo)
+            {
+                TraceUtil.ServerTrace("Encoding response");
+            }
+            #endregion
+            
             return this._encoder.Encode(response);
         }
         

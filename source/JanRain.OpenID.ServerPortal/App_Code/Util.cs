@@ -1,5 +1,6 @@
 using System;
 using System.Web;
+using Janrain.OpenId;
 using Janrain.OpenId.Server;
 
 /// <summary>
@@ -24,7 +25,15 @@ public class Util
         try
         {
             server = new Janrain.OpenId.Server.Server(Janrain.OpenId.Store.MemoryStore.GetInstance());
-            webresponse = server.EncodeResponse(response);            
+
+            #region  Trace
+            if (TraceUtil.Switch.TraceInfo)
+            {
+                TraceUtil.ServerTrace("Preparing to send response");
+            }
+            #endregion
+            
+            webresponse = server.EncodeResponse(response);                        
         }
         catch (Janrain.OpenId.Server.EncodingException e)
         {
@@ -72,6 +81,13 @@ public class Util
 
         if (((int)webresponse.Code) == 302)
         {
+            #region  Trace
+            if (TraceUtil.Switch.TraceInfo)
+            {
+                TraceUtil.ServerTrace(String.Format("Send response as 302 browser redirect to: '{0}'", webresponse.Headers["Location"]));
+            }
+            #endregion
+            
             HttpContext.Current.Response.Redirect(webresponse.Headers["Location"]);
             return;
         }
@@ -80,8 +96,26 @@ public class Util
             HttpContext.Current.Response.AddHeader(key, webresponse.Headers[key]);
 
         if (webresponse.Body != null)
-            HttpContext.Current.Response.Write(System.Text.Encoding.UTF8.GetString(
-                webresponse.Body));
+        {
+            
+            #region  Trace
+            if (TraceUtil.Switch.TraceInfo)
+            {
+                TraceUtil.ServerTrace("Send response as server side HTTP response");                
+            }
+            
+            if (TraceUtil.Switch.TraceVerbose)
+            {
+                TraceUtil.ServerTrace("HTTP Response headers follows:");
+                TraceUtil.ServerTrace(webresponse.Headers);
+                TraceUtil.ServerTrace("HTTP Response follows:");
+                TraceUtil.ServerTrace(System.Text.Encoding.UTF8.GetString(webresponse.Body));
+            }            
+            #endregion            
+            
+            HttpContext.Current.Response.Write(System.Text.Encoding.UTF8.GetString(webresponse.Body));
+            
+        }
         HttpContext.Current.Response.Flush();
         HttpContext.Current.Response.Close();
     }

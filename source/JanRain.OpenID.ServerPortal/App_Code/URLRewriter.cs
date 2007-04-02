@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Xml.Xsl;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Janrain.OpenId.Server;
 
 // nicked from http://www.codeproject.com/aspnet/URLRewriter.asp
 namespace Janrain.OpenId.ServerPortal {
@@ -36,6 +37,15 @@ namespace Janrain.OpenId.ServerPortal {
             URLRewriter oRewriter = (URLRewriter)System.Configuration.ConfigurationManager.GetSection("system.web/urlrewrites");
 
 			string zSubst=oRewriter.GetSubstitution(HttpContext.Current.Request.Path);
+
+            #region  Trace 
+            if (TraceUtil.Switch.TraceInfo)
+            {
+                string basicTraceMessage = String.Format("Rewriting url '{0}' to '{1}' ", HttpContext.Current.Request.Url.ToString(), zSubst);
+                TraceUtil.ServerTrace(basicTraceMessage);
+            }
+
+            #endregion		    
 
 			if(zSubst.Length>0) {
 				HttpContext.Current.RewritePath(zSubst);

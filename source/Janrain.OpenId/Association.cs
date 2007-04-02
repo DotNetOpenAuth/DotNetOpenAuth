@@ -32,7 +32,7 @@ namespace Janrain.OpenId
         public DateTime Issued
         {
             get { return this.issued; }
-			set { this.issued = value; }
+            set { this.issued = value; }
         }
 
         public byte[] Secret
@@ -42,7 +42,7 @@ namespace Janrain.OpenId
 
         public uint IssuedUnix
         {
-			get { return (uint)((this.issued - UNIX_EPOCH).TotalSeconds); }
+            get { return (uint)((this.issued - UNIX_EPOCH).TotalSeconds); }
         }
 
         public DateTime Expires
@@ -64,10 +64,10 @@ namespace Janrain.OpenId
 
         #region Abstract Methods
 
-		public abstract string AssociationType
-		{
-			get;
-		}
+        public abstract string AssociationType
+        {
+            get;
+        }
 
         public abstract string SignDict(string[] fields, NameValueCollection data, string prefix);
         public abstract byte[] Sign(NameValueCollection l);
@@ -87,7 +87,7 @@ namespace Janrain.OpenId
 
         public virtual byte[] Serialize()
         {
-            Dictionary<string, string> dict = new Dictionary<string,string>();
+            Dictionary<string, string> dict = new Dictionary<string, string>();
 
             dict.Add("version", "2");
             dict.Add("handle", this.Handle);
@@ -101,7 +101,7 @@ namespace Janrain.OpenId
 
         public virtual Association Deserialize(byte[] data)
         {
-            Dictionary<string, string> kvpairs = (Dictionary<string, string>) KVUtil.KVToDict(data);
+            Dictionary<string, string> kvpairs = (Dictionary<string, string>)KVUtil.KVToDict(data);
             string version = kvpairs["version"];
 
             if (version != "2")
@@ -115,6 +115,19 @@ namespace Janrain.OpenId
         }
 
         #endregion
+
+
+        public override string ToString()
+        {
+            string returnString = @"Association.Handle= '{0}'
+Association.Issued = '{1}'
+Association.Secret = '{2}' 
+Association.IssuedUnix = '{3}' 
+Association.Expires = '{4}' 
+Association.IsExpired = '{5}' 
+Association.ExpiresIn = '{6}' ";
+            return String.Format(returnString, Handle, Issued.ToString(), Secret.ToString(), IssuedUnix, Expires.ToString(), IsExpired, ExpiresIn);
+        }
 
     }
 
@@ -159,7 +172,7 @@ namespace Janrain.OpenId
 
             if (obj.GetType() == typeof(HMACSHA1Association))
             {
-                HMACSHA1Association a = (HMACSHA1Association) obj;
+                HMACSHA1Association a = (HMACSHA1Association)obj;
                 if (a.Handle != this.Handle)
                     return false;
 
@@ -198,7 +211,7 @@ namespace Janrain.OpenId
 
             val = val ^ this.Expires.ToFileTimeUtc();
 
-            return (int) val;
+            return (int)val;
         }
 
         public override string SignDict(string[] fields, NameValueCollection data, string prefix)
@@ -219,11 +232,13 @@ namespace Janrain.OpenId
 
             HMACSHA1 hmac = new HMACSHA1(this.Secret);
 
-			byte[] hash = hmac.ComputeHash(data);
+            byte[] hash = hmac.ComputeHash(data);
             hmac.Clear();
 
             return hash;
         }
         #endregion
+
+
     }
 }

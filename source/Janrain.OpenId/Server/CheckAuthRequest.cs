@@ -65,6 +65,13 @@ namespace Janrain.OpenId.Server
 
         public Response Answer(Signatory signatory)
         {
+            #region  Trace
+            if (TraceUtil.Switch.TraceInfo)
+            {
+                TraceUtil.ServerTrace("Start processing Response for CheckAuthRequest");
+            }
+            #endregion
+
             bool is_valid = signatory.Verify(this.AssocHandle, _sig, _signed);
 
             signatory.Invalidate(this.AssocHandle, true);
@@ -78,8 +85,31 @@ namespace Janrain.OpenId.Server
                 Association assoc = signatory.GetAssociation(_invalidate_handle, false);
 
                 if (assoc == null)
+                {
+                    #region  Trace
+                    if (TraceUtil.Switch.TraceInfo)
+                    {
+                        TraceUtil.ServerTrace("No matching association found. Returning invalidate_handle. ");
+                    }
+                    #endregion
+
                     response.Fields["invalidate_handle"] = _invalidate_handle;
+                }
             }
+
+            #region  Trace
+            if (TraceUtil.Switch.TraceInfo)
+            {
+                TraceUtil.ServerTrace("End processing Response for CheckAuthRequest. CheckAuthRequest response successfully created. ");
+                if (TraceUtil.Switch.TraceVerbose)
+                {
+                    TraceUtil.ServerTrace("Response follows. ");
+                    TraceUtil.ServerTrace(response.ToString());
+                }
+            }
+
+
+            #endregion
 
             return response;
         }
@@ -105,6 +135,15 @@ namespace Janrain.OpenId.Server
         }
 
         #endregion
+
+
+        public override string ToString()
+        {
+            string returnString = @"CheckAuthRequest._sig = '{0}'
+CheckAuthRequest.AssocHandle = '{1}'
+CheckAuthRequest._invalidate_handle = '{2}' ";
+            return base.ToString() + Environment.NewLine + String.Format(returnString, _sig, AssocHandle, _invalidate_handle);
+        }
 
     }
 }

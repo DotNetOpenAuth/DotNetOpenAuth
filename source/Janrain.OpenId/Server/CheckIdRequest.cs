@@ -134,13 +134,13 @@ namespace Janrain.OpenId.Server
                 string[] splitOptionalFields = optionalFields.Split(',');
                 setSimpleRegistrationExtensionFields(splitOptionalFields, ProfileRequest.Request);
             }
-           
+
             string requiredFields = GetSimpleRegistrationExtensionField(query, "required");
             if (!String.IsNullOrEmpty(requiredFields))
             {
                 string[] splitRrequiredFields = requiredFields.Split(',');
                 setSimpleRegistrationExtensionFields(splitRrequiredFields, ProfileRequest.Require);
-            }           
+            }
         }
 
         #endregion
@@ -179,42 +179,42 @@ namespace Janrain.OpenId.Server
                         {
                             this.requestEmailDefault = request;
                             break;
-                        }                        
+                        }
                     case "fullname":
                         {
                             this.requestFullNameDefault = request;
                             break;
-                        }                        
+                        }
                     case "dob":
                         {
                             this.requestBirthdateDefault = request;
                             break;
-                        }                        
+                        }
                     case "gender":
                         {
                             this.requestGenderDefault = request;
                             break;
-                        }                        
+                        }
                     case "postcode":
                         {
                             this.requestPostalCodeDefault = request;
                             break;
-                        }                        
+                        }
                     case "country":
                         {
                             this.requestCountryDefault = request;
                             break;
-                        }                        
+                        }
                     case "language":
                         {
                             this.requestLanguageDefault = request;
                             break;
-                        }                        
+                        }
                     case "timezone":
                         {
                             this.requestTimeZoneDefault = request;
                             break;
-                        }                        
+                        }
                 }
             }
         }
@@ -237,6 +237,28 @@ namespace Janrain.OpenId.Server
             else
                 mode = "cancel";
 
+            #region  Trace
+            if (TraceUtil.Switch.TraceInfo)
+            {
+                TraceUtil.ServerTrace("Start processing Response for CheckIdRequest");
+                if (TraceUtil.Switch.TraceVerbose)
+                {
+                    TraceUtil.ServerTrace(String.Format("mode = '{0}',  server_url = '{1}", mode, server_url.ToString()));
+                    if (openIdProfileFields != null)
+                    {
+                        TraceUtil.ServerTrace("Simple registration fields follow: ");
+                        TraceUtil.ServerTrace(openIdProfileFields);                        
+                    }
+                    else
+                    {
+                        TraceUtil.ServerTrace("No simple registration fields have been supplied.");
+                    }
+
+                }                    
+            }
+        
+            #endregion        
+
             Response response = new Response(this);
 
             if (allow)
@@ -246,59 +268,59 @@ namespace Janrain.OpenId.Server
                 fields.Add("mode", mode);
                 fields.Add("identity", _identity.AbsoluteUri);
                 fields.Add("return_to", _return_to.AbsoluteUri);
-                
+
                 if (openIdProfileFields != null)
                 {
-                    if (openIdProfileFields.Birthdate != null) 
-                    { 
-                        fields.Add("sreg.dob", openIdProfileFields.Birthdate.ToString()); 
+                    if (openIdProfileFields.Birthdate != null)
+                    {
+                        fields.Add("sreg.dob", openIdProfileFields.Birthdate.ToString());
                     }
-                    if (!String.IsNullOrEmpty(openIdProfileFields.Country)) 
-                    { 
-                        fields.Add("sreg.country", openIdProfileFields.Country); 
+                    if (!String.IsNullOrEmpty(openIdProfileFields.Country))
+                    {
+                        fields.Add("sreg.country", openIdProfileFields.Country);
                     }
-                    if (openIdProfileFields.Email != null) 
-                    { 
-                        fields.Add("sreg.email", openIdProfileFields.Email.ToString()); 
+                    if (openIdProfileFields.Email != null)
+                    {
+                        fields.Add("sreg.email", openIdProfileFields.Email.ToString());
                     }
                     if ((!String.IsNullOrEmpty(openIdProfileFields.Fullname)))
                     {
-                        fields.Add("sreg.fullname", openIdProfileFields.Fullname); 
+                        fields.Add("sreg.fullname", openIdProfileFields.Fullname);
                     }
-                    
-                    if (openIdProfileFields.Gender != null) 
-                    { 
+
+                    if (openIdProfileFields.Gender != null)
+                    {
                         if (openIdProfileFields.Gender == Gender.Female)
                         {
-                            fields.Add("sreg.gender", "F");     
+                            fields.Add("sreg.gender", "F");
                         }
                         else
                         {
-                            fields.Add("sreg.gender", "M"); 
+                            fields.Add("sreg.gender", "M");
                         }
-                        
+
                     }
-                    
-                    if (!String.IsNullOrEmpty(openIdProfileFields.Language)) 
-                    { 
-                        fields.Add("sreg.language", openIdProfileFields.Language); 
+
+                    if (!String.IsNullOrEmpty(openIdProfileFields.Language))
+                    {
+                        fields.Add("sreg.language", openIdProfileFields.Language);
                     }
-                    
+
                     if (!String.IsNullOrEmpty(openIdProfileFields.Nickname))
-                    { 
-                        fields.Add("sreg.nickname", openIdProfileFields.Nickname); 
+                    {
+                        fields.Add("sreg.nickname", openIdProfileFields.Nickname);
                     }
-                    
-                    if (!String.IsNullOrEmpty(openIdProfileFields.PostalCode)) 
-                    { 
-                        fields.Add("sreg.postcode", openIdProfileFields.PostalCode); 
+
+                    if (!String.IsNullOrEmpty(openIdProfileFields.PostalCode))
+                    {
+                        fields.Add("sreg.postcode", openIdProfileFields.PostalCode);
                     }
-                    
-                    if (!String.IsNullOrEmpty(openIdProfileFields.TimeZone)) 
-                    { 
-                        fields.Add("sreg.timezone", openIdProfileFields.TimeZone); 
+
+                    if (!String.IsNullOrEmpty(openIdProfileFields.TimeZone))
+                    {
+                        fields.Add("sreg.timezone", openIdProfileFields.TimeZone);
                     }
-                    
+
                 }
 
                 response.AddFields(null, fields, true);
@@ -316,6 +338,18 @@ namespace Janrain.OpenId.Server
                 response.AddField(null, "user_setup_url", setup_url.AbsoluteUri, false);
             }
 
+            #region  Trace
+            if (TraceUtil.Switch.TraceInfo)
+            {
+                TraceUtil.ServerTrace("CheckIdRequest response successfully created. ");
+                if (TraceUtil.Switch.TraceVerbose)
+                {
+                    TraceUtil.ServerTrace("Response follows. ");
+                    TraceUtil.ServerTrace(response.ToString());
+                }                
+            }
+
+            #endregion                     
 
             return response;
         }
@@ -358,15 +392,15 @@ namespace Janrain.OpenId.Server
         {
             get
             {
-               return (!(this.requestBirthdateDefault == ProfileRequest.NoRequest
-                         && this.requestCountryDefault == ProfileRequest.NoRequest
-                         && this.requestEmailDefault == ProfileRequest.NoRequest
-                         && this.requestFullNameDefault == ProfileRequest.NoRequest
-                         && this.requestGenderDefault == ProfileRequest.NoRequest
-                         && this.requestLanguageDefault == ProfileRequest.NoRequest
-                         && this.requestNicknameDefault == ProfileRequest.NoRequest
-                         && this.requestPostalCodeDefault == ProfileRequest.NoRequest
-                         && this.requestTimeZoneDefault == ProfileRequest.NoRequest));
+                return (!(this.requestBirthdateDefault == ProfileRequest.NoRequest
+                          && this.requestCountryDefault == ProfileRequest.NoRequest
+                          && this.requestEmailDefault == ProfileRequest.NoRequest
+                          && this.requestFullNameDefault == ProfileRequest.NoRequest
+                          && this.requestGenderDefault == ProfileRequest.NoRequest
+                          && this.requestLanguageDefault == ProfileRequest.NoRequest
+                          && this.requestNicknameDefault == ProfileRequest.NoRequest
+                          && this.requestPostalCodeDefault == ProfileRequest.NoRequest
+                          && this.requestTimeZoneDefault == ProfileRequest.NoRequest));
             }
         }
 
@@ -471,6 +505,44 @@ namespace Janrain.OpenId.Server
         }
 
         #endregion
+
+        public override string ToString()
+        {
+            string returnString = @"CheckIdRequest._immediate = '{0}'
+CheckIdRequest._trust_root = '{1}'
+CheckIdRequest._identity = '{2}' 
+CheckIdRequest._mode = '{3}' 
+CheckIdRequest._return_to = '{4}' 
+CheckIdRequest._policyUrl = '{5}' 
+CheckIdRequest.requestNicknameDefault = '{6}' 
+CheckIdRequest.requestEmailDefault = '{7}' 
+CheckIdRequest.requestFullNameDefault = '{8}' 
+CheckIdRequest.requestBirthdateDefault = '{9}'                         
+CheckIdRequest.requestGenderDefault = '{10}'                         
+CheckIdRequest.requestPostalCodeDefault = '{11}'                         
+CheckIdRequest.requestCountryDefault = '{12}'                         
+CheckIdRequest.requestLanguageDefault = '{13}'                         
+CheckIdRequest.requestTimeZoneDefault = '{14}'";
+
+            return base.ToString() + Environment.NewLine + String.Format(returnString,
+                                                                         _immediate,
+                                                                         _trust_root,
+                                                                         _identity,
+                                                                         _mode,
+                                                                         _return_to,
+                                                                         _policyUrl,
+                                                                         requestNicknameDefault,
+                                                                         requestEmailDefault,
+                                                                         requestFullNameDefault,
+                                                                         requestBirthdateDefault,
+                                                                         requestGenderDefault,
+                                                                         requestPostalCodeDefault,
+                                                                         requestCountryDefault,
+                                                                         requestLanguageDefault,
+                                                                         requestTimeZoneDefault);
+
+
+        }
 
     }
 }

@@ -10,6 +10,11 @@ namespace Janrain.OpenId.RegistrationExtension
     {
         internal static OpenIdProfileFields Empty = new OpenIdProfileFields();
 
+        public OpenIdProfileFields()
+        {
+
+        }
+
         private string nickname;
         public string Nickname
         {
@@ -66,12 +71,6 @@ namespace Janrain.OpenId.RegistrationExtension
             set { language = value; }
         }
 
-        private CultureInfo culture;
-        public CultureInfo Culture
-        {
-            get { return culture; }
-            set { culture = value; }
-        }
 
         private string timeZone;
         public string TimeZone

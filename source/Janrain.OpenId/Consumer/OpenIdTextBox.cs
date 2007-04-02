@@ -418,19 +418,8 @@ namespace NerdBank.OpenId.Consumer
 				fields.PostalCode = queryString["openid.sreg.postcode"];
 			if (RequestCountry > ProfileRequest.NoRequest)
 				fields.Country = queryString["openid.sreg.country"];
-			string cultureString = "";
-			if (RequestLanguage > ProfileRequest.NoRequest)
-			{
-				fields.Language = queryString["openid.sreg.language"];
+			
 
-				if (!string.IsNullOrEmpty(fields.Language))
-				{
-					cultureString = fields.Language;
-					if (!string.IsNullOrEmpty(fields.Country))
-						cultureString += "-" + fields.Country;
-					fields.Culture = CultureInfo.GetCultureInfo(cultureString);
-				}
-			}
 			if (RequestTimeZone > ProfileRequest.NoRequest)
 				fields.TimeZone = queryString["openid.sreg.timezone"];
 			return fields;
