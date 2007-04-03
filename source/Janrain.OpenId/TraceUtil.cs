@@ -12,6 +12,7 @@ namespace Janrain.OpenId
     {
         
         private static TraceSwitch openIDTraceSwitch;
+        private static TraceSwitch openIDPageOutputTraceSwitch;
 
 
 
@@ -103,6 +104,17 @@ namespace Janrain.OpenId
                 return openIDTraceSwitch;
             }
         }
+        
+        public static bool TracePageOutput
+        {
+            get
+            {
+                if (openIDPageOutputTraceSwitch == null) { openIDPageOutputTraceSwitch = new TraceSwitch("OpenIDEntireResponse", "OpenID Trace Switch"); }
+                return (((int)openIDPageOutputTraceSwitch.Level) >= 2);
+            }
+        }
+        
+       
 
         /// <summary>
         /// Serialize obj to an xml string.
