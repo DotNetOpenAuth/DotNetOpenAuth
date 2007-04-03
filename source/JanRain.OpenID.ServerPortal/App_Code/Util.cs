@@ -116,8 +116,8 @@ public class Util
             HttpContext.Current.Response.Write(System.Text.Encoding.UTF8.GetString(webresponse.Body));
             
         }
-        HttpContext.Current.Response.Flush();
-        HttpContext.Current.Response.Close();
+        // HttpContext.Current.Response.Flush();
+        // HttpContext.Current.Response.Close();
     }
     
 }

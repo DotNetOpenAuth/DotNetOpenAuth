@@ -13,7 +13,7 @@
          * The rules are set of url transformations defined using regular expressions with support for substitutions (the ability to extract regex-matched portions of a string).
          * There is only one rule currenty defined. It rewrites urls like: user/john ->user.aspx?username=john
          */
-        // System.Diagnostics.Debugger.Launch();
+         // System.Diagnostics.Debugger.Launch();
 
         #region " Trace "
         if (TraceUtil.Switch.TraceInfo)
@@ -54,14 +54,11 @@
 
     protected void Application_EndRequest(Object sender, EventArgs e)
     {
-        if (TraceUtil.Switch.TraceInfo)
+        if (TraceUtil.TracePageOutput)
         {
-            if (TraceUtil.Switch.TraceVerbose)
-            {
-               // taking this out for now because it makes the logs very big 
-                //TraceUtil.ServerTrace("Entire page response follows:");
-                //TraceUtil.ServerTrace(((CustomTraceStream)HttpContext.Current.Response.Filter).SavedPageOutput);
-            }
+            // taking this out for now because it makes the logs very big 
+            TraceUtil.ServerTrace("Entire page response follows:");
+            TraceUtil.ServerTrace(((CustomTraceStream)HttpContext.Current.Response.Filter).SavedPageOutput);
         }
     }
 

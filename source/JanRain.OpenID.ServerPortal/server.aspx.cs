@@ -37,7 +37,6 @@ public partial class server : System.Web.UI.Page
 
     protected void Page_Load(object src, System.EventArgs evt)
     {
-        
         openIDStore = Janrain.OpenId.Store.MemoryStore.GetInstance();
         openIDServer = new Janrain.OpenId.Server.Server(this.openIDStore);        
         Janrain.OpenId.Server.Request request = null;
@@ -56,7 +55,12 @@ public partial class server : System.Web.UI.Page
             Util.GenerateHttpResponse(e);
             return;
         }
-        if (request == null) return;
+        if (request == null)
+        {
+            contentForWebBrowsers.Visible = true;
+            return;
+        }
+            
 
         // process the incoming message appropriately and send the response
         Janrain.OpenId.Server.Response response = null;
@@ -82,7 +86,7 @@ public partial class server : System.Web.UI.Page
         else if (request is Janrain.OpenId.Server.AssociateRequest)
         {
             response = this.openIDServer.HandleRequest((Janrain.OpenId.Server.AssociateRequest)request);
-        }
+        }        
         Util.GenerateHttpResponse(response);
     }
 

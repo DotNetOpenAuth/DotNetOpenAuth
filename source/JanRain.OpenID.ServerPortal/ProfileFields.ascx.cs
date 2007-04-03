@@ -54,7 +54,7 @@ public partial class ProfileFields : System.Web.UI.UserControl
         }
     }
     
-    public DateTime DateOfBirth
+    public DateTime ?DateOfBirth
     {
         get
         {
@@ -68,7 +68,7 @@ public partial class ProfileFields : System.Web.UI.UserControl
             }
             catch (Exception)
             {
-                return DateTime.MinValue;
+                return null;
             }
         }
     }

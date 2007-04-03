@@ -1,4 +1,5 @@
-<%@ Page Language="C#" AutoEventWireup="true" CodeFile="server.aspx.cs" Inherits="server" Debug="true"%>
+<%@ Page Language="C#" AutoEventWireup="true" CodeFile="server.aspx.cs" Inherits="server" Debug="true" %>
+<asp:placeholder runat="server" id="contentForWebBrowsers" visible="false" > 
 <html>
   <head>
     <title>This is an OpenID server</title>
@@ -14,5 +15,6 @@
   </body>
 </html>
 <%
-int i = 1;
+    int i = 1;
 %>
+</asp:placeholder>
