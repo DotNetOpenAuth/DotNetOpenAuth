@@ -37,14 +37,11 @@
 
     protected void Application_EndRequest(Object sender, EventArgs e)
     {
-        if (TraceUtil.Switch.TraceInfo)
+        if (TraceUtil.TracePageOutput)
         {
-            if (TraceUtil.Switch.TraceVerbose)
-            {
-                // taking this out for now because it makes the logs very big 
-                //TraceUtil.ServerTrace("Entire page response follows:");
-                //TraceUtil.ServerTrace(((CustomTraceStream)HttpContext.Current.Response.Filter).SavedPageOutput);
-            }
+            // taking this out for now because it makes the logs very big 
+            TraceUtil.ServerTrace("Entire page response follows:");
+            TraceUtil.ServerTrace(((CustomTraceStream)HttpContext.Current.Response.Filter).SavedPageOutput);
         }
     }
 
