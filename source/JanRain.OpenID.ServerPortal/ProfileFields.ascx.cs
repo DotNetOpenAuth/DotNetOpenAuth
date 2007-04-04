@@ -42,7 +42,7 @@ public partial class ProfileFields : System.Web.UI.UserControl
     {
         get
         {
-            return  !((DateOfBirth == DateTime.MinValue)
+            return  !((DateOfBirth == null)
             && String.IsNullOrEmpty(countryDropdownList.SelectedValue)
             && String.IsNullOrEmpty(emailTextBox.Text)
             && String.IsNullOrEmpty(fullnameTextBox.Text)

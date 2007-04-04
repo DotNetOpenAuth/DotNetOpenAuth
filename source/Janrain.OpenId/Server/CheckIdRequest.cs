@@ -279,8 +279,8 @@ namespace Janrain.OpenId.Server
                     {
                         fields.Add("sreg.country", openIdProfileFields.Country);
                     }
-                    if (openIdProfileFields.Email != null)
-                    {
+                    if (!String.IsNullOrEmpty(openIdProfileFields.Email))
+                    {                        
                         fields.Add("sreg.email", openIdProfileFields.Email.ToString());
                     }
                     if ((!String.IsNullOrEmpty(openIdProfileFields.Fullname)))
