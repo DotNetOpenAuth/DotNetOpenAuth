@@ -57,7 +57,7 @@ namespace Janrain.OpenId
 
         public long ExpiresIn
         {
-            get { return (long)(this.Expires - DateTime.UtcNow).Seconds; }
+            get { return (long)(this.Expires - DateTime.UtcNow).TotalSeconds; }
         }
 
         #endregion
