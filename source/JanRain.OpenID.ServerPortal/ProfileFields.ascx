@@ -193,7 +193,7 @@ This consumer has requested the following fields from you<br />
             Gender
             <asp:Label ID="genderRequiredLabel" runat="server" Text="*" Visible="False"></asp:Label></td>
         <td style="width: 300px; height: 24px;">
-            <asp:DropDownList ID="DropDownList1" runat="server">
+            <asp:DropDownList ID="genderDropdownList" runat="server">
                 <asp:ListItem Selected="True"></asp:ListItem>
                 <asp:ListItem>Male</asp:ListItem>
                 <asp:ListItem>Female</asp:ListItem>

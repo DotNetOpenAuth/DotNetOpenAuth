@@ -77,11 +77,11 @@ public partial class ProfileFields : System.Web.UI.UserControl
     {
         get
         {
-            if (this.countryDropdownList.SelectedValue == "Male")
+            if (this.genderDropdownList.SelectedValue == "Male")
             {
                 return Janrain.OpenId.RegistrationExtension.Gender.Male;
             }
-            if (this.countryDropdownList.SelectedValue == "Female")
+            if (this.genderDropdownList.SelectedValue == "Female")
             {
                 return Janrain.OpenId.RegistrationExtension.Gender.Female;
             }
