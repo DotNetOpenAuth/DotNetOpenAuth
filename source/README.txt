@@ -33,13 +33,14 @@ This code was built using the following prerquisite sofware:
  * nUnit 2.2.9 for .Net 2.0 (get the MSI version from http://www.nunit.org/index.php?p=download)
  * See the tools section further below for some helpfull software 
  
-Setting up the websites
- * I have set up all my websites on port 79 due to local network config issues
- * Set up http://127.0.0.1:79/JanRain.OpenID.ConsumerPortal as a website in IIS and allow anonomys access
- * Set up http://127.0.0.1:79/JanRain.OpenID.ServerPortal as a website in IIS and allow anonomys access
+Setting up the IIS Application's 
+ * I have set up all my applications on port 79 due to local network config issues
+ * Set up http://127.0.0.1:79/JanRain.OpenID.ConsumerPortal as an IIS Application and allow anonomys access
+ * Set up http://127.0.0.1:79/JanRain.OpenID.ServerPortal as an IIS Application and allow anonomys access
  * Your openid server users are set up in JanRain.OpenID.ServerPortal\web.config. There are 5 default users already set up.
 
 You need to do something extra for URL rewriting in IIS to work. 
+
 This is the process of url conversion like: user/john ->user.aspx?username=john
  * In IIS, go properties on the website (not the virtual directory)
  * Go the Home Directory Tab and click Configuration
@@ -48,6 +49,11 @@ This is the process of url conversion like: user/john ->user.aspx?username=john
  * Uncheck the 'Verify that file exists button'
  * OK your way out of everything
  * If you navigate to 'http://localhost:79/JanRain.OpenID.ServerPortal/user/bob' you should see the text: 'OpenID identity page for bob'
+
+Note: These instructions work on IIS 6 with Windows 2003 Server. Other version of IIS (such as the one with windows XP - IIS 5.1) will vary. For IIS 5.1 , try follow instructions documented toward the end of this article: http://www.codeproject.com/aspnet/URLRewriter.asp. If you still have issues (particularly if you get 404 when trying the demos or experience something like http://groups.google.co.uk/group/microsoft.public.inetserver.iis/browse_thread/thread/386efa0bf596234b/ee1fab525c129071?lnk=st&q=URLRewriter+IIS+XP+404&rnum=2&hl=en#ee1fab525c129071) try this: 
+ * create a .openid extension that maps to asp.net (c:\WINDOWS\Microsoft.NET\Framework\v2.0.50727\aspnet_isapi.dll)
+ * browse to .openid eg: http://IP/JanRain.OpenID.ServerPortal/user/bob.openid
+
 
 
 The demos
@@ -59,7 +65,7 @@ orignally requested page.
 
 The Consumer Demo 
 1) Kill all session cookies
-2) Create an OpenID account with one of the Open Servers listed below OR use the demo Server website as the identity provider - using http://[EXTERNAL IP]/JanRain.OpenID.ServerPortal/user/bob with the password 'test'
+2) Create an OpenID account with one of the Open Servers listed below OR use the demo Server as the identity provider - using http://[EXTERNAL IP]/JanRain.OpenID.ServerPortal/user/bob with the password 'test'
 3) Go to http://[EXTERNAL IP]/JanRain.OpenID.ConsumerPortal/default.aspx and enter the OpenIDURL
 4) You are required to authenticate with the provider. Some fields (eg Name, DoB, Country etc.) are requested, some required and some omitted. 
 Your OpenID provider should prompt you for the relevant fields, or at least make you aware which fields its passing back. The exact page flow and auhentication mechanism will be implemented differently by different identity providers.
@@ -86,7 +92,7 @@ when the browser leaves the consumer site and returns later on. The IAssociation
 - Consumer.Begin(Url): This is the starting point for a consumer. Once a user has entered their url, you should call Consumer.Begin(Url). This initiates the discovery phase,
 obtains the shared secret and redirects the user's browser to their openid identity provider.
 - Consumer.Complete(NameValueCollection) - This should be called when it's suspected that the user is returning from the identity provider. It performs some structural validation 
-on the return message and does some general cleanup. After this method has executed successfully, the consumer website can assume a successfull authentication and log the user in locally.
+on the return message and does some general cleanup. After this method has executed successfully, the consumer can assume a successfull authentication and log the user in locally.
 
 Server
 -  Decoder.Decode should be called intially to obtain a request object. The following types are possibly returned (all derriving from Request):
@@ -102,6 +108,9 @@ Server
 
 Development tips / Issues I found:
 ------------------------------------------------ 
+
+
+
  - Uncomment  //System.Diagnostics.Debugger.Launch(); in global.asax to force the debugger to start up if its not working
  - I would reccommend against setting up multiple websites on your pc using host headers and entries in you hosts file
  - Always access the test sites via their external IP's, not localhost or 127.0.0. I started testing like this, but stopped because I kept getting an exception
