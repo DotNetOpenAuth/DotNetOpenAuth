@@ -34,7 +34,7 @@ public partial class xrds : System.Web.UI.Page
             builder.Path = path;
             builder.Query = null;
             builder.Fragment = null;
-            builder.Port = Convert.ToInt32(ConfigurationManager.AppSettings["ServerPort"]); ;
+            builder.Port = Request.Url.Port;
             return builder.ToString();
         }
     }

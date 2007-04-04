@@ -28,6 +28,22 @@ public partial class user : System.Web.UI.Page
     {
     }
 
+    private int ServerPort
+    {
+        get
+        {
+            // Return the same port that the request was made on,
+            // unless it is overrided by a Web.config setting and is
+            // non-negative.
+            string sPort = ConfigurationManager.AppSettings["OverrideServerPort"];
+            int iPort;
+            if (string.IsNullOrEmpty(sPort) || (iPort = Convert.ToInt32(sPort)) < 0)
+                return Request.Url.Port;
+            else
+                return iPort;
+        }
+    }
+
     public string ServerUrl
     {
         get
@@ -35,7 +51,7 @@ public partial class user : System.Web.UI.Page
             UriBuilder builder = new UriBuilder(Request.Url);
             builder.Path = Response.ApplyAppPathModifier("~/server.aspx");
             builder.Query = null;
-            builder.Port =  Convert.ToInt32(ConfigurationManager.AppSettings["ServerPort"]);
+            builder.Port = ServerPort;
             builder.Fragment = null;
             return builder.ToString();
         }
@@ -60,7 +76,7 @@ public partial class user : System.Web.UI.Page
             UriBuilder builder = new UriBuilder(Request.Url);
             builder.Path = Response.ApplyAppPathModifier("~/xrds.aspx");
             builder.Query = null;
-            builder.Port = Convert.ToInt32(ConfigurationManager.AppSettings["ServerPort"]); ;
+            builder.Port = ServerPort;
             builder.Fragment = null;
             return builder.ToString();
         }

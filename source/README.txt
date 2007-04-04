@@ -1,6 +1,7 @@
 THE OPENID ASP.NET DEMO
 ------------------------------------------------ 
 This file was created by Willem Muller (willem.muller@netidme.com) on 28/03/2007.
+This file was updated by Andrew Arnott (andrewarnott@gmail.com) on 04/04/2007.
 
 Introduction
 ------------------------------------------------ 
@@ -21,22 +22,45 @@ These have been my experiences in getting OpenID working in a .Net Windows envir
 
 Setting up up the environment 
 ------------------------------------------------ 
- -Your development machine ideally needs to be internet facing so that you can test with other online server/consumers
- - I reconfigured my network so that all incoming traffic to our external IP on port 79 is forwarded to my local development machine
- - Ensure your firewall is configured to allow outbound calls to web ports
 
-This code was built using the following prerquisite sofware:
- * .Net 2.0
+This code was built using the following prerequisite software:
+ * .NET 2.0
  * Visual Studio 2005
- * IIS
+ * IIS / PWS
  * Windows 2003 Server
- * nUnit 2.2.9 for .Net 2.0 (get the MSI version from http://www.nunit.org/index.php?p=download)
- * See the tools section further below for some helpfull software 
- 
-Setting up the IIS Application's 
+ * NUnit 2.2.9 for .NET 2.0 (get the MSI version from http://www.nunit.org/index.php?p=download)
+ * See the tools section further below for some helpful software 
+
+Testing the consumer/server included projects with each other
+-------------------------------------------------------------
+In this scenario you can use the Personal Web Server (PWS) that is included in
+Visual Studio 2005.
+1. Open the Janrain.OpenId.sln file in VS2005.
+2. Right-click on each web project and click "View in Browser" to start PWS
+   for each web site.
+3. Discover the dynamic port assigned to the server and use it to formulate the
+   OpenIDs of the predefined users on the server project's web.config file.
+   For example, if the server project is running on port 51957, the OpenID of 
+   the first user would be:
+   http://localhost:51957/JanRain.OpenID.ServerPortal/user/bob
+4. Activate the consumer web page and try logging in.
+
+Testing with other consumers/servers on the Internet
+---------------------------------------------------
+ - Your development machine ideally needs to be internet facing so that you 
+   can test with other online server/consumers
+ - I reconfigured my network so that all incoming traffic to our external IP 
+   on port 79 is forwarded to my local development machine
+ - Ensure your firewall is configured to allow outbound calls to web ports
+ - Since VS2005 Personal Web Server (PWS) does not allow web requests from 
+   other servers (as required by OpenID consumers trying to log into your 
+   server), testing with external consumers requires you to use IIS to host 
+   your server.
+
+Setting up the IIS Applications 
  * I have set up all my applications on port 79 due to local network config issues
- * Set up http://127.0.0.1:79/JanRain.OpenID.ConsumerPortal as an IIS Application and allow anonomys access
- * Set up http://127.0.0.1:79/JanRain.OpenID.ServerPortal as an IIS Application and allow anonomys access
+ * Set up http://127.0.0.1:79/JanRain.OpenID.ConsumerPortal as an IIS Application and allow anonymous access
+ * Set up http://127.0.0.1:79/JanRain.OpenID.ServerPortal as an IIS Application and allow anonymous access
  * Your openid server users are set up in JanRain.OpenID.ServerPortal\web.config. There are 5 default users already set up.
 
 You need to do something extra for URL rewriting in IIS to work. 
@@ -54,13 +78,18 @@ Note: These instructions work on IIS 6 with Windows 2003 Server. Other version o
  * create a .openid extension that maps to asp.net (c:\WINDOWS\Microsoft.NET\Framework\v2.0.50727\aspnet_isapi.dll)
  * browse to .openid eg: http://IP/JanRain.OpenID.ServerPortal/user/bob.openid
 
-
+Configure VS2005 to use IIS rather than PWS
+1. Right-click on one of the web projects within Solution Explorer.
+2. Select Property Pages.
+3. Select Start Options on the left.
+4. Under the Server section on the right, select Use Custom Server and 
+   fill in the Base URL.
 
 The demos
 ------------------------------------------------ 
-These will illustrate OpenID in action. You can debug the code to get a good idea of whats going on.
-The implementations are built on top of ASP.Net's forms authentication. So basically if you're unauthenticated and get get to page requiring authentication, it takes you through the
-Open-ID identity provider, tracks in session that you've left and then reckognizes the user when they return to the consumer and only then logs them into FormsAuth and redirects them to their 
+These will illustrate OpenID in action. You can debug the code to get a good idea of what's going on.
+The implementations are built on top of ASP.Net's forms authentication. So basically if you're unauthenticated and get to page requiring authentication, it takes you through the
+Open-ID identity provider, tracks in session that you've left and then recognizes the user when they return to the consumer and only then logs them into FormsAuth and redirects them to their 
 orignally requested page. 
 
 The Consumer Demo 
@@ -83,7 +112,7 @@ Only the requested or required fields are presented. Fields with * means the con
  
 Interesting classes and methods
 ------------------------------------------------ 
-I believe allot of this code originally came from a Python port for which good documentation is available: http://www.openidenabled.com/resources/docs/openid/python/1.1.0/.
+I believe a lot of this code originally came from a Python port for which good documentation is available: http://www.openidenabled.com/resources/docs/openid/python/1.1.0/.
 There will certainly be additions and refactorings made to the .Net version, I guess this will soon become out of date. Here is a short list of the import entrypoint objects and methods.
 
 Consumer 
@@ -112,7 +141,7 @@ Development tips / Issues I found:
 
 
  - Uncomment  //System.Diagnostics.Debugger.Launch(); in global.asax to force the debugger to start up if its not working
- - I would reccommend against setting up multiple websites on your pc using host headers and entries in you hosts file
+ - I would recommend against setting up multiple websites on your pc using host headers and entries in you hosts file
  - Always access the test sites via their external IP's, not localhost or 127.0.0. I started testing like this, but stopped because I kept getting an exception
 'Unable to read data from the transport connection: The connection was closed.' when trying to read from a webresponse stream in the OpenID discovery phase. It turned out the problem was the Cassini file based web 
 server. Thats why I created the Consumer.Util.ReadAndClose function. It's horrible code and needs to be improved, but ensures that things works if u need to test things locally.
@@ -137,7 +166,7 @@ Good sites to test with if you're developing a server:
  - http://dis.covr.us/ 
 * These sites seem to block outgoing traffic that is not on a non standard HTTP port like 80 and 443. Therefore you'll need to host on a proper internet domain before doing any testing with them.
 
-Usefull tools:
+Useful tools:
  - Fidler (http://www.fiddlertool.com/fiddler/) - this will allow you to monitor HTTP traffic when using IE
  - TamperIE (http://www.bayden.com/Other/) - allows you to change form data before posting it
  - IE Developer toolbar (http://www.microsoft.com/downloads/details.aspx?familyid=E59C3964-672D-4511-BB3E-2D5E1DB91038&displaylang=en) - good tool for general IE UI development. Has some neat features for quickly clearing cookies etc.
