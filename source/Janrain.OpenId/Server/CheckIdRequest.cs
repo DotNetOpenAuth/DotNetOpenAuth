@@ -416,7 +416,9 @@ namespace Janrain.OpenId.Server
                 if (tr == null)
                     throw new MalformedTrustRoot(null, _trust_root);
 
+                // TODO (willem.muller) - The trust code on 04/04/07 is dodgy. So returing true so all trust roots are valid for now.
                 return true;
+                
                 //return tr.ValidateUrl(_return_to);
             }
         }

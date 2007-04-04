@@ -98,7 +98,10 @@ namespace NerdBank.OpenId.Consumer
             uriFormatValidator = new RegularExpressionValidator();
             uriFormatValidator.ErrorMessage = uriFormatTextDefault + requiredTextSuffix;
             uriFormatValidator.ValidationExpression = @"http(s)?://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?";
+		    
+		    // TODO: (willem.muller) Disabling the validator  on 04/04/2007 because the above validation expression needs to be updated as it doesn't allow for URLs with IP's
             uriFormatValidator.Enabled = false;
+		    
             uriFormatValidator.Display = ValidatorDisplay.Dynamic;
             uriFormatValidator.ControlToValidate = WrappedTextBox.ID;
             uriFormatValidator.ValidationGroup = validationGroupDefault;
