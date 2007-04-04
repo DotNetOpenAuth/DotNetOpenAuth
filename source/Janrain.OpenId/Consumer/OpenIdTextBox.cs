@@ -112,7 +112,7 @@ namespace NerdBank.OpenId.Consumer
 			set { WrappedTextBox.Columns = value; }
 		}
 
-	    const string requestNicknameViewStateKey = "RequestNickname";
+		const string requestNicknameViewStateKey = "RequestNickname";
 		const ProfileRequest requestNicknameDefault = ProfileRequest.NoRequest;
 		[Bindable(true)]
 		[Category("Profile")]
@@ -135,7 +135,7 @@ namespace NerdBank.OpenId.Consumer
 		}
 
 		const string requestFullNameViewStateKey = "RequestFullName";
-        const ProfileRequest requestFullNameDefault = ProfileRequest.NoRequest;
+		const ProfileRequest requestFullNameDefault = ProfileRequest.NoRequest;
 		[Bindable(true)]
 		[Category("Profile")]
 		[DefaultValue(requestFullNameDefault)]
@@ -306,7 +306,6 @@ namespace NerdBank.OpenId.Consumer
 		{
 			base.OnLoad(e);
 
-		    
 			try
 			{
 				if (!Page.IsPostBack && Page.Request.QueryString["openid.mode"] != null)
@@ -351,11 +350,11 @@ namespace NerdBank.OpenId.Consumer
 			string trustRoot = builder.ToString();
 
 			// Build the return_to URL
-			builder = new UriBuilder(Page.Request.Url.AbsoluteUri);			
+			builder = new UriBuilder(Page.Request.Url.AbsoluteUri);
 			if (!string.IsNullOrEmpty(Page.Request.QueryString["ReturnUrl"]))
 			{
-			    builder.Query = "ReturnUrl=" + Page.Request.QueryString["ReturnUrl"];
-			}			
+				builder.Query = "ReturnUrl=" + Page.Request.QueryString["ReturnUrl"];
+			}
 			Uri returnTo = new Uri(builder.ToString());
 
 			Uri redirectUrl = request.CreateRedirect(trustRoot, returnTo, AuthRequest.Mode.SETUP);
@@ -372,7 +371,7 @@ namespace NerdBank.OpenId.Consumer
 		string[] assembleProfileFields(ProfileRequest level)
 		{
 			List<string> fields = new List<string>(10);
-			if (RequestNickname == level) 
+			if (RequestNickname == level)
 				fields.Add("nickname");
 			if (RequestEmail == level)
 				fields.Add("email");
@@ -399,7 +398,7 @@ namespace NerdBank.OpenId.Consumer
 			if (RequestNickname > ProfileRequest.NoRequest)
 				fields.Nickname = queryString["openid.sreg.nickname"];
 			if (RequestEmail > ProfileRequest.NoRequest)
-				fields.Email = queryString["openid.sreg.email"];
+				fields.Email = new MailAddress(queryString["openid.sreg.email"]);
 			if (RequestFullName > ProfileRequest.NoRequest)
 				fields.Fullname = queryString["openid.sreg.fullname"];
 			if (RequestBirthdate > ProfileRequest.NoRequest)
@@ -418,14 +417,15 @@ namespace NerdBank.OpenId.Consumer
 				fields.PostalCode = queryString["openid.sreg.postcode"];
 			if (RequestCountry > ProfileRequest.NoRequest)
 				fields.Country = queryString["openid.sreg.country"];
-			
+			if (RequestLanguage > ProfileRequest.NoRequest)
+				fields.Language = queryString["openid.sreg.language"];
 
 			if (RequestTimeZone > ProfileRequest.NoRequest)
 				fields.TimeZone = queryString["openid.sreg.timezone"];
 			return fields;
 		}
 
-	    #region Events
+		#region Events
 		public class OpenIdEventArgs : EventArgs
 		{
 			public OpenIdEventArgs(Uri openIdUri, OpenIdProfileFields profileFields)

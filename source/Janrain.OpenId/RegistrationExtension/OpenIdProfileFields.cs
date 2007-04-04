@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.Net.Mail;
 using Janrain.OpenId.RegistrationExtension;
+using System.Xml.Serialization;
 
 namespace Janrain.OpenId.RegistrationExtension
 {
@@ -22,11 +23,19 @@ namespace Janrain.OpenId.RegistrationExtension
             set { nickname = value; }
         }
 
-        private string email;
-        public string Email
+        private MailAddress email;
+        [XmlIgnore]
+        public MailAddress Email
         {
             get { return email; }
             set { email = value; }
+        }
+
+        [XmlElement("Email")]
+        string emailString
+        {
+            get { return Email == null ? null : Email.Address; }
+            set { Email = (string.IsNullOrEmpty(value) ? null : new MailAddress(value)); }
         }
 
         private string fullName;
@@ -71,6 +80,31 @@ namespace Janrain.OpenId.RegistrationExtension
             set { language = value; }
         }
 
+        private CultureInfo culture;
+        [XmlIgnore]
+        public CultureInfo Culture
+        {
+            get
+            {
+                if (culture == null && !string.IsNullOrEmpty(Language))
+                {
+                    string cultureString = "";
+                    cultureString = Language;
+                    if (!string.IsNullOrEmpty(Country))
+                        cultureString += "-" + Country;
+                    culture = CultureInfo.GetCultureInfo(cultureString);
+                }
+
+                return culture;
+            }
+            set
+            {
+                culture = value;
+                Language = (value != null) ? value.TwoLetterISOLanguageName : null;
+                int indexOfHyphen = (value != null) ? value.Name.IndexOf('-') : -1;
+                Country = indexOfHyphen > 0 ? value.Name.Substring(indexOfHyphen + 1) : null;
+            }
+        }
 
         private string timeZone;
         public string TimeZone

@@ -279,7 +279,7 @@ namespace Janrain.OpenId.Server
                     {
                         fields.Add("sreg.country", openIdProfileFields.Country);
                     }
-                    if (!String.IsNullOrEmpty(openIdProfileFields.Email))
+                    if (openIdProfileFields.Email != null)
                     {                        
                         fields.Add("sreg.email", openIdProfileFields.Email.ToString());
                     }
