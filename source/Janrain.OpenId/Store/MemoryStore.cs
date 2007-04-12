@@ -248,7 +248,7 @@ namespace Janrain.OpenId.Store
 
 		public void Set(Association assoc)
 		{
-			this.assocs.Add(assoc.Handle, assoc);
+			this.assocs[assoc.Handle] = assoc;
 		}
 
 		public Association Get(string handle)

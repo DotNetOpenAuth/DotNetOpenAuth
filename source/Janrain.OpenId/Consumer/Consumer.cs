@@ -5,6 +5,7 @@ namespace Janrain.OpenId.Consumer
 	using System.Web.SessionState;
 	using Janrain.OpenId;
 	using Janrain.OpenId.Store;
+ using Janrain.OpenId.Session;
 
 	public class FailureException : ApplicationException
 	{
@@ -50,7 +51,7 @@ namespace Janrain.OpenId.Consumer
 
 	public class Consumer
 	{
-		HttpSessionState session;
+		ISessionState session;
 		GenericConsumer consumer;
 
 		private string session_key_prefix;
@@ -73,7 +74,7 @@ namespace Janrain.OpenId.Consumer
 
 		ServiceEndpointManager manager;
 
-		public Consumer(HttpSessionState session, IAssociationStore store)
+		public Consumer(ISessionState session, IAssociationStore store)
 		{
 			this.session = session;
 			this.manager = new ServiceEndpointManager(session);

@@ -21,6 +21,7 @@ using System.Web.UI.WebControls;
 
 using Janrain.OpenId;
 using Janrain.OpenId.Consumer;
+using Janrain.OpenId.Session;
 using Janrain.OpenId.RegistrationExtension;
 using Janrain.OpenId.Store;
 
@@ -311,7 +312,7 @@ namespace NerdBank.OpenId.Consumer
 				if (!Page.IsPostBack && Page.Request.QueryString["openid.mode"] != null)
 				{
 					Janrain.OpenId.Consumer.Consumer consumer =
-						new Janrain.OpenId.Consumer.Consumer(Page.Session, MemoryStore.GetInstance());
+						new Janrain.OpenId.Consumer.Consumer(new SystemHttpSessionState(Page.Session), MemoryStore.GetInstance());
 
 					ConsumerResponse resp = consumer.Complete(Page.Request.QueryString);
 					OnLoggedIn(resp.IdentityUrl, parseProfileFields(Page.Request.QueryString));
@@ -333,7 +334,7 @@ namespace NerdBank.OpenId.Consumer
 				throw new InvalidOperationException(Janrain.OpenId.Strings.OpenIdTextBoxEmpty);
 
 			Janrain.OpenId.Consumer.Consumer consumer =
-				new Janrain.OpenId.Consumer.Consumer(Page.Session, MemoryStore.GetInstance());
+				new Janrain.OpenId.Consumer.Consumer(new SystemHttpSessionState(Page.Session), MemoryStore.GetInstance());
 
 			Uri userUri = UriUtil.NormalizeUri(Text);
 			// Initiate openid request

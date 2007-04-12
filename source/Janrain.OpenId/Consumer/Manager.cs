@@ -1,15 +1,15 @@
 namespace Janrain.OpenId.Consumer
 {
 	using System;
-	using System.Web.SessionState;
+	using Janrain.OpenId.Session;
 	using Janrain.Yadis;
 	using System.Collections.Generic;
 
 	public class ServiceEndpointManager
 	{
-		protected HttpSessionState session;
+		protected ISessionState session;
 
-		public ServiceEndpointManager(HttpSessionState session)
+		public ServiceEndpointManager(ISessionState session)
 		{
 			this.session = session;
 		}

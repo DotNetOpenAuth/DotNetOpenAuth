@@ -27,6 +27,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -46,6 +47,9 @@
     <Compile Include="CustomTraceStream.cs" />
     <Compile Include="RegistrationExtension\Gender.cs" />
     <Compile Include="Consumer\GenericConsumer.cs" />
+    <Compile Include="Session\SimpleSessionState.cs" />
+    <Compile Include="Session\SystemHttpSessionState.cs" />
+    <Compile Include="Session\ISessionState.cs" />
     <Compile Include="Consumer\Manager.cs" />
     <Compile Include="Consumer\OpenIdLogin.cs" />
     <Compile Include="RegistrationExtension\OpenIdProfileFields.cs" />
