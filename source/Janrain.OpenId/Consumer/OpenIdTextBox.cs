@@ -348,7 +348,7 @@ namespace NerdBank.OpenId.Consumer
 			builder.UserName = null;
 			builder.Fragment = null;
 			builder.Path = Page.Request.ApplicationPath;
-			string trustRoot = builder.ToString();
+			string trustRoot = builder.Uri.ToString();
 
 			// Build the return_to URL
 			builder = new UriBuilder(Page.Request.Url.AbsoluteUri);
