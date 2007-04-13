@@ -398,11 +398,11 @@ namespace NerdBank.OpenId.Consumer
 			OpenIdProfileFields fields = new OpenIdProfileFields();
 			if (RequestNickname > ProfileRequest.NoRequest)
 				fields.Nickname = queryString["openid.sreg.nickname"];
-			if (RequestEmail > ProfileRequest.NoRequest)
+			if (RequestEmail > ProfileRequest.NoRequest && !string.IsNullOrEmpty(queryString["openid.sreg.email"]))
 				fields.Email = new MailAddress(queryString["openid.sreg.email"]);
 			if (RequestFullName > ProfileRequest.NoRequest)
 				fields.Fullname = queryString["openid.sreg.fullname"];
-			if (RequestBirthdate > ProfileRequest.NoRequest)
+			if (RequestBirthdate > ProfileRequest.NoRequest && !string.IsNullOrEmpty(queryString["openid.sreg.dob"]))
 			{
 				DateTime birthdate;
 				DateTime.TryParse(queryString["openid.sreg.dob"], out birthdate);
@@ -420,7 +420,6 @@ namespace NerdBank.OpenId.Consumer
 				fields.Country = queryString["openid.sreg.country"];
 			if (RequestLanguage > ProfileRequest.NoRequest)
 				fields.Language = queryString["openid.sreg.language"];
-
 			if (RequestTimeZone > ProfileRequest.NoRequest)
 				fields.TimeZone = queryString["openid.sreg.timezone"];
 			return fields;
