@@ -398,8 +398,8 @@ namespace NerdBank.OpenId.Consumer
 			OpenIdProfileFields fields = new OpenIdProfileFields();
 			if (RequestNickname > ProfileRequest.NoRequest)
 				fields.Nickname = queryString["openid.sreg.nickname"];
-			if (RequestEmail > ProfileRequest.NoRequest && !string.IsNullOrEmpty(queryString["openid.sreg.email"]))
-				fields.Email = new MailAddress(queryString["openid.sreg.email"]);
+			if (RequestEmail > ProfileRequest.NoRequest)
+				fields.Email = queryString["openid.sreg.email"];
 			if (RequestFullName > ProfileRequest.NoRequest)
 				fields.Fullname = queryString["openid.sreg.fullname"];
 			if (RequestBirthdate > ProfileRequest.NoRequest && !string.IsNullOrEmpty(queryString["openid.sreg.dob"]))
