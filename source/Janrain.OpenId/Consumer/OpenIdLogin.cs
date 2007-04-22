@@ -91,15 +91,16 @@ namespace NerdBank.OpenId.Consumer
 			cell.Style[HtmlTextWriterStyle.FontSize] = "smaller";
 			requiredValidator = new RequiredFieldValidator();
 			requiredValidator.ErrorMessage = requiredTextDefault + requiredTextSuffix;
+			requiredValidator.Text = requiredTextDefault + requiredTextSuffix;
 			requiredValidator.Display = ValidatorDisplay.Dynamic;
 			requiredValidator.ControlToValidate = WrappedTextBox.ID;
 			requiredValidator.ValidationGroup = validationGroupDefault;
 			cell.Controls.Add(requiredValidator);
 			uriFormatValidator = new RegularExpressionValidator();
 			uriFormatValidator.ErrorMessage = uriFormatTextDefault + requiredTextSuffix;
+			uriFormatValidator.Text = uriFormatTextDefault + requiredTextSuffix;
 			uriFormatValidator.ValidationExpression = @"http(s)?://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?";
 			uriFormatValidator.Enabled = uriValidatorEnabledDefault;
-
 			uriFormatValidator.Display = ValidatorDisplay.Dynamic;
 			uriFormatValidator.ControlToValidate = WrappedTextBox.ID;
 			uriFormatValidator.ValidationGroup = validationGroupDefault;
@@ -179,8 +180,8 @@ namespace NerdBank.OpenId.Consumer
 		[Localizable(true)]
 		public string RequiredText
 		{
-			get { return requiredValidator.Text.Substring(requiredValidator.Text.Length - requiredTextSuffix.Length); }
-			set { requiredValidator.Text = value + requiredTextSuffix; }
+			get { return requiredValidator.Text.Substring(0, requiredValidator.Text.Length - requiredTextSuffix.Length); }
+			set { requiredValidator.ErrorMessage = requiredValidator.Text = value + requiredTextSuffix; }
 		}
 
 		const string uriFormatTextDefault = "Invalid OpenID URL.";
@@ -190,8 +191,8 @@ namespace NerdBank.OpenId.Consumer
 		[Localizable(true)]
 		public string UriFormatText
 		{
-			get { return uriFormatValidator.Text.Substring(uriFormatValidator.Text.Length - requiredTextSuffix.Length); }
-			set { uriFormatValidator.Text = value + requiredTextSuffix; }
+			get { return uriFormatValidator.Text.Substring(0, uriFormatValidator.Text.Length - requiredTextSuffix.Length); }
+			set { uriFormatValidator.ErrorMessage = uriFormatValidator.Text = value + requiredTextSuffix; }
 		}
 
 		const bool uriValidatorEnabledDefault = true;
