@@ -12,7 +12,7 @@
   <form id="Form1" runat="server">
 
     <h2>Login Page</h2>
-    <cc1:OpenIdLogin ID="OpenIdLogin1" runat="server" CssClass="openid_login" OnLoggedIn="OpenIdLogin1_LoggedIn" RequestCountry="Request" RequestEmail="Request" RequestGender="Require" RequestPostalCode="Require" RequestTimeZone="Require" UriValidatorEnabled="False" />
+    <cc1:OpenIdLogin ID="OpenIdLogin1" runat="server" CssClass="openid_login" OnLoggedIn="OpenIdLogin1_LoggedIn" RequestCountry="Request" RequestEmail="Request" RequestGender="Require" RequestPostalCode="Require" RequestTimeZone="Require" />
 
   </form>
 </body>
