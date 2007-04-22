@@ -96,7 +96,7 @@ public partial class ProfileFields : System.Web.UI.UserControl
             OpenIdProfileFields fields = new OpenIdProfileFields();
             fields.Birthdate = DateOfBirth;
             fields.Country = countryDropdownList.SelectedValue;
-            fields.Email = new MailAddress(emailTextBox.Text);
+            fields.Email = emailTextBox.Text;
             fields.Fullname = fullnameTextBox.Text;
             fields.Gender = Gender;
             fields.Language = languageDropdownList.SelectedValue;

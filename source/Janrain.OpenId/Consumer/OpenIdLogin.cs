@@ -36,7 +36,7 @@ namespace NerdBank.OpenId.Consumer
 			// Don't call base.CreateChildControls().  This would add the WrappedTextBox
 			// to the Controls collection, which would implicitly remove it from the table
 			// we have already added it to.
-			
+
 			// Just add the panel we've assembled earlier.
 			Controls.Add(panel);
 
@@ -95,16 +95,14 @@ namespace NerdBank.OpenId.Consumer
 			requiredValidator.ControlToValidate = WrappedTextBox.ID;
 			requiredValidator.ValidationGroup = validationGroupDefault;
 			cell.Controls.Add(requiredValidator);
-            uriFormatValidator = new RegularExpressionValidator();
-            uriFormatValidator.ErrorMessage = uriFormatTextDefault + requiredTextSuffix;
-            uriFormatValidator.ValidationExpression = @"http(s)?://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?";
-		    
-		    // TODO: (willem.muller) Disabling the validator  on 04/04/2007 because the above validation expression needs to be updated as it doesn't allow for URLs with IP's
-            uriFormatValidator.Enabled = false;
-		    
-            uriFormatValidator.Display = ValidatorDisplay.Dynamic;
-            uriFormatValidator.ControlToValidate = WrappedTextBox.ID;
-            uriFormatValidator.ValidationGroup = validationGroupDefault;
+			uriFormatValidator = new RegularExpressionValidator();
+			uriFormatValidator.ErrorMessage = uriFormatTextDefault + requiredTextSuffix;
+			uriFormatValidator.ValidationExpression = @"http(s)?://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?";
+			uriFormatValidator.Enabled = uriValidatorEnabledDefault;
+
+			uriFormatValidator.Display = ValidatorDisplay.Dynamic;
+			uriFormatValidator.ControlToValidate = WrappedTextBox.ID;
+			uriFormatValidator.ValidationGroup = validationGroupDefault;
 			cell.Controls.Add(uriFormatValidator);
 			examplePrefixLabel = new Label();
 			examplePrefixLabel.Text = examplePrefixDefault;
@@ -194,6 +192,16 @@ namespace NerdBank.OpenId.Consumer
 		{
 			get { return uriFormatValidator.Text.Substring(uriFormatValidator.Text.Length - requiredTextSuffix.Length); }
 			set { uriFormatValidator.Text = value + requiredTextSuffix; }
+		}
+
+		const bool uriValidatorEnabledDefault = true;
+		[Bindable(true)]
+		[Category("Behavior")]
+		[DefaultValue(uriValidatorEnabledDefault)]
+		public bool UriValidatorEnabled
+		{
+			get { return uriFormatValidator.Enabled; }
+			set { uriFormatValidator.Enabled = value; }
 		}
 
 		const string registerTextDefault = "register";
