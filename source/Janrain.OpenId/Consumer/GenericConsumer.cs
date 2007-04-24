@@ -237,10 +237,10 @@ namespace Janrain.OpenId.Consumer
 			string[] whitelist = new string[] { "assoc_handle", "sig", "signed", "invalidate_handle" };
 			string[] splitted = signed.Split(',');
 
-			string[] signed_array = new string[whitelist.Length + splitted.Length];
-
-			Array.Copy(whitelist, signed_array, 0);
-			Array.Copy(splitted, signed_array, splitted.Length);
+			// combine the previous 2 arrays (whitelist + splitted) into a new array: signed_array
+		    string[] signed_array = new string[whitelist.Length + splitted.Length];
+            Array.Copy(whitelist, signed_array, whitelist.Length);
+            Array.Copy(splitted, 0, signed_array, whitelist.Length, splitted.Length);
 
 			NameValueCollection check_args = new NameValueCollection();
 
