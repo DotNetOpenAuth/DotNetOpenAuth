@@ -37,4 +37,12 @@ public partial class login : System.Web.UI.Page
     {        
         State.ProfileFields = e.ProfileFields;       
     }
+    protected void OpenIdLogin1_Error(object sender, NerdBank.OpenId.Consumer.OpenIdTextBox.ErrorEventArgs e)
+    {
+        loginFailedLabel.Visible = true;
+    }
+    protected void OpenIdLogin1_Canceled(object sender, NerdBank.OpenId.Consumer.OpenIdTextBox.ErrorEventArgs e)
+    {
+        loginCanceledLabel.Visible = true;
+    }
 }

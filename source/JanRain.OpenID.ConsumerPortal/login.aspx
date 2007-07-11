@@ -12,7 +12,16 @@
   <form id="Form1" runat="server">
 
     <h2>Login Page</h2>
-    <cc1:OpenIdLogin ID="OpenIdLogin1" runat="server" CssClass="openid_login" OnLoggedIn="OpenIdLogin1_LoggedIn" RequestCountry="Request" RequestEmail="Request" RequestGender="Require" RequestPostalCode="Require" RequestTimeZone="Require" />
+    <cc1:OpenIdLogin ID="OpenIdLogin1" runat="server" CssClass="openid_login" 
+        RequestCountry="Request" RequestEmail="Request" RequestGender="Require" 
+        RequestPostalCode="Require" RequestTimeZone="Require" 
+        OnLoggedIn="OpenIdLogin1_LoggedIn" OnCanceled="OpenIdLogin1_Canceled"
+        OnError="OpenIdLogin1_Error" />
+    <br />
+    <asp:Label ID="loginFailedLabel" runat="server" EnableViewState="False" Text="Login failed"
+        Visible="False" />
+    <asp:Label ID="loginCanceledLabel" runat="server" EnableViewState="False" Text="Login canceled"
+        Visible="False" />
 
   </form>
 </body>
