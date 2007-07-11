@@ -290,6 +290,12 @@ namespace NerdBank.OpenId.Consumer
 		#endregion
 
 		#region Events
+		/// <summary>
+		/// Fired after the user clicks the log in button, but before the authentication
+		/// process begins.  Offers a chance for the web application to disallow based on 
+		/// OpenID URL before redirecting the user to the OpenID Provider.
+		/// </summary>
+		[Description("Fired after the user clicks the log in button, but before the authentication process begins.  Offers a chance for the web application to disallow based on OpenID URL before redirecting the user to the OpenID Provider.")]
 		public event EventHandler<OpenIdTextBox.OpenIdEventArgs> LoggingIn;
 		protected virtual bool OnLoggingIn(Uri openIdUri)
 		{

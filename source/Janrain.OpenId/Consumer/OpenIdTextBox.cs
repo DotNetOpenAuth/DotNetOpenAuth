@@ -324,7 +324,7 @@ namespace NerdBank.OpenId.Consumer
 			}
 			catch (CancelException cex)
 			{
-				OnError(cex);
+				OnCanceled(cex);
 			}
 		}
 
@@ -457,6 +457,10 @@ namespace NerdBank.OpenId.Consumer
 				get { return profileFields; }
 			}
 		}
+		/// <summary>
+		/// Fired upon completion of a successful login.
+		/// </summary>
+		[Description("Fired upon completion of a successful login.")]
 		public event EventHandler<OpenIdEventArgs> LoggedIn;
 		protected virtual void OnLoggedIn(Uri openIdUri, OpenIdProfileFields profileFields)
 		{
@@ -480,6 +484,11 @@ namespace NerdBank.OpenId.Consumer
 			public string ErrorMessage;
 			public Exception ErrorException;
 		}
+
+		/// <summary>
+		/// Fired when a login attempt fails or is canceled by the user.
+		/// </summary>
+		[Description("Fired when a login attempt fails or is canceled by the user.")]
 		public event EventHandler<ErrorEventArgs> Error;
 		protected virtual void OnError(Exception errorException)
 		{
@@ -489,6 +498,21 @@ namespace NerdBank.OpenId.Consumer
 			EventHandler<ErrorEventArgs> error = Error;
 			if (error != null)
 				error(this, new ErrorEventArgs(errorException.Message, errorException));
+		}
+
+		/// <summary>
+		/// Fired when an authentication attempt is canceled at the OpenID Provider.
+		/// </summary>
+		[Description("Fired when an authentication attempt is canceled at the OpenID Provider.")]
+		public event EventHandler<ErrorEventArgs> Canceled;
+		protected virtual void OnCanceled(Exception cancelException)
+		{
+			if (cancelException == null)
+				throw new ArgumentNullException("cancelException");
+
+			EventHandler<ErrorEventArgs> canceled = Canceled;
+			if (canceled != null)
+				canceled(this, new ErrorEventArgs(cancelException.Message, cancelException));
 		}
 		#endregion
 	}
