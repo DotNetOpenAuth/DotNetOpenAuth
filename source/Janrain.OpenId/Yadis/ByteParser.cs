@@ -13,6 +13,7 @@ namespace Janrain.Yadis
 		private static readonly Regex entityRe;
 		private const RegexOptions flags = (RegexOptions.IgnorePatternWhitespace | RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		private static readonly string tagExpr = "\n# Starts with the tag name at a word boundary, where the tag name is\n# not a namespace\n<{0}\\b(?!:)\n    \n# All of the stuff up to a \">\", hopefully attributes.\n(?<attrs>[^>]*?)\n    \n(?: # Match a short tag\n    />\n    \n|   # Match a full tag\n    >\n    \n    (?<contents>.*?)\n    \n    # Closed by\n    (?: # One of the specified close tags\n        </?{1}\\s*>\n    \n    # End of the string\n    |   \\Z\n    \n    )\n    \n)\n    ";
+		private static readonly string startTagExpr = "\n# Starts with the tag name at a word boundary, where the tag name is\n# not a namespace\n<{0}\\b(?!:)\n    \n# All of the stuff up to a \">\", hopefully attributes.\n(?<attrs>[^>]*?)\n    \n(?: # Match a short tag\n    />\n    \n|   # Match a full tag\n    >\n    )\n    ";
 
 		private static readonly Regex headRe;
 		private static readonly Regex htmlRe = TagMatcher("html", new string[0]);
@@ -44,7 +45,7 @@ namespace Janrain.Yadis
                 }
                 string text = null;
                 string text2 = null;
-                Regex regex = TagMatcher(tag_name, new string[0]);
+				Regex regex = StartTagMatcher(tag_name);
                 for (Match match3 = regex.Match(html, match2.Index, match2.Length); match3.Success; match3 = match3.NextMatch())
                 {
                     int beginning = (match3.Index + tag_name.Length) + 1;
@@ -124,6 +125,10 @@ namespace Janrain.Yadis
             }
             return new Regex(string.Format(tagExpr, tagName, text2), flags);
         }
+
+		private static Regex StartTagMatcher(string tag_name) {
+			return new Regex(string.Format(startTagExpr, tag_name), flags);
+		}
 
         public static string XmlEncoding(string data, int length, Encoding encoding)
         {
