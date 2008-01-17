@@ -351,20 +351,20 @@ namespace NerdBank.OpenId.Consumer
 			string trustRoot = builder.Uri.ToString();
 
 			// Build the return_to URL
-            UriBuilder return_to = new UriBuilder(Page.Request.Url);
-            // Trim off any old "openid." prefixed parameters to avoid carrying
-            // state from a prior login attempt.
-            return_to.Query = string.Empty;
-            NameValueCollection return_to_params = new NameValueCollection(Page.Request.QueryString.Count);
-            foreach (string key in Page.Request.QueryString) {
-                if (!key.StartsWith("openid.")) {
-                    return_to_params.Add(key, Page.Request.QueryString[key]);
-                }
-            }
-            UriUtil.AppendQueryArgs(ref return_to, return_to_params);
-            Uri redirectUrl = request.CreateRedirect(trustRoot, return_to.Uri, AuthRequest.Mode.SETUP);
-            Page.Response.Redirect(redirectUrl.AbsoluteUri);
-        }
+			UriBuilder return_to = new UriBuilder(Page.Request.Url);
+			// Trim off any old "openid." prefixed parameters to avoid carrying
+			// state from a prior login attempt.
+			return_to.Query = string.Empty;
+			NameValueCollection return_to_params = new NameValueCollection(Page.Request.QueryString.Count);
+			foreach (string key in Page.Request.QueryString) {
+				if (!key.StartsWith("openid.")) {
+					return_to_params.Add(key, Page.Request.QueryString[key]);
+				}
+			}
+			UriUtil.AppendQueryArgs(ref return_to, return_to_params);
+			Uri redirectUrl = request.CreateRedirect(trustRoot, return_to.Uri, AuthRequest.Mode.SETUP);
+			Page.Response.Redirect(redirectUrl.AbsoluteUri);
+		}
 
 		void addProfileArgs(AuthRequest request)
 		{
