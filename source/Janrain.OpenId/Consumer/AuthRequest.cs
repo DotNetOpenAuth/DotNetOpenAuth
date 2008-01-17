@@ -55,7 +55,7 @@ namespace Janrain.OpenId.Consumer
                 modeStr = "checkid_setup";
 
             UriBuilder returnToBuilder = new UriBuilder(returnTo);
-            UriUtil.AppendQueryArgs(ref returnToBuilder, this.ReturnToArgs);
+            UriUtil.AppendQueryArgs(returnToBuilder, this.ReturnToArgs);
 
             NameValueCollection qsArgs = new NameValueCollection();
 
@@ -69,8 +69,8 @@ namespace Janrain.OpenId.Consumer
 
             UriBuilder redir = new UriBuilder(this.endpoint.ServerUrl);
 
-            UriUtil.AppendQueryArgs(ref redir, qsArgs);
-            UriUtil.AppendQueryArgs(ref redir, this.ExtraArgs);
+            UriUtil.AppendQueryArgs(redir, qsArgs);
+            UriUtil.AppendQueryArgs(redir, this.ExtraArgs);
 
             return new Uri(redir.ToString(), true);
         }

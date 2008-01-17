@@ -369,7 +369,7 @@ namespace Janrain.OpenId.Server
                 q.Add("openid.assoc_handle", this.AssocHandle);
 
             UriBuilder builder = new UriBuilder(server_url);
-            UriUtil.AppendQueryArgs(ref builder, q);
+            UriUtil.AppendQueryArgs(builder, q);
 
             return new Uri(builder.ToString());
         }
@@ -383,7 +383,7 @@ namespace Janrain.OpenId.Server
             NameValueCollection args = new NameValueCollection();
 
             args.Add("openid.mode", "cancel");
-            UriUtil.AppendQueryArgs(ref builder, args);
+            UriUtil.AppendQueryArgs(builder, args);
 
             return new Uri(builder.ToString());
         }

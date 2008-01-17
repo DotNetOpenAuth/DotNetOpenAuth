@@ -44,9 +44,9 @@ namespace Janrain.OpenId
 
         #endregion
 
-        #region AppendQueryArg(ref UriBuilder builder, string key, string value)
+        #region AppendQueryArg(UriBuilder builder, string key, string value)
 
-        public static void AppendQueryArg(ref UriBuilder builder, string key, string value)
+        public static void AppendQueryArg(UriBuilder builder, string key, string value)
         {
             string encKey = HttpUtility.UrlEncode(key);
             string encVal = HttpUtility.UrlEncode(value);
@@ -64,9 +64,9 @@ namespace Janrain.OpenId
 
         #endregion
 
-        #region AppendQueryArgs(ref UriBuilder builder, NameValueCollection args)
+        #region AppendQueryArgs(UriBuilder builder, NameValueCollection args)
 
-        public static void AppendQueryArgs(ref UriBuilder builder, NameValueCollection args)
+        public static void AppendQueryArgs(UriBuilder builder, NameValueCollection args)
         {
             if (args.Count > 0)
             {

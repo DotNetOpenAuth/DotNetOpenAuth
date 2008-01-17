@@ -79,7 +79,7 @@ namespace Janrain.OpenId.Server
             q.Add("openid.error", this.Message);
 
             UriBuilder builder = new UriBuilder(return_to);
-            UriUtil.AppendQueryArgs(ref builder, q);
+            UriUtil.AppendQueryArgs(builder, q);
 
             return new Uri(builder.ToString());
         }

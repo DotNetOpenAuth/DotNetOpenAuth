@@ -361,7 +361,7 @@ namespace NerdBank.OpenId.Consumer
 					return_to_params.Add(key, Page.Request.QueryString[key]);
 				}
 			}
-			UriUtil.AppendQueryArgs(ref return_to, return_to_params);
+			UriUtil.AppendQueryArgs(return_to, return_to_params);
 			Uri redirectUrl = request.CreateRedirect(trustRoot, return_to.Uri, AuthRequest.Mode.SETUP);
 			Page.Response.Redirect(redirectUrl.AbsoluteUri);
 		}

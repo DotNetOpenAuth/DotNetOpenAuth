@@ -144,7 +144,7 @@ namespace Janrain.OpenId.Server
 
             CheckIdRequest checkidreq = (CheckIdRequest)this.Request;
             UriBuilder builder = new UriBuilder(checkidreq.ReturnTo);
-            UriUtil.AppendQueryArgs(ref builder, nvc);
+            UriUtil.AppendQueryArgs(builder, nvc);
 
             return new Uri(builder.ToString());
         }
