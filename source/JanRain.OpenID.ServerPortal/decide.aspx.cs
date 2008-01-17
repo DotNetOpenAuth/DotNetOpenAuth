@@ -10,7 +10,7 @@ public partial class decide : Page
 {
     protected void Page_Load(object src, EventArgs e)
     {
-        State.Session.CheckExpectedSateIsAvailable();
+        State.Session.CheckExpectedStateIsAvailable();
         
         // check that the logged in user is the same as the user requesting authentication to the consumer. If not, then log them out.
         String s = Util.ExtractUserName(State.Session.LastRequest.IdentityUrl);        

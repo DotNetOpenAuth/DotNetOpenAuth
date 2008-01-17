@@ -16,7 +16,7 @@ public partial class login : System.Web.UI.Page
 {
     protected void Page_Load(object src, EventArgs e)
     {
-            State.Session.CheckExpectedSateIsAvailable();
+            State.Session.CheckExpectedStateIsAvailable();
 
             String s = Util.ExtractUserName(State.Session.LastRequest.IdentityUrl);
             if (s != null)

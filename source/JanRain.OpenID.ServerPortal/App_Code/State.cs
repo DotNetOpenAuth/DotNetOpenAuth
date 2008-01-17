@@ -50,7 +50,7 @@ public class State
             set { lastRequest = value; }
         }
         
-        public void CheckExpectedSateIsAvailable()
+        public void CheckExpectedStateIsAvailable()
         {
             if (LastRequest == null)
             {
