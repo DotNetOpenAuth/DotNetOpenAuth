@@ -16,19 +16,20 @@ public partial class login : System.Web.UI.Page
 {
     protected void Page_Load(object src, EventArgs e)
     {
-            State.Session.CheckExpectedStateIsAvailable();
+        State.Session.CheckExpectedStateIsAvailable();
 
-            String s = Util.ExtractUserName(State.Session.LastRequest.IdentityUrl);
-            if (s != null)
-            {
-                username.Text = s;
-                username.Enabled = false;
-            }
+        if (!IsPostBack)
+        {
+            username.Text = Util.ExtractUserName(State.Session.LastRequest.IdentityUrl);
+            password.Focus();
+        }
     }
 
     protected void Login_Click(Object sender, EventArgs e)
     {
-        if (FormsAuthentication.Authenticate(username.Text, password.Text))
+        // Don't use username from text field because the user may have hijacked and changed it.
+        string challengedUsername = Util.ExtractUserName(State.Session.LastRequest.IdentityUrl);
+        if (FormsAuthentication.Authenticate(challengedUsername, password.Text))
             FormsAuthentication.RedirectFromLoginPage(username.Text, true);
         else
             status.InnerHtml += "Invalid Login";
