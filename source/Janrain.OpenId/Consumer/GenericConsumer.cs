@@ -44,7 +44,7 @@ namespace Janrain.OpenId.Consumer
 
 		public ConsumerResponse Complete(NameValueCollection query, string token)
 		{
-			string mode = query["openid.mode"];
+			string mode = query[QueryStringArgs.OpenIdMode];
 			if (mode == null)
 				mode = "<no mode specified>";
 
@@ -61,24 +61,24 @@ namespace Janrain.OpenId.Consumer
 				server_url = (Uri)pieces[2];
 			}
 
-			if (mode == "cancel")
+			if (mode == QueryStringArgs.OpenIdModes.Cancel)
 				throw new CancelException(identity_url);
-			
-			if (mode == "error")
+
+			if (mode == QueryStringArgs.OpenIdModes.Error)
 			{
-				string error = query["openid.error"];
+				string error = query[QueryStringArgs.OpenIdError];
 
 				throw new FailureException(identity_url, error);
 			}
 
-			if (mode == "id_res")
+			if (mode == QueryStringArgs.OpenIdModes.IdRes)
 			{
 				if (identity_url == null)
 					throw new FailureException(identity_url, "No session state found");
 
 				ConsumerResponse response = DoIdRes(query, identity_url, server_id, server_url);
 
-				CheckNonce(response, query["nonce"]);
+				CheckNonce(response, query[QueryStringArgs.Nonce]);
 
 				return response;
 			}
@@ -105,7 +105,7 @@ namespace Janrain.OpenId.Consumer
 		{
 			NameValueCollection nvc = HttpUtility.ParseQueryString(response.ReturnTo.Query);
 
-			string value = nvc["nonce"];
+			string value = nvc[QueryStringArgs.Nonce];
 			if (String.IsNullOrEmpty(value))
 				throw new FailureException(response.IdentityUrl,
 							   "Nonce missing from return_to: " +
@@ -144,20 +144,20 @@ namespace Janrain.OpenId.Consumer
 		{
 			Converter<string, string> getRequired = delegate(string key)
 				{
-					string val = query["openid." + key];
+					string val = query[key];
 					if (val == null)
 						throw new FailureException(consumer_id, "Missing required field: " + key);
 
 					return val;
 				};
 
-			string user_setup_url = query["openid.user_setup_url"];
+			string user_setup_url = query[QueryStringArgs.OpenIdUserSetupUrl];
 			if (user_setup_url != null)
 				throw new SetupNeededException(consumer_id, new Uri(user_setup_url));
 
-			string return_to = getRequired("return_to");
-			string server_id2 = getRequired("identity");
-			string assoc_handle = getRequired("assoc_handle");
+			string return_to = getRequired(QueryStringArgs.OpenIdReturnTo);
+			string server_id2 = getRequired(QueryStringArgs.OpenIdIdentity);
+			string assoc_handle = getRequired(QueryStringArgs.OpenIdAssocHandle);
 
 			if (server_id.AbsoluteUri != server_id.ToString())
 				throw new FailureException(consumer_id, "Server ID (delegate) mismatch");
@@ -171,7 +171,7 @@ namespace Janrain.OpenId.Consumer
 				if (!CheckAuth(query, server_url))
 					throw new FailureException(consumer_id, "check_authentication failed");
 
-				return new ConsumerResponse(consumer_id, query, query["openid.signed"]);
+				return new ConsumerResponse(consumer_id, query, query[QueryStringArgs.OpenIdSigned]);
 			}
 
 			if (assoc.ExpiresIn <= 0)
@@ -180,8 +180,8 @@ namespace Janrain.OpenId.Consumer
 			}
 
 			// Check the signature
-			string sig = getRequired("sig");
-			string signed = getRequired("signed");
+			string sig = getRequired(QueryStringArgs.OpenIdSig);
+			string signed = getRequired(QueryStringArgs.OpenIdSigned);
 			string[] signed_array = signed.Split(',');
 
 			string v_sig = assoc.SignDict(signed_array, query, "openid.");
@@ -226,7 +226,7 @@ namespace Janrain.OpenId.Consumer
 
 		private NameValueCollection CreateCheckAuthRequest(NameValueCollection query)
 		{
-			string signed = query["openid.signed"];
+			string signed = query[QueryStringArgs.OpenIdSigned];
 
 			if (signed == null)
 				// #XXX: oidutil.log('No signature present; checkAuth aborted')
@@ -249,7 +249,7 @@ namespace Janrain.OpenId.Consumer
 				if (key.StartsWith("openid.") && Array.IndexOf(signed_array, key.Substring(7)) > -1)
 					check_args.Add(key, query[key]);
 
-				check_args["openid.mode"] = "check_authentication";
+				check_args[QueryStringArgs.OpenIdMode] = "check_authentication";
 			}
 
 			return check_args;

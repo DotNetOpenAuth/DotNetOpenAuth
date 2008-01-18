@@ -309,7 +309,7 @@ namespace NerdBank.OpenId.Consumer
 
 			try
 			{
-				if (!Page.IsPostBack && Page.Request.QueryString["openid.mode"] != null)
+				if (!Page.IsPostBack && Page.Request.QueryString[QueryStringArgs.OpenIdMode] != null)
 				{
 					Janrain.OpenId.Consumer.Consumer consumer =
 						new Janrain.OpenId.Consumer.Consumer(new SystemHttpSessionState(Page.Session), MemoryStore.GetInstance());
@@ -357,7 +357,7 @@ namespace NerdBank.OpenId.Consumer
 			return_to.Query = string.Empty;
 			NameValueCollection return_to_params = new NameValueCollection(Page.Request.QueryString.Count);
 			foreach (string key in Page.Request.QueryString) {
-				if (!key.StartsWith("openid.")) {
+				if (!key.StartsWith(QueryStringArgs.OpenIdPrefix)) {
 					return_to_params.Add(key, Page.Request.QueryString[key]);
 				}
 			}
@@ -401,31 +401,31 @@ namespace NerdBank.OpenId.Consumer
 		{
 			OpenIdProfileFields fields = new OpenIdProfileFields();
 			if (RequestNickname > ProfileRequest.NoRequest)
-				fields.Nickname = queryString["openid.sreg.nickname"];
+				fields.Nickname = queryString[QueryStringArgs.OpenIdSregNickname];
 			if (RequestEmail > ProfileRequest.NoRequest)
-				fields.Email = queryString["openid.sreg.email"];
+				fields.Email = queryString[QueryStringArgs.OpenIdSregEmail];
 			if (RequestFullName > ProfileRequest.NoRequest)
-				fields.Fullname = queryString["openid.sreg.fullname"];
-			if (RequestBirthdate > ProfileRequest.NoRequest && !string.IsNullOrEmpty(queryString["openid.sreg.dob"]))
+				fields.Fullname = queryString[QueryStringArgs.OpenIdSregFullname];
+			if (RequestBirthdate > ProfileRequest.NoRequest && !string.IsNullOrEmpty(queryString[QueryStringArgs.OpenIdSregDob]))
 			{
 				DateTime birthdate;
-				DateTime.TryParse(queryString["openid.sreg.dob"], out birthdate);
+				DateTime.TryParse(queryString[QueryStringArgs.OpenIdSregDob], out birthdate);
 				fields.Birthdate = birthdate;
 			}
 			if (RequestGender > ProfileRequest.NoRequest)
-				switch (queryString["openid.sreg.gender"])
+				switch (queryString[QueryStringArgs.OpenIdGender])
 				{
-					case "M": fields.Gender = Gender.Male; break;
-					case "F": fields.Gender = Gender.Female; break;
+					case QueryStringArgs.OpenIdGenders.Male: fields.Gender = Gender.Male; break;
+					case QueryStringArgs.OpenIdGenders.Female: fields.Gender = Gender.Female; break;
 				}
 			if (RequestPostalCode > ProfileRequest.NoRequest)
-				fields.PostalCode = queryString["openid.sreg.postcode"];
+				fields.PostalCode = queryString[QueryStringArgs.OpenIdPostCode];
 			if (RequestCountry > ProfileRequest.NoRequest)
-				fields.Country = queryString["openid.sreg.country"];
+				fields.Country = queryString[QueryStringArgs.OpenIdCountry];
 			if (RequestLanguage > ProfileRequest.NoRequest)
-				fields.Language = queryString["openid.sreg.language"];
+				fields.Language = queryString[QueryStringArgs.OpenIdLanguage];
 			if (RequestTimeZone > ProfileRequest.NoRequest)
-				fields.TimeZone = queryString["openid.sreg.timezone"];
+				fields.TimeZone = queryString[QueryStringArgs.OpenIdTimezone];
 			return fields;
 		}
 

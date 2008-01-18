@@ -68,7 +68,7 @@ namespace Janrain.OpenId.Server
         public CheckIdRequest(NameValueCollection query)
         {
             // handle the mandatory protocol fields
-            string mode = query["openid.mode"];
+            string mode = query[QueryStringArgs.OpenIdMode];
 
             if (mode == "checkid_immediate")
             {
@@ -81,7 +81,7 @@ namespace Janrain.OpenId.Server
                 _mode = "checkid_setup";
             }
 
-            string identity = GetField(query, "identity");
+            string identity = GetField(query, QueryStringArgs.OpenIdIdentity);
             try
             {
                 _identity = new Uri(identity);
@@ -91,7 +91,7 @@ namespace Janrain.OpenId.Server
                 throw new ProtocolException(query, "openid.identity not a valid url: " + identity);
             }
 
-            string return_to = GetField(query, "return_to");
+            string return_to = GetField(query, QueryStringArgs.OpenIdReturnTo);
             try
             {
                 _return_to = new Uri(return_to);
@@ -122,20 +122,20 @@ namespace Janrain.OpenId.Server
 
 
             // Handle the optional Simple Registration extension fields
-            string policyUrl = GetSimpleRegistrationExtensionField(query, "policy_url");
+            string policyUrl = GetSimpleRegistrationExtensionField(query, QueryStringArgs.OpenIdSregPolicyUrl);
             if (!String.IsNullOrEmpty(policyUrl))
             {
                 _policyUrl = new Uri(policyUrl);
             }
 
-            string optionalFields = GetSimpleRegistrationExtensionField(query, "optional");
+            string optionalFields = GetSimpleRegistrationExtensionField(query, QueryStringArgs.OpenIdSregOptional);
             if (!String.IsNullOrEmpty(optionalFields))
             {
                 string[] splitOptionalFields = optionalFields.Split(',');
                 setSimpleRegistrationExtensionFields(splitOptionalFields, ProfileRequest.Request);
             }
 
-            string requiredFields = GetSimpleRegistrationExtensionField(query, "required");
+            string requiredFields = GetSimpleRegistrationExtensionField(query, QueryStringArgs.OpenIdSregRequired);
             if (!String.IsNullOrEmpty(requiredFields))
             {
                 string[] splitRrequiredFields = requiredFields.Split(',');
@@ -149,7 +149,7 @@ namespace Janrain.OpenId.Server
 
         private string GetField(NameValueCollection query, string field)
         {
-            string value = query.Get("openid." + field);
+            string value = query.Get(field);
 
             if (value == null)
                 throw new ProtocolException(query, "Missing required field " + field);
@@ -159,7 +159,7 @@ namespace Janrain.OpenId.Server
 
         private string GetSimpleRegistrationExtensionField(NameValueCollection query, string field)
         {
-            string value = query.Get("openid.sreg." + field);
+            string value = query.Get(field);
             return value;
         }
 

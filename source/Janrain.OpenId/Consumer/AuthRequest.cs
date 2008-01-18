@@ -50,22 +50,22 @@ namespace Janrain.OpenId.Consumer
         {
             string modeStr = String.Empty;
             if (mode == Mode.IMMEDIATE)
-                modeStr = "checkid_immediate";
+                modeStr = QueryStringArgs.OpenIdModes.CheckIdImmediate;
             else if (mode == Mode.SETUP)
-                modeStr = "checkid_setup";
+                modeStr = QueryStringArgs.OpenIdModes.CheckIdSetup;
 
             UriBuilder returnToBuilder = new UriBuilder(returnTo);
             UriUtil.AppendQueryArgs(returnToBuilder, this.ReturnToArgs);
 
             NameValueCollection qsArgs = new NameValueCollection();
 
-            qsArgs.Add("openid.mode", modeStr);
-            qsArgs.Add("openid.identity", this.endpoint.ServerId.AbsoluteUri); //TODO: breaks the Law of Demeter
-            qsArgs.Add("openid.return_to", new Uri(returnToBuilder.ToString(), true).AbsoluteUri); //TODO: obsolete, problem?
-            qsArgs.Add("openid.trust_root", trustRoot);
+            qsArgs.Add(QueryStringArgs.OpenIdMode, modeStr);
+            qsArgs.Add(QueryStringArgs.OpenIdIdentity, this.endpoint.ServerId.AbsoluteUri); //TODO: breaks the Law of Demeter
+            qsArgs.Add(QueryStringArgs.OpenIdReturnTo, returnToBuilder.ToString());
+            qsArgs.Add(QueryStringArgs.OpenIdTrustRoot, trustRoot);
 
             if (this.assoc != null)
-                qsArgs.Add("openid.assoc_handle", this.assoc.Handle); // !!!!
+                qsArgs.Add(QueryStringArgs.OpenIdAssocHandle, this.assoc.Handle); // !!!!
 
             UriBuilder redir = new UriBuilder(this.endpoint.ServerUrl);
 

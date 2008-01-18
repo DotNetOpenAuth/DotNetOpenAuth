@@ -30,7 +30,7 @@ namespace Janrain.OpenId.Server
         {
             get
             {
-                return (_query["openid.return_to"] != null);
+                return (_query[QueryStringArgs.OpenIdReturnTo] != null);
             }
         }
 

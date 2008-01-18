@@ -16,7 +16,7 @@ namespace Janrain.OpenId.Consumer
 
 		public Uri ReturnTo
 		{
-			get { return new Uri((string)this.signed_args["openid.return_to"], true); }
+			get { return new Uri((string)this.signed_args[QueryStringArgs.OpenIdReturnTo], true); }
 		}
 
 		public ConsumerResponse(Uri identity_url, NameValueCollection query, string signed)
