@@ -16,7 +16,7 @@ namespace Janrain.OpenId.Consumer
 
 		public Uri ReturnTo
 		{
-			get { return new Uri((string)this.signed_args[QueryStringArgs.OpenIdReturnTo], true); }
+			get { return new Uri((string)this.signed_args[QueryStringArgs.openid.return_to], true); }
 		}
 
 		public ConsumerResponse(Uri identity_url, NameValueCollection query, string signed)
@@ -25,7 +25,7 @@ namespace Janrain.OpenId.Consumer
 			this.signed_args = new Hashtable();
 			foreach (string field_name in signed.Split(','))
 			{
-				string field_name2 = "openid." + field_name;
+				string field_name2 = QueryStringArgs.openid.Prefix + field_name;
 				string val = query[field_name2];
 				if (val == null)
 					val = String.Empty;
@@ -35,7 +35,7 @@ namespace Janrain.OpenId.Consumer
 		public IDictionary ExtensionResponse(string prefix)
 		{
 			Hashtable response = new Hashtable();
-			prefix = "openid." + prefix + ".";
+			prefix = QueryStringArgs.openid.Prefix + prefix + ".";
 			int prefix_len = prefix.Length;
 			foreach (DictionaryEntry pair in this.signed_args)
 			{

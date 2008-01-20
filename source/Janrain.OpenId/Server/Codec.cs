@@ -136,7 +136,7 @@ namespace Janrain.OpenId.Server
                     if (_signatory == null)
                         throw new ArgumentException("Must have a store to sign this request");
 
-                    if (response.Fields.Contains("sig"))
+                    if (response.Fields.Contains(QueryStringArgs.openidnp.sig))
                         throw new AlreadySignedException(encodable);
 
                     _signatory.Sign(response);
@@ -178,17 +178,17 @@ namespace Janrain.OpenId.Server
             {
                 if (!String.IsNullOrEmpty(key))
                 {
-                    if (key.StartsWith("openid.")) { myquery[key] = query[key]; }
+                    if (key.StartsWith(QueryStringArgs.openid.Prefix)) { myquery[key] = query[key]; }
                 }
             }
 
             if (myquery.Count == 0) return null;
 
-            string mode = myquery.Get("openid.mode");
+            string mode = myquery.Get(QueryStringArgs.openid.mode);
             if (mode == null)
                 throw new ProtocolException(query, "No openid.mode value in query");
 
-            if (mode == "checkid_setup")
+            if (mode == QueryStringArgs.Modes.checkid_setup)
             {
                 CheckIdRequest request = new CheckIdRequest(query);
                 
@@ -206,7 +206,7 @@ namespace Janrain.OpenId.Server
                 
                 return request;
             }
-            else if (mode == "checkid_immediate")
+            else if (mode == QueryStringArgs.Modes.checkid_immediate)
             {
                 CheckIdRequest request = new CheckIdRequest(query);
 
@@ -224,7 +224,7 @@ namespace Janrain.OpenId.Server
                 
                 return request;
             }
-            else if (mode == "check_authentication")
+            else if (mode == QueryStringArgs.Modes.check_authentication)
             {
                 CheckAuthRequest request = new CheckAuthRequest(query);
 
@@ -242,7 +242,7 @@ namespace Janrain.OpenId.Server
                 
                 return request;
             }
-            else if (mode == "associate")
+            else if (mode == QueryStringArgs.Modes.associate)
             {
                 AssociateRequest request = new AssociateRequest(query);
 

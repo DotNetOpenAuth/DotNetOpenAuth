@@ -53,8 +53,8 @@ namespace Janrain.OpenId.Server
             get
             {
                   return (
-                    (this.Request.Mode == "checkid_setup" ||
-                     this.Request.Mode == "checkid_immediate")
+                    (this.Request.Mode == QueryStringArgs.Modes.checkid_setup ||
+                     this.Request.Mode == QueryStringArgs.Modes.checkid_immediate)
                      &&
                     (this.Signed.Length > 0)
                     );
@@ -87,32 +87,6 @@ namespace Janrain.OpenId.Server
             }
         }
 
-        public void Update(string nmspace, Response other)
-        {
-            Hashtable nmspaced_fields = new Hashtable();
-            ArrayList nmspaced_signed = new ArrayList();
-
-
-            if (nmspace == null || nmspace == String.Empty)
-            {
-                nmspaced_fields = (Hashtable) other.Fields;
-                nmspaced_signed = new ArrayList(this.Signed);
-            }
-            else
-            {
-                foreach (DictionaryEntry pair in other.Fields)
-                {
-                    nmspaced_fields.Add(nmspace + "." + pair.Key.ToString(), pair.Value);
-                }
-
-                foreach (string k in other.Signed)
-                {
-                    nmspaced_signed.Add(nmspace + "." + k);
-                }
-            }
-
-        }
-
         #endregion
 
         #region IEncodable Members
@@ -121,7 +95,7 @@ namespace Janrain.OpenId.Server
         {
             get
             {
-                if (this.Request.Mode == "checkid_setup" || this.Request.Mode == "checkid_immediate")
+                if (this.Request.Mode == QueryStringArgs.Modes.checkid_setup || this.Request.Mode == QueryStringArgs.Modes.checkid_immediate)
                 {
                     return EncodingType.ENCODE_URL;
                 }
@@ -139,7 +113,7 @@ namespace Janrain.OpenId.Server
 
             foreach (DictionaryEntry pair in this.Fields)
             {
-                nvc.Add("openid." + pair.Key.ToString(), pair.Value.ToString());
+                nvc.Add(QueryStringArgs.openid.Prefix + pair.Key.ToString(), pair.Value.ToString());
             }
 
             CheckIdRequest checkidreq = (CheckIdRequest)this.Request;

@@ -51,7 +51,7 @@ namespace Janrain.OpenId
 
         public static byte[] DictToKV(IDictionary dict)
         {
-            NameValueCollection data = new NameValueCollection();
+            NameValueCollection data = new NameValueCollection(dict.Count);
 
             foreach (DictionaryEntry pair in dict)
             {

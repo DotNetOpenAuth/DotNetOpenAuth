@@ -77,11 +77,14 @@ namespace NerdBank.OpenId.Consumer
 				WrappedTextBox.Focus();
 		}
 
+		const string appearanceCategory = "Appearance";
+		const string profileCategory = "Profile";
+
 		#region Properties
 		const string textDefault = "";
 		string text = textDefault;
 		[Bindable(true)]
-		[Category("Appearance")]
+		[Category(appearanceCategory)]
 		[DefaultValue("")]
 		public string Text
 		{
@@ -95,7 +98,7 @@ namespace NerdBank.OpenId.Consumer
 
 		const string cssClassDefault = "openid";
 		[Bindable(true)]
-		[Category("Appearance")]
+		[Category(appearanceCategory)]
 		[DefaultValue(cssClassDefault)]
 		public override string CssClass
 		{
@@ -105,7 +108,7 @@ namespace NerdBank.OpenId.Consumer
 
 		const int columnsDefault = 40;
 		[Bindable(true)]
-		[Category("Appearance")]
+		[Category(appearanceCategory)]
 		[DefaultValue(columnsDefault)]
 		public int Columns
 		{
@@ -116,7 +119,7 @@ namespace NerdBank.OpenId.Consumer
 		const string requestNicknameViewStateKey = "RequestNickname";
 		const ProfileRequest requestNicknameDefault = ProfileRequest.NoRequest;
 		[Bindable(true)]
-		[Category("Profile")]
+		[Category(profileCategory)]
 		[DefaultValue(requestNicknameDefault)]
 		public ProfileRequest RequestNickname
 		{
@@ -127,7 +130,7 @@ namespace NerdBank.OpenId.Consumer
 		const string requestEmailViewStateKey = "RequestEmail";
 		const ProfileRequest requestEmailDefault = ProfileRequest.NoRequest;
 		[Bindable(true)]
-		[Category("Profile")]
+		[Category(profileCategory)]
 		[DefaultValue(requestEmailDefault)]
 		public ProfileRequest RequestEmail
 		{
@@ -138,7 +141,7 @@ namespace NerdBank.OpenId.Consumer
 		const string requestFullNameViewStateKey = "RequestFullName";
 		const ProfileRequest requestFullNameDefault = ProfileRequest.NoRequest;
 		[Bindable(true)]
-		[Category("Profile")]
+		[Category(profileCategory)]
 		[DefaultValue(requestFullNameDefault)]
 		public ProfileRequest RequestFullName
 		{
@@ -149,7 +152,7 @@ namespace NerdBank.OpenId.Consumer
 		const string requestBirthdateViewStateKey = "RequestBirthday";
 		const ProfileRequest requestBirthdateDefault = ProfileRequest.NoRequest;
 		[Bindable(true)]
-		[Category("Profile")]
+		[Category(profileCategory)]
 		[DefaultValue(requestBirthdateDefault)]
 		public ProfileRequest RequestBirthdate
 		{
@@ -160,7 +163,7 @@ namespace NerdBank.OpenId.Consumer
 		const string requestGenderViewStateKey = "RequestGender";
 		const ProfileRequest requestGenderDefault = ProfileRequest.NoRequest;
 		[Bindable(true)]
-		[Category("Profile")]
+		[Category(profileCategory)]
 		[DefaultValue(requestGenderDefault)]
 		public ProfileRequest RequestGender
 		{
@@ -171,7 +174,7 @@ namespace NerdBank.OpenId.Consumer
 		const string requestPostalCodeViewStateKey = "RequestPostalCode";
 		const ProfileRequest requestPostalCodeDefault = ProfileRequest.NoRequest;
 		[Bindable(true)]
-		[Category("Profile")]
+		[Category(profileCategory)]
 		[DefaultValue(requestPostalCodeDefault)]
 		public ProfileRequest RequestPostalCode
 		{
@@ -182,7 +185,7 @@ namespace NerdBank.OpenId.Consumer
 		const string requestCountryViewStateKey = "RequestCountry";
 		const ProfileRequest requestCountryDefault = ProfileRequest.NoRequest;
 		[Bindable(true)]
-		[Category("Profile")]
+		[Category(profileCategory)]
 		[DefaultValue(requestCountryDefault)]
 		public ProfileRequest RequestCountry
 		{
@@ -193,7 +196,7 @@ namespace NerdBank.OpenId.Consumer
 		const string requestLanguageViewStateKey = "RequestLanguage";
 		const ProfileRequest requestLanguageDefault = ProfileRequest.NoRequest;
 		[Bindable(true)]
-		[Category("Profile")]
+		[Category(profileCategory)]
 		[DefaultValue(requestLanguageDefault)]
 		public ProfileRequest RequestLanguage
 		{
@@ -204,7 +207,7 @@ namespace NerdBank.OpenId.Consumer
 		const string requestTimeZoneViewStateKey = "RequestTimeZone";
 		const ProfileRequest requestTimeZoneDefault = ProfileRequest.NoRequest;
 		[Bindable(true)]
-		[Category("Profile")]
+		[Category(profileCategory)]
 		[DefaultValue(requestTimeZoneDefault)]
 		public ProfileRequest RequestTimeZone
 		{
@@ -215,7 +218,7 @@ namespace NerdBank.OpenId.Consumer
 		const string policyUrlViewStateKey = "PolicyUrl";
 		const string policyUrlDefault = "";
 		[Bindable(true)]
-		[Category("Profile")]
+		[Category(profileCategory)]
 		[DefaultValue(policyUrlDefault)]
 		public string PolicyUrl
 		{
@@ -226,7 +229,7 @@ namespace NerdBank.OpenId.Consumer
 		const string enableRequestProfileViewStateKey = "EnableRequestProfile";
 		const bool enableRequestProfileDefault = true;
 		[Bindable(true)]
-		[Category("Profile")]
+		[Category(profileCategory)]
 		[DefaultValue(enableRequestProfileDefault)]
 		public bool EnableRequestProfile
 		{
@@ -309,7 +312,7 @@ namespace NerdBank.OpenId.Consumer
 
 			try
 			{
-				if (!Page.IsPostBack && Page.Request.QueryString[QueryStringArgs.OpenIdMode] != null)
+				if (!Page.IsPostBack && Page.Request.QueryString[QueryStringArgs.openid.mode] != null)
 				{
 					Janrain.OpenId.Consumer.Consumer consumer =
 						new Janrain.OpenId.Consumer.Consumer(new SystemHttpSessionState(Page.Session), MemoryStore.GetInstance());
@@ -357,7 +360,7 @@ namespace NerdBank.OpenId.Consumer
 			return_to.Query = string.Empty;
 			NameValueCollection return_to_params = new NameValueCollection(Page.Request.QueryString.Count);
 			foreach (string key in Page.Request.QueryString) {
-				if (!key.StartsWith(QueryStringArgs.OpenIdPrefix)) {
+				if (!key.StartsWith(QueryStringArgs.openid.Prefix) && key != QueryStringArgs.nonce) {
 					return_to_params.Add(key, Page.Request.QueryString[key]);
 				}
 			}
@@ -368,32 +371,32 @@ namespace NerdBank.OpenId.Consumer
 
 		void addProfileArgs(AuthRequest request)
 		{
-			request.ExtraArgs.Add("openid.sreg.required", string.Join(",", assembleProfileFields(ProfileRequest.Require)));
-			request.ExtraArgs.Add("openid.sreg.optional", string.Join(",", assembleProfileFields(ProfileRequest.Request)));
-			request.ExtraArgs.Add("openid.sreg.policy_url", PolicyUrl);
+			request.ExtraArgs.Add(QueryStringArgs.openid.sreg.required, string.Join(",", assembleProfileFields(ProfileRequest.Require)));
+			request.ExtraArgs.Add(QueryStringArgs.openid.sreg.optional, string.Join(",", assembleProfileFields(ProfileRequest.Request)));
+			request.ExtraArgs.Add(QueryStringArgs.openid.sreg.policy_url, PolicyUrl);
 		}
 
 		string[] assembleProfileFields(ProfileRequest level)
 		{
 			List<string> fields = new List<string>(10);
 			if (RequestNickname == level)
-				fields.Add("nickname");
+				fields.Add(QueryStringArgs.openidnp.sregnp.nickname);
 			if (RequestEmail == level)
-				fields.Add("email");
+				fields.Add(QueryStringArgs.openidnp.sregnp.email);
 			if (RequestFullName == level)
-				fields.Add("fullname");
+				fields.Add(QueryStringArgs.openidnp.sregnp.fullname);
 			if (RequestBirthdate == level)
-				fields.Add("dob");
+				fields.Add(QueryStringArgs.openidnp.sregnp.dob);
 			if (RequestGender == level)
-				fields.Add("gender");
+				fields.Add(QueryStringArgs.openidnp.sregnp.gender);
 			if (RequestPostalCode == level)
-				fields.Add("postcode");
+				fields.Add(QueryStringArgs.openidnp.sregnp.postcode);
 			if (RequestCountry == level)
-				fields.Add("country");
+				fields.Add(QueryStringArgs.openidnp.sregnp.country);
 			if (RequestLanguage == level)
-				fields.Add("language");
+				fields.Add(QueryStringArgs.openidnp.sregnp.language);
 			if (RequestTimeZone == level)
-				fields.Add("timezone");
+				fields.Add(QueryStringArgs.openidnp.sregnp.timezone);
 
 			return fields.ToArray();
 		}
@@ -401,31 +404,31 @@ namespace NerdBank.OpenId.Consumer
 		{
 			OpenIdProfileFields fields = new OpenIdProfileFields();
 			if (RequestNickname > ProfileRequest.NoRequest)
-				fields.Nickname = queryString[QueryStringArgs.OpenIdSregNickname];
+				fields.Nickname = queryString[QueryStringArgs.openid.sreg.nickname];
 			if (RequestEmail > ProfileRequest.NoRequest)
-				fields.Email = queryString[QueryStringArgs.OpenIdSregEmail];
+				fields.Email = queryString[QueryStringArgs.openid.sreg.email];
 			if (RequestFullName > ProfileRequest.NoRequest)
-				fields.Fullname = queryString[QueryStringArgs.OpenIdSregFullname];
-			if (RequestBirthdate > ProfileRequest.NoRequest && !string.IsNullOrEmpty(queryString[QueryStringArgs.OpenIdSregDob]))
+				fields.Fullname = queryString[QueryStringArgs.openid.sreg.fullname];
+			if (RequestBirthdate > ProfileRequest.NoRequest && !string.IsNullOrEmpty(queryString[QueryStringArgs.openid.sreg.dob]))
 			{
 				DateTime birthdate;
-				DateTime.TryParse(queryString[QueryStringArgs.OpenIdSregDob], out birthdate);
+				DateTime.TryParse(queryString[QueryStringArgs.openid.sreg.dob], out birthdate);
 				fields.Birthdate = birthdate;
 			}
 			if (RequestGender > ProfileRequest.NoRequest)
-				switch (queryString[QueryStringArgs.OpenIdGender])
+				switch (queryString[QueryStringArgs.openid.sreg.gender])
 				{
-					case QueryStringArgs.OpenIdGenders.Male: fields.Gender = Gender.Male; break;
-					case QueryStringArgs.OpenIdGenders.Female: fields.Gender = Gender.Female; break;
+					case QueryStringArgs.Genders.Male: fields.Gender = Gender.Male; break;
+					case QueryStringArgs.Genders.Female: fields.Gender = Gender.Female; break;
 				}
 			if (RequestPostalCode > ProfileRequest.NoRequest)
-				fields.PostalCode = queryString[QueryStringArgs.OpenIdPostCode];
+				fields.PostalCode = queryString[QueryStringArgs.openid.sreg.postcode];
 			if (RequestCountry > ProfileRequest.NoRequest)
-				fields.Country = queryString[QueryStringArgs.OpenIdCountry];
+				fields.Country = queryString[QueryStringArgs.openid.sreg.country];
 			if (RequestLanguage > ProfileRequest.NoRequest)
-				fields.Language = queryString[QueryStringArgs.OpenIdLanguage];
+				fields.Language = queryString[QueryStringArgs.openid.sreg.language];
 			if (RequestTimeZone > ProfileRequest.NoRequest)
-				fields.TimeZone = queryString[QueryStringArgs.OpenIdTimezone];
+				fields.TimeZone = queryString[QueryStringArgs.openid.sreg.timezone];
 			return fields;
 		}
 

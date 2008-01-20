@@ -17,9 +17,6 @@ namespace Janrain.OpenId.Consumer
 	{
 		private static uint TOKEN_LIFETIME = 120;
 
-		private const string DH_SHA1 = "DH-SHA1";
-		private const string HMAC_SHA1 = "HMAC-SHA1";
-
 		private IAssociationStore store;
 		private Fetcher fetcher;
 
@@ -37,14 +34,14 @@ namespace Janrain.OpenId.Consumer
 			Association assoc = this.GetAssociation(service_endpoint.ServerUrl);
 
 			AuthRequest request = new AuthRequest(token, assoc, service_endpoint);
-			request.ReturnToArgs.Add("nonce", nonce);
+			request.ReturnToArgs.Add(QueryStringArgs.nonce, nonce);
 
 			return request;
 		}
 
 		public ConsumerResponse Complete(NameValueCollection query, string token)
 		{
-			string mode = query[QueryStringArgs.OpenIdMode];
+			string mode = query[QueryStringArgs.openid.mode];
 			if (mode == null)
 				mode = "<no mode specified>";
 
@@ -61,24 +58,24 @@ namespace Janrain.OpenId.Consumer
 				server_url = (Uri)pieces[2];
 			}
 
-			if (mode == QueryStringArgs.OpenIdModes.Cancel)
+			if (mode == QueryStringArgs.Modes.cancel)
 				throw new CancelException(identity_url);
 
-			if (mode == QueryStringArgs.OpenIdModes.Error)
+			if (mode == QueryStringArgs.Modes.error)
 			{
-				string error = query[QueryStringArgs.OpenIdError];
+				string error = query[QueryStringArgs.openid.error];
 
 				throw new FailureException(identity_url, error);
 			}
 
-			if (mode == QueryStringArgs.OpenIdModes.IdRes)
+			if (mode == QueryStringArgs.Modes.id_res)
 			{
 				if (identity_url == null)
 					throw new FailureException(identity_url, "No session state found");
 
 				ConsumerResponse response = DoIdRes(query, identity_url, server_id, server_url);
 
-				CheckNonce(response, query[QueryStringArgs.Nonce]);
+				CheckNonce(response, query[QueryStringArgs.nonce]);
 
 				return response;
 			}
@@ -105,7 +102,7 @@ namespace Janrain.OpenId.Consumer
 		{
 			NameValueCollection nvc = HttpUtility.ParseQueryString(response.ReturnTo.Query);
 
-			string value = nvc[QueryStringArgs.Nonce];
+			string value = nvc[QueryStringArgs.nonce];
 			if (String.IsNullOrEmpty(value))
 				throw new FailureException(response.IdentityUrl,
 							   "Nonce missing from return_to: " +
@@ -151,13 +148,13 @@ namespace Janrain.OpenId.Consumer
 					return val;
 				};
 
-			string user_setup_url = query[QueryStringArgs.OpenIdUserSetupUrl];
+			string user_setup_url = query[QueryStringArgs.openid.user_setup_url];
 			if (user_setup_url != null)
 				throw new SetupNeededException(consumer_id, new Uri(user_setup_url));
 
-			string return_to = getRequired(QueryStringArgs.OpenIdReturnTo);
-			string server_id2 = getRequired(QueryStringArgs.OpenIdIdentity);
-			string assoc_handle = getRequired(QueryStringArgs.OpenIdAssocHandle);
+			string return_to = getRequired(QueryStringArgs.openid.return_to);
+			string server_id2 = getRequired(QueryStringArgs.openid.identity);
+			string assoc_handle = getRequired(QueryStringArgs.openid.assoc_handle);
 
 			if (server_id.AbsoluteUri != server_id.ToString())
 				throw new FailureException(consumer_id, "Server ID (delegate) mismatch");
@@ -171,7 +168,7 @@ namespace Janrain.OpenId.Consumer
 				if (!CheckAuth(query, server_url))
 					throw new FailureException(consumer_id, "check_authentication failed");
 
-				return new ConsumerResponse(consumer_id, query, query[QueryStringArgs.OpenIdSigned]);
+				return new ConsumerResponse(consumer_id, query, query[QueryStringArgs.openid.signed]);
 			}
 
 			if (assoc.ExpiresIn <= 0)
@@ -180,11 +177,11 @@ namespace Janrain.OpenId.Consumer
 			}
 
 			// Check the signature
-			string sig = getRequired(QueryStringArgs.OpenIdSig);
-			string signed = getRequired(QueryStringArgs.OpenIdSigned);
+			string sig = getRequired(QueryStringArgs.openid.sig);
+			string signed = getRequired(QueryStringArgs.openid.signed);
 			string[] signed_array = signed.Split(',');
 
-			string v_sig = assoc.SignDict(signed_array, query, "openid.");
+			string v_sig = assoc.SignDict(signed_array, query, QueryStringArgs.openid.Prefix);
 
 			if (v_sig != sig)
 				throw new FailureException(consumer_id, "Bad signature");
@@ -196,8 +193,8 @@ namespace Janrain.OpenId.Consumer
 		{
 			NameValueCollection args = new NameValueCollection();
 
-			args.Add("openid.mode", "associate");
-			args.Add("openid.assoc_type", HMAC_SHA1);
+			args.Add(QueryStringArgs.openid.mode, QueryStringArgs.Modes.associate);
+			args.Add(QueryStringArgs.openid.assoc_type, QueryStringArgs.HMAC_SHA1);
 
 			DiffieHellman dh = null;
 
@@ -209,15 +206,15 @@ namespace Janrain.OpenId.Consumer
 				byte[] dhPublic = dh.CreateKeyExchange();
 				string cpub = CryptUtil.UnsignedToBase64(dhPublic);
 
-				args.Add("openid.session_type", DH_SHA1);
-				args.Add("openid.dh_consumer_public", cpub);
+				args.Add(QueryStringArgs.openid.session_type, QueryStringArgs.DH_SHA1);
+				args.Add(QueryStringArgs.openid.dh_consumer_public, cpub);
 
 				DHParameters dhps = dh.ExportParameters(true);
 
 				if (dhps.P != CryptUtil.DEFAULT_MOD || dhps.G != CryptUtil.DEFAULT_GEN)
 				{
-					args.Add("openid.dh_modulus", CryptUtil.UnsignedToBase64(dhps.P));
-					args.Add("openid.dh_gen", CryptUtil.UnsignedToBase64(dhps.G));
+					args.Add(QueryStringArgs.openid.dh_modulus, CryptUtil.UnsignedToBase64(dhps.P));
+					args.Add(QueryStringArgs.openid.dh_gen, CryptUtil.UnsignedToBase64(dhps.G));
 				}
 			}
 
@@ -226,7 +223,7 @@ namespace Janrain.OpenId.Consumer
 
 		private NameValueCollection CreateCheckAuthRequest(NameValueCollection query)
 		{
-			string signed = query[QueryStringArgs.OpenIdSigned];
+			string signed = query[QueryStringArgs.openid.signed];
 
 			if (signed == null)
 				// #XXX: oidutil.log('No signature present; checkAuth aborted')
@@ -234,22 +231,23 @@ namespace Janrain.OpenId.Consumer
 
 			// Arguments that are always passed to the server and not
 			// included in the signature.
-			string[] whitelist = new string[] { "assoc_handle", "sig", "signed", "invalidate_handle" };
+			string[] whitelist = new string[] { QueryStringArgs.openidnp.assoc_handle, QueryStringArgs.openidnp.sig, QueryStringArgs.openidnp.signed, QueryStringArgs.openidnp.invalidate_handle };
 			string[] splitted = signed.Split(',');
 
 			// combine the previous 2 arrays (whitelist + splitted) into a new array: signed_array
-		    string[] signed_array = new string[whitelist.Length + splitted.Length];
-            Array.Copy(whitelist, signed_array, whitelist.Length);
-            Array.Copy(splitted, 0, signed_array, whitelist.Length, splitted.Length);
+			string[] signed_array = new string[whitelist.Length + splitted.Length];
+			Array.Copy(whitelist, signed_array, whitelist.Length);
+			Array.Copy(splitted, 0, signed_array, whitelist.Length, splitted.Length);
 
 			NameValueCollection check_args = new NameValueCollection();
 
 			foreach (string key in query.AllKeys)
 			{
-				if (key.StartsWith("openid.") && Array.IndexOf(signed_array, key.Substring(7)) > -1)
+				if (key.StartsWith(QueryStringArgs.openid.Prefix) 
+					&& Array.IndexOf(signed_array, key.Substring(QueryStringArgs.openid.Prefix.Length)) > -1)
 					check_args.Add(key, query[key]);
 
-				check_args[QueryStringArgs.OpenIdMode] = "check_authentication";
+				check_args[QueryStringArgs.openid.mode] = QueryStringArgs.Modes.check_authentication;
 			}
 
 			return check_args;
@@ -339,27 +337,27 @@ namespace Janrain.OpenId.Consumer
 
 			try
 			{
-				if (getParameter("assoc_type") != HMAC_SHA1)
+				if (getParameter(QueryStringArgs.openidnp.assoc_type) != QueryStringArgs.HMAC_SHA1)
 					// XXX: log this
 					return null;
 
 				byte[] secret;
 
-				string session_type = (string)results["session_type"];
+				string session_type = (string)results[QueryStringArgs.openidnp.session_type];
 
 				if (session_type == null)
-					secret = getDecoded("mac_key");
-				else if (session_type == DH_SHA1)
+					secret = getDecoded(QueryStringArgs.mac_key);
+				else if (session_type == QueryStringArgs.DH_SHA1)
 				{
-					byte[] dh_server_public = getDecoded("dh_server_public");
-					byte[] enc_mac_key = getDecoded("enc_mac_key");
+					byte[] dh_server_public = getDecoded(QueryStringArgs.openidnp.dh_server_public);
+					byte[] enc_mac_key = getDecoded(QueryStringArgs.enc_mac_key);
 					secret = CryptUtil.SHA1XorSecret(dh, dh_server_public, enc_mac_key);
 				}
 				else // # XXX: log this
 					return null;
 
-				string assocHandle = getParameter("assoc_handle");
-				TimeSpan expiresIn = new TimeSpan(0, 0, Convert.ToInt32(getParameter("expires_in")));
+				string assocHandle = getParameter(QueryStringArgs.openidnp.assoc_handle);
+				TimeSpan expiresIn = new TimeSpan(0, 0, Convert.ToInt32(getParameter(QueryStringArgs.openidnp.expires_in)));
 
 				HMACSHA1Association assoc = new HMACSHA1Association(assocHandle, secret, expiresIn);
 				this.store.StoreAssociation(server_url, assoc);
@@ -382,11 +380,11 @@ namespace Janrain.OpenId.Consumer
 		}
 		private bool ProcessCheckAuthResponse(IDictionary response, Uri server_url)
 		{
-			string is_valid = (string)response["is_valid"];
+			string is_valid = (string)response[QueryStringArgs.openidnp.is_valid];
 
 			if (is_valid == "true")
 			{
-				string invalidate_handle = (string)response["invalidate_handle"];
+				string invalidate_handle = (string)response[QueryStringArgs.openidnp.invalidate_handle];
 				if (invalidate_handle != null)
 					this.store.RemoveAssociation(server_url, invalidate_handle);
 

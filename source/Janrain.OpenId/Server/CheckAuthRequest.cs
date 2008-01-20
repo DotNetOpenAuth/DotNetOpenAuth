@@ -28,11 +28,11 @@ namespace Janrain.OpenId.Server
 
         public CheckAuthRequest(NameValueCollection query)
         {
-            this.AssocHandle = this.GetField(query, "assoc_handle");
-            _sig = this.GetField(query, "sig");
-            string signedStr = this.GetField(query, "signed");
+            this.AssocHandle = this.GetField(query, QueryStringArgs.openidnp.assoc_handle);
+            _sig = this.GetField(query, QueryStringArgs.openidnp.sig);
+            string signedStr = this.GetField(query, QueryStringArgs.openidnp.signed);
 
-            _invalidate_handle = query.Get("openid.invalidate_handle");
+            _invalidate_handle = query.Get(QueryStringArgs.openid.invalidate_handle);
 
             string[] signedList = signedStr.Split(',');
             string value = "";
@@ -41,8 +41,8 @@ namespace Janrain.OpenId.Server
 
             foreach (string field in signedList)
             {
-                if (field == "mode")
-                    value = "id_res";
+                if (field == QueryStringArgs.openidnp.mode)
+                    value = QueryStringArgs.Modes.id_res;
                 else
                     value = this.GetSignedField(query, field);
 
@@ -56,7 +56,7 @@ namespace Janrain.OpenId.Server
 
         public override string Mode
         {
-            get { return "check_authentication"; }
+            get { return QueryStringArgs.Modes.check_authentication; }
         }
 
         #endregion
@@ -78,7 +78,7 @@ namespace Janrain.OpenId.Server
 
             Response response = new Response(this);
 
-            response.Fields["is_valid"] = (is_valid ? "true" : "false");
+            response.Fields[QueryStringArgs.openidnp.is_valid] = (is_valid ? "true" : "false");
 
             if (_invalidate_handle != null && _invalidate_handle != "")
             {
@@ -93,7 +93,7 @@ namespace Janrain.OpenId.Server
                     }
                     #endregion
 
-                    response.Fields["invalidate_handle"] = _invalidate_handle;
+                    response.Fields[QueryStringArgs.openidnp.invalidate_handle] = _invalidate_handle;
                 }
             }
 
@@ -116,7 +116,7 @@ namespace Janrain.OpenId.Server
 
         private string GetSignedField(NameValueCollection query, string valueToFind)
         {
-            string val = query.Get("openid." + valueToFind);
+            string val = query.Get(QueryStringArgs.openid.Prefix + valueToFind);
 
             if (val == null)
                 throw new ProtocolException(query, "Couldn't find signed field " + valueToFind);
@@ -126,7 +126,7 @@ namespace Janrain.OpenId.Server
 
         private string GetField(NameValueCollection query, string valueToFind)
         {
-            string val = query.Get("openid." + valueToFind);
+            string val = query.Get(QueryStringArgs.openid.Prefix + valueToFind);
 
             if (val == null)
                 throw new ProtocolException(query, this.Mode + " request missing required parameter " + valueToFind);

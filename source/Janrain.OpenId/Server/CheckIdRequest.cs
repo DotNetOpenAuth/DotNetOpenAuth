@@ -47,9 +47,9 @@ namespace Janrain.OpenId.Server
 
             _immediate = immediate;
             if (_immediate)
-                _mode = "checkid_immediate";
+                _mode = QueryStringArgs.Modes.checkid_immediate;
             else
-                _mode = "checkid_setup";
+                _mode = QueryStringArgs.Modes.checkid_setup;
 
             try
             {
@@ -68,20 +68,20 @@ namespace Janrain.OpenId.Server
         public CheckIdRequest(NameValueCollection query)
         {
             // handle the mandatory protocol fields
-            string mode = query[QueryStringArgs.OpenIdMode];
+            string mode = query[QueryStringArgs.openid.mode];
 
-            if (mode == "checkid_immediate")
+            if (mode == QueryStringArgs.Modes.checkid_immediate)
             {
                 _immediate = true;
-                _mode = "checkid_immediate";
+                _mode = QueryStringArgs.Modes.checkid_immediate;
             }
             else
             {
                 _immediate = false;
-                _mode = "checkid_setup";
+                _mode = QueryStringArgs.Modes.checkid_setup;
             }
 
-            string identity = GetField(query, QueryStringArgs.OpenIdIdentity);
+            string identity = GetField(query, QueryStringArgs.openid.identity);
             try
             {
                 _identity = new Uri(identity);
@@ -91,7 +91,7 @@ namespace Janrain.OpenId.Server
                 throw new ProtocolException(query, "openid.identity not a valid url: " + identity);
             }
 
-            string return_to = GetField(query, QueryStringArgs.OpenIdReturnTo);
+            string return_to = GetField(query, QueryStringArgs.openid.return_to);
             try
             {
                 _return_to = new Uri(return_to);
@@ -102,11 +102,11 @@ namespace Janrain.OpenId.Server
             }
 
             // TODO This just seems wonky to me
-            _trust_root = query.Get("openid.trust_root");
+            _trust_root = query.Get(QueryStringArgs.openid.trust_root);
             if (_trust_root == null)
                 _trust_root = _return_to.AbsoluteUri;
 
-            this.AssocHandle = query.Get("openid.assoc_handle");
+            this.AssocHandle = query.Get(QueryStringArgs.openid.assoc_handle);
 
             try
             {
@@ -122,20 +122,20 @@ namespace Janrain.OpenId.Server
 
 
             // Handle the optional Simple Registration extension fields
-            string policyUrl = GetSimpleRegistrationExtensionField(query, QueryStringArgs.OpenIdSregPolicyUrl);
+            string policyUrl = GetSimpleRegistrationExtensionField(query, QueryStringArgs.openid.sreg.policy_url);
             if (!String.IsNullOrEmpty(policyUrl))
             {
                 _policyUrl = new Uri(policyUrl);
             }
 
-            string optionalFields = GetSimpleRegistrationExtensionField(query, QueryStringArgs.OpenIdSregOptional);
+            string optionalFields = GetSimpleRegistrationExtensionField(query, QueryStringArgs.openid.sreg.optional);
             if (!String.IsNullOrEmpty(optionalFields))
             {
                 string[] splitOptionalFields = optionalFields.Split(',');
                 setSimpleRegistrationExtensionFields(splitOptionalFields, ProfileRequest.Request);
             }
 
-            string requiredFields = GetSimpleRegistrationExtensionField(query, QueryStringArgs.OpenIdSregRequired);
+            string requiredFields = GetSimpleRegistrationExtensionField(query, QueryStringArgs.openid.sreg.required);
             if (!String.IsNullOrEmpty(requiredFields))
             {
                 string[] splitRrequiredFields = requiredFields.Split(',');
@@ -170,47 +170,47 @@ namespace Janrain.OpenId.Server
             {
                 switch (field)
                 {
-                    case "nickname":
+                    case QueryStringArgs.openidnp.sregnp.nickname:
                         {
                             this.requestNicknameDefault = request;
                             break;
                         }
-                    case "email":
+                    case QueryStringArgs.openidnp.sregnp.email:
                         {
                             this.requestEmailDefault = request;
                             break;
                         }
-                    case "fullname":
+                    case QueryStringArgs.openidnp.sregnp.fullname:
                         {
                             this.requestFullNameDefault = request;
                             break;
                         }
-                    case "dob":
+                    case QueryStringArgs.openidnp.sregnp.dob:
                         {
                             this.requestBirthdateDefault = request;
                             break;
                         }
-                    case "gender":
+                    case QueryStringArgs.openidnp.sregnp.gender:
                         {
                             this.requestGenderDefault = request;
                             break;
                         }
-                    case "postcode":
+                    case QueryStringArgs.openidnp.sregnp.postcode:
                         {
                             this.requestPostalCodeDefault = request;
                             break;
                         }
-                    case "country":
+                    case QueryStringArgs.openidnp.sregnp.country:
                         {
                             this.requestCountryDefault = request;
                             break;
                         }
-                    case "language":
+                    case QueryStringArgs.openidnp.sregnp.language:
                         {
                             this.requestLanguageDefault = request;
                             break;
                         }
-                    case "timezone":
+                    case QueryStringArgs.openidnp.sregnp.timezone:
                         {
                             this.requestTimeZoneDefault = request;
                             break;
@@ -233,9 +233,9 @@ namespace Janrain.OpenId.Server
             string mode;
 
             if (allow || _immediate)
-                mode = "id_res";
+                mode = QueryStringArgs.Modes.id_res;
             else
-                mode = "cancel";
+                mode = QueryStringArgs.Modes.cancel;
 
             #region  Trace
             if (TraceUtil.Switch.TraceInfo)
@@ -265,60 +265,60 @@ namespace Janrain.OpenId.Server
             {
                 Hashtable fields = new Hashtable();
 
-                fields.Add("mode", mode);
-                fields.Add("identity", _identity.AbsoluteUri);
-                fields.Add("return_to", _return_to.AbsoluteUri);
+                fields.Add(QueryStringArgs.openidnp.mode, mode);
+                fields.Add(QueryStringArgs.openidnp.identity, _identity.AbsoluteUri);
+                fields.Add(QueryStringArgs.openidnp.return_to, _return_to.AbsoluteUri);
 
                 if (openIdProfileFields != null)
                 {
                     if (openIdProfileFields.Birthdate != null)
                     {
-                        fields.Add("sreg.dob", openIdProfileFields.Birthdate.ToString());
+                        fields.Add(QueryStringArgs.openidnp.sreg.dob, openIdProfileFields.Birthdate.ToString());
                     }
                     if (!String.IsNullOrEmpty(openIdProfileFields.Country))
                     {
-                        fields.Add("sreg.country", openIdProfileFields.Country);
+                        fields.Add(QueryStringArgs.openidnp.sreg.country, openIdProfileFields.Country);
                     }
                     if (openIdProfileFields.Email != null)
                     {                        
-                        fields.Add("sreg.email", openIdProfileFields.Email.ToString());
+                        fields.Add(QueryStringArgs.openidnp.sreg.email, openIdProfileFields.Email.ToString());
                     }
                     if ((!String.IsNullOrEmpty(openIdProfileFields.Fullname)))
                     {
-                        fields.Add("sreg.fullname", openIdProfileFields.Fullname);
+                        fields.Add(QueryStringArgs.openidnp.sreg.fullname, openIdProfileFields.Fullname);
                     }
 
                     if (openIdProfileFields.Gender != null)
                     {
                         if (openIdProfileFields.Gender == Gender.Female)
                         {
-                            fields.Add("sreg.gender", "F");
+                            fields.Add(QueryStringArgs.openidnp.sreg.gender, QueryStringArgs.Genders.Female);
                         }
                         else
                         {
-                            fields.Add("sreg.gender", "M");
+                            fields.Add(QueryStringArgs.openidnp.sreg.gender, QueryStringArgs.Genders.Male);
                         }
 
                     }
 
                     if (!String.IsNullOrEmpty(openIdProfileFields.Language))
                     {
-                        fields.Add("sreg.language", openIdProfileFields.Language);
+                        fields.Add(QueryStringArgs.openidnp.sreg.language, openIdProfileFields.Language);
                     }
 
                     if (!String.IsNullOrEmpty(openIdProfileFields.Nickname))
                     {
-                        fields.Add("sreg.nickname", openIdProfileFields.Nickname);
+                        fields.Add(QueryStringArgs.openidnp.sreg.nickname, openIdProfileFields.Nickname);
                     }
 
                     if (!String.IsNullOrEmpty(openIdProfileFields.PostalCode))
                     {
-                        fields.Add("sreg.postcode", openIdProfileFields.PostalCode);
+                        fields.Add(QueryStringArgs.openidnp.sreg.postcode, openIdProfileFields.PostalCode);
                     }
 
                     if (!String.IsNullOrEmpty(openIdProfileFields.TimeZone))
                     {
-                        fields.Add("sreg.timezone", openIdProfileFields.TimeZone);
+                        fields.Add(QueryStringArgs.openidnp.sreg.timezone, openIdProfileFields.TimeZone);
                     }
 
                 }
@@ -326,7 +326,7 @@ namespace Janrain.OpenId.Server
                 response.AddFields(null, fields, true);
 
             }
-            response.AddField(null, "mode", mode, false);
+            response.AddField(null, QueryStringArgs.openidnp.mode, mode, false);
             if (_immediate)
             {
                 if (server_url == null) { throw new ApplicationException("setup_url is required for allow=False in immediate mode."); }
@@ -358,15 +358,15 @@ namespace Janrain.OpenId.Server
         {
             NameValueCollection q = new NameValueCollection();
 
-            q.Add("openid.mode", _mode);
-            q.Add("openid.identity", _identity.AbsoluteUri);
-            q.Add("openid.return_to", _return_to.AbsoluteUri);
+            q.Add(QueryStringArgs.openid.mode, _mode);
+            q.Add(QueryStringArgs.openid.identity, _identity.AbsoluteUri);
+            q.Add(QueryStringArgs.openid.return_to, _return_to.AbsoluteUri);
 
             if (_trust_root != null)
-                q.Add("openid.trust_root", _trust_root);
+                q.Add(QueryStringArgs.openid.trust_root, _trust_root);
 
             if (this.AssocHandle != null)
-                q.Add("openid.assoc_handle", this.AssocHandle);
+                q.Add(QueryStringArgs.openid.assoc_handle, this.AssocHandle);
 
             UriBuilder builder = new UriBuilder(server_url);
             UriUtil.AppendQueryArgs(builder, q);
@@ -382,7 +382,7 @@ namespace Janrain.OpenId.Server
             UriBuilder builder = new UriBuilder(_return_to);
             NameValueCollection args = new NameValueCollection();
 
-            args.Add("openid.mode", "cancel");
+            args.Add(QueryStringArgs.openid.mode, QueryStringArgs.Modes.cancel);
             UriUtil.AppendQueryArgs(builder, args);
 
             return new Uri(builder.ToString());

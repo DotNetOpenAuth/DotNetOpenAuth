@@ -78,7 +78,7 @@ namespace Janrain.OpenId.Server
                 TraceUtil.ServerTrace(String.Format("No assoc_handle supplied. Creating new assocation."));
             }
 
-            response.Fields["assoc_handle"] = assoc.Handle;
+            response.Fields[QueryStringArgs.openidnp.assoc_handle] = assoc.Handle;
 
             foreach (DictionaryEntry pair in response.Fields)
             {
@@ -88,8 +88,8 @@ namespace Janrain.OpenId.Server
             string sig = assoc.SignDict(response.Signed, nvc, "");
             string signed = String.Join(",", response.Signed);
 
-            response.Fields["sig"] = sig;
-            response.Fields["signed"] = signed;
+            response.Fields[QueryStringArgs.openidnp.sig] = sig;
+            response.Fields[QueryStringArgs.openidnp.signed] = signed;
 
             #region  Trace
             if (TraceUtil.Switch.TraceInfo)
@@ -227,7 +227,7 @@ namespace Janrain.OpenId.Server
             Uri key;
 
             if (assoc_handle == null)
-                throw new ArgumentNullException("assoc_handle");
+                throw new ArgumentNullException(QueryStringArgs.openidnp.assoc_handle);
 
             if (dumb)
                 key = _dumb_key;

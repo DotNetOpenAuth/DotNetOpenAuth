@@ -30,7 +30,7 @@ namespace Janrain.OpenId.Server
         {
             get
             {
-                return (_query[QueryStringArgs.OpenIdReturnTo] != null);
+                return (_query[QueryStringArgs.openid.return_to] != null);
             }
         }
 
@@ -45,10 +45,10 @@ namespace Janrain.OpenId.Server
                 if (this.HasReturnTo)
                     return EncodingType.ENCODE_URL;
 
-                string mode = _query.Get("openid.mode");
+                string mode = _query.Get(QueryStringArgs.openid.mode);
                 if (mode != null)
-                    if (mode != "checkid_setup" &&
-                        mode != "checkid_immediate")
+                    if (mode != QueryStringArgs.Modes.checkid_setup &&
+                        mode != QueryStringArgs.Modes.checkid_immediate)
                         return EncodingType.ENCODE_KVFORM;
 
                 // Notes from the original port
@@ -70,13 +70,13 @@ namespace Janrain.OpenId.Server
 
         public Uri EncodeToUrl()
         {
-            string return_to = _query.Get("openid.return_to");
+            string return_to = _query.Get(QueryStringArgs.openid.return_to);
             if (return_to == null)
                 throw new ApplicationException("return_to URL has not been set.");
 
             NameValueCollection q = new NameValueCollection();
-            q.Add("openid.mode", "error");
-            q.Add("openid.error", this.Message);
+            q.Add(QueryStringArgs.openid.mode, QueryStringArgs.Modes.error);
+            q.Add(QueryStringArgs.openid.error, this.Message);
 
             UriBuilder builder = new UriBuilder(return_to);
             UriUtil.AppendQueryArgs(builder, q);
@@ -88,8 +88,8 @@ namespace Janrain.OpenId.Server
         {
             Hashtable d = new Hashtable();
 
-            d.Add("mode", "error");
-            d.Add("error", this.Message);
+            d.Add(QueryStringArgs.openidnp.mode, QueryStringArgs.Modes.error);
+            d.Add(QueryStringArgs.openidnp.error, this.Message);
 
             return KVUtil.DictToKV((IDictionary)d);
         }

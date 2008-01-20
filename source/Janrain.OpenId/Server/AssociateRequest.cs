@@ -9,7 +9,7 @@ namespace Janrain.OpenId.Server
 
         #region Private Members
 
-        private string _assoc_type = "HMAC-SHA1";
+        private string _assoc_type = QueryStringArgs.HMAC_SHA1;
         private ServerSession _session;
 
         #endregion
@@ -19,13 +19,13 @@ namespace Janrain.OpenId.Server
         public AssociateRequest(NameValueCollection query)
             : base()
         {
-            string session_type = query.Get("openid.session_type");
+            string session_type = query.Get(QueryStringArgs.openid.session_type);
 
             if (session_type == null)
             {
                 _session = new PlainTextServerSession();
             }
-            else if (session_type == "DH-SHA1")
+            else if (session_type == QueryStringArgs.DH_SHA1)
             {
                 _session = new DiffieHellmanServerSession(query);
             }
@@ -41,7 +41,7 @@ namespace Janrain.OpenId.Server
 
         public override string Mode
         {
-            get { return "associate"; }
+            get { return QueryStringArgs.Modes.associate; }
         }
 
         #endregion
@@ -65,9 +65,9 @@ namespace Janrain.OpenId.Server
 
             Response response = new Response(this);
 
-            response.Fields["expires_in"] = assoc.ExpiresIn;
-            response.Fields["assoc_type"] = "HMAC-SHA1";
-            response.Fields["assoc_handle"] = assoc.Handle;
+            response.Fields[QueryStringArgs.openidnp.expires_in] = assoc.ExpiresIn;
+            response.Fields[QueryStringArgs.openidnp.assoc_type] = QueryStringArgs.HMAC_SHA1;
+            response.Fields[QueryStringArgs.openidnp.assoc_handle] = assoc.Handle;
 
             NameValueCollection nvc = _session.Answer(assoc.Secret);
             foreach (string key in nvc)
@@ -77,7 +77,7 @@ namespace Janrain.OpenId.Server
 
             if (_session.SessionType != "plaintext")
             {
-                response.Fields["session_type"] = _session.SessionType;
+                response.Fields[QueryStringArgs.openidnp.session_type] = _session.SessionType;
             }
 
             #region  Trace
