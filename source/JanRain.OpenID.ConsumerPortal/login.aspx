@@ -6,7 +6,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>Login</title>
-    <link href="StyleSheet.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
   <form id="Form1" runat="server">
@@ -14,7 +13,7 @@
     <h2>Login Page</h2>
     <cc1:OpenIdLogin ID="OpenIdLogin1" runat="server" CssClass="openid_login" 
         RequestCountry="Request" RequestEmail="Request" RequestGender="Require" 
-        RequestPostalCode="Require" RequestTimeZone="Require" 
+        RequestPostalCode="Require" RequestTimeZone="Require" ShowLogo="true"
         OnLoggedIn="OpenIdLogin1_LoggedIn" OnCanceled="OpenIdLogin1_Canceled"
         OnError="OpenIdLogin1_Error" />
     <br />

@@ -88,6 +88,7 @@ namespace Janrain.OpenId
 
     internal static class Util
     {
+        internal const string DefaultNamespace = "Janrain.OpenId";
         #region InArray(string[] array, string valueToFind)
             
         public static bool InArray(string[] array, string valueToFind)

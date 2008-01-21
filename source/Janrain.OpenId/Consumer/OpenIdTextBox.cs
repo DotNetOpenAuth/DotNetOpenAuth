@@ -26,6 +26,8 @@ using Janrain.OpenId.RegistrationExtension;
 using Janrain.OpenId.Store;
 using System.Net;
 
+[assembly: WebResource(NerdBank.OpenId.Consumer.OpenIdTextBox.EmbeddedLogoResourceName, "image/gif")]
+
 namespace NerdBank.OpenId.RegistrationExtension
 {
 }
@@ -45,6 +47,7 @@ namespace NerdBank.OpenId.Consumer
 			InitializeControls();
 		}
 
+		internal const string EmbeddedLogoResourceName = Janrain.OpenId.Util.DefaultNamespace + ".Consumer.openid_login.gif";
 		TextBox wrappedTextBox;
 		protected TextBox WrappedTextBox
 		{
@@ -105,6 +108,16 @@ namespace NerdBank.OpenId.Consumer
 		{
 			get { return WrappedTextBox.CssClass; }
 			set { WrappedTextBox.CssClass = value; }
+		}
+
+		const string showLogoViewStateKey = "ShowLogo";
+		const bool showLogoDefault = false;
+		[Bindable(true)]
+		[Category(appearanceCategory)]
+		[DefaultValue(showLogoDefault)]
+		public bool ShowLogo {
+			get { return (bool)(ViewState[showLogoViewStateKey] ?? showLogoDefault); }
+			set { ViewState[showLogoViewStateKey] = value; }
 		}
 
 		const int columnsDefault = 40;
@@ -331,7 +344,22 @@ namespace NerdBank.OpenId.Consumer
 				OnCanceled(cex);
 			}
 		}
+		protected override void OnPreRender(EventArgs e) {
+			base.OnPreRender(e);
 
+			if (ShowLogo)
+			{
+				string logoUrl = Page.ClientScript.GetWebResourceUrl(
+					typeof(OpenIdTextBox), EmbeddedLogoResourceName);
+				WrappedTextBox.Style["background"] = string.Format(
+					"url({0}) no-repeat", logoUrl);
+				WrappedTextBox.Style["background-position"] = "0 50%";
+				WrappedTextBox.Style[HtmlTextWriterStyle.PaddingLeft] = "18px";
+				WrappedTextBox.Style[HtmlTextWriterStyle.BorderStyle] = "solid";
+				WrappedTextBox.Style[HtmlTextWriterStyle.BorderWidth] = "1px";
+				WrappedTextBox.Style[HtmlTextWriterStyle.BorderColor] = "lightgray";
+			}
+		}
 		public void Login()
 		{
 			if (string.IsNullOrEmpty(Text))
