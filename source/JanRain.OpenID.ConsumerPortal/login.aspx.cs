@@ -15,8 +15,6 @@ using Janrain.OpenId.RegistrationExtension;
 
 public partial class login : System.Web.UI.Page
 {
-
-    
     /// <summary>
     /// Handles the Load event of the Page control.
     /// </summary>
@@ -34,12 +32,13 @@ public partial class login : System.Web.UI.Page
     /// <param name="sender"></param>
     /// <param name="e"></param>
     protected void OpenIdLogin1_LoggedIn(object sender, NerdBank.OpenId.Consumer.OpenIdTextBox.OpenIdEventArgs e)
-    {        
-        State.ProfileFields = e.ProfileFields;       
+    {
+        State.ProfileFields = e.ProfileFields;
     }
     protected void OpenIdLogin1_Error(object sender, NerdBank.OpenId.Consumer.OpenIdTextBox.ErrorEventArgs e)
     {
         loginFailedLabel.Visible = true;
+        loginFailedLabel.Text += ": " + e.ErrorMessage;
     }
     protected void OpenIdLogin1_Canceled(object sender, NerdBank.OpenId.Consumer.OpenIdTextBox.ErrorEventArgs e)
     {

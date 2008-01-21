@@ -24,6 +24,7 @@ using Janrain.OpenId.Consumer;
 using Janrain.OpenId.Session;
 using Janrain.OpenId.RegistrationExtension;
 using Janrain.OpenId.Store;
+using System.Net;
 
 namespace NerdBank.OpenId.RegistrationExtension
 {
@@ -336,37 +337,43 @@ namespace NerdBank.OpenId.Consumer
 			if (string.IsNullOrEmpty(Text))
 				throw new InvalidOperationException(Janrain.OpenId.Strings.OpenIdTextBoxEmpty);
 
-			Janrain.OpenId.Consumer.Consumer consumer =
-				new Janrain.OpenId.Consumer.Consumer(new SystemHttpSessionState(Page.Session), MemoryStore.GetInstance());
+			try {
+				Janrain.OpenId.Consumer.Consumer consumer =
+					new Janrain.OpenId.Consumer.Consumer(new SystemHttpSessionState(Page.Session), MemoryStore.GetInstance());
 
-			Uri userUri = UriUtil.NormalizeUri(Text);
-			// Initiate openid request
-			AuthRequest request = consumer.Begin(userUri);
-			if (EnableRequestProfile) addProfileArgs(request);
+				Uri userUri = UriUtil.NormalizeUri(Text);
+				// Initiate openid request
+				AuthRequest request = consumer.Begin(userUri);
+				if (EnableRequestProfile) addProfileArgs(request);
 
-			// Build the trust root
-			UriBuilder builder = new UriBuilder(Page.Request.Url.AbsoluteUri);
-			builder.Query = null;
-			builder.Password = null;
-			builder.UserName = null;
-			builder.Fragment = null;
-			builder.Path = Page.Request.ApplicationPath;
-			string trustRoot = builder.Uri.ToString();
+				// Build the trust root
+				UriBuilder builder = new UriBuilder(Page.Request.Url.AbsoluteUri);
+				builder.Query = null;
+				builder.Password = null;
+				builder.UserName = null;
+				builder.Fragment = null;
+				builder.Path = Page.Request.ApplicationPath;
+				string trustRoot = builder.Uri.ToString();
 
-			// Build the return_to URL
-			UriBuilder return_to = new UriBuilder(Page.Request.Url);
-			// Trim off any old "openid." prefixed parameters to avoid carrying
-			// state from a prior login attempt.
-			return_to.Query = string.Empty;
-			NameValueCollection return_to_params = new NameValueCollection(Page.Request.QueryString.Count);
-			foreach (string key in Page.Request.QueryString) {
-				if (!key.StartsWith(QueryStringArgs.openid.Prefix) && key != QueryStringArgs.nonce) {
-					return_to_params.Add(key, Page.Request.QueryString[key]);
+				// Build the return_to URL
+				UriBuilder return_to = new UriBuilder(Page.Request.Url);
+				// Trim off any old "openid." prefixed parameters to avoid carrying
+				// state from a prior login attempt.
+				return_to.Query = string.Empty;
+				NameValueCollection return_to_params = new NameValueCollection(Page.Request.QueryString.Count);
+				foreach (string key in Page.Request.QueryString) {
+					if (!key.StartsWith(QueryStringArgs.openid.Prefix) && key != QueryStringArgs.nonce) {
+						return_to_params.Add(key, Page.Request.QueryString[key]);
+					}
 				}
+				UriUtil.AppendQueryArgs(return_to, return_to_params);
+				Uri redirectUrl = request.CreateRedirect(trustRoot, return_to.Uri, AuthRequest.Mode.SETUP);
+				Page.Response.Redirect(redirectUrl.AbsoluteUri);
+			} catch (WebException ex) {
+				OnError(ex);
+			} catch (FailureException ex) {
+				OnError(ex);
 			}
-			UriUtil.AppendQueryArgs(return_to, return_to_params);
-			Uri redirectUrl = request.CreateRedirect(trustRoot, return_to.Uri, AuthRequest.Mode.SETUP);
-			Page.Response.Redirect(redirectUrl.AbsoluteUri);
 		}
 
 		void addProfileArgs(AuthRequest request)
