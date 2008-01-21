@@ -13,7 +13,7 @@ The current code base comes from a variety of original contributors:
  - A C# port (and at the same time .Net 1.1 -> .Net 2.0) is currently under development at http://code.google.com/p/dotnetopenid/. The following people are main contributors:
   - Scott Hanselman (http://hanselman.com/blog) - Consumer 
   - Jason Alexander (http://jasona.net/) - Server
-  - Andrew Arnott (http://cs.nerdbank.net/blogs/jmpinline/default.aspx) - ASP.NET Controls (OpenIDLogin and OpenIDTextBox classes)
+  - Andrew Arnott (http://blog.nerdbank.net) - ASP.NET Controls (OpenIDLogin and OpenIDTextBox classes)
   - I think the DiffeHelman crypto stuff was all lifted from mono, but don't know by who
   - Willem Muller (willem.muller@netidme.com) - the sample web projects, bit of work on server side implementation of Registration Extensions, this document, and few bug bugfixes  
   - Anyone else deserve a mention...?
