@@ -129,7 +129,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Consumer\openid_login.gif">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
