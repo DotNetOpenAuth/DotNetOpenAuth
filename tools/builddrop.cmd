@@ -1,0 +1,34 @@
+@echo off
+SET CONFIGURATION=release
+SET RELEASE_DIR=drop
+IF EXIST %RELEASE_DIR% GOTO ALREADYEXISTS
+echo Building...
+msbuild source\Janrain.openid.sln /p:Configuration=%CONFIGURATION%
+IF ERRORLEVEL 1 GOTO BUILDFAILURE
+
+echo Copying files...
+md %RELEASE_DIR%
+md %RELEASE_DIR%\bin
+md %RELEASE_DIR%\samples
+copy bin\%CONFIGURATION%\Janrain.OpenId.* %RELEASE_DIR%\bin > nul
+IF ERRORLEVEL 1 GOTO COPYFAILURE
+xcopy /s /e samples %RELEASE_DIR%\samples > nul
+IF ERRORLEVEL 1 GOTO COPYFAILURE
+
+echo Successful.  The release bits can be found in the %RELEASE_DIR% directory.
+
+goto end
+
+:ALREADYEXISTS
+echo ERROR: The %RELEASE_DIR% directory already exists.  You should remove it first.
+exit /b 1
+
+:BUILDFAILURE
+echo Release aborted due to build failure.
+exit /b 2
+
+:COPYFAILURE
+echo A failure occurred while copying files to the %RELEASE_DIR% directory.
+exit /b 3
+
+:END

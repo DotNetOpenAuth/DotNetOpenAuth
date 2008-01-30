@@ -1,1 +1,0 @@
-msbuild Janrain.OpenId.sln
