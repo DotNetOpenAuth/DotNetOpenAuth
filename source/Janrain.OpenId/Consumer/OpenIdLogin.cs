@@ -38,6 +38,12 @@ namespace NerdBank.OpenId.Consumer
 		Label examplePrefixLabel;
 		Label exampleUrlLabel;
 		HyperLink registerLink;
+		CheckBox rememberMeCheckBox;
+
+		const short textBoxTabIndexOffset = 0;
+		const short loginButtonTabIndexOffset = 1;
+		const short rememberMeTabIndexOffset = 2;
+		const short registerTabIndexOffset = 3;
 
 		protected override void CreateChildControls()
 		{
@@ -59,10 +65,11 @@ namespace NerdBank.OpenId.Consumer
 			panel = new Panel();
 
 			Table table = new Table();
-			TableRow row1, row2;
+			TableRow row1, row2, row3;
 			TableCell cell;
 			table.Rows.Add(row1 = new TableRow());
 			table.Rows.Add(row2 = new TableRow());
+			table.Rows.Add(row3 = new TableRow());
 
 			// top row, left cell
 			cell = new TableCell();
@@ -90,10 +97,10 @@ namespace NerdBank.OpenId.Consumer
 			cell.Controls.Add(loginButton);
 			row1.Cells.Add(cell);
 
-			// bottom row, left cell
+			// middle row, left cell
 			row2.Cells.Add(new TableCell());
 
-			// bottom row, middle cell
+			// middle row, middle cell
 			cell = new TableCell();
 			cell.Style[HtmlTextWriterStyle.Color] = "gray";
 			cell.Style[HtmlTextWriterStyle.FontSize] = "smaller";
@@ -123,7 +130,7 @@ namespace NerdBank.OpenId.Consumer
 			cell.Controls.Add(exampleUrlLabel);
 			row2.Cells.Add(cell);
 
-			// bottom row, right cell
+			// middle row, right cell
 			cell = new TableCell();
 			cell.Style[HtmlTextWriterStyle.Color] = "gray";
 			cell.Style[HtmlTextWriterStyle.FontSize] = "smaller";
@@ -135,7 +142,33 @@ namespace NerdBank.OpenId.Consumer
 			cell.Controls.Add(registerLink);
 			row2.Cells.Add(cell);
 
+			// bottom row, left cell
+			cell = new TableCell();
+			row3.Cells.Add(cell);
+
+			// bottom row, middle cell
+			cell = new TableCell();
+			rememberMeCheckBox = new CheckBox();
+			rememberMeCheckBox.Text = rememberMeTextDefault;
+			rememberMeCheckBox.Checked = rememberMeDefault;
+			rememberMeCheckBox.Visible = rememberMeVisibleDefault;
+			rememberMeCheckBox.CheckedChanged += new EventHandler(rememberMeCheckBox_CheckedChanged);
+			cell.Controls.Add(rememberMeCheckBox);
+			row3.Cells.Add(cell);
+
+			// bottom row, right cell
+			cell = new TableCell();
+			row3.Cells.Add(cell);
+
+			// this sets all the controls' tab indexes
+			TabIndex = tabIndexDefault;
+
 			panel.Controls.Add(table);
+		}
+
+		void rememberMeCheckBox_CheckedChanged(object sender, EventArgs e) {
+			RememberMe = rememberMeCheckBox.Checked;
+			OnRememberMeChanged();
 		}
 
 		protected override void RenderChildren(HtmlTextWriter writer)
@@ -257,6 +290,44 @@ namespace NerdBank.OpenId.Consumer
 			set { loginButton.Text = value; }
 		}
 
+		const string rememberMeTextDefault = "Remember me";
+		[Bindable(true)]
+		[Category("Appearance")]
+		[DefaultValue(rememberMeTextDefault)]
+		[Localizable(true)]
+		public string RememberMeText {
+			get { return rememberMeCheckBox.Text; }
+			set { rememberMeCheckBox.Text = value; }
+		}
+
+		const bool rememberMeVisibleDefault = false;
+		[Bindable(true)]
+		[Category("Appearance")]
+		[DefaultValue(rememberMeVisibleDefault)]
+		public bool RememberMeVisible {
+			get { return rememberMeCheckBox.Visible; }
+			set { rememberMeCheckBox.Visible = value; }
+		}
+
+		const bool rememberMeDefault = usePersistentCookieDefault;
+		[Bindable(true)]
+		[Category("Appearance")]
+		[DefaultValue(usePersistentCookieDefault)]
+		public bool RememberMe {
+			get { return UsePersistentCookie; }
+			set { UsePersistentCookie = value; }
+		}
+
+		public override short TabIndex {
+			get { return base.TabIndex; }
+			set {
+				WrappedTextBox.TabIndex = (short)(value + textBoxTabIndexOffset);
+				loginButton.TabIndex = (short)(value + loginButtonTabIndexOffset);
+				rememberMeCheckBox.TabIndex = (short)(value + rememberMeTabIndexOffset);
+				registerLink.TabIndex = (short)(value + registerTabIndexOffset);
+			}
+		}
+
 		const string buttonToolTipDefault = "Account login";
 		[Bindable(true)]
 		[Category("Appearance")]
@@ -278,6 +349,21 @@ namespace NerdBank.OpenId.Consumer
 			{
 				requiredValidator.ValidationGroup = value;
 				loginButton.ValidationGroup = value;
+			}
+		}
+		#endregion
+
+		#region Properties to hide
+		[Browsable(false), Bindable(false)]
+		public override bool UsePersistentCookie {
+			get { return base.UsePersistentCookie; }
+			set {
+				base.UsePersistentCookie = value;
+				// use conditional here to prevent infinite recursion
+				// with CheckedChanged event.
+				if (rememberMeCheckBox.Checked != value) {
+					rememberMeCheckBox.Checked = value;
+				}
 			}
 		}
 		#endregion
@@ -308,6 +394,14 @@ namespace NerdBank.OpenId.Consumer
 			if (loggingIn != null)
 				loggingIn(this, args);
 			return !args.Cancel;
+		}
+
+		[Description("Fires when the Remember Me checkbox is changed by the user.")]
+		public event EventHandler RememberMeChanged;
+		protected virtual void OnRememberMeChanged() {
+			EventHandler rememberMeChanged = RememberMeChanged;
+			if (rememberMeChanged != null)
+				rememberMeChanged(this, new EventArgs());
 		}
 		#endregion
 	}
