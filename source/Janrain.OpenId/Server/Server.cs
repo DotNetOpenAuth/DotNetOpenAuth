@@ -2,6 +2,7 @@ using System;
 using System.Collections.Specialized;
 using System.Text;
 using Janrain.OpenId.Store;
+using System.Web;
 
 
 namespace Janrain.OpenId.Server
@@ -19,10 +20,18 @@ namespace Janrain.OpenId.Server
 
         #region Constructor(s)
 
+        /// <summary>
+        /// Constructs an OpenId server that uses the HttpApplication dictionary as
+        /// its association store.
+        /// </summary>
+        public Server() : this(HttpApplicationAssociationStore) { }
+
+        /// <summary>
+        /// Constructs an OpenId server that uses a given IAssociationStore.
+        /// </summary>
         public Server(IAssociationStore store)
         {
-  
-            
+            if (store == null) throw new ArgumentNullException("store");
             _store = store;
             _signatory = new Signatory(store);
             _encoder = new SigningEncoder(_signatory);
@@ -64,7 +73,26 @@ namespace Janrain.OpenId.Server
             
             return this._encoder.Encode(response);
         }
-        
 
+        const string associationStoreKey = "Janrain.OpenId.Server.Server.AssociationStore";
+        static IAssociationStore HttpApplicationAssociationStore {
+            get {
+                HttpContext context = HttpContext.Current;
+                if (context == null)
+                    throw new InvalidOperationException(Strings.IAssociationStoreRequiredWhenNoHttpContextAvailable);
+                IAssociationStore store = (IAssociationStore)context.Application[associationStoreKey];
+                if (store == null) {
+                    context.Application.Lock();
+                    try {
+                        if ((store = (IAssociationStore)context.Application[associationStoreKey]) == null) {
+                            context.Application[associationStoreKey] = store = new MemoryStore();
+                        }
+                    } finally {
+                        context.Application.UnLock();
+                    }
+                }
+                return store;
+            }
+        }
     }
 }

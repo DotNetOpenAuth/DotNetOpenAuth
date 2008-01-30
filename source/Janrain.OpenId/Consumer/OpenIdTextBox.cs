@@ -353,7 +353,7 @@ namespace NerdBank.OpenId.Consumer
 				if (!Page.IsPostBack && Page.Request.QueryString[QueryStringArgs.openid.mode] != null)
 				{
 					Janrain.OpenId.Consumer.Consumer consumer =
-						new Janrain.OpenId.Consumer.Consumer(new SystemHttpSessionState(Page.Session), MemoryStore.GetInstance());
+						new Janrain.OpenId.Consumer.Consumer(new SystemHttpSessionState(Page.Session));
 
 					ConsumerResponse resp = consumer.Complete(Page.Request.QueryString);
 					OnLoggedIn(resp.IdentityUrl, parseProfileFields(Page.Request.QueryString));
@@ -391,7 +391,7 @@ namespace NerdBank.OpenId.Consumer
 
 			try {
 				Janrain.OpenId.Consumer.Consumer consumer =
-					new Janrain.OpenId.Consumer.Consumer(new SystemHttpSessionState(Page.Session), MemoryStore.GetInstance());
+					new Janrain.OpenId.Consumer.Consumer(new SystemHttpSessionState(Page.Session));
 
 				Uri userUri = UriUtil.NormalizeUri(Text);
 				// Initiate openid request

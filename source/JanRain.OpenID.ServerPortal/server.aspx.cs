@@ -31,14 +31,9 @@ using Janrain.OpenId.Server;
 /// </summary>
 public partial class server : System.Web.UI.Page
 {
-    
-    protected Janrain.OpenId.Store.MemoryStore openIDStore;
-    protected Janrain.OpenId.Server.Server openIDServer;
-
     protected void Page_Load(object src, System.EventArgs evt)
     {
-        openIDStore = Janrain.OpenId.Store.MemoryStore.GetInstance();
-        openIDServer = new Janrain.OpenId.Server.Server(this.openIDStore);        
+        Server openIDServer = new Janrain.OpenId.Server.Server();
         Janrain.OpenId.Server.Request request = null;
 
         // determine what incoming message was received
@@ -81,11 +76,11 @@ public partial class server : System.Web.UI.Page
         }
         else if (request is Janrain.OpenId.Server.CheckAuthRequest)
         {
-            response = this.openIDServer.HandleRequest((Janrain.OpenId.Server.CheckAuthRequest)request);
+            response = openIDServer.HandleRequest((Janrain.OpenId.Server.CheckAuthRequest)request);
         }
         else if (request is Janrain.OpenId.Server.AssociateRequest)
         {
-            response = this.openIDServer.HandleRequest((Janrain.OpenId.Server.AssociateRequest)request);
+            response = openIDServer.HandleRequest((Janrain.OpenId.Server.AssociateRequest)request);
         }        
         Util.GenerateHttpResponse(response);
     }

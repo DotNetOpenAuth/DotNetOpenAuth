@@ -2,6 +2,7 @@ using System;
 using System.Web;
 using Janrain.OpenId;
 using Janrain.OpenId.Server;
+using Janrain.OpenId.Store;
 
 /// <summary>
 /// Summary description for Util
@@ -24,7 +25,7 @@ public class Util
         Janrain.OpenId.Server.Server server;
         try
         {
-            server = new Janrain.OpenId.Server.Server(Janrain.OpenId.Store.MemoryStore.GetInstance());
+            server = new Janrain.OpenId.Server.Server();
 
             #region  Trace
             if (TraceUtil.Switch.TraceInfo)

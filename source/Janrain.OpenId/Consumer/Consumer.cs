@@ -6,6 +6,7 @@ namespace Janrain.OpenId.Consumer
 	using Janrain.OpenId;
 	using Janrain.OpenId.Store;
  using Janrain.OpenId.Session;
+	using System.Web;
 
 	public class FailureException : ApplicationException
 	{
@@ -74,6 +75,15 @@ namespace Janrain.OpenId.Consumer
 
 		ServiceEndpointManager manager;
 
+		/// <summary>
+		/// Constructs an OpenId consumer that uses the HttpApplication dictionary as
+		/// its association store.
+		/// </summary>
+		public Consumer(ISessionState session) : this(session, HttpApplicationAssociationStore) { }
+
+		/// <summary>
+		/// Constructs an OpenId consumer that uses a given IAssociationStore.
+		/// </summary>
 		public Consumer(ISessionState session, IAssociationStore store)
 		{
 			this.session = session;
@@ -106,6 +116,27 @@ namespace Janrain.OpenId.Consumer
 			this.manager.Cleanup(response.IdentityUrl, this.TokenKey);
 
 			return response;
+		}
+
+		const string associationStoreKey = "Janrain.OpenId.Consumer.Consumer.AssociationStore";
+		static IAssociationStore HttpApplicationAssociationStore {
+			get {
+				HttpContext context = HttpContext.Current;
+				if (context == null)
+					throw new InvalidOperationException(Strings.IAssociationStoreRequiredWhenNoHttpContextAvailable);
+				IAssociationStore store = (IAssociationStore)context.Application[associationStoreKey];
+				if (store == null) {
+					context.Application.Lock();
+					try {
+						if ((store = (IAssociationStore)context.Application[associationStoreKey]) == null) {
+							context.Application[associationStoreKey] = store = new MemoryStore();
+						}
+					} finally {
+						context.Application.UnLock();
+					}
+				}
+				return store;
+			}
 		}
 	}
 }

@@ -100,6 +100,7 @@
     <Compile Include="Server\WebResponse.cs" />
     <Compile Include="Store\IAssociationStore.cs" />
     <Compile Include="Store\MemoryStore.cs" />
+    <Compile Include="Store\ServerAssocs.cs" />
     <Compile Include="Strings.Designer.cs">
       <DependentUpon>Strings.resx</DependentUpon>
       <DesignTime>True</DesignTime>
