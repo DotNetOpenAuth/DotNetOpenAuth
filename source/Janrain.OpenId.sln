@@ -12,7 +12,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdTests", "OpenIdTests\
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "JanRain.OpenID.ConsumerPortal", "..\samples\JanRain.OpenID.ConsumerPortal", "{E4E33934-E677-4858-A037-68B77019C485}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFramework = "2.0"
+		TargetFramework = "3.5"
 		Debug.AspNetCompiler.VirtualPath = "/JanRain.OpenID.ConsumerPortal"
 		Debug.AspNetCompiler.PhysicalPath = "..\samples\JanRain.OpenID.ConsumerPortal\"
 		Debug.AspNetCompiler.TargetPath = "..\bin\PrecompiledWeb\JanRain.OpenID.ConsumerPortal\"
@@ -32,7 +32,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "JanRain.OpenID.ConsumerPort
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "JanRain.OpenID.ServerPortal", "..\samples\JanRain.OpenID.ServerPortal", "{30DCDC0B-E08D-46FA-AEF5-E5E3ED95AEE0}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFramework = "2.0"
+		TargetFramework = "3.5"
 		Debug.AspNetCompiler.VirtualPath = "/JanRain.OpenID.ServerPortal"
 		Debug.AspNetCompiler.PhysicalPath = "..\samples\JanRain.OpenID.ServerPortal\"
 		Debug.AspNetCompiler.TargetPath = "..\bin\PrecompiledWeb\JanRain.OpenID.ServerPortal\"
