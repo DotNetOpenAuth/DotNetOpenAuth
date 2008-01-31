@@ -1,18 +1,20 @@
 @echo off
 SET CONFIGURATION=release
-SET RELEASE_DIR=drop
+REM %~dp0 returns the directory that the script resides in
+SET root=%~dp0..
+SET RELEASE_DIR=%root%\drop
 IF EXIST %RELEASE_DIR% GOTO ALREADYEXISTS
 echo Building...
-msbuild source\Janrain.openid.sln /p:Configuration=%CONFIGURATION%
+msbuild %root%\source\Janrain.openid.sln /p:Configuration=%CONFIGURATION%
 IF ERRORLEVEL 1 GOTO BUILDFAILURE
 
 echo Copying files...
 md %RELEASE_DIR%
 md %RELEASE_DIR%\bin
 md %RELEASE_DIR%\samples
-copy bin\%CONFIGURATION%\Janrain.OpenId.* %RELEASE_DIR%\bin > nul
+copy %root%\bin\%CONFIGURATION%\Janrain.OpenId.* %RELEASE_DIR%\bin > nul
 IF ERRORLEVEL 1 GOTO COPYFAILURE
-xcopy /s /e samples %RELEASE_DIR%\samples > nul
+xcopy /s /e %root%\samples %RELEASE_DIR%\samples > nul
 IF ERRORLEVEL 1 GOTO COPYFAILURE
 
 echo Successful.  The release bits can be found in the %RELEASE_DIR% directory.
