@@ -40,7 +40,7 @@ namespace OpenIdTests
         [Test]
         public void TestPublic()
         {
-            StreamReader sr = new StreamReader("..\\..\\dhpriv.txt");
+            StreamReader sr = new StreamReader(@"..\..\source\OpenIdTests\dhpriv.txt");
 
             try
             {
