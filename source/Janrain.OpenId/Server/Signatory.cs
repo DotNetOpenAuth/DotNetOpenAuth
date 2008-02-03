@@ -7,6 +7,9 @@ using Janrain.OpenId.Store;
 
 namespace Janrain.OpenId.Server
 {
+    /// <summary>
+    /// Signs things.
+    /// </summary>
     public class Signatory
     {
         public static readonly TimeSpan SECRET_LIFETIME = new TimeSpan(0, 0, 14 * 24 * 60 * 60);

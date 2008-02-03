@@ -7,20 +7,9 @@ namespace Janrain.OpenId.Server
 {
     public abstract class ServerSession
     {
-
-        #region Private Members
-
-        private string _session_type;
-
-        #endregion
-
         #region Properties
 
-        public string SessionType
-        {
-            get { return _session_type; }
-            set { _session_type = value; }
-        }
+        public string SessionType { get; set; }
 
         #endregion
 
@@ -32,6 +21,9 @@ namespace Janrain.OpenId.Server
 
     }
 
+    /// <summary>
+    /// An object that knows how to handle association requests with no session type.
+    /// </summary>
     public class PlainTextServerSession : ServerSession
     {
 
@@ -59,6 +51,9 @@ namespace Janrain.OpenId.Server
 
     }
 
+    /// <summary>
+    /// An object that knows how to handle association requests with the Diffie-Hellman session type.
+    /// </summary>
     public class DiffieHellmanServerSession : ServerSession
     {
 

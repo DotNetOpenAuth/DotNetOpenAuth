@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Janrain.OpenId.Server
 {
+    /// <summary>
+    /// Could not encode this as a protocol message.
+    /// </summary>
     public class EncodingException : ApplicationException
     {
 
@@ -33,6 +36,9 @@ namespace Janrain.OpenId.Server
 
     }
 
+    /// <summary>
+    /// This response is already signed.
+    /// </summary>
     public class AlreadySignedException : EncodingException
     {
 
@@ -43,6 +49,9 @@ namespace Janrain.OpenId.Server
 
     }
 
+    /// <summary>
+    /// Encodes responses in to <see cref="WebResponse"/>.
+    /// </summary>
     public class Encoder
     {
 
@@ -53,7 +62,9 @@ namespace Janrain.OpenId.Server
         #endregion
 
         #region Methods
-
+        /// <summary>
+        /// Encodes responses in to WebResponses.
+        /// </summary>
         public virtual WebResponse Encode(IEncodable response)
         {
             EncodingType encode_as = response.WhichEncoding;
@@ -97,6 +108,9 @@ namespace Janrain.OpenId.Server
 
     }
 
+    /// <summary>
+    /// Encodes responses in to <see cref="WebResponse"/>, signing them when required.
+    /// </summary>
     public class SigningEncoder : Encoder
     {
 
@@ -151,6 +165,9 @@ namespace Janrain.OpenId.Server
 
     }
 
+    /// <summary>
+    /// Decodes an incoming web request in to a <see cref="Request"/>.
+    /// </summary>
     public class Decoder
     {
 
@@ -162,6 +179,10 @@ namespace Janrain.OpenId.Server
 
         #region Methods
 
+        /// <summary>
+        /// Transform query parameters into an OpenIDRequest.
+        /// </summary>
+        /// <param name="query">The query parameters as a dictionary with each key mapping to one value. </param>
         public static Request Decode(NameValueCollection query)
         {
             #region  Trace

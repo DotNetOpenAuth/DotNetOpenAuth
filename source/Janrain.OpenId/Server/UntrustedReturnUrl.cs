@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Janrain.OpenId.Server
 {
+    /// <summary>
+    /// A return_to is outside the trust_root.
+    /// </summary>
     public class UntrustedReturnUrl : ProtocolException
     {
 

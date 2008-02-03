@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Janrain.OpenId.Server
 {
+    /// <summary>
+    /// The trust root is not well-formed.
+    /// </summary>
     public class MalformedTrustRoot : ProtocolException
     {
 

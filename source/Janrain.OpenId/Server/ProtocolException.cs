@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Janrain.OpenId.Server
 {
+    /// <summary>
+    /// A message did not conform to the OpenID protocol.
+    /// </summary>
     public class ProtocolException : ApplicationException, IEncodable
     {
 

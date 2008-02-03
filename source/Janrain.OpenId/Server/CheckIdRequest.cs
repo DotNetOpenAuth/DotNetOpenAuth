@@ -6,7 +6,12 @@ using Janrain.OpenId.RegistrationExtension;
 
 namespace Janrain.OpenId.Server
 {
-
+    /// <summary>
+    /// A request to confirm the identity of a user.
+    /// </summary>
+    /// <remarks>
+    /// This class handles requests for openid modes checkid_immediate and checkid_setup.
+    /// </remarks>
     public class CheckIdRequest : AssociatedRequest
     {
 
@@ -223,11 +228,24 @@ namespace Janrain.OpenId.Server
 
         #region Public Methods
 
+        /// <summary>
+        /// Respond to this request.
+        /// </summary>
+        /// <param name="allow">Allow this user to claim this identity, and allow the consumer to have this information?</param>
+        /// <param name="server_url"></param>
+        /// <returns></returns>
         public Response Answer(bool allow, Uri server_url)
         {
             return Answer(allow, server_url, null);
         }
 
+        /// <summary>
+        /// Respond to this request.
+        /// </summary>
+        /// <param name="allow">Allow this user to claim this identity, and allow the consumer to have this information?</param>
+        /// <param name="server_url"></param>
+        /// <param name="openIdProfileFields"></param>
+        /// <returns></returns>
         public Response Answer(bool allow, Uri server_url, OpenIdProfileFields openIdProfileFields)
         {
             string mode;
@@ -354,6 +372,10 @@ namespace Janrain.OpenId.Server
             return response;
         }
 
+        /// <summary>
+        /// Encode this request as a URL to GET.
+        /// </summary>
+        /// <param name="server_url">The URL of the OpenID server to make this request of. </param>
         public Uri EncodeToUrl(Uri server_url)
         {
             NameValueCollection q = new NameValueCollection();
@@ -374,6 +396,9 @@ namespace Janrain.OpenId.Server
             return new Uri(builder.ToString());
         }
 
+        /// <summary>
+        /// Get the URL to cancel this request.
+        /// </summary>
         public Uri GetCancelUrl()
         {
             if (_immediate)

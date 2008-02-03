@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Janrain.OpenId.Server
 {
+    /// <summary>
+    /// A request to establish an association.
+    /// </summary>
     public class AssociateRequest : Request
     {
 
@@ -39,6 +42,9 @@ namespace Janrain.OpenId.Server
 
         #region Properties
 
+        /// <summary>
+        /// Returns the string "associate".
+        /// </summary>
         public override string Mode
         {
             get { return QueryStringArgs.Modes.associate; }
@@ -48,6 +54,9 @@ namespace Janrain.OpenId.Server
 
         #region Methods
 
+        /// <summary>
+        /// Respond to this request with an association.
+        /// </summary>
         public Response Answer(Association assoc)
         {
 

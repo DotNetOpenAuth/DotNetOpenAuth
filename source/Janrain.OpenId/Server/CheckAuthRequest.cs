@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Janrain.OpenId.Server
 {
+    /// <summary>
+    /// A request to verify the validity of a previous response.
+    /// </summary>
     public class CheckAuthRequest : AssociatedRequest
     {
 
@@ -54,6 +57,9 @@ namespace Janrain.OpenId.Server
 
         #region Properties
 
+        /// <summary>
+        /// Gets the string "check_authentication".
+        /// </summary>
         public override string Mode
         {
             get { return QueryStringArgs.Modes.check_authentication; }
@@ -63,6 +69,9 @@ namespace Janrain.OpenId.Server
 
         #region Methods
 
+        /// <summary>
+        /// Respond to this request.
+        /// </summary>
         public Response Answer(Signatory signatory)
         {
             #region  Trace
