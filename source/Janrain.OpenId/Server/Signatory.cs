@@ -194,7 +194,7 @@ namespace Janrain.OpenId.Server
 
             uniq = CryptUtil.ToBase64String(uniq_bytes);
 
-            TimeSpan time = DateTime.Now.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, 0));
+            TimeSpan time = DateTime.UtcNow.Subtract(Association.UNIX_EPOCH);
             seconds = time.TotalSeconds;
 
             handle = "{{HMAC-SHA1}{" + seconds + "}{" + uniq + "}";
