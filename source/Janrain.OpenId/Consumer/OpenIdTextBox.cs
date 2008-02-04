@@ -113,7 +113,7 @@ namespace NerdBank.OpenId.Consumer
 		}
 
 		const string showLogoViewStateKey = "ShowLogo";
-		const bool showLogoDefault = false;
+		const bool showLogoDefault = true;
 		[Bindable(true)]
 		[Category(appearanceCategory)]
 		[DefaultValue(showLogoDefault)]
