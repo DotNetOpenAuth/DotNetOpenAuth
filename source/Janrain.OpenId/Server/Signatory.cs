@@ -78,7 +78,7 @@ namespace Janrain.OpenId.Server
             else
             {
                 assoc = this.CreateAssociation(true);
-                TraceUtil.ServerTrace(String.Format("No assoc_handle supplied. Creating new assocation."));
+                TraceUtil.ServerTrace(String.Format("No assoc_handle supplied. Creating new association."));
             }
 
             response.Fields[QueryStringArgs.openidnp.assoc_handle] = assoc.Handle;
@@ -199,7 +199,7 @@ namespace Janrain.OpenId.Server
 
             handle = "{{HMAC-SHA1}{" + seconds + "}{" + uniq + "}";
 
-            assoc = new HMACSHA1Association(handle, secret, SECRET_LIFETIME);
+            assoc = new HmacSha1Association(handle, secret, SECRET_LIFETIME);
 
             if (dumb)
                 key = _dumb_key;

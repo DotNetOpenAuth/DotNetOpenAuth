@@ -7,7 +7,7 @@ using Janrain.OpenId;
 namespace OpenIdTests
 {
     [TestFixture]
-    public class AssocationTestSuite
+    public class AssociationTestSuite
     {
 
         [Test]
@@ -18,7 +18,7 @@ namespace OpenIdTests
             byte[] secret = ASCIIEncoding.ASCII.GetBytes("secret");
             
             
-            Association assoc = new HMACSHA1Association(handle, secret, expiresIn);
+            Association assoc = new HmacSha1Association(handle, secret, expiresIn);
 
             byte[] s = assoc.Serialize();
 

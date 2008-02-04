@@ -312,7 +312,7 @@ namespace Janrain.OpenId.Consumer
 			return assoc;
 		}
 
-		protected HMACSHA1Association ParseAssociation(IDictionary results, DiffieHellman dh, Uri server_url)
+		protected HmacSha1Association ParseAssociation(IDictionary results, DiffieHellman dh, Uri server_url)
 		{
 			Converter<string, string> getParameter = delegate(string key)
 			{
@@ -359,7 +359,7 @@ namespace Janrain.OpenId.Consumer
 				string assocHandle = getParameter(QueryStringArgs.openidnp.assoc_handle);
 				TimeSpan expiresIn = new TimeSpan(0, 0, Convert.ToInt32(getParameter(QueryStringArgs.openidnp.expires_in)));
 
-				HMACSHA1Association assoc = new HMACSHA1Association(assocHandle, secret, expiresIn);
+				HmacSha1Association assoc = new HmacSha1Association(assocHandle, secret, expiresIn);
 				this.store.StoreAssociation(server_url, assoc);
 
 				return assoc;
