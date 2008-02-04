@@ -1,6 +1,6 @@
 <%@ Page Language="C#" AutoEventWireup="true" CodeFile="login.aspx.cs" Inherits="login" %>
 
-<%@ Register Assembly="Janrain.OpenId" Namespace="NerdBank.OpenId.Consumer" TagPrefix="cc1" %>
+<%@ Register Assembly="Janrain.OpenId" Namespace="Janrain.OpenId.Consumer" TagPrefix="cc1" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
 <html xmlns="http://www.w3.org/1999/xhtml">

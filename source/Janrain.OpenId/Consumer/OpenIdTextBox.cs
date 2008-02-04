@@ -6,37 +6,20 @@
  ********************************************************/
 
 using System;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Text;
-using System.Net.Mail;
-using System.Web;
 using System.Web.Security;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-using Janrain.OpenId;
-using Janrain.OpenId.Consumer;
 using Janrain.OpenId.Session;
 using Janrain.OpenId.RegistrationExtension;
-using Janrain.OpenId.Store;
 using System.Net;
 
-[assembly: WebResource(NerdBank.OpenId.Consumer.OpenIdTextBox.EmbeddedLogoResourceName, "image/gif")]
+[assembly: WebResource(Janrain.OpenId.Consumer.OpenIdTextBox.EmbeddedLogoResourceName, "image/gif")]
 
-namespace NerdBank.OpenId.RegistrationExtension
-{
-}
-
-namespace Janrain.OpenId.RegistrationExtension
-{
-}
-
-namespace NerdBank.OpenId.Consumer
+namespace Janrain.OpenId.Consumer
 {
 	[DefaultProperty("Text")]
 	[ToolboxData("<{0}:OpenIdTextBox runat=\"server\"></{0}:OpenIdTextBox>")]

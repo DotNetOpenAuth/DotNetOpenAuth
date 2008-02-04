@@ -6,18 +6,13 @@
  ********************************************************/
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
-using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.UI.HtmlControls;
-using System.Web.Security;
 using Janrain.OpenId.RegistrationExtension;
-using Janrain.OpenId;
 
-namespace NerdBank.OpenId.Consumer
+namespace Janrain.OpenId.Consumer
 {
 	[DefaultProperty("OpenIdUrl")]
 	[ToolboxData("<{0}:OpenIdLogin runat=\"server\"></{0}:OpenIdLogin>")]
