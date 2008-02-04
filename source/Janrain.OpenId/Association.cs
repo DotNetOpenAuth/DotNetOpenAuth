@@ -13,7 +13,7 @@ namespace Janrain.OpenId
 
         #region Member Variables
 
-        protected static DateTime UNIX_EPOCH = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+        protected internal static DateTime UNIX_EPOCH = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
         private string handle;
         private DateTime issued;
         protected TimeSpan expiresIn;
@@ -141,7 +141,7 @@ Association.ExpiresIn = '{6}' ";
         {
             this.Handle = handle;
             this.key = secret;
-            this.Issued = UNIX_EPOCH.Add(new TimeSpan(0, 0, Convert.ToInt32((DateTime.Now - UNIX_EPOCH).TotalSeconds)));
+            this.Issued = UNIX_EPOCH.Add(new TimeSpan(0, 0, Convert.ToInt32((DateTime.UtcNow - UNIX_EPOCH).TotalSeconds)));
             this.expiresIn = expiresIn;
         }
 

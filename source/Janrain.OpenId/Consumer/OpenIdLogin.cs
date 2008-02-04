@@ -139,6 +139,7 @@ namespace NerdBank.OpenId.Consumer
 			registerLink.Text = registerTextDefault;
 			registerLink.ToolTip = registerToolTipDefault;
 			registerLink.NavigateUrl = registerUrlDefault;
+			registerLink.Visible = registerVisibleDefault;
 			cell.Controls.Add(registerLink);
 			row2.Cells.Add(cell);
 
@@ -277,6 +278,15 @@ namespace NerdBank.OpenId.Consumer
 		{
 			get { return registerLink.ToolTip; }
 			set { registerLink.ToolTip = value; }
+		}
+
+		const bool registerVisibleDefault = true;
+		[Bindable(true)]
+		[Category("Appearance")]
+		[DefaultValue(registerVisibleDefault)]
+		public bool RegisterVisible {
+			get { return registerLink.Visible; }
+			set { registerLink.Visible = value; }
 		}
 
 		const string buttonTextDefault = "Login »";
