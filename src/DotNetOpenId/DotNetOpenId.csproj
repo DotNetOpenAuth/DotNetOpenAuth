@@ -1,0 +1,146 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5D6EDC86-F5B2-4786-8376-4E7C24C63D39}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DotNetOpenId</RootNamespace>
+    <AssemblyName>DotNetOpenId</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\bin\debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>..\..\bin\debug\DotNetOpenId.xml</DocumentationFile>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisRules>
+    </CodeAnalysisRules>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>..\..\bin\Release\DotNetOpenId.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Association.cs" />
+    <Compile Include="Consumer\AuthRequest.cs" />
+    <Compile Include="Consumer\Consumer.cs" />
+    <Compile Include="Consumer\ConsumerResponse.cs" />
+    <Compile Include="Consumer\Fetcher.cs" />
+    <Compile Include="Consumer\FetchException.cs" />
+    <Compile Include="Consumer\FetchResponse.cs" />
+    <Compile Include="CustomTraceStream.cs" />
+    <Compile Include="HmacSha1Association.cs" />
+    <Compile Include="RegistrationExtension\Gender.cs" />
+    <Compile Include="Consumer\GenericConsumer.cs" />
+    <Compile Include="Session\SimpleSessionState.cs" />
+    <Compile Include="Session\SystemHttpSessionState.cs" />
+    <Compile Include="Session\ISessionState.cs" />
+    <Compile Include="Consumer\Manager.cs" />
+    <Compile Include="Consumer\OpenIdLogin.cs" />
+    <Compile Include="RegistrationExtension\OpenIdProfileFields.cs" />
+    <Compile Include="Consumer\OpenIdTextBox.cs" />
+    <Compile Include="RegistrationExtension\ProfileRequest.cs" />
+    <Compile Include="Consumer\ServiceEndpoint.cs" />
+    <Compile Include="Consumer\SimpleFetcher.cs" />
+    <Compile Include="Consumer\Util.cs" />
+    <Compile Include="CryptUtil.cs" />
+    <Compile Include="DiffieHellman\DHKeyGeneration.cs" />
+    <Compile Include="DiffieHellman\DHParameters.cs" />
+    <Compile Include="DiffieHellman\DiffieHellman.cs" />
+    <Compile Include="DiffieHellman\DiffieHellmanManaged.cs" />
+    <Compile Include="DiffieHellman\mono\BigInteger.cs" />
+    <Compile Include="DiffieHellman\mono\ConfidenceFactor.cs" />
+    <Compile Include="DiffieHellman\mono\MiniParser.cs" />
+    <Compile Include="DiffieHellman\mono\NextPrimeFinder.cs" />
+    <Compile Include="DiffieHellman\mono\PrimalityTests.cs" />
+    <Compile Include="DiffieHellman\mono\PrimeGeneratorBase.cs" />
+    <Compile Include="DiffieHellman\mono\SecurityParser.cs" />
+    <Compile Include="DiffieHellman\mono\SequentialSearchPrimeGeneratorBase.cs" />
+    <Compile Include="KVUtil.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Server\AssociateRequest.cs" />
+    <Compile Include="Server\CheckAuthRequest.cs" />
+    <Compile Include="Server\CheckIdRequest.cs" />
+    <Compile Include="Server\Codec.cs" />
+    <Compile Include="Server\IEncodable.cs" />
+    <Compile Include="Server\MalformedReturnUrl.cs" />
+    <Compile Include="Server\MalformedTrustRoot.cs" />
+    <Compile Include="Server\ProtocolException.cs" />
+    <Compile Include="Server\Request.cs" />
+    <Compile Include="Server\Response.cs" />
+    <Compile Include="Server\Server.cs" />
+    <Compile Include="Server\ServerSession.cs" />
+    <Compile Include="Server\Signatory.cs" />
+    <Compile Include="Server\TrustRoot.cs" />
+    <Compile Include="Server\UntrustedReturnUrl.cs" />
+    <Compile Include="Server\WebResponse.cs" />
+    <Compile Include="Store\IAssociationStore.cs" />
+    <Compile Include="Store\MemoryStore.cs" />
+    <Compile Include="Store\ServerAssocs.cs" />
+    <Compile Include="Strings.Designer.cs">
+      <DependentUpon>Strings.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="TraceUtil.cs" />
+    <Compile Include="Util.cs" />
+    <Compile Include="Yadis\AcceptHeader.cs" />
+    <Compile Include="Yadis\ByteParser.cs" />
+    <Compile Include="Yadis\ContentType.cs" />
+    <Compile Include="Yadis\FetchRequest.cs" />
+    <Compile Include="Yadis\FetchResponse.cs" />
+    <Compile Include="Yadis\ServiceNode.cs" />
+    <Compile Include="Yadis\TypeNode.cs" />
+    <Compile Include="Yadis\UriNode.cs" />
+    <Compile Include="Yadis\Xrd.cs" />
+    <Compile Include="Yadis\XrdNode.cs" />
+    <Compile Include="Yadis\Yadis.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Strings.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Consumer\openid_login.gif">
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Server\Server.cd" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

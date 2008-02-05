@@ -5,14 +5,14 @@ SET root=%~dp0..
 SET RELEASE_DIR=%root%\drop
 IF EXIST %RELEASE_DIR% GOTO ALREADYEXISTS
 echo Building...
-msbuild %root%\source\Janrain.openid.sln /p:Configuration=%CONFIGURATION%
+msbuild %root%\src\DotNetOpenId.sln /p:Configuration=%CONFIGURATION%
 IF ERRORLEVEL 1 GOTO BUILDFAILURE
 
 echo Copying files...
 md %RELEASE_DIR%
 md %RELEASE_DIR%\bin
 md %RELEASE_DIR%\samples
-copy %root%\bin\%CONFIGURATION%\Janrain.OpenId.* %RELEASE_DIR%\bin > nul
+copy %root%\bin\%CONFIGURATION%\DotNetOpenId.??? %RELEASE_DIR%\bin > nul
 IF ERRORLEVEL 1 GOTO COPYFAILURE
 xcopy /s /e %root%\samples %RELEASE_DIR%\samples > nul
 IF ERRORLEVEL 1 GOTO COPYFAILURE

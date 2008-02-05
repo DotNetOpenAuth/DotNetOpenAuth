@@ -1,0 +1,57 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ServerPortal", "ServerPortal", "{24D1C874-DB4C-4001-82C6-1294DFAAFC73}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFramework = "2.0"
+		Debug.AspNetCompiler.VirtualPath = "/ServerPortal"
+		Debug.AspNetCompiler.PhysicalPath = "ServerPortal\"
+		Debug.AspNetCompiler.TargetPath = "..\bin\PrecompiledWeb\ServerPortal\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/ServerPortal"
+		Release.AspNetCompiler.PhysicalPath = "ServerPortal\"
+		Release.AspNetCompiler.TargetPath = "..\bin\PrecompiledWeb\ServerPortal\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "35228"
+	EndProjectSection
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ConsumerPortal", "ConsumerPortal", "{ED61866A-D424-4516-9A4A-3A6D168323AB}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFramework = "2.0"
+		Debug.AspNetCompiler.VirtualPath = "/ConsumerPortal"
+		Debug.AspNetCompiler.PhysicalPath = "ConsumerPortal\"
+		Debug.AspNetCompiler.TargetPath = "..\bin\PrecompiledWeb\ConsumerPortal\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/ConsumerPortal"
+		Release.AspNetCompiler.PhysicalPath = "ConsumerPortal\"
+		Release.AspNetCompiler.TargetPath = "..\bin\PrecompiledWeb\ConsumerPortal\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "35227"
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|.NET = Debug|.NET
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{24D1C874-DB4C-4001-82C6-1294DFAAFC73}.Debug|.NET.ActiveCfg = Debug|.NET
+		{24D1C874-DB4C-4001-82C6-1294DFAAFC73}.Debug|.NET.Build.0 = Debug|.NET
+		{ED61866A-D424-4516-9A4A-3A6D168323AB}.Debug|.NET.ActiveCfg = Debug|.NET
+		{ED61866A-D424-4516-9A4A-3A6D168323AB}.Debug|.NET.Build.0 = Debug|.NET
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
