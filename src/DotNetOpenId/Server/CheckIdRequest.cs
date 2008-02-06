@@ -56,15 +56,6 @@ namespace DotNetOpenId.Server
             else
                 _mode = QueryStringArgs.Modes.checkid_setup;
 
-            try
-            {
-                TrustRoot trustRoot = new TrustRoot(_return_to.AbsolutePath);
-            }
-            catch (ArgumentException)
-            {
-                throw new MalformedReturnUrl(null, _return_to.AbsoluteUri);
-            }
-
             if (!this.TrustRootValid)
                 throw new UntrustedReturnUrl(null, _return_to, _trust_root);
 
@@ -112,15 +103,6 @@ namespace DotNetOpenId.Server
                 _trust_root = _return_to.AbsoluteUri;
 
             this.AssocHandle = query.Get(QueryStringArgs.openid.assoc_handle);
-
-            try
-            {
-                TrustRoot tr = new TrustRoot(_return_to.AbsoluteUri);
-            }
-            catch (ArgumentException)
-            {
-                throw new MalformedReturnUrl(query, _return_to.AbsoluteUri);
-            }
 
             if (!TrustRootValid)
                 throw new UntrustedReturnUrl(query, _return_to, _trust_root);
@@ -437,9 +419,14 @@ namespace DotNetOpenId.Server
                 if (_trust_root == null)
                     return true;
 
-                TrustRoot tr = new TrustRoot(_trust_root);
-                if (tr == null)
+                try
+                {
+                    TrustRoot tr = new TrustRoot(_trust_root);
+                }
+                catch(ArgumentException)
+                {
                     throw new MalformedTrustRoot(null, _trust_root);
+                }
 
                 // TODO (willem.muller) - The trust code on 04/04/07 is dodgy. So returing true so all trust roots are valid for now.
                 return true;
