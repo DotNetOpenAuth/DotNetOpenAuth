@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
 using Janrain.OpenId.RegistrationExtension;
+using System.Diagnostics;
 
 namespace Janrain.OpenId.Server
 {
@@ -92,7 +93,6 @@ namespace Janrain.OpenId.Server
                 throw new MalformedReturnUrl(query, return_to);
             }
 
-            // TODO This just seems wonky to me
             _trust_root = query.Get(QueryStringArgs.openid.trust_root);
             if (_trust_root == null)
                 _trust_root = _return_to.AbsoluteUri;
@@ -390,23 +390,13 @@ namespace Janrain.OpenId.Server
         {
             get
             {
-                // TODO this doesn't seem right to me
-                if (_trust_root == null)
-                    return true;
+                Debug.Assert(_trust_root != null, "The constructor should have guaranteed this.");
 
-                try
-                {
-                    TrustRoot tr = new TrustRoot(_trust_root);
+                try {
+                    return new TrustRoot(_trust_root).ValidateUrl(_return_to);
+                } catch (MalformedTrustRoot) {
+                    return false;
                 }
-                catch(ArgumentException)
-                {
-                    throw new MalformedTrustRoot(null, _trust_root);
-                }
-
-                // TODO (willem.muller) - The trust code on 04/04/07 is dodgy. So returing true so all trust roots are valid for now.
-                return true;
-                
-                //return tr.ValidateUrl(_return_to);
             }
         }
 
