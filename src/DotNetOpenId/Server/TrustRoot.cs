@@ -1,16 +1,20 @@
 using System;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace DotNetOpenId.Server
 {
+    /// <summary>
+    /// A trust root to validate requests and match return URLs against.
+    /// </summary>
+    /// <!-- http://openid.net/specs/openid-authentication-1_1.html#anchor16 -->
+    /// <!-- http://openid.net/specs/openid-authentication-1_1.html#anchor21 -->
     public class TrustRoot
     {
-
         #region Private Members
 
         private static Regex _tr_regex = new Regex(@"^(?<scheme>https?)://((?<wildcard>\*)|(?<wildcard>\*\.)?(?<host>[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*)\.?)(:(?<port>[0-9]+))?(?<path>(/.*|$))");
-        private static string[] _top_level_domains =    {"com", "edu", "gov", "int", "mil", "net", "org", "biz", "info", "name", "museum", "coop", "aero", "ac", "ad", "ae", "" +
+        private static string[] _top_level_domains =    {"com", "edu", "gov", "int", "mil", "net", "org", "biz", "info", "name", "museum", "coop", "aero", "ac", "ad", "ae",
                                                         "af", "ag", "ai", "al", "am", "an", "ao", "aq", "ar", "as", "at", "au", "aw", "az", "ba", "bb", "bd", "be", "bf", "bg", "bh", "bi", "bj",
                                                         "bm", "bn", "bo", "br", "bs", "bt", "bv", "bw", "by", "bz", "ca", "cc", "cd", "cf", "cg", "ch", "ci", "ck", "cl", "cm", "cn", "co", "cr",
                                                         "cu", "cv", "cx", "cy", "cz", "de", "dj", "dk", "dm", "do", "dz", "ec", "ee", "eg", "eh", "er", "es", "et", "fi", "fj", "fk", "fm", "fo",
@@ -58,7 +62,7 @@ namespace DotNetOpenId.Server
             }
             else
             {
-                throw new ArgumentException(unparsed + " does not appear to be a valid TrustRoot");
+                throw new MalformedTrustRoot(null, unparsed + " does not appear to be a valid TrustRoot");
             }
         }
 
@@ -114,8 +118,20 @@ namespace DotNetOpenId.Server
         /// <summary>
         /// Validates a URL against this trust root.
         /// </summary>
+        /// <param name="url">A string specifying URL to check.</param>
+        /// <returns>Whether the given URL is within this trust root.</returns>
+        public bool ValidateUrl(string url)
+        {
+            Uri uri = new Uri(url);
+
+            return ValidateUrl(uri);
+        }
+
+        /// <summary>
+        /// Validates a URL against this trust root.
+        /// </summary>
         /// <param name="url">The URL to check.</param>
-        /// <returns>Whether the given URL is within this trust root. </returns>
+        /// <returns>Whether the given URL is within this trust root.</returns>
         public bool ValidateUrl(Uri url)
         {
             if (url.Scheme != _scheme)
@@ -131,39 +147,68 @@ namespace DotNetOpenId.Server
                     return false;
                 }
             }
-            else if (_host != String.Empty)
+            else
             {
+                Debug.Assert(_host != string.Empty, "The host part of the Regex should evaluate to at least one char for successful parsed trust roots.");
                 string[] host_parts = _host.Split('.');
                 string[] url_parts = url.Host.Split('.');
-                string end_parts = url_parts[url_parts.Length - host_parts.Length];
 
-                for (int i = 0; i < end_parts.Length; i++)
+                // If the domain contain the wildcard has more parts than the URL to match against,
+                // it naturally can't be valid.
+                // Unless *.example.com actually matches example.com too.
+                if (host_parts.Length > url_parts.Length)
+                    return false;
+
+                int offset = url_parts.Length - host_parts.Length;
+
+                // Compare last part first and move forward.
+                // Could be done by using EndsWith, but this solution seems more elegant.
+                for (int i = host_parts.Length - 1; i >= 0; i--)
                 {
-                    if (end_parts != host_parts[i])
+                    /*
+                    if (host_parts[i].Equals("*", StringComparison.Ordinal))
+                    {
+                        break;
+                    }
+                     */
+
+                    if (!host_parts[i].Equals(url_parts[i + 1], StringComparison.OrdinalIgnoreCase))
+                    {
                         return false;
+                    }
                 }
             }
 
-            if (url.PathAndQuery == _path)
+            // If path matches or is specified to root ...
+            if (_path.Equals(url.PathAndQuery, StringComparison.Ordinal)
+                || _path.Equals("/", StringComparison.Ordinal))
                 return true;
 
+            // If trust root has a longer path, the return URL must be invalid.
+            if (_path.Length > url.PathAndQuery.Length)
+                return false;
+
+            // The following code assures that http://example.com/directory isn't below http://example.com/dir,
+            // but makes sure http://example.com/dir/ectory is below http://example.com/dir
+            // Maybe this addition should be removed, as it is hard to see, if a path is below (/dir.html would accept /dir.html/something too)
             int path_len = _path.Length;
             string url_prefix = url.PathAndQuery.Substring(0, path_len);
 
             if (_path != url_prefix)
                 return false;
 
-            string allowed = "";
+            // If trust root includes a query string ...
             if (_path.Contains("?"))
-                allowed = "&";
-            else
-                allowed = "?";
+            {
+                // ... make sure return URL begins with a new argument
+                return url.PathAndQuery[path_len] == '&';
+            }
 
-            
-            return (allowed.IndexOf(_path[_path.Length - 1]) >= 0  || allowed.IndexOf(url.PathAndQuery[path_len]) >= 0);
+            // Or make sure a query string is introduced or a path below trust root
+            return url.PathAndQuery[path_len] == '?'
+                || url.PathAndQuery[path_len] == '/';
         }
 
         #endregion
-
     }
 }

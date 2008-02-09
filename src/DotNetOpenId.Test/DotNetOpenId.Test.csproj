@@ -46,6 +46,7 @@
     <Compile Include="MemoryStoreTestSuite.cs" />
     <Compile Include="OpenIdProfileFieldsTestSuite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TrustRootTestSuite.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="dhpriv.txt" />
