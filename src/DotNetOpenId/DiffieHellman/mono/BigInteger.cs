@@ -11,6 +11,9 @@
 //
 // Copyright (c) 2002 Chew Keong TAN
 // All rights reserved.
+//
+// Modified 2007 Andrew Arnott (http://blog.nerdbank.net)
+// Rewrote unsafe code as safe code.
 
 using System;
 using System.Security.Cryptography;
