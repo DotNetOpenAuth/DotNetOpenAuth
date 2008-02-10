@@ -1030,7 +1030,7 @@ namespace Mono.Math {
 				}
 			}
 
-			private unsafe BigInteger OddPow (uint b, BigInteger exp)
+			private BigInteger OddPow (uint b, BigInteger exp)
 			{
 				exp.Normalize ();
 				uint [] wkspace = new uint [mod.length << 1 + 1];
@@ -1050,81 +1050,79 @@ namespace Mono.Math {
 					//
 					// r = r ^ 2 % m
 					//
-					Kernel.SquarePositive (resultNum, ref wkspace);
-					resultNum = Montgomery.Reduce (resultNum, mod, mPrime);
+					Kernel.SquarePositive(resultNum, ref wkspace);
+					resultNum = Montgomery.Reduce(resultNum, mod, mPrime);
 
-					if (exp.testBit (pos)) {
+					if (exp.testBit(pos)) {
 
 						//
 						// r = r * b % m
 						//
 
-						// TODO: Is Unsafe really speeding things up?
-						fixed (uint* u = resultNum.data) {
+						uint u = 0;
 
-							uint i = 0;
-							ulong mc = 0;
+						uint i = 0;
+						ulong mc = 0;
 
-							do {
-								mc += (ulong)u [i] * (ulong)b;
-								u [i] = (uint)mc;
-								mc >>= 32;
-							} while (++i < resultNum.length);
+						do {
+							mc += (ulong)resultNum.data[u + i] * (ulong)b;
+							resultNum.data[u + i] = (uint)mc;
+							mc >>= 32;
+						} while (++i < resultNum.length);
 
-							if (resultNum.length < mod.length) {
-								if (mc != 0) {
-									u [i] = (uint)mc;
-									resultNum.length++;
-									while (resultNum >= mod)
-										Kernel.MinusEq (resultNum, mod);
-								}
-							} else if (mc != 0) {
-
-								//
-								// First, we estimate the quotient by dividing
-								// the first part of each of the numbers. Then
-								// we correct this, if necessary, with a subtraction.
-								//
-
-								uint cc = (uint)mc;
-
-								// We would rather have this estimate overshoot,
-								// so we add one to the divisor
-								uint divEstimate = (uint) ((((ulong)cc << 32) | (ulong) u [i -1]) /
-									(mod.data [mod.length-1] + 1));
-
-								uint t;
-
-								i = 0;
-								mc = 0;
-								do {
-									mc += (ulong)mod.data [i] * (ulong)divEstimate;
-									t = u [i];
-									u [i] -= (uint)mc;
-									mc >>= 32;
-									if (u [i] > t) mc++;
-									i++;
-								} while (i < resultNum.length);
-								cc -= (uint)mc;
-
-								if (cc != 0) {
-
-									uint sc = 0, j = 0;
-									uint [] s = mod.data;
-									do {
-										uint a = s [j];
-										if (((a += sc) < sc) | ((u [j] -= a) > ~a)) sc = 1;
-										else sc = 0;
-										j++;
-									} while (j < resultNum.length);
-									cc -= sc;
-								}
+						if (resultNum.length < mod.length) {
+							if (mc != 0) {
+								resultNum.data[u + i] = (uint)mc;
+								resultNum.length++;
 								while (resultNum >= mod)
-									Kernel.MinusEq (resultNum, mod);
-							} else {
-								while (resultNum >= mod)
-									Kernel.MinusEq (resultNum, mod);
+									Kernel.MinusEq(resultNum, mod);
 							}
+						} else if (mc != 0) {
+
+							//
+							// First, we estimate the quotient by dividing
+							// the first part of each of the numbers. Then
+							// we correct this, if necessary, with a subtraction.
+							//
+
+							uint cc = (uint)mc;
+
+							// We would rather have this estimate overshoot,
+							// so we add one to the divisor
+							uint divEstimate = (uint)((((ulong)cc << 32) | (ulong)resultNum.data[u + i - 1]) /
+								(mod.data[mod.length - 1] + 1));
+
+							uint t;
+
+							i = 0;
+							mc = 0;
+							do {
+								mc += (ulong)mod.data[i] * (ulong)divEstimate;
+								t = resultNum.data[u + i];
+								resultNum.data[u + i] -= (uint)mc;
+								mc >>= 32;
+								if (resultNum.data[u + i] > t) mc++;
+								i++;
+							} while (i < resultNum.length);
+							cc -= (uint)mc;
+
+							if (cc != 0) {
+
+								uint sc = 0, j = 0;
+								uint[] s = mod.data;
+								do {
+									uint a = s[j];
+									if (((a += sc) < sc) | ((resultNum.data[u + j] -= a) > ~a)) sc = 1;
+									else sc = 0;
+									j++;
+								} while (j < resultNum.length);
+								cc -= sc;
+							}
+							while (resultNum >= mod)
+								Kernel.MinusEq(resultNum, mod);
+						} else {
+							while (resultNum >= mod)
+								Kernel.MinusEq(resultNum, mod);
 						}
 					}
 				} while (pos-- > 0);
@@ -1133,14 +1131,13 @@ namespace Mono.Math {
 				return resultNum;
 
 			}
-			
-			private unsafe BigInteger EvenPow (uint b, BigInteger exp)
-			{
-				exp.Normalize ();
-				uint [] wkspace = new uint [mod.length << 1 + 1];
-				BigInteger resultNum = new BigInteger ((BigInteger)b, mod.length << 1 + 1);
 
-				uint pos = (uint)exp.bitCount () - 2;
+			private BigInteger EvenPow(uint b, BigInteger exp) {
+				exp.Normalize();
+				uint[] wkspace = new uint[mod.length << 1 + 1];
+				BigInteger resultNum = new BigInteger((BigInteger)b, mod.length << 1 + 1);
+
+				uint pos = (uint)exp.bitCount() - 2;
 
 				//
 				// We know that the first itr will make the val b
@@ -1150,82 +1147,80 @@ namespace Mono.Math {
 					//
 					// r = r ^ 2 % m
 					//
-					Kernel.SquarePositive (resultNum, ref wkspace);
+					Kernel.SquarePositive(resultNum, ref wkspace);
 					if (!(resultNum.length < mod.length))
-						BarrettReduction (resultNum);
+						BarrettReduction(resultNum);
 
-					if (exp.testBit (pos)) {
+					if (exp.testBit(pos)) {
 
 						//
 						// r = r * b % m
 						//
 
-						// TODO: Is Unsafe really speeding things up?
-						fixed (uint* u = resultNum.data) {
+						uint u = 0;
 
-							uint i = 0;
-							ulong mc = 0;
+						uint i = 0;
+						ulong mc = 0;
 
-							do {
-								mc += (ulong)u [i] * (ulong)b;
-								u [i] = (uint)mc;
-								mc >>= 32;
-							} while (++i < resultNum.length);
+						do {
+							mc += (ulong)resultNum.data[u + i] * (ulong)b;
+							resultNum.data[u + i] = (uint)mc;
+							mc >>= 32;
+						} while (++i < resultNum.length);
 
-							if (resultNum.length < mod.length) {
-								if (mc != 0) {
-									u [i] = (uint)mc;
-									resultNum.length++;
-									while (resultNum >= mod)
-										Kernel.MinusEq (resultNum, mod);
-								}
-							} else if (mc != 0) {
-
-								//
-								// First, we estimate the quotient by dividing
-								// the first part of each of the numbers. Then
-								// we correct this, if necessary, with a subtraction.
-								//
-
-								uint cc = (uint)mc;
-
-								// We would rather have this estimate overshoot,
-								// so we add one to the divisor
-								uint divEstimate = (uint) ((((ulong)cc << 32) | (ulong) u [i -1]) /
-									(mod.data [mod.length-1] + 1));
-
-								uint t;
-
-								i = 0;
-								mc = 0;
-								do {
-									mc += (ulong)mod.data [i] * (ulong)divEstimate;
-									t = u [i];
-									u [i] -= (uint)mc;
-									mc >>= 32;
-									if (u [i] > t) mc++;
-									i++;
-								} while (i < resultNum.length);
-								cc -= (uint)mc;
-
-								if (cc != 0) {
-
-									uint sc = 0, j = 0;
-									uint [] s = mod.data;
-									do {
-										uint a = s [j];
-										if (((a += sc) < sc) | ((u [j] -= a) > ~a)) sc = 1;
-										else sc = 0;
-										j++;
-									} while (j < resultNum.length);
-									cc -= sc;
-								}
+						if (resultNum.length < mod.length) {
+							if (mc != 0) {
+								resultNum.data[u + i] = (uint)mc;
+								resultNum.length++;
 								while (resultNum >= mod)
-									Kernel.MinusEq (resultNum, mod);
-							} else {
-								while (resultNum >= mod)
-									Kernel.MinusEq (resultNum, mod);
+									Kernel.MinusEq(resultNum, mod);
 							}
+						} else if (mc != 0) {
+
+							//
+							// First, we estimate the quotient by dividing
+							// the first part of each of the numbers. Then
+							// we correct this, if necessary, with a subtraction.
+							//
+
+							uint cc = (uint)mc;
+
+							// We would rather have this estimate overshoot,
+							// so we add one to the divisor
+							uint divEstimate = (uint)((((ulong)cc << 32) | (ulong)resultNum.data[u + i - 1]) /
+								(mod.data[mod.length - 1] + 1));
+
+							uint t;
+
+							i = 0;
+							mc = 0;
+							do {
+								mc += (ulong)mod.data[i] * (ulong)divEstimate;
+								t = resultNum.data[u + i];
+								resultNum.data[u + i] -= (uint)mc;
+								mc >>= 32;
+								if (resultNum.data[u + i] > t) mc++;
+								i++;
+							} while (i < resultNum.length);
+							cc -= (uint)mc;
+
+							if (cc != 0) {
+
+								uint sc = 0, j = 0;
+								uint[] s = mod.data;
+								do {
+									uint a = s[j];
+									if (((a += sc) < sc) | ((resultNum.data[u + j] -= a) > ~a)) sc = 1;
+									else sc = 0;
+									j++;
+								} while (j < resultNum.length);
+								cc -= sc;
+							}
+							while (resultNum >= mod)
+								Kernel.MinusEq(resultNum, mod);
+						} else {
+							while (resultNum >= mod)
+								Kernel.MinusEq(resultNum, mod);
 						}
 					}
 				} while (pos-- > 0);
@@ -1233,7 +1228,7 @@ namespace Mono.Math {
 				return resultNum;
 			}
 
-			private unsafe BigInteger EvenModTwoPow (BigInteger exp)
+			private BigInteger EvenModTwoPow (BigInteger exp)
 			{
 				exp.Normalize ();
 				uint [] wkspace = new uint [mod.length << 1 + 1];
@@ -1267,36 +1262,36 @@ namespace Mono.Math {
 							// resultNum = (resultNum * 2) % mod
 							//
 
-							fixed (uint* u = resultNum.data) {
-								//
-								// Double
-								//
-								uint* uu = u;
-								uint* uuE = u + resultNum.length;
-								uint x, carry = 0;
-								while (uu < uuE) {
-									x = *uu;
-									*uu = (x << 1) | carry;
-									carry = x >> (32 - 1);
-									uu++;
-								}
-
-								// subtraction inlined because we know it is square
-								if (carry != 0 || resultNum >= mod) {
-									uu = u;
-									uint c = 0;
-									uint [] s = mod.data;
-									uint i = 0;
-									do {
-										uint a = s [i];
-										if (((a += c) < c) | ((* (uu++) -= a) > ~a))
-											c = 1;
-										else
-											c = 0;
-										i++;
-									} while (uu < uuE);
-								}
+							uint u = 0;
+							//
+							// Double
+							//
+							uint uu = u;
+							uint uuE = u + resultNum.length;
+							uint x, carry = 0;
+							while (uu < uuE) {
+								x = resultNum.data[uu];
+								resultNum.data[uu] = (x << 1) | carry;
+								carry = x >> (32 - 1);
+								uu++;
 							}
+
+							// subtraction inlined because we know it is square
+							if (carry != 0 || resultNum >= mod) {
+								uu = u;
+								uint c = 0;
+								uint[] s = mod.data;
+								uint i = 0;
+								do {
+									uint a = s[i];
+									if (((a += c) < c) | ((resultNum.data[uu++] -= a) > ~a))
+										c = 1;
+									else
+										c = 0;
+									i++;
+								} while (uu < uuE);
+							}
+
 						}
 					} while ((mask >>= 1) > 0);
 					mask = 0x80000000;
@@ -1305,7 +1300,7 @@ namespace Mono.Math {
 				return resultNum;
 			}
 
-			private unsafe BigInteger OddModTwoPow (BigInteger exp)
+			private BigInteger OddModTwoPow (BigInteger exp)
 			{
 
 				uint [] wkspace = new uint [mod.length << 1 + 1];
@@ -1324,40 +1319,38 @@ namespace Mono.Math {
 					Kernel.SquarePositive (resultNum, ref wkspace);
 					resultNum = Montgomery.Reduce (resultNum, mod, mPrime);
 
-					if (exp.testBit (pos)) {
+					if (exp.testBit(pos)) {
 						//
 						// resultNum = (resultNum * 2) % mod
 						//
 
-						fixed (uint* u = resultNum.data) {
-							//
-							// Double
-							//
-							uint* uu = u;
-							uint* uuE = u + resultNum.length;
-							uint x, carry = 0;
-							while (uu < uuE) {
-								x = *uu;
-								*uu = (x << 1) | carry;
-								carry = x >> (32 - 1);
-								uu++;
-							}
+						uint u = 0;
+						//
+						// Double
+						//
+						uint uu = u;
+						uint uuE = u + resultNum.length;
+						uint x, carry = 0;
+						while (uu < uuE) {
+							x = resultNum.data[uu];
+							resultNum.data[uu] = (x << 1) | carry;
+							carry = x >> (32 - 1);
+							uu++;
+						}
 
-							// subtraction inlined because we know it is square
-							if (carry != 0 || resultNum >= mod) {
-								fixed (uint* s = mod.data) {
-									uu = u;
-									uint c = 0;
-									uint* ss = s;
-									do {
-										uint a = *ss++;
-										if (((a += c) < c) | ((* (uu++) -= a) > ~a))
-											c = 1;
-										else
-											c = 0;
-									} while (uu < uuE);
-								}
-							}
+						// subtraction inlined because we know it is square
+						if (carry != 0 || resultNum >= mod) {
+							uint s = 0;
+							uu = u;
+							uint c = 0;
+							uint ss = s;
+							do {
+								uint a = mod.data[ss++];
+								if (((a += c) < c) | ((resultNum.data[uu++] -= a) > ~a))
+									c = 1;
+								else
+									c = 0;
+							} while (uu < uuE);
 						}
 					}
 				} while (pos-- > 0);
@@ -1389,56 +1382,55 @@ namespace Mono.Math {
 				return n;
 			}
 
-			public static unsafe BigInteger Reduce (BigInteger n, BigInteger m, uint mPrime)
+			public static BigInteger Reduce(BigInteger n, BigInteger m, uint mPrime)
 			{
 				BigInteger A = n;
-				fixed (uint* a = A.data, mm = m.data) {
-					for (uint i = 0; i < m.length; i++) {
-						// The mod here is taken care of by the CPU,
-						// since the multiply will overflow.
-						uint u_i = a [0] * mPrime /* % 2^32 */;
+				uint a = 0, mm = 0;
+				for (uint i = 0; i < m.length; i++) {
+					// The mod here is taken care of by the CPU,
+					// since the multiply will overflow.
+					uint u_i = A.data[a] * mPrime /* % 2^32 */;
 
-						//
-						// A += u_i * m;
-						// A >>= 32
-						//
+					//
+					// A += u_i * m;
+					// A >>= 32
+					//
 
-						// mP = Position in mod
-						// aSP = the source of bits from a
-						// aDP = destination for bits
-						uint* mP = mm, aSP = a, aDP = a;
+					// mP = Position in mod
+					// aSP = the source of bits from a
+					// aDP = destination for bits
+					uint mP = mm, aSP = a, aDP = a;
 
-						ulong c = (ulong)u_i * (ulong)*(mP++) + *(aSP++);
+					ulong c = (ulong)u_i * (ulong)m.data[mP++] + A.data[aSP++];
+					c >>= 32;
+					uint j = 1;
+
+					// Multiply and add
+					for (; j < m.length; j++) {
+						c += (ulong)u_i * (ulong)m.data[mP++] + A.data[aSP++];
+						A.data[aDP++] = (uint)c;
 						c >>= 32;
-						uint j = 1;
-
-						// Multiply and add
-						for (; j < m.length; j++) {
-							c += (ulong)u_i * (ulong)*(mP++) + *(aSP++);
-							*(aDP++) = (uint)c;
-							c >>= 32;
-						}
-
-						// Account for carry
-						// TODO: use a better loop here, we dont need the ulong stuff
-						for (; j < A.length; j++) {
-							c += *(aSP++);
-							*(aDP++) = (uint)c;
-							c >>= 32;
-							if (c == 0) {j++; break;}
-						}
-						// Copy the rest
-						for (; j < A.length; j++) {
-							*(aDP++) = *(aSP++);
-						}
-
-						*(aDP++) = (uint)c;
 					}
 
-					while (A.length > 1 && a [A.length-1] == 0) A.length--;
+					// Account for carry
+					// TODO: use a better loop here, we dont need the ulong stuff
+					for (; j < A.length; j++) {
+						c += A.data[aSP++];
+						A.data[aDP++] = (uint)c;
+						c >>= 32;
+						if (c == 0) { j++; break; }
+					}
+					// Copy the rest
+					for (; j < A.length; j++) {
+						A.data[aDP++] = A.data[aSP++];
+					}
 
+					A.data[aDP++] = (uint)c;
 				}
-				if (A >= m) Kernel.MinusEq (A, m);
+
+				while (A.length > 1 && A.data[a + A.length - 1] == 0) A.length--;
+
+				if (A >= m) Kernel.MinusEq(A, m);
 
 				return A;
 			}
@@ -1976,37 +1968,31 @@ namespace Mono.Math {
 			/// y [yOffset:yOffset+yLen] and puts it into
 			/// d [dOffset:dOffset+xLen+yLen].
 			/// </summary>
-			/// <remarks>
-			/// This code is unsafe! It is the caller's responsibility to make
-			/// sure that it is safe to access x [xOffset:xOffset+xLen],
-			/// y [yOffset:yOffset+yLen], and d [dOffset:dOffset+xLen+yLen].
-			/// </remarks>
-			public static unsafe void Multiply (uint [] x, uint xOffset, uint xLen, uint [] y, uint yOffset, uint yLen, uint [] d, uint dOffset)
+			public static void Multiply(uint[] x, uint xOffset, uint xLen, uint[] y, uint yOffset, uint yLen, uint[] d, uint dOffset)
 			{
-				fixed (uint* xx = x, yy = y, dd = d) {
-					uint* xP = xx + xOffset,
-						xE = xP + xLen,
-						yB = yy + yOffset,
-						yE = yB + yLen,
-						dB = dd + dOffset;
+				uint xx = 0, yy = 0, dd = 0;
+				uint xP = xx + xOffset,
+					xE = xP + xLen,
+					yB = yy + yOffset,
+					yE = yB + yLen,
+					dB = dd + dOffset;
 
-					for (; xP < xE; xP++, dB++) {
+				for (; xP < xE; xP++, dB++) {
 
-						if (*xP == 0) continue;
+					if (x[xP] == 0) continue;
 
-						ulong mcarry = 0;
+					ulong mcarry = 0;
 
-						uint* dP = dB;
-						for (uint* yP = yB; yP < yE; yP++, dP++) {
-							mcarry += ((ulong)*xP * (ulong)*yP) + (ulong)*dP;
+					uint dP = dB;
+					for (uint yP = yB; yP < yE; yP++, dP++) {
+						mcarry += ((ulong)x[xP] * (ulong)y[yP]) + (ulong)d[dP];
 
-							*dP = (uint)mcarry;
-							mcarry >>= 32;
-						}
-
-						if (mcarry != 0)
-							*dP = (uint)mcarry;
+						d[dP] = (uint)mcarry;
+						mcarry >>= 32;
 					}
+
+					if (mcarry != 0)
+						d[dP] = (uint)mcarry;
 				}
 			}
 
@@ -2015,118 +2001,112 @@ namespace Mono.Math {
 			/// y [yOffset:yOffset+yLen] and puts the low mod words into
 			/// d [dOffset:dOffset+mod].
 			/// </summary>
-			/// <remarks>
-			/// This code is unsafe! It is the caller's responsibility to make
-			/// sure that it is safe to access x [xOffset:xOffset+xLen],
-			/// y [yOffset:yOffset+yLen], and d [dOffset:dOffset+mod].
-			/// </remarks>
-			public static unsafe void MultiplyMod2p32pmod (uint [] x, int xOffset, int xLen, uint [] y, int yOffest, int yLen, uint [] d, int dOffset, int mod)
+			public static void MultiplyMod2p32pmod(uint[] x, int xOffset, int xLen, uint[] y, int yOffest, int yLen, uint[] d, int dOffset, int mod)
 			{
-				fixed (uint* xx = x, yy = y, dd = d) {
-					uint* xP = xx + xOffset,
-						xE = xP + xLen,
-						yB = yy + yOffest,
-						yE = yB + yLen,
-						dB = dd + dOffset,
-						dE = dB + mod;
+				uint xx = 0, yy = 0, dd = 0;
+				uint xP = (uint)(xx + xOffset),
+					xE = (uint)(xP + xLen),
+					yB = (uint)(yy + yOffest),
+					yE = (uint)(yB + yLen),
+					dB = (uint)(dd + dOffset),
+					dE = (uint)(dB + mod);
 
-					for (; xP < xE; xP++, dB++) {
+				for (; xP < xE; xP++, dB++)
+				{
 
-						if (*xP == 0) continue;
+					if (x[xP] == 0) continue;
 
-						ulong mcarry = 0;
-						uint* dP = dB;
-						for (uint* yP = yB; yP < yE && dP < dE; yP++, dP++) {
-							mcarry += ((ulong)*xP * (ulong)*yP) + (ulong)*dP;
+					ulong mcarry = 0;
+					uint dP = dB;
+					for (uint yP = yB; yP < yE && dP < dE; yP++, dP++)
+					{
+						mcarry += ((ulong)x[xP] * (ulong)y[yP]) + (ulong)d[dP];
 
-							*dP = (uint)mcarry;
-							mcarry >>= 32;
-						}
-
-						if (mcarry != 0 && dP < dE)
-							*dP = (uint)mcarry;
+						d[dP] = (uint)mcarry;
+						mcarry >>= 32;
 					}
+
+					if (mcarry != 0 && dP < dE)
+						d[dP] = (uint)mcarry;
 				}
 			}
 
-			public static unsafe void SquarePositive (BigInteger bi, ref uint [] wkSpace)
-			{
-				uint [] t = wkSpace;
+			public static void SquarePositive(BigInteger bi, ref uint[] wkSpace) {
+				uint[] t = wkSpace;
 				wkSpace = bi.data;
-				uint [] d = bi.data;
+				uint[] d = bi.data;
 				uint dl = bi.length;
 				bi.data = t;
 
-				fixed (uint* dd = d, tt = t) {
+				uint dd = 0, tt = 0;
 
-					uint* ttE = tt + t.Length;
-					// Clear the dest
-					for (uint* ttt = tt; ttt < ttE; ttt++)
-						*ttt = 0;
+				uint ttE = (uint)t.Length;
+				// Clear the dest
+				for (uint ttt = tt; ttt < ttE; ttt++)
+					t[ttt] = 0;
 
-					uint* dP = dd, tP = tt;
+				uint dP = dd, tP = tt;
 
-					for (uint i = 0; i < dl; i++, dP++) {
-						if (*dP == 0)
-							continue;
+				for (uint i = 0; i < dl; i++, dP++) {
+					if (d[dP] == 0)
+						continue;
 
-						ulong mcarry = 0;
-						uint bi1val = *dP;
+					ulong mcarry = 0;
+					uint bi1val = d[dP];
 
-						uint* dP2 = dP + 1, tP2 = tP + 2*i + 1;
+					uint dP2 = dP + 1, tP2 = tP + 2 * i + 1;
 
-						for (uint j = i + 1; j < dl; j++, tP2++, dP2++) {
-							// k = i + j
-							mcarry += ((ulong)bi1val * (ulong)*dP2) + *tP2;
+					for (uint j = i + 1; j < dl; j++, tP2++, dP2++) {
+						// k = i + j
+						mcarry += ((ulong)bi1val * (ulong)d[dP2]) + t[tP2];
 
-							*tP2 = (uint)mcarry;
-							mcarry >>= 32;
-						}
-
-						if (mcarry != 0)
-							*tP2 = (uint)mcarry;
+						t[tP2] = (uint)mcarry;
+						mcarry >>= 32;
 					}
 
-					// Double t. Inlined for speed.
+					if (mcarry != 0)
+						t[tP2] = (uint)mcarry;
+				}
 
-					tP = tt;
+				// Double t. Inlined for speed.
 
-					uint x, carry = 0;
-					while (tP < ttE) {
-						x = *tP;
-						*tP = (x << 1) | carry;
-						carry = x >> (32 - 1);
-						tP++;
+				tP = tt;
+
+				uint x, carry = 0;
+				while (tP < ttE) {
+					x = t[tP];
+					t[tP] = (x << 1) | carry;
+					carry = x >> (32 - 1);
+					tP++;
+				}
+				if (carry != 0) t[tP] = carry;
+
+				// Add in the diagnals
+
+				dP = dd;
+				tP = tt;
+				for (uint dE = dP + dl; (dP < dE); dP++, tP++) {
+					ulong val = (ulong)d[dP] * (ulong)d[dP] + t[tP];
+					t[tP] = (uint)val;
+					val >>= 32;
+					t[(++tP)] += (uint)val;
+					if (t[tP] < (uint)val) {
+						uint tP3 = tP;
+						// Account for the first carry
+						(t[++tP3])++;
+
+						// Keep adding until no carry
+						while ((t[tP3++]) == 0x0)
+							(t[tP3])++;
 					}
-					if (carry != 0) *tP = carry;
-
-					// Add in the diagnals
-
-					dP = dd;
-					tP = tt;
-					for (uint* dE = dP + dl; (dP < dE); dP++, tP++) {
-						ulong val = (ulong)*dP * (ulong)*dP + *tP;
-						*tP = (uint)val;
-						val >>= 32;
-						*(++tP) += (uint)val;
-						if (*tP < (uint)val) {
-							uint* tP3 = tP;
-							// Account for the first carry
-							(*++tP3)++;
-
-							// Keep adding until no carry
-							while ((*tP3++) == 0x0)
-								(*tP3)++;
-						}
-
-					}
-
-					bi.length <<= 1;
-
-					// Normalize length
-					while (tt [bi.length-1] == 0 && bi.length > 1) bi.length--;
 
 				}
+
+				bi.length <<= 1;
+
+				// Normalize length
+				while (t[tt + bi.length - 1] == 0 && bi.length > 1) bi.length--;
+
 			}
 
 			public static bool Double (uint [] u, int l)
