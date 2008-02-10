@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DotNetOpenId.Server
 {
-    public class MalformedReturnUrl : ProtocolException
+    public class MalformedReturnUrlException : ProtocolException
     {
 
         #region Private Members
@@ -16,7 +16,7 @@ namespace DotNetOpenId.Server
 
         #region Constructor(s)
 
-        public MalformedReturnUrl(NameValueCollection query, string return_to)
+        public MalformedReturnUrlException(NameValueCollection query, string return_to)
             : base(query, "")
         {
             _return_to = return_to;

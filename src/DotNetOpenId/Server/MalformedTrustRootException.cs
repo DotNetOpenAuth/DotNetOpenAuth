@@ -8,12 +8,12 @@ namespace DotNetOpenId.Server
     /// <summary>
     /// The trust root is not well-formed.
     /// </summary>
-    public class MalformedTrustRoot : ProtocolException
+    public class MalformedTrustRootException : ProtocolException
     {
 
         #region Constructor(s)
 
-        public MalformedTrustRoot(NameValueCollection query, string text)
+        public MalformedTrustRootException(NameValueCollection query, string text)
             : base(query, text)
         {
         }

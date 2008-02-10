@@ -8,7 +8,7 @@ namespace DotNetOpenId.Server
     /// <summary>
     /// A message did not conform to the OpenID protocol.
     /// </summary>
-    public class ProtocolException : ApplicationException, IEncodable
+    public class ProtocolException : Exception, IEncodable
     {
 
         #region Private Members

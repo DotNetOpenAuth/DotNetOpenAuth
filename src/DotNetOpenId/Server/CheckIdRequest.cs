@@ -58,7 +58,7 @@ namespace DotNetOpenId.Server
                 _mode = QueryStringArgs.Modes.checkid_setup;
 
             if (!this.TrustRootValid)
-                throw new UntrustedReturnUrl(null, _return_to, _trust_root);
+                throw new UntrustedReturnUrlException(null, _return_to, _trust_root);
 
         }
 
@@ -95,7 +95,7 @@ namespace DotNetOpenId.Server
             }
             catch (UriFormatException)
             {
-                throw new MalformedReturnUrl(query, return_to);
+                throw new MalformedReturnUrlException(query, return_to);
             }
 
             _trust_root = query.Get(QueryStringArgs.openid.trust_root);
@@ -105,7 +105,7 @@ namespace DotNetOpenId.Server
             this.AssocHandle = query.Get(QueryStringArgs.openid.assoc_handle);
 
             if (!TrustRootValid)
-                throw new UntrustedReturnUrl(query, _return_to, _trust_root);
+                throw new UntrustedReturnUrlException(query, _return_to, _trust_root);
 
 
             // Handle the optional Simple Registration extension fields
@@ -419,7 +419,7 @@ namespace DotNetOpenId.Server
 
                 try {
                     return new TrustRoot(_trust_root).ValidateUrl(_return_to);
-                } catch (MalformedTrustRoot) {
+                } catch (MalformedTrustRootException) {
                     return false;
                 }
             }

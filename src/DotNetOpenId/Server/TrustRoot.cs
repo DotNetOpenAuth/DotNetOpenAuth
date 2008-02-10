@@ -62,7 +62,7 @@ namespace DotNetOpenId.Server
             }
             else
             {
-                throw new MalformedTrustRoot(null, unparsed + " does not appear to be a valid TrustRoot");
+                throw new MalformedTrustRootException(null, unparsed + " does not appear to be a valid TrustRoot");
             }
         }
 

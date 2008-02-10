@@ -30,37 +30,37 @@ namespace DotNetOpenId.Test {
 		}
 
 		[Test]
-		[ExpectedException(typeof(MalformedTrustRoot))]
+		[ExpectedException(typeof(MalformedTrustRootException))]
 		public void InvalidTrustRootEmpty() {
 			new TrustRoot("");
 		}
 
 		[Test]
-		[ExpectedException(typeof(MalformedTrustRoot))]
+		[ExpectedException(typeof(MalformedTrustRootException))]
 		public void InvalidTrustRootBadProtocol() {
 			new TrustRoot("asdf://www.microsoft.com/");
 		}
 
 		[Test]
-		[ExpectedException(typeof(MalformedTrustRoot))]
+		[ExpectedException(typeof(MalformedTrustRootException))]
 		public void InvalidTrustRootNoScheme() {
 			new TrustRoot("www.guy.com");
 		}
 
 		[Test]
-		[ExpectedException(typeof(MalformedTrustRoot))]
+		[ExpectedException(typeof(MalformedTrustRootException))]
 		public void InvalidTrustRootBadWildcard() {
 			new TrustRoot("http://*www.my.com");
 		}
 
 		[Test]
-		[ExpectedException(typeof(MalformedTrustRoot))]
+		[ExpectedException(typeof(MalformedTrustRootException))]
 		public void InvalidTrustRootTwoWildcards1() {
 			new TrustRoot("http://**.my.com");
 		}
 
 		[Test]
-		[ExpectedException(typeof(MalformedTrustRoot))]
+		[ExpectedException(typeof(MalformedTrustRootException))]
 		public void InvalidTrustRootTwoWildcards2() {
 			new TrustRoot("http://*.*.my.com");
 		}

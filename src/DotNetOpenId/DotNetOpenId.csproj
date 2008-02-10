@@ -57,6 +57,9 @@
     <Compile Include="HmacSha1Association.cs" />
     <Compile Include="RegistrationExtension\Gender.cs" />
     <Compile Include="Consumer\GenericConsumer.cs" />
+    <Compile Include="Server\MalformedReturnUrlException.cs" />
+    <Compile Include="Server\MalformedTrustRootException.cs" />
+    <Compile Include="Server\UntrustedReturnUrlException.cs" />
     <Compile Include="Session\SimpleSessionState.cs" />
     <Compile Include="Session\SystemHttpSessionState.cs" />
     <Compile Include="Session\ISessionState.cs" />
@@ -88,8 +91,6 @@
     <Compile Include="Server\CheckIdRequest.cs" />
     <Compile Include="Server\Codec.cs" />
     <Compile Include="Server\IEncodable.cs" />
-    <Compile Include="Server\MalformedReturnUrl.cs" />
-    <Compile Include="Server\MalformedTrustRoot.cs" />
     <Compile Include="Server\ProtocolException.cs" />
     <Compile Include="Server\Request.cs" />
     <Compile Include="Server\Response.cs" />
@@ -97,7 +98,6 @@
     <Compile Include="Server\ServerSession.cs" />
     <Compile Include="Server\Signatory.cs" />
     <Compile Include="Server\TrustRoot.cs" />
-    <Compile Include="Server\UntrustedReturnUrl.cs" />
     <Compile Include="Server\WebResponse.cs" />
     <Compile Include="Store\IAssociationStore.cs" />
     <Compile Include="Store\MemoryStore.cs" />
