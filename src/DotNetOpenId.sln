@@ -10,9 +10,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenId", "DotNetOpenI
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenId.Test", "DotNetOpenId.Test\DotNetOpenId.Test.csproj", "{CDEE655B-3902-420E-ADED-F4B6F666FB03}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ConsumerPortal", "..\samples\ConsumerPortal\", "{E4E33934-E677-4858-A037-68B77019C485}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ConsumerPortal", "..\samples\ConsumerPortal", "{E4E33934-E677-4858-A037-68B77019C485}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFramework = "3.5"
+		TargetFramework = "2.0"
 		ProjectReferences = "{5D6EDC86-F5B2-4786-8376-4E7C24C63D39}|DotNetOpenId.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/ConsumerPortal"
 		Debug.AspNetCompiler.PhysicalPath = "..\samples\ConsumerPortal\"
@@ -31,9 +31,9 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ConsumerPortal", "..\sample
 		VWDPort = "7339"
 	EndProjectSection
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ServerPortal", "..\samples\ServerPortal\", "{30DCDC0B-E08D-46FA-AEF5-E5E3ED95AEE0}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ServerPortal", "..\samples\ServerPortal", "{30DCDC0B-E08D-46FA-AEF5-E5E3ED95AEE0}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFramework = "3.5"
+		TargetFramework = "2.0"
 		ProjectReferences = "{5D6EDC86-F5B2-4786-8376-4E7C24C63D39}|DotNetOpenId.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/ServerPortal"
 		Debug.AspNetCompiler.PhysicalPath = "..\samples\ServerPortal\"
