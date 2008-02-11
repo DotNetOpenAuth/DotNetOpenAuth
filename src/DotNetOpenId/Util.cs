@@ -3,103 +3,69 @@ using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Text;
 using System.Web;
+using System.Globalization;
 
-namespace DotNetOpenId
-{
-    public static class UriUtil
-    {
+namespace DotNetOpenId {
+    public static class UriUtil {
 
-        #region NormalizeUri(string uriStr)
-
-        public static Uri NormalizeUri(string uriStr)
-        {
-            if (!uriStr.StartsWith("http") && uriStr.IndexOf("://") == -1)
+        /// <summary>
+        /// Takes an unparsed URI string and prefixes it with http:// if no 
+        /// protocol or scheme is in it, and converts the hostname to lowercase.
+        /// </summary>
+        /// <returns>A Uri object for the provided unparsed string.</returns>
+        public static Uri NormalizeUri(string uriStr) {
+            if (!uriStr.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                && uriStr.IndexOf("://", StringComparison.Ordinal) < 0)
                 uriStr = "http://" + uriStr;
 
             UriBuilder bldr = new UriBuilder(uriStr);
-            
-            bldr.Host = bldr.Host.ToLower();
+
+            bldr.Host = bldr.Host.ToLower(CultureInfo.InvariantCulture);
 
             return bldr.Uri;
         }
 
-        #endregion
+        /// <summary>
+        /// Concatenates a list of name-value pairs as key=value&amp;key=value,
+        /// taking care to properly encode each key and value for URL
+        /// transmission.  No ? is prefixed to the string.
+        /// </summary>
+        public static string CreateQueryString(NameValueCollection args) {
+            StringBuilder sb = new StringBuilder(args.Count * 10);
 
-        #region CreateQueryString(NameValueCollection args)
-
-        public static string CreateQueryString(NameValueCollection args)
-        {
-            string[] parts = new string[args.Count];
-            
-            for (int i = 0; i < args.Count; i++)
-            {
-                string encKey = HttpUtility.UrlEncode(args.GetKey(i));
-                string encVal = HttpUtility.UrlEncode(args.Get(i));
-
-                parts[i] = encKey + "=" + encVal;
+            for (int i = 0; i < args.Count; i++) {
+                sb.Append(HttpUtility.UrlEncode(args.GetKey(i)));
+                sb.Append('=');
+                sb.Append(HttpUtility.UrlEncode(args.Get(i)));
+                sb.Append('&');
             }
+            sb.Length--; // remove trailing &
 
-            return String.Join("&", parts);
+            return sb.ToString();
         }
 
-        #endregion
+        /// <summary>
+        /// Adds a set of name-value pairs to the end of a given URL
+        /// as part of the querystring piece.  Prefixes a ? or & before
+        /// first element as necessary.
+        /// </summary>
+        public static void AppendQueryArgs(UriBuilder builder, NameValueCollection args) {
+            if (args.Count > 0) {
+                StringBuilder sb = new StringBuilder(50 + args.Count * 10);
+                if (!string.IsNullOrEmpty(builder.Query)) {
+                    sb.Append(builder.Query.Substring(1));
+                    sb.Append('&');
+                }
+                sb.Append(CreateQueryString(args));
 
-        #region AppendQueryArg(UriBuilder builder, string key, string value)
-
-        public static void AppendQueryArg(UriBuilder builder, string key, string value)
-        {
-            string encKey = HttpUtility.UrlEncode(key);
-            string encVal = HttpUtility.UrlEncode(value);
-            string newqs = encKey + "=" + encVal;
-            string qs = builder.Query;
-
-            if (builder.Query != null && qs != String.Empty)
-                qs = qs.Substring(1) + "&" + newqs;
-            else
-                qs = newqs;
-
-            builder.Query = qs;
-
-        }
-
-        #endregion
-
-        #region AppendQueryArgs(UriBuilder builder, NameValueCollection args)
-
-        public static void AppendQueryArgs(UriBuilder builder, NameValueCollection args)
-        {
-            if (args.Count > 0)
-            {
-                string newqs = CreateQueryString(args);
-                string qs = builder.Query;
-
-                if (builder.Query != null && qs != String.Empty)
-                    qs = qs.Substring(1) + "&" + newqs;
-                else
-                    qs = newqs;
-
-                builder.Query = qs;
+                builder.Query = sb.ToString();
             }
         }
-
-        #endregion
 
     }
 
-    internal static class Util
-    {
+    internal static class Util {
         internal const string DefaultNamespace = "DotNetOpenId";
-        #region InArray(string[] array, string valueToFind)
-            
-        public static bool InArray(string[] array, string valueToFind)
-        {
-            foreach (string val in array)
-            {
-                if (val == valueToFind) return true;
-            }
-            return false;
-        }
-        #endregion
     }
 
     internal static class QueryStringArgs {

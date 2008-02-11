@@ -90,7 +90,7 @@ namespace DotNetOpenId.Server
 
                 string tld = host_parts[host_parts.Length - 1];
 
-                if (!Util.InArray(_top_level_domains, tld))
+                if (Array.IndexOf(_top_level_domains, tld) < 0)
                     return false;
 
                 if (tld.Length == 2)

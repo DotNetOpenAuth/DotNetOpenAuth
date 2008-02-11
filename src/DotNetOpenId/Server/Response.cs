@@ -73,7 +73,7 @@ namespace DotNetOpenId.Server
             }
 
             this.Fields[key] = value;
-            if (this.Signed != null && !Util.InArray(this.Signed, key))
+            if (this.Signed != null && Array.IndexOf(this.Signed, key) < 0)
             {
                 _signed.Add(key);
             }
