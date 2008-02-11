@@ -1,6 +1,9 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security.Permissions;
+using System.Web;
+using System.Net;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
@@ -33,3 +36,32 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 [assembly: AssemblyVersion("0.2.*")]
 [assembly: AssemblyFileVersion("0.2.*")]
+
+// Specify what permissions are required and optional for the assembly.
+// In order for CAS to remove unnecessary privileges from this assembly (which is desirable
+// for security), we need at least one RequestMinimum and at least one RequestOptional.
+// These permissions were determined using PermCalc.exe
+
+// We need to be allowed to execute code.  Besides, it gives a good baseline RequestMinimum permission.
+[assembly: SecurityPermission(SecurityAction.RequestMinimum, Execution = true)]
+// Allows the consumer to call out to the web server
+[assembly: WebPermission(SecurityAction.RequestMinimum, ConnectPattern=".*")]
+// Allows hosting this assembly in an ASP.NET setting.  Not all applications
+// will host this using ASP.NET, so this is optional.  Besides, we need at least
+// one optional permission to activate CAS permission shrinking.
+[assembly: AspNetHostingPermission(SecurityAction.RequestOptional, Level = AspNetHostingPermissionLevel.Medium)]
+
+// The following are only required for diagnostic logging (Trace.Write, Debug.Assert, etc.).
+#if DEBUG
+[assembly: KeyContainerPermission(SecurityAction.RequestMinimum, Unrestricted = true)]
+[assembly: ReflectionPermission(SecurityAction.RequestMinimum, MemberAccess = true)]
+[assembly: RegistryPermission(SecurityAction.RequestMinimum, Unrestricted = true)]
+[assembly: SecurityPermission(SecurityAction.RequestMinimum, ControlEvidence = true, UnmanagedCode = true, ControlThread = true)]
+[assembly: FileIOPermission(SecurityAction.RequestMinimum, AllFiles = FileIOPermissionAccess.PathDiscovery | FileIOPermissionAccess.Read)]
+#else
+[assembly: KeyContainerPermission(SecurityAction.RequestOptional, Unrestricted = true)]
+[assembly: ReflectionPermission(SecurityAction.RequestOptional, MemberAccess = true)]
+[assembly: RegistryPermission(SecurityAction.RequestOptional, Unrestricted = true)]
+[assembly: SecurityPermission(SecurityAction.RequestOptional, ControlEvidence = true, UnmanagedCode = true, ControlThread = true)]
+[assembly: FileIOPermission(SecurityAction.RequestOptional, AllFiles = FileIOPermissionAccess.PathDiscovery | FileIOPermissionAccess.Read)]
+#endif

@@ -28,7 +28,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ConsumerPortal", "..\sample
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "35227"
+		VWDPort = "7339"
 	EndProjectSection
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ServerPortal", "..\samples\ServerPortal\", "{30DCDC0B-E08D-46FA-AEF5-E5E3ED95AEE0}"
