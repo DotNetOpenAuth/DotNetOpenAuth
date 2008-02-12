@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 
 namespace DotNetOpenId
 {
-    public abstract class Association : ICloneable
+    public abstract class Association
     {
 
         #region Constructor(s)
@@ -78,15 +78,6 @@ namespace DotNetOpenId
 
         public abstract string SignDict(string[] fields, NameValueCollection data, string prefix);
         public abstract byte[] Sign(NameValueCollection l);
-
-        #endregion
-
-        #region ICloneable Members
-
-        object ICloneable.Clone()
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
 
         #endregion
 
