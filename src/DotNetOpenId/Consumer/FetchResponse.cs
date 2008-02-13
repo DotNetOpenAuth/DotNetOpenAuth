@@ -6,19 +6,19 @@ namespace DotNetOpenId.Consumer
 	[Serializable]
 	public class FetchResponse
 	{
-		public HttpStatusCode code;
-		public Uri finalUri;
-		public byte[] data;
-		public int length;
-		public string charset;
+		public HttpStatusCode Code { get; private set; }
+		public Uri FinalUri { get; private set; }
+		public byte[] Data { get; private set; }
+		public int Length { get; private set; }
+		public string Charset { get; private set; }
 
 		public FetchResponse(HttpStatusCode code, Uri finalUri, string charset, byte[] data, int length)
 		{
-			this.code = code;
-			this.finalUri = finalUri;
-			this.data = data;
-			this.length = length;
-			this.charset = charset;
+			Code = code;
+			FinalUri = finalUri;
+			Data = data;
+			Length = length;
+			Charset = charset;
 		}
 	}
 }

@@ -13,7 +13,7 @@ namespace DotNetOpenId.Test
 
         public static void KVDictTest(byte[] kvform, Dictionary<string,string> dict)
         {
-            Dictionary<string,string> d = (Dictionary<string,string>) KVUtil.KVToDict(kvform);
+            Dictionary<string,string> d = (Dictionary<string,string>) KVUtil.KVToDict(kvform, kvform.Length);
 
             Dictionary<string, string>.KeyCollection keys = dict.Keys;
 

@@ -61,9 +61,9 @@ namespace DotNetOpenId
             return SeqToKV(data, false);
         }
 
-        public static IDictionary KVToDict(byte[] data)
+        public static IDictionary KVToDict(byte[] buffer, int bufferLength)
         {
-            StringReader reader = new StringReader(UTF8Encoding.UTF8.GetString(data));
+            StringReader reader = new StringReader(UTF8Encoding.UTF8.GetString(buffer, 0, bufferLength));
             Dictionary<string,string> dict = new Dictionary<string,string>();
             int line_num = 0;
             string line = reader.ReadLine();

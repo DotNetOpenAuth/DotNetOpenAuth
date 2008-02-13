@@ -7,67 +7,54 @@ namespace DotNetOpenId.Consumer
 	[Serializable]
 	public abstract class Fetcher
 	{
-		public static uint MAX_BYTES = (1024 * 1024);
+		/// <summary>
+		/// The default maximum bytes to read in any given HTTP request.
+		/// Default is 1MB.
+		/// </summary>
+		public static int MaximumBytesToRead = (1024 * 1024);
 
-		// 1MB
-		protected static int ReadData(HttpWebResponse resp, uint max_bytes, ref byte[] buffer)
+		/// <summary>
+		/// Reads a maximum number of bytes from a response stream.
+		/// </summary>
+		/// <returns>
+		/// The number of bytes actually read.  
+		/// WARNING: This can be fewer than the size of the returned buffer.
+		/// </returns>
+		protected static int ReadData(HttpWebResponse resp, int maximumBytesToRead, out byte[] buffer)
 		{
-			MemoryStream ms = null;
-			Stream stream = resp.GetResponseStream();
-		    
-		    
-		    buffer = Util.ReadAndClose(stream);
-		    return buffer.Length;
-		    
-            //int length = (int)resp.ContentLength;
-            //bool nolength = (length == (-1));
-            //int size = (nolength ? 8192 : length);
-            //if (nolength)
-            //    ms = new MemoryStream();
-
-            //size = Math.Min(size, (int)max_bytes);
-            //int nread = 0;
-            //int offset = 0;
-            //buffer = new byte[size];
-            //while ((nread = stream.Read(buffer, offset, size)) != 0)
-            //{
-            //    if (nolength)
-            //        ms.Write(buffer, 0, nread);
-            //    else
-            //    {
-            //        size -= nread;
-            //        offset += nread;
-            //    }
-            //}
-
-            //if (nolength)
-            //{
-            //    buffer = ms.ToArray();
-            //    offset = buffer.Length;
-            //}
-            //return offset;
+			int bufferSize = resp.ContentLength >= 0 && resp.ContentLength < int.MaxValue ?
+				Math.Min(maximumBytesToRead, (int)resp.ContentLength) : maximumBytesToRead;
+			buffer = new byte[bufferSize];
+			using (Stream stream = resp.GetResponseStream())
+			{
+				int dataLength = 0;
+				int chunkSize;
+				while (dataLength < bufferSize && (chunkSize = stream.Read(buffer, dataLength, bufferSize - dataLength)) > 0)
+					dataLength += chunkSize;
+				return dataLength;
+			}
 		}
 		
-		protected static FetchResponse GetResponse(HttpWebResponse resp, uint maxRead)
+		protected static FetchResponse GetResponse(HttpWebResponse resp, int maximumBytesToRead)
 		{
-			byte[] data = null;
-			int length = ReadData(resp, maxRead, ref data);
+			byte[] data;
+			int length = ReadData(resp, maximumBytesToRead, out data);
 			return new FetchResponse(resp.StatusCode, resp.ResponseUri,
 					resp.CharacterSet, data, length);
 		}
-		
-		public abstract FetchResponse Get(Uri uri, uint maxRead);
+
+		public abstract FetchResponse Get(Uri uri, int maximumBytesToRead);
 		
 		public virtual FetchResponse Get(Uri uri)
 		{
-			return Get(uri, MAX_BYTES);
+			return Get(uri, MaximumBytesToRead);
 		}
 
-		public abstract FetchResponse Post(Uri uri, byte[] body, uint maxRead);
+		public abstract FetchResponse Post(Uri uri, byte[] body, int maximumBytesToRead);
 
 		public virtual FetchResponse Post(Uri uri, byte[] body)
 		{
-			return Post(uri, body, MAX_BYTES);
+			return Post(uri, body, MaximumBytesToRead);
 		}
 	}
 }

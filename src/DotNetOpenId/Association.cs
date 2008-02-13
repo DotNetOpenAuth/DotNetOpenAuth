@@ -99,7 +99,7 @@ namespace DotNetOpenId
 
         public virtual Association Deserialize(byte[] data)
         {
-            Dictionary<string, string> kvpairs = (Dictionary<string, string>)KVUtil.KVToDict(data);
+            Dictionary<string, string> kvpairs = (Dictionary<string, string>)KVUtil.KVToDict(data, data.Length);
             string version = kvpairs["version"];
 
             if (version != "2")

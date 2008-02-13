@@ -11,9 +11,9 @@ namespace DotNetOpenId.Consumer
 		{
 		}
 
-		public override FetchResponse Get(Uri uri, uint maxRead)
+		public override FetchResponse Get(Uri uri, int maxBytesToRead)
 		{
-			HttpWebRequest request = WebRequest.Create(uri) as HttpWebRequest;
+			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
 			request.KeepAlive = false;
 			request.Method = "GET";
 			request.MaximumAutomaticRedirections = 10;
@@ -24,10 +24,10 @@ namespace DotNetOpenId.Consumer
 
 			try
 			{
-				response = request.GetResponse() as HttpWebResponse;
+				response = (HttpWebResponse)request.GetResponse();
 				try
 				{
-					fresp = GetResponse(response, maxRead);
+					fresp = GetResponse(response, maxBytesToRead);
 
 					if (response.StatusCode == HttpStatusCode.OK)
 						return fresp;
@@ -47,7 +47,7 @@ namespace DotNetOpenId.Consumer
 				{
 					try
 					{
-						fresp = GetResponse(response, maxRead);
+						fresp = GetResponse(response, maxBytesToRead);
 					}
 					finally
 					{
@@ -61,9 +61,9 @@ namespace DotNetOpenId.Consumer
 			throw new FetchException(fresp, message);
 		}
 
-		public override FetchResponse Post(Uri uri, byte[] body, uint maxRead)
+		public override FetchResponse Post(Uri uri, byte[] body, int maxBytesToRead)
 		{
-			HttpWebRequest request = WebRequest.Create(uri) as HttpWebRequest;
+			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
 			request.ReadWriteTimeout = 20;
 			request.KeepAlive = false;
 			request.Method = "POST";
@@ -82,10 +82,10 @@ namespace DotNetOpenId.Consumer
 				outStream.Write(body, 0, body.Length);
 				outStream.Close();
 
-				response = request.GetResponse() as HttpWebResponse;
+				response = (HttpWebResponse)request.GetResponse();
 				try
 				{
-					fresp = GetResponse(response, maxRead);
+					fresp = GetResponse(response, maxBytesToRead);
 					if (response.StatusCode == HttpStatusCode.OK)
 						return fresp;
 
@@ -104,7 +104,7 @@ namespace DotNetOpenId.Consumer
 				{
 					try
 					{
-						fresp = GetResponse(response, maxRead);
+						fresp = GetResponse(response, maxBytesToRead);
 					}
 					finally
 					{

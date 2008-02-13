@@ -120,7 +120,7 @@ namespace DotNetOpenId.Consumer
 			{
 				FetchResponse resp = this.fetcher.Post(server_url, body);
 
-				return KVUtil.KVToDict(resp.data);
+				return KVUtil.KVToDict(resp.Data, resp.Length);
 			}
 			catch // (FetchException e)
 			{

@@ -67,7 +67,6 @@
     <Compile Include="RegistrationExtension\ProfileRequest.cs" />
     <Compile Include="Consumer\ServiceEndpoint.cs" />
     <Compile Include="Consumer\SimpleFetcher.cs" />
-    <Compile Include="Consumer\Util.cs" />
     <Compile Include="CryptUtil.cs" />
     <Compile Include="DiffieHellman\DHKeyGeneration.cs" />
     <Compile Include="DiffieHellman\DHParameters.cs" />
