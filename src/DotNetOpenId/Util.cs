@@ -30,13 +30,13 @@ namespace DotNetOpenId {
         /// taking care to properly encode each key and value for URL
         /// transmission.  No ? is prefixed to the string.
         /// </summary>
-        public static string CreateQueryString(NameValueCollection args) {
+        public static string CreateQueryString(IDictionary<string, string> args) {
             StringBuilder sb = new StringBuilder(args.Count * 10);
 
-            for (int i = 0; i < args.Count; i++) {
-                sb.Append(HttpUtility.UrlEncode(args.GetKey(i)));
+            foreach (var p in args) {
+                sb.Append(HttpUtility.UrlEncode(p.Key));
                 sb.Append('=');
-                sb.Append(HttpUtility.UrlEncode(args.Get(i)));
+                sb.Append(HttpUtility.UrlEncode(p.Value));
                 sb.Append('&');
             }
             sb.Length--; // remove trailing &
@@ -49,7 +49,7 @@ namespace DotNetOpenId {
         /// as part of the querystring piece.  Prefixes a ? or & before
         /// first element as necessary.
         /// </summary>
-        public static void AppendQueryArgs(UriBuilder builder, NameValueCollection args) {
+        public static void AppendQueryArgs(UriBuilder builder, IDictionary<string, string> args) {
             if (args.Count > 0) {
                 StringBuilder sb = new StringBuilder(50 + args.Count * 10);
                 if (!string.IsNullOrEmpty(builder.Query)) {
@@ -66,6 +66,14 @@ namespace DotNetOpenId {
 
     internal static class Util {
         internal const string DefaultNamespace = "DotNetOpenId";
+
+        public static IDictionary<string, string> NameValueCollectionToDictionary(NameValueCollection nvc)
+        {
+            var dict = new Dictionary<string, string>(nvc.Count);
+            for (int i = 0; i < nvc.Count; i++)
+                dict.Add(nvc.GetKey(i), nvc.Get(i));
+            return dict;
+        }
     }
 
     internal static class QueryStringArgs {

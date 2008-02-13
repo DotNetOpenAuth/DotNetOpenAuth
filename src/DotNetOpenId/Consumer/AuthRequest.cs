@@ -15,19 +15,19 @@ namespace DotNetOpenId.Consumer
         }
 
 		private string token;
-		private NameValueCollection extraArgs;
-		private NameValueCollection returnToArgs;
+		private Dictionary<string, string> extraArgs;
+		private Dictionary<string, string> returnToArgs;
 		private Association assoc;
 		private ServiceEndpoint endpoint;
-		
+
 		public AuthRequest(string token, Association assoc, ServiceEndpoint endpoint)
 		{
 			this.token = token;
 			this.assoc = assoc;
 			this.endpoint = endpoint;
 
-			this.extraArgs = new NameValueCollection();
-			this.returnToArgs = new NameValueCollection();
+			this.extraArgs = new Dictionary<string, string>();
+			this.returnToArgs = new Dictionary<string, string>();
 		}
 
         public string Token
@@ -36,12 +36,12 @@ namespace DotNetOpenId.Consumer
             set { this.token = value; }
         }
 
-        public NameValueCollection ExtraArgs
+        public IDictionary<string, string> ExtraArgs
         {
             get { return this.extraArgs; }
         }
 
-        public NameValueCollection ReturnToArgs
+        public IDictionary<string, string> ReturnToArgs
 		{
 			get { return this.returnToArgs; }
 		}
@@ -57,7 +57,7 @@ namespace DotNetOpenId.Consumer
             UriBuilder returnToBuilder = new UriBuilder(returnTo);
             UriUtil.AppendQueryArgs(returnToBuilder, this.ReturnToArgs);
 
-            NameValueCollection qsArgs = new NameValueCollection();
+            var qsArgs = new Dictionary<string, string>();
 
             qsArgs.Add(QueryStringArgs.openid.mode, modeStr);
             qsArgs.Add(QueryStringArgs.openid.identity, this.endpoint.ServerId.AbsoluteUri); //TODO: breaks the Law of Demeter

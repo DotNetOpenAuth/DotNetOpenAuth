@@ -150,7 +150,7 @@ namespace DotNetOpenId.Server
                     if (_signatory == null)
                         throw new ArgumentException("Must have a store to sign this request");
 
-                    if (response.Fields.Contains(QueryStringArgs.openidnp.sig))
+                    if (response.Fields.ContainsKey(QueryStringArgs.openidnp.sig))
                         throw new AlreadySignedException(encodable);
 
                     _signatory.Sign(response);

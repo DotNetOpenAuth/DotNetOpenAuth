@@ -76,8 +76,8 @@ namespace DotNetOpenId
             get;
         }
 
-        public abstract string SignDict(string[] fields, NameValueCollection data, string prefix);
-        public abstract byte[] Sign(NameValueCollection l);
+        public abstract string SignDict(ICollection<string> fields, IDictionary<string, string> data, string prefix);
+        public abstract byte[] Sign(IDictionary<string, string> l);
 
         #endregion
 
@@ -85,7 +85,7 @@ namespace DotNetOpenId
 
         public virtual byte[] Serialize()
         {
-            Dictionary<string, string> dict = new Dictionary<string, string>();
+            var dict = new Dictionary<string, string>();
 
             dict.Add("version", "2");
             dict.Add("handle", this.Handle);
@@ -99,7 +99,7 @@ namespace DotNetOpenId
 
         public virtual Association Deserialize(byte[] data)
         {
-            Dictionary<string, string> kvpairs = (Dictionary<string, string>)KVUtil.KVToDict(data, data.Length);
+            var kvpairs = KVUtil.KVToDict(data, data.Length);
             string version = kvpairs["version"];
 
             if (version != "2")

@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Security.Cryptography;
 using DotNetOpenId.Store;
+using System.Collections.Generic;
 
 namespace DotNetOpenId.Server
 {
@@ -45,7 +46,7 @@ namespace DotNetOpenId.Server
             }
             #endregion        	
             
-            NameValueCollection nvc = new NameValueCollection();
+            var nvc = new Dictionary<string, string>();
             Association assoc;
             string assoc_handle = ((AssociatedRequest)response.Request).AssocHandle;
 
@@ -83,9 +84,9 @@ namespace DotNetOpenId.Server
 
             response.Fields[QueryStringArgs.openidnp.assoc_handle] = assoc.Handle;
 
-            foreach (DictionaryEntry pair in response.Fields)
+            foreach (var pair in response.Fields)
             {
-                nvc.Add(pair.Key.ToString(), pair.Value.ToString());
+                nvc.Add(pair.Key, pair.Value);
             }
 
             string sig = assoc.SignDict(response.Signed, nvc, "");
@@ -103,7 +104,7 @@ namespace DotNetOpenId.Server
 
         }
 
-        public virtual bool Verify(string assoc_handle, string sig, NameValueCollection signed_pairs)
+        public virtual bool Verify(string assoc_handle, string sig, IDictionary<string, string> signed_pairs)
         {
             #region  Trace
             if (TraceUtil.Switch.TraceInfo)

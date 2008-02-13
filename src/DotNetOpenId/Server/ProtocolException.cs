@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
+using System.Collections.Generic;
 
 namespace DotNetOpenId.Server
 {
@@ -77,7 +78,7 @@ namespace DotNetOpenId.Server
             if (return_to == null)
                 throw new ApplicationException("return_to URL has not been set.");
 
-            NameValueCollection q = new NameValueCollection();
+            var q = new Dictionary<string, string>();
             q.Add(QueryStringArgs.openid.mode, QueryStringArgs.Modes.error);
             q.Add(QueryStringArgs.openid.error, this.Message);
 
@@ -89,12 +90,12 @@ namespace DotNetOpenId.Server
 
         public byte[] EncodeToKVForm()
         {
-            Hashtable d = new Hashtable();
+            var d = new Dictionary<string, string>();
 
             d.Add(QueryStringArgs.openidnp.mode, QueryStringArgs.Modes.error);
             d.Add(QueryStringArgs.openidnp.error, this.Message);
 
-            return KVUtil.DictToKV((IDictionary)d);
+            return KVUtil.DictToKV(d);
         }
 
         #endregion

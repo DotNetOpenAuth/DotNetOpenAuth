@@ -5,8 +5,9 @@ namespace DotNetOpenId.Consumer
 	using System.Web.SessionState;
 	using DotNetOpenId;
 	using DotNetOpenId.Store;
- using DotNetOpenId.Session;
+	using DotNetOpenId.Session;
 	using System.Web;
+	using System.Collections.Generic;
 
 	public class FailureException : ApplicationException
 	{
@@ -106,7 +107,11 @@ namespace DotNetOpenId.Consumer
 			return auth_req;
 		}
 
-		public ConsumerResponse Complete(NameValueCollection query)
+		public ConsumerResponse Complete(NameValueCollection nvc) {
+			return Complete(Util.NameValueCollectionToDictionary(nvc));
+		}
+
+		public ConsumerResponse Complete(IDictionary<string, string> query)
 		{
 			string token = this.session[TokenKey] as string;
 			if (token == null)

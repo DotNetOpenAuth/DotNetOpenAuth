@@ -18,23 +18,23 @@ namespace DotNetOpenId.Test {
 
         [Test]
         public void CreateQueryString() {
-            NameValueCollection nvc = new NameValueCollection();
-            nvc.Add("a", "b");
-            nvc.Add("c/d", "e/f");
-            Assert.AreEqual("a=b&c%2fd=e%2ff", UriUtil.CreateQueryString(nvc));
+            var args = new Dictionary<string, string>();
+            args.Add("a", "b");
+            args.Add("c/d", "e/f");
+            Assert.AreEqual("a=b&c%2fd=e%2ff", UriUtil.CreateQueryString(args));
         }
 
         [Test]
         public void AppendQueryArgs() {
             UriBuilder uri = new UriBuilder("http://baseline.org/page");
-            NameValueCollection nvc = new NameValueCollection();
-            nvc.Add("a", "b");
-            nvc.Add("c/d", "e/f");
-            UriUtil.AppendQueryArgs(uri, nvc);
+            var args = new Dictionary<string, string>();
+            args.Add("a", "b");
+            args.Add("c/d", "e/f");
+            UriUtil.AppendQueryArgs(uri, args);
             Assert.AreEqual("http://baseline.org/page?a=b&c%2fd=e%2ff", uri.Uri.AbsoluteUri);
-            nvc.Clear();
-            nvc.Add("g", "h");
-            UriUtil.AppendQueryArgs(uri, nvc);
+            args.Clear();
+            args.Add("g", "h");
+            UriUtil.AppendQueryArgs(uri, args);
             Assert.AreEqual("http://baseline.org/page?a=b&c%2fd=e%2ff&g=h", uri.Uri.AbsoluteUri);
         }
     }

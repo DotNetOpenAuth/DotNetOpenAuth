@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Text;
 using DotNetOpenId.RegistrationExtension;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace DotNetOpenId.Server
 {
@@ -263,7 +264,7 @@ namespace DotNetOpenId.Server
 
             if (allow)
             {
-                Hashtable fields = new Hashtable();
+                var fields = new Dictionary<string, string>();
 
                 fields.Add(QueryStringArgs.openidnp.mode, mode);
                 fields.Add(QueryStringArgs.openidnp.identity, _identity.AbsoluteUri);
@@ -360,7 +361,7 @@ namespace DotNetOpenId.Server
         /// <param name="server_url">The URL of the OpenID server to make this request of. </param>
         public Uri EncodeToUrl(Uri server_url)
         {
-            NameValueCollection q = new NameValueCollection();
+            var q = new Dictionary<string, string>();
 
             q.Add(QueryStringArgs.openid.mode, _mode);
             q.Add(QueryStringArgs.openid.identity, _identity.AbsoluteUri);
@@ -387,7 +388,7 @@ namespace DotNetOpenId.Server
                 throw new ApplicationException("Cancel is not an appropriate response to immediate mode requests.");
 
             UriBuilder builder = new UriBuilder(_return_to);
-            NameValueCollection args = new NameValueCollection();
+            var args = new Dictionary<string, string>();
 
             args.Add(QueryStringArgs.openid.mode, QueryStringArgs.Modes.cancel);
             UriUtil.AppendQueryArgs(builder, args);

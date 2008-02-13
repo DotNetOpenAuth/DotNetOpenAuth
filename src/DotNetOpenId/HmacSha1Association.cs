@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Collections.Generic;
 
 namespace DotNetOpenId {
     public class HmacSha1Association : Association {
@@ -14,8 +15,8 @@ namespace DotNetOpenId {
             : base(handle, secret, expiresIn, CutToSecond(DateTime.UtcNow)) {
         }
 
-        public HmacSha1Association(IDictionary kvpairs)
-            : base(kvpairs["handle"].ToString(), Convert.FromBase64String(kvpairs["secret"].ToString()),
+        public HmacSha1Association(IDictionary<string, string> kvpairs)
+            : base(kvpairs["handle"], Convert.FromBase64String(kvpairs["secret"]),
             new TimeSpan(0, 0, Convert.ToInt32(kvpairs["expires_in"])),
             UNIX_EPOCH.Add(new TimeSpan(0, 0, Convert.ToInt32(kvpairs["issued"])))) {
         }
@@ -76,17 +77,17 @@ namespace DotNetOpenId {
             return (int)val;
         }
 
-        public override string SignDict(string[] fields, NameValueCollection data, string prefix) {
-            NameValueCollection l = new NameValueCollection();
+        public override string SignDict(ICollection<string> fields, IDictionary<string, string> data, string prefix) {
+            var l = new Dictionary<string, string>();
 
             foreach (string field in fields) {
-                l.Add(field, data[(prefix + field)]);
+                l.Add(field, data[prefix + field]);
             }
 
             return CryptUtil.ToBase64String(Sign(l));
         }
 
-        public override byte[] Sign(NameValueCollection l) {
+        public override byte[] Sign(IDictionary<string, string> l) {
             byte[] data = KVUtil.SeqToKV(l, false);
 
             HMACSHA1 hmac = new HMACSHA1(this.Secret);

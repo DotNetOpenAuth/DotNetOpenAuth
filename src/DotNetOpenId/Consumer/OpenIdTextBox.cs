@@ -395,7 +395,7 @@ namespace DotNetOpenId.Consumer
 				// Trim off any old "openid." prefixed parameters to avoid carrying
 				// state from a prior login attempt.
 				return_to.Query = string.Empty;
-				NameValueCollection return_to_params = new NameValueCollection(Page.Request.QueryString.Count);
+				var return_to_params = new Dictionary<string, string>(Page.Request.QueryString.Count);
 				foreach (string key in Page.Request.QueryString) {
 					if (!key.StartsWith(QueryStringArgs.openid.Prefix) && key != QueryStringArgs.nonce) {
 						return_to_params.Add(key, Page.Request.QueryString[key]);

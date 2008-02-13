@@ -39,10 +39,10 @@ namespace DotNetOpenId.Consumer
 			return request;
 		}
 
-		public ConsumerResponse Complete(NameValueCollection query, string token)
+		public ConsumerResponse Complete(IDictionary<string, string> query, string token)
 		{
-			string mode = query[QueryStringArgs.openid.mode];
-			if (mode == null)
+			string mode;
+			if (!query.TryGetValue(QueryStringArgs.openid.mode, out mode))
 				mode = "<no mode specified>";
 
 			Uri identity_url = null;
@@ -83,14 +83,14 @@ namespace DotNetOpenId.Consumer
 			throw new FailureException(identity_url, "Invalid openid.mode: " + mode);
 		}
 
-		private bool CheckAuth(NameValueCollection query, Uri server_url)
+		private bool CheckAuth(IDictionary<string, string> query, Uri server_url)
 		{
-			NameValueCollection request = CreateCheckAuthRequest(query);
+			IDictionary<string, string> request = CreateCheckAuthRequest(query);
 
 			if (request == null)
 				return false;
 
-			IDictionary response = MakeKVPost(request, server_url);
+			var response = MakeKVPost(request, server_url);
 
 			if (response == null)
 				return false;
@@ -100,7 +100,7 @@ namespace DotNetOpenId.Consumer
 
 		private void CheckNonce(ConsumerResponse response, string nonce)
 		{
-			NameValueCollection nvc = HttpUtility.ParseQueryString(response.ReturnTo.Query);
+			var nvc = HttpUtility.ParseQueryString(response.ReturnTo.Query);
 
 			string value = nvc[QueryStringArgs.nonce];
 			if (String.IsNullOrEmpty(value))
@@ -112,7 +112,7 @@ namespace DotNetOpenId.Consumer
 				throw new FailureException(response.IdentityUrl, "Nonce mismatch");
 		}
 
-		private IDictionary MakeKVPost(NameValueCollection args, Uri server_url)
+		private IDictionary<string, string> MakeKVPost(IDictionary<string, string> args, Uri server_url)
 		{
 			byte[] body = ASCIIEncoding.ASCII.GetBytes(UriUtil.CreateQueryString(args));
 
@@ -137,19 +137,19 @@ namespace DotNetOpenId.Consumer
 			}
 		}
 
-		private ConsumerResponse DoIdRes(NameValueCollection query, Uri consumer_id, Uri server_id, Uri server_url)
+		private ConsumerResponse DoIdRes(IDictionary<string, string> query, Uri consumer_id, Uri server_id, Uri server_url)
 		{
 			Converter<string, string> getRequired = delegate(string key)
 				{
-					string val = query[key];
-					if (val == null)
+					string val;
+					if (!query.TryGetValue(key, out val))
 						throw new FailureException(consumer_id, "Missing required field: " + key);
 
 					return val;
 				};
 
-			string user_setup_url = query[QueryStringArgs.openid.user_setup_url];
-			if (user_setup_url != null)
+			string user_setup_url;
+			if (query.TryGetValue(QueryStringArgs.openid.user_setup_url, out user_setup_url))
 				throw new SetupNeededException(consumer_id, new Uri(user_setup_url));
 
 			string return_to = getRequired(QueryStringArgs.openid.return_to);
@@ -191,7 +191,7 @@ namespace DotNetOpenId.Consumer
 
 		private static AssociationRequest CreateAssociationRequest(Uri server_url)
 		{
-			NameValueCollection args = new NameValueCollection();
+			var args = new Dictionary<string, string>();
 
 			args.Add(QueryStringArgs.openid.mode, QueryStringArgs.Modes.associate);
 			args.Add(QueryStringArgs.openid.assoc_type, QueryStringArgs.HMAC_SHA1);
@@ -221,7 +221,7 @@ namespace DotNetOpenId.Consumer
 			return new AssociationRequest(dh, args);
 		}
 
-		private NameValueCollection CreateCheckAuthRequest(NameValueCollection query)
+		private IDictionary<string, string> CreateCheckAuthRequest(IDictionary<string, string> query)
 		{
 			string signed = query[QueryStringArgs.openid.signed];
 
@@ -239,9 +239,9 @@ namespace DotNetOpenId.Consumer
 			Array.Copy(whitelist, signed_array, whitelist.Length);
 			Array.Copy(splitted, 0, signed_array, whitelist.Length, splitted.Length);
 
-			NameValueCollection check_args = new NameValueCollection();
+			var check_args = new Dictionary<string, string>();
 
-			foreach (string key in query.AllKeys)
+			foreach (string key in query.Keys)
 			{
 				if (key.StartsWith(QueryStringArgs.openid.Prefix) 
 					&& Array.IndexOf(signed_array, key.Substring(QueryStringArgs.openid.Prefix.Length)) > -1)
@@ -301,7 +301,7 @@ namespace DotNetOpenId.Consumer
 			{
 				AssociationRequest req = CreateAssociationRequest(server_url);
 
-				IDictionary response = MakeKVPost(req.Args, server_url);
+				var response = MakeKVPost(req.Args, server_url);
 
 				if (response == null)
 					assoc = null;
@@ -312,11 +312,11 @@ namespace DotNetOpenId.Consumer
 			return assoc;
 		}
 
-		protected HmacSha1Association ParseAssociation(IDictionary results, DiffieHellman dh, Uri server_url)
+		protected HmacSha1Association ParseAssociation(IDictionary<string, string> results, DiffieHellman dh, Uri server_url)
 		{
 			Converter<string, string> getParameter = delegate(string key)
 			{
-				string val = (string)results[key];
+				string val = results[key];
 				if (val == null)
 					throw new MissingParameterException("Query args missing key: " + key);
 
@@ -343,7 +343,7 @@ namespace DotNetOpenId.Consumer
 
 				byte[] secret;
 
-				string session_type = (string)results[QueryStringArgs.openidnp.session_type];
+				string session_type = results[QueryStringArgs.openidnp.session_type];
 
 				if (session_type == null)
 					secret = getDecoded(QueryStringArgs.mac_key);
@@ -378,13 +378,13 @@ namespace DotNetOpenId.Consumer
 			{
 			}
 		}
-		private bool ProcessCheckAuthResponse(IDictionary response, Uri server_url)
+		private bool ProcessCheckAuthResponse(IDictionary<string, string> response, Uri server_url)
 		{
-			string is_valid = (string)response[QueryStringArgs.openidnp.is_valid];
+			string is_valid = response[QueryStringArgs.openidnp.is_valid];
 
 			if (is_valid == "true")
 			{
-				string invalidate_handle = (string)response[QueryStringArgs.openidnp.invalidate_handle];
+				string invalidate_handle = response[QueryStringArgs.openidnp.invalidate_handle];
 				if (invalidate_handle != null)
 					this.store.RemoveAssociation(server_url, invalidate_handle);
 
@@ -449,14 +449,14 @@ namespace DotNetOpenId.Consumer
 
 		class AssociationRequest
 		{
-			public AssociationRequest(DiffieHellman dh, NameValueCollection nvc)
+			public AssociationRequest(DiffieHellman dh, IDictionary<string, string> nvc)
 			{
 				this.DH = dh;
 				this.Args = nvc;
 			}
 
 			public readonly DiffieHellman DH;
-			public readonly NameValueCollection Args;
+			public readonly IDictionary<string, string> Args;
 		}
 
 	}

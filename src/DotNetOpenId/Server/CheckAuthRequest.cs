@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
+using System.Collections.Generic;
 
 namespace DotNetOpenId.Server
 {
@@ -14,14 +15,14 @@ namespace DotNetOpenId.Server
         #region Private Members
 
         private string _sig;
-        private NameValueCollection _signed;
+        private IDictionary<string, string> _signed;
         private string _invalidate_handle;
 
         #endregion
 
         #region Constructor(s)
 
-        public CheckAuthRequest(string assoc_handle, string sig, NameValueCollection signed, string invalidate_handle)
+        public CheckAuthRequest(string assoc_handle, string sig, IDictionary<string, string> signed, string invalidate_handle)
         {
             this.AssocHandle = assoc_handle;
             _sig = sig;
@@ -39,7 +40,7 @@ namespace DotNetOpenId.Server
 
             string[] signedList = signedStr.Split(',');
             string value = "";
-            _signed = new NameValueCollection();
+            _signed = new Dictionary<string, string>();
 
 
             foreach (string field in signedList)

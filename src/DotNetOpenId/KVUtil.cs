@@ -26,7 +26,7 @@ namespace DotNetOpenId
                 throw new ArgumentException(message);
         }
 
-        public static byte[] SeqToKV(NameValueCollection seq, bool strict)
+		public static byte[] SeqToKV(IDictionary<string, string> seq, bool strict)
         {
             MemoryStream ms = new MemoryStream();
 
@@ -49,22 +49,15 @@ namespace DotNetOpenId
             return ms.ToArray();
         }
 
-        public static byte[] DictToKV(IDictionary dict)
+        public static byte[] DictToKV(IDictionary<string, string> dict)
         {
-            NameValueCollection data = new NameValueCollection(dict.Count);
-
-            foreach (DictionaryEntry pair in dict)
-            {
-                data.Add(pair.Key.ToString(), pair.Value.ToString());
-            }
-
-            return SeqToKV(data, false);
+            return SeqToKV(dict, false);
         }
 
-        public static IDictionary KVToDict(byte[] buffer, int bufferLength)
+        public static IDictionary<string, string> KVToDict(byte[] buffer, int bufferLength)
         {
             StringReader reader = new StringReader(UTF8Encoding.UTF8.GetString(buffer, 0, bufferLength));
-            Dictionary<string,string> dict = new Dictionary<string,string>();
+            var dict = new Dictionary<string, string>();
             int line_num = 0;
             string line = reader.ReadLine();
 

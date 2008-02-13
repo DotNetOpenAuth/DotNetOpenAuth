@@ -74,7 +74,7 @@ namespace DotNetOpenId.Server
 
             Response response = new Response(this);
 
-            response.Fields[QueryStringArgs.openidnp.expires_in] = assoc.ExpiresIn;
+            response.Fields[QueryStringArgs.openidnp.expires_in] = assoc.ExpiresIn.ToString();
             response.Fields[QueryStringArgs.openidnp.assoc_type] = QueryStringArgs.HMAC_SHA1;
             response.Fields[QueryStringArgs.openidnp.assoc_handle] = assoc.Handle;
 

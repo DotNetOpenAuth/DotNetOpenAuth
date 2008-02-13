@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Text;
 using DotNetOpenId;
 using DotNetOpenId.Consumer;
+using System.Collections.Generic;
 
 namespace DotNetOpenId.Server
 {
@@ -12,8 +13,8 @@ namespace DotNetOpenId.Server
 
         #region Private Members
 
-        private Hashtable _fields;
-        private ArrayList _signed;
+        private Dictionary<string, string> _fields;
+        private List<string> _signed;
         private Request _request;
 
         #endregion
@@ -23,8 +24,8 @@ namespace DotNetOpenId.Server
         public Response(Request request)
         {
             this.Request = request;
-            _signed = new ArrayList();
-            _fields = new Hashtable();
+            _signed = new List<string>();
+            _fields = new Dictionary<string, string>();
             
         }
 
@@ -38,14 +39,14 @@ namespace DotNetOpenId.Server
             set { _request = value; }
         }
 
-        public IDictionary Fields
+        public IDictionary<string, string> Fields
         {
             get { return _fields; }
         }
 
         public string[] Signed
         {
-            get { return (string[])_signed.ToArray(typeof(string)); }
+            get { return _signed.ToArray(); }
         }
 
         public bool NeedsSigning
@@ -73,17 +74,17 @@ namespace DotNetOpenId.Server
             }
 
             this.Fields[key] = value;
-            if (this.Signed != null && Array.IndexOf(this.Signed, key) < 0)
+            if (this._signed != null && !this._signed.Contains(key))
             {
                 _signed.Add(key);
             }
         }
 
-        public void AddFields(string nmspace, IDictionary fields, bool signed)
+        public void AddFields(string nmspace, IDictionary<string, string> fields, bool signed)
         {
-            foreach (DictionaryEntry pair in fields)
+            foreach (var pair in fields)
             {
-                this.AddField(nmspace, (string)pair.Key, (string)pair.Value, signed);
+                this.AddField(nmspace, pair.Key, pair.Value, signed);
             }
         }
 
@@ -108,12 +109,12 @@ namespace DotNetOpenId.Server
 
         public Uri EncodeToUrl()
         {
-            NameValueCollection nvc = new NameValueCollection();
+            var nvc = new Dictionary<string, string>();
 
 
-            foreach (DictionaryEntry pair in this.Fields)
+            foreach (var pair in this.Fields)
             {
-                nvc.Add(QueryStringArgs.openid.Prefix + pair.Key.ToString(), pair.Value.ToString());
+                nvc.Add(QueryStringArgs.openid.Prefix + pair.Key, pair.Value);
             }
 
             CheckIdRequest checkidreq = (CheckIdRequest)this.Request;

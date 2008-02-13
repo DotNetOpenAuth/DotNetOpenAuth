@@ -3,6 +3,7 @@ namespace DotNetOpenId.Consumer
 	using System;
 	using System.Collections;
 	using System.Collections.Specialized;
+	using System.Collections.Generic;
 
 	public class ConsumerResponse
 	{
@@ -12,17 +13,17 @@ namespace DotNetOpenId.Consumer
 			get { return identity_url; }
 		}
 
-		IDictionary signed_args;
+		IDictionary<string, string> signed_args;
 
 		public Uri ReturnTo
 		{
-			get { return new Uri((string)this.signed_args[QueryStringArgs.openid.return_to], true); }
+			get { return new Uri(this.signed_args[QueryStringArgs.openid.return_to], true); }
 		}
 
-		public ConsumerResponse(Uri identity_url, NameValueCollection query, string signed)
+		public ConsumerResponse(Uri identity_url, IDictionary<string, string> query, string signed)
 		{
 			this.identity_url = identity_url;
-			this.signed_args = new Hashtable();
+			this.signed_args = new Dictionary<string, string>();
 			foreach (string field_name in signed.Split(','))
 			{
 				string field_name2 = QueryStringArgs.openid.Prefix + field_name;
@@ -32,14 +33,14 @@ namespace DotNetOpenId.Consumer
 				this.signed_args[field_name2] = val;
 			}
 		}
-		public IDictionary ExtensionResponse(string prefix)
+		public Dictionary<string, string> ExtensionResponse(string prefix)
 		{
-			Hashtable response = new Hashtable();
+			var response = new Dictionary<string, string>();
 			prefix = QueryStringArgs.openid.Prefix + prefix + ".";
 			int prefix_len = prefix.Length;
-			foreach (DictionaryEntry pair in this.signed_args)
+			foreach (var pair in this.signed_args)
 			{
-				string k = (string)pair.Key;
+				string k = pair.Key;
 				if (k.StartsWith(prefix))
 				{
 					string response_key = k.Substring(prefix_len);
