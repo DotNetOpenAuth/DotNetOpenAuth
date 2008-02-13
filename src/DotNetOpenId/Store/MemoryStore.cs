@@ -15,7 +15,6 @@ namespace DotNetOpenId.Store {
 		#region Member Variables
 
 		Dictionary<Uri, ServerAssocs> serverAssocsTable = new Dictionary<Uri, ServerAssocs>();
-		Hashtable nonces = new Hashtable();
 		byte[] authKey;
 
 		#endregion
@@ -61,28 +60,6 @@ namespace DotNetOpenId.Store {
 			}
 		}
 
-		public bool StoreNonce(string nonce) {
-			lock (this) {
-				bool present = nonces.ContainsKey(nonce);
-
-				nonces.Remove(nonce);
-
-				return present;
-
-			}
-		}
-
-		public bool UseNonce(string nonce) {
-			lock (this) {
-				bool present = nonces.ContainsKey(nonce);
-
-				nonces.Remove(nonce);
-
-				return present;
-
-			}
-		}
-
 		#endregion
 
 		#region IAssociationStore Members
@@ -105,10 +82,6 @@ namespace DotNetOpenId.Store {
 
 		bool IAssociationStore.IsDumb {
 			get { return false; }
-		}
-
-		void IAssociationStore.StoreNonce(string nonce) {
-			this.StoreNonce(nonce);
 		}
 
 		#endregion
