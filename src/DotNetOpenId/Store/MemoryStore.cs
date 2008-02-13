@@ -44,7 +44,7 @@ namespace DotNetOpenId.Store {
 
 		public Association GetAssociation(Uri serverUri) {
 			lock (this) {
-				return GetServerAssocs(serverUri).Best();
+				return GetServerAssocs(serverUri).Best;
 			}
 		}
 

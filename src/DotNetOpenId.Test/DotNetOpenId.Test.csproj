@@ -43,6 +43,7 @@
     <Compile Include="MemoryStoreTestSuite.cs" />
     <Compile Include="OpenIdProfileFieldsTestSuite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServerAssocsTest.cs" />
     <Compile Include="TraceUtilTest.cs" />
     <Compile Include="TrustRootTestSuite.cs" />
     <Compile Include="UriUtilTest.cs" />
