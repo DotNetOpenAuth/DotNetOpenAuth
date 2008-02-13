@@ -53,6 +53,7 @@
     <Compile Include="HmacSha1Association.cs" />
     <Compile Include="RegistrationExtension\Gender.cs" />
     <Compile Include="Consumer\GenericConsumer.cs" />
+    <Compile Include="Server\AssociatedRequest.cs" />
     <Compile Include="Server\MalformedReturnUrlException.cs" />
     <Compile Include="Server\MalformedTrustRootException.cs" />
     <Compile Include="Server\UntrustedReturnUrlException.cs" />
