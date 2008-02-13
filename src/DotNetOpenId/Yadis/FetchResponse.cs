@@ -7,7 +7,7 @@ using System.Net;
 namespace Janrain.Yadis
 {
     [Serializable]
-    public class FetchResponse
+    internal class FetchResponse
     {
         protected string body;
         protected ContentType contentType;

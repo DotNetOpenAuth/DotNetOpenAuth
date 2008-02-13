@@ -13,7 +13,7 @@ namespace Org.Mentalis.Security.Cryptography {
 	/// <summary>
 	/// Defines the different Diffie-Hellman key generation methods.
 	/// </summary>
-	public enum DHKeyGeneration {
+	internal enum DHKeyGeneration {
 		/// <summary>
 		/// [TODO] you first randomly select a prime Q of size 160 bits, then choose P randomly among numbers like
 		/// Q*R+1 with R random. Then you go along with finding a generator G which has order exactly Q. The private

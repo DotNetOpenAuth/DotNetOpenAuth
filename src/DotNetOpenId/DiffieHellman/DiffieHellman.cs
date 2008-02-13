@@ -18,7 +18,7 @@ namespace Org.Mentalis.Security.Cryptography {
 	/// <summary>
 	/// Defines a base class from which all Diffie-Hellman implementations inherit.
 	/// </summary>
-	public abstract class DiffieHellman : AsymmetricAlgorithm {
+	internal abstract class DiffieHellman : AsymmetricAlgorithm {
 		/// <summary>
 		/// Creates an instance of the default implementation of the <see cref="DiffieHellman"/> algorithm.
 		/// </summary>

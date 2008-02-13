@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 namespace Janrain.Yadis
 {
     [Serializable]
-    public class ByteParser
+    internal class ByteParser
     {
 		private static readonly Regex attrRe;
 		private static readonly Regex entityRe;

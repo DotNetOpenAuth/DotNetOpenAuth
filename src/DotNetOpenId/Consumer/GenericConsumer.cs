@@ -13,7 +13,7 @@ namespace DotNetOpenId.Consumer
 	using System.Web;
 	using System.IO;
 
-	public class GenericConsumer
+	internal class GenericConsumer
 	{
 		private static uint TOKEN_LIFETIME = 120;
 
@@ -312,7 +312,7 @@ namespace DotNetOpenId.Consumer
 			return assoc;
 		}
 
-		protected HmacSha1Association ParseAssociation(IDictionary<string, string> results, DiffieHellman dh, Uri server_url)
+		internal Association ParseAssociation(IDictionary<string, string> results, DiffieHellman dh, Uri server_url)
 		{
 			Converter<string, string> getParameter = delegate(string key)
 			{

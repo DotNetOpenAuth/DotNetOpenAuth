@@ -6,7 +6,7 @@ using System.Xml;
 namespace Janrain.Yadis
 {
     [Serializable]
-    public class UriNode : XrdNode, IComparable
+    internal class UriNode : XrdNode, IComparable
     {
         protected ServiceNode serviceNode;
 

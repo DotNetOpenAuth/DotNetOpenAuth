@@ -7,7 +7,7 @@ using System.Text;
 using System.Collections.Generic;
 
 namespace DotNetOpenId {
-    public class HmacSha1Association : Association {
+    internal class HmacSha1Association : Association {
 
         #region Constructor(s)
 

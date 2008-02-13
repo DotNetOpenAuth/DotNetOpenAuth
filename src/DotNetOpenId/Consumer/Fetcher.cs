@@ -5,7 +5,7 @@ namespace DotNetOpenId.Consumer
 	using System.IO;
 
 	[Serializable]
-	public abstract class Fetcher
+	internal abstract class Fetcher
 	{
 		/// <summary>
 		/// The default maximum bytes to read in any given HTTP request.

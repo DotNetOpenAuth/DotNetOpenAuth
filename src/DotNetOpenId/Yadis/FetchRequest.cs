@@ -8,7 +8,7 @@ using System.Net;
 namespace Janrain.Yadis
 {
     [Serializable]
-    public class FetchRequest
+    internal class FetchRequest
     {
         protected const string DEFAULT_HTML_ENCODING = "ISO-8859-1";
         protected const string DEFAULT_XML_ENCODING = "utf-8";

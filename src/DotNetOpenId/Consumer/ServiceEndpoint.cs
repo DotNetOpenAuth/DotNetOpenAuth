@@ -68,7 +68,7 @@ namespace DotNetOpenId.Consumer
             }
         }
 
-        public static Uri ExtractDelegate(ServiceNode serviceNode)
+        internal static Uri ExtractDelegate(ServiceNode serviceNode)
         {
             XmlNamespaceManager nsmgr = serviceNode.XmlNsManager;
             nsmgr.PushScope();
@@ -100,7 +100,7 @@ namespace DotNetOpenId.Consumer
             this._usedYadis = usedYadis;
         }
 
-        public ServiceEndpoint(Uri yadisUrl, UriNode uriNode)
+        internal ServiceEndpoint(Uri yadisUrl, UriNode uriNode)
         {
             ServiceNode serviceNode = uriNode.ServiceNode;
 

@@ -50,7 +50,6 @@
     <Compile Include="Consumer\Fetcher.cs" />
     <Compile Include="Consumer\FetchException.cs" />
     <Compile Include="Consumer\FetchResponse.cs" />
-    <Compile Include="CustomTraceStream.cs" />
     <Compile Include="HmacSha1Association.cs" />
     <Compile Include="RegistrationExtension\Gender.cs" />
     <Compile Include="Consumer\GenericConsumer.cs" />
@@ -103,7 +102,9 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Include="TraceUtil.cs" />
+    <Compile Include="TraceUtil.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Util.cs" />
     <Compile Include="Yadis\AcceptHeader.cs" />
     <Compile Include="Yadis\ByteParser.cs" />

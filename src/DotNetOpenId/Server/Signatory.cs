@@ -11,7 +11,7 @@ namespace DotNetOpenId.Server
     /// <summary>
     /// Signs things.
     /// </summary>
-    public class Signatory
+    internal class Signatory
     {
         public static readonly TimeSpan SECRET_LIFETIME = new TimeSpan(0, 0, 14 * 24 * 60 * 60);
 

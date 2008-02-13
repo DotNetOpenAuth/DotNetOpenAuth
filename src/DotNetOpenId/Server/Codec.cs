@@ -52,7 +52,7 @@ namespace DotNetOpenId.Server
     /// <summary>
     /// Encodes responses in to <see cref="WebResponse"/>.
     /// </summary>
-    public class Encoder
+    internal class Encoder
     {
 
         #region Constructor(s)
@@ -111,7 +111,7 @@ namespace DotNetOpenId.Server
     /// <summary>
     /// Encodes responses in to <see cref="WebResponse"/>, signing them when required.
     /// </summary>
-    public class SigningEncoder : Encoder
+    internal class SigningEncoder : Encoder
     {
 
         #region Private Members

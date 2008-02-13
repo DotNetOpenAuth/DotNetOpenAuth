@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace DotNetOpenId.Store {
-	public class ServerAssocs {
+	internal class ServerAssocs {
 
 		Dictionary<string, Association> assocs;
 

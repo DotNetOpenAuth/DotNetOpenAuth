@@ -9,7 +9,7 @@ namespace DotNetOpenId.Server
     /// </summary>
     /// <!-- http://openid.net/specs/openid-authentication-1_1.html#anchor16 -->
     /// <!-- http://openid.net/specs/openid-authentication-1_1.html#anchor21 -->
-    public class TrustRoot
+    internal class TrustRoot
     {
         #region Private Members
 

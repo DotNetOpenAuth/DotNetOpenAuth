@@ -6,7 +6,7 @@ using System.Web;
 using System.Globalization;
 
 namespace DotNetOpenId {
-    public static class UriUtil {
+    internal static class UriUtil {
 
         /// <summary>
         /// Takes an unparsed URI string and prefixes it with http:// if no 

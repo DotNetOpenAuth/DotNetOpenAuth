@@ -7,7 +7,7 @@ using Org.Mentalis.Security.Cryptography;
 
 namespace DotNetOpenId
 {
-    public class CryptUtil
+    internal class CryptUtil
     {
 
         #region Member Variables

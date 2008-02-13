@@ -18,7 +18,7 @@ namespace Org.Mentalis.Security.Cryptography {
 	/// <summary>
 	/// Implements the Diffie-Hellman algorithm.
 	/// </summary>
-	public sealed class DiffieHellmanManaged : DiffieHellman {
+	internal sealed class DiffieHellmanManaged : DiffieHellman {
 		/// <summary>
 		/// Initializes a new <see cref="DiffieHellmanManaged"/> instance.
 		/// </summary>

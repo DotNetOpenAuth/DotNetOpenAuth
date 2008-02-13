@@ -5,7 +5,7 @@ namespace DotNetOpenId.Consumer
 	using System.Net;
 
 	[Serializable]
-	public class SimpleFetcher : Fetcher
+	internal class SimpleFetcher : Fetcher
 	{
 		public SimpleFetcher()
 		{

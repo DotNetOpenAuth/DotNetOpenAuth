@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DotNetOpenId.Server
 {
-    public abstract class ServerSession
+    internal abstract class ServerSession
     {
         #region Properties
 
@@ -24,7 +24,7 @@ namespace DotNetOpenId.Server
     /// <summary>
     /// An object that knows how to handle association requests with no session type.
     /// </summary>
-    public class PlainTextServerSession : ServerSession
+    internal class PlainTextServerSession : ServerSession
     {
 
         #region Constructor(s)
@@ -54,7 +54,7 @@ namespace DotNetOpenId.Server
     /// <summary>
     /// An object that knows how to handle association requests with the Diffie-Hellman session type.
     /// </summary>
-    public class DiffieHellmanServerSession : ServerSession
+    internal class DiffieHellmanServerSession : ServerSession
     {
 
         #region Private Members

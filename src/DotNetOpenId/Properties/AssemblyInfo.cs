@@ -37,6 +37,8 @@ using System.Net;
 [assembly: AssemblyVersion("0.2.*")]
 [assembly: AssemblyFileVersion("0.2.*")]
 
+[assembly: InternalsVisibleTo("DotNetOpenId.Test")]
+
 // Specify what permissions are required and optional for the assembly.
 // In order for CAS to remove unnecessary privileges from this assembly (which is desirable
 // for security), we need at least one RequestMinimum and at least one RequestOptional.

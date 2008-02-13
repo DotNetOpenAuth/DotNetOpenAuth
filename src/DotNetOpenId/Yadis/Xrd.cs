@@ -6,7 +6,7 @@ using System.Xml;
 namespace Janrain.Yadis
 {
     [Serializable]
-    public class Xrd
+    internal class Xrd
     {
         protected XmlDocument xmldoc = new XmlDocument();
         protected XmlNamespaceManager xmlnsManager;

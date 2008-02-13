@@ -6,7 +6,7 @@ using System.Text;
 namespace Janrain.Yadis
 {
     [Serializable]
-    public class Yadis
+    internal class Yadis
     {
         private const string CONTENT_TYPE_HTML = "text/html";
         private const string CONTENT_TYPE_XHTML = "application/xhtml+xml";
@@ -100,7 +100,7 @@ namespace Janrain.Yadis
     }
 
     [Serializable]
-    public class DiscoveryResult
+    internal class DiscoveryResult
     {
         // Fields
         protected ContentType contentType;

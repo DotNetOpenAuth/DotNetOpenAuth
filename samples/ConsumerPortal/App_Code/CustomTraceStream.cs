@@ -4,8 +4,6 @@ using System.IO;
 using System.Text;
 using System.Web;
 
-namespace DotNetOpenId
-{
     public class CustomTraceStream : MemoryStream
     {
         // Private members
@@ -45,4 +43,3 @@ namespace DotNetOpenId
             m_outputStream.Write(data, 0, theText.Length);
         }
     }
-}

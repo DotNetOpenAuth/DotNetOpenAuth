@@ -5,7 +5,7 @@ namespace DotNetOpenId.Consumer
 	using Janrain.Yadis;
 	using System.Collections.Generic;
 
-	public class ServiceEndpointManager
+	internal class ServiceEndpointManager
 	{
 		protected ISessionState session;
 

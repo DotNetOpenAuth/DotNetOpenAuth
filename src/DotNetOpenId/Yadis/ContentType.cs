@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 namespace Janrain.Yadis
 {
     [Serializable]
-    public class ContentType
+    internal class ContentType
     {
         protected NameValueCollection parameters;
         protected string subType;

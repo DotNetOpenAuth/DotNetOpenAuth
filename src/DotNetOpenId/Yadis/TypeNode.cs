@@ -6,7 +6,7 @@ using System.Xml;
 namespace Janrain.Yadis
 {
     [Serializable]
-    public class TypeNode : XrdNode
+    internal class TypeNode : XrdNode
     {
         public TypeNode(XmlNode node, XmlDocument xmldoc, XmlNamespaceManager xmlnsManager)
             : base(node, xmldoc, xmlnsManager)

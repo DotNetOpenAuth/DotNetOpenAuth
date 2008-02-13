@@ -39,11 +39,11 @@ namespace Mono.Xml {
 [CLSCompliant(false)] 
 	internal class MiniParser {
 
-	public interface IReader {
+	internal interface IReader {
 		int Read();
 	}
 
-	public interface IAttrList {
+	internal interface IAttrList {
 		int Length {get;}
 		bool IsEmpty {get;}
 		string GetName(int i);
@@ -54,7 +54,7 @@ namespace Mono.Xml {
 		string[] Values {get;}
 	}
 
-	public interface IMutableAttrList : IAttrList {
+	internal interface IMutableAttrList : IAttrList {
 		void Clear();
 		void Add(string name, string value);
 		void CopyFrom(IAttrList attrs);
@@ -62,7 +62,7 @@ namespace Mono.Xml {
 		void Remove(string name);
 	}
 
-	public interface IHandler {
+	internal interface IHandler {
 		void OnStartParsing(MiniParser parser);
 		void OnStartElement(string name, IAttrList attrs);
 		void OnEndElement(string name);
@@ -70,7 +70,7 @@ namespace Mono.Xml {
 		void OnEndParsing(MiniParser parser);
 	}
 
-	public class HandlerAdapter : IHandler {
+	internal class HandlerAdapter : IHandler {
 		public HandlerAdapter() {}
 		public void OnStartParsing(MiniParser parser) {}
 		public void OnStartElement(string name, IAttrList attrs) {}
@@ -117,7 +117,7 @@ namespace Mono.Xml {
 		UNKNOWN = 0xF
 	}
 
-	public class AttrListImpl : IMutableAttrList {
+	internal class AttrListImpl : IMutableAttrList {
 		protected ArrayList names;
 		protected ArrayList values;
 
@@ -213,7 +213,7 @@ namespace Mono.Xml {
 		}
 	}
 
-	public class XMLError : Exception {
+	internal class XMLError : Exception {
 		protected string descr;
 		protected int line, column;
 		public XMLError() : this("Unknown") {}

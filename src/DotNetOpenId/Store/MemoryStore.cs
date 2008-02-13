@@ -10,7 +10,7 @@ using DotNetOpenId;
 
 namespace DotNetOpenId.Store {
 
-	public class MemoryStore : IAssociationStore {
+	internal class MemoryStore : IAssociationStore {
 
 		#region Member Variables
 
@@ -21,7 +21,7 @@ namespace DotNetOpenId.Store {
 
 		#region Methods
 
-		public ServerAssocs GetServerAssocs(Uri server_url) {
+		internal ServerAssocs GetServerAssocs(Uri server_url) {
 			lock (this) {
 				if (!serverAssocsTable.ContainsKey(server_url)) {
 					serverAssocsTable.Add(server_url, new ServerAssocs());

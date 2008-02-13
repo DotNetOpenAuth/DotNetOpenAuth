@@ -13,7 +13,7 @@ namespace Org.Mentalis.Security.Cryptography {
 	/// <summary>
 	/// Represents the parameters of the Diffie-Hellman algorithm.
 	/// </summary>
-	public struct DHParameters {
+	internal struct DHParameters {
 		/// <summary>
 		/// Represents the public <b>P</b> parameter of the Diffie-Hellman algorithm.
 		/// </summary>

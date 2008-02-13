@@ -7,7 +7,7 @@ using System.Text;
 
 namespace DotNetOpenId
 {
-    public class KVUtil
+    internal class KVUtil
     {
 
         #region Constructor(s)
