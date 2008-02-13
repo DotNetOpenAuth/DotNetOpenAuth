@@ -1,46 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Collections;
 
 namespace DotNetOpenId.Store {
 	public class ServerAssocs {
 
-		#region Private Members
-
-		private Hashtable assocs;
-
-		#endregion
-
-		#region Constructor(s)
+		Dictionary<string, Association> assocs;
 
 		public ServerAssocs() {
-			this.assocs = new Hashtable();
+			this.assocs = new Dictionary<string,Association>();
 		}
-
-		#endregion
-
-		#region Methods
 
 		public void Set(Association assoc) {
 			this.assocs[assoc.Handle] = assoc;
 		}
 
 		public Association Get(string handle) {
-			Association assoc = null;
-
-			if (this.assocs.Contains(handle))
-				assoc = (Association)this.assocs[handle];
-
+			Association assoc;
+			assocs.TryGetValue(handle, out assoc);
 			return assoc;
 		}
 
 		public bool Remove(string handle) {
-			bool present = this.assocs.Contains(handle);
-
-			this.assocs.Remove(handle);
-
-			return present;
+			return assocs.Remove(handle);
 		}
 
 		public Association Best() {
@@ -53,8 +34,6 @@ namespace DotNetOpenId.Store {
 
 			return best;
 		}
-
-		#endregion
 
 	}
 
