@@ -5,94 +5,93 @@ using DotNetOpenId.Store;
 using System.Web;
 
 
-namespace DotNetOpenId.Server
-{
-    public class Server
-    {
+namespace DotNetOpenId.Server {
+	/// <summary>
+	/// Offers services for a web page that is acting as an OpenID identity server.
+	/// </summary>
+	public class Server {
+		IAssociationStore store;
+		Signatory signatory;
+		Encoder encoder;
 
-        #region Private Members
+		/// <summary>
+		/// Constructs an OpenId server that uses the HttpApplication dictionary as
+		/// its association store.
+		/// </summary>
+		public Server() : this(httpApplicationAssociationStore) { }
 
-        private IAssociationStore _store;
-        private Signatory _signatory;
-        private Encoder _encoder;
+		/// <summary>
+		/// Constructs an OpenId server that uses a given IAssociationStore.
+		/// </summary>
+		public Server(IAssociationStore store) {
+			if (store == null) throw new ArgumentNullException("store");
+			this.store = store;
+			this.signatory = new Signatory(store);
+			this.encoder = new SigningEncoder(signatory);
+		}
 
-        #endregion
+		public Response HandleRequest(Request request) {
+			Response response;
+			switch (request.RequestMode) {
+				case RequestMode.CheckAuthRequest:
+					response = ((CheckAuthRequest)request).Answer(signatory);
+					break;
+				case RequestMode.AssociateRequest:
+					response = ((AssociateRequest)request).Answer(signatory.CreateAssociation(false));
+					break;
+				case RequestMode.CheckIdRequest:
+				default:
+					throw new ArgumentException("Unexpected Request.RequestMode value.", "request");
+			}
+			return response;
+		}
 
-        #region Constructor(s)
+		/// <returns>
+		/// Null if the given HttpRequest does not represent a request from an 
+		/// OpenId client.  This could occur if someone just typed in an OpenID
+		/// URL directly.
+		/// </returns>
+		public Request DecodeRequest(HttpRequest request) {
+			return DecodeRequest(
+				request.HttpMethod == "GET" ? request.QueryString : request.Form);
+		}
 
-        /// <summary>
-        /// Constructs an OpenId server that uses the HttpApplication dictionary as
-        /// its association store.
-        /// </summary>
-        public Server() : this(HttpApplicationAssociationStore) { }
+		/// <returns>
+		/// Null if the given HttpRequest does not represent a request from an 
+		/// OpenId client.  This could occur if someone just typed in an OpenID
+		/// URL directly.
+		/// </returns>
+		public Request DecodeRequest(NameValueCollection query) {
+			return Request.GetRequestFromQuery(query);
+		}
 
-        /// <summary>
-        /// Constructs an OpenId server that uses a given IAssociationStore.
-        /// </summary>
-        public Server(IAssociationStore store)
-        {
-            if (store == null) throw new ArgumentNullException("store");
-            _store = store;
-            _signatory = new Signatory(store);
-            _encoder = new SigningEncoder(_signatory);
-        }
+		public WebResponse EncodeResponse(IEncodable response) {
+			if (TraceUtil.Switch.TraceInfo) {
+				TraceUtil.ServerTrace("Encoding response");
+			}
 
-        #endregion
+			return this.encoder.Encode(response);
+		}
 
-        #region Methods
-
-        public Response HandleRequest(CheckAuthRequest request)        
-        {
-            Response response =  request.Answer(_signatory);
-            return response;
-            
-        }
-
-        public Response HandleRequest(AssociateRequest request)
-        {
-            Association assoc = _signatory.CreateAssociation(false);
-            Response response = request.Answer(assoc);
-            return response;
-        }
-
-        #endregion
-
-        public Request DecodeRequest(NameValueCollection query)
-        {
-            return Decoder.Decode(query);
-        }
-
-        public WebResponse EncodeResponse(IEncodable response)
-        {
-            #region  Trace
-            if (TraceUtil.Switch.TraceInfo)
-            {
-                TraceUtil.ServerTrace("Encoding response");
-            }
-            #endregion
-            
-            return this._encoder.Encode(response);
-        }
-
-        const string associationStoreKey = "DotNetOpenId.Server.Server.AssociationStore";
-        static IAssociationStore HttpApplicationAssociationStore {
-            get {
-                HttpContext context = HttpContext.Current;
-                if (context == null)
-                    throw new InvalidOperationException(Strings.IAssociationStoreRequiredWhenNoHttpContextAvailable);
-                IAssociationStore store = (IAssociationStore)context.Application[associationStoreKey];
-                if (store == null) {
-                    context.Application.Lock();
-                    try {
-                        if ((store = (IAssociationStore)context.Application[associationStoreKey]) == null) {
-                            context.Application[associationStoreKey] = store = new MemoryStore();
-                        }
-                    } finally {
-                        context.Application.UnLock();
-                    }
-                }
-                return store;
-            }
-        }
-    }
+		const string associationStoreKey = "DotNetOpenId.Server.Server.AssociationStore";
+		static IAssociationStore httpApplicationAssociationStore {
+			get {
+				HttpContext context = HttpContext.Current;
+				if (context == null)
+					throw new InvalidOperationException(Strings.IAssociationStoreRequiredWhenNoHttpContextAvailable);
+				IAssociationStore store = (IAssociationStore)context.Application[associationStoreKey];
+				if (store == null) {
+					context.Application.Lock();
+					try {
+						if ((store = (IAssociationStore)context.Application[associationStoreKey]) == null) {
+							context.Application[associationStoreKey] = store = new MemoryStore();
+						}
+					} finally {
+						context.Application.UnLock();
+					}
+				}
+				return store;
+			}
+		}
+	}
 }

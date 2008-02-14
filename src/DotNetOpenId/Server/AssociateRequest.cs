@@ -7,7 +7,7 @@ namespace DotNetOpenId.Server
     /// <summary>
     /// A request to establish an association.
     /// </summary>
-    public class AssociateRequest : Request
+    internal class AssociateRequest : Request
     {
 
         #region Private Members
@@ -42,10 +42,14 @@ namespace DotNetOpenId.Server
 
         #region Properties
 
+        public override RequestMode RequestMode {
+            get { return RequestMode.AssociateRequest; }
+        }
+
         /// <summary>
         /// Returns the string "associate".
         /// </summary>
-        public override string Mode
+        internal override string Mode
         {
             get { return QueryStringArgs.Modes.associate; }
         }

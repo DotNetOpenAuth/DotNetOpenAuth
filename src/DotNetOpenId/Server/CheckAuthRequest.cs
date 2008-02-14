@@ -9,7 +9,7 @@ namespace DotNetOpenId.Server
     /// <summary>
     /// A request to verify the validity of a previous response.
     /// </summary>
-    public class CheckAuthRequest : AssociatedRequest
+    internal class CheckAuthRequest : AssociatedRequest
     {
 
         #region Private Members
@@ -58,10 +58,14 @@ namespace DotNetOpenId.Server
 
         #region Properties
 
+        public override RequestMode RequestMode {
+            get { return RequestMode.CheckAuthRequest; }
+        }
+
         /// <summary>
         /// Gets the string "check_authentication".
         /// </summary>
-        public override string Mode
+        internal override string Mode
         {
             get { return QueryStringArgs.Modes.check_authentication; }
         }

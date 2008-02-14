@@ -211,6 +211,10 @@ namespace DotNetOpenId.Server
 
         #region Public Methods
 
+        public override RequestMode RequestMode {
+            get { return RequestMode.CheckIdRequest; }
+        }
+
         /// <summary>
         /// Respond to this request.
         /// </summary>
@@ -499,7 +503,7 @@ namespace DotNetOpenId.Server
 
         #region Inherited Properties
 
-        public override string Mode
+        internal override string Mode
         {
             get { return _mode; }
         }

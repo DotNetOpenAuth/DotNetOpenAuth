@@ -9,11 +9,13 @@ using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Web.UI.HtmlControls;
 using DotNetOpenId.Server;
+using System.Diagnostics;
 
 /// <summary>
 /// This is the primary page for this open-id server.
 /// This page is responsible for handling all open-id compliant requests:
-///
+/// </summary>
+/// <remarks>
 /// CheckIdRequest:
 ///   - when openid.mode='checkid_immediate' or openid.mode='checkid_setup'
 ///   - this is the initial message request sent to the server via server side call from the server
@@ -28,68 +30,42 @@ using DotNetOpenId.Server;
 ///   - when open.mode='check_authentication'
 ///   - this is request from the consumer to authenticate the user 
 ///   - this is sent via a HTTP 302 redirect by the consumer
-/// </summary>
-public partial class server : System.Web.UI.Page
-{
-    protected void Page_Load(object src, System.EventArgs evt)
-    {
-        Server openIDServer = new DotNetOpenId.Server.Server();
-        DotNetOpenId.Server.Request request = null;
+/// </remarks>
+public partial class server : System.Web.UI.Page {
+	protected void Page_Load(object src, System.EventArgs evt) {
+		Server openIDServer = new Server();
+		Request request = null;
 
-        // determine what incoming message was received
-        try
-        {
-            if (Request.HttpMethod == "GET")
+		// determine what incoming message was received
+		try {
+			request = openIDServer.DecodeRequest(Request);
+		} catch (ProtocolException e) {
+			Util.GenerateHttpResponse(e);
+			return;
+		}
+		if (request == null) {
+			contentForWebBrowsers.Visible = true;
+			return;
+		}
 
-                request = Decoder.Decode(Request.QueryString);
-            else
-                request = Decoder.Decode(Request.Form);
-        }
-        catch (DotNetOpenId.Server.ProtocolException e)
-        {
-            Util.GenerateHttpResponse(e);
-            return;
-        }
-        if (request == null)
-        {
-            contentForWebBrowsers.Visible = true;
-            return;
-        }
-            
-
-        // process the incoming message appropriately and send the response
-        DotNetOpenId.Server.Response response = null;
-        if (request is DotNetOpenId.Server.CheckIdRequest)
-        {
-            DotNetOpenId.Server.CheckIdRequest idrequest = (DotNetOpenId.Server.CheckIdRequest)request;
-            if (idrequest.Immediate)
-            {
-                String s = Util.ExtractUserName(idrequest.IdentityUrl);                
-                bool allow = (s != User.Identity.Name);
-                response = idrequest.Answer(allow, State.ServerUri);
-            }
-            else
-            {
-                State.Session.LastRequest = (CheckIdRequest)request;
-                Response.Redirect("decide.aspx");
-            }
-        }
-        else if (request is DotNetOpenId.Server.CheckAuthRequest)
-        {
-            response = openIDServer.HandleRequest((DotNetOpenId.Server.CheckAuthRequest)request);
-        }
-        else if (request is DotNetOpenId.Server.AssociateRequest)
-        {
-            response = openIDServer.HandleRequest((DotNetOpenId.Server.AssociateRequest)request);
-        }        
-        Util.GenerateHttpResponse(response);
-    }
-
-
-
-
-
-
+		// process the incoming message appropriately and send the response
+		Response response = null;
+		switch (request.RequestMode) {
+			case RequestMode.CheckIdRequest:
+				CheckIdRequest idrequest = (CheckIdRequest)request;
+				if (idrequest.Immediate) {
+					String s = Util.ExtractUserName(idrequest.IdentityUrl);
+					bool allow = (s != User.Identity.Name);
+					response = idrequest.Answer(allow, State.ServerUri);
+				} else {
+					State.Session.LastRequest = idrequest;
+					Response.Redirect("decide.aspx");
+				}
+				break;
+			default:
+				response = openIDServer.HandleRequest(request);
+				break;
+		}
+		Util.GenerateHttpResponse(response);
+	}
 }
-
-
