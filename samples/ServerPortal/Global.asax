@@ -35,7 +35,7 @@
         }
         #endregion
 
-        DotNetOpenId.ServerPortal.URLRewriter.Process();
+        URLRewriter.Process();
     }
 
     protected void Application_AuthenticateRequest(Object sender, EventArgs e)

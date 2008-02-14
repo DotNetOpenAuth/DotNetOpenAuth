@@ -8,10 +8,10 @@ using System.Text.RegularExpressions;
 using System.Xml.Xsl;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using DotNetOpenId;
 using DotNetOpenId.Server;
 
 // nicked from http://www.codeproject.com/aspnet/URLRewriter.asp
-namespace DotNetOpenId.ServerPortal {
 
 	public class URLRewriter : IConfigurationSectionHandler {
 		protected XmlNode _oRules=null;
@@ -62,4 +62,3 @@ namespace DotNetOpenId.ServerPortal {
 		}
 		#endregion
 	}
-}
