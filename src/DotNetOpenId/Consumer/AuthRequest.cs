@@ -72,7 +72,7 @@ namespace DotNetOpenId.Consumer
             UriUtil.AppendQueryArgs(redir, qsArgs);
             UriUtil.AppendQueryArgs(redir, this.ExtraArgs);
 
-            return new Uri(redir.ToString(), true);
+            return new Uri(redir.ToString(), true); // TODO: swap out deprecated call
         }
 
     }

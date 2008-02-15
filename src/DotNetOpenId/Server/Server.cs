@@ -32,14 +32,14 @@ namespace DotNetOpenId.Server {
 
 		public Response HandleRequest(Request request) {
 			Response response;
-			switch (request.RequestMode) {
-				case RequestMode.CheckAuthRequest:
+			switch (request.RequestType) {
+				case RequestType.CheckAuthRequest:
 					response = ((CheckAuthRequest)request).Answer(signatory);
 					break;
-				case RequestMode.AssociateRequest:
+				case RequestType.AssociateRequest:
 					response = ((AssociateRequest)request).Answer(signatory.CreateAssociation(false));
 					break;
-				case RequestMode.CheckIdRequest:
+				case RequestType.CheckIdRequest:
 				default:
 					throw new ArgumentException("Unexpected Request.RequestMode value.", "request");
 			}

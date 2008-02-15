@@ -53,12 +53,7 @@ namespace DotNetOpenId.Server
         {
             get
             {
-                  return (
-                    (this.Request.Mode == QueryStringArgs.Modes.checkid_setup ||
-                     this.Request.Mode == QueryStringArgs.Modes.checkid_immediate)
-                     &&
-                    (this.Signed.Length > 0)
-                    );
+                return Request is CheckIdRequest && Signed.Length > 0;
             }
         }
 

@@ -50,8 +50,8 @@ public partial class server : System.Web.UI.Page {
 
 		// process the incoming message appropriately and send the response
 		Response response = null;
-		switch (request.RequestMode) {
-			case RequestMode.CheckIdRequest:
+		switch (request.RequestType) {
+			case RequestType.CheckIdRequest:
 				CheckIdRequest idrequest = (CheckIdRequest)request;
 				if (idrequest.Immediate) {
 					String s = Util.ExtractUserName(idrequest.IdentityUrl);

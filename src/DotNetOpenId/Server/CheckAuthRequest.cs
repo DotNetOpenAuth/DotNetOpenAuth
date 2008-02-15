@@ -58,8 +58,8 @@ namespace DotNetOpenId.Server
 
         #region Properties
 
-        public override RequestMode RequestMode {
-            get { return RequestMode.CheckAuthRequest; }
+        public override RequestType RequestType {
+            get { return RequestType.CheckAuthRequest; }
         }
 
         /// <summary>

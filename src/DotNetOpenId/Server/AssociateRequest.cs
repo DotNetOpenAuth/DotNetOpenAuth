@@ -42,8 +42,8 @@ namespace DotNetOpenId.Server
 
         #region Properties
 
-        public override RequestMode RequestMode {
-            get { return RequestMode.AssociateRequest; }
+        public override RequestType RequestType {
+            get { return RequestType.AssociateRequest; }
         }
 
         /// <summary>

@@ -5,7 +5,7 @@ using System.Collections.Specialized;
 
 namespace DotNetOpenId.Server
 {
-	public enum RequestMode {
+	public enum RequestType {
 		CheckIdRequest,
 		CheckAuthRequest,
 		AssociateRequest,
@@ -14,8 +14,7 @@ namespace DotNetOpenId.Server
 	public abstract class Request {
 
 		internal abstract string Mode { get; }
-
-		public abstract RequestMode RequestMode { get; }
+		public abstract RequestType RequestType { get; }
 
 		public override string ToString() {
 			string returnString = @"Request.Mode = {0}";
