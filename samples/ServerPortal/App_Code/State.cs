@@ -10,59 +10,43 @@ using System.Web.UI.HtmlControls;
 using DotNetOpenId.Server;
 
 /// <summary>
-/// Summary description for State
+/// Helps manage state across requests.
 /// </summary>
-public class State
-{
-    public State()
-    {        
-    }
-    
-    public static SessionState Session
-    {
-        get
-        {
-            if (HttpContext.Current.Session["SessionState"] == null)  { HttpContext.Current.Session["SessionState"] = new SessionState(); }
-            return HttpContext.Current.Session["SessionState"] as SessionState;
-        }
-    }
+public class State {
+	const string sessionStateKey = "SessionState";
+	public static SessionState Session {
+		get {
+			SessionState state = HttpContext.Current.Session[sessionStateKey] as SessionState;
+			if (state == null) {
+				HttpContext.Current.Session[sessionStateKey] = state = new SessionState();
+			}
+			return state;
+		}
+	}
 
-    public static  Uri ServerUri
-    {
-        get
-        {
-            UriBuilder builder = new UriBuilder(HttpContext.Current.Request.Url);
-            builder.Path = HttpContext.Current.Response.ApplyAppPathModifier("~/server.aspx");
-            builder.Query = null;
-            builder.Fragment = null;
-            return new Uri(builder.ToString(), true);
-        }
-    }
+	[Serializable()]
+	public class SessionState {
+		CheckIdRequest lastRequest;
+		public CheckIdRequest LastRequest {
+			get { return lastRequest; }
+			set { lastRequest = value; }
+		}
 
-    [Serializable()]
-    public  class SessionState
-    {
-        private CheckIdRequest lastRequest;
+		/// <summary>
+		/// Ensures that memory of a prior request as part of an OpenID authentication
+		/// exists.  Throws an exception if this is not the case.
+		/// </summary>
+		public void CheckExpectedStateIsAvailable() {
+			if (LastRequest == null) {
+				throw new InvalidOperationException("The CheckIdRequest has not been set. This usually means that Http Session is not available and the OpenID request needs to be restarted.");
+			}
+		}
 
-        public CheckIdRequest LastRequest
-        {
-            get { return lastRequest; }
-            set { lastRequest = value; }
-        }
-        
-        public void CheckExpectedStateIsAvailable()
-        {
-            if (LastRequest == null)
-            {
-                throw new ApplicationException("The CheckIdRequest has not been set. This usually means that Http Session is not available and the OpenID request needs to be restarted.");
-            }
-        }
-        
-        public void Reset()
-        {
-            lastRequest = null;
-        }
-    }
-
-
+		/// <summary>
+		/// Clears memory of a prior request.
+		/// </summary>
+		public void Reset() {
+			LastRequest = null;
+		}
+	}
 }

@@ -56,7 +56,7 @@ public partial class server : System.Web.UI.Page {
 				if (idrequest.Immediate) {
 					String s = Util.ExtractUserName(idrequest.IdentityUrl);
 					bool allow = (s != User.Identity.Name);
-					response = idrequest.Answer(allow, State.ServerUri);
+					response = idrequest.Answer(allow, Util.ServerUri);
 				} else {
 					State.Session.LastRequest = idrequest;
 					Response.Redirect("decide.aspx");

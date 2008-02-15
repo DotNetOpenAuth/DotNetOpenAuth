@@ -9,10 +9,6 @@ using DotNetOpenId.Store;
 /// </summary>
 public class Util
 {
-    public Util()
-    {
-    }
-
     public static string ExtractUserName(Uri url)
     {        
         return url.Segments[url.Segments.Length - 1];
@@ -121,4 +117,16 @@ public class Util
         // HttpContext.Current.Response.Close();
     }
     
+    public static  Uri ServerUri
+    {
+        get
+        {
+            UriBuilder builder = new UriBuilder(HttpContext.Current.Request.Url);
+            builder.Path = HttpContext.Current.Response.ApplyAppPathModifier("~/server.aspx");
+            builder.Query = null;
+            builder.Fragment = null;
+            return new Uri(builder.ToString(), true);
+        }
+    }
+
 }

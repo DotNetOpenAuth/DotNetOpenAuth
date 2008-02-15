@@ -37,19 +37,19 @@ public partial class decide : Page
         if ( this.profileFields.DoesAnyFieldHaveAValue)
         {
             // authenticate with simple registration fields
-            response = State.Session.LastRequest.Answer(true, State.ServerUri, this.profileFields.OpenIdProfileFields);
+            response = State.Session.LastRequest.Answer(true, Util.ServerUri, this.profileFields.OpenIdProfileFields);
         }
         else
         {
             // no fields available
-            response = State.Session.LastRequest.Answer(true, State.ServerUri);
+            response = State.Session.LastRequest.Answer(true, Util.ServerUri);
         }
         Util.GenerateHttpResponse(response);
     }
 
     protected void No_Click(Object sender, EventArgs e)
     {
-        DotNetOpenId.Server.Response response = State.Session.LastRequest.Answer(false, State.ServerUri);
+        DotNetOpenId.Server.Response response = State.Session.LastRequest.Answer(false, Util.ServerUri);
         Util.GenerateHttpResponse(response);
     }
 }
