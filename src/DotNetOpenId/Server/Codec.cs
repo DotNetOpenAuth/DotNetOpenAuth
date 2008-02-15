@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Specialized;
 using System.Text;
+using System.Net;
 
 namespace DotNetOpenId.Server
 {
@@ -79,12 +80,12 @@ namespace DotNetOpenId.Server
             
             if (encode_as == EncodingType.ENCODE_KVFORM)
             {
-                HttpCode code;
+                HttpStatusCode code;
 
                 if (response is Exception)
-                    code = HttpCode.HTTP_ERROR;
+                    code = HttpStatusCode.BadRequest;
                 else
-                    code = HttpCode.HTTP_OK;
+                    code = HttpStatusCode.OK;
 
                 wr = new WebResponse(code, null, response.EncodeToKVForm());
             }
@@ -94,7 +95,7 @@ namespace DotNetOpenId.Server
 
                 headers.Add("Location", response.EncodeToUrl().AbsoluteUri);
 
-                wr = new WebResponse(HttpCode.HTTP_REDIRECT, headers, new byte[0]);
+                wr = new WebResponse(HttpStatusCode.Redirect, headers, new byte[0]);
             }
             else
             {

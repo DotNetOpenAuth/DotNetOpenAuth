@@ -1,65 +1,21 @@
 using System;
 using System.Collections.Specialized;
 using System.Text;
+using System.Net;
 
-namespace DotNetOpenId.Server
-{
+namespace DotNetOpenId.Server {
+	/// <summary>
+	/// A response to an OpenID request in terms a web server understands.
+	/// </summary>
+	public class WebResponse {
+		public WebResponse(HttpStatusCode code, NameValueCollection headers, byte[] body) {
+			Code = code;
+			Headers = headers ?? new NameValueCollection();
+			Body = body;
+		}
 
-    public enum HttpCode : int
-    {
-        HTTP_OK = 200,
-        HTTP_REDIRECT = 302,
-        HTTP_ERROR = 400
-    }
-
-    /// <summary>
-    /// A response to an OpenID request in terms a web server understands.
-    /// </summary>
-    public class WebResponse
-    {
-
-        #region Private Members
-
-        private HttpCode _code;
-        private NameValueCollection _headers;
-        private byte[] _body;
-
-        #endregion
-
-        #region Constructor(s)
-
-        public WebResponse(HttpCode code, NameValueCollection headers, byte[] body)
-        {
-            _code = code;
-
-            if (headers == null)
-                _headers = new NameValueCollection();
-            else
-                _headers = headers;
-
-            _body = body;
-        }
-
-        #endregion
-
-        #region Properties
-
-        public HttpCode Code
-        {
-            get { return _code; }
-        }
-
-        public NameValueCollection Headers
-        {
-            get { return _headers; }
-        }
-
-        public byte[] Body
-        {
-            get { return _body; }
-        }
-
-        #endregion
-
-    }
+		public HttpStatusCode Code { get; private set; }
+		public NameValueCollection Headers { get; private set; }
+		public byte[] Body { get; private set; }
+	}
 }
