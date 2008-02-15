@@ -10,31 +10,12 @@ namespace DotNetOpenId.Server
     /// </summary>
     public class EncodingException : ApplicationException
     {
-
-        #region Private Members
-
-        private IEncodable _response;
-
-        #endregion
-
-        #region Constructor(s)
-
         public EncodingException(IEncodable response)
         {
-            _response = response;
+            Response = response;
         }
 
-        #endregion
-
-        #region Properties
-
-        public IEncodable Response
-        {
-            get { return _response; }
-        }
-
-        #endregion
-
+        public IEncodable Response { get; private set; }
     }
 
     /// <summary>
@@ -42,12 +23,10 @@ namespace DotNetOpenId.Server
     /// </summary>
     public class AlreadySignedException : EncodingException
     {
-
         public AlreadySignedException(IEncodable response)
             : base(response)
         {
         }
-
     }
 
     /// <summary>
@@ -55,14 +34,6 @@ namespace DotNetOpenId.Server
     /// </summary>
     internal class Encoder
     {
-
-        #region Constructor(s)
-
-        public Encoder() { }
-
-        #endregion
-
-        #region Methods
         /// <summary>
         /// Encodes responses in to WebResponses.
         /// </summary>
@@ -104,9 +75,6 @@ namespace DotNetOpenId.Server
 
             return wr;
         }
-
-        #endregion
-
     }
 
     /// <summary>
@@ -114,23 +82,12 @@ namespace DotNetOpenId.Server
     /// </summary>
     internal class SigningEncoder : Encoder
     {
-
-        #region Private Members
-
-        private Signatory _signatory;
-
-        #endregion
-
-        #region Constructor(s)
+        Signatory signatory;
 
         public SigningEncoder(Signatory signatory)
         {
-            _signatory = signatory;
+            this.signatory = signatory;
         }
-
-        #endregion
-
-        #region Methods
 
         public override WebResponse Encode(IEncodable encodable)
         {
@@ -148,21 +105,18 @@ namespace DotNetOpenId.Server
 
                 if (response.NeedsSigning)
                 {
-                    if (_signatory == null)
+                    if (signatory == null)
                         throw new ArgumentException("Must have a store to sign this request");
 
                     if (response.Fields.ContainsKey(QueryStringArgs.openidnp.sig))
                         throw new AlreadySignedException(encodable);
 
-                    _signatory.Sign(response);
+                    signatory.Sign(response);
                 }
 
             }
 
             return base.Encode(encodable);
         }
-
-        #endregion
-
     }
 }
