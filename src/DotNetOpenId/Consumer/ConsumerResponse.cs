@@ -15,8 +15,8 @@ namespace DotNetOpenId.Consumer
 
 		IDictionary<string, string> signed_args;
 
-		public Uri ReturnTo { // TODO: swap out deprecated call
-			get { return new Uri(this.signed_args[QueryStringArgs.openid.return_to], true); }
+		public Uri ReturnTo {
+			get { return new Uri(this.signed_args[QueryStringArgs.openid.return_to]); }
 		}
 
 		public ConsumerResponse(Uri identity_url, IDictionary<string, string> query, string signed)
