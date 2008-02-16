@@ -53,6 +53,7 @@ namespace DotNetOpenId.Server {
 			get { return requestTimeZone; }
 		}
 
+		public Server Server { get; private set; }
 		public bool Immediate { get; private set; }
 		public string TrustRoot { get; private set; }
 		public Uri IdentityUrl { get; private set; }
@@ -106,7 +107,8 @@ namespace DotNetOpenId.Server {
 			}
 		}
 
-		internal CheckIdRequest(Uri identity, Uri return_to, string trust_root, bool immediate, string assoc_handle) {
+		internal CheckIdRequest(Server server, Uri identity, Uri return_to, string trust_root, bool immediate, string assoc_handle) {
+			Server = server;
 			this.AssocHandle = assoc_handle;
 
 			IdentityUrl = identity;
@@ -118,7 +120,8 @@ namespace DotNetOpenId.Server {
 				throw new UntrustedReturnUrlException(null, ReturnTo, TrustRoot);
 		}
 
-		internal CheckIdRequest(NameValueCollection query) {
+		internal CheckIdRequest(Server server, NameValueCollection query) {
+			Server = server;
 			// handle the mandatory protocol fields
 			string mode = getRequiredField(query, QueryStringArgs.openid.mode);
 			if (QueryStringArgs.Modes.checkid_immediate.Equals(mode, StringComparison.Ordinal)) {
@@ -215,7 +218,7 @@ namespace DotNetOpenId.Server {
 		/// <param name="allow">Allow this user to claim this identity, and allow the consumer to have this information?</param>
 		/// <param name="server_url"></param>
 		/// <returns></returns>
-		public IEncodable Answer(bool allow, Uri server_url) {
+		public WebResponse Answer(bool allow, Uri server_url) {
 			return Answer(allow, server_url, null);
 		}
 
@@ -226,7 +229,7 @@ namespace DotNetOpenId.Server {
 		/// <param name="server_url"></param>
 		/// <param name="openIdProfileFields"></param>
 		/// <returns></returns>
-		public IEncodable Answer(bool allow, Uri server_url, OpenIdProfileFields openIdProfileFields) {
+		public WebResponse Answer(bool allow, Uri server_url, OpenIdProfileFields openIdProfileFields) {
 			string mode;
 
 			if (allow || Immediate)
@@ -308,7 +311,7 @@ namespace DotNetOpenId.Server {
 			if (Immediate) {
 				if (server_url == null) { throw new ApplicationException("setup_url is required for allow=False in immediate mode."); }
 
-				CheckIdRequest setup_request = new CheckIdRequest(IdentityUrl, ReturnTo, TrustRoot, false, this.AssocHandle);
+				CheckIdRequest setup_request = new CheckIdRequest(Server, IdentityUrl, ReturnTo, TrustRoot, false, this.AssocHandle);
 
 				Uri setup_url = setup_request.encodeToUrl(server_url);
 
@@ -326,7 +329,7 @@ namespace DotNetOpenId.Server {
 
 			#endregion
 
-			return response;
+			return Server.EncodeResponse(response);
 		}
 
 		/// <summary>

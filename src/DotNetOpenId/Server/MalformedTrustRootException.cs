@@ -10,15 +10,9 @@ namespace DotNetOpenId.Server
     /// </summary>
     public class MalformedTrustRootException : ProtocolException
     {
-
-        #region Constructor(s)
-
-        public MalformedTrustRootException(NameValueCollection query, string text)
+        internal MalformedTrustRootException(NameValueCollection query, string text)
             : base(query, text)
         {
         }
-
-        #endregion
-
     }
 }

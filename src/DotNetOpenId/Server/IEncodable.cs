@@ -6,14 +6,14 @@ namespace DotNetOpenId.Server
 {
 
     // TODO Move this enum out to it's own file
-    public enum EncodingType
+    internal enum EncodingType
     {
         None,
         UrlRedirection,
         KVForm
     }
 
-    public interface IEncodable
+    internal interface IEncodable
     {
         EncodingType EncodingType { get; }
         IDictionary<string, string> EncodedFields { get; }

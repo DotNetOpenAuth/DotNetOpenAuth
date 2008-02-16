@@ -19,7 +19,7 @@ namespace DotNetOpenId.Server
             this.query = query;
         }
 
-        public bool HasReturnTo
+        internal bool HasReturnTo
         {
             get
             {
@@ -29,7 +29,7 @@ namespace DotNetOpenId.Server
 
         #region IEncodable Members
 
-        public EncodingType EncodingType
+        EncodingType IEncodable.EncodingType
         {
             get 
             {

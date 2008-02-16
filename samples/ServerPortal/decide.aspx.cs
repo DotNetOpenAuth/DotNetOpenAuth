@@ -33,7 +33,7 @@ public partial class decide : Page
     ///
     protected void Yes_Click(Object sender, EventArgs e)
     {
-        IEncodable response;
+        WebResponse response;
         if ( this.profileFields.DoesAnyFieldHaveAValue)
         {
             // authenticate with simple registration fields
@@ -49,7 +49,6 @@ public partial class decide : Page
 
     protected void No_Click(Object sender, EventArgs e)
     {
-        IEncodable response = State.Session.LastRequest.Answer(false, Util.ServerUri);
-        Util.GenerateHttpResponse(response);
+        Util.GenerateHttpResponse(State.Session.LastRequest.Answer(false, Util.ServerUri));
     }
 }

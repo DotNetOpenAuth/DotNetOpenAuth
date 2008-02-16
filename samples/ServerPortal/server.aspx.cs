@@ -49,7 +49,7 @@ public partial class server : System.Web.UI.Page {
 		}
 
 		// process the incoming message appropriately and send the response
-		IEncodable response = null;
+		WebResponse response = null;
 		switch (request.RequestType) {
 			case RequestType.CheckIdRequest:
 				CheckIdRequest idrequest = (CheckIdRequest)request;

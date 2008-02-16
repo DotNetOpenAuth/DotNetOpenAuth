@@ -10,12 +10,12 @@ namespace DotNetOpenId.Server
     /// </summary>
     public class EncodingException : Exception
     {
-        public EncodingException(IEncodable response)
+        internal EncodingException(IEncodable response)
         {
             Response = response;
         }
 
-        public IEncodable Response { get; private set; }
+        internal IEncodable Response { get; private set; }
     }
 
     /// <summary>
@@ -23,7 +23,7 @@ namespace DotNetOpenId.Server
     /// </summary>
     public class AlreadySignedException : EncodingException
     {
-        public AlreadySignedException(IEncodable response)
+        internal AlreadySignedException(IEncodable response)
             : base(response)
         {
         }

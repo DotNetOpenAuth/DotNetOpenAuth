@@ -5,6 +5,7 @@ using DotNetOpenId.Server;
 using DotNetOpenId.Store;
 using System.Text;
 using System.Collections.Generic;
+using System.Net;
 
 /// <summary>
 /// Summary description for Util
@@ -16,28 +17,13 @@ public class Util
         return url.Segments[url.Segments.Length - 1];
     }
 
-    public static void GenerateHttpResponse(IEncodable response)
+    public static void GenerateHttpResponse(ProtocolException e)
     {
         State.Session.Reset();
-        WebResponse webresponse = null;
-        Server server = new Server();
-        try
-        {
-            #region  Trace
-            if (TraceUtil.Switch.TraceInfo)
-            {
-                TraceUtil.ServerTrace("Preparing to send response");
-            }
-            #endregion
-            
-            webresponse = server.EncodeResponse(response);                        
-        }
-        catch (EncodingException e)
-        {
-            StringBuilder text = new StringBuilder();
-            foreach (KeyValuePair<string, string> pair in e.Response.EncodedFields)
-                text.AppendLine(pair.Key + "=" + pair.Value);
-            string error = @"
+        StringBuilder text = new StringBuilder();
+        foreach (KeyValuePair<string, string> pair in e.EncodedFields)
+            text.AppendLine(pair.Key + "=" + pair.Value);
+        string error = @"
         <html><head><title>Error Processing Request</title></head><body>
         <p><pre>{0}</pre></p>
         <!--
@@ -71,13 +57,18 @@ public class Util
         *************************************************************
 
         --></body></html>";
-            error = String.Format(error, HttpUtility.HtmlEncode(text.ToString()));
-            HttpContext.Current.Response.StatusCode = 400;
-            HttpContext.Current.Response.Write(error);
-            HttpContext.Current.Response.Close();
-        }
+        error = String.Format(error, HttpUtility.HtmlEncode(text.ToString()));
+        HttpContext.Current.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+        HttpContext.Current.Response.Write(error);
+        HttpContext.Current.Response.Close();
+    }
 
-        if (((int)webresponse.Code) == 302)
+    public static void GenerateHttpResponse(DotNetOpenId.Server.WebResponse webresponse)
+    {
+        State.Session.Reset();
+        Server server = new Server();
+
+        if (webresponse.Code == HttpStatusCode.Redirect)
         {
             #region  Trace
             if (TraceUtil.Switch.TraceInfo)

@@ -77,7 +77,7 @@ namespace DotNetOpenId.Server
         /// <summary>
         /// Respond to this request.
         /// </summary>
-        internal Response Answer(Signatory signatory)
+        internal IEncodable Answer(Signatory signatory)
         {
             #region  Trace
             if (TraceUtil.Switch.TraceInfo)

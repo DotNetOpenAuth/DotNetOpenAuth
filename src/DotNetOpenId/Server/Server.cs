@@ -30,20 +30,82 @@ namespace DotNetOpenId.Server {
 			this.encoder = new SigningEncoder(signatory);
 		}
 
-		public IEncodable HandleRequest(Request request) {
-			Response response;
-			switch (request.RequestType) {
-				case RequestType.CheckAuthRequest:
-					response = ((CheckAuthRequest)request).Answer(signatory);
-					break;
-				case RequestType.AssociateRequest:
-					response = ((AssociateRequest)request).Answer(signatory.CreateAssociation(false));
-					break;
-				case RequestType.CheckIdRequest:
-				default:
-					throw new ArgumentException("Unexpected Request.RequestMode value.", "request");
+		/// <summary>
+		/// Decodes an incoming web request in to a <see cref="Request"/>.
+		/// </summary>
+		/// <param name="query">The query parameters as a dictionary with each key mapping to one value. </param>
+		public Request DecodeRequest(NameValueCollection query) {
+			if (TraceUtil.Switch.TraceInfo) {
+				TraceUtil.ServerTrace("Start message decoding");
 			}
-			return response;
+
+			if (query == null) return null;
+
+			NameValueCollection myquery = new NameValueCollection();
+			foreach (string key in query) {
+				if (!String.IsNullOrEmpty(key)) {
+					if (key.StartsWith(QueryStringArgs.openid.Prefix)) { myquery[key] = query[key]; }
+				}
+			}
+
+			if (myquery.Count == 0) return null;
+
+			string mode = myquery.Get(QueryStringArgs.openid.mode);
+			if (mode == null)
+				throw new ProtocolException(query, "No openid.mode value in query");
+
+			if (mode == QueryStringArgs.Modes.checkid_setup) {
+				CheckIdRequest request = new CheckIdRequest(this, query);
+
+				if (TraceUtil.Switch.TraceInfo) {
+					TraceUtil.ServerTrace("End message decoding. Successfully decoded message as new CheckIdRequest in setup mode");
+					if (TraceUtil.Switch.TraceInfo) {
+						TraceUtil.ServerTrace("CheckIdRequest follows: ");
+						TraceUtil.ServerTrace(request.ToString());
+					}
+				}
+
+				return request;
+			} else if (mode == QueryStringArgs.Modes.checkid_immediate) {
+				CheckIdRequest request = new CheckIdRequest(this, query);
+
+				if (TraceUtil.Switch.TraceInfo) {
+					TraceUtil.ServerTrace("End message decoding. Successfully decoded message as new CheckIdRequest in immediate mode");
+					if (TraceUtil.Switch.TraceInfo) {
+						TraceUtil.ServerTrace("CheckIdRequest follows: ");
+						TraceUtil.ServerTrace(request.ToString());
+					}
+				}
+
+				return request;
+			} else if (mode == QueryStringArgs.Modes.check_authentication) {
+				CheckAuthRequest request = new CheckAuthRequest(query);
+
+				if (TraceUtil.Switch.TraceInfo) {
+					TraceUtil.ServerTrace("End message decoding. Successfully decoded message as new CheckAuthRequest");
+					if (TraceUtil.Switch.TraceInfo) {
+						TraceUtil.ServerTrace("CheckAuthRequest follows: ");
+						TraceUtil.ServerTrace(request.ToString());
+					}
+				}
+
+				return request;
+			} else if (mode == QueryStringArgs.Modes.associate) {
+				AssociateRequest request = new AssociateRequest(query);
+
+				if (TraceUtil.Switch.TraceInfo) {
+					TraceUtil.ServerTrace("End message decoding. Successfully decoded message as new AssociateRequest ");
+					if (TraceUtil.Switch.TraceInfo) {
+						TraceUtil.ServerTrace("AssociateRequest follows: ");
+						TraceUtil.ServerTrace(request.ToString());
+					}
+				}
+
+				return request;
+			}
+
+			throw new ProtocolException(query, "No decoder for openid.mode=" + mode);
+
 		}
 
 		/// <returns>
@@ -56,21 +118,28 @@ namespace DotNetOpenId.Server {
 				request.HttpMethod == "GET" ? request.QueryString : request.Form);
 		}
 
-		/// <returns>
-		/// Null if the given HttpRequest does not represent a request from an 
-		/// OpenId client.  This could occur if someone just typed in an OpenID
-		/// URL directly.
-		/// </returns>
-		public Request DecodeRequest(NameValueCollection query) {
-			return Request.GetRequestFromQuery(query);
+		public WebResponse HandleRequest(Request request) {
+			WebResponse response;
+			switch (request.RequestType) {
+				case RequestType.CheckAuthRequest:
+					response = EncodeResponse(((CheckAuthRequest)request).Answer(signatory));
+					break;
+				case RequestType.AssociateRequest:
+					response = EncodeResponse(((AssociateRequest)request).Answer(signatory.CreateAssociation(false)));
+					break;
+				case RequestType.CheckIdRequest:
+				default:
+					throw new ArgumentException("Unexpected Request.RequestMode value.  Use CheckIdRequest.Answer instead.", "request");
+			}
+			return response;
 		}
 
-		public WebResponse EncodeResponse(IEncodable response) {
+		internal WebResponse EncodeResponse(IEncodable response) {
 			if (TraceUtil.Switch.TraceInfo) {
 				TraceUtil.ServerTrace("Encoding response");
 			}
 
-			return this.encoder.Encode(response);
+			return encoder.Encode(response);
 		}
 
 		const string associationStoreKey = "DotNetOpenId.Server.Server.AssociationStore";

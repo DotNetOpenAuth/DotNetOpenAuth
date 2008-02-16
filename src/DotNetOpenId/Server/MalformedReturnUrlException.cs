@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DotNetOpenId.Server {
 	public class MalformedReturnUrlException : ProtocolException {
-		public MalformedReturnUrlException(NameValueCollection query, string return_to)
+		internal MalformedReturnUrlException(NameValueCollection query, string return_to)
 			: base(query, "") {
 			ReturnTo = return_to;
 		}
