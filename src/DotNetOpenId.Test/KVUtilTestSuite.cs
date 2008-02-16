@@ -14,7 +14,7 @@ namespace DotNetOpenId.Test
 
         public static void KVDictTest(byte[] kvform, IDictionary<string,string> dict)
         {
-            var d = KVUtil.KVToDict(kvform, kvform.Length);
+            var d = DictionarySerializer.Deserialize(kvform, kvform.Length);
 
             foreach (string key in dict.Keys)
             {

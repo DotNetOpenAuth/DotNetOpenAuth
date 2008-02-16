@@ -25,7 +25,7 @@ namespace DotNetOpenId.Provider
         public CheckAuthRequest(Server server, string assoc_handle, string sig,
             IDictionary<string, string> signed, string invalidate_handle) : base(server)
         {
-            this.AssocHandle = assoc_handle;
+            this.AssociationHandle = assoc_handle;
             _sig = sig;
             _signed = signed;
             _invalidate_handle = invalidate_handle;
@@ -33,7 +33,7 @@ namespace DotNetOpenId.Provider
 
         public CheckAuthRequest(Server server, NameValueCollection query) : base(server)
         {
-            this.AssocHandle = this.GetField(query, QueryStringArgs.openidnp.assoc_handle);
+            this.AssociationHandle = this.GetField(query, QueryStringArgs.openidnp.assoc_handle);
             _sig = this.GetField(query, QueryStringArgs.openidnp.sig);
             string signedStr = this.GetField(query, QueryStringArgs.openidnp.signed);
 
@@ -87,9 +87,9 @@ namespace DotNetOpenId.Provider
             }
             #endregion
 
-            bool is_valid = Server.Signatory.Verify(this.AssocHandle, _sig, _signed);
+            bool is_valid = Server.Signatory.Verify(this.AssociationHandle, _sig, _signed);
 
-            Server.Signatory.Invalidate(this.AssocHandle, true);
+            Server.Signatory.Invalidate(this.AssociationHandle, true);
 
             Response response = new Response(this);
 
@@ -157,7 +157,7 @@ namespace DotNetOpenId.Provider
             string returnString = @"CheckAuthRequest._sig = '{0}'
 CheckAuthRequest.AssocHandle = '{1}'
 CheckAuthRequest._invalidate_handle = '{2}' ";
-            return base.ToString() + Environment.NewLine + String.Format(returnString, _sig, AssocHandle, _invalidate_handle);
+            return base.ToString() + Environment.NewLine + String.Format(returnString, _sig, AssociationHandle, _invalidate_handle);
         }
 
     }

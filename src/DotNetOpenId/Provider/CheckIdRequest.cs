@@ -107,7 +107,7 @@ namespace DotNetOpenId.Provider {
 
 		internal CheckIdRequest(Server server, Uri identity, Uri return_to, string trust_root, 
 			bool immediate, string assoc_handle) : base(server) {
-			this.AssocHandle = assoc_handle;
+			this.AssociationHandle = assoc_handle;
 
 			IdentityUrl = identity;
 			ReturnTo = return_to;
@@ -142,7 +142,7 @@ namespace DotNetOpenId.Provider {
 			}
 
 			TrustRoot = query[QueryStringArgs.openid.trust_root] ?? ReturnTo.AbsoluteUri;
-			AssocHandle = query[QueryStringArgs.openid.assoc_handle];
+			AssociationHandle = query[QueryStringArgs.openid.assoc_handle];
 
 			if (!IsTrustRootValid)
 				throw new UntrustedReturnUrlException(query, ReturnTo, TrustRoot);
@@ -295,7 +295,7 @@ namespace DotNetOpenId.Provider {
 			if (Immediate) {
 				if (server_url == null) { throw new ApplicationException("setup_url is required for allow=False in immediate mode."); }
 
-				CheckIdRequest setup_request = new CheckIdRequest(Server, IdentityUrl, ReturnTo, TrustRoot, false, this.AssocHandle);
+				CheckIdRequest setup_request = new CheckIdRequest(Server, IdentityUrl, ReturnTo, TrustRoot, false, this.AssociationHandle);
 
 				Uri setup_url = setup_request.encodeToUrl(server_url);
 
@@ -330,8 +330,8 @@ namespace DotNetOpenId.Provider {
 			if (TrustRoot != null)
 				q.Add(QueryStringArgs.openid.trust_root, TrustRoot);
 
-			if (this.AssocHandle != null)
-				q.Add(QueryStringArgs.openid.assoc_handle, this.AssocHandle);
+			if (this.AssociationHandle != null)
+				q.Add(QueryStringArgs.openid.assoc_handle, this.AssociationHandle);
 
 			UriBuilder builder = new UriBuilder(server_url);
 			UriUtil.AppendQueryArgs(builder, q);

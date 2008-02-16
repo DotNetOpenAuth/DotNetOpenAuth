@@ -1,131 +1,157 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Security.Cryptography;
+using System.IO;
+using System.Text;
 
-namespace DotNetOpenId
-{
-    public abstract class Association
-    {
+namespace DotNetOpenId {
+	public abstract class Association {
+		protected Association(string handle, byte[] secretKey, TimeSpan totalLifeLength, DateTime issued) {
+			Handle = handle;
+			SecretKey = secretKey;
+			TotalLifeLength = totalLifeLength;
+			Issued = cutToSecond(issued);
+		}
 
-        #region Constructor(s)
+		/// <summary>
+		/// Represents January 1, 1970 12 AM.
+		/// </summary>
+		protected internal readonly static DateTime UNIX_EPOCH = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+		/// <summary>
+		/// A unique handle by which this <see cref="Association"/> may be stored or retrieved.
+		/// </summary>
+		public string Handle { get; set; }
+		/// <summary>
+		/// Gets the time that this <see cref="Association"/> was first created
+		/// and the <see cref="SecretKey"/> issued.
+		/// </summary>
+		public DateTime Issued { get; internal set; }
+		/// <summary>
+		/// The lifetime the OpenID provider permits this <see cref="Association"/>.
+		/// </summary>
+		protected TimeSpan TotalLifeLength { get; private set; }
+		/// <summary>
+		/// Gets the number of seconds between Jan 1, 1970 12 AM and the <see cref="Issued"/> date.
+		/// </summary>
+		public uint IssuedUnix {
+			get { return (uint)((Issued - UNIX_EPOCH).TotalSeconds); }
+		}
 
-        protected Association(string handle, byte[] key, TimeSpan expiresIn, DateTime issued) {
-            this.handle = handle;
-            this.key = key;
-            this.expiresIn = expiresIn;
-            this.issued = issued;
-        }
+		/// <summary>
+		/// The shared secret key between the consumer and provider.
+		/// </summary>
+		protected internal byte[] SecretKey { get; private set; }
 
-        #endregion
+		/// <summary>
+		/// Gets the time when this <see cref="Association"/> will expire.
+		/// </summary>
+		public DateTime Expires {
+			get { return Issued + TotalLifeLength; }
+		}
 
-        #region Member Variables
+		/// <summary>
+		/// Gets whether this <see cref="Association"/> has already expired.
+		/// </summary>
+		public bool IsExpired {
+			get { return Expires < DateTime.UtcNow; }
+		}
 
-        protected internal readonly static DateTime UNIX_EPOCH = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-        private string handle;
-        private DateTime issued;
-        protected TimeSpan expiresIn;
-        protected byte[] key;
+		/// <summary>
+		/// The number of seconds until this <see cref="Association"/> expires.
+		/// Never negative (counter runs to zero).
+		/// </summary>
+		public long SecondsTillExpiration {
+			get { return Math.Max(0, (long)(Expires - DateTime.UtcNow).TotalSeconds); }
+		}
 
-        #endregion
+		/// <summary>
+		/// The string to pass as the assoc_type value in the OpenID protocol.
+		/// </summary>
+		public abstract string AssociationType { get; }
 
-        #region Properties
+		/// <summary>
+		/// Signs certain given key/value pairs in a supplied dictionary.
+		/// </summary>
+		/// <param name="data">
+		/// A dictionary with key/value pairs, at least some of which you want to include in the signature.
+		/// </param>
+		/// <param name="keysToSign">
+		/// A list of the keys in the supplied dictionary you wish to sign.
+		/// </param>
+		/// <param name="keyLookupPrefix">
+		/// An optional prefix to use in front of a given name in <paramref name="fields"/>
+		/// when looking up the value from <paramref name="data"/>.
+		/// </param>
+		/// <returns>The signature of the key-value pairs.</returns>
+		internal byte[] Sign(IDictionary<string, string> data, ICollection<string> keysToSign, string keyLookupPrefix) {
+			var nvc = new Dictionary<string, string>();
 
-        public string Handle
-        {
-            get { return handle; }
-            set { handle = value; }
-        }
+			foreach (string field in keysToSign) {
+				nvc.Add(field, data[keyLookupPrefix + field]);
+			}
 
-        public DateTime Issued
-        {
-            get { return this.issued; }
-            set { this.issued = value; }
-        }
+			return Sign(nvc);
+		}
+		/// <summary>
+		/// Generates a signature from a given dictionary.
+		/// </summary>
+		/// <param name="data">The dictionary.  This dictionary will not be changed.</param>
+		/// <returns>The calculated signature of the data in the dictionary.</returns>
+		protected internal abstract byte[] Sign(IDictionary<string, string> data);
+		/// <summary>
+		/// Rounds the given <see cref="DateTime"/> downward to the whole second.
+		/// </summary>
+		static DateTime cutToSecond(DateTime dateTime) {
+			return new DateTime(dateTime.Ticks - (dateTime.Ticks % TimeSpan.TicksPerSecond));
+		}
 
-        public byte[] Secret
-        {
-            get { return key; }
-        }
+		public override bool Equals(object obj) {
+			Association a = obj as Association;
+			if (a == null) return false;
+			if (a.GetType() != GetType()) return false;
 
-        public uint IssuedUnix
-        {
-            get { return (uint)((this.issued - UNIX_EPOCH).TotalSeconds); }
-        }
+			if (a.Handle != this.Handle ||
+				a.Issued != this.Issued ||
+				a.TotalLifeLength != this.TotalLifeLength)
+				return false;
 
-        public DateTime Expires
-        {
-            get { return this.issued.Add(this.expiresIn); }
-        }
+			if (!Util.ArrayEquals(a.SecretKey, this.SecretKey))
+				return false;
 
-        public bool IsExpired
-        {
-            get { return this.Expires < DateTime.UtcNow; }
-        }
+			return true;
+		}
+		public override int GetHashCode() {
+			HMACSHA1 hmac = new HMACSHA1(SecretKey);
+			CryptoStream cs = new CryptoStream(Stream.Null, hmac, CryptoStreamMode.Write);
 
-        public long ExpiresIn
-        {
-            get { return (long)(this.Expires - DateTime.UtcNow).TotalSeconds; }
-        }
+			byte[] hbytes = ASCIIEncoding.ASCII.GetBytes(this.Handle);
 
-        #endregion
+			cs.Write(hbytes, 0, hbytes.Length);
+			cs.Close();
 
-        #region Abstract Methods
+			byte[] hash = hmac.Hash;
+			hmac.Clear();
 
-        public abstract string AssociationType
-        {
-            get;
-        }
+			long val = 0;
+			for (int i = 0; i < hash.Length; i++) {
+				val = val ^ (long)hash[i];
+			}
 
-        public abstract string SignDict(ICollection<string> fields, IDictionary<string, string> data, string prefix);
-        public abstract byte[] Sign(IDictionary<string, string> l);
+			val = val ^ this.Expires.ToFileTimeUtc();
 
-        #endregion
-
-        #region Methods
-
-        public virtual byte[] Serialize()
-        {
-            var dict = new Dictionary<string, string>();
-
-            dict.Add("version", "2");
-            dict.Add("handle", this.Handle);
-            dict.Add("secret", CryptUtil.ToBase64String(this.Secret));
-            dict.Add("issued", this.IssuedUnix.ToString());
-            dict.Add("expires_in", Convert.ToInt32(this.expiresIn.TotalSeconds).ToString());
-            dict.Add("assoc_type", this.AssociationType);
-
-            return KVUtil.DictToKV(dict);
-        }
-
-        public virtual Association Deserialize(byte[] data)
-        {
-            var kvpairs = KVUtil.KVToDict(data, data.Length);
-            string version = kvpairs["version"];
-
-            if (version != "2")
-                throw new NotSupportedException("Unknown version: " + version);
-
-            string assoc_type = kvpairs["assoc_type"];
-            if (assoc_type == "HMAC-SHA1")
-                return new HmacSha1Association(kvpairs);
-            else
-                throw new NotSupportedException("Unknown association type: " + assoc_type);
-        }
-
-        #endregion
-
-
-        public override string ToString()
-        {
-            string returnString = @"Association.Handle= '{0}'
+			return (int)val;
+		}
+		public override string ToString() {
+			string returnString = @"Association.Handle= '{0}'
 Association.Issued = '{1}'
 Association.Secret = '{2}' 
 Association.IssuedUnix = '{3}' 
 Association.Expires = '{4}' 
 Association.IsExpired = '{5}' 
 Association.ExpiresIn = '{6}' ";
-            return String.Format(returnString, Handle, Issued.ToString(), Secret.ToString(), IssuedUnix, Expires.ToString(), IsExpired, ExpiresIn);
-        }
-
-    }
+			return String.Format(returnString, Handle, Issued, SecretKey, IssuedUnix,
+				Expires, IsExpired, SecondsTillExpiration);
+		}
+	}
 }

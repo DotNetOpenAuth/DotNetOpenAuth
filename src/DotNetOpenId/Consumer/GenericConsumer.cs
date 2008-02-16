@@ -15,7 +15,7 @@ namespace DotNetOpenId.Consumer
 
 	internal class GenericConsumer
 	{
-		private static uint TOKEN_LIFETIME = 120;
+		static readonly TimeSpan minimumUsefulAssociationLifetime = TimeSpan.FromSeconds(120);
 
 		private IAssociationStore store;
 		private Fetcher fetcher;
@@ -49,13 +49,13 @@ namespace DotNetOpenId.Consumer
 			Uri server_id = null;
 			Uri server_url = null;
 
-			IList pieces = SplitToken(token);
+			IList<Uri> pieces = SplitToken(token);
 
 			if (pieces != null)
 			{
-				identity_url = (Uri)pieces[0];
-				server_id = (Uri)pieces[1];
-				server_url = (Uri)pieces[2];
+				identity_url = pieces[0];
+				server_id = pieces[1];
+				server_url = pieces[2];
 			}
 
 			if (mode == QueryStringArgs.Modes.cancel)
@@ -112,27 +112,19 @@ namespace DotNetOpenId.Consumer
 				throw new FailureException(response.IdentityUrl, "Nonce mismatch");
 		}
 
-		private IDictionary<string, string> MakeKVPost(IDictionary<string, string> args, Uri server_url)
-		{
+		IDictionary<string, string> MakeKVPost(IDictionary<string, string> args, Uri server_url) {
 			byte[] body = ASCIIEncoding.ASCII.GetBytes(UriUtil.CreateQueryString(args));
 
-			try
-			{
-				FetchResponse resp = this.fetcher.Post(server_url, body);
+			try {
+				FetchResponse resp = fetcher.Post(server_url, body);
 
-				return KVUtil.KVToDict(resp.Data, resp.Length);
-			}
-			catch // (FetchException e)
-			{
-				//if (e.response == null)
-				//    return null;
-				//else (if e.response.code == HttpStatusCode.BadRequest)
-				//    # XXX: log this
-				//    pass
-				//else:
-				//    # XXX: log this
-				//    pass
-
+				return DictionarySerializer.Deserialize(resp.Data, resp.Length);
+			} catch (FetchException e) {
+				if (e.response.Code == HttpStatusCode.BadRequest) {
+					TraceUtil.ConsumerTrace("Bad request code returned from post attempt.");
+				} else {
+					TraceUtil.ConsumerTrace("Some FetchException caught during post attempt.\n" + e.ToString());
+				}
 				return null;
 			}
 		}
@@ -157,7 +149,7 @@ namespace DotNetOpenId.Consumer
 			string assoc_handle = getRequired(QueryStringArgs.openid.assoc_handle);
 
 			if (server_id.AbsoluteUri != server_id.ToString())
-				throw new FailureException(consumer_id, "Server ID (delegate) mismatch");
+				throw new FailureException(consumer_id, "Provider ID (delegate) mismatch");
 
 			Association assoc = this.store.GetAssociation(server_url, assoc_handle);
 
@@ -171,7 +163,7 @@ namespace DotNetOpenId.Consumer
 				return new ConsumerResponse(consumer_id, query, query[QueryStringArgs.openid.signed]);
 			}
 
-			if (assoc.ExpiresIn <= 0)
+			if (assoc.IsExpired)
 			{
 				throw new FailureException(consumer_id, String.Format("Association with {0} expired", server_url));
 			}
@@ -181,7 +173,7 @@ namespace DotNetOpenId.Consumer
 			string signed = getRequired(QueryStringArgs.openid.signed);
 			string[] signed_array = signed.Split(',');
 
-			string v_sig = assoc.SignDict(signed_array, query, QueryStringArgs.openid.Prefix);
+			string v_sig = CryptUtil.ToBase64String(assoc.Sign(query, signed_array, QueryStringArgs.openid.Prefix));
 
 			if (v_sig != sig)
 				throw new FailureException(consumer_id, "Bad signature");
@@ -292,12 +284,12 @@ namespace DotNetOpenId.Consumer
 
 		private Association GetAssociation(Uri server_url)
 		{
-			if (this.store.IsDumb)
+			if (store.IsDumb)
 				return null;
 
-			Association assoc = this.store.GetAssociation(server_url);
+			Association assoc = store.GetAssociation(server_url);
 
-			if (assoc == null || assoc.ExpiresIn < TOKEN_LIFETIME)
+			if (assoc == null || assoc.SecondsTillExpiration < minimumUsefulAssociationLifetime.TotalSeconds)
 			{
 				AssociationRequest req = CreateAssociationRequest(server_url);
 
@@ -312,61 +304,55 @@ namespace DotNetOpenId.Consumer
 			return assoc;
 		}
 
-		internal Association ParseAssociation(IDictionary<string, string> results, DiffieHellman dh, Uri server_url)
-		{
-			Converter<string, string> getParameter = delegate(string key)
-			{
-				string val = results[key];
-				if (val == null)
-					throw new MissingParameterException("Query args missing key: " + key);
-
+		internal Association ParseAssociation(IDictionary<string, string> results, DiffieHellman dh, Uri server_url) {
+			Converter<string, string> getParameter = delegate(string key) {
+				string val;
+				if (!results.TryGetValue(key, out val) || string.IsNullOrEmpty(val))
+					throw new MissingParameterException(key);
 				return val;
 			};
 
-			Converter<string, byte[]> getDecoded = delegate(string key)
-				{
-					try
-					{
-						return Convert.FromBase64String(getParameter(key));
-					}
-					catch (FormatException)
-					{
-						throw new MissingParameterException("Query argument is not base64: " + key);
-					}
-				};
-
-			try
-			{
-				if (getParameter(QueryStringArgs.openidnp.assoc_type) != QueryStringArgs.HMAC_SHA1)
-					// XXX: log this
-					return null;
-
-				byte[] secret;
-
-				string session_type = results[QueryStringArgs.openidnp.session_type];
-
-				if (session_type == null)
-					secret = getDecoded(QueryStringArgs.mac_key);
-				else if (session_type == QueryStringArgs.DH_SHA1)
-				{
-					byte[] dh_server_public = getDecoded(QueryStringArgs.openidnp.dh_server_public);
-					byte[] enc_mac_key = getDecoded(QueryStringArgs.enc_mac_key);
-					secret = CryptUtil.SHA1XorSecret(dh, dh_server_public, enc_mac_key);
+			Converter<string, byte[]> getDecoded = delegate(string key) {
+				try {
+					return Convert.FromBase64String(getParameter(key));
+				} catch (FormatException) {
+					throw new MissingParameterException("Query argument is not base64: " + key);
 				}
-				else // # XXX: log this
-					return null;
+			};
 
-				string assocHandle = getParameter(QueryStringArgs.openidnp.assoc_handle);
-				TimeSpan expiresIn = new TimeSpan(0, 0, Convert.ToInt32(getParameter(QueryStringArgs.openidnp.expires_in)));
+			try {
+				Association assoc;
+				string assoc_type = getParameter(QueryStringArgs.openidnp.assoc_type);
+				switch (assoc_type) {
+					case QueryStringArgs.HMAC_SHA1:
+						byte[] secret;
 
-				HmacSha1Association assoc = new HmacSha1Association(assocHandle, secret, expiresIn);
-				this.store.StoreAssociation(server_url, assoc);
+						string session_type;
+						if (!results.TryGetValue(QueryStringArgs.openidnp.session_type, out session_type)) {
+							secret = getDecoded(QueryStringArgs.mac_key);
+						} else if (QueryStringArgs.DH_SHA1.Equals(session_type, StringComparison.Ordinal)) {
+							byte[] dh_server_public = getDecoded(QueryStringArgs.openidnp.dh_server_public);
+							byte[] enc_mac_key = getDecoded(QueryStringArgs.enc_mac_key);
+							secret = CryptUtil.SHA1XorSecret(dh, dh_server_public, enc_mac_key);
+						} else // # XXX: log this
+							return null;
+
+						string assocHandle = getParameter(QueryStringArgs.openidnp.assoc_handle);
+						TimeSpan expiresIn = new TimeSpan(0, 0, Convert.ToInt32(getParameter(QueryStringArgs.openidnp.expires_in)));
+
+						assoc = new HmacSha1Association(assocHandle, secret, expiresIn);
+						break;
+					default:
+						TraceUtil.ConsumerTrace("Unrecognized assoc_type '" + assoc_type + "'.");
+						assoc = null;
+						break;
+				}
+
+				store.StoreAssociation(server_url, assoc);
 
 				return assoc;
-			}
-			catch (MissingParameterException)
-			{
-
+			} catch (MissingParameterException ex) {
+				TraceUtil.ConsumerTrace("Missing parameter: " + ex.Message);
 				return null;
 			}
 		}
@@ -395,7 +381,7 @@ namespace DotNetOpenId.Consumer
 			return false;
 		}
 
-		private IList SplitToken(string token)
+		private IList<Uri> SplitToken(string token)
 		{
 			byte[] tok = Convert.FromBase64String(token);
 
@@ -430,7 +416,7 @@ namespace DotNetOpenId.Consumer
 
 			//# Check if timestamp has expired
 			DateTime ts = DateTime.FromFileTimeUtc(Convert.ToInt64(items[0]));
-			ts += new TimeSpan(0, 0, (int)TOKEN_LIFETIME);
+			ts += minimumUsefulAssociationLifetime;
 
 			if (ts < DateTime.UtcNow)
 				return null; //    # XXX: log this

@@ -74,6 +74,16 @@ namespace DotNetOpenId {
                 dict.Add(nvc.GetKey(i), nvc.Get(i));
             return dict;
         }
+
+        public static bool ArrayEquals<T>(T[] first, T[] second)
+        {
+            if (first == null) throw new ArgumentNullException("first");
+            if (second == null) throw new ArgumentNullException("second");
+            if (first.Length != second.Length) return false;
+            for(int i = 0; i < first.Length;i++)
+                if (!first[i].Equals(second[i])) return false;
+            return true;
+        }
     }
 
     internal static class QueryStringArgs {

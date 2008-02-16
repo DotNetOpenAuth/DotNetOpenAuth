@@ -46,9 +46,8 @@ namespace DotNetOpenId.Provider
             }
             #endregion        	
             
-            var nvc = new Dictionary<string, string>();
             Association assoc;
-            string assoc_handle = ((AssociatedRequest)response.Request).AssocHandle;
+            string assoc_handle = ((AssociatedRequest)response.Request).AssociationHandle;
 
             if (assoc_handle != null && assoc_handle != "")
             {
@@ -84,16 +83,9 @@ namespace DotNetOpenId.Provider
 
             response.Fields[QueryStringArgs.openidnp.assoc_handle] = assoc.Handle;
 
-            foreach (var pair in response.Fields)
-            {
-                nvc.Add(pair.Key, pair.Value);
-            }
-
-            string sig = assoc.SignDict(response.Signed, nvc, string.Empty);
-            string signed = String.Join(",", response.Signed);
-
-            response.Fields[QueryStringArgs.openidnp.sig] = sig;
-            response.Fields[QueryStringArgs.openidnp.signed] = signed;
+            response.Fields[QueryStringArgs.openidnp.signed] = String.Join(",", response.Signed);
+            response.Fields[QueryStringArgs.openidnp.sig] = 
+                CryptUtil.ToBase64String(assoc.Sign(response.Fields, response.Signed, string.Empty));
 
             #region  Trace
             if (TraceUtil.Switch.TraceInfo)
@@ -239,7 +231,7 @@ namespace DotNetOpenId.Provider
                 key = _normal_key;
 
             Association assoc = _store.GetAssociation(key, assoc_handle);
-            if (assoc != null && assoc.ExpiresIn <= 0)
+            if (assoc != null && assoc.SecondsTillExpiration <= 0)
             {
                 TraceUtil.ServerTrace("Association expired or not in store. Trying to remove association if it still exists.");
                 _store.RemoveAssociation(key, assoc_handle);

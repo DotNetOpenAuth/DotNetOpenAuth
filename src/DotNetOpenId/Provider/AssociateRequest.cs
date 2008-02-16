@@ -78,11 +78,11 @@ namespace DotNetOpenId.Provider
 
             Response response = new Response(this);
 
-            response.Fields[QueryStringArgs.openidnp.expires_in] = assoc.ExpiresIn.ToString();
+            response.Fields[QueryStringArgs.openidnp.expires_in] = assoc.SecondsTillExpiration.ToString();
             response.Fields[QueryStringArgs.openidnp.assoc_type] = QueryStringArgs.HMAC_SHA1;
             response.Fields[QueryStringArgs.openidnp.assoc_handle] = assoc.Handle;
 
-            NameValueCollection nvc = _session.Answer(assoc.Secret);
+            NameValueCollection nvc = _session.Answer(assoc.SecretKey);
             foreach (string key in nvc)
             {
                 response.Fields[key] = nvc[key];

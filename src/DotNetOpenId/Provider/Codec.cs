@@ -54,7 +54,7 @@ namespace DotNetOpenId.Provider
                 case EncodingType.KVForm:
                     HttpStatusCode code = (response is Exception) ? 
                         HttpStatusCode.BadRequest : HttpStatusCode.OK;
-                    wr = new WebResponse(code, null, KVUtil.DictToKV(response.EncodedFields));
+                    wr = new WebResponse(code, null, DictionarySerializer.Serialize(response.EncodedFields));
                     break;
                 case EncodingType.UrlRedirection:
                     NameValueCollection headers = new NameValueCollection();
