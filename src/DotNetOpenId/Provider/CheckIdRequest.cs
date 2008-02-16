@@ -53,10 +53,29 @@ namespace DotNetOpenId.Provider {
 			get { return requestTimeZone; }
 		}
 
+		/// <summary>
+		/// Whether the consumer demands an immediate response.
+		/// If false, the consumer is willing to wait for the identity provider
+		/// to authenticate the user.
+		/// </summary>
 		public bool Immediate { get; private set; }
+		/// <summary>
+		/// The URL the consumer site claims to use as its 'base' address.
+		/// </summary>
 		public string TrustRoot { get; private set; }
+		/// <summary>
+		/// The claimed OpenId URL of the user attempting to authenticate.
+		/// </summary>
 		public Uri IdentityUrl { get; private set; }
+		/// <summary>
+		/// The URL to redirect the user agent to after the authentication attempt.
+		/// This must fall "under" the TrustRoot URL.
+		/// </summary>
 		public Uri ReturnTo { get; private set; }
+		/// <summary>
+		/// The URL the consumer site provides for the authenticating user to review
+		/// for how his claims will be used by the consumer web site.
+		/// </summary>
 		public Uri PolicyUrl { get; private set; }
 		internal override string Mode {
 			get { return Immediate ? QueryStringArgs.Modes.checkid_immediate : QueryStringArgs.Modes.checkid_setup; }

@@ -7,18 +7,9 @@ namespace DotNetOpenId.Provider
 {
     internal abstract class ServerSession
     {
-        #region Properties
-
         public string SessionType { get; set; }
 
-        #endregion
-
-        #region Methods
-
         public abstract NameValueCollection Answer(byte[] secret);
-
-        #endregion
-
     }
 
     /// <summary>
@@ -56,15 +47,8 @@ namespace DotNetOpenId.Provider
     /// </summary>
     internal class DiffieHellmanServerSession : ServerSession
     {
-
-        #region Private Members
-
-        private byte[] _consumer_pubkey;
-        private DiffieHellman _dh;
-
-        #endregion
-
-        #region Constructor(s)
+        byte[] _consumer_pubkey;
+        DiffieHellman _dh;
 
         public DiffieHellmanServerSession(NameValueCollection query)
         {
@@ -129,10 +113,6 @@ namespace DotNetOpenId.Provider
             }
         }
 
-        #endregion
-
-        #region Methods
-
         public override NameValueCollection Answer(byte[] secret)
         {
             byte[] mac_key = CryptUtil.SHA1XorSecret(_dh, _consumer_pubkey, secret);
@@ -143,9 +123,5 @@ namespace DotNetOpenId.Provider
 
             return nvc;
         }
-
-        #endregion
-
     }
-
 }

@@ -11,41 +11,36 @@ namespace DotNetOpenId.Provider
 {
     internal class Response : IEncodable
     {
-        private List<string> _signed;
-
         public Response(Request request)
         {
             Request = request;
-            _signed = new List<string>();
+            Signed = new List<string>();
             Fields = new Dictionary<string, string>();
             
         }
 
         public Request Request { get; set; }
         public IDictionary<string, string> Fields { get; private set; }
-        public string[] Signed
-        {
-            get { return _signed.ToArray(); }
-        }
+        public List<string> Signed { get; private set; }
         public bool NeedsSigning
         {
             get
             {
-                return Request is CheckIdRequest && Signed.Length > 0;
+                return Request is CheckIdRequest && Signed.Count > 0;
             }
         }
 
         public void AddField(string nmspace, string key, string value, bool signed)
         {
-            if (nmspace != null && nmspace != String.Empty)
+            if (!string.IsNullOrEmpty(nmspace))
             {
                 key = nmspace + "." + key;
             }
 
-            this.Fields[key] = value;
-            if (this._signed != null && !this._signed.Contains(key))
+            Fields[key] = value;
+            if (signed && !Signed.Contains(key))
             {
-                _signed.Add(key);
+                Signed.Add(key);
             }
         }
 
@@ -64,7 +59,7 @@ namespace DotNetOpenId.Provider
             get
             {
                 return Request.RequestType == RequestType.CheckIdRequest ? 
-                    EncodingType.UrlRedirection : EncodingType.KVForm;
+                    EncodingType.RedirectBrowserUrl : EncodingType.ResponseBody;
             }
         }
 

@@ -51,12 +51,12 @@ namespace DotNetOpenId.Provider
 
             switch (encode_as)
             {
-                case EncodingType.KVForm:
+                case EncodingType.ResponseBody:
                     HttpStatusCode code = (response is Exception) ? 
                         HttpStatusCode.BadRequest : HttpStatusCode.OK;
                     wr = new WebResponse(code, null, DictionarySerializer.Serialize(response.EncodedFields));
                     break;
-                case EncodingType.UrlRedirection:
+                case EncodingType.RedirectBrowserUrl:
                     NameValueCollection headers = new NameValueCollection();
 
                     UriBuilder builder = new UriBuilder(response.BaseUri);

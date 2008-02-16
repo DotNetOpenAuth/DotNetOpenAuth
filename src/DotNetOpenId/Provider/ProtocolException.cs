@@ -11,12 +11,12 @@ namespace DotNetOpenId.Provider
     /// </summary>
     public class ProtocolException : Exception, IEncodable
     {
-        NameValueCollection query = new NameValueCollection();
+        NameValueCollection query;
 
         internal ProtocolException(NameValueCollection query, string text)
             : base(text)
         {
-            this.query = query;
+            this.query = query ?? new NameValueCollection();
         }
 
         internal bool HasReturnTo
@@ -33,14 +33,14 @@ namespace DotNetOpenId.Provider
         {
             get 
             {
-                if (this.HasReturnTo)
-                    return EncodingType.UrlRedirection;
+                if (HasReturnTo)
+                    return EncodingType.RedirectBrowserUrl;
 
                 string mode = query.Get(QueryStringArgs.openid.mode);
                 if (mode != null)
                     if (mode != QueryStringArgs.Modes.checkid_setup &&
                         mode != QueryStringArgs.Modes.checkid_immediate)
-                        return EncodingType.KVForm;
+                        return EncodingType.ResponseBody;
 
                 // Notes from the original port
                 //# According to the OpenID spec as of this writing, we are
