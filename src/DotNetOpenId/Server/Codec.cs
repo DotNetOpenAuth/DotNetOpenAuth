@@ -8,7 +8,7 @@ namespace DotNetOpenId.Server
     /// <summary>
     /// Could not encode this as a protocol message.
     /// </summary>
-    public class EncodingException : ApplicationException
+    public class EncodingException : Exception
     {
         public EncodingException(IEncodable response)
         {
@@ -39,7 +39,7 @@ namespace DotNetOpenId.Server
         /// </summary>
         public virtual WebResponse Encode(IEncodable response)
         {
-            EncodingType encode_as = response.WhichEncoding;
+            EncodingType encode_as = response.EncodingType;
             WebResponse wr;
 
             #region  Trace
@@ -48,31 +48,27 @@ namespace DotNetOpenId.Server
                 TraceUtil.ServerTrace(String.Format("Encode using {0}", encode_as));
             }
             #endregion
-            
-            if (encode_as == EncodingType.ENCODE_KVFORM)
+
+            switch (encode_as)
             {
-                HttpStatusCode code;
+                case EncodingType.KVForm:
+                    HttpStatusCode code = (response is Exception) ? 
+                        HttpStatusCode.BadRequest : HttpStatusCode.OK;
+                    wr = new WebResponse(code, null, KVUtil.DictToKV(response.EncodedFields));
+                    break;
+                case EncodingType.UrlRedirection:
+                    NameValueCollection headers = new NameValueCollection();
 
-                if (response is Exception)
-                    code = HttpStatusCode.BadRequest;
-                else
-                    code = HttpStatusCode.OK;
+                    UriBuilder builder = new UriBuilder(response.BaseUri);
+                    UriUtil.AppendQueryArgs(builder, response.EncodedFields);
 
-                wr = new WebResponse(code, null, response.EncodeToKVForm());
+                    headers.Add("Location", builder.Uri.AbsoluteUri);
+
+                    wr = new WebResponse(HttpStatusCode.Redirect, headers, new byte[0]);
+                    break;
+                default:
+                    throw new EncodingException(response);
             }
-            else if (encode_as == EncodingType.ENCODE_URL)
-            {
-                NameValueCollection headers = new NameValueCollection();
-
-                headers.Add("Location", response.EncodeToUrl().AbsoluteUri);
-
-                wr = new WebResponse(HttpStatusCode.Redirect, headers, new byte[0]);
-            }
-            else
-            {
-                throw new EncodingException(response);
-            }
-
             return wr;
         }
     }

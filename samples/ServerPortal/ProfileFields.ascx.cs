@@ -17,25 +17,25 @@ public partial class ProfileFields : System.Web.UI.UserControl
     
     public void SetRequiredFieldsFromRequest(CheckIdRequest request)
     {
-       this.dobRequiredLabel.Visible = (request.RequestBirthdateDefault == ProfileRequest.Require);
-       this.countryRequiredLabel.Visible = (request.RequestCountryDefault == ProfileRequest.Require);
-       this.emailRequiredLabel.Visible = (request.RequestEmailDefault == ProfileRequest.Require);
-       this.fullnameRequiredLabel.Visible = (request.RequestFullNameDefault == ProfileRequest.Require);
-       this.genderRequiredLabel.Visible = (request.RequestGenderDefault == ProfileRequest.Require);
-       this.languageRequiredLabel.Visible = (request.RequestLanguageDefault == ProfileRequest.Require);
-       this.nicknameRequiredLabel.Visible = (request.RequestNicknameDefault == ProfileRequest.Require);
-       this.postcodeRequiredLabel.Visible = (request.RequestPostalCodeDefault == ProfileRequest.Require);
-       this.timezoneRequiredLabel.Visible = (request.RequestTimeZoneDefault == ProfileRequest.Require);
+       this.dobRequiredLabel.Visible = (request.RequestBirthdate == ProfileRequest.Require);
+       this.countryRequiredLabel.Visible = (request.RequestCountry == ProfileRequest.Require);
+       this.emailRequiredLabel.Visible = (request.RequestEmail == ProfileRequest.Require);
+       this.fullnameRequiredLabel.Visible = (request.RequestFullName == ProfileRequest.Require);
+       this.genderRequiredLabel.Visible = (request.RequestGender == ProfileRequest.Require);
+       this.languageRequiredLabel.Visible = (request.RequestLanguage == ProfileRequest.Require);
+       this.nicknameRequiredLabel.Visible = (request.RequestNickname == ProfileRequest.Require);
+       this.postcodeRequiredLabel.Visible = (request.RequestPostalCode == ProfileRequest.Require);
+       this.timezoneRequiredLabel.Visible = (request.RequestTimeZone == ProfileRequest.Require);
 
-       this.dateOfBirthRow .Visible = !(request.RequestBirthdateDefault == ProfileRequest.NoRequest);
-       this.countryRow.Visible = !(request.RequestCountryDefault == ProfileRequest.NoRequest);
-       this.emailRow.Visible = !(request.RequestEmailDefault == ProfileRequest.NoRequest);
-       this.fullnameRow.Visible = !(request.RequestFullNameDefault == ProfileRequest.NoRequest);
-       this.genderRow.Visible = !(request.RequestGenderDefault == ProfileRequest.NoRequest);
-       this.languageRow.Visible = !(request.RequestLanguageDefault == ProfileRequest.NoRequest);
-       this.nicknameRow.Visible = !(request.RequestNicknameDefault == ProfileRequest.NoRequest);
-       this.postcodeRow.Visible = !(request.RequestPostalCodeDefault == ProfileRequest.NoRequest);
-       this.timezoneRow.Visible = !(request.RequestTimeZoneDefault == ProfileRequest.NoRequest);
+       this.dateOfBirthRow .Visible = !(request.RequestBirthdate == ProfileRequest.NoRequest);
+       this.countryRow.Visible = !(request.RequestCountry == ProfileRequest.NoRequest);
+       this.emailRow.Visible = !(request.RequestEmail == ProfileRequest.NoRequest);
+       this.fullnameRow.Visible = !(request.RequestFullName == ProfileRequest.NoRequest);
+       this.genderRow.Visible = !(request.RequestGender == ProfileRequest.NoRequest);
+       this.languageRow.Visible = !(request.RequestLanguage == ProfileRequest.NoRequest);
+       this.nicknameRow.Visible = !(request.RequestNickname == ProfileRequest.NoRequest);
+       this.postcodeRow.Visible = !(request.RequestPostalCode == ProfileRequest.NoRequest);
+       this.timezoneRow.Visible = !(request.RequestTimeZone == ProfileRequest.NoRequest);
     }
     
     public bool DoesAnyFieldHaveAValue

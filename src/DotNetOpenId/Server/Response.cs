@@ -5,50 +5,28 @@ using System.Text;
 using DotNetOpenId;
 using DotNetOpenId.Consumer;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace DotNetOpenId.Server
 {
-    public class Response : IEncodable
+    internal class Response : IEncodable
     {
-
-        #region Private Members
-
-        private Dictionary<string, string> _fields;
         private List<string> _signed;
-        private Request _request;
-
-        #endregion
-
-        #region Constructor(s)
 
         public Response(Request request)
         {
-            this.Request = request;
+            Request = request;
             _signed = new List<string>();
-            _fields = new Dictionary<string, string>();
+            Fields = new Dictionary<string, string>();
             
         }
 
-        #endregion
-
-        #region Properties
-
-        public Request Request
-        {
-            get { return _request; }
-            set { _request = value; }
-        }
-
-        public IDictionary<string, string> Fields
-        {
-            get { return _fields; }
-        }
-
+        public Request Request { get; set; }
+        public IDictionary<string, string> Fields { get; private set; }
         public string[] Signed
         {
             get { return _signed.ToArray(); }
         }
-
         public bool NeedsSigning
         {
             get
@@ -56,10 +34,6 @@ namespace DotNetOpenId.Server
                 return Request is CheckIdRequest && Signed.Length > 0;
             }
         }
-
-        #endregion
-
-        #region Methods
 
         public void AddField(string nmspace, string key, string value, bool signed)
         {
@@ -83,45 +57,49 @@ namespace DotNetOpenId.Server
             }
         }
 
-        #endregion
-
         #region IEncodable Members
 
-        public EncodingType WhichEncoding
+        public EncodingType EncodingType
         {
             get
             {
-                if (this.Request.Mode == QueryStringArgs.Modes.checkid_setup || this.Request.Mode == QueryStringArgs.Modes.checkid_immediate)
-                {
-                    return EncodingType.ENCODE_URL;
-                }
-                else
-                {
-                    return EncodingType.ENCODE_KVFORM;
-                }
+                return Request.RequestType == RequestType.CheckIdRequest ? 
+                    EncodingType.UrlRedirection : EncodingType.KVForm;
             }
         }
 
-        public Uri EncodeToUrl()
+        public IDictionary<string, string> EncodedFields
         {
-            var nvc = new Dictionary<string, string>();
-
-
-            foreach (var pair in this.Fields)
+            get
             {
-                nvc.Add(QueryStringArgs.openid.Prefix + pair.Key, pair.Value);
+                var nvc = new Dictionary<string, string>();
+
+                foreach (var pair in Fields)
+                {
+                    if (Request.RequestType == RequestType.CheckIdRequest)
+                    {
+                        nvc.Add(QueryStringArgs.openid.Prefix + pair.Key, pair.Value);
+                    }
+                    else
+                    {
+                        nvc.Add(pair.Key, pair.Value);
+                    }
+                }
+
+                return nvc;
             }
-
-            CheckIdRequest checkidreq = (CheckIdRequest)this.Request;
-            UriBuilder builder = new UriBuilder(checkidreq.ReturnTo);
-            UriUtil.AppendQueryArgs(builder, nvc);
-
-            return new Uri(builder.ToString());
         }
-
-        public byte[] EncodeToKVForm()
+        public Uri BaseUri
         {
-            return KVUtil.DictToKV(this.Fields);
+            get
+            {
+                if (Request.RequestType != RequestType.CheckIdRequest)
+                {
+                    throw new InvalidOperationException("Encoding to URL is only appropriate on CheckIdRequest requests.");
+                }
+                CheckIdRequest checkidreq = (CheckIdRequest)Request;
+                return checkidreq.ReturnTo;
+            }
         }
 
         #endregion

@@ -3,6 +3,8 @@ using System.Web;
 using DotNetOpenId;
 using DotNetOpenId.Server;
 using DotNetOpenId.Store;
+using System.Text;
+using System.Collections.Generic;
 
 /// <summary>
 /// Summary description for Util
@@ -17,12 +19,10 @@ public class Util
     public static void GenerateHttpResponse(IEncodable response)
     {
         State.Session.Reset();
-        DotNetOpenId.Server.WebResponse webresponse = null;
-        DotNetOpenId.Server.Server server;
+        WebResponse webresponse = null;
+        Server server = new Server();
         try
         {
-            server = new DotNetOpenId.Server.Server();
-
             #region  Trace
             if (TraceUtil.Switch.TraceInfo)
             {
@@ -32,10 +32,11 @@ public class Util
             
             webresponse = server.EncodeResponse(response);                        
         }
-        catch (DotNetOpenId.Server.EncodingException e)
+        catch (EncodingException e)
         {
-            string text = System.Text.Encoding.UTF8.GetString(
-                e.Response.EncodeToKVForm());
+            StringBuilder text = new StringBuilder();
+            foreach (KeyValuePair<string, string> pair in e.Response.EncodedFields)
+                text.AppendLine(pair.Key + "=" + pair.Value);
             string error = @"
         <html><head><title>Error Processing Request</title></head><body>
         <p><pre>{0}</pre></p>
@@ -70,7 +71,7 @@ public class Util
         *************************************************************
 
         --></body></html>";
-            error = String.Format(error, HttpContext.Current.Server.HtmlEncode(text));
+            error = String.Format(error, HttpUtility.HtmlEncode(text.ToString()));
             HttpContext.Current.Response.StatusCode = 400;
             HttpContext.Current.Response.Write(error);
             HttpContext.Current.Response.Close();

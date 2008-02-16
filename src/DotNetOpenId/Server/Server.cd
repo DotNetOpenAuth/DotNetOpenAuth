@@ -3,36 +3,29 @@
   <Class Name="DotNetOpenId.Server.AssociatedRequest" Collapsed="true">
     <Position X="8" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAEAQAAAAAAABAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Server\Request.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAABAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Server\AssociatedRequest.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DotNetOpenId.Server.AssociateRequest" Collapsed="true">
     <Position X="10" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAIAAAAAEAAAAAAAAAAAAAAAgAAAAAgABAAA=</HashCode>
+      <HashCode>AAAAAAAAAIAAAAAEAAAAAAAAAAAAAEAgAAAAAgABAAA=</HashCode>
       <FileName>Server\AssociateRequest.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DotNetOpenId.Server.CheckAuthRequest" Collapsed="true">
     <Position X="6.75" Y="3.25" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAoIBAAAAEAAAAAACAAAAAAAAAAAAAQgAAAAA=</HashCode>
+      <HashCode>AAAAAAAAoIBAAAAEAAAAAACAAAAAAEAAAAAAQgAAAAA=</HashCode>
       <FileName>Server\CheckAuthRequest.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DotNetOpenId.Server.CheckIdRequest" Collapsed="true">
     <Position X="8.75" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AQAEQCQCgZAhBAAECgAJAAAgSCiQAABgAAACAwIAgFk=</HashCode>
+      <HashCode>AQAFAAAAhZRgCAAUaAgAAAAAAACyJEIBAgQAAwAAAAA=</HashCode>
       <FileName>Server\CheckIdRequest.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="DotNetOpenId.Server.Decoder" Collapsed="true">
-    <Position X="15.25" Y="3.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAQAAAAAA=</HashCode>
-      <FileName>Server\Codec.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DotNetOpenId.Server.DiffieHellmanServerSession" Collapsed="true">
@@ -59,7 +52,7 @@
   <Class Name="DotNetOpenId.Server.Request" Collapsed="true">
     <Position X="9" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAIAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAIAAAAAEAAAAAAAAAAAAAEAAAAEAAAAAAAA=</HashCode>
       <FileName>Server\Request.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -74,7 +67,7 @@
   <Class Name="DotNetOpenId.Server.Server" Collapsed="true">
     <Position X="15.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAgBAEAACAAAAAGAAAAAAAACAAAAgAAA=</HashCode>
+      <HashCode>AEAAAAAAAAAAAABAEAACAAAAAEAAAIABAAAAAQAAAAA=</HashCode>
       <FileName>Server\Server.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -95,7 +88,7 @@
   <Class Name="DotNetOpenId.Server.SigningEncoder" Collapsed="true">
     <Position X="13.5" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAABAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AEAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Server\Codec.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -109,7 +102,7 @@
   <Class Name="DotNetOpenId.Server.WebResponse" Collapsed="true">
     <Position X="15.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAACAAAAAAhAAAACAAAAAAAAAAAAAAgEAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAhAAAACAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Server\WebResponse.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -125,13 +118,6 @@
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAAAAAAQAAAAAAAAAAEA=</HashCode>
       <FileName>Server\IEncodable.cs</FileName>
-    </TypeIdentifier>
-  </Enum>
-  <Enum Name="DotNetOpenId.Server.HttpCode" Collapsed="true">
-    <Position X="12" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
-      <FileName>Server\WebResponse.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Font Name="Segoe UI" Size="9" />

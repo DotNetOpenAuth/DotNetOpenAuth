@@ -89,7 +89,7 @@ namespace DotNetOpenId.Server
                 nvc.Add(pair.Key, pair.Value);
             }
 
-            string sig = assoc.SignDict(response.Signed, nvc, "");
+            string sig = assoc.SignDict(response.Signed, nvc, string.Empty);
             string signed = String.Join(",", response.Signed);
 
             response.Fields[QueryStringArgs.openidnp.sig] = sig;

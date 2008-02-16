@@ -30,7 +30,7 @@ namespace DotNetOpenId.Server {
 			this.encoder = new SigningEncoder(signatory);
 		}
 
-		public Response HandleRequest(Request request) {
+		public IEncodable HandleRequest(Request request) {
 			Response response;
 			switch (request.RequestType) {
 				case RequestType.CheckAuthRequest:

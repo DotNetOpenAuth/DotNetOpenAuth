@@ -8,7 +8,7 @@ namespace DotNetOpenId.Server {
 	/// A response to an OpenID request in terms a web server understands.
 	/// </summary>
 	public class WebResponse {
-		public WebResponse(HttpStatusCode code, NameValueCollection headers, byte[] body) {
+		internal WebResponse(HttpStatusCode code, NameValueCollection headers, byte[] body) {
 			Code = code;
 			Headers = headers ?? new NameValueCollection();
 			Body = body;

@@ -11,49 +11,36 @@ namespace DotNetOpenId.Server
     /// </summary>
     public class ProtocolException : Exception, IEncodable
     {
+        NameValueCollection query = new NameValueCollection();
 
-        #region Private Members
-
-        private NameValueCollection _query = new NameValueCollection();
-
-        #endregion
-
-        #region Constructor(s)
-
-        public ProtocolException(NameValueCollection query, string text)
+        internal ProtocolException(NameValueCollection query, string text)
             : base(text)
         {
-            _query = query;
+            this.query = query;
         }
-
-        #endregion
-
-        #region Properties
 
         public bool HasReturnTo
         {
             get
             {
-                return (_query[QueryStringArgs.openid.return_to] != null);
+                return query[QueryStringArgs.openid.return_to] != null;
             }
         }
 
-        #endregion
-
         #region IEncodable Members
 
-        public EncodingType WhichEncoding
+        public EncodingType EncodingType
         {
             get 
             {
                 if (this.HasReturnTo)
-                    return EncodingType.ENCODE_URL;
+                    return EncodingType.UrlRedirection;
 
-                string mode = _query.Get(QueryStringArgs.openid.mode);
+                string mode = query.Get(QueryStringArgs.openid.mode);
                 if (mode != null)
                     if (mode != QueryStringArgs.Modes.checkid_setup &&
                         mode != QueryStringArgs.Modes.checkid_immediate)
-                        return EncodingType.ENCODE_KVFORM;
+                        return EncodingType.KVForm;
 
                 // Notes from the original port
                 //# According to the OpenID spec as of this writing, we are
@@ -68,34 +55,29 @@ namespace DotNetOpenId.Server
                 //# Basically, if your request was so broken that you didn't
                 //# manage to include an openid.mode, I'm not going to worry
                 //# too much about returning you something you can't parse.
-                return EncodingType.ENCODE_NONE;
+                return EncodingType.None;
             }
         }
 
-        public Uri EncodeToUrl()
+        public IDictionary<string, string> EncodedFields
         {
-            string return_to = _query.Get(QueryStringArgs.openid.return_to);
-            if (return_to == null)
-                throw new ApplicationException("return_to URL has not been set.");
-
-            var q = new Dictionary<string, string>();
-            q.Add(QueryStringArgs.openid.mode, QueryStringArgs.Modes.error);
-            q.Add(QueryStringArgs.openid.error, this.Message);
-
-            UriBuilder builder = new UriBuilder(return_to);
-            UriUtil.AppendQueryArgs(builder, q);
-
-            return new Uri(builder.ToString());
+            get
+            {
+                var q = new Dictionary<string, string>();
+                q.Add(QueryStringArgs.openid.mode, QueryStringArgs.Modes.error);
+                q.Add(QueryStringArgs.openid.error, this.Message);
+                return q;
+            }
         }
-
-        public byte[] EncodeToKVForm()
+        public Uri BaseUri
         {
-            var d = new Dictionary<string, string>();
-
-            d.Add(QueryStringArgs.openidnp.mode, QueryStringArgs.Modes.error);
-            d.Add(QueryStringArgs.openidnp.error, this.Message);
-
-            return KVUtil.DictToKV(d);
+            get
+            {
+                string return_to = query.Get(QueryStringArgs.openid.return_to);
+                if (return_to == null)
+                    throw new InvalidOperationException("return_to URL has not been set.");
+                return new Uri(return_to);
+            }
         }
 
         #endregion

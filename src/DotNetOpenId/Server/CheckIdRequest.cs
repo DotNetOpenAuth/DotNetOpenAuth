@@ -15,42 +15,42 @@ namespace DotNetOpenId.Server {
 	/// </remarks>
 	public class CheckIdRequest : AssociatedRequest {
 
-		ProfileRequest requestNicknameDefault = ProfileRequest.NoRequest;
-		ProfileRequest requestEmailDefault = ProfileRequest.NoRequest;
-		ProfileRequest requestFullNameDefault = ProfileRequest.NoRequest;
-		ProfileRequest requestBirthdateDefault = ProfileRequest.NoRequest;
-		ProfileRequest requestGenderDefault = ProfileRequest.NoRequest;
-		ProfileRequest requestPostalCodeDefault = ProfileRequest.NoRequest;
-		ProfileRequest requestCountryDefault = ProfileRequest.NoRequest;
-		ProfileRequest requestLanguageDefault = ProfileRequest.NoRequest;
-		ProfileRequest requestTimeZoneDefault = ProfileRequest.NoRequest;
+		ProfileRequest requestNickname = ProfileRequest.NoRequest;
+		ProfileRequest requestEmail = ProfileRequest.NoRequest;
+		ProfileRequest requestFullName = ProfileRequest.NoRequest;
+		ProfileRequest requestBirthdate = ProfileRequest.NoRequest;
+		ProfileRequest requestGender = ProfileRequest.NoRequest;
+		ProfileRequest requestPostalCode = ProfileRequest.NoRequest;
+		ProfileRequest requestCountry = ProfileRequest.NoRequest;
+		ProfileRequest requestLanguage = ProfileRequest.NoRequest;
+		ProfileRequest requestTimeZone = ProfileRequest.NoRequest;
 
-		public ProfileRequest RequestNicknameDefault {
-			get { return requestNicknameDefault; }
+		public ProfileRequest RequestNickname {
+			get { return requestNickname; }
 		}
-		public ProfileRequest RequestEmailDefault {
-			get { return requestEmailDefault; }
+		public ProfileRequest RequestEmail {
+			get { return requestEmail; }
 		}
-		public ProfileRequest RequestFullNameDefault {
-			get { return requestFullNameDefault; }
+		public ProfileRequest RequestFullName {
+			get { return requestFullName; }
 		}
-		public ProfileRequest RequestBirthdateDefault {
-			get { return requestBirthdateDefault; }
+		public ProfileRequest RequestBirthdate {
+			get { return requestBirthdate; }
 		}
-		public ProfileRequest RequestGenderDefault {
-			get { return requestGenderDefault; }
+		public ProfileRequest RequestGender {
+			get { return requestGender; }
 		}
-		public ProfileRequest RequestPostalCodeDefault {
-			get { return requestPostalCodeDefault; }
+		public ProfileRequest RequestPostalCode {
+			get { return requestPostalCode; }
 		}
-		public ProfileRequest RequestCountryDefault {
-			get { return requestCountryDefault; }
+		public ProfileRequest RequestCountry {
+			get { return requestCountry; }
 		}
-		public ProfileRequest RequestLanguageDefault {
-			get { return requestLanguageDefault; }
+		public ProfileRequest RequestLanguage {
+			get { return requestLanguage; }
 		}
-		public ProfileRequest RequestTimeZoneDefault {
-			get { return requestTimeZoneDefault; }
+		public ProfileRequest RequestTimeZone {
+			get { return requestTimeZone; }
 		}
 
 		public bool Immediate { get; private set; }
@@ -66,15 +66,15 @@ namespace DotNetOpenId.Server {
 		}
 		public bool IsAnySimpleRegistrationFieldsRequestedOrRequired {
 			get {
-				return (!(this.requestBirthdateDefault == ProfileRequest.NoRequest
-						  && this.requestCountryDefault == ProfileRequest.NoRequest
-						  && this.requestEmailDefault == ProfileRequest.NoRequest
-						  && this.requestFullNameDefault == ProfileRequest.NoRequest
-						  && this.requestGenderDefault == ProfileRequest.NoRequest
-						  && this.requestLanguageDefault == ProfileRequest.NoRequest
-						  && this.requestNicknameDefault == ProfileRequest.NoRequest
-						  && this.requestPostalCodeDefault == ProfileRequest.NoRequest
-						  && this.requestTimeZoneDefault == ProfileRequest.NoRequest));
+				return (!(this.requestBirthdate == ProfileRequest.NoRequest
+						  && this.requestCountry == ProfileRequest.NoRequest
+						  && this.requestEmail == ProfileRequest.NoRequest
+						  && this.requestFullName == ProfileRequest.NoRequest
+						  && this.requestGender == ProfileRequest.NoRequest
+						  && this.requestLanguage == ProfileRequest.NoRequest
+						  && this.requestNickname == ProfileRequest.NoRequest
+						  && this.requestPostalCode == ProfileRequest.NoRequest
+						  && this.requestTimeZone == ProfileRequest.NoRequest));
 			}
 		}
 		public bool IsTrustRootValid {
@@ -179,31 +179,31 @@ namespace DotNetOpenId.Server {
 			foreach (string field in fields) {
 				switch (field) {
 					case QueryStringArgs.openidnp.sregnp.nickname:
-						this.requestNicknameDefault = request;
+						this.requestNickname = request;
 						break;
 					case QueryStringArgs.openidnp.sregnp.email:
-						this.requestEmailDefault = request;
+						this.requestEmail = request;
 						break;
 					case QueryStringArgs.openidnp.sregnp.fullname:
-						this.requestFullNameDefault = request;
+						this.requestFullName = request;
 						break;
 					case QueryStringArgs.openidnp.sregnp.dob:
-						this.requestBirthdateDefault = request;
+						this.requestBirthdate = request;
 						break;
 					case QueryStringArgs.openidnp.sregnp.gender:
-						this.requestGenderDefault = request;
+						this.requestGender = request;
 						break;
 					case QueryStringArgs.openidnp.sregnp.postcode:
-						this.requestPostalCodeDefault = request;
+						this.requestPostalCode = request;
 						break;
 					case QueryStringArgs.openidnp.sregnp.country:
-						this.requestCountryDefault = request;
+						this.requestCountry = request;
 						break;
 					case QueryStringArgs.openidnp.sregnp.language:
-						this.requestLanguageDefault = request;
+						this.requestLanguage = request;
 						break;
 					case QueryStringArgs.openidnp.sregnp.timezone:
-						this.requestTimeZoneDefault = request;
+						this.requestTimeZone = request;
 						break;
 				}
 			}
@@ -215,7 +215,7 @@ namespace DotNetOpenId.Server {
 		/// <param name="allow">Allow this user to claim this identity, and allow the consumer to have this information?</param>
 		/// <param name="server_url"></param>
 		/// <returns></returns>
-		public Response Answer(bool allow, Uri server_url) {
+		public IEncodable Answer(bool allow, Uri server_url) {
 			return Answer(allow, server_url, null);
 		}
 
@@ -226,7 +226,7 @@ namespace DotNetOpenId.Server {
 		/// <param name="server_url"></param>
 		/// <param name="openIdProfileFields"></param>
 		/// <returns></returns>
-		public Response Answer(bool allow, Uri server_url, OpenIdProfileFields openIdProfileFields) {
+		public IEncodable Answer(bool allow, Uri server_url, OpenIdProfileFields openIdProfileFields) {
 			string mode;
 
 			if (allow || Immediate)
@@ -360,22 +360,22 @@ CheckIdRequest.Identity = '{2}'
 CheckIdRequest._mode = '{3}' 
 CheckIdRequest.ReturnTo = '{4}' 
 CheckIdRequest._policyUrl = '{5}' 
-CheckIdRequest.requestNicknameDefault = '{6}' 
-CheckIdRequest.requestEmailDefault = '{7}' 
-CheckIdRequest.requestFullNameDefault = '{8}' 
-CheckIdRequest.requestBirthdateDefault = '{9}'
-CheckIdRequest.requestGenderDefault = '{10}'
-CheckIdRequest.requestPostalCodeDefault = '{11}'
-CheckIdRequest.requestCountryDefault = '{12}'
-CheckIdRequest.requestLanguageDefault = '{13}'
-CheckIdRequest.requestTimeZoneDefault = '{14}'";
+CheckIdRequest.requestNickname = '{6}' 
+CheckIdRequest.requestEmail = '{7}' 
+CheckIdRequest.requestFullName = '{8}' 
+CheckIdRequest.requestBirthdate = '{9}'
+CheckIdRequest.requestGender = '{10}'
+CheckIdRequest.requestPostalCode = '{11}'
+CheckIdRequest.requestCountry = '{12}'
+CheckIdRequest.requestLanguage = '{13}'
+CheckIdRequest.requestTimeZone = '{14}'";
 
 			return base.ToString() + string.Format(
 				returnString, Immediate, TrustRoot, IdentityUrl, Mode, ReturnTo,
-				PolicyUrl, requestNicknameDefault, requestEmailDefault,
-				requestFullNameDefault, requestBirthdateDefault, requestGenderDefault,
-				requestPostalCodeDefault, requestCountryDefault, requestLanguageDefault,
-				requestTimeZoneDefault);
+				PolicyUrl, requestNickname, requestEmail,
+				requestFullName, requestBirthdate, requestGender,
+				requestPostalCode, requestCountry, requestLanguage,
+				requestTimeZone);
 		}
 	}
 }

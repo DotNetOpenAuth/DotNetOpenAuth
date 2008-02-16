@@ -8,16 +8,15 @@ namespace DotNetOpenId.Server
     // TODO Move this enum out to it's own file
     public enum EncodingType
     {
-        ENCODE_NONE,
-        ENCODE_URL,
-        ENCODE_KVFORM
+        None,
+        UrlRedirection,
+        KVForm
     }
 
     public interface IEncodable
     {
-        EncodingType WhichEncoding { get; }
-
-        Uri EncodeToUrl();
-        byte[] EncodeToKVForm();
+        EncodingType EncodingType { get; }
+        IDictionary<string, string> EncodedFields { get; }
+        Uri BaseUri { get; }
     }
 }
