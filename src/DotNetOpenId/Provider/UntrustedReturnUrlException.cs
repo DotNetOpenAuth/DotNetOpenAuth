@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
 
-namespace DotNetOpenId.Server
+namespace DotNetOpenId.Provider
 {
     /// <summary>
     /// A return_to is outside the trust_root.

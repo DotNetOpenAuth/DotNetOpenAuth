@@ -5,7 +5,7 @@ using DotNetOpenId.Store;
 using System.Web;
 
 
-namespace DotNetOpenId.Server {
+namespace DotNetOpenId.Provider {
 	/// <summary>
 	/// Offers services for a web page that is acting as an OpenID identity server.
 	/// </summary>
@@ -142,7 +142,7 @@ namespace DotNetOpenId.Server {
 			return encoder.Encode(response);
 		}
 
-		const string associationStoreKey = "DotNetOpenId.Server.Server.AssociationStore";
+		const string associationStoreKey = "DotNetOpenId.Provider.Server.AssociationStore";
 		static IAssociationStore httpApplicationAssociationStore {
 			get {
 				HttpContext context = HttpContext.Current;

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Specialized;
 using System.Text;
 
-namespace DotNetOpenId.Server
+namespace DotNetOpenId.Provider
 {
     /// <summary>
     /// A request to establish an association.

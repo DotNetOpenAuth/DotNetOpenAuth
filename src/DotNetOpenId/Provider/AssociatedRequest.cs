@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DotNetOpenId.Server {
+namespace DotNetOpenId.Provider {
 
 	public abstract class AssociatedRequest : Request {
 		protected AssociatedRequest(Server server) : base(server) { }

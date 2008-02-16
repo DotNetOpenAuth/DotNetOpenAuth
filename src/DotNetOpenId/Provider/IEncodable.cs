@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DotNetOpenId.Server
+namespace DotNetOpenId.Provider
 {
 
     // TODO Move this enum out to it's own file

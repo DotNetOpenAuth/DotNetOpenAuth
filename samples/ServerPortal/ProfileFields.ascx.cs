@@ -1,6 +1,6 @@
 using System;
 using System.Net.Mail;
-using DotNetOpenId.Server;
+using DotNetOpenId.Provider;
 using DotNetOpenId.RegistrationExtension;
 
 /// <summary>

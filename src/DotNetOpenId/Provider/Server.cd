@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DotNetOpenId.Provider.AssociatedRequest" Collapsed="true">
+    <Position X="8" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Provider\AssociatedRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOpenId.Provider.AssociateRequest" Collapsed="true">
+    <Position X="10" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Provider\AssociateRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOpenId.Provider.CheckAuthRequest" Collapsed="true">
+    <Position X="6.75" Y="3.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Provider\CheckAuthRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOpenId.Provider.CheckIdRequest" Collapsed="true">
+    <Position X="8.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Provider\CheckIdRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOpenId.Provider.DiffieHellmanServerSession" Collapsed="true">
+    <Position X="6.5" Y="5.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Provider\ServerSession.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOpenId.Provider.Encoder" Collapsed="true">
+    <Position X="13.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Provider\Codec.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOpenId.Provider.PlainTextServerSession" Collapsed="true">
+    <Position X="9.25" Y="5.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Provider\ServerSession.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOpenId.Provider.Request" Collapsed="true">
+    <Position X="9" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Provider\Request.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOpenId.Provider.Response" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="13.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Provider\Response.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="DotNetOpenId.Provider.Server" Collapsed="true">
+    <Position X="15.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Provider\Provider.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOpenId.Provider.ServerSession" Collapsed="true">
+    <Position X="7.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Provider\ServerSession.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOpenId.Provider.Signatory" Collapsed="true">
+    <Position X="12" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Provider\Signatory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOpenId.Provider.SigningEncoder" Collapsed="true">
+    <Position X="13.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Provider\Codec.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOpenId.Provider.TrustRoot" Collapsed="true">
+    <Position X="13.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Provider\TrustRoot.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOpenId.Provider.WebResponse" Collapsed="true">
+    <Position X="15.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Provider\WebResponse.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="DotNetOpenId.Provider.IEncodable" Collapsed="true">
+    <Position X="15.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Provider\IEncodable.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="DotNetOpenId.Provider.EncodingType" Collapsed="true">
+    <Position X="11.75" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Provider\IEncodable.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -3,7 +3,7 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Net;
 
-namespace DotNetOpenId.Server
+namespace DotNetOpenId.Provider
 {
     /// <summary>
     /// Could not encode this as a protocol message.

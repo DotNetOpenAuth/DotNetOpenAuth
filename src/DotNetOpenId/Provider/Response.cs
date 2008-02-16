@@ -7,7 +7,7 @@ using DotNetOpenId.Consumer;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace DotNetOpenId.Server
+namespace DotNetOpenId.Provider
 {
     internal class Response : IEncodable
     {

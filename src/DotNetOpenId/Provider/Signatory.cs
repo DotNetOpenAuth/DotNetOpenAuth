@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using DotNetOpenId.Store;
 using System.Collections.Generic;
 
-namespace DotNetOpenId.Server
+namespace DotNetOpenId.Provider
 {
     /// <summary>
     /// Signs things.

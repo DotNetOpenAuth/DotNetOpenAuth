@@ -1,7 +1,7 @@
 using System;
 using System.Web;
 using DotNetOpenId;
-using DotNetOpenId.Server;
+using DotNetOpenId.Provider;
 using DotNetOpenId.Store;
 using System.Text;
 using System.Collections.Generic;
@@ -63,7 +63,7 @@ public class Util
         HttpContext.Current.Response.Close();
     }
 
-    public static void GenerateHttpResponse(DotNetOpenId.Server.WebResponse webresponse)
+    public static void GenerateHttpResponse(DotNetOpenId.Provider.WebResponse webresponse)
     {
         State.Session.Reset();
         Server server = new Server();

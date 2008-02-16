@@ -9,7 +9,7 @@ using System.Xml.Xsl;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using DotNetOpenId;
-using DotNetOpenId.Server;
+using DotNetOpenId.Provider;
 
 // nicked from http://www.codeproject.com/aspnet/URLRewriter.asp
 

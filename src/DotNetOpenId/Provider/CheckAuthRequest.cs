@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Collections.Generic;
 
-namespace DotNetOpenId.Server
+namespace DotNetOpenId.Provider
 {
     /// <summary>
     /// A request to verify the validity of a previous response.

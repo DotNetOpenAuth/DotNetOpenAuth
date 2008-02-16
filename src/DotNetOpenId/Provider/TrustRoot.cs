@@ -2,7 +2,7 @@ using System;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
 
-namespace DotNetOpenId.Server
+namespace DotNetOpenId.Provider
 {
     /// <summary>
     /// A trust root to validate requests and match return URLs against.

@@ -6,7 +6,7 @@ using DotNetOpenId.RegistrationExtension;
 using System.Diagnostics;
 using System.Collections.Generic;
 
-namespace DotNetOpenId.Server {
+namespace DotNetOpenId.Provider {
 	/// <summary>
 	/// A request to confirm the identity of a user.
 	/// </summary>

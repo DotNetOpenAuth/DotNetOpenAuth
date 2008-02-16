@@ -45,7 +45,7 @@ namespace DotNetOpenId
 
         public static void ServerTrace(string message)
         {
-            Trace(message, "OpenID Server");            
+            Trace(message, "OpenID Provider");            
         }
 
         public static void ServerTrace(NameValueCollection collection)

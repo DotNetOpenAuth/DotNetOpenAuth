@@ -3,7 +3,7 @@ using System.Collections.Specialized;
 using Org.Mentalis.Security.Cryptography;
 using System.Text;
 
-namespace DotNetOpenId.Server
+namespace DotNetOpenId.Provider
 {
     internal abstract class ServerSession
     {

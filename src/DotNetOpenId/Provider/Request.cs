@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Collections.Specialized;
 
-namespace DotNetOpenId.Server
+namespace DotNetOpenId.Provider
 {
 	public enum RequestType {
 		CheckIdRequest,

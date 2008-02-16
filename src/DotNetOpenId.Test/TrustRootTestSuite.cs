@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using NUnit.Framework;
-using DotNetOpenId.Server;
+using DotNetOpenId.Provider;
 
 namespace DotNetOpenId.Test {
 	[TestFixture]

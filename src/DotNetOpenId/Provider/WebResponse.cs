@@ -3,7 +3,7 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Net;
 
-namespace DotNetOpenId.Server {
+namespace DotNetOpenId.Provider {
 	/// <summary>
 	/// A response to an OpenID request in terms a web server understands.
 	/// </summary>

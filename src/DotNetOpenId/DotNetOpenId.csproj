@@ -53,10 +53,10 @@
     <Compile Include="HmacSha1Association.cs" />
     <Compile Include="RegistrationExtension\Gender.cs" />
     <Compile Include="Consumer\GenericConsumer.cs" />
-    <Compile Include="Server\AssociatedRequest.cs" />
-    <Compile Include="Server\MalformedReturnUrlException.cs" />
-    <Compile Include="Server\MalformedTrustRootException.cs" />
-    <Compile Include="Server\UntrustedReturnUrlException.cs" />
+    <Compile Include="Provider\AssociatedRequest.cs" />
+    <Compile Include="Provider\MalformedReturnUrlException.cs" />
+    <Compile Include="Provider\MalformedTrustRootException.cs" />
+    <Compile Include="Provider\UntrustedReturnUrlException.cs" />
     <Compile Include="Session\SimpleSessionState.cs" />
     <Compile Include="Session\SystemHttpSessionState.cs" />
     <Compile Include="Session\ISessionState.cs" />
@@ -82,19 +82,19 @@
     <Compile Include="DiffieHellman\mono\SequentialSearchPrimeGeneratorBase.cs" />
     <Compile Include="KVUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Server\AssociateRequest.cs" />
-    <Compile Include="Server\CheckAuthRequest.cs" />
-    <Compile Include="Server\CheckIdRequest.cs" />
-    <Compile Include="Server\Codec.cs" />
-    <Compile Include="Server\IEncodable.cs" />
-    <Compile Include="Server\ProtocolException.cs" />
-    <Compile Include="Server\Request.cs" />
-    <Compile Include="Server\Response.cs" />
-    <Compile Include="Server\Server.cs" />
-    <Compile Include="Server\ServerSession.cs" />
-    <Compile Include="Server\Signatory.cs" />
-    <Compile Include="Server\TrustRoot.cs" />
-    <Compile Include="Server\WebResponse.cs" />
+    <Compile Include="Provider\AssociateRequest.cs" />
+    <Compile Include="Provider\CheckAuthRequest.cs" />
+    <Compile Include="Provider\CheckIdRequest.cs" />
+    <Compile Include="Provider\Codec.cs" />
+    <Compile Include="Provider\IEncodable.cs" />
+    <Compile Include="Provider\ProtocolException.cs" />
+    <Compile Include="Provider\Request.cs" />
+    <Compile Include="Provider\Response.cs" />
+    <Compile Include="Provider\Server.cs" />
+    <Compile Include="Provider\ServerSession.cs" />
+    <Compile Include="Provider\Signatory.cs" />
+    <Compile Include="Provider\TrustRoot.cs" />
+    <Compile Include="Provider\WebResponse.cs" />
     <Compile Include="Store\IAssociationStore.cs" />
     <Compile Include="Store\MemoryStore.cs" />
     <Compile Include="Store\ServerAssocs.cs" />
@@ -131,7 +131,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Server\Server.cd" />
+    <None Include="Provider\Server.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

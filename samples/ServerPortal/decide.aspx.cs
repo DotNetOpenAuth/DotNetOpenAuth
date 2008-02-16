@@ -1,7 +1,7 @@
 using System;
 using System.Web.Security;
 using System.Web.UI;
-using DotNetOpenId.Server;
+using DotNetOpenId.Provider;
 
 /// <summary>
 /// Page for giving the user the option to continue or cancel out of authentication with a consumer.
