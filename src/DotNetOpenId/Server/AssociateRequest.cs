@@ -19,8 +19,8 @@ namespace DotNetOpenId.Server
 
         #region Constructor(s)
 
-        public AssociateRequest(NameValueCollection query)
-            : base()
+        public AssociateRequest(Server server, NameValueCollection query)
+            : base(server)
         {
             string session_type = query.Get(QueryStringArgs.openid.session_type);
 
@@ -61,9 +61,9 @@ namespace DotNetOpenId.Server
         /// <summary>
         /// Respond to this request with an association.
         /// </summary>
-        public Response Answer(Association assoc)
+        public Response Answer()
         {
-
+            Association assoc = Server.Signatory.CreateAssociation(false);
             #region  Trace
             if (TraceUtil.Switch.TraceInfo)
             {

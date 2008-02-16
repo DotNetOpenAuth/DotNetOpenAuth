@@ -12,7 +12,11 @@ namespace DotNetOpenId.Server
 	}
 
 	public abstract class Request {
+		protected Request(Server server) {
+			Server = server;
+		}
 
+		protected Server Server { get; private set; }
 		internal abstract string Mode { get; }
 		public abstract RequestType RequestType { get; }
 

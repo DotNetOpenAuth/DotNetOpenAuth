@@ -5,6 +5,8 @@ using System.Text;
 namespace DotNetOpenId.Server {
 
 	public abstract class AssociatedRequest : Request {
+		protected AssociatedRequest(Server server) : base(server) { }
+
 		public string AssocHandle { get; set; }
 
 		public override string ToString() {

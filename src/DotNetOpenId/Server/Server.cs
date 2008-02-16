@@ -11,7 +11,7 @@ namespace DotNetOpenId.Server {
 	/// </summary>
 	public class Server {
 		IAssociationStore store;
-		Signatory signatory;
+		internal Signatory Signatory { get; private set; }
 		Encoder encoder;
 
 		/// <summary>
@@ -26,8 +26,8 @@ namespace DotNetOpenId.Server {
 		public Server(IAssociationStore store) {
 			if (store == null) throw new ArgumentNullException("store");
 			this.store = store;
-			this.signatory = new Signatory(store);
-			this.encoder = new SigningEncoder(signatory);
+			Signatory = new Signatory(store);
+			this.encoder = new SigningEncoder(Signatory);
 		}
 
 		/// <summary>
@@ -79,7 +79,7 @@ namespace DotNetOpenId.Server {
 
 				return request;
 			} else if (mode == QueryStringArgs.Modes.check_authentication) {
-				CheckAuthRequest request = new CheckAuthRequest(query);
+				CheckAuthRequest request = new CheckAuthRequest(this, query);
 
 				if (TraceUtil.Switch.TraceInfo) {
 					TraceUtil.ServerTrace("End message decoding. Successfully decoded message as new CheckAuthRequest");
@@ -91,7 +91,7 @@ namespace DotNetOpenId.Server {
 
 				return request;
 			} else if (mode == QueryStringArgs.Modes.associate) {
-				AssociateRequest request = new AssociateRequest(query);
+				AssociateRequest request = new AssociateRequest(this, query);
 
 				if (TraceUtil.Switch.TraceInfo) {
 					TraceUtil.ServerTrace("End message decoding. Successfully decoded message as new AssociateRequest ");
@@ -122,10 +122,10 @@ namespace DotNetOpenId.Server {
 			WebResponse response;
 			switch (request.RequestType) {
 				case RequestType.CheckAuthRequest:
-					response = EncodeResponse(((CheckAuthRequest)request).Answer(signatory));
+					response = EncodeResponse(((CheckAuthRequest)request).Answer());
 					break;
 				case RequestType.AssociateRequest:
-					response = EncodeResponse(((AssociateRequest)request).Answer(signatory.CreateAssociation(false)));
+					response = EncodeResponse(((AssociateRequest)request).Answer());
 					break;
 				case RequestType.CheckIdRequest:
 				default:

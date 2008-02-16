@@ -53,7 +53,6 @@ namespace DotNetOpenId.Server {
 			get { return requestTimeZone; }
 		}
 
-		public Server Server { get; private set; }
 		public bool Immediate { get; private set; }
 		public string TrustRoot { get; private set; }
 		public Uri IdentityUrl { get; private set; }
@@ -99,16 +98,15 @@ namespace DotNetOpenId.Server {
 
 				UriBuilder builder = new UriBuilder(ReturnTo);
 				var args = new Dictionary<string, string>();
-
 				args.Add(QueryStringArgs.openid.mode, QueryStringArgs.Modes.cancel);
 				UriUtil.AppendQueryArgs(builder, args);
 
-				return new Uri(builder.ToString());
+				return builder.Uri;
 			}
 		}
 
-		internal CheckIdRequest(Server server, Uri identity, Uri return_to, string trust_root, bool immediate, string assoc_handle) {
-			Server = server;
+		internal CheckIdRequest(Server server, Uri identity, Uri return_to, string trust_root, 
+			bool immediate, string assoc_handle) : base(server) {
 			this.AssocHandle = assoc_handle;
 
 			IdentityUrl = identity;
@@ -120,8 +118,7 @@ namespace DotNetOpenId.Server {
 				throw new UntrustedReturnUrlException(null, ReturnTo, TrustRoot);
 		}
 
-		internal CheckIdRequest(Server server, NameValueCollection query) {
-			Server = server;
+		internal CheckIdRequest(Server server, NameValueCollection query) : base(server) {
 			// handle the mandatory protocol fields
 			string mode = getRequiredField(query, QueryStringArgs.openid.mode);
 			if (QueryStringArgs.Modes.checkid_immediate.Equals(mode, StringComparison.Ordinal)) {
@@ -216,8 +213,6 @@ namespace DotNetOpenId.Server {
 		/// Respond to this request.
 		/// </summary>
 		/// <param name="allow">Allow this user to claim this identity, and allow the consumer to have this information?</param>
-		/// <param name="server_url"></param>
-		/// <returns></returns>
 		public WebResponse Answer(bool allow, Uri server_url) {
 			return Answer(allow, server_url, null);
 		}
@@ -226,16 +221,8 @@ namespace DotNetOpenId.Server {
 		/// Respond to this request.
 		/// </summary>
 		/// <param name="allow">Allow this user to claim this identity, and allow the consumer to have this information?</param>
-		/// <param name="server_url"></param>
-		/// <param name="openIdProfileFields"></param>
-		/// <returns></returns>
 		public WebResponse Answer(bool allow, Uri server_url, OpenIdProfileFields openIdProfileFields) {
-			string mode;
-
-			if (allow || Immediate)
-				mode = QueryStringArgs.Modes.id_res;
-			else
-				mode = QueryStringArgs.Modes.cancel;
+			string mode = (allow || Immediate) ? QueryStringArgs.Modes.id_res : QueryStringArgs.Modes.cancel;
 
 			#region  Trace
 			if (TraceUtil.Switch.TraceInfo) {
@@ -283,7 +270,6 @@ namespace DotNetOpenId.Server {
 						} else {
 							fields.Add(QueryStringArgs.openidnp.sreg.gender, QueryStringArgs.Genders.Male);
 						}
-
 					}
 
 					if (!String.IsNullOrEmpty(openIdProfileFields.Language)) {
@@ -301,11 +287,9 @@ namespace DotNetOpenId.Server {
 					if (!String.IsNullOrEmpty(openIdProfileFields.TimeZone)) {
 						fields.Add(QueryStringArgs.openidnp.sreg.timezone, openIdProfileFields.TimeZone);
 					}
-
 				}
 
 				response.AddFields(null, fields, true);
-
 			}
 			response.AddField(null, QueryStringArgs.openidnp.mode, mode, false);
 			if (Immediate) {
@@ -352,7 +336,7 @@ namespace DotNetOpenId.Server {
 			UriBuilder builder = new UriBuilder(server_url);
 			UriUtil.AppendQueryArgs(builder, q);
 
-			return new Uri(builder.ToString());
+			return builder.Uri;
 		}
 
 		public override string ToString() {

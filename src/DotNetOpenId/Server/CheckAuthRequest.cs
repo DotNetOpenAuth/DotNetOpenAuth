@@ -22,7 +22,8 @@ namespace DotNetOpenId.Server
 
         #region Constructor(s)
 
-        public CheckAuthRequest(string assoc_handle, string sig, IDictionary<string, string> signed, string invalidate_handle)
+        public CheckAuthRequest(Server server, string assoc_handle, string sig,
+            IDictionary<string, string> signed, string invalidate_handle) : base(server)
         {
             this.AssocHandle = assoc_handle;
             _sig = sig;
@@ -30,7 +31,7 @@ namespace DotNetOpenId.Server
             _invalidate_handle = invalidate_handle;
         }
 
-        public CheckAuthRequest(NameValueCollection query)
+        public CheckAuthRequest(Server server, NameValueCollection query) : base(server)
         {
             this.AssocHandle = this.GetField(query, QueryStringArgs.openidnp.assoc_handle);
             _sig = this.GetField(query, QueryStringArgs.openidnp.sig);
@@ -77,7 +78,7 @@ namespace DotNetOpenId.Server
         /// <summary>
         /// Respond to this request.
         /// </summary>
-        internal IEncodable Answer(Signatory signatory)
+        internal IEncodable Answer()
         {
             #region  Trace
             if (TraceUtil.Switch.TraceInfo)
@@ -86,9 +87,9 @@ namespace DotNetOpenId.Server
             }
             #endregion
 
-            bool is_valid = signatory.Verify(this.AssocHandle, _sig, _signed);
+            bool is_valid = Server.Signatory.Verify(this.AssocHandle, _sig, _signed);
 
-            signatory.Invalidate(this.AssocHandle, true);
+            Server.Signatory.Invalidate(this.AssocHandle, true);
 
             Response response = new Response(this);
 
@@ -96,7 +97,7 @@ namespace DotNetOpenId.Server
 
             if (_invalidate_handle != null && _invalidate_handle != "")
             {
-                Association assoc = signatory.GetAssociation(_invalidate_handle, false);
+                Association assoc = Server.Signatory.GetAssociation(_invalidate_handle, false);
 
                 if (assoc == null)
                 {
