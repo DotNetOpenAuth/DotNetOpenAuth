@@ -18,25 +18,8 @@ namespace DotNetOpenId.RegistrationExtension
 	{
 		internal static OpenIdProfileFields Empty = new OpenIdProfileFields();
 
-		public OpenIdProfileFields()
-		{
-
-		}
-
-		private string nickname;
-		public string Nickname
-		{
-			get { return nickname; }
-			set { nickname = value; }
-		}
-
-		private string email;
-		public string Email
-		{
-			get { return email; }
-			set { email = value; }
-		}
-
+		public string Nickname { get; set; }
+		public string Email { get; set; }
 		public MailAddress MailAddress
 		{
 			get
@@ -48,50 +31,13 @@ namespace DotNetOpenId.RegistrationExtension
 					return new MailAddress(Email, Fullname);
 			}
 		}
-
-		private string fullname;
-		public string Fullname
-		{
-			get { return fullname; }
-			set { fullname = value; }
-		}
-
-		private DateTime? birthdate;
-		public DateTime? Birthdate
-		{
-			get { return birthdate; }
-			set { birthdate = value; }
-		}
-
-		private Gender? gender;
-		public Gender? Gender
-		{
-			get { return gender; }
-			set { gender = value; }
-		}
-
-		private string postalCode;
-		public string PostalCode
-		{
-			get { return postalCode; }
-			set { postalCode = value; }
-		}
-
-		private string country;
-		public string Country
-		{
-			get { return country; }
-			set { country = value; }
-		}
-
-		private string language;
-		public string Language
-		{
-			get { return language; }
-			set { language = value; }
-		}
-
-		private CultureInfo culture;
+		public string Fullname { get; set; }
+		public DateTime? Birthdate { get; set; }
+		public Gender? Gender { get; set; }
+		public string PostalCode { get; set; }
+		public string Country { get; set; }
+		public string Language { get; set; }
+		CultureInfo culture;
 		[XmlIgnore]
 		public CultureInfo Culture
 		{
@@ -116,13 +62,7 @@ namespace DotNetOpenId.RegistrationExtension
 				Country = indexOfHyphen > 0 ? value.Name.Substring(indexOfHyphen + 1) : null;
 			}
 		}
-
-		private string timeZone;
-		public string TimeZone
-		{
-			get { return timeZone; }
-			set { timeZone = value; }
-		}
+		public string TimeZone { get; set; }
 
 		public override bool Equals(object obj)
 		{
