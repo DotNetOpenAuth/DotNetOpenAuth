@@ -58,13 +58,7 @@ namespace DotNetOpenId.Consumer
 		ISessionState session;
 		GenericConsumer consumer;
 
-		private string session_key_prefix;
-
-		public string SessionKeyPrefix
-		{
-			get { return session_key_prefix; }
-			set { session_key_prefix = value; }
-		}
+		public string SessionKeyPrefix { get; set; }
 
 		string last_token = "last_token";
 
@@ -72,7 +66,7 @@ namespace DotNetOpenId.Consumer
 		{
 			get
 			{
-				return session_key_prefix + last_token;
+				return SessionKeyPrefix + last_token;
 			}
 		}
 

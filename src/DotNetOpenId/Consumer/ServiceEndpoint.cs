@@ -18,54 +18,15 @@ namespace DotNetOpenId.Consumer
                                     OPENID_1_1_TYPE, 
                                     OPENID_1_0_TYPE };
 
-        private Uri _identityUrl;
-        public Uri IdentityUrl
-        {
-            get
-            {
-                return _identityUrl;
-            }
-        }
+        public Uri IdentityUrl { get; private set; }
+        public Uri ServerUrl { get; private set; }
+        public Uri DelegateUrl { get; private set; }
+        public bool UsedYadis { get; private set; }
 
-        private Uri _serverUrl;
-        public Uri ServerUrl
-        {
-            get
-            {
-                return _serverUrl;
-            }
-        }
+        Uri[] typeUris;
 
-        private Uri _delegateUrl;
-        public Uri DelegateUrl
-        {
-            get
-            {
-                return _delegateUrl;
-            }
-        }
-
-        private bool _usedYadis;
-        public bool UsedYadis
-        {
-            get
-            {
-                return _usedYadis;
-            }
-        }
-
-        Uri[] _typeUris;
-
-        public Uri ServerId
-        {
-            get
-            {
-                if (this._delegateUrl == null)
-                {
-                    return this._identityUrl;
-                }
-                return this._delegateUrl;
-            }
+        public Uri ServerId {
+            get { return DelegateUrl ?? IdentityUrl; }
         }
 
         internal static Uri ExtractDelegate(ServiceNode serviceNode)
@@ -91,14 +52,13 @@ namespace DotNetOpenId.Consumer
             return delegateUrl;
         }
 
-        internal ServiceEndpoint(Uri identityUrl, Uri serverUrl, Uri[] typeUris, Uri delegateUrl, bool usedYadis)
-        {
-            this._identityUrl = identityUrl;
-            this._serverUrl = serverUrl;
-            this._typeUris = typeUris;
-            this._delegateUrl = delegateUrl;
-            this._usedYadis = usedYadis;
-        }
+		internal ServiceEndpoint(Uri identityUrl, Uri serverUrl, Uri[] typeUris, Uri delegateUrl, bool usedYadis) {
+			IdentityUrl = identityUrl;
+			ServerUrl = serverUrl;
+			this.typeUris = typeUris;
+			DelegateUrl = delegateUrl;
+			UsedYadis = usedYadis;
+		}
 
         internal ServiceEndpoint(Uri yadisUrl, UriNode uriNode)
         {
@@ -131,11 +91,11 @@ namespace DotNetOpenId.Consumer
             {
                 throw new ArgumentException("No matching openid type uris");
             }
-            this._identityUrl = yadisUrl;
-            this._serverUrl = uriNode.Uri;
-            this._typeUris = typeUris;
-            this._delegateUrl = ExtractDelegate(serviceNode);
-            this._usedYadis = true;
+            IdentityUrl = yadisUrl;
+            ServerUrl = uriNode.Uri;
+            this.typeUris = typeUris;
+            DelegateUrl = ExtractDelegate(serviceNode);
+            UsedYadis = true;
         }
 
         public ServiceEndpoint(Uri uri, string html)
@@ -149,21 +109,21 @@ namespace DotNetOpenId.Consumer
                     string uriString = values["href"];
                     if (uriString != null)
                     {
-                        if ((text == "openid.server") && (this._serverUrl == null))
+                        if ((text == "openid.server") && (ServerUrl == null))
                         {
                             try
                             {
-                                this._serverUrl = new Uri(uriString);
+                                ServerUrl = new Uri(uriString);
                             }
                             catch (UriFormatException)
                             {
                             }
                         }
-                        if ((text == "openid.delegate") && (this._delegateUrl == null))
+                        if ((text == "openid.delegate") && (DelegateUrl == null))
                         {
                             try
                             {
-                                this._delegateUrl = new Uri(uriString);
+                                DelegateUrl = new Uri(uriString);
                                 continue;
                             }
                             catch (UriFormatException)
@@ -178,15 +138,15 @@ namespace DotNetOpenId.Consumer
             {
                 throw new ArgumentException("html did not contain openid.server link");
             }
-            this._identityUrl = uri;
-            this._typeUris = new Uri[] { OPENID_1_0_TYPE };
-            this._usedYadis = false;
+            IdentityUrl = uri;
+            this.typeUris = new Uri[] { OPENID_1_0_TYPE };
+            UsedYadis = false;
         }
 
         public bool UsesExtension(Uri extension_uri)
         {
             //TODO: I think that all Arrays of stuff could use generics...
-           foreach(Uri u in this._typeUris)
+           foreach(Uri u in this.typeUris)
            {
                if (u == extension_uri)
                    return true;
