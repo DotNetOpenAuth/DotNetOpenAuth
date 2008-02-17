@@ -9,10 +9,10 @@ namespace DotNetOpenId.Test {
 	[TestFixture]
 	public class ServerAssocsTest {
 
-		ServerAssocs assocs;
+		Associations assocs;
 		[SetUp]
 		public void SetUp() {
-			assocs = new ServerAssocs();
+			assocs = new Associations();
 		}
 
 		[Test]

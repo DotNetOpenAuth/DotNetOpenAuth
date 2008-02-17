@@ -10,61 +10,53 @@ using DotNetOpenId;
 
 namespace DotNetOpenId.Store {
 
-	internal class MemoryStore : IAssociationStore {
-
-		#region Member Variables
-
-		Dictionary<Uri, ServerAssocs> serverAssocsTable = new Dictionary<Uri, ServerAssocs>();
+	internal class AssociationMemoryStore<TKey> : IAssociationStore<TKey> {
+		Dictionary<TKey, Associations> serverAssocsTable = new Dictionary<TKey, Associations>();
 		byte[] authKey;
 
-		#endregion
-
-		#region Methods
-
-		internal ServerAssocs GetServerAssocs(Uri server_url) {
+		internal Associations GetServerAssocs(TKey distinguishingFactor) {
 			lock (this) {
-				if (!serverAssocsTable.ContainsKey(server_url)) {
-					serverAssocsTable.Add(server_url, new ServerAssocs());
+
+				if (!serverAssocsTable.ContainsKey(distinguishingFactor)) {
+					serverAssocsTable.Add(distinguishingFactor, new Associations());
 				}
 
-				return serverAssocsTable[server_url];
+				return serverAssocsTable[distinguishingFactor];
 			}
 		}
 
-		public void StoreAssociation(Uri server_url, Association assoc) {
+		public void StoreAssociation(TKey distinguishingFactor, Association assoc) {
 			lock (this) {
-				if (!serverAssocsTable.ContainsKey(server_url))
-					serverAssocsTable.Add(server_url, new ServerAssocs());
+				if (!serverAssocsTable.ContainsKey(distinguishingFactor))
+					serverAssocsTable.Add(distinguishingFactor, new Associations());
 
-				ServerAssocs server_assocs = serverAssocsTable[server_url];
+				Associations server_assocs = serverAssocsTable[distinguishingFactor];
 
 				server_assocs.Set(assoc);
 			}
 		}
 
-		public Association GetAssociation(Uri serverUri) {
+		public Association GetAssociation(TKey distinguishingFactor) {
 			lock (this) {
-				return GetServerAssocs(serverUri).Best;
+				return GetServerAssocs(distinguishingFactor).Best;
 			}
 		}
 
-		public Association GetAssociation(Uri serverUri, string handle) {
+		public Association GetAssociation(TKey distinguishingFactor, string handle) {
 			lock (this) {
-				return GetServerAssocs(serverUri).Get(handle);
+				return GetServerAssocs(distinguishingFactor).Get(handle);
 			}
 		}
 
-		public bool RemoveAssociation(Uri serverUri, string handle) {
+		public bool RemoveAssociation(TKey distinguishingFactor, string handle) {
 			lock (this) {
-				return GetServerAssocs(serverUri).Remove(handle);
+				return GetServerAssocs(distinguishingFactor).Remove(handle);
 			}
 		}
-
-		#endregion
 
 		#region IAssociationStore Members
 
-		byte[] IAssociationStore.AuthKey {
+		byte[] IAssociationStore<TKey>.AuthKey {
 			get {
 				if (authKey == null) {
 					lock (this) {
@@ -80,11 +72,6 @@ namespace DotNetOpenId.Store {
 			}
 		}
 
-		bool IAssociationStore.IsDumb {
-			get { return false; }
-		}
-
 		#endregion
-
 	}
 }

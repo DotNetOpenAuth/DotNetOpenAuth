@@ -15,8 +15,6 @@ namespace DotNetOpenId.Session
             sessionstate = value;
         }
 
-        public int Count { get { return sessionstate.Count; } }
-        public object this[int index] { get { return sessionstate[index]; } set { sessionstate[index] = value; } }
         public object this[string index] { get { return sessionstate[index]; } set { sessionstate[index] = value; } }
         public void Add(string name, object value) { sessionstate.Add(name, value); }
         public void Clear() { sessionstate.Clear(); }

@@ -3,14 +3,15 @@ using System.Collections.Specialized;
 using System.Text;
 using DotNetOpenId.Store;
 using System.Web;
-
+using IProviderAssociationStore = DotNetOpenId.Store.IAssociationStore<DotNetOpenId.Store.AssociationConsumerType>;
+using ProviderMemoryStore = DotNetOpenId.Store.AssociationMemoryStore<DotNetOpenId.Store.AssociationConsumerType>;
 
 namespace DotNetOpenId.Provider {
 	/// <summary>
 	/// Offers services for a web page that is acting as an OpenID identity server.
 	/// </summary>
 	public class Server {
-		IAssociationStore store;
+		IProviderAssociationStore store;
 		internal Signatory Signatory { get; private set; }
 		Encoder encoder;
 
@@ -23,7 +24,7 @@ namespace DotNetOpenId.Provider {
 		/// <summary>
 		/// Constructs an OpenId server that uses a given IAssociationStore.
 		/// </summary>
-		public Server(IAssociationStore store) {
+		public Server(IProviderAssociationStore store) {
 			if (store == null) throw new ArgumentNullException("store");
 			this.store = store;
 			Signatory = new Signatory(store);
@@ -143,17 +144,17 @@ namespace DotNetOpenId.Provider {
 		}
 
 		const string associationStoreKey = "DotNetOpenId.Provider.Server.AssociationStore";
-		static IAssociationStore httpApplicationAssociationStore {
+		static IProviderAssociationStore httpApplicationAssociationStore {
 			get {
 				HttpContext context = HttpContext.Current;
 				if (context == null)
 					throw new InvalidOperationException(Strings.IAssociationStoreRequiredWhenNoHttpContextAvailable);
-				IAssociationStore store = (IAssociationStore)context.Application[associationStoreKey];
+				var store = (IProviderAssociationStore)context.Application[associationStoreKey];
 				if (store == null) {
 					context.Application.Lock();
 					try {
-						if ((store = (IAssociationStore)context.Application[associationStoreKey]) == null) {
-							context.Application[associationStoreKey] = store = new MemoryStore();
+						if ((store = (IProviderAssociationStore)context.Application[associationStoreKey]) == null) {
+							context.Application[associationStoreKey] = store = new ProviderMemoryStore();
 						}
 					} finally {
 						context.Application.UnLock();

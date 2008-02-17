@@ -3,18 +3,28 @@ using System.Collections.Generic;
 using System.Text;
 using DotNetOpenId;
 
-namespace DotNetOpenId.Store
-{
-    public interface IAssociationStore
-    {
+namespace DotNetOpenId.Store {
+	public enum AssociationConsumerType {
+		Smart,
+		Dumb
+	}
 
-        byte[] AuthKey { get; }
-        bool IsDumb { get; }
+	/// <summary>
+	/// Stores <see cref="Association"/>s for lookup by their handle, keeping
+	/// associations separated by a given distinguishing factor (like which server the
+	/// association is with).
+	/// </summary>
+	/// <typeparam name="TKey">
+	/// <see cref="System.Uri"/> for consumers (to distinguish associations across servers) or
+	/// <see cref="AssociationType"/> for providers (to distingish dumb and smart client associaitons).
+	/// </typeparam>
+	public interface IAssociationStore<TKey> {
+		// TODO: is this only used by Consumers? Does it relate to association storage?
+		byte[] AuthKey { get; }
 
-        void StoreAssociation(Uri serverUri, Association assoc);
-        Association GetAssociation(Uri serverUri);
-        Association GetAssociation(Uri serverUri, string handle);
-        bool RemoveAssociation(Uri serverUri, string handle);
-
-    }
+		void StoreAssociation(TKey distinguishingFactor, Association assoc);
+		Association GetAssociation(TKey distinguishingFactor);
+		Association GetAssociation(TKey distinguishingFactor, string handle);
+		bool RemoveAssociation(TKey distinguishingFactor, string handle);
+	}
 }

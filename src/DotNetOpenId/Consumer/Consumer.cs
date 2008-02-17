@@ -8,6 +8,8 @@ namespace DotNetOpenId.Consumer
 	using DotNetOpenId.Session;
 	using System.Web;
 	using System.Collections.Generic;
+	using IConsumerAssociationStore = DotNetOpenId.Store.IAssociationStore<System.Uri>;
+	using ConsumerMemoryStore = DotNetOpenId.Store.AssociationMemoryStore<System.Uri>;
 
 	public class FailureException : ApplicationException
 	{
@@ -85,7 +87,7 @@ namespace DotNetOpenId.Consumer
 		/// <summary>
 		/// Constructs an OpenId consumer that uses a given IAssociationStore.
 		/// </summary>
-		public Consumer(ISessionState session, IAssociationStore store)
+		public Consumer(ISessionState session, IConsumerAssociationStore store)
 		{
 			this.session = session;
 			this.manager = new ServiceEndpointManager(session);
@@ -124,17 +126,17 @@ namespace DotNetOpenId.Consumer
 		}
 
 		const string associationStoreKey = "DotNetOpenId.Consumer.Consumer.AssociationStore";
-		static IAssociationStore HttpApplicationAssociationStore {
+		static IConsumerAssociationStore HttpApplicationAssociationStore {
 			get {
 				HttpContext context = HttpContext.Current;
 				if (context == null)
 					throw new InvalidOperationException(Strings.IAssociationStoreRequiredWhenNoHttpContextAvailable);
-				IAssociationStore store = (IAssociationStore)context.Application[associationStoreKey];
+				var store = (IConsumerAssociationStore)context.Application[associationStoreKey];
 				if (store == null) {
 					context.Application.Lock();
 					try {
-						if ((store = (IAssociationStore)context.Application[associationStoreKey]) == null) {
-							context.Application[associationStoreKey] = store = new MemoryStore();
+						if ((store = (IConsumerAssociationStore)context.Application[associationStoreKey]) == null) {
+							context.Application[associationStoreKey] = store = new ConsumerMemoryStore();
 						}
 					} finally {
 						context.Application.UnLock();

@@ -12,15 +12,16 @@ namespace DotNetOpenId.Consumer
 	using DotNetOpenId.Store;
 	using System.Web;
 	using System.IO;
+	using IConsumerAssociationStore = DotNetOpenId.Store.IAssociationStore<System.Uri>;
 
 	internal class GenericConsumer
 	{
 		static readonly TimeSpan minimumUsefulAssociationLifetime = TimeSpan.FromSeconds(120);
 
-		private IAssociationStore store;
-		private Fetcher fetcher;
+		IConsumerAssociationStore store;
+		Fetcher fetcher;
 
-		public GenericConsumer(IAssociationStore store, Fetcher fetcher)
+		public GenericConsumer(IConsumerAssociationStore store, Fetcher fetcher)
 		{
 			this.store = store;
 			this.fetcher = fetcher;
@@ -284,9 +285,6 @@ namespace DotNetOpenId.Consumer
 
 		private Association GetAssociation(Uri server_url)
 		{
-			if (store.IsDumb)
-				return null;
-
 			Association assoc = store.GetAssociation(server_url);
 
 			if (assoc == null || assoc.SecondsTillExpiration < minimumUsefulAssociationLifetime.TotalSeconds)

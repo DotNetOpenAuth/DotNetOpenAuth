@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 
 namespace DotNetOpenId.Store {
-	internal class ServerAssocs {
+	/// <summary>
+	/// A dictionary of handle/Association pairs.
+	/// </summary>
+	internal class Associations {
 
 		Dictionary<string, Association> assocs;
 
 		/// <summary>
 		/// Instantiates a mapping between association handles and <see cref="Association"/> objects.
 		/// </summary>
-		public ServerAssocs() {
+		public Associations() {
 			this.assocs = new Dictionary<string,Association>();
 		}
 

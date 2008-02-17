@@ -21,8 +21,6 @@ namespace DotNetOpenId.Session
             return local_instance;
         }
 
-        public int Count { get { return hashtable.Count; } }
-        public object this[int index] { get { return hashtable[index]; } set { hashtable[index] = value; } }
         public object this[string index] { get { return hashtable[index]; } set { hashtable[index] = value; } }
         public void Add(string name, object value) { hashtable.Add(name, value); }
         public void Clear() { hashtable.Clear(); }

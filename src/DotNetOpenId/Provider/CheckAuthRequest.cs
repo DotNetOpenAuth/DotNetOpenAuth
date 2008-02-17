@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
 using System.Collections.Generic;
+using DotNetOpenId.Store;
 
 namespace DotNetOpenId.Provider {
 	/// <summary>
@@ -52,14 +53,14 @@ namespace DotNetOpenId.Provider {
 
 			bool is_valid = Server.Signatory.Verify(AssociationHandle, signature, signedFields);
 
-			Server.Signatory.Invalidate(AssociationHandle, true);
+			Server.Signatory.Invalidate(AssociationHandle, AssociationConsumerType.Dumb);
 
 			Response response = new Response(this);
 
 			response.Fields[QueryStringArgs.openidnp.is_valid] = (is_valid ? "true" : "false");
 
 			if (!string.IsNullOrEmpty(invalidate_handle)) {
-				Association assoc = Server.Signatory.GetAssociation(invalidate_handle, false);
+				Association assoc = Server.Signatory.GetAssociation(invalidate_handle, AssociationConsumerType.Smart);
 
 				if (assoc == null) {
 					#region  Trace

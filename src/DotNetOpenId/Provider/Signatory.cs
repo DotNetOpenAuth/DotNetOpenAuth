@@ -5,19 +5,28 @@ using System.Text;
 using System.Security.Cryptography;
 using DotNetOpenId.Store;
 using System.Collections.Generic;
+using IProviderAssociationStore = DotNetOpenId.Store.IAssociationStore<DotNetOpenId.Store.AssociationConsumerType>;
 
 namespace DotNetOpenId.Provider {
 	/// <summary>
 	/// Signs things.
 	/// </summary>
 	internal class Signatory {
-		static readonly TimeSpan associationLifetime = TimeSpan.FromDays(14);
+		/// <summary>
+		/// The duration any association and secret key the Provider generates will be good for.
+		/// </summary>
+		static readonly TimeSpan smartAssociationLifetime = TimeSpan.FromDays(14);
+		/// <summary>
+		/// The duration a secret key used for signing dumb client requests will be good for.
+		/// </summary>
+		static readonly TimeSpan dumbSecretLifetime = TimeSpan.FromMinutes(5);
 
-		static readonly Uri _normal_key = new Uri("http://localhost/|normal");
-		static readonly Uri _dumb_key = new Uri("http://localhost/|dumb");
-		IAssociationStore store;
+		/// <summary>
+		/// The store for shared secrets.
+		/// </summary>
+		IProviderAssociationStore store;
 
-		public Signatory(IAssociationStore store) {
+		public Signatory(IProviderAssociationStore store) {
 			if (store == null)
 				throw new ArgumentNullException("store");
 
@@ -35,7 +44,7 @@ namespace DotNetOpenId.Provider {
 			string assoc_handle = ((AssociatedRequest)response.Request).AssociationHandle;
 
 			if (!string.IsNullOrEmpty(assoc_handle)) {
-				assoc = this.GetAssociation(assoc_handle, false);
+				assoc = this.GetAssociation(assoc_handle, AssociationConsumerType.Smart);
 
 				if (assoc == null) {
 					#region  Trace
@@ -45,7 +54,7 @@ namespace DotNetOpenId.Provider {
 					#endregion
 
 					response.Fields[QueryStringArgs.openidnp.invalidate_handle] = assoc_handle;
-					assoc = this.CreateAssociation(true);
+					assoc = this.CreateAssociation(AssociationConsumerType.Dumb);
 				} else {
 					#region  Trace
 					if (TraceUtil.Switch.TraceInfo) {
@@ -54,7 +63,7 @@ namespace DotNetOpenId.Provider {
 					#endregion
 				}
 			} else {
-				assoc = this.CreateAssociation(true);
+				assoc = this.CreateAssociation(AssociationConsumerType.Dumb);
 				TraceUtil.ServerTrace(String.Format("No assoc_handle supplied. Creating new association."));
 			}
 
@@ -79,7 +88,7 @@ namespace DotNetOpenId.Provider {
 			}
 			#endregion
 
-			Association assoc = this.GetAssociation(assoc_handle, true);
+			Association assoc = this.GetAssociation(assoc_handle, AssociationConsumerType.Dumb);
 
 			string expected_sig;
 
@@ -126,9 +135,10 @@ namespace DotNetOpenId.Provider {
 			return expected_sig.Equals(signature, StringComparison.OrdinalIgnoreCase);
 		}
 
-		public virtual Association CreateAssociation(bool dumb) {
+		public virtual Association CreateAssociation(AssociationConsumerType associationType) {
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ServerTrace(String.Format("Start Create Association. InDumbMode = {0}", dumb));
+				TraceUtil.ServerTrace(String.Format("Start Create Association. Association type = {0}", 
+					associationType));
 			}
 
 			RNGCryptoServiceProvider generator = new RNGCryptoServiceProvider();
@@ -147,19 +157,19 @@ namespace DotNetOpenId.Provider {
 
 			handle = "{{HMAC-SHA1}{" + seconds + "}{" + uniq + "}";
 
-			assoc = new HmacSha1Association(handle, secret, associationLifetime);
+			assoc = new HmacSha1Association(handle, secret, 
+				associationType == AssociationConsumerType.Dumb ? dumbSecretLifetime : smartAssociationLifetime);
 
-			Uri key = dumb ? _dumb_key : _normal_key;
-			store.StoreAssociation(key, assoc);
+			store.StoreAssociation(associationType, assoc);
 
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ServerTrace(String.Format("End Create Association. Association successfully created. key = '{0}', handle = '{1}' ", key, handle));
+				TraceUtil.ServerTrace(String.Format("End Create Association. Association successfully created. key = '{0}', handle = '{1}' ", associationType, handle));
 			}
 
 			return assoc;
 		}
 
-		public virtual Association GetAssociation(string assoc_handle, bool dumb) {
+		public virtual Association GetAssociation(string assoc_handle, AssociationConsumerType associationType) {
 			if (TraceUtil.Switch.TraceInfo) {
 				TraceUtil.ServerTrace(String.Format("Start get association from store '{0}'.", assoc_handle));
 			}
@@ -168,11 +178,10 @@ namespace DotNetOpenId.Provider {
 			if (assoc_handle == null)
 				throw new ArgumentNullException(QueryStringArgs.openidnp.assoc_handle);
 
-			Uri key = dumb ? _dumb_key : _normal_key;
-			Association assoc = store.GetAssociation(key, assoc_handle);
+			Association assoc = store.GetAssociation(associationType, assoc_handle);
 			if (assoc == null || assoc.IsExpired) {
 				TraceUtil.ServerTrace("Association expired or not in store. Trying to remove association if it still exists.");
-				store.RemoveAssociation(key, assoc_handle);
+				store.RemoveAssociation(associationType, assoc_handle);
 				assoc = null;
 			}
 
@@ -183,13 +192,12 @@ namespace DotNetOpenId.Provider {
 			return assoc;
 		}
 
-		public virtual void Invalidate(string assoc_handle, bool dumb) {
+		public virtual void Invalidate(string assoc_handle, AssociationConsumerType associationType) {
 			if (TraceUtil.Switch.TraceInfo) {
 				TraceUtil.ServerTrace(String.Format("Start invalidate association '{0}'.", assoc_handle));
 			}
 
-			Uri key = dumb ? _dumb_key : _normal_key;
-			store.RemoveAssociation(key, assoc_handle);
+			store.RemoveAssociation(associationType, assoc_handle);
 
 			if (TraceUtil.Switch.TraceInfo) {
 				TraceUtil.ServerTrace(String.Format("End invalidate association '{0}'.", assoc_handle));

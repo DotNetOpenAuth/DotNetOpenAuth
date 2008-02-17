@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Specialized;
 using System.Text;
+using DotNetOpenId.Store;
 
 namespace DotNetOpenId.Provider {
 	/// <summary>
 	/// A request to establish an association.
 	/// </summary>
 	internal class AssociateRequest : Request {
-		string associationType = QueryStringArgs.HMAC_SHA1;
+		string associationKeyType = QueryStringArgs.HMAC_SHA1;
 		ServerSession session;
 
 		public AssociateRequest(Server server, NameValueCollection query)
@@ -41,7 +42,7 @@ namespace DotNetOpenId.Provider {
 		/// Respond to this request with an association.
 		/// </summary>
 		public Response Answer() {
-			Association assoc = Server.Signatory.CreateAssociation(false);
+			Association assoc = Server.Signatory.CreateAssociation(AssociationConsumerType.Smart);
 			#region  Trace
 			if (TraceUtil.Switch.TraceInfo) {
 				TraceUtil.ServerTrace("Start processing response for AssociateRequest");
@@ -82,7 +83,7 @@ namespace DotNetOpenId.Provider {
 
 		public override string ToString() {
 			string returnString = "AssociateRequest._assoc_type = {0}";
-			return base.ToString() + Environment.NewLine + String.Format(returnString, associationType);
+			return base.ToString() + Environment.NewLine + String.Format(returnString, associationKeyType);
 		}
 
 	}
