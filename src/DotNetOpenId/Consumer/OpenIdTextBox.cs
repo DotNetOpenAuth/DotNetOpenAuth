@@ -402,7 +402,7 @@ namespace DotNetOpenId.Consumer
 					}
 				}
 				UriUtil.AppendQueryArgs(return_to, return_to_params);
-				Uri redirectUrl = request.CreateRedirect(trustRoot, return_to.Uri, AuthRequest.Mode.SETUP);
+				Uri redirectUrl = request.CreateRedirect(trustRoot, return_to.Uri, AuthRequest.Mode.Setup);
 				Page.Response.Redirect(redirectUrl.AbsoluteUri);
 			} catch (WebException ex) {
 				OnError(ex);
