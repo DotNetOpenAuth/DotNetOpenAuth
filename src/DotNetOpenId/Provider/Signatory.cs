@@ -132,7 +132,7 @@ namespace DotNetOpenId.Provider {
 			}
 			#endregion
 
-			return expected_sig.Equals(signature, StringComparison.OrdinalIgnoreCase);
+			return expected_sig.Equals(signature, StringComparison.Ordinal);
 		}
 
 		public virtual Association CreateAssociation(AssociationConsumerType associationType) {
