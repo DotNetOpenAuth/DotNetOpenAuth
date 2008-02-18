@@ -50,6 +50,7 @@
     <Compile Include="Consumer\Fetcher.cs" />
     <Compile Include="Consumer\FetchException.cs" />
     <Compile Include="Consumer\FetchResponse.cs" />
+    <Compile Include="Consumer\Token.cs" />
     <Compile Include="HmacSha1Association.cs" />
     <Compile Include="RegistrationExtension\Gender.cs" />
     <Compile Include="Consumer\GenericConsumer.cs" />

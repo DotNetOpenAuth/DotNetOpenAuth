@@ -11,8 +11,6 @@ namespace DotNetOpenId.Consumer {
 			Setup
 		}
 
-		Dictionary<string, string> extraArgs;
-		Dictionary<string, string> returnToArgs;
 		Association assoc;
 		ServiceEndpoint endpoint;
 
@@ -21,19 +19,21 @@ namespace DotNetOpenId.Consumer {
 			this.assoc = assoc;
 			this.endpoint = endpoint;
 
-			this.extraArgs = new Dictionary<string, string>();
-			this.returnToArgs = new Dictionary<string, string>();
+			ExtraArgs = new Dictionary<string, string>();
+			ReturnToArgs = new Dictionary<string, string>();
+			ReturnToArgs.Add(DotNetOpenId.Consumer.Token.TokenKey, Token);
 		}
 
 		public string Token { get; set; }
-
-		public IDictionary<string, string> ExtraArgs {
-			get { return this.extraArgs; }
-		}
-
-		public IDictionary<string, string> ReturnToArgs {
-			get { return this.returnToArgs; }
-		}
+		/// <summary>
+		/// Arguments to add to the query string to be sent to the provider.
+		/// </summary>
+		public IDictionary<string, string> ExtraArgs { get; private set; }
+		/// <summary>
+		/// Arguments to add to the return_to part of the query string, so that
+		/// these values come back to the consumer when the user agent returns.
+		/// </summary>
+		public IDictionary<string, string> ReturnToArgs { get; private set; }
 
 		public Uri CreateRedirect(string trustRoot, Uri returnTo, Mode mode) {
 			UriBuilder returnToBuilder = new UriBuilder(returnTo);
@@ -53,7 +53,7 @@ namespace DotNetOpenId.Consumer {
 			UriBuilder redir = new UriBuilder(this.endpoint.ServerUrl);
 
 			UriUtil.AppendQueryArgs(redir, qsArgs);
-			UriUtil.AppendQueryArgs(redir, this.ExtraArgs);
+			UriUtil.AppendQueryArgs(redir, ExtraArgs);
 
 			return redir.Uri;
 		}

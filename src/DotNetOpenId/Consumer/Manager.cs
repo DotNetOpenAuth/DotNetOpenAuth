@@ -28,6 +28,7 @@ namespace DotNetOpenId.Consumer {
 			}
 
 			if (endpoints == null) {
+				endpoints = GetServiceEndpoints(openid_url);
 				if (session != null) {
 					session[key] = endpoints = GetServiceEndpoints(openid_url);
 				}

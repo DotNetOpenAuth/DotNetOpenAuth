@@ -55,20 +55,9 @@ namespace DotNetOpenId.Consumer
 
 	public class Consumer
 	{
-		ISessionState session;
 		GenericConsumer consumer;
 
 		public string SessionKeyPrefix { get; set; }
-
-		string last_token = "last_token";
-
-		protected string TokenKey
-		{
-			get
-			{
-				return SessionKeyPrefix + last_token;
-			}
-		}
 
 		ServiceEndpointManager manager;
 
@@ -76,15 +65,14 @@ namespace DotNetOpenId.Consumer
 		/// Constructs an OpenId consumer that uses the HttpApplication dictionary as
 		/// its association store.
 		/// </summary>
-		public Consumer(ISessionState session) : this(session, HttpApplicationAssociationStore) { }
+		public Consumer() : this(HttpApplicationAssociationStore) { }
 
 		/// <summary>
 		/// Constructs an OpenId consumer that uses a given IAssociationStore.
 		/// </summary>
-		public Consumer(ISessionState session, IConsumerAssociationStore store)
+		public Consumer(IConsumerAssociationStore store)
 		{
-			this.session = session;
-			this.manager = new ServiceEndpointManager(session);
+			this.manager = new ServiceEndpointManager(null);
 			this.consumer = new GenericConsumer(store, new SimpleFetcher());
 		}
 
@@ -99,7 +87,6 @@ namespace DotNetOpenId.Consumer
 		public AuthRequest BeginWithoutDiscovery(ServiceEndpoint endpoint)
 		{
 			AuthRequest auth_req = this.consumer.Begin(endpoint);
-			this.session[this.TokenKey] = auth_req.Token;
 			return auth_req;
 		}
 
@@ -109,12 +96,12 @@ namespace DotNetOpenId.Consumer
 
 		public ConsumerResponse Complete(IDictionary<string, string> query)
 		{
-			string token = this.session[TokenKey] as string;
+			string token = query[Token.TokenKey];
 			if (token == null)
-				throw new FailureException(null, "No session state found");
+				throw new FailureException(null, "No token found.");
 
 			ConsumerResponse response = this.consumer.Complete(query, token);
-			this.manager.Cleanup(response.IdentityUrl, this.TokenKey);
+			this.manager.Cleanup(response.IdentityUrl, Token.TokenKey);
 
 			return response;
 		}

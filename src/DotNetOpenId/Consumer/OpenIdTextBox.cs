@@ -336,7 +336,7 @@ namespace DotNetOpenId.Consumer
 				if (!Page.IsPostBack && Page.Request.QueryString[QueryStringArgs.openid.mode] != null)
 				{
 					DotNetOpenId.Consumer.Consumer consumer =
-						new DotNetOpenId.Consumer.Consumer(new SystemHttpSessionState(Page.Session));
+						new DotNetOpenId.Consumer.Consumer();
 
 					ConsumerResponse resp = consumer.Complete(Page.Request.QueryString);
 					OnLoggedIn(resp.IdentityUrl, parseProfileFields(Page.Request.QueryString));
@@ -374,7 +374,7 @@ namespace DotNetOpenId.Consumer
 
 			try {
 				DotNetOpenId.Consumer.Consumer consumer =
-					new DotNetOpenId.Consumer.Consumer(new SystemHttpSessionState(Page.Session));
+					new DotNetOpenId.Consumer.Consumer();
 
 				Uri userUri = UriUtil.NormalizeUri(Text);
 				// Initiate openid request
