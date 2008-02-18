@@ -56,7 +56,7 @@ namespace DotNetOpenId.Provider {
 			Response response = new Response(this);
 
 			response.Fields[QueryStringArgs.openidnp.expires_in] = assoc.SecondsTillExpiration.ToString();
-			response.Fields[QueryStringArgs.openidnp.assoc_type] = QueryStringArgs.HMAC_SHA1;
+			response.Fields[QueryStringArgs.openidnp.assoc_type] = assoc.AssociationType;
 			response.Fields[QueryStringArgs.openidnp.assoc_handle] = assoc.Handle;
 
 			NameValueCollection nvc = session.Answer(assoc.SecretKey);

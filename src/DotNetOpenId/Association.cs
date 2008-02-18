@@ -31,12 +31,6 @@ namespace DotNetOpenId {
 		/// The lifetime the OpenID provider permits this <see cref="Association"/>.
 		/// </summary>
 		protected TimeSpan TotalLifeLength { get; private set; }
-		/// <summary>
-		/// Gets the number of seconds between Jan 1, 1970 12 AM and the <see cref="Issued"/> date.
-		/// </summary>
-		public uint IssuedUnix {
-			get { return (uint)((Issued - UNIX_EPOCH).TotalSeconds); }
-		}
 
 		/// <summary>
 		/// The shared secret key between the consumer and provider.
@@ -61,14 +55,14 @@ namespace DotNetOpenId {
 		/// The number of seconds until this <see cref="Association"/> expires.
 		/// Never negative (counter runs to zero).
 		/// </summary>
-		public long SecondsTillExpiration {
+		protected internal long SecondsTillExpiration {
 			get { return Math.Max(0, (long)(Expires - DateTime.UtcNow).TotalSeconds); }
 		}
 
 		/// <summary>
 		/// The string to pass as the assoc_type value in the OpenID protocol.
 		/// </summary>
-		public abstract string AssociationType { get; }
+		protected internal abstract string AssociationType { get; }
 
 		/// <summary>
 		/// Signs certain given key/value pairs in a supplied dictionary.
@@ -146,11 +140,10 @@ namespace DotNetOpenId {
 			string returnString = @"Association.Handle= '{0}'
 Association.Issued = '{1}'
 Association.Secret = '{2}' 
-Association.IssuedUnix = '{3}' 
-Association.Expires = '{4}' 
-Association.IsExpired = '{5}' 
-Association.ExpiresIn = '{6}' ";
-			return String.Format(returnString, Handle, Issued, SecretKey, IssuedUnix,
+Association.Expires = '{3}' 
+Association.IsExpired = '{4}' 
+Association.ExpiresIn = '{5}' ";
+			return String.Format(returnString, Handle, Issued, SecretKey,
 				Expires, IsExpired, SecondsTillExpiration);
 		}
 	}
