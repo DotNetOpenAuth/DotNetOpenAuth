@@ -19,10 +19,6 @@ namespace DotNetOpenId.Session
         /// <param name="value">The value of the item to add to the session-state collection.</param>
         void Add(string name, object value);
         /// <summary>
-        /// Removes all keys and values from the session-state collection.
-        /// </summary>
-        void Clear();
-        /// <summary>
         /// Deletes an item from the session-state collection.
         /// </summary>
         /// <param name="name">The name of the item to delete from the session-state collection.</param>

@@ -23,7 +23,6 @@ namespace DotNetOpenId.Session
 
         public object this[string index] { get { return hashtable[index]; } set { hashtable[index] = value; } }
         public void Add(string name, object value) { hashtable.Add(name, value); }
-        public void Clear() { hashtable.Clear(); }
         public void Remove(string name) { hashtable.Remove(name); }
     }
 }
