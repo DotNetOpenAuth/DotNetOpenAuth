@@ -63,7 +63,7 @@ namespace DotNetOpenId.Consumer
 				if (token.IdentityUrl == null)
 					throw new FailureException(token.IdentityUrl, "No session state found");
 
-				ConsumerResponse response = DoIdRes(query, token.IdentityUrl, token.ServerId, token.ServerUrl);
+				ConsumerResponse response = DoIdRes(query, token);
 
 				CheckNonce(response, query[QueryStringArgs.nonce]);
 
@@ -119,43 +119,43 @@ namespace DotNetOpenId.Consumer
 			}
 		}
 
-		private ConsumerResponse DoIdRes(IDictionary<string, string> query, Uri consumer_id, Uri server_id, Uri server_url)
+		private ConsumerResponse DoIdRes(IDictionary<string, string> query, Token token)
 		{
 			Converter<string, string> getRequired = delegate(string key)
 				{
 					string val;
 					if (!query.TryGetValue(key, out val))
-						throw new FailureException(consumer_id, "Missing required field: " + key);
+						throw new FailureException(token.IdentityUrl, "Missing required field: " + key);
 
 					return val;
 				};
 
 			string user_setup_url;
 			if (query.TryGetValue(QueryStringArgs.openid.user_setup_url, out user_setup_url))
-				throw new SetupNeededException(consumer_id, new Uri(user_setup_url));
+				throw new SetupNeededException(token.IdentityUrl, new Uri(user_setup_url));
 
 			string return_to = getRequired(QueryStringArgs.openid.return_to);
 			string server_id2 = getRequired(QueryStringArgs.openid.identity);
 			string assoc_handle = getRequired(QueryStringArgs.openid.assoc_handle);
 
-			if (server_id.AbsoluteUri != server_id.ToString())
-				throw new FailureException(consumer_id, "Provider ID (delegate) mismatch");
+			if (token.ServerId.AbsoluteUri != token.ServerId.ToString())
+				throw new FailureException(token.IdentityUrl, "Provider ID (delegate) mismatch");
 
-			Association assoc = this.store.GetAssociation(server_url, assoc_handle);
+			Association assoc = this.store.GetAssociation(token.ServerUrl, assoc_handle);
 
 			if (assoc == null)
 			{
 				// It's not an association we know about.  Dumb mode is our
 				// only possible path for recovery.
-				if (!CheckAuth(query, server_url))
-					throw new FailureException(consumer_id, "check_authentication failed");
+				if (!CheckAuth(query, token.ServerUrl))
+					throw new FailureException(token.IdentityUrl, "check_authentication failed");
 
-				return new ConsumerResponse(consumer_id, query, query[QueryStringArgs.openid.signed]);
+				return new ConsumerResponse(token.IdentityUrl, query, query[QueryStringArgs.openid.signed]);
 			}
 
 			if (assoc.IsExpired)
 			{
-				throw new FailureException(consumer_id, String.Format("Association with {0} expired", server_url));
+				throw new FailureException(token.IdentityUrl, String.Format("Association with {0} expired", token.ServerUrl));
 			}
 
 			// Check the signature
@@ -166,9 +166,9 @@ namespace DotNetOpenId.Consumer
 			string v_sig = CryptUtil.ToBase64String(assoc.Sign(query, signed_array, QueryStringArgs.openid.Prefix));
 
 			if (v_sig != sig)
-				throw new FailureException(consumer_id, "Bad signature");
+				throw new FailureException(token.IdentityUrl, "Bad signature");
 
-			return new ConsumerResponse(consumer_id, query, signed);
+			return new ConsumerResponse(token.IdentityUrl, query, signed);
 		}
 
 		private static AssociationRequest CreateAssociationRequest(Uri server_url)
