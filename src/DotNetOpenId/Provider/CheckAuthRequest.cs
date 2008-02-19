@@ -47,7 +47,7 @@ namespace DotNetOpenId.Provider {
 		internal IEncodable Answer() {
 			#region  Trace
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ServerTrace("Start processing Response for CheckAuthRequest");
+				TraceUtil.ProviderTrace("Start processing Response for CheckAuthRequest");
 			}
 			#endregion
 
@@ -65,7 +65,7 @@ namespace DotNetOpenId.Provider {
 				if (assoc == null) {
 					#region  Trace
 					if (TraceUtil.Switch.TraceInfo) {
-						TraceUtil.ServerTrace("No matching association found. Returning invalidate_handle. ");
+						TraceUtil.ProviderTrace("No matching association found. Returning invalidate_handle. ");
 					}
 					#endregion
 
@@ -75,10 +75,10 @@ namespace DotNetOpenId.Provider {
 
 			#region  Trace
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ServerTrace("End processing Response for CheckAuthRequest. CheckAuthRequest response successfully created. ");
+				TraceUtil.ProviderTrace("End processing Response for CheckAuthRequest. CheckAuthRequest response successfully created. ");
 				if (TraceUtil.Switch.TraceVerbose) {
-					TraceUtil.ServerTrace("Response follows. ");
-					TraceUtil.ServerTrace(response.ToString());
+					TraceUtil.ProviderTrace("Response follows. ");
+					TraceUtil.ProviderTrace(response.ToString());
 				}
 			}
 

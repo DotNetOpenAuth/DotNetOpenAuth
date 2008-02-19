@@ -45,7 +45,7 @@ namespace DotNetOpenId.Provider
             #region  Trace
             if (TraceUtil.Switch.TraceInfo)
             {
-                TraceUtil.ServerTrace(String.Format("Encode using {0}", encode_as));
+                TraceUtil.ProviderTrace(String.Format("Encode using {0}", encode_as));
             }
             #endregion
 
@@ -92,7 +92,7 @@ namespace DotNetOpenId.Provider
                 #region  Trace
                 if (TraceUtil.Switch.TraceInfo)
                 {
-                    TraceUtil.ServerTrace("Encoding using the signing encoder");
+                    TraceUtil.ProviderTrace("Encoding using the signing encoder");
                 }
                 #endregion                          
                 

@@ -45,10 +45,10 @@ namespace DotNetOpenId.Provider {
 			Association assoc = Server.Signatory.CreateAssociation(AssociationConsumerType.Smart);
 			#region  Trace
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ServerTrace("Start processing response for AssociateRequest");
+				TraceUtil.ProviderTrace("Start processing response for AssociateRequest");
 				if (TraceUtil.Switch.TraceVerbose) {
-					TraceUtil.ServerTrace("Association to be sent follows:");
-					TraceUtil.ServerTrace(assoc.ToString());
+					TraceUtil.ProviderTrace("Association to be sent follows:");
+					TraceUtil.ProviderTrace(assoc.ToString());
 				}
 			}
 			#endregion
@@ -70,10 +70,10 @@ namespace DotNetOpenId.Provider {
 
 			#region  Trace
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ServerTrace("End processing response for AssociateRequest. AssociateRequest response successfully created. ");
+				TraceUtil.ProviderTrace("End processing response for AssociateRequest. AssociateRequest response successfully created. ");
 				if (TraceUtil.Switch.TraceVerbose) {
-					TraceUtil.ServerTrace("Response follows. ");
-					TraceUtil.ServerTrace(response.ToString());
+					TraceUtil.ProviderTrace("Response follows. ");
+					TraceUtil.ProviderTrace(response.ToString());
 				}
 			}
 			#endregion

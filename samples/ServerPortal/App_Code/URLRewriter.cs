@@ -42,7 +42,7 @@ using DotNetOpenId.Provider;
             if (TraceUtil.Switch.TraceInfo)
             {
                 string basicTraceMessage = String.Format("Rewriting url '{0}' to '{1}' ", HttpContext.Current.Request.Url.ToString(), zSubst);
-                TraceUtil.ServerTrace(basicTraceMessage);
+                TraceUtil.ProviderTrace(basicTraceMessage);
             }
 
             #endregion		    

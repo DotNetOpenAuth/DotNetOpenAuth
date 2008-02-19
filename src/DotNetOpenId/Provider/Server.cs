@@ -37,7 +37,7 @@ namespace DotNetOpenId.Provider {
 		/// <param name="query">The query parameters as a dictionary with each key mapping to one value. </param>
 		public Request DecodeRequest(NameValueCollection query) {
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ServerTrace("Start message decoding");
+				TraceUtil.ProviderTrace("Start message decoding");
 			}
 
 			if (query == null) return null;
@@ -59,10 +59,10 @@ namespace DotNetOpenId.Provider {
 				CheckIdRequest request = new CheckIdRequest(this, query);
 
 				if (TraceUtil.Switch.TraceInfo) {
-					TraceUtil.ServerTrace("End message decoding. Successfully decoded message as new CheckIdRequest in setup mode");
+					TraceUtil.ProviderTrace("End message decoding. Successfully decoded message as new CheckIdRequest in setup mode");
 					if (TraceUtil.Switch.TraceInfo) {
-						TraceUtil.ServerTrace("CheckIdRequest follows: ");
-						TraceUtil.ServerTrace(request.ToString());
+						TraceUtil.ProviderTrace("CheckIdRequest follows: ");
+						TraceUtil.ProviderTrace(request.ToString());
 					}
 				}
 
@@ -71,10 +71,10 @@ namespace DotNetOpenId.Provider {
 				CheckIdRequest request = new CheckIdRequest(this, query);
 
 				if (TraceUtil.Switch.TraceInfo) {
-					TraceUtil.ServerTrace("End message decoding. Successfully decoded message as new CheckIdRequest in immediate mode");
+					TraceUtil.ProviderTrace("End message decoding. Successfully decoded message as new CheckIdRequest in immediate mode");
 					if (TraceUtil.Switch.TraceInfo) {
-						TraceUtil.ServerTrace("CheckIdRequest follows: ");
-						TraceUtil.ServerTrace(request.ToString());
+						TraceUtil.ProviderTrace("CheckIdRequest follows: ");
+						TraceUtil.ProviderTrace(request.ToString());
 					}
 				}
 
@@ -83,10 +83,10 @@ namespace DotNetOpenId.Provider {
 				CheckAuthRequest request = new CheckAuthRequest(this, query);
 
 				if (TraceUtil.Switch.TraceInfo) {
-					TraceUtil.ServerTrace("End message decoding. Successfully decoded message as new CheckAuthRequest");
+					TraceUtil.ProviderTrace("End message decoding. Successfully decoded message as new CheckAuthRequest");
 					if (TraceUtil.Switch.TraceInfo) {
-						TraceUtil.ServerTrace("CheckAuthRequest follows: ");
-						TraceUtil.ServerTrace(request.ToString());
+						TraceUtil.ProviderTrace("CheckAuthRequest follows: ");
+						TraceUtil.ProviderTrace(request.ToString());
 					}
 				}
 
@@ -95,10 +95,10 @@ namespace DotNetOpenId.Provider {
 				AssociateRequest request = new AssociateRequest(this, query);
 
 				if (TraceUtil.Switch.TraceInfo) {
-					TraceUtil.ServerTrace("End message decoding. Successfully decoded message as new AssociateRequest ");
+					TraceUtil.ProviderTrace("End message decoding. Successfully decoded message as new AssociateRequest ");
 					if (TraceUtil.Switch.TraceInfo) {
-						TraceUtil.ServerTrace("AssociateRequest follows: ");
-						TraceUtil.ServerTrace(request.ToString());
+						TraceUtil.ProviderTrace("AssociateRequest follows: ");
+						TraceUtil.ProviderTrace(request.ToString());
 					}
 				}
 
@@ -137,7 +137,7 @@ namespace DotNetOpenId.Provider {
 
 		internal WebResponse EncodeResponse(IEncodable response) {
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ServerTrace("Encoding response");
+				TraceUtil.ProviderTrace("Encoding response");
 			}
 
 			return encoder.Encode(response);

@@ -10,20 +10,17 @@ using System.Net;
 /// <summary>
 /// Summary description for Util
 /// </summary>
-public class Util
-{
-    public static string ExtractUserName(Uri url)
-    {        
-        return url.Segments[url.Segments.Length - 1];
-    }
+public class Util {
+	public static string ExtractUserName(Uri url) {
+		return url.Segments[url.Segments.Length - 1];
+	}
 
-    public static void GenerateHttpResponse(ProtocolException e)
-    {
-        State.Session.Reset();
-        StringBuilder text = new StringBuilder();
-        foreach (KeyValuePair<string, string> pair in e.EncodedFields)
-            text.AppendLine(pair.Key + "=" + pair.Value);
-        string error = @"
+	public static void GenerateHttpResponse(ProtocolException e) {
+		State.Session.Reset();
+		StringBuilder text = new StringBuilder();
+		foreach (KeyValuePair<string, string> pair in e.EncodedFields)
+			text.AppendLine(pair.Key + "=" + pair.Value);
+		string error = @"
         <html><head><title>Error Processing Request</title></head><body>
         <p><pre>{0}</pre></p>
         <!--
@@ -57,68 +54,59 @@ public class Util
         *************************************************************
 
         --></body></html>";
-        error = String.Format(error, HttpUtility.HtmlEncode(text.ToString()));
-        HttpContext.Current.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-        HttpContext.Current.Response.Write(error);
-        HttpContext.Current.Response.Close();
-    }
+		error = String.Format(error, HttpUtility.HtmlEncode(text.ToString()));
+		HttpContext.Current.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+		HttpContext.Current.Response.Write(error);
+		HttpContext.Current.Response.Close();
+	}
 
-    public static void GenerateHttpResponse(DotNetOpenId.Provider.WebResponse webresponse)
-    {
-        State.Session.Reset();
-        Server server = new Server();
+	public static void GenerateHttpResponse(DotNetOpenId.Provider.WebResponse webresponse) {
+		State.Session.Reset();
+		Server server = new Server();
 
-        if (webresponse.Code == HttpStatusCode.Redirect)
-        {
-            #region  Trace
-            if (TraceUtil.Switch.TraceInfo)
-            {
-                TraceUtil.ServerTrace(String.Format("Send response as 302 browser redirect to: '{0}'", webresponse.Headers["Location"]));
-            }
-            #endregion
-            
-            HttpContext.Current.Response.Redirect(webresponse.Headers["Location"]);
-            return;
-        }
-        HttpContext.Current.Response.StatusCode = (int)webresponse.Code;
-        foreach (string key in webresponse.Headers)
-            HttpContext.Current.Response.AddHeader(key, webresponse.Headers[key]);
+		if (webresponse.Code == HttpStatusCode.Redirect) {
+			#region  Trace
+			if (TraceUtil.Switch.TraceInfo) {
+				TraceUtil.ProviderTrace(String.Format("Send response as 302 browser redirect to: '{0}'", webresponse.Headers["Location"]));
+			}
+			#endregion
 
-        if (webresponse.Body != null)
-        {
-            
-            #region  Trace
-            if (TraceUtil.Switch.TraceInfo)
-            {
-                TraceUtil.ServerTrace("Send response as server side HTTP response");                
-            }
-            
-            if (TraceUtil.Switch.TraceVerbose)
-            {
-                TraceUtil.ServerTrace("HTTP Response headers follows:");
-                TraceUtil.ServerTrace(webresponse.Headers);
-                TraceUtil.ServerTrace("HTTP Response follows:");
-                TraceUtil.ServerTrace(System.Text.Encoding.UTF8.GetString(webresponse.Body));
-            }            
-            #endregion            
-            
-            HttpContext.Current.Response.Write(System.Text.Encoding.UTF8.GetString(webresponse.Body));
-            
-        }
-        // HttpContext.Current.Response.Flush();
-        // HttpContext.Current.Response.Close();
-    }
-    
-    public static  Uri ServerUri
-    {
-        get
-        {
-            UriBuilder builder = new UriBuilder(HttpContext.Current.Request.Url);
-            builder.Path = HttpContext.Current.Response.ApplyAppPathModifier("~/server.aspx");
-            builder.Query = null;
-            builder.Fragment = null;
-            return new Uri(builder.ToString(), true);
-        }
-    }
+			HttpContext.Current.Response.Redirect(webresponse.Headers["Location"]);
+			return;
+		}
+		HttpContext.Current.Response.StatusCode = (int)webresponse.Code;
+		foreach (string key in webresponse.Headers)
+			HttpContext.Current.Response.AddHeader(key, webresponse.Headers[key]);
 
+		if (webresponse.Body != null) {
+
+			#region  Trace
+			if (TraceUtil.Switch.TraceInfo) {
+				TraceUtil.ProviderTrace("Send response as server side HTTP response");
+			}
+
+			if (TraceUtil.Switch.TraceVerbose) {
+				TraceUtil.ProviderTrace("HTTP Response headers follows: \n" +
+					TraceUtil.ToString(webresponse.Headers));
+				TraceUtil.ProviderTrace("HTTP Response follows: \n" +
+					System.Text.Encoding.UTF8.GetString(webresponse.Body));
+			}
+			#endregion
+
+			HttpContext.Current.Response.Write(System.Text.Encoding.UTF8.GetString(webresponse.Body));
+
+		}
+		// HttpContext.Current.Response.Flush();
+		// HttpContext.Current.Response.Close();
+	}
+
+	public static Uri ServerUri {
+		get {
+			UriBuilder builder = new UriBuilder(HttpContext.Current.Request.Url);
+			builder.Path = HttpContext.Current.Response.ApplyAppPathModifier("~/server.aspx");
+			builder.Query = null;
+			builder.Fragment = null;
+			return builder.Uri;
+		}
+	}
 }

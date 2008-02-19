@@ -36,7 +36,7 @@ namespace DotNetOpenId.Provider {
 		public void Sign(Response response) {
 			#region  Trace
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ServerTrace(String.Format("Digitally sign the response."));
+				TraceUtil.ProviderTrace(String.Format("Digitally sign the response."));
 			}
 			#endregion
 
@@ -49,7 +49,7 @@ namespace DotNetOpenId.Provider {
 				if (assoc == null) {
 					#region  Trace
 					if (TraceUtil.Switch.TraceInfo) {
-						TraceUtil.ServerTrace(String.Format("No associaton found with assoc_handle. Setting invalidate_handle and creating new Association."));
+						TraceUtil.ProviderTrace(String.Format("No associaton found with assoc_handle. Setting invalidate_handle and creating new Association."));
 					}
 					#endregion
 
@@ -58,13 +58,13 @@ namespace DotNetOpenId.Provider {
 				} else {
 					#region  Trace
 					if (TraceUtil.Switch.TraceInfo) {
-						TraceUtil.ServerTrace(String.Format("No association found."));
+						TraceUtil.ProviderTrace(String.Format("No association found."));
 					}
 					#endregion
 				}
 			} else {
 				assoc = this.CreateAssociation(AssociationConsumerType.Dumb);
-				TraceUtil.ServerTrace(String.Format("No assoc_handle supplied. Creating new association."));
+				TraceUtil.ProviderTrace(String.Format("No assoc_handle supplied. Creating new association."));
 			}
 
 			response.Fields[QueryStringArgs.openidnp.assoc_handle] = assoc.Handle;
@@ -75,7 +75,7 @@ namespace DotNetOpenId.Provider {
 
 			#region  Trace
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ServerTrace(String.Format("Digital signature successfully created"));
+				TraceUtil.ProviderTrace(String.Format("Digital signature successfully created"));
 			}
 			#endregion
 
@@ -84,7 +84,7 @@ namespace DotNetOpenId.Provider {
 		public virtual bool Verify(string assoc_handle, string signature, IDictionary<string, string> signed_pairs) {
 			#region  Trace
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ServerTrace(String.Format("Start signature verification for assoc_handle = '{0}'", assoc_handle));
+				TraceUtil.ProviderTrace(String.Format("Start signature verification for assoc_handle = '{0}'", assoc_handle));
 			}
 			#endregion
 
@@ -95,7 +95,7 @@ namespace DotNetOpenId.Provider {
 			if (assoc == null) {
 				#region  Trace
 				if (TraceUtil.Switch.TraceInfo) {
-					TraceUtil.ServerTrace("End signature verification. Signature verification failed. No matching association handle found ");
+					TraceUtil.ProviderTrace("End signature verification. Signature verification failed. No matching association handle found ");
 				}
 				#endregion
 
@@ -103,10 +103,10 @@ namespace DotNetOpenId.Provider {
 			} else {
 				#region  Trace
 				if (TraceUtil.Switch.TraceInfo) {
-					TraceUtil.ServerTrace("Found matching association handle. ");
+					TraceUtil.ProviderTrace("Found matching association handle. ");
 				}
 				if (TraceUtil.Switch.TraceVerbose) {
-					TraceUtil.ServerTrace(assoc.ToString());
+					TraceUtil.ProviderTrace(assoc.ToString());
 				}
 
 				#endregion
@@ -114,7 +114,7 @@ namespace DotNetOpenId.Provider {
 
 			#region  Trace
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ServerTrace("Matching association found ");
+				TraceUtil.ProviderTrace("Matching association found ");
 			}
 			#endregion
 
@@ -122,12 +122,12 @@ namespace DotNetOpenId.Provider {
 
 			#region  Trace
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ServerTrace(String.Format("Expected signature is '{0}'. Actual signature is '{1}' ", expected_sig, signature));
+				TraceUtil.ProviderTrace(String.Format("Expected signature is '{0}'. Actual signature is '{1}' ", expected_sig, signature));
 
 				if (signature == expected_sig) {
-					TraceUtil.ServerTrace("End signature verification. Signature verification passed");
+					TraceUtil.ProviderTrace("End signature verification. Signature verification passed");
 				} else {
-					TraceUtil.ServerTrace("End signature verification. Signature verification failed");
+					TraceUtil.ProviderTrace("End signature verification. Signature verification failed");
 				}
 			}
 			#endregion
@@ -137,7 +137,7 @@ namespace DotNetOpenId.Provider {
 
 		public virtual Association CreateAssociation(AssociationConsumerType associationType) {
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ServerTrace(String.Format("Start Create Association. Association type = {0}", 
+				TraceUtil.ProviderTrace(String.Format("Start Create Association. Association type = {0}", 
 					associationType));
 			}
 
@@ -163,7 +163,7 @@ namespace DotNetOpenId.Provider {
 			store.StoreAssociation(associationType, assoc);
 
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ServerTrace(String.Format("End Create Association. Association successfully created. key = '{0}', handle = '{1}' ", associationType, handle));
+				TraceUtil.ProviderTrace(String.Format("End Create Association. Association successfully created. key = '{0}', handle = '{1}' ", associationType, handle));
 			}
 
 			return assoc;
@@ -171,7 +171,7 @@ namespace DotNetOpenId.Provider {
 
 		public virtual Association GetAssociation(string assoc_handle, AssociationConsumerType associationType) {
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ServerTrace(String.Format("Start get association from store '{0}'.", assoc_handle));
+				TraceUtil.ProviderTrace(String.Format("Start get association from store '{0}'.", assoc_handle));
 			}
 
 
@@ -180,13 +180,13 @@ namespace DotNetOpenId.Provider {
 
 			Association assoc = store.GetAssociation(associationType, assoc_handle);
 			if (assoc == null || assoc.IsExpired) {
-				TraceUtil.ServerTrace("Association expired or not in store. Trying to remove association if it still exists.");
+				TraceUtil.ProviderTrace("Association expired or not in store. Trying to remove association if it still exists.");
 				store.RemoveAssociation(associationType, assoc_handle);
 				assoc = null;
 			}
 
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ServerTrace(String.Format("End get association from store '{0}'. Association found? =  {1}", assoc_handle, (assoc != null).ToString().ToUpper()));
+				TraceUtil.ProviderTrace(String.Format("End get association from store '{0}'. Association found? =  {1}", assoc_handle, (assoc != null).ToString().ToUpper()));
 			}
 
 			return assoc;
@@ -194,13 +194,13 @@ namespace DotNetOpenId.Provider {
 
 		public virtual void Invalidate(string assoc_handle, AssociationConsumerType associationType) {
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ServerTrace(String.Format("Start invalidate association '{0}'.", assoc_handle));
+				TraceUtil.ProviderTrace(String.Format("Start invalidate association '{0}'.", assoc_handle));
 			}
 
 			store.RemoveAssociation(associationType, assoc_handle);
 
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ServerTrace(String.Format("End invalidate association '{0}'.", assoc_handle));
+				TraceUtil.ProviderTrace(String.Format("End invalidate association '{0}'.", assoc_handle));
 			}
 		}
 	}
