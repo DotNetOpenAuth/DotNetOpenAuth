@@ -1,55 +1,24 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ProviderPortal", "ProviderPortal", "{24D1C874-DB4C-4001-82C6-1294DFAAFC73}"
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFramework = "2.0"
-		Debug.AspNetCompiler.VirtualPath = "/ProviderPortal"
-		Debug.AspNetCompiler.PhysicalPath = "ProviderPortal\"
-		Debug.AspNetCompiler.TargetPath = "..\bin\PrecompiledWeb\ProviderPortal\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/ProviderPortal"
-		Release.AspNetCompiler.PhysicalPath = "ProviderPortal\"
-		Release.AspNetCompiler.TargetPath = "..\bin\PrecompiledWeb\ProviderPortal\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "35228"
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsumerPortal", "ConsumerPortal\ConsumerPortal.csproj", "{51BCD5E9-E17A-4FB2-BAC8-C156DD7A1CA4}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ConsumerPortal", "ConsumerPortal", "{ED61866A-D424-4516-9A4A-3A6D168323AB}"
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFramework = "2.0"
-		Debug.AspNetCompiler.VirtualPath = "/ConsumerPortal"
-		Debug.AspNetCompiler.PhysicalPath = "ConsumerPortal\"
-		Debug.AspNetCompiler.TargetPath = "..\bin\PrecompiledWeb\ConsumerPortal\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/ConsumerPortal"
-		Release.AspNetCompiler.PhysicalPath = "ConsumerPortal\"
-		Release.AspNetCompiler.TargetPath = "..\bin\PrecompiledWeb\ConsumerPortal\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "35227"
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProviderPortal", "ProviderPortal\ProviderPortal.csproj", "{2A59DE0A-B76A-4B42-9A33-04D34548353D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|.NET = Debug|.NET
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{24D1C874-DB4C-4001-82C6-1294DFAAFC73}.Debug|.NET.ActiveCfg = Debug|.NET
-		{24D1C874-DB4C-4001-82C6-1294DFAAFC73}.Debug|.NET.Build.0 = Debug|.NET
-		{ED61866A-D424-4516-9A4A-3A6D168323AB}.Debug|.NET.ActiveCfg = Debug|.NET
-		{ED61866A-D424-4516-9A4A-3A6D168323AB}.Debug|.NET.Build.0 = Debug|.NET
+		{51BCD5E9-E17A-4FB2-BAC8-C156DD7A1CA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51BCD5E9-E17A-4FB2-BAC8-C156DD7A1CA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51BCD5E9-E17A-4FB2-BAC8-C156DD7A1CA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51BCD5E9-E17A-4FB2-BAC8-C156DD7A1CA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A59DE0A-B76A-4B42-9A33-04D34548353D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A59DE0A-B76A-4B42-9A33-04D34548353D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A59DE0A-B76A-4B42-9A33-04D34548353D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A59DE0A-B76A-4B42-9A33-04D34548353D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

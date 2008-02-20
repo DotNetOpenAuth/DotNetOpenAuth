@@ -1,4 +1,4 @@
-<%@ Page Language="C#" AutoEventWireup="true" CodeFile="server.aspx.cs" Inherits="server" Debug="true" %>
+<%@ Page Language="C#" AutoEventWireup="true" Inherits="server" Debug="true" Codebehind="server.aspx.cs" %>
 <asp:placeholder runat="server" id="contentForWebBrowsers" visible="false" > 
 <html>
   <head>

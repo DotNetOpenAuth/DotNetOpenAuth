@@ -1,4 +1,4 @@
-<%@ Page Language="C#" AutoEventWireup="true" CodeFile="decide.aspx.cs" Inherits="decide" Debug="true" %>
+<%@ Page Language="C#" AutoEventWireup="true" Inherits="decide" Debug="true" Codebehind="decide.aspx.cs" %>
 
 <%@ Register Src="ProfileFields.ascx" TagName="ProfileFields" TagPrefix="uc1" %>
 <html>

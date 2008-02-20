@@ -1,4 +1,4 @@
-<%@ Page Language="C#" AutoEventWireup="true" CodeFile="xrds.aspx.cs" Inherits="xrds" Debug="true"%><?xml version="1.0" encoding="UTF-8"?>
+<%@ Page Language="C#" AutoEventWireup="true" Inherits="xrds" Debug="true" Codebehind="xrds.aspx.cs" %><?xml version="1.0" encoding="UTF-8"?>
 <xrds:XRDS
     xmlns:xrds="xri://$xrds"
     xmlns:openid="http://openid.net/xmlns/1.0"

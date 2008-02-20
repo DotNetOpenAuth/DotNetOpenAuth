@@ -17,6 +17,10 @@ IF ERRORLEVEL 1 GOTO COPYFAILURE
 xcopy /s /e %root%\samples %RELEASE_DIR%\samples > nul
 IF ERRORLEVEL 1 GOTO COPYFAILURE
 
+REM Do a little cleanup of files that can get caught in these directories
+rd /s /q %RELEASE_DIR%\samples\consumerportal\obj %RELEASE_DIR%\samples\providerportal\obj
+del %RELEASE_DIR%\samples\consumerportal\*.user %RELEASE_DIR%\samples\providerportal\*.user %RELEASE_DIR%\samples\*.sln.cache
+
 echo Successful.  The release bits can be found in the %RELEASE_DIR% directory.
 
 goto end

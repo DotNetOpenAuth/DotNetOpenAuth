@@ -1,4 +1,4 @@
-<%@ Control Language="C#" AutoEventWireup="true" CodeFile="ProfileFields.ascx.cs" Inherits="ProfileFields" %>
+<%@ Control Language="C#" AutoEventWireup="true" Inherits="ProfileFields" Codebehind="ProfileFields.ascx.cs" %>
 This consumer has requested the following fields from you<br />
 <table>
     <tr>

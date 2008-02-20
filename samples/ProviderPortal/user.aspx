@@ -1,4 +1,4 @@
-<%@ Page Language="C#" AutoEventWireup="true" CodeFile="user.aspx.cs" Inherits="user"  Debug="true"%>
+<%@ Page Language="C#" AutoEventWireup="true" Inherits="user"  Debug="true" Codebehind="user.aspx.cs" %>
 <html>
   <head>
     <link rel="openid.server" href="<%=Server.HtmlEncode(ServerUrl)%>" />
