@@ -1,19 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ServerPortal", "ServerPortal", "{24D1C874-DB4C-4001-82C6-1294DFAAFC73}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ProviderPortal", "ProviderPortal", "{24D1C874-DB4C-4001-82C6-1294DFAAFC73}"
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFramework = "2.0"
-		Debug.AspNetCompiler.VirtualPath = "/ServerPortal"
-		Debug.AspNetCompiler.PhysicalPath = "ServerPortal\"
-		Debug.AspNetCompiler.TargetPath = "..\bin\PrecompiledWeb\ServerPortal\"
+		Debug.AspNetCompiler.VirtualPath = "/ProviderPortal"
+		Debug.AspNetCompiler.PhysicalPath = "ProviderPortal\"
+		Debug.AspNetCompiler.TargetPath = "..\bin\PrecompiledWeb\ProviderPortal\"
 		Debug.AspNetCompiler.Updateable = "true"
 		Debug.AspNetCompiler.ForceOverwrite = "true"
 		Debug.AspNetCompiler.FixedNames = "false"
 		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/ServerPortal"
-		Release.AspNetCompiler.PhysicalPath = "ServerPortal\"
-		Release.AspNetCompiler.TargetPath = "..\bin\PrecompiledWeb\ServerPortal\"
+		Release.AspNetCompiler.VirtualPath = "/ProviderPortal"
+		Release.AspNetCompiler.PhysicalPath = "ProviderPortal\"
+		Release.AspNetCompiler.TargetPath = "..\bin\PrecompiledWeb\ProviderPortal\"
 		Release.AspNetCompiler.Updateable = "true"
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"

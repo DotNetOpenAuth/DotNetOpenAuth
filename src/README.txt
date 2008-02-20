@@ -42,7 +42,7 @@ Visual Studio 2008.
    OpenIDs of the predefined users on the server project's web.config file.
    For example, if the server project is running on port 51957, the OpenID of 
    the first user would be:
-   http://localhost:51957/ServerPortal/user/bob
+   http://localhost:51957/ProviderPortal/user/bob
 4. Activate the consumer web page and try logging in.
 
 Testing with other consumers/servers on the Internet
@@ -60,8 +60,8 @@ Testing with other consumers/servers on the Internet
 Setting up the IIS Applications 
  * I have set up all my applications on port 79 due to local network config issues
  * Set up http://127.0.0.1:79/ConsumerPortal as an IIS Application and allow anonymous access
- * Set up http://127.0.0.1:79/ServerPortal as an IIS Application and allow anonymous access
- * Your openid server users are set up in ServerPortal\web.config. There are 5 default users already set up.
+ * Set up http://127.0.0.1:79/ProviderPortal as an IIS Application and allow anonymous access
+ * Your openid server users are set up in ProviderPortal\web.config. There are 5 default users already set up.
 
 You need to do something extra for URL rewriting in IIS to work. 
 
@@ -72,11 +72,11 @@ This is the process of url conversion like: user/john ->user.aspx?username=john
  * Enter 'c:\WINDOWS\Microsoft.NET\Framework\v2.0.50727\aspnet_isapi.dll' for the executable
  * Uncheck the 'Verify that file exists button'
  * OK your way out of everything
- * If you navigate to 'http://localhost:79/ServerPortal/user/bob' you should see the text: 'OpenID identity page for bob'
+ * If you navigate to 'http://localhost:79/ProviderPortal/user/bob' you should see the text: 'OpenID identity page for bob'
 
 Note: These instructions work on IIS 6 with Windows 2003 Server. Other version of IIS (such as the one with windows XP - IIS 5.1) will vary. For IIS 5.1 , try follow instructions documented toward the end of this article: http://www.codeproject.com/aspnet/URLRewriter.asp. If you still have issues (particularly if you get 404 when trying the demos or experience something like http://groups.google.co.uk/group/microsoft.public.inetserver.iis/browse_thread/thread/386efa0bf596234b/ee1fab525c129071?lnk=st&q=URLRewriter+IIS+XP+404&rnum=2&hl=en#ee1fab525c129071) try this: 
  * create a .openid extension that maps to asp.net (c:\WINDOWS\Microsoft.NET\Framework\v2.0.50727\aspnet_isapi.dll)
- * browse to .openid eg: http://IP/ServerPortal/user/bob.openid
+ * browse to .openid eg: http://IP/ProviderPortal/user/bob.openid
 
 Configure VS2005 to use IIS rather than PWS
 1. Right-click on one of the web projects within Solution Explorer.
@@ -94,7 +94,7 @@ orignally requested page.
 
 The Consumer Demo 
 1) Kill all session cookies
-2) Create an OpenID account with one of the Open Servers listed below OR use the demo Server as the identity provider - using http://[EXTERNAL IP]/ServerPortal/user/bob with the password 'test'
+2) Create an OpenID account with one of the Open Servers listed below OR use the demo Server as the identity provider - using http://[EXTERNAL IP]/ProviderPortal/user/bob with the password 'test'
 3) Go to http://[EXTERNAL IP]/ConsumerPortal/default.aspx and enter the OpenIDURL
 4) You are required to authenticate with the provider. Some fields (eg Name, DoB, Country etc.) are requested, some required and some omitted. 
 Your OpenID provider should prompt you for the relevant fields, or at least make you aware which fields its passing back. The exact page flow and auhentication mechanism will be implemented differently by different identity providers.
@@ -102,7 +102,7 @@ Your OpenID provider should prompt you for the relevant fields, or at least make
 
 The Server Demo 
 1) Kill all session cookies
-2) Get the full openID url for a user based on whats in web.config. By default you can use http://[EXTERNAL IP]/ServerPortal/user/bob with the password 'test'
+2) Get the full openID url for a user based on whats in web.config. By default you can use http://[EXTERNAL IP]/ProviderPortal/user/bob with the password 'test'
 3) Go to http://[EXTERNAL IP]/ConsumerPortal/default.aspx and enter the OpenIDURL of the local server
 4) The user is prompted for their password. The username field is propulated from the openid url and grayed out.
 5) The user is presentend with their  identity url, a trust root (the site requiring authentication) and set of fields to complete. 
