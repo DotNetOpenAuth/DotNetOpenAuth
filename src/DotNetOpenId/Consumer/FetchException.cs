@@ -2,7 +2,7 @@ namespace DotNetOpenId.Consumer
 {
 	using System;
 
-	public class FetchException : ApplicationException
+	internal class FetchException : ApplicationException
 	{
 		public readonly FetchResponse response;
 

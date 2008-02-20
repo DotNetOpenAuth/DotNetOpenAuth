@@ -21,12 +21,12 @@ namespace DotNetOpenId {
 		/// <summary>
 		/// A unique handle by which this <see cref="Association"/> may be stored or retrieved.
 		/// </summary>
-		public string Handle { get; set; }
+		internal string Handle { get; set; }
 		/// <summary>
 		/// Gets the time that this <see cref="Association"/> was first created
 		/// and the <see cref="SecretKey"/> issued.
 		/// </summary>
-		public DateTime Issued { get; internal set; }
+		internal DateTime Issued { get; set; }
 		/// <summary>
 		/// The lifetime the OpenID provider permits this <see cref="Association"/>.
 		/// </summary>

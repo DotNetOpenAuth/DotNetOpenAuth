@@ -4,7 +4,7 @@ namespace DotNetOpenId.Consumer
 	using System.Net;
 
 	[Serializable]
-	public class FetchResponse
+	internal class FetchResponse
 	{
 		public HttpStatusCode Code { get; private set; }
 		public Uri FinalUri { get; private set; }
