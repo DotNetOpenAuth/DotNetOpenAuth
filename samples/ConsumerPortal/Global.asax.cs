@@ -1,54 +1,38 @@
 ﻿using System;
-using System.Collections;
-using System.Configuration;
-using System.Data;
+using System.Collections.Specialized;
+using System.Diagnostics;
+using System.IO;
 using System.Web;
-using System.Web.Security;
-using System.Web.SessionState;
-using DotNetOpenId;
 
 namespace ConsumerPortal {
 	public class Global : System.Web.HttpApplication {
 		protected void Application_BeginRequest(Object sender, EventArgs e) {
 			// System.Diagnostics.Debugger.Launch();
-
-			#region " Trace "
-			if (TraceUtil.Switch.TraceInfo) {
-				HttpContext.Current.Response.Filter = new CustomTraceStream(Response.Filter);
-				((CustomTraceStream)HttpContext.Current.Response.Filter).ClearSavedPageOutput();
-				string basicTraceMessage = String.Format("Processing {0} on {1} ", Request.HttpMethod, Request.Url.ToString());
-				TraceUtil.ConsumerTrace(basicTraceMessage);
-
-				if (TraceUtil.Switch.TraceVerbose) {
-					TraceUtil.ConsumerTrace("Querystring follows: \n" +
-						TraceUtil.ToString(Request.QueryString));
-					TraceUtil.ConsumerTrace("Posted form follows: \n" +
-						TraceUtil.ToString(Request.Form));
-				}
-
-			}
-			#endregion
+			Trace.TraceInformation("Processing {0} on {1} ", Request.HttpMethod, Request.Url);
+			if (Request.QueryString.Count > 0)
+				Trace.TraceInformation("Querystring follows: {0}", ToString(Request.QueryString));
+			if (Request.Form.Count > 0)
+				Trace.TraceInformation("Posted form follows: {0}", ToString(Request.Form));
 		}
 
 		protected void Application_AuthenticateRequest(Object sender, EventArgs e) {
-			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ConsumerTrace(string.Format("Is Forms Authenticated = {0}", (HttpContext.Current.User != null).ToString().ToUpper()));
-			}
+			Trace.TraceInformation("Is Forms Authenticated = {0}", HttpContext.Current.User != null);
 		}
 
 		protected void Application_EndRequest(Object sender, EventArgs e) {
-			if (TraceUtil.TracePageOutput) {
-				// taking this out for now because it makes the logs very big 
-				TraceUtil.ProviderTrace("Entire page response follows:");
-				TraceUtil.ProviderTrace(((CustomTraceStream)HttpContext.Current.Response.Filter).SavedPageOutput);
-			}
 		}
 
 		protected void Application_Error(Object sender, EventArgs e) {
-			if (TraceUtil.Switch.TraceError) {
-				TraceUtil.ConsumerTrace("An anunhandled exception was raised. Details follow:");
-				TraceUtil.ConsumerTrace(HttpContext.Current.Server.GetLastError().ToString());
+			Trace.TraceError("An unhandled exception was raised. Details follow: {0}",
+				HttpContext.Current.Server.GetLastError());
+		}
 
+		public static string ToString(NameValueCollection collection) {
+			using (StringWriter sw = new StringWriter()) {
+				foreach (string key in collection.Keys) {
+					sw.WriteLine("{0} = '{1}'", key, collection[key]);
+				}
+				return sw.ToString();
 			}
 		}
 	}

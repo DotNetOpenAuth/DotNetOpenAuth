@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using DotNetOpenId;
 using DotNetOpenId.Provider;
+using System.Diagnostics;
 
 // nicked from http://www.codeproject.com/aspnet/URLRewriter.asp
 
@@ -38,14 +39,7 @@ using DotNetOpenId.Provider;
 
 			string zSubst=oRewriter.GetSubstitution(HttpContext.Current.Request.Path);
 
-            #region  Trace 
-            if (TraceUtil.Switch.TraceInfo)
-            {
-                string basicTraceMessage = String.Format("Rewriting url '{0}' to '{1}' ", HttpContext.Current.Request.Url.ToString(), zSubst);
-                TraceUtil.ProviderTrace(basicTraceMessage);
-            }
-
-            #endregion		    
+			Trace.TraceInformation("Rewriting url '{0}' to '{1}' ", HttpContext.Current.Request.Url, zSubst);
 
 			if(zSubst.Length>0) {
 				HttpContext.Current.RewritePath(zSubst);

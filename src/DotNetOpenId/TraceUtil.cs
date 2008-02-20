@@ -8,19 +8,12 @@ using System.Xml.Serialization;
 using System.Security;
 
 namespace DotNetOpenId {
-	public class TraceUtil {
+	internal class TraceUtil {
 		static TraceSwitch openIDTraceSwitch;
-		static TraceSwitch openIDPageOutputTraceSwitch;
 		public static TraceSwitch Switch {
 			get {
 				if (openIDTraceSwitch == null) { openIDTraceSwitch = new TraceSwitch("OpenID", "OpenID Trace Switch"); }
 				return openIDTraceSwitch;
-			}
-		}
-		public static bool TracePageOutput {
-			get {
-				if (openIDPageOutputTraceSwitch == null) { openIDPageOutputTraceSwitch = new TraceSwitch("OpenIDEntireResponse", "OpenID Trace Switch"); }
-				return openIDPageOutputTraceSwitch.Level > TraceLevel.Warning;
 			}
 		}
 

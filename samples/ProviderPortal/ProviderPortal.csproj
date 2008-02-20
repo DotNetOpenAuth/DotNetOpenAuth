@@ -52,7 +52,6 @@
     <Content Include="xrds.aspx" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Code\CustomTraceStream.cs" />
     <Compile Include="Code\State.cs" />
     <Compile Include="Code\URLRewriter.cs" />
     <Compile Include="Code\Util.cs" />

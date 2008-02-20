@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections;
-using System.Configuration;
-using System.Data;
+using System.Collections.Specialized;
+using System.Diagnostics;
+using System.IO;
 using System.Web;
-using System.Web.Security;
-using System.Web.SessionState;
-using DotNetOpenId;
 
 namespace ProviderPortal {
 	public class Global : System.Web.HttpApplication {
@@ -18,50 +15,35 @@ namespace ProviderPortal {
 			 * There is only one rule currenty defined. It rewrites urls like: user/john ->user.aspx?username=john
 			 */
 			// System.Diagnostics.Debugger.Launch();
-
-			#region " Trace "
-			if (TraceUtil.Switch.TraceInfo) {
-				HttpContext.Current.Response.Filter = new CustomTraceStream(Response.Filter);
-				((CustomTraceStream)HttpContext.Current.Response.Filter).ClearSavedPageOutput();
-
-				string basicTraceMessage = String.Format("Processing {0} on {1} ", Request.HttpMethod, Request.Url.ToString());
-				TraceUtil.ProviderTrace(basicTraceMessage);
-
-				if (TraceUtil.Switch.TraceVerbose) {
-					TraceUtil.ProviderTrace("Querystring follows: \n" +
-						TraceUtil.ToString(Request.QueryString));
-					TraceUtil.ProviderTrace("Posted form follows: \n" +
-						TraceUtil.ToString(Request.Form));
-				}
-
-			}
-			#endregion
+			Trace.TraceInformation("Processing {0} on {1} ", Request.HttpMethod, Request.Url);
+			if (Request.QueryString.Count > 0)
+				Trace.TraceInformation("Querystring follows: {0}", ToString(Request.QueryString));
+			if (Request.Form.Count > 0)
+				Trace.TraceInformation("Posted form follows: {0}", ToString(Request.Form));
 
 			URLRewriter.Process();
 		}
 
 		protected void Application_AuthenticateRequest(Object sender, EventArgs e) {
-			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ProviderTrace(string.Format("Is Forms Authenticated = {0}", (HttpContext.Current.User != null).ToString().ToUpper()));
-			}
+			Trace.TraceInformation("Is Forms Authenticated = {0}", HttpContext.Current.User != null);
 		}
 
 
 		protected void Application_EndRequest(Object sender, EventArgs e) {
-			if (TraceUtil.TracePageOutput) {
-				// taking this out for now because it makes the logs very big 
-				TraceUtil.ProviderTrace("Entire page response follows:");
-				TraceUtil.ProviderTrace(((CustomTraceStream)HttpContext.Current.Response.Filter).SavedPageOutput);
-			}
 		}
 
 		protected void Application_Error(Object sender, EventArgs e) {
-			if (TraceUtil.Switch.TraceError) {
-				TraceUtil.ProviderTrace("An anunhandled exception was raised. Details follow:");
-				TraceUtil.ProviderTrace(HttpContext.Current.Server.GetLastError().ToString());
-
-			}
+			Trace.TraceError("An unhandled exception was raised. Details follow: {0}",
+				HttpContext.Current.Server.GetLastError());
 		}
 
+		public static string ToString(NameValueCollection collection) {
+			using (StringWriter sw = new StringWriter()) {
+				foreach (string key in collection.Keys) {
+					sw.WriteLine("{0} = '{1}'", key, collection[key]);
+				}
+				return sw.ToString();
+			}
+		}
 	}
 }

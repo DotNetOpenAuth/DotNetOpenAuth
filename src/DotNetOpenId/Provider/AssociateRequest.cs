@@ -2,6 +2,7 @@ using System;
 using System.Collections.Specialized;
 using System.Text;
 using DotNetOpenId.Store;
+using System.Diagnostics;
 
 namespace DotNetOpenId.Provider {
 	/// <summary>
@@ -45,7 +46,7 @@ namespace DotNetOpenId.Provider {
 			Association assoc = Server.Signatory.CreateAssociation(AssociationConsumerType.Smart);
 			#region  Trace
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ProviderTrace("Start processing response for AssociateRequest");
+				Trace.TraceInformation("Start processing response for AssociateRequest");
 				if (TraceUtil.Switch.TraceVerbose) {
 					TraceUtil.ProviderTrace("Association to be sent follows:");
 					TraceUtil.ProviderTrace(assoc.ToString());

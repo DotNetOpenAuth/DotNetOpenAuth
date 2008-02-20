@@ -1,11 +1,11 @@
 using System;
-using System.Web;
-using DotNetOpenId;
-using DotNetOpenId.Provider;
-using DotNetOpenId.Store;
-using System.Text;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
+using System.Text;
+using System.Web;
+using DotNetOpenId.Provider;
+using ProviderPortal;
 
 /// <summary>
 /// Summary description for Util
@@ -65,11 +65,7 @@ public class Util {
 		Server server = new Server();
 
 		if (webresponse.Code == HttpStatusCode.Redirect) {
-			#region  Trace
-			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ProviderTrace(String.Format("Send response as 302 browser redirect to: '{0}'", webresponse.Headers["Location"]));
-			}
-			#endregion
+			Trace.TraceInformation("Send response as 302 browser redirect to: '{0}'", webresponse.Headers["Location"]);
 
 			HttpContext.Current.Response.Redirect(webresponse.Headers["Location"]);
 			return;
@@ -80,18 +76,13 @@ public class Util {
 
 		if (webresponse.Body != null) {
 
-			#region  Trace
-			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ProviderTrace("Send response as server side HTTP response");
-			}
-
-			if (TraceUtil.Switch.TraceVerbose) {
-				TraceUtil.ProviderTrace("HTTP Response headers follows: \n" +
-					TraceUtil.ToString(webresponse.Headers));
-				TraceUtil.ProviderTrace("HTTP Response follows: \n" +
-					System.Text.Encoding.UTF8.GetString(webresponse.Body));
-			}
-			#endregion
+			Trace.TraceInformation("Send response as server side HTTP response.");
+			Trace.Indent();
+			Trace.TraceInformation("HTTP Response headers follows: \n{0}",
+				Global.ToString(webresponse.Headers));
+			Trace.TraceInformation("HTTP Response follows: \n{0}",
+				System.Text.Encoding.UTF8.GetString(webresponse.Body));
+			Trace.Unindent();
 
 			HttpContext.Current.Response.Write(System.Text.Encoding.UTF8.GetString(webresponse.Body));
 
