@@ -5,7 +5,7 @@ using System.Text;
 namespace DotNetOpenId.Provider {
 
 	public abstract class AssociatedRequest : Request {
-		protected AssociatedRequest(Server server) : base(server) { }
+		protected AssociatedRequest(Provider server) : base(server) { }
 
 		internal string AssociationHandle { get; set; }
 

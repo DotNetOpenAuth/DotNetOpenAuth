@@ -124,7 +124,7 @@ namespace DotNetOpenId.Provider {
 			}
 		}
 
-		internal CheckIdRequest(Server server, Uri identity, Uri return_to, string trust_root, 
+		internal CheckIdRequest(Provider server, Uri identity, Uri return_to, string trust_root, 
 			bool immediate, string assoc_handle) : base(server) {
 			this.AssociationHandle = assoc_handle;
 
@@ -137,7 +137,7 @@ namespace DotNetOpenId.Provider {
 				throw new UntrustedReturnUrlException(null, ReturnTo, TrustRoot);
 		}
 
-		internal CheckIdRequest(Server server, NameValueCollection query) : base(server) {
+		internal CheckIdRequest(Provider server, NameValueCollection query) : base(server) {
 			// handle the mandatory protocol fields
 			string mode = getRequiredField(query, QueryStringArgs.openid.mode);
 			if (QueryStringArgs.Modes.checkid_immediate.Equals(mode, StringComparison.Ordinal)) {

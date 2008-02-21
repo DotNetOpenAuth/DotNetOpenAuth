@@ -14,7 +14,7 @@ namespace DotNetOpenId.Provider {
 		IDictionary<string, string> signedFields;
 		string invalidate_handle;
 
-		public CheckAuthRequest(Server server, NameValueCollection query)
+		public CheckAuthRequest(Provider server, NameValueCollection query)
 			: base(server) {
 			AssociationHandle = getRequiredField(query, QueryStringArgs.openid.assoc_handle);
 			signature = getRequiredField(query, QueryStringArgs.openid.sig);

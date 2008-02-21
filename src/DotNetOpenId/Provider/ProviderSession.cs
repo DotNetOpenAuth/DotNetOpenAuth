@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DotNetOpenId.Provider
 {
-    internal abstract class ServerSession
+    internal abstract class ProviderSession
     {
         public string SessionType { get; set; }
 
@@ -15,12 +15,12 @@ namespace DotNetOpenId.Provider
     /// <summary>
     /// An object that knows how to handle association requests with no session type.
     /// </summary>
-    internal class PlainTextServerSession : ServerSession
+    internal class PlainTextProviderSession : ProviderSession
     {
 
         #region Constructor(s)
 
-        public PlainTextServerSession()
+        public PlainTextProviderSession()
         {
             this.SessionType = "plaintext";
         }
@@ -45,12 +45,12 @@ namespace DotNetOpenId.Provider
     /// <summary>
     /// An object that knows how to handle association requests with the Diffie-Hellman session type.
     /// </summary>
-    internal class DiffieHellmanServerSession : ServerSession
+    internal class DiffieHellmanProviderSession : ProviderSession
     {
         byte[] _consumer_pubkey;
         DiffieHellman _dh;
 
-        public DiffieHellmanServerSession(NameValueCollection query)
+        public DiffieHellmanProviderSession(NameValueCollection query)
         {
             string missing;
             string dh_modulus = query.Get(QueryStringArgs.openid.dh_modulus);

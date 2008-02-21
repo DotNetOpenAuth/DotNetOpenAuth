@@ -62,7 +62,7 @@ public class Util {
 
 	public static void GenerateHttpResponse(DotNetOpenId.Provider.WebResponse webresponse) {
 		State.Session.Reset();
-		Server server = new Server();
+		Provider server = new Provider();
 
 		if (webresponse.Code == HttpStatusCode.Redirect) {
 			Trace.TraceInformation("Send response as 302 browser redirect to: '{0}'", webresponse.Headers["Location"]);

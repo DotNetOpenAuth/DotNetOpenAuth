@@ -10,18 +10,18 @@ namespace DotNetOpenId.Provider {
 	/// </summary>
 	internal class AssociateRequest : Request {
 		string associationKeyType = QueryStringArgs.HMAC_SHA1;
-		ServerSession session;
+		ProviderSession session;
 
-		public AssociateRequest(Server server, NameValueCollection query)
+		public AssociateRequest(Provider server, NameValueCollection query)
 			: base(server) {
 			string session_type = query.Get(QueryStringArgs.openid.session_type);
 
 			switch (session_type) {
 				case null:
-					session = new PlainTextServerSession();
+					session = new PlainTextProviderSession();
 					break;
 				case QueryStringArgs.DH_SHA1:
-					session = new DiffieHellmanServerSession(query);
+					session = new DiffieHellmanProviderSession(query);
 					break;
 				default:
 					throw new ProtocolException(query, "Unknown session type " + session_type);

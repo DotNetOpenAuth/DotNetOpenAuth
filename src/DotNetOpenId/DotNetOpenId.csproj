@@ -52,6 +52,8 @@
     <Compile Include="Consumer\FetchResponse.cs" />
     <Compile Include="Consumer\Token.cs" />
     <Compile Include="HmacSha1Association.cs" />
+    <Compile Include="Provider\Provider.cs" />
+    <Compile Include="Provider\ProviderSession.cs" />
     <Compile Include="RegistrationExtension\Gender.cs" />
     <Compile Include="Consumer\GenericConsumer.cs" />
     <Compile Include="Provider\AssociatedRequest.cs" />
@@ -91,8 +93,6 @@
     <Compile Include="Provider\ProtocolException.cs" />
     <Compile Include="Provider\Request.cs" />
     <Compile Include="Provider\Response.cs" />
-    <Compile Include="Provider\Server.cs" />
-    <Compile Include="Provider\ServerSession.cs" />
     <Compile Include="Provider\Signatory.cs" />
     <Compile Include="Provider\TrustRoot.cs" />
     <Compile Include="Provider\WebResponse.cs" />
@@ -132,7 +132,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Provider\Server.cd" />
+    <None Include="Provider\Provider.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

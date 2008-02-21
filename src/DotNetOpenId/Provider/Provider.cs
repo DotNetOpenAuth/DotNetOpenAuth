@@ -11,7 +11,7 @@ namespace DotNetOpenId.Provider {
 	/// <summary>
 	/// Offers services for a web page that is acting as an OpenID identity server.
 	/// </summary>
-	public class Server {
+	public class Provider {
 		IProviderAssociationStore store;
 		internal Signatory Signatory { get; private set; }
 		Encoder encoder;
@@ -20,12 +20,12 @@ namespace DotNetOpenId.Provider {
 		/// Constructs an OpenId server that uses the HttpApplication dictionary as
 		/// its association store.
 		/// </summary>
-		public Server() : this(httpApplicationAssociationStore) { }
+		public Provider() : this(httpApplicationAssociationStore) { }
 
 		/// <summary>
 		/// Constructs an OpenId server that uses a given IAssociationStore.
 		/// </summary>
-		public Server(IProviderAssociationStore store) {
+		public Provider(IProviderAssociationStore store) {
 			if (store == null) throw new ArgumentNullException("store");
 			this.store = store;
 			Signatory = new Signatory(store);
