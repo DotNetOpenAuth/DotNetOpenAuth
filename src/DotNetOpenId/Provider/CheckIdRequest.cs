@@ -14,44 +14,7 @@ namespace DotNetOpenId.Provider {
 	/// This class handles requests for openid modes checkid_immediate and checkid_setup.
 	/// </remarks>
 	public class CheckIdRequest : AssociatedRequest {
-
-		ProfileRequest requestNickname = ProfileRequest.NoRequest;
-		ProfileRequest requestEmail = ProfileRequest.NoRequest;
-		ProfileRequest requestFullName = ProfileRequest.NoRequest;
-		ProfileRequest requestBirthdate = ProfileRequest.NoRequest;
-		ProfileRequest requestGender = ProfileRequest.NoRequest;
-		ProfileRequest requestPostalCode = ProfileRequest.NoRequest;
-		ProfileRequest requestCountry = ProfileRequest.NoRequest;
-		ProfileRequest requestLanguage = ProfileRequest.NoRequest;
-		ProfileRequest requestTimeZone = ProfileRequest.NoRequest;
-
-		public ProfileRequest RequestNickname {
-			get { return requestNickname; }
-		}
-		public ProfileRequest RequestEmail {
-			get { return requestEmail; }
-		}
-		public ProfileRequest RequestFullName {
-			get { return requestFullName; }
-		}
-		public ProfileRequest RequestBirthdate {
-			get { return requestBirthdate; }
-		}
-		public ProfileRequest RequestGender {
-			get { return requestGender; }
-		}
-		public ProfileRequest RequestPostalCode {
-			get { return requestPostalCode; }
-		}
-		public ProfileRequest RequestCountry {
-			get { return requestCountry; }
-		}
-		public ProfileRequest RequestLanguage {
-			get { return requestLanguage; }
-		}
-		public ProfileRequest RequestTimeZone {
-			get { return requestTimeZone; }
-		}
+		public ProfileRequestFields RequestedProfileFields { get; private set; }
 
 		/// <summary>
 		/// Whether the consumer demands an immediate response.
@@ -83,19 +46,6 @@ namespace DotNetOpenId.Provider {
 		public override RequestType RequestType {
 			get { return RequestType.CheckIdRequest; }
 		}
-		public bool IsAnySimpleRegistrationFieldsRequestedOrRequired {
-			get {
-				return (!(this.requestBirthdate == ProfileRequest.NoRequest
-						  && this.requestCountry == ProfileRequest.NoRequest
-						  && this.requestEmail == ProfileRequest.NoRequest
-						  && this.requestFullName == ProfileRequest.NoRequest
-						  && this.requestGender == ProfileRequest.NoRequest
-						  && this.requestLanguage == ProfileRequest.NoRequest
-						  && this.requestNickname == ProfileRequest.NoRequest
-						  && this.requestPostalCode == ProfileRequest.NoRequest
-						  && this.requestTimeZone == ProfileRequest.NoRequest));
-			}
-		}
 		public bool IsTrustRootValid {
 			get {
 				Debug.Assert(TrustRoot != null, "The constructor should have guaranteed this.");
@@ -126,8 +76,9 @@ namespace DotNetOpenId.Provider {
 
 		internal CheckIdRequest(Provider server, Uri identity, Uri return_to, string trust_root, 
 			bool immediate, string assoc_handle) : base(server) {
-			this.AssociationHandle = assoc_handle;
-
+			RequestedProfileFields = new ProfileRequestFields();
+			
+			AssociationHandle = assoc_handle;
 			IdentityUrl = identity;
 			ReturnTo = return_to;
 			TrustRoot = trust_root ?? return_to.AbsoluteUri;
@@ -138,6 +89,8 @@ namespace DotNetOpenId.Provider {
 		}
 
 		internal CheckIdRequest(Provider server, NameValueCollection query) : base(server) {
+			RequestedProfileFields = new ProfileRequestFields();
+			
 			// handle the mandatory protocol fields
 			string mode = getRequiredField(query, QueryStringArgs.openid.mode);
 			if (QueryStringArgs.Modes.checkid_immediate.Equals(mode, StringComparison.Ordinal)) {
@@ -174,14 +127,12 @@ namespace DotNetOpenId.Provider {
 
 			string optionalFields = query[QueryStringArgs.openid.sreg.optional];
 			if (!String.IsNullOrEmpty(optionalFields)) {
-				string[] splitOptionalFields = optionalFields.Split(',');
-				setSimpleRegistrationExtensionFields(splitOptionalFields, ProfileRequest.Request);
+				RequestedProfileFields.SetProfileRequestFromList(optionalFields.Split(','), ProfileRequest.Request);
 			}
 
 			string requiredFields = query[QueryStringArgs.openid.sreg.required];
 			if (!String.IsNullOrEmpty(requiredFields)) {
-				string[] splitRrequiredFields = requiredFields.Split(',');
-				setSimpleRegistrationExtensionFields(splitRrequiredFields, ProfileRequest.Require);
+				RequestedProfileFields.SetProfileRequestFromList(requiredFields.Split(','), ProfileRequest.Require);
 			}
 		}
 
@@ -192,40 +143,6 @@ namespace DotNetOpenId.Provider {
 				throw new ProtocolException(query, "Missing required field " + field);
 
 			return value;
-		}
-
-		void setSimpleRegistrationExtensionFields(string[] fields, ProfileRequest request) {
-			foreach (string field in fields) {
-				switch (field) {
-					case QueryStringArgs.openidnp.sregnp.nickname:
-						this.requestNickname = request;
-						break;
-					case QueryStringArgs.openidnp.sregnp.email:
-						this.requestEmail = request;
-						break;
-					case QueryStringArgs.openidnp.sregnp.fullname:
-						this.requestFullName = request;
-						break;
-					case QueryStringArgs.openidnp.sregnp.dob:
-						this.requestBirthdate = request;
-						break;
-					case QueryStringArgs.openidnp.sregnp.gender:
-						this.requestGender = request;
-						break;
-					case QueryStringArgs.openidnp.sregnp.postcode:
-						this.requestPostalCode = request;
-						break;
-					case QueryStringArgs.openidnp.sregnp.country:
-						this.requestCountry = request;
-						break;
-					case QueryStringArgs.openidnp.sregnp.language:
-						this.requestLanguage = request;
-						break;
-					case QueryStringArgs.openidnp.sregnp.timezone:
-						this.requestTimeZone = request;
-						break;
-				}
-			}
 		}
 
 		/// <summary>
@@ -240,7 +157,7 @@ namespace DotNetOpenId.Provider {
 		/// Respond to this request.
 		/// </summary>
 		/// <param name="allow">Allow this user to claim this identity, and allow the consumer to have this information?</param>
-		public WebResponse Answer(bool allow, Uri server_url, OpenIdProfileFields openIdProfileFields) {
+		public WebResponse Answer(bool allow, Uri server_url, ProfileFieldValues openIdProfileFields) {
 			string mode = (allow || Immediate) ? QueryStringArgs.Modes.id_res : QueryStringArgs.Modes.cancel;
 
 			#region  Trace
@@ -365,23 +282,13 @@ CheckIdRequest.TrustRoot = '{1}'
 CheckIdRequest.Identity = '{2}' 
 CheckIdRequest._mode = '{3}' 
 CheckIdRequest.ReturnTo = '{4}' 
-CheckIdRequest._policyUrl = '{5}' 
-CheckIdRequest.requestNickname = '{6}' 
-CheckIdRequest.requestEmail = '{7}' 
-CheckIdRequest.requestFullName = '{8}' 
-CheckIdRequest.requestBirthdate = '{9}'
-CheckIdRequest.requestGender = '{10}'
-CheckIdRequest.requestPostalCode = '{11}'
-CheckIdRequest.requestCountry = '{12}'
-CheckIdRequest.requestLanguage = '{13}'
-CheckIdRequest.requestTimeZone = '{14}'";
+CheckIdRequest._policyUrl = '{5}'
+{6}
+";
 
 			return base.ToString() + string.Format(
 				returnString, Immediate, TrustRoot, IdentityUrl, Mode, ReturnTo,
-				PolicyUrl, requestNickname, requestEmail,
-				requestFullName, requestBirthdate, requestGender,
-				requestPostalCode, requestCountry, requestLanguage,
-				requestTimeZone);
+				PolicyUrl, RequestedProfileFields);
 		}
 	}
 }

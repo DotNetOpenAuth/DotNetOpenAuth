@@ -442,9 +442,9 @@ namespace DotNetOpenId.Consumer
 
 			return fields.ToArray();
 		}
-		OpenIdProfileFields parseProfileFields(NameValueCollection queryString)
+		ProfileFieldValues parseProfileFields(NameValueCollection queryString)
 		{
-			OpenIdProfileFields fields = new OpenIdProfileFields();
+			ProfileFieldValues fields = new ProfileFieldValues();
 			if (RequestNickname > ProfileRequest.NoRequest)
 				fields.Nickname = queryString[QueryStringArgs.openid.sreg.nickname];
 			if (RequestEmail > ProfileRequest.NoRequest)
@@ -477,7 +477,7 @@ namespace DotNetOpenId.Consumer
 		#region Events
 		public class OpenIdEventArgs : EventArgs
 		{
-			public OpenIdEventArgs(Uri openIdUri, OpenIdProfileFields profileFields)
+			public OpenIdEventArgs(Uri openIdUri, ProfileFieldValues profileFields)
 			{
 				this.openIdUri = openIdUri;
 				this.profileFields = profileFields;
@@ -500,8 +500,8 @@ namespace DotNetOpenId.Consumer
 				set { cancel = value; }
 			}
 
-			private OpenIdProfileFields profileFields;
-			public OpenIdProfileFields ProfileFields
+			private ProfileFieldValues profileFields;
+			public ProfileFieldValues ProfileFields
 			{
 				get { return profileFields; }
 			}
@@ -511,7 +511,7 @@ namespace DotNetOpenId.Consumer
 		/// </summary>
 		[Description("Fired upon completion of a successful login.")]
 		public event EventHandler<OpenIdEventArgs> LoggedIn;
-		protected virtual void OnLoggedIn(Uri openIdUri, OpenIdProfileFields profileFields)
+		protected virtual void OnLoggedIn(Uri openIdUri, ProfileFieldValues profileFields)
 		{
 			EventHandler<OpenIdEventArgs> loggedIn = LoggedIn;
 			OpenIdEventArgs args = new OpenIdEventArgs(openIdUri, profileFields);

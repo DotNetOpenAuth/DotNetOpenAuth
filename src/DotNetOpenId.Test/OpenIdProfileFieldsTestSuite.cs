@@ -20,9 +20,9 @@ namespace DotNetOpenId.Test
 	[TestFixture]
 	public class OpenIdProfileFieldsTestSuite
 	{
-		OpenIdProfileFields getFilledStruct()
+		ProfileFieldValues getFilledStruct()
 		{
-			OpenIdProfileFields fields = new OpenIdProfileFields();
+			ProfileFieldValues fields = new ProfileFieldValues();
 			fields.Birthdate = new DateTime(2005, 2, 3);
 			fields.Culture = new System.Globalization.CultureInfo("en-US");
 			fields.Email = "a@b.com";
@@ -37,26 +37,26 @@ namespace DotNetOpenId.Test
 		[Test]
 		public void TestBinarySerialization()
 		{
-			OpenIdProfileFields fields = getFilledStruct();
+			ProfileFieldValues fields = getFilledStruct();
 			MemoryStream ms = new MemoryStream();
 			IFormatter formatter = new BinaryFormatter();
 			formatter.Serialize(ms, fields);
 
 			ms.Position = 0;
-			OpenIdProfileFields fields2 = (OpenIdProfileFields)formatter.Deserialize(ms);
+			ProfileFieldValues fields2 = (ProfileFieldValues)formatter.Deserialize(ms);
 			Assert.AreEqual(fields, fields2);
 		}
 
 		[Test]
 		public void TestXmlSerialization()
 		{
-			OpenIdProfileFields fields = getFilledStruct();
+			ProfileFieldValues fields = getFilledStruct();
 			MemoryStream ms = new MemoryStream();
-			XmlSerializer xs = new XmlSerializer(typeof(OpenIdProfileFields));
+			XmlSerializer xs = new XmlSerializer(typeof(ProfileFieldValues));
 			xs.Serialize(ms, fields);
 
 			ms.Position = 0;
-			OpenIdProfileFields fields2 = (OpenIdProfileFields)xs.Deserialize(ms);
+			ProfileFieldValues fields2 = (ProfileFieldValues)xs.Deserialize(ms);
 			Assert.AreEqual(fields, fields2);
 		}
 	}

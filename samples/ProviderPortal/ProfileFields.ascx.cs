@@ -10,33 +10,30 @@ using DotNetOpenId.RegistrationExtension;
 /// </summary>
 public partial class ProfileFields : System.Web.UI.UserControl
 {
-    protected void Page_Load(object sender, EventArgs e)
-    {
-        
-    }
-    
-    public void SetRequiredFieldsFromRequest(CheckIdRequest request)
-    {
-       this.dobRequiredLabel.Visible = (request.RequestBirthdate == ProfileRequest.Require);
-       this.countryRequiredLabel.Visible = (request.RequestCountry == ProfileRequest.Require);
-       this.emailRequiredLabel.Visible = (request.RequestEmail == ProfileRequest.Require);
-       this.fullnameRequiredLabel.Visible = (request.RequestFullName == ProfileRequest.Require);
-       this.genderRequiredLabel.Visible = (request.RequestGender == ProfileRequest.Require);
-       this.languageRequiredLabel.Visible = (request.RequestLanguage == ProfileRequest.Require);
-       this.nicknameRequiredLabel.Visible = (request.RequestNickname == ProfileRequest.Require);
-       this.postcodeRequiredLabel.Visible = (request.RequestPostalCode == ProfileRequest.Require);
-       this.timezoneRequiredLabel.Visible = (request.RequestTimeZone == ProfileRequest.Require);
+	protected void Page_Load(object sender, EventArgs e) {
+	}
 
-       this.dateOfBirthRow .Visible = !(request.RequestBirthdate == ProfileRequest.NoRequest);
-       this.countryRow.Visible = !(request.RequestCountry == ProfileRequest.NoRequest);
-       this.emailRow.Visible = !(request.RequestEmail == ProfileRequest.NoRequest);
-       this.fullnameRow.Visible = !(request.RequestFullName == ProfileRequest.NoRequest);
-       this.genderRow.Visible = !(request.RequestGender == ProfileRequest.NoRequest);
-       this.languageRow.Visible = !(request.RequestLanguage == ProfileRequest.NoRequest);
-       this.nicknameRow.Visible = !(request.RequestNickname == ProfileRequest.NoRequest);
-       this.postcodeRow.Visible = !(request.RequestPostalCode == ProfileRequest.NoRequest);
-       this.timezoneRow.Visible = !(request.RequestTimeZone == ProfileRequest.NoRequest);
-    }
+	public void SetRequiredFieldsFromRequest(ProfileRequestFields requestFields) {
+		dobRequiredLabel.Visible = (requestFields.Birthdate == ProfileRequest.Require);
+		countryRequiredLabel.Visible = (requestFields.Country == ProfileRequest.Require);
+		emailRequiredLabel.Visible = (requestFields.Email == ProfileRequest.Require);
+		fullnameRequiredLabel.Visible = (requestFields.FullName == ProfileRequest.Require);
+		genderRequiredLabel.Visible = (requestFields.Gender == ProfileRequest.Require);
+		languageRequiredLabel.Visible = (requestFields.Language == ProfileRequest.Require);
+		nicknameRequiredLabel.Visible = (requestFields.Nickname == ProfileRequest.Require);
+		postcodeRequiredLabel.Visible = (requestFields.PostalCode == ProfileRequest.Require);
+		timezoneRequiredLabel.Visible = (requestFields.TimeZone == ProfileRequest.Require);
+
+		dateOfBirthRow.Visible = !(requestFields.Birthdate == ProfileRequest.NoRequest);
+		countryRow.Visible = !(requestFields.Country == ProfileRequest.NoRequest);
+		emailRow.Visible = !(requestFields.Email == ProfileRequest.NoRequest);
+		fullnameRow.Visible = !(requestFields.FullName == ProfileRequest.NoRequest);
+		genderRow.Visible = !(requestFields.Gender == ProfileRequest.NoRequest);
+		languageRow.Visible = !(requestFields.Language == ProfileRequest.NoRequest);
+		nicknameRow.Visible = !(requestFields.Nickname == ProfileRequest.NoRequest);
+		postcodeRow.Visible = !(requestFields.PostalCode == ProfileRequest.NoRequest);
+		timezoneRow.Visible = !(requestFields.TimeZone == ProfileRequest.NoRequest);
+	}
     
     public bool DoesAnyFieldHaveAValue
     {
@@ -89,11 +86,11 @@ public partial class ProfileFields : System.Web.UI.UserControl
         }
     }
 
-    public OpenIdProfileFields OpenIdProfileFields
+    public ProfileFieldValues OpenIdProfileFields
     {
         get
         {
-            OpenIdProfileFields fields = new OpenIdProfileFields();
+            ProfileFieldValues fields = new ProfileFieldValues();
             fields.Birthdate = DateOfBirth;
             fields.Country = countryDropdownList.SelectedValue;
             fields.Email = emailTextBox.Text;

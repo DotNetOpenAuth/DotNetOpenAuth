@@ -395,7 +395,7 @@ namespace DotNetOpenId.Consumer
 		{
 			EventHandler<OpenIdTextBox.OpenIdEventArgs> loggingIn = LoggingIn;
 			OpenIdTextBox.OpenIdEventArgs args = new OpenIdTextBox.OpenIdEventArgs(openIdUri,
-				OpenIdProfileFields.Empty);
+				ProfileFieldValues.Empty);
 			if (loggingIn != null)
 				loggingIn(this, args);
 			return !args.Cancel;

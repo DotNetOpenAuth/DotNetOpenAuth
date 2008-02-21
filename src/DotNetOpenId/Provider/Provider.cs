@@ -36,6 +36,7 @@ namespace DotNetOpenId.Provider {
 		/// Decodes an incoming web request in to a <see cref="Request"/>.
 		/// </summary>
 		/// <param name="query">The query parameters as a dictionary with each key mapping to one value. </param>
+		/// <returns>A Request object, or null if the given query doesn't represent an OpenId request.</returns>
 		public Request DecodeRequest(NameValueCollection query) {
 			if (query == null) throw new ArgumentNullException("query");
 

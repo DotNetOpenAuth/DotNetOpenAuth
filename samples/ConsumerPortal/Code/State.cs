@@ -18,15 +18,15 @@ public class State
     {
     }
 
-    public static OpenIdProfileFields ProfileFields
+    public static ProfileFieldValues ProfileFields
     {
         get
         {
             if (HttpContext.Current .Session["ProfileFields"] == null)
             {
-                HttpContext.Current .Session["ProfileFields"] = new OpenIdProfileFields();
+                HttpContext.Current .Session["ProfileFields"] = new ProfileFieldValues();
             }
-            return (OpenIdProfileFields)HttpContext.Current .Session["ProfileFields"];
+            return (ProfileFieldValues)HttpContext.Current .Session["ProfileFields"];
         }
         set { HttpContext.Current .Session["ProfileFields"] = value; }
     }

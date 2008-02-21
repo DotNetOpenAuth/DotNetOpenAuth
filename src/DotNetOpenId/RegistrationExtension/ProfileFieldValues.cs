@@ -14,9 +14,9 @@ using System.Xml.Serialization;
 namespace DotNetOpenId.RegistrationExtension
 {
 	[Serializable()]
-	public class OpenIdProfileFields
+	public class ProfileFieldValues
 	{
-		internal static OpenIdProfileFields Empty = new OpenIdProfileFields();
+		internal static ProfileFieldValues Empty = new ProfileFieldValues();
 
 		public string Nickname { get; set; }
 		public string Email { get; set; }
@@ -66,7 +66,7 @@ namespace DotNetOpenId.RegistrationExtension
 
 		public override bool Equals(object obj)
 		{
-			OpenIdProfileFields other = obj as OpenIdProfileFields;
+			ProfileFieldValues other = obj as ProfileFieldValues;
 			if (other == null) return false;
 
 			return

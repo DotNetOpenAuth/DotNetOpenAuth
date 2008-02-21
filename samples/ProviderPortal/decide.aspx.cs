@@ -22,10 +22,10 @@ public partial class decide : Page
         else
         {
             // if simple registration fields were used, then prompt the user for them
-            if (State.Session.LastRequest.IsAnySimpleRegistrationFieldsRequestedOrRequired)
+            if (State.Session.LastRequest.RequestedProfileFields.AnyRequestedOrRequired)
             {
                 this.profileFields.Visible = true;
-                this.profileFields.SetRequiredFieldsFromRequest(State.Session.LastRequest);
+                this.profileFields.SetRequiredFieldsFromRequest(State.Session.LastRequest.RequestedProfileFields);
             }
         }
     }
