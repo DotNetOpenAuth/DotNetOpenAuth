@@ -5,6 +5,7 @@ using DotNetOpenId.Store;
 using System.Web;
 using IProviderAssociationStore = DotNetOpenId.Store.IAssociationStore<DotNetOpenId.Store.AssociationConsumerType>;
 using ProviderMemoryStore = DotNetOpenId.Store.AssociationMemoryStore<DotNetOpenId.Store.AssociationConsumerType>;
+using System.Collections.Generic;
 
 namespace DotNetOpenId.Provider {
 	/// <summary>
@@ -36,77 +37,48 @@ namespace DotNetOpenId.Provider {
 		/// </summary>
 		/// <param name="query">The query parameters as a dictionary with each key mapping to one value. </param>
 		public Request DecodeRequest(NameValueCollection query) {
-			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ProviderTrace("Start message decoding");
-			}
+			if (query == null) throw new ArgumentNullException("query");
 
-			if (query == null) return null;
-
-			NameValueCollection myquery = new NameValueCollection();
+			var myquery = new Dictionary<string, string>();
 			foreach (string key in query) {
-				if (!String.IsNullOrEmpty(key)) {
-					if (key.StartsWith(QueryStringArgs.openid.Prefix)) { myquery[key] = query[key]; }
-				}
+				if (key.StartsWith(QueryStringArgs.openid.Prefix)) { myquery[key] = query[key]; }
 			}
 
 			if (myquery.Count == 0) return null;
 
-			string mode = myquery.Get(QueryStringArgs.openid.mode);
-			if (mode == null)
-				throw new ProtocolException(query, "No openid.mode value in query");
-
-			if (mode == QueryStringArgs.Modes.checkid_setup) {
-				CheckIdRequest request = new CheckIdRequest(this, query);
-
-				if (TraceUtil.Switch.TraceInfo) {
-					TraceUtil.ProviderTrace("End message decoding. Successfully decoded message as new CheckIdRequest in setup mode");
-					if (TraceUtil.Switch.TraceInfo) {
-						TraceUtil.ProviderTrace("CheckIdRequest follows: ");
-						TraceUtil.ProviderTrace(request.ToString());
-					}
-				}
-
-				return request;
-			} else if (mode == QueryStringArgs.Modes.checkid_immediate) {
-				CheckIdRequest request = new CheckIdRequest(this, query);
-
-				if (TraceUtil.Switch.TraceInfo) {
-					TraceUtil.ProviderTrace("End message decoding. Successfully decoded message as new CheckIdRequest in immediate mode");
-					if (TraceUtil.Switch.TraceInfo) {
-						TraceUtil.ProviderTrace("CheckIdRequest follows: ");
-						TraceUtil.ProviderTrace(request.ToString());
-					}
-				}
-
-				return request;
-			} else if (mode == QueryStringArgs.Modes.check_authentication) {
-				CheckAuthRequest request = new CheckAuthRequest(this, query);
-
-				if (TraceUtil.Switch.TraceInfo) {
-					TraceUtil.ProviderTrace("End message decoding. Successfully decoded message as new CheckAuthRequest");
-					if (TraceUtil.Switch.TraceInfo) {
-						TraceUtil.ProviderTrace("CheckAuthRequest follows: ");
-						TraceUtil.ProviderTrace(request.ToString());
-					}
-				}
-
-				return request;
-			} else if (mode == QueryStringArgs.Modes.associate) {
-				AssociateRequest request = new AssociateRequest(this, query);
-
-				if (TraceUtil.Switch.TraceInfo) {
-					TraceUtil.ProviderTrace("End message decoding. Successfully decoded message as new AssociateRequest ");
-					if (TraceUtil.Switch.TraceInfo) {
-						TraceUtil.ProviderTrace("AssociateRequest follows: ");
-						TraceUtil.ProviderTrace(request.ToString());
-					}
-				}
-
-				return request;
+			if (TraceUtil.Switch.TraceInfo) {
+				TraceUtil.ProviderTrace("Start message decoding");
 			}
 
-			throw new ProtocolException(query, "No decoder for openid.mode=" + mode);
+			string mode;
+			if (!myquery.TryGetValue(QueryStringArgs.openid.mode, out mode)) {
+				throw new ProtocolException(query, "No openid.mode value in query");
+			}
 
+			Request request;
+			switch (mode) {
+				case QueryStringArgs.Modes.checkid_setup:
+					request = new CheckIdRequest(this, query);
+					break;
+				case QueryStringArgs.Modes.checkid_immediate:
+					request = new CheckIdRequest(this, query);
+					break;
+				case QueryStringArgs.Modes.check_authentication:
+					request = new CheckAuthRequest(this, query);
+					break;
+				case QueryStringArgs.Modes.associate:
+					request = new AssociateRequest(this, query);
+					break;
+				default:
+					throw new ProtocolException(query, "No decoder for openid.mode=" + mode);
+			}
+
+			if (TraceUtil.Switch.TraceInfo) {
+				TraceUtil.ProviderTrace("End message decoding. Successfully decoded message as new " + request.GetType().Name);
+				TraceUtil.ProviderTrace(request.ToString());
+			}
+
+			return request;
 		}
 
 		/// <returns>
