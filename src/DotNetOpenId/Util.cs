@@ -183,6 +183,7 @@ namespace DotNetOpenId {
         internal const string enc_mac_key = "enc_mac_key";
         internal const string mac_key = "mac_key";
         internal const string DH_SHA1 = "DH-SHA1";
+        internal const string plaintext = "plaintext";
         internal const string HMAC_SHA1 = "HMAC-SHA1";
 
         internal static class Modes {

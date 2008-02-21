@@ -2,44 +2,43 @@ using System;
 using System.Collections.Specialized;
 using Org.Mentalis.Security.Cryptography;
 using System.Text;
+using System.Collections.Generic;
 
 namespace DotNetOpenId.Provider
 {
-    internal abstract class ProviderSession
-    {
-        public string SessionType { get; set; }
+	internal abstract class ProviderSession {
+		public abstract string SessionType { get; }
+		public abstract Dictionary<string, string> Answer(byte[] secret);
+		public static ProviderSession CreateSession(NameValueCollection query) {
+			string session_type = query[QueryStringArgs.openid.session_type];
 
-        public abstract NameValueCollection Answer(byte[] secret);
-    }
+			switch (session_type) {
+				case null:
+					return new PlainTextProviderSession();
+				case QueryStringArgs.DH_SHA1:
+					return new DiffieHellmanProviderSession(query);
+				default:
+					throw new ProtocolException(query, "Unknown session type " + session_type);
+			}
+		}
+	}
 
     /// <summary>
     /// An object that knows how to handle association requests with no session type.
     /// </summary>
     internal class PlainTextProviderSession : ProviderSession
     {
-
-        #region Constructor(s)
-
-        public PlainTextProviderSession()
+        public override string SessionType
         {
-            this.SessionType = "plaintext";
+            get { return QueryStringArgs.plaintext; }
         }
 
-        #endregion
-
-        #region Methods
-
-        public override NameValueCollection Answer(byte[] secret)
+        public override Dictionary<string, string> Answer(byte[] secret)
         {
-            NameValueCollection nvc = new NameValueCollection();
-
+            var nvc = new Dictionary<string, string>();
             nvc.Add(QueryStringArgs.mac_key, CryptUtil.ToBase64String(secret));
-
             return nvc;
         }
-
-        #endregion
-
     }
 
     /// <summary>
@@ -57,8 +56,6 @@ namespace DotNetOpenId.Provider
             string dh_gen = query.Get(QueryStringArgs.openid.dh_gen);
             byte[] dh_modulus_bytes = new byte[0];
             byte[] dh_gen_bytes = new byte[0];
-
-            this.SessionType = QueryStringArgs.DH_SHA1;
 
             if ((dh_modulus == null && dh_gen != null) ||
                 (dh_gen == null && dh_modulus != null))
@@ -113,10 +110,15 @@ namespace DotNetOpenId.Provider
             }
         }
 
-        public override NameValueCollection Answer(byte[] secret)
+        public override string SessionType
+        {
+            get { return QueryStringArgs.DH_SHA1; }
+        }
+
+        public override Dictionary<string, string> Answer(byte[] secret)
         {
             byte[] mac_key = CryptUtil.SHA1XorSecret(_dh, _consumer_pubkey, secret);
-            NameValueCollection nvc = new NameValueCollection();
+            var nvc = new Dictionary<string, string>();
 
             nvc.Add(QueryStringArgs.openidnp.dh_server_public, CryptUtil.UnsignedToBase64(_dh.CreateKeyExchange()));
             nvc.Add(QueryStringArgs.enc_mac_key, CryptUtil.ToBase64String(mac_key));

@@ -39,39 +39,15 @@ namespace DotNetOpenId.Provider {
 		public Request DecodeRequest(NameValueCollection query) {
 			if (query == null) throw new ArgumentNullException("query");
 
-			var myquery = new Dictionary<string, string>();
-			foreach (string key in query) {
-				if (key.StartsWith(QueryStringArgs.openid.Prefix)) { myquery[key] = query[key]; }
+			if (!Request.IsOpenIdRequest(query)) {
+				return null;
 			}
-
-			if (myquery.Count == 0) return null;
 
 			if (TraceUtil.Switch.TraceInfo) {
 				TraceUtil.ProviderTrace("Start message decoding");
 			}
 
-			string mode;
-			if (!myquery.TryGetValue(QueryStringArgs.openid.mode, out mode)) {
-				throw new ProtocolException(query, "No openid.mode value in query");
-			}
-
-			Request request;
-			switch (mode) {
-				case QueryStringArgs.Modes.checkid_setup:
-					request = new CheckIdRequest(this, query);
-					break;
-				case QueryStringArgs.Modes.checkid_immediate:
-					request = new CheckIdRequest(this, query);
-					break;
-				case QueryStringArgs.Modes.check_authentication:
-					request = new CheckAuthRequest(this, query);
-					break;
-				case QueryStringArgs.Modes.associate:
-					request = new AssociateRequest(this, query);
-					break;
-				default:
-					throw new ProtocolException(query, "No decoder for openid.mode=" + mode);
-			}
+			Request request = Request.CreateRequest(this, query);
 
 			if (TraceUtil.Switch.TraceInfo) {
 				TraceUtil.ProviderTrace("End message decoding. Successfully decoded message as new " + request.GetType().Name);

@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Text;
 using DotNetOpenId.Store;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace DotNetOpenId.Provider {
 	/// <summary>
@@ -14,18 +15,7 @@ namespace DotNetOpenId.Provider {
 
 		public AssociateRequest(Provider server, NameValueCollection query)
 			: base(server) {
-			string session_type = query.Get(QueryStringArgs.openid.session_type);
-
-			switch (session_type) {
-				case null:
-					session = new PlainTextProviderSession();
-					break;
-				case QueryStringArgs.DH_SHA1:
-					session = new DiffieHellmanProviderSession(query);
-					break;
-				default:
-					throw new ProtocolException(query, "Unknown session type " + session_type);
-			}
+			session = ProviderSession.CreateSession(query);
 		}
 
 		public override RequestType RequestType {
@@ -60,12 +50,12 @@ namespace DotNetOpenId.Provider {
 			response.Fields[QueryStringArgs.openidnp.assoc_type] = assoc.AssociationType;
 			response.Fields[QueryStringArgs.openidnp.assoc_handle] = assoc.Handle;
 
-			NameValueCollection nvc = session.Answer(assoc.SecretKey);
-			foreach (string key in nvc) {
-				response.Fields[key] = nvc[key];
+			IDictionary<string, string> nvc = session.Answer(assoc.SecretKey);
+			foreach (var pair in nvc) {
+				response.Fields[pair.Key] = nvc[pair.Key];
 			}
 
-			if (session.SessionType != "plaintext") {
+			if (session.SessionType != QueryStringArgs.plaintext) {
 				response.Fields[QueryStringArgs.openidnp.session_type] = session.SessionType;
 			}
 
