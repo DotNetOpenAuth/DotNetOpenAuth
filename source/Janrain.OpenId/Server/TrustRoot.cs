@@ -181,7 +181,6 @@ namespace Janrain.OpenId.Server
 
             // The following code assures that http://example.com/directory isn't below http://example.com/dir,
             // but makes sure http://example.com/dir/ectory is below http://example.com/dir
-            // Maybe this addition should be removed, as it is hard to see, if a path is below (/dir.html would accept /dir.html/something too)
             int path_len = _path.Length;
             string url_prefix = url.PathAndQuery.Substring(0, path_len);
 
@@ -196,7 +195,8 @@ namespace Janrain.OpenId.Server
             }
 
             // Or make sure a query string is introduced or a path below trust root
-            return url.PathAndQuery[path_len] == '?'
+            return _path.EndsWith("/", StringComparison.Ordinal)
+                || url.PathAndQuery[path_len] == '?'
                 || url.PathAndQuery[path_len] == '/';
         }
 

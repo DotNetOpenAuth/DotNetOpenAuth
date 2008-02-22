@@ -102,6 +102,7 @@ namespace OpenIdTests {
 			// Path must be (at or) below trust root
 			Assert.IsTrue(new TrustRoot("http://www.my.com/").ValidateUrl("http://www.my.com/"));
 			Assert.IsTrue(new TrustRoot("http://www.my.com/").ValidateUrl("http://www.my.com/boo"));
+			Assert.IsTrue(new TrustRoot("http://www.my.com/p/").ValidateUrl("http://www.my.com/p/l"));
 			Assert.IsTrue(new TrustRoot("http://www.my.com/bah").ValidateUrl("http://www.my.com/bah/bah"));
 			Assert.IsTrue(new TrustRoot("http://www.my.com/bah").ValidateUrl("http://www.my.com/bah/bah"));
 			Assert.IsTrue(new TrustRoot("http://www.my.com/bah.html").ValidateUrl("http://www.my.com/bah.html/bah"));
