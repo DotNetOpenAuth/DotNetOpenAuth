@@ -25,6 +25,7 @@ using Janrain.OpenId.Session;
 using Janrain.OpenId.RegistrationExtension;
 using Janrain.OpenId.Store;
 using System.Net;
+using System.Text.RegularExpressions;
 
 [assembly: WebResource(NerdBank.OpenId.Consumer.OpenIdTextBox.EmbeddedLogoResourceName, "image/gif")]
 
@@ -99,6 +100,39 @@ namespace NerdBank.OpenId.Consumer
 			{
 				text = value;
 				if (WrappedTextBox != null) WrappedTextBox.Text = value;
+			}
+		}
+
+		const string trustRootUrlViewStateKey = "TrustRootUrl";
+		const string trustRootUrlDefault = "~/";
+		[Bindable(true)]
+		[Category(behaviorCategory)]
+		[DefaultValue(trustRootUrlDefault)]
+		public string TrustRootUrl
+		{
+			get { return (string)(ViewState[trustRootUrlViewStateKey] ?? trustRootUrlDefault); }
+			set
+			{
+				if (Page != null && !DesignMode)
+				{
+					// Validate new value by trying to construct a TrustRoot object based on it.
+					new Janrain.OpenId.Server.TrustRoot(getResolvedTrustRoot(value).ToString()); // throws an exception on failure.
+				}
+				else
+				{
+					// We can't fully test it, but it should start with either ~/ or a protocol.
+					if (Regex.IsMatch(value, @"^https?://"))
+					{
+						new Uri(value.Replace("*.", "")); // make sure it's fully-qualified, but ignore wildcards
+					}
+					else if (value.StartsWith("~/", StringComparison.Ordinal))
+					{
+						// this is valid too
+					}
+					else
+						throw new UriFormatException();
+				}
+				ViewState[trustRootUrlViewStateKey] = value; 
 			}
 		}
 
@@ -398,15 +432,6 @@ namespace NerdBank.OpenId.Consumer
 				AuthRequest request = consumer.Begin(userUri);
 				if (EnableRequestProfile) addProfileArgs(request);
 
-				// Build the trust root
-				UriBuilder builder = new UriBuilder(Page.Request.Url.AbsoluteUri);
-				builder.Query = null;
-				builder.Password = null;
-				builder.UserName = null;
-				builder.Fragment = null;
-				builder.Path = Page.Request.ApplicationPath;
-				string trustRoot = builder.Uri.ToString();
-
 				// Build the return_to URL
 				UriBuilder return_to = new UriBuilder(Page.Request.Url);
 				// Trim off any old "openid." prefixed parameters to avoid carrying
@@ -419,7 +444,22 @@ namespace NerdBank.OpenId.Consumer
 					}
 				}
 				UriUtil.AppendQueryArgs(return_to, return_to_params);
-				Uri redirectUrl = request.CreateRedirect(trustRoot, return_to.Uri, AuthRequest.Mode.SETUP);
+
+				// Resolve the trust root, and swap out the scheme and port if necessary to match the
+				// return_to URL, since this match is required by OpenId, and the consumer app
+				// may be using HTTP at some times and HTTPS at others.
+				UriBuilder trustRoot = getResolvedTrustRoot(TrustRootUrl);
+				trustRoot.Scheme = return_to.Scheme;
+				trustRoot.Port = return_to.Port;
+				// Throw an exception now if the trustroot and the return_to URLs don't match
+				// as required by the provider.  We could wait for the provider to test this and
+				// fail, but this will be faster and give us a better error message.
+				if (!(new Janrain.OpenId.Server.TrustRoot(trustRoot.ToString()).ValidateUrl(return_to.ToString())))
+					throw new Janrain.OpenId.Server.UntrustedReturnUrl(new NameValueCollection(), 
+						return_to.Uri, trustRoot.ToString());
+
+				// Note: we must use trustRoot.ToString() because trustRoot.Uri throws when wildcards are present.
+				Uri redirectUrl = request.CreateRedirect(trustRoot.ToString(), return_to.Uri, AuthRequest.Mode.SETUP);
 				Page.Response.Redirect(redirectUrl.AbsoluteUri);
 			} catch (WebException ex) {
 				OnError(ex);
@@ -489,6 +529,37 @@ namespace NerdBank.OpenId.Consumer
 			if (RequestTimeZone > ProfileRequest.NoRequest)
 				fields.TimeZone = queryString[QueryStringArgs.openid.sreg.timezone];
 			return fields;
+		}
+
+		UriBuilder getResolvedTrustRoot(string trustRoot)
+		{
+			Debug.Assert(Page != null, "Current HttpContext required to resolve URLs.");
+			// Allow for *. trustroot notation, as well as ASP.NET ~/ shortcuts.
+
+			// We have to temporarily remove the *. notation if it's there so that
+			// the rest of our URL manipulation will succeed.
+			bool foundWildcard = false;
+			// Note: we don't just use string.Replace because poorly written URLs
+			// could potentially have multiple :// sequences in them.
+			string trustRootNoWildcard = Regex.Replace(trustRoot, @"^(\w+://)\*\.",
+				delegate(Match m) {
+					foundWildcard = true;
+					return m.Groups[1].Value;
+				});
+
+			UriBuilder fullyQualifiedTrustRoot = new UriBuilder(
+				new Uri(Page.Request.Url, Page.ResolveUrl(trustRootNoWildcard)));
+
+			if (foundWildcard)
+			{
+				fullyQualifiedTrustRoot.Host = "*." + fullyQualifiedTrustRoot.Host;
+			}
+
+			// Is it valid?
+			// Note: we MUST use ToString.  Uri property throws if wildcard is present.
+			new Janrain.OpenId.Server.TrustRoot(fullyQualifiedTrustRoot.ToString()); // throws if not valid
+
+			return fullyQualifiedTrustRoot;
 		}
 
 		#region Events
