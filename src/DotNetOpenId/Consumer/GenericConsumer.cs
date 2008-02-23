@@ -227,10 +227,9 @@ namespace DotNetOpenId.Consumer
 			{
 				if (key.StartsWith(QueryStringArgs.openid.Prefix) 
 					&& Array.IndexOf(signed_array, key.Substring(QueryStringArgs.openid.Prefix.Length)) > -1)
-					check_args.Add(key, query[key]);
-
-				check_args[QueryStringArgs.openid.mode] = QueryStringArgs.Modes.check_authentication;
+					check_args[key] = query[key];
 			}
+			check_args[QueryStringArgs.openid.mode] = QueryStringArgs.Modes.check_authentication;
 
 			return check_args;
 		}
