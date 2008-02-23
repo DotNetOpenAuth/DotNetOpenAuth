@@ -43,65 +43,67 @@ namespace DotNetOpenId.Consumer
 		{
 			string mode;
 			if (!query.TryGetValue(QueryStringArgs.openid.mode, out mode))
-				mode = "<no mode specified>";
+				throw new ProtocolException(string.Format(Strings.MissingOpenIdQueryParameter, QueryStringArgs.openid.mode));
 
 			string tokenString;
 			if (!query.TryGetValue(Token.TokenKey, out tokenString))
-				throw new FailureException(null, "No token found.");
+				throw new ProtocolException(string.Format(Strings.MissingInternalQueryParameter, Token.TokenKey));
 			Token token = Token.Deserialize(tokenString, store.AuthKey);
 
-			if (mode == QueryStringArgs.Modes.cancel)
-				throw new CancelException(token.IdentityUrl);
-
-			if (mode == QueryStringArgs.Modes.error)
-			{
-				string error = query[QueryStringArgs.openid.error];
-
-				throw new FailureException(token.IdentityUrl, error);
+			switch (mode) {
+				case QueryStringArgs.Modes.cancel:
+					throw new CancelException(token.IdentityUrl);
+				case QueryStringArgs.Modes.error:
+					throw new FailureException(token.IdentityUrl, query[QueryStringArgs.openid.error]);
+				case QueryStringArgs.Modes.id_res:
+					ConsumerResponse response = DoIdRes(query, token);
+					checkNonce(response, query[QueryStringArgs.nonce]);
+					return response;
+				default:
+					throw new ProtocolException(string.Format(Strings.InvalidOpenIdQueryParameterValue,
+						QueryStringArgs.openid.mode, mode), token.IdentityUrl);
 			}
-
-			if (mode == QueryStringArgs.Modes.id_res)
-			{
-				if (token.IdentityUrl == null)
-					throw new FailureException(token.IdentityUrl, "No session state found");
-
-				ConsumerResponse response = DoIdRes(query, token);
-
-				checkNonce(response, query[QueryStringArgs.nonce]);
-
-				return response;
-			}
-
-			throw new FailureException(token.IdentityUrl, "Invalid openid.mode: " + mode);
 		}
 
-		private bool CheckAuth(IDictionary<string, string> query, Uri server_url)
+		/// <summary>
+		/// Performs a dumb-mode authentication verification by making an extra
+		/// request to the provider after the user agent was redirected back
+		/// to the consumer site with an authenticated status.
+		/// </summary>
+		/// <returns>Whether the authentication is valid.</returns>
+		bool checkAuth(IDictionary<string, string> query, Uri serverUrl)
 		{
 			IDictionary<string, string> request = CreateCheckAuthRequest(query);
 
 			if (request == null)
 				return false;
 
-			var response = MakeKVPost(request, server_url);
+			var response = MakeKVPost(request, serverUrl);
 
 			if (response == null)
 				return false;
 
-			return ProcessCheckAuthResponse(response, server_url);
+			return ProcessCheckAuthResponse(response, serverUrl);
 		}
 
+		/// <summary>
+		/// Checks that a given nonce is valid, and that it has only been used once
+		/// to protect against replay attacks.
+		/// </summary>
+		/// <remarks>
+		/// TODO: replay attacks are not currently guarded against.
+		/// </remarks>
 		void checkNonce(ConsumerResponse response, string nonce)
 		{
 			var nvc = HttpUtility.ParseQueryString(response.ReturnTo.Query);
 
-			string value = nvc[QueryStringArgs.nonce];
-			if (String.IsNullOrEmpty(value))
-				throw new FailureException(response.IdentityUrl,
-							   "Nonce missing from return_to: " +
-							   response.ReturnTo.AbsoluteUri);
+			string returnToNonce = nvc[QueryStringArgs.nonce];
+			if (String.IsNullOrEmpty(returnToNonce))
+				throw new ProtocolException(string.Format(Strings.MissingReturnToQueryParameter,
+					QueryStringArgs.nonce, response.ReturnTo.Query), response.IdentityUrl);
 
-			if (value != nonce)
-				throw new FailureException(response.IdentityUrl, "Nonce mismatch");
+			if (returnToNonce != nonce)
+				throw new ProtocolException(Strings.NonceMismatch, response.IdentityUrl);
 		}
 
 		IDictionary<string, string> MakeKVPost(IDictionary<string, string> args, Uri server_url) {
@@ -151,7 +153,7 @@ namespace DotNetOpenId.Consumer
 			{
 				// It's not an association we know about.  Dumb mode is our
 				// only possible path for recovery.
-				if (!CheckAuth(query, token.ServerUrl))
+				if (!checkAuth(query, token.ServerUrl))
 					throw new FailureException(token.IdentityUrl, "check_authentication failed");
 
 				return new ConsumerResponse(token.IdentityUrl, query, query[QueryStringArgs.openid.signed]);

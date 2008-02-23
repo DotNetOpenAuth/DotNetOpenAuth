@@ -79,11 +79,47 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to OpenID parameter &apos;{0}&apos; had unexpected value &apos;{1}&apos;..
+        /// </summary>
+        internal static string InvalidOpenIdQueryParameterValue {
+            get {
+                return ResourceManager.GetString("InvalidOpenIdQueryParameterValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Query parameter &apos;{0}&apos; was missing from the query..
+        /// </summary>
+        internal static string MissingInternalQueryParameter {
+            get {
+                return ResourceManager.GetString("MissingInternalQueryParameter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to OpenID parameter &apos;{0}&apos; was missing from the query..
         /// </summary>
         internal static string MissingOpenIdQueryParameter {
             get {
                 return ResourceManager.GetString("MissingOpenIdQueryParameter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Query parameter &apos;{0}&apos; was expected in the return_to query &apos;{1}&apos;..
+        /// </summary>
+        internal static string MissingReturnToQueryParameter {
+            get {
+                return ResourceManager.GetString("MissingReturnToQueryParameter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nonce mismatch..
+        /// </summary>
+        internal static string NonceMismatch {
+            get {
+                return ResourceManager.GetString("NonceMismatch", resourceCulture);
             }
         }
         

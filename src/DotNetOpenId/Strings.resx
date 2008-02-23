@@ -123,8 +123,20 @@
   <data name="IAssociationStoreRequiredWhenNoHttpContextAvailable" xml:space="preserve">
     <value>No current HttpContext was detected, so an IAssociationStore must be explicitly provided. Call the Server constructor overload that takes an IAssociationStore.</value>
   </data>
+  <data name="InvalidOpenIdQueryParameterValue" xml:space="preserve">
+    <value>OpenID parameter '{0}' had unexpected value '{1}'.</value>
+  </data>
+  <data name="MissingInternalQueryParameter" xml:space="preserve">
+    <value>Query parameter '{0}' was missing from the query.</value>
+  </data>
   <data name="MissingOpenIdQueryParameter" xml:space="preserve">
     <value>OpenID parameter '{0}' was missing from the query.</value>
+  </data>
+  <data name="MissingReturnToQueryParameter" xml:space="preserve">
+    <value>Query parameter '{0}' was expected in the return_to query '{1}'.</value>
+  </data>
+  <data name="NonceMismatch" xml:space="preserve">
+    <value>Nonce mismatch.</value>
   </data>
   <data name="OpenIdTextBoxEmpty" xml:space="preserve">
     <value>No OpenId url is provided.</value>
