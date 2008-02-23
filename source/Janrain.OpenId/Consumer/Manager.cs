@@ -39,7 +39,7 @@ namespace Janrain.OpenId.Consumer
 				endpoints = this.GetServiceEndpoints(openid_url);
 				if (session != null)
 				{
-					session[key] = endpoints = GetServiceEndpoints(openid_url);
+					session[key] = endpoints;
 				}
 
 				if (endpoints == null)
