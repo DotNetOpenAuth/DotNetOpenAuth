@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Xml.Serialization;
+using System.Security;
 
 namespace Janrain.OpenId
 {
@@ -14,28 +15,31 @@ namespace Janrain.OpenId
         private static TraceSwitch openIDTraceSwitch;
         private static TraceSwitch openIDPageOutputTraceSwitch;
 
-
-
+        // Some permissions are required, but since it's just tracing we silently ignore failures.
+        //[SecurityPermission(SecurityAction.Demand, UnmanagedCode=true, ControlEvidence=true)]
         private static void Trace(string message, string category)
         {
-            string messagePrefix = String.Format("[{0}] : ", DateTime.Now.ToString());
-            char[] newLine = new char[2];
-            newLine[0] = '\r';
-            newLine[1] = '\n';
-            string[] splitMessage = message.Split(newLine, StringSplitOptions.RemoveEmptyEntries);
-            bool isMultiLineMessage = (splitMessage.Length > 1);
-            
-            if (isMultiLineMessage)
-            {
-                foreach (string line in splitMessage)
+            try {
+                string messagePrefix = String.Format("[{0}] : ", DateTime.Now.ToString());
+                char[] newLine = new char[2];
+                newLine[0] = '\r';
+                newLine[1] = '\n';
+                string[] splitMessage = message.Split(newLine, StringSplitOptions.RemoveEmptyEntries);
+                bool isMultiLineMessage = (splitMessage.Length > 1);
+                
+                if (isMultiLineMessage)
                 {
-                    System.Diagnostics.Trace.WriteLine(messagePrefix + line, category);
+                    foreach (string line in splitMessage)
+                    {
+                        System.Diagnostics.Trace.WriteLine(messagePrefix + line, category);
+                    }
                 }
+                else
+                {
+                    System.Diagnostics.Trace.WriteLine(messagePrefix + message, category);
+                }            
             }
-            else
-            {
-                System.Diagnostics.Trace.WriteLine(messagePrefix + message, category);
-            }            
+            catch (SecurityException) {}
         }
         
 
