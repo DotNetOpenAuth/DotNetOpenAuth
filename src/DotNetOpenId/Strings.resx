@@ -117,10 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ExpectedBase64OpenIdQueryParameter" xml:space="preserve">
+    <value>OpenID parameter '{0}' was expected to be base64 encoded but is not.</value>
+  </data>
   <data name="IAssociationStoreRequiredWhenNoHttpContextAvailable" xml:space="preserve">
     <value>No current HttpContext was detected, so an IAssociationStore must be explicitly provided. Call the Server constructor overload that takes an IAssociationStore.</value>
   </data>
+  <data name="MissingOpenIdQueryParameter" xml:space="preserve">
+    <value>OpenID parameter '{0}' was missing from the query.</value>
+  </data>
   <data name="OpenIdTextBoxEmpty" xml:space="preserve">
     <value>No OpenId url is provided.</value>
+  </data>
+  <data name="ReturnToNotUnderTrustRoot" xml:space="preserve">
+    <value>return_to '{0}' not under trust_root '{1}'.</value>
   </data>
 </root>

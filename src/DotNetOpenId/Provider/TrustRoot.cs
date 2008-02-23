@@ -62,7 +62,7 @@ namespace DotNetOpenId.Provider
             }
             else
             {
-                throw new MalformedTrustRootException(null, unparsed + " does not appear to be a valid TrustRoot");
+                throw new UriFormatException(string.Format("'{0}' is not a valid OpenID trustroot.", unparsed));
             }
         }
 

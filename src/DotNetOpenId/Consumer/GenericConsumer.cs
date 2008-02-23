@@ -261,15 +261,16 @@ namespace DotNetOpenId.Consumer
 			Converter<string, string> getParameter = delegate(string key) {
 				string val;
 				if (!results.TryGetValue(key, out val) || string.IsNullOrEmpty(val))
-					throw new MissingParameterException(key);
+					throw new ProtocolException(string.Format(Strings.MissingOpenIdQueryParameter, key));
 				return val;
 			};
 
 			Converter<string, byte[]> getDecoded = delegate(string key) {
 				try {
 					return Convert.FromBase64String(getParameter(key));
-				} catch (FormatException) {
-					throw new MissingParameterException("Query argument is not base64: " + key);
+				} catch (FormatException ex) {
+					throw new ProtocolException(string.Format(
+						Strings.ExpectedBase64OpenIdQueryParameter, key), null, ex);
 				}
 			};
 
@@ -304,19 +305,14 @@ namespace DotNetOpenId.Consumer
 				store.StoreAssociation(server_url, assoc);
 
 				return assoc;
-			} catch (MissingParameterException ex) {
-				Trace.TraceError("Missing parameter: {0}", ex.Message);
+			} catch (ProtocolException ex) {
+				if (TraceUtil.Switch.TraceError) {
+					Trace.TraceError(ex.ToString());
+				}
 				return null;
 			}
 		}
 
-		public class MissingParameterException : ApplicationException
-		{
-			public MissingParameterException(string key)
-				: base("Query missing key: " + key)
-			{
-			}
-		}
 		private bool ProcessCheckAuthResponse(IDictionary<string, string> response, Uri server_url)
 		{
 			string is_valid = response[QueryStringArgs.openidnp.is_valid];

@@ -7,30 +7,6 @@ using System.Diagnostics;
 namespace DotNetOpenId.Provider
 {
     /// <summary>
-    /// Could not encode this as a protocol message.
-    /// </summary>
-    public class EncodingException : Exception
-    {
-        internal EncodingException(IEncodable response)
-        {
-            Response = response;
-        }
-
-        internal IEncodable Response { get; private set; }
-    }
-
-    /// <summary>
-    /// This response is already signed.
-    /// </summary>
-    public class AlreadySignedException : EncodingException
-    {
-        internal AlreadySignedException(IEncodable response)
-            : base(response)
-        {
-        }
-    }
-
-    /// <summary>
     /// Encodes responses in to <see cref="WebResponse"/>.
     /// </summary>
     internal class Encoder
@@ -66,7 +42,11 @@ namespace DotNetOpenId.Provider
                     wr = new WebResponse(HttpStatusCode.Redirect, headers, new byte[0]);
                     break;
                 default:
-                    throw new EncodingException(response);
+                    if (TraceUtil.Switch.TraceError) {
+                        Trace.TraceError("Cannot encode response: {0}", response);
+                    }
+                    wr = new WebResponse(HttpStatusCode.BadRequest, new NameValueCollection(), new byte[0]);
+                    break;
             }
             return wr;
         }
@@ -100,8 +80,7 @@ namespace DotNetOpenId.Provider
                     if (signatory == null)
                         throw new ArgumentException("Must have a store to sign this request");
 
-                    if (response.Fields.ContainsKey(QueryStringArgs.openidnp.sig))
-                        throw new AlreadySignedException(encodable);
+                    Debug.Assert(!response.Fields.ContainsKey(QueryStringArgs.openidnp.sig));
 
                     signatory.Sign(response);
                 }

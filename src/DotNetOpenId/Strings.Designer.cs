@@ -61,6 +61,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to OpenID parameter &apos;{0}&apos; was expected to be base64 encoded but is not..
+        /// </summary>
+        internal static string ExpectedBase64OpenIdQueryParameter {
+            get {
+                return ResourceManager.GetString("ExpectedBase64OpenIdQueryParameter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No current HttpContext was detected, so an IAssociationStore must be explicitly provided. Call the Server constructor overload that takes an IAssociationStore..
         /// </summary>
         internal static string IAssociationStoreRequiredWhenNoHttpContextAvailable {
@@ -70,11 +79,29 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to OpenID parameter &apos;{0}&apos; was missing from the query..
+        /// </summary>
+        internal static string MissingOpenIdQueryParameter {
+            get {
+                return ResourceManager.GetString("MissingOpenIdQueryParameter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No OpenId url is provided..
         /// </summary>
         internal static string OpenIdTextBoxEmpty {
             get {
                 return ResourceManager.GetString("OpenIdTextBoxEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to return_to &apos;{0}&apos; not under trust_root &apos;{1}&apos;..
+        /// </summary>
+        internal static string ReturnToNotUnderTrustRoot {
+            get {
+                return ResourceManager.GetString("ReturnToNotUnderTrustRoot", resourceCulture);
             }
         }
     }

@@ -52,7 +52,7 @@ namespace DotNetOpenId.Provider {
 
 				try {
 					return new TrustRoot(TrustRoot).ValidateUrl(ReturnTo);
-				} catch (MalformedTrustRootException) {
+				} catch (UriFormatException) {
 					return false;
 				}
 			}
@@ -85,7 +85,7 @@ namespace DotNetOpenId.Provider {
 			Immediate = immediate;
 
 			if (!this.IsTrustRootValid)
-				throw new UntrustedReturnUrlException(null, ReturnTo, TrustRoot);
+				throw new UntrustedReturnUrlException(ReturnTo, TrustRoot, null);
 		}
 
 		internal CheckIdRequest(Provider server, NameValueCollection query) : base(server) {
@@ -98,26 +98,27 @@ namespace DotNetOpenId.Provider {
 			} else if (QueryStringArgs.Modes.checkid_setup.Equals(mode, StringComparison.Ordinal)) {
 				Immediate = false; // implied
 			} else {
-				throw new ProtocolException(query, QueryStringArgs.openid.mode + " does not have any expected value: " + mode);
+				throw new ProtocolException(QueryStringArgs.openid.mode + " does not have any expected value: " + mode, query);
 			}
 
 			try {
 				IdentityUrl = new Uri(getRequiredField(query, QueryStringArgs.openid.identity));
 			} catch (UriFormatException) {
-				throw new ProtocolException(query, QueryStringArgs.openid.identity + " not a valid url: " + query[QueryStringArgs.openid.identity]);
+				throw new ProtocolException(QueryStringArgs.openid.identity + " not a valid url: " + query[QueryStringArgs.openid.identity], query);
 			}
 
 			try {
 				ReturnTo = new Uri(getRequiredField(query, QueryStringArgs.openid.return_to));
-			} catch (UriFormatException) {
-				throw new MalformedReturnUrlException(query, query[QueryStringArgs.openid.return_to]);
+			} catch (UriFormatException ex) {
+				throw new ProtocolException(string.Format("'{0}' is not a valid OpenID return_to URL.", query[QueryStringArgs.openid.return_to]),
+					IdentityUrl, query, ex);
 			}
 
 			TrustRoot = query[QueryStringArgs.openid.trust_root] ?? ReturnTo.AbsoluteUri;
 			AssociationHandle = query[QueryStringArgs.openid.assoc_handle];
 
 			if (!IsTrustRootValid)
-				throw new UntrustedReturnUrlException(query, ReturnTo, TrustRoot);
+				throw new UntrustedReturnUrlException(ReturnTo, TrustRoot, query);
 
 			// Handle the optional Simple Registration extension fields
 			string policyUrl = query[QueryStringArgs.openid.sreg.policy_url];
@@ -140,7 +141,7 @@ namespace DotNetOpenId.Provider {
 			string value = query[field];
 
 			if (value == null)
-				throw new ProtocolException(query, "Missing required field " + field);
+				throw new ProtocolException("Missing required field " + field, query);
 
 			return value;
 		}
