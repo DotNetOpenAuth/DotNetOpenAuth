@@ -12,6 +12,7 @@ namespace DotNetOpenId.Consumer
 	using DotNetOpenId.Store;
 	using System.Web;
 	using System.IO;
+	using System.Diagnostics;
 	using IConsumerAssociationStore = DotNetOpenId.Store.IAssociationStore<System.Uri>;
 
 	internal class GenericConsumer
@@ -111,9 +112,9 @@ namespace DotNetOpenId.Consumer
 				return DictionarySerializer.Deserialize(resp.Data, resp.Length);
 			} catch (FetchException e) {
 				if (e.response.Code == HttpStatusCode.BadRequest) {
-					TraceUtil.ConsumerTrace("Bad request code returned from post attempt.");
+					Trace.TraceError("Bad request code returned from post attempt.");
 				} else {
-					TraceUtil.ConsumerTrace("Some FetchException caught during post attempt.\n" + e.ToString());
+					Trace.TraceError("Some FetchException caught during post attempt: {0}", e);
 				}
 				return null;
 			}
@@ -292,7 +293,7 @@ namespace DotNetOpenId.Consumer
 						assoc = new HmacSha1Association(assocHandle, secret, expiresIn);
 						break;
 					default:
-						TraceUtil.ConsumerTrace("Unrecognized assoc_type '" + assoc_type + "'.");
+						Trace.TraceError("Unrecognized assoc_type '{0}'.", assoc_type);
 						assoc = null;
 						break;
 				}
@@ -301,7 +302,7 @@ namespace DotNetOpenId.Consumer
 
 				return assoc;
 			} catch (MissingParameterException ex) {
-				TraceUtil.ConsumerTrace("Missing parameter: " + ex.Message);
+				Trace.TraceError("Missing parameter: {0}", ex.Message);
 				return null;
 			}
 		}

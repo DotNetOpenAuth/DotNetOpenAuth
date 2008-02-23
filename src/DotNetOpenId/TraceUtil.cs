@@ -10,22 +10,15 @@ using System.Security;
 namespace DotNetOpenId {
 	internal class TraceUtil {
 		static TraceSwitch openIDTraceSwitch;
+		/// <summary>
+		/// Gets the switch that indicates whether the user of this library desires for trace messages
+		/// to be emitted.
+		/// </summary>
 		public static TraceSwitch Switch {
 			get {
 				if (openIDTraceSwitch == null) { openIDTraceSwitch = new TraceSwitch("OpenID", "OpenID Trace Switch"); }
 				return openIDTraceSwitch;
 			}
-		}
-
-		const string providerCategory = "OpenID Provider";
-		const string consumerCategory = "OpenID Consumer";
-
-		public static void ProviderTrace(string message) {
-			System.Diagnostics.Trace.WriteLine(message, providerCategory);
-		}
-
-		public static void ConsumerTrace(string message) {
-			System.Diagnostics.Trace.WriteLine(message, consumerCategory);
 		}
 
 		/// <summary>

@@ -34,15 +34,12 @@ namespace DotNetOpenId.Provider {
 		/// </summary>
 		public Response Answer() {
 			Association assoc = Server.Signatory.CreateAssociation(AssociationConsumerType.Smart);
-			#region  Trace
 			if (TraceUtil.Switch.TraceInfo) {
 				Trace.TraceInformation("Start processing response for AssociateRequest");
 				if (TraceUtil.Switch.TraceVerbose) {
-					TraceUtil.ProviderTrace("Association to be sent follows:");
-					TraceUtil.ProviderTrace(assoc.ToString());
+					Trace.TraceInformation("Association to be sent: {0}", assoc);
 				}
 			}
-			#endregion
 
 			Response response = new Response(this);
 
@@ -59,15 +56,12 @@ namespace DotNetOpenId.Provider {
 				response.Fields[QueryStringArgs.openidnp.session_type] = session.SessionType;
 			}
 
-			#region  Trace
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ProviderTrace("End processing response for AssociateRequest. AssociateRequest response successfully created. ");
+				Trace.TraceInformation("End processing response for AssociateRequest. AssociateRequest response successfully created. ");
 				if (TraceUtil.Switch.TraceVerbose) {
-					TraceUtil.ProviderTrace("Response follows. ");
-					TraceUtil.ProviderTrace(response.ToString());
+					Trace.TraceInformation("Response follows: {0}", response);
 				}
 			}
-			#endregion
 
 			return response;
 		}

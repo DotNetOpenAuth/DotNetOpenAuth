@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Collections.Generic;
 using DotNetOpenId.Store;
+using System.Diagnostics;
 
 namespace DotNetOpenId.Provider {
 	/// <summary>
@@ -45,11 +46,9 @@ namespace DotNetOpenId.Provider {
 		/// Respond to this request.
 		/// </summary>
 		internal IEncodable Answer() {
-			#region  Trace
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ProviderTrace("Start processing Response for CheckAuthRequest");
+				Trace.TraceInformation("Start processing Response for CheckAuthRequest");
 			}
-			#endregion
 
 			bool is_valid = Server.Signatory.Verify(AssociationHandle, signature, signedFields);
 
@@ -63,27 +62,20 @@ namespace DotNetOpenId.Provider {
 				Association assoc = Server.Signatory.GetAssociation(invalidate_handle, AssociationConsumerType.Smart);
 
 				if (assoc == null) {
-					#region  Trace
-					if (TraceUtil.Switch.TraceInfo) {
-						TraceUtil.ProviderTrace("No matching association found. Returning invalidate_handle. ");
+					if (TraceUtil.Switch.TraceWarning) {
+						Trace.TraceWarning("No matching association found. Returning invalidate_handle. ");
 					}
-					#endregion
 
 					response.Fields[QueryStringArgs.openidnp.invalidate_handle] = invalidate_handle;
 				}
 			}
 
-			#region  Trace
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ProviderTrace("End processing Response for CheckAuthRequest. CheckAuthRequest response successfully created. ");
+				Trace.TraceInformation("End processing Response for CheckAuthRequest. CheckAuthRequest response successfully created. ");
 				if (TraceUtil.Switch.TraceVerbose) {
-					TraceUtil.ProviderTrace("Response follows. ");
-					TraceUtil.ProviderTrace(response.ToString());
+					Trace.TraceInformation("Response follows: {0}", response);
 				}
 			}
-
-
-			#endregion
 
 			return response;
 		}

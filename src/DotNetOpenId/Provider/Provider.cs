@@ -6,6 +6,7 @@ using System.Web;
 using IProviderAssociationStore = DotNetOpenId.Store.IAssociationStore<DotNetOpenId.Store.AssociationConsumerType>;
 using ProviderMemoryStore = DotNetOpenId.Store.AssociationMemoryStore<DotNetOpenId.Store.AssociationConsumerType>;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace DotNetOpenId.Provider {
 	/// <summary>
@@ -45,14 +46,14 @@ namespace DotNetOpenId.Provider {
 			}
 
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ProviderTrace("Start message decoding");
+				Trace.TraceInformation("Start message decoding");
 			}
 
 			Request request = Request.CreateRequest(this, query);
 
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ProviderTrace("End message decoding. Successfully decoded message as new " + request.GetType().Name);
-				TraceUtil.ProviderTrace(request.ToString());
+				Trace.TraceInformation("End message decoding. Successfully decoded message as new {0}.", request.GetType().Name);
+				Trace.TraceInformation(request.ToString());
 			}
 
 			return request;
@@ -86,7 +87,7 @@ namespace DotNetOpenId.Provider {
 
 		internal WebResponse EncodeResponse(IEncodable response) {
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ProviderTrace("Encoding response");
+				Trace.TraceInformation("Encoding response");
 			}
 
 			return encoder.Encode(response);

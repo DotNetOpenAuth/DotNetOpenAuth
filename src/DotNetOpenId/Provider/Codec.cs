@@ -2,6 +2,7 @@ using System;
 using System.Collections.Specialized;
 using System.Text;
 using System.Net;
+using System.Diagnostics;
 
 namespace DotNetOpenId.Provider
 {
@@ -42,12 +43,10 @@ namespace DotNetOpenId.Provider
             EncodingType encode_as = response.EncodingType;
             WebResponse wr;
 
-            #region  Trace
             if (TraceUtil.Switch.TraceInfo)
             {
-                TraceUtil.ProviderTrace(String.Format("Encode using {0}", encode_as));
+                Trace.TraceInformation("Encode using {0}", encode_as);
             }
-            #endregion
 
             switch (encode_as)
             {
@@ -89,13 +88,10 @@ namespace DotNetOpenId.Provider
         {
             if (!(encodable is Exception))
             {
-                #region  Trace
                 if (TraceUtil.Switch.TraceInfo)
                 {
-                    TraceUtil.ProviderTrace("Encoding using the signing encoder");
+                    Trace.TraceInformation("Encoding using the signing encoder");
                 }
-                #endregion                          
-                
                 
                 Response response = (Response)encodable;
 

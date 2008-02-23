@@ -160,22 +160,19 @@ namespace DotNetOpenId.Provider {
 		public WebResponse Answer(bool allow, Uri server_url, ProfileFieldValues openIdProfileFields) {
 			string mode = (allow || Immediate) ? QueryStringArgs.Modes.id_res : QueryStringArgs.Modes.cancel;
 
-			#region  Trace
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ProviderTrace("Start processing Response for CheckIdRequest");
+				Trace.TraceInformation("Start processing Response for CheckIdRequest");
 				if (TraceUtil.Switch.TraceVerbose) {
-					TraceUtil.ProviderTrace(String.Format("mode = '{0}',  server_url = '{1}", mode, server_url.ToString()));
+					Trace.TraceInformation("mode = '{0}',  server_url = '{1}", mode, server_url);
 					if (openIdProfileFields != null) {
-						TraceUtil.ProviderTrace("Simple registration fields follow: \n" + 
+						Trace.TraceInformation("Simple registration fields: {0}",
 							TraceUtil.ToString(openIdProfileFields));
 					} else {
-						TraceUtil.ProviderTrace("No simple registration fields have been supplied.");
+						Trace.TraceInformation("No simple registration fields have been supplied.");
 					}
 
 				}
 			}
-
-			#endregion
 
 			Response response = new Response(this);
 
@@ -238,16 +235,12 @@ namespace DotNetOpenId.Provider {
 				response.AddField(null, "user_setup_url", setup_url.AbsoluteUri, false);
 			}
 
-			#region  Trace
 			if (TraceUtil.Switch.TraceInfo) {
-				TraceUtil.ProviderTrace("CheckIdRequest response successfully created. ");
+				Trace.TraceInformation("CheckIdRequest response successfully created. ");
 				if (TraceUtil.Switch.TraceVerbose) {
-					TraceUtil.ProviderTrace("Response follows. ");
-					TraceUtil.ProviderTrace(response.ToString());
+					Trace.TraceInformation("Response follows: {0}", response);
 				}
 			}
-
-			#endregion
 
 			return Server.EncodeResponse(response);
 		}
