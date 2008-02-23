@@ -25,9 +25,9 @@ Setting up up the environment
 
 This code was built using the following prerequisite software:
  * .NET 2.0
- * Visual Studio 2005
+ * Visual Studio 2008
  * IIS / PWS
- * Windows 2003 Server
+ * Windows Vista
  * NUnit 2.2.9 for .NET 2.0 (get the MSI version from http://www.nunit.org/index.php?p=download)
  * See the tools section further below for some helpful software 
 
@@ -42,7 +42,7 @@ Visual Studio 2008.
    OpenIDs of the predefined users on the server project's web.config file.
    For example, if the server project is running on port 51957, the OpenID of 
    the first user would be:
-   http://localhost:51957/ProviderPortal/user/bob
+   http://localhost:51957/user/bob
 4. Activate the consumer web page and try logging in.
 
 Testing with other consumers/servers on the Internet
@@ -52,7 +52,7 @@ Testing with other consumers/servers on the Internet
  - I reconfigured my network so that all incoming traffic to our external IP 
    on port 79 is forwarded to my local development machine
  - Ensure your firewall is configured to allow outbound calls to web ports
- - Since VS2005 Personal Web Server (PWS) does not allow web requests from 
+ - Since VS2008 Personal Web Server (PWS) does not allow web requests from 
    other servers (as required by OpenID consumers trying to log into your 
    server), testing with external consumers requires you to use IIS to host 
    your server.
@@ -78,7 +78,7 @@ Note: These instructions work on IIS 6 with Windows 2003 Server. Other version o
  * create a .openid extension that maps to asp.net (c:\WINDOWS\Microsoft.NET\Framework\v2.0.50727\aspnet_isapi.dll)
  * browse to .openid eg: http://IP/ProviderPortal/user/bob.openid
 
-Configure VS2005 to use IIS rather than PWS
+Configure VS2008 to use IIS rather than PWS
 1. Right-click on one of the web projects within Solution Explorer.
 2. Select Property Pages.
 3. Select Start Options on the left.

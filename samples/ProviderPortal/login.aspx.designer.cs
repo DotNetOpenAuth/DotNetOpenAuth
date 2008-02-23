@@ -13,15 +13,6 @@
 public partial class login {
     
     /// <summary>
-    /// status control.
-    /// </summary>
-    /// <remarks>
-    /// Auto-generated field.
-    /// To modify move field declaration from designer file to code-behind file.
-    /// </remarks>
-    protected global::System.Web.UI.HtmlControls.HtmlGenericControl status;
-    
-    /// <summary>
     /// Form1 control.
     /// </summary>
     /// <remarks>
@@ -31,29 +22,11 @@ public partial class login {
     protected global::System.Web.UI.HtmlControls.HtmlForm Form1;
     
     /// <summary>
-    /// username control.
+    /// login1 control.
     /// </summary>
     /// <remarks>
     /// Auto-generated field.
     /// To modify move field declaration from designer file to code-behind file.
     /// </remarks>
-    protected global::System.Web.UI.WebControls.TextBox username;
-    
-    /// <summary>
-    /// password control.
-    /// </summary>
-    /// <remarks>
-    /// Auto-generated field.
-    /// To modify move field declaration from designer file to code-behind file.
-    /// </remarks>
-    protected global::System.Web.UI.WebControls.TextBox password;
-    
-    /// <summary>
-    /// login_button control.
-    /// </summary>
-    /// <remarks>
-    /// Auto-generated field.
-    /// To modify move field declaration from designer file to code-behind file.
-    /// </remarks>
-    protected global::System.Web.UI.WebControls.Button login_button;
+    protected global::System.Web.UI.WebControls.Login login1;
 }

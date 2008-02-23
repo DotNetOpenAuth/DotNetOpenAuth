@@ -59,7 +59,7 @@ public partial class server : System.Web.UI.Page {
 					response = idrequest.Answer(allow, Util.ServerUri);
 				} else {
 					State.Session.LastRequest = idrequest;
-					Response.Redirect("decide.aspx");
+					Response.Redirect("~/decide.aspx");
 				}
 				break;
 			default:

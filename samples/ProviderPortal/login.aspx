@@ -1,16 +1,28 @@
-<%@ Page Language="C#" AutoEventWireup="true" Inherits="login" Debug="true" Codebehind="login.aspx.cs" %>
+<%@ Page Language="C#" AutoEventWireup="true" Inherits="login" CodeBehind="login.aspx.cs" %>
+
 <html>
 <head>
-    <title>Login</title>
+	<title>Login</title>
 </head>
 <body>
-    <p class=title>Login</p> 
-    <span id="status" class="text" enableviewstate="false" runat="Server"/>
-   <br />Try Bob/Test. Usernames are defined in the web.config 
-    <form id="Form1" runat="server">
-    Username: <asp:textbox id=username ReadOnly=true cssclass="text" runat="Server"/><br/>
-    Password: <asp:textbox id=password textmode=Password cssclass="text" runat="Server"/><br />
-    <asp:button id=login_button onclick="Login_Click" text="  Login  " cssclass="button" runat="Server"/>
-    </form>
+	<form id="Form1" runat="server">
+	<h1>
+		OpenID Provider Login
+	</h1>
+	<p>
+		Usernames are defined in the ASPNETDB.MDF database of .\SQLExpress.
+	</p>
+	<asp:Login runat="server" ID="login1" />
+	
+	<p>Credentials to try (each with their own OpenID)</p>
+	<table>
+		<tr><td>Username</td><td>Password</td></tr>
+		<tr><td>bob</td><td>test</td></tr>
+		<tr><td>bob1</td><td>test</td></tr>
+		<tr><td>bob2</td><td>test</td></tr>
+		<tr><td>bob3</td><td>test</td></tr>
+		<tr><td>bob4</td><td>test</td></tr>
+	</table>
+	</form>
 </body>
 </html>
