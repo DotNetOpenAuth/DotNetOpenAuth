@@ -12,9 +12,9 @@ namespace Janrain.OpenId.Consumer {
 	class Token {
 		static readonly TimeSpan maximumLifetime = TimeSpan.FromMinutes(5);
 		public static readonly string TokenKey = "token";
-		public Uri IdentityUrl { get; private set; }
-		public Uri ServerId { get; private set; }
-		public Uri ServerUrl { get; private set; }
+		public Uri IdentityUrl;
+		public Uri ServerId;
+		public Uri ServerUrl;
 
 		public Token(ServiceEndpoint serviceEndpoint)
 			: this(serviceEndpoint.IdentityUrl, serviceEndpoint.ServerId, serviceEndpoint.ServerUrl) {
