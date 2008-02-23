@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace DotNetOpenId.Consumer {
-	public class SetupNeededException : ProtocolException {
+	/// <summary>
+	/// Thrown when immediate mode is used but the provider says it needs setup mode to complete.
+	/// </summary>
+	/// <remarks>Internal, because never send immediate mode to the provider right now.</remarks>
+	internal class SetupNeededException : ProtocolException {
 		public Uri ConsumerId { get; private set; }
 		public Uri UserSetupUrl { get; private set; }
 

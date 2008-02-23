@@ -14,7 +14,7 @@ namespace DotNetOpenId.Consumer {
 		Association assoc;
 		ServiceEndpoint endpoint;
 
-		public AuthRequest(string token, Association assoc, ServiceEndpoint endpoint) {
+		internal AuthRequest(string token, Association assoc, ServiceEndpoint endpoint) {
 			Token = token;
 			this.assoc = assoc;
 			this.endpoint = endpoint;

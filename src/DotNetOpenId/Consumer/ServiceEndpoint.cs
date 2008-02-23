@@ -6,7 +6,7 @@ using System.Xml;
 using Janrain.Yadis;
 
 namespace DotNetOpenId.Consumer {
-	public class ServiceEndpoint {
+	internal class ServiceEndpoint {
 		public static readonly Uri OPENID_1_0_NS = new Uri("http://openid.net/xmlns/1.0");
 		public static readonly Uri OPENID_1_2_TYPE = new Uri("http://openid.net/signon/1.2");
 		public static readonly Uri OPENID_1_1_TYPE = new Uri("http://openid.net/signon/1.1");

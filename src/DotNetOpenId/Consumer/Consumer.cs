@@ -28,22 +28,21 @@ namespace DotNetOpenId.Consumer {
 		/// </summary>
 		public Consumer(IConsumerAssociationStore store)
 		{
-			this.manager = new ServiceEndpointManager(null);
-			this.consumer = new GenericConsumer(store);
+			manager = new ServiceEndpointManager(null);
+			consumer = new GenericConsumer(store);
 		}
 
 		public AuthRequest Begin(Uri openid_url)
 		{
-			ServiceEndpoint endpoint = this.manager.GetNextService(openid_url);
+			ServiceEndpoint endpoint = manager.GetNextService(openid_url);
 			if (endpoint == null)
 				throw new FailureException(null, "No openid endpoint found");
 			return BeginWithoutDiscovery(endpoint);
 		}
 
-		public AuthRequest BeginWithoutDiscovery(ServiceEndpoint endpoint)
+		internal AuthRequest BeginWithoutDiscovery(ServiceEndpoint endpoint)
 		{
-			AuthRequest auth_req = this.consumer.Begin(endpoint);
-			return auth_req;
+			return consumer.Begin(endpoint);
 		}
 
 		public ConsumerResponse Complete(NameValueCollection nvc) {
