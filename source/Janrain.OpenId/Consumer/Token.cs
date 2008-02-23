@@ -69,8 +69,7 @@ namespace Janrain.OpenId.Consumer {
 			byte[] tok = Convert.FromBase64String(token);
 
 			if (tok.Length < 20)
-				// XXX: log this
-				return null;
+				throw new FailureException(null, "Failed while reading token.");
 
 			byte[] sig = new byte[20];
 			Buffer.BlockCopy(tok, 0, sig, 0, 20);
@@ -80,7 +79,7 @@ namespace Janrain.OpenId.Consumer {
 
 			for (int i = 0; i < sig.Length; i++)
 				if (sig[i] != newSig[i])
-					return null; // XXX: log this
+					throw new FailureException(null, "Token failed signature verification.");
 
 			List<string> items = new List<string>();
 
@@ -101,7 +100,7 @@ namespace Janrain.OpenId.Consumer {
 			ts += maximumLifetime;
 
 			if (ts < DateTime.UtcNow)
-				return null; //    # XXX: log this
+				throw new FailureException(null, "Token has expired.");
 
 			items.RemoveAt(0);
 
