@@ -50,6 +50,7 @@
     <Compile Include="Consumer\FetchException.cs" />
     <Compile Include="Consumer\FetchResponse.cs" />
     <Compile Include="CustomTraceStream.cs" />
+    <Compile Include="Consumer\Token.cs" />
     <Compile Include="RegistrationExtension\Gender.cs" />
     <Compile Include="Consumer\GenericConsumer.cs" />
     <Compile Include="Session\SimpleSessionState.cs" />

@@ -29,7 +29,7 @@ namespace Janrain.OpenId.Consumer
 		public AuthRequest Begin(ServiceEndpoint service_endpoint)
 		{
 			string nonce = CryptUtil.CreateNonce();
-			string token = GenToken(service_endpoint);
+			string token = new Token(service_endpoint).Serialize(store.AuthKey);
 
 			Association assoc = this.GetAssociation(service_endpoint.ServerUrl);
 
@@ -39,48 +39,37 @@ namespace Janrain.OpenId.Consumer
 			return request;
 		}
 
-		public ConsumerResponse Complete(NameValueCollection query, string token)
+		public ConsumerResponse Complete(NameValueCollection query, string tokenString)
 		{
 			string mode = query[QueryStringArgs.openid.mode];
 			if (mode == null)
 				mode = "<no mode specified>";
 
-			Uri identity_url = null;
-			Uri server_id = null;
-			Uri server_url = null;
-
-			IList pieces = SplitToken(token);
-
-			if (pieces != null)
-			{
-				identity_url = (Uri)pieces[0];
-				server_id = (Uri)pieces[1];
-				server_url = (Uri)pieces[2];
-			}
+			Token token = Token.Deserialize(tokenString, store.AuthKey);
 
 			if (mode == QueryStringArgs.Modes.cancel)
-				throw new CancelException(identity_url);
+				throw new CancelException(token.IdentityUrl);
 
 			if (mode == QueryStringArgs.Modes.error)
 			{
 				string error = query[QueryStringArgs.openid.error];
 
-				throw new FailureException(identity_url, error);
+				throw new FailureException(token.IdentityUrl, error);
 			}
 
 			if (mode == QueryStringArgs.Modes.id_res)
 			{
-				if (identity_url == null)
-					throw new FailureException(identity_url, "No session state found");
+				if (token.IdentityUrl == null)
+					throw new FailureException(token.IdentityUrl, "No session state found");
 
-				ConsumerResponse response = DoIdRes(query, identity_url, server_id, server_url);
+				ConsumerResponse response = DoIdRes(query, token.IdentityUrl, token.ServerId, token.ServerUrl);
 
 				CheckNonce(response, query[QueryStringArgs.nonce]);
 
 				return response;
 			}
 			
-			throw new FailureException(identity_url, "Invalid openid.mode: " + mode);
+			throw new FailureException(token.IdentityUrl, "Invalid openid.mode: " + mode);
 		}
 
 		private bool CheckAuth(NameValueCollection query, Uri server_url)
@@ -253,43 +242,6 @@ namespace Janrain.OpenId.Consumer
 			return check_args;
 		}
 
-		private delegate void DataWriter(string data, bool writeSeparator);
-
-		private string GenToken(ServiceEndpoint endpoint)
-		{
-			string timestamp = DateTime.UtcNow.ToFileTimeUtc().ToString();
-
-			using (MemoryStream ms = new MemoryStream())
-			using (HashAlgorithm sha1 = new HMACSHA1(this.store.AuthKey))
-			using (CryptoStream sha1Stream = new CryptoStream(ms, sha1, CryptoStreamMode.Write))
-			{
-				DataWriter writeData = delegate(string value, bool writeSeparator)
-				{
-					byte[] buffer = Encoding.ASCII.GetBytes(value);
-					sha1Stream.Write(buffer, 0, buffer.Length);
-
-					if (writeSeparator)
-						sha1Stream.WriteByte(0);
-				};
-
-				writeData(timestamp, true);
-				writeData(endpoint.IdentityUrl.AbsoluteUri, true);
-				writeData(endpoint.ServerId.AbsoluteUri, true);
-				writeData(endpoint.ServerUrl.AbsoluteUri, false);
-
-				sha1Stream.Flush();
-				sha1Stream.FlushFinalBlock();
-
-				byte[] hash = sha1.Hash;
-
-				byte[] data = new byte[sha1.HashSize / 8 + ms.Length];
-				Buffer.BlockCopy(hash, 0, data, 0, hash.Length);
-				Buffer.BlockCopy(ms.ToArray(), 0, data, hash.Length, (int)ms.Length);
-
-				return CryptUtil.ToBase64String(data);
-			}
-		}
-
 		private Association GetAssociation(Uri server_url)
 		{
 			if (this.store.IsDumb)
@@ -393,58 +345,6 @@ namespace Janrain.OpenId.Consumer
 
 			// XXX: Log this
 			return false;
-		}
-
-		private IList SplitToken(string token)
-		{
-			byte[] tok = Convert.FromBase64String(token);
-
-			if (tok.Length < 20)
-				// XXX: log this
-				return null;
-
-			byte[] sig = new byte[20];
-			Buffer.BlockCopy(tok, 0, sig, 0, 20);
-
-			HMACSHA1 hmac = new HMACSHA1(this.store.AuthKey);
-			byte[] newSig = hmac.ComputeHash(tok, 20, tok.Length - 20);
-
-			for (int i = 0; i < sig.Length; i++)
-				if (sig[i] != newSig[i])
-					return null; // XXX: log this
-
-			List<string> items = new List<string>();
-
-			int prev = 20;
-			int idx;
-
-			while ((idx = Array.IndexOf<byte>(tok, 0, prev)) > -1)
-			{
-				items.Add(Encoding.ASCII.GetString(tok, prev, idx - prev));
-
-				prev = idx + 1;
-			}
-
-			if (prev < tok.Length)
-				items.Add(Encoding.ASCII.GetString(tok, prev, tok.Length - prev));
-
-			//# Check if timestamp has expired
-			DateTime ts = DateTime.FromFileTimeUtc(Convert.ToInt64(items[0]));
-			ts += new TimeSpan(0, 0, (int)TOKEN_LIFETIME);
-
-			if (ts < DateTime.UtcNow)
-				return null; //    # XXX: log this
-
-			items.RemoveAt(0);
-
-			try
-			{
-				return items.ConvertAll<Uri>(delegate(string url) { return new Uri(url); });
-			}
-			catch (UriFormatException)
-			{
-				return null;
-			}
 		}
 
 		class AssociationRequest

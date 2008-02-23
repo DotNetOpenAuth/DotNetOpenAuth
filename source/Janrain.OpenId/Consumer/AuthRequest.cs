@@ -28,6 +28,7 @@ namespace Janrain.OpenId.Consumer
 
 			this.extraArgs = new NameValueCollection();
 			this.returnToArgs = new NameValueCollection();
+			this.returnToArgs.Add(Janrain.OpenId.Consumer.Token.TokenKey, Token);
 		}
 
         public string Token

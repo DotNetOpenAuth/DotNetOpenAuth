@@ -51,7 +51,6 @@ namespace Janrain.OpenId.Consumer
 
 	public class Consumer
 	{
-		ISessionState session;
 		GenericConsumer consumer;
 
 		private string session_key_prefix;
@@ -62,23 +61,20 @@ namespace Janrain.OpenId.Consumer
 			set { session_key_prefix = value; }
 		}
 
-		string last_token = "last_token";
-
-		protected string TokenKey
-		{
-			get
-			{
-				return session_key_prefix + last_token;
-			}
-		}
-
 		ServiceEndpointManager manager;
 
-		public Consumer(ISessionState session, IAssociationStore store)
+		public Consumer(IAssociationStore store)
 		{
-			this.session = session;
-			this.manager = new ServiceEndpointManager(session);
+			this.manager = new ServiceEndpointManager(null);
 			this.consumer = new GenericConsumer(store, new SimpleFetcher());
+		}
+
+		[Obsolete("Call the constructor that does not take an ISessionState instance instead.")]
+		public Consumer(ISessionState session, IAssociationStore store)
+			: this(store)
+		{
+			// We're ignoring session now as it's no longer necessary,
+			// but we keep this overload for backward compatibility.
 		}
 
 		public AuthRequest Begin(Uri openid_url)
@@ -92,18 +88,17 @@ namespace Janrain.OpenId.Consumer
 		public AuthRequest BeginWithoutDiscovery(ServiceEndpoint endpoint)
 		{
 			AuthRequest auth_req = this.consumer.Begin(endpoint);
-			this.session[this.TokenKey] = auth_req.Token;
 			return auth_req;
 		}
 
 		public ConsumerResponse Complete(NameValueCollection query)
 		{
-			string token = this.session[TokenKey] as string;
+			string token = query[Token.TokenKey];
 			if (token == null)
-				throw new FailureException(null, "No session state found");
+				throw new FailureException(null, "No token found.");
 
 			ConsumerResponse response = this.consumer.Complete(query, token);
-			this.manager.Cleanup(response.IdentityUrl, this.TokenKey);
+			this.manager.Cleanup(response.IdentityUrl, Token.TokenKey);
 
 			return response;
 		}

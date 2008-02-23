@@ -18,18 +18,29 @@ namespace Janrain.OpenId.Consumer
 		{
 			string key = prefix + openid_url.AbsoluteUri;
 
-			this.session.Remove(key);
+			if (session != null)
+			{
+				this.session.Remove(key);
+			}
 		}
 
 		public ServiceEndpoint GetNextService(Uri openid_url, string prefix)
 		{
 			string key = prefix + openid_url.AbsoluteUri;
 
-			List<ServiceEndpoint> endpoints = this.session[key] as List<ServiceEndpoint>;
+			List<ServiceEndpoint> endpoints = null;
+			if (session != null)
+			{
+				endpoints = session[key] as List<ServiceEndpoint>;
+			}
 
 			if (endpoints == null)
 			{
 				endpoints = this.GetServiceEndpoints(openid_url);
+				if (session != null)
+				{
+					session[key] = endpoints = GetServiceEndpoints(openid_url);
+				}
 
 				if (endpoints == null)
 				{
@@ -40,7 +51,7 @@ namespace Janrain.OpenId.Consumer
 			ServiceEndpoint endpoint = endpoints[0];
 
 			endpoints.RemoveAt(0);
-			if (endpoints.Count == 0)
+			if (endpoints.Count == 0 && session != null)
 				this.session.Remove(key);
 
 			return endpoint;
