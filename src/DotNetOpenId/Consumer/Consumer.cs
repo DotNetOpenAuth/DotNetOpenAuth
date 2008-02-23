@@ -8,31 +8,33 @@ namespace DotNetOpenId.Consumer
 	using DotNetOpenId.Session;
 	using System.Web;
 	using System.Collections.Generic;
+	using DotNetOpenId.Provider;
 	using IConsumerAssociationStore = DotNetOpenId.Store.IAssociationStore<System.Uri>;
 	using ConsumerMemoryStore = DotNetOpenId.Store.AssociationMemoryStore<System.Uri>;
 
-	public class FailureException : ApplicationException
+	public class FailureException : ProtocolException
 	{
 		public Uri identity_url;
 
 		public FailureException(Uri identity_url, string message)
-			: base(message)
+			: base(new NameValueCollection(), message)
 		{
 			this.identity_url = identity_url;
 		}
 	}
 
-	public class CancelException : ApplicationException
+	public class CancelException : ProtocolException
 	{
 		public Uri identity_url;
 
 		public CancelException(Uri identity_url)
+			: base(new NameValueCollection(), string.Empty)
 		{
 			this.identity_url = identity_url;
 		}
 	}
 
-	public class SetupNeededException : ApplicationException
+	public class SetupNeededException : ProtocolException
 	{
 		private Uri consumer_id;
 		public Uri ConsumerId
@@ -47,6 +49,7 @@ namespace DotNetOpenId.Consumer
 		}
 
 		public SetupNeededException(Uri consumer_id, Uri user_setup_url)
+			: base(new NameValueCollection(), string.Empty)
 		{
 			this.consumer_id = consumer_id;
 			this.user_setup_url = user_setup_url;
