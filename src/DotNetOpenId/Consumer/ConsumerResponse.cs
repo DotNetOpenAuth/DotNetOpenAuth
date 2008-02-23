@@ -1,49 +1,48 @@
-namespace DotNetOpenId.Consumer
-{
+namespace DotNetOpenId.Consumer {
 	using System;
 	using System.Collections;
 	using System.Collections.Specialized;
 	using System.Collections.Generic;
 
-	public class ConsumerResponse
-	{
-		Uri identity_url;
-		public Uri IdentityUrl
-		{
-			get { return identity_url; }
-		}
-
-		IDictionary<string, string> signed_args;
-
-		public Uri ReturnTo {
-			get { return new Uri(this.signed_args[QueryStringArgs.openid.return_to]); }
-		}
-
-		public ConsumerResponse(Uri identity_url, IDictionary<string, string> query, string signed)
-		{
-			this.identity_url = identity_url;
-			this.signed_args = new Dictionary<string, string>();
-			foreach (string field_name in signed.Split(','))
-			{
-				string field_name2 = QueryStringArgs.openid.Prefix + field_name;
-				string val = query[field_name2];
-				if (val == null)
-					val = String.Empty;
-				this.signed_args[field_name2] = val;
+	public class ConsumerResponse {
+		internal ConsumerResponse(Uri identityUrl, IDictionary<string, string> query, string signed) {
+			IdentityUrl = identityUrl;
+			signedArguments = new Dictionary<string, string>();
+			foreach (string fieldNoPrefix in signed.Split(',')) {
+				string fieldWithPrefix = QueryStringArgs.openid.Prefix + fieldNoPrefix;
+				string val;
+				if (!query.TryGetValue(fieldWithPrefix, out val)) val = string.Empty;
+				signedArguments[fieldWithPrefix] = val;
 			}
 		}
-		public Dictionary<string, string> ExtensionResponse(string prefix)
-		{
+
+		public Uri IdentityUrl { get; private set; }
+		IDictionary<string, string> signedArguments;
+
+		internal Uri ReturnTo {
+			get { return new Uri(signedArguments[QueryStringArgs.openid.return_to]); }
+		}
+
+		/// <summary>
+		/// Gets the key/value pairs of a provider's response for a given OpenID extension.
+		/// </summary>
+		/// <param name="extensionPrefix">
+		/// The prefix used by the extension, not including the 'openid.' start.
+		/// For example, simple registration key/values can be retrieved by passing 
+		/// 'sreg' as this argument.
+		/// </param>
+		/// <returns>
+		/// Returns key/value pairs where the keys do not include the 
+		/// 'openid.' or the <paramref name="extensionPrefix"/>.
+		/// </returns>
+		public IDictionary<string, string> GetExtensionResponse(string extensionPrefix) {
 			var response = new Dictionary<string, string>();
-			prefix = QueryStringArgs.openid.Prefix + prefix + ".";
-			int prefix_len = prefix.Length;
-			foreach (var pair in this.signed_args)
-			{
-				string k = pair.Key;
-				if (k.StartsWith(prefix))
-				{
-					string response_key = k.Substring(prefix_len);
-					response[response_key] = pair.Value;
+			extensionPrefix = QueryStringArgs.openid.Prefix + extensionPrefix + ".";
+			int prefix_len = extensionPrefix.Length;
+			foreach (var pair in this.signedArguments) {
+				if (pair.Key.StartsWith(extensionPrefix)) {
+					string bareKey = pair.Key.Substring(prefix_len);
+					response[bareKey] = pair.Value;
 				}
 			}
 

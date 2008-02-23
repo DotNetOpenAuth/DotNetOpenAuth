@@ -3,34 +3,33 @@ namespace DotNetOpenId.Consumer {
 	using DotNetOpenId.Session;
 	using Janrain.Yadis;
 	using System.Collections.Generic;
+	using System.Diagnostics;
 
 	internal class ServiceEndpointManager {
-		protected ISessionState session;
+		protected ISessionState Session;
 
 		public ServiceEndpointManager(ISessionState session) {
-			this.session = session;
+			this.Session = session;
 		}
 
-		public void Cleanup(Uri openid_url, string prefix) {
-			string key = prefix + openid_url.AbsoluteUri;
-
-			if (session != null) {
-				session.Remove(key);
+		public void Cleanup(Uri identityUrl) {
+			if (Session != null) {
+				Session.Remove(identityUrl.AbsoluteUri);
 			}
 		}
 
-		public ServiceEndpoint GetNextService(Uri openid_url, string prefix) {
-			string key = prefix + openid_url.AbsoluteUri;
+		public ServiceEndpoint GetNextService(Uri identityUrl) {
+			string key = identityUrl.AbsoluteUri;
 
 			List<ServiceEndpoint> endpoints = null;
-			if (session != null) {
-				endpoints = session[key] as List<ServiceEndpoint>;
+			if (Session != null) {
+				endpoints = Session[key] as List<ServiceEndpoint>;
 			}
 
 			if (endpoints == null) {
-				endpoints = GetServiceEndpoints(openid_url);
-				if (session != null) {
-					session[key] = endpoints = GetServiceEndpoints(openid_url);
+				endpoints = getServiceEndpoints(identityUrl);
+				if (Session != null) {
+					Session[key] = endpoints;
 				}
 
 				if (endpoints == null) {
@@ -41,13 +40,17 @@ namespace DotNetOpenId.Consumer {
 			ServiceEndpoint endpoint = endpoints[0];
 
 			endpoints.RemoveAt(0);
-			if (endpoints.Count == 0 && session != null)
-				session.Remove(key);
+			if (endpoints.Count == 0 && Session != null)
+				Session.Remove(key);
+
+			if (endpoints.Count > 0 && Session == null && TraceUtil.Switch.TraceWarning) {
+				Trace.TraceWarning("Multiple endpoints found, but cannot track them without a session.");
+			}
 
 			return endpoint;
 		}
 
-		protected static List<ServiceEndpoint> GetServiceEndpoints(Uri openid_url) {
+		static List<ServiceEndpoint> getServiceEndpoints(Uri openid_url) {
 			DiscoveryResult result = Yadis.Discover(openid_url);
 			if (result == null)
 				return null;

@@ -60,8 +60,6 @@ namespace DotNetOpenId.Consumer
 	{
 		GenericConsumer consumer;
 
-		public string SessionKeyPrefix { get; set; }
-
 		ServiceEndpointManager manager;
 
 		/// <summary>
@@ -81,7 +79,7 @@ namespace DotNetOpenId.Consumer
 
 		public AuthRequest Begin(Uri openid_url)
 		{
-			ServiceEndpoint endpoint = this.manager.GetNextService(openid_url, this.SessionKeyPrefix);
+			ServiceEndpoint endpoint = this.manager.GetNextService(openid_url);
 			if (endpoint == null)
 				throw new FailureException(null, "No openid endpoint found");
 			return BeginWithoutDiscovery(endpoint);
@@ -99,12 +97,8 @@ namespace DotNetOpenId.Consumer
 
 		public ConsumerResponse Complete(IDictionary<string, string> query)
 		{
-			string token = query[Token.TokenKey];
-			if (token == null)
-				throw new FailureException(null, "No token found.");
-
-			ConsumerResponse response = this.consumer.Complete(query, token);
-			this.manager.Cleanup(response.IdentityUrl, Token.TokenKey);
+			ConsumerResponse response = consumer.Complete(query);
+			manager.Cleanup(response.IdentityUrl);
 
 			return response;
 		}

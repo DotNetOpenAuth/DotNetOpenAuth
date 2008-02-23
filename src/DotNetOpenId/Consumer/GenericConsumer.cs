@@ -41,12 +41,15 @@ namespace DotNetOpenId.Consumer
 			return request;
 		}
 
-		public ConsumerResponse Complete(IDictionary<string, string> query, string tokenString)
+		public ConsumerResponse Complete(IDictionary<string, string> query)
 		{
 			string mode;
 			if (!query.TryGetValue(QueryStringArgs.openid.mode, out mode))
 				mode = "<no mode specified>";
 
+			string tokenString;
+			if (!query.TryGetValue(Token.TokenKey, out tokenString))
+				throw new FailureException(null, "No token found.");
 			Token token = Token.Deserialize(tokenString, store.AuthKey);
 
 			if (mode == QueryStringArgs.Modes.cancel)
@@ -66,7 +69,7 @@ namespace DotNetOpenId.Consumer
 
 				ConsumerResponse response = DoIdRes(query, token);
 
-				CheckNonce(response, query[QueryStringArgs.nonce]);
+				checkNonce(response, query[QueryStringArgs.nonce]);
 
 				return response;
 			}
@@ -89,7 +92,7 @@ namespace DotNetOpenId.Consumer
 			return ProcessCheckAuthResponse(response, server_url);
 		}
 
-		private void CheckNonce(ConsumerResponse response, string nonce)
+		void checkNonce(ConsumerResponse response, string nonce)
 		{
 			var nvc = HttpUtility.ParseQueryString(response.ReturnTo.Query);
 

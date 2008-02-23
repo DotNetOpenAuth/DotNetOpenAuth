@@ -4,25 +4,27 @@ using System.Collections.Generic;
 using System.Text;
 using System.Web;
 
-namespace DotNetOpenId.Session
-{
-    public class SimpleSessionState : ISessionState
-    {
-        private static SimpleSessionState local_instance = new SimpleSessionState();
+namespace DotNetOpenId.Session {
+	public class SimpleSessionState : ISessionState {
+		static SimpleSessionState local_instance = new SimpleSessionState();
 
-        private Hashtable hashtable = new Hashtable();
+		Dictionary<string, object> stateBag = new Dictionary<string,object>();
 
-        public SimpleSessionState()
-        {
-        }
+		private SimpleSessionState() { }
 
-        public static SimpleSessionState GetInstance()
-        {
-            return local_instance;
-        }
+		public static SimpleSessionState GetInstance() {
+			return local_instance;
+		}
 
-        public object this[string index] { get { return hashtable[index]; } set { hashtable[index] = value; } }
-        public void Add(string name, object value) { hashtable.Add(name, value); }
-        public void Remove(string name) { hashtable.Remove(name); }
-    }
+		public object this[string key] {
+			get { return stateBag.ContainsKey(key) ? stateBag[key] : null; }
+			set { stateBag[key] = value; }
+		}
+		public void Add(string key, object value) {
+			stateBag.Add(key, value);
+		}
+		public void Remove(string key) {
+			stateBag.Remove(key);
+		}
+	}
 }
