@@ -8,8 +8,7 @@ using DotNetOpenId.RegistrationExtension;
 /// Only mandatory or optional fields are displayed. Mandatory fields have a '*' next to them.
 /// No validation occurs here.
 /// </summary>
-public partial class ProfileFields : System.Web.UI.UserControl
-{
+public partial class ProfileFields : System.Web.UI.UserControl {
 	protected void Page_Load(object sender, EventArgs e) {
 	}
 
@@ -34,74 +33,92 @@ public partial class ProfileFields : System.Web.UI.UserControl
 		postcodeRow.Visible = !(requestFields.PostalCode == ProfileRequest.NoRequest);
 		timezoneRow.Visible = !(requestFields.TimeZone == ProfileRequest.NoRequest);
 	}
-    
-    public bool DoesAnyFieldHaveAValue
-    {
-        get
-        {
-            return  !((DateOfBirth == null)
-            && String.IsNullOrEmpty(countryDropdownList.SelectedValue)
-            && String.IsNullOrEmpty(emailTextBox.Text)
-            && String.IsNullOrEmpty(fullnameTextBox.Text)
-            && (Gender == null)
-            && String.IsNullOrEmpty(languageDropdownList.SelectedValue)
-            && String.IsNullOrEmpty(nicknameTextBox.Text)
-            && String.IsNullOrEmpty(postcodeTextBox.Text)
-            && String.IsNullOrEmpty(timezoneDropdownList.SelectedValue));
-        }
-    }
-    
-    public DateTime ?DateOfBirth
-    {
-        get
-        {
-            try
-            {
-                int day = Convert.ToInt32(dobDayDropdownlist.SelectedValue);
-                int month = Convert.ToInt32(dobMonthDropdownlist.SelectedValue);
-                int year = Convert.ToInt32(dobYearDropdownlist.SelectedValue);
-                DateTime newDate = new DateTime(year, month, day);
-                return newDate;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-    }
-    
-    public Gender ?Gender
-    {
-        get
-        {
-            if (this.genderDropdownList.SelectedValue == "Male")
-            {
-                return DotNetOpenId.RegistrationExtension.Gender.Male;
-            }
-            if (this.genderDropdownList.SelectedValue == "Female")
-            {
-                return DotNetOpenId.RegistrationExtension.Gender.Female;
-            }
-            return null;
-        }
-    }
 
-    public ProfileFieldValues OpenIdProfileFields
-    {
-        get
-        {
-            ProfileFieldValues fields = new ProfileFieldValues();
-            fields.Birthdate = DateOfBirth;
-            fields.Country = countryDropdownList.SelectedValue;
-            fields.Email = emailTextBox.Text;
-            fields.Fullname = fullnameTextBox.Text;
-            fields.Gender = Gender;
-            fields.Language = languageDropdownList.SelectedValue;
-            fields.Nickname = nicknameTextBox.Text;
-            fields.PostalCode = postcodeTextBox.Text;
-            fields.TimeZone = timezoneDropdownList.SelectedValue;
-            return fields;
-        }
-    }
-    
+	public bool DoesAnyFieldHaveAValue {
+		get {
+			return !((DateOfBirth == null)
+			&& String.IsNullOrEmpty(countryDropdownList.SelectedValue)
+			&& String.IsNullOrEmpty(emailTextBox.Text)
+			&& String.IsNullOrEmpty(fullnameTextBox.Text)
+			&& (Gender == null)
+			&& String.IsNullOrEmpty(languageDropdownList.SelectedValue)
+			&& String.IsNullOrEmpty(nicknameTextBox.Text)
+			&& String.IsNullOrEmpty(postcodeTextBox.Text)
+			&& String.IsNullOrEmpty(timezoneDropdownList.SelectedValue));
+		}
+	}
+
+	public DateTime? DateOfBirth {
+		get {
+			try {
+				int day = Convert.ToInt32(dobDayDropdownlist.SelectedValue);
+				int month = Convert.ToInt32(dobMonthDropdownlist.SelectedValue);
+				int year = Convert.ToInt32(dobYearDropdownlist.SelectedValue);
+				DateTime newDate = new DateTime(year, month, day);
+				return newDate;
+			} catch (Exception) {
+				return null;
+			}
+		}
+		set {
+			if (value.HasValue) {
+				dobDayDropdownlist.SelectedValue = value.Value.Day.ToString();
+				dobMonthDropdownlist.SelectedValue = value.Value.Month.ToString();
+				dobYearDropdownlist.SelectedValue = value.Value.Year.ToString();
+			} else {
+				dobDayDropdownlist.SelectedValue = string.Empty;
+				dobMonthDropdownlist.SelectedValue = string.Empty;
+				dobYearDropdownlist.SelectedValue = string.Empty;
+			}
+		}
+	}
+
+	public Gender? Gender {
+		get {
+			if (this.genderDropdownList.SelectedValue == "Male") {
+				return DotNetOpenId.RegistrationExtension.Gender.Male;
+			}
+			if (this.genderDropdownList.SelectedValue == "Female") {
+				return DotNetOpenId.RegistrationExtension.Gender.Female;
+			}
+			return null;
+		}
+		set {
+			if (value.HasValue) {
+				genderDropdownList.SelectedValue = value.Value.ToString();
+			} else {
+				genderDropdownList.SelectedIndex = -1;
+			}
+		}
+	}
+
+	public ProfileFieldValues OpenIdProfileFields {
+		get {
+			ProfileFieldValues fields = new ProfileFieldValues();
+			fields.Birthdate = DateOfBirth;
+			fields.Country = countryDropdownList.SelectedValue;
+			fields.Email = emailTextBox.Text;
+			fields.Fullname = fullnameTextBox.Text;
+			fields.Gender = Gender;
+			fields.Language = languageDropdownList.SelectedValue;
+			fields.Nickname = nicknameTextBox.Text;
+			fields.PostalCode = postcodeTextBox.Text;
+			fields.TimeZone = timezoneDropdownList.SelectedValue;
+			return fields;
+		}
+		set {
+			if (value == null)
+				throw new ArgumentNullException("OpenIdProfileFields");
+			DateOfBirth = value.Birthdate;
+			countryDropdownList.SelectedValue = value.Country;
+			emailTextBox.Text = value.Email;
+			fullnameTextBox.Text = value.Fullname;
+			Gender = value.Gender;
+			languageDropdownList.SelectedValue = value.Language;
+			nicknameTextBox.Text = value.Nickname;
+			postcodeTextBox.Text = value.PostalCode;
+			timezoneDropdownList.SelectedValue = value.TimeZone;
+		}
+	}
+
 }
