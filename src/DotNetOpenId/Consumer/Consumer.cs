@@ -29,7 +29,7 @@ namespace DotNetOpenId.Consumer {
 		public Consumer(IConsumerAssociationStore store)
 		{
 			this.manager = new ServiceEndpointManager(null);
-			this.consumer = new GenericConsumer(store, new SimpleFetcher());
+			this.consumer = new GenericConsumer(store);
 		}
 
 		public AuthRequest Begin(Uri openid_url)

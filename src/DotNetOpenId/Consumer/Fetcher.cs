@@ -4,14 +4,29 @@ namespace DotNetOpenId.Consumer
 	using System.Net;
 	using System.IO;
 
-	[Serializable]
-	internal abstract class Fetcher
+	/// <summary>
+	/// A paranoid HTTP get/post request engine.  It helps to protect against attacks from remote
+	/// server leaving dangling connections, sending too much data, etc.
+	/// </summary>
+	internal static class Fetcher
 	{
 		/// <summary>
 		/// The default maximum bytes to read in any given HTTP request.
 		/// Default is 1MB.
 		/// </summary>
 		public static int MaximumBytesToRead = (1024 * 1024);
+		/// <summary>
+		/// The total number of redirections to allow on any one request.
+		/// </summary>
+		public static int MaximumRedirections = 10;
+		/// <summary>
+		/// Gets the time allowed to wait for single read or write operation to complete.
+		/// </summary>
+		public static TimeSpan ReadWriteTimeout = TimeSpan.FromMilliseconds(500);
+		/// <summary>
+		/// Gets the time allowed for an entire request.
+		/// </summary>
+		public static TimeSpan Timeout = TimeSpan.FromSeconds(5);
 
 		/// <summary>
 		/// Reads a maximum number of bytes from a response stream.
@@ -20,10 +35,10 @@ namespace DotNetOpenId.Consumer
 		/// The number of bytes actually read.  
 		/// WARNING: This can be fewer than the size of the returned buffer.
 		/// </returns>
-		protected static int ReadData(HttpWebResponse resp, int maximumBytesToRead, out byte[] buffer)
+		static void readData(HttpWebResponse resp, out byte[] buffer, out int length)
 		{
 			int bufferSize = resp.ContentLength >= 0 && resp.ContentLength < int.MaxValue ?
-				Math.Min(maximumBytesToRead, (int)resp.ContentLength) : maximumBytesToRead;
+				Math.Min(MaximumBytesToRead, (int)resp.ContentLength) : MaximumBytesToRead;
 			buffer = new byte[bufferSize];
 			using (Stream stream = resp.GetResponseStream())
 			{
@@ -31,30 +46,57 @@ namespace DotNetOpenId.Consumer
 				int chunkSize;
 				while (dataLength < bufferSize && (chunkSize = stream.Read(buffer, dataLength, bufferSize - dataLength)) > 0)
 					dataLength += chunkSize;
-				return dataLength;
+				length = dataLength;
 			}
 		}
 		
-		protected static FetchResponse GetResponse(HttpWebResponse resp, int maximumBytesToRead)
+		static FetchResponse getResponse(HttpWebResponse resp)
 		{
 			byte[] data;
-			int length = ReadData(resp, maximumBytesToRead, out data);
-			return new FetchResponse(resp.StatusCode, resp.ResponseUri,
-					resp.CharacterSet, data, length);
+			int length;
+			readData(resp, out data, out length);
+			return new FetchResponse(resp.StatusCode, resp.ResponseUri, resp.CharacterSet, data, length);
 		}
 
-		public abstract FetchResponse Get(Uri uri, int maximumBytesToRead);
-		
-		public virtual FetchResponse Get(Uri uri)
+		public static FetchResponse Request(Uri uri) {
+			return Request(uri, null);
+		}
+
+		public static FetchResponse Request(Uri uri, byte[] body)
 		{
-			return Get(uri, MaximumBytesToRead);
+			if (uri == null) throw new ArgumentNullException("uri");
+
+			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
+			request.ReadWriteTimeout = (int)ReadWriteTimeout.TotalMilliseconds;
+			request.Timeout = (int)Timeout.TotalMilliseconds;
+			request.KeepAlive = false;
+			request.MaximumAutomaticRedirections = MaximumRedirections;
+			if (body != null) {
+				request.ContentType = "application/x-www-form-urlencoded";
+				request.ContentLength = body.Length;
+				request.Method = "POST";
+			}
+
+			try {
+				if (body != null) {
+					using (Stream outStream = request.GetRequestStream()) {
+						outStream.Write(body, 0, body.Length);
+					}
+				}
+
+				using(HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+					return getResponse(response);
+				}
+			} catch (WebException e) {
+				using (HttpWebResponse response = (HttpWebResponse)e.Response) {
+					if (response != null) {
+						return getResponse(response);
+					} else {
+						throw;
+					}
+				}
+			}
 		}
 
-		public abstract FetchResponse Post(Uri uri, byte[] body, int maximumBytesToRead);
-
-		public virtual FetchResponse Post(Uri uri, byte[] body)
-		{
-			return Post(uri, body, MaximumBytesToRead);
-		}
 	}
 }

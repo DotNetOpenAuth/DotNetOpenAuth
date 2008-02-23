@@ -20,12 +20,10 @@ namespace DotNetOpenId.Consumer
 		static readonly TimeSpan minimumUsefulAssociationLifetime = TimeSpan.FromSeconds(120);
 
 		IConsumerAssociationStore store;
-		Fetcher fetcher;
 
-		public GenericConsumer(IConsumerAssociationStore store, Fetcher fetcher)
+		public GenericConsumer(IConsumerAssociationStore store)
 		{
 			this.store = store;
-			this.fetcher = fetcher;
 		}
 
 		public AuthRequest Begin(ServiceEndpoint service_endpoint)
@@ -110,15 +108,17 @@ namespace DotNetOpenId.Consumer
 			byte[] body = ASCIIEncoding.ASCII.GetBytes(UriUtil.CreateQueryString(args));
 
 			try {
-				FetchResponse resp = fetcher.Post(server_url, body);
-
-				return DictionarySerializer.Deserialize(resp.Data, resp.Length);
-			} catch (FetchException e) {
-				if (e.response.Code == HttpStatusCode.BadRequest) {
-					Trace.TraceError("Bad request code returned from post attempt.");
+				FetchResponse resp = Fetcher.Request(server_url, body);
+				if ((int)resp.Code > 200 && (int)resp.Code < 300) {
+					return DictionarySerializer.Deserialize(resp.Data, resp.Length);
 				} else {
-					Trace.TraceError("Some FetchException caught during post attempt: {0}", e);
+					if (TraceUtil.Switch.TraceError) {
+						Trace.TraceError("Bad request code returned from remote server: {0}.", resp.Code);
+					}
+					return null;
 				}
+			} catch (WebException e) {
+				Trace.TraceError("Failure while connecting to remote server: {0}.", e.Message);
 				return null;
 			}
 		}
