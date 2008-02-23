@@ -65,7 +65,7 @@
     <Compile Include="Session\SimpleSessionState.cs" />
     <Compile Include="Session\SystemHttpSessionState.cs" />
     <Compile Include="Session\ISessionState.cs" />
-    <Compile Include="Consumer\Manager.cs" />
+    <Compile Include="Consumer\ServiceEndpointManager.cs" />
     <Compile Include="Consumer\OpenIdLogin.cs" />
     <Compile Include="Consumer\OpenIdTextBox.cs" />
     <Compile Include="RegistrationExtension\ProfileRequest.cs" />

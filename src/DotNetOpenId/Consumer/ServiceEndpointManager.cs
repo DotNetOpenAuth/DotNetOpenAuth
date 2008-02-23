@@ -47,7 +47,7 @@ namespace DotNetOpenId.Consumer {
 			return endpoint;
 		}
 
-		protected List<ServiceEndpoint> GetServiceEndpoints(Uri openid_url) {
+		protected static List<ServiceEndpoint> GetServiceEndpoints(Uri openid_url) {
 			DiscoveryResult result = Yadis.Discover(openid_url);
 			if (result == null)
 				return null;
