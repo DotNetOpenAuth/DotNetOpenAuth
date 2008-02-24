@@ -52,7 +52,7 @@ namespace DotNetOpenId.Provider {
 				Debug.Assert(TrustRoot != null, "The constructor should have guaranteed this.");
 
 				try {
-					return new TrustRoot(TrustRoot).ValidateUrl(ReturnTo);
+					return new TrustRoot(TrustRoot).IsUrlWithinTrustRoot(ReturnTo);
 				} catch (UriFormatException) {
 					return false;
 				}
