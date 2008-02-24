@@ -60,7 +60,6 @@
     <Compile Include="RegistrationExtension\Gender.cs" />
     <Compile Include="Consumer\GenericConsumer.cs" />
     <Compile Include="Provider\AssociatedRequest.cs" />
-    <Compile Include="Provider\UntrustedReturnUrlException.cs" />
     <Compile Include="RegistrationExtension\ProfileFieldValues.cs" />
     <Compile Include="RegistrationExtension\ProfileRequestFields.cs" />
     <Compile Include="Session\SimpleSessionState.cs" />

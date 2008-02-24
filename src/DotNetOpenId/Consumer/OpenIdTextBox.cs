@@ -443,7 +443,8 @@ namespace DotNetOpenId.Consumer
 				// as required by the provider.  We could wait for the provider to test this and
 				// fail, but this will be faster and give us a better error message.
 				if (!(new DotNetOpenId.Provider.TrustRoot(trustRoot.ToString()).ValidateUrl(return_to.Uri)))
-					throw new DotNetOpenId.Provider.UntrustedReturnUrlException(return_to.Uri, trustRoot.ToString(), new NameValueCollection());
+					throw new ProtocolException(string.Format(CultureInfo.CurrentUICulture, 
+						Strings.ReturnToNotUnderTrustRoot, return_to, trustRoot));
 
 				// Note: we must use trustRoot.ToString() because trustRoot.Uri throws when wildcards are present.
 				Uri redirectUrl = request.CreateRedirect(trustRoot.ToString(), return_to.Uri, AuthRequest.Mode.Setup);

@@ -86,7 +86,8 @@ namespace DotNetOpenId.Provider {
 			Immediate = immediate;
 
 			if (!this.IsTrustRootValid)
-				throw new UntrustedReturnUrlException(ReturnTo, TrustRoot, null);
+				throw new ProtocolException(string.Format(CultureInfo.CurrentUICulture, 
+					Strings.ReturnToNotUnderTrustRoot, ReturnTo.AbsoluteUri, TrustRoot));
 		}
 
 		internal CheckIdRequest(Provider server, NameValueCollection query) : base(server) {
@@ -120,7 +121,8 @@ namespace DotNetOpenId.Provider {
 			AssociationHandle = query[QueryStringArgs.openid.assoc_handle];
 
 			if (!IsTrustRootValid)
-				throw new UntrustedReturnUrlException(ReturnTo, TrustRoot, query);
+				throw new ProtocolException(string.Format(CultureInfo.CurrentUICulture, 
+					Strings.ReturnToNotUnderTrustRoot, ReturnTo.AbsoluteUri, TrustRoot), query);
 
 			// Handle the optional Simple Registration extension fields
 			string policyUrl = query[QueryStringArgs.openid.sreg.policy_url];
