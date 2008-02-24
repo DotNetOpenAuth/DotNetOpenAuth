@@ -34,6 +34,7 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>..\..\bin\Release\DotNetOpenId.xml</DocumentationFile>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -52,6 +53,7 @@
     <Compile Include="Consumer\FetchResponse.cs" />
     <Compile Include="Consumer\SetupNeededException.cs" />
     <Compile Include="Consumer\Token.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="HmacSha1Association.cs" />
     <Compile Include="OpenIdException.cs" />
     <Compile Include="Provider\Provider.cs" />

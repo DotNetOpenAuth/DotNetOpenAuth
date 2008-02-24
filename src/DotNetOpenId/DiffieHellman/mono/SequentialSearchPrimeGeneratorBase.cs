@@ -12,7 +12,7 @@ using Mono.Math.Prime;
 
 namespace Mono.Math.Prime.Generator {
 
-	[CLSCompliant(false)]
+	//[CLSCompliant(false)]
 	internal class SequentialSearchPrimeGeneratorBase : PrimeGeneratorBase {
 
 		protected virtual BigInteger GenerateSearchBase (int bits, object Context)
