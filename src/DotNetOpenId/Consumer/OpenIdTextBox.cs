@@ -103,7 +103,7 @@ namespace DotNetOpenId.Consumer
 				if (Page != null && !DesignMode)
 				{
 					// Validate new value by trying to construct a TrustRoot object based on it.
-					new DotNetOpenId.Provider.TrustRoot(getResolvedTrustRoot(value).ToString()); // throws an exception on failure.
+					new TrustRoot(getResolvedTrustRoot(value).ToString()); // throws an exception on failure.
 				}
 				else
 				{
@@ -414,41 +414,19 @@ namespace DotNetOpenId.Consumer
 			try {
 				var consumer = new Consumer();
 
-				Uri userUri = UriUtil.NormalizeUri(Text);
-				// Initiate openid request
-				AuthRequest request = consumer.Begin(userUri);
-				if (EnableRequestProfile) addProfileArgs(request);
-
-				// Build the return_to URL
-				UriBuilder return_to = new UriBuilder(Page.Request.Url);
-				// Trim off any old "openid." prefixed parameters to avoid carrying
-				// state from a prior login attempt.
-				return_to.Query = string.Empty;
-				var return_to_params = new Dictionary<string, string>(Page.Request.QueryString.Count);
-				foreach (string key in Page.Request.QueryString) {
-					if (!key.StartsWith(QueryStringArgs.openid.Prefix, StringComparison.OrdinalIgnoreCase) && key != QueryStringArgs.nonce) {
-						return_to_params.Add(key, Page.Request.QueryString[key]);
-					}
-				}
-				UriUtil.AppendQueryArgs(return_to, return_to_params);
-
 				// Resolve the trust root, and swap out the scheme and port if necessary to match the
 				// return_to URL, since this match is required by OpenId, and the consumer app
 				// may be using HTTP at some times and HTTPS at others.
 				UriBuilder trustRoot = getResolvedTrustRoot(TrustRootUrl);
-				trustRoot.Scheme = return_to.Scheme;
-				trustRoot.Port = return_to.Port;
-				// Throw an exception now if the trustroot and the return_to URLs don't match
-				// as required by the provider.  We could wait for the provider to test this and
-				// fail, but this will be faster and give us a better error message.
-				if (!(new DotNetOpenId.Provider.TrustRoot(trustRoot.ToString()).ValidateUrl(return_to.Uri)))
-					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture, 
-						Strings.ReturnToNotUnderTrustRoot, return_to, trustRoot));
+				trustRoot.Scheme = Page.Request.Url.Scheme;
+				trustRoot.Port = Page.Request.Url.Port;
 
+				// Initiate openid request
 				// Note: we must use trustRoot.ToString() because trustRoot.Uri throws when wildcards are present.
-				Uri redirectUrl = request.CreateRedirect(trustRoot.ToString(), return_to.Uri, AuthRequest.Mode.Setup);
-
-				Page.Response.Redirect(redirectUrl.AbsoluteUri);
+				AuthenticationRequest request = consumer.Begin(
+					UriUtil.NormalizeUri(Text), new TrustRoot(trustRoot.ToString()));
+				if (EnableRequestProfile) addProfileArgs(request);
+				request.RedirectToProvider();
 			} catch (WebException ex) {
 				OnError(ex);
 			} catch (OpenIdException ex) {
@@ -456,7 +434,7 @@ namespace DotNetOpenId.Consumer
 			}
 		}
 
-		void addProfileArgs(AuthRequest request)
+		void addProfileArgs(AuthenticationRequest request)
 		{
 			Dictionary<string, string> profileArguments = new Dictionary<string, string>();
 			profileArguments.Add(QueryStringArgs.openidnp.sregnp.required, string.Join(",", assembleProfileFields(ProfileRequest.Require)));
@@ -547,7 +525,7 @@ namespace DotNetOpenId.Consumer
 
 			// Is it valid?
 			// Note: we MUST use ToString.  Uri property throws if wildcard is present.
-			new DotNetOpenId.Provider.TrustRoot(fullyQualifiedTrustRoot.ToString()); // throws if not valid
+			new TrustRoot(fullyQualifiedTrustRoot.ToString()); // throws if not valid
 
 			return fullyQualifiedTrustRoot;
 		}

@@ -3,14 +3,14 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Globalization;
 
-namespace DotNetOpenId.Provider
+namespace DotNetOpenId
 {
     /// <summary>
     /// A trust root to validate requests and match return URLs against.
     /// </summary>
     /// <!-- http://openid.net/specs/openid-authentication-1_1.html#anchor16 -->
     /// <!-- http://openid.net/specs/openid-authentication-1_1.html#anchor21 -->
-    internal class TrustRoot
+    public class TrustRoot
     {
         #region Private Members
 
@@ -32,15 +32,17 @@ namespace DotNetOpenId.Provider
         string _host;
         int _port;
         string _path;
+        string _original;
 
         #endregion
 
         #region Constructor(s)
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase")]
-        public TrustRoot(string unparsed)
+        public TrustRoot(string trustRootUrl)
         {
-            Match mo = _tr_regex.Match(unparsed);
+            _original = trustRootUrl;
+            Match mo = _tr_regex.Match(trustRootUrl);
 
             if (mo.Success)
             {
@@ -63,7 +65,7 @@ namespace DotNetOpenId.Provider
             else
             {
                 throw new UriFormatException(string.Format(CultureInfo.CurrentUICulture,
-                    "'{0}' is not a valid OpenID trustroot.", unparsed));
+                    "'{0}' is not a valid OpenID trustroot.", trustRootUrl));
             }
         }
 
@@ -80,7 +82,7 @@ namespace DotNetOpenId.Provider
         /// but it can only work via heuristics. Negative responses from this method should be 
         /// treated as advisory, used only to alert the user to examine the trust root carefully.
         /// </remarks>
-        public bool IsSane
+        internal bool IsSane
         {
             get
             {
@@ -112,6 +114,8 @@ namespace DotNetOpenId.Provider
             }
         }
 
+        public string Url { get { return _original; } }
+
         #endregion
 
         #region Methods
@@ -121,7 +125,7 @@ namespace DotNetOpenId.Provider
         /// </summary>
         /// <param name="url">A string specifying URL to check.</param>
         /// <returns>Whether the given URL is within this trust root.</returns>
-        public bool ValidateUrl(string url)
+        internal bool ValidateUrl(string url)
         {
             Uri uri = new Uri(url);
 
@@ -133,7 +137,7 @@ namespace DotNetOpenId.Provider
         /// </summary>
         /// <param name="url">The URL to check.</param>
         /// <returns>Whether the given URL is within this trust root.</returns>
-        public bool ValidateUrl(Uri url)
+        internal bool ValidateUrl(Uri url)
         {
             if (url.Scheme != _scheme)
                 return false;
@@ -208,6 +212,9 @@ namespace DotNetOpenId.Provider
                 || url.PathAndQuery[path_len] == '/';
         }
 
+        public override string ToString() {
+            return _original;
+        }
         #endregion
     }
 }

@@ -27,14 +27,16 @@ namespace DotNetOpenId.Consumer
 			this.store = store;
 		}
 
-		public AuthRequest Begin(ServiceEndpoint service_endpoint)
+		public AuthenticationRequest Begin(ServiceEndpoint service_endpoint,
+			TrustRoot trustRootUrl, Uri returnToUrl)
 		{
 			string nonce = CryptUtil.CreateNonce();
 			string token = new Token(service_endpoint).Serialize(store.AuthKey);
 
 			Association assoc = this.getAssociation(service_endpoint.ServerUrl);
 
-			AuthRequest request = new AuthRequest(token, assoc, service_endpoint);
+			AuthenticationRequest request = new AuthenticationRequest(token, assoc, service_endpoint,
+				trustRootUrl, returnToUrl);
 			request.AddCallbackArguments(QueryStringArgs.nonce, nonce);
 
 			return request;

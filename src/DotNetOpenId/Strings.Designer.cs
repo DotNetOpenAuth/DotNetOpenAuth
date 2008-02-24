@@ -61,6 +61,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to HttpContext.Current is null.  There must be an ASP.NET request in process for this operation to succeed..
+        /// </summary>
+        internal static string CurrentHttpContextRequired {
+            get {
+                return ResourceManager.GetString("CurrentHttpContextRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to OpenID parameter &apos;{0}&apos; was expected to be base64 encoded but is not..
         /// </summary>
         internal static string ExpectedBase64OpenIdQueryParameter {

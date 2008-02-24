@@ -45,7 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Association.cs" />
-    <Compile Include="Consumer\AuthRequest.cs" />
+    <Compile Include="Consumer\AuthenticationRequest.cs" />
     <Compile Include="Consumer\CancelException.cs" />
     <Compile Include="Consumer\Consumer.cs" />
     <Compile Include="Consumer\ConsumerResponse.cs" />
@@ -94,7 +94,6 @@
     <Compile Include="Provider\Request.cs" />
     <Compile Include="Provider\Response.cs" />
     <Compile Include="Provider\Signatory.cs" />
-    <Compile Include="Provider\TrustRoot.cs" />
     <Compile Include="Provider\WebResponse.cs" />
     <Compile Include="Store\IAssociationStore.cs" />
     <Compile Include="Store\MemoryStore.cs" />
@@ -107,6 +106,7 @@
     <Compile Include="TraceUtil.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="TrustRoot.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="Yadis\AcceptHeader.cs" />
     <Compile Include="Yadis\ByteParser.cs" />
