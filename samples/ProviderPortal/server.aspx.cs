@@ -40,7 +40,7 @@ public partial class server : System.Web.UI.Page {
 		// determine what incoming message was received
 		try {
 			request = openIDServer.DecodeRequest(Request);
-		} catch (ProtocolException e) {
+		} catch (OpenIdException e) {
 			Util.GenerateHttpResponse(e);
 			return;
 		}

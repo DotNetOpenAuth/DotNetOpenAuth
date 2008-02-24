@@ -35,7 +35,7 @@ namespace DotNetOpenId.Consumer
 			Association assoc = this.getAssociation(service_endpoint.ServerUrl);
 
 			AuthRequest request = new AuthRequest(token, assoc, service_endpoint);
-			request.ReturnToArgs.Add(QueryStringArgs.nonce, nonce);
+			request.AddCallbackArguments(QueryStringArgs.nonce, nonce);
 
 			return request;
 		}
@@ -118,7 +118,7 @@ namespace DotNetOpenId.Consumer
 
 			try {
 				FetchResponse resp = Fetcher.Request(serverUrl, body);
-				if ((int)resp.Code > 200 && (int)resp.Code < 300) {
+				if ((int)resp.Code >= 200 && (int)resp.Code < 300) {
 					return DictionarySerializer.Deserialize(resp.Data, resp.Length);
 				} else {
 					if (TraceUtil.Switch.TraceError) {

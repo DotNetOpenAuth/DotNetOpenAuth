@@ -412,8 +412,7 @@ namespace DotNetOpenId.Consumer
 				throw new InvalidOperationException(DotNetOpenId.Strings.OpenIdTextBoxEmpty);
 
 			try {
-				DotNetOpenId.Consumer.Consumer consumer =
-					new DotNetOpenId.Consumer.Consumer();
+				var consumer = new Consumer();
 
 				Uri userUri = UriUtil.NormalizeUri(Text);
 				// Initiate openid request
@@ -459,9 +458,11 @@ namespace DotNetOpenId.Consumer
 
 		void addProfileArgs(AuthRequest request)
 		{
-			request.ExtraArgs.Add(QueryStringArgs.openid.sreg.required, string.Join(",", assembleProfileFields(ProfileRequest.Require)));
-			request.ExtraArgs.Add(QueryStringArgs.openid.sreg.optional, string.Join(",", assembleProfileFields(ProfileRequest.Request)));
-			request.ExtraArgs.Add(QueryStringArgs.openid.sreg.policy_url, PolicyUrl);
+			Dictionary<string, string> profileArguments = new Dictionary<string, string>();
+			profileArguments.Add(QueryStringArgs.openidnp.sregnp.required, string.Join(",", assembleProfileFields(ProfileRequest.Require)));
+			profileArguments.Add(QueryStringArgs.openidnp.sregnp.optional, string.Join(",", assembleProfileFields(ProfileRequest.Request)));
+			profileArguments.Add(QueryStringArgs.openidnp.sregnp.policy_url, PolicyUrl);
+			request.AddExtensionArguments(QueryStringArgs.openidnp.sreg.Prefix.TrimEnd('.'), profileArguments);
 		}
 
 		string[] assembleProfileFields(ProfileRequest level)

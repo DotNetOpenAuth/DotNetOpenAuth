@@ -120,11 +120,17 @@
   <data name="ExpectedBase64OpenIdQueryParameter" xml:space="preserve">
     <value>OpenID parameter '{0}' was expected to be base64 encoded but is not.</value>
   </data>
+  <data name="ExtensionParameterKeysWithoutPrefixExpected" xml:space="preserve">
+    <value>Extension parameter key '{0}' encountered, but extension parameter keys should not include their prefix.</value>
+  </data>
   <data name="IAssociationStoreRequiredWhenNoHttpContextAvailable" xml:space="preserve">
     <value>No current HttpContext was detected, so an IAssociationStore must be explicitly provided. Call the Server constructor overload that takes an IAssociationStore.</value>
   </data>
   <data name="InvalidOpenIdQueryParameterValue" xml:space="preserve">
     <value>OpenID parameter '{0}' had unexpected value '{1}'.</value>
+  </data>
+  <data name="KeyAlreadyExists" xml:space="preserve">
+    <value>The given key '{0}' already exists.</value>
   </data>
   <data name="MissingInternalQueryParameter" xml:space="preserve">
     <value>Query parameter '{0}' was missing from the query.</value>
@@ -140,6 +146,9 @@
   </data>
   <data name="OpenIdTextBoxEmpty" xml:space="preserve">
     <value>No OpenId url is provided.</value>
+  </data>
+  <data name="PrefixWithoutPeriodsExpected" xml:space="preserve">
+    <value>Prefix should not begin or end with a period.</value>
   </data>
   <data name="ReturnToNotUnderTrustRoot" xml:space="preserve">
     <value>return_to '{0}' not under trust_root '{1}'.</value>

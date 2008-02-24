@@ -31,10 +31,10 @@
                 </tr>
                 <tr>
                     <td style="width: 131px">
-                        Fullname
+                        FullName
                     </td>
                     <td style="width: 300px">
-                        <%=State.ProfileFields.Fullname%>
+                        <%=State.ProfileFields.FullName%>
                     </td>
                 </tr>
                 <tr>
@@ -42,7 +42,7 @@
                         Date of Birth
                     </td>
                     <td style="width: 300px; height: 24px">
-                        <%=State.ProfileFields.Birthdate.ToString()%>
+                        <%=State.ProfileFields.BirthDate.ToString()%>
                     </td>
                 </tr>
                 <tr>

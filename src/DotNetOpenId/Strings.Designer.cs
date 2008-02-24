@@ -70,6 +70,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Extension parameter key &apos;{0}&apos; encountered, but extension parameter keys should not include their prefix..
+        /// </summary>
+        internal static string ExtensionParameterKeysWithoutPrefixExpected {
+            get {
+                return ResourceManager.GetString("ExtensionParameterKeysWithoutPrefixExpected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No current HttpContext was detected, so an IAssociationStore must be explicitly provided. Call the Server constructor overload that takes an IAssociationStore..
         /// </summary>
         internal static string IAssociationStoreRequiredWhenNoHttpContextAvailable {
@@ -84,6 +93,15 @@ namespace DotNetOpenId {
         internal static string InvalidOpenIdQueryParameterValue {
             get {
                 return ResourceManager.GetString("InvalidOpenIdQueryParameterValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The given key &apos;{0}&apos; already exists..
+        /// </summary>
+        internal static string KeyAlreadyExists {
+            get {
+                return ResourceManager.GetString("KeyAlreadyExists", resourceCulture);
             }
         }
         
@@ -129,6 +147,15 @@ namespace DotNetOpenId {
         internal static string OpenIdTextBoxEmpty {
             get {
                 return ResourceManager.GetString("OpenIdTextBoxEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Prefix should not begin or end with a period..
+        /// </summary>
+        internal static string PrefixWithoutPeriodsExpected {
+            get {
+                return ResourceManager.GetString("PrefixWithoutPeriodsExpected", resourceCulture);
             }
         }
         

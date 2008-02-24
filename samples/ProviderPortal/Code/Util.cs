@@ -16,7 +16,7 @@ public class Util {
 		return url.Segments[url.Segments.Length - 1];
 	}
 
-	public static void GenerateHttpResponse(ProtocolException e) {
+	public static void GenerateHttpResponse(OpenIdException e) {
 		State.Session.Reset();
 		StringBuilder text = new StringBuilder();
 		foreach (KeyValuePair<string, string> pair in e.EncodedFields)

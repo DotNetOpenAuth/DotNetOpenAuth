@@ -31,7 +31,7 @@ This consumer has requested the following fields from you<br />
     </tr>
     <tr runat="server" id="fullnameRow">
         <td style="width: 131px">
-            Fullname
+            FullName
             <asp:Label ID="fullnameRequiredLabel" runat="server" Text="*" Visible="False"></asp:Label></td>
         <td style="width: 300px">
             <asp:TextBox ID="fullnameTextBox" runat="server"></asp:TextBox>
