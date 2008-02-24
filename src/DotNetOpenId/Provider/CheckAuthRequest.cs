@@ -85,7 +85,7 @@ namespace DotNetOpenId.Provider {
 			string val = query[key];
 
 			if (val == null)
-				throw new ProtocolException(Mode + " request missing required parameter " + key, query);
+				throw new OpenIdException(Mode + " request missing required parameter " + key, query);
 
 			return val;
 		}

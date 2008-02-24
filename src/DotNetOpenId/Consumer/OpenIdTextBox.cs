@@ -381,13 +381,13 @@ namespace DotNetOpenId.Consumer
 					OnLoggedIn(resp.IdentityUrl, parseProfileFields(Page.Request.QueryString));
 				}
 			}
-			catch (FailureException fexc)
-			{
-				OnError(fexc);
-			}
 			catch (CancelException cex)
 			{
 				OnCanceled(cex);
+			}
+			catch (OpenIdException ex)
+			{
+				OnError(ex);
 			}
 		}
 		protected override void OnPreRender(EventArgs e) {
@@ -443,7 +443,7 @@ namespace DotNetOpenId.Consumer
 				// as required by the provider.  We could wait for the provider to test this and
 				// fail, but this will be faster and give us a better error message.
 				if (!(new DotNetOpenId.Provider.TrustRoot(trustRoot.ToString()).ValidateUrl(return_to.Uri)))
-					throw new ProtocolException(string.Format(CultureInfo.CurrentUICulture, 
+					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture, 
 						Strings.ReturnToNotUnderTrustRoot, return_to, trustRoot));
 
 				// Note: we must use trustRoot.ToString() because trustRoot.Uri throws when wildcards are present.
@@ -452,7 +452,7 @@ namespace DotNetOpenId.Consumer
 				Page.Response.Redirect(redirectUrl.AbsoluteUri);
 			} catch (WebException ex) {
 				OnError(ex);
-			} catch (FailureException ex) {
+			} catch (OpenIdException ex) {
 				OnError(ex);
 			}
 		}

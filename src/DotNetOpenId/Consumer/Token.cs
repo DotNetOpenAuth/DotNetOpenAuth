@@ -72,7 +72,7 @@ namespace DotNetOpenId.Consumer {
 			byte[] tok = Convert.FromBase64String(token);
 
 			if (tok.Length < 20)
-				throw new FailureException("Failed while reading token.", null);
+				throw new OpenIdException("Failed while reading token.");
 
 			byte[] sig = new byte[20];
 			Buffer.BlockCopy(tok, 0, sig, 0, 20);
@@ -82,7 +82,7 @@ namespace DotNetOpenId.Consumer {
 
 			for (int i = 0; i < sig.Length; i++)
 				if (sig[i] != newSig[i])
-					throw new FailureException("Token failed signature verification.", null);
+					throw new OpenIdException("Token failed signature verification.");
 
 			List<string> items = new List<string>();
 
@@ -103,7 +103,7 @@ namespace DotNetOpenId.Consumer {
 			ts += maximumLifetime;
 
 			if (ts < DateTime.UtcNow)
-				throw new FailureException("Token has expired.", null);
+				throw new OpenIdException("Token has expired.");
 
 			items.RemoveAt(0);
 

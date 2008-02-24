@@ -49,7 +49,7 @@ namespace DotNetOpenId.Provider
 			
 			string mode = query[QueryStringArgs.openid.mode];
 			if (string.IsNullOrEmpty(mode)) {
-				throw new ProtocolException("No openid.mode value in query.", query);
+				throw new OpenIdException("No openid.mode value in query.", query);
 			}
 
 			Request request;
@@ -67,7 +67,7 @@ namespace DotNetOpenId.Provider
 					request = new AssociateRequest(provider, query);
 					break;
 				default:
-					throw new ProtocolException("No decoder for openid.mode=" + mode, query);
+					throw new OpenIdException("No decoder for openid.mode=" + mode, query);
 			}
 
 			return request;

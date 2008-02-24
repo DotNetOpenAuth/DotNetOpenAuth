@@ -8,7 +8,7 @@ namespace DotNetOpenId.Consumer {
 	/// </summary>
 	/// <remarks>Internal, because never send immediate mode to the provider right now.</remarks>
 	[Serializable]
-	internal class SetupNeededException : ProtocolException {
+	internal class SetupNeededException : OpenIdException {
 		public Uri ConsumerId { get; private set; }
 		public Uri UserSetupUrl { get; private set; }
 

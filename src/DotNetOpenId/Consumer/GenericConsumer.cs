@@ -44,12 +44,12 @@ namespace DotNetOpenId.Consumer
 		{
 			string mode;
 			if (!query.TryGetValue(QueryStringArgs.openid.mode, out mode))
-				throw new ProtocolException(string.Format(CultureInfo.CurrentUICulture, 
+				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture, 
 					Strings.MissingOpenIdQueryParameter, QueryStringArgs.openid.mode));
 
 			string tokenString;
 			if (!query.TryGetValue(Token.TokenKey, out tokenString))
-				throw new ProtocolException(string.Format(CultureInfo.CurrentUICulture,
+				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 					Strings.MissingInternalQueryParameter, Token.TokenKey));
 			Token token = Token.Deserialize(tokenString, store.AuthKey);
 
@@ -57,13 +57,15 @@ namespace DotNetOpenId.Consumer
 				case QueryStringArgs.Modes.cancel:
 					throw new CancelException(token.IdentityUrl);
 				case QueryStringArgs.Modes.error:
-					throw new FailureException(query[QueryStringArgs.openid.error], token.IdentityUrl);
+					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+						"The provider returned an error: {0}", query[QueryStringArgs.openid.error],
+						token.IdentityUrl));
 				case QueryStringArgs.Modes.id_res:
 					ConsumerResponse response = doIdRes(query, token);
 					checkNonce(response, query[QueryStringArgs.nonce]);
 					return response;
 				default:
-					throw new ProtocolException(string.Format(CultureInfo.CurrentUICulture,
+					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 						Strings.InvalidOpenIdQueryParameterValue,
 						QueryStringArgs.openid.mode, mode), token.IdentityUrl);
 			}
@@ -103,12 +105,12 @@ namespace DotNetOpenId.Consumer
 
 			string returnToNonce = nvc[QueryStringArgs.nonce];
 			if (String.IsNullOrEmpty(returnToNonce))
-				throw new ProtocolException(string.Format(CultureInfo.CurrentUICulture, 
+				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture, 
 					Strings.MissingReturnToQueryParameter,
 					QueryStringArgs.nonce, response.ReturnTo.Query), response.IdentityUrl);
 
 			if (returnToNonce != nonce)
-				throw new ProtocolException(Strings.NonceMismatch, response.IdentityUrl);
+				throw new OpenIdException(Strings.NonceMismatch, response.IdentityUrl);
 		}
 
 		static IDictionary<string, string> makeKVPost(IDictionary<string, string> args, Uri serverUrl) {
@@ -136,7 +138,8 @@ namespace DotNetOpenId.Consumer
 				{
 					string val;
 					if (!query.TryGetValue(key, out val))
-						throw new FailureException("Missing required field: " + key, token.IdentityUrl);
+						throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+							Strings.MissingOpenIdQueryParameter, key), token.IdentityUrl);
 
 					return val;
 				};
@@ -148,7 +151,7 @@ namespace DotNetOpenId.Consumer
 			string assoc_handle = getRequired(QueryStringArgs.openid.assoc_handle);
 
 			if (token.ServerId.AbsoluteUri != token.ServerId.ToString())
-				throw new FailureException("Provider ID (delegate) mismatch", token.IdentityUrl);
+				throw new OpenIdException("Provider ID (delegate) mismatch", token.IdentityUrl);
 
 			Association assoc = this.store.GetAssociation(token.ServerUrl, assoc_handle);
 
@@ -157,14 +160,14 @@ namespace DotNetOpenId.Consumer
 				// It's not an association we know about.  Dumb mode is our
 				// only possible path for recovery.
 				if (!checkAuth(query, token.ServerUrl))
-					throw new FailureException("check_authentication failed", token.IdentityUrl);
+					throw new OpenIdException("check_authentication failed", token.IdentityUrl);
 
 				return new ConsumerResponse(token.IdentityUrl, query, query[QueryStringArgs.openid.signed]);
 			}
 
 			if (assoc.IsExpired)
 			{
-				throw new FailureException(String.Format(CultureInfo.CurrentUICulture,
+				throw new OpenIdException(String.Format(CultureInfo.CurrentUICulture,
 					"Association with {0} expired", token.ServerUrl), token.IdentityUrl);
 			}
 
@@ -176,7 +179,7 @@ namespace DotNetOpenId.Consumer
 			string v_sig = CryptUtil.ToBase64String(assoc.Sign(query, signed_array, QueryStringArgs.openid.Prefix));
 
 			if (v_sig != sig)
-				throw new FailureException("Bad signature", token.IdentityUrl);
+				throw new OpenIdException("Bad signature", token.IdentityUrl);
 
 			return new ConsumerResponse(token.IdentityUrl, query, signed);
 		}
@@ -267,7 +270,7 @@ namespace DotNetOpenId.Consumer
 			Converter<string, string> getParameter = delegate(string key) {
 				string val;
 				if (!results.TryGetValue(key, out val) || string.IsNullOrEmpty(val))
-					throw new ProtocolException(string.Format(CultureInfo.CurrentUICulture, Strings.MissingOpenIdQueryParameter, key));
+					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture, Strings.MissingOpenIdQueryParameter, key));
 				return val;
 			};
 
@@ -275,7 +278,7 @@ namespace DotNetOpenId.Consumer
 				try {
 					return Convert.FromBase64String(getParameter(key));
 				} catch (FormatException ex) {
-					throw new ProtocolException(string.Format(CultureInfo.CurrentUICulture,
+					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 						Strings.ExpectedBase64OpenIdQueryParameter, key), null, ex);
 				}
 			};
@@ -311,7 +314,7 @@ namespace DotNetOpenId.Consumer
 				store.StoreAssociation(server_url, assoc);
 
 				return assoc;
-			} catch (ProtocolException ex) {
+			} catch (OpenIdException ex) {
 				if (TraceUtil.Switch.TraceError) {
 					Trace.TraceError(ex.ToString());
 				}

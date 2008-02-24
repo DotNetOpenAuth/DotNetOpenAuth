@@ -86,7 +86,7 @@ namespace DotNetOpenId.Provider {
 			Immediate = immediate;
 
 			if (!this.IsTrustRootValid)
-				throw new ProtocolException(string.Format(CultureInfo.CurrentUICulture, 
+				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture, 
 					Strings.ReturnToNotUnderTrustRoot, ReturnTo.AbsoluteUri, TrustRoot));
 		}
 
@@ -100,19 +100,19 @@ namespace DotNetOpenId.Provider {
 			} else if (QueryStringArgs.Modes.checkid_setup.Equals(mode, StringComparison.Ordinal)) {
 				Immediate = false; // implied
 			} else {
-				throw new ProtocolException(QueryStringArgs.openid.mode + " does not have any expected value: " + mode, query);
+				throw new OpenIdException(QueryStringArgs.openid.mode + " does not have any expected value: " + mode, query);
 			}
 
 			try {
 				IdentityUrl = new Uri(getRequiredField(query, QueryStringArgs.openid.identity));
 			} catch (UriFormatException) {
-				throw new ProtocolException(QueryStringArgs.openid.identity + " not a valid url: " + query[QueryStringArgs.openid.identity], query);
+				throw new OpenIdException(QueryStringArgs.openid.identity + " not a valid url: " + query[QueryStringArgs.openid.identity], query);
 			}
 
 			try {
 				ReturnTo = new Uri(getRequiredField(query, QueryStringArgs.openid.return_to));
 			} catch (UriFormatException ex) {
-				throw new ProtocolException(string.Format(CultureInfo.CurrentUICulture, 
+				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture, 
 					"'{0}' is not a valid OpenID return_to URL.", query[QueryStringArgs.openid.return_to]),
 					IdentityUrl, query, ex);
 			}
@@ -121,7 +121,7 @@ namespace DotNetOpenId.Provider {
 			AssociationHandle = query[QueryStringArgs.openid.assoc_handle];
 
 			if (!IsTrustRootValid)
-				throw new ProtocolException(string.Format(CultureInfo.CurrentUICulture, 
+				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture, 
 					Strings.ReturnToNotUnderTrustRoot, ReturnTo.AbsoluteUri, TrustRoot), query);
 
 			// Handle the optional Simple Registration extension fields
@@ -145,7 +145,7 @@ namespace DotNetOpenId.Provider {
 			string value = query[field];
 
 			if (value == null)
-				throw new ProtocolException("Missing required field " + field, query);
+				throw new OpenIdException("Missing required field " + field, query);
 
 			return value;
 		}

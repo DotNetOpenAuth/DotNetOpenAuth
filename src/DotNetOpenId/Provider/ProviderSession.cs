@@ -18,7 +18,7 @@ namespace DotNetOpenId.Provider
 				case QueryStringArgs.DH_SHA1:
 					return new DiffieHellmanProviderSession(query);
 				default:
-					throw new ProtocolException("Unknown session type " + session_type, query);
+					throw new OpenIdException("Unknown session type " + session_type, query);
 			}
 		}
 	}
@@ -65,7 +65,7 @@ namespace DotNetOpenId.Provider
                 else
                     missing = "generator";
 
-                throw new ProtocolException("If non-default modulus or generator is supplied, both must be supplied. Missing: " + missing, query);
+                throw new OpenIdException("If non-default modulus or generator is supplied, both must be supplied. Missing: " + missing, query);
             }
             
             if (!String.IsNullOrEmpty(dh_modulus) || !String.IsNullOrEmpty(dh_gen))
@@ -76,7 +76,7 @@ namespace DotNetOpenId.Provider
                 }
                 catch (FormatException)
                 {
-					throw new ProtocolException("dh_modulus isn't properly base64ed", query);
+					throw new OpenIdException("dh_modulus isn't properly base64ed", query);
                 }
 
                 try
@@ -85,7 +85,7 @@ namespace DotNetOpenId.Provider
                 }
                 catch (FormatException)
                 {
-					throw new ProtocolException("dh_gen isn't properly base64ed", query);
+					throw new OpenIdException("dh_gen isn't properly base64ed", query);
                 }                
             }
             else
@@ -98,7 +98,7 @@ namespace DotNetOpenId.Provider
 
             string consumer_pubkey = query.Get(QueryStringArgs.openid.dh_consumer_public);
             if (consumer_pubkey == null)
-				throw new ProtocolException("Public key for DH-SHA1 session not found in query", query);
+				throw new OpenIdException("Public key for DH-SHA1 session not found in query", query);
 
             try
             {
@@ -106,7 +106,7 @@ namespace DotNetOpenId.Provider
             }
             catch (FormatException)
             {
-				throw new ProtocolException("consumer_pubkey isn't properly base64ed", query);
+				throw new OpenIdException("consumer_pubkey isn't properly base64ed", query);
             }
         }
 

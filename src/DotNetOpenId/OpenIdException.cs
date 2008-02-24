@@ -6,39 +6,40 @@ using System.Runtime.Serialization;
 
 namespace DotNetOpenId {
 	/// <summary>
-	/// A message did not conform to the OpenID protocol.
+	/// A message did not conform to the OpenID protocol, or 
+	/// some other processing error occurred.
 	/// </summary>
 	[Serializable]
-	public class ProtocolException : Exception, IEncodable {
+	public class OpenIdException : Exception, IEncodable {
 		NameValueCollection query;
 		public Uri IdentityUrl { get; private set; }
 
-		internal ProtocolException(string message, Uri identityUrl, NameValueCollection query, Exception innerException)
+		internal OpenIdException(string message, Uri identityUrl, NameValueCollection query, Exception innerException)
 			: base(message, innerException) {
 			this.query = query;
 			IdentityUrl = identityUrl;
 		}
-		internal ProtocolException(string message, Uri identityUrl, NameValueCollection query)
+		internal OpenIdException(string message, Uri identityUrl, NameValueCollection query)
 			: this(message, identityUrl, query, null) {
 		}
-		internal ProtocolException(string message, Uri identityUrl, Exception innerException)
+		internal OpenIdException(string message, Uri identityUrl, Exception innerException)
 			: this(message, identityUrl, null, innerException) {
 		}
-		internal ProtocolException(string message, Uri identityUrl)
+		internal OpenIdException(string message, Uri identityUrl)
 			: this(message, identityUrl, null, null) {
 		}
-		internal ProtocolException(string message, NameValueCollection query)
+		internal OpenIdException(string message, NameValueCollection query)
 			: this(message, null, query, null) {
 		}
-		internal ProtocolException(string message, Exception innerException)
+		internal OpenIdException(string message, Exception innerException)
 			: this(message, null, null, innerException) {
 		}
-		internal ProtocolException(string message)
+		internal OpenIdException(string message)
 			: this(message, null, null, null) {
 		}
-		protected ProtocolException(SerializationInfo info, StreamingContext context)
+		protected OpenIdException(SerializationInfo info, StreamingContext context)
 			: base(info, context) { }
-		internal ProtocolException() { }
+		internal OpenIdException() { }
 
 		internal bool HasReturnTo {
 			get {

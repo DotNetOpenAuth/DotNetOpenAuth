@@ -36,7 +36,7 @@ namespace DotNetOpenId.Consumer {
 		{
 			ServiceEndpoint endpoint = manager.GetNextService(openIdUrl);
 			if (endpoint == null)
-				throw new FailureException("No openid endpoint found", null);
+				throw new OpenIdException("No openid endpoint found");
 			return BeginWithoutDiscovery(endpoint);
 		}
 
