@@ -4,6 +4,7 @@ using System.Text;
 using DotNetOpenId.Store;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace DotNetOpenId.Provider {
 	/// <summary>
@@ -43,7 +44,7 @@ namespace DotNetOpenId.Provider {
 
 			Response response = new Response(this);
 
-			response.Fields[QueryStringArgs.openidnp.expires_in] = assoc.SecondsTillExpiration.ToString();
+			response.Fields[QueryStringArgs.openidnp.expires_in] = assoc.SecondsTillExpiration.ToString(CultureInfo.InvariantCulture);
 			response.Fields[QueryStringArgs.openidnp.assoc_type] = assoc.AssociationType;
 			response.Fields[QueryStringArgs.openidnp.assoc_handle] = assoc.Handle;
 
@@ -68,7 +69,8 @@ namespace DotNetOpenId.Provider {
 
 		public override string ToString() {
 			string returnString = "AssociateRequest._assoc_type = {0}";
-			return base.ToString() + Environment.NewLine + String.Format(returnString, associationKeyType);
+			return base.ToString() + Environment.NewLine + String.Format(CultureInfo.CurrentUICulture,
+				returnString, associationKeyType);
 		}
 
 	}

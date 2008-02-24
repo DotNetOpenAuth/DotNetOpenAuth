@@ -32,11 +32,11 @@ namespace DotNetOpenId.Consumer {
 			consumer = new GenericConsumer(store);
 		}
 
-		public AuthRequest Begin(Uri openid_url)
+		public AuthRequest Begin(Uri openIdUrl)
 		{
-			ServiceEndpoint endpoint = manager.GetNextService(openid_url);
+			ServiceEndpoint endpoint = manager.GetNextService(openIdUrl);
 			if (endpoint == null)
-				throw new FailureException(null, "No openid endpoint found");
+				throw new FailureException("No openid endpoint found", null);
 			return BeginWithoutDiscovery(endpoint);
 		}
 
@@ -45,8 +45,8 @@ namespace DotNetOpenId.Consumer {
 			return consumer.Begin(endpoint);
 		}
 
-		public ConsumerResponse Complete(NameValueCollection nvc) {
-			return Complete(Util.NameValueCollectionToDictionary(nvc));
+		public ConsumerResponse Complete(NameValueCollection query) {
+			return Complete(Util.NameValueCollectionToDictionary(query));
 		}
 
 		public ConsumerResponse Complete(IDictionary<string, string> query)

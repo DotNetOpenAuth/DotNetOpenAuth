@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace DotNetOpenId.RegistrationExtension {
 	/// <summary>
@@ -11,7 +12,7 @@ namespace DotNetOpenId.RegistrationExtension {
 		public ProfileRequest Nickname { get; private set; }
 		public ProfileRequest Email { get; private set; }
 		public ProfileRequest FullName { get; private set; }
-		public ProfileRequest Birthdate { get; private set; }
+		public ProfileRequest BirthDate { get; private set; }
 		public ProfileRequest Gender { get; private set; }
 		public ProfileRequest PostalCode { get; private set; }
 		public ProfileRequest Country { get; private set; }
@@ -41,7 +42,7 @@ namespace DotNetOpenId.RegistrationExtension {
 						FullName = requestLevel;
 						break;
 					case QueryStringArgs.openidnp.sregnp.dob:
-						Birthdate = requestLevel;
+						BirthDate = requestLevel;
 						break;
 					case QueryStringArgs.openidnp.sregnp.gender:
 						Gender = requestLevel;
@@ -71,7 +72,7 @@ namespace DotNetOpenId.RegistrationExtension {
 		/// </summary>
 		public bool AnyRequestedOrRequired {
 			get {
-				return (!(Birthdate == ProfileRequest.NoRequest
+				return (!(BirthDate == ProfileRequest.NoRequest
 						  && Country == ProfileRequest.NoRequest
 						  && Email == ProfileRequest.NoRequest
 						  && FullName == ProfileRequest.NoRequest
@@ -84,7 +85,7 @@ namespace DotNetOpenId.RegistrationExtension {
 		}
 
 		public override string ToString() {
-			return string.Format(@"Nickname = '{0}' 
+			return string.Format(CultureInfo.CurrentUICulture, @"Nickname = '{0}' 
 Email = '{1}' 
 FullName = '{2}' 
 Birthdate = '{3}'
@@ -92,7 +93,7 @@ Gender = '{4}'
 PostalCode = '{5}'
 Country = '{6}'
 Language = '{7}'
-TimeZone = '{8}'", Nickname, Email, FullName, Birthdate, Gender, PostalCode, Country, Language, TimeZone);
+TimeZone = '{8}'", Nickname, Email, FullName, BirthDate, Gender, PostalCode, Country, Language, TimeZone);
 		}
 	}
 }

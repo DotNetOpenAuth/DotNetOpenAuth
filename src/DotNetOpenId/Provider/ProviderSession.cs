@@ -44,7 +44,7 @@ namespace DotNetOpenId.Provider
     /// <summary>
     /// An object that knows how to handle association requests with the Diffie-Hellman session type.
     /// </summary>
-    internal class DiffieHellmanProviderSession : ProviderSession
+    internal class DiffieHellmanProviderSession : ProviderSession, IDisposable
     {
         byte[] _consumer_pubkey;
         DiffieHellman _dh;
@@ -65,7 +65,7 @@ namespace DotNetOpenId.Provider
                 else
                     missing = "generator";
 
-				throw new ProtocolException("If non-default modulus or generator is supplied, both must be supplied. Missing: " + missing, query);
+                throw new ProtocolException("If non-default modulus or generator is supplied, both must be supplied. Missing: " + missing, query);
             }
             
             if (!String.IsNullOrEmpty(dh_modulus) || !String.IsNullOrEmpty(dh_gen))
@@ -125,5 +125,15 @@ namespace DotNetOpenId.Provider
 
             return nvc;
         }
-    }
+
+		#region IDisposable Members
+
+		public void Dispose() {
+			if (_dh != null) {
+				((IDisposable)_dh).Dispose();
+			}
+		}
+
+		#endregion
+	}
 }

@@ -11,9 +11,11 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.UI.HtmlControls;
 using DotNetOpenId.RegistrationExtension;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DotNetOpenId.Consumer
 {
+	[SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Login")]
 	[DefaultProperty("OpenIdUrl")]
 	[ToolboxData("<{0}:OpenIdLogin runat=\"server\"></{0}:OpenIdLogin>")]
 	public class OpenIdLogin : OpenIdTextBox
@@ -157,7 +159,7 @@ namespace DotNetOpenId.Consumer
 			row3.Cells.Add(cell);
 
 			// this sets all the controls' tab indexes
-			TabIndex = tabIndexDefault;
+			TabIndex = TabIndexDefault;
 
 			panel.Controls.Add(table);
 		}
@@ -199,6 +201,7 @@ namespace DotNetOpenId.Consumer
 		}
 
 		const string exampleUrlDefault = "http://your.name.myopenid.com";
+		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings")]
 		[Bindable(true)]
 		[Category("Appearance")]
 		[DefaultValue(exampleUrlDefault)]
@@ -222,6 +225,7 @@ namespace DotNetOpenId.Consumer
 		}
 
 		const string uriFormatTextDefault = "Invalid OpenID URL.";
+		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings")]
 		[Bindable(true)]
 		[Category("Appearance")]
 		[DefaultValue(uriFormatTextDefault)]
@@ -254,6 +258,7 @@ namespace DotNetOpenId.Consumer
 		}
 
 		const string registerUrlDefault = "https://www.myopenid.com/signup";
+		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings")]
 		[Bindable(true)]
 		[Category("Appearance")]
 		[DefaultValue(registerUrlDefault)]
@@ -314,10 +319,10 @@ namespace DotNetOpenId.Consumer
 			set { rememberMeCheckBox.Visible = value; }
 		}
 
-		const bool rememberMeDefault = usePersistentCookieDefault;
+		const bool rememberMeDefault = UsePersistentCookieDefault;
 		[Bindable(true)]
 		[Category("Appearance")]
-		[DefaultValue(usePersistentCookieDefault)]
+		[DefaultValue(UsePersistentCookieDefault)]
 		public bool RememberMe {
 			get { return UsePersistentCookie; }
 			set { UsePersistentCookie = value; }
@@ -378,7 +383,7 @@ namespace DotNetOpenId.Consumer
 		{
 			if (!Page.IsValid) return;
 			if (OnLoggingIn(UriUtil.NormalizeUri(Text)))
-				Login();
+				LogOn();
 		}
 
 		#endregion

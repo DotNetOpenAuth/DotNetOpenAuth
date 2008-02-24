@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Globalization;
 
 namespace DotNetOpenId.Provider {
 
@@ -11,7 +12,8 @@ namespace DotNetOpenId.Provider {
 
 		public override string ToString() {
 			string returnString = "AssociatedRequest.AssocHandle = {0}";
-			return base.ToString() + Environment.NewLine + String.Format(returnString, AssociationHandle);
+			return base.ToString() + Environment.NewLine + String.Format(CultureInfo.CurrentUICulture,
+				returnString, AssociationHandle);
 		}
 
 	}

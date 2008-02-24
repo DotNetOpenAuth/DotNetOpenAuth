@@ -13,7 +13,7 @@ public partial class ProfileFields : System.Web.UI.UserControl {
 	}
 
 	public void SetRequiredFieldsFromRequest(ProfileRequestFields requestFields) {
-		dobRequiredLabel.Visible = (requestFields.Birthdate == ProfileRequest.Require);
+		dobRequiredLabel.Visible = (requestFields.BirthDate == ProfileRequest.Require);
 		countryRequiredLabel.Visible = (requestFields.Country == ProfileRequest.Require);
 		emailRequiredLabel.Visible = (requestFields.Email == ProfileRequest.Require);
 		fullnameRequiredLabel.Visible = (requestFields.FullName == ProfileRequest.Require);
@@ -23,7 +23,7 @@ public partial class ProfileFields : System.Web.UI.UserControl {
 		postcodeRequiredLabel.Visible = (requestFields.PostalCode == ProfileRequest.Require);
 		timezoneRequiredLabel.Visible = (requestFields.TimeZone == ProfileRequest.Require);
 
-		dateOfBirthRow.Visible = !(requestFields.Birthdate == ProfileRequest.NoRequest);
+		dateOfBirthRow.Visible = !(requestFields.BirthDate == ProfileRequest.NoRequest);
 		countryRow.Visible = !(requestFields.Country == ProfileRequest.NoRequest);
 		emailRow.Visible = !(requestFields.Email == ProfileRequest.NoRequest);
 		fullnameRow.Visible = !(requestFields.FullName == ProfileRequest.NoRequest);
@@ -95,10 +95,10 @@ public partial class ProfileFields : System.Web.UI.UserControl {
 	public ProfileFieldValues OpenIdProfileFields {
 		get {
 			ProfileFieldValues fields = new ProfileFieldValues();
-			fields.Birthdate = DateOfBirth;
+			fields.BirthDate = DateOfBirth;
 			fields.Country = countryDropdownList.SelectedValue;
 			fields.Email = emailTextBox.Text;
-			fields.Fullname = fullnameTextBox.Text;
+			fields.FullName = fullnameTextBox.Text;
 			fields.Gender = Gender;
 			fields.Language = languageDropdownList.SelectedValue;
 			fields.Nickname = nicknameTextBox.Text;
@@ -109,10 +109,10 @@ public partial class ProfileFields : System.Web.UI.UserControl {
 		set {
 			if (value == null)
 				throw new ArgumentNullException("OpenIdProfileFields");
-			DateOfBirth = value.Birthdate;
+			DateOfBirth = value.BirthDate;
 			countryDropdownList.SelectedValue = value.Country;
 			emailTextBox.Text = value.Email;
-			fullnameTextBox.Text = value.Fullname;
+			fullnameTextBox.Text = value.FullName;
 			Gender = value.Gender;
 			languageDropdownList.SelectedValue = value.Language;
 			nicknameTextBox.Text = value.Nickname;

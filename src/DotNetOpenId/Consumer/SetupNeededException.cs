@@ -7,6 +7,7 @@ namespace DotNetOpenId.Consumer {
 	/// Thrown when immediate mode is used but the provider says it needs setup mode to complete.
 	/// </summary>
 	/// <remarks>Internal, because never send immediate mode to the provider right now.</remarks>
+	[Serializable]
 	internal class SetupNeededException : ProtocolException {
 		public Uri ConsumerId { get; private set; }
 		public Uri UserSetupUrl { get; private set; }

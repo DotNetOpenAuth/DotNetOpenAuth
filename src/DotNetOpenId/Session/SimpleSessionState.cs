@@ -8,12 +8,12 @@ namespace DotNetOpenId.Session {
 	public class SimpleSessionState : ISessionState {
 		static SimpleSessionState local_instance = new SimpleSessionState();
 
-		Dictionary<string, object> stateBag = new Dictionary<string,object>();
+		Dictionary<string, object> stateBag = new Dictionary<string, object>();
 
 		private SimpleSessionState() { }
 
-		public static SimpleSessionState GetInstance() {
-			return local_instance;
+		public static SimpleSessionState Instance {
+			get { return local_instance; }
 		}
 
 		public object this[string key] {

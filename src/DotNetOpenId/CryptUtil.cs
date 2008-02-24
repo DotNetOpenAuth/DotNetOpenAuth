@@ -98,9 +98,9 @@ namespace DotNetOpenId
 
         private static byte[] EnsurePositive(byte[] inputBytes)
         {
-            if (inputBytes.Length <= 0) throw new Exception("Invalid input passed to EnsurePositive. Array must have something in it.");
+            if (inputBytes.Length == 0) throw new ArgumentException("Invalid input passed to EnsurePositive. Array must have something in it.", "inputBytes");
 
-            int i = Convert.ToInt32(inputBytes[0].ToString());
+            int i = (int)inputBytes[0];
             if (i > 127)
             {
                 byte[] temp = new byte[inputBytes.Length + 1];
@@ -113,7 +113,7 @@ namespace DotNetOpenId
 
         private static void RandomSelection(ref byte[] tofill, byte[] choices)
         {
-            if (choices.Length <= 0) throw new Exception("Invalid input passed to RandomSelection. Array must have something in it.");
+            if (choices.Length <= 0) throw new ArgumentException("Invalid input passed to RandomSelection. Array must have something in it.", "choices");
 
             byte[] rand = new byte[1];
             for (int i = 0; i < tofill.Length; i++)

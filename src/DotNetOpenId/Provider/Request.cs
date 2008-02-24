@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace DotNetOpenId.Provider
 {
@@ -74,7 +75,7 @@ namespace DotNetOpenId.Provider
 
 		public override string ToString() {
 			string returnString = @"Request.Mode = {0}";
-			return String.Format(returnString, Mode);
+			return String.Format(CultureInfo.CurrentUICulture, returnString, Mode);
 		}
 	}
 }

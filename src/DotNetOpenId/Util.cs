@@ -13,6 +13,7 @@ namespace DotNetOpenId {
         /// protocol or scheme is in it, and converts the hostname to lowercase.
         /// </summary>
         /// <returns>A Uri object for the provided unparsed string.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase")]
         public static Uri NormalizeUri(string uriStr) {
             if (!uriStr.StartsWith("http", StringComparison.OrdinalIgnoreCase)
                 && uriStr.IndexOf("://", StringComparison.Ordinal) < 0)
@@ -20,7 +21,7 @@ namespace DotNetOpenId {
 
             UriBuilder bldr = new UriBuilder(uriStr);
 
-            bldr.Host = bldr.Host.ToLower(CultureInfo.InvariantCulture);
+            bldr.Host = bldr.Host.ToLowerInvariant();
 
             return bldr.Uri;
         }

@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using DotNetOpenId.Provider;
+using System.Runtime.Serialization;
 
 namespace DotNetOpenId {
 	/// <summary>
 	/// A message did not conform to the OpenID protocol.
 	/// </summary>
+	[Serializable]
 	public class ProtocolException : Exception, IEncodable {
 		NameValueCollection query;
 		public Uri IdentityUrl { get; private set; }
@@ -28,9 +30,15 @@ namespace DotNetOpenId {
 		internal ProtocolException(string message, NameValueCollection query)
 			: this(message, null, query, null) {
 		}
+		internal ProtocolException(string message, Exception innerException)
+			: this(message, null, null, innerException) {
+		}
 		internal ProtocolException(string message)
 			: this(message, null, null, null) {
 		}
+		protected ProtocolException(SerializationInfo info, StreamingContext context)
+			: base(info, context) { }
+		internal ProtocolException() { }
 
 		internal bool HasReturnTo {
 			get {

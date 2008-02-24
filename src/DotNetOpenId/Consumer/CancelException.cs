@@ -7,11 +7,8 @@ namespace DotNetOpenId.Consumer {
 	/// The authentication request was canceled on the OpenID provider's web site.
 	/// </summary>
 	public class CancelException : ProtocolException {
-		public Uri IdentityUrl { get; private set; }
-
 		public CancelException(Uri identityUrl)
-			: base(string.Empty) {
-			IdentityUrl = identityUrl;
+			: base(string.Empty, identityUrl) {
 		}
 	}
 

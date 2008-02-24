@@ -43,7 +43,7 @@ namespace DotNetOpenId {
 				if (line.Length == 0) continue;
 				string[] parts = line.Split(new char[] { ':' }, 2);
 				if (parts.Length != 2) {
-					System.Diagnostics.Trace.WriteLine("Line " + line_num.ToString() + " does not contain a colon.");
+					System.Diagnostics.Trace.TraceError("Line {0} does not contain a colon.", line_num);
 				} else {
 					dict[parts[0].Trim()] = parts[1].Trim();
 				}

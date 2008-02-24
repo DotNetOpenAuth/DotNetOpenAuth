@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Security.Cryptography;
 using System.IO;
 using System.Text;
+using System.Globalization;
 
 namespace DotNetOpenId {
 	public abstract class Association {
@@ -17,7 +18,7 @@ namespace DotNetOpenId {
 		/// <summary>
 		/// Represents January 1, 1970 12 AM.
 		/// </summary>
-		protected internal readonly static DateTime UNIX_EPOCH = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+		protected internal readonly static DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
 		/// <summary>
 		/// A unique handle by which this <see cref="Association"/> may be stored or retrieved.
 		/// </summary>
@@ -143,7 +144,8 @@ Association.Secret = '{2}'
 Association.Expires = '{3}' 
 Association.IsExpired = '{4}' 
 Association.ExpiresIn = '{5}' ";
-			return String.Format(returnString, Handle, Issued, SecretKey,
+			return String.Format(CultureInfo.CurrentUICulture, 
+				returnString, Handle, Issued, SecretKey,
 				Expires, IsExpired, SecondsTillExpiration);
 		}
 	}

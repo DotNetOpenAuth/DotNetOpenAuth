@@ -1,6 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace DotNetOpenId.Provider
 {
@@ -26,43 +27,43 @@ namespace DotNetOpenId.Provider
                                                         "sb", "sc", "sd", "se", "sg", "sh", "si", "sj", "sk", "sl", "sm", "sn", "so", "sr", "st", "sv", "sy", "sz", "tc", "td", "tf", "tg", "th",
                                                         "tj", "tk", "tm", "tn", "to", "tp", "tr", "tt", "tv", "tw", "tz", "ua", "ug", "uk", "um", "us", "uy", "uz", "va", "vc", "ve", "vg", "vi",
                                                         "vn", "vu", "wf", "ws", "ye", "yt", "yu", "za", "zm", "zw"};
-        private string _unparsed;
-        private string _scheme;
-        private bool _wildcard;
-        private string _host;
-        private int _port;
-        private string _path;
+        string _scheme;
+        bool _wildcard;
+        string _host;
+        int _port;
+        string _path;
 
         #endregion
 
         #region Constructor(s)
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase")]
         public TrustRoot(string unparsed)
         {
             Match mo = _tr_regex.Match(unparsed);
 
             if (mo.Success)
             {
-                _unparsed = unparsed;
                 _scheme = mo.Groups["scheme"].Value;
-                _wildcard = mo.Groups["wildcard"].Value != String.Empty;
-                _host = mo.Groups["host"].Value.ToLower();
+                _wildcard = !string.IsNullOrEmpty(mo.Groups["wildcard"].Value);
+                _host = mo.Groups["host"].Value.ToLowerInvariant();
 
                 Group port_group = mo.Groups["port"];
                 if (port_group.Success)
-                    _port = Convert.ToInt32(port_group.Value);
+                    _port = Convert.ToInt32(port_group.Value, CultureInfo.InvariantCulture);
                 else if (_scheme == "https")
                     _port = 443;
                 else
                     _port = 80;
 
                 _path = mo.Groups["path"].Value;
-                if (_path == String.Empty)
+                if (string.IsNullOrEmpty(_path))
                     _path = "/";
             }
             else
             {
-                throw new UriFormatException(string.Format("'{0}' is not a valid OpenID trustroot.", unparsed));
+                throw new UriFormatException(string.Format(CultureInfo.CurrentUICulture,
+                    "'{0}' is not a valid OpenID trustroot.", unparsed));
             }
         }
 
@@ -149,7 +150,7 @@ namespace DotNetOpenId.Provider
             }
             else
             {
-                Debug.Assert(_host != string.Empty, "The host part of the Regex should evaluate to at least one char for successful parsed trust roots.");
+                Debug.Assert(!string.IsNullOrEmpty(_host), "The host part of the Regex should evaluate to at least one char for successful parsed trust roots.");
                 string[] host_parts = _host.Split('.');
                 string[] url_parts = url.Host.Split('.');
 
@@ -158,8 +159,6 @@ namespace DotNetOpenId.Provider
                 // Unless *.example.com actually matches example.com too.
                 if (host_parts.Length > url_parts.Length)
                     return false;
-
-                int offset = url_parts.Length - host_parts.Length;
 
                 // Compare last part first and move forward.
                 // Could be done by using EndsWith, but this solution seems more elegant.

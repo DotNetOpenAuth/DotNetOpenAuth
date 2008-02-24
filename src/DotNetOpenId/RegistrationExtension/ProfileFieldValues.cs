@@ -25,14 +25,14 @@ namespace DotNetOpenId.RegistrationExtension
 			get
 			{
 				if (Email == null) return null;
-				if (string.IsNullOrEmpty(Fullname))
+				if (string.IsNullOrEmpty(FullName))
 					return new MailAddress(Email);
 				else
-					return new MailAddress(Email, Fullname);
+					return new MailAddress(Email, FullName);
 			}
 		}
-		public string Fullname { get; set; }
-		public DateTime? Birthdate { get; set; }
+		public string FullName { get; set; }
+		public DateTime? BirthDate { get; set; }
 		public Gender? Gender { get; set; }
 		public string PostalCode { get; set; }
 		public string Country { get; set; }
@@ -70,18 +70,18 @@ namespace DotNetOpenId.RegistrationExtension
 			if (other == null) return false;
 
 			return
-				safeEquals(this.Birthdate, other.Birthdate) &&
+				safeEquals(this.BirthDate, other.BirthDate) &&
 				safeEquals(this.Country, other.Country) &&
 				safeEquals(this.Language, other.Language) &&
 				safeEquals(this.Email, other.Email) &&
-				safeEquals(this.Fullname, other.Fullname) &&
+				safeEquals(this.FullName, other.FullName) &&
 				safeEquals(this.Gender, other.Gender) &&
 				safeEquals(this.Nickname, other.Nickname) &&
 				safeEquals(this.PostalCode, other.PostalCode) &&
 				safeEquals(this.TimeZone, other.TimeZone);
 		}
 
-		bool safeEquals(object one, object other)
+		static bool safeEquals(object one, object other)
 		{
 			if (one == null && other == null) return true;
 			if (one == null ^ other == null) return false;

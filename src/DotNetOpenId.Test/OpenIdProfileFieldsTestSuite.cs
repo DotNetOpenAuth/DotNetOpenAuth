@@ -23,10 +23,10 @@ namespace DotNetOpenId.Test
 		ProfileFieldValues getFilledStruct()
 		{
 			ProfileFieldValues fields = new ProfileFieldValues();
-			fields.Birthdate = new DateTime(2005, 2, 3);
+			fields.BirthDate = new DateTime(2005, 2, 3);
 			fields.Culture = new System.Globalization.CultureInfo("en-US");
 			fields.Email = "a@b.com";
-			fields.Fullname = "Jimmy buffet";
+			fields.FullName = "Jimmy buffet";
 			fields.Gender = Gender.Male;
 			fields.Nickname = "Jimbo";
 			fields.PostalCode = "12345";

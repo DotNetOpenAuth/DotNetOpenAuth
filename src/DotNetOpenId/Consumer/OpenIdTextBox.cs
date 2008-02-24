@@ -18,6 +18,8 @@ using DotNetOpenId.RegistrationExtension;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using System.Globalization;
+using System.Diagnostics.CodeAnalysis;
 
 [assembly: WebResource(DotNetOpenId.Consumer.OpenIdTextBox.EmbeddedLogoResourceName, "image/gif")]
 
@@ -55,7 +57,7 @@ namespace DotNetOpenId.Consumer
 			wrappedTextBox.CssClass = cssClassDefault;
 			wrappedTextBox.Columns = columnsDefault;
 			wrappedTextBox.Text = text;
-			wrappedTextBox.TabIndex = tabIndexDefault;
+			wrappedTextBox.TabIndex = TabIndexDefault;
 		}
 
 		protected bool ShouldBeFocused;
@@ -89,6 +91,7 @@ namespace DotNetOpenId.Consumer
 
 		const string trustRootUrlViewStateKey = "TrustRootUrl";
 		const string trustRootUrlDefault = "~/";
+		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings")]
 		[Bindable(true)]
 		[Category(behaviorCategory)]
 		[DefaultValue(trustRootUrlDefault)]
@@ -141,15 +144,15 @@ namespace DotNetOpenId.Consumer
 		}
 
 		const string usePersistentCookieViewStateKey = "UsePersistentCookie";
-		protected const bool usePersistentCookieDefault = false;
+		protected const bool UsePersistentCookieDefault = false;
 		[Bindable(true)]
 		[Category(behaviorCategory)]
-		[DefaultValue(usePersistentCookieDefault)]
+		[DefaultValue(UsePersistentCookieDefault)]
 		[Description("Whether to send a persistent cookie upon successful " +
 			"login so the user does not have to log in upon returning to this site.")]
 		public virtual bool UsePersistentCookie
 		{
-			get { return (bool)(ViewState[usePersistentCookieViewStateKey] ?? usePersistentCookieDefault); }
+			get { return (bool)(ViewState[usePersistentCookieViewStateKey] ?? UsePersistentCookieDefault); }
 			set { ViewState[usePersistentCookieViewStateKey] = value; }
 		}
 
@@ -163,10 +166,10 @@ namespace DotNetOpenId.Consumer
 			set { WrappedTextBox.Columns = value; }
 		}
 
-		protected const short tabIndexDefault = 0;
+		protected const short TabIndexDefault = 0;
 		[Bindable(true)]
 		[Category(behaviorCategory)]
-		[DefaultValue(tabIndexDefault)]
+		[DefaultValue(TabIndexDefault)]
 		public override short TabIndex {
 			get { return WrappedTextBox.TabIndex; }
 			set { WrappedTextBox.TabIndex = value; }
@@ -205,15 +208,15 @@ namespace DotNetOpenId.Consumer
 			set { ViewState[requestFullNameViewStateKey] = value; }
 		}
 
-		const string requestBirthdateViewStateKey = "RequestBirthday";
-		const ProfileRequest requestBirthdateDefault = ProfileRequest.NoRequest;
+		const string requestBirthDateViewStateKey = "RequestBirthday";
+		const ProfileRequest requestBirthDateDefault = ProfileRequest.NoRequest;
 		[Bindable(true)]
 		[Category(profileCategory)]
-		[DefaultValue(requestBirthdateDefault)]
-		public ProfileRequest RequestBirthdate
+		[DefaultValue(requestBirthDateDefault)]
+		public ProfileRequest RequestBirthDate
 		{
-			get { return (ProfileRequest)(ViewState[requestBirthdateViewStateKey] ?? requestBirthdateDefault); }
-			set { ViewState[requestBirthdateViewStateKey] = value; }
+			get { return (ProfileRequest)(ViewState[requestBirthDateViewStateKey] ?? requestBirthDateDefault); }
+			set { ViewState[requestBirthDateViewStateKey] = value; }
 		}
 
 		const string requestGenderViewStateKey = "RequestGender";
@@ -273,6 +276,7 @@ namespace DotNetOpenId.Consumer
 
 		const string policyUrlViewStateKey = "PolicyUrl";
 		const string policyUrlDefault = "";
+		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings")]
 		[Bindable(true)]
 		[Category(profileCategory)]
 		[DefaultValue(policyUrlDefault)]
@@ -393,7 +397,7 @@ namespace DotNetOpenId.Consumer
 			{
 				string logoUrl = Page.ClientScript.GetWebResourceUrl(
 					typeof(OpenIdTextBox), EmbeddedLogoResourceName);
-				WrappedTextBox.Style["background"] = string.Format(
+				WrappedTextBox.Style["background"] = string.Format(CultureInfo.InvariantCulture,
 					"url({0}) no-repeat", logoUrl);
 				WrappedTextBox.Style["background-position"] = "0 50%";
 				WrappedTextBox.Style[HtmlTextWriterStyle.PaddingLeft] = "18px";
@@ -402,7 +406,7 @@ namespace DotNetOpenId.Consumer
 				WrappedTextBox.Style[HtmlTextWriterStyle.BorderColor] = "lightgray";
 			}
 		}
-		public void Login()
+		public void LogOn()
 		{
 			if (string.IsNullOrEmpty(Text))
 				throw new InvalidOperationException(DotNetOpenId.Strings.OpenIdTextBoxEmpty);
@@ -423,7 +427,7 @@ namespace DotNetOpenId.Consumer
 				return_to.Query = string.Empty;
 				var return_to_params = new Dictionary<string, string>(Page.Request.QueryString.Count);
 				foreach (string key in Page.Request.QueryString) {
-					if (!key.StartsWith(QueryStringArgs.openid.Prefix) && key != QueryStringArgs.nonce) {
+					if (!key.StartsWith(QueryStringArgs.openid.Prefix, StringComparison.OrdinalIgnoreCase) && key != QueryStringArgs.nonce) {
 						return_to_params.Add(key, Page.Request.QueryString[key]);
 					}
 				}
@@ -438,7 +442,7 @@ namespace DotNetOpenId.Consumer
 				// Throw an exception now if the trustroot and the return_to URLs don't match
 				// as required by the provider.  We could wait for the provider to test this and
 				// fail, but this will be faster and give us a better error message.
-				if (!(new DotNetOpenId.Provider.TrustRoot(trustRoot.ToString()).ValidateUrl(return_to.ToString())))
+				if (!(new DotNetOpenId.Provider.TrustRoot(trustRoot.ToString()).ValidateUrl(return_to.Uri)))
 					throw new DotNetOpenId.Provider.UntrustedReturnUrlException(return_to.Uri, trustRoot.ToString(), new NameValueCollection());
 
 				// Note: we must use trustRoot.ToString() because trustRoot.Uri throws when wildcards are present.
@@ -468,7 +472,7 @@ namespace DotNetOpenId.Consumer
 				fields.Add(QueryStringArgs.openidnp.sregnp.email);
 			if (RequestFullName == level)
 				fields.Add(QueryStringArgs.openidnp.sregnp.fullname);
-			if (RequestBirthdate == level)
+			if (RequestBirthDate == level)
 				fields.Add(QueryStringArgs.openidnp.sregnp.dob);
 			if (RequestGender == level)
 				fields.Add(QueryStringArgs.openidnp.sregnp.gender);
@@ -491,12 +495,12 @@ namespace DotNetOpenId.Consumer
 			if (RequestEmail > ProfileRequest.NoRequest)
 				fields.Email = queryString[QueryStringArgs.openid.sreg.email];
 			if (RequestFullName > ProfileRequest.NoRequest)
-				fields.Fullname = queryString[QueryStringArgs.openid.sreg.fullname];
-			if (RequestBirthdate > ProfileRequest.NoRequest && !string.IsNullOrEmpty(queryString[QueryStringArgs.openid.sreg.dob]))
+				fields.FullName = queryString[QueryStringArgs.openid.sreg.fullname];
+			if (RequestBirthDate > ProfileRequest.NoRequest && !string.IsNullOrEmpty(queryString[QueryStringArgs.openid.sreg.dob]))
 			{
-				DateTime birthdate;
-				DateTime.TryParse(queryString[QueryStringArgs.openid.sreg.dob], out birthdate);
-				fields.Birthdate = birthdate;
+				DateTime birthDate;
+				DateTime.TryParse(queryString[QueryStringArgs.openid.sreg.dob], out birthDate);
+				fields.BirthDate = birthDate;
 			}
 			if (RequestGender > ProfileRequest.NoRequest)
 				switch (queryString[QueryStringArgs.openid.sreg.gender])
@@ -602,8 +606,8 @@ namespace DotNetOpenId.Consumer
 				ErrorMessage = errorMessage;
 				ErrorException = errorException;
 			}
-			public string ErrorMessage;
-			public Exception ErrorException;
+			public string ErrorMessage { get; private set; }
+			public Exception ErrorException { get; private set; }
 		}
 
 		/// <summary>

@@ -14,6 +14,7 @@ namespace DotNetOpenId.Consumer
 	using System.IO;
 	using System.Diagnostics;
 	using IConsumerAssociationStore = DotNetOpenId.Store.IAssociationStore<System.Uri>;
+	using System.Globalization;
 
 	internal class GenericConsumer
 	{
@@ -31,7 +32,7 @@ namespace DotNetOpenId.Consumer
 			string nonce = CryptUtil.CreateNonce();
 			string token = new Token(service_endpoint).Serialize(store.AuthKey);
 
-			Association assoc = this.GetAssociation(service_endpoint.ServerUrl);
+			Association assoc = this.getAssociation(service_endpoint.ServerUrl);
 
 			AuthRequest request = new AuthRequest(token, assoc, service_endpoint);
 			request.ReturnToArgs.Add(QueryStringArgs.nonce, nonce);
@@ -43,24 +44,27 @@ namespace DotNetOpenId.Consumer
 		{
 			string mode;
 			if (!query.TryGetValue(QueryStringArgs.openid.mode, out mode))
-				throw new ProtocolException(string.Format(Strings.MissingOpenIdQueryParameter, QueryStringArgs.openid.mode));
+				throw new ProtocolException(string.Format(CultureInfo.CurrentUICulture, 
+					Strings.MissingOpenIdQueryParameter, QueryStringArgs.openid.mode));
 
 			string tokenString;
 			if (!query.TryGetValue(Token.TokenKey, out tokenString))
-				throw new ProtocolException(string.Format(Strings.MissingInternalQueryParameter, Token.TokenKey));
+				throw new ProtocolException(string.Format(CultureInfo.CurrentUICulture,
+					Strings.MissingInternalQueryParameter, Token.TokenKey));
 			Token token = Token.Deserialize(tokenString, store.AuthKey);
 
 			switch (mode) {
 				case QueryStringArgs.Modes.cancel:
 					throw new CancelException(token.IdentityUrl);
 				case QueryStringArgs.Modes.error:
-					throw new FailureException(token.IdentityUrl, query[QueryStringArgs.openid.error]);
+					throw new FailureException(query[QueryStringArgs.openid.error], token.IdentityUrl);
 				case QueryStringArgs.Modes.id_res:
-					ConsumerResponse response = DoIdRes(query, token);
+					ConsumerResponse response = doIdRes(query, token);
 					checkNonce(response, query[QueryStringArgs.nonce]);
 					return response;
 				default:
-					throw new ProtocolException(string.Format(Strings.InvalidOpenIdQueryParameterValue,
+					throw new ProtocolException(string.Format(CultureInfo.CurrentUICulture,
+						Strings.InvalidOpenIdQueryParameterValue,
 						QueryStringArgs.openid.mode, mode), token.IdentityUrl);
 			}
 		}
@@ -73,12 +77,12 @@ namespace DotNetOpenId.Consumer
 		/// <returns>Whether the authentication is valid.</returns>
 		bool checkAuth(IDictionary<string, string> query, Uri serverUrl)
 		{
-			IDictionary<string, string> request = CreateCheckAuthRequest(query);
+			IDictionary<string, string> request = createCheckAuthRequest(query);
 
 			if (request == null)
 				return false;
 
-			var response = MakeKVPost(request, serverUrl);
+			var response = makeKVPost(request, serverUrl);
 
 			if (response == null)
 				return false;
@@ -93,24 +97,25 @@ namespace DotNetOpenId.Consumer
 		/// <remarks>
 		/// TODO: replay attacks are not currently guarded against.
 		/// </remarks>
-		void checkNonce(ConsumerResponse response, string nonce)
+		static void checkNonce(ConsumerResponse response, string nonce)
 		{
 			var nvc = HttpUtility.ParseQueryString(response.ReturnTo.Query);
 
 			string returnToNonce = nvc[QueryStringArgs.nonce];
 			if (String.IsNullOrEmpty(returnToNonce))
-				throw new ProtocolException(string.Format(Strings.MissingReturnToQueryParameter,
+				throw new ProtocolException(string.Format(CultureInfo.CurrentUICulture, 
+					Strings.MissingReturnToQueryParameter,
 					QueryStringArgs.nonce, response.ReturnTo.Query), response.IdentityUrl);
 
 			if (returnToNonce != nonce)
 				throw new ProtocolException(Strings.NonceMismatch, response.IdentityUrl);
 		}
 
-		IDictionary<string, string> MakeKVPost(IDictionary<string, string> args, Uri server_url) {
+		static IDictionary<string, string> makeKVPost(IDictionary<string, string> args, Uri serverUrl) {
 			byte[] body = ASCIIEncoding.ASCII.GetBytes(UriUtil.CreateQueryString(args));
 
 			try {
-				FetchResponse resp = Fetcher.Request(server_url, body);
+				FetchResponse resp = Fetcher.Request(serverUrl, body);
 				if ((int)resp.Code > 200 && (int)resp.Code < 300) {
 					return DictionarySerializer.Deserialize(resp.Data, resp.Length);
 				} else {
@@ -125,13 +130,13 @@ namespace DotNetOpenId.Consumer
 			}
 		}
 
-		private ConsumerResponse DoIdRes(IDictionary<string, string> query, Token token)
+		ConsumerResponse doIdRes(IDictionary<string, string> query, Token token)
 		{
 			Converter<string, string> getRequired = delegate(string key)
 				{
 					string val;
 					if (!query.TryGetValue(key, out val))
-						throw new FailureException(token.IdentityUrl, "Missing required field: " + key);
+						throw new FailureException("Missing required field: " + key, token.IdentityUrl);
 
 					return val;
 				};
@@ -140,12 +145,10 @@ namespace DotNetOpenId.Consumer
 			if (query.TryGetValue(QueryStringArgs.openid.user_setup_url, out user_setup_url))
 				throw new SetupNeededException(token.IdentityUrl, new Uri(user_setup_url));
 
-			string return_to = getRequired(QueryStringArgs.openid.return_to);
-			string server_id2 = getRequired(QueryStringArgs.openid.identity);
 			string assoc_handle = getRequired(QueryStringArgs.openid.assoc_handle);
 
 			if (token.ServerId.AbsoluteUri != token.ServerId.ToString())
-				throw new FailureException(token.IdentityUrl, "Provider ID (delegate) mismatch");
+				throw new FailureException("Provider ID (delegate) mismatch", token.IdentityUrl);
 
 			Association assoc = this.store.GetAssociation(token.ServerUrl, assoc_handle);
 
@@ -154,14 +157,15 @@ namespace DotNetOpenId.Consumer
 				// It's not an association we know about.  Dumb mode is our
 				// only possible path for recovery.
 				if (!checkAuth(query, token.ServerUrl))
-					throw new FailureException(token.IdentityUrl, "check_authentication failed");
+					throw new FailureException("check_authentication failed", token.IdentityUrl);
 
 				return new ConsumerResponse(token.IdentityUrl, query, query[QueryStringArgs.openid.signed]);
 			}
 
 			if (assoc.IsExpired)
 			{
-				throw new FailureException(token.IdentityUrl, String.Format("Association with {0} expired", token.ServerUrl));
+				throw new FailureException(String.Format(CultureInfo.CurrentUICulture,
+					"Association with {0} expired", token.ServerUrl), token.IdentityUrl);
 			}
 
 			// Check the signature
@@ -172,12 +176,12 @@ namespace DotNetOpenId.Consumer
 			string v_sig = CryptUtil.ToBase64String(assoc.Sign(query, signed_array, QueryStringArgs.openid.Prefix));
 
 			if (v_sig != sig)
-				throw new FailureException(token.IdentityUrl, "Bad signature");
+				throw new FailureException("Bad signature", token.IdentityUrl);
 
 			return new ConsumerResponse(token.IdentityUrl, query, signed);
 		}
 
-		private static AssociationRequest CreateAssociationRequest(Uri server_url)
+		static AssociationRequest createAssociationRequest(Uri serverUrl)
 		{
 			var args = new Dictionary<string, string>();
 
@@ -186,7 +190,7 @@ namespace DotNetOpenId.Consumer
 
 			DiffieHellman dh = null;
 
-			if (server_url.Scheme != Uri.UriSchemeHttps)
+			if (serverUrl.Scheme != Uri.UriSchemeHttps)
 			{
 				// Initiate Diffie-Hellman Exchange
 				dh = CryptUtil.CreateDiffieHellman();
@@ -209,7 +213,7 @@ namespace DotNetOpenId.Consumer
 			return new AssociationRequest(dh, args);
 		}
 
-		private IDictionary<string, string> CreateCheckAuthRequest(IDictionary<string, string> query)
+		static IDictionary<string, string> createCheckAuthRequest(IDictionary<string, string> query)
 		{
 			string signed = query[QueryStringArgs.openid.signed];
 
@@ -231,7 +235,7 @@ namespace DotNetOpenId.Consumer
 
 			foreach (string key in query.Keys)
 			{
-				if (key.StartsWith(QueryStringArgs.openid.Prefix) 
+				if (key.StartsWith(QueryStringArgs.openid.Prefix, StringComparison.OrdinalIgnoreCase) 
 					&& Array.IndexOf(signed_array, key.Substring(QueryStringArgs.openid.Prefix.Length)) > -1)
 					check_args[key] = query[key];
 			}
@@ -240,20 +244,20 @@ namespace DotNetOpenId.Consumer
 			return check_args;
 		}
 
-		private Association GetAssociation(Uri server_url)
+		Association getAssociation(Uri serverUrl)
 		{
-			Association assoc = store.GetAssociation(server_url);
+			Association assoc = store.GetAssociation(serverUrl);
 
 			if (assoc == null || assoc.SecondsTillExpiration < minimumUsefulAssociationLifetime.TotalSeconds)
 			{
-				AssociationRequest req = CreateAssociationRequest(server_url);
+				AssociationRequest req = createAssociationRequest(serverUrl);
 
-				var response = MakeKVPost(req.Args, server_url);
+				var response = makeKVPost(req.Args, serverUrl);
 
 				if (response == null)
 					assoc = null;
 				else
-					assoc = ParseAssociation(response, req.DH, server_url);
+					assoc = ParseAssociation(response, req.DH, serverUrl);
 			}
 
 			return assoc;
@@ -263,7 +267,7 @@ namespace DotNetOpenId.Consumer
 			Converter<string, string> getParameter = delegate(string key) {
 				string val;
 				if (!results.TryGetValue(key, out val) || string.IsNullOrEmpty(val))
-					throw new ProtocolException(string.Format(Strings.MissingOpenIdQueryParameter, key));
+					throw new ProtocolException(string.Format(CultureInfo.CurrentUICulture, Strings.MissingOpenIdQueryParameter, key));
 				return val;
 			};
 
@@ -271,7 +275,7 @@ namespace DotNetOpenId.Consumer
 				try {
 					return Convert.FromBase64String(getParameter(key));
 				} catch (FormatException ex) {
-					throw new ProtocolException(string.Format(
+					throw new ProtocolException(string.Format(CultureInfo.CurrentUICulture,
 						Strings.ExpectedBase64OpenIdQueryParameter, key), null, ex);
 				}
 			};
@@ -294,7 +298,7 @@ namespace DotNetOpenId.Consumer
 							return null;
 
 						string assocHandle = getParameter(QueryStringArgs.openidnp.assoc_handle);
-						TimeSpan expiresIn = new TimeSpan(0, 0, Convert.ToInt32(getParameter(QueryStringArgs.openidnp.expires_in)));
+						TimeSpan expiresIn = new TimeSpan(0, 0, Convert.ToInt32(getParameter(QueryStringArgs.openidnp.expires_in), CultureInfo.CurrentUICulture));
 
 						assoc = new HmacSha1Association(assocHandle, secret, expiresIn);
 						break;

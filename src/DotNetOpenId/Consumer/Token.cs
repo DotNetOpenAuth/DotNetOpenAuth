@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Security.Cryptography;
+using System.Globalization;
 
 namespace DotNetOpenId.Consumer {
 	/// <summary>
 	/// A state-containing bit of non-confidential data that is sent to the 
 	/// user agent as part of the return_to URL so we can read from it later.
 	/// </summary>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
+		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", Justification = "CryptoStream is not stored in a field.")]
 	class Token {
 		static readonly TimeSpan maximumLifetime = TimeSpan.FromMinutes(5);
 		public static readonly string TokenKey = "token";
@@ -34,7 +37,7 @@ namespace DotNetOpenId.Consumer {
 		/// This string is cryptographically signed to protect against tampering.
 		/// </summary>
 		public string Serialize(byte[] signingSecretKey) {
-			string timestamp = DateTime.UtcNow.ToFileTimeUtc().ToString();
+			string timestamp = DateTime.UtcNow.ToFileTimeUtc().ToString(CultureInfo.InvariantCulture);
 
 			using (MemoryStream ms = new MemoryStream())
 			using (HashAlgorithm sha1 = new HMACSHA1(signingSecretKey))
@@ -69,7 +72,7 @@ namespace DotNetOpenId.Consumer {
 			byte[] tok = Convert.FromBase64String(token);
 
 			if (tok.Length < 20)
-				throw new FailureException(null, "Failed while reading token.");
+				throw new FailureException("Failed while reading token.", null);
 
 			byte[] sig = new byte[20];
 			Buffer.BlockCopy(tok, 0, sig, 0, 20);
@@ -79,7 +82,7 @@ namespace DotNetOpenId.Consumer {
 
 			for (int i = 0; i < sig.Length; i++)
 				if (sig[i] != newSig[i])
-					throw new FailureException(null, "Token failed signature verification.");
+					throw new FailureException("Token failed signature verification.", null);
 
 			List<string> items = new List<string>();
 
@@ -96,11 +99,11 @@ namespace DotNetOpenId.Consumer {
 				items.Add(Encoding.ASCII.GetString(tok, prev, tok.Length - prev));
 
 			//# Check if timestamp has expired
-			DateTime ts = DateTime.FromFileTimeUtc(Convert.ToInt64(items[0]));
+			DateTime ts = DateTime.FromFileTimeUtc(Convert.ToInt64(items[0], CultureInfo.InvariantCulture));
 			ts += maximumLifetime;
 
 			if (ts < DateTime.UtcNow)
-				throw new FailureException(null, "Token has expired.");
+				throw new FailureException("Token has expired.", null);
 
 			items.RemoveAt(0);
 

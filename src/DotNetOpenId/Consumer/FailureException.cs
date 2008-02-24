@@ -2,11 +2,8 @@
 
 namespace DotNetOpenId.Consumer {
 	public class FailureException : ProtocolException {
-		public Uri IdentityUrl { get; private set; }
-
-		public FailureException(Uri identityUrl, string message)
-			: base(message) {
-			IdentityUrl = identityUrl;
+		public FailureException(string message, Uri identityUrl)
+			: base(message, identityUrl) {
 		}
 	}
 }

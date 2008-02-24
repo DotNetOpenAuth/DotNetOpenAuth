@@ -40,7 +40,7 @@ namespace DotNetOpenId.Consumer {
 			extensionPrefix = QueryStringArgs.openid.Prefix + extensionPrefix + ".";
 			int prefix_len = extensionPrefix.Length;
 			foreach (var pair in this.signedArguments) {
-				if (pair.Key.StartsWith(extensionPrefix)) {
+				if (pair.Key.StartsWith(extensionPrefix, StringComparison.OrdinalIgnoreCase)) {
 					string bareKey = pair.Key.Substring(prefix_len);
 					response[bareKey] = pair.Value;
 				}

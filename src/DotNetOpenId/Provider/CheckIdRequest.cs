@@ -5,6 +5,7 @@ using System.Text;
 using DotNetOpenId.RegistrationExtension;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace DotNetOpenId.Provider {
 	/// <summary>
@@ -110,7 +111,8 @@ namespace DotNetOpenId.Provider {
 			try {
 				ReturnTo = new Uri(getRequiredField(query, QueryStringArgs.openid.return_to));
 			} catch (UriFormatException ex) {
-				throw new ProtocolException(string.Format("'{0}' is not a valid OpenID return_to URL.", query[QueryStringArgs.openid.return_to]),
+				throw new ProtocolException(string.Format(CultureInfo.CurrentUICulture, 
+					"'{0}' is not a valid OpenID return_to URL.", query[QueryStringArgs.openid.return_to]),
 					IdentityUrl, query, ex);
 			}
 
@@ -137,7 +139,7 @@ namespace DotNetOpenId.Provider {
 			}
 		}
 
-		string getRequiredField(NameValueCollection query, string field) {
+		static string getRequiredField(NameValueCollection query, string field) {
 			string value = query[field];
 
 			if (value == null)
@@ -150,21 +152,21 @@ namespace DotNetOpenId.Provider {
 		/// Respond to this request.
 		/// </summary>
 		/// <param name="allow">Allow this user to claim this identity, and allow the consumer to have this information?</param>
-		public WebResponse Answer(bool allow, Uri server_url) {
-			return Answer(allow, server_url, null);
+		public WebResponse Answer(bool allow, Uri serverUrl) {
+			return Answer(allow, serverUrl, null);
 		}
 
 		/// <summary>
 		/// Respond to this request.
 		/// </summary>
 		/// <param name="allow">Allow this user to claim this identity, and allow the consumer to have this information?</param>
-		public WebResponse Answer(bool allow, Uri server_url, ProfileFieldValues openIdProfileFields) {
+		public WebResponse Answer(bool allow, Uri serverUrl, ProfileFieldValues openIdProfileFields) {
 			string mode = (allow || Immediate) ? QueryStringArgs.Modes.id_res : QueryStringArgs.Modes.cancel;
 
 			if (TraceUtil.Switch.TraceInfo) {
 				Trace.TraceInformation("Start processing Response for CheckIdRequest");
 				if (TraceUtil.Switch.TraceVerbose) {
-					Trace.TraceInformation("mode = '{0}',  server_url = '{1}", mode, server_url);
+					Trace.TraceInformation("mode = '{0}',  server_url = '{1}", mode, serverUrl);
 					if (openIdProfileFields != null) {
 						Trace.TraceInformation("Simple registration fields: {0}",
 							TraceUtil.ToString(openIdProfileFields));
@@ -185,8 +187,8 @@ namespace DotNetOpenId.Provider {
 				fields.Add(QueryStringArgs.openidnp.return_to, ReturnTo.AbsoluteUri);
 
 				if (openIdProfileFields != null) {
-					if (openIdProfileFields.Birthdate != null) {
-						fields.Add(QueryStringArgs.openidnp.sreg.dob, openIdProfileFields.Birthdate.ToString());
+					if (openIdProfileFields.BirthDate != null) {
+						fields.Add(QueryStringArgs.openidnp.sreg.dob, openIdProfileFields.BirthDate.ToString());
 					}
 					if (!String.IsNullOrEmpty(openIdProfileFields.Country)) {
 						fields.Add(QueryStringArgs.openidnp.sreg.country, openIdProfileFields.Country);
@@ -194,8 +196,8 @@ namespace DotNetOpenId.Provider {
 					if (openIdProfileFields.Email != null) {
 						fields.Add(QueryStringArgs.openidnp.sreg.email, openIdProfileFields.Email.ToString());
 					}
-					if ((!String.IsNullOrEmpty(openIdProfileFields.Fullname))) {
-						fields.Add(QueryStringArgs.openidnp.sreg.fullname, openIdProfileFields.Fullname);
+					if ((!String.IsNullOrEmpty(openIdProfileFields.FullName))) {
+						fields.Add(QueryStringArgs.openidnp.sreg.fullname, openIdProfileFields.FullName);
 					}
 
 					if (openIdProfileFields.Gender != null) {
@@ -227,11 +229,13 @@ namespace DotNetOpenId.Provider {
 			}
 			response.AddField(null, QueryStringArgs.openidnp.mode, mode, false);
 			if (Immediate) {
-				if (server_url == null) { throw new ApplicationException("setup_url is required for allow=False in immediate mode."); }
+				if (serverUrl == null) {
+					throw new ArgumentNullException("serverUrl", "serverUrl is required for allow=False in immediate mode.");
+				}
 
 				CheckIdRequest setup_request = new CheckIdRequest(Server, IdentityUrl, ReturnTo, TrustRoot, false, this.AssociationHandle);
 
-				Uri setup_url = setup_request.encodeToUrl(server_url);
+				Uri setup_url = setup_request.encodeToUrl(serverUrl);
 
 				response.AddField(null, "user_setup_url", setup_url.AbsoluteUri, false);
 			}
@@ -280,7 +284,7 @@ CheckIdRequest._policyUrl = '{5}'
 {6}
 ";
 
-			return base.ToString() + string.Format(
+			return base.ToString() + string.Format(CultureInfo.CurrentUICulture,
 				returnString, Immediate, TrustRoot, IdentityUrl, Mode, ReturnTo,
 				PolicyUrl, RequestedProfileFields);
 		}

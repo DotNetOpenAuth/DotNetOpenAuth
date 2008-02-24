@@ -5,6 +5,7 @@ using System.Text;
 using System.Collections.Generic;
 using DotNetOpenId.Store;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace DotNetOpenId.Provider {
 	/// <summary>
@@ -94,7 +95,7 @@ namespace DotNetOpenId.Provider {
 CheckAuthRequest._sig = '{0}'
 CheckAuthRequest.AssocHandle = '{1}'
 CheckAuthRequest._invalidate_handle = '{2}' ";
-			return base.ToString() + string.Format(
+			return base.ToString() + string.Format(CultureInfo.CurrentUICulture, 
 				returnString, signature, AssociationHandle, invalidate_handle);
 		}
 

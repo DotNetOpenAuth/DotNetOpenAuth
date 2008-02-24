@@ -135,7 +135,7 @@ namespace DotNetOpenId.Provider {
 
 			uniq = CryptUtil.ToBase64String(uniq_bytes);
 
-			double seconds = DateTime.UtcNow.Subtract(Association.UNIX_EPOCH).TotalSeconds;
+			double seconds = DateTime.UtcNow.Subtract(Association.UnixEpoch).TotalSeconds;
 
 			handle = "{{HMAC-SHA1}{" + seconds + "}{" + uniq + "}";
 
@@ -168,7 +168,7 @@ namespace DotNetOpenId.Provider {
 			}
 
 			if (TraceUtil.Switch.TraceInfo) {
-				Trace.TraceInformation("End get association from store '{0}'. Association found? =  {1}", assoc_handle, (assoc != null).ToString().ToUpper());
+				Trace.TraceInformation("End get association from store '{0}'. Association found? =  {1}", assoc_handle, (assoc != null).ToString());
 			}
 
 			return assoc;

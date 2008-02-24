@@ -6,6 +6,7 @@ using DotNetOpenId;
 using DotNetOpenId.Consumer;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace DotNetOpenId.Provider
 {
@@ -101,10 +102,12 @@ namespace DotNetOpenId.Provider
 
         public override string ToString()
         {
-            string returnString = String.Format("Response.NeedsSigning = {0}", this.NeedsSigning);             
+            string returnString = String.Format(CultureInfo.CurrentUICulture, 
+                "Response.NeedsSigning = {0}", this.NeedsSigning);             
             foreach (string key in Fields.Keys)
             {
-                returnString += Environment.NewLine +  String.Format("ResponseField[{0}] = '{1}'", key, Fields[key]);
+                returnString += Environment.NewLine +  String.Format(CultureInfo.CurrentUICulture,
+                    "ResponseField[{0}] = '{1}'", key, Fields[key]);
             }
             return returnString;            
         }               

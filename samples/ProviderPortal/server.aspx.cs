@@ -10,6 +10,7 @@ using System.Web.UI.WebControls.WebParts;
 using System.Web.UI.HtmlControls;
 using DotNetOpenId.Provider;
 using System.Diagnostics;
+using DotNetOpenId;
 
 /// <summary>
 /// This is the primary page for this open-id server.
