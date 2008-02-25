@@ -35,7 +35,7 @@ using DotNetOpenId;
 public partial class server : System.Web.UI.Page {
 	protected void Page_Load(object src, System.EventArgs evt) {
 		OpenIdProvider openIDServer = new OpenIdProvider();
-		Request request = null;
+		AuthenticationRequest request = null;
 
 		// determine what incoming message was received
 		try {
@@ -50,7 +50,7 @@ public partial class server : System.Web.UI.Page {
 		}
 
 		// process the incoming message appropriately and send the response
-		WebResponse response = null;
+		AuthenticationResponse response = null;
 		switch (request.RequestType) {
 			case RequestType.CheckIdRequest:
 				CheckIdRequest idrequest = (CheckIdRequest)request;

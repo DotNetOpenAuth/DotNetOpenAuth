@@ -14,10 +14,10 @@ namespace DotNetOpenId.Provider
         /// <summary>
         /// Encodes responses in to WebResponses.
         /// </summary>
-        public virtual WebResponse Encode(IEncodable response)
+        public virtual AuthenticationResponse Encode(IEncodable response)
         {
             EncodingType encode_as = response.EncodingType;
-            WebResponse wr;
+            AuthenticationResponse wr;
 
             if (TraceUtil.Switch.TraceInfo)
             {
@@ -29,7 +29,7 @@ namespace DotNetOpenId.Provider
                 case EncodingType.ResponseBody:
                     HttpStatusCode code = (response is Exception) ? 
                         HttpStatusCode.BadRequest : HttpStatusCode.OK;
-                    wr = new WebResponse(code, null, DictionarySerializer.Serialize(response.EncodedFields));
+                    wr = new AuthenticationResponse(code, null, DictionarySerializer.Serialize(response.EncodedFields));
                     break;
                 case EncodingType.RedirectBrowserUrl:
                     NameValueCollection headers = new NameValueCollection();
@@ -39,13 +39,13 @@ namespace DotNetOpenId.Provider
 
                     headers.Add("Location", builder.Uri.AbsoluteUri);
 
-                    wr = new WebResponse(HttpStatusCode.Redirect, headers, new byte[0]);
+                    wr = new AuthenticationResponse(HttpStatusCode.Redirect, headers, new byte[0]);
                     break;
                 default:
                     if (TraceUtil.Switch.TraceError) {
                         Trace.TraceError("Cannot encode response: {0}", response);
                     }
-                    wr = new WebResponse(HttpStatusCode.BadRequest, new NameValueCollection(), new byte[0]);
+                    wr = new AuthenticationResponse(HttpStatusCode.BadRequest, new NameValueCollection(), new byte[0]);
                     break;
             }
             return wr;
@@ -64,7 +64,7 @@ namespace DotNetOpenId.Provider
             this.signatory = signatory;
         }
 
-        public override WebResponse Encode(IEncodable encodable)
+        public override AuthenticationResponse Encode(IEncodable encodable)
         {
             if (!(encodable is Exception))
             {

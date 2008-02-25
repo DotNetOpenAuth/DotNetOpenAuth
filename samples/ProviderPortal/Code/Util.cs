@@ -61,7 +61,7 @@ public class Util {
 		HttpContext.Current.Response.Close();
 	}
 
-	public static void GenerateHttpResponse(DotNetOpenId.Provider.WebResponse webresponse) {
+	public static void GenerateHttpResponse(DotNetOpenId.Provider.AuthenticationResponse webresponse) {
 		State.Session.Reset();
 		OpenIdProvider server = new OpenIdProvider();
 

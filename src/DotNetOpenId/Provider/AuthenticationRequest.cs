@@ -14,8 +14,8 @@ namespace DotNetOpenId.Provider
 		AssociateRequest,
 	}
 
-	public abstract class Request {
-		protected Request(OpenIdProvider server) {
+	public abstract class AuthenticationRequest {
+		protected AuthenticationRequest(OpenIdProvider server) {
 			Server = server;
 		}
 
@@ -45,7 +45,7 @@ namespace DotNetOpenId.Provider
 		/// <param name="query">A dictionary of name/value pairs given in the request's
 		/// querystring or form submission.</param>
 		/// <returns>A Request-derived type appropriate for this stage in authentication.</returns>
-		internal static Request CreateRequest(OpenIdProvider provider, NameValueCollection query) {
+		internal static AuthenticationRequest CreateRequest(OpenIdProvider provider, NameValueCollection query) {
 			Debug.Assert(query != null);
 			
 			string mode = query[QueryStringArgs.openid.mode];
@@ -53,7 +53,7 @@ namespace DotNetOpenId.Provider
 				throw new OpenIdException("No openid.mode value in query.", query);
 			}
 
-			Request request;
+			AuthenticationRequest request;
 			switch (mode) {
 				case QueryStringArgs.Modes.checkid_setup:
 					request = new CheckIdRequest(provider, query);
@@ -74,7 +74,7 @@ namespace DotNetOpenId.Provider
 			return request;
 		}
 
-		protected abstract WebResponse CreateResponse();
+		protected abstract AuthenticationResponse CreateResponse();
 		/// <summary>
 		/// Called whenever a property changes that would cause the response to need to be
 		/// regenerated if it had already been generated.
@@ -82,12 +82,12 @@ namespace DotNetOpenId.Provider
 		protected void InvalidateResponse() {
 			response = null;
 		}
-		WebResponse response;
+		AuthenticationResponse response;
 		/// <summary>
 		/// The authentication response to be sent to the user agent or the calling
 		/// OpenId consumer.
 		/// </summary>
-		public WebResponse Response {
+		public AuthenticationResponse Response {
 			get {
 				if (response == null) {
 					response = CreateResponse();

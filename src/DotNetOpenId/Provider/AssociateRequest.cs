@@ -10,7 +10,7 @@ namespace DotNetOpenId.Provider {
 	/// <summary>
 	/// A request to establish an association.
 	/// </summary>
-	internal class AssociateRequest : Request {
+	internal class AssociateRequest : AuthenticationRequest {
 		string associationKeyType = QueryStringArgs.HMAC_SHA1;
 		ProviderSession session;
 
@@ -67,7 +67,7 @@ namespace DotNetOpenId.Provider {
 			return response;
 		}
 
-		protected override WebResponse CreateResponse() {
+		protected override AuthenticationResponse CreateResponse() {
 			return Server.EncodeResponse(Answer());
 		}
 

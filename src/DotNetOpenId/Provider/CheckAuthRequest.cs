@@ -81,7 +81,7 @@ namespace DotNetOpenId.Provider {
 			return response;
 		}
 
-		protected override WebResponse CreateResponse() {
+		protected override AuthenticationResponse CreateResponse() {
 			return Server.EncodeResponse(Answer());
 		}
 

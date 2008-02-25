@@ -31,7 +31,7 @@ public partial class decide : Page {
 	}
 
 	protected void Yes_Click(Object sender, EventArgs e) {
-		WebResponse response;
+		AuthenticationResponse response;
 		if (this.profileFields.DoesAnyFieldHaveAValue) {
 			// authenticate with simple registration fields
 			response = State.Session.LastRequest.Answer(true, Util.ServerUri, this.profileFields.OpenIdProfileFields);
