@@ -63,7 +63,6 @@ public class Util {
 
 	public static void GenerateHttpResponse(DotNetOpenId.Provider.AuthenticationResponse webresponse) {
 		State.Session.Reset();
-		OpenIdProvider server = new OpenIdProvider();
 
 		if (webresponse.Code == HttpStatusCode.Redirect) {
 			Trace.TraceInformation("Send response as 302 browser redirect to: '{0}'", webresponse.Headers["Location"]);
@@ -72,8 +71,8 @@ public class Util {
 			return;
 		}
 		HttpContext.Current.Response.StatusCode = (int)webresponse.Code;
-		foreach (string key in webresponse.Headers)
-			HttpContext.Current.Response.AddHeader(key, webresponse.Headers[key]);
+		foreach (string headerName in webresponse.Headers)
+			HttpContext.Current.Response.AddHeader(headerName, webresponse.Headers[headerName]);
 
 		if (webresponse.Body != null) {
 
@@ -85,7 +84,7 @@ public class Util {
 				System.Text.Encoding.UTF8.GetString(webresponse.Body));
 			Trace.Unindent();
 
-			HttpContext.Current.Response.Write(System.Text.Encoding.UTF8.GetString(webresponse.Body));
+			HttpContext.Current.Response.OutputStream.Write(webresponse.Body, 0, webresponse.Body.Length);
 
 		}
 		// HttpContext.Current.Response.Flush();

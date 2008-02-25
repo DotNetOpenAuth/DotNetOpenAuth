@@ -128,7 +128,8 @@ namespace DotNetOpenId.Provider
 			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
 			HttpContext.Current.Response.Clear();
 			HttpContext.Current.Response.StatusCode = (int)Response.Code;
-			HttpContext.Current.Response.Headers.Add(Response.Headers);
+			foreach (string headerName in Response.Headers)
+				HttpContext.Current.Response.AddHeader(headerName, Response.Headers[headerName]);
 			HttpContext.Current.Response.OutputStream.Write(Response.Body, 0, Response.Body.Length);
 			HttpContext.Current.Response.OutputStream.Flush();
 			HttpContext.Current.Response.OutputStream.Close();

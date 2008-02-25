@@ -15,30 +15,48 @@ namespace DotNetOpenId.Provider {
 	public class OpenIdProvider {
 		internal Signatory Signatory { get; private set; }
 		Encoder encoder;
+		NameValueCollection query;
 
 		/// <summary>
 		/// Constructs an OpenId server that uses the HttpApplication dictionary as
 		/// its association store.
 		/// </summary>
-		public OpenIdProvider() : this(httpApplicationAssociationStore) { }
-
+		/// <remarks>
+		/// This method requires a current ASP.NET HttpContext.
+		/// </remarks>
+		public OpenIdProvider() : this(Util.GetQueryFromContext(), httpApplicationAssociationStore) { }
 		/// <summary>
-		/// Constructs an OpenId server that uses a given IAssociationStore.
+		/// Constructs an OpenId server that uses a given query and IAssociationStore.
 		/// </summary>
-		public OpenIdProvider(IProviderAssociationStore store) {
+		/// <param name="query">The name/value pairs that came in on the QueryString of the web request.</param>
+		/// <param name="store">
+		/// The application-level store where associations with OpenId consumers will be preserved.
+		/// </param>
+		public OpenIdProvider(NameValueCollection query, IProviderAssociationStore store) {
+			if (query == null) throw new ArgumentNullException("query");
 			if (store == null) throw new ArgumentNullException("store");
+			this.query = query;
 			Signatory = new Signatory(store);
 			this.encoder = new SigningEncoder(Signatory);
 		}
 
+		bool requestProcessed;
+		Request request;
+		public Request Request {
+			get{
+				if (!requestProcessed) {
+					request = decodeRequest();
+					requestProcessed = true;
+				}
+				return request;
+			}
+		}
 		/// <summary>
 		/// Decodes an incoming web request in to a <see cref="Request"/>.
 		/// </summary>
 		/// <param name="query">The query parameters as a dictionary with each key mapping to one value. </param>
 		/// <returns>A Request object, or null if the given query doesn't represent an OpenId request.</returns>
-		public Request DecodeRequest(NameValueCollection query) {
-			if (query == null) throw new ArgumentNullException("query");
-
+		Request decodeRequest() {
 			if (!Request.IsOpenIdRequest(query)) {
 				return null;
 			}
@@ -55,16 +73,6 @@ namespace DotNetOpenId.Provider {
 			}
 
 			return request;
-		}
-
-		/// <returns>
-		/// Null if the given HttpRequest does not represent a request from an 
-		/// OpenId client.  This could occur if someone just typed in an OpenID
-		/// URL directly.
-		/// </returns>
-		public Request DecodeRequest(HttpRequest request) {
-			return DecodeRequest(
-				request.HttpMethod == "GET" ? request.QueryString : request.Form);
 		}
 
 		internal AuthenticationResponse EncodeResponse(IEncodable response) {

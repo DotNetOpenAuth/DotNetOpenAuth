@@ -35,38 +35,35 @@ using DotNetOpenId;
 public partial class server : System.Web.UI.Page {
 	protected void Page_Load(object src, System.EventArgs evt) {
 		OpenIdProvider openIDServer = new OpenIdProvider();
-		Request request = null;
 
 		// determine what incoming message was received
 		try {
-			request = openIDServer.DecodeRequest(Request);
+			if (openIDServer.Request == null) {
+				contentForWebBrowsers.Visible = true;
+				return;
+			}
+			// process the incoming message appropriately and send the response
+			AuthenticationResponse response = null;
+			switch (openIDServer.Request.RequestType) {
+				case RequestType.CheckIdRequest:
+					CheckIdRequest idrequest = (CheckIdRequest)openIDServer.Request;
+					if (idrequest.Immediate) {
+						String s = Util.ExtractUserName(idrequest.IdentityUrl);
+						bool allow = (s != User.Identity.Name);
+						Util.GenerateHttpResponse(idrequest.Answer(allow, Util.ServerUri));
+					} else {
+						State.Session.LastRequest = idrequest;
+						Response.Redirect("~/decide.aspx");
+					}
+					break;
+				default:
+					openIDServer.Request.Respond();
+					break;
+			}
 		} catch (OpenIdException e) {
 			Util.GenerateHttpResponse(e);
 			return;
 		}
-		if (request == null) {
-			contentForWebBrowsers.Visible = true;
-			return;
-		}
 
-		// process the incoming message appropriately and send the response
-		AuthenticationResponse response = null;
-		switch (request.RequestType) {
-			case RequestType.CheckIdRequest:
-				CheckIdRequest idrequest = (CheckIdRequest)request;
-				if (idrequest.Immediate) {
-					String s = Util.ExtractUserName(idrequest.IdentityUrl);
-					bool allow = (s != User.Identity.Name);
-					response = idrequest.Answer(allow, Util.ServerUri);
-				} else {
-					State.Session.LastRequest = idrequest;
-					Response.Redirect("~/decide.aspx");
-				}
-				break;
-			default:
-				response = request.Response;
-				break;
-		}
-		Util.GenerateHttpResponse(response);
 	}
 }

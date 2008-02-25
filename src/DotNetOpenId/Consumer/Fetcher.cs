@@ -1,3 +1,6 @@
+#if DEBUG
+#define LONGTIMEOUT
+#endif
 namespace DotNetOpenId.Consumer
 {
 	using System;
@@ -27,6 +30,13 @@ namespace DotNetOpenId.Consumer
 		/// Gets the time allowed for an entire request.
 		/// </summary>
 		public static TimeSpan Timeout = TimeSpan.FromSeconds(5);
+
+#if LONGTIMEOUT
+		static Fetcher() {
+			ReadWriteTimeout = TimeSpan.FromHours(1);
+			Timeout = TimeSpan.FromHours(1);
+		}
+#endif
 
 		/// <summary>
 		/// Reads a maximum number of bytes from a response stream.

@@ -326,9 +326,10 @@ namespace DotNetOpenId.Consumer
 
 		private bool ProcessCheckAuthResponse(IDictionary<string, string> response, Uri server_url)
 		{
-			string is_valid = response[QueryStringArgs.openidnp.is_valid];
+			string is_valid;
+			response.TryGetValue(QueryStringArgs.openidnp.is_valid, out is_valid);
 
-			if (is_valid == "true")
+			if (is_valid == QueryStringArgs.IsValid.True)
 			{
 				string invalidate_handle = response[QueryStringArgs.openidnp.invalidate_handle];
 				if (invalidate_handle != null)

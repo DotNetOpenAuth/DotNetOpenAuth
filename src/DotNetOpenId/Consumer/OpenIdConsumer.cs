@@ -27,25 +27,31 @@ namespace DotNetOpenId.Consumer {
 		/// <remarks>
 		/// This method requires a current ASP.NET HttpContext.
 		/// </remarks>
-		public OpenIdConsumer() : this(getQueryFromContext(), httpApplicationAssociationStore) { }
+		public OpenIdConsumer() : this(Util.GetQueryFromContext(), httpApplicationAssociationStore) { }
 		/// <summary>
 		/// Constructs an OpenId consumer that uses a given querystring and IAssociationStore.
 		/// </summary>
+		/// <param name="query">The name/value pairs that came in on the QueryString of the web request.</param>
+		/// <param name="store">
+		/// The application-level store where associations with other OpenId providers can be
+		/// preserved for optimized authentication.
+		/// If null, 'dumb' mode will always be used.
+		/// </param>
 		public OpenIdConsumer(NameValueCollection query, IConsumerAssociationStore store)
 			: this(Util.NameValueCollectionToDictionary(query), store) {
 		}
-		/// <summary>
-		/// Constructs an OpenId consumer that uses a given IAssociationStore.
-		/// </summary>
+		/// <summary> Constructs an OpenId consumer that uses a given IAssociationStore.</summary>
+		/// <param name="query">The name/value pairs that came in on the QueryString of the web request.</param>
+		/// <param name="store">
+		/// The application-level store where associations with other OpenId providers can be
+		/// preserved for optimized authentication.
+		/// If null, 'dumb' mode will always be used.
+		/// </param>
 		OpenIdConsumer(IDictionary<string, string> query, IConsumerAssociationStore store) {
+			if (query == null) throw new ArgumentNullException("query");
 			this.query = query;
 			manager = new ServiceEndpointManager(null);
 			consumer = new GenericConsumer(store);
-		}
-
-		static NameValueCollection getQueryFromContext() {
-			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
-			return HttpContext.Current.Request.QueryString;
 		}
 
 		public AuthenticationRequest CreateRequest(Uri openIdUrl, TrustRoot trustRootUrl, Uri returnToUrl) {
@@ -63,12 +69,13 @@ namespace DotNetOpenId.Consumer {
 
 			// Build the return_to URL
 			UriBuilder returnTo = new UriBuilder(HttpContext.Current.Request.Url);
-			// Trim off any parameters with an "openid." prefix to avoid carrying
-			// state from a prior login attempt.
+			// Trim off any parameters with an "openid." prefix, and a few known others
+			// to avoid carrying state from a prior login attempt.
 			returnTo.Query = string.Empty;
 			var returnToParams = new Dictionary<string, string>(HttpContext.Current.Request.QueryString.Count);
 			foreach (string key in HttpContext.Current.Request.QueryString) {
-				if (!key.StartsWith(QueryStringArgs.openid.Prefix, StringComparison.OrdinalIgnoreCase) && key != QueryStringArgs.nonce) {
+				if (!key.StartsWith(QueryStringArgs.openid.Prefix, StringComparison.OrdinalIgnoreCase) 
+					&& key != QueryStringArgs.nonce && key != Token.TokenKey) {
 					returnToParams.Add(key, HttpContext.Current.Request.QueryString[key]);
 				}
 			}

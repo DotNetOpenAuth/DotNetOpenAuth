@@ -76,6 +76,12 @@ namespace DotNetOpenId {
             return dict;
         }
 
+        public static NameValueCollection GetQueryFromContext() {
+            if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
+            return HttpContext.Current.Request.RequestType == "GET" ? 
+                HttpContext.Current.Request.QueryString : HttpContext.Current.Request.Form;
+        }
+
         public static bool ArrayEquals<T>(T[] first, T[] second)
         {
             if (first == null) throw new ArgumentNullException("first");
@@ -199,6 +205,9 @@ namespace DotNetOpenId {
         internal static class Genders {
             internal const string Male = "M";
             internal const string Female = "F";
+        }
+        internal static class IsValid {
+            internal const string True = "true";
         }
 
         /// <summary>
