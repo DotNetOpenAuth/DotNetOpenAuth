@@ -54,7 +54,7 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="HmacSha1Association.cs" />
     <Compile Include="OpenIdException.cs" />
-    <Compile Include="Provider\Provider.cs" />
+    <Compile Include="Provider\OpenIdProvider.cs" />
     <Compile Include="Provider\ProviderSession.cs" />
     <Compile Include="RegistrationExtension\Gender.cs" />
     <Compile Include="Consumer\GenericConsumer.cs" />
