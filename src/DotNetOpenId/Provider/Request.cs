@@ -117,24 +117,6 @@ namespace DotNetOpenId.Provider
 			}
 		}
 
-		/// <summary>
-		/// Sends the appropriate response to the OpenId request to the user agent or
-		/// OpenId consumer.
-		/// </summary>
-		/// <remarks>
-		/// This method requires a current ASP.NET HttpContext.
-		/// </remarks>
-		public void Respond() {
-			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
-			HttpContext.Current.Response.Clear();
-			HttpContext.Current.Response.StatusCode = (int)Response.Code;
-			foreach (string headerName in Response.Headers)
-				HttpContext.Current.Response.AddHeader(headerName, Response.Headers[headerName]);
-			HttpContext.Current.Response.OutputStream.Write(Response.Body, 0, Response.Body.Length);
-			HttpContext.Current.Response.OutputStream.Flush();
-			HttpContext.Current.Response.OutputStream.Close();
-		}
-
 		public override string ToString() {
 			string returnString = @"Request.Mode = {0}";
 			return String.Format(CultureInfo.CurrentUICulture, returnString, Mode);

@@ -61,36 +61,6 @@ public class Util {
 		HttpContext.Current.Response.Close();
 	}
 
-	public static void GenerateHttpResponse(DotNetOpenId.Provider.Response webresponse) {
-		State.Session.Reset();
-
-		if (webresponse.Code == HttpStatusCode.Redirect) {
-			Trace.TraceInformation("Send response as 302 browser redirect to: '{0}'", webresponse.Headers["Location"]);
-
-			HttpContext.Current.Response.Redirect(webresponse.Headers["Location"]);
-			return;
-		}
-		HttpContext.Current.Response.StatusCode = (int)webresponse.Code;
-		foreach (string headerName in webresponse.Headers)
-			HttpContext.Current.Response.AddHeader(headerName, webresponse.Headers[headerName]);
-
-		if (webresponse.Body != null) {
-
-			Trace.TraceInformation("Send response as server side HTTP response.");
-			Trace.Indent();
-			Trace.TraceInformation("HTTP Response headers follows: \n{0}",
-				Global.ToString(webresponse.Headers));
-			Trace.TraceInformation("HTTP Response follows: \n{0}",
-				System.Text.Encoding.UTF8.GetString(webresponse.Body));
-			Trace.Unindent();
-
-			HttpContext.Current.Response.OutputStream.Write(webresponse.Body, 0, webresponse.Body.Length);
-
-		}
-		// HttpContext.Current.Response.Flush();
-		// HttpContext.Current.Response.Close();
-	}
-
 	public static Uri ServerUri {
 		get {
 			UriBuilder builder = new UriBuilder(HttpContext.Current.Request.Url);

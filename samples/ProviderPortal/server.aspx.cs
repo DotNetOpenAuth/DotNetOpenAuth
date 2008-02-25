@@ -50,14 +50,14 @@ public partial class server : System.Web.UI.Page {
 					if (idrequest.Immediate) {
 						String s = Util.ExtractUserName(idrequest.IdentityUrl);
 						bool allow = (s != User.Identity.Name);
-						Util.GenerateHttpResponse(idrequest.Answer(allow, Util.ServerUri));
+						idrequest.Answer(allow, Util.ServerUri).Send();
 					} else {
 						State.Session.LastRequest = idrequest;
 						Response.Redirect("~/decide.aspx");
 					}
 					break;
 				default:
-					openIDServer.Request.Respond();
+					openIDServer.Request.Response.Send();
 					break;
 			}
 		} catch (OpenIdException e) {

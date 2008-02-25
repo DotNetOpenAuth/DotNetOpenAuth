@@ -39,10 +39,10 @@ public partial class decide : Page {
 			// no fields available
 			response = State.Session.LastRequest.Answer(true, Util.ServerUri);
 		}
-		Util.GenerateHttpResponse(response);
+		response.Send();
 	}
 
 	protected void No_Click(Object sender, EventArgs e) {
-		Util.GenerateHttpResponse(State.Session.LastRequest.Answer(false, Util.ServerUri));
+		State.Session.LastRequest.Answer(false, Util.ServerUri).Send();
 	}
 }
