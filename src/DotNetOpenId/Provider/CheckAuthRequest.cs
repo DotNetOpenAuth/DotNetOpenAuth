@@ -81,6 +81,10 @@ namespace DotNetOpenId.Provider {
 			return response;
 		}
 
+		protected override WebResponse CreateResponse() {
+			return Server.EncodeResponse(Answer());
+		}
+
 		string getRequiredField(NameValueCollection query, string key) {
 			string val = query[key];
 

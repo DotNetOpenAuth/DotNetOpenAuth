@@ -67,22 +67,6 @@ namespace DotNetOpenId.Provider {
 				request.HttpMethod == "GET" ? request.QueryString : request.Form);
 		}
 
-		public WebResponse HandleRequest(Request request) {
-			WebResponse response;
-			switch (request.RequestType) {
-				case RequestType.CheckAuthRequest:
-					response = EncodeResponse(((CheckAuthRequest)request).Answer());
-					break;
-				case RequestType.AssociateRequest:
-					response = EncodeResponse(((AssociateRequest)request).Answer());
-					break;
-				case RequestType.CheckIdRequest:
-				default:
-					throw new ArgumentException("Unexpected Request.RequestMode value.  Use CheckIdRequest.Answer instead.", "request");
-			}
-			return response;
-		}
-
 		internal WebResponse EncodeResponse(IEncodable response) {
 			if (TraceUtil.Switch.TraceInfo) {
 				Trace.TraceInformation("Encoding response");

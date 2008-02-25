@@ -64,7 +64,7 @@ public partial class server : System.Web.UI.Page {
 				}
 				break;
 			default:
-				response = openIDServer.HandleRequest(request);
+				response = request.Response;
 				break;
 		}
 		Util.GenerateHttpResponse(response);

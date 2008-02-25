@@ -67,6 +67,10 @@ namespace DotNetOpenId.Provider {
 			return response;
 		}
 
+		protected override WebResponse CreateResponse() {
+			return Server.EncodeResponse(Answer());
+		}
+
 		public override string ToString() {
 			string returnString = "AssociateRequest._assoc_type = {0}";
 			return base.ToString() + Environment.NewLine + String.Format(CultureInfo.CurrentUICulture,

@@ -252,6 +252,10 @@ namespace DotNetOpenId.Provider {
 			return Server.EncodeResponse(response);
 		}
 
+		protected override WebResponse CreateResponse() {
+			throw new NotSupportedException("Call Answer method instead.");
+		}
+
 		/// <summary>
 		/// Encode this request as a URL to GET.
 		/// </summary>

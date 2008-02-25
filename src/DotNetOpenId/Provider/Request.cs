@@ -4,6 +4,7 @@ using System.Text;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Globalization;
+using System.Web;
 
 namespace DotNetOpenId.Provider
 {
@@ -71,6 +72,45 @@ namespace DotNetOpenId.Provider
 			}
 
 			return request;
+		}
+
+		protected abstract WebResponse CreateResponse();
+		/// <summary>
+		/// Called whenever a property changes that would cause the response to need to be
+		/// regenerated if it had already been generated.
+		/// </summary>
+		protected void InvalidateResponse() {
+			response = null;
+		}
+		WebResponse response;
+		/// <summary>
+		/// The authentication response to be sent to the user agent or the calling
+		/// OpenId consumer.
+		/// </summary>
+		public WebResponse Response {
+			get {
+				if (response == null) {
+					response = CreateResponse();
+				}
+				return response;
+			}
+		}
+
+		/// <summary>
+		/// Sends the appropriate response to the OpenId request to the user agent or
+		/// OpenId consumer.
+		/// </summary>
+		/// <remarks>
+		/// This method requires a current ASP.NET HttpContext.
+		/// </remarks>
+		public void Respond() {
+			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
+			HttpContext.Current.Response.Clear();
+			HttpContext.Current.Response.StatusCode = (int)Response.Code;
+			HttpContext.Current.Response.Headers.Add(Response.Headers);
+			HttpContext.Current.Response.OutputStream.Write(Response.Body, 0, Response.Body.Length);
+			HttpContext.Current.Response.OutputStream.Flush();
+			HttpContext.Current.Response.OutputStream.Close();
 		}
 
 		public override string ToString() {
