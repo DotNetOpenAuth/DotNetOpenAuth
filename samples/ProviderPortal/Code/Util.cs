@@ -61,7 +61,7 @@ public class Util {
 		HttpContext.Current.Response.Close();
 	}
 
-	public static void GenerateHttpResponse(DotNetOpenId.Provider.AuthenticationResponse webresponse) {
+	public static void GenerateHttpResponse(DotNetOpenId.Provider.Response webresponse) {
 		State.Session.Reset();
 
 		if (webresponse.Code == HttpStatusCode.Redirect) {

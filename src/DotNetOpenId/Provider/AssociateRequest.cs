@@ -33,7 +33,7 @@ namespace DotNetOpenId.Provider {
 		/// <summary>
 		/// Respond to this request with an association.
 		/// </summary>
-		public Response Answer() {
+		public EncodableResponse Answer() {
 			Association assoc = Server.Signatory.CreateAssociation(AssociationConsumerType.Smart);
 			if (TraceUtil.Switch.TraceInfo) {
 				Trace.TraceInformation("Start processing response for AssociateRequest");
@@ -42,7 +42,7 @@ namespace DotNetOpenId.Provider {
 				}
 			}
 
-			Response response = new Response(this);
+			EncodableResponse response = new EncodableResponse(this);
 
 			response.Fields[QueryStringArgs.openidnp.expires_in] = assoc.SecondsTillExpiration.ToString(CultureInfo.InvariantCulture);
 			response.Fields[QueryStringArgs.openidnp.assoc_type] = assoc.AssociationType;
@@ -67,7 +67,7 @@ namespace DotNetOpenId.Provider {
 			return response;
 		}
 
-		protected override AuthenticationResponse CreateResponse() {
+		protected override Response CreateResponse() {
 			return Server.EncodeResponse(Answer());
 		}
 

@@ -154,7 +154,7 @@ namespace DotNetOpenId.Provider {
 		/// Respond to this request.
 		/// </summary>
 		/// <param name="allow">Allow this user to claim this identity, and allow the consumer to have this information?</param>
-		public AuthenticationResponse Answer(bool allow, Uri serverUrl) {
+		public Response Answer(bool allow, Uri serverUrl) {
 			return Answer(allow, serverUrl, null);
 		}
 
@@ -162,7 +162,7 @@ namespace DotNetOpenId.Provider {
 		/// Respond to this request.
 		/// </summary>
 		/// <param name="allow">Allow this user to claim this identity, and allow the consumer to have this information?</param>
-		public AuthenticationResponse Answer(bool allow, Uri serverUrl, ProfileFieldValues openIdProfileFields) {
+		public Response Answer(bool allow, Uri serverUrl, ProfileFieldValues openIdProfileFields) {
 			string mode = (allow || Immediate) ? QueryStringArgs.Modes.id_res : QueryStringArgs.Modes.cancel;
 
 			if (TraceUtil.Switch.TraceInfo) {
@@ -179,7 +179,7 @@ namespace DotNetOpenId.Provider {
 				}
 			}
 
-			Response response = new Response(this);
+			EncodableResponse response = new EncodableResponse(this);
 
 			if (allow) {
 				var fields = new Dictionary<string, string>();
@@ -252,7 +252,7 @@ namespace DotNetOpenId.Provider {
 			return Server.EncodeResponse(response);
 		}
 
-		protected override AuthenticationResponse CreateResponse() {
+		protected override Response CreateResponse() {
 			throw new NotSupportedException("Call Answer method instead.");
 		}
 

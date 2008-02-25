@@ -10,9 +10,9 @@ using System.Globalization;
 
 namespace DotNetOpenId.Provider
 {
-    internal class Response : IEncodable
+    internal class EncodableResponse : IEncodable
     {
-        public Response(Request request)
+        public EncodableResponse(Request request)
         {
             Request = request;
             Signed = new List<string>();

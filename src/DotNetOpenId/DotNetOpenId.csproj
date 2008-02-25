@@ -55,6 +55,7 @@
     <Compile Include="HmacSha1Association.cs" />
     <Compile Include="OpenIdException.cs" />
     <Compile Include="Provider\AuthenticationResponse.cs" />
+    <Compile Include="Provider\EncodableResponse.cs" />
     <Compile Include="Provider\OpenIdProvider.cs" />
     <Compile Include="Provider\ProviderSession.cs" />
     <Compile Include="Provider\Request.cs" />
@@ -91,7 +92,6 @@
     <Compile Include="Provider\CheckIdRequest.cs" />
     <Compile Include="Provider\Codec.cs" />
     <Compile Include="Provider\IEncodable.cs" />
-    <Compile Include="Provider\Response.cs" />
     <Compile Include="Provider\Signatory.cs" />
     <Compile Include="Store\IAssociationStore.cs" />
     <Compile Include="Store\MemoryStore.cs" />

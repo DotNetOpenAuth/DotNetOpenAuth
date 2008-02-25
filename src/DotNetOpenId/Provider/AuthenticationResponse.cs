@@ -7,8 +7,8 @@ namespace DotNetOpenId.Provider {
 	/// <summary>
 	/// A response to an OpenID request in terms a web server understands.
 	/// </summary>
-	public class AuthenticationResponse {
-		internal AuthenticationResponse(HttpStatusCode code, NameValueCollection headers, byte[] body) {
+	public class Response {
+		internal Response(HttpStatusCode code, NameValueCollection headers, byte[] body) {
 			Code = code;
 			Headers = headers ?? new NameValueCollection();
 			Body = body;

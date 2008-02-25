@@ -55,7 +55,7 @@ namespace DotNetOpenId.Provider {
 
 			Server.Signatory.Invalidate(AssociationHandle, AssociationConsumerType.Dumb);
 
-			Response response = new Response(this);
+			EncodableResponse response = new EncodableResponse(this);
 
 			response.Fields[QueryStringArgs.openidnp.is_valid] = (is_valid ? "true" : "false");
 
@@ -81,7 +81,7 @@ namespace DotNetOpenId.Provider {
 			return response;
 		}
 
-		protected override AuthenticationResponse CreateResponse() {
+		protected override Response CreateResponse() {
 			return Server.EncodeResponse(Answer());
 		}
 

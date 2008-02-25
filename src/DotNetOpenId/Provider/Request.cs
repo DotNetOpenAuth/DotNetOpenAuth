@@ -95,7 +95,7 @@ namespace DotNetOpenId.Provider
 			return request;
 		}
 
-		protected abstract AuthenticationResponse CreateResponse();
+		protected abstract Response CreateResponse();
 		/// <summary>
 		/// Called whenever a property changes that would cause the response to need to be
 		/// regenerated if it had already been generated.
@@ -103,12 +103,12 @@ namespace DotNetOpenId.Provider
 		protected void InvalidateResponse() {
 			response = null;
 		}
-		AuthenticationResponse response;
+		Response response;
 		/// <summary>
 		/// The authentication response to be sent to the user agent or the calling
 		/// OpenId consumer.
 		/// </summary>
-		public AuthenticationResponse Response {
+		public Response Response {
 			get {
 				if (response == null) {
 					response = CreateResponse();

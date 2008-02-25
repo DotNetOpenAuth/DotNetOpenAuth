@@ -14,10 +14,10 @@ namespace DotNetOpenId.Provider
         /// <summary>
         /// Encodes responses in to WebResponses.
         /// </summary>
-        public virtual AuthenticationResponse Encode(IEncodable response)
+        public virtual Response Encode(IEncodable response)
         {
             EncodingType encode_as = response.EncodingType;
-            AuthenticationResponse wr;
+            Response wr;
 
             if (TraceUtil.Switch.TraceInfo)
             {
@@ -29,7 +29,7 @@ namespace DotNetOpenId.Provider
                 case EncodingType.ResponseBody:
                     HttpStatusCode code = (response is Exception) ? 
                         HttpStatusCode.BadRequest : HttpStatusCode.OK;
-                    wr = new AuthenticationResponse(code, null, DictionarySerializer.Serialize(response.EncodedFields));
+                    wr = new Response(code, null, DictionarySerializer.Serialize(response.EncodedFields));
                     break;
                 case EncodingType.RedirectBrowserUrl:
                     NameValueCollection headers = new NameValueCollection();
@@ -39,13 +39,13 @@ namespace DotNetOpenId.Provider
 
                     headers.Add("Location", builder.Uri.AbsoluteUri);
 
-                    wr = new AuthenticationResponse(HttpStatusCode.Redirect, headers, new byte[0]);
+                    wr = new Response(HttpStatusCode.Redirect, headers, new byte[0]);
                     break;
                 default:
                     if (TraceUtil.Switch.TraceError) {
                         Trace.TraceError("Cannot encode response: {0}", response);
                     }
-                    wr = new AuthenticationResponse(HttpStatusCode.BadRequest, new NameValueCollection(), new byte[0]);
+                    wr = new Response(HttpStatusCode.BadRequest, new NameValueCollection(), new byte[0]);
                     break;
             }
             return wr;
@@ -64,7 +64,7 @@ namespace DotNetOpenId.Provider
             this.signatory = signatory;
         }
 
-        public override AuthenticationResponse Encode(IEncodable encodable)
+        public override Response Encode(IEncodable encodable)
         {
             if (!(encodable is Exception))
             {
@@ -73,7 +73,7 @@ namespace DotNetOpenId.Provider
                     Trace.TraceInformation("Encoding using the signing encoder");
                 }
                 
-                Response response = (Response)encodable;
+                EncodableResponse response = (EncodableResponse)encodable;
 
                 if (response.NeedsSigning)
                 {

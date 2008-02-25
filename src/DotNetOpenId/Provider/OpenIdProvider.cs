@@ -75,7 +75,7 @@ namespace DotNetOpenId.Provider {
 			return request;
 		}
 
-		internal AuthenticationResponse EncodeResponse(IEncodable response) {
+		internal Response EncodeResponse(IEncodable response) {
 			if (TraceUtil.Switch.TraceInfo) {
 				Trace.TraceInformation("Encoding response");
 			}

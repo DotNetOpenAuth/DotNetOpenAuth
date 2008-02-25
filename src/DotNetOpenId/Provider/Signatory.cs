@@ -34,7 +34,7 @@ namespace DotNetOpenId.Provider {
 			this.store = store;
 		}
 
-		public void Sign(Response response) {
+		public void Sign(EncodableResponse response) {
 			if (TraceUtil.Switch.TraceInfo) {
 				Trace.TraceInformation("Digitally sign the response.");
 			}

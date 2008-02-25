@@ -43,7 +43,7 @@ public partial class server : System.Web.UI.Page {
 				return;
 			}
 			// process the incoming message appropriately and send the response
-			AuthenticationResponse response = null;
+			Response response = null;
 			switch (openIDServer.Request.RequestType) {
 				case RequestType.CheckIdRequest:
 					CheckIdRequest idrequest = (CheckIdRequest)openIDServer.Request;
