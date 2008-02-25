@@ -36,10 +36,10 @@ namespace DotNetOpenId.Provider {
 		/// </summary>
 		/// <param name="query">The query parameters as a dictionary with each key mapping to one value. </param>
 		/// <returns>A Request object, or null if the given query doesn't represent an OpenId request.</returns>
-		public AuthenticationRequest DecodeRequest(NameValueCollection query) {
+		public Request DecodeRequest(NameValueCollection query) {
 			if (query == null) throw new ArgumentNullException("query");
 
-			if (!AuthenticationRequest.IsOpenIdRequest(query)) {
+			if (!Request.IsOpenIdRequest(query)) {
 				return null;
 			}
 
@@ -47,7 +47,7 @@ namespace DotNetOpenId.Provider {
 				Trace.TraceInformation("Start message decoding");
 			}
 
-			AuthenticationRequest request = AuthenticationRequest.CreateRequest(this, query);
+			Request request = Request.CreateRequest(this, query);
 
 			if (TraceUtil.Switch.TraceInfo) {
 				Trace.TraceInformation("End message decoding. Successfully decoded message as new {0}.", request.GetType().Name);
@@ -62,7 +62,7 @@ namespace DotNetOpenId.Provider {
 		/// OpenId client.  This could occur if someone just typed in an OpenID
 		/// URL directly.
 		/// </returns>
-		public AuthenticationRequest DecodeRequest(HttpRequest request) {
+		public Request DecodeRequest(HttpRequest request) {
 			return DecodeRequest(
 				request.HttpMethod == "GET" ? request.QueryString : request.Form);
 		}

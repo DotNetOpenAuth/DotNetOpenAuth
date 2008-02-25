@@ -35,7 +35,7 @@ using DotNetOpenId;
 public partial class server : System.Web.UI.Page {
 	protected void Page_Load(object src, System.EventArgs evt) {
 		OpenIdProvider openIDServer = new OpenIdProvider();
-		AuthenticationRequest request = null;
+		Request request = null;
 
 		// determine what incoming message was received
 		try {

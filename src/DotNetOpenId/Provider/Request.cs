@@ -8,14 +8,35 @@ using System.Web;
 
 namespace DotNetOpenId.Provider
 {
+	/// <summary>
+	/// Identifies the type of requests that can come to an OpenId provider.
+	/// </summary>
 	public enum RequestType {
+		/// <summary>
+		/// An OpenId consumer has directed a user agent to this provider
+		/// for authentication.
+		/// </summary>
 		CheckIdRequest,
+		/// <summary>
+		/// An OpenId consumer is requesting verification of a user agent's
+		/// claim of successful authentication when a prior association
+		/// between consumer and provider was not available to do the verification
+		/// immediately.
+		/// </summary>
 		CheckAuthRequest,
+		/// <summary>
+		/// An OpenId consumer is requesting a shared secret with this provider
+		/// so that future authentication requests do not need to be verified
+		/// with the provider seperately.
+		/// </summary>
 		AssociateRequest,
 	}
 
-	public abstract class AuthenticationRequest {
-		protected AuthenticationRequest(OpenIdProvider server) {
+	/// <summary>
+	/// Represents any OpenId-protocol request that may come to the provider.
+	/// </summary>
+	public abstract class Request {
+		protected Request(OpenIdProvider server) {
 			Server = server;
 		}
 
@@ -45,7 +66,7 @@ namespace DotNetOpenId.Provider
 		/// <param name="query">A dictionary of name/value pairs given in the request's
 		/// querystring or form submission.</param>
 		/// <returns>A Request-derived type appropriate for this stage in authentication.</returns>
-		internal static AuthenticationRequest CreateRequest(OpenIdProvider provider, NameValueCollection query) {
+		internal static Request CreateRequest(OpenIdProvider provider, NameValueCollection query) {
 			Debug.Assert(query != null);
 			
 			string mode = query[QueryStringArgs.openid.mode];
@@ -53,7 +74,7 @@ namespace DotNetOpenId.Provider
 				throw new OpenIdException("No openid.mode value in query.", query);
 			}
 
-			AuthenticationRequest request;
+			Request request;
 			switch (mode) {
 				case QueryStringArgs.Modes.checkid_setup:
 					request = new CheckIdRequest(provider, query);

@@ -10,7 +10,7 @@ namespace DotNetOpenId.Provider {
 	/// <summary>
 	/// A request to establish an association.
 	/// </summary>
-	internal class AssociateRequest : AuthenticationRequest {
+	internal class AssociateRequest : Request {
 		string associationKeyType = QueryStringArgs.HMAC_SHA1;
 		ProviderSession session;
 

@@ -12,7 +12,7 @@ namespace DotNetOpenId.Provider
 {
     internal class Response : IEncodable
     {
-        public Response(AuthenticationRequest request)
+        public Response(Request request)
         {
             Request = request;
             Signed = new List<string>();
@@ -20,7 +20,7 @@ namespace DotNetOpenId.Provider
             
         }
 
-        public AuthenticationRequest Request { get; set; }
+        public Request Request { get; set; }
         public IDictionary<string, string> Fields { get; private set; }
         public List<string> Signed { get; private set; }
         public bool NeedsSigning
