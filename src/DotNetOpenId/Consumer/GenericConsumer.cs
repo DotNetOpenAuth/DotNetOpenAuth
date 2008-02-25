@@ -42,7 +42,7 @@ namespace DotNetOpenId.Consumer
 			return request;
 		}
 
-		public ConsumerResponse Complete(IDictionary<string, string> query)
+		public AuthenticationResponse Complete(IDictionary<string, string> query)
 		{
 			string mode;
 			if (!query.TryGetValue(QueryStringArgs.openid.mode, out mode))
@@ -57,13 +57,13 @@ namespace DotNetOpenId.Consumer
 
 			switch (mode) {
 				case QueryStringArgs.Modes.cancel:
-					throw new CancelException(token.IdentityUrl);
+					return new AuthenticationResponse(AuthenticationStatus.Canceled, token.IdentityUrl, query);
 				case QueryStringArgs.Modes.error:
 					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 						"The provider returned an error: {0}", query[QueryStringArgs.openid.error],
 						token.IdentityUrl));
 				case QueryStringArgs.Modes.id_res:
-					ConsumerResponse response = doIdRes(query, token);
+					AuthenticationResponse response = doIdRes(query, token);
 					checkNonce(response, query[QueryStringArgs.nonce]);
 					return response;
 				default:
@@ -101,7 +101,7 @@ namespace DotNetOpenId.Consumer
 		/// <remarks>
 		/// TODO: replay attacks are not currently guarded against.
 		/// </remarks>
-		static void checkNonce(ConsumerResponse response, string nonce)
+		static void checkNonce(AuthenticationResponse response, string nonce)
 		{
 			var nvc = HttpUtility.ParseQueryString(response.ReturnTo.Query);
 
@@ -134,7 +134,7 @@ namespace DotNetOpenId.Consumer
 			}
 		}
 
-		ConsumerResponse doIdRes(IDictionary<string, string> query, Token token)
+		AuthenticationResponse doIdRes(IDictionary<string, string> query, Token token)
 		{
 			Converter<string, string> getRequired = delegate(string key)
 				{
@@ -148,7 +148,7 @@ namespace DotNetOpenId.Consumer
 
 			string user_setup_url;
 			if (query.TryGetValue(QueryStringArgs.openid.user_setup_url, out user_setup_url))
-				throw new SetupNeededException(token.IdentityUrl, new Uri(user_setup_url));
+				return new AuthenticationResponse(AuthenticationStatus.SetupRequired, token.IdentityUrl, query);
 
 			string assoc_handle = getRequired(QueryStringArgs.openid.assoc_handle);
 
@@ -164,7 +164,7 @@ namespace DotNetOpenId.Consumer
 				if (!checkAuth(query, token.ServerUrl))
 					throw new OpenIdException("check_authentication failed", token.IdentityUrl);
 
-				return new ConsumerResponse(token.IdentityUrl, query, query[QueryStringArgs.openid.signed]);
+				return new AuthenticationResponse(AuthenticationStatus.Authenticated, token.IdentityUrl, query);
 			}
 
 			if (assoc.IsExpired)
@@ -183,7 +183,7 @@ namespace DotNetOpenId.Consumer
 			if (v_sig != sig)
 				throw new OpenIdException("Bad signature", token.IdentityUrl);
 
-			return new ConsumerResponse(token.IdentityUrl, query, signed);
+			return new AuthenticationResponse(AuthenticationStatus.Authenticated, token.IdentityUrl, query);
 		}
 
 		static AssociationRequest createAssociationRequest(Uri serverUrl)

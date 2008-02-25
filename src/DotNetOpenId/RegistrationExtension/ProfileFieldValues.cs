@@ -10,6 +10,7 @@ using System.Globalization;
 using System.Net.Mail;
 using DotNetOpenId.RegistrationExtension;
 using System.Xml.Serialization;
+using DotNetOpenId.Consumer;
 
 namespace DotNetOpenId.RegistrationExtension
 {
@@ -64,6 +65,43 @@ namespace DotNetOpenId.RegistrationExtension
 		}
 		public string TimeZone { get; set; }
 
+		public static ProfileFieldValues ReadFromResponse(AuthenticationResponse response) {
+			var sreg = response.GetExtensionResponse(QueryStringArgs.openidnp.sreg.Prefix.TrimEnd('.'));
+			string nickname, email, fullName, dob, genderString, postalCode, country, language, timeZone;
+			DateTime? birthDate = null;
+			Gender? gender = null;
+			sreg.TryGetValue(QueryStringArgs.openidnp.sregnp.nickname, out nickname);
+			sreg.TryGetValue(QueryStringArgs.openidnp.sregnp.email, out email);
+			sreg.TryGetValue(QueryStringArgs.openidnp.sregnp.fullname, out fullName);
+			if (sreg.TryGetValue(QueryStringArgs.openidnp.sregnp.dob, out dob)) {
+				DateTime bd;
+				if (DateTime.TryParse(dob, out bd))
+					birthDate = bd;
+			}
+			if (sreg.TryGetValue(QueryStringArgs.openidnp.sregnp.gender, out genderString)) {
+				switch (genderString) {
+					case QueryStringArgs.Genders.Male: gender = DotNetOpenId.RegistrationExtension.Gender.Male; break;
+					case QueryStringArgs.Genders.Female: gender = DotNetOpenId.RegistrationExtension.Gender.Female; break;
+				}
+			}
+			sreg.TryGetValue(QueryStringArgs.openidnp.sregnp.postcode, out postalCode);
+			sreg.TryGetValue(QueryStringArgs.openidnp.sregnp.country, out country);
+			sreg.TryGetValue(QueryStringArgs.openidnp.sregnp.language, out language);
+			sreg.TryGetValue(QueryStringArgs.openidnp.sregnp.timezone, out timeZone);
+
+			return new ProfileFieldValues() {
+				Nickname = nickname,
+				Email = email,
+				FullName = fullName,
+				BirthDate = birthDate,
+				Gender = gender,
+				PostalCode = postalCode,
+				Country = country,
+				Language = language,
+				TimeZone = timeZone,
+			};
+		}
+
 		public override bool Equals(object obj)
 		{
 			ProfileFieldValues other = obj as ProfileFieldValues;
@@ -80,7 +118,6 @@ namespace DotNetOpenId.RegistrationExtension
 				safeEquals(this.PostalCode, other.PostalCode) &&
 				safeEquals(this.TimeZone, other.TimeZone);
 		}
-
 		static bool safeEquals(object one, object other)
 		{
 			if (one == null && other == null) return true;

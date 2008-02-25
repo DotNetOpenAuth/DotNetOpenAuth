@@ -399,8 +399,9 @@ namespace DotNetOpenId.Consumer
 		protected virtual bool OnLoggingIn(Uri openIdUri)
 		{
 			EventHandler<OpenIdTextBox.OpenIdEventArgs> loggingIn = LoggingIn;
-			OpenIdTextBox.OpenIdEventArgs args = new OpenIdTextBox.OpenIdEventArgs(openIdUri,
-				ProfileFieldValues.Empty);
+			// TODO: discover the true identityUrl from the openIdUrl given to
+			//       fill OpenIdEventArgs with before firing this event.
+			OpenIdTextBox.OpenIdEventArgs args = new OpenIdTextBox.OpenIdEventArgs(openIdUri);
 			if (loggingIn != null)
 				loggingIn(this, args);
 			return !args.Cancel;

@@ -40,7 +40,7 @@ public partial class login : System.Web.UI.Page
         loginFailedLabel.Visible = true;
         loginFailedLabel.Text += ": " + e.ErrorMessage;
     }
-    protected void OpenIdLogin1_Canceled(object sender, OpenIdTextBox.ErrorEventArgs e)
+	protected void OpenIdLogin1_Canceled(object sender, OpenIdTextBox.OpenIdEventArgs e)
     {
         loginCanceledLabel.Visible = true;
     }

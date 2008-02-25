@@ -4,18 +4,48 @@ namespace DotNetOpenId.Consumer {
 	using System.Collections.Specialized;
 	using System.Collections.Generic;
 
-	public class ConsumerResponse {
-		internal ConsumerResponse(Uri identityUrl, IDictionary<string, string> query, string signed) {
+	public enum AuthenticationStatus {
+		/// <summary>
+		/// The authentication was canceled by the user agent while at the provider.
+		/// </summary>
+		Canceled,
+		/// <summary>
+		/// The authentication failed because the provider refused to send
+		/// authentication approval.
+		/// </summary>
+		Failed,
+		/// <summary>
+		/// The Provider responded to a request for immediate authentication approval
+		/// with a message stating that additional user agent interaction is required
+		/// before authentication can be completed.
+		/// </summary>
+		SetupRequired,
+		/// <summary>
+		/// Authentication is completed successfully.
+		/// </summary>
+		Authenticated,
+	}
+
+	public class AuthenticationResponse {
+		internal AuthenticationResponse(AuthenticationStatus status, Uri identityUrl, IDictionary<string, string> query) {
+			Status = status;
 			IdentityUrl = identityUrl;
 			signedArguments = new Dictionary<string, string>();
-			foreach (string fieldNoPrefix in signed.Split(',')) {
-				string fieldWithPrefix = QueryStringArgs.openid.Prefix + fieldNoPrefix;
-				string val;
-				if (!query.TryGetValue(fieldWithPrefix, out val)) val = string.Empty;
-				signedArguments[fieldWithPrefix] = val;
+			string signed;
+			if (query.TryGetValue(QueryStringArgs.openid.signed, out signed)) {
+				foreach (string fieldNoPrefix in signed.Split(',')) {
+					string fieldWithPrefix = QueryStringArgs.openid.Prefix + fieldNoPrefix;
+					string val;
+					if (!query.TryGetValue(fieldWithPrefix, out val)) val = string.Empty;
+					signedArguments[fieldWithPrefix] = val;
+				}
 			}
 		}
 
+		/// <summary>
+		/// The detailed success or failure status of the authentication attempt.
+		/// </summary>
+		public AuthenticationStatus Status { get; private set; }
 		public Uri IdentityUrl { get; private set; }
 		IDictionary<string, string> signedArguments;
 

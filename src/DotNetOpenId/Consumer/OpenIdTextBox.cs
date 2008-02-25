@@ -372,24 +372,31 @@ namespace DotNetOpenId.Consumer
 
 			try
 			{
-				if (!Page.IsPostBack && Page.Request.QueryString[QueryStringArgs.openid.mode] != null)
+				var consumer = new OpenIdConsumer();
+				if (consumer.Response != null)
 				{
-					DotNetOpenId.Consumer.Consumer consumer =
-						new DotNetOpenId.Consumer.Consumer();
-
-					ConsumerResponse resp = consumer.Complete(Page.Request.QueryString);
-					OnLoggedIn(resp.IdentityUrl, parseProfileFields(Page.Request.QueryString));
+					switch (consumer.Response.Status) {
+						case AuthenticationStatus.Canceled:
+							OnCanceled(consumer.Response);
+							break;
+						case AuthenticationStatus.Authenticated:
+							OnLoggedIn(consumer.Response);
+							break;
+						case AuthenticationStatus.SetupRequired:
+						case AuthenticationStatus.Failed:
+							OnFailed(consumer.Response);
+							break;
+						default:
+							throw new InvalidOperationException("Unexpected response status code.");
+					}
 				}
-			}
-			catch (CancelException cex)
-			{
-				OnCanceled(cex);
 			}
 			catch (OpenIdException ex)
 			{
 				OnError(ex);
 			}
 		}
+
 		protected override void OnPreRender(EventArgs e) {
 			base.OnPreRender(e);
 
@@ -412,7 +419,7 @@ namespace DotNetOpenId.Consumer
 				throw new InvalidOperationException(DotNetOpenId.Strings.OpenIdTextBoxEmpty);
 
 			try {
-				var consumer = new Consumer();
+				var consumer = new OpenIdConsumer();
 
 				// Resolve the trust root, and swap out the scheme and port if necessary to match the
 				// return_to URL, since this match is required by OpenId, and the consumer app
@@ -423,7 +430,7 @@ namespace DotNetOpenId.Consumer
 
 				// Initiate openid request
 				// Note: we must use trustRoot.ToString() because trustRoot.Uri throws when wildcards are present.
-				AuthenticationRequest request = consumer.Begin(
+				AuthenticationRequest request = consumer.CreateRequest(
 					UriUtil.NormalizeUri(Text), new TrustRoot(trustRoot.ToString()));
 				if (EnableRequestProfile) addProfileArgs(request);
 				request.RedirectToProvider();
@@ -467,37 +474,6 @@ namespace DotNetOpenId.Consumer
 
 			return fields.ToArray();
 		}
-		ProfileFieldValues parseProfileFields(NameValueCollection queryString)
-		{
-			ProfileFieldValues fields = new ProfileFieldValues();
-			if (RequestNickname > ProfileRequest.NoRequest)
-				fields.Nickname = queryString[QueryStringArgs.openid.sreg.nickname];
-			if (RequestEmail > ProfileRequest.NoRequest)
-				fields.Email = queryString[QueryStringArgs.openid.sreg.email];
-			if (RequestFullName > ProfileRequest.NoRequest)
-				fields.FullName = queryString[QueryStringArgs.openid.sreg.fullname];
-			if (RequestBirthDate > ProfileRequest.NoRequest && !string.IsNullOrEmpty(queryString[QueryStringArgs.openid.sreg.dob]))
-			{
-				DateTime birthDate;
-				DateTime.TryParse(queryString[QueryStringArgs.openid.sreg.dob], out birthDate);
-				fields.BirthDate = birthDate;
-			}
-			if (RequestGender > ProfileRequest.NoRequest)
-				switch (queryString[QueryStringArgs.openid.sreg.gender])
-				{
-					case QueryStringArgs.Genders.Male: fields.Gender = Gender.Male; break;
-					case QueryStringArgs.Genders.Female: fields.Gender = Gender.Female; break;
-				}
-			if (RequestPostalCode > ProfileRequest.NoRequest)
-				fields.PostalCode = queryString[QueryStringArgs.openid.sreg.postcode];
-			if (RequestCountry > ProfileRequest.NoRequest)
-				fields.Country = queryString[QueryStringArgs.openid.sreg.country];
-			if (RequestLanguage > ProfileRequest.NoRequest)
-				fields.Language = queryString[QueryStringArgs.openid.sreg.language];
-			if (RequestTimeZone > ProfileRequest.NoRequest)
-				fields.TimeZone = queryString[QueryStringArgs.openid.sreg.timezone];
-			return fields;
-		}
 
 		UriBuilder getResolvedTrustRoot(string trustRoot)
 		{
@@ -533,48 +509,54 @@ namespace DotNetOpenId.Consumer
 		#region Events
 		public class OpenIdEventArgs : EventArgs
 		{
-			public OpenIdEventArgs(Uri openIdUri, ProfileFieldValues profileFields)
-			{
-				this.openIdUri = openIdUri;
-				this.profileFields = profileFields;
-			}
-			private Uri openIdUri;
 			/// <summary>
-			/// The OpenID url of the authenticating user.
+			/// Constructs an object with minimal information of an incomplete or failed
+			/// authentication attempt.
 			/// </summary>
-			public Uri OpenIdUri
-			{
-				get { return openIdUri; }
+			/// <param name="identityUrl"></param>
+			internal OpenIdEventArgs(Uri identityUrl) {
+				IdentityUrl = identityUrl;
 			}
-			private bool cancel;
+			/// <summary>
+			/// Constructs an object with information on a completed authentication attempt
+			/// (whether that attempt was successful or not).
+			/// </summary>
+			internal OpenIdEventArgs(AuthenticationResponse response)
+			{
+				Response = response;
+				IdentityUrl = response.IdentityUrl;
+				ProfileFields = ProfileFieldValues.ReadFromResponse(response);
+			}
 			/// <summary>
 			/// Cancels the OpenID authentication and/or login process.
 			/// </summary>
-			public bool Cancel
-			{
-				get { return cancel; }
-				set { cancel = value; }
-			}
+			public bool Cancel { get; set; }
+			public Uri IdentityUrl { get; private set; }
 
-			private ProfileFieldValues profileFields;
-			public ProfileFieldValues ProfileFields
-			{
-				get { return profileFields; }
-			}
+			/// <summary>
+			/// Gets the details of the OpenId authentication response.
+			/// </summary>
+			public AuthenticationResponse Response { get; private set; }
+			/// <summary>
+			/// Gets the simple registration (sreg) extension fields given
+			/// by the provider, if any.
+			/// </summary>
+			public ProfileFieldValues ProfileFields { get; private set; }
 		}
 		/// <summary>
 		/// Fired upon completion of a successful login.
 		/// </summary>
 		[Description("Fired upon completion of a successful login.")]
 		public event EventHandler<OpenIdEventArgs> LoggedIn;
-		protected virtual void OnLoggedIn(Uri openIdUri, ProfileFieldValues profileFields)
+		protected virtual void OnLoggedIn(AuthenticationResponse response)
 		{
-			EventHandler<OpenIdEventArgs> loggedIn = LoggedIn;
-			OpenIdEventArgs args = new OpenIdEventArgs(openIdUri, profileFields);
+			var loggedIn = LoggedIn;
+			OpenIdEventArgs args = new OpenIdEventArgs(response);
 			if (loggedIn != null)
 				loggedIn(this, args);
 			if (!args.Cancel)
-				FormsAuthentication.RedirectFromLoginPage(openIdUri.AbsoluteUri, UsePersistentCookie);
+				FormsAuthentication.RedirectFromLoginPage(
+					response.IdentityUrl.AbsoluteUri, UsePersistentCookie);
 		}
 
 		#endregion
@@ -600,7 +582,7 @@ namespace DotNetOpenId.Consumer
 			if (errorException == null)
 				throw new ArgumentNullException("errorException");
 
-			EventHandler<ErrorEventArgs> error = Error;
+			var error = Error;
 			if (error != null)
 				error(this, new ErrorEventArgs(errorException.Message, errorException));
 		}
@@ -609,16 +591,25 @@ namespace DotNetOpenId.Consumer
 		/// Fired when an authentication attempt is canceled at the OpenID Provider.
 		/// </summary>
 		[Description("Fired when an authentication attempt is canceled at the OpenID Provider.")]
-		public event EventHandler<ErrorEventArgs> Canceled;
-		protected virtual void OnCanceled(Exception cancelException)
+		public event EventHandler<OpenIdEventArgs> Canceled;
+		protected virtual void OnCanceled(AuthenticationResponse response)
 		{
-			if (cancelException == null)
-				throw new ArgumentNullException("cancelException");
-
-			EventHandler<ErrorEventArgs> canceled = Canceled;
+			var canceled = Canceled;
 			if (canceled != null)
-				canceled(this, new ErrorEventArgs(cancelException.Message, cancelException));
+				canceled(this, new OpenIdEventArgs(response));
 		}
+
+		/// <summary>
+		/// Fired when an authentication attempt fails at the OpenID Provider.
+		/// </summary>
+		[Description("Fired when an authentication attempt fails at the OpenID Provider.")]
+		public event EventHandler<OpenIdEventArgs> Failed;
+		protected virtual void OnFailed(AuthenticationResponse response) {
+			var failed = Failed;
+			if (failed != null)
+				failed(this, new OpenIdEventArgs(response));
+		}
+
 		#endregion
 	}
 }

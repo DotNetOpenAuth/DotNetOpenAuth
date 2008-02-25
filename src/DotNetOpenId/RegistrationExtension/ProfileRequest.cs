@@ -5,12 +5,10 @@
  * For news or support on this file: http://blog.nerdbank.net/
  ********************************************************/
 
-namespace DotNetOpenId.RegistrationExtension
-{
-    public enum ProfileRequest
-    {
-        NoRequest,
-        Request,
-        Require,
-    }
+namespace DotNetOpenId.RegistrationExtension {
+	public enum ProfileRequest {
+		NoRequest,
+		Request,
+		Require,
+	}
 }

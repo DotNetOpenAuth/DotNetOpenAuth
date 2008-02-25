@@ -5,11 +5,9 @@
  * For news or support on this file: http://blog.nerdbank.net/
  ********************************************************/
 
-namespace DotNetOpenId.RegistrationExtension
-{
-    public enum Gender
-    {
-        Male,
-        Female,
-    }
+namespace DotNetOpenId.RegistrationExtension {
+	public enum Gender {
+		Male,
+		Female,
+	}
 }

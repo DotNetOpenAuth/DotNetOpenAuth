@@ -46,12 +46,10 @@
   <ItemGroup>
     <Compile Include="Association.cs" />
     <Compile Include="Consumer\AuthenticationRequest.cs" />
-    <Compile Include="Consumer\CancelException.cs" />
-    <Compile Include="Consumer\Consumer.cs" />
-    <Compile Include="Consumer\ConsumerResponse.cs" />
+    <Compile Include="Consumer\AuthenticationResponse.cs" />
     <Compile Include="Consumer\Fetcher.cs" />
     <Compile Include="Consumer\FetchResponse.cs" />
-    <Compile Include="Consumer\SetupNeededException.cs" />
+    <Compile Include="Consumer\OpenIdConsumer.cs" />
     <Compile Include="Consumer\Token.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="HmacSha1Association.cs" />
