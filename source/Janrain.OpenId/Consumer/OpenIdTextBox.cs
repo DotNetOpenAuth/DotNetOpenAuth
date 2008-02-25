@@ -434,12 +434,14 @@ namespace NerdBank.OpenId.Consumer
 
 				// Build the return_to URL
 				UriBuilder return_to = new UriBuilder(Page.Request.Url);
-				// Trim off any old "openid." prefixed parameters to avoid carrying
-				// state from a prior login attempt.
+				// Trim off any parameters with an "openid." prefix, and a few known others
+				// to avoid carrying state from a prior login attempt.
 				return_to.Query = string.Empty;
 				NameValueCollection return_to_params = new NameValueCollection(Page.Request.QueryString.Count);
 				foreach (string key in Page.Request.QueryString) {
-					if (!key.StartsWith(QueryStringArgs.openid.Prefix) && key != QueryStringArgs.nonce) {
+					if (!key.StartsWith(QueryStringArgs.openid.Prefix) 
+						&& key != QueryStringArgs.nonce
+						&& key != Token.TokenKey) {
 						return_to_params.Add(key, Page.Request.QueryString[key]);
 					}
 				}
