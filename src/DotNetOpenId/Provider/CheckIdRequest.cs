@@ -75,7 +75,7 @@ namespace DotNetOpenId.Provider {
 			}
 		}
 
-		internal CheckIdRequest(Provider server, Uri identity, Uri return_to, string trust_root, 
+		internal CheckIdRequest(OpenIdProvider server, Uri identity, Uri return_to, string trust_root, 
 			bool immediate, string assoc_handle) : base(server) {
 			RequestedProfileFields = new ProfileRequestFields();
 			
@@ -90,7 +90,7 @@ namespace DotNetOpenId.Provider {
 					Strings.ReturnToNotUnderTrustRoot, ReturnTo.AbsoluteUri, TrustRoot));
 		}
 
-		internal CheckIdRequest(Provider server, NameValueCollection query) : base(server) {
+		internal CheckIdRequest(OpenIdProvider server, NameValueCollection query) : base(server) {
 			RequestedProfileFields = new ProfileRequestFields();
 			
 			// handle the mandatory protocol fields

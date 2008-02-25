@@ -14,11 +14,11 @@ namespace DotNetOpenId.Provider
 	}
 
 	public abstract class Request {
-		protected Request(Provider server) {
+		protected Request(OpenIdProvider server) {
 			Server = server;
 		}
 
-		protected Provider Server { get; private set; }
+		protected OpenIdProvider Server { get; private set; }
 		internal abstract string Mode { get; }
 		public abstract RequestType RequestType { get; }
 
@@ -44,7 +44,7 @@ namespace DotNetOpenId.Provider
 		/// <param name="query">A dictionary of name/value pairs given in the request's
 		/// querystring or form submission.</param>
 		/// <returns>A Request-derived type appropriate for this stage in authentication.</returns>
-		internal static Request CreateRequest(Provider provider, NameValueCollection query) {
+		internal static Request CreateRequest(OpenIdProvider provider, NameValueCollection query) {
 			Debug.Assert(query != null);
 			
 			string mode = query[QueryStringArgs.openid.mode];

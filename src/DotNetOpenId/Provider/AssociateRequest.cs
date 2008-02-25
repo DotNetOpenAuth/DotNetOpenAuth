@@ -14,7 +14,7 @@ namespace DotNetOpenId.Provider {
 		string associationKeyType = QueryStringArgs.HMAC_SHA1;
 		ProviderSession session;
 
-		public AssociateRequest(Provider server, NameValueCollection query)
+		public AssociateRequest(OpenIdProvider server, NameValueCollection query)
 			: base(server) {
 			session = ProviderSession.CreateSession(query);
 		}
