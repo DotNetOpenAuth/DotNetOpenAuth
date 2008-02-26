@@ -70,7 +70,7 @@ public partial class server : System.Web.UI.Page
             if (idrequest.Immediate)
             {
                 String s = Util.ExtractUserName(idrequest.IdentityUrl);                
-                bool allow = (s != User.Identity.Name);
+                bool allow = (s == User.Identity.Name);
                 response = idrequest.Answer(allow, State.ServerUri);
             }
             else
