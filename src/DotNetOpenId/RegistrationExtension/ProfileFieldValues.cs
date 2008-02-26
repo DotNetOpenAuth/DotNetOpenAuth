@@ -17,7 +17,7 @@ using System.Collections.Generic;
 namespace DotNetOpenId.RegistrationExtension
 {
 	[Serializable()]
-	public class ProfileFieldValues
+	public struct ProfileFieldValues
 	{
 		internal static ProfileFieldValues Empty = new ProfileFieldValues();
 
@@ -143,8 +143,8 @@ namespace DotNetOpenId.RegistrationExtension
 
 		public override bool Equals(object obj)
 		{
-			ProfileFieldValues other = obj as ProfileFieldValues;
-			if (other == null) return false;
+			if (!(obj is ProfileFieldValues)) return false;
+			ProfileFieldValues other = (ProfileFieldValues)obj;
 
 			return
 				safeEquals(this.BirthDate, other.BirthDate) &&

@@ -107,8 +107,6 @@ public partial class ProfileFields : System.Web.UI.UserControl {
 			return fields;
 		}
 		set {
-			if (value == null)
-				throw new ArgumentNullException("OpenIdProfileFields");
 			DateOfBirth = value.BirthDate;
 			countryDropdownList.SelectedValue = value.Country;
 			emailTextBox.Text = value.Email;

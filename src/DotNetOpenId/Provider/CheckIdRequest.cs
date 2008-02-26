@@ -184,7 +184,7 @@ namespace DotNetOpenId.Provider {
 				Trace.TraceInformation("Start processing Response for CheckIdRequest");
 				if (TraceUtil.Switch.TraceVerbose) {
 					Trace.TraceInformation("mode = '{0}',  server_url = '{1}", mode, ServerUrl);
-					if (ProfileFields != null) {
+					if (!ProfileFields.Equals(ProfileFieldValues.Empty)) {
 						Trace.TraceInformation("Simple registration fields: {0}",
 							TraceUtil.ToString(ProfileFields));
 					} else {
@@ -203,7 +203,7 @@ namespace DotNetOpenId.Provider {
 				fields.Add(QueryStringArgs.openidnp.identity, IdentityUrl.AbsoluteUri);
 				fields.Add(QueryStringArgs.openidnp.return_to, ReturnTo.AbsoluteUri);
 
-				if (ProfileFields != null) {
+				if (!ProfileFields.Equals(ProfileFieldValues.Empty)) {
 					ProfileFields.SendWithAuthenticationResponse(this);
 				}
 
