@@ -18,24 +18,46 @@ namespace DotNetOpenId.Provider {
 	public class CheckIdRequest : AssociatedRequest {
 		public ProfileRequestFields RequestedProfileFields { get; private set; }
 
+		bool? isAuthenticated;
 		/// <summary>
 		/// Gets/sets whether the provider has determined that the 
 		/// <see cref="IdentityUrl"/> belongs to the currently logged in user
 		/// and wishes to share this information with the consumer.
 		/// </summary>
-		public bool? IsAuthenticated { get; set; }
+		public bool? IsAuthenticated {
+			get { return isAuthenticated; }
+			set {
+				isAuthenticated = value;
+				InvalidateResponse();
+			}
+		}
+		Uri serverUrl = tryGetServerUrl();
 		/// <summary>
 		/// The provider URL that responds to OpenID requests.
 		/// </summary>
 		/// <remarks>
 		/// An auto-detect attempt is made if an ASP.NET HttpContext is available.
 		/// </remarks>
-		public Uri ServerUrl { get; set; }
+		public Uri ServerUrl {
+			get { return serverUrl; }
+			set {
+				serverUrl = value;
+				InvalidateResponse();
+			}
+		}
+		ProfileFieldValues profileFields;
 		/// <summary>
 		/// The simple registration profile field values to send to the consumer upon
 		/// successful authentication.
 		/// </summary>
-		public ProfileFieldValues ProfileFields { get; set; }
+		public ProfileFieldValues ProfileFields {
+			get { return profileFields; }
+			set {
+				profileFields = value;
+				InvalidateResponse();
+			}
+		}
+
 		/// <summary>
 		/// Whether the consumer demands an immediate response.
 		/// If false, the consumer is willing to wait for the identity provider
@@ -88,7 +110,6 @@ namespace DotNetOpenId.Provider {
 
 		internal CheckIdRequest(OpenIdProvider server, NameValueCollection query) : base(server) {
 			RequestedProfileFields = new ProfileRequestFields();
-			ServerUrl = tryGetServerUrl();
 			
 			// handle the mandatory protocol fields
 			string mode = getRequiredField(query, QueryStringArgs.openid.mode);
@@ -207,7 +228,7 @@ namespace DotNetOpenId.Provider {
 			return response;
 		}
 
-		Uri tryGetServerUrl() {
+		static Uri tryGetServerUrl() {
 			if (HttpContext.Current == null) return null;
 			UriBuilder builder = new UriBuilder(HttpContext.Current.Request.Url);
 			builder.Query = null;
