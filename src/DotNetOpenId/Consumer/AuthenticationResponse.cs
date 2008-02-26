@@ -65,7 +65,7 @@ namespace DotNetOpenId.Consumer {
 		/// Returns key/value pairs where the keys do not include the 
 		/// 'openid.' or the <paramref name="extensionPrefix"/>.
 		/// </returns>
-		public IDictionary<string, string> GetExtensionResponse(string extensionPrefix) {
+		public IDictionary<string, string> GetExtensionArguments(string extensionPrefix) {
 			var response = new Dictionary<string, string>();
 			extensionPrefix = QueryStringArgs.openid.Prefix + extensionPrefix + ".";
 			int prefix_len = extensionPrefix.Length;

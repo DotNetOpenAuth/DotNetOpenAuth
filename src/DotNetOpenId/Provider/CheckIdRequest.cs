@@ -45,7 +45,7 @@ namespace DotNetOpenId.Provider {
 		/// <summary>
 		/// The URL the consumer site claims to use as its 'base' address.
 		/// </summary>
-		public string TrustRoot { get; private set; }
+		public TrustRoot TrustRoot { get; private set; }
 		/// <summary>
 		/// The claimed OpenId URL of the user attempting to authenticate.
 		/// </summary>
@@ -70,21 +70,6 @@ namespace DotNetOpenId.Provider {
 			get { return IsAuthenticated.HasValue && ServerUrl != null; }
 		}
 		/// <summary>
-		/// Gets whether the TrustRoot string is valid and the ReturnTo string falls 'under'
-		/// the TrustRoot.
-		/// </summary>
-		public bool IsTrustRootValid {
-			get {
-				Debug.Assert(TrustRoot != null, "The constructor should have guaranteed this.");
-
-				try {
-					return new TrustRoot(TrustRoot).IsUrlWithinTrustRoot(ReturnTo);
-				} catch (UriFormatException) {
-					return false;
-				}
-			}
-		}
-		/// <summary>
 		/// Get the URL to cancel this request.
 		/// </summary>
 		internal Uri CancelUrl {
@@ -101,22 +86,6 @@ namespace DotNetOpenId.Provider {
 			}
 		}
 
-		internal CheckIdRequest(OpenIdProvider server, Uri identity, Uri return_to, string trust_root, 
-			bool immediate, string assoc_handle) : base(server) {
-			RequestedProfileFields = new ProfileRequestFields();
-			ServerUrl = tryGetServerUrl();
-	
-			AssociationHandle = assoc_handle;
-			IdentityUrl = identity;
-			ReturnTo = return_to;
-			TrustRoot = trust_root ?? return_to.AbsoluteUri;
-			Immediate = immediate;
-
-			if (!this.IsTrustRootValid)
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture, 
-					Strings.ReturnToNotUnderTrustRoot, ReturnTo.AbsoluteUri, TrustRoot));
-		}
-
 		internal CheckIdRequest(OpenIdProvider server, NameValueCollection query) : base(server) {
 			RequestedProfileFields = new ProfileRequestFields();
 			ServerUrl = tryGetServerUrl();
@@ -128,7 +97,8 @@ namespace DotNetOpenId.Provider {
 			} else if (QueryStringArgs.Modes.checkid_setup.Equals(mode, StringComparison.Ordinal)) {
 				Immediate = false; // implied
 			} else {
-				throw new OpenIdException(QueryStringArgs.openid.mode + " does not have any expected value: " + mode, query);
+				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+					Strings.InvalidOpenIdQueryParameterValue, QueryStringArgs.openid.mode, mode), query);
 			}
 
 			try {
@@ -145,12 +115,19 @@ namespace DotNetOpenId.Provider {
 					IdentityUrl, query, ex);
 			}
 
-			TrustRoot = query[QueryStringArgs.openid.trust_root] ?? ReturnTo.AbsoluteUri;
+			try {
+				TrustRoot = new TrustRoot(query[QueryStringArgs.openid.trust_root] ?? ReturnTo.AbsoluteUri);
+			} catch (UriFormatException ex) {
+				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+					Strings.InvalidOpenIdQueryParameterValue, QueryStringArgs.openid.trust_root,
+					query[QueryStringArgs.openid.trust_root]), ex);
+			}
 			AssociationHandle = query[QueryStringArgs.openid.assoc_handle];
 
-			if (!IsTrustRootValid)
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture, 
+			if (!TrustRoot.IsUrlWithinTrustRoot(ReturnTo)) {
+				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 					Strings.ReturnToNotUnderTrustRoot, ReturnTo.AbsoluteUri, TrustRoot), query);
+			}
 
 			// Handle the optional Simple Registration extension fields
 			string policyUrl = query[QueryStringArgs.openid.sreg.policy_url];
@@ -252,11 +229,7 @@ namespace DotNetOpenId.Provider {
 					throw new ArgumentNullException("serverUrl", "serverUrl is required for allow=False in immediate mode.");
 				}
 
-				CheckIdRequest setup_request = new CheckIdRequest(Server, IdentityUrl, ReturnTo, TrustRoot, false, this.AssociationHandle);
-
-				Uri setup_url = setup_request.encodeToUrl();
-
-				response.AddField(null, "user_setup_url", setup_url.AbsoluteUri, false);
+				response.AddField(null, "user_setup_url", SetupUrl.AbsoluteUri, false);
 			}
 
 			if (TraceUtil.Switch.TraceInfo) {
@@ -280,24 +253,83 @@ namespace DotNetOpenId.Provider {
 		/// <summary>
 		/// Encode this request as a URL to GET.
 		/// </summary>
-		/// <param name="server_url">The URL of the OpenID server to make this request of. </param>
-		Uri encodeToUrl() {
-			var q = new Dictionary<string, string>();
+		internal Uri SetupUrl {
+			get {
+				var q = new Dictionary<string, string>();
 
-			q.Add(QueryStringArgs.openid.mode, Mode);
-			q.Add(QueryStringArgs.openid.identity, IdentityUrl.AbsoluteUri);
-			q.Add(QueryStringArgs.openid.return_to, ReturnTo.AbsoluteUri);
+				q.Add(QueryStringArgs.openid.mode, QueryStringArgs.Modes.checkid_setup);
+				q.Add(QueryStringArgs.openid.identity, IdentityUrl.AbsoluteUri);
+				q.Add(QueryStringArgs.openid.return_to, ReturnTo.AbsoluteUri);
 
-			if (TrustRoot != null)
-				q.Add(QueryStringArgs.openid.trust_root, TrustRoot);
+				if (TrustRoot != null)
+					q.Add(QueryStringArgs.openid.trust_root, TrustRoot.Url);
 
-			if (this.AssociationHandle != null)
-				q.Add(QueryStringArgs.openid.assoc_handle, this.AssociationHandle);
+				if (this.AssociationHandle != null)
+					q.Add(QueryStringArgs.openid.assoc_handle, this.AssociationHandle);
 
-			UriBuilder builder = new UriBuilder(ServerUrl);
-			UriUtil.AppendQueryArgs(builder, q);
+				UriBuilder builder = new UriBuilder(ServerUrl);
+				UriUtil.AppendQueryArgs(builder, q);
 
-			return builder.Uri;
+				return builder.Uri;
+			}
+		}
+
+		/// <summary>
+		/// Adds extra query parameters to the response directed at the OpenID consumer.
+		/// </summary>
+		/// <param name="extensionPrefix">
+		/// The extension-specific prefix associated with these arguments.
+		/// This should not include the 'openid.' part of the prefix.
+		/// For example, the extension field openid.sreg.fullname would receive
+		/// 'sreg' for this value.
+		/// </param>
+		/// <param name="arguments">
+		/// The key/value pairs of parameters and values to pass to the provider.
+		/// The keys should NOT have the 'openid.ext.' prefix.
+		/// </param>
+		public void AddExtensionArguments(string extensionPrefix, IDictionary<string, string> arguments) {
+			if (string.IsNullOrEmpty(extensionPrefix)) throw new ArgumentNullException("extensionPrefix");
+			if (arguments == null) throw new ArgumentNullException("arguments");
+			if (extensionPrefix.StartsWith(".", StringComparison.Ordinal) ||
+				extensionPrefix.EndsWith(".", StringComparison.Ordinal))
+				throw new ArgumentException(Strings.PrefixWithoutPeriodsExpected, "extensionPrefix");
+
+			foreach (var pair in arguments) {
+				if (pair.Key.StartsWith(QueryStringArgs.openid.Prefix) ||
+					pair.Key.StartsWith(extensionPrefix))
+					throw new ArgumentException(string.Format(CultureInfo.CurrentUICulture,
+						Strings.ExtensionParameterKeysWithoutPrefixExpected, pair.Key), "arguments");
+				//ExtraArgs.Add(QueryStringArgs.openid.Prefix + extensionPrefix + "." + pair.Key, pair.Value);
+				// TODO: code here
+				throw new NotImplementedException();
+			}
+		}
+
+		/// <summary>
+		/// Gets the key/value pairs of a consumer's request for a given OpenID extension.
+		/// </summary>
+		/// <param name="extensionPrefix">
+		/// The prefix used by the extension, not including the 'openid.' start.
+		/// For example, simple registration key/values can be retrieved by passing 
+		/// 'sreg' as this argument.
+		/// </param>
+		/// <returns>
+		/// Returns key/value pairs where the keys do not include the 
+		/// 'openid.' or the <paramref name="extensionPrefix"/>.
+		/// </returns>
+		public IDictionary<string, string> GetExtensionArguments(string extensionPrefix) {
+			var response = new Dictionary<string, string>();
+			extensionPrefix = QueryStringArgs.openid.Prefix + extensionPrefix + ".";
+			int prefix_len = extensionPrefix.Length;
+			throw new NotImplementedException();
+			//foreach (var pair in this.signedArguments) {
+			//    if (pair.Key.StartsWith(extensionPrefix, StringComparison.OrdinalIgnoreCase)) {
+			//        string bareKey = pair.Key.Substring(prefix_len);
+			//        response[bareKey] = pair.Value;
+			//    }
+			//}
+
+			return response;
 		}
 
 		public override string ToString() {

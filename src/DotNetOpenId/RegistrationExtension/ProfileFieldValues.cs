@@ -66,7 +66,7 @@ namespace DotNetOpenId.RegistrationExtension
 		public string TimeZone { get; set; }
 
 		public static ProfileFieldValues ReadFromResponse(AuthenticationResponse response) {
-			var sreg = response.GetExtensionResponse(QueryStringArgs.openidnp.sreg.Prefix.TrimEnd('.'));
+			var sreg = response.GetExtensionArguments(QueryStringArgs.openidnp.sreg.Prefix.TrimEnd('.'));
 			string nickname, email, fullName, dob, genderString, postalCode, country, language, timeZone;
 			DateTime? birthDate = null;
 			Gender? gender = null;
