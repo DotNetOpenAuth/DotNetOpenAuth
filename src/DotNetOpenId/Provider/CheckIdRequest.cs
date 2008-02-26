@@ -155,7 +155,7 @@ namespace DotNetOpenId.Provider {
 			return value;
 		}
 
-		protected override Response CreateResponse() {
+		internal override EncodableResponse CreateResponse() {
 			string mode = (IsAuthenticated.Value || Immediate) ?
 				QueryStringArgs.Modes.id_res : QueryStringArgs.Modes.cancel;
 
@@ -183,42 +183,7 @@ namespace DotNetOpenId.Provider {
 				fields.Add(QueryStringArgs.openidnp.return_to, ReturnTo.AbsoluteUri);
 
 				if (ProfileFields != null) {
-					if (ProfileFields.BirthDate != null) {
-						fields.Add(QueryStringArgs.openidnp.sreg.dob, ProfileFields.BirthDate.ToString());
-					}
-					if (!String.IsNullOrEmpty(ProfileFields.Country)) {
-						fields.Add(QueryStringArgs.openidnp.sreg.country, ProfileFields.Country);
-					}
-					if (ProfileFields.Email != null) {
-						fields.Add(QueryStringArgs.openidnp.sreg.email, ProfileFields.Email.ToString());
-					}
-					if ((!String.IsNullOrEmpty(ProfileFields.FullName))) {
-						fields.Add(QueryStringArgs.openidnp.sreg.fullname, ProfileFields.FullName);
-					}
-
-					if (ProfileFields.Gender != null) {
-						if (ProfileFields.Gender == Gender.Female) {
-							fields.Add(QueryStringArgs.openidnp.sreg.gender, QueryStringArgs.Genders.Female);
-						} else {
-							fields.Add(QueryStringArgs.openidnp.sreg.gender, QueryStringArgs.Genders.Male);
-						}
-					}
-
-					if (!String.IsNullOrEmpty(ProfileFields.Language)) {
-						fields.Add(QueryStringArgs.openidnp.sreg.language, ProfileFields.Language);
-					}
-
-					if (!String.IsNullOrEmpty(ProfileFields.Nickname)) {
-						fields.Add(QueryStringArgs.openidnp.sreg.nickname, ProfileFields.Nickname);
-					}
-
-					if (!String.IsNullOrEmpty(ProfileFields.PostalCode)) {
-						fields.Add(QueryStringArgs.openidnp.sreg.postcode, ProfileFields.PostalCode);
-					}
-
-					if (!String.IsNullOrEmpty(ProfileFields.TimeZone)) {
-						fields.Add(QueryStringArgs.openidnp.sreg.timezone, ProfileFields.TimeZone);
-					}
+					ProfileFields.SendWithAuthenticationResponse(this);
 				}
 
 				response.AddFields(null, fields, true);
@@ -239,7 +204,7 @@ namespace DotNetOpenId.Provider {
 				}
 			}
 
-			return Server.EncodeResponse(response);
+			return response;
 		}
 
 		Uri tryGetServerUrl() {
@@ -272,64 +237,6 @@ namespace DotNetOpenId.Provider {
 
 				return builder.Uri;
 			}
-		}
-
-		/// <summary>
-		/// Adds extra query parameters to the response directed at the OpenID consumer.
-		/// </summary>
-		/// <param name="extensionPrefix">
-		/// The extension-specific prefix associated with these arguments.
-		/// This should not include the 'openid.' part of the prefix.
-		/// For example, the extension field openid.sreg.fullname would receive
-		/// 'sreg' for this value.
-		/// </param>
-		/// <param name="arguments">
-		/// The key/value pairs of parameters and values to pass to the provider.
-		/// The keys should NOT have the 'openid.ext.' prefix.
-		/// </param>
-		public void AddExtensionArguments(string extensionPrefix, IDictionary<string, string> arguments) {
-			if (string.IsNullOrEmpty(extensionPrefix)) throw new ArgumentNullException("extensionPrefix");
-			if (arguments == null) throw new ArgumentNullException("arguments");
-			if (extensionPrefix.StartsWith(".", StringComparison.Ordinal) ||
-				extensionPrefix.EndsWith(".", StringComparison.Ordinal))
-				throw new ArgumentException(Strings.PrefixWithoutPeriodsExpected, "extensionPrefix");
-
-			foreach (var pair in arguments) {
-				if (pair.Key.StartsWith(QueryStringArgs.openid.Prefix) ||
-					pair.Key.StartsWith(extensionPrefix))
-					throw new ArgumentException(string.Format(CultureInfo.CurrentUICulture,
-						Strings.ExtensionParameterKeysWithoutPrefixExpected, pair.Key), "arguments");
-				//ExtraArgs.Add(QueryStringArgs.openid.Prefix + extensionPrefix + "." + pair.Key, pair.Value);
-				// TODO: code here
-				throw new NotImplementedException();
-			}
-		}
-
-		/// <summary>
-		/// Gets the key/value pairs of a consumer's request for a given OpenID extension.
-		/// </summary>
-		/// <param name="extensionPrefix">
-		/// The prefix used by the extension, not including the 'openid.' start.
-		/// For example, simple registration key/values can be retrieved by passing 
-		/// 'sreg' as this argument.
-		/// </param>
-		/// <returns>
-		/// Returns key/value pairs where the keys do not include the 
-		/// 'openid.' or the <paramref name="extensionPrefix"/>.
-		/// </returns>
-		public IDictionary<string, string> GetExtensionArguments(string extensionPrefix) {
-			var response = new Dictionary<string, string>();
-			extensionPrefix = QueryStringArgs.openid.Prefix + extensionPrefix + ".";
-			int prefix_len = extensionPrefix.Length;
-			throw new NotImplementedException();
-			//foreach (var pair in this.signedArguments) {
-			//    if (pair.Key.StartsWith(extensionPrefix, StringComparison.OrdinalIgnoreCase)) {
-			//        string bareKey = pair.Key.Substring(prefix_len);
-			//        response[bareKey] = pair.Value;
-			//    }
-			//}
-
-			return response;
 		}
 
 		public override string ToString() {

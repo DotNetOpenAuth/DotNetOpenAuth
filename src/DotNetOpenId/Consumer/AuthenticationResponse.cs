@@ -66,6 +66,11 @@ namespace DotNetOpenId.Consumer {
 		/// 'openid.' or the <paramref name="extensionPrefix"/>.
 		/// </returns>
 		public IDictionary<string, string> GetExtensionArguments(string extensionPrefix) {
+			if (string.IsNullOrEmpty(extensionPrefix)) throw new ArgumentNullException("extensionPrefix");
+			if (extensionPrefix.StartsWith(".", StringComparison.Ordinal) ||
+				extensionPrefix.EndsWith(".", StringComparison.Ordinal))
+				throw new ArgumentException(Strings.PrefixWithoutPeriodsExpected, "extensionPrefix");
+
 			var response = new Dictionary<string, string>();
 			extensionPrefix = QueryStringArgs.openid.Prefix + extensionPrefix + ".";
 			int prefix_len = extensionPrefix.Length;

@@ -15,7 +15,7 @@ namespace DotNetOpenId.Provider {
 	public class OpenIdProvider {
 		internal Signatory Signatory { get; private set; }
 		Encoder encoder;
-		NameValueCollection query;
+		internal NameValueCollection query;
 
 		/// <summary>
 		/// Constructs an OpenId server that uses the HttpApplication dictionary as

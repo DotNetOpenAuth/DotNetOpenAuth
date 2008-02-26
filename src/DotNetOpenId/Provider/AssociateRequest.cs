@@ -68,8 +68,8 @@ namespace DotNetOpenId.Provider {
 			return response;
 		}
 
-		protected override Response CreateResponse() {
-			return Server.EncodeResponse(Answer());
+		internal override EncodableResponse CreateResponse() {
+			return Answer();
 		}
 
 		public override string ToString() {

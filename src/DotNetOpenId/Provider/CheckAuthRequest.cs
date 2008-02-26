@@ -47,7 +47,7 @@ namespace DotNetOpenId.Provider {
 		/// <summary>
 		/// Respond to this request.
 		/// </summary>
-		internal IEncodable Answer() {
+		internal EncodableResponse Answer() {
 			if (TraceUtil.Switch.TraceInfo) {
 				Trace.TraceInformation("Start processing Response for CheckAuthRequest");
 			}
@@ -82,8 +82,8 @@ namespace DotNetOpenId.Provider {
 			return response;
 		}
 
-		protected override Response CreateResponse() {
-			return Server.EncodeResponse(Answer());
+		internal override EncodableResponse CreateResponse() {
+			return Answer();
 		}
 
 		string getRequiredField(NameValueCollection query, string key) {

@@ -11,6 +11,8 @@ using System.Net.Mail;
 using DotNetOpenId.RegistrationExtension;
 using System.Xml.Serialization;
 using DotNetOpenId.Consumer;
+using DotNetOpenId.Provider;
+using System.Collections.Generic;
 
 namespace DotNetOpenId.RegistrationExtension
 {
@@ -65,6 +67,43 @@ namespace DotNetOpenId.RegistrationExtension
 		}
 		public string TimeZone { get; set; }
 
+		public void SendWithAuthenticationResponse(CheckIdRequest authenticationRequest) {
+			if (authenticationRequest == null) throw new ArgumentNullException("authenticationRequest");
+			Dictionary<string, string> fields = new Dictionary<string, string>();
+			if (BirthDate != null) {
+				fields.Add(QueryStringArgs.openidnp.sregnp.dob, BirthDate.ToString());
+			}
+			if (!String.IsNullOrEmpty(Country)) {
+				fields.Add(QueryStringArgs.openidnp.sregnp.country, Country);
+			}
+			if (Email != null) {
+				fields.Add(QueryStringArgs.openidnp.sregnp.email, Email.ToString());
+			}
+			if ((!String.IsNullOrEmpty(FullName))) {
+				fields.Add(QueryStringArgs.openidnp.sregnp.fullname, FullName);
+			}
+			if (Gender != null) {
+				if (Gender == DotNetOpenId.RegistrationExtension.Gender.Female) {
+					fields.Add(QueryStringArgs.openidnp.sregnp.gender, QueryStringArgs.Genders.Female);
+				} else {
+					fields.Add(QueryStringArgs.openidnp.sregnp.gender, QueryStringArgs.Genders.Male);
+				}
+			}
+			if (!String.IsNullOrEmpty(Language)) {
+				fields.Add(QueryStringArgs.openidnp.sregnp.language, Language);
+			}
+			if (!String.IsNullOrEmpty(Nickname)) {
+				fields.Add(QueryStringArgs.openidnp.sregnp.nickname, Nickname);
+			}
+			if (!String.IsNullOrEmpty(PostalCode)) {
+				fields.Add(QueryStringArgs.openidnp.sregnp.postcode, PostalCode);
+			}
+			if (!String.IsNullOrEmpty(TimeZone)) {
+				fields.Add(QueryStringArgs.openidnp.sregnp.timezone, TimeZone);
+			}
+			authenticationRequest.AddExtensionArguments(QueryStringArgs.openidnp.sreg.Prefix.TrimEnd('.'),
+				fields);
+		}
 		public static ProfileFieldValues ReadFromResponse(AuthenticationResponse response) {
 			var sreg = response.GetExtensionArguments(QueryStringArgs.openidnp.sreg.Prefix.TrimEnd('.'));
 			string nickname, email, fullName, dob, genderString, postalCode, country, language, timeZone;

@@ -43,7 +43,7 @@ namespace DotNetOpenId.Provider {
 			string assoc_handle = ((AssociatedRequest)response.Request).AssociationHandle;
 
 			if (!string.IsNullOrEmpty(assoc_handle)) {
-				assoc = this.GetAssociation(assoc_handle, AssociationConsumerType.Smart);
+				assoc = GetAssociation(assoc_handle, AssociationConsumerType.Smart);
 
 				if (assoc == null) {
 					if (TraceUtil.Switch.TraceInfo) {
@@ -51,11 +51,7 @@ namespace DotNetOpenId.Provider {
 					}
 
 					response.Fields[QueryStringArgs.openidnp.invalidate_handle] = assoc_handle;
-					assoc = this.CreateAssociation(AssociationConsumerType.Dumb);
-				} else {
-					if (TraceUtil.Switch.TraceInfo) {
-						Trace.TraceInformation("No association found.");
-					}
+					assoc = CreateAssociation(AssociationConsumerType.Dumb);
 				}
 			} else {
 				assoc = this.CreateAssociation(AssociationConsumerType.Dumb);
@@ -80,7 +76,7 @@ namespace DotNetOpenId.Provider {
 				Trace.TraceInformation("Start signature verification for assoc_handle = '{0}'", assoc_handle);
 			}
 
-			Association assoc = this.GetAssociation(assoc_handle, AssociationConsumerType.Dumb);
+			Association assoc = GetAssociation(assoc_handle, AssociationConsumerType.Dumb);
 
 			string expected_sig;
 

@@ -66,15 +66,14 @@ namespace DotNetOpenId.Provider
 
         public override Response Encode(IEncodable encodable)
         {
-            if (!(encodable is Exception))
+            var response = encodable as EncodableResponse;
+            if (response != null)
             {
                 if (TraceUtil.Switch.TraceInfo)
                 {
                     Trace.TraceInformation("Encoding using the signing encoder");
                 }
                 
-                EncodableResponse response = (EncodableResponse)encodable;
-
                 if (response.NeedsSigning)
                 {
                     if (signatory == null)
