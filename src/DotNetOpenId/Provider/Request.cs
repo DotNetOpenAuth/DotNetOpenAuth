@@ -9,30 +9,6 @@ using System.Web;
 namespace DotNetOpenId.Provider
 {
 	/// <summary>
-	/// Identifies the type of requests that can come to an OpenId provider.
-	/// </summary>
-	public enum RequestType {
-		/// <summary>
-		/// An OpenId consumer has directed a user agent to this provider
-		/// for authentication.
-		/// </summary>
-		CheckIdRequest,
-		/// <summary>
-		/// An OpenId consumer is requesting verification of a user agent's
-		/// claim of successful authentication when a prior association
-		/// between consumer and provider was not available to do the verification
-		/// immediately.
-		/// </summary>
-		CheckAuthRequest,
-		/// <summary>
-		/// An OpenId consumer is requesting a shared secret with this provider
-		/// so that future authentication requests do not need to be verified
-		/// with the provider seperately.
-		/// </summary>
-		AssociateRequest,
-	}
-
-	/// <summary>
 	/// Represents any OpenId-protocol request that may come to the provider.
 	/// </summary>
 	public abstract class Request {
@@ -42,7 +18,6 @@ namespace DotNetOpenId.Provider
 
 		protected OpenIdProvider Server { get; private set; }
 		internal abstract string Mode { get; }
-		public abstract RequestType RequestType { get; }
 
 		/// <summary>
 		/// Tests whether a given dictionary represents an incoming OpenId request.
@@ -95,6 +70,10 @@ namespace DotNetOpenId.Provider
 			return request;
 		}
 
+		/// <summary>
+		/// Indicates whether this request has all the information necessary to formulate a response.
+		/// </summary>
+		public abstract bool IsResponseReady { get; }
 		protected abstract Response CreateResponse();
 		/// <summary>
 		/// Called whenever a property changes that would cause the response to need to be
@@ -110,6 +89,7 @@ namespace DotNetOpenId.Provider
 		/// </summary>
 		public Response Response {
 			get {
+				if (!IsResponseReady) throw new InvalidOperationException(Strings.ResponseNotReady);
 				if (response == null) {
 					response = CreateResponse();
 				}

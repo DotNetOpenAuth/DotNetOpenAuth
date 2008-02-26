@@ -60,14 +60,4 @@ public class Util {
 		HttpContext.Current.Response.Write(error);
 		HttpContext.Current.Response.Close();
 	}
-
-	public static Uri ServerUri {
-		get {
-			UriBuilder builder = new UriBuilder(HttpContext.Current.Request.Url);
-			builder.Path = HttpContext.Current.Response.ApplyAppPathModifier("~/server.aspx");
-			builder.Query = null;
-			builder.Fragment = null;
-			return builder.Uri;
-		}
-	}
 }

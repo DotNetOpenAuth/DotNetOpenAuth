@@ -19,8 +19,9 @@ namespace DotNetOpenId.Provider {
 			session = ProviderSession.CreateSession(query);
 		}
 
-		public override RequestType RequestType {
-			get { return RequestType.AssociateRequest; }
+		public override bool IsResponseReady {
+			// This type of request can always be responded to immediately.
+			get { return true; }
 		}
 
 		/// <summary>

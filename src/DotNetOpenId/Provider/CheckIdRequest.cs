@@ -6,6 +6,7 @@ using DotNetOpenId.RegistrationExtension;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Web;
 
 namespace DotNetOpenId.Provider {
 	/// <summary>
@@ -17,6 +18,24 @@ namespace DotNetOpenId.Provider {
 	public class CheckIdRequest : AssociatedRequest {
 		public ProfileRequestFields RequestedProfileFields { get; private set; }
 
+		/// <summary>
+		/// Gets/sets whether the provider has determined that the 
+		/// <see cref="IdentityUrl"/> belongs to the currently logged in user
+		/// and wishes to share this information with the consumer.
+		/// </summary>
+		public bool? IsAuthenticated { get; set; }
+		/// <summary>
+		/// The provider URL that responds to OpenID requests.
+		/// </summary>
+		/// <remarks>
+		/// An auto-detect attempt is made if an ASP.NET HttpContext is available.
+		/// </remarks>
+		public Uri ServerUrl { get; set; }
+		/// <summary>
+		/// The simple registration profile field values to send to the consumer upon
+		/// successful authentication.
+		/// </summary>
+		public ProfileFieldValues ProfileFields { get; set; }
 		/// <summary>
 		/// Whether the consumer demands an immediate response.
 		/// If false, the consumer is willing to wait for the identity provider
@@ -35,7 +54,7 @@ namespace DotNetOpenId.Provider {
 		/// The URL to redirect the user agent to after the authentication attempt.
 		/// This must fall "under" the TrustRoot URL.
 		/// </summary>
-		public Uri ReturnTo { get; private set; }
+		internal Uri ReturnTo { get; private set; }
 		/// <summary>
 		/// The URL the consumer site provides for the authenticating user to review
 		/// for how his claims will be used by the consumer web site.
@@ -44,9 +63,16 @@ namespace DotNetOpenId.Provider {
 		internal override string Mode {
 			get { return Immediate ? QueryStringArgs.Modes.checkid_immediate : QueryStringArgs.Modes.checkid_setup; }
 		}
-		public override RequestType RequestType {
-			get { return RequestType.CheckIdRequest; }
+		/// <summary>
+		/// Indicates whether this request has all the information necessary to formulate a response.
+		/// </summary>
+		public override bool IsResponseReady {
+			get { return IsAuthenticated.HasValue && ServerUrl != null; }
 		}
+		/// <summary>
+		/// Gets whether the TrustRoot string is valid and the ReturnTo string falls 'under'
+		/// the TrustRoot.
+		/// </summary>
 		public bool IsTrustRootValid {
 			get {
 				Debug.Assert(TrustRoot != null, "The constructor should have guaranteed this.");
@@ -61,7 +87,7 @@ namespace DotNetOpenId.Provider {
 		/// <summary>
 		/// Get the URL to cancel this request.
 		/// </summary>
-		public Uri CancelUrl {
+		internal Uri CancelUrl {
 			get {
 				if (Immediate)
 					throw new InvalidOperationException("Cancel is not an appropriate response to immediate mode requests.");
@@ -78,7 +104,8 @@ namespace DotNetOpenId.Provider {
 		internal CheckIdRequest(OpenIdProvider server, Uri identity, Uri return_to, string trust_root, 
 			bool immediate, string assoc_handle) : base(server) {
 			RequestedProfileFields = new ProfileRequestFields();
-			
+			ServerUrl = tryGetServerUrl();
+	
 			AssociationHandle = assoc_handle;
 			IdentityUrl = identity;
 			ReturnTo = return_to;
@@ -92,6 +119,7 @@ namespace DotNetOpenId.Provider {
 
 		internal CheckIdRequest(OpenIdProvider server, NameValueCollection query) : base(server) {
 			RequestedProfileFields = new ProfileRequestFields();
+			ServerUrl = tryGetServerUrl();
 			
 			// handle the mandatory protocol fields
 			string mode = getRequiredField(query, QueryStringArgs.openid.mode);
@@ -150,28 +178,17 @@ namespace DotNetOpenId.Provider {
 			return value;
 		}
 
-		/// <summary>
-		/// Respond to this request.
-		/// </summary>
-		/// <param name="allow">Allow this user to claim this identity, and allow the consumer to have this information?</param>
-		public Response Answer(bool allow, Uri serverUrl) {
-			return Answer(allow, serverUrl, null);
-		}
-
-		/// <summary>
-		/// Respond to this request.
-		/// </summary>
-		/// <param name="allow">Allow this user to claim this identity, and allow the consumer to have this information?</param>
-		public Response Answer(bool allow, Uri serverUrl, ProfileFieldValues openIdProfileFields) {
-			string mode = (allow || Immediate) ? QueryStringArgs.Modes.id_res : QueryStringArgs.Modes.cancel;
+		protected override Response CreateResponse() {
+			string mode = (IsAuthenticated.Value || Immediate) ?
+				QueryStringArgs.Modes.id_res : QueryStringArgs.Modes.cancel;
 
 			if (TraceUtil.Switch.TraceInfo) {
 				Trace.TraceInformation("Start processing Response for CheckIdRequest");
 				if (TraceUtil.Switch.TraceVerbose) {
-					Trace.TraceInformation("mode = '{0}',  server_url = '{1}", mode, serverUrl);
-					if (openIdProfileFields != null) {
+					Trace.TraceInformation("mode = '{0}',  server_url = '{1}", mode, ServerUrl);
+					if (ProfileFields != null) {
 						Trace.TraceInformation("Simple registration fields: {0}",
-							TraceUtil.ToString(openIdProfileFields));
+							TraceUtil.ToString(ProfileFields));
 					} else {
 						Trace.TraceInformation("No simple registration fields have been supplied.");
 					}
@@ -181,49 +198,49 @@ namespace DotNetOpenId.Provider {
 
 			EncodableResponse response = new EncodableResponse(this);
 
-			if (allow) {
+			if (IsAuthenticated.Value) {
 				var fields = new Dictionary<string, string>();
 
 				fields.Add(QueryStringArgs.openidnp.mode, mode);
 				fields.Add(QueryStringArgs.openidnp.identity, IdentityUrl.AbsoluteUri);
 				fields.Add(QueryStringArgs.openidnp.return_to, ReturnTo.AbsoluteUri);
 
-				if (openIdProfileFields != null) {
-					if (openIdProfileFields.BirthDate != null) {
-						fields.Add(QueryStringArgs.openidnp.sreg.dob, openIdProfileFields.BirthDate.ToString());
+				if (ProfileFields != null) {
+					if (ProfileFields.BirthDate != null) {
+						fields.Add(QueryStringArgs.openidnp.sreg.dob, ProfileFields.BirthDate.ToString());
 					}
-					if (!String.IsNullOrEmpty(openIdProfileFields.Country)) {
-						fields.Add(QueryStringArgs.openidnp.sreg.country, openIdProfileFields.Country);
+					if (!String.IsNullOrEmpty(ProfileFields.Country)) {
+						fields.Add(QueryStringArgs.openidnp.sreg.country, ProfileFields.Country);
 					}
-					if (openIdProfileFields.Email != null) {
-						fields.Add(QueryStringArgs.openidnp.sreg.email, openIdProfileFields.Email.ToString());
+					if (ProfileFields.Email != null) {
+						fields.Add(QueryStringArgs.openidnp.sreg.email, ProfileFields.Email.ToString());
 					}
-					if ((!String.IsNullOrEmpty(openIdProfileFields.FullName))) {
-						fields.Add(QueryStringArgs.openidnp.sreg.fullname, openIdProfileFields.FullName);
+					if ((!String.IsNullOrEmpty(ProfileFields.FullName))) {
+						fields.Add(QueryStringArgs.openidnp.sreg.fullname, ProfileFields.FullName);
 					}
 
-					if (openIdProfileFields.Gender != null) {
-						if (openIdProfileFields.Gender == Gender.Female) {
+					if (ProfileFields.Gender != null) {
+						if (ProfileFields.Gender == Gender.Female) {
 							fields.Add(QueryStringArgs.openidnp.sreg.gender, QueryStringArgs.Genders.Female);
 						} else {
 							fields.Add(QueryStringArgs.openidnp.sreg.gender, QueryStringArgs.Genders.Male);
 						}
 					}
 
-					if (!String.IsNullOrEmpty(openIdProfileFields.Language)) {
-						fields.Add(QueryStringArgs.openidnp.sreg.language, openIdProfileFields.Language);
+					if (!String.IsNullOrEmpty(ProfileFields.Language)) {
+						fields.Add(QueryStringArgs.openidnp.sreg.language, ProfileFields.Language);
 					}
 
-					if (!String.IsNullOrEmpty(openIdProfileFields.Nickname)) {
-						fields.Add(QueryStringArgs.openidnp.sreg.nickname, openIdProfileFields.Nickname);
+					if (!String.IsNullOrEmpty(ProfileFields.Nickname)) {
+						fields.Add(QueryStringArgs.openidnp.sreg.nickname, ProfileFields.Nickname);
 					}
 
-					if (!String.IsNullOrEmpty(openIdProfileFields.PostalCode)) {
-						fields.Add(QueryStringArgs.openidnp.sreg.postcode, openIdProfileFields.PostalCode);
+					if (!String.IsNullOrEmpty(ProfileFields.PostalCode)) {
+						fields.Add(QueryStringArgs.openidnp.sreg.postcode, ProfileFields.PostalCode);
 					}
 
-					if (!String.IsNullOrEmpty(openIdProfileFields.TimeZone)) {
-						fields.Add(QueryStringArgs.openidnp.sreg.timezone, openIdProfileFields.TimeZone);
+					if (!String.IsNullOrEmpty(ProfileFields.TimeZone)) {
+						fields.Add(QueryStringArgs.openidnp.sreg.timezone, ProfileFields.TimeZone);
 					}
 				}
 
@@ -231,13 +248,13 @@ namespace DotNetOpenId.Provider {
 			}
 			response.AddField(null, QueryStringArgs.openidnp.mode, mode, false);
 			if (Immediate) {
-				if (serverUrl == null) {
+				if (ServerUrl == null) {
 					throw new ArgumentNullException("serverUrl", "serverUrl is required for allow=False in immediate mode.");
 				}
 
 				CheckIdRequest setup_request = new CheckIdRequest(Server, IdentityUrl, ReturnTo, TrustRoot, false, this.AssociationHandle);
 
-				Uri setup_url = setup_request.encodeToUrl(serverUrl);
+				Uri setup_url = setup_request.encodeToUrl();
 
 				response.AddField(null, "user_setup_url", setup_url.AbsoluteUri, false);
 			}
@@ -252,15 +269,19 @@ namespace DotNetOpenId.Provider {
 			return Server.EncodeResponse(response);
 		}
 
-		protected override Response CreateResponse() {
-			throw new NotSupportedException("Call Answer method instead.");
+		Uri tryGetServerUrl() {
+			if (HttpContext.Current == null) return null;
+			UriBuilder builder = new UriBuilder(HttpContext.Current.Request.Url);
+			builder.Query = null;
+			builder.Fragment = null;
+			return builder.Uri;
 		}
 
 		/// <summary>
 		/// Encode this request as a URL to GET.
 		/// </summary>
 		/// <param name="server_url">The URL of the OpenID server to make this request of. </param>
-		Uri encodeToUrl(Uri server_url) {
+		Uri encodeToUrl() {
 			var q = new Dictionary<string, string>();
 
 			q.Add(QueryStringArgs.openid.mode, Mode);
@@ -273,7 +294,7 @@ namespace DotNetOpenId.Provider {
 			if (this.AssociationHandle != null)
 				q.Add(QueryStringArgs.openid.assoc_handle, this.AssociationHandle);
 
-			UriBuilder builder = new UriBuilder(server_url);
+			UriBuilder builder = new UriBuilder(ServerUrl);
 			UriUtil.AppendQueryArgs(builder, q);
 
 			return builder.Uri;

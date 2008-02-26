@@ -3,6 +3,7 @@ using System.Web.Security;
 using System.Web.UI;
 using DotNetOpenId.Provider;
 using System.Web.Profile;
+using System.Diagnostics;
 
 /// <summary>
 /// Page for giving the user the option to continue or cancel out of authentication with a consumer.
@@ -31,18 +32,15 @@ public partial class decide : Page {
 	}
 
 	protected void Yes_Click(Object sender, EventArgs e) {
-		Response response;
-		if (this.profileFields.DoesAnyFieldHaveAValue) {
-			// authenticate with simple registration fields
-			response = State.Session.LastRequest.Answer(true, Util.ServerUri, this.profileFields.OpenIdProfileFields);
-		} else {
-			// no fields available
-			response = State.Session.LastRequest.Answer(true, Util.ServerUri);
-		}
-		response.Send();
+		State.Session.LastRequest.IsAuthenticated = true;
+		State.Session.LastRequest.ProfileFields = profileFields.OpenIdProfileFields;
+		Debug.Assert(State.Session.LastRequest.IsResponseReady);
+		State.Session.LastRequest.Response.Send();
 	}
 
 	protected void No_Click(Object sender, EventArgs e) {
-		State.Session.LastRequest.Answer(false, Util.ServerUri).Send();
+		State.Session.LastRequest.IsAuthenticated = false;
+		Debug.Assert(State.Session.LastRequest.IsResponseReady);
+		State.Session.LastRequest.Response.Send();
 	}
 }

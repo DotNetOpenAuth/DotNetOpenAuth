@@ -153,6 +153,9 @@
   <data name="PrefixWithoutPeriodsExpected" xml:space="preserve">
     <value>Prefix should not begin or end with a period.</value>
   </data>
+  <data name="ResponseNotReady" xml:space="preserve">
+    <value>OpenId provider's response is not ready.  Use IsResponseReady to check, and fill in the required properties first.</value>
+  </data>
   <data name="ReturnToNotUnderTrustRoot" xml:space="preserve">
     <value>return_to '{0}' not under trust_root '{1}'.</value>
   </data>

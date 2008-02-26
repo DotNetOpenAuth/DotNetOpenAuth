@@ -43,27 +43,24 @@ public partial class server : System.Web.UI.Page {
 				return;
 			}
 			// process the incoming message appropriately and send the response
-			Response response = null;
-			switch (openIDServer.Request.RequestType) {
-				case RequestType.CheckIdRequest:
-					CheckIdRequest idrequest = (CheckIdRequest)openIDServer.Request;
-					if (idrequest.Immediate) {
-						String s = Util.ExtractUserName(idrequest.IdentityUrl);
-						bool allow = (s != User.Identity.Name);
-						idrequest.Answer(allow, Util.ServerUri).Send();
-					} else {
-						State.Session.LastRequest = idrequest;
-						Response.Redirect("~/decide.aspx");
-					}
-					break;
-				default:
-					openIDServer.Request.Response.Send();
-					break;
+			if (!openIDServer.Request.IsResponseReady) {
+				var idrequest = (CheckIdRequest)openIDServer.Request;
+				if (idrequest.Immediate) {
+					string userOwningOpenIdUrl = Util.ExtractUserName(idrequest.IdentityUrl);
+					// NOTE: in a production provider site, you may want to only 
+					// respond affirmatively if the user has already authorized this consumer
+					// to know the answer.
+					idrequest.IsAuthenticated = userOwningOpenIdUrl == User.Identity.Name;
+				} else {
+					State.Session.LastRequest = idrequest;
+					Response.Redirect("~/decide.aspx", true); // This ends processing on this page.
+				}
 			}
+			Debug.Assert(openIDServer.Request.IsResponseReady);
+			openIDServer.Request.Response.Send();
 		} catch (OpenIdException e) {
 			Util.GenerateHttpResponse(e);
 			return;
 		}
-
 	}
 }

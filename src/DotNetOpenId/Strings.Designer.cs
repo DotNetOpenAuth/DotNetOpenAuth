@@ -169,6 +169,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to OpenId provider&apos;s response is not ready.  Use IsResponseReady to check, and fill in the required properties first..
+        /// </summary>
+        internal static string ResponseNotReady {
+            get {
+                return ResourceManager.GetString("ResponseNotReady", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to return_to &apos;{0}&apos; not under trust_root &apos;{1}&apos;..
         /// </summary>
         internal static string ReturnToNotUnderTrustRoot {

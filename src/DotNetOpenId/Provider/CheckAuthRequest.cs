@@ -32,8 +32,9 @@ namespace DotNetOpenId.Provider {
 			}
 		}
 
-		public override RequestType RequestType {
-			get { return RequestType.CheckAuthRequest; }
+		public override bool IsResponseReady {
+			// This type of request can always be responded to immediately.
+			get { return true; }
 		}
 
 		/// <summary>
