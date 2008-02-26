@@ -59,7 +59,7 @@ namespace DotNetOpenId.Provider
         {
             get
             {
-                return Request.RequestType == RequestType.CheckIdRequest ? 
+                return Request is CheckIdRequest ? 
                     EncodingType.RedirectBrowserUrl : EncodingType.ResponseBody;
             }
         }
@@ -72,7 +72,7 @@ namespace DotNetOpenId.Provider
 
                 foreach (var pair in Fields)
                 {
-                    if (Request.RequestType == RequestType.CheckIdRequest)
+                    if (Request is CheckIdRequest)
                     {
                         nvc.Add(QueryStringArgs.openid.Prefix + pair.Key, pair.Value);
                     }
@@ -89,7 +89,7 @@ namespace DotNetOpenId.Provider
         {
             get
             {
-                if (Request.RequestType != RequestType.CheckIdRequest)
+                if (!(Request is CheckIdRequest))
                 {
                     throw new InvalidOperationException("Encoding to URL is only appropriate on CheckIdRequest requests.");
                 }
