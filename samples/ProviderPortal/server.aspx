@@ -1,4 +1,4 @@
-<%@ Page Language="C#" AutoEventWireup="true" Inherits="server" Debug="true" CodeBehind="server.aspx.cs" %>
+<%@ Page Language="C#" AutoEventWireup="true" Inherits="server" CodeBehind="server.aspx.cs" %>
 
 <%@ Register Assembly="DotNetOpenId" Namespace="DotNetOpenId.Provider" TagPrefix="openid" %>
 <html>
