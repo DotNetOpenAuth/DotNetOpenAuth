@@ -134,6 +134,7 @@ namespace DotNetOpenId.Provider
 				// Leave off the prefix as it will be added after signing later.
 				ExtraArgs.Add(extensionPrefix + "." + pair.Key, pair.Value);
 			}
+			InvalidateResponse();
 		}
 
 		/// <summary>
