@@ -14,7 +14,7 @@
     <cc1:OpenIdLogin ID="OpenIdLogin1" runat="server" CssClass="openid_login" 
         RequestCountry="Request" RequestEmail="Request" RequestGender="Require" 
         RequestPostalCode="Require" RequestTimeZone="Require"
-        RememberMeVisible="True" TabIndex="1"
+        RememberMeVisible="True" PolicyUrl="~/PrivacyPolicy.aspx" TabIndex="1"
         OnLoggedIn="OpenIdLogin1_LoggedIn" OnCanceled="OpenIdLogin1_Canceled"
         OnError="OpenIdLogin1_Error" />
     <br />

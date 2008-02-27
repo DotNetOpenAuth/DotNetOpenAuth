@@ -20,6 +20,7 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Globalization;
 using System.Diagnostics.CodeAnalysis;
+using System.Web;
 
 [assembly: WebResource(DotNetOpenId.Consumer.OpenIdTextBox.EmbeddedLogoResourceName, "image/gif")]
 
@@ -283,7 +284,26 @@ namespace DotNetOpenId.Consumer
 		public string PolicyUrl
 		{
 			get { return (string)ViewState[policyUrlViewStateKey] ?? policyUrlDefault; }
-			set { ViewState[policyUrlViewStateKey] = value; }
+			set {
+				ValidateResolvableUrl(Page, DesignMode, value);
+				ViewState[policyUrlViewStateKey] = value;
+			}
+		}
+
+		internal static void ValidateResolvableUrl(Page page, bool designMode, string value) {
+			if (string.IsNullOrEmpty(value)) return;
+			if (page != null && !designMode) {
+				// Validate new value by trying to construct a TrustRoot object based on it.
+				new Uri(page.ResolveUrl(value)); // throws an exception on failure.
+			} else {
+				// We can't fully test it, but it should start with either ~/ or a protocol.
+				if (Regex.IsMatch(value, @"^https?://")) {
+					new Uri(value); // make sure it's fully-qualified, but ignore wildcards
+				} else if (value.StartsWith("~/", StringComparison.Ordinal)) {
+					// this is valid too
+				} else
+					throw new UriFormatException();
+			}
 		}
 
 		const string enableRequestProfileViewStateKey = "EnableRequestProfile";
@@ -446,7 +466,8 @@ namespace DotNetOpenId.Consumer
 			Dictionary<string, string> profileArguments = new Dictionary<string, string>();
 			profileArguments.Add(QueryStringArgs.openidnp.sregnp.required, string.Join(",", assembleProfileFields(ProfileRequest.Require)));
 			profileArguments.Add(QueryStringArgs.openidnp.sregnp.optional, string.Join(",", assembleProfileFields(ProfileRequest.Request)));
-			profileArguments.Add(QueryStringArgs.openidnp.sregnp.policy_url, PolicyUrl);
+			profileArguments.Add(QueryStringArgs.openidnp.sregnp.policy_url, 
+				new Uri(Page.Request.Url, Page.ResolveUrl(PolicyUrl)).AbsoluteUri);
 			request.AddExtensionArguments(QueryStringArgs.openidnp.sreg.Prefix.TrimEnd('.'), profileArguments);
 		}
 

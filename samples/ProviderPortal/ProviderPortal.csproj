@@ -57,7 +57,6 @@
     <Content Include="xrds.aspx" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Code\State.cs" />
     <Compile Include="Code\URLRewriter.cs" />
     <Compile Include="Code\Util.cs" />
     <Compile Include="decide.aspx.cs">

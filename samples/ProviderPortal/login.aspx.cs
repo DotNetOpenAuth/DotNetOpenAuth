@@ -8,6 +8,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Web.UI.HtmlControls;
+using DotNetOpenId.Provider;
 
 /// <summary>
 /// Page for handling logins to this server. 
@@ -15,8 +16,8 @@ using System.Web.UI.HtmlControls;
 public partial class login : System.Web.UI.Page {
 	protected void Page_Load(object src, EventArgs e) {
 		if (!IsPostBack) {
-			if (State.Session.LastRequest != null) {
-				login1.UserName = Util.ExtractUserName(State.Session.LastRequest.IdentityUrl);
+			if (ProviderEndpoint.PendingAuthenticationRequest != null) {
+				login1.UserName = Util.ExtractUserName(ProviderEndpoint.PendingAuthenticationRequest.IdentityUrl);
 				((TextBox)login1.FindControl("UserName")).ReadOnly = true;
 				login1.FindControl("Password").Focus();
 			}

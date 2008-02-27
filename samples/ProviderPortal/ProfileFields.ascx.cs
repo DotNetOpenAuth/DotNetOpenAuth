@@ -13,6 +13,12 @@ public partial class ProfileFields : System.Web.UI.UserControl {
 	}
 
 	public void SetRequiredFieldsFromRequest(ProfileRequestFields requestFields) {
+		if (requestFields.PolicyUrl != null) {
+			privacyLink.NavigateUrl = requestFields.PolicyUrl.AbsoluteUri;
+		} else {
+			privacyLink.Visible = false;
+		}
+
 		dobRequiredLabel.Visible = (requestFields.BirthDate == ProfileRequest.Require);
 		countryRequiredLabel.Visible = (requestFields.Country == ProfileRequest.Require);
 		emailRequiredLabel.Visible = (requestFields.Email == ProfileRequest.Require);

@@ -45,6 +45,7 @@
     <Content Include="Global.asax" />
     <Content Include="login.aspx" />
     <Content Include="logout.aspx" />
+    <Content Include="PrivacyPolicy.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -65,6 +66,13 @@
     </Compile>
     <Compile Include="login.aspx.designer.cs">
       <DependentUpon>login.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="PrivacyPolicy.aspx.cs">
+      <DependentUpon>PrivacyPolicy.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="PrivacyPolicy.aspx.designer.cs">
+      <DependentUpon>PrivacyPolicy.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

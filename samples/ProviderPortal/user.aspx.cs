@@ -22,63 +22,41 @@ using System.Web.UI.HtmlControls;
 /// The XRDS (or Yadis) content is also rendered to provide the consumer with an alternative discovery mechanism. The Yadis protocol allows the consumer 
 /// to provide the user with a more flexible range of authentication mechanisms (which ever has been defined in xrds.aspx). See http://en.wikipedia.org/wiki/Yadis.
 /// </summary>
-public partial class user : System.Web.UI.Page
-{
-    protected void Page_Load(object sender, EventArgs e)
-    {
-    }
+public partial class user : System.Web.UI.Page {
+	protected void Page_Load(object sender, EventArgs e) {
+		usernameLabel.Text = UserName;
+	}
 
-    private int ServerPort
-    {
-        get
-        {
-            // Return the same port that the request was made on,
-            // unless it is overrided by a Web.config setting and is
-            // non-negative.
-            string sPort = ConfigurationManager.AppSettings["OverrideServerPort"];
-            int iPort;
-            if (string.IsNullOrEmpty(sPort) || (iPort = Convert.ToInt32(sPort)) < 0)
-                return Request.Url.Port;
-            else
-                return iPort;
-        }
-    }
+	private int ServerPort {
+		get {
+			// Return the same port that the request was made on,
+			// unless it is overrided by a Web.config setting and is
+			// non-negative.
+			string sPort = ConfigurationManager.AppSettings["OverrideServerPort"];
+			int iPort;
+			if (string.IsNullOrEmpty(sPort) || (iPort = Convert.ToInt32(sPort)) < 0)
+				return Request.Url.Port;
+			else
+				return iPort;
+		}
+	}
 
-    public string ServerUrl
-    {
-        get
-        {
-            UriBuilder builder = new UriBuilder(Request.Url);
-            builder.Path = Response.ApplyAppPathModifier("~/server.aspx");
-            builder.Query = null;
-            builder.Port = ServerPort;
-            builder.Fragment = null;
-            return builder.ToString();
-        }
-    }
+	/// <summary>
+	/// Gets the name of the user.
+	/// </summary>
+	/// <value>The name of the user.</value>
+	public string UserName {
+		get { return Request.QueryString["username"]; }
+	}
 
-    /// <summary>
-    /// Gets the name of the user.
-    /// </summary>
-    /// <value>The name of the user.</value>
-    public string UserName
-    {
-        get
-        {
-            return Request.QueryString["username"];
-        }
-    }
-
-    public string XrdsUrl
-    {
-        get
-        {
-            UriBuilder builder = new UriBuilder(Request.Url);
-            builder.Path = Response.ApplyAppPathModifier("~/xrds.aspx");
-            builder.Query = null;
-            builder.Port = ServerPort;
-            builder.Fragment = null;
-            return builder.ToString();
-        }
-    }    
+	public string XrdsUrl {
+		get {
+			UriBuilder builder = new UriBuilder(Request.Url);
+			builder.Path = Response.ApplyAppPathModifier("~/xrds.aspx");
+			builder.Query = null;
+			builder.Port = ServerPort;
+			builder.Fragment = null;
+			return builder.ToString();
+		}
+	}
 }
