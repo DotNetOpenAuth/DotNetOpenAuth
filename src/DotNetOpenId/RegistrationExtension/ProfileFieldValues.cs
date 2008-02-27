@@ -19,7 +19,7 @@ namespace DotNetOpenId.RegistrationExtension
 	[Serializable()]
 	public struct ProfileFieldValues
 	{
-		internal static ProfileFieldValues Empty = new ProfileFieldValues();
+		public static readonly ProfileFieldValues Empty = new ProfileFieldValues();
 
 		public string Nickname { get; set; }
 		public string Email { get; set; }

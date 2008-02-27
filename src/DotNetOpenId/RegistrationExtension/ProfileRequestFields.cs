@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
 using System.Globalization;
+using DotNetOpenId.Provider;
 
 namespace DotNetOpenId.RegistrationExtension {
 	/// <summary>
 	/// Carries the request/require/none demand state of the simple registration fields.
 	/// </summary>
-	public class ProfileRequestFields {
+	public struct ProfileRequestFields {
+		public static readonly ProfileRequestFields None = new ProfileRequestFields();
+
 		public ProfileRequest Nickname { get; private set; }
 		public ProfileRequest Email { get; private set; }
 		public ProfileRequest FullName { get; private set; }
@@ -18,6 +21,12 @@ namespace DotNetOpenId.RegistrationExtension {
 		public ProfileRequest Country { get; private set; }
 		public ProfileRequest Language { get; private set; }
 		public ProfileRequest TimeZone { get; private set; }
+
+		/// <summary>
+		/// The URL the consumer site provides for the authenticating user to review
+		/// for how his claims will be used by the consumer web site.
+		/// </summary>
+		public Uri PolicyUrl { get; private set; }
 
 		/// <summary>
 		/// Sets the profile request properties according to a list of
@@ -65,23 +74,32 @@ namespace DotNetOpenId.RegistrationExtension {
 				}
 			}
 		}
-		
+
 		/// <summary>
-		/// Gets whether any of the profile fields have been requested or required by
-		/// the consumer.
+		/// Reads the sreg extension information on an authentication request to the provider
+		/// and returns information on what profile fields the consumer is requesting/requiring.
 		/// </summary>
-		public bool AnyRequestedOrRequired {
-			get {
-				return (!(BirthDate == ProfileRequest.NoRequest
-						  && Country == ProfileRequest.NoRequest
-						  && Email == ProfileRequest.NoRequest
-						  && FullName == ProfileRequest.NoRequest
-						  && Gender == ProfileRequest.NoRequest
-						  && Language == ProfileRequest.NoRequest
-						  && Nickname == ProfileRequest.NoRequest
-						  && PostalCode == ProfileRequest.NoRequest
-						  && TimeZone == ProfileRequest.NoRequest));
+		public static ProfileRequestFields ReadFromRequest(Request request) {
+			ProfileRequestFields fields = new ProfileRequestFields();
+			var args = request.GetExtensionArguments(QueryStringArgs.openidnp.sreg.Prefix.TrimEnd('.'));
+
+			string policyUrl;
+			if (args.TryGetValue(QueryStringArgs.openidnp.sregnp.policy_url, out policyUrl)
+				&& !string.IsNullOrEmpty(policyUrl)) {
+				fields.PolicyUrl = new Uri(policyUrl);
 			}
+
+			string optionalFields;
+			if (args.TryGetValue(QueryStringArgs.openidnp.sregnp.optional, out optionalFields)) {
+				fields.SetProfileRequestFromList(optionalFields.Split(','), ProfileRequest.Request);
+			}
+
+			string requiredFields;
+			if (args.TryGetValue(QueryStringArgs.openidnp.sregnp.required, out requiredFields)) {
+				fields.SetProfileRequestFromList(requiredFields.Split(','), ProfileRequest.Require);
+			}
+
+			return fields;
 		}
 
 		public override string ToString() {
@@ -94,6 +112,27 @@ PostalCode = '{5}'
 Country = '{6}'
 Language = '{7}'
 TimeZone = '{8}'", Nickname, Email, FullName, BirthDate, Gender, PostalCode, Country, Language, TimeZone);
+		}
+		public override bool Equals(object obj) {
+			if (!(obj is ProfileRequestFields)) return false;
+			ProfileRequestFields other = (ProfileRequestFields)obj;
+
+			return
+				safeEquals(this.BirthDate, other.BirthDate) &&
+				safeEquals(this.Country, other.Country) &&
+				safeEquals(this.Language, other.Language) &&
+				safeEquals(this.Email, other.Email) &&
+				safeEquals(this.FullName, other.FullName) &&
+				safeEquals(this.Gender, other.Gender) &&
+				safeEquals(this.Nickname, other.Nickname) &&
+				safeEquals(this.PostalCode, other.PostalCode) &&
+				safeEquals(this.TimeZone, other.TimeZone) &&
+				safeEquals(this.PolicyUrl, other.PolicyUrl);
+		}
+		static bool safeEquals(object one, object other) {
+			if (one == null && other == null) return true;
+			if (one == null ^ other == null) return false;
+			return one.Equals(other);
 		}
 	}
 }

@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
-using DotNetOpenId.RegistrationExtension;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Globalization;
@@ -16,8 +15,6 @@ namespace DotNetOpenId.Provider {
 	/// This class handles requests for openid modes checkid_immediate and checkid_setup.
 	/// </remarks>
 	public class CheckIdRequest : AssociatedRequest {
-		public ProfileRequestFields RequestedProfileFields { get; private set; }
-
 		bool? isAuthenticated;
 		/// <summary>
 		/// Gets/sets whether the provider has determined that the 
@@ -65,11 +62,6 @@ namespace DotNetOpenId.Provider {
 		/// This must fall "under" the TrustRoot URL.
 		/// </summary>
 		internal Uri ReturnTo { get; private set; }
-		/// <summary>
-		/// The URL the consumer site provides for the authenticating user to review
-		/// for how his claims will be used by the consumer web site.
-		/// </summary>
-		public Uri PolicyUrl { get; private set; }
 		internal override string Mode {
 			get { return Immediate ? QueryStringArgs.Modes.checkid_immediate : QueryStringArgs.Modes.checkid_setup; }
 		}
@@ -97,8 +89,6 @@ namespace DotNetOpenId.Provider {
 		}
 
 		internal CheckIdRequest(OpenIdProvider server, NameValueCollection query) : base(server) {
-			RequestedProfileFields = new ProfileRequestFields();
-			
 			// handle the mandatory protocol fields
 			string mode = getRequiredField(query, QueryStringArgs.openid.mode);
 			if (QueryStringArgs.Modes.checkid_immediate.Equals(mode, StringComparison.Ordinal)) {
@@ -136,22 +126,6 @@ namespace DotNetOpenId.Provider {
 			if (!TrustRoot.IsUrlWithinTrustRoot(ReturnTo)) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 					Strings.ReturnToNotUnderTrustRoot, ReturnTo.AbsoluteUri, TrustRoot), query);
-			}
-
-			// Handle the optional Simple Registration extension fields
-			string policyUrl = query[QueryStringArgs.openid.sreg.policy_url];
-			if (!String.IsNullOrEmpty(policyUrl)) {
-				PolicyUrl = new Uri(policyUrl);
-			}
-
-			string optionalFields = query[QueryStringArgs.openid.sreg.optional];
-			if (!String.IsNullOrEmpty(optionalFields)) {
-				RequestedProfileFields.SetProfileRequestFromList(optionalFields.Split(','), ProfileRequest.Request);
-			}
-
-			string requiredFields = query[QueryStringArgs.openid.sreg.required];
-			if (!String.IsNullOrEmpty(requiredFields)) {
-				RequestedProfileFields.SetProfileRequestFromList(requiredFields.Split(','), ProfileRequest.Require);
 			}
 		}
 
@@ -244,13 +218,10 @@ CheckIdRequest.TrustRoot = '{1}'
 CheckIdRequest.Identity = '{2}' 
 CheckIdRequest._mode = '{3}' 
 CheckIdRequest.ReturnTo = '{4}' 
-CheckIdRequest._policyUrl = '{5}'
-{6}
 ";
 
 			return base.ToString() + string.Format(CultureInfo.CurrentUICulture,
-				returnString, Immediate, TrustRoot, IdentityUrl, Mode, ReturnTo,
-				PolicyUrl, RequestedProfileFields);
+				returnString, Immediate, TrustRoot, IdentityUrl, Mode, ReturnTo);
 		}
 	}
 }
