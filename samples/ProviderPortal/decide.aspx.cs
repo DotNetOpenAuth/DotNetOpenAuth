@@ -33,7 +33,7 @@ public partial class decide : Page {
 
 	protected void Yes_Click(Object sender, EventArgs e) {
 		State.Session.LastRequest.IsAuthenticated = true;
-		State.Session.LastRequest.ProfileFields = profileFields.OpenIdProfileFields;
+		profileFields.OpenIdProfileFields.SendWithAuthenticationResponse(State.Session.LastRequest);
 		Debug.Assert(State.Session.LastRequest.IsResponseReady);
 		State.Session.LastRequest.Response.Send();
 	}

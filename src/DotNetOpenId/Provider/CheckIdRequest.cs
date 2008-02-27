@@ -45,18 +45,6 @@ namespace DotNetOpenId.Provider {
 				InvalidateResponse();
 			}
 		}
-		ProfileFieldValues profileFields;
-		/// <summary>
-		/// The simple registration profile field values to send to the consumer upon
-		/// successful authentication.
-		/// </summary>
-		public ProfileFieldValues ProfileFields {
-			get { return profileFields; }
-			set {
-				profileFields = value;
-				InvalidateResponse();
-			}
-		}
 
 		/// <summary>
 		/// Whether the consumer demands an immediate response.
@@ -184,13 +172,6 @@ namespace DotNetOpenId.Provider {
 				Trace.TraceInformation("Start processing Response for CheckIdRequest");
 				if (TraceUtil.Switch.TraceVerbose) {
 					Trace.TraceInformation("mode = '{0}',  server_url = '{1}", mode, ServerUrl);
-					if (!ProfileFields.Equals(ProfileFieldValues.Empty)) {
-						Trace.TraceInformation("Simple registration fields: {0}",
-							TraceUtil.ToString(ProfileFields));
-					} else {
-						Trace.TraceInformation("No simple registration fields have been supplied.");
-					}
-
 				}
 			}
 
@@ -202,10 +183,6 @@ namespace DotNetOpenId.Provider {
 				fields.Add(QueryStringArgs.openidnp.mode, mode);
 				fields.Add(QueryStringArgs.openidnp.identity, IdentityUrl.AbsoluteUri);
 				fields.Add(QueryStringArgs.openidnp.return_to, ReturnTo.AbsoluteUri);
-
-				if (!ProfileFields.Equals(ProfileFieldValues.Empty)) {
-					ProfileFields.SendWithAuthenticationResponse(this);
-				}
 
 				response.AddFields(null, fields, true);
 			}
