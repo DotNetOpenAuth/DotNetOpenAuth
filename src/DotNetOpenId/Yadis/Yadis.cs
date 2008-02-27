@@ -44,19 +44,21 @@ namespace Janrain.Yadis
             else
             {
                 string uriString = response.Headers.Get(HEADER_NAME.ToLower());
-                Uri url = null;
-                try
-                {
-                    url = new Uri(uriString);
-                }
-                catch (UriFormatException)
-                {
+                Uri url;
+                if (uriString == null)
                     url = null;
-                }
-                catch (ArgumentNullException)
+                else
                 {
-                    url = null;
+                    try
+                    {
+                        url = new Uri(uriString);
+                    }
+                    catch (UriFormatException)
+                    {
+                        url = null;
+                    }
                 }
+
                 if ((url == null) && (response.ContentType.MediaType == CONTENT_TYPE_HTML))
                 {
                     url = MetaYadisLoc(response.Body);

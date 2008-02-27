@@ -94,19 +94,21 @@ namespace Janrain.Yadis
             {
                 defaultEncName = "utf-8";
             }
-            Encoding enc = null;
-            try
-            {
-                enc = Encoding.GetEncoding(foundEndName);
-            }
-            catch (NotSupportedException)
-            {
+            Encoding enc;
+            if (foundEndName == null)
                 enc = Encoding.GetEncoding(defaultEncName);
-            }
-            catch (ArgumentNullException)
+            else
             {
-                enc = Encoding.GetEncoding(defaultEncName);
+                try
+                {
+                    enc = Encoding.GetEncoding(foundEndName);
+                }
+                catch (NotSupportedException)
+                {
+                    enc = Encoding.GetEncoding(defaultEncName);
+                }
             }
+
             //TODO: We've already got the body in the string "data"...changed the last line also
             //string body = enc.GetString(data, 0, data.Length);
             if (type == null)
