@@ -39,7 +39,7 @@ public partial class decide : Page {
 
 	protected void Yes_Click(Object sender, EventArgs e) {
 		ProviderEndpoint.PendingAuthenticationRequest.IsAuthenticated = true;
-		profileFields.OpenIdProfileFields.SendWithAuthenticationResponse(ProviderEndpoint.PendingAuthenticationRequest);
+		profileFields.OpenIdProfileFields.AddToResponse(ProviderEndpoint.PendingAuthenticationRequest);
 		Debug.Assert(ProviderEndpoint.PendingAuthenticationRequest.IsResponseReady);
 		ProviderEndpoint.PendingAuthenticationRequest.Response.Send();
 		ProviderEndpoint.PendingAuthenticationRequest = null;

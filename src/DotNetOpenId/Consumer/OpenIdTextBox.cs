@@ -463,37 +463,19 @@ namespace DotNetOpenId.Consumer
 
 		void addProfileArgs(AuthenticationRequest request)
 		{
-			Dictionary<string, string> profileArguments = new Dictionary<string, string>();
-			profileArguments.Add(QueryStringArgs.openidnp.sregnp.required, string.Join(",", assembleProfileFields(ProfileRequest.Require)));
-			profileArguments.Add(QueryStringArgs.openidnp.sregnp.optional, string.Join(",", assembleProfileFields(ProfileRequest.Request)));
-			profileArguments.Add(QueryStringArgs.openidnp.sregnp.policy_url, 
-				new Uri(Page.Request.Url, Page.ResolveUrl(PolicyUrl)).AbsoluteUri);
-			request.AddExtensionArguments(QueryStringArgs.openidnp.sreg.Prefix.TrimEnd('.'), profileArguments);
-		}
-
-		string[] assembleProfileFields(ProfileRequest level)
-		{
-			List<string> fields = new List<string>(10);
-			if (RequestNickname == level)
-				fields.Add(QueryStringArgs.openidnp.sregnp.nickname);
-			if (RequestEmail == level)
-				fields.Add(QueryStringArgs.openidnp.sregnp.email);
-			if (RequestFullName == level)
-				fields.Add(QueryStringArgs.openidnp.sregnp.fullname);
-			if (RequestBirthDate == level)
-				fields.Add(QueryStringArgs.openidnp.sregnp.dob);
-			if (RequestGender == level)
-				fields.Add(QueryStringArgs.openidnp.sregnp.gender);
-			if (RequestPostalCode == level)
-				fields.Add(QueryStringArgs.openidnp.sregnp.postcode);
-			if (RequestCountry == level)
-				fields.Add(QueryStringArgs.openidnp.sregnp.country);
-			if (RequestLanguage == level)
-				fields.Add(QueryStringArgs.openidnp.sregnp.language);
-			if (RequestTimeZone == level)
-				fields.Add(QueryStringArgs.openidnp.sregnp.timezone);
-
-			return fields.ToArray();
+			new ProfileRequestFields() {
+				Nickname = RequestNickname,
+				Email = RequestEmail,
+				FullName = RequestFullName,
+				BirthDate = RequestBirthDate,
+				Gender = RequestGender,
+				PostalCode = RequestPostalCode,
+				Country = RequestCountry,
+				Language = RequestLanguage,
+				TimeZone = RequestTimeZone,
+				PolicyUrl = string.IsNullOrEmpty(PolicyUrl) ? 
+					null : new Uri(Page.Request.Url, Page.ResolveUrl(PolicyUrl)),
+			}.AddToRequest(request);
 		}
 
 		UriBuilder getResolvedTrustRoot(string trustRoot)

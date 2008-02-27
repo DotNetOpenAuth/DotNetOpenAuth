@@ -4,6 +4,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Globalization;
 using DotNetOpenId.Provider;
+using DotNetOpenId.Consumer;
 
 namespace DotNetOpenId.RegistrationExtension {
 	/// <summary>
@@ -12,21 +13,21 @@ namespace DotNetOpenId.RegistrationExtension {
 	public struct ProfileRequestFields {
 		public static readonly ProfileRequestFields None = new ProfileRequestFields();
 
-		public ProfileRequest Nickname { get; private set; }
-		public ProfileRequest Email { get; private set; }
-		public ProfileRequest FullName { get; private set; }
-		public ProfileRequest BirthDate { get; private set; }
-		public ProfileRequest Gender { get; private set; }
-		public ProfileRequest PostalCode { get; private set; }
-		public ProfileRequest Country { get; private set; }
-		public ProfileRequest Language { get; private set; }
-		public ProfileRequest TimeZone { get; private set; }
+		public ProfileRequest Nickname { get; set; }
+		public ProfileRequest Email { get; set; }
+		public ProfileRequest FullName { get; set; }
+		public ProfileRequest BirthDate { get; set; }
+		public ProfileRequest Gender { get; set; }
+		public ProfileRequest PostalCode { get; set; }
+		public ProfileRequest Country { get; set; }
+		public ProfileRequest Language { get; set; }
+		public ProfileRequest TimeZone { get; set; }
 
 		/// <summary>
 		/// The URL the consumer site provides for the authenticating user to review
 		/// for how his claims will be used by the consumer web site.
 		/// </summary>
-		public Uri PolicyUrl { get; private set; }
+		public Uri PolicyUrl { get; set; }
 
 		/// <summary>
 		/// Sets the profile request properties according to a list of
@@ -74,7 +75,29 @@ namespace DotNetOpenId.RegistrationExtension {
 				}
 			}
 		}
+		string[] assembleProfileFields(ProfileRequest level) {
+			List<string> fields = new List<string>(10);
+			if (Nickname == level)
+				fields.Add(QueryStringArgs.openidnp.sregnp.nickname);
+			if (Email == level)
+				fields.Add(QueryStringArgs.openidnp.sregnp.email);
+			if (FullName == level)
+				fields.Add(QueryStringArgs.openidnp.sregnp.fullname);
+			if (BirthDate == level)
+				fields.Add(QueryStringArgs.openidnp.sregnp.dob);
+			if (Gender == level)
+				fields.Add(QueryStringArgs.openidnp.sregnp.gender);
+			if (PostalCode == level)
+				fields.Add(QueryStringArgs.openidnp.sregnp.postcode);
+			if (Country == level)
+				fields.Add(QueryStringArgs.openidnp.sregnp.country);
+			if (Language == level)
+				fields.Add(QueryStringArgs.openidnp.sregnp.language);
+			if (TimeZone == level)
+				fields.Add(QueryStringArgs.openidnp.sregnp.timezone);
 
+			return fields.ToArray();
+		}
 		/// <summary>
 		/// Reads the sreg extension information on an authentication request to the provider
 		/// and returns information on what profile fields the consumer is requesting/requiring.
@@ -100,6 +123,16 @@ namespace DotNetOpenId.RegistrationExtension {
 			}
 
 			return fields;
+		}
+		public void AddToRequest(AuthenticationRequest request) {
+			var fields = new Dictionary<string, string>();
+			if (PolicyUrl != null)
+				fields.Add(QueryStringArgs.openidnp.sregnp.policy_url, PolicyUrl.AbsoluteUri);
+
+			fields.Add(QueryStringArgs.openidnp.sregnp.required, string.Join(",", assembleProfileFields(ProfileRequest.Require)));
+			fields.Add(QueryStringArgs.openidnp.sregnp.optional, string.Join(",", assembleProfileFields(ProfileRequest.Request)));
+
+			request.AddExtensionArguments(QueryStringArgs.openidnp.sreg.Prefix.TrimEnd('.'), fields);
 		}
 
 		public override string ToString() {

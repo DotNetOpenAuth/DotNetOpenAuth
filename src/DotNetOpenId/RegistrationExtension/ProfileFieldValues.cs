@@ -67,7 +67,7 @@ namespace DotNetOpenId.RegistrationExtension
 		}
 		public string TimeZone { get; set; }
 
-		public void SendWithAuthenticationResponse(CheckIdRequest authenticationRequest) {
+		public void AddToResponse(CheckIdRequest authenticationRequest) {
 			if (authenticationRequest == null) throw new ArgumentNullException("authenticationRequest");
 			Dictionary<string, string> fields = new Dictionary<string, string>();
 			if (BirthDate != null) {
