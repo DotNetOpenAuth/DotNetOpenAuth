@@ -57,23 +57,26 @@ namespace DotNetOpenId.Provider
 			}
 
 			Request request;
-			switch (mode) {
-				case QueryStringArgs.Modes.checkid_setup:
-					request = new CheckIdRequest(provider, query);
-					break;
-				case QueryStringArgs.Modes.checkid_immediate:
-					request = new CheckIdRequest(provider, query);
-					break;
-				case QueryStringArgs.Modes.check_authentication:
-					request = new CheckAuthRequest(provider, query);
-					break;
-				case QueryStringArgs.Modes.associate:
-					request = new AssociateRequest(provider, query);
-					break;
-				default:
-					throw new OpenIdException("No decoder for openid.mode=" + mode, query);
+			try {
+				switch (mode) {
+					case QueryStringArgs.Modes.checkid_setup:
+						request = new CheckIdRequest(provider, query);
+						break;
+					case QueryStringArgs.Modes.checkid_immediate:
+						request = new CheckIdRequest(provider, query);
+						break;
+					case QueryStringArgs.Modes.check_authentication:
+						request = new CheckAuthRequest(provider, query);
+						break;
+					case QueryStringArgs.Modes.associate:
+						request = new AssociateRequest(provider, query);
+						break;
+					default:
+						throw new OpenIdException("No decoder for openid.mode=" + mode, query);
+				}
+			} catch (OpenIdException ex) {
+				request = new FaultyRequest(provider, ex);
 			}
-
 			return request;
 		}
 
@@ -81,7 +84,7 @@ namespace DotNetOpenId.Provider
 		/// Indicates whether this request has all the information necessary to formulate a response.
 		/// </summary>
 		public abstract bool IsResponseReady { get; }
-		internal abstract EncodableResponse CreateResponse();
+		internal abstract IEncodable CreateResponse();
 		/// <summary>
 		/// Called whenever a property changes that would cause the response to need to be
 		/// regenerated if it had already been generated.
@@ -99,7 +102,9 @@ namespace DotNetOpenId.Provider
 				if (!IsResponseReady) throw new InvalidOperationException(Strings.ResponseNotReady);
 				if (response == null) {
 					var encodableResponse = CreateResponse();
-					encodableResponse.AddFields(null, ExtraArgs, true);
+					EncodableResponse extendableResponse = encodableResponse as EncodableResponse;
+					if (extendableResponse != null)
+						extendableResponse.AddFields(null, ExtraArgs, true);
 					response = Server.EncodeResponse(encodableResponse);
 				}
 				return response;

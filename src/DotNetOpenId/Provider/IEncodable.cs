@@ -22,6 +22,6 @@ namespace DotNetOpenId.Provider {
 	internal interface IEncodable {
 		EncodingType EncodingType { get; }
 		IDictionary<string, string> EncodedFields { get; }
-		Uri BaseUri { get; }
+		Uri RedirectUrl { get; }
 	}
 }

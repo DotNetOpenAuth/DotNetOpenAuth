@@ -20,7 +20,7 @@ namespace DotNetOpenId.Provider
             
         }
 
-        public Request Request { get; set; }
+        public Request Request { get; private set; }
         public IDictionary<string, string> Fields { get; private set; }
         public List<string> Signed { get; private set; }
         public bool NeedsSigning
@@ -85,7 +85,7 @@ namespace DotNetOpenId.Provider
                 return nvc;
             }
         }
-        public Uri BaseUri
+        public Uri RedirectUrl
         {
             get
             {

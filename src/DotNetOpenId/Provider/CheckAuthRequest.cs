@@ -82,7 +82,7 @@ namespace DotNetOpenId.Provider {
 			return response;
 		}
 
-		internal override EncodableResponse CreateResponse() {
+		internal override IEncodable CreateResponse() {
 			return Answer();
 		}
 

@@ -55,6 +55,7 @@
     <Compile Include="HmacSha1Association.cs" />
     <Compile Include="OpenIdException.cs" />
     <Compile Include="Provider\EncodableResponse.cs" />
+    <Compile Include="Provider\FaultyRequest.cs" />
     <Compile Include="Provider\OpenIdProvider.cs" />
     <Compile Include="Provider\ProviderSession.cs" />
     <Compile Include="Provider\Request.cs" />

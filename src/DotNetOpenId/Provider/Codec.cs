@@ -32,11 +32,11 @@ namespace DotNetOpenId.Provider
                     wr = new Response(code, null, DictionarySerializer.Serialize(response.EncodedFields));
                     break;
                 case EncodingType.RedirectBrowserUrl:
+                    Debug.Assert(response.RedirectUrl != null);
                     NameValueCollection headers = new NameValueCollection();
 
-                    UriBuilder builder = new UriBuilder(response.BaseUri);
+                    UriBuilder builder = new UriBuilder(response.RedirectUrl);
                     UriUtil.AppendQueryArgs(builder, response.EncodedFields);
-
                     headers.Add("Location", builder.Uri.AbsoluteUri);
 
                     wr = new Response(HttpStatusCode.Redirect, headers, new byte[0]);
@@ -45,7 +45,7 @@ namespace DotNetOpenId.Provider
                     if (TraceUtil.Switch.TraceError) {
                         Trace.TraceError("Cannot encode response: {0}", response);
                     }
-                    wr = new Response(HttpStatusCode.BadRequest, new NameValueCollection(), new byte[0]);
+                    wr = new Response(HttpStatusCode.BadRequest, null, new byte[0]);
                     break;
             }
             return wr;

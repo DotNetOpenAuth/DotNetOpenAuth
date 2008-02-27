@@ -138,7 +138,7 @@ namespace DotNetOpenId.Provider {
 			return value;
 		}
 
-		internal override EncodableResponse CreateResponse() {
+		internal override IEncodable CreateResponse() {
 			string mode = (IsAuthenticated.Value || Immediate) ?
 				QueryStringArgs.Modes.id_res : QueryStringArgs.Modes.cancel;
 

@@ -87,7 +87,7 @@ namespace DotNetOpenId {
 				return q;
 			}
 		}
-		public Uri BaseUri {
+		public Uri RedirectUrl {
 			get {
 				if (query == null)
 					return null;
