@@ -37,6 +37,7 @@ namespace DotNetOpenId.Provider {
 			this.query = query;
 			Signatory = new Signatory(store);
 			this.encoder = new SigningEncoder(Signatory);
+			store.ClearExpired(); // every so often we should do this.
 		}
 
 		bool requestProcessed;

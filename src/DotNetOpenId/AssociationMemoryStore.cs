@@ -54,6 +54,17 @@ namespace DotNetOpenId {
 			}
 		}
 
+		/// <summary>
+		/// Clears all expired associations from the store.
+		/// </summary>
+		public void ClearExpired() {
+			lock (this) {
+				foreach (Associations assocs in serverAssocsTable.Values) {
+					assocs.ClearExpired();
+				}
+			}
+		}
+
 		#region IAssociationStore Members
 
 		byte[] IAssociationStore<TKey>.AuthKey {

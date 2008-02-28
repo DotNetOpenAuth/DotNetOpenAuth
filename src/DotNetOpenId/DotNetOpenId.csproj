@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Association.cs" />
+    <Compile Include="AssociationMemoryStore.cs" />
     <Compile Include="Associations.cs" />
     <Compile Include="Consumer\AuthenticationRequest.cs" />
     <Compile Include="Consumer\AuthenticationResponse.cs" />
@@ -56,7 +57,6 @@
     <Compile Include="HmacSha1Association.cs" />
     <Compile Include="IAssociationStore.cs" />
     <Compile Include="ISessionState.cs" />
-    <Compile Include="MemoryStore.cs" />
     <Compile Include="OpenIdException.cs" />
     <Compile Include="Provider\EncodableResponse.cs" />
     <Compile Include="Provider\FaultyRequest.cs" />

@@ -26,5 +26,13 @@ namespace DotNetOpenId {
 		Association GetAssociation(TKey distinguishingFactor);
 		Association GetAssociation(TKey distinguishingFactor, string handle);
 		bool RemoveAssociation(TKey distinguishingFactor, string handle);
+		/// <summary>
+		/// Clears all expired associations from the store.
+		/// </summary>
+		/// <remarks>
+		/// This should be done frequently enough to avoid a memory leak, but sparingly enough
+		/// to not be a performance drain.
+		/// </remarks>
+		void ClearExpired();
 	}
 }

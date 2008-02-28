@@ -50,6 +50,7 @@ namespace DotNetOpenId.Consumer {
 			this.query = query;
 			manager = new ServiceEndpointManager(null);
 			consumer = new GenericConsumer(store);
+			store.ClearExpired(); // every so often we should do this.
 		}
 
 		public AuthenticationRequest CreateRequest(Uri openIdUrl, TrustRoot trustRootUrl, Uri returnToUrl) {
