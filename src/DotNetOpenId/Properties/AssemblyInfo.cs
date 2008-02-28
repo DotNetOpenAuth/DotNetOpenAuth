@@ -6,6 +6,10 @@ using System.Web;
 using System.Net;
 using System.Resources;
 using System;
+using System.Web.UI;
+
+[assembly: TagPrefix("DotNetOpenId.Provider", "openid")]
+[assembly: TagPrefix("DotNetOpenId.Consumer", "openid")]
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
