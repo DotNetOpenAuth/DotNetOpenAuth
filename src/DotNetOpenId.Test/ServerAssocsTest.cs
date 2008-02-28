@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using NUnit.Framework;
-using DotNetOpenId.Store;
 using System.Threading;
 
 namespace DotNetOpenId.Test {

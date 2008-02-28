@@ -8,7 +8,6 @@ using System.Web;
 using Org.Mentalis.Security.Cryptography;
 using System.Text;
 using NUnit.Framework;
-using DotNetOpenId.Store;
 
 
 

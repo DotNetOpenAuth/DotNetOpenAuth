@@ -1,6 +1,5 @@
 namespace DotNetOpenId.Consumer {
 	using System;
-	using DotNetOpenId.Session;
 	using Janrain.Yadis;
 	using System.Collections.Generic;
 	using System.Diagnostics;

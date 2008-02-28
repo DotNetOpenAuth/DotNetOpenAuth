@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace DotNetOpenId.Store {
+namespace DotNetOpenId {
 	/// <summary>
 	/// A dictionary of handle/Association pairs.
 	/// </summary>

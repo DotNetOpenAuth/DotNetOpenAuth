@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using DotNetOpenId;
 
-namespace DotNetOpenId.Store {
+namespace DotNetOpenId {
 	public enum AssociationConsumerType {
 		Smart,
 		Dumb

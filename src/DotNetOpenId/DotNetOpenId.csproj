@@ -53,6 +53,9 @@
     <Compile Include="Consumer\Token.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="HmacSha1Association.cs" />
+    <Compile Include="IAssociationStore.cs" />
+    <Compile Include="ISessionState.cs" />
+    <Compile Include="MemoryStore.cs" />
     <Compile Include="OpenIdException.cs" />
     <Compile Include="Provider\EncodableResponse.cs" />
     <Compile Include="Provider\FaultyRequest.cs" />
@@ -67,9 +70,7 @@
     <Compile Include="Provider\AssociatedRequest.cs" />
     <Compile Include="RegistrationExtension\ProfileFieldValues.cs" />
     <Compile Include="RegistrationExtension\ProfileRequestFields.cs" />
-    <Compile Include="Session\SimpleSessionState.cs" />
-    <Compile Include="Session\SystemHttpSessionState.cs" />
-    <Compile Include="Session\ISessionState.cs" />
+    <Compile Include="ServerAssocs.cs" />
     <Compile Include="Consumer\ServiceEndpointManager.cs" />
     <Compile Include="Consumer\OpenIdLogin.cs" />
     <Compile Include="Consumer\OpenIdTextBox.cs" />
@@ -96,14 +97,13 @@
     <Compile Include="Provider\Codec.cs" />
     <Compile Include="Provider\IEncodable.cs" />
     <Compile Include="Provider\Signatory.cs" />
-    <Compile Include="Store\IAssociationStore.cs" />
-    <Compile Include="Store\MemoryStore.cs" />
-    <Compile Include="Store\ServerAssocs.cs" />
+    <Compile Include="SimpleSessionState.cs" />
     <Compile Include="Strings.Designer.cs">
       <DependentUpon>Strings.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
+    <Compile Include="SystemHttpSessionState.cs" />
     <Compile Include="TraceUtil.cs">
       <SubType>Code</SubType>
     </Compile>

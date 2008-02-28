@@ -12,8 +12,6 @@ using System.ComponentModel;
 using System.Web.Security;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-
-using DotNetOpenId.Session;
 using DotNetOpenId.RegistrationExtension;
 using System.Net;
 using System.Text.RegularExpressions;

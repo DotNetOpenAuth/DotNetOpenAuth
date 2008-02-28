@@ -9,11 +9,10 @@ namespace DotNetOpenId.Consumer
 	using System.Text;
 	using Org.Mentalis.Security.Cryptography;
 	using DotNetOpenId;
-	using DotNetOpenId.Store;
 	using System.Web;
 	using System.IO;
 	using System.Diagnostics;
-	using IConsumerAssociationStore = DotNetOpenId.Store.IAssociationStore<System.Uri>;
+	using IConsumerAssociationStore = IAssociationStore<System.Uri>;
 	using System.Globalization;
 
 	internal class GenericConsumer

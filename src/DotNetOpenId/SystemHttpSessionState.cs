@@ -4,8 +4,8 @@ using System.Text;
 using System.Web;
 using System.Web.SessionState;
 
-namespace DotNetOpenId.Session {
-	public class SystemHttpSessionState : ISessionState {
+namespace DotNetOpenId {
+	internal class SystemHttpSessionState : ISessionState {
 		HttpSessionState sessionState;
 		string prefix;
 

@@ -8,7 +8,7 @@ using System.Web.Caching;
 using DotNetOpenId;
 
 
-namespace DotNetOpenId.Store {
+namespace DotNetOpenId {
 
 	internal class AssociationMemoryStore<TKey> : IAssociationStore<TKey> {
 		Dictionary<TKey, Associations> serverAssocsTable = new Dictionary<TKey, Associations>();

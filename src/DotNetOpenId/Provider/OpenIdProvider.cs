@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Specialized;
 using System.Text;
-using DotNetOpenId.Store;
 using System.Web;
-using IProviderAssociationStore = DotNetOpenId.Store.IAssociationStore<DotNetOpenId.Store.AssociationConsumerType>;
-using ProviderMemoryStore = DotNetOpenId.Store.AssociationMemoryStore<DotNetOpenId.Store.AssociationConsumerType>;
+using IProviderAssociationStore = DotNetOpenId.IAssociationStore<DotNetOpenId.AssociationConsumerType>;
+using ProviderMemoryStore = DotNetOpenId.AssociationMemoryStore<DotNetOpenId.AssociationConsumerType>;
 using System.Collections.Generic;
 using System.Diagnostics;
 

@@ -2,13 +2,11 @@ using System;
 using System.Collections.Specialized;
 using System.Web.SessionState;
 using DotNetOpenId;
-using DotNetOpenId.Store;
-using DotNetOpenId.Session;
 using System.Web;
 using System.Collections.Generic;
 using DotNetOpenId.Provider;
-using IConsumerAssociationStore = DotNetOpenId.Store.IAssociationStore<System.Uri>;
-using ConsumerMemoryStore = DotNetOpenId.Store.AssociationMemoryStore<System.Uri>;
+using IConsumerAssociationStore = DotNetOpenId.IAssociationStore<System.Uri>;
+using ConsumerMemoryStore = DotNetOpenId.AssociationMemoryStore<System.Uri>;
 using System.Globalization;
 
 namespace DotNetOpenId.Consumer {

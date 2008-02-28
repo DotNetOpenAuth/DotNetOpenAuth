@@ -3,9 +3,8 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
 using System.Security.Cryptography;
-using DotNetOpenId.Store;
 using System.Collections.Generic;
-using IProviderAssociationStore = DotNetOpenId.Store.IAssociationStore<DotNetOpenId.Store.AssociationConsumerType>;
+using IProviderAssociationStore = DotNetOpenId.IAssociationStore<DotNetOpenId.AssociationConsumerType>;
 using System.Diagnostics;
 
 namespace DotNetOpenId.Provider {

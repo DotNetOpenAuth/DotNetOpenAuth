@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Web;
 
-namespace DotNetOpenId.Session {
-	public class SimpleSessionState : ISessionState {
+namespace DotNetOpenId {
+	internal class SimpleSessionState : ISessionState {
 		static SimpleSessionState local_instance = new SimpleSessionState();
 
 		Dictionary<string, object> stateBag = new Dictionary<string, object>();

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Specialized;
 using System.Text;
-using DotNetOpenId.Store;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Globalization;

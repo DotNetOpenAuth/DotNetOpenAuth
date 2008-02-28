@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DotNetOpenId.Session {
+namespace DotNetOpenId {
 	/// <summary>
 	/// A simple key/value dictionary for saving state across page requests.
 	/// </summary>
-	public interface ISessionState {
+	internal interface ISessionState {
 		/// <summary>Gets or sets a session value by name.</summary>
 		/// <param name="key">The key name of the session value.</param>
 		/// <returns>The session-state value with the specified name.  Null if the key was not found.</returns>

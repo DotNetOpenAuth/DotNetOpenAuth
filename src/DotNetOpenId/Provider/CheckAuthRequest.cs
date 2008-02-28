@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
 using System.Collections.Generic;
-using DotNetOpenId.Store;
 using System.Diagnostics;
 using System.Globalization;
 
