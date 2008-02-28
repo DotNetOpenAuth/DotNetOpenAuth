@@ -7,11 +7,8 @@ using Org.Mentalis.Security.Cryptography;
 
 namespace DotNetOpenId
 {
-    internal class CryptUtil
+    internal static class CryptUtil
     {
-
-        #region Member Variables
-
         public static byte[] DEFAULT_GEN = {2};
         public static byte[] DEFAULT_MOD = {0, 220, 249, 58, 11, 136, 57, 114, 236, 14, 25, 152, 154, 197, 162,
         206, 49, 14, 29, 55, 113, 126, 141, 149, 113, 187, 118, 35, 115, 24,
@@ -23,19 +20,15 @@ namespace DotNetOpenId
         154, 72, 59, 138, 118, 34, 62, 93, 73, 10, 37, 127, 5, 189, 255, 22,
         242, 251, 34, 197, 131, 171};
 
-        private static uint NONCE_LEN = 8;
-        private static byte[] NONCE_CHARS = {
+        static uint NONCE_LEN = 8;
+        static byte[] NONCE_CHARS = {
             97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,
             115,116,117,118,119,120,121,122,123,65,66,67,68,69,70,71,72,73,74,75,76,
             77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,48,49,50,51,52,53,54,55,56,57,
             58};
-        private static Random generator = new Random();
-        private static ToBase64Transform base64Transform = new ToBase64Transform();
-        private static SHA1CryptoServiceProvider sha1 = new SHA1CryptoServiceProvider();
-
-        #endregion
-
-        #region Public Methods
+        static Random generator = new Random();
+        static ToBase64Transform base64Transform = new ToBase64Transform();
+        static SHA1CryptoServiceProvider sha1 = new SHA1CryptoServiceProvider();
 
         public static string ToBase64String(byte[] inputBytes)
         {
@@ -60,13 +53,13 @@ namespace DotNetOpenId
 
         public static string UnsignedToBase64(byte[] inputBytes)
         {
-            return ToBase64String(EnsurePositive(inputBytes));
+            return ToBase64String(ensurePositive(inputBytes));
         }
 
         public static string CreateNonce()
         {
             byte[] nonce = new byte[NONCE_LEN];
-            RandomSelection(ref nonce, NONCE_CHARS);
+            randomSelection(ref nonce, NONCE_CHARS);
             return ASCIIEncoding.ASCII.GetString(nonce);
         }
 
@@ -78,7 +71,7 @@ namespace DotNetOpenId
         public static byte[] SHA1XorSecret(DiffieHellman dh, byte[] keyEx, byte[] encMacKey)
         {
             byte[] dhShared = dh.DecryptKeyExchange(keyEx);
-            byte[] sha1DhShared = sha1.ComputeHash(EnsurePositive(dhShared));
+            byte[] sha1DhShared = sha1.ComputeHash(ensurePositive(dhShared));
             if (sha1DhShared.Length != encMacKey.Length)
             {
                 throw new ArgumentOutOfRangeException("encMacKey's length is not 20 bytes: " + ToBase64String(encMacKey));
@@ -92,11 +85,7 @@ namespace DotNetOpenId
             return secret;
         }
 
-        #endregion
-
-        #region Private Methods
-
-        private static byte[] EnsurePositive(byte[] inputBytes)
+        static byte[] ensurePositive(byte[] inputBytes)
         {
             if (inputBytes.Length == 0) throw new ArgumentException("Invalid input passed to EnsurePositive. Array must have something in it.", "inputBytes");
 
@@ -111,7 +100,7 @@ namespace DotNetOpenId
             return inputBytes;
         }
 
-        private static void RandomSelection(ref byte[] tofill, byte[] choices)
+        static void randomSelection(ref byte[] tofill, byte[] choices)
         {
             if (choices.Length <= 0) throw new ArgumentException("Invalid input passed to RandomSelection. Array must have something in it.", "choices");
 
@@ -122,8 +111,5 @@ namespace DotNetOpenId
                 tofill[i] = choices[(Convert.ToInt32(rand[0]) % choices.Length)];
             }
         }
-
-        #endregion
-
     }
 }

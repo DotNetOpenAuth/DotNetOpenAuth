@@ -61,6 +61,9 @@ namespace DotNetOpenId.Provider
 
         public SigningEncoder(Signatory signatory)
         {
+            if (signatory == null)
+                throw new ArgumentException("Must have a store to sign this request");
+
             this.signatory = signatory;
         }
 
@@ -76,9 +79,6 @@ namespace DotNetOpenId.Provider
                 
                 if (response.NeedsSigning)
                 {
-                    if (signatory == null)
-                        throw new ArgumentException("Must have a store to sign this request");
-
                     Debug.Assert(!response.Fields.ContainsKey(QueryStringArgs.openidnp.sig));
 
                     signatory.Sign(response);
