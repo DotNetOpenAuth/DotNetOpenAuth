@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Association.cs" />
+    <Compile Include="Associations.cs" />
     <Compile Include="Consumer\AuthenticationRequest.cs" />
     <Compile Include="Consumer\AuthenticationResponse.cs" />
     <Compile Include="Consumer\Fetcher.cs" />
@@ -70,7 +71,6 @@
     <Compile Include="Provider\AssociatedRequest.cs" />
     <Compile Include="RegistrationExtension\ProfileFieldValues.cs" />
     <Compile Include="RegistrationExtension\ProfileRequestFields.cs" />
-    <Compile Include="ServerAssocs.cs" />
     <Compile Include="Consumer\ServiceEndpointManager.cs" />
     <Compile Include="Consumer\OpenIdLogin.cs" />
     <Compile Include="Consumer\OpenIdTextBox.cs" />
