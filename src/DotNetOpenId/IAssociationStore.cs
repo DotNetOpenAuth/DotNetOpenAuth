@@ -16,12 +16,9 @@ namespace DotNetOpenId {
 	/// </summary>
 	/// <typeparam name="TKey">
 	/// <see cref="System.Uri"/> for consumers (to distinguish associations across servers) or
-	/// <see cref="AssociationType"/> for providers (to distingish dumb and smart client associaitons).
+	/// <see cref="AssociationConsumerType"/> for providers (to distingish dumb and smart client associaitons).
 	/// </typeparam>
 	public interface IAssociationStore<TKey> {
-		// TODO: is this only used by Consumers? Does it relate to association storage?
-		byte[] AuthKey { get; }
-
 		void StoreAssociation(TKey distinguishingFactor, Association assoc);
 		Association GetAssociation(TKey distinguishingFactor);
 		Association GetAssociation(TKey distinguishingFactor, string handle);
@@ -33,6 +30,6 @@ namespace DotNetOpenId {
 		/// This should be done frequently enough to avoid a memory leak, but sparingly enough
 		/// to not be a performance drain.
 		/// </remarks>
-		void ClearExpired();
+		void ClearExpiredAssociations();
 	}
 }

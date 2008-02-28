@@ -57,32 +57,12 @@ namespace DotNetOpenId {
 		/// <summary>
 		/// Clears all expired associations from the store.
 		/// </summary>
-		public void ClearExpired() {
+		public void ClearExpiredAssociations() {
 			lock (this) {
 				foreach (Associations assocs in serverAssocsTable.Values) {
 					assocs.ClearExpired();
 				}
 			}
 		}
-
-		#region IAssociationStore Members
-
-		byte[] IAssociationStore<TKey>.AuthKey {
-			get {
-				if (authKey == null) {
-					lock (this) {
-						if (authKey == null) {
-							// initialize in a local variable before setting in field for thread safety.
-							byte[] auth_key = new byte[20];
-							new RNGCryptoServiceProvider().GetBytes(auth_key);
-							this.authKey = auth_key;
-						}
-					}
-				}
-				return authKey;
-			}
-		}
-
-		#endregion
 	}
 }

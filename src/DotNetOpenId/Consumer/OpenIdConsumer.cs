@@ -5,8 +5,6 @@ using DotNetOpenId;
 using System.Web;
 using System.Collections.Generic;
 using DotNetOpenId.Provider;
-using IConsumerAssociationStore = DotNetOpenId.IAssociationStore<System.Uri>;
-using ConsumerMemoryStore = DotNetOpenId.AssociationMemoryStore<System.Uri>;
 using System.Globalization;
 
 namespace DotNetOpenId.Consumer {
@@ -17,6 +15,16 @@ namespace DotNetOpenId.Consumer {
 		GenericConsumer consumer;
 		ServiceEndpointManager manager;
 		IDictionary<string, string> query;
+		
+		/// <summary>
+		/// The maximum time a user can be allowed to take to complete authentication
+		/// at the OpenID Provider web site.
+		/// </summary>
+		/// <remarks>
+		/// This is internal until we can decide whether to leave this static, or make
+		/// it an instance member, or put it inside the IConsumerAppliationStore interface.
+		/// </remarks>
+		internal static TimeSpan MaximumUserAgentAuthenticationTime = TimeSpan.FromMinutes(5);
 
 		/// <summary>
 		/// Constructs an OpenId consumer that uses the current HttpContext's querystring
@@ -25,7 +33,7 @@ namespace DotNetOpenId.Consumer {
 		/// <remarks>
 		/// This method requires a current ASP.NET HttpContext.
 		/// </remarks>
-		public OpenIdConsumer() : this(Util.GetQueryFromContext(), httpApplicationAssociationStore) { }
+		public OpenIdConsumer() : this(Util.GetQueryFromContext(), httpApplicationStore) { }
 		/// <summary>
 		/// Constructs an OpenId consumer that uses a given querystring and IAssociationStore.
 		/// </summary>
@@ -35,7 +43,7 @@ namespace DotNetOpenId.Consumer {
 		/// preserved for optimized authentication.
 		/// If null, 'dumb' mode will always be used.
 		/// </param>
-		public OpenIdConsumer(NameValueCollection query, IConsumerAssociationStore store)
+		public OpenIdConsumer(NameValueCollection query, IConsumerApplicationStore store)
 			: this(Util.NameValueCollectionToDictionary(query), store) {
 		}
 		/// <summary> Constructs an OpenId consumer that uses a given IAssociationStore.</summary>
@@ -45,12 +53,12 @@ namespace DotNetOpenId.Consumer {
 		/// preserved for optimized authentication.
 		/// If null, 'dumb' mode will always be used.
 		/// </param>
-		OpenIdConsumer(IDictionary<string, string> query, IConsumerAssociationStore store) {
+		OpenIdConsumer(IDictionary<string, string> query, IConsumerApplicationStore store) {
 			if (query == null) throw new ArgumentNullException("query");
 			this.query = query;
 			manager = new ServiceEndpointManager(null);
 			consumer = new GenericConsumer(store);
-			store.ClearExpired(); // every so often we should do this.
+			store.ClearExpiredAssociations(); // every so often we should do this.
 		}
 
 		public AuthenticationRequest CreateRequest(Uri openIdUrl, TrustRoot trustRootUrl, Uri returnToUrl) {
@@ -74,7 +82,7 @@ namespace DotNetOpenId.Consumer {
 			var returnToParams = new Dictionary<string, string>(HttpContext.Current.Request.QueryString.Count);
 			foreach (string key in HttpContext.Current.Request.QueryString) {
 				if (!key.StartsWith(QueryStringArgs.openid.Prefix, StringComparison.OrdinalIgnoreCase) 
-					&& key != QueryStringArgs.nonce && key != Token.TokenKey) {
+					&& key != Token.TokenKey) {
 					returnToParams.Add(key, HttpContext.Current.Request.QueryString[key]);
 				}
 			}
@@ -141,17 +149,17 @@ namespace DotNetOpenId.Consumer {
 		}
 
 		const string associationStoreKey = "DotNetOpenId.Consumer.Consumer.AssociationStore";
-		static IConsumerAssociationStore httpApplicationAssociationStore {
+		static IConsumerApplicationStore httpApplicationStore {
 			get {
 				HttpContext context = HttpContext.Current;
 				if (context == null)
 					throw new InvalidOperationException(Strings.IAssociationStoreRequiredWhenNoHttpContextAvailable);
-				var store = (IConsumerAssociationStore)context.Application[associationStoreKey];
+				var store = (IConsumerApplicationStore)context.Application[associationStoreKey];
 				if (store == null) {
 					context.Application.Lock();
 					try {
-						if ((store = (IConsumerAssociationStore)context.Application[associationStoreKey]) == null) {
-							context.Application[associationStoreKey] = store = new ConsumerMemoryStore();
+						if ((store = (IConsumerApplicationStore)context.Application[associationStoreKey]) == null) {
+							context.Application[associationStoreKey] = store = new ConsumerApplicationMemoryStore();
 						}
 					} finally {
 						context.Application.UnLock();

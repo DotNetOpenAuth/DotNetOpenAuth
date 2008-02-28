@@ -186,7 +186,6 @@ namespace DotNetOpenId {
                 internal const string timezone = Prefix + openidnp.sregnp.timezone;
             }
         }
-        internal const string nonce = "nonce";
         internal const string enc_mac_key = "enc_mac_key";
         internal const string mac_key = "mac_key";
         internal const string DH_SHA1 = "DH-SHA1";

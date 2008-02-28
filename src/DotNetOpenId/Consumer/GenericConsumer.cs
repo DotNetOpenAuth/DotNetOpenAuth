@@ -12,16 +12,17 @@ namespace DotNetOpenId.Consumer
 	using System.Web;
 	using System.IO;
 	using System.Diagnostics;
-	using IConsumerAssociationStore = IAssociationStore<System.Uri>;
 	using System.Globalization;
 
 	internal class GenericConsumer
 	{
-		static readonly TimeSpan minimumUsefulAssociationLifetime = TimeSpan.FromSeconds(120);
+		static TimeSpan minimumUsefulAssociationLifetime {
+			get { return OpenIdConsumer.MaximumUserAgentAuthenticationTime; }
+		}
 
-		IConsumerAssociationStore store;
+		IConsumerApplicationStore store;
 
-		public GenericConsumer(IConsumerAssociationStore store)
+		public GenericConsumer(IConsumerApplicationStore store)
 		{
 			this.store = store;
 		}
@@ -29,14 +30,12 @@ namespace DotNetOpenId.Consumer
 		public AuthenticationRequest Begin(ServiceEndpoint service_endpoint,
 			TrustRoot trustRootUrl, Uri returnToUrl)
 		{
-			string nonce = CryptUtil.CreateNonce();
-			string token = new Token(service_endpoint).Serialize(store.AuthKey);
+			string token = new Token(service_endpoint).Serialize(store);
 
 			Association assoc = this.getAssociation(service_endpoint.ServerUrl);
 
 			AuthenticationRequest request = new AuthenticationRequest(token, assoc, service_endpoint,
 				trustRootUrl, returnToUrl);
-			request.AddCallbackArguments(QueryStringArgs.nonce, nonce);
 
 			return request;
 		}
@@ -52,7 +51,7 @@ namespace DotNetOpenId.Consumer
 			if (!query.TryGetValue(Token.TokenKey, out tokenString))
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 					Strings.MissingInternalQueryParameter, Token.TokenKey));
-			Token token = Token.Deserialize(tokenString, store.AuthKey);
+			Token token = Token.Deserialize(tokenString, store);
 
 			switch (mode) {
 				case QueryStringArgs.Modes.cancel:
@@ -62,9 +61,7 @@ namespace DotNetOpenId.Consumer
 						"The provider returned an error: {0}", query[QueryStringArgs.openid.error],
 						token.IdentityUrl));
 				case QueryStringArgs.Modes.id_res:
-					AuthenticationResponse response = doIdRes(query, token);
-					checkNonce(response, query[QueryStringArgs.nonce]);
-					return response;
+					return doIdRes(query, token);
 				default:
 					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 						Strings.InvalidOpenIdQueryParameterValue,
@@ -93,25 +90,18 @@ namespace DotNetOpenId.Consumer
 			return ProcessCheckAuthResponse(response, serverUrl);
 		}
 
-		/// <summary>
-		/// Checks that a given nonce is valid, and that it has only been used once
-		/// to protect against replay attacks.
-		/// </summary>
-		/// <remarks>
-		/// TODO: replay attacks are not currently guarded against.
-		/// </remarks>
-		static void checkNonce(AuthenticationResponse response, string nonce)
-		{
-			var nvc = HttpUtility.ParseQueryString(response.ReturnTo.Query);
+		public void detectAlteredArguments(AuthenticationResponse response, 
+			IDictionary<string, string> query, params string[] argumentNames) {
+			
+			NameValueCollection return_to = HttpUtility.ParseQueryString(response.ReturnTo.Query);
 
-			string returnToNonce = nvc[QueryStringArgs.nonce];
-			if (String.IsNullOrEmpty(returnToNonce))
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture, 
-					Strings.MissingReturnToQueryParameter,
-					QueryStringArgs.nonce, response.ReturnTo.Query), response.IdentityUrl);
-
-			if (returnToNonce != nonce)
-				throw new OpenIdException(Strings.NonceMismatch, response.IdentityUrl);
+			foreach (string arg in argumentNames) {
+				string queryArg;
+				query.TryGetValue(arg, out queryArg);
+				if (queryArg != return_to[arg])
+					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+						Strings.ReturnToArgDifferentFromQueryArg, arg, return_to[arg], query[arg]));
+			}
 		}
 
 		static IDictionary<string, string> makeKVPost(IDictionary<string, string> args, Uri serverUrl) {
@@ -133,56 +123,67 @@ namespace DotNetOpenId.Consumer
 			}
 		}
 
+		string getRequiredField(IDictionary<string, string> query, string key) {
+			string val;
+			if (!query.TryGetValue(key, out val))
+				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+					Strings.MissingOpenIdQueryParameter, key));
+
+			return val;
+		}
+
 		AuthenticationResponse doIdRes(IDictionary<string, string> query, Token token)
 		{
-			Converter<string, string> getRequired = delegate(string key)
-				{
-					string val;
-					if (!query.TryGetValue(key, out val))
-						throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-							Strings.MissingOpenIdQueryParameter, key), token.IdentityUrl);
-
-					return val;
-				};
-
 			string user_setup_url;
 			if (query.TryGetValue(QueryStringArgs.openid.user_setup_url, out user_setup_url))
 				return new AuthenticationResponse(AuthenticationStatus.SetupRequired, token.IdentityUrl, query);
 
-			string assoc_handle = getRequired(QueryStringArgs.openid.assoc_handle);
+			string assoc_handle = getRequiredField(query, QueryStringArgs.openid.assoc_handle);
 
+			// TODO: I'm pretty sure this check doesn't accomplish anything. (ALA)
 			if (token.ServerId.AbsoluteUri != token.ServerId.ToString())
 				throw new OpenIdException("Provider ID (delegate) mismatch", token.IdentityUrl);
 
-			Association assoc = this.store.GetAssociation(token.ServerUrl, assoc_handle);
+			Association assoc = store.GetAssociation(token.ServerUrl, assoc_handle);
+			AuthenticationResponse response;
 
-			if (assoc == null)
-			{
+			if (assoc == null) {
 				// It's not an association we know about.  Dumb mode is our
 				// only possible path for recovery.
 				if (!checkAuth(query, token.ServerUrl))
 					throw new OpenIdException("check_authentication failed", token.IdentityUrl);
 
-				return new AuthenticationResponse(AuthenticationStatus.Authenticated, token.IdentityUrl, query);
+				response = new AuthenticationResponse(AuthenticationStatus.Authenticated, token.IdentityUrl, query);
+			} else {
+				if (assoc.IsExpired)
+					throw new OpenIdException(String.Format(CultureInfo.CurrentUICulture,
+						"Association with {0} expired", token.ServerUrl), token.IdentityUrl);
+
+				verifySignature(query, assoc);
+
+				response = new AuthenticationResponse(AuthenticationStatus.Authenticated, token.IdentityUrl, query);
 			}
 
-			if (assoc.IsExpired)
-			{
-				throw new OpenIdException(String.Format(CultureInfo.CurrentUICulture,
-					"Association with {0} expired", token.ServerUrl), token.IdentityUrl);
-			}
+			// Just a little extra something to make sure that what's signed in return_to
+			// and doubled in the actual returned arguments is the same.
+			detectAlteredArguments(response, query, Token.TokenKey);
 
-			// Check the signature
-			string sig = getRequired(QueryStringArgs.openid.sig);
-			string signed = getRequired(QueryStringArgs.openid.signed);
+			return response;
+		}
+
+		/// <summary>
+		/// Verifies that a query is signed and that the signed fields have not been tampered with.
+		/// </summary>
+		/// <exception cref="OpenIdException">Thrown when the signature is missing or the query has been tampered with.</exception>
+		void verifySignature(IDictionary<string, string> query, Association assoc) {
+			string sig = getRequiredField(query, QueryStringArgs.openid.sig);
+			string signed = getRequiredField(query, QueryStringArgs.openid.signed);
 			string[] signed_array = signed.Split(',');
 
 			string v_sig = CryptUtil.ToBase64String(assoc.Sign(query, signed_array, QueryStringArgs.openid.Prefix));
 
 			if (v_sig != sig)
-				throw new OpenIdException("Bad signature", token.IdentityUrl);
-
-			return new AuthenticationResponse(AuthenticationStatus.Authenticated, token.IdentityUrl, query);
+				throw new OpenIdException(Strings.InvalidSignature);
 		}
 
 		static AssociationRequest createAssociationRequest(Uri serverUrl)
@@ -332,7 +333,7 @@ namespace DotNetOpenId.Consumer
 			{
 				string invalidate_handle = response[QueryStringArgs.openidnp.invalidate_handle];
 				if (invalidate_handle != null)
-					this.store.RemoveAssociation(server_url, invalidate_handle);
+					store.RemoveAssociation(server_url, invalidate_handle);
 
 				return true;
 			}

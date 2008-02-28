@@ -79,6 +79,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The nonce has expired..
+        /// </summary>
+        internal static string ExpiredNonce {
+            get {
+                return ResourceManager.GetString("ExpiredNonce", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Extension parameter key &apos;{0}&apos; encountered, but extension parameter keys should not include their prefix..
         /// </summary>
         internal static string ExtensionParameterKeysWithoutPrefixExpected {
@@ -102,6 +111,15 @@ namespace DotNetOpenId {
         internal static string InvalidOpenIdQueryParameterValue {
             get {
                 return ResourceManager.GetString("InvalidOpenIdQueryParameterValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The signature verification failed..
+        /// </summary>
+        internal static string InvalidSignature {
+            get {
+                return ResourceManager.GetString("InvalidSignature", resourceCulture);
             }
         }
         
@@ -142,15 +160,6 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Nonce mismatch..
-        /// </summary>
-        internal static string NonceMismatch {
-            get {
-                return ResourceManager.GetString("NonceMismatch", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to No OpenId url is provided..
         /// </summary>
         internal static string OpenIdTextBoxEmpty {
@@ -169,11 +178,29 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The nonce has already been used..
+        /// </summary>
+        internal static string ReplayAttackDetected {
+            get {
+                return ResourceManager.GetString("ReplayAttackDetected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to OpenId provider&apos;s response is not ready.  Use IsResponseReady to check, and fill in the required properties first..
         /// </summary>
         internal static string ResponseNotReady {
             get {
                 return ResourceManager.GetString("ResponseNotReady", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; parameter does not have the same value for return_to (&apos;{1}&apos;) and the regular query (&apos;{2}&apos;)..
+        /// </summary>
+        internal static string ReturnToArgDifferentFromQueryArg {
+            get {
+                return ResourceManager.GetString("ReturnToArgDifferentFromQueryArg", resourceCulture);
             }
         }
         

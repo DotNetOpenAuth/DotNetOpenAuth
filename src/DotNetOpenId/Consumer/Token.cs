@@ -13,17 +13,18 @@ namespace DotNetOpenId.Consumer {
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
 		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", Justification = "CryptoStream is not stored in a field.")]
 	class Token {
-		static readonly TimeSpan maximumLifetime = TimeSpan.FromMinutes(5);
 		public static readonly string TokenKey = "token";
 		public Uri IdentityUrl { get; private set; }
 		public Uri ServerId { get; private set; }
 		public Uri ServerUrl { get; private set; }
+		public Nonce Nonce { get; set; }
 
 		public Token(ServiceEndpoint serviceEndpoint)
-			: this(serviceEndpoint.IdentityUrl, serviceEndpoint.ServerId, serviceEndpoint.ServerUrl) {
+			: this(new Nonce(), serviceEndpoint.IdentityUrl, serviceEndpoint.ServerId, serviceEndpoint.ServerUrl) {
 		}
 
-		Token(Uri identityUrl, Uri serverId, Uri serverUrl) {
+		Token(Nonce nonce, Uri identityUrl, Uri serverId, Uri serverUrl) {
+			this.Nonce = nonce;
 			IdentityUrl = identityUrl;
 			ServerId = serverId;
 			ServerUrl = serverUrl;
@@ -36,11 +37,11 @@ namespace DotNetOpenId.Consumer {
 		/// included as part of a return_to variable in a querystring. 
 		/// This string is cryptographically signed to protect against tampering.
 		/// </summary>
-		public string Serialize(byte[] signingSecretKey) {
-			string timestamp = DateTime.UtcNow.ToFileTimeUtc().ToString(CultureInfo.InvariantCulture);
+		public string Serialize(INonceStore store) {
+			string timestamp = Nonce.CreationDate.ToFileTimeUtc().ToString(CultureInfo.InvariantCulture);
 
 			using (MemoryStream ms = new MemoryStream())
-			using (HashAlgorithm sha1 = new HMACSHA1(signingSecretKey))
+			using (HashAlgorithm sha1 = new HMACSHA1(store.SecretSigningKey))
 			using (CryptoStream sha1Stream = new CryptoStream(ms, sha1, CryptoStreamMode.Write)) {
 				DataWriter writeData = delegate(string value, bool writeSeparator) {
 					byte[] buffer = Encoding.ASCII.GetBytes(value);
@@ -51,6 +52,7 @@ namespace DotNetOpenId.Consumer {
 				};
 
 				writeData(timestamp, true);
+				writeData(Nonce.Code, true);
 				writeData(IdentityUrl.AbsoluteUri, true);
 				writeData(ServerId.AbsoluteUri, true);
 				writeData(ServerUrl.AbsoluteUri, false);
@@ -68,7 +70,7 @@ namespace DotNetOpenId.Consumer {
 			}
 		}
 
-		public static Token Deserialize(string token, byte[] signingSecretKey) {
+		public static Token Deserialize(string token, INonceStore store) {
 			byte[] tok = Convert.FromBase64String(token);
 
 			if (tok.Length < 20)
@@ -77,7 +79,7 @@ namespace DotNetOpenId.Consumer {
 			byte[] sig = new byte[20];
 			Buffer.BlockCopy(tok, 0, sig, 0, 20);
 
-			HMACSHA1 hmac = new HMACSHA1(signingSecretKey);
+			HMACSHA1 hmac = new HMACSHA1(store.SecretSigningKey);
 			byte[] newSig = hmac.ComputeHash(tok, 20, tok.Length - 20);
 
 			for (int i = 0; i < sig.Length; i++)
@@ -100,15 +102,29 @@ namespace DotNetOpenId.Consumer {
 
 			//# Check if timestamp has expired
 			DateTime ts = DateTime.FromFileTimeUtc(Convert.ToInt64(items[0], CultureInfo.InvariantCulture));
-			ts += maximumLifetime;
+			Nonce nonce = new Nonce(items[1], ts);
+			consumeNonce(nonce, store);
 
-			if (ts < DateTime.UtcNow)
-				throw new OpenIdException("Token has expired.");
-
-			items.RemoveAt(0);
-
-			return new Token(new Uri(items[0]), new Uri(items[1]), new Uri(items[2]));
+			return new Token(nonce, new Uri(items[2]), new Uri(items[3]), new Uri(items[4]));
 		}
 
+		static void consumeNonce(Nonce nonce, INonceStore store) {
+			if (nonce.IsExpired)
+				throw new OpenIdException(Strings.ExpiredNonce);
+
+			// We could store unused nonces and remove them as they are used, or
+			// we could store used nonces and check that they do not previously exist.
+			// To protect against DoS attacks, it's cheaper to store fully-used ones
+			// than half-used ones because it costs the user agent more to get that far.
+			lock (store) {
+				// Replay detection
+				if (store.ContainsNonce(nonce)) {
+					// We've used this nonce before!  Replay attack!
+					throw new OpenIdException(Strings.ReplayAttackDetected);
+				}
+				store.StoreNonce(nonce);
+				store.ClearExpiredNonces();
+			}
+		}
 	}
 }
