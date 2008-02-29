@@ -70,6 +70,7 @@ namespace DotNetOpenId {
 
         public static IDictionary<string, string> NameValueCollectionToDictionary(NameValueCollection nvc)
         {
+            if (nvc == null) throw new ArgumentNullException("nvc");
             var dict = new Dictionary<string, string>(nvc.Count);
             for (int i = 0; i < nvc.Count; i++)
                 dict.Add(nvc.GetKey(i), nvc.Get(i));

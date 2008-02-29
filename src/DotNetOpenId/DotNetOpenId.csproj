@@ -57,6 +57,7 @@
     <Compile Include="Consumer\Nonce.cs" />
     <Compile Include="Consumer\OpenIdConsumer.cs" />
     <Compile Include="Consumer\Token.cs" />
+    <Compile Include="DictionarySerializer.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="HmacSha1Association.cs" />
     <Compile Include="IAssociationStore.cs" />
@@ -94,7 +95,6 @@
     <Compile Include="DiffieHellman\mono\PrimeGeneratorBase.cs" />
     <Compile Include="DiffieHellman\mono\SecurityParser.cs" />
     <Compile Include="DiffieHellman\mono\SequentialSearchPrimeGeneratorBase.cs" />
-    <Compile Include="KVUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Provider\AssociateRequest.cs" />
     <Compile Include="Provider\CheckAuthRequest.cs" />

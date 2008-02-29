@@ -51,14 +51,16 @@ namespace DotNetOpenId.Consumer {
 		/// <param name="store">
 		/// The application-level store where associations with other OpenId providers can be
 		/// preserved for optimized authentication.
-		/// If null, 'dumb' mode will always be used.
+		/// If null, 'dumb' mode will always be used, and replay attack cannot be protected against.
 		/// </param>
 		OpenIdConsumer(IDictionary<string, string> query, IConsumerApplicationStore store) {
 			if (query == null) throw new ArgumentNullException("query");
 			this.query = query;
 			manager = new ServiceEndpointManager(null);
 			consumer = new GenericConsumer(store);
-			store.ClearExpiredAssociations(); // every so often we should do this.
+			if (store != null) {
+				store.ClearExpiredAssociations(); // every so often we should do this.
+			}
 		}
 
 		public AuthenticationRequest CreateRequest(Uri openIdUrl, TrustRoot trustRootUrl, Uri returnToUrl) {
@@ -122,8 +124,6 @@ namespace DotNetOpenId.Consumer {
 		/// </summary>
 		bool isAuthenticationResponseReady {
 			get {
-				if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
-
 				if (!query.ContainsKey(QueryStringArgs.openid.mode))
 					return false;
 

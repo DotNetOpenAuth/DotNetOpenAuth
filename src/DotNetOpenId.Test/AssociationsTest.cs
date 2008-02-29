@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace DotNetOpenId.Test {
 	[TestFixture]
-	public class ServerAssocsTest {
+	public class AssociationsTest {
 
 		Associations assocs;
 		[SetUp]

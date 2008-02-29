@@ -9,7 +9,7 @@ using System.Collections.Specialized;
 namespace DotNetOpenId.Test
 {
     [TestFixture]
-    public class KVUtilTestSuite
+    public class DictionarySerializerTestSuite
     {
 
         public static void KVDictTest(byte[] kvform, IDictionary<string,string> dict)
@@ -20,14 +20,6 @@ namespace DotNetOpenId.Test
             {
                 Assert.AreEqual(d[key], dict[key], d[key] + " and " + dict[key] + " do not match.");
             }
-            
-            //byte[] kv = KVUtil.DictToKV(d);
-            //Hashtable d2 = (Hashtable) KVUtil.KVToDict(kv);
-
-            //foreach (DictionaryEntry de in d)
-            //{
-            //    Assert.AreEqual(de.Value, d2[de.Key], UTF8Encoding.UTF8.GetString(kvform));
-            //}
         }
 
         [Test]
