@@ -53,15 +53,15 @@ using System.Web.UI;
 
 // We need to be allowed to execute code.  Besides, it gives a good baseline RequestMinimum permission.
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, Execution = true)]
-// Allows the consumer to call out to the web server
-[assembly: WebPermission(SecurityAction.RequestMinimum, ConnectPattern=".*")]
+// Allows the consumer to call out to the web server.  This is unnecessary in provider-only scenarios.
+[assembly: WebPermission(SecurityAction.RequestMinimum, ConnectPattern = @".*")]
 // Allows hosting this assembly in an ASP.NET setting.  Not all applications
 // will host this using ASP.NET, so this is optional.  Besides, we need at least
 // one optional permission to activate CAS permission shrinking.
 [assembly: AspNetHostingPermission(SecurityAction.RequestOptional, Level = AspNetHostingPermissionLevel.Medium)]
 
 // The following are only required for diagnostic logging (Trace.Write, Debug.Assert, etc.).
-#if DEBUG
+#if TRACE
 [assembly: KeyContainerPermission(SecurityAction.RequestMinimum, Unrestricted = true)]
 [assembly: ReflectionPermission(SecurityAction.RequestMinimum, MemberAccess = true)]
 [assembly: RegistryPermission(SecurityAction.RequestMinimum, Unrestricted = true)]
