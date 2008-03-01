@@ -15,7 +15,7 @@ namespace DotNetOpenId.Test.Consumer {
 
 		[SetUp]
 		public void Setup() {
-			store = new DotNetOpenId.Consumer.ConsumerApplicationMemoryStore();
+			store = new ConsumerApplicationMemoryStore();
 		}
 
 		[Test]
@@ -58,7 +58,7 @@ namespace DotNetOpenId.Test.Consumer {
 			var consumer = new OpenIdConsumer(query, store);
 			
 			Assert.IsNull(consumer.Response);
-			var request = consumer.CreateRequest(simpleOpenId, simpleTrustRoot, simpleReturnTo);
+			var request = consumer.CreateRequest(TestSupport.IdentityUrl, simpleTrustRoot, simpleReturnTo);
 
 			// Test defaults
 			Assert.AreEqual(AuthenticationRequestMode.Setup, request.Mode);

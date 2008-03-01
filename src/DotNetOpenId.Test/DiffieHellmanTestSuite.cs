@@ -36,7 +36,7 @@ namespace DotNetOpenId.Test
             Assert.AreNotEqual(s1, s2, "Secret keys should NOT be the same.");
         }
 
-        [Test]
+        [Test, Explicit("Test is slow.")]
         public void TestPublic()
         {
             StreamReader sr = new StreamReader(@"..\..\src\DotNetOpenId.Test\dhpriv.txt");
