@@ -34,14 +34,17 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssociationsTest.cs" />
     <Compile Include="AssociationTestSuite.cs" />
     <Compile Include="Consumer\OpenIdConsumerTest.cs" />
+    <Compile Include="Hosting\ProviderHost.cs" />
     <Compile Include="DictionarySerializerTestSuite.cs" />
     <Compile Include="DiffieHellmanTestSuite.cs" />
+    <Compile Include="Hosting\TestingWorkerRequest.cs" />
     <Compile Include="ProfileFieldValuesTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Provider\OpenIdProviderTest.cs" />
