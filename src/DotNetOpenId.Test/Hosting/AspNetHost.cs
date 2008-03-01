@@ -10,19 +10,19 @@ namespace DotNetOpenId.Test.Hosting {
 	/// Hosts a 'portable' version of the OpenIdProvider for testing itself and the
 	/// Consumer against it.
 	/// </summary>
-	class Host : MarshalByRefObject {
-		public static Host CreateHost(string webDirectory) {
-			Host host = (Host)System.Web.Hosting.ApplicationHost.
-				CreateApplicationHost(typeof(Host), "/", webDirectory);
+	class AspNetHost : MarshalByRefObject {
+		public static AspNetHost CreateHost(string webDirectory) {
+			AspNetHost host = (AspNetHost)System.Web.Hosting.ApplicationHost.
+				CreateApplicationHost(typeof(AspNetHost), "/", webDirectory);
 			return host;
 		}
 
-		public void ProcessRequest(string page, string query, string body, TextWriter responseWriter) {
+		public void ProcessRequest(string page, string query, Stream body, TextWriter responseWriter) {
 			ProcessRequest(new TestingWorkerRequest(page, query, body, responseWriter));
 		}
 
 		public void ProcessRequest(HttpWorkerRequest wr) {
-			System.Web.HttpRuntime.ProcessRequest(wr);
+			HttpRuntime.ProcessRequest(wr);
 		}
 	}
 }

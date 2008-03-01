@@ -43,7 +43,10 @@
     <Compile Include="Consumer\OpenIdConsumerTest.cs" />
     <Compile Include="DictionarySerializerTestSuite.cs" />
     <Compile Include="DiffieHellmanTestSuite.cs" />
-    <Compile Include="Hosting\Host.cs" />
+    <Compile Include="Hosting.Tests\AspNetHostTest.cs" />
+    <Compile Include="Hosting.Tests\HttpHostTest.cs" />
+    <Compile Include="Hosting\AspNetHost.cs" />
+    <Compile Include="Hosting\HttpHost.cs" />
     <Compile Include="Hosting\TestingWorkerRequest.cs" />
     <Compile Include="ProfileFieldValuesTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

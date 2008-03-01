@@ -6,16 +6,19 @@ using System.IO;
 
 namespace DotNetOpenId.Test.Hosting {
 	class TestingWorkerRequest : SimpleWorkerRequest {
-		public TestingWorkerRequest(string page, string query, string body, TextWriter output)
+		public TestingWorkerRequest(string page, string query, Stream entityStream, TextWriter output)
 			: base(page, query, output) {
-			this.body = body;
+			this.entityStream = entityStream;
 		}
-		string body;
+		Stream entityStream;
 		public override bool IsEntireEntityBodyIsPreloaded() {
-			return true;
+			return false;
 		}
-		public override byte[] GetPreloadedEntityBody() {
-			return Encoding.ASCII.GetBytes(body);
+		public override int ReadEntityBody(byte[] buffer, int size) {
+			return entityStream.Read(buffer, 0, size);
+		}
+		public override int ReadEntityBody(byte[] buffer, int offset, int size) {
+			return entityStream.Read(buffer, offset, size);
 		}
 	}
 }
