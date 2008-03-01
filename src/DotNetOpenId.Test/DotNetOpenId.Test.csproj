@@ -41,9 +41,9 @@
     <Compile Include="AssociationsTest.cs" />
     <Compile Include="AssociationTestSuite.cs" />
     <Compile Include="Consumer\OpenIdConsumerTest.cs" />
-    <Compile Include="Hosting\ProviderHost.cs" />
     <Compile Include="DictionarySerializerTestSuite.cs" />
     <Compile Include="DiffieHellmanTestSuite.cs" />
+    <Compile Include="Hosting\Host.cs" />
     <Compile Include="Hosting\TestingWorkerRequest.cs" />
     <Compile Include="ProfileFieldValuesTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
