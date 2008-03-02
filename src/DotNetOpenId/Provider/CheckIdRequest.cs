@@ -160,8 +160,10 @@ namespace DotNetOpenId.Provider {
 
 				response.AddFields(null, fields, true);
 			}
+			// TODO: why are we adding the mode parameter twice? (once signed and once not) in
+			//       authenticated cases?
 			response.AddField(null, QueryStringArgs.openidnp.mode, mode, false);
-			if (Immediate) {
+			if (Immediate && !IsAuthenticated.Value) {
 				if (ServerUrl == null) {
 					throw new ArgumentNullException("serverUrl", "serverUrl is required for allow=False in immediate mode.");
 				}

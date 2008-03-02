@@ -53,19 +53,19 @@ namespace DotNetOpenId.Test.Consumer {
 			consumer.CreateRequest(simpleOpenId, simpleTrustRoot);
 		}
 
-		[Test]
-		public void BasicSimulation() {
+		void parameterizedTest(Uri identityUrl, TrustRoot trustRoot, Uri returnTo, 
+			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult) {
 			var consumer = new OpenIdConsumer(new NameValueCollection(), store);
-			var trustRoot = new TrustRoot(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri);
-			var returnTo = TestSupport.GetFullUrl(TestSupport.ConsumerPage);
 
 			Assert.IsNull(consumer.Response);
-			var request = consumer.CreateRequest(TestSupport.IdentityUrl, trustRoot, returnTo);
+			var request = consumer.CreateRequest(identityUrl, trustRoot, returnTo);
 
-			// Test defaults
+			// Test properties and defaults
 			Assert.AreEqual(AuthenticationRequestMode.Setup, request.Mode);
 			Assert.AreEqual(returnTo, request.ReturnToUrl);
 			Assert.AreEqual(trustRoot.Url, request.TrustRootUrl.Url);
+
+			request.Mode = requestMode;
 
 			// Verify the redirect URL
 			Assert.IsNotNull(request.RedirectToProviderUrl);
@@ -82,8 +82,30 @@ namespace DotNetOpenId.Test.Consumer {
 			}
 			var providerToConsumerQuery = HttpUtility.ParseQueryString(redirectUrl.Query);
 			var consumer2 = new OpenIdConsumer(providerToConsumerQuery, store);
-			Assert.AreEqual(AuthenticationStatus.Authenticated, consumer2.Response.Status);
-			Assert.AreEqual(TestSupport.IdentityUrl, consumer2.Response.IdentityUrl);
+			Assert.AreEqual(expectedResult, consumer2.Response.Status);
+			Assert.AreEqual(identityUrl, consumer2.Response.IdentityUrl);
+		}
+
+		[Test]
+		public void SetupAuthentication() {
+			parameterizedTest(
+				TestSupport.IdentityUrl,
+				new TrustRoot(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
+				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
+				AuthenticationRequestMode.Setup,
+				AuthenticationStatus.Authenticated
+			);
+		}
+
+		[Test]
+		public void ImmediateAuthentication() {
+			parameterizedTest(
+				TestSupport.IdentityUrl,
+				new TrustRoot(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
+				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
+				AuthenticationRequestMode.Immediate,
+				AuthenticationStatus.Authenticated
+			);
 		}
 	}
 }
