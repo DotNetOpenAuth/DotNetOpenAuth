@@ -13,8 +13,8 @@ namespace DotNetOpenId.Test.Hosting {
 		Thread listenerThread;
 		AspNetHost aspNetHost;
 
-		HttpHost(string webDirectory) {
-			aspNetHost = AspNetHost.CreateHost(webDirectory);
+		HttpHost(AspNetHost aspNetHost) {
+			this.aspNetHost = aspNetHost;
 
 			Port = 59687;
 			Random r = new Random();
@@ -35,20 +35,18 @@ namespace DotNetOpenId.Test.Hosting {
 			listenerThread.Start();
 		}
 
+		public static HttpHost CreateHost(AspNetHost aspNetHost) {
+			return new HttpHost(aspNetHost);
+		}
+
 		public static HttpHost CreateHost(string webDirectory) {
-			return new HttpHost(webDirectory);
+			return new HttpHost(AspNetHost.CreateHost(webDirectory));
 		}
 		void processRequests() {
 			try {
 				while (true) {
 					var context = listener.GetContext();
-					using (TextWriter writer = new StreamWriter(context.Response.OutputStream)) {
-						aspNetHost.ProcessRequest(
-							context.Request.Url.LocalPath.TrimStart('/'),
-							context.Request.Url.Query,
-							context.Request.InputStream,
-							writer);
-					}
+					aspNetHost.ProcessRequest(context);
 				}
 			} catch (HttpListenerException) {
 				// the listener is probably being shut down

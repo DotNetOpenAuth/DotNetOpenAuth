@@ -15,7 +15,7 @@ namespace DotNetOpenId.Test {
 		public void TestHost() {
 			string query = "a=b&c=d";
 			string body = "aa=bb&cc=dd";
-			string resultHtml = TestSupport.HttpHost.ProcessRequest(TestSupport.HostTestPage + "?" + query, body);
+			string resultHtml = TestSupport.Host.ProcessRequest(TestSupport.HostTestPage + "?" + query, body);
 
 			Assert.IsFalse(string.IsNullOrEmpty(resultHtml));
 			Debug.WriteLine(resultHtml);
@@ -23,5 +23,10 @@ namespace DotNetOpenId.Test {
 			Assert.IsTrue(Regex.IsMatch(resultHtml, @"Body.*" + Regex.Escape(body)));
 		}
 
+		[Test]
+		public void TestProviderPage() {
+			string html = TestSupport.Host.ProcessRequest(TestSupport.ProviderPage);
+			Assert.IsFalse(string.IsNullOrEmpty(html));
+		}
 	}
 }

@@ -14,21 +14,25 @@ public class TestSupport {
 	public const string ProviderPage = "ProviderEndpoint.aspx";
 	public const string ConsumerPage = "Consumer.aspx";
 	public static Uri IdentityUrl {
-		get {
-			return new Uri(HttpHost.BaseUri, "/bob");
-		}
+		get { return new Uri(Host.BaseUri, "/IdentityEndpoint.aspx?user=bob"); }
+	}
+	public static Uri DelegateUrl {
+		get { return new Uri(Host.BaseUri, "/bob"); }
+	}
+	public static Uri GetFullUrl(string url) {
+		return new Uri(Host.BaseUri, url);
 	}
 
-	internal static HttpHost HttpHost { get; private set; }
+	internal static AspNetHost Host { get; private set; }
 
 	[SetUp]
 	public void SetUp() {
-		HttpHost = HttpHost.CreateHost(TestSupport.TestWebDirectory);
+		Host = AspNetHost.CreateHost(TestSupport.TestWebDirectory);
 	}
 
 	[TearDown]
 	public void TearDown() {
-		HttpHost.Dispose();
-		HttpHost = null;
+		Host.CloseHttp();
+		Host = null;
 	}
 }
