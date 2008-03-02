@@ -309,7 +309,7 @@ namespace Janrain.OpenId.Server
 
             }
             response.AddField(null, QueryStringArgs.openidnp.mode, mode, false);
-            if (_immediate)
+            if (_immediate && !allow)
             {
                 if (server_url == null) { throw new ApplicationException("setup_url is required for allow=False in immediate mode."); }
 
