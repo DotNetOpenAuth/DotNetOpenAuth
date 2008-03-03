@@ -151,24 +151,18 @@ namespace DotNetOpenId.Provider {
 
 			EncodableResponse response = new EncodableResponse(this);
 
-			if (IsAuthenticated.Value) {
-				var fields = new Dictionary<string, string>();
+			// Always send the openid.mode, and sign it only if authentication succeeded.
+			response.AddField(null, QueryStringArgs.openidnp.mode, mode, IsAuthenticated.Value);
 
-				fields.Add(QueryStringArgs.openidnp.mode, mode);
+			if (IsAuthenticated.Value) {
+				// Add additional signed fields
+				var fields = new Dictionary<string, string>();
 				fields.Add(QueryStringArgs.openidnp.identity, IdentityUrl.AbsoluteUri);
 				fields.Add(QueryStringArgs.openidnp.return_to, ReturnTo.AbsoluteUri);
-
 				response.AddFields(null, fields, true);
 			}
-			// TODO: why are we adding the mode parameter twice? (once signed and once not) in
-			//       authenticated cases?
-			response.AddField(null, QueryStringArgs.openidnp.mode, mode, false);
 			if (Immediate && !IsAuthenticated.Value) {
-				if (ServerUrl == null) {
-					throw new ArgumentNullException("serverUrl", "serverUrl is required for allow=False in immediate mode.");
-				}
-
-				response.AddField(null, "user_setup_url", SetupUrl.AbsoluteUri, false);
+				response.AddField(null, QueryStringArgs.openidnp.user_setup_url, SetupUrl.AbsoluteUri, false);
 			}
 
 			if (TraceUtil.Switch.TraceInfo) {
@@ -194,6 +188,10 @@ namespace DotNetOpenId.Provider {
 		/// </summary>
 		internal Uri SetupUrl {
 			get {
+				if (ServerUrl == null) {
+					throw new InvalidOperationException("ServerUrl is required for failed authentication in immediate mode.");
+				}
+
 				var q = new Dictionary<string, string>();
 
 				q.Add(QueryStringArgs.openid.mode, QueryStringArgs.Modes.checkid_setup);
