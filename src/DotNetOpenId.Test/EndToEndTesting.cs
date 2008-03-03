@@ -118,5 +118,18 @@ namespace DotNetOpenId.Test {
 				true
 			);
 		}
+
+		[Test, Ignore("No store is not a supported scenario yet.")]
+		public void Pass_NoStore_AutoApproval() {
+			parameterizedTest(
+				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup),
+				new TrustRoot(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
+				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
+				AuthenticationRequestMode.Setup,
+				AuthenticationStatus.Authenticated,
+				false,
+				false
+			);
+		}
 	}
 }

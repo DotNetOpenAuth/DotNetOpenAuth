@@ -180,6 +180,11 @@ namespace DotNetOpenId {
 				|| url.PathAndQuery[path_len] == '/';
 		}
 
+		public override bool Equals(object obj) {
+			TrustRoot other = obj as TrustRoot;
+			if (other == null) return false;
+			return Url == other.Url;
+		}
 		public override string ToString() {
 			return _original;
 		}

@@ -40,6 +40,7 @@
   <ItemGroup>
     <Compile Include="AssociationsTest.cs" />
     <Compile Include="AssociationTestSuite.cs" />
+    <Compile Include="Consumer\NonceTest.cs" />
     <Compile Include="Consumer\OpenIdConsumerTest.cs" />
     <Compile Include="Consumer\OpenIdTextBoxTest.cs" />
     <Compile Include="DictionarySerializerTestSuite.cs" />
@@ -55,6 +56,7 @@
     <Compile Include="Provider\IdentityEndpointTest.cs" />
     <Compile Include="Provider\OpenIdProviderTest.cs" />
     <Compile Include="Provider\ProviderEndpointTest.cs" />
+    <Compile Include="Consumer\TokenTest.cs" />
     <Compile Include="TrustRootTestSuite.cs" />
     <Compile Include="UriUtilTest.cs" />
   </ItemGroup>

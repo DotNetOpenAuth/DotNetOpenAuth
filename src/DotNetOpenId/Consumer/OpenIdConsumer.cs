@@ -55,6 +55,7 @@ namespace DotNetOpenId.Consumer {
 		/// </param>
 		OpenIdConsumer(IDictionary<string, string> query, IConsumerApplicationStore store) {
 			if (query == null) throw new ArgumentNullException("query");
+			if (store == null) throw new ArgumentNullException("store");
 			this.query = query;
 			manager = new ServiceEndpointManager(null);
 			consumer = new GenericConsumer(store);

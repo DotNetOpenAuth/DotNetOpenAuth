@@ -134,5 +134,17 @@ namespace DotNetOpenId.Test {
 			Assert.IsTrue(new TrustRoot("http://www.my.com/").IsUrlWithinTrustRoot("http://WWW.MY.COM/"));
 			Assert.IsFalse(new TrustRoot("http://www.my.com/abc").IsUrlWithinTrustRoot("http://www.my.com/ABC"));
 		}
+
+		[Test]
+		public void EqualsTest() {
+			TrustRoot tr1a = new TrustRoot("http://www.yahoo.com");
+			TrustRoot tr1b = new TrustRoot("http://www.yahoo.com");
+			TrustRoot tr2 = new TrustRoot("http://www.yahoo.com/b");
+
+			Assert.AreEqual(tr1a, tr1b);
+			Assert.AreNotEqual(tr1a, tr2);
+			Assert.AreNotEqual(tr1a, null);
+			Assert.AreNotEqual(tr1a, tr1a.Url, "Although the URLs are equal, different object types shouldn't be equal.");
+		}
 	}
 }

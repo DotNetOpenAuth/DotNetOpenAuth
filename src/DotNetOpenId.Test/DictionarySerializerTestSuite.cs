@@ -23,7 +23,7 @@ namespace DotNetOpenId.Test
         }
 
         [Test]
-        public void KVDict()
+        public void SerializeDeserialize()
         {
 
             KVDictTest(UTF8Encoding.UTF8.GetBytes(""), new Dictionary<string, string>());

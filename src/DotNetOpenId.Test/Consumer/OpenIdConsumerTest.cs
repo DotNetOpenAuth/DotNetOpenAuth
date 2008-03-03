@@ -33,6 +33,7 @@ namespace DotNetOpenId.Test.Consumer {
 		}
 
 		[Test]
+		[ExpectedException(typeof(ArgumentNullException), UserMessage = "Until this is a supported scenario, an exception should be thrown right away.")]
 		public void CtorWithNullStore() {
 			var consumer = new OpenIdConsumer(new NameValueCollection(), null);
 		}

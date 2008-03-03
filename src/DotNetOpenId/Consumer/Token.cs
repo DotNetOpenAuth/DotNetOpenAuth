@@ -4,6 +4,7 @@ using System.Text;
 using System.IO;
 using System.Security.Cryptography;
 using System.Globalization;
+using System.Diagnostics;
 
 namespace DotNetOpenId.Consumer {
 	/// <summary>
@@ -14,8 +15,19 @@ namespace DotNetOpenId.Consumer {
 		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", Justification = "CryptoStream is not stored in a field.")]
 	class Token {
 		public static readonly string TokenKey = "token";
+		/// <summary>
+		/// The URL given as the OpenId URL, which may not be the same as the Provider-issued
+		/// OpenId URL.
+		/// This points to the page with the &lt;LINK&gt; tag with openid.server in it.
+		/// </summary>
 		public Uri IdentityUrl { get; private set; }
+		/// <summary>
+		/// The DelegateUrl if supplied, otherwise the IdentityUrl.
+		/// </summary>
 		public Uri ServerId { get; private set; }
+		/// <summary>
+		/// The OpenId provider URL used for programmatic authentication.
+		/// </summary>
 		public Uri ServerUrl { get; private set; }
 		public Nonce Nonce { get; set; }
 
@@ -125,6 +137,19 @@ namespace DotNetOpenId.Consumer {
 				store.StoreNonce(nonce);
 				store.ClearExpiredNonces();
 			}
+		}
+
+		public override bool Equals(object obj) {
+			Token other = obj as Token;
+			if (other == null) return false;
+			Debug.Assert(this.Nonce != null && other.Nonce != null, "No Token should be constructed with null Nonces.");
+			// This should pretty much always return false, since every token should
+			// have it's own unique nonce.
+			return
+				this.IdentityUrl == other.IdentityUrl &&
+				this.Nonce.Equals(other.Nonce) &&
+				this.ServerId == other.ServerId &&
+				this.ServerUrl == other.ServerUrl;
 		}
 	}
 }
