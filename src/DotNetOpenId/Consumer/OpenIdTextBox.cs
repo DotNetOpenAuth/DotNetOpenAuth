@@ -292,7 +292,7 @@ namespace DotNetOpenId.Consumer
 			if (string.IsNullOrEmpty(value)) return;
 			if (page != null && !designMode) {
 				// Validate new value by trying to construct a TrustRoot object based on it.
-				new Uri(page.ResolveUrl(value)); // throws an exception on failure.
+				new Uri(page.Request.Url, page.ResolveUrl(value)); // throws an exception on failure.
 			} else {
 				// We can't fully test it, but it should start with either ~/ or a protocol.
 				if (Regex.IsMatch(value, @"^https?://")) {
