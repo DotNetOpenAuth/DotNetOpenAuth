@@ -87,9 +87,9 @@ namespace DotNetOpenId.Test.Consumer {
 		}
 
 		[Test]
-		public void SetupAuthentication() {
+		public void PassSetupAutoApproval() {
 			parameterizedTest(
-				TestSupport.IdentityUrl,
+				TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval),
 				new TrustRoot(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
 				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
 				AuthenticationRequestMode.Setup,
@@ -98,12 +98,34 @@ namespace DotNetOpenId.Test.Consumer {
 		}
 
 		[Test]
-		public void ImmediateAuthentication() {
+		public void PassImmediateAutoApproval() {
 			parameterizedTest(
-				TestSupport.IdentityUrl,
+				TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval),
 				new TrustRoot(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
 				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
 				AuthenticationRequestMode.Immediate,
+				AuthenticationStatus.Authenticated
+			);
+		}
+
+		[Test]
+		public void FailImmediateApproveOnSetup() {
+			parameterizedTest(
+				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup),
+				new TrustRoot(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
+				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
+				AuthenticationRequestMode.Immediate,
+				AuthenticationStatus.SetupRequired
+			);
+		}
+
+		[Test]
+		public void PassSetupApproveOnSetup() {
+			parameterizedTest(
+				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup),
+				new TrustRoot(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
+				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
+				AuthenticationRequestMode.Setup,
 				AuthenticationStatus.Authenticated
 			);
 		}

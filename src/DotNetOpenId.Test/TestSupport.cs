@@ -10,14 +10,22 @@ using DotNetOpenId.Test.Hosting;
 public class TestSupport {
 	public static readonly string TestWebDirectory = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\src\DotNetOpenId.TestWeb"));
 	public const string HostTestPage = "HostTest.aspx";
-	public const string IdentityPage = "IdentityEndpoint.aspx";
+	const string identityPage = "IdentityEndpoint.aspx";
 	public const string ProviderPage = "ProviderEndpoint.aspx";
 	public const string ConsumerPage = "Consumer.aspx";
-	public static Uri IdentityUrl {
-		get { return new Uri(Host.BaseUri, "/IdentityEndpoint.aspx?user=bob"); }
+	public enum Scenarios {
+		AutoApproval,
+		ApproveOnSetup,
+		AlwaysDeny,
 	}
-	public static Uri DelegateUrl {
-		get { return new Uri(Host.BaseUri, "/bob"); }
+	public static Uri GetIdentityUrl(Scenarios scenario) {
+		UriBuilder builder = new UriBuilder(Host.BaseUri);
+		builder.Path = "/" + identityPage;
+		builder.Query = "user=" + scenario;
+		return builder.Uri;
+	}
+	public static Uri GetDelegateUrl(Scenarios scenario) {
+		return new Uri(Host.BaseUri, "/" + scenario);
 	}
 	public static Uri GetFullUrl(string url) {
 		return new Uri(Host.BaseUri, url);

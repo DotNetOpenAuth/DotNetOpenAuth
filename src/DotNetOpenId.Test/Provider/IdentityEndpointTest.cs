@@ -14,14 +14,15 @@ namespace DotNetOpenId.Test.Provider {
 	public class IdentityEndpointTest {
 		[Test]
 		public void IdentityEndpointPage() {
-			string html = TestSupport.Host.ProcessRequest(TestSupport.IdentityPage);
-			Trace.TraceInformation("{0} response:{1}{2}", TestSupport.IdentityPage, Environment.NewLine, html);
+			TestSupport.Scenarios scenario = TestSupport.Scenarios.AutoApproval;
+			string html = TestSupport.Host.ProcessRequest(TestSupport.GetIdentityUrl(scenario).AbsoluteUri);
+			Trace.TraceInformation("{0} response:{1}{2}", TestSupport.GetIdentityUrl(scenario), Environment.NewLine, html);
 			Assert.IsTrue(Regex.IsMatch(html, string.Format(CultureInfo.InvariantCulture,
 				@"\<link rel=""openid.server"" href=""http://[^/]+/{0}""\>\</link\>",
 				TestSupport.ProviderPage)));
 			Assert.IsTrue(Regex.IsMatch(html, string.Format(CultureInfo.InvariantCulture,
 				@"\<link rel=""openid.delegate"" href=""http://[^/]+{0}""\>\</link\>",
-				Regex.Escape(TestSupport.DelegateUrl.AbsolutePath))));
+				Regex.Escape(TestSupport.GetDelegateUrl(scenario).AbsolutePath))));
 		}
 	}
 }

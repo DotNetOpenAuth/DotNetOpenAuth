@@ -23,6 +23,12 @@ namespace DotNetOpenId.Test.Hosting {
 		Stream entityStream;
 		HttpListenerContext context;
 		TextWriter writer;
+		public override string GetAppPath() {
+			return base.GetAppPath();
+		}
+		public override string GetAppPathTranslated() {
+			return base.GetAppPathTranslated();
+		}
 		public override int GetLocalPort() {
 			return context.Request.Url.Port;
 		}
