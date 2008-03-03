@@ -20,6 +20,7 @@ namespace DotNetOpenId.Consumer {
 		/// <summary>
 		/// The URL given as the OpenId URL, which may not be the same as the Provider-issued
 		/// OpenId URL.
+		/// This points to the page with the &lt;LINK&gt; tag with openid.server in it.
 		/// </summary>
 		public Uri IdentityUrl { get; private set; }
 		/// <summary>

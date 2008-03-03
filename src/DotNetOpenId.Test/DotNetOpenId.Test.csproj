@@ -44,6 +44,7 @@
     <Compile Include="Consumer\OpenIdTextBoxTest.cs" />
     <Compile Include="DictionarySerializerTestSuite.cs" />
     <Compile Include="DiffieHellmanTestSuite.cs" />
+    <Compile Include="EndToEndTesting.cs" />
     <Compile Include="TestSupportSanityTest.cs" />
     <Compile Include="Hosting\AspNetHost.cs" />
     <Compile Include="Hosting\HttpHost.cs" />
