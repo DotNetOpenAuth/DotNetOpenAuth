@@ -60,10 +60,12 @@
     <Compile Include="Consumer\Token.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="HmacSha1Association.cs" />
+    <Compile Include="HttpEncoding.cs" />
     <Compile Include="IAssociationStore.cs" />
     <Compile Include="ISessionState.cs" />
     <Compile Include="KeyValueFormEncoding.cs" />
     <Compile Include="OpenIdException.cs" />
+    <Compile Include="ProtocolMessages.cs" />
     <Compile Include="Provider\EncodableResponse.cs" />
     <Compile Include="Provider\Encoder.cs" />
     <Compile Include="Provider\FaultyRequest.cs" />

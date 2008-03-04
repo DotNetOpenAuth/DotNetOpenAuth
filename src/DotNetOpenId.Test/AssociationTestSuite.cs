@@ -32,31 +32,37 @@ namespace DotNetOpenId.Test
 			var dict = new Dictionary<string, string>();
 			dict.Add("a", "b");
 			dict.Add("c", "d");
+			var keys = new List<string>();
+			keys.Add("a");
+			keys.Add("c");
 
 			// sign once and verify that it's sane
-			byte[] signature1 = assoc1.Sign(dict);
+			byte[] signature1 = assoc1.Sign(dict, keys);
 			Assert.IsNotNull(signature1);
 			Assert.AreNotEqual(0, signature1.Length);
 
 			// sign again and make sure it's different
-			byte[] signature2 = assoc2.Sign(dict);
+			byte[] signature2 = assoc2.Sign(dict, keys);
 			Assert.IsNotNull(signature2);
 			Assert.AreNotEqual(0, signature2.Length);
 			Assert.IsFalse(Util.ArrayEquals(signature1, signature2));
 
 			// sign again with the same secret and make sure it's the same.
-			Assert.IsTrue(Util.ArrayEquals(signature1, assoc1.Sign(dict)));
+			Assert.IsTrue(Util.ArrayEquals(signature1, assoc1.Sign(dict, keys)));
 
 			// now add data and make sure signature changes
 			dict.Add("g", "h");
-			Assert.IsFalse(Util.ArrayEquals(signature1, assoc1.Sign(dict)));
+			keys.Add("g");
+			Assert.IsFalse(Util.ArrayEquals(signature1, assoc1.Sign(dict, keys)));
 
 			// now change existing data.
 			dict.Remove("g");
+			keys.Remove("g");
 			dict["c"] = "e";
-			Assert.IsFalse(Util.ArrayEquals(signature1, assoc1.Sign(dict)));
+			Assert.IsFalse(Util.ArrayEquals(signature1, assoc1.Sign(dict, keys)));
 			dict.Remove("c");
-			Assert.IsFalse(Util.ArrayEquals(signature1, assoc1.Sign(dict)));
+			keys.Remove("c");
+			Assert.IsFalse(Util.ArrayEquals(signature1, assoc1.Sign(dict, keys)));
 		}
 
 		[Test]

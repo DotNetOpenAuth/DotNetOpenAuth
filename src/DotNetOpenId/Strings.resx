@@ -150,6 +150,9 @@
   <data name="KeyAlreadyExists" xml:space="preserve">
     <value>The given key '{0}' already exists.</value>
   </data>
+  <data name="KeysListAndDictionaryDoNotMatch" xml:space="preserve">
+    <value>The list of keys do not match the provided dictionary.</value>
+  </data>
   <data name="MissingInternalQueryParameter" xml:space="preserve">
     <value>Query parameter '{0}' was missing from the query.</value>
   </data>

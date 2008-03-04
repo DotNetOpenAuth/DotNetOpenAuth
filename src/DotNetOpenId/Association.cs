@@ -79,21 +79,21 @@ namespace DotNetOpenId {
 		/// when looking up the value from <paramref name="data"/>.
 		/// </param>
 		/// <returns>The signature of the key-value pairs.</returns>
-		internal byte[] Sign(IDictionary<string, string> data, ICollection<string> keysToSign, string keyLookupPrefix) {
+		internal byte[] Sign(IDictionary<string, string> data, IList<string> keysToSign, string keyLookupPrefix) {
 			var nvc = new Dictionary<string, string>();
 
 			foreach (string field in keysToSign) {
 				nvc.Add(field, data[keyLookupPrefix + field]);
 			}
 
-			return Sign(nvc);
+			return Sign(nvc, keysToSign);
 		}
 		/// <summary>
 		/// Generates a signature from a given dictionary.
 		/// </summary>
 		/// <param name="data">The dictionary.  This dictionary will not be changed.</param>
 		/// <returns>The calculated signature of the data in the dictionary.</returns>
-		protected internal abstract byte[] Sign(IDictionary<string, string> data);
+		protected internal abstract byte[] Sign(IDictionary<string, string> data, IList<string> keyOrder);
 		/// <summary>
 		/// Rounds the given <see cref="DateTime"/> downward to the whole second.
 		/// </summary>

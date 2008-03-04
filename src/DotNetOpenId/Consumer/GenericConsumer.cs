@@ -105,18 +105,22 @@ namespace DotNetOpenId.Consumer
 		}
 
 		static IDictionary<string, string> makeKVPost(IDictionary<string, string> args, Uri serverUrl) {
-			byte[] body = ASCIIEncoding.ASCII.GetBytes(UriUtil.CreateQueryString(args));
+			byte[] body = ProtocolMessages.Http.GetBytes(args);
 
 			try {
 				FetchResponse resp = Fetcher.Request(serverUrl, body);
 				if ((int)resp.Code >= 200 && (int)resp.Code < 300) {
-					return KeyValueFormEncoding.GetDictionary(resp.Data);
+					return ProtocolMessages.KeyValueForm.GetDictionary(resp.Data);
 				} else {
 					if (TraceUtil.Switch.TraceError) {
 						Trace.TraceError("Bad request code returned from remote server: {0}.", resp.Code);
 					}
 					return null;
 				}
+			} catch (ArgumentException e) {
+				if (TraceUtil.Switch.TraceWarning)
+					Trace.TraceWarning("Failure decoding Key-Value Form response from provider.");
+				return null;
 			} catch (WebException e) {
 				Trace.TraceError("Failure while connecting to remote server: {0}.", e.Message);
 				return null;

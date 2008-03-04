@@ -11,7 +11,7 @@ namespace DotNetOpenId.Test {
 	public class KeyValueFormEncodingTests {
 
 		public static void KVDictTest(byte[] kvform, IDictionary<string, string> dict) {
-			var d = KeyValueFormEncoding.GetDictionary(kvform);
+			var d = ProtocolMessages.KeyValueForm.GetDictionary(kvform);
 
 			foreach (string key in dict.Keys) {
 				Assert.AreEqual(d[key], dict[key], d[key] + " and " + dict[key] + " do not match.");
@@ -69,14 +69,13 @@ namespace DotNetOpenId.Test {
 			KVDictTest(UTF8Encoding.UTF8.GetBytes("east:west\nnorth:south"), d10);
 		}
 
-		void illegal(string s, KeyValueFormEncoding.ConformanceLevel level) {
-			var bytes = Encoding.UTF8.GetBytes(s);
-			KeyValueFormEncoding.GetDictionary(bytes, 0, bytes.Length, level);
+		void illegal(string s, KeyValueFormConformanceLevel level) {
+			new KeyValueFormEncoding(level).GetDictionary(Encoding.UTF8.GetBytes(s));
 		}
 
 		[Test, ExpectedException(typeof(ArgumentException))]
 		public void NoValue() {
-			illegal("x\n", KeyValueFormEncoding.ConformanceLevel.OpenID11);
+			illegal("x\n", KeyValueFormConformanceLevel.OpenID11);
 		}
 
 		[Test, ExpectedException(typeof(ArgumentException))]
@@ -87,7 +86,7 @@ namespace DotNetOpenId.Test {
 
 		[Test, ExpectedException(typeof(ArgumentException))]
 		public void EmptyLine() {
-			illegal("x:b\n\n", KeyValueFormEncoding.ConformanceLevel.OpenID20);
+			illegal("x:b\n\n", KeyValueFormConformanceLevel.OpenID20);
 		}
 
 		[Test]
@@ -99,7 +98,7 @@ namespace DotNetOpenId.Test {
 
 		[Test, ExpectedException(typeof(ArgumentException))]
 		public void LastLineNotTerminated() {
-			illegal("x:y\na:b", KeyValueFormEncoding.ConformanceLevel.OpenID11);
+			illegal("x:y\na:b", KeyValueFormConformanceLevel.OpenID11);
 		}
 
 		[Test]

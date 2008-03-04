@@ -29,7 +29,7 @@ namespace DotNetOpenId.Provider
                 case EncodingType.ResponseBody:
                     HttpStatusCode code = (response is Exception) ? 
                         HttpStatusCode.BadRequest : HttpStatusCode.OK;
-                    wr = new Response(code, null, KeyValueFormEncoding.GetBytes(response.EncodedFields));
+                    wr = new Response(code, null, ProtocolMessages.KeyValueForm.GetBytes(response.EncodedFields));
                     break;
                 case EncodingType.RedirectBrowserUrl:
                     Debug.Assert(response.RedirectUrl != null);

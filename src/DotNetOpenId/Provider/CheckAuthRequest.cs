@@ -13,18 +13,19 @@ namespace DotNetOpenId.Provider {
 	internal class CheckAuthRequest : AssociatedRequest {
 		string signature;
 		IDictionary<string, string> signedFields;
+		IList<string> signedKeyOrder;
 		string invalidate_handle;
 
 		public CheckAuthRequest(OpenIdProvider server, NameValueCollection query)
 			: base(server) {
 			AssociationHandle = getRequiredField(query, QueryStringArgs.openid.assoc_handle);
 			signature = getRequiredField(query, QueryStringArgs.openid.sig);
-			string[] signedList = getRequiredField(query, QueryStringArgs.openid.signed).Split(',');
+			signedKeyOrder = getRequiredField(query, QueryStringArgs.openid.signed).Split(',');
 			invalidate_handle = query[QueryStringArgs.openid.invalidate_handle];
 
 			signedFields = new Dictionary<string, string>();
 
-			foreach (string key in signedList) {
+			foreach (string key in signedKeyOrder) {
 				string value = (key == QueryStringArgs.openidnp.mode) ?
 					QueryStringArgs.Modes.id_res : getRequiredField(query, QueryStringArgs.openid.Prefix + key);
 				signedFields.Add(key, value);
@@ -51,7 +52,7 @@ namespace DotNetOpenId.Provider {
 				Trace.TraceInformation("Start processing Response for CheckAuthRequest");
 			}
 
-			bool is_valid = Server.Signatory.Verify(AssociationHandle, signature, signedFields);
+			bool is_valid = Server.Signatory.Verify(AssociationHandle, signature, signedFields, signedKeyOrder);
 
 			Server.Signatory.Invalidate(AssociationHandle, AssociationConsumerType.Dumb);
 

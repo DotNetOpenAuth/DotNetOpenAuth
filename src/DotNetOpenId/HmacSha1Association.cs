@@ -13,9 +13,9 @@ namespace DotNetOpenId {
 			get { return QueryStringArgs.HMAC_SHA1; }
 		}
 
-		protected internal override byte[] Sign(IDictionary<string, string> data) {
+		protected internal override byte[] Sign(IDictionary<string, string> data, IList<string> keyOrder) {
 			using (var hmac = new HMACSHA1(SecretKey)) {
-				return hmac.ComputeHash(KeyValueFormEncoding.GetBytes(data));
+				return hmac.ComputeHash(ProtocolMessages.KeyValueForm.GetBytes(data, keyOrder));
 			}
 		}
 	}

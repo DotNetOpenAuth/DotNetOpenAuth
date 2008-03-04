@@ -70,7 +70,7 @@ namespace DotNetOpenId.Provider {
 			}
 		}
 
-		public virtual bool Verify(string assoc_handle, string signature, IDictionary<string, string> signed_pairs) {
+		public virtual bool Verify(string assoc_handle, string signature, IDictionary<string, string> signed_pairs, IList<string> signedKeyOrder) {
 			if (TraceUtil.Switch.TraceInfo) {
 				Trace.TraceInformation("Start signature verification for assoc_handle = '{0}'", assoc_handle);
 			}
@@ -98,7 +98,7 @@ namespace DotNetOpenId.Provider {
 				Trace.TraceInformation("Matching association found ");
 			}
 
-			expected_sig = CryptUtil.ToBase64String(assoc.Sign(signed_pairs));
+			expected_sig = CryptUtil.ToBase64String(assoc.Sign(signed_pairs, signedKeyOrder));
 
 			if (TraceUtil.Switch.TraceInfo) {
 				Trace.TraceInformation("Expected signature is '{0}'. Actual signature is '{1}' ", expected_sig, signature);

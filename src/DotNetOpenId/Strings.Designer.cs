@@ -160,6 +160,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The list of keys do not match the provided dictionary..
+        /// </summary>
+        internal static string KeysListAndDictionaryDoNotMatch {
+            get {
+                return ResourceManager.GetString("KeysListAndDictionaryDoNotMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Query parameter &apos;{0}&apos; was missing from the query..
         /// </summary>
         internal static string MissingInternalQueryParameter {
