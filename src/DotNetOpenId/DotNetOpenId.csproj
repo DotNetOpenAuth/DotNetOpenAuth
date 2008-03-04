@@ -58,11 +58,11 @@
     <Compile Include="Consumer\Nonce.cs" />
     <Compile Include="Consumer\OpenIdConsumer.cs" />
     <Compile Include="Consumer\Token.cs" />
-    <Compile Include="DictionarySerializer.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="HmacSha1Association.cs" />
     <Compile Include="IAssociationStore.cs" />
     <Compile Include="ISessionState.cs" />
+    <Compile Include="KeyValueFormEncoding.cs" />
     <Compile Include="OpenIdException.cs" />
     <Compile Include="Provider\EncodableResponse.cs" />
     <Compile Include="Provider\Encoder.cs" />

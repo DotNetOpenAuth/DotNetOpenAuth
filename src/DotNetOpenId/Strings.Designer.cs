@@ -106,6 +106,24 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot encode &apos;{0}&apos; because it contains an illegal character for Key-Value Form encoding..
+        /// </summary>
+        internal static string InvalidCharacterInKeyValueFormInput {
+            get {
+                return ResourceManager.GetString("InvalidCharacterInKeyValueFormInput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot decode Key-Value Form because a line was found without a &apos;{0}&apos; character..
+        /// </summary>
+        internal static string InvalidKeyValueFormCharacterMissing {
+            get {
+                return ResourceManager.GetString("InvalidKeyValueFormCharacterMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to OpenID parameter &apos;{0}&apos; had unexpected value &apos;{1}&apos;..
         /// </summary>
         internal static string InvalidOpenIdQueryParameterValue {

@@ -110,7 +110,7 @@ namespace DotNetOpenId.Consumer
 			try {
 				FetchResponse resp = Fetcher.Request(serverUrl, body);
 				if ((int)resp.Code >= 200 && (int)resp.Code < 300) {
-					return DictionarySerializer.Deserialize(resp.Data, resp.Length);
+					return KeyValueFormEncoding.GetDictionary(resp.Data);
 				} else {
 					if (TraceUtil.Switch.TraceError) {
 						Trace.TraceError("Bad request code returned from remote server: {0}.", resp.Code);

@@ -15,7 +15,7 @@ namespace DotNetOpenId {
 
 		protected internal override byte[] Sign(IDictionary<string, string> data) {
 			using (var hmac = new HMACSHA1(SecretKey)) {
-				return hmac.ComputeHash(DictionarySerializer.Serialize(data));
+				return hmac.ComputeHash(KeyValueFormEncoding.GetBytes(data));
 			}
 		}
 	}

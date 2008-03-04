@@ -132,6 +132,12 @@
   <data name="IAssociationStoreRequiredWhenNoHttpContextAvailable" xml:space="preserve">
     <value>No current HttpContext was detected, so an IAssociationStore must be explicitly provided. Call the Server constructor overload that takes an IAssociationStore.</value>
   </data>
+  <data name="InvalidCharacterInKeyValueFormInput" xml:space="preserve">
+    <value>Cannot encode '{0}' because it contains an illegal character for Key-Value Form encoding.</value>
+  </data>
+  <data name="InvalidKeyValueFormCharacterMissing" xml:space="preserve">
+    <value>Cannot decode Key-Value Form because a line was found without a '{0}' character.</value>
+  </data>
   <data name="InvalidOpenIdQueryParameterValue" xml:space="preserve">
     <value>OpenID parameter '{0}' had unexpected value '{1}'.</value>
   </data>
