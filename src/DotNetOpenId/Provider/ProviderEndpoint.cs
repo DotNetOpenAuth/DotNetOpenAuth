@@ -34,6 +34,7 @@ namespace DotNetOpenId.Provider {
 				}
 				if (openIDServer.Request.IsResponseReady) {
 					openIDServer.Request.Response.Send();
+					Page.Response.End();
 					PendingAuthenticationRequest = null;
 				}
 			}
