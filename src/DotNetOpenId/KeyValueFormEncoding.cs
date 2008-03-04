@@ -39,9 +39,16 @@ namespace DotNetOpenId {
 
 					sw.WriteLine("{0}:{1}", key, value);
 				}
-			}
+				sw.Flush();
 
-			return ms.ToArray();
+				// Remove the text encoding preamble
+				int preambleLength = textEncoding.GetPreamble().Length;
+				byte[] bytes = new byte[ms.Length - preambleLength];
+				ms.Seek(preambleLength, SeekOrigin.Begin);
+				ms.Read(bytes, 0, (int)ms.Length - preambleLength);
+
+				return bytes;
+			}
 		}
 
 		public static IDictionary<string, string> GetDictionary(byte[] buffer) {
