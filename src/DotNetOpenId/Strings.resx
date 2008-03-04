@@ -135,6 +135,9 @@
   <data name="InvalidOpenIdQueryParameterValue" xml:space="preserve">
     <value>OpenID parameter '{0}' had unexpected value '{1}'.</value>
   </data>
+  <data name="InvalidScheme" xml:space="preserve">
+    <value>The scheme must be http or https but was '{0}'.</value>
+  </data>
   <data name="InvalidSignature" xml:space="preserve">
     <value>The signature verification failed.</value>
   </data>

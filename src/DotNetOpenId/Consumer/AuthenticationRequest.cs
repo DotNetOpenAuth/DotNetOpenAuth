@@ -59,7 +59,7 @@ namespace DotNetOpenId.Consumer {
 					QueryStringArgs.Modes.checkid_immediate : QueryStringArgs.Modes.checkid_setup);
 				qsArgs.Add(QueryStringArgs.openid.identity, this.endpoint.ServerId.AbsoluteUri); //TODO: breaks the Law of Demeter
 				qsArgs.Add(QueryStringArgs.openid.return_to, returnToBuilder.ToString());
-				qsArgs.Add(QueryStringArgs.openid.trust_root, TrustRootUrl.Url);
+				qsArgs.Add(QueryStringArgs.openid.trust_root, TrustRootUrl.ToString());
 
 				if (this.assoc != null)
 					qsArgs.Add(QueryStringArgs.openid.assoc_handle, this.assoc.Handle); // !!!!

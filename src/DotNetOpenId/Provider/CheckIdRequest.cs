@@ -123,7 +123,7 @@ namespace DotNetOpenId.Provider {
 			}
 			AssociationHandle = query[QueryStringArgs.openid.assoc_handle];
 
-			if (!TrustRoot.IsUrlWithinTrustRoot(ReturnTo)) {
+			if (!TrustRoot.Contains(ReturnTo)) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 					Strings.ReturnToNotUnderTrustRoot, ReturnTo.AbsoluteUri, TrustRoot), query);
 			}
@@ -199,7 +199,7 @@ namespace DotNetOpenId.Provider {
 				q.Add(QueryStringArgs.openid.return_to, ReturnTo.AbsoluteUri);
 
 				if (TrustRoot != null)
-					q.Add(QueryStringArgs.openid.trust_root, TrustRoot.Url);
+					q.Add(QueryStringArgs.openid.trust_root, TrustRoot.ToString());
 
 				if (this.AssociationHandle != null)
 					q.Add(QueryStringArgs.openid.assoc_handle, this.AssociationHandle);

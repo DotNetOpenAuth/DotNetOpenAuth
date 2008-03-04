@@ -40,7 +40,9 @@ public class TestSupport {
 
 	[TearDown]
 	public void TearDown() {
-		Host.CloseHttp();
-		Host = null;
+		if (Host != null) {
+			Host.CloseHttp();
+			Host = null;
+		}
 	}
 }

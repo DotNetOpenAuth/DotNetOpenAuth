@@ -90,39 +90,39 @@ namespace DotNetOpenId.Test {
 			 */
 
 			// Schemes must match
-			Assert.IsFalse(new TrustRoot("https://www.my.com/").IsUrlWithinTrustRoot("http://www.my.com/"));
-			Assert.IsFalse(new TrustRoot("http://www.my.com/").IsUrlWithinTrustRoot("https://www.my.com/"));
+			Assert.IsFalse(new TrustRoot("https://www.my.com/").Contains("http://www.my.com/"));
+			Assert.IsFalse(new TrustRoot("http://www.my.com/").Contains("https://www.my.com/"));
 
 			// Ports must match
-			Assert.IsTrue(new TrustRoot("http://www.my.com/").IsUrlWithinTrustRoot("http://www.my.com:80/boo"));
-			Assert.IsTrue(new TrustRoot("http://www.my.com:80/").IsUrlWithinTrustRoot("http://www.my.com/boo"));
-			Assert.IsFalse(new TrustRoot("http://www.my.com:79/").IsUrlWithinTrustRoot("http://www.my.com/boo"));
-			Assert.IsFalse(new TrustRoot("https://www.my.com/").IsUrlWithinTrustRoot("http://www.my.com:79/boo"));
+			Assert.IsTrue(new TrustRoot("http://www.my.com/").Contains("http://www.my.com:80/boo"));
+			Assert.IsTrue(new TrustRoot("http://www.my.com:80/").Contains("http://www.my.com/boo"));
+			Assert.IsFalse(new TrustRoot("http://www.my.com:79/").Contains("http://www.my.com/boo"));
+			Assert.IsFalse(new TrustRoot("https://www.my.com/").Contains("http://www.my.com:79/boo"));
 
 			// Path must be (at or) below trust root
-			Assert.IsTrue(new TrustRoot("http://www.my.com/").IsUrlWithinTrustRoot("http://www.my.com/"));
-			Assert.IsTrue(new TrustRoot("http://www.my.com/").IsUrlWithinTrustRoot("http://www.my.com/boo"));
-			Assert.IsTrue(new TrustRoot("http://www.my.com/p/").IsUrlWithinTrustRoot("http://www.my.com/p/l"));
-			Assert.IsTrue(new TrustRoot("http://www.my.com/bah").IsUrlWithinTrustRoot("http://www.my.com/bah/bah"));
-			Assert.IsTrue(new TrustRoot("http://www.my.com/bah").IsUrlWithinTrustRoot("http://www.my.com/bah/bah"));
-			Assert.IsTrue(new TrustRoot("http://www.my.com/bah.html").IsUrlWithinTrustRoot("http://www.my.com/bah.html/bah"));
-			Assert.IsFalse(new TrustRoot("http://www.my.com/bah").IsUrlWithinTrustRoot("http://www.my.com/bahbah"));
-			Assert.IsTrue(new TrustRoot("http://www.my.com/bah").IsUrlWithinTrustRoot("http://www.my.com/bah?q=a"));
-			Assert.IsTrue(new TrustRoot("http://www.my.com/bah?q=a").IsUrlWithinTrustRoot("http://www.my.com/bah?q=a"));
-			Assert.IsTrue(new TrustRoot("http://www.my.com/bah?a=b&c=d").IsUrlWithinTrustRoot("http://www.my.com/bah?a=b&c=d&e=f"));
-			Assert.IsFalse(new TrustRoot("http://www.my.com/bah?a=b&c=d").IsUrlWithinTrustRoot("http://www.my.com/bah?a=b"));
+			Assert.IsTrue(new TrustRoot("http://www.my.com/").Contains("http://www.my.com/"));
+			Assert.IsTrue(new TrustRoot("http://www.my.com/").Contains("http://www.my.com/boo"));
+			Assert.IsTrue(new TrustRoot("http://www.my.com/p/").Contains("http://www.my.com/p/l"));
+			Assert.IsTrue(new TrustRoot("http://www.my.com/bah").Contains("http://www.my.com/bah/bah"));
+			Assert.IsTrue(new TrustRoot("http://www.my.com/bah").Contains("http://www.my.com/bah/bah"));
+			Assert.IsTrue(new TrustRoot("http://www.my.com/bah.html").Contains("http://www.my.com/bah.html/bah"));
+			Assert.IsFalse(new TrustRoot("http://www.my.com/bah").Contains("http://www.my.com/bahbah"));
+			Assert.IsTrue(new TrustRoot("http://www.my.com/bah").Contains("http://www.my.com/bah?q=a"));
+			Assert.IsTrue(new TrustRoot("http://www.my.com/bah?q=a").Contains("http://www.my.com/bah?q=a"));
+			Assert.IsTrue(new TrustRoot("http://www.my.com/bah?a=b&c=d").Contains("http://www.my.com/bah?a=b&c=d&e=f"));
+			Assert.IsFalse(new TrustRoot("http://www.my.com/bah?a=b&c=d").Contains("http://www.my.com/bah?a=b"));
 
 			// Domains MUST match
-			Assert.IsFalse(new TrustRoot("http://www.my.com/").IsUrlWithinTrustRoot("http://yours.com/"));
-			Assert.IsFalse(new TrustRoot("http://www.my.com/").IsUrlWithinTrustRoot("http://www.yours.com/"));
-			Assert.IsFalse(new TrustRoot("http://www.my.com/").IsUrlWithinTrustRoot("http://q.www.my.com/"));
-			Assert.IsFalse(new TrustRoot("http://www.my.com/").IsUrlWithinTrustRoot("http://wwww.my.com/"));
-			Assert.IsFalse(new TrustRoot("http://www.my.com/").IsUrlWithinTrustRoot("http://www.my.com.uk/"));
-			Assert.IsFalse(new TrustRoot("http://www.my.com/").IsUrlWithinTrustRoot("http://www.my.comm/"));
+			Assert.IsFalse(new TrustRoot("http://www.my.com/").Contains("http://yours.com/"));
+			Assert.IsFalse(new TrustRoot("http://www.my.com/").Contains("http://www.yours.com/"));
+			Assert.IsFalse(new TrustRoot("http://www.my.com/").Contains("http://q.www.my.com/"));
+			Assert.IsFalse(new TrustRoot("http://www.my.com/").Contains("http://wwww.my.com/"));
+			Assert.IsFalse(new TrustRoot("http://www.my.com/").Contains("http://www.my.com.uk/"));
+			Assert.IsFalse(new TrustRoot("http://www.my.com/").Contains("http://www.my.comm/"));
 
 			// Allow for wildcards
-			Assert.IsTrue(new TrustRoot("http://*.www.my.com/").IsUrlWithinTrustRoot("http://bah.www.my.com/"));
-			Assert.IsTrue(new TrustRoot("http://*.www.my.com/").IsUrlWithinTrustRoot("http://bah.www.my.com/boo"));
+			Assert.IsTrue(new TrustRoot("http://*.www.my.com/").Contains("http://bah.www.my.com/"));
+			Assert.IsTrue(new TrustRoot("http://*.www.my.com/").Contains("http://bah.www.my.com/boo"));
 			// These are tested against by the constructor test, as these are invalid wildcard positions.
 			//Assert.IsFalse(new TrustRoot("http://*www.my.com/").ValidateUrl("http://bah.www.my.com/"));
 			//Assert.IsFalse(new TrustRoot("http://*www.my.com/").ValidateUrl("http://wwww.my.com/"));
@@ -131,8 +131,8 @@ namespace DotNetOpenId.Test {
 			// Host names should be case INSENSITIVE, but paths should probably be case SENSITIVE,
 			// because in some systems they are case sensitive and to ignore this would open
 			// security holes.
-			Assert.IsTrue(new TrustRoot("http://www.my.com/").IsUrlWithinTrustRoot("http://WWW.MY.COM/"));
-			Assert.IsFalse(new TrustRoot("http://www.my.com/abc").IsUrlWithinTrustRoot("http://www.my.com/ABC"));
+			Assert.IsTrue(new TrustRoot("http://www.my.com/").Contains("http://WWW.MY.COM/"));
+			Assert.IsFalse(new TrustRoot("http://www.my.com/abc").Contains("http://www.my.com/ABC"));
 		}
 
 		[Test]
@@ -140,11 +140,13 @@ namespace DotNetOpenId.Test {
 			TrustRoot tr1a = new TrustRoot("http://www.yahoo.com");
 			TrustRoot tr1b = new TrustRoot("http://www.yahoo.com");
 			TrustRoot tr2 = new TrustRoot("http://www.yahoo.com/b");
+			TrustRoot tr3 = new TrustRoot("http://*.www.yahoo.com");
 
 			Assert.AreEqual(tr1a, tr1b);
 			Assert.AreNotEqual(tr1a, tr2);
 			Assert.AreNotEqual(tr1a, null);
-			Assert.AreNotEqual(tr1a, tr1a.Url, "Although the URLs are equal, different object types shouldn't be equal.");
+			Assert.AreNotEqual(tr1a, tr1a.ToString(), "Although the URLs are equal, different object types shouldn't be equal.");
+			Assert.AreNotEqual(tr3, tr1a, "Wildcard difference ignored by Equals");
 		}
 	}
 }

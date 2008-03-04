@@ -115,6 +115,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The scheme must be http or https but was &apos;{0}&apos;..
+        /// </summary>
+        internal static string InvalidScheme {
+            get {
+                return ResourceManager.GetString("InvalidScheme", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The signature verification failed..
         /// </summary>
         internal static string InvalidSignature {

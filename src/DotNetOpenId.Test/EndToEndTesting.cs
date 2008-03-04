@@ -30,7 +30,7 @@ namespace DotNetOpenId.Test {
 			// Test properties and defaults
 			Assert.AreEqual(AuthenticationRequestMode.Setup, request.Mode);
 			Assert.AreEqual(returnTo, request.ReturnToUrl);
-			Assert.AreEqual(trustRoot.Url, request.TrustRootUrl.Url);
+			Assert.AreEqual(trustRoot, request.TrustRootUrl);
 
 			request.Mode = requestMode;
 
@@ -38,7 +38,7 @@ namespace DotNetOpenId.Test {
 			Assert.IsNotNull(request.RedirectToProviderUrl);
 			var consumerToProviderQuery = HttpUtility.ParseQueryString(request.RedirectToProviderUrl.Query);
 			Assert.IsTrue(consumerToProviderQuery[QueryStringArgs.openid.return_to].StartsWith(returnTo.AbsoluteUri, StringComparison.Ordinal));
-			Assert.AreEqual(trustRoot.Url, consumerToProviderQuery[QueryStringArgs.openid.trust_root]);
+			Assert.AreEqual(trustRoot.ToString(), consumerToProviderQuery[QueryStringArgs.openid.trust_root]);
 
 			HttpWebRequest providerRequest = (HttpWebRequest)WebRequest.Create(request.RedirectToProviderUrl);
 			providerRequest.AllowAutoRedirect = false;

@@ -112,7 +112,7 @@ namespace DotNetOpenId.Consumer {
 			// Throw an exception now if the trustroot and the return_to URLs don't match
 			// as required by the provider.  We could wait for the provider to test this and
 			// fail, but this will be faster and give us a better error message.
-			if (!trustRootUrl.IsUrlWithinTrustRoot(returnToUrl))
+			if (!trustRootUrl.Contains(returnToUrl))
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 					Strings.ReturnToNotUnderTrustRoot, returnToUrl, trustRootUrl));
 

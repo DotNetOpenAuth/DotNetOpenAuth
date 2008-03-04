@@ -10,7 +10,46 @@ namespace DotNetOpenId {
 	/// <!-- http://openid.net/specs/openid-authentication-1_1.html#anchor16 -->
 	/// <!-- http://openid.net/specs/openid-authentication-1_1.html#anchor21 -->
 	public class TrustRoot {
-		static Regex _tr_regex = new Regex(@"^(?<scheme>https?)://((?<wildcard>\*)|(?<wildcard>\*\.)?(?<host>[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*)\.?)(:(?<port>[0-9]+))?(?<path>(/.*|$))");
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase")]
+		public TrustRoot(string trustRootUrl) {
+			DomainWildcard = Regex.IsMatch(trustRootUrl, wildcardDetectionPattern);
+			uri = new Uri(Regex.Replace(trustRootUrl, wildcardDetectionPattern, m => m.Groups[1].Value));
+			if (!uri.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) &&
+				!uri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
+				throw new UriFormatException(string.Format(CultureInfo.CurrentUICulture,
+					Strings.InvalidScheme, uri.Scheme));
+		}
+
+		Uri uri;
+		const string wildcardDetectionPattern = @"^(\w+://)\*\.";
+
+		/// <summary>
+		/// Whether a '*.' prefix to the hostname is used in the trustroot to allow
+		/// subdomains or hosts to be added to the URL.
+		/// </summary>
+		public bool DomainWildcard { get; private set; }
+		/// <summary>
+		/// Gets the host component of this instance.
+		/// </summary>
+		public string Host { get { return uri.Host; } }
+		/// <summary>
+		/// Gets the scheme name for this URI.
+		/// </summary>
+		public string Scheme { get { return uri.Scheme; } }
+		/// <summary>
+		/// Gets the port number of this URI.
+		/// </summary>
+		public int Port { get { return uri.Port; } }
+		/// <summary>
+		/// Gets the absolute path of the URI.
+		/// </summary>
+		public string AbsolutePath { get { return uri.AbsolutePath; } }
+		/// <summary>
+		/// Gets the System.Uri.AbsolutePath and System.Uri.Query properties separated
+		/// by a question mark (?).
+		/// </summary>
+		public string PathAndQuery { get { return uri.PathAndQuery; } }
+
 		static string[] _top_level_domains =    {"com", "edu", "gov", "int", "mil", "net", "org", "biz", "info", "name", "museum", "coop", "aero", "ac", "ad", "ae",
 			"af", "ag", "ai", "al", "am", "an", "ao", "aq", "ar", "as", "at", "au", "aw", "az", "ba", "bb", "bd", "be", "bf", "bg", "bh", "bi", "bj",
 			"bm", "bn", "bo", "br", "bs", "bt", "bv", "bw", "by", "bz", "ca", "cc", "cd", "cf", "cg", "ch", "ci", "ck", "cl", "cm", "cn", "co", "cr",
@@ -23,41 +62,6 @@ namespace DotNetOpenId {
 			"sb", "sc", "sd", "se", "sg", "sh", "si", "sj", "sk", "sl", "sm", "sn", "so", "sr", "st", "sv", "sy", "sz", "tc", "td", "tf", "tg", "th",
 			"tj", "tk", "tm", "tn", "to", "tp", "tr", "tt", "tv", "tw", "tz", "ua", "ug", "uk", "um", "us", "uy", "uz", "va", "vc", "ve", "vg", "vi",
 			"vn", "vu", "wf", "ws", "ye", "yt", "yu", "za", "zm", "zw"};
-		string _scheme;
-		/// <summary>
-		/// Whether a '*.' prefix to the hostname is used in the trustroot to allow
-		/// subdomains or hosts to be added to the URL.
-		/// </summary>
-		bool hasDomainWildcard;
-		string _host;
-		int _port;
-		string _path;
-		string _original;
-
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase")]
-		public TrustRoot(string trustRootUrl) {
-			_original = trustRootUrl;
-			Match mo = _tr_regex.Match(trustRootUrl);
-
-			if (mo.Success) {
-				_scheme = mo.Groups["scheme"].Value;
-				hasDomainWildcard = !string.IsNullOrEmpty(mo.Groups["wildcard"].Value);
-				_host = mo.Groups["host"].Value.ToLowerInvariant();
-
-				Group port_group = mo.Groups["port"];
-				if (port_group.Success)
-					_port = Convert.ToInt32(port_group.Value, CultureInfo.InvariantCulture);
-				else 
-					_port = (_scheme == "https") ? 443 : 80;
-
-				_path = mo.Groups["path"].Value;
-				if (string.IsNullOrEmpty(_path))
-					_path = "/";
-			} else {
-				throw new UriFormatException(string.Format(CultureInfo.CurrentUICulture,
-					"'{0}' is not a valid OpenID trustroot.", trustRootUrl));
-			}
-		}
 
 		/// <summary>
 		/// This method checks the to see if a trust root represents a reasonable (sane) set of URLs.
@@ -70,10 +74,10 @@ namespace DotNetOpenId {
 		/// </remarks>
 		internal bool IsSane {
 			get {
-				if (_host == "localhost")
+				if (Host.Equals("localhost", StringComparison.OrdinalIgnoreCase))
 					return true;
 
-				string[] host_parts = _host.Split('.');
+				string[] host_parts = Host.Split('.');
 
 				string tld = host_parts[host_parts.Length - 1];
 
@@ -95,17 +99,13 @@ namespace DotNetOpenId {
 			}
 		}
 
-		public string Url { get { return _original; } }
-
 		/// <summary>
 		/// Validates a URL against this trust root.
 		/// </summary>
 		/// <param name="url">A string specifying URL to check.</param>
 		/// <returns>Whether the given URL is within this trust root.</returns>
-		internal bool IsUrlWithinTrustRoot(string url) {
-			Uri uri = new Uri(url);
-
-			return IsUrlWithinTrustRoot(uri);
+		internal bool Contains(string url) {
+			return Contains(new Uri(url));
 		}
 
 		/// <summary>
@@ -113,20 +113,20 @@ namespace DotNetOpenId {
 		/// </summary>
 		/// <param name="url">The URL to check.</param>
 		/// <returns>Whether the given URL is within this trust root.</returns>
-		internal bool IsUrlWithinTrustRoot(Uri url) {
-			if (url.Scheme != _scheme)
+		internal bool Contains(Uri url) {
+			if (url.Scheme != Scheme)
 				return false;
 
-			if (url.Port != _port)
+			if (url.Port != Port)
 				return false;
 
-			if (!hasDomainWildcard) {
-				if (url.Host != _host) {
+			if (!DomainWildcard) {
+				if (url.Host != Host) {
 					return false;
 				}
 			} else {
-				Debug.Assert(!string.IsNullOrEmpty(_host), "The host part of the Regex should evaluate to at least one char for successful parsed trust roots.");
-				string[] host_parts = _host.Split('.');
+				Debug.Assert(!string.IsNullOrEmpty(Host), "The host part of the Regex should evaluate to at least one char for successful parsed trust roots.");
+				string[] host_parts = Host.Split('.');
 				string[] url_parts = url.Host.Split('.');
 
 				// If the domain contain the wildcard has more parts than the URL to match against,
@@ -152,30 +152,30 @@ namespace DotNetOpenId {
 			}
 
 			// If path matches or is specified to root ...
-			if (_path.Equals(url.PathAndQuery, StringComparison.Ordinal)
-				|| _path.Equals("/", StringComparison.Ordinal))
+			if (PathAndQuery.Equals(url.PathAndQuery, StringComparison.Ordinal)
+				|| PathAndQuery.Equals("/", StringComparison.Ordinal))
 				return true;
 
 			// If trust root has a longer path, the return URL must be invalid.
-			if (_path.Length > url.PathAndQuery.Length)
+			if (PathAndQuery.Length > url.PathAndQuery.Length)
 				return false;
 
 			// The following code assures that http://example.com/directory isn't below http://example.com/dir,
 			// but makes sure http://example.com/dir/ectory is below http://example.com/dir
-			int path_len = _path.Length;
+			int path_len = PathAndQuery.Length;
 			string url_prefix = url.PathAndQuery.Substring(0, path_len);
 
-			if (_path != url_prefix)
+			if (PathAndQuery != url_prefix)
 				return false;
 
 			// If trust root includes a query string ...
-			if (_path.Contains("?")) {
+			if (PathAndQuery.Contains("?")) {
 				// ... make sure return URL begins with a new argument
 				return url.PathAndQuery[path_len] == '&';
 			}
 
 			// Or make sure a query string is introduced or a path below trust root
-			return _path.EndsWith("/", StringComparison.Ordinal)
+			return PathAndQuery.EndsWith("/", StringComparison.Ordinal)
 				|| url.PathAndQuery[path_len] == '?'
 				|| url.PathAndQuery[path_len] == '/';
 		}
@@ -183,10 +183,16 @@ namespace DotNetOpenId {
 		public override bool Equals(object obj) {
 			TrustRoot other = obj as TrustRoot;
 			if (other == null) return false;
-			return Url == other.Url;
+			return uri.Equals(other.uri) && DomainWildcard == other.DomainWildcard;
 		}
 		public override string ToString() {
-			return _original;
+			if (DomainWildcard) {
+				UriBuilder builder = new UriBuilder(uri);
+				builder.Host = "*." + builder.Host;
+				return builder.ToString();
+			} else {
+				return uri.ToString();
+			}
 		}
 	}
 }
