@@ -12,7 +12,7 @@ namespace DotNetOpenId.Consumer {
 		Setup
 	}
 
-	public class AuthenticationRequest {
+	class AuthenticationRequest : IAuthenticationRequest {
 		Association assoc;
 		ServiceEndpoint endpoint;
 

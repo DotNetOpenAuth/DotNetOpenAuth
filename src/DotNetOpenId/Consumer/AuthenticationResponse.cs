@@ -26,7 +26,7 @@ namespace DotNetOpenId.Consumer {
 		Authenticated,
 	}
 
-	public class AuthenticationResponse {
+	class AuthenticationResponse : IAuthenticationResponse {
 		internal AuthenticationResponse(AuthenticationStatus status, Uri identityUrl, IDictionary<string, string> query) {
 			Status = status;
 			IdentityUrl = identityUrl;

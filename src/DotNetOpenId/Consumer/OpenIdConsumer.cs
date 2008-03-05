@@ -64,7 +64,7 @@ namespace DotNetOpenId.Consumer {
 			}
 		}
 
-		public AuthenticationRequest CreateRequest(Uri openIdUrl, TrustRoot trustRootUrl, Uri returnToUrl) {
+		public IAuthenticationRequest CreateRequest(Uri openIdUrl, TrustRoot trustRootUrl, Uri returnToUrl) {
 			ServiceEndpoint endpoint = manager.GetNextService(openIdUrl);
 			if (endpoint == null)
 				throw new OpenIdException("No openid endpoint found");
@@ -74,7 +74,7 @@ namespace DotNetOpenId.Consumer {
 		/// <remarks>
 		/// This method requires an ASP.NET HttpContext.
 		/// </remarks>
-		public AuthenticationRequest CreateRequest(Uri openIdUrl, TrustRoot trustRootUrl) {
+		public IAuthenticationRequest CreateRequest(Uri openIdUrl, TrustRoot trustRootUrl) {
 			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
 
 			// Build the return_to URL
@@ -97,7 +97,7 @@ namespace DotNetOpenId.Consumer {
 		/// <remarks>
 		/// This method requires an ASP.NET HttpContext.
 		/// </remarks>
-		public AuthenticationRequest CreateRequest(Uri openIdUrl) {
+		public IAuthenticationRequest CreateRequest(Uri openIdUrl) {
 			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
 
 			// Build the trustroot URL
@@ -139,7 +139,7 @@ namespace DotNetOpenId.Consumer {
 		/// Gets the result of a user agent's visit to his OpenId provider in an
 		/// authentication attempt.  Null if no response is available.
 		/// </summary>
-		public AuthenticationResponse Response {
+		public IAuthenticationResponse Response {
 			get {
 				if (response == null && isAuthenticationResponseReady) {
 					response = consumer.Complete(query);

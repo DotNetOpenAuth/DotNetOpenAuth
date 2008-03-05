@@ -11,7 +11,7 @@ namespace DotNetOpenId.Provider
 	/// <summary>
 	/// Represents any OpenId-protocol request that may come to the provider.
 	/// </summary>
-	public abstract class Request {
+	abstract class Request : IRequest {
 		protected Request(OpenIdProvider server) {
 			Server = server;
 			Query = server.query;
@@ -110,6 +110,7 @@ namespace DotNetOpenId.Provider
 				return response;
 			}
 		}
+		IResponse IRequest.Response { get { return this.Response; } }
 
 		/// <summary>
 		/// Adds extra query parameters to the response directed at the OpenID consumer.

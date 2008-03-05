@@ -448,7 +448,7 @@ namespace DotNetOpenId.Consumer
 
 				// Initiate openid request
 				// Note: we must use trustRoot.ToString() because trustRoot.Uri throws when wildcards are present.
-				AuthenticationRequest request = consumer.CreateRequest(
+				IAuthenticationRequest request = consumer.CreateRequest(
 					UriUtil.NormalizeUri(Text), new TrustRoot(trustRoot.ToString()));
 				if (EnableRequestProfile) addProfileArgs(request);
 				request.RedirectToProvider();
@@ -459,7 +459,7 @@ namespace DotNetOpenId.Consumer
 			}
 		}
 
-		void addProfileArgs(AuthenticationRequest request)
+		void addProfileArgs(IAuthenticationRequest request)
 		{
 			new ProfileRequestFields() {
 				Nickname = RequestNickname,
@@ -522,7 +522,7 @@ namespace DotNetOpenId.Consumer
 			/// Constructs an object with information on a completed authentication attempt
 			/// (whether that attempt was successful or not).
 			/// </summary>
-			internal OpenIdEventArgs(AuthenticationResponse response)
+			internal OpenIdEventArgs(IAuthenticationResponse response)
 			{
 				Response = response;
 				IdentityUrl = response.IdentityUrl;
@@ -537,7 +537,7 @@ namespace DotNetOpenId.Consumer
 			/// <summary>
 			/// Gets the details of the OpenId authentication response.
 			/// </summary>
-			public AuthenticationResponse Response { get; private set; }
+			public IAuthenticationResponse Response { get; private set; }
 			/// <summary>
 			/// Gets the simple registration (sreg) extension fields given
 			/// by the provider, if any.
@@ -549,7 +549,7 @@ namespace DotNetOpenId.Consumer
 		/// </summary>
 		[Description("Fired upon completion of a successful login.")]
 		public event EventHandler<OpenIdEventArgs> LoggedIn;
-		protected virtual void OnLoggedIn(AuthenticationResponse response)
+		protected virtual void OnLoggedIn(IAuthenticationResponse response)
 		{
 			var loggedIn = LoggedIn;
 			OpenIdEventArgs args = new OpenIdEventArgs(response);
@@ -593,7 +593,7 @@ namespace DotNetOpenId.Consumer
 		/// </summary>
 		[Description("Fired when an authentication attempt is canceled at the OpenID Provider.")]
 		public event EventHandler<OpenIdEventArgs> Canceled;
-		protected virtual void OnCanceled(AuthenticationResponse response)
+		protected virtual void OnCanceled(IAuthenticationResponse response)
 		{
 			var canceled = Canceled;
 			if (canceled != null)
@@ -605,7 +605,7 @@ namespace DotNetOpenId.Consumer
 		/// </summary>
 		[Description("Fired when an authentication attempt fails at the OpenID Provider.")]
 		public event EventHandler<OpenIdEventArgs> Failed;
-		protected virtual void OnFailed(AuthenticationResponse response) {
+		protected virtual void OnFailed(IAuthenticationResponse response) {
 			var failed = Failed;
 			if (failed != null)
 				failed(this, new OpenIdEventArgs(response));

@@ -42,8 +42,8 @@ namespace DotNetOpenId.Provider {
 
 		bool requestProcessed;
 		Request request;
-		public Request Request {
-			get{
+		public IRequest Request {
+			get {
 				if (!requestProcessed) {
 					request = decodeRequest();
 					requestProcessed = true;
@@ -51,13 +51,14 @@ namespace DotNetOpenId.Provider {
 				return request;
 			}
 		}
+
 		/// <summary>
 		/// Decodes an incoming web request in to a <see cref="Request"/>.
 		/// </summary>
 		/// <param name="query">The query parameters as a dictionary with each key mapping to one value. </param>
 		/// <returns>A Request object, or null if the given query doesn't represent an OpenId request.</returns>
 		Request decodeRequest() {
-			if (!Request.IsOpenIdRequest(query)) {
+			if (!Provider.Request.IsOpenIdRequest(query)) {
 				return null;
 			}
 
@@ -65,7 +66,7 @@ namespace DotNetOpenId.Provider {
 				Trace.TraceInformation("Start message decoding");
 			}
 
-			Request request = Request.CreateRequest(this, query);
+			Request request = Provider.Request.CreateRequest(this, query);
 
 			if (TraceUtil.Switch.TraceInfo) {
 				Trace.TraceInformation("End message decoding. Successfully decoded message as new {0}.", request.GetType().Name);

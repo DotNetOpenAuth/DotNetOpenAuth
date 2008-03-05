@@ -67,7 +67,7 @@ namespace DotNetOpenId.RegistrationExtension
 		}
 		public string TimeZone { get; set; }
 
-		public void AddToResponse(CheckIdRequest authenticationRequest) {
+		public void AddToResponse(Provider.IAuthenticationRequest authenticationRequest) {
 			if (authenticationRequest == null) throw new ArgumentNullException("authenticationRequest");
 			Dictionary<string, string> fields = new Dictionary<string, string>();
 			if (BirthDate != null) {
@@ -104,7 +104,7 @@ namespace DotNetOpenId.RegistrationExtension
 			authenticationRequest.AddExtensionArguments(QueryStringArgs.openidnp.sreg.Prefix.TrimEnd('.'),
 				fields);
 		}
-		public static ProfileFieldValues ReadFromResponse(AuthenticationResponse response) {
+		public static ProfileFieldValues ReadFromResponse(IAuthenticationResponse response) {
 			var sreg = response.GetExtensionArguments(QueryStringArgs.openidnp.sreg.Prefix.TrimEnd('.'));
 			string nickname, email, fullName, dob, genderString, postalCode, country, language, timeZone;
 			DateTime? birthDate = null;

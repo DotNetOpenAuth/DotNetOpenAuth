@@ -14,7 +14,7 @@ namespace DotNetOpenId.Provider {
 	/// <remarks>
 	/// This class handles requests for openid modes checkid_immediate and checkid_setup.
 	/// </remarks>
-	public class CheckIdRequest : AssociatedRequest {
+	class CheckIdRequest : AssociatedRequest, IAuthenticationRequest {
 		bool? isAuthenticated;
 		/// <summary>
 		/// Gets/sets whether the provider has determined that the 
@@ -37,7 +37,7 @@ namespace DotNetOpenId.Provider {
 		/// </remarks>
 		public Uri ServerUrl {
 			get { return serverUrl; }
-			set {
+			private set {
 				serverUrl = value;
 				InvalidateResponse();
 			}

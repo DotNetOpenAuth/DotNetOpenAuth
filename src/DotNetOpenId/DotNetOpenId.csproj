@@ -53,6 +53,8 @@
     <Compile Include="Consumer\ConsumerApplicationMemoryStore.cs" />
     <Compile Include="Consumer\Fetcher.cs" />
     <Compile Include="Consumer\FetchResponse.cs" />
+    <Compile Include="Consumer\IAuthenticationRequest.cs" />
+    <Compile Include="Consumer\IAuthenticationResponse.cs" />
     <Compile Include="Consumer\IConsumerApplicationStore.cs" />
     <Compile Include="Consumer\INonceStore.cs" />
     <Compile Include="Consumer\Nonce.cs" />
@@ -69,7 +71,10 @@
     <Compile Include="Provider\EncodableResponse.cs" />
     <Compile Include="Provider\Encoder.cs" />
     <Compile Include="Provider\FaultyRequest.cs" />
+    <Compile Include="Provider\IAuthenticationRequest.cs" />
     <Compile Include="Provider\IdentityEndpoint.cs" />
+    <Compile Include="Provider\IRequest.cs" />
+    <Compile Include="Provider\IResponse.cs" />
     <Compile Include="Provider\OpenIdProvider.cs" />
     <Compile Include="Provider\ProviderSession.cs" />
     <Compile Include="Provider\Request.cs" />

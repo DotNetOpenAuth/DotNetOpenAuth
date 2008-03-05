@@ -12,7 +12,7 @@ namespace DotNetOpenId.Provider {
 	public class ProviderEndpoint : WebControl {
 
 		const string pendingAuthenticationRequestKey = "pendingAuthenticationRequestKey";
-		public static CheckIdRequest PendingAuthenticationRequest {
+		public static IAuthenticationRequest PendingAuthenticationRequest {
 			get { return HttpContext.Current.Session[pendingAuthenticationRequestKey] as CheckIdRequest; }
 			set { HttpContext.Current.Session[pendingAuthenticationRequestKey] = value; }
 		}
@@ -41,14 +41,14 @@ namespace DotNetOpenId.Provider {
 		}
 
 		public class AuthenticationChallengeEventArgs : EventArgs {
-			internal AuthenticationChallengeEventArgs(CheckIdRequest request) {
+			internal AuthenticationChallengeEventArgs(IAuthenticationRequest request) {
 				Request = request;
 			}
-			public CheckIdRequest Request { get; set; }
+			public IAuthenticationRequest Request { get; set; }
 		}
 
 		public event EventHandler<AuthenticationChallengeEventArgs> AuthenticationChallenge;
-		protected virtual void OnAuthenticationChallenge(CheckIdRequest request) {
+		protected virtual void OnAuthenticationChallenge(IAuthenticationRequest request) {
 			var authenticationChallenge = AuthenticationChallenge;
 			if (authenticationChallenge != null)
 				authenticationChallenge(this, new AuthenticationChallengeEventArgs(request));

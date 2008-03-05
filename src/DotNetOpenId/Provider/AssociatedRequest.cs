@@ -5,7 +5,7 @@ using System.Globalization;
 
 namespace DotNetOpenId.Provider {
 
-	public abstract class AssociatedRequest : Request {
+	abstract class AssociatedRequest : Request {
 		protected AssociatedRequest(OpenIdProvider server) : base(server) { }
 
 		internal string AssociationHandle { get; set; }

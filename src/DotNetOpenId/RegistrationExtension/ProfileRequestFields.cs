@@ -102,7 +102,7 @@ namespace DotNetOpenId.RegistrationExtension {
 		/// Reads the sreg extension information on an authentication request to the provider
 		/// and returns information on what profile fields the consumer is requesting/requiring.
 		/// </summary>
-		public static ProfileRequestFields ReadFromRequest(Request request) {
+		public static ProfileRequestFields ReadFromRequest(IRequest request) {
 			ProfileRequestFields fields = new ProfileRequestFields();
 			var args = request.GetExtensionArguments(QueryStringArgs.openidnp.sreg.Prefix.TrimEnd('.'));
 
@@ -124,7 +124,7 @@ namespace DotNetOpenId.RegistrationExtension {
 
 			return fields;
 		}
-		public void AddToRequest(AuthenticationRequest request) {
+		public void AddToRequest(Consumer.IAuthenticationRequest request) {
 			var fields = new Dictionary<string, string>();
 			if (PolicyUrl != null)
 				fields.Add(QueryStringArgs.openidnp.sregnp.policy_url, PolicyUrl.AbsoluteUri);
