@@ -17,11 +17,11 @@ namespace DotNetOpenId.Consumer {
 		ServiceEndpoint endpoint;
 
 		internal AuthenticationRequest(string token, Association assoc, ServiceEndpoint endpoint,
-			TrustRoot trustRootUrl, Uri returnToUrl) {
+			TrustRoot trustRoot, Uri returnToUrl) {
 			this.token = token;
 			this.assoc = assoc;
 			this.endpoint = endpoint;
-			TrustRootUrl = trustRootUrl;
+			TrustRoot = trustRoot;
 			ReturnToUrl = returnToUrl;
 
 			Mode = AuthenticationRequestMode.Setup;
@@ -42,7 +42,7 @@ namespace DotNetOpenId.Consumer {
 		protected IDictionary<string, string> ReturnToArgs { get; private set; }
 
 		public AuthenticationRequestMode Mode { get; set; }
-		public TrustRoot TrustRootUrl { get; private set; }
+		public TrustRoot TrustRoot { get; private set; }
 		public Uri ReturnToUrl { get; private set; }
 		/// <summary>
 		/// Gets the URL the user agent should be redirected to to begin the 
@@ -59,7 +59,7 @@ namespace DotNetOpenId.Consumer {
 					QueryStringArgs.Modes.checkid_immediate : QueryStringArgs.Modes.checkid_setup);
 				qsArgs.Add(QueryStringArgs.openid.identity, this.endpoint.ServerId.AbsoluteUri); //TODO: breaks the Law of Demeter
 				qsArgs.Add(QueryStringArgs.openid.return_to, returnToBuilder.ToString());
-				qsArgs.Add(QueryStringArgs.openid.trust_root, TrustRootUrl.ToString());
+				qsArgs.Add(QueryStringArgs.openid.trust_root, TrustRoot.ToString());
 
 				if (this.assoc != null)
 					qsArgs.Add(QueryStringArgs.openid.assoc_handle, this.assoc.Handle); // !!!!

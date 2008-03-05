@@ -52,6 +52,6 @@ namespace DotNetOpenId.Consumer {
 		/// </summary>
 		Uri RedirectToProviderUrl { get; }
 		Uri ReturnToUrl { get; }
-		TrustRoot TrustRootUrl { get; }
+		TrustRoot TrustRoot { get; }
 	}
 }

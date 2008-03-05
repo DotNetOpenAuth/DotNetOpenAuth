@@ -30,7 +30,7 @@ namespace DotNetOpenId.Test {
 			// Test properties and defaults
 			Assert.AreEqual(AuthenticationRequestMode.Setup, request.Mode);
 			Assert.AreEqual(returnTo, request.ReturnToUrl);
-			Assert.AreEqual(trustRoot, request.TrustRootUrl);
+			Assert.AreEqual(trustRoot, request.TrustRoot);
 
 			request.Mode = requestMode;
 

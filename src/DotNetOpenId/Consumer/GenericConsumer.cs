@@ -28,14 +28,14 @@ namespace DotNetOpenId.Consumer
 		}
 
 		public AuthenticationRequest Begin(ServiceEndpoint service_endpoint,
-			TrustRoot trustRootUrl, Uri returnToUrl)
+			TrustRoot trustRoot, Uri returnToUrl)
 		{
 			string token = new Token(service_endpoint).Serialize(store);
 
 			Association assoc = this.getAssociation(service_endpoint.ServerUrl);
 
 			AuthenticationRequest request = new AuthenticationRequest(token, assoc, service_endpoint,
-				trustRootUrl, returnToUrl);
+				trustRoot, returnToUrl);
 
 			return request;
 		}
