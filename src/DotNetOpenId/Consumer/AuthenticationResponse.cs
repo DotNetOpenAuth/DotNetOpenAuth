@@ -121,10 +121,6 @@ namespace DotNetOpenId.Consumer {
 
 			string assoc_handle = getRequiredField(query, QueryStringArgs.openid.assoc_handle);
 
-			// TODO: I'm pretty sure this check doesn't accomplish anything. (ALA)
-			if (token.ServerId.AbsoluteUri != token.ServerId.ToString())
-				throw new OpenIdException("Provider ID (delegate) mismatch", token.IdentityUrl);
-
 			Association assoc = store.GetAssociation(token.ServerUrl, assoc_handle);
 			AuthenticationResponse response;
 
