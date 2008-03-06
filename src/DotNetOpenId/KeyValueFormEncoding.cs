@@ -22,7 +22,7 @@ namespace DotNetOpenId {
 		static readonly char[] illegalKeyCharacters = { '\n', ':' };
 		static readonly char[] illegalValueCharacters = { '\n' };
 		const string newLineCharacters = "\n";
-		static readonly Encoding textEncoding = Encoding.UTF8;
+		static readonly Encoding textEncoding = new UTF8Encoding(false);
 
 		public KeyValueFormEncoding() {
 			ConformanceLevel = KeyValueFormConformanceLevel.Loose;
@@ -79,16 +79,8 @@ namespace DotNetOpenId {
 					sw.Write(value);
 					sw.WriteLine();
 				}
-				sw.Flush();
-			
-				// Remove the text encoding preamble
-				int preambleLength = textEncoding.GetPreamble().Length;
-				byte[] bytes = new byte[ms.Length - preambleLength];
-				ms.Seek(preambleLength, SeekOrigin.Begin);
-				ms.Read(bytes, 0, (int)ms.Length - preambleLength);
-
-				return bytes;
 			}
+			return ms.ToArray();
 		}
 
 		public IDictionary<string, string> GetDictionary(byte[] buffer) {
