@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
+using System.Collections.Generic;
 
 namespace Janrain.OpenId.Server
 {
@@ -12,17 +13,19 @@ namespace Janrain.OpenId.Server
 
         private string _sig;
         private NameValueCollection _signed;
+        private IList<string> _signed_order;
         private string _invalidate_handle;
 
         #endregion
 
         #region Constructor(s)
 
-        public CheckAuthRequest(string assoc_handle, string sig, NameValueCollection signed, string invalidate_handle)
+        public CheckAuthRequest(string assoc_handle, string sig, NameValueCollection signed, IList<string> signed_order, string invalidate_handle)
         {
             this.AssocHandle = assoc_handle;
             _sig = sig;
             _signed = signed;
+            _signed_order = signed_order;
             _invalidate_handle = invalidate_handle;
         }
 
@@ -72,7 +75,7 @@ namespace Janrain.OpenId.Server
             }
             #endregion
 
-            bool is_valid = signatory.Verify(this.AssocHandle, _sig, _signed);
+			bool is_valid = signatory.Verify(this.AssocHandle, _sig, _signed, _signed_order);
 
             signatory.Invalidate(this.AssocHandle, true);
 

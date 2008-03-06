@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Security.Cryptography;
 using Janrain.OpenId.Store;
+using System.Collections.Generic;
 
 namespace Janrain.OpenId.Server
 {
@@ -100,7 +101,7 @@ namespace Janrain.OpenId.Server
 
         }
 
-        public virtual bool Verify(string assoc_handle, string sig, NameValueCollection signed_pairs)
+        public virtual bool Verify(string assoc_handle, string sig, NameValueCollection signed_pairs, IList<string> signedKeyOrder)
         {
             #region  Trace
             if (TraceUtil.Switch.TraceInfo)
@@ -146,7 +147,7 @@ namespace Janrain.OpenId.Server
             }
             #endregion                    
 
-            expected_sig = CryptUtil.ToBase64String(assoc.Sign(signed_pairs));
+            expected_sig = CryptUtil.ToBase64String(assoc.Sign(signed_pairs, signedKeyOrder));
 
             #region  Trace
             if (TraceUtil.Switch.TraceInfo)

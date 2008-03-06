@@ -70,7 +70,7 @@ namespace Janrain.OpenId
         }
 
         public abstract string SignDict(string[] fields, NameValueCollection data, string prefix);
-        public abstract byte[] Sign(NameValueCollection l);
+        public abstract byte[] Sign(NameValueCollection l, IList<string> keyOrder);
 
         #endregion
 
@@ -223,12 +223,12 @@ Association.ExpiresIn = '{6}' ";
                 l.Add(field, data[(prefix + field)]);
             }
 
-            return CryptUtil.ToBase64String(Sign(l));
+            return CryptUtil.ToBase64String(Sign(l, fields));
         }
 
-        public override byte[] Sign(NameValueCollection l)
+        public override byte[] Sign(NameValueCollection l, IList<string> keyOrder)
         {
-            byte[] data = KVUtil.SeqToKV(l, false);
+            byte[] data = KVUtil.SeqToKV(l, keyOrder, false);
 
             HMACSHA1 hmac = new HMACSHA1(this.Secret);
 

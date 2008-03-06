@@ -26,11 +26,13 @@ namespace Janrain.OpenId
                 throw new ArgumentException(message);
         }
 
-        public static byte[] SeqToKV(NameValueCollection seq, bool strict)
+        public static byte[] SeqToKV(NameValueCollection seq, IList<string> keyOrder, bool strict)
         {
             MemoryStream ms = new MemoryStream();
+            if (keyOrder == null) throw new ArgumentNullException("keyOrder");
+            if (seq.Count != keyOrder.Count) throw new ArgumentException(Strings.KeysListAndDictionaryDoNotMatch);
 
-            foreach (string key in seq.Keys)
+            foreach (string key in keyOrder)
             {
                 string val = seq[key];
                 if (key.IndexOf('\n') >= 0)
@@ -49,7 +51,13 @@ namespace Janrain.OpenId
             return ms.ToArray();
         }
 
-        public static byte[] DictToKV(IDictionary dict)
+        public static byte[] DictToKV(IDictionary dict) {
+            string[] keyOrder = new string[dict.Count];
+            dict.Keys.CopyTo(keyOrder, 0);
+            return DictToKV(dict, keyOrder);
+        }
+
+        public static byte[] DictToKV(IDictionary dict, IList<string> keyOrder)
         {
             NameValueCollection data = new NameValueCollection(dict.Count);
 
@@ -58,7 +66,7 @@ namespace Janrain.OpenId
                 data.Add(pair.Key.ToString(), pair.Value.ToString());
             }
 
-            return SeqToKV(data, false);
+            return SeqToKV(data, keyOrder, false);
         }
 
         public static IDictionary KVToDict(byte[] data)
