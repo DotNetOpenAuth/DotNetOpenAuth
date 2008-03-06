@@ -68,7 +68,15 @@ namespace DotNetOpenId.Consumer {
 			ServiceEndpoint endpoint = manager.GetNextService(openIdUrl);
 			if (endpoint == null)
 				throw new OpenIdException("No openid endpoint found");
-			return prepareRequest(endpoint, trustRoot, returnToUrl);
+
+			// Throw an exception now if the trustroot and the return_to URLs don't match
+			// as required by the provider.  We could wait for the provider to test this and
+			// fail, but this will be faster and give us a better error message.
+			if (!trustRoot.Contains(returnToUrl))
+				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+					Strings.ReturnToNotUnderTrustRoot, returnToUrl, trustRoot));
+
+			return consumer.Begin(endpoint, trustRoot, returnToUrl);
 		}
 
 		/// <remarks>
@@ -105,18 +113,6 @@ namespace DotNetOpenId.Consumer {
 			trustRootUrl.Path = HttpContext.Current.Request.ApplicationPath;
 
 			return CreateRequest(openIdUrl, new TrustRoot(trustRootUrl.ToString()));
-		}
-
-		AuthenticationRequest prepareRequest(ServiceEndpoint endpoint,
-			TrustRoot trustRoot, Uri returnToUrl) {
-			// Throw an exception now if the trustroot and the return_to URLs don't match
-			// as required by the provider.  We could wait for the provider to test this and
-			// fail, but this will be faster and give us a better error message.
-			if (!trustRoot.Contains(returnToUrl))
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-					Strings.ReturnToNotUnderTrustRoot, returnToUrl, trustRoot));
-
-			return consumer.Begin(endpoint, trustRoot, returnToUrl);
 		}
 
 		/// <summary>

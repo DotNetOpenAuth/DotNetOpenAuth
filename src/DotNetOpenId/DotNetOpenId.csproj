@@ -48,9 +48,15 @@
     <Compile Include="Association.cs" />
     <Compile Include="AssociationMemoryStore.cs" />
     <Compile Include="Associations.cs" />
+    <Compile Include="Consumer\AssociateRequest.cs" />
+    <Compile Include="Consumer\AssociateResponse.cs" />
     <Compile Include="Consumer\AuthenticationRequest.cs" />
     <Compile Include="Consumer\AuthenticationResponse.cs" />
+    <Compile Include="Consumer\CheckAuthRequest.cs" />
+    <Compile Include="Consumer\CheckAuthResponse.cs" />
     <Compile Include="Consumer\ConsumerApplicationMemoryStore.cs" />
+    <Compile Include="Consumer\DirectRequest.cs" />
+    <Compile Include="Consumer\DirectResponse.cs" />
     <Compile Include="Consumer\Fetcher.cs" />
     <Compile Include="Consumer\FetchResponse.cs" />
     <Compile Include="Consumer\IAuthenticationRequest.cs" />
