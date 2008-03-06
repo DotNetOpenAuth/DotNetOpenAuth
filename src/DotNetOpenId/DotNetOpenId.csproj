@@ -87,7 +87,6 @@
     <Compile Include="Provider\Response.cs" />
     <Compile Include="Provider\ProviderEndpoint.cs" />
     <Compile Include="RegistrationExtension\Gender.cs" />
-    <Compile Include="Consumer\GenericConsumer.cs" />
     <Compile Include="Provider\AssociatedRequest.cs" />
     <Compile Include="RegistrationExtension\ProfileFieldValues.cs" />
     <Compile Include="RegistrationExtension\ProfileRequestFields.cs" />

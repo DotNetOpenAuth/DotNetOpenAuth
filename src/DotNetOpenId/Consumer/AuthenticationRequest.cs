@@ -16,7 +16,7 @@ namespace DotNetOpenId.Consumer {
 		Association assoc;
 		ServiceEndpoint endpoint;
 
-		internal AuthenticationRequest(string token, Association assoc, ServiceEndpoint endpoint,
+		AuthenticationRequest(string token, Association assoc, ServiceEndpoint endpoint,
 			TrustRoot trustRoot, Uri returnToUrl) {
 			this.token = token;
 			this.assoc = assoc;
@@ -28,6 +28,32 @@ namespace DotNetOpenId.Consumer {
 			ExtraArgs = new Dictionary<string, string>();
 			ReturnToArgs = new Dictionary<string, string>();
 			AddCallbackArguments(DotNetOpenId.Consumer.Token.TokenKey, token);
+		}
+		internal static AuthenticationRequest Create(ServiceEndpoint serviceEndpoint, TrustRoot trustRoot, Uri returnToUrl, IConsumerApplicationStore store) {
+			// Throw an exception now if the trustroot and the return_to URLs don't match
+			// as required by the provider.  We could wait for the provider to test this and
+			// fail, but this will be faster and give us a better error message.
+			if (!trustRoot.Contains(returnToUrl))
+				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+					Strings.ReturnToNotUnderTrustRoot, returnToUrl, trustRoot));
+
+			return new AuthenticationRequest(
+				new Token(serviceEndpoint).Serialize(store),
+				getAssociation(serviceEndpoint.ServerUrl, store), serviceEndpoint,
+				trustRoot, returnToUrl);
+		}
+		static Association getAssociation(Uri serverUrl, IConsumerApplicationStore store) {
+			Association assoc = store.GetAssociation(serverUrl);
+
+			if (assoc == null || !assoc.HasUsefulLifeRemaining) {
+				var req = AssociateRequest.Create(serverUrl);
+				if (req.Response != null) {
+					assoc = req.Response.Association;
+					store.StoreAssociation(serverUrl, assoc);
+				}
+			}
+
+			return assoc;
 		}
 
 		string token { get; set; }

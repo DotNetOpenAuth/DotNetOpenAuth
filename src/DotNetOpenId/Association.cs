@@ -15,6 +15,13 @@ namespace DotNetOpenId {
 			Issued = cutToSecond(issued);
 		}
 
+		static TimeSpan minimumUsefulAssociationLifetime {
+			get { return Consumer.OpenIdConsumer.MaximumUserAgentAuthenticationTime; }
+		}
+		internal bool HasUsefulLifeRemaining {
+			get { return timeTillExpiration >= minimumUsefulAssociationLifetime; }
+		}
+
 		/// <summary>
 		/// Represents January 1, 1970 12 AM.
 		/// </summary>
@@ -53,11 +60,18 @@ namespace DotNetOpenId {
 		}
 
 		/// <summary>
+		/// Gets the TimeSpan till this association expires.
+		/// </summary>
+		TimeSpan timeTillExpiration {
+			get { return Expires - DateTime.UtcNow; }
+		}
+
+		/// <summary>
 		/// The number of seconds until this <see cref="Association"/> expires.
 		/// Never negative (counter runs to zero).
 		/// </summary>
 		protected internal long SecondsTillExpiration {
-			get { return Math.Max(0, (long)(Expires - DateTime.UtcNow).TotalSeconds); }
+			get { return Math.Max(0, (long)timeTillExpiration.TotalSeconds); }
 		}
 
 		/// <summary>

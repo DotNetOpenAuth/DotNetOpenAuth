@@ -12,7 +12,7 @@ namespace DotNetOpenId.Consumer {
 	/// Provides the programmatic facilities to act as an OpenId consumer.
 	/// </summary>
 	public class OpenIdConsumer {
-		GenericConsumer consumer;
+		IConsumerApplicationStore store;
 		ServiceEndpointManager manager;
 		IDictionary<string, string> query;
 		
@@ -57,8 +57,8 @@ namespace DotNetOpenId.Consumer {
 			if (query == null) throw new ArgumentNullException("query");
 			if (store == null) throw new ArgumentNullException("store");
 			this.query = query;
+			this.store = store;
 			manager = new ServiceEndpointManager(null);
-			consumer = new GenericConsumer(store);
 			if (store != null) {
 				store.ClearExpiredAssociations(); // every so often we should do this.
 			}
@@ -69,14 +69,7 @@ namespace DotNetOpenId.Consumer {
 			if (endpoint == null)
 				throw new OpenIdException("No openid endpoint found");
 
-			// Throw an exception now if the trustroot and the return_to URLs don't match
-			// as required by the provider.  We could wait for the provider to test this and
-			// fail, but this will be faster and give us a better error message.
-			if (!trustRoot.Contains(returnToUrl))
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-					Strings.ReturnToNotUnderTrustRoot, returnToUrl, trustRoot));
-
-			return consumer.Begin(endpoint, trustRoot, returnToUrl);
+			return AuthenticationRequest.Create(endpoint, trustRoot, returnToUrl, store);
 		}
 
 		/// <remarks>
@@ -138,7 +131,7 @@ namespace DotNetOpenId.Consumer {
 		public IAuthenticationResponse Response {
 			get {
 				if (response == null && isAuthenticationResponseReady) {
-					response = consumer.Complete(query);
+					response = AuthenticationResponse.Parse(query, store);
 					manager.Cleanup(response.IdentityUrl);
 				}
 				return response;
