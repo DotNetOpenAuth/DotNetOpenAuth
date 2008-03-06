@@ -40,19 +40,21 @@ namespace DotNetOpenId.Consumer {
 		/// <param name="query">The name/value pairs that came in on the QueryString of the web request.</param>
 		/// <param name="store">
 		/// The application-level store where associations with other OpenId providers can be
-		/// preserved for optimized authentication.
-		/// If null, 'dumb' mode will always be used.
+		/// preserved for optimized authentication and information about nonces can be stored.
+		/// In a multi-server web farm environment, this store MUST be shared across
+		/// all servers.
 		/// </param>
+		/// <remarks>
+		/// The IConsumerApplicationStore must be shared across an entire web farm 
+		/// because of the design of how nonces are stored/retrieved.  Even if
+		/// a given visitor is guaranteed to have affinity toward one server,
+		/// replay attacks from another host may be directed at another server,
+		/// which must therefore share the nonce information in the application
+		/// state store in order to stop the intruder.
+		/// </remarks>
 		public OpenIdConsumer(NameValueCollection query, IConsumerApplicationStore store)
 			: this(Util.NameValueCollectionToDictionary(query), store) {
 		}
-		/// <summary> Constructs an OpenId consumer that uses a given IAssociationStore.</summary>
-		/// <param name="query">The name/value pairs that came in on the QueryString of the web request.</param>
-		/// <param name="store">
-		/// The application-level store where associations with other OpenId providers can be
-		/// preserved for optimized authentication.
-		/// If null, 'dumb' mode will always be used, and replay attack cannot be protected against.
-		/// </param>
 		OpenIdConsumer(IDictionary<string, string> query, IConsumerApplicationStore store) {
 			if (query == null) throw new ArgumentNullException("query");
 			if (store == null) throw new ArgumentNullException("store");
