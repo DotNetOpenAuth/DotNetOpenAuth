@@ -7,12 +7,12 @@ using System.Collections.Generic;
 using DotNetOpenId.Provider;
 using System.Globalization;
 
-namespace DotNetOpenId.Consumer {
+namespace DotNetOpenId.RelyingParty {
 	/// <summary>
 	/// Provides the programmatic facilities to act as an OpenId consumer.
 	/// </summary>
-	public class OpenIdConsumer {
-		IConsumerApplicationStore store;
+	public class OpenIdRelyingParty {
+		IRelyingPartyApplicationStore store;
 		ServiceEndpointManager manager;
 		IDictionary<string, string> query;
 		
@@ -33,7 +33,7 @@ namespace DotNetOpenId.Consumer {
 		/// <remarks>
 		/// This method requires a current ASP.NET HttpContext.
 		/// </remarks>
-		public OpenIdConsumer() : this(Util.GetQueryFromContext(), httpApplicationStore) { }
+		public OpenIdRelyingParty() : this(Util.GetQueryFromContext(), httpApplicationStore) { }
 		/// <summary>
 		/// Constructs an OpenId consumer that uses a given querystring and IAssociationStore.
 		/// </summary>
@@ -45,17 +45,17 @@ namespace DotNetOpenId.Consumer {
 		/// all servers.
 		/// </param>
 		/// <remarks>
-		/// The IConsumerApplicationStore must be shared across an entire web farm 
+		/// The IRelyingPartyApplicationStore must be shared across an entire web farm 
 		/// because of the design of how nonces are stored/retrieved.  Even if
 		/// a given visitor is guaranteed to have affinity toward one server,
 		/// replay attacks from another host may be directed at another server,
 		/// which must therefore share the nonce information in the application
 		/// state store in order to stop the intruder.
 		/// </remarks>
-		public OpenIdConsumer(NameValueCollection query, IConsumerApplicationStore store)
+		public OpenIdRelyingParty(NameValueCollection query, IRelyingPartyApplicationStore store)
 			: this(Util.NameValueCollectionToDictionary(query), store) {
 		}
-		OpenIdConsumer(IDictionary<string, string> query, IConsumerApplicationStore store) {
+		OpenIdRelyingParty(IDictionary<string, string> query, IRelyingPartyApplicationStore store) {
 			if (query == null) throw new ArgumentNullException("query");
 			if (store == null) throw new ArgumentNullException("store");
 			this.query = query;
@@ -140,17 +140,17 @@ namespace DotNetOpenId.Consumer {
 			}
 		}
 
-		const string associationStoreKey = "DotNetOpenId.Consumer.Consumer.AssociationStore";
-		static IConsumerApplicationStore httpApplicationStore {
+		const string associationStoreKey = "DotNetOpenId.RelyingParty.RelyingParty.AssociationStore";
+		static IRelyingPartyApplicationStore httpApplicationStore {
 			get {
 				HttpContext context = HttpContext.Current;
 				if (context == null)
 					throw new InvalidOperationException(Strings.IAssociationStoreRequiredWhenNoHttpContextAvailable);
-				var store = (IConsumerApplicationStore)context.Application[associationStoreKey];
+				var store = (IRelyingPartyApplicationStore)context.Application[associationStoreKey];
 				if (store == null) {
 					context.Application.Lock();
 					try {
-						if ((store = (IConsumerApplicationStore)context.Application[associationStoreKey]) == null) {
+						if ((store = (IRelyingPartyApplicationStore)context.Application[associationStoreKey]) == null) {
 							context.Application[associationStoreKey] = store = new ConsumerApplicationMemoryStore();
 						}
 					} finally {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DotNetOpenId.Consumer {
+namespace DotNetOpenId.RelyingParty {
 	public interface IAuthenticationResponse {
 		/// <summary>
 		/// Gets the key/value pairs of a provider's response for a given OpenID extension.

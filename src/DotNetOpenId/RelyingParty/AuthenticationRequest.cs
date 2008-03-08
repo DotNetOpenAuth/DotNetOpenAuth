@@ -6,7 +6,7 @@ using System.Collections.Specialized;
 using System.Globalization;
 using System.Web;
 
-namespace DotNetOpenId.Consumer {
+namespace DotNetOpenId.RelyingParty {
 	/// <summary>
 	/// Indicates the mode the Provider should use while authenticating the end user.
 	/// </summary>
@@ -40,9 +40,9 @@ namespace DotNetOpenId.Consumer {
 			Mode = AuthenticationRequestMode.Setup;
 			ExtraArgs = new Dictionary<string, string>();
 			ReturnToArgs = new Dictionary<string, string>();
-			AddCallbackArguments(DotNetOpenId.Consumer.Token.TokenKey, token);
+			AddCallbackArguments(DotNetOpenId.RelyingParty.Token.TokenKey, token);
 		}
-		internal static AuthenticationRequest Create(ServiceEndpoint serviceEndpoint, Realm trustRoot, Uri returnToUrl, IConsumerApplicationStore store) {
+		internal static AuthenticationRequest Create(ServiceEndpoint serviceEndpoint, Realm trustRoot, Uri returnToUrl, IRelyingPartyApplicationStore store) {
 			// Throw an exception now if the trustroot and the return_to URLs don't match
 			// as required by the provider.  We could wait for the provider to test this and
 			// fail, but this will be faster and give us a better error message.
@@ -55,7 +55,7 @@ namespace DotNetOpenId.Consumer {
 				getAssociation(serviceEndpoint.ServerUrl, store), serviceEndpoint,
 				trustRoot, returnToUrl);
 		}
-		static Association getAssociation(Uri serverUrl, IConsumerApplicationStore store) {
+		static Association getAssociation(Uri serverUrl, IRelyingPartyApplicationStore store) {
 			Association assoc = store.GetAssociation(serverUrl);
 
 			if (assoc == null || !assoc.HasUsefulLifeRemaining) {

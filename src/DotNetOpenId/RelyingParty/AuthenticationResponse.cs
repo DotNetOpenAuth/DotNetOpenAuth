@@ -1,4 +1,4 @@
-namespace DotNetOpenId.Consumer {
+namespace DotNetOpenId.RelyingParty {
 	using System;
 	using System.Collections;
 	using System.Collections.Specialized;
@@ -108,7 +108,7 @@ namespace DotNetOpenId.Consumer {
 			return null;
 		}
 
-		internal static AuthenticationResponse Parse(IDictionary<string, string> query, IConsumerApplicationStore store) {
+		internal static AuthenticationResponse Parse(IDictionary<string, string> query, IRelyingPartyApplicationStore store) {
 			string mode;
 			if (!query.TryGetValue(QueryStringArgs.openid.mode, out mode))
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
@@ -136,7 +136,7 @@ namespace DotNetOpenId.Consumer {
 			}
 		}
 
-		static AuthenticationResponse parseIdResResponse(IDictionary<string, string> query, Token token, IConsumerApplicationStore store) {
+		static AuthenticationResponse parseIdResResponse(IDictionary<string, string> query, Token token, IRelyingPartyApplicationStore store) {
 			string user_setup_url;
 			if (query.TryGetValue(QueryStringArgs.openid.user_setup_url, out user_setup_url))
 				return new AuthenticationResponse(AuthenticationStatus.SetupRequired, token.IdentityUrl, query);
@@ -200,7 +200,7 @@ namespace DotNetOpenId.Consumer {
 		/// to the consumer site with an authenticated status.
 		/// </summary>
 		/// <returns>Whether the authentication is valid.</returns>
-		static bool verifyByProvider(IDictionary<string, string> query, Uri serverUrl, IConsumerApplicationStore store) {
+		static bool verifyByProvider(IDictionary<string, string> query, Uri serverUrl, IRelyingPartyApplicationStore store) {
 			var request = CheckAuthRequest.Create(serverUrl, query);
 			if (request.Response == null)
 				return false;

@@ -28,7 +28,7 @@ public partial class login {
     /// Auto-generated field.
     /// To modify move field declaration from designer file to code-behind file.
     /// </remarks>
-    protected global::DotNetOpenId.Consumer.OpenIdLogin OpenIdLogin1;
+    protected global::DotNetOpenId.RelyingParty.OpenIdLogin OpenIdLogin1;
     
     /// <summary>
     /// loginFailedLabel control.

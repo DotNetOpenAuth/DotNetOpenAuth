@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DotNetOpenId.Consumer {
+namespace DotNetOpenId.RelyingParty {
 	class CheckAuthRequest : DirectRequest {
 		CheckAuthRequest(Uri provider, IDictionary<string, string> args) :
 			base(provider, args) {

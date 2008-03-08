@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Security.Cryptography;
 
-namespace DotNetOpenId.Consumer {
-	internal class ConsumerApplicationMemoryStore : AssociationMemoryStore<Uri>, IConsumerApplicationStore {
-		#region IConsumerApplicationStore Members
+namespace DotNetOpenId.RelyingParty {
+	internal class ConsumerApplicationMemoryStore : AssociationMemoryStore<Uri>, IRelyingPartyApplicationStore {
+		#region IRelyingPartyApplicationStore Members
 
 		byte[] secretSigningKey;
 		public byte[] SecretSigningKey {

@@ -5,7 +5,7 @@ using Org.Mentalis.Security.Cryptography;
 using System.Globalization;
 using System.Diagnostics;
 
-namespace DotNetOpenId.Consumer {
+namespace DotNetOpenId.RelyingParty {
 	class AssociateResponse : DirectResponse {
 		public AssociateResponse(Uri provider, IDictionary<string, string> args, DiffieHellman dh)
 			: base(provider, args) {

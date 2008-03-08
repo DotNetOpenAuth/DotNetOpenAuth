@@ -10,7 +10,7 @@ using System.Net;
 namespace DotNetOpenId.Test.Hosting {
 	/// <summary>
 	/// Hosts a 'portable' version of the OpenIdProvider for testing itself and the
-	/// Consumer against it.
+	/// RelyingParty against it.
 	/// </summary>
 	class AspNetHost : MarshalByRefObject {
 		HttpHost httpHost;

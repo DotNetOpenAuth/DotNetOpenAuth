@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DotNetOpenId.Consumer {
+namespace DotNetOpenId.RelyingParty {
 	class DirectResponse {
 		protected DirectResponse(Uri provider, IDictionary<string, string> args) {
 			Provider = provider;

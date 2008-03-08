@@ -10,7 +10,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Web.UI.HtmlControls;
-using DotNetOpenId.Consumer;
+using DotNetOpenId.RelyingParty;
 using DotNetOpenId.RegistrationExtension;
 
 public partial class login : System.Web.UI.Page

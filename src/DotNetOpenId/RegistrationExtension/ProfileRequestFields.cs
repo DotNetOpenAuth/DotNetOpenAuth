@@ -4,7 +4,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Globalization;
 using DotNetOpenId.Provider;
-using DotNetOpenId.Consumer;
+using DotNetOpenId.RelyingParty;
 
 namespace DotNetOpenId.RegistrationExtension {
 	/// <summary>
@@ -124,7 +124,7 @@ namespace DotNetOpenId.RegistrationExtension {
 
 			return fields;
 		}
-		public void AddToRequest(Consumer.IAuthenticationRequest request) {
+		public void AddToRequest(RelyingParty.IAuthenticationRequest request) {
 			var fields = new Dictionary<string, string>();
 			if (PolicyUrl != null)
 				fields.Add(QueryStringArgs.openidnp.sregnp.policy_url, PolicyUrl.AbsoluteUri);

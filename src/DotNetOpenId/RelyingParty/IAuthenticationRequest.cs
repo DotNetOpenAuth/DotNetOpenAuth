@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DotNetOpenId.Consumer {
+namespace DotNetOpenId.RelyingParty {
 	public interface IAuthenticationRequest {
 		/// <summary>
 		/// Adds given key/value pairs to the query that the provider will use in
