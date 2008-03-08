@@ -52,7 +52,7 @@ namespace DotNetOpenId.Provider {
 		/// <summary>
 		/// The URL the consumer site claims to use as its 'base' address.
 		/// </summary>
-		public TrustRoot TrustRoot { get; private set; }
+		public Realm TrustRoot { get; private set; }
 		/// <summary>
 		/// The claimed OpenId URL of the user attempting to authenticate.
 		/// </summary>
@@ -115,7 +115,7 @@ namespace DotNetOpenId.Provider {
 			}
 
 			try {
-				TrustRoot = new TrustRoot(query[QueryStringArgs.openid.trust_root] ?? ReturnTo.AbsoluteUri);
+				TrustRoot = new Realm(query[QueryStringArgs.openid.trust_root] ?? ReturnTo.AbsoluteUri);
 			} catch (UriFormatException ex) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 					Strings.InvalidOpenIdQueryParameterValue, QueryStringArgs.openid.trust_root,

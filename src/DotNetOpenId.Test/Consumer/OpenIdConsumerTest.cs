@@ -12,7 +12,7 @@ namespace DotNetOpenId.Test.Consumer {
 	public class OpenIdConsumerTest {
 		IConsumerApplicationStore store;
 		Uri simpleOpenId = new Uri("http://nonexistant.openid.com");
-		TrustRoot simpleTrustRoot = new TrustRoot("http://consumertest.openid.com");
+		Realm simpleRealm = new Realm("http://consumertest.openid.com");
 		Uri simpleReturnTo = new Uri("http://consumertest.openid.com/consumertests");
 
 		[SetUp]
@@ -51,7 +51,7 @@ namespace DotNetOpenId.Test.Consumer {
 		public void CreateRequestWithoutContext2() {
 			var query = new NameValueCollection();
 			var consumer = new OpenIdConsumer(query, store);
-			consumer.CreateRequest(simpleOpenId, simpleTrustRoot);
+			consumer.CreateRequest(simpleOpenId, simpleRealm);
 		}
 	}
 }
