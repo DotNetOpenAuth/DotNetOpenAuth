@@ -124,7 +124,7 @@
     <Compile Include="TraceUtil.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="TrustRoot.cs" />
+    <Compile Include="Realm.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="Yadis\AcceptHeader.cs" />
     <Compile Include="Yadis\ByteParser.cs" />

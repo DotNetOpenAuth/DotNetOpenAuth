@@ -57,7 +57,7 @@
     <Compile Include="Provider\OpenIdProviderTest.cs" />
     <Compile Include="Provider\ProviderEndpointTest.cs" />
     <Compile Include="Consumer\TokenTest.cs" />
-    <Compile Include="TrustRootTestSuite.cs" />
+    <Compile Include="RealmTestSuite.cs" />
     <Compile Include="UriUtilTest.cs" />
   </ItemGroup>
   <ItemGroup>

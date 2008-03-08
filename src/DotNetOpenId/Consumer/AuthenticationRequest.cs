@@ -30,11 +30,11 @@ namespace DotNetOpenId.Consumer {
 		ServiceEndpoint endpoint;
 
 		AuthenticationRequest(string token, Association assoc, ServiceEndpoint endpoint,
-			TrustRoot trustRoot, Uri returnToUrl) {
+			Realm trustRoot, Uri returnToUrl) {
 			this.token = token;
 			this.assoc = assoc;
 			this.endpoint = endpoint;
-			TrustRoot = trustRoot;
+			Realm = trustRoot;
 			ReturnToUrl = returnToUrl;
 
 			Mode = AuthenticationRequestMode.Setup;
@@ -42,7 +42,7 @@ namespace DotNetOpenId.Consumer {
 			ReturnToArgs = new Dictionary<string, string>();
 			AddCallbackArguments(DotNetOpenId.Consumer.Token.TokenKey, token);
 		}
-		internal static AuthenticationRequest Create(ServiceEndpoint serviceEndpoint, TrustRoot trustRoot, Uri returnToUrl, IConsumerApplicationStore store) {
+		internal static AuthenticationRequest Create(ServiceEndpoint serviceEndpoint, Realm trustRoot, Uri returnToUrl, IConsumerApplicationStore store) {
 			// Throw an exception now if the trustroot and the return_to URLs don't match
 			// as required by the provider.  We could wait for the provider to test this and
 			// fail, but this will be faster and give us a better error message.
@@ -85,7 +85,7 @@ namespace DotNetOpenId.Consumer {
 		protected IDictionary<string, string> ReturnToArgs { get; private set; }
 
 		public AuthenticationRequestMode Mode { get; set; }
-		public TrustRoot TrustRoot { get; private set; }
+		public Realm Realm { get; private set; }
 		public Uri ReturnToUrl { get; private set; }
 		/// <summary>
 		/// Gets the URL the user agent should be redirected to to begin the 
@@ -102,7 +102,7 @@ namespace DotNetOpenId.Consumer {
 					QueryStringArgs.Modes.checkid_immediate : QueryStringArgs.Modes.checkid_setup);
 				qsArgs.Add(QueryStringArgs.openid.identity, this.endpoint.ServerId.AbsoluteUri); //TODO: breaks the Law of Demeter
 				qsArgs.Add(QueryStringArgs.openid.return_to, returnToBuilder.ToString());
-				qsArgs.Add(QueryStringArgs.openid.trust_root, TrustRoot.ToString());
+				qsArgs.Add(QueryStringArgs.openid.trust_root, Realm.ToString());
 
 				if (this.assoc != null)
 					qsArgs.Add(QueryStringArgs.openid.assoc_handle, this.assoc.Handle); // !!!!

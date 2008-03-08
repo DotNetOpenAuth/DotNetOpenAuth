@@ -17,7 +17,7 @@ namespace DotNetOpenId.Test {
 			appStore = new ConsumerApplicationMemoryStore();
 		}
 
-		void parameterizedTest(Uri identityUrl, TrustRoot trustRoot, Uri returnTo,
+		void parameterizedTest(Uri identityUrl, Realm realm, Uri returnTo,
 			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult,
 			bool tryReplayAttack, bool provideStore) {
 			var store = provideStore ? appStore : null;
@@ -25,12 +25,12 @@ namespace DotNetOpenId.Test {
 			var consumer = new OpenIdConsumer(new NameValueCollection(), store);
 
 			Assert.IsNull(consumer.Response);
-			var request = consumer.CreateRequest(identityUrl, trustRoot, returnTo);
+			var request = consumer.CreateRequest(identityUrl, realm, returnTo);
 
 			// Test properties and defaults
 			Assert.AreEqual(AuthenticationRequestMode.Setup, request.Mode);
 			Assert.AreEqual(returnTo, request.ReturnToUrl);
-			Assert.AreEqual(trustRoot, request.TrustRoot);
+			Assert.AreEqual(realm, request.Realm);
 
 			request.Mode = requestMode;
 
@@ -38,7 +38,7 @@ namespace DotNetOpenId.Test {
 			Assert.IsNotNull(request.RedirectToProviderUrl);
 			var consumerToProviderQuery = HttpUtility.ParseQueryString(request.RedirectToProviderUrl.Query);
 			Assert.IsTrue(consumerToProviderQuery[QueryStringArgs.openid.return_to].StartsWith(returnTo.AbsoluteUri, StringComparison.Ordinal));
-			Assert.AreEqual(trustRoot.ToString(), consumerToProviderQuery[QueryStringArgs.openid.trust_root]);
+			Assert.AreEqual(realm.ToString(), consumerToProviderQuery[QueryStringArgs.openid.trust_root]);
 
 			HttpWebRequest providerRequest = (HttpWebRequest)WebRequest.Create(request.RedirectToProviderUrl);
 			providerRequest.AllowAutoRedirect = false;
@@ -71,7 +71,7 @@ namespace DotNetOpenId.Test {
 		public void Pass_Setup_AutoApproval() {
 			parameterizedTest(
 				TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval),
-				new TrustRoot(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
+				new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
 				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
 				AuthenticationRequestMode.Setup,
 				AuthenticationStatus.Authenticated,
@@ -84,7 +84,7 @@ namespace DotNetOpenId.Test {
 		public void Pass_Immediate_AutoApproval() {
 			parameterizedTest(
 				TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval),
-				new TrustRoot(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
+				new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
 				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
 				AuthenticationRequestMode.Immediate,
 				AuthenticationStatus.Authenticated,
@@ -97,7 +97,7 @@ namespace DotNetOpenId.Test {
 		public void Fail_Immediate_ApproveOnSetup() {
 			parameterizedTest(
 				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup),
-				new TrustRoot(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
+				new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
 				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
 				AuthenticationRequestMode.Immediate,
 				AuthenticationStatus.SetupRequired,
@@ -110,7 +110,7 @@ namespace DotNetOpenId.Test {
 		public void Pass_Setup_ApproveOnSetup() {
 			parameterizedTest(
 				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup),
-				new TrustRoot(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
+				new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
 				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
 				AuthenticationRequestMode.Setup,
 				AuthenticationStatus.Authenticated,
@@ -123,7 +123,7 @@ namespace DotNetOpenId.Test {
 		public void Pass_NoStore_AutoApproval() {
 			parameterizedTest(
 				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup),
-				new TrustRoot(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
+				new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
 				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
 				AuthenticationRequestMode.Setup,
 				AuthenticationStatus.Authenticated,

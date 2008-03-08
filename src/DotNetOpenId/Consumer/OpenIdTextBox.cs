@@ -102,7 +102,7 @@ namespace DotNetOpenId.Consumer
 				if (Page != null && !DesignMode)
 				{
 					// Validate new value by trying to construct a TrustRoot object based on it.
-					new TrustRoot(getResolvedTrustRoot(value).ToString()); // throws an exception on failure.
+					new Realm(getResolvedTrustRoot(value).ToString()); // throws an exception on failure.
 				}
 				else
 				{
@@ -449,7 +449,7 @@ namespace DotNetOpenId.Consumer
 				// Initiate openid request
 				// Note: we must use trustRoot.ToString() because trustRoot.Uri throws when wildcards are present.
 				IAuthenticationRequest request = consumer.CreateRequest(
-					UriUtil.NormalizeUri(Text), new TrustRoot(trustRoot.ToString()));
+					UriUtil.NormalizeUri(Text), new Realm(trustRoot.ToString()));
 				if (EnableRequestProfile) addProfileArgs(request);
 				request.RedirectToProvider();
 			} catch (WebException ex) {
@@ -502,7 +502,7 @@ namespace DotNetOpenId.Consumer
 
 			// Is it valid?
 			// Note: we MUST use ToString.  Uri property throws if wildcard is present.
-			new TrustRoot(fullyQualifiedTrustRoot.ToString()); // throws if not valid
+			new Realm(fullyQualifiedTrustRoot.ToString()); // throws if not valid
 
 			return fullyQualifiedTrustRoot;
 		}

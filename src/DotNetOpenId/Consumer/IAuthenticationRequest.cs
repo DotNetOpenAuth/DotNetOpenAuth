@@ -59,6 +59,6 @@ namespace DotNetOpenId.Consumer {
 		/// Gets the URL that identifies this consumer web application that
 		/// the Provider will display to the end user.
 		/// </summary>
-		TrustRoot TrustRoot { get; }
+		Realm Realm { get; }
 	}
 }
