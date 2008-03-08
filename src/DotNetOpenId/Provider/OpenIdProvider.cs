@@ -2,8 +2,8 @@ using System;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web;
-using IProviderAssociationStore = DotNetOpenId.IAssociationStore<DotNetOpenId.AssociationConsumerType>;
-using ProviderMemoryStore = DotNetOpenId.AssociationMemoryStore<DotNetOpenId.AssociationConsumerType>;
+using IProviderAssociationStore = DotNetOpenId.IAssociationStore<DotNetOpenId.AssociationRelyingPartyType>;
+using ProviderMemoryStore = DotNetOpenId.AssociationMemoryStore<DotNetOpenId.AssociationRelyingPartyType>;
 using System.Collections.Generic;
 using System.Diagnostics;
 

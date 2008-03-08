@@ -34,7 +34,7 @@ namespace DotNetOpenId.Provider {
 		/// Respond to this request with an association.
 		/// </summary>
 		public EncodableResponse Answer() {
-			Association assoc = Server.Signatory.CreateAssociation(AssociationConsumerType.Smart);
+			Association assoc = Server.Signatory.CreateAssociation(AssociationRelyingPartyType.Smart);
 			if (TraceUtil.Switch.TraceInfo) {
 				Trace.TraceInformation("Start processing response for AssociateRequest");
 				if (TraceUtil.Switch.TraceVerbose) {
