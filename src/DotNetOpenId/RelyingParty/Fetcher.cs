@@ -1,7 +1,7 @@
 #if DEBUG
 #define LONGTIMEOUT
 #endif
-namespace DotNetOpenId.Consumer
+namespace DotNetOpenId.RelyingParty
 {
 	using System;
 	using System.Net;

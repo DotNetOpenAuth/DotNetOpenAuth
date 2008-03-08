@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using NUnit.Framework;
-using DotNetOpenId.Consumer;
+using DotNetOpenId.RelyingParty;
 using System.Collections.Specialized;
 using System.Web;
 using System.Net;
@@ -10,7 +10,7 @@ using System.Net;
 namespace DotNetOpenId.Test {
 	[TestFixture]
 	public class EndToEndTesting {
-		IConsumerApplicationStore appStore;
+		IRelyingPartyApplicationStore appStore;
 
 		[SetUp]
 		public void Setup() {
@@ -22,7 +22,7 @@ namespace DotNetOpenId.Test {
 			bool tryReplayAttack, bool provideStore) {
 			var store = provideStore ? appStore : null;
 
-			var consumer = new OpenIdConsumer(new NameValueCollection(), store);
+			var consumer = new OpenIdRelyingParty(new NameValueCollection(), store);
 
 			Assert.IsNull(consumer.Response);
 			var request = consumer.CreateRequest(identityUrl, realm, returnTo);
@@ -48,7 +48,7 @@ namespace DotNetOpenId.Test {
 				redirectUrl = new Uri(providerResponse.Headers[HttpResponseHeader.Location]);
 			}
 			var providerToConsumerQuery = HttpUtility.ParseQueryString(redirectUrl.Query);
-			var consumer2 = new OpenIdConsumer(providerToConsumerQuery, store);
+			var consumer2 = new OpenIdRelyingParty(providerToConsumerQuery, store);
 			Assert.AreEqual(expectedResult, consumer2.Response.Status);
 			Assert.AreEqual(identityUrl, consumer2.Response.IdentityUrl);
 
@@ -59,7 +59,7 @@ namespace DotNetOpenId.Test {
 				// the consumer, and tries the same query to the consumer in an
 				// attempt to spoof the identity of the authenticating user.
 				try {
-					var replayAttackConsumer = new OpenIdConsumer(providerToConsumerQuery, store);
+					var replayAttackConsumer = new OpenIdRelyingParty(providerToConsumerQuery, store);
 					Assert.AreNotEqual(AuthenticationStatus.Authenticated, replayAttackConsumer.Response.Status, "Replay attack");
 				} catch (OpenIdException) { // nonce already used
 					// another way to pass

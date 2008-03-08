@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Text;
 using NUnit.Framework;
-using DotNetOpenId.Consumer;
+using DotNetOpenId.RelyingParty;
 using System.Collections.Specialized;
 using System.Web;
 using System.Net;
 
-namespace DotNetOpenId.Test.Consumer {
+namespace DotNetOpenId.Test.RelyingParty {
 	[TestFixture]
 	public class OpenIdConsumerTest {
-		IConsumerApplicationStore store;
+		IRelyingPartyApplicationStore store;
 		Uri simpleOpenId = new Uri("http://nonexistant.openid.com");
 		Realm simpleRealm = new Realm("http://consumertest.openid.com");
 		Uri simpleReturnTo = new Uri("http://consumertest.openid.com/consumertests");
@@ -23,26 +23,26 @@ namespace DotNetOpenId.Test.Consumer {
 		[Test]
 		[ExpectedException(typeof(InvalidOperationException))]
 		public void DefaultCtorWithoutContext() {
-			new OpenIdConsumer();
+			new OpenIdRelyingParty();
 		}
 
 		[Test]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void CtorWithNullQuery() {
-			new OpenIdConsumer(null, store);
+			new OpenIdRelyingParty(null, store);
 		}
 
 		[Test]
 		[ExpectedException(typeof(ArgumentNullException), UserMessage = "Until this is a supported scenario, an exception should be thrown right away.")]
 		public void CtorWithNullStore() {
-			var consumer = new OpenIdConsumer(new NameValueCollection(), null);
+			var consumer = new OpenIdRelyingParty(new NameValueCollection(), null);
 		}
 
 		[Test]
 		[ExpectedException(typeof(InvalidOperationException))]
 		public void CreateRequestWithoutContext1() {
 			var query = new NameValueCollection();
-			var consumer = new OpenIdConsumer(query, store);
+			var consumer = new OpenIdRelyingParty(query, store);
 			consumer.CreateRequest(simpleOpenId);
 		}
 
@@ -50,7 +50,7 @@ namespace DotNetOpenId.Test.Consumer {
 		[ExpectedException(typeof(InvalidOperationException))]
 		public void CreateRequestWithoutContext2() {
 			var query = new NameValueCollection();
-			var consumer = new OpenIdConsumer(query, store);
+			var consumer = new OpenIdRelyingParty(query, store);
 			consumer.CreateRequest(simpleOpenId, simpleRealm);
 		}
 	}

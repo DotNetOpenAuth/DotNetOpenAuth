@@ -20,9 +20,9 @@ using System.Globalization;
 using System.Diagnostics.CodeAnalysis;
 using System.Web;
 
-[assembly: WebResource(DotNetOpenId.Consumer.OpenIdTextBox.EmbeddedLogoResourceName, "image/gif")]
+[assembly: WebResource(DotNetOpenId.RelyingParty.OpenIdTextBox.EmbeddedLogoResourceName, "image/gif")]
 
-namespace DotNetOpenId.Consumer
+namespace DotNetOpenId.RelyingParty
 {
 	[DefaultProperty("Text")]
 	[ToolboxData("<{0}:OpenIdTextBox runat=\"server\"></{0}:OpenIdTextBox>")]
@@ -33,7 +33,7 @@ namespace DotNetOpenId.Consumer
 			InitializeControls();
 		}
 
-		internal const string EmbeddedLogoResourceName = DotNetOpenId.Util.DefaultNamespace + ".Consumer.openid_login.gif";
+		internal const string EmbeddedLogoResourceName = DotNetOpenId.Util.DefaultNamespace + ".RelyingParty.openid_login.gif";
 		TextBox wrappedTextBox;
 		protected TextBox WrappedTextBox
 		{
@@ -390,7 +390,7 @@ namespace DotNetOpenId.Consumer
 
 			try
 			{
-				var consumer = new OpenIdConsumer();
+				var consumer = new OpenIdRelyingParty();
 				if (consumer.Response != null)
 				{
 					switch (consumer.Response.Status) {
@@ -437,7 +437,7 @@ namespace DotNetOpenId.Consumer
 				throw new InvalidOperationException(DotNetOpenId.Strings.OpenIdTextBoxEmpty);
 
 			try {
-				var consumer = new OpenIdConsumer();
+				var consumer = new OpenIdRelyingParty();
 
 				// Resolve the trust root, and swap out the scheme and port if necessary to match the
 				// return_to URL, since this match is required by OpenId, and the consumer app

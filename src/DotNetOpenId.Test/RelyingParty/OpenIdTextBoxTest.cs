@@ -5,7 +5,7 @@ using NUnit.Framework;
 using DotNetOpenId.Test.Hosting;
 using System.Net;
 
-namespace DotNetOpenId.Test.Consumer {
+namespace DotNetOpenId.Test.RelyingParty {
 	[TestFixture]
 	public class OpenIdTextBoxTest {
 		[Test]

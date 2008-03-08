@@ -13,7 +13,7 @@ using System.Web.UI.HtmlControls;
 using DotNetOpenId.RegistrationExtension;
 using System.Diagnostics.CodeAnalysis;
 
-namespace DotNetOpenId.Consumer
+namespace DotNetOpenId.RelyingParty
 {
 	[SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Login")]
 	[DefaultProperty("OpenIdUrl")]

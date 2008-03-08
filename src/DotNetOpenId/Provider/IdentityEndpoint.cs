@@ -18,7 +18,7 @@ namespace DotNetOpenId.Provider {
 		public string ServerUrl {
 			get { return (string)ViewState[serverUrlViewStateKey]; }
 			set {
-				Consumer.OpenIdTextBox.ValidateResolvableUrl(Page, DesignMode, value);
+				RelyingParty.OpenIdTextBox.ValidateResolvableUrl(Page, DesignMode, value);
 				ViewState[serverUrlViewStateKey] = value;
 			}
 		}
@@ -30,7 +30,7 @@ namespace DotNetOpenId.Provider {
 		public string DelegateUrl {
 			get { return (string)ViewState[delegateUrlViewStateKey]; }
 			set {
-				Consumer.OpenIdTextBox.ValidateResolvableUrl(Page, DesignMode, value);
+				RelyingParty.OpenIdTextBox.ValidateResolvableUrl(Page, DesignMode, value);
 				ViewState[delegateUrlViewStateKey] = value;
 			}
 		}

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DotNetOpenId.Consumer {
+namespace DotNetOpenId.RelyingParty {
 	public class Nonce {
 		static TimeSpan maximumLifetime {
-			get { return OpenIdConsumer.MaximumUserAgentAuthenticationTime; }
+			get { return OpenIdRelyingParty.MaximumUserAgentAuthenticationTime; }
 		}
 
 		public Nonce() : this(CryptUtil.CreateNonce(), DateTime.UtcNow) {}

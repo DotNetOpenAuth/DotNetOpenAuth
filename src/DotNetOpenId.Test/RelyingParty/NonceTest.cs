@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using NUnit.Framework;
-using DotNetOpenId.Consumer;
+using DotNetOpenId.RelyingParty;
 
-namespace DotNetOpenId.Test.Consumer {
+namespace DotNetOpenId.Test.RelyingParty {
 	[TestFixture]
 	public class NonceTest {
 		[Test]
@@ -14,14 +14,14 @@ namespace DotNetOpenId.Test.Consumer {
 			Assert.GreaterOrEqual(nonce.Age.TotalSeconds, 0);
 			Assert.LessOrEqual(nonce.Age.TotalSeconds, 2);
 			Assert.IsFalse(nonce.IsExpired);
-			Assert.AreEqual(nonce.CreationDate + OpenIdConsumer.MaximumUserAgentAuthenticationTime, nonce.ExpirationDate);
+			Assert.AreEqual(nonce.CreationDate + OpenIdRelyingParty.MaximumUserAgentAuthenticationTime, nonce.ExpirationDate);
 			Assert.IsFalse(string.IsNullOrEmpty(nonce.Code));
 		}
 
 		[Test]
 		public void RecreatedNonce() {
 			string code = "somecode";
-			TimeSpan age = OpenIdConsumer.MaximumUserAgentAuthenticationTime.Subtract(TimeSpan.FromSeconds(10));
+			TimeSpan age = OpenIdRelyingParty.MaximumUserAgentAuthenticationTime.Subtract(TimeSpan.FromSeconds(10));
 			DateTime creationDate = DateTime.Now.Subtract(age);
 			Nonce nonce = new Nonce(code, creationDate);
 			Assert.AreEqual(code, nonce.Code);
@@ -33,7 +33,7 @@ namespace DotNetOpenId.Test.Consumer {
 		[Test]
 		public void ExpiredNonce() {
 			string code = "somecode";
-			TimeSpan age = OpenIdConsumer.MaximumUserAgentAuthenticationTime.Add(TimeSpan.FromSeconds(10));
+			TimeSpan age = OpenIdRelyingParty.MaximumUserAgentAuthenticationTime.Add(TimeSpan.FromSeconds(10));
 			DateTime creationDate = DateTime.Now.Subtract(age);
 			Nonce nonce = new Nonce(code, creationDate);
 			Assert.AreEqual(code, nonce.Code);

@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using System.Globalization;
 using System.Diagnostics;
 
-namespace DotNetOpenId.Consumer {
+namespace DotNetOpenId.RelyingParty {
 	/// <summary>
 	/// A state-containing bit of non-confidential data that is sent to the 
 	/// user agent as part of the return_to URL so we can read from it later.
