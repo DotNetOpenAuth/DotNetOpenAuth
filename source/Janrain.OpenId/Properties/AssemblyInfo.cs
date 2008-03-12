@@ -1,4 +1,12 @@
-﻿using System.Reflection;
+﻿// Uncomment this line to build a partially trusted assembly.
+// This has some security bonuses in that if there was a way to
+// hijack this assembly to do something it is not designed to do,
+// it will fail before doing much damage.
+// But a partially trusted assembly's events, handled by the hosting
+// web site, will also be under the partial trust restriction.
+//#define PARTIAL_TRUST
+
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
@@ -52,7 +60,9 @@ using System.Net;
 // Allows hosting this assembly in an ASP.NET setting.  Not all applications
 // will host this using ASP.NET, so this is optional.  Besides, we need at least
 // one optional permission to activate CAS permission shrinking.
+#if PARTIAL_TRUST
 [assembly: AspNetHostingPermission(SecurityAction.RequestOptional, Level = AspNetHostingPermissionLevel.Medium)]
+#endif
 
 // The following are only required for diagnostic logging (Trace.Write, Debug.Assert, etc.).
 #if TRACE
@@ -62,9 +72,11 @@ using System.Net;
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, ControlEvidence = true, UnmanagedCode = true, ControlThread = true)]
 [assembly: FileIOPermission(SecurityAction.RequestMinimum, AllFiles = FileIOPermissionAccess.PathDiscovery | FileIOPermissionAccess.Read)]
 #else
+#if PARTIAL_TRUST
 [assembly: KeyContainerPermission(SecurityAction.RequestOptional, Unrestricted = true)]
 [assembly: ReflectionPermission(SecurityAction.RequestOptional, MemberAccess = true)]
 [assembly: RegistryPermission(SecurityAction.RequestOptional, Unrestricted = true)]
 [assembly: SecurityPermission(SecurityAction.RequestOptional, ControlEvidence = true, UnmanagedCode = true, ControlThread = true)]
 [assembly: FileIOPermission(SecurityAction.RequestOptional, AllFiles = FileIOPermissionAccess.PathDiscovery | FileIOPermissionAccess.Read)]
+#endif
 #endif
