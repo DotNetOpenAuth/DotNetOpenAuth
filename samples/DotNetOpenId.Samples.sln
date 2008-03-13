@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsumerPortal", "ConsumerPortal\ConsumerPortal.csproj", "{51BCD5E9-E17A-4FB2-BAC8-C156DD7A1CA4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RelyingPartyPortal", "RelyingPartyPortal\RelyingPartyPortal.csproj", "{51BCD5E9-E17A-4FB2-BAC8-C156DD7A1CA4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProviderPortal", "ProviderPortal\ProviderPortal.csproj", "{2A59DE0A-B76A-4B42-9A33-04D34548353D}"
 EndProject
