@@ -4,7 +4,7 @@ using System.Text;
 using DotNetOpenId;
 
 namespace DotNetOpenId {
-	public enum AssociationConsumerType {
+	public enum AssociationRelyingPartyType {
 		Smart,
 		Dumb
 	}

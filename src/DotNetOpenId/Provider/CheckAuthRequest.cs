@@ -54,14 +54,14 @@ namespace DotNetOpenId.Provider {
 
 			bool is_valid = Server.Signatory.Verify(AssociationHandle, signature, signedFields, signedKeyOrder);
 
-			Server.Signatory.Invalidate(AssociationHandle, AssociationConsumerType.Dumb);
+			Server.Signatory.Invalidate(AssociationHandle, AssociationRelyingPartyType.Dumb);
 
 			EncodableResponse response = new EncodableResponse(this);
 
 			response.Fields[QueryStringArgs.openidnp.is_valid] = (is_valid ? "true" : "false");
 
 			if (!string.IsNullOrEmpty(invalidate_handle)) {
-				Association assoc = Server.Signatory.GetAssociation(invalidate_handle, AssociationConsumerType.Smart);
+				Association assoc = Server.Signatory.GetAssociation(invalidate_handle, AssociationRelyingPartyType.Smart);
 
 				if (assoc == null) {
 					if (TraceUtil.Switch.TraceWarning) {
