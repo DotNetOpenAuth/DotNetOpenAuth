@@ -1,0 +1,4172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en"><head><title>Final: OpenID Authentication 2.0 - Final</title>
+
+<meta http-equiv="Expires" content="Wed, 05 Dec 2007 17:38:41 +0000">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="description" content="OpenID Authentication 2.0 - Final">
+<meta name="generator" content="xml2rfc v1.32 (http://xml.resource.org/)">
+<style type="text/css"><!--
+        body {
+                font-family: verdana, charcoal, helvetica, arial, sans-serif;
+                font-size: small; color: #000; background-color: #FFF;
+                margin: 2em;
+        }
+        h1, h2, h3, h4, h5, h6 {
+                font-family: helvetica, monaco, "MS Sans Serif", arial, sans-serif;
+                font-weight: bold; font-style: normal;
+        }
+        h1 { color: #900; background-color: transparent; text-align: right; }
+        h3 { color: #333; background-color: transparent; }
+
+        td.RFCbug {
+                font-size: x-small; text-decoration: none;
+                width: 30px; height: 30px; padding-top: 2px;
+                text-align: justify; vertical-align: middle;
+                background-color: #000;
+        }
+        td.RFCbug span.RFC {
+                font-family: monaco, charcoal, geneva, "MS Sans Serif", helvetica, verdana, sans-serif;
+                font-weight: bold; color: #666;
+        }
+        td.RFCbug span.hotText {
+                font-family: charcoal, monaco, geneva, "MS Sans Serif", helvetica, verdana, sans-serif;
+                font-weight: normal; text-align: center; color: #FFF;
+        }
+
+        table.TOCbug { width: 30px; height: 15px; }
+        td.TOCbug {
+                text-align: center; width: 30px; height: 15px;
+                color: #FFF; background-color: #900;
+        }
+        td.TOCbug a {
+                font-family: monaco, charcoal, geneva, "MS Sans Serif", helvetica, sans-serif;
+                font-weight: bold; font-size: x-small; text-decoration: none;
+                color: #FFF; background-color: transparent;
+        }
+
+        td.header {
+                font-family: arial, helvetica, sans-serif; font-size: x-small;
+                vertical-align: top; width: 33%;
+                color: #FFF; background-color: #666;
+        }
+        td.author { font-weight: bold; font-size: x-small; margin-left: 4em; }
+        td.author-text { font-size: x-small; }
+
+        /* info code from SantaKlauss at http://www.madaboutstyle.com/tooltip2.html */
+        a.info {
+                /* This is the key. */
+                position: relative;
+                z-index: 24;
+                text-decoration: none;
+        }
+        a.info:hover {
+                z-index: 25;
+                color: #FFF; background-color: #900;
+        }
+        a.info span { display: none; }
+        a.info:hover span.info {
+                /* The span will display just on :hover state. */
+                display: block;
+                position: absolute;
+                font-size: smaller;
+                top: 2em; left: -5em; width: 15em;
+                padding: 2px; border: 1px solid #333;
+                color: #900; background-color: #EEE;
+                text-align: left;
+        }
+
+        a { font-weight: bold; }
+        a:link    { color: #900; background-color: transparent; }
+        a:visited { color: #633; background-color: transparent; }
+        a:active  { color: #633; background-color: transparent; }
+
+        p { margin-left: 2em; margin-right: 2em; }
+        p.copyright { font-size: x-small; }
+        p.toc { font-size: small; font-weight: bold; margin-left: 3em; }
+        table.toc { margin: 0 0 0 3em; padding: 0; border: 0; vertical-align: text-top; }
+        td.toc { font-size: small; font-weight: bold; vertical-align: text-top; }
+
+        ol.text { margin-left: 2em; margin-right: 2em; }
+        ul.text { margin-left: 2em; margin-right: 2em; }
+        li      { margin-left: 3em; }
+
+        /* RFC-2629 <spanx>s and <artwork>s. */
+        em     { font-style: italic; }
+        strong { font-weight: bold; }
+        dfn    { font-weight: bold; font-style: normal; }
+        cite   { font-weight: normal; font-style: normal; }
+        tt     { color: #036; }
+        tt, pre, pre dfn, pre em, pre cite, pre span {
+                font-family: "Courier New", Courier, monospace; font-size: small;
+        }
+        pre {
+                text-align: left; padding: 4px;
+                color: #000; background-color: #CCC;
+        }
+        pre dfn  { color: #900; }
+        pre em   { color: #66F; background-color: #FFC; font-weight: normal; }
+        pre .key { color: #33C; font-weight: bold; }
+        pre .id  { color: #900; }
+        pre .str { color: #000; background-color: #CFF; }
+        pre .val { color: #066; }
+        pre .rep { color: #909; }
+        pre .oth { color: #000; background-color: #FCF; }
+        pre .err { background-color: #FCC; }
+
+        /* RFC-2629 <texttable>s. */
+        table.all, table.full, table.headers, table.none {
+                font-size: small; text-align: center; border-width: 2px;
+                vertical-align: top; border-collapse: collapse;
+        }
+        table.all, table.full { border-style: solid; border-color: black; }
+        table.headers, table.none { border-style: none; }
+        th {
+                font-weight: bold; border-color: black;
+                border-width: 2px 2px 3px 2px;
+        }
+        table.all th, table.full th { border-style: solid; }
+        table.headers th { border-style: none none solid none; }
+        table.none th { border-style: none; }
+        table.all td {
+                border-style: solid; border-color: #333;
+                border-width: 1px 2px;
+        }
+        table.full td, table.headers td, table.none td { border-style: none; }
+
+        hr { height: 1px; }
+        hr.insert {
+                width: 80%; border-style: none; border-width: 0;
+                color: #CCC; background-color: #CCC;
+        }
+--></style></head><body>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<table summary="layout" border="0" cellpadding="0" cellspacing="0" width="66%"><tbody><tr><td><table summary="layout" border="0" cellpadding="2" cellspacing="1" width="100%">
+<tbody><tr><td class="header">Final</td><td class="header"> specs@openid.net</td></tr>
+<tr><td class="header">&nbsp;</td><td class="header">December 5, 2007</td></tr>
+</tbody></table></td></tr></tbody></table>
+<h1><br>OpenID Authentication 2.0 - Final</h1>
+
+<h3>Abstract</h3>
+
+<p>
+        OpenID Authentication provides a way to prove that an end user
+        controls an Identifier. It does this without the Relying Party
+        needing access to end user credentials such as a password or
+        to other sensitive information such as an email address.
+      
+</p>
+<p>
+        OpenID is decentralized. No central authority must approve or
+        register Relying Parties or OpenID Providers. An end user
+        can freely choose which OpenID Provider to use, and can
+        preserve their Identifier if they switch OpenID Providers.
+      
+</p>
+<p>
+        While nothing in the protocol requires JavaScript or modern
+        browsers, the authentication scheme plays nicely with
+        "AJAX"-style setups. This means an end user can prove their
+        Identity to a Relying Party without having to leave their
+        current Web page.
+      
+</p>
+<p>
+        OpenID Authentication uses only standard HTTP(S) requests and
+        responses, so it does not require any special capabilities of
+        the User-Agent or other client software. OpenID is not tied to
+        the use of cookies or any other specific mechanism of Relying
+        Party or OpenID Provider session management.  Extensions to
+        User-Agents can simplify the end user interaction, though are
+        not required to utilize the protocol.
+      
+</p>
+<p>
+        The exchange of profile information, or the exchange of other
+        information not covered in this specification, can be addressed
+        through additional service types built on top of this
+        protocol to create a framework. OpenID Authentication is
+        designed to provide a base service to enable portable,
+        user-centric digital identity in a free and decentralized manner.
+      
+</p><a name="toc"></a><br><hr>
+<h3>Table of Contents</h3>
+<p class="toc">
+<a href="#anchor1">1.</a>&nbsp;
+Requirements Notation and Conventions<br>
+<a href="#terminology">2.</a>&nbsp;
+Terminology<br>
+<a href="#anchor2">3.</a>&nbsp;
+Protocol Overview<br>
+<a href="#anchor3">4.</a>&nbsp;
+Data Formats<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor4">4.1.</a>&nbsp;
+Protocol Messages<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#btwoc">4.2.</a>&nbsp;
+Integer Representations<br>
+<a href="#anchor6">5.</a>&nbsp;
+Communication Types<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#direct_comm">5.1.</a>&nbsp;
+Direct Communication<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#indirect_comm">5.2.</a>&nbsp;
+Indirect Communication<br>
+<a href="#generating_signatures">6.</a>&nbsp;
+Generating Signatures<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor11">6.1.</a>&nbsp;
+Procedure<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sign_algos">6.2.</a>&nbsp;
+Signature Algorithms<br>
+<a href="#anchor12">7.</a>&nbsp;
+Initiation and Discovery<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#initiation">7.1.</a>&nbsp;
+Initiation<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#normalization">7.2.</a>&nbsp;
+Normalization<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#discovery">7.3.</a>&nbsp;
+Discovery<br>
+<a href="#associations">8.</a>&nbsp;
+Establishing Associations<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor17">8.1.</a>&nbsp;
+Association Session Request<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor20">8.2.</a>&nbsp;
+Association Session Response<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#assoc_types">8.3.</a>&nbsp;
+Association Types<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#assoc_sess_types">8.4.</a>&nbsp;
+Association Session Types<br>
+<a href="#requesting_authentication">9.</a>&nbsp;
+Requesting Authentication<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor27">9.1.</a>&nbsp;
+Request Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#realms">9.2.</a>&nbsp;
+Realms<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor28">9.3.</a>&nbsp;
+Immediate Requests<br>
+<a href="#responding_to_authentication">10.</a>&nbsp;
+Responding to Authentication Requests<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#positive_assertions">10.1.</a>&nbsp;
+Positive Assertions<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#negative_assertions">10.2.</a>&nbsp;
+Negative Assertions<br>
+<a href="#verification">11.</a>&nbsp;
+Verifying Assertions<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#verify_return_to">11.1.</a>&nbsp;
+Verifying the Return URL<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#verify_disco">11.2.</a>&nbsp;
+Verifying Discovered Information<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#verify_nonce">11.3.</a>&nbsp;
+Checking the Nonce<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#verifying_signatures">11.4.</a>&nbsp;
+Verifying Signatures<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#identifying">11.5.</a>&nbsp;
+Identifying the end user<br>
+<a href="#extensions">12.</a>&nbsp;
+Extensions<br>
+<a href="#rp_discovery">13.</a>&nbsp;
+Discovering OpenID Relying Parties<br>
+<a href="#compat_mode">14.</a>&nbsp;
+OpenID Authentication 1.1 Compatibility<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor34">14.1.</a>&nbsp;
+Changes from OpenID Authentication 1.1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor38">14.2.</a>&nbsp;
+Implementing OpenID Authentication 1.1 Compatibility<br>
+<a href="#security_considerations">15.</a>&nbsp;
+Security Considerations<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor41">15.1.</a>&nbsp;
+Preventing Attacks<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor43">15.2.</a>&nbsp;
+User-Agents<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor44">15.3.</a>&nbsp;
+User Interface Considerations<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor45">15.4.</a>&nbsp;
+HTTP and HTTPS URL Identifiers<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor46">15.5.</a>&nbsp;
+Denial of Service Attacks<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor47">15.6.</a>&nbsp;
+Protocol Variants<br>
+<a href="#anchor48">Appendix&nbsp;A.</a>&nbsp;
+Examples<br>
+<a href="#normalization_example">Appendix&nbsp;A.1.</a>&nbsp;
+Normalization<br>
+<a href="#anchor49">Appendix&nbsp;A.2.</a>&nbsp;
+OP-Local Identifiers<br>
+<a href="#XRDS_Sample">Appendix&nbsp;A.3.</a>&nbsp;
+XRDS<br>
+<a href="#anchor50">Appendix&nbsp;A.4.</a>&nbsp;
+HTML Identifier Markup<br>
+<a href="#anchor51">Appendix&nbsp;A.5.</a>&nbsp;
+XRI CanonicalID<br>
+<a href="#pvalue">Appendix&nbsp;B.</a>&nbsp;
+Diffie-Hellman Key Exchange Default Value<br>
+<a href="#anchor52">Appendix&nbsp;C.</a>&nbsp;
+Acknowledgements<br>
+<a href="#rfc.references1">16.</a>&nbsp;
+Normative References<br>
+<a href="#rfc.authors">§</a>&nbsp;
+Author's Address<br>
+</p>
+<br clear="all">
+
+<a name="anchor1"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.1"></a><h3>1.&nbsp;
+Requirements Notation and Conventions</h3>
+
+<p>
+        The key words "MUST", "MUST NOT", "REQUIRED", "SHALL",
+        "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY",
+        and "OPTIONAL" in this document are to be interpreted as
+        described in <a class="info" href="#RFC2119">[RFC2119]<span> (</span><span class="info">Bradner, B., “Key words for use in RFCs to Indicate Requirement Levels,” .</span><span>)</span></a>.
+      
+</p>
+<p>
+        Throughout this document, values are quoted to indicate that
+        they are to be taken literally. When using these values in
+        protocol messages, the quotes MUST NOT be used as part of the
+        value.
+      
+</p>
+<a name="terminology"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.2"></a><h3>2.&nbsp;
+Terminology</h3>
+
+<p>
+        </p>
+<blockquote class="text"><dl>
+<dt>Identifier:</dt>
+<dd>
+            An Identifier is either a "http" or "https" URI, (commonly
+            referred to as a "URL" within this document), or an <a class="info" href="#XRI_Syntax_2.0">XRI<span> (</span><span class="info">Reed, D. and D. McAlpin, “Extensible Resource Identifier (XRI) Syntax V2.0,” .</span><span>)</span></a> [XRI_Syntax_2.0].  This document defines
+            various kinds of Identifiers, designed for use in different
+            contexts.
+          
+</dd>
+<dt>User-Agent:</dt>
+<dd>
+            The end user's Web browser which implements HTTP/1.1 <a class="info" href="#RFC2616">[RFC2616]<span> (</span><span class="info">Fielding,
+R., Gettys, J., Mogul, J., Frystyk, H., Masinter, L., Leach, P., and T.
+Berners-Lee, “Hypertext Transfer Protocol -- HTTP/1.1,” .</span><span>)</span></a>.
+          
+</dd>
+<dt>Relying Party:</dt>
+<dd>
+            RP. A Web application that wants proof that the end user
+            controls an Identifier.
+          
+</dd>
+<dt>OpenID Provider:</dt>
+<dd>
+            OP. An OpenID Authentication server on which a Relying
+            Party relies for an assertion that the end user controls
+            an Identifier.
+          
+</dd>
+<dt>OP Endpoint URL:</dt>
+<dd>
+            The URL which accepts OpenID Authentication protocol messages,
+            obtained by performing discovery on the User-Supplied
+            Identifier. This value MUST be an absolute HTTP or HTTPS URL.
+          
+</dd>
+<dt>OP Identifier:</dt>
+<dd>
+            An Identifier for an OpenID Provider.
+          
+</dd>
+<dt>User-Supplied Identifier:</dt>
+<dd>
+            An Identifier that was presented by the end user to the
+            Relying Party, or selected by the user at the OpenID
+            Provider.  During the initiation phase of the protocol,
+            an end user may enter either their own Identifier or an OP
+            Identifier. If an OP Identifier is used, the OP may then
+            assist the end user in selecting an Identifier to share with
+            the Relying Party.
+          
+</dd>
+<dt>Claimed Identifier:</dt>
+<dd>
+            An Identifier that the end user claims to own; the overall
+            aim of the protocol is verifying this claim. The Claimed
+            Identifier is either:
+            
+<ul class="text">
+<li>
+                The Identifier obtained by <a class="info" href="#normalization">normalizing<span> (</span><span class="info">Normalization</span><span>)</span></a> the User-Supplied Identifier, if it
+                was an URL.
+              
+</li>
+<li>
+                The <a class="info" href="#canonicalid">CanonicalID<span> (</span><span class="info">XRI and the CanonicalID Element</span><span>)</span></a>, if it
+                was an XRI.
+              
+</li>
+</ul>
+          
+</dd>
+<dt>OP-Local Identifier:</dt>
+<dd>
+            An alternate Identifier for an end user that is local to a
+            particular OP and thus not necessarily under the end user's
+            control.
+          
+</dd>
+</dl></blockquote><p>
+      
+</p>
+<a name="anchor2"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.3"></a><h3>3.&nbsp;
+Protocol Overview</h3>
+
+<p>
+        </p>
+<ol class="text">
+<li>
+            The end user <a class="info" href="#initiation">initiates
+            authentication<span> (</span><span class="info">Initiation</span><span>)</span></a> by presenting a User-Supplied Identifier
+            to the Relying Party via their User-Agent.
+          
+</li>
+<li>
+            After <a class="info" href="#normalization">normalizing<span> (</span><span class="info">Normalization</span><span>)</span></a> the
+            User-Supplied Identifier, the Relying Party <a class="info" href="#discovery">performs discovery<span> (</span><span class="info">Discovery</span><span>)</span></a> on it and
+            establishes the OP Endpoint URL that the end user uses for
+            authentication.  It should be noted that the User-Supplied
+            Identifier may be an OP Identifier, as discussed in <a class="info" href="#discovered_info">Section&nbsp;7.3.1<span> (</span><span class="info">Discovered Information</span><span>)</span></a>, which allows selection of a
+            Claimed Identifier at the OP or for the protocol to
+            proceed without a Claimed Identifier if something else
+            useful is being done via an <a class="info" href="#extensions">extension<span> (</span><span class="info">Extensions</span><span>)</span></a>.
+          
+</li>
+<li>
+            (optional)
+
+            The Relying Party and the OP establish an <a class="info" href="#associations">association<span> (</span><span class="info">Establishing Associations</span><span>)</span></a> -- a shared
+            secret established using <a class="info" href="#RFC2631">Diffie-Hellman Key Exchange<span> (</span><span class="info">Rescorla, E., “Diffie-Hellman Key Agreement Method,” .</span><span>)</span></a> [RFC2631]. The
+            OP uses an association to sign subsequent messages and the
+            Relying Party to verify those messages; this removes the
+            need for subsequent direct requests to verify the
+            signature after each authentication request/response.
+          
+</li>
+<li>
+            The Relying Party redirects the end user's User-Agent to
+            the OP with an OpenID <a class="info" href="#requesting_authentication">Authentication
+            request<span> (</span><span class="info">Requesting Authentication</span><span>)</span></a>.
+          
+</li>
+<li>
+            The OP establishes whether the end user is authorized to
+            perform OpenID Authentication and wishes to do so. The
+            manner in which the end user authenticates to their OP and
+            any policies surrounding such authentication is out of
+            scope for this document.
+          
+</li>
+<li>
+            The OP redirects the end user's User-Agent back to the
+            Relying Party with either an assertion that <a class="info" href="#positive_assertions">authentication is
+            approved<span> (</span><span class="info">Positive Assertions</span><span>)</span></a> or a message that <a class="info" href="#negative_assertions">authentication failed<span> (</span><span class="info">Negative Assertions</span><span>)</span></a>.
+          
+</li>
+<li>
+            The Relying Party <a class="info" href="#verification">verifies<span> (</span><span class="info">Verifying Assertions</span><span>)</span></a> the information received from the OP including
+            checking the Return URL, verifying the discovered
+            information, checking the nonce, and verifying the
+            signature by using either the shared key established
+            during the association or by sending a direct request
+            to the OP.
+           
+</li>
+</ol><p>
+      
+</p>
+<a name="anchor3"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4"></a><h3>4.&nbsp;
+Data Formats</h3>
+
+<a name="anchor4"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4.1"></a><h3>4.1.&nbsp;
+Protocol Messages</h3>
+
+<p>
+          The OpenID Authentication protocol messages are
+          mappings of plain-text keys to plain-text values. The keys and
+          values permit the full Unicode character set (UCS). When the
+          keys and values need to be converted to/from bytes, they
+          MUST be encoded using <a class="info" href="#RFC3629">UTF-8<span> (</span><span class="info">Yergeau, F., “UTF-8, a transformation format of Unicode and ISO 10646,” .</span><span>)</span></a> [RFC3629].
+        
+</p>
+<p>
+          Messages MUST NOT contain multiple parameters with the same name.
+        
+</p>
+<p>
+          Throughout this document, all OpenID message parameters are
+          REQUIRED, unless specifically marked as OPTIONAL.
+        
+</p>
+<a name="kvform"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4.1.1"></a><h3>4.1.1.&nbsp;
+Key-Value Form Encoding</h3>
+
+<p>
+            A message in Key-Value form is a sequence of lines.  Each
+            line begins with a key, followed by a colon, and the value
+            associated with the key.  The line is terminated by a
+            single newline (UCS codepoint 10, "\n"). A key or value
+            MUST NOT contain a newline and a key also MUST NOT contain
+            a colon.
+          
+</p>
+<p>
+            Additional characters, including whitespace, MUST NOT be
+            added before or after the colon or newline. The message
+            MUST be encoded in UTF-8 to produce a byte string.
+          
+</p>
+<p>
+            Key-Value Form encoding is used for signature calculation
+            and for <a class="info" href="#direct_response">direct
+            responses<span> (</span><span class="info">Direct Response</span><span>)</span></a> to Relying Parties.
+          
+</p>
+<a name="http_encoding"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4.1.2"></a><h3>4.1.2.&nbsp;
+HTTP Encoding</h3>
+
+<p>
+            When a message is sent to an HTTP server, it MUST be encoded
+            using a form encoding specified in Section 17.13.4 of
+            <a class="info" href="#HTML401">[HTML401]<span> (</span><span class="info">W3C, “HTML 4.01 Specification,” .</span><span>)</span></a>. Likewise, if the "Content-Type"
+            header is included in the request headers, its value MUST
+            also be such an encoding.
+          
+</p>
+<p>
+            All of the keys in the request message MUST be prefixed
+            with "openid.". This prefix prevents interference with
+            other parameters that are passed along with the OpenID
+            Authentication message. When a message is sent as a POST,
+            OpenID parameters MUST only be sent in, and extracted
+            from, the POST body.
+          
+</p>
+<p>
+            All messages that are sent as HTTP requests (GET or POST)
+            MUST contain the following fields:
+
+            </p>
+<ul class="text">
+<li>
+                openid.ns
+                
+<blockquote class="text">
+<p>
+                    Value: "http://specs.openid.net/auth/2.0"
+                  
+</p>
+<p>
+                    This particular value MUST be present for the
+                    request to be a valid OpenID Authentication 2.0
+                    request. Future versions of the specification may
+                    define different values in order to allow message
+                    recipients to properly interpret the request.
+                  
+</p>
+<p>
+                    If this value is absent or set to one of
+                    "http://openid.net/signon/1.1" or
+                    "http://openid.net/signon/1.0", then this message
+                    SHOULD be interpreted using <a class="info" href="#compat_mode">OpenID Authentication 1.1
+                    Compatibility mode<span> (</span><span class="info">OpenID Authentication 1.1 Compatibility</span><span>)</span></a>.
+                  
+</p>
+</blockquote>
+              
+</li>
+<li>
+                openid.mode
+                
+<blockquote class="text">
+<p>
+                    Value: Specified individually for each message
+                    type.
+                  
+</p>
+<p>
+                    The "openid.mode" parameter allows the recipient
+                    of the message to know what kind of message it is
+                    processing. If "openid.mode" is absent, the party
+                    processing the message SHOULD assume that the
+                    request is not an OpenID message.
+                  
+</p>
+</blockquote>
+              
+</li>
+</ul><p>
+          
+</p>
+<p>
+            This model applies to messages from the User-Agent to both
+            the Relying Party and the OP, as well as messages from the
+            Relying Party to the OP.
+          
+</p>
+<a name="anchor5"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4.1.3"></a><h3>4.1.3.&nbsp;
+Example</h3>
+
+<p>
+            Non-normative
+          
+</p>
+<p>
+              The following examples encode the following information:
+            
+</p><div style="display: table; width: 0pt; margin-left: 3em; margin-right: auto;"><pre>Key     | Value
+--------+---------------------------
+mode    | error
+error   | This is an example message
+
+</pre></div>
+<p>
+              Key-Value Form encoded:
+            
+</p><div style="display: table; width: 0pt; margin-left: 3em; margin-right: auto;"><pre>mode:error
+error:This is an example message
+
+</pre></div>
+<p>
+              x-www-urlencoded, as in a HTTP POST body or in a URL's
+              query string (<a class="info" href="#RFC3986">[RFC3986]<span> (</span><span class="info">Berners-Lee, T., “Uniform Resource Identifiers (URI): Generic Syntax,” .</span><span>)</span></a> section 3):
+            
+</p><div style="display: table; width: 0pt; margin-left: 3em; margin-right: auto;"><pre>openid.mode=error&amp;openid.error=This%20is%20an%20example%20message</pre></div>
+<a name="btwoc"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4.2"></a><h3>4.2.&nbsp;
+Integer Representations</h3>
+
+<p>
+          Arbitrary precision integers MUST be encoded as big-endian
+          signed two's complement binary strings. Henceforth, "btwoc"
+          is a function that takes an arbitrary precision integer and
+          returns its shortest big-endian two's complement
+          representation. All integers that are used with
+          Diffie-Hellman Key Exchange are positive. This means that
+          the left-most bit of the two's complement representation
+          MUST be zero. If it is not, implementations MUST add a zero
+          byte at the front of the string.
+        
+</p>
+<p>Non-normative example:
+</p><div style="display: table; width: 0pt; margin-left: 3em; margin-right: auto;"><pre>Base 10 number | btwoc string representation
+---------------+----------------------------
+0              | "\x00"
+127            | "\x7F"
+128            | "\x00\x80"
+255            | "\x00\xFF"
+32768          | "\x00\x80\x00"
+</pre></div>
+<a name="anchor6"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.5"></a><h3>5.&nbsp;
+Communication Types</h3>
+
+<a name="direct_comm"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.5.1"></a><h3>5.1.&nbsp;
+Direct Communication</h3>
+
+<p>
+          Direct communication is initiated by a Relying Party to an
+          OP endpoint URL.  It is used for <a class="info" href="#associations">establishing associations<span> (</span><span class="info">Establishing Associations</span><span>)</span></a> and
+          <a class="info" href="#check_auth">verifying authentication
+          assertions<span> (</span><span class="info">Verifying Directly with the OpenID Provider</span><span>)</span></a>.
+        
+</p>
+<a name="direct_request"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.5.1.1"></a><h3>5.1.1.&nbsp;
+Direct Request</h3>
+
+<p>
+            The message MUST be encoded as a POST body, as specified
+            by <a class="info" href="#http_encoding">Section&nbsp;4.1.2<span> (</span><span class="info">HTTP Encoding</span><span>)</span></a>.
+          
+</p>
+<p>
+            All direct requests are HTTP POSTs, and so
+            contain the required fields listed in <a class="info" href="#http_encoding">Section&nbsp;4.1.2<span> (</span><span class="info">HTTP Encoding</span><span>)</span></a>.
+          
+</p>
+<a name="direct_response"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.5.1.2"></a><h3>5.1.2.&nbsp;
+Direct Response</h3>
+
+<p>
+            The body of a response to a <a class="info" href="#direct_request">Direct Request<span> (</span><span class="info">Direct Request</span><span>)</span></a> consists of
+            an HTTP Response body in <a class="info" href="#kvform">Key-Value
+            Form<span> (</span><span class="info">Key-Value Form Encoding</span><span>)</span></a>. The content-type of the response SHOULD be
+            "text/plain".
+          
+</p>
+<p>
+            All Key-Value form message MUST contain the following field:
+
+            </p>
+<ul class="text">
+<li>
+                ns
+                
+<blockquote class="text">
+<p>
+                    Value: "http://specs.openid.net/auth/2.0"
+                  
+</p>
+<p>
+                    This particular value MUST be present for the
+                    response to be a valid OpenID 2.0 response. Future
+                    versions of the specification may define different
+                    values in order to allow message recipients to
+                    properly interpret the request.
+                  
+</p>
+<p>
+                    If this value is absent or set to one of
+                    "http://openid.net/signon/1.1" or
+                    "http://openid.net/signon/1.0", then this message
+                    SHOULD be interpreted using <a class="info" href="#compat_mode">OpenID Authentication 1.1
+                    Compatibility mode<span> (</span><span class="info">OpenID Authentication 1.1 Compatibility</span><span>)</span></a>.
+                  
+</p>
+</blockquote>
+              
+</li>
+</ul><p>
+          
+</p>
+<a name="anchor7"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.5.1.2.1"></a><h3>5.1.2.1.&nbsp;
+Successful Responses</h3>
+
+<p>
+              A server receiving a valid request MUST send a
+              response with an HTTP status code of 200.
+            
+</p>
+<a name="anchor8"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.5.1.2.2"></a><h3>5.1.2.2.&nbsp;
+Error Responses</h3>
+
+<p>
+              If a request is malformed or contains invalid arguments,
+              the server MUST send a response with a status code of
+              400. The response body MUST be a <a class="info" href="#kvform">Key-Value Form<span> (</span><span class="info">Key-Value Form Encoding</span><span>)</span></a> message with the
+              following fields:
+            
+</p>
+<p>
+              </p>
+<ul class="text">
+<li>
+                  ns
+                  
+<blockquote class="text">
+<p>
+                      As specified in <a class="info" href="#direct_response">Section&nbsp;5.1.2<span> (</span><span class="info">Direct Response</span><span>)</span></a>.
+                    
+</p>
+</blockquote>
+                
+</li>
+<li>
+                  error
+                  
+<blockquote class="text">
+<p>
+                      Value: A human-readable message indicating the cause
+                      of the error.
+                    
+</p>
+</blockquote>
+                
+</li>
+<li>
+                  contact
+                  
+<blockquote class="text">
+<p>
+                      Value: (optional) Contact address for the
+                      administrator of the sever. The contact address
+                      may take any form, as it is intended to be
+                      displayed to a person.
+                    
+</p>
+</blockquote>
+                
+</li>
+<li>
+                  reference
+                  
+<blockquote class="text">
+<p>
+                      Value: (optional) A reference token, such
+                      as a support ticket number or a URL to a news
+                      blog, etc.
+                    
+</p>
+</blockquote>
+                
+</li>
+</ul><p>
+               The OP MAY add additional fields to this response.
+            
+</p>
+<a name="indirect_comm"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.5.2"></a><h3>5.2.&nbsp;
+Indirect Communication</h3>
+
+<p>
+          In indirect communication, messages are passed through the
+          User-Agent.  This can be initiated by either the Relying
+          Party or the OP.  Indirect communication is used for <a class="info" href="#requesting_authentication">authentication
+          requests<span> (</span><span class="info">Requesting Authentication</span><span>)</span></a> and <a class="info" href="#responding_to_authentication">authentication
+          responses<span> (</span><span class="info">Responding to Authentication Requests</span><span>)</span></a>.
+        
+</p>
+<p>
+          There are two methods for indirect communication: HTTP
+          redirects and HTML form submission.
+          Both form submission and redirection require that the sender
+          know a recipient URL and that the recipient URL expect
+          indirect messages, as specified in <a class="info" href="#http_encoding">Section&nbsp;4.1.2<span> (</span><span class="info">HTTP Encoding</span><span>)</span></a>. The initiator of the communication chooses which method
+          of indirect communication is appropriate depending on
+          capabilities, message size, or other external factors.
+        
+</p>
+<p>
+          All indirect messages arrive as HTTP requests, and so
+          contain the required fields listed in <a class="info" href="#http_encoding">Section&nbsp;4.1.2<span> (</span><span class="info">HTTP Encoding</span><span>)</span></a>.
+        
+</p>
+<a name="anchor9"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.5.2.1"></a><h3>5.2.1.&nbsp;
+HTTP Redirect</h3>
+
+<p>
+            Data can be transferred by issuing a 302, 303, or 307 HTTP
+            Redirect to the end user's User-Agent. The redirect URL is
+            the URL of the receiver with the OpenID Authentication
+            message appended to the query string, as specified in
+            <a class="info" href="#http_encoding">Section&nbsp;4.1.2<span> (</span><span class="info">HTTP Encoding</span><span>)</span></a>.
+          
+</p>
+<a name="anchor10"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.5.2.2"></a><h3>5.2.2.&nbsp;
+HTML FORM Redirection</h3>
+
+<p>
+            A mapping of keys to values can be transferred by
+            returning an HTML page to the User-Agent that contains an
+            HTML form element. Form submission MAY be automated,
+            for example by using JavaScript.
+          
+</p>
+<p>
+            The &lt;form&gt; element's "action" attribute value MUST
+            be the URL of the receiver. Each Key-Value pair MUST be
+            included in the form as an &lt;input&gt; element. The key
+            MUST be encoded as the "name" attribute and the value as
+            the "value" attribute, such that the User-Agent will
+            generate a message as specified in <a class="info" href="#http_encoding">Section&nbsp;4.1.2<span> (</span><span class="info">HTTP Encoding</span><span>)</span></a> when the form is submitted. The
+            form MUST include a submit button.
+          
+</p>
+<a name="indirect_error"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.5.2.3"></a><h3>5.2.3.&nbsp;
+Indirect Error Responses</h3>
+
+<p>
+            In the case of a malformed request, or one that contains
+            invalid arguments, the OpenID Provider MUST redirect the
+            User-Agent to the "openid.return_to" URL value if the
+            value is present and it is a valid URL.
+          
+</p>
+<p>
+            </p>
+<ul class="text">
+<li>
+                openid.ns
+                
+<blockquote class="text">
+<p>
+                    As specified in <a class="info" href="#http_encoding">Section&nbsp;4.1.2<span> (</span><span class="info">HTTP Encoding</span><span>)</span></a>.
+                  
+</p>
+</blockquote>
+              
+</li>
+<li>
+                openid.mode
+                
+<blockquote class="text">
+<p>
+                    Value: "error"
+                  
+</p>
+</blockquote>
+              
+</li>
+<li>
+                openid.error
+                
+<blockquote class="text">
+<p>
+                    Value: A human-readable message indicating the cause
+                    of the error.
+                  
+</p>
+</blockquote>
+              
+</li>
+<li>
+                openid.contact
+                
+<blockquote class="text">
+<p>
+                    Value: (optional) Contact address for the
+                    administrator of the sever. The contact address
+                    may take any form, as it is intended to be
+                    displayed to a person.
+                  
+</p>
+</blockquote>
+              
+</li>
+<li>
+                openid.reference
+                
+<blockquote class="text">
+<p>
+                    Value: (optional) A reference token, such as a
+                    support ticket number or a URL to a news blog,
+                    etc.
+                  
+</p>
+</blockquote>
+              
+</li>
+</ul><p>
+
+            The server MAY add additional keys to this response.
+          
+</p>
+<p>
+            If the malformed or invalid message is received by the Relying
+            Party, or "openid.return_to" is not present or its value is not
+            a valid URL, the server SHOULD return a response to the
+            end user indicating the error and that it is unable to continue.
+          
+</p>
+<a name="generating_signatures"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.6"></a><h3>6.&nbsp;
+Generating Signatures</h3>
+
+<p>
+        The most common usage of an association is as a Message
+        Authentication Code (MAC) key used to sign OpenID
+        Authentication messages.
+      
+</p>
+<p>
+        When generating MAC keys, the recommendations in <a class="info" href="#RFC1750">[RFC1750]<span> (</span><span class="info">Eastlake, D., Crocker, S., and J. Schiller, “Randomness Recommendations for Security,” .</span><span>)</span></a> SHOULD be followed.
+      
+</p>
+<a name="anchor11"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.6.1"></a><h3>6.1.&nbsp;
+Procedure</h3>
+
+<p>
+          To generate a message signature:
+
+          </p>
+<ol class="text">
+<li>
+              Determine the list of keys to be signed, according to
+              the message to be signed (See <a class="info" href="#positive_assertions">Section&nbsp;10.1<span> (</span><span class="info">Positive Assertions</span><span>)</span></a>). The list of keys to be
+              signed MUST be part of the message. The list is stored
+              with the key "openid.signed". The value is a
+              comma-separated list of keys, with the "openid." prefix
+              stripped. This algorithm is only capable of signing keys
+              that start with "openid."
+            
+</li>
+<li>
+              Iterate through the list of keys to be signed in the
+              order they appear in "openid.signed" list.  For each
+              key, find the value in the message whose key is equal to
+              the signed list key prefixed with "openid."
+            
+</li>
+<li>
+              Convert the list of key/value pairs to be signed to an
+              octet string by encoding with <a class="info" href="#kvform">Key-Value Form Encoding<span> (</span><span class="info">Key-Value Form Encoding</span><span>)</span></a>.
+            
+</li>
+<li>
+              Determine the signature algorithm from the <a class="info" href="#associations">association type<span> (</span><span class="info">Establishing Associations</span><span>)</span></a>.  Apply
+              the <a class="info" href="#sign_algos">signature algorithm<span> (</span><span class="info">Signature Algorithms</span><span>)</span></a>
+              to the octet string.
+            
+</li>
+</ol><p>
+        
+</p>
+<a name="sign_algos"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.6.2"></a><h3>6.2.&nbsp;
+Signature Algorithms</h3>
+
+<p>
+          OpenID Authentication supports two signature algorithms:
+
+          </p>
+<ul class="text">
+<li>HMAC-SHA1 - 160 bit key length (<a class="info" href="#RFC2104">[RFC2104]<span> (</span><span class="info">Krawczyk, H., Bellare, M., and R. Canetti, “HMAC: Keyed-Hashing for Message Authentication,” .</span><span>)</span></a> and <a class="info" href="#RFC3174">[RFC3174]<span> (</span><span class="info">Eastlake, D. and P. Jones, “US Secure Hash Algorithm 1 (SHA1),” .</span><span>)</span></a>)
+</li>
+<li>HMAC-SHA256 - 256 bit key length (<a class="info" href="#RFC2104">[RFC2104]<span> (</span><span class="info">Krawczyk, H., Bellare, M., and R. Canetti, “HMAC: Keyed-Hashing for Message Authentication,” .</span><span>)</span></a> and <a class="info" href="#FIPS180-2">[FIPS180‑2]<span> (</span><span class="info">U.S.
+Department of Commerce and National Institute of Standards and
+Technology, “Secure Hash Signature Standard,” .</span><span>)</span></a>
+</li>
+</ul><p>
+
+          If supported, the use of HMAC-SHA256 is RECOMMENDED.
+        
+</p>
+<a name="anchor12"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.7"></a><h3>7.&nbsp;
+Initiation and Discovery</h3>
+
+<a name="initiation"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.7.1"></a><h3>7.1.&nbsp;
+Initiation</h3>
+
+<p>
+          To initiate OpenID Authentication, the Relying Party SHOULD
+          present the end user with a form that has a field for
+          entering a User-Supplied Identifier.
+        
+</p>
+<p>
+          The form field's "name" attribute SHOULD have the value
+          "openid_identifier", so that User-Agents can automatically
+          determine that this is an OpenID form. Browser extensions or
+          other software that support OpenID Authentication may not
+          detect a Relying Party's support if this attribute is not
+          set appropriately.
+        
+</p>
+<a name="normalization"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.7.2"></a><h3>7.2.&nbsp;
+Normalization</h3>
+
+<p>
+          The end user's input MUST be normalized into an
+          Identifier, as follows:
+        
+</p>
+<p>
+          </p>
+<ol class="text">
+<li>
+              If the user's input starts with the "xri://" prefix,
+              it MUST be stripped off, so that XRIs are used in the
+              canonical form.
+            
+</li>
+<li>
+              If the first character of the resulting string is an
+              XRI Global Context Symbol ("=", "@", "+", "$", "!") or "(", as
+              defined in Section 2.2.1 of <a class="info" href="#XRI_Syntax_2.0">[XRI_Syntax_2.0]<span> (</span><span class="info">Reed, D. and D. McAlpin, “Extensible Resource Identifier (XRI) Syntax V2.0,” .</span><span>)</span></a>, 
+              then the input SHOULD be treated as an XRI.
+            
+</li>
+<li>
+              Otherwise, the input SHOULD be treated as an http URL; if it
+              does not include a "http" or "https" scheme, the Identifier
+              MUST be prefixed with the string "http://". If the URL
+              contains a fragment part, it MUST be stripped off
+              together with the fragment delimiter character "#". See
+              <a class="info" href="#http_s_identifiers">Section&nbsp;11.5.2<span> (</span><span class="info">HTTP and HTTPS URL Identifiers</span><span>)</span></a> for more information.
+            
+</li>
+<li>
+              URL Identifiers MUST then be further normalized by both
+              following redirects when retrieving their content and
+              finally applying the rules in Section 6 of <a class="info" href="#RFC3986">[RFC3986]<span> (</span><span class="info">Berners-Lee, T., “Uniform Resource Identifiers (URI): Generic Syntax,” .</span><span>)</span></a> to the final destination URL. This
+              final URL MUST be noted by the Relying Party as the
+              Claimed Identifier and be used when <a class="info" href="#requesting_authentication">requesting
+              authentication<span> (</span><span class="info">Requesting Authentication</span><span>)</span></a>.
+            
+</li>
+</ol><p>
+
+          See <a class="info" href="#normalization_example">normalization
+          example<span> (</span><span class="info">Normalization</span><span>)</span></a>.
+
+        
+</p>
+<a name="discovery"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.7.3"></a><h3>7.3.&nbsp;
+Discovery</h3>
+
+<p>
+          Discovery is the process where the Relying Party uses the
+          Identifier to look up ("discover") the necessary information
+          for initiating requests. OpenID Authentication has three
+          paths through which to do discovery:
+        
+</p>
+<p>
+          </p>
+<ol class="text">
+<li>
+              If the identifier is an XRI, <a class="info" href="#XRI_Resolution_2.0">[XRI_Resolution_2.0]<span> (</span><span class="info">Wachob,
+G., Reed, D., Chasen, L., Tan, W., and S. Churchill, “Extensible
+Resource Identifier (XRI) Resolution V2.0 - Committee Draft 02,” .</span><span>)</span></a>
+              will yield an XRDS document that
+              contains the necessary information.  It should also be
+              noted that Relying Parties can take advantage of
+              XRI Proxy Resolvers, such as the one provided by
+              XDI.org at http://www.xri.net. This will remove the need for the RPs to
+              perform XRI Resolution locally.
+            
+</li>
+<li>
+              If it is a URL, the <a class="info" href="#Yadis">Yadis
+              protocol<span> (</span><span class="info">Miller, J., “Yadis Specification 1.0,” .</span><span>)</span></a> [Yadis] SHALL be first attempted. If it
+              succeeds, the result is again an XRDS document.
+            
+</li>
+<li>
+              If the Yadis protocol fails and no valid XRDS document
+              is retrieved, or no <a class="info" href="#service_elements">Service Elements<span> (</span><span class="info">OpenID Service Elements</span><span>)</span></a> are
+              found in the XRDS document, the URL is retrieved and
+              <a class="info" href="#html_disco">HTML-Based discovery<span> (</span><span class="info">HTML-Based Discovery</span><span>)</span></a>
+              SHALL be attempted.
+            
+</li>
+</ol><p>
+        
+</p>
+<a name="discovered_info"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.7.3.1"></a><h3>7.3.1.&nbsp;
+Discovered Information</h3>
+
+<p>
+            Upon successful completion of discovery, the Relying Party
+            will have one or more sets of the following information
+            (see the <a class="info" href="#terminology">Terminology
+            section<span> (</span><span class="info">Terminology</span><span>)</span></a> for definitions).  If more than one set of
+            the following information has been discovered, the
+            precedence rules defined in <a class="info" href="#XRI_Resolution_2.0">[XRI_Resolution_2.0]<span> (</span><span class="info">Wachob,
+G., Reed, D., Chasen, L., Tan, W., and S. Churchill, “Extensible
+Resource Identifier (XRI) Resolution V2.0 - Committee Draft 02,” .</span><span>)</span></a>
+            are to be applied.
+
+            </p>
+<ul class="text">
+<li>OP Endpoint URL
+</li>
+<li>Protocol Version
+</li>
+</ul><p>
+
+            If the end user did not enter an OP Identifier, the
+            following information will also be present:
+
+            </p>
+<ul class="text">
+<li>Claimed Identifier
+</li>
+<li>OP-Local Identifier
+</li>
+</ul><p>
+
+            If the end user entered an OP Identifier, there is no
+            Claimed Identifier. For the purposes of making OpenID
+            Authentication requests, the value
+            "http://specs.openid.net/auth/2.0/identifier_select"
+            MUST be used as both the Claimed Identifier and the
+            OP-Local Identifier when an OP Identifier is entered.
+          
+</p>
+<a name="anchor13"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.7.3.2"></a><h3>7.3.2.&nbsp;
+XRDS-Based Discovery</h3>
+
+<p>
+            If XRI or Yadis discovery was used, the result will be an
+            XRDS Document.  This is an XML document with entries for
+            services that are related to the Identifier.  It is
+            defined in <a class="info" href="#XRI_Resolution_2.0">Section 3
+            of<span> (</span><span class="info">Wachob,
+G., Reed, D., Chasen, L., Tan, W., and S. Churchill, “Extensible
+Resource Identifier (XRI) Resolution V2.0 - Committee Draft 02,” .</span><span>)</span></a> [XRI_Resolution_2.0].  See <a class="info" href="#XRDS_Sample">Appendix&nbsp;A.3<span> (</span><span class="info">XRDS</span><span>)</span></a> for an
+            example XRDS document.
+          
+</p>
+<a name="service_elements"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.7.3.2.1"></a><h3>7.3.2.1.&nbsp;
+OpenID Service Elements</h3>
+
+<a name="anchor14"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.7.3.2.1.1"></a><h3>7.3.2.1.1.&nbsp;
+OP Identifier Element</h3>
+
+<p>
+                An OP Identifier Element is an &lt;xrd:Service&gt;
+                element with the following information:
+
+                </p>
+<blockquote class="text"><dl>
+<dt></dt>
+<dd>
+                    An &lt;xrd:Type&gt; tag whose text content is
+                    "http://specs.openid.net/auth/2.0/server".
+                  
+</dd>
+<dt></dt>
+<dd>
+                    An &lt;xrd:URI&gt; tag whose text content is the
+                    OP Endpoint URL
+                  
+</dd>
+</dl></blockquote><p>
+              
+</p>
+<a name="anchor15"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.7.3.2.1.2"></a><h3>7.3.2.1.2.&nbsp;
+Claimed Identifier Element</h3>
+
+<p>
+                A Claimed Identifier Element is an
+                &lt;xrd:Service&gt; element with the following
+                information:
+
+                </p>
+<blockquote class="text"><dl>
+<dt></dt>
+<dd>
+                    An &lt;xrd:Type&gt; tag whose text content is
+                    "http://specs.openid.net/auth/2.0/signon".
+                  
+</dd>
+<dt></dt>
+<dd>
+                    An &lt;xrd:URI&gt; tag whose text content is the
+                    OP Endpoint URL.
+                  
+</dd>
+<dt></dt>
+<dd>
+                    An &lt;xrd:LocalID&gt; tag (optional) whose text
+                    content is the OP-Local Identifier.
+                  
+</dd>
+</dl></blockquote><p>
+              
+</p>
+<a name="extracting_auth"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.7.3.2.2"></a><h3>7.3.2.2.&nbsp;
+Extracting Authentication Data</h3>
+
+<p>
+              Once the Relying Party has obtained an XRDS document, it
+              MUST first search the document (following the rules
+              described in <a class="info" href="#XRI_Resolution_2.0">[XRI_Resolution_2.0]<span> (</span><span class="info">Wachob,
+G., Reed, D., Chasen, L., Tan, W., and S. Churchill, “Extensible
+Resource Identifier (XRI) Resolution V2.0 - Committee Draft 02,” .</span><span>)</span></a>) for
+              an OP Identifier Element. If none is found, the RP will search
+              for a Claimed Identifier Element.
+            
+</p>
+<a name="canonicalid"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.7.3.2.3"></a><h3>7.3.2.3.&nbsp;
+XRI and the CanonicalID Element</h3>
+
+<p>
+              When the Identifier is an XRI, the &lt;xrd:XRD&gt;
+              element that contains the OpenID Authentication
+              &lt;xrd:Service&gt; element MUST also contain a
+              &lt;CanonicalID&gt; element. The content of this element
+              MUST be used as the Claimed Identifier (see <a class="info" href="#identifying">Section&nbsp;11.5<span> (</span><span class="info">Identifying the end user</span><span>)</span></a>).  This is a vital security
+              consideration because a primary purpose of the
+              &lt;CanonicalID&gt; element is to assert a persistent
+              identifier that will never be reassigned, thus
+              preventing the possibility of an XRI being ("taken
+              over") by a new registrant.
+            
+</p>
+<p>
+              The Relying Party MUST confirm that the provider of the
+              XRD that contains the &lt;CanonicalID&gt; element is
+              authoritative for that Canonical ID and that this XRDS
+              document is authoritative for the OpenID Service
+              Element. Relying Parties should either do this manually
+              or ensure that their resolver does this.
+           
+</p>
+<p>
+              When using XRI resolution, the Canonical ID MUST be
+              used as the Claimed Identifier. For an XRI to be a
+              valid Identifier, both the &lt;ProviderID&gt; and
+              &lt;CanonicalID&gt; MUST be present in the discovered
+              XRDS document.
+            
+</p>
+<p>
+              When using URL Identifiers, the CanonicalID
+              element MUST be ignored if present.
+            
+</p>
+<a name="anchor16"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.7.3.2.4"></a><h3>7.3.2.4.&nbsp;
+Additional Information</h3>
+
+<p>
+              The "openid" namespace is no longer used as of OpenID
+              Authentication 2.0.  The "xrd" namespace is
+              "xri://$xrd*($v*2.0)".
+            
+</p>
+<p>
+              For compatibility with deployed code, it is RECOMMENDED
+              that Relying Parties also accept
+              "http://openid.net/signon/1.0" or
+              "http://openid.net/signon/1.1" for the value of
+              &lt;xrd:Type&gt;, as described in the <a class="info" href="#compat_mode">OpenID Authentication 1.1
+              Compatibility mode<span> (</span><span class="info">OpenID Authentication 1.1 Compatibility</span><span>)</span></a> section. It is RECOMMENDED
+              that Relying Parties supporting OpenID Authentication
+              2.0 choose to use, if available, endpoints with the type
+              "http://specs.openid.net/auth/2.0/server" and
+              "http://specs.openid.net/auth/2.0/signon", in
+              this order, as specified in <a class="info" href="#extracting_auth">Section&nbsp;7.3.2.2<span> (</span><span class="info">Extracting Authentication Data</span><span>)</span></a>
+            
+</p>
+<p>
+              If an OP supports extensions (<a class="info" href="#extensions">Section&nbsp;12<span> (</span><span class="info">Extensions</span><span>)</span></a>), the extensions SHOULD be listed as additional
+              &lt;xrd:Type&gt; child elements of the
+              &lt;xrd:Service&gt; element.
+            
+</p>
+<a name="html_disco"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.7.3.3"></a><h3>7.3.3.&nbsp;
+HTML-Based Discovery</h3>
+
+<p>
+            HTML-Based discovery MUST be supported by Relying
+            Parties. HTML-Based discovery is only usable for discovery
+            of Claimed Identifiers. OP Identifiers must be XRIs or
+            URLs that support XRDS discovery.
+          
+</p>
+<p>
+            To use HTML-Based discovery, an HTML document MUST be
+            available at the URL of the Claimed Identifier. Within the
+            HEAD element of the document:
+
+            </p>
+<blockquote class="text">
+<p>
+                A LINK element MUST be included with attributes
+                "rel" set to "openid2.provider" and "href" set to an OP
+                Endpoint URL
+              
+</p>
+<p>
+                A LINK element MAY be included with attributes
+                "rel" set to "openid2.local_id" and "href" set to the
+                end user's OP-Local Identifier
+              
+</p>
+</blockquote><p>
+          
+</p>
+<p>
+            The protocol version when HTML discovery is performed is
+            "http://specs.openid.net/auth/2.0/signon".
+          
+</p>
+<p>
+            The host of the HTML document MAY be different from the
+            end user's OP's host.
+          
+</p>
+<p>
+            The "openid2.provider" and "openid2.local_id" URLs MUST NOT
+            include entities other than "&amp;amp;", "&amp;lt;",
+            "&amp;gt;", and "&amp;quot;". Other characters that would
+            not be valid in the HTML document or that cannot be
+            represented in the document's character encoding MUST be
+            escaped using the percent-encoding (%xx) mechanism
+            described in <a class="info" href="#RFC3986">[RFC3986]<span> (</span><span class="info">Berners-Lee, T., “Uniform Resource Identifiers (URI): Generic Syntax,” .</span><span>)</span></a>.
+          
+</p>
+<p>
+	        As discussed in the <a class="info" href="#compat_mode">OpenID Authentication 1.1
+            Compatibility mode<span> (</span><span class="info">OpenID Authentication 1.1 Compatibility</span><span>)</span></a> section, these discovery tags
+            are not the same as in previous versions of the protocol.
+            While the same data is conveyed, the names have changed which
+            allows a Relying Party to determine the protocol version
+            being used.  A Relying Party MAY encounter a Claimed Identifier
+            which uses HTML-Based Discovery to advertise both version 1.1
+            and 2.0 Providers.
+          
+</p>
+<a name="associations"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.8"></a><h3>8.&nbsp;
+Establishing Associations</h3>
+
+<p>
+        An association between the Relying Party and the OpenID Provider
+        establishes a shared secret between them, which is used to verify
+        subsequent protocol messages and reduce round trips.
+      
+</p>
+<p>
+        It is RECOMMENDED that a Relying Party form associations if it
+        is possible for it to do so.  If a Relying Party is incapable
+        of creating or storing associations, <a class="info" href="#check_auth">Section&nbsp;11.4.2<span> (</span><span class="info">Verifying Directly with the OpenID Provider</span><span>)</span></a>
+        provides an alternate verification mechanism referred to as
+        Stateless Mode.
+      
+</p>
+<a name="anchor17"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.8.1"></a><h3>8.1.&nbsp;
+Association Session Request</h3>
+
+<p>
+          An association session is initiated by a <a class="info" href="#direct_comm">direct request<span> (</span><span class="info">Direct Communication</span><span>)</span></a> from a Relying
+          Party to an OP Endpoint URL with the "openid.mode" key
+          having the value of "associate".
+        
+</p>
+<a name="anchor18"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.8.1.1"></a><h3>8.1.1.&nbsp;
+Common Request Parameters</h3>
+
+<p>
+            These parameters are common to all association requests:
+          
+</p>
+<p>
+            </p>
+<ul class="text">
+<li>openid.ns
+                
+<blockquote class="text">
+<p>
+                    As specified in <a class="info" href="#http_encoding">Section&nbsp;4.1.2<span> (</span><span class="info">HTTP Encoding</span><span>)</span></a>.
+                  
+</p>
+</blockquote>
+              
+</li>
+<li>openid.mode
+                
+<blockquote class="text">
+<p> Value: "associate"
+</p>
+</blockquote>
+              
+</li>
+<li>openid.assoc_type
+                
+<blockquote class="text">
+<p> The preferred association type.  The association
+                    type defines the algorithm to be used to sign
+                    subsequent messages.
+</p>
+<p> Value: A valid association type from <a class="info" href="#assoc_types">Section&nbsp;8.3<span> (</span><span class="info">Association Types</span><span>)</span></a>
+</p>
+</blockquote>
+              
+</li>
+<li>openid.session_type
+                
+<blockquote class="text">
+<p>
+                    The preferred association session type.  This
+                    defines the method used to encrypt the association's
+                    MAC key in transit.
+                  
+</p>
+<p>
+                    Value: A valid association session type from
+                    <a class="info" href="#assoc_sess_types">Section&nbsp;8.4<span> (</span><span class="info">Association Session Types</span><span>)</span></a>.
+                  
+</p>
+<p>
+                    Note: Unless using transport layer encryption, 
+                    "no-encryption" MUST NOT be used.
+                  
+</p>
+</blockquote>
+              
+</li>
+</ul><p>
+          
+</p>
+<a name="anchor19"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.8.1.2"></a><h3>8.1.2.&nbsp;
+Diffie-Hellman Request Parameters</h3>
+
+<p>
+            The following parameters are common to requests whose
+            requested association session type is "DH-SHA1" or
+            "DH-SHA256":
+          
+</p>
+<p>
+            </p>
+<ul class="text">
+<li>
+                openid.dh_modulus
+                
+<blockquote class="text">
+<p>Value: base64(btwoc(p))
+</p>
+<p>Default: See <a class="info" href="#pvalue">Appendix&nbsp;B<span> (</span><span class="info">Diffie-Hellman Key Exchange Default Value</span><span>)</span></a>
+</p>
+</blockquote>
+              
+</li>
+<li>
+                openid.dh_gen
+                
+<blockquote class="text">
+<p>Value: base64(btwoc(g))
+</p>
+<p>Default: g = 2
+</p>
+</blockquote>
+              
+</li>
+<li>
+                openid.dh_consumer_public
+                
+<blockquote class="text">
+<p>Value: base64(btwoc(g ^ xa mod p))
+</p>
+</blockquote>
+              
+</li>
+</ul><p>
+          
+</p>
+<p>
+            See <a class="info" href="#dh_sessions">Section&nbsp;8.4.2<span> (</span><span class="info">Diffie-Hellman Association Sessions</span><span>)</span></a> for more information on
+            these parameters.
+          
+</p>
+<p>
+            NOTE: The 'btwoc' function is defined in <a class="info" href="#btwoc">Section&nbsp;4.2<span> (</span><span class="info">Integer Representations</span><span>)</span></a>.
+          
+</p>
+<a name="anchor20"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.8.2"></a><h3>8.2.&nbsp;
+Association Session Response</h3>
+
+<p>
+          An association session response is a direct response from the
+          OP to the Relying Party in <a class="info" href="#kvform">Key-Value
+          Form<span> (</span><span class="info">Key-Value Form Encoding</span><span>)</span></a>.
+        
+</p>
+<a name="anchor21"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.8.2.1"></a><h3>8.2.1.&nbsp;
+Common Response Parameters</h3>
+
+<p>
+            </p>
+<ul class="text">
+<li>
+                ns
+                
+<blockquote class="text">
+<p>
+                    As specified in <a class="info" href="#direct_response">Section&nbsp;5.1.2<span> (</span><span class="info">Direct Response</span><span>)</span></a>.
+                  
+</p>
+</blockquote>
+              
+</li>
+<li>
+                assoc_handle
+                
+<blockquote class="text">
+<p>
+                    The association handle is used as a key to refer
+                    to this association in subsequent messages.
+                  
+</p>
+<p>
+                    Value: A string 255 characters or less in length.
+                    It MUST consist only of ASCII characters in the
+                    range 33-126 inclusive (printable non-whitespace
+                    characters).
+                  
+</p>
+</blockquote>
+              
+</li>
+<li>
+                session_type
+                
+<blockquote class="text">
+<p>
+                    The value of the "openid.session_type" parameter
+                    from the request.  If the OP is unwilling or
+                    unable to support this association type, it MUST
+                    return an <a class="info" href="#refuse_assoc">unsuccessful
+                    response<span> (</span><span class="info">Unsuccessful Response Parameters</span><span>)</span></a>.
+                  
+</p>
+</blockquote>
+              
+</li>
+<li>
+                assoc_type
+                
+<blockquote class="text">
+<p>
+                    The value of the "openid.assoc_type" parameter
+                    from the request.  If the OP is unwilling or
+                    unable to support this association type, it MUST
+                    return an <a class="info" href="#refuse_assoc">unsuccessful
+                    response<span> (</span><span class="info">Unsuccessful Response Parameters</span><span>)</span></a>.
+                  
+</p>
+</blockquote>
+              
+</li>
+<li>
+                expires_in
+                
+<blockquote class="text">
+<p>
+                    The lifetime, in seconds, of this association.
+                    The Relying Party MUST NOT use the association
+                    after this time has passed.
+                  
+</p>
+<p>
+                    Value: An integer, represented in base 10 ASCII.
+                  
+</p>
+</blockquote>
+              
+</li>
+</ul><p>
+          
+</p>
+<a name="anchor22"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.8.2.2"></a><h3>8.2.2.&nbsp;
+Unencrypted Response Parameters</h3>
+
+<p>
+            </p>
+<ul class="text">
+<li>
+                mac_key
+                
+<blockquote class="text">
+<p>
+                    The MAC key (shared secret) for this
+                    association, <a class="info" href="#RFC3548">Base 64<span> (</span><span class="info">Josefsson, S., “The Base16, Base32, and Base64 Data Encodings,” .</span><span>)</span></a> [RFC3548]
+                    encoded.
+                  
+</p>
+</blockquote>
+              
+</li>
+</ul><p>
+          
+</p>
+<a name="anchor23"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.8.2.3"></a><h3>8.2.3.&nbsp;
+Diffie-Hellman Response Parameters</h3>
+
+<p>
+            </p>
+<ul class="text">
+<li>
+                dh_server_public
+                
+<blockquote class="text">
+<p>
+                    Value: base64(btwoc(g ^ xb mod p))
+                  
+</p>
+<p>
+                    Description: The OP's Diffie-Hellman public key.
+                  
+</p>
+</blockquote>
+              
+</li>
+<li>
+                enc_mac_key
+                
+<blockquote class="text">
+<p>
+                    Value: base64(H(btwoc(g ^ (xa * xb) mod p)) XOR MAC key)
+                  
+</p>
+<p>
+                    Description: The MAC key (shared secret),
+                    encrypted with the secret Diffie-Hellman value. H
+                    is either "SHA1" or "SHA256" depending on the
+                    session type.
+                  
+</p>
+</blockquote>
+              
+</li>
+</ul><p>
+          
+</p>
+<p>
+            NOTE: The 'btwoc' function is defined in <a class="info" href="#btwoc">Section&nbsp;4.2<span> (</span><span class="info">Integer Representations</span><span>)</span></a>
+          
+</p>
+<a name="refuse_assoc"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.8.2.4"></a><h3>8.2.4.&nbsp;
+Unsuccessful Response Parameters</h3>
+
+<p>
+            If the OP does not support a session type or association
+            type, it MUST respond with a direct error message
+            indicating that the association request failed. If there
+            is another association session type or association type
+            that is supported, the OP SHOULD include that information
+            in the response.
+          
+</p>
+<p>
+            </p>
+<ul class="text">
+<li>
+                ns
+                
+<blockquote class="text">
+<p>
+                    As specified in <a class="info" href="#direct_response">Section&nbsp;5.1.2<span> (</span><span class="info">Direct Response</span><span>)</span></a>.
+                  
+</p>
+</blockquote>
+              
+</li>
+<li>
+                error
+                
+<blockquote class="text">
+<p>
+                    Value: A human-readable message indicating why the
+                    association request failed.
+                  
+</p>
+</blockquote>
+              
+</li>
+<li>
+                error_code
+                
+<blockquote class="text">
+<p>
+                    Value: "unsupported-type"
+                  
+</p>
+</blockquote>
+              
+</li>
+<li>
+                session_type
+                
+<blockquote class="text">
+<p>
+                    Value: (optional) A valid association session type
+                    from <a class="info" href="#assoc_sess_types">Section&nbsp;8.4<span> (</span><span class="info">Association Session Types</span><span>)</span></a> that the
+                    OP supports.
+                  
+</p>
+</blockquote>
+              
+</li>
+<li>
+                assoc_type
+                
+<blockquote class="text">
+<p>
+                    Value: (optional) An association type supported by
+                    the OP from <a class="info" href="#assoc_types">Section&nbsp;8.3<span> (</span><span class="info">Association Types</span><span>)</span></a>.
+                  
+</p>
+</blockquote>
+              
+</li>
+</ul><p>
+          
+</p>
+<p>
+            Upon receipt of an "unsupported-type" response, the
+            Relying Party MAY make another request with the specified
+            association session type and association type. If no
+            association is established, the Relying Party MAY continue
+            the authentication process in <a class="info" href="#check_auth">Direct Verification<span> (</span><span class="info">Verifying Directly with the OpenID Provider</span><span>)</span></a>.
+          
+</p>
+<a name="assoc_types"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.8.3"></a><h3>8.3.&nbsp;
+Association Types</h3>
+
+<a name="anchor24"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.8.3.1"></a><h3>8.3.1.&nbsp;
+HMAC-SHA1</h3>
+
+<p>
+            An association of type "HMAC-SHA1" uses the <a class="info" href="#sign_algos">HMAC-SHA1<span> (</span><span class="info">Signature Algorithms</span><span>)</span></a> signature algorithm.
+          
+</p>
+<a name="anchor25"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.8.3.2"></a><h3>8.3.2.&nbsp;
+HMAC-SHA256</h3>
+
+<p>
+            An association of type "HMAC-SHA256" uses the <a class="info" href="#sign_algos">HMAC-SHA256<span> (</span><span class="info">Signature Algorithms</span><span>)</span></a> signature
+            algorithm.
+          
+</p>
+<a name="assoc_sess_types"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.8.4"></a><h3>8.4.&nbsp;
+Association Session Types</h3>
+
+<p>
+          OpenID Authentication defines three valid association
+          session types: "no-encryption", "DH-SHA1", and "DH-SHA256".
+        
+</p>
+<a name="anchor26"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.8.4.1"></a><h3>8.4.1.&nbsp;
+No-Encryption Association Sessions</h3>
+
+<p>
+            In a "no-encryption" association session, the OP sends
+            the association MAC key in plain-text to the Relying Party.
+            This makes it possible for an eavesdropper to intercept
+            the key, and forge messages to this Relying Party when not
+            using transport layer encryption.  Therefore, "no-encryption"
+            association sessions MUST NOT be used unless the messages
+            are using transport layer encryption. See <a class="info" href="#preventing_eavesdropping">Section&nbsp;15.1.1<span> (</span><span class="info">Eavesdropping Attacks</span><span>)</span></a>
+            for more information.
+          
+</p>
+<p>
+            The MAC key sent by the OP MUST be the length specified
+            for the requested association type, as specified in <a class="info" href="#sign_algos">Section&nbsp;6.2<span> (</span><span class="info">Signature Algorithms</span><span>)</span></a>.
+          
+</p>
+<a name="dh_sessions"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.8.4.2"></a><h3>8.4.2.&nbsp;
+Diffie-Hellman Association Sessions</h3>
+
+<p>
+            The "DH-SHA1" and "DH-SHA256" association types use
+            Diffie-Hellman Key Exchange to securely transmit the
+            shared secret.
+          
+</p>
+<p>
+            The MAC key MUST be the same length as the output of H,
+            the hash function - 160 bits (20 bytes) for DH-SHA1 or 256
+            bits (32 bytes) for DH-SHA256, as well as the output of
+            the signature algorithm of this association.
+          
+</p>
+<p>
+            The Relying Party specifies a modulus, p, and a generator,
+            g. The Relying Party chooses a random private key xa and
+            OpenID Provider chooses a random private key xb, both in
+            the range [1 .. p-1]. The shared secret used to encrypt
+            the MAC key is thus g ^ (xa * xb) mod p = (g ^ xa) ^ xb
+            mod p = (g ^ xb) ^ xa mod p. For more information, see
+            <a class="info" href="#RFC2631">[RFC2631]<span> (</span><span class="info">Rescorla, E., “Diffie-Hellman Key Agreement Method,” .</span><span>)</span></a>. For information on the
+            selection of random values, see <a class="info" href="#RFC1750">[RFC1750]<span> (</span><span class="info">Eastlake, D., Crocker, S., and J. Schiller, “Randomness Recommendations for Security,” .</span><span>)</span></a>.
+          
+</p>
+<a name="requesting_authentication"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.9"></a><h3>9.&nbsp;
+Requesting Authentication</h3>
+
+<p>
+        Once the Relying Party has successfully performed discovery
+        and (optionally) created an association with the discovered
+        OP Endpoint URL, it can send an authentication request to the
+        OP to obtain an assertion. An authentication request is an
+        <a class="info" href="#indirect_comm">indirect request<span> (</span><span class="info">Indirect Communication</span><span>)</span></a>.
+      
+</p>
+<a name="anchor27"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.9.1"></a><h3>9.1.&nbsp;
+Request Parameters</h3>
+
+<p>
+          </p>
+<ul class="text">
+<li>
+              openid.ns
+              
+<blockquote class="text">
+<p>
+                  As specified in <a class="info" href="#http_encoding">Section&nbsp;4.1.2<span> (</span><span class="info">HTTP Encoding</span><span>)</span></a>.
+                
+</p>
+</blockquote>
+            
+</li>
+<li>
+              openid.mode
+              
+<blockquote class="text">
+<p>
+                  Value: "checkid_immediate" or "checkid_setup"
+                
+</p>
+<p>
+                  Note: If the Relying Party wishes the end user to be
+                  able to interact with the OP, "checkid_setup"
+                  should be used. An example of a situation where
+                  interaction between the end user and the OP is not
+                  desired is when the authentication request is
+                  happening asynchronously in JavaScript.
+                
+</p>
+</blockquote>
+            
+</li>
+<li>
+              openid.claimed_id
+              
+<blockquote class="text">
+<p>
+                  Value: (optional) The Claimed Identifier.
+                
+</p>
+<p>
+                  "openid.claimed_id" and "openid.identity" SHALL
+                  be either both present or both absent. If neither
+                  value is present, the assertion is not about an
+                  identifier, and will contain other information in
+                  its payload, using
+                  <a class="info" href="#extensions">extensions<span> (</span><span class="info">Extensions</span><span>)</span></a>.
+                
+</p>
+<p>
+                  It is RECOMMENDED that OPs accept XRI identifiers
+                  with or without the "xri://" prefix, as specified
+                  in the <a class="info" href="#normalization">Normalization<span> (</span><span class="info">Normalization</span><span>)</span></a> section.
+                
+</p>
+</blockquote>
+            
+</li>
+<li>
+              openid.identity
+              
+<blockquote class="text">
+<p>
+                  Value: (optional) The OP-Local Identifier.
+                
+</p>
+<p>
+                  If a different OP-Local Identifier is not specified,
+                  the claimed identifier MUST be used as the value for
+                  openid.identity. 
+                
+</p>
+<p>
+                  Note: If this is set to the special value
+                  "http://specs.openid.net/auth/2.0/identifier_select"
+                  then the OP SHOULD choose an Identifier that belongs
+                  to the end user. This parameter MAY be omitted if
+                  the request is not about an identifier (for instance
+                  if an extension is in use that makes the request
+                  meaningful without it; see openid.claimed_id above).
+                
+</p>
+</blockquote>
+            
+</li>
+<li>
+              openid.assoc_handle
+              
+<blockquote class="text">
+<p>
+                  Value: (optional) A handle for an association
+                  between the Relying Party and the OP that SHOULD be
+                  used to sign the response.
+                
+</p>
+<p>
+                  Note: If no association handle is sent, the
+                  transaction will take place in <a class="info" href="#check_auth">Stateless Mode<span> (</span><span class="info">Verifying Directly with the OpenID Provider</span><span>)</span></a>.
+                
+</p>
+</blockquote>
+            
+</li>
+<li>
+              openid.return_to
+              
+<blockquote class="text">
+<p>
+                  Value: (optional) URL to which the OP SHOULD return
+                  the User-Agent with the response indicating the
+                  status of the request.
+                
+</p>
+<p>
+                  Note: If this value is not sent in the request it
+                  signifies that the Relying Party does not wish
+                  for the end user to be returned.
+                
+</p>
+<p>
+                  Note: The return_to URL MAY be used as a mechanism
+                  for the Relying Party to attach context about the
+                  authentication request to the authentication
+                  response. This document does not define a mechanism
+                  by which the RP can ensure that query parameters are
+                  not modified by outside parties; such a mechanism
+                  can be defined by the RP itself.
+                
+</p>
+</blockquote>
+            
+</li>
+<li>
+              openid.realm
+              
+<blockquote class="text">
+<p>
+                  Value: (optional) URL pattern the OP SHOULD ask the
+                  end user to trust. See <a class="info" href="#realms">Section&nbsp;9.2<span> (</span><span class="info">Realms</span><span>)</span></a>.
+                  This value MUST be sent if openid.return_to is
+                  omitted.
+                
+</p>
+<p>
+                  Default: return_to URL
+                
+</p>
+</blockquote>
+            
+</li>
+</ul><p>
+        
+</p>
+<a name="realms"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.9.2"></a><h3>9.2.&nbsp;
+Realms</h3>
+
+<p>
+          A "realm" is a pattern that represents the part of URL-space
+          for which an OpenID Authentication request is valid. A realm
+          is designed to give the end user an indication of the scope
+          of the authentication request. OPs SHOULD present the realm
+          when requesting the end user's approval for an authentication
+          request. The realm SHOULD be used by OPs to uniquely identify
+          Relying Parties. For example, OPs MAY use the realm to allow
+          the end user to automate approval of authentication requests.
+        
+</p>
+<p>
+          A realm pattern is a URL, with the following changes:
+          </p>
+<ul class="text">
+<li>
+              A realm MUST NOT contain a URI fragment
+            
+</li>
+<li>
+              A realm MAY contain a wild-card at the beginning of the
+              URL authority section.  A wild-card consists of the
+              characters "*." prepended to the DNS name in the
+              authority section of the URL.
+            
+</li>
+</ul><p>
+        
+</p>
+<p>
+          A URL matches a realm if:
+
+          </p>
+<ul class="text">
+<li>
+              The URL scheme and port of the URL are identical to those
+              in the realm.  See <a class="info" href="#RFC3986">RFC
+              3986<span> (</span><span class="info">Berners-Lee, T., “Uniform Resource Identifiers (URI): Generic Syntax,” .</span><span>)</span></a> [RFC3986], section 3.1 for rules about URI matching.
+            
+</li>
+<li>
+              The URL's path is equal to or a sub-directory of the
+              realm's path.
+            
+</li>
+<li>
+              Either:
+              
+<ol class="text">
+<li>
+                  The realm's domain contains the wild-card characters
+                  "*.", and the trailing part of the URL's domain is
+                  identical to the part of the realm following the
+                  "*." wildcard, or
+                
+</li>
+<li>
+                  The URL's domain is identical to the realm's domain
+                
+</li>
+</ol>
+             
+</li>
+</ul><p>
+
+          When present, the "openid.return_to" URL MUST match the
+          "openid.realm", or the OP MUST return an <a class="info" href="#indirect_error">indirect error response<span> (</span><span class="info">Indirect Error Responses</span><span>)</span></a>.
+        
+</p>
+<p>
+          It is RECOMMENDED that OPs protect their users from making
+          assertions with overly-general realms, like http://*.com/ or
+          http://*.co.uk/. Overly general realms can be dangerous when
+          the realm is used for identifying a particular Relying
+          Party. Whether a realm is overly-general is at the
+          discretion of the OP.
+        
+</p>
+<a name="return_to_verification"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.9.2.1"></a><h3>9.2.1.&nbsp;
+Using the Realm for Return URL Verification</h3>
+
+<p>
+            OpenID providers SHOULD verify that the return_to URL
+            specified in the request is an OpenID relying party
+            endpoint. To verify a return_to URL, obtain the relying
+            party endpoints for the realm by performing <a class="info" href="#rp_discovery">discovery on the relying
+            party<span> (</span><span class="info">Discovering OpenID Relying Parties</span><span>)</span></a>. As always when performing discovery, the
+            discovered URL is the URL of the last HTTP response,
+            following redirects. If any redirects are followed when
+            performing discovery on the realm, verification has
+            failed. If discovery has successfuly completed, check to
+            make sure that the return_to URL matches one of the
+            relying party endpoints.
+          
+</p>
+<p>
+            A realm may contain a wildcard, and so may not be a valid
+            URL. In that case, perform discovery on the URL obtained
+            by substituting "www" for the wildcard in the realm.
+          
+</p>
+<p>
+            To match a return_to URL against a relying party endpoint,
+            use the same rules as for matching the return_to URL
+            against the realm, treating the relying party's endpoint
+            URL as the realm. Relying party endpoint URLs MUST NOT
+            contain a domain wildcard, and SHOULD be as specific as
+            possible.
+          
+</p>
+<p>
+            If verification is attempted and fails, the provider
+            SHOULD NOT send a positive assertion to that return_to
+            URL.
+          
+</p>
+<p>
+            Providers MAY cache verified return_to URLs.
+          
+</p>
+<a name="anchor28"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.9.3"></a><h3>9.3.&nbsp;
+Immediate Requests</h3>
+
+<p>
+          When requesting authentication, the Relying Party MAY
+          request that the OP not interact with the end user.  In
+          this case the OP MUST respond immediately with either an
+          assertion that authentication is successful, or a response
+          indicating that the request cannot be completed without
+          further user interaction.  This is accomplished by an
+          authentication request with "openid.mode" set to
+          "checkid_immediate".
+        
+</p>
+<a name="responding_to_authentication"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.10"></a><h3>10.&nbsp;
+Responding to Authentication Requests</h3>
+
+<p>
+        When an authentication request comes from the User-Agent via
+        <a class="info" href="#indirect_comm">indirect communication<span> (</span><span class="info">Indirect Communication</span><span>)</span></a>,
+        the OP SHOULD determine that an authorized end user wishes to
+        complete the authentication.  If an authorized end user wishes
+        to complete the authentication, the OP SHOULD send a <a class="info" href="#positive_assertions">positive assertion<span> (</span><span class="info">Positive Assertions</span><span>)</span></a> to the
+        Relying Party.
+      
+</p>
+<p>
+        Methods of identifying authorized end users and obtaining
+        approval to return an OpenID Authentication assertion are
+        beyond the scope of this specification.  See <a class="info" href="#rp_mitm_proxy">Section&nbsp;15.1.2.1<span> (</span><span class="info">Rogue Relying Party Proxying</span><span>)</span></a> for OpenID Provider security
+        considerations.
+      
+</p>
+<p>
+        If the relying party requested OP-driven identifier selection
+        by setting "openid.identity" to
+        "http://specs.openid.net/auth/2.0/identifier_select"
+        and there are Identifiers for which the end user is authorized
+        to issue authentication responses, the OP SHOULD allow the end
+        user to choose which Identifier to use.
+      
+</p>
+<p>
+        If the Relying Party supplied an association handle with the
+        authentication request, the OP SHOULD attempt to look up an
+        association based on that handle.  If the association is
+        missing or expired, the OP SHOULD send the
+        "openid.invalidate_handle" parameter as part of the response
+        with the value of the request's "openid.assoc_handle"
+        parameter, and SHOULD proceed as if no association handle was
+        specified.
+      
+</p>
+<p>
+        If no association handle is specified, the OP SHOULD use a
+        private association for signing the response.  The OP MUST
+        store this association and MUST respond to later requests to
+        check the signature of the response via <a class="info" href="#check_auth">Direct Verification<span> (</span><span class="info">Verifying Directly with the OpenID Provider</span><span>)</span></a>.
+      
+</p>
+<p>
+        Relying Parties SHOULD accept and verify assertions about
+        Identifiers for which they have not requested authentication.
+        OPs SHOULD use private associations for signing unsolicited
+        positive assertions. 
+      
+</p>
+<p>
+        If the "openid.return_to" value is omitted in the request, the
+        Relying Party does not wish to receive an authentication
+        assertion from the OP. This can be useful when using
+        extensions to transfer data from the Relying Party to the OP.
+      
+</p>
+<a name="positive_assertions"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.10.1"></a><h3>10.1.&nbsp;
+Positive Assertions</h3>
+
+<p>
+          Positive assertions are <a class="info" href="#indirect_comm">indirect responses<span> (</span><span class="info">Indirect Communication</span><span>)</span></a> with the following fields:
+        
+</p>
+<p>
+          </p>
+<ul class="text">
+<li>
+              openid.ns
+              
+<blockquote class="text">
+<p>
+                  As specified in <a class="info" href="#http_encoding">Section&nbsp;4.1.2<span> (</span><span class="info">HTTP Encoding</span><span>)</span></a>.
+                
+</p>
+</blockquote>
+            
+</li>
+<li>
+              openid.mode
+              
+<blockquote class="text">
+<p>Value: "id_res"
+</p>
+</blockquote>
+            
+</li>
+<li>
+              openid.op_endpoint
+              
+<blockquote class="text">
+<p>
+                  The OP Endpoint URL.
+                
+</p>
+</blockquote>
+            
+</li>
+<li>
+              openid.claimed_id
+              
+<blockquote class="text">
+<p>
+                  Value: (optional) The Claimed Identifier.
+                  "openid.claimed_id" and "openid.identity" SHALL
+                  be either both present or both absent.
+                
+</p>
+<p>
+                  Note: The end user MAY choose to use an OP-Local
+                  Identifier as a Claimed Identifier.
+                
+</p>
+<p>
+                  Note: If neither Identifier is present in the assertion,
+                  it is not about an identifier, and will contain
+                  other information in its payload, using <a class="info" href="#extensions">extensions<span> (</span><span class="info">Extensions</span><span>)</span></a>.
+                
+</p>
+</blockquote>
+            
+</li>
+<li>
+              openid.identity
+              
+<blockquote class="text">
+<p>
+                  Value: (optional) The OP-Local Identifier
+                
+</p>
+<p>
+                  Note: OpenID Providers MAY assist the end user in
+                  selecting the Claimed and OP-Local Identifiers about
+                  which the assertion is made. The openid.identity
+                  field MAY be omitted if an extension is in use that
+                  makes the response meaningful without it
+                  (see openid.claimed_id above).
+                
+</p>
+</blockquote>
+            
+</li>
+<li>
+              openid.return_to
+              
+<blockquote class="text">
+<p>
+                  Value: Verbatim copy of the return_to URL parameter
+                  sent in the request.
+                
+</p>
+</blockquote>
+            
+</li>
+<li>
+              openid.response_nonce
+              
+<blockquote class="text">
+<p>
+                  Value: A string 255 characters or less in length,
+                  that MUST be unique to this particular successful
+                  authentication response. The nonce MUST start with the
+                  current time on the server, and MAY contain additional
+                  ASCII characters in the range 33-126 inclusive
+                  (printable non-whitespace characters), as necessary to
+                  make each response unique. The date and time MUST be
+                  formatted as specified in section 5.6 of
+                  <a class="info" href="#RFC3339">[RFC3339]<span> (</span><span class="info">Klyne, G. and C. Newman, “Date and Time on the Internet: Timestamps,” .</span><span>)</span></a>, with the following restrictions:
+
+                  </p>
+<ul class="text">
+<li>
+                      All times must be in the UTC
+                      timezone, indicated with a "Z".
+                    
+</li>
+<li>
+                      No fractional seconds are allowed
+                    
+</li>
+</ul>
+
+                  For example: 2005-05-15T17:11:51ZUNIQUE
+                
+
+</blockquote>
+            
+</li>
+<li>
+              openid.invalidate_handle
+              
+<blockquote class="text">
+<p>
+                  Value: (optional) If the Relying Party sent an
+                  invalid association handle with the request, it
+                  SHOULD be included here.
+                
+</p>
+</blockquote>
+            
+</li>
+<li>
+              openid.assoc_handle
+              
+<blockquote class="text">
+<p>
+                  Value: The handle for the association that was used
+                  to sign this assertion.
+                
+</p>
+</blockquote>
+            
+</li>
+<li>
+              openid.signed
+              
+<blockquote class="text">
+<p>
+                  Value: Comma-separated list of signed fields.
+                
+</p>
+<p>
+                  Note: This entry consists of the fields without the
+                  "openid." prefix that the signature covers. This
+                  list MUST contain at least "op_endpoint",
+                  "return_to" "response_nonce" and "assoc_handle", and
+                  if present in the response, "claimed_id" and
+                  "identity". Additional keys MAY be signed as part of
+                  the message. See <a class="info" href="#generating_signatures">Generating
+                  Signatures<span> (</span><span class="info">Generating Signatures</span><span>)</span></a>.
+                
+</p>
+<p>
+                  For example,
+                  "op_endpoint,identity,claimed_id,return_to,assoc_handle,response_nonce".
+                
+</p>
+</blockquote>
+            
+</li>
+<li>
+              openid.sig
+              
+<blockquote class="text">
+<p>
+                  Value: Base 64 encoded signature calculated as
+                  specified in <a class="info" href="#generating_signatures">Section&nbsp;6<span> (</span><span class="info">Generating Signatures</span><span>)</span></a>.
+                
+</p>
+</blockquote>
+            
+</li>
+</ul><p>
+
+        
+</p>
+<a name="negative_assertions"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.10.2"></a><h3>10.2.&nbsp;
+Negative Assertions</h3>
+
+<p>
+          If the OP is unable to identify the end user or the end
+          user does not or cannot approve the authentication request,
+          the OP SHOULD send a negative assertion to the Relying
+          Party as an <a class="info" href="#indirect_comm">indirect
+          response<span> (</span><span class="info">Indirect Communication</span><span>)</span></a>.
+        
+</p>
+<p>
+          When receiving a negative assertion in response to a
+          "checkid_immediate" mode request, Relying Parties SHOULD
+          construct a new authentication request using "checkid_setup"
+          mode. Details about how this differs from OpenID
+          Authentication 1.1 can be found in <a class="info" href="#compat_mode">Section&nbsp;14<span> (</span><span class="info">OpenID Authentication 1.1 Compatibility</span><span>)</span></a>.
+        
+</p>
+<a name="anchor29"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.10.2.1"></a><h3>10.2.1.&nbsp;
+In Response to Immediate Requests</h3>
+
+<p>
+            If the request was an immediate request, there is no chance
+            for the end user to interact with pages on the OP to provide
+            identifying credentials or approval of a request.
+            A negative assertion of an immediate request takes the
+            following form:
+            </p>
+<ul class="text">
+<li>
+                openid.ns
+                
+<blockquote class="text">
+<p>
+                    As specified in <a class="info" href="#http_encoding">Section&nbsp;4.1.2<span> (</span><span class="info">HTTP Encoding</span><span>)</span></a>.
+                  
+</p>
+</blockquote>
+              
+</li>
+<li>
+                openid.mode
+                
+<blockquote class="text">
+<p>Value: "setup_needed"
+</p>
+</blockquote>
+              
+</li>
+</ul><p>
+          
+</p>
+<a name="anchor30"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.10.2.2"></a><h3>10.2.2.&nbsp;
+In Response to Non-Immediate Requests</h3>
+
+<p>
+            Since the OP may display pages to the end user and
+            request credentials from the end user, a negative response
+            to a request that is not immediate is definitive.  It
+            takes the following form:
+
+            </p>
+<ul class="text">
+<li>
+                openid.ns
+                
+<blockquote class="text">
+<p>
+                    As specified in <a class="info" href="#http_encoding">Section&nbsp;4.1.2<span> (</span><span class="info">HTTP Encoding</span><span>)</span></a>.
+                  
+</p>
+</blockquote>
+              
+</li>
+<li>
+                openid.mode
+                
+<blockquote class="text">
+<p>
+                    Value: "cancel"
+                  
+</p>
+</blockquote>
+              
+</li>
+</ul><p>
+          
+</p>
+<p>
+            Often, if the user does not wish to or cannot complete the
+            authentication request, the OpenID authentication process
+            will be aborted and the Relying Party will not get a
+            cancel mode response (the end user may quit or press the
+            back button in their User-Agent instead of continuing).
+            If a RP receives the "cancel" response, authentication was
+            unsuccessful and the RP MUST treat the end user as
+            non-authenticated.
+          
+</p>
+<a name="verification"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.11"></a><h3>11.&nbsp;
+Verifying Assertions</h3>
+
+<p>
+        When the Relying Party receives a positive assertion, it MUST
+        verify the following before accepting the assertion:
+
+        </p>
+<ul class="text">
+<li>
+            The value of "openid.return_to" matches the URL of the
+            current request (<a class="info" href="#verify_return_to">Section&nbsp;11.1<span> (</span><span class="info">Verifying the Return URL</span><span>)</span></a>)
+          
+</li>
+<li>
+            Discovered information matches the information in the
+            assertion (<a class="info" href="#verify_disco">Section&nbsp;11.2<span> (</span><span class="info">Verifying Discovered Information</span><span>)</span></a>)
+          
+</li>
+<li>
+            An assertion has not yet been accepted from this OP with
+            the same value for "openid.response_nonce" (<a class="info" href="#verify_nonce">Section&nbsp;11.3<span> (</span><span class="info">Checking the Nonce</span><span>)</span></a>)
+          
+</li>
+<li>
+            The signature on the assertion is valid and all fields
+            that are required to be signed are signed (<a class="info" href="#verifying_signatures">Section&nbsp;11.4<span> (</span><span class="info">Verifying Signatures</span><span>)</span></a>)
+          
+</li>
+</ul><p>
+
+        If all four of these conditions are met, assertion is now
+        verified. If the assertion contained a Claimed Identifier, the
+        user is now authenticated with that identifier.
+      
+</p>
+<a name="verify_return_to"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.11.1"></a><h3>11.1.&nbsp;
+Verifying the Return URL</h3>
+
+<p>
+          To verify that the "openid.return_to" URL matches the URL
+          that is processing this assertion:
+
+          </p>
+<ul class="text">
+<li>
+              The URL scheme, authority, and path MUST be the same
+              between the two URLs.
+            
+</li>
+<li>
+              Any query parameters that are present in the
+              "openid.return_to" URL MUST also be present with the
+              same values in the URL of the HTTP request the RP
+              received.
+            
+</li>
+</ul><p>
+        
+</p>
+<a name="verify_disco"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.11.2"></a><h3>11.2.&nbsp;
+Verifying Discovered Information</h3>
+
+<p>
+          If the Claimed Identifier in the assertion is a URL and
+          contains a fragment, the fragment part and the fragment
+          delimiter character "#" MUST NOT be used for the purposes
+          of verifying the discovered information.
+        
+</p>
+<p>
+          If the Claimed Identifier is included in the assertion, it
+          MUST have been <a class="info" href="#discovery">discovered<span> (</span><span class="info">Discovery</span><span>)</span></a> by
+          the Relying Party and the information in the assertion MUST
+          be present in the discovered information. The Claimed
+          Identifier MUST NOT be an OP Identifier.
+        
+</p>
+<p>
+          If the Claimed Identifier was not previously discovered
+          by the Relying Party (the "openid.identity" in the request
+          was "http://specs.openid.net/auth/2.0/identifier_select" or
+          a different Identifier, or if the OP is sending an unsolicited
+          positive assertion), the Relying Party MUST perform discovery
+          on the Claimed Identifier in the response to make sure that
+          the OP is authorized to make assertions about the Claimed
+          Identifier.
+        
+</p>
+<p>
+          If no Claimed Identifier is present in the response, the
+          assertion is not about an identifier and the RP MUST NOT use
+          the User-supplied Identifier associated with the current
+          OpenID authentication transaction to identify the user.
+          Extension information in the assertion MAY still be used.
+        
+</p><br><hr class="insert">
+<table class="full" align="center" border="0" cellpadding="2" cellspacing="2">
+<col align="left"><col align="left">
+<tbody><tr><th align="left">Discovered Value</th><th align="left">Response Field</th></tr>
+<tr>
+<td align="left">Claimed Identifier</td>
+<td align="left">openid.claimed_id</td>
+</tr>
+<tr>
+<td align="left">OP-Local Identifier</td>
+<td align="left">openid.identity</td>
+</tr>
+<tr>
+<td align="left">OP Endpoint URL</td>
+<td align="left">openid.op_endpoint</td>
+</tr>
+<tr>
+<td align="left">Protocol Version</td>
+<td align="left">openid.ns</td>
+</tr>
+</tbody></table>
+
+<p style="text-align: center;">
+            This table shows the mapping of <a class="info" href="#discovered_info">discovered information<span> (</span><span class="info">Discovered Information</span><span>)</span></a>
+            into fields in the <a class="info" href="#positive_assertions">OpenID Authentication 2.0
+            "id_res" response<span> (</span><span class="info">Positive Assertions</span><span>)</span></a>
+          
+</p><table align="center" border="0" cellpadding="0" cellspacing="2"><tbody><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Discovered Information to Authentication Response Mapping&nbsp;</b></font><br></td></tr></tbody></table><hr class="insert">
+
+<p>
+          If using a discovery mechanism that yields an XRDS document,
+          the protocol version, OP Endpoint URL and the OP-Local
+          Identifier (if different than the Claimed Identifier) MUST
+          be present in one &lt;xrd:Service&gt; element. There MAY be
+          unused fields in that &lt;xrd:Service&gt; element.
+        
+</p>
+<p>Non-normative example:
+</p><div style="display: table; width: 0pt; margin-left: 3em; margin-right: auto;"><pre>&lt;Service xmlns="xri://$xrd*($v*2.0)"&gt;
+  &lt;Type&gt;http://specs.openid.net/auth/2.0/signon&lt;/Type&gt;
+  &lt;URI&gt;http://provider.example.com/openid&lt;/URI&gt;
+  &lt;URI&gt;https://provider.example.com/openid&lt;/URI&gt;
+&lt;/Service&gt;
+</pre></div>
+<p>
+            In this example XRDS snippet, the &lt;xrd:Service&gt;
+            element has two &lt;xrd:URI&gt; elements, which map to OP
+            Endpoint URLs as per <a class="info" href="#discovered_info">Section&nbsp;7.3.1<span> (</span><span class="info">Discovered Information</span><span>)</span></a>. If
+            an assertion has either value for "openid.op_endpoint",
+            then that field matches this &lt;xrd:Service&gt;
+            element. The other &lt;xrd:URI&gt; element is unused.
+          
+</p>
+<a name="verify_nonce"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.11.3"></a><h3>11.3.&nbsp;
+Checking the Nonce</h3>
+
+<p>
+          To prevent replay attacks, the agent checking the signature
+          keeps track of the nonce values included in positive
+          assertions and never accepts the same value more than once
+          for the same OP Endpoint URL.
+        
+</p>
+<p>
+          </p>
+<ul class="text">
+<li>
+              When using "check_authentication", the OP MUST NOT issue
+              more than one successful response to a request with the
+              same value for "openid.response_nonce".
+            
+</li>
+<li>
+              When the Relying Party checks the signature on an
+              assertion, the Relying Party SHOULD ensure that an
+              assertion has not yet been accepted with the same value
+              for "openid.response_nonce" from the same OP Endpoint
+              URL.
+            
+</li>
+</ul><p>
+        
+</p>
+<p>
+          The time-stamp MAY be used to reject responses that are too
+          far away from the current time, limiting the amount of time
+          that nonces must be stored to prevent attacks. The
+          acceptable range is out of the scope of this
+          specification. A larger range requires storing more nonces
+          for a longer time. A shorter range increases the chance that
+          clock-skew and transaction time will cause a spurious
+          rejection.
+        
+</p>
+<a name="verifying_signatures"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.11.4"></a><h3>11.4.&nbsp;
+Verifying Signatures</h3>
+
+<p>
+          If the Relying Party has stored an association with the
+          association handle specified in the assertion, it MUST check
+          the signature on the assertion itself. If it does not have
+          an association stored, it MUST request that the OP verify
+          the signature via <a class="info" href="#check_auth">Direct
+          Verification<span> (</span><span class="info">Verifying Directly with the OpenID Provider</span><span>)</span></a>.
+        
+</p>
+<a name="anchor31"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.11.4.1"></a><h3>11.4.1.&nbsp;
+Verifying with an Association</h3>
+
+<p>
+            The Relying Party follows the same procedure that the
+            OP followed in <a class="info" href="#generating_signatures">generating the signature<span> (</span><span class="info">Generating Signatures</span><span>)</span></a>, and then compares the
+            signature in the response to the signature it
+            generated. If the signatures do not match, the assertion
+            is invalid.
+          
+</p>
+<p>
+            If an authentication request included an association
+            handle for an association between the OP and the Relying
+            party, and the OP no longer wishes to use that handle
+            (because it has expired or the secret has been
+            compromised, for instance), the OP will send a response
+            that must be verified directly with the OP, as specified
+            in <a class="info" href="#check_auth">Section&nbsp;11.4.2<span> (</span><span class="info">Verifying Directly with the OpenID Provider</span><span>)</span></a>. In that instance, the OP
+            will include the field "openid.invalidate_handle" set to
+            the association handle that the Relying Party included
+            with the original request.
+          
+</p>
+<a name="check_auth"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.11.4.2"></a><h3>11.4.2.&nbsp;
+Verifying Directly with the OpenID Provider</h3>
+
+<p>
+            To have the signature verification performed by the OP,
+            the Relying Party sends a <a class="info" href="#direct_request">direct request<span> (</span><span class="info">Direct Request</span><span>)</span></a> to the OP. To verify the signature,
+            the OP uses a private association that was generated when
+            it issued the <a class="info" href="#positive_assertions">positive assertion<span> (</span><span class="info">Positive Assertions</span><span>)</span></a>.
+          
+</p>
+<a name="anchor32"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.11.4.2.1"></a><h3>11.4.2.1.&nbsp;
+Request Parameters</h3>
+
+<p>
+              </p>
+<ul class="text">
+<li>
+                  openid.mode
+                  
+<blockquote class="text">
+<p>Value: "check_authentication"
+</p>
+</blockquote>
+                
+</li>
+<li>
+                  Exact copies of all fields from the authentication
+                  response, except for "openid.mode".
+                
+</li>
+</ul><p>
+            
+</p>
+<p>
+              For verifying signatures an OP MUST only use private
+              associations and MUST NOT use associations that have
+              shared keys. If the verification request contains a
+              handle for a shared association, it means the Relying
+              Party no longer knows the shared secret, or an entity
+              other than the RP (e.g. an attacker) has established
+              this association with the OP.
+            
+</p>
+<p>
+              To prevent replay attacks, the OP MUST NOT issue more
+              than one verification response for each authentication
+              response it had previously issued. An authentication
+              response and its matching verification request may
+              be identified by their "openid.response_nonce" values.
+            
+</p>
+<a name="anchor33"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.11.4.2.2"></a><h3>11.4.2.2.&nbsp;
+Response Parameters</h3>
+
+<p>
+              </p>
+<ul class="text">
+<li>
+                  ns
+                  
+<blockquote class="text">
+<p>
+                      As specified in <a class="info" href="#direct_response">Section&nbsp;5.1.2<span> (</span><span class="info">Direct Response</span><span>)</span></a>.
+                    
+</p>
+</blockquote>
+                
+</li>
+<li>
+                  is_valid
+                  
+<blockquote class="text">
+<p>
+                      Value: "true" or "false"; asserts whether the
+                      signature of the verification request is valid.
+                    
+</p>
+</blockquote>
+                
+</li>
+<li>
+                  invalidate_handle
+                  
+<blockquote class="text">
+<p>
+                      Value: (optional) The "invalidate_handle" value
+                      sent in the verification request, if the OP confirms
+                      it is invalid.
+                    
+</p>
+<p>
+                      Description: If present in a verification response
+                      with "is_valid" set to "true", the Relying Party
+                      SHOULD remove the corresponding association from its
+                      store and SHOULD NOT send further authentication
+                      requests with this handle.
+                    
+</p>
+<p>
+                      Note: This two-step process for invalidating
+                      associations is necessary to prevent an attacker
+                      from invalidating an association at will by adding
+                      "invalidate_handle" parameters to an authentication
+                      response.
+                    
+</p>
+</blockquote>
+                
+</li>
+</ul><p>
+            
+</p>
+<a name="identifying"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.11.5"></a><h3>11.5.&nbsp;
+Identifying the end user</h3>
+
+<p>
+          The Claimed Identifier in a successful authentication
+          response SHOULD be used by the Relying Party as a key for
+          local storage of information about the user. The Claimed
+          Identifier MAY be used as a user-visible Identifier. When 
+          displaying URL Identifiers, the fragment MAY be omitted.
+        
+</p>
+<a name="identifier_recycling"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.11.5.1"></a><h3>11.5.1.&nbsp;
+Identifier Recycling</h3>
+
+<p>
+            OpenID Providers with large user bases can use fragments
+            to recycle URL Identifiers if it is so desired. When
+            reassigning a URL Identifier to a new end user OPs should
+            generate a new, unique fragment part.
+          
+</p>
+<p>
+            The full URL with the fragment part constitutes the Claimed
+            Identifier in positive assertions, therefore Relying Parties
+            will distinguish between the current and previous owners of
+            the fragment-less URL.
+          
+</p>
+<p>
+            This mechanism allows the (presumably short, memorable)
+            recycled URL Identifiers without the fragment to be used by
+            end users at login time and by Relying Parties for display
+            purposes.
+          
+</p>
+<a name="http_s_identifiers"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.11.5.2"></a><h3>11.5.2.&nbsp;
+HTTP and HTTPS URL Identifiers</h3>
+
+<p>
+            Relying Parties MUST differentiate between URL Identifiers
+            that have different schemes. When end user input is
+            processed into a URL, it is processed into a HTTP URL. If
+            the same end user controls the same URL, differing only by
+            scheme, and it is desired that the Identifier be the HTTPS
+            URL, it is RECOMMENDED that a redirect be issued from the
+            HTTP URL to the HTTPS URL. Because the HTTP and HTTPS URLs
+            are not equivalent and the Identifier that is used is the
+            URL after following redirects, there is no foreseen
+            reduction in security when using this scheme. If an
+            attacker could gain control of the HTTP URL, it would have
+            no effect on the HTTPS URL, since the HTTP URL is not ever
+            used as an Identifier except to initiate the discovery
+            process.
+          
+</p>
+<a name="extensions"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.12"></a><h3>12.&nbsp;
+Extensions</h3>
+
+<p>
+        An Extension to OpenID Authentication is a protocol that
+        "piggybacks" on the authentication request and response. Extensions
+        are useful for providing extra information about an
+        authentication request or response as well as providing extra
+        information about the subject of the authentication response.
+      
+</p>
+<p>
+        OpenID extensions are identified by a Type URI. The Type URI
+        MAY be used as the value of an &lt;xrd:Type&gt; element of an
+        OpenID &lt;xrd:Service&gt; element in an XRDS document
+        associated with a Claimed Identifier.  The Type URI is also
+        used to associate key-value pairs in messages with the extension.
+      
+</p>
+<p>
+        
+        To associate keys and values in a message with an extension,
+        the key MUST be associated with the Type URI. To associate
+        keys with a Type URI, establish an alias by adding a key
+        prefixed with "openid.ns." and ending with the alias text
+        whose value is the Type URI. Once an alias has been
+        established, all pairs in the message whose keys start with
+        "openid." followed by the alias text, followed by a period or
+        the end of the key are associated with that extension.
+        This mechanism is similar to the XML namespaces.
+      
+</p>
+<p>
+        A namespace alias MUST NOT contain a period and MUST NOT be
+        the same as another namespace alias in the same message. A
+        namespace alias also MUST NOT be in the following list of
+        disallowed aliases:
+
+        </p>
+<ul class="text">
+<li>assoc_handle
+</li>
+<li>assoc_type
+</li>
+<li>claimed_id
+</li>
+<li>contact
+</li>
+<li>delegate
+</li>
+<li>dh_consumer_public
+</li>
+<li>dh_gen
+</li>
+<li>dh_modulus
+</li>
+<li>error
+</li>
+<li>identity
+</li>
+<li>invalidate_handle
+</li>
+<li>mode
+</li>
+<li>ns
+</li>
+<li>op_endpoint
+</li>
+<li>openid
+</li>
+<li>realm
+</li>
+<li>reference
+</li>
+<li>response_nonce
+</li>
+<li>return_to
+</li>
+<li>server
+</li>
+<li>session_type
+</li>
+<li>sig
+</li>
+<li>signed
+</li>
+<li>trust_root
+</li>
+</ul><p>
+
+        A namespace MUST NOT be assigned more than one alias in the
+        same message. If a message is a response to another message,
+        the response MAY use a different alias to refer to the same
+        namespace.
+      
+</p>
+<p>Non-normative example:
+</p>
+<p>An extension's type URI is
+      "&lt;http://example.com/ext/1.0&gt;".
+
+      </p>
+<blockquote class="text">
+<p>openid.ns.x=http://example.com/ext/1.0
+</p>
+<p>openid.x=example
+</p>
+<p>openid.x.foo=bar
+</p>
+<p>openid.xx=notx
+</p>
+</blockquote><p>
+
+        In this example, the keys "openid.x" and "openid.x.foo" are
+        associated with the extension; the "openid.xx" key is not.
+      
+</p>
+<p>
+        Extensions MUST NOT define multiple parameters with the same name.
+        Extensions that need to send multiple values for the same parameter
+        name must define their own conventions for doing so.
+      
+</p>
+<a name="rp_discovery"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.13"></a><h3>13.&nbsp;
+Discovering OpenID Relying Parties</h3>
+
+<p>
+        Relying Party discovery allows for software agents to discover
+        sites that support OpenID. It also allows OpenID providers to
+        automatically verify that a return_to URL in an OpenID request
+        is an OpenID relying party endpoint for the specified realm.
+      
+</p>
+<p>
+        Relying Parties SHOULD use the Yadis protocol to publish their
+        valid return_to URLs. The relying party MAY publish this
+        information at any URL, and SHOULD publish it under the realm
+        so that providers can verify return_to URLs.
+      
+</p>
+<p>
+        A Relying Party discovery XRDS document MUST contain one or more
+        &lt;xrd:Service&gt; elements:
+
+        </p>
+<ul class="text">
+<li>
+            Containing at least one &lt;xrd:URI&gt; element.
+          
+</li>
+<li>
+            Where all &lt;xrd:URI&gt; tags contain a URL that accepts
+            OpenID 2.0 Authentication responses.
+          
+</li>
+<li>
+            Containing a &lt;xrd:Type&gt; tag whose content is
+            "http://specs.openid.net/auth/2.0/return_to".
+          
+</li>
+</ul><p>
+      
+</p>
+<p>Non-normative example:
+</p><div style="display: table; width: 0pt; margin-left: 3em; margin-right: auto;"><pre>&lt;Service xmlns="xri://$xrd*($v*2.0)"&gt;
+  &lt;Type&gt;http://specs.openid.net/auth/2.0/return_to&lt;/Type&gt;
+  &lt;URI&gt;http://consumer.example.com/return&lt;/URI&gt;
+&lt;/Service&gt;
+</pre></div>
+<a name="compat_mode"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.14"></a><h3>14.&nbsp;
+OpenID Authentication 1.1 Compatibility</h3>
+
+<p>
+        This section describes how to interact with OpenID
+        Authentication 1.1 Relying Parties and OPs. OpenID
+        Authentication 2.0 implementations SHOULD support OpenID
+        Authentication 1.1 compatibility, unless security
+        considerations make it undesirable.
+      
+</p>
+<a name="anchor34"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.14.1"></a><h3>14.1.&nbsp;
+Changes from OpenID Authentication 1.1</h3>
+
+<p>
+          (non-normative)
+        
+</p>
+<p>
+          This specification is based on the original specification for
+          OpenID Authentication as written by Brad Fitzpatrick. That
+          specification did not have a version number, but was called
+          OpenID 1.0, and then OpenID 1.1 when it was revised.  The
+          protocol outlined in this specification is intended to be
+          backwards-compatible with the revised OpenID protocol.  The
+          changes to the specification are outlined in this section.
+        
+</p>
+<a name="anchor35"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.14.1.1"></a><h3>14.1.1.&nbsp;
+Updated Initiation and Discovery</h3>
+
+<p>
+            </p>
+<ul class="text">
+<li>
+                Supports OP Identifiers. This new variation of the
+                protocol flow is initiated by an end user entering an OP
+                Identifier instead of their own Identifier.  This allows
+                the OP to assist the end user in selecting an
+                Identifier.
+              
+</li>
+<li>
+                Supports the use of XRIs as Identifiers. XRIs may be
+                used as Identifiers for both end users and OPs, and
+                provide automatic mapping from one or more reassignable
+                i-names to a synonymous persistent Canonical ID that
+                will never be reassigned.
+              
+</li>
+<li>
+                When URLs are used as Identifiers, they are normalized
+                according to the guidelines in <a class="info" href="#RFC3986">[RFC3986]<span> (</span><span class="info">Berners-Lee, T., “Uniform Resource Identifiers (URI): Generic Syntax,” .</span><span>)</span></a>,
+                for better compatibility with the existing Web infrastructure.
+              
+</li>
+<li>
+                Uses the Yadis protocol for discovery. This allows for
+                using multiple OPs for a single Identifier, for
+                load-balancing and fallback in the case of OP
+                failure. Additionally, it allows for discovery of
+                supported extensions and other associated services.
+              
+</li>
+</ul><p>
+          
+</p>
+<a name="anchor36"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.14.1.2"></a><h3>14.1.2.&nbsp;
+Security improvements</h3>
+
+<p>
+            A nonce is now part of the protocol for built-in protection
+            against replay attacks, which was previously implemented
+            out-of-band by each library or application.
+          
+</p>
+<p>
+            A new association type, HMAC-SHA256, and a new association
+            session type, DH-SHA256, allow for stronger signatures on
+            authentication assertions.
+          
+</p>
+<p>
+            An actual <a class="info" href="#security_considerations">Security
+            Considerations section<span> (</span><span class="info">Security Considerations</span><span>)</span></a> which looks at protecting
+            the protocol from end-to-end.
+          
+</p>
+<a name="anchor37"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.14.1.3"></a><h3>14.1.3.&nbsp;
+Extensions</h3>
+
+<p>
+            Extensions are now an officially supported mechanism to
+            support data exchange and other Relying Party-OP
+            communication along with the authentication
+            exchange. Extensions allow for the exchange of arbitrary
+            attributes, as well as for protocol extensions,
+            such as the inclusion of additional information about the
+            Relying Party in the authentication request.
+          
+</p>
+<p>
+            Because extensions can transfer arbitrary data, the
+            Identifier is now optional in authentication messages.
+          
+</p>
+<a name="anchor38"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.14.2"></a><h3>14.2.&nbsp;
+Implementing OpenID Authentication 1.1 Compatibility</h3>
+
+<p>
+          All messages in OpenID Authentication 1.1 omit the
+          "openid.ns" parameter, which is an easy way for an RP to
+          determine if the message is from an OpenID Authentication
+          1.1 endpoint. OpenID Authentication 1.1 supports only
+          HMAC-SHA1 associations.
+        
+</p>
+<p>
+          Error responses in OpenID Authentication 1.1 did not define
+          "contact" or "reference". OpenID Authentication 1.1 did
+          allow for the addition of extra fields in error
+          responses. It is RECOMMENDED for contact and reference to be
+          sent even when using OpenID Authentication 1.1, since they
+          may be useful for debugging and do not affect compatibility.
+        
+</p>
+<a name="anchor39"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.14.2.1"></a><h3>14.2.1.&nbsp;
+Relying Parties</h3>
+
+<p>
+            </p>
+<ul class="text">
+<li>
+                When HTML discovery is performed, the OP endpoint URL
+                is marked by the link relationship "openid.server"
+                rather than "openid2.provider". The end user's
+                OP-Local Identifier is marked by the link relationship
+                "openid.delegate" rather than "openid2.local_id".  The
+                protocol version is in this case
+                "http://openid.net/signon/1.1". HTML allows multiple
+                link relationships to be specified for a single link,
+                so if an OP provides both OpenID Authentication 1.1
+                and OpenID Authentication 2.0, "openid2.provider" and
+                "openid.server" may appear in the same "rel"
+                attribute.
+              
+</li>
+<li>
+                When XRDS-based discovery is performed, the end user's
+                OP-Local Identifier appears in the
+                &lt;openid:Delegate&gt; tag of the OpenID
+                &lt;xrd:Service&gt; element rather than in the
+                &lt;xrd:LocalID&gt; tag. In order to support
+                currently-deployed discovery code, both tags MAY
+                appear in the &lt;xrd:Service&gt; element.
+              
+</li>
+<li>
+                Relying Parties SHOULD extract and use OpenID
+                Authentication 1.x service elements from XRDS
+                documents, if Yadis succeeds on an URL
+                Identifier. Such service elements are identified by
+                &lt;xrd:Type&gt; tags whose text contents are
+                "http://openid.net/server/1.0" or
+                "http://openid.net/server/1.1".  Although this is not
+                specified in the previous version of the protocol, it
+                is a generally accepted practice of advertising OpenID
+                Authentication 1.x services through Yadis.
+              
+</li>
+<li>
+                "openid.claimed_id" is not defined by OpenID
+                Authentication 1.1. Relying Parties MAY send the value
+                when making requests, but MUST NOT depend on the value
+                being present in authentication responses. When the
+                OP-Local Identifier ("openid.identity") is
+                different from the Claimed Identifier, the Relying
+                Party MUST keep track of what Claimed Identifier was
+                used to discover the OP-Local Identifier, for
+                example by keeping it in session state. Although the
+                Claimed Identifier will not be present in the
+                response, it MUST be used as the identifier for the
+                user.
+              
+</li>
+<li>
+                "openid.identity" MUST be sent in a <a class="info" href="#responding_to_authentication">authentication
+                request<span> (</span><span class="info">Responding to Authentication Requests</span><span>)</span></a>.
+              
+</li>
+<li>
+                Relying Parties MUST send a blank session_type parameter
+                in "no-encryption" association requests.
+              
+</li>
+<li>
+                In OpenID Authentication 1.1, the "no-encryption"
+                association session type is represented by a blank or
+                missing "openid.session_type" parameter. Relying
+                Parties MUST NOT send requests with
+                "openid.session_type" set to "no-encryption".
+              
+</li>
+<li>
+                In <a class="info" href="#requesting_authentication">authentication
+                requests<span> (</span><span class="info">Requesting Authentication</span><span>)</span></a>, the "openid.identity" parameter
+                SHOULD NOT be the special value
+                "http://specs.openid.net/auth/2.0/identifier_select",
+                because OpenID Authentication 1.1 does not support the
+                use of OP Identifiers.
+              
+</li>
+<li>
+                The "openid.realm" parameter in authentication requests
+                was known as "openid.trust_root". The syntax and meaning
+                are identical.
+              
+</li>
+<li>
+                When responding with a negative assertion to a
+                "checkid_immediate" mode authentication request, the
+                "user_setup_url" parameter MUST be returned. This is a
+                URL that the end user may visit to complete the
+                request. The OP MAY redirect the end user to
+                this URL, or provide the end user with a link that
+                points to this URL.
+              
+</li>
+<li>
+                The Relying Party MUST accept an <a class="info" href="#positive_assertions">authentication
+                response<span> (</span><span class="info">Positive Assertions</span><span>)</span></a> that is missing the
+                "openid.response_nonce" parameter.  It SHOULD
+                implement a method for preventing replay attacks.
+              
+</li>
+<li>
+                Relying Parties MUST accept
+                <a class="info" href="#positive_assertions">authentication responses<span> (</span><span class="info">Positive Assertions</span><span>)</span></a> that are missing the "openid.op_endpoint" parameter.
+              
+</li>
+</ul><p>
+          
+</p>
+<a name="anchor40"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.14.2.2"></a><h3>14.2.2.&nbsp;
+OpenID Providers</h3>
+
+<p>
+            </p>
+<ul class="text">
+<li>
+                "openid.identity" MUST be sent in a <a class="info" href="#positive_assertions">positive authentication
+                assertion<span> (</span><span class="info">Positive Assertions</span><span>)</span></a>.
+              
+</li>
+<li>
+                In OpenID Authentication 1.1, the "no-encryption"
+                association session type is represented by a blank or
+                missing "openid.session_type" parameter.  OPs MUST NOT
+                send responses with "openid.session_type" set to
+                "no-encryption".
+              
+</li>
+<li>
+                OPs MAY choose to return a successful "no-encryption"
+                response to any association request. As above, the
+                "openid.session_type" parameter MUST be blank or
+                omitted from the response.
+              
+</li>
+<li>
+                OPs MUST accept association requests with no assoc_type
+                parameter, and assume them to be of type HMAC-SHA1.
+              
+</li>
+<li>
+                Unsuccessful association attempts MAY be responded with
+                direct error messages or with "no-encryption" positive
+                association responses.
+              
+</li>
+<li>
+                The "openid.realm" parameter in authentication requests
+                was known as "openid.trust_root". The syntax and meaning
+                are identical.
+              
+</li>
+<li>
+                When responding with a negative assertion to a
+                "checkid_immediate" mode authentication request, the
+                "user_setup_url" parameter MUST be returned. This is a URL
+                that the end user may visit to complete the request. The
+                Relying Party may redirect the end user to this URL, or
+                provide the end user with a link that points to this
+                URL.
+              
+</li>
+<li>
+                OPs MUST NOT send the "openid.op_endpoint" parameter in
+                <a class="info" href="#positive_assertions">authentication responses<span> (</span><span class="info">Positive Assertions</span><span>)</span></a>, since it is not part of the OpenID Authentication
+                1.1 protocol.
+              
+</li>
+</ul><p>
+          
+</p>
+<a name="security_considerations"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.15"></a><h3>15.&nbsp;
+Security Considerations</h3>
+
+<a name="anchor41"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.15.1"></a><h3>15.1.&nbsp;
+Preventing Attacks</h3>
+
+<a name="preventing_eavesdropping"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.15.1.1"></a><h3>15.1.1.&nbsp;
+Eavesdropping Attacks</h3>
+
+<p>
+            There is one place in this protocol that is vulnerable
+            to eavesdropping attacks.
+            </p>
+<ul class="text">
+<li>
+                If the nonce were not checked, an eavesdropper could also
+                intercept a successful authentication assertion and re-use it.
+              
+</li>
+</ul><p>
+          
+</p>
+<p>
+            This attack can be prevented by using transport layer encryption
+            for these connections to prevent eavesdropping. In addition,
+            if not using TLS this attack can still be prevented by
+            checking the nonce while performing message verification.
+            When doing so, the positive authentication assertion cannot
+            be re-used.
+          
+</p>
+<a name="anchor42"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.15.1.2"></a><h3>15.1.2.&nbsp;
+Man-in-the-Middle Attacks</h3>
+
+<p>
+            Associations prevent tampering of signed fields by a man
+            in the middle except during discovery, association
+            sessions and <a class="info" href="#check_auth">Direct
+            Verification<span> (</span><span class="info">Verifying Directly with the OpenID Provider</span><span>)</span></a>. Altering signed fields without the
+            shared secret requires breaking the MAC. Currently no
+            tractable attack is known on the MACs used in this
+            protocol. The quality of the protection provided by the
+            MAC depends on the randomness of the shared MAC key, so it
+            is important that an unguessable value be used.
+          
+</p>
+<p>
+            If DNS resolution or the transport layer is compromised
+            signatures on messages are not adequate, since the
+            attacker can impersonate the OP and issue its own
+            associations, or its own decisions in Stateless Mode. If
+            an attacker can tamper with the discovery process they can
+            specify any OP, and so does not have to impersonate the
+            OP.  Additionally, if an attacker can compromise the
+            integrity of the information returned during the discovery
+            process, by altering the XRDS document, the need for a man
+            in the middle is removed.  One method to prevent this sort
+            of attack is by digitally signing the XRDS file as per
+            <a class="info" href="#RFC3275">XMLDSIG<span> (</span><span class="info">Eastlake 3rd, D., Reagle Jr., J., and D. Solo, “(Extensible Markup Language) XML-Signature Syntax and           Processing,” .</span><span>)</span></a> [RFC3275]. The keying material
+            is not specified, since the RP ultimately needs to make
+            its own decision whether to trust keys used for such
+            signature.
+          
+</p>
+<p>
+            Using SSL with certificates signed by a trusted authority
+            prevents these kinds of attacks by verifying the results
+            of the DNS look-up against the certificate. Once the
+            validity of the certificate has been established,
+            tampering is not possible. Impersonating an SSL server
+            requires forging or stealing a certificate, which is
+            significantly harder than the network based attacks.
+          
+</p>
+<p>
+            In order to get protection from SSL, SSL must be used for
+            all parts of the interaction, including interaction with
+            the end user through the User-Agent.  While the protocol
+            does not require SSL be used, its use is strongly
+            RECOMMENDED.  Current best practices dictate that an OP
+            SHOULD use SSL, with a certificate signed by a trusted
+            authority, to secure its Endpoint URL as well as the
+            interactions with the end user's User-Agent.  In addition,
+            SSL, with a certificate signed by a trusted authority,
+            SHOULD be used so that a Relying Party can fetch the end
+            user's URL in a secure manner.  Following its own security
+            policies, a Relying Party MAY choose to not complete, or
+            even begin, a transaction if SSL is not being correctly
+            used at these various endpoints.
+          
+</p>
+<a name="rp_mitm_proxy"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.15.1.2.1"></a><h3>15.1.2.1.&nbsp;
+Rogue Relying Party Proxying</h3>
+
+<p>
+              A special type of man-in-the-middle attack is one where
+              the Relying Party is a rogue party acting as a MITM.  The
+              RP would perform discovery on the End User's Claimed
+              Identifier and instead of redirecting the User Agent to
+              the OP, would instead proxy the OP through itself.  This
+              would thus allow the RP to capture credentials the End
+              User provides to the OP.  While there are multiple ways to
+              prevent this sort of attack, the specifics are outside the
+              scope of this document.  Each method of prevention
+              requires that the OP establish a secure channel with the
+              End User.
+            
+</p>
+<a name="anchor43"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.15.2"></a><h3>15.2.&nbsp;
+User-Agents</h3>
+
+<p>
+          Since this protocol is intended to be used interactively,
+          User-Agents will primarily be common Web browsers. Web
+          browsers or their hosts may be infected with spyware or
+          other malware, which limits the strength of the
+          authentication assertion, since untrusted software makes it
+          impossible to know whether the authentication decision has
+          been made with the end user's approval. With that said, many
+          web applications and protocols today rely on the security of
+          the Web browser and their hosts.
+        
+</p>
+<p>
+          Cross-site-scripting attacks against OPs may be used to the
+          same effect. For the best security, OPs should not depend
+          on scripting.  This enables User-Agents that do not support
+          scripting, or have scripting disabled, to still employ the
+          protocol.
+        
+</p>
+<a name="anchor44"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.15.3"></a><h3>15.3.&nbsp;
+User Interface Considerations</h3>
+
+<p>
+          The Relying Party SHOULD redirect the end user to the OP
+          Endpoint URL in a top-level browser window with all controls
+          visible. This allows better protection for the end user
+          against OP look-alike sites (phishing).
+        
+</p>
+<p>
+          OpenID Providers SHOULD educate their end users about the
+          potential for OpenID phishing attacks and SHOULD equip their
+          end users with the tools to defeat such attacks, for example
+          browser plug-ins that verify the authenticity of the OP's
+          Authentication Service Endpoint URL.
+        
+</p>
+<a name="anchor45"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.15.4"></a><h3>15.4.&nbsp;
+HTTP and HTTPS URL Identifiers</h3>
+
+<p>
+          While these types of Identifiers have been <a class="info" href="#http_s_identifiers">previously discussed<span> (</span><span class="info">HTTP and HTTPS URL Identifiers</span><span>)</span></a>,
+          they are worth mentioning again.  As previously stated, the
+          RECOMMENDED method of an End User expressing control over a
+          URL differing only be scheme is to setup a redirect from the
+          HTTP URL to the HTTPS URL.  Relying Parties will never store
+          the HTTP URL as during the discovery and initiation phase
+          will follow the redirect and use the HTTPS URL as the
+          Claimed Identifier.
+        
+</p>
+<p>
+          End users with concerns over this recommendation should
+          directly enter their HTTPS URL at each Relying Party.  This
+          thus removes the step where the Relying Party follows the
+          redirect to the HTTPS URL.  The single security
+          consideration currently seen is if an attacker were to
+          compromise the integrity of the HTTP URL by removing the
+          redirect and pointing the Identifier at a rogue OP.  This
+          however will alter the user experience, is detectable by
+          anti-phishing technologies, and the security of the
+          Identifier itself is a fundamental principle within OpenID.
+        
+</p>
+<a name="anchor46"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.15.5"></a><h3>15.5.&nbsp;
+Denial of Service Attacks</h3>
+
+<p>
+          Within the protocol there are places where a rogue RP could
+          launch a denial of service attack against an OP since there
+          is nothing in OpenID protocol messages that allows the OP to
+          quickly check that it is a genuine request.  This can be
+          done by the RP repeatedly requesting associations,
+          authentication, or verification of a signature.
+        
+</p>
+<p>
+          The potentially most severe attack is during the association
+          phase as each message requires the OP to execute a discrete
+          exponentiation.  Since the RP has the ability to specify
+          modulus and generator per message, an attacker can even
+          force the OP to perform this exponentiation in real time
+          prior to responding for each message.
+        
+</p>
+<p>
+          While this could be particularly harmful, OpenID Providers
+          can easily use generic IP based rate-limiting and banning
+          techniques to help combat these sorts of attacks.  OPs can
+          also look at banning requests based on the "openid.realm"
+          and "openid.return_to" values.
+        
+</p>
+<a name="anchor47"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.15.6"></a><h3>15.6.&nbsp;
+Protocol Variants</h3>
+
+<p>
+          The following are known variations in the protocol which may
+          or may not directly affect the security of the use of the
+          protocol.  It is imagined that these values could be used in
+          the creation of security profiles for this protocol.  The
+          following list of variants are from the perspective of an
+          OpenID Provider.
+        
+</p><table class="full" align="center" border="0" cellpadding="2" cellspacing="2">
+<col align="left"><col align="left"><col align="left">
+<tbody><tr><th align="left">Number</th><th align="left">Variant</th><th align="left">Values</th></tr>
+<tr>
+<td align="left">1.</td>
+<td align="left">
+            Are wildcards allowed in realms?
+          </td>
+<td align="left">
+            One of Yes/No
+          </td>
+</tr>
+<tr>
+<td align="left">2.</td>
+<td align="left">
+            Require prior association?  Does the OP require the RP
+            first create an association before requesting
+            authentication?
+          </td>
+<td align="left">
+            One of Yes/No
+          </td>
+</tr>
+<tr>
+<td align="left">3.</td>
+<td align="left">
+            Types of claimed identifiers accepted.
+          </td>
+<td align="left">
+            Set of HTTP/HTTPS/XRI
+          </td>
+</tr>
+<tr>
+<td align="left">4.</td>
+<td align="left">
+            Are self-issued certificates allowed for authentication?
+            This applies to all SSL traffic. If 'no' here, then OP
+            *probably* requires all HTTPS identifiers to chain up to
+            known trust roots, but that's intentionally not implied.
+          </td>
+<td align="left">
+            One of Yes/No
+          </td>
+</tr>
+<tr>
+<td align="left">5.</td>
+<td align="left">
+            Must the XRDS file be signed? Signature on the XRDS as per
+            XMLDSIG. Keying material not specified, since the RP
+            ultimately needs to make own decision whether to trust
+            keys used for such signature.
+          </td>
+<td align="left">
+            One of Yes/No
+          </td>
+</tr>
+<tr>
+<td align="left">6.</td>
+<td align="left">
+            Must the XRDS file be retrieved over secure channel? This does not
+            imply SSL?
+          </td>
+<td align="left">
+            One of Yes/No
+          </td>
+</tr>
+<tr>
+<td align="left">7.</td>
+<td align="left">
+            What types of session types can be used when creating
+            associations?
+          </td>
+<td align="left">
+            Set of no-encryption/DH-SHA1/DH-SHA256
+          </td>
+</tr>
+<tr>
+<td align="left">8.</td>
+<td align="left">
+            Must the RP have an XRDS document?
+          </td>
+<td align="left">
+            One of Yes/No
+          </td>
+</tr>
+<tr>
+<td align="left">9.</td>
+<td align="left">
+            What association types the OP agrees to use for
+            signatures?
+          </td>
+<td align="left">
+            Set of HMAC-SHA1/HMAC-SHA256
+          </td>
+</tr>
+<tr>
+<td align="left">10.</td>
+<td align="left">
+            Must the association request take place over secure channel?
+          </td>
+<td align="left">
+            One of Yes/No
+          </td>
+</tr>
+</tbody></table>
+
+<p style="text-align: center;">
+            Identified security variants.
+          
+</p>
+<a name="anchor48"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.A"></a><h3>Appendix A.&nbsp;
+Examples</h3>
+
+<p>Non-normative
+</p>
+<a name="normalization_example"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.A.1"></a><h3>Appendix A.1.&nbsp;
+Normalization</h3>
+
+<p>
+          See section 6 of <a class="info" href="#RFC3986">[RFC3986]<span> (</span><span class="info">Berners-Lee, T., “Uniform Resource Identifiers (URI): Generic Syntax,” .</span><span>)</span></a> for
+          textual URL normalization details and more examples.
+        
+</p><br><hr class="insert">
+<table class="full" align="center" border="0" cellpadding="2" cellspacing="2">
+<col align="left"><col align="left"><col align="left"><col align="left">
+<tbody><tr><th align="left">User's Input</th><th align="left">Identifier</th><th align="left">Type</th><th align="left">Discussion</th></tr>
+<tr>
+<td align="left">example.com</td>
+<td align="left">http://example.com/</td>
+<td align="left">URL</td>
+<td align="left">A URI with a missing scheme is normalized to a http URI</td>
+</tr>
+<tr>
+<td align="left">http://example.com</td>
+<td align="left">http://example.com/</td>
+<td align="left">URL</td>
+<td align="left">An empty path component is normalized to a slash</td>
+</tr>
+<tr>
+<td align="left">https://example.com/</td>
+<td align="left">https://example.com/</td>
+<td align="left">URL</td>
+<td align="left">https URIs remain https URIs</td>
+</tr>
+<tr>
+<td align="left">http://example.com/user</td>
+<td align="left">http://example.com/user</td>
+<td align="left">URL</td>
+<td align="left">No trailing slash is added to non-empty path components</td>
+</tr>
+<tr>
+<td align="left">http://example.com/user/</td>
+<td align="left">http://example.com/user/</td>
+<td align="left">URL</td>
+<td align="left">Trailing slashes are preserved on non-empty path components</td>
+</tr>
+<tr>
+<td align="left">http://example.com/</td>
+<td align="left">http://example.com/</td>
+<td align="left">URL</td>
+<td align="left">Trailing slashes are preserved when the path is empty</td>
+</tr>
+<tr>
+<td align="left">=example</td>
+<td align="left">=example</td>
+<td align="left">XRI</td>
+<td align="left">Normalized XRIs start with a global context symbol</td>
+</tr>
+<tr>
+<td align="left">xri://=example</td>
+<td align="left">=example</td>
+<td align="left">XRI</td>
+<td align="left">Normalized XRIs start with a global context symbol</td>
+</tr>
+</tbody></table>
+<table align="center" border="0" cellpadding="0" cellspacing="2"><tbody><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;User's Input to Identifier Normalization&nbsp;</b></font><br></td></tr></tbody></table><hr class="insert">
+
+<a name="anchor49"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.A.2"></a><h3>Appendix A.2.&nbsp;
+OP-Local Identifiers</h3>
+
+<p>
+          An end user wants to use "http://www.example.com/" as their
+          Claimed Identifier. The end user has an account with
+          Example Provider, which functions as an OpenID Provider.  The
+          end user's OP-Local Identifier is
+          "https://exampleuser.exampleprovider.com/".
+        
+</p>
+<p>
+          In this scenario, with the proper configuration of Yadis or
+          HTML-Based Discovery (see <a class="info" href="#discovery">Section&nbsp;7.3<span> (</span><span class="info">Discovery</span><span>)</span></a> and
+          <a class="info" href="#XRDS_Sample">Appendix&nbsp;A.3<span> (</span><span class="info">XRDS</span><span>)</span></a> below), a Relying Party will
+          discover the following information about the end user:
+
+          </p>
+<blockquote class="text"><dl>
+<dt>Claimed Identifier</dt>
+<dd>
+              http://www.example.com/
+            
+</dd>
+<dt>OP-Local Identifier</dt>
+<dd>
+              https://exampleuser.exampleprovider.com/
+            
+</dd>
+</dl></blockquote><p>
+        
+</p>
+<a name="XRDS_Sample"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.A.3"></a><h3>Appendix A.3.&nbsp;
+XRDS</h3>
+
+<p>
+            For an end user to use "http://www.example.com/" as
+            their Identifier, but have Relying Parties actually
+            verify "https://exampleuser.exampleprovider.com/" with the OP
+            Endpoint URL
+            "https://www.exampleprovider.com/endpoint/", the
+            following XML snippet should be present in the final XRD
+            element in the XRDS file when discovery is preformed on
+            "http://www.example.com/":
+          
+</p><div style="display: table; width: 0pt; margin-left: 3em; margin-right: auto;"><pre>&lt;Service xmlns="xri://$xrd*($v*2.0)"&gt;
+  &lt;Type&gt;http://specs.openid.net/auth/2.0/signon&lt;/Type&gt;
+  &lt;URI&gt;https://www.exampleprovider.com/endpoint/&lt;/URI&gt;
+  &lt;LocalID&gt;https://exampleuser.exampleprovider.com/&lt;/LocalID&gt;
+&lt;/Service&gt;
+</pre></div>
+<a name="anchor50"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.A.4"></a><h3>Appendix A.4.&nbsp;
+HTML Identifier Markup</h3>
+
+<p>
+            To use "http://www.example.com/" as their Identifier, but have
+            Relying Parties actually verify
+            "http://exampleuser.livejournal.com/" with the OpenID
+            Provider located at
+            "http://www.livejournal.com/openid/server.bml", the
+            following markup should be present in the &lt;head&gt;
+            of the HTML document located by the identifier URL:
+          
+</p><div style="display: table; width: 0pt; margin-left: 3em; margin-right: auto;"><pre>&lt;link rel="openid2.provider openid.server"
+      href="http://www.livejournal.com/openid/server.bml"/&gt;
+&lt;link rel="openid2.local_id openid.delegate"
+      href="http://exampleuser.livejournal.com/"/&gt;
+</pre></div>
+<a name="anchor51"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.A.5"></a><h3>Appendix A.5.&nbsp;
+XRI CanonicalID</h3>
+
+<p>
+          For example, if the XRI i-names =example and =exmpl both
+          yield an XRDS document with the CanonicalID
+          xri://(example)!1234 then those Identifiers should be
+          treated as equivalent. For applications with user accounts,
+          the persistent Canonical ID xri://(example)!1234 should be
+          used the primary key for the account.  Although the
+          i-names =example and =exmpl may also be stored for reference
+          as display names, they are reassignable identifiers and
+          should not be used as persistent keys.
+        
+</p>
+<a name="pvalue"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.B"></a><h3>Appendix B.&nbsp;
+Diffie-Hellman Key Exchange Default Value</h3>
+
+<p>
+          This is a confirmed-prime number, used as the default
+          modulus for Diffie-Hellman Key Exchange. In hexadecimal:
+        
+</p><div style="display: table; width: 0pt; margin-left: 3em; margin-right: auto;"><pre>DCF93A0B883972EC0E19989AC5A2CE310E1D37717E8D9571BB7623731866E61E
+F75A2E27898B057F9891C2E27A639C3F29B60814581CD3B2CA3986D268370557
+7D45C2E7E52DC81C7A171876E5CEA74B1448BFDFAF18828EFD2519F14E45E382
+6634AF1949E5B535CC829A483B8A76223E5D490A257F05BDFF16F2FB22C583AB
+</pre></div>
+<a name="anchor52"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.C"></a><h3>Appendix C.&nbsp;
+Acknowledgements</h3>
+
+<p>
+        The OpenID Community would like to thank the following people
+        for the work they've done in the drafting and editing of this
+        specification.  If you want to know the nitty gritty of who
+        actually wrote what, feel free to look at our SVN repository
+        or even use "svn blame". :)
+        http://openid.net/svn/specifications/authentication/2.0/
+      
+</p>
+<p>
+      </p>
+<blockquote class="text">
+<p>Barry Ferg (barry@sxip.com)
+</p>
+<p>Brad Fitzpatrick (brad@danga.com) &lt;author&gt;
+</p>
+<p>Carl Howells (chowells@janrain.com)
+</p>
+<p>David Recordon (david@sixapart.com) &lt;author/editor&gt;
+</p>
+<p>Dick Hardt (dick@sxip.com) &lt;author&gt;
+</p>
+<p>Drummond Reed (drummond.reed@cordance.net)
+</p>
+<p>Hans Granqvist (hgranqvist@verisign.com)
+</p>
+<p>Johannes Ernst (jernst@netmesh.us)
+</p>
+<p>Johnny Bufu (johnny@sxip.com) &lt;editor&gt;
+</p>
+<p>Josh Hoyt (josh@janrain.com) &lt;author/editor&gt;
+</p>
+<p>Kevin Turner (kevin@janrain.com)
+</p>
+<p>Marius Scurtescu (marius@sxip.com)
+</p>
+<p>Martin Atkins (mart@degeneration.co.uk)
+</p>
+<p>Mike Glover (mpg4@janrain.com)
+</p>
+</blockquote><p>
+      
+</p>
+<a name="rfc.references1"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<h3>16.&nbsp;Normative References</h3>
+<table border="0" width="99%">
+<tbody><tr><td class="author-text" valign="top"><a name="FIPS180-2">[FIPS180-2]</a></td>
+<td class="author-text">U.S. Department of Commerce and National Institute of Standards
+              and Technology, “<a href="http://csrc.nist.gov/publications/fips/fips180-2/fips180-2withchangenotice.pdf">Secure Hash Signature Standard</a>,” FIPS&nbsp;180-2.<p>
+Defines Secure Hash Algorithm 256 (SHA256)
+</p>
+</td></tr>
+<tr><td class="author-text" valign="top"><a name="HTML401">[HTML401]</a></td>
+<td class="author-text">W3C, “<a href="http://www.w3.org/TR/html401">HTML 4.01 Specification</a>.”</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC1750">[RFC1750]</a></td>
+<td class="author-text">Eastlake, D., Crocker, S., and J. Schiller, “<a href="ftp://ftp.isi.edu/in-notes/rfc1750.txt">Randomness Recommendations for Security</a>,” RFC&nbsp;1750.</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC2104">[RFC2104]</a></td>
+<td class="author-text">Krawczyk, H., Bellare, M., and R. Canetti, “<a href="ftp://ftp.isi.edu/in-notes/rfc2104.txt">HMAC: Keyed-Hashing for Message Authentication</a>,” RFC&nbsp;2104.</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC2119">[RFC2119]</a></td>
+<td class="author-text">Bradner, B., “<a href="ftp://ftp.isi.edu/in-notes/rfc2119.txt">Key words for use in RFCs to Indicate Requirement Levels</a>,” RFC&nbsp;2119.</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC2616">[RFC2616]</a></td>
+<td class="author-text">Fielding, R., Gettys, J., Mogul, J., Frystyk, H., Masinter, L., Leach, P., and T. Berners-Lee, “<a href="ftp://ftp.isi.edu/in-notes/rfc2616.txt">Hypertext Transfer Protocol -- HTTP/1.1</a>,” RFC&nbsp;2616.</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC2631">[RFC2631]</a></td>
+<td class="author-text">Rescorla, E., “<a href="ftp://ftp.isi.edu/in-notes/rfc2631.txt">Diffie-Hellman Key Agreement Method</a>,” RFC&nbsp;2631.</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC3174">[RFC3174]</a></td>
+<td class="author-text">Eastlake, D. and P. Jones, “<a href="ftp://ftp.isi.edu/in-notes/rfc3174.txt">US Secure Hash Algorithm 1 (SHA1)</a>,” RFC&nbsp;3174.</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC3275">[RFC3275]</a></td>
+<td class="author-text">Eastlake 3rd, D., Reagle Jr., J., and D. Solo, “<a href="ftp://ftp.isi.edu/in-notes/rfc3275.txt">(Extensible Markup Language) XML-Signature Syntax and
+          Processing</a>,” RFC&nbsp;3275.</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC3339">[RFC3339]</a></td>
+<td class="author-text">Klyne, G. and C. Newman, “<a href="ftp://ftp.isi.edu/in-notes/rfc3339.txt">Date and Time on the Internet: Timestamps</a>,” RFC&nbsp;3339.</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC3548">[RFC3548]</a></td>
+<td class="author-text">Josefsson, S., “<a href="ftp://ftp.isi.edu/in-notes/rfc3548.txt">The Base16, Base32, and Base64 Data Encodings</a>,” RFC&nbsp;3548.</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC3629">[RFC3629]</a></td>
+<td class="author-text">Yergeau, F., “<a href="ftp://ftp.isi.edu/in-notes/rfc3629.txt">UTF-8, a transformation format of Unicode and ISO 10646</a>,” RFC&nbsp;3629.</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC3986">[RFC3986]</a></td>
+<td class="author-text">Berners-Lee, T., “<a href="ftp://ftp.isi.edu/in-notes/rfc3986.txt">Uniform Resource Identifiers (URI): Generic Syntax</a>,” RFC&nbsp;3986.</td></tr>
+<tr><td class="author-text" valign="top"><a name="XRI_Resolution_2.0">[XRI_Resolution_2.0]</a></td>
+<td class="author-text">Wachob, G., Reed, D., Chasen, L., Tan, W., and S. Churchill, “<a href="http://www.oasis-open.org/committees/download.php/17293">Extensible Resource Identifier (XRI) Resolution V2.0
+          - Committee Draft 02</a>” (<a href="http://docs.oasis-open.org/xri/2.0/specs/cd02/xri-resolution-V2.0-cd-02.html">HTML</a>, <a href="http://docs.oasis-open.org/xri/2.0/specs/cd02/xri-resolution-V2.0-cd-02.pdf">PDF</a>).</td></tr>
+<tr><td class="author-text" valign="top"><a name="XRI_Syntax_2.0">[XRI_Syntax_2.0]</a></td>
+<td class="author-text">Reed, D. and D. McAlpin, “<a href="http://www.oasis-open.org/committees/download.php/15376">Extensible Resource Identifier (XRI) Syntax V2.0</a>” (<a href="http://www.oasis-open.org/committees/download.php/15376">HTML</a>, <a href="http://www.oasis-open.org/committees/download.php/15377">PDF</a>).</td></tr>
+<tr><td class="author-text" valign="top"><a name="Yadis">[Yadis]</a></td>
+<td class="author-text">Miller, J., “Yadis Specification 1.0” (<a href="http://yadis.org/papers/yadis-v1.0.pdf">PDF</a>, <a href="http://yadis.org/papers/yadis-v1.0.odt">ODT</a>).</td></tr>
+</tbody></table>
+
+<a name="rfc.authors"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<h3>Author's Address</h3>
+<table border="0" cellpadding="0" cellspacing="0" width="99%">
+<tbody><tr><td class="author-text">&nbsp;</td>
+<td class="author-text">specs@openid.net</td></tr>
+</tbody></table>
+
+</body></html>
