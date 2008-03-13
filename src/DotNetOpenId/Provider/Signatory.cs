@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Security.Cryptography;
 using System.Collections.Generic;
-using IProviderAssociationStore = DotNetOpenId.IAssociationStore<DotNetOpenId.AssociationConsumerType>;
+using IProviderAssociationStore = DotNetOpenId.IAssociationStore<DotNetOpenId.AssociationRelyingPartyType>;
 using System.Diagnostics;
 
 namespace DotNetOpenId.Provider {
@@ -42,7 +42,7 @@ namespace DotNetOpenId.Provider {
 			string assoc_handle = ((AssociatedRequest)response.Request).AssociationHandle;
 
 			if (!string.IsNullOrEmpty(assoc_handle)) {
-				assoc = GetAssociation(assoc_handle, AssociationConsumerType.Smart);
+				assoc = GetAssociation(assoc_handle, AssociationRelyingPartyType.Smart);
 
 				if (assoc == null) {
 					if (TraceUtil.Switch.TraceInfo) {
@@ -50,10 +50,10 @@ namespace DotNetOpenId.Provider {
 					}
 
 					response.Fields[QueryStringArgs.openidnp.invalidate_handle] = assoc_handle;
-					assoc = CreateAssociation(AssociationConsumerType.Dumb);
+					assoc = CreateAssociation(AssociationRelyingPartyType.Dumb);
 				}
 			} else {
-				assoc = this.CreateAssociation(AssociationConsumerType.Dumb);
+				assoc = this.CreateAssociation(AssociationRelyingPartyType.Dumb);
 				if (TraceUtil.Switch.TraceInfo) {
 					Trace.TraceInformation("No assoc_handle supplied. Creating new association.");
 				}
@@ -75,7 +75,7 @@ namespace DotNetOpenId.Provider {
 				Trace.TraceInformation("Start signature verification for assoc_handle = '{0}'", assoc_handle);
 			}
 
-			Association assoc = GetAssociation(assoc_handle, AssociationConsumerType.Dumb);
+			Association assoc = GetAssociation(assoc_handle, AssociationRelyingPartyType.Dumb);
 
 			string expected_sig;
 
@@ -113,7 +113,7 @@ namespace DotNetOpenId.Provider {
 			return expected_sig.Equals(signature, StringComparison.Ordinal);
 		}
 
-		public virtual Association CreateAssociation(AssociationConsumerType associationType) {
+		public virtual Association CreateAssociation(AssociationRelyingPartyType associationType) {
 			if (TraceUtil.Switch.TraceInfo) {
 				Trace.TraceInformation("Start Create Association. Association type = {0}", associationType);
 			}
@@ -135,7 +135,7 @@ namespace DotNetOpenId.Provider {
 			handle = "{{HMAC-SHA1}{" + seconds + "}{" + uniq + "}";
 
 			assoc = new HmacSha1Association(handle, secret, 
-				associationType == AssociationConsumerType.Dumb ? dumbSecretLifetime : smartAssociationLifetime);
+				associationType == AssociationRelyingPartyType.Dumb ? dumbSecretLifetime : smartAssociationLifetime);
 
 			store.StoreAssociation(associationType, assoc);
 
@@ -146,7 +146,7 @@ namespace DotNetOpenId.Provider {
 			return assoc;
 		}
 
-		public virtual Association GetAssociation(string assoc_handle, AssociationConsumerType associationType) {
+		public virtual Association GetAssociation(string assoc_handle, AssociationRelyingPartyType associationType) {
 			if (TraceUtil.Switch.TraceInfo) {
 				Trace.TraceInformation("Start get association from store '{0}'.", assoc_handle);
 			}
@@ -169,7 +169,7 @@ namespace DotNetOpenId.Provider {
 			return assoc;
 		}
 
-		public virtual void Invalidate(string assoc_handle, AssociationConsumerType associationType) {
+		public virtual void Invalidate(string assoc_handle, AssociationRelyingPartyType associationType) {
 			if (TraceUtil.Switch.TraceInfo) {
 				Trace.TraceInformation("Start invalidate association '{0}'.", assoc_handle);
 			}
