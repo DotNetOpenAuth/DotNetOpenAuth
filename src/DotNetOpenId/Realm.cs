@@ -7,11 +7,13 @@ namespace DotNetOpenId {
 	/// <summary>
 	/// A trust root to validate requests and match return URLs against.
 	/// </summary>
-	/// <!-- http://openid.net/specs/openid-authentication-1_1.html#anchor16 -->
-	/// <!-- http://openid.net/specs/openid-authentication-1_1.html#anchor21 -->
-	public class TrustRoot {
+	/// <remarks>
+	/// This fills the OpenID Authentication 2.0 specification for realms.
+	/// See http://openid.net/specs/openid-authentication-2_0.html#realms
+	/// </remarks>
+	public class Realm {
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase")]
-		public TrustRoot(string trustRootUrl) {
+		public Realm(string trustRootUrl) {
 			DomainWildcard = Regex.IsMatch(trustRootUrl, wildcardDetectionPattern);
 			uri = new Uri(Regex.Replace(trustRootUrl, wildcardDetectionPattern, m => m.Groups[1].Value));
 			if (!uri.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) &&
@@ -181,7 +183,7 @@ namespace DotNetOpenId {
 		}
 
 		public override bool Equals(object obj) {
-			TrustRoot other = obj as TrustRoot;
+			Realm other = obj as Realm;
 			if (other == null) return false;
 			return uri.Equals(other.uri) && DomainWildcard == other.DomainWildcard;
 		}

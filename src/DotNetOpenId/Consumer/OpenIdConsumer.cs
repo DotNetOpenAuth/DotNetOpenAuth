@@ -66,7 +66,7 @@ namespace DotNetOpenId.Consumer {
 			}
 		}
 
-		public IAuthenticationRequest CreateRequest(Uri openIdUrl, TrustRoot trustRoot, Uri returnToUrl) {
+		public IAuthenticationRequest CreateRequest(Uri openIdUrl, Realm trustRoot, Uri returnToUrl) {
 			ServiceEndpoint endpoint = manager.GetNextService(openIdUrl);
 			if (endpoint == null)
 				throw new OpenIdException("No openid endpoint found");
@@ -77,7 +77,7 @@ namespace DotNetOpenId.Consumer {
 		/// <remarks>
 		/// This method requires an ASP.NET HttpContext.
 		/// </remarks>
-		public IAuthenticationRequest CreateRequest(Uri openIdUrl, TrustRoot trustRoot) {
+		public IAuthenticationRequest CreateRequest(Uri openIdUrl, Realm trustRoot) {
 			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
 
 			// Build the return_to URL
@@ -107,7 +107,7 @@ namespace DotNetOpenId.Consumer {
 			UriBuilder trustRootUrl = new UriBuilder(HttpContext.Current.Request.Url.AbsoluteUri);
 			trustRootUrl.Path = HttpContext.Current.Request.ApplicationPath;
 
-			return CreateRequest(openIdUrl, new TrustRoot(trustRootUrl.ToString()));
+			return CreateRequest(openIdUrl, new Realm(trustRootUrl.ToString()));
 		}
 
 		/// <summary>
