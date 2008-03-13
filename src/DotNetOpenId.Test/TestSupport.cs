@@ -12,7 +12,7 @@ public class TestSupport {
 	public const string HostTestPage = "HostTest.aspx";
 	const string identityPage = "IdentityEndpoint.aspx";
 	public const string ProviderPage = "ProviderEndpoint.aspx";
-	public const string ConsumerPage = "Consumer.aspx";
+	public const string ConsumerPage = "RelyingParty.aspx";
 	public enum Scenarios {
 		AutoApproval,
 		ApproveOnSetup,

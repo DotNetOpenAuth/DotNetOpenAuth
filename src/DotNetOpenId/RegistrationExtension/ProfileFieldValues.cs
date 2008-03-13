@@ -10,7 +10,7 @@ using System.Globalization;
 using System.Net.Mail;
 using DotNetOpenId.RegistrationExtension;
 using System.Xml.Serialization;
-using DotNetOpenId.Consumer;
+using DotNetOpenId.RelyingParty;
 using DotNetOpenId.Provider;
 using System.Collections.Generic;
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Org.Mentalis.Security.Cryptography;
 
-namespace DotNetOpenId.Consumer {
+namespace DotNetOpenId.RelyingParty {
 	class AssociateRequest : DirectRequest {
 		AssociateRequest(Uri provider, IDictionary<string, string> args, DiffieHellman dh)
 			: base(provider, args) {

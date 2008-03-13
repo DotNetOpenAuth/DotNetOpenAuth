@@ -4,7 +4,7 @@ using System.Text;
 using System.Net;
 using System.Diagnostics;
 
-namespace DotNetOpenId.Consumer {
+namespace DotNetOpenId.RelyingParty {
 	abstract class DirectRequest {
 		protected DirectRequest(Uri provider, IDictionary<string, string> args) {
 			Provider = provider;

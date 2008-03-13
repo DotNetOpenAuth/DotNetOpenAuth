@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using NUnit.Framework;
-using DotNetOpenId.Consumer;
+using DotNetOpenId.RelyingParty;
 
-namespace DotNetOpenId.Test.Consumer {
+namespace DotNetOpenId.Test.RelyingParty {
 	[TestFixture]
 	public class TokenTest {
 		static ServiceEndpoint getServiceEndpoint(TestSupport.Scenarios scenario) {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DotNetOpenId.Consumer {
+namespace DotNetOpenId.RelyingParty {
 	class CheckAuthResponse : DirectResponse {
 		public CheckAuthResponse(Uri provider, IDictionary<string, string> args)
 			: base(provider, args) {

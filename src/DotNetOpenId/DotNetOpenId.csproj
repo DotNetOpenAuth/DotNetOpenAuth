@@ -48,24 +48,24 @@
     <Compile Include="Association.cs" />
     <Compile Include="AssociationMemoryStore.cs" />
     <Compile Include="Associations.cs" />
-    <Compile Include="Consumer\AssociateRequest.cs" />
-    <Compile Include="Consumer\AssociateResponse.cs" />
-    <Compile Include="Consumer\AuthenticationRequest.cs" />
-    <Compile Include="Consumer\AuthenticationResponse.cs" />
-    <Compile Include="Consumer\CheckAuthRequest.cs" />
-    <Compile Include="Consumer\CheckAuthResponse.cs" />
-    <Compile Include="Consumer\ConsumerApplicationMemoryStore.cs" />
-    <Compile Include="Consumer\DirectRequest.cs" />
-    <Compile Include="Consumer\DirectResponse.cs" />
-    <Compile Include="Consumer\Fetcher.cs" />
-    <Compile Include="Consumer\FetchResponse.cs" />
-    <Compile Include="Consumer\IAuthenticationRequest.cs" />
-    <Compile Include="Consumer\IAuthenticationResponse.cs" />
-    <Compile Include="Consumer\IConsumerApplicationStore.cs" />
-    <Compile Include="Consumer\INonceStore.cs" />
-    <Compile Include="Consumer\Nonce.cs" />
-    <Compile Include="Consumer\OpenIdConsumer.cs" />
-    <Compile Include="Consumer\Token.cs" />
+    <Compile Include="RelyingParty\AssociateRequest.cs" />
+    <Compile Include="RelyingParty\AssociateResponse.cs" />
+    <Compile Include="RelyingParty\AuthenticationRequest.cs" />
+    <Compile Include="RelyingParty\AuthenticationResponse.cs" />
+    <Compile Include="RelyingParty\CheckAuthRequest.cs" />
+    <Compile Include="RelyingParty\CheckAuthResponse.cs" />
+    <Compile Include="RelyingParty\RelyingPartyApplicationMemoryStore.cs" />
+    <Compile Include="RelyingParty\DirectRequest.cs" />
+    <Compile Include="RelyingParty\DirectResponse.cs" />
+    <Compile Include="RelyingParty\Fetcher.cs" />
+    <Compile Include="RelyingParty\FetchResponse.cs" />
+    <Compile Include="RelyingParty\IAuthenticationRequest.cs" />
+    <Compile Include="RelyingParty\IAuthenticationResponse.cs" />
+    <Compile Include="RelyingParty\IRelyingPartyApplicationStore.cs" />
+    <Compile Include="RelyingParty\INonceStore.cs" />
+    <Compile Include="RelyingParty\Nonce.cs" />
+    <Compile Include="RelyingParty\OpenIdRelyingParty.cs" />
+    <Compile Include="RelyingParty\Token.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="HmacSha1Association.cs" />
     <Compile Include="HttpEncoding.cs" />
@@ -90,11 +90,11 @@
     <Compile Include="Provider\AssociatedRequest.cs" />
     <Compile Include="RegistrationExtension\ProfileFieldValues.cs" />
     <Compile Include="RegistrationExtension\ProfileRequestFields.cs" />
-    <Compile Include="Consumer\ServiceEndpointManager.cs" />
-    <Compile Include="Consumer\OpenIdLogin.cs" />
-    <Compile Include="Consumer\OpenIdTextBox.cs" />
+    <Compile Include="RelyingParty\ServiceEndpointManager.cs" />
+    <Compile Include="RelyingParty\OpenIdLogin.cs" />
+    <Compile Include="RelyingParty\OpenIdTextBox.cs" />
     <Compile Include="RegistrationExtension\ProfileRequest.cs" />
-    <Compile Include="Consumer\ServiceEndpoint.cs" />
+    <Compile Include="RelyingParty\ServiceEndpoint.cs" />
     <Compile Include="CryptUtil.cs" />
     <Compile Include="DiffieHellman\DHKeyGeneration.cs" />
     <Compile Include="DiffieHellman\DHParameters.cs" />
@@ -146,11 +146,11 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Consumer\openid_login.gif">
+    <EmbeddedResource Include="RelyingParty\openid_login.gif">
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Consumer\Consumer.cd" />
+    <None Include="RelyingParty\RelyingParty.cd" />
     <None Include="Provider\Provider.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

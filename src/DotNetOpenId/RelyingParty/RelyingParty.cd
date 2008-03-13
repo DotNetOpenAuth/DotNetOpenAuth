@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DotNetOpenId.RelyingParty.AuthenticationRequest">
+    <Position X="6" Y="1.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAIQAIAAQAACAAAADAAAAAAAAEAAAEAAAAAEEBI=</HashCode>
+      <FileName>RelyingParty\AuthenticationRequest.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DotNetOpenId.RelyingParty.AuthenticationResponse" Collapsed="true">
+    <Position X="7.25" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAMBAAAgCAAAAAAAAAAAACQAAAAABAAAQAAAAA=</HashCode>
+      <FileName>RelyingParty\AuthenticationResponse.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DotNetOpenId.RelyingParty.OpenIdRelyingParty">
+    <Position X="0.5" Y="1" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAgAAEAAAABAAAAgEAABAAAEAAgAAAABAAAIAAAAAAA=</HashCode>
+      <FileName>RelyingParty\OpenIdRelyingParty.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="manager" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="DotNetOpenId.RelyingParty.ServiceEndpointManager" Collapsed="true">
+    <Position X="0.75" Y="3.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAEAAAgA=</HashCode>
+      <FileName>RelyingParty\ServiceEndpointManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -1,4 +1,4 @@
-namespace DotNetOpenId.Consumer {
+namespace DotNetOpenId.RelyingParty {
 	using System;
 	using Janrain.Yadis;
 	using System.Collections.Generic;
