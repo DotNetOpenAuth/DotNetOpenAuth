@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DotNetOpenId.Test</RootNamespace>
     <AssemblyName>DotNetOpenId.Test</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,6 +33,9 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
@@ -40,6 +43,7 @@
   <ItemGroup>
     <Compile Include="AssociationsTest.cs" />
     <Compile Include="AssociationTestSuite.cs" />
+    <Compile Include="IdentifierTests.cs" />
     <Compile Include="RelyingParty\NonceTest.cs" />
     <Compile Include="RelyingParty\OpenIdRelyingPartyTest.cs" />
     <Compile Include="RelyingParty\OpenIdTextBoxTest.cs" />
@@ -58,7 +62,9 @@
     <Compile Include="Provider\ProviderEndpointTest.cs" />
     <Compile Include="RelyingParty\TokenTest.cs" />
     <Compile Include="RealmTestSuite.cs" />
+    <Compile Include="UriIdentifierTests.cs" />
     <Compile Include="UriUtilTest.cs" />
+    <Compile Include="XriIdentifierTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="dhpriv.txt" />

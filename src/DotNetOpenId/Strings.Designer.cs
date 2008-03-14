@@ -151,6 +151,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Not a recognized XRI format: &apos;{0}&apos;..
+        /// </summary>
+        internal static string InvalidXri {
+            get {
+                return ResourceManager.GetString("InvalidXri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The given key &apos;{0}&apos; already exists..
         /// </summary>
         internal static string KeyAlreadyExists {
