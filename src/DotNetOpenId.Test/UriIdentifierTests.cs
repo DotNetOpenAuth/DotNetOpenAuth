@@ -10,8 +10,13 @@ namespace DotNetOpenId.Test {
 		string badUri = "som%-)830w8vf/?.<>,ewackedURI";
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
-		public void CtorNull() {
-			new UriIdentifier(null);
+		public void CtorNullUri() {
+			new UriIdentifier((Uri)null);
+		}
+
+		[Test, ExpectedException(typeof(ArgumentNullException))]
+		public void CtorNullString() {
+			new UriIdentifier((string)null);
 		}
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]

@@ -140,5 +140,65 @@ namespace DotNetOpenId.RelyingParty {
 			}
 			return false;
 		}
+
+		public static ServiceEndpoint Discover(Identifier userSuppliedIdentifier) {
+			// Fix this to support XRIs.
+			if (userSuppliedIdentifier == null) throw new ArgumentNullException("userSuppliedIdentifier");
+			UriIdentifier openIdUrl = userSuppliedIdentifier as UriIdentifier;
+			if (openIdUrl == null) throw new NotSupportedException();
+			return getNextService(openIdUrl.Uri);
+		}
+
+		static ServiceEndpoint getNextService(Uri identityUrl) {
+			string key = identityUrl.AbsoluteUri;
+
+			List<ServiceEndpoint> endpoints = null;
+
+			if (endpoints == null) {
+				endpoints = getServiceEndpoints(identityUrl);
+
+				if (endpoints == null) {
+					return null;
+				}
+			}
+
+			ServiceEndpoint endpoint = endpoints[0];
+
+			endpoints.RemoveAt(0);
+
+			return endpoint;
+		}
+		static List<ServiceEndpoint> getServiceEndpoints(Uri openid_url) {
+			DiscoveryResult result = Janrain.Yadis.Yadis.Discover(openid_url);
+			if (result == null)
+				return null;
+
+			Uri identity_url = result.NormalizedUri;
+
+			List<ServiceEndpoint> endpoints = new List<ServiceEndpoint>();
+
+			if (result.IsXRDS) {
+				Xrd xrds_node = new Xrd(result.ResponseText);
+
+				foreach (UriNode uri_node in xrds_node.UriNodes()) {
+					try {
+						endpoints.Add(new ServiceEndpoint(identity_url, uri_node));
+					} catch (ArgumentException) {
+					}
+				}
+			} else {
+				try {
+					endpoints.Add(new ServiceEndpoint(identity_url, result.ResponseText));
+				} catch (ArgumentException) {
+					//    pass
+				}
+			}
+
+			if (endpoints.Count > 0)
+				return endpoints;
+
+			return null;
+		}
+
 	}
 }

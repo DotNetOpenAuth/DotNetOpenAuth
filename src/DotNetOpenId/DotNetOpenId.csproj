@@ -91,7 +91,6 @@
     <Compile Include="Provider\AssociatedRequest.cs" />
     <Compile Include="RegistrationExtension\ProfileFieldValues.cs" />
     <Compile Include="RegistrationExtension\ProfileRequestFields.cs" />
-    <Compile Include="RelyingParty\ServiceEndpointManager.cs" />
     <Compile Include="RelyingParty\OpenIdLogin.cs" />
     <Compile Include="RelyingParty\OpenIdTextBox.cs" />
     <Compile Include="RegistrationExtension\ProfileRequest.cs" />

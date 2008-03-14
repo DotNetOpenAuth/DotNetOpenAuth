@@ -6,7 +6,7 @@ namespace DotNetOpenId {
 	/// <summary>
 	/// An Identifier is either a "http" or "https" URI, or an XRI.
 	/// </summary>
-	abstract class Identifier {
+	public abstract class Identifier {
 		/// <summary>
 		/// Parses an identifier string and automatically determines
 		/// whether it is an XRI or URI.

@@ -17,7 +17,7 @@ namespace DotNetOpenId.Test {
 			appStore = new ConsumerApplicationMemoryStore();
 		}
 
-		void parameterizedTest(Uri identityUrl, Realm realm, Uri returnTo,
+		void parameterizedTest(UriIdentifier identityUrl, Realm realm, Uri returnTo,
 			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult,
 			bool tryReplayAttack, bool provideStore) {
 			var store = provideStore ? appStore : null;

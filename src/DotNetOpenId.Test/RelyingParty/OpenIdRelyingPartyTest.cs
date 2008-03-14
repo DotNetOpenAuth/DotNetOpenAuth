@@ -11,7 +11,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 	[TestFixture]
 	public class OpenIdConsumerTest {
 		IRelyingPartyApplicationStore store;
-		Uri simpleOpenId = new Uri("http://nonexistant.openid.com");
+		UriIdentifier simpleOpenId = new UriIdentifier("http://nonexistant.openid.com");
 		Realm simpleRealm = new Realm("http://consumertest.openid.com");
 		Uri simpleReturnTo = new Uri("http://consumertest.openid.com/consumertests");
 

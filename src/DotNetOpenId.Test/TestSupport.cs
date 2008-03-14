@@ -5,6 +5,7 @@ using NUnit.Framework;
 using System.IO;
 using System.Globalization;
 using DotNetOpenId.Test.Hosting;
+using DotNetOpenId;
 
 [SetUpFixture]
 public class TestSupport {
@@ -18,11 +19,11 @@ public class TestSupport {
 		ApproveOnSetup,
 		AlwaysDeny,
 	}
-	public static Uri GetIdentityUrl(Scenarios scenario) {
+	internal static UriIdentifier GetIdentityUrl(Scenarios scenario) {
 		UriBuilder builder = new UriBuilder(Host.BaseUri);
 		builder.Path = "/" + identityPage;
 		builder.Query = "user=" + scenario;
-		return builder.Uri;
+		return new UriIdentifier(builder.Uri);
 	}
 	public static Uri GetDelegateUrl(Scenarios scenario) {
 		return new Uri(Host.BaseUri, "/" + scenario);

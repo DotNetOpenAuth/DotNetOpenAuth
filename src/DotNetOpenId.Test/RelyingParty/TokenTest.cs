@@ -9,7 +9,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 	public class TokenTest {
 		static ServiceEndpoint getServiceEndpoint(TestSupport.Scenarios scenario) {
 			ServiceEndpoint ep = new ServiceEndpoint(
-				TestSupport.GetIdentityUrl(scenario),
+				TestSupport.GetIdentityUrl(scenario).Uri,
 				TestSupport.GetFullUrl(TestSupport.ProviderPage),
 				null, TestSupport.GetDelegateUrl(scenario), false);
 			return ep;
