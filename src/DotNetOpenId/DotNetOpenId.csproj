@@ -138,6 +138,7 @@
     <Compile Include="Yadis\UriNode.cs" />
     <Compile Include="Yadis\Xrd.cs" />
     <Compile Include="Yadis\XrdNode.cs" />
+    <Compile Include="Yadis\XriResolver.cs" />
     <Compile Include="Yadis\Yadis.cs" />
   </ItemGroup>
   <ItemGroup>

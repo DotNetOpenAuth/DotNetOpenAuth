@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
+using System.IO;
+using System.Xml;
+using DotNetOpenId;
 
 namespace Janrain.Yadis
 {
@@ -27,7 +30,19 @@ namespace Janrain.Yadis
             //);
         }
 
-        public static DiscoveryResult Discover(Uri uri)
+        public static DiscoveryResult Discover(Identifier userSuppliedIdentifier)
+        {
+            if (userSuppliedIdentifier == null) throw new ArgumentNullException("userSuppliedIdentifier");
+            XriIdentifier xriIdentifier = userSuppliedIdentifier as XriIdentifier;
+            UriIdentifier uriIdentifier = userSuppliedIdentifier as UriIdentifier;
+            if (xriIdentifier != null)
+                return discoverXri(xriIdentifier);
+            if (uriIdentifier != null)
+                return discoverUri(uriIdentifier.Uri);
+            throw new ArgumentException(null, "userSuppliedIdentifier");
+        }
+
+        static DiscoveryResult discoverUri(Uri uri)
         {
             FetchRequest request = new FetchRequest(uri);
             request.Request.Accept = ACCEPT_HEADER;
@@ -75,6 +90,52 @@ namespace Janrain.Yadis
             return new DiscoveryResult(uri, response, response2);
         }
 
+        static DiscoveryResult discoverXri(XriIdentifier xri)
+        {
+            var res = new XriResolver(xri.CanonicalXri);
+            var xriResolverResponse = DotNetOpenId.RelyingParty.Fetcher.Request(res.Resolver);
+            MemoryStream ms = new MemoryStream(xriResolverResponse.Data, 0, xriResolverResponse.Length);
+            XmlTextReader reader = new XmlTextReader(ms);
+            // TODO: revise this to be more efficient.  No reason to load up a whole XmlDocument here.
+            XmlDocument doc = new XmlDocument();
+            doc.Load(reader);
+            Janrain.Yadis.Xrd xr = new Janrain.Yadis.Xrd(doc.InnerXml);
+            Janrain.Yadis.UriNode[] un = xr.UriNodes();
+
+            if (un.Length == 0)
+            {
+                return null;
+            }
+
+            FetchRequest request = new FetchRequest(un[1].Uri);
+            request.Request.Accept = ACCEPT_HEADER;
+            FetchResponse response = request.GetResponse(true);
+            if (((int)response.StatusCode) != 200)
+            {
+                return null;
+            }
+            FetchResponse response2 = null;
+            if (response.ContentType.MediaType == CONTENT_TYPE)
+            {
+                response2 = response;
+            }
+            else
+            {
+                Uri url = res.Resolver;
+                if (response.ContentType.MediaType == CONTENT_TYPE_HTML)
+                {
+                    url = MetaYadisLoc(response.Body);
+                }
+                response2 = new FetchRequest(url).GetResponse(false);
+                if (((int)response2.StatusCode) != 200)
+                {
+                    return null;
+                }
+            }
+            
+            return new DiscoveryResult(un[1].Uri, response, response2);
+        }
+
         public static Uri MetaYadisLoc(string html)
         {
             object[] objArray = ByteParser.HeadTagAttrs(html, "meta");
@@ -114,7 +175,8 @@ namespace Janrain.Yadis
         // Methods
         public DiscoveryResult(Uri requestUri, FetchResponse initResp, FetchResponse finalResp)
         {
-            this.requestUri = requestUri;
+			// requestUri == null when XRI is used.
+            this.requestUri = requestUri == null ? initResp.FinalUri : requestUri;
             this.normalizedUri = initResp.FinalUri;
             if (finalResp == null)
             {

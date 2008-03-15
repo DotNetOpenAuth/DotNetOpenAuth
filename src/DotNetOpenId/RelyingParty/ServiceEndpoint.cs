@@ -140,17 +140,7 @@ namespace DotNetOpenId.RelyingParty {
 
 		public static ServiceEndpoint Discover(Identifier userSuppliedIdentifier) {
 			if (userSuppliedIdentifier == null) throw new ArgumentNullException("userSuppliedIdentifier");
-			XriIdentifier xriIdentifier = userSuppliedIdentifier as XriIdentifier;
-			UriIdentifier uriIdentifier = userSuppliedIdentifier as UriIdentifier;
-			if (xriIdentifier != null)
-				return discoverXri(xriIdentifier);
-			if (uriIdentifier != null)
-				return discoverUri(uriIdentifier);
-			throw new ArgumentException(null, "userSuppliedIdentifier");
-		}
-
-		static ServiceEndpoint discoverUri(UriIdentifier userSuppliedIdentifier) {
-			DiscoveryResult result = Janrain.Yadis.Yadis.Discover(userSuppliedIdentifier.Uri);
+			DiscoveryResult result = Janrain.Yadis.Yadis.Discover(userSuppliedIdentifier);
 			if (result == null)
 				return null;
 
@@ -169,10 +159,6 @@ namespace DotNetOpenId.RelyingParty {
 			}
 
 			return null;
-		}
-
-		static ServiceEndpoint discoverXri(XriIdentifier userSuppliedIdentifier) {
-			throw new NotSupportedException();
 		}
 	}
 }

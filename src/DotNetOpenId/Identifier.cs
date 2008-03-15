@@ -20,5 +20,9 @@ namespace DotNetOpenId {
 				return new UriIdentifier(identifier);
 			}
 		}
+
+		public static bool IsValid(string identifier) {
+			return XriIdentifier.IsValidXri(identifier) || UriIdentifier.IsValidUri(identifier);
+		}
 	}
 }
