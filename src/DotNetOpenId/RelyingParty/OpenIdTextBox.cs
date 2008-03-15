@@ -515,8 +515,8 @@ namespace DotNetOpenId.RelyingParty
 			/// authentication attempt.
 			/// </summary>
 			/// <param name="identityUrl"></param>
-			internal OpenIdEventArgs(Uri identityUrl) {
-				IdentityUrl = identityUrl;
+			internal OpenIdEventArgs(Identifier userSuppliedIdentifier) {
+				UserSuppliedIdentifier = userSuppliedIdentifier;
 			}
 			/// <summary>
 			/// Constructs an object with information on a completed authentication attempt
@@ -525,14 +525,15 @@ namespace DotNetOpenId.RelyingParty
 			internal OpenIdEventArgs(IAuthenticationResponse response)
 			{
 				Response = response;
-				IdentityUrl = response.IdentityUrl;
+				ClaimedIdentifier = response.ClaimedIdentifier;
 				ProfileFields = ProfileFieldValues.ReadFromResponse(response);
 			}
 			/// <summary>
 			/// Cancels the OpenID authentication and/or login process.
 			/// </summary>
 			public bool Cancel { get; set; }
-			public Uri IdentityUrl { get; private set; }
+			public Identifier UserSuppliedIdentifier { get; private set; }
+			public Identifier ClaimedIdentifier { get; private set; }
 
 			/// <summary>
 			/// Gets the details of the OpenId authentication response.
@@ -557,7 +558,7 @@ namespace DotNetOpenId.RelyingParty
 				loggedIn(this, args);
 			if (!args.Cancel)
 				FormsAuthentication.RedirectFromLoginPage(
-					response.IdentityUrl.AbsoluteUri, UsePersistentCookie);
+					response.ClaimedIdentifier.ToString(), UsePersistentCookie);
 		}
 
 		#endregion

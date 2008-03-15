@@ -8,7 +8,7 @@
 	protected override void OnLoad(EventArgs e) {
 		base.OnLoad(e);
 
-		IdentityEndpoint1.DelegateUrl = "~/" + Request.QueryString["user"];
+		IdentityEndpoint1.ProviderLocalIdentifier = "~/" + Request.QueryString["user"];
 	}
 </script>
 

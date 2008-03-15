@@ -8,6 +8,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Web.UI.HtmlControls;
+using DotNetOpenId;
 using DotNetOpenId.Provider;
 
 /// <summary>
@@ -17,7 +18,8 @@ public partial class login : System.Web.UI.Page {
 	protected void Page_Load(object src, EventArgs e) {
 		if (!IsPostBack) {
 			if (ProviderEndpoint.PendingAuthenticationRequest != null) {
-				login1.UserName = Util.ExtractUserName(ProviderEndpoint.PendingAuthenticationRequest.IdentityUrl);
+				login1.UserName = Util.ExtractUserName(
+					ProviderEndpoint.PendingAuthenticationRequest.ClaimedIdentifier);
 				((TextBox)login1.FindControl("UserName")).ReadOnly = true;
 				login1.FindControl("Password").Focus();
 			}

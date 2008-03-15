@@ -94,6 +94,11 @@ namespace DotNetOpenId {
         }
     }
 
+	internal static class ProtocolConstants {
+		internal const string OpenIdServer = "openid.server";
+		internal const string OpenIdDelegate = "openid.delegate";
+	}
+
     internal static class QueryStringArgs {
         /// <summary>openid. variables that don't include the "openid." prefix.</summary>
         internal static class openidnp {

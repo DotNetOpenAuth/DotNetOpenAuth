@@ -18,57 +18,67 @@ namespace DotNetOpenId.RelyingParty {
 			OPENID_1_0_TYPE };
 
 		/// <summary>
-		/// The URL given as the OpenId URL, which may not be the same as the Provider-issued
-		/// OpenId URL.
-		/// This points to the page with the &lt;LINK&gt; tag with openid.server in it.
+		/// The URL which accepts OpenID Authentication protocol messages.
 		/// </summary>
-		public Uri IdentityUrl { get; private set; }
+		/// <remarks>
+		/// Obtained by performing discovery on the User-Supplied Identifier. 
+		/// This value MUST be an absolute HTTP or HTTPS URL.
+		/// </remarks>
+		public Uri ProviderEndpoint { get; private set; }
 		/// <summary>
-		/// The OpenId provider URL used for programmatic authentication.
+		/// An Identifier for an OpenID Provider.
 		/// </summary>
-		public Uri ServerUrl { get; private set; }
+		public Identifier ProviderIdentifier { get; private set; }
 		/// <summary>
-		/// The OpenId provider-issued identity URL.
+		/// An Identifier that was presented by the end user to the Relying Party, 
+		/// or selected by the user at the OpenID Provider. 
+		/// During the initiation phase of the protocol, an end user may enter 
+		/// either their own Identifier or an OP Identifier. If an OP Identifier 
+		/// is used, the OP may then assist the end user in selecting an Identifier 
+		/// to share with the Relying Party.
 		/// </summary>
-		public Uri DelegateUrl { get; private set; }
+		public Identifier UserSuppliedIdentifier { get; private set; }
+		/// <summary>
+		/// The Identifier that the end user claims to own.
+		/// </summary>
+		public Identifier ClaimedIdentifier { get; private set; }
+		/// <summary>
+		/// An alternate Identifier for an end user that is local to a 
+		/// particular OP and thus not necessarily under the end user's 
+		/// control.
+		/// </summary>
+		public Identifier ProviderLocalIdentifier { get; private set; }
 		public bool UsedYadis { get; private set; }
 
 		Uri[] typeUris;
 
-		/// <summary>
-		/// Gets the DelegateUrl if supplied, otherwise the IdentityUrl.
-		/// </summary>
-		public Uri ServerId {
-			get { return DelegateUrl ?? IdentityUrl; }
-		}
-
-		internal static Uri ExtractDelegate(ServiceNode serviceNode) {
+		internal static Identifier ExtractDelegate(ServiceNode serviceNode) {
 			XmlNamespaceManager nsmgr = serviceNode.XmlNsManager;
 			nsmgr.PushScope();
 			nsmgr.AddNamespace("openid", OPENID_1_0_NS.AbsoluteUri);
 			XmlNodeList delegateNodes = serviceNode.Node.SelectNodes("./openid:Delegate", nsmgr);
-			Uri delegateUrl = null;
+			Identifier providerLocalIdentifier = null;
 			foreach (XmlNode delegateNode in delegateNodes) {
 				try {
-					delegateUrl = new Uri(delegateNode.InnerXml);
+					providerLocalIdentifier = Identifier.Parse(delegateNode.InnerXml);
 					break;
 				} catch (UriFormatException) {
 					continue;
 				}
 			}
 			nsmgr.PopScope();
-			return delegateUrl;
+			return providerLocalIdentifier;
 		}
 
-		internal ServiceEndpoint(Uri identityUrl, Uri serverUrl, Uri[] typeUris, Uri delegateUrl, bool usedYadis) {
-			IdentityUrl = identityUrl;
-			ServerUrl = serverUrl;
+		internal ServiceEndpoint(Identifier claimedIdentifier, Uri providerEndpoint, Uri[] typeUris, Identifier providerLocalIdentifier, bool usedYadis) {
+			ClaimedIdentifier = claimedIdentifier;
+			ProviderEndpoint = providerEndpoint;
 			this.typeUris = typeUris;
-			DelegateUrl = delegateUrl;
+			ProviderLocalIdentifier = providerLocalIdentifier;
 			UsedYadis = usedYadis;
 		}
 
-		internal ServiceEndpoint(Uri yadisUrl, UriNode uriNode) {
+		internal ServiceEndpoint(Identifier yadisClaimedIdentifier, UriNode uriNode) {
 			ServiceNode serviceNode = uriNode.ServiceNode;
 
 			TypeNode[] typeNodes = serviceNode.TypeNodes();
@@ -93,42 +103,30 @@ namespace DotNetOpenId.RelyingParty {
 			if ((matches.Length == 0) || (uriNode.Uri == null)) {
 				throw new ArgumentException("No matching openid type uris");
 			}
-			IdentityUrl = yadisUrl;
-			ServerUrl = uriNode.Uri;
+			ClaimedIdentifier = yadisClaimedIdentifier;
+			ProviderEndpoint = uriNode.Uri;
 			this.typeUris = typeUris;
-			DelegateUrl = ExtractDelegate(serviceNode);
+			ProviderLocalIdentifier = ExtractDelegate(serviceNode);
 			UsedYadis = true;
 		}
 
-		public ServiceEndpoint(Uri uri, string html) {
-			object[] objArray = ByteParser.HeadTagAttrs(html, "link");
-			foreach (NameValueCollection values in objArray) {
-				string text = values["rel"];
-				if (text != null) {
-					string uriString = values["href"];
-					if (uriString != null) {
-						if ((text == "openid.server") && (ServerUrl == null)) {
-							try {
-								ServerUrl = new Uri(uriString);
-							} catch (UriFormatException) {
-							}
-						}
-						if ((text == "openid.delegate") && (DelegateUrl == null)) {
-							try {
-								DelegateUrl = new Uri(uriString);
-								continue;
-							} catch (UriFormatException) {
-								continue;
-							}
-						}
-					}
+		public ServiceEndpoint(Identifier claimedIdentifier, string html) {
+			ClaimedIdentifier = claimedIdentifier;
+			ProviderLocalIdentifier = claimedIdentifier;
+			foreach (NameValueCollection values in ByteParser.HeadTagAttrs(html, "link")) {
+				switch (values["rel"]) {
+					case ProtocolConstants.OpenIdServer:
+						ProviderEndpoint = new Uri(values["href"]);
+						break;
+					case ProtocolConstants.OpenIdDelegate:
+						ProviderLocalIdentifier = Identifier.Parse(values["href"]);
+						break;
 				}
 			}
-			if (this.ServerUrl == null) {
+			if (ProviderEndpoint == null) {
 				throw new ArgumentException("html did not contain openid.server link");
 			}
-			IdentityUrl = uri;
-			this.typeUris = new Uri[] { OPENID_1_0_TYPE };
+			typeUris = new Uri[] { OPENID_1_0_TYPE };
 			UsedYadis = false;
 		}
 
@@ -144,58 +142,28 @@ namespace DotNetOpenId.RelyingParty {
 		public static ServiceEndpoint Discover(Identifier userSuppliedIdentifier) {
 			// Fix this to support XRIs.
 			if (userSuppliedIdentifier == null) throw new ArgumentNullException("userSuppliedIdentifier");
-			UriIdentifier openIdUrl = userSuppliedIdentifier as UriIdentifier;
-			if (openIdUrl == null) throw new NotSupportedException();
-			return getNextService(openIdUrl.Uri);
-		}
+			UriIdentifier userSuppliedIdentifierUri = userSuppliedIdentifier as UriIdentifier;
+			if (userSuppliedIdentifierUri == null) throw new NotSupportedException();
 
-		static ServiceEndpoint getNextService(Uri identityUrl) {
-			string key = identityUrl.AbsoluteUri;
-
-			List<ServiceEndpoint> endpoints = null;
-
-			if (endpoints == null) {
-				endpoints = getServiceEndpoints(identityUrl);
-
-				if (endpoints == null) {
-					return null;
-				}
-			}
-
-			ServiceEndpoint endpoint = endpoints[0];
-
-			endpoints.RemoveAt(0);
-
-			return endpoint;
-		}
-		static List<ServiceEndpoint> getServiceEndpoints(Uri openid_url) {
-			DiscoveryResult result = Janrain.Yadis.Yadis.Discover(openid_url);
+			DiscoveryResult result = Janrain.Yadis.Yadis.Discover(userSuppliedIdentifierUri.Uri);
 			if (result == null)
 				return null;
 
-			Uri identity_url = result.NormalizedUri;
-
-			List<ServiceEndpoint> endpoints = new List<ServiceEndpoint>();
+			Identifier claimedIdentifier = new UriIdentifier(result.NormalizedUri);
 
 			if (result.IsXRDS) {
 				Xrd xrds_node = new Xrd(result.ResponseText);
 
 				foreach (UriNode uri_node in xrds_node.UriNodes()) {
 					try {
-						endpoints.Add(new ServiceEndpoint(identity_url, uri_node));
-					} catch (ArgumentException) {
-					}
+						return new ServiceEndpoint(claimedIdentifier, uri_node);
+					} catch (ArgumentException) { }
 				}
 			} else {
 				try {
-					endpoints.Add(new ServiceEndpoint(identity_url, result.ResponseText));
-				} catch (ArgumentException) {
-					//    pass
-				}
+					return new ServiceEndpoint(claimedIdentifier, result.ResponseText);
+				} catch (ArgumentException) { }
 			}
-
-			if (endpoints.Count > 0)
-				return endpoints;
 
 			return null;
 		}

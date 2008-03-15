@@ -17,7 +17,10 @@ namespace DotNetOpenId.RelyingParty {
 		/// 'openid.' or the <paramref name="extensionPrefix"/>.
 		/// </returns>
 		IDictionary<string, string> GetExtensionArguments(string extensionPrefix);
-		Uri IdentityUrl { get; }
+		/// <summary>
+		/// An Identifier that the end user claims to own.
+		/// </summary>
+		Identifier ClaimedIdentifier { get; }
 		/// <summary>
 		/// The detailed success or failure status of the authentication attempt.
 		/// </summary>

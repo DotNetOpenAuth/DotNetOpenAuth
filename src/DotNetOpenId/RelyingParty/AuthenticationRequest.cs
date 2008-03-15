@@ -52,7 +52,7 @@ namespace DotNetOpenId.RelyingParty {
 
 			return new AuthenticationRequest(
 				new Token(serviceEndpoint).Serialize(store),
-				getAssociation(serviceEndpoint.ServerUrl, store), serviceEndpoint,
+				getAssociation(serviceEndpoint.ProviderEndpoint, store), serviceEndpoint,
 				trustRoot, returnToUrl);
 		}
 		static Association getAssociation(Uri serverUrl, IRelyingPartyApplicationStore store) {
@@ -96,14 +96,14 @@ namespace DotNetOpenId.RelyingParty {
 
 				qsArgs.Add(QueryStringArgs.openid.mode, (Mode == AuthenticationRequestMode.Immediate) ?
 					QueryStringArgs.Modes.checkid_immediate : QueryStringArgs.Modes.checkid_setup);
-				qsArgs.Add(QueryStringArgs.openid.identity, this.endpoint.ServerId.AbsoluteUri); //TODO: breaks the Law of Demeter
+				qsArgs.Add(QueryStringArgs.openid.identity, this.endpoint.ProviderLocalIdentifier.ToString());
 				qsArgs.Add(QueryStringArgs.openid.return_to, returnToBuilder.ToString());
 				qsArgs.Add(QueryStringArgs.openid.trust_root, Realm.ToString());
 
 				if (this.assoc != null)
 					qsArgs.Add(QueryStringArgs.openid.assoc_handle, this.assoc.Handle); // !!!!
 
-				UriBuilder redir = new UriBuilder(this.endpoint.ServerUrl);
+				UriBuilder redir = new UriBuilder(this.endpoint.ProviderEndpoint);
 
 				UriUtil.AppendQueryArgs(redir, qsArgs);
 				UriUtil.AppendQueryArgs(redir, ExtraArgs);

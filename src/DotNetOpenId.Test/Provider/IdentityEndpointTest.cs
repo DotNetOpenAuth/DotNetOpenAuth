@@ -22,7 +22,7 @@ namespace DotNetOpenId.Test.Provider {
 				TestSupport.ProviderPage)));
 			Assert.IsTrue(Regex.IsMatch(html, string.Format(CultureInfo.InvariantCulture,
 				@"\<link rel=""openid.delegate"" href=""http://[^/]+{0}""\>\</link\>",
-				Regex.Escape(TestSupport.GetDelegateUrl(scenario).AbsolutePath))));
+				Regex.Escape(new Uri(TestSupport.GetDelegateUrl(scenario).ToString()).AbsolutePath))));
 		}
 	}
 }

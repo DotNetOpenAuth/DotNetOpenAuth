@@ -16,30 +16,28 @@ namespace DotNetOpenId.RelyingParty {
 	class Token {
 		public static readonly string TokenKey = "token";
 		/// <summary>
-		/// The URL given as the OpenId URL, which may not be the same as the Provider-issued
-		/// OpenId URL.
-		/// This points to the page with the &lt;LINK&gt; tag with openid.server in it.
+		/// The Identifier that the end user claims to own.
 		/// </summary>
-		public Uri IdentityUrl { get; private set; }
+		public Identifier ClaimedIdentifier { get; private set; }
 		/// <summary>
-		/// The DelegateUrl if supplied, otherwise the IdentityUrl.
+		/// The ProviderLocalIdentifier if supplied, otherwise the ClaimedIdentifier.
 		/// </summary>
-		public Uri ServerId { get; private set; }
+		public Identifier ProviderLocalIdentifier { get; private set; }
 		/// <summary>
-		/// The OpenId provider URL used for programmatic authentication.
+		/// The URL which accepts OpenID Authentication protocol messages.
 		/// </summary>
-		public Uri ServerUrl { get; private set; }
+		public Uri ProviderEndpoint { get; private set; }
 		public Nonce Nonce { get; set; }
 
 		public Token(ServiceEndpoint serviceEndpoint)
-			: this(new Nonce(), serviceEndpoint.IdentityUrl, serviceEndpoint.ServerId, serviceEndpoint.ServerUrl) {
+			: this(new Nonce(), serviceEndpoint.ClaimedIdentifier, serviceEndpoint.ProviderLocalIdentifier, serviceEndpoint.ProviderEndpoint) {
 		}
 
-		Token(Nonce nonce, Uri identityUrl, Uri serverId, Uri serverUrl) {
+		Token(Nonce nonce, Identifier claimedIdentifier, Identifier providerLocalIdentifier, Uri providerEndpoint) {
 			this.Nonce = nonce;
-			IdentityUrl = identityUrl;
-			ServerId = serverId;
-			ServerUrl = serverUrl;
+			ClaimedIdentifier = claimedIdentifier;
+			ProviderLocalIdentifier = providerLocalIdentifier;
+			ProviderEndpoint = providerEndpoint;
 		}
 
 		delegate void DataWriter(string data, bool writeSeparator);
@@ -65,9 +63,9 @@ namespace DotNetOpenId.RelyingParty {
 
 				writeData(timestamp, true);
 				writeData(Nonce.Code, true);
-				writeData(IdentityUrl.AbsoluteUri, true);
-				writeData(ServerId.AbsoluteUri, true);
-				writeData(ServerUrl.AbsoluteUri, false);
+				writeData(ClaimedIdentifier.ToString(), true);
+				writeData(ProviderLocalIdentifier.ToString(), true);
+				writeData(ProviderEndpoint.ToString(), false);
 
 				sha1Stream.Flush();
 				sha1Stream.FlushFinalBlock();
@@ -117,7 +115,7 @@ namespace DotNetOpenId.RelyingParty {
 			Nonce nonce = new Nonce(items[1], ts);
 			consumeNonce(nonce, store);
 
-			return new Token(nonce, new Uri(items[2]), new Uri(items[3]), new Uri(items[4]));
+			return new Token(nonce, Identifier.Parse(items[2]), Identifier.Parse(items[3]), new Uri(items[4]));
 		}
 
 		static void consumeNonce(Nonce nonce, INonceStore store) {
@@ -146,10 +144,10 @@ namespace DotNetOpenId.RelyingParty {
 			// This should pretty much always return false, since every token should
 			// have it's own unique nonce.
 			return
-				this.IdentityUrl == other.IdentityUrl &&
+				this.ClaimedIdentifier == other.ClaimedIdentifier &&
 				this.Nonce.Equals(other.Nonce) &&
-				this.ServerId == other.ServerId &&
-				this.ServerUrl == other.ServerUrl;
+				this.ProviderLocalIdentifier == other.ProviderLocalIdentifier &&
+				this.ProviderEndpoint == other.ProviderEndpoint;
 		}
 	}
 }

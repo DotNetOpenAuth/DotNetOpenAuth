@@ -9,7 +9,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 	public class TokenTest {
 		static ServiceEndpoint getServiceEndpoint(TestSupport.Scenarios scenario) {
 			ServiceEndpoint ep = new ServiceEndpoint(
-				TestSupport.GetIdentityUrl(scenario).Uri,
+				TestSupport.GetIdentityUrl(scenario),
 				TestSupport.GetFullUrl(TestSupport.ProviderPage),
 				null, TestSupport.GetDelegateUrl(scenario), false);
 			return ep;
@@ -19,9 +19,9 @@ namespace DotNetOpenId.Test.RelyingParty {
 		public void TokenBasics() {
 			ServiceEndpoint ep = getServiceEndpoint(TestSupport.Scenarios.AutoApproval);
 			Token token = new Token(ep);
-			Assert.AreEqual(ep.IdentityUrl, token.IdentityUrl);
-			Assert.AreEqual(ep.DelegateUrl, token.ServerId);
-			Assert.AreEqual(ep.ServerUrl, token.ServerUrl);
+			Assert.AreEqual(ep.ClaimedIdentifier, token.ClaimedIdentifier);
+			Assert.AreEqual(ep.ProviderLocalIdentifier, token.ProviderLocalIdentifier);
+			Assert.AreEqual(ep.ProviderEndpoint, token.ProviderEndpoint);
 			Assert.IsNotNull(token.Nonce);
 
 			INonceStore store = new ConsumerApplicationMemoryStore();
@@ -29,9 +29,9 @@ namespace DotNetOpenId.Test.RelyingParty {
 
 			Token token2 = Token.Deserialize(serializedToken, store);
 
-			Assert.AreEqual(token.IdentityUrl, token2.IdentityUrl);
-			Assert.AreEqual(token.ServerId, token2.ServerId);
-			Assert.AreEqual(token.ServerUrl, token2.ServerUrl);
+			Assert.AreEqual(token.ClaimedIdentifier, token2.ClaimedIdentifier);
+			Assert.AreEqual(token.ProviderLocalIdentifier, token2.ProviderLocalIdentifier);
+			Assert.AreEqual(token.ProviderEndpoint, token2.ProviderEndpoint);
 			Assert.IsNotNull(token2.Nonce);
 		}
 

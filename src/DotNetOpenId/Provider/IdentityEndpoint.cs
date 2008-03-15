@@ -23,15 +23,15 @@ namespace DotNetOpenId.Provider {
 			}
 		}
 
-		const string delegateUrlViewStateKey = "DelegateUrl";
+		const string providerLocalIdentifierViewStateKey = "ProviderLocalIdentifier";
 		[Bindable(true)]
 		[Category("Behavior")]
 		[Localizable(true)]
-		public string DelegateUrl {
-			get { return (string)ViewState[delegateUrlViewStateKey]; }
+		public string ProviderLocalIdentifier {
+			get { return (string)ViewState[providerLocalIdentifierViewStateKey]; }
 			set {
 				RelyingParty.OpenIdTextBox.ValidateResolvableUrl(Page, DesignMode, value);
-				ViewState[delegateUrlViewStateKey] = value;
+				ViewState[providerLocalIdentifierViewStateKey] = value;
 			}
 		}
 
@@ -44,11 +44,11 @@ namespace DotNetOpenId.Provider {
 				writer.Write(">");
 				writer.WriteEndTag("link");
 			}
-			if (!string.IsNullOrEmpty(DelegateUrl)) {
+			if (!string.IsNullOrEmpty(ProviderLocalIdentifier)) {
 				writer.WriteBeginTag("link");
 				writer.WriteAttribute("rel", "openid.delegate");
 				writer.WriteAttribute("href",
-					new Uri(Page.Request.Url, Page.ResolveUrl(DelegateUrl)).AbsoluteUri);
+					new Uri(Page.Request.Url, Page.ResolveUrl(ProviderLocalIdentifier)).AbsoluteUri);
 				writer.Write(">");
 				writer.WriteEndTag("link");
 			}

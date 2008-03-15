@@ -50,7 +50,7 @@ namespace DotNetOpenId.Test {
 			var providerToConsumerQuery = HttpUtility.ParseQueryString(redirectUrl.Query);
 			var consumer2 = new OpenIdRelyingParty(providerToConsumerQuery, store);
 			Assert.AreEqual(expectedResult, consumer2.Response.Status);
-			Assert.AreEqual(identityUrl, consumer2.Response.IdentityUrl);
+			Assert.AreEqual(identityUrl, consumer2.Response.ClaimedIdentifier);
 
 			// Try replay attack
 			if (tryReplayAttack) {

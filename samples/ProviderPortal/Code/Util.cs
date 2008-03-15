@@ -15,4 +15,7 @@ public class Util {
 	public static string ExtractUserName(Uri url) {
 		return url.Segments[url.Segments.Length - 1];
 	}
+	public static string ExtractUserName(Identifier identifier) {
+		return ExtractUserName(new Uri(identifier.ToString()));
+	}
 }

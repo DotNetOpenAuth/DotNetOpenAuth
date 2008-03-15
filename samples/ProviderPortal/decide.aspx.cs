@@ -14,11 +14,11 @@ public partial class decide : Page {
 		if (ProviderEndpoint.PendingAuthenticationRequest == null)
 			Response.Redirect("~/");
 
-		identityUrlLabel.Text = ProviderEndpoint.PendingAuthenticationRequest.IdentityUrl.AbsoluteUri;
+		identityUrlLabel.Text = ProviderEndpoint.PendingAuthenticationRequest.ClaimedIdentifier.ToString();
 		trustRootLabel.Text = ProviderEndpoint.PendingAuthenticationRequest.TrustRoot.ToString();
 
 		// check that the logged in user is the same as the user requesting authentication to the consumer. If not, then log them out.
-		String s = Util.ExtractUserName(ProviderEndpoint.PendingAuthenticationRequest.IdentityUrl);
+		String s = Util.ExtractUserName(ProviderEndpoint.PendingAuthenticationRequest.ClaimedIdentifier);
 		if (s != User.Identity.Name) {
 			FormsAuthentication.SignOut();
 			Response.Redirect(Request.Url.AbsoluteUri);

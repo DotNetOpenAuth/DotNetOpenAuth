@@ -29,9 +29,9 @@ namespace DotNetOpenId.RelyingParty {
 	}
 
 	class AuthenticationResponse : IAuthenticationResponse {
-		internal AuthenticationResponse(AuthenticationStatus status, Uri identityUrl, IDictionary<string, string> query) {
+		internal AuthenticationResponse(AuthenticationStatus status, Identifier claimedIdentifier, IDictionary<string, string> query) {
 			Status = status;
-			IdentityUrl = identityUrl;
+			ClaimedIdentifier = claimedIdentifier;
 			signedArguments = new Dictionary<string, string>();
 			string signed;
 			if (query.TryGetValue(QueryStringArgs.openid.signed, out signed)) {
@@ -48,7 +48,10 @@ namespace DotNetOpenId.RelyingParty {
 		/// The detailed success or failure status of the authentication attempt.
 		/// </summary>
 		public AuthenticationStatus Status { get; private set; }
-		public Uri IdentityUrl { get; private set; }
+		/// <summary>
+		/// An Identifier that the end user claims to own.
+		/// </summary>
+		public Identifier ClaimedIdentifier { get; private set; }
 		IDictionary<string, string> signedArguments;
 
 		internal Uri ReturnTo {
@@ -100,45 +103,45 @@ namespace DotNetOpenId.RelyingParty {
 
 			switch (mode) {
 				case QueryStringArgs.Modes.cancel:
-					return new AuthenticationResponse(AuthenticationStatus.Canceled, token.IdentityUrl, query);
+					return new AuthenticationResponse(AuthenticationStatus.Canceled, token.ClaimedIdentifier, query);
 				case QueryStringArgs.Modes.error:
 					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 						"The provider returned an error: {0}", query[QueryStringArgs.openid.error],
-						token.IdentityUrl));
+						token.ClaimedIdentifier));
 				case QueryStringArgs.Modes.id_res:
 					return parseIdResResponse(query, token, store);
 				default:
 					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 						Strings.InvalidOpenIdQueryParameterValue,
-						QueryStringArgs.openid.mode, mode), token.IdentityUrl);
+						QueryStringArgs.openid.mode, mode), token.ClaimedIdentifier);
 			}
 		}
 
 		static AuthenticationResponse parseIdResResponse(IDictionary<string, string> query, Token token, IRelyingPartyApplicationStore store) {
 			string user_setup_url;
 			if (query.TryGetValue(QueryStringArgs.openid.user_setup_url, out user_setup_url))
-				return new AuthenticationResponse(AuthenticationStatus.SetupRequired, token.IdentityUrl, query);
+				return new AuthenticationResponse(AuthenticationStatus.SetupRequired, token.ClaimedIdentifier, query);
 
 			string assoc_handle = getRequiredField(query, QueryStringArgs.openid.assoc_handle);
 
-			Association assoc = store.GetAssociation(token.ServerUrl, assoc_handle);
+			Association assoc = store.GetAssociation(token.ProviderEndpoint, assoc_handle);
 			AuthenticationResponse response;
 
 			if (assoc == null) {
 				// It's not an association we know about.  Dumb mode is our
 				// only possible path for recovery.
-				if (!verifyByProvider(query, token.ServerUrl, store))
-					throw new OpenIdException("check_authentication failed", token.IdentityUrl);
+				if (!verifyByProvider(query, token.ProviderEndpoint, store))
+					throw new OpenIdException("check_authentication failed", token.ClaimedIdentifier);
 
-				response = new AuthenticationResponse(AuthenticationStatus.Authenticated, token.IdentityUrl, query);
+				response = new AuthenticationResponse(AuthenticationStatus.Authenticated, token.ClaimedIdentifier, query);
 			} else {
 				if (assoc.IsExpired)
 					throw new OpenIdException(String.Format(CultureInfo.CurrentUICulture,
-						"Association with {0} expired", token.ServerUrl), token.IdentityUrl);
+						"Association with {0} expired", token.ProviderEndpoint), token.ClaimedIdentifier);
 
 				verifyBySignature(query, assoc);
 
-				response = new AuthenticationResponse(AuthenticationStatus.Authenticated, token.IdentityUrl, query);
+				response = new AuthenticationResponse(AuthenticationStatus.Authenticated, token.ClaimedIdentifier, query);
 			}
 
 			// Just a little extra something to make sure that what's signed in return_to

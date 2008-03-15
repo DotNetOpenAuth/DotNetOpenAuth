@@ -25,8 +25,8 @@ public class TestSupport {
 		builder.Query = "user=" + scenario;
 		return new UriIdentifier(builder.Uri);
 	}
-	public static Uri GetDelegateUrl(Scenarios scenario) {
-		return new Uri(Host.BaseUri, "/" + scenario);
+	public static Identifier GetDelegateUrl(Scenarios scenario) {
+		return new UriIdentifier(new Uri(Host.BaseUri, "/" + scenario));
 	}
 	public static Uri GetFullUrl(string url) {
 		return new Uri(Host.BaseUri, url);

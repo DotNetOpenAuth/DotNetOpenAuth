@@ -39,7 +39,7 @@ public partial class server : System.Web.UI.Page {
 	protected void provider_AuthenticationChallenge(object sender, ProviderEndpoint.AuthenticationChallengeEventArgs e) {
 		var idrequest = e.Request;
 		if (idrequest.Immediate) {
-			string userOwningOpenIdUrl = Util.ExtractUserName(idrequest.IdentityUrl);
+			string userOwningOpenIdUrl = Util.ExtractUserName(idrequest.ClaimedIdentifier);
 			// NOTE: in a production provider site, you may want to only 
 			// respond affirmatively if the user has already authorized this consumer
 			// to know the answer.
