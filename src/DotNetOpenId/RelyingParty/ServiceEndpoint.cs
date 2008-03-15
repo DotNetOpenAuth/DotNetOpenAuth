@@ -10,15 +10,15 @@ namespace DotNetOpenId.RelyingParty {
 	/// Represents information discovered about a user-supplied Identifier.
 	/// </summary>
 	internal class ServiceEndpoint {
-		public static readonly Uri OPENID_1_0_NS = new Uri("http://openid.net/xmlns/1.0");
-		public static readonly Uri OPENID_1_2_TYPE = new Uri("http://openid.net/signon/1.2");
-		public static readonly Uri OPENID_1_1_TYPE = new Uri("http://openid.net/signon/1.1");
-		public static readonly Uri OPENID_1_0_TYPE = new Uri("http://openid.net/signon/1.0");
+		public static readonly Uri OpenId10Namespace = new Uri("http://openid.net/xmlns/1.0");
+		public static readonly Uri OpenId12Type = new Uri("http://openid.net/signon/1.2");
+		public static readonly Uri OpenId11Type = new Uri("http://openid.net/signon/1.1");
+		public static readonly Uri OpenId10Type = new Uri("http://openid.net/signon/1.0");
 
-		public static readonly Uri[] OPENID_TYPE_URIS = { 
-			OPENID_1_2_TYPE,
-			OPENID_1_1_TYPE,
-			OPENID_1_0_TYPE };
+		public static readonly Uri[] OpenIdTypeUris = { 
+			OpenId12Type,
+			OpenId11Type,
+			OpenId10Type };
 
 		/// <summary>
 		/// The URL which accepts OpenID Authentication protocol messages.
@@ -57,7 +57,7 @@ namespace DotNetOpenId.RelyingParty {
 		internal static Identifier ExtractDelegate(ServiceNode serviceNode) {
 			XmlNamespaceManager nsmgr = serviceNode.XmlNsManager;
 			nsmgr.PushScope();
-			nsmgr.AddNamespace("openid", OPENID_1_0_NS.AbsoluteUri);
+			nsmgr.AddNamespace("openid", OpenId10Namespace.AbsoluteUri);
 			XmlNodeList delegateNodes = serviceNode.Node.SelectNodes("./openid:Delegate", nsmgr);
 			Identifier providerLocalIdentifier = null;
 			foreach (XmlNode delegateNode in delegateNodes) {
@@ -91,7 +91,7 @@ namespace DotNetOpenId.RelyingParty {
 			Uri[] typeUris = typeUriList.ToArray();
 
 			List<Uri> matchesList = new List<Uri>();
-			foreach (Uri u in OPENID_TYPE_URIS) {
+			foreach (Uri u in OpenIdTypeUris) {
 				foreach (TypeNode t in typeNodes) {
 					if (u == t.Uri) {
 						matchesList.Add(u);
@@ -125,17 +125,12 @@ namespace DotNetOpenId.RelyingParty {
 			if (providerEndpoint == null) {
 				return null; // html did not contain openid.server link
 			}
-			Uri[] typeUris = { OPENID_1_0_TYPE };
+			Uri[] typeUris = { OpenId10Type };
 			return new ServiceEndpoint(claimedIdentifier, providerEndpoint, typeUris, providerLocalIdentifier);
 		}
 
-		public bool UsesExtension(Uri extension_uri) {
-			//TODO: I think that all Arrays of stuff could use generics...
-			foreach (Uri u in this.typeUris) {
-				if (u == extension_uri)
-					return true;
-			}
-			return false;
+		public bool UsesExtension(Uri extensionUri) {
+			return Array.IndexOf(typeUris, extensionUri) >= 0;
 		}
 
 		public static ServiceEndpoint Discover(Identifier userSuppliedIdentifier) {
