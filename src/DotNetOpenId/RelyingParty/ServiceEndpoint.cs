@@ -6,6 +6,9 @@ using System.Xml;
 using Janrain.Yadis;
 
 namespace DotNetOpenId.RelyingParty {
+	/// <summary>
+	/// Represents information discovered about a user-supplied Identifier.
+	/// </summary>
 	internal class ServiceEndpoint {
 		public static readonly Uri OPENID_1_0_NS = new Uri("http://openid.net/xmlns/1.0");
 		public static readonly Uri OPENID_1_2_TYPE = new Uri("http://openid.net/signon/1.2");
@@ -48,7 +51,6 @@ namespace DotNetOpenId.RelyingParty {
 		/// control.
 		/// </summary>
 		public Identifier ProviderLocalIdentifier { get; private set; }
-		public bool UsedYadis { get; private set; }
 
 		Uri[] typeUris;
 
@@ -70,15 +72,14 @@ namespace DotNetOpenId.RelyingParty {
 			return providerLocalIdentifier;
 		}
 
-		internal ServiceEndpoint(Identifier claimedIdentifier, Uri providerEndpoint, Uri[] typeUris, Identifier providerLocalIdentifier, bool usedYadis) {
+		internal ServiceEndpoint(Identifier claimedIdentifier, Uri providerEndpoint, Uri[] typeUris, Identifier providerLocalIdentifier) {
 			ClaimedIdentifier = claimedIdentifier;
 			ProviderEndpoint = providerEndpoint;
 			this.typeUris = typeUris;
 			ProviderLocalIdentifier = providerLocalIdentifier;
-			UsedYadis = usedYadis;
 		}
 
-		internal ServiceEndpoint(Identifier yadisClaimedIdentifier, UriNode uriNode) {
+		internal static ServiceEndpoint Create(Identifier yadisClaimedIdentifier, UriNode uriNode) {
 			ServiceNode serviceNode = uriNode.ServiceNode;
 
 			TypeNode[] typeNodes = serviceNode.TypeNodes();
@@ -101,33 +102,31 @@ namespace DotNetOpenId.RelyingParty {
 			Uri[] matches = matchesList.ToArray();
 
 			if ((matches.Length == 0) || (uriNode.Uri == null)) {
-				throw new ArgumentException("No matching openid type uris");
+				return null; // No matching openid type uris
 			}
-			ClaimedIdentifier = yadisClaimedIdentifier;
-			ProviderEndpoint = uriNode.Uri;
-			this.typeUris = typeUris;
-			ProviderLocalIdentifier = ExtractDelegate(serviceNode);
-			UsedYadis = true;
+
+			return new ServiceEndpoint(
+				yadisClaimedIdentifier, uriNode.Uri, typeUris, ExtractDelegate(serviceNode));
 		}
 
-		public ServiceEndpoint(Identifier claimedIdentifier, string html) {
-			ClaimedIdentifier = claimedIdentifier;
-			ProviderLocalIdentifier = claimedIdentifier;
+		static ServiceEndpoint Create(Identifier claimedIdentifier, string html) {
+			Uri providerEndpoint = null;
+			Identifier providerLocalIdentifier = claimedIdentifier;
 			foreach (NameValueCollection values in ByteParser.HeadTagAttrs(html, "link")) {
 				switch (values["rel"]) {
 					case ProtocolConstants.OpenIdServer:
-						ProviderEndpoint = new Uri(values["href"]);
+						providerEndpoint = new Uri(values["href"]);
 						break;
 					case ProtocolConstants.OpenIdDelegate:
-						ProviderLocalIdentifier = Identifier.Parse(values["href"]);
+						providerLocalIdentifier = Identifier.Parse(values["href"]);
 						break;
 				}
 			}
-			if (ProviderEndpoint == null) {
-				throw new ArgumentException("html did not contain openid.server link");
+			if (providerEndpoint == null) {
+				return null; // html did not contain openid.server link
 			}
-			typeUris = new Uri[] { OPENID_1_0_TYPE };
-			UsedYadis = false;
+			Uri[] typeUris = { OPENID_1_0_TYPE };
+			return new ServiceEndpoint(claimedIdentifier, providerEndpoint, typeUris, providerLocalIdentifier);
 		}
 
 		public bool UsesExtension(Uri extension_uri) {
@@ -140,12 +139,18 @@ namespace DotNetOpenId.RelyingParty {
 		}
 
 		public static ServiceEndpoint Discover(Identifier userSuppliedIdentifier) {
-			// Fix this to support XRIs.
 			if (userSuppliedIdentifier == null) throw new ArgumentNullException("userSuppliedIdentifier");
-			UriIdentifier userSuppliedIdentifierUri = userSuppliedIdentifier as UriIdentifier;
-			if (userSuppliedIdentifierUri == null) throw new NotSupportedException();
+			XriIdentifier xriIdentifier = userSuppliedIdentifier as XriIdentifier;
+			UriIdentifier uriIdentifier = userSuppliedIdentifier as UriIdentifier;
+			if (xriIdentifier != null)
+				return discoverXri(xriIdentifier);
+			if (uriIdentifier != null)
+				return discoverUri(uriIdentifier);
+			throw new ArgumentException(null, "userSuppliedIdentifier");
+		}
 
-			DiscoveryResult result = Janrain.Yadis.Yadis.Discover(userSuppliedIdentifierUri.Uri);
+		static ServiceEndpoint discoverUri(UriIdentifier userSuppliedIdentifier) {
+			DiscoveryResult result = Janrain.Yadis.Yadis.Discover(userSuppliedIdentifier.Uri);
 			if (result == null)
 				return null;
 
@@ -155,18 +160,19 @@ namespace DotNetOpenId.RelyingParty {
 				Xrd xrds_node = new Xrd(result.ResponseText);
 
 				foreach (UriNode uri_node in xrds_node.UriNodes()) {
-					try {
-						return new ServiceEndpoint(claimedIdentifier, uri_node);
-					} catch (ArgumentException) { }
+					ServiceEndpoint ep = Create(claimedIdentifier, uri_node);
+					if (ep != null) return ep;
 				}
 			} else {
-				try {
-					return new ServiceEndpoint(claimedIdentifier, result.ResponseText);
-				} catch (ArgumentException) { }
+				ServiceEndpoint ep = Create(claimedIdentifier, result.ResponseText);
+				if (ep != null) return ep;
 			}
 
 			return null;
 		}
 
+		static ServiceEndpoint discoverXri(XriIdentifier userSuppliedIdentifier) {
+			throw new NotSupportedException();
+		}
 	}
 }
