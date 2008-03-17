@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using DotNetOpenId.RelyingParty;
+using DotNetOpenId.Yadis;
+using System.Collections.Specialized;
 
 namespace DotNetOpenId {
 	class UriIdentifier : Identifier {
@@ -73,6 +76,64 @@ namespace DotNetOpenId {
 			if (!uri.IsAbsoluteUri) return false;
 			if (!isAllowedScheme(uri)) return false;
 			return true;
+		}
+
+		/// <summary>
+		/// Downloads an XRDS document describing the services at some Identifier
+		/// if it is available.
+		/// </summary>
+		/// <returns>
+		/// An XrdsDocument if one is available, or null if none could be found.
+		/// </returns>
+		protected virtual XrdsDocument DownloadXrds() {
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Searches HTML for the HEAD META tags that describe OpenID provider services.
+		/// </summary>
+		/// <param name="claimedIdentifier">
+		/// The final URL that provided this HTML document.  
+		/// This may not be the same as (this) userSuppliedIdentifier if the 
+		/// userSuppliedIdentifier pointed to a 301 Redirect.
+		/// </param>
+		/// <param name="html">The HTML that was downloaded and should be searched.</param>
+		/// <returns>
+		/// An initialized ServiceEndpoint if the OpenID Provider information was
+		/// found.  Otherwise null.
+		/// </returns>
+		protected virtual ServiceEndpoint DiscoverFromHtml(Uri claimedIdentifier, string html) {
+			Uri providerEndpoint = null;
+			Identifier providerLocalIdentifier = claimedIdentifier;
+			foreach (NameValueCollection values in Janrain.Yadis.ByteParser.HeadTagAttrs(html, "link")) {
+				switch (values["rel"]) {
+					case ProtocolConstants.OpenIdServer:
+						providerEndpoint = new Uri(values["href"]);
+						break;
+					case ProtocolConstants.OpenIdDelegate:
+						providerLocalIdentifier = values["href"];
+						break;
+				}
+			}
+			if (providerEndpoint == null) {
+				return null; // html did not contain openid.server link
+			}
+			return new ServiceEndpoint(claimedIdentifier, providerEndpoint, providerLocalIdentifier);
+		}
+
+		internal override ServiceEndpoint Discover() {
+			// Attempt YADIS discovery
+			DiscoveryResult yadisResult = Yadis.Yadis.Discover(this);
+			if (yadisResult != null) {
+				if (yadisResult.IsXrds) {
+					XrdsDocument xrds = new XrdsDocument(yadisResult.ResponseText);
+					ServiceEndpoint ep = xrds.CreateServiceEndpoint(yadisResult.NormalizedUri);
+					if (ep != null) return ep;
+				}
+				// Failing YADIS discovery of an XRDS document, we try HTML discovery.
+				return DiscoverFromHtml(yadisResult.NormalizedUri, yadisResult.ResponseText);
+			}
+			return null;
 		}
 
 		public override bool Equals(object obj) {

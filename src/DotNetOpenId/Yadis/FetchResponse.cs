@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Collections.Specialized;
 using System.Net;
+using DotNetOpenId.Yadis;
 
 namespace Janrain.Yadis
 {

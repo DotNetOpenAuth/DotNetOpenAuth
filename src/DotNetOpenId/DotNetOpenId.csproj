@@ -138,7 +138,6 @@
     <Compile Include="Yadis\ContentType.cs" />
     <Compile Include="Yadis\FetchRequest.cs" />
     <Compile Include="Yadis\FetchResponse.cs" />
-    <Compile Include="Yadis\XriResolver.cs" />
     <Compile Include="Yadis\Yadis.cs" />
   </ItemGroup>
   <ItemGroup>

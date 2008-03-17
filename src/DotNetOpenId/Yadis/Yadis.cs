@@ -8,40 +8,24 @@ using Janrain.Yadis;
 using System.Xml.Serialization;
 
 namespace DotNetOpenId.Yadis {
-	internal class Yadis {
-		internal static class ContentTypes {
-			public const string Html = "text/html";
-			public const string XHtml = "application/xhtml+xml";
-			public const string Xrds = "application/xrds+xml";
-		}
+	class Yadis {
 		const string headerName = "X-XRDS-Location";
 
-		public static DiscoveryResult Discover(Identifier userSuppliedIdentifier) {
-			if (userSuppliedIdentifier == null) throw new ArgumentNullException("userSuppliedIdentifier");
-			XriIdentifier xriIdentifier = userSuppliedIdentifier as XriIdentifier;
-			UriIdentifier uriIdentifier = userSuppliedIdentifier as UriIdentifier;
-			if (xriIdentifier != null)
-				return discoverXri(xriIdentifier);
-			if (uriIdentifier != null)
-				return discoverUri(uriIdentifier);
-			throw new ArgumentException(null, "userSuppliedIdentifier");
-		}
-
-		static DiscoveryResult discoverUri(Uri uri) {
+		public static DiscoveryResult Discover(UriIdentifier uri) {
 			FetchRequest request = new FetchRequest(uri);
 			FetchResponse response = request.GetResponse(true);
 			if (response.StatusCode != System.Net.HttpStatusCode.OK) {
 				return null;
 			}
 			FetchResponse response2 = null;
-			if (response.ContentType.MediaType == ContentTypes.Xrds) {
+			if (response.ContentType.MediaType == ContentType.Xrds) {
 				response2 = response;
 			} else {
 				string uriString = response.Headers.Get(headerName.ToLower());
 				Uri url = null;
 				if (uriString != null)
 					Uri.TryCreate(uriString, UriKind.Absolute, out url);
-				if (url == null && response.ContentType.MediaType == ContentTypes.Html)
+				if (url == null && response.ContentType.MediaType == ContentType.Html)
 					url = FindYadisDocumentLocationInHtmlMetaTags(response.Body);
 				if (url != null) {
 					response2 = new FetchRequest(url).GetResponse(false);
@@ -51,23 +35,6 @@ namespace DotNetOpenId.Yadis {
 				}
 			}
 			return new DiscoveryResult(uri, response, response2);
-		}
-
-		static DiscoveryResult discoverXri(XriIdentifier xri) {
-			var res = new XriResolver(xri.CanonicalXri);
-			var xriResolverResponse = DotNetOpenId.RelyingParty.Fetcher.Request(res.Resolver);
-			MemoryStream ms = new MemoryStream(xriResolverResponse.Data, 0, xriResolverResponse.Length);
-			var reader = XmlReader.Create(ms);
-			var xrds = new XrdsDocument(reader);
-			foreach (var xrd in xrds.XrdElements) {
-				foreach (var service in xrd.OpenIdServices) {
-					foreach (var uri in service.UriElements) {
-						DiscoveryResult result = discoverUri(uri.Uri);
-						if (result != null) return result;
-					}
-				}
-			}
-			return null;
 		}
 
 		/// <summary>
@@ -92,36 +59,59 @@ namespace DotNetOpenId.Yadis {
 		}
 	}
 
-	[Serializable]
-	internal class DiscoveryResult {
-		public DiscoveryResult(Uri requestUri, FetchResponse initResp, FetchResponse finalResp) {
-			// requestUri == null when XRI is used.
-			RequestUri = requestUri == null ? initResp.FinalUri : requestUri;
-			NormalizedUri = initResp.FinalUri;
-			if (finalResp == null) {
-				ContentType = initResp.ContentType;
-				ResponseText = initResp.Body;
+	class DiscoveryResult {
+		public DiscoveryResult(Uri requestUri, FetchResponse initialResponse, FetchResponse finalResponse) {
+			RequestUri = requestUri;
+			NormalizedUri = initialResponse.FinalUri;
+			if (finalResponse == null) {
+				ContentType = initialResponse.ContentType;
+				ResponseText = initialResponse.Body;
 			} else {
-				ContentType = finalResp.ContentType;
-				ResponseText = finalResp.Body;
+				ContentType = finalResponse.ContentType;
+				ResponseText = finalResponse.Body;
 			}
-			if ((initResp != finalResp) && (finalResp != null)) {
-				YadisLocation = finalResp.RequestUri;
+			if ((initialResponse != finalResponse) && (finalResponse != null)) {
+				YadisLocation = finalResponse.RequestUri;
 			}
 		}
 
-		public ContentType ContentType { get; private set; }
-		public Uri NormalizedUri { get; private set; }
+		/// <summary>
+		/// The URI of the original YADIS discovery request.  
+		/// This is the user supplied Identifier as given in the original
+		/// YADIS discovery request.
+		/// </summary>
 		public Uri RequestUri { get; private set; }
-		public string ResponseText { get; private set; }
+		/// <summary>
+		/// The fully resolved (after redirects) URL of the user supplied Identifier.
+		/// This becomes the ClaimedIdentifier.
+		/// </summary>
+		public Uri NormalizedUri { get; private set; }
+		/// <summary>
+		/// The location the XRDS document was downloaded from, if different
+		/// from the user supplied Identifier.
+		/// </summary>
 		public Uri YadisLocation { get; private set; }
-
-		public bool IsXRDS {
-			get {
-				return UsedYadisLocation || ContentType.MediaType == Yadis.ContentTypes.Xrds;
-			}
+		/// <summary>
+		/// The Content-Type associated with the <see cref="ResponseText"/>.
+		/// </summary>
+		public ContentType ContentType { get; private set; }
+		/// <summary>
+		/// The text in the final response.
+		/// This may be an XRDS document or it may be an HTML document, 
+		/// as determined by the <see cref="IsXrds"/> property.
+		/// </summary>
+		public string ResponseText { get; private set; }
+		/// <summary>
+		/// Whether the <see cref="ResponseText"/> represents an XRDS document.
+		/// False if the response is an HTML document.
+		/// </summary>
+		public bool IsXrds {
+			get { return UsedYadisLocation || ContentType.MediaType == ContentType.Xrds; }
 		}
-
+		/// <summary>
+		/// True if the response to the userSuppliedIdentifier pointed to a different URL
+		/// for the XRDS document.
+		/// </summary>
 		public bool UsedYadisLocation {
 			get { return YadisLocation != null; }
 		}

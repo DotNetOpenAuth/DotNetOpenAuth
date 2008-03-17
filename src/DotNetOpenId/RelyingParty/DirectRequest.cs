@@ -27,12 +27,9 @@ namespace DotNetOpenId.RelyingParty {
 					return null;
 				}
 			} catch (ArgumentException e) {
-				if (TraceUtil.Switch.TraceWarning)
-					Trace.TraceWarning("Failure decoding Key-Value Form response from provider.");
-				return null;
+				throw new OpenIdException("Failure decoding Key-Value Form response from provider.", e);
 			} catch (WebException e) {
-				Trace.TraceError("Failure while connecting to remote server: {0}.", e.Message);
-				return null;
+				throw new OpenIdException("Failure while connecting to provider.", e);
 			}
 		}
 	}

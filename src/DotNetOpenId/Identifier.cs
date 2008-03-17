@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using DotNetOpenId.RelyingParty;
 
 namespace DotNetOpenId {
 	/// <summary>
@@ -38,9 +39,18 @@ namespace DotNetOpenId {
 				return new UriIdentifier(identifier);
 			}
 		}
-
+		/// <summary>
+		/// Gets whether a given string represents a valid Identifier format.
+		/// </summary>
 		public static bool IsValid(string identifier) {
 			return XriIdentifier.IsValidXri(identifier) || UriIdentifier.IsValidUri(identifier);
 		}
+		/// <summary>
+		/// Performs discovery on the Identifier.
+		/// </summary>
+		/// <returns>
+		/// An initialized structure containing the discovered service information.
+		/// </returns>
+		internal abstract ServiceEndpoint Discover();
 	}
 }

@@ -5,6 +5,8 @@ using System.Text;
 namespace DotNetOpenId.RelyingParty {
 	class DirectResponse {
 		protected DirectResponse(Uri provider, IDictionary<string, string> args) {
+			if (provider == null) throw new ArgumentNullException("provider");
+			if (args == null) throw new ArgumentNullException("args");
 			Provider = provider;
 			Args = args;
 		}

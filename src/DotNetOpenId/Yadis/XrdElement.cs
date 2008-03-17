@@ -33,7 +33,7 @@ namespace DotNetOpenId.Yadis {
 				xpath.Length -= 4;
 				xpath.Append("]");
 				var services = new List<ServiceElement>();
-				foreach (XPathNavigator service in Node.Select(xpath.ToString())) {
+				foreach (XPathNavigator service in Node.Select(xpath.ToString(), XmlNamespaceResolver)) {
 					services.Add(new ServiceElement(service, this));
 				}
 				services.Sort();

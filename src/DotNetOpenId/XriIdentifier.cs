@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Globalization;
+using DotNetOpenId.RelyingParty;
+using DotNetOpenId.Yadis;
+using System.IO;
+using System.Xml;
 
 namespace DotNetOpenId {
 	class XriIdentifier : Identifier {
@@ -43,6 +47,28 @@ namespace DotNetOpenId {
 			if (xri.StartsWith(xriScheme, StringComparison.OrdinalIgnoreCase))
 				xri = xri.Substring(xriScheme.Length);
 			return xri;
+		}
+
+		const string xriResolverProxy = "http://xri.net/{0}?_xrd_r=application/xrds%2Bxml;sep=false";
+		/// <summary>
+		/// Resolves the XRI to a URL from which an XRDS document may be downloaded.
+		/// </summary>
+		protected virtual Uri XrdsUrl {
+			get {
+				return new Uri(string.Format(CultureInfo.InvariantCulture, 
+					xriResolverProxy, this));
+			}
+		}
+
+		XrdsDocument downloadXrds() {
+			var xrdsResponse = Fetcher.Request(XrdsUrl);
+			MemoryStream ms = new MemoryStream(xrdsResponse.Data, 0, xrdsResponse.Length);
+			var reader = XmlReader.Create(ms);
+			return new XrdsDocument(reader);
+		}
+
+		internal override ServiceEndpoint Discover() {
+			return downloadXrds().CreateServiceEndpoint(this);
 		}
 
 		public override bool Equals(object obj) {

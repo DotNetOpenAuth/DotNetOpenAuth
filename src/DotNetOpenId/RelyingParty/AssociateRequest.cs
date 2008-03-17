@@ -43,7 +43,11 @@ namespace DotNetOpenId.RelyingParty {
 		public AssociateResponse Response {
 			get {
 				if (response == null) {
-					response = new AssociateResponse(Provider, GetResponse(), DH);
+					try {
+						response = new AssociateResponse(Provider, GetResponse(), DH);
+					} catch (OpenIdException) {
+						// silently fail at associate attempt.
+					}
 				}
 				return response;
 			}

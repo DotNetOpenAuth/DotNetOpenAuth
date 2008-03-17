@@ -47,7 +47,7 @@ namespace DotNetOpenId.RelyingParty {
 			Realm realm, Uri returnToUrl, IRelyingPartyApplicationStore store) {
 			if (userSuppliedIdentifier == null) throw new ArgumentNullException("userSuppliedIdentifier");
 			if (realm == null) throw new ArgumentNullException("realm");
-			var endpoint = ServiceEndpoint.Discover(userSuppliedIdentifier);
+			var endpoint = userSuppliedIdentifier.Discover();
 			if (endpoint == null)
 				throw new OpenIdException(Strings.OpenIdEndpointNotFound);
 

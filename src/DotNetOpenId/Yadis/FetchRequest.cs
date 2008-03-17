@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Net;
+using DotNetOpenId.Yadis;
 
 namespace Janrain.Yadis
 {
