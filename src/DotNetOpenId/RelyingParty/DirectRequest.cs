@@ -18,11 +18,11 @@ namespace DotNetOpenId.RelyingParty {
 
 			try {
 				FetchResponse resp = Fetcher.Request(Provider, body);
-				if ((int)resp.Code >= 200 && (int)resp.Code < 300) {
-					return ProtocolMessages.KeyValueForm.GetDictionary(resp.Data, 0, resp.Length);
+				if ((int)resp.StatusCode >= 200 && (int)resp.StatusCode < 300) {
+					return ProtocolMessages.KeyValueForm.GetDictionary(resp.ResponseStream);
 				} else {
 					if (TraceUtil.Switch.TraceError) {
-						Trace.TraceError("Bad request code returned from remote server: {0}.", resp.Code);
+						Trace.TraceError("Bad request code returned from remote server: {0}.", resp.StatusCode);
 					}
 					return null;
 				}

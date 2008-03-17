@@ -12,23 +12,23 @@ namespace DotNetOpenId.Yadis {
 		internal const string HeaderName = "X-XRDS-Location";
 
 		public static DiscoveryResult Discover(UriIdentifier uri) {
-			FetchRequest request = new FetchRequest(uri);
-			FetchResponse response = request.GetResponse(true);
+			var response = RelyingParty.Fetcher.Request(uri);
 			if (response.StatusCode != System.Net.HttpStatusCode.OK) {
 				return null;
 			}
-			FetchResponse response2 = null;
-			if (response.ContentType.MediaType == ContentType.Xrds) {
+			ContentType responseContentType = new ContentType(response.ContentType);
+			RelyingParty.FetchResponse response2 = null;
+			if (responseContentType.MediaType == ContentType.Xrds) {
 				response2 = response;
 			} else {
 				string uriString = response.Headers.Get(HeaderName.ToLower());
 				Uri url = null;
 				if (uriString != null)
 					Uri.TryCreate(uriString, UriKind.Absolute, out url);
-				if (url == null && response.ContentType.MediaType == ContentType.Html)
-					url = FindYadisDocumentLocationInHtmlMetaTags(response.Body);
+				if (url == null && responseContentType.MediaType == ContentType.Html)
+					url = FindYadisDocumentLocationInHtmlMetaTags(response.ReadResponseString());
 				if (url != null) {
-					response2 = new FetchRequest(url).GetResponse(false);
+					response2 = RelyingParty.Fetcher.Request(url);
 					if (response2.StatusCode != System.Net.HttpStatusCode.OK) {
 						return null;
 					}
@@ -60,15 +60,15 @@ namespace DotNetOpenId.Yadis {
 	}
 
 	class DiscoveryResult {
-		public DiscoveryResult(Uri requestUri, FetchResponse initialResponse, FetchResponse finalResponse) {
+		public DiscoveryResult(Uri requestUri, RelyingParty.FetchResponse initialResponse, RelyingParty.FetchResponse finalResponse) {
 			RequestUri = requestUri;
 			NormalizedUri = initialResponse.FinalUri;
 			if (finalResponse == null) {
 				ContentType = initialResponse.ContentType;
-				ResponseText = initialResponse.Body;
+				ResponseText = initialResponse.ReadResponseString();
 			} else {
 				ContentType = finalResponse.ContentType;
-				ResponseText = finalResponse.Body;
+				ResponseText = finalResponse.ReadResponseString();
 			}
 			if ((initialResponse != finalResponse) && (finalResponse != null)) {
 				YadisLocation = finalResponse.RequestUri;

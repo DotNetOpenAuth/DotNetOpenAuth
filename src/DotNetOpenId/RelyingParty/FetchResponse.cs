@@ -1,24 +1,38 @@
-namespace DotNetOpenId.RelyingParty
-{
+namespace DotNetOpenId.RelyingParty {
 	using System;
 	using System.Net;
+	using System.Collections.Specialized;
+	using System.IO;
+	using System.Text;
 
 	[Serializable]
-	internal class FetchResponse
-	{
-		public HttpStatusCode Code { get; private set; }
+	internal class FetchResponse {
+		const string DefaultContentEncoding = "ISO-8859-1";
+		
+		public Stream ResponseStream { get; private set; }
+		public HttpStatusCode StatusCode { get; private set; }
+		public string ContentType { get; private set; }
+		public string ContentEncoding { get; private set; }
+		public WebHeaderCollection Headers { get; private set; }
+		public Uri RequestUri { get; private set; }
 		public Uri FinalUri { get; private set; }
-		public byte[] Data { get; private set; }
-		public int Length { get; private set; }
-		public string Charset { get; private set; }
 
-		public FetchResponse(HttpStatusCode code, Uri finalUri, string charset, byte[] data, int length)
-		{
-			Code = code;
-			FinalUri = finalUri;
-			Data = data;
-			Length = length;
-			Charset = charset;
+		public FetchResponse(Uri requestUri, HttpWebResponse response, Stream responseStream) {
+			if (requestUri == null) throw new ArgumentNullException("requestUri");
+			if (response == null) throw new ArgumentNullException("response");
+			if (responseStream == null) throw new ArgumentNullException("responseStream");
+			this.RequestUri = requestUri;
+			this.ResponseStream = responseStream;
+			StatusCode = response.StatusCode;
+			ContentType = response.ContentType;
+			ContentEncoding = string.IsNullOrEmpty(response.ContentEncoding) ? DefaultContentEncoding : response.ContentEncoding;
+			Headers = response.Headers;
+			FinalUri = response.ResponseUri;
+		}
+
+		public string ReadResponseString() {
+			using (StreamReader sr = new StreamReader(ResponseStream, Encoding.GetEncoding(ContentEncoding)))
+				return sr.ReadToEnd();
 		}
 	}
 }

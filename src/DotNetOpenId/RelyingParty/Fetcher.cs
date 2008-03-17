@@ -60,12 +60,12 @@ namespace DotNetOpenId.RelyingParty
 			}
 		}
 		
-		static FetchResponse getResponse(HttpWebResponse resp)
+		static FetchResponse getResponse(Uri requestUri, HttpWebResponse resp)
 		{
 			byte[] data;
 			int length;
 			readData(resp, out data, out length);
-			return new FetchResponse(resp.StatusCode, resp.ResponseUri, resp.CharacterSet, data, length);
+			return new FetchResponse(requestUri, resp, new MemoryStream(data, 0, length));
 		}
 
 		public static FetchResponse Request(Uri uri) {
@@ -95,12 +95,12 @@ namespace DotNetOpenId.RelyingParty
 				}
 
 				using(HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
-					return getResponse(response);
+					return getResponse(uri, response);
 				}
 			} catch (WebException e) {
 				using (HttpWebResponse response = (HttpWebResponse)e.Response) {
 					if (response != null) {
-						return getResponse(response);
+						return getResponse(uri, response);
 					} else {
 						throw;
 					}

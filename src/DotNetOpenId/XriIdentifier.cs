@@ -62,9 +62,7 @@ namespace DotNetOpenId {
 
 		XrdsDocument downloadXrds() {
 			var xrdsResponse = Fetcher.Request(XrdsUrl);
-			MemoryStream ms = new MemoryStream(xrdsResponse.Data, 0, xrdsResponse.Length);
-			var reader = XmlReader.Create(ms);
-			return new XrdsDocument(reader);
+			return new XrdsDocument(XmlReader.Create(xrdsResponse.ResponseStream));
 		}
 
 		internal override ServiceEndpoint Discover() {

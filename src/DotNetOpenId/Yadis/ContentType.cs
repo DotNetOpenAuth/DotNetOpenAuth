@@ -14,35 +14,32 @@ namespace DotNetOpenId.Yadis {
 		public string SubType { get; set; }
 		public string Type { get; set; }
 
+		public static implicit operator string(ContentType contentType) {
+			return contentType.ToString();
+		}
+		public static implicit operator ContentType(string contentType) {
+			return new ContentType(contentType);
+		}
+
 		public ContentType(string contentType) {
-			string message = String.Format("\"{0}\" does not appear to be a valid content type", contentType);
+			ArgumentException ex = new ArgumentException(
+				String.Format("\"{0}\" does not appear to be a valid content type", contentType),
+				"contentType");
 			Parameters = new NameValueCollection();
-			const char SEMI = ';';
-			const char SLASH = '/';
-			const char EQUALS = '=';
-			string[] parts = contentType.Split(new char[] { SEMI });
-			try {
-				string[] slashedArray = parts[0].Split(new char[] { SLASH });
-				Type = slashedArray[0];
-				SubType = slashedArray[1];
-			} catch (IndexOutOfRangeException) {
-				throw new ArgumentException(message);
-			}
-			Type = Type.Trim();
-			SubType = SubType.Trim();
+			string[] parts = contentType.Split(';');
+			string[] slashedArray = parts[0].Split('/');
+			if (slashedArray.Length < 2) throw ex;
+			Type = slashedArray[0].Trim();
+			SubType = slashedArray[1].Trim();
 
 			for (int i = 1; i < parts.Length; i++) {
 				string param = parts[i];
 
-				string k;
-				string v;
-				try {
-					string[] equalsArray = param.Split(new char[] { EQUALS });
-					k = equalsArray[0];
-					v = equalsArray[1];
-				} catch (IndexOutOfRangeException) {
-					throw new ArgumentException(message);
-				}
+				string k, v;
+				string[] equalsArray = param.Split('=');
+				if (equalsArray.Length < 2) throw ex;
+				k = equalsArray[0];
+				v = equalsArray[1];
 
 				Parameters[k.Trim()] = v.Trim();
 			}
@@ -50,6 +47,10 @@ namespace DotNetOpenId.Yadis {
 
 		public string MediaType {
 			get { return String.Format("{0}/{0}", Type, SubType); }
+		}
+
+		public override string ToString() {
+			return MediaType;
 		}
 	}
 }

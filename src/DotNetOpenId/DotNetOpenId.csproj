@@ -136,8 +136,6 @@
     <Compile Include="XriIdentifier.cs" />
     <Compile Include="Yadis\ByteParser.cs" />
     <Compile Include="Yadis\ContentType.cs" />
-    <Compile Include="Yadis\FetchRequest.cs" />
-    <Compile Include="Yadis\FetchResponse.cs" />
     <Compile Include="Yadis\Yadis.cs" />
   </ItemGroup>
   <ItemGroup>

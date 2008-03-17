@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using NUnit.Framework;
 using System.Collections.Specialized;
+using System.IO;
 
 
 namespace DotNetOpenId.Test {
@@ -18,7 +19,7 @@ namespace DotNetOpenId.Test {
 
 		public static void KVDictTest(byte[] kvform, IDictionary<string, string> dict, TestMode mode) {
 			if ((mode & TestMode.Decoder) == TestMode.Decoder) {
-				var d = ProtocolMessages.KeyValueForm.GetDictionary(kvform);
+				var d = ProtocolMessages.KeyValueForm.GetDictionary(new MemoryStream(kvform));
 				foreach (string key in dict.Keys) {
 					Assert.AreEqual(d[key], dict[key], "Decoder fault: " + d[key] + " and " + dict[key] + " do not match.");
 				}
@@ -80,7 +81,7 @@ namespace DotNetOpenId.Test {
 		}
 
 		void illegal(string s, KeyValueFormConformanceLevel level) {
-			new KeyValueFormEncoding(level).GetDictionary(Encoding.UTF8.GetBytes(s));
+			new KeyValueFormEncoding(level).GetDictionary(new MemoryStream(Encoding.UTF8.GetBytes(s)));
 		}
 
 		[Test, ExpectedException(typeof(ArgumentException))]
