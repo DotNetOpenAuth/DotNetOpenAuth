@@ -19,7 +19,7 @@ namespace DotNetOpenId.RelyingParty {
 			try {
 				FetchResponse resp = Fetcher.Request(Provider, body);
 				if ((int)resp.Code >= 200 && (int)resp.Code < 300) {
-					return ProtocolMessages.KeyValueForm.GetDictionary(resp.Data);
+					return ProtocolMessages.KeyValueForm.GetDictionary(resp.Data, 0, resp.Length);
 				} else {
 					if (TraceUtil.Switch.TraceError) {
 						Trace.TraceError("Bad request code returned from remote server: {0}.", resp.Code);
