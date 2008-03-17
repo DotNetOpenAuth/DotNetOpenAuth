@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 
 namespace DotNetOpenId.Yadis {
 	class Yadis {
-		const string headerName = "X-XRDS-Location";
+		internal const string HeaderName = "X-XRDS-Location";
 
 		public static DiscoveryResult Discover(UriIdentifier uri) {
 			FetchRequest request = new FetchRequest(uri);
@@ -21,7 +21,7 @@ namespace DotNetOpenId.Yadis {
 			if (response.ContentType.MediaType == ContentType.Xrds) {
 				response2 = response;
 			} else {
-				string uriString = response.Headers.Get(headerName.ToLower());
+				string uriString = response.Headers.Get(HeaderName.ToLower());
 				Uri url = null;
 				if (uriString != null)
 					Uri.TryCreate(uriString, UriKind.Absolute, out url);
@@ -46,7 +46,7 @@ namespace DotNetOpenId.Yadis {
 			NameValueCollection[] nvc = ByteParser.HeadTagAttrs(html, "meta");
 			foreach (var values in nvc) {
 				string text = values["http-equiv"];
-				if (headerName.Equals(text, StringComparison.OrdinalIgnoreCase)) {
+				if (HeaderName.Equals(text, StringComparison.OrdinalIgnoreCase)) {
 					string uriString = values.Get("content");
 					if (uriString != null) {
 						Uri uri;

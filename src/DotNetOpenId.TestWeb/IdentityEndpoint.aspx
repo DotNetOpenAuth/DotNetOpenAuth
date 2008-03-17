@@ -16,7 +16,7 @@
 <head runat="server">
 	<title>Identity page</title>
 	<openid:IdentityEndpoint ID="IdentityEndpoint1" runat="server" 
-		ServerUrl="~/ProviderEndpoint.aspx"/>
+		ProviderEndpointUrl="~/ProviderEndpoint.aspx"/>
 </head>
 <body>
 	<form id="form1" runat="server">
