@@ -165,6 +165,9 @@
   <data name="MissingReturnToQueryParameter" xml:space="preserve">
     <value>Query parameter '{0}' was expected in the return_to query '{1}'.</value>
   </data>
+  <data name="OpenIdEndpointNotFound" xml:space="preserve">
+    <value>No openid endpoint found.</value>
+  </data>
   <data name="OpenIdTextBoxEmpty" xml:space="preserve">
     <value>No OpenId url is provided.</value>
   </data>

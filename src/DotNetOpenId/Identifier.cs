@@ -8,6 +8,24 @@ namespace DotNetOpenId {
 	/// </summary>
 	public abstract class Identifier {
 		/// <summary>
+		/// Converts the string representation of an Identifier to its strong type.
+		/// </summary>
+		public static implicit operator Identifier(string identifier) {
+			return Parse(identifier);
+		}
+		/// <summary>
+		/// Returns a strongly-typed Identifier for a given Uri.
+		/// </summary>
+		public static implicit operator Identifier(Uri identifier) {
+			return new UriIdentifier(identifier);
+		}
+		/// <summary>
+		/// Converts an Identifier to its string representation.
+		/// </summary>
+		public static implicit operator String(Identifier identifier) {
+			return identifier.ToString();
+		}
+		/// <summary>
 		/// Parses an identifier string and automatically determines
 		/// whether it is an XRI or URI.
 		/// </summary>

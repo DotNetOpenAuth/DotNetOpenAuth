@@ -12,6 +12,16 @@ namespace DotNetOpenId {
 	/// See http://openid.net/specs/openid-authentication-2_0.html#realms
 	/// </remarks>
 	public class Realm {
+		public static implicit operator Realm(string uri) {
+			return new Realm(uri);
+		}
+		public static implicit operator Realm(Uri uri) {
+			return new Realm(uri.AbsoluteUri);
+		}
+		public static implicit operator string(Realm realm) {
+			return realm.ToString();
+		}
+
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase")]
 		public Realm(string trustRootUrl) {
 			DomainWildcard = Regex.IsMatch(trustRootUrl, wildcardDetectionPattern);

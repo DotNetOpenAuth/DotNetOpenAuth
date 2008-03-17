@@ -448,8 +448,7 @@ namespace DotNetOpenId.RelyingParty
 
 				// Initiate openid request
 				// Note: we must use trustRoot.ToString() because trustRoot.Uri throws when wildcards are present.
-				IAuthenticationRequest request = consumer.CreateRequest(
-					Identifier.Parse(Text), new Realm(trustRoot.ToString()));
+				var request = consumer.CreateRequest(Text, trustRoot.ToString());
 				if (EnableRequestProfile) addProfileArgs(request);
 				request.RedirectToProvider();
 			} catch (WebException ex) {

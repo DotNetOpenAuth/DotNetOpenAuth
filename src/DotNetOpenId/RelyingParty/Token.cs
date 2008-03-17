@@ -34,6 +34,9 @@ namespace DotNetOpenId.RelyingParty {
 		}
 
 		Token(Nonce nonce, Identifier claimedIdentifier, Identifier providerLocalIdentifier, Uri providerEndpoint) {
+			if (nonce == null) throw new ArgumentNullException("nonce");
+			if (providerLocalIdentifier == null) throw new ArgumentNullException("providerLocalIdentifier");
+			if (providerEndpoint == null) throw new ArgumentNullException("providerEndpoint");
 			this.Nonce = nonce;
 			ClaimedIdentifier = claimedIdentifier;
 			ProviderLocalIdentifier = providerLocalIdentifier;
@@ -115,7 +118,7 @@ namespace DotNetOpenId.RelyingParty {
 			Nonce nonce = new Nonce(items[1], ts);
 			consumeNonce(nonce, store);
 
-			return new Token(nonce, Identifier.Parse(items[2]), Identifier.Parse(items[3]), new Uri(items[4]));
+			return new Token(nonce, items[2], items[3], new Uri(items[4]));
 		}
 
 		static void consumeNonce(Nonce nonce, INonceStore store) {

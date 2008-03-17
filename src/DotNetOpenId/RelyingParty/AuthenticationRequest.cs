@@ -28,13 +28,14 @@ namespace DotNetOpenId.RelyingParty {
 	class AuthenticationRequest : IAuthenticationRequest {
 		Association assoc;
 		ServiceEndpoint endpoint;
+		string token;
 
 		AuthenticationRequest(string token, Association assoc, ServiceEndpoint endpoint,
-			Realm trustRoot, Uri returnToUrl) {
+			Realm realm, Uri returnToUrl) {
 			this.token = token;
 			this.assoc = assoc;
 			this.endpoint = endpoint;
-			Realm = trustRoot;
+			Realm = realm;
 			ReturnToUrl = returnToUrl;
 
 			Mode = AuthenticationRequestMode.Setup;
@@ -42,18 +43,25 @@ namespace DotNetOpenId.RelyingParty {
 			ReturnToArgs = new Dictionary<string, string>();
 			AddCallbackArguments(DotNetOpenId.RelyingParty.Token.TokenKey, token);
 		}
-		internal static AuthenticationRequest Create(ServiceEndpoint serviceEndpoint, Realm trustRoot, Uri returnToUrl, IRelyingPartyApplicationStore store) {
+		internal static AuthenticationRequest Create(Identifier userSuppliedIdentifier,
+			Realm realm, Uri returnToUrl, IRelyingPartyApplicationStore store) {
+			if (userSuppliedIdentifier == null) throw new ArgumentNullException("userSuppliedIdentifier");
+			if (realm == null) throw new ArgumentNullException("realm");
+			var endpoint = ServiceEndpoint.Discover(userSuppliedIdentifier);
+			if (endpoint == null)
+				throw new OpenIdException(Strings.OpenIdEndpointNotFound);
+
 			// Throw an exception now if the trustroot and the return_to URLs don't match
 			// as required by the provider.  We could wait for the provider to test this and
 			// fail, but this will be faster and give us a better error message.
-			if (!trustRoot.Contains(returnToUrl))
+			if (!realm.Contains(returnToUrl))
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-					Strings.ReturnToNotUnderTrustRoot, returnToUrl, trustRoot));
+					Strings.ReturnToNotUnderTrustRoot, returnToUrl, realm));
 
 			return new AuthenticationRequest(
-				new Token(serviceEndpoint).Serialize(store),
-				getAssociation(serviceEndpoint.ProviderEndpoint, store), serviceEndpoint,
-				trustRoot, returnToUrl);
+				new Token(endpoint).Serialize(store),
+				getAssociation(endpoint.ProviderEndpoint, store), endpoint,
+				realm, returnToUrl);
 		}
 		static Association getAssociation(Uri serverUrl, IRelyingPartyApplicationStore store) {
 			Association assoc = store.GetAssociation(serverUrl);
@@ -69,7 +77,6 @@ namespace DotNetOpenId.RelyingParty {
 			return assoc;
 		}
 
-		string token { get; set; }
 		/// <summary>
 		/// Arguments to add to the query string to be sent to the provider.
 		/// </summary>
@@ -96,7 +103,7 @@ namespace DotNetOpenId.RelyingParty {
 
 				qsArgs.Add(QueryStringArgs.openid.mode, (Mode == AuthenticationRequestMode.Immediate) ?
 					QueryStringArgs.Modes.checkid_immediate : QueryStringArgs.Modes.checkid_setup);
-				qsArgs.Add(QueryStringArgs.openid.identity, this.endpoint.ProviderLocalIdentifier.ToString());
+				qsArgs.Add(QueryStringArgs.openid.identity, endpoint.ProviderLocalIdentifier.ToString());
 				qsArgs.Add(QueryStringArgs.openid.return_to, returnToBuilder.ToString());
 				qsArgs.Add(QueryStringArgs.openid.trust_root, Realm.ToString());
 

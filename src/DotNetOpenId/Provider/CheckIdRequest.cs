@@ -101,7 +101,7 @@ namespace DotNetOpenId.Provider {
 			}
 
 			try {
-				ClaimedIdentifier = Identifier.Parse(getRequiredField(query, QueryStringArgs.openid.identity));
+				ClaimedIdentifier = getRequiredField(query, QueryStringArgs.openid.identity);
 			} catch (UriFormatException) {
 				throw new OpenIdException(QueryStringArgs.openid.identity + " not a valid url: " + query[QueryStringArgs.openid.identity], query);
 			}

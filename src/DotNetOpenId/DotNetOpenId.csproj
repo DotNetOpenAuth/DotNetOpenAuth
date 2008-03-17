@@ -127,17 +127,17 @@
     <Compile Include="Realm.cs" />
     <Compile Include="UriIdentifier.cs" />
     <Compile Include="Util.cs" />
+    <Compile Include="Yadis\ServiceElement.cs" />
+    <Compile Include="Yadis\TypeElement.cs" />
+    <Compile Include="Yadis\UriElement.cs" />
+    <Compile Include="Yadis\XrdElement.cs" />
+    <Compile Include="Yadis\XrdsNode.cs" />
+    <Compile Include="Yadis\XrdsDocument.cs" />
     <Compile Include="XriIdentifier.cs" />
-    <Compile Include="Yadis\AcceptHeader.cs" />
     <Compile Include="Yadis\ByteParser.cs" />
     <Compile Include="Yadis\ContentType.cs" />
     <Compile Include="Yadis\FetchRequest.cs" />
     <Compile Include="Yadis\FetchResponse.cs" />
-    <Compile Include="Yadis\ServiceNode.cs" />
-    <Compile Include="Yadis\TypeNode.cs" />
-    <Compile Include="Yadis\UriNode.cs" />
-    <Compile Include="Yadis\Xrd.cs" />
-    <Compile Include="Yadis\XrdNode.cs" />
     <Compile Include="Yadis\XriResolver.cs" />
     <Compile Include="Yadis\Yadis.cs" />
   </ItemGroup>

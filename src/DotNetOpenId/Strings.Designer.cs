@@ -205,6 +205,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No openid endpoint found..
+        /// </summary>
+        internal static string OpenIdEndpointNotFound {
+            get {
+                return ResourceManager.GetString("OpenIdEndpointNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No OpenId url is provided..
         /// </summary>
         internal static string OpenIdTextBoxEmpty {

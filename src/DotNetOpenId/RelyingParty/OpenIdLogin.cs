@@ -379,7 +379,7 @@ namespace DotNetOpenId.RelyingParty
 		void loginButton_Click(object sender, EventArgs e)
 		{
 			if (!Page.IsValid) return;
-			if (OnLoggingIn(Identifier.Parse(Text)))
+			if (OnLoggingIn(Text))
 				LogOn();
 		}
 

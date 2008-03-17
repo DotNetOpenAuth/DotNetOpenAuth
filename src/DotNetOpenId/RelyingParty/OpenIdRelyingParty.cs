@@ -65,11 +65,7 @@ namespace DotNetOpenId.RelyingParty {
 		}
 
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm trustRoot, Uri returnToUrl) {
-			var endpoint = ServiceEndpoint.Discover(userSuppliedIdentifier);
-			if (endpoint == null)
-				throw new OpenIdException("No openid endpoint found");
-
-			return AuthenticationRequest.Create(endpoint, trustRoot, returnToUrl, store);
+			return AuthenticationRequest.Create(userSuppliedIdentifier, trustRoot, returnToUrl, store);
 		}
 
 		/// <remarks>

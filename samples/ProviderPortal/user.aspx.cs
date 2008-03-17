@@ -50,13 +50,6 @@ public partial class user : System.Web.UI.Page {
 	}
 
 	public string XrdsUrl {
-		get {
-			UriBuilder builder = new UriBuilder(Request.Url);
-			builder.Path = Response.ApplyAppPathModifier("~/xrds.aspx");
-			builder.Query = null;
-			builder.Port = ServerPort;
-			builder.Fragment = null;
-			return builder.ToString();
-		}
+		get { return Response.ApplyAppPathModifier("~/xrds.aspx"); }
 	}
 }

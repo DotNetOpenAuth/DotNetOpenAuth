@@ -5,7 +5,7 @@ using System.Globalization;
 
 namespace Janrain.Yadis {
 	class XriResolver {
-		const string proxy = "http://beta.xri.net/{0}?_xrd_r=application/xrds%2Bxml;sep=false";
+		const string proxy = "http://xri.net/{0}?_xrd_r=application/xrds%2Bxml;sep=false";
 		public Uri Resolver { get; private set; }
 
 		public XriResolver(string iname) {

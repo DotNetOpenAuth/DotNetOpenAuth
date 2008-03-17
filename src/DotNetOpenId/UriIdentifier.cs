@@ -5,6 +5,12 @@ using System.Text;
 namespace DotNetOpenId {
 	class UriIdentifier : Identifier {
 		static readonly string[] allowedSchemes = { "http", "https" };
+		public static implicit operator Uri(UriIdentifier identifier) {
+			return identifier.Uri;
+		}
+		public static implicit operator UriIdentifier(Uri identifier) {
+			return new UriIdentifier(identifier);
+		}
 
 		public UriIdentifier(string uri) {
 			if (string.IsNullOrEmpty(uri)) throw new ArgumentNullException("uri");
