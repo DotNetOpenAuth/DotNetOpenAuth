@@ -61,11 +61,11 @@ namespace DotNetOpenId.RelyingParty {
 		public string[] ProviderSupportedServiceTypeUris { get; private set; }
 
 		internal ServiceEndpoint(Identifier claimedIdentifier, Uri providerEndpoint, Identifier providerLocalIdentifier) {
-			if (providerLocalIdentifier == null) throw new ArgumentNullException("providerLocalIdentifier");
+			if (claimedIdentifier == null) throw new ArgumentNullException("claimedIdentifier");
 			if (providerEndpoint == null) throw new ArgumentNullException("providerEndpoint");
 			ClaimedIdentifier = claimedIdentifier;
 			ProviderEndpoint = providerEndpoint;
-			ProviderLocalIdentifier = providerLocalIdentifier;
+			ProviderLocalIdentifier = providerLocalIdentifier ?? claimedIdentifier;
 		}
 
 		internal static ServiceEndpoint Create(Identifier yadisClaimedIdentifier, UriElement serviceTypeUri) {

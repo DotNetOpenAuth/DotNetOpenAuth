@@ -9,9 +9,11 @@ namespace DotNetOpenId {
 	class UriIdentifier : Identifier {
 		static readonly string[] allowedSchemes = { "http", "https" };
 		public static implicit operator Uri(UriIdentifier identifier) {
+			if (identifier == null) return null;
 			return identifier.Uri;
 		}
 		public static implicit operator UriIdentifier(Uri identifier) {
+			if (identifier == null) return null;
 			return new UriIdentifier(identifier);
 		}
 
@@ -104,7 +106,7 @@ namespace DotNetOpenId {
 		/// </returns>
 		protected virtual ServiceEndpoint DiscoverFromHtml(Uri claimedIdentifier, string html) {
 			Uri providerEndpoint = null;
-			Identifier providerLocalIdentifier = claimedIdentifier;
+			Identifier providerLocalIdentifier = null;
 			foreach (NameValueCollection values in Janrain.Yadis.ByteParser.HeadTagAttrs(html, "link")) {
 				switch (values["rel"]) {
 					case ProtocolConstants.OpenIdServer:

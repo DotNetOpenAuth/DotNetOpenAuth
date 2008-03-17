@@ -70,7 +70,9 @@ namespace DotNetOpenId.RelyingParty {
 				var req = AssociateRequest.Create(serverUrl);
 				if (req.Response != null) {
 					assoc = req.Response.Association;
-					store.StoreAssociation(serverUrl, assoc);
+					if (assoc != null) {
+						store.StoreAssociation(serverUrl, assoc);
+					}
 				}
 			}
 

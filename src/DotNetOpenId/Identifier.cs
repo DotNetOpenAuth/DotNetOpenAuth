@@ -12,18 +12,21 @@ namespace DotNetOpenId {
 		/// Converts the string representation of an Identifier to its strong type.
 		/// </summary>
 		public static implicit operator Identifier(string identifier) {
+			if (identifier == null) return null;
 			return Parse(identifier);
 		}
 		/// <summary>
 		/// Returns a strongly-typed Identifier for a given Uri.
 		/// </summary>
 		public static implicit operator Identifier(Uri identifier) {
+			if (identifier == null) return null;
 			return new UriIdentifier(identifier);
 		}
 		/// <summary>
 		/// Converts an Identifier to its string representation.
 		/// </summary>
 		public static implicit operator String(Identifier identifier) {
+			if (identifier == null) return null;
 			return identifier.ToString();
 		}
 		/// <summary>

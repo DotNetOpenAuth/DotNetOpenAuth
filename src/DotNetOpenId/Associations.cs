@@ -24,10 +24,10 @@ namespace DotNetOpenId {
 		/// <summary>
 		/// Stores an <see cref="Association"/> in the collection.
 		/// </summary>
-		/// <param name="assoc"></param>
-		public void Set(Association assoc) {
+		public void Set(Association association) {
+			if (association == null) throw new ArgumentNullException("association");
 			lock (this) {
-				this.assocs[assoc.Handle] = assoc;
+				this.assocs[association.Handle] = association;
 			}
 		}
 
