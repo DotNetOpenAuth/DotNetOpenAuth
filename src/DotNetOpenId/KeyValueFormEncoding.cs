@@ -83,21 +83,12 @@ namespace DotNetOpenId {
 			return ms.ToArray();
 		}
 
-		public IDictionary<string, string> GetDictionary(byte[] buffer) {
-			return GetDictionary(buffer, 0, buffer.Length);
-		}
-
 		/// <summary>
 		/// Decodes bytes in Key-Value Form to key/value pairs.
 		/// </summary>
-		/// <param name="buffer">The Key-Value Form encoded bytes.</param>
-		/// <param name="offset">The offset into the byte array where reading should begin.</param>
-		/// <param name="bufferLength">The number of bytes to read from the byte array.</param>
-		/// <param name="enforcedSpec">Whether strict OpenID 2.0 spec validation will be performed </param>
 		/// <returns>The deserialized dictionary.</returns>
-		public IDictionary<string, string> GetDictionary(byte[] buffer, int offset, int bufferLength) {
-			MemoryStream ms = new MemoryStream(buffer, offset, bufferLength);
-			using (StreamReader reader = new StreamReader(ms, textEncoding)) {
+		public IDictionary<string, string> GetDictionary(Stream data) {
+			using (StreamReader reader = new StreamReader(data, textEncoding)) {
 				var dict = new Dictionary<string, string>();
 				int line_num = 0;
 				string line;
@@ -128,8 +119,8 @@ namespace DotNetOpenId {
 					dict.Add(parts[0], parts[1]);
 				}
 				if (ConformanceLevel > KeyValueFormConformanceLevel.Loose) {
-					ms.Seek(-1, SeekOrigin.End);
-					if (ms.ReadByte() != '\n') {
+					reader.BaseStream.Seek(-1, SeekOrigin.End);
+					if (reader.BaseStream.ReadByte() != '\n') {
 						throw new ArgumentException(string.Format(CultureInfo.CurrentUICulture,
 							Strings.InvalidKeyValueFormCharacterMissing, "\\n"));
 					}

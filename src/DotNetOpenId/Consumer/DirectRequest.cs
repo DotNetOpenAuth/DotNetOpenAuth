@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net;
 using System.Diagnostics;
+using System.IO;
 
 namespace DotNetOpenId.Consumer {
 	abstract class DirectRequest {
@@ -19,7 +20,7 @@ namespace DotNetOpenId.Consumer {
 			try {
 				FetchResponse resp = Fetcher.Request(Provider, body);
 				if ((int)resp.Code >= 200 && (int)resp.Code < 300) {
-					return ProtocolMessages.KeyValueForm.GetDictionary(resp.Data, 0, resp.Length);
+					return ProtocolMessages.KeyValueForm.GetDictionary(new MemoryStream(resp.Data, 0, resp.Length));
 				} else {
 					if (TraceUtil.Switch.TraceError) {
 						Trace.TraceError("Bad request code returned from remote server: {0}.", resp.Code);

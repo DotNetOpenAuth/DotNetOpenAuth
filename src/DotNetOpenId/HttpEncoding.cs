@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Web;
+using System.IO;
 
 namespace DotNetOpenId {
 	/// <summary>
@@ -14,14 +15,10 @@ namespace DotNetOpenId {
 			return Encoding.ASCII.GetBytes(UriUtil.CreateQueryString(dictionary));
 		}
 
-		public IDictionary<string, string> GetDictionary(byte[] bytes) {
-			return GetDictionary(bytes, 0, bytes.Length);
-		}
-
-		public IDictionary<string, string> GetDictionary(byte[] bytes, int offset, int count) {
-			return Util.NameValueCollectionToDictionary(
-				HttpUtility.ParseQueryString(Encoding.ASCII.GetString(bytes, offset, count))
-			);
+		public IDictionary<string, string> GetDictionary(Stream data) {
+			using (StreamReader sr = new StreamReader(data, Encoding.ASCII))
+				return Util.NameValueCollectionToDictionary(
+					HttpUtility.ParseQueryString(sr.ReadToEnd()));
 		}
 	}
 }

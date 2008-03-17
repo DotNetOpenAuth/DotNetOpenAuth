@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 
 namespace DotNetOpenId {
 	internal static class ProtocolMessages {
@@ -10,7 +11,6 @@ namespace DotNetOpenId {
 
 	internal interface IProtocolMessageEncoding {
 		byte[] GetBytes(IDictionary<string, string> dictionary);
-		IDictionary<string, string> GetDictionary(byte[] bytes);
-		IDictionary<string, string> GetDictionary(byte[] bytes, int offset, int count);
+		IDictionary<string, string> GetDictionary(Stream data);
 	}
 }
