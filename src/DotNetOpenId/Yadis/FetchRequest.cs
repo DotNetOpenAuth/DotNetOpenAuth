@@ -8,8 +8,7 @@ using DotNetOpenId.Yadis;
 
 namespace Janrain.Yadis
 {
-    [Serializable]
-    internal class FetchRequest
+    class FetchRequest
     {
         protected const string DEFAULT_HTML_ENCODING = "ISO-8859-1";
         protected const string DEFAULT_XML_ENCODING = "utf-8";
@@ -136,27 +135,5 @@ namespace Janrain.Yadis
             }
             return null;
         }
-
-
-        protected ContentType MetaContentType(byte[] data, int length, Encoding encoding)
-        {
-            if (encoding == null)
-            {
-                encoding = Encoding.GetEncoding("ISO-8859-1");
-            }
-            string html = encoding.GetString(data, 0, length);
-            return MetaContentType(html, 0, encoding);
-        }
-
-        public HttpWebRequest Request
-        {
-            get
-            {
-                return this.request;
-            }
-        }
     }
-
- 
-
 }
