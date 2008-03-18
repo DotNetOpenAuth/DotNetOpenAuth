@@ -297,7 +297,7 @@ namespace Janrain.OpenId.Consumer
 
 				string session_type = (string)results[QueryStringArgs.openidnp.session_type];
 
-				if (session_type == null)
+				if (string.IsNullOrEmpty(session_type) || session_type == "plaintext")
 					secret = getDecoded(QueryStringArgs.mac_key);
 				else if (session_type == QueryStringArgs.DH_SHA1)
 				{
