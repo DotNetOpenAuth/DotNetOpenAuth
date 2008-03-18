@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Org.Mentalis.Security.Cryptography;
+using System.Diagnostics;
 
 namespace DotNetOpenId.RelyingParty {
 	class AssociateRequest : DirectRequest {
@@ -19,14 +20,16 @@ namespace DotNetOpenId.RelyingParty {
 
 			DiffieHellman dh = null;
 
-			if (serverUrl.Scheme != Uri.UriSchemeHttps) {
+			if (serverUrl.Scheme == Uri.UriSchemeHttps) {
+				args.Add(QueryStringArgs.openid.session_type, QueryStringArgs.SessionType.NoEncryption20);
+			} else {
 				// Initiate Diffie-Hellman Exchange
 				dh = CryptUtil.CreateDiffieHellman();
 
 				byte[] dhPublic = dh.CreateKeyExchange();
 				string cpub = CryptUtil.UnsignedToBase64(dhPublic);
 
-				args.Add(QueryStringArgs.openid.session_type, QueryStringArgs.DH_SHA1);
+				args.Add(QueryStringArgs.openid.session_type, QueryStringArgs.SessionType.DH_SHA1);
 				args.Add(QueryStringArgs.openid.dh_consumer_public, cpub);
 
 				DHParameters dhps = dh.ExportParameters(true);
@@ -46,7 +49,11 @@ namespace DotNetOpenId.RelyingParty {
 					try {
 						response = new AssociateResponse(Provider, GetResponse(), DH);
 					} catch (OpenIdException) {
-						// silently fail at associate attempt.
+						// Silently fail at associate attempt, since we can recover
+						// using dumb mode.
+						if (TraceUtil.Switch.TraceWarning) {
+							Trace.TraceWarning("Association attempt with {0} provider failed.", Provider);
+						}
 					}
 				}
 				return response;

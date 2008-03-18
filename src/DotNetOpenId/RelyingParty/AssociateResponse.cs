@@ -33,40 +33,35 @@ namespace DotNetOpenId.RelyingParty {
 						}
 					};
 
-					try {
-						Association assoc;
-						string assoc_type = getParameter(QueryStringArgs.openidnp.assoc_type);
-						switch (assoc_type) {
-							case QueryStringArgs.HMAC_SHA1:
-								byte[] secret;
+					string assoc_type = getParameter(QueryStringArgs.openidnp.assoc_type);
+					switch (assoc_type) {
+						case QueryStringArgs.HMAC_SHA1:
+							byte[] secret;
 
-								string session_type;
-								if (!Args.TryGetValue(QueryStringArgs.openidnp.session_type, out session_type)) {
-									secret = getDecoded(QueryStringArgs.mac_key);
-								} else if (QueryStringArgs.DH_SHA1.Equals(session_type, StringComparison.Ordinal)) {
-									byte[] dh_server_public = getDecoded(QueryStringArgs.openidnp.dh_server_public);
-									byte[] enc_mac_key = getDecoded(QueryStringArgs.enc_mac_key);
-									secret = CryptUtil.SHA1XorSecret(DH, dh_server_public, enc_mac_key);
-								} else // # XXX: log this
-									return null;
+							string session_type;
+							if (!Args.TryGetValue(QueryStringArgs.openidnp.session_type, out session_type) ||
+								session_type == QueryStringArgs.SessionType.NoEncryption11 ||
+								session_type == QueryStringArgs.SessionType.NoEncryption20) {
+								secret = getDecoded(QueryStringArgs.mac_key);
+							} else if (QueryStringArgs.SessionType.DH_SHA1.Equals(session_type, StringComparison.Ordinal)) {
+								byte[] dh_server_public = getDecoded(QueryStringArgs.openidnp.dh_server_public);
+								byte[] enc_mac_key = getDecoded(QueryStringArgs.enc_mac_key);
+								secret = CryptUtil.SHA1XorSecret(DH, dh_server_public, enc_mac_key);
+							} else {
+								throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+									Strings.InvalidOpenIdQueryParameterValue,
+									QueryStringArgs.openid.session_type, session_type));
+							}
 
-								string assocHandle = getParameter(QueryStringArgs.openidnp.assoc_handle);
-								TimeSpan expiresIn = new TimeSpan(0, 0, Convert.ToInt32(getParameter(QueryStringArgs.openidnp.expires_in), CultureInfo.CurrentUICulture));
+							string assocHandle = getParameter(QueryStringArgs.openidnp.assoc_handle);
+							TimeSpan expiresIn = new TimeSpan(0, 0, Convert.ToInt32(getParameter(QueryStringArgs.openidnp.expires_in), CultureInfo.CurrentUICulture));
 
-								assoc = new HmacSha1Association(assocHandle, secret, expiresIn);
-								break;
-							default:
-								Trace.TraceError("Unrecognized assoc_type '{0}'.", assoc_type);
-								assoc = null;
-								break;
-						}
-
-						return assoc;
-					} catch (OpenIdException ex) {
-						if (TraceUtil.Switch.TraceError) {
-							Trace.TraceError(ex.ToString());
-						}
-						return null;
+							association = new HmacSha1Association(assocHandle, secret, expiresIn);
+							break;
+						default:
+							throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+								Strings.InvalidOpenIdQueryParameterValue,
+								QueryStringArgs.openid.assoc_type, assoc_type));
 					}
 				}
 				return association;

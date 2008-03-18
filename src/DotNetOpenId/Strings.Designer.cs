@@ -250,6 +250,24 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The OpenId Provider responded with an error: &apos;{0}&apos;..
+        /// </summary>
+        internal static string ProviderRespondedWithError {
+            get {
+                return ResourceManager.GetString("ProviderRespondedWithError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The OpenId Provider responded with unrecognized HTTP status code {0}..
+        /// </summary>
+        internal static string ProviderRespondedWithUnrecognizedHTTPStatusCode {
+            get {
+                return ResourceManager.GetString("ProviderRespondedWithUnrecognizedHTTPStatusCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The nonce has already been used..
         /// </summary>
         internal static string ReplayAttackDetected {

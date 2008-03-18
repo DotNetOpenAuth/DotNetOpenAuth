@@ -15,7 +15,7 @@ namespace DotNetOpenId.Provider
 			switch (session_type) {
 				case null:
 					return new PlainTextProviderSession();
-				case QueryStringArgs.DH_SHA1:
+				case QueryStringArgs.SessionType.DH_SHA1:
 					return new DiffieHellmanProviderSession(query);
 				default:
 					throw new OpenIdException("Unknown session type " + session_type, query);
@@ -30,7 +30,7 @@ namespace DotNetOpenId.Provider
     {
         public override string SessionType
         {
-            get { return QueryStringArgs.plaintext; }
+            get { return QueryStringArgs.SessionType.NoEncryption11; }
         }
 
         public override Dictionary<string, string> Answer(byte[] secret)
@@ -112,7 +112,7 @@ namespace DotNetOpenId.Provider
 
         public override string SessionType
         {
-            get { return QueryStringArgs.DH_SHA1; }
+            get { return QueryStringArgs.SessionType.DH_SHA1; }
         }
 
         public override Dictionary<string, string> Answer(byte[] secret)

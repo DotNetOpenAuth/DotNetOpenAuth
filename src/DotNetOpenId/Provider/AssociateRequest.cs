@@ -53,7 +53,7 @@ namespace DotNetOpenId.Provider {
 				response.Fields[pair.Key] = nvc[pair.Key];
 			}
 
-			if (session.SessionType != QueryStringArgs.plaintext) {
+			if (session.SessionType != QueryStringArgs.SessionType.NoEncryption11) {
 				response.Fields[QueryStringArgs.openidnp.session_type] = session.SessionType;
 			}
 

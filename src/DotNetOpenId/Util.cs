@@ -76,6 +76,13 @@ namespace DotNetOpenId {
                 dict.Add(nvc.GetKey(i), nvc.Get(i));
             return dict;
         }
+        public static NameValueCollection DictionaryToNameValueCollection(IDictionary<string, string> dict) {
+            NameValueCollection nvc = new NameValueCollection(dict.Count);
+            foreach (var pair in dict) {
+                nvc.Add(pair.Key, pair.Value);
+            }
+            return nvc;
+        }
 
         public static NameValueCollection GetQueryFromContext() {
             if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
@@ -104,6 +111,7 @@ namespace DotNetOpenId {
     internal static class QueryStringArgs {
         /// <summary>openid. variables that don't include the "openid." prefix.</summary>
         internal static class openidnp {
+            internal const string ns = "ns";
             internal const string return_to = "return_to";
             internal const string mode = "mode";
             internal const string error = "error";
@@ -159,6 +167,7 @@ namespace DotNetOpenId {
         internal static class openid {
             internal const string Prefix = "openid.";
 
+            internal const string ns = Prefix + openidnp.ns;
             internal const string return_to = Prefix + openidnp.return_to;
             internal const string mode = Prefix + openidnp.mode;
             internal const string error = Prefix + openidnp.error;
@@ -196,9 +205,18 @@ namespace DotNetOpenId {
         }
         internal const string enc_mac_key = "enc_mac_key";
         internal const string mac_key = "mac_key";
-        internal const string DH_SHA1 = "DH-SHA1";
-        internal const string plaintext = "plaintext";
+        internal static class SessionType {
+            internal const string DH_SHA1 = "DH-SHA1";
+            internal const string DH_SHA256 = "DH-SHA256";
+            internal const string NoEncryption20 = "no-encryption";
+            internal const string NoEncryption11 = "";
+        }
         internal const string HMAC_SHA1 = "HMAC-SHA1";
+        internal static class OpenIdNs {
+            internal const string v10 = "http://openid.net/signon/1.0";
+            internal const string v11 = "http://openid.net/signon/1.1";
+            internal const string v20 = "http://specs.openid.net/auth/2.0";
+        }
 
         internal static class Modes {
             internal const string cancel = "cancel";

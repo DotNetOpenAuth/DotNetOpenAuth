@@ -180,6 +180,12 @@
   <data name="ProviderOpenIdVersionUnknown" xml:space="preserve">
     <value>Unable to determine provider's OpenID version.</value>
   </data>
+  <data name="ProviderRespondedWithError" xml:space="preserve">
+    <value>The OpenId Provider responded with an error: '{0}'.</value>
+  </data>
+  <data name="ProviderRespondedWithUnrecognizedHTTPStatusCode" xml:space="preserve">
+    <value>The OpenId Provider responded with unrecognized HTTP status code {0}.</value>
+  </data>
   <data name="ReplayAttackDetected" xml:space="preserve">
     <value>The nonce has already been used.</value>
   </data>
