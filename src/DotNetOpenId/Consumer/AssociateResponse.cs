@@ -41,7 +41,9 @@ namespace DotNetOpenId.Consumer {
 								byte[] secret;
 
 								string session_type;
-								if (!Args.TryGetValue(QueryStringArgs.openidnp.session_type, out session_type)) {
+								if (!Args.TryGetValue(QueryStringArgs.openidnp.session_type, out session_type) ||
+									session_type == QueryStringArgs.plaintext ||
+									session_type == string.Empty) {
 									secret = getDecoded(QueryStringArgs.mac_key);
 								} else if (QueryStringArgs.DH_SHA1.Equals(session_type, StringComparison.Ordinal)) {
 									byte[] dh_server_public = getDecoded(QueryStringArgs.openidnp.dh_server_public);
