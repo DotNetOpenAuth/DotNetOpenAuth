@@ -46,7 +46,7 @@ namespace DotNetOpenId.Yadis {
 		}
 
 		public string MediaType {
-			get { return String.Format("{0}/{0}", Type, SubType); }
+			get { return String.Format("{0}/{1}", Type, SubType); }
 		}
 
 		public override string ToString() {

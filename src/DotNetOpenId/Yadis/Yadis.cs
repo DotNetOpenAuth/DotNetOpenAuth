@@ -12,7 +12,8 @@ namespace DotNetOpenId.Yadis {
 		internal const string HeaderName = "X-XRDS-Location";
 
 		public static DiscoveryResult Discover(UriIdentifier uri) {
-			var response = RelyingParty.Fetcher.Request(uri);
+			var response = RelyingParty.Fetcher.Request(uri, null,
+				new[] { ContentType.Html, ContentType.XHtml, ContentType.Xrds });
 			if (response.StatusCode != System.Net.HttpStatusCode.OK) {
 				return null;
 			}
