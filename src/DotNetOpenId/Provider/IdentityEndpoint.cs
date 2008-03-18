@@ -10,6 +10,8 @@ namespace DotNetOpenId.Provider {
 	[DefaultProperty("ServerUrl")]
 	[ToolboxData("<{0}:IdentityEndpoint runat=server></{0}:IdentityEndpoint>")]
 	public class IdentityEndpoint : WebControl {
+
+		#region Properties
 		[Flags]
 		public enum XrdsUrlLocations {
 			HttpHeader = 0x1,
@@ -77,6 +79,89 @@ namespace DotNetOpenId.Provider {
 			}
 			set { ViewState[xrdsAutoRedirectViewStateKey] = value; }
 		}
+		#endregion
+
+		#region Properties to hide
+		[Browsable(false), Bindable(false)]
+		public override string AccessKey {
+			get { throw new NotSupportedException(); }
+			set { throw new NotSupportedException(); }
+		}
+		[Browsable(false), Bindable(false)]
+		public override string CssClass {
+			get { throw new NotSupportedException(); }
+			set { throw new NotSupportedException(); }
+		}
+		[Browsable(false), Bindable(false)]
+		public override bool EnableViewState {
+			get { throw new NotSupportedException(); }
+			set { throw new NotSupportedException(); }
+		}
+		[Browsable(false), Bindable(false)]
+		public override bool Enabled {
+			get { throw new NotSupportedException(); }
+			set { throw new NotSupportedException(); }
+		}
+		[Browsable(false), Bindable(false)]
+		public override System.Drawing.Color ForeColor {
+			get { throw new NotSupportedException(); }
+			set { throw new NotSupportedException(); }
+		}
+		[Browsable(false), Bindable(false)]
+		public override System.Drawing.Color BackColor {
+			get { throw new NotSupportedException(); }
+			set { throw new NotSupportedException(); }
+		}
+		[Browsable(false), Bindable(false)]
+		public override System.Drawing.Color BorderColor {
+			get { throw new NotSupportedException(); }
+			set { throw new NotSupportedException(); }
+		}
+		[Browsable(false), Bindable(false)]
+		public override Unit BorderWidth {
+			get { return Unit.Empty; }
+			set { throw new NotSupportedException(); }
+		}
+		[Browsable(false), Bindable(false)]
+		public override BorderStyle BorderStyle {
+			get { return BorderStyle.None; }
+			set { throw new NotSupportedException(); }
+		}
+		[Browsable(false), Bindable(false)]
+		public override FontInfo Font {
+			get { return null; }
+		}
+		[Browsable(false), Bindable(false)]
+		public override Unit Height {
+			get { return Unit.Empty; }
+			set { throw new NotSupportedException(); }
+		}
+		[Browsable(false), Bindable(false)]
+		public override Unit Width {
+			get { return Unit.Empty; }
+			set { throw new NotSupportedException(); }
+		}
+		[Browsable(false), Bindable(false)]
+		public override short TabIndex {
+			get { throw new NotSupportedException(); }
+			set { throw new NotSupportedException(); }
+		}
+		[Browsable(false), Bindable(false)]
+		public override string ToolTip {
+			get { return string.Empty; }
+			set { throw new NotSupportedException(); }
+		}
+		[Browsable(false), Bindable(false)]
+		public override string SkinID {
+			get { return string.Empty; }
+			set { throw new NotSupportedException(); }
+		}
+		[Browsable(false), Bindable(false)]
+		public override bool EnableTheming {
+			get { return false; }
+			set { throw new NotSupportedException(); }
+		}
+		#endregion
 
 		protected override void OnLoad(EventArgs e) {
 			base.OnLoad(e);
