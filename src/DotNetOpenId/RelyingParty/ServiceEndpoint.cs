@@ -91,36 +91,8 @@ namespace DotNetOpenId.RelyingParty {
 			ProviderLocalIdentifier = providerLocalIdentifier ?? claimedIdentifier;
 		}
 
-		internal static ServiceEndpoint Create(Identifier yadisClaimedIdentifier, UriElement serviceTypeUri) {
-			return new ServiceEndpoint(
-				yadisClaimedIdentifier, serviceTypeUri.Uri,
-				serviceTypeUri.Service.ProviderLocalIdentifier ?? yadisClaimedIdentifier);
-		}
-
 		public bool UsesExtension(string extensionUri) {
 			return Array.IndexOf(ProviderSupportedServiceTypeUris, extensionUri) >= 0;
-		}
-
-		/// <summary>
-		/// Finds the first Service described in an XrdsDocument that supports
-		/// an OpenID protocol supported by this library.
-		/// </summary>
-		/// <returns>
-		/// The service type URI that matches one of the supported ones in this library.
-		/// This type URI can be connected to the supporting service.
-		/// </returns>
-		static UriElement findCompatibleService(XrdsDocument xrds) {
-			// Scan the XRDS document for services compatible with OpenID.
-			foreach (var xrd in xrds.XrdElements) {
-				foreach (var uri in xrd.ServiceUris) {
-					// See if this particular service type URI is one of the
-					// supported OpenID protocols in this library.
-					if (Array.IndexOf(OpenIdClaimedIdentifierTypeUris, uri.Uri) >= 0) {
-						return uri;
-					}
-				}
-			}
-			return null;
 		}
 	}
 }
