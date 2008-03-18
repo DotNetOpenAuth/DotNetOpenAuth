@@ -79,7 +79,8 @@ namespace DotNetOpenId.RelyingParty {
 			request.Timeout = (int)Timeout.TotalMilliseconds;
 			request.KeepAlive = false;
 			request.MaximumAutomaticRedirections = MaximumRedirections;
-			request.Accept = string.Join(",", acceptTypes);
+			if (acceptTypes != null)
+				request.Accept = string.Join(",", acceptTypes);
 			if (body != null) {
 				request.ContentType = "application/x-www-form-urlencoded";
 				request.ContentLength = body.Length;

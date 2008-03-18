@@ -31,8 +31,14 @@ namespace DotNetOpenId.RelyingParty {
 		}
 
 		public string ReadResponseString() {
-			using (StreamReader sr = new StreamReader(ResponseStream, Encoding.GetEncoding(ContentEncoding)))
-				return sr.ReadToEnd();
+			// We do NOT put a using clause around this or dispose of the StreamReader
+			// because that would dispose of the underlying stream, preventing this
+			// method from being called again.
+			StreamReader sr = new StreamReader(ResponseStream, Encoding.GetEncoding(ContentEncoding));
+			long oldPosition = ResponseStream.Position;
+			string result = sr.ReadToEnd();
+			ResponseStream.Seek(oldPosition, SeekOrigin.Begin);
+			return result;
 		}
 	}
 }
