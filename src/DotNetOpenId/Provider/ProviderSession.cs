@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using Org.Mentalis.Security.Cryptography;
 using System.Text;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace DotNetOpenId.Provider
 {
@@ -14,11 +15,15 @@ namespace DotNetOpenId.Provider
 
 			switch (session_type) {
 				case null:
+				case QueryStringArgs.SessionType.NoEncryption11:
+				case QueryStringArgs.SessionType.NoEncryption20:
 					return new PlainTextProviderSession();
 				case QueryStringArgs.SessionType.DH_SHA1:
 					return new DiffieHellmanProviderSession(query);
 				default:
-					throw new OpenIdException("Unknown session type " + session_type, query);
+					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+						Strings.InvalidOpenIdQueryParameterValue, 
+						QueryStringArgs.openid.session_type, session_type), query);
 			}
 		}
 	}
