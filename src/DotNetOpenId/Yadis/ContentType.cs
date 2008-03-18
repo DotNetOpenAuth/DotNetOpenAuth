@@ -59,7 +59,7 @@ namespace Janrain.Yadis
         {
             get
             {
-                return String.Format("{0}/{0}",this.type,this.subType);
+                return String.Format("{0}/{1}",this.type,this.subType);
             }
         }
 
