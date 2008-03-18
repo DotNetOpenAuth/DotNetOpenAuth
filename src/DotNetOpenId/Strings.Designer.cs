@@ -178,6 +178,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The XRDS document is missing the required CanonicalID element..
+        /// </summary>
+        internal static string MissingCanonicalIDElement {
+            get {
+                return ResourceManager.GetString("MissingCanonicalIDElement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Query parameter &apos;{0}&apos; was missing from the query..
         /// </summary>
         internal static string MissingInternalQueryParameter {

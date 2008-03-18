@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml.XPath;
+using DotNetOpenId.RelyingParty;
 
 namespace DotNetOpenId.Yadis {
 	class XrdElement : XrdsNode {
@@ -21,11 +22,44 @@ namespace DotNetOpenId.Yadis {
 			}
 		}
 
-		public IEnumerable<ServiceElement> OpenIdServices {
+		public string CanonicalID {
+			get {
+				var n = Node.SelectSingleNode("xrd:CanonicalID", XmlNamespaceResolver);
+				return n != null ? n.Value : null;
+			}
+		}
+
+		/// <summary>
+		/// Returns services for OP Identifiers.
+		/// </summary>
+		public IEnumerable<ServiceElement> OpenIdProviderIdentifierServices {
 			get {
 				var xpath = new StringBuilder();
 				xpath.Append("xrd:Service[");
-				foreach (string uri in DotNetOpenId.RelyingParty.ServiceEndpoint.OpenIdTypeUris) {
+				foreach (string uri in ServiceEndpoint.OpenIdProviderIdentifierTypeUris) {
+					xpath.Append("xrd:Type/text()='");
+					xpath.Append(uri);
+					xpath.Append("' or ");
+				}
+				xpath.Length -= 4;
+				xpath.Append("]");
+				var services = new List<ServiceElement>();
+				foreach (XPathNavigator service in Node.Select(xpath.ToString(), XmlNamespaceResolver)) {
+					services.Add(new ServiceElement(service, this));
+				}
+				services.Sort();
+				return services;
+			}
+		}
+
+		/// <summary>
+		/// Returns services for Claimed Identifiers.
+		/// </summary>
+		public IEnumerable<ServiceElement> OpenIdClaimedIdentifierServices {
+			get {
+				var xpath = new StringBuilder();
+				xpath.Append("xrd:Service[");
+				foreach (string uri in ServiceEndpoint.OpenIdClaimedIdentifierTypeUris) {
 					xpath.Append("xrd:Type/text()='");
 					xpath.Append(uri);
 					xpath.Append("' or ");

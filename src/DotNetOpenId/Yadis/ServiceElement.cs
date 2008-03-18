@@ -9,6 +9,10 @@ namespace DotNetOpenId.Yadis {
 			base(serviceElement, parent) {
 		}
 
+		public XrdElement Xrd {
+			get { return (XrdElement)ParentNode; }
+		}
+
 		public int Priority {
 			get { return Node.SelectSingleNode("@priority", XmlNamespaceResolver).ValueAsInt; }
 		}
