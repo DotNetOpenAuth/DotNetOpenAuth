@@ -95,8 +95,10 @@ namespace DotNetOpenId {
     }
 
 	internal static class ProtocolConstants {
-		internal const string OpenIdServer = "openid.server";
-		internal const string OpenIdDelegate = "openid.delegate";
+		internal const string OpenId11Server = "openid.server";
+		internal const string OpenId11Delegate = "openid.delegate";
+		internal const string OpenId20Provider = "openid2.provider";
+		internal const string OpenId20LocalId = "openid2.local_id";
 	}
 
     internal static class QueryStringArgs {

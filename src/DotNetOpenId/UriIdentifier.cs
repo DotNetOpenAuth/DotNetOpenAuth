@@ -104,23 +104,45 @@ namespace DotNetOpenId {
 		/// An initialized ServiceEndpoint if the OpenID Provider information was
 		/// found.  Otherwise null.
 		/// </returns>
+		/// <remarks>
+		/// OpenID 2.0 tags are always used if they are present, otherwise
+		/// OpenID 1.x tags are used if present.
+		/// </remarks>
 		protected virtual ServiceEndpoint DiscoverFromHtml(Uri claimedIdentifier, string html) {
 			Uri providerEndpoint = null;
 			Identifier providerLocalIdentifier = null;
+			int version = 0;
 			foreach (NameValueCollection values in Janrain.Yadis.ByteParser.HeadTagAttrs(html, "link")) {
 				switch (values["rel"]) {
-					case ProtocolConstants.OpenIdServer:
+					case ProtocolConstants.OpenId20Provider:
 						providerEndpoint = new Uri(values["href"]);
+						version = 2;
 						break;
-					case ProtocolConstants.OpenIdDelegate:
-						providerLocalIdentifier = values["href"];
+					case ProtocolConstants.OpenId20LocalId:
+						providerLocalIdentifier = new Uri(values["href"]);
+						version = 2;
+						break;
+					case ProtocolConstants.OpenId11Server:
+						if (version == 0) { // do not override a 2.0 discovery
+							providerEndpoint = new Uri(values["href"]);
+							version = 1;
+						}
+						break;
+					case ProtocolConstants.OpenId11Delegate:
+						if (version <= 1) {
+							providerLocalIdentifier = values["href"];
+						}
 						break;
 				}
 			}
 			if (providerEndpoint == null) {
 				return null; // html did not contain openid.server link
 			}
-			return new ServiceEndpoint(claimedIdentifier, providerEndpoint, providerLocalIdentifier);
+			// Choose the TypeURI to match the OpenID version detected.
+			string[] typeURIs = { version == 2 ?
+				ServiceEndpoint.OpenId20Type : ServiceEndpoint.OpenId11Type };
+			return new ServiceEndpoint(claimedIdentifier, providerEndpoint, 
+				providerLocalIdentifier, typeURIs);
 		}
 
 		internal override ServiceEndpoint Discover() {

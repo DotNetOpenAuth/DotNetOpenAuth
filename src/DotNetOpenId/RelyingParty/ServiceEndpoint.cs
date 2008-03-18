@@ -57,7 +57,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// <summary>
 		/// An Identifier for an OpenID Provider.
 		/// </summary>
-		public Identifier ProviderIdentifier { get; private set; }
+		//public Identifier ProviderIdentifier { get; private set; }
 		/// <summary>
 		/// An Identifier that was presented by the end user to the Relying Party, 
 		/// or selected by the user at the OpenID Provider. 
@@ -66,7 +66,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// is used, the OP may then assist the end user in selecting an Identifier 
 		/// to share with the Relying Party.
 		/// </summary>
-		public Identifier UserSuppliedIdentifier { get; private set; }
+		//public Identifier UserSuppliedIdentifier { get; private set; }
 		/// <summary>
 		/// The Identifier that the end user claims to own.
 		/// </summary>
@@ -83,12 +83,31 @@ namespace DotNetOpenId.RelyingParty {
 		/// </summary>
 		public string[] ProviderSupportedServiceTypeUris { get; private set; }
 
-		internal ServiceEndpoint(Identifier claimedIdentifier, Uri providerEndpoint, Identifier providerLocalIdentifier) {
+		internal ServiceEndpoint(Identifier claimedIdentifier, Uri providerEndpoint, 
+			Identifier providerLocalIdentifier, string[] providerSupportedServiceTypeUris) {
 			if (claimedIdentifier == null) throw new ArgumentNullException("claimedIdentifier");
 			if (providerEndpoint == null) throw new ArgumentNullException("providerEndpoint");
+			if (providerSupportedServiceTypeUris == null) throw new ArgumentNullException("providerSupportedServiceTypeUris");
 			ClaimedIdentifier = claimedIdentifier;
 			ProviderEndpoint = providerEndpoint;
 			ProviderLocalIdentifier = providerLocalIdentifier ?? claimedIdentifier;
+			ProviderSupportedServiceTypeUris = providerSupportedServiceTypeUris;
+		}
+
+		public Version ProviderVersion {
+			get {
+				if (Array.IndexOf(ProviderSupportedServiceTypeUris, OpenId20Type) >= 0)
+					return new Version(2, 0);
+				if (Array.IndexOf(ProviderSupportedServiceTypeUris, OpenId12Type) >= 0)
+					return new Version(1, 2);
+				if (Array.IndexOf(ProviderSupportedServiceTypeUris, OpenId11Type) >= 0)
+					return new Version(1, 1);
+				if (Array.IndexOf(ProviderSupportedServiceTypeUris, OpenId10Type) >= 0)
+					return new Version(1, 0);
+				// This should never really happen if we've detected an OpenId provider
+				// correctly.
+				throw new OpenIdException(Strings.ProviderOpenIdVersionUnknown);
+			}
 		}
 
 		public bool UsesExtension(string extensionUri) {

@@ -11,7 +11,9 @@ namespace DotNetOpenId.Test.RelyingParty {
 			ServiceEndpoint ep = new ServiceEndpoint(
 				TestSupport.GetIdentityUrl(scenario),
 				TestSupport.GetFullUrl(TestSupport.ProviderPage),
-				TestSupport.GetDelegateUrl(scenario));
+				TestSupport.GetDelegateUrl(scenario),
+				new[] { ServiceEndpoint.OpenId11Type }
+				);
 			return ep;
 		}
 

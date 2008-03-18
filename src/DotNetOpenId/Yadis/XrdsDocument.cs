@@ -26,12 +26,21 @@ namespace DotNetOpenId.Yadis {
 			}
 		}
 
-		internal ServiceEndpoint CreateServiceEndpoint(Identifier claimedIdentifier) {
+		internal ServiceEndpoint CreateServiceEndpoint(UriIdentifier claimedIdentifier) {
+			return createServiceEndpoint(claimedIdentifier);
+		}
+
+		internal ServiceEndpoint CreateServiceEndpoint(XriIdentifier userSuppliedIdentifier) {
+			return createServiceEndpoint(userSuppliedIdentifier);
+		}
+
+		ServiceEndpoint createServiceEndpoint(Identifier claimedIdentifier) {
 			// First search for OP Identifier service elements
 			foreach (var service in findOPIdentifierServices()) {
 				foreach (var uri in service.UriElements) {
 					return new ServiceEndpoint(ServiceEndpoint.ClaimedIdentifierForOPIdentifier,
-						uri.Uri, ServiceEndpoint.ClaimedIdentifierForOPIdentifier);
+						uri.Uri, ServiceEndpoint.ClaimedIdentifierForOPIdentifier,
+						service.TypeElementUris);
 				}
 			}
 			// Since we could not find an OP Identifier service element,
@@ -44,7 +53,8 @@ namespace DotNetOpenId.Yadis {
 							throw new OpenIdException(Strings.MissingCanonicalIDElement, claimedIdentifier);
 						claimedIdentifier = service.Xrd.CanonicalID;
 					}
-					return new ServiceEndpoint(claimedIdentifier, uri.Uri, service.ProviderLocalIdentifier);
+					return new ServiceEndpoint(claimedIdentifier, uri.Uri, 
+						service.ProviderLocalIdentifier, service.TypeElementUris);
 				}
 			}
 			return null;

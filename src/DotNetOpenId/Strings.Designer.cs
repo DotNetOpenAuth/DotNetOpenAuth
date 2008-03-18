@@ -241,6 +241,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to determine provider&apos;s OpenID version..
+        /// </summary>
+        internal static string ProviderOpenIdVersionUnknown {
+            get {
+                return ResourceManager.GetString("ProviderOpenIdVersionUnknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The nonce has already been used..
         /// </summary>
         internal static string ReplayAttackDetected {

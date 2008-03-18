@@ -36,6 +36,18 @@ namespace DotNetOpenId.Yadis {
 			}
 		}
 
+		public string[] TypeElementUris {
+			get {
+				XPathNodeIterator types = Node.Select("xrd:Type", XmlNamespaceResolver);
+				string[] typeUris = new string[types.Count];
+				int i = 0;
+				foreach(XPathNavigator type in types) {
+					typeUris[i++] = type.Value;
+				}
+				return typeUris;
+			}
+		}
+
 		public Identifier ProviderLocalIdentifier {
 			get {
 				var n = Node.SelectSingleNode("xrd:LocalID", XmlNamespaceResolver) 

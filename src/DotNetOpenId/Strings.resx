@@ -177,6 +177,9 @@
   <data name="PrefixWithoutPeriodsExpected" xml:space="preserve">
     <value>Prefix should not begin or end with a period.</value>
   </data>
+  <data name="ProviderOpenIdVersionUnknown" xml:space="preserve">
+    <value>Unable to determine provider's OpenID version.</value>
+  </data>
   <data name="ReplayAttackDetected" xml:space="preserve">
     <value>The nonce has already been used.</value>
   </data>
