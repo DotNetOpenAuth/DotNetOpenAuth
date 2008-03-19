@@ -66,18 +66,18 @@ namespace DotNetOpenId.Provider {
 			set { ViewState[xrdsAdvertisementViewStateKey] = value; }
 		}
 
-		const bool xrdsAutoRedirectDefault = true;
-		const string xrdsAutoRedirectViewStateKey = "XrdsAutoRedirect";
+		const bool xrdsAutoAnswerDefault = true;
+		const string xrdsAutoAnswerViewStateKey = "XrdsAutoAnswer";
 		[Bindable(true)]
 		[Category("Behavior")]
-		[DefaultValue(xrdsAutoRedirectDefault)]
-		[Description("Whether XRDS requests should be immediately redirected to the XRDS document.")]
-		public bool XrdsAutoRedirect {
+		[DefaultValue(xrdsAutoAnswerDefault)]
+		[Description("Whether XRDS requests should be immediately answered with the XRDS document if it is served by this web application.")]
+		public bool XrdsAutoAnswer {
 			get {
-				return ViewState[xrdsAutoRedirectViewStateKey] == null ?
-					xrdsAutoRedirectDefault : (bool)ViewState[xrdsAutoRedirectViewStateKey];
+				return ViewState[xrdsAutoAnswerViewStateKey] == null ?
+					xrdsAutoAnswerDefault : (bool)ViewState[xrdsAutoAnswerViewStateKey];
 			}
-			set { ViewState[xrdsAutoRedirectViewStateKey] = value; }
+			set { ViewState[xrdsAutoAnswerViewStateKey] = value; }
 		}
 		#endregion
 
@@ -167,15 +167,18 @@ namespace DotNetOpenId.Provider {
 			base.OnLoad(e);
 
 			if (!Page.IsPostBack) {
-				if (!string.IsNullOrEmpty(XrdsUrl) && XrdsAutoRedirect) {
+				if (XrdsAutoAnswer && !string.IsNullOrEmpty(XrdsUrl) &&
+					XrdsUrl.StartsWith("~/", StringComparison.Ordinal)) {
 					// Check for the presence of an accept types header that is looking
 					// for the XRDS document specifically.
 					if (Page.Request.AcceptTypes != null &&
 						Array.IndexOf(Page.Request.AcceptTypes, DotNetOpenId.Yadis.ContentType.Xrds) >= 0) {
-						// Redirect the caller immediately and avoid sending the whole
-						// web page's contents to the client since it isn't interested
-						// anyway.
-						Page.Response.Redirect(new Uri(Page.Request.Url, Page.Response.ApplyAppPathModifier(XrdsUrl)).AbsoluteUri, true);
+						// Respond to the caller immediately with an XRDS document
+						// and avoid sending the whole web page's contents to the 
+						// client since it isn't interested anyway.
+						Page.Server.Transfer(XrdsUrl);
+						// We do NOT simply send a 301 redirect here because that would
+						// alter the Claimed Identifier.
 					}
 				}
 			}
