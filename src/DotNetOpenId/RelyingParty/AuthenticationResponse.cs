@@ -62,6 +62,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// Gets the key/value pairs of a provider's response for a given OpenID extension.
 		/// </summary>
 		/// <param name="extensionTypeUri">
+		/// The Type URI of the OpenID extension whose arguments are being sought.
 		/// </param>
 		/// <returns>
 		/// Returns key/value pairs for this extension.

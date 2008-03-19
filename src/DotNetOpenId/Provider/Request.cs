@@ -25,6 +25,10 @@ namespace DotNetOpenId.Provider
 		/// Additional (extension) arguments to be sent back to the consumer.
 		/// </summary>
 		protected IDictionary<string, string> ExtraArgs { get; private set; }
+		/// <summary>
+		/// Tracks extension Type URIs and aliases assigned to them.
+		/// </summary>
+		Dictionary<string, string> extensionTypeUriToAliasMap = new Dictionary<string, string>();
 
 		/// <summary>
 		/// Tests whether a given dictionary represents an incoming OpenId request.
@@ -113,60 +117,100 @@ namespace DotNetOpenId.Provider
 		IResponse IRequest.Response { get { return this.Response; } }
 
 		/// <summary>
-		/// Adds extra query parameters to the response directed at the OpenID consumer.
+		/// Adds query parameters for OpenID extensions to the request directed 
+		/// at the OpenID provider.
 		/// </summary>
-		/// <param name="extensionPrefix">
-		/// The extension-specific prefix associated with these arguments.
-		/// This should not include the 'openid.' part of the prefix.
-		/// For example, the extension field openid.sreg.fullname would receive
-		/// 'sreg' for this value.
-		/// </param>
-		/// <param name="arguments">
-		/// The key/value pairs of parameters and values to pass to the provider.
-		/// The keys should NOT have the 'openid.ext.' prefix.
-		/// </param>
-		public void AddExtensionArguments(string extensionPrefix, IDictionary<string, string> arguments) {
-			if (string.IsNullOrEmpty(extensionPrefix)) throw new ArgumentNullException("extensionPrefix");
+		public void AddExtensionArguments(string extensionTypeUri, IDictionary<string, string> arguments) {
+			if (string.IsNullOrEmpty(extensionTypeUri)) throw new ArgumentNullException("extensionTypeUri");
 			if (arguments == null) throw new ArgumentNullException("arguments");
-			if (extensionPrefix.StartsWith(".", StringComparison.Ordinal) ||
-				extensionPrefix.EndsWith(".", StringComparison.Ordinal))
-				throw new ArgumentException(Strings.PrefixWithoutPeriodsExpected, "extensionPrefix");
 
-			foreach (var pair in arguments) {
-				if (pair.Key.StartsWith(QueryStringArgs.openid.Prefix) ||
-					pair.Key.StartsWith(extensionPrefix))
-					throw new ArgumentException(string.Format(CultureInfo.CurrentUICulture,
-						Strings.ExtensionParameterKeysWithoutPrefixExpected, pair.Key), "arguments");
-				// Leave off the prefix as it will be added after signing later.
-				ExtraArgs.Add(extensionPrefix + "." + pair.Key, pair.Value);
+			string extensionAlias;
+			// Affinity to make the simple registration extension use the sreg alias.
+			if (extensionTypeUri == QueryStringArgs.sreg_ns) {
+				extensionAlias = QueryStringArgs.sreg_compatibility_alias;
+				createExtensionAlias(extensionTypeUri, extensionAlias);
+			} else {
+				extensionAlias = findOrCreateExtensionAlias(extensionTypeUri);
 			}
-			InvalidateResponse();
+			foreach (var pair in arguments) {
+				ExtraArgs.Add(extensionAlias + "." + pair.Key, pair.Value);
+			}
+		}
+
+		void createExtensionAlias(string extensionTypeUri, string preferredAlias) {
+			string existingAlias;
+			if (!extensionTypeUriToAliasMap.TryGetValue(extensionTypeUri, out existingAlias)) {
+				extensionTypeUriToAliasMap.Add(extensionTypeUri, preferredAlias);
+				ExtraArgs.Add(QueryStringArgs.openid.ns + "." + preferredAlias, extensionTypeUri);
+			} else {
+				if (existingAlias != preferredAlias) {
+					throw new InvalidOperationException("Extension " + extensionTypeUri + " already assigned to alias " + existingAlias);
+				}
+			}
+		}
+
+		string findOrCreateExtensionAlias(string extensionTypeUri) {
+			string alias;
+			lock (extensionTypeUriToAliasMap) {
+				if (!extensionTypeUriToAliasMap.TryGetValue(extensionTypeUri, out alias)) {
+					alias = "ext" + (extensionTypeUriToAliasMap.Count + 1).ToString();
+					createExtensionAlias(extensionTypeUri, alias);
+				}
+			}
+			return alias;
 		}
 
 		/// <summary>
-		/// Gets the key/value pairs of a consumer's request for a given OpenID extension.
+		/// Gets the key/value pairs of a provider's response for a given OpenID extension.
 		/// </summary>
-		/// <param name="extensionPrefix">
-		/// The prefix used by the extension, not including the 'openid.' start.
-		/// For example, simple registration key/values can be retrieved by passing 
-		/// 'sreg' as this argument.
+		/// <param name="extensionTypeUri">
+		/// The Type URI of the OpenID extension whose arguments are being sought.
 		/// </param>
 		/// <returns>
-		/// Returns key/value pairs where the keys do not include the 
-		/// 'openid.' or the <paramref name="extensionPrefix"/>.
+		/// Returns key/value pairs for this extension.
 		/// </returns>
-		public IDictionary<string, string> GetExtensionArguments(string extensionPrefix) {
+		public IDictionary<string, string> GetExtensionArguments(string extensionTypeUri) {
+			if (string.IsNullOrEmpty(extensionTypeUri)) throw new ArgumentNullException("extensionTypeUri");
 			var response = new Dictionary<string, string>();
-			extensionPrefix = QueryStringArgs.openid.Prefix + extensionPrefix + ".";
-			int prefix_len = extensionPrefix.Length;
+			string alias = findAliasForExtension(extensionTypeUri);
+			if (alias == null) {
+				// for OpenID 1.x compatibility, guess the sreg alias.
+				if (extensionTypeUri == QueryStringArgs.sreg_ns &&
+					!isExtensionAliasDefined(QueryStringArgs.sreg_compatibility_alias))
+					alias = QueryStringArgs.sreg_compatibility_alias;
+				else
+					return response;
+			}
+
+			string extensionPrefix = QueryStringArgs.openid.Prefix + alias + ".";
 			foreach (string key in Query) {
 				if (key.StartsWith(extensionPrefix, StringComparison.OrdinalIgnoreCase)) {
-					string bareKey = key.Substring(prefix_len);
+					string bareKey = key.Substring(extensionPrefix.Length);
 					response[bareKey] = Query[key];
 				}
 			}
 
 			return response;
+		}
+
+		bool isExtensionAliasDefined(string alias) {
+			string aliasPrefix = QueryStringArgs.openid.ns + "." + alias;
+			foreach (string key in Query) {
+				if (key.Equals(aliasPrefix, StringComparison.OrdinalIgnoreCase))
+					return true;
+			}
+			return false;
+		}
+
+		string findAliasForExtension(string extensionTypeUri) {
+			string aliasPrefix = QueryStringArgs.openid.ns + ".";
+			foreach (string key in Query) {
+				if (key.StartsWith(aliasPrefix, StringComparison.OrdinalIgnoreCase) &&
+					Query[key].Equals(extensionTypeUri, StringComparison.Ordinal)) {
+					return key.Substring(aliasPrefix.Length);
+				}
+			}
+			return null;
 		}
 
 		public override string ToString() {
