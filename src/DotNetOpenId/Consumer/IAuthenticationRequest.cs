@@ -22,7 +22,6 @@ namespace DotNetOpenId.Consumer {
 		/// </param>
 		/// <param name="arguments">
 		/// The key/value pairs of parameters and values to pass to the provider.
-		/// The keys should NOT have the 'openid.ext.' prefix.
 		/// </param>
 		void AddExtensionArguments(string extensionTypeUri, IDictionary<string, string> arguments);
 		/// <summary>

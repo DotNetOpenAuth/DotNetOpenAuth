@@ -11,8 +11,7 @@ namespace DotNetOpenId.Consumer {
 		/// The Type URI of the OpenID extension whose arguments are being sought.
 		/// </param>
 		/// <returns>
-		/// Returns key/value pairs where the keys do not include the 
-		/// 'openid.' or the <paramref name="extensionPrefix"/>.
+		/// Returns key/value pairs found for the given extension.
 		/// </returns>
 		IDictionary<string, string> GetExtensionArguments(string extensionTypeUri);
 		Uri IdentityUrl { get; }
