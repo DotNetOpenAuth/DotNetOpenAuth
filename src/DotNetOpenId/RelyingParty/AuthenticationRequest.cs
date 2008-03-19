@@ -105,9 +105,15 @@ namespace DotNetOpenId.RelyingParty {
 
 				qsArgs.Add(QueryStringArgs.openid.mode, (Mode == AuthenticationRequestMode.Immediate) ?
 					QueryStringArgs.Modes.checkid_immediate : QueryStringArgs.Modes.checkid_setup);
-				qsArgs.Add(QueryStringArgs.openid.identity, endpoint.ProviderLocalIdentifier.ToString());
+				qsArgs.Add(QueryStringArgs.openid.identity, endpoint.ProviderLocalIdentifier);
+				if (endpoint.ProviderVersion.Major >= 2) {
+					qsArgs.Add(QueryStringArgs.openid.ns, QueryStringArgs.OpenIdNs.v20);
+					qsArgs.Add(QueryStringArgs.openid.claimed_id, endpoint.ClaimedIdentifier);
+					qsArgs.Add(QueryStringArgs.openid.realm, Realm.ToString());
+				} else {
+					qsArgs.Add(QueryStringArgs.openid.trust_root, Realm.ToString());
+				}
 				qsArgs.Add(QueryStringArgs.openid.return_to, returnToBuilder.ToString());
-				qsArgs.Add(QueryStringArgs.openid.trust_root, Realm.ToString());
 
 				if (this.assoc != null)
 					qsArgs.Add(QueryStringArgs.openid.assoc_handle, this.assoc.Handle); // !!!!

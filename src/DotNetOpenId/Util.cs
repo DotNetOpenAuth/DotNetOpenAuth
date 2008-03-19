@@ -116,6 +116,7 @@ namespace DotNetOpenId {
             internal const string mode = "mode";
             internal const string error = "error";
             internal const string identity = "identity";
+            internal const string claimed_id = "claimed_id";
             internal const string expires_in = "expires_in";
             internal const string assoc_type = "assoc_type";
             internal const string assoc_handle = "assoc_handle";
@@ -125,6 +126,7 @@ namespace DotNetOpenId {
             internal const string signed = "signed";
             internal const string user_setup_url = "user_setup_url";
             internal const string trust_root = "trust_root";
+            internal const string realm = "realm";
             internal const string invalidate_handle = "invalidate_handle";
             internal const string dh_modulus = "dh_modulus";
             internal const string dh_gen = "dh_gen";
@@ -172,6 +174,7 @@ namespace DotNetOpenId {
             internal const string mode = Prefix + openidnp.mode;
             internal const string error = Prefix + openidnp.error;
             internal const string identity = Prefix + openidnp.identity;
+            internal const string claimed_id = Prefix + openidnp.claimed_id;
             internal const string expires_in = Prefix + openidnp.expires_in;
             internal const string assoc_type = Prefix + openidnp.assoc_type;
             internal const string assoc_handle = Prefix + openidnp.assoc_handle;
@@ -181,6 +184,7 @@ namespace DotNetOpenId {
             internal const string signed = Prefix + openidnp.signed;
             internal const string user_setup_url = Prefix + openidnp.user_setup_url;
             internal const string trust_root = Prefix + openidnp.trust_root;
+            internal const string realm = Prefix + openidnp.realm;
             internal const string invalidate_handle = Prefix + openidnp.invalidate_handle;
             internal const string dh_modulus = Prefix + openidnp.dh_modulus;
             internal const string dh_gen = Prefix + openidnp.dh_gen;
