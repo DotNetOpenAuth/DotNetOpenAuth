@@ -61,32 +61,53 @@ namespace DotNetOpenId.RelyingParty {
 		/// <summary>
 		/// Gets the key/value pairs of a provider's response for a given OpenID extension.
 		/// </summary>
-		/// <param name="extensionPrefix">
-		/// The prefix used by the extension, not including the 'openid.' start.
-		/// For example, simple registration key/values can be retrieved by passing 
-		/// 'sreg' as this argument.
+		/// <param name="extensionTypeUri">
 		/// </param>
 		/// <returns>
-		/// Returns key/value pairs where the keys do not include the 
-		/// 'openid.' or the <paramref name="extensionPrefix"/>.
+		/// Returns key/value pairs for this extension.
 		/// </returns>
-		public IDictionary<string, string> GetExtensionArguments(string extensionPrefix) {
-			if (string.IsNullOrEmpty(extensionPrefix)) throw new ArgumentNullException("extensionPrefix");
-			if (extensionPrefix.StartsWith(".", StringComparison.Ordinal) ||
-				extensionPrefix.EndsWith(".", StringComparison.Ordinal))
-				throw new ArgumentException(Strings.PrefixWithoutPeriodsExpected, "extensionPrefix");
-
+		public IDictionary<string, string> GetExtensionArguments(string extensionTypeUri) {
+			if (string.IsNullOrEmpty(extensionTypeUri)) throw new ArgumentNullException("extensionTypeUri");
 			var response = new Dictionary<string, string>();
-			extensionPrefix = QueryStringArgs.openid.Prefix + extensionPrefix + ".";
-			int prefix_len = extensionPrefix.Length;
-			foreach (var pair in this.signedArguments) {
+			string alias = findAliasForExtension(extensionTypeUri);
+			if (alias == null) {
+				// for OpenID 1.x compatibility, guess the sreg alias.
+				if (extensionTypeUri == QueryStringArgs.sreg_ns &&
+					!isExtensionAliasDefined(QueryStringArgs.sreg_compatibility_alias))
+					alias = QueryStringArgs.sreg_compatibility_alias;
+				else
+					return response;
+			}
+
+			string extensionPrefix = QueryStringArgs.openid.Prefix + alias + ".";
+			foreach (var pair in signedArguments) {
 				if (pair.Key.StartsWith(extensionPrefix, StringComparison.OrdinalIgnoreCase)) {
-					string bareKey = pair.Key.Substring(prefix_len);
+					string bareKey = pair.Key.Substring(extensionPrefix.Length);
 					response[bareKey] = pair.Value;
 				}
 			}
 
 			return response;
+		}
+
+		bool isExtensionAliasDefined(string alias) {
+			string aliasPrefix = QueryStringArgs.openid.ns + "." + alias;
+			foreach (var arg in signedArguments) {
+				if (arg.Key.Equals(aliasPrefix, StringComparison.OrdinalIgnoreCase))
+					return true;
+			}
+			return false;
+		}
+
+		string findAliasForExtension(string extensionTypeUri) {
+			string aliasPrefix = QueryStringArgs.openid.ns + ".";
+			foreach (var arg in signedArguments) {
+				if (arg.Key.StartsWith(aliasPrefix, StringComparison.OrdinalIgnoreCase) &&
+					arg.Value.Equals(extensionTypeUri, StringComparison.Ordinal)) {
+					return arg.Key.Substring(aliasPrefix.Length);
+				}
+			}
+			return null;
 		}
 
 		internal static AuthenticationResponse Parse(IDictionary<string, string> query, IRelyingPartyApplicationStore store) {

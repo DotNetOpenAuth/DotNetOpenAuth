@@ -17,17 +17,14 @@ namespace DotNetOpenId.RelyingParty {
 		/// <summary>
 		/// Adds extra query parameters to the request directed at the OpenID provider.
 		/// </summary>
-		/// <param name="extensionPrefix">
-		/// The extension-specific prefix associated with these arguments.
-		/// This should not include the 'openid.' part of the prefix.
-		/// For example, the extension field openid.sreg.fullname would receive
-		/// 'sreg' for this value.
+		/// <param name="extensionTypeUri">
+		/// The Type URI of the OpenID extension whose arguments are being sought.
 		/// </param>
 		/// <param name="arguments">
 		/// The key/value pairs of parameters and values to pass to the provider.
 		/// The keys should NOT have the 'openid.ext.' prefix.
 		/// </param>
-		void AddExtensionArguments(string extensionPrefix, IDictionary<string, string> arguments);
+		void AddExtensionArguments(string extensionTypeUri, IDictionary<string, string> arguments);
 		/// <summary>
 		/// Redirects the user agent to the provider for authentication.
 		/// </summary>
