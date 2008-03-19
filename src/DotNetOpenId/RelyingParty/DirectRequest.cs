@@ -12,7 +12,8 @@ namespace DotNetOpenId.RelyingParty {
 			if (args == null) throw new ArgumentNullException("args");
 			Provider = provider;
 			Args = args;
-			Args.Add(QueryStringArgs.openid.ns, QueryStringArgs.OpenIdNs.v20);
+			if (!Args.ContainsKey(QueryStringArgs.openid.ns))
+				Args.Add(QueryStringArgs.openid.ns, QueryStringArgs.OpenIdNs.v20);
 		}
 		protected Uri Provider { get; private set; }
 		protected IDictionary<string, string> Args { get; private set; }
@@ -29,18 +30,21 @@ namespace DotNetOpenId.RelyingParty {
 			} catch (WebException e) {
 				throw new OpenIdException("Failure while connecting to provider.", e);
 			}
-			switch (resp.StatusCode) {
-				case HttpStatusCode.OK:
-					return args;
-				case HttpStatusCode.BadRequest:
-					string providerMessage;
-					args.TryGetValue(QueryStringArgs.openidnp.error, out providerMessage);
-					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-						Strings.ProviderRespondedWithError, providerMessage), 
-						Util.DictionaryToNameValueCollection(args));
-				default:
-					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-						Strings.ProviderRespondedWithUnrecognizedHTTPStatusCode, resp.StatusCode));
+			string mode;
+			// All error codes are supposed to be returned with 400, but
+			// some (like myopenid.com) sometimes send errors as 200's.
+			if (resp.StatusCode == HttpStatusCode.BadRequest ||
+				(args.TryGetValue(QueryStringArgs.openidnp.mode, out mode) && mode == QueryStringArgs.Modes.error)) {
+				string providerMessage;
+				args.TryGetValue(QueryStringArgs.openidnp.error, out providerMessage);
+				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+					Strings.ProviderRespondedWithError, providerMessage),
+					Util.DictionaryToNameValueCollection(args));
+			} else if (resp.StatusCode == HttpStatusCode.OK) {
+				return args;
+			} else {
+				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+					Strings.ProviderRespondedWithUnrecognizedHTTPStatusCode, resp.StatusCode));
 			}
 		}
 	}
