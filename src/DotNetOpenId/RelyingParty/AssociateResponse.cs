@@ -35,7 +35,8 @@ namespace DotNetOpenId.RelyingParty {
 
 					string assoc_type = getParameter(QueryStringArgs.openidnp.assoc_type);
 					switch (assoc_type) {
-						case QueryStringArgs.HMAC_SHA1:
+						case QueryStringArgs.SignatureAlgorithms.HMAC_SHA256:
+						case QueryStringArgs.SignatureAlgorithms.HMAC_SHA1:
 							byte[] secret;
 
 							string session_type;
@@ -56,7 +57,15 @@ namespace DotNetOpenId.RelyingParty {
 							string assocHandle = getParameter(QueryStringArgs.openidnp.assoc_handle);
 							TimeSpan expiresIn = new TimeSpan(0, 0, Convert.ToInt32(getParameter(QueryStringArgs.openidnp.expires_in), CultureInfo.CurrentUICulture));
 
-							association = new HmacSha1Association(assocHandle, secret, expiresIn);
+							if (assoc_type == QueryStringArgs.SignatureAlgorithms.HMAC_SHA1) {
+								association = new HmacSha1Association(assocHandle, secret, expiresIn);
+							} else if (assoc_type == QueryStringArgs.SignatureAlgorithms.HMAC_SHA256) {
+								association = new HmacSha256Association(assocHandle, secret, expiresIn);
+							} else {
+								throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+									Strings.InvalidOpenIdQueryParameterValue,
+									QueryStringArgs.openid.assoc_type, assoc_type));
+							}
 							break;
 						default:
 							throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,

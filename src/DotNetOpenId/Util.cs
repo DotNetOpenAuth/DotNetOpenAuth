@@ -211,7 +211,10 @@ namespace DotNetOpenId {
             internal const string NoEncryption20 = "no-encryption";
             internal const string NoEncryption11 = "";
         }
-        internal const string HMAC_SHA1 = "HMAC-SHA1";
+        internal static class SignatureAlgorithms {
+            internal const string HMAC_SHA1 = "HMAC-SHA1";
+            internal const string HMAC_SHA256 = "HMAC-SHA256";
+        }
         internal static class OpenIdNs {
             internal const string v10 = "http://openid.net/signon/1.0";
             internal const string v11 = "http://openid.net/signon/1.1";

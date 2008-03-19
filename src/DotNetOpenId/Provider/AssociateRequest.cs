@@ -10,12 +10,14 @@ namespace DotNetOpenId.Provider {
 	/// A request to establish an association.
 	/// </summary>
 	internal class AssociateRequest : Request {
-		string associationKeyType = QueryStringArgs.HMAC_SHA1;
+		string associationKeyType;
 		ProviderSession session;
 
 		public AssociateRequest(OpenIdProvider server, NameValueCollection query)
 			: base(server) {
+			if (query == null) throw new ArgumentNullException("query");
 			session = ProviderSession.CreateSession(query);
+			associationKeyType = query[QueryStringArgs.openidnp.assoc_type];
 		}
 
 		public override bool IsResponseReady {

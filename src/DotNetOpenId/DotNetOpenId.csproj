@@ -48,6 +48,7 @@
     <Compile Include="Association.cs" />
     <Compile Include="AssociationMemoryStore.cs" />
     <Compile Include="Associations.cs" />
+    <Compile Include="HmacSha256Association.cs" />
     <Compile Include="Identifier.cs" />
     <Compile Include="RelyingParty\AssociateRequest.cs" />
     <Compile Include="RelyingParty\AssociateResponse.cs" />

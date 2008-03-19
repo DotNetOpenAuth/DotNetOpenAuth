@@ -96,7 +96,8 @@ namespace DotNetOpenId.RelyingParty {
 
 		public Version ProviderVersion {
 			get {
-				if (Array.IndexOf(ProviderSupportedServiceTypeUris, OpenId20Type) >= 0)
+				if (Array.IndexOf(ProviderSupportedServiceTypeUris, OpenId20Type) >= 0 ||
+					Array.IndexOf(ProviderSupportedServiceTypeUris, OPIdentifierServiceTypeUri) >= 0)
 					return new Version(2, 0);
 				if (Array.IndexOf(ProviderSupportedServiceTypeUris, OpenId12Type) >= 0)
 					return new Version(1, 2);

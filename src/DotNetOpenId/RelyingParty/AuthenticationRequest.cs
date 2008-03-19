@@ -60,18 +60,18 @@ namespace DotNetOpenId.RelyingParty {
 
 			return new AuthenticationRequest(
 				new Token(endpoint).Serialize(store),
-				getAssociation(endpoint.ProviderEndpoint, store), endpoint,
+				getAssociation(endpoint, store), endpoint,
 				realm, returnToUrl);
 		}
-		static Association getAssociation(Uri serverUrl, IRelyingPartyApplicationStore store) {
-			Association assoc = store.GetAssociation(serverUrl);
+		static Association getAssociation(ServiceEndpoint provider, IRelyingPartyApplicationStore store) {
+			Association assoc = store.GetAssociation(provider.ProviderEndpoint);
 
 			if (assoc == null || !assoc.HasUsefulLifeRemaining) {
-				var req = AssociateRequest.Create(serverUrl);
+				var req = AssociateRequest.Create(provider);
 				if (req.Response != null) {
 					assoc = req.Response.Association;
 					if (assoc != null) {
-						store.StoreAssociation(serverUrl, assoc);
+						store.StoreAssociation(provider.ProviderEndpoint, assoc);
 					}
 				}
 			}

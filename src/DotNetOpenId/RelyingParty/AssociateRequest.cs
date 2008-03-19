@@ -6,21 +6,25 @@ using System.Diagnostics;
 
 namespace DotNetOpenId.RelyingParty {
 	class AssociateRequest : DirectRequest {
-		AssociateRequest(Uri provider, IDictionary<string, string> args, DiffieHellman dh)
-			: base(provider, args) {
+		/// <param name="dh">Optional.  Supplied only if Diffie-Hellman is used for encrypting the association secret key.</param>
+		AssociateRequest(ServiceEndpoint provider, IDictionary<string, string> args, DiffieHellman dh)
+			: base(provider.ProviderEndpoint, args) {
 			DH = dh;
 		}
 		public DiffieHellman DH { get; private set; }
 
-		public static AssociateRequest Create(Uri serverUrl) {
+		public static AssociateRequest Create(ServiceEndpoint provider) {
 			var args = new Dictionary<string, string>();
 
 			args.Add(QueryStringArgs.openid.mode, QueryStringArgs.Modes.associate);
-			args.Add(QueryStringArgs.openid.assoc_type, QueryStringArgs.HMAC_SHA1);
+			args.Add(QueryStringArgs.openid.assoc_type, 
+				provider.ProviderVersion.Major >= 2 ? 
+				QueryStringArgs.SignatureAlgorithms.HMAC_SHA256 :
+				QueryStringArgs.SignatureAlgorithms.HMAC_SHA1);
 
 			DiffieHellman dh = null;
 
-			if (serverUrl.Scheme == Uri.UriSchemeHttps) {
+			if (provider.ProviderEndpoint.Scheme == Uri.UriSchemeHttps) {
 				args.Add(QueryStringArgs.openid.session_type, QueryStringArgs.SessionType.NoEncryption20);
 			} else {
 				// Initiate Diffie-Hellman Exchange
@@ -40,7 +44,7 @@ namespace DotNetOpenId.RelyingParty {
 				}
 			}
 
-			return new AssociateRequest(serverUrl, args, dh);
+			return new AssociateRequest(provider, args, dh);
 		}
 		AssociateResponse response;
 		public AssociateResponse Response {
