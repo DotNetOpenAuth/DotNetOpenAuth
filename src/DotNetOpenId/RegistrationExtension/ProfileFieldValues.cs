@@ -101,11 +101,10 @@ namespace DotNetOpenId.RegistrationExtension
 			if (!String.IsNullOrEmpty(TimeZone)) {
 				fields.Add(QueryStringArgs.openidnp.sregnp.timezone, TimeZone);
 			}
-			authenticationRequest.AddExtensionArguments(QueryStringArgs.openidnp.sreg.Prefix.TrimEnd('.'),
-				fields);
+			authenticationRequest.AddExtensionArguments(QueryStringArgs.sreg_ns, fields);
 		}
 		public static ProfileFieldValues ReadFromResponse(IAuthenticationResponse response) {
-			var sreg = response.GetExtensionArguments(QueryStringArgs.openidnp.sreg.Prefix.TrimEnd('.'));
+			var sreg = response.GetExtensionArguments(QueryStringArgs.sreg_ns);
 			string nickname, email, fullName, dob, genderString, postalCode, country, language, timeZone;
 			DateTime? birthDate = null;
 			Gender? gender = null;

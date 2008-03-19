@@ -104,7 +104,7 @@ namespace DotNetOpenId.RegistrationExtension {
 		/// </summary>
 		public static ProfileRequestFields ReadFromRequest(IRequest request) {
 			ProfileRequestFields fields = new ProfileRequestFields();
-			var args = request.GetExtensionArguments(QueryStringArgs.openidnp.sreg.Prefix.TrimEnd('.'));
+			var args = request.GetExtensionArguments(QueryStringArgs.sreg_ns);
 
 			string policyUrl;
 			if (args.TryGetValue(QueryStringArgs.openidnp.sregnp.policy_url, out policyUrl)
@@ -132,7 +132,7 @@ namespace DotNetOpenId.RegistrationExtension {
 			fields.Add(QueryStringArgs.openidnp.sregnp.required, string.Join(",", assembleProfileFields(ProfileRequest.Require)));
 			fields.Add(QueryStringArgs.openidnp.sregnp.optional, string.Join(",", assembleProfileFields(ProfileRequest.Request)));
 
-			request.AddExtensionArguments(QueryStringArgs.openidnp.sreg.Prefix.TrimEnd('.'), fields);
+			request.AddExtensionArguments(QueryStringArgs.sreg_ns, fields);
 		}
 
 		public override string ToString() {

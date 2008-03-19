@@ -6,7 +6,7 @@ namespace DotNetOpenId.Provider {
 	public interface IRequest {
 		bool IsResponseReady { get; }
 		IResponse Response { get; }
-		void AddExtensionArguments(string extensionPrefix, IDictionary<string, string> arguments);
-		IDictionary<string, string> GetExtensionArguments(string extensionPrefix);
+		void AddExtensionArguments(string extensionTypeUri, IDictionary<string, string> arguments);
+		IDictionary<string, string> GetExtensionArguments(string extensionTypeUri);
 	}
 }
