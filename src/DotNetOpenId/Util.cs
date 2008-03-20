@@ -90,6 +90,34 @@ namespace DotNetOpenId {
                 HttpContext.Current.Request.QueryString : HttpContext.Current.Request.Form;
         }
 
+        public static string GetRequiredArg(NameValueCollection query, string key)
+        {
+            // very inefficient, but it will only last for a commit or two.
+            return GetRequiredArg(NameValueCollectionToDictionary(query), key);
+        }
+        public static string GetOptionalArg(NameValueCollection query, string key)
+        {
+            // very inefficient, but it will only last for a commit or two.
+            return GetOptionalArg(NameValueCollectionToDictionary(query), key);
+        }
+        public static string GetRequiredArg(IDictionary<string, string> query, string key)
+        {
+            if (query == null) throw new ArgumentNullException("query");
+            if (key == null) throw new ArgumentNullException("key");
+            string value;
+            if (!query.TryGetValue(key, out value) || value.Length == 0)
+                throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+                    Strings.MissingOpenIdQueryParameter, key), DictionaryToNameValueCollection(query));
+            return value;
+        }
+        public static string GetOptionalArg(IDictionary<string, string> query, string key)
+        {
+            if (query == null) throw new ArgumentNullException("query");
+            if (key == null) throw new ArgumentNullException("key");
+            string value;
+            query.TryGetValue(key, out value);
+            return value;
+        }
         public static bool ArrayEquals<T>(T[] first, T[] second)
         {
             if (first == null) throw new ArgumentNullException("first");

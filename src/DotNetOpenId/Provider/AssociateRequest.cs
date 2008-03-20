@@ -16,7 +16,7 @@ namespace DotNetOpenId.Provider {
 		public AssociateRequest(OpenIdProvider server)
 			: base(server) {
 			session = ProviderSession.CreateSession(Query);
-			associationKeyType = Query[QueryStringArgs.openidnp.assoc_type];
+			associationKeyType = Util.GetRequiredArg(Query, QueryStringArgs.openidnp.assoc_type);
 		}
 
 		public override bool IsResponseReady {

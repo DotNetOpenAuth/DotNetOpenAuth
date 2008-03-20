@@ -90,7 +90,7 @@ namespace DotNetOpenId.Provider {
 
 		internal CheckIdRequest(OpenIdProvider server) : base(server) {
 			// handle the mandatory protocol fields
-			string mode = getRequiredField(Query, QueryStringArgs.openid.mode);
+			string mode = Util.GetRequiredArg(Query, QueryStringArgs.openid.mode);
 			if (QueryStringArgs.Modes.checkid_immediate.Equals(mode, StringComparison.Ordinal)) {
 				Immediate = true;
 			} else if (QueryStringArgs.Modes.checkid_setup.Equals(mode, StringComparison.Ordinal)) {
@@ -101,41 +101,32 @@ namespace DotNetOpenId.Provider {
 			}
 
 			try {
-				ClaimedIdentifier = getRequiredField(Query, QueryStringArgs.openid.identity);
+				ClaimedIdentifier = Util.GetRequiredArg(Query, QueryStringArgs.openid.identity);
 			} catch (UriFormatException) {
-				throw new OpenIdException(QueryStringArgs.openid.identity + " not a valid url: " + Query[QueryStringArgs.openid.identity], Query);
+				throw new OpenIdException(QueryStringArgs.openid.identity + " not a valid url: " + Util.GetRequiredArg(Query, QueryStringArgs.openid.identity), Query);
 			}
 
 			try {
-				ReturnTo = new Uri(getRequiredField(Query, QueryStringArgs.openid.return_to));
+				ReturnTo = new Uri(Util.GetRequiredArg(Query, QueryStringArgs.openid.return_to));
 			} catch (UriFormatException ex) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture, 
-					"'{0}' is not a valid OpenID return_to URL.", Query[QueryStringArgs.openid.return_to]),
+					"'{0}' is not a valid OpenID return_to URL.", Util.GetRequiredArg(Query, QueryStringArgs.openid.return_to)),
 					ClaimedIdentifier, Query, ex);
 			}
 
 			try {
-				TrustRoot = new Realm(Query[QueryStringArgs.openid.trust_root] ?? ReturnTo.AbsoluteUri);
+				TrustRoot = new Realm(Util.GetOptionalArg(Query, QueryStringArgs.openid.trust_root) ?? ReturnTo.AbsoluteUri);
 			} catch (UriFormatException ex) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 					Strings.InvalidOpenIdQueryParameterValue, QueryStringArgs.openid.trust_root,
-					Query[QueryStringArgs.openid.trust_root]), ex);
+					Util.GetOptionalArg(Query, QueryStringArgs.openid.trust_root)), ex);
 			}
-			AssociationHandle = Query[QueryStringArgs.openid.assoc_handle];
+			AssociationHandle = Util.GetOptionalArg(Query, QueryStringArgs.openid.assoc_handle);
 
 			if (!TrustRoot.Contains(ReturnTo)) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 					Strings.ReturnToNotUnderTrustRoot, ReturnTo.AbsoluteUri, TrustRoot), Query);
 			}
-		}
-
-		static string getRequiredField(NameValueCollection query, string field) {
-			string value = query[field];
-
-			if (value == null)
-				throw new OpenIdException("Missing required field " + field, query);
-
-			return value;
 		}
 
 		internal override IEncodable CreateResponse() {

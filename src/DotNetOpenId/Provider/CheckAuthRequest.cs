@@ -18,16 +18,16 @@ namespace DotNetOpenId.Provider {
 
 		public CheckAuthRequest(OpenIdProvider server)
 			: base(server) {
-			AssociationHandle = getRequiredField(Query, QueryStringArgs.openid.assoc_handle);
-			signature = getRequiredField(Query, QueryStringArgs.openid.sig);
-			signedKeyOrder = getRequiredField(Query, QueryStringArgs.openid.signed).Split(',');
-			invalidate_handle = Query[QueryStringArgs.openid.invalidate_handle];
+			AssociationHandle = Util.GetRequiredArg(Query, QueryStringArgs.openid.assoc_handle);
+			signature = Util.GetRequiredArg(Query, QueryStringArgs.openid.sig);
+			signedKeyOrder = Util.GetRequiredArg(Query, QueryStringArgs.openid.signed).Split(',');
+			invalidate_handle = Util.GetOptionalArg(Query, QueryStringArgs.openid.invalidate_handle);
 
 			signedFields = new Dictionary<string, string>();
 
 			foreach (string key in signedKeyOrder) {
 				string value = (key == QueryStringArgs.openidnp.mode) ?
-					QueryStringArgs.Modes.id_res : getRequiredField(Query, QueryStringArgs.openid.Prefix + key);
+					QueryStringArgs.Modes.id_res : Util.GetRequiredArg(Query, QueryStringArgs.openid.Prefix + key);
 				signedFields.Add(key, value);
 			}
 		}
@@ -84,15 +84,6 @@ namespace DotNetOpenId.Provider {
 
 		internal override IEncodable CreateResponse() {
 			return Answer();
-		}
-
-		string getRequiredField(NameValueCollection query, string key) {
-			string val = query[key];
-
-			if (val == null)
-				throw new OpenIdException(Mode + " request missing required parameter " + key, query);
-
-			return val;
 		}
 
 		public override string ToString() {
