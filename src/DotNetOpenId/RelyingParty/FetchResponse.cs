@@ -4,6 +4,7 @@ namespace DotNetOpenId.RelyingParty {
 	using System.Collections.Specialized;
 	using System.IO;
 	using System.Text;
+	using System.Net.Mime;
 
 	[Serializable]
 	internal class FetchResponse {
@@ -11,7 +12,7 @@ namespace DotNetOpenId.RelyingParty {
 		
 		public Stream ResponseStream { get; private set; }
 		public HttpStatusCode StatusCode { get; private set; }
-		public string ContentType { get; private set; }
+		public ContentType ContentType { get; private set; }
 		public string ContentEncoding { get; private set; }
 		public WebHeaderCollection Headers { get; private set; }
 		public Uri RequestUri { get; private set; }
@@ -24,7 +25,7 @@ namespace DotNetOpenId.RelyingParty {
 			this.RequestUri = requestUri;
 			this.ResponseStream = responseStream;
 			StatusCode = response.StatusCode;
-			ContentType = response.ContentType;
+			ContentType = new ContentType(response.ContentType);
 			ContentEncoding = string.IsNullOrEmpty(response.ContentEncoding) ? DefaultContentEncoding : response.ContentEncoding;
 			Headers = response.Headers;
 			FinalUri = response.ResponseUri;

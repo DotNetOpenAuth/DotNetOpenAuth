@@ -128,6 +128,7 @@
     <Compile Include="Realm.cs" />
     <Compile Include="UriIdentifier.cs" />
     <Compile Include="Util.cs" />
+    <Compile Include="Yadis\ContentTypes.cs" />
     <Compile Include="Yadis\ServiceElement.cs" />
     <Compile Include="Yadis\TypeElement.cs" />
     <Compile Include="Yadis\UriElement.cs" />
@@ -136,7 +137,6 @@
     <Compile Include="Yadis\XrdsDocument.cs" />
     <Compile Include="XriIdentifier.cs" />
     <Compile Include="Yadis\ByteParser.cs" />
-    <Compile Include="Yadis\ContentType.cs" />
     <Compile Include="Yadis\Yadis.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -6,6 +6,7 @@ using System.IO;
 using System.Xml;
 using Janrain.Yadis;
 using System.Xml.Serialization;
+using System.Net.Mime;
 
 namespace DotNetOpenId.Yadis {
 	class Yadis {
@@ -13,20 +14,19 @@ namespace DotNetOpenId.Yadis {
 
 		public static DiscoveryResult Discover(UriIdentifier uri) {
 			var response = RelyingParty.Fetcher.Request(uri, null,
-				new[] { ContentType.Html, ContentType.XHtml, ContentType.Xrds });
+				new[] { ContentTypes.Html, ContentTypes.XHtml, ContentTypes.Xrds });
 			if (response.StatusCode != System.Net.HttpStatusCode.OK) {
 				return null;
 			}
-			ContentType responseContentType = new ContentType(response.ContentType);
 			RelyingParty.FetchResponse response2 = null;
-			if (responseContentType.MediaType == ContentType.Xrds) {
+			if (response.ContentType.MediaType == ContentTypes.Xrds) {
 				response2 = response;
 			} else {
 				string uriString = response.Headers.Get(HeaderName.ToLower());
 				Uri url = null;
 				if (uriString != null)
 					Uri.TryCreate(uriString, UriKind.Absolute, out url);
-				if (url == null && responseContentType.MediaType == ContentType.Html)
+				if (url == null && response.ContentType.MediaType == ContentTypes.Html)
 					url = FindYadisDocumentLocationInHtmlMetaTags(response.ReadResponseString());
 				if (url != null) {
 					response2 = RelyingParty.Fetcher.Request(url);
@@ -107,7 +107,7 @@ namespace DotNetOpenId.Yadis {
 		/// False if the response is an HTML document.
 		/// </summary>
 		public bool IsXrds {
-			get { return UsedYadisLocation || ContentType.MediaType == ContentType.Xrds; }
+			get { return UsedYadisLocation || ContentType.MediaType == ContentTypes.Xrds; }
 		}
 		/// <summary>
 		/// True if the response to the userSuppliedIdentifier pointed to a different URL

@@ -172,7 +172,7 @@ namespace DotNetOpenId.Provider {
 					// Check for the presence of an accept types header that is looking
 					// for the XRDS document specifically.
 					if (Page.Request.AcceptTypes != null &&
-						Array.IndexOf(Page.Request.AcceptTypes, DotNetOpenId.Yadis.ContentType.Xrds) >= 0) {
+						Array.IndexOf(Page.Request.AcceptTypes, DotNetOpenId.Yadis.ContentTypes.Xrds) >= 0) {
 						// Respond to the caller immediately with an XRDS document
 						// and avoid sending the whole web page's contents to the 
 						// client since it isn't interested anyway.
