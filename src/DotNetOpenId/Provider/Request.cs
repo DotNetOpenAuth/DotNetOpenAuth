@@ -64,16 +64,16 @@ namespace DotNetOpenId.Provider
 			try {
 				switch (mode) {
 					case QueryStringArgs.Modes.checkid_setup:
-						request = new CheckIdRequest(provider, query);
+						request = new CheckIdRequest(provider);
 						break;
 					case QueryStringArgs.Modes.checkid_immediate:
-						request = new CheckIdRequest(provider, query);
+						request = new CheckIdRequest(provider);
 						break;
 					case QueryStringArgs.Modes.check_authentication:
-						request = new CheckAuthRequest(provider, query);
+						request = new CheckAuthRequest(provider);
 						break;
 					case QueryStringArgs.Modes.associate:
-						request = new AssociateRequest(provider, query);
+						request = new AssociateRequest(provider);
 						break;
 					default:
 						throw new OpenIdException("No decoder for openid.mode=" + mode, query);

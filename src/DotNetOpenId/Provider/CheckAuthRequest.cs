@@ -16,18 +16,18 @@ namespace DotNetOpenId.Provider {
 		IList<string> signedKeyOrder;
 		string invalidate_handle;
 
-		public CheckAuthRequest(OpenIdProvider server, NameValueCollection query)
+		public CheckAuthRequest(OpenIdProvider server)
 			: base(server) {
-			AssociationHandle = getRequiredField(query, QueryStringArgs.openid.assoc_handle);
-			signature = getRequiredField(query, QueryStringArgs.openid.sig);
-			signedKeyOrder = getRequiredField(query, QueryStringArgs.openid.signed).Split(',');
-			invalidate_handle = query[QueryStringArgs.openid.invalidate_handle];
+			AssociationHandle = getRequiredField(Query, QueryStringArgs.openid.assoc_handle);
+			signature = getRequiredField(Query, QueryStringArgs.openid.sig);
+			signedKeyOrder = getRequiredField(Query, QueryStringArgs.openid.signed).Split(',');
+			invalidate_handle = Query[QueryStringArgs.openid.invalidate_handle];
 
 			signedFields = new Dictionary<string, string>();
 
 			foreach (string key in signedKeyOrder) {
 				string value = (key == QueryStringArgs.openidnp.mode) ?
-					QueryStringArgs.Modes.id_res : getRequiredField(query, QueryStringArgs.openid.Prefix + key);
+					QueryStringArgs.Modes.id_res : getRequiredField(Query, QueryStringArgs.openid.Prefix + key);
 				signedFields.Add(key, value);
 			}
 		}

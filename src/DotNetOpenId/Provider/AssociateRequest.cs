@@ -13,11 +13,10 @@ namespace DotNetOpenId.Provider {
 		string associationKeyType;
 		ProviderSession session;
 
-		public AssociateRequest(OpenIdProvider server, NameValueCollection query)
+		public AssociateRequest(OpenIdProvider server)
 			: base(server) {
-			if (query == null) throw new ArgumentNullException("query");
-			session = ProviderSession.CreateSession(query);
-			associationKeyType = query[QueryStringArgs.openidnp.assoc_type];
+			session = ProviderSession.CreateSession(Query);
+			associationKeyType = Query[QueryStringArgs.openidnp.assoc_type];
 		}
 
 		public override bool IsResponseReady {

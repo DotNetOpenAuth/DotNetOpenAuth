@@ -88,44 +88,44 @@ namespace DotNetOpenId.Provider {
 			}
 		}
 
-		internal CheckIdRequest(OpenIdProvider server, NameValueCollection query) : base(server) {
+		internal CheckIdRequest(OpenIdProvider server) : base(server) {
 			// handle the mandatory protocol fields
-			string mode = getRequiredField(query, QueryStringArgs.openid.mode);
+			string mode = getRequiredField(Query, QueryStringArgs.openid.mode);
 			if (QueryStringArgs.Modes.checkid_immediate.Equals(mode, StringComparison.Ordinal)) {
 				Immediate = true;
 			} else if (QueryStringArgs.Modes.checkid_setup.Equals(mode, StringComparison.Ordinal)) {
 				Immediate = false; // implied
 			} else {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-					Strings.InvalidOpenIdQueryParameterValue, QueryStringArgs.openid.mode, mode), query);
+					Strings.InvalidOpenIdQueryParameterValue, QueryStringArgs.openid.mode, mode), Query);
 			}
 
 			try {
-				ClaimedIdentifier = getRequiredField(query, QueryStringArgs.openid.identity);
+				ClaimedIdentifier = getRequiredField(Query, QueryStringArgs.openid.identity);
 			} catch (UriFormatException) {
-				throw new OpenIdException(QueryStringArgs.openid.identity + " not a valid url: " + query[QueryStringArgs.openid.identity], query);
+				throw new OpenIdException(QueryStringArgs.openid.identity + " not a valid url: " + Query[QueryStringArgs.openid.identity], Query);
 			}
 
 			try {
-				ReturnTo = new Uri(getRequiredField(query, QueryStringArgs.openid.return_to));
+				ReturnTo = new Uri(getRequiredField(Query, QueryStringArgs.openid.return_to));
 			} catch (UriFormatException ex) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture, 
-					"'{0}' is not a valid OpenID return_to URL.", query[QueryStringArgs.openid.return_to]),
-					ClaimedIdentifier, query, ex);
+					"'{0}' is not a valid OpenID return_to URL.", Query[QueryStringArgs.openid.return_to]),
+					ClaimedIdentifier, Query, ex);
 			}
 
 			try {
-				TrustRoot = new Realm(query[QueryStringArgs.openid.trust_root] ?? ReturnTo.AbsoluteUri);
+				TrustRoot = new Realm(Query[QueryStringArgs.openid.trust_root] ?? ReturnTo.AbsoluteUri);
 			} catch (UriFormatException ex) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 					Strings.InvalidOpenIdQueryParameterValue, QueryStringArgs.openid.trust_root,
-					query[QueryStringArgs.openid.trust_root]), ex);
+					Query[QueryStringArgs.openid.trust_root]), ex);
 			}
-			AssociationHandle = query[QueryStringArgs.openid.assoc_handle];
+			AssociationHandle = Query[QueryStringArgs.openid.assoc_handle];
 
 			if (!TrustRoot.Contains(ReturnTo)) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-					Strings.ReturnToNotUnderTrustRoot, ReturnTo.AbsoluteUri, TrustRoot), query);
+					Strings.ReturnToNotUnderTrustRoot, ReturnTo.AbsoluteUri, TrustRoot), Query);
 			}
 		}
 
