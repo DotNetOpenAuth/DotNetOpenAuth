@@ -16,7 +16,7 @@ namespace DotNetOpenId.Provider {
 		/// <summary>
 		/// The HTTP headers that should be added to the response.
 		/// </summary>
-		NameValueCollection Headers { get; }
+		WebHeaderCollection Headers { get; }
 		/// <summary>
 		/// The body that should be sent as the response content.
 		/// </summary>

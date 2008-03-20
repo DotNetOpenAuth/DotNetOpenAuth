@@ -33,11 +33,11 @@ namespace DotNetOpenId.Provider
                     break;
                 case EncodingType.RedirectBrowserUrl:
                     Debug.Assert(response.RedirectUrl != null);
-                    NameValueCollection headers = new NameValueCollection();
+                    WebHeaderCollection headers = new WebHeaderCollection();
 
                     UriBuilder builder = new UriBuilder(response.RedirectUrl);
                     UriUtil.AppendQueryArgs(builder, response.EncodedFields);
-                    headers.Add("Location", builder.Uri.AbsoluteUri);
+                    headers.Add(HttpResponseHeader.Location, builder.Uri.AbsoluteUri);
 
                     wr = new Response(HttpStatusCode.Redirect, headers, new byte[0]);
                     break;
