@@ -104,11 +104,9 @@
     <Compile Include="DiffieHellman\DiffieHellmanManaged.cs" />
     <Compile Include="DiffieHellman\mono\BigInteger.cs" />
     <Compile Include="DiffieHellman\mono\ConfidenceFactor.cs" />
-    <Compile Include="DiffieHellman\mono\MiniParser.cs" />
     <Compile Include="DiffieHellman\mono\NextPrimeFinder.cs" />
     <Compile Include="DiffieHellman\mono\PrimalityTests.cs" />
     <Compile Include="DiffieHellman\mono\PrimeGeneratorBase.cs" />
-    <Compile Include="DiffieHellman\mono\SecurityParser.cs" />
     <Compile Include="DiffieHellman\mono\SequentialSearchPrimeGeneratorBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Provider\AssociateRequest.cs" />

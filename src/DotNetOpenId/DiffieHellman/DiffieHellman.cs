@@ -11,7 +11,6 @@ using System;
 using System.Text;
 using System.Security;
 using System.Security.Cryptography;
-using Mono.Xml;
 using Mono.Math;
 
 namespace Org.Mentalis.Security.Cryptography {
@@ -78,26 +77,7 @@ namespace Org.Mentalis.Security.Cryptography {
 		public override void FromXmlString (string xmlString) {
 			if (xmlString == null)
 				throw new ArgumentNullException ();
-
-			DHParameters dhParams = new DHParameters();
-			try {
-				SecurityParser sp = new SecurityParser();
-				sp.LoadXml(xmlString);
-				SecurityElement se = sp.ToXml();
-				if (se.Tag != "DHKeyValue")
-					throw new CryptographicException();
-				dhParams.P = GetNamedParam(se, "P");
-				dhParams.G = GetNamedParam(se, "G");
-				dhParams.X = GetNamedParam(se, "X");
-				ImportParameters(dhParams);
-			} finally {
-				if (dhParams.P != null)
-					Array.Clear(dhParams.P, 0, dhParams.P.Length);
-				if (dhParams.G != null)
-					Array.Clear(dhParams.G, 0, dhParams.G.Length);
-				if (dhParams.X != null)
-					Array.Clear(dhParams.X, 0, dhParams.X.Length);
-			}
+			throw new NotImplementedException();
 		}
 		/// <summary>
 		/// Creates and returns an XML string representation of the current <see cref="DiffieHellman"/> object.
@@ -105,33 +85,7 @@ namespace Org.Mentalis.Security.Cryptography {
 		/// <param name="includePrivateParameters"><b>true</b> to include private parameters; otherwise, <b>false</b>.</param>
 		/// <returns>An XML string encoding of the current DiffieHellman object.</returns>
 		public override string ToXmlString (bool includePrivateParameters) {
-			StringBuilder sb = new StringBuilder ();
-			DHParameters dhParams = ExportParameters(includePrivateParameters);
-			try {
-				sb.Append ("<DHKeyValue>");
-				
-				sb.Append ("<P>");
-				sb.Append (Convert.ToBase64String (dhParams.P));
-				sb.Append ("</P>");
-
-				sb.Append ("<G>");
-				sb.Append (Convert.ToBase64String (dhParams.G));
-				sb.Append ("</G>");
-
-				if (includePrivateParameters) {
-					sb.Append ("<X>");
-					sb.Append (Convert.ToBase64String (dhParams.X));
-					sb.Append ("</X>");
-				}
-				
-				sb.Append ("</DHKeyValue>");
-			} finally {
-				Array.Clear(dhParams.P, 0, dhParams.P.Length);
-				Array.Clear(dhParams.G, 0, dhParams.G.Length);
-				if (dhParams.X != null)
-					Array.Clear(dhParams.X, 0, dhParams.X.Length);
-			}
-			return sb.ToString ();
+			throw new NotImplementedException();
 		}
 	}
 }
