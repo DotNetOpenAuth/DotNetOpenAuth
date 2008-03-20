@@ -28,7 +28,8 @@ namespace DotNetOpenId
             58};
         static Random generator = new Random();
         static ToBase64Transform base64Transform = new ToBase64Transform();
-        static SHA1CryptoServiceProvider sha1 = new SHA1CryptoServiceProvider();
+        internal static SHA1CryptoServiceProvider Sha1 = new SHA1CryptoServiceProvider();
+        internal static SHA256Managed Sha256 = new SHA256Managed();
 
         public static string ToBase64String(byte[] inputBytes)
         {
@@ -68,11 +69,11 @@ namespace DotNetOpenId
             return new DiffieHellmanManaged(DEFAULT_MOD, DEFAULT_GEN, 1024);
         }
 
-        public static byte[] SHA1XorSecret(DiffieHellman dh, byte[] keyEx, byte[] encMacKey)
+        public static byte[] SHAHashXorSecret(HashAlgorithm hasher, DiffieHellman dh, byte[] keyEx, byte[] encMacKey)
         {
             byte[] dhShared = dh.DecryptKeyExchange(keyEx);
-            byte[] sha1DhShared = sha1.ComputeHash(ensurePositive(dhShared));
-            if (sha1DhShared.Length != encMacKey.Length)
+            byte[] shaDhShared = hasher.ComputeHash(ensurePositive(dhShared));
+            if (shaDhShared.Length != encMacKey.Length)
             {
                 throw new ArgumentOutOfRangeException("encMacKey's length is not 20 bytes: " + ToBase64String(encMacKey));
             }
@@ -80,7 +81,7 @@ namespace DotNetOpenId
             byte[] secret = new byte[encMacKey.Length];
             for (int i = 0; i < encMacKey.Length; i++)
             {
-                secret[i] = (byte) (encMacKey[i] ^ sha1DhShared[i]);
+                secret[i] = (byte) (encMacKey[i] ^ shaDhShared[i]);
             }
             return secret;
         }

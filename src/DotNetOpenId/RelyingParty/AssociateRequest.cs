@@ -16,9 +16,10 @@ namespace DotNetOpenId.RelyingParty {
 		public static AssociateRequest Create(ServiceEndpoint provider) {
 			var args = new Dictionary<string, string>();
 
+			bool useSha256 = provider.ProviderVersion.Major >= 2;
+
 			args.Add(QueryStringArgs.openid.mode, QueryStringArgs.Modes.associate);
-			args.Add(QueryStringArgs.openid.assoc_type, 
-				provider.ProviderVersion.Major >= 2 ? 
+			args.Add(QueryStringArgs.openid.assoc_type, useSha256 ?
 				QueryStringArgs.SignatureAlgorithms.HMAC_SHA256 :
 				QueryStringArgs.SignatureAlgorithms.HMAC_SHA1);
 
@@ -33,7 +34,9 @@ namespace DotNetOpenId.RelyingParty {
 				byte[] dhPublic = dh.CreateKeyExchange();
 				string cpub = CryptUtil.UnsignedToBase64(dhPublic);
 
-				args.Add(QueryStringArgs.openid.session_type, QueryStringArgs.SessionType.DH_SHA1);
+				args.Add(QueryStringArgs.openid.session_type, useSha256 ?
+					QueryStringArgs.SessionType.DH_SHA256 :
+					QueryStringArgs.SessionType.DH_SHA1);
 				args.Add(QueryStringArgs.openid.dh_consumer_public, cpub);
 
 				DHParameters dhps = dh.ExportParameters(true);

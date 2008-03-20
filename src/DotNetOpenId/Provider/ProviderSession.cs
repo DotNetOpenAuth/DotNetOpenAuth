@@ -53,9 +53,12 @@ namespace DotNetOpenId.Provider
     {
         byte[] _consumer_pubkey;
         DiffieHellman _dh;
+		string sessionType;
 
         public DiffieHellmanProviderSession(NameValueCollection query)
         {
+			sessionType = query[QueryStringArgs.openid.session_type];
+
             string missing;
             string dh_modulus = query.Get(QueryStringArgs.openid.dh_modulus);
             string dh_gen = query.Get(QueryStringArgs.openid.dh_gen);
@@ -115,14 +118,13 @@ namespace DotNetOpenId.Provider
             }
         }
 
-        public override string SessionType
-        {
-            get { return QueryStringArgs.SessionType.DH_SHA1; }
+        public override string SessionType {
+            get { return sessionType; }
         }
 
         public override Dictionary<string, string> Answer(byte[] secret)
         {
-            byte[] mac_key = CryptUtil.SHA1XorSecret(_dh, _consumer_pubkey, secret);
+            byte[] mac_key = CryptUtil.SHAHashXorSecret(CryptUtil.Sha1, _dh, _consumer_pubkey, secret);
             var nvc = new Dictionary<string, string>();
 
             nvc.Add(QueryStringArgs.openidnp.dh_server_public, CryptUtil.UnsignedToBase64(_dh.CreateKeyExchange()));

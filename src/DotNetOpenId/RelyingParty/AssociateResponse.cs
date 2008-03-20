@@ -47,7 +47,11 @@ namespace DotNetOpenId.RelyingParty {
 							} else if (QueryStringArgs.SessionType.DH_SHA1.Equals(session_type, StringComparison.Ordinal)) {
 								byte[] dh_server_public = getDecoded(QueryStringArgs.openidnp.dh_server_public);
 								byte[] enc_mac_key = getDecoded(QueryStringArgs.enc_mac_key);
-								secret = CryptUtil.SHA1XorSecret(DH, dh_server_public, enc_mac_key);
+								secret = CryptUtil.SHAHashXorSecret(CryptUtil.Sha1, DH, dh_server_public, enc_mac_key);
+							} else if (QueryStringArgs.SessionType.DH_SHA256.Equals(session_type, StringComparison.Ordinal)) {
+								byte[] dh_server_public = getDecoded(QueryStringArgs.openidnp.dh_server_public);
+								byte[] enc_mac_key = getDecoded(QueryStringArgs.enc_mac_key);
+								secret = CryptUtil.SHAHashXorSecret(CryptUtil.Sha256, DH, dh_server_public, enc_mac_key);
 							} else {
 								throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 									Strings.InvalidOpenIdQueryParameterValue,
