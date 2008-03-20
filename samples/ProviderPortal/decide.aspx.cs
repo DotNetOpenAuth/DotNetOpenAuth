@@ -4,7 +4,7 @@ using System.Web.UI;
 using DotNetOpenId.Provider;
 using System.Web.Profile;
 using System.Diagnostics;
-using DotNetOpenId.RegistrationExtension;
+using DotNetOpenId.Extensions;
 
 /// <summary>
 /// Page for giving the user the option to continue or cancel out of authentication with a consumer.
@@ -24,12 +24,12 @@ public partial class decide : Page {
 			Response.Redirect(Request.Url.AbsoluteUri);
 		} else {
 			// if simple registration fields were used, then prompt the user for them
-			var requestedFields = ProfileRequestFields.ReadFromRequest(ProviderEndpoint.PendingAuthenticationRequest);
-			if (!requestedFields.Equals(ProfileRequestFields.None)) {
+			var requestedFields = SimpleRegistrationRequestFields.ReadFromRequest(ProviderEndpoint.PendingAuthenticationRequest);
+			if (!requestedFields.Equals(SimpleRegistrationRequestFields.None)) {
 				this.profileFields.Visible = true;
 				this.profileFields.SetRequiredFieldsFromRequest(requestedFields);
 				if (!IsPostBack) {
-					this.profileFields.OpenIdProfileFields = new DotNetOpenId.RegistrationExtension.ProfileFieldValues() {
+					this.profileFields.OpenIdProfileFields = new DotNetOpenId.Extensions.SimpleRegistrationFieldValues() {
 						Email = Membership.GetUser().Email,
 					};
 				}

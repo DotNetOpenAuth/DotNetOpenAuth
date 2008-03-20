@@ -7,7 +7,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Web.UI.HtmlControls;
-using DotNetOpenId.RegistrationExtension;
+using DotNetOpenId.Extensions;
 
 /// <summary>
 /// Summary description for State
@@ -18,15 +18,15 @@ public class State
     {
     }
 
-    public static ProfileFieldValues ProfileFields
+    public static SimpleRegistrationFieldValues ProfileFields
     {
         get
         {
             if (HttpContext.Current .Session["ProfileFields"] == null)
             {
-                HttpContext.Current .Session["ProfileFields"] = new ProfileFieldValues();
+                HttpContext.Current .Session["ProfileFields"] = new SimpleRegistrationFieldValues();
             }
-            return (ProfileFieldValues)HttpContext.Current .Session["ProfileFields"];
+            return (SimpleRegistrationFieldValues)HttpContext.Current .Session["ProfileFields"];
         }
         set { HttpContext.Current .Session["ProfileFields"] = value; }
     }

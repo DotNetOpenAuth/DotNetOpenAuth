@@ -11,7 +11,7 @@ using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Web.UI.HtmlControls;
 using DotNetOpenId.RelyingParty;
-using DotNetOpenId.RegistrationExtension;
+using DotNetOpenId.Extensions;
 
 public partial class login : System.Web.UI.Page
 {
