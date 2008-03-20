@@ -8,15 +8,6 @@ namespace DotNetOpenId.Test {
     [TestFixture]
     public class UriUtilTest {
         [Test]
-        public void NormalizeUri() {
-            Assert.AreEqual("http://www.yahoo.com/", UriUtil.NormalizeUri("www.YAHOO.com").AbsoluteUri);
-            Assert.AreEqual("http://www.yahoo.com/boo", UriUtil.NormalizeUri("www.YAHOO.com/boo").AbsoluteUri);
-            Assert.AreEqual("http://www.yahoo.com/", UriUtil.NormalizeUri("http://www.YAHOO.com").AbsoluteUri);
-            Assert.AreEqual("https://www.yahoo.com/", UriUtil.NormalizeUri("https://www.YAHOO.com").AbsoluteUri);
-            Assert.AreEqual("xri://www.yahoo.com/", UriUtil.NormalizeUri("xri://www.YAHOO.com").AbsoluteUri);
-        }
-
-        [Test]
         public void CreateQueryString() {
             var args = new Dictionary<string, string>();
             args.Add("a", "b");

@@ -133,6 +133,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to OpenID parameter &apos;{0}&apos; with value &apos;{1}&apos; failed to base64 decode..
+        /// </summary>
+        internal static string InvalidOpenIdQueryParameterValueBadBase64 {
+            get {
+                return ResourceManager.GetString("InvalidOpenIdQueryParameterValueBadBase64", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The scheme must be http or https but was &apos;{0}&apos;..
         /// </summary>
         internal static string InvalidScheme {

@@ -6,243 +6,93 @@ using System.Web;
 using System.Globalization;
 
 namespace DotNetOpenId {
-    internal static class UriUtil {
+	internal static class UriUtil {
+		/// <summary>
+		/// Concatenates a list of name-value pairs as key=value&amp;key=value,
+		/// taking care to properly encode each key and value for URL
+		/// transmission.  No ? is prefixed to the string.
+		/// </summary>
+		public static string CreateQueryString(IDictionary<string, string> args) {
+			StringBuilder sb = new StringBuilder(args.Count * 10);
 
-        /// <summary>
-        /// Takes an unparsed URI string and prefixes it with http:// if no 
-        /// protocol or scheme is in it, and converts the hostname to lowercase.
-        /// </summary>
-        /// <returns>A Uri object for the provided unparsed string.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase")]
-        public static Uri NormalizeUri(string uriStr) {
-            if (!uriStr.StartsWith("http", StringComparison.OrdinalIgnoreCase)
-                && uriStr.IndexOf("://", StringComparison.Ordinal) < 0)
-                uriStr = "http://" + uriStr;
+			foreach (var p in args) {
+				sb.Append(HttpUtility.UrlEncode(p.Key));
+				sb.Append('=');
+				sb.Append(HttpUtility.UrlEncode(p.Value));
+				sb.Append('&');
+			}
+			sb.Length--; // remove trailing &
 
-            UriBuilder bldr = new UriBuilder(uriStr);
+			return sb.ToString();
+		}
 
-            bldr.Host = bldr.Host.ToLowerInvariant();
+		/// <summary>
+		/// Adds a set of name-value pairs to the end of a given URL
+		/// as part of the querystring piece.  Prefixes a ? or & before
+		/// first element as necessary.
+		/// </summary>
+		public static void AppendQueryArgs(UriBuilder builder, IDictionary<string, string> args) {
+			if (args.Count > 0) {
+				StringBuilder sb = new StringBuilder(50 + args.Count * 10);
+				if (!string.IsNullOrEmpty(builder.Query)) {
+					sb.Append(builder.Query.Substring(1));
+					sb.Append('&');
+				}
+				sb.Append(CreateQueryString(args));
 
-            return bldr.Uri;
-        }
+				builder.Query = sb.ToString();
+			}
+		}
 
-        /// <summary>
-        /// Concatenates a list of name-value pairs as key=value&amp;key=value,
-        /// taking care to properly encode each key and value for URL
-        /// transmission.  No ? is prefixed to the string.
-        /// </summary>
-        public static string CreateQueryString(IDictionary<string, string> args) {
-            StringBuilder sb = new StringBuilder(args.Count * 10);
-
-            foreach (var p in args) {
-                sb.Append(HttpUtility.UrlEncode(p.Key));
-                sb.Append('=');
-                sb.Append(HttpUtility.UrlEncode(p.Value));
-                sb.Append('&');
-            }
-            sb.Length--; // remove trailing &
-
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Adds a set of name-value pairs to the end of a given URL
-        /// as part of the querystring piece.  Prefixes a ? or & before
-        /// first element as necessary.
-        /// </summary>
-        public static void AppendQueryArgs(UriBuilder builder, IDictionary<string, string> args) {
-            if (args.Count > 0) {
-                StringBuilder sb = new StringBuilder(50 + args.Count * 10);
-                if (!string.IsNullOrEmpty(builder.Query)) {
-                    sb.Append(builder.Query.Substring(1));
-                    sb.Append('&');
-                }
-                sb.Append(CreateQueryString(args));
-
-                builder.Query = sb.ToString();
-            }
-        }
-
-    }
-
-    internal static class Util {
-        internal const string DefaultNamespace = "DotNetOpenId";
-
-        public static IDictionary<string, string> NameValueCollectionToDictionary(NameValueCollection nvc)
-        {
-            if (nvc == null) throw new ArgumentNullException("nvc");
-            var dict = new Dictionary<string, string>(nvc.Count);
-            for (int i = 0; i < nvc.Count; i++)
-                dict.Add(nvc.GetKey(i), nvc.Get(i));
-            return dict;
-        }
-        public static NameValueCollection DictionaryToNameValueCollection(IDictionary<string, string> dict) {
-            NameValueCollection nvc = new NameValueCollection(dict.Count);
-            foreach (var pair in dict) {
-                nvc.Add(pair.Key, pair.Value);
-            }
-            return nvc;
-        }
-
-        public static NameValueCollection GetQueryFromContext() {
-            if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
-            return HttpContext.Current.Request.RequestType == "GET" ? 
-                HttpContext.Current.Request.QueryString : HttpContext.Current.Request.Form;
-        }
-
-        public static string GetRequiredArg(NameValueCollection query, string key)
-        {
-            // very inefficient, but it will only last for a commit or two.
-            return GetRequiredArg(NameValueCollectionToDictionary(query), key);
-        }
-        public static string GetOptionalArg(NameValueCollection query, string key)
-        {
-            // very inefficient, but it will only last for a commit or two.
-            return GetOptionalArg(NameValueCollectionToDictionary(query), key);
-        }
-        public static string GetRequiredArg(IDictionary<string, string> query, string key)
-        {
-            if (query == null) throw new ArgumentNullException("query");
-            if (key == null) throw new ArgumentNullException("key");
-            string value;
-            if (!query.TryGetValue(key, out value) || value.Length == 0)
-                throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-                    Strings.MissingOpenIdQueryParameter, key), query);
-            return value;
-        }
-        public static string GetOptionalArg(IDictionary<string, string> query, string key)
-        {
-            if (query == null) throw new ArgumentNullException("query");
-            if (key == null) throw new ArgumentNullException("key");
-            string value;
-            query.TryGetValue(key, out value);
-            return value;
-        }
-        public static bool ArrayEquals<T>(T[] first, T[] second)
-        {
-            if (first == null) throw new ArgumentNullException("first");
-            if (second == null) throw new ArgumentNullException("second");
-            if (first.Length != second.Length) return false;
-            for(int i = 0; i < first.Length;i++)
-                if (!first[i].Equals(second[i])) return false;
-            return true;
-        }
-    }
-
-	internal static class ProtocolConstants {
-		internal const string OpenId11Server = "openid.server";
-		internal const string OpenId11Delegate = "openid.delegate";
-		internal const string OpenId20Provider = "openid2.provider";
-		internal const string OpenId20LocalId = "openid2.local_id";
 	}
 
-    internal static class QueryStringArgs {
-        /// <summary>openid. variables that don't include the "openid." prefix.</summary>
-        internal static class openidnp {
-            internal const string ns = "ns";
-            internal const string return_to = "return_to";
-            internal const string mode = "mode";
-            internal const string error = "error";
-            internal const string identity = "identity";
-            internal const string claimed_id = "claimed_id";
-            internal const string expires_in = "expires_in";
-            internal const string assoc_type = "assoc_type";
-            internal const string assoc_handle = "assoc_handle";
-            internal const string session_type = "session_type";
-            internal const string is_valid = "is_valid";
-            internal const string sig = "sig";
-            internal const string signed = "signed";
-            internal const string user_setup_url = "user_setup_url";
-            internal const string trust_root = "trust_root";
-            internal const string realm = "realm";
-            internal const string invalidate_handle = "invalidate_handle";
-            internal const string dh_modulus = "dh_modulus";
-            internal const string dh_gen = "dh_gen";
-            internal const string dh_consumer_public = "dh_consumer_public";
-            internal const string dh_server_public = "dh_server_public";
+	internal static class Util {
+		internal const string DefaultNamespace = "DotNetOpenId";
 
-            internal static class sregnp {
-                internal const string policy_url = "policy_url";
-                internal const string optional = "optional";
-                internal const string required = "required";
-                internal const string nickname = "nickname";
-                internal const string email = "email";
-                internal const string fullname = "fullname";
-                internal const string dob = "dob";
-                internal const string gender = "gender";
-                internal const string postcode = "postcode";
-                internal const string country = "country";
-                internal const string language = "language";
-                internal const string timezone = "timezone";
-            }
-        }
-        /// <summary>openid. variables that include the "openid." prefix.</summary>
-        internal static class openid {
-            internal const string Prefix = "openid.";
+		public static IDictionary<string, string> NameValueCollectionToDictionary(NameValueCollection nvc) {
+			if (nvc == null) throw new ArgumentNullException("nvc");
+			var dict = new Dictionary<string, string>(nvc.Count);
+			for (int i = 0; i < nvc.Count; i++)
+				dict.Add(nvc.GetKey(i), nvc.Get(i));
+			return dict;
+		}
+		public static NameValueCollection DictionaryToNameValueCollection(IDictionary<string, string> dict) {
+			NameValueCollection nvc = new NameValueCollection(dict.Count);
+			foreach (var pair in dict) {
+				nvc.Add(pair.Key, pair.Value);
+			}
+			return nvc;
+		}
 
-            internal const string ns = Prefix + openidnp.ns;
-            internal const string return_to = Prefix + openidnp.return_to;
-            internal const string mode = Prefix + openidnp.mode;
-            internal const string error = Prefix + openidnp.error;
-            internal const string identity = Prefix + openidnp.identity;
-            internal const string claimed_id = Prefix + openidnp.claimed_id;
-            internal const string expires_in = Prefix + openidnp.expires_in;
-            internal const string assoc_type = Prefix + openidnp.assoc_type;
-            internal const string assoc_handle = Prefix + openidnp.assoc_handle;
-            internal const string session_type = Prefix + openidnp.session_type;
-            internal const string is_valid = Prefix + openidnp.is_valid;
-            internal const string sig = Prefix + openidnp.sig;
-            internal const string signed = Prefix + openidnp.signed;
-            internal const string user_setup_url = Prefix + openidnp.user_setup_url;
-            internal const string trust_root = Prefix + openidnp.trust_root;
-            internal const string realm = Prefix + openidnp.realm;
-            internal const string invalidate_handle = Prefix + openidnp.invalidate_handle;
-            internal const string dh_modulus = Prefix + openidnp.dh_modulus;
-            internal const string dh_gen = Prefix + openidnp.dh_gen;
-            internal const string dh_consumer_public = Prefix + openidnp.dh_consumer_public;
-            internal const string dh_server_public = Prefix + openidnp.dh_server_public;
-        }
-        internal const string enc_mac_key = "enc_mac_key";
-        internal const string mac_key = "mac_key";
-        internal const string sreg_ns = "http://openid.net/extensions/sreg/1.1";
-        internal const string sreg_compatibility_alias = "sreg";
-        internal static class SessionType {
-            internal const string DH_SHA1 = "DH-SHA1";
-            internal const string DH_SHA256 = "DH-SHA256";
-            internal const string NoEncryption20 = "no-encryption";
-            internal const string NoEncryption11 = "";
-        }
-        internal static class SignatureAlgorithms {
-            internal const string HMAC_SHA1 = "HMAC-SHA1";
-            internal const string HMAC_SHA256 = "HMAC-SHA256";
-        }
-        internal static class OpenIdNs {
-            internal const string v10 = "http://openid.net/signon/1.0";
-            internal const string v11 = "http://openid.net/signon/1.1";
-            internal const string v20 = "http://specs.openid.net/auth/2.0";
-        }
+		public static NameValueCollection GetQueryFromContext() {
+			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
+			return HttpContext.Current.Request.RequestType == "GET" ?
+				HttpContext.Current.Request.QueryString : HttpContext.Current.Request.Form;
+		}
 
-        internal static class Modes {
-            internal const string cancel = "cancel";
-            internal const string error = "error";
-            internal const string id_res = "id_res";
-            internal const string checkid_immediate = "checkid_immediate";
-            internal const string checkid_setup = "checkid_setup";
-            internal const string check_authentication = "check_authentication";
-            internal const string associate = "associate";
-        }
-        internal static class Genders {
-            internal const string Male = "M";
-            internal const string Female = "F";
-        }
-        internal static class IsValid {
-            internal const string True = "true";
-        }
-
-        /// <summary>
-        /// Used by ASP.NET on a login page to determine where a successful
-        /// login should be redirected to.
-        /// </summary>
-        internal const string ReturnUrl = "ReturnUrl";
-    }
+		public static string GetRequiredArg(IDictionary<string, string> query, string key) {
+			if (query == null) throw new ArgumentNullException("query");
+			if (key == null) throw new ArgumentNullException("key");
+			string value;
+			if (!query.TryGetValue(key, out value) || value.Length == 0)
+				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+					Strings.MissingOpenIdQueryParameter, key), query);
+			return value;
+		}
+		public static string GetOptionalArg(IDictionary<string, string> query, string key) {
+			if (query == null) throw new ArgumentNullException("query");
+			if (key == null) throw new ArgumentNullException("key");
+			string value;
+			query.TryGetValue(key, out value);
+			return value;
+		}
+		public static bool ArrayEquals<T>(T[] first, T[] second) {
+			if (first == null) throw new ArgumentNullException("first");
+			if (second == null) throw new ArgumentNullException("second");
+			if (first.Length != second.Length) return false;
+			for (int i = 0; i < first.Length; i++)
+				if (!first[i].Equals(second[i])) return false;
+			return true;
+		}
+	}
 }

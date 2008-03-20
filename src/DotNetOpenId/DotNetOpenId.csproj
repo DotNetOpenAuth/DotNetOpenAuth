@@ -50,6 +50,7 @@
     <Compile Include="Associations.cs" />
     <Compile Include="HmacSha256Association.cs" />
     <Compile Include="Identifier.cs" />
+    <Compile Include="ProtocolConstants.cs" />
     <Compile Include="RelyingParty\AssociateRequest.cs" />
     <Compile Include="RelyingParty\AssociateResponse.cs" />
     <Compile Include="RelyingParty\AuthenticationRequest.cs" />
