@@ -10,7 +10,7 @@ using System.ComponentModel;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.UI.HtmlControls;
-using DotNetOpenId.RegistrationExtension;
+using DotNetOpenId.Extensions;
 using System.Diagnostics.CodeAnalysis;
 
 namespace DotNetOpenId.RelyingParty

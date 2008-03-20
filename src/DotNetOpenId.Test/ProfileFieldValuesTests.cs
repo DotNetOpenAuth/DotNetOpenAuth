@@ -13,13 +13,13 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Xml.Serialization;
 using System.IO;
 using NUnit.Framework;
-using DotNetOpenId.RegistrationExtension;
+using DotNetOpenId.Extensions;
 
 namespace DotNetOpenId.Test {
 	[TestFixture]
 	public class ProfileFieldValuesTests {
-		ProfileFieldValues getFilledStruct() {
-			return new ProfileFieldValues() {
+		SimpleRegistrationFieldValues getFilledStruct() {
+			return new SimpleRegistrationFieldValues() {
 				BirthDate = new DateTime(2005, 2, 3),
 				Culture = new System.Globalization.CultureInfo("en-US"),
 				Email = "a@b.com",
@@ -33,36 +33,36 @@ namespace DotNetOpenId.Test {
 
 		[Test]
 		public void BinarySerialization() {
-			ProfileFieldValues fields = getFilledStruct();
+			SimpleRegistrationFieldValues fields = getFilledStruct();
 			MemoryStream ms = new MemoryStream();
 			IFormatter formatter = new BinaryFormatter();
 			formatter.Serialize(ms, fields);
 
 			ms.Position = 0;
-			ProfileFieldValues fields2 = (ProfileFieldValues)formatter.Deserialize(ms);
+			SimpleRegistrationFieldValues fields2 = (SimpleRegistrationFieldValues)formatter.Deserialize(ms);
 			Assert.AreEqual(fields, fields2);
 		}
 
 		[Test]
 		public void XmlSerialization() {
-			ProfileFieldValues fields = getFilledStruct();
+			SimpleRegistrationFieldValues fields = getFilledStruct();
 			MemoryStream ms = new MemoryStream();
-			XmlSerializer xs = new XmlSerializer(typeof(ProfileFieldValues));
+			XmlSerializer xs = new XmlSerializer(typeof(SimpleRegistrationFieldValues));
 			xs.Serialize(ms, fields);
 
 			ms.Position = 0;
-			ProfileFieldValues fields2 = (ProfileFieldValues)xs.Deserialize(ms);
+			SimpleRegistrationFieldValues fields2 = (SimpleRegistrationFieldValues)xs.Deserialize(ms);
 			Assert.AreEqual(fields, fields2);
 		}
 
 		[Test]
 		public void TestEquals() {
-			ProfileFieldValues fields1 = getFilledStruct();
+			SimpleRegistrationFieldValues fields1 = getFilledStruct();
 
 			Assert.AreNotEqual(fields1, null);
 			Assert.AreNotEqual(fields1, "string");
 
-			ProfileFieldValues fields2 = fields1;
+			SimpleRegistrationFieldValues fields2 = fields1;
 			Assert.AreNotSame(fields1, fields2, "Test sanity check.");
 			Assert.AreEqual(fields1, fields2);
 
@@ -97,7 +97,7 @@ namespace DotNetOpenId.Test {
 
 		[Test]
 		public void Empty() {
-			Assert.AreEqual(new ProfileFieldValues(), ProfileFieldValues.Empty);
+			Assert.AreEqual(new SimpleRegistrationFieldValues(), SimpleRegistrationFieldValues.Empty);
 		}
 
 		//[Test]

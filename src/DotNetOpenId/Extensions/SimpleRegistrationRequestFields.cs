@@ -6,22 +6,22 @@ using System.Globalization;
 using DotNetOpenId.Provider;
 using DotNetOpenId.RelyingParty;
 
-namespace DotNetOpenId.RegistrationExtension {
+namespace DotNetOpenId.Extensions {
 	/// <summary>
 	/// Carries the request/require/none demand state of the simple registration fields.
 	/// </summary>
-	public struct ProfileRequestFields {
-		public static readonly ProfileRequestFields None = new ProfileRequestFields();
+	public struct SimpleRegistrationRequestFields {
+		public static readonly SimpleRegistrationRequestFields None = new SimpleRegistrationRequestFields();
 
-		public ProfileRequest Nickname { get; set; }
-		public ProfileRequest Email { get; set; }
-		public ProfileRequest FullName { get; set; }
-		public ProfileRequest BirthDate { get; set; }
-		public ProfileRequest Gender { get; set; }
-		public ProfileRequest PostalCode { get; set; }
-		public ProfileRequest Country { get; set; }
-		public ProfileRequest Language { get; set; }
-		public ProfileRequest TimeZone { get; set; }
+		public SimpleRegistrationRequest Nickname { get; set; }
+		public SimpleRegistrationRequest Email { get; set; }
+		public SimpleRegistrationRequest FullName { get; set; }
+		public SimpleRegistrationRequest BirthDate { get; set; }
+		public SimpleRegistrationRequest Gender { get; set; }
+		public SimpleRegistrationRequest PostalCode { get; set; }
+		public SimpleRegistrationRequest Country { get; set; }
+		public SimpleRegistrationRequest Language { get; set; }
+		public SimpleRegistrationRequest TimeZone { get; set; }
 
 		/// <summary>
 		/// The URL the consumer site provides for the authenticating user to review
@@ -39,7 +39,7 @@ namespace DotNetOpenId.RegistrationExtension {
 		/// the OpenId specification for field names, omitting the 'openid.sreg' prefix.
 		/// </param>
 		/// <param name="requestLevel">The none/request/require state of the listed fields.</param>
-		internal void SetProfileRequestFromList(ICollection<string> fieldNames, ProfileRequest requestLevel) {
+		internal void SetProfileRequestFromList(ICollection<string> fieldNames, SimpleRegistrationRequest requestLevel) {
 			foreach (string field in fieldNames) {
 				switch (field) {
 					case QueryStringArgs.openidnp.sregnp.nickname:
@@ -75,7 +75,7 @@ namespace DotNetOpenId.RegistrationExtension {
 				}
 			}
 		}
-		string[] assembleProfileFields(ProfileRequest level) {
+		string[] assembleProfileFields(SimpleRegistrationRequest level) {
 			List<string> fields = new List<string>(10);
 			if (Nickname == level)
 				fields.Add(QueryStringArgs.openidnp.sregnp.nickname);
@@ -102,8 +102,8 @@ namespace DotNetOpenId.RegistrationExtension {
 		/// Reads the sreg extension information on an authentication request to the provider
 		/// and returns information on what profile fields the consumer is requesting/requiring.
 		/// </summary>
-		public static ProfileRequestFields ReadFromRequest(IRequest request) {
-			ProfileRequestFields fields = new ProfileRequestFields();
+		public static SimpleRegistrationRequestFields ReadFromRequest(IRequest request) {
+			SimpleRegistrationRequestFields fields = new SimpleRegistrationRequestFields();
 			var args = request.GetExtensionArguments(QueryStringArgs.sreg_ns);
 
 			string policyUrl;
@@ -114,12 +114,12 @@ namespace DotNetOpenId.RegistrationExtension {
 
 			string optionalFields;
 			if (args.TryGetValue(QueryStringArgs.openidnp.sregnp.optional, out optionalFields)) {
-				fields.SetProfileRequestFromList(optionalFields.Split(','), ProfileRequest.Request);
+				fields.SetProfileRequestFromList(optionalFields.Split(','), SimpleRegistrationRequest.Request);
 			}
 
 			string requiredFields;
 			if (args.TryGetValue(QueryStringArgs.openidnp.sregnp.required, out requiredFields)) {
-				fields.SetProfileRequestFromList(requiredFields.Split(','), ProfileRequest.Require);
+				fields.SetProfileRequestFromList(requiredFields.Split(','), SimpleRegistrationRequest.Require);
 			}
 
 			return fields;
@@ -129,8 +129,8 @@ namespace DotNetOpenId.RegistrationExtension {
 			if (PolicyUrl != null)
 				fields.Add(QueryStringArgs.openidnp.sregnp.policy_url, PolicyUrl.AbsoluteUri);
 
-			fields.Add(QueryStringArgs.openidnp.sregnp.required, string.Join(",", assembleProfileFields(ProfileRequest.Require)));
-			fields.Add(QueryStringArgs.openidnp.sregnp.optional, string.Join(",", assembleProfileFields(ProfileRequest.Request)));
+			fields.Add(QueryStringArgs.openidnp.sregnp.required, string.Join(",", assembleProfileFields(SimpleRegistrationRequest.Require)));
+			fields.Add(QueryStringArgs.openidnp.sregnp.optional, string.Join(",", assembleProfileFields(SimpleRegistrationRequest.Request)));
 
 			request.AddExtensionArguments(QueryStringArgs.sreg_ns, fields);
 		}
@@ -147,8 +147,8 @@ Language = '{7}'
 TimeZone = '{8}'", Nickname, Email, FullName, BirthDate, Gender, PostalCode, Country, Language, TimeZone);
 		}
 		public override bool Equals(object obj) {
-			if (!(obj is ProfileRequestFields)) return false;
-			ProfileRequestFields other = (ProfileRequestFields)obj;
+			if (!(obj is SimpleRegistrationRequestFields)) return false;
+			SimpleRegistrationRequestFields other = (SimpleRegistrationRequestFields)obj;
 
 			return
 				safeEquals(this.BirthDate, other.BirthDate) &&

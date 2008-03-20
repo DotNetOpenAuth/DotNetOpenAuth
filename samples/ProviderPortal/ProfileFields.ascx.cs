@@ -1,7 +1,7 @@
 using System;
 using System.Net.Mail;
 using DotNetOpenId.Provider;
-using DotNetOpenId.RegistrationExtension;
+using DotNetOpenId.Extensions;
 
 /// <summary>
 /// Handles the collection of the simple registration fields.
@@ -12,32 +12,32 @@ public partial class ProfileFields : System.Web.UI.UserControl {
 	protected void Page_Load(object sender, EventArgs e) {
 	}
 
-	public void SetRequiredFieldsFromRequest(ProfileRequestFields requestFields) {
+	public void SetRequiredFieldsFromRequest(SimpleRegistrationRequestFields requestFields) {
 		if (requestFields.PolicyUrl != null) {
 			privacyLink.NavigateUrl = requestFields.PolicyUrl.AbsoluteUri;
 		} else {
 			privacyLink.Visible = false;
 		}
 
-		dobRequiredLabel.Visible = (requestFields.BirthDate == ProfileRequest.Require);
-		countryRequiredLabel.Visible = (requestFields.Country == ProfileRequest.Require);
-		emailRequiredLabel.Visible = (requestFields.Email == ProfileRequest.Require);
-		fullnameRequiredLabel.Visible = (requestFields.FullName == ProfileRequest.Require);
-		genderRequiredLabel.Visible = (requestFields.Gender == ProfileRequest.Require);
-		languageRequiredLabel.Visible = (requestFields.Language == ProfileRequest.Require);
-		nicknameRequiredLabel.Visible = (requestFields.Nickname == ProfileRequest.Require);
-		postcodeRequiredLabel.Visible = (requestFields.PostalCode == ProfileRequest.Require);
-		timezoneRequiredLabel.Visible = (requestFields.TimeZone == ProfileRequest.Require);
+		dobRequiredLabel.Visible = (requestFields.BirthDate == SimpleRegistrationRequest.Require);
+		countryRequiredLabel.Visible = (requestFields.Country == SimpleRegistrationRequest.Require);
+		emailRequiredLabel.Visible = (requestFields.Email == SimpleRegistrationRequest.Require);
+		fullnameRequiredLabel.Visible = (requestFields.FullName == SimpleRegistrationRequest.Require);
+		genderRequiredLabel.Visible = (requestFields.Gender == SimpleRegistrationRequest.Require);
+		languageRequiredLabel.Visible = (requestFields.Language == SimpleRegistrationRequest.Require);
+		nicknameRequiredLabel.Visible = (requestFields.Nickname == SimpleRegistrationRequest.Require);
+		postcodeRequiredLabel.Visible = (requestFields.PostalCode == SimpleRegistrationRequest.Require);
+		timezoneRequiredLabel.Visible = (requestFields.TimeZone == SimpleRegistrationRequest.Require);
 
-		dateOfBirthRow.Visible = !(requestFields.BirthDate == ProfileRequest.NoRequest);
-		countryRow.Visible = !(requestFields.Country == ProfileRequest.NoRequest);
-		emailRow.Visible = !(requestFields.Email == ProfileRequest.NoRequest);
-		fullnameRow.Visible = !(requestFields.FullName == ProfileRequest.NoRequest);
-		genderRow.Visible = !(requestFields.Gender == ProfileRequest.NoRequest);
-		languageRow.Visible = !(requestFields.Language == ProfileRequest.NoRequest);
-		nicknameRow.Visible = !(requestFields.Nickname == ProfileRequest.NoRequest);
-		postcodeRow.Visible = !(requestFields.PostalCode == ProfileRequest.NoRequest);
-		timezoneRow.Visible = !(requestFields.TimeZone == ProfileRequest.NoRequest);
+		dateOfBirthRow.Visible = !(requestFields.BirthDate == SimpleRegistrationRequest.NoRequest);
+		countryRow.Visible = !(requestFields.Country == SimpleRegistrationRequest.NoRequest);
+		emailRow.Visible = !(requestFields.Email == SimpleRegistrationRequest.NoRequest);
+		fullnameRow.Visible = !(requestFields.FullName == SimpleRegistrationRequest.NoRequest);
+		genderRow.Visible = !(requestFields.Gender == SimpleRegistrationRequest.NoRequest);
+		languageRow.Visible = !(requestFields.Language == SimpleRegistrationRequest.NoRequest);
+		nicknameRow.Visible = !(requestFields.Nickname == SimpleRegistrationRequest.NoRequest);
+		postcodeRow.Visible = !(requestFields.PostalCode == SimpleRegistrationRequest.NoRequest);
+		timezoneRow.Visible = !(requestFields.TimeZone == SimpleRegistrationRequest.NoRequest);
 	}
 
 	public bool DoesAnyFieldHaveAValue {
@@ -82,10 +82,10 @@ public partial class ProfileFields : System.Web.UI.UserControl {
 	public Gender? Gender {
 		get {
 			if (this.genderDropdownList.SelectedValue == "Male") {
-				return DotNetOpenId.RegistrationExtension.Gender.Male;
+				return DotNetOpenId.Extensions.Gender.Male;
 			}
 			if (this.genderDropdownList.SelectedValue == "Female") {
-				return DotNetOpenId.RegistrationExtension.Gender.Female;
+				return DotNetOpenId.Extensions.Gender.Female;
 			}
 			return null;
 		}
@@ -98,9 +98,9 @@ public partial class ProfileFields : System.Web.UI.UserControl {
 		}
 	}
 
-	public ProfileFieldValues OpenIdProfileFields {
+	public SimpleRegistrationFieldValues OpenIdProfileFields {
 		get {
-			ProfileFieldValues fields = new ProfileFieldValues();
+			SimpleRegistrationFieldValues fields = new SimpleRegistrationFieldValues();
 			fields.BirthDate = DateOfBirth;
 			fields.Country = countryDropdownList.SelectedValue;
 			fields.Email = emailTextBox.Text;

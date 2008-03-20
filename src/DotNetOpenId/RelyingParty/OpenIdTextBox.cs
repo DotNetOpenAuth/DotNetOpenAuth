@@ -12,7 +12,7 @@ using System.ComponentModel;
 using System.Web.Security;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using DotNetOpenId.RegistrationExtension;
+using DotNetOpenId.Extensions;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
@@ -175,101 +175,101 @@ namespace DotNetOpenId.RelyingParty
 		}
 
 		const string requestNicknameViewStateKey = "RequestNickname";
-		const ProfileRequest requestNicknameDefault = ProfileRequest.NoRequest;
+		const SimpleRegistrationRequest requestNicknameDefault = SimpleRegistrationRequest.NoRequest;
 		[Bindable(true)]
 		[Category(profileCategory)]
 		[DefaultValue(requestNicknameDefault)]
-		public ProfileRequest RequestNickname
+		public SimpleRegistrationRequest RequestNickname
 		{
-			get { return (ProfileRequest)(ViewState[requestNicknameViewStateKey] ?? requestNicknameDefault); }
+			get { return (SimpleRegistrationRequest)(ViewState[requestNicknameViewStateKey] ?? requestNicknameDefault); }
 			set { ViewState[requestNicknameViewStateKey] = value; }
 		}
 
 		const string requestEmailViewStateKey = "RequestEmail";
-		const ProfileRequest requestEmailDefault = ProfileRequest.NoRequest;
+		const SimpleRegistrationRequest requestEmailDefault = SimpleRegistrationRequest.NoRequest;
 		[Bindable(true)]
 		[Category(profileCategory)]
 		[DefaultValue(requestEmailDefault)]
-		public ProfileRequest RequestEmail
+		public SimpleRegistrationRequest RequestEmail
 		{
-			get { return (ProfileRequest)(ViewState[requestEmailViewStateKey] ?? requestEmailDefault); }
+			get { return (SimpleRegistrationRequest)(ViewState[requestEmailViewStateKey] ?? requestEmailDefault); }
 			set { ViewState[requestEmailViewStateKey] = value; }
 		}
 
 		const string requestFullNameViewStateKey = "RequestFullName";
-		const ProfileRequest requestFullNameDefault = ProfileRequest.NoRequest;
+		const SimpleRegistrationRequest requestFullNameDefault = SimpleRegistrationRequest.NoRequest;
 		[Bindable(true)]
 		[Category(profileCategory)]
 		[DefaultValue(requestFullNameDefault)]
-		public ProfileRequest RequestFullName
+		public SimpleRegistrationRequest RequestFullName
 		{
-			get { return (ProfileRequest)(ViewState[requestFullNameViewStateKey] ?? requestFullNameDefault); }
+			get { return (SimpleRegistrationRequest)(ViewState[requestFullNameViewStateKey] ?? requestFullNameDefault); }
 			set { ViewState[requestFullNameViewStateKey] = value; }
 		}
 
 		const string requestBirthDateViewStateKey = "RequestBirthday";
-		const ProfileRequest requestBirthDateDefault = ProfileRequest.NoRequest;
+		const SimpleRegistrationRequest requestBirthDateDefault = SimpleRegistrationRequest.NoRequest;
 		[Bindable(true)]
 		[Category(profileCategory)]
 		[DefaultValue(requestBirthDateDefault)]
-		public ProfileRequest RequestBirthDate
+		public SimpleRegistrationRequest RequestBirthDate
 		{
-			get { return (ProfileRequest)(ViewState[requestBirthDateViewStateKey] ?? requestBirthDateDefault); }
+			get { return (SimpleRegistrationRequest)(ViewState[requestBirthDateViewStateKey] ?? requestBirthDateDefault); }
 			set { ViewState[requestBirthDateViewStateKey] = value; }
 		}
 
 		const string requestGenderViewStateKey = "RequestGender";
-		const ProfileRequest requestGenderDefault = ProfileRequest.NoRequest;
+		const SimpleRegistrationRequest requestGenderDefault = SimpleRegistrationRequest.NoRequest;
 		[Bindable(true)]
 		[Category(profileCategory)]
 		[DefaultValue(requestGenderDefault)]
-		public ProfileRequest RequestGender
+		public SimpleRegistrationRequest RequestGender
 		{
-			get { return (ProfileRequest)(ViewState[requestGenderViewStateKey] ?? requestGenderDefault); }
+			get { return (SimpleRegistrationRequest)(ViewState[requestGenderViewStateKey] ?? requestGenderDefault); }
 			set { ViewState[requestGenderViewStateKey] = value; }
 		}
 
 		const string requestPostalCodeViewStateKey = "RequestPostalCode";
-		const ProfileRequest requestPostalCodeDefault = ProfileRequest.NoRequest;
+		const SimpleRegistrationRequest requestPostalCodeDefault = SimpleRegistrationRequest.NoRequest;
 		[Bindable(true)]
 		[Category(profileCategory)]
 		[DefaultValue(requestPostalCodeDefault)]
-		public ProfileRequest RequestPostalCode
+		public SimpleRegistrationRequest RequestPostalCode
 		{
-			get { return (ProfileRequest)(ViewState[requestPostalCodeViewStateKey] ?? requestPostalCodeDefault); }
+			get { return (SimpleRegistrationRequest)(ViewState[requestPostalCodeViewStateKey] ?? requestPostalCodeDefault); }
 			set { ViewState[requestPostalCodeViewStateKey] = value; }
 		}
 
 		const string requestCountryViewStateKey = "RequestCountry";
-		const ProfileRequest requestCountryDefault = ProfileRequest.NoRequest;
+		const SimpleRegistrationRequest requestCountryDefault = SimpleRegistrationRequest.NoRequest;
 		[Bindable(true)]
 		[Category(profileCategory)]
 		[DefaultValue(requestCountryDefault)]
-		public ProfileRequest RequestCountry
+		public SimpleRegistrationRequest RequestCountry
 		{
-			get { return (ProfileRequest)(ViewState[requestCountryViewStateKey] ?? requestCountryDefault); }
+			get { return (SimpleRegistrationRequest)(ViewState[requestCountryViewStateKey] ?? requestCountryDefault); }
 			set { ViewState[requestCountryViewStateKey] = value; }
 		}
 
 		const string requestLanguageViewStateKey = "RequestLanguage";
-		const ProfileRequest requestLanguageDefault = ProfileRequest.NoRequest;
+		const SimpleRegistrationRequest requestLanguageDefault = SimpleRegistrationRequest.NoRequest;
 		[Bindable(true)]
 		[Category(profileCategory)]
 		[DefaultValue(requestLanguageDefault)]
-		public ProfileRequest RequestLanguage
+		public SimpleRegistrationRequest RequestLanguage
 		{
-			get { return (ProfileRequest)(ViewState[requestLanguageViewStateKey] ?? requestLanguageDefault); }
+			get { return (SimpleRegistrationRequest)(ViewState[requestLanguageViewStateKey] ?? requestLanguageDefault); }
 			set { ViewState[requestLanguageViewStateKey] = value; }
 		}
 
 		const string requestTimeZoneViewStateKey = "RequestTimeZone";
-		const ProfileRequest requestTimeZoneDefault = ProfileRequest.NoRequest;
+		const SimpleRegistrationRequest requestTimeZoneDefault = SimpleRegistrationRequest.NoRequest;
 		[Bindable(true)]
 		[Category(profileCategory)]
 		[DefaultValue(requestTimeZoneDefault)]
-		public ProfileRequest RequestTimeZone
+		public SimpleRegistrationRequest RequestTimeZone
 		{
-			get { return (ProfileRequest)(ViewState[requestTimeZoneViewStateKey] ?? requestTimeZoneDefault); }
+			get { return (SimpleRegistrationRequest)(ViewState[requestTimeZoneViewStateKey] ?? requestTimeZoneDefault); }
 			set { ViewState[requestTimeZoneViewStateKey] = value; }
 		}
 
@@ -461,7 +461,7 @@ namespace DotNetOpenId.RelyingParty
 
 		void addProfileArgs(IAuthenticationRequest request)
 		{
-			new ProfileRequestFields() {
+			new SimpleRegistrationRequestFields() {
 				Nickname = RequestNickname,
 				Email = RequestEmail,
 				FullName = RequestFullName,

@@ -8,18 +8,18 @@
 using System;
 using System.Globalization;
 using System.Net.Mail;
-using DotNetOpenId.RegistrationExtension;
+using DotNetOpenId.Extensions;
 using System.Xml.Serialization;
 using DotNetOpenId.RelyingParty;
 using DotNetOpenId.Provider;
 using System.Collections.Generic;
 
-namespace DotNetOpenId.RegistrationExtension
+namespace DotNetOpenId.Extensions
 {
 	[Serializable()]
-	public struct ProfileFieldValues
+	public struct SimpleRegistrationFieldValues
 	{
-		public static readonly ProfileFieldValues Empty = new ProfileFieldValues();
+		public static readonly SimpleRegistrationFieldValues Empty = new SimpleRegistrationFieldValues();
 
 		public string Nickname { get; set; }
 		public string Email { get; set; }
@@ -83,7 +83,7 @@ namespace DotNetOpenId.RegistrationExtension
 				fields.Add(QueryStringArgs.openidnp.sregnp.fullname, FullName);
 			}
 			if (Gender != null) {
-				if (Gender == DotNetOpenId.RegistrationExtension.Gender.Female) {
+				if (Gender == DotNetOpenId.Extensions.Gender.Female) {
 					fields.Add(QueryStringArgs.openidnp.sregnp.gender, QueryStringArgs.Genders.Female);
 				} else {
 					fields.Add(QueryStringArgs.openidnp.sregnp.gender, QueryStringArgs.Genders.Male);
@@ -103,7 +103,7 @@ namespace DotNetOpenId.RegistrationExtension
 			}
 			authenticationRequest.AddExtensionArguments(QueryStringArgs.sreg_ns, fields);
 		}
-		public static ProfileFieldValues ReadFromResponse(IAuthenticationResponse response) {
+		public static SimpleRegistrationFieldValues ReadFromResponse(IAuthenticationResponse response) {
 			var sreg = response.GetExtensionArguments(QueryStringArgs.sreg_ns);
 			string nickname, email, fullName, dob, genderString, postalCode, country, language, timeZone;
 			DateTime? birthDate = null;
@@ -118,8 +118,8 @@ namespace DotNetOpenId.RegistrationExtension
 			}
 			if (sreg.TryGetValue(QueryStringArgs.openidnp.sregnp.gender, out genderString)) {
 				switch (genderString) {
-					case QueryStringArgs.Genders.Male: gender = DotNetOpenId.RegistrationExtension.Gender.Male; break;
-					case QueryStringArgs.Genders.Female: gender = DotNetOpenId.RegistrationExtension.Gender.Female; break;
+					case QueryStringArgs.Genders.Male: gender = DotNetOpenId.Extensions.Gender.Male; break;
+					case QueryStringArgs.Genders.Female: gender = DotNetOpenId.Extensions.Gender.Female; break;
 				}
 			}
 			sreg.TryGetValue(QueryStringArgs.openidnp.sregnp.postcode, out postalCode);
@@ -127,7 +127,7 @@ namespace DotNetOpenId.RegistrationExtension
 			sreg.TryGetValue(QueryStringArgs.openidnp.sregnp.language, out language);
 			sreg.TryGetValue(QueryStringArgs.openidnp.sregnp.timezone, out timeZone);
 
-			return new ProfileFieldValues() {
+			return new SimpleRegistrationFieldValues() {
 				Nickname = nickname,
 				Email = email,
 				FullName = fullName,
@@ -142,8 +142,8 @@ namespace DotNetOpenId.RegistrationExtension
 
 		public override bool Equals(object obj)
 		{
-			if (!(obj is ProfileFieldValues)) return false;
-			ProfileFieldValues other = (ProfileFieldValues)obj;
+			if (!(obj is SimpleRegistrationFieldValues)) return false;
+			SimpleRegistrationFieldValues other = (SimpleRegistrationFieldValues)obj;
 
 			return
 				safeEquals(this.BirthDate, other.BirthDate) &&
