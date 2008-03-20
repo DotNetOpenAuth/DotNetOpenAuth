@@ -4,6 +4,7 @@ using System.Text;
 using DotNetOpenId.RelyingParty;
 using DotNetOpenId.Yadis;
 using System.Collections.Specialized;
+using System.Web.UI.HtmlControls;
 
 namespace DotNetOpenId {
 	class UriIdentifier : Identifier {
@@ -112,25 +113,25 @@ namespace DotNetOpenId {
 			Uri providerEndpoint = null;
 			Identifier providerLocalIdentifier = null;
 			int version = 0;
-			foreach (NameValueCollection values in Janrain.Yadis.ByteParser.HeadTagAttrs(html, "link")) {
-				switch (values["rel"]) {
+			foreach (var linkTag in Yadis.HtmlParser.HeadTags<HtmlLink>(html)) {
+				switch (linkTag.Attributes["rel"]) {
 					case ProtocolConstants.OpenId20Provider:
-						providerEndpoint = new Uri(values["href"]);
+						providerEndpoint = new Uri(linkTag.Href);
 						version = 2;
 						break;
 					case ProtocolConstants.OpenId20LocalId:
-						providerLocalIdentifier = new Uri(values["href"]);
+						providerLocalIdentifier = new Uri(linkTag.Href);
 						version = 2;
 						break;
 					case ProtocolConstants.OpenId11Server:
 						if (version == 0) { // do not override a 2.0 discovery
-							providerEndpoint = new Uri(values["href"]);
+							providerEndpoint = new Uri(linkTag.Href);
 							version = 1;
 						}
 						break;
 					case ProtocolConstants.OpenId11Delegate:
 						if (version <= 1) {
-							providerLocalIdentifier = values["href"];
+							providerLocalIdentifier = linkTag.Href;
 						}
 						break;
 				}

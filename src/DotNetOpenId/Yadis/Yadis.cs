@@ -4,9 +4,9 @@ using System.Collections.Specialized;
 using System.Text;
 using System.IO;
 using System.Xml;
-using Janrain.Yadis;
 using System.Xml.Serialization;
 using System.Net.Mime;
+using System.Web.UI.HtmlControls;
 
 namespace DotNetOpenId.Yadis {
 	class Yadis {
@@ -44,14 +44,11 @@ namespace DotNetOpenId.Yadis {
 		/// tag and returns the content of YadisURL.
 		/// </summary>
 		public static Uri FindYadisDocumentLocationInHtmlMetaTags(string html) {
-			NameValueCollection[] nvc = ByteParser.HeadTagAttrs(html, "meta");
-			foreach (var values in nvc) {
-				string text = values["http-equiv"];
-				if (HeaderName.Equals(text, StringComparison.OrdinalIgnoreCase)) {
-					string uriString = values.Get("content");
-					if (uriString != null) {
+			foreach (var metaTag in HtmlParser.HeadTags<HtmlMeta>(html)) {
+				if (HeaderName.Equals(metaTag.HttpEquiv, StringComparison.OrdinalIgnoreCase)) {
+					if (metaTag.Content != null) {
 						Uri uri;
-						if (Uri.TryCreate(uriString, UriKind.Absolute, out uri))
+						if (Uri.TryCreate(metaTag.Content, UriKind.Absolute, out uri))
 							return uri;
 					}
 				}

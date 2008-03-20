@@ -137,7 +137,7 @@
     <Compile Include="Yadis\XrdsNode.cs" />
     <Compile Include="Yadis\XrdsDocument.cs" />
     <Compile Include="XriIdentifier.cs" />
-    <Compile Include="Yadis\ByteParser.cs" />
+    <Compile Include="Yadis\HtmlParser.cs" />
     <Compile Include="Yadis\Yadis.cs" />
   </ItemGroup>
   <ItemGroup>
