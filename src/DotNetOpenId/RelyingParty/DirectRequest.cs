@@ -38,8 +38,7 @@ namespace DotNetOpenId.RelyingParty {
 				string providerMessage;
 				args.TryGetValue(QueryStringArgs.openidnp.error, out providerMessage);
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-					Strings.ProviderRespondedWithError, providerMessage),
-					Util.DictionaryToNameValueCollection(args));
+					Strings.ProviderRespondedWithError, providerMessage), args);
 			} else if (resp.StatusCode == HttpStatusCode.OK) {
 				return args;
 			} else {

@@ -107,7 +107,7 @@ namespace DotNetOpenId {
             string value;
             if (!query.TryGetValue(key, out value) || value.Length == 0)
                 throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-                    Strings.MissingOpenIdQueryParameter, key), DictionaryToNameValueCollection(query));
+                    Strings.MissingOpenIdQueryParameter, key), query);
             return value;
         }
         public static string GetOptionalArg(IDictionary<string, string> query, string key)

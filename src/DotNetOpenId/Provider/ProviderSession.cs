@@ -10,7 +10,7 @@ namespace DotNetOpenId.Provider
 	internal abstract class ProviderSession {
 		public abstract string SessionType { get; }
 		public abstract Dictionary<string, string> Answer(byte[] secret);
-		public static ProviderSession CreateSession(NameValueCollection query) {
+		public static ProviderSession CreateSession(IDictionary<string, string> query) {
 			string session_type = query[QueryStringArgs.openid.session_type];
 
 			switch (session_type) {
@@ -55,13 +55,13 @@ namespace DotNetOpenId.Provider
         DiffieHellman _dh;
 		string sessionType;
 
-        public DiffieHellmanProviderSession(NameValueCollection query)
+		public DiffieHellmanProviderSession(IDictionary<string, string> query)
         {
-			sessionType = query[QueryStringArgs.openid.session_type];
+			sessionType = Util.GetRequiredArg(query, QueryStringArgs.openid.session_type);
 
             string missing;
-            string dh_modulus = query.Get(QueryStringArgs.openid.dh_modulus);
-            string dh_gen = query.Get(QueryStringArgs.openid.dh_gen);
+            string dh_modulus = Util.GetOptionalArg(query, QueryStringArgs.openid.dh_modulus);
+            string dh_gen = Util.GetOptionalArg(query, QueryStringArgs.openid.dh_gen);
             byte[] dh_modulus_bytes = new byte[0];
             byte[] dh_gen_bytes = new byte[0];
 
@@ -104,7 +104,7 @@ namespace DotNetOpenId.Provider
 
             _dh = new DiffieHellmanManaged(dh_modulus_bytes, dh_gen_bytes, 1024);
 
-            string consumer_pubkey = query.Get(QueryStringArgs.openid.dh_consumer_public);
+            string consumer_pubkey = Util.GetRequiredArg(query, QueryStringArgs.openid.dh_consumer_public);
             if (consumer_pubkey == null)
 				throw new OpenIdException("Public key for DH-SHA1 session not found in query", query);
 

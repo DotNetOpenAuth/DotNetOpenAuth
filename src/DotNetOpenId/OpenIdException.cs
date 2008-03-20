@@ -11,15 +11,15 @@ namespace DotNetOpenId {
 	/// </summary>
 	[Serializable]
 	public class OpenIdException : Exception, IEncodable {
-		NameValueCollection query;
+		IDictionary<string, string> query;
 		public Identifier Identifier { get; private set; }
 
-		internal OpenIdException(string message, Identifier identifier, NameValueCollection query, Exception innerException)
+		internal OpenIdException(string message, Identifier identifier, IDictionary<string, string> query, Exception innerException)
 			: base(message, innerException) {
 			this.query = query;
 			Identifier = identifier;
 		}
-		internal OpenIdException(string message, Identifier identifier, NameValueCollection query)
+		internal OpenIdException(string message, Identifier identifier, IDictionary<string, string> query)
 			: this(message, identifier, query, null) {
 		}
 		internal OpenIdException(string message, Identifier identifier, Exception innerException)
@@ -28,7 +28,7 @@ namespace DotNetOpenId {
 		internal OpenIdException(string message, Identifier identifier)
 			: this(message, identifier, null, null) {
 		}
-		internal OpenIdException(string message, NameValueCollection query)
+		internal OpenIdException(string message, IDictionary<string, string> query)
 			: this(message, null, query, null) {
 		}
 		internal OpenIdException(string message, Exception innerException)
@@ -43,7 +43,7 @@ namespace DotNetOpenId {
 
 		internal bool HasReturnTo {
 			get {
-				return query == null ? false : (query[QueryStringArgs.openid.return_to] != null);
+				return query == null ? false : query.ContainsKey(QueryStringArgs.openid.return_to);
 			}
 		}
 
@@ -55,7 +55,7 @@ namespace DotNetOpenId {
 					return EncodingType.RedirectBrowserUrl;
 
 				if (query != null) {
-					string mode = query.Get(QueryStringArgs.openid.mode);
+					string mode = Util.GetOptionalArg(query, QueryStringArgs.openid.mode);
 					if (mode != null)
 						if (mode != QueryStringArgs.Modes.checkid_setup &&
 							mode != QueryStringArgs.Modes.checkid_immediate)
@@ -91,10 +91,7 @@ namespace DotNetOpenId {
 			get {
 				if (query == null)
 					return null;
-				string return_to = query.Get(QueryStringArgs.openid.return_to);
-				if (return_to == null)
-					throw new InvalidOperationException("return_to URL has not been set.");
-				return new Uri(return_to);
+				return new Uri(Util.GetRequiredArg(query, QueryStringArgs.openid.return_to));
 			}
 		}
 

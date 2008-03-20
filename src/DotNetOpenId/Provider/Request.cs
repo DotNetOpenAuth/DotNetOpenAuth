@@ -18,7 +18,7 @@ namespace DotNetOpenId.Provider
 			ExtraArgs = new Dictionary<string, string>();
 		}
 
-		protected NameValueCollection Query { get; private set; }
+		protected IDictionary<string, string> Query { get; private set; }
 		protected OpenIdProvider Server { get; private set; }
 		internal abstract string Mode { get; }
 		/// <summary>
@@ -35,9 +35,9 @@ namespace DotNetOpenId.Provider
 		/// </summary>
 		/// <param name="query">The name/value pairs in the querystring or Form submission.  Cannot be null.</param>
 		/// <returns>True if the request is an OpenId request, false otherwise.</returns>
-		internal static bool IsOpenIdRequest(NameValueCollection query) {
+		internal static bool IsOpenIdRequest(IDictionary<string, string> query) {
 			Debug.Assert(query != null);
-			foreach (string key in query) {
+			foreach (string key in query.Keys) {
 				if (key.StartsWith(QueryStringArgs.openid.Prefix, StringComparison.OrdinalIgnoreCase)) {
 					return true;
 				}
@@ -52,7 +52,7 @@ namespace DotNetOpenId.Provider
 		/// <param name="query">A dictionary of name/value pairs given in the request's
 		/// querystring or form submission.</param>
 		/// <returns>A Request-derived type appropriate for this stage in authentication.</returns>
-		internal static Request CreateRequest(OpenIdProvider provider, NameValueCollection query) {
+		internal static Request CreateRequest(OpenIdProvider provider, IDictionary<string, string> query) {
 			Debug.Assert(query != null);
 			
 			string mode = query[QueryStringArgs.openid.mode];
@@ -183,10 +183,10 @@ namespace DotNetOpenId.Provider
 			}
 
 			string extensionPrefix = QueryStringArgs.openid.Prefix + alias + ".";
-			foreach (string key in Query) {
-				if (key.StartsWith(extensionPrefix, StringComparison.OrdinalIgnoreCase)) {
-					string bareKey = key.Substring(extensionPrefix.Length);
-					response[bareKey] = Query[key];
+			foreach (var pair in Query) {
+				if (pair.Key.StartsWith(extensionPrefix, StringComparison.OrdinalIgnoreCase)) {
+					string bareKey = pair.Key.Substring(extensionPrefix.Length);
+					response[bareKey] = pair.Value;
 				}
 			}
 
@@ -195,7 +195,7 @@ namespace DotNetOpenId.Provider
 
 		bool isExtensionAliasDefined(string alias) {
 			string aliasPrefix = QueryStringArgs.openid.ns + "." + alias;
-			foreach (string key in Query) {
+			foreach (string key in Query.Keys) {
 				if (key.Equals(aliasPrefix, StringComparison.OrdinalIgnoreCase))
 					return true;
 			}
@@ -204,10 +204,10 @@ namespace DotNetOpenId.Provider
 
 		string findAliasForExtension(string extensionTypeUri) {
 			string aliasPrefix = QueryStringArgs.openid.ns + ".";
-			foreach (string key in Query) {
-				if (key.StartsWith(aliasPrefix, StringComparison.OrdinalIgnoreCase) &&
-					Query[key].Equals(extensionTypeUri, StringComparison.Ordinal)) {
-					return key.Substring(aliasPrefix.Length);
+			foreach (var pair in Query) {
+				if (pair.Key.StartsWith(aliasPrefix, StringComparison.OrdinalIgnoreCase) &&
+					pair.Value.Equals(extensionTypeUri, StringComparison.Ordinal)) {
+					return pair.Key.Substring(aliasPrefix.Length);
 				}
 			}
 			return null;

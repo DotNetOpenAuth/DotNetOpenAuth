@@ -14,7 +14,7 @@ namespace DotNetOpenId.Provider {
 	public class OpenIdProvider {
 		internal Signatory Signatory { get; private set; }
 		Encoder encoder;
-		internal NameValueCollection query;
+		internal IDictionary<string, string> query;
 
 		/// <summary>
 		/// Constructs an OpenId server that uses the HttpApplication dictionary as
@@ -31,7 +31,9 @@ namespace DotNetOpenId.Provider {
 		/// <param name="store">
 		/// The application-level store where associations with OpenId consumers will be preserved.
 		/// </param>
-		public OpenIdProvider(NameValueCollection query, IProviderAssociationStore store) {
+		public OpenIdProvider(NameValueCollection query, IProviderAssociationStore store)
+			: this (Util.NameValueCollectionToDictionary(query), store) {}
+		OpenIdProvider(IDictionary<string, string> query, IProviderAssociationStore store) {
 			if (query == null) throw new ArgumentNullException("query");
 			if (store == null) throw new ArgumentNullException("store");
 			this.query = query;
