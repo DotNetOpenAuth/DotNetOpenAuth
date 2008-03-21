@@ -77,26 +77,6 @@ namespace DotNetOpenId.RelyingParty {
 			return IncomingExtensions.GetExtensionArguments(extensionTypeUri);
 		}
 
-		bool isExtensionAliasDefined(string alias) {
-			string aliasPrefix = QueryStringArgs.openid.ns + "." + alias;
-			foreach (var arg in signedArguments) {
-				if (arg.Key.Equals(aliasPrefix, StringComparison.OrdinalIgnoreCase))
-					return true;
-			}
-			return false;
-		}
-
-		string findAliasForExtension(string extensionTypeUri) {
-			string aliasPrefix = QueryStringArgs.openid.ns + ".";
-			foreach (var arg in signedArguments) {
-				if (arg.Key.StartsWith(aliasPrefix, StringComparison.OrdinalIgnoreCase) &&
-					arg.Value.Equals(extensionTypeUri, StringComparison.Ordinal)) {
-					return arg.Key.Substring(aliasPrefix.Length);
-				}
-			}
-			return null;
-		}
-
 		internal static AuthenticationResponse Parse(IDictionary<string, string> query, IRelyingPartyApplicationStore store) {
 			string mode;
 			if (!query.TryGetValue(QueryStringArgs.openid.mode, out mode))
