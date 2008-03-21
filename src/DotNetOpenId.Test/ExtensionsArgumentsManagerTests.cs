@@ -46,7 +46,7 @@ namespace DotNetOpenId.Test {
 			var mgr = ExtensionArgumentsManager.CreateIncomingExtensions(new Dictionary<string, string>());
 			mgr.GetArgumentsToSend(true);
 		}
-		
+
 		[Test]
 		public void CreateIncomingSimpleNoExtensions() {
 			var args = new Dictionary<string, string>() {
@@ -117,7 +117,7 @@ namespace DotNetOpenId.Test {
 			Assert.IsTrue(mgr.ContainsExtension(QueryStringArgs.sreg_ns));
 			Assert.AreEqual("andy", mgr.GetExtensionArguments(QueryStringArgs.sreg_ns)["nickname"]);
 			// Now imagine that sreg was used explicitly by something else...
-			args = new Dictionary<string,string>() {
+			args = new Dictionary<string, string>() {
 				{"openid.sreg.nickname", "andy"},
 				{"openid.ns.sreg", "someOtherNS"},
 			};
@@ -177,6 +177,31 @@ namespace DotNetOpenId.Test {
 			mgr.AddExtensionArguments("extTypeURI", args2);
 			var results = mgr.GetArgumentsToSend(false);
 			Assert.AreEqual(3, results.Count);
+		}
+
+		[Test]
+		public void ReadExtensionWithEmptyKey() {
+			var args = new Dictionary<string, string> {
+				{"openid.sreg", "v1"},
+			};
+			var mgr = ExtensionArgumentsManager.CreateIncomingExtensions(args);
+			var result = mgr.GetExtensionArguments(QueryStringArgs.sreg_ns);
+			Assert.AreEqual("v1", result[string.Empty]);
+		}
+
+		[Test]
+		public void WriteExtensionWithEmptyKey() {
+			var args = new Dictionary<string, string> {
+				{"", "v1"},
+			};
+			var mgr = ExtensionArgumentsManager.CreateOutgoingExtensions();
+			mgr.AddExtensionArguments(QueryStringArgs.sreg_ns, args);
+			var result = mgr.GetArgumentsToSend(true);
+			Assert.AreEqual(2, result.Count);
+			Assert.AreEqual("v1", result["openid.sreg"]);
+			result = mgr.GetArgumentsToSend(false);
+			Assert.AreEqual(2, result.Count);
+			Assert.AreEqual("v1", result["sreg"]);
 		}
 	}
 }

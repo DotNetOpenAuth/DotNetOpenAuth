@@ -41,7 +41,7 @@ namespace DotNetOpenId {
 				}
 			}
 			// For backwards compatibility, add certain aliases if they aren't defined.
-			foreach(var pair in typeUriToAliasAffinity) {
+			foreach (var pair in typeUriToAliasAffinity) {
 				if (!mgr.typeUriToAliasMap.ContainsKey(pair.Key) &&
 					!aliasToTypeUriMap.ContainsKey(pair.Value)) {
 					mgr.typeUriToAliasMap.Add(pair.Key, pair.Value);
@@ -56,9 +56,10 @@ namespace DotNetOpenId {
 				if (periodIndex >= 0) possibleAlias = possibleAlias.Substring(0, periodIndex);
 				string typeUri;
 				if (aliasToTypeUriMap.TryGetValue(possibleAlias, out typeUri)) {
-					if (!mgr.extensions.ContainsKey(typeUri)) 
+					if (!mgr.extensions.ContainsKey(typeUri))
 						mgr.extensions[typeUri] = new Dictionary<string, string>();
-					mgr.extensions[typeUri].Add(pair.Key.Substring(QueryStringArgs.openid.Prefix.Length + possibleAlias.Length + 1), pair.Value);
+					string key = periodIndex >= 0 ? pair.Key.Substring(QueryStringArgs.openid.Prefix.Length + possibleAlias.Length + 1) : string.Empty;
+					mgr.extensions[typeUri].Add(key, pair.Value);
 				}
 			}
 			return mgr;
@@ -88,9 +89,11 @@ namespace DotNetOpenId {
 				// send out the alias declaration
 				string openidPrefix = includeOpenIdPrefix ? QueryStringArgs.openid.Prefix : string.Empty;
 				args.Add(openidPrefix + QueryStringArgs.openidnp.ns + "." + alias, typeUri);
-				string prefix = openidPrefix + alias + ".";
+				string prefix = openidPrefix + alias;
 				foreach (var pair in extensionArgs) {
-					args.Add(prefix + pair.Key, pair.Value);
+					string key = prefix;
+					if (pair.Key.Length > 0) key += "." + pair.Key;
+					args.Add(key, pair.Value);
 				}
 			}
 			return args;
