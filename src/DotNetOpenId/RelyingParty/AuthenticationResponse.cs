@@ -78,15 +78,8 @@ namespace DotNetOpenId.RelyingParty {
 		}
 
 		internal static AuthenticationResponse Parse(IDictionary<string, string> query, IRelyingPartyApplicationStore store) {
-			string mode;
-			if (!query.TryGetValue(QueryStringArgs.openid.mode, out mode))
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-					Strings.MissingOpenIdQueryParameter, QueryStringArgs.openid.mode));
-
-			string tokenString;
-			if (!query.TryGetValue(Token.TokenKey, out tokenString))
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-					Strings.MissingInternalQueryParameter, Token.TokenKey));
+			string mode = Util.GetRequiredArg(query, QueryStringArgs.openid.mode);
+			string tokenString = Util.GetRequiredArg(query, Token.TokenKey);
 			Token token = Token.Deserialize(tokenString, store);
 
 			switch (mode) {
@@ -110,7 +103,7 @@ namespace DotNetOpenId.RelyingParty {
 			if (query.TryGetValue(QueryStringArgs.openid.user_setup_url, out user_setup_url))
 				return new AuthenticationResponse(AuthenticationStatus.SetupRequired, token.ClaimedIdentifier, query);
 
-			string assoc_handle = getRequiredField(query, QueryStringArgs.openid.assoc_handle);
+			string assoc_handle = Util.GetRequiredArg(query, QueryStringArgs.openid.assoc_handle);
 
 			Association assoc = store.GetAssociation(token.ProviderEndpoint, assoc_handle);
 			AuthenticationResponse response;
@@ -120,17 +113,15 @@ namespace DotNetOpenId.RelyingParty {
 				// only possible path for recovery.
 				if (!verifyByProvider(query, token.ProviderEndpoint, store))
 					throw new OpenIdException("check_authentication failed", token.ClaimedIdentifier);
-
-				response = new AuthenticationResponse(AuthenticationStatus.Authenticated, token.ClaimedIdentifier, query);
 			} else {
 				if (assoc.IsExpired)
 					throw new OpenIdException(String.Format(CultureInfo.CurrentUICulture,
 						"Association with {0} expired", token.ProviderEndpoint), token.ClaimedIdentifier);
 
 				verifyBySignature(query, assoc);
-
-				response = new AuthenticationResponse(AuthenticationStatus.Authenticated, token.ClaimedIdentifier, query);
 			}
+
+			response = new AuthenticationResponse(AuthenticationStatus.Authenticated, token.ClaimedIdentifier, query);
 
 			// Just a little extra something to make sure that what's signed in return_to
 			// and doubled in the actual returned arguments is the same.
@@ -139,22 +130,13 @@ namespace DotNetOpenId.RelyingParty {
 			return response;
 		}
 
-		static string getRequiredField(IDictionary<string, string> query, string key) {
-			string val;
-			if (!query.TryGetValue(key, out val))
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-					Strings.MissingOpenIdQueryParameter, key));
-
-			return val;
-		}
-
 		/// <summary>
 		/// Verifies that a query is signed and that the signed fields have not been tampered with.
 		/// </summary>
 		/// <exception cref="OpenIdException">Thrown when the signature is missing or the query has been tampered with.</exception>
 		static void verifyBySignature(IDictionary<string, string> query, Association assoc) {
-			string sig = getRequiredField(query, QueryStringArgs.openid.sig);
-			string signed = getRequiredField(query, QueryStringArgs.openid.signed);
+			string sig = Util.GetRequiredArg(query, QueryStringArgs.openid.sig);
+			string signed = Util.GetRequiredArg(query, QueryStringArgs.openid.signed);
 			string[] signed_array = signed.Split(',');
 
 			string v_sig = CryptUtil.ToBase64String(assoc.Sign(query, signed_array, QueryStringArgs.openid.Prefix));
