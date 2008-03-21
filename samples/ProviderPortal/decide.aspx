@@ -27,7 +27,7 @@
 				Trust Root:
 			</td>
 			<td>
-				<asp:Label runat="server" ID='trustRootLabel' />
+				<asp:Label runat="server" ID='realmLabel' />
 			</td>
 		</tr>
 	</table>

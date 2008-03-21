@@ -64,14 +64,14 @@ namespace DotNetOpenId.RelyingParty {
 			}
 		}
 
-		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm trustRoot, Uri returnToUrl) {
-			return AuthenticationRequest.Create(userSuppliedIdentifier, trustRoot, returnToUrl, store);
+		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl) {
+			return AuthenticationRequest.Create(userSuppliedIdentifier, realm, returnToUrl, store);
 		}
 
 		/// <remarks>
 		/// This method requires an ASP.NET HttpContext.
 		/// </remarks>
-		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm trustRoot) {
+		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm) {
 			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
 
 			// Build the return_to URL
@@ -88,7 +88,7 @@ namespace DotNetOpenId.RelyingParty {
 			}
 			UriUtil.AppendQueryArgs(returnTo, returnToParams);
 
-			return CreateRequest(userSuppliedIdentifier, trustRoot, returnTo.Uri);
+			return CreateRequest(userSuppliedIdentifier, realm, returnTo.Uri);
 		}
 
 		/// <remarks>
@@ -97,11 +97,11 @@ namespace DotNetOpenId.RelyingParty {
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier) {
 			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
 
-			// Build the trustroot URL
-			UriBuilder trustRootUrl = new UriBuilder(HttpContext.Current.Request.Url);
-			trustRootUrl.Path = HttpContext.Current.Request.ApplicationPath;
+			// Build the realm URL
+			UriBuilder realmUrl = new UriBuilder(HttpContext.Current.Request.Url);
+			realmUrl.Path = HttpContext.Current.Request.ApplicationPath;
 
-			return CreateRequest(userSuppliedIdentifier, new Realm(trustRootUrl.Uri));
+			return CreateRequest(userSuppliedIdentifier, new Realm(realmUrl.Uri));
 		}
 
 		/// <summary>

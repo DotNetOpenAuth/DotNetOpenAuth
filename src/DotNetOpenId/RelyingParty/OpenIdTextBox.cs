@@ -88,21 +88,21 @@ namespace DotNetOpenId.RelyingParty
 			}
 		}
 
-		const string trustRootUrlViewStateKey = "TrustRootUrl";
-		const string trustRootUrlDefault = "~/";
+		const string realmUrlViewStateKey = "RealmUrl";
+		const string realmUrlDefault = "~/";
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenId.Realm"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings"), SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings")]
 		[Bindable(true)]
 		[Category(behaviorCategory)]
-		[DefaultValue(trustRootUrlDefault)]
-		public string TrustRootUrl
+		[DefaultValue(realmUrlDefault)]
+		public string RealmUrl
 		{
-			get { return (string)(ViewState[trustRootUrlViewStateKey] ?? trustRootUrlDefault); }
+			get { return (string)(ViewState[realmUrlViewStateKey] ?? realmUrlDefault); }
 			set
 			{
 				if (Page != null && !DesignMode)
 				{
-					// Validate new value by trying to construct a TrustRoot object based on it.
-					new Realm(getResolvedTrustRoot(value).ToString()); // throws an exception on failure.
+					// Validate new value by trying to construct a Realm object based on it.
+					new Realm(getResolvedRealm(value).ToString()); // throws an exception on failure.
 				}
 				else
 				{
@@ -118,7 +118,7 @@ namespace DotNetOpenId.RelyingParty
 					else
 						throw new UriFormatException();
 				}
-				ViewState[trustRootUrlViewStateKey] = value; 
+				ViewState[realmUrlViewStateKey] = value; 
 			}
 		}
 
@@ -292,7 +292,7 @@ namespace DotNetOpenId.RelyingParty
 		internal static void ValidateResolvableUrl(Page page, bool designMode, string value) {
 			if (string.IsNullOrEmpty(value)) return;
 			if (page != null && !designMode) {
-				// Validate new value by trying to construct a TrustRoot object based on it.
+				// Validate new value by trying to construct a Realm object based on it.
 				new Uri(page.Request.Url, page.ResolveUrl(value)); // throws an exception on failure.
 			} else {
 				// We can't fully test it, but it should start with either ~/ or a protocol.
@@ -444,13 +444,13 @@ namespace DotNetOpenId.RelyingParty
 				// Resolve the trust root, and swap out the scheme and port if necessary to match the
 				// return_to URL, since this match is required by OpenId, and the consumer app
 				// may be using HTTP at some times and HTTPS at others.
-				UriBuilder trustRoot = getResolvedTrustRoot(TrustRootUrl);
-				trustRoot.Scheme = Page.Request.Url.Scheme;
-				trustRoot.Port = Page.Request.Url.Port;
+				UriBuilder realm = getResolvedRealm(RealmUrl);
+				realm.Scheme = Page.Request.Url.Scheme;
+				realm.Port = Page.Request.Url.Port;
 
 				// Initiate openid request
-				// Note: we must use trustRoot.ToString() because trustRoot.Uri throws when wildcards are present.
-				var request = consumer.CreateRequest(Text, trustRoot.ToString());
+				// Note: we must use realm.ToString() because trustRoot.Uri throws when wildcards are present.
+				var request = consumer.CreateRequest(Text, realm.ToString());
 				if (EnableRequestProfile) addProfileArgs(request);
 				request.RedirectToProvider();
 			} catch (WebException ex) {
@@ -478,35 +478,35 @@ namespace DotNetOpenId.RelyingParty
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenId.Realm")]
-		UriBuilder getResolvedTrustRoot(string trustRoot)
+		UriBuilder getResolvedRealm(string realm)
 		{
 			Debug.Assert(Page != null, "Current HttpContext required to resolve URLs.");
-			// Allow for *. trustroot notation, as well as ASP.NET ~/ shortcuts.
+			// Allow for *. realm notation, as well as ASP.NET ~/ shortcuts.
 
 			// We have to temporarily remove the *. notation if it's there so that
 			// the rest of our URL manipulation will succeed.
 			bool foundWildcard = false;
 			// Note: we don't just use string.Replace because poorly written URLs
 			// could potentially have multiple :// sequences in them.
-			string trustRootNoWildcard = Regex.Replace(trustRoot, @"^(\w+://)\*\.",
+			string realmNoWildcard = Regex.Replace(realm, @"^(\w+://)\*\.",
 				delegate(Match m) {
 					foundWildcard = true;
 					return m.Groups[1].Value;
 				});
 
-			UriBuilder fullyQualifiedTrustRoot = new UriBuilder(
-				new Uri(Page.Request.Url, Page.ResolveUrl(trustRootNoWildcard)));
+			UriBuilder fullyQualifiedRealm = new UriBuilder(
+				new Uri(Page.Request.Url, Page.ResolveUrl(realmNoWildcard)));
 
 			if (foundWildcard)
 			{
-				fullyQualifiedTrustRoot.Host = "*." + fullyQualifiedTrustRoot.Host;
+				fullyQualifiedRealm.Host = "*." + fullyQualifiedRealm.Host;
 			}
 
 			// Is it valid?
 			// Note: we MUST use ToString.  Uri property throws if wildcard is present.
-			new Realm(fullyQualifiedTrustRoot.ToString()); // throws if not valid
+			new Realm(fullyQualifiedRealm.ToString()); // throws if not valid
 
-			return fullyQualifiedTrustRoot;
+			return fullyQualifiedRealm;
 		}
 
 		#region Events

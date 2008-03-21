@@ -49,7 +49,7 @@ namespace DotNetOpenId.RelyingParty {
 			if (endpoint == null)
 				throw new OpenIdException(Strings.OpenIdEndpointNotFound);
 
-			// Throw an exception now if the trustroot and the return_to URLs don't match
+			// Throw an exception now if the realm and the return_to URLs don't match
 			// as required by the provider.  We could wait for the provider to test this and
 			// fail, but this will be faster and give us a better error message.
 			if (!realm.Contains(returnToUrl))

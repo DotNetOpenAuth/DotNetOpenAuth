@@ -15,7 +15,7 @@ public partial class decide : Page {
 			Response.Redirect("~/");
 
 		identityUrlLabel.Text = ProviderEndpoint.PendingAuthenticationRequest.ClaimedIdentifier.ToString();
-		trustRootLabel.Text = ProviderEndpoint.PendingAuthenticationRequest.TrustRoot.ToString();
+		realmLabel.Text = ProviderEndpoint.PendingAuthenticationRequest.Realm.ToString();
 
 		// check that the logged in user is the same as the user requesting authentication to the consumer. If not, then log them out.
 		String s = Util.ExtractUserName(ProviderEndpoint.PendingAuthenticationRequest.ClaimedIdentifier);

@@ -47,7 +47,7 @@ namespace DotNetOpenId {
 		const string wildcardDetectionPattern = @"^(\w+://)\*\.";
 
 		/// <summary>
-		/// Whether a '*.' prefix to the hostname is used in the trustroot to allow
+		/// Whether a '*.' prefix to the hostname is used in the realm to allow
 		/// subdomains or hosts to be added to the URL.
 		/// </summary>
 		public bool DomainWildcard { get; private set; }

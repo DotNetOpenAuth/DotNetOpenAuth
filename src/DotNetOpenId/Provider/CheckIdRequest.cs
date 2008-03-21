@@ -52,14 +52,14 @@ namespace DotNetOpenId.Provider {
 		/// <summary>
 		/// The URL the consumer site claims to use as its 'base' address.
 		/// </summary>
-		public Realm TrustRoot { get; private set; }
+		public Realm Realm { get; private set; }
 		/// <summary>
 		/// The claimed OpenId URL of the user attempting to authenticate.
 		/// </summary>
 		public Identifier ClaimedIdentifier { get; private set; }
 		/// <summary>
 		/// The URL to redirect the user agent to after the authentication attempt.
-		/// This must fall "under" the TrustRoot URL.
+		/// This must fall "under" the realm URL.
 		/// </summary>
 		internal Uri ReturnTo { get; private set; }
 		internal override string Mode {
@@ -115,7 +115,7 @@ namespace DotNetOpenId.Provider {
 			}
 
 			try {
-				TrustRoot = new Realm(Util.GetOptionalArg(Query, QueryStringArgs.openid.trust_root) ?? ReturnTo.AbsoluteUri);
+				Realm = new Realm(Util.GetOptionalArg(Query, QueryStringArgs.openid.trust_root) ?? ReturnTo.AbsoluteUri);
 			} catch (UriFormatException ex) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 					Strings.InvalidOpenIdQueryParameterValue, QueryStringArgs.openid.trust_root,
@@ -123,9 +123,9 @@ namespace DotNetOpenId.Provider {
 			}
 			AssociationHandle = Util.GetOptionalArg(Query, QueryStringArgs.openid.assoc_handle);
 
-			if (!TrustRoot.Contains(ReturnTo)) {
+			if (!Realm.Contains(ReturnTo)) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-					Strings.ReturnToNotUnderRealm, ReturnTo.AbsoluteUri, TrustRoot), Query);
+					Strings.ReturnToNotUnderRealm, ReturnTo.AbsoluteUri, Realm), Query);
 			}
 		}
 
@@ -189,8 +189,8 @@ namespace DotNetOpenId.Provider {
 				q.Add(QueryStringArgs.openid.identity, ClaimedIdentifier.ToString());
 				q.Add(QueryStringArgs.openid.return_to, ReturnTo.AbsoluteUri);
 
-				if (TrustRoot != null)
-					q.Add(QueryStringArgs.openid.trust_root, TrustRoot.ToString());
+				if (Realm != null)
+					q.Add(QueryStringArgs.openid.trust_root, Realm.ToString());
 
 				if (this.AssociationHandle != null)
 					q.Add(QueryStringArgs.openid.assoc_handle, this.AssociationHandle);
@@ -205,14 +205,14 @@ namespace DotNetOpenId.Provider {
 		public override string ToString() {
 			string returnString = @"
 CheckIdRequest.Immediate = '{0}'
-CheckIdRequest.TrustRoot = '{1}'
+CheckIdRequest.Realm = '{1}'
 CheckIdRequest.Identity = '{2}' 
 CheckIdRequest._mode = '{3}' 
 CheckIdRequest.ReturnTo = '{4}' 
 ";
 
 			return base.ToString() + string.Format(CultureInfo.CurrentUICulture,
-				returnString, Immediate, TrustRoot, ClaimedIdentifier, Mode, ReturnTo);
+				returnString, Immediate, Realm, ClaimedIdentifier, Mode, ReturnTo);
 		}
 	}
 }
