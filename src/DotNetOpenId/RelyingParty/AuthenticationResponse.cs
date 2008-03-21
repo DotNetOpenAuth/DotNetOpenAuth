@@ -42,6 +42,8 @@ namespace DotNetOpenId.RelyingParty {
 					signedArguments[fieldWithPrefix] = val;
 				}
 			}
+			// Only read extensions from signed argument list.
+			IncomingExtensions = ExtensionArgumentsManager.CreateIncomingExtensions(signedArguments);
 		}
 
 		/// <summary>
@@ -53,6 +55,10 @@ namespace DotNetOpenId.RelyingParty {
 		/// </summary>
 		public Identifier ClaimedIdentifier { get; private set; }
 		IDictionary<string, string> signedArguments;
+		/// <summary>
+		/// Gets the set of arguments that the Provider included as extensions.
+		/// </summary>
+		public ExtensionArgumentsManager IncomingExtensions { get; private set; }
 
 		internal Uri ReturnTo {
 			get { return new Uri(signedArguments[QueryStringArgs.openid.return_to]); }
@@ -68,27 +74,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// Returns key/value pairs for this extension.
 		/// </returns>
 		public IDictionary<string, string> GetExtensionArguments(string extensionTypeUri) {
-			if (string.IsNullOrEmpty(extensionTypeUri)) throw new ArgumentNullException("extensionTypeUri");
-			var response = new Dictionary<string, string>();
-			string alias = findAliasForExtension(extensionTypeUri);
-			if (alias == null) {
-				// for OpenID 1.x compatibility, guess the sreg alias.
-				if (extensionTypeUri == QueryStringArgs.sreg_ns &&
-					!isExtensionAliasDefined(QueryStringArgs.sreg_compatibility_alias))
-					alias = QueryStringArgs.sreg_compatibility_alias;
-				else
-					return response;
-			}
-
-			string extensionPrefix = QueryStringArgs.openid.Prefix + alias + ".";
-			foreach (var pair in signedArguments) {
-				if (pair.Key.StartsWith(extensionPrefix, StringComparison.OrdinalIgnoreCase)) {
-					string bareKey = pair.Key.Substring(extensionPrefix.Length);
-					response[bareKey] = pair.Value;
-				}
-			}
-
-			return response;
+			return IncomingExtensions.GetExtensionArguments(extensionTypeUri);
 		}
 
 		bool isExtensionAliasDefined(string alias) {

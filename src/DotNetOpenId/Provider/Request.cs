@@ -15,20 +15,21 @@ namespace DotNetOpenId.Provider
 		protected Request(OpenIdProvider server) {
 			Server = server;
 			Query = server.query;
-			ExtraArgs = new Dictionary<string, string>();
+			IncomingExtensions = ExtensionArgumentsManager.CreateIncomingExtensions(Query);
+			OutgoingExtensions = ExtensionArgumentsManager.CreateOutgoingExtensions();
 		}
 
 		protected IDictionary<string, string> Query { get; private set; }
 		protected OpenIdProvider Server { get; private set; }
 		internal abstract string Mode { get; }
 		/// <summary>
-		/// Additional (extension) arguments to be sent back to the consumer.
+		/// Extension arguments to pass to the Relying Party.
 		/// </summary>
-		protected IDictionary<string, string> ExtraArgs { get; private set; }
+		protected ExtensionArgumentsManager OutgoingExtensions { get; private set; }
 		/// <summary>
-		/// Tracks extension Type URIs and aliases assigned to them.
+		/// Extension arguments received from the Relying Party.
 		/// </summary>
-		Dictionary<string, string> extensionTypeUriToAliasMap = new Dictionary<string, string>();
+		protected ExtensionArgumentsManager IncomingExtensions { get; private set; }
 
 		/// <summary>
 		/// Tests whether a given dictionary represents an incoming OpenId request.
@@ -108,7 +109,7 @@ namespace DotNetOpenId.Provider
 					var encodableResponse = CreateResponse();
 					EncodableResponse extendableResponse = encodableResponse as EncodableResponse;
 					if (extendableResponse != null)
-						extendableResponse.AddFields(null, ExtraArgs, true);
+						extendableResponse.AddFields(null, OutgoingExtensions.GetArgumentsToSend(false), true);
 					response = Server.EncodeResponse(encodableResponse);
 				}
 				return response;
@@ -117,51 +118,16 @@ namespace DotNetOpenId.Provider
 		IResponse IRequest.Response { get { return this.Response; } }
 
 		/// <summary>
-		/// Adds query parameters for OpenID extensions to the request directed 
-		/// at the OpenID provider.
+		/// Adds query parameters for OpenID extensions to the response directed 
+		/// at the OpenID Relying Party.
 		/// </summary>
 		public void AddExtensionArguments(string extensionTypeUri, IDictionary<string, string> arguments) {
-			if (string.IsNullOrEmpty(extensionTypeUri)) throw new ArgumentNullException("extensionTypeUri");
-			if (arguments == null) throw new ArgumentNullException("arguments");
-
-			string extensionAlias;
-			// Affinity to make the simple registration extension use the sreg alias.
-			if (extensionTypeUri == QueryStringArgs.sreg_ns) {
-				extensionAlias = QueryStringArgs.sreg_compatibility_alias;
-				createExtensionAlias(extensionTypeUri, extensionAlias);
-			} else {
-				extensionAlias = findOrCreateExtensionAlias(extensionTypeUri);
-			}
-			foreach (var pair in arguments) {
-				ExtraArgs.Add(extensionAlias + "." + pair.Key, pair.Value);
-			}
-		}
-
-		void createExtensionAlias(string extensionTypeUri, string preferredAlias) {
-			string existingAlias;
-			if (!extensionTypeUriToAliasMap.TryGetValue(extensionTypeUri, out existingAlias)) {
-				extensionTypeUriToAliasMap.Add(extensionTypeUri, preferredAlias);
-				ExtraArgs.Add(QueryStringArgs.openid.ns + "." + preferredAlias, extensionTypeUri);
-			} else {
-				if (existingAlias != preferredAlias) {
-					throw new InvalidOperationException("Extension " + extensionTypeUri + " already assigned to alias " + existingAlias);
-				}
-			}
-		}
-
-		string findOrCreateExtensionAlias(string extensionTypeUri) {
-			string alias;
-			lock (extensionTypeUriToAliasMap) {
-				if (!extensionTypeUriToAliasMap.TryGetValue(extensionTypeUri, out alias)) {
-					alias = "ext" + (extensionTypeUriToAliasMap.Count + 1).ToString(CultureInfo.InvariantCulture);
-					createExtensionAlias(extensionTypeUri, alias);
-				}
-			}
-			return alias;
+			OutgoingExtensions.AddExtensionArguments(extensionTypeUri, arguments);
 		}
 
 		/// <summary>
-		/// Gets the key/value pairs of a provider's response for a given OpenID extension.
+		/// Gets the key/value pairs for a given OpenID extension 
+		/// of a Relying Party's request.
 		/// </summary>
 		/// <param name="extensionTypeUri">
 		/// The Type URI of the OpenID extension whose arguments are being sought.
@@ -170,47 +136,7 @@ namespace DotNetOpenId.Provider
 		/// Returns key/value pairs for this extension.
 		/// </returns>
 		public IDictionary<string, string> GetExtensionArguments(string extensionTypeUri) {
-			if (string.IsNullOrEmpty(extensionTypeUri)) throw new ArgumentNullException("extensionTypeUri");
-			var result = new Dictionary<string, string>();
-			string alias = findAliasForExtension(extensionTypeUri);
-			if (alias == null) {
-				// for OpenID 1.x compatibility, guess the sreg alias.
-				if (extensionTypeUri == QueryStringArgs.sreg_ns &&
-					!isExtensionAliasDefined(QueryStringArgs.sreg_compatibility_alias))
-					alias = QueryStringArgs.sreg_compatibility_alias;
-				else
-					return result;
-			}
-
-			string extensionPrefix = QueryStringArgs.openid.Prefix + alias + ".";
-			foreach (var pair in Query) {
-				if (pair.Key.StartsWith(extensionPrefix, StringComparison.OrdinalIgnoreCase)) {
-					string bareKey = pair.Key.Substring(extensionPrefix.Length);
-					result[bareKey] = pair.Value;
-				}
-			}
-
-			return result;
-		}
-
-		bool isExtensionAliasDefined(string alias) {
-			string aliasPrefix = QueryStringArgs.openid.ns + "." + alias;
-			foreach (string key in Query.Keys) {
-				if (key.Equals(aliasPrefix, StringComparison.OrdinalIgnoreCase))
-					return true;
-			}
-			return false;
-		}
-
-		string findAliasForExtension(string extensionTypeUri) {
-			string aliasPrefix = QueryStringArgs.openid.ns + ".";
-			foreach (var pair in Query) {
-				if (pair.Key.StartsWith(aliasPrefix, StringComparison.OrdinalIgnoreCase) &&
-					pair.Value.Equals(extensionTypeUri, StringComparison.Ordinal)) {
-					return pair.Key.Substring(aliasPrefix.Length);
-				}
-			}
-			return null;
+			return IncomingExtensions.GetExtensionArguments(extensionTypeUri);
 		}
 
 		public override string ToString() {

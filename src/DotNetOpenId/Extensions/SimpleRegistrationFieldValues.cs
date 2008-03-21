@@ -107,6 +107,7 @@ namespace DotNetOpenId.Extensions
 		}
 		public static SimpleRegistrationFieldValues ReadFromResponse(IAuthenticationResponse response) {
 			var sreg = response.GetExtensionArguments(QueryStringArgs.sreg_ns);
+			if (sreg == null) return new SimpleRegistrationFieldValues();
 			string nickname, email, fullName, dob, genderString, postalCode, country, language, timeZone;
 			DateTime? birthDate = null;
 			Gender? gender = null;

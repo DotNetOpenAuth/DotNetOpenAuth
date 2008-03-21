@@ -107,6 +107,7 @@ namespace DotNetOpenId.Extensions {
 		public static SimpleRegistrationRequestFields ReadFromRequest(IRequest request) {
 			SimpleRegistrationRequestFields fields = new SimpleRegistrationRequestFields();
 			var args = request.GetExtensionArguments(QueryStringArgs.sreg_ns);
+			if (args == null) return fields;
 
 			string policyUrl;
 			if (args.TryGetValue(QueryStringArgs.openidnp.sregnp.policy_url, out policyUrl)

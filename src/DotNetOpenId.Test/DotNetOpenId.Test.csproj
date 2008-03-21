@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="AssociationsTest.cs" />
     <Compile Include="AssociationTestSuite.cs" />
+    <Compile Include="ExtensionsArgumentsManagerTests.cs" />
     <Compile Include="IdentifierTests.cs" />
     <Compile Include="RelyingParty\NonceTest.cs" />
     <Compile Include="RelyingParty\OpenIdRelyingPartyTest.cs" />

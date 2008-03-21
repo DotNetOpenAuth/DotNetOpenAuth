@@ -37,7 +37,7 @@ namespace DotNetOpenId.RelyingParty {
 			ReturnToUrl = returnToUrl;
 
 			Mode = AuthenticationRequestMode.Setup;
-			ExtraArgs = new Dictionary<string, string>();
+			OutgoingExtensions = ExtensionArgumentsManager.CreateOutgoingExtensions();
 			ReturnToArgs = new Dictionary<string, string>();
 			AddCallbackArguments(DotNetOpenId.RelyingParty.Token.TokenKey, token);
 		}
@@ -78,13 +78,9 @@ namespace DotNetOpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Arguments to add to the query string to be sent to the provider.
+		/// Extension arguments to pass to the Provider.
 		/// </summary>
-		protected IDictionary<string, string> ExtraArgs { get; private set; }
-		/// <summary>
-		/// Tracks extension Type URIs and aliases assigned to them.
-		/// </summary>
-		Dictionary<string, string> extensionTypeUriToAliasMap = new Dictionary<string, string>();
+		protected ExtensionArgumentsManager OutgoingExtensions { get; private set; }
 		/// <summary>
 		/// Arguments to add to the return_to part of the query string, so that
 		/// these values come back to the consumer when the user agent returns.
@@ -123,7 +119,7 @@ namespace DotNetOpenId.RelyingParty {
 				UriBuilder redir = new UriBuilder(this.endpoint.ProviderEndpoint);
 
 				UriUtil.AppendQueryArgs(redir, qsArgs);
-				UriUtil.AppendQueryArgs(redir, ExtraArgs);
+				UriUtil.AppendQueryArgs(redir, OutgoingExtensions.GetArgumentsToSend(true));
 
 				return redir.Uri;
 			}
@@ -134,43 +130,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// at the OpenID provider.
 		/// </summary>
 		public void AddExtensionArguments(string extensionTypeUri, IDictionary<string, string> arguments) {
-			if (string.IsNullOrEmpty(extensionTypeUri)) throw new ArgumentNullException("extensionTypeUri");
-			if (arguments == null) throw new ArgumentNullException("arguments");
-
-			string extensionAlias;
-			// Affinity to make the simple registration extension use the sreg alias.
-			if (extensionTypeUri == QueryStringArgs.sreg_ns) {
-				extensionAlias = QueryStringArgs.sreg_compatibility_alias;
-				createExtensionAlias(extensionTypeUri, extensionAlias);
-			} else {
-				extensionAlias = findOrCreateExtensionAlias(extensionTypeUri);
-			}
-			foreach (var pair in arguments) {
-				ExtraArgs.Add(QueryStringArgs.openid.Prefix + extensionAlias + "." + pair.Key, pair.Value);
-			}
-		}
-
-		void createExtensionAlias(string extensionTypeUri, string preferredAlias) {
-			string existingAlias;
-			if (!extensionTypeUriToAliasMap.TryGetValue(extensionTypeUri, out existingAlias)) {
-				extensionTypeUriToAliasMap.Add(extensionTypeUri, preferredAlias);
-				ExtraArgs.Add(QueryStringArgs.openid.ns + "." + preferredAlias, extensionTypeUri);
-			} else {
-				if (existingAlias != preferredAlias) {
-					throw new InvalidOperationException("Extension " + extensionTypeUri + " already assigned to alias " + existingAlias);
-				}
-			}
-		}
-
-		string findOrCreateExtensionAlias(string extensionTypeUri) {
-			string alias;
-			lock (extensionTypeUriToAliasMap) {
-				if (!extensionTypeUriToAliasMap.TryGetValue(extensionTypeUri, out alias)) {
-					alias = "ext" + (extensionTypeUriToAliasMap.Count + 1).ToString(CultureInfo.InvariantCulture);
-					createExtensionAlias(extensionTypeUri, alias);
-				}
-			}
-			return alias;
+			OutgoingExtensions.AddExtensionArguments(extensionTypeUri, arguments);
 		}
 
 		/// <summary>
