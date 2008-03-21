@@ -16,7 +16,8 @@ using System.Collections.Generic;
 
 namespace DotNetOpenId.Extensions
 {
-	[Serializable()]
+#pragma warning disable 0659, 0661
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2218:OverrideGetHashCodeOnOverridingEquals"), Serializable()]
 	public struct SimpleRegistrationFieldValues
 	{
 		public static readonly SimpleRegistrationFieldValues Empty = new SimpleRegistrationFieldValues();
@@ -67,6 +68,7 @@ namespace DotNetOpenId.Extensions
 		}
 		public string TimeZone { get; set; }
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
 		public void AddToResponse(Provider.IAuthenticationRequest authenticationRequest) {
 			if (authenticationRequest == null) throw new ArgumentNullException("authenticationRequest");
 			Dictionary<string, string> fields = new Dictionary<string, string>();
@@ -138,6 +140,13 @@ namespace DotNetOpenId.Extensions
 				Language = language,
 				TimeZone = timeZone,
 			};
+		}
+
+		public static bool operator ==(SimpleRegistrationFieldValues one, SimpleRegistrationFieldValues other) {
+			return one.Equals(other);
+		}
+		public static bool operator !=(SimpleRegistrationFieldValues one, SimpleRegistrationFieldValues other) {
+			return !one.Equals(other);
 		}
 
 		public override bool Equals(object obj)

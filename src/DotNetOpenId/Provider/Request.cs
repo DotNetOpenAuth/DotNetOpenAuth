@@ -153,7 +153,7 @@ namespace DotNetOpenId.Provider
 			string alias;
 			lock (extensionTypeUriToAliasMap) {
 				if (!extensionTypeUriToAliasMap.TryGetValue(extensionTypeUri, out alias)) {
-					alias = "ext" + (extensionTypeUriToAliasMap.Count + 1).ToString();
+					alias = "ext" + (extensionTypeUriToAliasMap.Count + 1).ToString(CultureInfo.InvariantCulture);
 					createExtensionAlias(extensionTypeUri, alias);
 				}
 			}
@@ -171,7 +171,7 @@ namespace DotNetOpenId.Provider
 		/// </returns>
 		public IDictionary<string, string> GetExtensionArguments(string extensionTypeUri) {
 			if (string.IsNullOrEmpty(extensionTypeUri)) throw new ArgumentNullException("extensionTypeUri");
-			var response = new Dictionary<string, string>();
+			var result = new Dictionary<string, string>();
 			string alias = findAliasForExtension(extensionTypeUri);
 			if (alias == null) {
 				// for OpenID 1.x compatibility, guess the sreg alias.
@@ -179,18 +179,18 @@ namespace DotNetOpenId.Provider
 					!isExtensionAliasDefined(QueryStringArgs.sreg_compatibility_alias))
 					alias = QueryStringArgs.sreg_compatibility_alias;
 				else
-					return response;
+					return result;
 			}
 
 			string extensionPrefix = QueryStringArgs.openid.Prefix + alias + ".";
 			foreach (var pair in Query) {
 				if (pair.Key.StartsWith(extensionPrefix, StringComparison.OrdinalIgnoreCase)) {
 					string bareKey = pair.Key.Substring(extensionPrefix.Length);
-					response[bareKey] = pair.Value;
+					result[bareKey] = pair.Value;
 				}
 			}
 
-			return response;
+			return result;
 		}
 
 		bool isExtensionAliasDefined(string alias) {

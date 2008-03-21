@@ -34,6 +34,7 @@ namespace DotNetOpenId.Provider {
 		/// <summary>
 		/// Respond to this request with an association.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1820:TestForEmptyStringsUsingStringLength")]
 		public EncodableResponse Answer() {
 			Association assoc = Server.Signatory.CreateAssociation(AssociationRelyingPartyType.Smart);
 			if (TraceUtil.Switch.TraceInfo) {

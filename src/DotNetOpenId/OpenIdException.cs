@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using DotNetOpenId.Provider;
 using System.Runtime.Serialization;
+using System.Security.Permissions;
 
 namespace DotNetOpenId {
 	/// <summary>
@@ -31,15 +32,27 @@ namespace DotNetOpenId {
 		internal OpenIdException(string message, IDictionary<string, string> query)
 			: this(message, null, query, null) {
 		}
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
 		internal OpenIdException(string message, Exception innerException)
 			: this(message, null, null, innerException) {
 		}
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
 		internal OpenIdException(string message)
 			: this(message, null, null, null) {
 		}
 		protected OpenIdException(SerializationInfo info, StreamingContext context)
-			: base(info, context) { }
+			: base(info, context) {
+			query = (IDictionary<string, string>)info.GetValue("query", typeof(IDictionary<string, string>));
+			Identifier = (Identifier)info.GetValue("Identifier", typeof(Identifier));
+		}
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
 		internal OpenIdException() { }
+		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
+		public override void GetObjectData(SerializationInfo info, StreamingContext context) {
+			base.GetObjectData(info, context);
+			info.AddValue("query", query, typeof(IDictionary<string, string>));
+			info.AddValue("Identifier", Identifier, typeof(Identifier));
+		}
 
 		internal bool HasReturnTo {
 			get {

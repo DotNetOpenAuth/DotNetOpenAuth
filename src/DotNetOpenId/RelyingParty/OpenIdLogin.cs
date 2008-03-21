@@ -325,6 +325,7 @@ namespace DotNetOpenId.RelyingParty
 			set { UsePersistentCookie = value; }
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "value+1"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "value+3"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "value+2")]
 		public override short TabIndex {
 			get { return base.TabIndex; }
 			set {
@@ -392,13 +393,13 @@ namespace DotNetOpenId.RelyingParty
 		/// OpenID URL before redirecting the user to the OpenID Provider.
 		/// </summary>
 		[Description("Fired after the user clicks the log in button, but before the authentication process begins.  Offers a chance for the web application to disallow based on OpenID URL before redirecting the user to the OpenID Provider.")]
-		public event EventHandler<OpenIdTextBox.OpenIdEventArgs> LoggingIn;
+		public event EventHandler<OpenIdEventArgs> LoggingIn;
 		protected virtual bool OnLoggingIn(Identifier userSuppliedIdentifier)
 		{
-			EventHandler<OpenIdTextBox.OpenIdEventArgs> loggingIn = LoggingIn;
-			// TODO: discover the true identityUrl from the openIdUrl given to
+			EventHandler<OpenIdEventArgs> loggingIn = LoggingIn;
+			// TODO: discover the Claimed Identifier from the User Suppied Identifier given to
 			//       fill OpenIdEventArgs with before firing this event.
-			OpenIdTextBox.OpenIdEventArgs args = new OpenIdTextBox.OpenIdEventArgs(userSuppliedIdentifier);
+			OpenIdEventArgs args = new OpenIdEventArgs(userSuppliedIdentifier);
 			if (loggingIn != null)
 				loggingIn(this, args);
 			return !args.Cancel;

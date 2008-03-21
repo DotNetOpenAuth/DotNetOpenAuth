@@ -14,6 +14,7 @@ namespace DotNetOpenId.RelyingParty {
 		public DiffieHellman DH { get; private set; }
 
 		Association association;
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1820:TestForEmptyStringsUsingStringLength")]
 		public Association Association {
 			get {
 				if (association == null) {

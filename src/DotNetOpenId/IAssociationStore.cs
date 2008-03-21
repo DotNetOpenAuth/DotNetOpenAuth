@@ -16,7 +16,7 @@ namespace DotNetOpenId {
 	/// </summary>
 	/// <typeparam name="TKey">
 	/// <see cref="System.Uri"/> for consumers (to distinguish associations across servers) or
-	/// <see cref="AssociationConsumerType"/> for providers (to distingish dumb and smart client associaitons).
+	/// <see cref="AssociationRelyingPartyType"/> for providers (to distingish dumb and smart client associaitons).
 	/// </typeparam>
 	public interface IAssociationStore<TKey> {
 		void StoreAssociation(TKey distinguishingFactor, Association assoc);

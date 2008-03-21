@@ -74,6 +74,9 @@ namespace DotNetOpenId {
 			if (other == null) return false;
 			return this.CanonicalXri == other.CanonicalXri;
 		}
+		public override int GetHashCode() {
+			return CanonicalXri.GetHashCode();
+		}
 
 		public override string ToString() {
 			return CanonicalXri;

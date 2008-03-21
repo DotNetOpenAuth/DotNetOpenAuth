@@ -30,6 +30,7 @@ namespace DotNetOpenId.RelyingParty {
 		public static TimeSpan Timeout = TimeSpan.FromSeconds(5);
 
 #if LONGTIMEOUT
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static Fetcher() {
 			ReadWriteTimeout = TimeSpan.FromHours(1);
 			Timeout = TimeSpan.FromHours(1);

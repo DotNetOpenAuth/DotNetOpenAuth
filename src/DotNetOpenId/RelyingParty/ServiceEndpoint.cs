@@ -53,10 +53,11 @@ namespace DotNetOpenId.RelyingParty {
 		/// This value MUST be an absolute HTTP or HTTPS URL.
 		/// </remarks>
 		public Uri ProviderEndpoint { get; private set; }
+		/*
 		/// <summary>
 		/// An Identifier for an OpenID Provider.
 		/// </summary>
-		//public Identifier ProviderIdentifier { get; private set; }
+		public Identifier ProviderIdentifier { get; private set; }
 		/// <summary>
 		/// An Identifier that was presented by the end user to the Relying Party, 
 		/// or selected by the user at the OpenID Provider. 
@@ -65,7 +66,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// is used, the OP may then assist the end user in selecting an Identifier 
 		/// to share with the Relying Party.
 		/// </summary>
-		//public Identifier UserSuppliedIdentifier { get; private set; }
+		public Identifier UserSuppliedIdentifier { get; private set; }*/
 		/// <summary>
 		/// The Identifier that the end user claims to own.
 		/// </summary>

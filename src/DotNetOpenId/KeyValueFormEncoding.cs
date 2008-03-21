@@ -9,8 +9,8 @@ using System.Globalization;
 namespace DotNetOpenId {
 	public enum KeyValueFormConformanceLevel {
 		Loose,
-		OpenID11,
-		OpenID20,
+		OpenId11,
+		OpenId20,
 	}
 
 	/// <summary>
@@ -52,11 +52,15 @@ namespace DotNetOpenId {
 		/// <summary>
 		/// Encodes key/value pairs to Key-Value Form.
 		/// </summary>
+		/// <param name="dictionary">
+		/// The dictionary of key/value pairs to convert to a byte stream.
+		/// </param>
 		/// <param name="keyOrder">
 		/// The order in which to encode the key/value pairs.
 		/// Useful in scenarios where a byte[] must be exactly reproduced.
 		/// </param>
 		/// <returns>The UTF8 byte array.</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public byte[] GetBytes(IDictionary<string, string> dictionary, IList<string> keyOrder) {
 			if (dictionary == null) throw new ArgumentNullException("dictionary");
 			if (keyOrder == null) throw new ArgumentNullException("keyOrder");
@@ -86,10 +90,7 @@ namespace DotNetOpenId {
 		/// <summary>
 		/// Decodes bytes in Key-Value Form to key/value pairs.
 		/// </summary>
-		/// <param name="buffer">The Key-Value Form encoded bytes.</param>
-		/// <param name="offset">The offset into the byte array where reading should begin.</param>
-		/// <param name="bufferLength">The number of bytes to read from the byte array.</param>
-		/// <param name="enforcedSpec">Whether strict OpenID 2.0 spec validation will be performed </param>
+		/// <param name="data">The stream of Key-Value Form encoded bytes.</param>
 		/// <returns>The deserialized dictionary.</returns>
 		public IDictionary<string, string> GetDictionary(Stream data) {
 			using (StreamReader reader = new StreamReader(data, textEncoding)) {
@@ -114,7 +115,7 @@ namespace DotNetOpenId {
 								Strings.InvalidCharacterInKeyValueFormInput, ' '));
 						}
 					}
-					if (ConformanceLevel < KeyValueFormConformanceLevel.OpenID20) {
+					if (ConformanceLevel < KeyValueFormConformanceLevel.OpenId20) {
 						parts[0] = parts[0].Trim();
 						parts[1] = parts[1].Trim();
 					}

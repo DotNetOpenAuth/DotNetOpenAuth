@@ -7,20 +7,20 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 
 namespace DotNetOpenId.Provider {
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Xrds"), Flags]
+	public enum XrdsUrlLocations {
+		HttpHeader = 0x1,
+		HtmlMeta = 0x2,
+		Both = 0x3
+	}
+
 	[DefaultProperty("ServerUrl")]
 	[ToolboxData("<{0}:IdentityEndpoint runat=server></{0}:IdentityEndpoint>")]
 	public class IdentityEndpoint : WebControl {
 
 		#region Properties
-		[Flags]
-		public enum XrdsUrlLocations {
-			HttpHeader = 0x1,
-			HtmlMeta = 0x2,
-			Both = 0x3
-		}
-
 		const string providerEndpointUrlViewStateKey = "ProviderEndpointUrl";
-		[Bindable(true)]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings"), Bindable(true)]
 		[Category("Behavior")]
 		public string ProviderEndpointUrl {
 			get { return (string)ViewState[providerEndpointUrlViewStateKey]; }
@@ -42,7 +42,7 @@ namespace DotNetOpenId.Provider {
 		}
 
 		const string xrdsUrlViewStateKey = "XrdsUrl";
-		[Bindable(true)]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Xrds"), Bindable(true)]
 		[Category("Behavior")]
 		public string XrdsUrl {
 			get { return (string)ViewState[xrdsUrlViewStateKey]; }
@@ -54,7 +54,7 @@ namespace DotNetOpenId.Provider {
 
 		const XrdsUrlLocations xrdsAdvertisementDefault = XrdsUrlLocations.HttpHeader;
 		const string xrdsAdvertisementViewStateKey = "XrdsAdvertisement";
-		[Bindable(true)]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Xrds"), Bindable(true)]
 		[Category("Behavior")]
 		[DefaultValue(xrdsAdvertisementDefault)]
 		[Description("Where the XRDS document URL is advertised in the web response.")]
@@ -68,7 +68,7 @@ namespace DotNetOpenId.Provider {
 
 		const bool xrdsAutoAnswerDefault = true;
 		const string xrdsAutoAnswerViewStateKey = "XrdsAutoAnswer";
-		[Bindable(true)]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Xrds"), Bindable(true)]
 		[Category("Behavior")]
 		[DefaultValue(xrdsAutoAnswerDefault)]
 		[Description("Whether XRDS requests should be immediately answered with the XRDS document if it is served by this web application.")]
@@ -184,6 +184,7 @@ namespace DotNetOpenId.Provider {
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
 		protected override void Render(HtmlTextWriter writer) {
 			if (!string.IsNullOrEmpty(XrdsUrl)) {
 				if ((XrdsAdvertisement & XrdsUrlLocations.HttpHeader) != 0) {

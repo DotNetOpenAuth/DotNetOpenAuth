@@ -22,7 +22,7 @@ namespace DotNetOpenId.Yadis {
 			if (response.ContentType.MediaType == ContentTypes.Xrds) {
 				response2 = response;
 			} else {
-				string uriString = response.Headers.Get(HeaderName.ToLower());
+				string uriString = response.Headers.Get(HeaderName);
 				Uri url = null;
 				if (uriString != null)
 					Uri.TryCreate(uriString, UriKind.Absolute, out url);

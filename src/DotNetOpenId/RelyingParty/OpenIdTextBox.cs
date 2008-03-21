@@ -90,7 +90,7 @@ namespace DotNetOpenId.RelyingParty
 
 		const string trustRootUrlViewStateKey = "TrustRootUrl";
 		const string trustRootUrlDefault = "~/";
-		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenId.Realm"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings"), SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings")]
 		[Bindable(true)]
 		[Category(behaviorCategory)]
 		[DefaultValue(trustRootUrlDefault)]
@@ -288,6 +288,7 @@ namespace DotNetOpenId.RelyingParty
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri")]
 		internal static void ValidateResolvableUrl(Page page, bool designMode, string value) {
 			if (string.IsNullOrEmpty(value)) return;
 			if (page != null && !designMode) {
@@ -431,6 +432,7 @@ namespace DotNetOpenId.RelyingParty
 				WrappedTextBox.Style[HtmlTextWriterStyle.BorderColor] = "lightgray";
 			}
 		}
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
 		public void LogOn()
 		{
 			if (string.IsNullOrEmpty(Text))
@@ -475,6 +477,7 @@ namespace DotNetOpenId.RelyingParty
 			}.AddToRequest(request);
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenId.Realm")]
 		UriBuilder getResolvedTrustRoot(string trustRoot)
 		{
 			Debug.Assert(Page != null, "Current HttpContext required to resolve URLs.");
@@ -507,43 +510,6 @@ namespace DotNetOpenId.RelyingParty
 		}
 
 		#region Events
-		public class OpenIdEventArgs : EventArgs
-		{
-			/// <summary>
-			/// Constructs an object with minimal information of an incomplete or failed
-			/// authentication attempt.
-			/// </summary>
-			/// <param name="identityUrl"></param>
-			internal OpenIdEventArgs(Identifier userSuppliedIdentifier) {
-				UserSuppliedIdentifier = userSuppliedIdentifier;
-			}
-			/// <summary>
-			/// Constructs an object with information on a completed authentication attempt
-			/// (whether that attempt was successful or not).
-			/// </summary>
-			internal OpenIdEventArgs(IAuthenticationResponse response)
-			{
-				Response = response;
-				ClaimedIdentifier = response.ClaimedIdentifier;
-				ProfileFields = SimpleRegistrationFieldValues.ReadFromResponse(response);
-			}
-			/// <summary>
-			/// Cancels the OpenID authentication and/or login process.
-			/// </summary>
-			public bool Cancel { get; set; }
-			public Identifier UserSuppliedIdentifier { get; private set; }
-			public Identifier ClaimedIdentifier { get; private set; }
-
-			/// <summary>
-			/// Gets the details of the OpenId authentication response.
-			/// </summary>
-			public IAuthenticationResponse Response { get; private set; }
-			/// <summary>
-			/// Gets the simple registration (sreg) extension fields given
-			/// by the provider, if any.
-			/// </summary>
-			public SimpleRegistrationFieldValues ProfileFields { get; private set; }
-		}
 		/// <summary>
 		/// Fired upon completion of a successful login.
 		/// </summary>
@@ -562,17 +528,6 @@ namespace DotNetOpenId.RelyingParty
 
 		#endregion
 		#region Error handling
-		public class ErrorEventArgs : EventArgs
-		{
-			public ErrorEventArgs(string errorMessage, Exception errorException)
-			{
-				ErrorMessage = errorMessage;
-				ErrorException = errorException;
-			}
-			public string ErrorMessage { get; private set; }
-			public Exception ErrorException { get; private set; }
-		}
-
 		/// <summary>
 		/// Fired when a login attempt fails or is canceled by the user.
 		/// </summary>
@@ -612,5 +567,48 @@ namespace DotNetOpenId.RelyingParty
 		}
 
 		#endregion
+	}
+
+	public class OpenIdEventArgs : EventArgs {
+		/// <summary>
+		/// Constructs an object with minimal information of an incomplete or failed
+		/// authentication attempt.
+		/// </summary>
+		internal OpenIdEventArgs(Identifier userSuppliedIdentifier) {
+			UserSuppliedIdentifier = userSuppliedIdentifier;
+		}
+		/// <summary>
+		/// Constructs an object with information on a completed authentication attempt
+		/// (whether that attempt was successful or not).
+		/// </summary>
+		internal OpenIdEventArgs(IAuthenticationResponse response) {
+			Response = response;
+			ClaimedIdentifier = response.ClaimedIdentifier;
+			ProfileFields = SimpleRegistrationFieldValues.ReadFromResponse(response);
+		}
+		/// <summary>
+		/// Cancels the OpenID authentication and/or login process.
+		/// </summary>
+		public bool Cancel { get; set; }
+		public Identifier UserSuppliedIdentifier { get; private set; }
+		public Identifier ClaimedIdentifier { get; private set; }
+
+		/// <summary>
+		/// Gets the details of the OpenId authentication response.
+		/// </summary>
+		public IAuthenticationResponse Response { get; private set; }
+		/// <summary>
+		/// Gets the simple registration (sreg) extension fields given
+		/// by the provider, if any.
+		/// </summary>
+		public SimpleRegistrationFieldValues ProfileFields { get; private set; }
+	}
+	public class ErrorEventArgs : EventArgs {
+		public ErrorEventArgs(string errorMessage, Exception errorException) {
+			ErrorMessage = errorMessage;
+			ErrorException = errorException;
+		}
+		public string ErrorMessage { get; private set; }
+		public Exception ErrorException { get; private set; }
 	}
 }

@@ -36,7 +36,7 @@ public partial class server : System.Web.UI.Page {
 	protected void Page_Load(object src, System.EventArgs evt) {
 		serverEndpointUrl.Text = Request.Url.ToString();
 	}
-	protected void provider_AuthenticationChallenge(object sender, ProviderEndpoint.AuthenticationChallengeEventArgs e) {
+	protected void provider_AuthenticationChallenge(object sender, AuthenticationChallengeEventArgs e) {
 		var idrequest = e.Request;
 		if (idrequest.Immediate) {
 			string userOwningOpenIdUrl = Util.ExtractUserName(idrequest.ClaimedIdentifier);

@@ -23,6 +23,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// <param name="arguments">
 		/// The key/value pairs of parameters and values to pass to the provider.
 		/// </param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", MessageId = "0#")]
 		void AddExtensionArguments(string extensionTypeUri, IDictionary<string, string> arguments);
 		/// <summary>
 		/// Redirects the user agent to the provider for authentication.

@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.IO;
 using System.Text;
 using System.Globalization;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DotNetOpenId {
 	public abstract class Association {
@@ -43,6 +44,7 @@ namespace DotNetOpenId {
 		/// <summary>
 		/// The shared secret key between the consumer and provider.
 		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		protected internal byte[] SecretKey { get; private set; }
 
 		/// <summary>

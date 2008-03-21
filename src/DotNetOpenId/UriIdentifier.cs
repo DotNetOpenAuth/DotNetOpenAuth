@@ -58,12 +58,15 @@ namespace DotNetOpenId {
 				return false;
 			}
 		}
+#if UNUSED
 		static bool TryCanonicalize(string uri, out string canonicalUri) {
 			Uri normalizedUri;
 			bool result = TryCanonicalize(uri, out normalizedUri);
 			canonicalUri = normalizedUri.ToString();
 			return result;
 		}
+#endif
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase")]
 		static bool TryCanonicalize(UriBuilder uriBuilder, out Uri canonicalUri) {
 			uriBuilder.Host = uriBuilder.Host.ToLowerInvariant();
 			uriBuilder.Fragment = null;
@@ -165,6 +168,9 @@ namespace DotNetOpenId {
 			UriIdentifier other = obj as UriIdentifier;
 			if (other == null) return false;
 			return this.Uri == other.Uri;
+		}
+		public override int GetHashCode() {
+			return Uri.GetHashCode();
 		}
 		public override string ToString() {
 			return Uri.ToString();

@@ -86,7 +86,7 @@ namespace DotNetOpenId.Test {
 
 		[Test, ExpectedException(typeof(ArgumentException))]
 		public void NoValue() {
-			illegal("x\n", KeyValueFormConformanceLevel.OpenID11);
+			illegal("x\n", KeyValueFormConformanceLevel.OpenId11);
 		}
 
 		[Test, ExpectedException(typeof(ArgumentException))]
@@ -97,7 +97,7 @@ namespace DotNetOpenId.Test {
 
 		[Test, ExpectedException(typeof(ArgumentException))]
 		public void EmptyLine() {
-			illegal("x:b\n\n", KeyValueFormConformanceLevel.OpenID20);
+			illegal("x:b\n\n", KeyValueFormConformanceLevel.OpenId20);
 		}
 
 		[Test]
@@ -109,7 +109,7 @@ namespace DotNetOpenId.Test {
 
 		[Test, ExpectedException(typeof(ArgumentException))]
 		public void LastLineNotTerminated() {
-			illegal("x:y\na:b", KeyValueFormConformanceLevel.OpenID11);
+			illegal("x:y\na:b", KeyValueFormConformanceLevel.OpenId11);
 		}
 
 		[Test]

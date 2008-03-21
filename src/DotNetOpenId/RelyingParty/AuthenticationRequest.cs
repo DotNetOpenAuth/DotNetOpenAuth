@@ -28,11 +28,9 @@ namespace DotNetOpenId.RelyingParty {
 	class AuthenticationRequest : IAuthenticationRequest {
 		Association assoc;
 		ServiceEndpoint endpoint;
-		string token;
 
 		AuthenticationRequest(string token, Association assoc, ServiceEndpoint endpoint,
 			Realm realm, Uri returnToUrl) {
-			this.token = token;
 			this.assoc = assoc;
 			this.endpoint = endpoint;
 			Realm = realm;
@@ -56,7 +54,7 @@ namespace DotNetOpenId.RelyingParty {
 			// fail, but this will be faster and give us a better error message.
 			if (!realm.Contains(returnToUrl))
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-					Strings.ReturnToNotUnderTrustRoot, returnToUrl, realm));
+					Strings.ReturnToNotUnderRealm, returnToUrl, realm));
 
 			return new AuthenticationRequest(
 				new Token(endpoint).Serialize(store),
@@ -168,7 +166,7 @@ namespace DotNetOpenId.RelyingParty {
 			string alias;
 			lock (extensionTypeUriToAliasMap) {
 				if (!extensionTypeUriToAliasMap.TryGetValue(extensionTypeUri, out alias)) {
-					alias = "ext" + (extensionTypeUriToAliasMap.Count + 1).ToString();
+					alias = "ext" + (extensionTypeUriToAliasMap.Count + 1).ToString(CultureInfo.InvariantCulture);
 					createExtensionAlias(extensionTypeUri, alias);
 				}
 			}

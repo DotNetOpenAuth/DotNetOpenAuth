@@ -25,6 +25,7 @@ namespace DotNetOpenId.Provider {
 		/// The key/value pairs for this extension to add to the response.
 		/// The keys should not include any 'openid.&lt;namespace&gt;.' prefix.
 		/// </param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", MessageId = "0#")]
 		void AddExtensionArguments(string extensionTypeUri, IDictionary<string, string> arguments);
 		/// <summary>
 		/// Gets the extension arguments sent from the relying party.
@@ -32,6 +33,7 @@ namespace DotNetOpenId.Provider {
 		/// <param name="extensionTypeUri">The extension's Type URI.</param>
 		/// <returns>A dictionary where the keys are the extension's
 		/// keys without the 'openid.&lt;namespace&gt;.' prefix.</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", MessageId = "0#")]
 		IDictionary<string, string> GetExtensionArguments(string extensionTypeUri);
 	}
 }

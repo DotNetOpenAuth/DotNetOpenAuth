@@ -98,10 +98,10 @@ namespace DotNetOpenId.RelyingParty {
 			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
 
 			// Build the trustroot URL
-			UriBuilder trustRootUrl = new UriBuilder(HttpContext.Current.Request.Url.AbsoluteUri);
+			UriBuilder trustRootUrl = new UriBuilder(HttpContext.Current.Request.Url);
 			trustRootUrl.Path = HttpContext.Current.Request.ApplicationPath;
 
-			return CreateRequest(userSuppliedIdentifier, new Realm(trustRootUrl.ToString()));
+			return CreateRequest(userSuppliedIdentifier, new Realm(trustRootUrl.Uri));
 		}
 
 		/// <summary>

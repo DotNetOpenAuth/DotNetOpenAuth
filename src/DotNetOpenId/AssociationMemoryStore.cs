@@ -12,7 +12,6 @@ namespace DotNetOpenId {
 
 	internal class AssociationMemoryStore<TKey> : IAssociationStore<TKey> {
 		Dictionary<TKey, Associations> serverAssocsTable = new Dictionary<TKey, Associations>();
-		byte[] authKey;
 
 		internal Associations GetServerAssocs(TKey distinguishingFactor) {
 			lock (this) {

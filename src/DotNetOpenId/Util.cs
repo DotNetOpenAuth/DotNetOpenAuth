@@ -28,7 +28,7 @@ namespace DotNetOpenId {
 
 		/// <summary>
 		/// Adds a set of name-value pairs to the end of a given URL
-		/// as part of the querystring piece.  Prefixes a ? or & before
+		/// as part of the querystring piece.  Prefixes a ? or &amp; before
 		/// first element as necessary.
 		/// </summary>
 		public static void AppendQueryArgs(UriBuilder builder, IDictionary<string, string> args) {

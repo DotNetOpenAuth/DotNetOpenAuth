@@ -63,12 +63,14 @@ namespace Org.Mentalis.Security.Cryptography {
 		/// <param name="parameters">The parameters for Diffie-Hellman.</param>
 		public abstract void ImportParameters (DHParameters parameters);
 
+#if UNUSED
 		private byte[] GetNamedParam(SecurityElement se, string param) {
 			SecurityElement sep = se.SearchForChildByTag(param);
 			if (sep == null)
 				return null;
 			return Convert.FromBase64String(sep.Text);
 		}
+#endif
 		/// <summary>
 		/// Reconstructs a <see cref="DiffieHellman"/> object from an XML string.
 		/// </summary>

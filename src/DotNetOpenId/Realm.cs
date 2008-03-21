@@ -12,9 +12,11 @@ namespace DotNetOpenId {
 	/// See http://openid.net/specs/openid-authentication-2_0.html#realms
 	/// </remarks>
 	public class Realm {
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads")]
 		public static implicit operator Realm(string uri) {
 			return new Realm(uri);
 		}
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
 		public static implicit operator Realm(Uri uri) {
 			return new Realm(uri.AbsoluteUri);
 		}
@@ -22,10 +24,19 @@ namespace DotNetOpenId {
 			return realm.ToString();
 		}
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase")]
-		public Realm(string trustRootUrl) {
-			DomainWildcard = Regex.IsMatch(trustRootUrl, wildcardDetectionPattern);
-			uri = new Uri(Regex.Replace(trustRootUrl, wildcardDetectionPattern, m => m.Groups[1].Value));
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase")]
+		public Realm(string realmUrl) {
+			if (realmUrl == null) throw new ArgumentNullException("realmUrl");
+			DomainWildcard = Regex.IsMatch(realmUrl, wildcardDetectionPattern);
+			uri = new Uri(Regex.Replace(realmUrl, wildcardDetectionPattern, m => m.Groups[1].Value));
+			if (!uri.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) &&
+				!uri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
+				throw new UriFormatException(string.Format(CultureInfo.CurrentUICulture,
+					Strings.InvalidScheme, uri.Scheme));
+		}
+		public Realm(Uri realmUrl) {
+			if (realmUrl == null) throw new ArgumentNullException("realmUrl");
+			uri = realmUrl;
 			if (!uri.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) &&
 				!uri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
 				throw new UriFormatException(string.Format(CultureInfo.CurrentUICulture,
@@ -196,6 +207,9 @@ namespace DotNetOpenId {
 			Realm other = obj as Realm;
 			if (other == null) return false;
 			return uri.Equals(other.uri) && DomainWildcard == other.DomainWildcard;
+		}
+		public override int GetHashCode() {
+			return uri.GetHashCode() + (DomainWildcard ? 1 : 0);
 		}
 		public override string ToString() {
 			if (DomainWildcard) {

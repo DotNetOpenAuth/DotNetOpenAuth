@@ -172,7 +172,7 @@
     <value>Query parameter '{0}' was expected in the return_to query '{1}'.</value>
   </data>
   <data name="OpenIdEndpointNotFound" xml:space="preserve">
-    <value>No openid endpoint found.</value>
+    <value>No OpenId endpoint found.</value>
   </data>
   <data name="OpenIdTextBoxEmpty" xml:space="preserve">
     <value>No OpenId url is provided.</value>
@@ -198,7 +198,7 @@
   <data name="ReturnToArgDifferentFromQueryArg" xml:space="preserve">
     <value>The '{0}' parameter does not have the same value for return_to ('{1}') and the regular query ('{2}').</value>
   </data>
-  <data name="ReturnToNotUnderTrustRoot" xml:space="preserve">
-    <value>return_to '{0}' not under trust_root '{1}'.</value>
+  <data name="ReturnToNotUnderRealm" xml:space="preserve">
+    <value>return_to '{0}' not under realm '{1}'.</value>
   </data>
 </root>

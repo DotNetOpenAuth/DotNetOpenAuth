@@ -13,6 +13,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// <returns>
 		/// Returns key/value pairs found for the given extension.
 		/// </returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", MessageId = "0#")]
 		IDictionary<string, string> GetExtensionArguments(string extensionTypeUri);
 		/// <summary>
 		/// An Identifier that the end user claims to own.

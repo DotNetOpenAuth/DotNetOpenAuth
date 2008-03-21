@@ -152,5 +152,8 @@ namespace DotNetOpenId.RelyingParty {
 				this.ProviderLocalIdentifier == other.ProviderLocalIdentifier &&
 				this.ProviderEndpoint == other.ProviderEndpoint;
 		}
+		public override int GetHashCode() {
+			return Nonce.GetHashCode();
+		}
 	}
 }

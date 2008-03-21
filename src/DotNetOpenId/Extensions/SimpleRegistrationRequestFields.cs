@@ -10,6 +10,8 @@ namespace DotNetOpenId.Extensions {
 	/// <summary>
 	/// Carries the request/require/none demand state of the simple registration fields.
 	/// </summary>
+#pragma warning disable 0659, 0661
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2218:OverrideGetHashCodeOnOverridingEquals")]
 	public struct SimpleRegistrationRequestFields {
 		public static readonly SimpleRegistrationRequestFields None = new SimpleRegistrationRequestFields();
 
@@ -145,6 +147,12 @@ PostalCode = '{5}'
 Country = '{6}'
 Language = '{7}'
 TimeZone = '{8}'", Nickname, Email, FullName, BirthDate, Gender, PostalCode, Country, Language, TimeZone);
+		}
+		public static bool operator ==(SimpleRegistrationRequestFields one, SimpleRegistrationRequestFields other) {
+			return one.Equals(other);
+		}
+		public static bool operator !=(SimpleRegistrationRequestFields one, SimpleRegistrationRequestFields other) {
+			return !one.Equals(other);
 		}
 		public override bool Equals(object obj) {
 			if (!(obj is SimpleRegistrationRequestFields)) return false;

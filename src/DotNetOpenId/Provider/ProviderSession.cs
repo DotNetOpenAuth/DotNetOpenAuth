@@ -9,6 +9,7 @@ namespace DotNetOpenId.Provider {
 	internal abstract class ProviderSession {
 		public abstract string SessionType { get; }
 		public abstract Dictionary<string, string> Answer(byte[] secret);
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1820:TestForEmptyStringsUsingStringLength")]
 		public static ProviderSession CreateSession(IDictionary<string, string> query) {
 			string session_type = query[QueryStringArgs.openid.session_type];
 
@@ -116,10 +117,20 @@ namespace DotNetOpenId.Provider {
 
 		#region IDisposable Members
 
-		public void Dispose() {
-			if (_dh != null) {
-				((IDisposable)_dh).Dispose();
+		~DiffieHellmanProviderSession() {
+			Dispose(false);
+		}
+		void Dispose(bool disposing) {
+			if (disposing) {
+				if (_dh != null) {
+					((IDisposable)_dh).Dispose();
+					_dh = null;
+				}
 			}
+		}
+		public void Dispose() {
+			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 
 		#endregion

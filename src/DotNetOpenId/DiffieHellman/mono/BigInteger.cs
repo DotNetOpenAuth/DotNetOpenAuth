@@ -22,7 +22,6 @@ using Mono.Math.Prime;
 
 namespace Mono.Math {
 
-	[CLSCompliant(false)]
 	internal class BigInteger {
 
 		#region Data Storage
@@ -313,7 +312,7 @@ namespace Mono.Math {
 				case Sign.Negative:
 					throw new ArithmeticException (WouldReturnNegVal);
 				default:
-					throw new Exception ();
+					throw new InvalidOperationException ();
 			}
 		}
 
@@ -518,7 +517,7 @@ namespace Mono.Math {
 
 		public bool testBit (int bitNum)
 		{
-			if (bitNum < 0) throw new IndexOutOfRangeException ("bitNum out of range");
+			if (bitNum < 0) throw new ArgumentOutOfRangeException ("bitNum");
 
 			uint bytePos = (uint)bitNum >> 5;             // divide by 32
 			byte bitPos = (byte)(bitNum & 0x1F);    // get the lowest 5 bits
@@ -933,7 +932,7 @@ namespace Mono.Math {
 					case Sign.Negative:
 						diff = b - a; break;
 					default:
-						throw new Exception ();
+						throw new InvalidOperationException();
 				}
 
 				if (diff >= mod) {
@@ -1448,7 +1447,7 @@ namespace Mono.Math {
 		/// Low level functions for the BigInteger
 		/// </summary>
 		private sealed class Kernel {
-
+			private Kernel() { }
 			#region Addition/Subtraction
 
 			/// <summary>
@@ -2111,7 +2110,7 @@ namespace Mono.Math {
 				while (t[tt + bi.length - 1] == 0 && bi.length > 1) bi.length--;
 
 			}
-
+#if UNUSED
 			public static bool Double (uint [] u, int l)
 			{
 				uint x, carry = 0;
@@ -2125,7 +2124,7 @@ namespace Mono.Math {
 				if (carry != 0) u [l] = carry;
 				return carry != 0;
 			}
-
+#endif
 			#endregion
 
 			#region Number Theory

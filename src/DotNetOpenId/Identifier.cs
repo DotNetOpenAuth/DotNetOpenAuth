@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using DotNetOpenId.RelyingParty;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DotNetOpenId {
 	/// <summary>
@@ -11,6 +12,7 @@ namespace DotNetOpenId {
 		/// <summary>
 		/// Converts the string representation of an Identifier to its strong type.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates"), SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads")]
 		public static implicit operator Identifier(string identifier) {
 			if (identifier == null) return null;
 			return Parse(identifier);
@@ -18,6 +20,7 @@ namespace DotNetOpenId {
 		/// <summary>
 		/// Returns a strongly-typed Identifier for a given Uri.
 		/// </summary>
+		[SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates")]
 		public static implicit operator Identifier(Uri identifier) {
 			if (identifier == null) return null;
 			return new UriIdentifier(identifier);
@@ -25,6 +28,7 @@ namespace DotNetOpenId {
 		/// <summary>
 		/// Converts an Identifier to its string representation.
 		/// </summary>
+		[SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates")]
 		public static implicit operator String(Identifier identifier) {
 			if (identifier == null) return null;
 			return identifier.ToString();
@@ -34,6 +38,7 @@ namespace DotNetOpenId {
 		/// whether it is an XRI or URI.
 		/// </summary>
 		/// <param name="identifier">Either a URI or XRI identifier.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
 		public static Identifier Parse(string identifier) {
 			if (string.IsNullOrEmpty(identifier)) throw new ArgumentNullException("identifier");
 			if (XriIdentifier.IsValidXri(identifier)) {
@@ -45,6 +50,7 @@ namespace DotNetOpenId {
 		/// <summary>
 		/// Gets whether a given string represents a valid Identifier format.
 		/// </summary>
+		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
 		public static bool IsValid(string identifier) {
 			return XriIdentifier.IsValidXri(identifier) || UriIdentifier.IsValidUri(identifier);
 		}

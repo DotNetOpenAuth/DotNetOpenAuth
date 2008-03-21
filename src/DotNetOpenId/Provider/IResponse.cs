@@ -20,6 +20,7 @@ namespace DotNetOpenId.Provider {
 		/// <summary>
 		/// The body that should be sent as the response content.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		byte[] Body { get; }
 		/// <summary>
 		/// Sends the response to the browser.

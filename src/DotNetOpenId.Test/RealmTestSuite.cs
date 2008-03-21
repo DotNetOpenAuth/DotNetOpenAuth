@@ -27,9 +27,15 @@ namespace DotNetOpenId.Test
 
 		[Test]
 		[ExpectedException(typeof(ArgumentNullException))]
-		public void InvalidRealmNull()
+		public void InvalidRealmNullString()
 		{
-			new Realm(null);
+			new Realm((string)null);
+		}
+
+		[Test]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void InvalidRealmNullUri() {
+			new Realm((Uri)null);
 		}
 
 		[Test]

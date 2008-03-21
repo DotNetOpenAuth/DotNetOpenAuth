@@ -18,7 +18,7 @@ namespace DotNetOpenId.Provider {
 		bool? isAuthenticated;
 		/// <summary>
 		/// Gets/sets whether the provider has determined that the 
-		/// <see cref="IdentityUrl"/> belongs to the currently logged in user
+		/// <see cref="ClaimedIdentifier"/> belongs to the currently logged in user
 		/// and wishes to share this information with the consumer.
 		/// </summary>
 		public bool? IsAuthenticated {
@@ -37,7 +37,7 @@ namespace DotNetOpenId.Provider {
 		/// </remarks>
 		public Uri ProviderEndpoint {
 			get { return serverUrl; }
-			private set {
+			set {
 				serverUrl = value;
 				InvalidateResponse();
 			}
@@ -125,7 +125,7 @@ namespace DotNetOpenId.Provider {
 
 			if (!TrustRoot.Contains(ReturnTo)) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-					Strings.ReturnToNotUnderTrustRoot, ReturnTo.AbsoluteUri, TrustRoot), Query);
+					Strings.ReturnToNotUnderRealm, ReturnTo.AbsoluteUri, TrustRoot), Query);
 			}
 		}
 
@@ -180,7 +180,7 @@ namespace DotNetOpenId.Provider {
 		internal Uri SetupUrl {
 			get {
 				if (ProviderEndpoint == null) {
-					throw new InvalidOperationException("ServerUrl is required for failed authentication in immediate mode.");
+					throw new InvalidOperationException("ProviderEndpoint is required for failed authentication in immediate mode.");
 				}
 
 				var q = new Dictionary<string, string>();

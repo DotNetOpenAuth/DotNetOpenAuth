@@ -223,7 +223,7 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No openid endpoint found..
+        ///   Looks up a localized string similar to No OpenId endpoint found..
         /// </summary>
         internal static string OpenIdEndpointNotFound {
             get {
@@ -304,11 +304,11 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to return_to &apos;{0}&apos; not under trust_root &apos;{1}&apos;..
+        ///   Looks up a localized string similar to return_to &apos;{0}&apos; not under realm &apos;{1}&apos;..
         /// </summary>
-        internal static string ReturnToNotUnderTrustRoot {
+        internal static string ReturnToNotUnderRealm {
             get {
-                return ResourceManager.GetString("ReturnToNotUnderTrustRoot", resourceCulture);
+                return ResourceManager.GetString("ReturnToNotUnderRealm", resourceCulture);
             }
         }
     }

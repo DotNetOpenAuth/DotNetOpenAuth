@@ -14,7 +14,7 @@ public partial class ProviderEndpoint : System.Web.UI.Page {
 	protected void Page_Load(object sender, EventArgs e) {
 
 	}
-	protected void ProviderEndpoint1_AuthenticationChallenge(object sender, DotNetOpenId.Provider.ProviderEndpoint.AuthenticationChallengeEventArgs e) {
+	protected void ProviderEndpoint1_AuthenticationChallenge(object sender, DotNetOpenId.Provider.AuthenticationChallengeEventArgs e) {
 		TestSupport.Scenarios scenario = (TestSupport.Scenarios)Enum.Parse(typeof(TestSupport.Scenarios), 
 			new Uri(e.Request.ClaimedIdentifier.ToString()).AbsolutePath.TrimStart('/'));
 		switch (scenario) {
