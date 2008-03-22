@@ -11,7 +11,7 @@ namespace DotNetOpenId.Yadis {
 			: base(xrdsNavigator) {
 			XmlNamespaceResolver.AddNamespace("xrd", XrdsNode.XrdNamespace);
 			XmlNamespaceResolver.AddNamespace("xrds", XrdsNode.XrdsNamespace);
-			XmlNamespaceResolver.AddNamespace("openid10", DotNetOpenId.RelyingParty.ServiceEndpoint.OpenId10Namespace);
+			XmlNamespaceResolver.AddNamespace("openid10", ProtocolConstants.Namespaces[ProtocolConstants.v10]);
 		}
 		public XrdsDocument(XmlReader reader)
 			: this(new XPathDocument(reader).CreateNavigator()) { }
@@ -38,9 +38,12 @@ namespace DotNetOpenId.Yadis {
 			// First search for OP Identifier service elements
 			foreach (var service in findOPIdentifierServices()) {
 				foreach (var uri in service.UriElements) {
-					return new ServiceEndpoint(ServiceEndpoint.ClaimedIdentifierForOPIdentifier,
-						uri.Uri, ServiceEndpoint.ClaimedIdentifierForOPIdentifier,
-						service.TypeElementUris);
+					Version version = Util.FindBestVersion(
+						ProtocolConstants.OPIdentifierServiceTypeURIs, typeUri =>
+							Array.IndexOf(service.TypeElementUris, typeUri) >= 0);
+					string claimedIdentifierForOPIdentifier = ProtocolConstants.ClaimedIdentifierForOPIdentifier[version];
+					return new ServiceEndpoint(claimedIdentifierForOPIdentifier, uri.Uri, 
+						claimedIdentifierForOPIdentifier, service.TypeElementUris);
 				}
 			}
 			// Since we could not find an OP Identifier service element,

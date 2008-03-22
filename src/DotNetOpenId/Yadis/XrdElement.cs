@@ -36,7 +36,7 @@ namespace DotNetOpenId.Yadis {
 			get {
 				var xpath = new StringBuilder();
 				xpath.Append("xrd:Service[");
-				foreach (string uri in ServiceEndpoint.OpenIdProviderIdentifierTypeUris) {
+				foreach (string uri in ProtocolConstants.OPIdentifierServiceTypeURIs.Values) {
 					xpath.Append("xrd:Type/text()='");
 					xpath.Append(uri);
 					xpath.Append("' or ");
@@ -47,6 +47,7 @@ namespace DotNetOpenId.Yadis {
 				foreach (XPathNavigator service in Node.Select(xpath.ToString(), XmlNamespaceResolver)) {
 					services.Add(new ServiceElement(service, this));
 				}
+				// Put the services in their own defined priority order
 				services.Sort();
 				return services;
 			}
@@ -59,7 +60,7 @@ namespace DotNetOpenId.Yadis {
 			get {
 				var xpath = new StringBuilder();
 				xpath.Append("xrd:Service[");
-				foreach (string uri in ServiceEndpoint.OpenIdClaimedIdentifierTypeUris) {
+				foreach (string uri in ProtocolConstants.ClaimedIdentifierServiceTypeURIs.Values) {
 					xpath.Append("xrd:Type/text()='");
 					xpath.Append(uri);
 					xpath.Append("' or ");
@@ -70,6 +71,7 @@ namespace DotNetOpenId.Yadis {
 				foreach (XPathNavigator service in Node.Select(xpath.ToString(), XmlNamespaceResolver)) {
 					services.Add(new ServiceElement(service, this));
 				}
+				// Put the services in their own defined priority order
 				services.Sort();
 				return services;
 			}

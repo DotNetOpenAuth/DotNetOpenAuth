@@ -85,17 +85,6 @@ namespace DotNetOpenId {
 		}
 
 		/// <summary>
-		/// Downloads an XRDS document describing the services at some Identifier
-		/// if it is available.
-		/// </summary>
-		/// <returns>
-		/// An XrdsDocument if one is available, or null if none could be found.
-		/// </returns>
-		protected virtual XrdsDocument DownloadXrds() {
-			throw new NotImplementedException();
-		}
-
-		/// <summary>
 		/// Searches HTML for the HEAD META tags that describe OpenID provider services.
 		/// </summary>
 		/// <param name="claimedIdentifier">
@@ -114,37 +103,32 @@ namespace DotNetOpenId {
 		/// </remarks>
 		protected virtual ServiceEndpoint DiscoverFromHtml(Uri claimedIdentifier, string html) {
 			Uri providerEndpoint = null;
+			Version discoveredVersion = null;
 			Identifier providerLocalIdentifier = null;
-			int version = 0;
-			foreach (var linkTag in Yadis.HtmlParser.HeadTags<HtmlLink>(html)) {
-				switch (linkTag.Attributes["rel"]) {
-					case ProtocolConstants.OpenId20Provider:
-						providerEndpoint = new Uri(linkTag.Href);
-						version = 2;
-						break;
-					case ProtocolConstants.OpenId20LocalId:
-						providerLocalIdentifier = new Uri(linkTag.Href);
-						version = 2;
-						break;
-					case ProtocolConstants.OpenId11Server:
-						if (version == 0) { // do not override a 2.0 discovery
-							providerEndpoint = new Uri(linkTag.Href);
-							version = 1;
+			var linkTags = new List<HtmlLink>(Yadis.HtmlParser.HeadTags<HtmlLink>(html));
+			providerEndpoint = Util.FindBestVersion(
+				ProtocolConstants.HtmlDiscoveryProviderKey,
+				relValue => {
+					foreach (var linkTag in linkTags) {
+						if (relValue.Equals(linkTag.Attributes["rel"], StringComparison.Ordinal)) {
+							return new Uri(linkTag.Href);
 						}
-						break;
-					case ProtocolConstants.OpenId11Delegate:
-						if (version <= 1) {
-							providerLocalIdentifier = linkTag.Href;
-						}
-						break;
+					}
+					return null;
+				}, out discoveredVersion);
+			if (providerEndpoint == null)
+				return null; // html did not contain openid.server link
+			// See if a LocalId tag of the discovered version exists
+			foreach (var linkTag in linkTags) {
+				if (ProtocolConstants.HtmlDiscoveryLocalIdKey[discoveredVersion].Equals(
+					linkTag.Attributes["rel"], StringComparison.Ordinal)) {
+					providerLocalIdentifier = new Uri(linkTag.Href);
+					break;
 				}
 			}
-			if (providerEndpoint == null) {
-				return null; // html did not contain openid.server link
-			}
+
 			// Choose the TypeURI to match the OpenID version detected.
-			string[] typeURIs = { version == 2 ?
-				ServiceEndpoint.OpenId20Type : ServiceEndpoint.OpenId11Type };
+			string[] typeURIs = { ProtocolConstants.ClaimedIdentifierServiceTypeURIs[discoveredVersion] };
 			return new ServiceEndpoint(claimedIdentifier, providerEndpoint, 
 				providerLocalIdentifier, typeURIs);
 		}

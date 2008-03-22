@@ -13,7 +13,7 @@ namespace DotNetOpenId.RelyingParty {
 			Provider = provider;
 			Args = args;
 			if (!Args.ContainsKey(QueryStringArgs.openid.ns))
-				Args.Add(QueryStringArgs.openid.ns, QueryStringArgs.OpenIdNs.v20);
+				Args.Add(QueryStringArgs.openid.ns, ProtocolConstants.OpenIdNs.v20);
 		}
 		protected Uri Provider { get; private set; }
 		protected IDictionary<string, string> Args { get; private set; }

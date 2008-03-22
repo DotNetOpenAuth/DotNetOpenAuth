@@ -12,39 +12,6 @@ namespace DotNetOpenId.RelyingParty {
 	/// Represents information discovered about a user-supplied Identifier.
 	/// </summary>
 	internal class ServiceEndpoint {
-		public const string OpenId10Namespace = "http://openid.net/xmlns/1.0";
-		public const string OpenId12Type = "http://openid.net/signon/1.2";
-		public const string OpenId11Type = "http://openid.net/signon/1.1";
-		public const string OpenId10Type = "http://openid.net/signon/1.0";
-		/// <summary>
-		/// The XRD/Service/Type value discovered in an XRDS document when
-		/// "discovering" on a Claimed Identifier (http://andrewarnott.yahoo.com)
-		/// </summary>
-		public const string OpenId20Type = "http://specs.openid.net/auth/2.0/signon";
-
-		public static readonly string[] OpenIdClaimedIdentifierTypeUris = { 
-			OpenId12Type,
-			OpenId11Type,
-			OpenId10Type,
-			OpenId20Type };
-
-		/// <summary>
-		/// The XRD/Service/Type value discovered in an XRDS document when
-		/// "discovering" on an OP Identifier rather than a Claimed Identifier.
-		/// (http://yahoo.com)
-		/// </summary>
-		public const string OPIdentifierServiceTypeUri = "http://specs.openid.net/auth/2.0/server";
-
-		public static readonly string[] OpenIdProviderIdentifierTypeUris = {
-			OPIdentifierServiceTypeUri,
-			};
-
-		/// <summary>
-		/// Used as the Claimed Identifier and the OP Local Identifier when
-		/// the User Supplied Identifier is an OP Identifier.
-		/// </summary>
-		public const string ClaimedIdentifierForOPIdentifier = "http://specs.openid.net/auth/2.0/identifier_select";
-
 		/// <summary>
 		/// The URL which accepts OpenID Authentication protocol messages.
 		/// </summary>
@@ -96,18 +63,12 @@ namespace DotNetOpenId.RelyingParty {
 
 		public Version ProviderVersion {
 			get {
-				if (Array.IndexOf(ProviderSupportedServiceTypeUris, OpenId20Type) >= 0 ||
-					Array.IndexOf(ProviderSupportedServiceTypeUris, OPIdentifierServiceTypeUri) >= 0)
-					return new Version(2, 0);
-				if (Array.IndexOf(ProviderSupportedServiceTypeUris, OpenId12Type) >= 0)
-					return new Version(1, 2);
-				if (Array.IndexOf(ProviderSupportedServiceTypeUris, OpenId11Type) >= 0)
-					return new Version(1, 1);
-				if (Array.IndexOf(ProviderSupportedServiceTypeUris, OpenId10Type) >= 0)
-					return new Version(1, 0);
-				// This should never really happen if we've detected an OpenId provider
-				// correctly.
-				throw new OpenIdException(Strings.ProviderOpenIdVersionUnknown);
+				return
+					Util.FindBestVersion(ProtocolConstants.OPIdentifierServiceTypeURIs,
+					uri => Array.IndexOf(ProviderSupportedServiceTypeUris, uri) >= 0)
+					??
+					Util.FindBestVersion(ProtocolConstants.ClaimedIdentifierServiceTypeURIs,
+					uri => Array.IndexOf(ProviderSupportedServiceTypeUris, uri) >= 0);
 			}
 		}
 

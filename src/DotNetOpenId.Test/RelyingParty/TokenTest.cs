@@ -12,7 +12,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 				TestSupport.GetIdentityUrl(scenario),
 				TestSupport.GetFullUrl(TestSupport.ProviderPage),
 				TestSupport.GetDelegateUrl(scenario),
-				new[] { ServiceEndpoint.OpenId11Type }
+				new[] { ProtocolConstants.OpenIdNs.v11 }
 				);
 			return ep;
 		}

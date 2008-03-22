@@ -5,10 +5,66 @@ using System.Text;
 namespace DotNetOpenId {
 
 	internal static class ProtocolConstants {
+		// Well-known, supported versions of the OpenID spec.
+		internal static readonly Version v10 = new Version(1, 0);
+		internal static readonly Version v11 = new Version(1, 1);
+		internal static readonly Version v20 = new Version(2, 0);
+
+		internal static readonly SortedDictionary<Version, string>
+			Namespaces = new SortedDictionary<Version, string>(ReverseVersionOrder.Instance) {
+			{ProtocolConstants.v10, "http://openid.net/xmlns/1.0"},
+			{ProtocolConstants.v11, "http://openid.net/xmlns/1.0"},
+			};
+		/// <summary>
+		/// The XRD/Service/Type value discovered in an XRDS document when
+		/// "discovering" on a Claimed Identifier (http://andrewarnott.yahoo.com)
+		/// </summary>
+		internal static readonly SortedDictionary<Version, string>
+			ClaimedIdentifierServiceTypeURIs = new SortedDictionary<Version, string>(ReverseVersionOrder.Instance) {
+				{ProtocolConstants.v10, "http://openid.net/signon/1.0"},
+				{ProtocolConstants.v11, "http://openid.net/signon/1.1"},
+				{ProtocolConstants.v20, "http://specs.openid.net/auth/2.0/signon"},
+			};
+		/// <summary>
+		/// The XRD/Service/Type value discovered in an XRDS document when
+		/// "discovering" on an OP Identifier rather than a Claimed Identifier.
+		/// (http://yahoo.com)
+		/// </summary>
+		internal static readonly SortedDictionary<Version, string>
+			OPIdentifierServiceTypeURIs = new SortedDictionary<Version, string>(ReverseVersionOrder.Instance) {
+				{ProtocolConstants.v20, "http://specs.openid.net/auth/2.0/server"},
+			};
+		/// <summary>
+		/// Used as the Claimed Identifier and the OP Local Identifier when
+		/// the User Supplied Identifier is an OP Identifier.
+		/// </summary>
+		internal static readonly SortedDictionary<Version, string>
+			ClaimedIdentifierForOPIdentifier = new SortedDictionary<Version, string>(ReverseVersionOrder.Instance) {
+				{ProtocolConstants.v20, "http://specs.openid.net/auth/2.0/identifier_select"},
+			};
+
+		internal static readonly SortedDictionary<Version, string>
+			HtmlDiscoveryProviderKey = new SortedDictionary<Version, string>(ReverseVersionOrder.Instance) {
+				{ProtocolConstants.v10, "openid.server"},
+				{ProtocolConstants.v11, "openid.server"},
+				{ProtocolConstants.v20, "openid2.provider"},
+			};
+		internal static readonly SortedDictionary<Version, string>
+			HtmlDiscoveryLocalIdKey = new SortedDictionary<Version, string>(ReverseVersionOrder.Instance) {
+				{ProtocolConstants.v10, "openid.delegate"},
+				{ProtocolConstants.v11, "openid.delegate"},
+				{ProtocolConstants.v20, "openid2.local_id"},
+			};
 		internal const string OpenId11Server = "openid.server";
 		internal const string OpenId11Delegate = "openid.delegate";
 		internal const string OpenId20Provider = "openid2.provider";
 		internal const string OpenId20LocalId = "openid2.local_id";
+
+		internal static class OpenIdNs {
+			internal const string v10 = "http://openid.net/signon/1.0";
+			internal const string v11 = "http://openid.net/signon/1.1";
+			internal const string v20 = "http://specs.openid.net/auth/2.0";
+		}
 	}
 
 	internal static class QueryStringArgs {
@@ -90,11 +146,6 @@ namespace DotNetOpenId {
 		internal static class SignatureAlgorithms {
 			internal const string HMAC_SHA1 = "HMAC-SHA1";
 			internal const string HMAC_SHA256 = "HMAC-SHA256";
-		}
-		internal static class OpenIdNs {
-			internal const string v10 = "http://openid.net/signon/1.0";
-			internal const string v11 = "http://openid.net/signon/1.1";
-			internal const string v20 = "http://specs.openid.net/auth/2.0";
 		}
 
 		internal static class Modes {

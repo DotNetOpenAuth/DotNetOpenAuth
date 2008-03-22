@@ -94,5 +94,39 @@ namespace DotNetOpenId {
 				if (!first[i].Equals(second[i])) return false;
 			return true;
 		}
+
+		internal delegate R Func<T, R>(T t);
+		internal static X FindBestVersion<X, T>(SortedDictionary<Version, T> set,
+			Func<T, X> predicate, out Version version) {
+			foreach (var pair in set) {
+				var result = predicate(pair.Value);
+				if (result != null) {
+					version = pair.Key;
+					return result;
+				}
+			}
+			version = null;
+			return default(X);
+		}
+		internal static X FindBestVersion<X, T>(SortedDictionary<Version, T> set,
+			Func<T, X> predicate) {
+			Version version;
+			return FindBestVersion(set, predicate, out version);
+		}
+		internal static Version FindBestVersion<T>(SortedDictionary<Version, T> set,
+			Func<T, bool> predicate) {
+			foreach (var pair in set) {
+				if (predicate(pair.Value)) return pair.Key;
+			}
+			return null;
+		}
+	}
+
+	internal class ReverseVersionOrder : IComparer<Version> {
+		private ReverseVersionOrder() { }
+		public static ReverseVersionOrder Instance = new ReverseVersionOrder();
+		public int Compare(Version x, Version y) {
+			return -x.CompareTo(y);
+		}
 	}
 }
