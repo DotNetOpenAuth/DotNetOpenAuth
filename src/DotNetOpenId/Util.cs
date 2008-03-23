@@ -96,37 +96,22 @@ namespace DotNetOpenId {
 		}
 
 		internal delegate R Func<T, R>(T t);
-		internal static X FindBestVersion<X, T>(SortedDictionary<Version, T> set,
-			Func<T, X> predicate, out Version version) {
-			foreach (var pair in set) {
-				var result = predicate(pair.Value);
-				if (result != null) {
-					version = pair.Key;
-					return result;
+		/// <summary>
+		/// Scans a list for matches with some element of the OpenID protocol,
+		/// searching from newest to oldest protocol for the first and best match.
+		/// </summary>
+		/// <typeparam name="T">The type of element retrieved from the <see cref="Protocol"/> instance.</typeparam>
+		/// <param name="elementOf">Takes a <see cref="Protocol"/> instance and returns an element of it.</param>
+		/// <param name="list">The list to scan for matches.</param>
+		/// <returns>The protocol with the element that matches some item in the list.</returns>
+		internal static Protocol FindBestVersion<T>(Func<Protocol, T> elementOf, IEnumerable<T> list) {
+			foreach (var protocol in Protocol.AllVersions) {
+				foreach (var item in list) {
+					if (item != null && item.Equals(elementOf(protocol)))
+						return protocol;
 				}
 			}
-			version = null;
-			return default(X);
-		}
-		internal static X FindBestVersion<X, T>(SortedDictionary<Version, T> set,
-			Func<T, X> predicate) {
-			Version version;
-			return FindBestVersion(set, predicate, out version);
-		}
-		internal static Version FindBestVersion<T>(SortedDictionary<Version, T> set,
-			Func<T, bool> predicate) {
-			foreach (var pair in set) {
-				if (predicate(pair.Value)) return pair.Key;
-			}
 			return null;
-		}
-	}
-
-	internal class ReverseVersionOrder : IComparer<Version> {
-		private ReverseVersionOrder() { }
-		public static ReverseVersionOrder Instance = new ReverseVersionOrder();
-		public int Compare(Version x, Version y) {
-			return -x.CompareTo(y);
 		}
 	}
 }

@@ -3,68 +3,91 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace DotNetOpenId {
+	/// <summary>
+	/// Tracks the several versions of OpenID this library supports and the unique
+	/// constants to each version used in the protocol.
+	/// </summary>
+	internal class Protocol {
+		private Protocol() { }
 
-	internal static class ProtocolConstants {
 		// Well-known, supported versions of the OpenID spec.
-		internal static readonly Version v10 = new Version(1, 0);
-		internal static readonly Version v11 = new Version(1, 1);
-		internal static readonly Version v20 = new Version(2, 0);
-
-		internal static readonly SortedDictionary<Version, string>
-			Namespaces = new SortedDictionary<Version, string>(ReverseVersionOrder.Instance) {
-			{ProtocolConstants.v10, "http://openid.net/xmlns/1.0"},
-			{ProtocolConstants.v11, "http://openid.net/xmlns/1.0"},
+		public static readonly Protocol v10 = new Protocol {
+				Version = new Version(1, 0),
+				XmlNamespace = "http://openid.net/xmlns/1.0",
+				QueryDeclaredNamespaceVersion = null,
+				ClaimedIdentifierServiceTypeURI = "http://openid.net/signon/1.0",
+				OPIdentifierServiceTypeURI = null, // not supported
+				ClaimedIdentifierForOPIdentifier = null, // not supported
+				HtmlDiscoveryProviderKey = "openid.server",
+				HtmlDiscoveryLocalIdKey = "openid.delegate",
 			};
+		public static readonly Protocol v11 = new Protocol {
+				Version = new Version(1, 1),
+				XmlNamespace = "http://openid.net/xmlns/1.0",
+				QueryDeclaredNamespaceVersion = null,
+				ClaimedIdentifierServiceTypeURI = "http://openid.net/signon/1.1",
+				OPIdentifierServiceTypeURI = null, // not supported
+				ClaimedIdentifierForOPIdentifier = null, // not supported
+				HtmlDiscoveryProviderKey = "openid.server",
+				HtmlDiscoveryLocalIdKey = "openid.delegate",
+			};
+		public static readonly Protocol v20 = new Protocol {
+				Version = new Version(2, 0),
+				XmlNamespace = null, // no longer applicable
+				QueryDeclaredNamespaceVersion = "http://specs.openid.net/auth/2.0",
+				ClaimedIdentifierServiceTypeURI = "http://specs.openid.net/auth/2.0/signon",
+				OPIdentifierServiceTypeURI = "http://specs.openid.net/auth/2.0/server",
+				ClaimedIdentifierForOPIdentifier = "http://specs.openid.net/auth/2.0/identifier_select",
+				HtmlDiscoveryProviderKey = "openid2.provider",
+				HtmlDiscoveryLocalIdKey = "openid2.local_id",
+			};
+		/// <summary>
+		/// A list of all supported OpenID versions, in order starting from newest version.
+		/// </summary>
+		public readonly static List<Protocol> AllVersions = new List<Protocol>() { v20, v11, v10 };
+
+		/// <summary>
+		/// The OpenID version that this <see cref="Protocol"/> instance describes.
+		/// </summary>
+		public Version Version;
+		/// <summary>
+		/// The namespace of OpenId 1.x elements in XRDS documents.
+		/// </summary>
+		public string XmlNamespace;
+		/// <summary>
+		/// The value of the openid.ns parameter that appears on the query string
+		/// whenever data is passed between relying party and provider for OpenID 2.0
+		/// and later.
+		/// </summary>
+		public string QueryDeclaredNamespaceVersion;
 		/// <summary>
 		/// The XRD/Service/Type value discovered in an XRDS document when
 		/// "discovering" on a Claimed Identifier (http://andrewarnott.yahoo.com)
 		/// </summary>
-		internal static readonly SortedDictionary<Version, string>
-			ClaimedIdentifierServiceTypeURIs = new SortedDictionary<Version, string>(ReverseVersionOrder.Instance) {
-				{ProtocolConstants.v10, "http://openid.net/signon/1.0"},
-				{ProtocolConstants.v11, "http://openid.net/signon/1.1"},
-				{ProtocolConstants.v20, "http://specs.openid.net/auth/2.0/signon"},
-			};
+		public string ClaimedIdentifierServiceTypeURI;
 		/// <summary>
 		/// The XRD/Service/Type value discovered in an XRDS document when
 		/// "discovering" on an OP Identifier rather than a Claimed Identifier.
 		/// (http://yahoo.com)
 		/// </summary>
-		internal static readonly SortedDictionary<Version, string>
-			OPIdentifierServiceTypeURIs = new SortedDictionary<Version, string>(ReverseVersionOrder.Instance) {
-				{ProtocolConstants.v20, "http://specs.openid.net/auth/2.0/server"},
-			};
+		public string OPIdentifierServiceTypeURI;
 		/// <summary>
 		/// Used as the Claimed Identifier and the OP Local Identifier when
 		/// the User Supplied Identifier is an OP Identifier.
 		/// </summary>
-		internal static readonly SortedDictionary<Version, string>
-			ClaimedIdentifierForOPIdentifier = new SortedDictionary<Version, string>(ReverseVersionOrder.Instance) {
-				{ProtocolConstants.v20, "http://specs.openid.net/auth/2.0/identifier_select"},
-			};
-
-		internal static readonly SortedDictionary<Version, string>
-			HtmlDiscoveryProviderKey = new SortedDictionary<Version, string>(ReverseVersionOrder.Instance) {
-				{ProtocolConstants.v10, "openid.server"},
-				{ProtocolConstants.v11, "openid.server"},
-				{ProtocolConstants.v20, "openid2.provider"},
-			};
-		internal static readonly SortedDictionary<Version, string>
-			HtmlDiscoveryLocalIdKey = new SortedDictionary<Version, string>(ReverseVersionOrder.Instance) {
-				{ProtocolConstants.v10, "openid.delegate"},
-				{ProtocolConstants.v11, "openid.delegate"},
-				{ProtocolConstants.v20, "openid2.local_id"},
-			};
-		internal const string OpenId11Server = "openid.server";
-		internal const string OpenId11Delegate = "openid.delegate";
-		internal const string OpenId20Provider = "openid2.provider";
-		internal const string OpenId20LocalId = "openid2.local_id";
-
-		internal static class OpenIdNs {
-			internal const string v10 = "http://openid.net/signon/1.0";
-			internal const string v11 = "http://openid.net/signon/1.1";
-			internal const string v20 = "http://specs.openid.net/auth/2.0";
-		}
+		public string ClaimedIdentifierForOPIdentifier;
+		/// <summary>
+		/// The value of the 'rel' attribute in an HTML document's LINK tag
+		/// when the same LINK tag's HREF attribute value contains the URL to an
+		/// OP Endpoint URL.
+		/// </summary>
+		public string HtmlDiscoveryProviderKey;
+		/// <summary>
+		/// The value of the 'rel' attribute in an HTML document's LINK tag
+		/// when the same LINK tag's HREF attribute value contains the URL to use
+		/// as the OP Local Identifier.
+		/// </summary>
+		public string HtmlDiscoveryLocalIdKey;
 	}
 
 	internal static class QueryStringArgs {

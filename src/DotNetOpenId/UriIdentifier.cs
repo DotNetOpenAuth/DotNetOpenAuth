@@ -103,32 +103,30 @@ namespace DotNetOpenId {
 		/// </remarks>
 		protected virtual ServiceEndpoint DiscoverFromHtml(Uri claimedIdentifier, string html) {
 			Uri providerEndpoint = null;
-			Version discoveredVersion = null;
+			Protocol discoveredProtocol = null;
 			Identifier providerLocalIdentifier = null;
 			var linkTags = new List<HtmlLink>(Yadis.HtmlParser.HeadTags<HtmlLink>(html));
-			providerEndpoint = Util.FindBestVersion(
-				ProtocolConstants.HtmlDiscoveryProviderKey,
-				relValue => {
-					foreach (var linkTag in linkTags) {
-						if (relValue.Equals(linkTag.Attributes["rel"], StringComparison.Ordinal)) {
-							return new Uri(linkTag.Href);
-						}
+			foreach (var protocol in Protocol.AllVersions) {
+				foreach (var linkTag in linkTags) {
+					if (protocol.HtmlDiscoveryProviderKey.Equals(linkTag.Attributes["rel"], StringComparison.Ordinal)) {
+						providerEndpoint = new Uri(linkTag.Href);
+						discoveredProtocol = protocol;
+						break;
 					}
-					return null;
-				}, out discoveredVersion);
+				}
+			}
 			if (providerEndpoint == null)
 				return null; // html did not contain openid.server link
 			// See if a LocalId tag of the discovered version exists
 			foreach (var linkTag in linkTags) {
-				if (ProtocolConstants.HtmlDiscoveryLocalIdKey[discoveredVersion].Equals(
-					linkTag.Attributes["rel"], StringComparison.Ordinal)) {
+				if (discoveredProtocol.HtmlDiscoveryLocalIdKey.Equals(linkTag.Attributes["rel"], StringComparison.Ordinal)) {
 					providerLocalIdentifier = new Uri(linkTag.Href);
 					break;
 				}
 			}
 
 			// Choose the TypeURI to match the OpenID version detected.
-			string[] typeURIs = { ProtocolConstants.ClaimedIdentifierServiceTypeURIs[discoveredVersion] };
+			string[] typeURIs = { discoveredProtocol.ClaimedIdentifierServiceTypeURI };
 			return new ServiceEndpoint(claimedIdentifier, providerEndpoint, 
 				providerLocalIdentifier, typeURIs);
 		}

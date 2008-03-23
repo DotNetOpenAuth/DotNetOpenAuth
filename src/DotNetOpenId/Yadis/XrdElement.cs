@@ -36,9 +36,9 @@ namespace DotNetOpenId.Yadis {
 			get {
 				var xpath = new StringBuilder();
 				xpath.Append("xrd:Service[");
-				foreach (string uri in ProtocolConstants.OPIdentifierServiceTypeURIs.Values) {
+				foreach (var protocol in Protocol.AllVersions) {
 					xpath.Append("xrd:Type/text()='");
-					xpath.Append(uri);
+					xpath.Append(protocol.OPIdentifierServiceTypeURI);
 					xpath.Append("' or ");
 				}
 				xpath.Length -= 4;
@@ -60,9 +60,9 @@ namespace DotNetOpenId.Yadis {
 			get {
 				var xpath = new StringBuilder();
 				xpath.Append("xrd:Service[");
-				foreach (string uri in ProtocolConstants.ClaimedIdentifierServiceTypeURIs.Values) {
+				foreach (var protocol in Protocol.AllVersions) {
 					xpath.Append("xrd:Type/text()='");
-					xpath.Append(uri);
+					xpath.Append(protocol.ClaimedIdentifierServiceTypeURI);
 					xpath.Append("' or ");
 				}
 				xpath.Length -= 4;

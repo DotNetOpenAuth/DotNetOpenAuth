@@ -105,7 +105,7 @@ namespace DotNetOpenId.RelyingParty {
 					QueryStringArgs.Modes.checkid_immediate : QueryStringArgs.Modes.checkid_setup);
 				qsArgs.Add(QueryStringArgs.openid.identity, endpoint.ProviderLocalIdentifier);
 				if (endpoint.ProviderVersion.Major >= 2) {
-					qsArgs.Add(QueryStringArgs.openid.ns, ProtocolConstants.OpenIdNs.v20);
+					qsArgs.Add(QueryStringArgs.openid.ns, Protocol.v20.QueryDeclaredNamespaceVersion);
 					qsArgs.Add(QueryStringArgs.openid.claimed_id, endpoint.ClaimedIdentifier);
 					qsArgs.Add(QueryStringArgs.openid.realm, Realm.ToString());
 				} else {

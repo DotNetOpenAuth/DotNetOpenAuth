@@ -63,12 +63,11 @@ namespace DotNetOpenId.RelyingParty {
 
 		public Version ProviderVersion {
 			get {
-				return
-					Util.FindBestVersion(ProtocolConstants.OPIdentifierServiceTypeURIs,
-					uri => Array.IndexOf(ProviderSupportedServiceTypeUris, uri) >= 0)
-					??
-					Util.FindBestVersion(ProtocolConstants.ClaimedIdentifierServiceTypeURIs,
-					uri => Array.IndexOf(ProviderSupportedServiceTypeUris, uri) >= 0);
+				Protocol protocol =
+					Util.FindBestVersion(p => p.OPIdentifierServiceTypeURI, ProviderSupportedServiceTypeUris) ??
+					Util.FindBestVersion(p => p.ClaimedIdentifierServiceTypeURI, ProviderSupportedServiceTypeUris);
+				if (protocol != null) return protocol.Version;
+				throw new InvalidOperationException("Unable to determine Provider's version.");
 			}
 		}
 

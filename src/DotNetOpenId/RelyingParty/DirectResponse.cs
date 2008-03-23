@@ -14,9 +14,9 @@ namespace DotNetOpenId.RelyingParty {
 			if (TraceUtil.Switch.TraceInfo) {
 				if (!Args.ContainsKey(QueryStringArgs.openidnp.ns)) {
 					Trace.TraceInformation("Direct response from provider lacked the {0} key.", QueryStringArgs.openid.ns);
-				} else if (Args[QueryStringArgs.openidnp.ns] != ProtocolConstants.OpenIdNs.v20) {
+				} else if (Args[QueryStringArgs.openidnp.ns] != Protocol.v20.QueryDeclaredNamespaceVersion) {
 					Trace.TraceInformation("Direct response from provider for key {0} was '{1}' rather than '{2}'.",
-						QueryStringArgs.openid.ns, Args[QueryStringArgs.openidnp.ns], ProtocolConstants.OpenIdNs.v20);
+						QueryStringArgs.openid.ns, Args[QueryStringArgs.openidnp.ns], Protocol.v20.QueryDeclaredNamespaceVersion);
 				}
 			}
 
