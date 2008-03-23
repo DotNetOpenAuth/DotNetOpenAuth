@@ -7,7 +7,7 @@ namespace DotNetOpenId {
 	/// Tracks the several versions of OpenID this library supports and the unique
 	/// constants to each version used in the protocol.
 	/// </summary>
-	internal class Protocol {
+	internal partial class Protocol {
 		private Protocol() { }
 
 		// Well-known, supported versions of the OpenID spec.
@@ -89,9 +89,9 @@ namespace DotNetOpenId {
 		/// </summary>
 		public string HtmlDiscoveryLocalIdKey;
 
-		internal static class Constants {
+		internal static partial class Constants {
 			/// <summary>openid. variables that don't include the "openid." prefix.</summary>
-			internal static class openidnp {
+			internal static partial class openidnp {
 				internal const string ns = "ns";
 				internal const string return_to = "return_to";
 				internal const string mode = "mode";
@@ -113,21 +113,6 @@ namespace DotNetOpenId {
 				internal const string dh_gen = "dh_gen";
 				internal const string dh_consumer_public = "dh_consumer_public";
 				internal const string dh_server_public = "dh_server_public";
-
-				internal static class sregnp {
-					internal const string policy_url = "policy_url";
-					internal const string optional = "optional";
-					internal const string required = "required";
-					internal const string nickname = "nickname";
-					internal const string email = "email";
-					internal const string fullname = "fullname";
-					internal const string dob = "dob";
-					internal const string gender = "gender";
-					internal const string postcode = "postcode";
-					internal const string country = "country";
-					internal const string language = "language";
-					internal const string timezone = "timezone";
-				}
 			}
 			/// <summary>openid. variables that include the "openid." prefix.</summary>
 			internal static class openid {
@@ -157,8 +142,6 @@ namespace DotNetOpenId {
 			}
 			internal const string enc_mac_key = "enc_mac_key";
 			internal const string mac_key = "mac_key";
-			internal const string sreg_ns = "http://openid.net/extensions/sreg/1.1";
-			internal const string sreg_compatibility_alias = "sreg";
 			internal static class SessionType {
 				internal const string DH_SHA1 = "DH-SHA1";
 				internal const string DH_SHA256 = "DH-SHA256";
@@ -178,10 +161,6 @@ namespace DotNetOpenId {
 				internal const string checkid_setup = "checkid_setup";
 				internal const string check_authentication = "check_authentication";
 				internal const string associate = "associate";
-			}
-			internal static class Genders {
-				internal const string Male = "M";
-				internal const string Female = "F";
 			}
 			internal static class IsValid {
 				internal const string True = "true";
