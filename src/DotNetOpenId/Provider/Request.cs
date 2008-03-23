@@ -39,7 +39,7 @@ namespace DotNetOpenId.Provider
 		internal static bool IsOpenIdRequest(IDictionary<string, string> query) {
 			Debug.Assert(query != null);
 			foreach (string key in query.Keys) {
-				if (key.StartsWith(QueryStringArgs.openid.Prefix, StringComparison.OrdinalIgnoreCase)) {
+				if (key.StartsWith(Protocol.Constants.openid.Prefix, StringComparison.OrdinalIgnoreCase)) {
 					return true;
 				}
 			}
@@ -56,7 +56,7 @@ namespace DotNetOpenId.Provider
 		internal static Request CreateRequest(OpenIdProvider provider, IDictionary<string, string> query) {
 			Debug.Assert(query != null);
 			
-			string mode = query[QueryStringArgs.openid.mode];
+			string mode = query[Protocol.Constants.openid.mode];
 			if (string.IsNullOrEmpty(mode)) {
 				throw new OpenIdException("No openid.mode value in query.", query);
 			}
@@ -64,16 +64,16 @@ namespace DotNetOpenId.Provider
 			Request request;
 			try {
 				switch (mode) {
-					case QueryStringArgs.Modes.checkid_setup:
+					case Protocol.Constants.Modes.checkid_setup:
 						request = new CheckIdRequest(provider);
 						break;
-					case QueryStringArgs.Modes.checkid_immediate:
+					case Protocol.Constants.Modes.checkid_immediate:
 						request = new CheckIdRequest(provider);
 						break;
-					case QueryStringArgs.Modes.check_authentication:
+					case Protocol.Constants.Modes.check_authentication:
 						request = new CheckAuthRequest(provider);
 						break;
-					case QueryStringArgs.Modes.associate:
+					case Protocol.Constants.Modes.associate:
 						request = new AssociateRequest(provider);
 						break;
 					default:

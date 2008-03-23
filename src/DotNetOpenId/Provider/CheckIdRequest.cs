@@ -63,7 +63,7 @@ namespace DotNetOpenId.Provider {
 		/// </summary>
 		internal Uri ReturnTo { get; private set; }
 		internal override string Mode {
-			get { return Immediate ? QueryStringArgs.Modes.checkid_immediate : QueryStringArgs.Modes.checkid_setup; }
+			get { return Immediate ? Protocol.Constants.Modes.checkid_immediate : Protocol.Constants.Modes.checkid_setup; }
 		}
 		/// <summary>
 		/// Indicates whether this request has all the information necessary to formulate a response.
@@ -81,7 +81,7 @@ namespace DotNetOpenId.Provider {
 
 				UriBuilder builder = new UriBuilder(ReturnTo);
 				var args = new Dictionary<string, string>();
-				args.Add(QueryStringArgs.openid.mode, QueryStringArgs.Modes.cancel);
+				args.Add(Protocol.Constants.openid.mode, Protocol.Constants.Modes.cancel);
 				UriUtil.AppendQueryArgs(builder, args);
 
 				return builder.Uri;
@@ -90,38 +90,38 @@ namespace DotNetOpenId.Provider {
 
 		internal CheckIdRequest(OpenIdProvider server) : base(server) {
 			// handle the mandatory protocol fields
-			string mode = Util.GetRequiredArg(Query, QueryStringArgs.openid.mode);
-			if (QueryStringArgs.Modes.checkid_immediate.Equals(mode, StringComparison.Ordinal)) {
+			string mode = Util.GetRequiredArg(Query, Protocol.Constants.openid.mode);
+			if (Protocol.Constants.Modes.checkid_immediate.Equals(mode, StringComparison.Ordinal)) {
 				Immediate = true;
-			} else if (QueryStringArgs.Modes.checkid_setup.Equals(mode, StringComparison.Ordinal)) {
+			} else if (Protocol.Constants.Modes.checkid_setup.Equals(mode, StringComparison.Ordinal)) {
 				Immediate = false; // implied
 			} else {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-					Strings.InvalidOpenIdQueryParameterValue, QueryStringArgs.openid.mode, mode), Query);
+					Strings.InvalidOpenIdQueryParameterValue, Protocol.Constants.openid.mode, mode), Query);
 			}
 
 			try {
-				ClaimedIdentifier = Util.GetRequiredArg(Query, QueryStringArgs.openid.identity);
+				ClaimedIdentifier = Util.GetRequiredArg(Query, Protocol.Constants.openid.identity);
 			} catch (UriFormatException) {
-				throw new OpenIdException(QueryStringArgs.openid.identity + " not a valid url: " + Util.GetRequiredArg(Query, QueryStringArgs.openid.identity), Query);
+				throw new OpenIdException(Protocol.Constants.openid.identity + " not a valid url: " + Util.GetRequiredArg(Query, Protocol.Constants.openid.identity), Query);
 			}
 
 			try {
-				ReturnTo = new Uri(Util.GetRequiredArg(Query, QueryStringArgs.openid.return_to));
+				ReturnTo = new Uri(Util.GetRequiredArg(Query, Protocol.Constants.openid.return_to));
 			} catch (UriFormatException ex) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture, 
-					"'{0}' is not a valid OpenID return_to URL.", Util.GetRequiredArg(Query, QueryStringArgs.openid.return_to)),
+					"'{0}' is not a valid OpenID return_to URL.", Util.GetRequiredArg(Query, Protocol.Constants.openid.return_to)),
 					ClaimedIdentifier, Query, ex);
 			}
 
 			try {
-				Realm = new Realm(Util.GetOptionalArg(Query, QueryStringArgs.openid.trust_root) ?? ReturnTo.AbsoluteUri);
+				Realm = new Realm(Util.GetOptionalArg(Query, Protocol.Constants.openid.trust_root) ?? ReturnTo.AbsoluteUri);
 			} catch (UriFormatException ex) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-					Strings.InvalidOpenIdQueryParameterValue, QueryStringArgs.openid.trust_root,
-					Util.GetOptionalArg(Query, QueryStringArgs.openid.trust_root)), ex);
+					Strings.InvalidOpenIdQueryParameterValue, Protocol.Constants.openid.trust_root,
+					Util.GetOptionalArg(Query, Protocol.Constants.openid.trust_root)), ex);
 			}
-			AssociationHandle = Util.GetOptionalArg(Query, QueryStringArgs.openid.assoc_handle);
+			AssociationHandle = Util.GetOptionalArg(Query, Protocol.Constants.openid.assoc_handle);
 
 			if (!Realm.Contains(ReturnTo)) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
@@ -131,7 +131,7 @@ namespace DotNetOpenId.Provider {
 
 		internal override IEncodable CreateResponse() {
 			string mode = (IsAuthenticated.Value || Immediate) ?
-				QueryStringArgs.Modes.id_res : QueryStringArgs.Modes.cancel;
+				Protocol.Constants.Modes.id_res : Protocol.Constants.Modes.cancel;
 
 			if (TraceUtil.Switch.TraceInfo) {
 				Trace.TraceInformation("Start processing Response for CheckIdRequest");
@@ -143,17 +143,17 @@ namespace DotNetOpenId.Provider {
 			EncodableResponse response = new EncodableResponse(this);
 
 			// Always send the openid.mode, and sign it only if authentication succeeded.
-			response.AddField(null, QueryStringArgs.openidnp.mode, mode, IsAuthenticated.Value);
+			response.AddField(null, Protocol.Constants.openidnp.mode, mode, IsAuthenticated.Value);
 
 			if (IsAuthenticated.Value) {
 				// Add additional signed fields
 				var fields = new Dictionary<string, string>();
-				fields.Add(QueryStringArgs.openidnp.identity, ClaimedIdentifier.ToString());
-				fields.Add(QueryStringArgs.openidnp.return_to, ReturnTo.AbsoluteUri);
+				fields.Add(Protocol.Constants.openidnp.identity, ClaimedIdentifier.ToString());
+				fields.Add(Protocol.Constants.openidnp.return_to, ReturnTo.AbsoluteUri);
 				response.AddFields(null, fields, true);
 			}
 			if (Immediate && !IsAuthenticated.Value) {
-				response.AddField(null, QueryStringArgs.openidnp.user_setup_url, SetupUrl.AbsoluteUri, false);
+				response.AddField(null, Protocol.Constants.openidnp.user_setup_url, SetupUrl.AbsoluteUri, false);
 			}
 
 			if (TraceUtil.Switch.TraceInfo) {
@@ -185,15 +185,15 @@ namespace DotNetOpenId.Provider {
 
 				var q = new Dictionary<string, string>();
 
-				q.Add(QueryStringArgs.openid.mode, QueryStringArgs.Modes.checkid_setup);
-				q.Add(QueryStringArgs.openid.identity, ClaimedIdentifier.ToString());
-				q.Add(QueryStringArgs.openid.return_to, ReturnTo.AbsoluteUri);
+				q.Add(Protocol.Constants.openid.mode, Protocol.Constants.Modes.checkid_setup);
+				q.Add(Protocol.Constants.openid.identity, ClaimedIdentifier.ToString());
+				q.Add(Protocol.Constants.openid.return_to, ReturnTo.AbsoluteUri);
 
 				if (Realm != null)
-					q.Add(QueryStringArgs.openid.trust_root, Realm.ToString());
+					q.Add(Protocol.Constants.openid.trust_root, Realm.ToString());
 
 				if (this.AssociationHandle != null)
-					q.Add(QueryStringArgs.openid.assoc_handle, this.AssociationHandle);
+					q.Add(Protocol.Constants.openid.assoc_handle, this.AssociationHandle);
 
 				UriBuilder builder = new UriBuilder(ProviderEndpoint);
 				UriUtil.AppendQueryArgs(builder, q);

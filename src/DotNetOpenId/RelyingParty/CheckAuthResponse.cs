@@ -12,7 +12,7 @@ namespace DotNetOpenId.RelyingParty {
 			get {
 				string invalidateHandle = null;
 				if (IsAuthenticationValid) {
-					Args.TryGetValue(QueryStringArgs.openidnp.invalidate_handle, out invalidateHandle);
+					Args.TryGetValue(Protocol.Constants.openidnp.invalidate_handle, out invalidateHandle);
 				}
 				return invalidateHandle;
 			}
@@ -21,8 +21,8 @@ namespace DotNetOpenId.RelyingParty {
 		public bool IsAuthenticationValid {
 			get {
 				string is_valid;
-				Args.TryGetValue(QueryStringArgs.openidnp.is_valid, out is_valid);
-				return QueryStringArgs.IsValid.True.Equals(is_valid, StringComparison.OrdinalIgnoreCase);
+				Args.TryGetValue(Protocol.Constants.openidnp.is_valid, out is_valid);
+				return Protocol.Constants.IsValid.True.Equals(is_valid, StringComparison.OrdinalIgnoreCase);
 			}
 		}
 	}

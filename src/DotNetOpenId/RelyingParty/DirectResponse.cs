@@ -12,11 +12,11 @@ namespace DotNetOpenId.RelyingParty {
 			Args = args;
 
 			if (TraceUtil.Switch.TraceInfo) {
-				if (!Args.ContainsKey(QueryStringArgs.openidnp.ns)) {
-					Trace.TraceInformation("Direct response from provider lacked the {0} key.", QueryStringArgs.openid.ns);
-				} else if (Args[QueryStringArgs.openidnp.ns] != Protocol.v20.QueryDeclaredNamespaceVersion) {
+				if (!Args.ContainsKey(Protocol.Constants.openidnp.ns)) {
+					Trace.TraceInformation("Direct response from provider lacked the {0} key.", Protocol.Constants.openid.ns);
+				} else if (Args[Protocol.Constants.openidnp.ns] != Protocol.v20.QueryDeclaredNamespaceVersion) {
 					Trace.TraceInformation("Direct response from provider for key {0} was '{1}' rather than '{2}'.",
-						QueryStringArgs.openid.ns, Args[QueryStringArgs.openidnp.ns], Protocol.v20.QueryDeclaredNamespaceVersion);
+						Protocol.Constants.openid.ns, Args[Protocol.Constants.openidnp.ns], Protocol.v20.QueryDeclaredNamespaceVersion);
 				}
 			}
 

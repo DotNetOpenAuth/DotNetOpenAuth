@@ -44,31 +44,31 @@ namespace DotNetOpenId.Extensions {
 		internal void SetProfileRequestFromList(ICollection<string> fieldNames, SimpleRegistrationRequest requestLevel) {
 			foreach (string field in fieldNames) {
 				switch (field) {
-					case QueryStringArgs.openidnp.sregnp.nickname:
+					case Protocol.Constants.openidnp.sregnp.nickname:
 						Nickname = requestLevel;
 						break;
-					case QueryStringArgs.openidnp.sregnp.email:
+					case Protocol.Constants.openidnp.sregnp.email:
 						Email = requestLevel;
 						break;
-					case QueryStringArgs.openidnp.sregnp.fullname:
+					case Protocol.Constants.openidnp.sregnp.fullname:
 						FullName = requestLevel;
 						break;
-					case QueryStringArgs.openidnp.sregnp.dob:
+					case Protocol.Constants.openidnp.sregnp.dob:
 						BirthDate = requestLevel;
 						break;
-					case QueryStringArgs.openidnp.sregnp.gender:
+					case Protocol.Constants.openidnp.sregnp.gender:
 						Gender = requestLevel;
 						break;
-					case QueryStringArgs.openidnp.sregnp.postcode:
+					case Protocol.Constants.openidnp.sregnp.postcode:
 						PostalCode = requestLevel;
 						break;
-					case QueryStringArgs.openidnp.sregnp.country:
+					case Protocol.Constants.openidnp.sregnp.country:
 						Country = requestLevel;
 						break;
-					case QueryStringArgs.openidnp.sregnp.language:
+					case Protocol.Constants.openidnp.sregnp.language:
 						Language = requestLevel;
 						break;
-					case QueryStringArgs.openidnp.sregnp.timezone:
+					case Protocol.Constants.openidnp.sregnp.timezone:
 						TimeZone = requestLevel;
 						break;
 					default:
@@ -80,23 +80,23 @@ namespace DotNetOpenId.Extensions {
 		string[] assembleProfileFields(SimpleRegistrationRequest level) {
 			List<string> fields = new List<string>(10);
 			if (Nickname == level)
-				fields.Add(QueryStringArgs.openidnp.sregnp.nickname);
+				fields.Add(Protocol.Constants.openidnp.sregnp.nickname);
 			if (Email == level)
-				fields.Add(QueryStringArgs.openidnp.sregnp.email);
+				fields.Add(Protocol.Constants.openidnp.sregnp.email);
 			if (FullName == level)
-				fields.Add(QueryStringArgs.openidnp.sregnp.fullname);
+				fields.Add(Protocol.Constants.openidnp.sregnp.fullname);
 			if (BirthDate == level)
-				fields.Add(QueryStringArgs.openidnp.sregnp.dob);
+				fields.Add(Protocol.Constants.openidnp.sregnp.dob);
 			if (Gender == level)
-				fields.Add(QueryStringArgs.openidnp.sregnp.gender);
+				fields.Add(Protocol.Constants.openidnp.sregnp.gender);
 			if (PostalCode == level)
-				fields.Add(QueryStringArgs.openidnp.sregnp.postcode);
+				fields.Add(Protocol.Constants.openidnp.sregnp.postcode);
 			if (Country == level)
-				fields.Add(QueryStringArgs.openidnp.sregnp.country);
+				fields.Add(Protocol.Constants.openidnp.sregnp.country);
 			if (Language == level)
-				fields.Add(QueryStringArgs.openidnp.sregnp.language);
+				fields.Add(Protocol.Constants.openidnp.sregnp.language);
 			if (TimeZone == level)
-				fields.Add(QueryStringArgs.openidnp.sregnp.timezone);
+				fields.Add(Protocol.Constants.openidnp.sregnp.timezone);
 
 			return fields.ToArray();
 		}
@@ -106,22 +106,22 @@ namespace DotNetOpenId.Extensions {
 		/// </summary>
 		public static SimpleRegistrationRequestFields ReadFromRequest(IRequest request) {
 			SimpleRegistrationRequestFields fields = new SimpleRegistrationRequestFields();
-			var args = request.GetExtensionArguments(QueryStringArgs.sreg_ns);
+			var args = request.GetExtensionArguments(Protocol.Constants.sreg_ns);
 			if (args == null) return fields;
 
 			string policyUrl;
-			if (args.TryGetValue(QueryStringArgs.openidnp.sregnp.policy_url, out policyUrl)
+			if (args.TryGetValue(Protocol.Constants.openidnp.sregnp.policy_url, out policyUrl)
 				&& !string.IsNullOrEmpty(policyUrl)) {
 				fields.PolicyUrl = new Uri(policyUrl);
 			}
 
 			string optionalFields;
-			if (args.TryGetValue(QueryStringArgs.openidnp.sregnp.optional, out optionalFields)) {
+			if (args.TryGetValue(Protocol.Constants.openidnp.sregnp.optional, out optionalFields)) {
 				fields.SetProfileRequestFromList(optionalFields.Split(','), SimpleRegistrationRequest.Request);
 			}
 
 			string requiredFields;
-			if (args.TryGetValue(QueryStringArgs.openidnp.sregnp.required, out requiredFields)) {
+			if (args.TryGetValue(Protocol.Constants.openidnp.sregnp.required, out requiredFields)) {
 				fields.SetProfileRequestFromList(requiredFields.Split(','), SimpleRegistrationRequest.Require);
 			}
 
@@ -130,12 +130,12 @@ namespace DotNetOpenId.Extensions {
 		public void AddToRequest(RelyingParty.IAuthenticationRequest request) {
 			var fields = new Dictionary<string, string>();
 			if (PolicyUrl != null)
-				fields.Add(QueryStringArgs.openidnp.sregnp.policy_url, PolicyUrl.AbsoluteUri);
+				fields.Add(Protocol.Constants.openidnp.sregnp.policy_url, PolicyUrl.AbsoluteUri);
 
-			fields.Add(QueryStringArgs.openidnp.sregnp.required, string.Join(",", assembleProfileFields(SimpleRegistrationRequest.Require)));
-			fields.Add(QueryStringArgs.openidnp.sregnp.optional, string.Join(",", assembleProfileFields(SimpleRegistrationRequest.Request)));
+			fields.Add(Protocol.Constants.openidnp.sregnp.required, string.Join(",", assembleProfileFields(SimpleRegistrationRequest.Require)));
+			fields.Add(Protocol.Constants.openidnp.sregnp.optional, string.Join(",", assembleProfileFields(SimpleRegistrationRequest.Request)));
 
-			request.AddExtensionArguments(QueryStringArgs.sreg_ns, fields);
+			request.AddExtensionArguments(Protocol.Constants.sreg_ns, fields);
 		}
 
 		public override string ToString() {

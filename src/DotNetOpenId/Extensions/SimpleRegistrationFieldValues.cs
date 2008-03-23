@@ -73,62 +73,62 @@ namespace DotNetOpenId.Extensions
 			if (authenticationRequest == null) throw new ArgumentNullException("authenticationRequest");
 			Dictionary<string, string> fields = new Dictionary<string, string>();
 			if (BirthDate != null) {
-				fields.Add(QueryStringArgs.openidnp.sregnp.dob, BirthDate.ToString());
+				fields.Add(Protocol.Constants.openidnp.sregnp.dob, BirthDate.ToString());
 			}
 			if (!String.IsNullOrEmpty(Country)) {
-				fields.Add(QueryStringArgs.openidnp.sregnp.country, Country);
+				fields.Add(Protocol.Constants.openidnp.sregnp.country, Country);
 			}
 			if (Email != null) {
-				fields.Add(QueryStringArgs.openidnp.sregnp.email, Email.ToString());
+				fields.Add(Protocol.Constants.openidnp.sregnp.email, Email.ToString());
 			}
 			if ((!String.IsNullOrEmpty(FullName))) {
-				fields.Add(QueryStringArgs.openidnp.sregnp.fullname, FullName);
+				fields.Add(Protocol.Constants.openidnp.sregnp.fullname, FullName);
 			}
 			if (Gender != null) {
 				if (Gender == DotNetOpenId.Extensions.Gender.Female) {
-					fields.Add(QueryStringArgs.openidnp.sregnp.gender, QueryStringArgs.Genders.Female);
+					fields.Add(Protocol.Constants.openidnp.sregnp.gender, Protocol.Constants.Genders.Female);
 				} else {
-					fields.Add(QueryStringArgs.openidnp.sregnp.gender, QueryStringArgs.Genders.Male);
+					fields.Add(Protocol.Constants.openidnp.sregnp.gender, Protocol.Constants.Genders.Male);
 				}
 			}
 			if (!String.IsNullOrEmpty(Language)) {
-				fields.Add(QueryStringArgs.openidnp.sregnp.language, Language);
+				fields.Add(Protocol.Constants.openidnp.sregnp.language, Language);
 			}
 			if (!String.IsNullOrEmpty(Nickname)) {
-				fields.Add(QueryStringArgs.openidnp.sregnp.nickname, Nickname);
+				fields.Add(Protocol.Constants.openidnp.sregnp.nickname, Nickname);
 			}
 			if (!String.IsNullOrEmpty(PostalCode)) {
-				fields.Add(QueryStringArgs.openidnp.sregnp.postcode, PostalCode);
+				fields.Add(Protocol.Constants.openidnp.sregnp.postcode, PostalCode);
 			}
 			if (!String.IsNullOrEmpty(TimeZone)) {
-				fields.Add(QueryStringArgs.openidnp.sregnp.timezone, TimeZone);
+				fields.Add(Protocol.Constants.openidnp.sregnp.timezone, TimeZone);
 			}
-			authenticationRequest.AddExtensionArguments(QueryStringArgs.sreg_ns, fields);
+			authenticationRequest.AddExtensionArguments(Protocol.Constants.sreg_ns, fields);
 		}
 		public static SimpleRegistrationFieldValues ReadFromResponse(IAuthenticationResponse response) {
-			var sreg = response.GetExtensionArguments(QueryStringArgs.sreg_ns);
+			var sreg = response.GetExtensionArguments(Protocol.Constants.sreg_ns);
 			if (sreg == null) return new SimpleRegistrationFieldValues();
 			string nickname, email, fullName, dob, genderString, postalCode, country, language, timeZone;
 			DateTime? birthDate = null;
 			Gender? gender = null;
-			sreg.TryGetValue(QueryStringArgs.openidnp.sregnp.nickname, out nickname);
-			sreg.TryGetValue(QueryStringArgs.openidnp.sregnp.email, out email);
-			sreg.TryGetValue(QueryStringArgs.openidnp.sregnp.fullname, out fullName);
-			if (sreg.TryGetValue(QueryStringArgs.openidnp.sregnp.dob, out dob)) {
+			sreg.TryGetValue(Protocol.Constants.openidnp.sregnp.nickname, out nickname);
+			sreg.TryGetValue(Protocol.Constants.openidnp.sregnp.email, out email);
+			sreg.TryGetValue(Protocol.Constants.openidnp.sregnp.fullname, out fullName);
+			if (sreg.TryGetValue(Protocol.Constants.openidnp.sregnp.dob, out dob)) {
 				DateTime bd;
 				if (DateTime.TryParse(dob, out bd))
 					birthDate = bd;
 			}
-			if (sreg.TryGetValue(QueryStringArgs.openidnp.sregnp.gender, out genderString)) {
+			if (sreg.TryGetValue(Protocol.Constants.openidnp.sregnp.gender, out genderString)) {
 				switch (genderString) {
-					case QueryStringArgs.Genders.Male: gender = DotNetOpenId.Extensions.Gender.Male; break;
-					case QueryStringArgs.Genders.Female: gender = DotNetOpenId.Extensions.Gender.Female; break;
+					case Protocol.Constants.Genders.Male: gender = DotNetOpenId.Extensions.Gender.Male; break;
+					case Protocol.Constants.Genders.Female: gender = DotNetOpenId.Extensions.Gender.Female; break;
 				}
 			}
-			sreg.TryGetValue(QueryStringArgs.openidnp.sregnp.postcode, out postalCode);
-			sreg.TryGetValue(QueryStringArgs.openidnp.sregnp.country, out country);
-			sreg.TryGetValue(QueryStringArgs.openidnp.sregnp.language, out language);
-			sreg.TryGetValue(QueryStringArgs.openidnp.sregnp.timezone, out timeZone);
+			sreg.TryGetValue(Protocol.Constants.openidnp.sregnp.postcode, out postalCode);
+			sreg.TryGetValue(Protocol.Constants.openidnp.sregnp.country, out country);
+			sreg.TryGetValue(Protocol.Constants.openidnp.sregnp.language, out language);
+			sreg.TryGetValue(Protocol.Constants.openidnp.sregnp.timezone, out timeZone);
 
 			return new SimpleRegistrationFieldValues() {
 				Nickname = nickname,

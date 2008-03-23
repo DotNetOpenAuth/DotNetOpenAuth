@@ -12,8 +12,8 @@ namespace DotNetOpenId.RelyingParty {
 			if (args == null) throw new ArgumentNullException("args");
 			Provider = provider;
 			Args = args;
-			if (!Args.ContainsKey(QueryStringArgs.openid.ns))
-				Args.Add(QueryStringArgs.openid.ns, Protocol.v20.QueryDeclaredNamespaceVersion);
+			if (!Args.ContainsKey(Protocol.Constants.openid.ns))
+				Args.Add(Protocol.Constants.openid.ns, Protocol.v20.QueryDeclaredNamespaceVersion);
 		}
 		protected Uri Provider { get; private set; }
 		protected IDictionary<string, string> Args { get; private set; }
@@ -34,9 +34,9 @@ namespace DotNetOpenId.RelyingParty {
 			// All error codes are supposed to be returned with 400, but
 			// some (like myopenid.com) sometimes send errors as 200's.
 			if (resp.StatusCode == HttpStatusCode.BadRequest ||
-				(args.TryGetValue(QueryStringArgs.openidnp.mode, out mode) && mode == QueryStringArgs.Modes.error)) {
+				(args.TryGetValue(Protocol.Constants.openidnp.mode, out mode) && mode == Protocol.Constants.Modes.error)) {
 				string providerMessage;
-				args.TryGetValue(QueryStringArgs.openidnp.error, out providerMessage);
+				args.TryGetValue(Protocol.Constants.openidnp.error, out providerMessage);
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 					Strings.ProviderRespondedWithError, providerMessage), args);
 			} else if (resp.StatusCode == HttpStatusCode.OK) {

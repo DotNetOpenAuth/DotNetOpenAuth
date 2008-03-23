@@ -101,20 +101,20 @@ namespace DotNetOpenId.RelyingParty {
 
 				var qsArgs = new Dictionary<string, string>();
 
-				qsArgs.Add(QueryStringArgs.openid.mode, (Mode == AuthenticationRequestMode.Immediate) ?
-					QueryStringArgs.Modes.checkid_immediate : QueryStringArgs.Modes.checkid_setup);
-				qsArgs.Add(QueryStringArgs.openid.identity, endpoint.ProviderLocalIdentifier);
+				qsArgs.Add(Protocol.Constants.openid.mode, (Mode == AuthenticationRequestMode.Immediate) ?
+					Protocol.Constants.Modes.checkid_immediate : Protocol.Constants.Modes.checkid_setup);
+				qsArgs.Add(Protocol.Constants.openid.identity, endpoint.ProviderLocalIdentifier);
 				if (endpoint.ProviderVersion.Major >= 2) {
-					qsArgs.Add(QueryStringArgs.openid.ns, Protocol.v20.QueryDeclaredNamespaceVersion);
-					qsArgs.Add(QueryStringArgs.openid.claimed_id, endpoint.ClaimedIdentifier);
-					qsArgs.Add(QueryStringArgs.openid.realm, Realm.ToString());
+					qsArgs.Add(Protocol.Constants.openid.ns, Protocol.v20.QueryDeclaredNamespaceVersion);
+					qsArgs.Add(Protocol.Constants.openid.claimed_id, endpoint.ClaimedIdentifier);
+					qsArgs.Add(Protocol.Constants.openid.realm, Realm.ToString());
 				} else {
-					qsArgs.Add(QueryStringArgs.openid.trust_root, Realm.ToString());
+					qsArgs.Add(Protocol.Constants.openid.trust_root, Realm.ToString());
 				}
-				qsArgs.Add(QueryStringArgs.openid.return_to, returnToBuilder.ToString());
+				qsArgs.Add(Protocol.Constants.openid.return_to, returnToBuilder.ToString());
 
 				if (this.assoc != null)
-					qsArgs.Add(QueryStringArgs.openid.assoc_handle, this.assoc.Handle); // !!!!
+					qsArgs.Add(Protocol.Constants.openid.assoc_handle, this.assoc.Handle); // !!!!
 
 				UriBuilder redir = new UriBuilder(this.endpoint.ProviderEndpoint);
 

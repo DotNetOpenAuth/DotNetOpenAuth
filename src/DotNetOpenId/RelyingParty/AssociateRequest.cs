@@ -18,15 +18,15 @@ namespace DotNetOpenId.RelyingParty {
 
 			bool useSha256 = provider.ProviderVersion.Major >= 2;
 
-			args.Add(QueryStringArgs.openid.mode, QueryStringArgs.Modes.associate);
-			args.Add(QueryStringArgs.openid.assoc_type, useSha256 ?
-				QueryStringArgs.SignatureAlgorithms.HMAC_SHA256 :
-				QueryStringArgs.SignatureAlgorithms.HMAC_SHA1);
+			args.Add(Protocol.Constants.openid.mode, Protocol.Constants.Modes.associate);
+			args.Add(Protocol.Constants.openid.assoc_type, useSha256 ?
+				Protocol.Constants.SignatureAlgorithms.HMAC_SHA256 :
+				Protocol.Constants.SignatureAlgorithms.HMAC_SHA1);
 
 			DiffieHellman dh = null;
 
 			if (provider.ProviderEndpoint.Scheme == Uri.UriSchemeHttps) {
-				args.Add(QueryStringArgs.openid.session_type, QueryStringArgs.SessionType.NoEncryption20);
+				args.Add(Protocol.Constants.openid.session_type, Protocol.Constants.SessionType.NoEncryption20);
 			} else {
 				// Initiate Diffie-Hellman Exchange
 				dh = CryptUtil.CreateDiffieHellman();
@@ -34,16 +34,16 @@ namespace DotNetOpenId.RelyingParty {
 				byte[] dhPublic = dh.CreateKeyExchange();
 				string cpub = CryptUtil.UnsignedToBase64(dhPublic);
 
-				args.Add(QueryStringArgs.openid.session_type, useSha256 ?
-					QueryStringArgs.SessionType.DH_SHA256 :
-					QueryStringArgs.SessionType.DH_SHA1);
-				args.Add(QueryStringArgs.openid.dh_consumer_public, cpub);
+				args.Add(Protocol.Constants.openid.session_type, useSha256 ?
+					Protocol.Constants.SessionType.DH_SHA256 :
+					Protocol.Constants.SessionType.DH_SHA1);
+				args.Add(Protocol.Constants.openid.dh_consumer_public, cpub);
 
 				DHParameters dhps = dh.ExportParameters(true);
 
 				if (dhps.P != CryptUtil.DEFAULT_MOD || dhps.G != CryptUtil.DEFAULT_GEN) {
-					args.Add(QueryStringArgs.openid.dh_modulus, CryptUtil.UnsignedToBase64(dhps.P));
-					args.Add(QueryStringArgs.openid.dh_gen, CryptUtil.UnsignedToBase64(dhps.G));
+					args.Add(Protocol.Constants.openid.dh_modulus, CryptUtil.UnsignedToBase64(dhps.P));
+					args.Add(Protocol.Constants.openid.dh_gen, CryptUtil.UnsignedToBase64(dhps.G));
 				}
 			}
 

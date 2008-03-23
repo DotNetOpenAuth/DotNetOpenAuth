@@ -23,7 +23,7 @@ namespace DotNetOpenId {
 		/// match to namespaces for backward compatibility with other OpenID libraries.
 		/// </summary>
 		static readonly Dictionary<string, string> typeUriToAliasAffinity = new Dictionary<string, string> {
-			{ QueryStringArgs.sreg_ns, QueryStringArgs.sreg_compatibility_alias },
+			{ Protocol.Constants.sreg_ns, Protocol.Constants.sreg_compatibility_alias },
 		};
 
 		private ExtensionArgumentsManager() { }
@@ -32,7 +32,7 @@ namespace DotNetOpenId {
 			var mgr = new ExtensionArgumentsManager();
 			mgr.isReadMode = true;
 			var aliasToTypeUriMap = new Dictionary<string, string>();
-			string aliasPrefix = QueryStringArgs.openid.ns + ".";
+			string aliasPrefix = Protocol.Constants.openid.ns + ".";
 			// First pass looks for namespace aliases
 			foreach (var pair in query) {
 				if (pair.Key.StartsWith(aliasPrefix, StringComparison.Ordinal)) {
@@ -50,15 +50,15 @@ namespace DotNetOpenId {
 			}
 			// Second pass looks for extensions using those aliases
 			foreach (var pair in query) {
-				if (!pair.Key.StartsWith(QueryStringArgs.openid.Prefix)) continue;
-				string possibleAlias = pair.Key.Substring(QueryStringArgs.openid.Prefix.Length);
+				if (!pair.Key.StartsWith(Protocol.Constants.openid.Prefix)) continue;
+				string possibleAlias = pair.Key.Substring(Protocol.Constants.openid.Prefix.Length);
 				int periodIndex = possibleAlias.IndexOf(".", StringComparison.Ordinal);
 				if (periodIndex >= 0) possibleAlias = possibleAlias.Substring(0, periodIndex);
 				string typeUri;
 				if (aliasToTypeUriMap.TryGetValue(possibleAlias, out typeUri)) {
 					if (!mgr.extensions.ContainsKey(typeUri))
 						mgr.extensions[typeUri] = new Dictionary<string, string>();
-					string key = periodIndex >= 0 ? pair.Key.Substring(QueryStringArgs.openid.Prefix.Length + possibleAlias.Length + 1) : string.Empty;
+					string key = periodIndex >= 0 ? pair.Key.Substring(Protocol.Constants.openid.Prefix.Length + possibleAlias.Length + 1) : string.Empty;
 					mgr.extensions[typeUri].Add(key, pair.Value);
 				}
 			}
@@ -87,8 +87,8 @@ namespace DotNetOpenId {
 				if (extensionArgs.Count == 0) continue;
 				string alias = typeUriToAliasMap[typeUri];
 				// send out the alias declaration
-				string openidPrefix = includeOpenIdPrefix ? QueryStringArgs.openid.Prefix : string.Empty;
-				args.Add(openidPrefix + QueryStringArgs.openidnp.ns + "." + alias, typeUri);
+				string openidPrefix = includeOpenIdPrefix ? Protocol.Constants.openid.Prefix : string.Empty;
+				args.Add(openidPrefix + Protocol.Constants.openidnp.ns + "." + alias, typeUri);
 				string prefix = openidPrefix + alias;
 				foreach (var pair in extensionArgs) {
 					string key = prefix;

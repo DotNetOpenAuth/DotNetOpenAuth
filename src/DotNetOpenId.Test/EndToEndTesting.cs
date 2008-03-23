@@ -37,8 +37,8 @@ namespace DotNetOpenId.Test {
 			// Verify the redirect URL
 			Assert.IsNotNull(request.RedirectToProviderUrl);
 			var consumerToProviderQuery = HttpUtility.ParseQueryString(request.RedirectToProviderUrl.Query);
-			Assert.IsTrue(consumerToProviderQuery[QueryStringArgs.openid.return_to].StartsWith(returnTo.AbsoluteUri, StringComparison.Ordinal));
-			Assert.AreEqual(realm.ToString(), consumerToProviderQuery[QueryStringArgs.openid.trust_root]);
+			Assert.IsTrue(consumerToProviderQuery[Protocol.Constants.openid.return_to].StartsWith(returnTo.AbsoluteUri, StringComparison.Ordinal));
+			Assert.AreEqual(realm.ToString(), consumerToProviderQuery[Protocol.Constants.openid.trust_root]);
 
 			HttpWebRequest providerRequest = (HttpWebRequest)WebRequest.Create(request.RedirectToProviderUrl);
 			providerRequest.AllowAutoRedirect = false;

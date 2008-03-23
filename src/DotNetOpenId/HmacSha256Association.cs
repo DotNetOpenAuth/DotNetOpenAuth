@@ -10,7 +10,7 @@ namespace DotNetOpenId {
 		}
 
 		protected internal override string AssociationType {
-			get { return QueryStringArgs.SignatureAlgorithms.HMAC_SHA256; }
+			get { return Protocol.Constants.SignatureAlgorithms.HMAC_SHA256; }
 		}
 
 		protected internal override byte[] Sign(IDictionary<string, string> data, IList<string> keyOrder) {

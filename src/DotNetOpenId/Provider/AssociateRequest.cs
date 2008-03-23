@@ -16,7 +16,7 @@ namespace DotNetOpenId.Provider {
 		public AssociateRequest(OpenIdProvider server)
 			: base(server) {
 			session = ProviderSession.CreateSession(Query);
-			associationKeyType = Util.GetRequiredArg(Query, QueryStringArgs.openidnp.assoc_type);
+			associationKeyType = Util.GetRequiredArg(Query, Protocol.Constants.openidnp.assoc_type);
 		}
 
 		public override bool IsResponseReady {
@@ -28,7 +28,7 @@ namespace DotNetOpenId.Provider {
 		/// Returns the string "associate".
 		/// </summary>
 		internal override string Mode {
-			get { return QueryStringArgs.Modes.associate; }
+			get { return Protocol.Constants.Modes.associate; }
 		}
 
 		/// <summary>
@@ -46,17 +46,17 @@ namespace DotNetOpenId.Provider {
 
 			EncodableResponse response = new EncodableResponse(this);
 
-			response.Fields[QueryStringArgs.openidnp.expires_in] = assoc.SecondsTillExpiration.ToString(CultureInfo.InvariantCulture);
-			response.Fields[QueryStringArgs.openidnp.assoc_type] = assoc.AssociationType;
-			response.Fields[QueryStringArgs.openidnp.assoc_handle] = assoc.Handle;
+			response.Fields[Protocol.Constants.openidnp.expires_in] = assoc.SecondsTillExpiration.ToString(CultureInfo.InvariantCulture);
+			response.Fields[Protocol.Constants.openidnp.assoc_type] = assoc.AssociationType;
+			response.Fields[Protocol.Constants.openidnp.assoc_handle] = assoc.Handle;
 
 			IDictionary<string, string> nvc = session.Answer(assoc.SecretKey);
 			foreach (var pair in nvc) {
 				response.Fields[pair.Key] = nvc[pair.Key];
 			}
 
-			if (session.SessionType != QueryStringArgs.SessionType.NoEncryption11) {
-				response.Fields[QueryStringArgs.openidnp.session_type] = session.SessionType;
+			if (session.SessionType != Protocol.Constants.SessionType.NoEncryption11) {
+				response.Fields[Protocol.Constants.openidnp.session_type] = session.SessionType;
 			}
 
 			if (TraceUtil.Switch.TraceInfo) {

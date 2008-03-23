@@ -49,7 +49,7 @@ namespace DotNetOpenId.Provider {
 						Trace.TraceInformation("No associaton found with assoc_handle. Setting invalidate_handle and creating new Association.");
 					}
 
-					response.Fields[QueryStringArgs.openidnp.invalidate_handle] = assoc_handle;
+					response.Fields[Protocol.Constants.openidnp.invalidate_handle] = assoc_handle;
 					assoc = CreateAssociation(AssociationRelyingPartyType.Dumb);
 				}
 			} else {
@@ -59,10 +59,10 @@ namespace DotNetOpenId.Provider {
 				}
 			}
 
-			response.Fields[QueryStringArgs.openidnp.assoc_handle] = assoc.Handle;
+			response.Fields[Protocol.Constants.openidnp.assoc_handle] = assoc.Handle;
 
-			response.Fields[QueryStringArgs.openidnp.signed] = String.Join(",", response.Signed.ToArray());
-			response.Fields[QueryStringArgs.openidnp.sig] =
+			response.Fields[Protocol.Constants.openidnp.signed] = String.Join(",", response.Signed.ToArray());
+			response.Fields[Protocol.Constants.openidnp.sig] =
 				CryptUtil.ToBase64String(assoc.Sign(response.Fields, response.Signed, string.Empty));
 
 			if (TraceUtil.Switch.TraceInfo) {
@@ -153,7 +153,7 @@ namespace DotNetOpenId.Provider {
 
 
 			if (assoc_handle == null)
-				throw new ArgumentNullException(QueryStringArgs.openidnp.assoc_handle);
+				throw new ArgumentNullException(Protocol.Constants.openidnp.assoc_handle);
 
 			Association assoc = store.GetAssociation(associationType, assoc_handle);
 			if (assoc == null || assoc.IsExpired) {
