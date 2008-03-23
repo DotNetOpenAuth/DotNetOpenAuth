@@ -57,7 +57,7 @@ namespace DotNetOpenId.Provider {
 
 				foreach (var pair in Fields) {
 					if (Request is CheckIdRequest) {
-						nvc.Add(Protocol.Constants.openid.Prefix + pair.Key, pair.Value);
+						nvc.Add(Protocol.Default.openid.Prefix + pair.Key, pair.Value);
 					} else {
 						nvc.Add(pair.Key, pair.Value);
 					}

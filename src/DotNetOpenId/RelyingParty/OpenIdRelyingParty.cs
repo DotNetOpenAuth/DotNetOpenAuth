@@ -81,7 +81,7 @@ namespace DotNetOpenId.RelyingParty {
 			returnTo.Query = string.Empty;
 			var returnToParams = new Dictionary<string, string>(HttpContext.Current.Request.QueryString.Count);
 			foreach (string key in HttpContext.Current.Request.QueryString) {
-				if (!key.StartsWith(Protocol.Constants.openid.Prefix, StringComparison.OrdinalIgnoreCase) 
+				if (!key.StartsWith(Protocol.Default.openid.Prefix, StringComparison.OrdinalIgnoreCase) 
 					&& key != Token.TokenKey) {
 					returnToParams.Add(key, HttpContext.Current.Request.QueryString[key]);
 				}
@@ -110,7 +110,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// </summary>
 		bool isAuthenticationResponseReady {
 			get {
-				if (!query.ContainsKey(Protocol.Constants.openid.mode))
+				if (!query.ContainsKey(Protocol.Default.openid.mode))
 					return false;
 
 				if (HttpContext.Current != null && !HttpContext.Current.Request.RequestType.Equals("GET", StringComparison.Ordinal))

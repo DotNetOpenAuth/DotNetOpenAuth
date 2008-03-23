@@ -73,62 +73,62 @@ namespace DotNetOpenId.Extensions
 			if (authenticationRequest == null) throw new ArgumentNullException("authenticationRequest");
 			Dictionary<string, string> fields = new Dictionary<string, string>();
 			if (BirthDate != null) {
-				fields.Add(Protocol.Constants.openidnp.sregnp.dob, BirthDate.ToString());
+				fields.Add(Constants.sreg.dob, BirthDate.ToString());
 			}
 			if (!String.IsNullOrEmpty(Country)) {
-				fields.Add(Protocol.Constants.openidnp.sregnp.country, Country);
+				fields.Add(Constants.sreg.country, Country);
 			}
 			if (Email != null) {
-				fields.Add(Protocol.Constants.openidnp.sregnp.email, Email.ToString());
+				fields.Add(Constants.sreg.email, Email.ToString());
 			}
 			if ((!String.IsNullOrEmpty(FullName))) {
-				fields.Add(Protocol.Constants.openidnp.sregnp.fullname, FullName);
+				fields.Add(Constants.sreg.fullname, FullName);
 			}
 			if (Gender != null) {
 				if (Gender == DotNetOpenId.Extensions.Gender.Female) {
-					fields.Add(Protocol.Constants.openidnp.sregnp.gender, Protocol.Constants.Genders.Female);
+					fields.Add(Constants.sreg.gender, Constants.sreg.Genders.Female);
 				} else {
-					fields.Add(Protocol.Constants.openidnp.sregnp.gender, Protocol.Constants.Genders.Male);
+					fields.Add(Constants.sreg.gender, Constants.sreg.Genders.Male);
 				}
 			}
 			if (!String.IsNullOrEmpty(Language)) {
-				fields.Add(Protocol.Constants.openidnp.sregnp.language, Language);
+				fields.Add(Constants.sreg.language, Language);
 			}
 			if (!String.IsNullOrEmpty(Nickname)) {
-				fields.Add(Protocol.Constants.openidnp.sregnp.nickname, Nickname);
+				fields.Add(Constants.sreg.nickname, Nickname);
 			}
 			if (!String.IsNullOrEmpty(PostalCode)) {
-				fields.Add(Protocol.Constants.openidnp.sregnp.postcode, PostalCode);
+				fields.Add(Constants.sreg.postcode, PostalCode);
 			}
 			if (!String.IsNullOrEmpty(TimeZone)) {
-				fields.Add(Protocol.Constants.openidnp.sregnp.timezone, TimeZone);
+				fields.Add(Constants.sreg.timezone, TimeZone);
 			}
-			authenticationRequest.AddExtensionArguments(Protocol.Constants.sreg_ns, fields);
+			authenticationRequest.AddExtensionArguments(Constants.sreg.sreg_ns, fields);
 		}
 		public static SimpleRegistrationFieldValues ReadFromResponse(IAuthenticationResponse response) {
-			var sreg = response.GetExtensionArguments(Protocol.Constants.sreg_ns);
+			var sreg = response.GetExtensionArguments(Constants.sreg.sreg_ns);
 			if (sreg == null) return new SimpleRegistrationFieldValues();
 			string nickname, email, fullName, dob, genderString, postalCode, country, language, timeZone;
 			DateTime? birthDate = null;
 			Gender? gender = null;
-			sreg.TryGetValue(Protocol.Constants.openidnp.sregnp.nickname, out nickname);
-			sreg.TryGetValue(Protocol.Constants.openidnp.sregnp.email, out email);
-			sreg.TryGetValue(Protocol.Constants.openidnp.sregnp.fullname, out fullName);
-			if (sreg.TryGetValue(Protocol.Constants.openidnp.sregnp.dob, out dob)) {
+			sreg.TryGetValue(Constants.sreg.nickname, out nickname);
+			sreg.TryGetValue(Constants.sreg.email, out email);
+			sreg.TryGetValue(Constants.sreg.fullname, out fullName);
+			if (sreg.TryGetValue(Constants.sreg.dob, out dob)) {
 				DateTime bd;
 				if (DateTime.TryParse(dob, out bd))
 					birthDate = bd;
 			}
-			if (sreg.TryGetValue(Protocol.Constants.openidnp.sregnp.gender, out genderString)) {
+			if (sreg.TryGetValue(Constants.sreg.gender, out genderString)) {
 				switch (genderString) {
-					case Protocol.Constants.Genders.Male: gender = DotNetOpenId.Extensions.Gender.Male; break;
-					case Protocol.Constants.Genders.Female: gender = DotNetOpenId.Extensions.Gender.Female; break;
+					case Constants.sreg.Genders.Male: gender = DotNetOpenId.Extensions.Gender.Male; break;
+					case Constants.sreg.Genders.Female: gender = DotNetOpenId.Extensions.Gender.Female; break;
 				}
 			}
-			sreg.TryGetValue(Protocol.Constants.openidnp.sregnp.postcode, out postalCode);
-			sreg.TryGetValue(Protocol.Constants.openidnp.sregnp.country, out country);
-			sreg.TryGetValue(Protocol.Constants.openidnp.sregnp.language, out language);
-			sreg.TryGetValue(Protocol.Constants.openidnp.sregnp.timezone, out timeZone);
+			sreg.TryGetValue(Constants.sreg.postcode, out postalCode);
+			sreg.TryGetValue(Constants.sreg.country, out country);
+			sreg.TryGetValue(Constants.sreg.language, out language);
+			sreg.TryGetValue(Constants.sreg.timezone, out timeZone);
 
 			return new SimpleRegistrationFieldValues() {
 				Nickname = nickname,

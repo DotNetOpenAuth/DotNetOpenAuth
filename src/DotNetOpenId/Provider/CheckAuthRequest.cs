@@ -18,16 +18,16 @@ namespace DotNetOpenId.Provider {
 
 		public CheckAuthRequest(OpenIdProvider server)
 			: base(server) {
-			AssociationHandle = Util.GetRequiredArg(Query, Protocol.Constants.openid.assoc_handle);
-			signature = Util.GetRequiredArg(Query, Protocol.Constants.openid.sig);
-			signedKeyOrder = Util.GetRequiredArg(Query, Protocol.Constants.openid.signed).Split(',');
-			invalidate_handle = Util.GetOptionalArg(Query, Protocol.Constants.openid.invalidate_handle);
+			AssociationHandle = Util.GetRequiredArg(Query, Protocol.Default.openid.assoc_handle);
+			signature = Util.GetRequiredArg(Query, Protocol.Default.openid.sig);
+			signedKeyOrder = Util.GetRequiredArg(Query, Protocol.Default.openid.signed).Split(',');
+			invalidate_handle = Util.GetOptionalArg(Query, Protocol.Default.openid.invalidate_handle);
 
 			signedFields = new Dictionary<string, string>();
 
 			foreach (string key in signedKeyOrder) {
-				string value = (key == Protocol.Constants.openidnp.mode) ?
-					Protocol.Constants.Modes.id_res : Util.GetRequiredArg(Query, Protocol.Constants.openid.Prefix + key);
+				string value = (key == Protocol.Default.openidnp.mode) ?
+					Protocol.Args.Mode.id_res : Util.GetRequiredArg(Query, Protocol.openid.Prefix + key);
 				signedFields.Add(key, value);
 			}
 		}
@@ -41,7 +41,7 @@ namespace DotNetOpenId.Provider {
 		/// Gets the string "check_authentication".
 		/// </summary>
 		internal override string Mode {
-			get { return Protocol.Constants.Modes.check_authentication; }
+			get { return Protocol.Args.Mode.check_authentication; }
 		}
 
 		/// <summary>
@@ -58,7 +58,7 @@ namespace DotNetOpenId.Provider {
 
 			EncodableResponse response = new EncodableResponse(this);
 
-			response.Fields[Protocol.Constants.openidnp.is_valid] = (is_valid ? "true" : "false");
+			response.Fields[Protocol.Default.openidnp.is_valid] = (is_valid ? "true" : "false");
 
 			if (!string.IsNullOrEmpty(invalidate_handle)) {
 				Association assoc = Server.Signatory.GetAssociation(invalidate_handle, AssociationRelyingPartyType.Smart);
@@ -68,7 +68,7 @@ namespace DotNetOpenId.Provider {
 						Trace.TraceWarning("No matching association found. Returning invalidate_handle. ");
 					}
 
-					response.Fields[Protocol.Constants.openidnp.invalidate_handle] = invalidate_handle;
+					response.Fields[Protocol.Default.openidnp.invalidate_handle] = invalidate_handle;
 				}
 			}
 

@@ -102,19 +102,19 @@ namespace DotNetOpenId.RelyingParty {
 
 				var qsArgs = new Dictionary<string, string>();
 
-				qsArgs.Add(Protocol.Constants.openid.mode, (Mode == AuthenticationRequestMode.Immediate) ?
-					Protocol.Constants.Modes.checkid_immediate : Protocol.Constants.Modes.checkid_setup);
-				qsArgs.Add(Protocol.Constants.openid.identity, endpoint.ProviderLocalIdentifier);
+				qsArgs.Add(Protocol.Default.openid.mode, (Mode == AuthenticationRequestMode.Immediate) ?
+					protocol.Args.Mode.checkid_immediate : protocol.Args.Mode.checkid_setup);
+				qsArgs.Add(Protocol.Default.openid.identity, endpoint.ProviderLocalIdentifier);
 				if (endpoint.ProviderVersion.QueryDeclaredNamespaceVersion != null)
-					qsArgs.Add(Protocol.Constants.openid.ns, endpoint.ProviderVersion.QueryDeclaredNamespaceVersion);
+					qsArgs.Add(Protocol.Default.openid.ns, endpoint.ProviderVersion.QueryDeclaredNamespaceVersion);
 				if (endpoint.ProviderVersion.Version.Major >= 2) {
-					qsArgs.Add(Protocol.Constants.openid.claimed_id, endpoint.ClaimedIdentifier);
+					qsArgs.Add(Protocol.Default.openid.claimed_id, endpoint.ClaimedIdentifier);
 				}
 				qsArgs.Add(protocol.openid.Realm, Realm);
-				qsArgs.Add(Protocol.Constants.openid.return_to, returnToBuilder.ToString());
+				qsArgs.Add(Protocol.Default.openid.return_to, returnToBuilder.ToString());
 
 				if (this.assoc != null)
-					qsArgs.Add(Protocol.Constants.openid.assoc_handle, this.assoc.Handle); // !!!!
+					qsArgs.Add(Protocol.Default.openid.assoc_handle, this.assoc.Handle); // !!!!
 
 				UriBuilder redir = new UriBuilder(this.endpoint.ProviderEndpoint);
 

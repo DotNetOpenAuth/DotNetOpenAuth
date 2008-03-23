@@ -12,16 +12,17 @@ namespace DotNetOpenId.RelyingParty {
 			Args = args;
 
 			if (TraceUtil.Switch.TraceInfo) {
-				if (!Args.ContainsKey(Protocol.Constants.openidnp.ns)) {
-					Trace.TraceInformation("Direct response from provider lacked the {0} key.", Protocol.Constants.openid.ns);
-				} else if (Args[Protocol.Constants.openidnp.ns] != Protocol.v20.QueryDeclaredNamespaceVersion) {
+				if (!Args.ContainsKey(Protocol.openidnp.ns)) {
+					Trace.TraceInformation("Direct response from provider lacked the {0} key.", Protocol.openid.ns);
+				} else if (Args[Protocol.Default.openidnp.ns] != Protocol.QueryDeclaredNamespaceVersion) {
 					Trace.TraceInformation("Direct response from provider for key {0} was '{1}' rather than '{2}'.",
-						Protocol.Constants.openid.ns, Args[Protocol.Constants.openidnp.ns], Protocol.v20.QueryDeclaredNamespaceVersion);
+						Protocol.openid.ns, Args[Protocol.openidnp.ns], Protocol.QueryDeclaredNamespaceVersion);
 				}
 			}
 
 		}
 		protected Uri Provider { get; private set; }
 		protected IDictionary<string, string> Args { get; private set; }
+		protected Protocol Protocol { get { return Protocol.Default; } }
 	}
 }

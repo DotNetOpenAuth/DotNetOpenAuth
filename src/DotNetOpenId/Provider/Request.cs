@@ -43,8 +43,9 @@ namespace DotNetOpenId.Provider
 		/// <returns>True if the request is an OpenId request, false otherwise.</returns>
 		internal static bool IsOpenIdRequest(IDictionary<string, string> query) {
 			Debug.Assert(query != null);
+			Protocol protocol = Protocol.Detect(query);
 			foreach (string key in query.Keys) {
-				if (key.StartsWith(Protocol.Constants.openid.Prefix, StringComparison.OrdinalIgnoreCase)) {
+				if (key.StartsWith(protocol.openid.Prefix, StringComparison.OrdinalIgnoreCase)) {
 					return true;
 				}
 			}
@@ -60,30 +61,25 @@ namespace DotNetOpenId.Provider
 		/// <returns>A Request-derived type appropriate for this stage in authentication.</returns>
 		internal static Request CreateRequest(OpenIdProvider provider, IDictionary<string, string> query) {
 			Debug.Assert(query != null);
-			
-			string mode = query[Protocol.Constants.openid.mode];
+
+			Protocol protocol = Protocol.Detect(query);
+			string mode = query[protocol.openid.mode];
 			if (string.IsNullOrEmpty(mode)) {
 				throw new OpenIdException("No openid.mode value in query.", query);
 			}
 
 			Request request;
 			try {
-				switch (mode) {
-					case Protocol.Constants.Modes.checkid_setup:
-						request = new CheckIdRequest(provider);
-						break;
-					case Protocol.Constants.Modes.checkid_immediate:
-						request = new CheckIdRequest(provider);
-						break;
-					case Protocol.Constants.Modes.check_authentication:
-						request = new CheckAuthRequest(provider);
-						break;
-					case Protocol.Constants.Modes.associate:
-						request = new AssociateRequest(provider);
-						break;
-					default:
-						throw new OpenIdException("No decoder for openid.mode=" + mode, query);
-				}
+				if (mode == protocol.Args.Mode.checkid_setup)
+					request = new CheckIdRequest(provider);
+				else if (mode == protocol.Args.Mode.checkid_immediate)
+					request = new CheckIdRequest(provider);
+				else if (mode == protocol.Args.Mode.check_authentication)
+					request = new CheckAuthRequest(provider);
+				else if (mode == protocol.Args.Mode.associate)
+					request = new AssociateRequest(provider);
+				else
+					throw new OpenIdException("No decoder for openid.mode=" + mode, query);
 			} catch (OpenIdException ex) {
 				request = new FaultyRequest(provider, ex);
 			}

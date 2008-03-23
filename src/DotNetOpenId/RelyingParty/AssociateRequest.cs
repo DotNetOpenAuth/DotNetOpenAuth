@@ -15,18 +15,19 @@ namespace DotNetOpenId.RelyingParty {
 
 		public static AssociateRequest Create(ServiceEndpoint provider) {
 			var args = new Dictionary<string, string>();
+			Protocol protocol = provider.ProviderVersion;
 
 			bool useSha256 = provider.ProviderVersion.Version.Major >= 2;
 
-			args.Add(Protocol.Constants.openid.mode, Protocol.Constants.Modes.associate);
-			args.Add(Protocol.Constants.openid.assoc_type, useSha256 ?
-				Protocol.Constants.SignatureAlgorithms.HMAC_SHA256 :
-				Protocol.Constants.SignatureAlgorithms.HMAC_SHA1);
+			args.Add(protocol.openid.mode, protocol.Args.Mode.associate);
+			args.Add(protocol.openid.assoc_type, useSha256 ?
+				protocol.Args.SignatureAlgorithm.HMAC_SHA256 :
+				protocol.Args.SignatureAlgorithm.HMAC_SHA1);
 
 			DiffieHellman dh = null;
 
 			if (provider.ProviderEndpoint.Scheme == Uri.UriSchemeHttps) {
-				args.Add(Protocol.Constants.openid.session_type, Protocol.Constants.SessionType.NoEncryption20);
+				args.Add(Protocol.Default.openid.session_type, protocol.Args.SessionType.NoEncryption);
 			} else {
 				// Initiate Diffie-Hellman Exchange
 				dh = CryptUtil.CreateDiffieHellman();
@@ -34,16 +35,16 @@ namespace DotNetOpenId.RelyingParty {
 				byte[] dhPublic = dh.CreateKeyExchange();
 				string cpub = CryptUtil.UnsignedToBase64(dhPublic);
 
-				args.Add(Protocol.Constants.openid.session_type, useSha256 ?
-					Protocol.Constants.SessionType.DH_SHA256 :
-					Protocol.Constants.SessionType.DH_SHA1);
-				args.Add(Protocol.Constants.openid.dh_consumer_public, cpub);
+				args.Add(protocol.openid.session_type, useSha256 ?
+					protocol.Args.SessionType.DH_SHA256 :
+					protocol.Args.SessionType.DH_SHA1);
+				args.Add(Protocol.Default.openid.dh_consumer_public, cpub);
 
 				DHParameters dhps = dh.ExportParameters(true);
 
 				if (dhps.P != CryptUtil.DEFAULT_MOD || dhps.G != CryptUtil.DEFAULT_GEN) {
-					args.Add(Protocol.Constants.openid.dh_modulus, CryptUtil.UnsignedToBase64(dhps.P));
-					args.Add(Protocol.Constants.openid.dh_gen, CryptUtil.UnsignedToBase64(dhps.G));
+					args.Add(Protocol.Default.openid.dh_modulus, CryptUtil.UnsignedToBase64(dhps.P));
+					args.Add(Protocol.Default.openid.dh_gen, CryptUtil.UnsignedToBase64(dhps.G));
 				}
 			}
 

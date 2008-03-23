@@ -9,7 +9,8 @@ namespace DotNetOpenId.RelyingParty {
 		}
 
 		public static CheckAuthRequest Create(Uri provider, IDictionary<string, string> query) {
-			string signed = query[Protocol.Constants.openid.signed];
+			Protocol protocol = Protocol.Default;
+			string signed = query[Protocol.Default.openid.signed];
 
 			if (signed == null)
 				// #XXX: oidutil.log('No signature present; checkAuth aborted')
@@ -17,7 +18,7 @@ namespace DotNetOpenId.RelyingParty {
 
 			// Arguments that are always passed to the server and not
 			// included in the signature.
-			string[] whitelist = new string[] { Protocol.Constants.openidnp.assoc_handle, Protocol.Constants.openidnp.sig, Protocol.Constants.openidnp.signed, Protocol.Constants.openidnp.invalidate_handle };
+			string[] whitelist = new string[] { Protocol.Default.openidnp.assoc_handle, Protocol.Default.openidnp.sig, Protocol.Default.openidnp.signed, Protocol.Default.openidnp.invalidate_handle };
 			string[] splitted = signed.Split(',');
 
 			// combine the previous 2 arrays (whitelist + splitted) into a new array: signed_array
@@ -28,11 +29,11 @@ namespace DotNetOpenId.RelyingParty {
 			var check_args = new Dictionary<string, string>();
 
 			foreach (string key in query.Keys) {
-				if (key.StartsWith(Protocol.Constants.openid.Prefix, StringComparison.OrdinalIgnoreCase)
-					&& Array.IndexOf(signed_array, key.Substring(Protocol.Constants.openid.Prefix.Length)) > -1)
+				if (key.StartsWith(Protocol.Default.openid.Prefix, StringComparison.OrdinalIgnoreCase)
+					&& Array.IndexOf(signed_array, key.Substring(Protocol.Default.openid.Prefix.Length)) > -1)
 					check_args[key] = query[key];
 			}
-			check_args[Protocol.Constants.openid.mode] = Protocol.Constants.Modes.check_authentication;
+			check_args[Protocol.Default.openid.mode] = protocol.Args.Mode.check_authentication;
 
 			return new CheckAuthRequest(provider, check_args);
 		}

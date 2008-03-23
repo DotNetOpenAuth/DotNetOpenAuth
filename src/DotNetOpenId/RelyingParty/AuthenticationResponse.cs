@@ -34,9 +34,9 @@ namespace DotNetOpenId.RelyingParty {
 			ClaimedIdentifier = claimedIdentifier;
 			signedArguments = new Dictionary<string, string>();
 			string signed;
-			if (query.TryGetValue(Protocol.Constants.openid.signed, out signed)) {
+			if (query.TryGetValue(Protocol.Default.openid.signed, out signed)) {
 				foreach (string fieldNoPrefix in signed.Split(',')) {
-					string fieldWithPrefix = Protocol.Constants.openid.Prefix + fieldNoPrefix;
+					string fieldWithPrefix = Protocol.Default.openid.Prefix + fieldNoPrefix;
 					string val;
 					if (!query.TryGetValue(fieldWithPrefix, out val)) val = string.Empty;
 					signedArguments[fieldWithPrefix] = val;
@@ -61,7 +61,7 @@ namespace DotNetOpenId.RelyingParty {
 		public ExtensionArgumentsManager IncomingExtensions { get; private set; }
 
 		internal Uri ReturnTo {
-			get { return new Uri(signedArguments[Protocol.Constants.openid.return_to]); }
+			get { return new Uri(signedArguments[Protocol.Default.openid.return_to]); }
 		}
 
 		/// <summary>
@@ -78,32 +78,32 @@ namespace DotNetOpenId.RelyingParty {
 		}
 
 		internal static AuthenticationResponse Parse(IDictionary<string, string> query, IRelyingPartyApplicationStore store) {
-			string mode = Util.GetRequiredArg(query, Protocol.Constants.openid.mode);
+			Protocol protocol = Protocol.Detect(query);
+			string mode = Util.GetRequiredArg(query, protocol.openid.mode);
 			string tokenString = Util.GetRequiredArg(query, Token.TokenKey);
 			Token token = Token.Deserialize(tokenString, store);
 
-			switch (mode) {
-				case Protocol.Constants.Modes.cancel:
-					return new AuthenticationResponse(AuthenticationStatus.Canceled, token.ClaimedIdentifier, query);
-				case Protocol.Constants.Modes.error:
-					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-						"The provider returned an error: {0}", query[Protocol.Constants.openid.error],
-						token.ClaimedIdentifier));
-				case Protocol.Constants.Modes.id_res:
-					return parseIdResResponse(query, token, store);
-				default:
-					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-						Strings.InvalidOpenIdQueryParameterValue,
-						Protocol.Constants.openid.mode, mode), token.ClaimedIdentifier);
+			if (protocol.Args.Mode.cancel.Equals(mode, StringComparison.Ordinal)) {
+				return new AuthenticationResponse(AuthenticationStatus.Canceled, token.ClaimedIdentifier, query);
+			} else if (protocol.Args.Mode.error.Equals(mode, StringComparison.Ordinal)) {
+				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+					"The provider returned an error: {0}", query[protocol.openid.error],
+					token.ClaimedIdentifier));
+			} else if (protocol.Args.Mode.id_res.Equals(mode, StringComparison.Ordinal)) {
+				return parseIdResResponse(query, token, store);
+			} else {
+				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+					Strings.InvalidOpenIdQueryParameterValue,
+					protocol.openid.mode, mode), token.ClaimedIdentifier);
 			}
 		}
 
 		static AuthenticationResponse parseIdResResponse(IDictionary<string, string> query, Token token, IRelyingPartyApplicationStore store) {
 			string user_setup_url;
-			if (query.TryGetValue(Protocol.Constants.openid.user_setup_url, out user_setup_url))
+			if (query.TryGetValue(Protocol.Default.openid.user_setup_url, out user_setup_url))
 				return new AuthenticationResponse(AuthenticationStatus.SetupRequired, token.ClaimedIdentifier, query);
 
-			string assoc_handle = Util.GetRequiredArg(query, Protocol.Constants.openid.assoc_handle);
+			string assoc_handle = Util.GetRequiredArg(query, Protocol.Default.openid.assoc_handle);
 
 			Association assoc = store.GetAssociation(token.ProviderEndpoint, assoc_handle);
 			AuthenticationResponse response;
@@ -135,11 +135,11 @@ namespace DotNetOpenId.RelyingParty {
 		/// </summary>
 		/// <exception cref="OpenIdException">Thrown when the signature is missing or the query has been tampered with.</exception>
 		static void verifyBySignature(IDictionary<string, string> query, Association assoc) {
-			string sig = Util.GetRequiredArg(query, Protocol.Constants.openid.sig);
-			string signed = Util.GetRequiredArg(query, Protocol.Constants.openid.signed);
+			string sig = Util.GetRequiredArg(query, Protocol.Default.openid.sig);
+			string signed = Util.GetRequiredArg(query, Protocol.Default.openid.signed);
 			string[] signed_array = signed.Split(',');
 
-			string v_sig = CryptUtil.ToBase64String(assoc.Sign(query, signed_array, Protocol.Constants.openid.Prefix));
+			string v_sig = CryptUtil.ToBase64String(assoc.Sign(query, signed_array, Protocol.Default.openid.Prefix));
 
 			if (v_sig != sig)
 				throw new OpenIdException(Strings.InvalidSignature);

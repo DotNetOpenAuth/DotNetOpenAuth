@@ -24,6 +24,10 @@ namespace DotNetOpenId {
 		}
 
 		/// <summary>
+		/// The protocol used by the other party (Provider or Relying Party).
+		/// </summary>
+		internal Protocol Protocol { get { return Protocol.Default; } }
+		/// <summary>
 		/// Represents January 1, 1970 12 AM.
 		/// </summary>
 		protected internal readonly static DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);

@@ -56,7 +56,7 @@ namespace DotNetOpenId {
 
 		internal bool HasReturnTo {
 			get {
-				return query == null ? false : query.ContainsKey(Protocol.Constants.openid.return_to);
+				return query == null ? false : query.ContainsKey(Protocol.Default.openid.return_to);
 			}
 		}
 
@@ -68,10 +68,11 @@ namespace DotNetOpenId {
 					return EncodingType.RedirectBrowserUrl;
 
 				if (query != null) {
-					string mode = Util.GetOptionalArg(query, Protocol.Constants.openid.mode);
+					Protocol protocol = Protocol.Detect(query);
+					string mode = Util.GetOptionalArg(query, protocol.openid.mode);
 					if (mode != null)
-						if (mode != Protocol.Constants.Modes.checkid_setup &&
-							mode != Protocol.Constants.Modes.checkid_immediate)
+						if (mode != protocol.Args.Mode.checkid_setup &&
+							mode != protocol.Args.Mode.checkid_immediate)
 							return EncodingType.ResponseBody;
 				}
 
@@ -94,9 +95,10 @@ namespace DotNetOpenId {
 
 		public IDictionary<string, string> EncodedFields {
 			get {
+				Protocol protocol = Protocol.Default;
 				var q = new Dictionary<string, string>();
-				q.Add(Protocol.Constants.openid.mode, Protocol.Constants.Modes.error);
-				q.Add(Protocol.Constants.openid.error, Message);
+				q.Add(protocol.openid.mode, protocol.Args.Mode.error);
+				q.Add(protocol.openid.error, Message);
 				return q;
 			}
 		}
@@ -104,7 +106,7 @@ namespace DotNetOpenId {
 			get {
 				if (query == null)
 					return null;
-				return new Uri(Util.GetRequiredArg(query, Protocol.Constants.openid.return_to));
+				return new Uri(Util.GetRequiredArg(query, Protocol.Default.openid.return_to));
 			}
 		}
 

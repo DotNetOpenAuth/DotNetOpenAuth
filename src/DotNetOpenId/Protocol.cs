@@ -8,13 +8,13 @@ namespace DotNetOpenId {
 	/// constants to each version used in the protocol.
 	/// </summary>
 	internal partial class Protocol {
-		Protocol(QueryBits queryBits) {
+		Protocol(QueryParameters queryBits) {
 			openidnp = queryBits;
-			openid = new QueryBits(queryBits);
+			openid = new QueryParameters(queryBits);
 		}
 
 		// Well-known, supported versions of the OpenID spec.
-		public static readonly Protocol v10 = new Protocol(new QueryBits()) {
+		public static readonly Protocol v10 = new Protocol(new QueryParameters()) {
 			Version = new Version(1, 0),
 			XmlNamespace = "http://openid.net/xmlns/1.0",
 			QueryDeclaredNamespaceVersion = null,
@@ -24,7 +24,7 @@ namespace DotNetOpenId {
 			HtmlDiscoveryProviderKey = "openid.server",
 			HtmlDiscoveryLocalIdKey = "openid.delegate",
 		};
-		public static readonly Protocol v11 = new Protocol(new QueryBits()) {
+		public static readonly Protocol v11 = new Protocol(new QueryParameters()) {
 			Version = new Version(1, 1),
 			XmlNamespace = "http://openid.net/xmlns/1.0",
 			QueryDeclaredNamespaceVersion = null,
@@ -34,7 +34,7 @@ namespace DotNetOpenId {
 			HtmlDiscoveryProviderKey = "openid.server",
 			HtmlDiscoveryLocalIdKey = "openid.delegate",
 		};
-		public static readonly Protocol v20 = new Protocol(new QueryBits() {
+		public static readonly Protocol v20 = new Protocol(new QueryParameters() {
 			Realm = "realm",
 		}) {
 			Version = new Version(2, 0),
@@ -45,6 +45,11 @@ namespace DotNetOpenId {
 			ClaimedIdentifierForOPIdentifier = "http://specs.openid.net/auth/2.0/identifier_select",
 			HtmlDiscoveryProviderKey = "openid2.provider",
 			HtmlDiscoveryLocalIdKey = "openid2.local_id",
+			Args = new QueryArguments() {
+				SessionType = new QueryArguments.SessionTypes() {
+					NoEncryption = "no-encryption",
+				},
+			},
 		};
 		/// <summary>
 		/// A list of all supported OpenID versions, in order starting from newest version.
@@ -59,7 +64,7 @@ namespace DotNetOpenId {
 		/// of an incoming query string.
 		/// </summary>
 		internal static Protocol Detect(IDictionary<string, string> Query) {
-			return Query.ContainsKey(Constants.openid.ns) ? v20 : v11;
+			return Query.ContainsKey(v20.openid.ns) ? v20 : v11;
 		}
 
 	
@@ -106,98 +111,98 @@ namespace DotNetOpenId {
 		/// </summary>
 		public string HtmlDiscoveryLocalIdKey;
 		/// <summary>
-		/// Parts of the protocol that define arguments that appear in the query string.
-		/// Each parameter name is prefixed with 'openid.'.
+		/// Parts of the protocol that define parameter names that appear in the 
+		/// query string.  Each parameter name is prefixed with 'openid.'.
 		/// </summary>
-		public readonly QueryBits openid;
+		public readonly QueryParameters openid;
 		/// <summary>
-		/// Parts of the protocol that define arguments that appear in the query string.
-		/// Each parameter name is NOT prefixed with 'openid.'.
+		/// Parts of the protocol that define parameter names that appear in the 
+		/// query string.  Each parameter name is NOT prefixed with 'openid.'.
 		/// </summary>
-		public readonly QueryBits openidnp;
+		public readonly QueryParameters openidnp;
+		/// <summary>
+		/// The various 'constants' that appear as parameter arguments (values).
+		/// </summary>
+		public QueryArguments Args = new QueryArguments();
 
-		internal class QueryBits {
-			const string openidPrefix = "openid.";
-			public QueryBits() { }
-			public QueryBits(QueryBits addPrefixTo) {
-				Realm = openidPrefix + addPrefixTo.Realm;
+		internal class QueryParameters {
+			public string Prefix = "openid.";
+			public QueryParameters() { }
+			public QueryParameters(QueryParameters addPrefixTo) {
+				ns = Prefix + addPrefixTo.ns;
+				return_to = Prefix + addPrefixTo.return_to;
+				Realm = Prefix + addPrefixTo.Realm;
+				mode = Prefix + addPrefixTo.mode;
+				error = Prefix + addPrefixTo.error;
+				identity = Prefix + addPrefixTo.identity;
+				claimed_id = Prefix + addPrefixTo.claimed_id;
+				expires_in = Prefix + addPrefixTo.expires_in;
+				assoc_type = Prefix + addPrefixTo.assoc_type;
+				assoc_handle = Prefix + addPrefixTo.assoc_handle;
+				session_type = Prefix + addPrefixTo.session_type;
+				is_valid = Prefix + addPrefixTo.is_valid;
+				sig = Prefix + addPrefixTo.sig;
+				signed = Prefix + addPrefixTo.signed;
+				user_setup_url = Prefix + addPrefixTo.user_setup_url;
+				invalidate_handle = Prefix + addPrefixTo.invalidate_handle;
+				dh_modulus = Prefix + addPrefixTo.dh_modulus;
+				dh_gen = Prefix + addPrefixTo.dh_gen;
+				dh_consumer_public = Prefix + addPrefixTo.dh_consumer_public;
+				dh_server_public = Prefix + addPrefixTo.dh_server_public;
+				enc_mac_key = Prefix + addPrefixTo.enc_mac_key;
+				mac_key = Prefix + addPrefixTo.mac_key;
 			}
 			// These fields default to 1.x specifications, and are overridden
 			// as necessary by later versions in the Protocol class initializers.
+			public string ns = "ns";
+			public string return_to = "return_to";
 			public string Realm = "trust_root";
+			public string mode = "mode";
+			public string error = "error";
+			public string identity = "identity";
+			public string claimed_id = "claimed_id";
+			public string expires_in = "expires_in";
+			public string assoc_type = "assoc_type";
+			public string assoc_handle = "assoc_handle";
+			public string session_type = "session_type";
+			public string is_valid = "is_valid";
+			public string sig = "sig";
+			public string signed = "signed";
+			public string user_setup_url = "user_setup_url";
+			public string invalidate_handle = "invalidate_handle";
+			public string dh_modulus = "dh_modulus";
+			public string dh_gen = "dh_gen";
+			public string dh_consumer_public = "dh_consumer_public";
+			public string dh_server_public = "dh_server_public";
+			public string enc_mac_key = "enc_mac_key";
+			public string mac_key = "mac_key";
 		}
+		internal class QueryArguments {
+			public SessionTypes SessionType = new SessionTypes();
+			public SignatureAlgorithms SignatureAlgorithm = new SignatureAlgorithms();
+			public Modes Mode = new Modes();
+			public IsValidValues IsValid = new IsValidValues();
 
-		internal static partial class Constants {
-			/// <summary>openid. variables that don't include the "openid." prefix.</summary>
-			internal static partial class openidnp {
-				internal const string ns = "ns";
-				internal const string return_to = "return_to";
-				internal const string mode = "mode";
-				internal const string error = "error";
-				internal const string identity = "identity";
-				internal const string claimed_id = "claimed_id";
-				internal const string expires_in = "expires_in";
-				internal const string assoc_type = "assoc_type";
-				internal const string assoc_handle = "assoc_handle";
-				internal const string session_type = "session_type";
-				internal const string is_valid = "is_valid";
-				internal const string sig = "sig";
-				internal const string signed = "signed";
-				internal const string user_setup_url = "user_setup_url";
-				internal const string invalidate_handle = "invalidate_handle";
-				internal const string dh_modulus = "dh_modulus";
-				internal const string dh_gen = "dh_gen";
-				internal const string dh_consumer_public = "dh_consumer_public";
-				internal const string dh_server_public = "dh_server_public";
+			internal class SessionTypes {
+				public string DH_SHA1 = "DH-SHA1";
+				public string DH_SHA256 = "DH-SHA256";
+				public string NoEncryption = "";
 			}
-			/// <summary>openid. variables that include the "openid." prefix.</summary>
-			internal static class openid {
-				internal const string Prefix = "openid.";
-
-				internal const string ns = Prefix + openidnp.ns;
-				internal const string return_to = Prefix + openidnp.return_to;
-				internal const string mode = Prefix + openidnp.mode;
-				internal const string error = Prefix + openidnp.error;
-				internal const string identity = Prefix + openidnp.identity;
-				internal const string claimed_id = Prefix + openidnp.claimed_id;
-				internal const string expires_in = Prefix + openidnp.expires_in;
-				internal const string assoc_type = Prefix + openidnp.assoc_type;
-				internal const string assoc_handle = Prefix + openidnp.assoc_handle;
-				internal const string session_type = Prefix + openidnp.session_type;
-				internal const string is_valid = Prefix + openidnp.is_valid;
-				internal const string sig = Prefix + openidnp.sig;
-				internal const string signed = Prefix + openidnp.signed;
-				internal const string user_setup_url = Prefix + openidnp.user_setup_url;
-				internal const string invalidate_handle = Prefix + openidnp.invalidate_handle;
-				internal const string dh_modulus = Prefix + openidnp.dh_modulus;
-				internal const string dh_gen = Prefix + openidnp.dh_gen;
-				internal const string dh_consumer_public = Prefix + openidnp.dh_consumer_public;
-				internal const string dh_server_public = Prefix + openidnp.dh_server_public;
+			internal class SignatureAlgorithms {
+				public string HMAC_SHA1 = "HMAC-SHA1";
+				public string HMAC_SHA256 = "HMAC-SHA256";
 			}
-			internal const string enc_mac_key = "enc_mac_key";
-			internal const string mac_key = "mac_key";
-			internal static class SessionType {
-				internal const string DH_SHA1 = "DH-SHA1";
-				internal const string DH_SHA256 = "DH-SHA256";
-				internal const string NoEncryption20 = "no-encryption";
-				internal const string NoEncryption11 = "";
+			internal class Modes {
+				public string cancel = "cancel";
+				public string error = "error";
+				public string id_res = "id_res";
+				public string checkid_immediate = "checkid_immediate";
+				public string checkid_setup = "checkid_setup";
+				public string check_authentication = "check_authentication";
+				public string associate = "associate";
 			}
-			internal static class SignatureAlgorithms {
-				internal const string HMAC_SHA1 = "HMAC-SHA1";
-				internal const string HMAC_SHA256 = "HMAC-SHA256";
-			}
-
-			internal static class Modes {
-				internal const string cancel = "cancel";
-				internal const string error = "error";
-				internal const string id_res = "id_res";
-				internal const string checkid_immediate = "checkid_immediate";
-				internal const string checkid_setup = "checkid_setup";
-				internal const string check_authentication = "check_authentication";
-				internal const string associate = "associate";
-			}
-			internal static class IsValid {
-				internal const string True = "true";
+			internal class IsValidValues {
+				public string True = "true";
 			}
 		}
 	}
