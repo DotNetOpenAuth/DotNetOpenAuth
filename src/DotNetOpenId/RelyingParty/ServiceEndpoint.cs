@@ -61,12 +61,15 @@ namespace DotNetOpenId.RelyingParty {
 			ProviderSupportedServiceTypeUris = providerSupportedServiceTypeUris;
 		}
 
-		public Version ProviderVersion {
+		/// <summary>
+		/// Gets the OpenID protocol used by the Provider.
+		/// </summary>
+		public Protocol ProviderVersion {
 			get {
 				Protocol protocol =
 					Util.FindBestVersion(p => p.OPIdentifierServiceTypeURI, ProviderSupportedServiceTypeUris) ??
 					Util.FindBestVersion(p => p.ClaimedIdentifierServiceTypeURI, ProviderSupportedServiceTypeUris);
-				if (protocol != null) return protocol.Version;
+				if (protocol != null) return protocol;
 				throw new InvalidOperationException("Unable to determine Provider's version.");
 			}
 		}

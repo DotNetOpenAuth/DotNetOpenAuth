@@ -15,10 +15,15 @@ namespace DotNetOpenId.Provider
 		protected Request(OpenIdProvider server) {
 			Server = server;
 			Query = server.query;
+			Protocol = Protocol.Detect(Query);
 			IncomingExtensions = ExtensionArgumentsManager.CreateIncomingExtensions(Query);
 			OutgoingExtensions = ExtensionArgumentsManager.CreateOutgoingExtensions();
 		}
 
+		/// <summary>
+		/// The detected protocol of the calling OpenId relying party.
+		/// </summary>
+		protected Protocol Protocol;
 		protected IDictionary<string, string> Query { get; private set; }
 		protected OpenIdProvider Server { get; private set; }
 		internal abstract string Mode { get; }

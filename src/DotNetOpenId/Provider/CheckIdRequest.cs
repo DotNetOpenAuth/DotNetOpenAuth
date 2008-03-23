@@ -115,11 +115,11 @@ namespace DotNetOpenId.Provider {
 			}
 
 			try {
-				Realm = new Realm(Util.GetOptionalArg(Query, Protocol.Constants.openid.trust_root) ?? ReturnTo.AbsoluteUri);
+				Realm = new Realm(Util.GetOptionalArg(Query, Protocol.openid.Realm) ?? ReturnTo.AbsoluteUri);
 			} catch (UriFormatException ex) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-					Strings.InvalidOpenIdQueryParameterValue, Protocol.Constants.openid.trust_root,
-					Util.GetOptionalArg(Query, Protocol.Constants.openid.trust_root)), ex);
+					Strings.InvalidOpenIdQueryParameterValue, Protocol.openid.Realm,
+					Util.GetOptionalArg(Query, Protocol.openid.Realm)), ex);
 			}
 			AssociationHandle = Util.GetOptionalArg(Query, Protocol.Constants.openid.assoc_handle);
 
@@ -190,7 +190,7 @@ namespace DotNetOpenId.Provider {
 				q.Add(Protocol.Constants.openid.return_to, ReturnTo.AbsoluteUri);
 
 				if (Realm != null)
-					q.Add(Protocol.Constants.openid.trust_root, Realm.ToString());
+					q.Add(Protocol.openid.Realm, Realm);
 
 				if (this.AssociationHandle != null)
 					q.Add(Protocol.Constants.openid.assoc_handle, this.AssociationHandle);

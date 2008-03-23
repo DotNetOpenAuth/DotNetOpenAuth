@@ -28,6 +28,7 @@ namespace DotNetOpenId.RelyingParty {
 	class AuthenticationRequest : IAuthenticationRequest {
 		Association assoc;
 		ServiceEndpoint endpoint;
+		Protocol protocol { get { return endpoint.ProviderVersion; } }
 
 		AuthenticationRequest(string token, Association assoc, ServiceEndpoint endpoint,
 			Realm realm, Uri returnToUrl) {
@@ -104,13 +105,12 @@ namespace DotNetOpenId.RelyingParty {
 				qsArgs.Add(Protocol.Constants.openid.mode, (Mode == AuthenticationRequestMode.Immediate) ?
 					Protocol.Constants.Modes.checkid_immediate : Protocol.Constants.Modes.checkid_setup);
 				qsArgs.Add(Protocol.Constants.openid.identity, endpoint.ProviderLocalIdentifier);
-				if (endpoint.ProviderVersion.Major >= 2) {
-					qsArgs.Add(Protocol.Constants.openid.ns, Protocol.v20.QueryDeclaredNamespaceVersion);
+				if (endpoint.ProviderVersion.QueryDeclaredNamespaceVersion != null)
+					qsArgs.Add(Protocol.Constants.openid.ns, endpoint.ProviderVersion.QueryDeclaredNamespaceVersion);
+				if (endpoint.ProviderVersion.Version.Major >= 2) {
 					qsArgs.Add(Protocol.Constants.openid.claimed_id, endpoint.ClaimedIdentifier);
-					qsArgs.Add(Protocol.Constants.openid.realm, Realm.ToString());
-				} else {
-					qsArgs.Add(Protocol.Constants.openid.trust_root, Realm.ToString());
 				}
+				qsArgs.Add(protocol.openid.Realm, Realm);
 				qsArgs.Add(Protocol.Constants.openid.return_to, returnToBuilder.ToString());
 
 				if (this.assoc != null)

@@ -8,10 +8,13 @@ namespace DotNetOpenId {
 	/// constants to each version used in the protocol.
 	/// </summary>
 	internal partial class Protocol {
-		private Protocol() { }
+		Protocol(QueryBits queryBits) {
+			openidnp = queryBits;
+			openid = new QueryBits(queryBits);
+		}
 
 		// Well-known, supported versions of the OpenID spec.
-		public static readonly Protocol v10 = new Protocol {
+		public static readonly Protocol v10 = new Protocol(new QueryBits()) {
 			Version = new Version(1, 0),
 			XmlNamespace = "http://openid.net/xmlns/1.0",
 			QueryDeclaredNamespaceVersion = null,
@@ -21,7 +24,7 @@ namespace DotNetOpenId {
 			HtmlDiscoveryProviderKey = "openid.server",
 			HtmlDiscoveryLocalIdKey = "openid.delegate",
 		};
-		public static readonly Protocol v11 = new Protocol {
+		public static readonly Protocol v11 = new Protocol(new QueryBits()) {
 			Version = new Version(1, 1),
 			XmlNamespace = "http://openid.net/xmlns/1.0",
 			QueryDeclaredNamespaceVersion = null,
@@ -31,7 +34,9 @@ namespace DotNetOpenId {
 			HtmlDiscoveryProviderKey = "openid.server",
 			HtmlDiscoveryLocalIdKey = "openid.delegate",
 		};
-		public static readonly Protocol v20 = new Protocol {
+		public static readonly Protocol v20 = new Protocol(new QueryBits() {
+			Realm = "realm",
+		}) {
 			Version = new Version(2, 0),
 			XmlNamespace = null, // no longer applicable
 			QueryDeclaredNamespaceVersion = "http://specs.openid.net/auth/2.0",
@@ -45,7 +50,19 @@ namespace DotNetOpenId {
 		/// A list of all supported OpenID versions, in order starting from newest version.
 		/// </summary>
 		public readonly static List<Protocol> AllVersions = new List<Protocol>() { v20, v11, v10 };
+		/// <summary>
+		/// The default (or most recent) supported version of the OpenID protocol.
+		/// </summary>
+		public readonly static Protocol Default = v20;
+		/// <summary>
+		/// Attempts to detect the right OpenID protocol version based on the contents
+		/// of an incoming query string.
+		/// </summary>
+		internal static Protocol Detect(IDictionary<string, string> Query) {
+			return Query.ContainsKey(Constants.openid.ns) ? v20 : v11;
+		}
 
+	
 		/// <summary>
 		/// The OpenID version that this <see cref="Protocol"/> instance describes.
 		/// </summary>
@@ -88,6 +105,27 @@ namespace DotNetOpenId {
 		/// as the OP Local Identifier.
 		/// </summary>
 		public string HtmlDiscoveryLocalIdKey;
+		/// <summary>
+		/// Parts of the protocol that define arguments that appear in the query string.
+		/// Each parameter name is prefixed with 'openid.'.
+		/// </summary>
+		public readonly QueryBits openid;
+		/// <summary>
+		/// Parts of the protocol that define arguments that appear in the query string.
+		/// Each parameter name is NOT prefixed with 'openid.'.
+		/// </summary>
+		public readonly QueryBits openidnp;
+
+		internal class QueryBits {
+			const string openidPrefix = "openid.";
+			public QueryBits() { }
+			public QueryBits(QueryBits addPrefixTo) {
+				Realm = openidPrefix + addPrefixTo.Realm;
+			}
+			// These fields default to 1.x specifications, and are overridden
+			// as necessary by later versions in the Protocol class initializers.
+			public string Realm = "trust_root";
+		}
 
 		internal static partial class Constants {
 			/// <summary>openid. variables that don't include the "openid." prefix.</summary>
@@ -106,8 +144,6 @@ namespace DotNetOpenId {
 				internal const string sig = "sig";
 				internal const string signed = "signed";
 				internal const string user_setup_url = "user_setup_url";
-				internal const string trust_root = "trust_root";
-				internal const string realm = "realm";
 				internal const string invalidate_handle = "invalidate_handle";
 				internal const string dh_modulus = "dh_modulus";
 				internal const string dh_gen = "dh_gen";
@@ -132,8 +168,6 @@ namespace DotNetOpenId {
 				internal const string sig = Prefix + openidnp.sig;
 				internal const string signed = Prefix + openidnp.signed;
 				internal const string user_setup_url = Prefix + openidnp.user_setup_url;
-				internal const string trust_root = Prefix + openidnp.trust_root;
-				internal const string realm = Prefix + openidnp.realm;
 				internal const string invalidate_handle = Prefix + openidnp.invalidate_handle;
 				internal const string dh_modulus = Prefix + openidnp.dh_modulus;
 				internal const string dh_gen = Prefix + openidnp.dh_gen;
