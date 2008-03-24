@@ -81,7 +81,7 @@ namespace DotNetOpenId.RelyingParty {
 			Protocol protocol = Protocol.Detect(query);
 			string mode = Util.GetRequiredArg(query, protocol.openid.mode);
 			string tokenString = Util.GetRequiredArg(query, Token.TokenKey);
-			Token token = Token.Deserialize(tokenString, store);
+			Token token = Token.Deserialize(tokenString, store, false);
 
 			if (protocol.Args.Mode.cancel.Equals(mode, StringComparison.Ordinal)) {
 				return new AuthenticationResponse(AuthenticationStatus.Canceled, token.ClaimedIdentifier, query);

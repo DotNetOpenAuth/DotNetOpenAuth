@@ -23,8 +23,8 @@ namespace DotNetOpenId.Test {
 			string code = "somecode";
 			TimeSpan age = Protocol.MaximumUserAgentAuthenticationTime.Subtract(TimeSpan.FromSeconds(10));
 			DateTime creationDate = DateTime.Now.Subtract(age);
-			Nonce nonce = new Nonce(code, creationDate);
-			Assert.AreEqual(code, nonce.Code);
+			Nonce nonce = new Nonce(creationDate, code, false);
+			Assert.AreEqual(creationDate.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ") + code, nonce.Code);
 			Assert.AreEqual(creationDate, nonce.CreationDate);
 			Assert.Less(((DateTime.Now - age) - creationDate).TotalSeconds, 2);
 			Assert.IsFalse(nonce.IsExpired);
@@ -35,8 +35,8 @@ namespace DotNetOpenId.Test {
 			string code = "somecode";
 			TimeSpan age = Protocol.MaximumUserAgentAuthenticationTime.Add(TimeSpan.FromSeconds(10));
 			DateTime creationDate = DateTime.Now.Subtract(age);
-			Nonce nonce = new Nonce(code, creationDate);
-			Assert.AreEqual(code, nonce.Code);
+			Nonce nonce = new Nonce(creationDate, code, false);
+			Assert.AreEqual(creationDate.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ") + code, nonce.Code);
 			Assert.AreEqual(creationDate, nonce.CreationDate);
 			Assert.Less(((DateTime.Now - age) - creationDate).TotalSeconds, 2);
 			Assert.IsTrue(nonce.IsExpired);
@@ -44,19 +44,19 @@ namespace DotNetOpenId.Test {
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void NullCode() {
-			new Nonce(null, DateTime.Now);
+			new Nonce(null, false);
 		}
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void EmptyCode() {
-			new Nonce(string.Empty, DateTime.Now);
+			new Nonce(string.Empty, false);
 		}
 
 		[Test]
 		public void EqualsTest() {
 			Assert.AreNotEqual(new Nonce(), new Nonce());
 			Nonce nonce1 = new Nonce();
-			Nonce nonce2 = new Nonce(nonce1.Code, nonce1.CreationDate);
+			Nonce nonce2 = new Nonce(nonce1.Code, false);
 			Assert.AreEqual(nonce1, nonce2);
 		}
 	}

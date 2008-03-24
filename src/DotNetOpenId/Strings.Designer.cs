@@ -124,6 +124,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The nonce was not in the expected format..
+        /// </summary>
+        internal static string InvalidNonce {
+            get {
+                return ResourceManager.GetString("InvalidNonce", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to OpenID parameter &apos;{0}&apos; had unexpected value &apos;{1}&apos;..
         /// </summary>
         internal static string InvalidOpenIdQueryParameterValue {

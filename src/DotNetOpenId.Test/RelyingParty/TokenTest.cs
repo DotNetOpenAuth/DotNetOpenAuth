@@ -29,7 +29,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 			INonceStore store = new ConsumerApplicationMemoryStore();
 			string serializedToken = token.Serialize(store);
 
-			Token token2 = Token.Deserialize(serializedToken, store);
+			Token token2 = Token.Deserialize(serializedToken, store, false);
 
 			Assert.AreEqual(token.ClaimedIdentifier, token2.ClaimedIdentifier);
 			Assert.AreEqual(token.ProviderLocalIdentifier, token2.ProviderLocalIdentifier);
@@ -44,8 +44,8 @@ namespace DotNetOpenId.Test.RelyingParty {
 
 			INonceStore store = new ConsumerApplicationMemoryStore();
 			string serializedToken = token.Serialize(store);
-			Token.Deserialize(serializedToken, store);
-			Token.Deserialize(serializedToken, store);
+			Token.Deserialize(serializedToken, store, false);
+			Token.Deserialize(serializedToken, store, false);
 		}
 
 		[Test]

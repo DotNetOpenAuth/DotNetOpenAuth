@@ -18,13 +18,6 @@ namespace DotNetOpenId {
         154, 72, 59, 138, 118, 34, 62, 93, 73, 10, 37, 127, 5, 189, 255, 22,
         242, 251, 34, 197, 131, 171};
 
-		static uint NONCE_LEN = 8;
-		static byte[] NONCE_CHARS = {
-            97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,
-            115,116,117,118,119,120,121,122,123,65,66,67,68,69,70,71,72,73,74,75,76,
-            77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,48,49,50,51,52,53,54,55,56,57,
-            58};
-		static Random generator = new Random();
 		static ToBase64Transform base64Transform = new ToBase64Transform();
 		internal static SHA1CryptoServiceProvider Sha1 = new SHA1CryptoServiceProvider();
 		internal static SHA256Managed Sha256 = new SHA256Managed();
@@ -50,12 +43,6 @@ namespace DotNetOpenId {
 
 		public static string UnsignedToBase64(byte[] inputBytes) {
 			return ToBase64String(ensurePositive(inputBytes));
-		}
-
-		public static string CreateNonce() {
-			byte[] nonce = new byte[NONCE_LEN];
-			randomSelection(ref nonce, NONCE_CHARS);
-			return ASCIIEncoding.ASCII.GetString(nonce);
 		}
 
 		public static DiffieHellman CreateDiffieHellman() {
@@ -96,16 +83,6 @@ namespace DotNetOpenId {
 				inputBytes = temp;
 			}
 			return inputBytes;
-		}
-
-		static void randomSelection(ref byte[] tofill, byte[] choices) {
-			if (choices.Length <= 0) throw new ArgumentException("Invalid input passed to RandomSelection. Array must have something in it.", "choices");
-
-			byte[] rand = new byte[1];
-			for (int i = 0; i < tofill.Length; i++) {
-				generator.NextBytes(rand);
-				tofill[i] = choices[(Convert.ToInt32(rand[0]) % choices.Length)];
-			}
 		}
 	}
 }

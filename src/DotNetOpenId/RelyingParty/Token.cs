@@ -51,8 +51,6 @@ namespace DotNetOpenId.RelyingParty {
 		/// This string is cryptographically signed to protect against tampering.
 		/// </summary>
 		public string Serialize(INonceStore store) {
-			string timestamp = Nonce.CreationDate.ToFileTimeUtc().ToString(CultureInfo.InvariantCulture);
-
 			using (MemoryStream ms = new MemoryStream())
 			using (HashAlgorithm sha1 = new HMACSHA1(store.SecretSigningKey))
 			using (CryptoStream sha1Stream = new CryptoStream(ms, sha1, CryptoStreamMode.Write)) {
@@ -64,7 +62,6 @@ namespace DotNetOpenId.RelyingParty {
 						sha1Stream.WriteByte(0);
 				};
 
-				writeData(timestamp, true);
 				writeData(Nonce.Code, true);
 				writeData(ClaimedIdentifier.ToString(), true);
 				writeData(ProviderLocalIdentifier.ToString(), true);
@@ -83,7 +80,7 @@ namespace DotNetOpenId.RelyingParty {
 			}
 		}
 
-		public static Token Deserialize(string token, INonceStore store) {
+		public static Token Deserialize(string token, INonceStore store, bool remoteServerOrigin) {
 			byte[] tok = Convert.FromBase64String(token);
 
 			if (tok.Length < 20)
@@ -113,12 +110,10 @@ namespace DotNetOpenId.RelyingParty {
 			if (prev < tok.Length)
 				items.Add(Encoding.ASCII.GetString(tok, prev, tok.Length - prev));
 
-			//# Check if timestamp has expired
-			DateTime ts = DateTime.FromFileTimeUtc(Convert.ToInt64(items[0], CultureInfo.InvariantCulture));
-			Nonce nonce = new Nonce(items[1], ts);
+			Nonce nonce = new Nonce(items[0], remoteServerOrigin);
 			consumeNonce(nonce, store);
 
-			return new Token(nonce, items[2], items[3], new Uri(items[4]));
+			return new Token(nonce, items[1], items[2], new Uri(items[3]));
 		}
 
 		static void consumeNonce(Nonce nonce, INonceStore store) {
