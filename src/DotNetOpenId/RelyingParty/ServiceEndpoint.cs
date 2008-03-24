@@ -74,7 +74,7 @@ namespace DotNetOpenId.RelyingParty {
 			}
 		}
 
-		public bool UsesExtension(string extensionUri) {
+		public bool IsExtensionSupported(string extensionUri) {
 			return Array.IndexOf(ProviderSupportedServiceTypeUris, extensionUri) >= 0;
 		}
 	}
