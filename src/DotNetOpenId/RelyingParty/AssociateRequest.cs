@@ -15,9 +15,9 @@ namespace DotNetOpenId.RelyingParty {
 
 		public static AssociateRequest Create(ServiceEndpoint provider) {
 			var args = new Dictionary<string, string>();
-			Protocol protocol = provider.ProviderVersion;
+			Protocol protocol = provider.Protocol;
 
-			bool useSha256 = provider.ProviderVersion.Version.Major >= 2;
+			bool useSha256 = provider.Protocol.Version.Major >= 2;
 
 			args.Add(protocol.openid.mode, protocol.Args.Mode.associate);
 			args.Add(protocol.openid.assoc_type, useSha256 ?

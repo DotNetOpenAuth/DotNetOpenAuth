@@ -28,7 +28,7 @@ namespace DotNetOpenId.RelyingParty {
 	class AuthenticationRequest : IAuthenticationRequest {
 		Association assoc;
 		ServiceEndpoint endpoint;
-		Protocol protocol { get { return endpoint.ProviderVersion; } }
+		Protocol protocol { get { return endpoint.Protocol; } }
 
 		AuthenticationRequest(string token, Association assoc, ServiceEndpoint endpoint,
 			Realm realm, Uri returnToUrl) {
@@ -105,9 +105,9 @@ namespace DotNetOpenId.RelyingParty {
 				qsArgs.Add(Protocol.Default.openid.mode, (Mode == AuthenticationRequestMode.Immediate) ?
 					protocol.Args.Mode.checkid_immediate : protocol.Args.Mode.checkid_setup);
 				qsArgs.Add(Protocol.Default.openid.identity, endpoint.ProviderLocalIdentifier);
-				if (endpoint.ProviderVersion.QueryDeclaredNamespaceVersion != null)
-					qsArgs.Add(Protocol.Default.openid.ns, endpoint.ProviderVersion.QueryDeclaredNamespaceVersion);
-				if (endpoint.ProviderVersion.Version.Major >= 2) {
+				if (endpoint.Protocol.QueryDeclaredNamespaceVersion != null)
+					qsArgs.Add(Protocol.Default.openid.ns, endpoint.Protocol.QueryDeclaredNamespaceVersion);
+				if (endpoint.Protocol.Version.Major >= 2) {
 					qsArgs.Add(Protocol.Default.openid.claimed_id, endpoint.ClaimedIdentifier);
 				}
 				qsArgs.Add(protocol.openid.Realm, Realm);
