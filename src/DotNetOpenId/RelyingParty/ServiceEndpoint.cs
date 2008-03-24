@@ -50,7 +50,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// </summary>
 		public string[] ProviderSupportedServiceTypeUris { get; private set; }
 
-		internal ServiceEndpoint(Identifier claimedIdentifier, Uri providerEndpoint, 
+		internal ServiceEndpoint(Identifier claimedIdentifier, Uri providerEndpoint,
 			Identifier providerLocalIdentifier, string[] providerSupportedServiceTypeUris) {
 			if (claimedIdentifier == null) throw new ArgumentNullException("claimedIdentifier");
 			if (providerEndpoint == null) throw new ArgumentNullException("providerEndpoint");
@@ -59,6 +59,13 @@ namespace DotNetOpenId.RelyingParty {
 			ProviderEndpoint = providerEndpoint;
 			ProviderLocalIdentifier = providerLocalIdentifier ?? claimedIdentifier;
 			ProviderSupportedServiceTypeUris = providerSupportedServiceTypeUris;
+		}
+		ServiceEndpoint(Identifier claimedIdentifier, Uri providerEndpoint,
+			Identifier providerLocalIdentifier, Protocol protocol) {
+			ClaimedIdentifier = claimedIdentifier;
+			ProviderEndpoint = providerEndpoint;
+			ProviderLocalIdentifier = providerLocalIdentifier ?? claimedIdentifier;
+			this.protocol = protocol;
 		}
 
 		Protocol protocol;
@@ -78,7 +85,54 @@ namespace DotNetOpenId.RelyingParty {
 		}
 
 		public bool IsExtensionSupported(string extensionUri) {
+			if (ProviderSupportedServiceTypeUris == null)
+				throw new InvalidOperationException("Cannot lookup extension support on a rehydrated ServiceEndpoint.");
 			return Array.IndexOf(ProviderSupportedServiceTypeUris, extensionUri) >= 0;
+		}
+
+		/// <summary>
+		/// Saves the discovered information about this endpoint
+		/// for later comparison to validate assertions.
+		/// </summary>
+		internal void Serialize(TextWriter writer) {
+			writer.WriteLine(ClaimedIdentifier);
+			writer.WriteLine(ProviderLocalIdentifier);
+			writer.WriteLine(ProviderEndpoint);
+			writer.WriteLine(Protocol.Version);
+		}
+
+		/// <summary>
+		/// Reads previously discovered information about an endpoint
+		/// from a solicited authentication assertion for validation.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="ServiceEndpoint"/> object that has everything
+		/// except the <see cref="ProviderSupportedServiceTypeUris"/>
+		/// deserialized.
+		/// </returns>
+		internal static ServiceEndpoint Deserialize(TextReader reader) {
+			var claimedIdentifier = Identifier.Parse(reader.ReadLine());
+			var providerLocalIdentifier = Identifier.Parse(reader.ReadLine());
+			var providerEndpoint = new Uri(reader.ReadLine());
+			var protocol = Util.FindBestVersion(p => p.Version, new[] { new Version(reader.ReadLine()) });
+			return new ServiceEndpoint(claimedIdentifier, providerEndpoint,
+				providerLocalIdentifier, protocol);
+		}
+
+		public override bool Equals(object obj) {
+			ServiceEndpoint other = obj as ServiceEndpoint;
+			if (other == null) return false;
+			// We specifically do not check our ProviderSupportedServiceTypeUris array
+			// as that is not persisted in our tokens, and it is not part of the 
+			// important assertion validation that is part of the spec.
+			return
+				this.ClaimedIdentifier == other.ClaimedIdentifier &&
+				this.ProviderEndpoint == other.ProviderEndpoint &&
+				this.ProviderLocalIdentifier == other.ProviderLocalIdentifier &&
+				this.Protocol == other.Protocol;
+		}
+		public override int GetHashCode() {
+			return ClaimedIdentifier.GetHashCode();
 		}
 	}
 }

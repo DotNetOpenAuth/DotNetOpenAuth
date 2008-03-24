@@ -67,7 +67,6 @@ namespace DotNetOpenId {
 			return Query.ContainsKey(v20.openid.ns) ? v20 : v11;
 		}
 
-	
 		/// <summary>
 		/// The OpenID version that this <see cref="Protocol"/> instance describes.
 		/// </summary>
@@ -227,5 +226,14 @@ namespace DotNetOpenId {
 		/// server to be five minutes behind and still be able to communicate.
 		/// </remarks>
 		internal static TimeSpan MaximumAllowableTimeSkew = TimeSpan.FromMinutes(10);
+
+		public override bool Equals(object obj) {
+			Protocol other = obj as Protocol;
+			if (other == null) return false;
+			return this.Version == other.Version;
+		}
+		public override int GetHashCode() {
+			return Version.GetHashCode();
+		}
 	}
 }

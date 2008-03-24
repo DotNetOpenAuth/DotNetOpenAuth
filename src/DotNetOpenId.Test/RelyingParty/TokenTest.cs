@@ -21,20 +21,20 @@ namespace DotNetOpenId.Test.RelyingParty {
 		public void TokenBasics() {
 			ServiceEndpoint ep = getServiceEndpoint(TestSupport.Scenarios.AutoApproval);
 			Token token = new Token(ep);
-			Assert.AreEqual(ep.ClaimedIdentifier, token.ClaimedIdentifier);
-			Assert.AreEqual(ep.ProviderLocalIdentifier, token.ProviderLocalIdentifier);
-			Assert.AreEqual(ep.ProviderEndpoint, token.ProviderEndpoint);
+			Assert.AreSame(ep, token.Endpoint);
 			Assert.IsNotNull(token.Nonce);
 
 			INonceStore store = new ConsumerApplicationMemoryStore();
 			string serializedToken = token.Serialize(store);
 
-			Token token2 = Token.Deserialize(serializedToken, store, false);
+			Token token2 = Token.Deserialize(serializedToken, store);
 
-			Assert.AreEqual(token.ClaimedIdentifier, token2.ClaimedIdentifier);
-			Assert.AreEqual(token.ProviderLocalIdentifier, token2.ProviderLocalIdentifier);
-			Assert.AreEqual(token.ProviderEndpoint, token2.ProviderEndpoint);
-			Assert.IsNotNull(token2.Nonce);
+			Assert.AreEqual(token.Endpoint, token2.Endpoint);
+			Assert.AreEqual(token.Nonce, token2.Nonce);
+			if (ep.Protocol.Version.Major < 2)
+				Assert.IsNotNull(token2.Nonce);
+			else
+				Assert.IsNull(token2.Nonce);
 		}
 
 		[Test, ExpectedException(typeof(OpenIdException))]
@@ -44,8 +44,8 @@ namespace DotNetOpenId.Test.RelyingParty {
 
 			INonceStore store = new ConsumerApplicationMemoryStore();
 			string serializedToken = token.Serialize(store);
-			Token.Deserialize(serializedToken, store, false);
-			Token.Deserialize(serializedToken, store, false);
+			Token.Deserialize(serializedToken, store);
+			Token.Deserialize(serializedToken, store);
 		}
 
 		[Test]

@@ -11,39 +11,24 @@ namespace DotNetOpenId.RelyingParty {
 	/// A state-containing bit of non-confidential data that is sent to the 
 	/// user agent as part of the return_to URL so we can read from it later.
 	/// </summary>
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design",
 		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", Justification = "CryptoStream is not stored in a field.")]
 	class Token {
 		public static readonly string TokenKey = "token";
 		/// <summary>
-		/// The Identifier that the end user claims to own.
+		/// This nonce will only be used if the provider is pre-2.0.
 		/// </summary>
-		public Identifier ClaimedIdentifier { get; private set; }
-		/// <summary>
-		/// The ProviderLocalIdentifier if supplied, otherwise the ClaimedIdentifier.
-		/// </summary>
-		public Identifier ProviderLocalIdentifier { get; private set; }
-		/// <summary>
-		/// The URL which accepts OpenID Authentication protocol messages.
-		/// </summary>
-		public Uri ProviderEndpoint { get; private set; }
 		public Nonce Nonce { get; set; }
+		public ServiceEndpoint Endpoint { get; set; }
 
-		public Token(ServiceEndpoint serviceEndpoint)
-			: this(new Nonce(), serviceEndpoint.ClaimedIdentifier, serviceEndpoint.ProviderLocalIdentifier, serviceEndpoint.ProviderEndpoint) {
+		public Token(ServiceEndpoint provider)
+			: this(new Nonce(), provider) {
 		}
 
-		Token(Nonce nonce, Identifier claimedIdentifier, Identifier providerLocalIdentifier, Uri providerEndpoint) {
-			if (nonce == null) throw new ArgumentNullException("nonce");
-			if (providerLocalIdentifier == null) throw new ArgumentNullException("providerLocalIdentifier");
-			if (providerEndpoint == null) throw new ArgumentNullException("providerEndpoint");
-			this.Nonce = nonce;
-			ClaimedIdentifier = claimedIdentifier;
-			ProviderLocalIdentifier = providerLocalIdentifier;
-			ProviderEndpoint = providerEndpoint;
+		Token(Nonce nonce, ServiceEndpoint provider) {
+			Nonce = nonce;
+			Endpoint = provider;
 		}
-
-		delegate void DataWriter(string data, bool writeSeparator);
 
 		/// <summary>
 		/// Serializes this <see cref="Token"/> instance as a string that can be
@@ -52,27 +37,20 @@ namespace DotNetOpenId.RelyingParty {
 		/// </summary>
 		public string Serialize(INonceStore store) {
 			using (MemoryStream ms = new MemoryStream())
-			using (HashAlgorithm sha1 = new HMACSHA1(store.SecretSigningKey))
-			using (CryptoStream sha1Stream = new CryptoStream(ms, sha1, CryptoStreamMode.Write)) {
-				DataWriter writeData = delegate(string value, bool writeSeparator) {
-					byte[] buffer = Encoding.ASCII.GetBytes(value);
-					sha1Stream.Write(buffer, 0, buffer.Length);
+			using (HashAlgorithm shaHash = createHashAlgorithm(store))
+			using (CryptoStream shaStream = new CryptoStream(ms, shaHash, CryptoStreamMode.Write)) {
+				StreamWriter writer = new StreamWriter(shaStream);
+				Endpoint.Serialize(writer);
+				if (persistToken(Endpoint))
+					writer.WriteLine(Nonce.Code, true);
+				writer.Flush();
 
-					if (writeSeparator)
-						sha1Stream.WriteByte(0);
-				};
+				shaStream.Flush();
+				shaStream.FlushFinalBlock();
 
-				writeData(Nonce.Code, true);
-				writeData(ClaimedIdentifier.ToString(), true);
-				writeData(ProviderLocalIdentifier.ToString(), true);
-				writeData(ProviderEndpoint.ToString(), false);
+				byte[] hash = shaHash.Hash;
 
-				sha1Stream.Flush();
-				sha1Stream.FlushFinalBlock();
-
-				byte[] hash = sha1.Hash;
-
-				byte[] data = new byte[sha1.HashSize / 8 + ms.Length];
+				byte[] data = new byte[hash.Length + ms.Length];
 				Buffer.BlockCopy(hash, 0, data, 0, hash.Length);
 				Buffer.BlockCopy(ms.ToArray(), 0, data, hash.Length, (int)ms.Length);
 
@@ -80,40 +58,32 @@ namespace DotNetOpenId.RelyingParty {
 			}
 		}
 
-		public static Token Deserialize(string token, INonceStore store, bool remoteServerOrigin) {
+		public static Token Deserialize(string token, INonceStore store) {
 			byte[] tok = Convert.FromBase64String(token);
 
-			if (tok.Length < 20)
-				throw new OpenIdException("Failed while reading token.");
-
-			byte[] sig = new byte[20];
-			Buffer.BlockCopy(tok, 0, sig, 0, 20);
-
-			HMACSHA1 hmac = new HMACSHA1(store.SecretSigningKey);
-			byte[] newSig = hmac.ComputeHash(tok, 20, tok.Length - 20);
-
+			// Verify the signature to guarantee that our state hasn't been
+			// tampered with in transit or on the provider.
+			HashAlgorithm hmac = createHashAlgorithm(store);
+			byte[] sig = new byte[hmac.HashSize / 8];
+			if (tok.Length < sig.Length)
+				throw new OpenIdException(Strings.InvalidSignature);
+			Buffer.BlockCopy(tok, 0, sig, 0, sig.Length);
+			var ms = new MemoryStream(tok, sig.Length, tok.Length - sig.Length);
+			byte[] newSig = hmac.ComputeHash(ms);
+			ms.Seek(0, SeekOrigin.Begin);
 			for (int i = 0; i < sig.Length; i++)
 				if (sig[i] != newSig[i])
-					throw new OpenIdException("Token failed signature verification.");
+					throw new OpenIdException(Strings.InvalidSignature);
 
-			List<string> items = new List<string>();
-
-			int prev = 20;
-			int idx;
-
-			while ((idx = Array.IndexOf<byte>(tok, 0, prev)) > -1) {
-				items.Add(Encoding.ASCII.GetString(tok, prev, idx - prev));
-
-				prev = idx + 1;
+			StreamReader reader = new StreamReader(ms);
+			ServiceEndpoint endpoint = ServiceEndpoint.Deserialize(reader);
+			Nonce nonce = null;
+			if (persistToken(endpoint)) {
+				nonce = new Nonce(reader.ReadLine(), false);
+				consumeNonce(nonce, store);
 			}
 
-			if (prev < tok.Length)
-				items.Add(Encoding.ASCII.GetString(tok, prev, tok.Length - prev));
-
-			Nonce nonce = new Nonce(items[0], remoteServerOrigin);
-			consumeNonce(nonce, store);
-
-			return new Token(nonce, items[1], items[2], new Uri(items[3]));
+			return new Token(nonce, endpoint);
 		}
 
 		static void consumeNonce(Nonce nonce, INonceStore store) {
@@ -135,20 +105,19 @@ namespace DotNetOpenId.RelyingParty {
 			}
 		}
 
-		public override bool Equals(object obj) {
-			Token other = obj as Token;
-			if (other == null) return false;
-			Debug.Assert(this.Nonce != null && other.Nonce != null, "No Token should be constructed with null Nonces.");
-			// This should pretty much always return false, since every token should
-			// have it's own unique nonce.
-			return
-				this.ClaimedIdentifier == other.ClaimedIdentifier &&
-				this.Nonce.Equals(other.Nonce) &&
-				this.ProviderLocalIdentifier == other.ProviderLocalIdentifier &&
-				this.ProviderEndpoint == other.ProviderEndpoint;
+		static HashAlgorithm createHashAlgorithm(INonceStore store) {
+			return new HMACSHA256(store.SecretSigningKey);
 		}
-		public override int GetHashCode() {
-			return Nonce.GetHashCode();
+		/// <summary>
+		/// Whether a relying party-side token should be used to protect
+		/// against replay attacks.
+		/// </summary>
+		/// <remarks>
+		/// When communicating with an OP using OpenID 2.0, the provider takes
+		/// care of the token, so we don't have to.
+		/// </remarks>
+		static bool persistToken(ServiceEndpoint endpoint) {
+			return endpoint.Protocol.Version.Major < 2;
 		}
 	}
 }

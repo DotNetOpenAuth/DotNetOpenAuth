@@ -81,47 +81,48 @@ namespace DotNetOpenId.RelyingParty {
 			Protocol protocol = Protocol.Detect(query);
 			string mode = Util.GetRequiredArg(query, protocol.openid.mode);
 			string tokenString = Util.GetRequiredArg(query, Token.TokenKey);
-			Token token = Token.Deserialize(tokenString, store, false);
+			Token token = Token.Deserialize(tokenString, store);
+			ServiceEndpoint endpoint = token.Endpoint;
 
 			if (protocol.Args.Mode.cancel.Equals(mode, StringComparison.Ordinal)) {
-				return new AuthenticationResponse(AuthenticationStatus.Canceled, token.ClaimedIdentifier, query);
+				return new AuthenticationResponse(AuthenticationStatus.Canceled, endpoint.ClaimedIdentifier, query);
 			} else if (protocol.Args.Mode.error.Equals(mode, StringComparison.Ordinal)) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 					"The provider returned an error: {0}", query[protocol.openid.error],
-					token.ClaimedIdentifier));
+					endpoint.ClaimedIdentifier));
 			} else if (protocol.Args.Mode.id_res.Equals(mode, StringComparison.Ordinal)) {
-				return parseIdResResponse(query, token, store);
+				return parseIdResResponse(query, endpoint, store);
 			} else {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 					Strings.InvalidOpenIdQueryParameterValue,
-					protocol.openid.mode, mode), token.ClaimedIdentifier);
+					protocol.openid.mode, mode), endpoint.ClaimedIdentifier);
 			}
 		}
 
-		static AuthenticationResponse parseIdResResponse(IDictionary<string, string> query, Token token, IRelyingPartyApplicationStore store) {
+		static AuthenticationResponse parseIdResResponse(IDictionary<string, string> query, ServiceEndpoint endpoint, IRelyingPartyApplicationStore store) {
 			string user_setup_url;
 			if (query.TryGetValue(Protocol.Default.openid.user_setup_url, out user_setup_url))
-				return new AuthenticationResponse(AuthenticationStatus.SetupRequired, token.ClaimedIdentifier, query);
+				return new AuthenticationResponse(AuthenticationStatus.SetupRequired, endpoint.ClaimedIdentifier, query);
 
 			string assoc_handle = Util.GetRequiredArg(query, Protocol.Default.openid.assoc_handle);
 
-			Association assoc = store.GetAssociation(token.ProviderEndpoint, assoc_handle);
+			Association assoc = store.GetAssociation(endpoint.ProviderEndpoint, assoc_handle);
 			AuthenticationResponse response;
 
 			if (assoc == null) {
 				// It's not an association we know about.  Dumb mode is our
 				// only possible path for recovery.
-				if (!verifyByProvider(query, token.ProviderEndpoint, store))
-					throw new OpenIdException("check_authentication failed", token.ClaimedIdentifier);
+				if (!verifyByProvider(query, endpoint.ProviderEndpoint, store))
+					throw new OpenIdException("check_authentication failed", endpoint.ClaimedIdentifier);
 			} else {
 				if (assoc.IsExpired)
 					throw new OpenIdException(String.Format(CultureInfo.CurrentUICulture,
-						"Association with {0} expired", token.ProviderEndpoint), token.ClaimedIdentifier);
+						"Association with {0} expired", endpoint.ProviderEndpoint), endpoint.ClaimedIdentifier);
 
 				verifyBySignature(query, assoc);
 			}
 
-			response = new AuthenticationResponse(AuthenticationStatus.Authenticated, token.ClaimedIdentifier, query);
+			response = new AuthenticationResponse(AuthenticationStatus.Authenticated, endpoint.ClaimedIdentifier, query);
 
 			// Just a little extra something to make sure that what's signed in return_to
 			// and doubled in the actual returned arguments is the same.

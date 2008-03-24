@@ -61,5 +61,14 @@ namespace DotNetOpenId {
 		/// An initialized structure containing the discovered service information.
 		/// </returns>
 		internal abstract ServiceEndpoint Discover();
+
+		public static bool operator ==(Identifier id1, Identifier id2) {
+			if ((object)id1 == null ^ (object)id2 == null) return false;
+			if ((object)id1 == null) return true;
+			return id1.Equals(id2);
+		}
+		public static bool operator !=(Identifier id1, Identifier id2) {
+			return !(id1 == id2);
+		}
 	}
 }
