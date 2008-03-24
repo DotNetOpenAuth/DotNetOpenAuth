@@ -17,7 +17,7 @@ namespace DotNetOpenId {
 		}
 
 		static TimeSpan minimumUsefulAssociationLifetime {
-			get { return RelyingParty.OpenIdRelyingParty.MaximumUserAgentAuthenticationTime; }
+			get { return Protocol.MaximumUserAgentAuthenticationTime; }
 		}
 		internal bool HasUsefulLifeRemaining {
 			get { return timeTillExpiration >= minimumUsefulAssociationLifetime; }

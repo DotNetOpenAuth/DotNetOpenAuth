@@ -205,5 +205,27 @@ namespace DotNetOpenId {
 				public string True = "true";
 			}
 		}
+
+		/// <summary>
+		/// The maximum time a user can be allowed to take to complete authentication.
+		/// </summary>
+		/// <remarks>
+		/// This is used to calculate the length of time that nonces are stored.
+		/// This is internal until we can decide whether to leave this static, or make
+		/// it an instance member, or put it inside the IConsumerAppliationStore interface.
+		/// </remarks>
+		internal static TimeSpan MaximumUserAgentAuthenticationTime = TimeSpan.FromMinutes(5);
+		/// <summary>
+		/// The maximum permissible difference in clocks between relying party and 
+		/// provider web servers, discounting time zone differences.
+		/// </summary>
+		/// <remarks>
+		/// This is used when storing/validating nonces from the provider.
+		/// If it is conceivable that a server's clock could be up to five minutes
+		/// off from true UTC time, then the maximum time skew should be set to 
+		/// ten minutes to allow one server to be five minutes ahead and the remote
+		/// server to be five minutes behind and still be able to communicate.
+		/// </remarks>
+		internal static TimeSpan MaximumAllowableTimeSkew = TimeSpan.FromMinutes(10);
 	}
 }

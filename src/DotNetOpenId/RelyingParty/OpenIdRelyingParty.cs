@@ -16,16 +16,6 @@ namespace DotNetOpenId.RelyingParty {
 		IDictionary<string, string> query;
 		
 		/// <summary>
-		/// The maximum time a user can be allowed to take to complete authentication
-		/// at the OpenID Provider web site.
-		/// </summary>
-		/// <remarks>
-		/// This is internal until we can decide whether to leave this static, or make
-		/// it an instance member, or put it inside the IConsumerAppliationStore interface.
-		/// </remarks>
-		internal static TimeSpan MaximumUserAgentAuthenticationTime = TimeSpan.FromMinutes(5);
-
-		/// <summary>
 		/// Constructs an OpenId consumer that uses the current HttpContext's querystring
 		/// and uses the HttpApplication dictionary as its association store.
 		/// </summary>

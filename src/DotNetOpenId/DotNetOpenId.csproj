@@ -69,7 +69,7 @@
     <Compile Include="RelyingParty\IAuthenticationResponse.cs" />
     <Compile Include="RelyingParty\IRelyingPartyApplicationStore.cs" />
     <Compile Include="RelyingParty\INonceStore.cs" />
-    <Compile Include="RelyingParty\Nonce.cs" />
+    <Compile Include="Nonce.cs" />
     <Compile Include="RelyingParty\OpenIdRelyingParty.cs" />
     <Compile Include="RelyingParty\Token.cs" />
     <Compile Include="GlobalSuppressions.cs" />
