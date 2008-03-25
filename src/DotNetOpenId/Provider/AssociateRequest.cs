@@ -47,7 +47,7 @@ namespace DotNetOpenId.Provider {
 			EncodableResponse response = new EncodableResponse(this);
 
 			response.Fields[Protocol.openidnp.expires_in] = assoc.SecondsTillExpiration.ToString(CultureInfo.InvariantCulture);
-			response.Fields[Protocol.openidnp.assoc_type] = assoc.AssociationType;
+			response.Fields[Protocol.openidnp.assoc_type] = assoc.GetAssociationType(Protocol);
 			response.Fields[Protocol.openidnp.assoc_handle] = assoc.Handle;
 
 			IDictionary<string, string> nvc = session.Answer(assoc.SecretKey);

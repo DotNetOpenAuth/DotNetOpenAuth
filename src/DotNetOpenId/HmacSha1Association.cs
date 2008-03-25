@@ -9,8 +9,8 @@ namespace DotNetOpenId {
 			: base(handle, secret, totalLifeLength, DateTime.UtcNow) {
 		}
 
-		protected internal override string AssociationType {
-			get { return Protocol.Args.SignatureAlgorithm.HMAC_SHA1; }
+		internal override string GetAssociationType(Protocol protocol) {
+			return protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 		}
 
 		protected internal override byte[] Sign(IDictionary<string, string> data, IList<string> keyOrder) {
