@@ -97,6 +97,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The OpenID parameter &apos;{0}&apos; must be signed by the OpenID Provider, but was not..
+        /// </summary>
+        internal static string FieldMustBeSigned {
+            get {
+                return ResourceManager.GetString("FieldMustBeSigned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No current HttpContext was detected, so an IAssociationStore must be explicitly provided. Call the Server constructor overload that takes an IAssociationStore..
         /// </summary>
         internal static string IAssociationStoreRequiredWhenNoHttpContextAvailable {
@@ -174,6 +183,15 @@ namespace DotNetOpenId {
         internal static string InvalidXri {
             get {
                 return ResourceManager.GetString("InvalidXri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The OpenId Provider issued an assertion for an Identifier whose discovery information did not match..
+        /// </summary>
+        internal static string IssuedAssertionFailsIdentifierDiscovery {
+            get {
+                return ResourceManager.GetString("IssuedAssertionFailsIdentifierDiscovery", resourceCulture);
             }
         }
         
@@ -318,6 +336,24 @@ namespace DotNetOpenId {
         internal static string ReturnToNotUnderRealm {
             get {
                 return ResourceManager.GetString("ReturnToNotUnderRealm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} parameter does not match the actual URL the request was made with..
+        /// </summary>
+        internal static string ReturnToParamDoesNotMatchRequestUrl {
+            get {
+                return ResourceManager.GetString("ReturnToParamDoesNotMatchRequestUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; parameter was expected to have the value &apos;{1}&apos; but had &apos;{2}&apos; instead..
+        /// </summary>
+        internal static string TamperingDetected {
+            get {
+                return ResourceManager.GetString("TamperingDetected", resourceCulture);
             }
         }
     }

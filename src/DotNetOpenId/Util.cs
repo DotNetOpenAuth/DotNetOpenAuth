@@ -64,10 +64,15 @@ namespace DotNetOpenId {
 			return nvc;
 		}
 
-		public static NameValueCollection GetQueryFromContext() {
+		public static IDictionary<string, string> GetQueryFromContext() {
 			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
-			return HttpContext.Current.Request.RequestType == "GET" ?
+			var query = HttpContext.Current.Request.RequestType == "GET" ?
 				HttpContext.Current.Request.QueryString : HttpContext.Current.Request.Form;
+			return NameValueCollectionToDictionary(query);
+		}
+		internal static Uri GetRequestUrlFromContext() {
+			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
+			return HttpContext.Current.Request.Url;
 		}
 
 		public static string GetRequiredArg(IDictionary<string, string> query, string key) {

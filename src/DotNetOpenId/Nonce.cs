@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using DotNetOpenId.RelyingParty;
 
 namespace DotNetOpenId {
 	public class Nonce {
@@ -76,6 +77,25 @@ namespace DotNetOpenId {
 			byte[] nonce = new byte[NonceLength];
 			randomSelection(ref nonce, AllowedCharacters);
 			return ASCIIEncoding.ASCII.GetString(nonce);
+		}
+
+		internal void Consume(INonceStore store) {
+			if (IsExpired)
+				throw new OpenIdException(Strings.ExpiredNonce);
+
+			// We could store unused nonces and remove them as they are used, or
+			// we could store used nonces and check that they do not previously exist.
+			// To protect against DoS attacks, it's cheaper to store fully-used ones
+			// than half-used ones because it costs the user agent more to get that far.
+			lock (store) {
+				// Replay detection
+				if (store.ContainsNonce(this)) {
+					// We've used this nonce before!  Replay attack!
+					throw new OpenIdException(Strings.ReplayAttackDetected);
+				}
+				store.StoreNonce(this);
+				store.ClearExpiredNonces();
+			}
 		}
 
 		public override bool Equals(object obj) {

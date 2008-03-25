@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DotNetOpenId.RelyingParty {
 	class CheckAuthResponse : DirectResponse {
-		public CheckAuthResponse(Uri provider, IDictionary<string, string> args)
+		public CheckAuthResponse(ServiceEndpoint provider, IDictionary<string, string> args)
 			: base(provider, args) {
 		}
 
@@ -12,7 +12,7 @@ namespace DotNetOpenId.RelyingParty {
 			get {
 				string invalidateHandle = null;
 				if (IsAuthenticationValid) {
-					Args.TryGetValue(Protocol.Default.openidnp.invalidate_handle, out invalidateHandle);
+					Args.TryGetValue(Protocol.openidnp.invalidate_handle, out invalidateHandle);
 				}
 				return invalidateHandle;
 			}

@@ -118,7 +118,23 @@ namespace DotNetOpenId.RelyingParty {
 			return new ServiceEndpoint(claimedIdentifier, providerEndpoint,
 				providerLocalIdentifier, protocol);
 		}
+		internal static ServiceEndpoint ParseFromAuthResponse(IDictionary<string, string> query) {
+			Protocol protocol = Protocol.Detect(query);
+			return new ServiceEndpoint(
+				Util.GetRequiredArg(query, protocol.openid.claimed_id),
+				new Uri(Util.GetRequiredArg(query, protocol.openid.op_endpoint)),
+				Util.GetRequiredArg(query, protocol.openid.identity),
+				protocol);
+		}
 
+		public static bool operator ==(ServiceEndpoint se1, ServiceEndpoint se2) {
+			if ((object)se1 == null ^ (object)se2 == null) return false;
+			if ((object)se1 == null) return true;
+			return se1.Equals(se2);
+		}
+		public static bool operator !=(ServiceEndpoint se1, ServiceEndpoint se2) {
+			return !(se1 == se2);
+		}
 		public override bool Equals(object obj) {
 			ServiceEndpoint other = obj as ServiceEndpoint;
 			if (other == null) return false;

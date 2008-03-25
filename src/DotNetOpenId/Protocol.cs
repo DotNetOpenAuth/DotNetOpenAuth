@@ -36,6 +36,8 @@ namespace DotNetOpenId {
 		};
 		public static readonly Protocol v20 = new Protocol(new QueryParameters() {
 			Realm = "realm",
+			op_endpoint = "op_endpoint",
+			response_nonce = "response_nonce",
 		}) {
 			Version = new Version(2, 0),
 			XmlNamespace = null, // no longer applicable
@@ -134,6 +136,8 @@ namespace DotNetOpenId {
 				mode = Prefix + addPrefixTo.mode;
 				error = Prefix + addPrefixTo.error;
 				identity = Prefix + addPrefixTo.identity;
+				op_endpoint = Prefix + addPrefixTo.op_endpoint;
+				response_nonce = Prefix + addPrefixTo.response_nonce;
 				claimed_id = Prefix + addPrefixTo.claimed_id;
 				expires_in = Prefix + addPrefixTo.expires_in;
 				assoc_type = Prefix + addPrefixTo.assoc_type;
@@ -159,6 +163,8 @@ namespace DotNetOpenId {
 			public string mode = "mode";
 			public string error = "error";
 			public string identity = "identity";
+			public string op_endpoint = null;
+			public string response_nonce = null;
 			public string claimed_id = "claimed_id";
 			public string expires_in = "expires_in";
 			public string assoc_type = "assoc_type";

@@ -13,6 +13,7 @@ namespace DotNetOpenId.RelyingParty {
 	/// </summary>
 	public class OpenIdRelyingParty {
 		IRelyingPartyApplicationStore store;
+		Uri request;
 		IDictionary<string, string> query;
 		
 		/// <summary>
@@ -22,16 +23,19 @@ namespace DotNetOpenId.RelyingParty {
 		/// <remarks>
 		/// This method requires a current ASP.NET HttpContext.
 		/// </remarks>
-		public OpenIdRelyingParty() : this(Util.GetQueryFromContext(), httpApplicationStore) { }
+		public OpenIdRelyingParty() : this(httpApplicationStore, Util.GetRequestUrlFromContext()) { }
 		/// <summary>
 		/// Constructs an OpenId consumer that uses a given querystring and IAssociationStore.
 		/// </summary>
-		/// <param name="query">The name/value pairs that came in on the QueryString of the web request.</param>
 		/// <param name="store">
 		/// The application-level store where associations with other OpenId providers can be
 		/// preserved for optimized authentication and information about nonces can be stored.
 		/// In a multi-server web farm environment, this store MUST be shared across
 		/// all servers.
+		/// </param>
+		/// <param name="requestUrl">
+		/// Optional.  The current incoming HTTP request that may contain an OpenId assertion.
+		/// If not included, any OpenId authentication assertions will not be processed.
 		/// </param>
 		/// <remarks>
 		/// The IRelyingPartyApplicationStore must be shared across an entire web farm 
@@ -41,16 +45,15 @@ namespace DotNetOpenId.RelyingParty {
 		/// which must therefore share the nonce information in the application
 		/// state store in order to stop the intruder.
 		/// </remarks>
-		public OpenIdRelyingParty(NameValueCollection query, IRelyingPartyApplicationStore store)
-			: this(Util.NameValueCollectionToDictionary(query), store) {
-		}
-		OpenIdRelyingParty(IDictionary<string, string> query, IRelyingPartyApplicationStore store) {
-			if (query == null) throw new ArgumentNullException("query");
-			if (store == null) throw new ArgumentNullException("store");
-			this.query = query;
+		public OpenIdRelyingParty(IRelyingPartyApplicationStore store, Uri requestUrl) {
+			if (store == null) throw new NotSupportedException("Stateless mode is not yet supported.");
 			this.store = store;
 			if (store != null) {
 				store.ClearExpiredAssociations(); // every so often we should do this.
+			}
+			if (requestUrl != null) {
+				this.request = requestUrl;
+				this.query = Util.NameValueCollectionToDictionary(HttpUtility.ParseQueryString(requestUrl.Query));
 			}
 		}
 
@@ -117,7 +120,7 @@ namespace DotNetOpenId.RelyingParty {
 		public IAuthenticationResponse Response {
 			get {
 				if (response == null && isAuthenticationResponseReady) {
-					response = AuthenticationResponse.Parse(query, store);
+					response = AuthenticationResponse.Parse(query, store, request);
 				}
 				return response;
 			}

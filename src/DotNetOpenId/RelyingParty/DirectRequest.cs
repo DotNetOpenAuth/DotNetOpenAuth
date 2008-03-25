@@ -7,7 +7,7 @@ using System.Globalization;
 
 namespace DotNetOpenId.RelyingParty {
 	abstract class DirectRequest {
-		protected DirectRequest(Uri provider, IDictionary<string, string> args) {
+		protected DirectRequest(ServiceEndpoint provider, IDictionary<string, string> args) {
 			if (provider == null) throw new ArgumentNullException("provider");
 			if (args == null) throw new ArgumentNullException("args");
 			Provider = provider;
@@ -16,7 +16,7 @@ namespace DotNetOpenId.RelyingParty {
 				!Args.ContainsKey(Protocol.openid.ns))
 				Args.Add(Protocol.openid.ns, Protocol.QueryDeclaredNamespaceVersion);
 		}
-		protected Uri Provider { get; private set; }
+		protected ServiceEndpoint Provider { get; private set; }
 		protected Protocol Protocol { get { return Protocol.Default; } }
 		protected IDictionary<string, string> Args { get; private set; }
 
@@ -25,7 +25,7 @@ namespace DotNetOpenId.RelyingParty {
 			FetchResponse resp = null;
 			IDictionary<string, string> args = null;
 			try {
-				resp = Fetcher.Request(Provider, body);
+				resp = Fetcher.Request(Provider.ProviderEndpoint, body);
 				args = ProtocolMessages.KeyValueForm.GetDictionary(resp.ResponseStream);
 			} catch (ArgumentException e) {
 				throw new OpenIdException("Failure decoding Key-Value Form response from provider.", e);

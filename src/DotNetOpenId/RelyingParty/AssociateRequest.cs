@@ -8,7 +8,7 @@ namespace DotNetOpenId.RelyingParty {
 	class AssociateRequest : DirectRequest {
 		/// <param name="dh">Optional.  Supplied only if Diffie-Hellman is used for encrypting the association secret key.</param>
 		AssociateRequest(ServiceEndpoint provider, IDictionary<string, string> args, DiffieHellman dh)
-			: base(provider.ProviderEndpoint, args) {
+			: base(provider, args) {
 			DH = dh;
 		}
 		public DiffieHellman DH { get; private set; }

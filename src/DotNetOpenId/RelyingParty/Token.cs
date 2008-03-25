@@ -58,6 +58,11 @@ namespace DotNetOpenId.RelyingParty {
 			}
 		}
 
+		/// <summary>
+		/// Deserializes a token returned to us from the server.
+		/// As part of deserialization, the signature is verified to check
+		/// for tampering, and the nonce (if included by the RP) is also checked.
+		/// </summary>
 		public static Token Deserialize(string token, INonceStore store) {
 			byte[] tok = Convert.FromBase64String(token);
 
@@ -80,29 +85,10 @@ namespace DotNetOpenId.RelyingParty {
 			Nonce nonce = null;
 			if (persistToken(endpoint)) {
 				nonce = new Nonce(reader.ReadLine(), false);
-				consumeNonce(nonce, store);
+				nonce.Consume(store);
 			}
 
 			return new Token(nonce, endpoint);
-		}
-
-		static void consumeNonce(Nonce nonce, INonceStore store) {
-			if (nonce.IsExpired)
-				throw new OpenIdException(Strings.ExpiredNonce);
-
-			// We could store unused nonces and remove them as they are used, or
-			// we could store used nonces and check that they do not previously exist.
-			// To protect against DoS attacks, it's cheaper to store fully-used ones
-			// than half-used ones because it costs the user agent more to get that far.
-			lock (store) {
-				// Replay detection
-				if (store.ContainsNonce(nonce)) {
-					// We've used this nonce before!  Replay attack!
-					throw new OpenIdException(Strings.ReplayAttackDetected);
-				}
-				store.StoreNonce(nonce);
-				store.ClearExpiredNonces();
-			}
 		}
 
 		static HashAlgorithm createHashAlgorithm(INonceStore store) {

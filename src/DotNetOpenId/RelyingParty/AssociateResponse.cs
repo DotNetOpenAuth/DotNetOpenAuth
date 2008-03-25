@@ -7,7 +7,7 @@ using System.Diagnostics;
 
 namespace DotNetOpenId.RelyingParty {
 	class AssociateResponse : DirectResponse {
-		public AssociateResponse(Uri provider, IDictionary<string, string> args, DiffieHellman dh)
+		public AssociateResponse(ServiceEndpoint provider, IDictionary<string, string> args, DiffieHellman dh)
 			: base(provider, args) {
 			DH = dh;
 		}
