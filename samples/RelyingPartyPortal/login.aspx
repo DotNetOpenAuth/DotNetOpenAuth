@@ -20,7 +20,7 @@
 	<asp:Label ID="loginCanceledLabel" runat="server" EnableViewState="False" Text="Login canceled"
 		Visible="False" />
 	<p>
-		<asp:ImageButton runat="server" ImageUrl="~/images/yahoo.jpg" ID="yahooLoginButton" OnClick="yahooLoginButton_Click" />
+		<asp:ImageButton runat="server" ImageUrl="~/images/yahoo.png" ID="yahooLoginButton" OnClick="yahooLoginButton_Click" />
 	</p>
 	</form>
 </body>

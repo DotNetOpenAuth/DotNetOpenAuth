@@ -43,11 +43,11 @@
   <ItemGroup>
     <Content Include="Default.aspx" />
     <Content Include="Global.asax" />
+    <Content Include="images\yahoo.png" />
     <Content Include="login.aspx" />
     <Content Include="logout.aspx" />
     <Content Include="PrivacyPolicy.aspx" />
     <Content Include="Web.config" />
-    <Content Include="images\yahoo.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Code\State.cs" />
