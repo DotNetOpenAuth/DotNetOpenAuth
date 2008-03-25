@@ -47,6 +47,7 @@
     <Content Include="logout.aspx" />
     <Content Include="PrivacyPolicy.aspx" />
     <Content Include="Web.config" />
+    <Content Include="images\yahoo.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Code\State.cs" />

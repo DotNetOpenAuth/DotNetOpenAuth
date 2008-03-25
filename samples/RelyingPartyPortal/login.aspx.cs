@@ -44,4 +44,12 @@ public partial class login : System.Web.UI.Page
     {
         loginCanceledLabel.Visible = true;
     }
+
+	protected void yahooLoginButton_Click(object sender, ImageClickEventArgs e) {
+		OpenIdRelyingParty openid = new OpenIdRelyingParty();
+		var req = openid.CreateRequest("yahoo.com");
+		req.RedirectToProvider();
+		// We don't listen for the response from the provider explicitly
+		// because the OpenIdLogin control is already doing that for us.
+	}
 }

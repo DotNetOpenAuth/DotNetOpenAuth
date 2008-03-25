@@ -17,7 +17,7 @@ namespace DotNetOpenId.RelyingParty {
 		IDictionary<string, string> query;
 		
 		/// <summary>
-		/// Constructs an OpenId consumer that uses the current HttpContext's querystring
+		/// Constructs an OpenId consumer that uses the current HttpContext request
 		/// and uses the HttpApplication dictionary as its association store.
 		/// </summary>
 		/// <remarks>
