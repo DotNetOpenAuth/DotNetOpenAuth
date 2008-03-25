@@ -15,8 +15,7 @@ namespace DotNetOpenId.Provider {
 		public abstract string SessionType { get; }
 		public abstract Dictionary<string, string> Answer(byte[] secret);
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1820:TestForEmptyStringsUsingStringLength")]
-		public static ProviderSession CreateSession(IDictionary<string, string> query) {
-			Protocol protocol = Protocol.Detect(query);
+		public static ProviderSession CreateSession(Protocol protocol, IDictionary<string, string> query) {
 			string session_type = Util.GetOptionalArg(query, protocol.openid.session_type);
 			if (protocol.Args.SessionType.NoEncryption.Equals(session_type, StringComparison.Ordinal) || session_type == null) {
 				return new PlainTextProviderSession(protocol);
@@ -25,7 +24,7 @@ namespace DotNetOpenId.Provider {
 			} else {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 					Strings.InvalidOpenIdQueryParameterValue,
-					Protocol.Default.openid.session_type, session_type), query);
+					protocol.openid.session_type, session_type), query);
 			}
 		}
 	}
@@ -56,11 +55,11 @@ namespace DotNetOpenId.Provider {
 
 		public DiffieHellmanProviderSession(Protocol protocol, IDictionary<string, string> query)
 			: base(protocol) {
-			sessionType = Util.GetRequiredArg(query, Protocol.Default.openid.session_type);
+			sessionType = Util.GetRequiredArg(query, protocol.openid.session_type);
 
 			string missing;
-			string dh_modulus = Util.GetOptionalArg(query, Protocol.Default.openid.dh_modulus);
-			string dh_gen = Util.GetOptionalArg(query, Protocol.Default.openid.dh_gen);
+			string dh_modulus = Util.GetOptionalArg(query, protocol.openid.dh_modulus);
+			string dh_gen = Util.GetOptionalArg(query, protocol.openid.dh_gen);
 			byte[] dh_modulus_bytes = new byte[0];
 			byte[] dh_gen_bytes = new byte[0];
 
@@ -78,7 +77,7 @@ namespace DotNetOpenId.Provider {
 				} catch (FormatException) {
 					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 						Strings.InvalidOpenIdQueryParameterValueBadBase64,
-						Protocol.Default.openid.dh_modulus, dh_modulus), query);
+						protocol.openid.dh_modulus, dh_modulus), query);
 				}
 
 				try {
@@ -86,7 +85,7 @@ namespace DotNetOpenId.Provider {
 				} catch (FormatException) {
 					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 						Strings.InvalidOpenIdQueryParameterValueBadBase64,
-						Protocol.Default.openid.dh_gen, dh_gen), query);
+						protocol.openid.dh_gen, dh_gen), query);
 				}
 			} else {
 				dh_modulus_bytes = CryptUtil.DEFAULT_MOD;
@@ -95,13 +94,13 @@ namespace DotNetOpenId.Provider {
 
 			_dh = new DiffieHellmanManaged(dh_modulus_bytes, dh_gen_bytes, 1024);
 
-			string consumer_pubkey = Util.GetRequiredArg(query, Protocol.Default.openid.dh_consumer_public);
+			string consumer_pubkey = Util.GetRequiredArg(query, protocol.openid.dh_consumer_public);
 			try {
 				_consumer_pubkey = Convert.FromBase64String(consumer_pubkey);
 			} catch (FormatException) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 					Strings.InvalidOpenIdQueryParameterValueBadBase64,
-					Protocol.Default.openid.dh_consumer_public, consumer_pubkey), query);
+					protocol.openid.dh_consumer_public, consumer_pubkey), query);
 			}
 		}
 

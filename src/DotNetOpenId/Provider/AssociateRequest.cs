@@ -15,8 +15,8 @@ namespace DotNetOpenId.Provider {
 
 		public AssociateRequest(OpenIdProvider server)
 			: base(server) {
-			session = ProviderSession.CreateSession(Query);
-			associationKeyType = Util.GetRequiredArg(Query, Protocol.Default.openidnp.assoc_type);
+			session = ProviderSession.CreateSession(Protocol, Query);
+			associationKeyType = Util.GetRequiredArg(Query, Protocol.openid.assoc_type);
 		}
 
 		public override bool IsResponseReady {
@@ -46,9 +46,9 @@ namespace DotNetOpenId.Provider {
 
 			EncodableResponse response = new EncodableResponse(this);
 
-			response.Fields[Protocol.Default.openidnp.expires_in] = assoc.SecondsTillExpiration.ToString(CultureInfo.InvariantCulture);
-			response.Fields[Protocol.Default.openidnp.assoc_type] = assoc.AssociationType;
-			response.Fields[Protocol.Default.openidnp.assoc_handle] = assoc.Handle;
+			response.Fields[Protocol.openidnp.expires_in] = assoc.SecondsTillExpiration.ToString(CultureInfo.InvariantCulture);
+			response.Fields[Protocol.openidnp.assoc_type] = assoc.AssociationType;
+			response.Fields[Protocol.openidnp.assoc_handle] = assoc.Handle;
 
 			IDictionary<string, string> nvc = session.Answer(assoc.SecretKey);
 			foreach (var pair in nvc) {
@@ -56,7 +56,7 @@ namespace DotNetOpenId.Provider {
 			}
 
 			if (session.SessionType != Protocol.Args.SessionType.NoEncryption) {
-				response.Fields[Protocol.Default.openidnp.session_type] = session.SessionType;
+				response.Fields[Protocol.openidnp.session_type] = session.SessionType;
 			}
 
 			if (TraceUtil.Switch.TraceInfo) {
