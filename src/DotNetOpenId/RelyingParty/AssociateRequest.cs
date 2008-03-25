@@ -27,7 +27,7 @@ namespace DotNetOpenId.RelyingParty {
 			DiffieHellman dh = null;
 
 			if (provider.ProviderEndpoint.Scheme == Uri.UriSchemeHttps) {
-				args.Add(Protocol.Default.openid.session_type, protocol.Args.SessionType.NoEncryption);
+				args.Add(protocol.openid.session_type, protocol.Args.SessionType.NoEncryption);
 			} else {
 				// Initiate Diffie-Hellman Exchange
 				dh = CryptUtil.CreateDiffieHellman();
@@ -38,13 +38,13 @@ namespace DotNetOpenId.RelyingParty {
 				args.Add(protocol.openid.session_type, useSha256 ?
 					protocol.Args.SessionType.DH_SHA256 :
 					protocol.Args.SessionType.DH_SHA1);
-				args.Add(Protocol.Default.openid.dh_consumer_public, cpub);
+				args.Add(protocol.openid.dh_consumer_public, cpub);
 
 				DHParameters dhps = dh.ExportParameters(true);
 
 				if (dhps.P != CryptUtil.DEFAULT_MOD || dhps.G != CryptUtil.DEFAULT_GEN) {
-					args.Add(Protocol.Default.openid.dh_modulus, CryptUtil.UnsignedToBase64(dhps.P));
-					args.Add(Protocol.Default.openid.dh_gen, CryptUtil.UnsignedToBase64(dhps.G));
+					args.Add(protocol.openid.dh_modulus, CryptUtil.UnsignedToBase64(dhps.P));
+					args.Add(protocol.openid.dh_gen, CryptUtil.UnsignedToBase64(dhps.G));
 				}
 			}
 

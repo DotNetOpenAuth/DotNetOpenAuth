@@ -39,7 +39,7 @@ namespace DotNetOpenId.RelyingParty {
 			string signed;
 			if (query.TryGetValue(Provider.Protocol.openid.signed, out signed)) {
 				foreach (string fieldNoPrefix in signed.Split(',')) {
-					string fieldWithPrefix = Protocol.Default.openid.Prefix + fieldNoPrefix;
+					string fieldWithPrefix = Provider.Protocol.openid.Prefix + fieldNoPrefix;
 					string val;
 					if (!query.TryGetValue(fieldWithPrefix, out val)) val = string.Empty;
 					signedArguments[fieldWithPrefix] = val;
@@ -73,7 +73,7 @@ namespace DotNetOpenId.RelyingParty {
 		public ExtensionArgumentsManager IncomingExtensions { get; private set; }
 
 		internal Uri ReturnTo {
-			get { return new Uri(Util.GetRequiredArg(signedArguments, Protocol.Default.openid.return_to)); }
+			get { return new Uri(Util.GetRequiredArg(signedArguments, Provider.Protocol.openid.return_to)); }
 		}
 
 		/// <summary>
@@ -264,7 +264,7 @@ namespace DotNetOpenId.RelyingParty {
 					throw new OpenIdException(String.Format(CultureInfo.CurrentUICulture,
 						"Association with {0} expired", endpoint.ProviderEndpoint), endpoint.ClaimedIdentifier);
 
-				verifySignatureByAssociation(query, signedFields, assoc);
+				verifySignatureByAssociation(query, endpoint.Protocol, signedFields, assoc);
 			}
 
 			// Invalidate an old association if the OP signals
@@ -290,10 +290,10 @@ namespace DotNetOpenId.RelyingParty {
 		/// Verifies that a query is signed and that the signed fields have not been tampered with.
 		/// </summary>
 		/// <exception cref="OpenIdException">Thrown when the signature is missing or the query has been tampered with.</exception>
-		static void verifySignatureByAssociation(IDictionary<string, string> query, string[] signedFields, Association assoc) {
-			string sig = Util.GetRequiredArg(query, Protocol.Default.openid.sig);
+		static void verifySignatureByAssociation(IDictionary<string, string> query, Protocol protocol, string[] signedFields, Association assoc) {
+			string sig = Util.GetRequiredArg(query, protocol.openid.sig);
 
-			string v_sig = CryptUtil.ToBase64String(assoc.Sign(query, signedFields, Protocol.Default.openid.Prefix));
+			string v_sig = CryptUtil.ToBase64String(assoc.Sign(query, signedFields, protocol.openid.Prefix));
 
 			if (v_sig != sig)
 				throw new OpenIdException(Strings.InvalidSignature);

@@ -17,13 +17,13 @@ namespace DotNetOpenId.Provider
 			Query = server.query;
 			Protocol = Protocol.Detect(Query);
 			IncomingExtensions = ExtensionArgumentsManager.CreateIncomingExtensions(Query);
-			OutgoingExtensions = ExtensionArgumentsManager.CreateOutgoingExtensions();
+			OutgoingExtensions = ExtensionArgumentsManager.CreateOutgoingExtensions(Protocol);
 		}
 
 		/// <summary>
 		/// The detected protocol of the calling OpenId relying party.
 		/// </summary>
-		protected Protocol Protocol;
+		protected internal Protocol Protocol;
 		protected IDictionary<string, string> Query { get; private set; }
 		protected OpenIdProvider Server { get; private set; }
 		internal abstract string Mode { get; }

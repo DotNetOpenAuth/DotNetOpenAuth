@@ -66,6 +66,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// </remarks>
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm) {
 			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
+			Protocol protocol = Protocol.Default;
 
 			// Build the return_to URL
 			UriBuilder returnTo = new UriBuilder(HttpContext.Current.Request.Url);
@@ -74,7 +75,7 @@ namespace DotNetOpenId.RelyingParty {
 			returnTo.Query = string.Empty;
 			var returnToParams = new Dictionary<string, string>(HttpContext.Current.Request.QueryString.Count);
 			foreach (string key in HttpContext.Current.Request.QueryString) {
-				if (!key.StartsWith(Protocol.Default.openid.Prefix, StringComparison.OrdinalIgnoreCase) 
+				if (!key.StartsWith(protocol.openid.Prefix, StringComparison.OrdinalIgnoreCase) 
 					&& key != Token.TokenKey) {
 					returnToParams.Add(key, HttpContext.Current.Request.QueryString[key]);
 				}
@@ -103,7 +104,8 @@ namespace DotNetOpenId.RelyingParty {
 		/// </summary>
 		bool isAuthenticationResponseReady {
 			get {
-				if (!query.ContainsKey(Protocol.Default.openid.mode))
+				Protocol protocol = Protocol.Detect(query);
+				if (!query.ContainsKey(protocol.openid.mode))
 					return false;
 
 				if (HttpContext.Current != null && !HttpContext.Current.Request.RequestType.Equals("GET", StringComparison.Ordinal))

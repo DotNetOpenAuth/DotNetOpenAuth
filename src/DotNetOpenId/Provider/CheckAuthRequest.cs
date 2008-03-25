@@ -18,15 +18,15 @@ namespace DotNetOpenId.Provider {
 
 		public CheckAuthRequest(OpenIdProvider server)
 			: base(server) {
-			AssociationHandle = Util.GetRequiredArg(Query, Protocol.Default.openid.assoc_handle);
-			signature = Util.GetRequiredArg(Query, Protocol.Default.openid.sig);
-			signedKeyOrder = Util.GetRequiredArg(Query, Protocol.Default.openid.signed).Split(',');
-			invalidate_handle = Util.GetOptionalArg(Query, Protocol.Default.openid.invalidate_handle);
+			AssociationHandle = Util.GetRequiredArg(Query, Protocol.openid.assoc_handle);
+			signature = Util.GetRequiredArg(Query, Protocol.openid.sig);
+			signedKeyOrder = Util.GetRequiredArg(Query, Protocol.openid.signed).Split(',');
+			invalidate_handle = Util.GetOptionalArg(Query, Protocol.openid.invalidate_handle);
 
 			signedFields = new Dictionary<string, string>();
 
 			foreach (string key in signedKeyOrder) {
-				string value = (key == Protocol.Default.openidnp.mode) ?
+				string value = (key == Protocol.openidnp.mode) ?
 					Protocol.Args.Mode.id_res : Util.GetRequiredArg(Query, Protocol.openid.Prefix + key);
 				signedFields.Add(key, value);
 			}
@@ -58,7 +58,7 @@ namespace DotNetOpenId.Provider {
 
 			EncodableResponse response = new EncodableResponse(this);
 
-			response.Fields[Protocol.Default.openidnp.is_valid] = (is_valid ? "true" : "false");
+			response.Fields[Protocol.openidnp.is_valid] = (is_valid ? "true" : "false");
 
 			if (!string.IsNullOrEmpty(invalidate_handle)) {
 				Association assoc = Server.Signatory.GetAssociation(invalidate_handle, AssociationRelyingPartyType.Smart);
@@ -68,7 +68,7 @@ namespace DotNetOpenId.Provider {
 						Trace.TraceWarning("No matching association found. Returning invalidate_handle. ");
 					}
 
-					response.Fields[Protocol.Default.openidnp.invalidate_handle] = invalidate_handle;
+					response.Fields[Protocol.openidnp.invalidate_handle] = invalidate_handle;
 				}
 			}
 

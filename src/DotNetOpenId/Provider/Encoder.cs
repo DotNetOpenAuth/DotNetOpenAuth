@@ -64,7 +64,7 @@ namespace DotNetOpenId.Provider {
 				}
 
 				if (response.NeedsSigning) {
-					Debug.Assert(!response.Fields.ContainsKey(Protocol.Default.openidnp.sig));
+					Debug.Assert(!response.Fields.ContainsKey(encodable.Protocol.openidnp.sig));
 
 					signatory.Sign(response);
 				}

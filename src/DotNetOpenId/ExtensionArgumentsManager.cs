@@ -5,6 +5,7 @@ using System.Globalization;
 
 namespace DotNetOpenId {
 	class ExtensionArgumentsManager : IIncomingExtensions, IOutgoingExtensions {
+		Protocol protocol;
 		/// <summary>
 		/// Whether extensions are being read or written.
 		/// </summary>
@@ -30,9 +31,10 @@ namespace DotNetOpenId {
 		public static ExtensionArgumentsManager CreateIncomingExtensions(IDictionary<string, string> query) {
 			if (query == null) throw new ArgumentNullException("query");
 			var mgr = new ExtensionArgumentsManager();
+			mgr.protocol = Protocol.Detect(query);
 			mgr.isReadMode = true;
 			var aliasToTypeUriMap = new Dictionary<string, string>();
-			string aliasPrefix = Protocol.Default.openid.ns + ".";
+			string aliasPrefix = mgr.protocol.openid.ns + ".";
 			// First pass looks for namespace aliases
 			foreach (var pair in query) {
 				if (pair.Key.StartsWith(aliasPrefix, StringComparison.Ordinal)) {
@@ -50,22 +52,23 @@ namespace DotNetOpenId {
 			}
 			// Second pass looks for extensions using those aliases
 			foreach (var pair in query) {
-				if (!pair.Key.StartsWith(Protocol.Default.openid.Prefix)) continue;
-				string possibleAlias = pair.Key.Substring(Protocol.Default.openid.Prefix.Length);
+				if (!pair.Key.StartsWith(mgr.protocol.openid.Prefix)) continue;
+				string possibleAlias = pair.Key.Substring(mgr.protocol.openid.Prefix.Length);
 				int periodIndex = possibleAlias.IndexOf(".", StringComparison.Ordinal);
 				if (periodIndex >= 0) possibleAlias = possibleAlias.Substring(0, periodIndex);
 				string typeUri;
 				if (aliasToTypeUriMap.TryGetValue(possibleAlias, out typeUri)) {
 					if (!mgr.extensions.ContainsKey(typeUri))
 						mgr.extensions[typeUri] = new Dictionary<string, string>();
-					string key = periodIndex >= 0 ? pair.Key.Substring(Protocol.Default.openid.Prefix.Length + possibleAlias.Length + 1) : string.Empty;
+					string key = periodIndex >= 0 ? pair.Key.Substring(mgr.protocol.openid.Prefix.Length + possibleAlias.Length + 1) : string.Empty;
 					mgr.extensions[typeUri].Add(key, pair.Value);
 				}
 			}
 			return mgr;
 		}
-		public static ExtensionArgumentsManager CreateOutgoingExtensions() {
+		public static ExtensionArgumentsManager CreateOutgoingExtensions(Protocol protocol) {
 			var mgr = new ExtensionArgumentsManager();
+			mgr.protocol = protocol;
 			// Affinity for certain alias for backwards compatibility
 			foreach (var pair in typeUriToAliasAffinity) {
 				mgr.typeUriToAliasMap.Add(pair.Key, pair.Value);
@@ -87,8 +90,8 @@ namespace DotNetOpenId {
 				if (extensionArgs.Count == 0) continue;
 				string alias = typeUriToAliasMap[typeUri];
 				// send out the alias declaration
-				string openidPrefix = includeOpenIdPrefix ? Protocol.Default.openid.Prefix : string.Empty;
-				args.Add(openidPrefix + Protocol.Default.openidnp.ns + "." + alias, typeUri);
+				string openidPrefix = includeOpenIdPrefix ? protocol.openid.Prefix : string.Empty;
+				args.Add(openidPrefix + protocol.openidnp.ns + "." + alias, typeUri);
 				string prefix = openidPrefix + alias;
 				foreach (var pair in extensionArgs) {
 					string key = prefix;

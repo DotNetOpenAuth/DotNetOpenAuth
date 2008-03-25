@@ -19,6 +19,7 @@ namespace DotNetOpenId.Provider {
 		public Request Request { get; private set; }
 		public IDictionary<string, string> Fields { get; private set; }
 		public List<string> Signed { get; private set; }
+		public Protocol Protocol { get { return Request.Protocol; } }
 		public bool NeedsSigning {
 			get {
 				return Request is CheckIdRequest && Signed.Count > 0;
@@ -57,7 +58,7 @@ namespace DotNetOpenId.Provider {
 
 				foreach (var pair in Fields) {
 					if (Request is CheckIdRequest) {
-						nvc.Add(Protocol.Default.openid.Prefix + pair.Key, pair.Value);
+						nvc.Add(Protocol.openid.Prefix + pair.Key, pair.Value);
 					} else {
 						nvc.Add(pair.Key, pair.Value);
 					}

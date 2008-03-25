@@ -10,7 +10,7 @@ namespace DotNetOpenId.RelyingParty {
 
 		public static CheckAuthRequest Create(ServiceEndpoint provider, IDictionary<string, string> query) {
 			Protocol protocol = provider.Protocol;
-			string signed = query[Protocol.Default.openid.signed];
+			string signed = query[protocol.openid.signed];
 
 			if (signed == null)
 				// #XXX: oidutil.log('No signature present; checkAuth aborted')
@@ -33,7 +33,7 @@ namespace DotNetOpenId.RelyingParty {
 					&& Array.IndexOf(signed_array, key.Substring(protocol.openid.Prefix.Length)) > -1)
 					check_args[key] = query[key];
 			}
-			check_args[Protocol.Default.openid.mode] = protocol.Args.Mode.check_authentication;
+			check_args[protocol.openid.mode] = protocol.Args.Mode.check_authentication;
 
 			return new CheckAuthRequest(provider, check_args);
 		}

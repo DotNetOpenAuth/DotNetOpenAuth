@@ -21,8 +21,8 @@ namespace DotNetOpenId.RelyingParty {
 		public bool IsAuthenticationValid {
 			get {
 				string is_valid;
-				Args.TryGetValue(Protocol.Default.openidnp.is_valid, out is_valid);
-				return Protocol.Default.Args.IsValid.True.Equals(is_valid, StringComparison.OrdinalIgnoreCase);
+				Args.TryGetValue(Protocol.openidnp.is_valid, out is_valid);
+				return Protocol.Args.IsValid.True.Equals(is_valid, StringComparison.OrdinalIgnoreCase);
 			}
 		}
 	}

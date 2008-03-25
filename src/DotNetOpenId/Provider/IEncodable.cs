@@ -23,5 +23,6 @@ namespace DotNetOpenId.Provider {
 		EncodingType EncodingType { get; }
 		IDictionary<string, string> EncodedFields { get; }
 		Uri RedirectUrl { get; }
+		Protocol Protocol { get; }
 	}
 }

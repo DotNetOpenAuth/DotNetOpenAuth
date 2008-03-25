@@ -8,9 +8,11 @@ using DotNetOpenId.Extensions;
 namespace DotNetOpenId.Test {
 	[TestFixture]
 	public class ExtensionsArgumentsManagerTests {
+		Protocol protocol = Protocol.Default;
+
 		[Test]
 		public void CreateOutgoing() {
-			var mgr = ExtensionArgumentsManager.CreateOutgoingExtensions();
+			var mgr = ExtensionArgumentsManager.CreateOutgoingExtensions(protocol);
 			Assert.IsNotNull(mgr);
 		}
 
@@ -26,13 +28,13 @@ namespace DotNetOpenId.Test {
 
 		[Test, ExpectedException(typeof(InvalidOperationException))]
 		public void WritingModeGetExtensionArguments() {
-			var mgr = ExtensionArgumentsManager.CreateOutgoingExtensions();
+			var mgr = ExtensionArgumentsManager.CreateOutgoingExtensions(protocol);
 			mgr.GetExtensionArguments("some");
 		}
 
 		[Test, ExpectedException(typeof(InvalidOperationException))]
 		public void WritingModeContainsExtension() {
-			var mgr = ExtensionArgumentsManager.CreateOutgoingExtensions();
+			var mgr = ExtensionArgumentsManager.CreateOutgoingExtensions(protocol);
 			mgr.ContainsExtension("some");
 		}
 
@@ -94,7 +96,7 @@ namespace DotNetOpenId.Test {
 				{ "e2k1", "e2v1" },
 				{ "e2k2", "e2v2" },
 			};
-			var mgr = ExtensionArgumentsManager.CreateOutgoingExtensions();
+			var mgr = ExtensionArgumentsManager.CreateOutgoingExtensions(protocol);
 			mgr.AddExtensionArguments("e1URI", ext1args);
 			mgr.AddExtensionArguments("e2URI", ext2args);
 			var results = mgr.GetArgumentsToSend(true);
@@ -132,7 +134,7 @@ namespace DotNetOpenId.Test {
 			var args = new Dictionary<string, string>() {
 				{"nickname", "andy"},
 			};
-			var mgr = ExtensionArgumentsManager.CreateOutgoingExtensions();
+			var mgr = ExtensionArgumentsManager.CreateOutgoingExtensions(protocol);
 			mgr.AddExtensionArguments(Constants.sreg.sreg_ns, args);
 			var results = mgr.GetArgumentsToSend(true);
 			Assert.IsTrue(results.ContainsKey("openid.ns.sreg"));
@@ -146,7 +148,7 @@ namespace DotNetOpenId.Test {
 			var args = new Dictionary<string, string>() {
 				{"nickname", "andy"},
 			};
-			var mgr = ExtensionArgumentsManager.CreateOutgoingExtensions();
+			var mgr = ExtensionArgumentsManager.CreateOutgoingExtensions(protocol);
 			mgr.AddExtensionArguments(Constants.sreg.sreg_ns, args);
 			var results = mgr.GetArgumentsToSend(false);
 			Assert.IsTrue(results.ContainsKey("ns.sreg"));
@@ -173,7 +175,7 @@ namespace DotNetOpenId.Test {
 			var args2 = new Dictionary<string, string>() {
 				{"k2", "v2"},
 			};
-			var mgr = ExtensionArgumentsManager.CreateOutgoingExtensions();
+			var mgr = ExtensionArgumentsManager.CreateOutgoingExtensions(protocol);
 			mgr.AddExtensionArguments("extTypeURI", args1);
 			mgr.AddExtensionArguments("extTypeURI", args2);
 			var results = mgr.GetArgumentsToSend(false);
@@ -195,7 +197,7 @@ namespace DotNetOpenId.Test {
 			var args = new Dictionary<string, string> {
 				{"", "v1"},
 			};
-			var mgr = ExtensionArgumentsManager.CreateOutgoingExtensions();
+			var mgr = ExtensionArgumentsManager.CreateOutgoingExtensions(protocol);
 			mgr.AddExtensionArguments(Constants.sreg.sreg_ns, args);
 			var result = mgr.GetArgumentsToSend(true);
 			Assert.AreEqual(2, result.Count);

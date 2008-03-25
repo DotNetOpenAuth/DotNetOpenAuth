@@ -14,11 +14,14 @@ namespace DotNetOpenId {
 	public class OpenIdException : Exception, IEncodable {
 		IDictionary<string, string> query;
 		public Identifier Identifier { get; private set; }
+		internal Protocol Protocol = Protocol.Default;
+		Protocol IEncodable.Protocol { get { return this.Protocol; } }
 
 		internal OpenIdException(string message, Identifier identifier, IDictionary<string, string> query, Exception innerException)
 			: base(message, innerException) {
 			this.query = query;
 			Identifier = identifier;
+			if (query != null) Protocol = Protocol.Detect(query);
 		}
 		internal OpenIdException(string message, Identifier identifier, IDictionary<string, string> query)
 			: this(message, identifier, query, null) {
@@ -56,7 +59,7 @@ namespace DotNetOpenId {
 
 		internal bool HasReturnTo {
 			get {
-				return query == null ? false : query.ContainsKey(Protocol.Default.openid.return_to);
+				return query == null ? false : query.ContainsKey(Protocol.openid.return_to);
 			}
 		}
 
@@ -68,11 +71,10 @@ namespace DotNetOpenId {
 					return EncodingType.RedirectBrowserUrl;
 
 				if (query != null) {
-					Protocol protocol = Protocol.Detect(query);
-					string mode = Util.GetOptionalArg(query, protocol.openid.mode);
+					string mode = Util.GetOptionalArg(query, Protocol.openid.mode);
 					if (mode != null)
-						if (mode != protocol.Args.Mode.checkid_setup &&
-							mode != protocol.Args.Mode.checkid_immediate)
+						if (mode != Protocol.Args.Mode.checkid_setup &&
+							mode != Protocol.Args.Mode.checkid_immediate)
 							return EncodingType.ResponseBody;
 				}
 
@@ -95,10 +97,9 @@ namespace DotNetOpenId {
 
 		public IDictionary<string, string> EncodedFields {
 			get {
-				Protocol protocol = Protocol.Default;
 				var q = new Dictionary<string, string>();
-				q.Add(protocol.openid.mode, protocol.Args.Mode.error);
-				q.Add(protocol.openid.error, Message);
+				q.Add(Protocol.openid.mode, Protocol.Args.Mode.error);
+				q.Add(Protocol.openid.error, Message);
 				return q;
 			}
 		}
@@ -106,7 +107,7 @@ namespace DotNetOpenId {
 			get {
 				if (query == null)
 					return null;
-				return new Uri(Util.GetRequiredArg(query, Protocol.Default.openid.return_to));
+				return new Uri(Util.GetRequiredArg(query, Protocol.openid.return_to));
 			}
 		}
 
