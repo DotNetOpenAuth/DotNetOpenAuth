@@ -389,6 +389,7 @@ namespace DotNetOpenId.RelyingParty
 		{
 			base.OnLoad(e);
 
+			if (!Enabled) return;
 			try
 			{
 				var consumer = new OpenIdRelyingParty();
