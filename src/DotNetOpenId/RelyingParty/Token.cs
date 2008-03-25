@@ -42,7 +42,7 @@ namespace DotNetOpenId.RelyingParty {
 				StreamWriter writer = new StreamWriter(shaStream);
 				Endpoint.Serialize(writer);
 				if (persistToken(Endpoint))
-					writer.WriteLine(Nonce.Code, true);
+					writer.WriteLine(Nonce.Code);
 				writer.Flush();
 
 				shaStream.Flush();

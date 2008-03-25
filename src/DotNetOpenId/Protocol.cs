@@ -60,7 +60,7 @@ namespace DotNetOpenId {
 		/// <summary>
 		/// The default (or most recent) supported version of the OpenID protocol.
 		/// </summary>
-		public readonly static Protocol Default = v20;
+		public readonly static Protocol Default = AllVersions[0];
 		/// <summary>
 		/// Attempts to detect the right OpenID protocol version based on the contents
 		/// of an incoming query string.

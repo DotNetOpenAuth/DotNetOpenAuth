@@ -9,7 +9,7 @@ using System.Net;
 
 namespace DotNetOpenId.Test.RelyingParty {
 	[TestFixture]
-	public class OpenIdConsumerTest {
+	public class OpenIdRelyingPartyTest {
 		IRelyingPartyApplicationStore store;
 		UriIdentifier simpleOpenId = new UriIdentifier("http://nonexistant.openid.com");
 		Realm simpleRealm = new Realm("http://consumertest.openid.com");
@@ -27,13 +27,12 @@ namespace DotNetOpenId.Test.RelyingParty {
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public void CtorWithNullQuery() {
+		public void CtorWithNullRequestUri() {
 			new OpenIdRelyingParty(store, null);
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException), UserMessage = "Until this is a supported scenario, an exception should be thrown right away.")]
+		[ExpectedException(typeof(NotSupportedException), UserMessage = "Until this is a supported scenario, an exception should be thrown right away.")]
 		public void CtorWithNullStore() {
 			var consumer = new OpenIdRelyingParty(null, new Uri("http://localhost/hi"));
 		}
