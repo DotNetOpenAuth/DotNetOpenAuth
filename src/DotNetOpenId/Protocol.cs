@@ -51,7 +51,11 @@ namespace DotNetOpenId {
 			Args = new QueryArguments() {
 				SessionType = new QueryArguments.SessionTypes() {
 					NoEncryption = "no-encryption",
+					DH_SHA256 = "DH-SHA256",
 				},
+				SignatureAlgorithm = new QueryArguments.SignatureAlgorithms() {
+					HMAC_SHA256 = "HMAC-SHA256",
+				}
 			},
 		};
 		/// <summary>
@@ -131,34 +135,38 @@ namespace DotNetOpenId {
 			public string Prefix = "openid.";
 			public QueryParameters() { }
 			public QueryParameters(QueryParameters addPrefixTo) {
-				ns = Prefix + addPrefixTo.ns;
-				return_to = Prefix + addPrefixTo.return_to;
-				Realm = Prefix + addPrefixTo.Realm;
-				mode = Prefix + addPrefixTo.mode;
-				error = Prefix + addPrefixTo.error;
-				error_code = Prefix + addPrefixTo.error_code;
-				identity = Prefix + addPrefixTo.identity;
-				op_endpoint = Prefix + addPrefixTo.op_endpoint;
-				response_nonce = Prefix + addPrefixTo.response_nonce;
-				claimed_id = Prefix + addPrefixTo.claimed_id;
-				expires_in = Prefix + addPrefixTo.expires_in;
-				assoc_type = Prefix + addPrefixTo.assoc_type;
-				assoc_handle = Prefix + addPrefixTo.assoc_handle;
-				session_type = Prefix + addPrefixTo.session_type;
-				is_valid = Prefix + addPrefixTo.is_valid;
-				sig = Prefix + addPrefixTo.sig;
-				signed = Prefix + addPrefixTo.signed;
-				user_setup_url = Prefix + addPrefixTo.user_setup_url;
-				invalidate_handle = Prefix + addPrefixTo.invalidate_handle;
-				dh_modulus = Prefix + addPrefixTo.dh_modulus;
-				dh_gen = Prefix + addPrefixTo.dh_gen;
-				dh_consumer_public = Prefix + addPrefixTo.dh_consumer_public;
-				dh_server_public = Prefix + addPrefixTo.dh_server_public;
-				enc_mac_key = Prefix + addPrefixTo.enc_mac_key;
-				mac_key = Prefix + addPrefixTo.mac_key;
+				ns = addPrefix(addPrefixTo.ns);
+				return_to = addPrefix(addPrefixTo.return_to);
+				Realm = addPrefix(addPrefixTo.Realm);
+				mode = addPrefix(addPrefixTo.mode);
+				error = addPrefix(addPrefixTo.error);
+				error_code = addPrefix(addPrefixTo.error_code);
+				identity = addPrefix(addPrefixTo.identity);
+				op_endpoint = addPrefix(addPrefixTo.op_endpoint);
+				response_nonce = addPrefix(addPrefixTo.response_nonce);
+				claimed_id = addPrefix(addPrefixTo.claimed_id);
+				expires_in = addPrefix(addPrefixTo.expires_in);
+				assoc_type = addPrefix(addPrefixTo.assoc_type);
+				assoc_handle = addPrefix(addPrefixTo.assoc_handle);
+				session_type = addPrefix(addPrefixTo.session_type);
+				is_valid = addPrefix(addPrefixTo.is_valid);
+				sig = addPrefix(addPrefixTo.sig);
+				signed = addPrefix(addPrefixTo.signed);
+				user_setup_url = addPrefix(addPrefixTo.user_setup_url);
+				invalidate_handle = addPrefix(addPrefixTo.invalidate_handle);
+				dh_modulus = addPrefix(addPrefixTo.dh_modulus);
+				dh_gen = addPrefix(addPrefixTo.dh_gen);
+				dh_consumer_public = addPrefix(addPrefixTo.dh_consumer_public);
+				dh_server_public = addPrefix(addPrefixTo.dh_server_public);
+				enc_mac_key = addPrefix(addPrefixTo.enc_mac_key);
+				mac_key = addPrefix(addPrefixTo.mac_key);
+			}
+			string addPrefix(string original) {
+				return (original != null) ? Prefix + original : null;
 			}
 			// These fields default to 1.x specifications, and are overridden
 			// as necessary by later versions in the Protocol class initializers.
+			// Null values in any version suggests that that feature is absent from that version.
 			public string ns = "ns";
 			public string return_to = "return_to";
 			public string Realm = "trust_root";
@@ -196,13 +204,21 @@ namespace DotNetOpenId {
 				public string UnsupportedType = "unsupported-type";
 			}
 			internal class SessionTypes {
+				/// <summary>
+				/// A preference order list of all supported session types.
+				/// </summary>
+				public string[] All { get { return new[] { DH_SHA256, DH_SHA1, NoEncryption }; } }
 				public string DH_SHA1 = "DH-SHA1";
-				public string DH_SHA256 = "DH-SHA256";
+				public string DH_SHA256 = null;
 				public string NoEncryption = "";
 			}
 			internal class SignatureAlgorithms {
+				/// <summary>
+				/// A preference order list of signature algorithms we support.
+				/// </summary>
+				public string[] All { get { return new [] { HMAC_SHA256, HMAC_SHA1 }; } }
 				public string HMAC_SHA1 = "HMAC-SHA1";
-				public string HMAC_SHA256 = "HMAC-SHA256";
+				public string HMAC_SHA256 = null;
 			}
 			internal class Modes {
 				public string cancel = "cancel";

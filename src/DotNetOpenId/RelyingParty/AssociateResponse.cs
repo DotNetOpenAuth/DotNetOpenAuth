@@ -20,11 +20,8 @@ namespace DotNetOpenId.RelyingParty {
 						string assoc_type = Util.GetRequiredArg(Args, Protocol.openidnp.assoc_type);
 						string session_type = Util.GetRequiredArg(Args, Protocol.openidnp.session_type);
 						// If the suggested options are among those we support...
-						if ((assoc_type == Protocol.Args.SignatureAlgorithm.HMAC_SHA1 ||
-							assoc_type == Protocol.Args.SignatureAlgorithm.HMAC_SHA256) &&
-							(session_type == Protocol.Args.SessionType.DH_SHA1 ||
-							session_type == Protocol.Args.SessionType.DH_SHA256 ||
-							session_type == Protocol.Args.SessionType.NoEncryption)) {
+						if (Array.IndexOf(Protocol.Args.SignatureAlgorithm.All, assoc_type) >= 0 &&
+							Array.IndexOf(Protocol.Args.SessionType.All, session_type) >= 0) {
 							SecondAttempt = AssociateRequest.Create(Provider, assoc_type, session_type);
 						}
 					}

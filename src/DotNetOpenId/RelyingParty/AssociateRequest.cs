@@ -25,6 +25,12 @@ namespace DotNetOpenId.RelyingParty {
 		}
 
 		public static AssociateRequest Create(ServiceEndpoint provider, string assoc_type, string session_type) {
+			if (provider == null) throw new ArgumentNullException("provider");
+			if (assoc_type == null) throw new ArgumentNullException("assoc_type");
+			if (session_type == null) throw new ArgumentNullException("session_type");
+			Debug.Assert(Array.IndexOf(provider.Protocol.Args.SignatureAlgorithm.All, assoc_type) >= 0);
+			Debug.Assert(Array.IndexOf(provider.Protocol.Args.SessionType.All, session_type) >= 0);
+
 			var args = new Dictionary<string, string>();
 			Protocol protocol = provider.Protocol;
 
