@@ -4,7 +4,7 @@ using System.Text;
 using NUnit.Framework;
 using DotNetOpenId.RelyingParty;
 
-namespace DotNetOpenId.Test.RelyingParty {
+namespace DotNetOpenId.Test {
 	[TestFixture]
 	public class NonceTest {
 		[Test]

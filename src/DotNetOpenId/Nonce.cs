@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using DotNetOpenId.RelyingParty;
 
-namespace DotNetOpenId.RelyingParty {
+namespace DotNetOpenId {
 	public class Nonce {
 		static TimeSpan maximumLifetime {
 			get { return OpenIdRelyingParty.MaximumUserAgentAuthenticationTime; }
