@@ -12,14 +12,14 @@ namespace DotNetOpenId {
 	/// </summary>
 	[Serializable]
 	public class OpenIdException : Exception, IEncodable {
-		IDictionary<string, string> query;
+		internal IDictionary<string, string> Query;
 		public Identifier Identifier { get; private set; }
 		internal Protocol Protocol = Protocol.Default;
 		Protocol IEncodable.Protocol { get { return this.Protocol; } }
 
 		internal OpenIdException(string message, Identifier identifier, IDictionary<string, string> query, Exception innerException)
 			: base(message, innerException) {
-			this.query = query;
+			this.Query = query;
 			Identifier = identifier;
 			if (query != null) Protocol = Protocol.Detect(query);
 		}
@@ -45,7 +45,7 @@ namespace DotNetOpenId {
 		}
 		protected OpenIdException(SerializationInfo info, StreamingContext context)
 			: base(info, context) {
-			query = (IDictionary<string, string>)info.GetValue("query", typeof(IDictionary<string, string>));
+			Query = (IDictionary<string, string>)info.GetValue("query", typeof(IDictionary<string, string>));
 			Identifier = (Identifier)info.GetValue("Identifier", typeof(Identifier));
 		}
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
@@ -53,13 +53,13 @@ namespace DotNetOpenId {
 		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context) {
 			base.GetObjectData(info, context);
-			info.AddValue("query", query, typeof(IDictionary<string, string>));
+			info.AddValue("query", Query, typeof(IDictionary<string, string>));
 			info.AddValue("Identifier", Identifier, typeof(Identifier));
 		}
 
 		internal bool HasReturnTo {
 			get {
-				return query == null ? false : query.ContainsKey(Protocol.openid.return_to);
+				return Query == null ? false : Query.ContainsKey(Protocol.openid.return_to);
 			}
 		}
 
@@ -70,8 +70,8 @@ namespace DotNetOpenId {
 				if (HasReturnTo)
 					return EncodingType.RedirectBrowserUrl;
 
-				if (query != null) {
-					string mode = Util.GetOptionalArg(query, Protocol.openid.mode);
+				if (Query != null) {
+					string mode = Util.GetOptionalArg(Query, Protocol.openid.mode);
 					if (mode != null)
 						if (mode != Protocol.Args.Mode.checkid_setup &&
 							mode != Protocol.Args.Mode.checkid_immediate)
@@ -105,9 +105,9 @@ namespace DotNetOpenId {
 		}
 		public Uri RedirectUrl {
 			get {
-				if (query == null)
+				if (Query == null)
 					return null;
-				return new Uri(Util.GetRequiredArg(query, Protocol.openid.return_to));
+				return new Uri(Util.GetRequiredArg(Query, Protocol.openid.return_to));
 			}
 		}
 

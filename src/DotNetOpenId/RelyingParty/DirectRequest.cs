@@ -32,15 +32,13 @@ namespace DotNetOpenId.RelyingParty {
 			} catch (WebException e) {
 				throw new OpenIdException("Failure while connecting to provider.", e);
 			}
-			string mode;
 			// All error codes are supposed to be returned with 400, but
 			// some (like myopenid.com) sometimes send errors as 200's.
 			if (resp.StatusCode == HttpStatusCode.BadRequest ||
-				(args.TryGetValue(Protocol.openidnp.mode, out mode) && mode == Protocol.Args.Mode.error)) {
-				string providerMessage;
-				args.TryGetValue(Protocol.openidnp.error, out providerMessage);
+				Util.GetOptionalArg(args, Protocol.openidnp.mode) == Protocol.Args.Mode.error) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-					Strings.ProviderRespondedWithError, providerMessage), args);
+					Strings.ProviderRespondedWithError, 
+					Util.GetOptionalArg(args, Protocol.openidnp.error)), args);
 			} else if (resp.StatusCode == HttpStatusCode.OK) {
 				return args;
 			} else {

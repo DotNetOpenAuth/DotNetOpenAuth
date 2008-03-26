@@ -38,6 +38,7 @@ namespace DotNetOpenId {
 			Realm = "realm",
 			op_endpoint = "op_endpoint",
 			response_nonce = "response_nonce",
+			error_code = "error_code",
 		}) {
 			Version = new Version(2, 0),
 			XmlNamespace = null, // no longer applicable
@@ -135,6 +136,7 @@ namespace DotNetOpenId {
 				Realm = Prefix + addPrefixTo.Realm;
 				mode = Prefix + addPrefixTo.mode;
 				error = Prefix + addPrefixTo.error;
+				error_code = Prefix + addPrefixTo.error_code;
 				identity = Prefix + addPrefixTo.identity;
 				op_endpoint = Prefix + addPrefixTo.op_endpoint;
 				response_nonce = Prefix + addPrefixTo.response_nonce;
@@ -162,6 +164,7 @@ namespace DotNetOpenId {
 			public string Realm = "trust_root";
 			public string mode = "mode";
 			public string error = "error";
+			public string error_code = null;
 			public string identity = "identity";
 			public string op_endpoint = null;
 			public string response_nonce = null;
@@ -183,11 +186,15 @@ namespace DotNetOpenId {
 			public string mac_key = "mac_key";
 		}
 		internal class QueryArguments {
+			public ErrorCodes ErrorCode = new ErrorCodes();
 			public SessionTypes SessionType = new SessionTypes();
 			public SignatureAlgorithms SignatureAlgorithm = new SignatureAlgorithms();
 			public Modes Mode = new Modes();
 			public IsValidValues IsValid = new IsValidValues();
 
+			internal class ErrorCodes {
+				public string UnsupportedType = "unsupported-type";
+			}
 			internal class SessionTypes {
 				public string DH_SHA1 = "DH-SHA1";
 				public string DH_SHA256 = "DH-SHA256";

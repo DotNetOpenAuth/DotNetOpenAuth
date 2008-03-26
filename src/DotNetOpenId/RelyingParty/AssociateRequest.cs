@@ -14,15 +14,22 @@ namespace DotNetOpenId.RelyingParty {
 		public DiffieHellman DH { get; private set; }
 
 		public static AssociateRequest Create(ServiceEndpoint provider) {
+			bool useSha256 = provider.Protocol.Version.Major >= 2;
+			string assoc_type = useSha256 ?
+				provider.Protocol.Args.SignatureAlgorithm.HMAC_SHA256 :
+				provider.Protocol.Args.SignatureAlgorithm.HMAC_SHA1;
+			string session_type = useSha256 ?
+					provider.Protocol.Args.SessionType.DH_SHA256 :
+					provider.Protocol.Args.SessionType.DH_SHA1;
+			return Create(provider, assoc_type, session_type);
+		}
+
+		public static AssociateRequest Create(ServiceEndpoint provider, string assoc_type, string session_type) {
 			var args = new Dictionary<string, string>();
 			Protocol protocol = provider.Protocol;
 
-			bool useSha256 = provider.Protocol.Version.Major >= 2;
-
 			args.Add(protocol.openid.mode, protocol.Args.Mode.associate);
-			args.Add(protocol.openid.assoc_type, useSha256 ?
-				protocol.Args.SignatureAlgorithm.HMAC_SHA256 :
-				protocol.Args.SignatureAlgorithm.HMAC_SHA1);
+			args.Add(protocol.openid.assoc_type, assoc_type);
 
 			DiffieHellman dh = null;
 
@@ -35,9 +42,7 @@ namespace DotNetOpenId.RelyingParty {
 				byte[] dhPublic = dh.CreateKeyExchange();
 				string cpub = CryptUtil.UnsignedToBase64(dhPublic);
 
-				args.Add(protocol.openid.session_type, useSha256 ?
-					protocol.Args.SessionType.DH_SHA256 :
-					protocol.Args.SessionType.DH_SHA1);
+				args.Add(protocol.openid.session_type, session_type);
 				args.Add(protocol.openid.dh_consumer_public, cpub);
 
 				DHParameters dhps = dh.ExportParameters(true);
@@ -56,7 +61,8 @@ namespace DotNetOpenId.RelyingParty {
 				if (response == null) {
 					try {
 						response = new AssociateResponse(Provider, GetResponse(), DH);
-					} catch (OpenIdException) {
+					} catch (OpenIdException ex) {
+						response = new AssociateResponse(Provider, ex.Query, DH);
 						// Silently fail at associate attempt, since we can recover
 						// using dumb mode.
 						if (TraceUtil.Switch.TraceWarning) {

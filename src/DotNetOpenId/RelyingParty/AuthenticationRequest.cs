@@ -68,6 +68,10 @@ namespace DotNetOpenId.RelyingParty {
 			if (assoc == null || !assoc.HasUsefulLifeRemaining) {
 				var req = AssociateRequest.Create(provider);
 				if (req.Response != null) {
+					// try again if we failed the first time and have a worthy second-try.
+					if (req.Response.Association == null && req.Response.SecondAttempt != null) {
+						req = req.Response.SecondAttempt;
+					}
 					assoc = req.Response.Association;
 					if (assoc != null) {
 						store.StoreAssociation(provider.ProviderEndpoint, assoc);
