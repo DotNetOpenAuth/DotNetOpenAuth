@@ -94,6 +94,8 @@ namespace DotNetOpenId.RelyingParty {
 			// Build the realm URL
 			UriBuilder realmUrl = new UriBuilder(HttpContext.Current.Request.Url);
 			realmUrl.Path = HttpContext.Current.Request.ApplicationPath;
+			realmUrl.Query = null;
+			realmUrl.Fragment = null;
 
 			return CreateRequest(userSuppliedIdentifier, new Realm(realmUrl.Uri));
 		}
