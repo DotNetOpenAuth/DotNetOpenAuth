@@ -433,9 +433,9 @@ namespace DotNetOpenId.RelyingParty
 				WrappedTextBox.Style[HtmlTextWriterStyle.BorderColor] = "lightgray";
 			}
 		}
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
-		public void LogOn()
-		{
+
+		protected IAuthenticationRequest Request;
+		protected void PrepareAuthenticationRequest() {
 			if (string.IsNullOrEmpty(Text))
 				throw new InvalidOperationException(DotNetOpenId.Strings.OpenIdTextBoxEmpty);
 
@@ -451,14 +451,22 @@ namespace DotNetOpenId.RelyingParty
 
 				// Initiate openid request
 				// Note: we must use realm.ToString() because trustRoot.Uri throws when wildcards are present.
-				var request = consumer.CreateRequest(Text, realm.ToString());
-				if (EnableRequestProfile) addProfileArgs(request);
-				request.RedirectToProvider();
+				Request = consumer.CreateRequest(Text, realm.ToString());
+				if (EnableRequestProfile) addProfileArgs(Request);
 			} catch (WebException ex) {
 				OnError(ex);
 			} catch (OpenIdException ex) {
 				OnError(ex);
 			}
+		}
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
+		public void LogOn()
+		{
+			if (Request == null)
+				PrepareAuthenticationRequest();
+			if (Request != null)
+				Request.RedirectToProvider();
 		}
 
 		void addProfileArgs(IAuthenticationRequest request)
@@ -575,8 +583,8 @@ namespace DotNetOpenId.RelyingParty
 		/// Constructs an object with minimal information of an incomplete or failed
 		/// authentication attempt.
 		/// </summary>
-		internal OpenIdEventArgs(Identifier userSuppliedIdentifier) {
-			UserSuppliedIdentifier = userSuppliedIdentifier;
+		internal OpenIdEventArgs(Identifier claimedIdentifier) {
+			ClaimedIdentifier = claimedIdentifier;
 		}
 		/// <summary>
 		/// Constructs an object with information on a completed authentication attempt
@@ -591,7 +599,6 @@ namespace DotNetOpenId.RelyingParty
 		/// Cancels the OpenID authentication and/or login process.
 		/// </summary>
 		public bool Cancel { get; set; }
-		public Identifier UserSuppliedIdentifier { get; private set; }
 		public Identifier ClaimedIdentifier { get; private set; }
 
 		/// <summary>

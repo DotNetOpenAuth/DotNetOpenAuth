@@ -91,6 +91,7 @@ namespace DotNetOpenId.RelyingParty {
 		public AuthenticationRequestMode Mode { get; set; }
 		public Realm Realm { get; private set; }
 		public Uri ReturnToUrl { get; private set; }
+		public Identifier ClaimedIdentifier { get { return endpoint.ClaimedIdentifier; } }
 		/// <summary>
 		/// Gets the URL the user agent should be redirected to to begin the 
 		/// OpenID authentication process.

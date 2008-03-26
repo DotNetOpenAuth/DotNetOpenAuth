@@ -61,5 +61,10 @@ namespace DotNetOpenId.RelyingParty {
 		/// the Provider will display to the end user.
 		/// </summary>
 		Realm Realm { get; }
+		/// <summary>
+		/// Gets the Claimed Identifier that the User Supplied Identifier
+		/// resolved to.
+		/// </summary>
+		Identifier ClaimedIdentifier { get; }
 	}
 }

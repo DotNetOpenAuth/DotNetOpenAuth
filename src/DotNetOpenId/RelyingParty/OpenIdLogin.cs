@@ -397,12 +397,14 @@ namespace DotNetOpenId.RelyingParty
 		protected virtual bool OnLoggingIn(Identifier userSuppliedIdentifier)
 		{
 			EventHandler<OpenIdEventArgs> loggingIn = LoggingIn;
-			// TODO: discover the Claimed Identifier from the User Suppied Identifier given to
-			//       fill OpenIdEventArgs with before firing this event.
-			OpenIdEventArgs args = new OpenIdEventArgs(userSuppliedIdentifier);
-			if (loggingIn != null)
-				loggingIn(this, args);
-			return !args.Cancel;
+			PrepareAuthenticationRequest();
+			if (Request != null) {
+				OpenIdEventArgs args = new OpenIdEventArgs(Request.ClaimedIdentifier);
+				if (loggingIn != null)
+					loggingIn(this, args);
+				return !args.Cancel;
+			} else
+				return false;
 		}
 
 		[Description("Fires when the Remember Me checkbox is changed by the user.")]
