@@ -16,8 +16,9 @@ using System.Resources;
 using System;
 using System.Web.UI;
 
-[assembly: TagPrefix("DotNetOpenId.Provider", "openid")]
-[assembly: TagPrefix("DotNetOpenId.RelyingParty", "openid")]
+[assembly: TagPrefix("DotNetOpenId", "openid")]
+[assembly: TagPrefix("DotNetOpenId.Provider", "OP")]
+[assembly: TagPrefix("DotNetOpenId.RelyingParty", "RP")]
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information

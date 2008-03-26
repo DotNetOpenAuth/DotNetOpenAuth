@@ -1,13 +1,5 @@
 using System;
-using System.Data;
 using System.Configuration;
-using System.Collections;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
 
 /// <summary>
 /// This page is a required as part of the service discovery phase of the openid protocol (step 1).
@@ -24,39 +16,6 @@ using System.Web.UI.HtmlControls;
 /// </summary>
 public partial class user : System.Web.UI.Page {
 	protected void Page_Load(object sender, EventArgs e) {
-		usernameLabel.Text = UserName;
-	}
-
-	private int ServerPort {
-		get {
-			// Return the same port that the request was made on,
-			// unless it is overrided by a Web.config setting and is
-			// non-negative.
-			string sPort = ConfigurationManager.AppSettings["OverrideServerPort"];
-			int iPort;
-			if (string.IsNullOrEmpty(sPort) || (iPort = Convert.ToInt32(sPort)) < 0)
-				return Request.Url.Port;
-			else
-				return iPort;
-		}
-	}
-
-	/// <summary>
-	/// Gets the name of the user.
-	/// </summary>
-	/// <value>The name of the user.</value>
-	public string UserName {
-		get { return Request.QueryString["username"]; }
-	}
-
-	public string XrdsUrl {
-		get {
-			UriBuilder builder = new UriBuilder(Request.Url);
-			builder.Path = Response.ApplyAppPathModifier("~/xrds.aspx");
-			builder.Query = null;
-			builder.Port = ServerPort;
-			builder.Fragment = null;
-			return builder.ToString();
-		}
+		usernameLabel.Text = Request.QueryString["username"];
 	}
 }

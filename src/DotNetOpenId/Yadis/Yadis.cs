@@ -11,7 +11,7 @@ namespace Janrain.Yadis
         private const string CONTENT_TYPE_HTML = "text/html";
         private const string CONTENT_TYPE_XHTML = "application/xhtml+xml";
         public const string CONTENT_TYPE = "application/xrds+xml";
-        protected const string HEADER_NAME = "X-XRDS-Location";
+        protected internal const string HEADER_NAME = "X-XRDS-Location";
         public static readonly string ACCEPT_HEADER;
 
         static Yadis()
