@@ -66,13 +66,6 @@
     <Compile Include="decide.aspx.designer.cs">
       <DependentUpon>decide.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Default.aspx.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Default.aspx.designer.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -104,13 +97,6 @@
     </Compile>
     <Compile Include="user.aspx.designer.cs">
       <DependentUpon>user.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="xrds.aspx.cs">
-      <DependentUpon>xrds.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="xrds.aspx.designer.cs">
-      <DependentUpon>xrds.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

@@ -117,6 +117,7 @@
     <Compile Include="Provider\CheckIdRequest.cs" />
     <Compile Include="Provider\IEncodable.cs" />
     <Compile Include="Provider\Signatory.cs" />
+    <Compile Include="XrdsPublisher.cs" />
     <Compile Include="SimpleSessionState.cs" />
     <Compile Include="Strings.Designer.cs">
       <DependentUpon>Strings.resx</DependentUpon>
