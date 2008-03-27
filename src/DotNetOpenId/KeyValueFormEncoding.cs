@@ -9,8 +9,8 @@ using System.Globalization;
 namespace DotNetOpenId {
 	public enum KeyValueFormConformanceLevel {
 		Loose,
-		OpenID11,
-		OpenID20,
+		OpenId11,
+		OpenId20,
 	}
 
 	/// <summary>
@@ -110,7 +110,7 @@ namespace DotNetOpenId {
 								Strings.InvalidCharacterInKeyValueFormInput, ' '));
 						}
 					}
-					if (ConformanceLevel < KeyValueFormConformanceLevel.OpenID20) {
+					if (ConformanceLevel < KeyValueFormConformanceLevel.OpenId20) {
 						parts[0] = parts[0].Trim();
 						parts[1] = parts[1].Trim();
 					}

@@ -583,7 +583,7 @@ namespace DotNetOpenId.RelyingParty
 		internal OpenIdEventArgs(IAuthenticationResponse response) {
 			Response = response;
 			IdentityUrl = response.IdentityUrl;
-			ProfileFields = ProfileFieldValues.ReadFromResponse(response);
+			ProfileFields = SimpleRegistrationFieldValues.ReadFromResponse(response);
 		}
 		/// <summary>
 		/// Cancels the OpenID authentication and/or login process.
@@ -599,7 +599,7 @@ namespace DotNetOpenId.RelyingParty
 		/// Gets the simple registration (sreg) extension fields given
 		/// by the provider, if any.
 		/// </summary>
-		public ProfileFieldValues ProfileFields { get; private set; }
+		public SimpleRegistrationFieldValues ProfileFields { get; private set; }
 	}
 
 	public class ErrorEventArgs : EventArgs {
