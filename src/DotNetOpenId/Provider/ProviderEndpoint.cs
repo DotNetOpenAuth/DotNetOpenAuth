@@ -124,13 +124,6 @@ namespace DotNetOpenId.Provider {
 			}
 		}
 
-		public class AuthenticationChallengeEventArgs : EventArgs {
-			internal AuthenticationChallengeEventArgs(IAuthenticationRequest request) {
-				Request = request;
-			}
-			public IAuthenticationRequest Request { get; set; }
-		}
-
 		public event EventHandler<AuthenticationChallengeEventArgs> AuthenticationChallenge;
 		protected virtual void OnAuthenticationChallenge(IAuthenticationRequest request) {
 			var authenticationChallenge = AuthenticationChallenge;
@@ -138,4 +131,11 @@ namespace DotNetOpenId.Provider {
 				authenticationChallenge(this, new AuthenticationChallengeEventArgs(request));
 		}
 	}
+	public class AuthenticationChallengeEventArgs : EventArgs {
+		internal AuthenticationChallengeEventArgs(IAuthenticationRequest request) {
+			Request = request;
+		}
+		public IAuthenticationRequest Request { get; set; }
+	}
+
 }

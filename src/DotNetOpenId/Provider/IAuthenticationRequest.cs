@@ -13,18 +13,18 @@ namespace DotNetOpenId.Provider {
 		/// <summary>
 		/// The URL the consumer site claims to use as its 'base' address.
 		/// </summary>
-		Realm TrustRoot { get; }
+		Realm Realm { get; }
 		/// <summary>
 		/// The claimed OpenId URL of the user attempting to authenticate.
 		/// </summary>
-		Uri IdentityUrl { get; }
+		Uri ClaimedIdentifier { get; }
 		/// <summary>
 		/// The provider URL that responds to OpenID requests.
 		/// </summary>
 		/// <remarks>
 		/// An auto-detect attempt is made if an ASP.NET HttpContext is available.
 		/// </remarks>
-		Uri ServerUrl { get; }
+		Uri ProviderEndpoint { get; }
 		/// <summary>
 		/// Gets/sets whether the provider has determined that the 
 		/// <see cref="IdentityUrl"/> belongs to the currently logged in user

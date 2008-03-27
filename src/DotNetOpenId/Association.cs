@@ -77,7 +77,7 @@ namespace DotNetOpenId {
 		/// <summary>
 		/// The string to pass as the assoc_type value in the OpenID protocol.
 		/// </summary>
-		protected internal abstract string AssociationType { get; }
+		internal abstract string AssociationType { get; }
 
 		/// <summary>
 		/// Signs certain given key/value pairs in a supplied dictionary.

@@ -508,42 +508,6 @@ namespace DotNetOpenId.RelyingParty
 		}
 
 		#region Events
-		public class OpenIdEventArgs : EventArgs
-		{
-			/// <summary>
-			/// Constructs an object with minimal information of an incomplete or failed
-			/// authentication attempt.
-			/// </summary>
-			/// <param name="identityUrl"></param>
-			internal OpenIdEventArgs(Uri identityUrl) {
-				IdentityUrl = identityUrl;
-			}
-			/// <summary>
-			/// Constructs an object with information on a completed authentication attempt
-			/// (whether that attempt was successful or not).
-			/// </summary>
-			internal OpenIdEventArgs(IAuthenticationResponse response)
-			{
-				Response = response;
-				IdentityUrl = response.IdentityUrl;
-				ProfileFields = ProfileFieldValues.ReadFromResponse(response);
-			}
-			/// <summary>
-			/// Cancels the OpenID authentication and/or login process.
-			/// </summary>
-			public bool Cancel { get; set; }
-			public Uri IdentityUrl { get; private set; }
-
-			/// <summary>
-			/// Gets the details of the OpenId authentication response.
-			/// </summary>
-			public IAuthenticationResponse Response { get; private set; }
-			/// <summary>
-			/// Gets the simple registration (sreg) extension fields given
-			/// by the provider, if any.
-			/// </summary>
-			public ProfileFieldValues ProfileFields { get; private set; }
-		}
 		/// <summary>
 		/// Fired upon completion of a successful login.
 		/// </summary>
@@ -562,17 +526,6 @@ namespace DotNetOpenId.RelyingParty
 
 		#endregion
 		#region Error handling
-		public class ErrorEventArgs : EventArgs
-		{
-			public ErrorEventArgs(string errorMessage, Exception errorException)
-			{
-				ErrorMessage = errorMessage;
-				ErrorException = errorException;
-			}
-			public string ErrorMessage { get; private set; }
-			public Exception ErrorException { get; private set; }
-		}
-
 		/// <summary>
 		/// Fired when a login attempt fails or is canceled by the user.
 		/// </summary>
@@ -613,4 +566,49 @@ namespace DotNetOpenId.RelyingParty
 
 		#endregion
 	}
+
+	public class OpenIdEventArgs : EventArgs {
+		/// <summary>
+		/// Constructs an object with minimal information of an incomplete or failed
+		/// authentication attempt.
+		/// </summary>
+		/// <param name="identityUrl"></param>
+		internal OpenIdEventArgs(Uri identityUrl) {
+			IdentityUrl = identityUrl;
+		}
+		/// <summary>
+		/// Constructs an object with information on a completed authentication attempt
+		/// (whether that attempt was successful or not).
+		/// </summary>
+		internal OpenIdEventArgs(IAuthenticationResponse response) {
+			Response = response;
+			IdentityUrl = response.IdentityUrl;
+			ProfileFields = ProfileFieldValues.ReadFromResponse(response);
+		}
+		/// <summary>
+		/// Cancels the OpenID authentication and/or login process.
+		/// </summary>
+		public bool Cancel { get; set; }
+		public Uri IdentityUrl { get; private set; }
+
+		/// <summary>
+		/// Gets the details of the OpenId authentication response.
+		/// </summary>
+		public IAuthenticationResponse Response { get; private set; }
+		/// <summary>
+		/// Gets the simple registration (sreg) extension fields given
+		/// by the provider, if any.
+		/// </summary>
+		public ProfileFieldValues ProfileFields { get; private set; }
+	}
+
+	public class ErrorEventArgs : EventArgs {
+		public ErrorEventArgs(string errorMessage, Exception errorException) {
+			ErrorMessage = errorMessage;
+			ErrorException = errorException;
+		}
+		public string ErrorMessage { get; private set; }
+		public Exception ErrorException { get; private set; }
+	}
+
 }

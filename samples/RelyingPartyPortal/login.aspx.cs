@@ -31,16 +31,16 @@ public partial class login : System.Web.UI.Page
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    protected void OpenIdLogin1_LoggedIn(object sender, OpenIdTextBox.OpenIdEventArgs e)
+    protected void OpenIdLogin1_LoggedIn(object sender, OpenIdEventArgs e)
     {
         State.ProfileFields = e.ProfileFields;
     }
-    protected void OpenIdLogin1_Error(object sender, OpenIdTextBox.ErrorEventArgs e)
+    protected void OpenIdLogin1_Error(object sender, ErrorEventArgs e)
     {
         loginFailedLabel.Visible = true;
         loginFailedLabel.Text += ": " + e.ErrorMessage;
     }
-	protected void OpenIdLogin1_Canceled(object sender, OpenIdTextBox.OpenIdEventArgs e)
+	protected void OpenIdLogin1_Canceled(object sender, OpenIdEventArgs e)
     {
         loginCanceledLabel.Visible = true;
     }

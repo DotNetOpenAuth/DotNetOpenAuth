@@ -12,7 +12,7 @@ namespace DotNetOpenId {
 	[Serializable]
 	public class OpenIdException : Exception, IEncodable {
 		NameValueCollection query;
-		public Uri IdentityUrl { get; private set; }
+		internal Uri IdentityUrl { get; private set; }
 
 		internal OpenIdException(string message, Uri identityUrl, NameValueCollection query, Exception innerException)
 			: base(message, innerException) {

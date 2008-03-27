@@ -9,8 +9,8 @@ namespace DotNetOpenId {
 			get { return OpenIdRelyingParty.MaximumUserAgentAuthenticationTime; }
 		}
 
-		public Nonce() : this(CryptUtil.CreateNonce(), DateTime.UtcNow) {}
-		public Nonce(string code, DateTime creationDate) {
+		internal Nonce() : this(CryptUtil.CreateNonce(), DateTime.UtcNow) {}
+		internal Nonce(string code, DateTime creationDate) {
 			if (string.IsNullOrEmpty(code)) throw new ArgumentNullException("code");
 			Code = code;
 			CreationDate = creationDate;

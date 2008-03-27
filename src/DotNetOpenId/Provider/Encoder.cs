@@ -33,7 +33,7 @@ namespace DotNetOpenId.Provider
                     break;
                 case EncodingType.RedirectBrowserUrl:
                     Debug.Assert(response.RedirectUrl != null);
-                    NameValueCollection headers = new NameValueCollection();
+                    WebHeaderCollection headers = new WebHeaderCollection();
 
                     UriBuilder builder = new UriBuilder(response.RedirectUrl);
                     UriUtil.AppendQueryArgs(builder, response.EncodedFields);

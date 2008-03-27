@@ -9,14 +9,14 @@ namespace DotNetOpenId.Provider {
 	/// A response to an OpenID request in terms a web server understands.
 	/// </summary>
 	class Response : IResponse {
-		internal Response(HttpStatusCode code, NameValueCollection headers, byte[] body) {
+		internal Response(HttpStatusCode code, WebHeaderCollection headers, byte[] body) {
 			Code = code;
-			Headers = headers ?? new NameValueCollection();
+			Headers = headers ?? new WebHeaderCollection();
 			Body = body;
 		}
 
 		public HttpStatusCode Code { get; private set; }
-		public NameValueCollection Headers { get; private set; }
+		public WebHeaderCollection Headers { get; private set; }
 		public byte[] Body { get; private set; }
 
 		/// <summary>

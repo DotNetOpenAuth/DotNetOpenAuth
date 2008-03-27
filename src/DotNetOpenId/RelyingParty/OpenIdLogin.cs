@@ -395,13 +395,13 @@ namespace DotNetOpenId.RelyingParty
 		/// OpenID URL before redirecting the user to the OpenID Provider.
 		/// </summary>
 		[Description("Fired after the user clicks the log in button, but before the authentication process begins.  Offers a chance for the web application to disallow based on OpenID URL before redirecting the user to the OpenID Provider.")]
-		public event EventHandler<OpenIdTextBox.OpenIdEventArgs> LoggingIn;
+		public event EventHandler<OpenIdEventArgs> LoggingIn;
 		protected virtual bool OnLoggingIn(Uri openIdUri)
 		{
-			EventHandler<OpenIdTextBox.OpenIdEventArgs> loggingIn = LoggingIn;
+			EventHandler<OpenIdEventArgs> loggingIn = LoggingIn;
 			// TODO: discover the true identityUrl from the openIdUrl given to
 			//       fill OpenIdEventArgs with before firing this event.
-			OpenIdTextBox.OpenIdEventArgs args = new OpenIdTextBox.OpenIdEventArgs(openIdUri);
+			OpenIdEventArgs args = new OpenIdEventArgs(openIdUri);
 			if (loggingIn != null)
 				loggingIn(this, args);
 			return !args.Cancel;

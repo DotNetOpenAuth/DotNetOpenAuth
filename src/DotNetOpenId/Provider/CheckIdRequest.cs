@@ -35,7 +35,7 @@ namespace DotNetOpenId.Provider {
 		/// <remarks>
 		/// An auto-detect attempt is made if an ASP.NET HttpContext is available.
 		/// </remarks>
-		public Uri ServerUrl {
+		public Uri ProviderEndpoint {
 			get { return serverUrl; }
 			private set {
 				serverUrl = value;
@@ -52,11 +52,11 @@ namespace DotNetOpenId.Provider {
 		/// <summary>
 		/// The URL the consumer site claims to use as its 'base' address.
 		/// </summary>
-		public Realm TrustRoot { get; private set; }
+		public Realm Realm { get; private set; }
 		/// <summary>
 		/// The claimed OpenId URL of the user attempting to authenticate.
 		/// </summary>
-		public Uri IdentityUrl { get; private set; }
+		public Uri ClaimedIdentifier { get; private set; }
 		/// <summary>
 		/// The URL to redirect the user agent to after the authentication attempt.
 		/// This must fall "under" the TrustRoot URL.
@@ -69,7 +69,7 @@ namespace DotNetOpenId.Provider {
 		/// Indicates whether this request has all the information necessary to formulate a response.
 		/// </summary>
 		public override bool IsResponseReady {
-			get { return IsAuthenticated.HasValue && ServerUrl != null; }
+			get { return IsAuthenticated.HasValue && ProviderEndpoint != null; }
 		}
 		/// <summary>
 		/// Get the URL to cancel this request.
@@ -101,7 +101,7 @@ namespace DotNetOpenId.Provider {
 			}
 
 			try {
-				IdentityUrl = new Uri(getRequiredField(query, QueryStringArgs.openid.identity));
+				ClaimedIdentifier = new Uri(getRequiredField(query, QueryStringArgs.openid.identity));
 			} catch (UriFormatException) {
 				throw new OpenIdException(QueryStringArgs.openid.identity + " not a valid url: " + query[QueryStringArgs.openid.identity], query);
 			}
@@ -111,11 +111,11 @@ namespace DotNetOpenId.Provider {
 			} catch (UriFormatException ex) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture, 
 					"'{0}' is not a valid OpenID return_to URL.", query[QueryStringArgs.openid.return_to]),
-					IdentityUrl, query, ex);
+					ClaimedIdentifier, query, ex);
 			}
 
 			try {
-				TrustRoot = new Realm(query[QueryStringArgs.openid.trust_root] ?? ReturnTo.AbsoluteUri);
+				Realm = new Realm(query[QueryStringArgs.openid.trust_root] ?? ReturnTo.AbsoluteUri);
 			} catch (UriFormatException ex) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 					Strings.InvalidOpenIdQueryParameterValue, QueryStringArgs.openid.trust_root,
@@ -123,9 +123,9 @@ namespace DotNetOpenId.Provider {
 			}
 			AssociationHandle = query[QueryStringArgs.openid.assoc_handle];
 
-			if (!TrustRoot.Contains(ReturnTo)) {
+			if (!Realm.Contains(ReturnTo)) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-					Strings.ReturnToNotUnderTrustRoot, ReturnTo.AbsoluteUri, TrustRoot), query);
+					Strings.ReturnToNotUnderTrustRoot, ReturnTo.AbsoluteUri, Realm), query);
 			}
 		}
 
@@ -145,7 +145,7 @@ namespace DotNetOpenId.Provider {
 			if (TraceUtil.Switch.TraceInfo) {
 				Trace.TraceInformation("Start processing Response for CheckIdRequest");
 				if (TraceUtil.Switch.TraceVerbose) {
-					Trace.TraceInformation("mode = '{0}',  server_url = '{1}", mode, ServerUrl);
+					Trace.TraceInformation("mode = '{0}',  server_url = '{1}", mode, ProviderEndpoint);
 				}
 			}
 
@@ -157,7 +157,7 @@ namespace DotNetOpenId.Provider {
 			if (IsAuthenticated.Value) {
 				// Add additional signed fields
 				var fields = new Dictionary<string, string>();
-				fields.Add(QueryStringArgs.openidnp.identity, IdentityUrl.AbsoluteUri);
+				fields.Add(QueryStringArgs.openidnp.identity, ClaimedIdentifier.AbsoluteUri);
 				fields.Add(QueryStringArgs.openidnp.return_to, ReturnTo.AbsoluteUri);
 				response.AddFields(null, fields, true);
 			}
@@ -188,23 +188,23 @@ namespace DotNetOpenId.Provider {
 		/// </summary>
 		internal Uri SetupUrl {
 			get {
-				if (ServerUrl == null) {
+				if (ProviderEndpoint == null) {
 					throw new InvalidOperationException("ServerUrl is required for failed authentication in immediate mode.");
 				}
 
 				var q = new Dictionary<string, string>();
 
 				q.Add(QueryStringArgs.openid.mode, QueryStringArgs.Modes.checkid_setup);
-				q.Add(QueryStringArgs.openid.identity, IdentityUrl.AbsoluteUri);
+				q.Add(QueryStringArgs.openid.identity, ClaimedIdentifier.AbsoluteUri);
 				q.Add(QueryStringArgs.openid.return_to, ReturnTo.AbsoluteUri);
 
-				if (TrustRoot != null)
-					q.Add(QueryStringArgs.openid.trust_root, TrustRoot.ToString());
+				if (Realm != null)
+					q.Add(QueryStringArgs.openid.trust_root, Realm.ToString());
 
 				if (this.AssociationHandle != null)
 					q.Add(QueryStringArgs.openid.assoc_handle, this.AssociationHandle);
 
-				UriBuilder builder = new UriBuilder(ServerUrl);
+				UriBuilder builder = new UriBuilder(ProviderEndpoint);
 				UriUtil.AppendQueryArgs(builder, q);
 
 				return builder.Uri;
@@ -221,7 +221,7 @@ CheckIdRequest.ReturnTo = '{4}'
 ";
 
 			return base.ToString() + string.Format(CultureInfo.CurrentUICulture,
-				returnString, Immediate, TrustRoot, IdentityUrl, Mode, ReturnTo);
+				returnString, Immediate, Realm, ClaimedIdentifier, Mode, ReturnTo);
 		}
 	}
 }
