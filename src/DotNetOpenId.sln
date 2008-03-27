@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{14D00F8C-C7CB-49B3-A668-7D0C5A4A6D9F}"
 	ProjectSection(SolutionItems) = preProject
-		README.txt = README.txt
+		README.html = README.html
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenId", "DotNetOpenId\DotNetOpenId.csproj", "{5D6EDC86-F5B2-4786-8376-4E7C24C63D39}"
