@@ -8,7 +8,7 @@
 	protected override void OnLoad(EventArgs e) {
 		base.OnLoad(e);
 
-		IdentityEndpoint1.DelegateUrl = "~/" + Request.QueryString["user"];
+		IdentityEndpoint1.ProviderLocalIdentifier = "~/" + Request.QueryString["user"];
 	}
 </script>
 
@@ -16,7 +16,7 @@
 <head runat="server">
 	<title>Identity page</title>
 	<openid:IdentityEndpoint ID="IdentityEndpoint1" runat="server" 
-		ServerUrl="~/ProviderEndpoint.aspx"/>
+		ProviderEndpointUrl="~/ProviderEndpoint.aspx"/>
 </head>
 <body>
 	<form id="form1" runat="server">

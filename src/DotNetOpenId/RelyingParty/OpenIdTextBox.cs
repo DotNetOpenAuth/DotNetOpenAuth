@@ -88,15 +88,15 @@ namespace DotNetOpenId.RelyingParty
 			}
 		}
 
-		const string trustRootUrlViewStateKey = "TrustRootUrl";
-		const string trustRootUrlDefault = "~/";
+		const string realmUrlViewStateKey = "TrustRootUrl";
+		const string realmUrlDefault = "~/";
 		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings")]
 		[Bindable(true)]
 		[Category(behaviorCategory)]
-		[DefaultValue(trustRootUrlDefault)]
-		public string TrustRootUrl
+		[DefaultValue(realmUrlDefault)]
+		public string RealmUrl
 		{
-			get { return (string)(ViewState[trustRootUrlViewStateKey] ?? trustRootUrlDefault); }
+			get { return (string)(ViewState[realmUrlViewStateKey] ?? realmUrlDefault); }
 			set
 			{
 				if (Page != null && !DesignMode)
@@ -118,7 +118,7 @@ namespace DotNetOpenId.RelyingParty
 					else
 						throw new UriFormatException();
 				}
-				ViewState[trustRootUrlViewStateKey] = value; 
+				ViewState[realmUrlViewStateKey] = value; 
 			}
 		}
 
@@ -442,7 +442,7 @@ namespace DotNetOpenId.RelyingParty
 				// Resolve the trust root, and swap out the scheme and port if necessary to match the
 				// return_to URL, since this match is required by OpenId, and the consumer app
 				// may be using HTTP at some times and HTTPS at others.
-				UriBuilder trustRoot = getResolvedTrustRoot(TrustRootUrl);
+				UriBuilder trustRoot = getResolvedTrustRoot(RealmUrl);
 				trustRoot.Scheme = Page.Request.Url.Scheme;
 				trustRoot.Port = Page.Request.Url.Port;
 
@@ -521,7 +521,7 @@ namespace DotNetOpenId.RelyingParty
 				loggedIn(this, args);
 			if (!args.Cancel)
 				FormsAuthentication.RedirectFromLoginPage(
-					response.IdentityUrl.AbsoluteUri, UsePersistentCookie);
+					response.ClaimedIdentifier.AbsoluteUri, UsePersistentCookie);
 		}
 
 		#endregion
@@ -573,8 +573,8 @@ namespace DotNetOpenId.RelyingParty
 		/// authentication attempt.
 		/// </summary>
 		/// <param name="identityUrl"></param>
-		internal OpenIdEventArgs(Uri identityUrl) {
-			IdentityUrl = identityUrl;
+		internal OpenIdEventArgs(Uri claimedIdentifier) {
+			ClaimedIdentifier = claimedIdentifier;
 		}
 		/// <summary>
 		/// Constructs an object with information on a completed authentication attempt
@@ -582,14 +582,14 @@ namespace DotNetOpenId.RelyingParty
 		/// </summary>
 		internal OpenIdEventArgs(IAuthenticationResponse response) {
 			Response = response;
-			IdentityUrl = response.IdentityUrl;
+			ClaimedIdentifier = response.ClaimedIdentifier;
 			ProfileFields = SimpleRegistrationFieldValues.ReadFromResponse(response);
 		}
 		/// <summary>
 		/// Cancels the OpenID authentication and/or login process.
 		/// </summary>
 		public bool Cancel { get; set; }
-		public Uri IdentityUrl { get; private set; }
+		public Uri ClaimedIdentifier { get; private set; }
 
 		/// <summary>
 		/// Gets the details of the OpenId authentication response.

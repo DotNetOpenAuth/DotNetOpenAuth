@@ -134,7 +134,7 @@ namespace DotNetOpenId.RelyingParty {
 			get {
 				if (response == null && isAuthenticationResponseReady) {
 					response = AuthenticationResponse.Parse(query, store);
-					manager.Cleanup(response.IdentityUrl);
+					manager.Cleanup(response.ClaimedIdentifier);
 				}
 				return response;
 			}

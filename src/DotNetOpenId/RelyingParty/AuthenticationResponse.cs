@@ -31,7 +31,7 @@ namespace DotNetOpenId.RelyingParty {
 	class AuthenticationResponse : IAuthenticationResponse {
 		internal AuthenticationResponse(AuthenticationStatus status, Uri identityUrl, IDictionary<string, string> query) {
 			Status = status;
-			IdentityUrl = identityUrl;
+			ClaimedIdentifier = identityUrl;
 			signedArguments = new Dictionary<string, string>();
 			string signed;
 			if (query.TryGetValue(QueryStringArgs.openid.signed, out signed)) {
@@ -48,7 +48,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// The detailed success or failure status of the authentication attempt.
 		/// </summary>
 		public AuthenticationStatus Status { get; private set; }
-		public Uri IdentityUrl { get; private set; }
+		public Uri ClaimedIdentifier { get; private set; }
 		IDictionary<string, string> signedArguments;
 
 		internal Uri ReturnTo {
