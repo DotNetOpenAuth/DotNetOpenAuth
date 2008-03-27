@@ -1,3 +1,4 @@
 *.VisualState.xml
 TestResult.xml
 bin
+drop
