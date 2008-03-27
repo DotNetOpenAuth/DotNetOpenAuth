@@ -48,6 +48,7 @@
     <Compile Include="Association.cs" />
     <Compile Include="AssociationMemoryStore.cs" />
     <Compile Include="Associations.cs" />
+    <Compile Include="Identifier.cs" />
     <Compile Include="RelyingParty\AssociateRequest.cs" />
     <Compile Include="RelyingParty\AssociateResponse.cs" />
     <Compile Include="RelyingParty\AuthenticationRequest.cs" />
@@ -114,6 +115,7 @@
     <Compile Include="Provider\CheckIdRequest.cs" />
     <Compile Include="Provider\IEncodable.cs" />
     <Compile Include="Provider\Signatory.cs" />
+    <Compile Include="UriIdentifier.cs" />
     <Compile Include="XrdsPublisher.cs" />
     <Compile Include="SimpleSessionState.cs" />
     <Compile Include="Strings.Designer.cs">

@@ -7,13 +7,6 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 
 namespace DotNetOpenId.Provider {
-	[Flags]
-	public enum XrdsUrlLocations {
-		HttpHeader = 0x1,
-		HtmlMeta = 0x2,
-		Both = 0x3
-	}
-
 	[DefaultProperty("ServerUrl")]
 	[ToolboxData("<{0}:IdentityEndpoint runat=server></{0}:IdentityEndpoint>")]
 	public class IdentityEndpoint : XrdsPublisher {

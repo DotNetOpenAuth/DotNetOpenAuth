@@ -3,7 +3,7 @@
 <%@ Register Assembly="DotNetOpenId" Namespace="DotNetOpenId.Provider" TagPrefix="openid" %>
 <html>
 <head>
-	<openid:IdentityEndpoint runat="server" ServerUrl="~/Server.aspx" />
+	<openid:IdentityEndpoint runat="server" ProviderEndpointUrl="~/Server.aspx" />
 </head>
 <body>
 	<p>

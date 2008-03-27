@@ -28,29 +28,27 @@ namespace DotNetOpenId.Test.RelyingParty {
 
 		[Test]
 		[ExpectedException(typeof(ArgumentNullException))]
-		public void CtorWithNullQuery() {
-			new OpenIdRelyingParty(null, store);
+		public void CtorWithNullRequestUrl() {
+			new OpenIdRelyingParty(store, null);
 		}
 
 		[Test]
 		[ExpectedException(typeof(ArgumentNullException), UserMessage = "Until this is a supported scenario, an exception should be thrown right away.")]
 		public void CtorWithNullStore() {
-			var consumer = new OpenIdRelyingParty(new NameValueCollection(), null);
+			var consumer = new OpenIdRelyingParty(null, new Uri("http://simple/req"));
 		}
 
 		[Test]
 		[ExpectedException(typeof(InvalidOperationException))]
 		public void CreateRequestWithoutContext1() {
-			var query = new NameValueCollection();
-			var consumer = new OpenIdRelyingParty(query, store);
+			var consumer = new OpenIdRelyingParty(store, new Uri("http://simple/req"));
 			consumer.CreateRequest(simpleOpenId);
 		}
 
 		[Test]
 		[ExpectedException(typeof(InvalidOperationException))]
 		public void CreateRequestWithoutContext2() {
-			var query = new NameValueCollection();
-			var consumer = new OpenIdRelyingParty(query, store);
+			var consumer = new OpenIdRelyingParty(store, new Uri("http://simple/req"));
 			consumer.CreateRequest(simpleOpenId, simpleRealm);
 		}
 	}

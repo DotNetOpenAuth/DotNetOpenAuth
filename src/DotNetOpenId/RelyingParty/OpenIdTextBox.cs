@@ -521,7 +521,7 @@ namespace DotNetOpenId.RelyingParty
 				loggedIn(this, args);
 			if (!args.Cancel)
 				FormsAuthentication.RedirectFromLoginPage(
-					response.ClaimedIdentifier.AbsoluteUri, UsePersistentCookie);
+					((UriIdentifier)response.ClaimedIdentifier).Uri.AbsoluteUri, UsePersistentCookie);
 		}
 
 		#endregion
@@ -572,8 +572,8 @@ namespace DotNetOpenId.RelyingParty
 		/// Constructs an object with minimal information of an incomplete or failed
 		/// authentication attempt.
 		/// </summary>
-		/// <param name="identityUrl"></param>
-		internal OpenIdEventArgs(Uri claimedIdentifier) {
+		/// <param name="claimedIdentifier"></param>
+		internal OpenIdEventArgs(Identifier claimedIdentifier) {
 			ClaimedIdentifier = claimedIdentifier;
 		}
 		/// <summary>
@@ -589,7 +589,7 @@ namespace DotNetOpenId.RelyingParty
 		/// Cancels the OpenID authentication and/or login process.
 		/// </summary>
 		public bool Cancel { get; set; }
-		public Uri ClaimedIdentifier { get; private set; }
+		public Identifier ClaimedIdentifier { get; private set; }
 
 		/// <summary>
 		/// Gets the details of the OpenId authentication response.

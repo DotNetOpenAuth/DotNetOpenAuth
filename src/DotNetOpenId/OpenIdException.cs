@@ -12,20 +12,20 @@ namespace DotNetOpenId {
 	[Serializable]
 	public class OpenIdException : Exception, IEncodable {
 		NameValueCollection query;
-		internal Uri IdentityUrl { get; private set; }
+		internal Identifier IdentityUrl { get; private set; }
 
-		internal OpenIdException(string message, Uri identityUrl, NameValueCollection query, Exception innerException)
+		internal OpenIdException(string message, Identifier identityUrl, NameValueCollection query, Exception innerException)
 			: base(message, innerException) {
 			this.query = query;
 			IdentityUrl = identityUrl;
 		}
-		internal OpenIdException(string message, Uri identityUrl, NameValueCollection query)
+		internal OpenIdException(string message, Identifier identityUrl, NameValueCollection query)
 			: this(message, identityUrl, query, null) {
 		}
-		internal OpenIdException(string message, Uri identityUrl, Exception innerException)
+		internal OpenIdException(string message, Identifier identityUrl, Exception innerException)
 			: this(message, identityUrl, null, innerException) {
 		}
-		internal OpenIdException(string message, Uri identityUrl)
+		internal OpenIdException(string message, Identifier identityUrl)
 			: this(message, identityUrl, null, null) {
 		}
 		internal OpenIdException(string message, NameValueCollection query)

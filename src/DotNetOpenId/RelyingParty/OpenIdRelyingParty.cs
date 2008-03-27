@@ -33,7 +33,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// <remarks>
 		/// This method requires a current ASP.NET HttpContext.
 		/// </remarks>
-		public OpenIdRelyingParty() : this(Util.GetQueryFromContext(), httpApplicationStore) { }
+		public OpenIdRelyingParty() : this(httpApplicationStore, Util.GetRequestUrlFromContext()) { }
 		/// <summary>
 		/// Constructs an OpenId consumer that uses a given querystring and IAssociationStore.
 		/// </summary>
@@ -52,32 +52,29 @@ namespace DotNetOpenId.RelyingParty {
 		/// which must therefore share the nonce information in the application
 		/// state store in order to stop the intruder.
 		/// </remarks>
-		public OpenIdRelyingParty(NameValueCollection query, IRelyingPartyApplicationStore store)
-			: this(Util.NameValueCollectionToDictionary(query), store) {
-		}
-		OpenIdRelyingParty(IDictionary<string, string> query, IRelyingPartyApplicationStore store) {
-			if (query == null) throw new ArgumentNullException("query");
+		public OpenIdRelyingParty(IRelyingPartyApplicationStore store, Uri requestUrl) {
 			if (store == null) throw new ArgumentNullException("store");
-			this.query = query;
+			if (requestUrl == null) throw new ArgumentNullException("requestUrl");
 			this.store = store;
+			this.query = Util.NameValueCollectionToDictionary(HttpUtility.ParseQueryString(requestUrl.Query));
 			manager = new ServiceEndpointManager(null);
 			if (store != null) {
 				store.ClearExpiredAssociations(); // every so often we should do this.
 			}
 		}
 
-		public IAuthenticationRequest CreateRequest(Uri openIdUrl, Realm trustRoot, Uri returnToUrl) {
-			ServiceEndpoint endpoint = manager.GetNextService(openIdUrl);
+		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl) {
+			ServiceEndpoint endpoint = manager.GetNextService((UriIdentifier)userSuppliedIdentifier);
 			if (endpoint == null)
 				throw new OpenIdException("No openid endpoint found");
 
-			return AuthenticationRequest.Create(endpoint, trustRoot, returnToUrl, store);
+			return AuthenticationRequest.Create(endpoint, realm, returnToUrl, store);
 		}
 
 		/// <remarks>
 		/// This method requires an ASP.NET HttpContext.
 		/// </remarks>
-		public IAuthenticationRequest CreateRequest(Uri openIdUrl, Realm trustRoot) {
+		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm) {
 			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
 
 			// Build the return_to URL
@@ -94,20 +91,20 @@ namespace DotNetOpenId.RelyingParty {
 			}
 			UriUtil.AppendQueryArgs(returnTo, returnToParams);
 
-			return CreateRequest(openIdUrl, trustRoot, returnTo.Uri);
+			return CreateRequest(userSuppliedIdentifier, realm, returnTo.Uri);
 		}
 
 		/// <remarks>
 		/// This method requires an ASP.NET HttpContext.
 		/// </remarks>
-		public IAuthenticationRequest CreateRequest(Uri openIdUrl) {
+		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier) {
 			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
 
 			// Build the trustroot URL
 			UriBuilder trustRootUrl = new UriBuilder(HttpContext.Current.Request.Url.AbsoluteUri);
 			trustRootUrl.Path = HttpContext.Current.Request.ApplicationPath;
 
-			return CreateRequest(openIdUrl, new Realm(trustRootUrl.ToString()));
+			return CreateRequest(userSuppliedIdentifier, new Realm(trustRootUrl.ToString()));
 		}
 
 		/// <summary>
@@ -134,7 +131,7 @@ namespace DotNetOpenId.RelyingParty {
 			get {
 				if (response == null && isAuthenticationResponseReady) {
 					response = AuthenticationResponse.Parse(query, store);
-					manager.Cleanup(response.ClaimedIdentifier);
+					manager.Cleanup((UriIdentifier)response.ClaimedIdentifier);
 				}
 				return response;
 			}

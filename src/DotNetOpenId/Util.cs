@@ -83,7 +83,12 @@ namespace DotNetOpenId {
                 HttpContext.Current.Request.QueryString : HttpContext.Current.Request.Form;
         }
 
-        public static bool ArrayEquals<T>(T[] first, T[] second)
+		internal static Uri GetRequestUrlFromContext() {
+			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
+			return HttpContext.Current.Request.Url;
+		}
+		
+		public static bool ArrayEquals<T>(T[] first, T[] second)
         {
             if (first == null) throw new ArgumentNullException("first");
             if (second == null) throw new ArgumentNullException("second");
@@ -92,7 +97,8 @@ namespace DotNetOpenId {
                 if (!first[i].Equals(second[i])) return false;
             return true;
         }
-    }
+
+	}
 
     internal static class QueryStringArgs {
         /// <summary>openid. variables that don't include the "openid." prefix.</summary>

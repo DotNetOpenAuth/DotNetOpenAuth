@@ -56,7 +56,7 @@ namespace DotNetOpenId.Provider {
 		/// <summary>
 		/// The claimed OpenId URL of the user attempting to authenticate.
 		/// </summary>
-		public Uri ClaimedIdentifier { get; private set; }
+		public Identifier ClaimedIdentifier { get; private set; }
 		/// <summary>
 		/// The URL to redirect the user agent to after the authentication attempt.
 		/// This must fall "under" the TrustRoot URL.
@@ -157,7 +157,7 @@ namespace DotNetOpenId.Provider {
 			if (IsAuthenticated.Value) {
 				// Add additional signed fields
 				var fields = new Dictionary<string, string>();
-				fields.Add(QueryStringArgs.openidnp.identity, ClaimedIdentifier.AbsoluteUri);
+				fields.Add(QueryStringArgs.openidnp.identity, ((UriIdentifier)ClaimedIdentifier).Uri.AbsoluteUri);
 				fields.Add(QueryStringArgs.openidnp.return_to, ReturnTo.AbsoluteUri);
 				response.AddFields(null, fields, true);
 			}
@@ -195,7 +195,7 @@ namespace DotNetOpenId.Provider {
 				var q = new Dictionary<string, string>();
 
 				q.Add(QueryStringArgs.openid.mode, QueryStringArgs.Modes.checkid_setup);
-				q.Add(QueryStringArgs.openid.identity, ClaimedIdentifier.AbsoluteUri);
+				q.Add(QueryStringArgs.openid.identity, ((UriIdentifier)ClaimedIdentifier).Uri.AbsoluteUri);
 				q.Add(QueryStringArgs.openid.return_to, ReturnTo.AbsoluteUri);
 
 				if (Realm != null)

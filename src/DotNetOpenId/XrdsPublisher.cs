@@ -7,7 +7,8 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 
 namespace DotNetOpenId {
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Xrds"), Flags]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Xrds")]
+	[Flags]
 	public enum XrdsUrlLocations {
 		HttpHeader = 0x1,
 		HtmlMeta = 0x2,

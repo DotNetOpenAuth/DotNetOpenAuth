@@ -17,7 +17,7 @@ namespace DotNetOpenId.Provider {
 		/// <summary>
 		/// The claimed OpenId URL of the user attempting to authenticate.
 		/// </summary>
-		Uri ClaimedIdentifier { get; }
+		Identifier ClaimedIdentifier { get; }
 		/// <summary>
 		/// The provider URL that responds to OpenID requests.
 		/// </summary>

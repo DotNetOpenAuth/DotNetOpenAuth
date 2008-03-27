@@ -48,7 +48,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// The detailed success or failure status of the authentication attempt.
 		/// </summary>
 		public AuthenticationStatus Status { get; private set; }
-		public Uri ClaimedIdentifier { get; private set; }
+		public Identifier ClaimedIdentifier { get; private set; }
 		IDictionary<string, string> signedArguments;
 
 		internal Uri ReturnTo {
