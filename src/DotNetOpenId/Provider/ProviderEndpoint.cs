@@ -9,7 +9,7 @@ using System.Web.UI.WebControls;
 namespace DotNetOpenId.Provider {
 	[DefaultEvent("AuthenticationChallenge")]
 	[ToolboxData("<{0}:ProviderEndpoint runat='server' />")]
-	public class ProviderEndpoint : WebControl {
+	public class ProviderEndpoint : Control {
 
 		const string pendingAuthenticationRequestKey = "pendingAuthenticationRequestKey";
 		public static IAuthenticationRequest PendingAuthenticationRequest {
@@ -17,87 +17,17 @@ namespace DotNetOpenId.Provider {
 			set { HttpContext.Current.Session[pendingAuthenticationRequestKey] = value; }
 		}
 
-		#region Properties to hide
-		[Browsable(false), Bindable(false)]
-		public override bool Visible {
-			get { return false; }
-			set { throw new NotSupportedException(); }
+		const bool enabledDefault = true;
+		const string enabledViewStateKey = "Enabled";
+		[Category("Behavior")]
+		[DefaultValue(enabledDefault)]
+		public bool Enabled {
+			get {
+				return ViewState[enabledViewStateKey] == null ?
+				enabledDefault : (bool)ViewState[enabledViewStateKey];
+			}
+			set { ViewState[enabledViewStateKey] = value; }
 		}
-		[Browsable(false), Bindable(false)]
-		public override string AccessKey {
-			get { throw new NotSupportedException(); }
-			set { throw new NotSupportedException(); }
-		}
-		[Browsable(false), Bindable(false)]
-		public override string CssClass {
-			get { throw new NotSupportedException(); }
-			set { throw new NotSupportedException(); }
-		}
-		[Browsable(false), Bindable(false)]
-		public override bool EnableViewState {
-			get { throw new NotSupportedException(); }
-			set { throw new NotSupportedException(); }
-		}
-		[Browsable(false), Bindable(false)]
-		public override short TabIndex {
-			get { throw new NotSupportedException(); }
-			set { throw new NotSupportedException(); }
-		}
-		[Browsable(false), Bindable(false)]
-		public override System.Drawing.Color ForeColor {
-			get { throw new NotSupportedException(); }
-			set { throw new NotSupportedException(); }
-		}
-		[Browsable(false), Bindable(false)]
-		public override System.Drawing.Color BackColor {
-			get { throw new NotSupportedException(); }
-			set { throw new NotSupportedException(); }
-		}
-		[Browsable(false), Bindable(false)]
-		public override System.Drawing.Color BorderColor {
-			get { throw new NotSupportedException(); }
-			set { throw new NotSupportedException(); }
-		}
-		[Browsable(false), Bindable(false)]
-		public override Unit BorderWidth {
-			get { return Unit.Empty; }
-			set { throw new NotSupportedException(); }
-		}
-		[Browsable(false), Bindable(false)]
-		public override BorderStyle BorderStyle {
-			get { return BorderStyle.None; }
-			set { throw new NotSupportedException(); }
-		}
-		[Browsable(false), Bindable(false)]
-		public override FontInfo Font {
-			get { return null; }
-		}
-		[Browsable(false), Bindable(false)]
-		public override Unit Height {
-			get { return Unit.Empty; }
-			set { throw new NotSupportedException(); }
-		}
-		[Browsable(false), Bindable(false)]
-		public override Unit Width {
-			get { return Unit.Empty; }
-			set { throw new NotSupportedException(); }
-		}
-		[Browsable(false), Bindable(false)]
-		public override string ToolTip {
-			get { return string.Empty; }
-			set { throw new NotSupportedException(); }
-		}
-		[Browsable(false), Bindable(false)]
-		public override string SkinID {
-			get { return string.Empty; }
-			set { throw new NotSupportedException(); }
-		}
-		[Browsable(false), Bindable(false)]
-		public override bool EnableTheming {
-			get { return false; }
-			set { throw new NotSupportedException(); }
-		}
-		#endregion
 
 		protected override void OnLoad(EventArgs e) {
 			base.OnLoad(e);
