@@ -213,6 +213,7 @@ namespace DotNetOpenId {
 				/// A preference order list of all supported session types.
 				/// </summary>
 				public string[] All { get { return new[] { DH_SHA256, DH_SHA1, NoEncryption }; } }
+				public string[] AllDiffieHellman { get { return new[] { DH_SHA256, DH_SHA1 }; } }
 				public string DH_SHA1 = "DH-SHA1";
 				public string DH_SHA256 = null;
 				public string NoEncryption = "";

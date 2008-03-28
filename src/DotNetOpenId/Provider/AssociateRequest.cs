@@ -13,9 +13,9 @@ namespace DotNetOpenId.Provider {
 		string associationKeyType;
 		ProviderSession session;
 
-		public AssociateRequest(OpenIdProvider server)
-			: base(server) {
-			session = ProviderSession.CreateSession(Protocol, Query);
+		public AssociateRequest(OpenIdProvider provider)
+			: base(provider) {
+			session = ProviderSession.CreateSession(provider);
 			associationKeyType = Util.GetRequiredArg(Query, Protocol.openid.assoc_type);
 		}
 
@@ -36,7 +36,7 @@ namespace DotNetOpenId.Provider {
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1820:TestForEmptyStringsUsingStringLength")]
 		public EncodableResponse Answer() {
-			Association assoc = Server.Signatory.CreateAssociation(AssociationRelyingPartyType.Smart);
+			Association assoc = Provider.Signatory.CreateAssociation(AssociationRelyingPartyType.Smart);
 			if (TraceUtil.Switch.TraceInfo) {
 				Trace.TraceInformation("Start processing response for AssociateRequest");
 				if (TraceUtil.Switch.TraceVerbose) {

@@ -6,6 +6,7 @@ using System.Xml;
 using System.Xml.XPath;
 using System.IO;
 using DotNetOpenId.Yadis;
+using System.Diagnostics;
 
 namespace DotNetOpenId.RelyingParty {
 	/// <summary>
@@ -120,6 +121,7 @@ namespace DotNetOpenId.RelyingParty {
 		}
 		internal static ServiceEndpoint ParseFromAuthResponse(IDictionary<string, string> query) {
 			Protocol protocol = Protocol.Detect(query);
+			Debug.Assert(protocol.openid.op_endpoint != null, "This method should only be called in OpenID 2.0 contexts.");
 			return new ServiceEndpoint(
 				Util.GetRequiredArg(query, protocol.openid.claimed_id),
 				new Uri(Util.GetRequiredArg(query, protocol.openid.op_endpoint)),

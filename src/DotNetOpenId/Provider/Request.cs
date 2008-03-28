@@ -12,9 +12,10 @@ namespace DotNetOpenId.Provider
 	/// Represents any OpenId-protocol request that may come to the provider.
 	/// </summary>
 	abstract class Request : IRequest {
-		protected Request(OpenIdProvider server) {
-			Server = server;
-			Query = server.query;
+		protected Request(OpenIdProvider provider) {
+			if (provider == null) throw new ArgumentNullException("provider");
+			Provider = provider;
+			Query = provider.Query;
 			Protocol = Protocol.Detect(Query);
 			IncomingExtensions = ExtensionArgumentsManager.CreateIncomingExtensions(Query);
 			OutgoingExtensions = ExtensionArgumentsManager.CreateOutgoingExtensions(Protocol);
@@ -25,7 +26,7 @@ namespace DotNetOpenId.Provider
 		/// </summary>
 		protected internal Protocol Protocol;
 		protected IDictionary<string, string> Query { get; private set; }
-		protected OpenIdProvider Server { get; private set; }
+		protected OpenIdProvider Provider { get; private set; }
 		internal abstract string Mode { get; }
 		/// <summary>
 		/// Extension arguments to pass to the Relying Party.
@@ -59,27 +60,25 @@ namespace DotNetOpenId.Provider
 		/// <param name="query">A dictionary of name/value pairs given in the request's
 		/// querystring or form submission.</param>
 		/// <returns>A Request-derived type appropriate for this stage in authentication.</returns>
-		internal static Request CreateRequest(OpenIdProvider provider, IDictionary<string, string> query) {
-			Debug.Assert(query != null);
-
-			Protocol protocol = Protocol.Detect(query);
-			string mode = query[protocol.openid.mode];
-			if (string.IsNullOrEmpty(mode)) {
-				throw new OpenIdException("No openid.mode value in query.", query);
-			}
+		internal static Request CreateRequest(OpenIdProvider provider) {
+			if (provider == null) throw new ArgumentNullException("provider");
+			Debug.Assert(provider.Protocol != null, "This should have been set already.");
+			string mode = Util.GetRequiredArg(provider.Query, provider.Protocol.openid.mode);
 
 			Request request;
 			try {
-				if (mode == protocol.Args.Mode.checkid_setup)
+				if (mode == provider.Protocol.Args.Mode.checkid_setup)
 					request = new CheckIdRequest(provider);
-				else if (mode == protocol.Args.Mode.checkid_immediate)
+				else if (mode == provider.Protocol.Args.Mode.checkid_immediate)
 					request = new CheckIdRequest(provider);
-				else if (mode == protocol.Args.Mode.check_authentication)
+				else if (mode == provider.Protocol.Args.Mode.check_authentication)
 					request = new CheckAuthRequest(provider);
-				else if (mode == protocol.Args.Mode.associate)
+				else if (mode == provider.Protocol.Args.Mode.associate)
 					request = new AssociateRequest(provider);
 				else
-					throw new OpenIdException("No decoder for openid.mode=" + mode, query);
+					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+						Strings.InvalidOpenIdQueryParameterValue, provider.Protocol.openid.mode,
+						mode), provider.Query);
 			} catch (OpenIdException ex) {
 				request = new FaultyRequest(provider, ex);
 			}
@@ -111,7 +110,7 @@ namespace DotNetOpenId.Provider
 					EncodableResponse extendableResponse = encodableResponse as EncodableResponse;
 					if (extendableResponse != null)
 						extendableResponse.AddFields(null, OutgoingExtensions.GetArgumentsToSend(false), true);
-					response = Server.EncodeResponse(encodableResponse);
+					response = Provider.Encoder.Encode(encodableResponse);
 				}
 				return response;
 			}

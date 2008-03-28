@@ -52,16 +52,16 @@ namespace DotNetOpenId.Provider {
 				Trace.TraceInformation("Start processing Response for CheckAuthRequest");
 			}
 
-			bool is_valid = Server.Signatory.Verify(AssociationHandle, signature, signedFields, signedKeyOrder);
+			bool is_valid = Provider.Signatory.Verify(AssociationHandle, signature, signedFields, signedKeyOrder);
 
-			Server.Signatory.Invalidate(AssociationHandle, AssociationRelyingPartyType.Dumb);
+			Provider.Signatory.Invalidate(AssociationHandle, AssociationRelyingPartyType.Dumb);
 
 			EncodableResponse response = new EncodableResponse(this);
 
 			response.Fields[Protocol.openidnp.is_valid] = (is_valid ? "true" : "false");
 
 			if (!string.IsNullOrEmpty(invalidate_handle)) {
-				Association assoc = Server.Signatory.GetAssociation(invalidate_handle, AssociationRelyingPartyType.Smart);
+				Association assoc = Provider.Signatory.GetAssociation(invalidate_handle, AssociationRelyingPartyType.Smart);
 
 				if (assoc == null) {
 					if (TraceUtil.Switch.TraceWarning) {

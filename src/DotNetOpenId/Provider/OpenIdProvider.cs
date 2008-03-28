@@ -13,8 +13,16 @@ namespace DotNetOpenId.Provider {
 	/// </summary>
 	public class OpenIdProvider {
 		internal Signatory Signatory { get; private set; }
-		Encoder encoder;
-		internal IDictionary<string, string> query;
+		internal Encoder Encoder;
+		/// <summary>
+		/// The query of the incoming request.
+		/// </summary>
+		internal IDictionary<string, string> Query;
+		/// <summary>
+		/// The version of OpenId being used by the Relying Party
+		/// sending the incoming request.
+		/// </summary>
+		internal Protocol Protocol { get; private set; }
 
 		/// <summary>
 		/// Constructs an OpenId server that uses the HttpApplication dictionary as
@@ -27,7 +35,8 @@ namespace DotNetOpenId.Provider {
 		/// <summary>
 		/// Constructs an OpenId server that uses a given query and IAssociationStore.
 		/// </summary>
-		/// <param name="query">The name/value pairs that came in on the QueryString of the web request.</param>
+		/// <param name="query">The name/value pairs that came in on the 
+		/// QueryString of a GET request or in the entity of a POST request.</param>
 		/// <param name="store">
 		/// The application-level store where associations with OpenId consumers will be preserved.
 		/// </param>
@@ -36,9 +45,9 @@ namespace DotNetOpenId.Provider {
 		OpenIdProvider(IDictionary<string, string> query, IProviderAssociationStore store) {
 			if (query == null) throw new ArgumentNullException("query");
 			if (store == null) throw new ArgumentNullException("store");
-			this.query = query;
+			Query = query;
 			Signatory = new Signatory(store);
-			this.encoder = new SigningEncoder(Signatory);
+			Encoder = new SigningEncoder(Signatory);
 			store.ClearExpiredAssociations(); // every so often we should do this.
 		}
 
@@ -59,7 +68,7 @@ namespace DotNetOpenId.Provider {
 		/// </summary>
 		/// <returns>A Request object, or null if the given query doesn't represent an OpenId request.</returns>
 		Request decodeRequest() {
-			if (!Provider.Request.IsOpenIdRequest(query)) {
+			if (!Provider.Request.IsOpenIdRequest(Query)) {
 				return null;
 			}
 
@@ -67,7 +76,8 @@ namespace DotNetOpenId.Provider {
 				Trace.TraceInformation("Start message decoding");
 			}
 
-			Request req = Provider.Request.CreateRequest(this, query);
+			Protocol = Protocol.Detect(Query);
+			Request req = Provider.Request.CreateRequest(this);
 
 			if (TraceUtil.Switch.TraceInfo) {
 				Trace.TraceInformation("End message decoding. Successfully decoded message as new {0}.", req.GetType().Name);
@@ -77,15 +87,7 @@ namespace DotNetOpenId.Provider {
 			return req;
 		}
 
-		internal Response EncodeResponse(IEncodable response) {
-			if (TraceUtil.Switch.TraceInfo) {
-				Trace.TraceInformation("Encoding response");
-			}
-
-			return encoder.Encode(response);
-		}
-
-		const string associationStoreKey = "DotNetOpenId.Provider.Server.AssociationStore";
+		const string associationStoreKey = "DotNetOpenId.Provider.OpenIdProvider.AssociationStore";
 		static IProviderAssociationStore httpApplicationAssociationStore {
 			get {
 				HttpContext context = HttpContext.Current;
