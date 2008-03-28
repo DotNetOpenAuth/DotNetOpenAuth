@@ -114,6 +114,7 @@ namespace DotNetOpenId {
 						break;
 					}
 				}
+				if (providerEndpoint != null) break;
 			}
 			if (providerEndpoint == null)
 				return null; // html did not contain openid.server link
