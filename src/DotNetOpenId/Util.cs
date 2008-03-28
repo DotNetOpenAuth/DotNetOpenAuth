@@ -91,6 +91,27 @@ namespace DotNetOpenId {
 			query.TryGetValue(key, out value);
 			return value;
 		}
+		public static byte[] GetRequiredBase64Arg(IDictionary<string, string> query, string key) {
+			string base64string = GetRequiredArg(query, key);
+			try {
+				return Convert.FromBase64String(base64string);
+			} catch (FormatException) {
+				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+					Strings.InvalidOpenIdQueryParameterValueBadBase64,
+					key, base64string), query);
+			}
+		}
+		public static byte[] GetOptionalBase64Arg(IDictionary<string, string> query, string key) {
+			string base64string = GetOptionalArg(query, key);
+			if (base64string == null) return null;
+			try {
+				return Convert.FromBase64String(base64string);
+			} catch (FormatException) {
+				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+					Strings.InvalidOpenIdQueryParameterValueBadBase64,
+					key, base64string), query);
+			}
+		}
 		public static bool ArrayEquals<T>(T[] first, T[] second) {
 			if (first == null) throw new ArgumentNullException("first");
 			if (second == null) throw new ArgumentNullException("second");

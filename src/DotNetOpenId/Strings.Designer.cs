@@ -70,6 +70,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An encrypted session using either HTTPS or Diffie-Hellman is required when establishing associations between relying parties and providers..
+        /// </summary>
+        internal static string EncryptionRequired {
+            get {
+                return ResourceManager.GetString("EncryptionRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to OpenID parameter &apos;{0}&apos; was expected to be base64 encoded but is not..
         /// </summary>
         internal static string ExpectedBase64OpenIdQueryParameter {

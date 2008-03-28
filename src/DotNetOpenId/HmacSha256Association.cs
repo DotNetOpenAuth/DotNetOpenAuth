@@ -9,14 +9,12 @@ namespace DotNetOpenId {
 			: base(handle, secret, totalLifeLength, DateTime.UtcNow) {
 		}
 
-		internal override string GetAssociationType(Protocol protocol) {
-			return protocol.Args.SignatureAlgorithm.HMAC_SHA256;
+		protected override HashAlgorithm CreateHasher() {
+			return new HMACSHA256(SecretKey);
 		}
 
-		protected internal override byte[] Sign(IDictionary<string, string> data, IList<string> keyOrder) {
-			using (var hmac = new HMACSHA256(SecretKey)) {
-				return hmac.ComputeHash(ProtocolMessages.KeyValueForm.GetBytes(data, keyOrder));
-			}
+		internal override string GetAssociationType(Protocol protocol) {
+			return protocol.Args.SignatureAlgorithm.HMAC_SHA256;
 		}
 	}
 }

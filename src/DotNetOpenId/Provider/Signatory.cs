@@ -50,10 +50,10 @@ namespace DotNetOpenId.Provider {
 					}
 
 					response.Fields[response.Protocol.openidnp.invalidate_handle] = assoc_handle;
-					assoc = CreateAssociation(AssociationRelyingPartyType.Dumb);
+					assoc = CreateAssociation(AssociationRelyingPartyType.Dumb, null);
 				}
 			} else {
-				assoc = this.CreateAssociation(AssociationRelyingPartyType.Dumb);
+				assoc = this.CreateAssociation(AssociationRelyingPartyType.Dumb, null);
 				if (TraceUtil.Switch.TraceInfo) {
 					Trace.TraceInformation("No assoc_handle supplied. Creating new association.");
 				}
@@ -113,13 +113,28 @@ namespace DotNetOpenId.Provider {
 			return expected_sig.Equals(signature, StringComparison.Ordinal);
 		}
 
-		public virtual Association CreateAssociation(AssociationRelyingPartyType associationType) {
+		public virtual Association CreateAssociation(AssociationRelyingPartyType associationType, OpenIdProvider provider) {
+			if (provider == null && associationType == AssociationRelyingPartyType.Smart) 
+				throw new ArgumentNullException("provider", "For Smart associations, the provider must be given.");
+
 			if (TraceUtil.Switch.TraceInfo) {
 				Trace.TraceInformation("Start Create Association. Association type = {0}", associationType);
 			}
 
+			bool useSha256;
+			string assoc_type;
+			if (associationType == AssociationRelyingPartyType.Dumb) {
+				useSha256 = true;
+				assoc_type = provider.Protocol.Args.SignatureAlgorithm.HMAC_SHA256;
+			} else {
+				assoc_type = Util.GetRequiredArg(provider.Query, provider.Protocol.openid.assoc_type);
+				Debug.Assert(Array.IndexOf(provider.Protocol.Args.SignatureAlgorithm.All, assoc_type) >= 0, "This should have been checked by our caller.");
+				useSha256 = assoc_type.Equals(provider.Protocol.Args.SignatureAlgorithm.HMAC_SHA256, StringComparison.Ordinal);
+			}
+			int hashSize = useSha256 ? CryptUtil.Sha256.HashSize : CryptUtil.Sha1.HashSize;
+
 			RNGCryptoServiceProvider generator = new RNGCryptoServiceProvider();
-			byte[] secret = new byte[20];
+			byte[] secret = new byte[hashSize / 8];
 			byte[] uniq_bytes = new byte[4];
 			string uniq;
 			string handle;
@@ -132,10 +147,12 @@ namespace DotNetOpenId.Provider {
 
 			double seconds = DateTime.UtcNow.Subtract(Association.UnixEpoch).TotalSeconds;
 
-			handle = "{{HMAC-SHA1}{" + seconds + "}{" + uniq + "}";
+			handle = "{{" + assoc_type + "}{" + seconds + "}{" + uniq + "}";
 
-			assoc = new HmacSha1Association(handle, secret, 
-				associationType == AssociationRelyingPartyType.Dumb ? dumbSecretLifetime : smartAssociationLifetime);
+			TimeSpan lifeSpan = associationType == AssociationRelyingPartyType.Dumb ? dumbSecretLifetime : smartAssociationLifetime;
+			assoc = useSha256 ? (Association)
+				new HmacSha256Association(handle, secret, lifeSpan) :
+				new HmacSha1Association(handle, secret, lifeSpan);
 
 			store.StoreAssociation(associationType, assoc);
 

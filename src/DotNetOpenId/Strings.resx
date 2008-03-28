@@ -120,6 +120,9 @@
   <data name="CurrentHttpContextRequired" xml:space="preserve">
     <value>HttpContext.Current is null.  There must be an ASP.NET request in process for this operation to succeed.</value>
   </data>
+  <data name="EncryptionRequired" xml:space="preserve">
+    <value>An encrypted session using either HTTPS or Diffie-Hellman is required when establishing associations between relying parties and providers.</value>
+  </data>
   <data name="ExpectedBase64OpenIdQueryParameter" xml:space="preserve">
     <value>OpenID parameter '{0}' was expected to be base64 encoded but is not.</value>
   </data>

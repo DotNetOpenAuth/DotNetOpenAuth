@@ -14,6 +14,8 @@ namespace DotNetOpenId.Provider {
 			Request = request;
 			Signed = new List<string>();
 			Fields = new Dictionary<string, string>();
+			if (Protocol.QueryDeclaredNamespaceVersion != null)
+				Fields.Add(Protocol.openid.ns, Protocol.QueryDeclaredNamespaceVersion);
 		}
 
 		public Request Request { get; private set; }

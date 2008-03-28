@@ -16,6 +16,7 @@ namespace DotNetOpenId {
 		public Identifier Identifier { get; private set; }
 		internal Protocol Protocol = Protocol.Default;
 		Protocol IEncodable.Protocol { get { return this.Protocol; } }
+		internal IDictionary<string, string> ExtraArgsToReturn;
 
 		internal OpenIdException(string message, Identifier identifier, IDictionary<string, string> query, Exception innerException)
 			: base(message, innerException) {
@@ -100,6 +101,11 @@ namespace DotNetOpenId {
 				var q = new Dictionary<string, string>();
 				q.Add(Protocol.openid.mode, Protocol.Args.Mode.error);
 				q.Add(Protocol.openid.error, Message);
+				if (ExtraArgsToReturn != null) {
+					foreach (var pair in ExtraArgsToReturn) {
+						q.Add(pair.Key, pair.Value);
+					}
+				}
 				return q;
 			}
 		}

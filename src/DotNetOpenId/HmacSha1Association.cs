@@ -13,10 +13,8 @@ namespace DotNetOpenId {
 			return protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 		}
 
-		protected internal override byte[] Sign(IDictionary<string, string> data, IList<string> keyOrder) {
-			using (var hmac = new HMACSHA1(SecretKey)) {
-				return hmac.ComputeHash(ProtocolMessages.KeyValueForm.GetBytes(data, keyOrder));
-			}
+		protected override HashAlgorithm CreateHasher() {
+			return new HMACSHA1(SecretKey);
 		}
 	}
 }

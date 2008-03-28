@@ -15,6 +15,15 @@ namespace DotNetOpenId.Provider {
 		internal Signatory Signatory { get; private set; }
 		internal Encoder Encoder;
 		/// <summary>
+		/// The incoming request's Url.
+		/// </summary>
+		/// <remarks>
+		/// This is used for certain security checks internally.  It should not
+		/// be used for its Query property, as it will be irrelevant on POST requests.
+		/// Instead, use the OpenIdProvider.Query field.
+		/// </remarks>
+		internal Uri RequestUrl;
+		/// <summary>
 		/// The query of the incoming request.
 		/// </summary>
 		internal IDictionary<string, string> Query;
@@ -49,6 +58,7 @@ namespace DotNetOpenId.Provider {
 			if (store == null) throw new ArgumentNullException("store");
 			if (requestUrl == null) throw new ArgumentNullException("requestUrl");
 			if (query == null) throw new ArgumentNullException("query");
+			RequestUrl = requestUrl;
 			Query = query;
 			Signatory = new Signatory(store);
 			Encoder = new SigningEncoder(Signatory);

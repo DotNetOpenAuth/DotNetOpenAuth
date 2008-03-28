@@ -53,7 +53,9 @@ namespace DotNetOpenId {
 			byte[] dhShared = dh.DecryptKeyExchange(keyEx);
 			byte[] shaDhShared = hasher.ComputeHash(ensurePositive(dhShared));
 			if (shaDhShared.Length != encMacKey.Length) {
-				throw new ArgumentOutOfRangeException("encMacKey's length is not 20 bytes: " + ToBase64String(encMacKey));
+				throw new ArgumentOutOfRangeException(string.Format(
+					"encMacKey's length ({0}) does not match the length of the hashing algorithm ({1}).",
+					encMacKey.Length, shaDhShared.Length));
 			}
 
 			byte[] secret = new byte[encMacKey.Length];

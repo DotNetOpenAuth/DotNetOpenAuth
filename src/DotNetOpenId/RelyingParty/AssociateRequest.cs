@@ -68,7 +68,9 @@ namespace DotNetOpenId.RelyingParty {
 					try {
 						response = new AssociateResponse(Provider, GetResponse(), DH);
 					} catch (OpenIdException ex) {
-						response = new AssociateResponse(Provider, ex.Query, DH);
+						if (ex.Query != null) {
+							response = new AssociateResponse(Provider, ex.Query, DH);
+						}
 						// Silently fail at associate attempt, since we can recover
 						// using dumb mode.
 						if (TraceUtil.Switch.TraceWarning) {

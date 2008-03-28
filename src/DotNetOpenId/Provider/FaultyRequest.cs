@@ -4,10 +4,10 @@ using System.Text;
 
 namespace DotNetOpenId.Provider {
 	class FaultyRequest : Request {
-		public OpenIdException Exception { get; private set; }
-		internal FaultyRequest(OpenIdProvider server, OpenIdException ex)
-			: base(server) {
-			Exception = ex;
+		public IEncodable Response { get; private set; }
+		internal FaultyRequest(OpenIdProvider provider, IEncodable response)
+			: base(provider) {
+			Response = response;
 		}
 
 		internal override string Mode {
@@ -19,7 +19,7 @@ namespace DotNetOpenId.Provider {
 		}
 
 		internal override IEncodable CreateResponse() {
-			return Exception;
+			return Response;
 		}
 	}
 }

@@ -9,12 +9,13 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace DotNetOpenId {
 	public abstract class Association {
-		protected Association(string handle, byte[] secretKey, TimeSpan totalLifeLength, DateTime issued) {
+		protected Association(string handle, byte[] secret, TimeSpan totalLifeLength, DateTime issued) {
 			Handle = handle;
-			SecretKey = secretKey;
+			SecretKey = secret;
 			TotalLifeLength = totalLifeLength;
 			Issued = cutToSecond(issued);
 		}
+		protected HashAlgorithm Hasher { get; private set; }
 
 		static TimeSpan minimumUsefulAssociationLifetime {
 			get { return Protocol.MaximumUserAgentAuthenticationTime; }
@@ -109,7 +110,13 @@ namespace DotNetOpenId {
 		/// </summary>
 		/// <param name="data">The dictionary.  This dictionary will not be changed.</param>
 		/// <returns>The calculated signature of the data in the dictionary.</returns>
-		protected internal abstract byte[] Sign(IDictionary<string, string> data, IList<string> keyOrder);
+		protected internal byte[] Sign(IDictionary<string, string> data, IList<string> keyOrder) {
+			using (HashAlgorithm hasher = CreateHasher()) {
+				return hasher.ComputeHash(ProtocolMessages.KeyValueForm.GetBytes(data, keyOrder));
+			}
+		}
+		protected abstract HashAlgorithm CreateHasher();
+
 		/// <summary>
 		/// Rounds the given <see cref="DateTime"/> downward to the whole second.
 		/// </summary>

@@ -4,6 +4,8 @@ using Org.Mentalis.Security.Cryptography;
 using System.Text;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Diagnostics;
+using System.Security.Cryptography;
 
 namespace DotNetOpenId.Provider {
 	internal abstract class ProviderSession {
@@ -31,7 +33,9 @@ namespace DotNetOpenId.Provider {
 			} else {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 					Strings.InvalidOpenIdQueryParameterValue,
-					protocol.openid.session_type, session_type), provider.Query);
+					protocol.openid.session_type, session_type), provider.Query) {
+						ExtraArgsToReturn = AssociateRequest.CreateAssociationTypeHints(provider),
+					};
 			}
 		}
 	}
@@ -40,7 +44,14 @@ namespace DotNetOpenId.Provider {
 	/// An object that knows how to handle association requests with no session type.
 	/// </summary>
 	internal class PlainTextProviderSession : ProviderSession {
-		public PlainTextProviderSession(OpenIdProvider provider) : base(provider) { }
+		public PlainTextProviderSession(OpenIdProvider provider) : base(provider) {
+			// Extra requirements for OpenId 2.0 compliance.  Although the 1.0 spec
+			// doesn't require use of an encrypted session, it's stupid not to encrypt
+			// the shared secret key, so we'll enforce the rule for 1.0 and 2.0 RPs.
+			if (!provider.RequestUrl.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase)) {
+				throw new OpenIdException(Strings.EncryptionRequired, provider.Query);
+			}
+		}
 		public override string SessionType {
 			get { return Protocol.Args.SessionType.NoEncryption; }
 		}
@@ -56,59 +67,20 @@ namespace DotNetOpenId.Provider {
 	/// An object that knows how to handle association requests with the Diffie-Hellman session type.
 	/// </summary>
 	internal class DiffieHellmanProviderSession : ProviderSession, IDisposable {
-		byte[] _consumer_pubkey;
-		DiffieHellman _dh;
+		byte[] consumerPublicKey;
+		DiffieHellman dh;
 		string sessionType;
 
 		public DiffieHellmanProviderSession(OpenIdProvider provider)
 			: base(provider) {
 			sessionType = Util.GetRequiredArg(provider.Query, Protocol.openid.session_type);
+			Debug.Assert(Array.IndexOf(Protocol.Args.SessionType.AllDiffieHellman, sessionType) >= 0, "We should not have been invoked if this wasn't a recognized DH session request.");
 
-			string missing;
-			string dh_modulus = Util.GetOptionalArg(Provider.Query, Protocol.openid.dh_modulus);
-			string dh_gen = Util.GetOptionalArg(Provider.Query, Protocol.openid.dh_gen);
-			byte[] dh_modulus_bytes = new byte[0];
-			byte[] dh_gen_bytes = new byte[0];
+			byte[] dh_modulus = Util.GetOptionalBase64Arg(Provider.Query, Protocol.openid.dh_modulus) ?? CryptUtil.DEFAULT_MOD;
+			byte[] dh_gen = Util.GetOptionalBase64Arg(Provider.Query, Protocol.openid.dh_gen) ?? CryptUtil.DEFAULT_GEN;
+			dh = new DiffieHellmanManaged(dh_modulus, dh_gen, 1024);
 
-			if (dh_modulus == null ^ dh_gen == null) {
-				// Only one of an atomic arg pair was included.  They must either both
-				// be omitted or both be specified.
-				missing = (dh_modulus == null) ? "modulus" : "generator";
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-					Strings.MissingOpenIdQueryParameter, missing), provider.Query);
-			}
-
-			if (!String.IsNullOrEmpty(dh_modulus) || !String.IsNullOrEmpty(dh_gen)) {
-				try {
-					dh_modulus_bytes = Convert.FromBase64String(dh_modulus);
-				} catch (FormatException) {
-					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-						Strings.InvalidOpenIdQueryParameterValueBadBase64,
-						Protocol.openid.dh_modulus, dh_modulus), provider.Query);
-				}
-
-				try {
-					dh_gen_bytes = Convert.FromBase64String(dh_gen);
-				} catch (FormatException) {
-					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-						Strings.InvalidOpenIdQueryParameterValueBadBase64,
-						Protocol.openid.dh_gen, dh_gen), Provider.Query);
-				}
-			} else {
-				dh_modulus_bytes = CryptUtil.DEFAULT_MOD;
-				dh_gen_bytes = CryptUtil.DEFAULT_GEN;
-			}
-
-			_dh = new DiffieHellmanManaged(dh_modulus_bytes, dh_gen_bytes, 1024);
-
-			string consumer_pubkey = Util.GetRequiredArg(Provider.Query, Protocol.openid.dh_consumer_public);
-			try {
-				_consumer_pubkey = Convert.FromBase64String(consumer_pubkey);
-			} catch (FormatException) {
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-					Strings.InvalidOpenIdQueryParameterValueBadBase64,
-					Protocol.openid.dh_consumer_public, consumer_pubkey), Provider.Query);
-			}
+			consumerPublicKey = Util.GetRequiredBase64Arg(Provider.Query, Protocol.openid.dh_consumer_public);
 		}
 
 		public override string SessionType {
@@ -116,10 +88,13 @@ namespace DotNetOpenId.Provider {
 		}
 
 		public override Dictionary<string, string> Answer(byte[] secret) {
-			byte[] mac_key = CryptUtil.SHAHashXorSecret(CryptUtil.Sha1, _dh, _consumer_pubkey, secret);
+			bool useSha256 = SessionType.Equals(Protocol.Args.SessionType.DH_SHA256, StringComparison.Ordinal);
+			byte[] mac_key = CryptUtil.SHAHashXorSecret(
+				useSha256 ? (HashAlgorithm) CryptUtil.Sha256 : CryptUtil.Sha1, 
+				dh, consumerPublicKey, secret);
 			var nvc = new Dictionary<string, string>();
 
-			nvc.Add(Protocol.openidnp.dh_server_public, CryptUtil.UnsignedToBase64(_dh.CreateKeyExchange()));
+			nvc.Add(Protocol.openidnp.dh_server_public, CryptUtil.UnsignedToBase64(dh.CreateKeyExchange()));
 			nvc.Add(Protocol.openidnp.enc_mac_key, CryptUtil.ToBase64String(mac_key));
 
 			return nvc;
@@ -132,9 +107,9 @@ namespace DotNetOpenId.Provider {
 		}
 		void Dispose(bool disposing) {
 			if (disposing) {
-				if (_dh != null) {
-					((IDisposable)_dh).Dispose();
-					_dh = null;
+				if (dh != null) {
+					((IDisposable)dh).Dispose();
+					dh = null;
 				}
 			}
 		}
