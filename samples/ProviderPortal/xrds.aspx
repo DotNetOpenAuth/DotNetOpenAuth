@@ -10,7 +10,12 @@ This XRDS doc is discovered via the user.aspx page.
 	xmlns:openid="http://openid.net/xmlns/1.0"
 	xmlns="xri://$xrd*($v*2.0)">
 	<XRD>
-		<Service priority="1">
+		<Service priority="10">
+			<Type>http://specs.openid.net/auth/2.0/signon</Type>
+			<Type>http://openid.net/sreg/1.0</Type>
+			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/server.aspx"))%></URI>
+		</Service>
+		<Service priority="20">
 			<Type>http://openid.net/signon/1.0</Type>
 			<Type>http://openid.net/sreg/1.0</Type>
 			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/server.aspx"))%></URI>

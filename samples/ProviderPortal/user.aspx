@@ -4,7 +4,7 @@
 <html>
 <head>
 	<openid:IdentityEndpoint runat="server" ProviderEndpointUrl="~/Server.aspx"
-		XrdsUrl="~/xrds.aspx" ProviderVersion="V11" />
+		XrdsUrl="~/xrds.aspx" ProviderVersion="V20" />
 </head>
 <body>
 	<p>
