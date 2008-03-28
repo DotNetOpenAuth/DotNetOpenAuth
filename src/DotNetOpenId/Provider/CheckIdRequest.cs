@@ -56,7 +56,7 @@ namespace DotNetOpenId.Provider {
 		/// <summary>
 		/// The claimed OpenId URL of the user attempting to authenticate.
 		/// </summary>
-		public Identifier ClaimedIdentifier { get; private set; }
+		public Identifier LocalIdentifier { get; private set; }
 		/// <summary>
 		/// The URL to redirect the user agent to after the authentication attempt.
 		/// This must fall "under" the TrustRoot URL.
@@ -101,7 +101,7 @@ namespace DotNetOpenId.Provider {
 			}
 
 			try {
-				ClaimedIdentifier = new Uri(getRequiredField(query, QueryStringArgs.openid.identity));
+				LocalIdentifier = new Uri(getRequiredField(query, QueryStringArgs.openid.identity));
 			} catch (UriFormatException) {
 				throw new OpenIdException(QueryStringArgs.openid.identity + " not a valid url: " + query[QueryStringArgs.openid.identity], query);
 			}
@@ -111,7 +111,7 @@ namespace DotNetOpenId.Provider {
 			} catch (UriFormatException ex) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture, 
 					"'{0}' is not a valid OpenID return_to URL.", query[QueryStringArgs.openid.return_to]),
-					ClaimedIdentifier, query, ex);
+					LocalIdentifier, query, ex);
 			}
 
 			try {
@@ -157,7 +157,7 @@ namespace DotNetOpenId.Provider {
 			if (IsAuthenticated.Value) {
 				// Add additional signed fields
 				var fields = new Dictionary<string, string>();
-				fields.Add(QueryStringArgs.openidnp.identity, ((UriIdentifier)ClaimedIdentifier).Uri.AbsoluteUri);
+				fields.Add(QueryStringArgs.openidnp.identity, ((UriIdentifier)LocalIdentifier).Uri.AbsoluteUri);
 				fields.Add(QueryStringArgs.openidnp.return_to, ReturnTo.AbsoluteUri);
 				response.AddFields(null, fields, true);
 			}
@@ -195,7 +195,7 @@ namespace DotNetOpenId.Provider {
 				var q = new Dictionary<string, string>();
 
 				q.Add(QueryStringArgs.openid.mode, QueryStringArgs.Modes.checkid_setup);
-				q.Add(QueryStringArgs.openid.identity, ((UriIdentifier)ClaimedIdentifier).Uri.AbsoluteUri);
+				q.Add(QueryStringArgs.openid.identity, ((UriIdentifier)LocalIdentifier).Uri.AbsoluteUri);
 				q.Add(QueryStringArgs.openid.return_to, ReturnTo.AbsoluteUri);
 
 				if (Realm != null)
@@ -221,7 +221,7 @@ CheckIdRequest.ReturnTo = '{4}'
 ";
 
 			return base.ToString() + string.Format(CultureInfo.CurrentUICulture,
-				returnString, Immediate, Realm, ClaimedIdentifier, Mode, ReturnTo);
+				returnString, Immediate, Realm, LocalIdentifier, Mode, ReturnTo);
 		}
 	}
 }

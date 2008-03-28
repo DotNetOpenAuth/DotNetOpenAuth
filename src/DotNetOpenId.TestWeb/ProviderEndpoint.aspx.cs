@@ -16,7 +16,7 @@ public partial class ProviderEndpoint : System.Web.UI.Page {
 	}
 	protected void ProviderEndpoint1_AuthenticationChallenge(object sender, DotNetOpenId.Provider.AuthenticationChallengeEventArgs e) {
 		TestSupport.Scenarios scenario = (TestSupport.Scenarios)Enum.Parse(typeof(TestSupport.Scenarios), 
-			new Uri(e.Request.ClaimedIdentifier).AbsolutePath.TrimStart('/'));
+			new Uri(e.Request.LocalIdentifier).AbsolutePath.TrimStart('/'));
 		switch (scenario) {
 			case TestSupport.Scenarios.AutoApproval:
 				// immediately approve
