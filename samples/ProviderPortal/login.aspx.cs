@@ -10,7 +10,7 @@ public partial class login : System.Web.UI.Page {
 		if (!IsPostBack) {
 			if (ProviderEndpoint.PendingAuthenticationRequest != null) {
 				login1.UserName = Util.ExtractUserName(
-					ProviderEndpoint.PendingAuthenticationRequest.ClaimedIdentifier);
+					ProviderEndpoint.PendingAuthenticationRequest.LocalIdentifier);
 				((TextBox)login1.FindControl("UserName")).ReadOnly = true;
 				login1.FindControl("Password").Focus();
 			}

@@ -15,9 +15,16 @@ namespace DotNetOpenId.Provider {
 		/// </summary>
 		Realm Realm { get; }
 		/// <summary>
-		/// The claimed OpenId URL of the user attempting to authenticate.
+		/// The local identifier to this OpenID Provider of the user attempting 
+		/// to authenticate.
 		/// </summary>
-		Identifier ClaimedIdentifier { get; }
+		/// <remarks>
+		/// This may or may not be the same as the Claimed Identifier that the user agent
+		/// originally supplied to the relying party.  The Claimed Identifier
+		/// endpoint may be delegating authentication to this provider using
+		/// this provider's local id, which is what this property contains.
+		/// </remarks>
+		Identifier LocalIdentifier { get; }
 		/// <summary>
 		/// The provider URL that responds to OpenID requests.
 		/// </summary>

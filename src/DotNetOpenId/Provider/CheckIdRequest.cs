@@ -56,7 +56,7 @@ namespace DotNetOpenId.Provider {
 		/// <summary>
 		/// The claimed OpenId URL of the user attempting to authenticate.
 		/// </summary>
-		public Identifier ClaimedIdentifier { get; private set; }
+		public Identifier LocalIdentifier { get; private set; }
 		/// <summary>
 		/// The URL to redirect the user agent to after the authentication attempt.
 		/// This must fall "under" the realm URL.
@@ -101,7 +101,7 @@ namespace DotNetOpenId.Provider {
 			}
 
 			try {
-				ClaimedIdentifier = Util.GetRequiredArg(Query, Protocol.openid.identity);
+				LocalIdentifier = Util.GetRequiredArg(Query, Protocol.openid.identity);
 			} catch (UriFormatException) {
 				throw new OpenIdException(Protocol.openid.identity + " not a valid url: " + Util.GetRequiredArg(Query, Protocol.openid.identity), Query);
 			}
@@ -111,7 +111,7 @@ namespace DotNetOpenId.Provider {
 			} catch (UriFormatException ex) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture, 
 					"'{0}' is not a valid OpenID return_to URL.", Util.GetRequiredArg(Query, Protocol.openid.return_to)),
-					ClaimedIdentifier, Query, ex);
+					LocalIdentifier, Query, ex);
 			}
 
 			try {
@@ -148,7 +148,7 @@ namespace DotNetOpenId.Provider {
 			if (IsAuthenticated.Value) {
 				// Add additional signed fields
 				var fields = new Dictionary<string, string>();
-				fields.Add(Protocol.openidnp.identity, ClaimedIdentifier.ToString());
+				fields.Add(Protocol.openidnp.identity, LocalIdentifier.ToString());
 				fields.Add(Protocol.openidnp.return_to, ReturnTo.AbsoluteUri);
 				response.AddFields(null, fields, true);
 			}
@@ -186,7 +186,7 @@ namespace DotNetOpenId.Provider {
 				var q = new Dictionary<string, string>();
 
 				q.Add(Protocol.openid.mode, Protocol.Args.Mode.checkid_setup);
-				q.Add(Protocol.openid.identity, ClaimedIdentifier.ToString());
+				q.Add(Protocol.openid.identity, LocalIdentifier.ToString());
 				q.Add(Protocol.openid.return_to, ReturnTo.AbsoluteUri);
 
 				if (Realm != null)
@@ -212,7 +212,7 @@ CheckIdRequest.ReturnTo = '{4}'
 ";
 
 			return base.ToString() + string.Format(CultureInfo.CurrentUICulture,
-				returnString, Immediate, Realm, ClaimedIdentifier, Mode, ReturnTo);
+				returnString, Immediate, Realm, LocalIdentifier, Mode, ReturnTo);
 		}
 	}
 }
