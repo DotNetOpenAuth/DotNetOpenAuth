@@ -35,13 +35,11 @@ namespace DotNetOpenId.Provider {
 		/// <param name="requestUrl">The incoming request URL.</param>
 		/// <param name="query">The name/value pairs that came in on the 
 		/// QueryString of a GET request or in the entity of a POST request.</param>
-		public OpenIdProvider(IProviderAssociationStore store, Uri requestUrl, NameValueCollection query)
-			: this(store, requestUrl, Util.NameValueCollectionToDictionary(query)) { }
-		OpenIdProvider(IProviderAssociationStore store, Uri requestUrl, IDictionary<string, string> query) {
+		public OpenIdProvider(IProviderAssociationStore store, Uri requestUrl, NameValueCollection query) {
 			if (store == null) throw new ArgumentNullException("store");
 			if (requestUrl == null) throw new ArgumentNullException("requestUrl");
 			if (query == null) throw new ArgumentNullException("query");
-			Query = query;
+			this.query = query;
 			Signatory = new Signatory(store);
 			this.encoder = new SigningEncoder(Signatory);
 			store.ClearExpiredAssociations(); // every so often we should do this.
