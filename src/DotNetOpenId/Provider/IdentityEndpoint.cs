@@ -12,6 +12,18 @@ namespace DotNetOpenId.Provider {
 	public class IdentityEndpoint : XrdsPublisher {
 
 		#region Properties
+		const string providerVersionViewStateKey = "ProviderVersion";
+		const ProtocolVersion providerVersionDefault = ProtocolVersion.V20;
+		[Category("Behavior")]
+		[DefaultValue(providerVersionDefault)]
+		public ProtocolVersion ProviderVersion {
+			get {
+				return ViewState[providerVersionViewStateKey] == null ?
+				providerVersionDefault : (ProtocolVersion)ViewState[providerVersionViewStateKey];
+			}
+			set { ViewState[providerVersionViewStateKey] = value; }
+		}
+
 		const string providerEndpointUrlViewStateKey = "ProviderEndpointUrl";
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings"), Bindable(true)]
 		[Category("Behavior")]
@@ -35,12 +47,16 @@ namespace DotNetOpenId.Provider {
 		}
 		#endregion
 
+		internal Protocol Protocol {
+			get { return ProviderVersion == ProtocolVersion.V11 ? Protocol.v11 : Protocol.v20; }
+		}
+
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
 		protected override void Render(HtmlTextWriter writer) {
 			base.Render(writer);
 			if (!string.IsNullOrEmpty(ProviderEndpointUrl)) {
 				writer.WriteBeginTag("link");
-				writer.WriteAttribute("rel", "openid.server");
+				writer.WriteAttribute("rel", Protocol.HtmlDiscoveryProviderKey);
 				writer.WriteAttribute("href",
 					new Uri(Page.Request.Url, Page.ResolveUrl(ProviderEndpointUrl)).AbsoluteUri);
 				writer.Write(">");
@@ -49,7 +65,7 @@ namespace DotNetOpenId.Provider {
 			}
 			if (!string.IsNullOrEmpty(ProviderLocalIdentifier)) {
 				writer.WriteBeginTag("link");
-				writer.WriteAttribute("rel", "openid.delegate");
+				writer.WriteAttribute("rel", Protocol.HtmlDiscoveryLocalIdKey);
 				writer.WriteAttribute("href",
 					new Uri(Page.Request.Url, Page.ResolveUrl(ProviderLocalIdentifier)).AbsoluteUri);
 				writer.Write(">");

@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace DotNetOpenId {
+	public enum ProtocolVersion {
+		V11,
+		V20
+	}
+
 	/// <summary>
 	/// Tracks the several versions of OpenID this library supports and the unique
 	/// constants to each version used in the protocol.
