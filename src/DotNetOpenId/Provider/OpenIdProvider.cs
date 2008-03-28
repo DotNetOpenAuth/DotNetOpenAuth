@@ -23,18 +23,25 @@ namespace DotNetOpenId.Provider {
 		/// <remarks>
 		/// This method requires a current ASP.NET HttpContext.
 		/// </remarks>
-		public OpenIdProvider() : this(Util.GetQueryFromContext(), httpApplicationAssociationStore) { }
+		public OpenIdProvider()
+			: this(httpApplicationAssociationStore,
+			Util.GetRequestUrlFromContext(), Util.GetQueryFromContext()) { }
 		/// <summary>
 		/// Constructs an OpenId server that uses a given query and IAssociationStore.
 		/// </summary>
-		/// <param name="query">The name/value pairs that came in on the QueryString of the web request.</param>
 		/// <param name="store">
 		/// The application-level store where associations with OpenId consumers will be preserved.
 		/// </param>
-		public OpenIdProvider(NameValueCollection query, IProviderAssociationStore store) {
-			if (query == null) throw new ArgumentNullException("query");
+		/// <param name="requestUrl">The incoming request URL.</param>
+		/// <param name="query">The name/value pairs that came in on the 
+		/// QueryString of a GET request or in the entity of a POST request.</param>
+		public OpenIdProvider(IProviderAssociationStore store, Uri requestUrl, NameValueCollection query)
+			: this(store, requestUrl, Util.NameValueCollectionToDictionary(query)) { }
+		OpenIdProvider(IProviderAssociationStore store, Uri requestUrl, IDictionary<string, string> query) {
 			if (store == null) throw new ArgumentNullException("store");
-			this.query = query;
+			if (requestUrl == null) throw new ArgumentNullException("requestUrl");
+			if (query == null) throw new ArgumentNullException("query");
+			Query = query;
 			Signatory = new Signatory(store);
 			this.encoder = new SigningEncoder(Signatory);
 			store.ClearExpiredAssociations(); // every so often we should do this.
