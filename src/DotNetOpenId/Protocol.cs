@@ -44,6 +44,7 @@ namespace DotNetOpenId {
 			op_endpoint = "op_endpoint",
 			response_nonce = "response_nonce",
 			error_code = "error_code",
+			user_setup_url = null,
 		}) {
 			Version = new Version(2, 0),
 			XmlNamespace = null, // no longer applicable
@@ -60,7 +61,10 @@ namespace DotNetOpenId {
 				},
 				SignatureAlgorithm = new QueryArguments.SignatureAlgorithms() {
 					HMAC_SHA256 = "HMAC-SHA256",
-				}
+				},
+				Mode = new QueryArguments.Modes() {
+					setup_needed = "setup_needed",
+				},
 			},
 		};
 		/// <summary>
@@ -234,6 +238,7 @@ namespace DotNetOpenId {
 				public string checkid_setup = "checkid_setup";
 				public string check_authentication = "check_authentication";
 				public string associate = "associate";
+				public string setup_needed = null;
 			}
 			internal class IsValidValues {
 				public string True = "true";

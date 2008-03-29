@@ -15,7 +15,9 @@ namespace DotNetOpenId.Provider {
 			Signed = new List<string>();
 			Fields = new Dictionary<string, string>();
 			if (Protocol.QueryDeclaredNamespaceVersion != null)
-				Fields.Add(Protocol.openid.ns, Protocol.QueryDeclaredNamespaceVersion);
+				Fields.Add(Request is CheckIdRequest ?
+					Protocol.openidnp.ns : Protocol.openid.ns, 
+					Protocol.QueryDeclaredNamespaceVersion);
 		}
 
 		public Request Request { get; private set; }
@@ -23,26 +25,7 @@ namespace DotNetOpenId.Provider {
 		public List<string> Signed { get; private set; }
 		public Protocol Protocol { get { return Request.Protocol; } }
 		public bool NeedsSigning {
-			get {
-				return Request is CheckIdRequest && Signed.Count > 0;
-			}
-		}
-
-		public void AddField(string nmspace, string key, string value, bool signed) {
-			if (!string.IsNullOrEmpty(nmspace)) {
-				key = nmspace + "." + key;
-			}
-
-			Fields[key] = value;
-			if (signed && !Signed.Contains(key)) {
-				Signed.Add(key);
-			}
-		}
-
-		public void AddFields(string nmspace, IDictionary<string, string> fields, bool signed) {
-			foreach (var pair in fields) {
-				this.AddField(nmspace, pair.Key, pair.Value, signed);
-			}
+			get { return Request is CheckIdRequest && Signed.Count > 0; }
 		}
 
 		#region IEncodable Members

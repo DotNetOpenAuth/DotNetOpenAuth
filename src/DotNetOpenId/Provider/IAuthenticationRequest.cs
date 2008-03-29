@@ -15,16 +15,36 @@ namespace DotNetOpenId.Provider {
 		/// </summary>
 		Realm Realm { get; }
 		/// <summary>
-		/// The local identifier to this OpenID Provider of the user attempting 
-		/// to authenticate.
+		/// Whether the Provider should help the user select a Claimed Identifier
+		/// to send back to the relying party.
+		/// </summary>
+		bool IsIdentifierSelect { get; }
+		/// <summary>
+		/// The Local Identifier to this OpenID Provider of the user attempting 
+		/// to authenticate.  Check <see cref="IsIdentifierSelect"/> to see if
+		/// this value is valid.
 		/// </summary>
 		/// <remarks>
 		/// This may or may not be the same as the Claimed Identifier that the user agent
 		/// originally supplied to the relying party.  The Claimed Identifier
 		/// endpoint may be delegating authentication to this provider using
 		/// this provider's local id, which is what this property contains.
+		/// Use this identifier when looking up this user in the provider's user account
+		/// list.
 		/// </remarks>
 		Identifier LocalIdentifier { get; }
+		/// <summary>
+		/// The identifier that the user agent is claiming at the relying party site.
+		/// Check <see cref="IsIdentifierSelect"/> to see if this value is valid.
+		/// </summary>
+		/// <remarks>
+		/// This will not be the same as this provider's local identifier for the user
+		/// if the user has set up his/her own identity page that points to this 
+		/// provider for authentication.
+		/// The provider may use this identifier for displaying to the user when
+		/// asking for the user's permission to authenticate to the relying party.
+		/// </remarks>
+		Identifier ClaimedIdentifier { get; }
 		/// <summary>
 		/// The provider URL that responds to OpenID requests.
 		/// </summary>

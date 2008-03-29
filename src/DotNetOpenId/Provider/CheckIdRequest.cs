@@ -54,9 +54,20 @@ namespace DotNetOpenId.Provider {
 		/// </summary>
 		public Realm Realm { get; private set; }
 		/// <summary>
-		/// The claimed OpenId URL of the user attempting to authenticate.
+		/// Whether the Provider should help the user select a Claimed Identifier
+		/// to send back to the relying party.
+		/// </summary>
+		public bool IsIdentifierSelect {
+			get { return ClaimedIdentifier == Protocol.ClaimedIdentifierForOPIdentifier; }
+		}
+		/// <summary>
+		/// The user identifier used by this particular provider.
 		/// </summary>
 		public Identifier LocalIdentifier { get; private set; }
+		/// <summary>
+		/// The identifier this user is claiming to control.  
+		/// </summary>
+		public Identifier ClaimedIdentifier { get; private set; }
 		/// <summary>
 		/// The URL to redirect the user agent to after the authentication attempt.
 		/// This must fall "under" the realm URL.
@@ -100,61 +111,73 @@ namespace DotNetOpenId.Provider {
 					Strings.InvalidOpenIdQueryParameterValue, Protocol.openid.mode, mode), Query);
 			}
 
-			try {
-				LocalIdentifier = Util.GetRequiredArg(Query, Protocol.openid.identity);
-			} catch (UriFormatException) {
-				throw new OpenIdException(Protocol.openid.identity + " not a valid url: " + Util.GetRequiredArg(Query, Protocol.openid.identity), Query);
+			// The spec says claimed_id and identity can both be either present or
+			// absent.  But for now we don't have or support extensions that don't
+			// use these parameters, so we require them.  In the future that may change.
+			if (Protocol.Version.Major >= 2) {
+				ClaimedIdentifier = Util.GetRequiredIdentifierArg(Query, Protocol.openid.claimed_id);
 			}
-
-			try {
-				ReturnTo = new Uri(Util.GetRequiredArg(Query, Protocol.openid.return_to));
-			} catch (UriFormatException ex) {
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture, 
-					"'{0}' is not a valid OpenID return_to URL.", Util.GetRequiredArg(Query, Protocol.openid.return_to)),
-					LocalIdentifier, Query, ex);
-			}
-
-			try {
-				Realm = new Realm(Util.GetOptionalArg(Query, Protocol.openid.Realm) ?? ReturnTo.AbsoluteUri);
-			} catch (UriFormatException ex) {
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-					Strings.InvalidOpenIdQueryParameterValue, Protocol.openid.Realm,
-					Util.GetOptionalArg(Query, Protocol.openid.Realm)), ex);
-			}
+			LocalIdentifier = Util.GetRequiredIdentifierArg(Query, Protocol.openid.identity);
+			// The spec says return_to is optional, but what good is authenticating
+			// a user if the user won't be sent back?
+			ReturnTo = Util.GetRequiredUriArg(Query, Protocol.openid.return_to);
+			Realm = Util.GetOptionalRealmArg(Query, Protocol.openid.Realm) ?? new Realm(ReturnTo.AbsoluteUri);
 			AssociationHandle = Util.GetOptionalArg(Query, Protocol.openid.assoc_handle);
 
 			if (!Realm.Contains(ReturnTo)) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 					Strings.ReturnToNotUnderRealm, ReturnTo.AbsoluteUri, Realm), Query);
 			}
+
+			if (LocalIdentifier == Protocol.ClaimedIdentifierForOPIdentifier ^
+				ClaimedIdentifier == Protocol.ClaimedIdentifierForOPIdentifier) {
+				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+					Strings.MatchingArgumentsExpected, Protocol.openid.claimed_id,
+					Protocol.openid.identity, Protocol.ClaimedIdentifierForOPIdentifier));
+			}
 		}
 
 		internal override IEncodable CreateResponse() {
-			string mode = (IsAuthenticated.Value || Immediate) ?
-				Protocol.Args.Mode.id_res : Protocol.Args.Mode.cancel;
+			Debug.Assert(IsAuthenticated.HasValue, "This should be checked internally before CreateResponse is called.");
 
-			if (TraceUtil.Switch.TraceInfo) {
-				Trace.TraceInformation("Start processing Response for CheckIdRequest");
-				if (TraceUtil.Switch.TraceVerbose) {
-					Trace.TraceInformation("mode = '{0}',  server_url = '{1}", mode, ProviderEndpoint);
+			// OpenID 1.1 and 2.0 differ quite a bit in how to respond to these requests,
+			// and then you add immediate/setup variances and you've got quite a complex
+			// mix of possible things to return.  Watch carefully...
+			EncodableResponse response = new EncodableResponse(this);
+
+			if (IsAuthenticated.Value) { // positive assertion
+				response.Fields[Protocol.openidnp.mode] = Protocol.Args.Mode.id_res;
+				response.Fields[Protocol.openidnp.identity] = LocalIdentifier;
+				response.Fields[Protocol.openidnp.return_to] = ReturnTo.AbsoluteUri;
+				response.Signed.AddRange(new[]{
+					Protocol.openidnp.return_to,
+					Protocol.openidnp.identity,
+				});
+				if (Protocol.Version.Major >= 2) {
+					response.Fields[Protocol.openidnp.claimed_id] = ClaimedIdentifier;
+					response.Fields[Protocol.openidnp.op_endpoint] = ProviderEndpoint.AbsoluteUri;
+					response.Fields[Protocol.openidnp.response_nonce] = new Nonce().Code;
+					response.Signed.AddRange(new[]{
+						Protocol.openidnp.claimed_id,
+						Protocol.openidnp.op_endpoint,
+						Protocol.openidnp.response_nonce,
+					});
+				}
+			} else { // negative assertion
+				if (Immediate) {
+					if (Protocol.Version.Major >= 2) {
+						response.Fields[Protocol.openidnp.mode] = Protocol.Args.Mode.setup_needed;
+					} else {
+						response.Fields[Protocol.openidnp.mode] = Protocol.Args.Mode.id_res;
+						response.Fields[Protocol.openidnp.user_setup_url] = SetupUrl.AbsoluteUri;
+					}
+				} else {
+					response.Fields[Protocol.openidnp.mode] = Protocol.Args.Mode.cancel;
 				}
 			}
 
-			EncodableResponse response = new EncodableResponse(this);
-
-			// Always send the openid.mode, and sign it only if authentication succeeded.
-			response.AddField(null, Protocol.openidnp.mode, mode, IsAuthenticated.Value);
-
-			if (IsAuthenticated.Value) {
-				// Add additional signed fields
-				var fields = new Dictionary<string, string>();
-				fields.Add(Protocol.openidnp.identity, LocalIdentifier.ToString());
-				fields.Add(Protocol.openidnp.return_to, ReturnTo.AbsoluteUri);
-				response.AddFields(null, fields, true);
-			}
-			if (Immediate && !IsAuthenticated.Value) {
-				response.AddField(null, Protocol.openidnp.user_setup_url, SetupUrl.AbsoluteUri, false);
-			}
+			// The assoc_handle, signed, sig and invalidate_handle fields are added
+			// as appropriate by the Signatory.Sign method.
 
 			if (TraceUtil.Switch.TraceInfo) {
 				Trace.TraceInformation("CheckIdRequest response successfully created. ");

@@ -60,6 +60,7 @@ namespace DotNetOpenId.Provider {
 			}
 
 			response.Fields[response.Protocol.openidnp.assoc_handle] = assoc.Handle;
+			response.Signed.Add(response.Protocol.openidnp.assoc_handle);
 
 			response.Fields[response.Protocol.openidnp.signed] = String.Join(",", response.Signed.ToArray());
 			response.Fields[response.Protocol.openidnp.sig] =
@@ -125,7 +126,7 @@ namespace DotNetOpenId.Provider {
 			string assoc_type;
 			if (associationType == AssociationRelyingPartyType.Dumb) {
 				useSha256 = true;
-				assoc_type = provider.Protocol.Args.SignatureAlgorithm.HMAC_SHA256;
+				assoc_type = Protocol.v20.Args.SignatureAlgorithm.HMAC_SHA256;
 			} else {
 				assoc_type = Util.GetRequiredArg(provider.Query, provider.Protocol.openid.assoc_type);
 				Debug.Assert(Array.IndexOf(provider.Protocol.Args.SignatureAlgorithm.All, assoc_type) >= 0, "This should have been checked by our caller.");

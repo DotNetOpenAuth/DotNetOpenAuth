@@ -112,6 +112,34 @@ namespace DotNetOpenId {
 					key, base64string), query);
 			}
 		}
+		public static Identifier GetRequiredIdentifierArg(IDictionary<string, string> query, string key) {
+			try {
+				return Util.GetRequiredArg(query, key);
+			} catch (UriFormatException) {
+				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+					Strings.InvalidOpenIdQueryParameterValue, key,
+					Util.GetRequiredArg(query, key), query));
+			}
+		}
+		public static Uri GetRequiredUriArg(IDictionary<string, string> query, string key) {
+			try {
+				return new Uri(Util.GetRequiredArg(query, key));
+			} catch (UriFormatException) {
+				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+					Strings.InvalidOpenIdQueryParameterValue, key,
+					Util.GetRequiredArg(query, key), query));
+			}
+		}
+		public static Realm GetOptionalRealmArg(IDictionary<string, string> query, string key) {
+			try {
+				string value = Util.GetOptionalArg(query, key);
+				return value == null ? null : new Realm(value);
+			} catch (UriFormatException ex) {
+				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+					Strings.InvalidOpenIdQueryParameterValue, key,
+					Util.GetOptionalArg(query, key)), ex);
+			}
+		}
 		public static bool ArrayEquals<T>(T[] first, T[] second) {
 			if (first == null) throw new ArgumentNullException("first");
 			if (second == null) throw new ArgumentNullException("second");

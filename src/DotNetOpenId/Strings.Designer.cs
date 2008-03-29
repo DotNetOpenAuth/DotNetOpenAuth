@@ -223,6 +223,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; and &apos;{1}&apos; parameters must both be or not be &apos;{2}&apos;..
+        /// </summary>
+        internal static string MatchingArgumentsExpected {
+            get {
+                return ResourceManager.GetString("MatchingArgumentsExpected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The XRDS document is missing the required CanonicalID element..
         /// </summary>
         internal static string MissingCanonicalIDElement {

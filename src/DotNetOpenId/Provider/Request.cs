@@ -67,9 +67,8 @@ namespace DotNetOpenId.Provider
 
 			Request request;
 			try {
-				if (mode == provider.Protocol.Args.Mode.checkid_setup)
-					request = new CheckIdRequest(provider);
-				else if (mode == provider.Protocol.Args.Mode.checkid_immediate)
+				if (mode == provider.Protocol.Args.Mode.checkid_setup ||
+					mode == provider.Protocol.Args.Mode.checkid_immediate)
 					request = new CheckIdRequest(provider);
 				else if (mode == provider.Protocol.Args.Mode.check_authentication)
 					request = new CheckAuthRequest(provider);
@@ -108,8 +107,12 @@ namespace DotNetOpenId.Provider
 				if (response == null) {
 					var encodableResponse = CreateResponse();
 					EncodableResponse extendableResponse = encodableResponse as EncodableResponse;
-					if (extendableResponse != null)
-						extendableResponse.AddFields(null, OutgoingExtensions.GetArgumentsToSend(false), true);
+					if (extendableResponse != null) {
+						foreach (var pair in OutgoingExtensions.GetArgumentsToSend(false)) {
+							extendableResponse.Fields.Add(pair.Key, pair.Value);
+							extendableResponse.Signed.Add(pair.Key);
+						}
+					}
 					response = Provider.Encoder.Encode(encodableResponse);
 				}
 				return response;
