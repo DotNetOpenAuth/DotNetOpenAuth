@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using DotNetOpenId.Provider;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
+using System.Diagnostics;
 
 namespace DotNetOpenId {
 	/// <summary>
@@ -68,6 +69,7 @@ namespace DotNetOpenId {
 
 		EncodingType IEncodable.EncodingType {
 			get {
+				Debug.Assert(Query != null, "An OpenId exception should always be provided with the query if it is to be encoded for transmittal to the RP.");
 				if (HasReturnTo)
 					return EncodingType.RedirectBrowserUrl;
 

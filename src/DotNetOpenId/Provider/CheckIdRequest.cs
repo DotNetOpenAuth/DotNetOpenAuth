@@ -129,11 +129,14 @@ namespace DotNetOpenId.Provider {
 					Strings.ReturnToNotUnderRealm, ReturnTo.AbsoluteUri, Realm), Query);
 			}
 
-			if (LocalIdentifier == Protocol.ClaimedIdentifierForOPIdentifier ^
-				ClaimedIdentifier == Protocol.ClaimedIdentifierForOPIdentifier) {
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-					Strings.MatchingArgumentsExpected, Protocol.openid.claimed_id,
-					Protocol.openid.identity, Protocol.ClaimedIdentifierForOPIdentifier));
+			if (Protocol.Version.Major >= 2) {
+				if (LocalIdentifier == Protocol.ClaimedIdentifierForOPIdentifier ^
+					ClaimedIdentifier == Protocol.ClaimedIdentifierForOPIdentifier) {
+					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+						Strings.MatchingArgumentsExpected, Protocol.openid.claimed_id,
+						Protocol.openid.identity, Protocol.ClaimedIdentifierForOPIdentifier),
+						Query);
+				}
 			}
 		}
 
