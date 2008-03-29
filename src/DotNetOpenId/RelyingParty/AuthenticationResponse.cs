@@ -140,12 +140,19 @@ namespace DotNetOpenId.RelyingParty {
 		static AuthenticationResponse parseIdResResponse(IDictionary<string, string> query,
 			ServiceEndpoint tokenEndpoint, ServiceEndpoint responseEndpoint,
 			IRelyingPartyApplicationStore store, Uri requestUrl) {
-			string user_setup_url;
 			// Use responseEndpoint if it is available so we get the
 			// Claimed Identifer correct in the AuthenticationResponse.
 			ServiceEndpoint unverifiedEndpoint = responseEndpoint ?? tokenEndpoint;
-			if (query.TryGetValue(unverifiedEndpoint.Protocol.openid.user_setup_url, out user_setup_url))
-				return new AuthenticationResponse(AuthenticationStatus.SetupRequired, unverifiedEndpoint, query);
+			if (unverifiedEndpoint.Protocol.Version.Major >= 2) {
+				if (unverifiedEndpoint.Protocol.Args.Mode.setup_needed.Equals(Util.GetRequiredArg(query, unverifiedEndpoint.Protocol.openid.mode), StringComparison.Ordinal)) {
+					return new AuthenticationResponse(AuthenticationStatus.SetupRequired, unverifiedEndpoint, query);
+				}
+			} else {
+				string user_setup_url = Util.GetOptionalArg(query, unverifiedEndpoint.Protocol.openid.user_setup_url);
+				if (user_setup_url != null) {
+					return new AuthenticationResponse(AuthenticationStatus.SetupRequired, unverifiedEndpoint, query);
+				}
+			}
 
 			verifyReturnTo(query, unverifiedEndpoint, requestUrl);
 			verifyDiscoveredInfoMatchesAssertedInfo(query, tokenEndpoint, responseEndpoint);
