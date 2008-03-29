@@ -97,6 +97,10 @@ namespace DotNetOpenId.RelyingParty {
 		public Uri ReturnToUrl { get; private set; }
 		public Identifier ClaimedIdentifier { get { return endpoint.ClaimedIdentifier; } }
 		/// <summary>
+		/// The detected version of OpenID implemented by the Provider.
+		/// </summary>
+		public Version ProviderVersion { get { return protocol.Version; } }
+		/// <summary>
 		/// Gets the URL the user agent should be redirected to to begin the 
 		/// OpenID authentication process.
 		/// </summary>

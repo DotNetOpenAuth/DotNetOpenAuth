@@ -94,46 +94,49 @@ namespace DotNetOpenId.RelyingParty {
 			if (query == null) throw new ArgumentNullException("query");
 			if (store == null) throw new ArgumentNullException("store");
 			if (requestUrl == null) throw new ArgumentNullException("requestUrl");
+			ServiceEndpoint tokenEndpoint = null;
+			string token = Util.GetOptionalArg(query, Token.TokenKey);
+			if (token != null) {
+				tokenEndpoint = Token.Deserialize(token, store).Endpoint;
+			}
 
 			Protocol protocol = Protocol.Detect(query);
 			string mode = Util.GetRequiredArg(query, protocol.openid.mode);
-
-			// We allow unsolicited assertions (that won't have our own token on it)
-			// only for OpenID 2.0 providers.
-			ServiceEndpoint tokenEndpoint = null, responseEndpoint = null;
-			if (protocol.Version.Major < 2) {
-				tokenEndpoint = Token.Deserialize(Util.GetRequiredArg(query, Token.TokenKey), store).Endpoint;
-			} else {
-				// 2.0 OPs provide enough information to assemble the entire endpoint info
-				responseEndpoint = ServiceEndpoint.ParseFromAuthResponse(query);
-				// If this is a solicited assertion, we'll have a token with endpoint data too,
-				// which we can use to more quickly confirm the validity of the claimed
-				// endpoint info.
-				string token = Util.GetOptionalArg(query, Token.TokenKey);
-				if (token != null) {
-					tokenEndpoint = Token.Deserialize(token, store).Endpoint;
-				}
-			}
-			// At this point, we are guaranteed to have tokenEndpoint ?? responseEndpoint
-			// set to endpoint data (one or the other or both).  
-			// tokenEndpoint is known good data, whereas responseEndpoint must still be
-			// verified.
-			// For the error-handling and cancellation cases, the info does not have to
-			// be verified, so we'll use whichever one is available.
-			ServiceEndpoint unverifiedEndpoint = tokenEndpoint ?? responseEndpoint;
-
-			if (protocol.Args.Mode.cancel.Equals(mode, StringComparison.Ordinal)) {
-				return new AuthenticationResponse(AuthenticationStatus.Canceled, unverifiedEndpoint, query);
-			} else if (protocol.Args.Mode.error.Equals(mode, StringComparison.Ordinal)) {
+			if (mode.Equals(protocol.Args.Mode.cancel, StringComparison.Ordinal)) {
+				return new AuthenticationResponse(AuthenticationStatus.Canceled, tokenEndpoint, query);
+			} else if (mode.Equals(protocol.Args.Mode.setup_needed, StringComparison.Ordinal)) {
+				return new AuthenticationResponse(AuthenticationStatus.SetupRequired, tokenEndpoint, query);
+			} else if (mode.Equals(protocol.Args.Mode.error, StringComparison.Ordinal)) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
-					"The provider returned an error: {0}", query[protocol.openid.error],
-					unverifiedEndpoint.ClaimedIdentifier));
-			} else if (protocol.Args.Mode.id_res.Equals(mode, StringComparison.Ordinal)) {
+					"The provider returned an error: {0}", query[protocol.openid.error]));
+			} else if (mode.Equals(protocol.Args.Mode.id_res, StringComparison.Ordinal)) {
+				// We allow unsolicited assertions (that won't have our own token on it)
+				// only for OpenID 2.0 providers.
+				ServiceEndpoint responseEndpoint = null;
+				if (protocol.Version.Major < 2) {
+					if (tokenEndpoint == null)
+						throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+							Strings.MissingInternalQueryParameter, Token.TokenKey));
+				} else {
+					// 2.0 OPs provide enough information to assemble the entire endpoint info
+					responseEndpoint = ServiceEndpoint.ParseFromAuthResponse(query);
+					// If this is a solicited assertion, we'll have a token with endpoint data too,
+					// which we can use to more quickly confirm the validity of the claimed
+					// endpoint info.
+				}
+				// At this point, we are guaranteed to have tokenEndpoint ?? responseEndpoint
+				// set to endpoint data (one or the other or both).  
+				// tokenEndpoint is known good data, whereas responseEndpoint must still be
+				// verified.
+				// For the error-handling and cancellation cases, the info does not have to
+				// be verified, so we'll use whichever one is available.
+				ServiceEndpoint unverifiedEndpoint = tokenEndpoint ?? responseEndpoint;
+
 				return parseIdResResponse(query, tokenEndpoint, responseEndpoint, store, requestUrl);
 			} else {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 					Strings.InvalidOpenIdQueryParameterValue,
-					protocol.openid.mode, mode), unverifiedEndpoint.ClaimedIdentifier);
+					protocol.openid.mode, mode));
 			}
 		}
 
@@ -143,11 +146,7 @@ namespace DotNetOpenId.RelyingParty {
 			// Use responseEndpoint if it is available so we get the
 			// Claimed Identifer correct in the AuthenticationResponse.
 			ServiceEndpoint unverifiedEndpoint = responseEndpoint ?? tokenEndpoint;
-			if (unverifiedEndpoint.Protocol.Version.Major >= 2) {
-				if (unverifiedEndpoint.Protocol.Args.Mode.setup_needed.Equals(Util.GetRequiredArg(query, unverifiedEndpoint.Protocol.openid.mode), StringComparison.Ordinal)) {
-					return new AuthenticationResponse(AuthenticationStatus.SetupRequired, unverifiedEndpoint, query);
-				}
-			} else {
+			if (unverifiedEndpoint.Protocol.Version.Major < 2) {
 				string user_setup_url = Util.GetOptionalArg(query, unverifiedEndpoint.Protocol.openid.user_setup_url);
 				if (user_setup_url != null) {
 					return new AuthenticationResponse(AuthenticationStatus.SetupRequired, unverifiedEndpoint, query);

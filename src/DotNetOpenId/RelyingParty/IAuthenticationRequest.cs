@@ -66,5 +66,9 @@ namespace DotNetOpenId.RelyingParty {
 		/// resolved to.
 		/// </summary>
 		Identifier ClaimedIdentifier { get; }
+		/// <summary>
+		/// The detected version of OpenID implemented by the Provider.
+		/// </summary>
+		Version ProviderVersion { get; }
 	}
 }

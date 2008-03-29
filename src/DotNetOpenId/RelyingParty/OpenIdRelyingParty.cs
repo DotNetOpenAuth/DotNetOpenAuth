@@ -106,6 +106,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// </summary>
 		bool isAuthenticationResponseReady {
 			get {
+				if (query == null) return false;
 				Protocol protocol = Protocol.Detect(query);
 				if (!query.ContainsKey(protocol.openid.mode))
 					return false;

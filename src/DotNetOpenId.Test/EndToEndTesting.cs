@@ -23,12 +23,11 @@ namespace DotNetOpenId.Test {
 			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult,
 			bool tryReplayAttack, bool provideStore) {
 			var store = provideStore ? appStore : null;
-			Protocol protocol = Protocol.Default;
 
-			var consumer = new OpenIdRelyingParty(store, new Uri("http://localhost/simple"));
-
+			var consumer = new OpenIdRelyingParty(store, null);
 			Assert.IsNull(consumer.Response);
 			var request = consumer.CreateRequest(identityUrl, realm, returnTo);
+			Protocol protocol = Protocol.Lookup(request.ProviderVersion);
 
 			// Test properties and defaults
 			Assert.AreEqual(AuthenticationRequestMode.Setup, request.Mode);
@@ -41,7 +40,7 @@ namespace DotNetOpenId.Test {
 			Assert.IsNotNull(request.RedirectToProviderUrl);
 			var consumerToProviderQuery = HttpUtility.ParseQueryString(request.RedirectToProviderUrl.Query);
 			Assert.IsTrue(consumerToProviderQuery[protocol.openid.return_to].StartsWith(returnTo.AbsoluteUri, StringComparison.Ordinal));
-			Assert.AreEqual(realm.ToString(), consumerToProviderQuery[Protocol.v11.openid.Realm]);
+			Assert.AreEqual(realm.ToString(), consumerToProviderQuery[protocol.openid.Realm]);
 
 			HttpWebRequest providerRequest = (HttpWebRequest)WebRequest.Create(request.RedirectToProviderUrl);
 			providerRequest.AllowAutoRedirect = false;

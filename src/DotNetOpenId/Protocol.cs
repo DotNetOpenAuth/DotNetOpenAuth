@@ -75,11 +75,18 @@ namespace DotNetOpenId {
 		/// The default (or most recent) supported version of the OpenID protocol.
 		/// </summary>
 		public readonly static Protocol Default = AllVersions[0];
+		public static Protocol Lookup(Version version) {
+			foreach (Protocol protocol in AllVersions) {
+				if (protocol.Version == version) return protocol;
+			}
+			throw new ArgumentOutOfRangeException("version");
+		}
 		/// <summary>
 		/// Attempts to detect the right OpenID protocol version based on the contents
 		/// of an incoming query string.
 		/// </summary>
 		internal static Protocol Detect(IDictionary<string, string> Query) {
+			if (Query == null) throw new ArgumentNullException("Query");
 			return Query.ContainsKey(v20.openid.ns) ? v20 : v11;
 		}
 
