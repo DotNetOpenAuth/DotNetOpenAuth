@@ -97,6 +97,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No current ASP.NET HttpContext was detected.  Use an overload that does not require one..
+        /// </summary>
+        internal static string HttpContextRequiredForThisOverload {
+            get {
+                return ResourceManager.GetString("HttpContextRequiredForThisOverload", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No current HttpContext was detected, so an IAssociationStore must be explicitly provided. Call the Server constructor overload that takes an IAssociationStore..
         /// </summary>
         internal static string IAssociationStoreRequiredWhenNoHttpContextAvailable {

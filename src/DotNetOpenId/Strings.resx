@@ -129,6 +129,9 @@
   <data name="ExtensionParameterKeysWithoutPrefixExpected" xml:space="preserve">
     <value>Extension parameter key '{0}' encountered, but extension parameter keys should not include their prefix.</value>
   </data>
+  <data name="HttpContextRequiredForThisOverload" xml:space="preserve">
+    <value>No current ASP.NET HttpContext was detected.  Use an overload that does not require one.</value>
+  </data>
   <data name="IAssociationStoreRequiredWhenNoHttpContextAvailable" xml:space="preserve">
     <value>No current HttpContext was detected, so an IAssociationStore must be explicitly provided. Call the Server constructor overload that takes an IAssociationStore.</value>
   </data>
