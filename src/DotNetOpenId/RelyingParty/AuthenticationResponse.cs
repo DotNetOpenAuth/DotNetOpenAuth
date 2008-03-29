@@ -263,8 +263,7 @@ namespace DotNetOpenId.RelyingParty {
 			if (assoc == null) {
 				// It's not an association we know about.  Dumb mode is our
 				// only possible path for recovery.
-				if (!verifySignatureByProvider(query, endpoint, store))
-					throw new OpenIdException("check_authentication failed", endpoint.ClaimedIdentifier);
+				verifySignatureByProvider(query, endpoint, store);
 			} else {
 				if (assoc.IsExpired)
 					throw new OpenIdException(String.Format(CultureInfo.CurrentUICulture,
@@ -272,11 +271,6 @@ namespace DotNetOpenId.RelyingParty {
 
 				verifySignatureByAssociation(query, endpoint.Protocol, signedFields, assoc);
 			}
-
-			// Invalidate an old association if the OP signals
-			string invalidate_handle = Util.GetOptionalArg(query, endpoint.Protocol.openid.invalidate_handle);
-			if (invalidate_handle != null)
-				store.RemoveAssociation(endpoint.ProviderEndpoint, invalidate_handle);
 		}
 
 		/// <summary>
@@ -311,13 +305,12 @@ namespace DotNetOpenId.RelyingParty {
 		/// to the consumer site with an authenticated status.
 		/// </summary>
 		/// <returns>Whether the authentication is valid.</returns>
-		static bool verifySignatureByProvider(IDictionary<string, string> query, ServiceEndpoint provider, IRelyingPartyApplicationStore store) {
+		static void verifySignatureByProvider(IDictionary<string, string> query, ServiceEndpoint provider, IRelyingPartyApplicationStore store) {
 			var request = CheckAuthRequest.Create(provider, query);
-			if (request.Response == null)
-				return false;
 			if (request.Response.InvalidatedAssociationHandle != null)
 				store.RemoveAssociation(provider.ProviderEndpoint, request.Response.InvalidatedAssociationHandle);
-			return request.Response.IsAuthenticationValid;
+			if (!request.Response.IsAuthenticationValid)
+				throw new OpenIdException(Strings.InvalidSignature);
 		}
 	}
 }

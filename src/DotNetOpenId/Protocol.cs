@@ -249,6 +249,7 @@ namespace DotNetOpenId {
 			}
 			internal class IsValidValues {
 				public string True = "true";
+				public string False = "false";
 			}
 		}
 

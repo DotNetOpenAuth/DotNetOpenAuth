@@ -85,7 +85,7 @@ namespace DotNetOpenId.Provider {
 			}
 		}
 
-		internal CheckIdRequest(OpenIdProvider server) : base(server) {
+		internal CheckIdRequest(OpenIdProvider provider) : base(provider) {
 			// handle the mandatory protocol fields
 			string mode = Util.GetRequiredArg(Query, Protocol.openid.mode);
 			if (Protocol.Args.Mode.checkid_immediate.Equals(mode, StringComparison.Ordinal)) {
@@ -165,6 +165,7 @@ namespace DotNetOpenId.Provider {
 				}
 			}
 
+			Debug.Assert(!response.Signed.Contains(Protocol.openidnp.mode), "openid.mode must not be signed because it changes in check_authentication requests.");
 			// The assoc_handle, signed, sig and invalidate_handle fields are added
 			// as appropriate by the Signatory.Sign method.
 

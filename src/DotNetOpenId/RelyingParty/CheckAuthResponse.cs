@@ -10,19 +10,17 @@ namespace DotNetOpenId.RelyingParty {
 
 		public string InvalidatedAssociationHandle {
 			get {
-				string invalidateHandle = null;
 				if (IsAuthenticationValid) {
-					Args.TryGetValue(Protocol.openidnp.invalidate_handle, out invalidateHandle);
+					return Util.GetOptionalArg(Args, Protocol.openidnp.invalidate_handle);
 				}
-				return invalidateHandle;
+				return null;
 			}
 		}
 
 		public bool IsAuthenticationValid {
 			get {
-				string is_valid;
-				Args.TryGetValue(Protocol.openidnp.is_valid, out is_valid);
-				return Protocol.Args.IsValid.True.Equals(is_valid, StringComparison.OrdinalIgnoreCase);
+				return Protocol.Args.IsValid.True.Equals(
+					Util.GetRequiredArg(Args, Protocol.openidnp.is_valid), StringComparison.Ordinal);
 			}
 		}
 	}
