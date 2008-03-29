@@ -6,6 +6,8 @@ using DotNetOpenId.RelyingParty;
 using System.Collections.Specialized;
 using System.Web;
 using System.Net;
+using System.Diagnostics;
+using System.IO;
 
 namespace DotNetOpenId.Test {
 	[TestFixture]
@@ -44,9 +46,19 @@ namespace DotNetOpenId.Test {
 			HttpWebRequest providerRequest = (HttpWebRequest)WebRequest.Create(request.RedirectToProviderUrl);
 			providerRequest.AllowAutoRedirect = false;
 			Uri redirectUrl;
-			using (HttpWebResponse providerResponse = (HttpWebResponse)providerRequest.GetResponse()) {
-				Assert.AreEqual(HttpStatusCode.Redirect, providerResponse.StatusCode);
-				redirectUrl = new Uri(providerResponse.Headers[HttpResponseHeader.Location]);
+			try {
+				using (HttpWebResponse providerResponse = (HttpWebResponse)providerRequest.GetResponse()) {
+					Assert.AreEqual(HttpStatusCode.Redirect, providerResponse.StatusCode);
+					redirectUrl = new Uri(providerResponse.Headers[HttpResponseHeader.Location]);
+				}
+			} catch (WebException ex) {
+				Trace.WriteLine(ex);
+				if (ex.Response != null) {
+					using (StreamReader sr = new StreamReader(ex.Response.GetResponseStream())) {
+						Trace.WriteLine(sr.ReadToEnd());
+					}
+				}
+				throw;
 			}
 			var consumer2 = new OpenIdRelyingParty(store, redirectUrl);
 			Assert.AreEqual(expectedResult, consumer2.Response.Status);
