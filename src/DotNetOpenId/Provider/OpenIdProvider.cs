@@ -35,35 +35,48 @@ namespace DotNetOpenId.Provider {
 
 		/// <summary>
 		/// Constructs an OpenId server that uses the HttpApplication dictionary as
-		/// its association store.
+		/// its association store and detects common settings.
 		/// </summary>
 		/// <remarks>
 		/// This method requires a current ASP.NET HttpContext.
 		/// </remarks>
 		public OpenIdProvider()
 			: this(httpApplicationAssociationStore,
-			Util.GetRequestUrlFromContext(), Util.GetQueryFromContext()) { }
+			getProviderEndpointFromContext(), Util.GetRequestUrlFromContext(), Util.GetQueryFromContext()) { }
 		/// <summary>
 		/// Constructs an OpenId server that uses a given query and IAssociationStore.
 		/// </summary>
 		/// <param name="store">
 		/// The application-level store where associations with OpenId consumers will be preserved.
 		/// </param>
+		/// <param name="providerEndpoint">
+		/// The Internet-facing URL that responds to OpenID requests.
+		/// </param>
 		/// <param name="requestUrl">The incoming request URL.</param>
 		/// <param name="query">The name/value pairs that came in on the 
 		/// QueryString of a GET request or in the entity of a POST request.</param>
-		public OpenIdProvider(IProviderAssociationStore store, Uri requestUrl, NameValueCollection query)
-			: this(store, requestUrl, Util.NameValueCollectionToDictionary(query)) { }
-		OpenIdProvider(IProviderAssociationStore store, Uri requestUrl, IDictionary<string, string> query) {
+		public OpenIdProvider(IProviderAssociationStore store, Uri providerEndpoint, Uri requestUrl, NameValueCollection query)
+			: this(store, providerEndpoint, requestUrl, Util.NameValueCollectionToDictionary(query)) { }
+		OpenIdProvider(IProviderAssociationStore store, Uri providerEndpoint, Uri requestUrl, IDictionary<string, string> query) {
 			if (store == null) throw new ArgumentNullException("store");
+			if (providerEndpoint == null) throw new ArgumentNullException("providerEndpoint");
 			if (requestUrl == null) throw new ArgumentNullException("requestUrl");
 			if (query == null) throw new ArgumentNullException("query");
+			Endpoint = providerEndpoint;
 			RequestUrl = requestUrl;
 			Query = query;
 			Signatory = new Signatory(store);
 			Encoder = new SigningEncoder(Signatory);
 			store.ClearExpiredAssociations(); // every so often we should do this.
 		}
+
+		/// <summary>
+		/// The provider URL that responds to OpenID requests.
+		/// </summary>
+		/// <remarks>
+		/// An auto-detect attempt is made if an ASP.NET HttpContext is available.
+		/// </remarks>
+		internal Uri Endpoint { get; private set; }
 
 		bool requestProcessed;
 		Request request;
@@ -120,6 +133,15 @@ namespace DotNetOpenId.Provider {
 				}
 				return store;
 			}
+		}
+		static Uri getProviderEndpointFromContext() {
+			HttpContext context = HttpContext.Current;
+			if (context == null)
+				throw new InvalidOperationException(Strings.HttpContextRequiredForThisOverload);
+			UriBuilder builder = new UriBuilder(HttpContext.Current.Request.Url);
+			builder.Query = null;
+			builder.Fragment = null;
+			return builder.Uri;
 		}
 	}
 }

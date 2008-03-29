@@ -46,13 +46,6 @@ namespace DotNetOpenId.Provider {
 		/// </remarks>
 		Identifier ClaimedIdentifier { get; }
 		/// <summary>
-		/// The provider URL that responds to OpenID requests.
-		/// </summary>
-		/// <remarks>
-		/// An auto-detect attempt is made if an ASP.NET HttpContext is available.
-		/// </remarks>
-		Uri ProviderEndpoint { get; set; }
-		/// <summary>
 		/// Gets/sets whether the provider has determined that the 
 		/// <see cref="ClaimedIdentifier"/> belongs to the currently logged in user
 		/// and wishes to share this information with the consumer.

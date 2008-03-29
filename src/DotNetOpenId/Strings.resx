@@ -135,6 +135,9 @@
   <data name="FieldMustBeSigned" xml:space="preserve">
     <value>The OpenID parameter '{0}' must be signed by the OpenID Provider, but was not.</value>
   </data>
+  <data name="HttpContextRequiredForThisOverload" xml:space="preserve">
+    <value>No current ASP.NET HttpContext was detected.  Use an overload that does not require one.</value>
+  </data>
   <data name="IAssociationStoreRequiredWhenNoHttpContextAvailable" xml:space="preserve">
     <value>No current HttpContext was detected, so an IAssociationStore must be explicitly provided. Call the Server constructor overload that takes an IAssociationStore.</value>
   </data>

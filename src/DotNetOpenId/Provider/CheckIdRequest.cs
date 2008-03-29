@@ -28,20 +28,6 @@ namespace DotNetOpenId.Provider {
 				InvalidateResponse();
 			}
 		}
-		Uri serverUrl = tryGetServerUrl();
-		/// <summary>
-		/// The provider URL that responds to OpenID requests.
-		/// </summary>
-		/// <remarks>
-		/// An auto-detect attempt is made if an ASP.NET HttpContext is available.
-		/// </remarks>
-		public Uri ProviderEndpoint {
-			get { return serverUrl; }
-			set {
-				serverUrl = value;
-				InvalidateResponse();
-			}
-		}
 
 		/// <summary>
 		/// Whether the consumer demands an immediate response.
@@ -80,7 +66,7 @@ namespace DotNetOpenId.Provider {
 		/// Indicates whether this request has all the information necessary to formulate a response.
 		/// </summary>
 		public override bool IsResponseReady {
-			get { return IsAuthenticated.HasValue && ProviderEndpoint != null; }
+			get { return IsAuthenticated.HasValue && Provider.Endpoint != null; }
 		}
 		/// <summary>
 		/// Get the URL to cancel this request.
@@ -158,7 +144,7 @@ namespace DotNetOpenId.Provider {
 				});
 				if (Protocol.Version.Major >= 2) {
 					response.Fields[Protocol.openidnp.claimed_id] = ClaimedIdentifier;
-					response.Fields[Protocol.openidnp.op_endpoint] = ProviderEndpoint.AbsoluteUri;
+					response.Fields[Protocol.openidnp.op_endpoint] = Provider.Endpoint.AbsoluteUri;
 					response.Fields[Protocol.openidnp.response_nonce] = new Nonce().Code;
 					response.Signed.AddRange(new[]{
 						Protocol.openidnp.claimed_id,
@@ -192,23 +178,12 @@ namespace DotNetOpenId.Provider {
 			return response;
 		}
 
-		static Uri tryGetServerUrl() {
-			if (HttpContext.Current == null) return null;
-			UriBuilder builder = new UriBuilder(HttpContext.Current.Request.Url);
-			builder.Query = null;
-			builder.Fragment = null;
-			return builder.Uri;
-		}
-
 		/// <summary>
 		/// Encode this request as a URL to GET.
 		/// </summary>
 		internal Uri SetupUrl {
 			get {
-				if (ProviderEndpoint == null) {
-					throw new InvalidOperationException("ProviderEndpoint is required for failed authentication in immediate mode.");
-				}
-
+				Debug.Assert(Provider.Endpoint != null, "The OpenIdProvider should have guaranteed this.");
 				var q = new Dictionary<string, string>();
 
 				q.Add(Protocol.openid.mode, Protocol.Args.Mode.checkid_setup);
@@ -221,7 +196,7 @@ namespace DotNetOpenId.Provider {
 				if (this.AssociationHandle != null)
 					q.Add(Protocol.openid.assoc_handle, this.AssociationHandle);
 
-				UriBuilder builder = new UriBuilder(ProviderEndpoint);
+				UriBuilder builder = new UriBuilder(Provider.Endpoint);
 				UriUtil.AppendQueryArgs(builder, q);
 
 				return builder.Uri;
