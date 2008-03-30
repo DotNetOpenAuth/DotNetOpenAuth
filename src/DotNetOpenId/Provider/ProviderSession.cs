@@ -58,7 +58,7 @@ namespace DotNetOpenId.Provider {
 
 		public override Dictionary<string, string> Answer(byte[] secret) {
 			var nvc = new Dictionary<string, string>();
-			nvc.Add(Protocol.openidnp.mac_key, CryptUtil.ToBase64String(secret));
+			nvc.Add(Protocol.openidnp.mac_key, Convert.ToBase64String(secret));
 			return nvc;
 		}
 	}
@@ -95,7 +95,7 @@ namespace DotNetOpenId.Provider {
 			var nvc = new Dictionary<string, string>();
 
 			nvc.Add(Protocol.openidnp.dh_server_public, CryptUtil.UnsignedToBase64(dh.CreateKeyExchange()));
-			nvc.Add(Protocol.openidnp.enc_mac_key, CryptUtil.ToBase64String(mac_key));
+			nvc.Add(Protocol.openidnp.enc_mac_key, Convert.ToBase64String(mac_key));
 
 			return nvc;
 		}

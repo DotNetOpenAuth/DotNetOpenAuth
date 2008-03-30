@@ -54,7 +54,7 @@ namespace DotNetOpenId.RelyingParty {
 				Buffer.BlockCopy(hash, 0, data, 0, hash.Length);
 				Buffer.BlockCopy(ms.ToArray(), 0, data, hash.Length, (int)ms.Length);
 
-				return CryptUtil.ToBase64String(data);
+				return Convert.ToBase64String(data);
 			}
 		}
 

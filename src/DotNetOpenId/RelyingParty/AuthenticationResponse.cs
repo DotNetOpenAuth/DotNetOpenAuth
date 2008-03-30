@@ -293,7 +293,7 @@ namespace DotNetOpenId.RelyingParty {
 		static void verifySignatureByAssociation(IDictionary<string, string> query, Protocol protocol, string[] signedFields, Association assoc) {
 			string sig = Util.GetRequiredArg(query, protocol.openid.sig);
 
-			string v_sig = CryptUtil.ToBase64String(assoc.Sign(query, signedFields, protocol.openid.Prefix));
+			string v_sig = Convert.ToBase64String(assoc.Sign(query, signedFields, protocol.openid.Prefix));
 
 			if (v_sig != sig)
 				throw new OpenIdException(Strings.InvalidSignature);

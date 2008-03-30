@@ -14,8 +14,8 @@ namespace DotNetOpenId.Test
             DiffieHellman dh1 = CryptUtil.CreateDiffieHellman();
             DiffieHellman dh2 = CryptUtil.CreateDiffieHellman();
 
-            string secret1 = CryptUtil.ToBase64String(dh1.DecryptKeyExchange(dh2.CreateKeyExchange()));
-            string secret2 = CryptUtil.ToBase64String(dh2.DecryptKeyExchange(dh1.CreateKeyExchange()));
+            string secret1 = Convert.ToBase64String(dh1.DecryptKeyExchange(dh2.CreateKeyExchange()));
+            string secret2 = Convert.ToBase64String(dh2.DecryptKeyExchange(dh1.CreateKeyExchange()));
 
             Assert.AreEqual(secret1, secret2, "Secret keys do not match for some reason.");
 

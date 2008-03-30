@@ -64,7 +64,7 @@ namespace DotNetOpenId.Provider {
 
 			response.Fields[response.Protocol.openidnp.signed] = String.Join(",", response.Signed.ToArray());
 			response.Fields[response.Protocol.openidnp.sig] =
-				CryptUtil.ToBase64String(assoc.Sign(response.Fields, response.Signed, string.Empty));
+				Convert.ToBase64String(assoc.Sign(response.Fields, response.Signed, string.Empty));
 
 			if (TraceUtil.Switch.TraceInfo) {
 				Trace.TraceInformation("Digital signature successfully created");
@@ -99,7 +99,7 @@ namespace DotNetOpenId.Provider {
 				Trace.TraceInformation("Matching association found ");
 			}
 
-			expected_sig = CryptUtil.ToBase64String(assoc.Sign(signed_pairs, signedKeyOrder));
+			expected_sig = Convert.ToBase64String(assoc.Sign(signed_pairs, signedKeyOrder));
 
 			if (TraceUtil.Switch.TraceInfo) {
 				Trace.TraceInformation("Expected signature is '{0}'. Actual signature is '{1}' ", expected_sig, signature);
@@ -144,7 +144,7 @@ namespace DotNetOpenId.Provider {
 			generator.GetBytes(secret);
 			generator.GetBytes(uniq_bytes);
 
-			uniq = CryptUtil.ToBase64String(uniq_bytes);
+			uniq = Convert.ToBase64String(uniq_bytes);
 
 			double seconds = DateTime.UtcNow.Subtract(Association.UnixEpoch).TotalSeconds;
 

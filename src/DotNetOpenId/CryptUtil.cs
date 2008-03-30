@@ -22,27 +22,8 @@ namespace DotNetOpenId {
 		internal static SHA1CryptoServiceProvider Sha1 = new SHA1CryptoServiceProvider();
 		internal static SHA256Managed Sha256 = new SHA256Managed();
 
-		public static string ToBase64String(byte[] inputBytes) {
-			StringBuilder sb = new StringBuilder();
-			byte[] outputBytes = new byte[base64Transform.OutputBlockSize];
-			int inputOffset = 0;
-			int inputBlockSize = base64Transform.InputBlockSize;
-
-			while ((inputBytes.Length - inputOffset) > inputBlockSize) {
-				base64Transform.TransformBlock(inputBytes, inputOffset, inputBlockSize, outputBytes, 0);
-				inputOffset += base64Transform.InputBlockSize;
-				sb.Append(Encoding.ASCII.GetString(outputBytes, 0, base64Transform.OutputBlockSize));
-			}
-
-			outputBytes = base64Transform.TransformFinalBlock(
-				inputBytes, inputOffset, (inputBytes.Length - inputOffset));
-			sb.Append(Encoding.ASCII.GetString(outputBytes, 0, outputBytes.Length));
-
-			return sb.ToString();
-		}
-
 		public static string UnsignedToBase64(byte[] inputBytes) {
-			return ToBase64String(ensurePositive(inputBytes));
+			return Convert.ToBase64String(ensurePositive(inputBytes));
 		}
 
 		public static DiffieHellman CreateDiffieHellman() {
