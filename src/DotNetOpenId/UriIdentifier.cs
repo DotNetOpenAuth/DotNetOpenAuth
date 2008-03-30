@@ -5,6 +5,7 @@ using DotNetOpenId.RelyingParty;
 using DotNetOpenId.Yadis;
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
+using System.Text.RegularExpressions;
 
 namespace DotNetOpenId {
 	class UriIdentifier : Identifier {
@@ -108,7 +109,9 @@ namespace DotNetOpenId {
 			var linkTags = new List<HtmlLink>(Yadis.HtmlParser.HeadTags<HtmlLink>(html));
 			foreach (var protocol in Protocol.AllVersions) {
 				foreach (var linkTag in linkTags) {
-					if (protocol.HtmlDiscoveryProviderKey.Equals(linkTag.Attributes["rel"], StringComparison.Ordinal)) {
+					// rel attributes are supposed to be interpreted with case INsensitivity, 
+					// and is a space-delimited list of values. (http://www.htmlhelp.com/reference/html40/values.html#linktypes)
+					if (Regex.IsMatch(linkTag.Attributes["rel"], @"\b" + Regex.Escape(protocol.HtmlDiscoveryProviderKey) + @"\b", RegexOptions.IgnoreCase)) {
 						providerEndpoint = new Uri(linkTag.Href);
 						discoveredProtocol = protocol;
 						break;
@@ -120,7 +123,7 @@ namespace DotNetOpenId {
 				return null; // html did not contain openid.server link
 			// See if a LocalId tag of the discovered version exists
 			foreach (var linkTag in linkTags) {
-				if (discoveredProtocol.HtmlDiscoveryLocalIdKey.Equals(linkTag.Attributes["rel"], StringComparison.Ordinal)) {
+				if (Regex.IsMatch(linkTag.Attributes["rel"], @"\b" + Regex.Escape(discoveredProtocol.HtmlDiscoveryLocalIdKey) + @"\b", RegexOptions.IgnoreCase)) {
 					providerLocalIdentifier = new Uri(linkTag.Href);
 					break;
 				}
