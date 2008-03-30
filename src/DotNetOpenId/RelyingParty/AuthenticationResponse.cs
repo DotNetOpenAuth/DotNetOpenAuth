@@ -92,11 +92,10 @@ namespace DotNetOpenId.RelyingParty {
 		internal static AuthenticationResponse Parse(IDictionary<string, string> query,
 			IRelyingPartyApplicationStore store, Uri requestUrl) {
 			if (query == null) throw new ArgumentNullException("query");
-			if (store == null) throw new ArgumentNullException("store");
 			if (requestUrl == null) throw new ArgumentNullException("requestUrl");
 			ServiceEndpoint tokenEndpoint = null;
 			string token = Util.GetOptionalArg(query, Token.TokenKey);
-			if (token != null) {
+			if (token != null && store != null) {
 				tokenEndpoint = Token.Deserialize(token, store).Endpoint;
 			}
 
@@ -231,6 +230,7 @@ namespace DotNetOpenId.RelyingParty {
 
 		static void verifyNonceUnused(IDictionary<string, string> query, ServiceEndpoint endpoint, IRelyingPartyApplicationStore store) {
 			if (endpoint.Protocol.Version.Major < 2) return; // nothing to validate
+			if (store == null) return; // we'll pass verifying the nonce responsibility to the OP
 			var nonce = new Nonce(Util.GetRequiredArg(query, endpoint.Protocol.openid.response_nonce), true);
 			nonce.Consume(store);
 		}
@@ -258,7 +258,7 @@ namespace DotNetOpenId.RelyingParty {
 
 			// Now actually validate the signature itself.
 			string assoc_handle = Util.GetRequiredArg(query, endpoint.Protocol.openid.assoc_handle);
-			Association assoc = store.GetAssociation(endpoint.ProviderEndpoint, assoc_handle);
+			Association assoc = store != null ? store.GetAssociation(endpoint.ProviderEndpoint, assoc_handle) : null;
 
 			if (assoc == null) {
 				// It's not an association we know about.  Dumb mode is our
@@ -307,7 +307,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// <returns>Whether the authentication is valid.</returns>
 		static void verifySignatureByProvider(IDictionary<string, string> query, ServiceEndpoint provider, IRelyingPartyApplicationStore store) {
 			var request = CheckAuthRequest.Create(provider, query);
-			if (request.Response.InvalidatedAssociationHandle != null)
+			if (request.Response.InvalidatedAssociationHandle != null && store != null)
 				store.RemoveAssociation(provider.ProviderEndpoint, request.Response.InvalidatedAssociationHandle);
 			if (!request.Response.IsAuthenticationValid)
 				throw new OpenIdException(Strings.InvalidSignature);

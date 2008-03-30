@@ -32,6 +32,9 @@ namespace DotNetOpenId.RelyingParty {
 
 		AuthenticationRequest(string token, Association assoc, ServiceEndpoint endpoint,
 			Realm realm, Uri returnToUrl) {
+			if (endpoint == null) throw new ArgumentNullException("endpoint");
+			if (realm == null) throw new ArgumentNullException("realm");
+			if (returnToUrl == null) throw new ArgumentNullException("returnToUrl");
 			this.assoc = assoc;
 			this.endpoint = endpoint;
 			Realm = realm;
@@ -40,7 +43,8 @@ namespace DotNetOpenId.RelyingParty {
 			Mode = AuthenticationRequestMode.Setup;
 			OutgoingExtensions = ExtensionArgumentsManager.CreateOutgoingExtensions(endpoint.Protocol);
 			ReturnToArgs = new Dictionary<string, string>();
-			AddCallbackArguments(DotNetOpenId.RelyingParty.Token.TokenKey, token);
+			if (token != null)
+				AddCallbackArguments(DotNetOpenId.RelyingParty.Token.TokenKey, token);
 		}
 		internal static AuthenticationRequest Create(Identifier userSuppliedIdentifier,
 			Realm realm, Uri returnToUrl, IRelyingPartyApplicationStore store) {
@@ -57,12 +61,18 @@ namespace DotNetOpenId.RelyingParty {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 					Strings.ReturnToNotUnderRealm, returnToUrl, realm));
 
-			return new AuthenticationRequest(
-				new Token(endpoint).Serialize(store),
-				getAssociation(endpoint, store), endpoint,
-				realm, returnToUrl);
+			if (store != null) {
+				return new AuthenticationRequest(
+					new Token(endpoint).Serialize(store),
+					getAssociation(endpoint, store), endpoint,
+					realm, returnToUrl);
+			} else {
+				return new AuthenticationRequest(null, null, endpoint, realm, returnToUrl);
+			}
 		}
 		static Association getAssociation(ServiceEndpoint provider, IRelyingPartyApplicationStore store) {
+			if (provider == null) throw new ArgumentNullException("provider");
+			if (store == null) throw new ArgumentNullException("store");
 			Association assoc = store.GetAssociation(provider.ProviderEndpoint);
 
 			if (assoc == null || !assoc.HasUsefulLifeRemaining) {

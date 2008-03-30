@@ -130,7 +130,7 @@ namespace DotNetOpenId.Test {
 			);
 		}
 
-		[Test, Ignore("No store is not a supported scenario yet.")]
+		[Test]
 		public void Pass_NoStore_AutoApproval() {
 			parameterizedTest(
 				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup),
@@ -138,7 +138,7 @@ namespace DotNetOpenId.Test {
 				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
 				AuthenticationRequestMode.Setup,
 				AuthenticationStatus.Authenticated,
-				false,
+				true,
 				false
 			);
 		}

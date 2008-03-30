@@ -31,7 +31,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// The application-level store where associations with other OpenId providers can be
 		/// preserved for optimized authentication and information about nonces can be stored.
 		/// In a multi-server web farm environment, this store MUST be shared across
-		/// all servers.
+		/// all servers.  Optional: if null, the relying party will operate in stateless mode.
 		/// </param>
 		/// <param name="requestUrl">
 		/// Optional.  The current incoming HTTP request that may contain an OpenId assertion.
@@ -46,7 +46,6 @@ namespace DotNetOpenId.RelyingParty {
 		/// state store in order to stop the intruder.
 		/// </remarks>
 		public OpenIdRelyingParty(IRelyingPartyApplicationStore store, Uri requestUrl) {
-			if (store == null) throw new NotSupportedException("Stateless mode is not yet supported.");
 			this.store = store;
 			if (store != null) {
 				store.ClearExpiredAssociations(); // every so often we should do this.
