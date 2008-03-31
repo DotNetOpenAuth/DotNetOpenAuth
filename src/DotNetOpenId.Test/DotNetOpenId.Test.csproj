@@ -46,11 +46,13 @@
     <Compile Include="ExtensionsArgumentsManagerTests.cs" />
     <Compile Include="IdentifierTests.cs" />
     <Compile Include="NonceTest.cs" />
+    <Compile Include="PiecewiseJointTesting.cs" />
     <Compile Include="RelyingParty\OpenIdRelyingPartyTest.cs" />
     <Compile Include="RelyingParty\OpenIdTextBoxTest.cs" />
     <Compile Include="DiffieHellmanTestSuite.cs" />
     <Compile Include="EndToEndTesting.cs" />
     <Compile Include="KeyValueFormEncodingTests.cs" />
+    <Compile Include="RelyingParty\ServiceEndpointTests.cs" />
     <Compile Include="TestSupportSanityTest.cs" />
     <Compile Include="Hosting\AspNetHost.cs" />
     <Compile Include="Hosting\HttpHost.cs" />

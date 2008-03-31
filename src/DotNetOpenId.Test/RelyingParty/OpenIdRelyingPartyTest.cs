@@ -14,6 +14,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 		UriIdentifier simpleOpenId = new UriIdentifier("http://nonexistant.openid.com");
 		Realm simpleRealm = new Realm("http://consumertest.openid.com");
 		Uri simpleReturnTo = new Uri("http://consumertest.openid.com/consumertests");
+		Uri simpleNonOpenIdRequest = new Uri("http://localhost/hi");
 
 		[SetUp]
 		public void Setup() {
@@ -33,20 +34,20 @@ namespace DotNetOpenId.Test.RelyingParty {
 
 		[Test]
 		public void CtorWithNullStore() {
-			var consumer = new OpenIdRelyingParty(null, new Uri("http://localhost/hi"));
+			var consumer = new OpenIdRelyingParty(null, simpleNonOpenIdRequest);
 		}
 
 		[Test]
 		[ExpectedException(typeof(InvalidOperationException))]
 		public void CreateRequestWithoutContext1() {
-			var consumer = new OpenIdRelyingParty(store, new Uri("http://localhost/hi"));
+			var consumer = new OpenIdRelyingParty(store, simpleNonOpenIdRequest);
 			consumer.CreateRequest(simpleOpenId);
 		}
 
 		[Test]
 		[ExpectedException(typeof(InvalidOperationException))]
 		public void CreateRequestWithoutContext2() {
-			var consumer = new OpenIdRelyingParty(store, new Uri("http://localhost/hi"));
+			var consumer = new OpenIdRelyingParty(store, simpleNonOpenIdRequest);
 			consumer.CreateRequest(simpleOpenId, simpleRealm);
 		}
 	}

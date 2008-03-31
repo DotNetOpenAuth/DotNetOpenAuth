@@ -53,5 +53,12 @@ namespace DotNetOpenId.Test.Provider {
 			OpenIdProvider op = new OpenIdProvider(new ProviderMemoryStore(), 
 				providerEndpoint, emptyRequestUrl, null);
 		}
+
+		[Test]
+		public void RequestNullOnEmptyRequest() {
+			OpenIdProvider op = new OpenIdProvider(new ProviderMemoryStore(),
+				providerEndpoint, emptyRequestUrl, new NameValueCollection());
+			Assert.IsNull(op.Request);
+		}
 	}
 }
