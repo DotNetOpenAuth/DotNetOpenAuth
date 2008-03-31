@@ -33,20 +33,20 @@ namespace DotNetOpenId.Provider {
 			base.OnLoad(e);
 
 			if (Enabled) {
-				OpenIdProvider openIDServer = new OpenIdProvider();
+				OpenIdProvider provider = new OpenIdProvider();
 
 				// determine what incoming message was received
-				if (openIDServer.Request != null) {
+				if (provider.Request != null) {
 					// process the incoming message appropriately and send the response
-					if (!openIDServer.Request.IsResponseReady) {
-						var idrequest = (CheckIdRequest)openIDServer.Request;
+					if (!provider.Request.IsResponseReady) {
+						var idrequest = (CheckIdRequest)provider.Request;
 						PendingAuthenticationRequest = idrequest;
 						OnAuthenticationChallenge(idrequest);
 					} else {
 						PendingAuthenticationRequest = null;
 					}
-					if (openIDServer.Request.IsResponseReady) {
-						openIDServer.Request.Response.Send();
+					if (provider.Request.IsResponseReady) {
+						provider.Request.Response.Send();
 						Page.Response.End();
 						PendingAuthenticationRequest = null;
 					}
