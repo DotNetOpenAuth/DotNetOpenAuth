@@ -53,15 +53,6 @@ namespace DotNetOpenId.RelyingParty {
 			var endpoint = userSuppliedIdentifier.Discover();
 			if (endpoint == null)
 				throw new OpenIdException(Strings.OpenIdEndpointNotFound);
-			// There is no way to securely and accurately call into a OpenID 1.0 Provider
-			// without an application store, because the Claimed Identifier is not preserved
-			// and passed back from the OP in the 1.x spec (only the delegate, or Local Id is),
-			// and it can't be persisted in the return_to URL without the danger of tampering
-			// (and thus masquerading as a different Claimed Id) unless we sign it, which requires
-			// an application-wide secret, which would requier state.
-			if (store == null && endpoint.Protocol.Version.Major < 2) {
-				throw new OpenIdException("Web application store is required to call 1.x OpenID Providers.");
-			}
 
 			// Throw an exception now if the realm and the return_to URLs don't match
 			// as required by the provider.  We could wait for the provider to test this and
@@ -70,14 +61,10 @@ namespace DotNetOpenId.RelyingParty {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 					Strings.ReturnToNotUnderRealm, returnToUrl, realm));
 
-			if (store != null) {
-				return new AuthenticationRequest(
-					new Token(endpoint).Serialize(store),
-					getAssociation(endpoint, store), endpoint,
-					realm, returnToUrl);
-			} else {
-				return new AuthenticationRequest(null, null, endpoint, realm, returnToUrl);
-			}
+			return new AuthenticationRequest(
+				new Token(endpoint).Serialize(store),
+				store != null ? getAssociation(endpoint, store) : null,
+				endpoint, realm, returnToUrl);
 		}
 		static Association getAssociation(ServiceEndpoint provider, IRelyingPartyApplicationStore store) {
 			if (provider == null) throw new ArgumentNullException("provider");

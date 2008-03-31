@@ -186,8 +186,7 @@ namespace DotNetOpenId.Test {
 			);
 		}
 
-		// For now we don't support stateless calling to V1.1 providers.  See exception message.
-		[Test, ExpectedException(typeof(OpenIdException))]
+		[Test]
 		public void Pass_NoStore_AutoApproval_11() {
 			parameterizedTest(
 				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V11),

@@ -95,7 +95,7 @@ namespace DotNetOpenId.RelyingParty {
 			if (requestUrl == null) throw new ArgumentNullException("requestUrl");
 			ServiceEndpoint tokenEndpoint = null;
 			string token = Util.GetOptionalArg(query, Token.TokenKey);
-			if (token != null && store != null) {
+			if (token != null) {
 				tokenEndpoint = Token.Deserialize(token, store).Endpoint;
 			}
 
