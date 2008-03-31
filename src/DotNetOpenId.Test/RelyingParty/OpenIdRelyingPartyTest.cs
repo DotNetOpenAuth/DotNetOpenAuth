@@ -32,7 +32,6 @@ namespace DotNetOpenId.Test.RelyingParty {
 		}
 
 		[Test]
-		[ExpectedException(typeof(NotSupportedException), UserMessage = "Until this is a supported scenario, an exception should be thrown right away.")]
 		public void CtorWithNullStore() {
 			var consumer = new OpenIdRelyingParty(null, new Uri("http://localhost/hi"));
 		}

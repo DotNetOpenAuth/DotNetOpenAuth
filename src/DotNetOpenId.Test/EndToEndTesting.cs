@@ -19,6 +19,14 @@ namespace DotNetOpenId.Test {
 			appStore = new ConsumerApplicationMemoryStore();
 		}
 
+		void parameterizedTest(TestSupport.Scenarios scenario, Realm realm, Uri returnTo,
+			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult,
+			bool tryReplayAttack, bool provideStore) {
+			parameterizedTest(TestSupport.GetIdentityUrl(scenario, ProtocolVersion.V11),
+				realm, returnTo, requestMode, expectedResult, tryReplayAttack, provideStore);
+			parameterizedTest(TestSupport.GetIdentityUrl(scenario, ProtocolVersion.V20),
+				realm, returnTo, requestMode, expectedResult, tryReplayAttack, provideStore);
+		}
 		void parameterizedTest(UriIdentifier identityUrl, Realm realm, Uri returnTo,
 			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult,
 			bool tryReplayAttack, bool provideStore) {
@@ -79,9 +87,21 @@ namespace DotNetOpenId.Test {
 		}
 
 		[Test]
-		public void Pass_Setup_AutoApproval() {
+		public void Pass_Setup_AutoApproval_11() {
 			parameterizedTest(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval),
+				TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V11),
+				new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
+				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
+				AuthenticationRequestMode.Setup,
+				AuthenticationStatus.Authenticated,
+				true,
+				true
+			);
+		}
+		[Test]
+		public void Pass_Setup_AutoApproval_20() {
+			parameterizedTest(
+				TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20),
 				new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
 				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
 				AuthenticationRequestMode.Setup,
@@ -92,9 +112,21 @@ namespace DotNetOpenId.Test {
 		}
 
 		[Test]
-		public void Pass_Immediate_AutoApproval() {
+		public void Pass_Immediate_AutoApproval_11() {
 			parameterizedTest(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval),
+				TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V11),
+				new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
+				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
+				AuthenticationRequestMode.Immediate,
+				AuthenticationStatus.Authenticated,
+				true,
+				true
+			);
+		}
+		[Test]
+		public void Pass_Immediate_AutoApproval_20() {
+			parameterizedTest(
+				TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20),
 				new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
 				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
 				AuthenticationRequestMode.Immediate,
@@ -105,9 +137,21 @@ namespace DotNetOpenId.Test {
 		}
 
 		[Test]
-		public void Fail_Immediate_ApproveOnSetup() {
+		public void Fail_Immediate_ApproveOnSetup_11() {
 			parameterizedTest(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup),
+				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V11),
+				new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
+				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
+				AuthenticationRequestMode.Immediate,
+				AuthenticationStatus.SetupRequired,
+				false,
+				true
+			);
+		}
+		[Test]
+		public void Fail_Immediate_ApproveOnSetup_20() {
+			parameterizedTest(
+				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20),
 				new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
 				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
 				AuthenticationRequestMode.Immediate,
@@ -118,9 +162,21 @@ namespace DotNetOpenId.Test {
 		}
 
 		[Test]
-		public void Pass_Setup_ApproveOnSetup() {
+		public void Pass_Setup_ApproveOnSetup_11() {
 			parameterizedTest(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup),
+				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V11),
+				new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
+				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
+				AuthenticationRequestMode.Setup,
+				AuthenticationStatus.Authenticated,
+				true,
+				true
+			);
+		}
+		[Test]
+		public void Pass_Setup_ApproveOnSetup_20() {
+			parameterizedTest(
+				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20),
 				new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
 				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
 				AuthenticationRequestMode.Setup,
@@ -130,10 +186,23 @@ namespace DotNetOpenId.Test {
 			);
 		}
 
-		[Test]
-		public void Pass_NoStore_AutoApproval() {
+		// For now we don't support stateless calling to V1.1 providers.  See exception message.
+		[Test, ExpectedException(typeof(OpenIdException))]
+		public void Pass_NoStore_AutoApproval_11() {
 			parameterizedTest(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup),
+				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V11),
+				new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
+				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
+				AuthenticationRequestMode.Setup,
+				AuthenticationStatus.Authenticated,
+				true,
+				false
+			);
+		}
+		[Test]
+		public void Pass_NoStore_AutoApproval_20() {
+			parameterizedTest(
+				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20),
 				new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
 				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
 				AuthenticationRequestMode.Setup,

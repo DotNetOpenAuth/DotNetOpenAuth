@@ -81,6 +81,13 @@ namespace DotNetOpenId {
 			}
 			throw new ArgumentOutOfRangeException("version");
 		}
+		public static Protocol Lookup(ProtocolVersion version) {
+			switch (version) {
+				case ProtocolVersion.V11: return Protocol.v11;
+				case ProtocolVersion.V20: return Protocol.v20;
+				default: throw new ArgumentOutOfRangeException("version");
+			}
+		}
 		/// <summary>
 		/// Attempts to detect the right OpenID protocol version based on the contents
 		/// of an incoming query string.

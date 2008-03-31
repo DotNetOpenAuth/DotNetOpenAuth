@@ -19,10 +19,10 @@ public class TestSupport {
 		ApproveOnSetup,
 		AlwaysDeny,
 	}
-	internal static UriIdentifier GetIdentityUrl(Scenarios scenario) {
+	internal static UriIdentifier GetIdentityUrl(Scenarios scenario, ProtocolVersion providerVersion) {
 		UriBuilder builder = new UriBuilder(Host.BaseUri);
 		builder.Path = "/" + identityPage;
-		builder.Query = "user=" + scenario;
+		builder.Query = "user=" + scenario + "&version=" + providerVersion;
 		return new UriIdentifier(builder.Uri);
 	}
 	public static Identifier GetDelegateUrl(Scenarios scenario) {
