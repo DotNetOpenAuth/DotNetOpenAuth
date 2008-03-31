@@ -32,7 +32,7 @@ namespace DotNetOpenId.Provider {
 		/// Use this identifier when looking up this user in the provider's user account
 		/// list.
 		/// </remarks>
-		Identifier LocalIdentifier { get; }
+		Identifier LocalIdentifier { get; set; }
 		/// <summary>
 		/// The identifier that the user agent is claiming at the relying party site.
 		/// Check <see cref="IsIdentifierSelect"/> to see if this value is valid.
@@ -44,7 +44,7 @@ namespace DotNetOpenId.Provider {
 		/// The provider may use this identifier for displaying to the user when
 		/// asking for the user's permission to authenticate to the relying party.
 		/// </remarks>
-		Identifier ClaimedIdentifier { get; }
+		Identifier ClaimedIdentifier { get; set; }
 		/// <summary>
 		/// Gets/sets whether the provider has determined that the 
 		/// <see cref="ClaimedIdentifier"/> belongs to the currently logged in user

@@ -1,8 +1,10 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" %>
+<%@ Register Assembly="DotNetOpenId" Namespace="DotNetOpenId" TagPrefix="openid" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
+	<openid:XrdsPublisher runat="server" XrdsUrl="~/op_xrds.aspx" />
 	<title>OpenID Provider, by DotNetOpenId</title>
 </head>
 <body>
@@ -17,6 +19,7 @@
 		Welcome.  This site doesn't do anything more than simple authentication of
 		users.  Start the authentication process on the Relying Party sample site.
 	</p>
+	<asp:LoginStatus runat="server" />
 	</form>
 </body>
 </html>

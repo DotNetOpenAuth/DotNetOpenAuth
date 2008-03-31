@@ -133,6 +133,24 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This operation is only allowed when IsIdentifierSelect is true..
+        /// </summary>
+        internal static string IdentifierSelectModeOnly {
+            get {
+                return ResourceManager.GetString("IdentifierSelectModeOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ClaimedIdentifier and LocalIdentifier must be the same when IsIdentifierSelect is true..
+        /// </summary>
+        internal static string IdentifierSelectRequiresMatchingIdentifiers {
+            get {
+                return ResourceManager.GetString("IdentifierSelectRequiresMatchingIdentifiers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot encode &apos;{0}&apos; because it contains an illegal character for Key-Value Form encoding..
         /// </summary>
         internal static string InvalidCharacterInKeyValueFormInput {

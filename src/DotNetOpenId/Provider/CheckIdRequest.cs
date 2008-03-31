@@ -43,17 +43,47 @@ namespace DotNetOpenId.Provider {
 		/// Whether the Provider should help the user select a Claimed Identifier
 		/// to send back to the relying party.
 		/// </summary>
-		public bool IsIdentifierSelect {
-			get { return ClaimedIdentifier == Protocol.ClaimedIdentifierForOPIdentifier; }
-		}
+		public bool IsIdentifierSelect { get; private set; }
+		Identifier localIdentifier;
 		/// <summary>
 		/// The user identifier used by this particular provider.
 		/// </summary>
-		public Identifier LocalIdentifier { get; private set; }
+		public Identifier LocalIdentifier {
+			get { return localIdentifier; }
+			set {
+				if (IsIdentifierSelect) {
+					// Keep LocalIdentifier and ClaimedIdentifier in sync
+					if (ClaimedIdentifier != null && ClaimedIdentifier != value) {
+						throw new InvalidOperationException(Strings.IdentifierSelectRequiresMatchingIdentifiers);
+					} else {
+						localIdentifier = value;
+						claimedIdentifier = value;
+					}
+				} else {
+					throw new InvalidOperationException(Strings.IdentifierSelectModeOnly);
+				}
+			}
+		}
+		Identifier claimedIdentifier;
 		/// <summary>
 		/// The identifier this user is claiming to control.  
 		/// </summary>
-		public Identifier ClaimedIdentifier { get; private set; }
+		public Identifier ClaimedIdentifier {
+			get { return claimedIdentifier; }
+			set {
+				if (IsIdentifierSelect) {
+					// Keep LocalIdentifier and ClaimedIdentifier in sync
+					if (LocalIdentifier != null && LocalIdentifier != value) {
+						throw new InvalidOperationException(Strings.IdentifierSelectRequiresMatchingIdentifiers);
+					} else {
+						claimedIdentifier = value;
+						localIdentifier = value;
+					}
+				} else {
+					throw new InvalidOperationException(Strings.IdentifierSelectModeOnly);
+				}
+			}
+		}
 		/// <summary>
 		/// The URL to redirect the user agent to after the authentication attempt.
 		/// This must fall "under" the realm URL.
@@ -66,7 +96,12 @@ namespace DotNetOpenId.Provider {
 		/// Indicates whether this request has all the information necessary to formulate a response.
 		/// </summary>
 		public override bool IsResponseReady {
-			get { return IsAuthenticated.HasValue && Provider.Endpoint != null; }
+			get { 
+				// The null checks on the identifiers is to make sure that an identifier_select
+				// has been resolved to actual identifiers.
+				return IsAuthenticated.HasValue &&
+				LocalIdentifier != null && ClaimedIdentifier != null;
+			}
 		}
 		/// <summary>
 		/// Get the URL to cancel this request.
@@ -101,9 +136,9 @@ namespace DotNetOpenId.Provider {
 			// absent.  But for now we don't have or support extensions that don't
 			// use these parameters, so we require them.  In the future that may change.
 			if (Protocol.Version.Major >= 2) {
-				ClaimedIdentifier = Util.GetRequiredIdentifierArg(Query, Protocol.openid.claimed_id);
+				claimedIdentifier = Util.GetRequiredIdentifierArg(Query, Protocol.openid.claimed_id);
 			}
-			LocalIdentifier = Util.GetRequiredIdentifierArg(Query, Protocol.openid.identity);
+			localIdentifier = Util.GetRequiredIdentifierArg(Query, Protocol.openid.identity);
 			// The spec says return_to is optional, but what good is authenticating
 			// a user if the user won't be sent back?
 			ReturnTo = Util.GetRequiredUriArg(Query, Protocol.openid.return_to);
@@ -123,6 +158,13 @@ namespace DotNetOpenId.Provider {
 						Protocol.openid.identity, Protocol.ClaimedIdentifierForOPIdentifier),
 						Query);
 				}
+			}
+
+			if (ClaimedIdentifier == Protocol.ClaimedIdentifierForOPIdentifier) {
+				// Force the OP to deal with identifier_select by nulling out the two identifiers.
+				IsIdentifierSelect = true;
+				claimedIdentifier = null;
+				localIdentifier = null;
 			}
 		}
 

@@ -46,6 +46,7 @@
     <Content Include="App_Data\aspnetdb_log.ldf">
       <DependentUpon>ASPNETDB.MDF</DependentUpon>
     </Content>
+    <Content Include="op_xrds.aspx" />
     <Content Include="decide.aspx" />
     <Content Include="Default.aspx" />
     <Content Include="login.aspx" />
@@ -54,7 +55,7 @@
     <Content Include="user.aspx" />
     <Content Include="Global.asax" />
     <Content Include="Web.config" />
-    <Content Include="xrds.aspx" />
+    <Content Include="user_xrds.aspx" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Code\URLRewriter.cs" />

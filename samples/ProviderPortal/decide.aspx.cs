@@ -13,15 +13,16 @@ public partial class decide : Page {
 		if (ProviderEndpoint.PendingAuthenticationRequest == null)
 			Response.Redirect("~/");
 
+		if (ProviderEndpoint.PendingAuthenticationRequest.IsIdentifierSelect) {
+			ProviderEndpoint.PendingAuthenticationRequest.LocalIdentifier =
+				new Uri(Request.Url, "/user/" + User.Identity.Name);
+		}
+
 		identityUrlLabel.Text = ProviderEndpoint.PendingAuthenticationRequest.LocalIdentifier.ToString();
 		realmLabel.Text = ProviderEndpoint.PendingAuthenticationRequest.Realm.ToString();
 
 		// check that the logged in user is the same as the user requesting authentication to the consumer. If not, then log them out.
-		String s = Util.ExtractUserName(ProviderEndpoint.PendingAuthenticationRequest.LocalIdentifier);
-		if (s != User.Identity.Name) {
-			FormsAuthentication.SignOut();
-			Response.Redirect(Request.Url.AbsoluteUri);
-		} else {
+		if (User.Identity.Name == Util.ExtractUserName(ProviderEndpoint.PendingAuthenticationRequest.LocalIdentifier)) {
 			// if simple registration fields were used, then prompt the user for them
 			var requestedFields = SimpleRegistrationRequestFields.ReadFromRequest(ProviderEndpoint.PendingAuthenticationRequest);
 			if (!requestedFields.Equals(SimpleRegistrationRequestFields.None)) {
@@ -33,6 +34,9 @@ public partial class decide : Page {
 					};
 				}
 			}
+		} else {
+			FormsAuthentication.SignOut();
+			Response.Redirect(Request.Url.AbsoluteUri);
 		}
 	}
 
