@@ -48,7 +48,7 @@ namespace DotNetOpenId.Provider {
 		#endregion
 
 		internal Protocol Protocol {
-			get { return ProviderVersion == ProtocolVersion.V11 ? Protocol.v11 : Protocol.v20; }
+			get { return Protocol.Lookup(ProviderVersion); }
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]

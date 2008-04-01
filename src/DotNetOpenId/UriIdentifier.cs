@@ -6,6 +6,7 @@ using DotNetOpenId.Yadis;
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace DotNetOpenId {
 	class UriIdentifier : Identifier {
@@ -112,9 +113,10 @@ namespace DotNetOpenId {
 					// rel attributes are supposed to be interpreted with case INsensitivity, 
 					// and is a space-delimited list of values. (http://www.htmlhelp.com/reference/html40/values.html#linktypes)
 					if (Regex.IsMatch(linkTag.Attributes["rel"], @"\b" + Regex.Escape(protocol.HtmlDiscoveryProviderKey) + @"\b", RegexOptions.IgnoreCase)) {
-						providerEndpoint = new Uri(linkTag.Href);
-						discoveredProtocol = protocol;
-						break;
+						if (Uri.TryCreate(linkTag.Href, UriKind.Absolute, out providerEndpoint)) {
+							discoveredProtocol = protocol;
+							break;
+						}
 					}
 				}
 				if (providerEndpoint != null) break;
@@ -124,8 +126,14 @@ namespace DotNetOpenId {
 			// See if a LocalId tag of the discovered version exists
 			foreach (var linkTag in linkTags) {
 				if (Regex.IsMatch(linkTag.Attributes["rel"], @"\b" + Regex.Escape(discoveredProtocol.HtmlDiscoveryLocalIdKey) + @"\b", RegexOptions.IgnoreCase)) {
-					providerLocalIdentifier = new Uri(linkTag.Href);
-					break;
+					if (Identifier.IsValid(linkTag.Href)) {
+						providerLocalIdentifier = linkTag.Href;
+						break;
+					} else {
+						if (TraceUtil.Switch.TraceWarning)
+							Trace.TraceWarning("Skipping endpoint data because local id is badly formed ({0}).", linkTag.Href);
+						return null; // badly formed URL used as LocalId
+					}
 				}
 			}
 

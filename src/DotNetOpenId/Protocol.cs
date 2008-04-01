@@ -4,8 +4,9 @@ using System.Text;
 
 namespace DotNetOpenId {
 	public enum ProtocolVersion {
+		V10,
 		V11,
-		V20
+		V20,
 	}
 
 	/// <summary>
@@ -83,6 +84,7 @@ namespace DotNetOpenId {
 		}
 		public static Protocol Lookup(ProtocolVersion version) {
 			switch (version) {
+				case ProtocolVersion.V10: return Protocol.v10;
 				case ProtocolVersion.V11: return Protocol.v11;
 				case ProtocolVersion.V20: return Protocol.v20;
 				default: throw new ArgumentOutOfRangeException("version");
@@ -289,6 +291,9 @@ namespace DotNetOpenId {
 		}
 		public override int GetHashCode() {
 			return Version.GetHashCode();
+		}
+		public override string ToString() {
+			return string.Format("OpenID Authentication {0}.{1}", Version.Major, Version.Minor);
 		}
 	}
 }

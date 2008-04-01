@@ -9,6 +9,7 @@ namespace DotNetOpenId.Extensions {
 	/// </summary>
 	internal static class Constants {
 		internal static class sreg {
+			internal const string TypeUri = "http://openid.net/sreg/1.0";
 			internal const string sreg_ns = "http://openid.net/extensions/sreg/1.1";
 			internal const string sreg_compatibility_alias = "sreg";
 			internal const string policy_url = "policy_url";
