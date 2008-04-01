@@ -100,7 +100,7 @@ namespace DotNetOpenId.Provider {
 				// The null checks on the identifiers is to make sure that an identifier_select
 				// has been resolved to actual identifiers.
 				return IsAuthenticated.HasValue &&
-				LocalIdentifier != null && ClaimedIdentifier != null;
+					(!IsIdentifierSelect || (LocalIdentifier != null && ClaimedIdentifier != null));
 			}
 		}
 		/// <summary>
@@ -160,7 +160,8 @@ namespace DotNetOpenId.Provider {
 				}
 			}
 
-			if (ClaimedIdentifier == Protocol.ClaimedIdentifierForOPIdentifier) {
+			if (ClaimedIdentifier == Protocol.ClaimedIdentifierForOPIdentifier &&
+				Protocol.ClaimedIdentifierForOPIdentifier != null) {
 				// Force the OP to deal with identifier_select by nulling out the two identifiers.
 				IsIdentifierSelect = true;
 				claimedIdentifier = null;
