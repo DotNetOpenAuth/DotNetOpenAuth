@@ -29,9 +29,16 @@ namespace DotNetOpenId.RelyingParty {
 		/// </summary>
 		public static TimeSpan Timeout = TimeSpan.FromSeconds(5);
 
+		internal delegate FetchResponse HttpRequestToResponseTransform(HttpWebRequest request, byte[] body);
+		internal static readonly HttpRequestToResponseTransform StandardGetResponseFromRequest =
+			(req, body) => {
+					using (HttpWebResponse response = (HttpWebResponse)req.GetResponse()) {
+						return GetResponse(req.RequestUri, response);
+					}
+			};
 		// Used to intercept messages going out and coming in for testing purposes.
-		internal static event EventHandler<FetcherRequestEventArgs> SendingRequest;
-		internal static event EventHandler<FetcherResponseEventArgs> ReceivingResponse;
+		internal static HttpRequestToResponseTransform GetResponseFromRequest =
+			StandardGetResponseFromRequest;
 
 #if LONGTIMEOUT
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
@@ -61,7 +68,7 @@ namespace DotNetOpenId.RelyingParty {
 			}
 		}
 
-		static FetchResponse getResponse(Uri requestUri, HttpWebResponse resp) {
+		internal static FetchResponse GetResponse(Uri requestUri, HttpWebResponse resp) {
 			byte[] data;
 			int length;
 			readData(resp, out data, out length);
@@ -99,50 +106,16 @@ namespace DotNetOpenId.RelyingParty {
 					}
 				}
 
-				onSendingRequest(ref request, ref body);
-
-				using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
-					var resp = getResponse(uri, response);
-					onReceivingResponse(resp);
-					return resp;
-				}
+				return GetResponseFromRequest(request, body);
 			} catch (WebException e) {
 				using (HttpWebResponse response = (HttpWebResponse)e.Response) {
 					if (response != null) {
-						return getResponse(uri, response);
+						return GetResponse(uri, response);
 					} else {
 						throw;
 					}
 				}
 			}
 		}
-
-		static void onSendingRequest(ref HttpWebRequest request, ref byte[] data) {
-			if (SendingRequest == null) return;
-			var args = new FetcherRequestEventArgs(request, data);
-			SendingRequest(null, args);
-			request = args.Request;
-			data = args.Data;
-		}
-		static void onReceivingResponse(FetchResponse response) {
-			if (ReceivingResponse == null) return;
-			var args = new FetcherResponseEventArgs(response);
-			ReceivingResponse(null, args);
-		}
-	}
-
-	internal class FetcherRequestEventArgs : EventArgs {
-		public FetcherRequestEventArgs(HttpWebRequest request, byte[] data) {
-			Request = request;
-			Data = data;
-		}
-		public HttpWebRequest Request { get; set; }
-		public byte[] Data { get; set; }
-	}
-	internal class FetcherResponseEventArgs : EventArgs {
-		public FetcherResponseEventArgs(FetchResponse response) {
-			Response = response;
-		}
-		public FetchResponse Response { get; private set; }
 	}
 }

@@ -38,6 +38,7 @@ namespace DotNetOpenId.Test.Hosting {
 		public void ProcessRequest(HttpListenerContext context) {
 			using (TextWriter tw = new StreamWriter(context.Response.OutputStream)) {
 				HttpRuntime.ProcessRequest(new TestingWorkerRequest(context, tw));
+				context.Response.OutputStream.Flush();
 			}
 		}
 

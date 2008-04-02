@@ -44,7 +44,7 @@
     <Compile Include="AssociationsTest.cs" />
     <Compile Include="AssociationTestSuite.cs" />
     <Compile Include="ExtensionsArgumentsManagerTests.cs" />
-    <Compile Include="Hosting\ProxyHost.cs" />
+    <Compile Include="Hosting\InterceptionHost.cs" />
     <Compile Include="IdentifierTests.cs" />
     <Compile Include="NonceTest.cs" />
     <Compile Include="PiecewiseJointTesting.cs" />
