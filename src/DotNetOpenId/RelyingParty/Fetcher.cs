@@ -29,6 +29,10 @@ namespace DotNetOpenId.RelyingParty {
 		/// </summary>
 		public static TimeSpan Timeout = TimeSpan.FromSeconds(5);
 
+		// Used to intercept messages going out and coming in for testing purposes.
+		internal static event EventHandler<FetcherRequestEventArgs> SendingRequest;
+		internal static event EventHandler<FetcherResponseEventArgs> ReceivingResponse;
+
 #if LONGTIMEOUT
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static Fetcher() {
@@ -95,8 +99,12 @@ namespace DotNetOpenId.RelyingParty {
 					}
 				}
 
+				onSendingRequest(ref request, ref body);
+
 				using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
-					return getResponse(uri, response);
+					var resp = getResponse(uri, response);
+					onReceivingResponse(resp);
+					return resp;
 				}
 			} catch (WebException e) {
 				using (HttpWebResponse response = (HttpWebResponse)e.Response) {
@@ -109,5 +117,32 @@ namespace DotNetOpenId.RelyingParty {
 			}
 		}
 
+		static void onSendingRequest(ref HttpWebRequest request, ref byte[] data) {
+			if (SendingRequest == null) return;
+			var args = new FetcherRequestEventArgs(request, data);
+			SendingRequest(null, args);
+			request = args.Request;
+			data = args.Data;
+		}
+		static void onReceivingResponse(FetchResponse response) {
+			if (ReceivingResponse == null) return;
+			var args = new FetcherResponseEventArgs(response);
+			ReceivingResponse(null, args);
+		}
+	}
+
+	internal class FetcherRequestEventArgs : EventArgs {
+		public FetcherRequestEventArgs(HttpWebRequest request, byte[] data) {
+			Request = request;
+			Data = data;
+		}
+		public HttpWebRequest Request { get; set; }
+		public byte[] Data { get; set; }
+	}
+	internal class FetcherResponseEventArgs : EventArgs {
+		public FetcherResponseEventArgs(FetchResponse response) {
+			Response = response;
+		}
+		public FetchResponse Response { get; private set; }
 	}
 }

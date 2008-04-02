@@ -6,6 +6,7 @@ using System.IO;
 using System.Globalization;
 using DotNetOpenId.Test.Hosting;
 using DotNetOpenId;
+using System.Net;
 
 [SetUpFixture]
 public class TestSupport {
