@@ -21,8 +21,13 @@ namespace DotNetOpenId.Test {
 		}
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
-		public void CreateQueryStringNull() {
-			UriUtil.CreateQueryString(null);
+		public void CreateQueryStringNullNvc() {
+			UriUtil.CreateQueryString((NameValueCollection)null);
+		}
+
+		[Test, ExpectedException(typeof(ArgumentNullException))]
+		public void CreateQueryStringNullDictionary() {
+			UriUtil.CreateQueryString((IDictionary<string, string>)null);
 		}
 
 		[Test]

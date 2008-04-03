@@ -27,6 +27,14 @@ namespace DotNetOpenId {
 
 			return sb.ToString();
 		}
+		/// <summary>
+		/// Concatenates a list of name-value pairs as key=value&amp;key=value,
+		/// taking care to properly encode each key and value for URL
+		/// transmission.  No ? is prefixed to the string.
+		/// </summary>
+		public static string CreateQueryString(NameValueCollection args) {
+			return CreateQueryString(Util.NameValueCollectionToDictionary(args));
+		}
 
 		/// <summary>
 		/// Adds a set of name-value pairs to the end of a given URL
