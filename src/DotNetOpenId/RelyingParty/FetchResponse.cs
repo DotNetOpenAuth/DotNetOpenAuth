@@ -18,18 +18,6 @@ namespace DotNetOpenId.RelyingParty {
 		public Uri RequestUri { get; private set; }
 		public Uri FinalUri { get; private set; }
 
-		/// <summary>
-		/// This overload used internally for testing purposes.
-		/// </summary>
-		internal FetchResponse(Uri finalUri, HttpStatusCode statusCode,
-			WebHeaderCollection headers, byte[] responseBody) {
-			StatusCode = statusCode;
-			ContentType = new ContentType(headers[HttpResponseHeader.ContentType]);
-			ContentEncoding = headers[HttpResponseHeader.ContentEncoding];
-			Headers = headers;
-			ResponseStream = new MemoryStream(responseBody);
-			FinalUri = finalUri;
-		}
 		public FetchResponse(Uri requestUri, HttpWebResponse response, Stream responseStream) {
 			if (requestUri == null) throw new ArgumentNullException("requestUri");
 			if (response == null) throw new ArgumentNullException("response");

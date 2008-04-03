@@ -9,7 +9,7 @@ using System.Diagnostics;
 using System.Globalization;
 
 namespace DotNetOpenId.Provider {
-	internal class EncodableResponse : IEncodable {
+	internal class EncodableResponse : MarshalByRefObject, IEncodable {
 		public EncodableResponse(Request request) {
 			Request = request;
 			Signed = new List<string>();

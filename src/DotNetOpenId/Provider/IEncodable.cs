@@ -19,6 +19,11 @@ namespace DotNetOpenId.Provider {
 		ResponseBody
 	}
 
+	/// <remarks>
+	/// Classes that implement IEncodable should be either [Serializable] or
+	/// derive from <see cref="MarshalByRefObject"/> so that testing can
+	/// remote across app-domain boundaries to sniff/tamper with messages.
+	/// </remarks>
 	internal interface IEncodable {
 		EncodingType EncodingType { get; }
 		IDictionary<string, string> EncodedFields { get; }

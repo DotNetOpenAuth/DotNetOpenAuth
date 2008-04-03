@@ -44,7 +44,7 @@
     <Compile Include="AssociationsTest.cs" />
     <Compile Include="AssociationTestSuite.cs" />
     <Compile Include="ExtensionsArgumentsManagerTests.cs" />
-    <Compile Include="Hosting\InterceptionHost.cs" />
+    <Compile Include="Hosting\EncodingInterceptor.cs" />
     <Compile Include="IdentifierTests.cs" />
     <Compile Include="NonceTest.cs" />
     <Compile Include="PiecewiseJointTesting.cs" />
@@ -54,7 +54,6 @@
     <Compile Include="EndToEndTesting.cs" />
     <Compile Include="KeyValueFormEncodingTests.cs" />
     <Compile Include="RelyingParty\ServiceEndpointTests.cs" />
-    <Compile Include="SecurityTesting.cs" />
     <Compile Include="TestSupportSanityTest.cs" />
     <Compile Include="Hosting\AspNetHost.cs" />
     <Compile Include="Hosting\HttpHost.cs" />

@@ -29,17 +29,6 @@ namespace DotNetOpenId.RelyingParty {
 		/// </summary>
 		public static TimeSpan Timeout = TimeSpan.FromSeconds(5);
 
-		internal delegate FetchResponse HttpRequestToResponseTransform(HttpWebRequest request, byte[] body);
-		internal static readonly HttpRequestToResponseTransform StandardGetResponseFromRequest =
-			(req, body) => {
-					using (HttpWebResponse response = (HttpWebResponse)req.GetResponse()) {
-						return GetResponse(req.RequestUri, response);
-					}
-			};
-		// Used to intercept messages going out and coming in for testing purposes.
-		internal static HttpRequestToResponseTransform GetResponseFromRequest =
-			StandardGetResponseFromRequest;
-
 #if LONGTIMEOUT
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static Fetcher() {
@@ -68,7 +57,7 @@ namespace DotNetOpenId.RelyingParty {
 			}
 		}
 
-		internal static FetchResponse GetResponse(Uri requestUri, HttpWebResponse resp) {
+		static FetchResponse getResponse(Uri requestUri, HttpWebResponse resp) {
 			byte[] data;
 			int length;
 			readData(resp, out data, out length);
@@ -106,11 +95,13 @@ namespace DotNetOpenId.RelyingParty {
 					}
 				}
 
-				return GetResponseFromRequest(request, body);
+				using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+					return getResponse(uri, response);
+				}
 			} catch (WebException e) {
 				using (HttpWebResponse response = (HttpWebResponse)e.Response) {
 					if (response != null) {
-						return GetResponse(uri, response);
+						return getResponse(uri, response);
 					} else {
 						throw;
 					}

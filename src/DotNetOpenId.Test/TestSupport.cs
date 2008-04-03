@@ -34,14 +34,17 @@ public class TestSupport {
 	}
 
 	internal static AspNetHost Host { get; private set; }
+	internal static EncodingInterceptor Interceptor { get; private set; }
 
 	[SetUp]
 	public void SetUp() {
 		Host = AspNetHost.CreateHost(TestSupport.TestWebDirectory);
+		Host.MessageInterceptor = Interceptor = new EncodingInterceptor();
 	}
 
 	[TearDown]
 	public void TearDown() {
+		Host.MessageInterceptor = null;
 		if (Host != null) {
 			Host.CloseHttp();
 			Host = null;

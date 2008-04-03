@@ -57,6 +57,7 @@ namespace DotNetOpenId.Provider {
 		}
 
 		public override Response Encode(IEncodable encodable) {
+			OnSigning(encodable);
 			var response = encodable as EncodableResponse;
 			if (response != null) {
 				if (TraceUtil.Switch.TraceInfo) {
@@ -73,5 +74,22 @@ namespace DotNetOpenId.Provider {
 
 			return base.Encode(encodable);
 		}
+
+		/// <summary>
+		/// Used for testing.  Allows interception and modification of messages 
+		/// that are about to be returned to the RP.
+		/// </summary>
+		public static event EventHandler<EncodeEventArgs> Signing;
+		protected virtual void OnSigning(IEncodable encodable) {
+			if (Signing != null)
+				Signing(this, new EncodeEventArgs(encodable));
+		}
+	}
+
+	internal class EncodeEventArgs : EventArgs {
+		public EncodeEventArgs(IEncodable encodable) {
+			Message = encodable;
+		}
+		public IEncodable Message { get; private set;}
 	}
 }

@@ -19,13 +19,17 @@ namespace DotNetOpenId.Test {
 			appStore = new ConsumerApplicationMemoryStore();
 		}
 
-		void parameterizedTest(TestSupport.Scenarios scenario, Realm realm, Uri returnTo,
+		void parameterizedTest(UriIdentifier identityUrl,
 			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult,
 			bool tryReplayAttack, bool provideStore) {
-			parameterizedTest(TestSupport.GetIdentityUrl(scenario, ProtocolVersion.V11),
-				realm, returnTo, requestMode, expectedResult, tryReplayAttack, provideStore);
-			parameterizedTest(TestSupport.GetIdentityUrl(scenario, ProtocolVersion.V20),
-				realm, returnTo, requestMode, expectedResult, tryReplayAttack, provideStore);
+			parameterizedTest(identityUrl,
+				new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
+				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
+				requestMode, expectedResult, tryReplayAttack, provideStore);
+			parameterizedTest(identityUrl,
+				new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
+				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
+				requestMode, expectedResult, tryReplayAttack, provideStore);
 		}
 		void parameterizedTest(UriIdentifier identityUrl, Realm realm, Uri returnTo,
 			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult,
@@ -90,8 +94,6 @@ namespace DotNetOpenId.Test {
 		public void Pass_Setup_AutoApproval_11() {
 			parameterizedTest(
 				TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V11),
-				new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
-				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
 				AuthenticationRequestMode.Setup,
 				AuthenticationStatus.Authenticated,
 				true,
@@ -102,8 +104,6 @@ namespace DotNetOpenId.Test {
 		public void Pass_Setup_AutoApproval_20() {
 			parameterizedTest(
 				TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20),
-				new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
-				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
 				AuthenticationRequestMode.Setup,
 				AuthenticationStatus.Authenticated,
 				true,
@@ -115,8 +115,6 @@ namespace DotNetOpenId.Test {
 		public void Pass_Immediate_AutoApproval_11() {
 			parameterizedTest(
 				TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V11),
-				new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
-				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
 				AuthenticationRequestMode.Immediate,
 				AuthenticationStatus.Authenticated,
 				true,
@@ -127,8 +125,6 @@ namespace DotNetOpenId.Test {
 		public void Pass_Immediate_AutoApproval_20() {
 			parameterizedTest(
 				TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20),
-				new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
-				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
 				AuthenticationRequestMode.Immediate,
 				AuthenticationStatus.Authenticated,
 				true,
@@ -140,8 +136,6 @@ namespace DotNetOpenId.Test {
 		public void Fail_Immediate_ApproveOnSetup_11() {
 			parameterizedTest(
 				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V11),
-				new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
-				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
 				AuthenticationRequestMode.Immediate,
 				AuthenticationStatus.SetupRequired,
 				false,
@@ -152,8 +146,6 @@ namespace DotNetOpenId.Test {
 		public void Fail_Immediate_ApproveOnSetup_20() {
 			parameterizedTest(
 				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20),
-				new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
-				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
 				AuthenticationRequestMode.Immediate,
 				AuthenticationStatus.SetupRequired,
 				false,
@@ -165,8 +157,6 @@ namespace DotNetOpenId.Test {
 		public void Pass_Setup_ApproveOnSetup_11() {
 			parameterizedTest(
 				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V11),
-				new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
-				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
 				AuthenticationRequestMode.Setup,
 				AuthenticationStatus.Authenticated,
 				true,
@@ -177,8 +167,6 @@ namespace DotNetOpenId.Test {
 		public void Pass_Setup_ApproveOnSetup_20() {
 			parameterizedTest(
 				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20),
-				new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
-				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
 				AuthenticationRequestMode.Setup,
 				AuthenticationStatus.Authenticated,
 				true,
@@ -190,8 +178,6 @@ namespace DotNetOpenId.Test {
 		public void Pass_NoStore_AutoApproval_11() {
 			parameterizedTest(
 				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V11),
-				new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
-				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
 				AuthenticationRequestMode.Setup,
 				AuthenticationStatus.Authenticated,
 				true,
@@ -202,8 +188,6 @@ namespace DotNetOpenId.Test {
 		public void Pass_NoStore_AutoApproval_20() {
 			parameterizedTest(
 				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20),
-				new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri),
-				TestSupport.GetFullUrl(TestSupport.ConsumerPage),
 				AuthenticationRequestMode.Setup,
 				AuthenticationStatus.Authenticated,
 				true,

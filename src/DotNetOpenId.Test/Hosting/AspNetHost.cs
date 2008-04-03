@@ -6,6 +6,7 @@ using System.Web.Hosting;
 using System.IO;
 using System.Diagnostics;
 using System.Net;
+using DotNetOpenId.Provider;
 
 namespace DotNetOpenId.Test.Hosting {
 	/// <summary>
@@ -17,9 +18,13 @@ namespace DotNetOpenId.Test.Hosting {
 
 		public AspNetHost() {
 			httpHost = HttpHost.CreateHost(this);
+			DotNetOpenId.Provider.SigningEncoder.Signing += (s, e) => {
+				if (MessageInterceptor != null) MessageInterceptor.OnSigningMessage(e.Message);
+			};
 		}
 
 		public Uri BaseUri { get { return httpHost.BaseUri; } }
+		public EncodingInterceptor MessageInterceptor { get; set; }
 
 		public static AspNetHost CreateHost(string webDirectory) {
 			AspNetHost host = (AspNetHost)ApplicationHost.
@@ -38,7 +43,6 @@ namespace DotNetOpenId.Test.Hosting {
 		public void ProcessRequest(HttpListenerContext context) {
 			using (TextWriter tw = new StreamWriter(context.Response.OutputStream)) {
 				HttpRuntime.ProcessRequest(new TestingWorkerRequest(context, tw));
-				context.Response.OutputStream.Flush();
 			}
 		}
 
