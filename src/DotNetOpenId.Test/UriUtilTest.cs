@@ -16,6 +16,16 @@ namespace DotNetOpenId.Test {
 		}
 
 		[Test]
+		public void CreateQueryStringEmptyCollection() {
+			Assert.AreEqual(0, UriUtil.CreateQueryString(new Dictionary<string, string>()).Length);
+		}
+
+		[Test, ExpectedException(typeof(ArgumentNullException))]
+		public void CreateQueryStringNull() {
+			UriUtil.CreateQueryString(null);
+		}
+
+		[Test]
 		public void AppendQueryArgs() {
 			UriBuilder uri = new UriBuilder("http://baseline.org/page");
 			var args = new Dictionary<string, string>();

@@ -13,6 +13,8 @@ namespace DotNetOpenId {
 		/// transmission.  No ? is prefixed to the string.
 		/// </summary>
 		public static string CreateQueryString(IDictionary<string, string> args) {
+			if (args == null) throw new ArgumentNullException("args");
+			if (args.Count == 0) return string.Empty;
 			StringBuilder sb = new StringBuilder(args.Count * 10);
 
 			foreach (var p in args) {
