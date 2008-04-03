@@ -59,7 +59,7 @@ public class TestSupport {
 	/// to simulate a Provider that deliberately sent a bad message in an attempt
 	/// to thwart RP security.
 	/// </summary>
-	internal static void Resign(NameValueCollection nvc, ConsumerApplicationMemoryStore store) {
+	internal static void Resign(NameValueCollection nvc, ApplicationMemoryStore store) {
 		Debug.Assert(nvc != null);
 		Debug.Assert(store != null);
 		var dict = Util.NameValueCollectionToDictionary(nvc);

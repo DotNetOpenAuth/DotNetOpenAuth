@@ -141,7 +141,7 @@ namespace DotNetOpenId.RelyingParty {
 					context.Application.Lock();
 					try {
 						if ((store = (IRelyingPartyApplicationStore)context.Application[associationStoreKey]) == null) {
-							context.Application[associationStoreKey] = store = new ConsumerApplicationMemoryStore();
+							context.Application[associationStoreKey] = store = new ApplicationMemoryStore();
 						}
 					} finally {
 						context.Application.UnLock();

@@ -4,7 +4,7 @@ using System.Text;
 using System.Security.Cryptography;
 
 namespace DotNetOpenId.RelyingParty {
-	internal class ConsumerApplicationMemoryStore : AssociationMemoryStore<Uri>, IRelyingPartyApplicationStore {
+	internal class ApplicationMemoryStore : AssociationMemoryStore<Uri>, IRelyingPartyApplicationStore {
 		#region IRelyingPartyApplicationStore Members
 
 		byte[] secretSigningKey;

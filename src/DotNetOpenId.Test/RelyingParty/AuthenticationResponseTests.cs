@@ -22,7 +22,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 		/// </summary>
 		[Test, ExpectedException(typeof(OpenIdException))]
 		public void SpoofedClaimedIdDetection() {
-			ConsumerApplicationMemoryStore store = new ConsumerApplicationMemoryStore();
+			ApplicationMemoryStore store = new ApplicationMemoryStore();
 			ProtocolVersion version = ProtocolVersion.V20;
 			Protocol protocol = Protocol.Lookup(version);
 			OpenIdRelyingParty rp = new OpenIdRelyingParty(store, null);

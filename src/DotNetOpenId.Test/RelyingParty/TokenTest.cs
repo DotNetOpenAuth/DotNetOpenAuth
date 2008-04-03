@@ -28,7 +28,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 			Assert.AreSame(ep, token.Endpoint);
 			Assert.IsNotNull(token.Nonce);
 
-			INonceStore store = new ConsumerApplicationMemoryStore();
+			INonceStore store = new ApplicationMemoryStore();
 			string serializedToken = token.Serialize(store);
 
 			Token token2 = Token.Deserialize(serializedToken, store);
@@ -54,7 +54,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 			ServiceEndpoint ep = getServiceEndpoint(TestSupport.Scenarios.AutoApproval, version);
 			Token token = new Token(ep);
 
-			INonceStore store = new ConsumerApplicationMemoryStore();
+			INonceStore store = new ApplicationMemoryStore();
 			string serializedToken = token.Serialize(store);
 			Token.Deserialize(serializedToken, store);
 			Token.Deserialize(serializedToken, store);

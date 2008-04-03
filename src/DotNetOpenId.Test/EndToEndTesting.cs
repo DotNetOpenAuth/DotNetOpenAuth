@@ -16,7 +16,7 @@ namespace DotNetOpenId.Test {
 
 		[SetUp]
 		public void Setup() {
-			appStore = new ConsumerApplicationMemoryStore();
+			appStore = new ApplicationMemoryStore();
 		}
 
 		void parameterizedTest(UriIdentifier identityUrl,

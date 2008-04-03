@@ -14,7 +14,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 
 		[SetUp]
 		public void Setup() {
-			store = new ConsumerApplicationMemoryStore();
+			store = new ApplicationMemoryStore();
 		}
 
 		[Test]
@@ -51,7 +51,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 		public void AssociationCreationWithStore() {
 			var providerStore = new ProviderMemoryStore();
 
-			OpenIdRelyingParty rp = new OpenIdRelyingParty(new ConsumerApplicationMemoryStore(), null);
+			OpenIdRelyingParty rp = new OpenIdRelyingParty(new ApplicationMemoryStore(), null);
 			var idUrl = TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
 
 			DotNetOpenId.RelyingParty.IAuthenticationRequest req;
