@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DotNetOpenId.Provider;
+using System.Diagnostics;
 
 namespace DotNetOpenId.Test.Hosting {
 	/// <remarks>
@@ -15,8 +16,13 @@ namespace DotNetOpenId.Test.Hosting {
 		/// </summary>
 		/// <param name="message"></param>
 		internal void OnSigningMessage(IEncodable message) {
-			if (SigningMessage != null)
-				SigningMessage(message);
+			if (SigningMessage != null) {
+				try {
+					SigningMessage(message);
+				} catch (Exception e) {
+					Trace.TraceWarning("Unhandled exception in cross app-domain event handler: {0}", e);
+				}
+			}
 		}
 		internal delegate void InterceptorHandler(IEncodable message);
 		internal InterceptorHandler SigningMessage;

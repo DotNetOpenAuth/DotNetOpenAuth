@@ -7,6 +7,9 @@ using System.Globalization;
 using DotNetOpenId.Test.Hosting;
 using DotNetOpenId;
 using System.Net;
+using System.Collections.Specialized;
+using DotNetOpenId.RelyingParty;
+using System.Diagnostics;
 
 [SetUpFixture]
 public class TestSupport {
@@ -49,5 +52,27 @@ public class TestSupport {
 			Host.CloseHttp();
 			Host = null;
 		}
+	}
+
+	/// <summary>
+	/// Uses an RPs stored association to resign an altered message from a Provider,
+	/// to simulate a Provider that deliberately sent a bad message in an attempt
+	/// to thwart RP security.
+	/// </summary>
+	internal static void Resign(NameValueCollection nvc, ConsumerApplicationMemoryStore store) {
+		Debug.Assert(nvc != null);
+		Debug.Assert(store != null);
+		var dict = Util.NameValueCollectionToDictionary(nvc);
+		Protocol protocol = Protocol.Detect(dict);
+		Uri providerEndpoint = new Uri(nvc[protocol.openid.op_endpoint]);
+		string assoc_handle = nvc[protocol.openid.assoc_handle];
+		Association assoc = store.GetAssociation(providerEndpoint, assoc_handle);
+		IList<string> signed = nvc[protocol.openid.signed].Split(',');
+		var subsetDictionary = new Dictionary<string, string>();
+		foreach (string signedKey in signed) {
+			string keyName = protocol.openid.Prefix + signedKey;
+			subsetDictionary.Add(signedKey, dict[keyName]);
+		}
+		nvc[protocol.openid.sig] = Convert.ToBase64String(assoc.Sign(subsetDictionary, signed));
 	}
 }

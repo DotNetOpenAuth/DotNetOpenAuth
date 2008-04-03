@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using NUnit.Framework;
 using DotNetOpenId.RelyingParty;
-using System.Collections.Specialized;
-using System.Web;
-using System.Net;
+using NUnit.Framework;
 using ProviderMemoryStore = DotNetOpenId.AssociationMemoryStore<DotNetOpenId.AssociationRelyingPartyType>;
 
 namespace DotNetOpenId.Test.RelyingParty {
