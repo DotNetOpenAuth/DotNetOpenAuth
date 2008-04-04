@@ -14,7 +14,7 @@ namespace DotNetOpenId.RelyingParty {
 					lock (this) {
 						if (secretSigningKey == null) {
 							// initialize in a local variable before setting in field for thread safety.
-							byte[] auth_key = new byte[20];
+							byte[] auth_key = new byte[64];
 							new RNGCryptoServiceProvider().GetBytes(auth_key);
 							this.secretSigningKey = auth_key;
 						}
