@@ -24,7 +24,7 @@ namespace DotNetOpenId {
 				AllowedCharacters[i++] = j;
 		}
 
-		public Nonce() : this(DateTime.UtcNow, generateUniqueFragment(), false) { }
+		internal Nonce() : this(DateTime.UtcNow, generateUniqueFragment(), false) { }
 		/// <summary>
 		/// Deserializes a nonce from a string passed to us.
 		/// </summary>
@@ -34,7 +34,7 @@ namespace DotNetOpenId {
 		/// 2005-05-15T17:11:51ZUNIQUE
 		/// </param>
 		/// <param name="remoteServerOrigin"></param>
-		public Nonce(string code, bool remoteServerOrigin) {
+		internal Nonce(string code, bool remoteServerOrigin) {
 			if (string.IsNullOrEmpty(code)) throw new ArgumentNullException("code");
 			Code = code;
 			int indexOfDateEnd = code.IndexOf("Z", StringComparison.Ordinal);
@@ -51,7 +51,7 @@ namespace DotNetOpenId {
 		}
 
 		public string Code { get; internal set; }
-		public DateTime CreationDate { get; internal set; }
+		internal DateTime CreationDate { get; set; }
 		internal string UniqueFragment { get; set; }
 		bool remoteServerOrigin;
 		TimeSpan maximumLifetime {
@@ -62,7 +62,7 @@ namespace DotNetOpenId {
 			}
 		}
 
-		public TimeSpan Age { get { return DateTime.UtcNow - CreationDate.ToUniversalTime(); } }
+		internal TimeSpan Age { get { return DateTime.UtcNow - CreationDate.ToUniversalTime(); } }
 		public bool IsExpired { get { return Age > maximumLifetime; } }
 		/// <summary>
 		/// Gets the date past which this nonce is no longer valid, so storing a nonce for replay attack
