@@ -69,7 +69,7 @@ namespace DotNetOpenId.RelyingParty
 		}
 
 		const string appearanceCategory = "Appearance";
-		const string profileCategory = "Profile";
+		const string profileCategory = "Simple Registration";
 		const string behaviorCategory = "Behavior";
 
 		#region Properties
@@ -120,6 +120,16 @@ namespace DotNetOpenId.RelyingParty
 				}
 				ViewState[realmUrlViewStateKey] = value; 
 			}
+		}
+
+		const string immediateModeViewStateKey = "ImmediateMode";
+		const bool immediateModeDefault = false;
+		[Bindable(true)]
+		[Category(behaviorCategory)]
+		[DefaultValue(immediateModeDefault)]
+		public bool ImmediateMode {
+			get { return (bool)(ViewState[immediateModeViewStateKey] ?? immediateModeDefault); }
+			set { ViewState[immediateModeViewStateKey] = value; }
 		}
 
 		const string cssClassDefault = "openid";
@@ -452,6 +462,7 @@ namespace DotNetOpenId.RelyingParty
 				// Initiate openid request
 				// Note: we must use realm.ToString() because trustRoot.Uri throws when wildcards are present.
 				Request = consumer.CreateRequest(Text, realm.ToString());
+				Request.Mode = ImmediateMode ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;
 				if (EnableRequestProfile) addProfileArgs(Request);
 			} catch (WebException ex) {
 				OnError(ex);
