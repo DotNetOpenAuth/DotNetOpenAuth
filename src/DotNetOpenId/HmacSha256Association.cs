@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Security.Cryptography;
+using System.Diagnostics;
 
 namespace DotNetOpenId {
 	class HmacSha256Association : Association {
 		public HmacSha256Association(string handle, byte[] secret, TimeSpan totalLifeLength)
 			: base(handle, secret, totalLifeLength, DateTime.UtcNow) {
+			Debug.Assert(secret.Length == CryptUtil.Sha256.HashSize / 8);
 		}
 
 		protected override HashAlgorithm CreateHasher() {
