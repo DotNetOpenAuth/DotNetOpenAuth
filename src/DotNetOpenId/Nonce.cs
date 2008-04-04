@@ -4,8 +4,15 @@ using System.Text;
 using DotNetOpenId.RelyingParty;
 
 namespace DotNetOpenId {
+	/// <summary>
+	/// Represents some unique value that can help prevent replay attacks.
+	/// </summary>
+	/// <remarks>
+	/// When persisting nonce instances, only the <see cref="Code"/> and <see cref="ExpirationDate"/>
+	/// properties are significant.  Nonces never need to be deserialized.
+	/// </remarks>
 	public class Nonce {
-		static readonly uint NonceLength = 8;
+		static readonly uint UniqueFragmentLength = 8;
 		static readonly byte[] AllowedCharacters;
 		// This array of formats is not yet a complete list.
 		static readonly string[] PermissibleDateTimeFormats = { "yyyy-MM-ddTHH:mm:ssZ" };
@@ -74,7 +81,7 @@ namespace DotNetOpenId {
 			}
 		}
 		static string generateUniqueFragment() {
-			byte[] nonce = new byte[NonceLength];
+			byte[] nonce = new byte[UniqueFragmentLength];
 			randomSelection(ref nonce, AllowedCharacters);
 			return ASCIIEncoding.ASCII.GetString(nonce);
 		}
