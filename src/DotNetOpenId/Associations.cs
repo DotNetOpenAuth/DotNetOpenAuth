@@ -32,7 +32,7 @@ namespace DotNetOpenId {
 		}
 
 		/// <summary>
-		/// Returns the <see cref="Association"/> with the given handle.
+		/// Returns the <see cref="Association"/> with the given handle.  Null if not found.
 		/// </summary>
 		public Association Get(string handle) {
 			lock (this) {
@@ -53,7 +53,7 @@ namespace DotNetOpenId {
 		}
 
 		/// <summary>
-		/// Gets the <see cref="Association"/> issued most recently.
+		/// Gets the <see cref="Association"/> issued most recently.  Null if no valid associations exist.
 		/// </summary>
 		public Association Best {
 			get {

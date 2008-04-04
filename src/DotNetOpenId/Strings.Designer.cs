@@ -61,6 +61,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The private data supplied does not meet the requirements of any known Association type.  Its length may be too short, or it may have been corrupted..
+        /// </summary>
+        internal static string BadAssociationPrivateData {
+            get {
+                return ResourceManager.GetString("BadAssociationPrivateData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to HttpContext.Current is null.  There must be an ASP.NET request in process for this operation to succeed..
         /// </summary>
         internal static string CurrentHttpContextRequired {

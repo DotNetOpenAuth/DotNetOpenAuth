@@ -10,10 +10,43 @@ using System.Diagnostics.CodeAnalysis;
 namespace DotNetOpenId {
 	public abstract class Association {
 		protected Association(string handle, byte[] secret, TimeSpan totalLifeLength, DateTime issued) {
+			if (string.IsNullOrEmpty(handle)) throw new ArgumentNullException("handle");
+			if (secret == null) throw new ArgumentNullException("secret");
 			Handle = handle;
 			SecretKey = secret;
 			TotalLifeLength = totalLifeLength;
 			Issued = cutToSecond(issued);
+		}
+		/// <summary>
+		/// Re-instantiates an <see cref="Association"/> previously persisted in a database or some
+		/// other shared store.
+		/// </summary>
+		/// <param name="handle">
+		/// The <see cref="Handle"/> property of the previous <see cref="Association"/> instance.
+		/// </param>
+		/// <param name="expires">
+		/// The value of the <see cref="Expires"/> property of the previous <see cref="Association"/> instance.
+		/// </param>
+		/// <param name="privateData">
+		/// The byte array returned by a call to <see cref="SerializePrivateData"/> on the previous
+		/// <see cref="Association"/> instance.
+		/// </param>
+		/// <returns>
+		/// The newly dehydrated <see cref="Association"/>, which can be returned
+		/// from a custom association store's <see cref="IAssociationStore.GetAssociation"/> method.
+		/// </returns>
+		public static Association Deserialize(string handle, DateTime expires, byte[] privateData) {
+			if (string.IsNullOrEmpty(handle)) throw new ArgumentNullException("handle");
+			if (privateData == null) throw new ArgumentNullException("privateData");
+			expires = expires.ToUniversalTime();
+			TimeSpan remainingLifeLength = expires - DateTime.UtcNow;
+			byte[] secret = privateData; // the whole of privateData is the secret key for now.
+			// We figure out what derived type to instantiate based on the length of the secret.
+			if(secret.Length == CryptUtil.Sha1.HashSize / 8)
+				return new HmacSha1Association(handle, secret, remainingLifeLength);
+			if (secret.Length == CryptUtil.Sha256.HashSize / 8)
+				return new HmacSha256Association(handle, secret, remainingLifeLength);
+			throw new ArgumentException(Strings.BadAssociationPrivateData, "privateData");
 		}
 		protected HashAlgorithm Hasher { get; private set; }
 
@@ -31,7 +64,7 @@ namespace DotNetOpenId {
 		/// <summary>
 		/// A unique handle by which this <see cref="Association"/> may be stored or retrieved.
 		/// </summary>
-		internal string Handle { get; set; }
+		public string Handle { get; private set; }
 		/// <summary>
 		/// Gets the time that this <see cref="Association"/> was first created
 		/// and the <see cref="SecretKey"/> issued.
@@ -47,6 +80,29 @@ namespace DotNetOpenId {
 		/// </summary>
 		[SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		protected internal byte[] SecretKey { get; private set; }
+
+		/// <summary>
+		/// Returns private data required to persist this <see cref="Association"/> in
+		/// permanent storage (a shared database for example) for deserialization later.
+		/// </summary>
+		/// <returns>
+		/// An opaque byte array that must be stored and returned exactly as it is provided here.
+		/// The byte array may vary in length depending on the specific type of <see cref="Association"/>,
+		/// but in current versions are no larger than 256 bytes.
+		/// </returns>
+		/// <remarks>
+		/// Values of public properties on the base class <see cref="Association"/> are not included
+		/// in this byte array, as they are useful for fast database lookup and are persisted separately.
+		/// </remarks>
+		public byte[] SerializePrivateData() {
+			// We may want to encrypt this secret using the machine.config private key,
+			// and add data regarding which Association derivative will need to be
+			// re-instantiated on deserialization.
+			// For now, we just send out the secret key.  We can derive the type from the length later.
+			byte[] secretKeyCopy = new byte[SecretKey.Length];
+			SecretKey.CopyTo(secretKeyCopy, 0);
+			return secretKeyCopy;
+		}
 
 		/// <summary>
 		/// Gets the time when this <see cref="Association"/> will expire.
