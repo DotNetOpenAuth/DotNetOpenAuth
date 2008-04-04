@@ -15,7 +15,7 @@ namespace DotNetOpenId.Provider {
 		/// <summary>
 		/// The duration any association and secret key the Provider generates will be good for.
 		/// </summary>
-		static readonly TimeSpan smartAssociationLifetime = TimeSpan.FromMinutes(1);// TimeSpan.FromDays(14);
+		static readonly TimeSpan smartAssociationLifetime = TimeSpan.FromDays(14);
 		/// <summary>
 		/// The duration a secret key used for signing dumb client requests will be good for.
 		/// </summary>
