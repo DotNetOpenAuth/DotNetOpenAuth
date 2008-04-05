@@ -13,16 +13,19 @@ namespace DotNetOpenId {
 	/// </remarks>
 	public class Nonce {
 		static readonly uint UniqueFragmentLength = 8;
-		static readonly byte[] AllowedCharacters;
+		/// <summary>
+		/// These are the characters that may be chosen from when forming a random nonce,
+		/// per the OpenID 2.0 Authentication spec section 10.1.  
+		/// </summary>
+		/// <remarks>
+		/// The following characters are allowed in the spec, but because they can cause validation
+		/// failures with ASP.NET query validation (XSS-detection) they are deliberately left out of
+		/// the set of characters we choose from: &lt; &amp;
+		/// </remarks>
+		const string allowedCharacters =
+			@"!""#$%'()*+,-./0123456789:;=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 		// This array of formats is not yet a complete list.
 		static readonly string[] PermissibleDateTimeFormats = { "yyyy-MM-ddTHH:mm:ssZ" };
-		static Nonce() {
-			// Valid nonce characters are ASCII codes 33 - 126 per 2.0 spec section 10.1
-			AllowedCharacters = new byte[126 - 33 + 1];
-			int i = 0;
-			for (byte j = 33; j <= 126; j++)
-				AllowedCharacters[i++] = j;
-		}
 
 		internal Nonce() : this(DateTime.UtcNow, generateUniqueFragment(), false) { }
 		/// <summary>
@@ -71,19 +74,12 @@ namespace DotNetOpenId {
 		public DateTime ExpirationDate { get { return CreationDate + maximumLifetime; } }
 
 		static Random generator = new Random();
-		static void randomSelection(ref byte[] tofill, byte[] choices) {
-			if (choices.Length <= 0) throw new ArgumentException("Invalid input passed to RandomSelection. Array must have something in it.", "choices");
-
-			byte[] rand = new byte[1];
-			for (int i = 0; i < tofill.Length; i++) {
-				generator.NextBytes(rand);
-				tofill[i] = choices[(Convert.ToInt32(rand[0]) % choices.Length)];
-			}
-		}
 		static string generateUniqueFragment() {
-			byte[] nonce = new byte[UniqueFragmentLength];
-			randomSelection(ref nonce, AllowedCharacters);
-			return ASCIIEncoding.ASCII.GetString(nonce);
+			char[] nonce = new char[UniqueFragmentLength];
+			for (int i = 0; i < nonce.Length; i++) {
+				nonce[i] = allowedCharacters[generator.Next(allowedCharacters.Length)];
+			}
+			return new string(nonce);
 		}
 
 		internal void Consume(INonceStore store) {
