@@ -12,7 +12,7 @@ public partial class server : System.Web.UI.Page {
 	protected void provider_AuthenticationChallenge(object sender, AuthenticationChallengeEventArgs e) {
 		var idrequest = e.Request;
 		if (idrequest.Immediate) {
-			if (idrequest.IsIdentifierSelect) {
+			if (idrequest.IsDirectedIdentity) {
 				if (User.Identity.IsAuthenticated) {
 					idrequest.LocalIdentifier = Util.BuildIdentityUrl();
 					idrequest.IsAuthenticated = true;

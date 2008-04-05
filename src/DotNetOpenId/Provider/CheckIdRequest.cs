@@ -43,7 +43,7 @@ namespace DotNetOpenId.Provider {
 		/// Whether the Provider should help the user select a Claimed Identifier
 		/// to send back to the relying party.
 		/// </summary>
-		public bool IsIdentifierSelect { get; private set; }
+		public bool IsDirectedIdentity { get; private set; }
 		Identifier localIdentifier;
 		/// <summary>
 		/// The user identifier used by this particular provider.
@@ -51,7 +51,7 @@ namespace DotNetOpenId.Provider {
 		public Identifier LocalIdentifier {
 			get { return localIdentifier; }
 			set {
-				if (IsIdentifierSelect) {
+				if (IsDirectedIdentity) {
 					// Keep LocalIdentifier and ClaimedIdentifier in sync
 					if (ClaimedIdentifier != null && ClaimedIdentifier != value) {
 						throw new InvalidOperationException(Strings.IdentifierSelectRequiresMatchingIdentifiers);
@@ -71,7 +71,7 @@ namespace DotNetOpenId.Provider {
 		public Identifier ClaimedIdentifier {
 			get { return claimedIdentifier; }
 			set {
-				if (IsIdentifierSelect) {
+				if (IsDirectedIdentity) {
 					// Keep LocalIdentifier and ClaimedIdentifier in sync
 					if (LocalIdentifier != null && LocalIdentifier != value) {
 						throw new InvalidOperationException(Strings.IdentifierSelectRequiresMatchingIdentifiers);
@@ -100,7 +100,7 @@ namespace DotNetOpenId.Provider {
 				// The null checks on the identifiers is to make sure that an identifier_select
 				// has been resolved to actual identifiers.
 				return IsAuthenticated.HasValue &&
-					(!IsAuthenticated.Value || !IsIdentifierSelect || (LocalIdentifier != null && ClaimedIdentifier != null));
+					(!IsAuthenticated.Value || !IsDirectedIdentity || (LocalIdentifier != null && ClaimedIdentifier != null));
 			}
 		}
 		/// <summary>
@@ -163,7 +163,7 @@ namespace DotNetOpenId.Provider {
 			if (ClaimedIdentifier == Protocol.ClaimedIdentifierForOPIdentifier &&
 				Protocol.ClaimedIdentifierForOPIdentifier != null) {
 				// Force the OP to deal with identifier_select by nulling out the two identifiers.
-				IsIdentifierSelect = true;
+				IsDirectedIdentity = true;
 				claimedIdentifier = null;
 				localIdentifier = null;
 			}

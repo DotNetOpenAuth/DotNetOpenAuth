@@ -18,7 +18,7 @@ namespace DotNetOpenId.Provider {
 		/// Whether the Provider should help the user select a Claimed Identifier
 		/// to send back to the relying party.
 		/// </summary>
-		bool IsIdentifierSelect { get; }
+		bool IsDirectedIdentity { get; }
 		/// <summary>
 		/// The Local Identifier to this OpenID Provider of the user attempting 
 		/// to authenticate.  Check <see cref="IsIdentifierSelect"/> to see if

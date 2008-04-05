@@ -13,7 +13,7 @@ public partial class decide : Page {
 		if (ProviderEndpoint.PendingAuthenticationRequest == null)
 			Response.Redirect("~/");
 
-		if (ProviderEndpoint.PendingAuthenticationRequest.IsIdentifierSelect) {
+		if (ProviderEndpoint.PendingAuthenticationRequest.IsDirectedIdentity) {
 			ProviderEndpoint.PendingAuthenticationRequest.LocalIdentifier = Util.BuildIdentityUrl();
 		}
 
