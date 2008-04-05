@@ -18,4 +18,7 @@ public class Util {
 	public static string ExtractUserName(Identifier identifier) {
 		return ExtractUserName(new Uri(identifier.ToString()));
 	}
+	public static Identifier BuildIdentityUrl() {
+		return new Uri(HttpContext.Current.Request.Url, "/user/" + HttpContext.Current.User.Identity.Name);
+	}
 }

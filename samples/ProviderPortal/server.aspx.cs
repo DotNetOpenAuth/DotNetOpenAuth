@@ -14,7 +14,7 @@ public partial class server : System.Web.UI.Page {
 		if (idrequest.Immediate) {
 			if (idrequest.IsIdentifierSelect) {
 				if (User.Identity.IsAuthenticated) {
-					idrequest.LocalIdentifier = new Uri(Request.Url, "/user/" + User.Identity.Name);
+					idrequest.LocalIdentifier = Util.BuildIdentityUrl();
 					idrequest.IsAuthenticated = true;
 				} else {
 					idrequest.IsAuthenticated = false;

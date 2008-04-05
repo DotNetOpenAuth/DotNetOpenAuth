@@ -14,8 +14,7 @@ public partial class decide : Page {
 			Response.Redirect("~/");
 
 		if (ProviderEndpoint.PendingAuthenticationRequest.IsIdentifierSelect) {
-			ProviderEndpoint.PendingAuthenticationRequest.LocalIdentifier =
-				new Uri(Request.Url, "/user/" + User.Identity.Name);
+			ProviderEndpoint.PendingAuthenticationRequest.LocalIdentifier = Util.BuildIdentityUrl();
 		}
 
 		identityUrlLabel.Text = ProviderEndpoint.PendingAuthenticationRequest.LocalIdentifier.ToString();
