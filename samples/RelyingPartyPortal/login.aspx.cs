@@ -7,6 +7,7 @@ public partial class login : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
         OpenIdLogin1.Focus();
+		OpenIdLogin1.ImmediateMode = immediateCheckBox.Checked;
     }
     
     /// <summary>
@@ -33,5 +34,12 @@ public partial class login : System.Web.UI.Page
 		req.RedirectToProvider();
 		// We don't listen for the response from the provider explicitly
 		// because the OpenIdLogin control is already doing that for us.
+	}
+
+	protected void OpenIdLogin1_Failed(object sender, OpenIdEventArgs e) {
+		if (e.Response.Status == AuthenticationStatus.SetupRequired) {
+			loginFailedLabel.Text = "You must log into your Provider first to use Immediate mode.";
+			loginFailedLabel.Visible = true;
+		}
 	}
 }

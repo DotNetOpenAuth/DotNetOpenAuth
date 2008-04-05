@@ -9,11 +9,12 @@
 <body>
 	<form id="Form1" runat="server">
 	<h2>
-		Login Page</h2>
+		Login Page </h2>
 	<cc1:OpenIdLogin ID="OpenIdLogin1" runat="server" CssClass="openid_login" RequestCountry="Request"
 		RequestEmail="Request" RequestGender="Require" RequestPostalCode="Require" RequestTimeZone="Require"
 		RememberMeVisible="True" PolicyUrl="~/PrivacyPolicy.aspx" TabIndex="1" OnLoggedIn="OpenIdLogin1_LoggedIn"
-		OnCanceled="OpenIdLogin1_Canceled" OnError="OpenIdLogin1_Error" />
+		OnCanceled="OpenIdLogin1_Canceled" OnError="OpenIdLogin1_Error" OnFailed="OpenIdLogin1_Failed" />
+	<asp:CheckBox ID="immediateCheckBox" runat="server" Text="Immediate mode" />
 	<br />
 	<asp:Label ID="loginFailedLabel" runat="server" EnableViewState="False" Text="Login failed"
 		Visible="False" />

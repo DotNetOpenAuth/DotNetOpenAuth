@@ -31,6 +31,15 @@ public partial class login {
     protected global::DotNetOpenId.RelyingParty.OpenIdLogin OpenIdLogin1;
     
     /// <summary>
+    /// immediateCheckBox control.
+    /// </summary>
+    /// <remarks>
+    /// Auto-generated field.
+    /// To modify move field declaration from designer file to code-behind file.
+    /// </remarks>
+    protected global::System.Web.UI.WebControls.CheckBox immediateCheckBox;
+    
+    /// <summary>
     /// loginFailedLabel control.
     /// </summary>
     /// <remarks>
