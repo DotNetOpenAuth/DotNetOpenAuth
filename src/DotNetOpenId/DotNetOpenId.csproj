@@ -43,6 +43,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Mobile" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -61,6 +62,7 @@
     <Compile Include="RelyingParty\CheckAuthRequest.cs" />
     <Compile Include="RelyingParty\CheckAuthResponse.cs" />
     <Compile Include="RelyingParty\ApplicationMemoryStore.cs" />
+    <Compile Include="RelyingParty\OpenIdMobileTextBox.cs" />
     <Compile Include="RelyingParty\DirectRequest.cs" />
     <Compile Include="RelyingParty\DirectResponse.cs" />
     <Compile Include="RelyingParty\FailedAuthenticationResponse.cs" />
