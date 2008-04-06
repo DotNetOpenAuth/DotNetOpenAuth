@@ -13,8 +13,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// </summary>
 		Canceled,
 		/// <summary>
-		/// The authentication failed because the provider refused to send
-		/// authentication approval.
+		/// The authentication failed because an error was detected in the OpenId communication.
 		/// </summary>
 		Failed,
 		/// <summary>
@@ -53,6 +52,12 @@ namespace DotNetOpenId.RelyingParty {
 		/// The detailed success or failure status of the authentication attempt.
 		/// </summary>
 		public AuthenticationStatus Status { get; private set; }
+		/// <summary>
+		/// Details regarding a failed authentication attempt, if available.
+		/// This will only be set if <see cref="Status"/> is <see cref="AuthenticationStatus.Failed"/>,
+		/// but may sometimes by null in this case as well.
+		/// </summary>
+		public Exception Exception { get; private set; }
 		/// <summary>
 		/// An Identifier that the end user claims to own.
 		/// </summary>
@@ -135,7 +140,7 @@ namespace DotNetOpenId.RelyingParty {
 			} else {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
 					Strings.InvalidOpenIdQueryParameterValue,
-					protocol.openid.mode, mode));
+					protocol.openid.mode, mode), query);
 			}
 		}
 

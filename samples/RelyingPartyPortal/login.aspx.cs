@@ -15,12 +15,16 @@ public partial class login : System.Web.UI.Page {
 	protected void OpenIdLogin1_LoggedIn(object sender, OpenIdEventArgs e) {
 		State.ProfileFields = e.ProfileFields;
 	}
-	protected void OpenIdLogin1_Error(object sender, ErrorEventArgs e) {
+	protected void OpenIdLogin1_Failed(object sender, OpenIdEventArgs e) {
 		loginFailedLabel.Visible = true;
-		loginFailedLabel.Text += ": " + e.ErrorMessage;
+		loginFailedLabel.Text += ": " + e.Response.Exception.Message;
 	}
 	protected void OpenIdLogin1_Canceled(object sender, OpenIdEventArgs e) {
 		loginCanceledLabel.Visible = true;
+	}
+	protected void OpenIdLogin1_SetupRequired(object sender, OpenIdEventArgs e) {
+		loginFailedLabel.Text = "You must log into your Provider first to use Immediate mode.";
+		loginFailedLabel.Visible = true;
 	}
 
 	protected void yahooLoginButton_Click(object sender, ImageClickEventArgs e) {
@@ -29,12 +33,5 @@ public partial class login : System.Web.UI.Page {
 		req.RedirectToProvider();
 		// We don't listen for the response from the provider explicitly
 		// because the OpenIdLogin control is already doing that for us.
-	}
-
-	protected void OpenIdLogin1_Failed(object sender, OpenIdEventArgs e) {
-		if (e.Response.Status == AuthenticationStatus.SetupRequired) {
-			loginFailedLabel.Text = "You must log into your Provider first to use Immediate mode.";
-			loginFailedLabel.Visible = true;
-		}
 	}
 }

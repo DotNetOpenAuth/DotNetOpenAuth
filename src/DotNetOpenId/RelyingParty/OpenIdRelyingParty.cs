@@ -116,7 +116,7 @@ namespace DotNetOpenId.RelyingParty {
 				return true;
 			}
 		}
-		AuthenticationResponse response;
+		IAuthenticationResponse response;
 		/// <summary>
 		/// Gets the result of a user agent's visit to his OpenId provider in an
 		/// authentication attempt.  Null if no response is available.
@@ -124,7 +124,11 @@ namespace DotNetOpenId.RelyingParty {
 		public IAuthenticationResponse Response {
 			get {
 				if (response == null && isAuthenticationResponseReady) {
-					response = AuthenticationResponse.Parse(query, store, request);
+					try {
+						response = AuthenticationResponse.Parse(query, store, request);
+					} catch (OpenIdException ex) {
+						response = new FailedAuthenticationResponse(ex);
+					}
 				}
 				return response;
 			}

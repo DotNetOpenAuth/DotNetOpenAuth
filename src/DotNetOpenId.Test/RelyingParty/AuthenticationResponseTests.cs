@@ -95,7 +95,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 			uri = builder.Uri;
 		}
 
-		[Test, ExpectedException(typeof(OpenIdException))]
+		[Test]
 		public void ReturnToMismatchDetection() {
 			ProtocolVersion version = ProtocolVersion.V20;
 			Protocol protocol = Protocol.Lookup(version);
@@ -104,7 +104,9 @@ namespace DotNetOpenId.Test.RelyingParty {
 			// which should cause a failure because the return_to argument
 			// says that parameter is supposed to be there.
 			removeQueryParameter(ref assertion, returnToRemovableParameter);
-			var result = new OpenIdRelyingParty(store, assertion).Response.Status;
+			var response = new OpenIdRelyingParty(store, assertion).Response;
+			Assert.AreEqual(AuthenticationStatus.Failed, response.Status);
+			Assert.IsNotNull(response.Exception);
 		}
 
 		/// <summary>
@@ -112,7 +114,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 		/// claimed Id that was not part of the original request, and that the OP
 		/// has no authority to assert positively regarding.
 		/// </summary>
-		[Test, ExpectedException(typeof(OpenIdException))]
+		[Test]
 		public void SpoofedClaimedIdDetection_20() {
 			ProtocolVersion version = ProtocolVersion.V20;
 			Protocol protocol = Protocol.Lookup(version);
@@ -136,7 +138,9 @@ namespace DotNetOpenId.Test.RelyingParty {
 			resign(ref assertion); // resign changed URL to simulate a contrived OP for breaking into RPs.
 
 			// (triggers exception) "... you're in trouble up to your ears."
-			var result = new OpenIdRelyingParty(store, assertion).Response.Status;
+			var response = new OpenIdRelyingParty(store, assertion).Response;
+			Assert.AreEqual(AuthenticationStatus.Failed, response.Status);
+			Assert.IsNotNull(response.Exception);
 		}
 
 	}

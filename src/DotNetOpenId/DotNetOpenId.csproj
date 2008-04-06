@@ -63,6 +63,7 @@
     <Compile Include="RelyingParty\ApplicationMemoryStore.cs" />
     <Compile Include="RelyingParty\DirectRequest.cs" />
     <Compile Include="RelyingParty\DirectResponse.cs" />
+    <Compile Include="RelyingParty\FailedAuthenticationResponse.cs" />
     <Compile Include="RelyingParty\Fetcher.cs" />
     <Compile Include="RelyingParty\FetchResponse.cs" />
     <Compile Include="RelyingParty\IAuthenticationRequest.cs" />

@@ -23,5 +23,10 @@ namespace DotNetOpenId.RelyingParty {
 		/// The detailed success or failure status of the authentication attempt.
 		/// </summary>
 		AuthenticationStatus Status { get; }
+		/// <summary>
+		/// Details regarding a failed authentication attempt, if available.
+		/// This will be set if and only if <see cref="Status"/> is <see cref="AuthenticationStatus.Failed"/>.
+		/// </summary>
+		Exception Exception { get; }
 	}
 }

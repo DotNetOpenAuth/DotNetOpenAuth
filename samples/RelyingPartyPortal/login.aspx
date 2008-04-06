@@ -13,7 +13,7 @@
 	<cc1:OpenIdLogin ID="OpenIdLogin1" runat="server" CssClass="openid_login" RequestCountry="Request"
 		RequestEmail="Request" RequestGender="Require" RequestPostalCode="Require" RequestTimeZone="Require"
 		RememberMeVisible="True" PolicyUrl="~/PrivacyPolicy.aspx" TabIndex="1" OnLoggedIn="OpenIdLogin1_LoggedIn"
-		OnCanceled="OpenIdLogin1_Canceled" OnError="OpenIdLogin1_Error" OnFailed="OpenIdLogin1_Failed" />
+		OnCanceled="OpenIdLogin1_Canceled" OnFailed="OpenIdLogin1_Failed" OnSetupRequired="OpenIdLogin1_SetupRequired" />
 	<asp:CheckBox ID="immediateCheckBox" runat="server" Text="Immediate mode" />
 	<br />
 	<asp:Label ID="loginFailedLabel" runat="server" EnableViewState="False" Text="Login failed"

@@ -395,35 +395,28 @@ namespace DotNetOpenId.RelyingParty
 		}
 		#endregion
 
-		protected override void OnLoad(EventArgs e)
-		{
+		protected override void OnLoad(EventArgs e) {
 			base.OnLoad(e);
 
 			if (!Enabled) return;
-			try
-			{
-				var consumer = new OpenIdRelyingParty();
-				if (consumer.Response != null)
-				{
-					switch (consumer.Response.Status) {
-						case AuthenticationStatus.Canceled:
-							OnCanceled(consumer.Response);
-							break;
-						case AuthenticationStatus.Authenticated:
-							OnLoggedIn(consumer.Response);
-							break;
-						case AuthenticationStatus.SetupRequired:
-						case AuthenticationStatus.Failed:
-							OnFailed(consumer.Response);
-							break;
-						default:
-							throw new InvalidOperationException("Unexpected response status code.");
-					}
+			var consumer = new OpenIdRelyingParty();
+			if (consumer.Response != null) {
+				switch (consumer.Response.Status) {
+					case AuthenticationStatus.Canceled:
+						OnCanceled(consumer.Response);
+						break;
+					case AuthenticationStatus.Authenticated:
+						OnLoggedIn(consumer.Response);
+						break;
+					case AuthenticationStatus.SetupRequired:
+						OnSetupRequired(consumer.Response);
+						break;
+					case AuthenticationStatus.Failed:
+						OnFailed(consumer.Response);
+						break;
+					default:
+						throw new InvalidOperationException("Unexpected response status code.");
 				}
-			}
-			catch (OpenIdException ex)
-			{
-				OnError(ex);
 			}
 		}
 
@@ -465,9 +458,9 @@ namespace DotNetOpenId.RelyingParty
 				Request.Mode = ImmediateMode ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;
 				if (EnableRequestProfile) addProfileArgs(Request);
 			} catch (WebException ex) {
-				OnError(ex);
+				OnFailed(new FailedAuthenticationResponse(ex));
 			} catch (OpenIdException ex) {
-				OnError(ex);
+				OnFailed(new FailedAuthenticationResponse(ex));
 			}
 		}
 
@@ -537,6 +530,8 @@ namespace DotNetOpenId.RelyingParty
 		public event EventHandler<OpenIdEventArgs> LoggedIn;
 		protected virtual void OnLoggedIn(IAuthenticationResponse response)
 		{
+			if (response == null) throw new ArgumentNullException("response");
+			Debug.Assert(response.Status == AuthenticationStatus.Authenticated);
 			var loggedIn = LoggedIn;
 			OpenIdEventArgs args = new OpenIdEventArgs(response);
 			if (loggedIn != null)
@@ -546,21 +541,20 @@ namespace DotNetOpenId.RelyingParty
 					response.ClaimedIdentifier.ToString(), UsePersistentCookie);
 		}
 
-		#endregion
-		#region Error handling
 		/// <summary>
-		/// Fired when a login attempt fails or is canceled by the user.
+		/// Fired when a login attempt fails.
 		/// </summary>
-		[Description("Fired when a login attempt fails or is canceled by the user.")]
-		public event EventHandler<ErrorEventArgs> Error;
-		protected virtual void OnError(Exception errorException)
+		[Description("Fired when a login attempt fails.")]
+		public event EventHandler<OpenIdEventArgs> Failed;
+		protected virtual void OnFailed(IAuthenticationResponse response)
 		{
-			if (errorException == null)
-				throw new ArgumentNullException("errorException");
+			if (response == null) throw new ArgumentNullException("response");
+			Debug.Assert(response.Status == AuthenticationStatus.Failed);
+			Exception errorException = response.Exception;
 
-			var error = Error;
-			if (error != null)
-				error(this, new ErrorEventArgs(errorException.Message, errorException));
+			var failed = Failed;
+			if (failed != null)
+				failed(this, new OpenIdEventArgs(response));
 		}
 
 		/// <summary>
@@ -570,20 +564,26 @@ namespace DotNetOpenId.RelyingParty
 		public event EventHandler<OpenIdEventArgs> Canceled;
 		protected virtual void OnCanceled(IAuthenticationResponse response)
 		{
+			if (response == null) throw new ArgumentNullException("response");
+			Debug.Assert(response.Status == AuthenticationStatus.Canceled);
+
 			var canceled = Canceled;
 			if (canceled != null)
 				canceled(this, new OpenIdEventArgs(response));
 		}
 
 		/// <summary>
-		/// Fired when an authentication attempt fails at the OpenID Provider.
+		/// Fired when an Immediate authentication attempt fails, and the Provider suggests using non-Immediate mode.
 		/// </summary>
-		[Description("Fired when an authentication attempt fails at the OpenID Provider.")]
-		public event EventHandler<OpenIdEventArgs> Failed;
-		protected virtual void OnFailed(IAuthenticationResponse response) {
-			var failed = Failed;
-			if (failed != null)
-				failed(this, new OpenIdEventArgs(response));
+		[Description("Fired when an Immediate authentication attempt fails, and the Provider suggests using non-Immediate mode.")]
+		public event EventHandler<OpenIdEventArgs> SetupRequired;
+		protected virtual void OnSetupRequired(IAuthenticationResponse response) {
+			if (response == null) throw new ArgumentNullException("response");
+			Debug.Assert(response.Status == AuthenticationStatus.SetupRequired);
+			// Why are we firing Failed when we're OnSetupRequired?  Backward compatibility.
+			var setupRequired = SetupRequired;
+			if (setupRequired != null)
+				setupRequired(this, new OpenIdEventArgs(response));
 		}
 
 		#endregion
@@ -602,6 +602,7 @@ namespace DotNetOpenId.RelyingParty
 		/// (whether that attempt was successful or not).
 		/// </summary>
 		internal OpenIdEventArgs(IAuthenticationResponse response) {
+			if (response == null) throw new ArgumentNullException("response");
 			Response = response;
 			ClaimedIdentifier = response.ClaimedIdentifier;
 			ProfileFields = SimpleRegistrationFieldValues.ReadFromResponse(response);
@@ -621,13 +622,5 @@ namespace DotNetOpenId.RelyingParty
 		/// by the provider, if any.
 		/// </summary>
 		public SimpleRegistrationFieldValues ProfileFields { get; private set; }
-	}
-	public class ErrorEventArgs : EventArgs {
-		public ErrorEventArgs(string errorMessage, Exception errorException) {
-			ErrorMessage = errorMessage;
-			ErrorException = errorException;
-		}
-		public string ErrorMessage { get; private set; }
-		public Exception ErrorException { get; private set; }
 	}
 }
