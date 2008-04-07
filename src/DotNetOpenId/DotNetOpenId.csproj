@@ -56,6 +56,7 @@
     <Compile Include="Identifier.cs" />
     <Compile Include="Protocol.cs" />
     <Compile Include="Provider\AssertionMessage.cs" />
+    <Compile Include="Provider\RealmEndpoint.cs" />
     <Compile Include="RelyingParty\AssociateRequest.cs" />
     <Compile Include="RelyingParty\AssociateResponse.cs" />
     <Compile Include="RelyingParty\AuthenticationRequest.cs" />

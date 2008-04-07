@@ -58,7 +58,7 @@ namespace DotNetOpenId {
 		/// Performs discovery on the Identifier.
 		/// </summary>
 		/// <returns>
-		/// An initialized structure containing the discovered service information.
+		/// An initialized structure containing the discovered provider endpoint information.
 		/// </returns>
 		internal abstract ServiceEndpoint Discover();
 

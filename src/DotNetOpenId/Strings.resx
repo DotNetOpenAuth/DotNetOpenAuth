@@ -198,6 +198,9 @@
   <data name="MissingReturnToQueryParameter" xml:space="preserve">
     <value>Query parameter '{0}' was expected in the return_to query '{1}'.</value>
   </data>
+  <data name="NoRelyingPartyEndpointDiscovered" xml:space="preserve">
+    <value>No XRDS document containing OpenId relying party endpoint information could be found at {0}.</value>
+  </data>
   <data name="OpenIdEndpointNotFound" xml:space="preserve">
     <value>No OpenId endpoint found.</value>
   </data>

@@ -304,6 +304,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No XRDS document containing OpenId relying party endpoint information could be found at {0}..
+        /// </summary>
+        internal static string NoRelyingPartyEndpointDiscovered {
+            get {
+                return ResourceManager.GetString("NoRelyingPartyEndpointDiscovered", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No OpenId endpoint found..
         /// </summary>
         internal static string OpenIdEndpointNotFound {

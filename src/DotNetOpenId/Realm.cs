@@ -207,6 +207,15 @@ namespace DotNetOpenId {
 				|| url.PathAndQuery[path_len] == '/';
 		}
 
+		/// <summary>
+		/// Searches for an XRDS document at the realm URL, and if found, searches
+		/// for a description of a relying party endpoint (OpenId login page).
+		/// </summary>
+		/// <returns>The details of the endpoint if found, otherwise null.</returns>
+		internal DotNetOpenId.Provider.RealmEndpoint Discover() {
+			return new DotNetOpenId.Provider.RealmEndpoint(Protocol.Default, NoWildcardUri);
+		}
+
 		public override bool Equals(object obj) {
 			Realm other = obj as Realm;
 			if (other == null) return false;

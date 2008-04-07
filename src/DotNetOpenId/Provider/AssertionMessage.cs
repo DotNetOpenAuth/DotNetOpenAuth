@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace DotNetOpenId.Provider {
 	static class AssertionMessage {
@@ -73,10 +74,13 @@ namespace DotNetOpenId.Provider {
 			if (claimedIdentifier == null) throw new ArgumentNullException("claimedIdentifier");
 			if (localIdentifier == null) throw new ArgumentNullException("localIdentifier");
 
-			Uri relyingPartyLoginUrl = relyingParty.NoWildcardUri;
-			Protocol protocol = Protocol.Default;
+			var discoveredRealm = relyingParty.Discover();
+			if (discoveredRealm == null) throw new OpenIdException(
+				string.Format(CultureInfo.CurrentUICulture, Strings.NoRelyingPartyEndpointDiscovered,
+				relyingParty.NoWildcardUri));
 
-			EncodableResponse message = EncodableResponse.PrepareIndirectMessage(protocol, relyingPartyLoginUrl, null);
+			EncodableResponse message = EncodableResponse.PrepareIndirectMessage(
+				discoveredRealm.Protocol, discoveredRealm.RelyingPartyEndpoint, null);
 			CreatePositiveAssertion(message, provider, localIdentifier, claimedIdentifier);
 			return provider.Encoder.Encode(message);
 		}
