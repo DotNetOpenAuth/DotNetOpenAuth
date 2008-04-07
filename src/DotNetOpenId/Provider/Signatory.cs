@@ -39,7 +39,7 @@ namespace DotNetOpenId.Provider {
 			}
 
 			Association assoc;
-			string assoc_handle = ((AssociatedRequest)response.Request).AssociationHandle;
+			string assoc_handle = response.PreferredAssociationHandle;
 
 			if (!string.IsNullOrEmpty(assoc_handle)) {
 				assoc = GetAssociation(assoc_handle, AssociationRelyingPartyType.Smart);

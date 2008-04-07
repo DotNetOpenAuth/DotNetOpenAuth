@@ -172,46 +172,8 @@ namespace DotNetOpenId.Provider {
 		internal override IEncodable CreateResponse() {
 			Debug.Assert(IsAuthenticated.HasValue, "This should be checked internally before CreateResponse is called.");
 
-			// OpenID 1.1 and 2.0 differ quite a bit in how to respond to these requests,
-			// and then you add immediate/setup variances and you've got quite a complex
-			// mix of possible things to return.  Watch carefully...
-			EncodableResponse response = new EncodableResponse(this);
-
-			if (IsAuthenticated.Value) { // positive assertion
-				response.Fields[Protocol.openidnp.mode] = Protocol.Args.Mode.id_res;
-				response.Fields[Protocol.openidnp.identity] = LocalIdentifier;
-				response.Fields[Protocol.openidnp.return_to] = ReturnTo.AbsoluteUri;
-				response.Signed.AddRange(new[]{
-					Protocol.openidnp.return_to,
-					Protocol.openidnp.identity,
-				});
-				if (Protocol.Version.Major >= 2) {
-					response.Fields[Protocol.openidnp.claimed_id] = ClaimedIdentifier;
-					response.Fields[Protocol.openidnp.op_endpoint] = Provider.Endpoint.AbsoluteUri;
-					response.Fields[Protocol.openidnp.response_nonce] = new Nonce().Code;
-					response.Signed.AddRange(new[]{
-						Protocol.openidnp.claimed_id,
-						Protocol.openidnp.op_endpoint,
-						Protocol.openidnp.response_nonce,
-					});
-				}
-			} else { // negative assertion
-				if (Immediate) {
-					if (Protocol.Version.Major >= 2) {
-						response.Fields[Protocol.openidnp.mode] = Protocol.Args.Mode.setup_needed;
-					} else {
-						response.Fields[Protocol.openidnp.mode] = Protocol.Args.Mode.id_res;
-						response.Fields[Protocol.openidnp.user_setup_url] = SetupUrl.AbsoluteUri;
-					}
-				} else {
-					response.Fields[Protocol.openidnp.mode] = Protocol.Args.Mode.cancel;
-				}
-			}
-
-			Debug.Assert(!response.Signed.Contains(Protocol.openidnp.mode), "openid.mode must not be signed because it changes in check_authentication requests.");
-			// The assoc_handle, signed, sig and invalidate_handle fields are added
-			// as appropriate by the Signatory.Sign method.
-
+			EncodableResponse response = AssertionMessage.CreateAssertion(this);
+			
 			if (TraceUtil.Switch.TraceInfo) {
 				Trace.TraceInformation("CheckIdRequest response successfully created. ");
 				if (TraceUtil.Switch.TraceVerbose) {

@@ -47,7 +47,7 @@ namespace DotNetOpenId.Provider {
 			if (TraceUtil.Switch.TraceInfo) {
 				Trace.TraceInformation("Start processing Response for CheckAuthRequest");
 			}
-			EncodableResponse response = new EncodableResponse(this);
+			EncodableResponse response = EncodableResponse.PrepareDirectMessage(Protocol);
 
 			bool validSignature = Provider.Signatory.Verify(AssociationHandle, signature, signedFields, signedKeyOrder);
 			response.Fields[Protocol.openidnp.is_valid] = validSignature ?

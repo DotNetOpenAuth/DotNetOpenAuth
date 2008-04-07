@@ -26,7 +26,7 @@ namespace DotNetOpenId.Provider
 		/// </summary>
 		protected internal Protocol Protocol;
 		protected IDictionary<string, string> Query { get; private set; }
-		protected OpenIdProvider Provider { get; private set; }
+		protected internal OpenIdProvider Provider { get; private set; }
 		internal abstract string Mode { get; }
 		/// <summary>
 		/// Extension arguments to pass to the Relying Party.
