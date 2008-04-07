@@ -2,6 +2,8 @@ using System;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Globalization;
+using DotNetOpenId.Yadis;
+using DotNetOpenId.Provider;
 
 namespace DotNetOpenId {
 	/// <summary>
@@ -213,7 +215,16 @@ namespace DotNetOpenId {
 		/// </summary>
 		/// <returns>The details of the endpoint if found, otherwise null.</returns>
 		internal DotNetOpenId.Provider.RealmEndpoint Discover() {
-			return new DotNetOpenId.Provider.RealmEndpoint(Protocol.Default, NoWildcardUri);
+			// Attempt YADIS discovery
+			DiscoveryResult yadisResult = Yadis.Yadis.Discover(NoWildcardUri);
+			if (yadisResult != null) {
+				if (yadisResult.IsXrds) {
+					XrdsDocument xrds = new XrdsDocument(yadisResult.ResponseText);
+					RealmEndpoint ep = xrds.CreateRealmEndpoint();
+					if (ep != null) return ep;
+				}
+			}
+			return null;
 		}
 
 		public override bool Equals(object obj) {

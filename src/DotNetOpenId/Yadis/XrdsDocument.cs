@@ -4,6 +4,7 @@ using System.Xml;
 using System.Xml.XPath;
 using System.Collections.Generic;
 using DotNetOpenId.RelyingParty;
+using DotNetOpenId.Provider;
 
 namespace DotNetOpenId.Yadis {
 	class XrdsDocument : XrdsNode {
@@ -60,6 +61,15 @@ namespace DotNetOpenId.Yadis {
 			return null;
 		}
 
+		internal RealmEndpoint CreateRealmEndpoint() {
+			foreach (var service in findReturnToServices()) {
+				foreach (var uri in service.UriElements) {
+					return new RealmEndpoint(uri.Uri, service.TypeElementUris);
+				}
+			}
+			return null;
+		}
+
 		IEnumerable<ServiceElement> findOPIdentifierServices() {
 			foreach (var xrd in XrdElements) {
 				foreach (var service in xrd.OpenIdProviderIdentifierServices) {
@@ -75,6 +85,14 @@ namespace DotNetOpenId.Yadis {
 		IEnumerable<ServiceElement> findClaimedIdentifierServices() {
 			foreach (var xrd in XrdElements) {
 				foreach (var service in xrd.OpenIdClaimedIdentifierServices) {
+					yield return service;
+				}
+			}
+		}
+
+		IEnumerable<ServiceElement> findReturnToServices() {
+			foreach (var xrd in XrdElements) {
+				foreach( var service in xrd.OpenIdRelyingPartyReturnToServices) {
 					yield return service;
 				}
 			}

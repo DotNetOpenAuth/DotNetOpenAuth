@@ -29,52 +29,43 @@ namespace DotNetOpenId.Yadis {
 			}
 		}
 
+		IEnumerable<ServiceElement> searchForServiceTypeUris(Util.Func<Protocol, string> p) {
+			var xpath = new StringBuilder();
+			xpath.Append("xrd:Service[");
+			foreach (var protocol in Protocol.AllVersions) {
+				string typeUri = p(protocol);
+				if (typeUri == null) continue;
+				xpath.Append("xrd:Type/text()='");
+				xpath.Append(typeUri);
+				xpath.Append("' or ");
+			}
+			xpath.Length -= 4;
+			xpath.Append("]");
+			var services = new List<ServiceElement>();
+			foreach (XPathNavigator service in Node.Select(xpath.ToString(), XmlNamespaceResolver)) {
+				services.Add(new ServiceElement(service, this));
+			}
+			// Put the services in their own defined priority order
+			services.Sort();
+			return services;
+		}
+
 		/// <summary>
 		/// Returns services for OP Identifiers.
 		/// </summary>
 		public IEnumerable<ServiceElement> OpenIdProviderIdentifierServices {
-			get {
-				var xpath = new StringBuilder();
-				xpath.Append("xrd:Service[");
-				foreach (var protocol in Protocol.AllVersions) {
-					xpath.Append("xrd:Type/text()='");
-					xpath.Append(protocol.OPIdentifierServiceTypeURI);
-					xpath.Append("' or ");
-				}
-				xpath.Length -= 4;
-				xpath.Append("]");
-				var services = new List<ServiceElement>();
-				foreach (XPathNavigator service in Node.Select(xpath.ToString(), XmlNamespaceResolver)) {
-					services.Add(new ServiceElement(service, this));
-				}
-				// Put the services in their own defined priority order
-				services.Sort();
-				return services;
-			}
+			get { return searchForServiceTypeUris(p => p.OPIdentifierServiceTypeURI); }
 		}
 
 		/// <summary>
 		/// Returns services for Claimed Identifiers.
 		/// </summary>
 		public IEnumerable<ServiceElement> OpenIdClaimedIdentifierServices {
-			get {
-				var xpath = new StringBuilder();
-				xpath.Append("xrd:Service[");
-				foreach (var protocol in Protocol.AllVersions) {
-					xpath.Append("xrd:Type/text()='");
-					xpath.Append(protocol.ClaimedIdentifierServiceTypeURI);
-					xpath.Append("' or ");
-				}
-				xpath.Length -= 4;
-				xpath.Append("]");
-				var services = new List<ServiceElement>();
-				foreach (XPathNavigator service in Node.Select(xpath.ToString(), XmlNamespaceResolver)) {
-					services.Add(new ServiceElement(service, this));
-				}
-				// Put the services in their own defined priority order
-				services.Sort();
-				return services;
-			}
+			get { return searchForServiceTypeUris(p => p.ClaimedIdentifierServiceTypeURI); }
+		}
+
+		public IEnumerable<ServiceElement> OpenIdRelyingPartyReturnToServices {
+			get { return searchForServiceTypeUris(p => p.RPReturnToTypeURI); }
 		}
 
 		/// <summary>

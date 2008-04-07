@@ -27,6 +27,7 @@ namespace DotNetOpenId {
 			ClaimedIdentifierServiceTypeURI = "http://openid.net/signon/1.0",
 			OPIdentifierServiceTypeURI = null, // not supported
 			ClaimedIdentifierForOPIdentifier = null, // not supported
+			RPReturnToTypeURI = null, // not supported
 			HtmlDiscoveryProviderKey = "openid.server",
 			HtmlDiscoveryLocalIdKey = "openid.delegate",
 		};
@@ -37,6 +38,7 @@ namespace DotNetOpenId {
 			ClaimedIdentifierServiceTypeURI = "http://openid.net/signon/1.1",
 			OPIdentifierServiceTypeURI = null, // not supported
 			ClaimedIdentifierForOPIdentifier = null, // not supported
+			RPReturnToTypeURI = null, // not supported
 			HtmlDiscoveryProviderKey = "openid.server",
 			HtmlDiscoveryLocalIdKey = "openid.delegate",
 		};
@@ -53,6 +55,7 @@ namespace DotNetOpenId {
 			ClaimedIdentifierServiceTypeURI = "http://specs.openid.net/auth/2.0/signon",
 			OPIdentifierServiceTypeURI = "http://specs.openid.net/auth/2.0/server",
 			ClaimedIdentifierForOPIdentifier = "http://specs.openid.net/auth/2.0/identifier_select",
+			RPReturnToTypeURI = "http://specs.openid.net/auth/2.0/return_to",
 			HtmlDiscoveryProviderKey = "openid2.provider",
 			HtmlDiscoveryLocalIdKey = "openid2.local_id",
 			Args = new QueryArguments() {
@@ -124,6 +127,12 @@ namespace DotNetOpenId {
 		/// (http://yahoo.com)
 		/// </summary>
 		public string OPIdentifierServiceTypeURI;
+		/// <summary>
+		/// The XRD/Service/Type value discovered in an XRDS document when
+		/// "discovering" on a Realm URL and looking for the endpoint URL
+		/// that can receive authentication assertions.
+		/// </summary>
+		public string RPReturnToTypeURI;
 		/// <summary>
 		/// Used as the Claimed Identifier and the OP Local Identifier when
 		/// the User Supplied Identifier is an OP Identifier.

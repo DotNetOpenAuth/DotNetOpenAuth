@@ -10,7 +10,13 @@
 		Uri providerEndpoint = new Uri(Request.Url, Page.ResolveUrl("~/server.aspx"));
 		OpenIdProvider op = new OpenIdProvider(OpenIdProvider.HttpApplicationStore,
 			providerEndpoint, Request.Url, Request.QueryString);
-		op.PrepareUnsolicitedAssertion(relyingPartySite.Text, Util.BuildIdentityUrl(), Util.BuildIdentityUrl()).Send();
+		try {
+			op.PrepareUnsolicitedAssertion(relyingPartySite.Text, Util.BuildIdentityUrl(), Util.BuildIdentityUrl()).Send();
+		} catch (OpenIdException ex) {
+			Label errorLabel = (Label)loginView.FindControl("errorLabel");
+			errorLabel.Visible = true;
+			errorLabel.Text = ex.Message;
+		}
 	}
 </script>
 
@@ -45,6 +51,10 @@
 				<br />
 				An unsolicited assertion is a way to log in to a relying party site directly from
 				your OpenID Provider.
+				<p>
+					<asp:Label runat="server" EnableViewState="false" Visible="false" ID="errorLabel"
+						ForeColor="Red" />
+				</p>
 			</asp:Panel>
 		</LoggedInTemplate>
 	</asp:LoginView>

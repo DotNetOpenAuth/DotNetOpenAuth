@@ -4,17 +4,30 @@ using System.Text;
 
 namespace DotNetOpenId.Provider {
 	class RealmEndpoint {
-		public RealmEndpoint(Protocol protocol, Uri relyingPartyEndpoint) {
-			Protocol = protocol;
+		public RealmEndpoint(Uri relyingPartyEndpoint, string[] supportedServiceTypeUris) {
 			RelyingPartyEndpoint = relyingPartyEndpoint;
+			this.supportedServiceTypeUris = supportedServiceTypeUris;
 		}
-		/// <summary>
-		/// The OpenId protocol that the discovered relying party supports.
-		/// </summary>
-		public Protocol Protocol { get; private set; }
 		/// <summary>
 		/// The URL to the login page on the discovered relying party web site.
 		/// </summary>
 		public Uri RelyingPartyEndpoint { get; private set; }
+		/// <summary>
+		/// The Type URIs of supported services advertised on a relying party's XRDS document.
+		/// </summary>
+		string[] supportedServiceTypeUris;
+		Protocol protocol;
+		/// <summary>
+		/// The OpenId protocol that the discovered relying party supports.
+		/// </summary>
+		public Protocol Protocol {
+			get {
+				if (protocol == null) {
+					protocol = Util.FindBestVersion(p => p.RPReturnToTypeURI, supportedServiceTypeUris);
+				}
+				if (protocol != null) return protocol;
+				throw new InvalidOperationException("Unable to determine the version of OpenID the Relying Party supports.");
+			}
+		}
 	}
 }
