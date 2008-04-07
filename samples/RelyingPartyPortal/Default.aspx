@@ -20,6 +20,7 @@
 		<asp:HyperLink runat="server" NavigateUrl="~/MembersOnly/Default.aspx" Text="Members Only" />
 		area. (This will trigger a login demo).
 	</p>
+	<asp:LoginStatus runat="server" />
 	</form>
 </body>
 </html>

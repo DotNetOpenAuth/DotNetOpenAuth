@@ -72,6 +72,10 @@ namespace DotNetOpenId {
 		/// by a question mark (?).
 		/// </summary>
 		public string PathAndQuery { get { return uri.PathAndQuery; } }
+		/// <summary>
+		/// Gets the realm URL.  If the realm includes a wildcard, it is not included here.
+		/// </summary>
+		internal Uri NoWildcardUri { get { return uri; } }
 
 		static string[] _top_level_domains =    {"com", "edu", "gov", "int", "mil", "net", "org", "biz", "info", "name", "museum", "coop", "aero", "ac", "ad", "ae",
 			"af", "ag", "ai", "al", "am", "an", "ao", "aq", "ar", "as", "at", "au", "aw", "az", "ba", "bb", "bd", "be", "bf", "bg", "bh", "bi", "bj",

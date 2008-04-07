@@ -6,6 +6,7 @@ using IProviderAssociationStore = DotNetOpenId.IAssociationStore<DotNetOpenId.As
 using ProviderMemoryStore = DotNetOpenId.AssociationMemoryStore<DotNetOpenId.AssociationRelyingPartyType>;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net;
 
 namespace DotNetOpenId.Provider {
 	/// <summary>
@@ -41,7 +42,7 @@ namespace DotNetOpenId.Provider {
 		/// This method requires a current ASP.NET HttpContext.
 		/// </remarks>
 		public OpenIdProvider()
-			: this(httpApplicationAssociationStore,
+			: this(HttpApplicationAssociationStore,
 			getProviderEndpointFromContext(), Util.GetRequestUrlFromContext(), Util.GetQueryFromContext()) { }
 		/// <summary>
 		/// Constructs an OpenId server that uses a given query and IAssociationStore.
@@ -114,8 +115,17 @@ namespace DotNetOpenId.Provider {
 			return req;
 		}
 
+		public IResponse PrepareUnsolicitedAssertion(Realm relyingParty, 
+			Identifier claimedIdentifier, Identifier localIdentifier) {
+			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
+			if (claimedIdentifier == null) throw new ArgumentNullException("claimedIdentifier");
+			if (localIdentifier == null) throw new ArgumentNullException("localIdentifier");
+			return AssertionMessage.CreateUnsolicitedAssertion(this, 
+				relyingParty, claimedIdentifier, localIdentifier);
+		}
+
 		const string associationStoreKey = "DotNetOpenId.Provider.OpenIdProvider.AssociationStore";
-		static IProviderAssociationStore httpApplicationAssociationStore {
+		public static IProviderAssociationStore HttpApplicationAssociationStore {
 			get {
 				HttpContext context = HttpContext.Current;
 				if (context == null)

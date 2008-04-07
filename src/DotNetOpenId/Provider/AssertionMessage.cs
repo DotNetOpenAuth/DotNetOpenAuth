@@ -61,5 +61,24 @@ namespace DotNetOpenId.Provider {
 				AssertionMessage.CreateNegativeAssertion(response, request.Immediate, request.SetupUrl);
 			return response;
 		}
+
+		/// <summary>
+		/// Creates a message that can be sent to a user agent to redirect them to a 
+		/// relying party web site complete with authentication information to 
+		/// automatically log them into that web site.
+		/// </summary>
+		public static IResponse CreateUnsolicitedAssertion(OpenIdProvider provider,
+			Realm relyingParty, Identifier claimedIdentifier, Identifier localIdentifier) {
+			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
+			if (claimedIdentifier == null) throw new ArgumentNullException("claimedIdentifier");
+			if (localIdentifier == null) throw new ArgumentNullException("localIdentifier");
+
+			Uri relyingPartyLoginUrl = relyingParty.NoWildcardUri;
+			Protocol protocol = Protocol.Default;
+
+			EncodableResponse message = EncodableResponse.PrepareIndirectMessage(protocol, relyingPartyLoginUrl, null);
+			CreatePositiveAssertion(message, provider, localIdentifier, claimedIdentifier);
+			return provider.Encoder.Encode(message);
+		}
 	}
 }
