@@ -8,7 +8,7 @@
 	protected void sendAssertionButton_Click(object sender, EventArgs e) {
 		TextBox relyingPartySite = (TextBox)loginView.FindControl("relyingPartySite");
 		Uri providerEndpoint = new Uri(Request.Url, Page.ResolveUrl("~/server.aspx"));
-		OpenIdProvider op = new OpenIdProvider(OpenIdProvider.HttpApplicationAssociationStore,
+		OpenIdProvider op = new OpenIdProvider(OpenIdProvider.HttpApplicationStore,
 			providerEndpoint, Request.Url, Request.QueryString);
 		op.PrepareUnsolicitedAssertion(relyingPartySite.Text, Util.BuildIdentityUrl(), Util.BuildIdentityUrl()).Send();
 	}

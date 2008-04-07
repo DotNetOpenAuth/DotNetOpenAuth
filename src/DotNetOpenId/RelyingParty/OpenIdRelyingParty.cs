@@ -23,7 +23,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// <remarks>
 		/// This method requires a current ASP.NET HttpContext.
 		/// </remarks>
-		public OpenIdRelyingParty() : this(httpApplicationStore, Util.GetRequestUrlFromContext()) { }
+		public OpenIdRelyingParty() : this(HttpApplicationStore, Util.GetRequestUrlFromContext()) { }
 		/// <summary>
 		/// Constructs an OpenId consumer that uses a given querystring and IAssociationStore.
 		/// </summary>
@@ -135,7 +135,7 @@ namespace DotNetOpenId.RelyingParty {
 		}
 
 		const string associationStoreKey = "DotNetOpenId.RelyingParty.RelyingParty.AssociationStore";
-		static IRelyingPartyApplicationStore httpApplicationStore {
+		public static IRelyingPartyApplicationStore HttpApplicationStore {
 			get {
 				HttpContext context = HttpContext.Current;
 				if (context == null)

@@ -42,7 +42,7 @@ namespace DotNetOpenId.Provider {
 		/// This method requires a current ASP.NET HttpContext.
 		/// </remarks>
 		public OpenIdProvider()
-			: this(HttpApplicationAssociationStore,
+			: this(HttpApplicationStore,
 			getProviderEndpointFromContext(), Util.GetRequestUrlFromContext(), Util.GetQueryFromContext()) { }
 		/// <summary>
 		/// Constructs an OpenId server that uses a given query and IAssociationStore.
@@ -125,7 +125,7 @@ namespace DotNetOpenId.Provider {
 		}
 
 		const string associationStoreKey = "DotNetOpenId.Provider.OpenIdProvider.AssociationStore";
-		public static IProviderAssociationStore HttpApplicationAssociationStore {
+		public static IProviderAssociationStore HttpApplicationStore {
 			get {
 				HttpContext context = HttpContext.Current;
 				if (context == null)
