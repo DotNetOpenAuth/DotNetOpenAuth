@@ -1,3 +1,6 @@
 bin
 TestResult.xml
 *.VisualState.xml
+Drop
+drop
+DotNetOpenId-*

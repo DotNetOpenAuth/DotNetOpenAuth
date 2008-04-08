@@ -1,0 +1,116 @@
+﻿param(
+	$Version, 
+	$Configuration='Release',
+	[switch] $Force=$false
+)
+
+$ProductName = "DotNetOpenId"
+
+function Usage() {
+	$ScriptName = Split-Path -leaf $MyInvocation.ScriptName
+	Write-Host "$ScriptName -Version x.y.z [-Configuration Debug|Release] [-force]"
+	exit
+}
+
+if ($Args -Contains "-?") {
+	Usage
+}
+
+function jdate($date = [datetime]::now) {
+	$yearLastDigit = $date.year % 10
+	$firstOfYear = [datetime] "1/1/$($date.year)"
+	$dayOfYear = ($date - $firstOfYear).days + 1
+	$jdate = $yearLastDigit * 1000 + $dayOfYear
+	$jdate
+}
+
+function SetupVariables() {
+	$ToolsDir = Split-Path $MyInvocation.ScriptName
+	$RootDir = [io.path]::getfullpath((Join-Path $ToolsDir .. -resolve))
+	$BinDir = "$RootDir\bin"
+	$AssemblyInfoFile = "$RootDir\src\$ProductName\Properties\AssemblyInfo.cs"
+	$VersionRegEx = [regex] "^(\d)\.(\d)\.(\d)$"
+	if ($Version -notmatch $VersionRegEx) { Usage }
+	$Version += "." + (jdate)
+	$DropDir = "$RootDir\$ProductName-$Version"
+}
+
+function PerformChecks() {
+	if ((Test-Path $DropDir) -and -not $Force) {
+		throw "$DropDir already exists.  Use -force to overwrite."
+	}
+	if (@(Get-Command "msbuild.exe").Length -eq 0) {
+		throw "Unable to find msbuild.exe.  Make sure your .NET SDK is in the PATH."
+	}
+	if (-not (Test-Path $AssemblyInfoFile)) {
+		throw "Unable to find AssemblyInfo.cs at $AssemblyInfoFile."
+	}
+	if (-not ($Configuration -eq "Release" -or $Configuration -eq "Debug")) { Usage }
+}
+
+function SetBuildVersion() {
+	Write-Host "Building version $Version"
+	# Make backup
+	Copy-Item $AssemblyInfoFile "$($AssemblyInfoFile)~"
+	# Now change the version attribute in the file.
+	$VersionRegEx = [regex]"\d+\.\d+\.\d+\.\d+"
+	(Get-Content $AssemblyInfoFile) | 
+		Foreach-Object { $VersionRegEx.Replace($_, $Version) } |
+		Set-Content $AssemblyInfoFile -encoding utf8
+}
+
+function RevertBuildVersion() {
+	# Restore backup
+	Copy-Item "$($AssemblyInfoFile)~" $AssemblyInfoFile
+}
+
+function Build() {
+	msbuild $RootDir\src\$ProductName.sln /p:Configuration=$Configuration
+}
+
+function AssembleDrop() {
+	If (Test-Path $DropDir) { Remove-Item -recurse -force $DropDir }
+	[void] (mkdir $DropDir\Bin)
+	Copy-Item "$BinDir\$Configuration\$ProductName.???" $DropDir\Bin
+	Copy-Item -recurse $RootDir\Samples $DropDir
+	
+	# Do a little cleanup of files that we don't want to inclue in the drop
+	("obj", "*.user", "*.sln.cache", "*.suo", "*.user", ".gitignore") |% {
+		Get-ChildItem -force -recurse "$DropDir\Samples" "$_" |% { 
+			If (Test-Path "$($_.FullName)") { 
+				Remove-Item -force -recurse "$($_.FullName)"
+			}
+		}
+	}
+	
+	# Adjust Sample projects references
+	$vsns = "http://schemas.microsoft.com/developer/msbuild/2003"
+	Get-ChildItem -recurse $DropDir\Samples *.csproj |% {
+		Write-Host "Adjust project references for sample $_"
+		$proj = [xml] (Get-Content -path $_.fullname)
+		$nsmgr = New-Object Xml.XmlNamespaceManager $proj.get_NameTable()
+		$nsmgr.AddNamespace("vs", $vsns)
+		$ref = $proj.SelectSingleNode("/vs:Project/vs:ItemGroup/vs:ProjectReference", $nsmgr)
+		$parentNode = $ref.get_ParentNode()
+		$parentNode.RemoveChild($ref)
+		$newRef = $proj.CreateElement("Reference", $vsns)
+		$newRef.SetAttribute("Include", "$ProductName")
+		$hintPath = $proj.CreateElement("HintPath", $vsns)
+		$hintPath.set_InnerText("..\..\Bin\$ProductName.dll")
+		$newRef.AppendChild($hintPath)
+		$parentNode.AppendChild($newRef)
+		Set-Content -path $_.FullName -value ($proj.get_outerxml())
+	}
+}
+
+function Finished() {
+	Write-Host "Successful.  The drop can be found in the $DropDir directory."
+}
+
+. SetupVariables
+PerformChecks
+SetBuildVersion
+Build
+RevertBuildVersion
+AssembleDrop
+Finished
