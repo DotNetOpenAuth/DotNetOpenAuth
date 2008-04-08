@@ -91,6 +91,7 @@ namespace DotNetOpenId {
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
 		protected override void Render(HtmlTextWriter writer) {
 			if (!string.IsNullOrEmpty(XrdsUrl)) {
 				if ((XrdsAdvertisement & XrdsUrlLocations.HttpHeader) != 0) {

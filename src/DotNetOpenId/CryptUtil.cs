@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Security.Cryptography;
 using Org.Mentalis.Security.Cryptography;
+using System.Globalization;
 
 
 namespace DotNetOpenId {
@@ -18,7 +19,6 @@ namespace DotNetOpenId {
         154, 72, 59, 138, 118, 34, 62, 93, 73, 10, 37, 127, 5, 189, 255, 22,
         242, 251, 34, 197, 131, 171};
 
-		static ToBase64Transform base64Transform = new ToBase64Transform();
 		internal static SHA1CryptoServiceProvider Sha1 = new SHA1CryptoServiceProvider();
 		internal static SHA256Managed Sha256 = new SHA256Managed();
 
@@ -34,7 +34,7 @@ namespace DotNetOpenId {
 			byte[] dhShared = dh.DecryptKeyExchange(keyEx);
 			byte[] shaDhShared = hasher.ComputeHash(ensurePositive(dhShared));
 			if (shaDhShared.Length != encMacKey.Length) {
-				throw new ArgumentOutOfRangeException(string.Format(
+				throw new ArgumentOutOfRangeException(string.Format(CultureInfo.CurrentUICulture,
 					"encMacKey's length ({0}) does not match the length of the hashing algorithm ({1}).",
 					encMacKey.Length, shaDhShared.Length));
 			}

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using DotNetOpenId.RelyingParty;
+using System.Globalization;
 
 namespace DotNetOpenId {
 	/// <summary>
@@ -12,7 +13,7 @@ namespace DotNetOpenId {
 	/// properties are significant.  Nonces never need to be deserialized.
 	/// </remarks>
 	public class Nonce {
-		static readonly uint UniqueFragmentLength = 8;
+		const uint UniqueFragmentLength = 8;
 		/// <summary>
 		/// These are the characters that may be chosen from when forming a random nonce,
 		/// per the OpenID 2.0 Authentication spec section 10.1.  
@@ -42,12 +43,12 @@ namespace DotNetOpenId {
 			Code = code;
 			int indexOfDateEnd = code.IndexOf("Z", StringComparison.Ordinal);
 			if (indexOfDateEnd < 0) throw new FormatException(Strings.InvalidNonce);
-			CreationDate = DateTime.Parse(code.Substring(0, indexOfDateEnd + 1));
+			CreationDate = DateTime.Parse(code.Substring(0, indexOfDateEnd + 1), CultureInfo.InvariantCulture);
 			UniqueFragment = code.Substring(indexOfDateEnd + 1);
 			this.remoteServerOrigin = remoteServerOrigin;
 		}
 		internal Nonce(DateTime creation, string uniqueFragment, bool remoteServerOrigin) {
-			Code = creation.ToUniversalTime().ToString(PermissibleDateTimeFormats[0]) + uniqueFragment;
+			Code = creation.ToUniversalTime().ToString(PermissibleDateTimeFormats[0], CultureInfo.InvariantCulture) + uniqueFragment;
 			CreationDate = creation;
 			UniqueFragment = uniqueFragment;
 			this.remoteServerOrigin = remoteServerOrigin;

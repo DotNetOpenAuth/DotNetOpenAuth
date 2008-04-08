@@ -57,8 +57,6 @@ namespace DotNetOpenId.Provider
 		/// Creates the appropriate Request-derived type based on the request dictionary.
 		/// </summary>
 		/// <param name="provider">The Provider instance that called this method.</param>
-		/// <param name="query">A dictionary of name/value pairs given in the request's
-		/// querystring or form submission.</param>
 		/// <returns>A Request-derived type appropriate for this stage in authentication.</returns>
 		internal static Request CreateRequest(OpenIdProvider provider) {
 			if (provider == null) throw new ArgumentNullException("provider");

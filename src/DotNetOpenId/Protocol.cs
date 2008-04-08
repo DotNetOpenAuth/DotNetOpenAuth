@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Globalization;
 
 namespace DotNetOpenId {
 	public enum ProtocolVersion {
@@ -167,7 +168,9 @@ namespace DotNetOpenId {
 
 		internal class QueryParameters {
 			public string Prefix = "openid.";
+			[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1805:DoNotInitializeUnnecessarily")]
 			public QueryParameters() { }
+			[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1805:DoNotInitializeUnnecessarily")]
 			public QueryParameters(QueryParameters addPrefixTo) {
 				ns = addPrefix(addPrefixTo.ns);
 				return_to = addPrefix(addPrefixTo.return_to);
@@ -302,7 +305,7 @@ namespace DotNetOpenId {
 			return Version.GetHashCode();
 		}
 		public override string ToString() {
-			return string.Format("OpenID Authentication {0}.{1}", Version.Major, Version.Minor);
+			return string.Format(CultureInfo.CurrentUICulture, "OpenID Authentication {0}.{1}", Version.Major, Version.Minor);
 		}
 	}
 }

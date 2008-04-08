@@ -52,7 +52,7 @@ namespace DotNetOpenId {
 			}
 			// Second pass looks for extensions using those aliases
 			foreach (var pair in query) {
-				if (!pair.Key.StartsWith(mgr.protocol.openid.Prefix)) continue;
+				if (!pair.Key.StartsWith(mgr.protocol.openid.Prefix, StringComparison.Ordinal)) continue;
 				string possibleAlias = pair.Key.Substring(mgr.protocol.openid.Prefix.Length);
 				int periodIndex = possibleAlias.IndexOf(".", StringComparison.Ordinal);
 				if (periodIndex >= 0) possibleAlias = possibleAlias.Substring(0, periodIndex);
@@ -109,7 +109,7 @@ namespace DotNetOpenId {
 			if (arguments == null) throw new ArgumentNullException("arguments");
 			if (arguments.Count == 0) return;
 
-			string extensionAlias = findOrCreateExtensionAlias(extensionTypeUri);
+			findOrCreateExtensionAlias(extensionTypeUri);
 			var extensionArgs = extensions[extensionTypeUri];
 			foreach (var pair in arguments) {
 				extensionArgs.Add(pair.Key, pair.Value);

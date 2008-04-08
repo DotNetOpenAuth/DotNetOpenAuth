@@ -57,7 +57,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// This will only be set if <see cref="Status"/> is <see cref="AuthenticationStatus.Failed"/>,
 		/// but may sometimes by null in this case as well.
 		/// </summary>
-		public Exception Exception { get; private set; }
+		public Exception Exception { get { return null; } }
 		/// <summary>
 		/// An Identifier that the end user claims to own.
 		/// </summary>
@@ -134,8 +134,6 @@ namespace DotNetOpenId.RelyingParty {
 				// verified.
 				// For the error-handling and cancellation cases, the info does not have to
 				// be verified, so we'll use whichever one is available.
-				ServiceEndpoint unverifiedEndpoint = tokenEndpoint ?? responseEndpoint;
-
 				return parseIdResResponse(query, tokenEndpoint, responseEndpoint, store, requestUrl);
 			} else {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,

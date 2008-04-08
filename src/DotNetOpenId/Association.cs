@@ -33,7 +33,8 @@ namespace DotNetOpenId {
 		/// </param>
 		/// <returns>
 		/// The newly dehydrated <see cref="Association"/>, which can be returned
-		/// from a custom association store's <see cref="IAssociationStore.GetAssociation"/> method.
+		/// from a custom association store's 
+		/// <see cref="IAssociationStore&lt;TKey&gt;.GetAssociation(TKey)"/> method.
 		/// </returns>
 		public static Association Deserialize(string handle, DateTime expires, byte[] privateData) {
 			if (string.IsNullOrEmpty(handle)) throw new ArgumentNullException("handle");
@@ -48,7 +49,6 @@ namespace DotNetOpenId {
 				return new HmacSha256Association(handle, secret, remainingLifeLength);
 			throw new ArgumentException(Strings.BadAssociationPrivateData, "privateData");
 		}
-		protected HashAlgorithm Hasher { get; private set; }
 
 		static TimeSpan minimumUsefulAssociationLifetime {
 			get { return Protocol.MaximumUserAgentAuthenticationTime; }

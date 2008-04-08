@@ -438,6 +438,7 @@ namespace DotNetOpenId.RelyingParty
 		}
 
 		protected IAuthenticationRequest Request;
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
 		protected void PrepareAuthenticationRequest() {
 			if (string.IsNullOrEmpty(Text))
 				throw new InvalidOperationException(DotNetOpenId.Strings.OpenIdTextBoxEmpty);
@@ -550,7 +551,6 @@ namespace DotNetOpenId.RelyingParty
 		{
 			if (response == null) throw new ArgumentNullException("response");
 			Debug.Assert(response.Status == AuthenticationStatus.Failed);
-			Exception errorException = response.Exception;
 
 			var failed = Failed;
 			if (failed != null)

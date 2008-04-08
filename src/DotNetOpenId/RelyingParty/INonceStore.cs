@@ -16,7 +16,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// is not necessary as <see cref="ContainsNonce"/> is atomically checked first.
 		/// </summary>
 		/// <remarks>
-		/// When persisting nonce instances, only the <see cref="Code"/> and <see cref="ExpirationDate"/>
+		/// When persisting nonce instances, only the <see cref="Nonce.Code"/> and <see cref="Nonce.ExpirationDate"/>
 		/// properties are significant.  Nonces never need to be deserialized.
 		/// </remarks>
 		void StoreNonce(Nonce nonce);

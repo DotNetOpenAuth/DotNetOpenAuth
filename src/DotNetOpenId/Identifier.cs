@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using DotNetOpenId.RelyingParty;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics;
 
 namespace DotNetOpenId {
 	/// <summary>
@@ -69,6 +70,14 @@ namespace DotNetOpenId {
 		}
 		public static bool operator !=(Identifier id1, Identifier id2) {
 			return !(id1 == id2);
+		}
+		public override bool Equals(object obj) {
+			Debug.Fail("This should be overridden in every derived class.");
+			return base.Equals(obj);
+		}
+		public override int GetHashCode() {
+			Debug.Fail("This should be overridden in every derived class.");
+			return base.GetHashCode();
 		}
 	}
 }

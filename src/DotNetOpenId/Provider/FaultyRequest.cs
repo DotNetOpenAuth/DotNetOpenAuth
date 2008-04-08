@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DotNetOpenId.Provider {
 	class FaultyRequest : Request {
-		public IEncodable Response { get; private set; }
+		public new IEncodable Response { get; private set; }
 		internal FaultyRequest(OpenIdProvider provider, IEncodable response)
 			: base(provider) {
 			Response = response;

@@ -120,6 +120,7 @@ namespace DotNetOpenId.Provider {
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1805:DoNotInitializeUnnecessarily")]
 		internal CheckIdRequest(OpenIdProvider provider) : base(provider) {
 			// handle the mandatory protocol fields
 			string mode = Util.GetRequiredArg(Query, Protocol.openid.mode);

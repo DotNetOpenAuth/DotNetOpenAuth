@@ -21,7 +21,7 @@ namespace DotNetOpenId.Provider {
 		bool IsDirectedIdentity { get; }
 		/// <summary>
 		/// The Local Identifier to this OpenID Provider of the user attempting 
-		/// to authenticate.  Check <see cref="IsIdentifierSelect"/> to see if
+		/// to authenticate.  Check <see cref="IsDirectedIdentity"/> to see if
 		/// this value is valid.
 		/// </summary>
 		/// <remarks>
@@ -35,7 +35,7 @@ namespace DotNetOpenId.Provider {
 		Identifier LocalIdentifier { get; set; }
 		/// <summary>
 		/// The identifier that the user agent is claiming at the relying party site.
-		/// Check <see cref="IsIdentifierSelect"/> to see if this value is valid.
+		/// Check <see cref="IsDirectedIdentity"/> to see if this value is valid.
 		/// </summary>
 		/// <remarks>
 		/// This will not be the same as this provider's local identifier for the user
