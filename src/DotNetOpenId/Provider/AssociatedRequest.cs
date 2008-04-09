@@ -12,7 +12,7 @@ namespace DotNetOpenId.Provider {
 
 		public override string ToString() {
 			string returnString = "AssociatedRequest.AssocHandle = {0}";
-			return base.ToString() + Environment.NewLine + String.Format(CultureInfo.CurrentUICulture,
+			return base.ToString() + Environment.NewLine + string.Format(CultureInfo.CurrentCulture,
 				returnString, AssociationHandle);
 		}
 

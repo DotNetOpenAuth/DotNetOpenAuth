@@ -76,7 +76,7 @@ namespace DotNetOpenId.Provider {
 
 			var discoveredRealm = relyingParty.Discover();
 			if (discoveredRealm == null) throw new OpenIdException(
-				string.Format(CultureInfo.CurrentUICulture, Strings.NoRelyingPartyEndpointDiscovered,
+				string.Format(CultureInfo.CurrentCulture, Strings.NoRelyingPartyEndpointDiscovered,
 				relyingParty.NoWildcardUri));
 
 			EncodableResponse message = EncodableResponse.PrepareIndirectMessage(

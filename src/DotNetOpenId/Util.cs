@@ -90,7 +90,7 @@ namespace DotNetOpenId {
 			if (key == null) throw new ArgumentNullException("key");
 			string value;
 			if (!query.TryGetValue(key, out value) || value.Length == 0)
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.MissingOpenIdQueryParameter, key), query);
 			return value;
 		}
@@ -106,7 +106,7 @@ namespace DotNetOpenId {
 			try {
 				return Convert.FromBase64String(base64string);
 			} catch (FormatException) {
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.InvalidOpenIdQueryParameterValueBadBase64,
 					key, base64string), query);
 			}
@@ -117,7 +117,7 @@ namespace DotNetOpenId {
 			try {
 				return Convert.FromBase64String(base64string);
 			} catch (FormatException) {
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.InvalidOpenIdQueryParameterValueBadBase64,
 					key, base64string), query);
 			}
@@ -126,7 +126,7 @@ namespace DotNetOpenId {
 			try {
 				return Util.GetRequiredArg(query, key);
 			} catch (UriFormatException) {
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.InvalidOpenIdQueryParameterValue, key,
 					Util.GetRequiredArg(query, key), query));
 			}
@@ -135,7 +135,7 @@ namespace DotNetOpenId {
 			try {
 				return new Uri(Util.GetRequiredArg(query, key));
 			} catch (UriFormatException) {
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.InvalidOpenIdQueryParameterValue, key,
 					Util.GetRequiredArg(query, key), query));
 			}
@@ -145,7 +145,7 @@ namespace DotNetOpenId {
 				string value = Util.GetOptionalArg(query, key);
 				return value == null ? null : new Realm(value);
 			} catch (UriFormatException ex) {
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.InvalidOpenIdQueryParameterValue, key,
 					Util.GetOptionalArg(query, key)), ex);
 			}

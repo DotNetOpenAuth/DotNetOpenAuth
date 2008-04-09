@@ -37,13 +37,13 @@ namespace DotNetOpenId.RelyingParty {
 			// some (like myopenid.com) sometimes send errors as 200's.
 			if (resp.StatusCode == HttpStatusCode.BadRequest ||
 				Util.GetOptionalArg(args, Protocol.openidnp.mode) == Protocol.Args.Mode.error) {
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.ProviderRespondedWithError, 
 					Util.GetOptionalArg(args, Protocol.openidnp.error)), args);
 			} else if (resp.StatusCode == HttpStatusCode.OK) {
 				return args;
 			} else {
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.ProviderRespondedWithUnrecognizedHTTPStatusCode, resp.StatusCode));
 			}
 		}

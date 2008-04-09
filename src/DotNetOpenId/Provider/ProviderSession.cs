@@ -32,7 +32,7 @@ namespace DotNetOpenId.Provider {
 			} else if (Array.IndexOf(protocol.Args.SessionType.AllDiffieHellman, session_type) >= 0) {
 				return new DiffieHellmanProviderSession(provider);
 			} else {
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.InvalidOpenIdQueryParameterValue,
 					protocol.openid.session_type, session_type), provider.Query) {
 						ExtraArgsToReturn = AssociateRequest.CreateAssociationTypeHints(provider),

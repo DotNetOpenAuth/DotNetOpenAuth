@@ -139,7 +139,7 @@ namespace DotNetOpenId.Extensions {
 		}
 
 		public override string ToString() {
-			return string.Format(CultureInfo.CurrentUICulture, @"Nickname = '{0}' 
+			return string.Format(CultureInfo.CurrentCulture, @"Nickname = '{0}' 
 Email = '{1}' 
 FullName = '{2}' 
 Birthdate = '{3}'

@@ -14,7 +14,7 @@ namespace DotNetOpenId {
 
 		public XriIdentifier(string xri) {
 			if (!IsValidXri(xri))
-				throw new FormatException(string.Format(CultureInfo.CurrentUICulture,
+				throw new FormatException(string.Format(CultureInfo.CurrentCulture,
 					Strings.InvalidXri, xri));
 			OriginalXri = xri;
 			CanonicalXri = canonicalizeXri(xri);

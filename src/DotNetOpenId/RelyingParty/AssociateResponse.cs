@@ -48,7 +48,7 @@ namespace DotNetOpenId.RelyingParty {
 					byte[] enc_mac_key = getDecoded(Protocol.openidnp.enc_mac_key);
 					secret = CryptUtil.SHAHashXorSecret(CryptUtil.Sha256, DH, dh_server_public, enc_mac_key);
 				} else {
-					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 						Strings.InvalidOpenIdQueryParameterValue,
 						Protocol.openid.session_type, session_type));
 				}
@@ -61,12 +61,12 @@ namespace DotNetOpenId.RelyingParty {
 				} else if (assoc_type == Protocol.Args.SignatureAlgorithm.HMAC_SHA256) {
 					Association = new HmacSha256Association(assocHandle, secret, expiresIn);
 				} else {
-					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 						Strings.InvalidOpenIdQueryParameterValue,
 						Protocol.openid.assoc_type, assoc_type));
 				}
 			} else {
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.InvalidOpenIdQueryParameterValue,
 					Protocol.openid.assoc_type, assoc_type));
 			}
@@ -80,7 +80,7 @@ namespace DotNetOpenId.RelyingParty {
 			try {
 				return Convert.FromBase64String(Util.GetRequiredArg(Args, key));
 			} catch (FormatException ex) {
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.ExpectedBase64OpenIdQueryParameter, key), null, ex);
 			}
 		}

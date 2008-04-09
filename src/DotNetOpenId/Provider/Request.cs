@@ -74,7 +74,7 @@ namespace DotNetOpenId.Provider
 				else if (mode == provider.Protocol.Args.Mode.associate)
 					request = new AssociateRequest(provider);
 				else
-					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 						Strings.InvalidOpenIdQueryParameterValue, provider.Protocol.openid.mode,
 						mode), provider.Query);
 			} catch (OpenIdException ex) {
@@ -143,7 +143,7 @@ namespace DotNetOpenId.Provider
 
 		public override string ToString() {
 			string returnString = @"Request.Mode = {0}";
-			return String.Format(CultureInfo.CurrentUICulture, returnString, Mode);
+			return string.Format(CultureInfo.CurrentCulture, returnString, Mode);
 		}
 	}
 }

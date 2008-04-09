@@ -33,7 +33,7 @@ namespace DotNetOpenId {
 			uri = new Uri(Regex.Replace(realmUrl, wildcardDetectionPattern, m => m.Groups[1].Value));
 			if (!uri.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) &&
 				!uri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
-				throw new UriFormatException(string.Format(CultureInfo.CurrentUICulture,
+				throw new UriFormatException(string.Format(CultureInfo.CurrentCulture,
 					Strings.InvalidScheme, uri.Scheme));
 		}
 		public Realm(Uri realmUrl) {
@@ -41,7 +41,7 @@ namespace DotNetOpenId {
 			uri = realmUrl;
 			if (!uri.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) &&
 				!uri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
-				throw new UriFormatException(string.Format(CultureInfo.CurrentUICulture,
+				throw new UriFormatException(string.Format(CultureInfo.CurrentCulture,
 					Strings.InvalidScheme, uri.Scheme));
 		}
 

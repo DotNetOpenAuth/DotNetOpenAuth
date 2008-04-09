@@ -60,7 +60,7 @@ namespace DotNetOpenId.RelyingParty {
 			// as required by the provider.  We could wait for the provider to test this and
 			// fail, but this will be faster and give us a better error message.
 			if (!realm.Contains(returnToUrl))
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.ReturnToNotUnderRealm, returnToUrl, realm));
 
 			return new AuthenticationRequest(
@@ -166,7 +166,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// </summary>
 		public void AddCallbackArguments(string key, string value) {
 			if (string.IsNullOrEmpty(key)) throw new ArgumentNullException("key");
-			if (ReturnToArgs.ContainsKey(key)) throw new ArgumentException(string.Format(CultureInfo.CurrentUICulture,
+			if (ReturnToArgs.ContainsKey(key)) throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
 				Strings.KeyAlreadyExists, key));
 			ReturnToArgs.Add(key, value ?? "");
 		}

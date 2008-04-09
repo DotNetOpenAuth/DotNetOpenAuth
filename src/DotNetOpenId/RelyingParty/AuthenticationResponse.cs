@@ -112,7 +112,7 @@ namespace DotNetOpenId.RelyingParty {
 			} else if (mode.Equals(protocol.Args.Mode.setup_needed, StringComparison.Ordinal)) {
 				return new AuthenticationResponse(AuthenticationStatus.SetupRequired, tokenEndpoint, query);
 			} else if (mode.Equals(protocol.Args.Mode.error, StringComparison.Ordinal)) {
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					"The provider returned an error: {0}", query[protocol.openid.error]));
 			} else if (mode.Equals(protocol.Args.Mode.id_res, StringComparison.Ordinal)) {
 				// We allow unsolicited assertions (that won't have our own token on it)
@@ -120,7 +120,7 @@ namespace DotNetOpenId.RelyingParty {
 				ServiceEndpoint responseEndpoint = null;
 				if (protocol.Version.Major < 2) {
 					if (tokenEndpoint == null)
-						throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+						throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 							Strings.MissingInternalQueryParameter, Token.TokenKey));
 				} else {
 					// 2.0 OPs provide enough information to assemble the entire endpoint info
@@ -137,7 +137,7 @@ namespace DotNetOpenId.RelyingParty {
 				// be verified, so we'll use whichever one is available.
 				return parseIdResResponse(query, tokenEndpoint, responseEndpoint, store, requestUrl);
 			} else {
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.InvalidOpenIdQueryParameterValue,
 					protocol.openid.mode, mode), query);
 			}
@@ -183,14 +183,14 @@ namespace DotNetOpenId.RelyingParty {
 			if (return_to.Scheme != requestUrl.Scheme ||
 				return_to.Authority != requestUrl.Authority ||
 				return_to.AbsolutePath != requestUrl.AbsolutePath)
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.ReturnToParamDoesNotMatchRequestUrl, endpoint.Protocol.openid.return_to));
 
 			NameValueCollection returnToArgs = HttpUtility.ParseQueryString(return_to.Query);
 			NameValueCollection requestArgs = HttpUtility.ParseQueryString(requestUrl.Query);
 			foreach (string paramName in returnToArgs) {
 				if (requestArgs[paramName] != returnToArgs[paramName])
-					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 						Strings.ReturnToParamDoesNotMatchRequestUrl, endpoint.Protocol.openid.return_to));
 			}
 		}
@@ -206,7 +206,7 @@ namespace DotNetOpenId.RelyingParty {
 				// hasn't changed since we made the request.
 				if (tokenEndpoint.ProviderLocalIdentifier !=
 					Util.GetRequiredArg(query, tokenEndpoint.Protocol.openid.identity)) {
-					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 						Strings.TamperingDetected, tokenEndpoint.Protocol.openid.identity,
 						tokenEndpoint.ProviderLocalIdentifier,
 						Util.GetRequiredArg(query, tokenEndpoint.Protocol.openid.identity)));
@@ -270,7 +270,7 @@ namespace DotNetOpenId.RelyingParty {
 				verifySignatureByProvider(query, endpoint, store);
 			} else {
 				if (assoc.IsExpired)
-					throw new OpenIdException(String.Format(CultureInfo.CurrentUICulture,
+					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 						"Association with {0} expired", endpoint.ProviderEndpoint), endpoint.ClaimedIdentifier);
 
 				verifySignatureByAssociation(query, endpoint.Protocol, signedFields, assoc);
@@ -285,7 +285,7 @@ namespace DotNetOpenId.RelyingParty {
 			Debug.Assert(fieldsThatShouldBeSigned != null);
 			foreach (string field in fieldsThatShouldBeSigned) {
 				if (Array.IndexOf(fieldsThatAreSigned, field) < 0)
-					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 						Strings.FieldMustBeSigned, field));
 			}
 		}

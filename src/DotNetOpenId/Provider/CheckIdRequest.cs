@@ -130,7 +130,7 @@ namespace DotNetOpenId.Provider {
 			} else if (Protocol.Args.Mode.checkid_setup.Equals(mode, StringComparison.Ordinal)) {
 				Immediate = false; // implied
 			} else {
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.InvalidOpenIdQueryParameterValue, Protocol.openid.mode, mode), Query);
 			}
 
@@ -148,14 +148,14 @@ namespace DotNetOpenId.Provider {
 			AssociationHandle = Util.GetOptionalArg(Query, Protocol.openid.assoc_handle);
 
 			if (!Realm.Contains(ReturnTo)) {
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.ReturnToNotUnderRealm, ReturnTo.AbsoluteUri, Realm), Query);
 			}
 
 			if (Protocol.Version.Major >= 2) {
 				if (LocalIdentifier == Protocol.ClaimedIdentifierForOPIdentifier ^
 					ClaimedIdentifier == Protocol.ClaimedIdentifierForOPIdentifier) {
-					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 						Strings.MatchingArgumentsExpected, Protocol.openid.claimed_id,
 						Protocol.openid.identity, Protocol.ClaimedIdentifierForOPIdentifier),
 						Query);
@@ -220,7 +220,7 @@ CheckIdRequest._mode = '{3}'
 CheckIdRequest.ReturnTo = '{4}' 
 ";
 
-			return base.ToString() + string.Format(CultureInfo.CurrentUICulture,
+			return base.ToString() + string.Format(CultureInfo.CurrentCulture,
 				returnString, Immediate, Realm, LocalIdentifier, Mode, ReturnTo);
 		}
 	}

@@ -305,7 +305,7 @@ namespace DotNetOpenId {
 			return Version.GetHashCode();
 		}
 		public override string ToString() {
-			return string.Format(CultureInfo.CurrentUICulture, "OpenID Authentication {0}.{1}", Version.Major, Version.Minor);
+			return string.Format(CultureInfo.CurrentCulture, "OpenID Authentication {0}.{1}", Version.Major, Version.Minor);
 		}
 	}
 }

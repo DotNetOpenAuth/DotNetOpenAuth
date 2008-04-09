@@ -19,7 +19,7 @@ namespace DotNetOpenId.Provider {
 			session = ProviderSession.CreateSession(provider);
 			assoc_type = Util.GetRequiredArg(Query, Protocol.openid.assoc_type);
 			if (Array.IndexOf(Protocol.Args.SignatureAlgorithm.All, assoc_type) < 0) {
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.InvalidOpenIdQueryParameterValue,
 					Protocol.openid.assoc_type, assoc_type), provider.Query) {
 						ExtraArgsToReturn = CreateAssociationTypeHints(provider),
@@ -97,7 +97,7 @@ namespace DotNetOpenId.Provider {
 
 		public override string ToString() {
 			string returnString = "AssociateRequest._assoc_type = {0}";
-			return base.ToString() + Environment.NewLine + String.Format(CultureInfo.CurrentUICulture,
+			return base.ToString() + Environment.NewLine + string.Format(CultureInfo.CurrentCulture,
 				returnString, assoc_type);
 		}
 
