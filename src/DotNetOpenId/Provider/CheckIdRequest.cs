@@ -14,6 +14,7 @@ namespace DotNetOpenId.Provider {
 	/// <remarks>
 	/// This class handles requests for openid modes checkid_immediate and checkid_setup.
 	/// </remarks>
+	[DebuggerDisplay("Mode: {Mode}, IsAuthenticated: {IsAuthenticated}, LocalIdentifier: {LocalIdentifier}, OpenId: {Protocol.Version}")]
 	class CheckIdRequest : AssociatedRequest, IAuthenticationRequest {
 		bool? isAuthenticated;
 		/// <summary>

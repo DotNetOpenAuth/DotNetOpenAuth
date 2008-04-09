@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace DotNetOpenId {
 	/// <summary>
@@ -10,8 +11,9 @@ namespace DotNetOpenId {
 	/// against each other, particularly the ones that enumerate over the list, since they
 	/// can break if the collection is changed by another thread during enumeration.
 	/// </remarks>
+	[DebuggerDisplay("Count = {assocs.Count}")]
 	internal class Associations {
-
+		[DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
 		Dictionary<string, Association> assocs;
 
 		/// <summary>

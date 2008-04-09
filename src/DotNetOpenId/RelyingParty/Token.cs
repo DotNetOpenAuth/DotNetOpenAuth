@@ -13,6 +13,7 @@ namespace DotNetOpenId.RelyingParty {
 	/// </summary>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design",
 		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", Justification = "CryptoStream is not stored in a field.")]
+	[DebuggerDisplay("Nonce: {Nonce}, Endpoint: {Endpoint.ClaimedIdentifier}")]
 	class Token {
 		public static readonly string TokenKey = "token";
 		/// <summary>

@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Security.Cryptography;
 
 namespace DotNetOpenId.Provider {
+	[DebuggerDisplay("{SessionType}")]
 	internal abstract class ProviderSession {
 		protected ProviderSession(OpenIdProvider provider) {
 			if (provider == null) throw new ArgumentNullException("provider");

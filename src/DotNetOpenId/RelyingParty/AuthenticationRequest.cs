@@ -5,6 +5,7 @@ using DotNetOpenId;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.Web;
+using System.Diagnostics;
 
 namespace DotNetOpenId.RelyingParty {
 	/// <summary>
@@ -25,6 +26,7 @@ namespace DotNetOpenId.RelyingParty {
 		Setup
 	}
 
+	[DebuggerDisplay("ClaimedIdentifier: {ClaimedIdentifier}, Mode: {Mode}, OpenId: {protocol.Version}")]
 	class AuthenticationRequest : IAuthenticationRequest {
 		Association assoc;
 		ServiceEndpoint endpoint;

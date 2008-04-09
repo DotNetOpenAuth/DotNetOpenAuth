@@ -4,6 +4,7 @@ using System.Text;
 using System.Diagnostics;
 
 namespace DotNetOpenId.RelyingParty {
+	[DebuggerDisplay("OpenId: {Protocol.Version}")]
 	class DirectResponse {
 		protected DirectResponse(ServiceEndpoint provider, IDictionary<string, string> args) {
 			if (provider == null) throw new ArgumentNullException("provider");

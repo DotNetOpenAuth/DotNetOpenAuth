@@ -5,8 +5,10 @@ namespace DotNetOpenId.RelyingParty {
 	using System.IO;
 	using System.Text;
 	using System.Net.Mime;
+	using System.Diagnostics;
 
 	[Serializable]
+	[DebuggerDisplay("{StatusCode} {ContentType.MediaType}: {ReadResponseString().Substring(4,50)}")]
 	internal class FetchResponse {
 		const string DefaultContentEncoding = "ISO-8859-1";
 		

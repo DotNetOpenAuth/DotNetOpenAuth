@@ -5,6 +5,7 @@ using Org.Mentalis.Security.Cryptography;
 using System.Diagnostics;
 
 namespace DotNetOpenId.RelyingParty {
+	[DebuggerDisplay("Mode: {Args[\"openid.mode\"]}, {Args[\"openid.assoc_type\"]}, OpenId: {Protocol.Version}")]
 	class AssociateRequest : DirectRequest {
 		/// <param name="dh">Optional.  Supplied only if Diffie-Hellman is used for encrypting the association secret key.</param>
 		AssociateRequest(ServiceEndpoint provider, IDictionary<string, string> args, DiffieHellman dh)
@@ -62,6 +63,7 @@ namespace DotNetOpenId.RelyingParty {
 			return new AssociateRequest(provider, args, dh);
 		}
 		AssociateResponse response;
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)] // code execution in getter
 		public AssociateResponse Response {
 			get {
 				if (response == null) {

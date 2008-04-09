@@ -28,6 +28,7 @@ namespace DotNetOpenId.RelyingParty {
 		Authenticated,
 	}
 
+	[DebuggerDisplay("Status: {Status}, ClaimedIdentifier: {ClaimedIdentifier}")]
 	class AuthenticationResponse : IAuthenticationResponse {
 		internal AuthenticationResponse(AuthenticationStatus status, ServiceEndpoint provider, IDictionary<string, string> query) {
 			if (provider == null) throw new ArgumentNullException("provider");

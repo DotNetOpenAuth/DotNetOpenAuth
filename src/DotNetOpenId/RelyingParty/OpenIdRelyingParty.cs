@@ -6,11 +6,13 @@ using System.Web;
 using System.Collections.Generic;
 using DotNetOpenId.Provider;
 using System.Globalization;
+using System.Diagnostics;
 
 namespace DotNetOpenId.RelyingParty {
 	/// <summary>
 	/// Provides the programmatic facilities to act as an OpenId consumer.
 	/// </summary>
+	[DebuggerDisplay("isAuthenticationResponseReady: {isAuthenticationResponseReady}, stateless: {store == null}")]
 	public class OpenIdRelyingParty {
 		IRelyingPartyApplicationStore store;
 		Uri request;
@@ -121,6 +123,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// Gets the result of a user agent's visit to his OpenId provider in an
 		/// authentication attempt.  Null if no response is available.
 		/// </summary>
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)] // getter does work
 		public IAuthenticationResponse Response {
 			get {
 				if (response == null && isAuthenticationResponseReady) {

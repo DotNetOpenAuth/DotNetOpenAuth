@@ -110,5 +110,8 @@ namespace DotNetOpenId {
 		public override int GetHashCode() {
 			return Code.GetHashCode();
 		}
+		public override string ToString() {
+			return Code;
+		}
 	}
 }

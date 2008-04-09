@@ -9,6 +9,7 @@ namespace DotNetOpenId.Provider {
 	/// <summary>
 	/// A request to establish an association.
 	/// </summary>
+	[DebuggerDisplay("Mode: {Mode}, AssocType: {assoc_type}, Session: {session.SessionType}, OpenId: {Protocol.Version}")]
 	internal class AssociateRequest : Request {
 		string assoc_type;
 		ProviderSession session;

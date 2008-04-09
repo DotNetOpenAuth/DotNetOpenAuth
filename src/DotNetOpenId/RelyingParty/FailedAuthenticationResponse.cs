@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Diagnostics;
 
 namespace DotNetOpenId.RelyingParty {
+	[DebuggerDisplay("{Exception.Message}")]
 	class FailedAuthenticationResponse : IAuthenticationResponse {
 		public FailedAuthenticationResponse(Exception exception) {
 			Exception = exception;

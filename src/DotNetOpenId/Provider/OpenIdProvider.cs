@@ -12,6 +12,7 @@ namespace DotNetOpenId.Provider {
 	/// <summary>
 	/// Offers services for a web page that is acting as an OpenID identity server.
 	/// </summary>
+	[DebuggerDisplay("Endpoint: {Endpoint}, OpenId Request: {Query.ContainsKey(\"openid.mode\")}")]
 	public class OpenIdProvider {
 		internal Signatory Signatory { get; private set; }
 		internal Encoder Encoder;
@@ -81,6 +82,7 @@ namespace DotNetOpenId.Provider {
 
 		bool requestProcessed;
 		Request request;
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)] // this property getter executes code
 		public IRequest Request {
 			get {
 				if (!requestProcessed) {

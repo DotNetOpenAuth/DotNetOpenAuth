@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Globalization;
 
 namespace DotNetOpenId.Provider {
+	[DebuggerDisplay("OpenId: {Protocol.Version}")]
 	internal class EncodableResponse : MarshalByRefObject, IEncodable {
 		public static EncodableResponse PrepareDirectMessage(Protocol protocol) {
 			EncodableResponse response = new EncodableResponse(protocol);

@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Globalization;
 
 namespace DotNetOpenId.RelyingParty {
+	[DebuggerDisplay("OpenId: {Protocol.Version}")]
 	abstract class DirectRequest {
 		protected DirectRequest(ServiceEndpoint provider, IDictionary<string, string> args) {
 			if (provider == null) throw new ArgumentNullException("provider");

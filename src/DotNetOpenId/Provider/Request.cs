@@ -11,6 +11,7 @@ namespace DotNetOpenId.Provider
 	/// <summary>
 	/// Represents any OpenId-protocol request that may come to the provider.
 	/// </summary>
+	[DebuggerDisplay("Mode: {Mode}, OpenId: {Protocol.Version}")]
 	abstract class Request : IRequest {
 		protected Request(OpenIdProvider provider) {
 			if (provider == null) throw new ArgumentNullException("provider");

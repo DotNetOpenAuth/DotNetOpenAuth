@@ -6,8 +6,10 @@ using System.IO;
 using System.Text;
 using System.Globalization;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics;
 
 namespace DotNetOpenId {
+	[DebuggerDisplay("Handle = {Handle}, Expires = {Expires}")]
 	public abstract class Association {
 		protected Association(string handle, byte[] secret, TimeSpan totalLifeLength, DateTime issued) {
 			if (string.IsNullOrEmpty(handle)) throw new ArgumentNullException("handle");
@@ -215,17 +217,6 @@ namespace DotNetOpenId {
 			val = val ^ this.Expires.ToFileTimeUtc();
 
 			return (int)val;
-		}
-		public override string ToString() {
-			string returnString = @"Association.Handle= '{0}'
-Association.Issued = '{1}'
-Association.Secret = '{2}' 
-Association.Expires = '{3}' 
-Association.IsExpired = '{4}' 
-Association.ExpiresIn = '{5}' ";
-			return String.Format(CultureInfo.CurrentUICulture, 
-				returnString, Handle, Issued, SecretKey,
-				Expires, IsExpired, SecondsTillExpiration);
 		}
 	}
 }

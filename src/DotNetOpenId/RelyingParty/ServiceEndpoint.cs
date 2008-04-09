@@ -12,6 +12,7 @@ namespace DotNetOpenId.RelyingParty {
 	/// <summary>
 	/// Represents information discovered about a user-supplied Identifier.
 	/// </summary>
+	[DebuggerDisplay("ClaimedIdentifier: {ClaimedIdentifier}, ProviderEndpoint: {ProviderEndpoint}, OpenId: {Protocol.Version}")]
 	internal class ServiceEndpoint {
 		/// <summary>
 		/// The URL which accepts OpenID Authentication protocol messages.

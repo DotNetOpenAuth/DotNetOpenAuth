@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Diagnostics;
 
 namespace DotNetOpenId.RelyingParty {
+	[DebuggerDisplay("IsAuthenticationValid: {IsAuthenticationValid}, OpenId: {Protocol.Version}")]
 	class CheckAuthResponse : DirectResponse {
 		public CheckAuthResponse(ServiceEndpoint provider, IDictionary<string, string> args)
 			: base(provider, args) {

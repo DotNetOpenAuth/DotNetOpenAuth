@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Diagnostics;
 
 namespace DotNetOpenId.RelyingParty {
 	class CheckAuthRequest : DirectRequest {
@@ -39,6 +40,7 @@ namespace DotNetOpenId.RelyingParty {
 		}
 
 		CheckAuthResponse response;
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)] // getter executes code
 		public CheckAuthResponse Response {
 			get {
 				if (response == null) {
