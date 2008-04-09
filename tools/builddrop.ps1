@@ -8,7 +8,7 @@ $ProductName = "DotNetOpenId"
 
 function Usage() {
 	$ScriptName = Split-Path -leaf $MyInvocation.ScriptName
-	Write-Host "$ScriptName -Version x.y.z [-Configuration Debug|Release] [-force]"
+	Write-Host "$ScriptName [-Version x.y.z] [-Configuration Debug|Release] [-force]"
 	exit
 }
 
@@ -29,10 +29,15 @@ function SetupVariables() {
 	$RootDir = [io.path]::getfullpath((Join-Path $ToolsDir .. -resolve))
 	$BinDir = "$RootDir\bin"
 	$AssemblyInfoFile = "$RootDir\src\$ProductName\Properties\AssemblyInfo.cs"
-	$VersionRegEx = [regex] "^(\d)\.(\d)\.(\d)$"
-	if ($Version -notmatch $VersionRegEx) { Usage }
+	if ($Version -and ($Version -notmatch "^(\d)\.(\d)\.(\d)$")) { Usage }
+	if (!$Version) {
+		$VersionRegEx = [regex] "\d\.\d\.\d"
+		$m = $VersionRegEx.Match((Get-Content $AssemblyInfoFile))
+		$Script:Version = $m.Groups[0].Value
+	}
 	$Version += "." + (jdate)
 	$DropDir = "$RootDir\$ProductName-$Version"
+	$errorActionPreference = "Stop"
 }
 
 function PerformChecks() {
@@ -49,7 +54,7 @@ function PerformChecks() {
 }
 
 function SetBuildVersion() {
-	Write-Host "Building version $Version"
+	Write-Host "Building version $Version..."
 	# Make backup
 	Copy-Item $AssemblyInfoFile "$($AssemblyInfoFile)~"
 	# Now change the version attribute in the file.
@@ -65,7 +70,7 @@ function RevertBuildVersion() {
 }
 
 function Build() {
-	msbuild $RootDir\src\$ProductName.sln /p:Configuration=$Configuration
+	msbuild $RootDir\src\$ProductName.sln /p:Configuration=$Configuration > $nul
 }
 
 function AssembleDrop() {
@@ -73,12 +78,14 @@ function AssembleDrop() {
 	[void] (mkdir $DropDir\Bin)
 	Copy-Item "$BinDir\$Configuration\$ProductName.???" $DropDir\Bin
 	Copy-Item -recurse $RootDir\Samples $DropDir
-	
+	Copy-Item -Recurse $RootDir\Doc\*.htm* $DropDir
+
 	# Do a little cleanup of files that we don't want to inclue in the drop
 	("obj", "*.user", "*.sln.cache", "*.suo", "*.user", ".gitignore") |% {
 		Get-ChildItem -force -recurse "$DropDir\Samples" "$_" |% { 
-			If (Test-Path "$($_.FullName)") { 
-				Remove-Item -force -recurse "$($_.FullName)"
+			If (Test-Path "$($_.FullName)") {
+				$errorActionPreference = "SilentlyContinue"
+				Remove-Item -force -recurse -path "$($_.FullName)"
 			}
 		}
 	}
@@ -86,7 +93,7 @@ function AssembleDrop() {
 	# Adjust Sample projects references
 	$vsns = "http://schemas.microsoft.com/developer/msbuild/2003"
 	Get-ChildItem -recurse $DropDir\Samples *.csproj |% {
-		Write-Host "Adjust project references for sample $_"
+		Write-Debug "Adjust project references for sample $_"
 		$proj = [xml] (Get-Content -path $_.fullname)
 		$nsmgr = New-Object Xml.XmlNamespaceManager $proj.get_NameTable()
 		$nsmgr.AddNamespace("vs", $vsns)
@@ -100,7 +107,7 @@ function AssembleDrop() {
 		$newRef.AppendChild($hintPath)
 		$parentNode.AppendChild($newRef)
 		Set-Content -path $_.FullName -value ($proj.get_outerxml())
-	}
+	} > $nul
 }
 
 function Finished() {
