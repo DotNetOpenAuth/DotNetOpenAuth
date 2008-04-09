@@ -7,6 +7,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Net;
 using DotNetOpenId.Provider;
+using System.Threading;
 
 namespace DotNetOpenId.Test.Hosting {
 	/// <summary>
@@ -38,6 +39,10 @@ namespace DotNetOpenId.Test.Hosting {
 
 		public string ProcessRequest(string url, string body) {
 			return httpHost.ProcessRequest(url, body);
+		}
+
+		public void BeginProcessRequest(HttpListenerContext context) {
+			ThreadPool.QueueUserWorkItem(state => { ProcessRequest(context); });
 		}
 
 		public void ProcessRequest(HttpListenerContext context) {

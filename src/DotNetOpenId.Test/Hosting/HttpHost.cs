@@ -46,7 +46,7 @@ namespace DotNetOpenId.Test.Hosting {
 			try {
 				while (true) {
 					var context = listener.GetContext();
-					aspNetHost.ProcessRequest(context);
+					aspNetHost.BeginProcessRequest(context);
 				}
 			} catch (HttpListenerException) {
 				// the listener is probably being shut down

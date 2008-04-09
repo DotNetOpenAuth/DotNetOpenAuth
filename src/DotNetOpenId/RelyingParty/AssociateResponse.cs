@@ -54,7 +54,7 @@ namespace DotNetOpenId.RelyingParty {
 				}
 
 				string assocHandle = Util.GetRequiredArg(Args, Protocol.openidnp.assoc_handle);
-				TimeSpan expiresIn = new TimeSpan(0, 0, Convert.ToInt32(Util.GetRequiredArg(Args, Protocol.openidnp.expires_in), CultureInfo.CurrentUICulture));
+				TimeSpan expiresIn = new TimeSpan(0, 0, Convert.ToInt32(Util.GetRequiredArg(Args, Protocol.openidnp.expires_in), CultureInfo.InvariantCulture));
 
 				if (assoc_type == Protocol.Args.SignatureAlgorithm.HMAC_SHA1) {
 					Association = new HmacSha1Association(assocHandle, secret, expiresIn);
