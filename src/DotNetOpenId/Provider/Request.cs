@@ -215,7 +215,7 @@ namespace DotNetOpenId.Provider
 
 		public override string ToString() {
 			string returnString = @"Request.Mode = {0}";
-			return String.Format(CultureInfo.CurrentUICulture, returnString, Mode);
+			return string.Format(CultureInfo.CurrentCulture, returnString, Mode);
 		}
 	}
 }

@@ -20,7 +20,7 @@ namespace DotNetOpenId.RelyingParty {
 					Converter<string, string> getParameter = delegate(string key) {
 						string val;
 						if (!Args.TryGetValue(key, out val) || string.IsNullOrEmpty(val))
-							throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture, Strings.MissingOpenIdQueryParameter, key));
+							throw new OpenIdException(string.Format(CultureInfo.CurrentCulture, Strings.MissingOpenIdQueryParameter, key));
 						return val;
 					};
 
@@ -28,7 +28,7 @@ namespace DotNetOpenId.RelyingParty {
 						try {
 							return Convert.FromBase64String(getParameter(key));
 						} catch (FormatException ex) {
-							throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+							throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 								Strings.ExpectedBase64OpenIdQueryParameter, key), null, ex);
 						}
 					};
@@ -53,7 +53,7 @@ namespace DotNetOpenId.RelyingParty {
 									return null;
 
 								string assocHandle = getParameter(QueryStringArgs.openidnp.assoc_handle);
-								TimeSpan expiresIn = new TimeSpan(0, 0, Convert.ToInt32(getParameter(QueryStringArgs.openidnp.expires_in), CultureInfo.CurrentUICulture));
+								TimeSpan expiresIn = new TimeSpan(0, 0, Convert.ToInt32(getParameter(QueryStringArgs.openidnp.expires_in), CultureInfo.InvariantCulture));
 
 								assoc = new HmacSha1Association(assocHandle, secret, expiresIn);
 								break;

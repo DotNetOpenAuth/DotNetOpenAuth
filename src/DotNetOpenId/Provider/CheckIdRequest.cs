@@ -82,7 +82,7 @@ namespace DotNetOpenId.Provider {
 			} else if (QueryStringArgs.Modes.checkid_setup.Equals(mode, StringComparison.Ordinal)) {
 				Immediate = false; // implied
 			} else {
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.InvalidOpenIdQueryParameterValue, QueryStringArgs.openid.mode, mode), query);
 			}
 
@@ -95,7 +95,7 @@ namespace DotNetOpenId.Provider {
 			try {
 				ReturnTo = new Uri(getRequiredField(query, QueryStringArgs.openid.return_to));
 			} catch (UriFormatException ex) {
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture, 
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture, 
 					"'{0}' is not a valid OpenID return_to URL.", query[QueryStringArgs.openid.return_to]),
 					LocalIdentifier, query, ex);
 			}
@@ -103,14 +103,14 @@ namespace DotNetOpenId.Provider {
 			try {
 				Realm = new Realm(query[QueryStringArgs.openid.trust_root] ?? ReturnTo.AbsoluteUri);
 			} catch (UriFormatException ex) {
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.InvalidOpenIdQueryParameterValue, QueryStringArgs.openid.trust_root,
 					query[QueryStringArgs.openid.trust_root]), ex);
 			}
 			AssociationHandle = query[QueryStringArgs.openid.assoc_handle];
 
 			if (!Realm.Contains(ReturnTo)) {
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.ReturnToNotUnderTrustRoot, ReturnTo.AbsoluteUri, Realm), query);
 			}
 		}
@@ -195,7 +195,7 @@ CheckIdRequest._mode = '{3}'
 CheckIdRequest.ReturnTo = '{4}' 
 ";
 
-			return base.ToString() + string.Format(CultureInfo.CurrentUICulture,
+			return base.ToString() + string.Format(CultureInfo.CurrentCulture,
 				returnString, Immediate, Realm, LocalIdentifier, Mode, ReturnTo);
 		}
 	}

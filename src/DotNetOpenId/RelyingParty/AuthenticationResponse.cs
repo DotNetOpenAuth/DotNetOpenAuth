@@ -111,12 +111,12 @@ namespace DotNetOpenId.RelyingParty {
 		internal static AuthenticationResponse Parse(IDictionary<string, string> query, IRelyingPartyApplicationStore store) {
 			string mode;
 			if (!query.TryGetValue(QueryStringArgs.openid.mode, out mode))
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.MissingOpenIdQueryParameter, QueryStringArgs.openid.mode));
 
 			string tokenString;
 			if (!query.TryGetValue(Token.TokenKey, out tokenString))
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.MissingInternalQueryParameter, Token.TokenKey));
 			Token token = Token.Deserialize(tokenString, store);
 
@@ -124,13 +124,13 @@ namespace DotNetOpenId.RelyingParty {
 				case QueryStringArgs.Modes.cancel:
 					return new AuthenticationResponse(AuthenticationStatus.Canceled, token.IdentityUrl, query);
 				case QueryStringArgs.Modes.error:
-					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 						"The provider returned an error: {0}", query[QueryStringArgs.openid.error],
 						token.IdentityUrl));
 				case QueryStringArgs.Modes.id_res:
 					return parseIdResResponse(query, token, store);
 				default:
-					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 						Strings.InvalidOpenIdQueryParameterValue,
 						QueryStringArgs.openid.mode, mode), token.IdentityUrl);
 			}
@@ -155,7 +155,7 @@ namespace DotNetOpenId.RelyingParty {
 				response = new AuthenticationResponse(AuthenticationStatus.Authenticated, token.IdentityUrl, query);
 			} else {
 				if (assoc.IsExpired)
-					throw new OpenIdException(String.Format(CultureInfo.CurrentUICulture,
+					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 						"Association with {0} expired", token.ServerUrl), token.IdentityUrl);
 
 				verifyBySignature(query, assoc);
@@ -173,7 +173,7 @@ namespace DotNetOpenId.RelyingParty {
 		static string getRequiredField(IDictionary<string, string> query, string key) {
 			string val;
 			if (!query.TryGetValue(key, out val))
-				throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.MissingOpenIdQueryParameter, key));
 
 			return val;
@@ -218,7 +218,7 @@ namespace DotNetOpenId.RelyingParty {
 				string queryArg;
 				query.TryGetValue(arg, out queryArg);
 				if (queryArg != return_to[arg])
-					throw new OpenIdException(string.Format(CultureInfo.CurrentUICulture,
+					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 						Strings.ReturnToArgDifferentFromQueryArg, arg, return_to[arg], query[arg]));
 			}
 		}

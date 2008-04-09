@@ -102,11 +102,11 @@ namespace DotNetOpenId.Provider
 
         public override string ToString()
         {
-            string returnString = String.Format(CultureInfo.CurrentUICulture, 
+            string returnString = string.Format(CultureInfo.CurrentCulture, 
                 "Response.NeedsSigning = {0}", this.NeedsSigning);             
             foreach (string key in Fields.Keys)
             {
-                returnString += Environment.NewLine +  String.Format(CultureInfo.CurrentUICulture,
+                returnString += Environment.NewLine +  string.Format(CultureInfo.CurrentCulture,
                     "ResponseField[{0}] = '{1}'", key, Fields[key]);
             }
             return returnString;            

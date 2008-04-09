@@ -68,10 +68,10 @@ namespace DotNetOpenId {
 					string key = keyInOrder.Trim();
 					string value = dictionary[key].Trim();
 					if (key.IndexOfAny(illegalKeyCharacters) >= 0)
-						throw new ArgumentException(string.Format(CultureInfo.CurrentUICulture,
+						throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
 							Strings.InvalidCharacterInKeyValueFormInput, key));
 					if (value.IndexOfAny(illegalValueCharacters) >= 0)
-						throw new ArgumentException(string.Format(CultureInfo.CurrentUICulture,
+						throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
 							Strings.InvalidCharacterInKeyValueFormInput, value));
 
 					sw.Write(key);
@@ -100,13 +100,13 @@ namespace DotNetOpenId {
 					}
 					string[] parts = line.Split(new[] { ':' }, 2);
 					if (parts.Length != 2) {
-						throw new ArgumentException(string.Format(CultureInfo.CurrentUICulture,
+						throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
 							Strings.InvalidKeyValueFormCharacterMissing, ':'));
 					}
 					if (ConformanceLevel > KeyValueFormConformanceLevel.Loose) {
 						if (char.IsWhiteSpace(parts[0], parts[0].Length-1) ||
 							char.IsWhiteSpace(parts[1], 0)) {
-							throw new ArgumentException(string.Format(CultureInfo.CurrentUICulture,
+							throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
 								Strings.InvalidCharacterInKeyValueFormInput, ' '));
 						}
 					}
@@ -121,7 +121,7 @@ namespace DotNetOpenId {
 				if (ConformanceLevel > KeyValueFormConformanceLevel.Loose) {
 					reader.BaseStream.Seek(-1, SeekOrigin.End);
 					if (reader.BaseStream.ReadByte() != '\n') {
-						throw new ArgumentException(string.Format(CultureInfo.CurrentUICulture,
+						throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
 							Strings.InvalidKeyValueFormCharacterMissing, "\\n"));
 					}
 				}

@@ -73,7 +73,7 @@ namespace DotNetOpenId.Provider {
 
 		public override string ToString() {
 			string returnString = "AssociateRequest._assoc_type = {0}";
-			return base.ToString() + Environment.NewLine + String.Format(CultureInfo.CurrentUICulture,
+			return base.ToString() + Environment.NewLine + string.Format(CultureInfo.CurrentCulture,
 				returnString, associationKeyType);
 		}
 

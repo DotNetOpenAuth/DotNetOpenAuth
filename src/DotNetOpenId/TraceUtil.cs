@@ -27,14 +27,14 @@ namespace DotNetOpenId {
 		/// </summary>
 		public static string ToString(object obj) {
 			XmlSerializer serializer = new XmlSerializer(obj.GetType());
-			using (StringWriter writer = new StringWriter(CultureInfo.CurrentUICulture)) {
+			using (StringWriter writer = new StringWriter(CultureInfo.CurrentCulture)) {
 				serializer.Serialize(writer, obj);
 				return writer.ToString();
 			}
 		}
 
 		public static string ToString(NameValueCollection collection) {
-			using (StringWriter sw = new StringWriter(CultureInfo.CurrentUICulture)) {
+			using (StringWriter sw = new StringWriter(CultureInfo.CurrentCulture)) {
 				foreach (string key in collection.Keys) {
 					sw.WriteLine("{0} = '{1}'", key, collection[key]);
 				}

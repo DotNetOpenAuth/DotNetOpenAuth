@@ -158,7 +158,7 @@ Association.Secret = '{2}'
 Association.Expires = '{3}' 
 Association.IsExpired = '{4}' 
 Association.ExpiresIn = '{5}' ";
-			return String.Format(CultureInfo.CurrentUICulture, 
+			return string.Format(CultureInfo.CurrentCulture, 
 				returnString, Handle, Issued, SecretKey,
 				Expires, IsExpired, SecondsTillExpiration);
 		}

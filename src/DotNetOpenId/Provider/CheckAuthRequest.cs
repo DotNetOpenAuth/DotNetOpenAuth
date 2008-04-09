@@ -100,7 +100,7 @@ namespace DotNetOpenId.Provider {
 CheckAuthRequest._sig = '{0}'
 CheckAuthRequest.AssocHandle = '{1}'
 CheckAuthRequest._invalidate_handle = '{2}' ";
-			return base.ToString() + string.Format(CultureInfo.CurrentUICulture, 
+			return base.ToString() + string.Format(CultureInfo.CurrentCulture, 
 				returnString, signature, AssociationHandle, invalidate_handle);
 		}
 
