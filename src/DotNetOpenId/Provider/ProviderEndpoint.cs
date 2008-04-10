@@ -47,6 +47,11 @@ namespace DotNetOpenId.Provider {
 			set { ViewState[enabledViewStateKey] = value; }
 		}
 
+		/// <summary>
+		/// Checks for incoming OpenID requests, responds to ones it can
+		/// respond to without policy checks, and fires events for custom
+		/// handling of the ones it cannot decide on automatically.
+		/// </summary>
 		protected override void OnLoad(EventArgs e) {
 			base.OnLoad(e);
 
@@ -78,6 +83,9 @@ namespace DotNetOpenId.Provider {
 		/// own user database and policies.
 		/// </summary>
 		public event EventHandler<AuthenticationChallengeEventArgs> AuthenticationChallenge;
+		/// <summary>
+		/// Fires the <see cref="AuthenticationChallenge"/> event.
+		/// </summary>
 		protected virtual void OnAuthenticationChallenge(IAuthenticationRequest request) {
 			var authenticationChallenge = AuthenticationChallenge;
 			if (authenticationChallenge != null)

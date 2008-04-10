@@ -32,6 +32,9 @@ namespace DotNetOpenId {
 	/// <see cref="AssociationRelyingPartyType"/> for providers (to distingish dumb and smart client associaitons).
 	/// </typeparam>
 	public interface IAssociationStore<TKey> {
+		/// <summary>
+		/// Saves an <see cref="Association"/> for later recall.
+		/// </summary>
 		void StoreAssociation(TKey distinguishingFactor, Association assoc);
 		/// <summary>
 		/// Gets the best association (the one with the longest remaining life) for a given key.

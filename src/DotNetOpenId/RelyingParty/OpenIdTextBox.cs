@@ -36,6 +36,9 @@ namespace DotNetOpenId.RelyingParty
 	[ToolboxData("<{0}:OpenIdTextBox runat=\"server\"></{0}:OpenIdTextBox>")]
 	public class OpenIdTextBox : CompositeControl
 	{
+		/// <summary>
+		/// Instantiates an <see cref="OpenIdTextBox"/> instance.
+		/// </summary>
 		public OpenIdTextBox()
 		{
 			InitializeControls();
@@ -43,11 +46,17 @@ namespace DotNetOpenId.RelyingParty
 
 		internal const string EmbeddedLogoResourceName = DotNetOpenId.Util.DefaultNamespace + ".RelyingParty.openid_login.gif";
 		TextBox wrappedTextBox;
+		/// <summary>
+		/// Gets the <see cref="TextBox"/> control that this control wraps.
+		/// </summary>
 		protected TextBox WrappedTextBox
 		{
 			get { return wrappedTextBox; }
 		}
 
+		/// <summary>
+		/// Creates the text box control.
+		/// </summary>
 		protected override void CreateChildControls()
 		{
 			base.CreateChildControls();
@@ -165,6 +174,9 @@ namespace DotNetOpenId.RelyingParty
 		}
 
 		const string usePersistentCookieViewStateKey = "UsePersistentCookie";
+		/// <summary>
+		/// Default value of <see cref="UsePersistentCookie"/>.
+		/// </summary>
 		protected const bool UsePersistentCookieDefault = false;
 		[Bindable(true)]
 		[Category(behaviorCategory)]
@@ -187,6 +199,9 @@ namespace DotNetOpenId.RelyingParty
 			set { WrappedTextBox.Columns = value; }
 		}
 
+		/// <summary>
+		/// Default value for <see cref="TabIndex"/> property.
+		/// </summary>
 		protected const short TabIndexDefault = 0;
 		[Bindable(true)]
 		[Category(behaviorCategory)]
@@ -601,6 +616,9 @@ namespace DotNetOpenId.RelyingParty
 		#endregion
 	}
 
+	/// <summary>
+	/// The event details passed to event handlers.
+	/// </summary>
 	public class OpenIdEventArgs : EventArgs {
 		/// <summary>
 		/// Constructs an object with minimal information of an incomplete or failed
@@ -623,6 +641,9 @@ namespace DotNetOpenId.RelyingParty
 		/// Cancels the OpenID authentication and/or login process.
 		/// </summary>
 		public bool Cancel { get; set; }
+		/// <summary>
+		/// The Identifier the user is claiming to own.
+		/// </summary>
 		public Identifier ClaimedIdentifier { get; private set; }
 
 		/// <summary>

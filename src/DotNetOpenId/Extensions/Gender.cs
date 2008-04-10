@@ -6,8 +6,17 @@
  ********************************************************/
 
 namespace DotNetOpenId.Extensions {
+	/// <summary>
+	/// Indicates the gender of a user.
+	/// </summary>
 	public enum Gender {
+		/// <summary>
+		/// The user is male.
+		/// </summary>
 		Male,
+		/// <summary>
+		/// The user is female.
+		/// </summary>
 		Female,
 	}
 }

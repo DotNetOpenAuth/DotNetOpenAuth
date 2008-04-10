@@ -7,9 +7,25 @@ using System.Text;
 using System.Globalization;
 
 namespace DotNetOpenId {
+	/// <summary>
+	/// Indicates the level of strictness to require when decoding a
+	/// Key-Value Form encoded dictionary.
+	/// </summary>
 	public enum KeyValueFormConformanceLevel {
+		/// <summary>
+		/// Be as forgiving as possible to errors made while encoding.
+		/// </summary>
 		Loose,
+		/// <summary>
+		/// Allow for certain errors in encoding attributable to ambiguities
+		/// in the OpenID 1.1 spec's description of the encoding.
+		/// </summary>
 		OpenId11,
+		/// <summary>
+		/// The strictest mode.  The decoder requires the encoded dictionary
+		/// to be in strict compliance with OpenID 2.0's description of
+		/// the encoding.
+		/// </summary>
 		OpenId20,
 	}
 

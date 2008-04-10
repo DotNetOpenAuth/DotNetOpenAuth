@@ -7,6 +7,11 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 
 namespace DotNetOpenId.Provider {
+	/// <summary>
+	/// An ASP.NET control that manages the OpenID identity advertising tags
+	/// of a user's Identity Page that allow a relying party web site to discover
+	/// how to authenticate a user.
+	/// </summary>
 	[DefaultProperty("ServerUrl")]
 	[ToolboxData("<{0}:IdentityEndpoint runat=server></{0}:IdentityEndpoint>")]
 	public class IdentityEndpoint : XrdsPublisher {
@@ -51,6 +56,9 @@ namespace DotNetOpenId.Provider {
 			get { return Protocol.Lookup(ProviderVersion); }
 		}
 
+		/// <summary>
+		/// Renders OpenID identity tags.
+		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
 		protected override void Render(HtmlTextWriter writer) {
 			base.Render(writer);

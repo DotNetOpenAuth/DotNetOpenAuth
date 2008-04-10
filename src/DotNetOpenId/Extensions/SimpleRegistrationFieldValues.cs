@@ -17,13 +17,29 @@ using System.Collections.Generic;
 namespace DotNetOpenId.Extensions
 {
 #pragma warning disable 0659, 0661
+	/// <summary>
+	/// A struct storing Simple Registration field values describing an
+	/// authenticating user.
+	/// </summary>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2218:OverrideGetHashCodeOnOverridingEquals"), Serializable()]
 	public struct SimpleRegistrationFieldValues
 	{
+		/// <summary>
+		/// An empty struct.  Useful for comparisons.
+		/// </summary>
 		public static readonly SimpleRegistrationFieldValues Empty = new SimpleRegistrationFieldValues();
 
+		/// <summary>
+		/// The nickname the user goes by.
+		/// </summary>
 		public string Nickname { get; set; }
+		/// <summary>
+		/// The user's email address.
+		/// </summary>
 		public string Email { get; set; }
+		/// <summary>
+		/// A combination of the user's full name and email address.
+		/// </summary>
 		public MailAddress MailAddress
 		{
 			get
@@ -35,13 +51,34 @@ namespace DotNetOpenId.Extensions
 					return new MailAddress(Email, FullName);
 			}
 		}
+		/// <summary>
+		/// The full name of a user as a single string.
+		/// </summary>
 		public string FullName { get; set; }
+		/// <summary>
+		/// The user's birthdate.
+		/// </summary>
 		public DateTime? BirthDate { get; set; }
+		/// <summary>
+		/// The gender of the user.
+		/// </summary>
 		public Gender? Gender { get; set; }
+		/// <summary>
+		/// The zip code / postal code of the user.
+		/// </summary>
 		public string PostalCode { get; set; }
+		/// <summary>
+		/// The country of the user.
+		/// </summary>
 		public string Country { get; set; }
+		/// <summary>
+		/// The primary/preferred language of the user.
+		/// </summary>
 		public string Language { get; set; }
 		CultureInfo culture;
+		/// <summary>
+		/// A combination o the language and country of the user.
+		/// </summary>
 		[XmlIgnore]
 		public CultureInfo Culture
 		{
@@ -66,8 +103,16 @@ namespace DotNetOpenId.Extensions
 				Country = indexOfHyphen > 0 ? value.Name.Substring(indexOfHyphen + 1) : null;
 			}
 		}
+		/// <summary>
+		/// The user's timezone.
+		/// </summary>
 		public string TimeZone { get; set; }
 
+		/// <summary>
+		/// Adds the values of this struct to an authentication response being prepared
+		/// by an OpenID Provider.
+		/// </summary>
+		/// <param name="authenticationRequest"></param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
 		public void AddToResponse(Provider.IAuthenticationRequest authenticationRequest) {
 			if (authenticationRequest == null) throw new ArgumentNullException("authenticationRequest");
@@ -105,6 +150,10 @@ namespace DotNetOpenId.Extensions
 			}
 			authenticationRequest.AddExtensionArguments(Constants.sreg.sreg_ns, fields);
 		}
+		/// <summary>
+		/// Reads a Provider's response for Simple Registration values and returns
+		/// an instance of this struct with the values.
+		/// </summary>
 		public static SimpleRegistrationFieldValues ReadFromResponse(IAuthenticationResponse response) {
 			var sreg = response.GetExtensionArguments(Constants.sreg.sreg_ns);
 			if (sreg == null) return new SimpleRegistrationFieldValues();
@@ -143,13 +192,21 @@ namespace DotNetOpenId.Extensions
 			};
 		}
 
+		/// <summary>
+		/// Tests equality of two <see cref="SimpleRegistrationFieldValues"/> objects.
+		/// </summary>
 		public static bool operator ==(SimpleRegistrationFieldValues one, SimpleRegistrationFieldValues other) {
 			return one.Equals(other);
 		}
+		/// <summary>
+		/// Tests inequality of two <see cref="SimpleRegistrationFieldValues"/> objects.
+		/// </summary>
 		public static bool operator !=(SimpleRegistrationFieldValues one, SimpleRegistrationFieldValues other) {
 			return !one.Equals(other);
 		}
-
+		/// <summary>
+		/// Tests equality of two <see cref="SimpleRegistrationFieldValues"/> objects.
+		/// </summary>
 		public override bool Equals(object obj)
 		{
 			if (!(obj is SimpleRegistrationFieldValues)) return false;

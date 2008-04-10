@@ -7,6 +7,11 @@ using System.Diagnostics;
 namespace DotNetOpenId.RelyingParty {
 	[DebuggerDisplay("Mode: {Args[\"openid.mode\"]}, {Args[\"openid.assoc_type\"]}, OpenId: {Protocol.Version}")]
 	class AssociateRequest : DirectRequest {
+		/// <summary>
+		/// Instantiates an <see cref="AssociateRequest"/> object.
+		/// </summary>
+		/// <param name="provider">The discovered OpenID Provider endpoint information.</param>
+		/// <param name="args">The arguments assembled for sending to the Provider.</param>
 		/// <param name="dh">Optional.  Supplied only if Diffie-Hellman is used for encrypting the association secret key.</param>
 		AssociateRequest(ServiceEndpoint provider, IDictionary<string, string> args, DiffieHellman dh)
 			: base(provider, args) {

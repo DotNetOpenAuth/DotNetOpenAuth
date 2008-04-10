@@ -7,13 +7,30 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 
 namespace DotNetOpenId {
+	/// <summary>
+	/// The locations the YADIS protocol describes can contain a reference
+	/// to an XRDS document.
+	/// </summary>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Xrds"), Flags]
 	public enum XrdsUrlLocations {
+		/// <summary>
+		/// Indicates XRDS document referencing from an HTTP protocol header (outside the HTML).
+		/// </summary>
 		HttpHeader = 0x1,
+		/// <summary>
+		/// Indicates XRDS document referencing from within an HTML page's &lt;HEAD&gt; tag.
+		/// </summary>
 		HtmlMeta = 0x2,
+		/// <summary>
+		/// Indicates XRDS document referencing in both HTTP headers and HTML HEAD tags.
+		/// </summary>
 		Both = 0x3
 	}
 
+	/// <summary>
+	/// An ASP.NET control that advertises an XRDS document and even responds to specially
+	/// crafted requests to retrieve it.
+	/// </summary>
 	[DefaultProperty("XrdsLocation")]
 	[ToolboxData("<{0}:XrdsPublisher runat=server></{0}:XrdsPublisher>")]
 	public class XrdsPublisher : Control {
@@ -91,6 +108,10 @@ namespace DotNetOpenId {
 			}
 		}
 
+		/// <summary>
+		/// Renders the HTTP Header and/or HTML HEAD tags.
+		/// </summary>
+		/// <param name="writer"></param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
 		protected override void Render(HtmlTextWriter writer) {
 			if (!string.IsNullOrEmpty(XrdsUrl)) {

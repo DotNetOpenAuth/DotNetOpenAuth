@@ -102,14 +102,24 @@ namespace DotNetOpenId {
 			}
 		}
 
+		/// <summary>
+		/// Tests equality of two <see cref="Nonce"/> objects.
+		/// </summary>
 		public override bool Equals(object obj) {
 			Nonce other = obj as Nonce;
 			if (other == null) return false;
 			return Code == other.Code;
 		}
+		/// <summary>
+		/// Gets the hash code.
+		/// </summary>
 		public override int GetHashCode() {
 			return Code.GetHashCode();
 		}
+		/// <summary>
+		/// Returns the string representation of the <see cref="Nonce"/>.
+		/// This is the <see cref="Code"/> property.
+		/// </summary>
 		public override string ToString() {
 			return Code;
 		}

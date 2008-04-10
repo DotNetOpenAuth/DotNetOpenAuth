@@ -9,8 +9,19 @@ using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics;
 
 namespace DotNetOpenId {
+	/// <summary>
+	/// Stores a secret used in signing and verifying messages.
+	/// </summary>
+	/// <remarks>
+	/// OpenID associations may be shared between Provider and Relying Party (smart
+	/// associations), or be a way for a Provider to recall its own secret for later
+	/// (dumb associations).
+	/// </remarks>
 	[DebuggerDisplay("Handle = {Handle}, Expires = {Expires}")]
 	public abstract class Association {
+		/// <summary>
+		/// Instantiates an <see cref="Association"/> object.
+		/// </summary>
 		protected Association(string handle, byte[] secret, TimeSpan totalLifeLength, DateTime issued) {
 			if (string.IsNullOrEmpty(handle)) throw new ArgumentNullException("handle");
 			if (secret == null) throw new ArgumentNullException("secret");
@@ -173,6 +184,9 @@ namespace DotNetOpenId {
 				return hasher.ComputeHash(ProtocolMessages.KeyValueForm.GetBytes(data, keyOrder));
 			}
 		}
+		/// <summary>
+		/// Returns the specific hash algorithm used for message signing.
+		/// </summary>
 		protected abstract HashAlgorithm CreateHasher();
 
 		/// <summary>
@@ -182,6 +196,9 @@ namespace DotNetOpenId {
 			return new DateTime(dateTime.Ticks - (dateTime.Ticks % TimeSpan.TicksPerSecond));
 		}
 
+		/// <summary>
+		/// Tests equality of two <see cref="Association"/> objects.
+		/// </summary>
 		public override bool Equals(object obj) {
 			Association a = obj as Association;
 			if (a == null) return false;
@@ -197,6 +214,9 @@ namespace DotNetOpenId {
 
 			return true;
 		}
+		/// <summary>
+		/// Returns the hash code.
+		/// </summary>
 		public override int GetHashCode() {
 			HMACSHA1 hmac = new HMACSHA1(SecretKey);
 			CryptoStream cs = new CryptoStream(Stream.Null, hmac, CryptoStreamMode.Write);

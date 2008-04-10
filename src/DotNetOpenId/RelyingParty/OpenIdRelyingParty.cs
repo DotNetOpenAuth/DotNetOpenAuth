@@ -58,6 +58,26 @@ namespace DotNetOpenId.RelyingParty {
 			}
 		}
 
+		/// <summary>
+		/// Creates an authentication request to verify that a user controls
+		/// some given Identifier.
+		/// </summary>
+		/// <param name="userSuppliedIdentifier">
+		/// The Identifier supplied by the user.  This may be a URL, an XRI or i-name.
+		/// </param>
+		/// <param name="realm">
+		/// The shorest URL that describes this relying party web site's address.
+		/// For example, if your login page is found at https://www.example.com/login.aspx,
+		/// your realm would typically be https://www.example.com/.
+		/// </param>
+		/// <param name="returnToUrl">
+		/// The URL of the login page, or the page prepared to receive authentication 
+		/// responses from the OpenID Provider.
+		/// </param>
+		/// <returns>
+		/// An authentication request object that describes the HTTP response to
+		/// send to the user agent to initiate the authentication.
+		/// </returns>
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl) {
 			return AuthenticationRequest.Create(userSuppliedIdentifier, realm, returnToUrl, store);
 		}
@@ -138,6 +158,10 @@ namespace DotNetOpenId.RelyingParty {
 		}
 
 		const string associationStoreKey = "DotNetOpenId.RelyingParty.RelyingParty.AssociationStore";
+		/// <summary>
+		/// The standard state storage mechanism that uses ASP.NET's HttpApplication state dictionary
+		/// to store associations and nonces.
+		/// </summary>
 		public static IRelyingPartyApplicationStore HttpApplicationStore {
 			get {
 				HttpContext context = HttpContext.Current;
