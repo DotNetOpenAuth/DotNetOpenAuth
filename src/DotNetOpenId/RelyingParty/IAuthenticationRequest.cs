@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace DotNetOpenId.RelyingParty {
+	/// <summary>
+	/// Instances of this interface represent relying party authentication 
+	/// requests that may be queried/modified in specific ways before being
+	/// routed to the OpenID Provider.
+	/// </summary>
 	public interface IAuthenticationRequest {
 		/// <summary>
 		/// Adds given key/value pairs to the query that the provider will use in

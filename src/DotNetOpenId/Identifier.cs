@@ -63,18 +63,30 @@ namespace DotNetOpenId {
 		/// </returns>
 		internal abstract ServiceEndpoint Discover();
 
+		/// <summary>
+		/// Tests equality between two <see cref="Identifier"/>s.
+		/// </summary>
 		public static bool operator ==(Identifier id1, Identifier id2) {
 			if ((object)id1 == null ^ (object)id2 == null) return false;
 			if ((object)id1 == null) return true;
 			return id1.Equals(id2);
 		}
+		/// <summary>
+		/// Tests inequality between two <see cref="Identifier"/>s.
+		/// </summary>
 		public static bool operator !=(Identifier id1, Identifier id2) {
 			return !(id1 == id2);
 		}
+		/// <summary>
+		/// Tests equality between two <see cref="Identifier"/>s.
+		/// </summary>
 		public override bool Equals(object obj) {
 			Debug.Fail("This should be overridden in every derived class.");
 			return base.Equals(obj);
 		}
+		/// <summary>
+		/// Gets the hash code for an <see cref="Identifier"/> for storage in a hashtable.
+		/// </summary>
 		public override int GetHashCode() {
 			Debug.Fail("This should be overridden in every derived class.");
 			return base.GetHashCode();

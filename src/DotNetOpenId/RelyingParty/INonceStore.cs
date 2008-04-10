@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace DotNetOpenId.RelyingParty {
+	/// <summary>
+	/// The contract for recalling nonces during their useful lifetime.
+	/// </summary>
 	public interface INonceStore {
 		/// <summary>
 		/// Gets some key that can be used for signing.  Any positive length can be used, but a

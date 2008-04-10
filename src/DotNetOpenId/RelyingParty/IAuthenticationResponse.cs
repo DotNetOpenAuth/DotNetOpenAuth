@@ -3,6 +3,17 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace DotNetOpenId.RelyingParty {
+	/// <summary>
+	/// An instance of this interface represents an identity assertion 
+	/// from an OpenID Provider.  It may be in response to an authentication 
+	/// request previously put to it by a Relying Party site or it may be an
+	/// unsolicited assertion.
+	/// </summary>
+	/// <remarks>
+	/// Relying party web sites should handle both solicited and unsolicited 
+	/// assertions.  This interface does not offer a way to discern between
+	/// solicited and unsolicited assertions as they should be treated equally.
+	/// </remarks>
 	public interface IAuthenticationResponse {
 		/// <summary>
 		/// Gets the key/value pairs of a provider's response for a given OpenID extension.

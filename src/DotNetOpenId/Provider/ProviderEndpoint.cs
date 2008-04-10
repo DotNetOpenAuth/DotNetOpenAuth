@@ -7,11 +7,25 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 
 namespace DotNetOpenId.Provider {
+	/// <summary>
+	/// An OpenID Provider control that automatically responds to certain
+	/// automated OpenID messages, and routes authentication requests to
+	/// custom code via an event handler.
+	/// </summary>
 	[DefaultEvent("AuthenticationChallenge")]
 	[ToolboxData("<{0}:ProviderEndpoint runat='server' />")]
 	public class ProviderEndpoint : Control {
 
 		const string pendingAuthenticationRequestKey = "pendingAuthenticationRequestKey";
+		/// <summary>
+		/// An incoming OpenID authentication request that has not yet been responded to.
+		/// </summary>
+		/// <remarks>
+		/// This request is stored in the ASP.NET Session state, so it will survive across
+		/// redirects, postbacks, and transfers.  This allows you to authenticate the user
+		/// yourself, and confirm his/her desire to authenticate to the relying party site
+		/// before responding to the relying party's authentication request.
+		/// </remarks>
 		public static IAuthenticationRequest PendingAuthenticationRequest {
 			get { return HttpContext.Current.Session[pendingAuthenticationRequestKey] as CheckIdRequest; }
 			set { HttpContext.Current.Session[pendingAuthenticationRequestKey] = value; }
@@ -19,6 +33,10 @@ namespace DotNetOpenId.Provider {
 
 		const bool enabledDefault = true;
 		const string enabledViewStateKey = "Enabled";
+		/// <summary>
+		/// Whether or not this control should be listening for and responding
+		/// to incoming OpenID requests.
+		/// </summary>
 		[Category("Behavior")]
 		[DefaultValue(enabledDefault)]
 		public bool Enabled {
@@ -54,6 +72,11 @@ namespace DotNetOpenId.Provider {
 			}
 		}
 
+		/// <summary>
+		/// Fired when an incoming OpenID request is an authentication challenge
+		/// that must be responded to by the Provider web site according to its
+		/// own user database and policies.
+		/// </summary>
 		public event EventHandler<AuthenticationChallengeEventArgs> AuthenticationChallenge;
 		protected virtual void OnAuthenticationChallenge(IAuthenticationRequest request) {
 			var authenticationChallenge = AuthenticationChallenge;
@@ -62,10 +85,16 @@ namespace DotNetOpenId.Provider {
 		}
 	}
 
+	/// <summary>
+	/// The event arguments that include details of the incoming request.
+	/// </summary>
 	public class AuthenticationChallengeEventArgs : EventArgs {
 		internal AuthenticationChallengeEventArgs(IAuthenticationRequest request) {
 			Request = request;
 		}
+		/// <summary>
+		/// The incoming authentication request.
+		/// </summary>
 		public IAuthenticationRequest Request { get; set; }
 	}
 

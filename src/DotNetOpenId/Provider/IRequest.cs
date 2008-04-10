@@ -6,6 +6,11 @@ namespace DotNetOpenId.Provider {
 	/// <summary>
 	/// Represents an incoming OpenId authentication request.
 	/// </summary>
+	/// <remarks>
+	/// Requests may be infrastructural to OpenID and allow auto-responses, or they may
+	/// be authentication requests where the Provider site has to make decisions based
+	/// on its own user database and policies.
+	/// </remarks>
 	public interface IRequest {
 		/// <summary>
 		/// Returns true if the Response is ready to be sent to the user agent.

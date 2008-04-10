@@ -82,6 +82,14 @@ namespace DotNetOpenId.Provider {
 
 		bool requestProcessed;
 		Request request;
+		/// <summary>
+		/// Gets the incoming OpenID request if there is one, or null if none was detected.
+		/// </summary>
+		/// <remarks>
+		/// Requests may be infrastructural to OpenID and allow auto-responses, or they may
+		/// be authentication requests where the Provider site has to make decisions based
+		/// on its own user database and policies.
+		/// </remarks>
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)] // this property getter executes code
 		public IRequest Request {
 			get {
@@ -117,6 +125,29 @@ namespace DotNetOpenId.Provider {
 			return req;
 		}
 
+		/// <summary>
+		/// Allows a Provider to send an identity assertion on behalf of one
+		/// of its members in order to redirect the member to a relying party
+		/// web site and log him/her in immediately in one uninterrupted step.
+		/// </summary>
+		/// <param name="relyingParty">
+		/// The URL of the relying party web site.
+		/// This will typically be the home page, but may be a longer URL if
+		/// that Relying Party considers the scope of its realm to be more specific.
+		/// The URL provided here must allow discovery of the Relying Party's
+		/// XRDS document that advertises its OpenID RP endpoint.
+		/// </param>
+		/// <param name="claimedIdentifier">
+		/// The Identifier you are asserting your member controls.
+		/// </param>
+		/// <param name="localIdentifier">
+		/// The Identifier you know your user by internally.  This will typically
+		/// be the same as <paramref name="claimedIdentifier"/>.
+		/// </param>
+		/// <returns>
+		/// An <see cref="IResponse"/> object describing the HTTP response to send
+		/// the user agent to allow the redirect with assertion to happen.
+		/// </returns>
 		public IResponse PrepareUnsolicitedAssertion(Realm relyingParty, 
 			Identifier claimedIdentifier, Identifier localIdentifier) {
 			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
@@ -127,6 +158,10 @@ namespace DotNetOpenId.Provider {
 		}
 
 		const string associationStoreKey = "DotNetOpenId.Provider.OpenIdProvider.AssociationStore";
+		/// <summary>
+		/// The standard state storage mechanism that uses ASP.NET's HttpApplication state dictionary
+		/// to store associations.
+		/// </summary>
 		public static IProviderAssociationStore HttpApplicationStore {
 			get {
 				HttpContext context = HttpContext.Current;

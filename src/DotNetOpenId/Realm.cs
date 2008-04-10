@@ -14,18 +14,33 @@ namespace DotNetOpenId {
 	/// See http://openid.net/specs/openid-authentication-2_0.html#realms
 	/// </remarks>
 	public class Realm {
+		/// <summary>
+		/// Implicitly converts the string-form of a URI to a <see cref="Realm"/> object.
+		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads")]
 		public static implicit operator Realm(string uri) {
 			return new Realm(uri);
 		}
+		/// <summary>
+		/// Implicitly converts a <see cref="Uri"/> to a <see cref="Realm"/> object.
+		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
 		public static implicit operator Realm(Uri uri) {
 			return new Realm(uri.AbsoluteUri);
 		}
+		/// <summary>
+		/// Implicitly converts a <see cref="Realm"/> object to its <see cref="String"/> form.
+		/// </summary>
+		/// <param name="realm"></param>
+		/// <returns></returns>
 		public static implicit operator string(Realm realm) {
 			return realm.ToString();
 		}
 
+		/// <summary>
+		/// Instantiates a <see cref="Realm"/> from its string representation.
+		/// </summary>
+		/// <param name="realmUrl"></param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase")]
 		public Realm(string realmUrl) {
 			if (realmUrl == null) throw new ArgumentNullException("realmUrl");
@@ -36,6 +51,9 @@ namespace DotNetOpenId {
 				throw new UriFormatException(string.Format(CultureInfo.CurrentCulture,
 					Strings.InvalidScheme, uri.Scheme));
 		}
+		/// <summary>
+		/// Instantiates a <see cref="Realm"/> from its <see cref="Uri"/> representation.
+		/// </summary>
 		public Realm(Uri realmUrl) {
 			if (realmUrl == null) throw new ArgumentNullException("realmUrl");
 			uri = realmUrl;
@@ -227,14 +245,24 @@ namespace DotNetOpenId {
 			return null;
 		}
 
+		/// <summary>
+		/// Checks whether one <see cref="Realm"/> is equal to another.
+		/// </summary>
 		public override bool Equals(object obj) {
 			Realm other = obj as Realm;
 			if (other == null) return false;
 			return uri.Equals(other.uri) && DomainWildcard == other.DomainWildcard;
 		}
+		/// <summary>
+		/// Returns the hash code used for storing this object in a hash table.
+		/// </summary>
+		/// <returns></returns>
 		public override int GetHashCode() {
 			return uri.GetHashCode() + (DomainWildcard ? 1 : 0);
 		}
+		/// <summary>
+		/// Returns the string form of this <see cref="Realm"/>.
+		/// </summary>
 		public override string ToString() {
 			if (DomainWildcard) {
 				UriBuilder builder = new UriBuilder(uri);

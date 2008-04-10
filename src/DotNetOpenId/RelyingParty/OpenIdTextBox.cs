@@ -24,6 +24,14 @@ using System.Web;
 
 namespace DotNetOpenId.RelyingParty
 {
+	/// <summary>
+	/// An ASP.NET control that provides a minimal text box that is OpenID-aware.
+	/// </summary>
+	/// <remarks>
+	/// This control offers greater UI flexibility than the <see cref="OpenIdLogin"/>
+	/// control, but requires more work to be done by the hosting web site to 
+	/// assemble a complete login experience.
+	/// </remarks>
 	[DefaultProperty("Text")]
 	[ToolboxData("<{0}:OpenIdTextBox runat=\"server\"></{0}:OpenIdTextBox>")]
 	public class OpenIdTextBox : CompositeControl
@@ -60,6 +68,10 @@ namespace DotNetOpenId.RelyingParty
 		}
 
 		protected bool ShouldBeFocused;
+		/// <summary>
+		/// Sets the input focus to start on the text box when the page appears
+		/// in the user's browser.
+		/// </summary>
 		public override void Focus()
 		{
 			if (Controls.Count == 0)

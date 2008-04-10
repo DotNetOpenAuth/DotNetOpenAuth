@@ -7,6 +7,9 @@ namespace DotNetOpenId.RelyingParty {
 	using System.Globalization;
 	using System.Diagnostics;
 
+	/// <summary>
+	/// An enumeration of the possible results of an authentication attempt.
+	/// </summary>
 	public enum AuthenticationStatus {
 		/// <summary>
 		/// The authentication was canceled by the user agent while at the provider.

@@ -15,6 +15,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace DotNetOpenId.RelyingParty
 {
+	/// <summary>
+	/// An ASP.NET control providing a complete OpenID login experience.
+	/// </summary>
 	[SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Login")]
 	[DefaultProperty("OpenIdUrl")]
 	[ToolboxData("<{0}:OpenIdLogin runat=\"server\"></{0}:OpenIdLogin>")]

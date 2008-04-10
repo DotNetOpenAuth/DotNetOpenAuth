@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace DotNetOpenId.Provider {
+	/// <summary>
+	/// Instances of this interface represent incoming authentication requests.
+	/// This interface provides the details of the request and allows setting
+	/// the response.
+	/// </summary>
 	public interface IAuthenticationRequest : IRequest {
 		/// <summary>
 		/// Whether the consumer demands an immediate response.
