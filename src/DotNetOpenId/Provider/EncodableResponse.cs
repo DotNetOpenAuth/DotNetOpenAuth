@@ -14,7 +14,7 @@ namespace DotNetOpenId.Provider {
 		public static EncodableResponse PrepareDirectMessage(Protocol protocol) {
 			EncodableResponse response = new EncodableResponse(protocol);
 			if (protocol.QueryDeclaredNamespaceVersion != null)
-				response.Fields.Add(protocol.openid.ns, protocol.QueryDeclaredNamespaceVersion);
+				response.Fields.Add(protocol.openidnp.ns, protocol.QueryDeclaredNamespaceVersion);
 			return response;
 		}
 		public static EncodableResponse PrepareIndirectMessage(Protocol protocol, Uri baseRedirectUrl, string preferredAssociationHandle) {
