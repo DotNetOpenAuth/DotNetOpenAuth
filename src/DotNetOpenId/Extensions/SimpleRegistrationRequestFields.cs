@@ -13,16 +13,46 @@ namespace DotNetOpenId.Extensions {
 #pragma warning disable 0659, 0661
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2218:OverrideGetHashCodeOnOverridingEquals")]
 	public struct SimpleRegistrationRequestFields {
+		/// <summary>
+		/// Gets a <see cref="SimpleRegistrationRequestFields"/> struct where no information is requested.
+		/// </summary>
 		public static readonly SimpleRegistrationRequestFields None = new SimpleRegistrationRequestFields();
 
+		/// <summary>
+		/// The level of interest a relying party has in the nickname of the user.
+		/// </summary>
 		public SimpleRegistrationRequest Nickname { get; set; }
+		/// <summary>
+		/// The level of interest a relying party has in the email of the user.
+		/// </summary>
 		public SimpleRegistrationRequest Email { get; set; }
+		/// <summary>
+		/// The level of interest a relying party has in the full name of the user.
+		/// </summary>
 		public SimpleRegistrationRequest FullName { get; set; }
+		/// <summary>
+		/// The level of interest a relying party has in the birthdate of the user.
+		/// </summary>
 		public SimpleRegistrationRequest BirthDate { get; set; }
+		/// <summary>
+		/// The level of interest a relying party has in the gender of the user.
+		/// </summary>
 		public SimpleRegistrationRequest Gender { get; set; }
+		/// <summary>
+		/// The level of interest a relying party has in the postal code of the user.
+		/// </summary>
 		public SimpleRegistrationRequest PostalCode { get; set; }
+		/// <summary>
+		/// The level of interest a relying party has in the Country of the user.
+		/// </summary>
 		public SimpleRegistrationRequest Country { get; set; }
+		/// <summary>
+		/// The level of interest a relying party has in the language of the user.
+		/// </summary>
 		public SimpleRegistrationRequest Language { get; set; }
+		/// <summary>
+		/// The level of interest a relying party has in the time zone of the user.
+		/// </summary>
 		public SimpleRegistrationRequest TimeZone { get; set; }
 
 		/// <summary>
@@ -127,6 +157,11 @@ namespace DotNetOpenId.Extensions {
 
 			return fields;
 		}
+		/// <summary>
+		/// Adds a description of the information the relying party site would like
+		/// the Provider to include with a positive authentication assertion as an
+		/// extension to an authentication request.
+		/// </summary>
 		public void AddToRequest(RelyingParty.IAuthenticationRequest request) {
 			var fields = new Dictionary<string, string>();
 			if (PolicyUrl != null)
@@ -138,6 +173,10 @@ namespace DotNetOpenId.Extensions {
 			request.AddExtensionArguments(Constants.sreg.sreg_ns, fields);
 		}
 
+		/// <summary>
+		/// Renders the requested information as a string.
+		/// </summary>
+		/// <returns></returns>
 		public override string ToString() {
 			return string.Format(CultureInfo.CurrentCulture, @"Nickname = '{0}' 
 Email = '{1}' 
@@ -149,12 +188,21 @@ Country = '{6}'
 Language = '{7}'
 TimeZone = '{8}'", Nickname, Email, FullName, BirthDate, Gender, PostalCode, Country, Language, TimeZone);
 		}
+		/// <summary>
+		/// Tests equality between two <see cref="SimpleRegistrationRequestFields"/> structs.
+		/// </summary>
 		public static bool operator ==(SimpleRegistrationRequestFields one, SimpleRegistrationRequestFields other) {
 			return one.Equals(other);
 		}
+		/// <summary>
+		/// Tests inequality between two <see cref="SimpleRegistrationRequestFields"/> structs.
+		/// </summary>
 		public static bool operator !=(SimpleRegistrationRequestFields one, SimpleRegistrationRequestFields other) {
 			return !one.Equals(other);
 		}
+		/// <summary>
+		/// Tests equality between two <see cref="SimpleRegistrationRequestFields"/> structs.
+		/// </summary>
 		public override bool Equals(object obj) {
 			if (!(obj is SimpleRegistrationRequestFields)) return false;
 			SimpleRegistrationRequestFields other = (SimpleRegistrationRequestFields)obj;

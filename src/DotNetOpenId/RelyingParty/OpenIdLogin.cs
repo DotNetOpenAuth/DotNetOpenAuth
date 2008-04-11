@@ -38,6 +38,9 @@ namespace DotNetOpenId.RelyingParty
 		const short rememberMeTabIndexOffset = 2;
 		const short registerTabIndexOffset = 3;
 
+		/// <summary>
+		/// Creates the child controls.
+		/// </summary>
 		protected override void CreateChildControls()
 		{
 			// Don't call base.CreateChildControls().  This would add the WrappedTextBox
@@ -51,6 +54,9 @@ namespace DotNetOpenId.RelyingParty
 				WrappedTextBox.Focus();
 		}
 
+		/// <summary>
+		/// Initializes the child controls.
+		/// </summary>
 		protected override void InitializeControls()
 		{
 			base.InitializeControls();
@@ -169,6 +175,9 @@ namespace DotNetOpenId.RelyingParty
 			OnRememberMeChanged();
 		}
 
+		/// <summary>
+		/// Renders the child controls.
+		/// </summary>
 		protected override void RenderChildren(HtmlTextWriter writer)
 		{
 			if (!this.DesignMode)
@@ -179,10 +188,14 @@ namespace DotNetOpenId.RelyingParty
 
 		#region Properties
 		const string labelTextDefault = "OpenID Login:";
+		/// <summary>
+		/// The caption that appears before the text box.
+		/// </summary>
 		[Bindable(true)]
 		[Category("Appearance")]
 		[DefaultValue(labelTextDefault)]
 		[Localizable(true)]
+		[Description("The caption that appears before the text box.")]
 		public string LabelText
 		{
 			get { return label.InnerText; }
@@ -190,10 +203,14 @@ namespace DotNetOpenId.RelyingParty
 		}
 
 		const string examplePrefixDefault = "Example:";
+		/// <summary>
+		/// The text that introduces the example OpenID url.
+		/// </summary>
 		[Bindable(true)]
 		[Category("Appearance")]
 		[DefaultValue(examplePrefixDefault)]
 		[Localizable(true)]
+		[Description("The text that introduces the example OpenID url.")]
 		public string ExamplePrefix
 		{
 			get { return examplePrefixLabel.Text; }
@@ -201,11 +218,15 @@ namespace DotNetOpenId.RelyingParty
 		}
 
 		const string exampleUrlDefault = "http://your.name.myopenid.com";
+		/// <summary>
+		/// The example OpenID Identifier to display to the user.
+		/// </summary>
 		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings")]
 		[Bindable(true)]
 		[Category("Appearance")]
 		[DefaultValue(exampleUrlDefault)]
 		[Localizable(true)]
+		[Description("The example OpenID Identifier to display to the user.")]
 		public string ExampleUrl
 		{
 			get { return exampleUrlLabel.Text; }
@@ -214,10 +235,14 @@ namespace DotNetOpenId.RelyingParty
 
 		const string requiredTextSuffix = "<br/>";
 		const string requiredTextDefault = "Provide an OpenID first.";
+		/// <summary>
+		/// The text to display if the user attempts to login without providing an Identifier.
+		/// </summary>
 		[Bindable(true)]
 		[Category("Appearance")]
 		[DefaultValue(requiredTextDefault)]
 		[Localizable(true)]
+		[Description("The text to display if the user attempts to login without providing an Identifier.")]
 		public string RequiredText
 		{
 			get { return requiredValidator.Text.Substring(0, requiredValidator.Text.Length - requiredTextSuffix.Length); }
@@ -225,11 +250,15 @@ namespace DotNetOpenId.RelyingParty
 		}
 
 		const string uriFormatTextDefault = "Invalid OpenID URL.";
+		/// <summary>
+		/// The text to display if the user provides an invalid form for an Identifier.
+		/// </summary>
 		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings")]
 		[Bindable(true)]
 		[Category("Appearance")]
 		[DefaultValue(uriFormatTextDefault)]
 		[Localizable(true)]
+		[Description("The text to display if the user provides an invalid form for an Identifier.")]
 		public string UriFormatText
 		{
 			get { return identifierFormatValidator.Text.Substring(0, identifierFormatValidator.Text.Length - requiredTextSuffix.Length); }
@@ -237,9 +266,13 @@ namespace DotNetOpenId.RelyingParty
 		}
 
 		const bool uriValidatorEnabledDefault = true;
+		/// <summary>
+		/// Whether to perform Identifier format validation prior to an authentication attempt.
+		/// </summary>
 		[Bindable(true)]
 		[Category("Behavior")]
 		[DefaultValue(uriValidatorEnabledDefault)]
+		[Description("Whether to perform Identifier format validation prior to an authentication attempt.")]
 		public bool UriValidatorEnabled
 		{
 			get { return identifierFormatValidator.Enabled; }
@@ -247,10 +280,14 @@ namespace DotNetOpenId.RelyingParty
 		}
 
 		const string registerTextDefault = "register";
+		/// <summary>
+		/// The text of the link users can click on to obtain an OpenID.
+		/// </summary>
 		[Bindable(true)]
 		[Category("Appearance")]
 		[DefaultValue(registerTextDefault)]
 		[Localizable(true)]
+		[Description("The text of the link users can click on to obtain an OpenID.")]
 		public string RegisterText
 		{
 			get { return registerLink.Text; }
@@ -258,11 +295,15 @@ namespace DotNetOpenId.RelyingParty
 		}
 
 		const string registerUrlDefault = "https://www.myopenid.com/signup";
+		/// <summary>
+		/// The URL to link users to who click the link to obtain a new OpenID.
+		/// </summary>
 		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings")]
 		[Bindable(true)]
 		[Category("Appearance")]
 		[DefaultValue(registerUrlDefault)]
 		[Localizable(true)]
+		[Description("The URL to link users to who click the link to obtain a new OpenID.")]
 		public string RegisterUrl
 		{
 			get { return registerLink.NavigateUrl; }
@@ -270,10 +311,14 @@ namespace DotNetOpenId.RelyingParty
 		}
 
 		const string registerToolTipDefault = "Sign up free for an OpenID with MyOpenID now.";
+		/// <summary>
+		/// The text of the tooltip to display when the user hovers over the link to obtain a new OpenID.
+		/// </summary>
 		[Bindable(true)]
 		[Category("Appearance")]
 		[DefaultValue(registerToolTipDefault)]
 		[Localizable(true)]
+		[Description("The text of the tooltip to display when the user hovers over the link to obtain a new OpenID.")]
 		public string RegisterToolTip
 		{
 			get { return registerLink.ToolTip; }
@@ -281,19 +326,27 @@ namespace DotNetOpenId.RelyingParty
 		}
 
 		const bool registerVisibleDefault = true;
+		/// <summary>
+		/// Whether to display a link to allow users to easily obtain a new OpenID.
+		/// </summary>
 		[Bindable(true)]
 		[Category("Appearance")]
 		[DefaultValue(registerVisibleDefault)]
+		[Description("Whether to display a link to allow users to easily obtain a new OpenID.")]
 		public bool RegisterVisible {
 			get { return registerLink.Visible; }
 			set { registerLink.Visible = value; }
 		}
 
 		const string buttonTextDefault = "Login »";
+		/// <summary>
+		/// The text that appears on the button that initiates login.
+		/// </summary>
 		[Bindable(true)]
 		[Category("Appearance")]
 		[DefaultValue(buttonTextDefault)]
 		[Localizable(true)]
+		[Description("The text that appears on the button that initiates login.")]
 		public string ButtonText
 		{
 			get { return loginButton.Text; }
@@ -301,33 +354,49 @@ namespace DotNetOpenId.RelyingParty
 		}
 
 		const string rememberMeTextDefault = "Remember me";
+		/// <summary>
+		/// The text of the "Remember Me" checkbox.
+		/// </summary>
 		[Bindable(true)]
 		[Category("Appearance")]
 		[DefaultValue(rememberMeTextDefault)]
 		[Localizable(true)]
+		[Description("The text of the \"Remember Me\" checkbox.")]
 		public string RememberMeText {
 			get { return rememberMeCheckBox.Text; }
 			set { rememberMeCheckBox.Text = value; }
 		}
 
 		const bool rememberMeVisibleDefault = false;
+		/// <summary>
+		/// Whether the "Remember Me" checkbox should be displayed.
+		/// </summary>
 		[Bindable(true)]
 		[Category("Appearance")]
 		[DefaultValue(rememberMeVisibleDefault)]
+		[Description("Whether the \"Remember Me\" checkbox should be displayed.")]
 		public bool RememberMeVisible {
 			get { return rememberMeCheckBox.Visible; }
 			set { rememberMeCheckBox.Visible = value; }
 		}
 
 		const bool rememberMeDefault = UsePersistentCookieDefault;
+		/// <summary>
+		/// Whether a successful authentication should result in a persistent
+		/// cookie being saved to the browser.
+		/// </summary>
 		[Bindable(true)]
 		[Category("Appearance")]
 		[DefaultValue(UsePersistentCookieDefault)]
+		[Description("Whether a successful authentication should result in a persistent cookie being saved to the browser.")]
 		public bool RememberMe {
 			get { return UsePersistentCookie; }
 			set { UsePersistentCookie = value; }
 		}
 
+		/// <summary>
+		/// The starting tab index to distribute across the controls.
+		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "value+1"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "value+3"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "value+2")]
 		public override short TabIndex {
 			get { return base.TabIndex; }
@@ -340,10 +409,14 @@ namespace DotNetOpenId.RelyingParty
 		}
 
 		const string buttonToolTipDefault = "Account login";
+		/// <summary>
+		/// The tooltip to display when the user hovers over the login button.
+		/// </summary>
 		[Bindable(true)]
 		[Category("Appearance")]
 		[DefaultValue(buttonToolTipDefault)]
 		[Localizable(true)]
+		[Description("The tooltip to display when the user hovers over the login button.")]
 		public string ButtonToolTip
 		{
 			get { return loginButton.ToolTip; }
@@ -351,8 +424,12 @@ namespace DotNetOpenId.RelyingParty
 		}
 
 		const string validationGroupDefault = "OpenIdLogin";
+		/// <summary>
+		/// The validation group that the login button and text box validator belong to.
+		/// </summary>
 		[Category("Behavior")]
 		[DefaultValue(validationGroupDefault)]
+		[Description("The validation group that the login button and text box validator belong to.")]
 		public string ValidationGroup
 		{
 			get { return requiredValidator.ValidationGroup; }
@@ -365,6 +442,9 @@ namespace DotNetOpenId.RelyingParty
 		#endregion
 
 		#region Properties to hide
+		/// <summary>
+		/// Whether a FormsAuthentication cookie should persist across user sessions.
+		/// </summary>
 		[Browsable(false), Bindable(false)]
 		public override bool UsePersistentCookie {
 			get { return base.UsePersistentCookie; }
@@ -397,6 +477,15 @@ namespace DotNetOpenId.RelyingParty
 		/// </summary>
 		[Description("Fired after the user clicks the log in button, but before the authentication process begins.  Offers a chance for the web application to disallow based on OpenID URL before redirecting the user to the OpenID Provider.")]
 		public event EventHandler<OpenIdEventArgs> LoggingIn;
+		/// <summary>
+		/// Fires the <see cref="LoggingIn"/> event.
+		/// </summary>
+		/// <param name="userSuppliedIdentifier">
+		/// The Identifier supplied by the user via the login page.
+		/// </param>
+		/// <returns>
+		/// Returns whether the login should proceed.  False if some event handler canceled the request.
+		/// </returns>
 		protected virtual bool OnLoggingIn(Identifier userSuppliedIdentifier)
 		{
 			EventHandler<OpenIdEventArgs> loggingIn = LoggingIn;
@@ -410,8 +499,14 @@ namespace DotNetOpenId.RelyingParty
 				return false;
 		}
 
+		/// <summary>
+		/// Fired when the Remember Me checkbox is changed by the user.
+		/// </summary>
 		[Description("Fires when the Remember Me checkbox is changed by the user.")]
 		public event EventHandler RememberMeChanged;
+		/// <summary>
+		/// Fires the <see cref="RememberMeChanged"/> event.
+		/// </summary>
 		protected virtual void OnRememberMeChanged() {
 			EventHandler rememberMeChanged = RememberMeChanged;
 			if (rememberMeChanged != null)

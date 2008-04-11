@@ -14,6 +14,10 @@ namespace DotNetOpenId {
 	[Serializable]
 	public class OpenIdException : Exception, IEncodable {
 		internal IDictionary<string, string> Query;
+		/// <summary>
+		/// An Identifier (claimed or local provider) that was being processed when
+		/// the exception was thrown.
+		/// </summary>
 		public Identifier Identifier { get; private set; }
 		internal Protocol Protocol = Protocol.Default;
 		Protocol IEncodable.Protocol { get { return this.Protocol; } }
@@ -45,6 +49,11 @@ namespace DotNetOpenId {
 		internal OpenIdException(string message)
 			: this(message, null, null, null) {
 		}
+		/// <summary>
+		/// Instantiates an <see cref="OpenIdException"/> based on deserialized data.
+		/// </summary>
+		/// <param name="info"></param>
+		/// <param name="context"></param>
 		protected OpenIdException(SerializationInfo info, StreamingContext context)
 			: base(info, context) {
 			Query = (IDictionary<string, string>)info.GetValue("query", typeof(IDictionary<string, string>));
@@ -52,6 +61,9 @@ namespace DotNetOpenId {
 		}
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
 		internal OpenIdException() { }
+		/// <summary>
+		/// Serializes the exception details for binary transmission.
+		/// </summary>
 		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context) {
 			base.GetObjectData(info, context);
@@ -98,6 +110,11 @@ namespace DotNetOpenId {
 			}
 		}
 
+		/// <summary>
+		/// Fields that should be encoded for processing when this exception 
+		/// is thrown by a Provider and the details should be passed to the
+		/// relying party.
+		/// </summary>
 		public IDictionary<string, string> EncodedFields {
 			get {
 				var q = new Dictionary<string, string>();
@@ -111,6 +128,11 @@ namespace DotNetOpenId {
 				return q;
 			}
 		}
+		/// <summary>
+		/// The URL that the exception details should be forwarded to.
+		/// This is used when a Provider throws an exception that a relying
+		/// party may find helpful in diagnosing the failure.
+		/// </summary>
 		public Uri RedirectUrl {
 			get {
 				if (Query == null)

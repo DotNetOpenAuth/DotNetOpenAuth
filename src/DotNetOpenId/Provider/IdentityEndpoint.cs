@@ -19,6 +19,11 @@ namespace DotNetOpenId.Provider {
 		#region Properties
 		const string providerVersionViewStateKey = "ProviderVersion";
 		const ProtocolVersion providerVersionDefault = ProtocolVersion.V20;
+		/// <summary>
+		/// The OpenID version supported by the provider.
+		/// If multiple versions are supported, this should be set to the latest
+		/// version that DotNetOpenId and the Provider both support.
+		/// </summary>
 		[Category("Behavior")]
 		[DefaultValue(providerVersionDefault)]
 		public ProtocolVersion ProviderVersion {
@@ -30,6 +35,9 @@ namespace DotNetOpenId.Provider {
 		}
 
 		const string providerEndpointUrlViewStateKey = "ProviderEndpointUrl";
+		/// <summary>
+		/// The Provider URL that processes OpenID requests.
+		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings"), Bindable(true)]
 		[Category("Behavior")]
 		public string ProviderEndpointUrl {
@@ -41,6 +49,9 @@ namespace DotNetOpenId.Provider {
 		}
 
 		const string providerLocalIdentifierViewStateKey = "ProviderLocalIdentifier";
+		/// <summary>
+		/// The Identifier that is controlled by the Provider.
+		/// </summary>
 		[Bindable(true)]
 		[Category("Behavior")]
 		public string ProviderLocalIdentifier {

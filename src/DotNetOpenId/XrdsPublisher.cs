@@ -36,6 +36,9 @@ namespace DotNetOpenId {
 	public class XrdsPublisher : Control {
 		#region Properties
 		const string xrdsUrlViewStateKey = "XrdsUrl";
+		/// <summary>
+		/// The location of the XRDS document.
+		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Xrds"), Bindable(true)]
 		[Category("Behavior")]
 		public string XrdsUrl {
@@ -48,6 +51,9 @@ namespace DotNetOpenId {
 
 		const XrdsUrlLocations xrdsAdvertisementDefault = XrdsUrlLocations.HttpHeader;
 		const string xrdsAdvertisementViewStateKey = "XrdsAdvertisement";
+		/// <summary>
+		/// Where the XRDS document URL is advertised in the web response.
+		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Xrds"), Bindable(true)]
 		[Category("Behavior")]
 		[DefaultValue(xrdsAdvertisementDefault)]
@@ -62,6 +68,10 @@ namespace DotNetOpenId {
 
 		const bool xrdsAutoAnswerDefault = true;
 		const string xrdsAutoAnswerViewStateKey = "XrdsAutoAnswer";
+		/// <summary>
+		/// Gets/sets whether a specially crafted YADIS search for an XRDS document is
+		/// immediately answered by this control.
+		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Xrds"), Bindable(true)]
 		[Category("Behavior")]
 		[DefaultValue(xrdsAutoAnswerDefault)]
@@ -76,6 +86,9 @@ namespace DotNetOpenId {
 
 		const bool enabledDefault = true;
 		const string enabledViewStateKey = "Enabled";
+		/// <summary>
+		/// Sets/gets whether the XRDS document is advertised.
+		/// </summary>
 		[Category("Behavior")]
 		[DefaultValue(enabledDefault)]
 		public bool Enabled {
@@ -87,6 +100,10 @@ namespace DotNetOpenId {
 		}
 		#endregion
 
+		/// <summary>
+		/// Detects YADIS requests for the XRDS document and responds immediately
+		/// if <see cref="XrdsAutoAnswer"/> is true.
+		/// </summary>
 		protected override void OnLoad(EventArgs e) {
 			base.OnLoad(e);
 

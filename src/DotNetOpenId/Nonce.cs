@@ -54,6 +54,10 @@ namespace DotNetOpenId {
 			this.remoteServerOrigin = remoteServerOrigin;
 		}
 
+		/// <summary>
+		/// The string form of the nonce that can be transmitted with an authentication
+		/// request or response.
+		/// </summary>
 		public string Code { get; internal set; }
 		internal DateTime CreationDate { get; set; }
 		internal string UniqueFragment { get; set; }
@@ -67,6 +71,9 @@ namespace DotNetOpenId {
 		}
 
 		internal TimeSpan Age { get { return DateTime.UtcNow - CreationDate.ToUniversalTime(); } }
+		/// <summary>
+		/// Gets whether this nonce is so old it no longer needs to be stored.
+		/// </summary>
 		public bool IsExpired { get { return Age > maximumLifetime; } }
 		/// <summary>
 		/// Gets the date past which this nonce is no longer valid, so storing a nonce for replay attack

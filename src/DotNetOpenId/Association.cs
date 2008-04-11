@@ -178,6 +178,7 @@ namespace DotNetOpenId {
 		/// Generates a signature from a given dictionary.
 		/// </summary>
 		/// <param name="data">The dictionary.  This dictionary will not be changed.</param>
+		/// <param name="keyOrder">The order that the data in the dictionary must be encoded in for the signature to be valid.</param>
 		/// <returns>The calculated signature of the data in the dictionary.</returns>
 		protected internal byte[] Sign(IDictionary<string, string> data, IList<string> keyOrder) {
 			using (HashAlgorithm hasher = CreateHasher()) {

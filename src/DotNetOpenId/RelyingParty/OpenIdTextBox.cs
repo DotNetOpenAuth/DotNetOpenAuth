@@ -66,6 +66,9 @@ namespace DotNetOpenId.RelyingParty
 				WrappedTextBox.Focus();
 		}
 
+		/// <summary>
+		/// Initializes the text box control.
+		/// </summary>
 		protected virtual void InitializeControls()
 		{
 			wrappedTextBox = new TextBox();
@@ -76,6 +79,9 @@ namespace DotNetOpenId.RelyingParty
 			wrappedTextBox.TabIndex = TabIndexDefault;
 		}
 
+		/// <summary>
+		/// Whether the text box should receive input focus when the web page appears.
+		/// </summary>
 		protected bool ShouldBeFocused;
 		/// <summary>
 		/// Sets the input focus to start on the text box when the page appears
@@ -96,9 +102,13 @@ namespace DotNetOpenId.RelyingParty
 		#region Properties
 		const string textDefault = "";
 		string text = textDefault;
+		/// <summary>
+		/// The content of the text box.
+		/// </summary>
 		[Bindable(true)]
 		[Category(appearanceCategory)]
 		[DefaultValue("")]
+		[Description("The content of the text box.")]
 		public string Text
 		{
 			get { return (WrappedTextBox != null) ? WrappedTextBox.Text : text; }
@@ -111,10 +121,14 @@ namespace DotNetOpenId.RelyingParty
 
 		const string realmUrlViewStateKey = "RealmUrl";
 		const string realmUrlDefault = "~/";
+		/// <summary>
+		/// The OpenID <see cref="Realm"/> of the relying party web site.
+		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenId.Realm"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings"), SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings")]
 		[Bindable(true)]
 		[Category(behaviorCategory)]
 		[DefaultValue(realmUrlDefault)]
+		[Description("The OpenID Realm of the relying party web site.")]
 		public string RealmUrl
 		{
 			get { return (string)(ViewState[realmUrlViewStateKey] ?? realmUrlDefault); }
@@ -145,18 +159,34 @@ namespace DotNetOpenId.RelyingParty
 
 		const string immediateModeViewStateKey = "ImmediateMode";
 		const bool immediateModeDefault = false;
+		/// <summary>
+		/// True if a Provider should reply immediately to the authentication request
+		/// without interacting with the user.  False if the Provider can take time
+		/// to authenticate the user in order to complete an authentication attempt.
+		/// </summary>
+		/// <remarks>
+		/// Setting this to true is sometimes useful in AJAX scenarios.  Setting this to
+		/// true can cause failed authentications when the user truly controls an
+		/// Identifier, but must complete an authentication step with the Provider before
+		/// the Provider will approve the login from this relying party.
+		/// </remarks>
 		[Bindable(true)]
 		[Category(behaviorCategory)]
 		[DefaultValue(immediateModeDefault)]
+		[Description("Whether the Provider should respond immediately to an authentication attempt without interacting with the user.")]
 		public bool ImmediateMode {
 			get { return (bool)(ViewState[immediateModeViewStateKey] ?? immediateModeDefault); }
 			set { ViewState[immediateModeViewStateKey] = value; }
 		}
 
 		const string cssClassDefault = "openid";
+		/// <summary>
+		/// Gets/sets the CSS class assigned to the text box.
+		/// </summary>
 		[Bindable(true)]
 		[Category(appearanceCategory)]
 		[DefaultValue(cssClassDefault)]
+		[Description("The CSS class assigned to the text box.")]
 		public override string CssClass
 		{
 			get { return WrappedTextBox.CssClass; }
@@ -165,9 +195,13 @@ namespace DotNetOpenId.RelyingParty
 
 		const string showLogoViewStateKey = "ShowLogo";
 		const bool showLogoDefault = true;
+		/// <summary>
+		/// Gets/sets whether to show the OpenID logo in the text box.
+		/// </summary>
 		[Bindable(true)]
 		[Category(appearanceCategory)]
 		[DefaultValue(showLogoDefault)]
+		[Description("The visibility of the OpenID logo in the text box.")]
 		public bool ShowLogo {
 			get { return (bool)(ViewState[showLogoViewStateKey] ?? showLogoDefault); }
 			set { ViewState[showLogoViewStateKey] = value; }
@@ -178,6 +212,10 @@ namespace DotNetOpenId.RelyingParty
 		/// Default value of <see cref="UsePersistentCookie"/>.
 		/// </summary>
 		protected const bool UsePersistentCookieDefault = false;
+		/// <summary>
+		/// Whether to send a persistent cookie upon successful 
+		/// login so the user does not have to log in upon returning to this site.
+		/// </summary>
 		[Bindable(true)]
 		[Category(behaviorCategory)]
 		[DefaultValue(UsePersistentCookieDefault)]
@@ -190,9 +228,13 @@ namespace DotNetOpenId.RelyingParty
 		}
 
 		const int columnsDefault = 40;
+		/// <summary>
+		/// The width of the text box in characters.
+		/// </summary>
 		[Bindable(true)]
 		[Category(appearanceCategory)]
 		[DefaultValue(columnsDefault)]
+		[Description("The width of the text box in characters.")]
 		public int Columns
 		{
 			get { return WrappedTextBox.Columns; }
@@ -203,9 +245,13 @@ namespace DotNetOpenId.RelyingParty
 		/// Default value for <see cref="TabIndex"/> property.
 		/// </summary>
 		protected const short TabIndexDefault = 0;
+		/// <summary>
+		/// The tab index of the text box control.
+		/// </summary>
 		[Bindable(true)]
 		[Category(behaviorCategory)]
 		[DefaultValue(TabIndexDefault)]
+		[Description("The tab index of the text box control.")]
 		public override short TabIndex {
 			get { return WrappedTextBox.TabIndex; }
 			set { WrappedTextBox.TabIndex = value; }
@@ -213,9 +259,13 @@ namespace DotNetOpenId.RelyingParty
 
 		const string requestNicknameViewStateKey = "RequestNickname";
 		const SimpleRegistrationRequest requestNicknameDefault = SimpleRegistrationRequest.NoRequest;
+		/// <summary>
+		/// Gets/sets your level of interest in receiving the user's nickname from the Provider.
+		/// </summary>
 		[Bindable(true)]
 		[Category(profileCategory)]
 		[DefaultValue(requestNicknameDefault)]
+		[Description("Your level of interest in receiving the user's nickname from the Provider.")]
 		public SimpleRegistrationRequest RequestNickname
 		{
 			get { return (SimpleRegistrationRequest)(ViewState[requestNicknameViewStateKey] ?? requestNicknameDefault); }
@@ -224,9 +274,13 @@ namespace DotNetOpenId.RelyingParty
 
 		const string requestEmailViewStateKey = "RequestEmail";
 		const SimpleRegistrationRequest requestEmailDefault = SimpleRegistrationRequest.NoRequest;
+		/// <summary>
+		/// Gets/sets your level of interest in receiving the user's email address from the Provider.
+		/// </summary>
 		[Bindable(true)]
 		[Category(profileCategory)]
 		[DefaultValue(requestEmailDefault)]
+		[Description("Your level of interest in receiving the user's email address from the Provider.")]
 		public SimpleRegistrationRequest RequestEmail
 		{
 			get { return (SimpleRegistrationRequest)(ViewState[requestEmailViewStateKey] ?? requestEmailDefault); }
@@ -235,9 +289,13 @@ namespace DotNetOpenId.RelyingParty
 
 		const string requestFullNameViewStateKey = "RequestFullName";
 		const SimpleRegistrationRequest requestFullNameDefault = SimpleRegistrationRequest.NoRequest;
+		/// <summary>
+		/// Gets/sets your level of interest in receiving the user's full name from the Provider.
+		/// </summary>
 		[Bindable(true)]
 		[Category(profileCategory)]
 		[DefaultValue(requestFullNameDefault)]
+		[Description("Your level of interest in receiving the user's full name from the Provider")]
 		public SimpleRegistrationRequest RequestFullName
 		{
 			get { return (SimpleRegistrationRequest)(ViewState[requestFullNameViewStateKey] ?? requestFullNameDefault); }
@@ -246,9 +304,13 @@ namespace DotNetOpenId.RelyingParty
 
 		const string requestBirthDateViewStateKey = "RequestBirthday";
 		const SimpleRegistrationRequest requestBirthDateDefault = SimpleRegistrationRequest.NoRequest;
+		/// <summary>
+		/// Gets/sets your level of interest in receiving the user's birthdate from the Provider.
+		/// </summary>
 		[Bindable(true)]
 		[Category(profileCategory)]
 		[DefaultValue(requestBirthDateDefault)]
+		[Description("Your level of interest in receiving the user's birthdate from the Provider.")]
 		public SimpleRegistrationRequest RequestBirthDate
 		{
 			get { return (SimpleRegistrationRequest)(ViewState[requestBirthDateViewStateKey] ?? requestBirthDateDefault); }
@@ -257,9 +319,13 @@ namespace DotNetOpenId.RelyingParty
 
 		const string requestGenderViewStateKey = "RequestGender";
 		const SimpleRegistrationRequest requestGenderDefault = SimpleRegistrationRequest.NoRequest;
+		/// <summary>
+		/// Gets/sets your level of interest in receiving the user's gender from the Provider.
+		/// </summary>
 		[Bindable(true)]
 		[Category(profileCategory)]
 		[DefaultValue(requestGenderDefault)]
+		[Description("Your level of interest in receiving the user's gender from the Provider.")]
 		public SimpleRegistrationRequest RequestGender
 		{
 			get { return (SimpleRegistrationRequest)(ViewState[requestGenderViewStateKey] ?? requestGenderDefault); }
@@ -268,9 +334,13 @@ namespace DotNetOpenId.RelyingParty
 
 		const string requestPostalCodeViewStateKey = "RequestPostalCode";
 		const SimpleRegistrationRequest requestPostalCodeDefault = SimpleRegistrationRequest.NoRequest;
+		/// <summary>
+		/// Gets/sets your level of interest in receiving the user's postal code from the Provider.
+		/// </summary>
 		[Bindable(true)]
 		[Category(profileCategory)]
 		[DefaultValue(requestPostalCodeDefault)]
+		[Description("Your level of interest in receiving the user's postal code from the Provider.")]
 		public SimpleRegistrationRequest RequestPostalCode
 		{
 			get { return (SimpleRegistrationRequest)(ViewState[requestPostalCodeViewStateKey] ?? requestPostalCodeDefault); }
@@ -279,9 +349,13 @@ namespace DotNetOpenId.RelyingParty
 
 		const string requestCountryViewStateKey = "RequestCountry";
 		const SimpleRegistrationRequest requestCountryDefault = SimpleRegistrationRequest.NoRequest;
+		/// <summary>
+		/// Gets/sets your level of interest in receiving the user's country from the Provider.
+		/// </summary>
 		[Bindable(true)]
 		[Category(profileCategory)]
 		[DefaultValue(requestCountryDefault)]
+		[Description("Your level of interest in receiving the user's country from the Provider.")]
 		public SimpleRegistrationRequest RequestCountry
 		{
 			get { return (SimpleRegistrationRequest)(ViewState[requestCountryViewStateKey] ?? requestCountryDefault); }
@@ -290,9 +364,13 @@ namespace DotNetOpenId.RelyingParty
 
 		const string requestLanguageViewStateKey = "RequestLanguage";
 		const SimpleRegistrationRequest requestLanguageDefault = SimpleRegistrationRequest.NoRequest;
+		/// <summary>
+		/// Gets/sets your level of interest in receiving the user's preferred language from the Provider.
+		/// </summary>
 		[Bindable(true)]
 		[Category(profileCategory)]
 		[DefaultValue(requestLanguageDefault)]
+		[Description("Your level of interest in receiving the user's preferred language from the Provider.")]
 		public SimpleRegistrationRequest RequestLanguage
 		{
 			get { return (SimpleRegistrationRequest)(ViewState[requestLanguageViewStateKey] ?? requestLanguageDefault); }
@@ -301,9 +379,13 @@ namespace DotNetOpenId.RelyingParty
 
 		const string requestTimeZoneViewStateKey = "RequestTimeZone";
 		const SimpleRegistrationRequest requestTimeZoneDefault = SimpleRegistrationRequest.NoRequest;
+		/// <summary>
+		/// Gets/sets your level of interest in receiving the user's time zone from the Provider.
+		/// </summary>
 		[Bindable(true)]
 		[Category(profileCategory)]
 		[DefaultValue(requestTimeZoneDefault)]
+		[Description("Your level of interest in receiving the user's time zone from the Provider.")]
 		public SimpleRegistrationRequest RequestTimeZone
 		{
 			get { return (SimpleRegistrationRequest)(ViewState[requestTimeZoneViewStateKey] ?? requestTimeZoneDefault); }
@@ -312,10 +394,15 @@ namespace DotNetOpenId.RelyingParty
 
 		const string policyUrlViewStateKey = "PolicyUrl";
 		const string policyUrlDefault = "";
+		/// <summary>
+		/// Gets/sets the URL to your privacy policy page that describes how 
+		/// claims will be used and/or shared.
+		/// </summary>
 		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings")]
 		[Bindable(true)]
 		[Category(profileCategory)]
 		[DefaultValue(policyUrlDefault)]
+		[Description("The URL to your privacy policy page that describes how claims will be used and/or shared.")]
 		public string PolicyUrl
 		{
 			get { return (string)ViewState[policyUrlViewStateKey] ?? policyUrlDefault; }
@@ -344,9 +431,13 @@ namespace DotNetOpenId.RelyingParty
 
 		const string enableRequestProfileViewStateKey = "EnableRequestProfile";
 		const bool enableRequestProfileDefault = true;
+		/// <summary>
+		/// Turns the entire Simple Registration extension on or off.
+		/// </summary>
 		[Bindable(true)]
 		[Category(profileCategory)]
 		[DefaultValue(enableRequestProfileDefault)]
+		[Description("Turns the entire Simple Registration extension on or off.")]
 		public bool EnableRequestProfile
 		{
 			get { return (bool)(ViewState[enableRequestProfileViewStateKey] ?? enableRequestProfileDefault); }
@@ -355,65 +446,98 @@ namespace DotNetOpenId.RelyingParty
 		#endregion
 
 		#region Properties to hide
+		/// <summary>
+		/// Unused property.
+		/// </summary>
 		[Browsable(false), Bindable(false)]
 		public override System.Drawing.Color ForeColor
 		{
 			get { throw new NotSupportedException(); }
 			set { throw new NotSupportedException(); }
 		}
+		/// <summary>
+		/// Unused property.
+		/// </summary>
 		[Browsable(false), Bindable(false)]
 		public override System.Drawing.Color BackColor
 		{
 			get { throw new NotSupportedException(); }
 			set { throw new NotSupportedException(); }
 		}
+		/// <summary>
+		/// Unused property.
+		/// </summary>
 		[Browsable(false), Bindable(false)]
 		public override System.Drawing.Color BorderColor
 		{
 			get { throw new NotSupportedException(); }
 			set { throw new NotSupportedException(); }
 		}
+		/// <summary>
+		/// Unused property.
+		/// </summary>
 		[Browsable(false), Bindable(false)]
 		public override Unit BorderWidth
 		{
 			get { return Unit.Empty; }
 			set { throw new NotSupportedException(); }
 		}
+		/// <summary>
+		/// Unused property.
+		/// </summary>
 		[Browsable(false), Bindable(false)]
 		public override BorderStyle BorderStyle
 		{
 			get { return BorderStyle.None; }
 			set { throw new NotSupportedException(); }
 		}
+		/// <summary>
+		/// Unused property.
+		/// </summary>
 		[Browsable(false), Bindable(false)]
 		public override FontInfo Font
 		{
 			get { return null; }
 		}
+		/// <summary>
+		/// Unused property.
+		/// </summary>
 		[Browsable(false), Bindable(false)]
 		public override Unit Height
 		{
 			get { return Unit.Empty; }
 			set { throw new NotSupportedException(); }
 		}
+		/// <summary>
+		/// Unused property.
+		/// </summary>
 		[Browsable(false), Bindable(false)]
 		public override Unit Width
 		{
 			get { return Unit.Empty; }
 			set { throw new NotSupportedException(); }
 		}
+		/// <summary>
+		/// Unused property.
+		/// </summary>
 		[Browsable(false), Bindable(false)]
 		public override string ToolTip
 		{
 			get { return string.Empty; }
 			set { throw new NotSupportedException(); }
 		}
+		/// <summary>
+		/// Unused property.
+		/// </summary>
 		[Browsable(false), Bindable(false)]
 		public override string SkinID
 		{
 			get { return string.Empty; }
 			set { throw new NotSupportedException(); }
 		}
+		/// <summary>
+		/// Unused property.
+		/// </summary>
 		[Browsable(false), Bindable(false)]
 		public override bool EnableTheming
 		{
@@ -422,6 +546,9 @@ namespace DotNetOpenId.RelyingParty
 		}
 		#endregion
 
+		/// <summary>
+		/// Checks for incoming OpenID authentication responses and fires appropriate events.
+		/// </summary>
 		protected override void OnLoad(EventArgs e) {
 			base.OnLoad(e);
 
@@ -447,6 +574,9 @@ namespace DotNetOpenId.RelyingParty
 			}
 		}
 
+		/// <summary>
+		/// Prepares the text box to be rendered.
+		/// </summary>
 		protected override void OnPreRender(EventArgs e) {
 			base.OnPreRender(e);
 
@@ -464,7 +594,13 @@ namespace DotNetOpenId.RelyingParty
 			}
 		}
 
+		/// <summary>
+		/// The OpenID authentication request that is about to be sent.
+		/// </summary>
 		protected IAuthenticationRequest Request;
+		/// <summary>
+		/// Constructs the authentication request and adds the Simple Registration extension arguments.
+		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
 		protected void PrepareAuthenticationRequest() {
 			if (string.IsNullOrEmpty(Text))
@@ -492,6 +628,10 @@ namespace DotNetOpenId.RelyingParty
 			}
 		}
 
+		/// <summary>
+		/// Immediately redirects to the OpenID Provider to verify the Identifier
+		/// provided in the text box.
+		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
 		public void LogOn()
 		{
@@ -556,6 +696,9 @@ namespace DotNetOpenId.RelyingParty
 		/// </summary>
 		[Description("Fired upon completion of a successful login.")]
 		public event EventHandler<OpenIdEventArgs> LoggedIn;
+		/// <summary>
+		/// Fires the <see cref="LoggedIn"/> event.
+		/// </summary>
 		protected virtual void OnLoggedIn(IAuthenticationResponse response)
 		{
 			if (response == null) throw new ArgumentNullException("response");
@@ -574,6 +717,9 @@ namespace DotNetOpenId.RelyingParty
 		/// </summary>
 		[Description("Fired when a login attempt fails.")]
 		public event EventHandler<OpenIdEventArgs> Failed;
+		/// <summary>
+		/// Fires the <see cref="Failed"/> event.
+		/// </summary>
 		protected virtual void OnFailed(IAuthenticationResponse response)
 		{
 			if (response == null) throw new ArgumentNullException("response");
@@ -589,6 +735,9 @@ namespace DotNetOpenId.RelyingParty
 		/// </summary>
 		[Description("Fired when an authentication attempt is canceled at the OpenID Provider.")]
 		public event EventHandler<OpenIdEventArgs> Canceled;
+		/// <summary>
+		/// Fires the <see cref="Canceled"/> event.
+		/// </summary>
 		protected virtual void OnCanceled(IAuthenticationResponse response)
 		{
 			if (response == null) throw new ArgumentNullException("response");
@@ -604,6 +753,9 @@ namespace DotNetOpenId.RelyingParty
 		/// </summary>
 		[Description("Fired when an Immediate authentication attempt fails, and the Provider suggests using non-Immediate mode.")]
 		public event EventHandler<OpenIdEventArgs> SetupRequired;
+		/// <summary>
+		/// Fires the <see cref="SetupRequired"/> event.
+		/// </summary>
 		protected virtual void OnSetupRequired(IAuthenticationResponse response) {
 			if (response == null) throw new ArgumentNullException("response");
 			Debug.Assert(response.Status == AuthenticationStatus.SetupRequired);
