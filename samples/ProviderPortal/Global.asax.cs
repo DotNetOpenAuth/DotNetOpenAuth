@@ -7,6 +7,12 @@ using System.Web;
 namespace ProviderPortal {
 	public class Global : System.Web.HttpApplication {
 
+		string stripQueryString(Uri uri) {
+			UriBuilder builder = new UriBuilder(uri);
+			builder.Query = null;
+			return builder.ToString();
+		}
+
 		protected void Application_BeginRequest(Object sender, EventArgs e) {
 			/*
 			 * The URLRewriter was taken from http://www.codeproject.com/aspnet/URLRewriter.asp and modified slightly.
@@ -15,7 +21,7 @@ namespace ProviderPortal {
 			 * There is only one rule currenty defined. It rewrites urls like: user/john ->user.aspx?username=john
 			 */
 			// System.Diagnostics.Debugger.Launch();
-			Trace.TraceInformation("Processing {0} on {1} ", Request.HttpMethod, Request.Url);
+			Trace.TraceInformation("Processing {0} on {1} ", Request.HttpMethod, stripQueryString(Request.Url));
 			if (Request.QueryString.Count > 0)
 				Trace.TraceInformation("Querystring follows: {0}", ToString(Request.QueryString));
 			if (Request.Form.Count > 0)
@@ -25,7 +31,7 @@ namespace ProviderPortal {
 		}
 
 		protected void Application_AuthenticateRequest(Object sender, EventArgs e) {
-			Trace.TraceInformation("Is Forms Authenticated = {0}", HttpContext.Current.User != null);
+			Trace.TraceInformation("User {0} authenticated.", HttpContext.Current.User != null ? "IS" : "is NOT");
 		}
 
 

@@ -153,5 +153,8 @@ namespace DotNetOpenId.RelyingParty {
 		public override int GetHashCode() {
 			return ClaimedIdentifier.GetHashCode();
 		}
+		public override string ToString() {
+			return ProviderEndpoint.AbsoluteUri;
+		}
 	}
 }
