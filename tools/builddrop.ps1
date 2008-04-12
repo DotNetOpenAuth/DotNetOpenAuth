@@ -81,7 +81,7 @@ function AssembleDrop() {
 	Copy-Item -Recurse $RootDir\Doc\*.htm* $DropDir
 
 	# Do a little cleanup of files that we don't want to inclue in the drop
-	("obj", "*.user", "*.sln.cache", "*.suo", "*.user", ".gitignore", "*.ldf") |% {
+	("obj", "*.user", "*.sln.cache", "*.suo", "*.user", ".gitignore", "*.ldf", "*Trace.txt") |% {
 		Get-ChildItem -force -recurse "$DropDir\Samples" "$_" |% { 
 			If (Test-Path "$($_.FullName)") {
 				$errorActionPreference = "SilentlyContinue"
