@@ -60,18 +60,11 @@ namespace DotNetOpenId.Provider {
 			OnSigning(encodable);
 			var response = encodable as EncodableResponse;
 			if (response != null) {
-				if (TraceUtil.Switch.TraceInfo) {
-					Trace.TraceInformation("Encoding using the signing encoder");
-				}
-
 				if (response.NeedsSigning) {
 					Debug.Assert(!response.Fields.ContainsKey(encodable.Protocol.openidnp.sig));
-
 					signatory.Sign(response);
 				}
-
 			}
-
 			return base.Encode(encodable);
 		}
 

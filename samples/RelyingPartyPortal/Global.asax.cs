@@ -16,9 +16,9 @@ namespace ConsumerPortal {
 			// System.Diagnostics.Debugger.Launch();
 			Trace.TraceInformation("Processing {0} on {1} ", Request.HttpMethod, stripQueryString(Request.Url));
 			if (Request.QueryString.Count > 0)
-				Trace.TraceInformation("Querystring follows: {0}", ToString(Request.QueryString));
+				Trace.TraceInformation("Querystring follows: \n{0}", ToString(Request.QueryString));
 			if (Request.Form.Count > 0)
-				Trace.TraceInformation("Posted form follows: {0}", ToString(Request.Form));
+				Trace.TraceInformation("Posted form follows: \n{0}", ToString(Request.Form));
 		}
 
 		protected void Application_AuthenticateRequest(Object sender, EventArgs e) {
@@ -36,6 +36,7 @@ namespace ConsumerPortal {
 		public static string ToString(NameValueCollection collection) {
 			using (StringWriter sw = new StringWriter()) {
 				foreach (string key in collection.Keys) {
+					if (key.StartsWith("__")) continue; // skip
 					sw.WriteLine("{0} = '{1}'", key, collection[key]);
 				}
 				return sw.ToString();

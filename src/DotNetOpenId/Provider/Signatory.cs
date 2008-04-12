@@ -34,10 +34,6 @@ namespace DotNetOpenId.Provider {
 		}
 
 		public void Sign(EncodableResponse response) {
-			if (TraceUtil.Switch.TraceInfo) {
-				Trace.TraceInformation("Digitally sign the response.");
-			}
-
 			Association assoc;
 			string assoc_handle = response.PreferredAssociationHandle;
 
@@ -45,8 +41,8 @@ namespace DotNetOpenId.Provider {
 				assoc = GetAssociation(assoc_handle, AssociationRelyingPartyType.Smart);
 
 				if (assoc == null) {
-					if (TraceUtil.Switch.TraceInfo) {
-						Trace.TraceInformation("No associaton found with assoc_handle. Setting invalidate_handle and creating new Association.");
+					if (TraceUtil.Switch.TraceWarning) {
+						Trace.TraceWarning("No associaton found with assoc_handle {0}. Setting invalidate_handle and creating new Association.", assoc_handle);
 					}
 
 					response.Fields[response.Protocol.openidnp.invalidate_handle] = assoc_handle;
@@ -65,50 +61,20 @@ namespace DotNetOpenId.Provider {
 			response.Fields[response.Protocol.openidnp.signed] = String.Join(",", response.Signed.ToArray());
 			response.Fields[response.Protocol.openidnp.sig] =
 				Convert.ToBase64String(assoc.Sign(response.Fields, response.Signed, string.Empty));
-
-			if (TraceUtil.Switch.TraceInfo) {
-				Trace.TraceInformation("Digital signature successfully created");
-			}
 		}
 
 		public virtual bool Verify(string assoc_handle, string signature, IDictionary<string, string> signed_pairs, IList<string> signedKeyOrder) {
-			if (TraceUtil.Switch.TraceInfo) {
-				Trace.TraceInformation("Start signature verification for assoc_handle = '{0}'", assoc_handle);
-			}
-
 			Association assoc = GetAssociation(assoc_handle, AssociationRelyingPartyType.Dumb);
-
-			string expected_sig;
-
 			if (assoc == null) {
-				if (TraceUtil.Switch.TraceInfo) {
-					Trace.TraceInformation("End signature verification. Signature verification failed. No matching association handle found ");
-				}
-
+				if (TraceUtil.Switch.TraceError)
+					Trace.TraceError("Signature verification failed. No association with handle {0} found ", assoc_handle);
 				return false;
-			} else {
-				if (TraceUtil.Switch.TraceInfo) {
-					Trace.TraceInformation("Found matching association handle. ");
-				}
-				if (TraceUtil.Switch.TraceVerbose) {
-					Trace.TraceInformation(assoc.ToString());
-				}
 			}
 
-			if (TraceUtil.Switch.TraceInfo) {
-				Trace.TraceInformation("Matching association found ");
-			}
+			string expected_sig = Convert.ToBase64String(assoc.Sign(signed_pairs, signedKeyOrder));
 
-			expected_sig = Convert.ToBase64String(assoc.Sign(signed_pairs, signedKeyOrder));
-
-			if (TraceUtil.Switch.TraceInfo) {
-				Trace.TraceInformation("Expected signature is '{0}'. Actual signature is '{1}' ", expected_sig, signature);
-
-				if (signature == expected_sig) {
-					Trace.TraceInformation("End signature verification. Signature verification passed");
-				} else {
-					Trace.TraceInformation("End signature verification. Signature verification failed");
-				}
+			if (TraceUtil.Switch.TraceError && signature != expected_sig) {
+				Trace.TraceError("Expected signature is '{0}'. Actual signature is '{1}' ", expected_sig, signature);
 			}
 
 			return expected_sig.Equals(signature, StringComparison.Ordinal);
@@ -117,10 +83,6 @@ namespace DotNetOpenId.Provider {
 		public virtual Association CreateAssociation(AssociationRelyingPartyType associationType, OpenIdProvider provider) {
 			if (provider == null && associationType == AssociationRelyingPartyType.Smart) 
 				throw new ArgumentNullException("provider", "For Smart associations, the provider must be given.");
-
-			if (TraceUtil.Switch.TraceInfo) {
-				Trace.TraceInformation("Start Create Association. Association type = {0}", associationType);
-			}
 
 			bool useSha256;
 			string assoc_type;
@@ -157,45 +119,29 @@ namespace DotNetOpenId.Provider {
 
 			store.StoreAssociation(associationType, assoc);
 
-			if (TraceUtil.Switch.TraceInfo) {
-				Trace.TraceInformation("End Create Association. Association successfully created. key = '{0}', handle = '{1}' ", associationType, handle);
-			}
-
 			return assoc;
 		}
 
 		public virtual Association GetAssociation(string assoc_handle, AssociationRelyingPartyType associationType) {
-			if (TraceUtil.Switch.TraceInfo) {
-				Trace.TraceInformation("Start get association from store '{0}'.", assoc_handle);
-			}
-
 			if (assoc_handle == null)
 				throw new ArgumentNullException("assoc_handle");
 
 			Association assoc = store.GetAssociation(associationType, assoc_handle);
 			if (assoc == null || assoc.IsExpired) {
-				Trace.TraceInformation("Association expired or not in store. Trying to remove association if it still exists.");
+				if (TraceUtil.Switch.TraceError)
+					Trace.TraceError("Association {0} expired or not in store.", assoc_handle);
 				store.RemoveAssociation(associationType, assoc_handle);
 				assoc = null;
-			}
-
-			if (TraceUtil.Switch.TraceInfo) {
-				Trace.TraceInformation("End get association from store '{0}'. Association found? =  {1}", assoc_handle, (assoc != null).ToString());
 			}
 
 			return assoc;
 		}
 
 		public virtual void Invalidate(string assoc_handle, AssociationRelyingPartyType associationType) {
-			if (TraceUtil.Switch.TraceInfo) {
-				Trace.TraceInformation("Start invalidate association '{0}'.", assoc_handle);
-			}
+			if (TraceUtil.Switch.TraceInfo)
+				Trace.TraceInformation("Invalidating association '{0}'.", assoc_handle);
 
 			store.RemoveAssociation(associationType, assoc_handle);
-
-			if (TraceUtil.Switch.TraceInfo) {
-				Trace.TraceInformation("End invalidate association '{0}'.", assoc_handle);
-			}
 		}
 	}
 }

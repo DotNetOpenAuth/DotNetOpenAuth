@@ -43,9 +43,8 @@ namespace ProviderPortal {
 
 			string zSubst = oRewriter.GetSubstitution(HttpContext.Current.Request.Path);
 
-			Trace.TraceInformation("Rewriting url '{0}' to '{1}' ", HttpContext.Current.Request.Url, zSubst);
-
 			if (!string.IsNullOrEmpty(zSubst)) {
+				Trace.TraceInformation("Rewriting url '{0}' to '{1}' ", HttpContext.Current.Request.Path, zSubst);
 				HttpContext.Current.RewritePath(zSubst);
 			}
 		}

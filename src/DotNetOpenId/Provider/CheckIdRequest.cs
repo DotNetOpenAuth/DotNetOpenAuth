@@ -173,17 +173,7 @@ namespace DotNetOpenId.Provider {
 
 		internal override IEncodable CreateResponse() {
 			Debug.Assert(IsAuthenticated.HasValue, "This should be checked internally before CreateResponse is called.");
-
-			EncodableResponse response = AssertionMessage.CreateAssertion(this);
-			
-			if (TraceUtil.Switch.TraceInfo) {
-				Trace.TraceInformation("CheckIdRequest response successfully created. ");
-				if (TraceUtil.Switch.TraceVerbose) {
-					Trace.TraceInformation("Response follows: {0}", response);
-				}
-			}
-
-			return response;
+			return AssertionMessage.CreateAssertion(this);
 		}
 
 		/// <summary>

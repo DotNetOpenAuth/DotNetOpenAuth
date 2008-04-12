@@ -110,17 +110,11 @@ namespace DotNetOpenId.Provider {
 				return null;
 			}
 
-			if (TraceUtil.Switch.TraceInfo) {
-				Trace.TraceInformation("Start message decoding");
-			}
-
 			Protocol = Protocol.Detect(Query);
 			Request req = Provider.Request.CreateRequest(this);
 
-			if (TraceUtil.Switch.TraceInfo) {
-				Trace.TraceInformation("End message decoding. Successfully decoded message as new {0}.", req.GetType().Name);
-				Trace.TraceInformation(req.ToString());
-			}
+			if (TraceUtil.Switch.TraceInfo)
+				Trace.TraceInformation("Received OpenID {0} request.", req.Mode);
 
 			return req;
 		}

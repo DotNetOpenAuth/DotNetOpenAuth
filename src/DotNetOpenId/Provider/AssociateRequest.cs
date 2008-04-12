@@ -62,13 +62,6 @@ namespace DotNetOpenId.Provider {
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1820:TestForEmptyStringsUsingStringLength")]
 		public EncodableResponse Answer() {
 			Association assoc = Provider.Signatory.CreateAssociation(AssociationRelyingPartyType.Smart, Provider);
-			if (TraceUtil.Switch.TraceInfo) {
-				Trace.TraceInformation("Start processing response for AssociateRequest");
-				if (TraceUtil.Switch.TraceVerbose) {
-					Trace.TraceInformation("Association to be sent: {0}", assoc);
-				}
-			}
-
 			EncodableResponse response = EncodableResponse.PrepareDirectMessage(Protocol);
 
 			response.Fields[Protocol.openidnp.expires_in] = assoc.SecondsTillExpiration.ToString(CultureInfo.InvariantCulture);
@@ -81,12 +74,8 @@ namespace DotNetOpenId.Provider {
 				response.Fields[pair.Key] = nvc[pair.Key];
 			}
 
-			if (TraceUtil.Switch.TraceInfo) {
-				Trace.TraceInformation("End processing response for AssociateRequest. AssociateRequest response successfully created. ");
-				if (TraceUtil.Switch.TraceVerbose) {
-					Trace.TraceInformation("Response follows: {0}", response);
-				}
-			}
+			if (TraceUtil.Switch.TraceInfo)
+				Trace.TraceInformation("Association {0} created.", assoc.Handle);
 
 			return response;
 		}

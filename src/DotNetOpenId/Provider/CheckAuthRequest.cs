@@ -44,9 +44,6 @@ namespace DotNetOpenId.Provider {
 		/// Respond to this request.
 		/// </summary>
 		internal EncodableResponse Answer() {
-			if (TraceUtil.Switch.TraceInfo) {
-				Trace.TraceInformation("Start processing Response for CheckAuthRequest");
-			}
 			EncodableResponse response = EncodableResponse.PrepareDirectMessage(Protocol);
 
 			bool validSignature = Provider.Signatory.Verify(AssociationHandle, signature, signedFields, signedKeyOrder);
@@ -69,13 +66,6 @@ namespace DotNetOpenId.Provider {
 						Trace.TraceWarning("No matching association found. Returning invalidate_handle. ");
 					}
 					response.Fields[Protocol.openidnp.invalidate_handle] = invalidate_handle;
-				}
-			}
-
-			if (TraceUtil.Switch.TraceInfo) {
-				Trace.TraceInformation("End processing Response for CheckAuthRequest. CheckAuthRequest response successfully created. ");
-				if (TraceUtil.Switch.TraceVerbose) {
-					Trace.TraceInformation("Response follows: {0}", response);
 				}
 			}
 
