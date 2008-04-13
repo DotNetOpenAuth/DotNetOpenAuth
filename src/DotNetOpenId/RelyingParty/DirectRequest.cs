@@ -23,10 +23,10 @@ namespace DotNetOpenId.RelyingParty {
 
 		protected IDictionary<string, string> GetResponse() {
 			byte[] body = ProtocolMessages.Http.GetBytes(Args);
-			FetchResponse resp = null;
+			UntrustedWebResponse resp = null;
 			IDictionary<string, string> args = null;
 			try {
-				resp = Fetcher.Request(Provider.ProviderEndpoint, body);
+				resp = UntrustedWebRequest.Request(Provider.ProviderEndpoint, body);
 				args = ProtocolMessages.KeyValueForm.GetDictionary(resp.ResponseStream);
 			} catch (ArgumentException e) {
 				throw new OpenIdException("Failure decoding Key-Value Form response from provider.", e);

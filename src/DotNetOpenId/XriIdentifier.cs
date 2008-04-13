@@ -61,7 +61,7 @@ namespace DotNetOpenId {
 		}
 
 		XrdsDocument downloadXrds() {
-			var xrdsResponse = Fetcher.Request(XrdsUrl);
+			var xrdsResponse = UntrustedWebRequest.Request(XrdsUrl);
 			return new XrdsDocument(XmlReader.Create(xrdsResponse.ResponseStream));
 		}
 

@@ -9,7 +9,7 @@ namespace DotNetOpenId {
 
 	[Serializable]
 	[DebuggerDisplay("{StatusCode} {ContentType.MediaType}: {ReadResponseString().Substring(4,50)}")]
-	internal class FetchResponse {
+	internal class UntrustedWebResponse {
 		const string DefaultContentEncoding = "ISO-8859-1";
 		
 		public Stream ResponseStream { get; private set; }
@@ -20,7 +20,7 @@ namespace DotNetOpenId {
 		public Uri RequestUri { get; private set; }
 		public Uri FinalUri { get; private set; }
 
-		public FetchResponse(Uri requestUri, HttpWebResponse response, Stream responseStream) {
+		public UntrustedWebResponse(Uri requestUri, HttpWebResponse response, Stream responseStream) {
 			if (requestUri == null) throw new ArgumentNullException("requestUri");
 			if (response == null) throw new ArgumentNullException("response");
 			if (responseStream == null) throw new ArgumentNullException("responseStream");

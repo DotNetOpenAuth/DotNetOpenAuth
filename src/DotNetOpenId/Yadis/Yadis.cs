@@ -13,12 +13,12 @@ namespace DotNetOpenId.Yadis {
 		internal const string HeaderName = "X-XRDS-Location";
 
 		public static DiscoveryResult Discover(UriIdentifier uri) {
-			var response = Fetcher.Request(uri, null,
+			var response = UntrustedWebRequest.Request(uri, null,
 				new[] { ContentTypes.Html, ContentTypes.XHtml, ContentTypes.Xrds });
 			if (response.StatusCode != System.Net.HttpStatusCode.OK) {
 				return null;
 			}
-			FetchResponse response2 = null;
+			UntrustedWebResponse response2 = null;
 			if (response.ContentType.MediaType == ContentTypes.Xrds) {
 				response2 = response;
 			} else {
@@ -29,7 +29,7 @@ namespace DotNetOpenId.Yadis {
 				if (url == null && response.ContentType.MediaType == ContentTypes.Html)
 					url = FindYadisDocumentLocationInHtmlMetaTags(response.ReadResponseString());
 				if (url != null) {
-					response2 = Fetcher.Request(url);
+					response2 = UntrustedWebRequest.Request(url);
 					if (response2.StatusCode != System.Net.HttpStatusCode.OK) {
 						return null;
 					}
@@ -58,7 +58,7 @@ namespace DotNetOpenId.Yadis {
 	}
 
 	class DiscoveryResult {
-		public DiscoveryResult(Uri requestUri, FetchResponse initialResponse, FetchResponse finalResponse) {
+		public DiscoveryResult(Uri requestUri, UntrustedWebResponse initialResponse, UntrustedWebResponse finalResponse) {
 			RequestUri = requestUri;
 			NormalizedUri = initialResponse.FinalUri;
 			if (finalResponse == null) {

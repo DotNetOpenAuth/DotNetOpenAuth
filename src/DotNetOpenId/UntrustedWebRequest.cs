@@ -5,37 +5,59 @@ namespace DotNetOpenId {
 	using System;
 	using System.Net;
 	using System.IO;
+using System.Diagnostics;
 
 	/// <summary>
 	/// A paranoid HTTP get/post request engine.  It helps to protect against attacks from remote
 	/// server leaving dangling connections, sending too much data, etc.
 	/// </summary>
-	internal static class Fetcher {
+	public static class UntrustedWebRequest {
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		static int maximumBytesToRead = 1024 * 1024;
 		/// <summary>
 		/// The default maximum bytes to read in any given HTTP request.
-		/// Default is 1MB.
+		/// Default is 1MB.  Cannot be less than 2KB.
 		/// </summary>
-		public static int MaximumBytesToRead = (1024 * 1024);
+		public static int MaximumBytesToRead {
+			get { return maximumBytesToRead; }
+			set {
+				if (value < 2048) throw new ArgumentOutOfRangeException("MaximumBytesToRead");
+				maximumBytesToRead = value;
+			}
+		}
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		static int maximumRedirections = 10;
 		/// <summary>
 		/// The total number of redirections to allow on any one request.
+		/// Default is 10.
 		/// </summary>
-		public static int MaximumRedirections = 10;
+		public static int MaximumRedirections {
+			get { return maximumRedirections; }
+			set {
+				if (value < 0) throw new ArgumentOutOfRangeException("MaximumRedirections");
+				maximumRedirections = value;
+			}
+		}
 		/// <summary>
 		/// Gets the time allowed to wait for single read or write operation to complete.
+		/// Default is 500 milliseconds.
 		/// </summary>
-		public static TimeSpan ReadWriteTimeout = TimeSpan.FromMilliseconds(500);
+		public static TimeSpan ReadWriteTimeout { get; set; }
 		/// <summary>
-		/// Gets the time allowed for an entire request.
+		/// Gets the time allowed for an entire HTTP request.  
+		/// Default is 5 seconds.
 		/// </summary>
-		public static TimeSpan Timeout = TimeSpan.FromSeconds(5);
+		public static TimeSpan Timeout { get; set; }
 
-#if LONGTIMEOUT
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
-		static Fetcher() {
+		static UntrustedWebRequest() {
+			ReadWriteTimeout = TimeSpan.FromMilliseconds(500);
+			Timeout = TimeSpan.FromSeconds(5);
+#if LONGTIMEOUT
 			ReadWriteTimeout = TimeSpan.FromHours(1);
 			Timeout = TimeSpan.FromHours(1);
-		}
 #endif
+		}
 
 		/// <summary>
 		/// Reads a maximum number of bytes from a response stream.
@@ -57,22 +79,22 @@ namespace DotNetOpenId {
 			}
 		}
 
-		static FetchResponse getResponse(Uri requestUri, HttpWebResponse resp) {
+		static UntrustedWebResponse getResponse(Uri requestUri, HttpWebResponse resp) {
 			byte[] data;
 			int length;
 			readData(resp, out data, out length);
-			return new FetchResponse(requestUri, resp, new MemoryStream(data, 0, length));
+			return new UntrustedWebResponse(requestUri, resp, new MemoryStream(data, 0, length));
 		}
 
-		public static FetchResponse Request(Uri uri) {
+		internal static UntrustedWebResponse Request(Uri uri) {
 			return Request(uri, null);
 		}
 
-		public static FetchResponse Request(Uri uri, byte[] body) {
+		internal static UntrustedWebResponse Request(Uri uri, byte[] body) {
 			return Request(uri, body, null);
 		}
 
-		public static FetchResponse Request(Uri uri, byte[] body, string[] acceptTypes) {
+		internal static UntrustedWebResponse Request(Uri uri, byte[] body, string[] acceptTypes) {
 			if (uri == null) throw new ArgumentNullException("uri");
 
 			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);

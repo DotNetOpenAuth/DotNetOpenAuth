@@ -69,8 +69,8 @@
     <Compile Include="RelyingParty\DirectRequest.cs" />
     <Compile Include="RelyingParty\DirectResponse.cs" />
     <Compile Include="RelyingParty\FailedAuthenticationResponse.cs" />
-    <Compile Include="Fetcher.cs" />
-    <Compile Include="FetchResponse.cs" />
+    <Compile Include="UntrustedWebRequest.cs" />
+    <Compile Include="UntrustedWebResponse.cs" />
     <Compile Include="RelyingParty\IAuthenticationRequest.cs" />
     <Compile Include="RelyingParty\IAuthenticationResponse.cs" />
     <Compile Include="RelyingParty\IRelyingPartyApplicationStore.cs" />
