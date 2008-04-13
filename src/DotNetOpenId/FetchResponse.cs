@@ -1,4 +1,4 @@
-namespace DotNetOpenId.RelyingParty {
+namespace DotNetOpenId {
 	using System;
 	using System.Net;
 	using System.Collections.Specialized;
