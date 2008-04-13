@@ -45,6 +45,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RelyingPartyCustomStore", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProviderCustomStore", "..\samples\ProviderCustomStore\ProviderCustomStore.csproj", "{2D0B2C39-3F90-484E-848B-F3EF956835C3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RelyingPartyMvc", "..\samples\RelyingPartyMvc\RelyingPartyMvc.csproj", "{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|.NET = Debug|.NET
@@ -125,6 +127,16 @@ Global
 		{2D0B2C39-3F90-484E-848B-F3EF956835C3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2D0B2C39-3F90-484E-848B-F3EF956835C3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{2D0B2C39-3F90-484E-848B-F3EF956835C3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB}.Debug|.NET.ActiveCfg = Debug|Any CPU
+		{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB}.Release|.NET.ActiveCfg = Release|Any CPU
+		{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -134,5 +146,6 @@ Global
 		{51BCD5E9-E17A-4FB2-BAC8-C156DD7A1CA4} = {48A90678-A754-4E6E-98E2-7C519607C85F}
 		{DB54DC19-BA56-4C22-A8A0-C49289EA4F53} = {48A90678-A754-4E6E-98E2-7C519607C85F}
 		{2D0B2C39-3F90-484E-848B-F3EF956835C3} = {48A90678-A754-4E6E-98E2-7C519607C85F}
+		{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB} = {48A90678-A754-4E6E-98E2-7C519607C85F}
 	EndGlobalSection
 EndGlobal

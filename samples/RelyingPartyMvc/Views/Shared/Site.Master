@@ -1,0 +1,51 @@
+<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="RelyingPartyMvc.Views.Shared.Site" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<title>DotNetOpenId ASP.NET MVC Login sample</title>
+	<link href="../../Content/Site.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+	<div class="page">
+		<div id="header">
+			<p id="logo"><a href="">DotNetOpenId ASP.NET MVC Login sample</a></p>
+			<ul id="mainMenu">
+				<li>
+					<%= Html.ActionLink("Home", "Index", "Home")%>
+				</li>
+				<li>
+					<%= Html.ActionLink("Member Area", "Index", "User")%>
+				</li>
+			</ul>
+		</div>
+		<div id="mainContent">
+			<div class="columnsContainer">
+				<div class="leftColumn">
+					<h2>External OpenID Links</h2>
+					<ul>
+						<li><a href="http://dotnetopenid.googlecode.com">DotNetOpenId</a></li>
+						<li><a href="http://openid.net">About OpenID</a></li>
+					</ul>
+				</div>
+				<!--/leftColumn-->
+				<div class="rightColumn">
+					<asp:ContentPlaceHolder ID="MainContentPlaceHolder" runat="server">
+					</asp:ContentPlaceHolder>
+				</div>
+				<!--/rightColumn-->
+				<div class="clear">
+				</div>
+			</div>
+			<!--/columnsContainer-->
+			<div id="footer">
+				<p>Andrew Arnott &copy; Copyright 2008 </p>
+			</div>
+			<!--/footer-->
+		</div>
+		<!--/mainContent-->
+	</div>
+	<!--/page-->
+</body>
+</html>
