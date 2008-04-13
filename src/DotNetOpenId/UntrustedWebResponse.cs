@@ -27,7 +27,8 @@ namespace DotNetOpenId {
 			this.RequestUri = requestUri;
 			this.ResponseStream = responseStream;
 			StatusCode = response.StatusCode;
-			ContentType = new ContentType(response.ContentType);
+			if (!string.IsNullOrEmpty(response.ContentType))
+				ContentType = new ContentType(response.ContentType);
 			ContentEncoding = string.IsNullOrEmpty(response.ContentEncoding) ? DefaultContentEncoding : response.ContentEncoding;
 			Headers = response.Headers;
 			FinalUri = response.ResponseUri;
