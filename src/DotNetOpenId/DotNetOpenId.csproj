@@ -52,7 +52,11 @@
     <Compile Include="AssociationMemoryStore.cs" />
     <Compile Include="Associations.cs" />
     <Compile Include="ExtensionArgumentsManager.cs" />
+    <Compile Include="Extensions\AttributeExchangeFetchResponse.cs" />
     <Compile Include="Extensions\Constants.cs" />
+    <Compile Include="Extensions\AttributeExchangeFetchRequest.cs" />
+    <Compile Include="Extensions\AttributeExchangeStoreRequest.cs" />
+    <Compile Include="Extensions\AttributeExchangeStoreResponse.cs" />
     <Compile Include="HmacSha256Association.cs" />
     <Compile Include="Identifier.cs" />
     <Compile Include="Protocol.cs" />

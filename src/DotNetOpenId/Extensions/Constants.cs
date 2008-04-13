@@ -8,6 +8,15 @@ namespace DotNetOpenId.Extensions {
 	/// constants to each version used in the protocol.
 	/// </summary>
 	internal static class Constants {
+		/// <summary>
+		/// Attribute Exchange constants
+		/// </summary>
+		internal static class ae {
+			internal const string ns = "http://openid.net/srv/ax/1.0";
+		}
+		/// <summary>
+		/// Simple Registration constants
+		/// </summary>
 		internal static class sreg {
 			internal const string TypeUri = "http://openid.net/sreg/1.0";
 			internal const string sreg_ns = "http://openid.net/extensions/sreg/1.1";

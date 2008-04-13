@@ -112,7 +112,6 @@ namespace DotNetOpenId.Extensions
 		/// Adds the values of this struct to an authentication response being prepared
 		/// by an OpenID Provider.
 		/// </summary>
-		/// <param name="authenticationRequest"></param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
 		public void AddToResponse(Provider.IAuthenticationRequest authenticationRequest) {
 			if (authenticationRequest == null) throw new ArgumentNullException("authenticationRequest");
