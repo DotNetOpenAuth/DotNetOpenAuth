@@ -20,9 +20,20 @@ public class TestSupport {
 	public const string MobileConsumerPage = "RelyingPartyMobile.aspx";
 	public const string ConsumerPage = "RelyingParty.aspx";
 	public enum Scenarios {
+		// Authentication test scenarios
 		AutoApproval,
 		ApproveOnSetup,
 		AlwaysDeny,
+
+		// Extension test scenarios
+		/// <summary>
+		/// Provides all required and requested fields.
+		/// </summary>
+		ExtensionFullCooperation,
+		/// <summary>
+		/// Provides only those fields marked as required.
+		/// </summary>
+		ExtensionPartialCooperation,
 	}
 	internal static UriIdentifier GetIdentityUrl(Scenarios scenario, ProtocolVersion providerVersion) {
 		UriBuilder builder = new UriBuilder(Host.BaseUri);

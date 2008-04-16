@@ -187,6 +187,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to OpenID extension {0} parameter {1} had unexpected value &apos;{2}&apos;..
+        /// </summary>
+        internal static string InvalidOpenIdExtensionParameterValue {
+            get {
+                return ResourceManager.GetString("InvalidOpenIdExtensionParameterValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to OpenID parameter &apos;{0}&apos; had unexpected value &apos;{1}&apos;..
         /// </summary>
         internal static string InvalidOpenIdQueryParameterValue {

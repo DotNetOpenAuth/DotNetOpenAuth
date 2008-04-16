@@ -22,13 +22,8 @@ namespace DotNetOpenId.Extensions
 	/// authenticating user.
 	/// </summary>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2218:OverrideGetHashCodeOnOverridingEquals"), Serializable()]
-	public struct SimpleRegistrationFieldValues
+	public class SimpleRegistrationFieldValues : IExtensionResponse
 	{
-		/// <summary>
-		/// An empty struct.  Useful for comparisons.
-		/// </summary>
-		public static readonly SimpleRegistrationFieldValues Empty = new SimpleRegistrationFieldValues();
-
 		/// <summary>
 		/// The nickname the user goes by.
 		/// </summary>
@@ -109,11 +104,23 @@ namespace DotNetOpenId.Extensions
 		public string TimeZone { get; set; }
 
 		/// <summary>
+		/// Reads a Provider's response for Simple Registration values and returns
+		/// an instance of this struct with the values.
+		/// </summary>
+		public static SimpleRegistrationFieldValues ReadFromResponse(IAuthenticationResponse response) {
+			var obj = new SimpleRegistrationFieldValues();
+			return ((IExtensionResponse)obj).ReadFromResponse(response) ? obj : null;
+		}
+
+		#region IExtensionResponse Members
+		string IExtensionResponse.TypeUri { get { return Constants.sreg.sreg_ns; } }
+
+		/// <summary>
 		/// Adds the values of this struct to an authentication response being prepared
 		/// by an OpenID Provider.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
-		public void AddToResponse(Provider.IAuthenticationRequest authenticationRequest) {
+		public void AddToResponse(Provider.IRequest authenticationRequest) {
 			if (authenticationRequest == null) throw new ArgumentNullException("authenticationRequest");
 			Dictionary<string, string> fields = new Dictionary<string, string>();
 			if (BirthDate != null) {
@@ -149,47 +156,43 @@ namespace DotNetOpenId.Extensions
 			}
 			authenticationRequest.AddExtensionArguments(Constants.sreg.sreg_ns, fields);
 		}
-		/// <summary>
-		/// Reads a Provider's response for Simple Registration values and returns
-		/// an instance of this struct with the values.
-		/// </summary>
-		public static SimpleRegistrationFieldValues ReadFromResponse(IAuthenticationResponse response) {
+
+		bool IExtensionResponse.ReadFromResponse(IAuthenticationResponse response) {
 			var sreg = response.GetExtensionArguments(Constants.sreg.sreg_ns);
-			if (sreg == null) return new SimpleRegistrationFieldValues();
+			if (sreg == null) return false;
 			string nickname, email, fullName, dob, genderString, postalCode, country, language, timeZone;
-			DateTime? birthDate = null;
-			Gender? gender = null;
+			BirthDate = null;
+			Gender = null;
 			sreg.TryGetValue(Constants.sreg.nickname, out nickname);
+			Nickname = nickname;
 			sreg.TryGetValue(Constants.sreg.email, out email);
+			Email = email;
 			sreg.TryGetValue(Constants.sreg.fullname, out fullName);
+			FullName = fullName;
 			if (sreg.TryGetValue(Constants.sreg.dob, out dob)) {
 				DateTime bd;
 				if (DateTime.TryParse(dob, out bd))
-					birthDate = bd;
+					BirthDate = bd;
 			}
 			if (sreg.TryGetValue(Constants.sreg.gender, out genderString)) {
 				switch (genderString) {
-					case Constants.sreg.Genders.Male: gender = DotNetOpenId.Extensions.Gender.Male; break;
-					case Constants.sreg.Genders.Female: gender = DotNetOpenId.Extensions.Gender.Female; break;
+					case Constants.sreg.Genders.Male: Gender = DotNetOpenId.Extensions.Gender.Male; break;
+					case Constants.sreg.Genders.Female: Gender = DotNetOpenId.Extensions.Gender.Female; break;
 				}
 			}
 			sreg.TryGetValue(Constants.sreg.postcode, out postalCode);
+			PostalCode = postalCode;
 			sreg.TryGetValue(Constants.sreg.country, out country);
+			Country = country;
 			sreg.TryGetValue(Constants.sreg.language, out language);
+			Language = language;
 			sreg.TryGetValue(Constants.sreg.timezone, out timeZone);
+			TimeZone = timeZone;
 
-			return new SimpleRegistrationFieldValues() {
-				Nickname = nickname,
-				Email = email,
-				FullName = fullName,
-				BirthDate = birthDate,
-				Gender = gender,
-				PostalCode = postalCode,
-				Country = country,
-				Language = language,
-				TimeZone = timeZone,
-			};
+			return true;
 		}
+
+		#endregion
 
 		/// <summary>
 		/// Tests equality of two <see cref="SimpleRegistrationFieldValues"/> objects.
@@ -228,5 +231,6 @@ namespace DotNetOpenId.Extensions
 			if (one == null ^ other == null) return false;
 			return one.Equals(other);
 		}
+
 	}
 }

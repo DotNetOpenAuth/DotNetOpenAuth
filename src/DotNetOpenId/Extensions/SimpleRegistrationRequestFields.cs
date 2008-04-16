@@ -12,12 +12,7 @@ namespace DotNetOpenId.Extensions {
 	/// </summary>
 #pragma warning disable 0659, 0661
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2218:OverrideGetHashCodeOnOverridingEquals")]
-	public struct SimpleRegistrationRequestFields {
-		/// <summary>
-		/// Gets a <see cref="SimpleRegistrationRequestFields"/> struct where no information is requested.
-		/// </summary>
-		public static readonly SimpleRegistrationRequestFields None = new SimpleRegistrationRequestFields();
-
+	public class SimpleRegistrationRequestFields : IExtensionRequest {
 		/// <summary>
 		/// The level of interest a relying party has in the nickname of the user.
 		/// </summary>
@@ -135,28 +130,37 @@ namespace DotNetOpenId.Extensions {
 		/// and returns information on what profile fields the consumer is requesting/requiring.
 		/// </summary>
 		public static SimpleRegistrationRequestFields ReadFromRequest(IRequest request) {
-			SimpleRegistrationRequestFields fields = new SimpleRegistrationRequestFields();
+			var fields = new SimpleRegistrationRequestFields();
+			((IExtensionRequest)fields).ReadFromRequest(request);
+			return fields;
+		}
+
+		#region IExtensionRequest Members
+		string IExtensionRequest.TypeUri { get { return Constants.sreg.sreg_ns; } }
+
+		bool IExtensionRequest.ReadFromRequest(IRequest request) {
 			var args = request.GetExtensionArguments(Constants.sreg.sreg_ns);
-			if (args == null) return fields;
+			if (args == null) return false;
 
 			string policyUrl;
 			if (args.TryGetValue(Constants.sreg.policy_url, out policyUrl)
 				&& !string.IsNullOrEmpty(policyUrl)) {
-				fields.PolicyUrl = new Uri(policyUrl);
+				PolicyUrl = new Uri(policyUrl);
 			}
 
 			string optionalFields;
 			if (args.TryGetValue(Constants.sreg.optional, out optionalFields)) {
-				fields.SetProfileRequestFromList(optionalFields.Split(','), SimpleRegistrationRequest.Request);
+				SetProfileRequestFromList(optionalFields.Split(','), SimpleRegistrationRequest.Request);
 			}
 
 			string requiredFields;
 			if (args.TryGetValue(Constants.sreg.required, out requiredFields)) {
-				fields.SetProfileRequestFromList(requiredFields.Split(','), SimpleRegistrationRequest.Require);
+				SetProfileRequestFromList(requiredFields.Split(','), SimpleRegistrationRequest.Require);
 			}
 
-			return fields;
+			return true;
 		}
+
 		/// <summary>
 		/// Adds a description of the information the relying party site would like
 		/// the Provider to include with a positive authentication assertion as an
@@ -172,6 +176,7 @@ namespace DotNetOpenId.Extensions {
 
 			request.AddExtensionArguments(Constants.sreg.sreg_ns, fields);
 		}
+		#endregion
 
 		/// <summary>
 		/// Renders the requested information as a string.

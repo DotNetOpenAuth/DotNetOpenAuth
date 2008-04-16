@@ -159,6 +159,9 @@
   <data name="InvalidNonce" xml:space="preserve">
     <value>The nonce was not in the expected format.</value>
   </data>
+  <data name="InvalidOpenIdExtensionParameterValue" xml:space="preserve">
+    <value>OpenID extension {0} parameter {1} had unexpected value '{2}'.</value>
+  </data>
   <data name="InvalidOpenIdQueryParameterValue" xml:space="preserve">
     <value>OpenID parameter '{0}' had unexpected value '{1}'.</value>
   </data>

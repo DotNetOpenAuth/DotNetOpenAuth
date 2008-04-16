@@ -57,6 +57,7 @@
     <Compile Include="Extensions\AttributeExchangeFetchRequest.cs" />
     <Compile Include="Extensions\AttributeExchangeStoreRequest.cs" />
     <Compile Include="Extensions\AttributeExchangeStoreResponse.cs" />
+    <Compile Include="Extensions\IExtension.cs" />
     <Compile Include="HmacSha256Association.cs" />
     <Compile Include="Identifier.cs" />
     <Compile Include="Protocol.cs" />
