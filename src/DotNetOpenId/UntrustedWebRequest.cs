@@ -21,7 +21,7 @@ using System.Diagnostics;
 		public static int MaximumBytesToRead {
 			get { return maximumBytesToRead; }
 			set {
-				if (value < 2048) throw new ArgumentOutOfRangeException("MaximumBytesToRead");
+				if (value < 2048) throw new ArgumentOutOfRangeException("value");
 				maximumBytesToRead = value;
 			}
 		}
@@ -34,7 +34,7 @@ using System.Diagnostics;
 		public static int MaximumRedirections {
 			get { return maximumRedirections; }
 			set {
-				if (value < 0) throw new ArgumentOutOfRangeException("MaximumRedirections");
+				if (value < 0) throw new ArgumentOutOfRangeException("value");
 				maximumRedirections = value;
 			}
 		}
