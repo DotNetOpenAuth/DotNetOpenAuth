@@ -24,7 +24,7 @@ public partial class decide : Page {
 		if (User.Identity.Name == Util.ExtractUserName(ProviderEndpoint.PendingAuthenticationRequest.LocalIdentifier)) {
 			// if simple registration fields were used, then prompt the user for them
 			var requestedFields = SimpleRegistrationRequestFields.ReadFromRequest(ProviderEndpoint.PendingAuthenticationRequest);
-			if (!requestedFields.Equals(SimpleRegistrationRequestFields.None)) {
+			if (requestedFields != null) {
 				this.profileFields.Visible = true;
 				this.profileFields.SetRequiredFieldsFromRequest(requestedFields);
 				if (!IsPostBack) {

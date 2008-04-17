@@ -103,11 +103,6 @@ namespace DotNetOpenId.Test {
 			Assert.AreNotEqual(fields1, fields2);
 		}
 
-		[Test]
-		public void Empty() {
-			Assert.AreEqual(new SimpleRegistrationFieldValues(), SimpleRegistrationFieldValues.Empty);
-		}
-
 		//[Test]
 		public void AddToResponse() {
 			// TODO
