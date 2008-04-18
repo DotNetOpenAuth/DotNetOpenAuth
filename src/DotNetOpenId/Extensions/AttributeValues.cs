@@ -8,6 +8,7 @@ namespace DotNetOpenId.Extensions {
 	/// in response to a prior request by an OpenID Relying Party as part of
 	/// a fetch request, or by a relying party as part of a store request.
 	/// </summary>
+	[Serializable]
 	public class AttributeValues {
 		internal AttributeValues() { }
 

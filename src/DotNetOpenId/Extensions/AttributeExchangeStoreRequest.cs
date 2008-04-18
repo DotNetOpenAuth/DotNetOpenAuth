@@ -12,6 +12,10 @@ namespace DotNetOpenId.Extensions {
 		readonly string Mode = "store_request";
 
 		List<AttributeValues> attributesProvided = new List<AttributeValues>();
+		public IEnumerable<AttributeValues> Attributes {
+			get { return attributesProvided; }
+		}
+		
 		public void AddAttribute(AttributeValues attribute) {
 			if (attribute == null) throw new ArgumentNullException("attribute");
 			if (containsAttribute(attribute.TypeUri)) throw new ArgumentException(

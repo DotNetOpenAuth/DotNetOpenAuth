@@ -12,6 +12,10 @@ namespace DotNetOpenId.Extensions {
 		readonly string Mode = "fetch_request";
 
 		List<AttributeRequest> attributesRequested = new List<AttributeRequest>();
+		public IEnumerable<AttributeRequest> Attributes {
+			get { return attributesRequested; }
+		}
+		
 		public void AddAttribute(AttributeRequest attribute) {
 			if (attribute == null) throw new ArgumentNullException("attribute");
 			if (containsAttribute(attribute.TypeUri)) throw new ArgumentException(

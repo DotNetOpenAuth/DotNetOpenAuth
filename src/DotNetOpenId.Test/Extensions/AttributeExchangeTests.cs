@@ -11,6 +11,8 @@ namespace DotNetOpenId.Test.Extensions {
 	public class AttributeExchangeTests : ExtensionTestBase {
 		const string nicknameTypeUri = "http://axschema.org/namePerson/friendly";
 		const string emailTypeUri = "http://axschema.org/contact/email";
+		const string incrementingAttribute = "http://incatt";
+		int incrementingAttributeValue = 1;
 
 		[Test]
 		public void None() {
@@ -60,9 +62,31 @@ namespace DotNetOpenId.Test.Extensions {
 		[Test]
 		public void Store() {
 			var request = new AttributeExchangeStoreRequest();
+			var newAttribute = new AttributeValues {
+				TypeUri = incrementingAttribute,
+				Values = new[] { 
+					"val" + (incrementingAttributeValue++).ToString(), 
+					"val" + (incrementingAttributeValue++).ToString()
+				}
+			};
+			request.AddAttribute(newAttribute);
+
 			var response = ParameterizedTest<AttributeExchangeStoreResponse>(
 				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ExtensionFullCooperation, Version), request);
 			Assert.IsNotNull(response);
+			Assert.IsTrue(response.Succeeded);
+			Assert.IsNull(response.FailureReason);
+
+			var fetchRequest = new AttributeExchangeFetchRequest();
+			fetchRequest.AddAttribute(new AttributeRequest { TypeUri = incrementingAttribute });
+			var fetchResponse = ParameterizedTest<AttributeExchangeFetchResponse>(
+				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ExtensionFullCooperation, Version), fetchRequest);
+			Assert.IsNotNull(fetchResponse);
+			var att = fetchResponse.GetAttribute(incrementingAttribute);
+			Assert.IsNotNull(att);
+			Assert.AreEqual(newAttribute.Values.Length, att.Values.Length);
+			for (int i = 0; i < newAttribute.Values.Length; i++)
+				Assert.AreEqual(newAttribute.Values[i], att.Values[i]);
 		}
 	}
 }

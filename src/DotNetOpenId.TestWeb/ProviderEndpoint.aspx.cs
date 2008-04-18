@@ -10,10 +10,22 @@ using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Collections.Specialized;
 using DotNetOpenId.Extensions;
+using System.Collections.Generic;
 
 public partial class ProviderEndpoint : System.Web.UI.Page {
 	const string nicknameTypeUri = "http://axschema.org/namePerson/friendly";
 	const string emailTypeUri = "http://axschema.org/contact/email";
+
+	IDictionary<string, AttributeValues> storedAttributes {
+		get {
+			var atts = (Dictionary<string, AttributeValues>)Application["storedAttributes"];
+			if (atts == null) {
+				atts = new Dictionary<string, AttributeValues>();
+				Application["storedAttributes"] = atts;
+			}
+			return atts;
+		}
+	}
 
 	void respondToExtensions(DotNetOpenId.Provider.IRequest request, TestSupport.Scenarios scenario) {
 		var sregRequest = SimpleRegistrationRequestFields.ReadFromRequest(request);
@@ -41,6 +53,10 @@ public partial class ProviderEndpoint : System.Web.UI.Page {
 						Array.Copy(emails, subset, subset.Length);
 						aeFetchResponse.AddAttribute(att.Respond(subset));
 					}
+					foreach (var att2 in aeFetchRequest.Attributes) {
+						if (storedAttributes.ContainsKey(att2.TypeUri))
+							aeFetchResponse.AddAttribute(storedAttributes[att2.TypeUri]);
+					}
 				}
 				break;
 			case TestSupport.Scenarios.ExtensionPartialCooperation:
@@ -61,9 +77,19 @@ public partial class ProviderEndpoint : System.Web.UI.Page {
 						Array.Copy(emails, subset, subset.Length);
 						aeFetchResponse.AddAttribute(att.Respond(subset));
 					}
+					foreach (var att2 in aeFetchRequest.Attributes) {
+						if (att2.IsRequired && storedAttributes.ContainsKey(att2.TypeUri))
+							aeFetchResponse.AddAttribute(storedAttributes[att2.TypeUri]);
+					}
 				}
 				break;
 		}
+		if (aeStoreRequest != null) {
+			foreach (var att in aeStoreRequest.Attributes) {
+				storedAttributes[att.TypeUri] = att;
+			}
+			aeStoreResponse.Succeeded = true;
+		} 
 		if (sregRequest != null) sregResponse.AddToResponse(request);
 		if (aeFetchRequest != null) aeFetchResponse.AddToResponse(request);
 		if (aeStoreRequest != null) aeStoreResponse.AddToResponse(request);
