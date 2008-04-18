@@ -12,9 +12,9 @@ using System.Collections.Specialized;
 using DotNetOpenId.Extensions;
 
 public partial class ProviderEndpoint : System.Web.UI.Page {
-	protected void Page_Load(object sender, EventArgs e) {
+	const string nicknameTypeUri = "http://axschema.org/namePerson/friendly";
+	const string emailTypeUri = "http://axschema.org/contact/email";
 
-	}
 	void respondToExtensions(DotNetOpenId.Provider.IRequest request, TestSupport.Scenarios scenario) {
 		var sregRequest = SimpleRegistrationRequestFields.ReadFromRequest(request);
 		var sregResponse = new SimpleRegistrationFieldValues();
@@ -24,19 +24,47 @@ public partial class ProviderEndpoint : System.Web.UI.Page {
 		var aeStoreResponse = new AttributeExchangeStoreResponse();
 		switch (scenario) {
 			case TestSupport.Scenarios.ExtensionFullCooperation:
-				if (sregRequest.FullName != SimpleRegistrationRequest.NoRequest)
-					sregResponse.FullName = "Andrew Arnott";
-				if (sregRequest.Email != SimpleRegistrationRequest.NoRequest)
-					sregResponse.Email = "andrewarnott@gmail.com";
+				if (sregRequest != null) {
+					if (sregRequest.FullName != SimpleRegistrationRequest.NoRequest)
+						sregResponse.FullName = "Andrew Arnott";
+					if (sregRequest.Email != SimpleRegistrationRequest.NoRequest)
+						sregResponse.Email = "andrewarnott@gmail.com";
+				}
+				if (aeFetchRequest != null) {
+					var att = aeFetchRequest.GetAttribute(nicknameTypeUri);
+					if (att != null)
+						aeFetchResponse.AddAttribute(att.Respond("Andrew"));
+					att = aeFetchRequest.GetAttribute(emailTypeUri);
+					if (att != null) {
+						string[] emails = new[] { "a@a.com", "b@b.com" };
+						string[] subset = new string[Math.Min(emails.Length, att.Count)];
+						Array.Copy(emails, subset, subset.Length);
+						aeFetchResponse.AddAttribute(att.Respond(subset));
+					}
+				}
 				break;
 			case TestSupport.Scenarios.ExtensionPartialCooperation:
-				if (sregRequest.FullName == SimpleRegistrationRequest.Require)
-					sregResponse.FullName = "Andrew Arnott";
-				if (sregRequest.Email == SimpleRegistrationRequest.Require)
-					sregResponse.Email = "andrewarnott@gmail.com";
+				if (sregRequest != null) {
+					if (sregRequest.FullName == SimpleRegistrationRequest.Require)
+						sregResponse.FullName = "Andrew Arnott";
+					if (sregRequest.Email == SimpleRegistrationRequest.Require)
+						sregResponse.Email = "andrewarnott@gmail.com";
+				}
+				if (aeFetchRequest != null) {
+					var att = aeFetchRequest.GetAttribute(nicknameTypeUri);
+					if (att != null && att.IsRequired)
+						aeFetchResponse.AddAttribute(att.Respond("Andrew"));
+					att = aeFetchRequest.GetAttribute(emailTypeUri);
+					if (att != null && att.IsRequired) {
+						string[] emails = new[] { "a@a.com", "b@b.com" };
+						string[] subset = new string[Math.Min(emails.Length, att.Count)];
+						Array.Copy(emails, subset, subset.Length);
+						aeFetchResponse.AddAttribute(att.Respond(subset));
+					}
+				}
 				break;
 		}
-		sregResponse.AddToResponse(request);
+		if (sregRequest != null) sregResponse.AddToResponse(request);
 		if (aeFetchRequest != null) aeFetchResponse.AddToResponse(request);
 		if (aeStoreRequest != null) aeStoreResponse.AddToResponse(request);
 	}

@@ -44,6 +44,8 @@
     <Compile Include="AssociationsTest.cs" />
     <Compile Include="AssociationTestSuite.cs" />
     <Compile Include="ExtensionsArgumentsManagerTests.cs" />
+    <Compile Include="Extensions\AttributeExchangeFetchRequestTests.cs" />
+    <Compile Include="Extensions\AttributeExchangeFetchResponseTests.cs" />
     <Compile Include="Extensions\AttributeExchangeTests.cs" />
     <Compile Include="Extensions\ExtensionTestBase.cs" />
     <Compile Include="Extensions\SimpleRegistrationTests.cs" />

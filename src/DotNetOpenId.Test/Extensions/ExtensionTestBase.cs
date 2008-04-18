@@ -11,12 +11,12 @@ using System.Diagnostics;
 
 namespace DotNetOpenId.Test.Extensions {
 	public class ExtensionTestBase {
-		protected IRelyingPartyApplicationStore Store;
+		protected IRelyingPartyApplicationStore AppStore;
 		protected const ProtocolVersion Version = ProtocolVersion.V20;
 
 		[SetUp]
 		public virtual void Setup() {
-			Store = new ApplicationMemoryStore();
+			AppStore = new ApplicationMemoryStore();
 		}
 
 		protected T ParameterizedTest<T>(Identifier identityUrl, IExtensionRequest extensionArgs)
@@ -24,7 +24,7 @@ namespace DotNetOpenId.Test.Extensions {
 			Debug.Assert(identityUrl != null);
 			var returnTo = TestSupport.GetFullUrl(TestSupport.ConsumerPage);
 			var realm = new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri);
-			var consumer = new OpenIdRelyingParty(Store, null);
+			var consumer = new OpenIdRelyingParty(AppStore, null);
 			var request = consumer.CreateRequest(identityUrl, realm, returnTo);
 			if (extensionArgs != null)
 				extensionArgs.AddToRequest(request);
@@ -46,7 +46,7 @@ namespace DotNetOpenId.Test.Extensions {
 				}
 				throw;
 			}
-			consumer = new OpenIdRelyingParty(Store, redirectUrl);
+			consumer = new OpenIdRelyingParty(AppStore, redirectUrl);
 			Assert.AreEqual(AuthenticationStatus.Authenticated, consumer.Response.Status);
 			Assert.AreEqual(identityUrl, consumer.Response.ClaimedIdentifier);
 			T r = new T();
