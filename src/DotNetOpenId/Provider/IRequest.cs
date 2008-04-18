@@ -37,7 +37,7 @@ namespace DotNetOpenId.Provider {
 		/// <summary>
 		/// Adds an extension to the response to send to the relying party.
 		/// </summary>
-		void AddExtension(IExtensionResponse extension);
+		void AddResponseExtension(IExtensionResponse extension);
 		/// <summary>
 		/// Gets the extension arguments sent from the relying party.
 		/// </summary>

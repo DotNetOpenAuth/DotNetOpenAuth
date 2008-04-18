@@ -23,7 +23,7 @@ public partial class decide : Page {
 		// check that the logged in user is the same as the user requesting authentication to the consumer. If not, then log them out.
 		if (User.Identity.Name == Util.ExtractUserName(ProviderEndpoint.PendingAuthenticationRequest.LocalIdentifier)) {
 			// if simple registration fields were used, then prompt the user for them
-			var requestedFields = SimpleRegistrationRequestFields.ReadFromRequest(ProviderEndpoint.PendingAuthenticationRequest);
+			var requestedFields = ProviderEndpoint.PendingAuthenticationRequest.GetExtension<SimpleRegistrationRequestFields>();
 			if (requestedFields != null) {
 				this.profileFields.Visible = true;
 				this.profileFields.SetRequiredFieldsFromRequest(requestedFields);
@@ -41,7 +41,7 @@ public partial class decide : Page {
 
 	protected void Yes_Click(Object sender, EventArgs e) {
 		ProviderEndpoint.PendingAuthenticationRequest.IsAuthenticated = true;
-		profileFields.OpenIdProfileFields.AddToResponse(ProviderEndpoint.PendingAuthenticationRequest);
+		ProviderEndpoint.PendingAuthenticationRequest.AddResponseExtension(profileFields.OpenIdProfileFields);
 		Debug.Assert(ProviderEndpoint.PendingAuthenticationRequest.IsResponseReady);
 		ProviderEndpoint.PendingAuthenticationRequest.Response.Send();
 		ProviderEndpoint.PendingAuthenticationRequest = null;

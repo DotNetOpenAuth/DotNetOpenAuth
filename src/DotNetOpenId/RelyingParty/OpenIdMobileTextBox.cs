@@ -372,7 +372,7 @@ namespace DotNetOpenId.RelyingParty
 
 		void addProfileArgs(IAuthenticationRequest request)
 		{
-			new SimpleRegistrationRequestFields() {
+			request.AddExtension(new SimpleRegistrationRequestFields() {
 				Nickname = RequestNickname,
 				Email = RequestEmail,
 				FullName = RequestFullName,
@@ -382,9 +382,9 @@ namespace DotNetOpenId.RelyingParty
 				Country = RequestCountry,
 				Language = RequestLanguage,
 				TimeZone = RequestTimeZone,
-				PolicyUrl = string.IsNullOrEmpty(PolicyUrl) ? 
+				PolicyUrl = string.IsNullOrEmpty(PolicyUrl) ?
 					null : new Uri(Page.Request.Url, Page.ResolveUrl(PolicyUrl)),
-			}.AddToRequest(request);
+			});
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenId.Realm")]

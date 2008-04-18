@@ -103,15 +103,6 @@ namespace DotNetOpenId.Extensions
 		/// </summary>
 		public string TimeZone { get; set; }
 
-		/// <summary>
-		/// Reads a Provider's response for Simple Registration values and returns
-		/// an instance of this struct with the values.
-		/// </summary>
-		public static SimpleRegistrationFieldValues ReadFromResponse(IAuthenticationResponse response) {
-			var obj = new SimpleRegistrationFieldValues();
-			return ((IExtensionResponse)obj).ReadFromResponse(response) ? obj : null;
-		}
-
 		#region IExtensionResponse Members
 		string IExtensionResponse.TypeUri { get { return Constants.sreg.sreg_ns; } }
 
@@ -120,7 +111,7 @@ namespace DotNetOpenId.Extensions
 		/// by an OpenID Provider.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
-		public void AddToResponse(Provider.IRequest authenticationRequest) {
+		void IExtensionResponse.AddToResponse(Provider.IRequest authenticationRequest) {
 			if (authenticationRequest == null) throw new ArgumentNullException("authenticationRequest");
 			Dictionary<string, string> fields = new Dictionary<string, string>();
 			if (BirthDate != null) {

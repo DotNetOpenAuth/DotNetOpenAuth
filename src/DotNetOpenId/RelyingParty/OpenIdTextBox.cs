@@ -643,7 +643,7 @@ namespace DotNetOpenId.RelyingParty
 
 		void addProfileArgs(IAuthenticationRequest request)
 		{
-			new SimpleRegistrationRequestFields() {
+			request.AddExtension(new SimpleRegistrationRequestFields() {
 				Nickname = RequestNickname,
 				Email = RequestEmail,
 				FullName = RequestFullName,
@@ -653,9 +653,9 @@ namespace DotNetOpenId.RelyingParty
 				Country = RequestCountry,
 				Language = RequestLanguage,
 				TimeZone = RequestTimeZone,
-				PolicyUrl = string.IsNullOrEmpty(PolicyUrl) ? 
+				PolicyUrl = string.IsNullOrEmpty(PolicyUrl) ?
 					null : new Uri(Page.Request.Url, Page.ResolveUrl(PolicyUrl)),
-			}.AddToRequest(request);
+			});
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenId.Realm")]
@@ -787,7 +787,7 @@ namespace DotNetOpenId.RelyingParty
 			if (response == null) throw new ArgumentNullException("response");
 			Response = response;
 			ClaimedIdentifier = response.ClaimedIdentifier;
-			ProfileFields = SimpleRegistrationFieldValues.ReadFromResponse(response);
+			ProfileFields = response.GetExtension<SimpleRegistrationFieldValues>();
 		}
 		/// <summary>
 		/// Cancels the OpenID authentication and/or login process.

@@ -43,19 +43,10 @@ namespace DotNetOpenId.Extensions {
 		/// </summary>
 		public Uri UpdateUrl { get; set; }
 
-		/// <summary>
-		/// Reads a Provider's response for Attribute Exchange values and returns
-		/// an instance of this struct with the values.
-		/// </summary>
-		public static AttributeExchangeFetchResponse ReadFromResponse(IAuthenticationResponse response) {
-			var obj = new AttributeExchangeFetchResponse();
-			return ((IExtensionResponse)obj).ReadFromResponse(response) ? obj : null;
-		}
-
 		#region IExtensionResponse Members
 		string IExtensionResponse.TypeUri { get { return Constants.ae.ns; } }
 
-		public void AddToResponse(Provider.IRequest authenticationRequest) {
+		void IExtensionResponse.AddToResponse(Provider.IRequest authenticationRequest) {
 			var fields = new Dictionary<string, string> {
 				{ "mode", Mode },
 			};

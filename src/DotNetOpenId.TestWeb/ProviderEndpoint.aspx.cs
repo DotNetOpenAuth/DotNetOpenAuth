@@ -28,11 +28,11 @@ public partial class ProviderEndpoint : System.Web.UI.Page {
 	}
 
 	void respondToExtensions(DotNetOpenId.Provider.IRequest request, TestSupport.Scenarios scenario) {
-		var sregRequest = SimpleRegistrationRequestFields.ReadFromRequest(request);
+		var sregRequest = request.GetExtension<SimpleRegistrationRequestFields>();
 		var sregResponse = new SimpleRegistrationFieldValues();
-		var aeFetchRequest = AttributeExchangeFetchRequest.ReadFromRequest(request);
+		var aeFetchRequest = request.GetExtension<AttributeExchangeFetchRequest>();
 		var aeFetchResponse = new AttributeExchangeFetchResponse();
-		var aeStoreRequest = AttributeExchangeStoreRequest.ReadFromRequest(request);
+		var aeStoreRequest = request.GetExtension<AttributeExchangeStoreRequest>();
 		var aeStoreResponse = new AttributeExchangeStoreResponse();
 		switch (scenario) {
 			case TestSupport.Scenarios.ExtensionFullCooperation:
@@ -89,10 +89,10 @@ public partial class ProviderEndpoint : System.Web.UI.Page {
 				storedAttributes[att.TypeUri] = att;
 			}
 			aeStoreResponse.Succeeded = true;
-		} 
-		if (sregRequest != null) sregResponse.AddToResponse(request);
-		if (aeFetchRequest != null) aeFetchResponse.AddToResponse(request);
-		if (aeStoreRequest != null) aeStoreResponse.AddToResponse(request);
+		}
+		if (sregRequest != null) request.AddResponseExtension(sregResponse);
+		if (aeFetchRequest != null) request.AddResponseExtension(aeFetchResponse);
+		if (aeStoreRequest != null) request.AddResponseExtension(aeStoreResponse);
 	}
 
 	protected void ProviderEndpoint1_AuthenticationChallenge(object sender, DotNetOpenId.Provider.AuthenticationChallengeEventArgs e) {

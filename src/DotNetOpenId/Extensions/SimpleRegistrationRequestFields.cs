@@ -125,14 +125,6 @@ namespace DotNetOpenId.Extensions {
 
 			return fields.ToArray();
 		}
-		/// <summary>
-		/// Reads the sreg extension information on an authentication request to the provider
-		/// and returns information on what profile fields the consumer is requesting/requiring.
-		/// </summary>
-		public static SimpleRegistrationRequestFields ReadFromRequest(IRequest request) {
-			var fields = new SimpleRegistrationRequestFields();
-			return ((IExtensionRequest)fields).ReadFromRequest(request) ? fields : null;
-		}
 
 		#region IExtensionRequest Members
 		string IExtensionRequest.TypeUri { get { return Constants.sreg.sreg_ns; } }
@@ -165,7 +157,7 @@ namespace DotNetOpenId.Extensions {
 		/// the Provider to include with a positive authentication assertion as an
 		/// extension to an authentication request.
 		/// </summary>
-		public void AddToRequest(RelyingParty.IAuthenticationRequest request) {
+		void IExtensionRequest.AddToRequest(RelyingParty.IAuthenticationRequest request) {
 			var fields = new Dictionary<string, string>();
 			if (PolicyUrl != null)
 				fields.Add(Constants.sreg.policy_url, PolicyUrl.AbsoluteUri);

@@ -141,7 +141,7 @@ namespace DotNetOpenId.Provider
 			return IncomingExtensions.GetExtensionArguments(extensionTypeUri);
 		}
 
-		public void AddExtension(DotNetOpenId.Extensions.IExtensionResponse extension) {
+		public void AddResponseExtension(DotNetOpenId.Extensions.IExtensionResponse extension) {
 			extension.AddToResponse(this);
 		}
 

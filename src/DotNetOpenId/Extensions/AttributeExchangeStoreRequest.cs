@@ -33,20 +33,10 @@ namespace DotNetOpenId.Extensions {
 			return GetAttribute(typeUri) != null;
 		}
 
-		/// <summary>
-		/// Reads an incoming authentication request (from a relying party)
-		/// for Attribute Exchange properties and returns an instance of this 
-		/// struct with them.
-		/// </summary>
-		public static AttributeExchangeStoreRequest ReadFromRequest(Provider.IRequest request) {
-			var obj = new AttributeExchangeStoreRequest();
-			return ((IExtensionRequest)obj).ReadFromRequest(request) ? obj : null;
-		}
-
 		#region IExtensionRequest Members
 		string IExtensionRequest.TypeUri { get { return Constants.ae.ns; } }
 
-		public void AddToRequest(RelyingParty.IAuthenticationRequest authenticationRequest) {
+		void IExtensionRequest.AddToRequest(RelyingParty.IAuthenticationRequest authenticationRequest) {
 			var fields = new Dictionary<string, string> {
 				{ "mode", Mode },
 			};
