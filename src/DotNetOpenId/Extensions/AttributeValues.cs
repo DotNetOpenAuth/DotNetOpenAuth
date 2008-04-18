@@ -5,10 +5,11 @@ using System.Text;
 namespace DotNetOpenId.Extensions {
 	/// <summary>
 	/// An individual attribute's value(s) as supplied by an OpenID Provider
-	/// in response to a prior request by an OpenID Relying Party.
+	/// in response to a prior request by an OpenID Relying Party as part of
+	/// a fetch request, or by a relying party as part of a store request.
 	/// </summary>
-	public class AttributeResponse {
-		internal AttributeResponse() { }
+	public class AttributeValues {
+		internal AttributeValues() { }
 
 		/// <summary>
 		/// The URI uniquely identifying the attribute whose value is being supplied.

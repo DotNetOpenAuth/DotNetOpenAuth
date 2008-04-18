@@ -11,6 +11,24 @@ namespace DotNetOpenId.Extensions {
 	public class AttributeExchangeStoreRequest : IExtensionRequest {
 		readonly string Mode = "store_request";
 
+		List<AttributeValues> attributesProvided = new List<AttributeValues>();
+		public void AddAttribute(AttributeValues attribute) {
+			if (attribute == null) throw new ArgumentNullException("attribute");
+			if (containsAttribute(attribute.TypeUri)) throw new ArgumentException(
+				  string.Format(CultureInfo.CurrentCulture, Strings.AttributeAlreadyAdded, attribute.TypeUri));
+			attributesProvided.Add(attribute);
+		}
+		public AttributeValues GetAttribute(string typeUri) {
+			foreach (var att in attributesProvided) {
+				if (att.TypeUri == typeUri)
+					return att;
+			}
+			return null;
+		}
+		bool containsAttribute(string typeUri) {
+			return GetAttribute(typeUri) != null;
+		}
+
 		/// <summary>
 		/// Reads an incoming authentication request (from a relying party)
 		/// for Attribute Exchange properties and returns an instance of this 
@@ -28,6 +46,9 @@ namespace DotNetOpenId.Extensions {
 			var fields = new Dictionary<string, string> {
 				{ "mode", Mode },
 			};
+
+			AttributeExchangeFetchResponse.SerializeAttributes(fields, attributesProvided);
+
 			authenticationRequest.AddExtensionArguments(Constants.ae.ns, fields);
 		}
 
@@ -37,6 +58,9 @@ namespace DotNetOpenId.Extensions {
 			string mode;
 			fields.TryGetValue("mode", out mode);
 			if (mode != Mode) return false;
+
+			foreach (var att in AttributeExchangeFetchResponse.DeserializeAttributes(fields))
+				AddAttribute(att);
 
 			return true;
 		}

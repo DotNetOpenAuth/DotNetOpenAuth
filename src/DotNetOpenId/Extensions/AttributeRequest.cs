@@ -32,11 +32,11 @@ namespace DotNetOpenId.Extensions {
 			}
 		}
 
-		public AttributeResponse Respond(params string[] values) {
+		public AttributeValues Respond(params string[] values) {
 			if (values == null) throw new ArgumentNullException("values");
 			if (values.Length > Count) throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
 			   Strings.AttributeTooManyValues, Count, TypeUri, values.Length));
-			return new AttributeResponse {
+			return new AttributeValues {
 				TypeUri = this.TypeUri,
 				Values = values,
 			};

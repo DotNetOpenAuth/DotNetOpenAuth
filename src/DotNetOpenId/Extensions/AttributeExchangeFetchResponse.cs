@@ -12,14 +12,14 @@ namespace DotNetOpenId.Extensions {
 	public class AttributeExchangeFetchResponse : IExtensionResponse {
 		readonly string Mode = "fetch_response";
 
-		List<AttributeResponse> attributesProvided = new List<AttributeResponse>();
-		public void AddAttribute(AttributeResponse attribute) {
+		List<AttributeValues> attributesProvided = new List<AttributeValues>();
+		public void AddAttribute(AttributeValues attribute) {
 			if (attribute == null) throw new ArgumentNullException("attribute");
 			if (containsAttribute(attribute.TypeUri)) throw new ArgumentException(
 				  string.Format(CultureInfo.CurrentCulture, Strings.AttributeAlreadyAdded, attribute.TypeUri));
 			attributesProvided.Add(attribute);
 		}
-		public AttributeResponse GetAttribute(string typeUri) {
+		public AttributeValues GetAttribute(string typeUri) {
 			foreach (var att in attributesProvided) {
 				if (att.TypeUri == typeUri)
 					return att;
@@ -60,12 +60,17 @@ namespace DotNetOpenId.Extensions {
 			if (UpdateUrlSupported)
 				fields.Add("update_url", UpdateUrl.AbsoluteUri);
 
+			SerializeAttributes(fields, attributesProvided);
+
+			authenticationRequest.AddExtensionArguments(Constants.ae.ns, fields);
+		}
+
+		internal static void SerializeAttributes(Dictionary<string, string> fields, IEnumerable<AttributeValues> attributes) {
 			AliasManager aliasManager = new AliasManager();
-			foreach (var att in attributesProvided) {
+			foreach (var att in attributes) {
 				string alias = aliasManager.GetAlias(att.TypeUri);
-				if (att.Values.Length == 0) continue;
 				fields.Add("type." + alias, att.TypeUri);
-				if (att.Values.Length > 1) {
+				if (att.Values.Length != 1) {
 					fields.Add("count." + alias, att.Values.Length.ToString());
 					for (int i = 0; i < att.Values.Length; i++) {
 						fields.Add(string.Format(CultureInfo.InvariantCulture, "value.{0}.{1}", alias, i + 1), att.Values[i]);
@@ -74,8 +79,6 @@ namespace DotNetOpenId.Extensions {
 					fields.Add("value." + alias, att.Values[0]);
 				}
 			}
-
-			authenticationRequest.AddExtensionArguments(Constants.ae.ns, fields);
 		}
 
 		bool IExtensionResponse.ReadFromResponse(IAuthenticationResponse response) {
@@ -91,9 +94,16 @@ namespace DotNetOpenId.Extensions {
 			if (Uri.TryCreate(updateUrl, UriKind.Absolute, out updateUri))
 				UpdateUrl = updateUri;
 
+			foreach (var att in DeserializeAttributes(fields))
+				AddAttribute(att);
+
+			return true;
+		}
+
+		internal static IEnumerable<AttributeValues> DeserializeAttributes(IDictionary<string, string> fields) {
 			AliasManager aliasManager = parseAliases(fields);
 			foreach (string alias in aliasManager.Aliases) {
-				AttributeResponse att = new AttributeResponse() {
+				AttributeValues att = new AttributeValues() {
 					TypeUri = aliasManager.ResolveAlias(alias),
 				};
 				int count = 1;
@@ -129,13 +139,11 @@ namespace DotNetOpenId.Extensions {
 						continue;
 					}
 				}
-				AddAttribute(att);
+				yield return att;
 			}
-
-			return true;
 		}
 
-		AliasManager parseAliases(IDictionary<string, string> fields) {
+		static AliasManager parseAliases(IDictionary<string, string> fields) {
 			Debug.Assert(fields != null);
 			AliasManager aliasManager = new AliasManager();
 			foreach (var pair in fields) {

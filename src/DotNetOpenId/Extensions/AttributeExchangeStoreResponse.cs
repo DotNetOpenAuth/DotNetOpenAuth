@@ -3,14 +3,25 @@ using System.Collections.Generic;
 using System.Text;
 using DotNetOpenId.RelyingParty;
 using System.Globalization;
+using System.Diagnostics;
 
 namespace DotNetOpenId.Extensions {
 	/// <summary>
 	/// The Attribute Exchange Store message, response leg.
 	/// </summary>
 	public class AttributeExchangeStoreResponse : IExtensionResponse {
-		readonly string Mode = "store_response";
-		
+		const string SuccessMode = "store_response_success";
+		const string FailureMode = "store_response_failure";
+
+		/// <summary>
+		/// Whether the storage request succeeded.
+		/// </summary>
+		public bool Succeeded { get; set; }
+		/// <summary>
+		/// The reason for the failure.
+		/// </summary>
+		public string FailureReason { get; set; }
+
 		/// <summary>
 		/// Reads a Provider's response for Attribute Exchange values and returns
 		/// an instance of this struct with the values.
@@ -25,8 +36,11 @@ namespace DotNetOpenId.Extensions {
 
 		public void AddToResponse(Provider.IRequest authenticationRequest) {
 			var fields = new Dictionary<string, string> {
-				{ "mode", Mode },
+				{ "mode", Succeeded ? SuccessMode : FailureMode },
 			};
+			if (!Succeeded && !string.IsNullOrEmpty(FailureReason))
+				fields.Add("error", FailureReason);
+
 			authenticationRequest.AddExtensionArguments(Constants.ae.ns, fields);
 		}
 
@@ -34,8 +48,23 @@ namespace DotNetOpenId.Extensions {
 			var fields = response.GetExtensionArguments(Constants.ae.ns);
 			if (fields == null) return false;
 			string mode;
-			fields.TryGetValue("mode", out mode);
-			if (mode != Mode) return false;
+			if (!fields.TryGetValue("mode", out mode)) return false;
+			switch (mode) {
+				case SuccessMode:
+					Succeeded = true;
+					break;
+				case FailureMode:
+					Succeeded = false;
+					break;
+				default:
+					return false;
+			}
+
+			if (!Succeeded) {
+				string error;
+				if (fields.TryGetValue("error", out error))
+					FailureReason = error;
+			}
 
 			return true;
 		}

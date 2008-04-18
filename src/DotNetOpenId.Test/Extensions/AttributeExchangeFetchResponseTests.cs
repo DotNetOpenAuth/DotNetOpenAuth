@@ -11,7 +11,7 @@ namespace DotNetOpenId.Test.Extensions {
 		[Test]
 		public void AddAttribute() {
 			var response = new AttributeExchangeFetchResponse();
-			response.AddAttribute(new AttributeResponse {
+			response.AddAttribute(new AttributeValues {
 				TypeUri = "http://someattribute",
 				Values = new[] { "Value1" },
 			});
@@ -20,11 +20,11 @@ namespace DotNetOpenId.Test.Extensions {
 		[Test]
 		public void AddTwoAttributes() {
 			var response = new AttributeExchangeFetchResponse();
-			response.AddAttribute(new AttributeResponse {
+			response.AddAttribute(new AttributeValues {
 				TypeUri = "http://someattribute",
 				Values = new[] { "Value1" },
 			});
-			response.AddAttribute(new AttributeResponse {
+			response.AddAttribute(new AttributeValues {
 				TypeUri = "http://someOtherAttribute",
 				Values = new[] { "Value2" },
 			});
@@ -33,11 +33,11 @@ namespace DotNetOpenId.Test.Extensions {
 		[Test, ExpectedException(typeof(ArgumentException))]
 		public void AddAttributeTwice() {
 			var response = new AttributeExchangeFetchResponse();
-			response.AddAttribute(new AttributeResponse {
+			response.AddAttribute(new AttributeValues {
 				TypeUri = "http://someattribute",
 				Values = new[] { "Value1" },
 			});
-			response.AddAttribute(new AttributeResponse {
+			response.AddAttribute(new AttributeValues {
 				TypeUri = "http://someattribute",
 				Values = new[] { "Value1" },
 			});

@@ -102,6 +102,11 @@ namespace DotNetOpenId.Extensions {
 			var allAliases = new List<string>(requiredAliases.Count + optionalAliases.Count);
 			allAliases.AddRange(requiredAliases);
 			allAliases.AddRange(optionalAliases);
+			if (allAliases.Count == 0) {
+				if (TraceUtil.Switch.TraceError)
+					Trace.TraceError("Attribute Exchange extension did not provide any aliases in the if_available or required lists.");
+				return false;
+			}
 			AliasManager aliasManager = new AliasManager();
 			foreach (var alias in allAliases) {
 				string typeUri;

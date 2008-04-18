@@ -55,7 +55,7 @@
     <Compile Include="Extensions\AliasManager.cs" />
     <Compile Include="Extensions\AttributeExchangeFetchResponse.cs" />
     <Compile Include="Extensions\AttributeRequest.cs" />
-    <Compile Include="Extensions\AttributeResponse.cs" />
+    <Compile Include="Extensions\AttributeValues.cs" />
     <Compile Include="Extensions\Constants.cs" />
     <Compile Include="Extensions\AttributeExchangeFetchRequest.cs" />
     <Compile Include="Extensions\AttributeExchangeStoreRequest.cs" />
