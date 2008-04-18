@@ -42,15 +42,28 @@ namespace DotNetOpenId.Extensions {
 		/// Gets the Type Uri encoded by a given alias.
 		/// </summary>
 		public string ResolveAlias(string alias) {
-			if (string.IsNullOrEmpty(alias)) throw new ArgumentNullException("alias");
-			string typeUri;
-			if (!aliasToTypeUriMap.TryGetValue(alias, out typeUri))
+			string typeUri = TryResolveAlias(alias);
+			if (typeUri == null)
 				throw new ArgumentOutOfRangeException("alias");
+			return typeUri;
+		}
+		public string TryResolveAlias(string alias) {
+			if (string.IsNullOrEmpty(alias)) throw new ArgumentNullException("alias");
+			string typeUri = null;
+			aliasToTypeUriMap.TryGetValue(alias, out typeUri);
 			return typeUri;
 		}
 
 		public IEnumerable<string> Aliases {
 			get { return aliasToTypeUriMap.Keys; }
+		}
+		public bool IsAliasUsed(string alias) {
+			if (string.IsNullOrEmpty(alias)) throw new ArgumentNullException("alias");
+			return aliasToTypeUriMap.ContainsKey(alias);
+		}
+		public bool IsAliasAssignedTo(string typeUri) {
+			if (string.IsNullOrEmpty("typeUri")) throw new ArgumentNullException("typeUri");
+			return typeUriToAliasMap.ContainsKey(typeUri);
 		}
 
 		string assignNewAlias(string typeUri) {
