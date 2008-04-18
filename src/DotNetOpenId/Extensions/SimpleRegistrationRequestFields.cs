@@ -131,8 +131,7 @@ namespace DotNetOpenId.Extensions {
 		/// </summary>
 		public static SimpleRegistrationRequestFields ReadFromRequest(IRequest request) {
 			var fields = new SimpleRegistrationRequestFields();
-			((IExtensionRequest)fields).ReadFromRequest(request);
-			return fields;
+			return ((IExtensionRequest)fields).ReadFromRequest(request) ? fields : null;
 		}
 
 		#region IExtensionRequest Members
@@ -197,13 +196,15 @@ TimeZone = '{8}'", Nickname, Email, FullName, BirthDate, Gender, PostalCode, Cou
 		/// Tests equality between two <see cref="SimpleRegistrationRequestFields"/> structs.
 		/// </summary>
 		public static bool operator ==(SimpleRegistrationRequestFields one, SimpleRegistrationRequestFields other) {
+			if ((object)one == null && (object)other == null) return true;
+			if ((object)one == null ^ (object)other == null) return false;
 			return one.Equals(other);
-		}
+				}
 		/// <summary>
 		/// Tests inequality between two <see cref="SimpleRegistrationRequestFields"/> structs.
 		/// </summary>
 		public static bool operator !=(SimpleRegistrationRequestFields one, SimpleRegistrationRequestFields other) {
-			return !one.Equals(other);
+			return !(one == other);
 		}
 		/// <summary>
 		/// Tests equality between two <see cref="SimpleRegistrationRequestFields"/> structs.

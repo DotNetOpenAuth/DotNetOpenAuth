@@ -198,13 +198,15 @@ namespace DotNetOpenId.Extensions
 		/// Tests equality of two <see cref="SimpleRegistrationFieldValues"/> objects.
 		/// </summary>
 		public static bool operator ==(SimpleRegistrationFieldValues one, SimpleRegistrationFieldValues other) {
+			if ((object)one == null && (object)other == null) return true;
+			if ((object)one == null ^ (object)other == null) return false;
 			return one.Equals(other);
 		}
 		/// <summary>
 		/// Tests inequality of two <see cref="SimpleRegistrationFieldValues"/> objects.
 		/// </summary>
 		public static bool operator !=(SimpleRegistrationFieldValues one, SimpleRegistrationFieldValues other) {
-			return !one.Equals(other);
+			return !(one == other);
 		}
 		/// <summary>
 		/// Tests equality of two <see cref="SimpleRegistrationFieldValues"/> objects.
