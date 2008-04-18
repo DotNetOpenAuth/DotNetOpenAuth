@@ -19,15 +19,15 @@ namespace DotNetOpenId.Test.Extensions {
 			AppStore = new ApplicationMemoryStore();
 		}
 
-		protected T ParameterizedTest<T>(Identifier identityUrl, IExtensionRequest extensionArgs)
+		protected T ParameterizedTest<T>(Identifier identityUrl, IExtensionRequest extension)
 			where T : IExtensionResponse, new() {
 			Debug.Assert(identityUrl != null);
 			var returnTo = TestSupport.GetFullUrl(TestSupport.ConsumerPage);
 			var realm = new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri);
 			var consumer = new OpenIdRelyingParty(AppStore, null);
 			var request = consumer.CreateRequest(identityUrl, realm, returnTo);
-			if (extensionArgs != null)
-				extensionArgs.AddToRequest(request);
+			if (extension != null)
+				request.AddExtension(extension);
 
 			HttpWebRequest providerRequest = (HttpWebRequest)WebRequest.Create(request.RedirectToProviderUrl);
 			providerRequest.AllowAutoRedirect = false;
@@ -49,8 +49,7 @@ namespace DotNetOpenId.Test.Extensions {
 			consumer = new OpenIdRelyingParty(AppStore, redirectUrl);
 			Assert.AreEqual(AuthenticationStatus.Authenticated, consumer.Response.Status);
 			Assert.AreEqual(identityUrl, consumer.Response.ClaimedIdentifier);
-			T r = new T();
-			return r.ReadFromResponse(consumer.Response) ? r : default(T);
+			return consumer.Response.GetExtension<T>();
 		}
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using DotNetOpenId.Extensions;
 
 namespace DotNetOpenId.RelyingParty {
 	/// <summary>
@@ -29,7 +30,12 @@ namespace DotNetOpenId.RelyingParty {
 		/// The key/value pairs of parameters and values to pass to the provider.
 		/// </param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", MessageId = "0#")]
+		[Obsolete("Use AddExtension instead.")]
 		void AddExtensionArguments(string extensionTypeUri, IDictionary<string, string> arguments);
+		/// <summary>
+		/// Adds an OpenID extension to the request directed at the OpenID provider.
+		/// </summary>
+		void AddExtension(IExtensionRequest extension);
 		/// <summary>
 		/// Redirects the user agent to the provider for authentication.
 		/// </summary>

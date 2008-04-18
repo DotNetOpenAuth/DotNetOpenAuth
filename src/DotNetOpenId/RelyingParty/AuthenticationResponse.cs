@@ -6,6 +6,7 @@ namespace DotNetOpenId.RelyingParty {
 	using System.Web;
 	using System.Globalization;
 	using System.Diagnostics;
+	using DotNetOpenId.Extensions;
 
 	/// <summary>
 	/// An enumeration of the possible results of an authentication attempt.
@@ -96,6 +97,16 @@ namespace DotNetOpenId.RelyingParty {
 		/// </returns>
 		public IDictionary<string, string> GetExtensionArguments(string extensionTypeUri) {
 			return IncomingExtensions.GetExtensionArguments(extensionTypeUri);
+		}
+
+		/// <summary>
+		/// Tries to get an OpenID extension that may be present in the response.
+		/// </summary>
+		/// <param name="extensionTypeUri">The type URI the extension is known by.</param>
+		/// <returns>The extension, if it is found.  Null otherwise.</returns>
+		public T GetExtension<T>() where T : IExtensionResponse, new() {
+			T extension = new T();
+			return extension.ReadFromResponse(this) ? extension : default(T);
 		}
 
 		internal static AuthenticationResponse Parse(IDictionary<string, string> query,

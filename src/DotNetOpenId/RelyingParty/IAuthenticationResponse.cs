@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using DotNetOpenId.Extensions;
 
 namespace DotNetOpenId.RelyingParty {
 	/// <summary>
@@ -25,7 +26,14 @@ namespace DotNetOpenId.RelyingParty {
 		/// Returns key/value pairs found for the given extension.
 		/// </returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", MessageId = "0#")]
+		[Obsolete("Use GetExtension instead.")]
 		IDictionary<string, string> GetExtensionArguments(string extensionTypeUri);
+		/// <summary>
+		/// Tries to get an OpenID extension that may be present in the response.
+		/// </summary>
+		/// <param name="extensionTypeUri">The type URI the extension is known by.</param>
+		/// <returns>The extension, if it is found.  Null otherwise.</returns>
+		T GetExtension<T>() where T : IExtensionResponse, new();
 		/// <summary>
 		/// An Identifier that the end user claims to own.
 		/// </summary>

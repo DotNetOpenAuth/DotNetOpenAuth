@@ -141,6 +141,15 @@ namespace DotNetOpenId.Provider
 			return IncomingExtensions.GetExtensionArguments(extensionTypeUri);
 		}
 
+		public void AddExtension(DotNetOpenId.Extensions.IExtensionResponse extension) {
+			extension.AddToResponse(this);
+		}
+
+		public T GetExtension<T>() where T : DotNetOpenId.Extensions.IExtensionRequest, new() {
+			T extension = new T();
+			return extension.ReadFromRequest(this) ? extension : default(T);
+		}
+
 		public override string ToString() {
 			string returnString = @"Request.Mode = {0}";
 			return string.Format(CultureInfo.CurrentCulture, returnString, Mode);

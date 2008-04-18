@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using DotNetOpenId.Extensions;
 
 namespace DotNetOpenId.Provider {
 	/// <summary>
@@ -23,7 +24,7 @@ namespace DotNetOpenId.Provider {
 		/// </summary>
 		IResponse Response { get; }
 		/// <summary>
-		/// Adds extension arguments to the response to send to the client.
+		/// Adds extension arguments to the response to send to the relying party.
 		/// </summary>
 		/// <param name="extensionTypeUri">The extension's Type URI.</param>
 		/// <param name="arguments">
@@ -31,7 +32,12 @@ namespace DotNetOpenId.Provider {
 		/// The keys should not include any 'openid.&lt;namespace&gt;.' prefix.
 		/// </param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", MessageId = "0#")]
+		[Obsolete("Use AddExtension instead.")]
 		void AddExtensionArguments(string extensionTypeUri, IDictionary<string, string> arguments);
+		/// <summary>
+		/// Adds an extension to the response to send to the relying party.
+		/// </summary>
+		void AddExtension(IExtensionResponse extension);
 		/// <summary>
 		/// Gets the extension arguments sent from the relying party.
 		/// </summary>
@@ -39,6 +45,12 @@ namespace DotNetOpenId.Provider {
 		/// <returns>A dictionary where the keys are the extension's
 		/// keys without the 'openid.&lt;namespace&gt;.' prefix.</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", MessageId = "0#")]
+		[Obsolete("Use GetExtension instead.")]
 		IDictionary<string, string> GetExtensionArguments(string extensionTypeUri);
+		/// <summary>
+		/// Gets an extension sent from the relying party.
+		/// </summary>
+		/// <typeparam name="T">The type of the extension.</typeparam>
+		T GetExtension<T>() where T : IExtensionRequest, new();
 	}
 }

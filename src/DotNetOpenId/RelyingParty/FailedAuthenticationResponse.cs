@@ -16,6 +16,10 @@ namespace DotNetOpenId.RelyingParty {
 			return new Dictionary<string, string>();
 		}
 
+		public T GetExtension<T>() where T : DotNetOpenId.Extensions.IExtensionResponse, new() {
+			return default(T);
+		}
+
 		public Identifier ClaimedIdentifier {
 			get { return null; }
 		}

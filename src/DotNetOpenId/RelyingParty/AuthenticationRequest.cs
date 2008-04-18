@@ -176,6 +176,10 @@ namespace DotNetOpenId.RelyingParty {
 			OutgoingExtensions.AddExtensionArguments(extensionTypeUri, arguments);
 		}
 
+		public void AddExtension(DotNetOpenId.Extensions.IExtensionRequest extension) {
+			extension.AddToRequest(this);
+		}
+
 		/// <summary>
 		/// Adds given key/value pairs to the query that the provider will use in
 		/// the request to return to the consumer web site.
