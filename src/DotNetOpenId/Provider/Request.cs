@@ -123,7 +123,7 @@ namespace DotNetOpenId.Provider
 		/// Adds query parameters for OpenID extensions to the response directed 
 		/// at the OpenID Relying Party.
 		/// </summary>
-		public void AddExtensionArguments(string extensionTypeUri, IDictionary<string, string> arguments) {
+		public void AddResponseExtensionArguments(string extensionTypeUri, IDictionary<string, string> arguments) {
 			OutgoingExtensions.AddExtensionArguments(extensionTypeUri, arguments);
 		}
 

@@ -145,7 +145,7 @@ namespace DotNetOpenId.Extensions
 			if (!String.IsNullOrEmpty(TimeZone)) {
 				fields.Add(Constants.sreg.timezone, TimeZone);
 			}
-			authenticationRequest.AddExtensionArguments(Constants.sreg.sreg_ns, fields);
+			authenticationRequest.AddResponseExtensionArguments(Constants.sreg.sreg_ns, fields);
 		}
 
 		bool IExtensionResponse.ReadFromResponse(IAuthenticationResponse response) {

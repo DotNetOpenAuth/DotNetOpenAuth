@@ -32,7 +32,7 @@ namespace DotNetOpenId.Extensions {
 			if (!Succeeded && !string.IsNullOrEmpty(FailureReason))
 				fields.Add("error", FailureReason);
 
-			authenticationRequest.AddExtensionArguments(Constants.ae.ns, fields);
+			authenticationRequest.AddResponseExtensionArguments(Constants.ae.ns, fields);
 		}
 
 		bool IExtensionResponse.ReadFromResponse(IAuthenticationResponse response) {

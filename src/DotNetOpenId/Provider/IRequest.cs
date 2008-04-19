@@ -33,7 +33,7 @@ namespace DotNetOpenId.Provider {
 		/// </param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", MessageId = "0#")]
 		[Obsolete("Use AddExtension instead.")]
-		void AddExtensionArguments(string extensionTypeUri, IDictionary<string, string> arguments);
+		void AddResponseExtensionArguments(string extensionTypeUri, IDictionary<string, string> arguments);
 		/// <summary>
 		/// Adds an extension to the response to send to the relying party.
 		/// </summary>

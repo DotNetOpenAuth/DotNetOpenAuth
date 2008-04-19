@@ -56,7 +56,7 @@ namespace DotNetOpenId.Extensions {
 
 			SerializeAttributes(fields, attributesProvided);
 
-			authenticationRequest.AddExtensionArguments(Constants.ae.ns, fields);
+			authenticationRequest.AddResponseExtensionArguments(Constants.ae.ns, fields);
 		}
 
 		internal static void SerializeAttributes(Dictionary<string, string> fields, IEnumerable<AttributeValues> attributes) {
