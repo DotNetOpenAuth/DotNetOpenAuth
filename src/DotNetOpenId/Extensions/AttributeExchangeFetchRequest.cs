@@ -44,7 +44,7 @@ namespace DotNetOpenId.Extensions {
 		#region IExtensionRequest Members
 		string IExtensionRequest.TypeUri { get { return Constants.ae.ns; } }
 
-		void IExtensionRequest.AddToRequest(RelyingParty.IAuthenticationRequest authenticationRequest) {
+		Dictionary<string, string> IExtensionRequest.GetFields(RelyingParty.IAuthenticationRequest authenticationRequest) {
 			var fields = new Dictionary<string, string> {
 				{ "mode", Mode },
 			};
@@ -71,7 +71,7 @@ namespace DotNetOpenId.Extensions {
 			if (requiredAliases.Count > 0)
 				fields.Add("required", string.Join(",", requiredAliases.ToArray()));
 
-			authenticationRequest.AddExtensionArguments(Constants.ae.ns, fields);
+			return fields;
 		}
 
 		bool IExtensionRequest.ReadFromRequest(DotNetOpenId.Provider.IRequest request) {

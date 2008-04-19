@@ -168,16 +168,8 @@ namespace DotNetOpenId.RelyingParty {
 			}
 		}
 
-		/// <summary>
-		/// Adds query parameters for OpenID extensions to the request directed 
-		/// at the OpenID provider.
-		/// </summary>
-		public void AddExtensionArguments(string extensionTypeUri, IDictionary<string, string> arguments) {
-			OutgoingExtensions.AddExtensionArguments(extensionTypeUri, arguments);
-		}
-
 		public void AddExtension(DotNetOpenId.Extensions.IExtensionRequest extension) {
-			extension.AddToRequest(this);
+			OutgoingExtensions.AddExtensionArguments(extension.TypeUri, extension.GetFields(this));
 		}
 
 		/// <summary>

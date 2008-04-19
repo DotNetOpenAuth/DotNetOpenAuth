@@ -14,10 +14,9 @@ namespace DotNetOpenId.Extensions {
 		/// </summary>
 		string TypeUri { get; }
 		/// <summary>
-		/// Adds the properties of this Attribute Exchange request to an outgoing
-		/// OpenID authentication request.
+		/// Returns the fields this extension should add to an authentication request.
 		/// </summary>
-		void AddToRequest(RelyingParty.IAuthenticationRequest authenticationRequest);
+		Dictionary<string, string> GetFields(RelyingParty.IAuthenticationRequest authenticationRequest);
 		/// <summary>
 		/// Reads the extension information on an authentication request to the provider.
 		/// </summary>
@@ -36,10 +35,9 @@ namespace DotNetOpenId.Extensions {
 		/// </summary>
 		string TypeUri { get; }
 		/// <summary>
-		/// Adds the values of this struct to an authentication response being prepared
-		/// by an OpenID Provider.
+		/// Returns the fields this extension should add to an authentication response.
 		/// </summary>
-		void AddToResponse(Provider.IRequest authenticationRequest);
+		Dictionary<string, string> GetFields(Provider.IRequest authenticationRequest);
 		/// <summary>
 		/// Reads a Provider's response for extension values.
 		/// </summary>

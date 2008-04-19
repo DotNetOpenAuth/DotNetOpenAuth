@@ -24,17 +24,6 @@ namespace DotNetOpenId.Provider {
 		/// </summary>
 		IResponse Response { get; }
 		/// <summary>
-		/// Adds extension arguments to the response to send to the relying party.
-		/// </summary>
-		/// <param name="extensionTypeUri">The extension's Type URI.</param>
-		/// <param name="arguments">
-		/// The key/value pairs for this extension to add to the response.
-		/// The keys should not include any 'openid.&lt;namespace&gt;.' prefix.
-		/// </param>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", MessageId = "0#")]
-		[Obsolete("Use AddExtension instead.")]
-		void AddResponseExtensionArguments(string extensionTypeUri, IDictionary<string, string> arguments);
-		/// <summary>
 		/// Adds an extension to the response to send to the relying party.
 		/// </summary>
 		void AddResponseExtension(IExtensionResponse extension);

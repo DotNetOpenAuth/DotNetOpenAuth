@@ -111,7 +111,7 @@ namespace DotNetOpenId.Extensions
 		/// by an OpenID Provider.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
-		void IExtensionResponse.AddToResponse(Provider.IRequest authenticationRequest) {
+		Dictionary<string, string> IExtensionResponse.GetFields(Provider.IRequest authenticationRequest) {
 			if (authenticationRequest == null) throw new ArgumentNullException("authenticationRequest");
 			Dictionary<string, string> fields = new Dictionary<string, string>();
 			if (BirthDate != null) {
@@ -145,7 +145,7 @@ namespace DotNetOpenId.Extensions
 			if (!String.IsNullOrEmpty(TimeZone)) {
 				fields.Add(Constants.sreg.timezone, TimeZone);
 			}
-			authenticationRequest.AddResponseExtensionArguments(Constants.sreg.sreg_ns, fields);
+			return fields;
 		}
 
 		bool IExtensionResponse.ReadFromResponse(IAuthenticationResponse response) {

@@ -46,7 +46,7 @@ namespace DotNetOpenId.Extensions {
 		#region IExtensionResponse Members
 		string IExtensionResponse.TypeUri { get { return Constants.ae.ns; } }
 
-		void IExtensionResponse.AddToResponse(Provider.IRequest authenticationRequest) {
+		Dictionary<string, string> IExtensionResponse.GetFields(Provider.IRequest authenticationRequest) {
 			var fields = new Dictionary<string, string> {
 				{ "mode", Mode },
 			};
@@ -56,7 +56,7 @@ namespace DotNetOpenId.Extensions {
 
 			SerializeAttributes(fields, attributesProvided);
 
-			authenticationRequest.AddResponseExtensionArguments(Constants.ae.ns, fields);
+			return fields;
 		}
 
 		internal static void SerializeAttributes(Dictionary<string, string> fields, IEnumerable<AttributeValues> attributes) {

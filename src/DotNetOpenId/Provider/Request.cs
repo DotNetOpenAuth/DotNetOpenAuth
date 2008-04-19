@@ -120,14 +120,6 @@ namespace DotNetOpenId.Provider
 		IResponse IRequest.Response { get { return this.Response; } }
 
 		/// <summary>
-		/// Adds query parameters for OpenID extensions to the response directed 
-		/// at the OpenID Relying Party.
-		/// </summary>
-		public void AddResponseExtensionArguments(string extensionTypeUri, IDictionary<string, string> arguments) {
-			OutgoingExtensions.AddExtensionArguments(extensionTypeUri, arguments);
-		}
-
-		/// <summary>
 		/// Gets the key/value pairs for a given OpenID extension 
 		/// of a Relying Party's request.
 		/// </summary>
@@ -142,7 +134,7 @@ namespace DotNetOpenId.Provider
 		}
 
 		public void AddResponseExtension(DotNetOpenId.Extensions.IExtensionResponse extension) {
-			extension.AddToResponse(this);
+			OutgoingExtensions.AddExtensionArguments(extension.TypeUri, extension.GetFields(this));
 		}
 
 		public T GetExtension<T>() where T : DotNetOpenId.Extensions.IExtensionRequest, new() {

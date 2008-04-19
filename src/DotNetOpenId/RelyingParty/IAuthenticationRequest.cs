@@ -21,18 +21,6 @@ namespace DotNetOpenId.RelyingParty {
 		/// </summary>
 		void AddCallbackArguments(string key, string value);
 		/// <summary>
-		/// Adds extra query parameters to the request directed at the OpenID provider.
-		/// </summary>
-		/// <param name="extensionTypeUri">
-		/// The Type URI of the OpenID extension whose arguments are being sought.
-		/// </param>
-		/// <param name="arguments">
-		/// The key/value pairs of parameters and values to pass to the provider.
-		/// </param>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", MessageId = "0#")]
-		[Obsolete("Use AddExtension instead.")]
-		void AddExtensionArguments(string extensionTypeUri, IDictionary<string, string> arguments);
-		/// <summary>
 		/// Adds an OpenID extension to the request directed at the OpenID provider.
 		/// </summary>
 		void AddExtension(IExtensionRequest extension);

@@ -25,14 +25,14 @@ namespace DotNetOpenId.Extensions {
 		#region IExtensionResponse Members
 		string IExtensionResponse.TypeUri { get { return Constants.ae.ns; } }
 
-		void IExtensionResponse.AddToResponse(Provider.IRequest authenticationRequest) {
+		Dictionary<string, string> IExtensionResponse.GetFields(Provider.IRequest authenticationRequest) {
 			var fields = new Dictionary<string, string> {
 				{ "mode", Succeeded ? SuccessMode : FailureMode },
 			};
 			if (!Succeeded && !string.IsNullOrEmpty(FailureReason))
 				fields.Add("error", FailureReason);
 
-			authenticationRequest.AddResponseExtensionArguments(Constants.ae.ns, fields);
+			return fields;
 		}
 
 		bool IExtensionResponse.ReadFromResponse(IAuthenticationResponse response) {
