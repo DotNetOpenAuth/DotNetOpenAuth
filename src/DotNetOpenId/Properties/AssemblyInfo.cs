@@ -53,7 +53,11 @@ using System.Web.UI;
 [assembly: AssemblyVersion("2.0.0.0")]
 [assembly: AssemblyFileVersion("2.0.0.0")]
 
+#if StrongNameSigned
+[assembly: InternalsVisibleTo("DotNetOpenId.Test, PublicKey=0024000004800000940000000602000000240000525341310004000001000100AD093C3765257C89A7010E853F2C7C741FF92FA8ACE06D7B8254702CAD5CF99104447F63AB05F8BB6F51CE0D81C8C93D2FCE8C20AAFF7042E721CBA16EAAE98778611DED11C0ABC8900DC5667F99B50A9DADEC24DBD8F2C91E3E8AD300EF64F1B4B9536CEB16FB440AF939F57624A9B486F867807C649AE4830EAB88C6C03998")]
+#else
 [assembly: InternalsVisibleTo("DotNetOpenId.Test")]
+#endif
 
 // Specify what permissions are required and optional for the assembly.
 // In order for CAS to remove unnecessary privileges from this assembly (which is desirable
