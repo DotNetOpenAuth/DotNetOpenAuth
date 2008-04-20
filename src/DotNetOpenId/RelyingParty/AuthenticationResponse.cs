@@ -106,7 +106,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// <returns>The extension, if it is found.  Null otherwise.</returns>
 		public T GetExtension<T>() where T : IExtensionResponse, new() {
 			T extension = new T();
-			return extension.ReadFromResponse(this) ? extension : default(T);
+			return extension.SetFields(IncomingExtensions.GetExtensionArguments(extension.TypeUri), this) ? extension : default(T);
 		}
 
 		internal static AuthenticationResponse Parse(IDictionary<string, string> query,

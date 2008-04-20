@@ -129,8 +129,7 @@ namespace DotNetOpenId.Extensions {
 		#region IExtensionRequest Members
 		string IExtensionRequest.TypeUri { get { return Constants.sreg.sreg_ns; } }
 
-		bool IExtensionRequest.ReadFromRequest(IRequest request) {
-			var args = request.GetExtensionArguments(Constants.sreg.sreg_ns);
+		bool IExtensionRequest.SetFields(IDictionary<string, string> args, IRequest request) {
 			if (args == null) return false;
 
 			string policyUrl;
@@ -157,7 +156,7 @@ namespace DotNetOpenId.Extensions {
 		/// the Provider to include with a positive authentication assertion as an
 		/// extension to an authentication request.
 		/// </summary>
-		Dictionary<string, string> IExtensionRequest.GetFields(RelyingParty.IAuthenticationRequest request) {
+		IDictionary<string, string> IExtensionRequest.GetFields(RelyingParty.IAuthenticationRequest request) {
 			var fields = new Dictionary<string, string>();
 			if (PolicyUrl != null)
 				fields.Add(Constants.sreg.policy_url, PolicyUrl.AbsoluteUri);

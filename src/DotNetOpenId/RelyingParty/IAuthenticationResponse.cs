@@ -17,21 +17,8 @@ namespace DotNetOpenId.RelyingParty {
 	/// </remarks>
 	public interface IAuthenticationResponse {
 		/// <summary>
-		/// Gets the key/value pairs of a provider's response for a given OpenID extension.
-		/// </summary>
-		/// <param name="extensionTypeUri">
-		/// The Type URI of the OpenID extension whose arguments are being sought.
-		/// </param>
-		/// <returns>
-		/// Returns key/value pairs found for the given extension.
-		/// </returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", MessageId = "0#")]
-		[Obsolete("Use GetExtension instead.")]
-		IDictionary<string, string> GetExtensionArguments(string extensionTypeUri);
-		/// <summary>
 		/// Tries to get an OpenID extension that may be present in the response.
 		/// </summary>
-		/// <param name="extensionTypeUri">The type URI the extension is known by.</param>
 		/// <returns>The extension, if it is found.  Null otherwise.</returns>
 		T GetExtension<T>() where T : IExtensionResponse, new();
 		/// <summary>

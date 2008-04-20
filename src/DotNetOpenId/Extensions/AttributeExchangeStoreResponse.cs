@@ -35,8 +35,7 @@ namespace DotNetOpenId.Extensions {
 			return fields;
 		}
 
-		bool IExtensionResponse.ReadFromResponse(IAuthenticationResponse response) {
-			var fields = response.GetExtensionArguments(Constants.ae.ns);
+		bool IExtensionResponse.SetFields(IDictionary<string, string> fields, IAuthenticationResponse response) {
 			if (fields == null) return false;
 			string mode;
 			if (!fields.TryGetValue("mode", out mode)) return false;

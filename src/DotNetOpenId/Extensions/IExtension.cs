@@ -16,12 +16,12 @@ namespace DotNetOpenId.Extensions {
 		/// <summary>
 		/// Returns the fields this extension should add to an authentication request.
 		/// </summary>
-		Dictionary<string, string> GetFields(RelyingParty.IAuthenticationRequest authenticationRequest);
+		IDictionary<string, string> GetFields(RelyingParty.IAuthenticationRequest authenticationRequest);
 		/// <summary>
 		/// Reads the extension information on an authentication request to the provider.
 		/// </summary>
-		/// <returns>True if the extension found any of its parameters in the request.</returns>
-		bool ReadFromRequest(Provider.IRequest request);
+		/// <returns>True if the extension found any of its parameters in the request, false otherwise.</returns>
+		bool SetFields(IDictionary<string, string> fields, Provider.IRequest request);
 	}
 
 	/// <summary>
@@ -42,6 +42,6 @@ namespace DotNetOpenId.Extensions {
 		/// Reads a Provider's response for extension values.
 		/// </summary>
 		/// <returns>True if the extension found any of its parameters in the response.</returns>
-		bool ReadFromResponse(RelyingParty.IAuthenticationResponse response);
+		bool SetFields(IDictionary<string, string> fields, RelyingParty.IAuthenticationResponse response);
 	}
 }

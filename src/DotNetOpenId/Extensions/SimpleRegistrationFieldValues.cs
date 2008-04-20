@@ -148,8 +148,7 @@ namespace DotNetOpenId.Extensions
 			return fields;
 		}
 
-		bool IExtensionResponse.ReadFromResponse(IAuthenticationResponse response) {
-			var sreg = response.GetExtensionArguments(Constants.sreg.sreg_ns);
+		bool IExtensionResponse.SetFields(IDictionary<string, string> sreg, IAuthenticationResponse response) {
 			if (sreg == null) return false;
 			string nickname, email, fullName, dob, genderString, postalCode, country, language, timeZone;
 			BirthDate = null;

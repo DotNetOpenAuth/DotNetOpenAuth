@@ -119,27 +119,13 @@ namespace DotNetOpenId.Provider
 		}
 		IResponse IRequest.Response { get { return this.Response; } }
 
-		/// <summary>
-		/// Gets the key/value pairs for a given OpenID extension 
-		/// of a Relying Party's request.
-		/// </summary>
-		/// <param name="extensionTypeUri">
-		/// The Type URI of the OpenID extension whose arguments are being sought.
-		/// </param>
-		/// <returns>
-		/// Returns key/value pairs for this extension.
-		/// </returns>
-		public IDictionary<string, string> GetExtensionArguments(string extensionTypeUri) {
-			return IncomingExtensions.GetExtensionArguments(extensionTypeUri);
-		}
-
 		public void AddResponseExtension(DotNetOpenId.Extensions.IExtensionResponse extension) {
 			OutgoingExtensions.AddExtensionArguments(extension.TypeUri, extension.GetFields(this));
 		}
 
 		public T GetExtension<T>() where T : DotNetOpenId.Extensions.IExtensionRequest, new() {
 			T extension = new T();
-			return extension.ReadFromRequest(this) ? extension : default(T);
+			return extension.SetFields(IncomingExtensions.GetExtensionArguments(extension.TypeUri), this) ? extension : default(T);
 		}
 
 		public override string ToString() {
