@@ -87,22 +87,9 @@ namespace DotNetOpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Gets the key/value pairs of a provider's response for a given OpenID extension.
-		/// </summary>
-		/// <param name="extensionTypeUri">
-		/// The Type URI of the OpenID extension whose arguments are being sought.
-		/// </param>
-		/// <returns>
-		/// Returns key/value pairs for this extension.
-		/// </returns>
-		public IDictionary<string, string> GetExtensionArguments(string extensionTypeUri) {
-			return IncomingExtensions.GetExtensionArguments(extensionTypeUri);
-		}
-
-		/// <summary>
 		/// Tries to get an OpenID extension that may be present in the response.
 		/// </summary>
-		/// <param name="extensionTypeUri">The type URI the extension is known by.</param>
+		/// <typeparam name="T">The extension to retrieve.</param>
 		/// <returns>The extension, if it is found.  Null otherwise.</returns>
 		public T GetExtension<T>() where T : IExtensionResponse, new() {
 			T extension = new T();
