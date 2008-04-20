@@ -23,9 +23,9 @@ namespace DotNetOpenId.Extensions {
 		public string FailureReason { get; set; }
 
 		#region IExtensionResponse Members
-		string IExtensionResponse.TypeUri { get { return Constants.ae.ns; } }
+		string IExtension.TypeUri { get { return Constants.ae.ns; } }
 
-		Dictionary<string, string> IExtensionResponse.GetFields(Provider.IRequest authenticationRequest) {
+		IDictionary<string, string> IExtensionResponse.Serialize(Provider.IRequest authenticationRequest) {
 			var fields = new Dictionary<string, string> {
 				{ "mode", Succeeded ? SuccessMode : FailureMode },
 			};
@@ -35,7 +35,7 @@ namespace DotNetOpenId.Extensions {
 			return fields;
 		}
 
-		bool IExtensionResponse.SetFields(IDictionary<string, string> fields, IAuthenticationResponse response) {
+		bool IExtensionResponse.Deserialize(IDictionary<string, string> fields, IAuthenticationResponse response) {
 			if (fields == null) return false;
 			string mode;
 			if (!fields.TryGetValue("mode", out mode)) return false;

@@ -104,14 +104,14 @@ namespace DotNetOpenId.Extensions
 		public string TimeZone { get; set; }
 
 		#region IExtensionResponse Members
-		string IExtensionResponse.TypeUri { get { return Constants.sreg.sreg_ns; } }
+		string IExtension.TypeUri { get { return Constants.sreg.sreg_ns; } }
 
 		/// <summary>
 		/// Adds the values of this struct to an authentication response being prepared
 		/// by an OpenID Provider.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
-		Dictionary<string, string> IExtensionResponse.GetFields(Provider.IRequest authenticationRequest) {
+		IDictionary<string, string> IExtensionResponse.Serialize(Provider.IRequest authenticationRequest) {
 			if (authenticationRequest == null) throw new ArgumentNullException("authenticationRequest");
 			Dictionary<string, string> fields = new Dictionary<string, string>();
 			if (BirthDate != null) {
@@ -148,7 +148,7 @@ namespace DotNetOpenId.Extensions
 			return fields;
 		}
 
-		bool IExtensionResponse.SetFields(IDictionary<string, string> sreg, IAuthenticationResponse response) {
+		bool IExtensionResponse.Deserialize(IDictionary<string, string> sreg, IAuthenticationResponse response) {
 			if (sreg == null) return false;
 			string nickname, email, fullName, dob, genderString, postalCode, country, language, timeZone;
 			BirthDate = null;

@@ -169,7 +169,7 @@ namespace DotNetOpenId.RelyingParty {
 		}
 
 		public void AddExtension(DotNetOpenId.Extensions.IExtensionRequest extension) {
-			OutgoingExtensions.AddExtensionArguments(extension.TypeUri, extension.GetFields(this));
+			OutgoingExtensions.AddExtensionArguments(extension.TypeUri, extension.Serialize(this));
 		}
 
 		/// <summary>

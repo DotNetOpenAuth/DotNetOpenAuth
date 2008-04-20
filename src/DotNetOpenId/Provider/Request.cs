@@ -120,12 +120,12 @@ namespace DotNetOpenId.Provider
 		IResponse IRequest.Response { get { return this.Response; } }
 
 		public void AddResponseExtension(DotNetOpenId.Extensions.IExtensionResponse extension) {
-			OutgoingExtensions.AddExtensionArguments(extension.TypeUri, extension.GetFields(this));
+			OutgoingExtensions.AddExtensionArguments(extension.TypeUri, extension.Serialize(this));
 		}
 
 		public T GetExtension<T>() where T : DotNetOpenId.Extensions.IExtensionRequest, new() {
 			T extension = new T();
-			return extension.SetFields(IncomingExtensions.GetExtensionArguments(extension.TypeUri), this) ? extension : default(T);
+			return extension.Deserialize(IncomingExtensions.GetExtensionArguments(extension.TypeUri), this) ? extension : default(T);
 		}
 
 		public override string ToString() {

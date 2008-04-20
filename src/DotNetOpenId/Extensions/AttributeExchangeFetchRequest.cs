@@ -42,9 +42,9 @@ namespace DotNetOpenId.Extensions {
 		public Uri UpdateUrl { get; set; }
 
 		#region IExtensionRequest Members
-		string IExtensionRequest.TypeUri { get { return Constants.ae.ns; } }
+		string IExtension.TypeUri { get { return Constants.ae.ns; } }
 
-		IDictionary<string, string> IExtensionRequest.GetFields(RelyingParty.IAuthenticationRequest authenticationRequest) {
+		IDictionary<string, string> IExtensionRequest.Serialize(RelyingParty.IAuthenticationRequest authenticationRequest) {
 			var fields = new Dictionary<string, string> {
 				{ "mode", Mode },
 			};
@@ -74,7 +74,7 @@ namespace DotNetOpenId.Extensions {
 			return fields;
 		}
 
-		bool IExtensionRequest.SetFields(IDictionary<string, string> fields, DotNetOpenId.Provider.IRequest request) {
+		bool IExtensionRequest.Deserialize(IDictionary<string, string> fields, DotNetOpenId.Provider.IRequest request) {
 			if (fields == null) return false;
 			string mode;
 			fields.TryGetValue("mode", out mode);
