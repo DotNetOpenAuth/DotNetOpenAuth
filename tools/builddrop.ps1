@@ -10,7 +10,7 @@ $ProductName = "DotNetOpenId"
 
 function Usage() {
 	$ScriptName = Split-Path -leaf $MyInvocation.ScriptName
-	Write-Host "$ScriptName [-Version x.y.z] [-Configuration Debug|Release] [-force] [-signed]"
+	Write-Host "$ScriptName [-Version x.y.z] [-Configuration Debug|Release] [-force] [-rebuild] [-signed]"
 	exit
 }
 
