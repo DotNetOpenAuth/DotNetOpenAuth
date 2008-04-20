@@ -25,7 +25,7 @@ namespace DotNetOpenId.Test {
 			DateTime creationDate = DateTime.Now.Subtract(age);
 			Nonce nonce = new Nonce(creationDate, code, false);
 			Assert.AreEqual(creationDate.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ") + code, nonce.Code);
-			Assert.AreEqual(creationDate, nonce.CreationDate);
+			Assert.AreEqual(creationDate.ToUniversalTime(), nonce.CreationDate);
 			Assert.Less(((DateTime.Now - age) - creationDate).TotalSeconds, 2);
 			Assert.IsFalse(nonce.IsExpired);
 		}
@@ -37,7 +37,7 @@ namespace DotNetOpenId.Test {
 			DateTime creationDate = DateTime.Now.Subtract(age);
 			Nonce nonce = new Nonce(creationDate, code, false);
 			Assert.AreEqual(creationDate.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ") + code, nonce.Code);
-			Assert.AreEqual(creationDate, nonce.CreationDate);
+			Assert.AreEqual(creationDate.ToUniversalTime(), nonce.CreationDate);
 			Assert.Less(((DateTime.Now - age) - creationDate).TotalSeconds, 2);
 			Assert.IsTrue(nonce.IsExpired);
 		}
