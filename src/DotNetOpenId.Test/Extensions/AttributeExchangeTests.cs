@@ -88,5 +88,20 @@ namespace DotNetOpenId.Test.Extensions {
 			for (int i = 0; i < newAttribute.Values.Length; i++)
 				Assert.AreEqual(newAttribute.Values[i], att.Values[i]);
 		}
+
+		/// <summary>
+		/// Tests that two extensions that use the same namespace cannot 
+		/// both be added to the message at once, per the spec.
+		/// </summary>
+		[Test, ExpectedException(typeof(OpenIdException))]
+		public void FetchAndStore() {
+			var identityUrl = TestSupport.GetIdentityUrl(TestSupport.Scenarios.ExtensionFullCooperation, Version);
+			var returnTo = TestSupport.GetFullUrl(TestSupport.ConsumerPage);
+			var realm = new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri);
+			var consumer = new OpenIdRelyingParty(AppStore, null);
+			var request = consumer.CreateRequest(identityUrl, realm, returnTo);
+			request.AddExtension(new AttributeExchangeFetchRequest());
+			request.AddExtension(new AttributeExchangeStoreRequest());
+		}
 	}
 }

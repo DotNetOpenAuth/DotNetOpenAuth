@@ -167,8 +167,12 @@ namespace DotNetOpenId.Test {
 			ExtensionArgumentsManager.CreateIncomingExtensions(args);
 		}
 
-		[Test]
-		public void AddExtensionArgsTwice() {
+		/// <summary>
+		/// Verifies that two extensions cannot be added in the same namespace
+		/// to the same message.
+		/// </summary>
+		[Test, ExpectedException(typeof(OpenIdException))]
+		public void AddExtensionArgsTwiceInSameNamespace() {
 			var args1 = new Dictionary<string, string>() {
 				{"k1", "v1"},
 			};
@@ -178,8 +182,6 @@ namespace DotNetOpenId.Test {
 			var mgr = ExtensionArgumentsManager.CreateOutgoingExtensions(protocol);
 			mgr.AddExtensionArguments("extTypeURI", args1);
 			mgr.AddExtensionArguments("extTypeURI", args2);
-			var results = mgr.GetArgumentsToSend(false);
-			Assert.AreEqual(3, results.Count);
 		}
 
 		[Test]

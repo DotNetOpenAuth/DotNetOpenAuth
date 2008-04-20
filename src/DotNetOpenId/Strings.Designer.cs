@@ -124,6 +124,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An extension sharing namespace &apos;{0}&apos; has already been added.  Only one extension per namespace is allowed in a given request..
+        /// </summary>
+        internal static string ExtensionAlreadyAddedWithSameTypeURI {
+            get {
+                return ResourceManager.GetString("ExtensionAlreadyAddedWithSameTypeURI", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Extension parameter key &apos;{0}&apos; encountered, but extension parameter keys should not include their prefix..
         /// </summary>
         internal static string ExtensionParameterKeysWithoutPrefixExpected {

@@ -138,6 +138,9 @@
   <data name="ExpiredNonce" xml:space="preserve">
     <value>The nonce has expired.</value>
   </data>
+  <data name="ExtensionAlreadyAddedWithSameTypeURI" xml:space="preserve">
+    <value>An extension sharing namespace '{0}' has already been added.  Only one extension per namespace is allowed in a given request.</value>
+  </data>
   <data name="ExtensionParameterKeysWithoutPrefixExpected" xml:space="preserve">
     <value>Extension parameter key '{0}' encountered, but extension parameter keys should not include their prefix.</value>
   </data>

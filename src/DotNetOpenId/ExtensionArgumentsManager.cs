@@ -105,6 +105,9 @@ namespace DotNetOpenId {
 			Dictionary<string, string> extensionArgs;
 			if (!extensions.TryGetValue(extensionTypeUri, out extensionArgs))
 				extensions.Add(extensionTypeUri, extensionArgs = new Dictionary<string,string>());
+			if (extensionArgs.Count > 0)
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
+					Strings.ExtensionAlreadyAddedWithSameTypeURI, extensionTypeUri));
 			foreach (var pair in arguments) {
 				extensionArgs.Add(pair.Key, pair.Value);
 			}
