@@ -1,14 +1,16 @@
 ﻿param(
 	$Version, 
 	$Configuration='Release',
-	[switch] $Force=$false
+	[switch] $Signed,
+	[switch] $Force=$false,
+	[switch] $Rebuild
 )
 
 $ProductName = "DotNetOpenId"
 
 function Usage() {
 	$ScriptName = Split-Path -leaf $MyInvocation.ScriptName
-	Write-Host "$ScriptName [-Version x.y.z] [-Configuration Debug|Release] [-force]"
+	Write-Host "$ScriptName [-Version x.y.z] [-Configuration Debug|Release] [-force] [-signed]"
 	exit
 }
 
@@ -28,11 +30,11 @@ function SetupVariables() {
 	$ToolsDir = Split-Path $MyInvocation.ScriptName
 	$RootDir = [io.path]::getfullpath((Join-Path $ToolsDir .. -resolve))
 	$BinDir = "$RootDir\bin"
-	$AssemblyInfoFile = "$RootDir\src\$ProductName\Properties\AssemblyInfo.cs"
+	$AssemblyInfoFiles = "$RootDir\src\$ProductName\Properties\AssemblyInfo.cs","$RootDir\src\$ProductName.Test\Properties\AssemblyInfo.cs"
 	if ($Version -and ($Version -notmatch "^(\d)\.(\d)\.(\d)$")) { Usage }
 	if (!$Version) {
 		$VersionRegEx = [regex] "\d\.\d\.\d"
-		$m = $VersionRegEx.Match((Get-Content $AssemblyInfoFile))
+		$m = $VersionRegEx.Match((Get-Content $AssemblyInfoFiles[0]))
 		$Script:Version = $m.Groups[0].Value
 	}
 	$Version += "." + (jdate)
@@ -47,30 +49,39 @@ function PerformChecks() {
 	if (@(Get-Command "msbuild.exe").Length -eq 0) {
 		throw "Unable to find msbuild.exe.  Make sure your .NET SDK is in the PATH."
 	}
-	if (-not (Test-Path $AssemblyInfoFile)) {
-		throw "Unable to find AssemblyInfo.cs at $AssemblyInfoFile."
+	if (-not (Test-Path $AssemblyInfoFiles[0])) {
+		throw "Unable to find AssemblyInfo.cs at $($AssemblyInfoFiles[0])."
 	}
 	if (-not ($Configuration -eq "Release" -or $Configuration -eq "Debug")) { Usage }
 }
 
 function SetBuildVersion() {
 	Write-Host "Building version $Version..."
-	# Make backup
-	Copy-Item $AssemblyInfoFile "$($AssemblyInfoFile)~"
-	# Now change the version attribute in the file.
-	$VersionRegEx = [regex]"\d+\.\d+\.\d+\.\d+"
-	(Get-Content $AssemblyInfoFile) | 
-		Foreach-Object { $VersionRegEx.Replace($_, $Version) } |
-		Set-Content $AssemblyInfoFile -encoding utf8
+	foreach ($AssemblyInfoFile in $AssemblyInfoFiles) {
+		# Make backup
+		Copy-Item $AssemblyInfoFile "$($AssemblyInfoFile)~"
+		# Now change the version attribute in the file.
+		$VersionRegEx = [regex]"\d+\.\d+\.\d+\.\d+"
+		(Get-Content $AssemblyInfoFile) | 
+			Foreach-Object { $VersionRegEx.Replace($_, $Version) } |
+			Set-Content $AssemblyInfoFile -encoding utf8
+	}
 }
 
 function RevertBuildVersion() {
-	# Restore backup
-	Copy-Item "$($AssemblyInfoFile)~" $AssemblyInfoFile
+	foreach ($AssemblyInfoFile in $AssemblyInfoFiles) {
+		# Restore backup
+		Copy-Item "$($AssemblyInfoFile)~" $AssemblyInfoFile
+	}
 }
 
 function Build() {
-	msbuild $RootDir\src\$ProductName.sln /p:Configuration=$Configuration > $nul
+	if ($Rebuild) {
+		msbuild $RootDir\src\$ProductName.sln /p:Configuration=$Configuration /p:Sign=$Signed > $nul
+	} else {
+		msbuild $RootDir\src\$ProductName.sln /p:Configuration=$Configuration /p:Sign=$Signed /t:rebuild > $nul
+	}
+	if ($lastexitcode -ne 0) { throw "Build failure." }
 }
 
 function AssembleDrop() {
