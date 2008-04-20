@@ -3,6 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{14D00F8C-C7CB-49B3-A668-7D0C5A4A6D9F}"
 	ProjectSection(SolutionItems) = preProject
+		..\doc\openid-attribute-exchange-1_0.html = ..\doc\openid-attribute-exchange-1_0.html
 		..\doc\openid-authentication-1_1.html = ..\doc\openid-authentication-1_1.html
 		..\doc\openid-authentication-2_0.html = ..\doc\openid-authentication-2_0.html
 		..\doc\README.html = ..\doc\README.html
