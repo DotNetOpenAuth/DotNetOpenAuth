@@ -29,16 +29,14 @@ namespace DotNetOpenId.RelyingParty {
 
 		List<Nonce> nonces = new List<Nonce>();
 
-		public void StoreNonce(Nonce nonce) {
+		public bool TryStoreNonce(Nonce nonce) {
 			if (TraceUtil.Switch.TraceVerbose)
 				Trace.TraceInformation("Storing nonce: {0}", nonce.Code);
 			lock (this) {
+				if (nonces.Contains(nonce)) return false;
 				nonces.Add(nonce);
+				return true;
 			}
-		}
-
-		public bool ContainsNonce(Nonce nonce) {
-			return nonces.Contains(nonce);
 		}
 
 		public void ClearExpiredNonces() {

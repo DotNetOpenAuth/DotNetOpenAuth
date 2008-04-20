@@ -15,22 +15,26 @@ namespace DotNetOpenId.RelyingParty {
 		byte[] SecretSigningKey { get; }
 
 		/// <summary>
-		/// Stores a nonce.  Checking for an existing nonce with the same <see cref="Nonce.Code"/> value
-		/// is not necessary as <see cref="ContainsNonce"/> is atomically checked first.
+		/// Stores a nonce at least until it expires.
 		/// </summary>
+		/// <returns>
+		/// True if the nonce was stored and did not exist previous to this call.
+		/// False if the nonce already exists in the store.
+		/// </returns>
 		/// <remarks>
-		/// When persisting nonce instances, only the <see cref="Nonce.Code"/> and <see cref="Nonce.ExpirationDate"/>
-		/// properties are significant.  Nonces never need to be deserialized.
+		/// <para>When persisting nonce instances, only the <see cref="Nonce.Code"/> and <see cref="Nonce.ExpirationDate"/>
+		/// properties are significant.  The Code property is used for checking prior nonce use,
+		/// and the ExpirationDate for rapid deletion of expired nonces.</para>
+		/// <para>Nonces never need to be deserialized.</para>
+		/// <para>When checking if a nonce already exists, only the Nonce.Code field should be compared.</para>
+		/// <para>Checking for the prior existence of the given nonce and adding the nonce if it 
+		/// did not previously exist must be an atomic operation to prevent replay attacks
+		/// in the race condition of two threads trying to store the same nonce at the same time.
+		/// This should be done by using a UNIQUE constraint on the Nonce.Code column, and perhaps
+		/// a transaction that guarantees repeatable READ operations to ensure that no other process
+		/// can add a given nonce once you've verified that it's not there.</para>
 		/// </remarks>
-		void StoreNonce(Nonce nonce);
-		/// <summary>
-		/// Gets whether a given nonce already exists in the store.
-		/// </summary>
-		/// <remarks>
-		/// When checking a persistent store for an existing nonce, only compare the
-		/// <see cref="Nonce.Code"/> fields.
-		/// </remarks>
-		bool ContainsNonce(Nonce nonce);
+		bool TryStoreNonce(Nonce nonce);
 		/// <summary>
 		/// Hints to the store to clear expired nonces.
 		/// </summary>

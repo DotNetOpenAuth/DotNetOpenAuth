@@ -101,15 +101,13 @@ namespace DotNetOpenId {
 			// we could store used nonces and check that they do not previously exist.
 			// To protect against DoS attacks, it's cheaper to store fully-used ones
 			// than half-used ones because it costs the user agent more to get that far.
-			lock (store) {
-				// Replay detection
-				if (store.ContainsNonce(this)) {
-					// We've used this nonce before!  Replay attack!
-					throw new OpenIdException(Strings.ReplayAttackDetected);
-				}
-				store.StoreNonce(this);
-				store.ClearExpiredNonces();
+
+			// Replay detection
+			if (!store.TryStoreNonce(this)) {
+				// We've used this nonce before!  Replay attack!
+				throw new OpenIdException(Strings.ReplayAttackDetected);
 			}
+			store.ClearExpiredNonces();
 		}
 
 		/// <summary>

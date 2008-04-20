@@ -83,12 +83,23 @@ namespace RelyingPartyCustomStore {
 			}
 		}
 
-		public void StoreNonce(Nonce nonce) {
-			dataSet.Nonce.AddNonceRow(nonce.Code, nonce.ExpirationDate.ToLocalTime());
-		}
-
-		public bool ContainsNonce(Nonce nonce) {
-			return dataSet.Nonce.FindByCode(nonce.Code) != null;
+		public bool TryStoreNonce(Nonce nonce) {
+			// IMPORTANT: If actually persisting to a database that can be reached from
+			// different servers/instances of this class at once, it is vitally important
+			// to protect against race condition attacks by one or more of these:
+			// 1) setting a UNIQUE constraint on the nonce CODE in the SQL table
+			// 2) Using a transaction with repeatable reads to guarantee that a check
+			//    that verified a nonce did not exist will prevent that nonce from being
+			//    added by another process while this process is adding it.
+			// And then you'll want to catch the exception that the SQL database can throw
+			// at you in the result of a race condition somewhere in your web site UI code
+			// and display some message to have the user try to log in again, and possibly
+			// warn them about a replay attack.
+			lock (this) {
+				if (dataSet.Nonce.FindByCode(nonce.Code) != null) return false;
+				dataSet.Nonce.AddNonceRow(nonce.Code, nonce.ExpirationDate.ToLocalTime());
+				return true;
+			}
 		}
 
 		public void ClearExpiredNonces() {
