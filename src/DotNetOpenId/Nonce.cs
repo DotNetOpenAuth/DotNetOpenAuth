@@ -49,7 +49,7 @@ namespace DotNetOpenId {
 		}
 		internal Nonce(DateTime creation, string uniqueFragment, bool remoteServerOrigin) {
 			Code = creation.ToUniversalTime().ToString(PermissibleDateTimeFormats[0], CultureInfo.InvariantCulture) + uniqueFragment;
-			CreationDate = creation;
+			CreationDate = creation.ToUniversalTime();
 			UniqueFragment = uniqueFragment;
 			this.remoteServerOrigin = remoteServerOrigin;
 		}
@@ -59,6 +59,9 @@ namespace DotNetOpenId {
 		/// request or response.
 		/// </summary>
 		public string Code { get; internal set; }
+		/// <summary>
+		/// The UTC date/time this nonce was generated.
+		/// </summary>
 		internal DateTime CreationDate { get; set; }
 		internal string UniqueFragment { get; set; }
 		bool remoteServerOrigin;
@@ -76,8 +79,8 @@ namespace DotNetOpenId {
 		/// </summary>
 		public bool IsExpired { get { return Age > maximumLifetime; } }
 		/// <summary>
-		/// Gets the date past which this nonce is no longer valid, so storing a nonce for replay attack
-		/// protection is only necessary until this time.
+		/// Gets the UTC date beyond which this nonce is no longer valid, so storing
+		/// a nonce for replay attack protection is only necessary until this time.
 		/// </summary>
 		public DateTime ExpirationDate { get { return CreationDate + maximumLifetime; } }
 
