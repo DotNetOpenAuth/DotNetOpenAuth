@@ -10,6 +10,10 @@ namespace DotNetOpenId.Extensions {
 	/// </summary>
 	[Serializable]
 	public class AttributeValues {
+		/// <remarks>
+		/// This is internal because web sites should be using the 
+		/// <see cref="AttributeRequest.Respond"/> method to instantiate.
+		/// </remarks>
 		internal AttributeValues() { }
 
 		/// <summary>

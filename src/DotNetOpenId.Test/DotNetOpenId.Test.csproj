@@ -51,6 +51,7 @@
     <Compile Include="Extensions\AttributeExchangeFetchRequestTests.cs" />
     <Compile Include="Extensions\AttributeExchangeFetchResponseTests.cs" />
     <Compile Include="Extensions\AttributeExchangeTests.cs" />
+    <Compile Include="Extensions\AttributeRequestTests.cs" />
     <Compile Include="Extensions\ExtensionTestBase.cs" />
     <Compile Include="Extensions\SimpleRegistrationTests.cs" />
     <Compile Include="Hosting\EncodingInterceptor.cs" />

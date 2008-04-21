@@ -9,6 +9,27 @@ namespace DotNetOpenId.Extensions {
 	/// the Attribute Exchange extension.
 	/// </summary>
 	public class AttributeRequest {
+		public AttributeRequest() { }
+		/// <summary>
+		/// Instantiates a new <see cref="AttributeRequest"/> with IsRequired = false, Count = 1.
+		/// </summary>
+		public AttributeRequest(string typeUri) {
+			if (string.IsNullOrEmpty(typeUri)) throw new ArgumentNullException("typeUri");
+			TypeUri = typeUri;
+		}
+		/// <summary>
+		/// Instantiates a new <see cref="AttributeRequest"/> with Count = 1.
+		/// </summary>
+		public AttributeRequest(string typeUri, bool isRequired)
+			: this(typeUri) {
+			IsRequired = isRequired;
+		}
+		/// <summary>
+		/// Instantiates a new <see cref="AttributeRequest"/>.
+		/// </summary>
+		public AttributeRequest(string typeUri, bool isRequired, int count) : this(typeUri, isRequired) {
+			Count = count;
+		}
 		/// <summary>
 		/// The URI uniquely identifying the attribute being requested.
 		/// </summary>
