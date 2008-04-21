@@ -58,6 +58,7 @@
     <Compile Include="Associations.cs" />
     <Compile Include="ExtensionArgumentsManager.cs" />
     <Compile Include="Extensions\AliasManager.cs" />
+    <Compile Include="Extensions\AttributeExchangeConstants.cs" />
     <Compile Include="Extensions\AttributeExchangeFetchResponse.cs" />
     <Compile Include="Extensions\AttributeRequest.cs" />
     <Compile Include="Extensions\AttributeValues.cs" />

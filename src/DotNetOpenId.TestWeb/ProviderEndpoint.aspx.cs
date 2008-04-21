@@ -13,8 +13,8 @@ using DotNetOpenId.Extensions;
 using System.Collections.Generic;
 
 public partial class ProviderEndpoint : System.Web.UI.Page {
-	const string nicknameTypeUri = "http://axschema.org/namePerson/friendly";
-	const string emailTypeUri = "http://axschema.org/contact/email";
+	const string nicknameTypeUri = AttributeExchangeConstants.Name.Alias;
+	const string emailTypeUri = AttributeExchangeConstants.Contact.Email;
 
 	IDictionary<string, AttributeValues> storedAttributes {
 		get {

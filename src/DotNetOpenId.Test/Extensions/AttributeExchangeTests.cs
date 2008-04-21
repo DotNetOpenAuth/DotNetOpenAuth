@@ -9,8 +9,8 @@ using DotNetOpenId.Extensions;
 namespace DotNetOpenId.Test.Extensions {
 	[TestFixture]
 	public class AttributeExchangeTests : ExtensionTestBase {
-		const string nicknameTypeUri = "http://axschema.org/namePerson/friendly";
-		const string emailTypeUri = "http://axschema.org/contact/email";
+		const string nicknameTypeUri = AttributeExchangeConstants.Name.Alias;
+		const string emailTypeUri = AttributeExchangeConstants.Contact.Email;
 		const string incrementingAttribute = "http://incatt";
 		int incrementingAttributeValue = 1;
 
