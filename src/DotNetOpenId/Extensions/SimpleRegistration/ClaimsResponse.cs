@@ -22,7 +22,7 @@ namespace DotNetOpenId.Extensions.SimpleRegistration
 	/// authenticating user.
 	/// </summary>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2218:OverrideGetHashCodeOnOverridingEquals"), Serializable()]
-	public class SimpleRegistrationFieldValues : IExtensionResponse
+	public class ClaimsResponse : IExtensionResponse
 	{
 		/// <summary>
 		/// The nickname the user goes by.
@@ -187,7 +187,7 @@ namespace DotNetOpenId.Extensions.SimpleRegistration
 		/// <summary>
 		/// Tests equality of two <see cref="SimpleRegistrationFieldValues"/> objects.
 		/// </summary>
-		public static bool operator ==(SimpleRegistrationFieldValues one, SimpleRegistrationFieldValues other) {
+		public static bool operator ==(ClaimsResponse one, ClaimsResponse other) {
 			if ((object)one == null && (object)other == null) return true;
 			if ((object)one == null ^ (object)other == null) return false;
 			return one.Equals(other);
@@ -195,7 +195,7 @@ namespace DotNetOpenId.Extensions.SimpleRegistration
 		/// <summary>
 		/// Tests inequality of two <see cref="SimpleRegistrationFieldValues"/> objects.
 		/// </summary>
-		public static bool operator !=(SimpleRegistrationFieldValues one, SimpleRegistrationFieldValues other) {
+		public static bool operator !=(ClaimsResponse one, ClaimsResponse other) {
 			return !(one == other);
 		}
 		/// <summary>
@@ -203,8 +203,8 @@ namespace DotNetOpenId.Extensions.SimpleRegistration
 		/// </summary>
 		public override bool Equals(object obj)
 		{
-			if (!(obj is SimpleRegistrationFieldValues)) return false;
-			SimpleRegistrationFieldValues other = (SimpleRegistrationFieldValues)obj;
+			if (!(obj is ClaimsResponse)) return false;
+			ClaimsResponse other = (ClaimsResponse)obj;
 
 			return
 				safeEquals(this.BirthDate, other.BirthDate) &&

@@ -10,7 +10,7 @@ namespace DotNetOpenId.Extensions.SimpleRegistration {
 	/// Specifies what level of interest a relying party has in obtaining the value
 	/// of a given field offered by the Simple Registration extension.
 	/// </summary>
-	public enum SimpleRegistrationRequest {
+	public enum DemandLevel {
 		/// <summary>
 		/// The relying party has no interest in obtaining this field.
 		/// </summary>

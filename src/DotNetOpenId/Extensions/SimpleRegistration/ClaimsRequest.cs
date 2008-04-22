@@ -12,43 +12,43 @@ namespace DotNetOpenId.Extensions.SimpleRegistration {
 	/// </summary>
 #pragma warning disable 0659, 0661
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2218:OverrideGetHashCodeOnOverridingEquals")]
-	public class SimpleRegistrationRequestFields : IExtensionRequest {
+	public class ClaimsRequest : IExtensionRequest {
 		/// <summary>
 		/// The level of interest a relying party has in the nickname of the user.
 		/// </summary>
-		public SimpleRegistrationRequest Nickname { get; set; }
+		public DemandLevel Nickname { get; set; }
 		/// <summary>
 		/// The level of interest a relying party has in the email of the user.
 		/// </summary>
-		public SimpleRegistrationRequest Email { get; set; }
+		public DemandLevel Email { get; set; }
 		/// <summary>
 		/// The level of interest a relying party has in the full name of the user.
 		/// </summary>
-		public SimpleRegistrationRequest FullName { get; set; }
+		public DemandLevel FullName { get; set; }
 		/// <summary>
 		/// The level of interest a relying party has in the birthdate of the user.
 		/// </summary>
-		public SimpleRegistrationRequest BirthDate { get; set; }
+		public DemandLevel BirthDate { get; set; }
 		/// <summary>
 		/// The level of interest a relying party has in the gender of the user.
 		/// </summary>
-		public SimpleRegistrationRequest Gender { get; set; }
+		public DemandLevel Gender { get; set; }
 		/// <summary>
 		/// The level of interest a relying party has in the postal code of the user.
 		/// </summary>
-		public SimpleRegistrationRequest PostalCode { get; set; }
+		public DemandLevel PostalCode { get; set; }
 		/// <summary>
 		/// The level of interest a relying party has in the Country of the user.
 		/// </summary>
-		public SimpleRegistrationRequest Country { get; set; }
+		public DemandLevel Country { get; set; }
 		/// <summary>
 		/// The level of interest a relying party has in the language of the user.
 		/// </summary>
-		public SimpleRegistrationRequest Language { get; set; }
+		public DemandLevel Language { get; set; }
 		/// <summary>
 		/// The level of interest a relying party has in the time zone of the user.
 		/// </summary>
-		public SimpleRegistrationRequest TimeZone { get; set; }
+		public DemandLevel TimeZone { get; set; }
 
 		/// <summary>
 		/// The URL the consumer site provides for the authenticating user to review
@@ -66,7 +66,7 @@ namespace DotNetOpenId.Extensions.SimpleRegistration {
 		/// the OpenId specification for field names, omitting the 'openid.sreg' prefix.
 		/// </param>
 		/// <param name="requestLevel">The none/request/require state of the listed fields.</param>
-		internal void SetProfileRequestFromList(ICollection<string> fieldNames, SimpleRegistrationRequest requestLevel) {
+		internal void SetProfileRequestFromList(ICollection<string> fieldNames, DemandLevel requestLevel) {
 			foreach (string field in fieldNames) {
 				switch (field) {
 					case Constants.nickname:
@@ -102,7 +102,7 @@ namespace DotNetOpenId.Extensions.SimpleRegistration {
 				}
 			}
 		}
-		string[] assembleProfileFields(SimpleRegistrationRequest level) {
+		string[] assembleProfileFields(DemandLevel level) {
 			List<string> fields = new List<string>(10);
 			if (Nickname == level)
 				fields.Add(Constants.nickname);
@@ -140,12 +140,12 @@ namespace DotNetOpenId.Extensions.SimpleRegistration {
 
 			string optionalFields;
 			if (args.TryGetValue(Constants.optional, out optionalFields)) {
-				SetProfileRequestFromList(optionalFields.Split(','), SimpleRegistrationRequest.Request);
+				SetProfileRequestFromList(optionalFields.Split(','), DemandLevel.Request);
 			}
 
 			string requiredFields;
 			if (args.TryGetValue(Constants.required, out requiredFields)) {
-				SetProfileRequestFromList(requiredFields.Split(','), SimpleRegistrationRequest.Require);
+				SetProfileRequestFromList(requiredFields.Split(','), DemandLevel.Require);
 			}
 
 			return true;
@@ -161,8 +161,8 @@ namespace DotNetOpenId.Extensions.SimpleRegistration {
 			if (PolicyUrl != null)
 				fields.Add(Constants.policy_url, PolicyUrl.AbsoluteUri);
 
-			fields.Add(Constants.required, string.Join(",", assembleProfileFields(SimpleRegistrationRequest.Require)));
-			fields.Add(Constants.optional, string.Join(",", assembleProfileFields(SimpleRegistrationRequest.Request)));
+			fields.Add(Constants.required, string.Join(",", assembleProfileFields(DemandLevel.Require)));
+			fields.Add(Constants.optional, string.Join(",", assembleProfileFields(DemandLevel.Request)));
 
 			return fields;
 		}
@@ -186,7 +186,7 @@ TimeZone = '{8}'", Nickname, Email, FullName, BirthDate, Gender, PostalCode, Cou
 		/// <summary>
 		/// Tests equality between two <see cref="SimpleRegistrationRequestFields"/> structs.
 		/// </summary>
-		public static bool operator ==(SimpleRegistrationRequestFields one, SimpleRegistrationRequestFields other) {
+		public static bool operator ==(ClaimsRequest one, ClaimsRequest other) {
 			if ((object)one == null && (object)other == null) return true;
 			if ((object)one == null ^ (object)other == null) return false;
 			return one.Equals(other);
@@ -194,15 +194,15 @@ TimeZone = '{8}'", Nickname, Email, FullName, BirthDate, Gender, PostalCode, Cou
 		/// <summary>
 		/// Tests inequality between two <see cref="SimpleRegistrationRequestFields"/> structs.
 		/// </summary>
-		public static bool operator !=(SimpleRegistrationRequestFields one, SimpleRegistrationRequestFields other) {
+		public static bool operator !=(ClaimsRequest one, ClaimsRequest other) {
 			return !(one == other);
 		}
 		/// <summary>
 		/// Tests equality between two <see cref="SimpleRegistrationRequestFields"/> structs.
 		/// </summary>
 		public override bool Equals(object obj) {
-			if (!(obj is SimpleRegistrationRequestFields)) return false;
-			SimpleRegistrationRequestFields other = (SimpleRegistrationRequestFields)obj;
+			if (!(obj is ClaimsRequest)) return false;
+			ClaimsRequest other = (ClaimsRequest)obj;
 
 			return
 				safeEquals(this.BirthDate, other.BirthDate) &&

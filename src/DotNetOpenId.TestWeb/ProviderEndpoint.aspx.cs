@@ -12,10 +12,11 @@ using System.Collections.Specialized;
 using System.Collections.Generic;
 using DotNetOpenId.Extensions.AttributeExchange;
 using DotNetOpenId.Extensions.SimpleRegistration;
+using SregDemandLevel = DotNetOpenId.Extensions.SimpleRegistration.DemandLevel;
 
 public partial class ProviderEndpoint : System.Web.UI.Page {
-	const string nicknameTypeUri = AttributeExchangeConstants.Name.Alias;
-	const string emailTypeUri = AttributeExchangeConstants.Contact.Email;
+	const string nicknameTypeUri = WellKnownAttributes.Name.Alias;
+	const string emailTypeUri = WellKnownAttributes.Contact.Email;
 
 	IDictionary<string, AttributeValues> storedAttributes {
 		get {
@@ -29,18 +30,18 @@ public partial class ProviderEndpoint : System.Web.UI.Page {
 	}
 
 	void respondToExtensions(DotNetOpenId.Provider.IRequest request, TestSupport.Scenarios scenario) {
-		var sregRequest = request.GetExtension<SimpleRegistrationRequestFields>();
-		var sregResponse = new SimpleRegistrationFieldValues();
-		var aeFetchRequest = request.GetExtension<AttributeExchangeFetchRequest>();
-		var aeFetchResponse = new AttributeExchangeFetchResponse();
-		var aeStoreRequest = request.GetExtension<AttributeExchangeStoreRequest>();
-		var aeStoreResponse = new AttributeExchangeStoreResponse();
+		var sregRequest = request.GetExtension<ClaimsRequest>();
+		var sregResponse = new ClaimsResponse();
+		var aeFetchRequest = request.GetExtension<FetchRequest>();
+		var aeFetchResponse = new FetchResponse();
+		var aeStoreRequest = request.GetExtension<StoreRequest>();
+		var aeStoreResponse = new StoreResponse();
 		switch (scenario) {
 			case TestSupport.Scenarios.ExtensionFullCooperation:
 				if (sregRequest != null) {
-					if (sregRequest.FullName != SimpleRegistrationRequest.NoRequest)
+					if (sregRequest.FullName != SregDemandLevel.NoRequest)
 						sregResponse.FullName = "Andrew Arnott";
-					if (sregRequest.Email != SimpleRegistrationRequest.NoRequest)
+					if (sregRequest.Email != SregDemandLevel.NoRequest)
 						sregResponse.Email = "andrewarnott@gmail.com";
 				}
 				if (aeFetchRequest != null) {
@@ -62,9 +63,9 @@ public partial class ProviderEndpoint : System.Web.UI.Page {
 				break;
 			case TestSupport.Scenarios.ExtensionPartialCooperation:
 				if (sregRequest != null) {
-					if (sregRequest.FullName == SimpleRegistrationRequest.Require)
+					if (sregRequest.FullName == SregDemandLevel.Require)
 						sregResponse.FullName = "Andrew Arnott";
-					if (sregRequest.Email == SimpleRegistrationRequest.Require)
+					if (sregRequest.Email == SregDemandLevel.Require)
 						sregResponse.Email = "andrewarnott@gmail.com";
 				}
 				if (aeFetchRequest != null) {

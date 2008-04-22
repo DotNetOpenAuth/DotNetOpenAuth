@@ -109,7 +109,7 @@ namespace DotNetOpenId.RelyingParty
 		}
 
 		const string requestNicknameViewStateKey = "RequestNickname";
-		const SimpleRegistrationRequest requestNicknameDefault = SimpleRegistrationRequest.NoRequest;
+		const DemandLevel requestNicknameDefault = DemandLevel.NoRequest;
 		/// <summary>
 		/// Gets/sets your level of interest in receiving the user's nickname from the Provider.
 		/// </summary>
@@ -117,14 +117,14 @@ namespace DotNetOpenId.RelyingParty
 		[Category(profileCategory)]
 		[DefaultValue(requestNicknameDefault)]
 		[Description("Your level of interest in receiving the user's nickname from the Provider.")]
-		public SimpleRegistrationRequest RequestNickname
+		public DemandLevel RequestNickname
 		{
-			get { return (SimpleRegistrationRequest)(ViewState[requestNicknameViewStateKey] ?? requestNicknameDefault); }
+			get { return (DemandLevel)(ViewState[requestNicknameViewStateKey] ?? requestNicknameDefault); }
 			set { ViewState[requestNicknameViewStateKey] = value; }
 		}
 
 		const string requestEmailViewStateKey = "RequestEmail";
-		const SimpleRegistrationRequest requestEmailDefault = SimpleRegistrationRequest.NoRequest;
+		const DemandLevel requestEmailDefault = DemandLevel.NoRequest;
 		/// <summary>
 		/// Gets/sets your level of interest in receiving the user's email address from the Provider.
 		/// </summary>
@@ -132,14 +132,14 @@ namespace DotNetOpenId.RelyingParty
 		[Category(profileCategory)]
 		[DefaultValue(requestEmailDefault)]
 		[Description("Your level of interest in receiving the user's email address from the Provider.")]
-		public SimpleRegistrationRequest RequestEmail
+		public DemandLevel RequestEmail
 		{
-			get { return (SimpleRegistrationRequest)(ViewState[requestEmailViewStateKey] ?? requestEmailDefault); }
+			get { return (DemandLevel)(ViewState[requestEmailViewStateKey] ?? requestEmailDefault); }
 			set { ViewState[requestEmailViewStateKey] = value; }
 		}
 
 		const string requestFullNameViewStateKey = "RequestFullName";
-		const SimpleRegistrationRequest requestFullNameDefault = SimpleRegistrationRequest.NoRequest;
+		const DemandLevel requestFullNameDefault = DemandLevel.NoRequest;
 		/// <summary>
 		/// Gets/sets your level of interest in receiving the user's full name from the Provider.
 		/// </summary>
@@ -147,14 +147,14 @@ namespace DotNetOpenId.RelyingParty
 		[Category(profileCategory)]
 		[DefaultValue(requestFullNameDefault)]
 		[Description("Your level of interest in receiving the user's full name from the Provider")]
-		public SimpleRegistrationRequest RequestFullName
+		public DemandLevel RequestFullName
 		{
-			get { return (SimpleRegistrationRequest)(ViewState[requestFullNameViewStateKey] ?? requestFullNameDefault); }
+			get { return (DemandLevel)(ViewState[requestFullNameViewStateKey] ?? requestFullNameDefault); }
 			set { ViewState[requestFullNameViewStateKey] = value; }
 		}
 
 		const string requestBirthDateViewStateKey = "RequestBirthday";
-		const SimpleRegistrationRequest requestBirthDateDefault = SimpleRegistrationRequest.NoRequest;
+		const DemandLevel requestBirthDateDefault = DemandLevel.NoRequest;
 		/// <summary>
 		/// Gets/sets your level of interest in receiving the user's birthdate from the Provider.
 		/// </summary>
@@ -162,14 +162,14 @@ namespace DotNetOpenId.RelyingParty
 		[Category(profileCategory)]
 		[DefaultValue(requestBirthDateDefault)]
 		[Description("Your level of interest in receiving the user's birthdate from the Provider.")]
-		public SimpleRegistrationRequest RequestBirthDate
+		public DemandLevel RequestBirthDate
 		{
-			get { return (SimpleRegistrationRequest)(ViewState[requestBirthDateViewStateKey] ?? requestBirthDateDefault); }
+			get { return (DemandLevel)(ViewState[requestBirthDateViewStateKey] ?? requestBirthDateDefault); }
 			set { ViewState[requestBirthDateViewStateKey] = value; }
 		}
 
 		const string requestGenderViewStateKey = "RequestGender";
-		const SimpleRegistrationRequest requestGenderDefault = SimpleRegistrationRequest.NoRequest;
+		const DemandLevel requestGenderDefault = DemandLevel.NoRequest;
 		/// <summary>
 		/// Gets/sets your level of interest in receiving the user's gender from the Provider.
 		/// </summary>
@@ -177,14 +177,14 @@ namespace DotNetOpenId.RelyingParty
 		[Category(profileCategory)]
 		[DefaultValue(requestGenderDefault)]
 		[Description("Your level of interest in receiving the user's gender from the Provider.")]
-		public SimpleRegistrationRequest RequestGender
+		public DemandLevel RequestGender
 		{
-			get { return (SimpleRegistrationRequest)(ViewState[requestGenderViewStateKey] ?? requestGenderDefault); }
+			get { return (DemandLevel)(ViewState[requestGenderViewStateKey] ?? requestGenderDefault); }
 			set { ViewState[requestGenderViewStateKey] = value; }
 		}
 
 		const string requestPostalCodeViewStateKey = "RequestPostalCode";
-		const SimpleRegistrationRequest requestPostalCodeDefault = SimpleRegistrationRequest.NoRequest;
+		const DemandLevel requestPostalCodeDefault = DemandLevel.NoRequest;
 		/// <summary>
 		/// Gets/sets your level of interest in receiving the user's postal code from the Provider.
 		/// </summary>
@@ -192,14 +192,14 @@ namespace DotNetOpenId.RelyingParty
 		[Category(profileCategory)]
 		[DefaultValue(requestPostalCodeDefault)]
 		[Description("Your level of interest in receiving the user's postal code from the Provider.")]
-		public SimpleRegistrationRequest RequestPostalCode
+		public DemandLevel RequestPostalCode
 		{
-			get { return (SimpleRegistrationRequest)(ViewState[requestPostalCodeViewStateKey] ?? requestPostalCodeDefault); }
+			get { return (DemandLevel)(ViewState[requestPostalCodeViewStateKey] ?? requestPostalCodeDefault); }
 			set { ViewState[requestPostalCodeViewStateKey] = value; }
 		}
 
 		const string requestCountryViewStateKey = "RequestCountry";
-		const SimpleRegistrationRequest requestCountryDefault = SimpleRegistrationRequest.NoRequest;
+		const DemandLevel requestCountryDefault = DemandLevel.NoRequest;
 		/// <summary>
 		/// Gets/sets your level of interest in receiving the user's country from the Provider.
 		/// </summary>
@@ -207,14 +207,14 @@ namespace DotNetOpenId.RelyingParty
 		[Category(profileCategory)]
 		[DefaultValue(requestCountryDefault)]
 		[Description("Your level of interest in receiving the user's country from the Provider.")]
-		public SimpleRegistrationRequest RequestCountry
+		public DemandLevel RequestCountry
 		{
-			get { return (SimpleRegistrationRequest)(ViewState[requestCountryViewStateKey] ?? requestCountryDefault); }
+			get { return (DemandLevel)(ViewState[requestCountryViewStateKey] ?? requestCountryDefault); }
 			set { ViewState[requestCountryViewStateKey] = value; }
 		}
 
 		const string requestLanguageViewStateKey = "RequestLanguage";
-		const SimpleRegistrationRequest requestLanguageDefault = SimpleRegistrationRequest.NoRequest;
+		const DemandLevel requestLanguageDefault = DemandLevel.NoRequest;
 		/// <summary>
 		/// Gets/sets your level of interest in receiving the user's preferred language from the Provider.
 		/// </summary>
@@ -222,14 +222,14 @@ namespace DotNetOpenId.RelyingParty
 		[Category(profileCategory)]
 		[DefaultValue(requestLanguageDefault)]
 		[Description("Your level of interest in receiving the user's preferred language from the Provider.")]
-		public SimpleRegistrationRequest RequestLanguage
+		public DemandLevel RequestLanguage
 		{
-			get { return (SimpleRegistrationRequest)(ViewState[requestLanguageViewStateKey] ?? requestLanguageDefault); }
+			get { return (DemandLevel)(ViewState[requestLanguageViewStateKey] ?? requestLanguageDefault); }
 			set { ViewState[requestLanguageViewStateKey] = value; }
 		}
 
 		const string requestTimeZoneViewStateKey = "RequestTimeZone";
-		const SimpleRegistrationRequest requestTimeZoneDefault = SimpleRegistrationRequest.NoRequest;
+		const DemandLevel requestTimeZoneDefault = DemandLevel.NoRequest;
 		/// <summary>
 		/// Gets/sets your level of interest in receiving the user's time zone from the Provider.
 		/// </summary>
@@ -237,9 +237,9 @@ namespace DotNetOpenId.RelyingParty
 		[Category(profileCategory)]
 		[DefaultValue(requestTimeZoneDefault)]
 		[Description("Your level of interest in receiving the user's time zone from the Provider.")]
-		public SimpleRegistrationRequest RequestTimeZone
+		public DemandLevel RequestTimeZone
 		{
-			get { return (SimpleRegistrationRequest)(ViewState[requestTimeZoneViewStateKey] ?? requestTimeZoneDefault); }
+			get { return (DemandLevel)(ViewState[requestTimeZoneViewStateKey] ?? requestTimeZoneDefault); }
 			set { ViewState[requestTimeZoneViewStateKey] = value; }
 		}
 
@@ -372,7 +372,7 @@ namespace DotNetOpenId.RelyingParty
 
 		void addProfileArgs(IAuthenticationRequest request)
 		{
-			request.AddExtension(new SimpleRegistrationRequestFields() {
+			request.AddExtension(new ClaimsRequest() {
 				Nickname = RequestNickname,
 				Email = RequestEmail,
 				FullName = RequestFullName,

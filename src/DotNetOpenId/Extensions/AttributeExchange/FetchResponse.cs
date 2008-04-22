@@ -9,7 +9,7 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 	/// <summary>
 	/// The Attribute Exchange Fetch message, response leg.
 	/// </summary>
-	public class AttributeExchangeFetchResponse : IExtensionResponse {
+	public class FetchResponse : IExtensionResponse {
 		readonly string Mode = "fetch_response";
 
 		List<AttributeValues> attributesProvided = new List<AttributeValues>();
@@ -44,7 +44,7 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 		public Uri UpdateUrl { get; set; }
 
 		#region IExtensionResponse Members
-		string IExtension.TypeUri { get { return Constants.ns; } }
+		string IExtension.TypeUri { get { return Constants.TypeUri; } }
 
 		IDictionary<string, string> IExtensionResponse.Serialize(Provider.IRequest authenticationRequest) {
 			var fields = new Dictionary<string, string> {

@@ -10,24 +10,24 @@ namespace DotNetOpenId.Test.Extensions {
 	public class AttributeExchangeFetchRequestTests {
 		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void AddAttributeRequestNull() {
-			new AttributeExchangeFetchRequest().AddAttribute(null);
+			new FetchRequest().AddAttribute(null);
 		}
 
 		[Test]
 		public void AddAttributeRequest() {
-			var req = new AttributeExchangeFetchRequest();
+			var req = new FetchRequest();
 			req.AddAttribute(new AttributeRequest() { TypeUri = "http://someUri" });
 		}
 
 		[Test]
 		public void AddAttributeRequestStrangeUri() {
-			var req = new AttributeExchangeFetchRequest();
+			var req = new FetchRequest();
 			req.AddAttribute(new AttributeRequest() { TypeUri = "=someUri*who*knows*but*this*is*legal" });
 		}
 
 		[Test, ExpectedException(typeof(ArgumentException))]
 		public void AddAttributeRequestAgain() {
-			var req = new AttributeExchangeFetchRequest();
+			var req = new FetchRequest();
 			req.AddAttribute(new AttributeRequest() { TypeUri = "http://UriTwice" });
 			req.AddAttribute(new AttributeRequest() { TypeUri = "http://UriTwice" });
 		}

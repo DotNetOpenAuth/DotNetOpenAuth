@@ -19,8 +19,8 @@ using DotNetOpenId.Extensions;
 namespace DotNetOpenId.Test {
 	[TestFixture]
 	public class ProfileFieldValuesTests {
-		SimpleRegistrationFieldValues getFilledData() {
-			return new SimpleRegistrationFieldValues() {
+		ClaimsResponse getFilledData() {
+			return new ClaimsResponse() {
 				BirthDate = new DateTime(2005, 2, 3),
 				Culture = new System.Globalization.CultureInfo("en-US"),
 				Email = "a@b.com",
@@ -34,36 +34,36 @@ namespace DotNetOpenId.Test {
 
 		[Test]
 		public void BinarySerialization() {
-			SimpleRegistrationFieldValues fields = getFilledData();
+			ClaimsResponse fields = getFilledData();
 			MemoryStream ms = new MemoryStream();
 			IFormatter formatter = new BinaryFormatter();
 			formatter.Serialize(ms, fields);
 
 			ms.Position = 0;
-			SimpleRegistrationFieldValues fields2 = (SimpleRegistrationFieldValues)formatter.Deserialize(ms);
+			ClaimsResponse fields2 = (ClaimsResponse)formatter.Deserialize(ms);
 			Assert.AreEqual(fields, fields2);
 		}
 
 		[Test]
 		public void XmlSerialization() {
-			SimpleRegistrationFieldValues fields = getFilledData();
+			ClaimsResponse fields = getFilledData();
 			MemoryStream ms = new MemoryStream();
-			XmlSerializer xs = new XmlSerializer(typeof(SimpleRegistrationFieldValues));
+			XmlSerializer xs = new XmlSerializer(typeof(ClaimsResponse));
 			xs.Serialize(ms, fields);
 
 			ms.Position = 0;
-			SimpleRegistrationFieldValues fields2 = (SimpleRegistrationFieldValues)xs.Deserialize(ms);
+			ClaimsResponse fields2 = (ClaimsResponse)xs.Deserialize(ms);
 			Assert.AreEqual(fields, fields2);
 		}
 
 		[Test]
 		public void TestEquals() {
-			SimpleRegistrationFieldValues fields1 = getFilledData();
+			ClaimsResponse fields1 = getFilledData();
 
 			Assert.AreNotEqual(fields1, null);
 			Assert.AreNotEqual(fields1, "string");
 
-			SimpleRegistrationFieldValues fields2 = getFilledData();
+			ClaimsResponse fields2 = getFilledData();
 			Assert.AreNotSame(fields1, fields2, "Test sanity check.");
 			Assert.AreEqual(fields1, fields2);
 

@@ -11,32 +11,32 @@ public partial class ProfileFields : System.Web.UI.UserControl {
 	protected void Page_Load(object sender, EventArgs e) {
 	}
 
-	public void SetRequiredFieldsFromRequest(SimpleRegistrationRequestFields requestFields) {
+	public void SetRequiredFieldsFromRequest(ClaimsRequest requestFields) {
 		if (requestFields.PolicyUrl != null) {
 			privacyLink.NavigateUrl = requestFields.PolicyUrl.AbsoluteUri;
 		} else {
 			privacyLink.Visible = false;
 		}
 
-		dobRequiredLabel.Visible = (requestFields.BirthDate == SimpleRegistrationRequest.Require);
-		countryRequiredLabel.Visible = (requestFields.Country == SimpleRegistrationRequest.Require);
-		emailRequiredLabel.Visible = (requestFields.Email == SimpleRegistrationRequest.Require);
-		fullnameRequiredLabel.Visible = (requestFields.FullName == SimpleRegistrationRequest.Require);
-		genderRequiredLabel.Visible = (requestFields.Gender == SimpleRegistrationRequest.Require);
-		languageRequiredLabel.Visible = (requestFields.Language == SimpleRegistrationRequest.Require);
-		nicknameRequiredLabel.Visible = (requestFields.Nickname == SimpleRegistrationRequest.Require);
-		postcodeRequiredLabel.Visible = (requestFields.PostalCode == SimpleRegistrationRequest.Require);
-		timezoneRequiredLabel.Visible = (requestFields.TimeZone == SimpleRegistrationRequest.Require);
+		dobRequiredLabel.Visible = (requestFields.BirthDate == DemandLevel.Require);
+		countryRequiredLabel.Visible = (requestFields.Country == DemandLevel.Require);
+		emailRequiredLabel.Visible = (requestFields.Email == DemandLevel.Require);
+		fullnameRequiredLabel.Visible = (requestFields.FullName == DemandLevel.Require);
+		genderRequiredLabel.Visible = (requestFields.Gender == DemandLevel.Require);
+		languageRequiredLabel.Visible = (requestFields.Language == DemandLevel.Require);
+		nicknameRequiredLabel.Visible = (requestFields.Nickname == DemandLevel.Require);
+		postcodeRequiredLabel.Visible = (requestFields.PostalCode == DemandLevel.Require);
+		timezoneRequiredLabel.Visible = (requestFields.TimeZone == DemandLevel.Require);
 
-		dateOfBirthRow.Visible = !(requestFields.BirthDate == SimpleRegistrationRequest.NoRequest);
-		countryRow.Visible = !(requestFields.Country == SimpleRegistrationRequest.NoRequest);
-		emailRow.Visible = !(requestFields.Email == SimpleRegistrationRequest.NoRequest);
-		fullnameRow.Visible = !(requestFields.FullName == SimpleRegistrationRequest.NoRequest);
-		genderRow.Visible = !(requestFields.Gender == SimpleRegistrationRequest.NoRequest);
-		languageRow.Visible = !(requestFields.Language == SimpleRegistrationRequest.NoRequest);
-		nicknameRow.Visible = !(requestFields.Nickname == SimpleRegistrationRequest.NoRequest);
-		postcodeRow.Visible = !(requestFields.PostalCode == SimpleRegistrationRequest.NoRequest);
-		timezoneRow.Visible = !(requestFields.TimeZone == SimpleRegistrationRequest.NoRequest);
+		dateOfBirthRow.Visible = !(requestFields.BirthDate == DemandLevel.NoRequest);
+		countryRow.Visible = !(requestFields.Country == DemandLevel.NoRequest);
+		emailRow.Visible = !(requestFields.Email == DemandLevel.NoRequest);
+		fullnameRow.Visible = !(requestFields.FullName == DemandLevel.NoRequest);
+		genderRow.Visible = !(requestFields.Gender == DemandLevel.NoRequest);
+		languageRow.Visible = !(requestFields.Language == DemandLevel.NoRequest);
+		nicknameRow.Visible = !(requestFields.Nickname == DemandLevel.NoRequest);
+		postcodeRow.Visible = !(requestFields.PostalCode == DemandLevel.NoRequest);
+		timezoneRow.Visible = !(requestFields.TimeZone == DemandLevel.NoRequest);
 	}
 
 	public bool DoesAnyFieldHaveAValue {
@@ -97,9 +97,9 @@ public partial class ProfileFields : System.Web.UI.UserControl {
 		}
 	}
 
-	public SimpleRegistrationFieldValues OpenIdProfileFields {
+	public ClaimsResponse OpenIdProfileFields {
 		get {
-			SimpleRegistrationFieldValues fields = new SimpleRegistrationFieldValues();
+			ClaimsResponse fields = new ClaimsResponse();
 			fields.BirthDate = DateOfBirth;
 			fields.Country = countryDropdownList.SelectedValue;
 			fields.Email = emailTextBox.Text;

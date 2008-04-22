@@ -9,7 +9,7 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 	/// <summary>
 	/// The Attribute Exchange Store message, response leg.
 	/// </summary>
-	public class AttributeExchangeStoreResponse : IExtensionResponse {
+	public class StoreResponse : IExtensionResponse {
 		const string SuccessMode = "store_response_success";
 		const string FailureMode = "store_response_failure";
 
@@ -23,7 +23,7 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 		public string FailureReason { get; set; }
 
 		#region IExtensionResponse Members
-		string IExtension.TypeUri { get { return Constants.ns; } }
+		string IExtension.TypeUri { get { return Constants.TypeUri; } }
 
 		IDictionary<string, string> IExtensionResponse.Serialize(Provider.IRequest authenticationRequest) {
 			var fields = new Dictionary<string, string> {

@@ -18,15 +18,15 @@ public class State
     {
     }
 
-    public static SimpleRegistrationFieldValues ProfileFields
+    public static ClaimsResponse ProfileFields
     {
         get
         {
             if (HttpContext.Current .Session["ProfileFields"] == null)
             {
-                HttpContext.Current .Session["ProfileFields"] = new SimpleRegistrationFieldValues();
+                HttpContext.Current .Session["ProfileFields"] = new ClaimsResponse();
             }
-            return (SimpleRegistrationFieldValues)HttpContext.Current .Session["ProfileFields"];
+            return (ClaimsResponse)HttpContext.Current .Session["ProfileFields"];
         }
         set { HttpContext.Current .Session["ProfileFields"] = value; }
     }

@@ -9,27 +9,27 @@ using DotNetOpenId.Extensions.AttributeExchange;
 namespace DotNetOpenId.Test.Extensions {
 	[TestFixture]
 	public class AttributeExchangeTests : ExtensionTestBase {
-		const string nicknameTypeUri = AttributeExchangeConstants.Name.Alias;
-		const string emailTypeUri = AttributeExchangeConstants.Contact.Email;
+		const string nicknameTypeUri = WellKnownAttributes.Name.Alias;
+		const string emailTypeUri = WellKnownAttributes.Contact.Email;
 		const string incrementingAttribute = "http://incatt";
 		int incrementingAttributeValue = 1;
 
 		[Test]
 		public void None() {
-			var fetchResponse = ParameterizedTest<AttributeExchangeFetchResponse>(
+			var fetchResponse = ParameterizedTest<FetchResponse>(
 				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ExtensionFullCooperation, Version), null);
 			Assert.IsNull(fetchResponse);
-			var storeResponse = ParameterizedTest<AttributeExchangeStoreResponse>(
+			var storeResponse = ParameterizedTest<StoreResponse>(
 				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ExtensionFullCooperation, Version), null);
 			Assert.IsNull(storeResponse);
 		}
 
 		[Test]
 		public void Fetch() {
-			var request = new AttributeExchangeFetchRequest();
+			var request = new FetchRequest();
 			request.AddAttribute(new AttributeRequest { TypeUri = nicknameTypeUri });
 			request.AddAttribute(new AttributeRequest { TypeUri = emailTypeUri, Count = int.MaxValue });
-			var response = ParameterizedTest<AttributeExchangeFetchResponse>(
+			var response = ParameterizedTest<FetchResponse>(
 				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ExtensionFullCooperation, Version), request);
 			Assert.IsNotNull(response);
 			var att = response.GetAttribute(nicknameTypeUri);
@@ -47,9 +47,9 @@ namespace DotNetOpenId.Test.Extensions {
 
 		[Test]
 		public void FetchLimitEmails() {
-			var request = new AttributeExchangeFetchRequest();
+			var request = new FetchRequest();
 			request.AddAttribute(new AttributeRequest { TypeUri = emailTypeUri, Count = 1 });
-			var response = ParameterizedTest<AttributeExchangeFetchResponse>(
+			var response = ParameterizedTest<FetchResponse>(
 				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ExtensionFullCooperation, Version), request);
 			Assert.IsNotNull(response);
 			var att = response.GetAttribute(emailTypeUri);
@@ -61,7 +61,7 @@ namespace DotNetOpenId.Test.Extensions {
 
 		[Test]
 		public void Store() {
-			var request = new AttributeExchangeStoreRequest();
+			var request = new StoreRequest();
 			var newAttribute = new AttributeValues {
 				TypeUri = incrementingAttribute,
 				Values = new[] { 
@@ -71,15 +71,15 @@ namespace DotNetOpenId.Test.Extensions {
 			};
 			request.AddAttribute(newAttribute);
 
-			var response = ParameterizedTest<AttributeExchangeStoreResponse>(
+			var response = ParameterizedTest<StoreResponse>(
 				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ExtensionFullCooperation, Version), request);
 			Assert.IsNotNull(response);
 			Assert.IsTrue(response.Succeeded);
 			Assert.IsNull(response.FailureReason);
 
-			var fetchRequest = new AttributeExchangeFetchRequest();
+			var fetchRequest = new FetchRequest();
 			fetchRequest.AddAttribute(new AttributeRequest { TypeUri = incrementingAttribute });
-			var fetchResponse = ParameterizedTest<AttributeExchangeFetchResponse>(
+			var fetchResponse = ParameterizedTest<FetchResponse>(
 				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ExtensionFullCooperation, Version), fetchRequest);
 			Assert.IsNotNull(fetchResponse);
 			var att = fetchResponse.GetAttribute(incrementingAttribute);
@@ -100,8 +100,8 @@ namespace DotNetOpenId.Test.Extensions {
 			var realm = new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri);
 			var consumer = new OpenIdRelyingParty(AppStore, null);
 			var request = consumer.CreateRequest(identityUrl, realm, returnTo);
-			request.AddExtension(new AttributeExchangeFetchRequest());
-			request.AddExtension(new AttributeExchangeStoreRequest());
+			request.AddExtension(new FetchRequest());
+			request.AddExtension(new StoreRequest());
 		}
 	}
 }

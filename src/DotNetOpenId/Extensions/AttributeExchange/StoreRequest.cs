@@ -8,7 +8,7 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 	/// <summary>
 	/// The Attribute Exchange Store message, request leg.
 	/// </summary>
-	public class AttributeExchangeStoreRequest : IExtensionRequest {
+	public class StoreRequest : IExtensionRequest {
 		readonly string Mode = "store_request";
 
 		List<AttributeValues> attributesProvided = new List<AttributeValues>();
@@ -34,14 +34,14 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 		}
 
 		#region IExtensionRequest Members
-		string IExtension.TypeUri { get { return Constants.ns; } }
+		string IExtension.TypeUri { get { return Constants.TypeUri; } }
 
 		IDictionary<string, string> IExtensionRequest.Serialize(RelyingParty.IAuthenticationRequest authenticationRequest) {
 			var fields = new Dictionary<string, string> {
 				{ "mode", Mode },
 			};
 
-			AttributeExchangeFetchResponse.SerializeAttributes(fields, attributesProvided);
+			FetchResponse.SerializeAttributes(fields, attributesProvided);
 
 			return fields;
 		}
@@ -52,7 +52,7 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 			fields.TryGetValue("mode", out mode);
 			if (mode != Mode) return false;
 
-			foreach (var att in AttributeExchangeFetchResponse.DeserializeAttributes(fields))
+			foreach (var att in FetchResponse.DeserializeAttributes(fields))
 				AddAttribute(att);
 
 			return true;

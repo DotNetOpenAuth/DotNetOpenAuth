@@ -28,18 +28,18 @@ namespace DotNetOpenId.Test.Extensions {
 
 		[Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void CtorCountZero() {
-			new AttributeRequest(AttributeExchangeConstants.Contact.Email, false, 0);
+			new AttributeRequest(WellKnownAttributes.Contact.Email, false, 0);
 		}
 
 		[Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void CtorCountNegative() {
-			new AttributeRequest(AttributeExchangeConstants.Contact.Email, false, -1);
+			new AttributeRequest(WellKnownAttributes.Contact.Email, false, -1);
 		}
 
 		[Test]
 		public void CtorFull() {
-			var req = new AttributeRequest(AttributeExchangeConstants.Contact.Email, true, 5);
-			Assert.AreEqual(AttributeExchangeConstants.Contact.Email, req.TypeUri);
+			var req = new AttributeRequest(WellKnownAttributes.Contact.Email, true, 5);
+			Assert.AreEqual(WellKnownAttributes.Contact.Email, req.TypeUri);
 			Assert.IsTrue(req.IsRequired);
 			Assert.AreEqual(5, req.Count);
 		}

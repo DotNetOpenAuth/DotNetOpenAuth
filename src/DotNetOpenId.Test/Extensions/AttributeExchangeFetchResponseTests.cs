@@ -10,7 +10,7 @@ namespace DotNetOpenId.Test.Extensions {
 	public class AttributeExchangeFetchResponseTests {
 		[Test]
 		public void AddAttribute() {
-			var response = new AttributeExchangeFetchResponse();
+			var response = new FetchResponse();
 			response.AddAttribute(new AttributeValues {
 				TypeUri = "http://someattribute",
 				Values = new[] { "Value1" },
@@ -19,7 +19,7 @@ namespace DotNetOpenId.Test.Extensions {
 
 		[Test]
 		public void AddTwoAttributes() {
-			var response = new AttributeExchangeFetchResponse();
+			var response = new FetchResponse();
 			response.AddAttribute(new AttributeValues {
 				TypeUri = "http://someattribute",
 				Values = new[] { "Value1" },
@@ -32,7 +32,7 @@ namespace DotNetOpenId.Test.Extensions {
 
 		[Test, ExpectedException(typeof(ArgumentException))]
 		public void AddAttributeTwice() {
-			var response = new AttributeExchangeFetchResponse();
+			var response = new FetchResponse();
 			response.AddAttribute(new AttributeValues {
 				TypeUri = "http://someattribute",
 				Values = new[] { "Value1" },
@@ -45,7 +45,7 @@ namespace DotNetOpenId.Test.Extensions {
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void AddAttributeNull() {
-			var response = new AttributeExchangeFetchResponse();
+			var response = new FetchResponse();
 			response.AddAttribute(null);
 		}
 	}
