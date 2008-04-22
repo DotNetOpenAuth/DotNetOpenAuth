@@ -14,7 +14,7 @@ using System.Text.RegularExpressions;
 using System.Web.Security;
 using System.Web.UI;
 using System.Web.UI.MobileControls;
-using DotNetOpenId.Extensions;
+using DotNetOpenId.Extensions.SimpleRegistration;
 
 [assembly: WebResource(DotNetOpenId.RelyingParty.OpenIdMobileTextBox.EmbeddedLogoResourceName, "image/gif")]
 

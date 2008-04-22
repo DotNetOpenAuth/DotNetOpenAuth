@@ -13,6 +13,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Xml.Serialization;
 using System.IO;
 using NUnit.Framework;
+using DotNetOpenId.Extensions.SimpleRegistration;
 using DotNetOpenId.Extensions;
 
 namespace DotNetOpenId.Test {

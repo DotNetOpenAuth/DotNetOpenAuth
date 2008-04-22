@@ -5,7 +5,7 @@
  * For news or support on this file: http://blog.nerdbank.net/
  ********************************************************/
 
-namespace DotNetOpenId.Extensions {
+namespace DotNetOpenId.Extensions.SimpleRegistration {
 	/// <summary>
 	/// Indicates the gender of a user.
 	/// </summary>

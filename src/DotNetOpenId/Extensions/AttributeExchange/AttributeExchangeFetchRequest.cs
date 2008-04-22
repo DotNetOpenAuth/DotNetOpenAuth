@@ -4,7 +4,7 @@ using System.Text;
 using System.Globalization;
 using System.Diagnostics;
 
-namespace DotNetOpenId.Extensions {
+namespace DotNetOpenId.Extensions.AttributeExchange {
 	/// <summary>
 	/// The Attribute Exchange Fetch message, request leg.
 	/// </summary>
@@ -42,7 +42,7 @@ namespace DotNetOpenId.Extensions {
 		public Uri UpdateUrl { get; set; }
 
 		#region IExtensionRequest Members
-		string IExtension.TypeUri { get { return Constants.ae.ns; } }
+		string IExtension.TypeUri { get { return Constants.ns; } }
 
 		IDictionary<string, string> IExtensionRequest.Serialize(RelyingParty.IAuthenticationRequest authenticationRequest) {
 			var fields = new Dictionary<string, string> {

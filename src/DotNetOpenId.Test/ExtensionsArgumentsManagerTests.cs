@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using DotNetOpenId.Extensions;
+using DotNetOpenId.Extensions.SimpleRegistration;
 
 namespace DotNetOpenId.Test {
 	[TestFixture]
@@ -117,15 +117,15 @@ namespace DotNetOpenId.Test {
 				{"openid.sreg.nickname", "andy"},
 			};
 			IIncomingExtensions mgr = ExtensionArgumentsManager.CreateIncomingExtensions(args);
-			Assert.IsTrue(mgr.ContainsExtension(Constants.sreg.sreg_ns));
-			Assert.AreEqual("andy", mgr.GetExtensionArguments(Constants.sreg.sreg_ns)["nickname"]);
+			Assert.IsTrue(mgr.ContainsExtension(Constants.sreg_ns));
+			Assert.AreEqual("andy", mgr.GetExtensionArguments(Constants.sreg_ns)["nickname"]);
 			// Now imagine that sreg was used explicitly by something else...
 			args = new Dictionary<string, string>() {
 				{"openid.sreg.nickname", "andy"},
 				{"openid.ns.sreg", "someOtherNS"},
 			};
 			mgr = ExtensionArgumentsManager.CreateIncomingExtensions(args);
-			Assert.IsFalse(mgr.ContainsExtension(Constants.sreg.sreg_ns));
+			Assert.IsFalse(mgr.ContainsExtension(Constants.sreg_ns));
 			Assert.AreEqual("andy", mgr.GetExtensionArguments("someOtherNS")["nickname"]);
 		}
 
@@ -135,10 +135,10 @@ namespace DotNetOpenId.Test {
 				{"nickname", "andy"},
 			};
 			var mgr = ExtensionArgumentsManager.CreateOutgoingExtensions(protocol);
-			mgr.AddExtensionArguments(Constants.sreg.sreg_ns, args);
+			mgr.AddExtensionArguments(Constants.sreg_ns, args);
 			var results = mgr.GetArgumentsToSend(true);
 			Assert.IsTrue(results.ContainsKey("openid.ns.sreg"));
-			Assert.AreEqual(Constants.sreg.sreg_ns, results["openid.ns.sreg"]);
+			Assert.AreEqual(Constants.sreg_ns, results["openid.ns.sreg"]);
 			Assert.IsTrue(results.ContainsKey("openid.sreg.nickname"));
 			Assert.AreEqual("andy", results["openid.sreg.nickname"]);
 		}
@@ -149,10 +149,10 @@ namespace DotNetOpenId.Test {
 				{"nickname", "andy"},
 			};
 			var mgr = ExtensionArgumentsManager.CreateOutgoingExtensions(protocol);
-			mgr.AddExtensionArguments(Constants.sreg.sreg_ns, args);
+			mgr.AddExtensionArguments(Constants.sreg_ns, args);
 			var results = mgr.GetArgumentsToSend(false);
 			Assert.IsTrue(results.ContainsKey("ns.sreg"));
-			Assert.AreEqual(Constants.sreg.sreg_ns, results["ns.sreg"]);
+			Assert.AreEqual(Constants.sreg_ns, results["ns.sreg"]);
 			Assert.IsTrue(results.ContainsKey("sreg.nickname"));
 			Assert.AreEqual("andy", results["sreg.nickname"]);
 		}
@@ -190,7 +190,7 @@ namespace DotNetOpenId.Test {
 				{"openid.sreg", "v1"},
 			};
 			var mgr = ExtensionArgumentsManager.CreateIncomingExtensions(args);
-			var result = mgr.GetExtensionArguments(Constants.sreg.sreg_ns);
+			var result = mgr.GetExtensionArguments(Constants.sreg_ns);
 			Assert.AreEqual("v1", result[string.Empty]);
 		}
 
@@ -200,7 +200,7 @@ namespace DotNetOpenId.Test {
 				{"", "v1"},
 			};
 			var mgr = ExtensionArgumentsManager.CreateOutgoingExtensions(protocol);
-			mgr.AddExtensionArguments(Constants.sreg.sreg_ns, args);
+			mgr.AddExtensionArguments(Constants.sreg_ns, args);
 			var result = mgr.GetArgumentsToSend(true);
 			Assert.AreEqual(2, result.Count);
 			Assert.AreEqual("v1", result["openid.sreg"]);

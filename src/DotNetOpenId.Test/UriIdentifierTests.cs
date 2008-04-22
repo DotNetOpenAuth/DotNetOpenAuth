@@ -4,7 +4,7 @@ using System.Text;
 using NUnit.Framework;
 using DotNetOpenId.RelyingParty;
 using System.Net;
-using DotNetOpenId.Extensions;
+using DotNetOpenId.Extensions.SimpleRegistration;
 
 namespace DotNetOpenId.Test {
 	[TestFixture]
@@ -74,7 +74,7 @@ namespace DotNetOpenId.Test {
 			Assert.AreEqual(expectSreg ? 2 : 1, se.ProviderSupportedServiceTypeUris.Length);
 			Assert.IsTrue(Array.IndexOf(se.ProviderSupportedServiceTypeUris, protocol.ClaimedIdentifierServiceTypeURI)>=0);
 			if (expectSreg)
-				Assert.IsTrue(Array.IndexOf(se.ProviderSupportedServiceTypeUris, Constants.sreg.TypeUri) >= 0);
+				Assert.IsTrue(Array.IndexOf(se.ProviderSupportedServiceTypeUris, Constants.TypeUri) >= 0);
 		}
 		void discoverXrds(string page, ProtocolVersion version, Identifier expectedLocalId) {
 			discover("/xrdsdiscovery/" + page + ".aspx", version, expectedLocalId, true, false);

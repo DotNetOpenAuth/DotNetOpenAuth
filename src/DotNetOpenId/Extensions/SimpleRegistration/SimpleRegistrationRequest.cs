@@ -5,7 +5,7 @@
  * For news or support on this file: http://blog.nerdbank.net/
  ********************************************************/
 
-namespace DotNetOpenId.Extensions {
+namespace DotNetOpenId.Extensions.SimpleRegistration {
 	/// <summary>
 	/// Specifies what level of interest a relying party has in obtaining the value
 	/// of a given field offered by the Simple Registration extension.

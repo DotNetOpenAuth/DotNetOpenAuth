@@ -14,7 +14,7 @@ using DotNetOpenId.RelyingParty;
 using DotNetOpenId.Provider;
 using System.Collections.Generic;
 
-namespace DotNetOpenId.Extensions
+namespace DotNetOpenId.Extensions.SimpleRegistration
 {
 #pragma warning disable 0659, 0661
 	/// <summary>
@@ -104,7 +104,7 @@ namespace DotNetOpenId.Extensions
 		public string TimeZone { get; set; }
 
 		#region IExtensionResponse Members
-		string IExtension.TypeUri { get { return Constants.sreg.sreg_ns; } }
+		string IExtension.TypeUri { get { return Constants.sreg_ns; } }
 
 		/// <summary>
 		/// Adds the values of this struct to an authentication response being prepared
@@ -115,35 +115,35 @@ namespace DotNetOpenId.Extensions
 			if (authenticationRequest == null) throw new ArgumentNullException("authenticationRequest");
 			Dictionary<string, string> fields = new Dictionary<string, string>();
 			if (BirthDate != null) {
-				fields.Add(Constants.sreg.dob, BirthDate.ToString());
+				fields.Add(Constants.dob, BirthDate.ToString());
 			}
 			if (!String.IsNullOrEmpty(Country)) {
-				fields.Add(Constants.sreg.country, Country);
+				fields.Add(Constants.country, Country);
 			}
 			if (Email != null) {
-				fields.Add(Constants.sreg.email, Email.ToString());
+				fields.Add(Constants.email, Email.ToString());
 			}
 			if ((!String.IsNullOrEmpty(FullName))) {
-				fields.Add(Constants.sreg.fullname, FullName);
+				fields.Add(Constants.fullname, FullName);
 			}
 			if (Gender != null) {
-				if (Gender == DotNetOpenId.Extensions.Gender.Female) {
-					fields.Add(Constants.sreg.gender, Constants.sreg.Genders.Female);
+				if (Gender == SimpleRegistration.Gender.Female) {
+					fields.Add(Constants.gender, Constants.Genders.Female);
 				} else {
-					fields.Add(Constants.sreg.gender, Constants.sreg.Genders.Male);
+					fields.Add(Constants.gender, Constants.Genders.Male);
 				}
 			}
 			if (!String.IsNullOrEmpty(Language)) {
-				fields.Add(Constants.sreg.language, Language);
+				fields.Add(Constants.language, Language);
 			}
 			if (!String.IsNullOrEmpty(Nickname)) {
-				fields.Add(Constants.sreg.nickname, Nickname);
+				fields.Add(Constants.nickname, Nickname);
 			}
 			if (!String.IsNullOrEmpty(PostalCode)) {
-				fields.Add(Constants.sreg.postcode, PostalCode);
+				fields.Add(Constants.postcode, PostalCode);
 			}
 			if (!String.IsNullOrEmpty(TimeZone)) {
-				fields.Add(Constants.sreg.timezone, TimeZone);
+				fields.Add(Constants.timezone, TimeZone);
 			}
 			return fields;
 		}
@@ -153,30 +153,30 @@ namespace DotNetOpenId.Extensions
 			string nickname, email, fullName, dob, genderString, postalCode, country, language, timeZone;
 			BirthDate = null;
 			Gender = null;
-			sreg.TryGetValue(Constants.sreg.nickname, out nickname);
+			sreg.TryGetValue(Constants.nickname, out nickname);
 			Nickname = nickname;
-			sreg.TryGetValue(Constants.sreg.email, out email);
+			sreg.TryGetValue(Constants.email, out email);
 			Email = email;
-			sreg.TryGetValue(Constants.sreg.fullname, out fullName);
+			sreg.TryGetValue(Constants.fullname, out fullName);
 			FullName = fullName;
-			if (sreg.TryGetValue(Constants.sreg.dob, out dob)) {
+			if (sreg.TryGetValue(Constants.dob, out dob)) {
 				DateTime bd;
 				if (DateTime.TryParse(dob, out bd))
 					BirthDate = bd;
 			}
-			if (sreg.TryGetValue(Constants.sreg.gender, out genderString)) {
+			if (sreg.TryGetValue(Constants.gender, out genderString)) {
 				switch (genderString) {
-					case Constants.sreg.Genders.Male: Gender = DotNetOpenId.Extensions.Gender.Male; break;
-					case Constants.sreg.Genders.Female: Gender = DotNetOpenId.Extensions.Gender.Female; break;
+					case Constants.Genders.Male: Gender = SimpleRegistration.Gender.Male; break;
+					case Constants.Genders.Female: Gender = SimpleRegistration.Gender.Female; break;
 				}
 			}
-			sreg.TryGetValue(Constants.sreg.postcode, out postalCode);
+			sreg.TryGetValue(Constants.postcode, out postalCode);
 			PostalCode = postalCode;
-			sreg.TryGetValue(Constants.sreg.country, out country);
+			sreg.TryGetValue(Constants.country, out country);
 			Country = country;
-			sreg.TryGetValue(Constants.sreg.language, out language);
+			sreg.TryGetValue(Constants.language, out language);
 			Language = language;
-			sreg.TryGetValue(Constants.sreg.timezone, out timeZone);
+			sreg.TryGetValue(Constants.timezone, out timeZone);
 			TimeZone = timeZone;
 
 			return true;

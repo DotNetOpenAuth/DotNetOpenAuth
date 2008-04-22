@@ -6,7 +6,7 @@ using System.Globalization;
 using DotNetOpenId.Provider;
 using DotNetOpenId.RelyingParty;
 
-namespace DotNetOpenId.Extensions {
+namespace DotNetOpenId.Extensions.SimpleRegistration {
 	/// <summary>
 	/// Carries the request/require/none demand state of the simple registration fields.
 	/// </summary>
@@ -69,31 +69,31 @@ namespace DotNetOpenId.Extensions {
 		internal void SetProfileRequestFromList(ICollection<string> fieldNames, SimpleRegistrationRequest requestLevel) {
 			foreach (string field in fieldNames) {
 				switch (field) {
-					case Constants.sreg.nickname:
+					case Constants.nickname:
 						Nickname = requestLevel;
 						break;
-					case Constants.sreg.email:
+					case Constants.email:
 						Email = requestLevel;
 						break;
-					case Constants.sreg.fullname:
+					case Constants.fullname:
 						FullName = requestLevel;
 						break;
-					case Constants.sreg.dob:
+					case Constants.dob:
 						BirthDate = requestLevel;
 						break;
-					case Constants.sreg.gender:
+					case Constants.gender:
 						Gender = requestLevel;
 						break;
-					case Constants.sreg.postcode:
+					case Constants.postcode:
 						PostalCode = requestLevel;
 						break;
-					case Constants.sreg.country:
+					case Constants.country:
 						Country = requestLevel;
 						break;
-					case Constants.sreg.language:
+					case Constants.language:
 						Language = requestLevel;
 						break;
-					case Constants.sreg.timezone:
+					case Constants.timezone:
 						TimeZone = requestLevel;
 						break;
 					default:
@@ -105,46 +105,46 @@ namespace DotNetOpenId.Extensions {
 		string[] assembleProfileFields(SimpleRegistrationRequest level) {
 			List<string> fields = new List<string>(10);
 			if (Nickname == level)
-				fields.Add(Constants.sreg.nickname);
+				fields.Add(Constants.nickname);
 			if (Email == level)
-				fields.Add(Constants.sreg.email);
+				fields.Add(Constants.email);
 			if (FullName == level)
-				fields.Add(Constants.sreg.fullname);
+				fields.Add(Constants.fullname);
 			if (BirthDate == level)
-				fields.Add(Constants.sreg.dob);
+				fields.Add(Constants.dob);
 			if (Gender == level)
-				fields.Add(Constants.sreg.gender);
+				fields.Add(Constants.gender);
 			if (PostalCode == level)
-				fields.Add(Constants.sreg.postcode);
+				fields.Add(Constants.postcode);
 			if (Country == level)
-				fields.Add(Constants.sreg.country);
+				fields.Add(Constants.country);
 			if (Language == level)
-				fields.Add(Constants.sreg.language);
+				fields.Add(Constants.language);
 			if (TimeZone == level)
-				fields.Add(Constants.sreg.timezone);
+				fields.Add(Constants.timezone);
 
 			return fields.ToArray();
 		}
 
 		#region IExtensionRequest Members
-		string IExtension.TypeUri { get { return Constants.sreg.sreg_ns; } }
+		string IExtension.TypeUri { get { return Constants.sreg_ns; } }
 
 		bool IExtensionRequest.Deserialize(IDictionary<string, string> args, IRequest request) {
 			if (args == null) return false;
 
 			string policyUrl;
-			if (args.TryGetValue(Constants.sreg.policy_url, out policyUrl)
+			if (args.TryGetValue(Constants.policy_url, out policyUrl)
 				&& !string.IsNullOrEmpty(policyUrl)) {
 				PolicyUrl = new Uri(policyUrl);
 			}
 
 			string optionalFields;
-			if (args.TryGetValue(Constants.sreg.optional, out optionalFields)) {
+			if (args.TryGetValue(Constants.optional, out optionalFields)) {
 				SetProfileRequestFromList(optionalFields.Split(','), SimpleRegistrationRequest.Request);
 			}
 
 			string requiredFields;
-			if (args.TryGetValue(Constants.sreg.required, out requiredFields)) {
+			if (args.TryGetValue(Constants.required, out requiredFields)) {
 				SetProfileRequestFromList(requiredFields.Split(','), SimpleRegistrationRequest.Require);
 			}
 
@@ -159,10 +159,10 @@ namespace DotNetOpenId.Extensions {
 		IDictionary<string, string> IExtensionRequest.Serialize(RelyingParty.IAuthenticationRequest request) {
 			var fields = new Dictionary<string, string>();
 			if (PolicyUrl != null)
-				fields.Add(Constants.sreg.policy_url, PolicyUrl.AbsoluteUri);
+				fields.Add(Constants.policy_url, PolicyUrl.AbsoluteUri);
 
-			fields.Add(Constants.sreg.required, string.Join(",", assembleProfileFields(SimpleRegistrationRequest.Require)));
-			fields.Add(Constants.sreg.optional, string.Join(",", assembleProfileFields(SimpleRegistrationRequest.Request)));
+			fields.Add(Constants.required, string.Join(",", assembleProfileFields(SimpleRegistrationRequest.Require)));
+			fields.Add(Constants.optional, string.Join(",", assembleProfileFields(SimpleRegistrationRequest.Request)));
 
 			return fields;
 		}

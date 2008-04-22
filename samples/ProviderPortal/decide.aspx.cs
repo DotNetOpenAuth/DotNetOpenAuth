@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Web.Security;
 using System.Web.UI;
-using DotNetOpenId.Extensions;
+using DotNetOpenId.Extensions.SimpleRegistration;
 using DotNetOpenId.Provider;
 
 /// <summary>
@@ -28,7 +28,7 @@ public partial class decide : Page {
 				this.profileFields.Visible = true;
 				this.profileFields.SetRequiredFieldsFromRequest(requestedFields);
 				if (!IsPostBack) {
-					this.profileFields.OpenIdProfileFields = new DotNetOpenId.Extensions.SimpleRegistrationFieldValues() {
+					this.profileFields.OpenIdProfileFields = new SimpleRegistrationFieldValues() {
 						Email = Membership.GetUser().Email,
 					};
 				}

@@ -12,13 +12,13 @@ using System.ComponentModel;
 using System.Web.Security;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using DotNetOpenId.Extensions;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Globalization;
 using System.Diagnostics.CodeAnalysis;
 using System.Web;
+using DotNetOpenId.Extensions.SimpleRegistration;
 
 [assembly: WebResource(DotNetOpenId.RelyingParty.OpenIdTextBox.EmbeddedLogoResourceName, "image/gif")]
 

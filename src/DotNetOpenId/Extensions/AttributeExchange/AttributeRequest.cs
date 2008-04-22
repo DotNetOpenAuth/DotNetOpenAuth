@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Globalization;
 
-namespace DotNetOpenId.Extensions {
+namespace DotNetOpenId.Extensions.AttributeExchange {
 	/// <summary>
 	/// An individual attribute to be requested of the OpenID Provider using
 	/// the Attribute Exchange extension.

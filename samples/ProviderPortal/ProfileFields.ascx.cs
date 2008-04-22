@@ -1,7 +1,6 @@
 using System;
-using System.Net.Mail;
-using DotNetOpenId.Provider;
 using DotNetOpenId.Extensions;
+using DotNetOpenId.Extensions.SimpleRegistration;
 
 /// <summary>
 /// Handles the collection of the simple registration fields.
@@ -82,10 +81,10 @@ public partial class ProfileFields : System.Web.UI.UserControl {
 	public Gender? Gender {
 		get {
 			if (this.genderDropdownList.SelectedValue == "Male") {
-				return DotNetOpenId.Extensions.Gender.Male;
+				return DotNetOpenId.Extensions.SimpleRegistration.Gender.Male;
 			}
 			if (this.genderDropdownList.SelectedValue == "Female") {
-				return DotNetOpenId.Extensions.Gender.Female;
+				return DotNetOpenId.Extensions.SimpleRegistration.Gender.Female;
 			}
 			return null;
 		}

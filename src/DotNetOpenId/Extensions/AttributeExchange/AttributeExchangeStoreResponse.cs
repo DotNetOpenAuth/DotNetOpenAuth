@@ -5,7 +5,7 @@ using DotNetOpenId.RelyingParty;
 using System.Globalization;
 using System.Diagnostics;
 
-namespace DotNetOpenId.Extensions {
+namespace DotNetOpenId.Extensions.AttributeExchange {
 	/// <summary>
 	/// The Attribute Exchange Store message, response leg.
 	/// </summary>
@@ -23,7 +23,7 @@ namespace DotNetOpenId.Extensions {
 		public string FailureReason { get; set; }
 
 		#region IExtensionResponse Members
-		string IExtension.TypeUri { get { return Constants.ae.ns; } }
+		string IExtension.TypeUri { get { return Constants.ns; } }
 
 		IDictionary<string, string> IExtensionResponse.Serialize(Provider.IRequest authenticationRequest) {
 			var fields = new Dictionary<string, string> {

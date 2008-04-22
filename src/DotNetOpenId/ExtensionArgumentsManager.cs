@@ -21,7 +21,7 @@ namespace DotNetOpenId {
 		/// match to namespaces for backward compatibility with other OpenID libraries.
 		/// </summary>
 		static readonly Dictionary<string, string> typeUriToAliasAffinity = new Dictionary<string, string> {
-			{ Extensions.Constants.sreg.sreg_ns, Extensions.Constants.sreg.sreg_compatibility_alias },
+			{ Extensions.SimpleRegistration.Constants.sreg_ns, Extensions.SimpleRegistration.Constants.sreg_compatibility_alias },
 		};
 
 		private ExtensionArgumentsManager() { }

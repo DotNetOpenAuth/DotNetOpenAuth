@@ -9,8 +9,9 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Collections.Specialized;
-using DotNetOpenId.Extensions;
 using System.Collections.Generic;
+using DotNetOpenId.Extensions.AttributeExchange;
+using DotNetOpenId.Extensions.SimpleRegistration;
 
 public partial class ProviderEndpoint : System.Web.UI.Page {
 	const string nicknameTypeUri = AttributeExchangeConstants.Name.Alias;

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using DotNetOpenId.RelyingParty;
-using DotNetOpenId.Extensions;
+using DotNetOpenId.Extensions.AttributeExchange;
 
 namespace DotNetOpenId.Test.Extensions {
 	[TestFixture]

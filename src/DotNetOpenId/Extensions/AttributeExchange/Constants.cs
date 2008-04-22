@@ -2,7 +2,14 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DotNetOpenId.Extensions {
+namespace DotNetOpenId.Extensions.AttributeExchange {
+	/// <summary>
+	/// Attribute Exchange constants
+	/// </summary>
+	internal static class Constants {
+		internal const string ns = "http://openid.net/srv/ax/1.0";
+	}
+
 	/// <summary>
 	/// Attribute types defined at http://www.axschema.org/types/.
 	/// </summary>

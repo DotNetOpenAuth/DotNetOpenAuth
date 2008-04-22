@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DotNetOpenId.Extensions {
+namespace DotNetOpenId.Extensions.AttributeExchange {
 	/// <summary>
 	/// An individual attribute's value(s) as supplied by an OpenID Provider
 	/// in response to a prior request by an OpenID Relying Party as part of

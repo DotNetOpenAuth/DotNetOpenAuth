@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DotNetOpenId.Extensions {
+namespace DotNetOpenId.Extensions.AttributeExchange {
 	/// <summary>
 	/// Indicates a relying party's level of desire for a particular value
 	/// to be provided by the OpenID Provider.
