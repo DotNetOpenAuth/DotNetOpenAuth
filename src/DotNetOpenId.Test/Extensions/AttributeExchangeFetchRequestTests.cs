@@ -38,7 +38,7 @@ namespace DotNetOpenId.Test.Extensions {
 			req.TypeUri = "http://someType";
 			var resp = req.Respond("value");
 			Assert.AreEqual(req.TypeUri, resp.TypeUri);
-			Assert.AreEqual(1, resp.Values.Length);
+			Assert.AreEqual(1, resp.Values.Count);
 			Assert.AreEqual("value", resp.Values[0]);
 		}
 
@@ -49,7 +49,7 @@ namespace DotNetOpenId.Test.Extensions {
 			req.Count = 2;
 			var resp = req.Respond("value1", "value2");
 			Assert.AreEqual(req.TypeUri, resp.TypeUri);
-			Assert.AreEqual(2, resp.Values.Length);
+			Assert.AreEqual(2, resp.Values.Count);
 			Assert.AreEqual("value1", resp.Values[0]);
 			Assert.AreEqual("value2", resp.Values[1]);
 		}

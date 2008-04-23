@@ -8,23 +8,34 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 	/// <summary>
 	/// The Attribute Exchange Store message, request leg.
 	/// </summary>
-	public class StoreRequest : IExtensionRequest {
+	public sealed class StoreRequest : IExtensionRequest {
 		readonly string Mode = "store_request";
 
 		List<AttributeValues> attributesProvided = new List<AttributeValues>();
+		/// <summary>
+		/// Lists all the attributes that are included in the store request.
+		/// </summary>
 		public IEnumerable<AttributeValues> Attributes {
 			get { return attributesProvided; }
 		}
 		
+		/// <summary>
+		/// Used by the Relying Party to add a given attribute with one or more values 
+		/// to the request for storage.
+		/// </summary>
 		public void AddAttribute(AttributeValues attribute) {
 			if (attribute == null) throw new ArgumentNullException("attribute");
 			if (containsAttribute(attribute.TypeUri)) throw new ArgumentException(
 				  string.Format(CultureInfo.CurrentCulture, Strings.AttributeAlreadyAdded, attribute.TypeUri));
 			attributesProvided.Add(attribute);
 		}
-		public AttributeValues GetAttribute(string typeUri) {
+		/// <summary>
+		/// Used by the Provider to gets the value(s) associated with a given attribute
+		/// that should be stored.
+		/// </summary>
+		public AttributeValues GetAttribute(string attributeTypeUri) {
 			foreach (var att in attributesProvided) {
-				if (att.TypeUri == typeUri)
+				if (att.TypeUri == attributeTypeUri)
 					return att;
 			}
 			return null;

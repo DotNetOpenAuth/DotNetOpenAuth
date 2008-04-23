@@ -20,7 +20,13 @@ namespace DotNetOpenId.RelyingParty {
 		/// Tries to get an OpenID extension that may be present in the response.
 		/// </summary>
 		/// <returns>The extension, if it is found.  Null otherwise.</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
 		T GetExtension<T>() where T : IExtensionResponse, new();
+		/// <summary>
+		/// Tries to get an OpenID extension that may be present in the response.
+		/// </summary>
+		/// <returns>The extension, if it is found.  Null otherwise.</returns>
+		IExtensionResponse GetExtension(Type extensionType);
 		/// <summary>
 		/// An Identifier that the end user claims to own.
 		/// </summary>

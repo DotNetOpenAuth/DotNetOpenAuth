@@ -89,11 +89,21 @@ namespace DotNetOpenId.RelyingParty {
 		/// <summary>
 		/// Tries to get an OpenID extension that may be present in the response.
 		/// </summary>
-		/// <typeparam name="T">The extension to retrieve.</param>
+		/// <typeparam name="T">The extension to retrieve.</typeparam>
 		/// <returns>The extension, if it is found.  Null otherwise.</returns>
 		public T GetExtension<T>() where T : IExtensionResponse, new() {
 			T extension = new T();
 			return extension.Deserialize(IncomingExtensions.GetExtensionArguments(extension.TypeUri), this) ? extension : default(T);
+		}
+
+		public IExtensionResponse GetExtension(Type extensionType) {
+			if (extensionType == null) throw new ArgumentNullException("extensionType");
+			if (!typeof(DotNetOpenId.Extensions.IExtensionResponse).IsAssignableFrom(extensionType))
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
+					Strings.TypeMustImplementX, typeof(IExtensionResponse).FullName),
+					"extensionType");
+			var extension = (IExtensionResponse)Activator.CreateInstance(extensionType);
+			return extension.Deserialize(IncomingExtensions.GetExtensionArguments(extension.TypeUri), this) ? extension : null;
 		}
 
 		internal static AuthenticationResponse Parse(IDictionary<string, string> query,

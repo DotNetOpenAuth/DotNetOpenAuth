@@ -11,36 +11,21 @@ namespace DotNetOpenId.Test.Extensions {
 		[Test]
 		public void AddAttribute() {
 			var response = new FetchResponse();
-			response.AddAttribute(new AttributeValues {
-				TypeUri = "http://someattribute",
-				Values = new[] { "Value1" },
-			});
+			response.AddAttribute(new AttributeValues("http://someattribute", "Value1"));
 		}
 
 		[Test]
 		public void AddTwoAttributes() {
 			var response = new FetchResponse();
-			response.AddAttribute(new AttributeValues {
-				TypeUri = "http://someattribute",
-				Values = new[] { "Value1" },
-			});
-			response.AddAttribute(new AttributeValues {
-				TypeUri = "http://someOtherAttribute",
-				Values = new[] { "Value2" },
-			});
+			response.AddAttribute(new AttributeValues("http://someattribute", "Value1"));
+			response.AddAttribute(new AttributeValues("http://someOtherAttribute", "Value2"));
 		}
 
 		[Test, ExpectedException(typeof(ArgumentException))]
 		public void AddAttributeTwice() {
 			var response = new FetchResponse();
-			response.AddAttribute(new AttributeValues {
-				TypeUri = "http://someattribute",
-				Values = new[] { "Value1" },
-			});
-			response.AddAttribute(new AttributeValues {
-				TypeUri = "http://someattribute",
-				Values = new[] { "Value1" },
-			});
+			response.AddAttribute(new AttributeValues("http://someattribute", "Value1"));
+			response.AddAttribute(new AttributeValues("http://someattribute", "Value1"));
 		}
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]

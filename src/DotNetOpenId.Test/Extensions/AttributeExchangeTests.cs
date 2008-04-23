@@ -27,20 +27,20 @@ namespace DotNetOpenId.Test.Extensions {
 		[Test]
 		public void Fetch() {
 			var request = new FetchRequest();
-			request.AddAttribute(new AttributeRequest { TypeUri = nicknameTypeUri });
-			request.AddAttribute(new AttributeRequest { TypeUri = emailTypeUri, Count = int.MaxValue });
+			request.AddAttribute(new AttributeRequest(nicknameTypeUri));
+			request.AddAttribute(new AttributeRequest(emailTypeUri, false, int.MaxValue));
 			var response = ParameterizedTest<FetchResponse>(
 				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ExtensionFullCooperation, Version), request);
 			Assert.IsNotNull(response);
 			var att = response.GetAttribute(nicknameTypeUri);
 			Assert.IsNotNull(att);
 			Assert.AreEqual(nicknameTypeUri, att.TypeUri);
-			Assert.AreEqual(1, att.Values.Length);
+			Assert.AreEqual(1, att.Values.Count);
 			Assert.AreEqual("Andrew", att.Values[0]);
 			att = response.GetAttribute(emailTypeUri);
 			Assert.IsNotNull(att);
 			Assert.AreEqual(emailTypeUri, att.TypeUri);
-			Assert.AreEqual(2, att.Values.Length);
+			Assert.AreEqual(2, att.Values.Count);
 			Assert.AreEqual("a@a.com", att.Values[0]);
 			Assert.AreEqual("b@b.com", att.Values[1]);
 		}
@@ -55,20 +55,17 @@ namespace DotNetOpenId.Test.Extensions {
 			var att = response.GetAttribute(emailTypeUri);
 			Assert.IsNotNull(att);
 			Assert.AreEqual(emailTypeUri, att.TypeUri);
-			Assert.AreEqual(1, att.Values.Length);
+			Assert.AreEqual(1, att.Values.Count);
 			Assert.AreEqual("a@a.com", att.Values[0]);
 		}
 
 		[Test]
 		public void Store() {
 			var request = new StoreRequest();
-			var newAttribute = new AttributeValues {
-				TypeUri = incrementingAttribute,
-				Values = new[] { 
-					"val" + (incrementingAttributeValue++).ToString(), 
-					"val" + (incrementingAttributeValue++).ToString()
-				}
-			};
+			var newAttribute = new AttributeValues(incrementingAttribute,
+				"val" + (incrementingAttributeValue++).ToString(), 
+				"val" + (incrementingAttributeValue++).ToString()
+			);
 			request.AddAttribute(newAttribute);
 
 			var response = ParameterizedTest<StoreResponse>(
@@ -84,8 +81,8 @@ namespace DotNetOpenId.Test.Extensions {
 			Assert.IsNotNull(fetchResponse);
 			var att = fetchResponse.GetAttribute(incrementingAttribute);
 			Assert.IsNotNull(att);
-			Assert.AreEqual(newAttribute.Values.Length, att.Values.Length);
-			for (int i = 0; i < newAttribute.Values.Length; i++)
+			Assert.AreEqual(newAttribute.Values.Count, att.Values.Count);
+			for (int i = 0; i < newAttribute.Values.Count; i++)
 				Assert.AreEqual(newAttribute.Values[i], att.Values[i]);
 		}
 

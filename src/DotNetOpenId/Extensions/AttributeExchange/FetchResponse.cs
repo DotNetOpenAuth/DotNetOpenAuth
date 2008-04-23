@@ -9,22 +9,32 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 	/// <summary>
 	/// The Attribute Exchange Fetch message, response leg.
 	/// </summary>
-	public class FetchResponse : IExtensionResponse {
+	public sealed class FetchResponse : IExtensionResponse {
 		readonly string Mode = "fetch_response";
 
 		List<AttributeValues> attributesProvided = new List<AttributeValues>();
+		/// <summary>
+		/// Enumerates over all the attributes included by the Provider.
+		/// </summary>
 		public IEnumerable<AttributeValues> Attributes {
 			get { return attributesProvided; }
 		}
+		/// <summary>
+		/// Used by the Provider to add attributes to the response for the relying party.
+		/// </summary>
 		public void AddAttribute(AttributeValues attribute) {
 			if (attribute == null) throw new ArgumentNullException("attribute");
 			if (containsAttribute(attribute.TypeUri)) throw new ArgumentException(
 				  string.Format(CultureInfo.CurrentCulture, Strings.AttributeAlreadyAdded, attribute.TypeUri));
 			attributesProvided.Add(attribute);
 		}
-		public AttributeValues GetAttribute(string typeUri) {
+		/// <summary>
+		/// Used by the Relying Party to get the value(s) returned by the OpenID Provider 
+		/// for a given attribute, or null if that attribute was not provided.
+		/// </summary>
+		public AttributeValues GetAttribute(string attributeTypeUri) {
 			foreach (var att in attributesProvided) {
-				if (att.TypeUri == typeUri)
+				if (att.TypeUri == attributeTypeUri)
 					return att;
 			}
 			return null;
@@ -60,13 +70,15 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 		}
 
 		internal static void SerializeAttributes(Dictionary<string, string> fields, IEnumerable<AttributeValues> attributes) {
+			Debug.Assert(fields != null && attributes != null);
 			AliasManager aliasManager = new AliasManager();
 			foreach (var att in attributes) {
 				string alias = aliasManager.GetAlias(att.TypeUri);
 				fields.Add("type." + alias, att.TypeUri);
-				if (att.Values.Length != 1) {
-					fields.Add("count." + alias, att.Values.Length.ToString());
-					for (int i = 0; i < att.Values.Length; i++) {
+				if (att.Values == null) continue;
+				if (att.Values.Count != 1) {
+					fields.Add("count." + alias, att.Values.Count.ToString(CultureInfo.InvariantCulture));
+					for (int i = 0; i < att.Values.Count; i++) {
 						fields.Add(string.Format(CultureInfo.InvariantCulture, "value.{0}.{1}", alias, i + 1), att.Values[i]);
 					}
 				} else {
@@ -96,9 +108,7 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 		internal static IEnumerable<AttributeValues> DeserializeAttributes(IDictionary<string, string> fields) {
 			AliasManager aliasManager = parseAliases(fields);
 			foreach (string alias in aliasManager.Aliases) {
-				AttributeValues att = new AttributeValues() {
-					TypeUri = aliasManager.ResolveAlias(alias),
-				};
+				AttributeValues att = new AttributeValues(aliasManager.ResolveAlias(alias));
 				int count = 1;
 				bool countSent = false;
 				string countString;
@@ -110,12 +120,11 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 					}
 					countSent = true;
 				}
-				att.Values = new string[count];
 				if (countSent) {
-					for (int i = 0; i < att.Values.Length; i++) {
+					for (int i = 1; i <= count; i++) {
 						string value;
-						if (fields.TryGetValue(string.Format(CultureInfo.InvariantCulture, "value.{0}.{1}", alias, i + 1), out value)) {
-							att.Values[i] = value;
+						if (fields.TryGetValue(string.Format(CultureInfo.InvariantCulture, "value.{0}.{1}", alias, i), out value)) {
+							att.Values.Add(value);
 						} else {
 							if (TraceUtil.Switch.TraceError)
 								Trace.TraceError("Missing value for attribute '{0}'.", att.TypeUri);
@@ -125,7 +134,7 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 				} else {
 					string value;
 					if (fields.TryGetValue("value." + alias, out value))
-						att.Values[0] = value;
+						att.Values.Add(value);
 					else {
 						if (TraceUtil.Switch.TraceError)
 							Trace.TraceError("Missing value for attribute '{0}'.", att.TypeUri);

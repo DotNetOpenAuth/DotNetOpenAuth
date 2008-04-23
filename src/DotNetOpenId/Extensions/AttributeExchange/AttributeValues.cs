@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Collections.ObjectModel;
 
 namespace DotNetOpenId.Extensions.AttributeExchange {
 	/// <summary>
@@ -14,7 +15,19 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 		/// This is internal because web sites should be using the 
 		/// <see cref="AttributeRequest.Respond"/> method to instantiate.
 		/// </remarks>
-		internal AttributeValues() { }
+		internal AttributeValues() {
+			Values = new List<string>(1);
+		}
+		internal AttributeValues(string typeUri)
+			: this() {
+			TypeUri = typeUri;
+		}
+		internal AttributeValues(string typeUri, params string[] values) {
+			if (string.IsNullOrEmpty(typeUri)) throw new ArgumentNullException("typeUri");
+			if (values == null) throw new ArgumentNullException("values");
+			TypeUri = typeUri;
+			Values = values;
+		}
 
 		/// <summary>
 		/// The URI uniquely identifying the attribute whose value is being supplied.
@@ -24,6 +37,6 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// Gets the values supplied by the Provider.
 		/// </summary>
-		public string[] Values;
+		public IList<string> Values { get; private set; }
 	}
 }

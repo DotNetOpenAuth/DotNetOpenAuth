@@ -8,14 +8,20 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 	/// <summary>
 	/// The Attribute Exchange Fetch message, request leg.
 	/// </summary>
-	public class FetchRequest : IExtensionRequest {
+	public sealed class FetchRequest : IExtensionRequest {
 		readonly string Mode = "fetch_request";
 
 		List<AttributeRequest> attributesRequested = new List<AttributeRequest>();
+		/// <summary>
+		/// Enumerates the attributes whose values are requested by the Relying Party.
+		/// </summary>
 		public IEnumerable<AttributeRequest> Attributes {
 			get { return attributesRequested; }
 		}
 		
+		/// <summary>
+		/// Used by the Relying Party to add a request for the values of a given attribute.
+		/// </summary>
 		public void AddAttribute(AttributeRequest attribute) {
 			if (attribute == null) throw new ArgumentNullException("attribute");
 			if (containsAttribute(attribute.TypeUri)) throw new ArgumentException(
@@ -23,9 +29,13 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 				Strings.AttributeAlreadyAdded, attribute.TypeUri), "attribute");
 			attributesRequested.Add(attribute);
 		}
-		public AttributeRequest GetAttribute(string typeUri) {
+		/// <summary>
+		/// Used by the Provider to find out whether the value(s) of a given attribute is requested.
+		/// </summary>
+		/// <returns>Null if the Relying Party did not ask for the values of the given attribute.</returns>
+		public AttributeRequest GetAttribute(string attributeTypeUri) {
 			foreach (var attribute in attributesRequested)
-				if (string.Equals(attribute.TypeUri, typeUri, StringComparison.Ordinal))
+				if (string.Equals(attribute.TypeUri, attributeTypeUri, StringComparison.Ordinal))
 					return attribute;
 			return null;
 		}
@@ -58,7 +68,7 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 				// define the alias<->typeUri mapping
 				fields.Add("type." + alias, att.TypeUri);
 				// set how many values the relying party wants max
-				fields.Add("count." + alias, att.Count.ToString());
+				fields.Add("count." + alias, att.Count.ToString(CultureInfo.InvariantCulture));
 				if (att.IsRequired)
 					requiredAliases.Add(alias);
 				else
@@ -135,7 +145,7 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 			return true;
 		}
 
-		List<string> parseAliasList(string aliasList) {
+		static List<string> parseAliasList(string aliasList) {
 			List<string> result = new List<string>();
 			if (string.IsNullOrEmpty(aliasList)) return result;
 			if (aliasList.Contains(".") || aliasList.Contains("\n")) {

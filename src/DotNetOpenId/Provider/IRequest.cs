@@ -31,6 +31,14 @@ namespace DotNetOpenId.Provider {
 		/// Gets an extension sent from the relying party.
 		/// </summary>
 		/// <typeparam name="T">The type of the extension.</typeparam>
+		/// <returns>An instance of the extension initialized with values passed in with the request.</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
 		T GetExtension<T>() where T : IExtensionRequest, new();
+		/// <summary>
+		/// Gets an extension sent from the relying party.
+		/// </summary>
+		/// <param name="extensionType">The type of the extension.</param>
+		/// <returns>An instance of the extension initialized with values passed in with the request.</returns>
+		IExtensionRequest GetExtension(Type extensionType);
 	}
 }

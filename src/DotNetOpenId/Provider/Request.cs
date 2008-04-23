@@ -128,6 +128,16 @@ namespace DotNetOpenId.Provider
 			return extension.Deserialize(IncomingExtensions.GetExtensionArguments(extension.TypeUri), this) ? extension : default(T);
 		}
 
+		public DotNetOpenId.Extensions.IExtensionRequest GetExtension(Type extensionType) {
+			if (extensionType == null) throw new ArgumentNullException("extensionType");
+			if (!typeof(DotNetOpenId.Extensions.IExtensionRequest).IsAssignableFrom(extensionType))
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
+					Strings.TypeMustImplementX, typeof(DotNetOpenId.Extensions.IExtensionRequest).FullName),
+					"extensionType");
+			var extension = (DotNetOpenId.Extensions.IExtensionRequest)Activator.CreateInstance(extensionType);
+			return extension.Deserialize(IncomingExtensions.GetExtensionArguments(extension.TypeUri), this) ? extension : null;
+		}
+
 		public override string ToString() {
 			string returnString = @"Request.Mode = {0}";
 			return string.Format(CultureInfo.CurrentCulture, returnString, Mode);

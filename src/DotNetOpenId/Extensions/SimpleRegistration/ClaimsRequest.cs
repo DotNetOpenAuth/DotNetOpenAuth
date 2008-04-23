@@ -12,7 +12,7 @@ namespace DotNetOpenId.Extensions.SimpleRegistration {
 	/// </summary>
 #pragma warning disable 0659, 0661
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2218:OverrideGetHashCodeOnOverridingEquals")]
-	public class ClaimsRequest : IExtensionRequest {
+	public sealed class ClaimsRequest : IExtensionRequest {
 		/// <summary>
 		/// The level of interest a relying party has in the nickname of the user.
 		/// </summary>
@@ -184,7 +184,7 @@ Language = '{7}'
 TimeZone = '{8}'", Nickname, Email, FullName, BirthDate, Gender, PostalCode, Country, Language, TimeZone);
 		}
 		/// <summary>
-		/// Tests equality between two <see cref="SimpleRegistrationRequestFields"/> structs.
+		/// Tests equality between two <see cref="ClaimsRequest"/> structs.
 		/// </summary>
 		public static bool operator ==(ClaimsRequest one, ClaimsRequest other) {
 			if ((object)one == null && (object)other == null) return true;
@@ -192,17 +192,17 @@ TimeZone = '{8}'", Nickname, Email, FullName, BirthDate, Gender, PostalCode, Cou
 			return one.Equals(other);
 				}
 		/// <summary>
-		/// Tests inequality between two <see cref="SimpleRegistrationRequestFields"/> structs.
+		/// Tests inequality between two <see cref="ClaimsRequest"/> structs.
 		/// </summary>
 		public static bool operator !=(ClaimsRequest one, ClaimsRequest other) {
 			return !(one == other);
 		}
 		/// <summary>
-		/// Tests equality between two <see cref="SimpleRegistrationRequestFields"/> structs.
+		/// Tests equality between two <see cref="ClaimsRequest"/> structs.
 		/// </summary>
 		public override bool Equals(object obj) {
-			if (!(obj is ClaimsRequest)) return false;
-			ClaimsRequest other = (ClaimsRequest)obj;
+			ClaimsRequest other = obj as ClaimsRequest;
+			if (other == null) return false;
 
 			return
 				safeEquals(this.BirthDate, other.BirthDate) &&

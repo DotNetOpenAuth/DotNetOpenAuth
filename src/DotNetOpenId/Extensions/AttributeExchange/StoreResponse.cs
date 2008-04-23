@@ -9,7 +9,7 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 	/// <summary>
 	/// The Attribute Exchange Store message, response leg.
 	/// </summary>
-	public class StoreResponse : IExtensionResponse {
+	public sealed class StoreResponse : IExtensionResponse {
 		const string SuccessMode = "store_response_success";
 		const string FailureMode = "store_response_failure";
 

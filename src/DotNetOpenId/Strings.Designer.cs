@@ -455,5 +455,14 @@ namespace DotNetOpenId {
                 return ResourceManager.GetString("TamperingDetected", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The type must implement {0}..
+        /// </summary>
+        internal static string TypeMustImplementX {
+            get {
+                return ResourceManager.GetString("TypeMustImplementX", resourceCulture);
+            }
+        }
     }
 }

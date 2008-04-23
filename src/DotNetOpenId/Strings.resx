@@ -249,4 +249,7 @@
   <data name="TamperingDetected" xml:space="preserve">
     <value>The '{0}' parameter was expected to have the value '{1}' but had '{2}' instead.</value>
   </data>
+  <data name="TypeMustImplementX" xml:space="preserve">
+    <value>The type must implement {0}.</value>
+  </data>
 </root>

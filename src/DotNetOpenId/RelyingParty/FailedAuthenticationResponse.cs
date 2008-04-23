@@ -16,6 +16,10 @@ namespace DotNetOpenId.RelyingParty {
 			return default(T);
 		}
 
+		public DotNetOpenId.Extensions.IExtensionResponse GetExtension(Type extensionType) {
+			return null;
+		}
+
 		public Identifier ClaimedIdentifier {
 			get { return null; }
 		}
