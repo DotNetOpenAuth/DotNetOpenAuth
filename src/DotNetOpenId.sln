@@ -6,6 +6,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{14D00F8C-C
 		..\doc\openid-attribute-exchange-1_0.html = ..\doc\openid-attribute-exchange-1_0.html
 		..\doc\openid-authentication-1_1.html = ..\doc\openid-authentication-1_1.html
 		..\doc\openid-authentication-2_0.html = ..\doc\openid-authentication-2_0.html
+		..\doc\openid-simple-registration-extension-1_0.html = ..\doc\openid-simple-registration-extension-1_0.html
 		..\doc\README.html = ..\doc\README.html
 		..\doc\WebFarms.htm = ..\doc\WebFarms.htm
 	EndProjectSection
