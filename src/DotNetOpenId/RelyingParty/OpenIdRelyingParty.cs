@@ -17,7 +17,7 @@ namespace DotNetOpenId.RelyingParty {
 		IRelyingPartyApplicationStore store;
 		Uri request;
 		IDictionary<string, string> query;
-		
+
 		/// <summary>
 		/// Constructs an OpenId consumer that uses the current HttpContext request
 		/// and uses the HttpApplication dictionary as its association store.
@@ -87,7 +87,6 @@ namespace DotNetOpenId.RelyingParty {
 		/// </remarks>
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm) {
 			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
-			Protocol protocol = Protocol.Default;
 
 			// Build the return_to URL
 			UriBuilder returnTo = new UriBuilder(HttpContext.Current.Request.Url);
@@ -96,14 +95,19 @@ namespace DotNetOpenId.RelyingParty {
 			returnTo.Query = string.Empty;
 			var returnToParams = new Dictionary<string, string>(HttpContext.Current.Request.QueryString.Count);
 			foreach (string key in HttpContext.Current.Request.QueryString) {
-				if (!key.StartsWith(protocol.openid.Prefix, StringComparison.OrdinalIgnoreCase) 
-					&& key != Token.TokenKey) {
+				if (!ShouldParameterBeStrippedFromReturnToUrl(key)) {
 					returnToParams.Add(key, HttpContext.Current.Request.QueryString[key]);
 				}
 			}
 			UriUtil.AppendQueryArgs(returnTo, returnToParams);
 
 			return CreateRequest(userSuppliedIdentifier, realm, returnTo.Uri);
+		}
+
+		internal static bool ShouldParameterBeStrippedFromReturnToUrl(string parameterName) {
+			Protocol protocol = Protocol.Default;
+			return parameterName.StartsWith(protocol.openid.Prefix, StringComparison.OrdinalIgnoreCase)
+				|| parameterName == Token.TokenKey;
 		}
 
 		/// <remarks>
