@@ -142,8 +142,7 @@ namespace DotNetOpenId {
 		}
 		public static Realm GetOptionalRealmArg(IDictionary<string, string> query, string key) {
 			try {
-				string value = Util.GetOptionalArg(query, key);
-				return value == null ? null : new Realm(value);
+				return Util.GetOptionalArg(query, key);
 			} catch (UriFormatException ex) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.InvalidOpenIdQueryParameterValue, key,

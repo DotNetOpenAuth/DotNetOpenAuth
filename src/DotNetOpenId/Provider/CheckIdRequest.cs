@@ -144,7 +144,7 @@ namespace DotNetOpenId.Provider {
 			// The spec says return_to is optional, but what good is authenticating
 			// a user if the user won't be sent back?
 			ReturnTo = Util.GetRequiredUriArg(Query, Protocol.openid.return_to);
-			Realm = Util.GetOptionalRealmArg(Query, Protocol.openid.Realm) ?? new Realm(ReturnTo.AbsoluteUri);
+			Realm = Util.GetOptionalRealmArg(Query, Protocol.openid.Realm) ?? ReturnTo;
 			AssociationHandle = Util.GetOptionalArg(Query, Protocol.openid.assoc_handle);
 
 			if (!Realm.Contains(ReturnTo)) {
