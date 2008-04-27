@@ -62,6 +62,20 @@ namespace DotNetOpenId {
 				throw new UriFormatException(string.Format(CultureInfo.CurrentCulture,
 					Strings.InvalidScheme, uri.Scheme));
 		}
+		/// <summary>
+		/// Instantiates a <see cref="Realm"/> from its <see cref="UriBuilder"/> representation.
+		/// </summary>
+		/// <remarks>
+		/// This is useful because UriBuilder can construct a host with a wildcard 
+		/// in the Host property, but once there it can't be converted to a Uri.
+		/// </remarks>
+		internal Realm(UriBuilder realmUriBuilder)
+			: this(safeUriBuilderToString(realmUriBuilder)) { }
+		static string safeUriBuilderToString(UriBuilder realmUriBuilder) {
+			if (realmUriBuilder == null) throw new ArgumentNullException("realmUriBuilder");
+			// Note: we MUST use ToString.  Uri property throws if wildcard is present.
+			return realmUriBuilder.ToString();
+		}
 
 		Uri uri;
 		const string wildcardDetectionPattern = @"^(\w+://)\*\.";
