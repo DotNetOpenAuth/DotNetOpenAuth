@@ -63,6 +63,15 @@ namespace DotNetOpenId.RelyingParty {
 				Trace.TraceInformation("Return To: {0}", returnToUrl);
 				Trace.Unindent();
 			}
+			if (TraceUtil.Switch.TraceWarning && returnToUrl.Query != null) {
+				NameValueCollection returnToArgs = HttpUtility.ParseQueryString(returnToUrl.Query);
+				foreach (string key in returnToArgs) {
+					if (OpenIdRelyingParty.ShouldParameterBeStrippedFromReturnToUrl(key)) {
+						Trace.TraceWarning("OpenId argument \"{0}\" found in return_to URL.  This can corrupt an OpenID response.", key);
+						break;
+					}
+				}
+			}
 
 			var endpoint = userSuppliedIdentifier.Discover();
 			if (endpoint == null)
