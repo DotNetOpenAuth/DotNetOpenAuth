@@ -31,8 +31,6 @@ namespace DotNetOpenId {
 		/// <summary>
 		/// Implicitly converts a <see cref="Realm"/> object to its <see cref="String"/> form.
 		/// </summary>
-		/// <param name="realm"></param>
-		/// <returns></returns>
 		public static implicit operator string(Realm realm) {
 			return realm.ToString();
 		}
@@ -40,7 +38,6 @@ namespace DotNetOpenId {
 		/// <summary>
 		/// Instantiates a <see cref="Realm"/> from its string representation.
 		/// </summary>
-		/// <param name="realmUrl"></param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase")]
 		public Realm(string realmUrl) {
 			if (realmUrl == null) throw new ArgumentNullException("realmUrl");
