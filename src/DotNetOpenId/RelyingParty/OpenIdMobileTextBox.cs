@@ -52,7 +52,7 @@ namespace DotNetOpenId.RelyingParty
 				if (Page != null && !DesignMode)
 				{
 					// Validate new value by trying to construct a Realm object based on it.
-					new Realm(getResolvedRealm(value).ToString()); // throws an exception on failure.
+					new Realm(getResolvedRealm(value)); // throws an exception on failure.
 				}
 				else
 				{
@@ -413,8 +413,7 @@ namespace DotNetOpenId.RelyingParty
 			}
 
 			// Is it valid?
-			// Note: we MUST use ToString.  Uri property throws if wildcard is present.
-			new Realm(fullyQualifiedRealm.ToString()); // throws if not valid
+			new Realm(fullyQualifiedRealm); // throws if not valid
 
 			return fullyQualifiedRealm;
 		}
