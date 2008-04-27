@@ -95,6 +95,11 @@ using System.Diagnostics;
 		}
 
 		internal static UntrustedWebResponse Request(Uri uri, byte[] body, string[] acceptTypes) {
+			return Request(uri, body, acceptTypes, false);
+		}
+
+		static UntrustedWebResponse Request(Uri uri, byte[] body, string[] acceptTypes,
+			bool avoidSendingExpect100Continue) {
 			if (uri == null) throw new ArgumentNullException("uri");
 
 			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
@@ -108,6 +113,17 @@ using System.Diagnostics;
 				request.ContentType = "application/x-www-form-urlencoded";
 				request.ContentLength = body.Length;
 				request.Method = "POST";
+				if (avoidSendingExpect100Continue) {
+					// Some OpenID servers doesn't understand Expect header and send 417 error back.
+					// If this server just failed from that, we're trying again without sending the
+					// "Expect: 100-Continue" HTTP header. (see Google Code Issue 72)
+					// We don't just set Expect100Continue = !avoidSendingExpect100Continue
+					// so that future requests don't reset this and have to try twice as well.
+					// We don't want to blindly set all ServicePoints to not use the Expect header
+					// as that would be a security hole allowing any visitor to a web site change
+					// the web site's global behavior when calling that host.
+					request.ServicePoint.Expect100Continue = false;
+				}
 			}
 
 			try {
@@ -123,6 +139,11 @@ using System.Diagnostics;
 			} catch (WebException e) {
 				using (HttpWebResponse response = (HttpWebResponse)e.Response) {
 					if (response != null) {
+						if (response.StatusCode == HttpStatusCode.ExpectationFailed) {
+							if (!avoidSendingExpect100Continue) { // must only try this once more
+								return Request(uri, body, acceptTypes, true);
+							}
+						}
 						return getResponse(uri, response);
 					} else {
 						throw;
