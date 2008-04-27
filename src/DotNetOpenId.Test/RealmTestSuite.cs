@@ -154,6 +154,34 @@ namespace DotNetOpenId.Test
 		}
 
 		[Test]
+		public void ImplicitConversionFromStringTests() {
+			Realm realm = "http://host";
+			Assert.AreEqual("host", realm.Host);
+			realm = (string)null;
+			Assert.IsNull(realm);
+		}
+
+		[Test]
+		public void ImplicitConversionToStringTests() {
+			Realm realm = new Realm("http://host/");
+			string realmString = realm;
+			Assert.AreEqual("http://host/", realmString);
+			realm = null;
+			realmString = realm;
+			Assert.IsNull(realmString);
+		}
+
+		[Test]
+		public void ImplicitConverstionFromUriTests() {
+			Uri uri = new Uri("http://host");
+			Realm realm = uri;
+			Assert.AreEqual(uri.Host, realm.Host);
+			uri = null;
+			realm = uri;
+			Assert.IsNull(realm);
+		}
+
+		[Test]
 		public void EqualsTest()
 		{
 			Realm tr1a = new Realm("http://www.yahoo.com");

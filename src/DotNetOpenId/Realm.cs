@@ -19,20 +19,20 @@ namespace DotNetOpenId {
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads")]
 		public static implicit operator Realm(string uri) {
-			return new Realm(uri);
+			return uri != null ? new Realm(uri) : null;
 		}
 		/// <summary>
 		/// Implicitly converts a <see cref="Uri"/> to a <see cref="Realm"/> object.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
 		public static implicit operator Realm(Uri uri) {
-			return new Realm(uri.AbsoluteUri);
+			return uri != null ? new Realm(uri.AbsoluteUri) : null;
 		}
 		/// <summary>
 		/// Implicitly converts a <see cref="Realm"/> object to its <see cref="String"/> form.
 		/// </summary>
 		public static implicit operator string(Realm realm) {
-			return realm.ToString();
+			return realm != null ? realm.ToString() : null;
 		}
 
 		/// <summary>
