@@ -55,9 +55,21 @@ namespace DotNetOpenId.Test
 
 		[Test]
 		[ExpectedException(typeof(UriFormatException))]
-		public void InvalidRealmBadWildcard()
+		public void InvalidRealmBadWildcard1()
 		{
 			new Realm("http://*www.my.com");
+		}
+
+		[Test]
+		[ExpectedException(typeof(UriFormatException))]
+		public void InvalidRealmBadWildcard2() {
+			new Realm("http://www.*.com");
+		}
+
+		[Test]
+		[ExpectedException(typeof(UriFormatException))]
+		public void InvalidRealmBadWildcard3() {
+			new Realm("http://www.my.*/");
 		}
 
 		[Test]
@@ -134,7 +146,16 @@ namespace DotNetOpenId.Test
 
 			// Allow for wildcards
 			Assert.IsTrue(new Realm("http://*.www.my.com/").Contains("http://bah.www.my.com/"));
+			Assert.IsTrue(new Realm("http://*.www.my.com/").Contains("http://bah.WWW.MY.COM/"));
 			Assert.IsTrue(new Realm("http://*.www.my.com/").Contains("http://bah.www.my.com/boo"));
+			Assert.IsTrue(new Realm("http://*.my.com/").Contains("http://bah.www.my.com/boo"));
+			Assert.IsTrue(new Realm("http://*.my.com/").Contains("http://my.com/boo"));
+			Assert.IsFalse(new Realm("http://*.my.com/").Contains("http://ohmeohmy.com/"));
+			Assert.IsFalse(new Realm("http://*.my.com/").Contains("http://me.com/"));
+			Assert.IsFalse(new Realm("http://*.my.com/").Contains("http://my.co/"));
+			Assert.IsFalse(new Realm("http://*.my.com/").Contains("http://com/"));
+			Assert.IsFalse(new Realm("http://*.www.my.com/").Contains("http://my.com/"));
+			Assert.IsFalse(new Realm("http://*.www.my.com/").Contains("http://zzz.my.com/"));
 			// These are tested against by the constructor test, as these are invalid wildcard positions.
 			//Assert.IsFalse(new Realm("http://*www.my.com/").ValidateUrl("http://bah.www.my.com/"));
 			//Assert.IsFalse(new Realm("http://*www.my.com/").ValidateUrl("http://wwww.my.com/"));
