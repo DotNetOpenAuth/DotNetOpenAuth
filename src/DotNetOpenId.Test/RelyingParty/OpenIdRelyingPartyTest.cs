@@ -51,5 +51,17 @@ namespace DotNetOpenId.Test.RelyingParty {
 			var consumer = new OpenIdRelyingParty(store, new Uri("http://simple/req"));
 			consumer.CreateRequest(simpleOpenId, simpleRealm);
 		}
+
+		[Test]
+		public void ReturnToUrlEncodingTest() {
+			Uri origin = TestSupport.GetFullUrl(TestSupport.ConsumerPage);
+			var identityUrl = TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval);
+			var consumer = new OpenIdRelyingParty(store, new Uri("http://simple/req"));
+			var request = consumer.CreateRequest(identityUrl, new Realm(origin.AbsoluteUri), origin);
+			request.AddCallbackArguments("a+b", "c+d");
+			var requestArgs = HttpUtility.ParseQueryString(request.RedirectToProviderUrl.Query);
+			var returnToArgs = HttpUtility.ParseQueryString(requestArgs[QueryStringArgs.openid.return_to]);
+			Assert.AreEqual("c+d", returnToArgs["a+b"]);
+		}
 	}
 }
