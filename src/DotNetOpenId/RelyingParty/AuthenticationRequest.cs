@@ -163,7 +163,7 @@ namespace DotNetOpenId.RelyingParty {
 					qsArgs.Add(protocol.openid.claimed_id, endpoint.ClaimedIdentifier);
 				}
 				qsArgs.Add(protocol.openid.Realm, Realm);
-				qsArgs.Add(protocol.openid.return_to, returnToBuilder.ToString());
+				qsArgs.Add(protocol.openid.return_to, returnToBuilder.Uri.ToString());
 
 				if (this.assoc != null)
 					qsArgs.Add(protocol.openid.assoc_handle, this.assoc.Handle); // !!!!

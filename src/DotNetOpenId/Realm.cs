@@ -281,7 +281,7 @@ namespace DotNetOpenId {
 			if (DomainWildcard) {
 				UriBuilder builder = new UriBuilder(uri);
 				builder.Host = "*." + builder.Host;
-				return builder.ToString();
+				return UriUtil.UriBuilderToStringWithImpliedPorts(builder);
 			} else {
 				return uri.ToString();
 			}

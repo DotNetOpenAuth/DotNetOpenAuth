@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Web;
 using System.Globalization;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace DotNetOpenId {
 	internal static class UriUtil {
@@ -54,6 +56,27 @@ namespace DotNetOpenId {
 			}
 		}
 
+		/// <summary>
+		/// Equivalent to UriBuilder.ToString() but omits port # if it may be implied.
+		/// Equivalent to UriBuilder.Uri.ToString(), but doesn't throw an exception if the Host has a wildcard.
+		/// </summary>
+		public static string UriBuilderToStringWithImpliedPorts(UriBuilder builder) {
+			Debug.Assert(builder != null);
+			// We only check for implied ports on HTTP and HTTPS schemes since those
+			// are the only ones supported by OpenID anyway.
+			if ((builder.Port == 80 && string.Equals(builder.Scheme, "http", StringComparison.OrdinalIgnoreCase)) ||
+				(builder.Port == 443 && string.Equals(builder.Scheme, "https", StringComparison.OrdinalIgnoreCase))) {
+				// An implied port may be removed.
+				string url = builder.ToString();
+				// Be really careful to only remove the first :80 or :443 so we are guaranteed
+				// we're removing only the port (and not something in the query string that 
+				// looks like a port.
+				return Regex.Replace(url, @"^(https?://[^:]+):\d+", m => m.Groups[1].Value, RegexOptions.IgnoreCase);
+			} else {
+				// The port must be explicitly given anyway.
+				return builder.ToString();
+			}
+		}
 	}
 
 	internal static class Util {
