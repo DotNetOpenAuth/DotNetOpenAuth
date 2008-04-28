@@ -19,28 +19,25 @@ namespace DotNetOpenId {
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads")]
 		public static implicit operator Realm(string uri) {
-			return new Realm(uri);
+			return uri != null ? new Realm(uri) : null;
 		}
 		/// <summary>
 		/// Implicitly converts a <see cref="Uri"/> to a <see cref="Realm"/> object.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
 		public static implicit operator Realm(Uri uri) {
-			return new Realm(uri.AbsoluteUri);
+			return uri != null ? new Realm(uri.AbsoluteUri) : null;
 		}
 		/// <summary>
 		/// Implicitly converts a <see cref="Realm"/> object to its <see cref="String"/> form.
 		/// </summary>
-		/// <param name="realm"></param>
-		/// <returns></returns>
 		public static implicit operator string(Realm realm) {
-			return realm.ToString();
+			return realm != null ? realm.ToString() : null;
 		}
 
 		/// <summary>
 		/// Instantiates a <see cref="Realm"/> from its string representation.
 		/// </summary>
-		/// <param name="realmUrl"></param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase")]
 		public Realm(string realmUrl) {
 			if (realmUrl == null) throw new ArgumentNullException("realmUrl");
@@ -61,6 +58,20 @@ namespace DotNetOpenId {
 				!uri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
 				throw new UriFormatException(string.Format(CultureInfo.CurrentCulture,
 					Strings.InvalidScheme, uri.Scheme));
+		}
+		/// <summary>
+		/// Instantiates a <see cref="Realm"/> from its <see cref="UriBuilder"/> representation.
+		/// </summary>
+		/// <remarks>
+		/// This is useful because UriBuilder can construct a host with a wildcard 
+		/// in the Host property, but once there it can't be converted to a Uri.
+		/// </remarks>
+		internal Realm(UriBuilder realmUriBuilder)
+			: this(safeUriBuilderToString(realmUriBuilder)) { }
+		static string safeUriBuilderToString(UriBuilder realmUriBuilder) {
+			if (realmUriBuilder == null) throw new ArgumentNullException("realmUriBuilder");
+			// Note: we MUST use ToString.  Uri property throws if wildcard is present.
+			return realmUriBuilder.ToString();
 		}
 
 		Uri uri;
@@ -176,23 +187,19 @@ namespace DotNetOpenId {
 				string[] host_parts = Host.Split('.');
 				string[] url_parts = url.Host.Split('.');
 
-				// If the domain contain the wildcard has more parts than the URL to match against,
+				// If the domain containing the wildcard has more parts than the URL to match against,
 				// it naturally can't be valid.
 				// Unless *.example.com actually matches example.com too.
 				if (host_parts.Length > url_parts.Length)
 					return false;
 
 				// Compare last part first and move forward.
-				// Could be done by using EndsWith, but this solution seems more elegant.
-				for (int i = host_parts.Length - 1; i >= 0; i--) {
-					/*
-					if (host_parts[i].Equals("*", StringComparison.Ordinal))
-					{
-						break;
-					}
-					 */
-
-					if (!host_parts[i].Equals(url_parts[i + 1], StringComparison.OrdinalIgnoreCase)) {
+				// Maybe could be done by using EndsWith, but piecewies helps ensure that
+				// *.my.com doesn't match ohmeohmy.com but can still match my.com.
+				for (int i = 0; i < host_parts.Length; i++) {
+					string hostPart = host_parts[host_parts.Length - 1 - i];
+					string urlPart = url_parts[url_parts.Length - 1 - i];
+					if (!string.Equals(hostPart, urlPart, StringComparison.OrdinalIgnoreCase)) {
 						return false;
 					}
 				}
@@ -267,9 +274,9 @@ namespace DotNetOpenId {
 			if (DomainWildcard) {
 				UriBuilder builder = new UriBuilder(uri);
 				builder.Host = "*." + builder.Host;
-				return builder.ToString();
+				return UriUtil.UriBuilderToStringWithImpliedPorts(builder);
 			} else {
-				return uri.ToString();
+				return uri.AbsoluteUri;
 			}
 		}
 	}

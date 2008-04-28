@@ -137,7 +137,7 @@ namespace DotNetOpenId.RelyingParty
 				if (Page != null && !DesignMode)
 				{
 					// Validate new value by trying to construct a Realm object based on it.
-					new Realm(getResolvedRealm(value).ToString()); // throws an exception on failure.
+					new Realm(getResolvedRealm(value)); // throws an exception on failure.
 				}
 				else
 				{
@@ -617,8 +617,7 @@ namespace DotNetOpenId.RelyingParty
 				realm.Port = Page.Request.Url.Port;
 
 				// Initiate openid request
-				// Note: we must use realm.ToString() because trustRoot.Uri throws when wildcards are present.
-				Request = consumer.CreateRequest(Text, realm.ToString());
+				Request = consumer.CreateRequest(Text, new Realm(realm));
 				Request.Mode = ImmediateMode ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;
 				if (EnableRequestProfile) addProfileArgs(Request);
 			} catch (WebException ex) {
@@ -684,8 +683,7 @@ namespace DotNetOpenId.RelyingParty
 			}
 
 			// Is it valid?
-			// Note: we MUST use ToString.  Uri property throws if wildcard is present.
-			new Realm(fullyQualifiedRealm.ToString()); // throws if not valid
+			new Realm(fullyQualifiedRealm); // throws if not valid
 
 			return fullyQualifiedRealm;
 		}

@@ -43,5 +43,21 @@ namespace DotNetOpenId.Test {
 			UriUtil.AppendQueryArgs(uri, args);
 			Assert.AreEqual("http://baseline.org/page?a=b&c%2fd=e%2ff&g=h", uri.Uri.AbsoluteUri);
 		}
+
+		[Test]
+		public void UriBuilderToStringWithImpliedPorts() {
+			Assert.AreEqual("http://localhost/p?q#f", 
+				UriUtil.UriBuilderToStringWithImpliedPorts(new UriBuilder("http://localhost:80/p?q#f")));
+			Assert.AreEqual("https://localhost/p?q#f",
+				UriUtil.UriBuilderToStringWithImpliedPorts(new UriBuilder("https://localhost:443/p?q#f")));
+			// Switch it up to make sure that ports are explicitly given where required.
+			Assert.AreEqual("http://localhost:443/p?q#f",
+				UriUtil.UriBuilderToStringWithImpliedPorts(new UriBuilder("http://localhost:443/p?q#f")));
+			Assert.AreEqual("https://localhost:80/p?q#f",
+				UriUtil.UriBuilderToStringWithImpliedPorts(new UriBuilder("https://localhost:80/p?q#f")));
+			// and some random ports
+			Assert.AreEqual("https://localhost:5000/p?q#f",
+				UriUtil.UriBuilderToStringWithImpliedPorts(new UriBuilder("https://localhost:5000/p?q#f")));
+		}
 	}
 }
