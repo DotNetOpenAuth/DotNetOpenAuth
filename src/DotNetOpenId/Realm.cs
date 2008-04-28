@@ -189,7 +189,7 @@ namespace DotNetOpenId {
 				builder.Host = "*." + builder.Host;
 				return builder.ToString();
 			} else {
-				return uri.ToString();
+				return uri.AbsoluteUri;
 			}
 		}
 	}

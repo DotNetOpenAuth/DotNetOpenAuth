@@ -62,7 +62,7 @@ namespace DotNetOpenId {
 		static bool TryCanonicalize(string uri, out string canonicalUri) {
 			Uri normalizedUri;
 			bool result = TryCanonicalize(uri, out normalizedUri);
-			canonicalUri = normalizedUri.ToString();
+			canonicalUri = normalizedUri.AbsoluteUri;
 			return result;
 		}
 #endif
@@ -93,7 +93,7 @@ namespace DotNetOpenId {
 			return Uri.GetHashCode();
 		}
 		public override string ToString() {
-			return Uri.ToString();
+			return Uri.AbsoluteUri;
 		}
 
 	}
