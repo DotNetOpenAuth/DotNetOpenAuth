@@ -617,8 +617,7 @@ namespace DotNetOpenId.RelyingParty
 				realm.Port = Page.Request.Url.Port;
 
 				// Initiate openid request
-				// Note: we must use realm.ToString() because trustRoot.Uri throws when wildcards are present.
-				Request = consumer.CreateRequest(Text, realm.ToString());
+				Request = consumer.CreateRequest(Text, new Realm(realm));
 				Request.Mode = ImmediateMode ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;
 				if (EnableRequestProfile) addProfileArgs(Request);
 			} catch (WebException ex) {

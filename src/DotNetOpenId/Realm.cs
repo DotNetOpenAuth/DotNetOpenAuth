@@ -279,7 +279,7 @@ namespace DotNetOpenId {
 				builder.Host = "*." + builder.Host;
 				return UriUtil.UriBuilderToStringWithImpliedPorts(builder);
 			} else {
-				return uri.ToString();
+				return uri.AbsoluteUri;
 			}
 		}
 	}
