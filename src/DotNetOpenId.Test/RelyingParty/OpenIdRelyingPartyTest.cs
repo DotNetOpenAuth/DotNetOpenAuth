@@ -126,5 +126,18 @@ namespace DotNetOpenId.Test.RelyingParty {
 					Assert.Fail("Return_to port is explicitly specified although it may be implied, and realm only implies it.");
 			}
 		}
+
+		[Test]
+		public void ReturnToUrlEncodingTest() {
+			Uri origin = TestSupport.GetFullUrl(TestSupport.ConsumerPage);
+			var identityUrl = TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
+			var consumer = new OpenIdRelyingParty(null, null);
+			var request = consumer.CreateRequest(identityUrl, origin, origin);
+			Protocol protocol = Protocol.Lookup(request.ProviderVersion);
+			request.AddCallbackArguments("a+b", "c+d");
+			var requestArgs = HttpUtility.ParseQueryString(request.RedirectToProviderUrl.Query);
+			var returnToArgs = HttpUtility.ParseQueryString(requestArgs[protocol.openid.return_to]);
+			Assert.AreEqual("c+d", returnToArgs["a+b"]);
+		}
 	}
 }

@@ -163,10 +163,10 @@ namespace DotNetOpenId.RelyingParty {
 					qsArgs.Add(protocol.openid.claimed_id, endpoint.ClaimedIdentifier);
 				}
 				qsArgs.Add(protocol.openid.Realm, Realm);
-				qsArgs.Add(protocol.openid.return_to, returnToBuilder.Uri.ToString());
+				qsArgs.Add(protocol.openid.return_to, returnToBuilder.Uri.AbsoluteUri);
 
 				if (this.assoc != null)
-					qsArgs.Add(protocol.openid.assoc_handle, this.assoc.Handle); // !!!!
+					qsArgs.Add(protocol.openid.assoc_handle, this.assoc.Handle);
 
 				UriBuilder redir = new UriBuilder(this.endpoint.ProviderEndpoint);
 
