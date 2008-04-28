@@ -190,23 +190,19 @@ namespace DotNetOpenId {
 				string[] host_parts = Host.Split('.');
 				string[] url_parts = url.Host.Split('.');
 
-				// If the domain contain the wildcard has more parts than the URL to match against,
+				// If the domain containing the wildcard has more parts than the URL to match against,
 				// it naturally can't be valid.
 				// Unless *.example.com actually matches example.com too.
 				if (host_parts.Length > url_parts.Length)
 					return false;
 
 				// Compare last part first and move forward.
-				// Could be done by using EndsWith, but this solution seems more elegant.
-				for (int i = host_parts.Length - 1; i >= 0; i--) {
-					/*
-					if (host_parts[i].Equals("*", StringComparison.Ordinal))
-					{
-						break;
-					}
-					 */
-
-					if (!host_parts[i].Equals(url_parts[i + 1], StringComparison.OrdinalIgnoreCase)) {
+				// Maybe could be done by using EndsWith, but piecewies helps ensure that
+				// *.my.com doesn't match ohmeohmy.com but can still match my.com.
+				for (int i = 0; i < host_parts.Length; i++) {
+					string hostPart = host_parts[host_parts.Length - 1 - i];
+					string urlPart = url_parts[url_parts.Length - 1 - i];
+					if (!string.Equals(hostPart, urlPart, StringComparison.OrdinalIgnoreCase)) {
 						return false;
 					}
 				}
