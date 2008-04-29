@@ -14,7 +14,7 @@ namespace DotNetOpenId.Extensions.AuthenticationPolicy {
 		/// <summary>
 		/// Parameters to be included with PAPE requests.
 		/// </summary>
-		static class RequestParameters {
+		internal static class RequestParameters {
 			/// <summary>
 			/// Optional. If the End User has not actively authenticated to the OP within the number of seconds specified in a manner fitting the requested policies, the OP SHOULD authenticate the End User for this request.
 			/// </summary>
@@ -35,7 +35,7 @@ namespace DotNetOpenId.Extensions.AuthenticationPolicy {
 		/// <summary>
 		/// Parameters to be included with PAPE responses.
 		/// </summary>
-		static class ResponseParameters {
+		internal static class ResponseParameters {
 			/// <summary>
 			/// One or more authentication policy URIs that the OP conformed to when authenticating the End User.
 			/// </summary>
@@ -65,21 +65,6 @@ namespace DotNetOpenId.Extensions.AuthenticationPolicy {
 			/// Level 0 is not an assurance level defined by NIST, but rather SHOULD be used to signify that the OP recognizes the parameter and the End User authentication did not meet the requirements of Level 1. See Appendix A.1.2 (NIST Assurance Levels) for high-level example classifications of authentication methods within the defined levels.
 			/// </remarks>
 			internal const string NistAuthLevel = "nist_auth_level";
-		}
-
-		static class AuthenticationPolicies {
-			/// <summary>
-			/// An authentication mechanism where the End User does not provide a shared secret to a party potentially under the control of the Relying Party. (Note that the potentially malicious Relying Party controls where the User-Agent is redirected to and thus may not send it to the End User's actual OpenID Provider).
-			/// </summary>
-			public const string PhishingResistantAuthentication = "http://schemas.openid.net/pape/policies/2007/06/phishing-resistant";
-			/// <summary>
-			/// An authentication mechanism where the End User authenticates to the OpenID Provider by providing over one authentication factor. Common authentication factors are something you know, something you have, and something you are. An example would be authentication using a password and a software token or digital certificate.
-			/// </summary>
-			public const string MultiFactorAuthentication = "http://schemas.openid.net/pape/policies/2007/06/multi-factor";
-			/// <summary>
-			/// An authentication mechanism where the End User authenticates to the OpenID Provider by providing over one authentication factor where at least one of the factors is a physical factor such as a hardware device or biometric. Common authentication factors are something you know, something you have, and something you are. This policy also implies the Multi-Factor Authentication policy (http://schemas.openid.net/pape/policies/2007/06/multi-factor) and both policies MAY BE specified in conjunction without conflict. An example would be authentication using a password and a hardware token.
-			/// </summary>
-			public const string PhysicalMultiFactorAuthentication = "http://schemas.openid.net/pape/policies/2007/06/multi-factor-physical";
 		}
 	}
 }
