@@ -1,18 +1,9 @@
 ﻿using System;
-using System.Collections;
-using System.Configuration;
-using System.Data;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.HtmlControls;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Collections.Specialized;
 using System.Collections.Generic;
 using DotNetOpenId.Extensions.AttributeExchange;
 using DotNetOpenId.Extensions.SimpleRegistration;
 using SregDemandLevel = DotNetOpenId.Extensions.SimpleRegistration.DemandLevel;
+using DotNetOpenId.Extensions.ProviderAuthenticationPolicy;
 
 public partial class ProviderEndpoint : System.Web.UI.Page {
 	const string nicknameTypeUri = WellKnownAttributes.Name.Alias;
@@ -36,6 +27,8 @@ public partial class ProviderEndpoint : System.Web.UI.Page {
 		var aeFetchResponse = new FetchResponse();
 		var aeStoreRequest = request.GetExtension<StoreRequest>();
 		var aeStoreResponse = new StoreResponse();
+		var papeRequest = request.GetExtension<PolicyRequest>();
+		var papeResponse = new PolicyResponse();
 		switch (scenario) {
 			case TestSupport.Scenarios.ExtensionFullCooperation:
 				if (sregRequest != null) {
@@ -58,6 +51,11 @@ public partial class ProviderEndpoint : System.Web.UI.Page {
 					foreach (var att2 in aeFetchRequest.Attributes) {
 						if (storedAttributes.ContainsKey(att2.TypeUri))
 							aeFetchResponse.AddAttribute(storedAttributes[att2.TypeUri]);
+					}
+				}
+				if (papeRequest != null) {
+					if (papeRequest.MaximumAuthenticationAge.HasValue) {
+						papeResponse.AuthenticationTimeUtc = DateTime.UtcNow - (papeRequest.MaximumAuthenticationAge.Value - TimeSpan.FromSeconds(30));
 					}
 				}
 				break;
@@ -95,6 +93,7 @@ public partial class ProviderEndpoint : System.Web.UI.Page {
 		if (sregRequest != null) request.AddResponseExtension(sregResponse);
 		if (aeFetchRequest != null) request.AddResponseExtension(aeFetchResponse);
 		if (aeStoreRequest != null) request.AddResponseExtension(aeStoreResponse);
+		if (papeRequest != null) request.AddResponseExtension(papeResponse);
 	}
 
 	protected void ProviderEndpoint1_AuthenticationChallenge(object sender, DotNetOpenId.Provider.AuthenticationChallengeEventArgs e) {

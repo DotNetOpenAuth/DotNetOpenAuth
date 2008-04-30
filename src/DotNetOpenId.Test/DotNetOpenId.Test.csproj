@@ -53,6 +53,9 @@
     <Compile Include="Extensions\AttributeExchangeTests.cs" />
     <Compile Include="Extensions\AttributeRequestTests.cs" />
     <Compile Include="Extensions\ExtensionTestBase.cs" />
+    <Compile Include="Extensions\PapeTests.cs" />
+    <Compile Include="Extensions\PolicyRequestTests.cs" />
+    <Compile Include="Extensions\PolicyResponseTests.cs" />
     <Compile Include="Extensions\SimpleRegistrationTests.cs" />
     <Compile Include="Hosting\EncodingInterceptor.cs" />
     <Compile Include="IdentifierTests.cs" />

@@ -62,6 +62,11 @@
     <Compile Include="Extensions\AttributeExchange\AttributeRequest.cs" />
     <Compile Include="Extensions\AttributeExchange\AttributeValues.cs" />
     <Compile Include="Extensions\AttributeExchange\WellKnownAttributes.cs" />
+    <Compile Include="Extensions\ProviderAuthenticationPolicy\AuthenticationPolicies.cs" />
+    <Compile Include="Extensions\ProviderAuthenticationPolicy\Constants.cs" />
+    <Compile Include="Extensions\ProviderAuthenticationPolicy\NistAssuranceLevel.cs" />
+    <Compile Include="Extensions\ProviderAuthenticationPolicy\PolicyRequest.cs" />
+    <Compile Include="Extensions\ProviderAuthenticationPolicy\PolicyResponse.cs" />
     <Compile Include="Extensions\SimpleRegistration\Constants.cs" />
     <Compile Include="Extensions\AttributeExchange\FetchRequest.cs" />
     <Compile Include="Extensions\AttributeExchange\StoreRequest.cs" />

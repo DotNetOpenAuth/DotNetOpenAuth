@@ -183,6 +183,9 @@
   <data name="InvalidSignature" xml:space="preserve">
     <value>The signature verification failed.</value>
   </data>
+  <data name="InvalidUri" xml:space="preserve">
+    <value>The value '{0}' is not a valid URI.</value>
+  </data>
   <data name="InvalidXri" xml:space="preserve">
     <value>Not a recognized XRI format: '{0}'.</value>
   </data>
@@ -251,5 +254,8 @@
   </data>
   <data name="TypeMustImplementX" xml:space="preserve">
     <value>The type must implement {0}.</value>
+  </data>
+  <data name="UnspecifiedDateTimeKindNotAllowed" xml:space="preserve">
+    <value>Providing a DateTime whose Kind is Unspecified is not allowed.</value>
   </data>
 </root>
