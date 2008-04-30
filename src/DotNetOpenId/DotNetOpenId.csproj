@@ -64,6 +64,7 @@
     <Compile Include="Extensions\AttributeExchange\WellKnownAttributes.cs" />
     <Compile Include="Extensions\AuthenticationPolicy\AuthenticationPolicies.cs" />
     <Compile Include="Extensions\AuthenticationPolicy\Constants.cs" />
+    <Compile Include="Extensions\AuthenticationPolicy\NistAssuranceLevel.cs" />
     <Compile Include="Extensions\AuthenticationPolicy\PolicyRequest.cs" />
     <Compile Include="Extensions\AuthenticationPolicy\PolicyResponse.cs" />
     <Compile Include="Extensions\SimpleRegistration\Constants.cs" />
