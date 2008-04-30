@@ -4,7 +4,7 @@ using System.Text;
 using System.Globalization;
 using System.Diagnostics;
 
-namespace DotNetOpenId.Extensions.AuthenticationPolicy {
+namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 	/// <summary>
 	/// The PAPE request part of an OpenID Authentication request message.
 	/// </summary>

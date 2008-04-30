@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DotNetOpenId.Extensions.AuthenticationPolicy {
+namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 	/// <summary>
 	/// OpenID Provider Authentication Policy extension constants.
 	/// </summary>

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using DotNetOpenId.Extensions.AuthenticationPolicy;
+using DotNetOpenId.Extensions.ProviderAuthenticationPolicy;
 
 namespace DotNetOpenId.Test.Extensions {
 	[TestFixture]

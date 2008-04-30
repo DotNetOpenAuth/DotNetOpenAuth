@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using DotNetOpenId.Extensions.AttributeExchange;
 using DotNetOpenId.Extensions.SimpleRegistration;
 using SregDemandLevel = DotNetOpenId.Extensions.SimpleRegistration.DemandLevel;
-using DotNetOpenId.Extensions.AuthenticationPolicy;
+using DotNetOpenId.Extensions.ProviderAuthenticationPolicy;
 
 public partial class ProviderEndpoint : System.Web.UI.Page {
 	const string nicknameTypeUri = WellKnownAttributes.Name.Alias;

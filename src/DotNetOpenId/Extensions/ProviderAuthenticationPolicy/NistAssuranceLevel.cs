@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DotNetOpenId.Extensions.AuthenticationPolicy {
+namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 	/// <summary>
 	/// Descriptions for NIST-defined levels of assurance that a credential
 	/// has not been compromised and therefore the extent to which an

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DotNetOpenId.Extensions.AuthenticationPolicy {
+namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 	/// <summary>
 	/// Well-known authentication policies defined in the PAPE extension spec or by a recognized
 	/// standards body.
