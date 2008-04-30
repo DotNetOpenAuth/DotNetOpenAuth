@@ -30,11 +30,11 @@ namespace DotNetOpenId.Test.Extensions {
 		[Test]
 		public void AddPolicies() {
 			PolicyRequest resp = new PolicyRequest();
-			resp.PreferredPolicies.Add(AuthenticationPolicies.MultiFactorAuthentication);
-			resp.PreferredPolicies.Add(AuthenticationPolicies.PhishingResistantAuthentication);
+			resp.PreferredPolicies.Add(AuthenticationPolicies.MultiFactor);
+			resp.PreferredPolicies.Add(AuthenticationPolicies.PhishingResistant);
 			Assert.AreEqual(2, resp.PreferredPolicies.Count);
-			Assert.AreEqual(AuthenticationPolicies.MultiFactorAuthentication, resp.PreferredPolicies[0]);
-			Assert.AreEqual(AuthenticationPolicies.PhishingResistantAuthentication, resp.PreferredPolicies[1]);
+			Assert.AreEqual(AuthenticationPolicies.MultiFactor, resp.PreferredPolicies[0]);
+			Assert.AreEqual(AuthenticationPolicies.PhishingResistant, resp.PreferredPolicies[1]);
 		}
 
 		[Test]
@@ -44,8 +44,8 @@ namespace DotNetOpenId.Test.Extensions {
 			// expect anything better (for now).  But if this is ever fixed, by all means
 			// change this test to expect an exception or something else.
 			PolicyRequest resp = new PolicyRequest();
-			resp.PreferredPolicies.Add(AuthenticationPolicies.MultiFactorAuthentication);
-			resp.PreferredPolicies.Add(AuthenticationPolicies.MultiFactorAuthentication);
+			resp.PreferredPolicies.Add(AuthenticationPolicies.MultiFactor);
+			resp.PreferredPolicies.Add(AuthenticationPolicies.MultiFactor);
 			Assert.AreEqual(2, resp.PreferredPolicies.Count);
 		}
 
@@ -58,18 +58,18 @@ namespace DotNetOpenId.Test.Extensions {
 			Assert.AreNotEqual(null, req);
 
 			// Test PreferredPolicies list comparison
-			req.PreferredPolicies.Add(AuthenticationPolicies.PhishingResistantAuthentication);
+			req.PreferredPolicies.Add(AuthenticationPolicies.PhishingResistant);
 			Assert.AreNotEqual(req, req2);
-			req2.PreferredPolicies.Add(AuthenticationPolicies.MultiFactorAuthentication);
+			req2.PreferredPolicies.Add(AuthenticationPolicies.MultiFactor);
 			Assert.AreNotEqual(req, req2);
 			req2.PreferredPolicies.Clear();
-			req2.PreferredPolicies.Add(AuthenticationPolicies.PhishingResistantAuthentication);
+			req2.PreferredPolicies.Add(AuthenticationPolicies.PhishingResistant);
 			Assert.AreEqual(req, req2);
 
 			// Test PreferredPolicies list comparison when that list is not in the same order.
-			req.PreferredPolicies.Add(AuthenticationPolicies.MultiFactorAuthentication);
+			req.PreferredPolicies.Add(AuthenticationPolicies.MultiFactor);
 			Assert.AreNotEqual(req, req2);
-			req2.PreferredPolicies.Insert(0, AuthenticationPolicies.MultiFactorAuthentication);
+			req2.PreferredPolicies.Insert(0, AuthenticationPolicies.MultiFactor);
 			Assert.AreEqual(req, req2);
 
 			// Test MaximumAuthenticationAge comparison.
@@ -104,7 +104,7 @@ namespace DotNetOpenId.Test.Extensions {
 
 			// Test with all fields set
 			req2 = new PolicyRequest();
-			req.PreferredPolicies.Add(AuthenticationPolicies.MultiFactorAuthentication);
+			req.PreferredPolicies.Add(AuthenticationPolicies.MultiFactor);
 			req.MaximumAuthenticationAge = TimeSpan.FromHours(1);
 			fields = ((IExtensionRequest)req).Serialize(null);
 			Assert.IsTrue(((IExtensionRequest)req2).Deserialize(fields, null));
@@ -112,7 +112,7 @@ namespace DotNetOpenId.Test.Extensions {
 
 			// Test with an extra policy
 			req2 = new PolicyRequest();
-			req.PreferredPolicies.Add(AuthenticationPolicies.PhishingResistantAuthentication);
+			req.PreferredPolicies.Add(AuthenticationPolicies.PhishingResistant);
 			fields = ((IExtensionRequest)req).Serialize(null);
 			Assert.IsTrue(((IExtensionRequest)req2).Deserialize(fields, null));
 			Assert.AreEqual(req, req2);
@@ -120,12 +120,12 @@ namespace DotNetOpenId.Test.Extensions {
 			// Test with a policy added twice.  We should see it intelligently leave one of
 			// the doubled policies out.
 			req2 = new PolicyRequest();
-			req.PreferredPolicies.Add(AuthenticationPolicies.PhishingResistantAuthentication);
+			req.PreferredPolicies.Add(AuthenticationPolicies.PhishingResistant);
 			fields = ((IExtensionRequest)req).Serialize(null);
 			Assert.IsTrue(((IExtensionRequest)req2).Deserialize(fields, null));
 			Assert.AreNotEqual(req, req2);
 			// Now go ahead and add the doubled one so we can do our equality test.
-			req2.PreferredPolicies.Add(AuthenticationPolicies.PhishingResistantAuthentication);
+			req2.PreferredPolicies.Add(AuthenticationPolicies.PhishingResistant);
 			Assert.AreEqual(req, req2);
 
 		}

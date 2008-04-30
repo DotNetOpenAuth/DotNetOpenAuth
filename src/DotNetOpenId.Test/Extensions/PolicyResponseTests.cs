@@ -24,11 +24,11 @@ namespace DotNetOpenId.Test.Extensions {
 		[Test]
 		public void AddPolicies() {
 			PolicyResponse resp = new PolicyResponse();
-			resp.ActualPolicies.Add(AuthenticationPolicies.MultiFactorAuthentication);
-			resp.ActualPolicies.Add(AuthenticationPolicies.PhishingResistantAuthentication);
+			resp.ActualPolicies.Add(AuthenticationPolicies.MultiFactor);
+			resp.ActualPolicies.Add(AuthenticationPolicies.PhishingResistant);
 			Assert.AreEqual(2, resp.ActualPolicies.Count);
-			Assert.AreEqual(AuthenticationPolicies.MultiFactorAuthentication, resp.ActualPolicies[0]);
-			Assert.AreEqual(AuthenticationPolicies.PhishingResistantAuthentication, resp.ActualPolicies[1]);
+			Assert.AreEqual(AuthenticationPolicies.MultiFactor, resp.ActualPolicies[0]);
+			Assert.AreEqual(AuthenticationPolicies.PhishingResistant, resp.ActualPolicies[1]);
 		}
 
 		[Test]
@@ -38,8 +38,8 @@ namespace DotNetOpenId.Test.Extensions {
 			// expect anything better (for now).  But if this is ever fixed, by all means
 			// change this test to expect an exception or something else.
 			PolicyResponse resp = new PolicyResponse();
-			resp.ActualPolicies.Add(AuthenticationPolicies.MultiFactorAuthentication);
-			resp.ActualPolicies.Add(AuthenticationPolicies.MultiFactorAuthentication);
+			resp.ActualPolicies.Add(AuthenticationPolicies.MultiFactor);
+			resp.ActualPolicies.Add(AuthenticationPolicies.MultiFactor);
 			Assert.AreEqual(2, resp.ActualPolicies.Count);
 		}
 
@@ -96,18 +96,18 @@ namespace DotNetOpenId.Test.Extensions {
 			Assert.AreNotEqual(null, resp);
 
 			// Test ActualPolicies list comparison
-			resp.ActualPolicies.Add(AuthenticationPolicies.PhishingResistantAuthentication);
+			resp.ActualPolicies.Add(AuthenticationPolicies.PhishingResistant);
 			Assert.AreNotEqual(resp, resp2);
-			resp2.ActualPolicies.Add(AuthenticationPolicies.MultiFactorAuthentication);
+			resp2.ActualPolicies.Add(AuthenticationPolicies.MultiFactor);
 			Assert.AreNotEqual(resp, resp2);
 			resp2.ActualPolicies.Clear();
-			resp2.ActualPolicies.Add(AuthenticationPolicies.PhishingResistantAuthentication);
+			resp2.ActualPolicies.Add(AuthenticationPolicies.PhishingResistant);
 			Assert.AreEqual(resp, resp2);
 
 			// Test ActualPolicies list comparison when that list is not in the same order.
-			resp.ActualPolicies.Add(AuthenticationPolicies.MultiFactorAuthentication);
+			resp.ActualPolicies.Add(AuthenticationPolicies.MultiFactor);
 			Assert.AreNotEqual(resp, resp2);
-			resp2.ActualPolicies.Insert(0, AuthenticationPolicies.MultiFactorAuthentication);
+			resp2.ActualPolicies.Insert(0, AuthenticationPolicies.MultiFactor);
 			Assert.AreEqual(resp, resp2);
 
 			// Test AuthenticationTimeUtc comparison.
@@ -156,7 +156,7 @@ namespace DotNetOpenId.Test.Extensions {
 
 			// Test with all fields set
 			resp2 = new PolicyResponse();
-			resp.ActualPolicies.Add(AuthenticationPolicies.MultiFactorAuthentication);
+			resp.ActualPolicies.Add(AuthenticationPolicies.MultiFactor);
 			resp.AuthenticationTimeUtc = someUtcTime;
 			resp.NistAssuranceLevel = NistAssuranceLevel.Level2;
 			fields = ((IExtensionResponse)resp).Serialize(null);
@@ -165,7 +165,7 @@ namespace DotNetOpenId.Test.Extensions {
 
 			// Test with an extra policy
 			resp2 = new PolicyResponse();
-			resp.ActualPolicies.Add(AuthenticationPolicies.PhishingResistantAuthentication);
+			resp.ActualPolicies.Add(AuthenticationPolicies.PhishingResistant);
 			fields = ((IExtensionResponse)resp).Serialize(null);
 			Assert.IsTrue(((IExtensionResponse)resp2).Deserialize(fields, null));
 			Assert.AreEqual(resp, resp2);
@@ -173,12 +173,12 @@ namespace DotNetOpenId.Test.Extensions {
 			// Test with a policy added twice.  We should see it intelligently leave one of
 			// the doubled policies out.
 			resp2 = new PolicyResponse();
-			resp.ActualPolicies.Add(AuthenticationPolicies.PhishingResistantAuthentication);
+			resp.ActualPolicies.Add(AuthenticationPolicies.PhishingResistant);
 			fields = ((IExtensionResponse)resp).Serialize(null);
 			Assert.IsTrue(((IExtensionResponse)resp2).Deserialize(fields, null));
 			Assert.AreNotEqual(resp, resp2);
 			// Now go ahead and add the doubled one so we can do our equality test.
-			resp2.ActualPolicies.Add(AuthenticationPolicies.PhishingResistantAuthentication);
+			resp2.ActualPolicies.Add(AuthenticationPolicies.PhishingResistant);
 			Assert.AreEqual(resp, resp2);
 		}
 	}
