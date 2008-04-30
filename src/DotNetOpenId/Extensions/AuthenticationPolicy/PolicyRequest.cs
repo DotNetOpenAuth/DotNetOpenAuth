@@ -32,6 +32,17 @@ namespace DotNetOpenId.Extensions.AuthenticationPolicy {
 		/// </remarks>
 		public IList<string> PreferredPolicies { get; private set; }
 
+		public override bool Equals(object obj) {
+			PolicyRequest other = obj as PolicyRequest;
+			if (other == null) return false;
+			if (MaximumAuthenticationAge != other.MaximumAuthenticationAge) return false;
+			if (PreferredPolicies.Count != other.PreferredPolicies.Count) return false;
+			foreach(string policy in PreferredPolicies) {
+				if (!other.PreferredPolicies.Contains(policy)) return false;
+			}
+			return true;
+		}
+
 		#region IExtensionRequest Members
 
 		IDictionary<string, string> IExtensionRequest.Serialize(DotNetOpenId.RelyingParty.IAuthenticationRequest authenticationRequest) {
@@ -59,7 +70,8 @@ namespace DotNetOpenId.Extensions.AuthenticationPolicy {
 			PreferredPolicies.Clear();
 			string[] preferredPolicies = fields[Constants.RequestParameters.PreferredAuthPolicies].Split(' ');
 			foreach (string policy in preferredPolicies) {
-				PreferredPolicies.Add(policy);
+				if (policy.Length > 0)
+					PreferredPolicies.Add(policy);
 			}
 
 			return true;
@@ -78,7 +90,7 @@ namespace DotNetOpenId.Extensions.AuthenticationPolicy {
 		static internal string SerializePolicies(IList<string> policies) {
 			Debug.Assert(policies != null);
 			StringBuilder policyList = new StringBuilder();
-			foreach (string policy in policies) {
+			foreach (string policy in GetUniqueItems(policies)) {
 				if (policy.Contains(" ")) {
 					throw new FormatException(string.Format(CultureInfo.CurrentCulture,
 						Strings.InvalidUri, policy));
@@ -89,6 +101,14 @@ namespace DotNetOpenId.Extensions.AuthenticationPolicy {
 			if (policyList.Length > 0)
 				policyList.Length -= 1; // remove trailing space
 			return policyList.ToString();
+		}
+		static internal IEnumerable<T> GetUniqueItems<T>(IList<T> list) {
+			List<T> itemsSeen = new List<T>(list.Count);
+			foreach (T item in list) {
+				if (itemsSeen.Contains(item)) continue;
+				itemsSeen.Add(item);
+				yield return item;
+			}
 		}
 	}
 }

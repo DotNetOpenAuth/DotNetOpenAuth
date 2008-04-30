@@ -473,5 +473,14 @@ namespace DotNetOpenId {
                 return ResourceManager.GetString("TypeMustImplementX", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Providing a DateTime whose Kind is Unspecified is not allowed..
+        /// </summary>
+        internal static string UnspecifiedDateTimeKindNotAllowed {
+            get {
+                return ResourceManager.GetString("UnspecifiedDateTimeKindNotAllowed", resourceCulture);
+            }
+        }
     }
 }

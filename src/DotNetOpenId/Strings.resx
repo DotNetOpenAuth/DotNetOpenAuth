@@ -255,4 +255,7 @@
   <data name="TypeMustImplementX" xml:space="preserve">
     <value>The type must implement {0}.</value>
   </data>
+  <data name="UnspecifiedDateTimeKindNotAllowed" xml:space="preserve">
+    <value>Providing a DateTime whose Kind is Unspecified is not allowed.</value>
+  </data>
 </root>
