@@ -8,7 +8,7 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 	/// <summary>
 	/// The PAPE response part of an OpenID Authentication response message.
 	/// </summary>
-	public class PolicyResponse : IExtensionResponse {
+	public sealed class PolicyResponse : IExtensionResponse {
 		// This array of formats is not yet a complete list.
 		static readonly string[] PermissibleDateTimeFormats = { "yyyy-MM-ddTHH:mm:ssZ" };
 
@@ -54,6 +54,9 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 		/// </remarks>
 		public NistAssuranceLevel? NistAssuranceLevel { get; set; }
 
+		/// <summary>
+		/// Tests equality between two <see cref="PolicyResponse"/> instances.
+		/// </summary>
 		public override bool Equals(object obj) {
 			PolicyResponse other = obj as PolicyResponse;
 			if (other == null) return false;
@@ -66,6 +69,13 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 			return true;
 		}
 
+		/// <summary>
+		/// Gets a hash code for this object.
+		/// </summary>
+		public override int GetHashCode() {
+			return ActualPolicies.GetHashCode();
+		}
+
 		#region IExtensionResponse Members
 
 		IDictionary<string, string> IExtensionResponse.Serialize(DotNetOpenId.Provider.IRequest authenticationRequest) {
@@ -76,7 +86,7 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 				fields.Add(Constants.ResponseParameters.AuthTime, AuthenticationTimeUtc.Value.ToUniversalTime().ToString(PermissibleDateTimeFormats[0], CultureInfo.InvariantCulture));
 			}
 			if (NistAssuranceLevel.HasValue) {
-				fields.Add(Constants.ResponseParameters.NistAuthLevel, ((int)NistAssuranceLevel).ToString());
+				fields.Add(Constants.ResponseParameters.NistAuthLevel, ((int)NistAssuranceLevel).ToString(CultureInfo.InvariantCulture));
 			}
 
 			return fields;

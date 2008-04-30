@@ -14,6 +14,7 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 	/// the brief summaries attached to each level in DotNetOpenId documentation.
 	/// http://csrc.nist.gov/publications/nistpubs/800-63/SP800-63V1_0_2.pdf
 	/// </remarks>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Nist")]
 	public enum NistAssuranceLevel {
 		/// <summary>
 		/// Not an assurance level defined by NIST, but rather SHOULD be used to 

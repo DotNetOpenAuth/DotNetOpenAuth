@@ -8,7 +8,7 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 	/// <summary>
 	/// The PAPE request part of an OpenID Authentication request message.
 	/// </summary>
-	public class PolicyRequest : IExtensionRequest {
+	public sealed class PolicyRequest : IExtensionRequest {
 		/// <summary>
 		/// Instantiates a new <see cref="PolicyRequest"/>.
 		/// </summary>
@@ -32,6 +32,9 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 		/// </remarks>
 		public IList<string> PreferredPolicies { get; private set; }
 
+		/// <summary>
+		/// Tests equality between two <see cref="PolicyRequest"/> instances.
+		/// </summary>
 		public override bool Equals(object obj) {
 			PolicyRequest other = obj as PolicyRequest;
 			if (other == null) return false;
@@ -41,6 +44,13 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 				if (!other.PreferredPolicies.Contains(policy)) return false;
 			}
 			return true;
+		}
+
+		/// <summary>
+		/// Gets a hash code for this object.
+		/// </summary>
+		public override int GetHashCode() {
+			return PreferredPolicies.GetHashCode();
 		}
 
 		#region IExtensionRequest Members
@@ -65,7 +75,7 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 
 			string maxAuthAge;
 			MaximumAuthenticationAge = fields.TryGetValue(Constants.RequestParameters.MaxAuthAge, out maxAuthAge) ?
-				TimeSpan.FromSeconds(double.Parse(maxAuthAge)) : (TimeSpan?)null;
+				TimeSpan.FromSeconds(double.Parse(maxAuthAge, CultureInfo.InvariantCulture)) : (TimeSpan?)null;
 
 			PreferredPolicies.Clear();
 			string[] preferredPolicies = fields[Constants.RequestParameters.PreferredAuthPolicies].Split(' ');
