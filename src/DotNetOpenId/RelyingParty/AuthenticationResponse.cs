@@ -216,7 +216,7 @@ namespace DotNetOpenId.RelyingParty {
 				// For 1.x OPs, we only need to verify that the OP Local Identifier 
 				// hasn't changed since we made the request.
 				if (tokenEndpoint.ProviderLocalIdentifier !=
-					Util.GetRequiredArg(query, tokenEndpoint.Protocol.openid.identity)) {
+					((Identifier)Util.GetRequiredArg(query, tokenEndpoint.Protocol.openid.identity))) {
 					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 						Strings.TamperingDetected, tokenEndpoint.Protocol.openid.identity,
 						tokenEndpoint.ProviderLocalIdentifier,
@@ -229,7 +229,7 @@ namespace DotNetOpenId.RelyingParty {
 				// the responseEndpoint.ClaimedIdentifier to verify the OP has authority
 				// to speak for it.
 				if (tokenEndpoint == null ||
-					tokenEndpoint.ClaimedIdentifier == tokenEndpoint.Protocol.ClaimedIdentifierForOPIdentifier) {
+					tokenEndpoint.ClaimedIdentifier == ((Identifier)tokenEndpoint.Protocol.ClaimedIdentifierForOPIdentifier)) {
 					Identifier claimedIdentifier = Util.GetRequiredArg(query, responseEndpoint.Protocol.openid.claimed_id);
 					ServiceEndpoint claimedEndpoint = claimedIdentifier.Discover();
 					// Compare the two ServiceEndpoints to make sure they are the same.

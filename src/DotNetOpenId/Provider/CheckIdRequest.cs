@@ -153,8 +153,8 @@ namespace DotNetOpenId.Provider {
 			}
 
 			if (Protocol.Version.Major >= 2) {
-				if (LocalIdentifier == Protocol.ClaimedIdentifierForOPIdentifier ^
-					ClaimedIdentifier == Protocol.ClaimedIdentifierForOPIdentifier) {
+				if (LocalIdentifier == ((Identifier)Protocol.ClaimedIdentifierForOPIdentifier) ^
+					ClaimedIdentifier == ((Identifier)Protocol.ClaimedIdentifierForOPIdentifier)) {
 					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 						Strings.MatchingArgumentsExpected, Protocol.openid.claimed_id,
 						Protocol.openid.identity, Protocol.ClaimedIdentifierForOPIdentifier),
@@ -162,7 +162,7 @@ namespace DotNetOpenId.Provider {
 				}
 			}
 
-			if (ClaimedIdentifier == Protocol.ClaimedIdentifierForOPIdentifier &&
+			if (ClaimedIdentifier == ((Identifier)Protocol.ClaimedIdentifierForOPIdentifier) &&
 				Protocol.ClaimedIdentifierForOPIdentifier != null) {
 				// Force the OP to deal with identifier_select by nulling out the two identifiers.
 				IsDirectedIdentity = true;

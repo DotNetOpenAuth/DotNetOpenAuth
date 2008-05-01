@@ -5,6 +5,7 @@
  * For news or support on this file: http://blog.nerdbank.net/
  ********************************************************/
 
+#if !__MonoCS__
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -495,3 +496,5 @@ namespace DotNetOpenId.RelyingParty
 		#endregion
 	}
 }
+#endif
+

@@ -69,8 +69,10 @@ using System.Web.UI;
 // Allows the consumer to call out to the web server.  This is unnecessary in provider-only scenarios.
 // Note: we don't use a single demand for https?://.* because the regex pattern must exactly
 // match the one used by hosting providers.  Listing them individually seems to be more common.
+#if !__MonoCS__
 [assembly: WebPermission(SecurityAction.RequestMinimum, ConnectPattern = @"http://.*")]
 [assembly: WebPermission(SecurityAction.RequestMinimum, ConnectPattern = @"https://.*")]
+#endif
 // Allows hosting this assembly in an ASP.NET setting.  Not all applications
 // will host this using ASP.NET, so this is optional.  Besides, we need at least
 // one optional permission to activate CAS permission shrinking.
