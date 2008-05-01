@@ -1,0 +1,2 @@
+gmcs -target:library -out:dnoi.dll -recurse:*.cs -langversion:linq -reference:System.Web.dll -reference:System.Drawing.dll
+
