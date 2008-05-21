@@ -141,14 +141,14 @@
 		<li>Create an OpenID account with one of the Open Servers listed below OR use the demo
 			Server as the identity provider - using http://[EXTERNAL IP]/ProviderPortal/user/bob
 			with the password 'test'</li>
-		<li>Go to http://[EXTERNAL IP]/ConsumerPortal/default.aspx and enter the OpenIDURL</li>
+		<li>Go to http://[EXTERNAL IP]/RelyingPartyPortal/default.aspx and enter the OpenIDURL</li>
 		<li>You are required to authenticate with the provider. Some fields (eg Name, DoB, Country
 			etc.) are requested, some required and some omitted. Your OpenID provider should
 			prompt you for the relevant fields, or at least make you aware which fields its
 			passing back. The exact page flow and auhentication mechanism will be implemented
 			differently by different identity providers.</li>
 		<li>After providing the required info and loggin in, you are taken back to the http://[EXTERNAL
-			IP]/ConsumerPortal/default.aspx and the available profile information is displayed</li>
+			IP]/RelyingPartyPortal/default.aspx and the available profile information is displayed</li>
 	</ol>
 	<h3>
 		The Provider Demo
@@ -157,14 +157,14 @@
 		<li>Kill all session cookies</li>
 		<li>Get the full openID url for a user based on whats in web.config. By default you
 			can use http://[EXTERNAL IP]/ProviderPortal/user/bob with the password 'test'</li>
-		<li>Go to http://[EXTERNAL IP]/ConsumerPortal/default.aspx and enter the OpenIDURL of
+		<li>Go to http://[EXTERNAL IP]/RelyingPartyPortal/default.aspx and enter the OpenIDURL of
 			the local server</li>
 		<li>The user is prompted for their password. The username field is propulated from the
 			openid url and grayed out.</li>
 		<li>The user is presentend with their identity url, a trust root (the site requiring
 			authentication) and set of fields to complete. Only the requested or required fields
 			are presented. Fields with * means the consumer requires it. </li>
-		<li>The user completes the fields and clicks Yes and are taken to http://[EXTERNAL IP]/ConsumerPortal/default.aspx
+		<li>The user completes the fields and clicks Yes and are taken to http://[EXTERNAL IP]/RelyingPartyPortal/default.aspx
 			with their available profile information.</li>
 	</ol>
 	<h3>
