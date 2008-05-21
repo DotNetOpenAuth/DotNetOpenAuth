@@ -13,6 +13,24 @@
 public partial class user {
     
     /// <summary>
+    /// IdentityEndpoint20 control.
+    /// </summary>
+    /// <remarks>
+    /// Auto-generated field.
+    /// To modify move field declaration from designer file to code-behind file.
+    /// </remarks>
+    protected global::DotNetOpenId.Provider.IdentityEndpoint IdentityEndpoint20;
+    
+    /// <summary>
+    /// IdentityEndpoint11 control.
+    /// </summary>
+    /// <remarks>
+    /// Auto-generated field.
+    /// To modify move field declaration from designer file to code-behind file.
+    /// </remarks>
+    protected global::DotNetOpenId.Provider.IdentityEndpoint IdentityEndpoint11;
+    
+    /// <summary>
     /// usernameLabel control.
     /// </summary>
     /// <remarks>
