@@ -105,7 +105,11 @@ namespace DotNetOpenId {
 		}
 		internal static Uri GetRequestUrlFromContext() {
 			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
-			return HttpContext.Current.Request.Url;
+			UriBuilder builder = new UriBuilder(HttpContext.Current.Request.Url);
+			// If a cookieless session is in use, the Request.Url will not include the session bit,
+			// so we add it here ourselves.
+			builder.Path = HttpContext.Current.Response.ApplyAppPathModifier(builder.Path);
+			return builder.Uri;
 		}
 
 		public static string GetRequiredArg(IDictionary<string, string> query, string key) {
