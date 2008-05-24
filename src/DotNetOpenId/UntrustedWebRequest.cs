@@ -6,11 +6,21 @@ namespace DotNetOpenId {
 	using System.Net;
 	using System.IO;
 using System.Diagnostics;
+	using System.Globalization;
+using System.Collections.Generic;
 
 	/// <summary>
 	/// A paranoid HTTP get/post request engine.  It helps to protect against attacks from remote
-	/// server leaving dangling connections, sending too much data, etc.
+	/// server leaving dangling connections, sending too much data, causing requests against 
+	/// internal servers, etc.
 	/// </summary>
+	/// <remarks>
+	/// Protections include:
+	/// * Conservative maximum time to receive the complete response.
+	/// * Only HTTP and HTTPS schemes are permitted.
+	/// * Internal IP address ranges are not permitted: 127.*.*.*, 1::*
+	/// * Internal host names are not permitted (periods must be found in the host name)
+	/// </remarks>
 	public static class UntrustedWebRequest {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		static int maximumBytesToRead = 1024 * 1024;
@@ -52,11 +62,69 @@ using System.Diagnostics;
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static UntrustedWebRequest() {
 			ReadWriteTimeout = TimeSpan.FromMilliseconds(500);
-			Timeout = TimeSpan.FromSeconds(5);
+			Timeout = TimeSpan.FromSeconds(10);
 #if LONGTIMEOUT
 			ReadWriteTimeout = TimeSpan.FromHours(1);
 			Timeout = TimeSpan.FromHours(1);
 #endif
+		}
+
+		static bool isIPv6Loopback(IPAddress ip) {
+			Debug.Assert(ip != null);
+			byte[] addressBytes = ip.GetAddressBytes();
+			for (int i = 0; i < addressBytes.Length - 1; i++)
+				if (addressBytes[i] != 0) return false;
+			if (addressBytes[addressBytes.Length - 1] != 1) return false;
+			return true;
+		}
+		static ICollection<string> allowableSchemes = new List<string> { "http", "https" };
+		static bool isUriAllowable(Uri uri) {
+			Debug.Assert(uri != null);
+			if (!allowableSchemes.Contains(uri.Scheme)) {
+				if (TraceUtil.Switch.TraceWarning)
+					Trace.TraceWarning("Rejecting URL {0} because it uses a disallowed scheme.", uri);
+				return false;
+			}
+			// Try to interpret the hostname as an IP address so we can test for internal
+			// IP address ranges.  Note that IP addresses can appear in many forms 
+			// (e.g. http://127.0.0.1, http://2130706433, http://0x0100007f, http://::1
+			// So we convert them to a canonical IPAddress instance, and test for all
+			// non-routable IP ranges: 10.*.*.*, 127.*.*.*, ::1
+			// Note that Uri.IsLoopback is very unreliable, not catching many of these variants.
+			IPAddress hostIPAddress;
+			if (IPAddress.TryParse(uri.DnsSafeHost, out hostIPAddress)) {
+				byte[] addressBytes = hostIPAddress.GetAddressBytes();
+				// The host is actually an IP address.
+				switch (hostIPAddress.AddressFamily) {
+					case System.Net.Sockets.AddressFamily.InterNetwork:
+						if (addressBytes[0] == 127 || addressBytes[0] == 10) {
+							if (TraceUtil.Switch.TraceWarning)
+								Trace.TraceWarning("Rejecting URL {0} because it is a loopback address.", uri);
+							return false;
+						}
+						break;
+					case System.Net.Sockets.AddressFamily.InterNetworkV6:
+						if (isIPv6Loopback(hostIPAddress)) {
+							if (TraceUtil.Switch.TraceWarning)
+								Trace.TraceWarning("Rejecting URL {0} because it is a loopback address.", uri);
+							return false;
+						}
+						break;
+					default:
+						if (TraceUtil.Switch.TraceWarning)
+							Trace.TraceWarning("Rejecting URL {0} because it does not use an IPv4 or IPv6 address.");
+						return false;
+				}
+			} else {
+				// The host is given by name.  We require names to contain periods to
+				// help make sure it's not an internal address.
+				if (!uri.Host.Contains(".")) {
+					if (TraceUtil.Switch.TraceWarning)
+						Trace.TraceWarning("Rejecting URL {0} because it does not contain a period in the host name.", uri);
+					return false;
+				}
+			}
+			return true;
 		}
 
 		/// <summary>
@@ -101,6 +169,8 @@ using System.Diagnostics;
 		static UntrustedWebResponse Request(Uri uri, byte[] body, string[] acceptTypes,
 			bool avoidSendingExpect100Continue) {
 			if (uri == null) throw new ArgumentNullException("uri");
+			if (!isUriAllowable(uri)) throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
+				Strings.UnsafeWebRequestDetected, uri), "uri");
 
 			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
 			request.ReadWriteTimeout = (int)ReadWriteTimeout.TotalMilliseconds;

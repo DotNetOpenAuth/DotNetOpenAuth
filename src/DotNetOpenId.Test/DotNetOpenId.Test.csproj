@@ -81,6 +81,7 @@
     <Compile Include="Provider\ProviderEndpointTest.cs" />
     <Compile Include="RelyingParty\TokenTest.cs" />
     <Compile Include="RealmTestSuite.cs" />
+    <Compile Include="UntrustedWebRequestTests.cs" />
     <Compile Include="UriIdentifierTests.cs" />
     <Compile Include="UriUtilTest.cs" />
     <Compile Include="XriIdentifierTests.cs" />
