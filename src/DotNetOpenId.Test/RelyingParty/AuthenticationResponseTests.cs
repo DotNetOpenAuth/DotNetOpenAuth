@@ -29,6 +29,8 @@ namespace DotNetOpenId.Test.RelyingParty {
 		[SetUp]
 		public void SetUp() {
 			store = new ApplicationMemoryStore();
+			if (!UntrustedWebRequest.WhitelistHosts.Contains("localhost"))
+				UntrustedWebRequest.WhitelistHosts.Add("localhost");
 		}
 
 		Uri getPositiveAssertion(ProtocolVersion version) {

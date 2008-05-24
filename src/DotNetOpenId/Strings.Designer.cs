@@ -475,6 +475,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The URL &apos;{0}&apos; is rated unsafe and cannot be requested this way..
+        /// </summary>
+        internal static string UnsafeWebRequestDetected {
+            get {
+                return ResourceManager.GetString("UnsafeWebRequestDetected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Providing a DateTime whose Kind is Unspecified is not allowed..
         /// </summary>
         internal static string UnspecifiedDateTimeKindNotAllowed {

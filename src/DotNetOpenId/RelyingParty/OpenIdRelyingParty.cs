@@ -90,6 +90,8 @@ namespace DotNetOpenId.RelyingParty {
 
 			// Build the return_to URL
 			UriBuilder returnTo = new UriBuilder(HttpContext.Current.Request.Url);
+			// Support cookieless sessions by adding the special path if appropriate.
+			returnTo.Path = HttpContext.Current.Response.ApplyAppPathModifier(returnTo.Path);
 			// Trim off any parameters with an "openid." prefix, and a few known others
 			// to avoid carrying state from a prior login attempt.
 			returnTo.Query = string.Empty;

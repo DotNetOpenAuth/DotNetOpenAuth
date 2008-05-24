@@ -5,12 +5,25 @@ namespace DotNetOpenId {
 	using System;
 	using System.Net;
 	using System.IO;
-using System.Diagnostics;
+	using System.Diagnostics;
+	using System.Globalization;
+	using System.Collections.Generic;
+	using System.Text.RegularExpressions;
 
 	/// <summary>
 	/// A paranoid HTTP get/post request engine.  It helps to protect against attacks from remote
-	/// server leaving dangling connections, sending too much data, etc.
+	/// server leaving dangling connections, sending too much data, causing requests against 
+	/// internal servers, etc.
 	/// </summary>
+	/// <remarks>
+	/// Protections include:
+	/// * Conservative maximum time to receive the complete response.
+	/// * Only HTTP and HTTPS schemes are permitted.
+	/// * Internal IP address ranges are not permitted: 127.*.*.*, 1::*
+	/// * Internal host names are not permitted (periods must be found in the host name)
+	/// If a particular host would be permitted but is in the blacklist, it is not allowed.
+	/// If a particular host would not be permitted but is in the whitelist, it is allowed.
+	/// </remarks>
 	public static class UntrustedWebRequest {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		static int maximumBytesToRead = 1024 * 1024;
@@ -52,11 +65,117 @@ using System.Diagnostics;
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static UntrustedWebRequest() {
 			ReadWriteTimeout = TimeSpan.FromMilliseconds(500);
-			Timeout = TimeSpan.FromSeconds(5);
+			Timeout = TimeSpan.FromSeconds(10);
 #if LONGTIMEOUT
 			ReadWriteTimeout = TimeSpan.FromHours(1);
 			Timeout = TimeSpan.FromHours(1);
 #endif
+		}
+
+		static bool isIPv6Loopback(IPAddress ip) {
+			Debug.Assert(ip != null);
+			byte[] addressBytes = ip.GetAddressBytes();
+			for (int i = 0; i < addressBytes.Length - 1; i++)
+				if (addressBytes[i] != 0) return false;
+			if (addressBytes[addressBytes.Length - 1] != 1) return false;
+			return true;
+		}
+		static ICollection<string> allowableSchemes = new List<string> { "http", "https" };
+		static ICollection<string> whitelistHosts = new List<string>();
+		/// <summary>
+		/// A collection of host name literals that should be allowed even if they don't
+		/// pass standard security checks.
+		/// </summary>
+		public static ICollection<string> WhitelistHosts { get { return whitelistHosts; } }
+		static ICollection<Regex> whitelistHostsRegex = new List<Regex>();
+		/// <summary>
+		/// A collection of host name regular expressions that indicate hosts that should
+		/// be allowed even though they don't pass standard security checks.
+		/// </summary>
+		public static ICollection<Regex> WhitelistHostsRegex { get { return whitelistHostsRegex; } }
+		static ICollection<string> blacklistHosts = new List<string>();
+		/// <summary>
+		/// A collection of host name literals that should be rejected even if they 
+		/// pass standard security checks.
+		/// </summary>
+		public static ICollection<string> BlacklistHosts { get { return blacklistHosts; } }
+		static ICollection<Regex> blacklistHostsRegex = new List<Regex>();
+		/// <summary>
+		/// A collection of host name regular expressions that indicate hosts that should
+		/// be rjected even if they pass standard security checks.
+		/// </summary>
+		public static ICollection<Regex> BlacklistHostsRegex { get { return blacklistHostsRegex; } }
+		static bool isHostWhitelisted(string host) {
+			return isHostInList(host, WhitelistHosts, WhitelistHostsRegex);
+		}
+		static bool isHostBlacklisted(string host) {
+			return isHostInList(host, BlacklistHosts, BlacklistHostsRegex);
+		}
+		static bool isHostInList(string host, ICollection<string> stringList, ICollection<Regex> regexList) {
+			Debug.Assert(!string.IsNullOrEmpty(host));
+			Debug.Assert(stringList != null);
+			Debug.Assert(regexList != null);
+			foreach (string testHost in stringList) {
+				if (string.Equals(host, testHost, StringComparison.OrdinalIgnoreCase))
+					return true;
+			}
+			foreach (Regex regex in regexList) {
+				if (regex.IsMatch(host))
+					return true;
+			}
+			return false;
+		}
+		static bool isUriAllowable(Uri uri) {
+			Debug.Assert(uri != null);
+			if (!allowableSchemes.Contains(uri.Scheme)) {
+				if (TraceUtil.Switch.TraceWarning)
+					Trace.TraceWarning("Rejecting URL {0} because it uses a disallowed scheme.", uri);
+				return false;
+			}
+
+			// Allow for whitelist or blacklist to override our detection.
+			DotNetOpenId.Util.Func<string, bool> failsUnlessWhitelisted = (string reason) => {
+				if (isHostWhitelisted(uri.DnsSafeHost)) return true;
+				if (TraceUtil.Switch.TraceWarning)
+					Trace.TraceWarning("Rejecting URL {0} because {1}.", uri, reason);
+				return false;
+			};
+
+			// Try to interpret the hostname as an IP address so we can test for internal
+			// IP address ranges.  Note that IP addresses can appear in many forms 
+			// (e.g. http://127.0.0.1, http://2130706433, http://0x0100007f, http://::1
+			// So we convert them to a canonical IPAddress instance, and test for all
+			// non-routable IP ranges: 10.*.*.*, 127.*.*.*, ::1
+			// Note that Uri.IsLoopback is very unreliable, not catching many of these variants.
+			IPAddress hostIPAddress;
+			if (IPAddress.TryParse(uri.DnsSafeHost, out hostIPAddress)) {
+				byte[] addressBytes = hostIPAddress.GetAddressBytes();
+				// The host is actually an IP address.
+				switch (hostIPAddress.AddressFamily) {
+					case System.Net.Sockets.AddressFamily.InterNetwork:
+						if (addressBytes[0] == 127 || addressBytes[0] == 10)
+							return failsUnlessWhitelisted("it is a loopback address.");
+						break;
+					case System.Net.Sockets.AddressFamily.InterNetworkV6:
+						if (isIPv6Loopback(hostIPAddress))
+							return failsUnlessWhitelisted("it is a loopback address.");
+						break;
+					default:
+						return failsUnlessWhitelisted("it does not use an IPv4 or IPv6 address.");
+				}
+			} else {
+				// The host is given by name.  We require names to contain periods to
+				// help make sure it's not an internal address.
+				if (!uri.Host.Contains(".")) {
+					return failsUnlessWhitelisted("it does not contain a period in the host name.");
+				}
+			}
+			if (isHostBlacklisted(uri.DnsSafeHost)) {
+				if (TraceUtil.Switch.TraceWarning)
+					Trace.TraceWarning("Rejected URL {0} because it is blacklisted.", uri);
+				return false;
+			}
+			return true;
 		}
 
 		/// <summary>
@@ -101,6 +220,8 @@ using System.Diagnostics;
 		static UntrustedWebResponse Request(Uri uri, byte[] body, string[] acceptTypes,
 			bool avoidSendingExpect100Continue) {
 			if (uri == null) throw new ArgumentNullException("uri");
+			if (!isUriAllowable(uri)) throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
+				Strings.UnsafeWebRequestDetected, uri), "uri");
 
 			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
 			request.ReadWriteTimeout = (int)ReadWriteTimeout.TotalMilliseconds;

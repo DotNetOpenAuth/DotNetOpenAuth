@@ -12,6 +12,12 @@ namespace DotNetOpenId.Test {
 		string goodUri = "http://blog.nerdbank.net/";
 		string badUri = "som%-)830w8vf/?.<>,ewackedURI";
 
+		[SetUp]
+		public void SetUp() {
+			if (!UntrustedWebRequest.WhitelistHosts.Contains("localhost"))
+				UntrustedWebRequest.WhitelistHosts.Add("localhost");
+		}
+
 		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullUri() {
 			new UriIdentifier((Uri)null);

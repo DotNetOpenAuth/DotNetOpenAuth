@@ -16,6 +16,8 @@ namespace DotNetOpenId.Test.RelyingParty {
 		[SetUp]
 		public void Setup() {
 			store = new ApplicationMemoryStore();
+			if (!UntrustedWebRequest.WhitelistHosts.Contains("localhost"))
+				UntrustedWebRequest.WhitelistHosts.Add("localhost");
 		}
 
 		[Test]

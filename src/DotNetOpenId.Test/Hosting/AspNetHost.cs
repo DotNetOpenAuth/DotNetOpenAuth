@@ -19,6 +19,8 @@ namespace DotNetOpenId.Test.Hosting {
 
 		public AspNetHost() {
 			httpHost = HttpHost.CreateHost(this);
+			if (!UntrustedWebRequest.WhitelistHosts.Contains("localhost"))
+				UntrustedWebRequest.WhitelistHosts.Add("localhost");
 			DotNetOpenId.Provider.SigningEncoder.Signing += (s, e) => {
 				if (MessageInterceptor != null) MessageInterceptor.OnSigningMessage(e.Message);
 			};
