@@ -52,6 +52,7 @@
     <Compile Include="Extensions\AttributeExchangeFetchResponseTests.cs" />
     <Compile Include="Extensions\AttributeExchangeTests.cs" />
     <Compile Include="Extensions\AttributeRequestTests.cs" />
+    <Compile Include="Extensions\ExtensionsTestSetup.cs" />
     <Compile Include="Extensions\ExtensionTestBase.cs" />
     <Compile Include="Extensions\PapeTests.cs" />
     <Compile Include="Extensions\PolicyRequestTests.cs" />

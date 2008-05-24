@@ -18,6 +18,8 @@ namespace DotNetOpenId.Test {
 		[SetUp]
 		public void Setup() {
 			appStore = new ApplicationMemoryStore();
+			if (!UntrustedWebRequest.WhitelistHosts.Contains("localhost"))
+				UntrustedWebRequest.WhitelistHosts.Add("localhost");
 		}
 
 		void parameterizedTest(UriIdentifier identityUrl,
