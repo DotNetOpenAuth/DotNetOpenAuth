@@ -77,3 +77,6 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA2210:AssembliesShouldHaveValidStrongNames")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Nist", Scope = "member", Target = "DotNetOpenId.Extensions.ProviderAuthenticationPolicy.PolicyResponse.#NistAssuranceLevel")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "DotNetOpenId.Extensions.ProviderAuthenticationPolicy")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Whitelist", Scope = "member", Target = "DotNetOpenId.UntrustedWebRequest.#WhitelistHostsRegEx")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Whitelist", Scope = "member", Target = "DotNetOpenId.UntrustedWebRequest.#WhitelistHostsRegex")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Whitelist", Scope = "member", Target = "DotNetOpenId.UntrustedWebRequest.#WhitelistHosts")]
