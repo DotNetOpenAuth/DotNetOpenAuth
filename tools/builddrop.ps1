@@ -81,6 +81,8 @@ function Build() {
 	} else {
 		msbuild $RootDir\src\$ProductName.sln /p:Configuration=$Configuration /p:Sign=$Signed /t:rebuild > $nul
 	}
+	Write-Host "Building documentation..."
+	msbuild $RootDir\src\Documentation\build.proj /p:Configuration=$Configuration > $nul
 	if ($lastexitcode -ne 0) { throw "Build failure." }
 }
 
@@ -90,6 +92,9 @@ function AssembleDrop() {
 	Copy-Item "$BinDir\$Configuration\$ProductName.???" $DropDir\Bin
 	Copy-Item -recurse $RootDir\Samples $DropDir
 	Copy-Item -Recurse $RootDir\Doc\*.htm* $DropDir
+	[void] (md $DropDir\specs)
+	Copy-Item -Recurse $RootDir\Doc\specs\*.htm* $DropDir\specs
+	Copy-Item $RootDir\Doc\$ProductName.chm $DropDir
 
 	# Do a little cleanup of files that we don't want to inclue in the drop
 	("obj", "*.user", "*.sln.cache", "*.suo", "*.user", ".gitignore", "*.ldf", "*Trace.txt", "*~") |% {
