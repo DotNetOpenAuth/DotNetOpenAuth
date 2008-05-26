@@ -81,6 +81,7 @@
     <Compile Include="RealmTestSuite.cs" />
     <Compile Include="UriIdentifierTests.cs" />
     <Compile Include="UriUtilTest.cs" />
+    <Compile Include="UtilTest.cs" />
     <Compile Include="XriIdentifierTests.cs" />
   </ItemGroup>
   <ItemGroup>
