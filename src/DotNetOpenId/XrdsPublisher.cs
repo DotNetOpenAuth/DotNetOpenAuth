@@ -107,6 +107,7 @@ namespace DotNetOpenId {
 		protected override void OnLoad(EventArgs e) {
 			base.OnLoad(e);
 
+			if (!Enabled) return;
 			if (!Page.IsPostBack) {
 				if (XrdsAutoAnswer && !string.IsNullOrEmpty(XrdsUrl) &&
 					XrdsUrl.StartsWith("~/", StringComparison.Ordinal)) {
@@ -131,7 +132,7 @@ namespace DotNetOpenId {
 		/// <param name="writer"></param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
 		protected override void Render(HtmlTextWriter writer) {
-			if (!string.IsNullOrEmpty(XrdsUrl)) {
+			if (Enabled && Visible && !string.IsNullOrEmpty(XrdsUrl)) {
 				if ((XrdsAdvertisement & XrdsUrlLocations.HttpHeader) != 0) {
 					Page.Response.AddHeader(Yadis.Yadis.HeaderName,
 						new Uri(Page.Request.Url, Page.Response.ApplyAppPathModifier(XrdsUrl)).AbsoluteUri);
