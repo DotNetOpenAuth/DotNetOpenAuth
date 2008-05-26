@@ -7,6 +7,11 @@ using System.Web.Routing;
 
 namespace RelyingPartyMvc {
 	public class GlobalApplication : System.Web.HttpApplication {
+		public GlobalApplication() {
+			// since this is a sample, and will often be used with localhost
+			DotNetOpenId.UntrustedWebRequest.WhitelistHosts.Add("localhost");
+		}
+
 		public static void RegisterRoutes(RouteCollection routes) {
 			// Note: Change the URL to "{controller}.mvc/{action}/{id}" to enable
 			//       automatic support on IIS6 and IIS7 classic mode

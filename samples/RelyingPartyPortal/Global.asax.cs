@@ -6,6 +6,11 @@ using System.Web;
 
 namespace ConsumerPortal {
 	public class Global : System.Web.HttpApplication {
+		public Global() {
+			// since this is a sample, and will often be used with localhost
+			DotNetOpenId.UntrustedWebRequest.WhitelistHosts.Add("localhost");
+		}
+
 		string stripQueryString(Uri uri) {
 			UriBuilder builder = new UriBuilder(uri);
 			builder.Query = null;
