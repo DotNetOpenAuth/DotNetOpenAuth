@@ -16,6 +16,8 @@ public partial class decide : Page {
 		if (ProviderEndpoint.PendingAuthenticationRequest.IsDirectedIdentity) {
 			ProviderEndpoint.PendingAuthenticationRequest.LocalIdentifier = Util.BuildIdentityUrl();
 		}
+		relyingPartyVerificationResultLabel.Text =
+			ProviderEndpoint.PendingAuthenticationRequest.IsReturnUrlDiscoverable ? "passed" : "failed";
 
 		identityUrlLabel.Text = ProviderEndpoint.PendingAuthenticationRequest.LocalIdentifier.ToString();
 		realmLabel.Text = ProviderEndpoint.PendingAuthenticationRequest.Realm.ToString();

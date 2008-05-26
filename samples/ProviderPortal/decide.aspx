@@ -8,24 +8,24 @@
 <body>
 	<form id="Form1" runat="server">
 	<p>
-		A site has asked for your identity. If you approve, the site represented by the
-		trust root below will be told that you control identity URL listed below. (If you
-		are using a delegated identity, the site will take care of reversing the delegation
-		on its own.)
-	</p>
+		A site has asked to authenticate that you own the identifier below.&nbsp; You should 
+		only do this if you wish to log in to the site given by the Realm.</p>
+	<p>
+		This site
+		<asp:Label ID="relyingPartyVerificationResultLabel" runat="server" 
+			Font-Bold="True" Text="failed"></asp:Label>
+&nbsp;verification and may be fraudulent.</p>
 	<table>
 		<tr>
 			<td>
-				Identity:
-			</td>
+				Identifier: 			</td>
 			<td>
 				<asp:Label runat="server" ID='identityUrlLabel' />
 			</td>
 		</tr>
 		<tr>
 			<td>
-				Trust Root:
-			</td>
+				Realm: 			</td>
 			<td>
 				<asp:Label runat="server" ID='realmLabel' />
 			</td>

@@ -79,13 +79,14 @@ namespace DotNetOpenId.Provider {
 			if (claimedIdentifier == null) throw new ArgumentNullException("claimedIdentifier");
 			if (localIdentifier == null) throw new ArgumentNullException("localIdentifier");
 
-			var discoveredRealm = relyingParty.Discover();
-			if (discoveredRealm == null) throw new OpenIdException(
+			var discoveredEndpoints = new List<RelyingPartyReceivingEndpoint>(relyingParty.Discover(true));
+			if (discoveredEndpoints.Count == 0) throw new OpenIdException(
 				string.Format(CultureInfo.CurrentCulture, Strings.NoRelyingPartyEndpointDiscovered,
 				relyingParty.NoWildcardUri));
+			var selectedEndpoint = discoveredEndpoints[0];
 
 			EncodableResponse message = EncodableResponse.PrepareIndirectMessage(
-				discoveredRealm.Protocol, discoveredRealm.RelyingPartyEndpoint, null);
+				selectedEndpoint.Protocol, selectedEndpoint.RelyingPartyEndpoint, null);
 			CreatePositiveAssertion(message, provider, localIdentifier, claimedIdentifier);
 			return provider.Encoder.Encode(message);
 		}
