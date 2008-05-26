@@ -90,8 +90,16 @@ namespace DotNetOpenId {
 		public static IDictionary<string, string> NameValueCollectionToDictionary(NameValueCollection nvc) {
 			if (nvc == null) throw new ArgumentNullException("nvc");
 			var dict = new Dictionary<string, string>(nvc.Count);
-			for (int i = 0; i < nvc.Count; i++)
-				dict.Add(nvc.GetKey(i), nvc.Get(i));
+			for (int i = 0; i < nvc.Count; i++) {
+				string key = nvc.GetKey(i);
+				string value = nvc.Get(i);
+				// NameValueCollections allow for a null key.  Dictionary<TKey, TValue> does not.
+				// We just skip a null key member.  It probably came from a query string that
+				// started with "?&".  See Google Code Issue 81.
+				if (key != null) {
+					dict.Add(key, value);
+				}
+			}
 			return dict;
 		}
 		public static NameValueCollection DictionaryToNameValueCollection(IDictionary<string, string> dict) {
