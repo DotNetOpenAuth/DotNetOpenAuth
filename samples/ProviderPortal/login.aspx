@@ -10,7 +10,7 @@
 		OpenID Provider Login
 	</h1>
 	<p>
-		Usernames are defined in the ASPNETDB.MDF database of .\SQLExpress.
+		Usernames are defined in the App_Data\Users.xml file.
 	</p>
 	<asp:Login runat="server" ID="login1" />
 	
