@@ -43,8 +43,13 @@ namespace DotNetOpenId {
 		/// as part of the querystring piece.  Prefixes a ? or &amp; before
 		/// first element as necessary.
 		/// </summary>
+		/// <param name="builder">The UriBuilder to add arguments to.</param>
+		/// <param name="args">
+		/// The arguments to add to the query.  
+		/// If null, <paramref name="builder"/> is not changed.
+		/// </param>
 		public static void AppendQueryArgs(UriBuilder builder, IDictionary<string, string> args) {
-			if (args.Count > 0) {
+			if (args != null && args.Count > 0) {
 				StringBuilder sb = new StringBuilder(50 + args.Count * 10);
 				if (!string.IsNullOrEmpty(builder.Query)) {
 					sb.Append(builder.Query.Substring(1));
