@@ -13,8 +13,7 @@
 	<p>
 		This site
 		<asp:Label ID="relyingPartyVerificationResultLabel" runat="server" 
-			Font-Bold="True" Text="failed"></asp:Label>
-&nbsp;verification and may be fraudulent.</p>
+			Font-Bold="True" Text="failed" /> verification. </p>
 	<table>
 		<tr>
 			<td>
