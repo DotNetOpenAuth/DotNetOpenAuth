@@ -30,15 +30,18 @@ namespace DotNetOpenId.RelyingParty {
 	class AuthenticationRequest : IAuthenticationRequest {
 		Association assoc;
 		ServiceEndpoint endpoint;
+		MessageEncoder encoder;
 		Protocol protocol { get { return endpoint.Protocol; } }
 
 		AuthenticationRequest(string token, Association assoc, ServiceEndpoint endpoint,
-			Realm realm, Uri returnToUrl) {
+			Realm realm, Uri returnToUrl, MessageEncoder encoder) {
 			if (endpoint == null) throw new ArgumentNullException("endpoint");
 			if (realm == null) throw new ArgumentNullException("realm");
 			if (returnToUrl == null) throw new ArgumentNullException("returnToUrl");
+			if (encoder == null) throw new ArgumentNullException("encoder");
 			this.assoc = assoc;
 			this.endpoint = endpoint;
+			this.encoder = encoder;
 			Realm = realm;
 			ReturnToUrl = returnToUrl;
 
@@ -49,7 +52,7 @@ namespace DotNetOpenId.RelyingParty {
 				AddCallbackArguments(DotNetOpenId.RelyingParty.Token.TokenKey, token);
 		}
 		internal static AuthenticationRequest Create(Identifier userSuppliedIdentifier,
-			Realm realm, Uri returnToUrl, IRelyingPartyApplicationStore store) {
+			Realm realm, Uri returnToUrl, IRelyingPartyApplicationStore store, MessageEncoder encoder) {
 			if (userSuppliedIdentifier == null) throw new ArgumentNullException("userSuppliedIdentifier");
 			if (realm == null) throw new ArgumentNullException("realm");
 
@@ -92,7 +95,7 @@ namespace DotNetOpenId.RelyingParty {
 			return new AuthenticationRequest(
 				new Token(endpoint).Serialize(store),
 				store != null ? getAssociation(endpoint, store) : null,
-				endpoint, realm, returnToUrl);
+				endpoint, realm, returnToUrl, encoder);
 		}
 		static Association getAssociation(ServiceEndpoint provider, IRelyingPartyApplicationStore store) {
 			if (provider == null) throw new ArgumentNullException("provider");
@@ -147,7 +150,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// Gets the URL the user agent should be redirected to to begin the 
 		/// OpenID authentication process.
 		/// </summary>
-		public Uri RedirectToProviderUrl {
+		public IResponse RedirectingResponse {
 			get {
 				UriBuilder returnToBuilder = new UriBuilder(ReturnToUrl);
 				UriUtil.AppendQueryArgs(returnToBuilder, this.ReturnToArgs);
@@ -168,16 +171,17 @@ namespace DotNetOpenId.RelyingParty {
 				if (this.assoc != null)
 					qsArgs.Add(protocol.openid.assoc_handle, this.assoc.Handle);
 
-				UriBuilder redir = new UriBuilder(this.endpoint.ProviderEndpoint);
+				// Add on extension arguments
+				foreach(var pair in OutgoingExtensions.GetArgumentsToSend(true))
+					qsArgs.Add(pair.Key, pair.Value);
 
-				UriUtil.AppendQueryArgs(redir, qsArgs);
-				UriUtil.AppendQueryArgs(redir, OutgoingExtensions.GetArgumentsToSend(true));
-
-				return redir.Uri;
+				var request = new IndirectMessageRequest(this.endpoint.ProviderEndpoint, qsArgs);
+				return this.encoder.Encode(request);
 			}
 		}
 
 		public void AddExtension(DotNetOpenId.Extensions.IExtensionRequest extension) {
+			if (extension == null) throw new ArgumentNullException("extension");
 			OutgoingExtensions.AddExtensionArguments(extension.TypeUri, extension.Serialize(this));
 		}
 
@@ -204,26 +208,15 @@ namespace DotNetOpenId.RelyingParty {
 
 		/// <summary>
 		/// Redirects the user agent to the provider for authentication.
+		/// Execution of the current page terminates after this call.
 		/// </summary>
 		/// <remarks>
 		/// This method requires an ASP.NET HttpContext.
 		/// </remarks>
 		public void RedirectToProvider() {
-			RedirectToProvider(false);
-		}
-		/// <summary>
-		/// Redirects the user agent to the provider for authentication.
-		/// </summary>
-		/// <param name="endResponse">
-		/// Whether execution of this response should cease after this call.
-		/// </param>
-		/// <remarks>
-		/// This method requires an ASP.NET HttpContext.
-		/// </remarks>
-		public void RedirectToProvider(bool endResponse) {
 			if (HttpContext.Current == null || HttpContext.Current.Response == null) 
 				throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
-			HttpContext.Current.Response.Redirect(RedirectToProviderUrl.AbsoluteUri, endResponse);
+			RedirectingResponse.Send();
 		}
 	}
 }

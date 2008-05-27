@@ -4,7 +4,7 @@ using System.Text;
 using System.Net;
 using System.Collections.Specialized;
 
-namespace DotNetOpenId.Provider {
+namespace DotNetOpenId {
 	/// <summary>
 	/// Represents a Provider's response to an OpenId authentication request.
 	/// </summary>
@@ -26,7 +26,7 @@ namespace DotNetOpenId.Provider {
 		/// Sends the response to the browser.
 		/// </summary>
 		/// <remarks>
-		/// This requires an ASP.NET hosted web site.
+		/// This requires an ASP.NET HttpContext.
 		/// </remarks>
 		void Send();
 	}

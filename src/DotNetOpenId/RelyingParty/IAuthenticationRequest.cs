@@ -26,30 +26,21 @@ namespace DotNetOpenId.RelyingParty {
 		void AddExtension(IExtensionRequest extension);
 		/// <summary>
 		/// Redirects the user agent to the provider for authentication.
+		/// Execution of the current page terminates after this call.
 		/// </summary>
 		/// <remarks>
 		/// This method requires an ASP.NET HttpContext.
 		/// </remarks>
 		void RedirectToProvider();
 		/// <summary>
-		/// Redirects the user agent to the provider for authentication.
-		/// </summary>
-		/// <param name="endResponse">
-		/// Whether execution of this response should cease after this call.
-		/// </param>
-		/// <remarks>
-		/// This method requires an ASP.NET HttpContext.
-		/// </remarks>
-		void RedirectToProvider(bool endResponse);
-		/// <summary>
 		/// Gets/sets the mode the Provider should use during authentication.
 		/// </summary>
 		AuthenticationRequestMode Mode { get; set; }
 		/// <summary>
-		/// Gets the URL the user agent should be redirected to to begin the 
-		/// OpenID authentication process.
+		/// Gets the HTTP response the relying party should send to the user agent 
+		/// to redirect it to the OpenID Provider to start the OpenID authentication process.
 		/// </summary>
-		Uri RedirectToProviderUrl { get; }
+		IResponse RedirectingResponse { get; }
 		/// <summary>
 		/// Gets the URL that the user agent will return to after authentication
 		/// completes or fails at the Provider.

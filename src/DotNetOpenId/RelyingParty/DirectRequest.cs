@@ -4,6 +4,7 @@ using System.Text;
 using System.Net;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 
 namespace DotNetOpenId.RelyingParty {
 	[DebuggerDisplay("OpenId: {Protocol.Version}")]
@@ -27,6 +28,14 @@ namespace DotNetOpenId.RelyingParty {
 			IDictionary<string, string> args = null;
 			try {
 				resp = UntrustedWebRequest.Request(Provider.ProviderEndpoint, body);
+				// If an internal server error occurred, there won't be any KV-form stream
+				// to read in.  So instead, preserve whatever error the server did send back
+				// and throw it in the exception.
+				if (resp.StatusCode == HttpStatusCode.InternalServerError) {
+					string errorStream = new StreamReader(resp.ResponseStream).ReadToEnd();
+					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
+						Strings.ProviderRespondedWithError, errorStream));
+				}
 				args = ProtocolMessages.KeyValueForm.GetDictionary(resp.ResponseStream);
 			} catch (ArgumentException e) {
 				throw new OpenIdException("Failure decoding Key-Value Form response from provider.", e);

@@ -36,7 +36,7 @@ namespace DotNetOpenId.Test {
 			Uri redirectToProviderUrl;
 			var returnTo = TestSupport.GetFullUrl(TestSupport.ConsumerPage);
 			var realm = new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri);
-			var consumer = new OpenIdRelyingParty(store, null);
+			var consumer = new OpenIdRelyingParty(store, null, null);
 			Assert.IsNull(consumer.Response);
 			var request = consumer.CreateRequest(identityUrl, realm, returnTo);
 			Protocol protocol = Protocol.Lookup(request.ProviderVersion);
@@ -49,11 +49,11 @@ namespace DotNetOpenId.Test {
 			request.Mode = requestMode;
 
 			// Verify the redirect URL
-			Assert.IsNotNull(request.RedirectToProviderUrl);
-			var consumerToProviderQuery = HttpUtility.ParseQueryString(request.RedirectToProviderUrl.Query);
+			Assert.IsNotNull(request.RedirectingResponse);
+			var consumerToProviderQuery = HttpUtility.ParseQueryString(request.RedirectingResponse.ExtractUrl().Query);
 			Assert.IsTrue(consumerToProviderQuery[protocol.openid.return_to].StartsWith(returnTo.AbsoluteUri, StringComparison.Ordinal));
 			Assert.AreEqual(realm.ToString(), consumerToProviderQuery[protocol.openid.Realm]);
-			redirectToProviderUrl = request.RedirectToProviderUrl;
+			redirectToProviderUrl = request.RedirectingResponse.ExtractUrl();
 
 			HttpWebRequest providerRequest = (HttpWebRequest)WebRequest.Create(redirectToProviderUrl);
 			providerRequest.AllowAutoRedirect = false;
@@ -72,7 +72,7 @@ namespace DotNetOpenId.Test {
 				}
 				throw;
 			}
-			consumer = new OpenIdRelyingParty(store, redirectUrl);
+			consumer = new OpenIdRelyingParty(store, redirectUrl, HttpUtility.ParseQueryString(redirectUrl.Query));
 			Assert.AreEqual(expectedResult, consumer.Response.Status);
 			Assert.AreEqual(identityUrl, consumer.Response.ClaimedIdentifier);
 
@@ -83,7 +83,7 @@ namespace DotNetOpenId.Test {
 				// the consumer, and tries the same query to the consumer in an
 				// attempt to spoof the identity of the authenticating user.
 				try {
-					var replayAttackConsumer = new OpenIdRelyingParty(store, redirectUrl);
+					var replayAttackConsumer = new OpenIdRelyingParty(store, redirectUrl, HttpUtility.ParseQueryString(redirectUrl.Query));
 					Assert.AreNotEqual(AuthenticationStatus.Authenticated, replayAttackConsumer.Response.Status, "Replay attack");
 				} catch (OpenIdException) { // nonce already used
 					// another way to pass

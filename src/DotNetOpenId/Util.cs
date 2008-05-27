@@ -88,7 +88,7 @@ namespace DotNetOpenId {
 		internal const string DefaultNamespace = "DotNetOpenId";
 
 		public static IDictionary<string, string> NameValueCollectionToDictionary(NameValueCollection nvc) {
-			if (nvc == null) throw new ArgumentNullException("nvc");
+			if (nvc == null) return null;
 			var dict = new Dictionary<string, string>(nvc.Count);
 			for (int i = 0; i < nvc.Count; i++) {
 				string key = nvc.GetKey(i);
@@ -103,6 +103,7 @@ namespace DotNetOpenId {
 			return dict;
 		}
 		public static NameValueCollection DictionaryToNameValueCollection(IDictionary<string, string> dict) {
+			if (dict == null) return null;
 			NameValueCollection nvc = new NameValueCollection(dict.Count);
 			foreach (var pair in dict) {
 				nvc.Add(pair.Key, pair.Value);

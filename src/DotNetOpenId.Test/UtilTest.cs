@@ -24,5 +24,15 @@ namespace DotNetOpenId.Test {
 			IDictionary<string, string> dict = Util.NameValueCollectionToDictionary(nvc);
 			Assert.IsTrue(dict["a"] == "b");
 		}
+
+		[Test]
+		public void NameValueCollectionToDictionaryNull() {
+			Assert.IsNull(Util.NameValueCollectionToDictionary(null));
+		}
+
+		[Test]
+		public void DictionaryToNameValueCollectionNull() {
+			Assert.IsNull(Util.DictionaryToNameValueCollection(null));
+		}
 	}
 }

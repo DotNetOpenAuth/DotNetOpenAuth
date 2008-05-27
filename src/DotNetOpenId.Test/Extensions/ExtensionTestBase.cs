@@ -8,6 +8,7 @@ using System.Net;
 using DotNetOpenId.Extensions;
 using System.IO;
 using System.Diagnostics;
+using System.Web;
 
 namespace DotNetOpenId.Test.Extensions {
 	public class ExtensionTestBase {
@@ -24,12 +25,12 @@ namespace DotNetOpenId.Test.Extensions {
 			Debug.Assert(identityUrl != null);
 			var returnTo = TestSupport.GetFullUrl(TestSupport.ConsumerPage);
 			var realm = new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri);
-			var consumer = new OpenIdRelyingParty(AppStore, null);
+			var consumer = new OpenIdRelyingParty(AppStore, null, null);
 			var request = consumer.CreateRequest(identityUrl, realm, returnTo);
 			if (extension != null)
 				request.AddExtension(extension);
 
-			HttpWebRequest providerRequest = (HttpWebRequest)WebRequest.Create(request.RedirectToProviderUrl);
+			HttpWebRequest providerRequest = (HttpWebRequest)WebRequest.Create(request.RedirectingResponse.ExtractUrl());
 			providerRequest.AllowAutoRedirect = false;
 			Uri redirectUrl;
 			try {
@@ -46,7 +47,7 @@ namespace DotNetOpenId.Test.Extensions {
 				}
 				throw;
 			}
-			consumer = new OpenIdRelyingParty(AppStore, redirectUrl);
+			consumer = new OpenIdRelyingParty(AppStore, redirectUrl, HttpUtility.ParseQueryString(redirectUrl.Query));
 			Assert.AreEqual(AuthenticationStatus.Authenticated, consumer.Response.Status);
 			Assert.AreEqual(identityUrl, consumer.Response.ClaimedIdentifier);
 			return consumer.Response.GetExtension<T>();

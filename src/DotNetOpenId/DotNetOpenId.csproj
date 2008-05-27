@@ -55,6 +55,8 @@
     <Compile Include="Association.cs" />
     <Compile Include="AssociationMemoryStore.cs" />
     <Compile Include="Associations.cs" />
+    <Compile Include="Provider\SigningMessageEncoder.cs" />
+    <Compile Include="RelyingParty\IndirectMessageRequest.cs" />
     <Compile Include="ExtensionArgumentsManager.cs" />
     <Compile Include="Extensions\AliasManager.cs" />
     <Compile Include="Extensions\AttributeExchange\Constants.cs" />
@@ -74,6 +76,7 @@
     <Compile Include="Extensions\IExtension.cs" />
     <Compile Include="HmacSha256Association.cs" />
     <Compile Include="Identifier.cs" />
+    <Compile Include="IResponse.cs" />
     <Compile Include="Protocol.cs" />
     <Compile Include="Provider\AssertionMessage.cs" />
     <Compile Include="Provider\RelyingPartyReceivingEndpoint.cs" />
@@ -105,16 +108,15 @@
     <Compile Include="OpenIdException.cs" />
     <Compile Include="ProtocolMessages.cs" />
     <Compile Include="Provider\EncodableResponse.cs" />
-    <Compile Include="Provider\Encoder.cs" />
+    <Compile Include="MessageEncoder.cs" />
     <Compile Include="Provider\FaultyRequest.cs" />
     <Compile Include="Provider\IAuthenticationRequest.cs" />
     <Compile Include="Provider\IdentityEndpoint.cs" />
     <Compile Include="Provider\IRequest.cs" />
-    <Compile Include="Provider\IResponse.cs" />
     <Compile Include="Provider\OpenIdProvider.cs" />
     <Compile Include="Provider\ProviderSession.cs" />
     <Compile Include="Provider\Request.cs" />
-    <Compile Include="Provider\Response.cs" />
+    <Compile Include="Response.cs" />
     <Compile Include="Provider\ProviderEndpoint.cs" />
     <Compile Include="Extensions\SimpleRegistration\Gender.cs" />
     <Compile Include="Provider\AssociatedRequest.cs" />
@@ -139,7 +141,7 @@
     <Compile Include="Provider\AssociateRequest.cs" />
     <Compile Include="Provider\CheckAuthRequest.cs" />
     <Compile Include="Provider\CheckIdRequest.cs" />
-    <Compile Include="Provider\IEncodable.cs" />
+    <Compile Include="IEncodable.cs" />
     <Compile Include="Provider\Signatory.cs" />
     <Compile Include="XrdsPublisher.cs" />
     <Compile Include="Strings.Designer.cs">

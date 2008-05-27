@@ -93,3 +93,16 @@ public class TestSupport {
 		nvc[protocol.openid.sig] = Convert.ToBase64String(assoc.Sign(subsetDictionary, signed));
 	}
 }
+
+static class TestExtensions {
+	/// <summary>
+	/// Gets a URL that can be requested to send an indirect message.
+	/// </summary>
+	public static Uri ExtractUrl(this IResponse message) {
+		DotNetOpenId.Response response = (DotNetOpenId.Response)message;
+		IEncodable encodable = response.EncodableMessage;
+		UriBuilder builder = new UriBuilder(encodable.RedirectUrl);
+		UriUtil.AppendQueryArgs(builder, encodable.EncodedFields);
+		return builder.Uri;
+	}
+}

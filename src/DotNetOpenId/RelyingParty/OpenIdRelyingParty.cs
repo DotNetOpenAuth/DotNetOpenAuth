@@ -17,6 +17,7 @@ namespace DotNetOpenId.RelyingParty {
 		IRelyingPartyApplicationStore store;
 		Uri request;
 		IDictionary<string, string> query;
+		MessageEncoder encoder;
 
 		/// <summary>
 		/// Constructs an OpenId consumer that uses the current HttpContext request
@@ -25,7 +26,9 @@ namespace DotNetOpenId.RelyingParty {
 		/// <remarks>
 		/// This method requires a current ASP.NET HttpContext.
 		/// </remarks>
-		public OpenIdRelyingParty() : this(HttpApplicationStore, Util.GetRequestUrlFromContext()) { }
+		public OpenIdRelyingParty()
+			: this(HttpApplicationStore,
+				Util.GetRequestUrlFromContext(), Util.GetQueryFromContext()) { }
 		/// <summary>
 		/// Constructs an OpenId consumer that uses a given querystring and IAssociationStore.
 		/// </summary>
@@ -39,6 +42,12 @@ namespace DotNetOpenId.RelyingParty {
 		/// Optional.  The current incoming HTTP request that may contain an OpenId assertion.
 		/// If not included, any OpenId authentication assertions will not be processed.
 		/// </param>
+		/// <param name="query">
+		/// The name/value pairs that came in on the 
+		/// QueryString of a GET request or in the entity of a POST request.
+		/// For example: (Request.HttpMethod == "GET" ? Request.QueryString : Request.Form).
+		/// This must be supplied if <paramref name="requestUrl"/> is supplied.
+		/// </param>
 		/// <remarks>
 		/// The IRelyingPartyApplicationStore must be shared across an entire web farm 
 		/// because of the design of how nonces are stored/retrieved.  Even if
@@ -47,15 +56,20 @@ namespace DotNetOpenId.RelyingParty {
 		/// which must therefore share the nonce information in the application
 		/// state store in order to stop the intruder.
 		/// </remarks>
-		public OpenIdRelyingParty(IRelyingPartyApplicationStore store, Uri requestUrl) {
+		public OpenIdRelyingParty(IRelyingPartyApplicationStore store, Uri requestUrl, NameValueCollection query) :
+			this(store, requestUrl, Util.NameValueCollectionToDictionary(query)) {
+		}
+		OpenIdRelyingParty(IRelyingPartyApplicationStore store, Uri requestUrl, IDictionary<string, string> query) {
 			this.store = store;
 			if (store != null) {
 				store.ClearExpiredAssociations(); // every so often we should do this.
 			}
 			if (requestUrl != null) {
+				if (query == null) throw new ArgumentNullException("query");
 				this.request = requestUrl;
-				this.query = Util.NameValueCollectionToDictionary(HttpUtility.ParseQueryString(requestUrl.Query));
+				this.query = query;
 			}
+			this.encoder = new MessageEncoder();
 		}
 
 		/// <summary>
@@ -79,7 +93,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// send to the user agent to initiate the authentication.
 		/// </returns>
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl) {
-			return AuthenticationRequest.Create(userSuppliedIdentifier, realm, returnToUrl, store);
+			return AuthenticationRequest.Create(userSuppliedIdentifier, realm, returnToUrl, store, encoder);
 		}
 
 		/// <remarks>
@@ -136,9 +150,6 @@ namespace DotNetOpenId.RelyingParty {
 				if (query == null) return false;
 				Protocol protocol = Protocol.Detect(query);
 				if (!query.ContainsKey(protocol.openid.mode))
-					return false;
-
-				if (HttpContext.Current != null && !HttpContext.Current.Request.RequestType.Equals("GET", StringComparison.Ordinal))
 					return false;
 
 				return true;

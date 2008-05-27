@@ -2,21 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DotNetOpenId.Provider {
+namespace DotNetOpenId {
 	internal enum EncodingType {
 		None,
 		/// <summary>
-		/// Response data to be sent to the consumer web site by telling the 
-		/// browser to redirect back to the consumer web site with a querystring
-		/// that contains our data.
+		/// Data to be sent to the OP or RP site by telling the user agent to
+		/// redirect GET or form POST to a special URL with a payload of arguments.
 		/// </summary>
-		RedirectBrowserUrl,
+		IndirectMessage,
 		/// <summary>
-		/// Response data to be sent directly to the consumer site, 
-		/// in response to a direct request initiated by the consumer site
-		/// (not the client browser).
+		/// Provider response data to be sent directly to the Relying Party site, 
+		/// in response to a direct request initiated by the RP
+		/// (not indirect via the user agent).
+		/// Key-Value Form encoding will be used.
 		/// </summary>
-		ResponseBody
+		DirectResponse
 	}
 
 	/// <remarks>
