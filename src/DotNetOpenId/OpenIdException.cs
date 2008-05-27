@@ -83,14 +83,14 @@ namespace DotNetOpenId {
 			get {
 				Debug.Assert(Query != null, "An OpenId exception should always be provided with the query if it is to be encoded for transmittal to the RP.");
 				if (HasReturnTo)
-					return EncodingType.RedirectBrowserUrl;
+					return EncodingType.IndirectMessage;
 
 				if (Query != null) {
 					string mode = Util.GetOptionalArg(Query, Protocol.openid.mode);
 					if (mode != null)
 						if (mode != Protocol.Args.Mode.checkid_setup &&
 							mode != Protocol.Args.Mode.checkid_immediate)
-							return EncodingType.ResponseBody;
+							return EncodingType.DirectResponse;
 				}
 
 				// Notes from the original port

@@ -41,11 +41,7 @@
     <Reference Include="System.Web.Mobile" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\ASPNETDB.MDF">
-    </Content>
-    <Content Include="App_Data\aspnetdb_log.ldf">
-      <DependentUpon>ASPNETDB.MDF</DependentUpon>
-    </Content>
+    <Content Include="App_Data\Users.xml" />
     <Content Include="op_xrds.aspx" />
     <Content Include="decide.aspx" />
     <Content Include="Default.aspx" />
@@ -58,6 +54,7 @@
     <Content Include="user_xrds.aspx" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Code\ReadOnlyXmlMembershipProvider.cs" />
     <Compile Include="Code\URLRewriter.cs" />
     <Compile Include="Code\Util.cs" />
     <Compile Include="decide.aspx.cs">

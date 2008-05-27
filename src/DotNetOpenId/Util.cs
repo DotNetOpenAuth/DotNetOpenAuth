@@ -43,8 +43,13 @@ namespace DotNetOpenId {
 		/// as part of the querystring piece.  Prefixes a ? or &amp; before
 		/// first element as necessary.
 		/// </summary>
+		/// <param name="builder">The UriBuilder to add arguments to.</param>
+		/// <param name="args">
+		/// The arguments to add to the query.  
+		/// If null, <paramref name="builder"/> is not changed.
+		/// </param>
 		public static void AppendQueryArgs(UriBuilder builder, IDictionary<string, string> args) {
-			if (args.Count > 0) {
+			if (args != null && args.Count > 0) {
 				StringBuilder sb = new StringBuilder(50 + args.Count * 10);
 				if (!string.IsNullOrEmpty(builder.Query)) {
 					sb.Append(builder.Query.Substring(1));
@@ -83,13 +88,22 @@ namespace DotNetOpenId {
 		internal const string DefaultNamespace = "DotNetOpenId";
 
 		public static IDictionary<string, string> NameValueCollectionToDictionary(NameValueCollection nvc) {
-			if (nvc == null) throw new ArgumentNullException("nvc");
+			if (nvc == null) return null;
 			var dict = new Dictionary<string, string>(nvc.Count);
-			for (int i = 0; i < nvc.Count; i++)
-				dict.Add(nvc.GetKey(i), nvc.Get(i));
+			for (int i = 0; i < nvc.Count; i++) {
+				string key = nvc.GetKey(i);
+				string value = nvc.Get(i);
+				// NameValueCollections allow for a null key.  Dictionary<TKey, TValue> does not.
+				// We just skip a null key member.  It probably came from a query string that
+				// started with "?&".  See Google Code Issue 81.
+				if (key != null) {
+					dict.Add(key, value);
+				}
+			}
 			return dict;
 		}
 		public static NameValueCollection DictionaryToNameValueCollection(IDictionary<string, string> dict) {
+			if (dict == null) return null;
 			NameValueCollection nvc = new NameValueCollection(dict.Count);
 			foreach (var pair in dict) {
 				nvc.Add(pair.Key, pair.Value);

@@ -15,7 +15,7 @@ namespace DotNetOpenId.Provider {
 	[DebuggerDisplay("Endpoint: {Endpoint}, OpenId Request: {Query.ContainsKey(\"openid.mode\")}")]
 	public class OpenIdProvider {
 		internal Signatory Signatory { get; private set; }
-		internal Encoder Encoder;
+		internal MessageEncoder Encoder;
 		/// <summary>
 		/// The incoming request's Url.
 		/// </summary>
@@ -55,8 +55,11 @@ namespace DotNetOpenId.Provider {
 		/// The Internet-facing URL that responds to OpenID requests.
 		/// </param>
 		/// <param name="requestUrl">The incoming request URL.</param>
-		/// <param name="query">The name/value pairs that came in on the 
-		/// QueryString of a GET request or in the entity of a POST request.</param>
+		/// <param name="query">
+		/// The name/value pairs that came in on the 
+		/// QueryString of a GET request or in the entity of a POST request.
+		/// For example: (Request.HttpMethod == "GET" ? Request.QueryString : Request.Form).
+		/// </param>
 		public OpenIdProvider(IProviderAssociationStore store, Uri providerEndpoint, Uri requestUrl, NameValueCollection query)
 			: this(store, providerEndpoint, requestUrl, Util.NameValueCollectionToDictionary(query)) { }
 		OpenIdProvider(IProviderAssociationStore store, Uri providerEndpoint, Uri requestUrl, IDictionary<string, string> query) {
@@ -68,7 +71,7 @@ namespace DotNetOpenId.Provider {
 			RequestUrl = requestUrl;
 			Query = query;
 			Signatory = new Signatory(store);
-			Encoder = new SigningEncoder(Signatory);
+			Encoder = new SigningMessageEncoder(Signatory);
 			store.ClearExpiredAssociations(); // every so often we should do this.
 		}
 

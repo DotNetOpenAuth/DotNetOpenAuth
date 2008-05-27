@@ -61,13 +61,12 @@ namespace DotNetOpenId.Yadis {
 			return null;
 		}
 
-		internal RealmEndpoint CreateRealmEndpoint() {
+		internal IEnumerable<RelyingPartyReceivingEndpoint> FindRelyingPartyReceivingEndpoints() {
 			foreach (var service in findReturnToServices()) {
 				foreach (var uri in service.UriElements) {
-					return new RealmEndpoint(uri.Uri, service.TypeElementUris);
+					yield return new RelyingPartyReceivingEndpoint(uri.Uri, service.TypeElementUris);
 				}
 			}
-			return null;
 		}
 
 		IEnumerable<ServiceElement> findOPIdentifierServices() {

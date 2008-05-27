@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Web;
+using System.Net;
 
 namespace DotNetOpenId.Provider {
 	/// <summary>
@@ -40,6 +41,54 @@ namespace DotNetOpenId.Provider {
 		/// The URL the consumer site claims to use as its 'base' address.
 		/// </summary>
 		public Realm Realm { get; private set; }
+		bool? isReturnUrlDiscoverable;
+		/// <summary>
+		/// Whether verification of the return URL claimed by the Relying Party
+		/// succeeded.
+		/// </summary>
+		/// <remarks>
+		/// This property will never throw a WebException or OpenIdException.  Any failures
+		/// occuring during return URL verification results in a false value being returned.
+		/// Details regarding failure may be found in the trace log.
+		/// </remarks>
+		public bool IsReturnUrlDiscoverable {
+			get {
+				Debug.Assert(Realm != null);
+				if (!isReturnUrlDiscoverable.HasValue) {
+					isReturnUrlDiscoverable = false; // assume not until we succeed
+					try {
+						foreach (var returnUrl in Realm.Discover(false)) {
+							Realm discoveredReturnToUrl = returnUrl.RelyingPartyEndpoint;
+							// The spec requires that the return_to URLs given in an RPs XRDS doc
+							// do not contain wildcards.
+							if (discoveredReturnToUrl.DomainWildcard) {
+								if (TraceUtil.Switch.TraceWarning)
+									Trace.TraceWarning("Realm {0} contained return_to URL {1} which contains a wildcard, which is not allowed.",
+										Realm, discoveredReturnToUrl);
+								continue;
+							}
+							// Use the same rules as return_to/realm matching to check whether this
+							// URL fits the return_to URL we were given.
+							if (discoveredReturnToUrl.Contains(ReturnTo)) {
+								isReturnUrlDiscoverable = true;
+								break; // no need to keep looking after we find a match
+							}
+						}
+					} catch (OpenIdException ex) {
+						if (TraceUtil.Switch.TraceInfo)
+							Trace.TraceInformation("Relying party discovery at URL {0} failed.  {1}",
+								Realm, ex);
+						// Don't do anything else.  We quietly fail at return_to verification and return false.
+					} catch (WebException ex) {
+						if (TraceUtil.Switch.TraceInfo)
+							Trace.TraceInformation("Relying party discovery at URL {0} failed.  {1}",
+								Realm, ex);
+						// Don't do anything else.  We quietly fail at return_to verification and return false.
+					}
+				}
+				return isReturnUrlDiscoverable.Value;
+			}
+		}
 		/// <summary>
 		/// Whether the Provider should help the user select a Claimed Identifier
 		/// to send back to the relying party.

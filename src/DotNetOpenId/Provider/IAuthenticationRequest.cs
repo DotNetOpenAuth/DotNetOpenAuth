@@ -20,6 +20,17 @@ namespace DotNetOpenId.Provider {
 		/// </summary>
 		Realm Realm { get; }
 		/// <summary>
+		/// Whether verification of the return URL claimed by the Relying Party
+		/// succeeded.
+		/// </summary>
+		/// <remarks>
+		/// Return URL verification is only attempted if this property is queried.
+		/// The result of the verification is cached per request so calling this
+		/// property getter multiple times in one request is not a performance hit.
+		/// See OpenID Authentication 2.0 spec section 9.2.1.
+		/// </remarks>
+		bool IsReturnUrlDiscoverable { get; }
+		/// <summary>
 		/// Whether the Provider should help the user select a Claimed Identifier
 		/// to send back to the relying party.
 		/// </summary>

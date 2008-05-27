@@ -24,7 +24,10 @@ namespace DotNetOpenId.Test.Hosting {
 		HttpListenerContext context;
 		TextWriter writer;
 		public override string GetFilePath() {
-			return context.Request.Url.LocalPath.Replace("/", "\\");
+			string filePath = context.Request.Url.LocalPath.Replace("/", "\\");
+			if (filePath.EndsWith("\\", StringComparison.Ordinal))
+				filePath += "default.aspx";
+			return filePath;
 		}
 		public override int GetLocalPort() {
 			return context.Request.Url.Port;

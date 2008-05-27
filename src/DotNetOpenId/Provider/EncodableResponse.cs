@@ -45,7 +45,7 @@ namespace DotNetOpenId.Provider {
 		#region IEncodable Members
 
 		public EncodingType EncodingType { 
-			get { return RedirectUrl != null ? EncodingType.RedirectBrowserUrl : EncodingType.ResponseBody; }
+			get { return RedirectUrl != null ? EncodingType.IndirectMessage : EncodingType.DirectResponse; }
 		}
 
 		public IDictionary<string, string> EncodedFields {
@@ -53,7 +53,7 @@ namespace DotNetOpenId.Provider {
 				var nvc = new Dictionary<string, string>();
 
 				foreach (var pair in Fields) {
-					if (EncodingType == EncodingType.RedirectBrowserUrl) {
+					if (EncodingType == EncodingType.IndirectMessage) {
 						nvc.Add(Protocol.openid.Prefix + pair.Key, pair.Value);
 					} else {
 						nvc.Add(pair.Key, pair.Value);

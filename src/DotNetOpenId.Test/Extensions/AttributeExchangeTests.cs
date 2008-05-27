@@ -95,7 +95,7 @@ namespace DotNetOpenId.Test.Extensions {
 			var identityUrl = TestSupport.GetIdentityUrl(TestSupport.Scenarios.ExtensionFullCooperation, Version);
 			var returnTo = TestSupport.GetFullUrl(TestSupport.ConsumerPage);
 			var realm = new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri);
-			var consumer = new OpenIdRelyingParty(AppStore, null);
+			var consumer = new OpenIdRelyingParty(AppStore, null, null);
 			var request = consumer.CreateRequest(identityUrl, realm, returnTo);
 			request.AddExtension(new FetchRequest());
 			request.AddExtension(new StoreRequest());

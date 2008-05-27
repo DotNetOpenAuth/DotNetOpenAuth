@@ -3,6 +3,7 @@ using DotNetOpenId.RelyingParty;
 using NUnit.Framework;
 using ProviderMemoryStore = DotNetOpenId.AssociationMemoryStore<DotNetOpenId.AssociationRelyingPartyType>;
 using System.Web;
+using System.Collections.Specialized;
 
 namespace DotNetOpenId.Test.RelyingParty {
 	[TestFixture]
@@ -28,25 +29,25 @@ namespace DotNetOpenId.Test.RelyingParty {
 
 		[Test]
 		public void CtorWithNullRequestUri() {
-			new OpenIdRelyingParty(store, null);
+			new OpenIdRelyingParty(store, null, null);
 		}
 
 		[Test]
 		public void CtorWithNullStore() {
-			var consumer = new OpenIdRelyingParty(null, simpleNonOpenIdRequest);
+			var consumer = new OpenIdRelyingParty(null, simpleNonOpenIdRequest, new NameValueCollection());
 		}
 
 		[Test]
 		[ExpectedException(typeof(InvalidOperationException))]
 		public void CreateRequestWithoutContext1() {
-			var consumer = new OpenIdRelyingParty(store, simpleNonOpenIdRequest);
+			var consumer = new OpenIdRelyingParty(store, simpleNonOpenIdRequest, new NameValueCollection());
 			consumer.CreateRequest(simpleOpenId);
 		}
 
 		[Test]
 		[ExpectedException(typeof(InvalidOperationException))]
 		public void CreateRequestWithoutContext2() {
-			var consumer = new OpenIdRelyingParty(store, simpleNonOpenIdRequest);
+			var consumer = new OpenIdRelyingParty(store, simpleNonOpenIdRequest, new NameValueCollection());
 			consumer.CreateRequest(simpleOpenId, realm);
 		}
 
@@ -54,7 +55,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 		public void AssociationCreationWithStore() {
 			var providerStore = new ProviderMemoryStore();
 
-			OpenIdRelyingParty rp = new OpenIdRelyingParty(new ApplicationMemoryStore(), null);
+			OpenIdRelyingParty rp = new OpenIdRelyingParty(new ApplicationMemoryStore(), null, null);
 			var idUrl = TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
 
 			DotNetOpenId.RelyingParty.IAuthenticationRequest req;
@@ -72,7 +73,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 		public void NoAssociationRequestWithoutStore() {
 			var providerStore = new ProviderMemoryStore();
 
-			OpenIdRelyingParty rp = new OpenIdRelyingParty(null, null);
+			OpenIdRelyingParty rp = new OpenIdRelyingParty(null, null, null);
 			var idUrl = TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
 
 			DotNetOpenId.RelyingParty.IAuthenticationRequest req;
@@ -113,10 +114,10 @@ namespace DotNetOpenId.Test.RelyingParty {
 
 		private static void testExplicitPortOnRealmAndReturnTo(Uri returnTo, Realm realm) {
 			var identityUrl = TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
-			var consumer = new OpenIdRelyingParty(null, null);
+			var consumer = new OpenIdRelyingParty(null, null, null);
 			var request = consumer.CreateRequest(identityUrl, realm, returnTo);
 			Protocol protocol = Protocol.Lookup(request.ProviderVersion);
-			var nvc = HttpUtility.ParseQueryString(request.RedirectToProviderUrl.Query);
+			var nvc = HttpUtility.ParseQueryString(request.RedirectingResponse.ExtractUrl().Query);
 			string realmString = nvc[protocol.openid.Realm];
 			string returnToString = nvc[protocol.openid.return_to];
 			bool realmPortExplicitlyGiven = realmString.Contains(":80");
@@ -133,11 +134,11 @@ namespace DotNetOpenId.Test.RelyingParty {
 		public void ReturnToUrlEncodingTest() {
 			Uri origin = TestSupport.GetFullUrl(TestSupport.ConsumerPage);
 			var identityUrl = TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
-			var consumer = new OpenIdRelyingParty(null, null);
+			var consumer = new OpenIdRelyingParty(null, null, null);
 			var request = consumer.CreateRequest(identityUrl, origin, origin);
 			Protocol protocol = Protocol.Lookup(request.ProviderVersion);
 			request.AddCallbackArguments("a+b", "c+d");
-			var requestArgs = HttpUtility.ParseQueryString(request.RedirectToProviderUrl.Query);
+			var requestArgs = HttpUtility.ParseQueryString(request.RedirectingResponse.ExtractUrl().Query);
 			var returnToArgs = HttpUtility.ParseQueryString(requestArgs[protocol.openid.return_to]);
 			Assert.AreEqual("c+d", returnToArgs["a+b"]);
 		}

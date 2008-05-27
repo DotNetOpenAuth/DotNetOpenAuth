@@ -35,10 +35,10 @@ namespace DotNetOpenId.Test.RelyingParty {
 
 		Uri getPositiveAssertion(ProtocolVersion version) {
 			try {
-				OpenIdRelyingParty rp = new OpenIdRelyingParty(store, null);
+				OpenIdRelyingParty rp = new OpenIdRelyingParty(store, null, null);
 				Identifier id = TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, version);
 				var request = rp.CreateRequest(id, realm, returnTo);
-				HttpWebRequest providerRequest = (HttpWebRequest)WebRequest.Create(request.RedirectToProviderUrl);
+				HttpWebRequest providerRequest = (HttpWebRequest)WebRequest.Create(request.RedirectingResponse.ExtractUrl());
 				providerRequest.AllowAutoRedirect = false;
 				Uri redirectUrl;
 				try {
@@ -106,7 +106,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 			// which should cause a failure because the return_to argument
 			// says that parameter is supposed to be there.
 			removeQueryParameter(ref assertion, returnToRemovableParameter);
-			var response = new OpenIdRelyingParty(store, assertion).Response;
+			var response = new OpenIdRelyingParty(store, assertion, HttpUtility.ParseQueryString(assertion.Query)).Response;
 			Assert.AreEqual(AuthenticationStatus.Failed, response.Status);
 			Assert.IsNotNull(response.Exception);
 		}
@@ -140,7 +140,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 			resign(ref assertion); // resign changed URL to simulate a contrived OP for breaking into RPs.
 
 			// (triggers exception) "... you're in trouble up to your ears."
-			var response = new OpenIdRelyingParty(store, assertion).Response;
+			var response = new OpenIdRelyingParty(store, assertion, HttpUtility.ParseQueryString(assertion.Query)).Response;
 			Assert.AreEqual(AuthenticationStatus.Failed, response.Status);
 			Assert.IsNotNull(response.Exception);
 		}

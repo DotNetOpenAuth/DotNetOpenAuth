@@ -552,7 +552,7 @@ namespace DotNetOpenId.RelyingParty
 		protected override void OnLoad(EventArgs e) {
 			base.OnLoad(e);
 
-			if (!Enabled) return;
+			if (!Enabled || Page.IsPostBack) return;
 			var consumer = new OpenIdRelyingParty();
 			if (consumer.Response != null) {
 				switch (consumer.Response.Status) {

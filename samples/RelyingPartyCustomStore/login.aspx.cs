@@ -8,7 +8,8 @@ public partial class login : System.Web.UI.Page {
 	protected void Page_Load(object sender, EventArgs e) {
 		openIdBox.Focus();
 
-		OpenIdRelyingParty rp = new OpenIdRelyingParty(CustomStore.Instance, Request.Url);
+		OpenIdRelyingParty rp = new OpenIdRelyingParty(CustomStore.Instance, Request.Url,
+			Request.HttpMethod == "GET" ? Request.QueryString : Request.Form);
 		if (rp.Response != null) {
 			switch (rp.Response.Status) {
 				case AuthenticationStatus.Authenticated:
@@ -25,7 +26,8 @@ public partial class login : System.Web.UI.Page {
 	}
 
 	protected void loginButton_Click(object sender, EventArgs e) {
-		OpenIdRelyingParty rp = new OpenIdRelyingParty(CustomStore.Instance, Request.Url);
+		OpenIdRelyingParty rp = new OpenIdRelyingParty(CustomStore.Instance, Request.Url,
+			Request.HttpMethod == "GET" ? Request.QueryString : Request.Form);
 		rp.CreateRequest(openIdBox.Text).RedirectToProvider();
 	}
 }

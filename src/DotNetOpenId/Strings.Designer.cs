@@ -412,6 +412,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An HTTP request to the realm URL ({0}) resulted in a redirect, which is not allowed during relying party discovery..
+        /// </summary>
+        internal static string RealmCausedRedirectUponDiscovery {
+            get {
+                return ResourceManager.GetString("RealmCausedRedirectUponDiscovery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The nonce has already been used..
         /// </summary>
         internal static string ReplayAttackDetected {

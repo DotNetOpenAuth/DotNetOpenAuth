@@ -53,6 +53,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CustomStoreDataSet.xsd</DependentUpon>
     </Compile>
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
     <Compile Include="login.aspx.cs">
       <DependentUpon>login.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -69,6 +72,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Global.asax" />
     <Content Include="MembersOnly\Web.config" />
   </ItemGroup>
   <ItemGroup>

@@ -45,7 +45,12 @@ public class TestSupport {
 		return new UriIdentifier(new Uri(Host.BaseUri, "/" + scenario));
 	}
 	public static Uri GetFullUrl(string url) {
-		return new Uri(Host.BaseUri, url);
+		return GetFullUrl(url, null);
+	}
+	public static Uri GetFullUrl(string url, IDictionary<string, string> args) {
+		UriBuilder builder = new UriBuilder(new Uri(Host.BaseUri, url));
+		UriUtil.AppendQueryArgs(builder, args);
+		return builder.Uri;
 	}
 
 	internal static AspNetHost Host { get; private set; }
@@ -86,5 +91,18 @@ public class TestSupport {
 			subsetDictionary.Add(signedKey, dict[keyName]);
 		}
 		nvc[protocol.openid.sig] = Convert.ToBase64String(assoc.Sign(subsetDictionary, signed));
+	}
+}
+
+static class TestExtensions {
+	/// <summary>
+	/// Gets a URL that can be requested to send an indirect message.
+	/// </summary>
+	public static Uri ExtractUrl(this IResponse message) {
+		DotNetOpenId.Response response = (DotNetOpenId.Response)message;
+		IEncodable encodable = response.EncodableMessage;
+		UriBuilder builder = new UriBuilder(encodable.RedirectUrl);
+		UriUtil.AppendQueryArgs(builder, encodable.EncodedFields);
+		return builder.Uri;
 	}
 }

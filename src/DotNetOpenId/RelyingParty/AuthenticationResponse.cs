@@ -111,7 +111,12 @@ namespace DotNetOpenId.RelyingParty {
 			if (query == null) throw new ArgumentNullException("query");
 			if (requestUrl == null) throw new ArgumentNullException("requestUrl");
 			ServiceEndpoint tokenEndpoint = null;
-			string token = Util.GetOptionalArg(query, Token.TokenKey);
+			// The query parameter may be the POST query or the GET query,
+			// but the token parameter will always be in the GET query because
+			// it was added to the return_to parameter list.
+			IDictionary<string, string> requestUrlQuery = Util.NameValueCollectionToDictionary(
+				HttpUtility.ParseQueryString(requestUrl.Query));
+			string token = Util.GetOptionalArg(requestUrlQuery, Token.TokenKey);
 			if (token != null) {
 				tokenEndpoint = Token.Deserialize(token, store).Endpoint;
 			}
