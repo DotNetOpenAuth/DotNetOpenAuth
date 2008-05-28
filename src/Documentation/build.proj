@@ -21,7 +21,7 @@
 	<PropertyGroup>
 		<NetfxVer>2.0</NetfxVer>
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-		<ProjectRoot>..\..</ProjectRoot>
+		<ProjectRoot>$(MSBuildProjectDirectory)\..\..</ProjectRoot>
 		<OutputAssembly>DotNetOpenId</OutputAssembly>
 		<OutputPath>$(ProjectRoot)\bin\$(Configuration)</OutputPath>
 		<DocOutputPath>$(ProjectRoot)\doc</DocOutputPath>

@@ -51,6 +51,14 @@
 		<MakeDir Directories="$(DocIntermediatePath)" Condition="!Exists('$(DocIntermediatePath)')" />
 	</Target>
 
+	<Target Name="SetEnvironmentVars" DependsOnTargets="CompileCustomBuildTasks">
+		<SetEnvironmentVariable Name="DxRoot" Value="$(DxRoot)" />
+		<SetEnvironmentVariable Name="DocumentationFile" Value="$(DocumentationFile)" />
+		<SetEnvironmentVariable Name="ReflectionXmlFile" Value="$(ReflectionFile)" />
+		<SetEnvironmentVariable Name="OutputHtml" Value="$(DocOutputApiPath)\html" />
+		<SetEnvironmentVariable Name="FxReflectionData" Value="$(FxReflectionOutputPath)" />
+	</Target>
+
 	<Target Name="FxReflection" Condition="!Exists('$(FxReflectionOutputPath)')">
 		<MakeDir Directories="$(FxReflectionIntermediatePath)" Condition="!Exists('$(FxReflectionIntermediatePath)')" />
 		<MakeDir Directories="$(FxReflectionOutputPath)" Condition="!Exists('$(FxReflectionOutputPath)')" />
@@ -85,7 +93,7 @@
 	</Target>
 
 	<Target Name="ReflectionBase" Inputs="$(OutputAssemblyFile)" Outputs="$(ReflectionBaseFile)" 
-					DependsOnTargets="Compile;CreateIntermediatePath">
+					DependsOnTargets="SetEnvironmentVars;Compile;CreateIntermediatePath">
 		<Exec Command='"$(ProductionTools)\MRefBuilder.exe" "$(OutputAssemblyFile)" /out:"$(ReflectionBaseFile)"' />
 	</Target>
 
@@ -102,12 +110,7 @@
 	<Target Name="Html"
 	      Inputs="$(ManifestFile);$(ReflectionFile);$(DocumentationFile)"
 	      Outputs="$(DocOutputApiPath)\html\N_DotNetOpenId.htm"
-	      DependsOnTargets="Template;Manifest;Compile;CompileCustomBuildTasks">
-		<SetEnvironmentVariable Name="DxRoot" Value="$(DxRoot)" />
-		<SetEnvironmentVariable Name="DocumentationFile" Value="$(DocumentationFile)" />
-		<SetEnvironmentVariable Name="ReflectionXmlFile" Value="$(ReflectionFile)" />
-		<SetEnvironmentVariable Name="OutputHtml" Value="$(DocOutputApiPath)\html" />
-		<SetEnvironmentVariable Name="FxReflectionData" Value="$(FxReflectionOutputPath)" />
+	      DependsOnTargets="SetEnvironmentVars;Template;Manifest;Compile">
 		<Exec Command='"$(ProductionTools)\BuildAssembler.exe" /config:"$(Presentation)\configuration\sandcastle.config" "$(ManifestFile)"' />
 	</Target>
 
