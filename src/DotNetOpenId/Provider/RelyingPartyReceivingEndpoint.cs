@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Diagnostics;
 
 namespace DotNetOpenId.Provider {
-	class RealmEndpoint {
-		public RealmEndpoint(Uri relyingPartyEndpoint, string[] supportedServiceTypeUris) {
+	[DebuggerDisplay("RelyingPartyReceivingEndpoint: {RelyingPartyEndpoint}")]
+	class RelyingPartyReceivingEndpoint {
+		public RelyingPartyReceivingEndpoint(Uri relyingPartyEndpoint, string[] supportedServiceTypeUris) {
 			RelyingPartyEndpoint = relyingPartyEndpoint;
 			this.supportedServiceTypeUris = supportedServiceTypeUris;
 		}

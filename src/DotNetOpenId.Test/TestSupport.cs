@@ -45,7 +45,12 @@ public class TestSupport {
 		return new UriIdentifier(new Uri(Host.BaseUri, "/" + scenario));
 	}
 	public static Uri GetFullUrl(string url) {
-		return new Uri(Host.BaseUri, url);
+		return GetFullUrl(url, null);
+	}
+	public static Uri GetFullUrl(string url, IDictionary<string, string> args) {
+		UriBuilder builder = new UriBuilder(new Uri(Host.BaseUri, url));
+		UriUtil.AppendQueryArgs(builder, args);
+		return builder.Uri;
 	}
 
 	internal static AspNetHost Host { get; private set; }

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using DotNetOpenId.Yadis;
 using DotNetOpenId.Provider;
+using System.Collections.Generic;
 
 namespace DotNetOpenId {
 	/// <summary>
@@ -107,6 +108,25 @@ namespace DotNetOpenId {
 		/// Gets the realm URL.  If the realm includes a wildcard, it is not included here.
 		/// </summary>
 		internal Uri NoWildcardUri { get { return uri; } }
+		/// <summary>
+		/// Produces the Realm URL.  If the realm URL had a wildcard in it,
+		/// the wildcard is replaced with a "www." prefix.
+		/// </summary>
+		/// <remarks>
+		/// See OpenID 2.0 spec section 9.2.1 for the explanation on the addition of
+		/// the "www" prefix.
+		/// </remarks>
+		internal Uri UriWithWildcardChangedToWww {
+			get {
+				if (DomainWildcard) {
+					UriBuilder builder = new UriBuilder(NoWildcardUri);
+					builder.Host = "www." + builder.Host;
+					return builder.Uri;
+				} else {
+					return NoWildcardUri;
+				}
+			}
+		}
 
 		static string[] _top_level_domains =    {"com", "edu", "gov", "int", "mil", "net", "org", "biz", "info", "name", "museum", "coop", "aero", "ac", "ad", "ae",
 			"af", "ag", "ai", "al", "am", "an", "ao", "aq", "ar", "as", "at", "au", "aw", "az", "ba", "bb", "bd", "be", "bf", "bg", "bh", "bi", "bj",
@@ -236,20 +256,29 @@ namespace DotNetOpenId {
 
 		/// <summary>
 		/// Searches for an XRDS document at the realm URL, and if found, searches
-		/// for a description of a relying party endpoint (OpenId login page).
+		/// for a description of a relying party endpoints (OpenId login pages).
 		/// </summary>
-		/// <returns>The details of the endpoint if found, otherwise null.</returns>
-		internal DotNetOpenId.Provider.RealmEndpoint Discover() {
+		/// <param name="allowRedirects">
+		/// Whether redirects may be followed when discovering the Realm.
+		/// This may be true when creating an unsolicited assertion, but must be
+		/// false when performing return URL verification per 2.0 spec section 9.2.1.
+		/// </param>
+		/// <returns>The details of the endpoints if found, otherwise null.</returns>
+		internal IEnumerable<DotNetOpenId.Provider.RelyingPartyReceivingEndpoint> Discover(bool allowRedirects) {
 			// Attempt YADIS discovery
-			DiscoveryResult yadisResult = Yadis.Yadis.Discover(NoWildcardUri);
+			DiscoveryResult yadisResult = Yadis.Yadis.Discover(UriWithWildcardChangedToWww);
 			if (yadisResult != null) {
+				if (!allowRedirects && yadisResult.NormalizedUri != yadisResult.RequestUri) {
+					// Redirect occurred when it was not allowed.
+					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
+						Strings.RealmCausedRedirectUponDiscovery, yadisResult.RequestUri));
+				}
 				if (yadisResult.IsXrds) {
 					XrdsDocument xrds = new XrdsDocument(yadisResult.ResponseText);
-					RealmEndpoint ep = xrds.CreateRealmEndpoint();
-					if (ep != null) return ep;
+					return xrds.FindRelyingPartyReceivingEndpoints();
 				}
 			}
-			return null;
+			return new List<DotNetOpenId.Provider.RelyingPartyReceivingEndpoint>(); // empty list
 		}
 
 		/// <summary>
