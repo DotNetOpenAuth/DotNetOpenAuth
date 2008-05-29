@@ -187,7 +187,7 @@ namespace DotNetOpenId {
 			} catch (UriFormatException ex) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.InvalidOpenIdQueryParameterValue, key,
-					Util.GetOptionalArg(query, key)), ex);
+					Util.GetOptionalArg(query, key)), null, query, ex);
 			}
 		}
 		public static bool ArrayEquals<T>(T[] first, T[] second) {
