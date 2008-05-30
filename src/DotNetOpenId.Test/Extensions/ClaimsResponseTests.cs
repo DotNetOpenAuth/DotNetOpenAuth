@@ -33,6 +33,13 @@ namespace DotNetOpenId.Test.Extensions {
 		}
 
 		[Test]
+		public void EmptyMailAddress() {
+			ClaimsResponse response = new ClaimsResponse();
+			response.Email = "";
+			Assert.IsNull(response.MailAddress);
+		}
+
+		[Test]
 		public void BinarySerialization() {
 			ClaimsResponse fields = getFilledData();
 			MemoryStream ms = new MemoryStream();
