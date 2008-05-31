@@ -76,7 +76,7 @@
     <Compile Include="Hosting\HttpHost.cs" />
     <Compile Include="TestSupport.cs" />
     <Compile Include="Hosting\TestingWorkerRequest.cs" />
-    <Compile Include="ProfileFieldValuesTests.cs" />
+    <Compile Include="Extensions\ClaimsResponseTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Provider\IdentityEndpointTest.cs" />
     <Compile Include="Provider\OpenIdProviderTest.cs" />

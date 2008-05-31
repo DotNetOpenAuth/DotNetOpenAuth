@@ -16,9 +16,9 @@ using NUnit.Framework;
 using DotNetOpenId.Extensions.SimpleRegistration;
 using DotNetOpenId.Extensions;
 
-namespace DotNetOpenId.Test {
+namespace DotNetOpenId.Test.Extensions {
 	[TestFixture]
-	public class ProfileFieldValuesTests {
+	public class ClaimsResponseTests {
 		ClaimsResponse getFilledData() {
 			return new ClaimsResponse() {
 				BirthDate = new DateTime(2005, 2, 3),
@@ -30,6 +30,13 @@ namespace DotNetOpenId.Test {
 				PostalCode = "12345",
 				TimeZone = "PST",
 			};
+		}
+
+		[Test]
+		public void EmptyMailAddress() {
+			ClaimsResponse response = new ClaimsResponse();
+			response.Email = "";
+			Assert.IsNull(response.MailAddress);
 		}
 
 		[Test]

@@ -183,11 +183,14 @@ namespace DotNetOpenId {
 		}
 		public static Realm GetOptionalRealmArg(IDictionary<string, string> query, string key) {
 			try {
-				return Util.GetOptionalArg(query, key);
+				string realm = Util.GetOptionalArg(query, key);
+				// Take care to not return the empty string in case the RP
+				// sent us realm= but didn't provide a value.
+				return realm.Length > 0 ? realm : null;
 			} catch (UriFormatException ex) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.InvalidOpenIdQueryParameterValue, key,
-					Util.GetOptionalArg(query, key)), ex);
+					Util.GetOptionalArg(query, key)), null, query, ex);
 			}
 		}
 		public static bool ArrayEquals<T>(T[] first, T[] second) {

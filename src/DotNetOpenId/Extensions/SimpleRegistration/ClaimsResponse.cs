@@ -39,7 +39,7 @@ namespace DotNetOpenId.Extensions.SimpleRegistration
 		{
 			get
 			{
-				if (Email == null) return null;
+				if (string.IsNullOrEmpty(Email)) return null;
 				if (string.IsNullOrEmpty(FullName))
 					return new MailAddress(Email);
 				else
