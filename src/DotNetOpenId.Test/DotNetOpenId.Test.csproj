@@ -63,6 +63,7 @@
     <Compile Include="NonceTest.cs" />
     <Compile Include="PiecewiseJointTesting.cs" />
     <Compile Include="Provider\IAuthenticationRequestTest.cs" />
+    <Compile Include="RelyingParty\AuthenticationRequestTests.cs" />
     <Compile Include="RelyingParty\AuthenticationResponseTests.cs" />
     <Compile Include="RelyingParty\OpenIdMobileTextBoxTest.cs" />
     <Compile Include="RelyingParty\OpenIdRelyingPartyTest.cs" />

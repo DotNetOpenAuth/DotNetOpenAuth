@@ -185,6 +185,23 @@ namespace DotNetOpenId.RelyingParty {
 			}
 		}
 
+		bool isExtensionAdvertisedAsSupported(string extensionTypeUri) {
+			return Array.IndexOf(endpoint.ProviderSupportedServiceTypeUris, extensionTypeUri) >= 0;
+		}
+		public bool IsExtensionAdvertisedAsSupported<T>() where T : Extensions.IExtension, new() {
+			T extension = new T();
+			return isExtensionAdvertisedAsSupported(extension.TypeUri);
+		}
+		public bool IsExtensionAdvertisedAsSupported(Type extensionType) {
+			if (extensionType == null) throw new ArgumentNullException("extensionType");
+			if (!typeof(Extensions.IExtension).IsAssignableFrom(extensionType))
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
+					Strings.TypeMustImplementX, typeof(Extensions.IExtension).FullName),
+					"extensionType");
+			var extension = (Extensions.IExtension)Activator.CreateInstance(extensionType);
+			return isExtensionAdvertisedAsSupported(extension.TypeUri);
+		}
+
 		public void AddExtension(DotNetOpenId.Extensions.IExtensionRequest extension) {
 			if (extension == null) throw new ArgumentNullException("extension");
 			OutgoingExtensions.AddExtensionArguments(extension.TypeUri, extension.Serialize(this));
