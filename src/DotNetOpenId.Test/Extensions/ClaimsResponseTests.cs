@@ -20,7 +20,7 @@ namespace DotNetOpenId.Test.Extensions {
 	[TestFixture]
 	public class ClaimsResponseTests {
 		ClaimsResponse getFilledData() {
-			return new ClaimsResponse() {
+			return new ClaimsResponse(Constants.sreg_ns) {
 				BirthDate = new DateTime(2005, 2, 3),
 				Culture = new System.Globalization.CultureInfo("en-US"),
 				Email = "a@b.com",
@@ -34,7 +34,7 @@ namespace DotNetOpenId.Test.Extensions {
 
 		[Test]
 		public void EmptyMailAddress() {
-			ClaimsResponse response = new ClaimsResponse();
+			ClaimsResponse response = new ClaimsResponse(Constants.sreg_ns);
 			response.Email = "";
 			Assert.IsNull(response.MailAddress);
 		}

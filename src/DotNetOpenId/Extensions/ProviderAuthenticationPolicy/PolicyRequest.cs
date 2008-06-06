@@ -69,7 +69,7 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 			return fields;
 		}
 
-		bool IExtensionRequest.Deserialize(IDictionary<string, string> fields, DotNetOpenId.Provider.IRequest request) {
+		bool IExtensionRequest.Deserialize(IDictionary<string, string> fields, DotNetOpenId.Provider.IRequest request, string typeUri) {
 			if (fields == null) return false;
 			if (!fields.ContainsKey(Constants.RequestParameters.PreferredAuthPolicies)) return false;
 
@@ -93,6 +93,10 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 
 		string IExtension.TypeUri {
 			get { return Constants.TypeUri; }
+		}
+
+		IEnumerable<string> IExtension.AdditionalSupportedTypeUris {
+			get { return new string[0]; }
 		}
 
 		#endregion

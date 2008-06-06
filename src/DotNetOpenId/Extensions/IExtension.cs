@@ -11,6 +11,17 @@ namespace DotNetOpenId.Extensions {
 		/// Gets the TypeURI the extension uses in the OpenID protocol and in XRDS advertisements.
 		/// </summary>
 		string TypeUri { get; }
+		/// <summary>
+		/// Additional TypeURIs that are supported by this extension, in preferred order.
+		/// May be empty if none other than <see cref="TypeUri"/> is supported, but
+		/// should not be null.
+		/// </summary>
+		/// <remarks>
+		/// Useful for reading in messages with an older version of an extension.
+		/// The value in the <see cref="TypeUri"/> property is always checked before
+		/// trying this list.
+		/// </remarks>
+		IEnumerable<string> AdditionalSupportedTypeUris { get; }
 	}
 
 	/// <summary>
@@ -26,8 +37,14 @@ namespace DotNetOpenId.Extensions {
 		/// <summary>
 		/// Reads the extension information on an authentication request to the provider.
 		/// </summary>
-		/// <returns>True if the extension found any of its parameters in the request, false otherwise.</returns>
-		bool Deserialize(IDictionary<string, string> fields, Provider.IRequest request);
+		/// <param name="fields">The fields belonging to the extension.</param>
+		/// <param name="request">The incoming OpenID request carrying the extension.</param>
+		/// <param name="typeUri">The actual extension TypeUri that was recognized in the message.</param>
+		/// <returns>
+		/// True if the extension found a valid set of recognized parameters in the request, 
+		/// false otherwise.
+		/// </returns>
+		bool Deserialize(IDictionary<string, string> fields, Provider.IRequest request, string typeUri);
 	}
 
 	/// <summary>
@@ -43,7 +60,13 @@ namespace DotNetOpenId.Extensions {
 		/// <summary>
 		/// Reads a Provider's response for extension values.
 		/// </summary>
-		/// <returns>True if the extension found any of its parameters in the response.</returns>
-		bool Deserialize(IDictionary<string, string> fields, RelyingParty.IAuthenticationResponse response);
+		/// <param name="fields">The fields belonging to the extension.</param>
+		/// <param name="response">The incoming OpenID response carrying the extension.</param>
+		/// <param name="typeUri">The actual extension TypeUri that was recognized in the message.</param>
+		/// <returns>
+		/// True if the extension found a valid set of recognized parameters in the response, 
+		/// false otherwise.
+		/// </returns>
+		bool Deserialize(IDictionary<string, string> fields, RelyingParty.IAuthenticationResponse response, string typeUri);
 	}
 }

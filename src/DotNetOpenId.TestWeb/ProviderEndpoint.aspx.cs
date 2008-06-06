@@ -23,7 +23,7 @@ public partial class ProviderEndpoint : System.Web.UI.Page {
 
 	void respondToExtensions(DotNetOpenId.Provider.IRequest request, TestSupport.Scenarios scenario) {
 		var sregRequest = request.GetExtension<ClaimsRequest>();
-		var sregResponse = new ClaimsResponse();
+		var sregResponse = sregRequest != null ? sregRequest.CreateResponse() : null;
 		var aeFetchRequest = request.GetExtension<FetchRequest>();
 		var aeFetchResponse = new FetchResponse();
 		var aeStoreRequest = request.GetExtension<StoreRequest>();

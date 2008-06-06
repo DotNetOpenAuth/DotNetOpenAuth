@@ -113,6 +113,10 @@ namespace DotNetOpenId {
 			}
 		}
 
+		/// <summary>
+		/// Gets the fields carried by a given OpenId extension.
+		/// </summary>
+		/// <returns>The fields included in the given extension, or null if the extension is not present.</returns>
 		public IDictionary<string, string> GetExtensionArguments(string extensionTypeUri) {
 			if (!isReadMode) throw new InvalidOperationException();
 			if (string.IsNullOrEmpty(extensionTypeUri)) throw new ArgumentNullException("extensionTypeUri");

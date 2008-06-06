@@ -134,13 +134,13 @@ namespace DotNetOpenId.Test.Extensions {
 		[Test]
 		public void DeserializeNull() {
 			PolicyResponse resp = new PolicyResponse();
-			Assert.IsFalse(((IExtensionResponse)resp).Deserialize(null, null));
+			Assert.IsFalse(((IExtensionResponse)resp).Deserialize(null, null, Constants.TypeUri));
 		}
 
 		[Test]
 		public void DeserializeEmpty() {
 			PolicyResponse resp = new PolicyResponse();
-			Assert.IsFalse(((IExtensionResponse)resp).Deserialize(new Dictionary<string,string>(), null));
+			Assert.IsFalse(((IExtensionResponse)resp).Deserialize(new Dictionary<string, string>(), null, Constants.TypeUri));
 		}
 
 		[Test]
@@ -151,7 +151,7 @@ namespace DotNetOpenId.Test.Extensions {
 			// Most basic test
 			PolicyResponse resp = new PolicyResponse(), resp2 = new PolicyResponse();
 			var fields = ((IExtensionResponse)resp).Serialize(null);
-			Assert.IsTrue(((IExtensionResponse)resp2).Deserialize(fields, null));
+			Assert.IsTrue(((IExtensionResponse)resp2).Deserialize(fields, null, Constants.TypeUri));
 			Assert.AreEqual(resp, resp2);
 
 			// Test with all fields set
@@ -160,14 +160,14 @@ namespace DotNetOpenId.Test.Extensions {
 			resp.AuthenticationTimeUtc = someUtcTime;
 			resp.NistAssuranceLevel = NistAssuranceLevel.Level2;
 			fields = ((IExtensionResponse)resp).Serialize(null);
-			Assert.IsTrue(((IExtensionResponse)resp2).Deserialize(fields, null));
+			Assert.IsTrue(((IExtensionResponse)resp2).Deserialize(fields, null, Constants.TypeUri));
 			Assert.AreEqual(resp, resp2);
 
 			// Test with an extra policy
 			resp2 = new PolicyResponse();
 			resp.ActualPolicies.Add(AuthenticationPolicies.PhishingResistant);
 			fields = ((IExtensionResponse)resp).Serialize(null);
-			Assert.IsTrue(((IExtensionResponse)resp2).Deserialize(fields, null));
+			Assert.IsTrue(((IExtensionResponse)resp2).Deserialize(fields, null, Constants.TypeUri));
 			Assert.AreEqual(resp, resp2);
 
 			// Test with a policy added twice.  We should see it intelligently leave one of
@@ -175,7 +175,7 @@ namespace DotNetOpenId.Test.Extensions {
 			resp2 = new PolicyResponse();
 			resp.ActualPolicies.Add(AuthenticationPolicies.PhishingResistant);
 			fields = ((IExtensionResponse)resp).Serialize(null);
-			Assert.IsTrue(((IExtensionResponse)resp2).Deserialize(fields, null));
+			Assert.IsTrue(((IExtensionResponse)resp2).Deserialize(fields, null, Constants.TypeUri));
 			Assert.AreNotEqual(resp, resp2);
 			// Now go ahead and add the doubled one so we can do our equality test.
 			resp2.ActualPolicies.Add(AuthenticationPolicies.PhishingResistant);

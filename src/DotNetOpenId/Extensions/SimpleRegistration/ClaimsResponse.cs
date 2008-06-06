@@ -24,6 +24,20 @@ namespace DotNetOpenId.Extensions.SimpleRegistration
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2218:OverrideGetHashCodeOnOverridingEquals"), Serializable()]
 	public sealed class ClaimsResponse : IExtensionResponse
 	{
+		string typeUriToUse;
+
+		/// <summary>
+		/// Creates an instance of the <see cref="ClaimsResponse"/> class.
+		/// </summary>
+		[Obsolete("Use ClaimsRequest.CreateResponse() instead.")]
+		public ClaimsResponse() : this(Constants.sreg_ns) {
+		}
+
+		internal ClaimsResponse(string typeUriToUse) {
+			if (string.IsNullOrEmpty(typeUriToUse)) throw new ArgumentNullException("typeUriToUse");
+			this.typeUriToUse = typeUriToUse;
+		}
+
 		/// <summary>
 		/// The nickname the user goes by.
 		/// </summary>
@@ -104,7 +118,10 @@ namespace DotNetOpenId.Extensions.SimpleRegistration
 		public string TimeZone { get; set; }
 
 		#region IExtensionResponse Members
-		string IExtension.TypeUri { get { return Constants.sreg_ns; } }
+		string IExtension.TypeUri { get { return typeUriToUse; } }
+		IEnumerable<string> IExtension.AdditionalSupportedTypeUris {
+			get { return new string[0]; }
+		}
 
 		/// <summary>
 		/// Adds the values of this struct to an authentication response being prepared
@@ -148,7 +165,7 @@ namespace DotNetOpenId.Extensions.SimpleRegistration
 			return fields;
 		}
 
-		bool IExtensionResponse.Deserialize(IDictionary<string, string> sreg, IAuthenticationResponse response) {
+		bool IExtensionResponse.Deserialize(IDictionary<string, string> sreg, IAuthenticationResponse response, string typeUri) {
 			if (sreg == null) return false;
 			string nickname, email, fullName, dob, genderString, postalCode, country, language, timeZone;
 			BirthDate = null;

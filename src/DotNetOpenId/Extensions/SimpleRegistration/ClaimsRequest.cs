@@ -128,9 +128,18 @@ namespace DotNetOpenId.Extensions.SimpleRegistration {
 
 		#region IExtensionRequest Members
 		string IExtension.TypeUri { get { return Constants.sreg_ns; } }
+		static readonly string[] additionalTypeUris = new string[] {
+			Constants.sreg_ns10,
+			Constants.sreg_ns11other,
+		};
+		IEnumerable<string> IExtension.AdditionalSupportedTypeUris {
+			get { return additionalTypeUris; }
+		}
 
-		bool IExtensionRequest.Deserialize(IDictionary<string, string> args, IRequest request) {
+		bool IExtensionRequest.Deserialize(IDictionary<string, string> args, IRequest request, string typeUri) {
 			if (args == null) return false;
+			Debug.Assert(!string.IsNullOrEmpty(typeUri));
+			typeUriDeserializedFrom = typeUri;
 
 			string policyUrl;
 			if (args.TryGetValue(Constants.policy_url, out policyUrl)
@@ -167,6 +176,16 @@ namespace DotNetOpenId.Extensions.SimpleRegistration {
 			return fields;
 		}
 		#endregion
+
+		string typeUriDeserializedFrom;
+		/// <summary>
+		/// Prepares a Simple Registration response extension that is compatible with the
+		/// version of Simple Registration used in the request message.
+		/// </summary>
+		/// <returns></returns>
+		public ClaimsResponse CreateResponse() {
+			return new ClaimsResponse(typeUriDeserializedFrom);
+		}
 
 		/// <summary>
 		/// Renders the requested information as a string.

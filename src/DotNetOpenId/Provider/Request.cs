@@ -123,9 +123,36 @@ namespace DotNetOpenId.Provider
 			OutgoingExtensions.AddExtensionArguments(extension.TypeUri, extension.Serialize(this));
 		}
 
+		/// <summary>
+		/// Attempts to load an extension from an OpenId message.
+		/// </summary>
+		/// <param name="extension">The extension to attempt to load.</param>
+		/// <returns>
+		/// True if the extension was found in the message and successfully loaded.
+		/// False otherwise.
+		/// </returns>
+		bool getExtension(DotNetOpenId.Extensions.IExtensionRequest extension) {
+			var fields = IncomingExtensions.GetExtensionArguments(extension.TypeUri);
+			if (fields != null) {
+				// The extension was found using the preferred TypeUri.
+				return extension.Deserialize(fields, this, extension.TypeUri);
+			} else {
+				// The extension may still be found using secondary TypeUris.
+				if (extension.AdditionalSupportedTypeUris != null) {
+					foreach (string typeUri in extension.AdditionalSupportedTypeUris) {
+						fields = IncomingExtensions.GetExtensionArguments(typeUri);
+						if (fields != null) {
+							// We found one of the older ones.
+							return extension.Deserialize(fields, this, typeUri);
+						}
+					}
+				}
+			}
+			return false;
+		}
 		public T GetExtension<T>() where T : DotNetOpenId.Extensions.IExtensionRequest, new() {
 			T extension = new T();
-			return extension.Deserialize(IncomingExtensions.GetExtensionArguments(extension.TypeUri), this) ? extension : default(T);
+			return getExtension(extension) ? (T)extension : default(T);
 		}
 
 		public DotNetOpenId.Extensions.IExtensionRequest GetExtension(Type extensionType) {
@@ -135,7 +162,7 @@ namespace DotNetOpenId.Provider
 					Strings.TypeMustImplementX, typeof(DotNetOpenId.Extensions.IExtensionRequest).FullName),
 					"extensionType");
 			var extension = (DotNetOpenId.Extensions.IExtensionRequest)Activator.CreateInstance(extensionType);
-			return extension.Deserialize(IncomingExtensions.GetExtensionArguments(extension.TypeUri), this) ? extension : null;
+			return getExtension(extension) ? extension : null;
 		}
 
 		public override string ToString() {
