@@ -17,6 +17,7 @@
 	</p>
 	<asp:LoginStatus ID="LoginStatus1" runat="server" />
 
+<% if (State.ProfileFields != null) { %>
 	<p>
 		In addition to authenticating you, your OpenID Provider may
 		have told us something about you using the 
@@ -96,6 +97,7 @@
 			</td>
 		</tr>
 	</table>
+<% } %>
 	</form>
 </body>
 </html>
