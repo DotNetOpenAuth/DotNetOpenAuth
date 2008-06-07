@@ -182,7 +182,6 @@ namespace DotNetOpenId.Extensions.SimpleRegistration {
 		/// Prepares a Simple Registration response extension that is compatible with the
 		/// version of Simple Registration used in the request message.
 		/// </summary>
-		/// <returns></returns>
 		public ClaimsResponse CreateResponse() {
 			return new ClaimsResponse(typeUriDeserializedFrom);
 		}
@@ -190,7 +189,6 @@ namespace DotNetOpenId.Extensions.SimpleRegistration {
 		/// <summary>
 		/// Renders the requested information as a string.
 		/// </summary>
-		/// <returns></returns>
 		public override string ToString() {
 			return string.Format(CultureInfo.CurrentCulture, @"Nickname = '{0}' 
 Email = '{1}' 

@@ -20,6 +20,11 @@ namespace DotNetOpenId.Extensions {
 		/// Useful for reading in messages with an older version of an extension.
 		/// The value in the <see cref="TypeUri"/> property is always checked before
 		/// trying this list.
+		/// If you do support multiple versions of an extension using this method,
+		/// consider adding a CreateResponse method to your request extension class
+		/// so that the response can have the context it needs to remain compatible
+		/// given the version of the extension in the request message.
+		/// The <see cref="SimpleRegistration.ClaimsRequest.CreateResponse"/> for an example.
 		/// </remarks>
 		IEnumerable<string> AdditionalSupportedTypeUris { get; }
 	}
