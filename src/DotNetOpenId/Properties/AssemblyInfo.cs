@@ -4,6 +4,10 @@
 // it will fail before doing much damage.
 // But a partially trusted assembly's events, handled by the hosting
 // web site, will also be under the partial trust restriction.
+// Also note that http://support.microsoft.com/kb/839300 states a 
+// strong-name signed assembly must use AllowPartiallyTrustedCallers 
+// to be called from a web page, but defining PARTIAL_TRUST below also
+// accomplishes this.
 //#define PARTIAL_TRUST
 
 using System.Reflection;
@@ -15,6 +19,7 @@ using System.Net;
 using System.Resources;
 using System;
 using System.Web.UI;
+using System.Security;
 
 [assembly: TagPrefix("DotNetOpenId", "openid")]
 [assembly: TagPrefix("DotNetOpenId.Provider", "OP")]
@@ -54,6 +59,10 @@ using System.Web.UI;
 [assembly: AssemblyFileVersion("2.1.2.0")]
 
 #if StrongNameSigned
+// See comment at top of this file.  We need this so that strong-naming doesn't
+// keep this assembly from being useful to shared host (medium trust) web sites.
+[assembly: AllowPartiallyTrustedCallers]
+
 [assembly: InternalsVisibleTo("DotNetOpenId.Test, PublicKey=0024000004800000940000000602000000240000525341310004000001000100AD093C3765257C89A7010E853F2C7C741FF92FA8ACE06D7B8254702CAD5CF99104447F63AB05F8BB6F51CE0D81C8C93D2FCE8C20AAFF7042E721CBA16EAAE98778611DED11C0ABC8900DC5667F99B50A9DADEC24DBD8F2C91E3E8AD300EF64F1B4B9536CEB16FB440AF939F57624A9B486F867807C649AE4830EAB88C6C03998")]
 #else
 [assembly: InternalsVisibleTo("DotNetOpenId.Test")]
