@@ -117,12 +117,16 @@ namespace DotNetOpenId {
 			return NameValueCollectionToDictionary(query);
 		}
 		internal static Uri GetRequestUrlFromContext() {
-			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
-			UriBuilder builder = new UriBuilder(HttpContext.Current.Request.Url);
-			// If a cookieless session is in use, the Request.Url will not include the session bit,
-			// so we add it here ourselves.
-			builder.Path = HttpContext.Current.Response.ApplyAppPathModifier(builder.Path);
-			return builder.Uri;
+			HttpContext context = HttpContext.Current;
+			if (context == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
+			// We use Request.Url for the full path to the server, and modify it
+			// with Request.RawUrl to capture both the cookieless session "directory" if it exists
+			// and the original path in case URL rewriting is going on.  We don't want to be
+			// fooled by URL rewriting because we're comparing the actual URL with what's in
+			// the return_to parameter in some cases.
+			return new Uri(context.Request.Url, context.Request.RawUrl);
+			// Response.ApplyAppPathModifier(builder.Path) would have worked for the cookieless
+			// session, but not the URL rewriting problem.
 		}
 
 		public static string GetRequiredArg(IDictionary<string, string> query, string key) {
