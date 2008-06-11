@@ -653,7 +653,7 @@ namespace DotNetOpenId.RelyingParty
 				Language = RequestLanguage,
 				TimeZone = RequestTimeZone,
 				PolicyUrl = string.IsNullOrEmpty(PolicyUrl) ?
-					null : new Uri(Page.Request.Url, Page.ResolveUrl(PolicyUrl)),
+					null : new Uri(Util.GetRequestUrlFromContext(), Page.ResolveUrl(PolicyUrl)),
 			});
 		}
 
@@ -675,7 +675,7 @@ namespace DotNetOpenId.RelyingParty
 				});
 
 			UriBuilder fullyQualifiedRealm = new UriBuilder(
-				new Uri(Page.Request.Url, Page.ResolveUrl(realmNoWildcard)));
+				new Uri(Util.GetRequestUrlFromContext(), Page.ResolveUrl(realmNoWildcard)));
 
 			if (foundWildcard)
 			{

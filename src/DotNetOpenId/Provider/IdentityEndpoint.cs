@@ -77,7 +77,7 @@ namespace DotNetOpenId.Provider {
 				writer.WriteBeginTag("link");
 				writer.WriteAttribute("rel", Protocol.HtmlDiscoveryProviderKey);
 				writer.WriteAttribute("href",
-					new Uri(Page.Request.Url, Page.ResolveUrl(ProviderEndpointUrl)).AbsoluteUri);
+					new Uri(Util.GetRequestUrlFromContext(), Page.ResolveUrl(ProviderEndpointUrl)).AbsoluteUri);
 				writer.Write(">");
 				writer.WriteEndTag("link");
 				writer.WriteLine();
@@ -86,7 +86,7 @@ namespace DotNetOpenId.Provider {
 				writer.WriteBeginTag("link");
 				writer.WriteAttribute("rel", Protocol.HtmlDiscoveryLocalIdKey);
 				writer.WriteAttribute("href",
-					new Uri(Page.Request.Url, Page.ResolveUrl(ProviderLocalIdentifier)).AbsoluteUri);
+					new Uri(Util.GetRequestUrlFromContext(), Page.ResolveUrl(ProviderLocalIdentifier)).AbsoluteUri);
 				writer.Write(">");
 				writer.WriteEndTag("link");
 				writer.WriteLine();
