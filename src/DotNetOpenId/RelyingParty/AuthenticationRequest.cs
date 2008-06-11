@@ -141,7 +141,12 @@ namespace DotNetOpenId.RelyingParty {
 		public AuthenticationRequestMode Mode { get; set; }
 		public Realm Realm { get; private set; }
 		public Uri ReturnToUrl { get; private set; }
-		public Identifier ClaimedIdentifier { get { return endpoint.ClaimedIdentifier; } }
+		public Identifier ClaimedIdentifier {
+			get { return IsDirectedIdentity ? null : endpoint.ClaimedIdentifier; }
+		}
+		public bool IsDirectedIdentity {
+			get { return endpoint.ClaimedIdentifier == endpoint.Protocol.ClaimedIdentifierForOPIdentifier; }
+		}
 		/// <summary>
 		/// The detected version of OpenID implemented by the Provider.
 		/// </summary>

@@ -774,8 +774,10 @@ namespace DotNetOpenId.RelyingParty
 		/// Constructs an object with minimal information of an incomplete or failed
 		/// authentication attempt.
 		/// </summary>
-		internal OpenIdEventArgs(Identifier claimedIdentifier) {
-			ClaimedIdentifier = claimedIdentifier;
+		internal OpenIdEventArgs(IAuthenticationRequest request) {
+			if (request == null) throw new ArgumentNullException("request");
+			ClaimedIdentifier = request.ClaimedIdentifier;
+			IsDirectedIdentity = request.IsDirectedIdentity;
 		}
 		/// <summary>
 		/// Constructs an object with information on a completed authentication attempt
@@ -792,9 +794,15 @@ namespace DotNetOpenId.RelyingParty
 		/// </summary>
 		public bool Cancel { get; set; }
 		/// <summary>
-		/// The Identifier the user is claiming to own.
+		/// The Identifier the user is claiming to own.  Or null if the user
+		/// is using Directed Identity.
 		/// </summary>
 		public Identifier ClaimedIdentifier { get; private set; }
+		/// <summary>
+		/// Whether the user has selected to let his Provider determine 
+		/// the ClaimedIdentifier to use as part of successful authentication.
+		/// </summary>
+		public bool IsDirectedIdentity { get; private set; }
 
 		/// <summary>
 		/// Gets the details of the OpenId authentication response.

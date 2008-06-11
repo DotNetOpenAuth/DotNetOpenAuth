@@ -491,7 +491,7 @@ namespace DotNetOpenId.RelyingParty
 			EventHandler<OpenIdEventArgs> loggingIn = LoggingIn;
 			PrepareAuthenticationRequest();
 			if (Request != null) {
-				OpenIdEventArgs args = new OpenIdEventArgs(Request.ClaimedIdentifier);
+				OpenIdEventArgs args = new OpenIdEventArgs(Request);
 				if (loggingIn != null)
 					loggingIn(this, args);
 				return !args.Cancel;
