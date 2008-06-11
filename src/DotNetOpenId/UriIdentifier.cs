@@ -68,6 +68,15 @@ namespace DotNetOpenId {
 			return result;
 		}
 #endif
+		/// <summary>
+		/// Removes the fragment from a URL and sets the host to lowercase.
+		/// </summary>
+		/// <remarks>
+		/// This does NOT standardize an OpenID URL for storage in a database, as
+		/// it does nothing to convert the URL to a Claimed Identifier, besides the fact
+		/// that it only deals with URLs whereas OpenID 2.0 supports XRIs.
+		/// For this, you should lookup the value stored in IAuthenticationResponse.ClaimedIdentifier.
+		/// </remarks>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase")]
 		static bool TryCanonicalize(UriBuilder uriBuilder, out Uri canonicalUri) {
 			uriBuilder.Host = uriBuilder.Host.ToLowerInvariant();
