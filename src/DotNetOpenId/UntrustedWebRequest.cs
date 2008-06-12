@@ -51,8 +51,8 @@ using System.Diagnostics;
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static UntrustedWebRequest() {
-			ReadWriteTimeout = TimeSpan.FromMilliseconds(500);
-			Timeout = TimeSpan.FromSeconds(5);
+			ReadWriteTimeout = TimeSpan.FromMilliseconds(800);
+			Timeout = TimeSpan.FromSeconds(8);
 #if LONGTIMEOUT
 			ReadWriteTimeout = TimeSpan.FromHours(1);
 			Timeout = TimeSpan.FromHours(1);
