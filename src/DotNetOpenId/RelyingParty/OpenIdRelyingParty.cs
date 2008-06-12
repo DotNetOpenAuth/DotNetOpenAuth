@@ -122,6 +122,13 @@ namespace DotNetOpenId.RelyingParty {
 			realmUrl.Query = null;
 			realmUrl.Fragment = null;
 
+			// For RP discovery, the realm url MUST NOT redirect.  To prevent this for 
+			// virtual directory hosted apps, we need to make sure that the realm path ends
+			// in a slash (since our calculation above guarantees it doesn't end in a specific
+			// page like default.aspx).
+			if (!realmUrl.Path.EndsWith("/", StringComparison.Ordinal))
+				realmUrl.Path += "/";
+
 			return CreateRequest(userSuppliedIdentifier, new Realm(realmUrl.Uri));
 		}
 
