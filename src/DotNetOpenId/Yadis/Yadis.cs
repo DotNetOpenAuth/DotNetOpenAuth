@@ -7,15 +7,25 @@ using System.Xml;
 using System.Xml.Serialization;
 using System.Net.Mime;
 using System.Web.UI.HtmlControls;
+using System.Diagnostics;
 
 namespace DotNetOpenId.Yadis {
 	class Yadis {
 		internal const string HeaderName = "X-XRDS-Location";
 
 		public static DiscoveryResult Discover(UriIdentifier uri) {
-			var response = UntrustedWebRequest.Request(uri, null,
+			UntrustedWebResponse response;
+			try {
+				response = UntrustedWebRequest.Request(uri, null,
 				new[] { ContentTypes.Html, ContentTypes.XHtml, ContentTypes.Xrds });
-			if (response.StatusCode != System.Net.HttpStatusCode.OK) {
+				if (response.StatusCode != System.Net.HttpStatusCode.OK) {
+					return null;
+				}
+			} catch (ArgumentException ex) {
+				// Unsafe URLs generate this
+				if (TraceUtil.Switch.TraceWarning) {
+					Trace.TraceWarning("Unsafe OpenId URL detected ({0}).  Request aborted.  {1}", uri, ex);
+				}
 				return null;
 			}
 			UntrustedWebResponse response2 = null;
