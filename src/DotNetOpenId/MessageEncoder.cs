@@ -14,6 +14,10 @@ namespace DotNetOpenId {
 	/// </summary>
 	internal class MessageEncoder {
 		/// <summary>
+		/// The HTTP Content-Type to use in Key-Value Form responses.
+		/// </summary>
+		const string KeyValueFormContentType = "application/x-openid-kvf";
+		/// <summary>
 		/// The maximum allowable size for a 301 Redirect response before we send
 		/// a 200 OK response with a scripted form POST with the parameters instead
 		/// in order to ensure successfully sending a large payload to another server
@@ -45,6 +49,11 @@ namespace DotNetOpenId {
 				case EncodingType.DirectResponse:
 					HttpStatusCode code = (message is Exception) ?
 						HttpStatusCode.BadRequest : HttpStatusCode.OK;
+					// Key-Value Encoding is how response bodies are sent.
+					// Setting the content-type to something other than text/html or text/plain
+					// prevents free hosted sites like GoDaddy's from automatically appending
+					// the <script/> at the end that adds a banner, and invalidating our response.
+					headers.Add(HttpResponseHeader.ContentType, KeyValueFormContentType);
 					wr = new Response(code, headers, ProtocolMessages.KeyValueForm.GetBytes(message.EncodedFields), message);
 					break;
 				case EncodingType.IndirectMessage:

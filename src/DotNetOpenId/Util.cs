@@ -6,6 +6,7 @@ using System.Web;
 using System.Globalization;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.Net;
 
 namespace DotNetOpenId {
 	internal static class UriUtil {
@@ -132,6 +133,22 @@ namespace DotNetOpenId {
 			return new Uri(context.Request.Url, context.Request.RawUrl);
 			// Response.ApplyAppPathModifier(builder.Path) would have worked for the cookieless
 			// session, but not the URL rewriting problem.
+		}
+
+		public static void ApplyHeadersToResponse(WebHeaderCollection headers, HttpResponse response) {
+			if (headers == null) throw new ArgumentNullException("headers");
+			if (response == null) throw new ArgumentNullException("response");
+			foreach (string headerName in headers) {
+				switch (headerName) {
+					case "Content-Type":
+						response.ContentType = headers[HttpResponseHeader.ContentType];
+						break;
+					// Add more special cases here as necessary.
+					default:
+						response.AddHeader(headerName, headers[headerName]);
+						break;
+				}
+			}
 		}
 
 		public static string GetRequiredArg(IDictionary<string, string> query, string key) {
