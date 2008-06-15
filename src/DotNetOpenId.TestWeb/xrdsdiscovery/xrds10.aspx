@@ -6,7 +6,8 @@
 	<XRD>
 		<Service priority="10">
 			<Type>http://openid.net/signon/1.0</Type>
-			<Type>http://openid.net/extensions/sreg/1.1</Type>
+			<!-- this next sreg one is deliberately an unofficial (but supported) sreg/1.0 typeUri, so we test it. -->
+			<Type>http://openid.net/sreg/1.0</Type>
 			<URI>http://a/b</URI>
 		</Service>
 	</XRD>

@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.Globalization;
 using System.Web;
 using System.Diagnostics;
+using DotNetOpenId.Extensions;
 
 namespace DotNetOpenId.RelyingParty {
 	/// <summary>
@@ -185,12 +186,9 @@ namespace DotNetOpenId.RelyingParty {
 			}
 		}
 
-		bool isExtensionAdvertisedAsSupported(string extensionTypeUri) {
-			return Array.IndexOf(endpoint.ProviderSupportedServiceTypeUris, extensionTypeUri) >= 0;
-		}
 		public bool IsExtensionAdvertisedAsSupported<T>() where T : Extensions.IExtension, new() {
 			T extension = new T();
-			return isExtensionAdvertisedAsSupported(extension.TypeUri);
+			return endpoint.IsExtensionSupported(extension);
 		}
 		public bool IsExtensionAdvertisedAsSupported(Type extensionType) {
 			if (extensionType == null) throw new ArgumentNullException("extensionType");
@@ -199,7 +197,7 @@ namespace DotNetOpenId.RelyingParty {
 					Strings.TypeMustImplementX, typeof(Extensions.IExtension).FullName),
 					"extensionType");
 			var extension = (Extensions.IExtension)Activator.CreateInstance(extensionType);
-			return isExtensionAdvertisedAsSupported(extension.TypeUri);
+			return endpoint.IsExtensionSupported(extension);
 		}
 
 		public void AddExtension(DotNetOpenId.Extensions.IExtensionRequest extension) {

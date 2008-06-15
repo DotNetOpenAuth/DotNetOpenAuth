@@ -7,6 +7,7 @@ using System.Xml.XPath;
 using System.IO;
 using DotNetOpenId.Yadis;
 using System.Diagnostics;
+using DotNetOpenId.Extensions;
 
 namespace DotNetOpenId.RelyingParty {
 	/// <summary>
@@ -90,6 +91,24 @@ namespace DotNetOpenId.RelyingParty {
 			if (ProviderSupportedServiceTypeUris == null)
 				throw new InvalidOperationException("Cannot lookup extension support on a rehydrated ServiceEndpoint.");
 			return Array.IndexOf(ProviderSupportedServiceTypeUris, extensionUri) >= 0;
+		}
+
+		public bool IsExtensionSupported(IExtension extension) {
+			if (extension == null) throw new ArgumentNullException("extension");
+
+			// Consider the primary case.
+			if (IsExtensionSupported(extension.TypeUri)) {
+				return true;
+			}
+			// Consider the secondary cases.
+			if (extension.AdditionalSupportedTypeUris != null) {
+				foreach (string extensionTypeUri in extension.AdditionalSupportedTypeUris) {
+					if (IsExtensionSupported(extensionTypeUri)) {
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 
 		/// <summary>

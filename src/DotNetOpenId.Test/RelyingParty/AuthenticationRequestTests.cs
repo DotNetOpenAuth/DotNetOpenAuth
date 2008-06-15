@@ -30,6 +30,13 @@ namespace DotNetOpenId.Test.RelyingParty {
 			Assert.IsTrue(request.IsExtensionAdvertisedAsSupported(typeof(ClaimsRequest)));
 			Assert.IsFalse(request.IsExtensionAdvertisedAsSupported<FetchRequest>());
 			Assert.IsFalse(request.IsExtensionAdvertisedAsSupported(typeof(FetchRequest)));
+
+			// Test the AdditionalTypeUris list by pulling from an XRDS page with one of the
+			// TypeURIs that only shows up in that list.
+			id = TestSupport.GetFullUrl("xrdsdiscovery/xrds10.aspx");
+			request = rp.CreateRequest(id, realm, returnTo);
+			Assert.IsTrue(request.IsExtensionAdvertisedAsSupported<ClaimsRequest>());
+			Assert.IsTrue(request.IsExtensionAdvertisedAsSupported(typeof(ClaimsRequest)));
 		}
 	}
 }
