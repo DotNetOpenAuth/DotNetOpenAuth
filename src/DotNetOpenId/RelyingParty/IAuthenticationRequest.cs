@@ -25,33 +25,6 @@ namespace DotNetOpenId.RelyingParty {
 		/// </summary>
 		void AddExtension(IExtensionRequest extension);
 		/// <summary>
-		/// Checks whether the OpenId Identifier claims support for a given extension.
-		/// </summary>
-		/// <typeparam name="T">The extension whose support is being queried.</typeparam>
-		/// <returns>True if support for the extension is advertised.  False otherwise.</returns>
-		/// <remarks>
-		/// Note that a true or false return value is no guarantee of a Provider's 
-		/// support for or lack of support for an extension.  The return value is
-		/// determined by how the authenticating user filled out his/her XRDS document only.
-		/// The only way to be sure of support for a given extension is to include
-		/// the extension in the request and see if a response comes back for that extension.
-		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
-		bool IsExtensionAdvertisedAsSupported<T>() where T : Extensions.IExtension, new();
-		/// <summary>
-		/// Checks whether the OpenId Identifier claims support for a given extension.
-		/// </summary>
-		/// <param name="extensionType">The extension whose support is being queried.</param>
-		/// <returns>True if support for the extension is advertised.  False otherwise.</returns>
-		/// <remarks>
-		/// Note that a true or false return value is no guarantee of a Provider's 
-		/// support for or lack of support for an extension.  The return value is
-		/// determined by how the authenticating user filled out his/her XRDS document only.
-		/// The only way to be sure of support for a given extension is to include
-		/// the extension in the request and see if a response comes back for that extension.
-		/// </remarks>
-		bool IsExtensionAdvertisedAsSupported(Type extensionType);
-		/// <summary>
 		/// Redirects the user agent to the provider for authentication.
 		/// Execution of the current page terminates after this call.
 		/// </summary>
@@ -99,8 +72,15 @@ namespace DotNetOpenId.RelyingParty {
 		/// </summary>
 		bool IsDirectedIdentity { get; }
 		/// <summary>
+		/// Gets information about the OpenId Provider, as advertised by the
+		/// OpenId discovery documents found at the <see cref="ClaimedIdentifier"/>
+		/// location.
+		/// </summary>
+		IProviderEndpoint Provider { get; }
+		/// <summary>
 		/// The detected version of OpenID implemented by the Provider.
 		/// </summary>
+		[Obsolete("Use Provider.Version instead.")]
 		Version ProviderVersion { get; }
 	}
 }

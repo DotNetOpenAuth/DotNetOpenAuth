@@ -116,7 +116,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 			var identityUrl = TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
 			var consumer = new OpenIdRelyingParty(null, null, null);
 			var request = consumer.CreateRequest(identityUrl, realm, returnTo);
-			Protocol protocol = Protocol.Lookup(request.ProviderVersion);
+			Protocol protocol = Protocol.Lookup(request.Provider.Version);
 			var nvc = HttpUtility.ParseQueryString(request.RedirectingResponse.ExtractUrl().Query);
 			string realmString = nvc[protocol.openid.Realm];
 			string returnToString = nvc[protocol.openid.return_to];
@@ -136,7 +136,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 			var identityUrl = TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
 			var consumer = new OpenIdRelyingParty(null, null, null);
 			var request = consumer.CreateRequest(identityUrl, origin, origin);
-			Protocol protocol = Protocol.Lookup(request.ProviderVersion);
+			Protocol protocol = Protocol.Lookup(request.Provider.Version);
 			request.AddCallbackArguments("a+b", "c+d");
 			var requestArgs = HttpUtility.ParseQueryString(request.RedirectingResponse.ExtractUrl().Query);
 			var returnToArgs = HttpUtility.ParseQueryString(requestArgs[protocol.openid.return_to]);

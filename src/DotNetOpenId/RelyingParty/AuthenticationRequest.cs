@@ -153,6 +153,12 @@ namespace DotNetOpenId.RelyingParty {
 		/// </summary>
 		public Version ProviderVersion { get { return protocol.Version; } }
 		/// <summary>
+		/// Gets information about the OpenId Provider, as advertised by the
+		/// OpenId discovery documents found at the <see cref="ClaimedIdentifier"/>
+		/// location.
+		/// </summary>
+		IProviderEndpoint IAuthenticationRequest.Provider { get { return endpoint; } }
+		/// <summary>
 		/// Gets the URL the user agent should be redirected to to begin the 
 		/// OpenID authentication process.
 		/// </summary>
@@ -184,20 +190,6 @@ namespace DotNetOpenId.RelyingParty {
 				var request = new IndirectMessageRequest(this.endpoint.ProviderEndpoint, qsArgs);
 				return this.encoder.Encode(request);
 			}
-		}
-
-		public bool IsExtensionAdvertisedAsSupported<T>() where T : Extensions.IExtension, new() {
-			T extension = new T();
-			return endpoint.IsExtensionSupported(extension);
-		}
-		public bool IsExtensionAdvertisedAsSupported(Type extensionType) {
-			if (extensionType == null) throw new ArgumentNullException("extensionType");
-			if (!typeof(Extensions.IExtension).IsAssignableFrom(extensionType))
-				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
-					Strings.TypeMustImplementX, typeof(Extensions.IExtension).FullName),
-					"extensionType");
-			var extension = (Extensions.IExtension)Activator.CreateInstance(extensionType);
-			return endpoint.IsExtensionSupported(extension);
 		}
 
 		public void AddExtension(DotNetOpenId.Extensions.IExtensionRequest extension) {

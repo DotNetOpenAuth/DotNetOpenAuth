@@ -8,13 +8,14 @@ using System.IO;
 using DotNetOpenId.Yadis;
 using System.Diagnostics;
 using DotNetOpenId.Extensions;
+using System.Globalization;
 
 namespace DotNetOpenId.RelyingParty {
 	/// <summary>
 	/// Represents information discovered about a user-supplied Identifier.
 	/// </summary>
 	[DebuggerDisplay("ClaimedIdentifier: {ClaimedIdentifier}, ProviderEndpoint: {ProviderEndpoint}, OpenId: {Protocol.Version}")]
-	internal class ServiceEndpoint {
+	internal class ServiceEndpoint : IProviderEndpoint {
 		/// <summary>
 		/// The URL which accepts OpenID Authentication protocol messages.
 		/// </summary>
@@ -87,29 +88,46 @@ namespace DotNetOpenId.RelyingParty {
 			}
 		}
 
-		public bool IsExtensionSupported(string extensionUri) {
+		public bool IsExtensionAdvertisedAsSupported(string extensionUri) {
 			if (ProviderSupportedServiceTypeUris == null)
 				throw new InvalidOperationException("Cannot lookup extension support on a rehydrated ServiceEndpoint.");
 			return Array.IndexOf(ProviderSupportedServiceTypeUris, extensionUri) >= 0;
 		}
 
-		public bool IsExtensionSupported(IExtension extension) {
+		public bool IsExtensionAdvertisedAsSupported(IExtension extension) {
 			if (extension == null) throw new ArgumentNullException("extension");
 
 			// Consider the primary case.
-			if (IsExtensionSupported(extension.TypeUri)) {
+			if (IsExtensionAdvertisedAsSupported(extension.TypeUri)) {
 				return true;
 			}
 			// Consider the secondary cases.
 			if (extension.AdditionalSupportedTypeUris != null) {
 				foreach (string extensionTypeUri in extension.AdditionalSupportedTypeUris) {
-					if (IsExtensionSupported(extensionTypeUri)) {
+					if (IsExtensionAdvertisedAsSupported(extensionTypeUri)) {
 						return true;
 					}
 				}
 			}
 			return false;
 		}
+
+		public bool IsExtensionAdvertisedAsSupported<T>() where T : Extensions.IExtension, new() {
+			T extension = new T();
+			return IsExtensionAdvertisedAsSupported(extension);
+		}
+
+		public bool IsExtensionAdvertisedAsSupported(Type extensionType) {
+			if (extensionType == null) throw new ArgumentNullException("extensionType");
+			if (!typeof(Extensions.IExtension).IsAssignableFrom(extensionType))
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
+					Strings.TypeMustImplementX, typeof(Extensions.IExtension).FullName),
+					"extensionType");
+			var extension = (Extensions.IExtension)Activator.CreateInstance(extensionType);
+			return IsExtensionAdvertisedAsSupported(extension);
+		}
+
+		Version IProviderEndpoint.Version { get { return Protocol.Version; } }
 
 		/// <summary>
 		/// Saves the discovered information about this endpoint
