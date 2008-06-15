@@ -88,23 +88,23 @@ namespace DotNetOpenId.RelyingParty {
 			}
 		}
 
-		public bool IsExtensionAdvertisedAsSupported(string extensionUri) {
+		public bool IsExtensionSupported(string extensionUri) {
 			if (ProviderSupportedServiceTypeUris == null)
 				throw new InvalidOperationException("Cannot lookup extension support on a rehydrated ServiceEndpoint.");
 			return Array.IndexOf(ProviderSupportedServiceTypeUris, extensionUri) >= 0;
 		}
 
-		public bool IsExtensionAdvertisedAsSupported(IExtension extension) {
+		public bool IsExtensionSupported(IExtension extension) {
 			if (extension == null) throw new ArgumentNullException("extension");
 
 			// Consider the primary case.
-			if (IsExtensionAdvertisedAsSupported(extension.TypeUri)) {
+			if (IsExtensionSupported(extension.TypeUri)) {
 				return true;
 			}
 			// Consider the secondary cases.
 			if (extension.AdditionalSupportedTypeUris != null) {
 				foreach (string extensionTypeUri in extension.AdditionalSupportedTypeUris) {
-					if (IsExtensionAdvertisedAsSupported(extensionTypeUri)) {
+					if (IsExtensionSupported(extensionTypeUri)) {
 						return true;
 					}
 				}
@@ -112,19 +112,19 @@ namespace DotNetOpenId.RelyingParty {
 			return false;
 		}
 
-		public bool IsExtensionAdvertisedAsSupported<T>() where T : Extensions.IExtension, new() {
+		public bool IsExtensionSupported<T>() where T : Extensions.IExtension, new() {
 			T extension = new T();
-			return IsExtensionAdvertisedAsSupported(extension);
+			return IsExtensionSupported(extension);
 		}
 
-		public bool IsExtensionAdvertisedAsSupported(Type extensionType) {
+		public bool IsExtensionSupported(Type extensionType) {
 			if (extensionType == null) throw new ArgumentNullException("extensionType");
 			if (!typeof(Extensions.IExtension).IsAssignableFrom(extensionType))
 				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
 					Strings.TypeMustImplementX, typeof(Extensions.IExtension).FullName),
 					"extensionType");
 			var extension = (Extensions.IExtension)Activator.CreateInstance(extensionType);
-			return IsExtensionAdvertisedAsSupported(extension);
+			return IsExtensionSupported(extension);
 		}
 
 		Version IProviderEndpoint.Version { get { return Protocol.Version; } }

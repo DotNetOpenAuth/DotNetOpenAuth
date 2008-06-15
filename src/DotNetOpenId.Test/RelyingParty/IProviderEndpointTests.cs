@@ -22,22 +22,22 @@ namespace DotNetOpenId.Test.RelyingParty {
 		}
 
 		[Test]
-		public void IsExtensionAdvertisedAsSupportedTest() {
+		public void IsExtensionSupportedTest() {
 			OpenIdRelyingParty rp = new OpenIdRelyingParty(store, null, null);
 			Identifier id = TestSupport.GetFullUrl("xrdsdiscovery/xrds20.aspx");
 			IAuthenticationRequest request = rp.CreateRequest(id, realm, returnTo);
 			IProviderEndpoint provider = request.Provider;
-			Assert.IsTrue(provider.IsExtensionAdvertisedAsSupported<ClaimsRequest>());
-			Assert.IsTrue(provider.IsExtensionAdvertisedAsSupported(typeof(ClaimsRequest)));
-			Assert.IsFalse(provider.IsExtensionAdvertisedAsSupported<FetchRequest>());
-			Assert.IsFalse(provider.IsExtensionAdvertisedAsSupported(typeof(FetchRequest)));
+			Assert.IsTrue(provider.IsExtensionSupported<ClaimsRequest>());
+			Assert.IsTrue(provider.IsExtensionSupported(typeof(ClaimsRequest)));
+			Assert.IsFalse(provider.IsExtensionSupported<FetchRequest>());
+			Assert.IsFalse(provider.IsExtensionSupported(typeof(FetchRequest)));
 
 			// Test the AdditionalTypeUris list by pulling from an XRDS page with one of the
 			// TypeURIs that only shows up in that list.
 			id = TestSupport.GetFullUrl("xrdsdiscovery/xrds10.aspx");
 			request = rp.CreateRequest(id, realm, returnTo);
-			Assert.IsTrue(provider.IsExtensionAdvertisedAsSupported<ClaimsRequest>());
-			Assert.IsTrue(provider.IsExtensionAdvertisedAsSupported(typeof(ClaimsRequest)));
+			Assert.IsTrue(provider.IsExtensionSupported<ClaimsRequest>());
+			Assert.IsTrue(provider.IsExtensionSupported(typeof(ClaimsRequest)));
 		}
 
 	}

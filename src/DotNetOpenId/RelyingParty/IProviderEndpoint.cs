@@ -25,7 +25,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// the extension in the request and see if a response comes back for that extension.
 		/// </remarks>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
-		bool IsExtensionAdvertisedAsSupported<T>() where T : Extensions.IExtension, new();
+		bool IsExtensionSupported<T>() where T : Extensions.IExtension, new();
 		/// <summary>
 		/// Checks whether the OpenId Identifier claims support for a given extension.
 		/// </summary>
@@ -38,7 +38,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// The only way to be sure of support for a given extension is to include
 		/// the extension in the request and see if a response comes back for that extension.
 		/// </remarks>
-		bool IsExtensionAdvertisedAsSupported(Type extensionType);
+		bool IsExtensionSupported(Type extensionType);
 		/// <summary>
 		/// The detected version of OpenID implemented by the Provider.
 		/// </summary>
