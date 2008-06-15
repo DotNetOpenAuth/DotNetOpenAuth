@@ -111,6 +111,26 @@ namespace DotNetOpenId.Test.Extensions {
 			Assert.AreNotEqual(fields1, fields2);
 		}
 
+		void parameterizedPreserveVersionFromRequest(string versionTypeUri) {
+			Dictionary<string, string> fields = new Dictionary<string, string>{
+				{"optional", "nickname"},
+			};
+			var req = new ClaimsRequest();
+			Assert.IsTrue(((IExtensionRequest)req).Deserialize(fields, null, versionTypeUri));
+			Assert.AreEqual(DemandLevel.Request, req.Nickname);
+			ClaimsResponse resp = req.CreateResponse();
+			Assert.AreEqual(versionTypeUri, ((IExtensionResponse)resp).TypeUri);
+		}
+
+		[Test]
+		public void PreserveVersionFromRequest() {
+			// some unofficial type URIs...
+			parameterizedPreserveVersionFromRequest("http://openid.net/sreg/1.0");
+			parameterizedPreserveVersionFromRequest("http://openid.net/sreg/1.1");
+			// and the official one.
+			parameterizedPreserveVersionFromRequest("http://openid.net/extensions/sreg/1.1");
+		}
+
 		//[Test]
 		public void AddToResponse() {
 			// TODO
