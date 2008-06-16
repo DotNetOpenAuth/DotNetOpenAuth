@@ -1,0 +1,149 @@
+4 ,all,c
+4 ,all,d  ,l
+4 ,all,m  ,r
+4 ,all,s
+10,all,b
+10,all,ca ,cy
+10,all,cz ,dy
+10,all,dz ,j
+10,all,k  ,l
+10,all,m  ,pf
+10,all,pg  ,r
+10,all,sa ,sy
+10,all,sz ,ty
+10,all,tz
+15,all,b
+15,all,c ,cg
+15,all,ch,cr
+15,all,cs,h
+15,all,i ,l
+15,all,m ,o
+15,all,p ,r
+15,all,s ,sd
+15,all,se,sg
+15,all,sh,sm
+15,all,sn,s
+15,all,t ,td
+15,all,te,tl
+15,all,tm,t
+15,all,u
+20,all,b
+20,all,c ,cg
+20,all,ch,ck
+20,all,cl,cr
+20,all,cs,d
+20,all,e,h
+20,all,i ,j
+20,all,k ,l
+20,all,m ,my
+20,all,mz,oy
+20,all,oz,qy
+20,all,qz,ry
+20,all,rz,sd
+20,all,se,sg
+20,all,sh,sm
+20,all,sn,s
+20,all,t ,td
+20,all,te,tl
+20,all,tm,t
+20,all,u
+20,mscorlib.dll,b
+20,mscorlib.dll,c ,cg
+20,mscorlib.dll,ch,ck
+20,mscorlib.dll,cl,cr
+20,mscorlib.dll,cs,d
+20,mscorlib.dll,e,h
+20,mscorlib.dll,i ,j
+20,mscorlib.dll,k ,l
+20,mscorlib.dll,m ,my
+20,mscorlib.dll,mz,oy
+20,mscorlib.dll,oz,qy
+20,mscorlib.dll,qz,ry
+20,mscorlib.dll,rz,sd
+20,mscorlib.dll,se,sg
+20,mscorlib.dll,sh,sm
+20,mscorlib.dll,sn,s
+20,mscorlib.dll,t ,td
+20,mscorlib.dll,te,tl
+20,mscorlib.dll,tm,t
+20,mscorlib.dll,u
+20,system.windows.forms.dll,bf
+20,system.windows.forms.dll,bg,cg
+20,system.windows.forms.dll,ch,ck
+20,system.windows.forms.dll,cl,cr
+20,system.windows.forms.dll,cs,d
+20,system.windows.forms.dll,e,h
+20,system.windows.forms.dll,i ,j
+20,system.windows.forms.dll,k ,l
+20,system.windows.forms.dll,m ,my
+20,system.windows.forms.dll,mz,oy
+20,system.windows.forms.dll,oz,qy
+20,system.windows.forms.dll,qz,ry
+20,system.windows.forms.dll,rz,sd
+20,system.windows.forms.dll,se,sg
+20,system.windows.forms.dll,sh,sm
+20,system.windows.forms.dll,sn,s
+20,system.windows.forms.dll,t ,td
+20,system.windows.forms.dll,te,tl
+20,system.windows.forms.dll,tm,t
+20,system.windows.forms.dll,u
+30,all,bf
+30,all,bg,cg
+30,all,ch,ck
+30,all,cl,cn
+30,all,co,cr
+30,all,cs,de
+30,all,df,d
+30,all,e ,f
+30,all,g ,h
+30,all,i ,j
+30,all,k ,k
+30,all,l ,l
+30,all,m ,n
+30,all,o ,o
+30,all,p ,pl
+30,all,pm,p
+30,all,q ,rf
+30,all,rg,r
+30,all,s ,sd
+30,all,se,sg
+30,all,sh,sm
+30,all,sn,s
+30,all,t ,td
+30,all,te,tg
+30,all,th,tl
+30,all,tm,tq
+30,all,tr,t
+30,all,u,v
+30,all,w,w
+30,all,x
+30,system.windows.forms.dll,bf
+30,system.windows.forms.dll,bg,cg
+30,system.windows.forms.dll,ch,ck
+30,system.windows.forms.dll,cl,com
+30,system.windows.forms.dll,con,cs
+30,system.windows.forms.dll,ct,de
+30,system.windows.forms.dll,df,d
+30,system.windows.forms.dll,e ,f
+30,system.windows.forms.dll,g ,h
+30,system.windows.forms.dll,i ,j
+30,system.windows.forms.dll,k ,k
+30,system.windows.forms.dll,l ,lir
+30,system.windows.forms.dll,lis,l
+30,system.windows.forms.dll,m ,n
+30,system.windows.forms.dll,o ,o
+30,system.windows.forms.dll,p ,pl
+30,system.windows.forms.dll,pm,p
+30,system.windows.forms.dll,q ,rf
+30,system.windows.forms.dll,rg,rm
+30,system.windows.forms.dll,rn,sa
+30,system.windows.forms.dll,sb,sd
+30,system.windows.forms.dll,se,sm
+30,system.windows.forms.dll,sn,s
+30,system.windows.forms.dll,t ,td
+30,system.windows.forms.dll,te,tg
+30,system.windows.forms.dll,th,tl
+30,system.windows.forms.dll,tm,tq
+30,system.windows.forms.dll,tr,t
+30,system.windows.forms.dll,u ,u
+30,system.windows.forms.dll,v

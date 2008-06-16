@@ -1,0 +1,14 @@
+In the following table, you will find a list of API changes introduced into the .Net Framework since Beta 2 was released in July of 2001. The table in this summary page links directly to details about the changes made. To see the changes for a particular namespace, select the row for that namespace and click the Details button. You can then search that particular namespace for specific details on any changes that were made from Beta 2 to the release version of the product.
+<p>
+When viewing the changes for a particular namespace, please note the following: 
+<p>
+<ul>
+<li>Breaking changes show up on specific reports in the color red. A breaking change is interpreted as any change which would require an existing user of a class or interface to change their code. Breaking changes include removing a class or member on that class, changing the parameters or the order of parameters passed to a method, or changing the name of a method. 
+<li>Where a particular change is an inherited change, it shows up on the report with a blue, italicized i beside it. 
+Inherited members are shown on all classes. While this means that the report indicates a high number of changes, these are often due to a high level change on one class or interface, which affected all implementing or inheriting class. 
+<li>If the inheritance or implementation details for a class changes, then you can hover your mouse over the type name to see the changed implementation for that class, as a tooltip. In these situations, a prompt is displayed beneath the class names indicating that you can do this. If you see this prompt, it indicates that the implementation or inheritance signature for the class has changed. 
+<li>If a member has been obsoleted but not yet removed, it is displayed on the report with the term "[Obsolete]" in front of it 
+<li>If a literal value has changed (a constant whose value is embedded at compile time and therefore, changing it's value is a breaking change), then the change is captured in the report, and the pre, and post values of the literal are displayed in the report
+<li>If an assembly does not appear on the summary page, then no changes have been made in that assembly
+</ul>
+<hr>
