@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<!-- Standard Head Part -->
+<head>
+<title>NUnit - CustomAsserts</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-US">
+<link rel="stylesheet" type="text/css" href="nunit.css">
+<link rel="shortcut icon" href="favicon.ico">
+</head>
+<!-- End Standard Head Part -->
+
+<body>
+
+<!-- Standard Header for NUnit.org -->
+<div id="header">
+  <a id="logo" href="http://www.nunit.org"><img src="img/logo.gif" alt="NUnit.org" title="NUnit.org"></a>
+  <div id="nav">
+    <a href="http://www.nunit.org">NUnit</a>
+    <a class="active" href="index.html">Documentation</a>
+  </div>
+</div>
+<!-- End of Header -->
+
+<div id="content">
+
+<h2>Custom Asserts</h2>
+
+<div style="text-align: center; margin: 2em 10%; padding: 4px 0; border: 2px solid black">
+  <h4>Preliminary documentation, subject to change.</h4>
+</div>
+
+<p>Experienced developers using NUnit generally end up with a library of custom
+setup, teardown, test and support methods. Custom Asserts provide one way to
+re-package such methods, allowing the normal NUnit syntax to be used to
+invoke them and providing error messages that match the style and layout
+of standard NUnit messages.</p>
+
+<p>The standard NUnit Asserts create an object known as an <b>asserter</b> and
+pass it to the <b>DoAssert</b> method, which includes code similar to this...
+
+<pre>
+	if ( !asserter.Test() )
+		throw new AssertionException( asserter.Message );
+</pre></p>
+
+<p><b>Asserters</b> encapsulate the comparison to be performed as well as the
+objects being compared. They implement the <b>IAsserter</b> interface, 
+defined as follows:
+
+<pre>
+	public interface IAsserter
+	{
+		// Test the condition for the assertion.
+		bool Test();
+
+		// Return the message giving the failure reason.
+		string Message { get; }
+	}
+</pre></p>
+
+<p>When implementing an <b>asserter</b>, you will have to decide on an approach
+for creating the message. For complex tests, it may be necessary to create
+and cache the message - or info used to create it - while the test is
+being performed. For example, when NUnit compares arrays, it notes the
+point of failure for use in the message. Otherwise, it would have to 
+pass the entire array a second time.</p>
+
+<p>Generally, the constructor for the <b>asserter</b> will include any required
+parameters, the actual value and an optional user message. You may invoke
+the asserter directly, using <b>Assert.DoAssert</b>, but it is generally more 
+convenient and readable to create an class similar to NUNit's <b>Assert</b> class,
+which contains static methods that wrap the object creation. For an example of 
+how to do this, see the <b>StringAssert</b> class in the NUnit source.</p>
+
+</div>
+
+<!-- Submenu -->
+<div id="subnav">
+<ul>
+<li><a href="index.html">NUnit 2.4.7</a></li>
+<ul>
+<li><a href="getStarted.html">Getting&nbsp;Started</a></li>
+<li><a href="assertions.html">Assertions</a></li>
+<li><a href="attributes.html">Attributes</a></li>
+<li><a href="nunit-console.html">Console&nbsp;Runner</a></li>
+<li><a href="nunit-gui.html">Gui&nbsp;Runner</a></li>
+<li><a href="features.html">Other&nbsp;Features</a></li>
+<ul>
+<li><a href="configFiles.html">Configuration&nbsp;Files</a></li>
+<li><a href="multiAssembly.html">Multiple&nbsp;Assemblies</a></li>
+<li><a href="vsSupport.html">Visual&nbsp;Studio&nbsp;Support</a></li>
+<li><a href="extensibility.html">Extensibility</a></li>
+<ul>
+<li id="current"><a href="customAsserts.html">Custom&nbsp;Asserts</a></li>
+<li><a href="nunitAddins.html">NUnit&nbsp;Addins</a></li>
+</ul>
+</ul>
+<li><a href="releaseNotes.html">Release&nbsp;Notes</a></li>
+<li><a href="samples.html">Samples</a></li>
+<li><a href="license.html">License</a></li>
+</ul>
+</ul>
+</div>
+<!-- End of Submenu -->
+
+
+<!-- Standard Footer for NUnit.org -->
+<div id="footer">
+  Copyright &copy; 2008 Charlie Poole. All Rights Reserved.
+</div>
+<!-- End of Footer -->
+
+</body>
+</html>

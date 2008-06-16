@@ -117,6 +117,10 @@ namespace DotNetOpenId {
 				HttpContext.Current.Request.QueryString : HttpContext.Current.Request.Form;
 			return NameValueCollectionToDictionary(query);
 		}
+		/// <summary>
+		/// Gets the original request URL, as seen from the browser before any URL rewrites on the server if any.
+		/// Cookieless session directory (if applicable) is also included.
+		/// </summary>
 		internal static Uri GetRequestUrlFromContext() {
 			HttpContext context = HttpContext.Current;
 			if (context == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);

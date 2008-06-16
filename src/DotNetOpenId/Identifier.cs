@@ -49,6 +49,23 @@ namespace DotNetOpenId {
 			}
 		}
 		/// <summary>
+		/// Attempts to parse a string for an OpenId Identifier.
+		/// </summary>
+		/// <param name="value">The string to be parsed.</param>
+		/// <param name="result">The parsed Identifier form.</param>
+		/// <returns>
+		/// True if the operation was successful.  False if the string was not a valid OpenId Identifier.
+		/// </returns>
+		public static bool TryParse(string value, out Identifier result) {
+			if (IsValid(value)) {
+				result = Parse(value);
+				return true;
+			} else {
+				result = null;
+				return false;
+			}
+		}
+		/// <summary>
 		/// Gets whether a given string represents a valid Identifier format.
 		/// </summary>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]

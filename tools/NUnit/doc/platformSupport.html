@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<!-- Standard Head Part -->
+<head>
+<title>NUnit - PlatformSupport</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-US">
+<link rel="stylesheet" type="text/css" href="nunit.css">
+<link rel="shortcut icon" href="favicon.ico">
+</head>
+<!-- End Standard Head Part -->
+
+<body>
+
+<!-- Standard Header for NUnit.org -->
+<div id="header">
+  <a id="logo" href="http://www.nunit.org"><img src="img/logo.gif" alt="NUnit.org" title="NUnit.org"></a>
+  <div id="nav">
+    <a href="http://www.nunit.org">NUnit</a>
+    <a class="active" href="index.html">Documentation</a>
+  </div>
+</div>
+<!-- End of Header -->
+
+<div id="content">
+
+<h2>NUnit Platform Support</h2>
+
+<p>NUnit 2.4 is distributed in two binary packages, one built with .Net 1.1 and
+one build with .Net 2.0. Users may also build NUnit on other 
+platforms. 
+
+<p>The following table lists the platforms under which we have successfully built 
+and tested NUnit. We have heard of people building and running NUnit under OSX, 
+but have not tested it ourselves. If you have information about other platforms 
+on which you have built or run NUnit, please let us know.
+
+<table class="platforms">
+  <tr><th rowspan=3 colspan=2>Build Platform</th><th colspan=7 style="text-align: center">Execution platform</th></tr>
+  <tr><th colspan=5 style="text-align: center">Windows</th><th colspan=2 style="text-align: center">Linux</th></tr>
+  <tr><th>.Net&nbsp;1.0</th><th>.Net&nbsp;1.1</th><th>.Net&nbsp;2.0</th><th>Mono&nbsp;1.0</th><th>Mono&nbsp;2.0</th><th>Mono&nbsp;1.0</th><th>Mono&nbsp;2.0</th></tr>
+  <tr><th rowspan=5>Windows</th><th>.Net&nbsp;1.0</th><td>OK</td><td>OK</td><td>OK</td><td>OK</td><td>OK</td><td>OK</td><td>OK</td></tr>
+  <tr><th>.Net&nbsp;1.1</th><td>OK</td><td>OK</td><td>OK</td><td>OK</td><td>OK</td><td>OK</td><td>OK</td></tr>
+  <tr><th>.Net&nbsp;2.0</th><td>-</td><td>-</td><td>OK</td><td>-</td><td>OK</td><td>-</td><td>OK</td></tr>
+  <tr><th>Mono&nbsp;1.0</th><td>(7)</td><td>(7)</td><td>(7)</td><td>OK</td><td>OK</td><td>OK</td><td>OK</td></tr>
+  <tr><th>Mono&nbsp;2.0</th><td>-</td><td>-</td><td>(10)</td><td>-</td><td>OK</td><td>-</td><td>OK</td></tr>
+  <tr><th rowspan=2>Linux</th><th>Mono&nbsp;1.0</th><td>Fails</td><td>(7)</td><td>(10)</td><td>OK</td><td>OK</td><td>OK</td><td>OK</td></tr>
+  <tr><th>Mono&nbsp;2.0</th><td>-</td><td>-</td><td>(10)</td><td>-</td><td>OK</td><td>-</td><td>OK</td></tr>
+</table>
+
+<h4>Notes</h4>
+<ol>
+  <li>OK means the build runs and all tests pass. Some tests may be skipped on a particular platform.
+  <li>Fails means the build fails to run or crashes immediately.
+  <li>A number like (n) means the build runs but there are n test failures.
+</ol>
+
+<h3>Gui Support</h3>
+
+<p>The NUnit Gui runs on both Windows and Linux. There are some undesirable
+visual artifacts on Linux and the Gui is not completely robust. User actions
+will sometimes cause it to crash. Most of the problems are expected to be 
+resolved as the Mono Windows.Forms implementation evolves.
+
+<p>Currently, .NET 1.1 binaries are more stable on Linux than those built 
+with Mono. We expect this to change in the future as well.
+
+
+
+</div>
+
+<!-- Submenu -->
+<div id="subnav">
+<ul>
+<li><a href="index.html">NUnit 2.4.2</a></li>
+<ul>
+<li><a href="getStarted.html">Getting&nbsp;Started</a></li>
+<li id="current"><a href="platformSupport.html">Platform&nbsp;Support</a></li>
+<li><a href="installation.html">Installation</a></li>
+<li><a href="features.html">Core&nbsp;Features</a></li>
+<li><a href="nunit-console.html">Console&nbsp;Runner</a></li>
+<li><a href="nunit-gui.html">Gui&nbsp;Runner</a></li>
+<li><a href="releaseNotes.html">Release&nbsp;Notes</a></li>
+<li><a href="samples.html">Samples</a></li>
+<li><a href="license.html">License</a></li>
+</ul>
+</ul>
+</div>
+<!-- End of Submenu -->
+
+
+<!-- Standard Footer for NUnit.org -->
+<div id="footer">
+  Copyright &copy; 2007 Charlie Poole. All Rights Reserved.
+</div>
+<!-- End of Footer -->
+
+</body>
+</html>

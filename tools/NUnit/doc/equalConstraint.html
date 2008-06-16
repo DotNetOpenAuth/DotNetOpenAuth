@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<!-- Standard Head Part -->
+<head>
+<title>NUnit - EqualConstraint</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-US">
+<link rel="stylesheet" type="text/css" href="nunit.css">
+<link rel="shortcut icon" href="favicon.ico">
+</head>
+<!-- End Standard Head Part -->
+
+<body>
+
+<!-- Standard Header for NUnit.org -->
+<div id="header">
+  <a id="logo" href="http://www.nunit.org"><img src="img/logo.gif" alt="NUnit.org" title="NUnit.org"></a>
+  <div id="nav">
+    <a href="http://www.nunit.org">NUnit</a>
+    <a class="active" href="index.html">Documentation</a>
+  </div>
+</div>
+<!-- End of Header -->
+
+<div id="content">
+
+<h2>Equal Constraint (NUnit 2.4)</h2>
+
+<p>An EqualConstraint is used to test whether an actual value
+   is equal to the expected value supplied in its constructor.
+
+<table class="constraints">
+<tr><th>Syntax Helper</th><th>Constructor</th><th>Operation</th></tr>
+<tr><td>Is.EqualTo( object )</td><td>EqualConstraint( null )</td></td><td>tests that two objects are equal</td></tr>
+</table>
+
+<h4>Notes</h4>
+<ol>
+<li><p>Numerics of different types compare successfully if their values are equal.
+<li><p>Values of type float and double are normally compared using an additional
+	argument that indicates a tolerance within which they will be considered 
+	as equal. The <b>Within</b> modifier is used for this purpose. Beginning with
+	NUnit 2.4.2, a tolerance may be specified for other numeric types as well.
+<li><p>Beginning with NUnit 2.4.4, float and double comparisons for which no 
+	tolerance is specified use a default, use the value of
+	<b>GlobalSettings.DefaultFloatingPointTolerance</b>. If this is not
+	set, a tolerance of 0.0d is used.
+<li><p>Beginning with NUnit 2.4, equality comparisons of <b>DateTime</b> values
+	may use a <b>TimeSpan</b> as a tolerannce.
+<li><p>Unlike normal floating point arithmetic, floating NaN comparisons succeed
+    if both values are NaN. See the note on 
+	<a href="equalityAsserts.html">Equality Asserts</a>.
+<li><p>You may use this constraint to compare arrays with the same number of dimensions,
+   two collections or an single-dimensioned array and collection. If you want to 
+   treat the arrays being compared as simple collections, use the <b>AsCollection</b>
+   modifier, which causes the comparison to be made element by element, without
+   regard for the rank or dimensions of the array. Jagged arrays (arrays of arrays)
+   are compared recursively and must match in shape exactly for the comparison
+   to succeed.
+<li><p>In order to assert that two strings are equal ignoring case, use the <b>IgnoreCase</b>
+   modifier. It may also be used when comparing arrays or collections of strings.
+<li><p>When an equality test between two strings fails, the relevant portion of
+	of both strings is displayed in the error message, clipping the strings to
+	fit the length of the line as needed. Beginning with 2.4.4, this behavior
+	may be modified by use of the <b>NoClip</b> modifier on the constraint. In
+	addition, the maximum line length may be modified for all tests by setting
+	the value of <b>TextMessageWriter.MaximumLineLength</b> in the appropriate
+	level of setup.
+</ol>
+
+<h4>Examples of Use</h4>
+
+<div class="code" style="width: 40em"><pre>
+Assert.That(2 + 2, Is.EqualTo(4));
+Assert.That(2 + 2 == 4);
+Assert.That(2 + 2, Is.Not.EqualTo(5));
+Assert.That(2 + 2 != 5);
+Assert.That( 5.0, Is.EqualTo( 5 );
+Assert.That( 2.1 + 1.2, Is.EqualTo( 3.3 ).Within( .0005 );
+Assert.That( double.PositiveInfinity, Is.EqualTo( double.PositiveInfinity ) );
+Assert.That( double.NegativeInfinity, Is.EqualTo( double.NegativeInfinity ) );
+Assert.That( double.NaN, Is.EqualTo( double.NaN ) );
+
+int[] i3 = new int[] { 1, 2, 3 };
+double[] d3 = new double[] { 1.0, 2.0, 3.0 };
+int[] iunequal = new int[] { 1, 3, 2 };
+Assert.That(i3, Is.EqualTo(d3));
+Assert.That(i3, Is.Not.EqualTo(iunequal));
+
+int array2x2 = new int[,] { { 1, 2 } { 3, 4 } };
+int array4 = new int[] { 1, 2, 3, 4 };		
+Assert.That( array2x2, Is.EqualTo( array4 ) ); // Fails
+Assert.That( array2x2, Is.EqualTo( array4 ).AsCollection ); // Succeeds
+
+Assert.That( "Hello!", Is.EqualTo( "HELLO!" ).IgnoreCase );
+
+string[] expected = new string[] { "Hello", World" };
+string[] actual = new string[] { "HELLO", "world" };
+Assert.That( actual, Is.EqualTo( expected ).IgnoreCase;
+
+// Using inheritance
+Expect( i3, EqualTo( d3 ) );
+Expect( i3, Not.EqualTo( iunequal ) );
+</pre></div>
+
+</div>
+
+<!-- Submenu -->
+<div id="subnav">
+<ul>
+<li><a href="index.html">NUnit 2.4.7</a></li>
+<ul>
+<li><a href="getStarted.html">Getting&nbsp;Started</a></li>
+<li><a href="assertions.html">Assertions</a></li>
+<ul>
+<li><a href="classicModel.html">Classic&nbsp;Model</a></li>
+<li><a href="constraintModel.html">Constraint&nbsp;Model</a></li>
+<ul>
+<li id="current"><a href="equalConstraint.html">Equal&nbsp;Constraint</a></li>
+<li><a href="sameasConstraint.html">SameAs&nbsp;Constraint</a></li>
+<li><a href="conditionConstraints.html">Condition&nbsp;Constraints</a></li>
+<li><a href="comparisonConstraints.html">Comparison&nbsp;Constrants</a></li>
+<li><a href="typeConstraints.html">Type&nbsp;Constraints</a></li>
+<li><a href="stringConstraints.html">String&nbsp;Constraints</a></li>
+<li><a href="collectionConstraints.html">Collection&nbsp;Constraints</a></li>
+<li><a href="propertyConstraint.html">Property&nbsp;Constraint</a></li>
+<li><a href="compoundConstraints.html">Compound&nbsp;Constraints</a></li>
+<li><a href="customConstraints.html">Custom&nbsp;Constraints</a></li>
+<li><a href="listMapper.html">List&nbsp;Mapper</a></li>
+</ul>
+</ul>
+<li><a href="attributes.html">Attributes</a></li>
+<li><a href="nunit-console.html">Console&nbsp;Runner</a></li>
+<li><a href="nunit-gui.html">Gui&nbsp;Runner</a></li>
+<li><a href="features.html">Other&nbsp;Features</a></li>
+<li><a href="releaseNotes.html">Release&nbsp;Notes</a></li>
+<li><a href="samples.html">Samples</a></li>
+<li><a href="license.html">License</a></li>
+</ul>
+</ul>
+</div>
+<!-- End of Submenu -->
+
+
+<!-- Standard Footer for NUnit.org -->
+<div id="footer">
+  Copyright &copy; 2008 Charlie Poole. All Rights Reserved.
+</div>
+<!-- End of Footer -->
+
+</body>
+</html>

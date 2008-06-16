@@ -64,7 +64,7 @@ namespace DotNetOpenId {
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static UntrustedWebRequest() {
-			ReadWriteTimeout = TimeSpan.FromMilliseconds(500);
+			ReadWriteTimeout = TimeSpan.FromMilliseconds(800);
 			Timeout = TimeSpan.FromSeconds(10);
 #if LONGTIMEOUT
 			ReadWriteTimeout = TimeSpan.FromHours(1);

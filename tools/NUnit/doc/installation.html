@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<!-- Standard Head Part -->
+<head>
+<title>NUnit - Installation</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-US">
+<link rel="stylesheet" type="text/css" href="nunit.css">
+<link rel="shortcut icon" href="favicon.ico">
+</head>
+<!-- End Standard Head Part -->
+
+<body>
+
+<!-- Standard Header for NUnit.org -->
+<div id="header">
+  <a id="logo" href="http://www.nunit.org"><img src="img/logo.gif" alt="NUnit.org" title="NUnit.org"></a>
+  <div id="nav">
+    <a href="http://www.nunit.org">NUnit</a>
+    <a class="active" href="index.html">Documentation</a>
+  </div>
+</div>
+<!-- End of Header -->
+
+<div id="content">
+
+<h2>Installation</h2>
+<p>By default the <b>NUnit</b> installation program places all of the files into the 
+	<b>C:\Program&nbsp;Files\NUnit&nbsp;2.4.7</b> directory. In the installation directory 
+	there are three sub-directories: bin, doc, and samples. Source code is no
+      longer provided with the binary installation package. Download the source
+	  package if source is needed.
+<h3>Running NUnit</h3>
+<p>The installation program places a number of items in the Start menu. There are
+	a number of shortcuts, which run the NUnit GUI under various versions of .NET
+	or under Mono, depending on the versions available on your system at the time
+	of installation.</p>
+<h3>Configuration</h3>
+<p>When running NUnit from the command line or through the desktop shortcut, the
+	configuration files files nunit.exe.config and nunit-console.exe.config control 
+	which version of the CLR is used. As installed, the <startup> section of the
+	config file is commented out and may be left that way unless problems arise.
+	If uncommented, the order of precedence is .NET 2.0, .NET 1.1 and .NET 1.0. 
+	To change which version is used, simply change the order of the elements
+	in the config files. The nunit About Box shows the version currently being used.</p>
+<p>Settings that you place in these files are not available to your tests or to the 
+	production code you are testing. A separate config file is used when running 
+	tests. If you are running tests from the test.dll assembly, the config file 
+	should be named test.dll.config. If you are running tests from the NUnit test 
+	project MyTests.nunit, the config file should be named MyTests.config. In 
+	either case the config file must reside in the same directory as the file from 
+	which it takes its name.</p>
+<p>In addition to settings of your own, the config file for a set of tests may 
+	contain information used by NUnit in loading your tests. In particular, this 
+	allows you to control the apartment state and priority of the thread that NUnit 
+	uses to run your tests. Other settings may be added in the future. See the file 
+	nunit.tests.dll for an example.</p>
+<h3>Installation Verification</h3>
+<p>Verify that the installation has worked successfully by running the NUnit gui and
+loading and running NUnitTests.nunit in the bin directory. All tests should pass.
+<div class="screenshot-left">
+    <img src="img/gui-verify.jpg"></div>
+<p>
+<p><b>Note:</b> Although the NUnit installation has been modified to allow non-admin
+    users to install, there are still a large number of tests which can only run
+	successfully under an administrative id. This is a problem with the code in
+	the tests themselves, not with NUnit.</p>
+<h3>Timing Tests</h3>
+<p>The assembly timing-tests.dll contains several tests that measure the performance
+    NUnit in loading tests. In addition, it contains some long-running tests that are used 
+	to verify that all remoting timeout problems have been fixed. The test cases 
+	all run for six to 12 minutes and give no indication whatsoever that they are 
+	working! This is required since correct handling of a non-communicative user 
+	test is what these tests are all about.</p>
+<h3>Additional Tests</h3>
+<p>Additional tests are included with the samples and in separate assemblies used 
+	as data by the verification tests themselves. Failures or not run conditions in 
+	these tests are intentional.</p>
+<h3>Manual Installation</h3>
+<p>If you are building NUnit from source, it is recommended that you use the
+    NAnt script for your final build, since it puts all the required files
+	into one directory, from which you can easily copy them. Perform a manual
+	installation by following these steps:</p>
+<ol>
+	<p><li>Copy the following files to the target directory:
+			<ul>
+				<li>nunit.framework.dll</li>
+				<li>nunit.framework.extensions.dll</li>
+				<li>nunit.core.dll</li>
+				<li>nunit.core.interfaces.dll</li>
+				<li>nunit.core.extensions.dll</li>
+				<li>nunit.mocks.dll</li>
+				<li>nunit.uikit.dll</li>
+				<li>nunit.util.dll</li>
+				<li>nunit-console-runner.dll</li>
+				<li>nunit-console.exe</li>
+				<li>nunit-console.exe.config</li>
+				<li>nunit-gui-runner.dll</li>
+				<li>nunit.exe</li>
+				<li>nunit.exe.config</li>
+			</ul>
+		</li>
+	<p><li>Create shortcuts as needed.</li>
+	<p><li>If you want to be able to run the nunit tests, copy the following files to the 
+			same location as the others, along with any additional config files
+			for the dlls.
+			<ul>
+				<li>mock-assembly.dll</li>
+				<li>nonamespace-assembly.dll</li>
+				<li>notestfixtures-assembly.dll</li>
+				<li>nunit.core.tests.dll</li>
+				<li>nunit.extensions.tests.dll</li>
+				<li>nunit.framework.tests.dll</li>
+				<li>nunit.mocks.tests.dll</li>
+				<li>nunit.uikit.tests.dll</li>
+				<li>nunit.util.tests.dll</li>
+				<li>nunit-console.tests.dll</li>
+				<li>nunit-gui.tests.dll</li>
+				<li>nunit.testutilities.dll</li>
+				<li>test-assembly.dll</li>
+				<li>timing-tests.dll</li>
+				<li>NunitTests.nunit</li>
+				<li>NUnitTests.config</li>
+			</ul>
+		</li>
+</ol>
+
+<h4>Installation Under Mono</h4>
+
+<p>Mono is delivered with a version of NUnit already pre-installed. The Mono 1.0 release 
+	included a beta version of NUnit 2.2. Later builds may include a more up-to-date 
+	version of NUnit. Before attempting to install NUnit under Mono, determine whether 
+	an equivalent or newer version is already installed. It may be necessary to remove 
+	the pre-installed version from the GAC in order for the new version to be recognized.</p>
+
+</div>
+
+<!-- Submenu -->
+<div id="subnav">
+<ul>
+<li><a href="index.html">NUnit 2.4.7</a></li>
+<ul>
+<li><a href="getStarted.html">Getting&nbsp;Started</a></li>
+<ul>
+<li><a href="quickStart.html">Quick&nbsp;Start</a></li>
+<li id="current"><a href="installation.html">Installation</a></li>
+<ul>
+<li><a href="upgrade.html">Upgrading</a></li>
+</ul>
+</ul>
+<li><a href="assertions.html">Assertions</a></li>
+<li><a href="attributes.html">Attributes</a></li>
+<li><a href="nunit-console.html">Console&nbsp;Runner</a></li>
+<li><a href="nunit-gui.html">Gui&nbsp;Runner</a></li>
+<li><a href="features.html">Other&nbsp;Features</a></li>
+<li><a href="releaseNotes.html">Release&nbsp;Notes</a></li>
+<li><a href="samples.html">Samples</a></li>
+<li><a href="license.html">License</a></li>
+</ul>
+</ul>
+</div>
+<!-- End of Submenu -->
+
+
+<!-- Standard Footer for NUnit.org -->
+<div id="footer">
+  Copyright &copy; 2008 Charlie Poole. All Rights Reserved.
+</div>
+<!-- End of Footer -->
+
+</body>
+</html>

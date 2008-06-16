@@ -12,6 +12,7 @@ using System.Web.UI.WebControls;
 using System.Web.UI.HtmlControls;
 using DotNetOpenId.Extensions;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics;
 
 namespace DotNetOpenId.RelyingParty
 {
@@ -463,7 +464,7 @@ namespace DotNetOpenId.RelyingParty
 		void loginButton_Click(object sender, EventArgs e)
 		{
 			if (!Page.IsValid) return;
-			if (OnLoggingIn(Text))
+			if (OnLoggingIn())
 				LogOn();
 		}
 
@@ -480,13 +481,10 @@ namespace DotNetOpenId.RelyingParty
 		/// <summary>
 		/// Fires the <see cref="LoggingIn"/> event.
 		/// </summary>
-		/// <param name="userSuppliedIdentifier">
-		/// The Identifier supplied by the user via the login page.
-		/// </param>
 		/// <returns>
 		/// Returns whether the login should proceed.  False if some event handler canceled the request.
 		/// </returns>
-		protected virtual bool OnLoggingIn(Identifier userSuppliedIdentifier)
+		protected virtual bool OnLoggingIn()
 		{
 			EventHandler<OpenIdEventArgs> loggingIn = LoggingIn;
 			PrepareAuthenticationRequest();

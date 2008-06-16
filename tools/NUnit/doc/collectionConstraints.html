@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<!-- Standard Head Part -->
+<head>
+<title>NUnit - CollectionConstraints</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-US">
+<link rel="stylesheet" type="text/css" href="nunit.css">
+<link rel="shortcut icon" href="favicon.ico">
+</head>
+<!-- End Standard Head Part -->
+
+<body>
+
+<!-- Standard Header for NUnit.org -->
+<div id="header">
+  <a id="logo" href="http://www.nunit.org"><img src="img/logo.gif" alt="NUnit.org" title="NUnit.org"></a>
+  <div id="nav">
+    <a href="http://www.nunit.org">NUnit</a>
+    <a class="active" href="index.html">Documentation</a>
+  </div>
+</div>
+<!-- End of Header -->
+
+<div id="content">
+
+<h2>Collection Constraints (NUnit 2.4)</h2>
+
+<p>Collection constraints perform tests that are specific to collections.
+   The following collection constraints are provided.
+   
+<table class="constraints">
+<tr><th>Syntax Helper</th><th>Constructor</th><th>Operation</th></tr>
+<tr><td>Is.All...<br>Has.All...</td><td>AllItemsConstraint( Constraint )</td></td><td>applies a constraint to each item in a collection, succeeding only if all of them succeed</td></tr>
+<tr><td>Has.Some...</td><td>SomeItemsConstraint( Constraint )</td></td><td>applies a constraint to each item in a collection, succeeding if at least one of them succeeds</td></tr>
+<tr><td>Has.None...</td><td>NoItemConstraint( Constraint )</td></td><td>applies a constraint to each item in a collection, succeeding only if all of them fail</td></tr>
+<tr><td>Is.Unique</td><td>UniqueItemsConstraint()</td></td><td>tests that a collection contains only unique items</td></tr>
+<tr><td>Has.Member( object )</td><td>CollectionContainsConstraint( object )</td></td><td>tests that a collection contains an object</td></tr>
+<tr><td>Is.EquivalentTo( IEnumerable )</td><td>CollectionEquivalentConstraint( ICollection )</td></td><td>tests that two collections are equivalent</td></tr>
+<tr><td>Is.SubsetOf( IEnumerable )</td><td>CollectionSubsetConstraint( ICollection )</td></td><td>tests that one collection is a subset of another</td></tr>
+</table>
+
+<h4>Notes</h4>
+
+<ol>
+<li>Two collections are equivalent if they contain the same items, in any order.
+<li>To compare collections for equality, use Is.EqualTo().
+<li>Has.Member uses object equality to find an object in a collection. To check
+for an object equal to an item the collection, use Has.Some.EqualTo().
+<li>Beginning with NUnit 2.4.2, use of a collection constraint with a non-collection
+argument causes an error rather than a test failure. This avoids false positives
+when the collection constraint is negated.
+<li>Beginning with NUnit 2.4.6, you may use any object implementing IEnumerable
+in place of a collection.
+</ol>
+
+<h4>Examples of Use</h4>
+
+<div class="code" style="width: 38em"><pre>
+int[] iarray = new int[] { 1, 2, 3 };
+string[] sarray = new string[] { "a", "b", "c" };
+
+Assert.That( iarray, Is.All.Not.Null );
+Assert.That( sarray, Is.All.InstanceOfType(typeof(string)) );
+Assert.That( iarray, Is.All.GreaterThan(0) );
+                 
+Assert.That( sarray, Is.Unique );
+
+Assert.That( iarray, List.Contains(3) );
+Assert.That( sarray, List.Contains("b") );
+Assert.That( sarray, List.Not.Contains("x") );
+
+Assert.That( new string[] { "c", "a", "b" }, Is.EquivalentTo( sarray ) );
+Assert.That( new int[] { 1, 2, 2 }, Is.Not.EquivalentTo( iarray ) );
+Assert.That( new int[] { 1, 3 }, Is.SubsetOf( iarray ) );
+
+// Using inheritance
+Expect( iarray, All.GreaterThan( 0 ) );
+Expect( sarray, Contains("b") );
+Expect( new int[] { 1, 3 }, SubsetOf( iarray ) );
+</pre></div>
+
+
+</div>
+
+<!-- Submenu -->
+<div id="subnav">
+<ul>
+<li><a href="index.html">NUnit 2.4.7</a></li>
+<ul>
+<li><a href="getStarted.html">Getting&nbsp;Started</a></li>
+<li><a href="assertions.html">Assertions</a></li>
+<ul>
+<li><a href="classicModel.html">Classic&nbsp;Model</a></li>
+<li><a href="constraintModel.html">Constraint&nbsp;Model</a></li>
+<ul>
+<li><a href="equalConstraint.html">Equal&nbsp;Constraint</a></li>
+<li><a href="sameasConstraint.html">SameAs&nbsp;Constraint</a></li>
+<li><a href="conditionConstraints.html">Condition&nbsp;Constraints</a></li>
+<li><a href="comparisonConstraints.html">Comparison&nbsp;Constrants</a></li>
+<li><a href="typeConstraints.html">Type&nbsp;Constraints</a></li>
+<li><a href="stringConstraints.html">String&nbsp;Constraints</a></li>
+<li id="current"><a href="collectionConstraints.html">Collection&nbsp;Constraints</a></li>
+<li><a href="propertyConstraint.html">Property&nbsp;Constraint</a></li>
+<li><a href="compoundConstraints.html">Compound&nbsp;Constraints</a></li>
+<li><a href="customConstraints.html">Custom&nbsp;Constraints</a></li>
+<li><a href="listMapper.html">List&nbsp;Mapper</a></li>
+</ul>
+</ul>
+<li><a href="attributes.html">Attributes</a></li>
+<li><a href="nunit-console.html">Console&nbsp;Runner</a></li>
+<li><a href="nunit-gui.html">Gui&nbsp;Runner</a></li>
+<li><a href="features.html">Other&nbsp;Features</a></li>
+<li><a href="releaseNotes.html">Release&nbsp;Notes</a></li>
+<li><a href="samples.html">Samples</a></li>
+<li><a href="license.html">License</a></li>
+</ul>
+</ul>
+</div>
+<!-- End of Submenu -->
+
+
+<!-- Standard Footer for NUnit.org -->
+<div id="footer">
+  Copyright &copy; 2008 Charlie Poole. All Rights Reserved.
+</div>
+<!-- End of Footer -->
+
+</body>
+</html>
