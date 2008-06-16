@@ -12,7 +12,7 @@ This XRDS doc is discovered via the user.aspx page.
 	<XRD>
 		<Service priority="10">
 			<Type>http://specs.openid.net/auth/2.0/server</Type>
-			<Type>http://openid.net/sreg/1.0</Type>
+			<Type>http://openid.net/extensions/sreg/1.1</Type>
 			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/server.aspx"))%></URI>
 		</Service>
 	</XRD>

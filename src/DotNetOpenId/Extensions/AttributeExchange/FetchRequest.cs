@@ -53,6 +53,9 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 
 		#region IExtensionRequest Members
 		string IExtension.TypeUri { get { return Constants.TypeUri; } }
+		IEnumerable<string> IExtension.AdditionalSupportedTypeUris {
+			get { return new string[0]; }
+		}
 
 		IDictionary<string, string> IExtensionRequest.Serialize(RelyingParty.IAuthenticationRequest authenticationRequest) {
 			var fields = new Dictionary<string, string> {
@@ -84,7 +87,7 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 			return fields;
 		}
 
-		bool IExtensionRequest.Deserialize(IDictionary<string, string> fields, DotNetOpenId.Provider.IRequest request) {
+		bool IExtensionRequest.Deserialize(IDictionary<string, string> fields, DotNetOpenId.Provider.IRequest request, string typeUri) {
 			if (fields == null) return false;
 			string mode;
 			fields.TryGetValue("mode", out mode);
@@ -112,11 +115,11 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 			}
 			AliasManager aliasManager = new AliasManager();
 			foreach (var alias in allAliases) {
-				string typeUri;
-				if (fields.TryGetValue("type." + alias, out typeUri)) {
-					aliasManager.SetAlias(alias, typeUri);
+				string attributeTypeUri;
+				if (fields.TryGetValue("type." + alias, out attributeTypeUri)) {
+					aliasManager.SetAlias(alias, attributeTypeUri);
 					AttributeRequest att = new AttributeRequest {
-						TypeUri = typeUri,
+						TypeUri = attributeTypeUri,
 						IsRequired = requiredAliases.Contains(alias),
 					};
 					string countString;

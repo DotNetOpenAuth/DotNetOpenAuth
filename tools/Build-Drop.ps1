@@ -2,7 +2,9 @@
 	$Version, 
 	$Configuration='Release',
 	[switch] $Signed,
-	[switch] $Force=$false,
+	[switch] $Force,
+	[switch] $SkipTest,
+	[switch] $SkipDocs,
 	[switch] $Rebuild
 )
 
@@ -10,12 +12,48 @@ $ProductName = "DotNetOpenId"
 
 function Usage() {
 	$ScriptName = Split-Path -leaf $MyInvocation.ScriptName
-	Write-Host "$ScriptName [-Version x.y.z] [-Configuration Debug|Release] [-force] [-rebuild] [-signed]"
+	Write-Host "$ScriptName [-Version x.y.z] [-Configuration Debug|Release] [-force] [-skiptest] [-skipdocs] [-rebuild] [-signed]"
 	exit
 }
 
 if ($Args -Contains "-?") {
 	Usage
+}
+
+function Try
+{
+	param
+	(
+		[ScriptBlock]$Command = $(throw "The parameter -Command is required."),
+		[ScriptBlock]$Catch   = { throw $_ },
+		[ScriptBlock]$Finally = {}
+	)
+   
+	& {
+		$local:ErrorActionPreference = "SilentlyContinue"
+	   
+		trap
+		{
+			trap
+			{
+				& {
+					trap { throw $_ }
+					&$Finally
+				}
+			   
+				throw $_
+			}
+		   
+			$_ | & { &$Catch }
+		}
+	   
+		&$Command
+	}
+
+	& {
+		trap { throw $_ }
+		&$Finally
+	}
 }
 
 function jdate($date = [datetime]::now) {
@@ -56,7 +94,7 @@ function PerformChecks() {
 }
 
 function SetBuildVersion() {
-	Write-Host "Building version $Version..."
+	Write-Host "Assembly drop for version $Version..."
 	foreach ($AssemblyInfoFile in $AssemblyInfoFiles) {
 		# Make backup
 		Copy-Item $AssemblyInfoFile "$($AssemblyInfoFile)~"
@@ -76,14 +114,32 @@ function RevertBuildVersion() {
 }
 
 function Build() {
-	if ($Rebuild) {
-		msbuild $RootDir\src\$ProductName.sln /p:Configuration=$Configuration /p:Sign=$Signed > $nul
-	} else {
-		msbuild $RootDir\src\$ProductName.sln /p:Configuration=$Configuration /p:Sign=$Signed /t:rebuild > $nul
-	}
-	Write-Host "Building documentation..."
-	msbuild $RootDir\src\Documentation\build.proj /p:Configuration=$Configuration > $nul
+	Write-Host "Building..."
+	if ($Rebuild) { $Target = "Rebuild" } else { $Target = "Build" }
+	msbuild $RootDir\src\$ProductName.sln /p:Configuration=$Configuration /p:Sign=$Signed /t:$Target > $nul
 	if ($lastexitcode -ne 0) { throw "Build failure." }
+}
+
+function Test() {
+	if (!$SkipTest) {
+		Write-Host "Testing..."
+		# We don't use the *.nunit file because it points only at the Debug assembly,
+		# and we need to be able to run on debug or release.
+		& "$ToolsDir\nunit\bin\nunit-console.exe" "$BinDir\$Configuration\DotNetOpenId.Test.dll"
+		if ($lastexitcode -ne 0) { throw "Test failure." }
+	} else {
+		Write-Warning "Skipping tests."
+	}
+}
+
+function BuildDocumentation() {
+	if (!$SkipDocs) {
+		Write-Host "Building documentation..."
+		msbuild $RootDir\src\Documentation\build.proj /p:Configuration=$Configuration > $nul
+		if ($lastexitcode -ne 0) { throw "Build failure." }
+	} else {
+		Write-Host "Skipping documentation."
+	}
 }
 
 function AssembleDrop() {
@@ -133,7 +189,12 @@ function Finished() {
 . SetupVariables
 PerformChecks
 SetBuildVersion
-Build
-RevertBuildVersion
+Try {
+	Build
+	Test
+	BuildDocumentation
+} -Finally {
+	RevertBuildVersion
+}
 AssembleDrop
 Finished

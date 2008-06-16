@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.Globalization;
 using System.Web;
 using System.Diagnostics;
+using DotNetOpenId.Extensions;
 
 namespace DotNetOpenId.RelyingParty {
 	/// <summary>
@@ -141,11 +142,22 @@ namespace DotNetOpenId.RelyingParty {
 		public AuthenticationRequestMode Mode { get; set; }
 		public Realm Realm { get; private set; }
 		public Uri ReturnToUrl { get; private set; }
-		public Identifier ClaimedIdentifier { get { return endpoint.ClaimedIdentifier; } }
+		public Identifier ClaimedIdentifier {
+			get { return IsDirectedIdentity ? null : endpoint.ClaimedIdentifier; }
+		}
+		public bool IsDirectedIdentity {
+			get { return endpoint.ClaimedIdentifier == endpoint.Protocol.ClaimedIdentifierForOPIdentifier; }
+		}
 		/// <summary>
 		/// The detected version of OpenID implemented by the Provider.
 		/// </summary>
 		public Version ProviderVersion { get { return protocol.Version; } }
+		/// <summary>
+		/// Gets information about the OpenId Provider, as advertised by the
+		/// OpenId discovery documents found at the <see cref="ClaimedIdentifier"/>
+		/// location.
+		/// </summary>
+		IProviderEndpoint IAuthenticationRequest.Provider { get { return endpoint; } }
 		/// <summary>
 		/// Gets the URL the user agent should be redirected to to begin the 
 		/// OpenID authentication process.

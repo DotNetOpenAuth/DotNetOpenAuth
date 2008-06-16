@@ -103,9 +103,7 @@ namespace DotNetOpenId.RelyingParty {
 			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
 
 			// Build the return_to URL
-			UriBuilder returnTo = new UriBuilder(HttpContext.Current.Request.Url);
-			// Support cookieless sessions by adding the special path if appropriate.
-			returnTo.Path = HttpContext.Current.Response.ApplyAppPathModifier(returnTo.Path);
+			UriBuilder returnTo = new UriBuilder(Util.GetRequestUrlFromContext());
 			// Trim off any parameters with an "openid." prefix, and a few known others
 			// to avoid carrying state from a prior login attempt.
 			returnTo.Query = string.Empty;
@@ -133,10 +131,17 @@ namespace DotNetOpenId.RelyingParty {
 			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
 
 			// Build the realm URL
-			UriBuilder realmUrl = new UriBuilder(HttpContext.Current.Request.Url);
+			UriBuilder realmUrl = new UriBuilder(Util.GetRequestUrlFromContext());
 			realmUrl.Path = HttpContext.Current.Request.ApplicationPath;
 			realmUrl.Query = null;
 			realmUrl.Fragment = null;
+
+			// For RP discovery, the realm url MUST NOT redirect.  To prevent this for 
+			// virtual directory hosted apps, we need to make sure that the realm path ends
+			// in a slash (since our calculation above guarantees it doesn't end in a specific
+			// page like default.aspx).
+			if (!realmUrl.Path.EndsWith("/", StringComparison.Ordinal))
+				realmUrl.Path += "/";
 
 			return CreateRequest(userSuppliedIdentifier, new Realm(realmUrl.Uri));
 		}

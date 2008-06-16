@@ -182,7 +182,7 @@ namespace DotNetOpenId.Provider {
 			HttpContext context = HttpContext.Current;
 			if (context == null)
 				throw new InvalidOperationException(Strings.HttpContextRequiredForThisOverload);
-			UriBuilder builder = new UriBuilder(HttpContext.Current.Request.Url);
+			UriBuilder builder = new UriBuilder(Util.GetRequestUrlFromContext());
 			builder.Query = null;
 			builder.Fragment = null;
 			return builder.Uri;

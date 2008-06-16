@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<!-- Standard Head Part -->
+<head>
+<title>NUnit - StringConstraints</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-US">
+<link rel="stylesheet" type="text/css" href="nunit.css">
+<link rel="shortcut icon" href="favicon.ico">
+</head>
+<!-- End Standard Head Part -->
+
+<body>
+
+<!-- Standard Header for NUnit.org -->
+<div id="header">
+  <a id="logo" href="http://www.nunit.org"><img src="img/logo.gif" alt="NUnit.org" title="NUnit.org"></a>
+  <div id="nav">
+    <a href="http://www.nunit.org">NUnit</a>
+    <a class="active" href="index.html">Documentation</a>
+  </div>
+</div>
+<!-- End of Header -->
+
+<div id="content">
+
+<h2>String Constraints (NUnit 2.4)</h2>
+
+<p>String constraints perform tests that are specific to strings.
+   The following string constraints are provided.
+   
+<table class="constraints">
+<tr><th>Syntax Helpers</th><th>Constructor</th><th>Operation</th></tr>
+<tr><td>Text.Contains( string )<br>Text.DoesNotContain( string )</td><td>SubstringConstraint( string )</td></td><td>tests for a substring</td></tr>
+<tr><td>Text.StartsWith( string )<br>Text.DoesNotStartWith( string )</td><td>StartsWithConstraint( string )</td></td><td>tests for an initial string</td></tr>
+<tr><td>Text.EndsWith( string )<br>Text.DoesNotEndWith( string )</td><td>EndsWithConstraint( string )</td></td><td>tests for an ending string</td></tr>
+<tr><td>Text.Matches( string )<br>Text.DoesNotMatch( string )</td><td>RegexConstraint( string )</td></td><td>tests that a pattern is matched</td></tr>
+</table>
+
+<h4>Examples</h4>
+
+<div class="code" style="width: 36em"><pre>
+string phrase = "Make your tests fail before passing!"
+
+Assert.That( phrase, Text.Contains( "tests fail" ) );
+Assert.That( phrase, Text.Contains( "make" ).IgnoreCase );
+
+Assert.That( phrase, Text.StartsWith( "Make" ) );
+Assert.That( phrase, Text.Not.StartsWith( "Break" ) );
+Assert.That( phrase, Text.DoesNotStartWith( "Break" ) );
+
+Assert.That( phrase, Text.EndsWith( "!" ) );
+Assert.That( phrase, Text.EndsWith( "PASSING!" ).IgnoreCase );
+
+Assert.That( phrase, Text.Matches( "Make.*tests.*pass" ) );
+Assert.That( phrase, Text.Not.Matches( "your.*passing.*tests" ) );
+Assert.That( phrase, Text.DoesNotMatch( "your.*passing.*tests" ) );
+
+// Using Inheritance
+Expect( phrase, Contains( "make" ).IgnoreCase );
+Expect( phrase, EndsWith( "!" ) );
+Expect( phrase, Matches( "Make.*pass" ) );
+</pre></div>
+
+</div>
+
+<!-- Submenu -->
+<div id="subnav">
+<ul>
+<li><a href="index.html">NUnit 2.4.7</a></li>
+<ul>
+<li><a href="getStarted.html">Getting&nbsp;Started</a></li>
+<li><a href="assertions.html">Assertions</a></li>
+<ul>
+<li><a href="classicModel.html">Classic&nbsp;Model</a></li>
+<li><a href="constraintModel.html">Constraint&nbsp;Model</a></li>
+<ul>
+<li><a href="equalConstraint.html">Equal&nbsp;Constraint</a></li>
+<li><a href="sameasConstraint.html">SameAs&nbsp;Constraint</a></li>
+<li><a href="conditionConstraints.html">Condition&nbsp;Constraints</a></li>
+<li><a href="comparisonConstraints.html">Comparison&nbsp;Constrants</a></li>
+<li><a href="typeConstraints.html">Type&nbsp;Constraints</a></li>
+<li id="current"><a href="stringConstraints.html">String&nbsp;Constraints</a></li>
+<li><a href="collectionConstraints.html">Collection&nbsp;Constraints</a></li>
+<li><a href="propertyConstraint.html">Property&nbsp;Constraint</a></li>
+<li><a href="compoundConstraints.html">Compound&nbsp;Constraints</a></li>
+<li><a href="customConstraints.html">Custom&nbsp;Constraints</a></li>
+<li><a href="listMapper.html">List&nbsp;Mapper</a></li>
+</ul>
+</ul>
+<li><a href="attributes.html">Attributes</a></li>
+<li><a href="nunit-console.html">Console&nbsp;Runner</a></li>
+<li><a href="nunit-gui.html">Gui&nbsp;Runner</a></li>
+<li><a href="features.html">Other&nbsp;Features</a></li>
+<li><a href="releaseNotes.html">Release&nbsp;Notes</a></li>
+<li><a href="samples.html">Samples</a></li>
+<li><a href="license.html">License</a></li>
+</ul>
+</ul>
+</div>
+<!-- End of Submenu -->
+
+
+<!-- Standard Footer for NUnit.org -->
+<div id="footer">
+  Copyright &copy; 2008 Charlie Poole. All Rights Reserved.
+</div>
+<!-- End of Footer -->
+
+</body>
+</html>

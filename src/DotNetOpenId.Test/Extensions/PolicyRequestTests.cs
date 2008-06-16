@@ -82,13 +82,13 @@ namespace DotNetOpenId.Test.Extensions {
 		[Test]
 		public void DeserializeNull() {
 			PolicyRequest req = new PolicyRequest();
-			Assert.IsFalse(((IExtensionRequest)req).Deserialize(null, null));
+			Assert.IsFalse(((IExtensionRequest)req).Deserialize(null, null, Constants.TypeUri));
 		}
 
 		[Test]
 		public void DeserializeEmpty() {
 			PolicyRequest req = new PolicyRequest();
-			Assert.IsFalse(((IExtensionRequest)req).Deserialize(new Dictionary<string, string>(), null));
+			Assert.IsFalse(((IExtensionRequest)req).Deserialize(new Dictionary<string, string>(), null, Constants.TypeUri));
 		}
 
 		[Test]
@@ -99,7 +99,7 @@ namespace DotNetOpenId.Test.Extensions {
 			// Most basic test
 			PolicyRequest req = new PolicyRequest(), req2 = new PolicyRequest();
 			var fields = ((IExtensionRequest)req).Serialize(null);
-			Assert.IsTrue(((IExtensionRequest)req2).Deserialize(fields, null));
+			Assert.IsTrue(((IExtensionRequest)req2).Deserialize(fields, null, Constants.TypeUri));
 			Assert.AreEqual(req, req2);
 
 			// Test with all fields set
@@ -107,14 +107,14 @@ namespace DotNetOpenId.Test.Extensions {
 			req.PreferredPolicies.Add(AuthenticationPolicies.MultiFactor);
 			req.MaximumAuthenticationAge = TimeSpan.FromHours(1);
 			fields = ((IExtensionRequest)req).Serialize(null);
-			Assert.IsTrue(((IExtensionRequest)req2).Deserialize(fields, null));
+			Assert.IsTrue(((IExtensionRequest)req2).Deserialize(fields, null, Constants.TypeUri));
 			Assert.AreEqual(req, req2);
 
 			// Test with an extra policy
 			req2 = new PolicyRequest();
 			req.PreferredPolicies.Add(AuthenticationPolicies.PhishingResistant);
 			fields = ((IExtensionRequest)req).Serialize(null);
-			Assert.IsTrue(((IExtensionRequest)req2).Deserialize(fields, null));
+			Assert.IsTrue(((IExtensionRequest)req2).Deserialize(fields, null, Constants.TypeUri));
 			Assert.AreEqual(req, req2);
 
 			// Test with a policy added twice.  We should see it intelligently leave one of
@@ -122,7 +122,7 @@ namespace DotNetOpenId.Test.Extensions {
 			req2 = new PolicyRequest();
 			req.PreferredPolicies.Add(AuthenticationPolicies.PhishingResistant);
 			fields = ((IExtensionRequest)req).Serialize(null);
-			Assert.IsTrue(((IExtensionRequest)req2).Deserialize(fields, null));
+			Assert.IsTrue(((IExtensionRequest)req2).Deserialize(fields, null, Constants.TypeUri));
 			Assert.AreNotEqual(req, req2);
 			// Now go ahead and add the doubled one so we can do our equality test.
 			req2.PreferredPolicies.Add(AuthenticationPolicies.PhishingResistant);

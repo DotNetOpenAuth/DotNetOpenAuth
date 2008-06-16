@@ -86,6 +86,26 @@ namespace DotNetOpenId.RelyingParty {
 			get { return new Uri(Util.GetRequiredArg(signedArguments, Provider.Protocol.openid.return_to)); }
 		}
 
+		bool getExtension(IExtensionResponse extension) {
+			var fields = IncomingExtensions.GetExtensionArguments(extension.TypeUri);
+			if (fields != null) {
+				// The extension was found using the preferred TypeUri.
+				return extension.Deserialize(fields, this, extension.TypeUri);
+			} else {
+				// The extension may still be found using secondary TypeUris.
+				if (extension.AdditionalSupportedTypeUris != null) {
+					foreach (string typeUri in extension.AdditionalSupportedTypeUris) {
+						fields = IncomingExtensions.GetExtensionArguments(typeUri);
+						if (fields != null) {
+							// We found one of the older ones.
+							return extension.Deserialize(fields, this, typeUri);
+						}
+					}
+				}
+			}
+			return false;
+		}
+
 		/// <summary>
 		/// Tries to get an OpenID extension that may be present in the response.
 		/// </summary>
@@ -93,7 +113,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// <returns>The extension, if it is found.  Null otherwise.</returns>
 		public T GetExtension<T>() where T : IExtensionResponse, new() {
 			T extension = new T();
-			return extension.Deserialize(IncomingExtensions.GetExtensionArguments(extension.TypeUri), this) ? extension : default(T);
+			return getExtension(extension) ? extension : default(T);
 		}
 
 		public IExtensionResponse GetExtension(Type extensionType) {
@@ -103,7 +123,7 @@ namespace DotNetOpenId.RelyingParty {
 					Strings.TypeMustImplementX, typeof(IExtensionResponse).FullName),
 					"extensionType");
 			var extension = (IExtensionResponse)Activator.CreateInstance(extensionType);
-			return extension.Deserialize(IncomingExtensions.GetExtensionArguments(extension.TypeUri), this) ? extension : null;
+			return getExtension(extension) ? extension : null;
 		}
 
 		internal static AuthenticationResponse Parse(IDictionary<string, string> query,

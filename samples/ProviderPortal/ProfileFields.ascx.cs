@@ -97,31 +97,32 @@ public partial class ProfileFields : System.Web.UI.UserControl {
 		}
 	}
 
-	public ClaimsResponse OpenIdProfileFields {
-		get {
-			ClaimsResponse fields = new ClaimsResponse();
-			fields.BirthDate = DateOfBirth;
-			fields.Country = countryDropdownList.SelectedValue;
-			fields.Email = emailTextBox.Text;
-			fields.FullName = fullnameTextBox.Text;
-			fields.Gender = Gender;
-			fields.Language = languageDropdownList.SelectedValue;
-			fields.Nickname = nicknameTextBox.Text;
-			fields.PostalCode = postcodeTextBox.Text;
-			fields.TimeZone = timezoneDropdownList.SelectedValue;
-			return fields;
-		}
-		set {
-			DateOfBirth = value.BirthDate;
-			countryDropdownList.SelectedValue = value.Country;
-			emailTextBox.Text = value.Email;
-			fullnameTextBox.Text = value.FullName;
-			Gender = value.Gender;
-			languageDropdownList.SelectedValue = value.Language;
-			nicknameTextBox.Text = value.Nickname;
-			postcodeTextBox.Text = value.PostalCode;
-			timezoneDropdownList.SelectedValue = value.TimeZone;
-		}
+	public ClaimsResponse GetOpenIdProfileFields(ClaimsRequest request) {
+		if (request == null) throw new ArgumentNullException("request");
+		ClaimsResponse fields = request.CreateResponse();
+		fields.BirthDate = DateOfBirth;
+		fields.Country = countryDropdownList.SelectedValue;
+		fields.Email = emailTextBox.Text;
+		fields.FullName = fullnameTextBox.Text;
+		fields.Gender = Gender;
+		fields.Language = languageDropdownList.SelectedValue;
+		fields.Nickname = nicknameTextBox.Text;
+		fields.PostalCode = postcodeTextBox.Text;
+		fields.TimeZone = timezoneDropdownList.SelectedValue;
+		return fields;
+	}
+
+	public void SetOpenIdProfileFields(ClaimsResponse value) {
+		if (value == null) throw new ArgumentNullException("value");
+		DateOfBirth = value.BirthDate;
+		countryDropdownList.SelectedValue = value.Country;
+		emailTextBox.Text = value.Email;
+		fullnameTextBox.Text = value.FullName;
+		Gender = value.Gender;
+		languageDropdownList.SelectedValue = value.Language;
+		nicknameTextBox.Text = value.Nickname;
+		postcodeTextBox.Text = value.PostalCode;
+		timezoneDropdownList.SelectedValue = value.TimeZone;
 	}
 
 }

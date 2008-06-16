@@ -20,7 +20,7 @@ namespace DotNetOpenId.Test.Extensions {
 	[TestFixture]
 	public class ClaimsResponseTests {
 		ClaimsResponse getFilledData() {
-			return new ClaimsResponse() {
+			return new ClaimsResponse(Constants.sreg_ns) {
 				BirthDate = new DateTime(2005, 2, 3),
 				Culture = new System.Globalization.CultureInfo("en-US"),
 				Email = "a@b.com",
@@ -34,7 +34,7 @@ namespace DotNetOpenId.Test.Extensions {
 
 		[Test]
 		public void EmptyMailAddress() {
-			ClaimsResponse response = new ClaimsResponse();
+			ClaimsResponse response = new ClaimsResponse(Constants.sreg_ns);
 			response.Email = "";
 			Assert.IsNull(response.MailAddress);
 		}
@@ -109,6 +109,26 @@ namespace DotNetOpenId.Test.Extensions {
 			Assert.AreEqual(fields1, fields2, "Test sanity check.");
 			fields2.TimeZone += "q";
 			Assert.AreNotEqual(fields1, fields2);
+		}
+
+		void parameterizedPreserveVersionFromRequest(string versionTypeUri) {
+			Dictionary<string, string> fields = new Dictionary<string, string>{
+				{"optional", "nickname"},
+			};
+			var req = new ClaimsRequest();
+			Assert.IsTrue(((IExtensionRequest)req).Deserialize(fields, null, versionTypeUri));
+			Assert.AreEqual(DemandLevel.Request, req.Nickname);
+			ClaimsResponse resp = req.CreateResponse();
+			Assert.AreEqual(versionTypeUri, ((IExtensionResponse)resp).TypeUri);
+		}
+
+		[Test]
+		public void PreserveVersionFromRequest() {
+			// some unofficial type URIs...
+			parameterizedPreserveVersionFromRequest("http://openid.net/sreg/1.0");
+			parameterizedPreserveVersionFromRequest("http://openid.net/sreg/1.1");
+			// and the official one.
+			parameterizedPreserveVersionFromRequest("http://openid.net/extensions/sreg/1.1");
 		}
 
 		//[Test]

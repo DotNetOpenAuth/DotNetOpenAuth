@@ -53,12 +53,34 @@ namespace DotNetOpenId.RelyingParty {
 		Realm Realm { get; }
 		/// <summary>
 		/// Gets the Claimed Identifier that the User Supplied Identifier
-		/// resolved to.
+		/// resolved to.  Null if the user provided an OP Identifier 
+		/// (directed identity).
 		/// </summary>
+		/// <remarks>
+		/// Null is returned if the user is using the directed identity feature
+		/// of OpenID 2.0 to make it nearly impossible for a relying party site
+		/// to improperly store the reserved OpenID URL used for directed identity
+		/// as a user's own Identifier.  
+		/// However, to test for the Directed Identity feature, please test the
+		/// <see cref="IsDirectedIdentity"/> property rather than testing this 
+		/// property for a null value.
+		/// </remarks>
 		Identifier ClaimedIdentifier { get; }
+		/// <summary>
+		/// Gets whether the authenticating user has chosen to let the Provider
+		/// determine and send the ClaimedIdentifier after authentication.
+		/// </summary>
+		bool IsDirectedIdentity { get; }
+		/// <summary>
+		/// Gets information about the OpenId Provider, as advertised by the
+		/// OpenId discovery documents found at the <see cref="ClaimedIdentifier"/>
+		/// location.
+		/// </summary>
+		IProviderEndpoint Provider { get; }
 		/// <summary>
 		/// The detected version of OpenID implemented by the Provider.
 		/// </summary>
+		[Obsolete("Use Provider.Version instead.")]
 		Version ProviderVersion { get; }
 	}
 }

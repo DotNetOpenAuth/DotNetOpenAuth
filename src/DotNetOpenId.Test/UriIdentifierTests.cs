@@ -79,8 +79,7 @@ namespace DotNetOpenId.Test {
 			Assert.AreEqual(expectedLocalId, se.ProviderLocalIdentifier);
 			Assert.AreEqual(expectSreg ? 2 : 1, se.ProviderSupportedServiceTypeUris.Length);
 			Assert.IsTrue(Array.IndexOf(se.ProviderSupportedServiceTypeUris, protocol.ClaimedIdentifierServiceTypeURI)>=0);
-			if (expectSreg)
-				Assert.IsTrue(Array.IndexOf(se.ProviderSupportedServiceTypeUris, Constants.TypeUri) >= 0);
+			Assert.AreEqual(expectSreg, se.IsExtensionSupported(new ClaimsRequest()));
 		}
 		void discoverXrds(string page, ProtocolVersion version, Identifier expectedLocalId) {
 			discover("/xrdsdiscovery/" + page + ".aspx", version, expectedLocalId, true, false);

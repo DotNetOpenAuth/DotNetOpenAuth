@@ -617,9 +617,19 @@ namespace DotNetOpenId.RelyingParty
 				realm.Port = Page.Request.Url.Port;
 
 				// Initiate openid request
-				Request = consumer.CreateRequest(Text, new Realm(realm));
-				Request.Mode = ImmediateMode ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;
-				if (EnableRequestProfile) addProfileArgs(Request);
+				// We use TryParse here to avoid throwing an exception which 
+				// might slip through our validator control if it is disabled.
+				Identifier userSuppliedIdentifier;
+				if (Identifier.TryParse(Text, out userSuppliedIdentifier)) {
+					Request = consumer.CreateRequest(userSuppliedIdentifier, new Realm(realm));
+					Request.Mode = ImmediateMode ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;
+					if (EnableRequestProfile) addProfileArgs(Request);
+				} else {
+					if (TraceUtil.Switch.TraceWarning) {
+						Trace.TraceWarning("An invalid identifier was entered ({0}), but not caught by any validation routine.", Text);
+					}
+					Request = null;
+				}
 			} catch (WebException ex) {
 				OnFailed(new FailedAuthenticationResponse(ex));
 			} catch (OpenIdException ex) {
@@ -653,7 +663,7 @@ namespace DotNetOpenId.RelyingParty
 				Language = RequestLanguage,
 				TimeZone = RequestTimeZone,
 				PolicyUrl = string.IsNullOrEmpty(PolicyUrl) ?
-					null : new Uri(Page.Request.Url, Page.ResolveUrl(PolicyUrl)),
+					null : new Uri(Util.GetRequestUrlFromContext(), Page.ResolveUrl(PolicyUrl)),
 			});
 		}
 
@@ -675,7 +685,7 @@ namespace DotNetOpenId.RelyingParty
 				});
 
 			UriBuilder fullyQualifiedRealm = new UriBuilder(
-				new Uri(Page.Request.Url, Page.ResolveUrl(realmNoWildcard)));
+				new Uri(Util.GetRequestUrlFromContext(), Page.ResolveUrl(realmNoWildcard)));
 
 			if (foundWildcard)
 			{
@@ -774,8 +784,10 @@ namespace DotNetOpenId.RelyingParty
 		/// Constructs an object with minimal information of an incomplete or failed
 		/// authentication attempt.
 		/// </summary>
-		internal OpenIdEventArgs(Identifier claimedIdentifier) {
-			ClaimedIdentifier = claimedIdentifier;
+		internal OpenIdEventArgs(IAuthenticationRequest request) {
+			if (request == null) throw new ArgumentNullException("request");
+			ClaimedIdentifier = request.ClaimedIdentifier;
+			IsDirectedIdentity = request.IsDirectedIdentity;
 		}
 		/// <summary>
 		/// Constructs an object with information on a completed authentication attempt
@@ -792,9 +804,15 @@ namespace DotNetOpenId.RelyingParty
 		/// </summary>
 		public bool Cancel { get; set; }
 		/// <summary>
-		/// The Identifier the user is claiming to own.
+		/// The Identifier the user is claiming to own.  Or null if the user
+		/// is using Directed Identity.
 		/// </summary>
 		public Identifier ClaimedIdentifier { get; private set; }
+		/// <summary>
+		/// Whether the user has selected to let his Provider determine 
+		/// the ClaimedIdentifier to use as part of successful authentication.
+		/// </summary>
+		public bool IsDirectedIdentity { get; private set; }
 
 		/// <summary>
 		/// Gets the details of the OpenId authentication response.

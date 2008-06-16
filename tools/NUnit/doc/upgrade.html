@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<!-- Standard Head Part -->
+<head>
+<title>NUnit - Upgrade</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-US">
+<link rel="stylesheet" type="text/css" href="nunit.css">
+<link rel="shortcut icon" href="favicon.ico">
+</head>
+<!-- End Standard Head Part -->
+
+<body>
+
+<!-- Standard Header for NUnit.org -->
+<div id="header">
+  <a id="logo" href="http://www.nunit.org"><img src="img/logo.gif" alt="NUnit.org" title="NUnit.org"></a>
+  <div id="nav">
+    <a href="http://www.nunit.org">NUnit</a>
+    <a class="active" href="index.html">Documentation</a>
+  </div>
+</div>
+<!-- End of Header -->
+
+<div id="content">
+
+<h2>From NUnit 2.x</h2>
+
+<p>Beginning with version 2.2.1, old style test cases ("Test....") are no longer 
+recognized by default. We recommend that you convert such test cases to use the
+<a href="test.html">TestAttribute</a>. Alternatively, you may
+specify a setting in the test config file to allow use of old style test cases by
+default.</p>
+
+<p>Beginning with NUnit 2.2.2, NUnit is able to run tests Built with older
+versions of NUnit 2.x without recompilation.</p>
+
+<h2>From NUnit 1.x</h2>
+
+<p>Upgrading requires a minimal amount of work. Since the framework still looks for 
+	test methods by name in addition to the attributes, <b>no test method will need to 
+		be modified to upgrade to the new version</b>. The only source code change 
+	required is to remove the constructor with the string parameter in the class 
+	that inherits from TestCase. The only new requirement is that you have a 
+	default constructor. If there was significant processing in the existing 
+	constructor then just move it to the default constructor. The only other change 
+	is to change the reference to nunit.framework.dll instead of the V1.x framework 
+	dll. Using the TestCase class has been marked obsolete so you will get 
+	warnings, but they can be ignored for now!&nbsp;
+</p>
+<h3>Suite property</h3>
+<p>The existing Suite property will not be found by the new program. These must be 
+	changed to the &quot;Suite&quot; attribute for the test runners to find them. 
+	Another alternative is that these suites are no longer needed due to the 
+	automatic capability that is built in to the new version.</p>
+<h3>AssertionFailedError</h3>
+<p>If you have written code expecting the exception AssertionFailedError, this must 
+	be changed to AssertionException.</p>
+
+
+</div>
+
+<!-- Submenu -->
+<div id="subnav">
+<ul>
+<li><a href="index.html">NUnit 2.4.7</a></li>
+<ul>
+<li><a href="getStarted.html">Getting&nbsp;Started</a></li>
+<ul>
+<li><a href="quickStart.html">Quick&nbsp;Start</a></li>
+<li><a href="installation.html">Installation</a></li>
+<ul>
+<li id="current"><a href="upgrade.html">Upgrading</a></li>
+</ul>
+</ul>
+<li><a href="assertions.html">Assertions</a></li>
+<li><a href="attributes.html">Attributes</a></li>
+<li><a href="nunit-console.html">Console&nbsp;Runner</a></li>
+<li><a href="nunit-gui.html">Gui&nbsp;Runner</a></li>
+<li><a href="features.html">Other&nbsp;Features</a></li>
+<li><a href="releaseNotes.html">Release&nbsp;Notes</a></li>
+<li><a href="samples.html">Samples</a></li>
+<li><a href="license.html">License</a></li>
+</ul>
+</ul>
+</div>
+<!-- End of Submenu -->
+
+
+<!-- Standard Footer for NUnit.org -->
+<div id="footer">
+  Copyright &copy; 2008 Charlie Poole. All Rights Reserved.
+</div>
+<!-- End of Footer -->
+
+</body>
+</html>

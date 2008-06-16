@@ -39,7 +39,7 @@ namespace DotNetOpenId.Test {
 			var consumer = new OpenIdRelyingParty(store, null, null);
 			Assert.IsNull(consumer.Response);
 			var request = consumer.CreateRequest(identityUrl, realm, returnTo);
-			Protocol protocol = Protocol.Lookup(request.ProviderVersion);
+			Protocol protocol = Protocol.Lookup(request.Provider.Version);
 
 			// Test properties and defaults
 			Assert.AreEqual(AuthenticationRequestMode.Setup, request.Mode);

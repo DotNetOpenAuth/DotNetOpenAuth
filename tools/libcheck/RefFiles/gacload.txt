@@ -1,0 +1,2 @@
+mscorlib.dll:mscorlib, version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+system.xml.dll:System.XML, version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089

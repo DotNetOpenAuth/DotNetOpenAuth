@@ -24,6 +24,9 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 
 		#region IExtensionResponse Members
 		string IExtension.TypeUri { get { return Constants.TypeUri; } }
+		IEnumerable<string> IExtension.AdditionalSupportedTypeUris {
+			get { return new string[0]; }
+		}
 
 		IDictionary<string, string> IExtensionResponse.Serialize(Provider.IRequest authenticationRequest) {
 			var fields = new Dictionary<string, string> {
@@ -35,7 +38,7 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 			return fields;
 		}
 
-		bool IExtensionResponse.Deserialize(IDictionary<string, string> fields, IAuthenticationResponse response) {
+		bool IExtensionResponse.Deserialize(IDictionary<string, string> fields, IAuthenticationResponse response, string typeUri) {
 			if (fields == null) return false;
 			string mode;
 			if (!fields.TryGetValue("mode", out mode)) return false;
