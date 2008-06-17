@@ -5,27 +5,34 @@ using System.Web;
 using System.Web.Mvc;
 using DotNetOpenId.RelyingParty;
 using System.Web.Security;
+using DotNetOpenId;
 
 namespace RelyingPartyMvc.Controllers {
 	public class UserController : Controller {
-		public void Index() {
+		public ActionResult Index() {
 			if (!User.Identity.IsAuthenticated) Response.Redirect("/User/Login?ReturnUrl=Index");
-			RenderView("Index");
+			return View("Index");
 		}
-		public void Logout() {
+		public ActionResult Logout() {
 			FormsAuthentication.SignOut();
-			Response.Redirect("/Home");
+			return Redirect("/Home");
 		}
 
-		public void Login() {
+		public ActionResult Login() {
 			// Stage 1: display login form to user
-			RenderView("Login");
+			return View("Login");
 		}
-		public void Authenticate() {
+		public ActionResult Authenticate() {
 			var openid = new OpenIdRelyingParty();
 			if (openid.Response == null) {
 				// Stage 2: user submitting Identifier
-				openid.CreateRequest(Request.Form["openid_identifier"]).RedirectToProvider();
+				Identifier id;
+				if (Identifier.TryParse(Request.Form["openid_identifier"], out id)) {
+					openid.CreateRequest(Request.Form["openid_identifier"]).RedirectToProvider();
+				} else {
+					ViewData["Message"] = "Invalid identifier";
+					return View("Login");
+				}
 			} else {
 				// Stage 3: OpenID Provider sending assertion response
 				switch (openid.Response.Status) {
@@ -34,14 +41,13 @@ namespace RelyingPartyMvc.Controllers {
 						break;
 					case AuthenticationStatus.Canceled:
 						ViewData["Message"] = "Canceled at provider";
-						RenderView("Login");
-						break;
+						return View("Login");
 					case AuthenticationStatus.Failed:
 						ViewData["Message"] = openid.Response.Exception.Message;
-						RenderView("Login");
-						break;
+						return View("Login");
 				}
 			}
+			return new EmptyResult();
 		}
 	}
 }
