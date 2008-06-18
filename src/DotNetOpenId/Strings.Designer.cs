@@ -259,6 +259,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failure parsing XRDS document..
+        /// </summary>
+        internal static string InvalidXRDSDocument {
+            get {
+                return ResourceManager.GetString("InvalidXRDSDocument", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Not a recognized XRI format: &apos;{0}&apos;..
         /// </summary>
         internal static string InvalidXri {

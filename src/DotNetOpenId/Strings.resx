@@ -183,6 +183,9 @@
   <data name="InvalidSignature" xml:space="preserve">
     <value>The signature verification failed.</value>
   </data>
+  <data name="InvalidXRDSDocument" xml:space="preserve">
+    <value>Failure parsing XRDS document.</value>
+  </data>
   <data name="InvalidXri" xml:space="preserve">
     <value>Not a recognized XRI format: '{0}'.</value>
   </data>
