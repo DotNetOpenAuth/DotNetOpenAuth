@@ -160,10 +160,10 @@
     <value>ClaimedIdentifier and LocalIdentifier must be the same when IsIdentifierSelect is true.</value>
   </data>
   <data name="InvalidCharacterInKeyValueFormInput" xml:space="preserve">
-    <value>Cannot encode '{0}' because it contains an illegal character for Key-Value Form encoding.</value>
+    <value>Cannot encode '{0}' because it contains an illegal character for Key-Value Form encoding.  (line {1}: '{2}')</value>
   </data>
   <data name="InvalidKeyValueFormCharacterMissing" xml:space="preserve">
-    <value>Cannot decode Key-Value Form because a line was found without a '{0}' character.</value>
+    <value>Cannot decode Key-Value Form because a line was found without a '{0}' character.  (line {1}: '{2}')</value>
   </data>
   <data name="InvalidNonce" xml:space="preserve">
     <value>The nonce was not in the expected format.</value>

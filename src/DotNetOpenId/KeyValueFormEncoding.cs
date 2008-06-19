@@ -122,13 +122,13 @@ namespace DotNetOpenId {
 					string[] parts = line.Split(new[] { ':' }, 2);
 					if (parts.Length != 2) {
 						throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
-							Strings.InvalidKeyValueFormCharacterMissing, ':'));
+							Strings.InvalidKeyValueFormCharacterMissing, ':', line_num, line));
 					}
 					if (ConformanceLevel > KeyValueFormConformanceLevel.Loose) {
 						if (char.IsWhiteSpace(parts[0], parts[0].Length-1) ||
 							char.IsWhiteSpace(parts[1], 0)) {
 							throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
-								Strings.InvalidCharacterInKeyValueFormInput, ' '));
+								Strings.InvalidCharacterInKeyValueFormInput, ' ', line_num, line));
 						}
 					}
 					if (ConformanceLevel < KeyValueFormConformanceLevel.OpenId20) {
@@ -143,7 +143,7 @@ namespace DotNetOpenId {
 					reader.BaseStream.Seek(-1, SeekOrigin.End);
 					if (reader.BaseStream.ReadByte() != '\n') {
 						throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
-							Strings.InvalidKeyValueFormCharacterMissing, "\\n"));
+							Strings.InvalidKeyValueFormCharacterMissing, "\\n", line_num, line));
 					}
 				}
 				return dict;
