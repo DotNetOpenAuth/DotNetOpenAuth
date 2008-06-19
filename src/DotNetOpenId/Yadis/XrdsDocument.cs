@@ -21,7 +21,15 @@ namespace DotNetOpenId.Yadis {
 
 		public IEnumerable<XrdElement> XrdElements {
 			get {
-				foreach (XPathNavigator node in Node.Select("/xrds:XRDS/xrd:XRD", XmlNamespaceResolver)) {
+				// We may be looking at a full XRDS document (in the case of YADIS discovery)
+				// or we may be looking at just an individual XRD element from a larger document
+				// if we asked xri.net for just one.
+				if (Node.SelectSingleNode("/xrds:XRDS", XmlNamespaceResolver) != null) {
+					foreach (XPathNavigator node in Node.Select("/xrds:XRDS/xrd:XRD", XmlNamespaceResolver)) {
+						yield return new XrdElement(node, this);
+					}
+				} else {
+					XPathNavigator node = Node.SelectSingleNode("/xrd:XRD", XmlNamespaceResolver);
 					yield return new XrdElement(node, this);
 				}
 			}
