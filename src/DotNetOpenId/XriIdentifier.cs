@@ -49,7 +49,15 @@ namespace DotNetOpenId {
 			return xri;
 		}
 
-		const string xriResolverProxy = "http://xri.net/{0}?_xrd_r=application/xrds%2Bxml;sep=false";
+		/// <summary>
+		/// The magic URL that will provide us an XRDS document for a given XRI identifier.
+		/// </summary>
+		/// <remarks>
+		/// We use application/xrd+xml instead of application/xrds+xml because it gets
+		/// xri.net to automatically give us exactly the right XRD element for community i-names
+		/// automatically, saving us having to choose which one to use out of the result.
+		/// </remarks>
+		const string xriResolverProxy = "http://xri.net/{0}?_xrd_r=application/xrd%2Bxml;sep=false";
 		/// <summary>
 		/// Resolves the XRI to a URL from which an XRDS document may be downloaded.
 		/// </summary>

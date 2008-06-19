@@ -5,6 +5,7 @@ using System.Xml.XPath;
 using System.Collections.Generic;
 using DotNetOpenId.RelyingParty;
 using DotNetOpenId.Provider;
+using System.Diagnostics;
 
 namespace DotNetOpenId.Yadis {
 	class XrdsDocument : XrdsNode {
@@ -21,7 +22,15 @@ namespace DotNetOpenId.Yadis {
 
 		public IEnumerable<XrdElement> XrdElements {
 			get {
-				foreach (XPathNavigator node in Node.Select("/xrds:XRDS/xrd:XRD", XmlNamespaceResolver)) {
+				// We may be looking at a full XRDS document (in the case of YADIS discovery)
+				// or we may be looking at just an individual XRD element from a larger document
+				// if we asked xri.net for just one.
+				if (Node.SelectSingleNode("/xrds:XRDS", XmlNamespaceResolver) != null) {
+					foreach (XPathNavigator node in Node.Select("/xrds:XRDS/xrd:XRD", XmlNamespaceResolver)) {
+						yield return new XrdElement(node, this);
+					}
+				} else {
+					XPathNavigator node = Node.SelectSingleNode("/xrd:XRD", XmlNamespaceResolver);
 					yield return new XrdElement(node, this);
 				}
 			}
@@ -35,7 +44,7 @@ namespace DotNetOpenId.Yadis {
 			return createServiceEndpoint(userSuppliedIdentifier);
 		}
 
-		ServiceEndpoint createServiceEndpoint(Identifier claimedIdentifier) {
+		ServiceEndpoint createServiceEndpoint(Identifier userSuppliedOrClaimedIdentifier) {
 			// First search for OP Identifier service elements
 			foreach (var service in findOPIdentifierServices()) {
 				foreach (var uri in service.UriElements) {
@@ -49,12 +58,17 @@ namespace DotNetOpenId.Yadis {
 			foreach (var service in findClaimedIdentifierServices()) {
 				foreach (var uri in service.UriElements) {
 					// spec section 7.3.2.3 on Claimed Id -> CanonicalID substitution
-					if (claimedIdentifier is XriIdentifier) {
-						if (service.Xrd.CanonicalID == null)
-							throw new OpenIdException(Strings.MissingCanonicalIDElement, claimedIdentifier);
-						claimedIdentifier = service.Xrd.CanonicalID;
+					if (userSuppliedOrClaimedIdentifier is XriIdentifier) {
+						if (service.Xrd.CanonicalID == null) {
+							if (TraceUtil.Switch.TraceWarning) {
+								Trace.TraceWarning(Strings.MissingCanonicalIDElement, userSuppliedOrClaimedIdentifier);
+							}
+							return null;
+						}
+						// In the case of XRI names, the ClaimedId is actually the CanonicalID.
+						userSuppliedOrClaimedIdentifier = service.Xrd.CanonicalID;
 					}
-					return new ServiceEndpoint(claimedIdentifier, uri.Uri, 
+					return new ServiceEndpoint(userSuppliedOrClaimedIdentifier, uri.Uri, 
 						service.ProviderLocalIdentifier, service.TypeElementUris);
 				}
 			}

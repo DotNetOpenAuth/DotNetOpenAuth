@@ -13,8 +13,11 @@ namespace DotNetOpenId.Yadis {
 			get { return (XrdElement)ParentNode; }
 		}
 
-		public int Priority {
-			get { return Node.SelectSingleNode("@priority", XmlNamespaceResolver).ValueAsInt; }
+		public int? Priority {
+			get {
+				XPathNavigator n = Node.SelectSingleNode("@priority", XmlNamespaceResolver);
+				return n != null ? n.ValueAsInt : (int?)null;
+			}
 		}
 
 		public IEnumerable<UriElement> UriElements {
@@ -41,7 +44,7 @@ namespace DotNetOpenId.Yadis {
 				XPathNodeIterator types = Node.Select("xrd:Type", XmlNamespaceResolver);
 				string[] typeUris = new string[types.Count];
 				int i = 0;
-				foreach(XPathNavigator type in types) {
+				foreach (XPathNavigator type in types) {
 					typeUris[i++] = type.Value;
 				}
 				return typeUris;
@@ -50,7 +53,7 @@ namespace DotNetOpenId.Yadis {
 
 		public Identifier ProviderLocalIdentifier {
 			get {
-				var n = Node.SelectSingleNode("xrd:LocalID", XmlNamespaceResolver) 
+				var n = Node.SelectSingleNode("xrd:LocalID", XmlNamespaceResolver)
 					?? Node.SelectSingleNode("openid10:Delegate", XmlNamespaceResolver);
 				return (n != null) ? n.Value : null;
 			}
@@ -59,7 +62,18 @@ namespace DotNetOpenId.Yadis {
 		#region IComparable<ServiceElement> Members
 
 		public int CompareTo(ServiceElement other) {
-			return Priority.CompareTo(other.Priority);
+			if (other == null) return -1;
+			if (Priority.HasValue && other.Priority.HasValue) {
+				return Priority.Value.CompareTo(other.Priority.Value);
+			} else {
+				if (Priority.HasValue) {
+					return -1;
+				} else if (other.Priority.HasValue) {
+					return 1;
+				} else {
+					return 0;
+				}
+			}
 		}
 
 		#endregion
