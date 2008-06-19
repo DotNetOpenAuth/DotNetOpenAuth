@@ -313,7 +313,7 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The XRDS document is missing the required CanonicalID element..
+        ///   Looks up a localized string similar to The XRDS document for XRI {0} is missing the required CanonicalID element..
         /// </summary>
         internal static string MissingCanonicalIDElement {
             get {

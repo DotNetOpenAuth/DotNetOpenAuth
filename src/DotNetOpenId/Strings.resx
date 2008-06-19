@@ -202,7 +202,7 @@
     <value>The '{0}' and '{1}' parameters must both be or not be '{2}'.</value>
   </data>
   <data name="MissingCanonicalIDElement" xml:space="preserve">
-    <value>The XRDS document is missing the required CanonicalID element.</value>
+    <value>The XRDS document for XRI {0} is missing the required CanonicalID element.</value>
   </data>
   <data name="MissingInternalQueryParameter" xml:space="preserve">
     <value>Query parameter '{0}' was missing from the query.</value>

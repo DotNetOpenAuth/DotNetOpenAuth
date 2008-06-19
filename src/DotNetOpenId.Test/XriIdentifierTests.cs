@@ -91,14 +91,20 @@ namespace DotNetOpenId.Test {
 		}
 
 		[Test]
-		public void DiscoverCommunityIname() {
-			verifyCanonicalId("=Web", "=!91F2.8153.F600.AE24");
-			//verifyCanonicalId("=Web*andrew.arnott", null);
+		public void DiscoverCommunityInameCanonicalIDs() {
 			verifyCanonicalId("@llli", "@!72CD.A072.157E.A9C6");
 			verifyCanonicalId("@llli*area", "@!72CD.A072.157E.A9C6!0000.0000.3B9A.CA0C");
 			verifyCanonicalId("@llli*area*canada.unattached", "@!72CD.A072.157E.A9C6!0000.0000.3B9A.CA0C!0000.0000.3B9A.CA41");
 			verifyCanonicalId("@llli*area*canada.unattached*ada", "@!72CD.A072.157E.A9C6!0000.0000.3B9A.CA0C!0000.0000.3B9A.CA41!0000.0000.3B9A.CA01");
-			
+			verifyCanonicalId("=Web", "=!91F2.8153.F600.AE24");
+		}
+
+		[Test]
+		public void DiscoveryCommunityInameDelegateWithoutCanonicalID() {
+			// Consistent with spec section 7.3.2.3, we do not permit
+			// delegation on XRI discovery when there is no CanonicalID present.
+			verifyCanonicalId("=Web*andrew.arnott", null);
+			verifyCanonicalId("@id*andrewarnott", null);
 		}
 	}
 }
