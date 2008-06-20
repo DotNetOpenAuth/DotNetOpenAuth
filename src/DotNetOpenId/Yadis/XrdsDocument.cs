@@ -44,6 +44,8 @@ namespace DotNetOpenId.Yadis {
 			return createServiceEndpoint(userSuppliedIdentifier);
 		}
 
+		const bool performCIDVerification = true;
+
 		ServiceEndpoint createServiceEndpoint(Identifier userSuppliedOrClaimedIdentifier) {
 			// First search for OP Identifier service elements
 			foreach (var service in findOPIdentifierServices()) {
@@ -66,7 +68,22 @@ namespace DotNetOpenId.Yadis {
 							return null;
 						}
 						// In the case of XRI names, the ClaimedId is actually the CanonicalID.
-						userSuppliedOrClaimedIdentifier = service.Xrd.CanonicalID;
+						// Per http://dev.inames.net/wiki/XRI_CanonicalID_Verification as of 6/20/08, 
+						// we need to perform CanonicalId verification when using xri.net as our proxy resolver
+						// to protect ourselves against a security vulnerability.
+						// We do this by asking the proxy to resolve again, based on the CanonicalId that we
+						// just got from the XRI i-name.  We SHOULD get the same document back, but in case
+						// of the attack it would be a different document, and the second document would be
+						// the reliable one.
+						if (performCIDVerification && userSuppliedOrClaimedIdentifier != service.Xrd.CanonicalID) {
+							if (TraceUtil.Switch.TraceInfo) {
+								Trace.TraceInformation("Performing XRI CanonicalID verification on user supplied identifier {0}, canonical id {1}.", userSuppliedOrClaimedIdentifier, service.Xrd.CanonicalID);
+							}
+							Identifier canonicalId = service.Xrd.CanonicalID;
+							return canonicalId.Discover();
+						} else {
+							userSuppliedOrClaimedIdentifier = service.Xrd.CanonicalID;
+						}
 					}
 					return new ServiceEndpoint(userSuppliedOrClaimedIdentifier, uri.Uri, 
 						service.ProviderLocalIdentifier, service.TypeElementUris);
