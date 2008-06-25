@@ -226,7 +226,8 @@ namespace DotNetOpenId {
 				}
 			}
 
-			// If path matches or is specified to root ...
+			// If path matches or is specified to root ... 
+			// (deliberately case sensitive to protect security on case sensitive systems)
 			if (PathAndQuery.Equals(url.PathAndQuery, StringComparison.Ordinal)
 				|| PathAndQuery.Equals("/", StringComparison.Ordinal))
 				return true;
