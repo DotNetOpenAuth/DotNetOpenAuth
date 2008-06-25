@@ -40,5 +40,13 @@ namespace DotNetOpenId.Test.RelyingParty {
 			Assert.IsTrue(provider.IsExtensionSupported(typeof(ClaimsRequest)));
 		}
 
+		[Test]
+		public void UriTest() {
+			OpenIdRelyingParty rp = new OpenIdRelyingParty(store, null, null);
+			Identifier id = TestSupport.GetFullUrl("xrdsdiscovery/xrds20.aspx");
+			IAuthenticationRequest request = rp.CreateRequest(id, realm, returnTo);
+			IProviderEndpoint provider = request.Provider;
+			Assert.AreEqual(new Uri("http://a/b"), provider.Uri);
+		}
 	}
 }

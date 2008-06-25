@@ -43,6 +43,9 @@ namespace DotNetOpenId.RelyingParty {
 		/// The detected version of OpenID implemented by the Provider.
 		/// </summary>
 		Version Version { get; }
-
+		/// <summary>
+		/// The URL that the OpenID Provider receives authentication requests at.
+		/// </summary>
+		Uri Uri { get; }
 	}
 }

@@ -24,6 +24,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// This value MUST be an absolute HTTP or HTTPS URL.
 		/// </remarks>
 		public Uri ProviderEndpoint { get; private set; }
+		Uri IProviderEndpoint.Uri { get { return ProviderEndpoint; } }
 		/*
 		/// <summary>
 		/// An Identifier for an OpenID Provider.
