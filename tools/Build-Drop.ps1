@@ -65,6 +65,10 @@ function jdate($date = [datetime]::now) {
 }
 
 function SetupVariables() {
+	# Find MSBuild.exe
+	$fxroot = [Microsoft.Win32.Registry]::LocalMachine.OpenSubKey("SOFTWARE\Microsoft\.NETFramework").GetValue("InstallRoot")
+	$msbuild = "$($fxroot)v3.5\msbuild.exe"
+	
 	$ToolsDir = Split-Path $MyInvocation.ScriptName
 	$RootDir = [io.path]::getfullpath((Join-Path $ToolsDir .. -resolve))
 	$BinDir = "$RootDir\bin"
@@ -83,9 +87,6 @@ function SetupVariables() {
 function PerformChecks() {
 	if ((Test-Path $DropDir) -and -not $Force) {
 		throw "$DropDir already exists.  Use -force to overwrite."
-	}
-	if (@(Get-Command "msbuild.exe").Length -eq 0) {
-		throw "Unable to find msbuild.exe.  Make sure your .NET SDK is in the PATH."
 	}
 	if (-not (Test-Path $AssemblyInfoFiles[0])) {
 		throw "Unable to find AssemblyInfo.cs at $($AssemblyInfoFiles[0])."
@@ -116,7 +117,7 @@ function RevertBuildVersion() {
 function Build() {
 	Write-Host "Building..."
 	if ($Rebuild) { $Target = "Rebuild" } else { $Target = "Build" }
-	msbuild $RootDir\src\$ProductName.sln /p:Configuration=$Configuration /p:Sign=$Signed /t:$Target > $nul
+	& $msbuild $RootDir\src\$ProductName.sln /p:Configuration=$Configuration /p:Sign=$Signed /t:$Target > $nul
 	if ($lastexitcode -ne 0) { throw "Build failure." }
 }
 
@@ -135,7 +136,7 @@ function Test() {
 function BuildDocumentation() {
 	if (!$SkipDocs) {
 		Write-Host "Building documentation..."
-		msbuild $RootDir\src\Documentation\build.proj /p:Configuration=$Configuration > $nul
+		& $msbuild $RootDir\src\Documentation\build.proj /p:Configuration=$Configuration > $nul
 		if ($lastexitcode -ne 0) { throw "Build failure." }
 	} else {
 		Write-Host "Skipping documentation."
