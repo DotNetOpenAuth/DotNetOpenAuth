@@ -1,10 +1,9 @@
 <?xml version="1.0"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTarget="Build">
-	<UsingTask AssemblyFile="..\..\bin\$(Configuration)\DotNetOpenId.BuildTasks.dll" TaskName="SetEnvironmentVariable"/>
-
 	<PropertyGroup>
 		<PresentationStyle Condition="'$(PresentationStyle)' == ''">vs2005</PresentationStyle>
 		<!-- Environment -->
+		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\..\..</ProjectRoot>
 		<Framework>$(WINDIR)\Microsoft.NET\Framework\v2.0.50727</Framework>
 		<DxRoot>$(ProjectRoot)\tools\Sandcastle</DxRoot>
 		<ProductionTools>$(DxRoot)\ProductionTools</ProductionTools>
@@ -40,7 +39,7 @@
 		<AssemblyFolders Include="$(ProgramFiles)\Reference Assemblies\Microsoft\Framework\v3.5\*.dll" Condition="$(NetfxVer)>3.0"/>
 	</ItemGroup>
 
-	<Target Name="Clean">
+	<Target Name="CleanDocumentation">
 		<Delete Files="$(ReflectionFile);$(ManifestFile);$(ReflectionBaseFile);$(ChmFile)" TreatErrorsAsWarnings="true"/>
 		<RemoveDir Directories="$(DocOutputApiPath);$(DocIntermediatePath);$(ChmDir)" ContinueOnError="true"/>
 		<RemoveDir Directories="$(FxReflectionIntermediatePath)" ContinueOnError="true" />
@@ -51,7 +50,7 @@
 		<MakeDir Directories="$(DocIntermediatePath)" Condition="!Exists('$(DocIntermediatePath)')" />
 	</Target>
 
-	<Target Name="SetEnvironmentVars" DependsOnTargets="CompileCustomBuildTasks">
+	<Target Name="SetEnvironmentVars" DependsOnTargets="BuildCustomTasks">
 		<SetEnvironmentVariable Name="DxRoot" Value="$(DxRoot)" />
 		<SetEnvironmentVariable Name="DocumentationFile" Value="$(DocumentationFile)" />
 		<SetEnvironmentVariable Name="ReflectionXmlFile" Value="$(ReflectionFile)" />
@@ -85,15 +84,15 @@
 		<StyleDestFiles Include="@(StyleFiles->'$(DocOutputApiPath)\styles\%(RecursiveDir)%(FileName)%(Extension)')"/>
 	</ItemGroup>
 
-	<Target Name="Template" Inputs="@(IconFiles);@(ScriptFiles);@(StyleFiles)" Outputs="@(IconDestFiles);@(ScriptDestFiles);@(StyleDestFiles)">
-		<Copy SourceFiles="@(IconFiles)" DestinationFiles="@(IconDestFiles)"/>
-		<Copy SourceFiles="@(ScriptFiles)" DestinationFiles="@(ScriptDestFiles)"/>
-		<Copy SourceFiles="@(StyleFiles)" DestinationFiles="@(StyleDestFiles)"/>
+	<Target Name="Template">
+		<Copy SourceFiles="@(IconFiles)" DestinationFiles="@(IconDestFiles)" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(ScriptFiles)" DestinationFiles="@(ScriptDestFiles)" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(StyleFiles)" DestinationFiles="@(StyleDestFiles)" SkipUnchangedFiles="true"/>
 		<MakeDir Directories="$(DocOutputApiPath)\html;$(DocOutputApiPath)\media;$(DocOutputApiPath)\intellisense"/>
 	</Target>
 
 	<Target Name="ReflectionBase" Inputs="$(OutputAssemblyFile)" Outputs="$(ReflectionBaseFile)" 
-					DependsOnTargets="SetEnvironmentVars;Compile;CreateIntermediatePath">
+					DependsOnTargets="SetEnvironmentVars;CreateIntermediatePath">
 		<Exec Command='"$(ProductionTools)\MRefBuilder.exe" "$(OutputAssemblyFile)" /out:"$(ReflectionBaseFile)"' />
 	</Target>
 
@@ -110,7 +109,7 @@
 	<Target Name="Html"
 	      Inputs="$(ManifestFile);$(ReflectionFile);$(DocumentationFile)"
 	      Outputs="$(DocOutputApiPath)\html\N_DotNetOpenId.htm"
-	      DependsOnTargets="SetEnvironmentVars;Template;Manifest;Compile">
+	      DependsOnTargets="SetEnvironmentVars;Template;Manifest">
 		<Exec Command='"$(ProductionTools)\BuildAssembler.exe" /config:"$(Presentation)\configuration\sandcastle.config" "$(ManifestFile)"' />
 	</Target>
 
@@ -126,9 +125,9 @@
 		<Exec Condition="'$(PresentationStyle)' != 'prototype'" Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\CreateVSToc.xsl" "$(ReflectionFile)" /out:"$(TocFile)"' />
 
 		<!--copy directories from hxs -->
-		<Copy SourceFiles="@(IconFiles)" DestinationFolder="$(chmDir)\icons\%(RecursiveDir)"/>
-		<Copy SourceFiles="@(ScriptFiles)" DestinationFolder="$(chmDir)\scripts\%(RecursiveDir)"/>
-		<Copy SourceFiles="@(StyleFiles)" DestinationFolder="$(chmDir)\styles\%(RecursiveDir)"/>
+		<Copy SourceFiles="@(IconFiles)" DestinationFolder="$(chmDir)\icons\%(RecursiveDir)" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(ScriptFiles)" DestinationFolder="$(chmDir)\scripts\%(RecursiveDir)" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(StyleFiles)" DestinationFolder="$(chmDir)\styles\%(RecursiveDir)" SkipUnchangedFiles="true"/>
 		<Exec Condition="Exists('$(chmDir)s\Local')" Command='xcopy.exe "$(chmDir)\Local\*" "$(chmDir)\Local\" /y /r'/>
 
 		<!-- generate CHM-specific HTML and HH* files -->

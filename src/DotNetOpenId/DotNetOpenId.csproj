@@ -36,7 +36,7 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <DocumentationFile>..\..\bin\Release\DotNetOpenId.xml</DocumentationFile>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Sign)' == 'true' ">
     <SignAssembly>true</SignAssembly>
@@ -175,11 +175,5 @@
     <None Include="Provider\Provider.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <Import Project="..\..\tools\DotNetOpenId.Versioning.targets" />
 </Project>

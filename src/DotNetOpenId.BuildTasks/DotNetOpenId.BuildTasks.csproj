@@ -31,6 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Build.Engine" />
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build.Utilities.v3.5">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -43,6 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChangeProjectReferenceToAssemblyReference.cs" />
+    <Compile Include="GetBuildVersion.cs" />
     <Compile Include="SetEnvironmentVariable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
