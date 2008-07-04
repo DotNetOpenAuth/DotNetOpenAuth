@@ -61,6 +61,13 @@
     <Compile Include="login.aspx.designer.cs">
       <DependentUpon>login.aspx</DependentUpon>
     </Compile>
+    <Compile Include="loginProgrammatic.aspx.cs">
+      <DependentUpon>loginProgrammatic.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="loginProgrammatic.aspx.designer.cs">
+      <DependentUpon>loginProgrammatic.aspx</DependentUpon>
+    </Compile>
     <Compile Include="m\Login.aspx.cs">
       <DependentUpon>Login.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -81,6 +88,7 @@
     <Content Include="xrds.aspx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="loginProgrammatic.aspx" />
     <Content Include="MembersOnly\Default.aspx" />
     <Content Include="MembersOnly\Web.config" />
     <Content Include="m\Login.aspx" />
