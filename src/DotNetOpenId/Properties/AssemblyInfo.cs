@@ -10,6 +10,8 @@
 // accomplishes this.
 //#define PARTIAL_TRUST
 
+// We DON'T put an AssemblyVersionAttribute in here because it is generated in the build.
+
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -45,18 +47,6 @@ using System.Security;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("7d73990c-47c0-4256-9f20-a893add9e289")]
-
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-[assembly: AssemblyVersion("2.2.2.0")]
-[assembly: AssemblyFileVersion("2.2.2.0")]
 
 #if StrongNameSigned
 // See comment at top of this file.  We need this so that strong-naming doesn't
