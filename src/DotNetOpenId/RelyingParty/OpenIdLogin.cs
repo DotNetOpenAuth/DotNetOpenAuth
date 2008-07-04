@@ -513,7 +513,8 @@ idselector_input_id = '" + WrappedTextBox.ClientID + @"';
 		protected virtual bool OnLoggingIn()
 		{
 			EventHandler<OpenIdEventArgs> loggingIn = LoggingIn;
-			PrepareAuthenticationRequest();
+			if (Request == null)
+				CreateRequest();
 			if (Request != null) {
 				OpenIdEventArgs args = new OpenIdEventArgs(Request);
 				if (loggingIn != null)
