@@ -187,7 +187,7 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot encode &apos;{0}&apos; because it contains an illegal character for Key-Value Form encoding..
+        ///   Looks up a localized string similar to Cannot encode &apos;{0}&apos; because it contains an illegal character for Key-Value Form encoding.  (line {1}: &apos;{2}&apos;).
         /// </summary>
         internal static string InvalidCharacterInKeyValueFormInput {
             get {
@@ -196,7 +196,7 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot decode Key-Value Form because a line was found without a &apos;{0}&apos; character..
+        ///   Looks up a localized string similar to Cannot decode Key-Value Form because a line was found without a &apos;{0}&apos; character.  (line {1}: &apos;{2}&apos;).
         /// </summary>
         internal static string InvalidKeyValueFormCharacterMissing {
             get {
@@ -268,6 +268,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failure parsing XRDS document..
+        /// </summary>
+        internal static string InvalidXRDSDocument {
+            get {
+                return ResourceManager.GetString("InvalidXRDSDocument", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Not a recognized XRI format: &apos;{0}&apos;..
         /// </summary>
         internal static string InvalidXri {
@@ -313,7 +322,7 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The XRDS document is missing the required CanonicalID element..
+        ///   Looks up a localized string similar to The XRDS document for XRI {0} is missing the required CanonicalID element..
         /// </summary>
         internal static string MissingCanonicalIDElement {
             get {

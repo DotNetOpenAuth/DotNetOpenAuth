@@ -1,0 +1,153 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)</ProjectRoot>
+		<OutputPath>$(ProjectRoot)\bin\$(Configuration)</OutputPath>
+		<DocOutputPath>$(ProjectRoot)\doc</DocOutputPath>
+		<IntermediatePath>$(ProjectRoot)\obj\$(Configuration)</IntermediatePath>
+		<ToolsDir>$(ProjectRoot)\tools</ToolsDir>
+		<AutomatedBuild>true</AutomatedBuild>
+	</PropertyGroup>
+
+	<Import Project="$(ProjectRoot)\tools\DotNetOpenId.Versioning.targets"/>
+	<Import Project="$(ProjectRoot)\tools\Documentation.targets"/>
+	<UsingTask AssemblyFile="$(ProjectRoot)\lib\MSBuild.Community.Tasks.dll" TaskName="Zip"/>
+
+	<ItemGroup>
+		<SampleDirectories Include="
+		                            $(ProjectRoot)\samples\ProviderCustomStore;
+		                            $(ProjectRoot)\samples\ProviderPortal;
+		                            $(ProjectRoot)\samples\RelyingPartyCustomStore;
+		                            $(ProjectRoot)\samples\RelyingPartyMvc;
+		                            $(ProjectRoot)\samples\RelyingPartyPortal;
+		" />
+		<Samples Include="$(ProjectRoot)\samples\**\*.csproj" />
+	</ItemGroup>
+	
+	<Target Name="Clean" DependsOnTargets="CleanDocumentation">
+		<MSBuild Projects="$(ProjectRoot)\src\DotNetOpenId.sln" Targets="Clean" />
+		<ItemGroup>
+			<DirtyDirectories Include="
+			                           $(ProjectRoot)\bin;
+			                           $(ProjectRoot)\**\obj;
+			                           $(ProjectRoot)\doc\api;
+			                           $(ProjectRoot)\drops;
+			                           $(ProjectRoot)\src\PrecompiledWeb;
+			                           $(ProjectRoot)\src\DotNetOpenId.TestWeb\Bin;
+			                           " />
+			<DirtyDirectories Include="@(SampleDirectories->'%(FullPath)\bin')" />
+			<DirtyDirectories Include="@(SampleDirectories->'%(FullPath)\obj')" />
+			<DirtyFiles Include="
+			                     $(ProjectRoot)\**\*~;
+			                     $(ProjectRoot)\**\*Trace.txt;
+			                     $(ProjectRoot)\doc\DotNetOpenId.chm;
+			                     " />
+		</ItemGroup>
+		<Delete Files="@(DirtyFiles)" />
+		<RemoveDir Directories="@(DirtyDirectories)" />
+	</Target>
+
+	<Target Name="BuildProduct">
+		<MSBuild Projects="$(ProjectRoot)\src\DotNetOpenId\DotNetOpenId.csproj" />
+	</Target>
+
+	<Target Name="BuildTests">
+		<MSBuild Projects="$(ProjectRoot)\src\DotNetOpenId.Test\DotNetOpenId.Test.csproj" />
+	</Target>
+
+	<Target Name="BuildSamples">
+		<!-- poor man's list of samples until we decide to maintain the real list here. -->
+		<MSBuild Projects="@(Samples)" />
+	</Target>
+
+	<Target Name="Build">
+		<MSBuild Projects="$(ProjectRoot)\src\DotNetOpenId.sln" />
+	</Target>
+
+	<Target Name="Documentation" DependsOnTargets="BuildProduct;Chm">
+	</Target>
+
+	<!-- Test depends on "Build" rather than "BuildTests" until we can figure out how to build the 
+	     no-.csproj file test project (to copy binaries to Bin directory). -->
+	<Target Name="Test" DependsOnTargets="Build"
+	        Inputs="$(OutputPath)\DotNetOpenId.Test.dll"
+	        Outputs='$(OutputPath)\Test-results.xml;$(OutputPath)\Test-output-results.log'>
+		<Exec Command='"$(ToolsDir)\nunit\bin\nunit-console.exe" "$(OutputPath)\DotNetOpenId.Test.dll" /xml="$(OutputPath)\Test-results.xml" /out="$(OutputPath)\Test-output-results.log"'
+		      Outputs='$(OutputPath)\Test-results.xml;$(OutputPath)\Test-output-results.log' />
+	</Target>
+
+	<Target Name="Drop" DependsOnTargets="GetBuildVersion;Build;Documentation">
+		<PropertyGroup>
+			<DropDirectory>$(ProjectRoot)\drops\DotNetOpenId-$(BuildVersion)</DropDirectory>
+			<DropZip>$(DropDirectory).zip</DropZip>
+			<DropBinDirectory>$(DropDirectory)\Bin</DropBinDirectory>
+			<DropSamplesDirectory>$(DropDirectory)\Samples</DropSamplesDirectory>
+			<DropSpecsDirectory>$(DropDirectory)\Specs</DropSpecsDirectory>
+		</PropertyGroup>
+		<ItemGroup>
+			<DropDirectories Include="
+						 $(DropDirectory);
+						 $(DropBinDirectory);
+						 $(DropSamplesDirectory);
+						 $(DropSpecsDirectory);
+										 " />
+
+			<DropSourceFiles Include="
+			                          $(ProjectRoot)\Doc\DotNetOpenId.chm;
+			                          $(ProjectRoot)\Doc\*.htm*;
+			                          " />
+			<DropBinSourceFiles Include="$(OutputPath)\DotNetOpenId.???" />
+			<DropSamplesSourceFiles Include="$(ProjectRoot)\Samples\**" Exclude="
+															$(ProjectRoot)\**\obj\**;
+															$(ProjectRoot)\**\*.user;
+															$(ProjectRoot)\**\*.sln.cache;
+															$(ProjectRoot)\**\*.suo;
+															$(ProjectRoot)\**\*.user;
+															$(ProjectRoot)\**\*.gitignore;
+															$(ProjectRoot)\**\*.ldf;
+															$(ProjectRoot)\**\*Trace.txt;
+															$(ProjectRoot)\**\*~;
+															" />
+			<DropSpecsSourceFiles Include="$(ProjectRoot)\Doc\specs\*.htm*" />
+
+			<DropFiles Include="@(DropSourceFiles->'$(DropDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
+			<DropBinFiles Include="@(DropBinSourceFiles->'$(DropBinDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
+			<DropSamplesFiles Include="@(DropSamplesSourceFiles->'$(DropSamplesDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
+			<DropSpecsFiles Include="@(DropSpecsSourceFiles->'$(DropSpecsDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
+
+			<AllDropSources Include="
+										@(DropSourceFiles);
+										@(DropBinSourceFiles);
+										@(DropSamplesSourceFiles);
+										@(DropDocSourceFiles);
+										@(DropSpecsSourceFiles);
+										" />
+
+			<AllDropTargets Include="
+										@(DropFiles);
+										@(DropBinFiles);
+										@(DropSamplesFiles);
+										@(DropDocFiles);
+										@(DropSpecsFiles)
+										" />
+
+			<SampleProjectTargets Include="$(DropSamplesDirectory)\**\*.csproj" />
+		</ItemGroup>
+
+		<MakeDir Directories="@(DropDirectories)" />
+		<Copy SourceFiles="@(AllDropSources)" DestinationFiles="@(AllDropTargets)" SkipUnchangedFiles="true" />
+		<!-- fix up the samples so that they will compile right out of the drop -->
+		<ChangeProjectReferenceToAssemblyReference Projects="@(SampleProjectTargets)"
+		  ProjectReference="..\..\src\DotNetOpenId\DotNetOpenId.csproj" Reference="..\..\Bin\DotNetOpenId.dll" />
+		<Zip Files="@(AllDropTargets)" ZipFileName="$(DropZip)" WorkingDirectory="$(ProjectRoot)\drops" />
+	</Target>
+
+	<Target Name="Nightly" DependsOnTargets="Drop;Test">
+
+	</Target>
+
+	<Target Name="Release" DependsOnTargets="Nightly">
+
+	</Target>
+
+</Project>

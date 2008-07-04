@@ -62,23 +62,49 @@ namespace DotNetOpenId.Test {
 			Assert.AreNotEqual(goodXri, new XriIdentifier(goodXri));
 		}
 
-		[Test]
-		public void Discover() {
+		private ServiceEndpoint verifyCanonicalId(Identifier iname, string expectedClaimedIdentifier) {
 			// This test requires a network connection
-			Identifier id = "=Arnott";
 			ServiceEndpoint se = null;
 			try {
-				se = id.Discover();
+				se = iname.Discover();
 			} catch (WebException ex) {
 				if (ex.Message.Contains("remote name could not be resolved"))
 					Assert.Ignore("This test requires a network connection.");
 			}
-			Assert.IsNotNull(se);
+			if (expectedClaimedIdentifier != null) {
+				Assert.IsNotNull(se);
+				Assert.AreEqual(expectedClaimedIdentifier, se.ClaimedIdentifier.ToString(), "i-name {0} discovery resulted in unexpected CanonicalId", iname);
+				Assert.AreEqual(1, se.ProviderSupportedServiceTypeUris.Length);
+			} else {
+				Assert.IsNull(se);
+			}
+			return se;
+		}
+
+		[Test]
+		public void Discover() {
+			string expectedCanonicalId = "=!9B72.7DD1.50A9.5CCD";
+			ServiceEndpoint se = verifyCanonicalId("=Arnott", expectedCanonicalId);
 			Assert.AreEqual(Protocol.v10, se.Protocol);
-			Assert.AreEqual("=!9B72.7DD1.50A9.5CCD", se.ClaimedIdentifier.ToString());
 			Assert.AreEqual("http://1id.com/sso", se.ProviderEndpoint.ToString());
-			Assert.AreEqual("=!9B72.7DD1.50A9.5CCD", se.ProviderLocalIdentifier.ToString());
-			Assert.AreEqual(1, se.ProviderSupportedServiceTypeUris.Length);
+			Assert.AreEqual(se.ClaimedIdentifier, se.ProviderLocalIdentifier);
+		}
+
+		[Test]
+		public void DiscoverCommunityInameCanonicalIDs() {
+			verifyCanonicalId("@llli", "@!72CD.A072.157E.A9C6");
+			verifyCanonicalId("@llli*area", "@!72CD.A072.157E.A9C6!0000.0000.3B9A.CA0C");
+			verifyCanonicalId("@llli*area*canada.unattached", "@!72CD.A072.157E.A9C6!0000.0000.3B9A.CA0C!0000.0000.3B9A.CA41");
+			verifyCanonicalId("@llli*area*canada.unattached*ada", "@!72CD.A072.157E.A9C6!0000.0000.3B9A.CA0C!0000.0000.3B9A.CA41!0000.0000.3B9A.CA01");
+			verifyCanonicalId("=Web", "=!91F2.8153.F600.AE24");
+		}
+
+		[Test]
+		public void DiscoveryCommunityInameDelegateWithoutCanonicalID() {
+			// Consistent with spec section 7.3.2.3, we do not permit
+			// delegation on XRI discovery when there is no CanonicalID present.
+			verifyCanonicalId("=Web*andrew.arnott", null);
+			verifyCanonicalId("@id*andrewarnott", null);
 		}
 	}
 }

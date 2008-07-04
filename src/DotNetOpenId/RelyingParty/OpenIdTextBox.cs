@@ -786,6 +786,7 @@ namespace DotNetOpenId.RelyingParty
 		/// </summary>
 		internal OpenIdEventArgs(IAuthenticationRequest request) {
 			if (request == null) throw new ArgumentNullException("request");
+			Request = request;
 			ClaimedIdentifier = request.ClaimedIdentifier;
 			IsDirectedIdentity = request.IsDirectedIdentity;
 		}
@@ -815,7 +816,12 @@ namespace DotNetOpenId.RelyingParty
 		public bool IsDirectedIdentity { get; private set; }
 
 		/// <summary>
-		/// Gets the details of the OpenId authentication response.
+		/// Gets the details of the OpenID authentication request,
+		/// and allows for adding extensions.
+		/// </summary>
+		public IAuthenticationRequest Request { get; private set; }
+		/// <summary>
+		/// Gets the details of the OpenID authentication response.
 		/// </summary>
 		public IAuthenticationResponse Response { get; private set; }
 		/// <summary>

@@ -33,6 +33,7 @@ namespace DotNetOpenId.RelyingParty
 		Label exampleUrlLabel;
 		HyperLink registerLink;
 		CheckBox rememberMeCheckBox;
+		Literal idselectorJavascript;
 
 		const short textBoxTabIndexOffset = 0;
 		const short loginButtonTabIndexOffset = 1;
@@ -165,6 +166,9 @@ namespace DotNetOpenId.RelyingParty
 			TabIndex = TabIndexDefault;
 
 			panel.Controls.Add(table);
+
+			idselectorJavascript = new Literal();
+			panel.Controls.Add(idselectorJavascript);
 		}
 
 		void identifierFormatValidator_ServerValidate(object source, ServerValidateEventArgs args) {
@@ -181,8 +185,19 @@ namespace DotNetOpenId.RelyingParty
 		/// </summary>
 		protected override void RenderChildren(HtmlTextWriter writer)
 		{
-			if (!this.DesignMode)
+			if (!this.DesignMode) {
 				label.Attributes["for"] = WrappedTextBox.ClientID;
+
+				if (!string.IsNullOrEmpty(IdSelectorIdentifier)) {
+					idselectorJavascript.Visible = true;
+					idselectorJavascript.Text = @"<script type='text/javascript'><!--
+idselector_input_id = '" + WrappedTextBox.ClientID + @"';
+// --></script>
+<script type='text/javascript' id='__openidselector' src='https://www.idselector.com/selector/" + IdSelectorIdentifier + @"' charset='utf-8'></script>";
+				} else {
+					idselectorJavascript.Visible = false;
+				}
+			}
 
 			base.RenderChildren(writer);
 		}
@@ -439,6 +454,17 @@ namespace DotNetOpenId.RelyingParty
 				requiredValidator.ValidationGroup = value;
 				loginButton.ValidationGroup = value;
 			}
+		}
+
+		const string idSelectorIdentifierViewStateKey = "IdSelectorIdentifier";
+		/// <summary>
+		/// The unique hash string that ends your idselector.com account.
+		/// </summary>
+		[Category("Behavior")]
+		[Description("The unique hash string that ends your idselector.com account.")]
+		public string IdSelectorIdentifier {
+			get { return (string)(ViewState[idSelectorIdentifierViewStateKey]); }
+			set { ViewState[idSelectorIdentifierViewStateKey] = value; }
 		}
 		#endregion
 

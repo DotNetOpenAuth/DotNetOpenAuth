@@ -160,10 +160,10 @@
     <value>ClaimedIdentifier and LocalIdentifier must be the same when IsIdentifierSelect is true.</value>
   </data>
   <data name="InvalidCharacterInKeyValueFormInput" xml:space="preserve">
-    <value>Cannot encode '{0}' because it contains an illegal character for Key-Value Form encoding.</value>
+    <value>Cannot encode '{0}' because it contains an illegal character for Key-Value Form encoding.  (line {1}: '{2}')</value>
   </data>
   <data name="InvalidKeyValueFormCharacterMissing" xml:space="preserve">
-    <value>Cannot decode Key-Value Form because a line was found without a '{0}' character.</value>
+    <value>Cannot decode Key-Value Form because a line was found without a '{0}' character.  (line {1}: '{2}')</value>
   </data>
   <data name="InvalidNonce" xml:space="preserve">
     <value>The nonce was not in the expected format.</value>
@@ -186,6 +186,9 @@
   <data name="InvalidUri" xml:space="preserve">
     <value>The value '{0}' is not a valid URI.</value>
   </data>
+  <data name="InvalidXRDSDocument" xml:space="preserve">
+    <value>Failure parsing XRDS document.</value>
+  </data>
   <data name="InvalidXri" xml:space="preserve">
     <value>Not a recognized XRI format: '{0}'.</value>
   </data>
@@ -202,7 +205,7 @@
     <value>The '{0}' and '{1}' parameters must both be or not be '{2}'.</value>
   </data>
   <data name="MissingCanonicalIDElement" xml:space="preserve">
-    <value>The XRDS document is missing the required CanonicalID element.</value>
+    <value>The XRDS document for XRI {0} is missing the required CanonicalID element.</value>
   </data>
   <data name="MissingInternalQueryParameter" xml:space="preserve">
     <value>Query parameter '{0}' was missing from the query.</value>
