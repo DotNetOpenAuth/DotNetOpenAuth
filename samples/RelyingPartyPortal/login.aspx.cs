@@ -1,6 +1,7 @@
 using System;
 using System.Web.UI;
 using DotNetOpenId.RelyingParty;
+using DotNetOpenId.Extensions.SimpleRegistration;
 
 public partial class login : System.Web.UI.Page {
 	protected void Page_Load(object sender, EventArgs e) {
@@ -13,7 +14,7 @@ public partial class login : System.Web.UI.Page {
 	/// Note, that straight after login, forms auth will redirect the user to their original page. So this page may never be rendererd.
 	/// </summary>
 	protected void OpenIdLogin1_LoggedIn(object sender, OpenIdEventArgs e) {
-		State.ProfileFields = e.ProfileFields;
+		State.ProfileFields = e.Response.GetExtension<ClaimsResponse>();
 	}
 	protected void OpenIdLogin1_Failed(object sender, OpenIdEventArgs e) {
 		loginFailedLabel.Visible = true;
