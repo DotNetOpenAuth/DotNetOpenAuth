@@ -784,8 +784,10 @@ namespace DotNetOpenId.RelyingParty
 		/// Constructs an object with minimal information of an incomplete or failed
 		/// authentication attempt.
 		/// </summary>
-		internal OpenIdEventArgs(Identifier claimedIdentifier) {
-			ClaimedIdentifier = claimedIdentifier;
+		internal OpenIdEventArgs(IAuthenticationRequest request) {
+			if (request == null) throw new ArgumentNullException("request");
+			Request = request;
+			ClaimedIdentifier = request.ClaimedIdentifier;
 		}
 		/// <summary>
 		/// Constructs an object with information on a completed authentication attempt
@@ -807,7 +809,12 @@ namespace DotNetOpenId.RelyingParty
 		public Identifier ClaimedIdentifier { get; private set; }
 
 		/// <summary>
-		/// Gets the details of the OpenId authentication response.
+		/// Gets the details of the OpenID authentication request,
+		/// and allows for adding extensions.
+		/// </summary>
+		public IAuthenticationRequest Request { get; private set; }
+		/// <summary>
+		/// Gets the details of the OpenID authentication response.
 		/// </summary>
 		public IAuthenticationResponse Response { get; private set; }
 		/// <summary>
