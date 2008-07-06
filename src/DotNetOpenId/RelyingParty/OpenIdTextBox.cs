@@ -787,6 +787,8 @@ namespace DotNetOpenId.RelyingParty
 		internal OpenIdEventArgs(IAuthenticationRequest request) {
 			if (request == null) throw new ArgumentNullException("request");
 			Request = request;
+			ClaimedIdentifier = request.ClaimedIdentifier;
+			IsDirectedIdentity = request.IsDirectedIdentity;
 		}
 		/// <summary>
 		/// Constructs an object with information on a completed authentication attempt
@@ -795,11 +797,22 @@ namespace DotNetOpenId.RelyingParty
 		internal OpenIdEventArgs(IAuthenticationResponse response) {
 			if (response == null) throw new ArgumentNullException("response");
 			Response = response;
+			ClaimedIdentifier = response.ClaimedIdentifier;
 		}
 		/// <summary>
 		/// Cancels the OpenID authentication and/or login process.
 		/// </summary>
 		public bool Cancel { get; set; }
+		/// <summary>
+		/// The Identifier the user is claiming to own.  Or null if the user
+		/// is using Directed Identity.
+		/// </summary>
+		public Identifier ClaimedIdentifier { get; private set; }
+		/// <summary>
+		/// Whether the user has selected to let his Provider determine 
+		/// the ClaimedIdentifier to use as part of successful authentication.
+		/// </summary>
+		public bool IsDirectedIdentity { get; private set; }
 
 		/// <summary>
 		/// Gets the details of the OpenID authentication request,
