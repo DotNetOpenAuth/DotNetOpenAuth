@@ -74,7 +74,7 @@ namespace DotNetOpenId.Test {
 			if (expectedClaimedIdentifier != null) {
 				Assert.IsNotNull(se);
 				Assert.AreEqual(expectedClaimedIdentifier, se.ClaimedIdentifier.ToString(), "i-name {0} discovery resulted in unexpected CanonicalId", iname);
-				Assert.AreEqual(1, se.ProviderSupportedServiceTypeUris.Length);
+				Assert.IsTrue(se.ProviderSupportedServiceTypeUris.Length > 0);
 			} else {
 				Assert.IsNull(se);
 			}
