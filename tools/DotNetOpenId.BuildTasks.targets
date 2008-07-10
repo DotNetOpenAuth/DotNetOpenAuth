@@ -11,5 +11,6 @@
 	<UsingTask AssemblyFile="$(ProjectRoot)\bin\$(Configuration)\DotNetOpenId.BuildTasks.dll" TaskName="GetBuildVersion" />
 	<UsingTask AssemblyFile="$(ProjectRoot)\bin\$(Configuration)\DotNetOpenId.BuildTasks.dll" TaskName="SetEnvironmentVariable" />
 	<UsingTask AssemblyFile="$(ProjectRoot)\bin\$(Configuration)\DotNetOpenId.BuildTasks.dll" TaskName="ChangeProjectReferenceToAssemblyReference" />
+	<UsingTask AssemblyFile="$(ProjectRoot)\bin\$(Configuration)\DotNetOpenId.BuildTasks.dll" TaskName="CompareFiles" />
 
 </Project>

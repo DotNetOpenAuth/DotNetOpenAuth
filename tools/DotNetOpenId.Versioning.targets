@@ -11,15 +11,24 @@
 	<UsingTask AssemblyFile="$(ProjectRoot)\lib\MSBuild.Community.Tasks.dll" TaskName="AssemblyInfo"/>
 
 	<Target Name="GetBuildVersion" DependsOnTargets="BuildCustomTasks">
-		<GetBuildVersion VersionFile="$(ProjectRoot)\src\version.txt">
+		<GetBuildVersion VersionFile="$(ProjectRoot)\src\version.txt" Condition=" '$(BuildVersion)' == '' ">
 			<Output TaskParameter="Version" PropertyName="BuildVersion" />
 		</GetBuildVersion>
 		<Message Text="Building version $(BuildVersion)"/>
 	</Target>
 	
 	<Target Name="BeforeBuild" DependsOnTargets="GetBuildVersion">
+		<PropertyGroup>
+			<NewVersionCsFile>$(VersionCsFile).new</NewVersionCsFile>
+		</PropertyGroup>
 		<MakeDir Directories="$(ProjectRoot)\obj\$(Configuration)"/>
-		<AssemblyInfo OutputFile="$(VersionCsFile)" CodeLanguage="C#" AssemblyVersion="$(BuildVersion)" />
+		<AssemblyInfo OutputFile="$(NewVersionCsFile)" CodeLanguage="C#" AssemblyVersion="$(BuildVersion)" />
+		<!-- Avoid applying the newly generated AssemblyInfo.cs file to the build 
+		     unless it has changed in order to allow for incremental building. -->
+		<CompareFiles OriginalItems="$(VersionCsFile)" NewItems="$(NewVersionCsFile)">
+			<Output TaskParameter="AreChanged" PropertyName="AssemblyInfoChanged" />
+		</CompareFiles>
+		<Copy Condition=" '$(AssemblyInfoChanged)' == 'true' " SourceFiles="$(NewVersionCsFile)" DestinationFiles="$(VersionCsFile)" />
 		<ItemGroup>
 			<Compile Include="$(VersionCsFile)" />
 		</ItemGroup>
