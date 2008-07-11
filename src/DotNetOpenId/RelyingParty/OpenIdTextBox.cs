@@ -585,7 +585,7 @@ namespace DotNetOpenId.RelyingParty
 				string logoUrl = Page.ClientScript.GetWebResourceUrl(
 					typeof(OpenIdTextBox), EmbeddedLogoResourceName);
 				WrappedTextBox.Style["background"] = string.Format(CultureInfo.InvariantCulture,
-					"url({0}) no-repeat", logoUrl);
+					"url({0}) no-repeat", HttpUtility.HtmlEncode(logoUrl));
 				WrappedTextBox.Style["background-position"] = "0 50%";
 				WrappedTextBox.Style[HtmlTextWriterStyle.PaddingLeft] = "18px";
 				WrappedTextBox.Style[HtmlTextWriterStyle.BorderStyle] = "solid";

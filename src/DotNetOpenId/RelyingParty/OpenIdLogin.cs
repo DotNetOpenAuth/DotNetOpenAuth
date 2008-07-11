@@ -181,6 +181,14 @@ namespace DotNetOpenId.RelyingParty
 		}
 
 		/// <summary>
+		/// Customizes HTML rendering of the control.
+		/// </summary>
+		protected override void Render(HtmlTextWriter writer) {
+			// avoid writing begin and end SPAN tags for XHTML validity.
+			RenderContents(writer);
+		}
+
+		/// <summary>
 		/// Renders the child controls.
 		/// </summary>
 		protected override void RenderChildren(HtmlTextWriter writer)
