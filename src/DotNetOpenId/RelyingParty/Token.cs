@@ -152,7 +152,8 @@ namespace DotNetOpenId.RelyingParty {
 		/// verification, this is the only alternative.
 		/// </remarks>
 		static void verifyEndpointByDiscovery(ServiceEndpoint endpoint) {
-			if (!endpoint.Equals(endpoint.ClaimedIdentifier.Discover())) {
+			List<ServiceEndpoint> discoveredEndpoints = new List<ServiceEndpoint>(endpoint.ClaimedIdentifier.Discover());
+			if (!discoveredEndpoints.Contains(endpoint)) {
 				throw new OpenIdException(Strings.InvalidSignature);
 			}
 		}
