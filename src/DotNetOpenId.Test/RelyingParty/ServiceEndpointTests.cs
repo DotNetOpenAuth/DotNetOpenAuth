@@ -69,7 +69,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 		[Test]
 		public void EqualsTests() {
 			ServiceEndpoint se = new ServiceEndpoint(claimedId, providerEndpoint, localId, v20TypeUris, priority);
-			ServiceEndpoint se2 = new ServiceEndpoint(claimedId, providerEndpoint, localId, v20TypeUris, priority);
+			ServiceEndpoint se2 = new ServiceEndpoint(claimedId, providerEndpoint, localId, v20TypeUris, (int?)null);
 			Assert.AreEqual(se2, se);
 			Assert.AreNotEqual(se, null);
 			Assert.AreNotEqual(null, se);
@@ -81,8 +81,6 @@ namespace DotNetOpenId.Test.RelyingParty {
 			se3 = new ServiceEndpoint(claimedId, providerEndpoint, localId + "a", v20TypeUris, priority);
 			Assert.AreNotEqual(se, se3);
 			se3 = new ServiceEndpoint(claimedId, providerEndpoint, localId, v11TypeUris, priority);
-			Assert.AreNotEqual(se, se3);
-			se3 = new ServiceEndpoint(claimedId, providerEndpoint, localId, v20TypeUris, priority + 1);
 			Assert.AreNotEqual(se, se3);
 
 			// make sure that Collection<T>.Contains works as desired.

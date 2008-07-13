@@ -141,6 +141,7 @@ namespace DotNetOpenId.RelyingParty {
 			writer.WriteLine(ProviderLocalIdentifier);
 			writer.WriteLine(ProviderEndpoint);
 			writer.WriteLine(Protocol.Version);
+			// No reason to serialize priority. We only needed priority to decide whether to use this endpoint.
 		}
 
 		/// <summary>
@@ -182,6 +183,7 @@ namespace DotNetOpenId.RelyingParty {
 			ServiceEndpoint other = obj as ServiceEndpoint;
 			if (other == null) return false;
 			// We specifically do not check our ProviderSupportedServiceTypeUris array
+			// or the priority field
 			// as that is not persisted in our tokens, and it is not part of the 
 			// important assertion validation that is part of the spec.
 			return
