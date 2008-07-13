@@ -77,9 +77,10 @@ namespace DotNetOpenId.RelyingParty {
 				}
 			}
 
-			var endpoint = userSuppliedIdentifier.Discover();
-			if (endpoint == null)
+			List<ServiceEndpoint> endpoints = new List<ServiceEndpoint>(userSuppliedIdentifier.Discover());
+			if (endpoints.Count == 0)
 				throw new OpenIdException(Strings.OpenIdEndpointNotFound);
+			ServiceEndpoint endpoint = endpoints[0]; // select first one (for now).
 			if (TraceUtil.Switch.TraceVerbose) {
 				Trace.Indent();
 				Trace.TraceInformation("Discovered provider endpoint: {0}", endpoint);

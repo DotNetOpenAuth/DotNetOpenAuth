@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using NUnit.Framework;
-using DotNetOpenId.RelyingParty;
+using System.Linq;
 using System.Net;
+using DotNetOpenId.RelyingParty;
+using NUnit.Framework;
 
 namespace DotNetOpenId.Test {
 	[TestFixture]
@@ -66,7 +65,7 @@ namespace DotNetOpenId.Test {
 			// This test requires a network connection
 			ServiceEndpoint se = null;
 			try {
-				se = iname.Discover();
+				se = iname.Discover().FirstOrDefault();
 			} catch (WebException ex) {
 				if (ex.Message.Contains("remote name could not be resolved"))
 					Assert.Ignore("This test requires a network connection.");

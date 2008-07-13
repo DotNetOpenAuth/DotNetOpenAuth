@@ -36,25 +36,31 @@ namespace DotNetOpenId.Yadis {
 			}
 		}
 
-		internal ServiceEndpoint CreateServiceEndpoint(UriIdentifier claimedIdentifier) {
-			return createServiceEndpoint(claimedIdentifier);
+		internal IEnumerable<ServiceEndpoint> CreateServiceEndpoints(UriIdentifier claimedIdentifier) {
+			return createServiceEndpoints(claimedIdentifier);
 		}
 
-		internal ServiceEndpoint CreateServiceEndpoint(XriIdentifier userSuppliedIdentifier) {
-			return createServiceEndpoint(userSuppliedIdentifier);
+		internal IEnumerable<ServiceEndpoint> CreateServiceEndpoints(XriIdentifier userSuppliedIdentifier) {
+			return createServiceEndpoints(userSuppliedIdentifier);
 		}
 
 		const bool performCIDVerification = true;
 
-		ServiceEndpoint createServiceEndpoint(Identifier userSuppliedOrClaimedIdentifier) {
+		IEnumerable<ServiceEndpoint> createServiceEndpoints(Identifier userSuppliedOrClaimedIdentifier) {
 			// First search for OP Identifier service elements
+			bool opIdentifierServiceFound = false;
 			foreach (var service in findOPIdentifierServices()) {
+				opIdentifierServiceFound = true;
 				foreach (var uri in service.UriElements) {
 					var protocol = Util.FindBestVersion(p => p.OPIdentifierServiceTypeURI, service.TypeElementUris);
-					return new ServiceEndpoint(protocol.ClaimedIdentifierForOPIdentifier, uri.Uri, 
+					yield return new ServiceEndpoint(protocol.ClaimedIdentifierForOPIdentifier, uri.Uri, 
 						protocol.ClaimedIdentifierForOPIdentifier, service.TypeElementUris);
 				}
 			}
+			// If any OP Identifier service elements were found, we must not proceed
+			// to return any Claimed Identifier services.
+			if (opIdentifierServiceFound) yield break;
+
 			// Since we could not find an OP Identifier service element,
 			// search for a Claimed Identifier element.
 			foreach (var service in findClaimedIdentifierServices()) {
@@ -65,7 +71,7 @@ namespace DotNetOpenId.Yadis {
 							if (TraceUtil.Switch.TraceWarning) {
 								Trace.TraceWarning(Strings.MissingCanonicalIDElement, userSuppliedOrClaimedIdentifier);
 							}
-							return null;
+							break; // skip on to next service
 						}
 						// In the case of XRI names, the ClaimedId is actually the CanonicalID.
 						// Per http://dev.inames.net/wiki/XRI_CanonicalID_Verification as of 6/20/08, 
@@ -80,16 +86,18 @@ namespace DotNetOpenId.Yadis {
 								Trace.TraceInformation("Performing XRI CanonicalID verification on user supplied identifier {0}, canonical id {1}.", userSuppliedOrClaimedIdentifier, service.Xrd.CanonicalID);
 							}
 							Identifier canonicalId = service.Xrd.CanonicalID;
-							return canonicalId.Discover();
+							foreach (var endpoint in canonicalId.Discover()) {
+								yield return endpoint;
+							}
+							yield break;
 						} else {
 							userSuppliedOrClaimedIdentifier = service.Xrd.CanonicalID;
 						}
 					}
-					return new ServiceEndpoint(userSuppliedOrClaimedIdentifier, uri.Uri, 
+					yield return new ServiceEndpoint(userSuppliedOrClaimedIdentifier, uri.Uri, 
 						service.ProviderLocalIdentifier, service.TypeElementUris);
 				}
 			}
-			return null;
 		}
 
 		internal IEnumerable<RelyingPartyReceivingEndpoint> FindRelyingPartyReceivingEndpoints() {

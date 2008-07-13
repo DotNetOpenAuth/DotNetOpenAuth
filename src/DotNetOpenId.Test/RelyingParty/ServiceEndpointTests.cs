@@ -81,6 +81,11 @@ namespace DotNetOpenId.Test.RelyingParty {
 			Assert.AreNotEqual(se, se3);
 			se3 = new ServiceEndpoint(claimedId, providerEndpoint, localId, v11TypeUris);
 			Assert.AreNotEqual(se, se3);
+
+			// make sure that Collection<T>.Contains works as desired.
+			List<ServiceEndpoint> list = new List<ServiceEndpoint>();
+			list.Add(se);
+			Assert.IsTrue(list.Contains(se2));
 		}
 	}
 }

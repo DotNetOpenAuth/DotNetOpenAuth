@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using NUnit.Framework;
-using DotNetOpenId.RelyingParty;
+using System.Linq;
 using System.Net;
 using DotNetOpenId.Extensions.SimpleRegistration;
+using DotNetOpenId.RelyingParty;
+using NUnit.Framework;
 
 namespace DotNetOpenId.Test {
 	[TestFixture]
@@ -72,7 +71,7 @@ namespace DotNetOpenId.Test {
 			Identifier idToDiscover = useRedirect ? userSuppliedIdentifier : claimedId;
 			// confirm the page exists (validates the test)
 			WebRequest.Create(idToDiscover).GetResponse().Close();
-			ServiceEndpoint se = idToDiscover.Discover();
+			ServiceEndpoint se = idToDiscover.Discover().FirstOrDefault();
 			Assert.IsNotNull(se, url + " failed to be discovered.");
 			Assert.AreSame(protocol, se.Protocol);
 			Assert.AreEqual(claimedId, se.ClaimedIdentifier);
@@ -96,7 +95,7 @@ namespace DotNetOpenId.Test {
 		void failDiscover(string url) {
 			UriIdentifier userSuppliedId = TestSupport.GetFullUrl(url);
 			WebRequest.Create((Uri)userSuppliedId).GetResponse().Close(); // confirm the page exists ...
-			Assert.IsNull(userSuppliedId.Discover()); // ... but that no endpoint info is discoverable
+			Assert.AreEqual(0, userSuppliedId.Discover().Count()); // ... but that no endpoint info is discoverable
 		}
 		void failDiscoverHtml(string scenario) {
 			failDiscover("htmldiscovery/" + scenario + ".aspx");

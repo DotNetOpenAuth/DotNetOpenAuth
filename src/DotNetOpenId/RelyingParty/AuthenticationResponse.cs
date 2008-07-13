@@ -256,10 +256,11 @@ namespace DotNetOpenId.RelyingParty {
 				if (tokenEndpoint == null ||
 					tokenEndpoint.ClaimedIdentifier == tokenEndpoint.Protocol.ClaimedIdentifierForOPIdentifier) {
 					Identifier claimedIdentifier = Util.GetRequiredArg(query, responseEndpoint.Protocol.openid.claimed_id);
-					ServiceEndpoint claimedEndpoint = claimedIdentifier.Discover();
-					// Compare the two ServiceEndpoints to make sure they are the same.
-					if (responseEndpoint != claimedEndpoint)
+					List<ServiceEndpoint> discoveredEndpoints = new List<ServiceEndpoint>(claimedIdentifier.Discover());
+					// Make sure the response endpoint matches one of the discovered endpoints.
+					if (!discoveredEndpoints.Contains(responseEndpoint)) {
 						throw new OpenIdException(Strings.IssuedAssertionFailsIdentifierDiscovery);
+					}
 				} else {
 					// Check that the assertion matches the service endpoint we know about.
 					if (responseEndpoint != tokenEndpoint)

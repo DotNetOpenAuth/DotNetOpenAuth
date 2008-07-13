@@ -152,19 +152,24 @@ namespace DotNetOpenId {
 				providerLocalIdentifier, typeURIs);
 		}
 
-		internal override ServiceEndpoint Discover() {
+		internal override IEnumerable<ServiceEndpoint> Discover() {
+			List<ServiceEndpoint> endpoints = new List<ServiceEndpoint>();
 			// Attempt YADIS discovery
 			DiscoveryResult yadisResult = Yadis.Yadis.Discover(this);
 			if (yadisResult != null) {
 				if (yadisResult.IsXrds) {
 					XrdsDocument xrds = new XrdsDocument(yadisResult.ResponseText);
-					ServiceEndpoint ep = xrds.CreateServiceEndpoint(yadisResult.NormalizedUri);
-					if (ep != null) return ep;
+					endpoints.AddRange(xrds.CreateServiceEndpoints(yadisResult.NormalizedUri));
 				}
 				// Failing YADIS discovery of an XRDS document, we try HTML discovery.
-				return DiscoverFromHtml(yadisResult.NormalizedUri, yadisResult.ResponseText);
+				if (endpoints.Count == 0) {
+					ServiceEndpoint ep = DiscoverFromHtml(yadisResult.NormalizedUri, yadisResult.ResponseText);
+					if (ep != null) {
+						endpoints.Add(ep);
+					}
+				}
 			}
-			return null;
+			return endpoints;
 		}
 
 		public override bool Equals(object obj) {

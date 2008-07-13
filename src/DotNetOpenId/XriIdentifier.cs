@@ -73,8 +73,8 @@ namespace DotNetOpenId {
 			return new XrdsDocument(XmlReader.Create(xrdsResponse.ResponseStream));
 		}
 
-		internal override ServiceEndpoint Discover() {
-			return downloadXrds().CreateServiceEndpoint(this);
+		internal override IEnumerable<ServiceEndpoint> Discover() {
+			return downloadXrds().CreateServiceEndpoints(this);
 		}
 
 		public override bool Equals(object obj) {
