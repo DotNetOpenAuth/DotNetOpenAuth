@@ -17,7 +17,7 @@ namespace DotNetOpenId.RelyingParty {
 		IRelyingPartyApplicationStore store;
 		Uri request;
 		IDictionary<string, string> query;
-		MessageEncoder encoder;
+		MessageEncoder encoder = new MessageEncoder();
 
 		/// <summary>
 		/// Constructs an OpenId consumer that uses the current HttpContext request
@@ -69,7 +69,6 @@ namespace DotNetOpenId.RelyingParty {
 				this.request = requestUrl;
 				this.query = query;
 			}
-			this.encoder = new MessageEncoder();
 		}
 
 		/// <summary>
@@ -165,7 +164,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// Gets the result of a user agent's visit to his OpenId provider in an
 		/// authentication attempt.  Null if no response is available.
 		/// </summary>
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)] // getter does work
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)] // getter does lots of processing, so avoid debugger calling it.
 		public IAuthenticationResponse Response {
 			get {
 				if (response == null && isAuthenticationResponseReady) {
@@ -178,6 +177,30 @@ namespace DotNetOpenId.RelyingParty {
 					}
 				}
 				return response;
+			}
+		}
+
+		private Comparison<IProviderEndpoint> endpointSorter = DefaultSorter;
+		/// <summary>
+		/// Gets/sets the ordering routine that will determine which XRDS 
+		/// Service element to try first 
+		/// </summary>
+		public Comparison<IProviderEndpoint> EndpointSorter {
+			get { return endpointSorter; }
+			set {
+				if (value == null) throw new ArgumentNullException("value");
+				endpointSorter = value;
+			}
+		}
+		/// <summary>
+		/// Gets an XRDS sorting routine that uses the XRDS Service/@Priority 
+		/// attribute to determine order.
+		/// </summary>
+		public static Comparison<IProviderEndpoint> DefaultSorter {
+			get {
+				return (se1, se2) => {
+					return -1;
+				};
 			}
 		}
 
