@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
-using DotNetOpenId;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Globalization;
 using System.Web;
-using System.Diagnostics;
-using DotNetOpenId.Extensions;
 
 namespace DotNetOpenId.RelyingParty {
 	/// <summary>
@@ -53,8 +51,9 @@ namespace DotNetOpenId.RelyingParty {
 				AddCallbackArguments(DotNetOpenId.RelyingParty.Token.TokenKey, token);
 		}
 		internal static AuthenticationRequest Create(Identifier userSuppliedIdentifier,
-			Realm realm, Uri returnToUrl, IRelyingPartyApplicationStore store, MessageEncoder encoder) {
+			OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl, IRelyingPartyApplicationStore store) {
 			if (userSuppliedIdentifier == null) throw new ArgumentNullException("userSuppliedIdentifier");
+			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
 			if (realm == null) throw new ArgumentNullException("realm");
 
 			if (TraceUtil.Switch.TraceInfo) {
@@ -80,7 +79,7 @@ namespace DotNetOpenId.RelyingParty {
 			List<ServiceEndpoint> endpoints = new List<ServiceEndpoint>(userSuppliedIdentifier.Discover());
 			if (endpoints.Count == 0)
 				throw new OpenIdException(Strings.OpenIdEndpointNotFound);
-			ServiceEndpoint endpoint = endpoints[0]; // select first one (for now).
+			ServiceEndpoint endpoint = selectEndpoint(endpoints.AsReadOnly(), relyingParty);
 			if (TraceUtil.Switch.TraceVerbose) {
 				Trace.Indent();
 				Trace.TraceInformation("Discovered provider endpoint: {0}", endpoint);
@@ -97,7 +96,31 @@ namespace DotNetOpenId.RelyingParty {
 			return new AuthenticationRequest(
 				new Token(endpoint).Serialize(store),
 				store != null ? getAssociation(endpoint, store) : null,
-				endpoint, realm, returnToUrl, encoder);
+				endpoint, realm, returnToUrl, relyingParty.Encoder);
+		}
+
+		/// <summary>
+		/// Chooses which provider endpoint is the best one to use.
+		/// </summary>
+		/// <returns>The best endpoint, or null if no acceptable endpoints were found.</returns>
+		private static ServiceEndpoint selectEndpoint(ReadOnlyCollection<ServiceEndpoint> endpoints, OpenIdRelyingParty relyingParty) {
+			if (endpoints == null) throw new ArgumentNullException("endpoints");
+			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
+
+			// Filter the endpoints based on criteria given by the host web site.
+			List<IXrdsProviderEndpoint> filteredEndpoints = new List<IXrdsProviderEndpoint>(endpoints.Count);
+			var filter = relyingParty.EndpointFilter;
+			foreach (ServiceEndpoint endpoint in endpoints) {
+				if (filter == null || filter(endpoint)) {
+					filteredEndpoints.Add(endpoint);
+				}
+			}
+
+			// Sort endpoints so that the first one in the list is the most preferred one.
+			filteredEndpoints.Sort(relyingParty.EndpointSorter);
+
+			// Now take the best one.  The filter may have removed all endpoints.
+			return filteredEndpoints.Count > 0 ? (ServiceEndpoint)filteredEndpoints[0] : null;
 		}
 		static Association getAssociation(ServiceEndpoint provider, IRelyingPartyApplicationStore store) {
 			if (provider == null) throw new ArgumentNullException("provider");
@@ -185,7 +208,7 @@ namespace DotNetOpenId.RelyingParty {
 					qsArgs.Add(protocol.openid.assoc_handle, this.assoc.Handle);
 
 				// Add on extension arguments
-				foreach(var pair in OutgoingExtensions.GetArgumentsToSend(true))
+				foreach (var pair in OutgoingExtensions.GetArgumentsToSend(true))
 					qsArgs.Add(pair.Key, pair.Value);
 
 				var request = new IndirectMessageRequest(this.endpoint.ProviderEndpoint, qsArgs);
@@ -227,7 +250,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// This method requires an ASP.NET HttpContext.
 		/// </remarks>
 		public void RedirectToProvider() {
-			if (HttpContext.Current == null || HttpContext.Current.Response == null) 
+			if (HttpContext.Current == null || HttpContext.Current.Response == null)
 				throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
 			RedirectingResponse.Send();
 		}

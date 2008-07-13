@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using DotNetOpenId.RelyingParty;
 using NUnit.Framework;
-using DotNetOpenId.RelyingParty;
-using System.Threading;
 
 namespace DotNetOpenId.Test.RelyingParty {
 	[TestFixture]
@@ -14,7 +10,8 @@ namespace DotNetOpenId.Test.RelyingParty {
 				TestSupport.GetIdentityUrl(scenario, version),
 				TestSupport.GetFullUrl(TestSupport.ProviderPage),
 				TestSupport.GetDelegateUrl(scenario),
-				new[] { protocol.ClaimedIdentifierServiceTypeURI }
+				new[] { protocol.ClaimedIdentifierServiceTypeURI },
+				10
 				);
 			return ep;
 		}

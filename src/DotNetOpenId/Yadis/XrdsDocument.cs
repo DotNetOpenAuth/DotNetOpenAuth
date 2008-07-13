@@ -1,11 +1,10 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Xml;
 using System.Xml.XPath;
-using System.Collections.Generic;
-using DotNetOpenId.RelyingParty;
 using DotNetOpenId.Provider;
-using System.Diagnostics;
+using DotNetOpenId.RelyingParty;
 
 namespace DotNetOpenId.Yadis {
 	class XrdsDocument : XrdsNode {
@@ -54,7 +53,7 @@ namespace DotNetOpenId.Yadis {
 				foreach (var uri in service.UriElements) {
 					var protocol = Util.FindBestVersion(p => p.OPIdentifierServiceTypeURI, service.TypeElementUris);
 					yield return new ServiceEndpoint(protocol.ClaimedIdentifierForOPIdentifier, uri.Uri, 
-						protocol.ClaimedIdentifierForOPIdentifier, service.TypeElementUris);
+						protocol.ClaimedIdentifierForOPIdentifier, service.TypeElementUris, service.Priority);
 				}
 			}
 			// If any OP Identifier service elements were found, we must not proceed
@@ -95,7 +94,7 @@ namespace DotNetOpenId.Yadis {
 						}
 					}
 					yield return new ServiceEndpoint(userSuppliedOrClaimedIdentifier, uri.Uri, 
-						service.ProviderLocalIdentifier, service.TypeElementUris);
+						service.ProviderLocalIdentifier, service.TypeElementUris, service.Priority);
 				}
 			}
 		}

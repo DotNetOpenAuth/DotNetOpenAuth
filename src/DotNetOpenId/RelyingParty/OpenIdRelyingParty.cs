@@ -1,12 +1,8 @@
 using System;
-using System.Collections.Specialized;
-using System.Web.SessionState;
-using DotNetOpenId;
-using System.Web;
 using System.Collections.Generic;
-using DotNetOpenId.Provider;
-using System.Globalization;
+using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Web;
 
 namespace DotNetOpenId.RelyingParty {
 	/// <summary>
@@ -92,7 +88,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// send to the user agent to initiate the authentication.
 		/// </returns>
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl) {
-			return AuthenticationRequest.Create(userSuppliedIdentifier, realm, returnToUrl, store, encoder);
+			return AuthenticationRequest.Create(userSuppliedIdentifier, this, realm, returnToUrl, store);
 		}
 
 		/// <remarks>
@@ -180,12 +176,21 @@ namespace DotNetOpenId.RelyingParty {
 			}
 		}
 
-		private Comparison<IProviderEndpoint> endpointSorter = DefaultSorter;
+		/// <summary>
+		/// The message encoder to use.
+		/// </summary>
+		internal MessageEncoder Encoder { get { return encoder; } }
+
+		private Comparison<IXrdsProviderEndpoint> endpointSorter = DefaultSorter;
 		/// <summary>
 		/// Gets/sets the ordering routine that will determine which XRDS 
 		/// Service element to try first 
 		/// </summary>
-		public Comparison<IProviderEndpoint> EndpointSorter {
+		/// <remarks>
+		/// This may never be null.  To reset to default behavior this property 
+		/// can be set to the value of <see cref="DefaultSorter"/>.
+		/// </remarks>
+		public Comparison<IXrdsProviderEndpoint> EndpointSorter {
 			get { return endpointSorter; }
 			set {
 				if (value == null) throw new ArgumentNullException("value");
@@ -196,13 +201,35 @@ namespace DotNetOpenId.RelyingParty {
 		/// Gets an XRDS sorting routine that uses the XRDS Service/@Priority 
 		/// attribute to determine order.
 		/// </summary>
-		public static Comparison<IProviderEndpoint> DefaultSorter {
+		/// <remarks>
+		/// Endpoints lacking any priority value are sorted to the end of the list.
+		/// </remarks>
+		public static Comparison<IXrdsProviderEndpoint> DefaultSorter {
 			get {
 				return (se1, se2) => {
-					return -1;
+					if (se1.Priority.HasValue && se2.Priority.HasValue) {
+						return se1.Priority.Value.CompareTo(se2.Priority.Value);
+					} else {
+						if (se1.Priority.HasValue) {
+							return -1;
+						} else if (se2.Priority.HasValue) {
+							return 1;
+						} else {
+							return 0;
+						}
+					}
 				};
 			}
 		}
+
+		/// <summary>
+		/// Provides a way to optionally filter the providers that may be used in authenticating a user.
+		/// </summary>
+		/// <remarks>
+		/// If provided, the delegate should return true to accept an endpoint, and false to reject it.
+		/// If null, all identity providers will be accepted.  This is the default.
+		/// </remarks>
+		public EndpointSelector EndpointFilter { get; set; }
 
 		const string associationStoreKey = "DotNetOpenId.RelyingParty.RelyingParty.AssociationStore";
 		/// <summary>
@@ -229,4 +256,14 @@ namespace DotNetOpenId.RelyingParty {
 			}
 		}
 	}
+
+	/// <summary>
+	/// A delegate that decides whether a given OpenID Provider endpoint may be
+	/// considered for authenticating a user.
+	/// </summary>
+	/// <returns>
+	/// True if the endpoint should be considered.  
+	/// False to remove it from the pool of acceptable providers.
+	/// </returns>
+	public delegate bool EndpointSelector(IXrdsProviderEndpoint endpoint);
 }

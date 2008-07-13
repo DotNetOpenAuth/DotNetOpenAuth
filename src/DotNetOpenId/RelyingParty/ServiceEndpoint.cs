@@ -15,7 +15,7 @@ namespace DotNetOpenId.RelyingParty {
 	/// Represents information discovered about a user-supplied Identifier.
 	/// </summary>
 	[DebuggerDisplay("ClaimedIdentifier: {ClaimedIdentifier}, ProviderEndpoint: {ProviderEndpoint}, OpenId: {Protocol.Version}")]
-	internal class ServiceEndpoint : IProviderEndpoint {
+	internal class ServiceEndpoint : IXrdsProviderEndpoint {
 		/// <summary>
 		/// The URL which accepts OpenID Authentication protocol messages.
 		/// </summary>
@@ -56,7 +56,8 @@ namespace DotNetOpenId.RelyingParty {
 		public string[] ProviderSupportedServiceTypeUris { get; private set; }
 
 		internal ServiceEndpoint(Identifier claimedIdentifier, Uri providerEndpoint,
-			Identifier providerLocalIdentifier, string[] providerSupportedServiceTypeUris) {
+			Identifier providerLocalIdentifier, string[] providerSupportedServiceTypeUris,
+			int? priority) {
 			if (claimedIdentifier == null) throw new ArgumentNullException("claimedIdentifier");
 			if (providerEndpoint == null) throw new ArgumentNullException("providerEndpoint");
 			if (providerSupportedServiceTypeUris == null) throw new ArgumentNullException("providerSupportedServiceTypeUris");
@@ -64,6 +65,7 @@ namespace DotNetOpenId.RelyingParty {
 			ProviderEndpoint = providerEndpoint;
 			ProviderLocalIdentifier = providerLocalIdentifier ?? claimedIdentifier;
 			ProviderSupportedServiceTypeUris = providerSupportedServiceTypeUris;
+			this.priority = priority;
 		}
 		ServiceEndpoint(Identifier claimedIdentifier, Uri providerEndpoint,
 			Identifier providerLocalIdentifier, Protocol protocol) {
@@ -194,5 +196,18 @@ namespace DotNetOpenId.RelyingParty {
 		public override string ToString() {
 			return ProviderEndpoint.AbsoluteUri;
 		}
+
+		#region IXrdsProviderEndpoint Members
+
+		private int? priority;
+		/// <summary>
+		/// Gets the priority associated with this service that may have been given
+		/// in the XRDS document.
+		/// </summary>
+		int? IXrdsProviderEndpoint.Priority {
+			get { return priority; }
+		}
+
+		#endregion
 	}
 }

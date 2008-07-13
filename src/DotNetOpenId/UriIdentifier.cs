@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
+using System.Web.UI.HtmlControls;
 using DotNetOpenId.RelyingParty;
 using DotNetOpenId.Yadis;
-using System.Collections.Specialized;
-using System.Web.UI.HtmlControls;
-using System.Text.RegularExpressions;
-using System.Diagnostics;
 
 namespace DotNetOpenId {
 	class UriIdentifier : Identifier {
@@ -149,7 +147,7 @@ namespace DotNetOpenId {
 			// Choose the TypeURI to match the OpenID version detected.
 			string[] typeURIs = { discoveredProtocol.ClaimedIdentifierServiceTypeURI };
 			return new ServiceEndpoint(claimedIdentifier, providerEndpoint, 
-				providerLocalIdentifier, typeURIs);
+				providerLocalIdentifier, typeURIs, (int?)null);
 		}
 
 		internal override IEnumerable<ServiceEndpoint> Discover() {
