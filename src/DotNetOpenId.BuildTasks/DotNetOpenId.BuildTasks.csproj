@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChangeProjectReferenceToAssemblyReference.cs" />
+    <Compile Include="CompareFiles.cs" />
     <Compile Include="GetBuildVersion.cs" />
     <Compile Include="SetEnvironmentVariable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

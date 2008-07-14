@@ -10,6 +10,7 @@ namespace DotNetOpenId.Test {
 	[TestFixture]
 	public class UriIdentifierTests {
 		string goodUri = "http://blog.nerdbank.net/";
+		string relativeUri = "host/path";
 		string badUri = "som%-)830w8vf/?.<>,ewackedURI";
 
 		[SetUp]
@@ -48,6 +49,7 @@ namespace DotNetOpenId.Test {
 		public void IsValid() {
 			Assert.IsTrue(UriIdentifier.IsValidUri(goodUri));
 			Assert.IsFalse(UriIdentifier.IsValidUri(badUri));
+			Assert.IsTrue(UriIdentifier.IsValidUri(relativeUri), "URL lacking http:// prefix should have worked anyway.");
 		}
 
 		[Test]
@@ -61,6 +63,15 @@ namespace DotNetOpenId.Test {
 			Assert.AreNotEqual(new UriIdentifier(goodUri), new UriIdentifier(goodUri + "a"));
 			Assert.AreNotEqual(null, new UriIdentifier(goodUri));
 			Assert.AreNotEqual(goodUri, new UriIdentifier(goodUri));
+		}
+
+		[Test]
+		public void UnicodeTest() {
+			string unicodeUrl = "http://nerdbank.org/opaffirmative/崎村.aspx";
+			Assert.IsTrue(UriIdentifier.IsValidUri(unicodeUrl));
+			Identifier id;
+			Assert.IsTrue(UriIdentifier.TryParse(unicodeUrl, out id));
+			Assert.AreEqual(Uri.EscapeUriString(unicodeUrl), id.ToString());
 		}
 
 		void discover(string url, ProtocolVersion version, Identifier expectedLocalId, bool expectSreg, bool useRedirect) {

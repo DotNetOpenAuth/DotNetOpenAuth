@@ -146,8 +146,31 @@
 
 	</Target>
 
-	<Target Name="Release" DependsOnTargets="Nightly">
-
+	<!-- the following targets are a work in development and are not yet reliable -->
+	
+	<Target Name="TagVersion" DependsOnTargets="GetBuildVersion">
+		<!-- Tag this version -->
+		<Exec Command='git tag -s -m "Tagged v$(BuildVersion)" v$(BuildVersion)' />
+	</Target>
+	
+	<Target Name="Release" DependsOnTargets="Nightly;GetBuildVersion;TagVersion">
+		<!-- Detect whether any unit tests failed during the test run 
+		     and abort if we're not running clean. -->
+		<!-- TODO: Set the UnitTestFailureCount property somehow -->
+		<PropertyGroup>
+			<UnitTestFailureCount>0</UnitTestFailureCount>
+		</PropertyGroup>
+		<Error Condition=" $(UnitTestFailureCount) &gt; 0 " Text="$(UnitTestFailureCount) unit tests failed.  Release aborted." />
+		
+		<!-- Publish the drop as a release -->
 	</Target>
 
+	<Target Name="PublishLiveSamplesToWebSite" DependsOnTargets="BuildSamples">
+		<Error Text="This target is not implemented yet." />
+	</Target>
+
+	<Target Name="PublishDropToWebSite" DependsOnTargets="Drop">
+		<Error Condition=" '$(WebDropDirectory)' == '' " Text="The WebDropDireectory property is mandatory for this target." />
+		<Copy SourceFiles="$(DropZip)" DestinationFolder="$(WebDropDirectory)" SkipUnchangedFiles="true" />
+	</Target>
 </Project>
