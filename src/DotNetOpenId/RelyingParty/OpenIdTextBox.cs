@@ -585,7 +585,7 @@ namespace DotNetOpenId.RelyingParty
 				string logoUrl = Page.ClientScript.GetWebResourceUrl(
 					typeof(OpenIdTextBox), EmbeddedLogoResourceName);
 				WrappedTextBox.Style["background"] = string.Format(CultureInfo.InvariantCulture,
-					"url({0}) no-repeat", logoUrl);
+					"url({0}) no-repeat", HttpUtility.HtmlEncode(logoUrl));
 				WrappedTextBox.Style["background-position"] = "0 50%";
 				WrappedTextBox.Style[HtmlTextWriterStyle.PaddingLeft] = "18px";
 				WrappedTextBox.Style[HtmlTextWriterStyle.BorderStyle] = "solid";
@@ -599,10 +599,17 @@ namespace DotNetOpenId.RelyingParty
 		/// </summary>
 		protected IAuthenticationRequest Request;
 		/// <summary>
-		/// Constructs the authentication request and adds the Simple Registration extension arguments.
+		/// Constructs the authentication request and returns it.
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
-		protected void PrepareAuthenticationRequest() {
+		/// <remarks>
+		/// <para>This method need not be called before calling the <see cref="LogOn"/> method,
+		/// but is offered in the event that adding extensions to the request is desired.</para>
+		/// <para>The Simple Registration extension arguments are added to the request 
+		/// before returning if <see cref="EnableRequestProfile"/> is set to true.</para>
+		/// </remarks>
+		public IAuthenticationRequest CreateRequest() {
+			if (Request != null)
+				throw new InvalidOperationException(Strings.CreateRequestAlreadyCalled);
 			if (string.IsNullOrEmpty(Text))
 				throw new InvalidOperationException(DotNetOpenId.Strings.OpenIdTextBoxEmpty);
 
@@ -635,6 +642,8 @@ namespace DotNetOpenId.RelyingParty
 			} catch (OpenIdException ex) {
 				OnFailed(new FailedAuthenticationResponse(ex));
 			}
+
+			return Request;
 		}
 
 		/// <summary>
@@ -645,7 +654,7 @@ namespace DotNetOpenId.RelyingParty
 		public void LogOn()
 		{
 			if (Request == null)
-				PrepareAuthenticationRequest();
+				CreateRequest();
 			if (Request != null)
 				Request.RedirectToProvider();
 		}

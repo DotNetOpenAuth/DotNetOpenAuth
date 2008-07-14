@@ -13,7 +13,9 @@ namespace DotNetOpenId.Provider {
 
 			message.Fields[protocol.openidnp.mode] = protocol.Args.Mode.id_res;
 			message.Fields[protocol.openidnp.identity] = localIdentifier;
-			message.Fields[protocol.openidnp.return_to] = message.RedirectUrl.AbsoluteUri;
+			// We use OriginalString for the return_to to help protect against interop
+			// problems with RPs that require an explicit port, or who knows what else.
+			message.Fields[protocol.openidnp.return_to] = message.RedirectUrl.OriginalString;
 			message.Signed.AddRange(new[]{
 					protocol.openidnp.return_to,
 					protocol.openidnp.identity,
