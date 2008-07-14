@@ -13,21 +13,22 @@ namespace DotNetOpenId.Test.RelyingParty {
 		Identifier localId = "http://localid.someprovider.com";
 		string[] v20TypeUris = { Protocol.v20.ClaimedIdentifierServiceTypeURI };
 		string[] v11TypeUris = { Protocol.v11.ClaimedIdentifierServiceTypeURI };
-		int priority = 10;
+		int servicePriority = 10;
+		int uriPriority = 10;
 
 		[Test]
 		public void Ctor() {
-			ServiceEndpoint se = new ServiceEndpoint(claimedId, providerEndpoint, localId, v20TypeUris, priority);
+			ServiceEndpoint se = new ServiceEndpoint(claimedId, providerEndpoint, localId, v20TypeUris, servicePriority, uriPriority);
 			Assert.AreSame(claimedId, se.ClaimedIdentifier);
 			Assert.AreSame(providerEndpoint, se.ProviderEndpoint);
 			Assert.AreSame(localId, se.ProviderLocalIdentifier);
 			Assert.AreSame(v20TypeUris, se.ProviderSupportedServiceTypeUris);
-			Assert.AreEqual(priority, ((IXrdsProviderEndpoint)se).Priority);
+			Assert.AreEqual(servicePriority, ((IXrdsProviderEndpoint)se).ServicePriority);
 		}
 
 		[Test]
 		public void CtorImpliedLocalIdentifier() {
-			ServiceEndpoint se = new ServiceEndpoint(claimedId, providerEndpoint, null, v20TypeUris, priority);
+			ServiceEndpoint se = new ServiceEndpoint(claimedId, providerEndpoint, null, v20TypeUris, servicePriority, uriPriority);
 			Assert.AreSame(claimedId, se.ClaimedIdentifier);
 			Assert.AreSame(providerEndpoint, se.ProviderEndpoint);
 			Assert.AreSame(claimedId, se.ProviderLocalIdentifier);
@@ -36,25 +37,25 @@ namespace DotNetOpenId.Test.RelyingParty {
 
 		[Test]
 		public void ProtocolDetection() {
-			ServiceEndpoint se = new ServiceEndpoint(claimedId, providerEndpoint, localId, v20TypeUris, priority);
+			ServiceEndpoint se = new ServiceEndpoint(claimedId, providerEndpoint, localId, v20TypeUris, servicePriority, uriPriority);
 			Assert.AreSame(Protocol.v20, se.Protocol);
 			se = new ServiceEndpoint(claimedId, providerEndpoint, localId,
-				new[] { Protocol.v20.OPIdentifierServiceTypeURI }, priority);
+				new[] { Protocol.v20.OPIdentifierServiceTypeURI }, servicePriority, uriPriority);
 			Assert.AreSame(Protocol.v20, se.Protocol);
-			se = new ServiceEndpoint(claimedId, providerEndpoint, localId, v11TypeUris, priority);
+			se = new ServiceEndpoint(claimedId, providerEndpoint, localId, v11TypeUris, servicePriority, uriPriority);
 			Assert.AreSame(Protocol.v11, se.Protocol);
 		}
 
 		[Test, ExpectedException(typeof(InvalidOperationException))]
 		public void ProtocolDetectionWithoutClues() {
 			ServiceEndpoint se = new ServiceEndpoint(claimedId, providerEndpoint, localId,
-				new[] { Protocol.v20.HtmlDiscoveryLocalIdKey }, priority); // random type URI irrelevant to detection
+				new[] { Protocol.v20.HtmlDiscoveryLocalIdKey }, servicePriority, uriPriority); // random type URI irrelevant to detection
 			Protocol p = se.Protocol;
 		}
 
 		[Test]
 		public void Serialization() {
-			ServiceEndpoint se = new ServiceEndpoint(claimedId, providerEndpoint, localId, v20TypeUris, priority);
+			ServiceEndpoint se = new ServiceEndpoint(claimedId, providerEndpoint, localId, v20TypeUris, servicePriority, uriPriority);
 			StringBuilder sb = new StringBuilder();
 			using (StringWriter sw = new StringWriter(sb)) {
 				se.Serialize(sw);
@@ -68,19 +69,19 @@ namespace DotNetOpenId.Test.RelyingParty {
 
 		[Test]
 		public void EqualsTests() {
-			ServiceEndpoint se = new ServiceEndpoint(claimedId, providerEndpoint, localId, v20TypeUris, priority);
-			ServiceEndpoint se2 = new ServiceEndpoint(claimedId, providerEndpoint, localId, v20TypeUris, (int?)null);
+			ServiceEndpoint se = new ServiceEndpoint(claimedId, providerEndpoint, localId, v20TypeUris, servicePriority, uriPriority);
+			ServiceEndpoint se2 = new ServiceEndpoint(claimedId, providerEndpoint, localId, v20TypeUris, (int?)null, (int?)null);
 			Assert.AreEqual(se2, se);
 			Assert.AreNotEqual(se, null);
 			Assert.AreNotEqual(null, se);
 
-			ServiceEndpoint se3 = new ServiceEndpoint(claimedId + "a", providerEndpoint, localId, v20TypeUris, priority);
+			ServiceEndpoint se3 = new ServiceEndpoint(claimedId + "a", providerEndpoint, localId, v20TypeUris, servicePriority, uriPriority);
 			Assert.AreNotEqual(se, se3);
-			se3 = new ServiceEndpoint(claimedId, new Uri(providerEndpoint.AbsoluteUri + "a"), localId, v20TypeUris, priority);
+			se3 = new ServiceEndpoint(claimedId, new Uri(providerEndpoint.AbsoluteUri + "a"), localId, v20TypeUris, servicePriority, uriPriority);
 			Assert.AreNotEqual(se, se3);
-			se3 = new ServiceEndpoint(claimedId, providerEndpoint, localId + "a", v20TypeUris, priority);
+			se3 = new ServiceEndpoint(claimedId, providerEndpoint, localId + "a", v20TypeUris, servicePriority, uriPriority);
 			Assert.AreNotEqual(se, se3);
-			se3 = new ServiceEndpoint(claimedId, providerEndpoint, localId, v11TypeUris, priority);
+			se3 = new ServiceEndpoint(claimedId, providerEndpoint, localId, v11TypeUris, servicePriority, uriPriority);
 			Assert.AreNotEqual(se, se3);
 
 			// make sure that Collection<T>.Contains works as desired.

@@ -146,7 +146,7 @@ namespace DotNetOpenId {
 			// Choose the TypeURI to match the OpenID version detected.
 			string[] typeURIs = { discoveredProtocol.ClaimedIdentifierServiceTypeURI };
 			return new ServiceEndpoint(claimedIdentifier, providerEndpoint, 
-				providerLocalIdentifier, typeURIs, (int?)null);
+				providerLocalIdentifier, typeURIs, (int?)null, (int?)null);
 		}
 
 		internal override IEnumerable<ServiceEndpoint> Discover() {

@@ -57,7 +57,7 @@ namespace DotNetOpenId.RelyingParty {
 
 		internal ServiceEndpoint(Identifier claimedIdentifier, Uri providerEndpoint,
 			Identifier providerLocalIdentifier, string[] providerSupportedServiceTypeUris,
-			int? priority) {
+			int? servicePriority, int? uriPriority) {
 			if (claimedIdentifier == null) throw new ArgumentNullException("claimedIdentifier");
 			if (providerEndpoint == null) throw new ArgumentNullException("providerEndpoint");
 			if (providerSupportedServiceTypeUris == null) throw new ArgumentNullException("providerSupportedServiceTypeUris");
@@ -65,7 +65,8 @@ namespace DotNetOpenId.RelyingParty {
 			ProviderEndpoint = providerEndpoint;
 			ProviderLocalIdentifier = providerLocalIdentifier ?? claimedIdentifier;
 			ProviderSupportedServiceTypeUris = providerSupportedServiceTypeUris;
-			this.priority = priority;
+			this.servicePriority = servicePriority;
+			this.uriPriority = uriPriority;
 		}
 		ServiceEndpoint(Identifier claimedIdentifier, Uri providerEndpoint,
 			Identifier providerLocalIdentifier, Protocol protocol) {
@@ -201,13 +202,20 @@ namespace DotNetOpenId.RelyingParty {
 
 		#region IXrdsProviderEndpoint Members
 
-		private int? priority;
+		private int? servicePriority;
 		/// <summary>
 		/// Gets the priority associated with this service that may have been given
 		/// in the XRDS document.
 		/// </summary>
-		int? IXrdsProviderEndpoint.Priority {
-			get { return priority; }
+		int? IXrdsProviderEndpoint.ServicePriority {
+			get { return servicePriority; }
+		}
+		private int? uriPriority;
+		/// <summary>
+		/// Gets the priority associated with the service endpoint URL.
+		/// </summary>
+		int? IXrdsProviderEndpoint.UriPriority {
+			get { return uriPriority; }
 		}
 
 		#endregion

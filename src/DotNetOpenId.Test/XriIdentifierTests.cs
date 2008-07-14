@@ -80,25 +80,6 @@ namespace DotNetOpenId.Test {
 			return se;
 		}
 
-		UntrustedWebRequest.MockRequestResponse generateMockXrdsResponses(IDictionary<string, string> requestUriAndResponseBody) {
-			return (uri, body, acceptTypes) => {
-				string contentType = "text/xml; saml=false; https=false; charset=UTF-8";
-				string contentEncoding = null;
-				MemoryStream stream = new MemoryStream();
-				StreamWriter sw = new StreamWriter(stream);
-				Assert.IsNull(body);
-				string responseBody;
-				if (!requestUriAndResponseBody.TryGetValue(uri.AbsoluteUri, out responseBody)) {
-					Assert.Fail("Unexpected HTTP request: {0}", uri);
-				}
-				sw.Write(responseBody);
-				sw.Flush();
-				stream.Seek(0, SeekOrigin.Begin);
-				return new UntrustedWebResponse(uri, uri, new WebHeaderCollection(),
-					HttpStatusCode.OK, contentType, contentEncoding, stream);
-			};
-		}
-
 		[Test]
 		public void Discover() {
 			string xrds = @"<?xml version='1.0' encoding='UTF-8'?>
@@ -136,7 +117,7 @@ namespace DotNetOpenId.Test {
 				{"https://xri.net/=Arnott?_xrd_r=application/xrd%2Bxml;sep=false", xrds},
 				{"https://xri.net/=!9B72.7DD1.50A9.5CCD?_xrd_r=application/xrd%2Bxml;sep=false", xrds},
 			};
-			UntrustedWebRequest.MockRequests = generateMockXrdsResponses(mocks);
+			UntrustedWebRequest.MockRequests = TestSupport.GenerateMockXrdsResponses(mocks);
 
 			string expectedCanonicalId = "=!9B72.7DD1.50A9.5CCD";
 			ServiceEndpoint se = verifyCanonicalId("=Arnott", expectedCanonicalId);
@@ -361,7 +342,7 @@ uEyb50RJ7DWmXctSC0b3eymZ2lSXxAWNOsNy
   </X509Data>
  </KeyInfo>
 </XRD>";
-			UntrustedWebRequest.MockRequests = generateMockXrdsResponses(new Dictionary<string, string> {
+			UntrustedWebRequest.MockRequests = TestSupport.GenerateMockXrdsResponses(new Dictionary<string, string> {
 				{ "https://xri.net/@llli?_xrd_r=application/xrd%2Bxml;sep=false", llliResponse},
 				{ "https://xri.net/@!72CD.A072.157E.A9C6?_xrd_r=application/xrd%2Bxml;sep=false", llliResponse},
 
@@ -386,7 +367,7 @@ uEyb50RJ7DWmXctSC0b3eymZ2lSXxAWNOsNy
 
 		[Test]
 		public void DiscoveryCommunityInameDelegateWithoutCanonicalID() {
-			UntrustedWebRequest.MockRequests = generateMockXrdsResponses(new Dictionary<string, string> {
+			UntrustedWebRequest.MockRequests = TestSupport.GenerateMockXrdsResponses(new Dictionary<string, string> {
 				{ "https://xri.net/=Web*andrew.arnott?_xrd_r=application/xrd%2Bxml;sep=false", @"<?xml version='1.0' encoding='UTF-8'?>
 <XRD xmlns='xri://$xrd*($v*2.0)'>
  <Query>*andrew.arnott</Query>

@@ -11,6 +11,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 				TestSupport.GetFullUrl(TestSupport.ProviderPage),
 				TestSupport.GetDelegateUrl(scenario),
 				new[] { protocol.ClaimedIdentifierServiceTypeURI },
+				10,
 				10
 				);
 			return ep;

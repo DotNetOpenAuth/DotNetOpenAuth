@@ -56,6 +56,25 @@ public class TestSupport {
 	internal static AspNetHost Host { get; private set; }
 	internal static EncodingInterceptor Interceptor { get; private set; }
 
+	internal static UntrustedWebRequest.MockRequestResponse GenerateMockXrdsResponses(IDictionary<string, string> requestUriAndResponseBody) {
+		return (uri, body, acceptTypes) => {
+			string contentType = "text/xml; saml=false; https=false; charset=UTF-8";
+			string contentEncoding = null;
+			MemoryStream stream = new MemoryStream();
+			StreamWriter sw = new StreamWriter(stream);
+			Assert.IsNull(body);
+			string responseBody;
+			if (!requestUriAndResponseBody.TryGetValue(uri.AbsoluteUri, out responseBody)) {
+				Assert.Fail("Unexpected HTTP request: {0}", uri);
+			}
+			sw.Write(responseBody);
+			sw.Flush();
+			stream.Seek(0, SeekOrigin.Begin);
+			return new UntrustedWebResponse(uri, uri, new WebHeaderCollection(),
+				HttpStatusCode.OK, contentType, contentEncoding, stream);
+		};
+	}
+
 	[SetUp]
 	public void SetUp() {
 		Host = AspNetHost.CreateHost(TestSupport.TestWebDirectory);

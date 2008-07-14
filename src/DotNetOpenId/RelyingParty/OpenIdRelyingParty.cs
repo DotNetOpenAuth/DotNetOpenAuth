@@ -206,16 +206,36 @@ namespace DotNetOpenId.RelyingParty {
 		/// </remarks>
 		public static Comparison<IXrdsProviderEndpoint> DefaultSorter {
 			get {
+				// Sort first by Service/@priority, then by Service/Uri/@priority
 				return (se1, se2) => {
-					if (se1.Priority.HasValue && se2.Priority.HasValue) {
-						return se1.Priority.Value.CompareTo(se2.Priority.Value);
-					} else {
-						if (se1.Priority.HasValue) {
+					if (se1.ServicePriority.HasValue && se2.ServicePriority.HasValue) {
+						int result = se1.ServicePriority.Value.CompareTo(se2.ServicePriority.Value);
+						if (result != 0) return result;
+						if (se1.UriPriority.HasValue && se2.UriPriority.HasValue) {
+							return se1.UriPriority.Value.CompareTo(se2.UriPriority.Value);
+						} else if (se1.UriPriority.HasValue) {
 							return -1;
-						} else if (se2.Priority.HasValue) {
+						} else if (se2.UriPriority.HasValue) {
 							return 1;
 						} else {
 							return 0;
+						}
+					} else {
+						if (se1.ServicePriority.HasValue) {
+							return -1;
+						} else if (se2.ServicePriority.HasValue) {
+							return 1;
+						} else {
+							// neither service defines a priority, so base ordering by uri priority.
+							if (se1.UriPriority.HasValue && se2.UriPriority.HasValue) {
+								return se1.UriPriority.Value.CompareTo(se2.UriPriority.Value);
+							} else if (se1.UriPriority.HasValue) {
+								return -1;
+							} else if (se2.UriPriority.HasValue) {
+								return 1;
+							} else {
+								return 0;
+							}
 						}
 					}
 				};
