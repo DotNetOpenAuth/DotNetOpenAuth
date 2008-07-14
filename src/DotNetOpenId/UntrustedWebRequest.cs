@@ -3,9 +3,9 @@
 #endif
 namespace DotNetOpenId {
 	using System;
-	using System.Net;
+	using System.Diagnostics;
 	using System.IO;
-using System.Diagnostics;
+	using System.Net;
 
 	/// <summary>
 	/// A paranoid HTTP get/post request engine.  It helps to protect against attacks from remote
@@ -48,6 +48,16 @@ using System.Diagnostics;
 		/// Default is 5 seconds.
 		/// </summary>
 		public static TimeSpan Timeout { get; set; }
+
+		internal delegate UntrustedWebResponse MockRequestResponse(Uri uri, byte[] body, string[] acceptTypes);
+		/// <summary>
+		/// Used in unit testing to mock HTTP responses to expected requests.
+		/// </summary>
+		/// <remarks>
+		/// If null, no mocking will take place.  But if non-null, all requests
+		/// will be channeled through this mock method for processing.
+		/// </remarks>
+		internal static MockRequestResponse MockRequests;
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static UntrustedWebRequest() {
@@ -101,6 +111,11 @@ using System.Diagnostics;
 		static UntrustedWebResponse Request(Uri uri, byte[] body, string[] acceptTypes,
 			bool avoidSendingExpect100Continue) {
 			if (uri == null) throw new ArgumentNullException("uri");
+
+			// mock the request if a hosting unit test has configured it.
+			if (MockRequests != null) {
+				return MockRequests(uri, body, acceptTypes);
+			}
 
 			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
 			request.ReadWriteTimeout = (int)ReadWriteTimeout.TotalMilliseconds;
