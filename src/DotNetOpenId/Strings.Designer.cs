@@ -88,6 +88,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An authentication request has already been created using CreateRequest()..
+        /// </summary>
+        internal static string CreateRequestAlreadyCalled {
+            get {
+                return ResourceManager.GetString("CreateRequestAlreadyCalled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to HttpContext.Current is null.  There must be an ASP.NET request in process for this operation to succeed..
         /// </summary>
         internal static string CurrentHttpContextRequired {

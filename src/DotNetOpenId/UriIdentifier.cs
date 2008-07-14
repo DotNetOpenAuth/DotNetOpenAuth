@@ -50,7 +50,6 @@ namespace DotNetOpenId {
 				// Assume http:// scheme if an allowed scheme isn't given, and strip
 				// fragments off.  Consistent with spec section 7.2#3
 				if (!isAllowedScheme(uri)) uri = "http" + Uri.SchemeDelimiter + uri;
-				if (!Uri.IsWellFormedUriString(uri, UriKind.Absolute)) return false;
 				// Use a UriBuilder because it helps to normalize the URL as well.
 				return TryCanonicalize(new UriBuilder(uri), out canonicalUri);
 			} catch (UriFormatException) {
