@@ -142,5 +142,36 @@ namespace DotNetOpenId.Test.RelyingParty {
 			var returnToArgs = HttpUtility.ParseQueryString(requestArgs[protocol.openid.return_to]);
 			Assert.AreEqual("c+d", returnToArgs["a+b"]);
 		}
+
+		static ServiceEndpoint getServiceEndpoint(int? priority) {
+			Protocol protocol = Protocol.v20;
+			ServiceEndpoint ep = new ServiceEndpoint(
+				TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20),
+				TestSupport.GetFullUrl(TestSupport.ProviderPage),
+				TestSupport.GetDelegateUrl(TestSupport.Scenarios.AutoApproval),
+				new[] { protocol.ClaimedIdentifierServiceTypeURI },
+				priority
+				);
+			return ep;
+		}
+
+		[Test]
+		public void DefaultSorter() {
+			var consumer = new OpenIdRelyingParty(null, null, null);
+			Assert.AreSame(OpenIdRelyingParty.DefaultSorter, consumer.EndpointSorter);
+			var defaultSorter = OpenIdRelyingParty.DefaultSorter;
+			Assert.AreEqual(-1, defaultSorter(getServiceEndpoint(10), getServiceEndpoint(20)));
+			Assert.AreEqual(1, defaultSorter(getServiceEndpoint(20), getServiceEndpoint(10)));
+			Assert.AreEqual(0, defaultSorter(getServiceEndpoint(10), getServiceEndpoint(10)));
+			Assert.AreEqual(-1, defaultSorter(getServiceEndpoint(20), getServiceEndpoint(null)));
+			Assert.AreEqual(1, defaultSorter(getServiceEndpoint(null), getServiceEndpoint(10)));
+			Assert.AreEqual(0, defaultSorter(getServiceEndpoint(null), getServiceEndpoint(null)));
+		}
+
+		[Test]
+		public void DefaultFilter() {
+			var consumer = new OpenIdRelyingParty(null, null, null);
+			Assert.IsNull(consumer.EndpointFilter);
+		}
 	}
 }
