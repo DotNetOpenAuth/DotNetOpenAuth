@@ -163,26 +163,26 @@ namespace DotNetOpenId.Test.RelyingParty {
 		}
 
 		[Test]
-		public void DefaultSorter() {
+		public void DefaultEndpointOrder() {
 			var consumer = new OpenIdRelyingParty(null, null, null);
-			Assert.AreSame(OpenIdRelyingParty.DefaultSorter, consumer.EndpointSorter);
-			var defaultSorter = OpenIdRelyingParty.DefaultSorter;
+			Assert.AreSame(OpenIdRelyingParty.DefaultEndpointOrder, consumer.EndpointOrder);
+			var defaultEndpointOrder = OpenIdRelyingParty.DefaultEndpointOrder;
 			// Test service priority ordering
-			Assert.AreEqual(-1, defaultSorter(getServiceEndpoint(10, null), getServiceEndpoint(20, null)));
-			Assert.AreEqual(1, defaultSorter(getServiceEndpoint(20, null), getServiceEndpoint(10, null)));
-			Assert.AreEqual(0, defaultSorter(getServiceEndpoint(10, null), getServiceEndpoint(10, null)));
-			Assert.AreEqual(-1, defaultSorter(getServiceEndpoint(20, null), getServiceEndpoint(null, null)));
-			Assert.AreEqual(1, defaultSorter(getServiceEndpoint(null, null), getServiceEndpoint(10, null)));
-			Assert.AreEqual(0, defaultSorter(getServiceEndpoint(null, null), getServiceEndpoint(null, null)));
+			Assert.AreEqual(-1, defaultEndpointOrder(getServiceEndpoint(10, null), getServiceEndpoint(20, null)));
+			Assert.AreEqual(1, defaultEndpointOrder(getServiceEndpoint(20, null), getServiceEndpoint(10, null)));
+			Assert.AreEqual(0, defaultEndpointOrder(getServiceEndpoint(10, null), getServiceEndpoint(10, null)));
+			Assert.AreEqual(-1, defaultEndpointOrder(getServiceEndpoint(20, null), getServiceEndpoint(null, null)));
+			Assert.AreEqual(1, defaultEndpointOrder(getServiceEndpoint(null, null), getServiceEndpoint(10, null)));
+			Assert.AreEqual(0, defaultEndpointOrder(getServiceEndpoint(null, null), getServiceEndpoint(null, null)));
 			// Test secondary type uri ordering
-			Assert.AreEqual(-1, defaultSorter(getServiceEndpoint(10, 10), getServiceEndpoint(10, 20)));
-			Assert.AreEqual(1, defaultSorter(getServiceEndpoint(10, 20), getServiceEndpoint(10, 10)));
-			Assert.AreEqual(0, defaultSorter(getServiceEndpoint(10, 5), getServiceEndpoint(10, 5)));
+			Assert.AreEqual(-1, defaultEndpointOrder(getServiceEndpoint(10, 10), getServiceEndpoint(10, 20)));
+			Assert.AreEqual(1, defaultEndpointOrder(getServiceEndpoint(10, 20), getServiceEndpoint(10, 10)));
+			Assert.AreEqual(0, defaultEndpointOrder(getServiceEndpoint(10, 5), getServiceEndpoint(10, 5)));
 			// test that it is secondary...
-			Assert.AreEqual(1, defaultSorter(getServiceEndpoint(20, 10), getServiceEndpoint(10, 20)));
-			Assert.AreEqual(-1, defaultSorter(getServiceEndpoint(null, 10), getServiceEndpoint(null, 20)));
-			Assert.AreEqual(1, defaultSorter(getServiceEndpoint(null, 20), getServiceEndpoint(null, 10)));
-			Assert.AreEqual(0, defaultSorter(getServiceEndpoint(null, 10), getServiceEndpoint(null, 10)));
+			Assert.AreEqual(1, defaultEndpointOrder(getServiceEndpoint(20, 10), getServiceEndpoint(10, 20)));
+			Assert.AreEqual(-1, defaultEndpointOrder(getServiceEndpoint(null, 10), getServiceEndpoint(null, 20)));
+			Assert.AreEqual(1, defaultEndpointOrder(getServiceEndpoint(null, 20), getServiceEndpoint(null, 10)));
+			Assert.AreEqual(0, defaultEndpointOrder(getServiceEndpoint(null, 10), getServiceEndpoint(null, 10)));
 		}
 
 		[Test]
@@ -236,12 +236,12 @@ namespace DotNetOpenId.Test.RelyingParty {
 			Uri return_to = new Uri("http://somerealm/return_to");
 			IAuthenticationRequest request = rp.CreateRequest("=MultipleEndpoint", realm, return_to);
 			Assert.AreEqual("https://authn.freexri.com/auth20/", request.Provider.Uri.AbsoluteUri);
-			rp.EndpointSorter = (se1, se2) => -se1.ServicePriority.Value.CompareTo(se2.ServicePriority.Value);
+			rp.EndpointOrder = (se1, se2) => -se1.ServicePriority.Value.CompareTo(se2.ServicePriority.Value);
 			request = rp.CreateRequest("=MultipleEndpoint", realm, return_to);
 			Assert.AreEqual("https://authn.freexri.com/auth10/", request.Provider.Uri.AbsoluteUri);
 			
 			// Now test the filter.  Auth20 would come out on top, if we didn't select it out with the filter.
-			rp.EndpointSorter = OpenIdRelyingParty.DefaultSorter;
+			rp.EndpointOrder = OpenIdRelyingParty.DefaultEndpointOrder;
 			rp.EndpointFilter = (se) => se.Uri.AbsoluteUri == "https://authn.freexri.com/auth10/";
 			request = rp.CreateRequest("=MultipleEndpoint", realm, return_to);
 			Assert.AreEqual("https://authn.freexri.com/auth10/", request.Provider.Uri.AbsoluteUri);

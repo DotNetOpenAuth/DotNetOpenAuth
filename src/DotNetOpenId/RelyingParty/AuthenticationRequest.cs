@@ -117,7 +117,7 @@ namespace DotNetOpenId.RelyingParty {
 			}
 
 			// Sort endpoints so that the first one in the list is the most preferred one.
-			filteredEndpoints.Sort(relyingParty.EndpointSorter);
+			filteredEndpoints.Sort(relyingParty.EndpointOrder);
 
 			// Now take the best one.  The filter may have removed all endpoints.
 			return filteredEndpoints.Count > 0 ? (ServiceEndpoint)filteredEndpoints[0] : null;

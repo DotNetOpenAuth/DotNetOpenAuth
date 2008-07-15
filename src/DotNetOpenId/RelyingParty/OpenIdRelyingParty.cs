@@ -181,20 +181,20 @@ namespace DotNetOpenId.RelyingParty {
 		/// </summary>
 		internal MessageEncoder Encoder { get { return encoder; } }
 
-		private Comparison<IXrdsProviderEndpoint> endpointSorter = DefaultSorter;
+		private Comparison<IXrdsProviderEndpoint> endpointOrder = DefaultEndpointOrder;
 		/// <summary>
 		/// Gets/sets the ordering routine that will determine which XRDS 
 		/// Service element to try first 
 		/// </summary>
 		/// <remarks>
 		/// This may never be null.  To reset to default behavior this property 
-		/// can be set to the value of <see cref="DefaultSorter"/>.
+		/// can be set to the value of <see cref="DefaultEndpointOrder"/>.
 		/// </remarks>
-		public Comparison<IXrdsProviderEndpoint> EndpointSorter {
-			get { return endpointSorter; }
+		public Comparison<IXrdsProviderEndpoint> EndpointOrder {
+			get { return endpointOrder; }
 			set {
 				if (value == null) throw new ArgumentNullException("value");
-				endpointSorter = value;
+				endpointOrder = value;
 			}
 		}
 		/// <summary>
@@ -204,7 +204,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// <remarks>
 		/// Endpoints lacking any priority value are sorted to the end of the list.
 		/// </remarks>
-		public static Comparison<IXrdsProviderEndpoint> DefaultSorter {
+		public static Comparison<IXrdsProviderEndpoint> DefaultEndpointOrder {
 			get {
 				// Sort first by Service/@priority, then by Service/Uri/@priority
 				return (se1, se2) => {
