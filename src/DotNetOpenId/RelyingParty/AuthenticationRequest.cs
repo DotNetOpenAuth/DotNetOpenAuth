@@ -76,13 +76,13 @@ namespace DotNetOpenId.RelyingParty {
 				}
 			}
 
-			List<ServiceEndpoint> endpoints = new List<ServiceEndpoint>(userSuppliedIdentifier.Discover());
-			if (endpoints.Count == 0)
+			var endpoints = new List<ServiceEndpoint>(userSuppliedIdentifier.Discover());
+			ServiceEndpoint endpoint = selectEndpoint(endpoints.AsReadOnly(), relyingParty, store);
+			if (endpoint == null)
 				throw new OpenIdException(Strings.OpenIdEndpointNotFound);
-			ServiceEndpoint endpoint = selectEndpoint(endpoints.AsReadOnly(), relyingParty);
 			if (TraceUtil.Switch.TraceVerbose) {
 				Trace.Indent();
-				Trace.TraceInformation("Discovered provider endpoint: {0}", endpoint);
+				Trace.TraceInformation("Using discovered provider endpoint: {0}", endpoint);
 				Trace.Unindent();
 			}
 
@@ -93,17 +93,20 @@ namespace DotNetOpenId.RelyingParty {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.ReturnToNotUnderRealm, returnToUrl, realm));
 
+			string token = new Token(endpoint).Serialize(store);
+			// Retrieve the association, but don't create one, as a creation was already
+			// attempted by the selectEndpoint method.
+			Association association = store != null ? getAssociation(endpoint, store, false) : null;
+
 			return new AuthenticationRequest(
-				new Token(endpoint).Serialize(store),
-				store != null ? getAssociation(endpoint, store) : null,
-				endpoint, realm, returnToUrl, relyingParty.Encoder);
+				token, association, endpoint, realm, returnToUrl, relyingParty.Encoder);
 		}
 
 		/// <summary>
-		/// Chooses which provider endpoint is the best one to use.
+		/// Returns a filtered and sorted list of the available OP endpoints for a discovered Identifier.
 		/// </summary>
-		/// <returns>The best endpoint, or null if no acceptable endpoints were found.</returns>
-		private static ServiceEndpoint selectEndpoint(ReadOnlyCollection<ServiceEndpoint> endpoints, OpenIdRelyingParty relyingParty) {
+		private static List<ServiceEndpoint> filterAndSortEndpoints(ReadOnlyCollection<ServiceEndpoint> endpoints,
+			OpenIdRelyingParty relyingParty) {
 			if (endpoints == null) throw new ArgumentNullException("endpoints");
 			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
 
@@ -119,15 +122,58 @@ namespace DotNetOpenId.RelyingParty {
 			// Sort endpoints so that the first one in the list is the most preferred one.
 			filteredEndpoints.Sort(relyingParty.EndpointOrder);
 
-			// Now take the best one.  The filter may have removed all endpoints.
-			return filteredEndpoints.Count > 0 ? (ServiceEndpoint)filteredEndpoints[0] : null;
+			List<ServiceEndpoint> endpointList = new List<ServiceEndpoint>(filteredEndpoints.Count);
+			foreach (ServiceEndpoint endpoint in filteredEndpoints) {
+				endpointList.Add(endpoint);
+			}
+			return endpointList;
 		}
-		static Association getAssociation(ServiceEndpoint provider, IRelyingPartyApplicationStore store) {
+
+		/// <summary>
+		/// Chooses which provider endpoint is the best one to use.
+		/// </summary>
+		/// <returns>The best endpoint, or null if no acceptable endpoints were found.</returns>
+		private static ServiceEndpoint selectEndpoint(ReadOnlyCollection<ServiceEndpoint> endpoints, 
+			OpenIdRelyingParty relyingParty, IRelyingPartyApplicationStore store) {
+
+			List<ServiceEndpoint> filteredEndpoints = filterAndSortEndpoints(endpoints, relyingParty);
+
+			// If there are no endpoint candidates...
+			if (filteredEndpoints.Count == 0) {
+				return null;
+			}
+
+			// If we don't have an application store, we have no place to record an association to
+			// and therefore can only take our best shot at one of the endpoints.
+			if (store == null) {
+				return filteredEndpoints[0];
+			}
+
+			// Go through each endpoint until we find one that we can successfully create
+			// an association with.  This is our only hint about whether an OP is up and running.
+			// The idea here is that we don't want to redirect the user to a dead OP for authentication.
+			// If the user has multiple OPs listed in his/her XRDS document, then we'll go down the list
+			// and try each one until we find one that's good.
+			foreach (ServiceEndpoint endpointCandidate in filteredEndpoints) {
+				// One weakness of this method is that an OP that's down, but with whom we already
+				// created an association in the past will still pass this "are you alive?" test.
+				Association association = getAssociation(endpointCandidate, store, true);
+				if (association != null) {
+					// We have a winner!
+					return endpointCandidate;
+				}
+			}
+
+			// Since all OPs failed to form an association with us, just return the first endpoint
+			// and hope for the best.
+			return endpoints[0];
+		}
+		static Association getAssociation(ServiceEndpoint provider, IRelyingPartyApplicationStore store, bool createNewAssociationIfNeeded) {
 			if (provider == null) throw new ArgumentNullException("provider");
 			if (store == null) throw new ArgumentNullException("store");
 			Association assoc = store.GetAssociation(provider.ProviderEndpoint);
 
-			if (assoc == null || !assoc.HasUsefulLifeRemaining) {
+			if ((assoc == null || !assoc.HasUsefulLifeRemaining) && createNewAssociationIfNeeded) {
 				var req = AssociateRequest.Create(provider);
 				if (req.Response != null) {
 					// try again if we failed the first time and have a worthy second-try.
