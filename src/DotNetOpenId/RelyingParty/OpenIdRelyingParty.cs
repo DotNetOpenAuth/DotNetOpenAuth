@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Web;
 
@@ -52,6 +53,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// which must therefore share the nonce information in the application
 		/// state store in order to stop the intruder.
 		/// </remarks>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public OpenIdRelyingParty(IRelyingPartyApplicationStore store, Uri requestUrl, NameValueCollection query) :
 			this(store, requestUrl, Util.NameValueCollectionToDictionary(query)) {
 		}
@@ -190,6 +192,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// This may never be null.  To reset to default behavior this property 
 		/// can be set to the value of <see cref="DefaultEndpointOrder"/>.
 		/// </remarks>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public Comparison<IXrdsProviderEndpoint> EndpointOrder {
 			get { return endpointOrder; }
 			set {
@@ -204,6 +207,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// <remarks>
 		/// Endpoints lacking any priority value are sorted to the end of the list.
 		/// </remarks>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public static Comparison<IXrdsProviderEndpoint> DefaultEndpointOrder {
 			get {
 				// Sort first by Service/@priority, then by Service/Uri/@priority
@@ -249,6 +253,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// If provided, the delegate should return true to accept an endpoint, and false to reject it.
 		/// If null, all identity providers will be accepted.  This is the default.
 		/// </remarks>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public EndpointSelector EndpointFilter { get; set; }
 
 		const string associationStoreKey = "DotNetOpenId.RelyingParty.RelyingParty.AssociationStore";
@@ -256,6 +261,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// The standard state storage mechanism that uses ASP.NET's HttpApplication state dictionary
 		/// to store associations and nonces.
 		/// </summary>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public static IRelyingPartyApplicationStore HttpApplicationStore {
 			get {
 				HttpContext context = HttpContext.Current;
