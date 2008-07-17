@@ -8,27 +8,34 @@ namespace ConsumerPortal {
 	public class Global : System.Web.HttpApplication {
 		public static log4net.ILog Logger = log4net.LogManager.GetLogger(typeof(Global));
 
+		protected void Application_Start(object sender, EventArgs e) {
+			log4net.Config.XmlConfigurator.Configure();
+			Logger.Info("Sample starting...");
+		}
+
+		protected void Application_End(object sender, EventArgs e) {
+			Logger.Info("Sample shutting down...");
+			// this would be automatic, but in partial trust scenarios it is not.
+			log4net.LogManager.Shutdown();
+		}
+
 		string stripQueryString(Uri uri) {
 			UriBuilder builder = new UriBuilder(uri);
 			builder.Query = null;
 			return builder.ToString();
 		}
 
-		protected void Application_Start(object sender, EventArgs e) {
-			Logger.Info("Application starting");
-		}
-
 		protected void Application_BeginRequest(Object sender, EventArgs e) {
 			// System.Diagnostics.Debugger.Launch();
 			Trace.TraceInformation("Processing {0} on {1} ", Request.HttpMethod, stripQueryString(Request.Url));
 			if (Request.QueryString.Count > 0)
-				Logger.InfoFormat("Querystring follows: \n{0}", ToString(Request.QueryString));
+				Logger.DebugFormat("Querystring follows: \n{0}", ToString(Request.QueryString));
 			if (Request.Form.Count > 0)
-				Logger.InfoFormat("Posted form follows: \n{0}", ToString(Request.Form));
+				Logger.DebugFormat("Posted form follows: \n{0}", ToString(Request.Form));
 		}
 
 		protected void Application_AuthenticateRequest(Object sender, EventArgs e) {
-			Logger.InfoFormat("User {0} authenticated.", HttpContext.Current.User != null ? "IS" : "is NOT");
+			Logger.DebugFormat("User {0} authenticated.", HttpContext.Current.User != null ? "IS" : "is NOT");
 		}
 
 		protected void Application_EndRequest(Object sender, EventArgs e) {
