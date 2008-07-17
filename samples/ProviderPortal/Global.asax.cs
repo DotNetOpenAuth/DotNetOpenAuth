@@ -6,6 +6,7 @@ using System.Web;
 
 namespace ProviderPortal {
 	public class Global : System.Web.HttpApplication {
+		public static log4net.ILog Logger = log4net.LogManager.GetLogger(typeof(Global));
 
 		string stripQueryString(Uri uri) {
 			UriBuilder builder = new UriBuilder(uri);
@@ -21,17 +22,17 @@ namespace ProviderPortal {
 			 * There is only one rule currenty defined. It rewrites urls like: user/john ->user.aspx?username=john
 			 */
 			// System.Diagnostics.Debugger.Launch();
-			Trace.TraceInformation("Processing {0} on {1} ", Request.HttpMethod, stripQueryString(Request.Url));
+			Logger.InfoFormat("Processing {0} on {1} ", Request.HttpMethod, stripQueryString(Request.Url));
 			if (Request.QueryString.Count > 0)
-				Trace.TraceInformation("Querystring follows: \n{0}", ToString(Request.QueryString));
+				Logger.InfoFormat("Querystring follows: \n{0}", ToString(Request.QueryString));
 			if (Request.Form.Count > 0)
-				Trace.TraceInformation("Posted form follows: \n{0}", ToString(Request.Form));
+				Logger.InfoFormat("Posted form follows: \n{0}", ToString(Request.Form));
 
 			URLRewriter.Process();
 		}
 
 		protected void Application_AuthenticateRequest(Object sender, EventArgs e) {
-			Trace.TraceInformation("User {0} authenticated.", HttpContext.Current.User != null ? "IS" : "is NOT");
+			Logger.InfoFormat("User {0} authenticated.", HttpContext.Current.User != null ? "IS" : "is NOT");
 		}
 
 
@@ -39,7 +40,7 @@ namespace ProviderPortal {
 		}
 
 		protected void Application_Error(Object sender, EventArgs e) {
-			Trace.TraceError("An unhandled exception was raised. Details follow: {0}",
+			Logger.InfoFormat("An unhandled exception was raised. Details follow: {0}",
 				HttpContext.Current.Server.GetLastError());
 		}
 
