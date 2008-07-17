@@ -33,9 +33,7 @@ namespace DotNetOpenId.Provider {
 					wr = new Response(HttpStatusCode.Redirect, headers, new byte[0]);
 					break;
 				default:
-					if (TraceUtil.Switch.TraceError) {
-						Trace.TraceError("Cannot encode response: {0}", response);
-					}
+					TraceUtil.Logger.ErrorFormat("Cannot encode response: {0}", response);
 					wr = new Response(HttpStatusCode.BadRequest, null, new byte[0]);
 					break;
 			}

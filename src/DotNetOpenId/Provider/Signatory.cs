@@ -41,18 +41,14 @@ namespace DotNetOpenId.Provider {
 				assoc = GetAssociation(assoc_handle, AssociationRelyingPartyType.Smart);
 
 				if (assoc == null) {
-					if (TraceUtil.Switch.TraceWarning) {
-						Trace.TraceWarning("No associaton found with assoc_handle {0}. Setting invalidate_handle and creating new Association.", assoc_handle);
-					}
+					TraceUtil.Logger.WarnFormat("No associaton found with assoc_handle {0}. Setting invalidate_handle and creating new Association.", assoc_handle);
 
 					response.Fields[response.Protocol.openidnp.invalidate_handle] = assoc_handle;
 					assoc = CreateAssociation(AssociationRelyingPartyType.Dumb, null);
 				}
 			} else {
 				assoc = this.CreateAssociation(AssociationRelyingPartyType.Dumb, null);
-				if (TraceUtil.Switch.TraceInfo) {
-					Trace.TraceInformation("No assoc_handle supplied. Creating new association.");
-				}
+				TraceUtil.Logger.Info("No assoc_handle supplied. Creating new association.");
 			}
 
 			response.Fields[response.Protocol.openidnp.assoc_handle] = assoc.Handle;
@@ -66,15 +62,14 @@ namespace DotNetOpenId.Provider {
 		public virtual bool Verify(string assoc_handle, string signature, IDictionary<string, string> signed_pairs, IList<string> signedKeyOrder) {
 			Association assoc = GetAssociation(assoc_handle, AssociationRelyingPartyType.Dumb);
 			if (assoc == null) {
-				if (TraceUtil.Switch.TraceError)
-					Trace.TraceError("Signature verification failed. No association with handle {0} found ", assoc_handle);
+				TraceUtil.Logger.ErrorFormat("Signature verification failed. No association with handle {0} found ", assoc_handle);
 				return false;
 			}
 
 			string expected_sig = Convert.ToBase64String(assoc.Sign(signed_pairs, signedKeyOrder));
 
-			if (TraceUtil.Switch.TraceError && signature != expected_sig) {
-				Trace.TraceError("Expected signature is '{0}'. Actual signature is '{1}' ", expected_sig, signature);
+			if (signature != expected_sig) {
+				TraceUtil.Logger.ErrorFormat("Expected signature is '{0}'. Actual signature is '{1}' ", expected_sig, signature);
 			}
 
 			return expected_sig.Equals(signature, StringComparison.Ordinal);
@@ -128,8 +123,7 @@ namespace DotNetOpenId.Provider {
 
 			Association assoc = store.GetAssociation(associationType, assoc_handle);
 			if (assoc == null || assoc.IsExpired) {
-				if (TraceUtil.Switch.TraceError)
-					Trace.TraceError("Association {0} expired or not in store.", assoc_handle);
+				TraceUtil.Logger.ErrorFormat("Association {0} expired or not in store.", assoc_handle);
 				store.RemoveAssociation(associationType, assoc_handle);
 				assoc = null;
 			}
@@ -138,8 +132,7 @@ namespace DotNetOpenId.Provider {
 		}
 
 		public virtual void Invalidate(string assoc_handle, AssociationRelyingPartyType associationType) {
-			if (TraceUtil.Switch.TraceInfo)
-				Trace.TraceInformation("Invalidating association '{0}'.", assoc_handle);
+			TraceUtil.Logger.InfoFormat("Invalidating association '{0}'.", assoc_handle);
 
 			store.RemoveAssociation(associationType, assoc_handle);
 		}

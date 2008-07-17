@@ -113,8 +113,7 @@ namespace DotNetOpenId.Provider {
 			Protocol = Protocol.Detect(Query);
 			Request req = Provider.Request.CreateRequest(this);
 
-			if (TraceUtil.Switch.TraceInfo)
-				Trace.TraceInformation("Received OpenID {0} request.", req.Mode);
+			TraceUtil.Logger.InfoFormat("Received OpenID {0} request.", req.Mode);
 
 			return req;
 		}

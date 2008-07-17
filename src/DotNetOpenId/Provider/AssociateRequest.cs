@@ -74,8 +74,7 @@ namespace DotNetOpenId.Provider {
 				response.Fields[pair.Key] = nvc[pair.Key];
 			}
 
-			if (TraceUtil.Switch.TraceInfo)
-				Trace.TraceInformation("Association {0} created.", assoc.Handle);
+			TraceUtil.Logger.InfoFormat("Association {0} created.", assoc.Handle);
 
 			return response;
 		}

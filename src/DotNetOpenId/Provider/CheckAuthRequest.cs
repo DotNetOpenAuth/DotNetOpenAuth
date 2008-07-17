@@ -62,9 +62,7 @@ namespace DotNetOpenId.Provider {
 				Association assoc = Provider.Signatory.GetAssociation(invalidate_handle, AssociationRelyingPartyType.Smart);
 
 				if (assoc == null) {
-					if (TraceUtil.Switch.TraceWarning) {
-						Trace.TraceWarning("No matching association found. Returning invalidate_handle. ");
-					}
+					TraceUtil.Logger.Warn("No matching association found. Returning invalidate_handle. ");
 					response.Fields[Protocol.openidnp.invalidate_handle] = invalidate_handle;
 				}
 			}
