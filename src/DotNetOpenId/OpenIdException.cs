@@ -79,33 +79,40 @@ namespace DotNetOpenId {
 
 		#region IEncodable Members
 
-		EncodingType IEncodable.EncodingType {
+		/// <summary>
+		/// Gets whether this exception was generated on an OP as the result of processing a message
+		/// that came directly from the RP.  
+		/// </summary>
+		/// <remarks>
+		/// This is useful because it allows us to determine what kind of error reporting we'll send
+		/// in the HTTP response.
+		/// </remarks>
+		private bool IsDirectMessage {
 			get {
 				Debug.Assert(Query != null, "An OpenId exception should always be provided with the query if it is to be encoded for transmittal to the RP.");
-				if (HasReturnTo)
-					return EncodingType.RedirectBrowserUrl;
 
 				if (Query != null) {
 					string mode = Util.GetOptionalArg(Query, Protocol.openid.mode);
-					if (mode != null)
-						if (mode != Protocol.Args.Mode.checkid_setup &&
-							mode != Protocol.Args.Mode.checkid_immediate)
-							return EncodingType.ResponseBody;
+					if (mode != null) {
+						return mode == Protocol.Args.Mode.associate ||
+							mode == Protocol.Args.Mode.check_authentication;
+					}
 				}
 
-				// Notes from the original port
-				//# According to the OpenID spec as of this writing, we are
-				//# probably supposed to switch on request type here (GET
-				//# versus POST) to figure out if we're supposed to print
-				//# machine-readable or human-readable content at this
-				//# point.  GET/POST seems like a pretty lousy way of making
-				//# the distinction though, as it's just as possible that
-				//# the user agent could have mistakenly been directed to
-				//# post to the server URL.
+				// Unable to figure it out, so we'll default to indirect message.
+				return false;
+			}
+		}
 
-				//# Basically, if your request was so broken that you didn't
-				//# manage to include an openid.mode, I'm not going to worry
-				//# too much about returning you something you can't parse.
+		EncodingType IEncodable.EncodingType {
+			get {
+				if (IsDirectMessage)
+					return EncodingType.ResponseBody;
+
+				if (HasReturnTo)
+					return EncodingType.RedirectBrowserUrl;
+
+				Debug.Fail("Somehow we cannot tell whether this is a direct message or indirect message.  Did we construct an exception without a Query parameter?");
 				return EncodingType.None;
 			}
 		}
@@ -118,8 +125,13 @@ namespace DotNetOpenId {
 		public IDictionary<string, string> EncodedFields {
 			get {
 				var q = new Dictionary<string, string>();
-				q.Add(Protocol.openid.mode, Protocol.Args.Mode.error);
-				q.Add(Protocol.openid.error, Message);
+				if (IsDirectMessage) {
+					q.Add(Protocol.openidnp.mode, Protocol.Args.Mode.error);
+					q.Add(Protocol.openidnp.error, Message);
+				} else {
+					q.Add(Protocol.openid.mode, Protocol.Args.Mode.error);
+					q.Add(Protocol.openid.error, Message);
+				}
 				if (ExtraArgsToReturn != null) {
 					foreach (var pair in ExtraArgsToReturn) {
 						q.Add(pair.Key, pair.Value);
