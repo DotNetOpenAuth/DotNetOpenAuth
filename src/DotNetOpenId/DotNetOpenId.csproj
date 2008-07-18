@@ -74,6 +74,9 @@
     <Compile Include="Extensions\IExtension.cs" />
     <Compile Include="HmacSha256Association.cs" />
     <Compile Include="Identifier.cs" />
+    <Compile Include="ILog.cs" />
+    <Compile Include="Log4NetLogger.cs" />
+    <Compile Include="NoOpLogger.cs" />
     <Compile Include="Protocol.cs" />
     <Compile Include="Provider\AssertionMessage.cs" />
     <Compile Include="Provider\RelyingPartyReceivingEndpoint.cs" />
@@ -147,7 +150,7 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Include="TraceUtil.cs">
+    <Compile Include="Logger.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Realm.cs" />

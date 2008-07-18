@@ -62,7 +62,7 @@ namespace DotNetOpenId.Provider {
 							// The spec requires that the return_to URLs given in an RPs XRDS doc
 							// do not contain wildcards.
 							if (discoveredReturnToUrl.DomainWildcard) {
-								TraceUtil.Logger.WarnFormat("Realm {0} contained return_to URL {1} which contains a wildcard, which is not allowed.",
+								Logger.WarnFormat("Realm {0} contained return_to URL {1} which contains a wildcard, which is not allowed.",
 										Realm, discoveredReturnToUrl);
 								continue;
 							}
@@ -74,11 +74,11 @@ namespace DotNetOpenId.Provider {
 							}
 						}
 					} catch (OpenIdException ex) {
-						TraceUtil.Logger.InfoFormat("Relying party discovery at URL {0} failed.  {1}",
+						Logger.InfoFormat("Relying party discovery at URL {0} failed.  {1}",
 								Realm, ex);
 						// Don't do anything else.  We quietly fail at return_to verification and return false.
 					} catch (WebException ex) {
-						TraceUtil.Logger.InfoFormat("Relying party discovery at URL {0} failed.  {1}",
+						Logger.InfoFormat("Relying party discovery at URL {0} failed.  {1}",
 								Realm, ex);
 						// Don't do anything else.  We quietly fail at return_to verification and return false.
 					}

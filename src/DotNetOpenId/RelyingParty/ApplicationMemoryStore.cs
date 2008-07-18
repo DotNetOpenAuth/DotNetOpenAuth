@@ -14,7 +14,7 @@ namespace DotNetOpenId.RelyingParty {
 				if (secretSigningKey == null) {
 					lock (this) {
 						if (secretSigningKey == null) {
-							TraceUtil.Logger.Info("Generating new secret signing key.");
+							Logger.Info("Generating new secret signing key.");
 							// initialize in a local variable before setting in field for thread safety.
 							byte[] auth_key = new byte[64];
 							new RNGCryptoServiceProvider().GetBytes(auth_key);
@@ -29,7 +29,7 @@ namespace DotNetOpenId.RelyingParty {
 		List<Nonce> nonces = new List<Nonce>();
 
 		public bool TryStoreNonce(Nonce nonce) {
-			TraceUtil.Logger.InfoFormat("Storing nonce: {0}", nonce.Code);
+			Logger.InfoFormat("Storing nonce: {0}", nonce.Code);
 			lock (this) {
 				if (nonces.Contains(nonce)) return false;
 				nonces.Add(nonce);

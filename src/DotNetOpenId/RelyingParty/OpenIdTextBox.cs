@@ -632,7 +632,7 @@ namespace DotNetOpenId.RelyingParty
 					Request.Mode = ImmediateMode ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;
 					if (EnableRequestProfile) addProfileArgs(Request);
 				} else {
-					TraceUtil.Logger.WarnFormat("An invalid identifier was entered ({0}), but not caught by any validation routine.", Text);
+					Logger.WarnFormat("An invalid identifier was entered ({0}), but not caught by any validation routine.", Text);
 					Request = null;
 				}
 			} catch (WebException ex) {
