@@ -196,6 +196,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Inconsistent setting of application state.  Authentication request was sent with application state available, but authentication response was received without it available.  This makes it impossible to validate the token&apos;s signature and will cause assertion verification failure..
+        /// </summary>
+        internal static string InconsistentAppState {
+            get {
+                return ResourceManager.GetString("InconsistentAppState", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot encode &apos;{0}&apos; because it contains an illegal character for Key-Value Form encoding.  (line {1}: &apos;{2}&apos;).
         /// </summary>
         internal static string InvalidCharacterInKeyValueFormInput {
