@@ -142,6 +142,15 @@ namespace DotNetOpenId {
 					Strings.MissingOpenIdQueryParameter, key), query);
 			return value;
 		}
+		public static string GetRequiredArgAllowEmptyValue(IDictionary<string, string> query, string key) {
+			if (query == null) throw new ArgumentNullException("query");
+			if (key == null) throw new ArgumentNullException("key");
+			string value;
+			if (!query.TryGetValue(key, out value))
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
+					Strings.MissingOpenIdQueryParameter, key), query);
+			return value;
+		}
 		public static string GetOptionalArg(IDictionary<string, string> query, string key) {
 			if (query == null) throw new ArgumentNullException("query");
 			if (key == null) throw new ArgumentNullException("key");

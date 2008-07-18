@@ -24,7 +24,7 @@ namespace DotNetOpenId.Provider {
 			signedFields = new Dictionary<string, string>();
 			Debug.Assert(!signedKeyOrder.Contains(Protocol.openidnp.mode), "openid.mode must not be included in signature because it necessarily changes in checkauth requests.");
 			foreach (string key in signedKeyOrder) {
-				signedFields.Add(key, Util.GetRequiredArg(Query, Protocol.openid.Prefix + key));
+				signedFields.Add(key, Util.GetRequiredArgAllowEmptyValue(Query, Protocol.openid.Prefix + key));
 			}
 		}
 
