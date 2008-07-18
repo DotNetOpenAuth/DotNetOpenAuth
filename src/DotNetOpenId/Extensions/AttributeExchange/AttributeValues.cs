@@ -23,6 +23,9 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 			TypeUri = typeUri;
 			Values = new List<string>(1);
 		}
+		/// <summary>
+		/// Instantiates an <see cref="AttributeValues"/> object.
+		/// </summary>
 		public AttributeValues(string typeUri, params string[] values) {
 			if (string.IsNullOrEmpty(typeUri)) throw new ArgumentNullException("typeUri");
 			TypeUri = typeUri;
