@@ -1,13 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Diagnostics;
-using System.IO;
-using System.Text;
-using System.Xml.Serialization;
-using System.Security;
 using System.Globalization;
-using System.Reflection;
 
 namespace DotNetOpenId {
 	/// <summary>
@@ -22,12 +14,7 @@ namespace DotNetOpenId {
 		static ILog facade = initializeFacade();
 
 		static ILog initializeFacade() {
-			try {
-				Assembly.Load("log4net");
-				return Log4NetLogger.Initialize();
-			} catch (FileNotFoundException) {
-				return new NoOpLogger();
-			}
+			return Log4NetLogger.Initialize() ?? NoOpLogger.Initialize();
 		}
 
 		#region ILog Members

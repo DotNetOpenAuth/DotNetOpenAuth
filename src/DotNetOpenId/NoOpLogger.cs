@@ -1,9 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DotNetOpenId {
 	class NoOpLogger : ILog {
+
+		internal static ILog Initialize() {
+			return new NoOpLogger();
+		}
+
 		#region ILog Members
 
 		public void Debug(object message) {

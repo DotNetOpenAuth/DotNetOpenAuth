@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Reflection;
 using System.Globalization;
+using System.IO;
+using System.Reflection;
 
 namespace DotNetOpenId {
 	class Log4NetLogger : ILog {
@@ -12,8 +11,22 @@ namespace DotNetOpenId {
 			log4netLogger = logger;
 		}
 
+		/// <summary>
+		/// Initializes the log4net logger if it exists, or returns null if the assembly cannot be found.
+		/// </summary>
 		internal static ILog Initialize() {
-			return new Log4NetLogger(log4net.LogManager.GetLogger("DotNetOpenId"));
+			return isLog4NetPresent ? new Log4NetLogger(log4net.LogManager.GetLogger("DotNetOpenId")) : null;
+		}
+
+		static bool isLog4NetPresent {
+			get {
+				try {
+					Assembly.Load("log4net");
+					return true;
+				} catch (FileNotFoundException) {
+					return false;
+				}
+			}
 		}
 
 		#region ILog Members
