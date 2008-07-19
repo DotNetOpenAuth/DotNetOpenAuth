@@ -27,7 +27,7 @@ namespace ConsumerPortal {
 
 		protected void Application_BeginRequest(Object sender, EventArgs e) {
 			// System.Diagnostics.Debugger.Launch();
-			Trace.TraceInformation("Processing {0} on {1} ", Request.HttpMethod, stripQueryString(Request.Url));
+			Logger.DebugFormat("Processing {0} on {1} ", Request.HttpMethod, stripQueryString(Request.Url));
 			if (Request.QueryString.Count > 0)
 				Logger.DebugFormat("Querystring follows: \n{0}", ToString(Request.QueryString));
 			if (Request.Form.Count > 0)

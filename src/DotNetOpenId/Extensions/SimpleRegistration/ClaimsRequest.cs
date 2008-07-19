@@ -97,7 +97,7 @@ namespace DotNetOpenId.Extensions.SimpleRegistration {
 						TimeZone = requestLevel;
 						break;
 					default:
-						Trace.TraceWarning("OpenIdProfileRequest.SetProfileRequestFromList: Unrecognized field name '{0}'.", field);
+						Logger.WarnFormat("OpenIdProfileRequest.SetProfileRequestFromList: Unrecognized field name '{0}'.", field);
 						break;
 				}
 			}
