@@ -18,6 +18,8 @@
 
 using System;
 using System.Reflection;
+using log4net;
+using log4net.Core;
 
 // This interface is designed to look like log4net's ILog interface.
 // We have this as a facade in front of it to avoid crashing if the

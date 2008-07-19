@@ -10,15 +10,23 @@ using System.Globalization;
 using System.Reflection;
 
 namespace DotNetOpenId {
+	/// <summary>
+	/// A general logger for the entire DotNetOpenId library.
+	/// </summary>
+	/// <remarks>
+	/// Because this logger is intended for use with non-localized strings, the
+	/// overloads that take <see cref="CultureInfo"/> have been removed, and 
+	/// <see cref="CultureInfo.InvariantCulture"/> is used implicitly.
+	/// </remarks>
 	internal class Logger {
-		static ILog facade;
+		static ILog facade = initializeFacade();
 
-		static Logger() {
+		static ILog initializeFacade() {
 			if (Assembly.LoadWithPartialName("log4net") != null) {
 				// do in separate method to avoid JIT error when log4net is not present.
-				facade = InitializeLog4NetFrontend();
+				return InitializeLog4NetFrontend();
 			} else {
-				facade = new NoOpLogger();
+				return new NoOpLogger();
 			}
 		}
 
@@ -37,7 +45,7 @@ namespace DotNetOpenId {
 		}
 
 		public static void DebugFormat(string format, params object[] args) {
-			facade.DebugFormat(format, args);
+			facade.DebugFormat(CultureInfo.InvariantCulture, format, args);
 		}
 
 		public static void DebugFormat(string format, object arg0) {
@@ -52,9 +60,11 @@ namespace DotNetOpenId {
 			facade.DebugFormat(format, arg0, arg1, arg2);
 		}
 
+		/*
 		public static void DebugFormat(IFormatProvider provider, string format, params object[] args) {
 			facade.DebugFormat(provider, format, args);
 		}
+		*/
 
 		public static void Info(object message) {
 			facade.Info(message);
@@ -65,7 +75,7 @@ namespace DotNetOpenId {
 		}
 
 		public static void InfoFormat(string format, params object[] args) {
-			facade.InfoFormat(format, args);
+			facade.InfoFormat(CultureInfo.InvariantCulture, format, args);
 		}
 
 		public static void InfoFormat(string format, object arg0) {
@@ -80,9 +90,11 @@ namespace DotNetOpenId {
 			facade.InfoFormat(format, arg0, arg1, arg2);
 		}
 
+		/*
 		public static void InfoFormat(IFormatProvider provider, string format, params object[] args) {
 			facade.InfoFormat(provider, format, args);
 		}
+		*/
 
 		public static void Warn(object message) {
 			facade.Warn(message);
@@ -93,7 +105,7 @@ namespace DotNetOpenId {
 		}
 
 		public static void WarnFormat(string format, params object[] args) {
-			facade.WarnFormat(format, args);
+			facade.WarnFormat(CultureInfo.InvariantCulture, format, args);
 		}
 
 		public static void WarnFormat(string format, object arg0) {
@@ -108,9 +120,11 @@ namespace DotNetOpenId {
 			facade.WarnFormat(format, arg0, arg1, arg2);
 		}
 
+		/*
 		public static void WarnFormat(IFormatProvider provider, string format, params object[] args) {
 			facade.WarnFormat(provider, format, args);
 		}
+		*/
 
 		public static void Error(object message) {
 			facade.Error(message);
@@ -121,7 +135,7 @@ namespace DotNetOpenId {
 		}
 
 		public static void ErrorFormat(string format, params object[] args) {
-			facade.ErrorFormat(format, args);
+			facade.ErrorFormat(CultureInfo.InvariantCulture, format, args);
 		}
 
 		public static void ErrorFormat(string format, object arg0) {
@@ -136,9 +150,11 @@ namespace DotNetOpenId {
 			facade.ErrorFormat(format, arg0, arg1, arg2);
 		}
 
+		/*
 		public static void ErrorFormat(IFormatProvider provider, string format, params object[] args) {
 			facade.ErrorFormat(provider, format, args);
 		}
+		*/
 
 		public static void Fatal(object message) {
 			facade.Fatal(message);
@@ -149,7 +165,7 @@ namespace DotNetOpenId {
 		}
 
 		public static void FatalFormat(string format, params object[] args) {
-			facade.FatalFormat(format, args);
+			facade.FatalFormat(CultureInfo.InvariantCulture, format, args);
 		}
 
 		public static void FatalFormat(string format, object arg0) {
@@ -164,9 +180,11 @@ namespace DotNetOpenId {
 			facade.FatalFormat(format, arg0, arg1, arg2);
 		}
 
+		/*
 		public static void FatalFormat(IFormatProvider provider, string format, params object[] args) {
 			facade.FatalFormat(provider, format, args);
 		}
+		*/
 
 		public static bool IsDebugEnabled {
 			get { return facade.IsDebugEnabled; }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
+using System.Globalization;
 
 namespace DotNetOpenId {
 	class Log4NetLogger : ILog {
@@ -26,7 +27,7 @@ namespace DotNetOpenId {
 		}
 
 		public void DebugFormat(string format, params object[] args) {
-			log4netLogger.DebugFormat(format, args);
+			log4netLogger.DebugFormat(CultureInfo.InvariantCulture, format, args);
 		}
 
 		public void DebugFormat(string format, object arg0) {
@@ -54,7 +55,7 @@ namespace DotNetOpenId {
 		}
 
 		public void InfoFormat(string format, params object[] args) {
-			log4netLogger.InfoFormat(format, args);
+			log4netLogger.InfoFormat(CultureInfo.InvariantCulture, format, args);
 		}
 
 		public void InfoFormat(string format, object arg0) {
@@ -82,7 +83,7 @@ namespace DotNetOpenId {
 		}
 
 		public void WarnFormat(string format, params object[] args) {
-			log4netLogger.WarnFormat(format, args);
+			log4netLogger.WarnFormat(CultureInfo.InvariantCulture, format, args);
 		}
 
 		public void WarnFormat(string format, object arg0) {
@@ -110,7 +111,7 @@ namespace DotNetOpenId {
 		}
 
 		public void ErrorFormat(string format, params object[] args) {
-			log4netLogger.ErrorFormat(format, args);
+			log4netLogger.ErrorFormat(CultureInfo.InvariantCulture, format, args);
 		}
 
 		public void ErrorFormat(string format, object arg0) {
@@ -138,7 +139,7 @@ namespace DotNetOpenId {
 		}
 
 		public void FatalFormat(string format, params object[] args) {
-			log4netLogger.FatalFormat(format, args);
+			log4netLogger.FatalFormat(CultureInfo.InvariantCulture, format, args);
 		}
 
 		public void FatalFormat(string format, object arg0) {
