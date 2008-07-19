@@ -26,7 +26,7 @@ using log4net.Core;
 // hosting web site chooses not to deploy log4net.dll along with
 // dotnetopenid.dll.
 
-namespace DotNetOpenId
+namespace DotNetOpenId.Loggers
 {
 	/// <summary>
 	/// The ILog interface is use by application to log messages into

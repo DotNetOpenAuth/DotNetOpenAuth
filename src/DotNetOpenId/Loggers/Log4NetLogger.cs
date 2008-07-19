@@ -3,7 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 
-namespace DotNetOpenId {
+namespace DotNetOpenId.Loggers {
 	class Log4NetLogger : ILog {
 		private log4net.ILog log4netLogger;
 

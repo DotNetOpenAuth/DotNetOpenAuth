@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DotNetOpenId {
+namespace DotNetOpenId.Loggers {
 	class NoOpLogger : ILog {
 
 		internal static ILog Initialize() {

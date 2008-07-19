@@ -74,9 +74,9 @@
     <Compile Include="Extensions\IExtension.cs" />
     <Compile Include="HmacSha256Association.cs" />
     <Compile Include="Identifier.cs" />
-    <Compile Include="ILog.cs" />
-    <Compile Include="Log4NetLogger.cs" />
-    <Compile Include="NoOpLogger.cs" />
+    <Compile Include="Loggers\ILog.cs" />
+    <Compile Include="Loggers\Log4NetLogger.cs" />
+    <Compile Include="Loggers\NoOpLogger.cs" />
     <Compile Include="Protocol.cs" />
     <Compile Include="Provider\AssertionMessage.cs" />
     <Compile Include="Provider\RelyingPartyReceivingEndpoint.cs" />

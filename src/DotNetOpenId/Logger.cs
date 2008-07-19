@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using DotNetOpenId.Loggers;
 
 namespace DotNetOpenId {
 	/// <summary>
