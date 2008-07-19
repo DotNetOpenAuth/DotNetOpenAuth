@@ -11,7 +11,7 @@ namespace DotNetOpenId {
 	/// overloads that take <see cref="CultureInfo"/> have been removed, and 
 	/// <see cref="CultureInfo.InvariantCulture"/> is used implicitly.
 	/// </remarks>
-	internal class Logger {
+	static class Logger {
 		static ILog facade = initializeFacade();
 
 		static ILog initializeFacade() {
@@ -19,6 +19,8 @@ namespace DotNetOpenId {
 		}
 
 		#region ILog Members
+		// Although this static class doesn't literally implement the ILog interface, 
+		// we implement (mostly) all the same methods in a static way.
 
 		public static void Debug(object message) {
 			facade.Debug(message);
