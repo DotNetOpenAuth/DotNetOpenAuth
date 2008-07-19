@@ -22,16 +22,12 @@ namespace DotNetOpenId {
 		static ILog facade = initializeFacade();
 
 		static ILog initializeFacade() {
-			if (Assembly.LoadWithPartialName("log4net") != null) {
-				// do in separate method to avoid JIT error when log4net is not present.
-				return InitializeLog4NetFrontend();
-			} else {
+			try {
+				Assembly.Load("log4net");
+				return Log4NetLogger.Initialize();
+			} catch (FileNotFoundException) {
 				return new NoOpLogger();
 			}
-		}
-
-		private static ILog InitializeLog4NetFrontend() {
-			return Log4NetLogger.Initialize();
 		}
 
 		#region ILog Members
