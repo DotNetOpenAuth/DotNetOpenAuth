@@ -3,6 +3,9 @@
 namespace DotNetOpenId.Loggers {
 	class NoOpLogger : ILog {
 
+		/// <summary>
+		/// Returns a new logger that does nothing when invoked.
+		/// </summary>
 		internal static ILog Initialize() {
 			return new NoOpLogger();
 		}

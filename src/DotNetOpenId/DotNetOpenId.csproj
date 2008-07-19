@@ -74,6 +74,7 @@
     <Compile Include="Extensions\IExtension.cs" />
     <Compile Include="HmacSha256Association.cs" />
     <Compile Include="Identifier.cs" />
+    <Compile Include="Loggers\TraceLogger.cs" />
     <Compile Include="Loggers\ILog.cs" />
     <Compile Include="Loggers\Log4NetLogger.cs" />
     <Compile Include="Loggers\NoOpLogger.cs" />

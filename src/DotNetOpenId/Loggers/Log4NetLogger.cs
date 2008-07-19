@@ -12,7 +12,7 @@ namespace DotNetOpenId.Loggers {
 		}
 
 		/// <summary>
-		/// Initializes the log4net logger if it exists, or returns null if the assembly cannot be found.
+		/// Returns a new log4net logger if it exists, or returns null if the assembly cannot be found.
 		/// </summary>
 		internal static ILog Initialize() {
 			return isLog4NetPresent ? new Log4NetLogger(log4net.LogManager.GetLogger("DotNetOpenId")) : null;
