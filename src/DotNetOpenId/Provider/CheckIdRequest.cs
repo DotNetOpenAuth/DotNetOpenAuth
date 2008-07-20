@@ -134,6 +134,37 @@ namespace DotNetOpenId.Provider {
 				}
 			}
 		}
+
+		/// <summary>
+		/// Adds an optional fragment (#fragment) portion to a URI ClaimedIdentifier.
+		/// Useful for identifier recycling.
+		/// </summary>
+		/// <param name="fragment">
+		/// Should not include the # prefix character as that will be added internally.
+		/// May be null or the empty string to clear a previously set fragment.
+		/// </param>
+		/// <remarks>
+		/// <para>Unlike the <see cref="ClaimedIdentifier"/> property, which can only be set if
+		/// using directed identity, this method can be called on any URI claimed identifier.</para>
+		/// <para>Because XRI claimed identifiers (the canonical IDs) are never recycled,
+		/// this method should<i>not</i> be called for XRIs.</para>
+		/// </remarks>
+		/// <exception cref="InvalidOperationException">
+		/// Thrown when this method is called on an XRI, or on a directed identity request
+		/// before the <see cref="ClaimedIdentifier"/> property is set.</exception>
+		public void SetClaimedIdentifierFragment(string fragment) {
+			if (IsDirectedIdentity && ClaimedIdentifier == null) {
+				throw new InvalidOperationException(Strings.ClaimedIdentifierMustBeSetFirst);
+			}
+			if (ClaimedIdentifier is XriIdentifier) {
+				throw new InvalidOperationException(Strings.FragmentNotAllowedOnXRIs);
+			}
+
+			UriBuilder builder = new UriBuilder(ClaimedIdentifier);
+			builder.Fragment = fragment;
+			claimedIdentifier = builder.Uri;
+		}
+
 		/// <summary>
 		/// The URL to redirect the user agent to after the authentication attempt.
 		/// This must fall "under" the realm URL.

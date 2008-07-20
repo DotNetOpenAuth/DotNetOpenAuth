@@ -25,10 +25,10 @@ namespace DotNetOpenId.Test {
 		void parameterizedTest(UriIdentifier identityUrl,
 			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult,
 			bool tryReplayAttack, bool provideStore) {
-			parameterizedProgrammaticTest(identityUrl, requestMode, expectedResult, tryReplayAttack, provideStore);
+			parameterizedProgrammaticTest(identityUrl, identityUrl, requestMode, expectedResult, tryReplayAttack, provideStore);
 			parameterizedWebClientTest(identityUrl, requestMode, expectedResult, tryReplayAttack, provideStore);
 		}
-		void parameterizedProgrammaticTest(UriIdentifier identityUrl,
+		void parameterizedProgrammaticTest(UriIdentifier identityUrl, UriIdentifier claimedUrl,
 			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult,
 			bool tryReplayAttack, bool provideStore) {
 			var store = provideStore ? appStore : null;
@@ -74,7 +74,7 @@ namespace DotNetOpenId.Test {
 			}
 			consumer = new OpenIdRelyingParty(store, redirectUrl, HttpUtility.ParseQueryString(redirectUrl.Query));
 			Assert.AreEqual(expectedResult, consumer.Response.Status);
-			Assert.AreEqual(identityUrl, consumer.Response.ClaimedIdentifier);
+			Assert.AreEqual(claimedUrl, consumer.Response.ClaimedIdentifier);
 
 			// Try replay attack
 			if (tryReplayAttack) {
@@ -266,6 +266,21 @@ namespace DotNetOpenId.Test {
 				AuthenticationStatus.Authenticated,
 				true,
 				false
+			);
+		}
+
+		[Test]
+		public void ProviderAddedFragmentRemainsInClaimedIdentifier() {
+			Uri userSuppliedIdentifier = TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApprovalAddFragment, ProtocolVersion.V20);
+			UriBuilder claimedIdentifier = new UriBuilder(userSuppliedIdentifier);
+			claimedIdentifier.Fragment = "frag";
+			parameterizedProgrammaticTest(
+				userSuppliedIdentifier,
+				claimedIdentifier.Uri,
+				AuthenticationRequestMode.Setup,
+				AuthenticationStatus.Authenticated,
+				false,
+				true
 			);
 		}
 	}

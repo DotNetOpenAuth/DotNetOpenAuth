@@ -67,6 +67,14 @@ namespace DotNetOpenId.Test {
 		}
 
 		[Test]
+		public void TrimFragment() {
+			Identifier noFragment = UriIdentifier.Parse("http://a/b");
+			Identifier fragment = UriIdentifier.Parse("http://a/b#c");
+			Assert.AreSame(noFragment, noFragment.TrimFragment());
+			Assert.AreEqual(noFragment, fragment.TrimFragment());
+		}
+
+		[Test]
 		public void ToStringTest() {
 			Assert.AreEqual(goodUri, new UriIdentifier(goodUri).ToString());
 		}
@@ -74,6 +82,8 @@ namespace DotNetOpenId.Test {
 		[Test]
 		public void EqualsTest() {
 			Assert.AreEqual(new UriIdentifier(goodUri), new UriIdentifier(goodUri));
+			// This next test is an interesting side-effect of passing off to Uri.Equals.  But it's probably ok.
+			Assert.AreEqual(new UriIdentifier(goodUri), new UriIdentifier(goodUri + "#frag"));
 			Assert.AreNotEqual(new UriIdentifier(goodUri), new UriIdentifier(goodUri + "a"));
 			Assert.AreNotEqual(null, new UriIdentifier(goodUri));
 			Assert.AreNotEqual(goodUri, new UriIdentifier(goodUri));

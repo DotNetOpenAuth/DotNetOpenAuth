@@ -108,5 +108,12 @@ namespace DotNetOpenId {
 			Debug.Fail("This should be overridden in every derived class.");
 			return base.GetHashCode();
 		}
+
+		/// <summary>
+		/// Returns an <see cref="Identifier"/> that has no URI fragment.
+		/// Quietly returns the original <see cref="Identifier"/> if it is not 
+		/// a <see cref="UriIdentifier"/> or no fragment exists.
+		/// </summary>
+		internal abstract Identifier TrimFragment();
 	}
 }

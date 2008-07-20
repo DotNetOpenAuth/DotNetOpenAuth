@@ -62,6 +62,22 @@ namespace DotNetOpenId.Provider {
 		/// </remarks>
 		Identifier ClaimedIdentifier { get; set; }
 		/// <summary>
+		/// Adds an optional fragment (#fragment) portion to the ClaimedIdentifier.
+		/// Useful for identifier recycling.
+		/// </summary>
+		/// <param name="fragment">
+		/// Should not include the # prefix character as that will be added internally.
+		/// May be null or the empty string to clear a previously set fragment.
+		/// </param>
+		/// <remarks>
+		/// <para>Unlike the <see cref="ClaimedIdentifier"/> property, which can only be set if
+		/// using directed identity, this method can be called on any URI claimed identifier.</para>
+		/// <para>Because XRI claimed identifiers (the canonical IDs) are never recycled,
+		/// this method should<i>not</i> be called for XRIs.</para>
+		/// </remarks>
+		/// <exception cref="InvalidOperationException">Thrown when this method is called on an XRI.</exception>
+		void SetClaimedIdentifierFragment(string fragment);
+		/// <summary>
 		/// Gets/sets whether the provider has determined that the 
 		/// <see cref="ClaimedIdentifier"/> belongs to the currently logged in user
 		/// and wishes to share this information with the consumer.

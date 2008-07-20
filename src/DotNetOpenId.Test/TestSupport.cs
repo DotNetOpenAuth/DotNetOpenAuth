@@ -22,6 +22,7 @@ public class TestSupport {
 	public enum Scenarios {
 		// Authentication test scenarios
 		AutoApproval,
+		AutoApprovalAddFragment,
 		ApproveOnSetup,
 		AlwaysDeny,
 

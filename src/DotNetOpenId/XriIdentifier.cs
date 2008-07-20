@@ -77,6 +77,10 @@ namespace DotNetOpenId {
 			return downloadXrds().CreateServiceEndpoints(this);
 		}
 
+		internal override Identifier TrimFragment() {
+			return this;
+		}
+
 		public override bool Equals(object obj) {
 			XriIdentifier other = obj as XriIdentifier;
 			if (other == null) return false;

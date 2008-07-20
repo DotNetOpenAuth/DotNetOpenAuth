@@ -56,6 +56,12 @@ namespace DotNetOpenId.Test {
 		}
 
 		[Test]
+		public void TrimFragment() {
+			Identifier xri = new XriIdentifier(goodXri);
+			Assert.AreSame(xri, xri.TrimFragment());
+		}
+
+		[Test]
 		public void ToStringTest() {
 			Assert.AreEqual(goodXri, new XriIdentifier(goodXri).ToString());
 		}

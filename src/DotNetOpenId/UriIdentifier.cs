@@ -168,6 +168,17 @@ namespace DotNetOpenId {
 			return endpoints;
 		}
 
+		internal override Identifier TrimFragment() {
+			// If there is no fragment, we have no need to rebuild the Identifier.
+			if (Uri.Fragment == null || Uri.Fragment.Length == 0)
+				return this;
+
+			// Strip the fragment.
+			UriBuilder builder = new UriBuilder(Uri);
+			builder.Fragment = null;
+			return builder.Uri;
+		}
+
 		public override bool Equals(object obj) {
 			UriIdentifier other = obj as UriIdentifier;
 			if (other == null) return false;
@@ -179,6 +190,5 @@ namespace DotNetOpenId {
 		public override string ToString() {
 			return Uri.AbsoluteUri;
 		}
-
 	}
 }

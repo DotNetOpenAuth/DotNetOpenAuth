@@ -88,6 +88,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The ClaimedIdentifier property must be set first..
+        /// </summary>
+        internal static string ClaimedIdentifierMustBeSetFirst {
+            get {
+                return ResourceManager.GetString("ClaimedIdentifierMustBeSetFirst", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to An authentication request has already been created using CreateRequest()..
         /// </summary>
         internal static string CreateRequestAlreadyCalled {
@@ -156,6 +165,15 @@ namespace DotNetOpenId {
         internal static string FieldMustBeSigned {
             get {
                 return ResourceManager.GetString("FieldMustBeSigned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fragment segments do not apply to XRI identifiers..
+        /// </summary>
+        internal static string FragmentNotAllowedOnXRIs {
+            get {
+                return ResourceManager.GetString("FragmentNotAllowedOnXRIs", resourceCulture);
             }
         }
         

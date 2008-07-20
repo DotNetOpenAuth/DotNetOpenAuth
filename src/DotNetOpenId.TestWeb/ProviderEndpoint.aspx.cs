@@ -109,6 +109,10 @@ public partial class ProviderEndpoint : System.Web.UI.Page {
 				// immediately approve
 				e.Request.IsAuthenticated = true;
 				break;
+			case TestSupport.Scenarios.AutoApprovalAddFragment:
+				e.Request.SetClaimedIdentifierFragment("frag");
+				e.Request.IsAuthenticated = true;
+				break;
 			case TestSupport.Scenarios.ApproveOnSetup:
 				e.Request.IsAuthenticated = !e.Request.Immediate;
 				break;
