@@ -48,7 +48,7 @@ namespace DotNetOpenId.Provider {
 				}
 			} else {
 				assoc = this.CreateAssociation(AssociationRelyingPartyType.Dumb, null);
-				Logger.Info("No assoc_handle supplied. Creating new association.");
+				Logger.Debug("No assoc_handle supplied. Creating new association.");
 			}
 
 			response.Fields[response.Protocol.openidnp.assoc_handle] = assoc.Handle;
@@ -132,7 +132,7 @@ namespace DotNetOpenId.Provider {
 		}
 
 		public virtual void Invalidate(string assoc_handle, AssociationRelyingPartyType associationType) {
-			Logger.InfoFormat("Invalidating association '{0}'.", assoc_handle);
+			Logger.DebugFormat("Invalidating association '{0}'.", assoc_handle);
 
 			store.RemoveAssociation(associationType, assoc_handle);
 		}

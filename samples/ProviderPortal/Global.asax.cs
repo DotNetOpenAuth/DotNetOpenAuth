@@ -33,7 +33,7 @@ namespace ProviderPortal {
 			 * There is only one rule currenty defined. It rewrites urls like: user/john ->user.aspx?username=john
 			 */
 			// System.Diagnostics.Debugger.Launch();
-			Logger.InfoFormat("Processing {0} on {1} ", Request.HttpMethod, stripQueryString(Request.Url));
+			Logger.DebugFormat("Processing {0} on {1} ", Request.HttpMethod, stripQueryString(Request.Url));
 			if (Request.QueryString.Count > 0)
 				Logger.DebugFormat("Querystring follows: \n{0}", ToString(Request.QueryString));
 			if (Request.Form.Count > 0)
@@ -51,7 +51,7 @@ namespace ProviderPortal {
 		}
 
 		protected void Application_Error(Object sender, EventArgs e) {
-			Logger.InfoFormat("An unhandled exception was raised. Details follow: {0}",
+			Logger.ErrorFormat("An unhandled exception was raised. Details follow: {0}",
 				HttpContext.Current.Server.GetLastError());
 		}
 

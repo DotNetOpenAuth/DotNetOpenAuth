@@ -18,11 +18,15 @@ namespace DotNetOpenId.Provider {
 
 			switch (encode_as) {
 				case EncodingType.ResponseBody:
+					Logger.DebugFormat("Sending direct message response:{0}{1}",
+						Environment.NewLine, Util.ToString(response.EncodedFields));
 					HttpStatusCode code = (response is Exception) ?
 						HttpStatusCode.BadRequest : HttpStatusCode.OK;
 					wr = new Response(code, null, ProtocolMessages.KeyValueForm.GetBytes(response.EncodedFields));
 					break;
 				case EncodingType.RedirectBrowserUrl:
+					Logger.DebugFormat("Sending indirect message response:{0}{1}",
+						Environment.NewLine, Util.ToString(response.EncodedFields));
 					Debug.Assert(response.RedirectUrl != null);
 					WebHeaderCollection headers = new WebHeaderCollection();
 
@@ -30,6 +34,7 @@ namespace DotNetOpenId.Provider {
 					UriUtil.AppendQueryArgs(builder, response.EncodedFields);
 					headers.Add(HttpResponseHeader.Location, builder.Uri.AbsoluteUri);
 
+					Logger.DebugFormat("Redirecting to {0}", builder.Uri.AbsoluteUri);
 					wr = new Response(HttpStatusCode.Redirect, headers, new byte[0]);
 					break;
 				default:
