@@ -72,6 +72,13 @@
     <Compile Include="loginProgrammatic.aspx.designer.cs">
       <DependentUpon>loginProgrammatic.aspx</DependentUpon>
     </Compile>
+    <Compile Include="logs.aspx.cs">
+      <DependentUpon>logs.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="logs.aspx.designer.cs">
+      <DependentUpon>logs.aspx</DependentUpon>
+    </Compile>
     <Compile Include="m\Login.aspx.cs">
       <DependentUpon>Login.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -92,7 +99,10 @@
     <Content Include="xrds.aspx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\Logging.mdf">
+    </Content>
     <Content Include="loginProgrammatic.aspx" />
+    <Content Include="logs.aspx" />
     <Content Include="MembersOnly\Default.aspx" />
     <Content Include="MembersOnly\Web.config" />
     <Content Include="m\Login.aspx" />
