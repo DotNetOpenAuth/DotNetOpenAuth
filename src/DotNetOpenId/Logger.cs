@@ -15,7 +15,9 @@ namespace DotNetOpenId {
 		static ILog facade = initializeFacade();
 
 		static ILog initializeFacade() {
-			return Log4NetLogger.Initialize() ?? TraceLogger.Initialize() ?? NoOpLogger.Initialize();
+			ILog result = Log4NetLogger.Initialize() ?? TraceLogger.Initialize() ?? NoOpLogger.Initialize();
+			result.Info(Util.DotNetOpenIdVersion);
+			return result;
 		}
 
 		#region ILog Members

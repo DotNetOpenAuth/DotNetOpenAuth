@@ -1,11 +1,12 @@
 using System;
-using System.Collections.Specialized;
 using System.Collections.Generic;
-using System.Text;
-using System.Web;
-using System.Globalization;
+using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Globalization;
+using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Web;
 
 namespace DotNetOpenId {
 	internal static class UriUtil {
@@ -86,6 +87,14 @@ namespace DotNetOpenId {
 
 	internal static class Util {
 		internal const string DefaultNamespace = "DotNetOpenId";
+
+		public static string DotNetOpenIdVersion {
+			get {
+				string assemblyFullName = Assembly.GetExecutingAssembly().FullName;
+				bool official = assemblyFullName.Contains("PublicKeyToken=2780ccd10d57b246");
+				return string.Format("{0} ({1})", assemblyFullName, official ? "official" : "private");
+			}
+		}
 
 		public static IDictionary<string, string> NameValueCollectionToDictionary(NameValueCollection nvc) {
 			if (nvc == null) throw new ArgumentNullException("nvc");
