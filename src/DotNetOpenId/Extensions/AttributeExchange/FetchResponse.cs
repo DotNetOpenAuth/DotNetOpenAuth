@@ -114,7 +114,7 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 				string countString;
 				if (fields.TryGetValue("count." + alias, out countString)) {
 					if (!int.TryParse(countString, out count) || count <= 0) {
-						Logger.Error("Failed to parse count.{0} value to a positive integer.");
+						Logger.ErrorFormat("Failed to parse count.{0} value to a positive integer.", alias);
 						continue;
 					}
 					countSent = true;

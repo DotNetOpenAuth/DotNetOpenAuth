@@ -227,5 +227,36 @@ namespace DotNetOpenId {
 			}
 			return null;
 		}
+
+		/// <summary>
+		/// Prepares a dictionary for printing as a string.
+		/// </summary>
+		/// <remarks>
+		/// The work isn't done until (and if) the 
+		/// <see cref="Object.ToString"/> method is actually called, which makes it great
+		/// for logging complex objects without being in a conditional block.
+		/// </remarks>
+		internal static object ToString<K, V>(IEnumerable<KeyValuePair<K, V>> pairs) {
+			return new DelayedToString<IEnumerable<KeyValuePair<K, V>>>(pairs, p => {
+				var dictionary = pairs as IDictionary<K, V>;
+				StringBuilder sb = new StringBuilder(dictionary != null ? dictionary.Count * 40 : 200);
+				foreach (var pair in pairs) {
+					sb.AppendFormat("\t{0}: {1}{2}", pair.Key, pair.Value, Environment.NewLine);
+				}
+				return sb.ToString();
+			});
+		}
+
+		private class DelayedToString<T> {
+			public DelayedToString(T obj, Func<T, string> toString) {
+				this.obj = obj;
+				this.toString = toString;
+			}
+			T obj;
+			Func<T, string> toString;
+			public override string ToString() {
+				return toString(obj);
+			}
+		}
 	}
 }

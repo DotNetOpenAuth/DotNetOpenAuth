@@ -29,7 +29,6 @@ namespace DotNetOpenId.RelyingParty {
 		List<Nonce> nonces = new List<Nonce>();
 
 		public bool TryStoreNonce(Nonce nonce) {
-			Logger.InfoFormat("Storing nonce: {0}", nonce.Code);
 			lock (this) {
 				if (nonces.Contains(nonce)) return false;
 				nonces.Add(nonce);

@@ -28,6 +28,12 @@ namespace DotNetOpenId {
 			this.Query = query;
 			Identifier = identifier;
 			if (query != null) Protocol = Protocol.Detect(query);
+
+			if (query != null) {
+				Logger.ErrorFormat("OpenIdException: {0}{1}{2}", message, Environment.NewLine, Util.ToString(query));
+			} else {
+				Logger.ErrorFormat("OpenIdException: {0}", message);
+			}
 		}
 		internal OpenIdException(string message, Identifier identifier, IDictionary<string, string> query)
 			: this(message, identifier, query, null) {

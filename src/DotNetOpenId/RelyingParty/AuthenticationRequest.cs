@@ -154,10 +154,15 @@ namespace DotNetOpenId.RelyingParty {
 				if (this.assoc != null)
 					qsArgs.Add(protocol.openid.assoc_handle, this.assoc.Handle);
 
+				var extensionArgs = OutgoingExtensions.GetArgumentsToSend(true);
+
+				Logger.DebugFormat("Preparing indirect message:{0}{1}{2}", Environment.NewLine,
+					Util.ToString(qsArgs), Util.ToString(extensionArgs));
+
 				UriBuilder redir = new UriBuilder(this.endpoint.ProviderEndpoint);
 
 				UriUtil.AppendQueryArgs(redir, qsArgs);
-				UriUtil.AppendQueryArgs(redir, OutgoingExtensions.GetArgumentsToSend(true));
+				UriUtil.AppendQueryArgs(redir, extensionArgs);
 
 				return redir.Uri;
 			}
@@ -209,7 +214,9 @@ namespace DotNetOpenId.RelyingParty {
 		public void RedirectToProvider(bool endResponse) {
 			if (HttpContext.Current == null || HttpContext.Current.Response == null) 
 				throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
-			HttpContext.Current.Response.Redirect(RedirectToProviderUrl.AbsoluteUri, endResponse);
+			Uri redirectUri = RedirectToProviderUrl;
+			Logger.InfoFormat("Redirecting for authentication to {0}", redirectUri.AbsoluteUri);
+			HttpContext.Current.Response.Redirect(redirectUri.AbsoluteUri, endResponse);
 		}
 	}
 }
