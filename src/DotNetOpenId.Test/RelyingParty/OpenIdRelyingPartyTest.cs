@@ -58,6 +58,15 @@ namespace DotNetOpenId.Test.RelyingParty {
 		}
 
 		[Test]
+		public void CreateRequestStripsFragment() {
+			var consumer = new OpenIdRelyingParty(store, simpleNonOpenIdRequest, new NameValueCollection());
+			UriBuilder userSuppliedIdentifier = new UriBuilder((Uri)TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20));
+			userSuppliedIdentifier.Fragment = "c";
+			IAuthenticationRequest request = consumer.CreateRequest(userSuppliedIdentifier.Uri, realm, returnTo);
+			Assert.AreEqual(0, new Uri(request.ClaimedIdentifier).Fragment.Length);
+		}
+
+		[Test]
 		public void AssociationCreationWithStore() {
 			var providerStore = new ProviderMemoryStore();
 

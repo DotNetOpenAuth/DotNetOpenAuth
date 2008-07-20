@@ -77,7 +77,6 @@ namespace DotNetOpenId {
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase")]
 		static bool TryCanonicalize(UriBuilder uriBuilder, out Uri canonicalUri) {
 			uriBuilder.Host = uriBuilder.Host.ToLowerInvariant();
-			uriBuilder.Fragment = null;
 			canonicalUri = uriBuilder.Uri;
 			return true;
 		}

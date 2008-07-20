@@ -56,6 +56,7 @@ namespace DotNetOpenId.RelyingParty {
 			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
 			if (realm == null) throw new ArgumentNullException("realm");
 
+			StripFragment(ref userSuppliedIdentifier);
 			if (TraceUtil.Switch.TraceInfo) {
 				Trace.TraceInformation("Creating authentication request for user supplied Identifier: {0}",
 					userSuppliedIdentifier);
@@ -100,6 +101,23 @@ namespace DotNetOpenId.RelyingParty {
 
 			return new AuthenticationRequest(
 				token, association, endpoint, realm, returnToUrl, relyingParty.Encoder);
+		}
+
+		private static void StripFragment(ref Identifier userSuppliedIdentifier) {
+			if (userSuppliedIdentifier == null) throw new ArgumentNullException("userSuppliedIdentifier");
+
+			// If this is an XRI, we have nothing to do here.
+			UriIdentifier userSuppliedUriIdentifier = userSuppliedIdentifier as UriIdentifier;
+			if (userSuppliedUriIdentifier == null) return;
+
+			// If there is no fragment, we have no need to rebuild the Identifier.
+			if (userSuppliedUriIdentifier.Uri.Fragment == null || userSuppliedUriIdentifier.Uri.Fragment.Length == 0)
+				return;
+
+			// Strip the fragment.
+			UriBuilder userSuppliedIdentifierBuilder = new UriBuilder(userSuppliedUriIdentifier.Uri);
+			userSuppliedIdentifierBuilder.Fragment = null;
+			userSuppliedIdentifier = userSuppliedIdentifierBuilder.Uri;
 		}
 
 		/// <summary>

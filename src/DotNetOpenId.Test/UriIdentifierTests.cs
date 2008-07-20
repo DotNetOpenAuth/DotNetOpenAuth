@@ -44,6 +44,21 @@ namespace DotNetOpenId.Test {
 			Assert.AreEqual(new Uri(goodUri), uri.Uri);
 		}
 
+		/// <summary>
+		/// Verifies that the fragment is not stripped from an Identifier.
+		/// </summary>
+		/// <remarks>
+		/// Although fragments should be stripped from user supplied identifiers, 
+		/// they should NOT be stripped from claimed identifiers.  So the UriIdentifier
+		/// class, which serves both identifier types, must not do the stripping.
+		/// </remarks>
+		[Test]
+		public void DoesNotStripFragment() {
+			Uri original = new Uri("http://a/b#c");
+			UriIdentifier identifier = new UriIdentifier(original);
+			Assert.AreEqual(original.Fragment, identifier.Uri.Fragment);
+		}
+
 		[Test]
 		public void IsValid() {
 			Assert.IsTrue(UriIdentifier.IsValidUri(goodUri));

@@ -51,9 +51,6 @@ namespace DotNetOpenId.Test {
 			id = Identifier.Parse(uriNoScheme);
 			Assert.IsInstanceOfType(typeof(UriIdentifier), id);
 			Assert.AreEqual(uri, ((UriIdentifier)id).Uri.AbsoluteUri);
-			// verify that fragments are stripped
-			id = Identifier.Parse(uri + "#fragment");
-			Assert.AreEqual(uri, ((UriIdentifier)id).Uri.AbsoluteUri);
 		}
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
