@@ -88,10 +88,15 @@
     <Content Include="xrds.aspx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="images\dotnetopenid_tiny.gif" />
     <Content Include="loginProgrammatic.aspx" />
     <Content Include="MembersOnly\Default.aspx" />
     <Content Include="MembersOnly\Web.config" />
     <Content Include="m\Login.aspx" />
+    <Content Include="styles.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Site.Master" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v9.0\WebApplications\Microsoft.WebApplication.targets" />

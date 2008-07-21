@@ -1,8 +1,7 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" MasterPageFile="~/Site.Master" %>
 
 <%@ Import Namespace="DotNetOpenId.Provider" %>
 <%@ Register Assembly="DotNetOpenId" Namespace="DotNetOpenId" TagPrefix="openid" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <script runat="server">
 	protected void sendAssertionButton_Click(object sender, EventArgs e) {
@@ -20,18 +19,9 @@
 	}
 </script>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
-	<openid:XrdsPublisher runat="server" XrdsUrl="~/op_xrds.aspx" />
-	<title>OpenID Provider, by DotNetOpenId</title>
-</head>
-<body>
-	<form id="form1" runat="server">
-	<h1>
-		OpenID Provider
-	</h1>
+<asp:Content runat=server ContentPlaceHolderID=Main>
 	<h2>
-		Provided by <a href="http://dotnetopenid.googlecode.com">DotNetOpenId</a>
+		Provider
 	</h2>
 	<p>
 		Welcome. This site doesn't do anything more than simple authentication of users.
@@ -59,6 +49,4 @@
 		</LoggedInTemplate>
 	</asp:LoginView>
 	<asp:LoginStatus runat="server" />
-	</form>
-</body>
-</html>
+</asp:Content>
