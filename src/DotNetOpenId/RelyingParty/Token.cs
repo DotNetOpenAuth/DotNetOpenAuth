@@ -37,18 +37,18 @@ namespace DotNetOpenId.RelyingParty {
 		/// This string is cryptographically signed to protect against tampering.
 		/// </summary>
 		public string Serialize(INonceStore store) {
-			using (MemoryStream ms = new MemoryStream()) {
+			using (MemoryStream dataStream = new MemoryStream()) {
 				if (!persistSignature(store)) {
 					Debug.Assert(!persistNonce(Endpoint, store), "Without a signature, a nonce is meaningless.");
-					StreamWriter writer = new StreamWriter(ms);
+					dataStream.WriteByte(0); // there will be NO signature.
+					StreamWriter writer = new StreamWriter(dataStream);
 					Endpoint.Serialize(writer);
 					writer.Flush();
-					return Convert.ToBase64String(ms.ToArray());
+					return Convert.ToBase64String(dataStream.ToArray());
 				} else {
 					using (HashAlgorithm shaHash = createHashAlgorithm(store))
-					using (CryptoStream shaStream = new CryptoStream(ms, shaHash, CryptoStreamMode.Write)) {
+					using (CryptoStream shaStream = new CryptoStream(dataStream, shaHash, CryptoStreamMode.Write)) {
 						StreamWriter writer = new StreamWriter(shaStream);
-
 						Endpoint.Serialize(writer);
 						if (persistNonce(Endpoint, store))
 							writer.WriteLine(Nonce.Code);
@@ -58,9 +58,10 @@ namespace DotNetOpenId.RelyingParty {
 						shaStream.FlushFinalBlock();
 
 						byte[] hash = shaHash.Hash;
-						byte[] data = new byte[hash.Length + ms.Length];
-						Buffer.BlockCopy(hash, 0, data, 0, hash.Length);
-						Buffer.BlockCopy(ms.ToArray(), 0, data, hash.Length, (int)ms.Length);
+						byte[] data = new byte[1 + hash.Length + dataStream.Length];
+						data[0] = 1; // there is a signature
+						Buffer.BlockCopy(hash, 0, data, 1, hash.Length);
+						Buffer.BlockCopy(dataStream.ToArray(), 0, data, 1 + hash.Length, (int)dataStream.Length);
 
 						return Convert.ToBase64String(data);
 					}
@@ -79,34 +80,42 @@ namespace DotNetOpenId.RelyingParty {
 		/// </remarks>
 		public static Token Deserialize(string token, INonceStore store) {
 			byte[] tok = Convert.FromBase64String(token);
-			MemoryStream ms;
+			if (tok.Length < 1) throw new OpenIdException(Strings.InvalidSignature);
+			bool signaturePresent = tok[0] == 1;
+			bool signatureVerified = false;
+			MemoryStream dataStream;
 
-			if (persistSignature(store)) {
-				// Verify the signature to guarantee that our state hasn't been
-				// tampered with in transit or on the provider.
-				HashAlgorithm hmac = createHashAlgorithm(store);
-				byte[] sig = new byte[hmac.HashSize / 8];
-				if (tok.Length < sig.Length)
-					throw new OpenIdException(Strings.InvalidSignature);
-				Buffer.BlockCopy(tok, 0, sig, 0, sig.Length);
-				ms = new MemoryStream(tok, sig.Length, tok.Length - sig.Length);
-				byte[] newSig = hmac.ComputeHash(ms);
-				ms.Seek(0, SeekOrigin.Begin);
-				for (int i = 0; i < sig.Length; i++)
-					if (sig[i] != newSig[i])
+			if (signaturePresent) {
+				if (persistSignature(store)) {
+					// Verify the signature to guarantee that our state hasn't been
+					// tampered with in transit or on the provider.
+					HashAlgorithm hmac = createHashAlgorithm(store);
+					int signatureLength = hmac.HashSize / 8;
+					dataStream = new MemoryStream(tok, 1 + signatureLength, tok.Length - 1 - signatureLength);
+					byte[] newSig = hmac.ComputeHash(dataStream);
+					dataStream.Position = 0;
+					if (tok.Length - 1 < newSig.Length)
 						throw new OpenIdException(Strings.InvalidSignature);
+					for (int i = 0; i < newSig.Length; i++)
+						if (tok[i + 1] != newSig[i])
+							throw new OpenIdException(Strings.InvalidSignature);
+					signatureVerified = true;
+				} else {
+					// Oops, we have no application state, so we have no way of validating the signature.
+					throw new OpenIdException(Strings.InconsistentAppState);
+				}
 			} else {
-				ms = new MemoryStream(tok);
+				dataStream = new MemoryStream(tok, 1, tok.Length - 1);
 			}
 
-			StreamReader reader = new StreamReader(ms);
+			StreamReader reader = new StreamReader(dataStream);
 			ServiceEndpoint endpoint = ServiceEndpoint.Deserialize(reader);
 			Nonce nonce = null;
-			if (persistNonce(endpoint, store)) {
+			if (signatureVerified && persistNonce(endpoint, store)) {
 				nonce = new Nonce(reader.ReadLine(), false);
 				nonce.Consume(store);
 			}
-			if (!persistSignature(store)) {
+			if (!signatureVerified) {
 				verifyEndpointByDiscovery(endpoint);
 			}
 

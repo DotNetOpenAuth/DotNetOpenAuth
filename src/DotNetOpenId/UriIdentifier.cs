@@ -135,8 +135,7 @@ namespace DotNetOpenId {
 						providerLocalIdentifier = linkTag.Href;
 						break;
 					} else {
-						if (TraceUtil.Switch.TraceWarning)
-							Trace.TraceWarning("Skipping endpoint data because local id is badly formed ({0}).", linkTag.Href);
+						Logger.WarnFormat("Skipping endpoint data because local id is badly formed ({0}).", linkTag.Href);
 						return null; // badly formed URL used as LocalId
 					}
 				}

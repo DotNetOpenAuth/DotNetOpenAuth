@@ -23,13 +23,11 @@ namespace DotNetOpenId.Yadis {
 				}
 			} catch (ArgumentException ex) {
 				// Unsafe URLs generate this
-				if (TraceUtil.Switch.TraceWarning) {
-					Trace.TraceWarning("Unsafe OpenId URL detected ({0}).  Request aborted.  {1}", uri, ex);
-				}
+				Logger.WarnFormat("Unsafe OpenId URL detected ({0}).  Request aborted.  {1}", uri, ex);
 				return null;
 			}
 			UntrustedWebResponse response2 = null;
-			if (response.ContentType.MediaType == ContentTypes.Xrds) {
+			if (isXrdsDocument(response)) {
 				response2 = response;
 			} else {
 				string uriString = response.Headers.Get(HeaderName);
@@ -46,6 +44,23 @@ namespace DotNetOpenId.Yadis {
 				}
 			}
 			return new DiscoveryResult(uri, response, response2);
+		}
+
+		private static bool isXrdsDocument(UntrustedWebResponse response) {
+			if (response.ContentType.MediaType == ContentTypes.Xrds) {
+				return true;
+			}
+
+			if (response.ContentType.MediaType == ContentTypes.Xml) {
+				// This COULD be an XRDS document with an imprecise content-type.
+				XmlReader reader = XmlReader.Create(new StringReader(response.ReadResponseString()));
+				while (reader.Read() && reader.NodeType != XmlNodeType.Element) ;
+				if (reader.NamespaceURI == XrdsNode.XrdsNamespace && reader.Name == "XRDS") {
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		/// <summary>
@@ -74,12 +89,14 @@ namespace DotNetOpenId.Yadis {
 			if (finalResponse == null) {
 				ContentType = initialResponse.ContentType;
 				ResponseText = initialResponse.ReadResponseString();
+				IsXrds = ContentType.MediaType == ContentTypes.Xrds;
 			} else {
 				ContentType = finalResponse.ContentType;
 				ResponseText = finalResponse.ReadResponseString();
-			}
-			if ((initialResponse != finalResponse) && (finalResponse != null)) {
-				YadisLocation = finalResponse.RequestUri;
+				IsXrds = true;
+				if (initialResponse != finalResponse) {
+					YadisLocation = finalResponse.RequestUri;
+				}
 			}
 		}
 
@@ -113,9 +130,7 @@ namespace DotNetOpenId.Yadis {
 		/// Whether the <see cref="ResponseText"/> represents an XRDS document.
 		/// False if the response is an HTML document.
 		/// </summary>
-		public bool IsXrds {
-			get { return UsedYadisLocation || ContentType.MediaType == ContentTypes.Xrds; }
-		}
+		public bool IsXrds { get; private set; }
 		/// <summary>
 		/// True if the response to the userSuppliedIdentifier pointed to a different URL
 		/// for the XRDS document.

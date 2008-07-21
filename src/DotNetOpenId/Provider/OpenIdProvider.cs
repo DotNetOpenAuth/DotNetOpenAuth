@@ -116,8 +116,8 @@ namespace DotNetOpenId.Provider {
 			Protocol = Protocol.Detect(Query);
 			Request req = Provider.Request.CreateRequest(this);
 
-			if (TraceUtil.Switch.TraceInfo)
-				Trace.TraceInformation("Received OpenID {0} request.", req.Mode);
+			Logger.InfoFormat("Received OpenID {0} request.{1}{2}", req.Mode, Environment.NewLine,
+				Util.ToString(Query));
 
 			return req;
 		}
@@ -150,6 +150,8 @@ namespace DotNetOpenId.Provider {
 			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
 			if (claimedIdentifier == null) throw new ArgumentNullException("claimedIdentifier");
 			if (localIdentifier == null) throw new ArgumentNullException("localIdentifier");
+
+			Logger.InfoFormat("Preparing unsolicited assertion for {0}", claimedIdentifier);
 			return AssertionMessage.CreateUnsolicitedAssertion(this, 
 				relyingParty, claimedIdentifier, localIdentifier);
 		}

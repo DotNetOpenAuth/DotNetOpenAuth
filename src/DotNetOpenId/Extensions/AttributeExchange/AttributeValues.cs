@@ -18,15 +18,18 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 		internal AttributeValues() {
 			Values = new List<string>(1);
 		}
-		internal AttributeValues(string typeUri)
-			: this() {
-			TypeUri = typeUri;
-		}
-		internal AttributeValues(string typeUri, params string[] values) {
+		internal AttributeValues(string typeUri) {
 			if (string.IsNullOrEmpty(typeUri)) throw new ArgumentNullException("typeUri");
-			if (values == null) throw new ArgumentNullException("values");
 			TypeUri = typeUri;
-			Values = values;
+			Values = new List<string>(1);
+		}
+		/// <summary>
+		/// Instantiates an <see cref="AttributeValues"/> object.
+		/// </summary>
+		public AttributeValues(string typeUri, params string[] values) {
+			if (string.IsNullOrEmpty(typeUri)) throw new ArgumentNullException("typeUri");
+			TypeUri = typeUri;
+			Values = values ?? new string[0];
 		}
 
 		/// <summary>

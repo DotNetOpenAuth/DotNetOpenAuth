@@ -60,12 +60,10 @@ namespace DotNetOpenId.Provider {
 			if (request.IsAuthenticated.Value) {
 				AssertionMessage.CreatePositiveAssertion(response, request.Provider,
 					request.LocalIdentifier, request.ClaimedIdentifier);
-				if (TraceUtil.Switch.TraceInfo)
-					Trace.TraceInformation("Created positive assertion for {0}.", request.ClaimedIdentifier);
+				Logger.InfoFormat("Created positive assertion for {0}.", request.ClaimedIdentifier);
 			} else {
 				AssertionMessage.CreateNegativeAssertion(response, request.Immediate, request.SetupUrl);
-				if (TraceUtil.Switch.TraceInfo)
-					Trace.TraceInformation("Created negative assertion for {0}.", request.ClaimedIdentifier);
+				Logger.InfoFormat("Created negative assertion for {0}.", request.ClaimedIdentifier);
 			}
 			return response;
 		}

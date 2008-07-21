@@ -168,6 +168,9 @@
   <data name="IdentifierSelectRequiresMatchingIdentifiers" xml:space="preserve">
     <value>ClaimedIdentifier and LocalIdentifier must be the same when IsIdentifierSelect is true.</value>
   </data>
+  <data name="InconsistentAppState" xml:space="preserve">
+    <value>Inconsistent setting of application state.  Authentication request was sent with application state available, but authentication response was received without it available.  This makes it impossible to validate the token's signature and will cause assertion verification failure.</value>
+  </data>
   <data name="InvalidCharacterInKeyValueFormInput" xml:space="preserve">
     <value>Cannot encode '{0}' because it contains an illegal character for Key-Value Form encoding.  (line {1}: '{2}')</value>
   </data>

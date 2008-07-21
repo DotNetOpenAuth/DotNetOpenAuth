@@ -24,7 +24,7 @@ namespace DotNetOpenId.Provider {
 			signedFields = new Dictionary<string, string>();
 			Debug.Assert(!signedKeyOrder.Contains(Protocol.openidnp.mode), "openid.mode must not be included in signature because it necessarily changes in checkauth requests.");
 			foreach (string key in signedKeyOrder) {
-				signedFields.Add(key, Util.GetRequiredArg(Query, Protocol.openid.Prefix + key));
+				signedFields.Add(key, Util.GetRequiredArgAllowEmptyValue(Query, Protocol.openid.Prefix + key));
 			}
 		}
 
@@ -62,9 +62,7 @@ namespace DotNetOpenId.Provider {
 				Association assoc = Provider.Signatory.GetAssociation(invalidate_handle, AssociationRelyingPartyType.Smart);
 
 				if (assoc == null) {
-					if (TraceUtil.Switch.TraceWarning) {
-						Trace.TraceWarning("No matching association found. Returning invalidate_handle. ");
-					}
+					Logger.Warn("No matching association found. Returning invalidate_handle. ");
 					response.Fields[Protocol.openidnp.invalidate_handle] = invalidate_handle;
 				}
 			}

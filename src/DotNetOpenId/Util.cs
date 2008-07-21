@@ -1,12 +1,13 @@
 using System;
-using System.Collections.Specialized;
 using System.Collections.Generic;
-using System.Text;
-using System.Web;
-using System.Globalization;
+using System.Collections.Specialized;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
+using System.Globalization;
 using System.Net;
+using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Web;
 
 namespace DotNetOpenId {
 	internal static class UriUtil {
@@ -88,6 +89,15 @@ namespace DotNetOpenId {
 	internal static class Util {
 		internal const string DefaultNamespace = "DotNetOpenId";
 
+		public static string DotNetOpenIdVersion {
+			get {
+				string assemblyFullName = Assembly.GetExecutingAssembly().FullName;
+				bool official = assemblyFullName.Contains("PublicKeyToken=2780ccd10d57b246");
+				// We use InvariantCulture since this is used for logging.
+				return string.Format(CultureInfo.InvariantCulture, "{0} ({1})", assemblyFullName, official ? "official" : "private");
+			}
+		}
+
 		public static IDictionary<string, string> NameValueCollectionToDictionary(NameValueCollection nvc) {
 			if (nvc == null) return null;
 			var dict = new Dictionary<string, string>(nvc.Count);
@@ -156,6 +166,15 @@ namespace DotNetOpenId {
 			if (key == null) throw new ArgumentNullException("key");
 			string value;
 			if (!query.TryGetValue(key, out value) || value.Length == 0)
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
+					Strings.MissingOpenIdQueryParameter, key), query);
+			return value;
+		}
+		public static string GetRequiredArgAllowEmptyValue(IDictionary<string, string> query, string key) {
+			if (query == null) throw new ArgumentNullException("query");
+			if (key == null) throw new ArgumentNullException("key");
+			string value;
+			if (!query.TryGetValue(key, out value))
 				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.MissingOpenIdQueryParameter, key), query);
 			return value;
@@ -244,6 +263,37 @@ namespace DotNetOpenId {
 				}
 			}
 			return null;
+		}
+
+		/// <summary>
+		/// Prepares a dictionary for printing as a string.
+		/// </summary>
+		/// <remarks>
+		/// The work isn't done until (and if) the 
+		/// <see cref="Object.ToString"/> method is actually called, which makes it great
+		/// for logging complex objects without being in a conditional block.
+		/// </remarks>
+		internal static object ToString<K, V>(IEnumerable<KeyValuePair<K, V>> pairs) {
+			return new DelayedToString<IEnumerable<KeyValuePair<K, V>>>(pairs, p => {
+				var dictionary = pairs as IDictionary<K, V>;
+				StringBuilder sb = new StringBuilder(dictionary != null ? dictionary.Count * 40 : 200);
+				foreach (var pair in pairs) {
+					sb.AppendFormat("\t{0}: {1}{2}", pair.Key, pair.Value, Environment.NewLine);
+				}
+				return sb.ToString();
+			});
+		}
+
+		private class DelayedToString<T> {
+			public DelayedToString(T obj, Func<T, string> toString) {
+				this.obj = obj;
+				this.toString = toString;
+			}
+			T obj;
+			Func<T, string> toString;
+			public override string ToString() {
+				return toString(obj);
+			}
 		}
 	}
 }

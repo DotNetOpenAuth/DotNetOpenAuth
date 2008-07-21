@@ -7,6 +7,7 @@ using System.Xml;
 // nicked from http://www.codeproject.com/aspnet/URLRewriter.asp
 namespace ProviderPortal {
 	public class URLRewriter : IConfigurationSectionHandler {
+		public static log4net.ILog Logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		protected XmlNode _oRules = null;
 
 		protected URLRewriter() { }
@@ -22,7 +23,7 @@ namespace ProviderPortal {
 				// check validity of the values
 				if (oUrlNode == null || string.IsNullOrEmpty(oUrlNode.InnerText)
 					|| oRewriteNode == null || string.IsNullOrEmpty(oRewriteNode.InnerText)) {
-					Trace.TraceWarning("Invalid urlrewrites rule discovered in web.config file.");
+					Logger.Warn("Invalid urlrewrites rule discovered in web.config file.");
 					continue;
 				}
 
@@ -44,7 +45,7 @@ namespace ProviderPortal {
 			string zSubst = oRewriter.GetSubstitution(HttpContext.Current.Request.Path);
 
 			if (!string.IsNullOrEmpty(zSubst)) {
-				Trace.TraceInformation("Rewriting url '{0}' to '{1}' ", HttpContext.Current.Request.Path, zSubst);
+				Logger.InfoFormat("Rewriting url '{0}' to '{1}' ", HttpContext.Current.Request.Path, zSubst);
 				HttpContext.Current.RewritePath(zSubst);
 			}
 		}

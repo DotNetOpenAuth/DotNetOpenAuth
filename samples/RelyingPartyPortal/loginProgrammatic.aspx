@@ -1,13 +1,6 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="loginProgrammatic.aspx.cs"
-	Inherits="loginProgrammatic" %>
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-	<title>Login</title>
-</head>
-<body>
-	<form id="Form1" runat="server">
+	Inherits="loginProgrammatic" MasterPageFile="~/Site.Master" %>
+<asp:Content ID="Content1" runat="server" ContentPlaceHolderID="Main">
 	<h2>Login Page </h2>
 	<asp:Label ID="Label1" runat="server" Text="OpenID Login" />
 	<asp:TextBox ID="openIdBox" runat="server" />
@@ -19,6 +12,4 @@
 		Visible="False" />
 	<asp:Label ID="loginCanceledLabel" runat="server" EnableViewState="False" Text="Login canceled"
 		Visible="False" />
-	</form>
-</body>
-</html>
+</asp:Content>

@@ -16,7 +16,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\..\bin\debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
@@ -30,8 +30,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\..\bin\Release\</OutputPath>
-    <DefineConstants>
-    </DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
@@ -45,6 +44,10 @@
     <DefineConstants>$(DefineConstants);StrongNameSigned</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -78,6 +81,10 @@
     <Compile Include="HmacSha256Association.cs" />
     <Compile Include="Identifier.cs" />
     <Compile Include="IResponse.cs" />
+    <Compile Include="Loggers\TraceLogger.cs" />
+    <Compile Include="Loggers\ILog.cs" />
+    <Compile Include="Loggers\Log4NetLogger.cs" />
+    <Compile Include="Loggers\NoOpLogger.cs" />
     <Compile Include="Protocol.cs" />
     <Compile Include="Provider\AssertionMessage.cs" />
     <Compile Include="Provider\RelyingPartyReceivingEndpoint.cs" />
@@ -152,7 +159,7 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Include="TraceUtil.cs">
+    <Compile Include="Logger.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Realm.cs" />

@@ -117,8 +117,7 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 				string countString;
 				if (fields.TryGetValue("count." + alias, out countString)) {
 					if (!int.TryParse(countString, out count) || count <= 0) {
-						if (TraceUtil.Switch.TraceError)
-							Trace.TraceError("Failed to parse count.{0} value to a positive integer.");
+						Logger.ErrorFormat("Failed to parse count.{0} value to a positive integer.", alias);
 						continue;
 					}
 					countSent = true;
@@ -129,8 +128,7 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 						if (fields.TryGetValue(string.Format(CultureInfo.InvariantCulture, "value.{0}.{1}", alias, i), out value)) {
 							att.Values.Add(value);
 						} else {
-							if (TraceUtil.Switch.TraceError)
-								Trace.TraceError("Missing value for attribute '{0}'.", att.TypeUri);
+							Logger.ErrorFormat("Missing value for attribute '{0}'.", att.TypeUri);
 							continue;
 						}
 					}
@@ -139,8 +137,7 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 					if (fields.TryGetValue("value." + alias, out value))
 						att.Values.Add(value);
 					else {
-						if (TraceUtil.Switch.TraceError)
-							Trace.TraceError("Missing value for attribute '{0}'.", att.TypeUri);
+						Logger.ErrorFormat("Missing value for attribute '{0}'.", att.TypeUri);
 						continue;
 					}
 				}
@@ -155,8 +152,7 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 				if (!pair.Key.StartsWith("type.", StringComparison.Ordinal)) continue;
 				string alias = pair.Key.Substring(5);
 				if (alias.IndexOfAny(new[] { '.', ',', ':' }) >= 0) {
-					if (TraceUtil.Switch.TraceError)
-						Trace.TraceError("Illegal characters in alias name '{0}'.", alias);
+					Logger.ErrorFormat("Illegal characters in alias name '{0}'.", alias);
 					continue;
 				}
 				aliasManager.SetAlias(alias, pair.Value);

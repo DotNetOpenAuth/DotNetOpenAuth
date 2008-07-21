@@ -1,12 +1,7 @@
-<%@ Page Language="C#" AutoEventWireup="true" Inherits="decide" CodeBehind="decide.aspx.cs" %>
+<%@ Page Language="C#" AutoEventWireup="true" Inherits="decide" CodeBehind="decide.aspx.cs" MasterPageFile="~/Site.Master" %>
 
 <%@ Register Src="ProfileFields.ascx" TagName="ProfileFields" TagPrefix="uc1" %>
-<html>
-<head>
-	<title>Approve OpenID request?</title>
-</head>
-<body>
-	<form id="Form1" runat="server">
+<asp:Content runat="server" ContentPlaceHolderID="Main">
 	<p>
 		A site has asked to authenticate that you own the identifier below.&nbsp; You should 
 		only do this if you wish to log in to the site given by the Realm.</p>
@@ -36,6 +31,4 @@
 	<uc1:ProfileFields ID="profileFields" runat="server" Visible="false" />
 	<asp:Button ID="yes_button" OnClick="Yes_Click" Text="  yes  " runat="Server" />
 	<asp:Button ID="no_button" OnClick="No_Click" Text="  no  " runat="Server" />
-	</form>
-</body>
-</html>
+</asp:Content>

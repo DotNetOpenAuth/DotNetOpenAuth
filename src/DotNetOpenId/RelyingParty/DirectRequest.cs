@@ -23,6 +23,8 @@ namespace DotNetOpenId.RelyingParty {
 		protected IDictionary<string, string> Args { get; private set; }
 
 		protected IDictionary<string, string> GetResponse() {
+			Logger.DebugFormat("Sending direct message to {0}: {1}{2}", Provider.ProviderEndpoint,
+				Environment.NewLine, Util.ToString(Args));
 			byte[] body = ProtocolMessages.Http.GetBytes(Args);
 			UntrustedWebResponse resp = null;
 			IDictionary<string, string> args = null;
@@ -37,6 +39,8 @@ namespace DotNetOpenId.RelyingParty {
 						Strings.ProviderRespondedWithError, errorStream));
 				}
 				args = ProtocolMessages.KeyValueForm.GetDictionary(resp.ResponseStream);
+				Logger.DebugFormat("Received direct response from {0}: {1}{2}", Provider.ProviderEndpoint,
+					Environment.NewLine, Util.ToString(args));
 			} catch (ArgumentException e) {
 				throw new OpenIdException("Failure decoding Key-Value Form response from provider.", e);
 			} catch (WebException e) {
