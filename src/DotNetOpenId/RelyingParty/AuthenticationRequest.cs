@@ -57,21 +57,16 @@ namespace DotNetOpenId.RelyingParty {
 			if (userSuppliedIdentifier == null) throw new ArgumentNullException("userSuppliedIdentifier");
 			if (realm == null) throw new ArgumentNullException("realm");
 
-			if (TraceUtil.Switch.TraceInfo) {
-				Trace.TraceInformation("Creating authentication request for user supplied Identifier: {0}",
+			Logger.InfoFormat("Creating authentication request for user supplied Identifier: {0}",
 					userSuppliedIdentifier);
-			}
-			if (TraceUtil.Switch.TraceVerbose) {
-				Trace.Indent();
-				Trace.TraceInformation("Realm: {0}", realm);
-				Trace.TraceInformation("Return To: {0}", returnToUrl);
-				Trace.Unindent();
-			}
-			if (TraceUtil.Switch.TraceWarning && returnToUrl.Query != null) {
+			Logger.DebugFormat("Realm: {0}", realm);
+			Logger.DebugFormat("Return To: {0}", returnToUrl);
+
+			if (Logger.IsWarnEnabled && returnToUrl.Query != null) {
 				NameValueCollection returnToArgs = HttpUtility.ParseQueryString(returnToUrl.Query);
 				foreach (string key in returnToArgs) {
 					if (OpenIdRelyingParty.ShouldParameterBeStrippedFromReturnToUrl(key)) {
-						Trace.TraceWarning("OpenId argument \"{0}\" found in return_to URL.  This can corrupt an OpenID response.", key);
+						Logger.WarnFormat("OpenId argument \"{0}\" found in return_to URL.  This can corrupt an OpenID response.", key);
 						break;
 					}
 				}
@@ -80,11 +75,7 @@ namespace DotNetOpenId.RelyingParty {
 			var endpoint = userSuppliedIdentifier.Discover();
 			if (endpoint == null)
 				throw new OpenIdException(Strings.OpenIdEndpointNotFound);
-			if (TraceUtil.Switch.TraceVerbose) {
-				Trace.Indent();
-				Trace.TraceInformation("Discovered provider endpoint: {0}", endpoint);
-				Trace.Unindent();
-			}
+			Logger.DebugFormat("Discovered provider endpoint: {0}", endpoint);
 
 			// Throw an exception now if the realm and the return_to URLs don't match
 			// as required by the provider.  We could wait for the provider to test this and
@@ -108,20 +99,15 @@ namespace DotNetOpenId.RelyingParty {
 				if (req.Response != null) {
 					// try again if we failed the first time and have a worthy second-try.
 					if (req.Response.Association == null && req.Response.SecondAttempt != null) {
-						if (TraceUtil.Switch.TraceWarning) {
-							Trace.TraceWarning("Initial association attempt failed, but will retry with Provider-suggested parameters.");
-						}
+						Logger.Warn("Initial association attempt failed, but will retry with Provider-suggested parameters.");
 						req = req.Response.SecondAttempt;
 					}
 					assoc = req.Response.Association;
 					if (assoc != null) {
-						if (TraceUtil.Switch.TraceInfo)
-							Trace.TraceInformation("Association with {0} established.", provider.ProviderEndpoint);
+						Logger.InfoFormat("Association with {0} established.", provider.ProviderEndpoint);
 						store.StoreAssociation(provider.ProviderEndpoint, assoc);
 					} else {
-						if (TraceUtil.Switch.TraceError) {
-							Trace.TraceError("Association attempt with {0} provider failed.", provider);
-						}
+						Logger.ErrorFormat("Association attempt with {0} provider failed.", provider);
 					}
 				}
 			}

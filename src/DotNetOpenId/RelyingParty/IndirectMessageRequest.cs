@@ -9,6 +9,9 @@ namespace DotNetOpenId.RelyingParty {
 			if (fields == null) throw new ArgumentNullException("fields");
 			RedirectUrl = receivingUrl;
 			EncodedFields = fields;
+
+			Logger.DebugFormat("Preparing indirect message:{0}{1}", Environment.NewLine,
+				Util.ToString(fields));
 		}
 
 		#region IEncodable Members

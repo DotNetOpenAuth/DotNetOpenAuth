@@ -111,9 +111,8 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 					authDateTime.Kind == DateTimeKind.Utc) { // may be unspecified per our option above
 					AuthenticationTimeUtc = authDateTime;
 				} else {
-					if (TraceUtil.Switch.TraceError)
-						Trace.TraceError("Invalid format for {0} parameter: {1}",
-							Constants.ResponseParameters.AuthTime, authTime);
+					Logger.ErrorFormat("Invalid format for {0} parameter: {1}",
+						Constants.ResponseParameters.AuthTime, authTime);
 				}
 			}
 
@@ -125,8 +124,7 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 					nistAuthLevelNumber >= 0 && nistAuthLevelNumber <= 4) {
 					NistAssuranceLevel = (NistAssuranceLevel)nistAuthLevelNumber;
 				} else {
-					if (TraceUtil.Switch.TraceError)
-						Trace.TraceError("Invalid NIST level.");
+					Logger.Error("Invalid NIST level.");
 				}
 			}
 

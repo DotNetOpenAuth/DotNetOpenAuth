@@ -137,16 +137,14 @@ namespace DotNetOpenId {
 		static bool isUriAllowable(Uri uri) {
 			Debug.Assert(uri != null);
 			if (!allowableSchemes.Contains(uri.Scheme)) {
-				if (TraceUtil.Switch.TraceWarning)
-					Trace.TraceWarning("Rejecting URL {0} because it uses a disallowed scheme.", uri);
+				Logger.WarnFormat("Rejecting URL {0} because it uses a disallowed scheme.", uri);
 				return false;
 			}
 
 			// Allow for whitelist or blacklist to override our detection.
 			DotNetOpenId.Util.Func<string, bool> failsUnlessWhitelisted = (string reason) => {
 				if (isHostWhitelisted(uri.DnsSafeHost)) return true;
-				if (TraceUtil.Switch.TraceWarning)
-					Trace.TraceWarning("Rejecting URL {0} because {1}.", uri, reason);
+				Logger.WarnFormat("Rejecting URL {0} because {1}.", uri, reason);
 				return false;
 			};
 
@@ -180,8 +178,7 @@ namespace DotNetOpenId {
 				}
 			}
 			if (isHostBlacklisted(uri.DnsSafeHost)) {
-				if (TraceUtil.Switch.TraceWarning)
-					Trace.TraceWarning("Rejected URL {0} because it is blacklisted.", uri);
+				Logger.WarnFormat("Rejected URL {0} because it is blacklisted.", uri);
 				return false;
 			}
 			return true;

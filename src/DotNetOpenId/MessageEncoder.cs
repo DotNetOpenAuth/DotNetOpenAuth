@@ -43,11 +43,15 @@ namespace DotNetOpenId {
 			WebHeaderCollection headers = new WebHeaderCollection();
 			switch (encode_as) {
 				case EncodingType.DirectResponse:
+					Logger.DebugFormat("Sending direct message response:{0}{1}",
+						Environment.NewLine, Util.ToString(message.EncodedFields));
 					HttpStatusCode code = (message is Exception) ?
 						HttpStatusCode.BadRequest : HttpStatusCode.OK;
 					wr = new Response(code, headers, ProtocolMessages.KeyValueForm.GetBytes(message.EncodedFields), message);
 					break;
 				case EncodingType.IndirectMessage:
+					Logger.DebugFormat("Sending indirect message response:{0}{1}",
+						Environment.NewLine, Util.ToString(message.EncodedFields));
 					// TODO: either redirect or do a form POST depending on payload size.
 					Debug.Assert(message.RedirectUrl != null);
 					if (getSizeOfPayload(message) <= GetToPostThreshold)
@@ -56,9 +60,7 @@ namespace DotNetOpenId {
 						wr = CreateFormPostResponse(message);
 					break;
 				default:
-					if (TraceUtil.Switch.TraceError) {
-						Trace.TraceError("Cannot encode response: {0}", message);
-					}
+					Logger.ErrorFormat("Cannot encode response: {0}", message);
 					wr = new Response(HttpStatusCode.BadRequest, headers, new byte[0], message);
 					break;
 			}
@@ -79,6 +81,7 @@ namespace DotNetOpenId {
 			UriBuilder builder = new UriBuilder(message.RedirectUrl);
 			UriUtil.AppendQueryArgs(builder, message.EncodedFields);
 			headers.Add(HttpResponseHeader.Location, builder.Uri.AbsoluteUri);
+			Logger.DebugFormat("Redirecting to {0}", builder.Uri.AbsoluteUri);
 			return new Response(HttpStatusCode.Redirect, headers, new byte[0], message);
 		}
 		protected virtual Response CreateFormPostResponse(IEncodable message) {
