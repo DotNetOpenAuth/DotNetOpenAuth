@@ -92,7 +92,8 @@ namespace DotNetOpenId {
 			get {
 				string assemblyFullName = Assembly.GetExecutingAssembly().FullName;
 				bool official = assemblyFullName.Contains("PublicKeyToken=2780ccd10d57b246");
-				return string.Format("{0} ({1})", assemblyFullName, official ? "official" : "private");
+				// We use InvariantCulture since this is used for logging.
+				return string.Format(CultureInfo.InvariantCulture, "{0} ({1})", assemblyFullName, official ? "official" : "private");
 			}
 		}
 
