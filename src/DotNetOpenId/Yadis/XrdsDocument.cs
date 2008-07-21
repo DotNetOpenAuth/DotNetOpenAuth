@@ -62,9 +62,7 @@ namespace DotNetOpenId.Yadis {
 					// spec section 7.3.2.3 on Claimed Id -> CanonicalID substitution
 					if (userSuppliedOrClaimedIdentifier is XriIdentifier) {
 						if (service.Xrd.CanonicalID == null) {
-							if (TraceUtil.Switch.TraceWarning) {
-								Trace.TraceWarning(Strings.MissingCanonicalIDElement, userSuppliedOrClaimedIdentifier);
-							}
+							Logger.WarnFormat(Strings.MissingCanonicalIDElement, userSuppliedOrClaimedIdentifier);
 							return null;
 						}
 						// In the case of XRI names, the ClaimedId is actually the CanonicalID.
@@ -76,9 +74,7 @@ namespace DotNetOpenId.Yadis {
 						// of the attack it would be a different document, and the second document would be
 						// the reliable one.
 						if (performCIDVerification && userSuppliedOrClaimedIdentifier != service.Xrd.CanonicalID) {
-							if (TraceUtil.Switch.TraceInfo) {
-								Trace.TraceInformation("Performing XRI CanonicalID verification on user supplied identifier {0}, canonical id {1}.", userSuppliedOrClaimedIdentifier, service.Xrd.CanonicalID);
-							}
+							Logger.InfoFormat("Performing XRI CanonicalID verification on user supplied identifier {0}, canonical id {1}.", userSuppliedOrClaimedIdentifier, service.Xrd.CanonicalID);
 							Identifier canonicalId = service.Xrd.CanonicalID;
 							return canonicalId.Discover();
 						} else {

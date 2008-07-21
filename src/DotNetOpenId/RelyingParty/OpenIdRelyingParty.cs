@@ -159,8 +159,6 @@ namespace DotNetOpenId.RelyingParty {
 			get {
 				if (response == null && isAuthenticationResponseReady) {
 					try {
-						if (TraceUtil.Switch.TraceInfo)
-							Trace.TraceInformation("OpenID authentication response detected.");
 						response = AuthenticationResponse.Parse(query, store, request);
 					} catch (OpenIdException ex) {
 						response = new FailedAuthenticationResponse(ex);

@@ -12,16 +12,15 @@
 
 // We DON'T put an AssemblyVersionAttribute in here because it is generated in the build.
 
+using System;
+using System.Net;
 using System.Reflection;
+using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Security.Permissions;
-using System.Web;
-using System.Net;
-using System.Resources;
-using System;
-using System.Web.UI;
 using System.Security;
+using System.Security.Permissions;
+using System.Web.UI;
 
 [assembly: TagPrefix("DotNetOpenId", "openid")]
 [assembly: TagPrefix("DotNetOpenId.Provider", "OP")]
@@ -70,22 +69,15 @@ using System.Security;
 // match the one used by hosting providers.  Listing them individually seems to be more common.
 [assembly: WebPermission(SecurityAction.RequestMinimum, ConnectPattern = @"http://.*")]
 [assembly: WebPermission(SecurityAction.RequestMinimum, ConnectPattern = @"https://.*")]
+
+#if PARTIAL_TRUST
 // Allows hosting this assembly in an ASP.NET setting.  Not all applications
 // will host this using ASP.NET, so this is optional.  Besides, we need at least
 // one optional permission to activate CAS permission shrinking.
-#if PARTIAL_TRUST
 [assembly: AspNetHostingPermission(SecurityAction.RequestOptional, Level = AspNetHostingPermissionLevel.Medium)]
-#endif
 
 // The following are only required for diagnostic logging (Trace.Write, Debug.Assert, etc.).
-#if TRACE
-[assembly: KeyContainerPermission(SecurityAction.RequestMinimum, Unrestricted = true)]
-[assembly: ReflectionPermission(SecurityAction.RequestMinimum, MemberAccess = true)]
-[assembly: RegistryPermission(SecurityAction.RequestMinimum, Unrestricted = true)]
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, ControlEvidence = true, UnmanagedCode = true, ControlThread = true)]
-[assembly: FileIOPermission(SecurityAction.RequestMinimum, AllFiles = FileIOPermissionAccess.PathDiscovery | FileIOPermissionAccess.Read)]
-#else
-#if PARTIAL_TRUST
+#if TRACE || DEBUG
 [assembly: KeyContainerPermission(SecurityAction.RequestOptional, Unrestricted = true)]
 [assembly: ReflectionPermission(SecurityAction.RequestOptional, MemberAccess = true)]
 [assembly: RegistryPermission(SecurityAction.RequestOptional, Unrestricted = true)]

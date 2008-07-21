@@ -37,6 +37,8 @@ namespace DotNetOpenId.RelyingParty {
 		internal AuthenticationResponse(AuthenticationStatus status, ServiceEndpoint provider, IDictionary<string, string> query) {
 			if (provider == null) throw new ArgumentNullException("provider");
 			if (query == null) throw new ArgumentNullException("query");
+
+			Logger.InfoFormat("Verified positive authentication assertion for: {0}", provider.ClaimedIdentifier);
 			Status = status;
 			Provider = provider;
 			signedArguments = new Dictionary<string, string>();
@@ -110,6 +112,9 @@ namespace DotNetOpenId.RelyingParty {
 			IRelyingPartyApplicationStore store, Uri requestUrl) {
 			if (query == null) throw new ArgumentNullException("query");
 			if (requestUrl == null) throw new ArgumentNullException("requestUrl");
+
+			Logger.DebugFormat("OpenID authentication response received:{0}{1}", Environment.NewLine, Util.ToString(query));
+
 			ServiceEndpoint tokenEndpoint = null;
 			string token = Util.GetOptionalArg(query, Token.TokenKey);
 			if (token != null) {
@@ -190,6 +195,7 @@ namespace DotNetOpenId.RelyingParty {
 			Debug.Assert(endpoint != null);
 			Debug.Assert(requestUrl != null);
 
+			Logger.Debug("Verifying return_to...");
 			Uri return_to = new Uri(Util.GetRequiredArg(query, endpoint.Protocol.openid.return_to));
 			if (return_to.Scheme != requestUrl.Scheme ||
 				return_to.Authority != requestUrl.Authority ||
@@ -211,6 +217,8 @@ namespace DotNetOpenId.RelyingParty {
 		/// </remarks>
 		static void verifyDiscoveredInfoMatchesAssertedInfo(IDictionary<string, string> query, 
 			ServiceEndpoint tokenEndpoint, ServiceEndpoint responseEndpoint) {
+
+			Logger.Debug("Verifying assertion matches identifier discovery results...");
 			if ((tokenEndpoint ?? responseEndpoint).Protocol.Version.Major < 2) {
 				Debug.Assert(tokenEndpoint != null, "Our OpenID 1.x implementation requires an RP token.  And this should have been verified by our caller.");
 				// For 1.x OPs, we only need to verify that the OP Local Identifier 
@@ -246,6 +254,8 @@ namespace DotNetOpenId.RelyingParty {
 		static void verifyNonceUnused(IDictionary<string, string> query, ServiceEndpoint endpoint, IRelyingPartyApplicationStore store) {
 			if (endpoint.Protocol.Version.Major < 2) return; // nothing to validate
 			if (store == null) return; // we'll pass verifying the nonce responsibility to the OP
+
+			Logger.Debug("Verifying nonce is unused...");
 			var nonce = new Nonce(Util.GetRequiredArg(query, endpoint.Protocol.openid.response_nonce), true);
 			nonce.Consume(store);
 		}
@@ -278,12 +288,14 @@ namespace DotNetOpenId.RelyingParty {
 			if (assoc == null) {
 				// It's not an association we know about.  Dumb mode is our
 				// only possible path for recovery.
+				Logger.Debug("Passing signature back to Provider for verification (no association available)...");
 				verifySignatureByProvider(query, endpoint, store);
 			} else {
 				if (assoc.IsExpired)
 					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 						"Association with {0} expired", endpoint.ProviderEndpoint), endpoint.ClaimedIdentifier);
 
+				Logger.Debug("Verifying signature by association...");
 				verifySignatureByAssociation(query, endpoint.Protocol, signedFields, assoc);
 			}
 		}
