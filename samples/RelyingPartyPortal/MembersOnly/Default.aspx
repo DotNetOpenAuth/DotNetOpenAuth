@@ -8,7 +8,6 @@
 		Congratulations, <b><asp:LoginName ID="LoginName1" runat="server" /></b>. 
 		You have completed the OpenID login process.
 	</p>
-	<asp:LoginStatus ID="LoginStatus1" runat="server" />
 
 <% if (State.ProfileFields != null) { %>
 	<p>
