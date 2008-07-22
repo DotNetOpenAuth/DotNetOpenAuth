@@ -176,8 +176,11 @@ namespace DotNetOpenId.RelyingParty {
 						throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 							Strings.MissingInternalQueryParameter, Token.TokenKey));
 				} else {
-					// 2.0 OPs provide enough information to assemble the entire endpoint info
-					responseEndpoint = ServiceEndpoint.ParseFromAuthResponse(query);
+					// 2.0 OPs provide enough information to assemble the entire endpoint info,
+					// except perhaps for the original user supplied identifier, which if available
+					// allows us to display a friendly XRI.
+					Identifier friendlyIdentifier = tokenEndpoint != null ? tokenEndpoint.UserSuppliedIdentifier : null;
+					responseEndpoint = ServiceEndpoint.ParseFromAuthResponse(query, friendlyIdentifier);
 					// If this is a solicited assertion, we'll have a token with endpoint data too,
 					// which we can use to more quickly confirm the validity of the claimed
 					// endpoint info.

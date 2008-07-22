@@ -112,6 +112,12 @@ namespace DotNetOpenId.Test.RelyingParty {
 			se = new ServiceEndpoint(new XriIdentifier("=!9B72.7DD1.50A9.5CCD"),
 				new XriIdentifier("=Arnott崎村"), providerEndpoint, localId, serviceTypeUris, null, null);
 			Assert.AreEqual("=!9B72.7DD1.50A9.5CCD (=Arnott崎村)", se.FriendlyIdentifierForDisplay);
+
+			// If UserSuppliedIdentifier is the same as the ClaimedIdentifier, don't display it twice...
+			se = new ServiceEndpoint(
+				new XriIdentifier("=!9B72.7DD1.50A9.5CCD"), new XriIdentifier("=!9B72.7DD1.50A9.5CCD"), 
+				providerEndpoint, localId, serviceTypeUris, null, null);
+			Assert.AreEqual("=!9B72.7DD1.50A9.5CCD", se.FriendlyIdentifierForDisplay);
 		}
 	}
 }

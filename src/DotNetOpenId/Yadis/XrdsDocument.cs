@@ -36,16 +36,16 @@ namespace DotNetOpenId.Yadis {
 		}
 
 		internal IEnumerable<ServiceEndpoint> CreateServiceEndpoints(UriIdentifier claimedIdentifier) {
-			return createServiceEndpoints(claimedIdentifier);
+			return createServiceEndpoints(claimedIdentifier, claimedIdentifier);
 		}
 
-		internal IEnumerable<ServiceEndpoint> CreateServiceEndpoints(XriIdentifier userSuppliedIdentifier) {
-			return createServiceEndpoints(userSuppliedIdentifier);
+		internal IEnumerable<ServiceEndpoint> CreateServiceEndpoints(XriIdentifier discoveredIdentifier, XriIdentifier userSuppliedIdentifier) {
+			return createServiceEndpoints(discoveredIdentifier, userSuppliedIdentifier);
 		}
 
 		const bool performCIDVerification = true;
 
-		IEnumerable<ServiceEndpoint> createServiceEndpoints(Identifier userSuppliedOrClaimedIdentifier) {
+		IEnumerable<ServiceEndpoint> createServiceEndpoints(Identifier discoveredIdentifier, Identifier userSuppliedOrClaimedIdentifier) {
 			// First search for OP Identifier service elements
 			bool opIdentifierServiceFound = false;
 			foreach (var service in findOPIdentifierServices()) {
@@ -78,17 +78,17 @@ namespace DotNetOpenId.Yadis {
 						// just got from the XRI i-name.  We SHOULD get the same document back, but in case
 						// of the attack it would be a different document, and the second document would be
 						// the reliable one.
-						if (performCIDVerification && userSuppliedOrClaimedIdentifier != service.Xrd.CanonicalID) {
+						if (performCIDVerification && discoveredIdentifier != service.Xrd.CanonicalID) {
 							Logger.InfoFormat("Performing XRI CanonicalID verification on user supplied identifier {0}, canonical id {1}.", userSuppliedOrClaimedIdentifier, service.Xrd.CanonicalID);
-							Identifier canonicalId = service.Xrd.CanonicalID;
-							foreach (var endpoint in canonicalId.Discover()) {
+							XriIdentifier canonicalId = new XriIdentifier(service.Xrd.CanonicalID);
+							foreach (var endpoint in canonicalId.Discover((XriIdentifier)userSuppliedOrClaimedIdentifier)) {
 								yield return endpoint;
 							}
 							yield break;
 						} else {
-							userSuppliedOrClaimedIdentifier = service.Xrd.CanonicalID;
+							discoveredIdentifier = service.Xrd.CanonicalID;
 						}
-						yield return new ServiceEndpoint((XriIdentifier)userSuppliedOrClaimedIdentifier,
+						yield return new ServiceEndpoint((XriIdentifier)discoveredIdentifier,
 							(XriIdentifier)userSuppliedOrClaimedIdentifier,
 							uri.Uri, service.ProviderLocalIdentifier,
 							service.TypeElementUris, service.Priority, uri.Priority);

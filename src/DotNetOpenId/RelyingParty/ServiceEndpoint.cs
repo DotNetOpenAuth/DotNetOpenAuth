@@ -60,7 +60,7 @@ namespace DotNetOpenId.RelyingParty {
 					XriIdentifier xri = ClaimedIdentifier as XriIdentifier;
 					UriIdentifier uri = ClaimedIdentifier as UriIdentifier;
 					if (xri != null) {
-						if (String.Equals(UserSuppliedIdentifier, ClaimedIdentifier, StringComparison.OrdinalIgnoreCase)) {
+						if (UserSuppliedIdentifier == null || String.Equals(UserSuppliedIdentifier, ClaimedIdentifier, StringComparison.OrdinalIgnoreCase)) {
 							friendlyIdentifierForDisplay = ClaimedIdentifier;
 						} else {
 							friendlyIdentifierForDisplay = String.Format(CultureInfo.CurrentCulture, "{0} ({1})",
@@ -113,9 +113,10 @@ namespace DotNetOpenId.RelyingParty {
 			this.servicePriority = servicePriority;
 			this.uriPriority = uriPriority;
 		}
-		ServiceEndpoint(Identifier claimedIdentifier, Uri providerEndpoint,
+		ServiceEndpoint(Identifier claimedIdentifier, Identifier userSuppliedIdentifier, Uri providerEndpoint,
 			Identifier providerLocalIdentifier, Protocol protocol) {
 			ClaimedIdentifier = claimedIdentifier;
+			UserSuppliedIdentifier = userSuppliedIdentifier;
 			ProviderEndpoint = providerEndpoint;
 			ProviderLocalIdentifier = providerLocalIdentifier ?? claimedIdentifier;
 			this.protocol = protocol;
@@ -185,6 +186,7 @@ namespace DotNetOpenId.RelyingParty {
 		internal void Serialize(TextWriter writer) {
 			writer.WriteLine(ClaimedIdentifier);
 			writer.WriteLine(ProviderLocalIdentifier);
+			writer.WriteLine(UserSuppliedIdentifier);
 			writer.WriteLine(ProviderEndpoint);
 			writer.WriteLine(Protocol.Version);
 			// No reason to serialize priority. We only needed priority to decide whether to use this endpoint.
@@ -202,16 +204,19 @@ namespace DotNetOpenId.RelyingParty {
 		internal static ServiceEndpoint Deserialize(TextReader reader) {
 			var claimedIdentifier = Identifier.Parse(reader.ReadLine());
 			var providerLocalIdentifier = Identifier.Parse(reader.ReadLine());
+			string userSuppliedIdentifier = reader.ReadLine();
+			if (userSuppliedIdentifier.Length == 0) userSuppliedIdentifier = null;
 			var providerEndpoint = new Uri(reader.ReadLine());
 			var protocol = Util.FindBestVersion(p => p.Version, new[] { new Version(reader.ReadLine()) });
-			return new ServiceEndpoint(claimedIdentifier, providerEndpoint,
-				providerLocalIdentifier, protocol);
+			return new ServiceEndpoint(claimedIdentifier, userSuppliedIdentifier,
+				providerEndpoint, providerLocalIdentifier, protocol);
 		}
-		internal static ServiceEndpoint ParseFromAuthResponse(IDictionary<string, string> query) {
+		internal static ServiceEndpoint ParseFromAuthResponse(IDictionary<string, string> query, Identifier userSuppliedIdentifier) {
 			Protocol protocol = Protocol.Detect(query);
 			Debug.Assert(protocol.openid.op_endpoint != null, "This method should only be called in OpenID 2.0 contexts.");
 			return new ServiceEndpoint(
 				Util.GetRequiredArg(query, protocol.openid.claimed_id),
+				userSuppliedIdentifier,
 				new Uri(Util.GetRequiredArg(query, protocol.openid.op_endpoint)),
 				Util.GetRequiredArg(query, protocol.openid.identity),
 				protocol);
