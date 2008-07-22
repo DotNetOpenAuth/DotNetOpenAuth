@@ -52,7 +52,7 @@ namespace DotNetOpenId.Yadis {
 				opIdentifierServiceFound = true;
 				foreach (var uri in service.UriElements) {
 					var protocol = Util.FindBestVersion(p => p.OPIdentifierServiceTypeURI, service.TypeElementUris);
-					yield return new ServiceEndpoint(protocol.ClaimedIdentifierForOPIdentifier, uri.Uri, 
+					yield return new ServiceEndpoint((UriIdentifier)protocol.ClaimedIdentifierForOPIdentifier, uri.Uri, 
 						protocol.ClaimedIdentifierForOPIdentifier, service.TypeElementUris, service.Priority, uri.Priority);
 				}
 			}
@@ -88,9 +88,16 @@ namespace DotNetOpenId.Yadis {
 						} else {
 							userSuppliedOrClaimedIdentifier = service.Xrd.CanonicalID;
 						}
+						yield return new ServiceEndpoint((XriIdentifier)userSuppliedOrClaimedIdentifier,
+							(XriIdentifier)userSuppliedOrClaimedIdentifier,
+							uri.Uri, service.ProviderLocalIdentifier,
+							service.TypeElementUris, service.Priority, uri.Priority);
+					} else {
+						yield return new ServiceEndpoint(
+							(UriIdentifier)userSuppliedOrClaimedIdentifier,
+							uri.Uri, service.ProviderLocalIdentifier,
+							service.TypeElementUris, service.Priority, uri.Priority);
 					}
-					yield return new ServiceEndpoint(userSuppliedOrClaimedIdentifier, uri.Uri, 
-						service.ProviderLocalIdentifier, service.TypeElementUris, service.Priority, uri.Priority);
 				}
 			}
 		}

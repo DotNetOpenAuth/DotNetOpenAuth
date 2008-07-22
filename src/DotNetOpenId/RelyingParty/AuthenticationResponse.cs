@@ -69,8 +69,20 @@ namespace DotNetOpenId.RelyingParty {
 		/// An Identifier that the end user claims to own.
 		/// </summary>
 		public Identifier ClaimedIdentifier {
+			[DebuggerStepThrough]
 			get { return Provider.ClaimedIdentifier; }
 		}
+		/// <summary>
+		/// Gets a user-friendly OpenID Identifier for display purposes ONLY.
+		/// </summary>
+		/// <remarks>
+		/// See <see cref="IAuthenticationResponse.FriendlyIdentifierForDisplay"/>.
+		/// </remarks>
+		public string FriendlyIdentifierForDisplay {
+			[DebuggerStepThrough]
+			get { return Provider.FriendlyIdentifierForDisplay; }
+		}
+		
 		/// <summary>
 		/// The discovered endpoint information.
 		/// </summary>

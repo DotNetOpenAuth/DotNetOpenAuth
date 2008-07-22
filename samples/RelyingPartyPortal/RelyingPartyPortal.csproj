@@ -100,6 +100,7 @@
     <Content Include="styles.css" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="images\openid_login.gif" />
     <Content Include="Site.Master" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

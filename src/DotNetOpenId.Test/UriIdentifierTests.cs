@@ -95,6 +95,7 @@ namespace DotNetOpenId.Test {
 			Assert.IsTrue(UriIdentifier.IsValidUri(unicodeUrl));
 			Identifier id;
 			Assert.IsTrue(UriIdentifier.TryParse(unicodeUrl, out id));
+			Assert.AreEqual("/opaffirmative/%E5%B4%8E%E6%9D%91.aspx", ((UriIdentifier)id).Uri.AbsolutePath);
 			Assert.AreEqual(Uri.EscapeUriString(unicodeUrl), id.ToString());
 		}
 

@@ -24,6 +24,10 @@ namespace DotNetOpenId.RelyingParty {
 			get { return null; }
 		}
 
+		public string FriendlyIdentifierForDisplay {
+			get { return null; }
+		}
+
 		public AuthenticationStatus Status {
 			get { return AuthenticationStatus.Failed; }
 		}

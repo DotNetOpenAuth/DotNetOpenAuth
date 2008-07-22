@@ -14,6 +14,7 @@ public partial class login : System.Web.UI.Page {
 	/// Note, that straight after login, forms auth will redirect the user to their original page. So this page may never be rendererd.
 	/// </summary>
 	protected void OpenIdLogin1_LoggedIn(object sender, OpenIdEventArgs e) {
+		State.FriendlyLoginName = e.Response.FriendlyIdentifierForDisplay;
 		State.ProfileFields = e.Response.GetExtension<ClaimsResponse>();
 	}
 	protected void OpenIdLogin1_Failed(object sender, OpenIdEventArgs e) {

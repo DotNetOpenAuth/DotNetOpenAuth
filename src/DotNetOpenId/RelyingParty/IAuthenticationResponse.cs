@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Web;
 using DotNetOpenId.Extensions;
 
 namespace DotNetOpenId.RelyingParty {
@@ -39,12 +40,17 @@ namespace DotNetOpenId.RelyingParty {
 		/// <para>
 		/// For user-friendly identifiers to display, use the 
 		/// <see cref="FriendlyIdentifierForDisplay"/> property.
+		/// </para>
 		/// </remarks>
 		Identifier ClaimedIdentifier { get; }
 		/// <summary>
 		/// Gets a user-friendly OpenID Identifier for display purposes ONLY.
 		/// </summary>
 		/// <remarks>
+		/// <para>
+		/// This <i>should</i> be put through <see cref="HttpUtility.HtmlEncode(string)"/> before
+		/// sending to a browser to secure against javascript injection attacks.
+		/// </para>
 		/// <para>
 		/// This property retains some aspects of the user-supplied identifier that get lost
 		/// in the <see cref="ClaimedIdentifier"/>.  For example, XRIs used as user-supplied
@@ -55,7 +61,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// </para>
 		/// <para>
 		/// If the user-supplied identifier is a URI, this property will be the URI after all 
-		/// redirects, and with the protocol trimmed off.
+		/// redirects, and with the protocol and fragment trimmed off.
 		/// If the user-supplied identifier is an XRI, this property will be the original XRI.
 		/// If the user-supplied identifier is an OpenID Provider identifier (i.e. yahoo.com), 
 		/// this property will be the Claimed Identifier, with the protocol stripped if it is a URI.
@@ -66,7 +72,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// and lookup please use the <see cref="ClaimedIdentifier"/> property.
 		/// </para>
 		/// </remarks>
-		//Identifier FriendlyIdentifierForDisplay { get; }
+		string FriendlyIdentifierForDisplay { get; }
 		/// <summary>
 		/// The detailed success or failure status of the authentication attempt.
 		/// </summary>

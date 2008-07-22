@@ -4,11 +4,12 @@ using System.IO;
 using System.Text;
 using DotNetOpenId.RelyingParty;
 using NUnit.Framework;
+using System.Diagnostics;
 
 namespace DotNetOpenId.Test.RelyingParty {
 	[TestFixture]
 	public class ServiceEndpointTests {
-		Identifier claimedId = "http://claimedid.justatest.com";
+		UriIdentifier claimedId = new UriIdentifier("http://claimedid.justatest.com");
 		Uri providerEndpoint = new Uri("http://someprovider.com");
 		Identifier localId = "http://localid.someprovider.com";
 		string[] v20TypeUris = { Protocol.v20.ClaimedIdentifierServiceTypeURI };
@@ -75,7 +76,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 			Assert.AreNotEqual(se, null);
 			Assert.AreNotEqual(null, se);
 
-			ServiceEndpoint se3 = new ServiceEndpoint(claimedId + "a", providerEndpoint, localId, v20TypeUris, servicePriority, uriPriority);
+			ServiceEndpoint se3 = new ServiceEndpoint(new UriIdentifier(claimedId + "a"), providerEndpoint, localId, v20TypeUris, servicePriority, uriPriority);
 			Assert.AreNotEqual(se, se3);
 			se3 = new ServiceEndpoint(claimedId, new Uri(providerEndpoint.AbsoluteUri + "a"), localId, v20TypeUris, servicePriority, uriPriority);
 			Assert.AreNotEqual(se, se3);
@@ -88,6 +89,29 @@ namespace DotNetOpenId.Test.RelyingParty {
 			List<ServiceEndpoint> list = new List<ServiceEndpoint>();
 			list.Add(se);
 			Assert.IsTrue(list.Contains(se2));
+		}
+
+		[Test]
+		public void FriendlyIdentifierForDisplay() {
+			Uri providerEndpoint= new Uri("http://someprovider");
+			Identifier localId = "someuser";
+			string[] serviceTypeUris = new string[0];
+			ServiceEndpoint se;
+
+			// strip of protocol and fragment
+			se = new ServiceEndpoint(new UriIdentifier("http://someprovider.somedomain.com:79/someuser#frag"),
+				providerEndpoint, localId, serviceTypeUris, null, null);
+			Assert.AreEqual("someprovider.somedomain.com:79/someuser", se.FriendlyIdentifierForDisplay);
+
+			// unescape characters
+			Uri foreignUri = new Uri("http://server崎/村");
+			se = new ServiceEndpoint(foreignUri, providerEndpoint, localId, serviceTypeUris, null, null);
+			Assert.AreEqual("server崎/村", se.FriendlyIdentifierForDisplay);
+			
+			// restore user supplied identifier to XRIs
+			se = new ServiceEndpoint(new XriIdentifier("=!9B72.7DD1.50A9.5CCD"),
+				new XriIdentifier("=Arnott崎村"), providerEndpoint, localId, serviceTypeUris, null, null);
+			Assert.AreEqual("=!9B72.7DD1.50A9.5CCD (=Arnott崎村)", se.FriendlyIdentifierForDisplay);
 		}
 	}
 }

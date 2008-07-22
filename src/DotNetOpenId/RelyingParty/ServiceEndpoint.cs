@@ -30,6 +30,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// An Identifier for an OpenID Provider.
 		/// </summary>
 		public Identifier ProviderIdentifier { get; private set; }
+		*/
 		/// <summary>
 		/// An Identifier that was presented by the end user to the Relying Party, 
 		/// or selected by the user at the OpenID Provider. 
@@ -38,7 +39,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// is used, the OP may then assist the end user in selecting an Identifier 
 		/// to share with the Relying Party.
 		/// </summary>
-		public Identifier UserSuppliedIdentifier { get; private set; }*/
+		public Identifier UserSuppliedIdentifier { get; private set; }
 		/// <summary>
 		/// The Identifier that the end user claims to own.
 		/// </summary>
@@ -49,19 +50,63 @@ namespace DotNetOpenId.RelyingParty {
 		/// control.
 		/// </summary>
 		public Identifier ProviderLocalIdentifier { get; private set; }
+		string friendlyIdentifierForDisplay;
+		/// <summary>
+		/// Supports the <see cref="IAuthenticationResponse.FriendlyIdentifierForDisplay"/> property.
+		/// </summary>
+		public string FriendlyIdentifierForDisplay {
+			get {
+				if (friendlyIdentifierForDisplay == null) {
+					XriIdentifier xri = ClaimedIdentifier as XriIdentifier;
+					UriIdentifier uri = ClaimedIdentifier as UriIdentifier;
+					if (xri != null) {
+						if (String.Equals(UserSuppliedIdentifier, ClaimedIdentifier, StringComparison.OrdinalIgnoreCase)) {
+							friendlyIdentifierForDisplay = ClaimedIdentifier;
+						} else {
+							friendlyIdentifierForDisplay = String.Format(CultureInfo.CurrentCulture, "{0} ({1})",
+								ClaimedIdentifier, UserSuppliedIdentifier);
+						}
+					} else if (uri != null) {
+						string displayUri = uri.Uri.Authority + uri.Uri.PathAndQuery;
+						displayUri = displayUri.TrimEnd('/');
+						// Multi-byte unicode characters get encoded by the Uri class for transit.
+						// Since this is for display purposes, we want to reverse this and display a readable
+						// representation of these foreign characters.  
+						friendlyIdentifierForDisplay = Uri.UnescapeDataString(displayUri);
+					} else {
+						Debug.Fail("Doh!  We never should have reached here.");
+						friendlyIdentifierForDisplay = ClaimedIdentifier;
+					}
+				}
+				return friendlyIdentifierForDisplay;
+			}
+		}
 		/// <summary>
 		/// Gets the list of services available at this OP Endpoint for the
 		/// claimed Identifier.
 		/// </summary>
 		public string[] ProviderSupportedServiceTypeUris { get; private set; }
 
-		internal ServiceEndpoint(Identifier claimedIdentifier, Uri providerEndpoint,
-			Identifier providerLocalIdentifier, string[] providerSupportedServiceTypeUris,
-			int? servicePriority, int? uriPriority) {
+		internal ServiceEndpoint(XriIdentifier claimedIdentifier, XriIdentifier userSuppliedIdentifier,
+			Uri providerEndpoint, Identifier providerLocalIdentifier,
+			string[] providerSupportedServiceTypeUris, int? servicePriority, int? uriPriority) :
+			this((Identifier)claimedIdentifier, (Identifier)userSuppliedIdentifier, providerEndpoint, providerLocalIdentifier,
+			providerSupportedServiceTypeUris, servicePriority, uriPriority) {
+		}
+		internal ServiceEndpoint(UriIdentifier claimedIdentifier,
+			Uri providerEndpoint, Identifier providerLocalIdentifier,
+			string[] providerSupportedServiceTypeUris, int? servicePriority, int? uriPriority) :
+			this(claimedIdentifier, null, providerEndpoint, providerLocalIdentifier,
+			providerSupportedServiceTypeUris, servicePriority, uriPriority) {
+		}
+		ServiceEndpoint(Identifier claimedIdentifier, Identifier userSuppliedIdentifier,
+			Uri providerEndpoint, Identifier providerLocalIdentifier, 
+			string[] providerSupportedServiceTypeUris, int? servicePriority, int? uriPriority) {
 			if (claimedIdentifier == null) throw new ArgumentNullException("claimedIdentifier");
 			if (providerEndpoint == null) throw new ArgumentNullException("providerEndpoint");
 			if (providerSupportedServiceTypeUris == null) throw new ArgumentNullException("providerSupportedServiceTypeUris");
 			ClaimedIdentifier = claimedIdentifier;
+			UserSuppliedIdentifier = userSuppliedIdentifier;
 			ProviderEndpoint = providerEndpoint;
 			ProviderLocalIdentifier = providerLocalIdentifier ?? claimedIdentifier;
 			ProviderSupportedServiceTypeUris = providerSupportedServiceTypeUris;
