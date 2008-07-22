@@ -10,6 +10,8 @@ namespace DotNetOpenId.Test.RelyingParty {
 	[TestFixture]
 	public class ServiceEndpointTests {
 		UriIdentifier claimedId = new UriIdentifier("http://claimedid.justatest.com");
+		XriIdentifier claimedXri = new XriIdentifier("=!9B72.7DD1.50A9.5CCD");
+		XriIdentifier userSuppliedXri = new XriIdentifier("=Arnot");
 		Uri providerEndpoint = new Uri("http://someprovider.com");
 		Identifier localId = "http://localid.someprovider.com";
 		string[] v20TypeUris = { Protocol.v20.ClaimedIdentifierServiceTypeURI };
@@ -55,7 +57,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 		}
 
 		[Test]
-		public void Serialization() {
+		public void SerializationWithUri() {
 			ServiceEndpoint se = new ServiceEndpoint(claimedId, providerEndpoint, localId, v20TypeUris, servicePriority, uriPriority);
 			StringBuilder sb = new StringBuilder();
 			using (StringWriter sw = new StringWriter(sb)) {
@@ -65,6 +67,24 @@ namespace DotNetOpenId.Test.RelyingParty {
 				ServiceEndpoint se2 = ServiceEndpoint.Deserialize(sr);
 				Assert.AreEqual(se, se2);
 				Assert.AreEqual(se.Protocol.Version, se2.Protocol.Version, "Particularly interested in this, since type URIs are not serialized but version info is.");
+				Assert.AreEqual(se.UserSuppliedIdentifier, se2.UserSuppliedIdentifier);
+				Assert.AreEqual(se.FriendlyIdentifierForDisplay, se2.FriendlyIdentifierForDisplay);
+			}
+		}
+
+		[Test]
+		public void SerializationWithXri() {
+			ServiceEndpoint se = new ServiceEndpoint(claimedXri, userSuppliedXri, providerEndpoint, localId, v20TypeUris, servicePriority, uriPriority);
+			StringBuilder sb = new StringBuilder();
+			using (StringWriter sw = new StringWriter(sb)) {
+				se.Serialize(sw);
+			}
+			using (StringReader sr = new StringReader(sb.ToString())) {
+				ServiceEndpoint se2 = ServiceEndpoint.Deserialize(sr);
+				Assert.AreEqual(se, se2);
+				Assert.AreEqual(se.Protocol.Version, se2.Protocol.Version, "Particularly interested in this, since type URIs are not serialized but version info is.");
+				Assert.AreEqual(se.UserSuppliedIdentifier, se2.UserSuppliedIdentifier);
+				Assert.AreEqual(se.FriendlyIdentifierForDisplay, se2.FriendlyIdentifierForDisplay);
 			}
 		}
 
