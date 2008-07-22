@@ -39,7 +39,7 @@
 			<DirtyDirectories Include="@(SampleDirectories->'%(FullPath)\obj')" />
 			<DirtyFiles Include="
 			                     $(ProjectRoot)\**\*~;
-			                     $(ProjectRoot)\**\*Trace.txt;
+			                     $(ProjectRoot)\**\*.log*;
 			                     $(ProjectRoot)\doc\DotNetOpenId.chm;
 			                     " />
 		</ItemGroup>
@@ -105,7 +105,7 @@
 															$(ProjectRoot)\**\*.user;
 															$(ProjectRoot)\**\*.gitignore;
 															$(ProjectRoot)\**\*.ldf;
-															$(ProjectRoot)\**\*Trace.txt;
+															$(ProjectRoot)\**\*.log*;
 															$(ProjectRoot)\**\*~;
 															" />
 			<DropSpecsSourceFiles Include="$(ProjectRoot)\Doc\specs\*.htm*" />
