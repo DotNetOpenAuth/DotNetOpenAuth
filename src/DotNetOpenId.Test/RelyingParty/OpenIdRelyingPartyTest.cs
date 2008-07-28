@@ -160,10 +160,10 @@ namespace DotNetOpenId.Test.RelyingParty {
 
 		static ServiceEndpoint getServiceEndpoint(int? servicePriority, int? uriPriority) {
 			Protocol protocol = Protocol.v20;
-			ServiceEndpoint ep = new ServiceEndpoint(
+			ServiceEndpoint ep = ServiceEndpoint.CreateForClaimedIdentifier(
 				TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20),
-				TestSupport.GetFullUrl(TestSupport.ProviderPage),
 				TestSupport.GetDelegateUrl(TestSupport.Scenarios.AutoApproval),
+				TestSupport.GetFullUrl(TestSupport.ProviderPage),
 				new[] { protocol.ClaimedIdentifierServiceTypeURI },
 				servicePriority,
 				uriPriority

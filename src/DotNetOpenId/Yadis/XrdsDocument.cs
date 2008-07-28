@@ -37,7 +37,7 @@ namespace DotNetOpenId.Yadis {
 
 		internal IEnumerable<ServiceEndpoint> CreateServiceEndpoints(UriIdentifier claimedIdentifier) {
 			List<ServiceEndpoint> endpoints = new List<ServiceEndpoint>();
-			endpoints.AddRange(generateOPIdentifierServiceEndpoints());
+			endpoints.AddRange(generateOPIdentifierServiceEndpoints(claimedIdentifier));
 			// If any OP Identifier service elements were found, we must not proceed
 			// to return any Claimed Identifier services.
 			if (endpoints.Count == 0) {
@@ -48,7 +48,7 @@ namespace DotNetOpenId.Yadis {
 
 		internal IEnumerable<ServiceEndpoint> CreateServiceEndpoints(XriIdentifier discoveredIdentifier, XriIdentifier userSuppliedIdentifier) {
 			List<ServiceEndpoint> endpoints = new List<ServiceEndpoint>();
-			endpoints.AddRange(generateOPIdentifierServiceEndpoints());
+			endpoints.AddRange(generateOPIdentifierServiceEndpoints(userSuppliedIdentifier));
 			// If any OP Identifier service elements were found, we must not proceed
 			// to return any Claimed Identifier services.
 			if (endpoints.Count == 0) {
@@ -57,12 +57,13 @@ namespace DotNetOpenId.Yadis {
 			return endpoints;
 		}
 
-		IEnumerable<ServiceEndpoint> generateOPIdentifierServiceEndpoints() {
+		IEnumerable<ServiceEndpoint> generateOPIdentifierServiceEndpoints(Identifier opIdentifier) {
 			foreach (var service in findOPIdentifierServices()) {
 				foreach (var uri in service.UriElements) {
 					var protocol = Util.FindBestVersion(p => p.OPIdentifierServiceTypeURI, service.TypeElementUris);
-					yield return new ServiceEndpoint((UriIdentifier)protocol.ClaimedIdentifierForOPIdentifier, uri.Uri,
-						protocol.ClaimedIdentifierForOPIdentifier, service.TypeElementUris, service.Priority, uri.Priority);
+					yield return ServiceEndpoint.CreateForProviderIdentifier(
+						opIdentifier, uri.Uri, service.TypeElementUris,
+						service.Priority, uri.Priority);
 				}
 			}
 		}
@@ -70,9 +71,9 @@ namespace DotNetOpenId.Yadis {
 		IEnumerable<ServiceEndpoint> generateClaimedIdentifierServiceEndpoints(UriIdentifier claimedIdentifier) {
 			foreach (var service in findClaimedIdentifierServices()) {
 				foreach (var uri in service.UriElements) {
-					yield return new ServiceEndpoint(
-						claimedIdentifier, uri.Uri, service.ProviderLocalIdentifier,
-						service.TypeElementUris, service.Priority, uri.Priority);
+					yield return ServiceEndpoint.CreateForClaimedIdentifier(
+						claimedIdentifier, service.ProviderLocalIdentifier,
+						uri.Uri, service.TypeElementUris, service.Priority, uri.Priority);
 				}
 			}
 		}
@@ -103,9 +104,9 @@ namespace DotNetOpenId.Yadis {
 					} else {
 						claimedIdentifier = new XriIdentifier(service.Xrd.CanonicalID);
 					}
-					yield return new ServiceEndpoint(claimedIdentifier, userSuppliedIdentifier,
-						uri.Uri, service.ProviderLocalIdentifier,
-						service.TypeElementUris, service.Priority, uri.Priority);
+					yield return ServiceEndpoint.CreateForClaimedIdentifier(
+						claimedIdentifier, userSuppliedIdentifier, service.ProviderLocalIdentifier,
+						uri.Uri, service.TypeElementUris, service.Priority, uri.Priority);
 				}
 			}
 		}

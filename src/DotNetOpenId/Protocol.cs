@@ -114,6 +114,15 @@ namespace DotNetOpenId {
 			if (Query == null) throw new ArgumentNullException("Query");
 			return Query.ContainsKey(v20.openid.ns) ? v20 : v11;
 		}
+		/// <summary>
+		/// Attemps to detect the highest OpenID protocol version supported given a set
+		/// of XRDS Service Type URIs included for some service.
+		/// </summary>
+		internal static Protocol Detect(string[] serviceTypeURIs) {
+			if (serviceTypeURIs == null) throw new ArgumentNullException("serviceTypeURIs");
+			return Util.FindBestVersion(p => p.OPIdentifierServiceTypeURI, serviceTypeURIs) ??
+				   Util.FindBestVersion(p => p.ClaimedIdentifierServiceTypeURI, serviceTypeURIs);
+		}
 
 		/// <summary>
 		/// The OpenID version that this <see cref="Protocol"/> instance describes.
@@ -266,7 +275,7 @@ namespace DotNetOpenId {
 				/// <summary>
 				/// A preference order list of signature algorithms we support.
 				/// </summary>
-				public string[] All { get { return new [] { HMAC_SHA256, HMAC_SHA1 }; } }
+				public string[] All { get { return new[] { HMAC_SHA256, HMAC_SHA1 }; } }
 				public string HMAC_SHA1 = "HMAC-SHA1";
 				public string HMAC_SHA256 = null;
 			}
