@@ -33,7 +33,7 @@ namespace DotNetOpenId.RelyingParty {
 	}
 
 	[DebuggerDisplay("Status: {Status}, ClaimedIdentifier: {ClaimedIdentifier}")]
-	class AuthenticationResponse : IAuthenticationResponse {
+	class AuthenticationResponse : IAuthenticationResponse, ISetupRequiredAuthenticationResponse {
 		internal AuthenticationResponse(AuthenticationStatus status, ServiceEndpoint provider, IDictionary<string, string> query) {
 			if (provider == null) throw new ArgumentNullException("provider");
 			if (query == null) throw new ArgumentNullException("query");
@@ -69,8 +69,12 @@ namespace DotNetOpenId.RelyingParty {
 		/// An Identifier that the end user claims to own.
 		/// </summary>
 		public Identifier ClaimedIdentifier {
-			[DebuggerStepThrough]
-			get { return Provider.ClaimedIdentifier; }
+			get {
+				if (Provider.ClaimedIdentifier == Provider.Protocol.ClaimedIdentifierForOPIdentifier) {
+					return null; // no claimed identifier -- failed directed identity authentication
+				}
+				return Provider.ClaimedIdentifier;
+			}
 		}
 		/// <summary>
 		/// Gets a user-friendly OpenID Identifier for display purposes ONLY.
@@ -380,5 +384,25 @@ namespace DotNetOpenId.RelyingParty {
 			if (!request.Response.IsAuthenticationValid)
 				throw new OpenIdException(Strings.InvalidSignature);
 		}
+
+		#region ISetupRequiredAuthenticationResponse Members
+
+		public Identifier ClaimedOrProviderIdentifier {
+			get {
+				if (Status != AuthenticationStatus.SetupRequired) {
+					throw new InvalidOperationException(Strings.OperationOnlyValidForSetupRequiredState);
+				}
+				return ClaimedIdentifier ?? Provider.UserSuppliedIdentifier;
+			}
+		}
+
+		public IAuthenticationRequest CreateSetupRequest() {
+			if (Status != AuthenticationStatus.SetupRequired) {
+				throw new InvalidOperationException(Strings.OperationOnlyValidForSetupRequiredState);
+			}
+			throw new NotImplementedException();
+		}
+
+		#endregion
 	}
 }

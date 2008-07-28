@@ -421,6 +421,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This operation is only allowed when IAuthenticationResponse.State == AuthenticationStatus.SetupRequired..
+        /// </summary>
+        internal static string OperationOnlyValidForSetupRequiredState {
+            get {
+                return ResourceManager.GetString("OperationOnlyValidForSetupRequiredState", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Prefix should not begin or end with a period..
         /// </summary>
         internal static string PrefixWithoutPeriodsExpected {

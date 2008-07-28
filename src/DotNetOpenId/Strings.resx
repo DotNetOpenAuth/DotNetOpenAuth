@@ -237,6 +237,9 @@
   <data name="OpenIdTextBoxEmpty" xml:space="preserve">
     <value>No OpenId url is provided.</value>
   </data>
+  <data name="OperationOnlyValidForSetupRequiredState" xml:space="preserve">
+    <value>This operation is only allowed when IAuthenticationResponse.State == AuthenticationStatus.SetupRequired.</value>
+  </data>
   <data name="PrefixWithoutPeriodsExpected" xml:space="preserve">
     <value>Prefix should not begin or end with a period.</value>
   </data>

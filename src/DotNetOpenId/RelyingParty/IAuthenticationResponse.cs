@@ -30,6 +30,7 @@ namespace DotNetOpenId.RelyingParty {
 		IExtensionResponse GetExtension(Type extensionType);
 		/// <summary>
 		/// An Identifier that the end user claims to own.  For use with user database storage and lookup.
+		/// May be null for some failed authentications (i.e. failed directed identity authentications).
 		/// </summary>
 		/// <remarks>
 		/// <para>

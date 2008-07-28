@@ -96,6 +96,7 @@
     <Compile Include="RelyingParty\CheckAuthResponse.cs" />
     <Compile Include="RelyingParty\ApplicationMemoryStore.cs" />
     <Compile Include="RelyingParty\IProviderEndpoint.cs" />
+    <Compile Include="RelyingParty\ISetupRequiredAuthenticationResponse.cs" />
     <Compile Include="RelyingParty\IXrdsProviderEndpoint.cs" />
     <Compile Include="RelyingParty\OpenIdMobileTextBox.cs" />
     <Compile Include="RelyingParty\DirectRequest.cs" />
