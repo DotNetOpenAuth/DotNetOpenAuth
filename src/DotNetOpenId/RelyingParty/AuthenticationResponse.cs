@@ -21,9 +21,12 @@ namespace DotNetOpenId.RelyingParty {
 		/// </summary>
 		Failed,
 		/// <summary>
-		/// The Provider responded to a request for immediate authentication approval
+		/// <para>The Provider responded to a request for immediate authentication approval
 		/// with a message stating that additional user agent interaction is required
-		/// before authentication can be completed.
+		/// before authentication can be completed.</para>
+		/// <para>Casting the <see cref="IAuthenticationResponse"/> to a 
+		/// <see cref="ISetupRequiredAuthenticationResponse"/> in this case can help
+		/// you retry the authentication using Setup (non-immediate) mode.</para>
 		/// </summary>
 		SetupRequired,
 		/// <summary>
@@ -387,6 +390,14 @@ namespace DotNetOpenId.RelyingParty {
 
 		#region ISetupRequiredAuthenticationResponse Members
 
+		/// <summary>
+		/// The <see cref="Identifier"/> to pass to <see cref="OpenIdRelyingParty.CreateRequest(Identifier)"/>
+		/// in a subsequent authentication attempt.
+		/// </summary>
+		/// <remarks>
+		/// When directed identity is used, this will be the Provider Identifier given by the user.
+		/// Otherwise it will be the Claimed Identifier derived from the user-supplied identifier.
+		/// </remarks>
 		public Identifier ClaimedOrProviderIdentifier {
 			get {
 				if (Status != AuthenticationStatus.SetupRequired) {
