@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Net;
-using System.Collections.Specialized;
+﻿using System.Net;
 
 namespace DotNetOpenId {
 	/// <summary>
-	/// Represents a Provider's response to an OpenId authentication request.
+	/// Represents an indirect message passed between Relying Party and Provider.
 	/// </summary>
 	public interface IResponse {
 		/// <summary>
