@@ -396,13 +396,6 @@ namespace DotNetOpenId.RelyingParty {
 			}
 		}
 
-		public IAuthenticationRequest CreateSetupRequest() {
-			if (Status != AuthenticationStatus.SetupRequired) {
-				throw new InvalidOperationException(Strings.OperationOnlyValidForSetupRequiredState);
-			}
-			throw new NotImplementedException();
-		}
-
 		#endregion
 	}
 }

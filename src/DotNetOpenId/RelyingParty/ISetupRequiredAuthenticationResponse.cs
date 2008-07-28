@@ -18,15 +18,5 @@ namespace DotNetOpenId.RelyingParty {
 		/// Otherwise it will be the Claimed Identifier derived from the user-supplied identifier.
 		/// </remarks>
 		Identifier ClaimedOrProviderIdentifier { get; }
-		/// <summary>
-		/// Generates an <see cref="IAuthenticationRequest"/> representing an authentication
-		/// request similar to the original, except that instead of using immediate mode it
-		/// uses setup mode.
-		/// </summary>
-		/// <returns>
-		/// The generated <see cref="IAuthenticationRequest"/> that can
-		/// be used to begin a new setup authentication request.
-		/// </returns>
-		IAuthenticationRequest CreateSetupRequest();
 	}
 }
