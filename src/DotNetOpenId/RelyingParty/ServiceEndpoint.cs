@@ -87,20 +87,8 @@ namespace DotNetOpenId.RelyingParty {
 		/// </summary>
 		public string[] ProviderSupportedServiceTypeUris { get; private set; }
 
-		internal ServiceEndpoint(XriIdentifier claimedIdentifier, XriIdentifier userSuppliedIdentifier,
-			Uri providerEndpoint, Identifier providerLocalIdentifier,
-			string[] providerSupportedServiceTypeUris, int? servicePriority, int? uriPriority) :
-			this((Identifier)claimedIdentifier, (Identifier)userSuppliedIdentifier, providerEndpoint, providerLocalIdentifier,
-			providerSupportedServiceTypeUris, servicePriority, uriPriority) {
-		}
-		internal ServiceEndpoint(UriIdentifier claimedIdentifier,
-			Uri providerEndpoint, Identifier providerLocalIdentifier,
-			string[] providerSupportedServiceTypeUris, int? servicePriority, int? uriPriority) :
-			this(claimedIdentifier, null, providerEndpoint, providerLocalIdentifier,
-			providerSupportedServiceTypeUris, servicePriority, uriPriority) {
-		}
 		ServiceEndpoint(Identifier claimedIdentifier, Identifier userSuppliedIdentifier,
-			Uri providerEndpoint, Identifier providerLocalIdentifier, 
+			Uri providerEndpoint, Identifier providerLocalIdentifier,
 			string[] providerSupportedServiceTypeUris, int? servicePriority, int? uriPriority) {
 			if (claimedIdentifier == null) throw new ArgumentNullException("claimedIdentifier");
 			if (providerEndpoint == null) throw new ArgumentNullException("providerEndpoint");
@@ -113,13 +101,45 @@ namespace DotNetOpenId.RelyingParty {
 			this.servicePriority = servicePriority;
 			this.uriPriority = uriPriority;
 		}
-		ServiceEndpoint(Identifier claimedIdentifier, Identifier userSuppliedIdentifier, Uri providerEndpoint,
-			Identifier providerLocalIdentifier, Protocol protocol) {
+		/// <summary>
+		/// Used for deserializing <see cref="ServiceEndpoint"/> from authentication responses.
+		/// </summary>
+		ServiceEndpoint(Identifier claimedIdentifier, Identifier userSuppliedIdentifier, 
+			Uri providerEndpoint, Identifier providerLocalIdentifier, Protocol protocol) {
 			ClaimedIdentifier = claimedIdentifier;
 			UserSuppliedIdentifier = userSuppliedIdentifier;
 			ProviderEndpoint = providerEndpoint;
 			ProviderLocalIdentifier = providerLocalIdentifier ?? claimedIdentifier;
 			this.protocol = protocol;
+		}
+
+		internal static ServiceEndpoint CreateForProviderIdentifier(
+			Identifier providerIdentifier, Uri providerEndpoint,
+			string[] providerSupportedServiceTypeUris, int? servicePriority, int? uriPriority) {
+
+			Protocol protocol = Protocol.Detect(providerSupportedServiceTypeUris);
+
+			return new ServiceEndpoint(protocol.ClaimedIdentifierForOPIdentifier, providerIdentifier,
+				providerEndpoint, protocol.ClaimedIdentifierForOPIdentifier,
+				providerSupportedServiceTypeUris, servicePriority, uriPriority);
+		}
+
+		internal static ServiceEndpoint CreateForClaimedIdentifier(
+			Identifier claimedIdentifier, Identifier providerLocalIdentifier,
+			Uri providerEndpoint,
+			string[] providerSupportedServiceTypeUris, int? servicePriority, int? uriPriority) {
+
+			return CreateForClaimedIdentifier(claimedIdentifier, null, providerLocalIdentifier, 
+				providerEndpoint, providerSupportedServiceTypeUris, servicePriority, uriPriority);
+		}
+
+		internal static ServiceEndpoint CreateForClaimedIdentifier(
+			Identifier claimedIdentifier, Identifier userSuppliedIdentifier, Identifier providerLocalIdentifier,
+			Uri providerEndpoint,
+			string[] providerSupportedServiceTypeUris, int? servicePriority, int? uriPriority) {
+
+			return new ServiceEndpoint(claimedIdentifier, userSuppliedIdentifier, providerEndpoint,
+				providerLocalIdentifier, providerSupportedServiceTypeUris, servicePriority, uriPriority);
 		}
 
 		Protocol protocol;
@@ -129,9 +149,7 @@ namespace DotNetOpenId.RelyingParty {
 		public Protocol Protocol {
 			get {
 				if (protocol == null) {
-					protocol =
-						Util.FindBestVersion(p => p.OPIdentifierServiceTypeURI, ProviderSupportedServiceTypeUris) ??
-						Util.FindBestVersion(p => p.ClaimedIdentifierServiceTypeURI, ProviderSupportedServiceTypeUris);
+					protocol = Protocol.Detect(ProviderSupportedServiceTypeUris);
 				}
 				if (protocol != null) return protocol;
 				throw new InvalidOperationException("Unable to determine the version of OpenID the Provider supports.");

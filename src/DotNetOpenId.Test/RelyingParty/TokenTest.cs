@@ -6,10 +6,10 @@ namespace DotNetOpenId.Test.RelyingParty {
 	public class TokenTest {
 		static ServiceEndpoint getServiceEndpoint(TestSupport.Scenarios scenario, ProtocolVersion version) {
 			Protocol protocol = Protocol.Lookup(version);
-			ServiceEndpoint ep = new ServiceEndpoint(
+			ServiceEndpoint ep = ServiceEndpoint.CreateForClaimedIdentifier(
 				TestSupport.GetIdentityUrl(scenario, version),
-				TestSupport.GetFullUrl(TestSupport.ProviderPage),
 				TestSupport.GetDelegateUrl(scenario),
+				TestSupport.GetFullUrl(TestSupport.ProviderPage),
 				new[] { protocol.ClaimedIdentifierServiceTypeURI },
 				10,
 				10
