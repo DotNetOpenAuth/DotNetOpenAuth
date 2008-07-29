@@ -130,13 +130,14 @@
 										@(DropDocFiles);
 										@(DropSpecsFiles)
 										" />
-
-			<SampleProjectTargets Include="$(DropSamplesDirectory)\**\*.csproj" />
 		</ItemGroup>
 
 		<MakeDir Directories="@(DropDirectories)" />
 		<Copy SourceFiles="@(AllDropSources)" DestinationFiles="@(AllDropTargets)" SkipUnchangedFiles="true" />
 		<!-- fix up the samples so that they will compile right out of the drop -->
+		<ItemGroup>
+			<SampleProjectTargets Include="$(DropSamplesDirectory)\**\*.csproj" />
+		</ItemGroup>
 		<ChangeProjectReferenceToAssemblyReference Projects="@(SampleProjectTargets)"
 		  ProjectReference="..\..\src\DotNetOpenId\DotNetOpenId.csproj" Reference="..\..\Bin\DotNetOpenId.dll" />
 		<Zip Files="@(AllDropTargets)" ZipFileName="$(DropZip)" WorkingDirectory="$(ProjectRoot)\drops" />
