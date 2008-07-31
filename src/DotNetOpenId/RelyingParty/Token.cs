@@ -161,7 +161,15 @@ namespace DotNetOpenId.RelyingParty {
 		/// verification, this is the only alternative.
 		/// </remarks>
 		static void verifyEndpointByDiscovery(ServiceEndpoint endpoint) {
-			List<ServiceEndpoint> discoveredEndpoints = new List<ServiceEndpoint>(endpoint.ClaimedIdentifier.Discover());
+			// If the user entered an OP Identifier then the ClaimedIdentifier will be the special
+			// identifier that we can't perform discovery on.  We need to be careful about that.
+			Identifier identifierToDiscover;
+			if (endpoint.ClaimedIdentifier == endpoint.Protocol.ClaimedIdentifierForOPIdentifier) {
+				identifierToDiscover = endpoint.UserSuppliedIdentifier;
+			} else {
+				identifierToDiscover = endpoint.ClaimedIdentifier;
+			}
+			var discoveredEndpoints = new List<ServiceEndpoint>(identifierToDiscover.Discover());
 			if (!discoveredEndpoints.Contains(endpoint)) {
 				throw new OpenIdException(Strings.InvalidSignature);
 			}
