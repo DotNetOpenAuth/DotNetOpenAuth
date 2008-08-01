@@ -28,6 +28,12 @@ namespace DotNetOpenId.Test {
 			parameterizedProgrammaticTest(identityUrl, identityUrl, requestMode, expectedResult, tryReplayAttack, provideStore);
 			parameterizedWebClientTest(identityUrl, requestMode, expectedResult, tryReplayAttack, provideStore);
 		}
+		void parameterizedTest(UriIdentifier opIdentifier, UriIdentifier claimedIdentifier,
+			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult,
+			bool tryReplayAttack, bool provideStore) {
+			parameterizedProgrammaticTest(opIdentifier, claimedIdentifier, requestMode, expectedResult, tryReplayAttack, provideStore);
+			parameterizedWebClientTest(opIdentifier, requestMode, expectedResult, tryReplayAttack, provideStore);
+		}
 		void parameterizedProgrammaticTest(UriIdentifier identityUrl, UriIdentifier claimedUrl,
 			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult,
 			bool tryReplayAttack, bool provideStore) {
@@ -267,6 +273,26 @@ namespace DotNetOpenId.Test {
 				true,
 				false
 			);
+		}
+		[Test]
+		public void Pass_Setup_ApproveOnSetup_DirectedIdentity_20() {
+			parameterizedTest(
+				TestSupport.GetOPIdentityUrl(TestSupport.Scenarios.ApproveOnSetup),
+				TestSupport.GetDirectedIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20),
+				AuthenticationRequestMode.Setup,
+				AuthenticationStatus.Authenticated,
+				true,
+				true);
+		}
+		[Test]
+		public void Pass_NoStore_ApproveOnSetup_DirectedIdentity_20() {
+			parameterizedTest(
+				TestSupport.GetOPIdentityUrl(TestSupport.Scenarios.ApproveOnSetup),
+				TestSupport.GetDirectedIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20),
+				AuthenticationRequestMode.Setup,
+				AuthenticationStatus.Authenticated,
+				true,
+				false);
 		}
 
 		[Test]
