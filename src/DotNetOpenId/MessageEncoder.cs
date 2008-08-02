@@ -41,6 +41,8 @@ namespace DotNetOpenId {
 		/// Encodes messages into <see cref="Response"/> instances.
 		/// </summary>
 		public virtual Response Encode(IEncodable message) {
+			if (message == null) throw new ArgumentNullException("message");
+
 			EncodingType encode_as = message.EncodingType;
 			Response wr;
 
