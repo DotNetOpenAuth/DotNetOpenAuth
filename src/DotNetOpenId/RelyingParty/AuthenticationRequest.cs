@@ -216,7 +216,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// </summary>
 		IProviderEndpoint IAuthenticationRequest.Provider { get { return endpoint; } }
 		/// <summary>
-		/// Gets the URL the user agent should be redirected to to begin the 
+		/// Gets the response to send to the user agent to begin the
 		/// OpenID authentication process.
 		/// </summary>
 		public IResponse RedirectingResponse {
