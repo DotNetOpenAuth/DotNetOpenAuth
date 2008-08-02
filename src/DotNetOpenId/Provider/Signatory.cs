@@ -34,6 +34,9 @@ namespace DotNetOpenId.Provider {
 		}
 
 		public void Sign(EncodableResponse response) {
+			if (response == null) throw new ArgumentNullException("response");
+			if (!response.NeedsSigning) return;
+
 			Association assoc;
 			string assoc_handle = response.PreferredAssociationHandle;
 

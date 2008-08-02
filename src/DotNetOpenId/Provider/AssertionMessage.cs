@@ -88,6 +88,7 @@ namespace DotNetOpenId.Provider {
 			EncodableResponse message = EncodableResponse.PrepareIndirectMessage(
 				selectedEndpoint.Protocol, selectedEndpoint.RelyingPartyEndpoint, null);
 			CreatePositiveAssertion(message, provider, localIdentifier, claimedIdentifier);
+			provider.Signatory.Sign(message);
 			return provider.Encoder.Encode(message);
 		}
 	}

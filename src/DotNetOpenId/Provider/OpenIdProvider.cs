@@ -71,7 +71,7 @@ namespace DotNetOpenId.Provider {
 			RequestUrl = requestUrl;
 			Query = query;
 			Signatory = new Signatory(store);
-			Encoder = new SigningMessageEncoder(Signatory);
+			Encoder = new MessageEncoder();
 			store.ClearExpiredAssociations(); // every so often we should do this.
 		}
 

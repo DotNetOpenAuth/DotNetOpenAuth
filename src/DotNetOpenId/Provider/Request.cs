@@ -102,22 +102,34 @@ namespace DotNetOpenId.Provider
 		/// </summary>
 		public Response Response {
 			get {
-				if (!IsResponseReady) throw new InvalidOperationException(Strings.ResponseNotReady);
 				if (response == null) {
-					var encodableResponse = CreateResponse();
-					EncodableResponse extendableResponse = encodableResponse as EncodableResponse;
-					if (extendableResponse != null) {
-						foreach (var pair in OutgoingExtensions.GetArgumentsToSend(false)) {
-							extendableResponse.Fields.Add(pair.Key, pair.Value);
-							extendableResponse.Signed.Add(pair.Key);
-						}
-					}
-					response = Provider.Encoder.Encode(encodableResponse);
+					response = Provider.Encoder.Encode(ResponseNotYetEncoded);
 				}
 				return response;
 			}
 		}
 		IResponse IRequest.Response { get { return this.Response; } }
+		/// <summary>
+		/// Generates the response but does not encode it.
+		/// </summary>
+		/// <remarks>
+		/// Useful for unit testing that mocks the HTTP transport.
+		/// </remarks>
+		internal IEncodable ResponseNotYetEncoded {
+			get {
+				if (!IsResponseReady) throw new InvalidOperationException(Strings.ResponseNotReady);
+				var encodableResponse = CreateResponse();
+				EncodableResponse extendableResponse = encodableResponse as EncodableResponse;
+				if (extendableResponse != null) {
+					foreach (var pair in OutgoingExtensions.GetArgumentsToSend(false)) {
+						extendableResponse.Fields.Add(pair.Key, pair.Value);
+						extendableResponse.Signed.Add(pair.Key);
+					}
+					Provider.Signatory.Sign(extendableResponse);
+				}
+				return encodableResponse;
+			}
+		}
 
 		public void AddResponseExtension(DotNetOpenId.Extensions.IExtensionResponse extension) {
 			OutgoingExtensions.AddExtensionArguments(extension.TypeUri, extension.Serialize(this));
