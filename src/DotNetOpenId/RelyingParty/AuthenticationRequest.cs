@@ -215,11 +215,23 @@ namespace DotNetOpenId.RelyingParty {
 		/// location.
 		/// </summary>
 		IProviderEndpoint IAuthenticationRequest.Provider { get { return endpoint; } }
+
 		/// <summary>
 		/// Gets the response to send to the user agent to begin the
 		/// OpenID authentication process.
 		/// </summary>
 		public IResponse RedirectingResponse {
+			get { return this.encoder.Encode(RedirectingEncodableResponse); }
+		}
+
+		/// <summary>
+		/// Generates the encodable message used to begin the authentication.
+		/// </summary>
+		/// <remarks>
+		/// This is separated from the <see cref="RedirectingResponse"/> property
+		/// so that unit testing that mocks up the actual HTTP transport can be done.
+		/// </remarks>
+		internal IEncodable RedirectingEncodableResponse {
 			get {
 				UriBuilder returnToBuilder = new UriBuilder(ReturnToUrl);
 				UriUtil.AppendQueryArgs(returnToBuilder, this.ReturnToArgs);
@@ -245,7 +257,7 @@ namespace DotNetOpenId.RelyingParty {
 					qsArgs.Add(pair.Key, pair.Value);
 
 				var request = new IndirectMessageRequest(this.endpoint.ProviderEndpoint, qsArgs);
-				return this.encoder.Encode(request);
+				return request;
 			}
 		}
 
