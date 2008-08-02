@@ -20,7 +20,6 @@ namespace DotNetOpenId.Provider {
 			var response = encodable as EncodableResponse;
 			if (response != null) {
 				if (response.NeedsSigning) {
-					Debug.Assert(!response.Fields.ContainsKey(encodable.Protocol.openidnp.sig));
 					signatory.Sign(response);
 				}
 			}
