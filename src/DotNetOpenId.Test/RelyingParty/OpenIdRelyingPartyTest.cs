@@ -5,6 +5,7 @@ using System.Web;
 using DotNetOpenId.RelyingParty;
 using NUnit.Framework;
 using ProviderMemoryStore = DotNetOpenId.AssociationMemoryStore<DotNetOpenId.AssociationRelyingPartyType>;
+using DotNetOpenId.Test.Mocks;
 
 namespace DotNetOpenId.Test.RelyingParty {
 	[TestFixture]
@@ -24,7 +25,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 
 		[TearDown]
 		public void TearDown() {
-			UntrustedWebRequest.MockRequests = null;
+			MockHttpRequest.Reset();
 		}
 
 		[Test]
@@ -236,7 +237,7 @@ namespace DotNetOpenId.Test.RelyingParty {
  </Service>
  <ServedBy>OpenXRI</ServedBy>
 </XRD>";
-			UntrustedWebRequest.MockRequests = TestSupport.GenerateMockXrdsResponses(new Dictionary<string, string> {
+			MockHttpRequest.RegisterMockXrdsResponses(new Dictionary<string, string> {
 				{"https://xri.net/=MultipleEndpoint?_xrd_r=application/xrd%2Bxml;sep=false", xrds},
 				{"https://xri.net/=!91F2.8153.F600.AE24?_xrd_r=application/xrd%2Bxml;sep=false", xrds},
 			});

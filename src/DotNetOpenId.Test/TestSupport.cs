@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
+using System.Reflection;
 using DotNetOpenId;
 using DotNetOpenId.RelyingParty;
 using DotNetOpenId.Test.Hosting;
-using NUnit.Framework;
 using DotNetOpenId.Test.Mocks;
+using NUnit.Framework;
 
 [SetUpFixture]
 public class TestSupport {
@@ -67,23 +67,18 @@ public class TestSupport {
 	internal static AspNetHost Host { get; private set; }
 	internal static EncodingInterceptor Interceptor { get; private set; }
 
-	internal static UntrustedWebRequest.MockRequestResponse GenerateMockXrdsResponses(IDictionary<string, string> requestUriAndResponseBody) {
-		return (uri, body, acceptTypes) => {
-			string contentType = "text/xml; saml=false; https=false; charset=UTF-8";
-			string contentEncoding = null;
-			MemoryStream stream = new MemoryStream();
-			StreamWriter sw = new StreamWriter(stream);
-			Assert.IsNull(body);
-			string responseBody;
-			if (!requestUriAndResponseBody.TryGetValue(uri.AbsoluteUri, out responseBody)) {
-				Assert.Fail("Unexpected HTTP request: {0}", uri);
-			}
-			sw.Write(responseBody);
-			sw.Flush();
-			stream.Seek(0, SeekOrigin.Begin);
-			return new UntrustedWebResponse(uri, uri, new WebHeaderCollection(),
-				HttpStatusCode.OK, contentType, contentEncoding, stream);
-		};
+	/// <summary>
+	/// Returns the content of a given embedded resource.
+	/// </summary>
+	/// <param name="path">The path of the file as it appears within the project,
+	/// where the leading / marks the root directory of the project.</param>
+	internal static string LoadEmbeddedFile(string path) {
+		path = "DotNetOpenId.Test.Discovery" + path.Replace('/', '.');
+		Stream resource = Assembly.GetExecutingAssembly().GetManifestResourceStream(path);
+		if (resource == null) throw new ArgumentException();
+		using (StreamReader sr = new StreamReader(resource)) {
+			return sr.ReadToEnd();
+		}
 	}
 
 	[SetUp]
