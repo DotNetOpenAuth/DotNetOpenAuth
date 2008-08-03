@@ -6,8 +6,8 @@ using System.Diagnostics;
 namespace DotNetOpenId.RelyingParty {
 	[DebuggerDisplay("IsAuthenticationValid: {IsAuthenticationValid}, OpenId: {Protocol.Version}")]
 	class CheckAuthResponse : DirectResponse {
-		public CheckAuthResponse(ServiceEndpoint provider, IDictionary<string, string> args)
-			: base(provider, args) {
+		public CheckAuthResponse(OpenIdRelyingParty relyingParty, ServiceEndpoint provider, IDictionary<string, string> args)
+			: base(relyingParty, provider, args) {
 		}
 
 		public string InvalidatedAssociationHandle {

@@ -1,23 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using NUnit.Framework;
-using DotNetOpenId.RelyingParty;
 using System.Collections.Specialized;
-using System.Web;
-using System.Net;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Text.RegularExpressions;
+using System.Web;
+using DotNetOpenId.Provider;
+using DotNetOpenId.RelyingParty;
+using NUnit.Framework;
+using IProviderAssociationStore = DotNetOpenId.IAssociationStore<DotNetOpenId.AssociationRelyingPartyType>;
+using ProviderMemoryStore = DotNetOpenId.AssociationMemoryStore<DotNetOpenId.AssociationRelyingPartyType>;
 
 namespace DotNetOpenId.Test {
 	[TestFixture]
 	public class EndToEndTesting {
 		IRelyingPartyApplicationStore appStore;
+		IProviderAssociationStore providerStore;
 
 		[SetUp]
 		public void Setup() {
 			appStore = new ApplicationMemoryStore();
+			providerStore = new ProviderMemoryStore();
 			if (!UntrustedWebRequest.WhitelistHosts.Contains("localhost"))
 				UntrustedWebRequest.WhitelistHosts.Add("localhost");
 		}
@@ -37,6 +40,7 @@ namespace DotNetOpenId.Test {
 			var returnTo = TestSupport.GetFullUrl(TestSupport.ConsumerPage);
 			var realm = new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri);
 			var consumer = new OpenIdRelyingParty(store, null, null);
+			consumer.DirectMessageChannel = new DirectMessageTestRedirector(providerStore);
 			Assert.IsNull(consumer.Response);
 			var request = consumer.CreateRequest(identityUrl, realm, returnTo);
 			Protocol protocol = Protocol.Lookup(request.Provider.Version);
@@ -48,31 +52,30 @@ namespace DotNetOpenId.Test {
 
 			request.Mode = requestMode;
 
-			// Verify the redirect URL
 			Assert.IsNotNull(request.RedirectingResponse);
+			var rpWebMessageToOP = request.RedirectingResponse as Response;
+			Assert.IsNotNull(rpWebMessageToOP);
+			var rpMessageToOP = rpWebMessageToOP.EncodableMessage as IndirectMessageRequest;
+			Assert.IsNotNull(rpMessageToOP);
+
+			// Verify the redirect URL
 			var consumerToProviderQuery = HttpUtility.ParseQueryString(request.RedirectingResponse.ExtractUrl().Query);
 			Assert.IsTrue(consumerToProviderQuery[protocol.openid.return_to].StartsWith(returnTo.AbsoluteUri, StringComparison.Ordinal));
 			Assert.AreEqual(realm.ToString(), consumerToProviderQuery[protocol.openid.Realm]);
 			redirectToProviderUrl = request.RedirectingResponse.ExtractUrl();
 
-			HttpWebRequest providerRequest = (HttpWebRequest)WebRequest.Create(redirectToProviderUrl);
-			providerRequest.AllowAutoRedirect = false;
-			Uri redirectUrl;
-			try {
-				using (HttpWebResponse providerResponse = (HttpWebResponse)providerRequest.GetResponse()) {
-					Assert.AreEqual(HttpStatusCode.Redirect, providerResponse.StatusCode);
-					redirectUrl = new Uri(providerResponse.Headers[HttpResponseHeader.Location]);
-				}
-			} catch (WebException ex) {
-				Trace.WriteLine(ex);
-				if (ex.Response != null) {
-					using (StreamReader sr = new StreamReader(ex.Response.GetResponseStream())) {
-						Trace.WriteLine(sr.ReadToEnd());
-					}
-				}
-				throw;
-			}
-			consumer = new OpenIdRelyingParty(store, redirectUrl, HttpUtility.ParseQueryString(redirectUrl.Query));
+			OpenIdProvider provider = new OpenIdProvider(providerStore, rpMessageToOP.RedirectUrl, redirectToProviderUrl, rpMessageToOP.EncodedFields.ToNameValueCollection());
+			var opAuthRequest = provider.Request as DotNetOpenId.Provider.IAuthenticationRequest;
+			Assert.IsNotNull(opAuthRequest);
+			opAuthRequest.IsAuthenticated = expectedResult == AuthenticationStatus.Authenticated;
+			Assert.IsTrue(opAuthRequest.IsResponseReady);
+			var opAuthWebResponse = opAuthRequest.Response as Response;
+			Assert.IsNotNull(opAuthWebResponse);
+			var opAuthResponse = opAuthWebResponse.EncodableMessage as EncodableResponse;
+
+			consumer = new OpenIdRelyingParty(store, opAuthResponse.RedirectUrl, opAuthResponse.EncodedFields.ToNameValueCollection());
+			consumer.DirectMessageChannel = new DirectMessageTestRedirector(providerStore);
+			Assert.IsNotNull(consumer.Response);
 			Assert.AreEqual(expectedResult, consumer.Response.Status);
 			Assert.AreEqual(claimedUrl, consumer.Response.ClaimedIdentifier);
 
@@ -83,7 +86,7 @@ namespace DotNetOpenId.Test {
 				// the consumer, and tries the same query to the consumer in an
 				// attempt to spoof the identity of the authenticating user.
 				try {
-					var replayAttackConsumer = new OpenIdRelyingParty(store, redirectUrl, HttpUtility.ParseQueryString(redirectUrl.Query));
+					var replayAttackConsumer = new OpenIdRelyingParty(store, opAuthResponse.RedirectUrl, opAuthResponse.EncodedFields.ToNameValueCollection());
 					Assert.AreNotEqual(AuthenticationStatus.Authenticated, replayAttackConsumer.Response.Status, "Replay attack");
 				} catch (OpenIdException) { // nonce already used
 					// another way to pass

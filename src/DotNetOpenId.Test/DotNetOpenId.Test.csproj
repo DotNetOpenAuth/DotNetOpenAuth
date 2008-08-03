@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="AssociationsTest.cs" />
     <Compile Include="AssociationTestSuite.cs" />
+    <Compile Include="DirectMessageTestRedirector.cs" />
     <Compile Include="ExtensionsArgumentsManagerTests.cs" />
     <Compile Include="Extensions\AttributeExchangeFetchRequestTests.cs" />
     <Compile Include="Extensions\AttributeExchangeFetchResponseTests.cs" />
@@ -102,5 +103,5 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-	<Import Project="..\..\tools\DotNetOpenId.Versioning.targets" />
+  <Import Project="..\..\tools\DotNetOpenId.Versioning.targets" />
 </Project>

@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using NUnit.Framework;
-using System.IO;
-using System.Globalization;
-using DotNetOpenId.Test.Hosting;
-using DotNetOpenId;
-using System.Net;
 using System.Collections.Specialized;
-using DotNetOpenId.RelyingParty;
 using System.Diagnostics;
+using System.IO;
+using System.Net;
+using DotNetOpenId;
+using DotNetOpenId.RelyingParty;
+using DotNetOpenId.Test.Hosting;
+using NUnit.Framework;
 
 [SetUpFixture]
 public class TestSupport {
@@ -124,5 +122,13 @@ static class TestExtensions {
 		UriBuilder builder = new UriBuilder(encodable.RedirectUrl);
 		UriUtil.AppendQueryArgs(builder, encodable.EncodedFields);
 		return builder.Uri;
+	}
+
+	public static NameValueCollection ToNameValueCollection(this IDictionary<string, string> dictionary) {
+		NameValueCollection nvc = new NameValueCollection(dictionary.Count);
+		foreach (var pair in dictionary) {
+			nvc.Add(pair.Key, pair.Value);
+		}
+		return nvc;
 	}
 }

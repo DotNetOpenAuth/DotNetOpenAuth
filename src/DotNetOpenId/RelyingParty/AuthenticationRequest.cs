@@ -51,7 +51,7 @@ namespace DotNetOpenId.RelyingParty {
 				AddCallbackArguments(DotNetOpenId.RelyingParty.Token.TokenKey, token);
 		}
 		internal static AuthenticationRequest Create(Identifier userSuppliedIdentifier,
-			OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl, IRelyingPartyApplicationStore store) {
+			OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl) {
 			if (userSuppliedIdentifier == null) throw new ArgumentNullException("userSuppliedIdentifier");
 			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
 			if (realm == null) throw new ArgumentNullException("realm");
@@ -73,7 +73,7 @@ namespace DotNetOpenId.RelyingParty {
 			}
 
 			var endpoints = new List<ServiceEndpoint>(userSuppliedIdentifier.Discover());
-			ServiceEndpoint endpoint = selectEndpoint(endpoints.AsReadOnly(), relyingParty, store);
+			ServiceEndpoint endpoint = selectEndpoint(endpoints.AsReadOnly(), relyingParty);
 			if (endpoint == null)
 				throw new OpenIdException(Strings.OpenIdEndpointNotFound);
 			Logger.DebugFormat("Discovered provider endpoint: {0}", endpoint);
@@ -85,10 +85,10 @@ namespace DotNetOpenId.RelyingParty {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.ReturnToNotUnderRealm, returnToUrl, realm));
 
-			string token = new Token(endpoint).Serialize(store);
+			string token = new Token(endpoint).Serialize(relyingParty.Store);
 			// Retrieve the association, but don't create one, as a creation was already
 			// attempted by the selectEndpoint method.
-			Association association = store != null ? getAssociation(endpoint, store, false) : null;
+			Association association = relyingParty.Store != null ? getAssociation(relyingParty, endpoint, false) : null;
 
 			return new AuthenticationRequest(
 				token, association, endpoint, realm, returnToUrl, relyingParty.Encoder);
@@ -126,7 +126,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// </summary>
 		/// <returns>The best endpoint, or null if no acceptable endpoints were found.</returns>
 		private static ServiceEndpoint selectEndpoint(ReadOnlyCollection<ServiceEndpoint> endpoints, 
-			OpenIdRelyingParty relyingParty, IRelyingPartyApplicationStore store) {
+			OpenIdRelyingParty relyingParty) {
 
 			List<ServiceEndpoint> filteredEndpoints = filterAndSortEndpoints(endpoints, relyingParty);
 
@@ -137,7 +137,7 @@ namespace DotNetOpenId.RelyingParty {
 
 			// If we don't have an application store, we have no place to record an association to
 			// and therefore can only take our best shot at one of the endpoints.
-			if (store == null) {
+			if (relyingParty.Store == null) {
 				return filteredEndpoints[0];
 			}
 
@@ -149,7 +149,7 @@ namespace DotNetOpenId.RelyingParty {
 			foreach (ServiceEndpoint endpointCandidate in filteredEndpoints) {
 				// One weakness of this method is that an OP that's down, but with whom we already
 				// created an association in the past will still pass this "are you alive?" test.
-				Association association = getAssociation(endpointCandidate, store, true);
+				Association association = getAssociation(relyingParty, endpointCandidate, true);
 				if (association != null) {
 					// We have a winner!
 					return endpointCandidate;
@@ -160,13 +160,13 @@ namespace DotNetOpenId.RelyingParty {
 			// and hope for the best.
 			return endpoints[0];
 		}
-		static Association getAssociation(ServiceEndpoint provider, IRelyingPartyApplicationStore store, bool createNewAssociationIfNeeded) {
+		static Association getAssociation(OpenIdRelyingParty relyingParty, ServiceEndpoint provider, bool createNewAssociationIfNeeded) {
+			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
 			if (provider == null) throw new ArgumentNullException("provider");
-			if (store == null) throw new ArgumentNullException("store");
-			Association assoc = store.GetAssociation(provider.ProviderEndpoint);
+			Association assoc = relyingParty.Store.GetAssociation(provider.ProviderEndpoint);
 
 			if ((assoc == null || !assoc.HasUsefulLifeRemaining) && createNewAssociationIfNeeded) {
-				var req = AssociateRequest.Create(provider);
+				var req = AssociateRequest.Create(relyingParty, provider);
 				if (req.Response != null) {
 					// try again if we failed the first time and have a worthy second-try.
 					if (req.Response.Association == null && req.Response.SecondAttempt != null) {
@@ -176,7 +176,7 @@ namespace DotNetOpenId.RelyingParty {
 					assoc = req.Response.Association;
 					if (assoc != null) {
 						Logger.InfoFormat("Association with {0} established.", provider.ProviderEndpoint);
-						store.StoreAssociation(provider.ProviderEndpoint, assoc);
+						relyingParty.Store.StoreAssociation(provider.ProviderEndpoint, assoc);
 					} else {
 						Logger.ErrorFormat("Association attempt with {0} provider failed.", provider);
 					}

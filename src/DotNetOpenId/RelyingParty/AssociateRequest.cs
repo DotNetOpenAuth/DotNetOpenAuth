@@ -10,16 +10,20 @@ namespace DotNetOpenId.RelyingParty {
 		/// <summary>
 		/// Instantiates an <see cref="AssociateRequest"/> object.
 		/// </summary>
+		/// <param name="relyingParty">The RP instance that is creating this request.</param>
 		/// <param name="provider">The discovered OpenID Provider endpoint information.</param>
 		/// <param name="args">The arguments assembled for sending to the Provider.</param>
 		/// <param name="dh">Optional.  Supplied only if Diffie-Hellman is used for encrypting the association secret key.</param>
-		AssociateRequest(ServiceEndpoint provider, IDictionary<string, string> args, DiffieHellman dh)
-			: base(provider, args) {
+		AssociateRequest(OpenIdRelyingParty relyingParty, ServiceEndpoint provider, IDictionary<string, string> args, DiffieHellman dh)
+			: base(relyingParty, provider, args) {
 			DH = dh;
 		}
 		public DiffieHellman DH { get; private set; }
 
-		public static AssociateRequest Create(ServiceEndpoint provider) {
+		public static AssociateRequest Create(OpenIdRelyingParty relyingParty, ServiceEndpoint provider) {
+			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
+			if (provider == null) throw new ArgumentNullException("provider");
+
 			bool useSha256 = provider.Protocol.Version.Major >= 2;
 			string assoc_type = useSha256 ?
 				provider.Protocol.Args.SignatureAlgorithm.HMAC_SHA256 :
@@ -27,10 +31,11 @@ namespace DotNetOpenId.RelyingParty {
 			string session_type = useSha256 ?
 					provider.Protocol.Args.SessionType.DH_SHA256 :
 					provider.Protocol.Args.SessionType.DH_SHA1;
-			return Create(provider, assoc_type, session_type);
+			return Create(relyingParty, provider, assoc_type, session_type);
 		}
 
-		public static AssociateRequest Create(ServiceEndpoint provider, string assoc_type, string session_type) {
+		public static AssociateRequest Create(OpenIdRelyingParty relyingParty, ServiceEndpoint provider, string assoc_type, string session_type) {
+			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
 			if (provider == null) throw new ArgumentNullException("provider");
 			if (assoc_type == null) throw new ArgumentNullException("assoc_type");
 			if (session_type == null) throw new ArgumentNullException("session_type");
@@ -68,7 +73,7 @@ namespace DotNetOpenId.RelyingParty {
 				}
 			}
 
-			return new AssociateRequest(provider, args, dh);
+			return new AssociateRequest(relyingParty, provider, args, dh);
 		}
 		AssociateResponse response;
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)] // code execution in getter
@@ -76,10 +81,10 @@ namespace DotNetOpenId.RelyingParty {
 			get {
 				if (response == null) {
 					try {
-						response = new AssociateResponse(Provider, GetResponse(), DH);
+						response = new AssociateResponse(RelyingParty, Provider, GetResponse(), DH);
 					} catch (OpenIdException ex) {
 						if (ex.Query != null) {
-							response = new AssociateResponse(Provider, ex.Query, DH);
+							response = new AssociateResponse(RelyingParty, Provider, ex.Query, DH);
 						}
 						// Silently fail at associate attempt, since we can recover
 						// using dumb mode.

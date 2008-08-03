@@ -5,11 +5,12 @@ using System.Diagnostics;
 
 namespace DotNetOpenId.RelyingParty {
 	class CheckAuthRequest : DirectRequest {
-		CheckAuthRequest(ServiceEndpoint provider, IDictionary<string, string> args) :
-			base(provider, args) {
+		CheckAuthRequest(OpenIdRelyingParty relyingParty, ServiceEndpoint provider, IDictionary<string, string> args) :
+			base(relyingParty, provider, args) {
 		}
 
-		public static CheckAuthRequest Create(ServiceEndpoint provider, IDictionary<string, string> query) {
+		public static CheckAuthRequest Create(OpenIdRelyingParty relyingParty, ServiceEndpoint provider, IDictionary<string, string> query) {
+			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
 			Protocol protocol = provider.Protocol;
 			string signed = query[protocol.openid.signed];
 
@@ -36,7 +37,7 @@ namespace DotNetOpenId.RelyingParty {
 			}
 			check_args[protocol.openid.mode] = protocol.Args.Mode.check_authentication;
 
-			return new CheckAuthRequest(provider, check_args);
+			return new CheckAuthRequest(relyingParty, provider, check_args);
 		}
 
 		CheckAuthResponse response;
@@ -44,7 +45,7 @@ namespace DotNetOpenId.RelyingParty {
 		public CheckAuthResponse Response {
 			get {
 				if (response == null) {
-					response = new CheckAuthResponse(Provider, GetResponse());
+					response = new CheckAuthResponse(RelyingParty, Provider, GetResponse());
 				}
 				return response;
 			}

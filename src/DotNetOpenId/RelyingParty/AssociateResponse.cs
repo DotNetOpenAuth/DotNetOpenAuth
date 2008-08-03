@@ -7,8 +7,8 @@ using System.Diagnostics;
 
 namespace DotNetOpenId.RelyingParty {
 	class AssociateResponse : DirectResponse {
-		public AssociateResponse(ServiceEndpoint provider, IDictionary<string, string> args, DiffieHellman dh)
-			: base(provider, args) {
+		public AssociateResponse(OpenIdRelyingParty relyingParty, ServiceEndpoint provider, IDictionary<string, string> args, DiffieHellman dh)
+			: base(relyingParty, provider, args) {
 			DH = dh;
 
 			if (Args.ContainsKey(Protocol.openidnp.assoc_handle)) {
@@ -22,7 +22,7 @@ namespace DotNetOpenId.RelyingParty {
 						// If the suggested options are among those we support...
 						if (Array.IndexOf(Protocol.Args.SignatureAlgorithm.All, assoc_type) >= 0 &&
 							Array.IndexOf(Protocol.Args.SessionType.All, session_type) >= 0) {
-							SecondAttempt = AssociateRequest.Create(Provider, assoc_type, session_type);
+							SecondAttempt = AssociateRequest.Create(RelyingParty, Provider, assoc_type, session_type);
 						}
 					}
 				}
