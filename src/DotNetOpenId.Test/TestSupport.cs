@@ -8,6 +8,7 @@ using DotNetOpenId;
 using DotNetOpenId.RelyingParty;
 using DotNetOpenId.Test.Hosting;
 using NUnit.Framework;
+using DotNetOpenId.Test.Mocks;
 
 [SetUpFixture]
 public class TestSupport {
@@ -42,6 +43,17 @@ public class TestSupport {
 	}
 	public static Identifier GetDelegateUrl(Scenarios scenario) {
 		return new UriIdentifier(new Uri(Host.BaseUri, "/" + scenario));
+	}
+	internal static MockIdentifier GetMockIdentifier(Scenarios scenario, ProtocolVersion providerVersion) {
+		ServiceEndpoint se = ServiceEndpoint.CreateForClaimedIdentifier(
+			GetIdentityUrl(scenario, providerVersion),
+			GetDelegateUrl(scenario),
+			new Uri(Host.BaseUri, "/ProviderEndpoint.aspx"),
+			new string[] { Protocol.Lookup(providerVersion).ClaimedIdentifierServiceTypeURI },
+			10,
+			10
+			);
+		return new MockIdentifier(GetIdentityUrl(scenario, providerVersion), new ServiceEndpoint[] { se });
 	}
 	public static Uri GetFullUrl(string url) {
 		return GetFullUrl(url, null);

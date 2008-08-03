@@ -62,6 +62,7 @@
     <Compile Include="Extensions\SimpleRegistrationTests.cs" />
     <Compile Include="Hosting\EncodingInterceptor.cs" />
     <Compile Include="IdentifierTests.cs" />
+    <Compile Include="Mocks\MockIdentifier.cs" />
     <Compile Include="NonceTest.cs" />
     <Compile Include="PiecewiseJointTesting.cs" />
     <Compile Include="Provider\IAuthenticationRequestTest.cs" />

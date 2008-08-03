@@ -25,13 +25,13 @@ namespace DotNetOpenId.Test {
 				UntrustedWebRequest.WhitelistHosts.Add("localhost");
 		}
 
-		void parameterizedTest(UriIdentifier identityUrl,
+		void parameterizedTest(Identifier identityUrl,
 			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult,
 			bool tryReplayAttack, bool provideStore) {
 			parameterizedProgrammaticTest(identityUrl, identityUrl, requestMode, expectedResult, tryReplayAttack, provideStore);
 			parameterizedWebClientTest(identityUrl, requestMode, expectedResult, tryReplayAttack, provideStore);
 		}
-		void parameterizedProgrammaticTest(UriIdentifier identityUrl, UriIdentifier claimedUrl,
+		void parameterizedProgrammaticTest(Identifier userSuppliedIdentifier, Identifier claimedUrl,
 			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult,
 			bool tryReplayAttack, bool provideStore) {
 			var store = provideStore ? appStore : null;
@@ -42,7 +42,7 @@ namespace DotNetOpenId.Test {
 			var consumer = new OpenIdRelyingParty(store, null, null);
 			consumer.DirectMessageChannel = new DirectMessageTestRedirector(providerStore);
 			Assert.IsNull(consumer.Response);
-			var request = consumer.CreateRequest(identityUrl, realm, returnTo);
+			var request = consumer.CreateRequest(userSuppliedIdentifier, realm, returnTo);
 			Protocol protocol = Protocol.Lookup(request.Provider.Version);
 
 			// Test properties and defaults
@@ -93,7 +93,7 @@ namespace DotNetOpenId.Test {
 				}
 			}
 		}
-		void parameterizedWebClientTest(UriIdentifier identityUrl,
+		void parameterizedWebClientTest(Identifier identityUrl,
 			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult,
 			bool tryReplayAttack, bool provideStore) {
 			var store = provideStore ? appStore : null;
@@ -170,7 +170,7 @@ namespace DotNetOpenId.Test {
 		[Test]
 		public void Pass_Setup_AutoApproval_11() {
 			parameterizedTest(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V11),
+				TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V11),
 				AuthenticationRequestMode.Setup,
 				AuthenticationStatus.Authenticated,
 				true,
@@ -180,7 +180,7 @@ namespace DotNetOpenId.Test {
 		[Test]
 		public void Pass_Setup_AutoApproval_20() {
 			parameterizedTest(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20),
+				TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20),
 				AuthenticationRequestMode.Setup,
 				AuthenticationStatus.Authenticated,
 				true,
@@ -191,7 +191,7 @@ namespace DotNetOpenId.Test {
 		[Test]
 		public void Pass_Immediate_AutoApproval_11() {
 			parameterizedTest(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V11),
+				TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V11),
 				AuthenticationRequestMode.Immediate,
 				AuthenticationStatus.Authenticated,
 				true,
@@ -201,7 +201,7 @@ namespace DotNetOpenId.Test {
 		[Test]
 		public void Pass_Immediate_AutoApproval_20() {
 			parameterizedTest(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20),
+				TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20),
 				AuthenticationRequestMode.Immediate,
 				AuthenticationStatus.Authenticated,
 				true,
@@ -212,7 +212,7 @@ namespace DotNetOpenId.Test {
 		[Test]
 		public void Fail_Immediate_ApproveOnSetup_11() {
 			parameterizedTest(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V11),
+				TestSupport.GetMockIdentifier(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V11),
 				AuthenticationRequestMode.Immediate,
 				AuthenticationStatus.SetupRequired,
 				false,
@@ -222,7 +222,7 @@ namespace DotNetOpenId.Test {
 		[Test]
 		public void Fail_Immediate_ApproveOnSetup_20() {
 			parameterizedTest(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20),
+				TestSupport.GetMockIdentifier(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20),
 				AuthenticationRequestMode.Immediate,
 				AuthenticationStatus.SetupRequired,
 				false,
@@ -233,7 +233,7 @@ namespace DotNetOpenId.Test {
 		[Test]
 		public void Pass_Setup_ApproveOnSetup_11() {
 			parameterizedTest(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V11),
+				TestSupport.GetMockIdentifier(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V11),
 				AuthenticationRequestMode.Setup,
 				AuthenticationStatus.Authenticated,
 				true,
@@ -243,7 +243,7 @@ namespace DotNetOpenId.Test {
 		[Test]
 		public void Pass_Setup_ApproveOnSetup_20() {
 			parameterizedTest(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20),
+				TestSupport.GetMockIdentifier(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20),
 				AuthenticationRequestMode.Setup,
 				AuthenticationStatus.Authenticated,
 				true,
@@ -254,7 +254,7 @@ namespace DotNetOpenId.Test {
 		[Test]
 		public void Pass_NoStore_AutoApproval_11() {
 			parameterizedTest(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V11),
+				TestSupport.GetMockIdentifier(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V11),
 				AuthenticationRequestMode.Setup,
 				AuthenticationStatus.Authenticated,
 				true,
@@ -264,7 +264,7 @@ namespace DotNetOpenId.Test {
 		[Test]
 		public void Pass_NoStore_AutoApproval_20() {
 			parameterizedTest(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20),
+				TestSupport.GetMockIdentifier(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20),
 				AuthenticationRequestMode.Setup,
 				AuthenticationStatus.Authenticated,
 				true,
@@ -274,7 +274,7 @@ namespace DotNetOpenId.Test {
 
 		[Test]
 		public void ProviderAddedFragmentRemainsInClaimedIdentifier() {
-			Uri userSuppliedIdentifier = TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApprovalAddFragment, ProtocolVersion.V20);
+			Identifier userSuppliedIdentifier = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApprovalAddFragment, ProtocolVersion.V20);
 			UriBuilder claimedIdentifier = new UriBuilder(userSuppliedIdentifier);
 			claimedIdentifier.Fragment = "frag";
 			parameterizedProgrammaticTest(
