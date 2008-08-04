@@ -37,14 +37,26 @@ namespace DotNetOpenId.Test.Mocks {
 			registeredMockResponses.Add(response.RequestUri, response);
 		}
 
-		internal static void RegisterMockResponse(Uri uri, string contentType, string responseBody) {
+		internal static void RegisterMockResponse(Uri requestUri, string contentType, string responseBody) {
+			RegisterMockResponse(requestUri, requestUri, contentType, responseBody);
+		}
+
+		internal static void RegisterMockResponse(Uri requestUri, Uri responseUri, string contentType, string responseBody) {
+			RegisterMockResponse(requestUri, responseUri, contentType, new WebHeaderCollection(), responseBody);
+		}
+
+		internal static void RegisterMockResponse(Uri requestUri, Uri responseUri, string contentType, WebHeaderCollection headers, string responseBody) {
+			if (requestUri == null) throw new ArgumentNullException("requestUri");
+			if (responseUri == null) throw new ArgumentNullException("responseUri");
+			if (String.IsNullOrEmpty(contentType)) throw new ArgumentNullException("contentType");
+
 			string contentEncoding = null;
 			MemoryStream stream = new MemoryStream();
 			StreamWriter sw = new StreamWriter(stream);
 			sw.Write(responseBody);
 			sw.Flush();
 			stream.Seek(0, SeekOrigin.Begin);
-			RegisterMockResponse(new UntrustedWebResponse(uri, uri, new WebHeaderCollection(),
+			RegisterMockResponse(new UntrustedWebResponse(requestUri, responseUri, headers ?? new WebHeaderCollection(),
 				HttpStatusCode.OK, contentType, contentEncoding, stream));
 		}
 

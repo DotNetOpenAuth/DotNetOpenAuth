@@ -73,7 +73,8 @@ public class TestSupport {
 	/// <param name="path">The path of the file as it appears within the project,
 	/// where the leading / marks the root directory of the project.</param>
 	internal static string LoadEmbeddedFile(string path) {
-		path = "DotNetOpenId.Test.Discovery" + path.Replace('/', '.');
+		if (!path.StartsWith("/")) path = "/" + path;
+		path = "DotNetOpenId.Test" + path.Replace('/', '.');
 		Stream resource = Assembly.GetExecutingAssembly().GetManifestResourceStream(path);
 		if (resource == null) throw new ArgumentException();
 		using (StreamReader sr = new StreamReader(resource)) {

@@ -97,6 +97,27 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="dhpriv.txt" />
+    <EmbeddedResource Include="Discovery\htmldiscovery\html1020.html" />
+    <EmbeddedResource Include="Discovery\htmldiscovery\html10both.html" />
+    <EmbeddedResource Include="Discovery\htmldiscovery\html10del.html" />
+    <EmbeddedResource Include="Discovery\htmldiscovery\html10prov.html" />
+    <EmbeddedResource Include="Discovery\htmldiscovery\html2010.html" />
+    <EmbeddedResource Include="Discovery\htmldiscovery\html2010combinedA.html" />
+    <EmbeddedResource Include="Discovery\htmldiscovery\html2010combinedB.html" />
+    <EmbeddedResource Include="Discovery\htmldiscovery\html2010combinedC.html" />
+    <EmbeddedResource Include="Discovery\htmldiscovery\html20both.html" />
+    <EmbeddedResource Include="Discovery\htmldiscovery\html20del.html" />
+    <EmbeddedResource Include="Discovery\htmldiscovery\html20prov.html" />
+    <EmbeddedResource Include="Discovery\htmldiscovery\html20relative.html" />
+    <EmbeddedResource Include="Discovery\xrdsdiscovery\xrds-irrelevant.xml" />
+    <EmbeddedResource Include="Discovery\xrdsdiscovery\xrds10.xml" />
+    <EmbeddedResource Include="Discovery\xrdsdiscovery\xrds1020.xml" />
+    <EmbeddedResource Include="Discovery\xrdsdiscovery\xrds11.xml" />
+    <EmbeddedResource Include="Discovery\xrdsdiscovery\xrds20.xml" />
+    <EmbeddedResource Include="Discovery\xrdsdiscovery\xrds2010a.xml" />
+    <EmbeddedResource Include="Discovery\xrdsdiscovery\xrds2010b.xml" />
+    <EmbeddedResource Include="Discovery\xrdsdiscovery\XrdsReferencedInHead.html" />
+    <EmbeddedResource Include="Discovery\xrdsdiscovery\XrdsReferencedInHttpHeader.html" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DotNetOpenId\DotNetOpenId.csproj">
