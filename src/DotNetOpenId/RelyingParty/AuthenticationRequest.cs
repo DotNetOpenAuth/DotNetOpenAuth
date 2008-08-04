@@ -29,18 +29,19 @@ namespace DotNetOpenId.RelyingParty {
 	class AuthenticationRequest : IAuthenticationRequest {
 		Association assoc;
 		ServiceEndpoint endpoint;
-		MessageEncoder encoder;
 		Protocol protocol { get { return endpoint.Protocol; } }
+		internal OpenIdRelyingParty RelyingParty;
 
 		AuthenticationRequest(string token, Association assoc, ServiceEndpoint endpoint,
-			Realm realm, Uri returnToUrl, MessageEncoder encoder) {
+			Realm realm, Uri returnToUrl, OpenIdRelyingParty relyingParty) {
 			if (endpoint == null) throw new ArgumentNullException("endpoint");
 			if (realm == null) throw new ArgumentNullException("realm");
 			if (returnToUrl == null) throw new ArgumentNullException("returnToUrl");
-			if (encoder == null) throw new ArgumentNullException("encoder");
+			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
+			
 			this.assoc = assoc;
 			this.endpoint = endpoint;
-			this.encoder = encoder;
+			RelyingParty = relyingParty;
 			Realm = realm;
 			ReturnToUrl = returnToUrl;
 
@@ -91,7 +92,7 @@ namespace DotNetOpenId.RelyingParty {
 			Association association = relyingParty.Store != null ? getAssociation(relyingParty, endpoint, false) : null;
 
 			return new AuthenticationRequest(
-				token, association, endpoint, realm, returnToUrl, relyingParty.Encoder);
+				token, association, endpoint, realm, returnToUrl, relyingParty);
 		}
 
 		/// <summary>
@@ -221,7 +222,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// OpenID authentication process.
 		/// </summary>
 		public IResponse RedirectingResponse {
-			get { return this.encoder.Encode(RedirectingEncodableResponse); }
+			get { return RelyingParty.Encoder.Encode(RedirectingEncodableResponse); }
 		}
 
 		/// <summary>

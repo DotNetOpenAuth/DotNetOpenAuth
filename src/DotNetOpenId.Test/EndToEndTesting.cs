@@ -35,10 +35,11 @@ namespace DotNetOpenId.Test {
 			Uri redirectToProviderUrl;
 			var returnTo = TestSupport.GetFullUrl(TestSupport.ConsumerPage);
 			var realm = new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri);
-			var consumer = TestSupport.CreateRelyingParty(!provideStore, null);
+			var consumer = TestSupport.CreateRelyingParty(provideStore ? TestSupport.RelyingPartyStore : null, null);
 			Assert.IsNull(consumer.Response);
 			var request = consumer.CreateRequest(userSuppliedIdentifier, realm, returnTo);
 			Protocol protocol = Protocol.Lookup(request.Provider.Version);
+			var store = provideStore ? TestSupport.RelyingPartyStore : null;
 
 			// Test properties and defaults
 			Assert.AreEqual(AuthenticationRequestMode.Setup, request.Mode);
@@ -65,7 +66,7 @@ namespace DotNetOpenId.Test {
 			opAuthRequest.IsAuthenticated = expectedResult == AuthenticationStatus.Authenticated;
 			Assert.IsTrue(opAuthRequest.IsResponseReady);
 
-			consumer = TestSupport.CreateRelyingPartyForResponse(!provideStore, opAuthRequest.Response);
+			consumer = TestSupport.CreateRelyingPartyForResponse(store, opAuthRequest.Response);
 			Assert.IsNotNull(consumer.Response);
 			Assert.AreEqual(expectedResult, consumer.Response.Status);
 			Assert.AreEqual(claimedUrl, consumer.Response.ClaimedIdentifier);
@@ -77,7 +78,7 @@ namespace DotNetOpenId.Test {
 				// the consumer, and tries the same query to the consumer in an
 				// attempt to spoof the identity of the authenticating user.
 				try {
-					var replayAttackConsumer = TestSupport.CreateRelyingPartyForResponse(!provideStore, opAuthRequest.Response);
+					var replayAttackConsumer = TestSupport.CreateRelyingPartyForResponse(store, opAuthRequest.Response);
 					Assert.AreNotEqual(AuthenticationStatus.Authenticated, replayAttackConsumer.Response.Status, "Replay attack");
 				} catch (OpenIdException) { // nonce already used
 					// another way to pass
@@ -276,6 +277,13 @@ namespace DotNetOpenId.Test {
 				false,
 				true
 			);
+		}
+
+		[Test]
+		public void SampleScriptedTest() {
+			var rpReq = TestSupport.CreateRelyingPartyRequest(false, TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
+			var rp = TestSupport.CreateRelyingPartyFromRoundtrippedProviderRequest(rpReq, opReq => opReq.IsAuthenticated = true);
+			Assert.AreEqual(AuthenticationStatus.Authenticated, rp.Response.Status);
 		}
 	}
 }

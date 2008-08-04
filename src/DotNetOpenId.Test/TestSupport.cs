@@ -93,31 +93,39 @@ public class TestSupport {
 	/// that uses the shared <see cref="ProviderStore"/>.
 	/// </summary>
 	internal static OpenIdRelyingParty CreateRelyingParty(NameValueCollection fields) {
-		return CreateRelyingParty(false, null, fields);
+		return CreateRelyingParty(RelyingPartyStore, null, fields);
 	}
-	internal static OpenIdRelyingParty CreateRelyingParty(bool stateless, NameValueCollection fields) {
-		return CreateRelyingParty(stateless, null, fields);
+	internal static OpenIdRelyingParty CreateRelyingParty(IRelyingPartyApplicationStore store, NameValueCollection fields) {
+		return CreateRelyingParty(store, null, fields);
 	}
 	/// <summary>
 	/// Generates a new <see cref="OpenIdRelyingParty"/> whose direct messages
 	/// will be automatically handled by an internal <see cref="OpenIdProvider"/>
 	/// that uses the shared <see cref="ProviderStore"/>.
 	/// </summary>
-	internal static OpenIdRelyingParty CreateRelyingParty(bool stateless, Uri requestUrl, NameValueCollection fields) {
-		var rp = new OpenIdRelyingParty(RelyingPartyStore, requestUrl ?? GetFullUrl(ConsumerPage), fields ?? new NameValueCollection());
+	internal static OpenIdRelyingParty CreateRelyingParty(IRelyingPartyApplicationStore store, Uri requestUrl, NameValueCollection fields) {
+		var rp = new OpenIdRelyingParty(store, requestUrl ?? GetFullUrl(ConsumerPage), fields ?? new NameValueCollection());
 		rp.DirectMessageChannel = new DirectMessageTestRedirector(ProviderStore);
 		return rp;
+	}
+	internal static DotNetOpenId.RelyingParty.IAuthenticationRequest CreateRelyingPartyRequest(bool stateless, Scenarios scenario, ProtocolVersion version) {
+		var returnTo = TestSupport.GetFullUrl(TestSupport.ConsumerPage);
+		var realm = new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri);
+
+		var rp = TestSupport.CreateRelyingParty(stateless ? null : RelyingPartyStore, null);
+		var rpReq = rp.CreateRequest(TestSupport.GetMockIdentifier(scenario, version), realm, returnTo);
+		return rpReq;
 	}
 	/// <summary>
 	/// Generates a new <see cref="OpenIdRelyingParty"/> ready to process a 
 	/// response from an <see cref="OpenIdProvider"/>.
 	/// </summary>
-	internal static OpenIdRelyingParty CreateRelyingPartyForResponse(bool stateless, IResponse providerResponse) {
+	internal static OpenIdRelyingParty CreateRelyingPartyForResponse(IRelyingPartyApplicationStore store, IResponse providerResponse) {
 		if (providerResponse == null) throw new ArgumentNullException("providerResponse");
 
 		var opAuthWebResponse = (Response)providerResponse;
 		var opAuthResponse = (EncodableResponse)opAuthWebResponse.EncodableMessage;
-		return CreateRelyingParty(stateless, opAuthResponse.RedirectUrl,
+		return CreateRelyingParty(store, opAuthResponse.RedirectUrl,
 			opAuthResponse.EncodedFields.ToNameValueCollection());
 	}
 	/// <summary>
@@ -135,6 +143,24 @@ public class TestSupport {
 		var rpMessageToOP = (IndirectMessageRequest)rpWebMessageToOP.EncodableMessage;
 		var provider = CreateProvider(rpMessageToOP.EncodedFields.ToNameValueCollection());
 		return provider;
+	}
+	internal static IResponse CreateProviderResponseToRequest(
+		DotNetOpenId.RelyingParty.IAuthenticationRequest request,
+		Action<DotNetOpenId.Provider.IAuthenticationRequest> prepareProviderResponse) {
+		var op = TestSupport.CreateProviderForRequest(request);
+		var opReq = (DotNetOpenId.Provider.IAuthenticationRequest)op.Request;
+		prepareProviderResponse(opReq);
+		return opReq.Response;
+	}
+	internal static OpenIdRelyingParty CreateRelyingPartyFromRoundtrippedProviderRequest(
+		DotNetOpenId.RelyingParty.IAuthenticationRequest request,
+		Action<DotNetOpenId.Provider.IAuthenticationRequest> providerAction) {
+
+		var rpReq = (AuthenticationRequest)request;
+		var opResponse = CreateProviderResponseToRequest(rpReq, providerAction);
+		// Be careful to use whatever store the original RP was using.
+		var rp = CreateRelyingPartyForResponse(rpReq.RelyingParty.Store, opResponse);
+		return rp;
 	}
 
 	[SetUp]

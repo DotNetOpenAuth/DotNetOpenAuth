@@ -85,7 +85,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 			// which should cause a failure because the return_to argument
 			// says that parameter is supposed to be there.
 			removeQueryParameter(ref assertion, returnToRemovableParameter);
-			var response = TestSupport.CreateRelyingParty(false, assertion, HttpUtility.ParseQueryString(assertion.Query)).Response;
+			var response = TestSupport.CreateRelyingParty(TestSupport.RelyingPartyStore, assertion, HttpUtility.ParseQueryString(assertion.Query)).Response;
 			Assert.AreEqual(AuthenticationStatus.Failed, response.Status);
 			Assert.IsNotNull(response.Exception);
 		}
@@ -119,7 +119,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 			resign(ref assertion); // resign changed URL to simulate a contrived OP for breaking into RPs.
 
 			// (triggers exception) "... you're in trouble up to your ears."
-			var response = TestSupport.CreateRelyingParty(false, assertion, HttpUtility.ParseQueryString(assertion.Query)).Response;
+			var response = TestSupport.CreateRelyingParty(TestSupport.RelyingPartyStore, assertion, HttpUtility.ParseQueryString(assertion.Query)).Response;
 			Assert.AreEqual(AuthenticationStatus.Failed, response.Status);
 			Assert.IsNotNull(response.Exception);
 		}
