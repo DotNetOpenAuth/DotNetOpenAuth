@@ -23,8 +23,8 @@ namespace DotNetOpenId.Test.RelyingParty {
 
 		[Test]
 		public void Provider() {
-			OpenIdRelyingParty rp = new OpenIdRelyingParty(store, null, null);
-			Identifier id = TestSupport.GetFullUrl("xrdsdiscovery/xrds20.aspx");
+			OpenIdRelyingParty rp = new OpenIdRelyingParty(null, null, null);
+			Identifier id = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
 			IAuthenticationRequest request = rp.CreateRequest(id, realm, returnTo);
 			Assert.IsNotNull(request.Provider);
 		}

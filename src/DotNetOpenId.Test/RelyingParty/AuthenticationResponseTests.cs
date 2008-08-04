@@ -36,7 +36,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 		Uri getPositiveAssertion(ProtocolVersion version) {
 			try {
 				OpenIdRelyingParty rp = new OpenIdRelyingParty(store, null, null);
-				Identifier id = TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, version);
+				Identifier id = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, version);
 				var request = rp.CreateRequest(id, realm, returnTo);
 				HttpWebRequest providerRequest = (HttpWebRequest)WebRequest.Create(request.RedirectingResponse.ExtractUrl());
 				providerRequest.AllowAutoRedirect = false;
