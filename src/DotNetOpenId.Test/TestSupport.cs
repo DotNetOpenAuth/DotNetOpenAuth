@@ -103,7 +103,7 @@ public class TestSupport {
 	/// will be automatically handled by an internal <see cref="OpenIdProvider"/>
 	/// that uses the shared <see cref="ProviderStore"/>.
 	/// </summary>
-	private static OpenIdRelyingParty CreateRelyingParty(bool stateless, Uri requestUrl, NameValueCollection fields) {
+	internal static OpenIdRelyingParty CreateRelyingParty(bool stateless, Uri requestUrl, NameValueCollection fields) {
 		var rp = new OpenIdRelyingParty(RelyingPartyStore, requestUrl ?? GetFullUrl(ConsumerPage), fields ?? new NameValueCollection());
 		rp.DirectMessageChannel = new DirectMessageTestRedirector(ProviderStore);
 		return rp;
@@ -127,6 +127,13 @@ public class TestSupport {
 	internal static OpenIdProvider CreateProvider(NameValueCollection fields) {
 		var provider = new OpenIdProvider(ProviderStore,
 			GetFullUrl(ProviderPage), GetFullUrl(ProviderPage), fields);
+		return provider;
+	}
+	internal static OpenIdProvider CreateProviderForRequest(DotNetOpenId.RelyingParty.IAuthenticationRequest request) {
+		IResponse relyingPartyAuthenticationRequest = request.RedirectingResponse;
+		var rpWebMessageToOP = (Response)relyingPartyAuthenticationRequest;
+		var rpMessageToOP = (IndirectMessageRequest)rpWebMessageToOP.EncodableMessage;
+		var provider = CreateProvider(rpMessageToOP.EncodedFields.ToNameValueCollection());
 		return provider;
 	}
 
@@ -153,7 +160,7 @@ public class TestSupport {
 	/// to simulate a Provider that deliberately sent a bad message in an attempt
 	/// to thwart RP security.
 	/// </summary>
-	internal static void Resign(NameValueCollection nvc, ApplicationMemoryStore store) {
+	internal static void Resign(NameValueCollection nvc, IRelyingPartyApplicationStore store) {
 		Debug.Assert(nvc != null);
 		Debug.Assert(store != null);
 		var dict = Util.NameValueCollectionToDictionary(nvc);
@@ -161,6 +168,7 @@ public class TestSupport {
 		Uri providerEndpoint = new Uri(nvc[protocol.openid.op_endpoint]);
 		string assoc_handle = nvc[protocol.openid.assoc_handle];
 		Association assoc = store.GetAssociation(providerEndpoint, assoc_handle);
+		Debug.Assert(assoc != null, "Association not found in RP's store.  Maybe you're communicating with a hosted OP instead of the TestSupport one?");
 		IList<string> signed = nvc[protocol.openid.signed].Split(',');
 		var subsetDictionary = new Dictionary<string, string>();
 		foreach (string signedKey in signed) {

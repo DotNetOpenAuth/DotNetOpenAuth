@@ -59,7 +59,7 @@ namespace DotNetOpenId.Test {
 			Assert.AreEqual(realm.ToString(), consumerToProviderQuery[protocol.openid.Realm]);
 			redirectToProviderUrl = request.RedirectingResponse.ExtractUrl();
 
-			OpenIdProvider provider = TestSupport.CreateProvider(rpMessageToOP.EncodedFields.ToNameValueCollection());
+			OpenIdProvider provider = TestSupport.CreateProviderForRequest(request);
 			var opAuthRequest = provider.Request as DotNetOpenId.Provider.IAuthenticationRequest;
 			Assert.IsNotNull(opAuthRequest);
 			opAuthRequest.IsAuthenticated = expectedResult == AuthenticationStatus.Authenticated;
