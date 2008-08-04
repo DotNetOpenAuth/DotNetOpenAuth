@@ -5,7 +5,7 @@ using DotNetOpenId.Provider;
 using DotNetOpenId.RelyingParty;
 using IProviderAssociationStore = DotNetOpenId.IAssociationStore<DotNetOpenId.AssociationRelyingPartyType>;
 
-namespace DotNetOpenId.Test {
+namespace DotNetOpenId.Test.Mocks {
 	class DirectMessageTestRedirector : IDirectMessageChannel {
 
 		IProviderAssociationStore providerStore;

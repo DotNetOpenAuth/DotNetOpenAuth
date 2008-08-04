@@ -48,7 +48,7 @@
   <ItemGroup>
     <Compile Include="AssociationsTest.cs" />
     <Compile Include="AssociationTestSuite.cs" />
-    <Compile Include="DirectMessageTestRedirector.cs" />
+    <Compile Include="Mocks\DirectMessageTestRedirector.cs" />
     <Compile Include="ExtensionsArgumentsManagerTests.cs" />
     <Compile Include="Extensions\AttributeExchangeFetchRequestTests.cs" />
     <Compile Include="Extensions\AttributeExchangeFetchResponseTests.cs" />

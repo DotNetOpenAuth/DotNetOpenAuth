@@ -10,17 +10,14 @@ using DotNetOpenId.RelyingParty;
 using NUnit.Framework;
 using IProviderAssociationStore = DotNetOpenId.IAssociationStore<DotNetOpenId.AssociationRelyingPartyType>;
 using ProviderMemoryStore = DotNetOpenId.AssociationMemoryStore<DotNetOpenId.AssociationRelyingPartyType>;
+using DotNetOpenId.Test.Mocks;
 
 namespace DotNetOpenId.Test {
 	[TestFixture]
 	public class EndToEndTesting {
-		IRelyingPartyApplicationStore appStore;
-		IProviderAssociationStore providerStore;
 
 		[SetUp]
 		public void Setup() {
-			appStore = new ApplicationMemoryStore();
-			providerStore = new ProviderMemoryStore();
 			if (!UntrustedWebRequest.WhitelistHosts.Contains("localhost"))
 				UntrustedWebRequest.WhitelistHosts.Add("localhost");
 		}
@@ -34,13 +31,11 @@ namespace DotNetOpenId.Test {
 		void parameterizedProgrammaticTest(Identifier userSuppliedIdentifier, Identifier claimedUrl,
 			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult,
 			bool tryReplayAttack, bool provideStore) {
-			var store = provideStore ? appStore : null;
 
 			Uri redirectToProviderUrl;
 			var returnTo = TestSupport.GetFullUrl(TestSupport.ConsumerPage);
 			var realm = new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri);
-			var consumer = new OpenIdRelyingParty(store, null, null);
-			consumer.DirectMessageChannel = new DirectMessageTestRedirector(providerStore);
+			var consumer = TestSupport.CreateRelyingParty(!provideStore, null);
 			Assert.IsNull(consumer.Response);
 			var request = consumer.CreateRequest(userSuppliedIdentifier, realm, returnTo);
 			Protocol protocol = Protocol.Lookup(request.Provider.Version);
@@ -64,17 +59,13 @@ namespace DotNetOpenId.Test {
 			Assert.AreEqual(realm.ToString(), consumerToProviderQuery[protocol.openid.Realm]);
 			redirectToProviderUrl = request.RedirectingResponse.ExtractUrl();
 
-			OpenIdProvider provider = new OpenIdProvider(providerStore, rpMessageToOP.RedirectUrl, redirectToProviderUrl, rpMessageToOP.EncodedFields.ToNameValueCollection());
+			OpenIdProvider provider = TestSupport.CreateProvider(rpMessageToOP.EncodedFields.ToNameValueCollection());
 			var opAuthRequest = provider.Request as DotNetOpenId.Provider.IAuthenticationRequest;
 			Assert.IsNotNull(opAuthRequest);
 			opAuthRequest.IsAuthenticated = expectedResult == AuthenticationStatus.Authenticated;
 			Assert.IsTrue(opAuthRequest.IsResponseReady);
-			var opAuthWebResponse = opAuthRequest.Response as Response;
-			Assert.IsNotNull(opAuthWebResponse);
-			var opAuthResponse = opAuthWebResponse.EncodableMessage as EncodableResponse;
 
-			consumer = new OpenIdRelyingParty(store, opAuthResponse.RedirectUrl, opAuthResponse.EncodedFields.ToNameValueCollection());
-			consumer.DirectMessageChannel = new DirectMessageTestRedirector(providerStore);
+			consumer = TestSupport.CreateRelyingPartyForResponse(!provideStore, opAuthRequest.Response);
 			Assert.IsNotNull(consumer.Response);
 			Assert.AreEqual(expectedResult, consumer.Response.Status);
 			Assert.AreEqual(claimedUrl, consumer.Response.ClaimedIdentifier);
@@ -86,7 +77,7 @@ namespace DotNetOpenId.Test {
 				// the consumer, and tries the same query to the consumer in an
 				// attempt to spoof the identity of the authenticating user.
 				try {
-					var replayAttackConsumer = new OpenIdRelyingParty(store, opAuthResponse.RedirectUrl, opAuthResponse.EncodedFields.ToNameValueCollection());
+					var replayAttackConsumer = TestSupport.CreateRelyingPartyForResponse(!provideStore, opAuthRequest.Response);
 					Assert.AreNotEqual(AuthenticationStatus.Authenticated, replayAttackConsumer.Response.Status, "Replay attack");
 				} catch (OpenIdException) { // nonce already used
 					// another way to pass
@@ -96,7 +87,7 @@ namespace DotNetOpenId.Test {
 		void parameterizedWebClientTest(Identifier identityUrl,
 			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult,
 			bool tryReplayAttack, bool provideStore) {
-			var store = provideStore ? appStore : null;
+			var store = provideStore ? TestSupport.RelyingPartyStore : null;
 
 			Uri redirectToProviderUrl;
 			HttpWebRequest rpRequest = (HttpWebRequest)WebRequest.Create(TestSupport.GetFullUrl(TestSupport.ConsumerPage));

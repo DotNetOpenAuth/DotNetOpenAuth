@@ -5,10 +5,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using DotNetOpenId;
+using DotNetOpenId.Provider;
 using DotNetOpenId.RelyingParty;
 using DotNetOpenId.Test.Hosting;
 using DotNetOpenId.Test.Mocks;
 using NUnit.Framework;
+using IProviderAssociationStore = DotNetOpenId.IAssociationStore<DotNetOpenId.AssociationRelyingPartyType>;
+using ProviderMemoryStore = DotNetOpenId.AssociationMemoryStore<DotNetOpenId.AssociationRelyingPartyType>;
 
 [SetUpFixture]
 public class TestSupport {
@@ -82,10 +85,58 @@ public class TestSupport {
 		}
 	}
 
+	internal static IRelyingPartyApplicationStore RelyingPartyStore;
+	internal static IProviderAssociationStore ProviderStore;
+	/// <summary>
+	/// Generates a new, stateful <see cref="OpenIdRelyingParty"/> whose direct messages
+	/// will be automatically handled by an internal <see cref="OpenIdProvider"/>
+	/// that uses the shared <see cref="ProviderStore"/>.
+	/// </summary>
+	internal static OpenIdRelyingParty CreateRelyingParty(NameValueCollection fields) {
+		return CreateRelyingParty(false, null, fields);
+	}
+	internal static OpenIdRelyingParty CreateRelyingParty(bool stateless, NameValueCollection fields) {
+		return CreateRelyingParty(stateless, null, fields);
+	}
+	/// <summary>
+	/// Generates a new <see cref="OpenIdRelyingParty"/> whose direct messages
+	/// will be automatically handled by an internal <see cref="OpenIdProvider"/>
+	/// that uses the shared <see cref="ProviderStore"/>.
+	/// </summary>
+	private static OpenIdRelyingParty CreateRelyingParty(bool stateless, Uri requestUrl, NameValueCollection fields) {
+		var rp = new OpenIdRelyingParty(RelyingPartyStore, requestUrl ?? GetFullUrl(ConsumerPage), fields ?? new NameValueCollection());
+		rp.DirectMessageChannel = new DirectMessageTestRedirector(ProviderStore);
+		return rp;
+	}
+	/// <summary>
+	/// Generates a new <see cref="OpenIdRelyingParty"/> ready to process a 
+	/// response from an <see cref="OpenIdProvider"/>.
+	/// </summary>
+	internal static OpenIdRelyingParty CreateRelyingPartyForResponse(bool stateless, IResponse providerResponse) {
+		if (providerResponse == null) throw new ArgumentNullException("providerResponse");
+
+		var opAuthWebResponse = (Response)providerResponse;
+		var opAuthResponse = (EncodableResponse)opAuthWebResponse.EncodableMessage;
+		return CreateRelyingParty(stateless, opAuthResponse.RedirectUrl,
+			opAuthResponse.EncodedFields.ToNameValueCollection());
+	}
+	/// <summary>
+	/// Generates a new <see cref="OpenIdProvider"/> that uses the shared
+	/// store in <see cref="ProviderStore"/>.
+	/// </summary>
+	internal static OpenIdProvider CreateProvider(NameValueCollection fields) {
+		var provider = new OpenIdProvider(ProviderStore,
+			GetFullUrl(ProviderPage), GetFullUrl(ProviderPage), fields);
+		return provider;
+	}
+
 	[SetUp]
 	public void SetUp() {
 		Host = AspNetHost.CreateHost(TestSupport.TestWebDirectory);
 		Host.MessageInterceptor = Interceptor = new EncodingInterceptor();
+
+		RelyingPartyStore = new ApplicationMemoryStore();
+		ProviderStore = new ProviderMemoryStore();
 	}
 
 	[TearDown]
