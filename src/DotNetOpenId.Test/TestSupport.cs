@@ -21,6 +21,7 @@ public class TestSupport {
 	const string identityPage = "IdentityEndpoint.aspx";
 	const string directedIdentityPage = "DirectedIdentityEndpoint.aspx";
 	public const string ProviderPage = "ProviderEndpoint.aspx";
+	public const string DirectedProviderEndpoint = "DirectedProviderEndpoint.aspx";
 	public const string MobileConsumerPage = "RelyingPartyMobile.aspx";
 	public const string ConsumerPage = "RelyingParty.aspx";
 	public enum Scenarios {
@@ -65,12 +66,23 @@ public class TestSupport {
 		ServiceEndpoint se = ServiceEndpoint.CreateForClaimedIdentifier(
 			GetIdentityUrl(scenario, providerVersion),
 			GetDelegateUrl(scenario),
-			new Uri(Host.BaseUri, "/ProviderEndpoint.aspx"),
+			new Uri(Host.BaseUri, "/" + ProviderPage),
 			new string[] { Protocol.Lookup(providerVersion).ClaimedIdentifierServiceTypeURI },
 			10,
 			10
 			);
 		return new MockIdentifier(GetIdentityUrl(scenario, providerVersion), new ServiceEndpoint[] { se });
+	}
+	internal static MockIdentifier GetMockOPIdentifier(Scenarios scenario) {
+		Uri opEndpoint = new Uri(Host.BaseUri, DirectedProviderEndpoint + "?user=" + scenario);
+		ServiceEndpoint se = ServiceEndpoint.CreateForProviderIdentifier(
+			GetOPIdentityUrl(scenario),
+			opEndpoint,
+			new string[] { Protocol.v20.OPIdentifierServiceTypeURI },
+			10,
+			10
+			);
+		return new MockIdentifier(GetOPIdentityUrl(scenario), new ServiceEndpoint[] { se });
 	}
 	public static Uri GetFullUrl(string url) {
 		return GetFullUrl(url, null);
@@ -179,15 +191,18 @@ public class TestSupport {
 	/// store in <see cref="ProviderStore"/>.
 	/// </summary>
 	internal static OpenIdProvider CreateProvider(NameValueCollection fields) {
-		var provider = new OpenIdProvider(ProviderStore,
-			GetFullUrl(ProviderPage), GetFullUrl(ProviderPage), fields);
+		Protocol protocol = Protocol.Detect(fields.ToDictionary());
+		Uri opEndpoint = GetFullUrl(ProviderPage);
+		var provider = new OpenIdProvider(ProviderStore, opEndpoint, opEndpoint, fields);
 		return provider;
 	}
 	internal static OpenIdProvider CreateProviderForRequest(DotNetOpenId.RelyingParty.IAuthenticationRequest request) {
 		IResponse relyingPartyAuthenticationRequest = request.RedirectingResponse;
 		var rpWebMessageToOP = (Response)relyingPartyAuthenticationRequest;
 		var rpMessageToOP = (IndirectMessageRequest)rpWebMessageToOP.EncodableMessage;
-		var provider = CreateProvider(rpMessageToOP.EncodedFields.ToNameValueCollection());
+		var opEndpoint = (ServiceEndpoint)request.Provider;
+		var provider = new OpenIdProvider(ProviderStore, opEndpoint.ProviderEndpoint,
+			opEndpoint.ProviderEndpoint, rpMessageToOP.EncodedFields.ToNameValueCollection());
 		return provider;
 	}
 	internal static IResponse CreateProviderResponseToRequest(

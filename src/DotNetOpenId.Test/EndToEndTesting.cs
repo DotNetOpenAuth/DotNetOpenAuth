@@ -25,6 +25,15 @@ namespace DotNetOpenId.Test {
 			parameterizedProgrammaticTest(scenario, version, claimedId, requestMode, expectedResult, false);
 			parameterizedWebClientTest(userSuppliedIdentifier, requestMode, expectedResult);
 		}
+		void parameterizedOPIdentifierTest(TestSupport.Scenarios scenario,
+			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult) {
+			ProtocolVersion version = ProtocolVersion.V20; // only this version supports directed identity
+			Identifier opIdentifier = TestSupport.GetMockOPIdentifier(TestSupport.Scenarios.ApproveOnSetup);
+			Identifier claimedIdentifier = TestSupport.GetDirectedIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, version);
+			parameterizedProgrammaticOPIdentifierTest(opIdentifier, version, claimedIdentifier, requestMode, expectedResult, true);
+			parameterizedProgrammaticOPIdentifierTest(opIdentifier, version, claimedIdentifier, requestMode, expectedResult, false);
+			parameterizedWebClientTest(opIdentifier, requestMode, expectedResult);
+		}
 		void parameterizedProgrammaticTest(TestSupport.Scenarios scenario, ProtocolVersion version, 
 			Identifier claimedUrl, AuthenticationRequestMode requestMode, 
 			AuthenticationStatus expectedResult, bool provideStore) {
@@ -36,6 +45,27 @@ namespace DotNetOpenId.Test {
 				opReq => opReq.IsAuthenticated = expectedResult == AuthenticationStatus.Authenticated);
 			Assert.AreEqual(expectedResult, rpResponse.Status);
 			Assert.AreEqual(claimedUrl, rpResponse.ClaimedIdentifier);
+		}
+		void parameterizedProgrammaticOPIdentifierTest(Identifier opIdentifier, ProtocolVersion version,
+			Identifier claimedUrl, AuthenticationRequestMode requestMode,
+			AuthenticationStatus expectedResult, bool provideStore) {
+
+			var rp = TestSupport.CreateRelyingParty(provideStore ? TestSupport.RelyingPartyStore : null, null, null);
+
+			var returnTo = TestSupport.GetFullUrl(TestSupport.ConsumerPage);
+			var realm = new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri);
+			var request = rp.CreateRequest(opIdentifier, realm, returnTo);
+			request.Mode = requestMode;
+
+			var rpResponse = TestSupport.CreateRelyingPartyResponseThroughProvider(request,
+				opReq => {
+					opReq.ClaimedIdentifier = claimedUrl;
+					opReq.IsAuthenticated = expectedResult == AuthenticationStatus.Authenticated;
+				});
+			Assert.AreEqual(expectedResult, rpResponse.Status);
+			if (rpResponse.Status == AuthenticationStatus.Authenticated) {
+				Assert.AreEqual(claimedUrl, rpResponse.ClaimedIdentifier);
+			}
 		}
 		void parameterizedWebClientTest(Identifier identityUrl,
 			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult) {
@@ -176,28 +206,30 @@ namespace DotNetOpenId.Test {
 				AuthenticationStatus.Authenticated
 			);
 		}
-/*
+
+		[Test]
+		public void Pass_Immediate_AutoApproval_DirectedIdentity_20() {
+			parameterizedOPIdentifierTest(
+				TestSupport.Scenarios.AutoApproval,
+				AuthenticationRequestMode.Immediate,
+				AuthenticationStatus.Authenticated);
+		}
+
 		[Test]
 		public void Pass_Setup_ApproveOnSetup_DirectedIdentity_20() {
-			parameterizedTest(
-				TestSupport.GetOPIdentityUrl(TestSupport.Scenarios.ApproveOnSetup),
-				TestSupport.GetDirectedIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20),
+			parameterizedOPIdentifierTest(
+				TestSupport.Scenarios.ApproveOnSetup,
 				AuthenticationRequestMode.Setup,
-				AuthenticationStatus.Authenticated,
-				true,
-				true);
+				AuthenticationStatus.Authenticated);
 		}
+
 		[Test]
-		public void Pass_NoStore_ApproveOnSetup_DirectedIdentity_20() {
-			parameterizedTest(
-				TestSupport.GetOPIdentityUrl(TestSupport.Scenarios.ApproveOnSetup),
-				TestSupport.GetDirectedIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20),
-				AuthenticationRequestMode.Setup,
-				AuthenticationStatus.Authenticated,
-				true,
-				false);
+		public void Fail_Immediate_ApproveOnSetup_DirectedIdentity_20() {
+			parameterizedOPIdentifierTest(
+				TestSupport.Scenarios.ApproveOnSetup,
+				AuthenticationRequestMode.Immediate,
+				AuthenticationStatus.SetupRequired);
 		}
-*/
 
 		[Test]
 		public void ProviderAddedFragmentRemainsInClaimedIdentifier() {
