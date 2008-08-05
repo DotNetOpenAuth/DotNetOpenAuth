@@ -27,6 +27,11 @@ namespace DotNetOpenId {
 	internal interface IEncodable {
 		EncodingType EncodingType { get; }
 		IDictionary<string, string> EncodedFields { get; }
+		/// <summary>
+		/// The URL that the user agent should be redirected to 
+		/// in the case of <see cref="DotNetOpenId.EncodingType.IndirectMessage"/>.
+		/// Does not apply to <see cref="DotNetOpenId.EncodingType.DirectResponse"/>.
+		/// </summary>
 		Uri RedirectUrl { get; }
 		Protocol Protocol { get; }
 	}
