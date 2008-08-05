@@ -38,7 +38,12 @@ namespace DotNetOpenId.RelyingParty {
 			if (provider == null) throw new ArgumentNullException("provider");
 			if (query == null) throw new ArgumentNullException("query");
 
-			Logger.InfoFormat("Verified positive authentication assertion for: {0}", provider.ClaimedIdentifier);
+			if (status == AuthenticationStatus.Authenticated) {
+				Logger.InfoFormat("Verified positive authentication assertion for: {0}", provider.ClaimedIdentifier);
+			} else {
+				Logger.InfoFormat("Negative authentication assertion received: {0}", status);
+			}
+
 			Status = status;
 			Provider = provider;
 			signedArguments = new Dictionary<string, string>();
