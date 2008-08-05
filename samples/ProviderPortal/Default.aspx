@@ -19,7 +19,11 @@
 	}
 </script>
 
-<asp:Content runat=server ContentPlaceHolderID=Main>
+<asp:Content runat="server" ContentPlaceHolderID="head">
+	<openid:XrdsPublisher runat="server" XrdsUrl="~/op_xrds.aspx" />
+</asp:Content>
+
+<asp:Content runat="server" ContentPlaceHolderID="Main">
 	<h2>
 		Provider
 	</h2>

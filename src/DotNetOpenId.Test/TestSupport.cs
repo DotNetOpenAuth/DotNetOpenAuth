@@ -19,6 +19,7 @@ public class TestSupport {
 	public static readonly string TestWebDirectory = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\src\DotNetOpenId.TestWeb"));
 	public const string HostTestPage = "HostTest.aspx";
 	const string identityPage = "IdentityEndpoint.aspx";
+	const string directedIdentityPage = "DirectedIdentityEndpoint.aspx";
 	public const string ProviderPage = "ProviderEndpoint.aspx";
 	public const string MobileConsumerPage = "RelyingPartyMobile.aspx";
 	public const string ConsumerPage = "RelyingParty.aspx";
@@ -39,9 +40,21 @@ public class TestSupport {
 		/// </summary>
 		ExtensionPartialCooperation,
 	}
+	internal static UriIdentifier GetOPIdentityUrl(Scenarios scenario) {
+		UriBuilder builder = new UriBuilder(Host.BaseUri);
+		builder.Path = "/opdefault.aspx";
+		builder.Query = "user=" + scenario;
+		return new UriIdentifier(builder.Uri);
+	}
 	internal static UriIdentifier GetIdentityUrl(Scenarios scenario, ProtocolVersion providerVersion) {
 		UriBuilder builder = new UriBuilder(Host.BaseUri);
 		builder.Path = "/" + identityPage;
+		builder.Query = "user=" + scenario + "&version=" + providerVersion;
+		return new UriIdentifier(builder.Uri);
+	}
+	internal static UriIdentifier GetDirectedIdentityUrl(Scenarios scenario, ProtocolVersion providerVersion) {
+		UriBuilder builder = new UriBuilder(Host.BaseUri);
+		builder.Path = "/" + directedIdentityPage;
 		builder.Query = "user=" + scenario + "&version=" + providerVersion;
 		return new UriIdentifier(builder.Uri);
 	}
@@ -246,6 +259,12 @@ public class TestSupport {
 			subsetDictionary.Add(signedKey, dict[keyName]);
 		}
 		nvc[protocol.openid.sig] = Convert.ToBase64String(assoc.Sign(subsetDictionary, signed));
+	}
+
+	public static IAssociationStore<AssociationRelyingPartyType> ProviderStoreContext {
+		get {
+			return DotNetOpenId.Provider.OpenIdProvider.HttpApplicationStore;
+		}
 	}
 }
 

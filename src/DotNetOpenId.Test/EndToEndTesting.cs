@@ -176,7 +176,28 @@ namespace DotNetOpenId.Test {
 				AuthenticationStatus.Authenticated
 			);
 		}
-
+/*
+		[Test]
+		public void Pass_Setup_ApproveOnSetup_DirectedIdentity_20() {
+			parameterizedTest(
+				TestSupport.GetOPIdentityUrl(TestSupport.Scenarios.ApproveOnSetup),
+				TestSupport.GetDirectedIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20),
+				AuthenticationRequestMode.Setup,
+				AuthenticationStatus.Authenticated,
+				true,
+				true);
+		}
+		[Test]
+		public void Pass_NoStore_ApproveOnSetup_DirectedIdentity_20() {
+			parameterizedTest(
+				TestSupport.GetOPIdentityUrl(TestSupport.Scenarios.ApproveOnSetup),
+				TestSupport.GetDirectedIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20),
+				AuthenticationRequestMode.Setup,
+				AuthenticationStatus.Authenticated,
+				true,
+				false);
+		}
+*/
 
 		[Test]
 		public void ProviderAddedFragmentRemainsInClaimedIdentifier() {

@@ -8,7 +8,7 @@
 	protected override void OnLoad(EventArgs e) {
 		base.OnLoad(e);
 
-		IdentityEndpoint1.ProviderLocalIdentifier = "~/" + Request.QueryString["user"];
+		IdentityEndpoint1.ProviderEndpointUrl += "?user=" + Request.QueryString["user"];
 		IdentityEndpoint1.ProviderVersion = (DotNetOpenId.ProtocolVersion)
 			Enum.Parse(typeof(DotNetOpenId.ProtocolVersion), Request.QueryString["version"]);
 	}
@@ -18,7 +18,7 @@
 <head runat="server">
 	<title>Identity page</title>
 	<openid:IdentityEndpoint ID="IdentityEndpoint1" runat="server" EnableViewState="false"
-		ProviderEndpointUrl="~/ProviderEndpoint.aspx" />
+		ProviderEndpointUrl="~/DirectedProviderEndpoint.aspx" />
 </head>
 <body>
 	<form id="form1" runat="server">
