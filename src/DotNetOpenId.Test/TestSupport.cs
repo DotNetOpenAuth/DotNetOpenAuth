@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Web;
 using DotNetOpenId;
 using DotNetOpenId.Provider;
 using DotNetOpenId.RelyingParty;
@@ -105,6 +106,9 @@ public class TestSupport {
 	/// </summary>
 	internal static OpenIdRelyingParty CreateRelyingParty(IRelyingPartyApplicationStore store, Uri requestUrl, NameValueCollection fields) {
 		var rp = new OpenIdRelyingParty(store, requestUrl ?? GetFullUrl(ConsumerPage), fields ?? new NameValueCollection());
+		if (fields == null || fields.Count == 0) {
+			Assert.IsNull(rp.Response);
+		}
 		rp.DirectMessageChannel = new DirectMessageTestRedirector(ProviderStore);
 		return rp;
 	}
@@ -114,19 +118,48 @@ public class TestSupport {
 
 		var rp = TestSupport.CreateRelyingParty(stateless ? null : RelyingPartyStore, null);
 		var rpReq = rp.CreateRequest(TestSupport.GetMockIdentifier(scenario, version), realm, returnTo);
+
+		{
+			// Sidetrack: verify URLs and other default properties
+			Assert.AreEqual(AuthenticationRequestMode.Setup, rpReq.Mode);
+			Assert.AreEqual(realm, rpReq.Realm);
+			Assert.AreEqual(returnTo, rpReq.ReturnToUrl);
+		}
+
 		return rpReq;
 	}
 	/// <summary>
 	/// Generates a new <see cref="OpenIdRelyingParty"/> ready to process a 
 	/// response from an <see cref="OpenIdProvider"/>.
 	/// </summary>
-	internal static OpenIdRelyingParty CreateRelyingPartyForResponse(IRelyingPartyApplicationStore store, IResponse providerResponse) {
+	internal static IAuthenticationResponse CreateRelyingPartyResponse(IRelyingPartyApplicationStore store, IResponse providerResponse) {
 		if (providerResponse == null) throw new ArgumentNullException("providerResponse");
 
 		var opAuthWebResponse = (Response)providerResponse;
 		var opAuthResponse = (EncodableResponse)opAuthWebResponse.EncodableMessage;
-		return CreateRelyingParty(store, opAuthResponse.RedirectUrl,
+		var rp = CreateRelyingParty(store, opAuthResponse.RedirectUrl,
 			opAuthResponse.EncodedFields.ToNameValueCollection());
+
+		// TODO: Remove this conditional, which really should not be required.
+		//       When it's removed, some tests hang while signature verification
+		//       is supposedly being performed.
+		if (rp.Response.Status == AuthenticationStatus.Authenticated) {
+			// Side-track to test for replay attack while we're at it.
+			// This simulates a network sniffing user who caught the 
+			// authenticating query en route to either the user agent or
+			// the consumer, and tries the same query to the consumer in an
+			// attempt to spoof the identity of the authenticating user.
+			try {
+				var replayRP = CreateRelyingParty(store, opAuthResponse.RedirectUrl,
+					opAuthResponse.EncodedFields.ToNameValueCollection());
+				Assert.AreNotEqual(AuthenticationStatus.Authenticated, replayRP.Response.Status, "Replay attack succeeded!");
+			} catch (OpenIdException) { // nonce already used
+				// another way to pass
+			}
+		}
+
+		// Return the result of the initial response (not the replay attack one).
+		return rp.Response;
 	}
 	/// <summary>
 	/// Generates a new <see cref="OpenIdProvider"/> that uses the shared
@@ -147,19 +180,30 @@ public class TestSupport {
 	internal static IResponse CreateProviderResponseToRequest(
 		DotNetOpenId.RelyingParty.IAuthenticationRequest request,
 		Action<DotNetOpenId.Provider.IAuthenticationRequest> prepareProviderResponse) {
+
+		{
+			// Sidetrack: Verify the return_to and realm URLs
+			var consumerToProviderQuery = HttpUtility.ParseQueryString(request.RedirectingResponse.ExtractUrl().Query);
+			Protocol protocol = Protocol.Detect(consumerToProviderQuery.ToDictionary());
+			Assert.IsTrue(consumerToProviderQuery[protocol.openid.return_to].StartsWith(request.ReturnToUrl.AbsoluteUri, StringComparison.Ordinal));
+			Assert.AreEqual(request.Realm.ToString(), consumerToProviderQuery[protocol.openid.Realm]);
+		}
+
 		var op = TestSupport.CreateProviderForRequest(request);
 		var opReq = (DotNetOpenId.Provider.IAuthenticationRequest)op.Request;
 		prepareProviderResponse(opReq);
+		Assert.IsTrue(opReq.IsResponseReady);
 		return opReq.Response;
 	}
-	internal static OpenIdRelyingParty CreateRelyingPartyFromRoundtrippedProviderRequest(
+	internal static IAuthenticationResponse CreateRelyingPartyResponseThroughProvider(
 		DotNetOpenId.RelyingParty.IAuthenticationRequest request,
 		Action<DotNetOpenId.Provider.IAuthenticationRequest> providerAction) {
 
 		var rpReq = (AuthenticationRequest)request;
 		var opResponse = CreateProviderResponseToRequest(rpReq, providerAction);
 		// Be careful to use whatever store the original RP was using.
-		var rp = CreateRelyingPartyForResponse(rpReq.RelyingParty.Store, opResponse);
+		var rp = CreateRelyingPartyResponse(rpReq.RelyingParty.Store, opResponse);
+		Assert.IsNotNull(rp);
 		return rp;
 	}
 
@@ -223,5 +267,12 @@ static class TestExtensions {
 			nvc.Add(pair.Key, pair.Value);
 		}
 		return nvc;
+	}
+	public static IDictionary<string, string> ToDictionary(this NameValueCollection nvc) {
+		Dictionary<string, string> dict = new Dictionary<string, string>(nvc.Count);
+		foreach (string key in nvc) {
+			dict[key] = nvc[key];
+		}
+		return dict;
 	}
 }

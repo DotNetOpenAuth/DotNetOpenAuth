@@ -4,13 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
-using System.Web;
-using DotNetOpenId.Provider;
 using DotNetOpenId.RelyingParty;
 using NUnit.Framework;
-using IProviderAssociationStore = DotNetOpenId.IAssociationStore<DotNetOpenId.AssociationRelyingPartyType>;
-using ProviderMemoryStore = DotNetOpenId.AssociationMemoryStore<DotNetOpenId.AssociationRelyingPartyType>;
-using DotNetOpenId.Test.Mocks;
 
 namespace DotNetOpenId.Test {
 	[TestFixture]
@@ -22,73 +17,28 @@ namespace DotNetOpenId.Test {
 				UntrustedWebRequest.WhitelistHosts.Add("localhost");
 		}
 
-		void parameterizedTest(Identifier identityUrl,
-			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult,
-			bool tryReplayAttack, bool provideStore) {
-			parameterizedProgrammaticTest(identityUrl, identityUrl, requestMode, expectedResult, tryReplayAttack, provideStore);
-			parameterizedWebClientTest(identityUrl, requestMode, expectedResult, tryReplayAttack, provideStore);
+		void parameterizedTest(TestSupport.Scenarios scenario, ProtocolVersion version,
+			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult) {
+			Identifier userSuppliedIdentifier = TestSupport.GetMockIdentifier(scenario, version);
+			Identifier claimedId = userSuppliedIdentifier;
+			parameterizedProgrammaticTest(scenario, version, claimedId, requestMode, expectedResult, true);
+			parameterizedProgrammaticTest(scenario, version, claimedId, requestMode, expectedResult, false);
+			parameterizedWebClientTest(userSuppliedIdentifier, requestMode, expectedResult);
 		}
-		void parameterizedProgrammaticTest(Identifier userSuppliedIdentifier, Identifier claimedUrl,
-			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult,
-			bool tryReplayAttack, bool provideStore) {
+		void parameterizedProgrammaticTest(TestSupport.Scenarios scenario, ProtocolVersion version, 
+			Identifier claimedUrl, AuthenticationRequestMode requestMode, 
+			AuthenticationStatus expectedResult, bool provideStore) {
 
-			Uri redirectToProviderUrl;
-			var returnTo = TestSupport.GetFullUrl(TestSupport.ConsumerPage);
-			var realm = new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri);
-			var consumer = TestSupport.CreateRelyingParty(provideStore ? TestSupport.RelyingPartyStore : null, null);
-			Assert.IsNull(consumer.Response);
-			var request = consumer.CreateRequest(userSuppliedIdentifier, realm, returnTo);
-			Protocol protocol = Protocol.Lookup(request.Provider.Version);
-			var store = provideStore ? TestSupport.RelyingPartyStore : null;
-
-			// Test properties and defaults
-			Assert.AreEqual(AuthenticationRequestMode.Setup, request.Mode);
-			Assert.AreEqual(returnTo, request.ReturnToUrl);
-			Assert.AreEqual(realm, request.Realm);
-
+			var request = TestSupport.CreateRelyingPartyRequest(!provideStore, scenario, version);
 			request.Mode = requestMode;
 
-			Assert.IsNotNull(request.RedirectingResponse);
-			var rpWebMessageToOP = request.RedirectingResponse as Response;
-			Assert.IsNotNull(rpWebMessageToOP);
-			var rpMessageToOP = rpWebMessageToOP.EncodableMessage as IndirectMessageRequest;
-			Assert.IsNotNull(rpMessageToOP);
-
-			// Verify the redirect URL
-			var consumerToProviderQuery = HttpUtility.ParseQueryString(request.RedirectingResponse.ExtractUrl().Query);
-			Assert.IsTrue(consumerToProviderQuery[protocol.openid.return_to].StartsWith(returnTo.AbsoluteUri, StringComparison.Ordinal));
-			Assert.AreEqual(realm.ToString(), consumerToProviderQuery[protocol.openid.Realm]);
-			redirectToProviderUrl = request.RedirectingResponse.ExtractUrl();
-
-			OpenIdProvider provider = TestSupport.CreateProviderForRequest(request);
-			var opAuthRequest = provider.Request as DotNetOpenId.Provider.IAuthenticationRequest;
-			Assert.IsNotNull(opAuthRequest);
-			opAuthRequest.IsAuthenticated = expectedResult == AuthenticationStatus.Authenticated;
-			Assert.IsTrue(opAuthRequest.IsResponseReady);
-
-			consumer = TestSupport.CreateRelyingPartyForResponse(store, opAuthRequest.Response);
-			Assert.IsNotNull(consumer.Response);
-			Assert.AreEqual(expectedResult, consumer.Response.Status);
-			Assert.AreEqual(claimedUrl, consumer.Response.ClaimedIdentifier);
-
-			// Try replay attack
-			if (tryReplayAttack) {
-				// This simulates a network sniffing user who caught the 
-				// authenticating query en route to either the user agent or
-				// the consumer, and tries the same query to the consumer in an
-				// attempt to spoof the identity of the authenticating user.
-				try {
-					var replayAttackConsumer = TestSupport.CreateRelyingPartyForResponse(store, opAuthRequest.Response);
-					Assert.AreNotEqual(AuthenticationStatus.Authenticated, replayAttackConsumer.Response.Status, "Replay attack");
-				} catch (OpenIdException) { // nonce already used
-					// another way to pass
-				}
-			}
+			var rpResponse = TestSupport.CreateRelyingPartyResponseThroughProvider(request, 
+				opReq => opReq.IsAuthenticated = expectedResult == AuthenticationStatus.Authenticated);
+			Assert.AreEqual(expectedResult, rpResponse.Status);
+			Assert.AreEqual(claimedUrl, rpResponse.ClaimedIdentifier);
 		}
 		void parameterizedWebClientTest(Identifier identityUrl,
-			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult,
-			bool tryReplayAttack, bool provideStore) {
-			var store = provideStore ? TestSupport.RelyingPartyStore : null;
+			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult) {
 
 			Uri redirectToProviderUrl;
 			HttpWebRequest rpRequest = (HttpWebRequest)WebRequest.Create(TestSupport.GetFullUrl(TestSupport.ConsumerPage));
@@ -147,7 +97,7 @@ namespace DotNetOpenId.Test {
 			}
 
 			// Try replay attack
-			if (tryReplayAttack) {
+			if (expectedResult == AuthenticationStatus.Authenticated) {
 				// This simulates a network sniffing user who caught the 
 				// authenticating query en route to either the user agent or
 				// the consumer, and tries the same query to the consumer in an
@@ -162,107 +112,71 @@ namespace DotNetOpenId.Test {
 		[Test]
 		public void Pass_Setup_AutoApproval_11() {
 			parameterizedTest(
-				TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V11),
+				TestSupport.Scenarios.AutoApproval, ProtocolVersion.V11,
 				AuthenticationRequestMode.Setup,
-				AuthenticationStatus.Authenticated,
-				true,
-				true
+				AuthenticationStatus.Authenticated
 			);
 		}
 		[Test]
 		public void Pass_Setup_AutoApproval_20() {
 			parameterizedTest(
-				TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20),
+				TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20,
 				AuthenticationRequestMode.Setup,
-				AuthenticationStatus.Authenticated,
-				true,
-				true
+				AuthenticationStatus.Authenticated
 			);
 		}
 
 		[Test]
 		public void Pass_Immediate_AutoApproval_11() {
 			parameterizedTest(
-				TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V11),
+				TestSupport.Scenarios.AutoApproval, ProtocolVersion.V11,
 				AuthenticationRequestMode.Immediate,
-				AuthenticationStatus.Authenticated,
-				true,
-				true
+				AuthenticationStatus.Authenticated
 			);
 		}
 		[Test]
 		public void Pass_Immediate_AutoApproval_20() {
 			parameterizedTest(
-				TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20),
+				TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20,
 				AuthenticationRequestMode.Immediate,
-				AuthenticationStatus.Authenticated,
-				true,
-				true
+				AuthenticationStatus.Authenticated
 			);
 		}
 
 		[Test]
 		public void Fail_Immediate_ApproveOnSetup_11() {
 			parameterizedTest(
-				TestSupport.GetMockIdentifier(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V11),
+				TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V11,
 				AuthenticationRequestMode.Immediate,
-				AuthenticationStatus.SetupRequired,
-				false,
-				true
+				AuthenticationStatus.SetupRequired
 			);
 		}
 		[Test]
 		public void Fail_Immediate_ApproveOnSetup_20() {
 			parameterizedTest(
-				TestSupport.GetMockIdentifier(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20),
+				TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20,
 				AuthenticationRequestMode.Immediate,
-				AuthenticationStatus.SetupRequired,
-				false,
-				true
+				AuthenticationStatus.SetupRequired
 			);
 		}
 
 		[Test]
 		public void Pass_Setup_ApproveOnSetup_11() {
 			parameterizedTest(
-				TestSupport.GetMockIdentifier(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V11),
+				TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V11,
 				AuthenticationRequestMode.Setup,
-				AuthenticationStatus.Authenticated,
-				true,
-				true
+				AuthenticationStatus.Authenticated
 			);
 		}
 		[Test]
 		public void Pass_Setup_ApproveOnSetup_20() {
 			parameterizedTest(
-				TestSupport.GetMockIdentifier(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20),
+				TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20,
 				AuthenticationRequestMode.Setup,
-				AuthenticationStatus.Authenticated,
-				true,
-				true
+				AuthenticationStatus.Authenticated
 			);
 		}
 
-		[Test]
-		public void Pass_NoStore_AutoApproval_11() {
-			parameterizedTest(
-				TestSupport.GetMockIdentifier(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V11),
-				AuthenticationRequestMode.Setup,
-				AuthenticationStatus.Authenticated,
-				true,
-				false
-			);
-		}
-		[Test]
-		public void Pass_NoStore_AutoApproval_20() {
-			parameterizedTest(
-				TestSupport.GetMockIdentifier(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20),
-				AuthenticationRequestMode.Setup,
-				AuthenticationStatus.Authenticated,
-				true,
-				false
-			);
-		}
 
 		[Test]
 		public void ProviderAddedFragmentRemainsInClaimedIdentifier() {
@@ -270,11 +184,10 @@ namespace DotNetOpenId.Test {
 			UriBuilder claimedIdentifier = new UriBuilder(userSuppliedIdentifier);
 			claimedIdentifier.Fragment = "frag";
 			parameterizedProgrammaticTest(
-				userSuppliedIdentifier,
+				TestSupport.Scenarios.AutoApprovalAddFragment, ProtocolVersion.V20,
 				claimedIdentifier.Uri,
 				AuthenticationRequestMode.Setup,
 				AuthenticationStatus.Authenticated,
-				false,
 				true
 			);
 		}
@@ -282,8 +195,8 @@ namespace DotNetOpenId.Test {
 		[Test]
 		public void SampleScriptedTest() {
 			var rpReq = TestSupport.CreateRelyingPartyRequest(false, TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
-			var rp = TestSupport.CreateRelyingPartyFromRoundtrippedProviderRequest(rpReq, opReq => opReq.IsAuthenticated = true);
-			Assert.AreEqual(AuthenticationStatus.Authenticated, rp.Response.Status);
+			var rpResp = TestSupport.CreateRelyingPartyResponseThroughProvider(rpReq, opReq => opReq.IsAuthenticated = true);
+			Assert.AreEqual(AuthenticationStatus.Authenticated, rpResp.Status);
 		}
 	}
 }
