@@ -9,6 +9,79 @@ namespace DotNetOpenId.RelyingParty {
 	/// <summary>
 	/// Provides the programmatic facilities to act as an OpenId consumer.
 	/// </summary>
+	/// <remarks>
+	/// For easier, ASP.NET designer drop-in support for adding OpenID login support,
+	/// see the <see cref="OpenIdLogin"/> or <see cref="OpenIdTextBox"/> controls.
+	/// </remarks>
+	/// <example>
+	/// <code language="ASP.NET">
+	///&lt;h2&gt;Login Page &lt;/h2&gt;
+	///&lt;asp:Label ID="Label1" runat="server" Text="OpenID Login" /&gt;
+	///&lt;asp:TextBox ID="openIdBox" runat="server" /&gt;
+	///&lt;asp:Button ID="loginButton" runat="server" Text="Login" OnClick="loginButton_Click" /&gt;
+	///&lt;asp:CustomValidator runat="server" ID="openidValidator" ErrorMessage="Invalid OpenID Identifier"
+	///    ControlToValidate="openIdBox" EnableViewState="false" OnServerValidate="openidValidator_ServerValidate" /&gt;
+	///&lt;br /&gt;
+	///&lt;asp:Label ID="loginFailedLabel" runat="server" EnableViewState="False" Text="Login failed"
+	///    Visible="False" /&gt;
+	///&lt;asp:Label ID="loginCanceledLabel" runat="server" EnableViewState="False" Text="Login canceled"
+	///    Visible="False" /&gt;
+	/// </code>
+	/// <code language="c#">
+	///protected void openidValidator_ServerValidate(object source, ServerValidateEventArgs args) {
+	///    // This catches common typos that result in an invalid OpenID Identifier.
+	///    args.IsValid = Identifier.IsValid(args.Value);
+	///}
+	///
+	///protected void loginButton_Click(object sender, EventArgs e) {
+	///    if (!Page.IsValid) return; // don't login if custom validation failed.
+	///    OpenIdRelyingParty openid = new OpenIdRelyingParty();
+	///    try {
+	///        IAuthenticationRequest request = openid.CreateRequest(openIdBox.Text);
+	///        // This is where you would add any OpenID extensions you wanted
+	///        // to include in the authentication request.
+	///        // request.AddExtension(someExtensionRequestInstance);
+	///
+	///        // Send your visitor to their Provider for authentication.
+	///        request.RedirectToProvider();
+	///    } catch (OpenIdException ex) {
+	///        // The user probably entered an Identifier that 
+	///        // was not a valid OpenID endpoint.
+	///        openidValidator.Text = ex.Message;
+	///        openidValidator.IsValid = false;
+	///    }
+	///}
+	///
+	///protected void Page_Load(object sender, EventArgs e) {
+	///    openIdBox.Focus();
+	///
+	///    OpenIdRelyingParty openid = new OpenIdRelyingParty();
+	///    if (openid.Response != null) {
+	///        switch (openid.Response.Status) {
+	///            case AuthenticationStatus.Authenticated:
+	///                // This is where you would look for any OpenID extension responses included
+	///                // in the authentication assertion.
+	///                // var extension = openid.Response.GetExtension&lt;SomeExtensionResponseType&gt;();
+	///
+	///                // Use FormsAuthentication to tell ASP.NET that the user is now logged in,
+	///                // with the OpenID Claimed Identifier as their username.
+	///                FormsAuthentication.RedirectFromLoginPage(openid.Response.ClaimedIdentifier, false);
+	///                break;
+	///            case AuthenticationStatus.Canceled:
+	///                loginCanceledLabel.Visible = true;
+	///                break;
+	///            case AuthenticationStatus.Failed:
+	///                loginFailedLabel.Visible = true;
+	///                break;
+	///            // We don't need to handle SetupRequired because we're not setting
+	///            // IAuthenticationRequest.Mode to immediate mode.
+	///            //case AuthenticationStatus.SetupRequired:
+	///            //    break;
+	///        }
+	///    }
+	///}
+	/// </code>
+	/// </example>
 	[DebuggerDisplay("isAuthenticationResponseReady: {isAuthenticationResponseReady}, stateless: {store == null}")]
 	public class OpenIdRelyingParty {
 		IRelyingPartyApplicationStore store;
@@ -93,6 +166,22 @@ namespace DotNetOpenId.RelyingParty {
 			return AuthenticationRequest.Create(userSuppliedIdentifier, this, realm, returnToUrl, store);
 		}
 
+		/// <summary>
+		/// Creates an authentication request to verify that a user controls
+		/// some given Identifier.
+		/// </summary>
+		/// <param name="userSuppliedIdentifier">
+		/// The Identifier supplied by the user.  This may be a URL, an XRI or i-name.
+		/// </param>
+		/// <param name="realm">
+		/// The shorest URL that describes this relying party web site's address.
+		/// For example, if your login page is found at https://www.example.com/login.aspx,
+		/// your realm would typically be https://www.example.com/.
+		/// </param>
+		/// <returns>
+		/// An authentication request object that describes the HTTP response to
+		/// send to the user agent to initiate the authentication.
+		/// </returns>
 		/// <remarks>
 		/// This method requires an ASP.NET HttpContext.
 		/// </remarks>
@@ -121,6 +210,17 @@ namespace DotNetOpenId.RelyingParty {
 				|| parameterName == Token.TokenKey;
 		}
 
+		/// <summary>
+		/// Creates an authentication request to verify that a user controls
+		/// some given Identifier.
+		/// </summary>
+		/// <param name="userSuppliedIdentifier">
+		/// The Identifier supplied by the user.  This may be a URL, an XRI or i-name.
+		/// </param>
+		/// <returns>
+		/// An authentication request object that describes the HTTP response to
+		/// send to the user agent to initiate the authentication.
+		/// </returns>
 		/// <remarks>
 		/// This method requires an ASP.NET HttpContext.
 		/// </remarks>

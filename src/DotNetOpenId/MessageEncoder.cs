@@ -41,6 +41,8 @@ namespace DotNetOpenId {
 		/// Encodes messages into <see cref="Response"/> instances.
 		/// </summary>
 		public virtual Response Encode(IEncodable message) {
+			if (message == null) throw new ArgumentNullException("message");
+
 			EncodingType encode_as = message.EncodingType;
 			Response wr;
 
@@ -59,7 +61,7 @@ namespace DotNetOpenId {
 					wr = new Response(code, headers, ProtocolMessages.KeyValueForm.GetBytes(message.EncodedFields), message);
 					break;
 				case EncodingType.IndirectMessage:
-					Logger.DebugFormat("Sending indirect message response:{0}{1}",
+					Logger.DebugFormat("Sending indirect message:{0}{1}",
 						Environment.NewLine, Util.ToString(message.EncodedFields));
 					// TODO: either redirect or do a form POST depending on payload size.
 					Debug.Assert(message.RedirectUrl != null);
