@@ -76,7 +76,18 @@
 		      Outputs='$(OutputPath)\Test-results.xml;$(OutputPath)\Test-output-results.log' />
 	</Target>
 
-	<Target Name="Drop" DependsOnTargets="GetBuildVersion;Build;Documentation">
+	<Target Name="Drop">
+		<Warning Condition=" '$(Configuration)' != 'release' " Text="Building $(Configuration) instead of Release!" />
+		<!-- First build product and documentation.  We need to set them to be signed before calling targets. -->
+		<PropertyGroup>
+			<Sign Condition=" '$(Sign)' == '' ">true</Sign>
+		</PropertyGroup>
+		<!-- We clean first to be sure we're not 'incremental building' using a non-signed dll. -->
+		<!-- We don't put ANY of these targets in our DependsOnTargets attribute, because that would result
+		     in our custom tasks dll being loaded, which would result in the Clean target failing because it
+		     cannot remove a loaded assembly. -->
+		<CallTarget Targets="Clean;GetBuildVersion;Build;Documentation" />
+		
 		<PropertyGroup>
 			<DropDirectory>$(ProjectRoot)\drops\DotNetOpenId-$(BuildVersion)</DropDirectory>
 			<DropZip>$(DropDirectory).zip</DropZip>
