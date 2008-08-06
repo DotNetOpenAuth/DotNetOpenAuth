@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
-using DotNetOpenId.RelyingParty;
-using DotNetOpenId.Extensions.SimpleRegistration;
 using DotNetOpenId.Extensions.AttributeExchange;
+using DotNetOpenId.Extensions.SimpleRegistration;
+using DotNetOpenId.RelyingParty;
+using NUnit.Framework;
 
 namespace DotNetOpenId.Test.RelyingParty {
 	[TestFixture]

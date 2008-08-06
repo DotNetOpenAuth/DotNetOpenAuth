@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
-using DotNetOpenId.RelyingParty;
-using System.Net;
-using System.Diagnostics;
-using System.IO;
-using System.Web;
 using System.Collections.Specialized;
+using System.Web;
+using DotNetOpenId.RelyingParty;
+using DotNetOpenId.Test.Mocks;
+using NUnit.Framework;
 
 namespace DotNetOpenId.Test.RelyingParty {
 	[TestFixture]
@@ -29,6 +25,11 @@ namespace DotNetOpenId.Test.RelyingParty {
 		public void SetUp() {
 			if (!UntrustedWebRequest.WhitelistHosts.Contains("localhost"))
 				UntrustedWebRequest.WhitelistHosts.Add("localhost");
+		}
+
+		[TearDown]
+		public void TearDown() {
+			MockHttpRequest.Reset();
 		}
 
 		Uri getPositiveAssertion(ProtocolVersion version) {

@@ -246,8 +246,7 @@ public class TestSupport {
 		Host = AspNetHost.CreateHost(TestSupport.TestWebDirectory);
 		Host.MessageInterceptor = Interceptor = new EncodingInterceptor();
 
-		RelyingPartyStore = new ApplicationMemoryStore();
-		ProviderStore = new ProviderMemoryStore();
+		ResetStores();
 	}
 
 	[TearDown]
@@ -257,6 +256,11 @@ public class TestSupport {
 			Host.CloseHttp();
 			Host = null;
 		}
+	}
+
+	internal static void ResetStores() {
+		RelyingPartyStore = new ApplicationMemoryStore();
+		ProviderStore = new ProviderMemoryStore();
 	}
 
 	/// <summary>

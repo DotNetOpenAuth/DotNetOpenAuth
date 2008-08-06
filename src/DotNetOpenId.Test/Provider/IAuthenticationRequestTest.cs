@@ -20,7 +20,7 @@ namespace DotNetOpenId.Test.Provider {
 			Uri returnTo;
 			Realm realm;
 			getUnverifiableRP(out returnTo, out realm);
-			var consumer = new OpenIdRelyingParty(new ApplicationMemoryStore(), null, null);
+			var consumer = TestSupport.CreateRelyingParty(null);
 			var request = consumer.CreateRequest(TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20), realm, returnTo);
 			WebRequest.Create(request.RedirectingResponse.ExtractUrl()).GetResponse(); // the OP should return 500, causing exception here.
 		}

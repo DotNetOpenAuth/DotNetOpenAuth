@@ -1,24 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
 using DotNetOpenId.RelyingParty;
-using DotNetOpenId.Extensions.SimpleRegistration;
-using DotNetOpenId.Extensions.AttributeExchange;
+using DotNetOpenId.Test.Mocks;
+using NUnit.Framework;
 
 namespace DotNetOpenId.Test.RelyingParty {
 	[TestFixture]
 	public class AuthenticationRequestTests {
-		IRelyingPartyApplicationStore store;
 		Realm realm = new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri);
 		Uri returnTo = TestSupport.GetFullUrl(TestSupport.ConsumerPage);
 
 		[SetUp]
 		public void SetUp() {
-			store = new ApplicationMemoryStore();
 			if (!UntrustedWebRequest.WhitelistHosts.Contains("localhost"))
 				UntrustedWebRequest.WhitelistHosts.Add("localhost");
+		}
+
+		[TearDown]
+		public void TearDown() {
+			MockHttpRequest.Reset();
 		}
 
 		[Test]
