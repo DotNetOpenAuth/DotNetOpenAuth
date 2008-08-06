@@ -263,6 +263,29 @@ public class TestSupport {
 		ProviderStore = new ProviderMemoryStore();
 	}
 
+	internal static void SetAuthenticationFromScenario(Scenarios scenario, DotNetOpenId.Provider.IAuthenticationRequest request) {
+		switch (scenario) {
+			case TestSupport.Scenarios.ExtensionFullCooperation:
+			case TestSupport.Scenarios.ExtensionPartialCooperation:
+			case TestSupport.Scenarios.AutoApproval:
+				// immediately approve
+				request.IsAuthenticated = true;
+				break;
+			case TestSupport.Scenarios.AutoApprovalAddFragment:
+				request.SetClaimedIdentifierFragment("frag");
+				request.IsAuthenticated = true;
+				break;
+			case TestSupport.Scenarios.ApproveOnSetup:
+				request.IsAuthenticated = !request.Immediate;
+				break;
+			case TestSupport.Scenarios.AlwaysDeny:
+				request.IsAuthenticated = false;
+				break;
+			default:
+				throw new InvalidOperationException("Unrecognized scenario");
+		}
+	}
+
 	/// <summary>
 	/// Uses an RPs stored association to resign an altered message from a Provider,
 	/// to simulate a Provider that deliberately sent a bad message in an attempt

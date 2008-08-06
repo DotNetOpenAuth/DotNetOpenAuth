@@ -17,10 +17,10 @@ namespace DotNetOpenId.Test.Extensions {
 		[Test]
 		public void None() {
 			var fetchResponse = ParameterizedTest<FetchResponse>(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ExtensionFullCooperation, Version), null);
+				TestSupport.Scenarios.ExtensionFullCooperation, Version, null);
 			Assert.IsNull(fetchResponse);
 			var storeResponse = ParameterizedTest<StoreResponse>(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ExtensionFullCooperation, Version), null);
+				TestSupport.Scenarios.ExtensionFullCooperation, Version, null);
 			Assert.IsNull(storeResponse);
 		}
 
@@ -30,7 +30,7 @@ namespace DotNetOpenId.Test.Extensions {
 			request.AddAttribute(new AttributeRequest(nicknameTypeUri));
 			request.AddAttribute(new AttributeRequest(emailTypeUri, false, int.MaxValue));
 			var response = ParameterizedTest<FetchResponse>(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ExtensionFullCooperation, Version), request);
+				TestSupport.Scenarios.ExtensionFullCooperation, Version, request);
 			Assert.IsNotNull(response);
 			var att = response.GetAttribute(nicknameTypeUri);
 			Assert.IsNotNull(att);
@@ -50,7 +50,7 @@ namespace DotNetOpenId.Test.Extensions {
 			var request = new FetchRequest();
 			request.AddAttribute(new AttributeRequest { TypeUri = emailTypeUri, Count = 1 });
 			var response = ParameterizedTest<FetchResponse>(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ExtensionFullCooperation, Version), request);
+				TestSupport.Scenarios.ExtensionFullCooperation, Version, request);
 			Assert.IsNotNull(response);
 			var att = response.GetAttribute(emailTypeUri);
 			Assert.IsNotNull(att);
@@ -69,7 +69,7 @@ namespace DotNetOpenId.Test.Extensions {
 			request.AddAttribute(newAttribute);
 
 			var response = ParameterizedTest<StoreResponse>(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ExtensionFullCooperation, Version), request);
+				TestSupport.Scenarios.ExtensionFullCooperation, Version, request);
 			Assert.IsNotNull(response);
 			Assert.IsTrue(response.Succeeded);
 			Assert.IsNull(response.FailureReason);
@@ -77,7 +77,7 @@ namespace DotNetOpenId.Test.Extensions {
 			var fetchRequest = new FetchRequest();
 			fetchRequest.AddAttribute(new AttributeRequest { TypeUri = incrementingAttribute });
 			var fetchResponse = ParameterizedTest<FetchResponse>(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ExtensionFullCooperation, Version), fetchRequest);
+				TestSupport.Scenarios.ExtensionFullCooperation, Version, fetchRequest);
 			Assert.IsNotNull(fetchResponse);
 			var att = fetchResponse.GetAttribute(incrementingAttribute);
 			Assert.IsNotNull(att);
@@ -92,11 +92,7 @@ namespace DotNetOpenId.Test.Extensions {
 		/// </summary>
 		[Test, ExpectedException(typeof(OpenIdException))]
 		public void FetchAndStore() {
-			var identityUrl = TestSupport.GetIdentityUrl(TestSupport.Scenarios.ExtensionFullCooperation, Version);
-			var returnTo = TestSupport.GetFullUrl(TestSupport.ConsumerPage);
-			var realm = new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri);
-			var consumer = new OpenIdRelyingParty(AppStore, null, null);
-			var request = consumer.CreateRequest(identityUrl, realm, returnTo);
+			var request = TestSupport.CreateRelyingPartyRequest(false, TestSupport.Scenarios.ExtensionFullCooperation, Version);
 			request.AddExtension(new FetchRequest());
 			request.AddExtension(new StoreRequest());
 		}
