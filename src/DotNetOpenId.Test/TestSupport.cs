@@ -71,9 +71,10 @@ public class TestSupport {
 			10,
 			10
 			);
+
 		return new MockIdentifier(GetIdentityUrl(scenario, providerVersion), new ServiceEndpoint[] { se });
 	}
-	internal static MockIdentifier GetMockOPIdentifier(Scenarios scenario) {
+	internal static MockIdentifier GetMockOPIdentifier(Scenarios scenario, UriIdentifier expectedClaimedId) {
 		Uri opEndpoint = new Uri(Host.BaseUri, DirectedProviderEndpoint + "?user=" + scenario);
 		ServiceEndpoint se = ServiceEndpoint.CreateForProviderIdentifier(
 			GetOPIdentityUrl(scenario),
@@ -82,6 +83,11 @@ public class TestSupport {
 			10,
 			10
 			);
+
+		// Register the Claimed Identifier that directed identity will choose so that RP
+		// discovery on that identifier can be mocked up.
+		MockHttpRequest.RegisterMockXrdsResponse(expectedClaimedId, se);
+
 		return new MockIdentifier(GetOPIdentityUrl(scenario), new ServiceEndpoint[] { se });
 	}
 	public static Uri GetFullUrl(string url) {

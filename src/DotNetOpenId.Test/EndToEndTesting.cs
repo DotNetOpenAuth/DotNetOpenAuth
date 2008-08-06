@@ -5,6 +5,7 @@ using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
 using DotNetOpenId.RelyingParty;
+using DotNetOpenId.Test.Mocks;
 using NUnit.Framework;
 
 namespace DotNetOpenId.Test {
@@ -15,6 +16,11 @@ namespace DotNetOpenId.Test {
 		public void Setup() {
 			if (!UntrustedWebRequest.WhitelistHosts.Contains("localhost"))
 				UntrustedWebRequest.WhitelistHosts.Add("localhost");
+		}
+
+		[TearDown]
+		public void TearDown() {
+			MockHttpRequest.Reset();
 		}
 
 		void parameterizedTest(TestSupport.Scenarios scenario, ProtocolVersion version,
@@ -28,8 +34,8 @@ namespace DotNetOpenId.Test {
 		void parameterizedOPIdentifierTest(TestSupport.Scenarios scenario,
 			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult) {
 			ProtocolVersion version = ProtocolVersion.V20; // only this version supports directed identity
-			Identifier opIdentifier = TestSupport.GetMockOPIdentifier(TestSupport.Scenarios.ApproveOnSetup);
-			Identifier claimedIdentifier = TestSupport.GetDirectedIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, version);
+			UriIdentifier claimedIdentifier = TestSupport.GetDirectedIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, version);
+			Identifier opIdentifier = TestSupport.GetMockOPIdentifier(TestSupport.Scenarios.ApproveOnSetup, claimedIdentifier);
 			parameterizedProgrammaticOPIdentifierTest(opIdentifier, version, claimedIdentifier, requestMode, expectedResult, true);
 			parameterizedProgrammaticOPIdentifierTest(opIdentifier, version, claimedIdentifier, requestMode, expectedResult, false);
 			parameterizedWebClientTest(opIdentifier, requestMode, expectedResult);
