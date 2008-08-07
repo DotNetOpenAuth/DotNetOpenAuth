@@ -20,7 +20,7 @@ namespace DotNetOpenId.Test.Mocks {
 				response.ResponseStream.Seek(0, SeekOrigin.Begin);
 				return response;
 			} else {
-				Assert.Fail("Unexpected HTTP request: {0}", uri);
+				//Assert.Fail("Unexpected HTTP request: {0}", uri);
 				return new UntrustedWebResponse(uri, uri, new WebHeaderCollection(), HttpStatusCode.NotFound,
 					"text/html", null, new MemoryStream());
 			}
@@ -112,6 +112,11 @@ namespace DotNetOpenId.Test.Mocks {
 				10
 				);
 			RegisterMockXrdsResponse(identityEndpoint);
+		}
+		internal static Identifier RegisterMockXrdsResponse(string embeddedResourcePath) {
+			UriIdentifier id = TestSupport.GetFullUrl(embeddedResourcePath);
+			RegisterMockResponse(id, "application/xrds+xml", TestSupport.LoadEmbeddedFile(embeddedResourcePath));
+			return id;
 		}
 	}
 }

@@ -24,6 +24,9 @@ public class TestSupport {
 	public const string DirectedProviderEndpoint = "DirectedProviderEndpoint.aspx";
 	public const string MobileConsumerPage = "RelyingPartyMobile.aspx";
 	public const string ConsumerPage = "RelyingParty.aspx";
+	public static Uri ReturnTo { get { return TestSupport.GetFullUrl(TestSupport.ConsumerPage); } }
+	public static Realm Realm { get { return new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri); } }
+
 	public enum Scenarios {
 		// Authentication test scenarios
 		AutoApproval,
@@ -144,17 +147,17 @@ public class TestSupport {
 		return rp;
 	}
 	internal static DotNetOpenId.RelyingParty.IAuthenticationRequest CreateRelyingPartyRequest(bool stateless, Scenarios scenario, ProtocolVersion version) {
-		var returnTo = TestSupport.GetFullUrl(TestSupport.ConsumerPage);
-		var realm = new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri);
+		// Publish RP discovery information
+		// TODO: code here
 
 		var rp = TestSupport.CreateRelyingParty(stateless ? null : RelyingPartyStore, null);
-		var rpReq = rp.CreateRequest(TestSupport.GetMockIdentifier(scenario, version), realm, returnTo);
+		var rpReq = rp.CreateRequest(TestSupport.GetMockIdentifier(scenario, version), Realm, ReturnTo);
 
 		{
 			// Sidetrack: verify URLs and other default properties
 			Assert.AreEqual(AuthenticationRequestMode.Setup, rpReq.Mode);
-			Assert.AreEqual(realm, rpReq.Realm);
-			Assert.AreEqual(returnTo, rpReq.ReturnToUrl);
+			Assert.AreEqual(Realm, rpReq.Realm);
+			Assert.AreEqual(ReturnTo, rpReq.ReturnToUrl);
 		}
 
 		return rpReq;
@@ -264,6 +267,8 @@ public class TestSupport {
 	}
 
 	internal static void SetAuthenticationFromScenario(Scenarios scenario, DotNetOpenId.Provider.IAuthenticationRequest request) {
+		// TODO: enable this and make all tests pass.
+		//Assert.IsTrue(request.IsReturnUrlDiscoverable);
 		switch (scenario) {
 			case TestSupport.Scenarios.ExtensionFullCooperation:
 			case TestSupport.Scenarios.ExtensionPartialCooperation:

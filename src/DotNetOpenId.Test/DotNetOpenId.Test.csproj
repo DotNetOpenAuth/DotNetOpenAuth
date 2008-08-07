@@ -98,6 +98,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="dhpriv.txt" />
+    <Content Include="Discovery\rp_xrds.xml" />
+    <EmbeddedResource Include="Discovery\rprealmdiscovery.html" />
     <EmbeddedResource Include="Discovery\htmldiscovery\html1020.html" />
     <EmbeddedResource Include="Discovery\htmldiscovery\html10both.html" />
     <EmbeddedResource Include="Discovery\htmldiscovery\html10del.html" />

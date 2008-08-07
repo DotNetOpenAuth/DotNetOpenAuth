@@ -17,7 +17,6 @@ namespace DotNetOpenId.Test.RelyingParty {
 
 		[SetUp]
 		public void Setup() {
-			TestSupport.ResetStores();
 			if (!UntrustedWebRequest.WhitelistHosts.Contains("localhost"))
 				UntrustedWebRequest.WhitelistHosts.Add("localhost");
 		}
@@ -59,21 +58,24 @@ namespace DotNetOpenId.Test.RelyingParty {
 
 		[Test]
 		public void CreateRequestStripsFragment() {
-			var consumer = new OpenIdRelyingParty(new ApplicationMemoryStore(), simpleNonOpenIdRequest, new NameValueCollection());
+			var consumer = TestSupport.CreateRelyingParty(null);
 			UriBuilder userSuppliedIdentifier = new UriBuilder((Uri)TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20));
 			userSuppliedIdentifier.Fragment = "c";
-			IAuthenticationRequest request = consumer.CreateRequest(userSuppliedIdentifier.Uri, realm, returnTo);
+			Identifier mockIdentifer = new MockIdentifier(userSuppliedIdentifier.Uri,
+				TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20).Discover());
+			Assert.IsTrue(mockIdentifer.ToString().EndsWith("#c"), "Test broken");
+			IAuthenticationRequest request = consumer.CreateRequest(mockIdentifer, TestSupport.Realm, TestSupport.ReturnTo);
 			Assert.AreEqual(0, new Uri(request.ClaimedIdentifier).Fragment.Length);
 		}
 
 		[Test]
 		public void AssociationCreationWithStore() {
-			var providerStore = new ProviderMemoryStore();
-
+			TestSupport.ResetStores(); // get rid of existing associations so a new one is created
+			
 			OpenIdRelyingParty rp = TestSupport.CreateRelyingParty(null);
 			var directMessageSniffer = new DirectMessageSniffWrapper(rp.DirectMessageChannel);
 			rp.DirectMessageChannel = directMessageSniffer;
-			var idUrl = TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
+			var idUrl = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
 
 			DotNetOpenId.RelyingParty.IAuthenticationRequest req;
 			bool associationMade = false;
@@ -87,19 +89,20 @@ namespace DotNetOpenId.Test.RelyingParty {
 
 		[Test]
 		public void NoAssociationRequestWithoutStore() {
-			var providerStore = new ProviderMemoryStore();
+			TestSupport.ResetStores(); // get rid of existing associations so a new one is created
 
-			OpenIdRelyingParty rp = new OpenIdRelyingParty(null, null, null);
-			var idUrl = TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
+			OpenIdRelyingParty rp = TestSupport.CreateRelyingParty(null, null);
+			var directMessageSniffer = new DirectMessageSniffWrapper(rp.DirectMessageChannel);
+			rp.DirectMessageChannel = directMessageSniffer;
+			var idUrl = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
 
 			DotNetOpenId.RelyingParty.IAuthenticationRequest req;
 			bool associationMade = false;
-			TestSupport.Interceptor.SigningMessage = m => {
-				if (m.EncodedFields.ContainsKey("assoc_handle") && m.EncodedFields.ContainsKey("session_type"))
+			directMessageSniffer.Receiving += (provider, fields) => {
+				if (fields.ContainsKey("assoc_handle") && fields.ContainsKey("session_type"))
 					associationMade = true;
 			};
 			req = rp.CreateRequest(idUrl, realm, returnTo);
-			TestSupport.Interceptor.SigningMessage = null;
 			Assert.IsFalse(associationMade);
 		}
 
@@ -129,9 +132,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 		}
 
 		private static void testExplicitPortOnRealmAndReturnTo(Uri returnTo, Realm realm) {
-			var identityUrl = TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
-			var consumer = new OpenIdRelyingParty(null, null, null);
-			var request = consumer.CreateRequest(identityUrl, realm, returnTo);
+			var request = TestSupport.CreateRelyingPartyRequest(true, TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
 			Protocol protocol = Protocol.Lookup(request.Provider.Version);
 			var nvc = HttpUtility.ParseQueryString(request.RedirectingResponse.ExtractUrl().Query);
 			string realmString = nvc[protocol.openid.Realm];
@@ -148,10 +149,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 
 		[Test]
 		public void ReturnToUrlEncodingTest() {
-			Uri origin = TestSupport.GetFullUrl(TestSupport.ConsumerPage);
-			var identityUrl = TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
-			var consumer = new OpenIdRelyingParty(null, null, null);
-			var request = consumer.CreateRequest(identityUrl, origin, origin);
+			var request = TestSupport.CreateRelyingPartyRequest(true, TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
 			Protocol protocol = Protocol.Lookup(request.Provider.Version);
 			request.AddCallbackArguments("a+b", "c+d");
 			var requestArgs = HttpUtility.ParseQueryString(request.RedirectingResponse.ExtractUrl().Query);
