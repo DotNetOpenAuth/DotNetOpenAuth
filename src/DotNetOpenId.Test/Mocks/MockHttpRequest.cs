@@ -118,5 +118,27 @@ namespace DotNetOpenId.Test.Mocks {
 			RegisterMockResponse(id, "application/xrds+xml", TestSupport.LoadEmbeddedFile(embeddedResourcePath));
 			return id;
 		}
+		internal static void RegisterMockRPDiscovery() {
+			Uri rpRealmUri = TestSupport.Realm.UriWithWildcardChangedToWww;
+
+			string template = @"<xrds:XRDS xmlns:xrds='xri://$xrds' xmlns:openid='http://openid.net/xmlns/1.0' xmlns='xri://$xrd*($v*2.0)'>
+	<XRD>
+		<Service priority='10'>
+			<Type>{0}</Type>
+			<URI>{1}</URI>
+		</Service>
+	</XRD>
+</xrds:XRDS>";
+			string xrds = string.Format(CultureInfo.InvariantCulture, template,
+				HttpUtility.HtmlEncode(Protocol.v20.RPReturnToTypeURI),
+				HttpUtility.HtmlEncode(rpRealmUri.AbsoluteUri)
+				);
+
+			RegisterMockResponse(rpRealmUri, ContentTypes.Xrds, xrds);
+		}
+
+		internal static void DeleteResponse(Uri requestUri) {
+			registeredMockResponses.Remove(requestUri);
+		}
 	}
 }

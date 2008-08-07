@@ -148,7 +148,7 @@ public class TestSupport {
 	}
 	internal static DotNetOpenId.RelyingParty.IAuthenticationRequest CreateRelyingPartyRequest(bool stateless, Scenarios scenario, ProtocolVersion version) {
 		// Publish RP discovery information
-		// TODO: code here
+		MockHttpRequest.RegisterMockRPDiscovery();
 
 		var rp = TestSupport.CreateRelyingParty(stateless ? null : RelyingPartyStore, null);
 		var rpReq = rp.CreateRequest(TestSupport.GetMockIdentifier(scenario, version), Realm, ReturnTo);
@@ -267,8 +267,7 @@ public class TestSupport {
 	}
 
 	internal static void SetAuthenticationFromScenario(Scenarios scenario, DotNetOpenId.Provider.IAuthenticationRequest request) {
-		// TODO: enable this and make all tests pass.
-		//Assert.IsTrue(request.IsReturnUrlDiscoverable);
+		Assert.IsTrue(request.IsReturnUrlDiscoverable);
 		switch (scenario) {
 			case TestSupport.Scenarios.ExtensionFullCooperation:
 			case TestSupport.Scenarios.ExtensionPartialCooperation:
