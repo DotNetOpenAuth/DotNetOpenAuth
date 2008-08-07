@@ -121,7 +121,8 @@ namespace DotNetOpenId {
 		internal static Protocol Detect(string[] serviceTypeURIs) {
 			if (serviceTypeURIs == null) throw new ArgumentNullException("serviceTypeURIs");
 			return Util.FindBestVersion(p => p.OPIdentifierServiceTypeURI, serviceTypeURIs) ??
-				   Util.FindBestVersion(p => p.ClaimedIdentifierServiceTypeURI, serviceTypeURIs);
+				   Util.FindBestVersion(p => p.ClaimedIdentifierServiceTypeURI, serviceTypeURIs) ??
+				   Util.FindBestVersion(p => p.RPReturnToTypeURI, serviceTypeURIs);
 		}
 
 		/// <summary>
