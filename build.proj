@@ -61,7 +61,10 @@
 	</Target>
 
 	<Target Name="Build">
-		<MSBuild Projects="$(ProjectRoot)\src\DotNetOpenId.sln" />
+		<!-- We explicitly pass the Sign property in because if properties are set
+		     inside this very .proj file instead of being passed on the command-line, their
+		     values won't propagate automatically. -->
+		<MSBuild Projects="$(ProjectRoot)\src\DotNetOpenId.sln" Properties="Sign=$(Sign)" />
 	</Target>
 
 	<Target Name="Documentation" DependsOnTargets="BuildProduct;Chm">
@@ -76,7 +79,24 @@
 		      Outputs='$(OutputPath)\Test-results.xml;$(OutputPath)\Test-output-results.log' />
 	</Target>
 
-	<Target Name="Drop" DependsOnTargets="GetBuildVersion;Build;Documentation">
+	<Target Name="_SetDropProperties">
+		<!-- This target is necessary because PropertyGroups within the same Target as 
+		     where CallTarget is fired do NOT affect those called targets. -->
+		<PropertyGroup>
+			<Sign>true</Sign>
+			<Configuration Condition=" '$(ConfigurationAutoSet)' == 'true' ">Release</Configuration>
+		</PropertyGroup>
+	</Target>
+
+	<Target Name="_EnsureCleanDrop">
+		<!-- This target only does a clean sufficient to guarantee that our dotnetopenid.dll is rebuilt, but
+		     we don't usually want to clean our documentation because that takes forever to build froms scratch. -->
+		<MSBuild Projects="$(ProjectRoot)\src\DotNetOpenId.sln" Targets="Clean" />
+	</Target>
+
+	<Target Name="Drop" DependsOnTargets="_SetDropProperties;GetBuildVersion;_EnsureCleanDrop;Build;Documentation">
+		<Warning Condition=" '$(Configuration)' != 'release' " Text="Building $(Configuration) instead of Release!" />
+
 		<PropertyGroup>
 			<DropDirectory>$(ProjectRoot)\drops\DotNetOpenId-$(BuildVersion)</DropDirectory>
 			<DropZip>$(DropDirectory).zip</DropZip>
