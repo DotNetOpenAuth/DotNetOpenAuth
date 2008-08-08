@@ -173,27 +173,26 @@ public class TestSupport {
 		var opAuthResponse = (EncodableResponse)opAuthWebResponse.EncodableMessage;
 		var rp = CreateRelyingParty(store, opAuthResponse.RedirectUrl,
 			opAuthResponse.EncodedFields.ToNameValueCollection());
+		// Get the response now, before trying the replay attack.  The Response
+		// property is lazily-evaluated, so the replay attack can be evaluated first
+		// and pass, while this one that SUPPOSED to pass fails, if we don't force it now.
+		var response = rp.Response;
 
-		// TODO: Remove this conditional, which really should not be required.
-		//       When it's removed, some tests hang while signature verification
-		//       is supposedly being performed.
-		if (rp.Response.Status == AuthenticationStatus.Authenticated) {
-			// Side-track to test for replay attack while we're at it.
-			// This simulates a network sniffing user who caught the 
-			// authenticating query en route to either the user agent or
-			// the consumer, and tries the same query to the consumer in an
-			// attempt to spoof the identity of the authenticating user.
-			try {
-				var replayRP = CreateRelyingParty(store, opAuthResponse.RedirectUrl,
-					opAuthResponse.EncodedFields.ToNameValueCollection());
-				Assert.AreNotEqual(AuthenticationStatus.Authenticated, replayRP.Response.Status, "Replay attack succeeded!");
-			} catch (OpenIdException) { // nonce already used
-				// another way to pass
-			}
+		// Side-track to test for replay attack while we're at it.
+		// This simulates a network sniffing user who caught the 
+		// authenticating query en route to either the user agent or
+		// the consumer, and tries the same query to the consumer in an
+		// attempt to spoof the identity of the authenticating user.
+		try {
+			var replayRP = CreateRelyingParty(store, opAuthResponse.RedirectUrl,
+				opAuthResponse.EncodedFields.ToNameValueCollection());
+			Assert.AreNotEqual(AuthenticationStatus.Authenticated, replayRP.Response.Status, "Replay attack succeeded!");
+		} catch (OpenIdException) { // nonce already used
+			// another way to pass
 		}
 
 		// Return the result of the initial response (not the replay attack one).
-		return rp.Response;
+		return response;
 	}
 	/// <summary>
 	/// Generates a new <see cref="OpenIdProvider"/> that uses the shared
