@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using System.Net;
 using System.Globalization;
 
-namespace DotNetOpenId.Test.Provider {
+namespace DotNetOpenId.Test.UI {
 	[TestFixture]
 	public class IdentityEndpointTest {
 		void parameterizedIdentityEndpointPage(ProtocolVersion version) {

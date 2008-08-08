@@ -8,7 +8,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
-namespace DotNetOpenId.Test {
+namespace DotNetOpenId.Test.UI {
 	[TestFixture]
 	public class TestSupportSanityTest {
 		[Test]
