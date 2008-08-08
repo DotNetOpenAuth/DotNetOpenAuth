@@ -15,7 +15,7 @@ namespace DotNetOpenId.Test.UI {
 		public void TestHost() {
 			string query = "a=b&c=d";
 			string body = "aa=bb&cc=dd";
-			string resultHtml = TestSupport.Host.ProcessRequest(TestSupport.HostTestPage + "?" + query, body);
+			string resultHtml = UITestSupport.Host.ProcessRequest(TestSupport.HostTestPage + "?" + query, body);
 
 			Assert.IsFalse(string.IsNullOrEmpty(resultHtml));
 			Debug.WriteLine(resultHtml);
@@ -25,7 +25,7 @@ namespace DotNetOpenId.Test.UI {
 
 		[Test]
 		public void TestProviderPage() {
-			string html = TestSupport.Host.ProcessRequest(TestSupport.ProviderPage);
+			string html = UITestSupport.Host.ProcessRequest(TestSupport.ProviderPage);
 			Assert.IsFalse(string.IsNullOrEmpty(html));
 		}
 	}

@@ -10,7 +10,7 @@ namespace DotNetOpenId.Test.UI {
 	public class OpenIdTextBoxTest {
 		[Test]
 		public void TextBoxAppears() {
-			string html = TestSupport.Host.ProcessRequest(TestSupport.ConsumerPage);
+			string html = UITestSupport.Host.ProcessRequest(TestSupport.ConsumerPage);
 			Assert.IsTrue(html.Contains("<input "));
 		}
 	}

@@ -9,7 +9,7 @@ namespace DotNetOpenId.Test.UI {
 	public class OpenIdMobileTextBoxTest {
 		[Test]
 		public void TextBoxAppears() {
-			string html = TestSupport.Host.ProcessRequest(TestSupport.MobileConsumerPage);
+			string html = UITestSupport.Host.ProcessRequest(TestSupport.MobileConsumerPage);
 			Assert.IsTrue(html.Contains("<input "));
 		}
 	}

@@ -13,6 +13,7 @@ using DotNetOpenId.Test.Mocks;
 using NUnit.Framework;
 using IProviderAssociationStore = DotNetOpenId.IAssociationStore<DotNetOpenId.AssociationRelyingPartyType>;
 using ProviderMemoryStore = DotNetOpenId.AssociationMemoryStore<DotNetOpenId.AssociationRelyingPartyType>;
+using DotNetOpenId.Test.UI;
 
 [SetUpFixture]
 public class TestSupport {
@@ -24,6 +25,7 @@ public class TestSupport {
 	public const string DirectedProviderEndpoint = "DirectedProviderEndpoint.aspx";
 	public const string MobileConsumerPage = "RelyingPartyMobile.aspx";
 	public const string ConsumerPage = "RelyingParty.aspx";
+	public const string OPDefaultPage = "OPDefault.aspx";
 	public static Uri ReturnTo { get { return TestSupport.GetFullUrl(TestSupport.ConsumerPage); } }
 	public static Realm Realm { get { return new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri); } }
 
@@ -45,31 +47,28 @@ public class TestSupport {
 		ExtensionPartialCooperation,
 	}
 	internal static UriIdentifier GetOPIdentityUrl(Scenarios scenario) {
-		UriBuilder builder = new UriBuilder(Host.BaseUri);
-		builder.Path = "/opdefault.aspx";
-		builder.Query = "user=" + scenario;
-		return new UriIdentifier(builder.Uri);
+		return new UriIdentifier(GetFullUrl("/" + OPDefaultPage, "user", scenario));
 	}
 	internal static UriIdentifier GetIdentityUrl(Scenarios scenario, ProtocolVersion providerVersion) {
-		UriBuilder builder = new UriBuilder(Host.BaseUri);
-		builder.Path = "/" + identityPage;
-		builder.Query = "user=" + scenario + "&version=" + providerVersion;
-		return new UriIdentifier(builder.Uri);
+		return new UriIdentifier(GetFullUrl("/" + identityPage, new Dictionary<string, string> {
+			{ "user", scenario.ToString() },
+			{ "version", providerVersion.ToString() },
+		}));
 	}
 	internal static UriIdentifier GetDirectedIdentityUrl(Scenarios scenario, ProtocolVersion providerVersion) {
-		UriBuilder builder = new UriBuilder(Host.BaseUri);
-		builder.Path = "/" + directedIdentityPage;
-		builder.Query = "user=" + scenario + "&version=" + providerVersion;
-		return new UriIdentifier(builder.Uri);
+		return new UriIdentifier(GetFullUrl("/" + directedIdentityPage, new Dictionary<string, string> {
+			{ "user", scenario.ToString() },
+			{ "version", providerVersion.ToString() },
+		}));
 	}
 	public static Identifier GetDelegateUrl(Scenarios scenario) {
-		return new UriIdentifier(new Uri(Host.BaseUri, "/" + scenario));
+		return new UriIdentifier(GetFullUrl("/" + scenario));
 	}
 	internal static MockIdentifier GetMockIdentifier(Scenarios scenario, ProtocolVersion providerVersion) {
 		ServiceEndpoint se = ServiceEndpoint.CreateForClaimedIdentifier(
 			GetIdentityUrl(scenario, providerVersion),
 			GetDelegateUrl(scenario),
-			new Uri(Host.BaseUri, "/" + ProviderPage),
+			GetFullUrl("/" + ProviderPage),
 			new string[] { Protocol.Lookup(providerVersion).ClaimedIdentifierServiceTypeURI },
 			10,
 			10
@@ -78,7 +77,7 @@ public class TestSupport {
 		return new MockIdentifier(GetIdentityUrl(scenario, providerVersion), new ServiceEndpoint[] { se });
 	}
 	internal static MockIdentifier GetMockOPIdentifier(Scenarios scenario, UriIdentifier expectedClaimedId) {
-		Uri opEndpoint = new Uri(Host.BaseUri, DirectedProviderEndpoint + "?user=" + scenario);
+		Uri opEndpoint = GetFullUrl(DirectedProviderEndpoint, "user", scenario);
 		ServiceEndpoint se = ServiceEndpoint.CreateForProviderIdentifier(
 			GetOPIdentityUrl(scenario),
 			opEndpoint,
@@ -96,13 +95,17 @@ public class TestSupport {
 	public static Uri GetFullUrl(string url) {
 		return GetFullUrl(url, null);
 	}
+	public static Uri GetFullUrl(string url, string key, object value) {
+		return GetFullUrl(url, new Dictionary<string, string> {
+			{ key, value.ToString() },
+		});
+	}
 	public static Uri GetFullUrl(string url, IDictionary<string, string> args) {
-		UriBuilder builder = new UriBuilder(new Uri(Host.BaseUri, url));
+		Uri baseUri = UITestSupport.Host != null ? UITestSupport.Host.BaseUri : new Uri("http://localhost/");
+		UriBuilder builder = new UriBuilder(new Uri(baseUri, url));
 		UriUtil.AppendQueryArgs(builder, args);
 		return builder.Uri;
 	}
-
-	internal static AspNetHost Host { get; private set; }
 
 	/// <summary>
 	/// Returns the content of a given embedded resource.
@@ -245,7 +248,6 @@ public class TestSupport {
 	[SetUp]
 	public void SetUp() {
 		log4net.Config.XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("DotNetOpenId.Test.Logging.config"));
-		Host = AspNetHost.CreateHost(TestSupport.TestWebDirectory);
 
 		ResetStores();
 	}
@@ -253,10 +255,6 @@ public class TestSupport {
 	[TearDown]
 	public void TearDown() {
 		log4net.LogManager.Shutdown();
-		if (Host != null) {
-			Host.CloseHttp();
-			Host = null;
-		}
 	}
 
 	internal static void ResetStores() {

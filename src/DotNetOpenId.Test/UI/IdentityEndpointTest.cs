@@ -16,7 +16,7 @@ namespace DotNetOpenId.Test.UI {
 			Protocol protocol = Protocol.Lookup(version);
 			TestSupport.Scenarios scenario = TestSupport.Scenarios.AutoApproval;
 			Identifier identityUrl = TestSupport.GetIdentityUrl(scenario, version);
-			string html = TestSupport.Host.ProcessRequest(identityUrl);
+			string html = UITestSupport.Host.ProcessRequest(identityUrl);
 			Trace.TraceInformation("{0} response:{1}{2}", identityUrl, Environment.NewLine, html);
 			Assert.IsTrue(Regex.IsMatch(html, string.Format(CultureInfo.InvariantCulture,
 				@"\<link rel=""{1}"" href=""http://[^/]+/{0}""\>\</link\>",
