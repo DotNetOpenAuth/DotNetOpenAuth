@@ -14,6 +14,7 @@ using NUnit.Framework;
 using IProviderAssociationStore = DotNetOpenId.IAssociationStore<DotNetOpenId.AssociationRelyingPartyType>;
 using ProviderMemoryStore = DotNetOpenId.AssociationMemoryStore<DotNetOpenId.AssociationRelyingPartyType>;
 using DotNetOpenId.Test.UI;
+using log4net;
 
 [SetUpFixture]
 public class TestSupport {
@@ -28,6 +29,7 @@ public class TestSupport {
 	public const string OPDefaultPage = "OPDefault.aspx";
 	public static Uri ReturnTo { get { return TestSupport.GetFullUrl(TestSupport.ConsumerPage); } }
 	public static Realm Realm { get { return new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri); } }
+	public readonly static ILog Logger = LogManager.GetLogger("DotNetOpenId.Test");
 
 	public enum Scenarios {
 		// Authentication test scenarios

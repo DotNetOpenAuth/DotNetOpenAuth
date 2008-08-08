@@ -33,8 +33,6 @@ namespace DotNetOpenId {
 			ContentEncoding = string.IsNullOrEmpty(response.ContentEncoding) ? DefaultContentEncoding : response.ContentEncoding;
 			Headers = response.Headers;
 			FinalUri = response.ResponseUri;
-
-			Trace.TraceWarning("Unmocked HTTP response: {0}", this);
 		}
 
 		/// <summary>

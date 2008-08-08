@@ -73,10 +73,10 @@ namespace DotNetOpenId.Test.Hosting {
 						return sr.ReadToEnd();
 				}
 			} catch (WebException ex) {
-				Console.Error.WriteLine(ex);
+				TestSupport.Logger.Error("Exception in HttpHost", ex);
 				using (StreamReader sr = new StreamReader(ex.Response.GetResponseStream())) {
 					string streamContent = sr.ReadToEnd();
-					Console.Error.WriteLine(streamContent);
+					TestSupport.Logger.ErrorFormat("Error content stream follows: {0}", streamContent);
 				}
 				throw;
 			}

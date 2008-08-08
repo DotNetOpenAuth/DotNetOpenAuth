@@ -58,10 +58,10 @@ namespace DotNetOpenId.Test.UI {
 					redirectUrl = new Uri(providerResponse.Headers[HttpResponseHeader.Location]);
 				}
 			} catch (WebException ex) {
-				Trace.WriteLine(ex);
+				TestSupport.Logger.Error("WebException", ex);
 				if (ex.Response != null) {
 					using (StreamReader sr = new StreamReader(ex.Response.GetResponseStream())) {
-						Trace.WriteLine(sr.ReadToEnd());
+						TestSupport.Logger.ErrorFormat("Response stream follows: {0}", sr.ReadToEnd());
 					}
 				}
 				throw;

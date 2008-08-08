@@ -17,7 +17,7 @@ namespace DotNetOpenId.Test.UI {
 			TestSupport.Scenarios scenario = TestSupport.Scenarios.AutoApproval;
 			Identifier identityUrl = TestSupport.GetIdentityUrl(scenario, version);
 			string html = UITestSupport.Host.ProcessRequest(identityUrl);
-			Trace.TraceInformation("{0} response:{1}{2}", identityUrl, Environment.NewLine, html);
+			TestSupport.Logger.InfoFormat("{0} response:{1}{2}", identityUrl, Environment.NewLine, html);
 			Assert.IsTrue(Regex.IsMatch(html, string.Format(CultureInfo.InvariantCulture,
 				@"\<link rel=""{1}"" href=""http://[^/]+/{0}""\>\</link\>",
 				Regex.Escape(TestSupport.ProviderPage),

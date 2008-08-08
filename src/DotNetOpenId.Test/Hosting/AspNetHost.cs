@@ -49,7 +49,7 @@ namespace DotNetOpenId.Test.Hosting {
 					HttpRuntime.ProcessRequest(new TestingWorkerRequest(context, tw));
 				}
 			} catch (Exception ex) {
-				Console.WriteLine(ex);
+				TestSupport.Logger.Error("Exception in AspNetHost", ex);
 				throw;
 			}
 		}

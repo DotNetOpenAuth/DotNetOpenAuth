@@ -38,7 +38,7 @@ namespace DotNetOpenId.Test.Mocks {
 			if (response == null) throw new ArgumentNullException("response");
 			UntrustedWebRequest.MockRequests = MockRequestResponse;
 			if (registeredMockResponses.ContainsKey(response.RequestUri)) {
-				Trace.TraceWarning("Mock HTTP response already registered for {0}.", response.RequestUri);
+				TestSupport.Logger.WarnFormat("Mock HTTP response already registered for {0}.", response.RequestUri);
 			} else {
 				registeredMockResponses.Add(response.RequestUri, response);
 			}
