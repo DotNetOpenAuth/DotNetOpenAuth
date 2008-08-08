@@ -103,7 +103,6 @@ public class TestSupport {
 	}
 
 	internal static AspNetHost Host { get; private set; }
-	internal static EncodingInterceptor Interceptor { get; private set; }
 
 	/// <summary>
 	/// Returns the content of a given embedded resource.
@@ -247,7 +246,6 @@ public class TestSupport {
 	public void SetUp() {
 		log4net.Config.XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("DotNetOpenId.Test.Logging.config"));
 		Host = AspNetHost.CreateHost(TestSupport.TestWebDirectory);
-		Host.MessageInterceptor = Interceptor = new EncodingInterceptor();
 
 		ResetStores();
 	}
@@ -255,7 +253,6 @@ public class TestSupport {
 	[TearDown]
 	public void TearDown() {
 		log4net.LogManager.Shutdown();
-		Host.MessageInterceptor = null;
 		if (Host != null) {
 			Host.CloseHttp();
 			Host = null;

@@ -65,7 +65,6 @@
     <Compile Include="Extensions\PolicyRequestTests.cs" />
     <Compile Include="Extensions\PolicyResponseTests.cs" />
     <Compile Include="Extensions\SimpleRegistrationTests.cs" />
-    <Compile Include="Hosting\EncodingInterceptor.cs" />
     <Compile Include="IdentifierTests.cs" />
     <Compile Include="Mocks\MockHttpRequest.cs" />
     <Compile Include="Mocks\MockIdentifier.cs" />
