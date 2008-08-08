@@ -33,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework, Version=2.2.9.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <HintPath>../../tools/NUnit/bin/nunit.framework.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -99,6 +103,7 @@
   <ItemGroup>
     <Content Include="dhpriv.txt" />
     <Content Include="Discovery\rp_xrds.xml" />
+    <EmbeddedResource Include="Logging.config" />
     <EmbeddedResource Include="Discovery\rprealmdiscovery.html" />
     <EmbeddedResource Include="Discovery\htmldiscovery\html1020.html" />
     <EmbeddedResource Include="Discovery\htmldiscovery\html10both.html" />

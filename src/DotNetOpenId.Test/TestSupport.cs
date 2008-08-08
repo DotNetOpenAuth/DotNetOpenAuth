@@ -246,6 +246,7 @@ public class TestSupport {
 
 	[SetUp]
 	public void SetUp() {
+		log4net.Config.XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("DotNetOpenId.Test.Logging.config"));
 		Host = AspNetHost.CreateHost(TestSupport.TestWebDirectory);
 		Host.MessageInterceptor = Interceptor = new EncodingInterceptor();
 
@@ -254,6 +255,7 @@ public class TestSupport {
 
 	[TearDown]
 	public void TearDown() {
+		log4net.LogManager.Shutdown();
 		Host.MessageInterceptor = null;
 		if (Host != null) {
 			Host.CloseHttp();
