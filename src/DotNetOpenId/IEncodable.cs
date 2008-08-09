@@ -33,6 +33,5 @@ namespace DotNetOpenId {
 		/// Does not apply to <see cref="DotNetOpenId.EncodingType.DirectResponse"/>.
 		/// </summary>
 		Uri RedirectUrl { get; }
-		Protocol Protocol { get; }
 	}
 }

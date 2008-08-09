@@ -5,11 +5,11 @@ using System.Web;
 using DotNetOpenId.RelyingParty;
 using NUnit.Framework;
 using ProviderMemoryStore = DotNetOpenId.AssociationMemoryStore<DotNetOpenId.AssociationRelyingPartyType>;
+using DotNetOpenId.Test.Mocks;
 
 namespace DotNetOpenId.Test.RelyingParty {
 	[TestFixture]
 	public class OpenIdRelyingPartyTest {
-		IRelyingPartyApplicationStore store;
 		UriIdentifier simpleOpenId = new UriIdentifier("http://nonexistant.openid.com");
 		readonly Realm realm = new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri);
 		readonly Uri returnTo = TestSupport.GetFullUrl(TestSupport.ConsumerPage);
@@ -17,14 +17,13 @@ namespace DotNetOpenId.Test.RelyingParty {
 
 		[SetUp]
 		public void Setup() {
-			store = new ApplicationMemoryStore();
 			if (!UntrustedWebRequest.WhitelistHosts.Contains("localhost"))
 				UntrustedWebRequest.WhitelistHosts.Add("localhost");
 		}
 
 		[TearDown]
 		public void TearDown() {
-			UntrustedWebRequest.MockRequests = null;
+			MockHttpRequest.Reset();
 		}
 
 		[Test]
@@ -35,7 +34,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 
 		[Test]
 		public void CtorWithNullRequestUri() {
-			new OpenIdRelyingParty(store, null, null);
+			new OpenIdRelyingParty(new ApplicationMemoryStore(), null, null);
 		}
 
 		[Test]
@@ -46,59 +45,64 @@ namespace DotNetOpenId.Test.RelyingParty {
 		[Test]
 		[ExpectedException(typeof(InvalidOperationException))]
 		public void CreateRequestWithoutContext1() {
-			var consumer = new OpenIdRelyingParty(store, simpleNonOpenIdRequest, new NameValueCollection());
+			var consumer = new OpenIdRelyingParty(new ApplicationMemoryStore(), simpleNonOpenIdRequest, new NameValueCollection());
 			consumer.CreateRequest(simpleOpenId);
 		}
 
 		[Test]
 		[ExpectedException(typeof(InvalidOperationException))]
 		public void CreateRequestWithoutContext2() {
-			var consumer = new OpenIdRelyingParty(store, simpleNonOpenIdRequest, new NameValueCollection());
+			var consumer = new OpenIdRelyingParty(new ApplicationMemoryStore(), simpleNonOpenIdRequest, new NameValueCollection());
 			consumer.CreateRequest(simpleOpenId, realm);
 		}
 
 		[Test]
 		public void CreateRequestStripsFragment() {
-			var consumer = new OpenIdRelyingParty(store, simpleNonOpenIdRequest, new NameValueCollection());
+			var consumer = TestSupport.CreateRelyingParty(null);
 			UriBuilder userSuppliedIdentifier = new UriBuilder((Uri)TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20));
 			userSuppliedIdentifier.Fragment = "c";
-			IAuthenticationRequest request = consumer.CreateRequest(userSuppliedIdentifier.Uri, realm, returnTo);
+			Identifier mockIdentifer = new MockIdentifier(userSuppliedIdentifier.Uri,
+				TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20).Discover());
+			Assert.IsTrue(mockIdentifer.ToString().EndsWith("#c"), "Test broken");
+			IAuthenticationRequest request = consumer.CreateRequest(mockIdentifer, TestSupport.Realm, TestSupport.ReturnTo);
 			Assert.AreEqual(0, new Uri(request.ClaimedIdentifier).Fragment.Length);
 		}
 
 		[Test]
 		public void AssociationCreationWithStore() {
-			var providerStore = new ProviderMemoryStore();
-
-			OpenIdRelyingParty rp = new OpenIdRelyingParty(new ApplicationMemoryStore(), null, null);
-			var idUrl = TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
+			TestSupport.ResetStores(); // get rid of existing associations so a new one is created
+			
+			OpenIdRelyingParty rp = TestSupport.CreateRelyingParty(null);
+			var directMessageSniffer = new DirectMessageSniffWrapper(rp.DirectMessageChannel);
+			rp.DirectMessageChannel = directMessageSniffer;
+			var idUrl = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
 
 			DotNetOpenId.RelyingParty.IAuthenticationRequest req;
 			bool associationMade = false;
-			TestSupport.Interceptor.SigningMessage = m => {
-				if (m.EncodedFields.ContainsKey("assoc_handle") && m.EncodedFields.ContainsKey("session_type"))
+			directMessageSniffer.Receiving += (provider, fields) => {
+				if (fields.ContainsKey("assoc_handle") && fields.ContainsKey("session_type"))
 					associationMade = true;
 			};
 			req = rp.CreateRequest(idUrl, realm, returnTo);
-			TestSupport.Interceptor.SigningMessage = null;
 			Assert.IsTrue(associationMade);
 		}
 
 		[Test]
 		public void NoAssociationRequestWithoutStore() {
-			var providerStore = new ProviderMemoryStore();
+			TestSupport.ResetStores(); // get rid of existing associations so a new one is created
 
-			OpenIdRelyingParty rp = new OpenIdRelyingParty(null, null, null);
-			var idUrl = TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
+			OpenIdRelyingParty rp = TestSupport.CreateRelyingParty(null, null);
+			var directMessageSniffer = new DirectMessageSniffWrapper(rp.DirectMessageChannel);
+			rp.DirectMessageChannel = directMessageSniffer;
+			var idUrl = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
 
 			DotNetOpenId.RelyingParty.IAuthenticationRequest req;
 			bool associationMade = false;
-			TestSupport.Interceptor.SigningMessage = m => {
-				if (m.EncodedFields.ContainsKey("assoc_handle") && m.EncodedFields.ContainsKey("session_type"))
+			directMessageSniffer.Receiving += (provider, fields) => {
+				if (fields.ContainsKey("assoc_handle") && fields.ContainsKey("session_type"))
 					associationMade = true;
 			};
 			req = rp.CreateRequest(idUrl, realm, returnTo);
-			TestSupport.Interceptor.SigningMessage = null;
 			Assert.IsFalse(associationMade);
 		}
 
@@ -128,9 +132,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 		}
 
 		private static void testExplicitPortOnRealmAndReturnTo(Uri returnTo, Realm realm) {
-			var identityUrl = TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
-			var consumer = new OpenIdRelyingParty(null, null, null);
-			var request = consumer.CreateRequest(identityUrl, realm, returnTo);
+			var request = TestSupport.CreateRelyingPartyRequest(true, TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
 			Protocol protocol = Protocol.Lookup(request.Provider.Version);
 			var nvc = HttpUtility.ParseQueryString(request.RedirectingResponse.ExtractUrl().Query);
 			string realmString = nvc[protocol.openid.Realm];
@@ -147,10 +149,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 
 		[Test]
 		public void ReturnToUrlEncodingTest() {
-			Uri origin = TestSupport.GetFullUrl(TestSupport.ConsumerPage);
-			var identityUrl = TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
-			var consumer = new OpenIdRelyingParty(null, null, null);
-			var request = consumer.CreateRequest(identityUrl, origin, origin);
+			var request = TestSupport.CreateRelyingPartyRequest(true, TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
 			Protocol protocol = Protocol.Lookup(request.Provider.Version);
 			request.AddCallbackArguments("a+b", "c+d");
 			var requestArgs = HttpUtility.ParseQueryString(request.RedirectingResponse.ExtractUrl().Query);
@@ -236,7 +235,7 @@ namespace DotNetOpenId.Test.RelyingParty {
  </Service>
  <ServedBy>OpenXRI</ServedBy>
 </XRD>";
-			UntrustedWebRequest.MockRequests = TestSupport.GenerateMockXrdsResponses(new Dictionary<string, string> {
+			MockHttpRequest.RegisterMockXrdsResponses(new Dictionary<string, string> {
 				{"https://xri.net/=MultipleEndpoint?_xrd_r=application/xrd%2Bxml;sep=false", xrds},
 				{"https://xri.net/=!91F2.8153.F600.AE24?_xrd_r=application/xrd%2Bxml;sep=false", xrds},
 			});

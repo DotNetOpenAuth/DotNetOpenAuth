@@ -1,313 +1,186 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using NUnit.Framework;
-using DotNetOpenId.RelyingParty;
 using System.Collections.Specialized;
-using System.Web;
-using System.Net;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Text.RegularExpressions;
+using DotNetOpenId.RelyingParty;
+using DotNetOpenId.Test.Mocks;
+using NUnit.Framework;
 
 namespace DotNetOpenId.Test {
 	[TestFixture]
 	public class EndToEndTesting {
-		IRelyingPartyApplicationStore appStore;
 
 		[SetUp]
 		public void Setup() {
-			appStore = new ApplicationMemoryStore();
 			if (!UntrustedWebRequest.WhitelistHosts.Contains("localhost"))
 				UntrustedWebRequest.WhitelistHosts.Add("localhost");
 		}
 
-		void parameterizedTest(UriIdentifier identityUrl,
-			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult,
-			bool tryReplayAttack, bool provideStore) {
-			parameterizedProgrammaticTest(identityUrl, identityUrl, requestMode, expectedResult, tryReplayAttack, provideStore);
-			parameterizedWebClientTest(identityUrl, requestMode, expectedResult, tryReplayAttack, provideStore);
+		[TearDown]
+		public void TearDown() {
+			MockHttpRequest.Reset();
 		}
-		void parameterizedTest(UriIdentifier opIdentifier, UriIdentifier claimedIdentifier,
-			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult,
-			bool tryReplayAttack, bool provideStore) {
-			parameterizedProgrammaticTest(opIdentifier, claimedIdentifier, requestMode, expectedResult, tryReplayAttack, provideStore);
-			parameterizedWebClientTest(opIdentifier, requestMode, expectedResult, tryReplayAttack, provideStore);
+
+		void parameterizedTest(TestSupport.Scenarios scenario, ProtocolVersion version,
+			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult) {
+			Identifier claimedId = TestSupport.GetMockIdentifier(scenario, version);
+			parameterizedProgrammaticTest(scenario, version, claimedId, requestMode, expectedResult, true);
+			parameterizedProgrammaticTest(scenario, version, claimedId, requestMode, expectedResult, false);
 		}
-		void parameterizedProgrammaticTest(UriIdentifier identityUrl, UriIdentifier claimedUrl,
-			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult,
-			bool tryReplayAttack, bool provideStore) {
-			var store = provideStore ? appStore : null;
+		void parameterizedOPIdentifierTest(TestSupport.Scenarios scenario,
+			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult) {
+			ProtocolVersion version = ProtocolVersion.V20; // only this version supports directed identity
+			UriIdentifier claimedIdentifier = TestSupport.GetDirectedIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, version);
+			Identifier opIdentifier = TestSupport.GetMockOPIdentifier(TestSupport.Scenarios.ApproveOnSetup, claimedIdentifier);
+			parameterizedProgrammaticOPIdentifierTest(opIdentifier, version, claimedIdentifier, requestMode, expectedResult, true);
+			parameterizedProgrammaticOPIdentifierTest(opIdentifier, version, claimedIdentifier, requestMode, expectedResult, false);
+		}
+		void parameterizedProgrammaticTest(TestSupport.Scenarios scenario, ProtocolVersion version, 
+			Identifier claimedUrl, AuthenticationRequestMode requestMode, 
+			AuthenticationStatus expectedResult, bool provideStore) {
 
-			Uri redirectToProviderUrl;
-			var returnTo = TestSupport.GetFullUrl(TestSupport.ConsumerPage);
-			var realm = new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri);
-			var consumer = new OpenIdRelyingParty(store, null, null);
-			Assert.IsNull(consumer.Response);
-			var request = consumer.CreateRequest(identityUrl, realm, returnTo);
-			Protocol protocol = Protocol.Lookup(request.Provider.Version);
-
-			// Test properties and defaults
-			Assert.AreEqual(AuthenticationRequestMode.Setup, request.Mode);
-			Assert.AreEqual(returnTo, request.ReturnToUrl);
-			Assert.AreEqual(realm, request.Realm);
-
+			var request = TestSupport.CreateRelyingPartyRequest(!provideStore, scenario, version);
 			request.Mode = requestMode;
 
-			// Verify the redirect URL
-			Assert.IsNotNull(request.RedirectingResponse);
-			var consumerToProviderQuery = HttpUtility.ParseQueryString(request.RedirectingResponse.ExtractUrl().Query);
-			Assert.IsTrue(consumerToProviderQuery[protocol.openid.return_to].StartsWith(returnTo.AbsoluteUri, StringComparison.Ordinal));
-			Assert.AreEqual(realm.ToString(), consumerToProviderQuery[protocol.openid.Realm]);
-			redirectToProviderUrl = request.RedirectingResponse.ExtractUrl();
-
-			HttpWebRequest providerRequest = (HttpWebRequest)WebRequest.Create(redirectToProviderUrl);
-			providerRequest.AllowAutoRedirect = false;
-			Uri redirectUrl;
-			try {
-				using (HttpWebResponse providerResponse = (HttpWebResponse)providerRequest.GetResponse()) {
-					Assert.AreEqual(HttpStatusCode.Redirect, providerResponse.StatusCode);
-					redirectUrl = new Uri(providerResponse.Headers[HttpResponseHeader.Location]);
-				}
-			} catch (WebException ex) {
-				Trace.WriteLine(ex);
-				if (ex.Response != null) {
-					using (StreamReader sr = new StreamReader(ex.Response.GetResponseStream())) {
-						Trace.WriteLine(sr.ReadToEnd());
-					}
-				}
-				throw;
-			}
-			consumer = new OpenIdRelyingParty(store, redirectUrl, HttpUtility.ParseQueryString(redirectUrl.Query));
-			Assert.AreEqual(expectedResult, consumer.Response.Status);
-			Assert.AreEqual(claimedUrl, consumer.Response.ClaimedIdentifier);
-
-			// Try replay attack
-			if (tryReplayAttack) {
-				// This simulates a network sniffing user who caught the 
-				// authenticating query en route to either the user agent or
-				// the consumer, and tries the same query to the consumer in an
-				// attempt to spoof the identity of the authenticating user.
-				try {
-					var replayAttackConsumer = new OpenIdRelyingParty(store, redirectUrl, HttpUtility.ParseQueryString(redirectUrl.Query));
-					Assert.AreNotEqual(AuthenticationStatus.Authenticated, replayAttackConsumer.Response.Status, "Replay attack");
-				} catch (OpenIdException) { // nonce already used
-					// another way to pass
-				}
-			}
+			var rpResponse = TestSupport.CreateRelyingPartyResponseThroughProvider(request, 
+				opReq => opReq.IsAuthenticated = expectedResult == AuthenticationStatus.Authenticated);
+			Assert.AreEqual(expectedResult, rpResponse.Status);
+			Assert.AreEqual(claimedUrl, rpResponse.ClaimedIdentifier);
 		}
-		void parameterizedWebClientTest(UriIdentifier identityUrl,
-			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult,
-			bool tryReplayAttack, bool provideStore) {
-			var store = provideStore ? appStore : null;
+		void parameterizedProgrammaticOPIdentifierTest(Identifier opIdentifier, ProtocolVersion version,
+			Identifier claimedUrl, AuthenticationRequestMode requestMode,
+			AuthenticationStatus expectedResult, bool provideStore) {
 
-			Uri redirectToProviderUrl;
-			HttpWebRequest rpRequest = (HttpWebRequest)WebRequest.Create(TestSupport.GetFullUrl(TestSupport.ConsumerPage));
-			NameValueCollection query = new NameValueCollection();
-			using (HttpWebResponse response = (HttpWebResponse)rpRequest.GetResponse()) {
-				using (StreamReader sr = new StreamReader(response.GetResponseStream())) {
-					Regex regex = new Regex(@"\<input\b.*\bname=""(\w+)"".*\bvalue=""([^""]+)""", RegexOptions.IgnoreCase);
-					while (!sr.EndOfStream) {
-						string line = sr.ReadLine();
-						Match m = regex.Match(line);
-						if (m.Success) {
-							query[m.Groups[1].Value] = m.Groups[2].Value;
-						}
-					}
-				}
-			}
-			query["OpenIdTextBox1$wrappedTextBox"] = identityUrl;
-			rpRequest = (HttpWebRequest)WebRequest.Create(TestSupport.GetFullUrl(TestSupport.ConsumerPage));
-			rpRequest.Method = "POST";
-			rpRequest.AllowAutoRedirect = false;
-			string queryString = UriUtil.CreateQueryString(query);
-			rpRequest.ContentLength = queryString.Length;
-			rpRequest.ContentType = "application/x-www-form-urlencoded";
-			using (StreamWriter sw = new StreamWriter(rpRequest.GetRequestStream())) {
-				sw.Write(queryString);
-			}
-			using (HttpWebResponse response = (HttpWebResponse)rpRequest.GetResponse()) {
-				using (StreamReader sr = new StreamReader(response.GetResponseStream())) {
-					string doc = sr.ReadToEnd();
-					Debug.WriteLine(doc);
-				}
-				redirectToProviderUrl = new Uri(response.Headers[HttpResponseHeader.Location]);
-			}
+			var rp = TestSupport.CreateRelyingParty(provideStore ? TestSupport.RelyingPartyStore : null, null, null);
 
-			HttpWebRequest providerRequest = (HttpWebRequest)WebRequest.Create(redirectToProviderUrl);
-			providerRequest.AllowAutoRedirect = false;
-			Uri redirectUrl;
-			try {
-				using (HttpWebResponse providerResponse = (HttpWebResponse)providerRequest.GetResponse()) {
-					Assert.AreEqual(HttpStatusCode.Redirect, providerResponse.StatusCode);
-					redirectUrl = new Uri(providerResponse.Headers[HttpResponseHeader.Location]);
-				}
-			} catch (WebException ex) {
-				Trace.WriteLine(ex);
-				if (ex.Response != null) {
-					using (StreamReader sr = new StreamReader(ex.Response.GetResponseStream())) {
-						Trace.WriteLine(sr.ReadToEnd());
-					}
-				}
-				throw;
-			}
-			rpRequest = (HttpWebRequest)WebRequest.Create(redirectUrl);
-			rpRequest.AllowAutoRedirect = false;
-			using (HttpWebResponse response = (HttpWebResponse)rpRequest.GetResponse()) {
-				Assert.AreEqual(HttpStatusCode.Redirect, response.StatusCode); // redirect on login
-			}
+			var returnTo = TestSupport.GetFullUrl(TestSupport.ConsumerPage);
+			var realm = new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri);
+			var request = rp.CreateRequest(opIdentifier, realm, returnTo);
+			request.Mode = requestMode;
 
-			// Try replay attack
-			if (tryReplayAttack) {
-				// This simulates a network sniffing user who caught the 
-				// authenticating query en route to either the user agent or
-				// the consumer, and tries the same query to the consumer in an
-				// attempt to spoof the identity of the authenticating user.
-				rpRequest = (HttpWebRequest)WebRequest.Create(redirectUrl);
-				rpRequest.AllowAutoRedirect = false;
-				using (HttpWebResponse response = (HttpWebResponse)rpRequest.GetResponse()) {
-					Assert.AreEqual(HttpStatusCode.OK, response.StatusCode); // error message
-				}
+			var rpResponse = TestSupport.CreateRelyingPartyResponseThroughProvider(request,
+				opReq => {
+					opReq.ClaimedIdentifier = claimedUrl;
+					opReq.IsAuthenticated = expectedResult == AuthenticationStatus.Authenticated;
+				});
+			Assert.AreEqual(expectedResult, rpResponse.Status);
+			if (rpResponse.Status == AuthenticationStatus.Authenticated) {
+				Assert.AreEqual(claimedUrl, rpResponse.ClaimedIdentifier);
 			}
 		}
 		[Test]
 		public void Pass_Setup_AutoApproval_11() {
 			parameterizedTest(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V11),
+				TestSupport.Scenarios.AutoApproval, ProtocolVersion.V11,
 				AuthenticationRequestMode.Setup,
-				AuthenticationStatus.Authenticated,
-				true,
-				true
+				AuthenticationStatus.Authenticated
 			);
 		}
 		[Test]
 		public void Pass_Setup_AutoApproval_20() {
 			parameterizedTest(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20),
+				TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20,
 				AuthenticationRequestMode.Setup,
-				AuthenticationStatus.Authenticated,
-				true,
-				true
+				AuthenticationStatus.Authenticated
 			);
 		}
 
 		[Test]
 		public void Pass_Immediate_AutoApproval_11() {
 			parameterizedTest(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V11),
+				TestSupport.Scenarios.AutoApproval, ProtocolVersion.V11,
 				AuthenticationRequestMode.Immediate,
-				AuthenticationStatus.Authenticated,
-				true,
-				true
+				AuthenticationStatus.Authenticated
 			);
 		}
 		[Test]
 		public void Pass_Immediate_AutoApproval_20() {
 			parameterizedTest(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20),
+				TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20,
 				AuthenticationRequestMode.Immediate,
-				AuthenticationStatus.Authenticated,
-				true,
-				true
+				AuthenticationStatus.Authenticated
 			);
 		}
 
 		[Test]
 		public void Fail_Immediate_ApproveOnSetup_11() {
 			parameterizedTest(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V11),
+				TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V11,
 				AuthenticationRequestMode.Immediate,
-				AuthenticationStatus.SetupRequired,
-				false,
-				true
+				AuthenticationStatus.SetupRequired
 			);
 		}
 		[Test]
 		public void Fail_Immediate_ApproveOnSetup_20() {
 			parameterizedTest(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20),
+				TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20,
 				AuthenticationRequestMode.Immediate,
-				AuthenticationStatus.SetupRequired,
-				false,
-				true
+				AuthenticationStatus.SetupRequired
 			);
 		}
 
 		[Test]
 		public void Pass_Setup_ApproveOnSetup_11() {
 			parameterizedTest(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V11),
+				TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V11,
 				AuthenticationRequestMode.Setup,
-				AuthenticationStatus.Authenticated,
-				true,
-				true
+				AuthenticationStatus.Authenticated
 			);
 		}
 		[Test]
 		public void Pass_Setup_ApproveOnSetup_20() {
 			parameterizedTest(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20),
+				TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20,
 				AuthenticationRequestMode.Setup,
-				AuthenticationStatus.Authenticated,
-				true,
-				true
+				AuthenticationStatus.Authenticated
 			);
 		}
 
 		[Test]
-		public void Pass_NoStore_AutoApproval_11() {
-			parameterizedTest(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V11),
-				AuthenticationRequestMode.Setup,
-				AuthenticationStatus.Authenticated,
-				true,
-				false
-			);
+		public void Pass_Immediate_AutoApproval_DirectedIdentity_20() {
+			parameterizedOPIdentifierTest(
+				TestSupport.Scenarios.AutoApproval,
+				AuthenticationRequestMode.Immediate,
+				AuthenticationStatus.Authenticated);
 		}
-		[Test]
-		public void Pass_NoStore_AutoApproval_20() {
-			parameterizedTest(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20),
-				AuthenticationRequestMode.Setup,
-				AuthenticationStatus.Authenticated,
-				true,
-				false
-			);
-		}
+
 		[Test]
 		public void Pass_Setup_ApproveOnSetup_DirectedIdentity_20() {
-			parameterizedTest(
-				TestSupport.GetOPIdentityUrl(TestSupport.Scenarios.ApproveOnSetup),
-				TestSupport.GetDirectedIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20),
+			parameterizedOPIdentifierTest(
+				TestSupport.Scenarios.ApproveOnSetup,
 				AuthenticationRequestMode.Setup,
-				AuthenticationStatus.Authenticated,
-				true,
-				true);
+				AuthenticationStatus.Authenticated);
 		}
+
 		[Test]
-		public void Pass_NoStore_ApproveOnSetup_DirectedIdentity_20() {
-			parameterizedTest(
-				TestSupport.GetOPIdentityUrl(TestSupport.Scenarios.ApproveOnSetup),
-				TestSupport.GetDirectedIdentityUrl(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20),
-				AuthenticationRequestMode.Setup,
-				AuthenticationStatus.Authenticated,
-				true,
-				false);
+		public void Fail_Immediate_ApproveOnSetup_DirectedIdentity_20() {
+			parameterizedOPIdentifierTest(
+				TestSupport.Scenarios.ApproveOnSetup,
+				AuthenticationRequestMode.Immediate,
+				AuthenticationStatus.SetupRequired);
 		}
 
 		[Test]
 		public void ProviderAddedFragmentRemainsInClaimedIdentifier() {
-			Uri userSuppliedIdentifier = TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApprovalAddFragment, ProtocolVersion.V20);
+			Identifier userSuppliedIdentifier = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApprovalAddFragment, ProtocolVersion.V20);
 			UriBuilder claimedIdentifier = new UriBuilder(userSuppliedIdentifier);
 			claimedIdentifier.Fragment = "frag";
 			parameterizedProgrammaticTest(
-				userSuppliedIdentifier,
+				TestSupport.Scenarios.AutoApprovalAddFragment, ProtocolVersion.V20,
 				claimedIdentifier.Uri,
 				AuthenticationRequestMode.Setup,
 				AuthenticationStatus.Authenticated,
-				false,
 				true
 			);
+		}
+
+		[Test]
+		public void SampleScriptedTest() {
+			var rpReq = TestSupport.CreateRelyingPartyRequest(false, TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
+			var rpResp = TestSupport.CreateRelyingPartyResponseThroughProvider(rpReq, opReq => opReq.IsAuthenticated = true);
+			Assert.AreEqual(AuthenticationStatus.Authenticated, rpResp.Status);
 		}
 	}
 }

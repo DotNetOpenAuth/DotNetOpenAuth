@@ -20,7 +20,6 @@ namespace DotNetOpenId {
 		/// </summary>
 		public Identifier Identifier { get; private set; }
 		internal Protocol Protocol = Protocol.Default;
-		Protocol IEncodable.Protocol { get { return this.Protocol; } }
 		internal IDictionary<string, string> ExtraArgsToReturn;
 
 		internal OpenIdException(string message, Identifier identifier, IDictionary<string, string> query, Exception innerException)

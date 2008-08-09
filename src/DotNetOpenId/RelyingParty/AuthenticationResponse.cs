@@ -146,7 +146,7 @@ namespace DotNetOpenId.RelyingParty {
 		}
 
 		internal static AuthenticationResponse Parse(IDictionary<string, string> query,
-			IRelyingPartyApplicationStore store, Uri requestUrl) {
+			OpenIdRelyingParty relyingParty, Uri requestUrl) {
 			if (query == null) throw new ArgumentNullException("query");
 			if (requestUrl == null) throw new ArgumentNullException("requestUrl");
 
@@ -160,7 +160,7 @@ namespace DotNetOpenId.RelyingParty {
 				HttpUtility.ParseQueryString(requestUrl.Query));
 			string token = Util.GetOptionalArg(requestUrlQuery, Token.TokenKey);
 			if (token != null) {
-				tokenEndpoint = Token.Deserialize(token, store).Endpoint;
+				tokenEndpoint = Token.Deserialize(token, relyingParty.Store).Endpoint;
 			}
 
 			Protocol protocol = Protocol.Detect(query);
@@ -196,7 +196,7 @@ namespace DotNetOpenId.RelyingParty {
 				// verified.
 				// For the error-handling and cancellation cases, the info does not have to
 				// be verified, so we'll use whichever one is available.
-				return parseIdResResponse(query, tokenEndpoint, responseEndpoint, store, requestUrl);
+				return parseIdResResponse(query, tokenEndpoint, responseEndpoint, relyingParty, requestUrl);
 			} else {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.InvalidOpenIdQueryParameterValue,
@@ -206,7 +206,7 @@ namespace DotNetOpenId.RelyingParty {
 
 		static AuthenticationResponse parseIdResResponse(IDictionary<string, string> query,
 			ServiceEndpoint tokenEndpoint, ServiceEndpoint responseEndpoint,
-			IRelyingPartyApplicationStore store, Uri requestUrl) {
+			OpenIdRelyingParty relyingParty, Uri requestUrl) {
 			// Use responseEndpoint if it is available so we get the
 			// Claimed Identifer correct in the AuthenticationResponse.
 			ServiceEndpoint unverifiedEndpoint = responseEndpoint ?? tokenEndpoint;
@@ -219,8 +219,8 @@ namespace DotNetOpenId.RelyingParty {
 
 			verifyReturnTo(query, unverifiedEndpoint, requestUrl);
 			verifyDiscoveredInfoMatchesAssertedInfo(query, tokenEndpoint, responseEndpoint);
-			verifyNonceUnused(query, unverifiedEndpoint, store);
-			verifySignature(query, unverifiedEndpoint, store);
+			verifyNonceUnused(query, unverifiedEndpoint, relyingParty.Store);
+			verifySignature(relyingParty, query, unverifiedEndpoint);
 
 			return new AuthenticationResponse(AuthenticationStatus.Authenticated, unverifiedEndpoint, query);
 		}
@@ -306,7 +306,7 @@ namespace DotNetOpenId.RelyingParty {
 			nonce.Consume(store);
 		}
 
-		static void verifySignature(IDictionary<string, string> query, ServiceEndpoint endpoint, IRelyingPartyApplicationStore store) {
+		static void verifySignature(OpenIdRelyingParty relyingParty, IDictionary<string, string> query, ServiceEndpoint endpoint) {
 			string signed = Util.GetRequiredArg(query, endpoint.Protocol.openid.signed);
 			string[] signedFields = signed.Split(',');
 
@@ -329,13 +329,13 @@ namespace DotNetOpenId.RelyingParty {
 
 			// Now actually validate the signature itself.
 			string assoc_handle = Util.GetRequiredArg(query, endpoint.Protocol.openid.assoc_handle);
-			Association assoc = store != null ? store.GetAssociation(endpoint.ProviderEndpoint, assoc_handle) : null;
+			Association assoc = relyingParty.Store != null ? relyingParty.Store.GetAssociation(endpoint.ProviderEndpoint, assoc_handle) : null;
 
 			if (assoc == null) {
 				// It's not an association we know about.  Dumb mode is our
 				// only possible path for recovery.
 				Logger.Debug("Passing signature back to Provider for verification (no association available)...");
-				verifySignatureByProvider(query, endpoint, store);
+				verifySignatureByProvider(relyingParty, query, endpoint);
 			} else {
 				if (assoc.IsExpired)
 					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
@@ -378,10 +378,10 @@ namespace DotNetOpenId.RelyingParty {
 		/// to the consumer site with an authenticated status.
 		/// </summary>
 		/// <returns>Whether the authentication is valid.</returns>
-		static void verifySignatureByProvider(IDictionary<string, string> query, ServiceEndpoint provider, IRelyingPartyApplicationStore store) {
-			var request = CheckAuthRequest.Create(provider, query);
-			if (request.Response.InvalidatedAssociationHandle != null && store != null)
-				store.RemoveAssociation(provider.ProviderEndpoint, request.Response.InvalidatedAssociationHandle);
+		static void verifySignatureByProvider(OpenIdRelyingParty relyingParty, IDictionary<string, string> query, ServiceEndpoint provider) {
+			var request = CheckAuthRequest.Create(relyingParty, provider, query);
+			if (request.Response.InvalidatedAssociationHandle != null && relyingParty.Store != null)
+				relyingParty.Store.RemoveAssociation(provider.ProviderEndpoint, request.Response.InvalidatedAssociationHandle);
 			if (!request.Response.IsAuthenticationValid)
 				throw new OpenIdException(Strings.InvalidSignature);
 		}

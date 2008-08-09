@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
 using DotNetOpenId.RelyingParty;
+using DotNetOpenId.Test.Mocks;
 using NUnit.Framework;
 
 namespace DotNetOpenId.Test {
@@ -14,7 +13,7 @@ namespace DotNetOpenId.Test {
 
 		[TearDown]
 		public void TearDown() {
-			UntrustedWebRequest.MockRequests = null;
+			MockHttpRequest.Reset();
 		}
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
@@ -123,7 +122,7 @@ namespace DotNetOpenId.Test {
 				{"https://xri.net/=Arnott?_xrd_r=application/xrd%2Bxml;sep=false", xrds},
 				{"https://xri.net/=!9B72.7DD1.50A9.5CCD?_xrd_r=application/xrd%2Bxml;sep=false", xrds},
 			};
-			UntrustedWebRequest.MockRequests = TestSupport.GenerateMockXrdsResponses(mocks);
+			MockHttpRequest.RegisterMockXrdsResponses(mocks);
 
 			string expectedCanonicalId = "=!9B72.7DD1.50A9.5CCD";
 			ServiceEndpoint se = verifyCanonicalId("=Arnott", expectedCanonicalId);
@@ -349,7 +348,7 @@ uEyb50RJ7DWmXctSC0b3eymZ2lSXxAWNOsNy
   </X509Data>
  </KeyInfo>
 </XRD>";
-			UntrustedWebRequest.MockRequests = TestSupport.GenerateMockXrdsResponses(new Dictionary<string, string> {
+			MockHttpRequest.RegisterMockXrdsResponses(new Dictionary<string, string> {
 				{ "https://xri.net/@llli?_xrd_r=application/xrd%2Bxml;sep=false", llliResponse},
 				{ "https://xri.net/@!72CD.A072.157E.A9C6?_xrd_r=application/xrd%2Bxml;sep=false", llliResponse},
 
@@ -374,7 +373,7 @@ uEyb50RJ7DWmXctSC0b3eymZ2lSXxAWNOsNy
 
 		[Test]
 		public void DiscoveryCommunityInameDelegateWithoutCanonicalID() {
-			UntrustedWebRequest.MockRequests = TestSupport.GenerateMockXrdsResponses(new Dictionary<string, string> {
+			MockHttpRequest.RegisterMockXrdsResponses(new Dictionary<string, string> {
 				{ "https://xri.net/=Web*andrew.arnott?_xrd_r=application/xrd%2Bxml;sep=false", @"<?xml version='1.0' encoding='UTF-8'?>
 <XRD xmlns='xri://$xrd*($v*2.0)'>
  <Query>*andrew.arnott</Query>

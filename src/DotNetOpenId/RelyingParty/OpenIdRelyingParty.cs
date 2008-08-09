@@ -84,10 +84,11 @@ namespace DotNetOpenId.RelyingParty {
 	/// </example>
 	[DebuggerDisplay("isAuthenticationResponseReady: {isAuthenticationResponseReady}, stateless: {store == null}")]
 	public class OpenIdRelyingParty {
-		IRelyingPartyApplicationStore store;
+		internal IRelyingPartyApplicationStore Store;
 		Uri request;
 		IDictionary<string, string> query;
 		MessageEncoder encoder = new MessageEncoder();
+		internal IDirectMessageChannel DirectMessageChannel = new DirectMessageHttpChannel();
 
 		/// <summary>
 		/// Constructs an OpenId consumer that uses the current HttpContext request
@@ -131,7 +132,7 @@ namespace DotNetOpenId.RelyingParty {
 			this(store, requestUrl, Util.NameValueCollectionToDictionary(query)) {
 		}
 		OpenIdRelyingParty(IRelyingPartyApplicationStore store, Uri requestUrl, IDictionary<string, string> query) {
-			this.store = store;
+			this.Store = store;
 			if (store != null) {
 				store.ClearExpiredAssociations(); // every so often we should do this.
 			}
@@ -163,7 +164,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// send to the user agent to initiate the authentication.
 		/// </returns>
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl) {
-			return AuthenticationRequest.Create(userSuppliedIdentifier, this, realm, returnToUrl, store);
+			return AuthenticationRequest.Create(userSuppliedIdentifier, this, realm, returnToUrl);
 		}
 
 		/// <summary>
@@ -267,7 +268,7 @@ namespace DotNetOpenId.RelyingParty {
 			get {
 				if (response == null && isAuthenticationResponseReady) {
 					try {
-						response = AuthenticationResponse.Parse(query, store, request);
+						response = AuthenticationResponse.Parse(query, this, request);
 					} catch (OpenIdException ex) {
 						response = new FailedAuthenticationResponse(ex);
 					}
