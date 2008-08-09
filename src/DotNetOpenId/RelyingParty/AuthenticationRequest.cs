@@ -38,7 +38,7 @@ namespace DotNetOpenId.RelyingParty {
 			if (realm == null) throw new ArgumentNullException("realm");
 			if (returnToUrl == null) throw new ArgumentNullException("returnToUrl");
 			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
-			
+
 			this.assoc = assoc;
 			this.endpoint = endpoint;
 			RelyingParty = relyingParty;
@@ -222,17 +222,6 @@ namespace DotNetOpenId.RelyingParty {
 		/// OpenID authentication process.
 		/// </summary>
 		public IResponse RedirectingResponse {
-			get { return RelyingParty.Encoder.Encode(RedirectingEncodableResponse); }
-		}
-
-		/// <summary>
-		/// Generates the encodable message used to begin the authentication.
-		/// </summary>
-		/// <remarks>
-		/// This is separated from the <see cref="RedirectingResponse"/> property
-		/// so that unit testing that mocks up the actual HTTP transport can be done.
-		/// </remarks>
-		internal IEncodable RedirectingEncodableResponse {
 			get {
 				UriBuilder returnToBuilder = new UriBuilder(ReturnToUrl);
 				UriUtil.AppendQueryArgs(returnToBuilder, this.ReturnToArgs);
@@ -258,7 +247,7 @@ namespace DotNetOpenId.RelyingParty {
 					qsArgs.Add(pair.Key, pair.Value);
 
 				var request = new IndirectMessageRequest(this.endpoint.ProviderEndpoint, qsArgs);
-				return request;
+				return RelyingParty.Encoder.Encode(request);
 			}
 		}
 
