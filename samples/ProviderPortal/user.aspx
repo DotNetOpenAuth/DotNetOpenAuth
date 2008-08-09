@@ -1,9 +1,9 @@
 <%@ Page Language="C#" AutoEventWireup="true" Inherits="user" CodeBehind="user.aspx.cs" MasterPageFile="~/Site.Master" %>
 
 <%@ Register Assembly="DotNetOpenId" Namespace="DotNetOpenId.Provider" TagPrefix="openid" %>
-<asp:Content ID="Content2" runat="server" ContentPlaceHolderID="Head">
+<asp:Content ID="Content2" runat="server" ContentPlaceHolderID="head">
 	<openid:IdentityEndpoint ID="IdentityEndpoint20" runat="server" ProviderEndpointUrl="~/Server.aspx"
-		XrdsUrl="~/user_xrds.aspx" ProviderVersion="V20" />
+		XrdsUrl="~/user_xrds.aspx" ProviderVersion="V20" AutoNormalizeRequest="true" OnNormalizeUri="IdentityEndpoint20_NormalizeUri" />
 	<!-- and for backward compatibility with OpenID 1.x RPs... -->
 	<openid:IdentityEndpoint ID="IdentityEndpoint11" runat="server" ProviderEndpointUrl="~/Server.aspx"
 		ProviderVersion="V11" />

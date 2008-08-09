@@ -1,5 +1,7 @@
 using System;
 using System.Configuration;
+using DotNetOpenId.Provider;
+using System.Text.RegularExpressions;
 
 /// <summary>
 /// This page is a required as part of the service discovery phase of the openid protocol (step 1).
@@ -17,5 +19,22 @@ using System.Configuration;
 public partial class user : System.Web.UI.Page {
 	protected void Page_Load(object sender, EventArgs e) {
 		usernameLabel.Text = Request.QueryString["username"];
+	}
+
+	protected void IdentityEndpoint20_NormalizeUri(object sender, IdentityEndpointNormalizationEventArgs e) {
+		// This sample Provider has a custom policy for normalizing URIs, which is that the whole
+		// path of the URI be lowercase except for the first letter of the username.
+		UriBuilder builder = new UriBuilder(e.UserSuppliedIdentifier);
+		builder.Path = builder.Path.ToLowerInvariant(); // start by lowercasing everything
+		builder.Path = builder.Path.Trim('/'); // ensure no trailing slashes
+		builder.Query = null; // there shouldn't be any query
+		// Capitalize the first letter of the username
+		Match m = Regex.Match(builder.Path, "^/user/(.+)$");
+		if (m.Success) {
+			string username = m.Groups[1].Value;
+			username = username.Substring(0, 1).ToUpperInvariant() + username.Substring(1);
+			builder.Path = "/user/" + username;
+		}
+		e.NormalizedIdentifier = builder.Uri;
 	}
 }
