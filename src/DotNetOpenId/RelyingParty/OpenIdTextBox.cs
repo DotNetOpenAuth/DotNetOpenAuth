@@ -32,9 +32,9 @@ namespace DotNetOpenId.RelyingParty
 	/// control, but requires more work to be done by the hosting web site to 
 	/// assemble a complete login experience.
 	/// </remarks>
-	[DefaultProperty("Text")]
+	[DefaultProperty("Text"), ValidationProperty("Text")]
 	[ToolboxData("<{0}:OpenIdTextBox runat=\"server\"></{0}:OpenIdTextBox>")]
-	public class OpenIdTextBox : CompositeControl
+	public class OpenIdTextBox : CompositeControl, IEditableTextControl, ITextControl
 	{
 		/// <summary>
 		/// Instantiates an <see cref="OpenIdTextBox"/> instance.
@@ -778,6 +778,15 @@ namespace DotNetOpenId.RelyingParty
 			var setupRequired = SetupRequired;
 			if (setupRequired != null)
 				setupRequired(this, new OpenIdEventArgs(response));
+		}
+
+		#endregion
+
+		#region IEditableTextControl Members
+
+		public event EventHandler TextChanged {
+			add { WrappedTextBox.TextChanged += value; }
+			remove { WrappedTextBox.TextChanged -= value; }
 		}
 
 		#endregion

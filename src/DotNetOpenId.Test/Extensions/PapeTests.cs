@@ -11,7 +11,7 @@ namespace DotNetOpenId.Test.Extensions {
 		[Test]
 		public void None() {
 			var response = ParameterizedTest<PolicyResponse>(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ExtensionFullCooperation, Version), null);
+				TestSupport.Scenarios.ExtensionFullCooperation, Version, null);
 			Assert.IsNull(response);
 		}
 
@@ -20,7 +20,7 @@ namespace DotNetOpenId.Test.Extensions {
 			var request = new PolicyRequest();
 			request.MaximumAuthenticationAge = TimeSpan.FromMinutes(10);
 			var response = ParameterizedTest<PolicyResponse>(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ExtensionFullCooperation, Version), request);
+				TestSupport.Scenarios.ExtensionFullCooperation, Version, request);
 			Assert.IsNotNull(response);
 			Assert.IsNotNull(response.AuthenticationTimeUtc);
 			Assert.IsTrue(response.AuthenticationTimeUtc.Value > DateTime.UtcNow - request.MaximumAuthenticationAge);

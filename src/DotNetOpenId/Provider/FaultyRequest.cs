@@ -18,7 +18,7 @@ namespace DotNetOpenId.Provider {
 			get { return true; }
 		}
 
-		internal override IEncodable CreateResponse() {
+		protected override IEncodable CreateResponse() {
 			return Response;
 		}
 	}

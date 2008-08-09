@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
-using DotNetOpenId.RelyingParty;
-using System.Net;
-using System.Diagnostics;
-using System.IO;
-using System.Web;
 using System.Collections.Specialized;
+using System.Web;
+using DotNetOpenId.RelyingParty;
+using DotNetOpenId.Test.Mocks;
+using NUnit.Framework;
 
 namespace DotNetOpenId.Test.RelyingParty {
 	[TestFixture]
@@ -16,7 +12,6 @@ namespace DotNetOpenId.Test.RelyingParty {
 		Realm realm = new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri);
 		Uri returnTo;
 		const string returnToRemovableParameter = "a";
-		ApplicationMemoryStore store;
 
 		public AuthenticationResponseTests() {
 			UriBuilder builder = new UriBuilder(TestSupport.GetFullUrl(TestSupport.ConsumerPage));
@@ -28,38 +23,23 @@ namespace DotNetOpenId.Test.RelyingParty {
 
 		[SetUp]
 		public void SetUp() {
-			store = new ApplicationMemoryStore();
 			if (!UntrustedWebRequest.WhitelistHosts.Contains("localhost"))
 				UntrustedWebRequest.WhitelistHosts.Add("localhost");
 		}
 
+		[TearDown]
+		public void TearDown() {
+			MockHttpRequest.Reset();
+		}
+
 		Uri getPositiveAssertion(ProtocolVersion version) {
-			try {
-				OpenIdRelyingParty rp = new OpenIdRelyingParty(store, null, null);
-				Identifier id = TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, version);
-				var request = rp.CreateRequest(id, realm, returnTo);
-				HttpWebRequest providerRequest = (HttpWebRequest)WebRequest.Create(request.RedirectingResponse.ExtractUrl());
-				providerRequest.AllowAutoRedirect = false;
-				Uri redirectUrl;
-				try {
-					using (HttpWebResponse providerResponse = (HttpWebResponse)providerRequest.GetResponse()) {
-						Assert.AreEqual(HttpStatusCode.Redirect, providerResponse.StatusCode);
-						redirectUrl = new Uri(providerResponse.Headers[HttpResponseHeader.Location]);
-					}
-				} catch (WebException ex) {
-					Trace.WriteLine(ex);
-					if (ex.Response != null) {
-						using (StreamReader sr = new StreamReader(ex.Response.GetResponseStream())) {
-							Trace.WriteLine(sr.ReadToEnd());
-						}
-					}
-					throw;
-				}
-				return redirectUrl;
-			} catch (OpenIdException ex) {
-				Assert.Ignore("Test failed to verify good or bad behavior on account of failing to set itself up: {0}", ex);
-				return null; // Assert.Ignore will throw an exception anyway
-			}
+			OpenIdRelyingParty rp = TestSupport.CreateRelyingParty(null);
+			Identifier id = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, version);
+			var request = rp.CreateRequest(id, realm, returnTo);
+			var provider = TestSupport.CreateProviderForRequest(request);
+			var opRequest = provider.Request as DotNetOpenId.Provider.IAuthenticationRequest;
+			opRequest.IsAuthenticated = true;
+			return opRequest.Response.ExtractUrl();
 		}
 		void removeQueryParameter(ref Uri uri, string parameterToRemove) {
 			UriBuilder builder = new UriBuilder(uri);
@@ -92,7 +72,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 		void resign(ref Uri uri) {
 			UriBuilder builder = new UriBuilder(uri);
 			NameValueCollection nvc = HttpUtility.ParseQueryString(builder.Query);
-			TestSupport.Resign(nvc, store);
+			TestSupport.Resign(nvc, TestSupport.RelyingPartyStore);
 			builder.Query = UriUtil.CreateQueryString(nvc);
 			uri = builder.Uri;
 		}
@@ -106,7 +86,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 			// which should cause a failure because the return_to argument
 			// says that parameter is supposed to be there.
 			removeQueryParameter(ref assertion, returnToRemovableParameter);
-			var response = new OpenIdRelyingParty(store, assertion, HttpUtility.ParseQueryString(assertion.Query)).Response;
+			var response = TestSupport.CreateRelyingParty(TestSupport.RelyingPartyStore, assertion, HttpUtility.ParseQueryString(assertion.Query)).Response;
 			Assert.AreEqual(AuthenticationStatus.Failed, response.Status);
 			Assert.IsNotNull(response.Exception);
 		}
@@ -140,7 +120,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 			resign(ref assertion); // resign changed URL to simulate a contrived OP for breaking into RPs.
 
 			// (triggers exception) "... you're in trouble up to your ears."
-			var response = new OpenIdRelyingParty(store, assertion, HttpUtility.ParseQueryString(assertion.Query)).Response;
+			var response = TestSupport.CreateRelyingParty(TestSupport.RelyingPartyStore, assertion, HttpUtility.ParseQueryString(assertion.Query)).Response;
 			Assert.AreEqual(AuthenticationStatus.Failed, response.Status);
 			Assert.IsNotNull(response.Exception);
 		}

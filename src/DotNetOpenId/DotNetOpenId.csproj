@@ -60,6 +60,8 @@
     <Compile Include="AssociationMemoryStore.cs" />
     <Compile Include="Associations.cs" />
     <Compile Include="Provider\SigningMessageEncoder.cs" />
+    <Compile Include="RelyingParty\DirectMessageHttpChannel.cs" />
+    <Compile Include="RelyingParty\IDirectMessageChannel.cs" />
     <Compile Include="RelyingParty\IndirectMessageRequest.cs" />
     <Compile Include="ExtensionArgumentsManager.cs" />
     <Compile Include="Extensions\AliasManager.cs" />

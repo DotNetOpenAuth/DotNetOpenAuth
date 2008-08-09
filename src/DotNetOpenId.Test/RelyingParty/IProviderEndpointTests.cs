@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
-using DotNetOpenId.RelyingParty;
-using DotNetOpenId.Extensions.SimpleRegistration;
 using DotNetOpenId.Extensions.AttributeExchange;
+using DotNetOpenId.Extensions.SimpleRegistration;
+using DotNetOpenId.RelyingParty;
+using NUnit.Framework;
+using DotNetOpenId.Test.Mocks;
 
 namespace DotNetOpenId.Test.RelyingParty {
 	[TestFixture]
@@ -21,11 +19,16 @@ namespace DotNetOpenId.Test.RelyingParty {
 				UntrustedWebRequest.WhitelistHosts.Add("localhost");
 		}
 
+		[TearDown]
+		public void TearDown() {
+			Mocks.MockHttpRequest.Reset();
+		}
+
 		[Test]
 		public void IsExtensionSupportedTest() {
-			OpenIdRelyingParty rp = new OpenIdRelyingParty(store, null, null);
-			Identifier id = TestSupport.GetFullUrl("xrdsdiscovery/xrds20.aspx");
-			IAuthenticationRequest request = rp.CreateRequest(id, realm, returnTo);
+			OpenIdRelyingParty rp = TestSupport.CreateRelyingParty(null);
+			Identifier id = MockHttpRequest.RegisterMockXrdsResponse("/Discovery/xrdsdiscovery/xrds20.xml");
+			IAuthenticationRequest request = rp.CreateRequest(id, TestSupport.Realm, TestSupport.ReturnTo);
 			IProviderEndpoint provider = request.Provider;
 			Assert.IsTrue(provider.IsExtensionSupported<ClaimsRequest>());
 			Assert.IsTrue(provider.IsExtensionSupported(typeof(ClaimsRequest)));
@@ -34,7 +37,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 
 			// Test the AdditionalTypeUris list by pulling from an XRDS page with one of the
 			// TypeURIs that only shows up in that list.
-			id = TestSupport.GetFullUrl("xrdsdiscovery/xrds10.aspx");
+			id = MockHttpRequest.RegisterMockXrdsResponse("/Discovery/xrdsdiscovery/xrds10.xml");
 			request = rp.CreateRequest(id, realm, returnTo);
 			Assert.IsTrue(provider.IsExtensionSupported<ClaimsRequest>());
 			Assert.IsTrue(provider.IsExtensionSupported(typeof(ClaimsRequest)));
@@ -42,9 +45,9 @@ namespace DotNetOpenId.Test.RelyingParty {
 
 		[Test]
 		public void UriTest() {
-			OpenIdRelyingParty rp = new OpenIdRelyingParty(store, null, null);
-			Identifier id = TestSupport.GetFullUrl("xrdsdiscovery/xrds20.aspx");
-			IAuthenticationRequest request = rp.CreateRequest(id, realm, returnTo);
+			OpenIdRelyingParty rp = TestSupport.CreateRelyingParty(null);
+			Identifier id = MockHttpRequest.RegisterMockXrdsResponse("/Discovery/xrdsdiscovery/xrds20.xml");
+			IAuthenticationRequest request = rp.CreateRequest(id, TestSupport.Realm, TestSupport.ReturnTo);
 			IProviderEndpoint provider = request.Provider;
 			Assert.AreEqual(new Uri("http://a/b"), provider.Uri);
 		}

@@ -10,7 +10,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
 	<title>Untitled Page</title>
-	<openid:XrdsPublisher runat="server" ID="xrdsPublisher" XrdsUrl="~/rp_xrds.aspx" />
+	<openid:XrdsPublisher runat="server" ID="xrdsPublisher" XrdsUrl="~/rp_xrds.aspx" XrdsAdvertisement=Both />
 </head>
 <body>
 	<form id="form1" runat="server">

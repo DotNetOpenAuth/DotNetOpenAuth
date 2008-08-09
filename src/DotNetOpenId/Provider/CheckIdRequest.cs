@@ -248,7 +248,7 @@ namespace DotNetOpenId.Provider {
 			}
 		}
 
-		internal override IEncodable CreateResponse() {
+		protected override IEncodable CreateResponse() {
 			Debug.Assert(IsAuthenticated.HasValue, "This should be checked internally before CreateResponse is called.");
 			return AssertionMessage.CreateAssertion(this);
 		}

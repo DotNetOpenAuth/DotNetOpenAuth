@@ -87,7 +87,7 @@ namespace DotNetOpenId.Provider
 		/// Indicates whether this request has all the information necessary to formulate a response.
 		/// </summary>
 		public abstract bool IsResponseReady { get; }
-		internal abstract IEncodable CreateResponse();
+		protected abstract IEncodable CreateResponse();
 		/// <summary>
 		/// Called whenever a property changes that would cause the response to need to be
 		/// regenerated if it had already been generated.

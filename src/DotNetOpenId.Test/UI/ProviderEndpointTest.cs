@@ -6,7 +6,7 @@ using DotNetOpenId.Test.Hosting;
 using DotNetOpenId.Provider;
 using System.Net;
 
-namespace DotNetOpenId.Test.Provider {
+namespace DotNetOpenId.Test.UI {
 	[TestFixture]
 	public class ProviderEndpointTest {
 		[Test]

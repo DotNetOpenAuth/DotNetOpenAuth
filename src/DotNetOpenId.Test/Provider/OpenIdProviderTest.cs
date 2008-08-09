@@ -60,5 +60,10 @@ namespace DotNetOpenId.Test.Provider {
 				providerEndpoint, emptyRequestUrl, new NameValueCollection());
 			Assert.IsNull(op.Request);
 		}
+
+		//[Test, Ignore("Not implemented")]
+		public void PrepareUnsolicitedAssertion() {
+			// TODO: code here
+		}
 	}
 }

@@ -9,15 +9,15 @@ using System.Text.RegularExpressions;
 using System.Net;
 using System.Globalization;
 
-namespace DotNetOpenId.Test.Provider {
+namespace DotNetOpenId.Test.UI {
 	[TestFixture]
 	public class IdentityEndpointTest {
 		void parameterizedIdentityEndpointPage(ProtocolVersion version) {
 			Protocol protocol = Protocol.Lookup(version);
 			TestSupport.Scenarios scenario = TestSupport.Scenarios.AutoApproval;
-			UriIdentifier identityUrl = TestSupport.GetIdentityUrl(scenario, version);
-			string html = TestSupport.Host.ProcessRequest(identityUrl.Uri.AbsoluteUri);
-			Trace.TraceInformation("{0} response:{1}{2}", identityUrl, Environment.NewLine, html);
+			Identifier identityUrl = TestSupport.GetIdentityUrl(scenario, version);
+			string html = UITestSupport.Host.ProcessRequest(identityUrl);
+			TestSupport.Logger.InfoFormat("{0} response:{1}{2}", identityUrl, Environment.NewLine, html);
 			Assert.IsTrue(Regex.IsMatch(html, string.Format(CultureInfo.InvariantCulture,
 				@"\<link rel=""{1}"" href=""http://[^/]+/{0}""\>\</link\>",
 				Regex.Escape(TestSupport.ProviderPage),

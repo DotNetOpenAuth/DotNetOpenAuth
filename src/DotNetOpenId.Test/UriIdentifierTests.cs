@@ -18,6 +18,11 @@ namespace DotNetOpenId.Test {
 				UntrustedWebRequest.WhitelistHosts.Add("localhost");
 		}
 
+		[TearDown]
+		public void TearDown() {
+			Mocks.MockHttpRequest.Reset();
+		}
+
 		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullUri() {
 			new UriIdentifier((Uri)null);
@@ -100,45 +105,65 @@ namespace DotNetOpenId.Test {
 		}
 
 		void discover(string url, ProtocolVersion version, Identifier expectedLocalId, bool expectSreg, bool useRedirect) {
+			discover(url, version, expectedLocalId, expectSreg, useRedirect, null);
+		}
+		void discover(string url, ProtocolVersion version, Identifier expectedLocalId, bool expectSreg, bool useRedirect, WebHeaderCollection headers) {
 			Protocol protocol = Protocol.Lookup(version);
 			UriIdentifier claimedId = TestSupport.GetFullUrl(url);
 			UriIdentifier userSuppliedIdentifier = TestSupport.GetFullUrl(
-				"htmldiscovery/redirect.aspx?target=" + url);
+				"Discovery/htmldiscovery/redirect.aspx?target=" + url);
 			if (expectedLocalId == null) expectedLocalId = claimedId;
 			Identifier idToDiscover = useRedirect ? userSuppliedIdentifier : claimedId;
-			// confirm the page exists (validates the test)
-			WebRequest.Create(idToDiscover).GetResponse().Close();
+
+			string contentType;
+			if (url.EndsWith("html")) {
+				contentType = "text/html";
+			} else if (url.EndsWith("xml")) {
+				contentType = "application/xrds+xml";
+			} else {
+				throw new InvalidOperationException();
+			}
+			Mocks.MockHttpRequest.RegisterMockResponse(new Uri(idToDiscover), claimedId, contentType,
+				headers ?? new WebHeaderCollection(), TestSupport.LoadEmbeddedFile(url));
+
 			ServiceEndpoint se = idToDiscover.Discover().FirstOrDefault();
 			Assert.IsNotNull(se, url + " failed to be discovered.");
 			Assert.AreSame(protocol, se.Protocol);
 			Assert.AreEqual(claimedId, se.ClaimedIdentifier);
 			Assert.AreEqual(expectedLocalId, se.ProviderLocalIdentifier);
 			Assert.AreEqual(expectSreg ? 2 : 1, se.ProviderSupportedServiceTypeUris.Length);
-			Assert.IsTrue(Array.IndexOf(se.ProviderSupportedServiceTypeUris, protocol.ClaimedIdentifierServiceTypeURI)>=0);
+			Assert.IsTrue(Array.IndexOf(se.ProviderSupportedServiceTypeUris, protocol.ClaimedIdentifierServiceTypeURI) >= 0);
 			Assert.AreEqual(expectSreg, se.IsExtensionSupported(new ClaimsRequest()));
 		}
 		void discoverXrds(string page, ProtocolVersion version, Identifier expectedLocalId) {
-			discover("/xrdsdiscovery/" + page + ".aspx", version, expectedLocalId, true, false);
-			discover("/xrdsdiscovery/" + page + ".aspx", version, expectedLocalId, true, true);
+			discoverXrds(page, version, expectedLocalId, null);
+		}
+		void discoverXrds(string page, ProtocolVersion version, Identifier expectedLocalId, WebHeaderCollection headers) {
+			if (!page.Contains(".")) page += ".xml";
+			discover("/Discovery/xrdsdiscovery/" + page, version, expectedLocalId, true, false, headers);
+			discover("/Discovery/xrdsdiscovery/" + page, version, expectedLocalId, true, true, headers);
 		}
 		void discoverHtml(string page, ProtocolVersion version, Identifier expectedLocalId, bool useRedirect) {
-			discover("/htmldiscovery/" + page, version, expectedLocalId, false, useRedirect);
+			discover("/Discovery/htmldiscovery/" + page, version, expectedLocalId, false, useRedirect);
 		}
 		void discoverHtml(string scenario, ProtocolVersion version, Identifier expectedLocalId) {
-			string page = scenario + ".aspx";
+			string page = scenario + ".html";
 			discoverHtml(page, version, expectedLocalId, false);
 			discoverHtml(page, version, expectedLocalId, true);
 		}
 		void failDiscover(string url) {
 			UriIdentifier userSuppliedId = TestSupport.GetFullUrl(url);
-			WebRequest.Create((Uri)userSuppliedId).GetResponse().Close(); // confirm the page exists ...
+
+			Mocks.MockHttpRequest.RegisterMockResponse(new Uri(userSuppliedId), userSuppliedId, "text/html",
+				TestSupport.LoadEmbeddedFile(url));
+
 			Assert.AreEqual(0, userSuppliedId.Discover().Count()); // ... but that no endpoint info is discoverable
 		}
 		void failDiscoverHtml(string scenario) {
-			failDiscover("htmldiscovery/" + scenario + ".aspx");
+			failDiscover("/Discovery/htmldiscovery/" + scenario + ".html");
 		}
 		void failDiscoverXrds(string scenario) {
-			failDiscover("xrdsdiscovery/" + scenario + ".aspx");
+			failDiscover("/Discovery/xrdsdiscovery/" + scenario + ".xml");
 		}
 		[Test]
 		public void HtmlDiscover_11() {
@@ -160,11 +185,17 @@ namespace DotNetOpenId.Test {
 		}
 		[Test]
 		public void XrdsDiscoveryFromHead() {
-			discoverXrds("XrdsReferencedInHead", ProtocolVersion.V10, null);
+			Mocks.MockHttpRequest.RegisterMockResponse(new Uri("http://localhost/xrds1020.xml"),
+				"application/xrds+xml", TestSupport.LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds1020.xml"));
+			discoverXrds("XrdsReferencedInHead.html", ProtocolVersion.V10, null);
 		}
 		[Test]
 		public void XrdsDiscoveryFromHttpHeader() {
-			discoverXrds("XrdsReferencedInHttpHeader", ProtocolVersion.V10, null);
+			WebHeaderCollection headers = new WebHeaderCollection();
+			headers.Add("X-XRDS-Location", TestSupport.GetFullUrl("http://localhost/xrds1020.xml").AbsoluteUri);
+			Mocks.MockHttpRequest.RegisterMockResponse(new Uri("http://localhost/xrds1020.xml"),
+				"application/xrds+xml", TestSupport.LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds1020.xml"));
+			discoverXrds("XrdsReferencedInHttpHeader.html", ProtocolVersion.V10, null, headers);
 		}
 		[Test]
 		public void XrdsDirectDiscovery_10() {
