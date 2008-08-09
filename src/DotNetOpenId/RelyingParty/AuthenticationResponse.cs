@@ -26,7 +26,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// before authentication can be completed.</para>
 		/// <para>Casting the <see cref="IAuthenticationResponse"/> to a 
 		/// <see cref="ISetupRequiredAuthenticationResponse"/> in this case can help
-		/// you retry the authentication using Setup (non-immediate) mode.</para>
+		/// you retry the authentication using setup (non-immediate) mode.</para>
 		/// </summary>
 		SetupRequired,
 		/// <summary>
