@@ -20,7 +20,7 @@ namespace DotNetOpenId.RelyingParty
 	/// An ASP.NET control providing a complete OpenID login experience.
 	/// </summary>
 	[SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Login")]
-	[DefaultProperty("OpenIdUrl")]
+	[DefaultProperty("Text"), ValidationProperty("Text")]
 	[ToolboxData("<{0}:OpenIdLogin runat=\"server\"></{0}:OpenIdLogin>")]
 	public class OpenIdLogin : OpenIdTextBox
 	{
