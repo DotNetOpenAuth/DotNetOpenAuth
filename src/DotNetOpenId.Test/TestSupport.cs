@@ -188,6 +188,7 @@ public class TestSupport {
 		// the consumer, and tries the same query to the consumer in an
 		// attempt to spoof the identity of the authenticating user.
 		try {
+			Logger.Info("Attempting replay attack...");
 			var replayRP = CreateRelyingParty(store, opAuthResponse.RedirectUrl,
 				opAuthResponse.EncodedFields.ToNameValueCollection());
 			Assert.AreNotEqual(AuthenticationStatus.Authenticated, replayRP.Response.Status, "Replay attack succeeded!");
@@ -203,9 +204,9 @@ public class TestSupport {
 	/// store in <see cref="ProviderStore"/>.
 	/// </summary>
 	internal static OpenIdProvider CreateProvider(NameValueCollection fields) {
-		Protocol protocol = Protocol.Detect(fields.ToDictionary());
+		Protocol protocol = fields != null ? Protocol.Detect(fields.ToDictionary()) : Protocol.v20;
 		Uri opEndpoint = GetFullUrl(ProviderPage);
-		var provider = new OpenIdProvider(ProviderStore, opEndpoint, opEndpoint, fields);
+		var provider = new OpenIdProvider(ProviderStore, opEndpoint, opEndpoint, fields ?? new NameValueCollection());
 		return provider;
 	}
 	internal static OpenIdProvider CreateProviderForRequest(DotNetOpenId.RelyingParty.IAuthenticationRequest request) {
@@ -338,6 +339,7 @@ static class TestExtensions {
 		return nvc;
 	}
 	public static IDictionary<string, string> ToDictionary(this NameValueCollection nvc) {
+		if (nvc == null) return null;
 		Dictionary<string, string> dict = new Dictionary<string, string>(nvc.Count);
 		foreach (string key in nvc) {
 			dict[key] = nvc[key];

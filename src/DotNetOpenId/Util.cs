@@ -283,6 +283,21 @@ namespace DotNetOpenId {
 				return sb.ToString();
 			});
 		}
+		internal static object ToString<T>(IEnumerable<T> list) {
+			return new DelayedToString<IEnumerable<T>>(list, l => {
+				StringBuilder sb = new StringBuilder();
+				sb.Append("{");
+				foreach (T obj in l) {
+					sb.Append(obj);
+					sb.AppendLine(",");
+				}
+				if (sb.Length > 1) {
+					sb.Length -= 1;
+				}
+				sb.Append("}");
+				return sb.ToString();
+			});
+		}
 
 		private class DelayedToString<T> {
 			public DelayedToString(T obj, Func<T, string> toString) {

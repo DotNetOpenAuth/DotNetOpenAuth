@@ -205,7 +205,11 @@
     <value>Not a recognized XRI format: '{0}'.</value>
   </data>
   <data name="IssuedAssertionFailsIdentifierDiscovery" xml:space="preserve">
-    <value>The OpenId Provider issued an assertion for an Identifier whose discovery information did not match.</value>
+    <value>The OpenId Provider issued an assertion for an Identifier whose discovery information did not match.  
+Assertion endpoint info: 
+{0}
+Discovered endpoint info:
+{1}</value>
   </data>
   <data name="KeyAlreadyExists" xml:space="preserve">
     <value>The given key '{0}' already exists.</value>

@@ -294,12 +294,16 @@ namespace DotNetOpenId.RelyingParty {
 					List<ServiceEndpoint> discoveredEndpoints = new List<ServiceEndpoint>(claimedIdentifier.Discover());
 					// Make sure the response endpoint matches one of the discovered endpoints.
 					if (!discoveredEndpoints.Contains(responseEndpoint)) {
-						throw new OpenIdException(Strings.IssuedAssertionFailsIdentifierDiscovery);
+						throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
+							Strings.IssuedAssertionFailsIdentifierDiscovery,
+							responseEndpoint, Util.ToString(discoveredEndpoints)));
 					}
 				} else {
 					// Check that the assertion matches the service endpoint we know about.
 					if (responseEndpoint != tokenEndpoint)
-						throw new OpenIdException(Strings.IssuedAssertionFailsIdentifierDiscovery);
+						throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
+						Strings.IssuedAssertionFailsIdentifierDiscovery,
+						responseEndpoint, tokenEndpoint));
 				}
 			}
 		}

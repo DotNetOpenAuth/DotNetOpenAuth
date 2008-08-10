@@ -265,7 +265,12 @@ namespace DotNetOpenId.RelyingParty {
 			return ClaimedIdentifier.GetHashCode();
 		}
 		public override string ToString() {
-			return ProviderEndpoint.AbsoluteUri;
+			StringBuilder builder = new StringBuilder();
+			builder.AppendLine("ClaimedIdentifier: " + ClaimedIdentifier);
+			builder.AppendLine("ProviderLocalIdentifier: " + ProviderLocalIdentifier);
+			builder.AppendLine("ProviderEndpoint: " + ProviderEndpoint.AbsoluteUri);
+			builder.Append("OpenID version: " + Protocol.Version);
+			return builder.ToString();
 		}
 
 		#region IXrdsProviderEndpoint Members

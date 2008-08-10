@@ -322,7 +322,11 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The OpenId Provider issued an assertion for an Identifier whose discovery information did not match..
+        ///   Looks up a localized string similar to The OpenId Provider issued an assertion for an Identifier whose discovery information did not match.  
+        ///Assertion endpoint info: 
+        ///{0}
+        ///Discovered endpoint info:
+        ///{1}.
         /// </summary>
         internal static string IssuedAssertionFailsIdentifierDiscovery {
             get {

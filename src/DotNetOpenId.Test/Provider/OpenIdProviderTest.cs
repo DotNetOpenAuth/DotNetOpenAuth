@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using NUnit.Framework;
-using System.IO;
-using System.Diagnostics;
-using DotNetOpenId.Test.Hosting;
-using System.Text.RegularExpressions;
-using DotNetOpenId.Provider;
 using System.Collections.Specialized;
+using DotNetOpenId.Provider;
+using DotNetOpenId.RelyingParty;
+using DotNetOpenId.Test.Mocks;
+using NUnit.Framework;
 using ProviderMemoryStore = DotNetOpenId.AssociationMemoryStore<DotNetOpenId.AssociationRelyingPartyType>;
 
 namespace DotNetOpenId.Test.Provider {
@@ -15,6 +11,17 @@ namespace DotNetOpenId.Test.Provider {
 	public class OpenIdProviderTest {
 		readonly Uri providerEndpoint = new Uri("http://someendpoint");
 		readonly Uri emptyRequestUrl = new Uri("http://someendpoint/request");
+
+		[SetUp]
+		public void Setup() {
+			if (!UntrustedWebRequest.WhitelistHosts.Contains("localhost"))
+				UntrustedWebRequest.WhitelistHosts.Add("localhost");
+		}
+
+		[TearDown]
+		public void TearDown() {
+			MockHttpRequest.Reset();
+		}
 
 		/// <summary>
 		/// Verifies that without an ASP.NET context, the default constructor fails.
@@ -61,9 +68,32 @@ namespace DotNetOpenId.Test.Provider {
 			Assert.IsNull(op.Request);
 		}
 
-		//[Test, Ignore("Not implemented")]
-		public void PrepareUnsolicitedAssertion() {
-			// TODO: code here
+		[Test]
+		public void BasicUnsolicitedAssertion() {
+			Mocks.MockHttpRequest.RegisterMockRPDiscovery();
+			TestSupport.Scenarios scenario = TestSupport.Scenarios.AutoApproval;
+			Identifier claimedId = TestSupport.GetMockIdentifier(scenario, ProtocolVersion.V20);
+			Identifier localId = TestSupport.GetDelegateUrl(scenario);
+
+			OpenIdProvider op = TestSupport.CreateProvider(null);
+			IResponse assertion = op.PrepareUnsolicitedAssertion(TestSupport.Realm, claimedId, localId);
+			var rpResponse = TestSupport.CreateRelyingPartyResponse(TestSupport.RelyingPartyStore, assertion);
+			Assert.AreEqual(AuthenticationStatus.Authenticated, rpResponse.Status);
+			Assert.AreEqual(claimedId, rpResponse.ClaimedIdentifier);
+		}
+
+		[Test]
+		public void UnsolicitedAssertionWithBadCapitalization() {
+			Mocks.MockHttpRequest.RegisterMockRPDiscovery();
+			TestSupport.Scenarios scenario = TestSupport.Scenarios.AutoApproval;
+			Identifier claimedId = TestSupport.GetMockIdentifier(scenario, ProtocolVersion.V20);
+			claimedId = claimedId.ToString().ToUpper(); // make all caps, which is not right
+			Identifier localId = TestSupport.GetDelegateUrl(scenario);
+
+			OpenIdProvider op = TestSupport.CreateProvider(null);
+			IResponse assertion = op.PrepareUnsolicitedAssertion(TestSupport.Realm, claimedId, localId);
+			var rpResponse = TestSupport.CreateRelyingPartyResponse(TestSupport.RelyingPartyStore, assertion);
+			Assert.AreEqual(AuthenticationStatus.Failed, rpResponse.Status);
 		}
 	}
 }
