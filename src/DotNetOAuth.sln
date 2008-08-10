@@ -1,19 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YOURLIBNAME", "YOURLIBNAME\YOURLIBNAME.csproj", "{3191B653-F76D-4C1A-9A5A-347BC3AAAAB7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOAuth", "DotNetOAuth\DotNetOAuth.csproj", "{3191B653-F76D-4C1A-9A5A-347BC3AAAAB7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YOURLIBNAME.Test", "YOURLIBNAME.Test\YOURLIBNAME.Test.csproj", "{4376ECC9-C346-4A99-B13C-FA93C0FBD2C9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOAuth.Test", "DotNetOAuth.Test\DotNetOAuth.Test.csproj", "{4376ECC9-C346-4A99-B13C-FA93C0FBD2C9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{20B5E173-C3C4-49F8-BD25-E69044075B4D}"
 	ProjectSection(SolutionItems) = preProject
-		YOURLIBNAME.vsmdi = YOURLIBNAME.vsmdi
+		DotNetOAuth.vsmdi = DotNetOAuth.vsmdi
 		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
 	EndProjectSection
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = YOURLIBNAME.vsmdi
+		CategoryFile = DotNetOAuth.vsmdi
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

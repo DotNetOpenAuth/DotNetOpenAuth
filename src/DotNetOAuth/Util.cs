@@ -3,7 +3,7 @@
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
-namespace YOURLIBNAME {
+namespace DotNetOAuth {
 	using System.Globalization;
 	using System.Reflection;
 
