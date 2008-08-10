@@ -84,7 +84,6 @@
 		     where CallTarget is fired do NOT affect those called targets. -->
 		<PropertyGroup>
 			<Sign>true</Sign>
-			<Configuration Condition=" '$(ConfigurationAutoSet)' == 'true' ">Release</Configuration>
 		</PropertyGroup>
 	</Target>
 
