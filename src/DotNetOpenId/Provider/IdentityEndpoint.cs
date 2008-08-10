@@ -166,6 +166,7 @@ namespace DotNetOpenId.Provider {
 		/// <summary>
 		/// Normalizes the URL by making the path and query lowercase, and trimming trailing slashes.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification="FxCop is probably right, but we've been lowercasing host names for normalization elsewhere in the project for a long time now.")]
 		private static Uri bestGuessNormalization(Uri uri) {
 			UriBuilder uriBuilder = new UriBuilder(uri);
 			uriBuilder.Path = uriBuilder.Path.ToLowerInvariant();
@@ -176,7 +177,7 @@ namespace DotNetOpenId.Provider {
 			// We trim the ? from the start of the query when we reset it because
 			// the UriBuilder.Query setter automatically prepends one, and we don't
 			// want to double them up.
-			uriBuilder.Query = uriBuilder.Query.TrimStart('?').ToLower();
+			uriBuilder.Query = uriBuilder.Query.TrimStart('?').ToLowerInvariant();
 			return uriBuilder.Uri;
 		}
 

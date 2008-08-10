@@ -784,6 +784,9 @@ namespace DotNetOpenId.RelyingParty
 
 		#region IEditableTextControl Members
 
+		/// <summary>
+		/// Occurs when the content of the text box changes between posts to the server.
+		/// </summary>
 		public event EventHandler TextChanged {
 			add { WrappedTextBox.TextChanged += value; }
 			remove { WrappedTextBox.TextChanged -= value; }
