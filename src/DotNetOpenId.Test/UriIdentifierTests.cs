@@ -210,5 +210,15 @@ namespace DotNetOpenId.Test {
 			discoverXrds("xrds2010a", ProtocolVersion.V20, null);
 			discoverXrds("xrds2010b", ProtocolVersion.V20, null);
 		}
+
+		[Test]
+		public void NormalizeCase() {
+			// only the host name can be normalized in casing safely.
+			Identifier id = "http://HOST:80/PaTH?KeY=VaLUE#fRag";
+			Assert.AreEqual("http://host/PaTH?KeY=VaLUE#fRag", id.ToString());
+			// make sure https is preserved, along with port 80, which is NON-default for https
+			id = "https://HOST:80/PaTH?KeY=VaLUE#fRag";
+			Assert.AreEqual("https://host:80/PaTH?KeY=VaLUE#fRag", id.ToString());
+		}
 	}
 }
