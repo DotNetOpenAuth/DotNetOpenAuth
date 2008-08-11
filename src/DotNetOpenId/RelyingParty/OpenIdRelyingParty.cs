@@ -355,6 +355,31 @@ namespace DotNetOpenId.RelyingParty {
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public EndpointSelector EndpointFilter { get; set; }
 
+		/// <summary>
+		/// Gets/sets whether the entire pipeline from Identifier discovery to Provider redirect
+		/// is guaranteed to be encrypted using HTTPS for authentication to succeed.
+		/// </summary>
+		/// <remarks>
+		/// <para>Setting this property to true is appropriate for RPs with highly sensitive 
+		/// personal information behind the authentication (money management, health records, etc.)</para>
+		/// <para>When set to true, some behavioral changes and additional restrictions are placed:</para>
+		/// <list>
+		/// <item>User-supplied identifiers lacking a scheme are prepended with
+		/// HTTPS:// rather than the standard HTTP:// automatically.</item>
+		/// <item>User-supplied identifiers are not allowed to use HTTP for the scheme.</item>
+		/// <item>Any redirects resulting from discovery on the user-supplied identifier must be HTTPS.</item>
+		/// <item>Any XRDS file found by discovery on the Claimed Identifier must be protected using HTTPS.</item>
+		/// <item>Only Provider endpoints found at HTTPS URLs will be considered.</item>
+		/// <item>Only HTTPS redirects for authentication at the provider are accepted.</item>
+		/// </list>
+		/// <para>Although the first redirect from this relying party to the Provider can be required
+		/// to use HTTPS, any additional redirects within the Provider cannot be protected and MAY
+		/// revert the user's connection to HTTP, based on individual Provider implementation.
+		/// There is nothing that the RP can do to detect or prevent this.</para>
+		/// </remarks>
+		/// <exception cref="OpenIdException">Thrown when a secure pipeline cannot be established.</exception>
+		public bool RequireSsl { get; set; }
+
 		const string associationStoreKey = "DotNetOpenId.RelyingParty.RelyingParty.AssociationStore";
 		/// <summary>
 		/// The standard state storage mechanism that uses ASP.NET's HttpApplication state dictionary
