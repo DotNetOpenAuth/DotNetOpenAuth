@@ -14,7 +14,8 @@ namespace DotNetOpenId.Test.Mocks {
 		IEnumerable<ServiceEndpoint> endpoints;
 		Identifier wrappedIdentifier;
 
-		public MockIdentifier(Identifier wrappedIdentifier, IEnumerable<ServiceEndpoint> endpoints) {
+		public MockIdentifier(Identifier wrappedIdentifier, IEnumerable<ServiceEndpoint> endpoints)
+			: base(false) {
 			if (wrappedIdentifier == null) throw new ArgumentNullException("wrappedIdentifier");
 			if (endpoints == null) throw new ArgumentNullException("endpoints");
 			this.wrappedIdentifier = wrappedIdentifier;
@@ -34,6 +35,10 @@ namespace DotNetOpenId.Test.Mocks {
 
 		internal override Identifier TrimFragment() {
 			return this;
+		}
+
+		internal override bool TryRequireSsl(out Identifier secureIdentifier) {
+			throw new NotSupportedException();
 		}
 
 		public override string ToString() {

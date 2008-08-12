@@ -11,6 +11,26 @@ namespace DotNetOpenId {
 	/// </summary>
 	public abstract class Identifier {
 		/// <summary>
+		/// Constructs an <see cref="Identifier"/>.
+		/// </summary>
+		/// <param name="isDiscoverySecureEndToEnd">
+		/// Whether the derived class is prepared to guarantee end-to-end discovery
+		/// and initial redirect for authentication is performed using SSL.
+		/// </param>
+		protected Identifier(bool isDiscoverySecureEndToEnd) {
+			IsDiscoverySecureEndToEnd = isDiscoverySecureEndToEnd;
+		}
+
+		/// <summary>
+		/// Whether this Identifier will ensure SSL is used throughout the discovery phase
+		/// and initial redirect of authentication.
+		/// </summary>
+		/// <remarks>
+		/// If this is False, a value of True may be obtained by calling <see cref="TryRequireSsl"/>.
+		/// </remarks>
+		protected internal bool IsDiscoverySecureEndToEnd { get; private set; }
+
+		/// <summary>
 		/// Converts the string representation of an Identifier to its strong type.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates"), SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads")]
@@ -115,5 +135,21 @@ namespace DotNetOpenId {
 		/// a <see cref="UriIdentifier"/> or no fragment exists.
 		/// </summary>
 		internal abstract Identifier TrimFragment();
+
+		/// <summary>
+		/// Converts a given identifier to its secure equivalent.  
+		/// UriIdentifiers originally created with an implied HTTP scheme change to HTTPS.
+		/// Discovery is made to require SSL for the entire resolution process.
+		/// </summary>
+		/// <param name="secureIdentifier">
+		/// The newly created secure identifier.
+		/// If the conversion fails, <see cref="secureIdentifier"/> retains
+		/// <i>this</i> identifiers identity, but will never discover any endpoints.
+		/// </param>
+		/// <returns>
+		/// True if the secure conversion was successful.
+		/// False if the Identifier was originally created with an explicit HTTP scheme.
+		/// </returns>
+		internal abstract bool TryRequireSsl(out Identifier secureIdentifier);
 	}
 }

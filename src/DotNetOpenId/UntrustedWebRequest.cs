@@ -223,11 +223,41 @@ namespace DotNetOpenId {
 			return Request(uri, body, acceptTypes, false);
 		}
 
-		static UntrustedWebResponse Request(Uri uri, byte[] body, string[] acceptTypes,
-			bool avoidSendingExpect100Continue) {
+		internal static UntrustedWebResponse Request(Uri uri, byte[] body, string[] acceptTypes, bool requireSsl) {
+			if (!requireSsl) {
+				// This is the simplest case... if we don't care about SSL, then let
+				// HttpWebRequest do auto-redirection.
+				return RequestInternal(uri, body, acceptTypes, false, false, uri);
+			} else {
+				// Since we require SSL for every redirect, we handle each redirect manually
+				// in order to detect and fail if any redirect sends us to an HTTP url.
+				Uri originalRequestUri = uri;
+				int i;
+				for (i = 0; i < MaximumRedirections; i++) {
+					UntrustedWebResponse response = RequestInternal(uri, body, acceptTypes, true, false, originalRequestUri);
+					Debug.Assert(response.RequestUri == response.FinalUri, "Redirects shouldn't have been allowed!");
+					if (response.StatusCode == HttpStatusCode.MovedPermanently ||
+						response.StatusCode == HttpStatusCode.Redirect ||
+						response.StatusCode == HttpStatusCode.RedirectMethod ||
+						response.StatusCode == HttpStatusCode.RedirectKeepVerb) {
+						uri = new Uri(response.Headers[HttpResponseHeader.Location]);
+					} else {
+						return response;
+					}
+				}
+				throw new WebException(string.Format(CultureInfo.CurrentCulture, Strings.TooManyRedirects, originalRequestUri));
+			}
+		}
+
+		static UntrustedWebResponse RequestInternal(Uri uri, byte[] body, string[] acceptTypes,
+			bool requireSslAndNoRedirects, bool avoidSendingExpect100Continue, Uri originalRequestUri) {
 			if (uri == null) throw new ArgumentNullException("uri");
+			if (originalRequestUri == null) throw new ArgumentNullException("originalRequestUri");
 			if (!isUriAllowable(uri)) throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
 				Strings.UnsafeWebRequestDetected, uri), "uri");
+			if (requireSslAndNoRedirects && !String.Equals(uri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)) {
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture, Strings.InsecureWebRequestWithSslRequired, uri));
+			}
 
 			// mock the request if a hosting unit test has configured it.
 			if (MockRequests != null) {
@@ -235,10 +265,14 @@ namespace DotNetOpenId {
 			}
 
 			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
+			// If SSL is required throughout, we cannot allow auto redirects because
+			// it may include a pass through an unprotected HTTP request.
+			// In the SSL required scenario, we have to follow redirects manually,
+			// and our caller will be responsible for that.
+			request.AllowAutoRedirect = !requireSslAndNoRedirects;
 			request.ReadWriteTimeout = (int)ReadWriteTimeout.TotalMilliseconds;
 			request.Timeout = (int)Timeout.TotalMilliseconds;
 			request.KeepAlive = false;
-			request.MaximumAutomaticRedirections = MaximumRedirections;
 			if (acceptTypes != null)
 				request.Accept = string.Join(",", acceptTypes);
 			if (body != null) {
@@ -266,17 +300,17 @@ namespace DotNetOpenId {
 				}
 
 				using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
-					return getResponse(uri, response);
+					return getResponse(originalRequestUri, response);
 				}
 			} catch (WebException e) {
 				using (HttpWebResponse response = (HttpWebResponse)e.Response) {
 					if (response != null) {
 						if (response.StatusCode == HttpStatusCode.ExpectationFailed) {
 							if (!avoidSendingExpect100Continue) { // must only try this once more
-								return Request(uri, body, acceptTypes, true);
+								return RequestInternal(uri, body, acceptTypes, requireSslAndNoRedirects, true, originalRequestUri);
 							}
 						}
-						return getResponse(uri, response);
+						return getResponse(originalRequestUri, response);
 					} else {
 						throw;
 					}

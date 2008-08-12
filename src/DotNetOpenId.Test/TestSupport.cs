@@ -52,31 +52,43 @@ public class TestSupport {
 		return new UriIdentifier(GetFullUrl("/" + OPDefaultPage, "user", scenario));
 	}
 	internal static UriIdentifier GetIdentityUrl(Scenarios scenario, ProtocolVersion providerVersion) {
+		return GetIdentityUrl(scenario, providerVersion, false);
+	}
+	internal static UriIdentifier GetIdentityUrl(Scenarios scenario, ProtocolVersion providerVersion, bool useSsl) {
 		return new UriIdentifier(GetFullUrl("/" + identityPage, new Dictionary<string, string> {
 			{ "user", scenario.ToString() },
 			{ "version", providerVersion.ToString() },
-		}));
+		}, useSsl));
 	}
 	internal static UriIdentifier GetDirectedIdentityUrl(Scenarios scenario, ProtocolVersion providerVersion) {
+		return GetDirectedIdentityUrl(scenario, providerVersion, false);
+	}
+	internal static UriIdentifier GetDirectedIdentityUrl(Scenarios scenario, ProtocolVersion providerVersion, bool useSsl) {
 		return new UriIdentifier(GetFullUrl("/" + directedIdentityPage, new Dictionary<string, string> {
 			{ "user", scenario.ToString() },
 			{ "version", providerVersion.ToString() },
-		}));
+		}, useSsl));
 	}
 	public static Identifier GetDelegateUrl(Scenarios scenario) {
-		return new UriIdentifier(GetFullUrl("/" + scenario));
+		return GetDelegateUrl(scenario, false);
+	}
+	public static Identifier GetDelegateUrl(Scenarios scenario, bool useSsl) {
+		return new UriIdentifier(GetFullUrl("/" + scenario, null, useSsl));
 	}
 	internal static MockIdentifier GetMockIdentifier(Scenarios scenario, ProtocolVersion providerVersion) {
+		return GetMockIdentifier(scenario, providerVersion, false);
+	}
+	internal static MockIdentifier GetMockIdentifier(Scenarios scenario, ProtocolVersion providerVersion, bool useSsl) {
 		ServiceEndpoint se = ServiceEndpoint.CreateForClaimedIdentifier(
-			GetIdentityUrl(scenario, providerVersion),
-			GetDelegateUrl(scenario),
-			GetFullUrl("/" + ProviderPage),
+			GetIdentityUrl(scenario, providerVersion, useSsl),
+			GetDelegateUrl(scenario, useSsl),
+			GetFullUrl("/" + ProviderPage, null, useSsl),
 			new string[] { Protocol.Lookup(providerVersion).ClaimedIdentifierServiceTypeURI },
 			10,
 			10
 			);
 
-		return new MockIdentifier(GetIdentityUrl(scenario, providerVersion), new ServiceEndpoint[] { se });
+		return new MockIdentifier(GetIdentityUrl(scenario, providerVersion, useSsl), new ServiceEndpoint[] { se });
 	}
 	internal static MockIdentifier GetMockOPIdentifier(Scenarios scenario, UriIdentifier expectedClaimedId) {
 		Uri opEndpoint = GetFullUrl(DirectedProviderEndpoint, "user", scenario);
@@ -95,15 +107,16 @@ public class TestSupport {
 		return new MockIdentifier(GetOPIdentityUrl(scenario), new ServiceEndpoint[] { se });
 	}
 	public static Uri GetFullUrl(string url) {
-		return GetFullUrl(url, null);
+		return GetFullUrl(url, null, false);
 	}
 	public static Uri GetFullUrl(string url, string key, object value) {
 		return GetFullUrl(url, new Dictionary<string, string> {
 			{ key, value.ToString() },
-		});
+		}, false);
 	}
-	public static Uri GetFullUrl(string url, IDictionary<string, string> args) {
-		Uri baseUri = UITestSupport.Host != null ? UITestSupport.Host.BaseUri : new Uri("http://localhost/");
+	public static Uri GetFullUrl(string url, IDictionary<string, string> args, bool useSsl) {
+		Uri defaultUriBase = new Uri(useSsl ? "https://localhost/" : "http://localhost/");
+		Uri baseUri = UITestSupport.Host != null ? UITestSupport.Host.BaseUri : defaultUriBase;
 		UriBuilder builder = new UriBuilder(new Uri(baseUri, url));
 		UriUtil.AppendQueryArgs(builder, args);
 		return builder.Uri;

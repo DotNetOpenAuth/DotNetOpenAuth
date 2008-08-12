@@ -71,7 +71,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 		[Test]
 		public void AssociationCreationWithStore() {
 			TestSupport.ResetStores(); // get rid of existing associations so a new one is created
-			
+
 			OpenIdRelyingParty rp = TestSupport.CreateRelyingParty(null);
 			var directMessageSniffer = new DirectMessageSniffWrapper(rp.DirectMessageChannel);
 			rp.DirectMessageChannel = directMessageSniffer;
@@ -247,12 +247,27 @@ namespace DotNetOpenId.Test.RelyingParty {
 			rp.EndpointOrder = (se1, se2) => -se1.ServicePriority.Value.CompareTo(se2.ServicePriority.Value);
 			request = rp.CreateRequest("=MultipleEndpoint", realm, return_to);
 			Assert.AreEqual("https://authn.freexri.com/auth10/", request.Provider.Uri.AbsoluteUri);
-			
+
 			// Now test the filter.  Auth20 would come out on top, if we didn't select it out with the filter.
 			rp.EndpointOrder = OpenIdRelyingParty.DefaultEndpointOrder;
 			rp.EndpointFilter = (se) => se.Uri.AbsoluteUri == "https://authn.freexri.com/auth10/";
 			request = rp.CreateRequest("=MultipleEndpoint", realm, return_to);
 			Assert.AreEqual("https://authn.freexri.com/auth10/", request.Provider.Uri.AbsoluteUri);
+		}
+
+		private string stripScheme(string identifier) {
+			return identifier.Substring(identifier.IndexOf("://") + 3);
+		}
+
+		[Test]
+		public void RequireSslPrependsHttpsScheme() {
+			MockHttpRequest.Reset();
+			OpenIdRelyingParty rp = TestSupport.CreateRelyingParty(null);
+			rp.RequireSsl = true;
+			Identifier mockId = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20, true);
+			string noSchemeId = stripScheme(mockId);
+			var request = rp.CreateRequest(noSchemeId, TestSupport.Realm, TestSupport.ReturnTo);
+			Assert.IsTrue(request.ClaimedIdentifier.ToString().StartsWith("https://", StringComparison.OrdinalIgnoreCase));
 		}
 	}
 }

@@ -47,6 +47,39 @@ namespace DotNetOpenId.Test {
 		public void CtorGoodUri() {
 			var uri = new UriIdentifier(goodUri);
 			Assert.AreEqual(new Uri(goodUri), uri.Uri);
+			Assert.IsFalse(uri.SchemeImplicitlyPrepended);
+			Assert.IsFalse(uri.IsDiscoverySecureEndToEnd);
+		}
+
+		[Test]
+		public void CtorStringNoSchemeSecure() {
+			var uri = new UriIdentifier("host/path", true);
+			Assert.AreEqual("https://host/path", uri.Uri.AbsoluteUri);
+			Assert.IsTrue(uri.IsDiscoverySecureEndToEnd);
+		}
+
+		[Test]
+		public void CtorStringHttpsSchemeSecure() {
+			var uri = new UriIdentifier("https://host/path", true);
+			Assert.AreEqual("https://host/path", uri.Uri.AbsoluteUri);
+			Assert.IsTrue(uri.IsDiscoverySecureEndToEnd);
+		}
+
+		[Test, ExpectedException(typeof(ArgumentException))]
+		public void CtorStringHttpSchemeSecure() {
+			new UriIdentifier("http://host/path", true);
+		}
+
+		[Test]
+		public void CtorUriHttpsSchemeSecure() {
+			var uri = new UriIdentifier(new Uri("https://host/path"), true);
+			Assert.AreEqual("https://host/path", uri.Uri.AbsoluteUri);
+			Assert.IsTrue(uri.IsDiscoverySecureEndToEnd);
+		}
+
+		[Test, ExpectedException(typeof(ArgumentException))]
+		public void CtorUriHttpSchemeSecure() {
+			new UriIdentifier(new Uri("http://host/path"), true);
 		}
 
 		/// <summary>
@@ -219,6 +252,50 @@ namespace DotNetOpenId.Test {
 			// make sure https is preserved, along with port 80, which is NON-default for https
 			id = "https://HOST:80/PaTH?KeY=VaLUE#fRag";
 			Assert.AreEqual("https://host:80/PaTH?KeY=VaLUE#fRag", id.ToString());
+		}
+
+		[Test]
+		public void HttpSchemePrepended() {
+			UriIdentifier id = new UriIdentifier("www.yahoo.com");
+			Assert.AreEqual("http://www.yahoo.com/", id.ToString());
+			Assert.IsTrue(id.SchemeImplicitlyPrepended);
+		}
+
+		//[Test, Ignore("The spec says http:// must be prepended in this case, but that just creates an invalid URI.  Our UntrustedWebRequest will stop disallowed schemes.")]
+		public void CtorDisallowedScheme() {
+			UriIdentifier id = new UriIdentifier(new Uri("ftp://host/path"));
+			Assert.AreEqual("http://ftp://host/path", id.ToString());
+			Assert.IsTrue(id.SchemeImplicitlyPrepended);
+		}
+
+		[Test]
+		public void TryRequireSsl() {
+			Identifier secureId;
+			// Try Parse and ctor without explicit scheme
+			var id = Identifier.Parse("www.yahoo.com");
+			Assert.AreEqual("http://www.yahoo.com/", id.ToString());
+			Assert.IsTrue(id.TryRequireSsl(out secureId));
+			Assert.IsTrue(secureId.IsDiscoverySecureEndToEnd);
+			Assert.AreEqual("https://www.yahoo.com/", secureId.ToString());
+
+			id = new UriIdentifier("www.yahoo.com");
+			Assert.AreEqual("http://www.yahoo.com/", id.ToString());
+			Assert.IsTrue(id.TryRequireSsl(out secureId));
+			Assert.IsTrue(secureId.IsDiscoverySecureEndToEnd);
+			Assert.AreEqual("https://www.yahoo.com/", secureId.ToString());
+
+			// Try Parse and ctor with explicit http:// scheme
+			id = Identifier.Parse("http://www.yahoo.com");
+			Assert.IsFalse(id.TryRequireSsl(out secureId));
+			Assert.IsFalse(secureId.IsDiscoverySecureEndToEnd);
+			Assert.AreEqual("http://www.yahoo.com/", secureId.ToString());
+			Assert.AreEqual(0, secureId.Discover().Count());
+
+			id = new UriIdentifier("http://www.yahoo.com");
+			Assert.IsFalse(id.TryRequireSsl(out secureId));
+			Assert.IsFalse(secureId.IsDiscoverySecureEndToEnd);
+			Assert.AreEqual("http://www.yahoo.com/", secureId.ToString());
+			Assert.AreEqual(0, secureId.Discover().Count());
 		}
 	}
 }

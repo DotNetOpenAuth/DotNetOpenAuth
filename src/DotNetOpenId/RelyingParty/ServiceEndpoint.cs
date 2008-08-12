@@ -24,6 +24,12 @@ namespace DotNetOpenId.RelyingParty {
 		/// This value MUST be an absolute HTTP or HTTPS URL.
 		/// </remarks>
 		public Uri ProviderEndpoint { get; private set; }
+		/// <summary>
+		/// Returns true if the <see cref="ProviderEndpoint"/> is using an encrypted channel.
+		/// </summary>
+		internal bool IsSecure {
+			get { return string.Equals(ProviderEndpoint.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase); }
+		}
 		Uri IProviderEndpoint.Uri { get { return ProviderEndpoint; } }
 		/*
 		/// <summary>

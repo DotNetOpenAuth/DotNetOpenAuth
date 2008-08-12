@@ -370,9 +370,10 @@ namespace DotNetOpenId.RelyingParty {
 		/// <item>Any redirects resulting from discovery on the user-supplied identifier must be HTTPS.</item>
 		/// <item>Any XRDS file found by discovery on the Claimed Identifier must be protected using HTTPS.</item>
 		/// <item>Only Provider endpoints found at HTTPS URLs will be considered.</item>
-		/// <item>Only HTTPS redirects for authentication at the provider are accepted.</item>
+		/// <item>If the discovered identifier is an OP Identifier (directed identity), the 
+		/// Claimed Identifier eventually asserted by the Provider must be an HTTPS identifier.</item>
 		/// </list>
-		/// <para>Although the first redirect from this relying party to the Provider can be required
+		/// <para>Although the first redirect from this relying party to the Provider is required
 		/// to use HTTPS, any additional redirects within the Provider cannot be protected and MAY
 		/// revert the user's connection to HTTP, based on individual Provider implementation.
 		/// There is nothing that the RP can do to detect or prevent this.</para>

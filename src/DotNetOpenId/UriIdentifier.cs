@@ -18,21 +18,40 @@ namespace DotNetOpenId {
 			return new UriIdentifier(identifier);
 		}
 
-		public UriIdentifier(string uri) {
+		public UriIdentifier(string uri) : this(uri, false) { }
+		public UriIdentifier(string uri, bool requireSslDiscovery)
+			: base(requireSslDiscovery) {
 			if (string.IsNullOrEmpty(uri)) throw new ArgumentNullException("uri");
 			Uri canonicalUri;
-			if (!TryCanonicalize(uri, out canonicalUri))
+			bool schemePrepended;
+			if (!TryCanonicalize(uri, out canonicalUri, requireSslDiscovery, out schemePrepended))
 				throw new UriFormatException();
+			if (requireSslDiscovery && canonicalUri.Scheme != Uri.UriSchemeHttps) {
+				throw new ArgumentException(Strings.ExplicitHttpUriSuppliedWithSslRequirement);
+			}
 			Uri = canonicalUri;
+			SchemeImplicitlyPrepended = schemePrepended;
 		}
-		public UriIdentifier(Uri uri) {
+		public UriIdentifier(Uri uri) : this(uri, false) { }
+		public UriIdentifier(Uri uri, bool requireSslDiscovery)
+			: base(requireSslDiscovery) {
 			if (uri == null) throw new ArgumentNullException("uri");
 			if (!TryCanonicalize(new UriBuilder(uri), out uri))
 				throw new UriFormatException();
+			if (requireSslDiscovery && uri.Scheme != Uri.UriSchemeHttps) {
+				throw new ArgumentException(Strings.ExplicitHttpUriSuppliedWithSslRequirement);
+			}
 			Uri = uri;
+			SchemeImplicitlyPrepended = false;
 		}
 
 		public Uri Uri { get; private set; }
+		/// <summary>
+		/// Gets whether the scheme was missing when this Identifier was
+		/// created and added automatically as part of the normalization
+		/// process.
+		/// </summary>
+		internal bool SchemeImplicitlyPrepended { get; private set; }
 
 		static bool isAllowedScheme(string uri) {
 			if (string.IsNullOrEmpty(uri)) return false;
@@ -41,15 +60,20 @@ namespace DotNetOpenId {
 		}
 		static bool isAllowedScheme(Uri uri) {
 			if (uri == null) return false;
-			return Array.FindIndex(allowedSchemes, s => 
+			return Array.FindIndex(allowedSchemes, s =>
 				uri.Scheme.Equals(s, StringComparison.OrdinalIgnoreCase)) >= 0;
 		}
-		static bool TryCanonicalize(string uri, out Uri canonicalUri) {
+		static bool TryCanonicalize(string uri, out Uri canonicalUri, bool forceHttpsDefaultScheme, out bool schemePrepended) {
 			canonicalUri = null;
+			schemePrepended = false;
 			try {
 				// Assume http:// scheme if an allowed scheme isn't given, and strip
 				// fragments off.  Consistent with spec section 7.2#3
-				if (!isAllowedScheme(uri)) uri = "http" + Uri.SchemeDelimiter + uri;
+				if (!isAllowedScheme(uri)) {
+					uri = (forceHttpsDefaultScheme ? Uri.UriSchemeHttps : Uri.UriSchemeHttp) +
+						Uri.SchemeDelimiter + uri;
+					schemePrepended = true;
+				}
 				// Use a UriBuilder because it helps to normalize the URL as well.
 				return TryCanonicalize(new UriBuilder(uri), out canonicalUri);
 			} catch (UriFormatException) {
@@ -82,7 +106,8 @@ namespace DotNetOpenId {
 		}
 		internal static bool IsValidUri(string uri) {
 			Uri normalized;
-			return TryCanonicalize(uri, out normalized);
+			bool schemePrepended;
+			return TryCanonicalize(uri, out normalized, false, out schemePrepended);
 		}
 		internal static bool IsValidUri(Uri uri) {
 			if (uri == null) return false;
@@ -150,16 +175,21 @@ namespace DotNetOpenId {
 		internal override IEnumerable<ServiceEndpoint> Discover() {
 			List<ServiceEndpoint> endpoints = new List<ServiceEndpoint>();
 			// Attempt YADIS discovery
-			DiscoveryResult yadisResult = Yadis.Yadis.Discover(this);
+			DiscoveryResult yadisResult = Yadis.Yadis.Discover(this, IsDiscoverySecureEndToEnd);
 			if (yadisResult != null) {
 				if (yadisResult.IsXrds) {
 					XrdsDocument xrds = new XrdsDocument(yadisResult.ResponseText);
-					endpoints.AddRange(xrds.CreateServiceEndpoints(yadisResult.NormalizedUri));
+					var xrdsEndpoints = xrds.CreateServiceEndpoints(yadisResult.NormalizedUri);
+					// Filter out insecure endpoints if high security is required.
+					if (IsDiscoverySecureEndToEnd) {
+						xrdsEndpoints = Util.Where(xrdsEndpoints, se => se.IsSecure);
+					}
+					endpoints.AddRange(xrdsEndpoints);
 				}
 				// Failing YADIS discovery of an XRDS document, we try HTML discovery.
 				if (endpoints.Count == 0) {
 					ServiceEndpoint ep = DiscoverFromHtml(yadisResult.NormalizedUri, yadisResult.ResponseText);
-					if (ep != null) {
+					if (ep != null && (!IsDiscoverySecureEndToEnd || ep.IsSecure)) {
 						endpoints.Add(ep);
 					}
 				}
@@ -176,6 +206,36 @@ namespace DotNetOpenId {
 			UriBuilder builder = new UriBuilder(Uri);
 			builder.Fragment = null;
 			return builder.Uri;
+		}
+
+		internal override bool TryRequireSsl(out Identifier secureIdentifier) {
+			// If this Identifier is already secure, reuse it.
+			if (IsDiscoverySecureEndToEnd) {
+				secureIdentifier = this;
+				return true;
+			}
+
+			// If this identifier already uses SSL for initial discovery, return one
+			// that guarantees it will be used throughout the discovery process.
+			if (String.Equals(Uri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)) {
+				secureIdentifier = new UriIdentifier(this.Uri, true);
+				return true;
+			}
+
+			// Otherwise, try to make this Identifier secure by normalizing to HTTPS instead of HTTP.
+			if (SchemeImplicitlyPrepended) {
+				UriBuilder newIdentifierUri = new UriBuilder(this.Uri);
+				newIdentifierUri.Scheme = Uri.UriSchemeHttps;
+				if (newIdentifierUri.Port == 80) {
+					newIdentifierUri.Port = 443;
+				}
+				secureIdentifier = new UriIdentifier(newIdentifierUri.Uri, true);
+				return true;
+			}
+
+			// This identifier is explicitly NOT https, so we cannot change it.
+			secureIdentifier = new NoDiscoveryIdentifier(this);
+			return false;
 		}
 
 		public override bool Equals(object obj) {

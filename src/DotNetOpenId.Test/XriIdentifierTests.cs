@@ -36,6 +36,15 @@ namespace DotNetOpenId.Test {
 			var xri = new XriIdentifier(goodXri);
 			Assert.AreEqual(goodXri, xri.OriginalXri);
 			Assert.AreEqual(goodXri, xri.CanonicalXri); // assumes 'goodXri' is canonical already
+			Assert.IsFalse(xri.IsDiscoverySecureEndToEnd);
+		}
+
+		[Test]
+		public void CtorGoodXriSecure() {
+			var xri = new XriIdentifier(goodXri, true);
+			Assert.AreEqual(goodXri, xri.OriginalXri);
+			Assert.AreEqual(goodXri, xri.CanonicalXri); // assumes 'goodXri' is canonical already
+			Assert.IsTrue(xri.IsDiscoverySecureEndToEnd);
 		}
 
 		[Test]

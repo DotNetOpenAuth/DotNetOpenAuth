@@ -144,6 +144,9 @@
   <data name="ExpiredNonce" xml:space="preserve">
     <value>The nonce has expired.</value>
   </data>
+  <data name="ExplicitHttpUriSuppliedWithSslRequirement" xml:space="preserve">
+    <value>URI is not SSL yet requireSslDiscovery is set to true.</value>
+  </data>
   <data name="ExtensionAlreadyAddedWithSameTypeURI" xml:space="preserve">
     <value>An extension sharing namespace '{0}' has already been added.  Only one extension per namespace is allowed in a given request.</value>
   </data>
@@ -170,6 +173,9 @@
   </data>
   <data name="InconsistentAppState" xml:space="preserve">
     <value>Inconsistent setting of application state.  Authentication request was sent with application state available, but authentication response was received without it available.  This makes it impossible to validate the token's signature and will cause assertion verification failure.</value>
+  </data>
+  <data name="InsecureWebRequestWithSslRequired" xml:space="preserve">
+    <value>Insecure web request for '{0}' aborted due to security requirements demanding HTTPS.</value>
   </data>
   <data name="InvalidCharacterInKeyValueFormInput" xml:space="preserve">
     <value>Cannot encode '{0}' because it contains an illegal character for Key-Value Form encoding.  (line {1}: '{2}')</value>
@@ -276,6 +282,9 @@ Discovered endpoint info:
   </data>
   <data name="TamperingDetected" xml:space="preserve">
     <value>The '{0}' parameter was expected to have the value '{1}' but had '{2}' instead.</value>
+  </data>
+  <data name="TooManyRedirects" xml:space="preserve">
+    <value>The maximum allowable number of redirects were exceeded while requesting '{0}'.</value>
   </data>
   <data name="TypeMustImplementX" xml:space="preserve">
     <value>The type must implement {0}.</value>
