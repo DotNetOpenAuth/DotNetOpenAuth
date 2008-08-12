@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
+using System.Web;
 using DotNetOpenId.Extensions.SimpleRegistration;
 using DotNetOpenId.RelyingParty;
-using NUnit.Framework;
 using DotNetOpenId.Test.Mocks;
+using NUnit.Framework;
 
 namespace DotNetOpenId.Test {
 	[TestFixture]
@@ -157,7 +158,7 @@ namespace DotNetOpenId.Test {
 			} else {
 				throw new InvalidOperationException();
 			}
-			Mocks.MockHttpRequest.RegisterMockResponse(new Uri(idToDiscover), claimedId, contentType,
+			MockHttpRequest.RegisterMockResponse(new Uri(idToDiscover), claimedId, contentType,
 				headers ?? new WebHeaderCollection(), TestSupport.LoadEmbeddedFile(url));
 
 			ServiceEndpoint se = idToDiscover.Discover().FirstOrDefault();
@@ -346,6 +347,56 @@ namespace DotNetOpenId.Test {
 
 			Identifier userSuppliedIdentifier = new UriIdentifier(userSuppliedUri, true);
 			userSuppliedIdentifier.Discover();
+		}
+
+		[Test]
+		public void DiscoveryRequireSslWithInsecureXrdsInSecureHtmlHead() {
+			var insecureXrdsSource = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20, false);
+			Uri secureClaimedUri = TestSupport.GetFullUrl("/secureId", null, true);
+
+			string html = string.Format("<html><head><meta http-equiv='X-XRDS-Location' content='{0}'/></head><body></body></html>",
+				insecureXrdsSource);
+			MockHttpRequest.RegisterMockResponse(secureClaimedUri, "text/html", html);
+
+			Identifier userSuppliedIdentifier = new UriIdentifier(secureClaimedUri, true);
+			Assert.AreEqual(0, userSuppliedIdentifier.Discover().Count());
+		}
+
+		[Test]
+		public void DiscoveryRequireSslWithInsecureXrdsInSecureHttpHeader() {
+			var insecureXrdsSource = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20, false);
+			Uri secureClaimedUri = TestSupport.GetFullUrl("/secureId", null, true);
+
+			string html = "<html><head></head><body></body></html>";
+			WebHeaderCollection headers = new WebHeaderCollection {
+				{ "X-XRDS-Location", insecureXrdsSource }
+			};
+			MockHttpRequest.RegisterMockResponse(secureClaimedUri, secureClaimedUri, "text/html", headers, html);
+
+			Identifier userSuppliedIdentifier = new UriIdentifier(secureClaimedUri, true);
+			Assert.AreEqual(0, userSuppliedIdentifier.Discover().Count());
+		}
+
+		[Test]
+		public void DiscoveryRequireSslWithInsecureXrdsButSecureLinkTags() {
+			var insecureXrdsSource = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20, false);
+			Uri secureClaimedUri = TestSupport.GetFullUrl("/secureId", null, true);
+
+			Identifier localIdForLinkTag = TestSupport.GetDelegateUrl(TestSupport.Scenarios.AlwaysDeny, true);
+			string html = string.Format(@"
+	<html><head>
+		<meta http-equiv='X-XRDS-Location' content='{0}'/> <!-- this one will be insecure and ignored -->
+		<link rel='openid2.provider' href='{1}' />
+		<link rel='openid2.local_id' href='{2}' />
+	</head><body></body></html>",
+				HttpUtility.HtmlEncode(insecureXrdsSource),
+				HttpUtility.HtmlEncode(TestSupport.GetFullUrl("/" + TestSupport.ProviderPage, null, true).AbsoluteUri),
+				HttpUtility.HtmlEncode(localIdForLinkTag.ToString())
+				);
+			MockHttpRequest.RegisterMockResponse(secureClaimedUri, "text/html", html);
+
+			Identifier userSuppliedIdentifier = new UriIdentifier(secureClaimedUri, true);
+			Assert.AreEqual(localIdForLinkTag, userSuppliedIdentifier.Discover().Single().ProviderLocalIdentifier);
 		}
 	}
 }

@@ -52,13 +52,13 @@ namespace DotNetOpenId.Yadis {
 				if (url == null && response.ContentType.MediaType == ContentTypes.Html)
 					url = FindYadisDocumentLocationInHtmlMetaTags(response.ReadResponseString());
 				if (url != null) {
-					if (requireSsl && !string.Equals(url.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)) {
-						Logger.WarnFormat("XRDS document at insecure location '{0}'.  Aborting discovery.", url);
-						return null;
-					}
-					response2 = UntrustedWebRequest.Request(url, null, null, requireSsl);
-					if (response2.StatusCode != System.Net.HttpStatusCode.OK) {
-						return null;
+					if (!requireSsl || string.Equals(url.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)) {
+						response2 = UntrustedWebRequest.Request(url, null, null, requireSsl);
+						if (response2.StatusCode != System.Net.HttpStatusCode.OK) {
+							return null;
+						}
+					} else {
+						Logger.WarnFormat("XRDS document at insecure location '{0}'.  Aborting YADIS discovery.", url);
 					}
 				}
 			}

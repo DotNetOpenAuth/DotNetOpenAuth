@@ -36,6 +36,7 @@ namespace DotNetOpenId.Test.Mocks {
 
 		internal static void RegisterMockResponse(UntrustedWebResponse response) {
 			if (response == null) throw new ArgumentNullException("response");
+			Debug.Assert(response.RequestUri == response.FinalUri, "Implicit mock redirects are not allowed.  Use RegisterMockRedirect.");
 			UntrustedWebRequest.MockRequests = MockRequestResponse;
 			if (registeredMockResponses.ContainsKey(response.RequestUri)) {
 				TestSupport.Logger.WarnFormat("Mock HTTP response already registered for {0}.", response.RequestUri);
@@ -57,13 +58,18 @@ namespace DotNetOpenId.Test.Mocks {
 			if (responseUri == null) throw new ArgumentNullException("responseUri");
 			if (String.IsNullOrEmpty(contentType)) throw new ArgumentNullException("contentType");
 
+			// Set up the redirect if appropriate
+			if (requestUri != responseUri) {
+				RegisterMockRedirect(requestUri, responseUri);
+			}
+
 			string contentEncoding = null;
 			MemoryStream stream = new MemoryStream();
 			StreamWriter sw = new StreamWriter(stream);
 			sw.Write(responseBody);
 			sw.Flush();
 			stream.Seek(0, SeekOrigin.Begin);
-			RegisterMockResponse(new UntrustedWebResponse(requestUri, responseUri, headers ?? new WebHeaderCollection(),
+			RegisterMockResponse(new UntrustedWebResponse(responseUri, responseUri, headers ?? new WebHeaderCollection(),
 				HttpStatusCode.OK, contentType, contentEncoding, stream));
 		}
 
