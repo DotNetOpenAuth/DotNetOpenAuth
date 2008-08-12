@@ -270,6 +270,22 @@ namespace DotNetOpenId.Test {
 		}
 
 		[Test]
+		public void DiscoveryWithRedirects() {
+			MockHttpRequest.Reset();
+			Identifier claimedId = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
+
+			// Add a couple of chained redirect pages that lead to the claimedId.
+			Uri userSuppliedUri = TestSupport.GetFullUrl("/someSecurePage", null, true);
+			Uri insecureMidpointUri = TestSupport.GetFullUrl("/insecureStop");
+			MockHttpRequest.RegisterMockRedirect(userSuppliedUri, insecureMidpointUri);
+			MockHttpRequest.RegisterMockRedirect(insecureMidpointUri, new Uri(claimedId.ToString()));
+
+			// don't require secure SSL discovery for this test.
+			Identifier userSuppliedIdentifier = new UriIdentifier(userSuppliedUri, false);
+			Assert.AreEqual(1, userSuppliedIdentifier.Discover().Count());
+		}
+
+		[Test]
 		public void TryRequireSslAdjustsIdentifier() {
 			Identifier secureId;
 			// Try Parse and ctor without explicit scheme
