@@ -367,7 +367,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// <item>User-supplied identifiers lacking a scheme are prepended with
 		/// HTTPS:// rather than the standard HTTP:// automatically.</item>
 		/// <item>User-supplied identifiers are not allowed to use HTTP for the scheme.</item>
-		/// <item>Any redirects resulting from discovery on the user-supplied identifier must be HTTPS.</item>
+		/// <item>All redirects during discovery on the user-supplied identifier must be HTTPS.</item>
 		/// <item>Any XRDS file found by discovery on the Claimed Identifier must be protected using HTTPS.</item>
 		/// <item>Only Provider endpoints found at HTTPS URLs will be considered.</item>
 		/// <item>If the discovered identifier is an OP Identifier (directed identity), the 

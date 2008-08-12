@@ -140,5 +140,14 @@ namespace DotNetOpenId.Test.Mocks {
 		internal static void DeleteResponse(Uri requestUri) {
 			registeredMockResponses.Remove(requestUri);
 		}
+
+		internal static void RegisterMockRedirect(Uri origin, Uri redirectLocation) {
+			var redirectionHeaders = new WebHeaderCollection {
+				{ HttpResponseHeader.Location, redirectLocation.AbsoluteUri },
+			};
+			UntrustedWebResponse response = new UntrustedWebResponse(origin, origin,
+				redirectionHeaders, HttpStatusCode.Redirect, null, null, new MemoryStream());
+			RegisterMockResponse(response);
+		}
 	}
 }

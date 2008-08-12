@@ -4,6 +4,7 @@ using System.Net;
 using DotNetOpenId.Extensions.SimpleRegistration;
 using DotNetOpenId.RelyingParty;
 using NUnit.Framework;
+using DotNetOpenId.Test.Mocks;
 
 namespace DotNetOpenId.Test {
 	[TestFixture]
@@ -269,7 +270,7 @@ namespace DotNetOpenId.Test {
 		}
 
 		[Test]
-		public void TryRequireSsl() {
+		public void TryRequireSslAdjustsIdentifier() {
 			Identifier secureId;
 			// Try Parse and ctor without explicit scheme
 			var id = Identifier.Parse("www.yahoo.com");
@@ -296,6 +297,39 @@ namespace DotNetOpenId.Test {
 			Assert.IsFalse(secureId.IsDiscoverySecureEndToEnd);
 			Assert.AreEqual("http://www.yahoo.com/", secureId.ToString());
 			Assert.AreEqual(0, secureId.Discover().Count());
+		}
+
+		[Test]
+		public void DiscoverRequireSslWithSecureRedirects() {
+			MockHttpRequest.Reset();
+			Identifier claimedId = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20, true);
+
+			// Add a couple of chained redirect pages that lead to the claimedId.
+			// All redirects should be secure.
+			Uri userSuppliedUri = TestSupport.GetFullUrl("/someSecurePage", null, true);
+			Uri secureMidpointUri = TestSupport.GetFullUrl("/secureStop", null, true);
+			MockHttpRequest.RegisterMockRedirect(userSuppliedUri, secureMidpointUri);
+			MockHttpRequest.RegisterMockRedirect(secureMidpointUri, new Uri(claimedId.ToString()));
+
+			Identifier userSuppliedIdentifier = new UriIdentifier(userSuppliedUri, true);
+			Assert.AreEqual(1, userSuppliedIdentifier.Discover().Count());
+		}
+
+		[Test, ExpectedException(typeof(OpenIdException))]
+		public void DiscoverRequireSslWithInsecureRedirect() {
+			MockHttpRequest.Reset();
+			Identifier claimedId = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20, true);
+
+			// Add a couple of chained redirect pages that lead to the claimedId.
+			// Include an insecure HTTP jump in those redirects to verify that
+			// the ultimate endpoint is never found as a result of high security profile.
+			Uri userSuppliedUri = TestSupport.GetFullUrl("/someSecurePage", null, true);
+			Uri insecureMidpointUri = TestSupport.GetFullUrl("/insecureStop");
+			MockHttpRequest.RegisterMockRedirect(userSuppliedUri, insecureMidpointUri);
+			MockHttpRequest.RegisterMockRedirect(insecureMidpointUri, new Uri(claimedId.ToString()));
+
+			Identifier userSuppliedIdentifier = new UriIdentifier(userSuppliedUri, true);
+			userSuppliedIdentifier.Discover();
 		}
 	}
 }
