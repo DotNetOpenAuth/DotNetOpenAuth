@@ -38,7 +38,12 @@ namespace DotNetOpenId.Test.Mocks {
 		}
 
 		internal override bool TryRequireSsl(out Identifier secureIdentifier) {
-			throw new NotSupportedException();
+			// We take special care to make our wrapped identifier secure, but still
+			// return a mocked (secure) identifier.
+			Identifier secureWrappedIdentifier;
+			bool result = wrappedIdentifier.TryRequireSsl(out secureWrappedIdentifier);
+			secureIdentifier = new MockIdentifier(secureWrappedIdentifier, endpoints);
+			return result;
 		}
 
 		public override string ToString() {

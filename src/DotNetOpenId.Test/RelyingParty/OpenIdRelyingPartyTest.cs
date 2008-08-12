@@ -269,5 +269,18 @@ namespace DotNetOpenId.Test.RelyingParty {
 			var request = rp.CreateRequest(noSchemeId, TestSupport.Realm, TestSupport.ReturnTo);
 			Assert.IsTrue(request.ClaimedIdentifier.ToString().StartsWith("https://", StringComparison.OrdinalIgnoreCase));
 		}
+
+		[Test, Ignore("Until the Identifier.IsDiscoverySecureEndToEnd property is public, it doesn't matter whether it passes through to the ClaimedIdentifier.")]
+		public void RequireSslPassesThroughToClaimedIdentifier() {
+			MockHttpRequest.Reset();
+			OpenIdRelyingParty rp = TestSupport.CreateRelyingParty(null);
+			rp.RequireSsl = true;
+			Identifier mockId = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20, true);
+			var request = rp.CreateRequest(mockId, TestSupport.Realm, TestSupport.ReturnTo);
+			Assert.IsTrue(request.ClaimedIdentifier.IsDiscoverySecureEndToEnd);
+			IAuthenticationResponse response = TestSupport.CreateRelyingPartyResponseThroughProvider(request,
+				req => req.IsAuthenticated = true);
+			Assert.IsTrue(response.ClaimedIdentifier.IsDiscoverySecureEndToEnd);
+		}
 	}
 }
