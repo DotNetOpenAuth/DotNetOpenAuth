@@ -79,16 +79,18 @@ public class TestSupport {
 		return GetMockIdentifier(scenario, providerVersion, false);
 	}
 	internal static MockIdentifier GetMockIdentifier(Scenarios scenario, ProtocolVersion providerVersion, bool useSsl) {
-		ServiceEndpoint se = ServiceEndpoint.CreateForClaimedIdentifier(
+		ServiceEndpoint se = GetServiceEndpoint(scenario, providerVersion, 10, useSsl);
+		return new MockIdentifier(GetIdentityUrl(scenario, providerVersion, useSsl), new ServiceEndpoint[] { se });
+	}
+	internal static ServiceEndpoint GetServiceEndpoint(Scenarios scenario, ProtocolVersion providerVersion, int servicePriority, bool useSsl) {
+		return ServiceEndpoint.CreateForClaimedIdentifier(
 			GetIdentityUrl(scenario, providerVersion, useSsl),
 			GetDelegateUrl(scenario, useSsl),
 			GetFullUrl("/" + ProviderPage, null, useSsl),
 			new string[] { Protocol.Lookup(providerVersion).ClaimedIdentifierServiceTypeURI },
-			10,
+			servicePriority,
 			10
 			);
-
-		return new MockIdentifier(GetIdentityUrl(scenario, providerVersion, useSsl), new ServiceEndpoint[] { se });
 	}
 	internal static MockIdentifier GetMockOPIdentifier(Scenarios scenario, UriIdentifier expectedClaimedId) {
 		Uri opEndpoint = GetFullUrl(DirectedProviderEndpoint, "user", scenario);

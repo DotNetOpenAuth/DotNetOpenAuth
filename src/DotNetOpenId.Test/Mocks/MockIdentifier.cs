@@ -21,12 +21,9 @@ namespace DotNetOpenId.Test.Mocks {
 			this.wrappedIdentifier = wrappedIdentifier;
 			this.endpoints = endpoints;
 
-			if (endpoints.Count() != 1) {
-				throw new NotSupportedException("Multiple endpoints not supported by RegisterMockXrdsResponse generator yet.");
-			}
 			// Register a mock HTTP response to enable discovery of this identifier within the RP
 			// without having to host an ASP.NET site within the test.
-			MockHttpRequest.RegisterMockXrdsResponse(endpoints.First());
+			MockHttpRequest.RegisterMockXrdsResponse(new Uri(wrappedIdentifier.ToString()), endpoints);
 		}
 
 		internal override IEnumerable<ServiceEndpoint> Discover() {

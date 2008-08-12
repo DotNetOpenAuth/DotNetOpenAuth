@@ -8,6 +8,7 @@ using DotNetOpenId.Yadis;
 using NUnit.Framework;
 using System.Diagnostics;
 using System.Web;
+using System.Text;
 
 namespace DotNetOpenId.Test.Mocks {
 	class MockHttpRequest {
@@ -82,31 +83,47 @@ namespace DotNetOpenId.Test.Mocks {
 		internal static void RegisterMockXrdsResponse(ServiceEndpoint endpoint) {
 			if (endpoint == null) throw new ArgumentNullException("endpoint");
 
-			string template = @"<xrds:XRDS xmlns:xrds='xri://$xrds' xmlns:openid='http://openid.net/xmlns/1.0' xmlns='xri://$xrd*($v*2.0)'>
-	<XRD>
+			string identityUri;
+			if (endpoint.ClaimedIdentifier == endpoint.Protocol.ClaimedIdentifierForOPIdentifier) {
+				identityUri = endpoint.UserSuppliedIdentifier;
+			} else {
+				identityUri = endpoint.UserSuppliedIdentifier ?? endpoint.ClaimedIdentifier;
+			}
+			RegisterMockXrdsResponse(new Uri(identityUri), new ServiceEndpoint[] { endpoint });
+		}
+
+		internal static void RegisterMockXrdsResponse(Uri respondingUri, IEnumerable<ServiceEndpoint> endpoints) {
+			if (endpoints == null) throw new ArgumentNullException("endpoints");
+
+			StringBuilder xrds = new StringBuilder();
+			xrds.AppendLine(@"<xrds:XRDS xmlns:xrds='xri://$xrds' xmlns:openid='http://openid.net/xmlns/1.0' xmlns='xri://$xrd*($v*2.0)'>
+	<XRD>");
+			foreach (var endpoint in endpoints) {
+				string template = @"
 		<Service priority='10'>
 			<Type>{0}</Type>
 			<URI>{1}</URI>
 			<LocalID>{2}</LocalID>
 			<openid:Delegate xmlns:openid='http://openid.net/xmlns/1.0'>{2}</openid:Delegate>
-		</Service>
-	</XRD>
-</xrds:XRDS>";
-			string serviceTypeUri, identityUri;
-			if (endpoint.ClaimedIdentifier == endpoint.Protocol.ClaimedIdentifierForOPIdentifier) {
-				serviceTypeUri = endpoint.Protocol.OPIdentifierServiceTypeURI;
-				identityUri = endpoint.UserSuppliedIdentifier;
-			} else {
-				serviceTypeUri = endpoint.Protocol.ClaimedIdentifierServiceTypeURI;
-				identityUri = endpoint.UserSuppliedIdentifier ?? endpoint.ClaimedIdentifier;
+		</Service>";
+				string serviceTypeUri;
+				if (endpoint.ClaimedIdentifier == endpoint.Protocol.ClaimedIdentifierForOPIdentifier) {
+					serviceTypeUri = endpoint.Protocol.OPIdentifierServiceTypeURI;
+				} else {
+					serviceTypeUri = endpoint.Protocol.ClaimedIdentifierServiceTypeURI;
+				}
+				string xrd = string.Format(CultureInfo.InvariantCulture, template,
+					HttpUtility.HtmlEncode(serviceTypeUri),
+					HttpUtility.HtmlEncode(endpoint.ProviderEndpoint.AbsoluteUri),
+					HttpUtility.HtmlEncode(endpoint.ProviderLocalIdentifier)
+					);
+				xrds.Append(xrd);
 			}
-			string xrds = string.Format(CultureInfo.InvariantCulture, template, 
-				HttpUtility.HtmlEncode(serviceTypeUri), 
-				HttpUtility.HtmlEncode(endpoint.ProviderEndpoint.AbsoluteUri), 
-				HttpUtility.HtmlEncode(endpoint.ProviderLocalIdentifier)
-				);
+			xrds.Append(@"
+	</XRD>
+</xrds:XRDS>");
 
-			RegisterMockResponse(new Uri(identityUri), ContentTypes.Xrds, xrds);
+			RegisterMockResponse(respondingUri, ContentTypes.Xrds, xrds.ToString());
 		}
 		internal static void RegisterMockXrdsResponse(UriIdentifier directedIdentityAssignedIdentifier, ServiceEndpoint providerEndpoint) {
 			ServiceEndpoint identityEndpoint = ServiceEndpoint.CreateForClaimedIdentifier(

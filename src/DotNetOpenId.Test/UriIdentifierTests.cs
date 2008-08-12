@@ -398,5 +398,14 @@ namespace DotNetOpenId.Test {
 			Identifier userSuppliedIdentifier = new UriIdentifier(secureClaimedUri, true);
 			Assert.AreEqual(localIdForLinkTag, userSuppliedIdentifier.Discover().Single().ProviderLocalIdentifier);
 		}
+
+		[Test]
+		public void DiscoveryRequiresSslIgnoresInsecureEndpointsInXrds() {
+			var insecureEndpoint = TestSupport.GetServiceEndpoint(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20, 10, false);
+			var secureEndpoint = TestSupport.GetServiceEndpoint(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20, 20, true);
+			UriIdentifier secureClaimedId = new UriIdentifier(TestSupport.GetFullUrl("/claimedId", null, true), true);
+			MockHttpRequest.RegisterMockXrdsResponse(secureClaimedId, new ServiceEndpoint[] { insecureEndpoint, secureEndpoint });
+			Assert.AreEqual(secureEndpoint.ProviderLocalIdentifier, secureClaimedId.Discover().Single().ProviderLocalIdentifier);
+		}
 	}
 }
