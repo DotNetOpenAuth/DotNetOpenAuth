@@ -282,5 +282,33 @@ namespace DotNetOpenId.Test.RelyingParty {
 				req => req.IsAuthenticated = true);
 			Assert.IsTrue(response.ClaimedIdentifier.IsDiscoverySecureEndToEnd);
 		}
+
+		[Test]
+		public void DirectedIdentityWithRequireSslSucceedsWithSecureEndpoint() {
+			Uri claimedId = TestSupport.GetFullUrl("/secureClaimedId", null, true);
+			Identifier opIdentifier = TestSupport.GetMockOPIdentifier(TestSupport.Scenarios.AutoApproval, claimedId);
+			var rp = TestSupport.CreateRelyingParty(null);
+			rp.RequireSsl = true;
+			var rpRequest = rp.CreateRequest(opIdentifier, TestSupport.Realm, TestSupport.ReturnTo);
+			var rpResponse = TestSupport.CreateRelyingPartyResponseThroughProvider(rpRequest, opRequest => {
+				opRequest.IsAuthenticated = true;
+				opRequest.ClaimedIdentifier = claimedId;
+			});
+			Assert.AreEqual(AuthenticationStatus.Authenticated, rpResponse.Status);
+		}
+
+		[Test]
+		public void DirectedIdentityWithRequireSslFailsWithoutSecureEndpoint() {
+			Uri claimedId = TestSupport.GetFullUrl("/secureClaimedId", null, false);
+			Identifier opIdentifier = TestSupport.GetMockOPIdentifier(TestSupport.Scenarios.AutoApproval, claimedId);
+			var rp = TestSupport.CreateRelyingParty(null);
+			rp.RequireSsl = true;
+			var rpRequest = rp.CreateRequest(opIdentifier, TestSupport.Realm, TestSupport.ReturnTo);
+			var rpResponse = TestSupport.CreateRelyingPartyResponseThroughProvider(rpRequest, opRequest => {
+				opRequest.IsAuthenticated = true;
+				opRequest.ClaimedIdentifier = claimedId;
+			});
+			Assert.AreEqual(AuthenticationStatus.Failed, rpResponse.Status);
+		}
 	}
 }
