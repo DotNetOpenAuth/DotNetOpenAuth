@@ -31,8 +31,7 @@ namespace DotNetOpenId.RelyingParty {
 
 		void initializeAssociation() {
 			string assoc_type = Util.GetRequiredArg(Args, Protocol.openidnp.assoc_type);
-			if (Protocol.Args.SignatureAlgorithm.HMAC_SHA1.Equals(assoc_type, StringComparison.Ordinal) ||
-				Protocol.Args.SignatureAlgorithm.HMAC_SHA256.Equals(assoc_type, StringComparison.Ordinal)) {
+			if (Array.IndexOf(Protocol.Args.SignatureAlgorithm.All, assoc_type) >= 0) {
 				byte[] secret;
 
 				string session_type;
