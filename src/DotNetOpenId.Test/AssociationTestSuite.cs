@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Security.Cryptography;
 using NUnit.Framework;
 
 namespace DotNetOpenId.Test {
 	[TestFixture]
 	public class AssociationTestSuite {
 		static readonly TimeSpan deltaDateTime = TimeSpan.FromSeconds(2);
-		byte[] sha1Secret = new byte[CryptUtil.Sha1.HashSize / 8];
-		byte[] sha1Secret2 = new byte[CryptUtil.Sha1.HashSize / 8];
+		static HashAlgorithm sha1 = DiffieHellmanUtil.Lookup(Protocol.Default, Protocol.Default.Args.SessionType.DH_SHA1);
+		byte[] sha1Secret = new byte[sha1.HashSize / 8];
+		byte[] sha1Secret2 = new byte[sha1.HashSize / 8];
 
 		public AssociationTestSuite() {
 			// just a little something to make it at all interesting.

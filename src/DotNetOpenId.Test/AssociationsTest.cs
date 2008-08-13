@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Security.Cryptography;
 using NUnit.Framework;
-using System.Threading;
 
 namespace DotNetOpenId.Test {
 	[TestFixture]
 	public class AssociationsTest {
-		byte[] sha1Secret = new byte[CryptUtil.Sha1.HashSize / 8];
+		static HashAlgorithm sha1 = DiffieHellmanUtil.Lookup(Protocol.Default, Protocol.Default.Args.SessionType.DH_SHA1);
+		byte[] sha1Secret = new byte[sha1.HashSize / 8];
 
 		Associations assocs;
 		[SetUp]
