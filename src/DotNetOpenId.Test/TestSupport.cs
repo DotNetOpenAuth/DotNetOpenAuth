@@ -219,8 +219,11 @@ public class TestSupport {
 	/// store in <see cref="ProviderStore"/>.
 	/// </summary>
 	internal static OpenIdProvider CreateProvider(NameValueCollection fields) {
+		return CreateProvider(fields, false);
+	}
+	internal static OpenIdProvider CreateProvider(NameValueCollection fields, bool useSsl) {
 		Protocol protocol = fields != null ? Protocol.Detect(fields.ToDictionary()) : Protocol.v20;
-		Uri opEndpoint = GetFullUrl(ProviderPage);
+		Uri opEndpoint = GetFullUrl(ProviderPage, null, useSsl);
 		var provider = new OpenIdProvider(ProviderStore, opEndpoint, opEndpoint, fields ?? new NameValueCollection());
 		return provider;
 	}

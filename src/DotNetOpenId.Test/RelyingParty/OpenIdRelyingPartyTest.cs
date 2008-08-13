@@ -311,8 +311,25 @@ namespace DotNetOpenId.Test.RelyingParty {
 			Assert.AreEqual(AuthenticationStatus.Failed, rpResponse.Status);
 		}
 
-		[Test, Ignore]
+		[Test]
 		public void UnsolicitedAssertionWithRequireSsl() {
+			MockHttpRequest.Reset();
+			Mocks.MockHttpRequest.RegisterMockRPDiscovery();
+			TestSupport.Scenarios scenario = TestSupport.Scenarios.AutoApproval;
+			Identifier claimedId = TestSupport.GetMockIdentifier(scenario, ProtocolVersion.V20, true);
+			Identifier localId = TestSupport.GetDelegateUrl(scenario, true);
+
+			OpenIdProvider op = TestSupport.CreateProvider(null, true);
+			IResponse assertion = op.PrepareUnsolicitedAssertion(TestSupport.Realm, claimedId, localId);
+
+			var opAuthWebResponse = (Response)assertion;
+			var opAuthResponse = (DotNetOpenId.Provider.EncodableResponse)opAuthWebResponse.EncodableMessage;
+			var rp = TestSupport.CreateRelyingParty(TestSupport.RelyingPartyStore, opAuthResponse.RedirectUrl,
+				opAuthResponse.EncodedFields.ToNameValueCollection());
+			rp.RequireSsl = true;
+
+			Assert.AreEqual(AuthenticationStatus.Authenticated, rp.Response.Status);
+			Assert.AreEqual(claimedId, rp.Response.ClaimedIdentifier);
 		}
 
 		[Test]
