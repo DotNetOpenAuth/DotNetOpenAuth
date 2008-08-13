@@ -38,9 +38,6 @@ namespace DotNetOpenId.RelyingParty {
 			Debug.Assert(Array.IndexOf(provider.Protocol.Args.SignatureAlgorithm.All, assoc_type) >= 0);
 			Debug.Assert(Array.IndexOf(provider.Protocol.Args.SessionType.All, session_type) >= 0);
 
-			Logger.InfoFormat("Requesting association with {0} (assoc_type = '{1}', session_type = '{2}').",
-					provider.ProviderEndpoint, assoc_type, session_type);
-
 			var args = new Dictionary<string, string>();
 			Protocol protocol = provider.Protocol;
 
@@ -50,8 +47,13 @@ namespace DotNetOpenId.RelyingParty {
 			DiffieHellman dh = null;
 
 			if (provider.ProviderEndpoint.Scheme == Uri.UriSchemeHttps) {
+				Logger.InfoFormat("Requesting association with {0} (assoc_type = '{1}', session_type = '{2}').",
+						provider.ProviderEndpoint, assoc_type, protocol.Args.SessionType.NoEncryption);
 				args.Add(protocol.openid.session_type, protocol.Args.SessionType.NoEncryption);
 			} else {
+				Logger.InfoFormat("Requesting association with {0} (assoc_type = '{1}', session_type = '{2}').",
+						provider.ProviderEndpoint, assoc_type, session_type);
+
 				// Initiate Diffie-Hellman Exchange
 				dh = DiffieHellmanUtil.CreateDiffieHellman();
 

@@ -10,6 +10,9 @@ namespace DotNetOpenId {
 			internal Util.Func<Protocol, string> GetAssociationType;
 			internal Util.Func<byte[], HashAlgorithm> CreateHasher;
 			internal HashAlgorithm BaseHashAlgorithm;
+			/// <summary>
+			/// The size of the hash (in bytes).
+			/// </summary>
 			internal int SecretLength { get { return BaseHashAlgorithm.HashSize / 8; } }
 		}
 		static HmacSha[] HmacShaAssociationTypes = {
