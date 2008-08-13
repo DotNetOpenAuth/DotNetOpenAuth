@@ -48,8 +48,11 @@ public class TestSupport {
 		/// </summary>
 		ExtensionPartialCooperation,
 	}
-	internal static UriIdentifier GetOPIdentityUrl(Scenarios scenario) {
-		return new UriIdentifier(GetFullUrl("/" + OPDefaultPage, "user", scenario));
+	internal static UriIdentifier GetOPIdentityUrl(Scenarios scenario, bool useSsl) {
+		var args = new Dictionary<string, string> {
+			{ "user", scenario.ToString() },
+		};
+		return new UriIdentifier(GetFullUrl("/" + OPDefaultPage, args, useSsl));
 	}
 	internal static UriIdentifier GetIdentityUrl(Scenarios scenario, ProtocolVersion providerVersion) {
 		return GetIdentityUrl(scenario, providerVersion, false);
@@ -93,9 +96,16 @@ public class TestSupport {
 			);
 	}
 	internal static MockIdentifier GetMockOPIdentifier(Scenarios scenario, UriIdentifier expectedClaimedId) {
-		Uri opEndpoint = GetFullUrl(DirectedProviderEndpoint, "user", scenario);
+		return GetMockOPIdentifier(scenario, expectedClaimedId, false, false);
+	}
+	internal static MockIdentifier GetMockOPIdentifier(Scenarios scenario, UriIdentifier expectedClaimedId, bool useSslOpIdentifier, bool useSslProviderEndpoint) {
+		var fields = new Dictionary<string, string> {
+			{ "user", scenario.ToString() },
+		};
+		Uri opEndpoint = GetFullUrl(DirectedProviderEndpoint, fields, useSslProviderEndpoint);
+		Uri opIdentifier = GetOPIdentityUrl(scenario, useSslOpIdentifier);
 		ServiceEndpoint se = ServiceEndpoint.CreateForProviderIdentifier(
-			GetOPIdentityUrl(scenario),
+			opIdentifier,
 			opEndpoint,
 			new string[] { Protocol.v20.OPIdentifierServiceTypeURI },
 			10,
@@ -106,7 +116,7 @@ public class TestSupport {
 		// discovery on that identifier can be mocked up.
 		MockHttpRequest.RegisterMockXrdsResponse(expectedClaimedId, se);
 
-		return new MockIdentifier(GetOPIdentityUrl(scenario), new ServiceEndpoint[] { se });
+		return new MockIdentifier(opIdentifier, new ServiceEndpoint[] { se });
 	}
 	public static Uri GetFullUrl(string url) {
 		return GetFullUrl(url, null, false);
@@ -186,12 +196,16 @@ public class TestSupport {
 	/// response from an <see cref="OpenIdProvider"/>.
 	/// </summary>
 	internal static IAuthenticationResponse CreateRelyingPartyResponse(IRelyingPartyApplicationStore store, IResponse providerResponse) {
+		return CreateRelyingPartyResponse(store, providerResponse, false);
+	}
+	internal static IAuthenticationResponse CreateRelyingPartyResponse(IRelyingPartyApplicationStore store, IResponse providerResponse, bool requireSsl) {
 		if (providerResponse == null) throw new ArgumentNullException("providerResponse");
 
 		var opAuthWebResponse = (Response)providerResponse;
 		var opAuthResponse = (EncodableResponse)opAuthWebResponse.EncodableMessage;
 		var rp = CreateRelyingParty(store, opAuthResponse.RedirectUrl,
 			opAuthResponse.EncodedFields.ToNameValueCollection());
+		rp.RequireSsl = requireSsl;
 		// Get the response now, before trying the replay attack.  The Response
 		// property is lazily-evaluated, so the replay attack can be evaluated first
 		// and pass, while this one that SUPPOSED to pass fails, if we don't force it now.
@@ -206,6 +220,7 @@ public class TestSupport {
 			Logger.Info("Attempting replay attack...");
 			var replayRP = CreateRelyingParty(store, opAuthResponse.RedirectUrl,
 				opAuthResponse.EncodedFields.ToNameValueCollection());
+			replayRP.RequireSsl = requireSsl;
 			Assert.AreNotEqual(AuthenticationStatus.Authenticated, replayRP.Response.Status, "Replay attack succeeded!");
 		} catch (OpenIdException) { // nonce already used
 			// another way to pass
@@ -261,7 +276,8 @@ public class TestSupport {
 		var rpReq = (AuthenticationRequest)request;
 		var opResponse = CreateProviderResponseToRequest(rpReq, providerAction);
 		// Be careful to use whatever store the original RP was using.
-		var rp = CreateRelyingPartyResponse(rpReq.RelyingParty.Store, opResponse);
+		var rp = CreateRelyingPartyResponse(rpReq.RelyingParty.Store, opResponse,
+			((AuthenticationRequest)request).RelyingParty.RequireSsl);
 		Assert.IsNotNull(rp);
 		return rp;
 	}
