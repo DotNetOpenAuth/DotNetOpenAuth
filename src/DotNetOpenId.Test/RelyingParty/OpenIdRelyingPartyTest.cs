@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web;
 using DotNetOpenId.RelyingParty;
-using NUnit.Framework;
-using ProviderMemoryStore = DotNetOpenId.AssociationMemoryStore<DotNetOpenId.AssociationRelyingPartyType>;
 using DotNetOpenId.Test.Mocks;
+using NUnit.Framework;
+using OpenIdProvider = DotNetOpenId.Provider.OpenIdProvider;
 
 namespace DotNetOpenId.Test.RelyingParty {
 	[TestFixture]
@@ -309,6 +309,36 @@ namespace DotNetOpenId.Test.RelyingParty {
 				opRequest.ClaimedIdentifier = claimedId;
 			});
 			Assert.AreEqual(AuthenticationStatus.Failed, rpResponse.Status);
+		}
+
+		[Test, Ignore]
+		public void UnsolicitedAssertionWithRequireSsl() {
+		}
+
+		[Test]
+		public void UnsolicitedAssertionWithRequireSslWithoutSecureIdentityUrl() {
+			MockHttpRequest.Reset();
+			Mocks.MockHttpRequest.RegisterMockRPDiscovery();
+			TestSupport.Scenarios scenario = TestSupport.Scenarios.AutoApproval;
+			Identifier claimedId = TestSupport.GetMockIdentifier(scenario, ProtocolVersion.V20);
+			Identifier localId = TestSupport.GetDelegateUrl(scenario);
+
+			OpenIdProvider op = TestSupport.CreateProvider(null);
+			IResponse assertion = op.PrepareUnsolicitedAssertion(TestSupport.Realm, claimedId, localId);
+
+			var opAuthWebResponse = (Response)assertion;
+			var opAuthResponse = (DotNetOpenId.Provider.EncodableResponse)opAuthWebResponse.EncodableMessage;
+			var rp = TestSupport.CreateRelyingParty(TestSupport.RelyingPartyStore, opAuthResponse.RedirectUrl,
+				opAuthResponse.EncodedFields.ToNameValueCollection());
+			rp.RequireSsl = true;
+
+			Assert.AreEqual(AuthenticationStatus.Failed, rp.Response.Status);
+			Assert.IsNull(rp.Response.ClaimedIdentifier);
+		}
+
+		[Test, Ignore]
+		public void UnsolicitedAssertionWithRequireSslWithSecureIdentityButInsecureEndpoint() {
+
 		}
 	}
 }

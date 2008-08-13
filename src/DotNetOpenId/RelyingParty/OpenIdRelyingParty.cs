@@ -355,6 +355,7 @@ namespace DotNetOpenId.RelyingParty {
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public EndpointSelector EndpointFilter { get; set; }
 
+		private bool requireSsl;
 		/// <summary>
 		/// Gets/sets whether the entire pipeline from Identifier discovery to Provider redirect
 		/// is guaranteed to be encrypted using HTTPS for authentication to succeed.
@@ -372,6 +373,8 @@ namespace DotNetOpenId.RelyingParty {
 		/// <item>Only Provider endpoints found at HTTPS URLs will be considered.</item>
 		/// <item>If the discovered identifier is an OP Identifier (directed identity), the 
 		/// Claimed Identifier eventually asserted by the Provider must be an HTTPS identifier.</item>
+		/// <item>In the case of an unsolicited assertion, the asserted Identifier, discovery on it and 
+		/// the asserting provider endpoint must all be secured by HTTPS.</item>
 		/// </list>
 		/// <para>Although the first redirect from this relying party to the Provider is required
 		/// to use HTTPS, any additional redirects within the Provider cannot be protected and MAY
@@ -379,7 +382,15 @@ namespace DotNetOpenId.RelyingParty {
 		/// There is nothing that the RP can do to detect or prevent this.</para>
 		/// </remarks>
 		/// <exception cref="OpenIdException">Thrown when a secure pipeline cannot be established.</exception>
-		public bool RequireSsl { get; set; }
+		public bool RequireSsl {
+			get { return requireSsl; }
+			set {
+				requireSsl = value;
+				// reset response that may have been calculated to force 
+				// reconsideration with new security policy.
+				response = null;
+			}
+		}
 
 		const string associationStoreKey = "DotNetOpenId.RelyingParty.RelyingParty.AssociationStore";
 		/// <summary>
