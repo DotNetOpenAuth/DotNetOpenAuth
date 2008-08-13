@@ -23,7 +23,7 @@ public partial class decide : Page {
 		realmLabel.Text = ProviderEndpoint.PendingAuthenticationRequest.Realm.ToString();
 
 		// check that the logged in user is the same as the user requesting authentication to the consumer. If not, then log them out.
-		if (User.Identity.Name == Util.ExtractUserName(ProviderEndpoint.PendingAuthenticationRequest.LocalIdentifier)) {
+		if (String.Equals(User.Identity.Name, Util.ExtractUserName(ProviderEndpoint.PendingAuthenticationRequest.LocalIdentifier), StringComparison.OrdinalIgnoreCase)) {
 			// if simple registration fields were used, then prompt the user for them
 			var requestedFields = ProviderEndpoint.PendingAuthenticationRequest.GetExtension<ClaimsRequest>();
 			if (requestedFields != null) {

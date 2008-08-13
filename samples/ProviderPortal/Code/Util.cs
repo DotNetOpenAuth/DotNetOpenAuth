@@ -19,6 +19,9 @@ public class Util {
 		return ExtractUserName(new Uri(identifier.ToString()));
 	}
 	public static Identifier BuildIdentityUrl() {
-		return new Uri(HttpContext.Current.Request.Url, "/user/" + HttpContext.Current.User.Identity.Name);
+		string username = HttpContext.Current.User.Identity.Name;
+		// be sure to normalize case the way the user's identity page does.
+		username = username.Substring(0, 1).ToUpperInvariant() + username.Substring(1).ToLowerInvariant();
+		return new Uri(HttpContext.Current.Request.Url, "/user/" + username);
 	}
 }
