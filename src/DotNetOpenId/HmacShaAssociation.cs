@@ -16,22 +16,22 @@ namespace DotNetOpenId {
 			new HmacSha {
 				CreateHasher = secretKey => new HMACSHA1(secretKey),
 				GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA1,
-				BaseHashAlgorithm = CryptUtil.Sha1,
+				BaseHashAlgorithm = new SHA1Managed(),
 			},
 			new HmacSha {
 				CreateHasher = secretKey => new HMACSHA256(secretKey),
 				GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA256,
-				BaseHashAlgorithm = CryptUtil.Sha256,
+				BaseHashAlgorithm = new SHA256Managed(),
 			},
 			new HmacSha {
 				CreateHasher = secretKey => new HMACSHA384(secretKey),
 				GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA384,
-				BaseHashAlgorithm = CryptUtil.Sha384,
+				BaseHashAlgorithm = new SHA384Managed(),
 			},
 			new HmacSha {
 				CreateHasher = secretKey => new HMACSHA512(secretKey),
 				GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA512,
-				BaseHashAlgorithm = CryptUtil.Sha512,
+				BaseHashAlgorithm = new SHA512Managed(),
 			},
 		};
 

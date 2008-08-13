@@ -39,18 +39,16 @@ namespace DotNetOpenId.RelyingParty {
 				if (!Args.TryGetValue(Protocol.openidnp.session_type, out session_type) ||
 					Protocol.Args.SessionType.NoEncryption.Equals(session_type, StringComparison.Ordinal)) {
 					secret = getDecoded(Protocol.openidnp.mac_key);
-				} else if (Protocol.Args.SessionType.DH_SHA1.Equals(session_type, StringComparison.Ordinal)) {
-					byte[] dh_server_public = getDecoded(Protocol.openidnp.dh_server_public);
-					byte[] enc_mac_key = getDecoded(Protocol.openidnp.enc_mac_key);
-					secret = CryptUtil.SHAHashXorSecret(CryptUtil.Sha1, DH, dh_server_public, enc_mac_key);
-				} else if (Protocol.Args.SessionType.DH_SHA256.Equals(session_type, StringComparison.Ordinal)) {
-					byte[] dh_server_public = getDecoded(Protocol.openidnp.dh_server_public);
-					byte[] enc_mac_key = getDecoded(Protocol.openidnp.enc_mac_key);
-					secret = CryptUtil.SHAHashXorSecret(CryptUtil.Sha256, DH, dh_server_public, enc_mac_key);
 				} else {
-					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
-						Strings.InvalidOpenIdQueryParameterValue,
-						Protocol.openid.session_type, session_type));
+					try {
+						byte[] dh_server_public = getDecoded(Protocol.openidnp.dh_server_public);
+						byte[] enc_mac_key = getDecoded(Protocol.openidnp.enc_mac_key);
+						secret = CryptUtil.SHAHashXorSecret(DiffieHellmanUtil.Lookup(Protocol, session_type), DH, dh_server_public, enc_mac_key);
+					} catch (ArgumentException ex) {
+						throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
+							Strings.InvalidOpenIdQueryParameterValue,
+							Protocol.openid.session_type, session_type), ex);
+					}
 				}
 
 				string assocHandle = Util.GetRequiredArg(Args, Protocol.openidnp.assoc_handle);

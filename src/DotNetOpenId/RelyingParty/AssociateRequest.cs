@@ -24,13 +24,9 @@ namespace DotNetOpenId.RelyingParty {
 			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
 			if (provider == null) throw new ArgumentNullException("provider");
 
-			bool useSha256 = provider.Protocol.Version.Major >= 2;
-			string assoc_type = useSha256 ?
-				provider.Protocol.Args.SignatureAlgorithm.HMAC_SHA256 :
-				provider.Protocol.Args.SignatureAlgorithm.HMAC_SHA1;
-			string session_type = useSha256 ?
-					provider.Protocol.Args.SessionType.DH_SHA256 :
-					provider.Protocol.Args.SessionType.DH_SHA1;
+			// TODO: derive some guarantee that we're using the same bit sizes for assoc and session.
+			string assoc_type = provider.Protocol.Args.SignatureAlgorithm.Best;
+			string session_type = provider.Protocol.Args.SessionType.Best;
 			return Create(relyingParty, provider, assoc_type, session_type);
 		}
 

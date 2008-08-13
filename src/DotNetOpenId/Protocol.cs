@@ -277,6 +277,16 @@ namespace DotNetOpenId {
 				public string DH_SHA384 = null;
 				public string DH_SHA512 = null;
 				public string NoEncryption = "";
+				public string Best {
+					get {
+						foreach (string algorithmName in All) {
+							if (algorithmName != null) {
+								return algorithmName;
+							}
+						}
+						throw new OpenIdException(); // really bad... we have no signing algorithms at all
+					}
+				}
 			}
 			internal class SignatureAlgorithms {
 				/// <summary>
