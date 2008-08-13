@@ -53,19 +53,19 @@ namespace DotNetOpenId.RelyingParty {
 				args.Add(protocol.openid.session_type, protocol.Args.SessionType.NoEncryption);
 			} else {
 				// Initiate Diffie-Hellman Exchange
-				dh = CryptUtil.CreateDiffieHellman();
+				dh = DiffieHellmanUtil.CreateDiffieHellman();
 
 				byte[] dhPublic = dh.CreateKeyExchange();
-				string cpub = CryptUtil.UnsignedToBase64(dhPublic);
+				string cpub = DiffieHellmanUtil.UnsignedToBase64(dhPublic);
 
 				args.Add(protocol.openid.session_type, session_type);
 				args.Add(protocol.openid.dh_consumer_public, cpub);
 
 				DHParameters dhps = dh.ExportParameters(true);
 
-				if (dhps.P != CryptUtil.DEFAULT_MOD || dhps.G != CryptUtil.DEFAULT_GEN) {
-					args.Add(protocol.openid.dh_modulus, CryptUtil.UnsignedToBase64(dhps.P));
-					args.Add(protocol.openid.dh_gen, CryptUtil.UnsignedToBase64(dhps.G));
+				if (dhps.P != DiffieHellmanUtil.DEFAULT_MOD || dhps.G != DiffieHellmanUtil.DEFAULT_GEN) {
+					args.Add(protocol.openid.dh_modulus, DiffieHellmanUtil.UnsignedToBase64(dhps.P));
+					args.Add(protocol.openid.dh_gen, DiffieHellmanUtil.UnsignedToBase64(dhps.G));
 				}
 			}
 

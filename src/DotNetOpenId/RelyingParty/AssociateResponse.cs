@@ -42,7 +42,7 @@ namespace DotNetOpenId.RelyingParty {
 					try {
 						byte[] dh_server_public = getDecoded(Protocol.openidnp.dh_server_public);
 						byte[] enc_mac_key = getDecoded(Protocol.openidnp.enc_mac_key);
-						secret = CryptUtil.SHAHashXorSecret(DiffieHellmanUtil.Lookup(Protocol, session_type), DH, dh_server_public, enc_mac_key);
+						secret = DiffieHellmanUtil.SHAHashXorSecret(DiffieHellmanUtil.Lookup(Protocol, session_type), DH, dh_server_public, enc_mac_key);
 					} catch (ArgumentException ex) {
 						throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 							Strings.InvalidOpenIdQueryParameterValue,
