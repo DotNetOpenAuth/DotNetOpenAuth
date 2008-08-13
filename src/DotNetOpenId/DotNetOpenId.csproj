@@ -59,6 +59,8 @@
     <Compile Include="Association.cs" />
     <Compile Include="AssociationMemoryStore.cs" />
     <Compile Include="Associations.cs" />
+    <Compile Include="HmacSha384Association.cs" />
+    <Compile Include="HmacSha512Association.cs" />
     <Compile Include="Provider\SigningMessageEncoder.cs" />
     <Compile Include="RelyingParty\DirectMessageHttpChannel.cs" />
     <Compile Include="RelyingParty\IDirectMessageChannel.cs" />

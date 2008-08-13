@@ -19,8 +19,10 @@ namespace DotNetOpenId {
 			154, 72, 59, 138, 118, 34, 62, 93, 73, 10, 37, 127, 5, 189, 255, 22,
 			242, 251, 34, 197, 131, 171};
 
-		internal static SHA1CryptoServiceProvider Sha1 = new SHA1CryptoServiceProvider();
-		internal static SHA256Managed Sha256 = new SHA256Managed();
+		internal static HashAlgorithm Sha1 = new SHA1CryptoServiceProvider();
+		internal static HashAlgorithm Sha256 = new SHA256Managed();
+		internal static HashAlgorithm Sha384 = new SHA384Managed();
+		internal static HashAlgorithm Sha512 = new SHA512Managed();
 
 		public static string UnsignedToBase64(byte[] inputBytes) {
 			return Convert.ToBase64String(ensurePositive(inputBytes));

@@ -91,7 +91,7 @@ namespace DotNetOpenId.Provider {
 		public override Dictionary<string, string> Answer(byte[] secret) {
 			bool useSha256 = SessionType.Equals(Protocol.Args.SessionType.DH_SHA256, StringComparison.Ordinal);
 			byte[] mac_key = CryptUtil.SHAHashXorSecret(
-				useSha256 ? (HashAlgorithm) CryptUtil.Sha256 : CryptUtil.Sha1, 
+				useSha256 ? CryptUtil.Sha256 : CryptUtil.Sha1, 
 				dh, consumerPublicKey, secret);
 			var nvc = new Dictionary<string, string>();
 
