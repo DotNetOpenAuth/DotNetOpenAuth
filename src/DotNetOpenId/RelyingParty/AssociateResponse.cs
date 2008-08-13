@@ -56,14 +56,13 @@ namespace DotNetOpenId.RelyingParty {
 				string assocHandle = Util.GetRequiredArg(Args, Protocol.openidnp.assoc_handle);
 				TimeSpan expiresIn = new TimeSpan(0, 0, Convert.ToInt32(Util.GetRequiredArg(Args, Protocol.openidnp.expires_in), CultureInfo.InvariantCulture));
 
-				if (assoc_type == Protocol.Args.SignatureAlgorithm.HMAC_SHA1) {
-					Association = new HmacSha1Association(assocHandle, secret, expiresIn);
-				} else if (assoc_type == Protocol.Args.SignatureAlgorithm.HMAC_SHA256) {
-					Association = new HmacSha256Association(assocHandle, secret, expiresIn);
-				} else {
+				try {
+					Association = HmacShaAssociation.Create(Protocol, assoc_type,
+						assocHandle, secret, expiresIn);
+				} catch (ArgumentException ex) {
 					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 						Strings.InvalidOpenIdQueryParameterValue,
-						Protocol.openid.assoc_type, assoc_type));
+						Protocol.openid.assoc_type, assoc_type), ex);
 				}
 			} else {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,

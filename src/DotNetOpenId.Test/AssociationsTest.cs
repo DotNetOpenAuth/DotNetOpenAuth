@@ -27,7 +27,8 @@ namespace DotNetOpenId.Test {
 
 		[Test]
 		public void HandleLifecycle() {
-			Association a = new HmacSha1Association("somehandle", sha1Secret, TimeSpan.FromDays(1));
+			Association a = HmacShaAssociation.Create(Protocol.Default, Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA1,
+				"somehandle", sha1Secret, TimeSpan.FromDays(1));
 			assocs.Set(a);
 			Assert.AreSame(a, assocs.Get(a.Handle));
 			Assert.IsTrue(assocs.Remove(a.Handle));
@@ -37,8 +38,10 @@ namespace DotNetOpenId.Test {
 
 		[Test]
 		public void Best() {
-			Association a = new HmacSha1Association("h1", sha1Secret, TimeSpan.FromHours(1));
-			Association b = new HmacSha1Association("h2", sha1Secret, TimeSpan.FromHours(1));
+			Association a = HmacShaAssociation.Create(Protocol.Default, Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA1,
+				"h1", sha1Secret, TimeSpan.FromHours(1));
+			Association b = HmacShaAssociation.Create(Protocol.Default, Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA1,
+				"h2", sha1Secret, TimeSpan.FromHours(1));
 
 			assocs.Set(a);
 			assocs.Set(b);

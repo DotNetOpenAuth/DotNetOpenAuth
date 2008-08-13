@@ -59,8 +59,6 @@
     <Compile Include="Association.cs" />
     <Compile Include="AssociationMemoryStore.cs" />
     <Compile Include="Associations.cs" />
-    <Compile Include="HmacSha384Association.cs" />
-    <Compile Include="HmacSha512Association.cs" />
     <Compile Include="Provider\SigningMessageEncoder.cs" />
     <Compile Include="RelyingParty\DirectMessageHttpChannel.cs" />
     <Compile Include="RelyingParty\IDirectMessageChannel.cs" />
@@ -82,7 +80,6 @@
     <Compile Include="Extensions\AttributeExchange\StoreRequest.cs" />
     <Compile Include="Extensions\AttributeExchange\StoreResponse.cs" />
     <Compile Include="Extensions\IExtension.cs" />
-    <Compile Include="HmacSha256Association.cs" />
     <Compile Include="Identifier.cs" />
     <Compile Include="IResponse.cs" />
     <Compile Include="Loggers\TraceLogger.cs" />
@@ -116,7 +113,7 @@
     <Compile Include="RelyingParty\OpenIdRelyingParty.cs" />
     <Compile Include="RelyingParty\Token.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="HmacSha1Association.cs" />
+    <Compile Include="HmacShaAssociation.cs" />
     <Compile Include="HttpEncoding.cs" />
     <Compile Include="IAssociationStore.cs" />
     <Compile Include="KeyValueFormEncoding.cs" />

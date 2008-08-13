@@ -287,6 +287,16 @@ namespace DotNetOpenId {
 				public string HMAC_SHA256 = null;
 				public string HMAC_SHA384 = null;
 				public string HMAC_SHA512 = null;
+				public string Best {
+					get {
+						foreach (string algorithmName in All) {
+							if (algorithmName != null) {
+								return algorithmName;
+							}
+						}
+						throw new OpenIdException(); // really bad... we have no signing algorithms at all
+					}
+				}
 			}
 			internal class Modes {
 				public string cancel = "cancel";

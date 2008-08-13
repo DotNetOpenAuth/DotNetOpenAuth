@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using NUnit.Framework;
 
-namespace DotNetOpenId.Test
-{
+namespace DotNetOpenId.Test {
 	[TestFixture]
 	public class AssociationTestSuite {
 		static readonly TimeSpan deltaDateTime = TimeSpan.FromSeconds(2);
@@ -24,7 +23,8 @@ namespace DotNetOpenId.Test
 		public void Properties() {
 			string handle = "somehandle";
 			TimeSpan lifetime = TimeSpan.FromMinutes(2);
-			Association assoc = new HmacSha1Association(handle, sha1Secret, lifetime);
+			Association assoc = HmacShaAssociation.Create(Protocol.Default, Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA1,
+				handle, sha1Secret, lifetime);
 			Assert.IsFalse(assoc.IsExpired);
 			Assert.IsTrue(Math.Abs((DateTime.Now - assoc.Issued.ToLocalTime()).TotalSeconds) < deltaDateTime.TotalSeconds);
 			Assert.IsTrue(Math.Abs((DateTime.Now.ToLocalTime() + lifetime - assoc.Expires.ToLocalTime()).TotalSeconds) < deltaDateTime.TotalSeconds);
@@ -36,8 +36,10 @@ namespace DotNetOpenId.Test
 
 		[Test]
 		public void Sign() {
-			Association assoc1 = new HmacSha1Association("h1", sha1Secret, TimeSpan.FromMinutes(2));
-			Association assoc2 = new HmacSha1Association("h2", sha1Secret2, TimeSpan.FromMinutes(2));
+			Association assoc1 = HmacShaAssociation.Create(Protocol.Default, Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA1,
+				"h1", sha1Secret, TimeSpan.FromMinutes(2));
+			Association assoc2 = HmacShaAssociation.Create(Protocol.Default, Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA1,
+				"h2", sha1Secret2, TimeSpan.FromMinutes(2));
 
 			var dict = new Dictionary<string, string>();
 			dict.Add("a", "b");
@@ -77,7 +79,8 @@ namespace DotNetOpenId.Test
 
 		[Test]
 		public void SignSome() {
-			Association assoc = new HmacSha1Association("h1", sha1Secret, TimeSpan.FromMinutes(2));
+			Association assoc = HmacShaAssociation.Create(Protocol.Default, Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA1,
+				"h1", sha1Secret, TimeSpan.FromMinutes(2));
 			const string prefix = "q.";
 
 			var dict = new Dictionary<string, string>();
@@ -85,7 +88,7 @@ namespace DotNetOpenId.Test
 			dict.Add("q.c", "d");
 			dict.Add("q.e", "f");
 
-			var signKeys = new List<string> {"a", "c"}; // don't sign e
+			var signKeys = new List<string> { "a", "c" }; // don't sign e
 
 			byte[] sig1 = assoc.Sign(dict, signKeys, prefix);
 
