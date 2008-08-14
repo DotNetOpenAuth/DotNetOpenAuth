@@ -443,6 +443,20 @@ namespace DotNetOpenId.RelyingParty
 			get { return (bool)(ViewState[enableRequestProfileViewStateKey] ?? enableRequestProfileDefault); }
 			set { ViewState[enableRequestProfileViewStateKey] = value; }
 		}
+
+		const string requireSslViewStateKey = "RequireSsl";
+		const bool requireSslDefault = false;
+		/// <summary>
+		/// Turns on high security mode, requiring the full authentication pipeline to be protected by SSL.
+		/// </summary>
+		[Bindable(true)]
+		[Category(behaviorCategory)]
+		[DefaultValue(requireSslDefault)]
+		[Description("Turns on high security mode, requiring the full authentication pipeline to be protected by SSL.")]
+		public bool RequireSsl {
+			get { return (bool)(ViewState[requireSslViewStateKey] ?? requireSslDefault); }
+			set { ViewState[requireSslViewStateKey] = value; }
+		}
 		#endregion
 
 		#region Properties to hide
@@ -554,6 +568,7 @@ namespace DotNetOpenId.RelyingParty
 
 			if (!Enabled || Page.IsPostBack) return;
 			var consumer = new OpenIdRelyingParty();
+			consumer.Settings.RequireSsl = RequireSsl;
 			if (consumer.Response != null) {
 				switch (consumer.Response.Status) {
 					case AuthenticationStatus.Canceled:
@@ -615,6 +630,7 @@ namespace DotNetOpenId.RelyingParty
 
 			try {
 				var consumer = new OpenIdRelyingParty();
+				consumer.Settings.RequireSsl = RequireSsl;
 
 				// Resolve the trust root, and swap out the scheme and port if necessary to match the
 				// return_to URL, since this match is required by OpenId, and the consumer app
