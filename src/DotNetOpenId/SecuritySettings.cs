@@ -47,6 +47,11 @@ namespace DotNetOpenId {
 			set { maximumHashBitLength = value; }
 		}
 
+		internal bool IsAssociationInPermittedRange(Protocol protocol, string associationType) {
+			int length = HmacShaAssociation.GetSecretLength(protocol, associationType);
+			return length >= MinimumHashBitLength && length <= MaximumHashBitLength;
+		}
+
 		/// <summary>
 		/// Gets/sets the oldest version of OpenID the remote party is allowed to implement.
 		/// </summary>

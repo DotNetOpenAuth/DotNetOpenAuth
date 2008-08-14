@@ -58,6 +58,9 @@ namespace DotNetOpenId {
 			throw new ArgumentOutOfRangeException("secretLength");
 		}
 
+		/// <summary>
+		/// Returns the length of the shared secret (in bytes).
+		/// </summary>
 		public static int GetSecretLength(Protocol protocol, string associationType) {
 			foreach (HmacSha shaType in HmacShaAssociationTypes) {
 				if (String.Equals(shaType.GetAssociationType(protocol), associationType, StringComparison.Ordinal)) {
