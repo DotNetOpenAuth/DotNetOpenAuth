@@ -24,13 +24,10 @@ namespace DotNetOpenId.RelyingParty {
 			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
 			if (provider == null) throw new ArgumentNullException("provider");
 
-			bool useSha256 = provider.Protocol.Version.Major >= 2;
-			string assoc_type = useSha256 ?
-				provider.Protocol.Args.SignatureAlgorithm.HMAC_SHA256 :
-				provider.Protocol.Args.SignatureAlgorithm.HMAC_SHA1;
-			string session_type = useSha256 ?
-					provider.Protocol.Args.SessionType.DH_SHA256 :
-					provider.Protocol.Args.SessionType.DH_SHA1;
+			string assoc_type, session_type;
+			HmacShaAssociation.TryFindBestAssociation(provider.Protocol,
+				relyingParty.MinimumHashBitLength, relyingParty.MaximumHashBitLength,
+				true, out assoc_type, out session_type);
 			return Create(relyingParty, provider, assoc_type, session_type);
 		}
 
@@ -42,9 +39,6 @@ namespace DotNetOpenId.RelyingParty {
 			Debug.Assert(Array.IndexOf(provider.Protocol.Args.SignatureAlgorithm.All, assoc_type) >= 0);
 			Debug.Assert(Array.IndexOf(provider.Protocol.Args.SessionType.All, session_type) >= 0);
 
-			Logger.InfoFormat("Requesting association with {0} (assoc_type = '{1}', session_type = '{2}').",
-					provider.ProviderEndpoint, assoc_type, session_type);
-
 			var args = new Dictionary<string, string>();
 			Protocol protocol = provider.Protocol;
 
@@ -54,22 +48,27 @@ namespace DotNetOpenId.RelyingParty {
 			DiffieHellman dh = null;
 
 			if (provider.ProviderEndpoint.Scheme == Uri.UriSchemeHttps) {
+				Logger.InfoFormat("Requesting association with {0} (assoc_type = '{1}', session_type = '{2}').",
+						provider.ProviderEndpoint, assoc_type, protocol.Args.SessionType.NoEncryption);
 				args.Add(protocol.openid.session_type, protocol.Args.SessionType.NoEncryption);
 			} else {
+				Logger.InfoFormat("Requesting association with {0} (assoc_type = '{1}', session_type = '{2}').",
+						provider.ProviderEndpoint, assoc_type, session_type);
+
 				// Initiate Diffie-Hellman Exchange
-				dh = CryptUtil.CreateDiffieHellman();
+				dh = DiffieHellmanUtil.CreateDiffieHellman();
 
 				byte[] dhPublic = dh.CreateKeyExchange();
-				string cpub = CryptUtil.UnsignedToBase64(dhPublic);
+				string cpub = DiffieHellmanUtil.UnsignedToBase64(dhPublic);
 
 				args.Add(protocol.openid.session_type, session_type);
 				args.Add(protocol.openid.dh_consumer_public, cpub);
 
 				DHParameters dhps = dh.ExportParameters(true);
 
-				if (dhps.P != CryptUtil.DEFAULT_MOD || dhps.G != CryptUtil.DEFAULT_GEN) {
-					args.Add(protocol.openid.dh_modulus, CryptUtil.UnsignedToBase64(dhps.P));
-					args.Add(protocol.openid.dh_gen, CryptUtil.UnsignedToBase64(dhps.G));
+				if (dhps.P != DiffieHellmanUtil.DEFAULT_MOD || dhps.G != DiffieHellmanUtil.DEFAULT_GEN) {
+					args.Add(protocol.openid.dh_modulus, DiffieHellmanUtil.UnsignedToBase64(dhps.P));
+					args.Add(protocol.openid.dh_gen, DiffieHellmanUtil.UnsignedToBase64(dhps.G));
 				}
 			}
 

@@ -1,13 +1,47 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
+using System.Globalization;
 using System.Security.Cryptography;
 using Org.Mentalis.Security.Cryptography;
-using System.Globalization;
-
 
 namespace DotNetOpenId {
-	internal static class CryptUtil {
+	class DiffieHellmanUtil {
+		class DHSha {
+			public DHSha(HashAlgorithm algorithm, Util.Func<Protocol, string> getName) {
+				if (algorithm == null) throw new ArgumentNullException("algorithm");
+				if (getName == null) throw new ArgumentNullException("getName");
+
+				GetName = getName;
+				Algorithm = algorithm;
+			}
+			internal Util.Func<Protocol, string> GetName;
+			internal readonly HashAlgorithm Algorithm;
+		}
+
+		static DHSha[] DiffieHellmanSessionTypes = {
+			new DHSha(new SHA512Managed(), protocol => protocol.Args.SessionType.DH_SHA512),
+			new DHSha(new SHA384Managed(), protocol => protocol.Args.SessionType.DH_SHA384),
+			new DHSha(new SHA256Managed(), protocol => protocol.Args.SessionType.DH_SHA256),
+			new DHSha(new SHA1Managed(), protocol => protocol.Args.SessionType.DH_SHA1),
+		};
+
+		public static HashAlgorithm Lookup(Protocol protocol, string name) {
+			foreach (DHSha dhsha in DiffieHellmanSessionTypes) {
+				if (String.Equals(dhsha.GetName(protocol), name, StringComparison.Ordinal)) {
+					return dhsha.Algorithm;
+				}
+			}
+			throw new ArgumentOutOfRangeException("name");
+		}
+
+		public static string GetNameForSize(Protocol protocol, int hashSizeInBits) {
+			foreach (DHSha dhsha in DiffieHellmanSessionTypes) {
+				if (dhsha.Algorithm.HashSize == hashSizeInBits) {
+					return dhsha.GetName(protocol);
+				}
+			}
+			return null;
+		}
+
 		public static byte[] DEFAULT_GEN = { 2 };
 		public static byte[] DEFAULT_MOD = {0, 220, 249, 58, 11, 136, 57, 114, 236, 14, 25, 152, 154, 197, 162,
 			206, 49, 14, 29, 55, 113, 126, 141, 149, 113, 187, 118, 35, 115, 24,
@@ -18,13 +52,6 @@ namespace DotNetOpenId {
 			241, 78, 69, 227, 130, 102, 52, 175, 25, 73, 229, 181, 53, 204, 130,
 			154, 72, 59, 138, 118, 34, 62, 93, 73, 10, 37, 127, 5, 189, 255, 22,
 			242, 251, 34, 197, 131, 171};
-
-		internal static SHA1CryptoServiceProvider Sha1 = new SHA1CryptoServiceProvider();
-		internal static SHA256Managed Sha256 = new SHA256Managed();
-
-		public static string UnsignedToBase64(byte[] inputBytes) {
-			return Convert.ToBase64String(ensurePositive(inputBytes));
-		}
 
 		public static DiffieHellman CreateDiffieHellman() {
 			return new DiffieHellmanManaged(DEFAULT_MOD, DEFAULT_GEN, 1024);
@@ -44,6 +71,10 @@ namespace DotNetOpenId {
 				secret[i] = (byte)(encMacKey[i] ^ shaDhShared[i]);
 			}
 			return secret;
+		}
+
+		public static string UnsignedToBase64(byte[] inputBytes) {
+			return Convert.ToBase64String(ensurePositive(inputBytes));
 		}
 
 		/// <summary>

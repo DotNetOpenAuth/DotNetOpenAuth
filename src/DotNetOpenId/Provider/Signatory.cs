@@ -79,24 +79,25 @@ namespace DotNetOpenId.Provider {
 			if (provider == null && associationType == AssociationRelyingPartyType.Smart) 
 				throw new ArgumentNullException("provider", "For Smart associations, the provider must be given.");
 
-			bool useSha256;
 			string assoc_type;
+			Protocol associationProtocol;
 			if (associationType == AssociationRelyingPartyType.Dumb) {
-				useSha256 = true;
-				assoc_type = Protocol.v20.Args.SignatureAlgorithm.HMAC_SHA256;
+				// We'll just use the best association available.
+				associationProtocol = Protocol.Default;
+				assoc_type = associationProtocol.Args.SignatureAlgorithm.Best;
 			} else {
+				associationProtocol = provider.Protocol;
 				assoc_type = Util.GetRequiredArg(provider.Query, provider.Protocol.openid.assoc_type);
 				Debug.Assert(Array.IndexOf(provider.Protocol.Args.SignatureAlgorithm.All, assoc_type) >= 0, "This should have been checked by our caller.");
-				useSha256 = assoc_type.Equals(provider.Protocol.Args.SignatureAlgorithm.HMAC_SHA256, StringComparison.Ordinal);
 			}
-			int hashSize = useSha256 ? CryptUtil.Sha256.HashSize : CryptUtil.Sha1.HashSize;
+			int secretLength = HmacShaAssociation.GetSecretLength(associationProtocol, assoc_type);
 
 			RNGCryptoServiceProvider generator = new RNGCryptoServiceProvider();
-			byte[] secret = new byte[hashSize / 8];
+			byte[] secret = new byte[secretLength];
 			byte[] uniq_bytes = new byte[4];
 			string uniq;
 			string handle;
-			Association assoc;
+			HmacShaAssociation assoc;
 
 			generator.GetBytes(secret);
 			generator.GetBytes(uniq_bytes);
@@ -108,9 +109,7 @@ namespace DotNetOpenId.Provider {
 			handle = "{{" + assoc_type + "}{" + seconds + "}{" + uniq + "}";
 
 			TimeSpan lifeSpan = associationType == AssociationRelyingPartyType.Dumb ? dumbSecretLifetime : smartAssociationLifetime;
-			assoc = useSha256 ? (Association)
-				new HmacSha256Association(handle, secret, lifeSpan) :
-				new HmacSha1Association(handle, secret, lifeSpan);
+			assoc = HmacShaAssociation.Create(secretLength, handle, secret, lifeSpan);
 
 			store.StoreAssociation(associationType, assoc);
 

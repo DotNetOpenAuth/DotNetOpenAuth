@@ -77,8 +77,8 @@ namespace DotNetOpenId.Provider {
 			sessionType = Util.GetRequiredArg(provider.Query, Protocol.openid.session_type);
 			Debug.Assert(Array.IndexOf(Protocol.Args.SessionType.AllDiffieHellman, sessionType) >= 0, "We should not have been invoked if this wasn't a recognized DH session request.");
 
-			byte[] dh_modulus = Util.GetOptionalBase64Arg(Provider.Query, Protocol.openid.dh_modulus) ?? CryptUtil.DEFAULT_MOD;
-			byte[] dh_gen = Util.GetOptionalBase64Arg(Provider.Query, Protocol.openid.dh_gen) ?? CryptUtil.DEFAULT_GEN;
+			byte[] dh_modulus = Util.GetOptionalBase64Arg(Provider.Query, Protocol.openid.dh_modulus) ?? DiffieHellmanUtil.DEFAULT_MOD;
+			byte[] dh_gen = Util.GetOptionalBase64Arg(Provider.Query, Protocol.openid.dh_gen) ?? DiffieHellmanUtil.DEFAULT_GEN;
 			dh = new DiffieHellmanManaged(dh_modulus, dh_gen, 1024);
 
 			consumerPublicKey = Util.GetRequiredBase64Arg(Provider.Query, Protocol.openid.dh_consumer_public);
@@ -89,13 +89,11 @@ namespace DotNetOpenId.Provider {
 		}
 
 		public override Dictionary<string, string> Answer(byte[] secret) {
-			bool useSha256 = SessionType.Equals(Protocol.Args.SessionType.DH_SHA256, StringComparison.Ordinal);
-			byte[] mac_key = CryptUtil.SHAHashXorSecret(
-				useSha256 ? (HashAlgorithm) CryptUtil.Sha256 : CryptUtil.Sha1, 
+			byte[] mac_key = DiffieHellmanUtil.SHAHashXorSecret(DiffieHellmanUtil.Lookup(Protocol, SessionType),
 				dh, consumerPublicKey, secret);
 			var nvc = new Dictionary<string, string>();
 
-			nvc.Add(Protocol.openidnp.dh_server_public, CryptUtil.UnsignedToBase64(dh.CreateKeyExchange()));
+			nvc.Add(Protocol.openidnp.dh_server_public, DiffieHellmanUtil.UnsignedToBase64(dh.CreateKeyExchange()));
 			nvc.Add(Protocol.openidnp.enc_mac_key, Convert.ToBase64String(mac_key));
 
 			return nvc;

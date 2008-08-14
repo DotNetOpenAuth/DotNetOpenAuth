@@ -75,9 +75,13 @@ namespace DotNetOpenId {
 				SessionType = new QueryArguments.SessionTypes() {
 					NoEncryption = "no-encryption",
 					DH_SHA256 = "DH-SHA256",
+					DH_SHA384 = "DH-SHA384",
+					DH_SHA512 = "DH-SHA512",
 				},
 				SignatureAlgorithm = new QueryArguments.SignatureAlgorithms() {
 					HMAC_SHA256 = "HMAC-SHA256",
+					HMAC_SHA384 = "HMAC-SHA384",
+					HMAC_SHA512 = "HMAC-SHA512",
 				},
 				Mode = new QueryArguments.Modes() {
 					setup_needed = "setup_needed",
@@ -266,19 +270,43 @@ namespace DotNetOpenId {
 				/// <summary>
 				/// A preference order list of all supported session types.
 				/// </summary>
-				public string[] All { get { return new[] { DH_SHA256, DH_SHA1, NoEncryption }; } }
-				public string[] AllDiffieHellman { get { return new[] { DH_SHA256, DH_SHA1 }; } }
+				public string[] All { get { return new[] { DH_SHA512, DH_SHA384, DH_SHA256, DH_SHA1, NoEncryption }; } }
+				public string[] AllDiffieHellman { get { return new[] { DH_SHA512, DH_SHA384, DH_SHA256, DH_SHA1 }; } }
 				public string DH_SHA1 = "DH-SHA1";
 				public string DH_SHA256 = null;
+				public string DH_SHA384 = null;
+				public string DH_SHA512 = null;
 				public string NoEncryption = "";
+				public string Best {
+					get {
+						foreach (string algorithmName in All) {
+							if (algorithmName != null) {
+								return algorithmName;
+							}
+						}
+						throw new OpenIdException(); // really bad... we have no signing algorithms at all
+					}
+				}
 			}
 			internal class SignatureAlgorithms {
 				/// <summary>
 				/// A preference order list of signature algorithms we support.
 				/// </summary>
-				public string[] All { get { return new[] { HMAC_SHA256, HMAC_SHA1 }; } }
+				public string[] All { get { return new[] { HMAC_SHA512, HMAC_SHA384, HMAC_SHA256, HMAC_SHA1 }; } }
 				public string HMAC_SHA1 = "HMAC-SHA1";
 				public string HMAC_SHA256 = null;
+				public string HMAC_SHA384 = null;
+				public string HMAC_SHA512 = null;
+				public string Best {
+					get {
+						foreach (string algorithmName in All) {
+							if (algorithmName != null) {
+								return algorithmName;
+							}
+						}
+						throw new OpenIdException(); // really bad... we have no signing algorithms at all
+					}
+				}
 			}
 			internal class Modes {
 				public string cancel = "cancel";

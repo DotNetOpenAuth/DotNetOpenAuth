@@ -8,8 +8,8 @@ using NUnit.Framework;
 namespace DotNetOpenId.Test {
 	public static class DHTestUtil {
 		public static string Test1() {
-			DiffieHellman dh1 = CryptUtil.CreateDiffieHellman();
-			DiffieHellman dh2 = CryptUtil.CreateDiffieHellman();
+			DiffieHellman dh1 = DiffieHellmanUtil.CreateDiffieHellman();
+			DiffieHellman dh2 = DiffieHellmanUtil.CreateDiffieHellman();
 
 			string secret1 = Convert.ToBase64String(dh1.DecryptKeyExchange(dh2.CreateKeyExchange()));
 			string secret2 = Convert.ToBase64String(dh2.DecryptKeyExchange(dh1.CreateKeyExchange()));
@@ -21,7 +21,7 @@ namespace DotNetOpenId.Test {
 	}
 
 	[TestFixture]
-	public class DiffieHellmanTestSuite {
+	public class DiffieHellmanUtilTests {
 
 		[Test]
 		public void Test() {
@@ -40,14 +40,14 @@ namespace DotNetOpenId.Test {
 				while ((line = sr.ReadLine()) != null) {
 					string[] parts = line.Trim().Split(' ');
 					byte[] x = Convert.FromBase64String(parts[0]);
-					DiffieHellmanManaged dh = new DiffieHellmanManaged(CryptUtil.DEFAULT_MOD, CryptUtil.DEFAULT_GEN, x);
+					DiffieHellmanManaged dh = new DiffieHellmanManaged(DiffieHellmanUtil.DEFAULT_MOD, DiffieHellmanUtil.DEFAULT_GEN, x);
 					byte[] pub = dh.CreateKeyExchange();
 					byte[] y = Convert.FromBase64String(parts[1]);
 
 					if (y[0] == 0 && y[1] <= 127)
 						y.CopyTo(y, 1);
 
-					Assert.AreEqual(y, Convert.FromBase64String(CryptUtil.UnsignedToBase64(pub)), line);
+					Assert.AreEqual(y, Convert.FromBase64String(DiffieHellmanUtil.UnsignedToBase64(pub)), line);
 				}
 			} finally {
 				sr.Close();
