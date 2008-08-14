@@ -24,9 +24,10 @@ namespace DotNetOpenId.RelyingParty {
 			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
 			if (provider == null) throw new ArgumentNullException("provider");
 
-			// TODO: derive some guarantee that we're using the same bit sizes for assoc and session.
-			string assoc_type = provider.Protocol.Args.SignatureAlgorithm.Best;
-			string session_type = provider.Protocol.Args.SessionType.Best;
+			string assoc_type, session_type;
+			HmacShaAssociation.TryFindBestAssociation(provider.Protocol,
+				relyingParty.MinimumHashBitLength, relyingParty.MaximumHashBitLength,
+				true, out assoc_type, out session_type);
 			return Create(relyingParty, provider, assoc_type, session_type);
 		}
 

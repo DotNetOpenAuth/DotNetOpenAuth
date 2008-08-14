@@ -18,10 +18,10 @@ namespace DotNetOpenId {
 		}
 
 		static DHSha[] DiffieHellmanSessionTypes = {
-			new DHSha(new SHA1Managed(), protocol => protocol.Args.SessionType.DH_SHA1),
-			new DHSha(new SHA256Managed(), protocol => protocol.Args.SessionType.DH_SHA256),
-			new DHSha(new SHA384Managed(), protocol => protocol.Args.SessionType.DH_SHA384),
 			new DHSha(new SHA512Managed(), protocol => protocol.Args.SessionType.DH_SHA512),
+			new DHSha(new SHA384Managed(), protocol => protocol.Args.SessionType.DH_SHA384),
+			new DHSha(new SHA256Managed(), protocol => protocol.Args.SessionType.DH_SHA256),
+			new DHSha(new SHA1Managed(), protocol => protocol.Args.SessionType.DH_SHA1),
 		};
 
 		public static HashAlgorithm Lookup(Protocol protocol, string name) {
@@ -31,6 +31,15 @@ namespace DotNetOpenId {
 				}
 			}
 			throw new ArgumentOutOfRangeException("name");
+		}
+
+		public static string GetNameForSize(Protocol protocol, int hashSizeInBits) {
+			foreach (DHSha dhsha in DiffieHellmanSessionTypes) {
+				if (dhsha.Algorithm.HashSize == hashSizeInBits) {
+					return dhsha.GetName(protocol);
+				}
+			}
+			return null;
 		}
 
 		public static byte[] DEFAULT_GEN = { 2 };

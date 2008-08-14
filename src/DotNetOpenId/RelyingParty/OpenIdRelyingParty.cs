@@ -355,6 +355,9 @@ namespace DotNetOpenId.RelyingParty {
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public EndpointSelector EndpointFilter { get; set; }
 
+		internal int MinimumHashBitLength = 160; // SHA1
+		internal int MaximumHashBitLength = 256; // SHA256 -- we have stronger, but few OPs do
+
 		const string associationStoreKey = "DotNetOpenId.RelyingParty.RelyingParty.AssociationStore";
 		/// <summary>
 		/// The standard state storage mechanism that uses ASP.NET's HttpApplication state dictionary
