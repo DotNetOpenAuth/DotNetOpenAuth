@@ -56,6 +56,6 @@ namespace DotNetOpenId {
 		/// Gets/sets the oldest version of OpenID the remote party is allowed to implement.
 		/// </summary>
 		/// <value>Defaults to <see cref="ProtocolVersion.V10"/></value>
-		public ProtocolVersion MinimumRequiredOpenIDVersion { get; set; }
+		internal ProtocolVersion MinimumRequiredOpenIDVersion { get; set; }
 	}
 }
