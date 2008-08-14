@@ -26,7 +26,7 @@ namespace DotNetOpenId.RelyingParty {
 
 			string assoc_type, session_type;
 			HmacShaAssociation.TryFindBestAssociation(provider.Protocol,
-				relyingParty.MinimumHashBitLength, relyingParty.MaximumHashBitLength,
+				relyingParty.Settings.MinimumHashBitLength, relyingParty.Settings.MaximumHashBitLength,
 				true, out assoc_type, out session_type);
 			return Create(relyingParty, provider, assoc_type, session_type);
 		}

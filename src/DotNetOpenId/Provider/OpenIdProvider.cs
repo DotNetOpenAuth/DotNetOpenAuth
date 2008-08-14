@@ -67,6 +67,7 @@ namespace DotNetOpenId.Provider {
 			if (providerEndpoint == null) throw new ArgumentNullException("providerEndpoint");
 			if (requestUrl == null) throw new ArgumentNullException("requestUrl");
 			if (query == null) throw new ArgumentNullException("query");
+			Settings = new ProviderSecuritySettings();
 			Endpoint = providerEndpoint;
 			RequestUrl = requestUrl;
 			Query = query;
@@ -82,6 +83,13 @@ namespace DotNetOpenId.Provider {
 		/// An auto-detect attempt is made if an ASP.NET HttpContext is available.
 		/// </remarks>
 		internal Uri Endpoint { get; private set; }
+
+		// TODO: make this property public WHEN its security settings are actually supported.
+		/// <summary>
+		/// Provides access to the adjustable security settings of this instance
+		/// of <see cref="OpenIdProvider"/>.
+		/// </summary>
+		internal ProviderSecuritySettings Settings { get; private set; }
 
 		bool requestProcessed;
 		Request request;

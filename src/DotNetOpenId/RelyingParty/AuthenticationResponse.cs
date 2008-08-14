@@ -295,7 +295,7 @@ namespace DotNetOpenId.RelyingParty {
 					// Require SSL where appropriate.  This will filter out insecure identifiers, 
 					// redirects and provider endpoints automatically.  If we find a match after all that
 					// filtering with the responseEndpoint, then the unsolicited assertion is secure.
-					if (relyingParty.RequireSsl && !claimedIdentifier.TryRequireSsl(out claimedIdentifier)) {
+					if (relyingParty.Settings.RequireSsl && !claimedIdentifier.TryRequireSsl(out claimedIdentifier)) {
 						throw new OpenIdException(Strings.InsecureWebRequestWithSslRequired, query);
 					}
 					List<ServiceEndpoint> discoveredEndpoints = new List<ServiceEndpoint>(claimedIdentifier.Discover());

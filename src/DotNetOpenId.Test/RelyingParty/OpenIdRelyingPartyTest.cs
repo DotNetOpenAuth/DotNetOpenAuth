@@ -263,7 +263,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 		public void RequireSslPrependsHttpsScheme() {
 			MockHttpRequest.Reset();
 			OpenIdRelyingParty rp = TestSupport.CreateRelyingParty(null);
-			rp.RequireSsl = true;
+			rp.Settings.RequireSsl = true;
 			Identifier mockId = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20, true);
 			string noSchemeId = stripScheme(mockId);
 			var request = rp.CreateRequest(noSchemeId, TestSupport.Realm, TestSupport.ReturnTo);
@@ -275,7 +275,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 			Uri claimedId = TestSupport.GetFullUrl("/secureClaimedId", null, true);
 			Identifier opIdentifier = TestSupport.GetMockOPIdentifier(TestSupport.Scenarios.AutoApproval, claimedId, true, true);
 			var rp = TestSupport.CreateRelyingParty(null);
-			rp.RequireSsl = true;
+			rp.Settings.RequireSsl = true;
 			var rpRequest = rp.CreateRequest(opIdentifier, TestSupport.Realm, TestSupport.ReturnTo);
 			var rpResponse = TestSupport.CreateRelyingPartyResponseThroughProvider(rpRequest, opRequest => {
 				opRequest.IsAuthenticated = true;
@@ -289,7 +289,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 			Uri claimedId = TestSupport.GetFullUrl("/insecureClaimedId", null, false);
 			Identifier opIdentifier = TestSupport.GetMockOPIdentifier(TestSupport.Scenarios.AutoApproval, claimedId, true, true);
 			var rp = TestSupport.CreateRelyingParty(null);
-			rp.RequireSsl = true;
+			rp.Settings.RequireSsl = true;
 			var rpRequest = rp.CreateRequest(opIdentifier, TestSupport.Realm, TestSupport.ReturnTo);
 			var rpResponse = TestSupport.CreateRelyingPartyResponseThroughProvider(rpRequest, opRequest => {
 				opRequest.IsAuthenticated = true;
@@ -305,7 +305,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 			// XRDS doc describes an insecure provider endpoint.
 			Identifier opIdentifier = TestSupport.GetMockOPIdentifier(TestSupport.Scenarios.AutoApproval, claimedId, true, false);
 			var rp = TestSupport.CreateRelyingParty(null);
-			rp.RequireSsl = true;
+			rp.Settings.RequireSsl = true;
 			var rpRequest = rp.CreateRequest(opIdentifier, TestSupport.Realm, TestSupport.ReturnTo);
 			var rpResponse = TestSupport.CreateRelyingPartyResponseThroughProvider(rpRequest, opRequest => {
 				opRequest.IsAuthenticated = true;
@@ -329,7 +329,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 			var opAuthResponse = (DotNetOpenId.Provider.EncodableResponse)opAuthWebResponse.EncodableMessage;
 			var rp = TestSupport.CreateRelyingParty(TestSupport.RelyingPartyStore, opAuthResponse.RedirectUrl,
 				opAuthResponse.EncodedFields.ToNameValueCollection());
-			rp.RequireSsl = true;
+			rp.Settings.RequireSsl = true;
 
 			Assert.AreEqual(AuthenticationStatus.Authenticated, rp.Response.Status);
 			Assert.AreEqual(claimedId, rp.Response.ClaimedIdentifier);
@@ -350,7 +350,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 			var opAuthResponse = (DotNetOpenId.Provider.EncodableResponse)opAuthWebResponse.EncodableMessage;
 			var rp = TestSupport.CreateRelyingParty(TestSupport.RelyingPartyStore, opAuthResponse.RedirectUrl,
 				opAuthResponse.EncodedFields.ToNameValueCollection());
-			rp.RequireSsl = true;
+			rp.Settings.RequireSsl = true;
 
 			Assert.AreEqual(AuthenticationStatus.Failed, rp.Response.Status);
 			Assert.IsNull(rp.Response.ClaimedIdentifier);
@@ -374,7 +374,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 			var opAuthResponse = (DotNetOpenId.Provider.EncodableResponse)opAuthWebResponse.EncodableMessage;
 			var rp = TestSupport.CreateRelyingParty(TestSupport.RelyingPartyStore, opAuthResponse.RedirectUrl,
 				opAuthResponse.EncodedFields.ToNameValueCollection());
-			rp.RequireSsl = true;
+			rp.Settings.RequireSsl = true;
 
 			Assert.AreEqual(AuthenticationStatus.Failed, rp.Response.Status);
 			Assert.IsNull(rp.Response.ClaimedIdentifier);

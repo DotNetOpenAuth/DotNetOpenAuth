@@ -205,7 +205,7 @@ public class TestSupport {
 		var opAuthResponse = (EncodableResponse)opAuthWebResponse.EncodableMessage;
 		var rp = CreateRelyingParty(store, opAuthResponse.RedirectUrl,
 			opAuthResponse.EncodedFields.ToNameValueCollection());
-		rp.RequireSsl = requireSsl;
+		rp.Settings.RequireSsl = requireSsl;
 		// Get the response now, before trying the replay attack.  The Response
 		// property is lazily-evaluated, so the replay attack can be evaluated first
 		// and pass, while this one that SUPPOSED to pass fails, if we don't force it now.
@@ -220,7 +220,7 @@ public class TestSupport {
 			Logger.Info("Attempting replay attack...");
 			var replayRP = CreateRelyingParty(store, opAuthResponse.RedirectUrl,
 				opAuthResponse.EncodedFields.ToNameValueCollection());
-			replayRP.RequireSsl = requireSsl;
+			replayRP.Settings.RequireSsl = requireSsl;
 			Assert.AreNotEqual(AuthenticationStatus.Authenticated, replayRP.Response.Status, "Replay attack succeeded!");
 		} catch (OpenIdException) { // nonce already used
 			// another way to pass
@@ -277,7 +277,7 @@ public class TestSupport {
 		var opResponse = CreateProviderResponseToRequest(rpReq, providerAction);
 		// Be careful to use whatever store the original RP was using.
 		var rp = CreateRelyingPartyResponse(rpReq.RelyingParty.Store, opResponse,
-			((AuthenticationRequest)request).RelyingParty.RequireSsl);
+			((AuthenticationRequest)request).RelyingParty.Settings.RequireSsl);
 		Assert.IsNotNull(rp);
 		return rp;
 	}
