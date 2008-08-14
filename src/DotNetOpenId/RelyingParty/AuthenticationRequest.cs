@@ -58,6 +58,11 @@ namespace DotNetOpenId.RelyingParty {
 			if (realm == null) throw new ArgumentNullException("realm");
 
 			userSuppliedIdentifier = userSuppliedIdentifier.TrimFragment();
+			if (relyingParty.RequireSsl) {
+				// Rather than check for successful SSL conversion at this stage,
+				// We'll wait for secure discovery to fail on the new identifier.
+				userSuppliedIdentifier.TryRequireSsl(out userSuppliedIdentifier);
+			}
 			Logger.InfoFormat("Creating authentication request for user supplied Identifier: {0}",
 				userSuppliedIdentifier);
 			Logger.DebugFormat("Realm: {0}", realm);

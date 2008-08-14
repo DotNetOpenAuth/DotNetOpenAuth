@@ -142,6 +142,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to URI is not SSL yet requireSslDiscovery is set to true..
+        /// </summary>
+        internal static string ExplicitHttpUriSuppliedWithSslRequirement {
+            get {
+                return ResourceManager.GetString("ExplicitHttpUriSuppliedWithSslRequirement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to An extension sharing namespace &apos;{0}&apos; has already been added.  Only one extension per namespace is allowed in a given request..
         /// </summary>
         internal static string ExtensionAlreadyAddedWithSameTypeURI {
@@ -219,6 +228,15 @@ namespace DotNetOpenId {
         internal static string InconsistentAppState {
             get {
                 return ResourceManager.GetString("InconsistentAppState", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Insecure web request for &apos;{0}&apos; aborted due to security requirements demanding HTTPS..
+        /// </summary>
+        internal static string InsecureWebRequestWithSslRequired {
+            get {
+                return ResourceManager.GetString("InsecureWebRequestWithSslRequired", resourceCulture);
             }
         }
         
@@ -529,6 +547,15 @@ namespace DotNetOpenId {
         internal static string TamperingDetected {
             get {
                 return ResourceManager.GetString("TamperingDetected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The maximum allowable number of redirects were exceeded while requesting &apos;{0}&apos;..
+        /// </summary>
+        internal static string TooManyRedirects {
+            get {
+                return ResourceManager.GetString("TooManyRedirects", resourceCulture);
             }
         }
         

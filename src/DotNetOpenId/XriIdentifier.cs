@@ -12,10 +12,18 @@ namespace DotNetOpenId {
 		internal static readonly char[] GlobalContextSymbols = { '=', '@', '+', '$', '!' };
 		const string xriScheme = "xri://";
 
-		public XriIdentifier(string xri) {
+		public XriIdentifier(string xri) : this(xri, false) { }
+		public XriIdentifier(string xri, bool requireSsl)
+			: base(requireSsl) {
 			if (!IsValidXri(xri))
 				throw new FormatException(string.Format(CultureInfo.CurrentCulture,
 					Strings.InvalidXri, xri));
+			xriResolverProxy = xriResolverProxyTemplate;
+			if (requireSsl) {
+				// Indicate to xri.net that we require SSL to be used for delegated resolution
+				// of community i-names.
+				xriResolverProxy += "&ssl=true";
+			}
 			OriginalXri = xri;
 			CanonicalXri = canonicalizeXri(xri);
 		}
@@ -56,14 +64,17 @@ namespace DotNetOpenId {
 		/// We use application/xrd+xml instead of application/xrds+xml because it gets
 		/// xri.net to automatically give us exactly the right XRD element for community i-names
 		/// automatically, saving us having to choose which one to use out of the result.
+		/// The ssl=true parameter tells the proxy resolver to accept only SSL connections
+		/// when resolving community i-names.
 		/// </remarks>
-		const string xriResolverProxy = "https://xri.net/{0}?_xrd_r=application/xrd%2Bxml;sep=false";
+		const string xriResolverProxyTemplate = "https://xri.net/{0}?_xrd_r=application/xrd%2Bxml;sep=false";
+		readonly string xriResolverProxy;
 		/// <summary>
 		/// Resolves the XRI to a URL from which an XRDS document may be downloaded.
 		/// </summary>
 		protected virtual Uri XrdsUrl {
 			get {
-				return new Uri(string.Format(CultureInfo.InvariantCulture, 
+				return new Uri(string.Format(CultureInfo.InvariantCulture,
 					xriResolverProxy, this));
 			}
 		}
@@ -87,6 +98,11 @@ namespace DotNetOpenId {
 
 		internal override Identifier TrimFragment() {
 			return this;
+		}
+
+		internal override bool TryRequireSsl(out Identifier secureIdentifier) {
+			secureIdentifier = IsDiscoverySecureEndToEnd ? this : new XriIdentifier(this, true);
+			return true;
 		}
 
 		public override bool Equals(object obj) {

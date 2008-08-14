@@ -265,6 +265,14 @@ namespace DotNetOpenId {
 			return null;
 		}
 
+		internal static IEnumerable<T> Where<T>(IEnumerable<T> sequence, Func<T, bool> predicate) {
+			foreach (T item in sequence) {
+				if (predicate(item)) {
+					yield return item;
+				}
+			}
+		}
+
 		/// <summary>
 		/// Prepares a dictionary for printing as a string.
 		/// </summary>

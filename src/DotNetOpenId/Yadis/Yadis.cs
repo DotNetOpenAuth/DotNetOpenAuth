@@ -13,11 +13,26 @@ namespace DotNetOpenId.Yadis {
 	class Yadis {
 		internal const string HeaderName = "X-XRDS-Location";
 
-		public static DiscoveryResult Discover(UriIdentifier uri) {
+		/// <summary>
+		/// Performs YADIS discovery on some identifier.
+		/// </summary>
+		/// <param name="uri">The URI to perform discovery on.</param>
+		/// <param name="requireSsl">Whether discovery should fail if any step of it is not encrypted.</param>
+		/// <returns>
+		/// The result of discovery on the given URL.
+		/// Null may be returned if an error occurs,
+		/// or if <paramref name="requireSsl"/> is true but part of discovery
+		/// is not protected by SSL.
+		/// </returns>
+		public static DiscoveryResult Discover(UriIdentifier uri, bool requireSsl) {
 			UntrustedWebResponse response;
 			try {
+				if (requireSsl && !string.Equals(uri.Uri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)) {
+					Logger.WarnFormat("Discovery on insecure identifier '{0}' aborted.", uri);
+					return null;
+				}
 				response = UntrustedWebRequest.Request(uri, null,
-				new[] { ContentTypes.Html, ContentTypes.XHtml, ContentTypes.Xrds });
+					new[] { ContentTypes.Html, ContentTypes.XHtml, ContentTypes.Xrds }, requireSsl);
 				if (response.StatusCode != System.Net.HttpStatusCode.OK) {
 					return null;
 				}
@@ -37,9 +52,13 @@ namespace DotNetOpenId.Yadis {
 				if (url == null && response.ContentType.MediaType == ContentTypes.Html)
 					url = FindYadisDocumentLocationInHtmlMetaTags(response.ReadResponseString());
 				if (url != null) {
-					response2 = UntrustedWebRequest.Request(url);
-					if (response2.StatusCode != System.Net.HttpStatusCode.OK) {
-						return null;
+					if (!requireSsl || string.Equals(url.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)) {
+						response2 = UntrustedWebRequest.Request(url, null, null, requireSsl);
+						if (response2.StatusCode != System.Net.HttpStatusCode.OK) {
+							return null;
+						}
+					} else {
+						Logger.WarnFormat("XRDS document at insecure location '{0}'.  Aborting YADIS discovery.", url);
 					}
 				}
 			}

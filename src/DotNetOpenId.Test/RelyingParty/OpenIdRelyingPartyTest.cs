@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web;
 using DotNetOpenId.RelyingParty;
-using NUnit.Framework;
-using ProviderMemoryStore = DotNetOpenId.AssociationMemoryStore<DotNetOpenId.AssociationRelyingPartyType>;
 using DotNetOpenId.Test.Mocks;
+using NUnit.Framework;
+using OpenIdProvider = DotNetOpenId.Provider.OpenIdProvider;
 
 namespace DotNetOpenId.Test.RelyingParty {
 	[TestFixture]
@@ -71,7 +71,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 		[Test]
 		public void AssociationCreationWithStore() {
 			TestSupport.ResetStores(); // get rid of existing associations so a new one is created
-			
+
 			OpenIdRelyingParty rp = TestSupport.CreateRelyingParty(null);
 			var directMessageSniffer = new DirectMessageSniffWrapper(rp.DirectMessageChannel);
 			rp.DirectMessageChannel = directMessageSniffer;
@@ -247,12 +247,137 @@ namespace DotNetOpenId.Test.RelyingParty {
 			rp.EndpointOrder = (se1, se2) => -se1.ServicePriority.Value.CompareTo(se2.ServicePriority.Value);
 			request = rp.CreateRequest("=MultipleEndpoint", realm, return_to);
 			Assert.AreEqual("https://authn.freexri.com/auth10/", request.Provider.Uri.AbsoluteUri);
-			
+
 			// Now test the filter.  Auth20 would come out on top, if we didn't select it out with the filter.
 			rp.EndpointOrder = OpenIdRelyingParty.DefaultEndpointOrder;
 			rp.EndpointFilter = (se) => se.Uri.AbsoluteUri == "https://authn.freexri.com/auth10/";
 			request = rp.CreateRequest("=MultipleEndpoint", realm, return_to);
 			Assert.AreEqual("https://authn.freexri.com/auth10/", request.Provider.Uri.AbsoluteUri);
+		}
+
+		private string stripScheme(string identifier) {
+			return identifier.Substring(identifier.IndexOf("://") + 3);
+		}
+
+		[Test]
+		public void RequireSslPrependsHttpsScheme() {
+			MockHttpRequest.Reset();
+			OpenIdRelyingParty rp = TestSupport.CreateRelyingParty(null);
+			rp.RequireSsl = true;
+			Identifier mockId = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20, true);
+			string noSchemeId = stripScheme(mockId);
+			var request = rp.CreateRequest(noSchemeId, TestSupport.Realm, TestSupport.ReturnTo);
+			Assert.IsTrue(request.ClaimedIdentifier.ToString().StartsWith("https://", StringComparison.OrdinalIgnoreCase));
+		}
+
+		[Test]
+		public void DirectedIdentityWithRequireSslSucceeds() {
+			Uri claimedId = TestSupport.GetFullUrl("/secureClaimedId", null, true);
+			Identifier opIdentifier = TestSupport.GetMockOPIdentifier(TestSupport.Scenarios.AutoApproval, claimedId, true, true);
+			var rp = TestSupport.CreateRelyingParty(null);
+			rp.RequireSsl = true;
+			var rpRequest = rp.CreateRequest(opIdentifier, TestSupport.Realm, TestSupport.ReturnTo);
+			var rpResponse = TestSupport.CreateRelyingPartyResponseThroughProvider(rpRequest, opRequest => {
+				opRequest.IsAuthenticated = true;
+				opRequest.ClaimedIdentifier = claimedId;
+			});
+			Assert.AreEqual(AuthenticationStatus.Authenticated, rpResponse.Status);
+		}
+
+		[Test]
+		public void DirectedIdentityWithRequireSslFailsWithoutSecureIdentity() {
+			Uri claimedId = TestSupport.GetFullUrl("/insecureClaimedId", null, false);
+			Identifier opIdentifier = TestSupport.GetMockOPIdentifier(TestSupport.Scenarios.AutoApproval, claimedId, true, true);
+			var rp = TestSupport.CreateRelyingParty(null);
+			rp.RequireSsl = true;
+			var rpRequest = rp.CreateRequest(opIdentifier, TestSupport.Realm, TestSupport.ReturnTo);
+			var rpResponse = TestSupport.CreateRelyingPartyResponseThroughProvider(rpRequest, opRequest => {
+				opRequest.IsAuthenticated = true;
+				opRequest.ClaimedIdentifier = claimedId;
+			});
+			Assert.AreEqual(AuthenticationStatus.Failed, rpResponse.Status);
+		}
+
+		[Test]
+		public void DirectedIdentityWithRequireSslFailsWithoutSecureProviderEndpoint() {
+			Uri claimedId = TestSupport.GetFullUrl("/secureClaimedId", null, true);
+			// We want to generate an OP Identifier that itself is secure, but whose
+			// XRDS doc describes an insecure provider endpoint.
+			Identifier opIdentifier = TestSupport.GetMockOPIdentifier(TestSupport.Scenarios.AutoApproval, claimedId, true, false);
+			var rp = TestSupport.CreateRelyingParty(null);
+			rp.RequireSsl = true;
+			var rpRequest = rp.CreateRequest(opIdentifier, TestSupport.Realm, TestSupport.ReturnTo);
+			var rpResponse = TestSupport.CreateRelyingPartyResponseThroughProvider(rpRequest, opRequest => {
+				opRequest.IsAuthenticated = true;
+				opRequest.ClaimedIdentifier = claimedId;
+			});
+			Assert.AreEqual(AuthenticationStatus.Failed, rpResponse.Status);
+		}
+
+		[Test]
+		public void UnsolicitedAssertionWithRequireSsl() {
+			MockHttpRequest.Reset();
+			Mocks.MockHttpRequest.RegisterMockRPDiscovery();
+			TestSupport.Scenarios scenario = TestSupport.Scenarios.AutoApproval;
+			Identifier claimedId = TestSupport.GetMockIdentifier(scenario, ProtocolVersion.V20, true);
+			Identifier localId = TestSupport.GetDelegateUrl(scenario, true);
+
+			OpenIdProvider op = TestSupport.CreateProvider(null, true);
+			IResponse assertion = op.PrepareUnsolicitedAssertion(TestSupport.Realm, claimedId, localId);
+
+			var opAuthWebResponse = (Response)assertion;
+			var opAuthResponse = (DotNetOpenId.Provider.EncodableResponse)opAuthWebResponse.EncodableMessage;
+			var rp = TestSupport.CreateRelyingParty(TestSupport.RelyingPartyStore, opAuthResponse.RedirectUrl,
+				opAuthResponse.EncodedFields.ToNameValueCollection());
+			rp.RequireSsl = true;
+
+			Assert.AreEqual(AuthenticationStatus.Authenticated, rp.Response.Status);
+			Assert.AreEqual(claimedId, rp.Response.ClaimedIdentifier);
+		}
+
+		[Test]
+		public void UnsolicitedAssertionWithRequireSslWithoutSecureIdentityUrl() {
+			MockHttpRequest.Reset();
+			Mocks.MockHttpRequest.RegisterMockRPDiscovery();
+			TestSupport.Scenarios scenario = TestSupport.Scenarios.AutoApproval;
+			Identifier claimedId = TestSupport.GetMockIdentifier(scenario, ProtocolVersion.V20);
+			Identifier localId = TestSupport.GetDelegateUrl(scenario);
+
+			OpenIdProvider op = TestSupport.CreateProvider(null);
+			IResponse assertion = op.PrepareUnsolicitedAssertion(TestSupport.Realm, claimedId, localId);
+
+			var opAuthWebResponse = (Response)assertion;
+			var opAuthResponse = (DotNetOpenId.Provider.EncodableResponse)opAuthWebResponse.EncodableMessage;
+			var rp = TestSupport.CreateRelyingParty(TestSupport.RelyingPartyStore, opAuthResponse.RedirectUrl,
+				opAuthResponse.EncodedFields.ToNameValueCollection());
+			rp.RequireSsl = true;
+
+			Assert.AreEqual(AuthenticationStatus.Failed, rp.Response.Status);
+			Assert.IsNull(rp.Response.ClaimedIdentifier);
+		}
+
+		[Test]
+		public void UnsolicitedAssertionWithRequireSslWithSecureIdentityButInsecureProviderEndpoint() {
+			MockHttpRequest.Reset();
+			Mocks.MockHttpRequest.RegisterMockRPDiscovery();
+			TestSupport.Scenarios scenario = TestSupport.Scenarios.AutoApproval;
+			ProtocolVersion version = ProtocolVersion.V20;
+			ServiceEndpoint providerEndpoint = TestSupport.GetServiceEndpoint(scenario, version, 10, false);
+			Identifier claimedId = new MockIdentifier(TestSupport.GetIdentityUrl(scenario, version, true), 
+				new ServiceEndpoint[] { providerEndpoint });
+			Identifier localId = TestSupport.GetDelegateUrl(scenario, true);
+
+			OpenIdProvider op = TestSupport.CreateProvider(null, false);
+			IResponse assertion = op.PrepareUnsolicitedAssertion(TestSupport.Realm, claimedId, localId);
+
+			var opAuthWebResponse = (Response)assertion;
+			var opAuthResponse = (DotNetOpenId.Provider.EncodableResponse)opAuthWebResponse.EncodableMessage;
+			var rp = TestSupport.CreateRelyingParty(TestSupport.RelyingPartyStore, opAuthResponse.RedirectUrl,
+				opAuthResponse.EncodedFields.ToNameValueCollection());
+			rp.RequireSsl = true;
+
+			Assert.AreEqual(AuthenticationStatus.Failed, rp.Response.Status);
+			Assert.IsNull(rp.Response.ClaimedIdentifier);
 		}
 	}
 }

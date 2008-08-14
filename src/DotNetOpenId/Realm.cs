@@ -268,7 +268,7 @@ namespace DotNetOpenId {
 		/// <returns>The details of the endpoints if found, otherwise null.</returns>
 		internal IEnumerable<DotNetOpenId.Provider.RelyingPartyReceivingEndpoint> Discover(bool allowRedirects) {
 			// Attempt YADIS discovery
-			DiscoveryResult yadisResult = Yadis.Yadis.Discover(UriWithWildcardChangedToWww);
+			DiscoveryResult yadisResult = Yadis.Yadis.Discover(UriWithWildcardChangedToWww, false);
 			if (yadisResult != null) {
 				if (!allowRedirects && yadisResult.NormalizedUri != yadisResult.RequestUri) {
 					// Redirect occurred when it was not allowed.

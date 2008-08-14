@@ -14,18 +14,16 @@ namespace DotNetOpenId.Test.Mocks {
 		IEnumerable<ServiceEndpoint> endpoints;
 		Identifier wrappedIdentifier;
 
-		public MockIdentifier(Identifier wrappedIdentifier, IEnumerable<ServiceEndpoint> endpoints) {
+		public MockIdentifier(Identifier wrappedIdentifier, IEnumerable<ServiceEndpoint> endpoints)
+			: base(false) {
 			if (wrappedIdentifier == null) throw new ArgumentNullException("wrappedIdentifier");
 			if (endpoints == null) throw new ArgumentNullException("endpoints");
 			this.wrappedIdentifier = wrappedIdentifier;
 			this.endpoints = endpoints;
 
-			if (endpoints.Count() != 1) {
-				throw new NotSupportedException("Multiple endpoints not supported by RegisterMockXrdsResponse generator yet.");
-			}
 			// Register a mock HTTP response to enable discovery of this identifier within the RP
 			// without having to host an ASP.NET site within the test.
-			MockHttpRequest.RegisterMockXrdsResponse(endpoints.First());
+			MockHttpRequest.RegisterMockXrdsResponse(new Uri(wrappedIdentifier.ToString()), endpoints);
 		}
 
 		internal override IEnumerable<ServiceEndpoint> Discover() {
@@ -34,6 +32,15 @@ namespace DotNetOpenId.Test.Mocks {
 
 		internal override Identifier TrimFragment() {
 			return this;
+		}
+
+		internal override bool TryRequireSsl(out Identifier secureIdentifier) {
+			// We take special care to make our wrapped identifier secure, but still
+			// return a mocked (secure) identifier.
+			Identifier secureWrappedIdentifier;
+			bool result = wrappedIdentifier.TryRequireSsl(out secureWrappedIdentifier);
+			secureIdentifier = new MockIdentifier(secureWrappedIdentifier, endpoints);
+			return result;
 		}
 
 		public override string ToString() {

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
+using System.Web;
 using DotNetOpenId.Extensions.SimpleRegistration;
 using DotNetOpenId.RelyingParty;
+using DotNetOpenId.Test.Mocks;
 using NUnit.Framework;
 
 namespace DotNetOpenId.Test {
@@ -47,6 +49,39 @@ namespace DotNetOpenId.Test {
 		public void CtorGoodUri() {
 			var uri = new UriIdentifier(goodUri);
 			Assert.AreEqual(new Uri(goodUri), uri.Uri);
+			Assert.IsFalse(uri.SchemeImplicitlyPrepended);
+			Assert.IsFalse(uri.IsDiscoverySecureEndToEnd);
+		}
+
+		[Test]
+		public void CtorStringNoSchemeSecure() {
+			var uri = new UriIdentifier("host/path", true);
+			Assert.AreEqual("https://host/path", uri.Uri.AbsoluteUri);
+			Assert.IsTrue(uri.IsDiscoverySecureEndToEnd);
+		}
+
+		[Test]
+		public void CtorStringHttpsSchemeSecure() {
+			var uri = new UriIdentifier("https://host/path", true);
+			Assert.AreEqual("https://host/path", uri.Uri.AbsoluteUri);
+			Assert.IsTrue(uri.IsDiscoverySecureEndToEnd);
+		}
+
+		[Test, ExpectedException(typeof(ArgumentException))]
+		public void CtorStringHttpSchemeSecure() {
+			new UriIdentifier("http://host/path", true);
+		}
+
+		[Test]
+		public void CtorUriHttpsSchemeSecure() {
+			var uri = new UriIdentifier(new Uri("https://host/path"), true);
+			Assert.AreEqual("https://host/path", uri.Uri.AbsoluteUri);
+			Assert.IsTrue(uri.IsDiscoverySecureEndToEnd);
+		}
+
+		[Test, ExpectedException(typeof(ArgumentException))]
+		public void CtorUriHttpSchemeSecure() {
+			new UriIdentifier(new Uri("http://host/path"), true);
 		}
 
 		/// <summary>
@@ -123,7 +158,7 @@ namespace DotNetOpenId.Test {
 			} else {
 				throw new InvalidOperationException();
 			}
-			Mocks.MockHttpRequest.RegisterMockResponse(new Uri(idToDiscover), claimedId, contentType,
+			MockHttpRequest.RegisterMockResponse(new Uri(idToDiscover), claimedId, contentType,
 				headers ?? new WebHeaderCollection(), TestSupport.LoadEmbeddedFile(url));
 
 			ServiceEndpoint se = idToDiscover.Discover().FirstOrDefault();
@@ -219,6 +254,158 @@ namespace DotNetOpenId.Test {
 			// make sure https is preserved, along with port 80, which is NON-default for https
 			id = "https://HOST:80/PaTH?KeY=VaLUE#fRag";
 			Assert.AreEqual("https://host:80/PaTH?KeY=VaLUE#fRag", id.ToString());
+		}
+
+		[Test]
+		public void HttpSchemePrepended() {
+			UriIdentifier id = new UriIdentifier("www.yahoo.com");
+			Assert.AreEqual("http://www.yahoo.com/", id.ToString());
+			Assert.IsTrue(id.SchemeImplicitlyPrepended);
+		}
+
+		//[Test, Ignore("The spec says http:// must be prepended in this case, but that just creates an invalid URI.  Our UntrustedWebRequest will stop disallowed schemes.")]
+		public void CtorDisallowedScheme() {
+			UriIdentifier id = new UriIdentifier(new Uri("ftp://host/path"));
+			Assert.AreEqual("http://ftp://host/path", id.ToString());
+			Assert.IsTrue(id.SchemeImplicitlyPrepended);
+		}
+
+		[Test]
+		public void DiscoveryWithRedirects() {
+			MockHttpRequest.Reset();
+			Identifier claimedId = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
+
+			// Add a couple of chained redirect pages that lead to the claimedId.
+			Uri userSuppliedUri = TestSupport.GetFullUrl("/someSecurePage", null, true);
+			Uri insecureMidpointUri = TestSupport.GetFullUrl("/insecureStop");
+			MockHttpRequest.RegisterMockRedirect(userSuppliedUri, insecureMidpointUri);
+			MockHttpRequest.RegisterMockRedirect(insecureMidpointUri, new Uri(claimedId.ToString()));
+
+			// don't require secure SSL discovery for this test.
+			Identifier userSuppliedIdentifier = new UriIdentifier(userSuppliedUri, false);
+			Assert.AreEqual(1, userSuppliedIdentifier.Discover().Count());
+		}
+
+		[Test]
+		public void TryRequireSslAdjustsIdentifier() {
+			Identifier secureId;
+			// Try Parse and ctor without explicit scheme
+			var id = Identifier.Parse("www.yahoo.com");
+			Assert.AreEqual("http://www.yahoo.com/", id.ToString());
+			Assert.IsTrue(id.TryRequireSsl(out secureId));
+			Assert.IsTrue(secureId.IsDiscoverySecureEndToEnd);
+			Assert.AreEqual("https://www.yahoo.com/", secureId.ToString());
+
+			id = new UriIdentifier("www.yahoo.com");
+			Assert.AreEqual("http://www.yahoo.com/", id.ToString());
+			Assert.IsTrue(id.TryRequireSsl(out secureId));
+			Assert.IsTrue(secureId.IsDiscoverySecureEndToEnd);
+			Assert.AreEqual("https://www.yahoo.com/", secureId.ToString());
+
+			// Try Parse and ctor with explicit http:// scheme
+			id = Identifier.Parse("http://www.yahoo.com");
+			Assert.IsFalse(id.TryRequireSsl(out secureId));
+			Assert.IsFalse(secureId.IsDiscoverySecureEndToEnd);
+			Assert.AreEqual("http://www.yahoo.com/", secureId.ToString());
+			Assert.AreEqual(0, secureId.Discover().Count());
+
+			id = new UriIdentifier("http://www.yahoo.com");
+			Assert.IsFalse(id.TryRequireSsl(out secureId));
+			Assert.IsFalse(secureId.IsDiscoverySecureEndToEnd);
+			Assert.AreEqual("http://www.yahoo.com/", secureId.ToString());
+			Assert.AreEqual(0, secureId.Discover().Count());
+		}
+
+		[Test]
+		public void DiscoverRequireSslWithSecureRedirects() {
+			MockHttpRequest.Reset();
+			Identifier claimedId = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20, true);
+
+			// Add a couple of chained redirect pages that lead to the claimedId.
+			// All redirects should be secure.
+			Uri userSuppliedUri = TestSupport.GetFullUrl("/someSecurePage", null, true);
+			Uri secureMidpointUri = TestSupport.GetFullUrl("/secureStop", null, true);
+			MockHttpRequest.RegisterMockRedirect(userSuppliedUri, secureMidpointUri);
+			MockHttpRequest.RegisterMockRedirect(secureMidpointUri, new Uri(claimedId.ToString()));
+
+			Identifier userSuppliedIdentifier = new UriIdentifier(userSuppliedUri, true);
+			Assert.AreEqual(1, userSuppliedIdentifier.Discover().Count());
+		}
+
+		[Test, ExpectedException(typeof(OpenIdException))]
+		public void DiscoverRequireSslWithInsecureRedirect() {
+			MockHttpRequest.Reset();
+			Identifier claimedId = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20, true);
+
+			// Add a couple of chained redirect pages that lead to the claimedId.
+			// Include an insecure HTTP jump in those redirects to verify that
+			// the ultimate endpoint is never found as a result of high security profile.
+			Uri userSuppliedUri = TestSupport.GetFullUrl("/someSecurePage", null, true);
+			Uri insecureMidpointUri = TestSupport.GetFullUrl("/insecureStop");
+			MockHttpRequest.RegisterMockRedirect(userSuppliedUri, insecureMidpointUri);
+			MockHttpRequest.RegisterMockRedirect(insecureMidpointUri, new Uri(claimedId.ToString()));
+
+			Identifier userSuppliedIdentifier = new UriIdentifier(userSuppliedUri, true);
+			userSuppliedIdentifier.Discover();
+		}
+
+		[Test]
+		public void DiscoveryRequireSslWithInsecureXrdsInSecureHtmlHead() {
+			var insecureXrdsSource = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20, false);
+			Uri secureClaimedUri = TestSupport.GetFullUrl("/secureId", null, true);
+
+			string html = string.Format("<html><head><meta http-equiv='X-XRDS-Location' content='{0}'/></head><body></body></html>",
+				insecureXrdsSource);
+			MockHttpRequest.RegisterMockResponse(secureClaimedUri, "text/html", html);
+
+			Identifier userSuppliedIdentifier = new UriIdentifier(secureClaimedUri, true);
+			Assert.AreEqual(0, userSuppliedIdentifier.Discover().Count());
+		}
+
+		[Test]
+		public void DiscoveryRequireSslWithInsecureXrdsInSecureHttpHeader() {
+			var insecureXrdsSource = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20, false);
+			Uri secureClaimedUri = TestSupport.GetFullUrl("/secureId", null, true);
+
+			string html = "<html><head></head><body></body></html>";
+			WebHeaderCollection headers = new WebHeaderCollection {
+				{ "X-XRDS-Location", insecureXrdsSource }
+			};
+			MockHttpRequest.RegisterMockResponse(secureClaimedUri, secureClaimedUri, "text/html", headers, html);
+
+			Identifier userSuppliedIdentifier = new UriIdentifier(secureClaimedUri, true);
+			Assert.AreEqual(0, userSuppliedIdentifier.Discover().Count());
+		}
+
+		[Test]
+		public void DiscoveryRequireSslWithInsecureXrdsButSecureLinkTags() {
+			var insecureXrdsSource = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20, false);
+			Uri secureClaimedUri = TestSupport.GetFullUrl("/secureId", null, true);
+
+			Identifier localIdForLinkTag = TestSupport.GetDelegateUrl(TestSupport.Scenarios.AlwaysDeny, true);
+			string html = string.Format(@"
+	<html><head>
+		<meta http-equiv='X-XRDS-Location' content='{0}'/> <!-- this one will be insecure and ignored -->
+		<link rel='openid2.provider' href='{1}' />
+		<link rel='openid2.local_id' href='{2}' />
+	</head><body></body></html>",
+				HttpUtility.HtmlEncode(insecureXrdsSource),
+				HttpUtility.HtmlEncode(TestSupport.GetFullUrl("/" + TestSupport.ProviderPage, null, true).AbsoluteUri),
+				HttpUtility.HtmlEncode(localIdForLinkTag.ToString())
+				);
+			MockHttpRequest.RegisterMockResponse(secureClaimedUri, "text/html", html);
+
+			Identifier userSuppliedIdentifier = new UriIdentifier(secureClaimedUri, true);
+			Assert.AreEqual(localIdForLinkTag, userSuppliedIdentifier.Discover().Single().ProviderLocalIdentifier);
+		}
+
+		[Test]
+		public void DiscoveryRequiresSslIgnoresInsecureEndpointsInXrds() {
+			var insecureEndpoint = TestSupport.GetServiceEndpoint(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20, 10, false);
+			var secureEndpoint = TestSupport.GetServiceEndpoint(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20, 20, true);
+			UriIdentifier secureClaimedId = new UriIdentifier(TestSupport.GetFullUrl("/claimedId", null, true), true);
+			MockHttpRequest.RegisterMockXrdsResponse(secureClaimedId, new ServiceEndpoint[] { insecureEndpoint, secureEndpoint });
+			Assert.AreEqual(secureEndpoint.ProviderLocalIdentifier, secureClaimedId.Discover().Single().ProviderLocalIdentifier);
 		}
 	}
 }

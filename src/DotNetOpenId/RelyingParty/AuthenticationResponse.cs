@@ -225,7 +225,7 @@ namespace DotNetOpenId.RelyingParty {
 			}
 
 			verifyReturnTo(query, unverifiedEndpoint, requestUrl);
-			verifyDiscoveredInfoMatchesAssertedInfo(query, tokenEndpoint, responseEndpoint);
+			verifyDiscoveredInfoMatchesAssertedInfo(relyingParty, query, tokenEndpoint, responseEndpoint);
 			verifyNonceUnused(query, unverifiedEndpoint, relyingParty.Store);
 			verifySignature(relyingParty, query, unverifiedEndpoint);
 
@@ -267,7 +267,8 @@ namespace DotNetOpenId.RelyingParty {
 		/// <remarks>
 		/// This is documented in OpenId Authentication 2.0 section 11.2.
 		/// </remarks>
-		static void verifyDiscoveredInfoMatchesAssertedInfo(IDictionary<string, string> query, 
+		static void verifyDiscoveredInfoMatchesAssertedInfo(OpenIdRelyingParty relyingParty, 
+			IDictionary<string, string> query,
 			ServiceEndpoint tokenEndpoint, ServiceEndpoint responseEndpoint) {
 
 			Logger.Debug("Verifying assertion matches identifier discovery results...");
@@ -291,6 +292,12 @@ namespace DotNetOpenId.RelyingParty {
 				if (tokenEndpoint == null ||
 					tokenEndpoint.ClaimedIdentifier == tokenEndpoint.Protocol.ClaimedIdentifierForOPIdentifier) {
 					Identifier claimedIdentifier = Util.GetRequiredArg(query, responseEndpoint.Protocol.openid.claimed_id);
+					// Require SSL where appropriate.  This will filter out insecure identifiers, 
+					// redirects and provider endpoints automatically.  If we find a match after all that
+					// filtering with the responseEndpoint, then the unsolicited assertion is secure.
+					if (relyingParty.RequireSsl && !claimedIdentifier.TryRequireSsl(out claimedIdentifier)) {
+						throw new OpenIdException(Strings.InsecureWebRequestWithSslRequired, query);
+					}
 					List<ServiceEndpoint> discoveredEndpoints = new List<ServiceEndpoint>(claimedIdentifier.Discover());
 					// Make sure the response endpoint matches one of the discovered endpoints.
 					if (!discoveredEndpoints.Contains(responseEndpoint)) {
