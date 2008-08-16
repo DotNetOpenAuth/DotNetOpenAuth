@@ -66,9 +66,15 @@ ajaxOnLoad();
 			Realm realm = new Uri(Page.Request.Url, Page.Request.ApplicationPath);
 			Uri return_to = new Uri(Page.Request.Url,
 				Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedReturnToHtmlResourceName));
+
+			string setupUrl, immediateUrl;
+
 			IAuthenticationRequest req = rp.CreateRequest(eventArgument, realm, return_to);
+			setupUrl = req.RedirectingResponse.Headers[HttpResponseHeader.Location];
 			req.Mode = AuthenticationRequestMode.Immediate;
-			callbackResult = req.RedirectingResponse.Headers[HttpResponseHeader.Location];
+			immediateUrl = req.RedirectingResponse.Headers[HttpResponseHeader.Location];
+
+			callbackResult = immediateUrl + " " + setupUrl;
 		}
 
 		#endregion
