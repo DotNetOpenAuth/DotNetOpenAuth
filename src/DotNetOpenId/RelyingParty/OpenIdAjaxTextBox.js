@@ -1,19 +1,31 @@
 ﻿var openIdBox;
-var statusupdates;
-var iframe;
+var discoveryIFrame;
+
+function trace(msg) {
+//	alert(msg);
+}
 
 function ajaxOnLoad() {
 	openIdBox = document.getElementsByName("openid_identifier")[0];
-	//    statusupdates = document.getElementById("statusupdates");
 	openIdBox.onchange = function(event) {
 		if (openIdBox.oldvalue != openIdBox.value) {
-			//            statusupdates.innerHTML += "Performing discovery...<br/>";
 			performDiscovery();
 			openIdBox.oldvalue = openIdBox.value;
 		}
 		return true;
 	}
 	openIdBox.onblur = openIdBox.onchange;
+}
+
+function performDiscovery() {
+	var frameLocation = new Uri(document.location.href);
+	var discoveryUri = frameLocation.trimQueryAndFragment().toString() + '?' + 'dotnetopenid.userSuppliedIdentifier=' + escape(openIdBox.value);
+	if (discoveryIFrame) {
+		discoveryIFrame.parentNode.removeChild(discoveryIFrame);
+		discoveryIFrame = null;
+	}
+	trace('Performing discovery using url: ' + discoveryUri);
+	discoveryIFrame = createHiddenFrame(discoveryUri);
 }
 
 function findParentForm(element) {
@@ -36,22 +48,23 @@ function findOrCreateHiddenField(form, name) {
 	return element;
 }
 
-function discoveryResult(result) {
-	var splitResult = result.split(' ');
-	var immediateUrl = splitResult[0];
-	var setupUrl = splitResult[1];
-	
-	//    statusupdates.innerHTML += "Attempting authentication... " + escape(result) + "<br/>";
-	iframe = document.createElement("iframe");
+function createHiddenFrame(url) {
+	var iframe = document.createElement("iframe");
 	iframe.setAttribute("width", 0);
 	iframe.setAttribute("height", 0);
 	iframe.setAttribute("style", "display: none");
-	iframe.setAttribute("src", immediateUrl);
+	iframe.setAttribute("src", url);
 	openIdBox.parentNode.insertBefore(iframe, openIdBox);
+	return iframe;
+}
+
+function openidDiscoveryFailure(msg) {
+	trace('Discovery failure: ' + msg);
 }
 
 function openidAuthResult(resultUrl) {
-	iframe.parentNode.removeChild(iframe);
+	discoveryIFrame.parentNode.removeChild(discoveryIFrame);
+	discoveryIFrame = null;
 	var resultUri = new Uri(resultUrl);
 
 	// stick the result in a hidden field so the RP can verify it (positive or negative)
@@ -85,6 +98,20 @@ function isOpenID2Response(resultUri) {
 }
 
 function Uri(url) {
+	this.originalUri = url;
+
+	this.toString = function() {
+		return this.originalUri;
+	}
+
+	this.trimQueryAndFragment = function() {
+		var qmark = this.originalUri.indexOf('?');
+		var hashmark = this.originalUri.indexOf('#');
+		if (qmark < 0) { qmark = this.originalUri.length; }
+		if (hashmark < 0) { hashmark = this.originalUri.length; }
+		return new Uri(this.originalUri.substr(0, Math.min(qmark, hashmark)));
+	}
+
 	function KeyValuePair(key, value) {
 		this.key = key;
 		this.value = value;
@@ -113,6 +140,10 @@ function Uri(url) {
 	
 	this.containsQueryArg = function(key) {
 		return this.getQueryArgValue(key);
+	}
+
+	this.indexOf = function(args) {
+		return this.originalUri.indexOf(args);
 	}
 
 	return this;

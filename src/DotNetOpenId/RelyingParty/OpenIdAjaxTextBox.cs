@@ -9,7 +9,7 @@ using System.Web.UI.WebControls;
 [assembly: WebResource(DotNetOpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedReturnToHtmlResourceName, "text/html")]
 
 namespace DotNetOpenId.RelyingParty {
-	public class OpenIdAjaxTextBox : WebControl, ICallbackEventHandler {
+	public class OpenIdAjaxTextBox : WebControl {
 		internal const string EmbeddedScriptResourceName = DotNetOpenId.Util.DefaultNamespace + ".RelyingParty.OpenIdAjaxTextBox.js";
 		internal const string EmbeddedReturnToHtmlResourceName = DotNetOpenId.Util.DefaultNamespace + ".RelyingParty.OpenIdAjaxReturnToForwarder.htm";
 
@@ -19,13 +19,6 @@ namespace DotNetOpenId.RelyingParty {
 			base.OnLoad(e);
 
 			Page.ClientScript.RegisterClientScriptResource(typeof(OpenIdAjaxTextBox), EmbeddedScriptResourceName);
-			string callbackMethod = Page.ClientScript.GetCallbackEventReference(this, "document.getElementsByName('openid_identifier')[0].value", "discoveryResult", null, true);
-			Page.ClientScript.RegisterClientScriptBlock(GetType(), "callbackMethod", string.Format(CultureInfo.InvariantCulture, @"
-<script language='javascript'>
-	function performDiscovery() {{
-		{0};
-	}}
-</script>", callbackMethod));
 			Page.ClientScript.RegisterStartupScript(GetType(), "ajaxstartup", @"
 <script language='javascript'>
 ajaxOnLoad();
@@ -44,15 +37,37 @@ ajaxOnLoad();
 						returnTo, authDataFields);
 					AuthenticationResponse = rp.Response;
 				}
+			} else {
+				string userSuppliedIdentifier = Page.Request.QueryString["dotnetopenid.userSuppliedIdentifier"];
+				if (!string.IsNullOrEmpty(userSuppliedIdentifier)) {
+					if (Page.Request.QueryString["dotnetopenid.phase"] == "2") {
+						callbackUserAgentMethod("openidAuthResult(document.URL)");
+					} else {
+						OpenIdRelyingParty rp = new OpenIdRelyingParty();
+
+						try {
+							IAuthenticationRequest req = rp.CreateRequest(userSuppliedIdentifier);
+							req.AddCallbackArguments("dotnetopenid.phase", "2");
+							req.Mode = AuthenticationRequestMode.Immediate;
+							req.RedirectToProvider();
+						} catch (OpenIdException ex) {
+							callbackUserAgentMethod("openidDiscoveryFailure('" + ex.Message.Replace("'", "''") + "')");
+						}
+					}
+				}
 			}
+		}
+
+		private void callbackUserAgentMethod(string methodCall) {
+			Page.Response.Write(string.Format(CultureInfo.InvariantCulture,
+				"<html><body><script language='javascript'>window.parent.{0};</script></body></html>", methodCall));
+			Page.Response.End();
 		}
 
 		protected override void Render(System.Web.UI.HtmlTextWriter writer) {
 
 			string logoUrl = Page.ClientScript.GetWebResourceUrl(
 				typeof(OpenIdTextBox), OpenIdTextBox.EmbeddedLogoResourceName);
-
-			//writer.Write("<input name='openid_identifier' />");
 
 			writer.WriteBeginTag("input");
 			writer.WriteAttribute("name", "openid_identifier");
@@ -68,35 +83,10 @@ ajaxOnLoad();
 			writer.Write(" />");
 		}
 
-		#region ICallbackEventHandler Members
-
-		string callbackResult;
-
-		public string GetCallbackResult() {
-			return callbackResult;
-		}
-
-		public void RaiseCallbackEvent(string eventArgument) {
-			OpenIdRelyingParty rp = new OpenIdRelyingParty();
-			Realm realm = new Uri(Page.Request.Url, Page.Request.ApplicationPath);
-			Uri return_to = getAjaxReturnTo();
-
-			string setupUrl, immediateUrl;
-
-			IAuthenticationRequest req = rp.CreateRequest(eventArgument, realm, return_to);
-			setupUrl = req.RedirectingResponse.Headers[HttpResponseHeader.Location];
-			req.Mode = AuthenticationRequestMode.Immediate;
-			immediateUrl = req.RedirectingResponse.Headers[HttpResponseHeader.Location];
-
-			callbackResult = immediateUrl + " " + setupUrl;
-		}
-
 		private Uri getAjaxReturnTo() {
 			Uri return_to = new Uri(Page.Request.Url,
 				Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedReturnToHtmlResourceName));
 			return return_to;
 		}
-
-		#endregion
 	}
 }
