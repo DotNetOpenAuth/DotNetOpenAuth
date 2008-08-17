@@ -6,12 +6,12 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 
 [assembly: WebResource(DotNetOpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedScriptResourceName, "text/javascript")]
-[assembly: WebResource(DotNetOpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedReturnToHtmlResourceName, "text/html")]
+[assembly: WebResource(DotNetOpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedDotNetOpenIdLogoResourceName, "image/gif")]
 
 namespace DotNetOpenId.RelyingParty {
 	public class OpenIdAjaxTextBox : WebControl {
 		internal const string EmbeddedScriptResourceName = DotNetOpenId.Util.DefaultNamespace + ".RelyingParty.OpenIdAjaxTextBox.js";
-		internal const string EmbeddedReturnToHtmlResourceName = DotNetOpenId.Util.DefaultNamespace + ".RelyingParty.OpenIdAjaxReturnToForwarder.htm";
+		internal const string EmbeddedDotNetOpenIdLogoResourceName = DotNetOpenId.Util.DefaultNamespace + ".RelyingParty.dotnetopenid_16x16.gif";
 
 		public IAuthenticationResponse AuthenticationResponse { get; private set; }
 
@@ -19,20 +19,17 @@ namespace DotNetOpenId.RelyingParty {
 			base.OnLoad(e);
 
 			Page.ClientScript.RegisterClientScriptResource(typeof(OpenIdAjaxTextBox), EmbeddedScriptResourceName);
-			Page.ClientScript.RegisterStartupScript(GetType(), "ajaxstartup", @"
+			Page.ClientScript.RegisterStartupScript(GetType(), "ajaxstartup", string.Format(CultureInfo.InvariantCulture, @"
 <script language='javascript'>
-ajaxOnLoad();
-</script>");
+var dotnetopenid_logo_url = '{0}';
+initAjaxOpenId(document.getElementsByName('openid_identifier')[0]);
+</script>", Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedDotNetOpenIdLogoResourceName)));
 
 			if (Page.IsPostBack) {
 				string authData = Page.Request.Form["openidAuthData"];
 				if (!string.IsNullOrEmpty(authData)) {
 					var authDataFields = HttpUtility.ParseQueryString(authData);
-					// We won't use the actual request URL of this request because
-					// the request we pass in must match the return_to value we gave
-					// before, or else verification will throw a return_to-request mismatch error.
-					Uri returnTo = authDataFields[Protocol.Default.openid.return_to] != null ?
-						new Uri(authDataFields[Protocol.Default.openid.return_to]) : getAjaxReturnTo();
+					Uri returnTo = Util.GetRequestUrlFromContext();
 					var rp = new OpenIdRelyingParty(OpenIdRelyingParty.HttpApplicationStore,
 						returnTo, authDataFields);
 					AuthenticationResponse = rp.Response;
@@ -51,7 +48,7 @@ ajaxOnLoad();
 							req.Mode = AuthenticationRequestMode.Immediate;
 							req.RedirectToProvider();
 						} catch (OpenIdException ex) {
-							callbackUserAgentMethod("openidDiscoveryFailure('" + ex.Message.Replace("'", "''") + "')");
+							callbackUserAgentMethod("openidDiscoveryFailure('" + ex.Message.Replace("'", "\\'") + "')");
 						}
 					}
 				}
@@ -81,12 +78,6 @@ ajaxOnLoad();
 			writer.WriteStyleAttribute("border-color", "lightgray");
 			writer.Write("'");
 			writer.Write(" />");
-		}
-
-		private Uri getAjaxReturnTo() {
-			Uri return_to = new Uri(Page.Request.Url,
-				Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedReturnToHtmlResourceName));
-			return return_to;
 		}
 	}
 }

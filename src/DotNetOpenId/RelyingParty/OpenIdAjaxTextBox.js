@@ -1,30 +1,38 @@
 ﻿function trace(msg) {
-	//	alert(msg);
-}
-
-function ajaxOnLoad() {
-	initAjaxOpenId(document.getElementsByName("openid_identifier")[0]);
+	//alert(msg);
+	window.status = msg;
 }
 
 function initAjaxOpenId(box) {
+	box.originalBackground = box.style.background;
+
 	box.setVisualCue = function(state) {
-		if (state == "authenticated") {
+		if (state == "discovering") {
+			box.style.background = 'url(' + dotnetopenid_logo_url + ') no-repeat';
+			box.style.backgroundColor = 'yellow';
+			window.status = "Discovering OpenID Identifier '" + box.value + "'...";
+		} else if (state == "authenticated") {
+			box.style.background = box.originalBackground;
 			box.style.backgroundColor = 'lightgreen';
+			window.status = "Authenticated as " + box.value;
 		} else if (state == "failed") {
+			box.style.background = box.originalBackground;
 			box.style.backgroundColor = 'pink';
+			window.status = "Authentication failed.";
 		} else if (state = '' || state == null) {
-			box.style.backgroundColor = '';
+			box.style.background = box.originalBackground;
+			window.status = null;
 		} else {
 			trace('unrecognized state ' + state);
 		}
 	}
 
 	box.performDiscovery = function() {
-		box.setVisualCue();
+		box.setVisualCue('discovering');
 		var frameLocation = new Uri(document.location.href);
 		var discoveryUri = frameLocation.trimQueryAndFragment().toString() + '?' + 'dotnetopenid.userSuppliedIdentifier=' + escape(box.value);
 		if (box.discoveryIFrame) {
-			box.discoveryIFrame.parentNode.removeChild(discoveryIFrame);
+			box.discoveryIFrame.parentNode.removeChild(box.discoveryIFrame);
 			box.discoveryIFrame = null;
 		}
 		trace('Performing discovery using url: ' + discoveryUri);
@@ -69,6 +77,7 @@ function initAjaxOpenId(box) {
 	}
 
 	box.openidAuthResult = function(resultUrl) {
+		trace('openidAuthResult ' + resultUrl);
 		box.discoveryIFrame.parentNode.removeChild(box.discoveryIFrame);
 		box.discoveryIFrame = null;
 		var resultUri = new Uri(resultUrl);

@@ -199,15 +199,12 @@
     <None Include="Provider\Provider.cd" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\..\lib\MicrosoftAjaxLibrary\System.Web.Extensions\3.5.0.0\3.5.21022.8\MicrosoftAjax.js">
-      <Link>RelyingParty\MicrosoftAjax.js</Link>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="RelyingParty\OpenIdAjaxTextBox.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="RelyingParty\OpenIdAjaxReturnToForwarder.htm" />
+    <EmbeddedResource Include="..\..\doc\logo\dotnetopenid_16x16.gif">
+      <Link>RelyingParty\dotnetopenid_16x16.gif</Link>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\tools\DotNetOpenId.Versioning.targets" />
