@@ -60,7 +60,7 @@ ajaxOnLoad();
 
 		private void callbackUserAgentMethod(string methodCall) {
 			Page.Response.Write(string.Format(CultureInfo.InvariantCulture,
-				"<html><body><script language='javascript'>window.parent.{0};</script></body></html>", methodCall));
+				"<html><body><script language='javascript'>window.frameElement.openidBox.{0};</script></body></html>", methodCall));
 			Page.Response.End();
 		}
 
