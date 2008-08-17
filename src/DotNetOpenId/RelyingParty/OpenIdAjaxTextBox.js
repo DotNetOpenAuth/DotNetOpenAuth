@@ -16,6 +16,26 @@ function ajaxOnLoad() {
 	openIdBox.onblur = openIdBox.onchange;
 }
 
+function findParentForm(element) {
+	if (element == null || element.nodeName == "FORM") {
+		return element;
+	}
+
+	return findParentForm(element.parentNode);
+}
+
+function findOrCreateHiddenField(form, name) {
+	if (form.elements[name]) {
+		return form.elements[name];
+	}
+
+	var element = document.createElement('input');
+	element.setAttribute("name", name);
+	element.setAttribute("type", "hidden");
+	form.appendChild(element);
+	return element;
+}
+
 function discoveryResult(result) {
 	var splitResult = result.split(' ');
 	var immediateUrl = splitResult[0];
@@ -33,10 +53,21 @@ function discoveryResult(result) {
 function openidAuthResult(resultUrl) {
 	iframe.parentNode.removeChild(iframe);
 	var resultUri = new Uri(resultUrl);
+
+	// stick the result in a hidden field so the RP can verify it (positive or negative)
+	var form = findParentForm(openIdBox);
+	var hiddenField = findOrCreateHiddenField(form, "openidAuthData");
+	hiddenField.setAttribute("value", resultUri.queryString);
+	if (hiddenField.parentNode == null) {
+		form.appendChild(hiddenField);
+	}
+
 	if (isAuthSuccessful(resultUri)) {
-		alert('finished auth successfully');
+		// visual cue that auth was successful
+		openIdBox.style.backgroundColor = 'lightgreen';
 	} else {
-		alert('auth failed.');
+		// visual cue that auth failed
+		openIdBox.style.backgroundColor = 'pink';
 	}
 	//    statusupdates.innerHTML += "auth result: " + escape(resultUrl) + "<br/>";
 }
@@ -63,8 +94,8 @@ function Uri(url) {
 
 	var queryBeginsAt = url.indexOf('?');
 	if (queryBeginsAt >= 0) {
-		var queryString = url.substr(queryBeginsAt + 1);
-		var queryStringPairs = queryString.split('&');
+		this.queryString = url.substr(queryBeginsAt + 1);
+		var queryStringPairs = this.queryString.split('&');
 
 		for (var i = 0; i < queryStringPairs.length; i++) {
 			var pair = queryStringPairs[i].split('=');

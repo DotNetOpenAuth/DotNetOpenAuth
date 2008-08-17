@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Web.UI.WebControls;
-using System.Web;
 using System.Globalization;
-using System.Web.UI;
 using System.Net;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
 
 [assembly: WebResource(DotNetOpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedScriptResourceName, "text/javascript")]
 [assembly: WebResource(DotNetOpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedReturnToHtmlResourceName, "text/html")]
@@ -14,6 +12,8 @@ namespace DotNetOpenId.RelyingParty {
 	public class OpenIdAjaxTextBox : WebControl, ICallbackEventHandler {
 		internal const string EmbeddedScriptResourceName = DotNetOpenId.Util.DefaultNamespace + ".RelyingParty.OpenIdAjaxTextBox.js";
 		internal const string EmbeddedReturnToHtmlResourceName = DotNetOpenId.Util.DefaultNamespace + ".RelyingParty.OpenIdAjaxReturnToForwarder.htm";
+
+		public IAuthenticationResponse AuthenticationResponse { get; private set; }
 
 		protected override void OnLoad(EventArgs e) {
 			base.OnLoad(e);
@@ -30,6 +30,21 @@ namespace DotNetOpenId.RelyingParty {
 <script language='javascript'>
 ajaxOnLoad();
 </script>");
+
+			if (Page.IsPostBack) {
+				string authData = Page.Request.Form["openidAuthData"];
+				if (!string.IsNullOrEmpty(authData)) {
+					var authDataFields = HttpUtility.ParseQueryString(authData);
+					// We won't use the actual request URL of this request because
+					// the request we pass in must match the return_to value we gave
+					// before, or else verification will throw a return_to-request mismatch error.
+					Uri returnTo = authDataFields[Protocol.Default.openid.return_to] != null ?
+						new Uri(authDataFields[Protocol.Default.openid.return_to]) : getAjaxReturnTo();
+					var rp = new OpenIdRelyingParty(OpenIdRelyingParty.HttpApplicationStore,
+						returnTo, authDataFields);
+					AuthenticationResponse = rp.Response;
+				}
+			}
 		}
 
 		protected override void Render(System.Web.UI.HtmlTextWriter writer) {
@@ -64,8 +79,7 @@ ajaxOnLoad();
 		public void RaiseCallbackEvent(string eventArgument) {
 			OpenIdRelyingParty rp = new OpenIdRelyingParty();
 			Realm realm = new Uri(Page.Request.Url, Page.Request.ApplicationPath);
-			Uri return_to = new Uri(Page.Request.Url,
-				Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedReturnToHtmlResourceName));
+			Uri return_to = getAjaxReturnTo();
 
 			string setupUrl, immediateUrl;
 
@@ -75,6 +89,12 @@ ajaxOnLoad();
 			immediateUrl = req.RedirectingResponse.Headers[HttpResponseHeader.Location];
 
 			callbackResult = immediateUrl + " " + setupUrl;
+		}
+
+		private Uri getAjaxReturnTo() {
+			Uri return_to = new Uri(Page.Request.Url,
+				Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedReturnToHtmlResourceName));
+			return return_to;
 		}
 
 		#endregion
