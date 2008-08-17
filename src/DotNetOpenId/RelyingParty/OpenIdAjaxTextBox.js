@@ -14,10 +14,17 @@ function ajaxOnLoad() {
 		}
 		return true;
 	}
+	openIdBox.onkeyup = function(event) {
+		if (openIdBox.oldvalue != openIdBox.value) {
+			visualCueClear();
+		}
+		return true;
+	}
 	openIdBox.onblur = openIdBox.onchange;
 }
 
 function performDiscovery() {
+	visualCueClear();
 	var frameLocation = new Uri(document.location.href);
 	var discoveryUri = frameLocation.trimQueryAndFragment().toString() + '?' + 'dotnetopenid.userSuppliedIdentifier=' + escape(openIdBox.value);
 	if (discoveryIFrame) {
@@ -77,12 +84,22 @@ function openidAuthResult(resultUrl) {
 
 	if (isAuthSuccessful(resultUri)) {
 		// visual cue that auth was successful
-		openIdBox.style.backgroundColor = 'lightgreen';
+		visualCueSuccess();
 	} else {
 		// visual cue that auth failed
-		openIdBox.style.backgroundColor = 'pink';
+		visualCueFailure();
 	}
 	//    statusupdates.innerHTML += "auth result: " + escape(resultUrl) + "<br/>";
+}
+
+function visualCueSuccess() {
+	openIdBox.style.backgroundColor = 'lightgreen';
+}
+function visualCueFailure() {
+	openIdBox.style.backgroundColor = 'pink';
+}
+function visualCueClear() {
+	openIdBox.style.backgroundColor = '';
 }
 
 function isAuthSuccessful(resultUri) {
