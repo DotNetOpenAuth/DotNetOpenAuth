@@ -59,7 +59,11 @@ initAjaxOpenId(document.getElementsByName('openid_identifier')[0]);
 
 		private void callbackUserAgentMethod(string methodCall) {
 			Page.Response.Write(string.Format(CultureInfo.InvariantCulture,
-				"<html><body><script language='javascript'>window.frameElement.openidBox.{0};</script></body></html>", methodCall));
+				@"<html><body><script language='javascript'>
+					var objSrc = window.frameElement ? window.frameElement.openidBox : window.opener.waiting_openidBox;
+					objSrc.{0};
+					if (!window.frameElement) {{ self.close(); }}
+				</script></body></html>", methodCall));
 			Page.Response.End();
 		}
 

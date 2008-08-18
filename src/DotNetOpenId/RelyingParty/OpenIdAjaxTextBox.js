@@ -12,7 +12,8 @@ function initAjaxOpenId(box) {
 	loginButton.textContent = "LOG IN";
 	loginButton.title = "Click here to log in using a pop-up window."
 	loginButton.onclick = function() {
-		window.open(getAuthenticationUrl(), 'opLogin', 'status=0,toolbar=0,resizable=1,scrollbars=1,width=800,height=600');
+		box.popup = window.open(getAuthenticationUrl(), 'opLogin', 'status=0,toolbar=0,resizable=1,scrollbars=1,width=800,height=600');
+		self.waiting_openidBox = box;
 		return false;
 	};
 	loginButton.style.visibility = 'hidden';
@@ -108,9 +109,15 @@ function initAjaxOpenId(box) {
 	}
 
 	box.openidAuthResult = function(resultUrl) {
+		self.waiting_openidBox = null;
 		trace('openidAuthResult ' + resultUrl);
-		box.discoveryIFrame.parentNode.removeChild(box.discoveryIFrame);
-		box.discoveryIFrame = null;
+		if (box.discoveryIFrame) {
+			box.discoveryIFrame.parentNode.removeChild(box.discoveryIFrame);
+			box.discoveryIFrame = null;
+		} else if (box.popup) {
+			box.popup.close();
+			box.popup = null;
+		}
 		var resultUri = new Uri(resultUrl);
 
 		// stick the result in a hidden field so the RP can verify it (positive or negative)
