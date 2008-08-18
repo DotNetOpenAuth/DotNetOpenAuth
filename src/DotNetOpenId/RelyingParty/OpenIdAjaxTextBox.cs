@@ -45,7 +45,9 @@ initAjaxOpenId(document.getElementsByName('openid_identifier')[0]);
 						try {
 							IAuthenticationRequest req = rp.CreateRequest(userSuppliedIdentifier);
 							req.AddCallbackArguments("dotnetopenid.phase", "2");
-							req.Mode = AuthenticationRequestMode.Immediate;
+							if (Page.Request.QueryString["dotnetopenid.immediate"] == "true") {
+								req.Mode = AuthenticationRequestMode.Immediate;
+							}
 							req.RedirectToProvider();
 						} catch (OpenIdException ex) {
 							callbackUserAgentMethod("openidDiscoveryFailure('" + ex.Message.Replace("'", "\\'") + "')");
@@ -66,6 +68,11 @@ initAjaxOpenId(document.getElementsByName('openid_identifier')[0]);
 			string logoUrl = Page.ClientScript.GetWebResourceUrl(
 				typeof(OpenIdTextBox), OpenIdTextBox.EmbeddedLogoResourceName);
 
+			writer.WriteBeginTag("span");
+			writer.Write(" style='");
+			writer.WriteStyleAttribute("position", "relative");
+			writer.Write("'>");
+
 			writer.WriteBeginTag("input");
 			writer.WriteAttribute("name", "openid_identifier");
 			writer.Write(" style='");
@@ -78,6 +85,8 @@ initAjaxOpenId(document.getElementsByName('openid_identifier')[0]);
 			writer.WriteStyleAttribute("border-color", "lightgray");
 			writer.Write("'");
 			writer.Write(" />");
+
+			writer.WriteEndTag("span");
 		}
 	}
 }

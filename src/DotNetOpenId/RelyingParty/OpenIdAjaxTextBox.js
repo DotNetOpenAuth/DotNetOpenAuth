@@ -6,7 +6,27 @@
 function initAjaxOpenId(box) {
 	box.originalBackground = box.style.background;
 
+	// Construct the login button
+	var loginButton = document.createElement('button');
+	loginButton.type = "button";
+	loginButton.textContent = "LOG IN";
+	loginButton.title = "Click here to log in using a pop-up window."
+	loginButton.onclick = function() {
+		window.open(getAuthenticationUrl(), 'opLogin', 'status=0,toolbar=0,resizable=1,scrollbars=1,width=800,height=600');
+		return false;
+	};
+	loginButton.style.visibility = 'hidden';
+	loginButton.style.position = 'absolute';
+	loginButton.style.padding = "0px";
+	loginButton.style.fontSize = '8px';
+	loginButton.style.top = "1px";
+	loginButton.style.bottom = "1px";
+	loginButton.style.right = "2px";
+	box.parentNode.appendChild(loginButton);
+	box.loginButton = loginButton;
+
 	box.setVisualCue = function(state) {
+		box.loginButton.style.visibility = 'hidden';
 		if (state == "discovering") {
 			box.style.background = 'url(' + dotnetopenid_logo_url + ') no-repeat';
 			box.style.backgroundColor = 'yellow';
@@ -18,6 +38,7 @@ function initAjaxOpenId(box) {
 		} else if (state == "failed") {
 			box.style.background = box.originalBackground;
 			box.style.backgroundColor = 'pink';
+			box.loginButton.style.visibility = 'visible';
 			window.status = "Authentication failed.";
 		} else if (state = '' || state == null) {
 			box.style.background = box.originalBackground;
@@ -27,12 +48,20 @@ function initAjaxOpenId(box) {
 		}
 	}
 
+	this.getAuthenticationUrl = function(immediateMode) {
+		var frameLocation = new Uri(document.location.href);
+		var discoveryUri = frameLocation.trimQueryAndFragment().toString() + '?' + 'dotnetopenid.userSuppliedIdentifier=' + escape(box.value);
+		if (immediateMode) {
+			discoveryUri += "&dotnetopenid.immediate=true";
+		}
+		return discoveryUri;
+	}
+
 	box.performDiscovery = function() {
 		box.setVisualCue('discovering');
 		box.lastDiscoveredIdentifier = box.value;
 		box.lastAuthenticationResult = null;
-		var frameLocation = new Uri(document.location.href);
-		var discoveryUri = frameLocation.trimQueryAndFragment().toString() + '?' + 'dotnetopenid.userSuppliedIdentifier=' + escape(box.value);
+		var discoveryUri = getAuthenticationUrl(true);
 		if (box.discoveryIFrame) {
 			box.discoveryIFrame.parentNode.removeChild(box.discoveryIFrame);
 			box.discoveryIFrame = null;
