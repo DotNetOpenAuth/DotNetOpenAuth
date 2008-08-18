@@ -31,10 +31,12 @@ function initAjaxOpenId(box) {
 		if (state == "discovering") {
 			box.style.background = 'url(' + dotnetopenid_logo_url + ') no-repeat';
 			box.style.backgroundColor = 'yellow';
+			box.title = null;
 			window.status = "Discovering OpenID Identifier '" + box.value + "'...";
 		} else if (state == "authenticated") {
 			box.style.background = box.originalBackground;
 			box.style.backgroundColor = 'lightgreen';
+			box.title = box.claimedIdentifier;
 			window.status = "Authenticated as " + box.value;
 		} else if (state == "failed") {
 			box.style.background = box.originalBackground;
@@ -43,6 +45,7 @@ function initAjaxOpenId(box) {
 			window.status = "Authentication failed.";
 		} else if (state = '' || state == null) {
 			box.style.background = box.originalBackground;
+			box.title = null;
 			window.status = null;
 		} else {
 			trace('unrecognized state ' + state);
@@ -130,6 +133,7 @@ function initAjaxOpenId(box) {
 
 		if (isAuthSuccessful(resultUri)) {
 			// visual cue that auth was successful
+			box.claimedIdentifier = isOpenID2Response(resultUri) ? resultUri.getQueryArgValue("openid.claimed_id") : resultUri.getQueryArgValue("openid.identity");
 			box.setVisualCue('authenticated');
 			box.lastAuthenticationResult = 'authenticated';
 		} else {
@@ -153,7 +157,11 @@ function initAjaxOpenId(box) {
 
 	box.onblur = function(event) {
 		if (box.lastDiscoveredIdentifier != box.value) {
-			box.performDiscovery();
+			if (box.value.length > 0) {
+				box.performDiscovery();
+			} else {
+				box.setVisualCue();
+			}
 			box.oldvalue = box.value;
 		}
 		return true;
