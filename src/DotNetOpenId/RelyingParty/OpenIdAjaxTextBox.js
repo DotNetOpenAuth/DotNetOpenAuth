@@ -29,6 +29,8 @@ function initAjaxOpenId(box) {
 
 	box.performDiscovery = function() {
 		box.setVisualCue('discovering');
+		box.lastDiscoveredIdentifier = box.value;
+		box.lastAuthenticationResult = null;
 		var frameLocation = new Uri(document.location.href);
 		var discoveryUri = frameLocation.trimQueryAndFragment().toString() + '?' + 'dotnetopenid.userSuppliedIdentifier=' + escape(box.value);
 		if (box.discoveryIFrame) {
@@ -93,9 +95,11 @@ function initAjaxOpenId(box) {
 		if (isAuthSuccessful(resultUri)) {
 			// visual cue that auth was successful
 			box.setVisualCue('authenticated');
+			box.lastAuthenticationResult = 'authenticated';
 		} else {
 			// visual cue that auth failed
 			box.setVisualCue('failed');
+			box.lastAuthenticationResult = 'failed';
 		}
 	}
 
@@ -111,20 +115,21 @@ function initAjaxOpenId(box) {
 		return resultUri.containsQueryArg("openid.ns");
 	}
 
-	box.onchange = function(event) {
-		if (box.oldvalue != box.value) {
+	box.onblur = function(event) {
+		if (box.lastDiscoveredIdentifier != box.value) {
 			box.performDiscovery();
 			box.oldvalue = box.value;
 		}
 		return true;
 	}
 	box.onkeyup = function(event) {
-		if (box.oldvalue != box.value) {
+		if (box.lastDiscoveredIdentifier != box.value) {
 			box.setVisualCue();
+		} else {
+			box.setVisualCue(box.lastAuthenticationResult);
 		}
 		return true;
 	}
-	box.onblur = box.onchange;
 }
 
 function Uri(url) {
