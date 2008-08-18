@@ -1,6 +1,6 @@
 ﻿function trace(msg) {
 	//alert(msg);
-	window.status = msg;
+	//window.status = msg;
 }
 
 function initAjaxOpenId(box) {
@@ -8,8 +8,8 @@ function initAjaxOpenId(box) {
 
 	// Construct the login button
 	var loginButton = document.createElement('button');
-	loginButton.type = "button";
-	loginButton.textContent = "LOG IN";
+	loginButton.textContent = "LOG IN"; // Mozilla
+	loginButton.value = "LOG IN"; // IE
 	loginButton.title = "Click here to log in using a pop-up window."
 	loginButton.onclick = function() {
 		box.popup = window.open(getAuthenticationUrl(), 'opLogin', 'status=0,toolbar=0,resizable=1,scrollbars=1,width=800,height=600');
@@ -83,15 +83,15 @@ function initAjaxOpenId(box) {
 	}
 
 	function findOrCreateHiddenField(form, name) {
-		if (form.elements[name]) {
-			return form.elements[name];
+		if (box.hiddenField) {
+			return box.hiddenField;
 		}
 
-		var element = document.createElement('input');
-		element.setAttribute("name", name);
-		element.setAttribute("type", "hidden");
-		form.appendChild(element);
-		return element;
+		box.hiddenField = document.createElement('input');
+		box.hiddenField.setAttribute("name", name);
+		box.hiddenField.setAttribute("type", "hidden");
+		form.appendChild(box.hiddenField);
+		return box.hiddenField;
 	}
 
 	function createHiddenFrame(url) {
@@ -127,9 +127,11 @@ function initAjaxOpenId(box) {
 		var form = findParentForm(box);
 		var hiddenField = findOrCreateHiddenField(form, "openidAuthData");
 		hiddenField.setAttribute("value", resultUri.queryString);
+		trace("set openidAuthData = " + resultUri.queryString);
 		if (hiddenField.parentNode == null) {
 			form.appendChild(hiddenField);
 		}
+		trace("review: " + box.hiddenField.value);
 
 		if (isAuthSuccessful(resultUri)) {
 			// visual cue that auth was successful

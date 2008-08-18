@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Globalization;
-using System.Net;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -22,14 +22,17 @@ namespace DotNetOpenId.RelyingParty {
 			Page.ClientScript.RegisterStartupScript(GetType(), "ajaxstartup", string.Format(CultureInfo.InvariantCulture, @"
 <script language='javascript'>
 var dotnetopenid_logo_url = '{0}';
-initAjaxOpenId(document.getElementsByName('openid_identifier')[0]);
+var openidbox = document.getElementsByName('openid_identifier')[0];
+if (openidbox) {{ initAjaxOpenId(openidbox); }}
 </script>", Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedDotNetOpenIdLogoResourceName)));
 
 			if (Page.IsPostBack) {
 				string authData = Page.Request.Form["openidAuthData"];
 				if (!string.IsNullOrEmpty(authData)) {
 					var authDataFields = HttpUtility.ParseQueryString(authData);
-					Uri returnTo = Util.GetRequestUrlFromContext();
+					// Lie about the request URL so it matches the return_to URL made
+					// back when this authentication occurred.
+					Uri returnTo = getReturnTo(Util.GetRequestUrlFromContext(), authDataFields);
 					var rp = new OpenIdRelyingParty(OpenIdRelyingParty.HttpApplicationStore,
 						returnTo, authDataFields);
 					AuthenticationResponse = rp.Response;
@@ -55,6 +58,22 @@ initAjaxOpenId(document.getElementsByName('openid_identifier')[0]);
 					}
 				}
 			}
+		}
+
+		private Uri getReturnTo(Uri uri, System.Collections.Specialized.NameValueCollection authDataFields) {
+			UriBuilder builder = new UriBuilder(uri);
+			NameValueCollection returnToNVC = HttpUtility.ParseQueryString(builder.Query);
+			foreach (string key in authDataFields) {
+				if (returnToNVC[key] == null) {
+					returnToNVC[key] = authDataFields[key];
+				} else {
+					if (returnToNVC[key] != authDataFields[key]) {
+						throw new ArgumentException(Strings.ReturnToParamDoesNotMatchRequestUrl, key);
+					}
+				}
+			}
+			builder.Query = UriUtil.CreateQueryString(returnToNVC);
+			return builder.Uri;
 		}
 
 		private void callbackUserAgentMethod(string methodCall) {
