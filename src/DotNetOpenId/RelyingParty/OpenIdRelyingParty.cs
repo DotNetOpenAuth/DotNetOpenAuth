@@ -91,7 +91,7 @@ namespace DotNetOpenId.RelyingParty {
 		internal IDirectMessageChannel DirectMessageChannel = new DirectMessageHttpChannel();
 
 		internal static Uri DefaultRequestUrl { get { return Util.GetRequestUrlFromContext(); } }
-		internal static NameValueCollection DefaultQuery { get { return Util.DictionaryToNameValueCollection(Util.GetQueryFromContext()); } }
+		internal static NameValueCollection DefaultQuery { get { return Util.GetQueryFromContextNVC(); } }
 
 		/// <summary>
 		/// Constructs an OpenId consumer that uses the current HttpContext request

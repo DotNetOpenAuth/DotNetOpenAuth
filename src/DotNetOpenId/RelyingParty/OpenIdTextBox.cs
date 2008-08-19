@@ -179,6 +179,20 @@ namespace DotNetOpenId.RelyingParty
 			set { ViewState[immediateModeViewStateKey] = value; }
 		}
 
+		const string statelessViewStateKey = "Stateless";
+		const bool statelessDefault = false;
+		/// <summary>
+		/// Controls whether stateless mode is used.
+		/// </summary>
+		[Bindable(true)]
+		[Category(behaviorCategory)]
+		[DefaultValue(statelessDefault)]
+		[Description("Controls whether stateless mode is used.")]
+		public bool Stateless {
+			get { return (bool)(ViewState[statelessViewStateKey] ?? statelessDefault); }
+			set { ViewState[statelessViewStateKey] = value; }
+		}
+
 		const string cssClassDefault = "openid";
 		/// <summary>
 		/// Gets/sets the CSS class assigned to the text box.
@@ -461,6 +475,10 @@ namespace DotNetOpenId.RelyingParty
 		/// <summary>
 		/// A custom application store to use, or null to use the default.
 		/// </summary>
+		/// <remarks>
+		/// If set, this property must be set in each Page Load event
+		/// as it is not persisted across postbacks.
+		/// </remarks>
 		public IRelyingPartyApplicationStore CustomApplicationStore { get; set; }
 
 		#endregion
@@ -595,7 +613,8 @@ namespace DotNetOpenId.RelyingParty
 		}
 
 		private OpenIdRelyingParty createRelyingParty() {
-			IRelyingPartyApplicationStore store = CustomApplicationStore ?? OpenIdRelyingParty.HttpApplicationStore;
+			IRelyingPartyApplicationStore store = Stateless ? null :
+				(CustomApplicationStore ?? OpenIdRelyingParty.HttpApplicationStore);
 			Uri request = OpenIdRelyingParty.DefaultRequestUrl;
 			NameValueCollection query = OpenIdRelyingParty.DefaultQuery;
 			var rp = new OpenIdRelyingParty(store, request, query);

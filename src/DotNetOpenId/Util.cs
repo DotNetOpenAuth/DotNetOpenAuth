@@ -122,11 +122,14 @@ namespace DotNetOpenId {
 			return nvc;
 		}
 
-		public static IDictionary<string, string> GetQueryFromContext() {
+		public static NameValueCollection GetQueryFromContextNVC() {
 			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
 			var query = HttpContext.Current.Request.RequestType == "GET" ?
 				HttpContext.Current.Request.QueryString : HttpContext.Current.Request.Form;
-			return NameValueCollectionToDictionary(query);
+			return query;
+		}
+		public static IDictionary<string, string> GetQueryFromContext() {
+			return NameValueCollectionToDictionary(GetQueryFromContextNVC());
 		}
 		/// <summary>
 		/// Gets the original request URL, as seen from the browser before any URL rewrites on the server if any.

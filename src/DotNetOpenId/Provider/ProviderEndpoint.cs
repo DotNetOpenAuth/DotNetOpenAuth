@@ -5,6 +5,7 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using IProviderAssociationStore = DotNetOpenId.IAssociationStore<DotNetOpenId.AssociationRelyingPartyType>;
 
 namespace DotNetOpenId.Provider {
 	/// <summary>
@@ -48,6 +49,15 @@ namespace DotNetOpenId.Provider {
 		}
 
 		/// <summary>
+		/// A custom application store to use.  Null to use the default.
+		/// </summary>
+		/// <remarks>
+		/// If set, this property must be set in each Page Load event
+		/// as it is not persisted across postbacks.
+		/// </remarks>
+		public IProviderAssociationStore CustomApplicationStore { get; set; }
+
+		/// <summary>
 		/// Checks for incoming OpenID requests, responds to ones it can
 		/// respond to without policy checks, and fires events for custom
 		/// handling of the ones it cannot decide on automatically.
@@ -56,7 +66,11 @@ namespace DotNetOpenId.Provider {
 			base.OnLoad(e);
 
 			if (Enabled) {
-				OpenIdProvider provider = new OpenIdProvider();
+				OpenIdProvider provider = new OpenIdProvider(
+					CustomApplicationStore ?? OpenIdProvider.HttpApplicationStore,
+					OpenIdProvider.DefaultProviderEndpoint,
+					OpenIdProvider.DefaultRequestUrl,
+					OpenIdProvider.DefaultQuery);
 
 				// determine what incoming message was received
 				if (provider.Request != null) {
