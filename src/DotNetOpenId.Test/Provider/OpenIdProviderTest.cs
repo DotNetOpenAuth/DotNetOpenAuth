@@ -112,7 +112,8 @@ namespace DotNetOpenId.Test.Provider {
 			rp10Request[simulatedVersion.openid.Realm] = TestSupport.Realm;
 
 			OpenIdProvider op = TestSupport.CreateProvider(rp10Request);
-			Assert.AreEqual(simulatedVersion.ProtocolVersion, op.Request.RelyingPartyVersion);
+			Assert.AreEqual(simulatedVersion.ProtocolVersion,
+				((DotNetOpenId.Provider.IAuthenticationRequest)op.Request).RelyingPartyVersion);
 
 			// Verify V2.0 reporting.
 			var rp20Request = TestSupport.CreateRelyingPartyRequest(true, TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);

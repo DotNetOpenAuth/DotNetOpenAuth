@@ -109,11 +109,10 @@ namespace DotNetOpenId.RelyingParty {
 			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
 
 			// Construct the endpoints filters based on criteria given by the host web site.
-			EndpointSelector versionFilter = ep => ((ServiceEndpoint)ep).Protocol.Version >= Protocol.Lookup(relyingParty.Settings.MinimumRequiredOpenIDVersion).Version;
+			EndpointSelector versionFilter = ep => ((ServiceEndpoint)ep).Protocol.Version >= Protocol.Lookup(relyingParty.Settings.MinimumRequiredOpenIdVersion).Version;
 			EndpointSelector hostFilter = relyingParty.EndpointFilter ?? (ep => true);
 
 			var filteredEndpoints = new List<IXrdsProviderEndpoint>(endpoints.Count);
-			var filter = relyingParty.EndpointFilter;
 			foreach (ServiceEndpoint endpoint in endpoints) {
 				if (versionFilter(endpoint) && hostFilter(endpoint)) {
 					filteredEndpoints.Add(endpoint);

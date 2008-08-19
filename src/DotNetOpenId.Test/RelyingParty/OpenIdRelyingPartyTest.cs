@@ -388,7 +388,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 			MockIdentifier id = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V11);
 
 			var rp = TestSupport.CreateRelyingParty(null);
-			rp.Settings.MinimumRequiredOpenIDVersion = ProtocolVersion.V20;
+			rp.Settings.MinimumRequiredOpenIdVersion = ProtocolVersion.V20;
 			rp.CreateRequest(id, TestSupport.Realm, TestSupport.ReturnTo);
 		}
 	}
