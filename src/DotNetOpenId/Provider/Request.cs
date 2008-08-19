@@ -84,6 +84,15 @@ namespace DotNetOpenId.Provider
 		}
 
 		/// <summary>
+		/// Gets the version of OpenID being used by the relying party that sent the request.
+		/// </summary>
+		public ProtocolVersion RelyingPartyVersion {
+			get {
+				return Protocol.Lookup(Protocol.Version).ProtocolVersion;
+			}
+		}
+
+		/// <summary>
 		/// Indicates whether this request has all the information necessary to formulate a response.
 		/// </summary>
 		public abstract bool IsResponseReady { get; }

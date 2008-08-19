@@ -33,31 +33,31 @@ namespace DotNetOpenId.Test.Provider {
 
 		[Test]
 		public void CtorNonDefault() {
-			OpenIdProvider op = new OpenIdProvider(new ProviderMemoryStore(), 
+			OpenIdProvider op = new OpenIdProvider(new ProviderMemoryStore(),
 				providerEndpoint, emptyRequestUrl, new NameValueCollection());
 		}
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullStore() {
-			OpenIdProvider op = new OpenIdProvider(null, providerEndpoint, 
+			OpenIdProvider op = new OpenIdProvider(null, providerEndpoint,
 				emptyRequestUrl, new NameValueCollection());
 		}
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullEndpoint() {
-			OpenIdProvider op = new OpenIdProvider(new ProviderMemoryStore(), 
+			OpenIdProvider op = new OpenIdProvider(new ProviderMemoryStore(),
 				null, emptyRequestUrl, new NameValueCollection());
 		}
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullRequestUrl() {
-			OpenIdProvider op = new OpenIdProvider(new ProviderMemoryStore(), 
+			OpenIdProvider op = new OpenIdProvider(new ProviderMemoryStore(),
 				providerEndpoint, null, new NameValueCollection());
 		}
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullQuery() {
-			OpenIdProvider op = new OpenIdProvider(new ProviderMemoryStore(), 
+			OpenIdProvider op = new OpenIdProvider(new ProviderMemoryStore(),
 				providerEndpoint, emptyRequestUrl, null);
 		}
 
@@ -94,6 +94,32 @@ namespace DotNetOpenId.Test.Provider {
 			IResponse assertion = op.PrepareUnsolicitedAssertion(TestSupport.Realm, claimedId, localId);
 			var rpResponse = TestSupport.CreateRelyingPartyResponse(TestSupport.RelyingPartyStore, assertion);
 			Assert.AreEqual(AuthenticationStatus.Failed, rpResponse.Status);
+		}
+
+		/// <summary>
+		/// Verifies that OP will properly report RP versions in requests.
+		/// </summary>
+		[Test]
+		public void RelyingPartyVersion() {
+			Protocol simulatedVersion = Protocol.v11;
+			UriIdentifier id = TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, simulatedVersion.ProtocolVersion);
+
+			// make up some OpenID 1.x looking message...
+			NameValueCollection rp10Request = new NameValueCollection();
+			rp10Request[simulatedVersion.openid.mode] = simulatedVersion.Args.Mode.checkid_immediate;
+			rp10Request[simulatedVersion.openid.identity] = id;
+			rp10Request[simulatedVersion.openid.return_to] = TestSupport.ReturnTo.AbsoluteUri;
+			rp10Request[simulatedVersion.openid.Realm] = TestSupport.Realm;
+
+			OpenIdProvider op = TestSupport.CreateProvider(rp10Request);
+			Assert.AreEqual(simulatedVersion.ProtocolVersion, op.Request.RelyingPartyVersion);
+
+			// Verify V2.0 reporting.
+			var rp20Request = TestSupport.CreateRelyingPartyRequest(true, TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
+			TestSupport.CreateRelyingPartyResponseThroughProvider(rp20Request, opReq => {
+				Assert.AreEqual(ProtocolVersion.V20, opReq.RelyingPartyVersion);
+				opReq.IsAuthenticated = true;
+			});
 		}
 	}
 }

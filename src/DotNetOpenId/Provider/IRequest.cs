@@ -14,6 +14,10 @@ namespace DotNetOpenId.Provider {
 	/// </remarks>
 	public interface IRequest {
 		/// <summary>
+		/// Gets the version of OpenID being used by the relying party that sent the request.
+		/// </summary>
+		ProtocolVersion RelyingPartyVersion { get; }
+		/// <summary>
 		/// Returns true if the Response is ready to be sent to the user agent.
 		/// Returns false if there are properties that must be set on this
 		/// request instance before the response can be sent.

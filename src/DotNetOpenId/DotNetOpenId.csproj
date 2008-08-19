@@ -60,6 +60,7 @@
     <Compile Include="AssociationMemoryStore.cs" />
     <Compile Include="Associations.cs" />
     <Compile Include="DiffieHellmanUtil.cs" />
+    <Compile Include="InternalErrorException.cs" />
     <Compile Include="Provider\ProviderSecuritySettings.cs" />
     <Compile Include="RelyingParty\RelyingPartySecuritySettings.cs" />
     <Compile Include="SecuritySettings.cs" />

@@ -51,11 +51,5 @@ namespace DotNetOpenId {
 			int length = HmacShaAssociation.GetSecretLength(protocol, associationType);
 			return length >= MinimumHashBitLength && length <= MaximumHashBitLength;
 		}
-
-		/// <summary>
-		/// Gets/sets the oldest version of OpenID the remote party is allowed to implement.
-		/// </summary>
-		/// <value>Defaults to <see cref="ProtocolVersion.V10"/></value>
-		internal ProtocolVersion MinimumRequiredOpenIDVersion { get; set; }
 	}
 }

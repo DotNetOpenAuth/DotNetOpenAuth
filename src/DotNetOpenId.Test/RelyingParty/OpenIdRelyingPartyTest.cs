@@ -379,5 +379,17 @@ namespace DotNetOpenId.Test.RelyingParty {
 			Assert.AreEqual(AuthenticationStatus.Failed, rp.Response.Status);
 			Assert.IsNull(rp.Response.ClaimedIdentifier);
 		}
+
+		/// <summary>
+		/// Verifies that an RP will not "discover" endpoints below OpenID 2.0 when appropriate.
+		/// </summary>
+		[Test, ExpectedException(typeof(OpenIdException))]
+		public void MinimumOPVersion20() {
+			MockIdentifier id = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V11);
+
+			var rp = TestSupport.CreateRelyingParty(null);
+			rp.Settings.MinimumRequiredOpenIDVersion = ProtocolVersion.V20;
+			rp.CreateRequest(id, TestSupport.Realm, TestSupport.ReturnTo);
+		}
 	}
 }
