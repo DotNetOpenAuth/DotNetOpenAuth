@@ -90,6 +90,9 @@ namespace DotNetOpenId.RelyingParty {
 		MessageEncoder encoder = new MessageEncoder();
 		internal IDirectMessageChannel DirectMessageChannel = new DirectMessageHttpChannel();
 
+		internal static Uri DefaultRequestUrl { get { return Util.GetRequestUrlFromContext(); } }
+		internal static NameValueCollection DefaultQuery { get { return Util.DictionaryToNameValueCollection(Util.GetQueryFromContext()); } }
+
 		/// <summary>
 		/// Constructs an OpenId consumer that uses the current HttpContext request
 		/// and uses the HttpApplication dictionary as its association store.
