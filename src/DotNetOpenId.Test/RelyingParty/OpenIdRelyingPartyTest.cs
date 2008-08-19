@@ -391,5 +391,37 @@ namespace DotNetOpenId.Test.RelyingParty {
 			rp.Settings.MinimumRequiredOpenIdVersion = ProtocolVersion.V20;
 			rp.CreateRequest(id, TestSupport.Realm, TestSupport.ReturnTo);
 		}
+
+		/// <summary>
+		/// Verifies that an RP configured to require 2.0 OPs will fail on communicating with 1.x OPs
+		/// that merely advertise 2.0 support but don't really have it.
+		/// </summary>
+		[Test]
+		public void MinimumOPVersion20WithDeceptiveEndpointRealizedAtAuthentication() {
+			// Create an identifier that claims to have a 2.0 OP endpoint.
+			MockIdentifier id = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
+
+			var rp = TestSupport.CreateRelyingParty(null, null);
+
+			IAuthenticationRequest req = rp.CreateRequest(id, TestSupport.Realm, TestSupport.ReturnTo);
+			IResponse providerResponse = TestSupport.CreateProviderResponseToRequest(req, opReq => {
+				opReq.IsAuthenticated = true;
+			});
+
+			var opAuthWebResponse = (Response)providerResponse;
+			var opAuthResponse = (DotNetOpenId.Provider.EncodableResponse)opAuthWebResponse.EncodableMessage;
+			var rp2 =TestSupport. CreateRelyingParty(null, opAuthResponse.RedirectUrl,
+				opAuthResponse.EncodedFields.ToNameValueCollection());
+			rp2.Settings.MinimumRequiredOpenIdVersion = ProtocolVersion.V20;
+			// Rig an intercept between the provider and RP to make our own Provider LOOK like a 1.x provider.
+			var sniffer = new DirectMessageSniffWrapper(rp2.DirectMessageChannel);
+			rp2.DirectMessageChannel = sniffer;
+			sniffer.Receiving += (endpoint, fields) => {
+				fields.Remove(Protocol.v20.openidnp.ns);
+			};
+			var resp = rp2.Response;
+
+			Assert.AreEqual(AuthenticationStatus.Failed, resp.Status, "Authentication should have failed since OP is really a 1.x OP masquerading as a 2.0 OP.");
+		}
 	}
 }

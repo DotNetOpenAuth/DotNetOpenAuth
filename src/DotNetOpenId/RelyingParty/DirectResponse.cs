@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace DotNetOpenId.RelyingParty {
 	[DebuggerDisplay("OpenId: {Protocol.Version}")]
@@ -14,6 +15,16 @@ namespace DotNetOpenId.RelyingParty {
 			Provider = provider;
 			Args = args;
 
+			// Make sure that the OP fulfills the required OpenID version.
+			// We don't use Provider.Protocol here because that's just a cache of
+			// what we _thought_ the OP would support, and our purpose is to double-check this.
+			if (Protocol.Detect(args).ProtocolVersion < relyingParty.Settings.MinimumRequiredOpenIdVersion) {
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
+					Strings.MinimumOPVersionRequirementNotMet,
+					Protocol.Lookup(relyingParty.Settings.MinimumRequiredOpenIdVersion).Version,
+					provider.Protocol.Version));
+			}
+
 			if (Logger.IsErrorEnabled) {
 				if (!Args.ContainsKey(Protocol.openidnp.ns)) {
 					Logger.ErrorFormat("Direct response from provider lacked the {0} key.", Protocol.openid.ns);
@@ -22,7 +33,6 @@ namespace DotNetOpenId.RelyingParty {
 						Protocol.openid.ns, Args[Protocol.openidnp.ns], Protocol.QueryDeclaredNamespaceVersion);
 				}
 			}
-
 		}
 		protected OpenIdRelyingParty RelyingParty { get; private set; }
 		protected ServiceEndpoint Provider { get; private set; }
