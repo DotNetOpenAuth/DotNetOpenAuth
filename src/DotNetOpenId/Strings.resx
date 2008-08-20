@@ -226,6 +226,9 @@ Discovered endpoint info:
   <data name="MatchingArgumentsExpected" xml:space="preserve">
     <value>The '{0}' and '{1}' parameters must both be or not be '{2}'.</value>
   </data>
+  <data name="MinimumOPVersionRequirementNotMet" xml:space="preserve">
+    <value>This Relying Party requires a Provider that supports at least OpenID version {0}, but Provider is detected to only support OpenID version {1}.</value>
+  </data>
   <data name="MissingCanonicalIDElement" xml:space="preserve">
     <value>The XRDS document for XRI {0} is missing the required CanonicalID element.</value>
   </data>

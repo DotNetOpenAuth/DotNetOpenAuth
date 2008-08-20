@@ -35,6 +35,10 @@ namespace DotNetOpenId.Provider {
 		/// </summary>
 		internal Protocol Protocol { get; private set; }
 
+		internal static Uri DefaultProviderEndpoint { get { return getProviderEndpointFromContext(); } }
+		internal static Uri DefaultRequestUrl { get { return Util.GetRequestUrlFromContext(); } }
+		internal static NameValueCollection DefaultQuery { get { return Util.GetQueryFromContextNVC(); } }
+
 		/// <summary>
 		/// Constructs an OpenId server that uses the HttpApplication dictionary as
 		/// its association store and detects common settings.

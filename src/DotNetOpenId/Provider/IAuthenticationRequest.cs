@@ -10,6 +10,10 @@ namespace DotNetOpenId.Provider {
 	/// </summary>
 	public interface IAuthenticationRequest : IRequest {
 		/// <summary>
+		/// Gets the version of OpenID being used by the relying party that sent the request.
+		/// </summary>
+		ProtocolVersion RelyingPartyVersion { get; }
+		/// <summary>
 		/// Whether the consumer demands an immediate response.
 		/// If false, the consumer is willing to wait for the identity provider
 		/// to authenticate the user.

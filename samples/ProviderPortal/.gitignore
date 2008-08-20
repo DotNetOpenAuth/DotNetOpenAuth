@@ -1,4 +1,4 @@
 Bin
 obj
 *.user
-*Trace.txt
+*.log

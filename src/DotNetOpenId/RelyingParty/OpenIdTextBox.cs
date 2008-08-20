@@ -33,7 +33,7 @@ namespace DotNetOpenId.RelyingParty
 	/// assemble a complete login experience.
 	/// </remarks>
 	[DefaultProperty("Text"), ValidationProperty("Text")]
-	[ToolboxData("<{0}:OpenIdTextBox runat=\"server\"></{0}:OpenIdTextBox>")]
+	[ToolboxData("<{0}:OpenIdTextBox runat=\"server\" />")]
 	public class OpenIdTextBox : CompositeControl, IEditableTextControl, ITextControl
 	{
 		/// <summary>
@@ -177,6 +177,20 @@ namespace DotNetOpenId.RelyingParty
 		public bool ImmediateMode {
 			get { return (bool)(ViewState[immediateModeViewStateKey] ?? immediateModeDefault); }
 			set { ViewState[immediateModeViewStateKey] = value; }
+		}
+
+		const string statelessViewStateKey = "Stateless";
+		const bool statelessDefault = false;
+		/// <summary>
+		/// Controls whether stateless mode is used.
+		/// </summary>
+		[Bindable(true)]
+		[Category(behaviorCategory)]
+		[DefaultValue(statelessDefault)]
+		[Description("Controls whether stateless mode is used.")]
+		public bool Stateless {
+			get { return (bool)(ViewState[statelessViewStateKey] ?? statelessDefault); }
+			set { ViewState[statelessViewStateKey] = value; }
 		}
 
 		const string cssClassDefault = "openid";
@@ -457,6 +471,16 @@ namespace DotNetOpenId.RelyingParty
 			get { return (bool)(ViewState[requireSslViewStateKey] ?? requireSslDefault); }
 			set { ViewState[requireSslViewStateKey] = value; }
 		}
+
+		/// <summary>
+		/// A custom application store to use, or null to use the default.
+		/// </summary>
+		/// <remarks>
+		/// If set, this property must be set in each Page Load event
+		/// as it is not persisted across postbacks.
+		/// </remarks>
+		public IRelyingPartyApplicationStore CustomApplicationStore { get; set; }
+
 		#endregion
 
 		#region Properties to hide
@@ -567,8 +591,7 @@ namespace DotNetOpenId.RelyingParty
 			base.OnLoad(e);
 
 			if (!Enabled || Page.IsPostBack) return;
-			var consumer = new OpenIdRelyingParty();
-			consumer.Settings.RequireSsl = RequireSsl;
+			var consumer = createRelyingParty();
 			if (consumer.Response != null) {
 				switch (consumer.Response.Status) {
 					case AuthenticationStatus.Canceled:
@@ -587,6 +610,16 @@ namespace DotNetOpenId.RelyingParty
 						throw new InvalidOperationException("Unexpected response status code.");
 				}
 			}
+		}
+
+		private OpenIdRelyingParty createRelyingParty() {
+			IRelyingPartyApplicationStore store = Stateless ? null :
+				(CustomApplicationStore ?? OpenIdRelyingParty.HttpApplicationStore);
+			Uri request = OpenIdRelyingParty.DefaultRequestUrl;
+			NameValueCollection query = OpenIdRelyingParty.DefaultQuery;
+			var rp = new OpenIdRelyingParty(store, request, query);
+			rp.Settings.RequireSsl = RequireSsl;
+			return rp;
 		}
 
 		/// <summary>
@@ -629,8 +662,7 @@ namespace DotNetOpenId.RelyingParty
 				throw new InvalidOperationException(DotNetOpenId.Strings.OpenIdTextBoxEmpty);
 
 			try {
-				var consumer = new OpenIdRelyingParty();
-				consumer.Settings.RequireSsl = RequireSsl;
+				var consumer = createRelyingParty();
 
 				// Resolve the trust root, and swap out the scheme and port if necessary to match the
 				// return_to URL, since this match is required by OpenId, and the consumer app

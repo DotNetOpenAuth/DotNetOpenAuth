@@ -8,13 +8,12 @@ using System.Web;
 using DotNetOpenId;
 using DotNetOpenId.Provider;
 using DotNetOpenId.RelyingParty;
-using DotNetOpenId.Test.Hosting;
 using DotNetOpenId.Test.Mocks;
+using DotNetOpenId.Test.UI;
+using log4net;
 using NUnit.Framework;
 using IProviderAssociationStore = DotNetOpenId.IAssociationStore<DotNetOpenId.AssociationRelyingPartyType>;
 using ProviderMemoryStore = DotNetOpenId.AssociationMemoryStore<DotNetOpenId.AssociationRelyingPartyType>;
-using DotNetOpenId.Test.UI;
-using log4net;
 
 [SetUpFixture]
 public class TestSupport {

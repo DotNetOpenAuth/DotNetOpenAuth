@@ -21,7 +21,7 @@ namespace DotNetOpenId.RelyingParty
 	/// </summary>
 	[SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Login")]
 	[DefaultProperty("Text"), ValidationProperty("Text")]
-	[ToolboxData("<{0}:OpenIdLogin runat=\"server\"></{0}:OpenIdLogin>")]
+	[ToolboxData("<{0}:OpenIdLogin runat=\"server\" />")]
 	public class OpenIdLogin : OpenIdTextBox
 	{
 		Panel panel;

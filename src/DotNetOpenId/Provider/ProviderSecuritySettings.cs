@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace DotNetOpenId.Provider {
-	class ProviderSecuritySettings : SecuritySettings {
+	sealed class ProviderSecuritySettings : SecuritySettings {
 		internal ProviderSecuritySettings() : base(true) { }
 
 		// This property is a placeholder for a feature that has not been written yet.

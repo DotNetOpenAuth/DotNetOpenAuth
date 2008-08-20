@@ -134,6 +134,18 @@ namespace DotNetOpenId {
 		/// </summary>
 		public Version Version;
 		/// <summary>
+		/// Returns the <see cref="ProtocolVersion"/> enum value for the <see cref="Protocol"/> instance.
+		/// </summary>
+		public ProtocolVersion ProtocolVersion {
+			get {
+				switch (Version.Major) {
+					case 1: return ProtocolVersion.V11;
+					case 2: return ProtocolVersion.V20;
+					default: throw new ArgumentException(null); // this should never happen
+				}
+			}
+		}
+		/// <summary>
 		/// The namespace of OpenId 1.x elements in XRDS documents.
 		/// </summary>
 		public string XmlNamespace;
