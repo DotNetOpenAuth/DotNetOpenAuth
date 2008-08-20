@@ -31,7 +31,8 @@
 			</table>
 		</asp:View>
 		<asp:View runat="server" ID="commentSubmitted">
-			<p>Congratulations! Your comment was received.</p>
+			<p>Congratulations! Your comment was received (and discarded... this is just a demo 
+				after all).</p>
 		</asp:View>
 		<asp:View runat="server" ID="commentFailed">
 			<p>Your comment submission failed.</p>
