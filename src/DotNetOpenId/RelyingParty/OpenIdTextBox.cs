@@ -33,7 +33,7 @@ namespace DotNetOpenId.RelyingParty
 	/// assemble a complete login experience.
 	/// </remarks>
 	[DefaultProperty("Text"), ValidationProperty("Text")]
-	[ToolboxData("<{0}:OpenIdTextBox runat=\"server\"></{0}:OpenIdTextBox>")]
+	[ToolboxData("<{0}:OpenIdTextBox runat=\"server\" />")]
 	public class OpenIdTextBox : CompositeControl, IEditableTextControl, ITextControl
 	{
 		/// <summary>

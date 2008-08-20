@@ -43,9 +43,14 @@ public partial class decide : Page {
 
 	protected void Yes_Click(Object sender, EventArgs e) {
 		var sregRequest = ProviderEndpoint.PendingAuthenticationRequest.GetExtension<ClaimsRequest>();
-		var sregResponse = profileFields.GetOpenIdProfileFields(sregRequest);
+		ClaimsResponse sregResponse = null;
+		if (sregRequest != null) {
+			sregResponse = profileFields.GetOpenIdProfileFields(sregRequest);
+		}
 		ProviderEndpoint.PendingAuthenticationRequest.IsAuthenticated = true;
-		ProviderEndpoint.PendingAuthenticationRequest.AddResponseExtension(sregResponse);
+		if (sregResponse != null) {
+			ProviderEndpoint.PendingAuthenticationRequest.AddResponseExtension(sregResponse);
+		}
 		Debug.Assert(ProviderEndpoint.PendingAuthenticationRequest.IsResponseReady);
 		ProviderEndpoint.PendingAuthenticationRequest.Response.Send();
 		ProviderEndpoint.PendingAuthenticationRequest = null;
