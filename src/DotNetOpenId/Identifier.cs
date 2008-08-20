@@ -143,7 +143,7 @@ namespace DotNetOpenId {
 		/// </summary>
 		/// <param name="secureIdentifier">
 		/// The newly created secure identifier.
-		/// If the conversion fails, <see cref="secureIdentifier"/> retains
+		/// If the conversion fails, <paramref name="secureIdentifier"/> retains
 		/// <i>this</i> identifiers identity, but will never discover any endpoints.
 		/// </param>
 		/// <returns>

@@ -6,7 +6,7 @@ namespace DotNetOpenId.RelyingParty {
 	/// <summary>
 	/// Security settings that are applicable to relying parties.
 	/// </summary>
-	public class RelyingPartySecuritySettings : SecuritySettings {
+	public sealed class RelyingPartySecuritySettings : SecuritySettings {
 		internal RelyingPartySecuritySettings() : base(false) { }
 
 		private bool requireSsl;
@@ -48,7 +48,10 @@ namespace DotNetOpenId.RelyingParty {
 		}
 
 		internal event EventHandler RequireSslChanged;
-		protected void OnRequireSslChanged() {
+		/// <summary>
+		/// Fires the <see cref="RequireSslChanged"/> event.
+		/// </summary>
+		void OnRequireSslChanged() {
 			EventHandler requireSslChanged = RequireSslChanged;
 			if (requireSslChanged != null) {
 				requireSslChanged(this, new EventArgs());

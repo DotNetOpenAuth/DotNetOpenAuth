@@ -74,6 +74,7 @@ namespace DotNetOpenId {
 		/// Looks for the longest hash length for a given protocol for which we have an association,
 		/// and perhaps a matching Diffie-Hellman session type.
 		/// </summary>
+		/// <param name="protocol">The OpenID version that dictates which associations are available.</param>
 		/// <param name="minimumHashSizeInBits">The minimum required hash length given security settings.</param>
 		/// <param name="maximumHashSizeInBits">The maximum hash length to even attempt.  Useful for the RP side where we support SHA512 but most OPs do not -- why waste time trying?</param>
 		/// <param name="requireMatchingDHSessionType">True for HTTP associations, False for HTTPS associations.</param>

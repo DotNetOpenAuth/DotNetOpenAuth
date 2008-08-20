@@ -141,7 +141,7 @@ namespace DotNetOpenId {
 				switch (Version.Major) {
 					case 1: return ProtocolVersion.V11;
 					case 2: return ProtocolVersion.V20;
-					default: throw new ArgumentException(); // this should never happen
+					default: throw new ArgumentException(null); // this should never happen
 				}
 			}
 		}
