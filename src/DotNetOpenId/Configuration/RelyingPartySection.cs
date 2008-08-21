@@ -3,6 +3,10 @@ using DotNetOpenId.RelyingParty;
 
 namespace DotNetOpenId.Configuration {
 	internal class RelyingPartySection : ConfigurationSection {
+		internal static RelyingPartySection Configuration {
+			get { return (RelyingPartySection)ConfigurationManager.GetSection("dotNetOpenId/relyingParty"); }
+		}
+
 		public RelyingPartySection() {
 		}
 

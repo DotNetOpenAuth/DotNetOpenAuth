@@ -413,9 +413,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// Gets the relevant Configuration section for this OpenIdRelyingParty.
 		/// </summary>
 		internal static RelyingPartySection Configuration {
-			get {
-				return (RelyingPartySection)ConfigurationManager.GetSection("dotNetOpenId/relyingParty");
-			}
+			get { return RelyingPartySection.Configuration; }
 		}
 	}
 

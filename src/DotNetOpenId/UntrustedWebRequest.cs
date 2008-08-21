@@ -9,6 +9,8 @@ namespace DotNetOpenId {
 	using System.IO;
 	using System.Net;
 	using System.Text.RegularExpressions;
+	using System.Configuration;
+	using DotNetOpenId.Configuration;
 	/// <summary>
 	/// A paranoid HTTP get/post request engine.  It helps to protect against attacks from remote
 	/// server leaving dangling connections, sending too much data, causing requests against 
@@ -24,8 +26,12 @@ namespace DotNetOpenId {
 	/// If a particular host would not be permitted but is in the whitelist, it is allowed.
 	/// </remarks>
 	public static class UntrustedWebRequest {
+		static Configuration.UntrustedWebRequestSection Configuration {
+			get { return UntrustedWebRequestSection.Configuration; }
+		}
+
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		static int maximumBytesToRead = 1024 * 1024;
+		static int maximumBytesToRead = Configuration.MaximumBytesToRead;
 		/// <summary>
 		/// The default maximum bytes to read in any given HTTP request.
 		/// Default is 1MB.  Cannot be less than 2KB.
@@ -38,7 +44,7 @@ namespace DotNetOpenId {
 			}
 		}
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		static int maximumRedirections = 10;
+		static int maximumRedirections = Configuration.MaximumRedirections;
 		/// <summary>
 		/// The total number of redirections to allow on any one request.
 		/// Default is 10.
@@ -73,8 +79,8 @@ namespace DotNetOpenId {
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static UntrustedWebRequest() {
-			ReadWriteTimeout = TimeSpan.FromMilliseconds(800);
-			Timeout = TimeSpan.FromSeconds(10);
+			ReadWriteTimeout = Configuration.ReadWriteTimeout;
+			Timeout = Configuration.Timeout;
 #if LONGTIMEOUT
 			ReadWriteTimeout = TimeSpan.FromHours(1);
 			Timeout = TimeSpan.FromHours(1);

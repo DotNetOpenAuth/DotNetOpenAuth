@@ -4,8 +4,11 @@ using IProviderAssociationStore = DotNetOpenId.IAssociationStore<DotNetOpenId.As
 
 namespace DotNetOpenId.Configuration {
 	internal class ProviderSection : ConfigurationSection {
-		public ProviderSection() {
+		internal static ProviderSection Configuration {
+			get { return (ProviderSection)ConfigurationManager.GetSection("dotNetOpenId/provider"); }
 		}
+
+		public ProviderSection() { }
 
 		const string securitySettingsConfigName = "security";
 		[ConfigurationProperty(securitySettingsConfigName)]

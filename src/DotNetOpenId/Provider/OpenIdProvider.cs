@@ -210,9 +210,7 @@ namespace DotNetOpenId.Provider {
 		/// invoked, the configuration section might be different. (location tag, for example).
 		/// </remarks>
 		internal static ProviderSection Configuration {
-			get {
-				return (ProviderSection)ConfigurationManager.GetSection("dotNetOpenId/provider");
-			}
+			get { return ProviderSection.Configuration; }
 		}
 	}
 }

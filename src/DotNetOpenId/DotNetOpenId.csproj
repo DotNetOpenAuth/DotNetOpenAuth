@@ -21,7 +21,7 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <DocumentationFile>..\..\bin\debug\DotNetOpenId.xml</DocumentationFile>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRules>-Microsoft.Design#CA1054;-Microsoft.Design#CA1056;-Microsoft.Design#CA1055</CodeAnalysisRules>
     <NoWarn>
     </NoWarn>
@@ -60,6 +60,7 @@
     <Compile Include="Association.cs" />
     <Compile Include="AssociationMemoryStore.cs" />
     <Compile Include="Associations.cs" />
+    <Compile Include="Configuration\UntrustedWebRequestSection.cs" />
     <Compile Include="DiffieHellmanUtil.cs" />
     <Compile Include="Provider\ProviderSecuritySettings.cs" />
     <Compile Include="Configuration\ProviderSecuritySettingsElement.cs" />
