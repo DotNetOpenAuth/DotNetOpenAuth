@@ -67,7 +67,7 @@
     <Compile Include="Configuration\RelyingPartySection.cs" />
     <Compile Include="RelyingParty\RelyingPartySecuritySettings.cs" />
     <Compile Include="Configuration\RelyingPartySecuritySettingsElement.cs" />
-    <Compile Include="Configuration\StoreConfigurationElement.cs" />
+    <Compile Include="Configuration\StoreElement.cs" />
     <Compile Include="SecuritySettings.cs" />
     <Compile Include="NoDiscoveryIdentifier.cs" />
     <Compile Include="Provider\SigningMessageEncoder.cs" />
