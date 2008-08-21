@@ -62,11 +62,12 @@
     <Compile Include="Associations.cs" />
     <Compile Include="DiffieHellmanUtil.cs" />
     <Compile Include="Provider\ProviderSecuritySettings.cs" />
-    <Compile Include="Provider\ProviderSecuritySettingsConfigurationElement.cs" />
-    <Compile Include="Provider\ProviderConfigurationSectionHandler.cs" />
-    <Compile Include="RelyingParty\RelyingPartyConfigurationSectionHandler.cs" />
+    <Compile Include="Provider\ProviderSecuritySettingsElement.cs" />
+    <Compile Include="Provider\ProviderSection.cs" />
+    <Compile Include="RelyingParty\RelyingPartySection.cs" />
     <Compile Include="RelyingParty\RelyingPartySecuritySettings.cs" />
-    <Compile Include="RelyingParty\RelyingPartySecuritySettingsConfigurationElement.cs" />
+    <Compile Include="RelyingParty\SecuritySettingsElement.cs" />
+    <Compile Include="RelyingParty\StoreConfigurationElement.cs" />
     <Compile Include="SecuritySettings.cs" />
     <Compile Include="NoDiscoveryIdentifier.cs" />
     <Compile Include="Provider\SigningMessageEncoder.cs" />

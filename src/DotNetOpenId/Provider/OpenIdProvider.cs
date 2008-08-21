@@ -208,7 +208,7 @@ namespace DotNetOpenId.Provider {
 		/// This is not a static member because depending on the context within which we are
 		/// invoked, the configuration section might be different. (location tag, for example).
 		/// </remarks>
-		internal ProviderConfigurationSectionHandler Configuration =
-			(ProviderConfigurationSectionHandler)ConfigurationManager.GetSection("dotNetOpenId/provider");
+		internal ProviderSection Configuration =
+			(ProviderSection)ConfigurationManager.GetSection("dotNetOpenId/provider");
 	}
 }

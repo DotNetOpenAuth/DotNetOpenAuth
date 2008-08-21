@@ -83,7 +83,7 @@ namespace DotNetOpenId.RelyingParty {
 	///}
 	/// </code>
 	/// </example>
-	[DebuggerDisplay("isAuthenticationResponseReady: {isAuthenticationResponseReady}, stateless: {store == null}")]
+	[DebuggerDisplay("isAuthenticationResponseReady: {isAuthenticationResponseReady}, stateless: {Store == null}")]
 	public class OpenIdRelyingParty {
 		internal IRelyingPartyApplicationStore Store;
 		Uri request;
@@ -91,6 +91,15 @@ namespace DotNetOpenId.RelyingParty {
 		MessageEncoder encoder = new MessageEncoder();
 		internal IDirectMessageChannel DirectMessageChannel = new DirectMessageHttpChannel();
 
+		internal static IRelyingPartyApplicationStore DefaultStore {
+			get {
+				if (Configuration.Store.CustomStoreType != null) {
+					return (IRelyingPartyApplicationStore)Activator.CreateInstance(Configuration.Store.CustomStoreType);
+				} else {
+					return HttpApplicationStore;
+				}
+			}
+		}
 		internal static Uri DefaultRequestUrl { get { return Util.GetRequestUrlFromContext(); } }
 		internal static NameValueCollection DefaultQuery { get { return Util.GetQueryFromContextNVC(); } }
 
@@ -102,7 +111,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// This method requires a current ASP.NET HttpContext.
 		/// </remarks>
 		public OpenIdRelyingParty()
-			: this(HttpApplicationStore,
+			: this(DefaultStore,
 				Util.GetRequestUrlFromContext(), Util.GetQueryFromContext()) { }
 		/// <summary>
 		/// Constructs an OpenId consumer that uses a given querystring and IAssociationStore.
@@ -411,12 +420,11 @@ namespace DotNetOpenId.RelyingParty {
 		/// <summary>
 		/// Gets the relevant Configuration section for this OpenIdRelyingParty.
 		/// </summary>
-		/// <remarks>
-		/// This is not a static member because depending on the context within which we are
-		/// invoked, the configuration section might be different. (location tag, for example).
-		/// </remarks>
-		internal RelyingPartyConfigurationSectionHandler Configuration =
-			(RelyingPartyConfigurationSectionHandler)ConfigurationManager.GetSection("dotNetOpenId/relyingParty");
+		internal static RelyingPartySection Configuration {
+			get {
+				return (RelyingPartySection)ConfigurationManager.GetSection("dotNetOpenId/relyingParty");
+			}
+		}
 	}
 
 	/// <summary>
