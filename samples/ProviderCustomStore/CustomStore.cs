@@ -18,8 +18,7 @@ namespace ProviderCustomStore {
 	/// that using a database is possible.
 	/// </remarks>
 	public class CustomStore : IProviderAssociationStore {
-		public static CustomStore Instance = new CustomStore();
-		public CustomStoreDataSet dataSet = new CustomStoreDataSet();
+		static CustomStoreDataSet dataSet = new CustomStoreDataSet();
 
 		#region IAssociationStore<AssociationRelyingPartyType> Members
 

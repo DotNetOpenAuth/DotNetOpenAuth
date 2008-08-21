@@ -46,7 +46,7 @@ namespace DotNetOpenId.Provider {
 		/// This method requires a current ASP.NET HttpContext.
 		/// </remarks>
 		public OpenIdProvider()
-			: this(HttpApplicationStore,
+			: this(Configuration.Store.CreateInstanceOfStore(HttpApplicationStore),
 			getProviderEndpointFromContext(), Util.GetRequestUrlFromContext(), Util.GetQueryFromContext()) { }
 		/// <summary>
 		/// Constructs an OpenId server that uses a given query and IAssociationStore.
@@ -208,7 +208,10 @@ namespace DotNetOpenId.Provider {
 		/// This is not a static member because depending on the context within which we are
 		/// invoked, the configuration section might be different. (location tag, for example).
 		/// </remarks>
-		internal ProviderSection Configuration =
-			(ProviderSection)ConfigurationManager.GetSection("dotNetOpenId/provider");
+		internal static ProviderSection Configuration {
+			get {
+				return (ProviderSection)ConfigurationManager.GetSection("dotNetOpenId/provider");
+			}
+		}
 	}
 }

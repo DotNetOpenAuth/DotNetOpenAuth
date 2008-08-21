@@ -91,15 +91,6 @@ namespace DotNetOpenId.RelyingParty {
 		MessageEncoder encoder = new MessageEncoder();
 		internal IDirectMessageChannel DirectMessageChannel = new DirectMessageHttpChannel();
 
-		internal static IRelyingPartyApplicationStore DefaultStore {
-			get {
-				if (Configuration.Store.CustomStoreType != null) {
-					return (IRelyingPartyApplicationStore)Activator.CreateInstance(Configuration.Store.CustomStoreType);
-				} else {
-					return HttpApplicationStore;
-				}
-			}
-		}
 		internal static Uri DefaultRequestUrl { get { return Util.GetRequestUrlFromContext(); } }
 		internal static NameValueCollection DefaultQuery { get { return Util.GetQueryFromContextNVC(); } }
 
@@ -111,7 +102,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// This method requires a current ASP.NET HttpContext.
 		/// </remarks>
 		public OpenIdRelyingParty()
-			: this(DefaultStore,
+			: this(Configuration.Store.CreateInstanceOfStore(HttpApplicationStore),
 				Util.GetRequestUrlFromContext(), Util.GetQueryFromContext()) { }
 		/// <summary>
 		/// Constructs an OpenId consumer that uses a given querystring and IAssociationStore.

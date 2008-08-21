@@ -14,8 +14,8 @@ namespace DotNetOpenId.RelyingParty {
 
 		const string storeConfigName = "store";
 		[ConfigurationProperty(storeConfigName)]
-		public StoreConfigurationElement Store {
-			get { return (StoreConfigurationElement)this[storeConfigName]; }
+		public StoreConfigurationElement<IRelyingPartyApplicationStore> Store {
+			get { return (StoreConfigurationElement<IRelyingPartyApplicationStore>)this[storeConfigName]; }
 			set { this[storeConfigName] = value; }
 		}
 	}

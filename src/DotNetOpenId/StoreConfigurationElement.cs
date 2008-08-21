@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Text;
 using System.Configuration;
 
-namespace DotNetOpenId.RelyingParty {
-	internal class StoreConfigurationElement : ConfigurationElement {
+namespace DotNetOpenId {
+	internal class StoreConfigurationElement<T> : ConfigurationElement {
 		public StoreConfigurationElement() { }
 
 		const string customStoreTypeConfigName = "type";
 		[ConfigurationProperty(customStoreTypeConfigName)]
-		//[SubclassTypeValidator(typeof(IRelyingPartyApplicationStore))]
+		//[SubclassTypeValidator(typeof(T))]
 		public string TypeName {
 			get { return (string)this[customStoreTypeConfigName]; }
 			set { this[customStoreTypeConfigName] = value; }
@@ -17,6 +17,10 @@ namespace DotNetOpenId.RelyingParty {
 
 		public Type CustomStoreType {
 			get { return string.IsNullOrEmpty(TypeName) ? null : Type.GetType(TypeName); }
+		}
+
+		public T CreateInstanceOfStore(T defaultValue) {
+			return CustomStoreType != null ? (T)Activator.CreateInstance(CustomStoreType) : defaultValue;
 		}
 	}
 }

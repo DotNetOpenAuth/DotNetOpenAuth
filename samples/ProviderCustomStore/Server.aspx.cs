@@ -6,12 +6,7 @@ using ProviderCustomStore;
 
 public partial class Server : System.Web.UI.Page {
 	protected void Page_Load(object sender, EventArgs e) {
-		var builder = new UriBuilder(Request.Url);
-		builder.Query = null;
-		builder.Fragment = null;
-		Uri providerEndpoint = builder.Uri;
-		NameValueCollection query = Request.RequestType == "GET" ? Request.QueryString : Request.Form;
-		OpenIdProvider op = new OpenIdProvider(CustomStore.Instance, providerEndpoint, Request.Url, query);
+		OpenIdProvider op = new OpenIdProvider();
 		if (op.Request != null) {
 			if (!op.Request.IsResponseReady) {
 				var request = (IAuthenticationRequest)op.Request;
