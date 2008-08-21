@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Configuration;
 using System.Diagnostics;
 using System.Web;
 
@@ -135,8 +136,11 @@ namespace DotNetOpenId.RelyingParty {
 			this(store, requestUrl, Util.NameValueCollectionToDictionary(query)) {
 		}
 		OpenIdRelyingParty(IRelyingPartyApplicationStore store, Uri requestUrl, IDictionary<string, string> query) {
-			Settings = new RelyingPartySecuritySettings();
+			// Initialize settings with defaults and config section
+			var section = (RelyingPartySecuritySettingsConfigurationSectionHandler)ConfigurationManager.GetSection("dotNetOpenId/relyingPartySecuritySettings");
+			Settings = section.CreateSecuritySettings();
 			Settings.RequireSslChanged += new EventHandler(Settings_RequireSslChanged);
+
 			this.Store = store;
 			if (store != null) {
 				store.ClearExpiredAssociations(); // every so often we should do this.

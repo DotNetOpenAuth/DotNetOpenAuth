@@ -49,6 +49,7 @@
       <HintPath>..\..\lib\log4net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
@@ -61,7 +62,9 @@
     <Compile Include="Associations.cs" />
     <Compile Include="DiffieHellmanUtil.cs" />
     <Compile Include="Provider\ProviderSecuritySettings.cs" />
+    <Compile Include="Provider\ProviderSecuritySettingsConfigurationSectionHandler.cs" />
     <Compile Include="RelyingParty\RelyingPartySecuritySettings.cs" />
+    <Compile Include="RelyingParty\RelyingPartySecuritySettingsConfigurationSectionHandler.cs" />
     <Compile Include="SecuritySettings.cs" />
     <Compile Include="NoDiscoveryIdentifier.cs" />
     <Compile Include="Provider\SigningMessageEncoder.cs" />

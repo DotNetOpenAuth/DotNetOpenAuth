@@ -618,7 +618,11 @@ namespace DotNetOpenId.RelyingParty
 			Uri request = OpenIdRelyingParty.DefaultRequestUrl;
 			NameValueCollection query = OpenIdRelyingParty.DefaultQuery;
 			var rp = new OpenIdRelyingParty(store, request, query);
-			rp.Settings.RequireSsl = RequireSsl;
+			// Only set RequireSsl to true, as we don't want to override 
+			// a .config setting of true with false.
+			if (RequireSsl) {
+				rp.Settings.RequireSsl = true;
+			}
 			return rp;
 		}
 
