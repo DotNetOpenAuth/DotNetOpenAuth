@@ -96,25 +96,25 @@ namespace DotNetOpenId {
 			return true;
 		}
 		static ICollection<string> allowableSchemes = new List<string> { "http", "https" };
-		static ICollection<string> whitelistHosts = new List<string>();
+		static ICollection<string> whitelistHosts = new List<string>(Configuration.WhitelistHosts.KeysAsStrings);
 		/// <summary>
 		/// A collection of host name literals that should be allowed even if they don't
 		/// pass standard security checks.
 		/// </summary>
 		public static ICollection<string> WhitelistHosts { get { return whitelistHosts; } }
-		static ICollection<Regex> whitelistHostsRegex = new List<Regex>();
+		static ICollection<Regex> whitelistHostsRegex = new List<Regex>(Configuration.WhitelistHostsRegex.KeysAsRegexs);
 		/// <summary>
 		/// A collection of host name regular expressions that indicate hosts that should
 		/// be allowed even though they don't pass standard security checks.
 		/// </summary>
 		public static ICollection<Regex> WhitelistHostsRegex { get { return whitelistHostsRegex; } }
-		static ICollection<string> blacklistHosts = new List<string>();
+		static ICollection<string> blacklistHosts = new List<string>(Configuration.BlacklistHosts.KeysAsStrings);
 		/// <summary>
 		/// A collection of host name literals that should be rejected even if they 
 		/// pass standard security checks.
 		/// </summary>
 		public static ICollection<string> BlacklistHosts { get { return blacklistHosts; } }
-		static ICollection<Regex> blacklistHostsRegex = new List<Regex>();
+		static ICollection<Regex> blacklistHostsRegex = new List<Regex>(Configuration.BlacklistHostsRegex.KeysAsRegexs);
 		/// <summary>
 		/// A collection of host name regular expressions that indicate hosts that should
 		/// be rjected even if they pass standard security checks.

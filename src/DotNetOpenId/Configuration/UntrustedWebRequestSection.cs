@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Configuration;
 
 namespace DotNetOpenId.Configuration {
@@ -43,6 +41,38 @@ namespace DotNetOpenId.Configuration {
 		public int MaximumRedirections {
 			get { return (int)this[maximumRedirectionsConfigName]; }
 			set { this[maximumRedirectionsConfigName] = value; }
+		}
+
+		const string whitelistHostsConfigName = "whitelistHosts";
+		[ConfigurationProperty(whitelistHostsConfigName, IsDefaultCollection = false)]
+		[ConfigurationCollection(typeof(WhiteBlackListCollection))]
+		public WhiteBlackListCollection WhitelistHosts {
+			get { return (WhiteBlackListCollection)this[whitelistHostsConfigName]; }
+			set { this[whitelistHostsConfigName] = value; }
+		}
+
+		const string blacklistHostsConfigName = "blacklistHosts";
+		[ConfigurationProperty(blacklistHostsConfigName, IsDefaultCollection = false)]
+		[ConfigurationCollection(typeof(WhiteBlackListCollection))]
+		public WhiteBlackListCollection BlacklistHosts {
+			get { return (WhiteBlackListCollection)this[blacklistHostsConfigName]; }
+			set { this[blacklistHostsConfigName] = value; }
+		}
+
+		const string whitelistHostsRegexConfigName = "whitelistHostsRegex";
+		[ConfigurationProperty(whitelistHostsRegexConfigName, IsDefaultCollection = false)]
+		[ConfigurationCollection(typeof(WhiteBlackListCollection))]
+		public WhiteBlackListCollection WhitelistHostsRegex {
+			get { return (WhiteBlackListCollection)this[whitelistHostsRegexConfigName]; }
+			set { this[whitelistHostsRegexConfigName] = value; }
+		}
+
+		const string blacklistHostsRegexConfigName = "blacklistHostsRegex";
+		[ConfigurationProperty(blacklistHostsRegexConfigName, IsDefaultCollection = false)]
+		[ConfigurationCollection(typeof(WhiteBlackListCollection))]
+		public WhiteBlackListCollection BlacklistHostsRegex {
+			get { return (WhiteBlackListCollection)this[blacklistHostsRegexConfigName]; }
+			set { this[blacklistHostsRegexConfigName] = value; }
 		}
 	}
 }
