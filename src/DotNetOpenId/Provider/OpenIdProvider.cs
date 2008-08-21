@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Web;
 using IProviderAssociationStore = DotNetOpenId.IAssociationStore<DotNetOpenId.AssociationRelyingPartyType>;
 using ProviderMemoryStore = DotNetOpenId.AssociationMemoryStore<DotNetOpenId.AssociationRelyingPartyType>;
+using DotNetOpenId.Configuration;
 
 namespace DotNetOpenId.Provider {
 	/// <summary>

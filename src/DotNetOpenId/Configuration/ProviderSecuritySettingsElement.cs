@@ -1,7 +1,8 @@
 ﻿using System.Configuration;
+using DotNetOpenId.Provider;
 
-namespace DotNetOpenId.Provider {
-	sealed class ProviderSecuritySettingsElement : ConfigurationElement {
+namespace DotNetOpenId.Configuration {
+	internal class ProviderSecuritySettingsElement : ConfigurationElement {
 		public ProviderSecuritySettingsElement() {
 		}
 

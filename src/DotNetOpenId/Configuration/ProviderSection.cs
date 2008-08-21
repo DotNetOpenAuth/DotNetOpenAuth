@@ -1,7 +1,8 @@
 ﻿using System.Configuration;
+using DotNetOpenId.Provider;
 using IProviderAssociationStore = DotNetOpenId.IAssociationStore<DotNetOpenId.AssociationRelyingPartyType>;
 
-namespace DotNetOpenId.Provider {
+namespace DotNetOpenId.Configuration {
 	internal class ProviderSection : ConfigurationSection {
 		public ProviderSection() {
 		}

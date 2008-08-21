@@ -1,14 +1,15 @@
 ﻿using System.Configuration;
+using DotNetOpenId.RelyingParty;
 
-namespace DotNetOpenId.RelyingParty {
+namespace DotNetOpenId.Configuration {
 	internal class RelyingPartySection : ConfigurationSection {
 		public RelyingPartySection() {
 		}
 
 		const string securitySettingsConfigName = "security";
 		[ConfigurationProperty(securitySettingsConfigName)]
-		public SecuritySettingsElement SecuritySettings {
-			get { return (SecuritySettingsElement)this[securitySettingsConfigName]; }
+		public RelyingPartySecuritySettingsElement SecuritySettings {
+			get { return (RelyingPartySecuritySettingsElement)this[securitySettingsConfigName]; }
 			set { this[securitySettingsConfigName] = value; }
 		}
 

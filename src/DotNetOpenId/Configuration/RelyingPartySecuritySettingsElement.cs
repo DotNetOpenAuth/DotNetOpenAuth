@@ -1,8 +1,9 @@
 ﻿using System.Configuration;
+using DotNetOpenId.RelyingParty;
 
-namespace DotNetOpenId.RelyingParty {
-	internal class SecuritySettingsElement : ConfigurationElement {
-		public SecuritySettingsElement() { }
+namespace DotNetOpenId.Configuration {
+	internal class RelyingPartySecuritySettingsElement : ConfigurationElement {
+		public RelyingPartySecuritySettingsElement() { }
 
 		public RelyingPartySecuritySettings CreateSecuritySettings() {
 			RelyingPartySecuritySettings settings = new RelyingPartySecuritySettings();

@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Configuration;
 
-namespace DotNetOpenId {
+namespace DotNetOpenId.Configuration {
 	internal class StoreConfigurationElement<T> : ConfigurationElement {
 		public StoreConfigurationElement() { }
 

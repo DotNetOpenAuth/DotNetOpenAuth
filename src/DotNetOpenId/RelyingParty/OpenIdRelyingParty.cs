@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics;
 using System.Web;
+using DotNetOpenId.Configuration;
 
 namespace DotNetOpenId.RelyingParty {
 	/// <summary>
