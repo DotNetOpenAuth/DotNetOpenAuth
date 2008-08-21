@@ -1,12 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Text;
+using System.Configuration;
+using System.Diagnostics;
 using System.Web;
 using IProviderAssociationStore = DotNetOpenId.IAssociationStore<DotNetOpenId.AssociationRelyingPartyType>;
 using ProviderMemoryStore = DotNetOpenId.AssociationMemoryStore<DotNetOpenId.AssociationRelyingPartyType>;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Net;
 
 namespace DotNetOpenId.Provider {
 	/// <summary>
@@ -201,5 +200,15 @@ namespace DotNetOpenId.Provider {
 			builder.Fragment = null;
 			return builder.Uri;
 		}
+
+		/// <summary>
+		/// Gets the relevant Configuration section for this OpenIdRelyingParty.
+		/// </summary>
+		/// <remarks>
+		/// This is not a static member because depending on the context within which we are
+		/// invoked, the configuration section might be different. (location tag, for example).
+		/// </remarks>
+		internal ProviderConfigurationSectionHandler Configuration =
+			(ProviderConfigurationSectionHandler)ConfigurationManager.GetSection("dotNetOpenId/provider");
 	}
 }

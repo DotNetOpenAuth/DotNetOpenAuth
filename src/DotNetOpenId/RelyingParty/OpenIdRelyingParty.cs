@@ -137,8 +137,7 @@ namespace DotNetOpenId.RelyingParty {
 		}
 		OpenIdRelyingParty(IRelyingPartyApplicationStore store, Uri requestUrl, IDictionary<string, string> query) {
 			// Initialize settings with defaults and config section
-			var section = (RelyingPartySecuritySettingsConfigurationSectionHandler)ConfigurationManager.GetSection("dotNetOpenId/relyingPartySecuritySettings");
-			Settings = section.CreateSecuritySettings();
+			Settings = Configuration.SecuritySettings.CreateSecuritySettings();
 			Settings.RequireSslChanged += new EventHandler(Settings_RequireSslChanged);
 
 			this.Store = store;
@@ -408,6 +407,16 @@ namespace DotNetOpenId.RelyingParty {
 			// reconsideration with new security policy.
 			response = null;
 		}
+
+		/// <summary>
+		/// Gets the relevant Configuration section for this OpenIdRelyingParty.
+		/// </summary>
+		/// <remarks>
+		/// This is not a static member because depending on the context within which we are
+		/// invoked, the configuration section might be different. (location tag, for example).
+		/// </remarks>
+		internal RelyingPartyConfigurationSectionHandler Configuration =
+			(RelyingPartyConfigurationSectionHandler)ConfigurationManager.GetSection("dotNetOpenId/relyingParty");
 	}
 
 	/// <summary>
