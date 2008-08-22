@@ -238,6 +238,7 @@ document.getElementsByName({0})[0].focus();
 			if (!Page.IsPostBack) {
 				string userSuppliedIdentifier = Page.Request.QueryString["dotnetopenid.userSuppliedIdentifier"];
 				if (!string.IsNullOrEmpty(userSuppliedIdentifier)) {
+					Logger.Info("AJAX (iframe) request detected.");
 					if (Page.Request.QueryString["dotnetopenid.phase"] == "2") {
 						reportDiscoveryResult();
 					} else {
@@ -261,6 +262,7 @@ if (openidbox) {{ initAjaxOpenId(openidbox, '{1}', '{2}'); }}
 		}
 
 		private void performDiscovery(string userSuppliedIdentifier) {
+			Logger.InfoFormat("Discovery on {0} requested.", userSuppliedIdentifier);
 			OpenIdRelyingParty rp = new OpenIdRelyingParty();
 
 			try {
@@ -276,6 +278,7 @@ if (openidbox) {{ initAjaxOpenId(openidbox, '{1}', '{2}'); }}
 		}
 
 		private void reportDiscoveryResult() {
+			Logger.InfoFormat("AJAX (iframe) callback from OP: {0}", Page.Request.Url);
 			callbackUserAgentMethod("openidAuthResult(document.URL)");
 		}
 
@@ -343,6 +346,7 @@ if (openidbox) {{ initAjaxOpenId(openidbox, '{1}', '{2}'); }}
 		/// <param name="methodCall">The method to call on the OpenIdAjaxTextBox, including
 		/// parameters.  (i.e. "callback('arg1', 2)").  No escaping is done by this method.</param>
 		private void callbackUserAgentMethod(string methodCall) {
+			Logger.InfoFormat("Sending Javascript callback: {0}", methodCall);
 			Page.Response.Write(string.Format(CultureInfo.InvariantCulture,
 				@"<html><body><script language='javascript'>
 					var objSrc = window.frameElement ? window.frameElement.openidBox : window.opener.waiting_openidBox;
