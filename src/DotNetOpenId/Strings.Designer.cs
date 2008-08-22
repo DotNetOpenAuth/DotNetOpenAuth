@@ -594,5 +594,14 @@ namespace DotNetOpenId {
                 return ResourceManager.GetString("UnspecifiedDateTimeKindNotAllowed", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Web request to &apos;{0}&apos; failed..
+        /// </summary>
+        internal static string WebRequestFailed {
+            get {
+                return ResourceManager.GetString("WebRequestFailed", resourceCulture);
+            }
+        }
     }
 }
