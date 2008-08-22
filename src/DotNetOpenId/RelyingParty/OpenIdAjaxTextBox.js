@@ -45,6 +45,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url) {
 	box.setVisualCue = function(state) {
 		box.spinner.style.visibility = 'hidden';
 		box.loginButton.style.visibility = 'hidden';
+		box.title = null;
 		if (state == "discovering") {
 			box.style.background = 'url(' + dotnetopenid_logo_url + ') no-repeat';
 			box.spinner.style.visibility = 'visible';
@@ -55,11 +56,16 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url) {
 			box.style.backgroundColor = 'lightgreen';
 			box.title = box.claimedIdentifier;
 			window.status = "Authenticated as " + box.value;
-		} else if (state == "failed") {
+		} else if (state == "setup") {
 			box.style.background = box.originalBackground;
 			box.style.backgroundColor = 'pink';
 			box.loginButton.style.visibility = 'visible';
+			window.status = "Authentication requires setup.";
+		} else if (state == "failed") {
+			box.style.background = box.originalBackground;
+			box.style.backgroundColor = 'pink';
 			window.status = "Authentication failed.";
+			box.title = "Authentication failed.";
 		} else if (state = '' || state == null) {
 			box.style.background = box.originalBackground;
 			box.title = null;
@@ -126,6 +132,8 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url) {
 
 	box.openidDiscoveryFailure = function(msg) {
 		trace('Discovery failure: ' + msg);
+		box.setVisualCue('failed');
+		box.title = msg;
 	}
 
 	box.openidAuthResult = function(resultUrl) {
@@ -157,8 +165,8 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url) {
 			box.lastAuthenticationResult = 'authenticated';
 		} else {
 			// visual cue that auth failed
-			box.setVisualCue('failed');
-			box.lastAuthenticationResult = 'failed';
+			box.setVisualCue('setup');
+			box.lastAuthenticationResult = 'setup';
 		}
 	}
 

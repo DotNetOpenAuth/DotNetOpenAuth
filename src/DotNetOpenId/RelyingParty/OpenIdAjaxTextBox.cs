@@ -234,6 +234,20 @@ document.getElementsByName({0})[0].focus();
 		protected override void OnLoad(EventArgs e) {
 			base.OnLoad(e);
 
+			prepareClientJavascript();
+			if (!Page.IsPostBack) {
+				string userSuppliedIdentifier = Page.Request.QueryString["dotnetopenid.userSuppliedIdentifier"];
+				if (!string.IsNullOrEmpty(userSuppliedIdentifier)) {
+					if (Page.Request.QueryString["dotnetopenid.phase"] == "2") {
+						reportDiscoveryResult();
+					} else {
+						performDiscovery(userSuppliedIdentifier);
+					}
+				}
+			}
+		}
+
+		private void prepareClientJavascript() {
 			// Import the .js file where most of the code is.
 			Page.ClientScript.RegisterClientScriptResource(typeof(OpenIdAjaxTextBox), EmbeddedScriptResourceName);
 			// Cal into the .js file with initialization information.
@@ -242,30 +256,27 @@ document.getElementsByName({0})[0].focus();
 var openidbox = document.getElementsByName('{0}')[0];
 if (openidbox) {{ initAjaxOpenId(openidbox, '{1}', '{2}'); }}
 </script>", Name,
-		  Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedDotNetOpenIdLogoResourceName),
-		  Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedSpinnerResourceName)));
+				Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedDotNetOpenIdLogoResourceName),
+				Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedSpinnerResourceName)));
+		}
 
-			if (!Page.IsPostBack) {
-				string userSuppliedIdentifier = Page.Request.QueryString["dotnetopenid.userSuppliedIdentifier"];
-				if (!string.IsNullOrEmpty(userSuppliedIdentifier)) {
-					if (Page.Request.QueryString["dotnetopenid.phase"] == "2") {
-						callbackUserAgentMethod("openidAuthResult(document.URL)");
-					} else {
-						OpenIdRelyingParty rp = new OpenIdRelyingParty();
+		private void performDiscovery(string userSuppliedIdentifier) {
+			OpenIdRelyingParty rp = new OpenIdRelyingParty();
 
-						try {
-							IAuthenticationRequest req = rp.CreateRequest(userSuppliedIdentifier);
-							req.AddCallbackArguments("dotnetopenid.phase", "2");
-							if (Page.Request.QueryString["dotnetopenid.immediate"] == "true") {
-								req.Mode = AuthenticationRequestMode.Immediate;
-							}
-							req.RedirectToProvider();
-						} catch (OpenIdException ex) {
-							callbackUserAgentMethod("openidDiscoveryFailure('" + ex.Message.Replace("'", "\\'") + "')");
-						}
-					}
+			try {
+				IAuthenticationRequest req = rp.CreateRequest(userSuppliedIdentifier);
+				req.AddCallbackArguments("dotnetopenid.phase", "2");
+				if (Page.Request.QueryString["dotnetopenid.immediate"] == "true") {
+					req.Mode = AuthenticationRequestMode.Immediate;
 				}
+				req.RedirectToProvider();
+			} catch (OpenIdException ex) {
+				callbackUserAgentMethod("openidDiscoveryFailure('" + ex.Message.Replace("'", "\\'") + "')");
 			}
+		}
+
+		private void reportDiscoveryResult() {
+			callbackUserAgentMethod("openidAuthResult(document.URL)");
 		}
 
 		/// <summary>
