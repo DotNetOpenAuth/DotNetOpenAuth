@@ -3,7 +3,7 @@
 	//window.status = msg;
 }
 
-function initAjaxOpenId(box) {
+function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url) {
 	box.originalBackground = box.style.background;
 
 	// Construct the login button
@@ -26,11 +26,28 @@ function initAjaxOpenId(box) {
 	box.parentNode.appendChild(loginButton);
 	box.loginButton = loginButton;
 
+	// Construct the "discovering" busy icon
+	var spinner = document.createElement('img');
+	spinner.src = spinner_url;
+	spinner.style.visibility = 'hidden';
+	spinner.style.position = 'absolute';
+	spinner.style.top = "2px";
+	spinner.style.right = "2px";
+	box.parentNode.appendChild(spinner);
+	box.spinner = spinner;
+
+	// pre-fetch the DNOI icon
+	var prefetchImage = document.createElement('img');
+	prefetchImage.src = dotnetopenid_logo_url;
+	prefetchImage.style.display = 'none';
+	box.parentNode.appendChild(prefetchImage);
+
 	box.setVisualCue = function(state) {
+		box.spinner.style.visibility = 'hidden';
 		box.loginButton.style.visibility = 'hidden';
 		if (state == "discovering") {
 			box.style.background = 'url(' + dotnetopenid_logo_url + ') no-repeat';
-			box.style.backgroundColor = 'yellow';
+			box.spinner.style.visibility = 'visible';
 			box.title = null;
 			window.status = "Discovering OpenID Identifier '" + box.value + "'...";
 		} else if (state == "authenticated") {

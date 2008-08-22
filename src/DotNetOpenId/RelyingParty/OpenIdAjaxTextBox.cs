@@ -8,6 +8,7 @@ using System.Web.UI.WebControls;
 
 [assembly: WebResource(DotNetOpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedScriptResourceName, "text/javascript")]
 [assembly: WebResource(DotNetOpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedDotNetOpenIdLogoResourceName, "image/gif")]
+[assembly: WebResource(DotNetOpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedSpinnerResourceName, "image/gif")]
 
 namespace DotNetOpenId.RelyingParty {
 	/// <summary>
@@ -19,6 +20,7 @@ namespace DotNetOpenId.RelyingParty {
 	public class OpenIdAjaxTextBox : WebControl {
 		internal const string EmbeddedScriptResourceName = DotNetOpenId.Util.DefaultNamespace + ".RelyingParty.OpenIdAjaxTextBox.js";
 		internal const string EmbeddedDotNetOpenIdLogoResourceName = DotNetOpenId.Util.DefaultNamespace + ".RelyingParty.dotnetopenid_16x16.gif";
+		internal const string EmbeddedSpinnerResourceName = DotNetOpenId.Util.DefaultNamespace + ".RelyingParty.spinner.gif";
 
 		#region Properties
 
@@ -237,10 +239,11 @@ document.getElementsByName({0})[0].focus();
 			// Cal into the .js file with initialization information.
 			Page.ClientScript.RegisterStartupScript(GetType(), "ajaxstartup", string.Format(CultureInfo.InvariantCulture, @"
 <script language='javascript'>
-var dotnetopenid_logo_url = '{0}';
-var openidbox = document.getElementsByName('{1}')[0];
-if (openidbox) {{ initAjaxOpenId(openidbox); }}
-</script>", Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedDotNetOpenIdLogoResourceName), Name));
+var openidbox = document.getElementsByName('{0}')[0];
+if (openidbox) {{ initAjaxOpenId(openidbox, '{1}', '{2}'); }}
+</script>", Name,
+		  Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedDotNetOpenIdLogoResourceName),
+		  Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedSpinnerResourceName)));
 
 			if (!Page.IsPostBack) {
 				string userSuppliedIdentifier = Page.Request.QueryString["dotnetopenid.userSuppliedIdentifier"];
