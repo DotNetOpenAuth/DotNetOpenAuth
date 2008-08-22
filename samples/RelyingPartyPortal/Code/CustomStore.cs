@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using DotNetOpenId;
 using DotNetOpenId.RelyingParty;
 
-namespace RelyingPartyCustomStore {
+namespace ConsumerPortal.Code {
 	/// <summary>
 	/// This custom store serializes all elements to demonstrate peristent and/or shared storage.
 	/// This is common in a web farm, for example.
