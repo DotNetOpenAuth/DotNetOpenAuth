@@ -3,8 +3,9 @@
 	//window.status = msg;
 }
 
-function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url) {
+function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 	box.originalBackground = box.style.background;
+	box.timeout = timeout;
 
 	// Construct the login button
 	var loginButton = document.createElement('button');
@@ -126,18 +127,23 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url) {
 		iframe.setAttribute("src", url);
 		iframe.openidBox = box;
 		box.parentNode.insertBefore(iframe, box);
+		box.discoveryTimeout = setTimeout(function() { trace("timeout"); box.openidDiscoveryFailure("Timed out"); }, box.timeout);
 		return iframe;
 	}
 
 	this.parentForm = findParentForm(box);
 
 	box.openidDiscoveryFailure = function(msg) {
+		box.closeDiscoveryIFrame();
 		trace('Discovery failure: ' + msg);
 		box.setVisualCue('failed');
 		box.title = msg;
 	}
 
 	box.closeDiscoveryIFrame = function() {
+		if (box.discoveryTimeout) {
+			clearTimeout(box.discoveryTimeout);
+		}
 		if (box.discoveryIFrame) {
 			box.discoveryIFrame.parentNode.removeChild(box.discoveryIFrame);
 			box.discoveryIFrame = null;

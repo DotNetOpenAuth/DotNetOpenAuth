@@ -126,6 +126,21 @@ namespace DotNetOpenId.RelyingParty {
 			}
 		}
 
+		const string timeoutViewStateKey = "Timeout";
+		readonly TimeSpan timeoutDefault = TimeSpan.FromSeconds(8);
+		/// <summary>
+		/// Gets/sets the time duration for the AJAX control to wait for an OP to respond before reporting failure to the user.
+		/// </summary>
+		[Browsable(true), DefaultValue(typeof(TimeSpan), "00:00:08"), Category("Behavior")]
+		[Description("The time duration for the AJAX control to wait for an OP to respond before reporting failure to the user.")]
+		public TimeSpan Timeout {
+			get { return (TimeSpan)(ViewState[timeoutViewStateKey] ?? timeoutDefault); }
+			set {
+				if (value.TotalMilliseconds <= 0) throw new ArgumentOutOfRangeException("value");
+				ViewState[timeoutViewStateKey] = value;
+			}
+		}
+
 		#endregion
 
 		#region Properties to hide
@@ -255,10 +270,11 @@ document.getElementsByName({0})[0].focus();
 			Page.ClientScript.RegisterStartupScript(GetType(), "ajaxstartup", string.Format(CultureInfo.InvariantCulture, @"
 <script language='javascript'>
 var openidbox = document.getElementsByName('{0}')[0];
-if (openidbox) {{ initAjaxOpenId(openidbox, '{1}', '{2}'); }}
+if (openidbox) {{ initAjaxOpenId(openidbox, '{1}', '{2}', {3}); }}
 </script>", Name,
 				Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedDotNetOpenIdLogoResourceName),
-				Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedSpinnerResourceName)));
+				Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedSpinnerResourceName),
+				Timeout.TotalMilliseconds));
 		}
 
 		private void performDiscovery(string userSuppliedIdentifier) {
