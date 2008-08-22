@@ -85,6 +85,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url) {
 	}
 
 	box.performDiscovery = function() {
+		box.closeDiscoveryIFrame();
 		box.setVisualCue('discovering');
 		box.lastDiscoveredIdentifier = box.value;
 		box.lastAuthenticationResult = null;
@@ -136,12 +137,18 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url) {
 		box.title = msg;
 	}
 
+	box.closeDiscoveryIFrame = function() {
+		if (box.discoveryIFrame) {
+			box.discoveryIFrame.parentNode.removeChild(box.discoveryIFrame);
+			box.discoveryIFrame = null;
+		}
+	}
+
 	box.openidAuthResult = function(resultUrl) {
 		self.waiting_openidBox = null;
 		trace('openidAuthResult ' + resultUrl);
 		if (box.discoveryIFrame) {
-			box.discoveryIFrame.parentNode.removeChild(box.discoveryIFrame);
-			box.discoveryIFrame = null;
+			box.closeDiscoveryIFrame();
 		} else if (box.popup) {
 			box.popup.close();
 			box.popup = null;
