@@ -15,7 +15,6 @@
 
 	<ItemGroup>
 		<SampleDirectories Include="
-		                            $(ProjectRoot)\samples\ProviderCustomStore;
 		                            $(ProjectRoot)\samples\ProviderPortal;
 		                            $(ProjectRoot)\samples\RelyingPartyMvc;
 		                            $(ProjectRoot)\samples\RelyingPartyPortal;
