@@ -298,4 +298,7 @@ Discovered endpoint info:
   <data name="UnspecifiedDateTimeKindNotAllowed" xml:space="preserve">
     <value>Providing a DateTime whose Kind is Unspecified is not allowed.</value>
   </data>
+  <data name="WebRequestFailed" xml:space="preserve">
+    <value>Web request to '{0}' failed.</value>
+  </data>
 </root>

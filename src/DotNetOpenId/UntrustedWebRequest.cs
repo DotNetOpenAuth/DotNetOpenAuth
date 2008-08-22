@@ -307,7 +307,8 @@ namespace DotNetOpenId {
 						}
 						return getResponse(originalRequestUri, response);
 					} else {
-						throw;
+						throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
+							Strings.WebRequestFailed, originalRequestUri), e);
 					}
 				}
 			}
