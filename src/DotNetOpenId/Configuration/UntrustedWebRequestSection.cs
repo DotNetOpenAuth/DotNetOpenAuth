@@ -4,7 +4,7 @@ using System.Configuration;
 namespace DotNetOpenId.Configuration {
 	internal class UntrustedWebRequestSection : ConfigurationSection {
 		internal static UntrustedWebRequestSection Configuration {
-			get { return (UntrustedWebRequestSection)ConfigurationManager.GetSection("dotNetOpenId/untrustedWebRequest"); }
+			get { return (UntrustedWebRequestSection)ConfigurationManager.GetSection("dotNetOpenId/untrustedWebRequest") ?? new UntrustedWebRequestSection(); }
 		}
 
 		public UntrustedWebRequestSection() {
@@ -47,7 +47,7 @@ namespace DotNetOpenId.Configuration {
 		[ConfigurationProperty(whitelistHostsConfigName, IsDefaultCollection = false)]
 		[ConfigurationCollection(typeof(WhiteBlackListCollection))]
 		public WhiteBlackListCollection WhitelistHosts {
-			get { return (WhiteBlackListCollection)this[whitelistHostsConfigName]; }
+			get { return (WhiteBlackListCollection)this[whitelistHostsConfigName] ?? new WhiteBlackListCollection(); }
 			set { this[whitelistHostsConfigName] = value; }
 		}
 
@@ -55,7 +55,7 @@ namespace DotNetOpenId.Configuration {
 		[ConfigurationProperty(blacklistHostsConfigName, IsDefaultCollection = false)]
 		[ConfigurationCollection(typeof(WhiteBlackListCollection))]
 		public WhiteBlackListCollection BlacklistHosts {
-			get { return (WhiteBlackListCollection)this[blacklistHostsConfigName]; }
+			get { return (WhiteBlackListCollection)this[blacklistHostsConfigName] ?? new WhiteBlackListCollection(); }
 			set { this[blacklistHostsConfigName] = value; }
 		}
 
@@ -63,7 +63,7 @@ namespace DotNetOpenId.Configuration {
 		[ConfigurationProperty(whitelistHostsRegexConfigName, IsDefaultCollection = false)]
 		[ConfigurationCollection(typeof(WhiteBlackListCollection))]
 		public WhiteBlackListCollection WhitelistHostsRegex {
-			get { return (WhiteBlackListCollection)this[whitelistHostsRegexConfigName]; }
+			get { return (WhiteBlackListCollection)this[whitelistHostsRegexConfigName] ?? new WhiteBlackListCollection(); }
 			set { this[whitelistHostsRegexConfigName] = value; }
 		}
 
@@ -71,7 +71,7 @@ namespace DotNetOpenId.Configuration {
 		[ConfigurationProperty(blacklistHostsRegexConfigName, IsDefaultCollection = false)]
 		[ConfigurationCollection(typeof(WhiteBlackListCollection))]
 		public WhiteBlackListCollection BlacklistHostsRegex {
-			get { return (WhiteBlackListCollection)this[blacklistHostsRegexConfigName]; }
+			get { return (WhiteBlackListCollection)this[blacklistHostsRegexConfigName] ?? new WhiteBlackListCollection(); }
 			set { this[blacklistHostsRegexConfigName] = value; }
 		}
 	}
