@@ -13,16 +13,16 @@ namespace DotNetOpenId {
 			}
 		}
 
-		internal const int minimumHashBitLengthDefault = 120;
+		internal const int minimumHashBitLengthDefault = 160;
 		int minimumHashBitLength = minimumHashBitLengthDefault;
 		/// <summary>
 		/// Gets/sets the minimum hash length (in bits) allowed to be used in an <see cref="Association"/>
-		/// with the remote party.  The default is 120.
+		/// with the remote party.  The default is 160.
 		/// </summary>
 		/// <remarks>
-		/// SHA-1 (120 bits) has been broken.  The minimum secure hash length is now 256 bits.
-		/// The default is still a 120 bit minimum to allow interop with common remote parties,
-		/// such as Yahoo! that only supports 120 bits.  
+		/// SHA-1 (160 bits) has been broken.  The minimum secure hash length is now 256 bits.
+		/// The default is still a 160 bit minimum to allow interop with common remote parties,
+		/// such as Yahoo! that only supports 160 bits.  
 		/// For sites that require high security such as to store bank account information and 
 		/// health records, 256 is the recommended value.
 		/// </remarks>
@@ -51,8 +51,8 @@ namespace DotNetOpenId {
 		}
 
 		internal bool IsAssociationInPermittedRange(Protocol protocol, string associationType) {
-			int length = HmacShaAssociation.GetSecretLength(protocol, associationType);
-			return length >= MinimumHashBitLength && length <= MaximumHashBitLength;
+			int lengthInBits = HmacShaAssociation.GetSecretLength(protocol, associationType) * 8;
+			return lengthInBits >= MinimumHashBitLength && lengthInBits <= MaximumHashBitLength;
 		}
 	}
 }
