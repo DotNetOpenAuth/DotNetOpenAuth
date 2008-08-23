@@ -36,7 +36,7 @@ namespace DotNetOpenId.RelyingParty {
 		}
 		protected OpenIdRelyingParty RelyingParty { get; private set; }
 		protected ServiceEndpoint Provider { get; private set; }
-		protected IDictionary<string, string> Args { get; private set; }
+		protected internal IDictionary<string, string> Args { get; private set; }
 		protected Protocol Protocol { get { return Provider.Protocol; } }
 	}
 }

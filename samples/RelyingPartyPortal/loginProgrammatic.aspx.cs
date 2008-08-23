@@ -11,9 +11,28 @@ public partial class loginProgrammatic : System.Web.UI.Page {
 		args.IsValid = Identifier.IsValid(args.Value);
 	}
 
+	OpenIdRelyingParty createRelyingParty() {
+		OpenIdRelyingParty openid = new OpenIdRelyingParty();
+		int minsha, maxsha, minversion;
+		if (int.TryParse(Request.QueryString["minsha"], out minsha)) {
+			openid.Settings.MinimumHashBitLength = minsha;
+		}
+		if (int.TryParse(Request.QueryString["maxsha"], out maxsha)) {
+			openid.Settings.MaximumHashBitLength = maxsha;
+		}
+		if (int.TryParse(Request.QueryString["minversion"], out minversion)) {
+			switch (minversion) {
+				case 1: openid.Settings.MinimumRequiredOpenIdVersion = ProtocolVersion.V10; break;
+				case 2: openid.Settings.MinimumRequiredOpenIdVersion = ProtocolVersion.V20; break;
+				default: throw new ArgumentOutOfRangeException("minversion");
+			}
+		}
+		return openid;
+	}
+
 	protected void loginButton_Click(object sender, EventArgs e) {
 		if (!Page.IsValid) return; // don't login if custom validation failed.
-		OpenIdRelyingParty openid = new OpenIdRelyingParty();
+		OpenIdRelyingParty openid = createRelyingParty();
 		try {
 			IAuthenticationRequest request = openid.CreateRequest(openIdBox.Text);
 			// This is where you would add any OpenID extensions you wanted
@@ -33,7 +52,7 @@ public partial class loginProgrammatic : System.Web.UI.Page {
 	protected void Page_Load(object sender, EventArgs e) {
 		openIdBox.Focus();
 
-		OpenIdRelyingParty openid = new OpenIdRelyingParty();
+		OpenIdRelyingParty openid = createRelyingParty();
 		if (openid.Response != null) {
 			switch (openid.Response.Status) {
 				case AuthenticationStatus.Authenticated:

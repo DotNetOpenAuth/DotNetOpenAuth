@@ -171,10 +171,23 @@ namespace DotNetOpenId.RelyingParty {
 		static Association getAssociation(OpenIdRelyingParty relyingParty, ServiceEndpoint provider, bool createNewAssociationIfNeeded) {
 			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
 			if (provider == null) throw new ArgumentNullException("provider");
+			// TODO: we need a way to lookup an association that fulfills a given set of security
+			// requirements.  We may have a SHA-1 association and a SHA-256 association that need
+			// to be called for specifically. (a bizzare scenario, admittedly, making this low priority).
 			Association assoc = relyingParty.Store.GetAssociation(provider.ProviderEndpoint);
+
+			// If the returned association does not fulfill security requirements, ignore it.
+			if (assoc != null && !relyingParty.Settings.IsAssociationInPermittedRange(provider.Protocol, assoc.GetAssociationType(provider.Protocol))) {
+				assoc = null;
+			}
 
 			if ((assoc == null || !assoc.HasUsefulLifeRemaining) && createNewAssociationIfNeeded) {
 				var req = AssociateRequest.Create(relyingParty, provider);
+				if (req == null) {
+					// this can happen if security requirements and protocol conflict
+					// to where there are no association types to choose from.
+					return null;
+				}
 				if (req.Response != null) {
 					// try again if we failed the first time and have a worthy second-try.
 					if (req.Response.Association == null && req.Response.SecondAttempt != null) {
@@ -182,11 +195,30 @@ namespace DotNetOpenId.RelyingParty {
 						req = req.Response.SecondAttempt;
 					}
 					assoc = req.Response.Association;
+					// Confirm that the association matches the type we requested (section 8.2.1).
+					if (assoc != null) {
+						if (!string.Equals(
+							req.Args[provider.Protocol.openid.assoc_type],
+							req.Response.Args[provider.Protocol.openidnp.assoc_type],
+							StringComparison.Ordinal) ||
+							!string.Equals(
+							req.Args[provider.Protocol.openid.session_type],
+							req.Response.Args[provider.Protocol.openidnp.session_type],
+							StringComparison.Ordinal)) {
+							Logger.ErrorFormat("Provider responded with contradicting association parameters.  Requested [{0}, {1}] but got [{2}, {3}] back.",
+								req.Args[provider.Protocol.openid.assoc_type],
+								req.Args[provider.Protocol.openid.session_type],
+								req.Response.Args[provider.Protocol.openidnp.assoc_type],
+								req.Response.Args[provider.Protocol.openidnp.session_type]);
+
+							assoc = null;
+						}
+					}
 					if (assoc != null) {
 						Logger.InfoFormat("Association with {0} established.", provider.ProviderEndpoint);
 						relyingParty.Store.StoreAssociation(provider.ProviderEndpoint, assoc);
 					} else {
-						Logger.ErrorFormat("Association attempt with {0} provider failed.", provider);
+						Logger.ErrorFormat("Association attempt with {0} provider failed.", provider.ProviderEndpoint);
 					}
 				}
 			}
