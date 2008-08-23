@@ -164,7 +164,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 		// stick the result in a hidden field so the RP can verify it (positive or negative)
 		var form = findParentForm(box);
 		var hiddenField = findOrCreateHiddenField(form, "openidAuthData");
-		hiddenField.setAttribute("value", resultUri.queryString);
+		hiddenField.setAttribute("value", resultUri.toString());
 		trace("set openidAuthData = " + resultUri.queryString);
 		if (hiddenField.parentNode == null) {
 			form.appendChild(hiddenField);

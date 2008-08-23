@@ -40,12 +40,10 @@ namespace DotNetOpenId.RelyingParty {
 				if (authenticationResponse == null) {
 					string authData = Page.Request.Form["openidAuthData"];
 					if (!string.IsNullOrEmpty(authData)) {
-						var authDataFields = HttpUtility.ParseQueryString(authData);
-						// Lie about the request URL so it matches the return_to URL made
-						// back when this authentication occurred.
-						Uri returnTo = getReturnTo(Util.GetRequestUrlFromContext(), authDataFields);
+						Uri authUri = new Uri(authData);
+						var authDataFields = HttpUtility.ParseQueryString(authUri.Query);
 						var rp = new OpenIdRelyingParty(OpenIdRelyingParty.HttpApplicationStore,
-							returnTo, authDataFields);
+							authUri, authDataFields);
 						authenticationResponse = rp.Response;
 					}
 				}
@@ -337,24 +335,6 @@ if (openidbox) {{ initAjaxOpenId(openidbox, '{1}', '{2}', {3}); }}
 			writer.Write(" />");
 
 			writer.WriteEndTag("span");
-		}
-
-		private static Uri getReturnTo(Uri uri, System.Collections.Specialized.NameValueCollection authDataFields) {
-			UriBuilder builder = new UriBuilder(uri);
-			NameValueCollection returnToNVC = HttpUtility.ParseQueryString(builder.Query);
-			foreach (string key in authDataFields) {
-				if (returnToNVC[key] == null) {
-					returnToNVC[key] = authDataFields[key];
-				} else {
-					if (returnToNVC[key] != authDataFields[key]) {
-						throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
-							Strings.ReturnToParamDoesNotMatchRequestUrl, key,
-							returnToNVC[key], authDataFields[key]), key);
-					}
-				}
-			}
-			builder.Query = UriUtil.CreateQueryString(returnToNVC);
-			return builder.Uri;
 		}
 
 		/// <summary>
