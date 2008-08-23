@@ -281,7 +281,7 @@ Discovered endpoint info:
     <value>return_to '{0}' not under realm '{1}'.</value>
   </data>
   <data name="ReturnToParamDoesNotMatchRequestUrl" xml:space="preserve">
-    <value>The {0} parameter does not match the actual URL the request was made with.</value>
+    <value>The {0} parameter ({1}) does not match the actual URL ({2}) the request was made with.</value>
   </data>
   <data name="TamperingDetected" xml:space="preserve">
     <value>The '{0}' parameter was expected to have the value '{1}' but had '{2}' instead.</value>

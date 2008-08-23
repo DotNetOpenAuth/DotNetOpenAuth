@@ -253,14 +253,16 @@ namespace DotNetOpenId.RelyingParty {
 				return_to.Authority != requestUrl.Authority ||
 				return_to.AbsolutePath != requestUrl.AbsolutePath)
 				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
-					Strings.ReturnToParamDoesNotMatchRequestUrl, endpoint.Protocol.openid.return_to));
+					Strings.ReturnToParamDoesNotMatchRequestUrl, endpoint.Protocol.openid.return_to,
+					return_to, requestUrl));
 
 			NameValueCollection returnToArgs = HttpUtility.ParseQueryString(return_to.Query);
 			NameValueCollection requestArgs = HttpUtility.ParseQueryString(requestUrl.Query);
 			foreach (string paramName in returnToArgs) {
 				if (requestArgs[paramName] != returnToArgs[paramName])
 					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
-						Strings.ReturnToParamDoesNotMatchRequestUrl, endpoint.Protocol.openid.return_to));
+						Strings.ReturnToParamDoesNotMatchRequestUrl, endpoint.Protocol.openid.return_to,
+						return_to, requestUrl));
 			}
 		}
 

@@ -542,7 +542,7 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The {0} parameter does not match the actual URL the request was made with..
+        ///   Looks up a localized string similar to The {0} parameter ({1}) does not match the actual URL ({2}) the request was made with..
         /// </summary>
         internal static string ReturnToParamDoesNotMatchRequestUrl {
             get {

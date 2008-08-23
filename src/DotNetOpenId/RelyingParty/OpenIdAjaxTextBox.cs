@@ -347,7 +347,9 @@ if (openidbox) {{ initAjaxOpenId(openidbox, '{1}', '{2}', {3}); }}
 					returnToNVC[key] = authDataFields[key];
 				} else {
 					if (returnToNVC[key] != authDataFields[key]) {
-						throw new ArgumentException(Strings.ReturnToParamDoesNotMatchRequestUrl, key);
+						throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
+							Strings.ReturnToParamDoesNotMatchRequestUrl, key,
+							returnToNVC[key], authDataFields[key]), key);
 					}
 				}
 			}
