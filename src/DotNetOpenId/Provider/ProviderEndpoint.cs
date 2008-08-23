@@ -66,8 +66,11 @@ namespace DotNetOpenId.Provider {
 			base.OnLoad(e);
 
 			if (Enabled) {
+				// Use the explicitly given state store on this control if there is one.  
+				// Then try the configuration file specified one.  Finally, use the default
+				// in-memory one that's built into OpenIdProvider.
 				OpenIdProvider provider = new OpenIdProvider(
-					CustomApplicationStore ?? OpenIdProvider.HttpApplicationStore,
+					CustomApplicationStore ?? OpenIdProvider.Configuration.Store.CreateInstanceOfStore(OpenIdProvider.HttpApplicationStore),
 					OpenIdProvider.DefaultProviderEndpoint,
 					OpenIdProvider.DefaultRequestUrl,
 					OpenIdProvider.DefaultQuery);

@@ -9,6 +9,8 @@ namespace DotNetOpenId {
 	using System.IO;
 	using System.Net;
 	using System.Text.RegularExpressions;
+	using System.Configuration;
+	using DotNetOpenId.Configuration;
 	/// <summary>
 	/// A paranoid HTTP get/post request engine.  It helps to protect against attacks from remote
 	/// server leaving dangling connections, sending too much data, causing requests against 
@@ -24,8 +26,12 @@ namespace DotNetOpenId {
 	/// If a particular host would not be permitted but is in the whitelist, it is allowed.
 	/// </remarks>
 	public static class UntrustedWebRequest {
+		static Configuration.UntrustedWebRequestSection Configuration {
+			get { return UntrustedWebRequestSection.Configuration; }
+		}
+
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		static int maximumBytesToRead = 1024 * 1024;
+		static int maximumBytesToRead = Configuration.MaximumBytesToRead;
 		/// <summary>
 		/// The default maximum bytes to read in any given HTTP request.
 		/// Default is 1MB.  Cannot be less than 2KB.
@@ -38,7 +44,7 @@ namespace DotNetOpenId {
 			}
 		}
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		static int maximumRedirections = 10;
+		static int maximumRedirections = Configuration.MaximumRedirections;
 		/// <summary>
 		/// The total number of redirections to allow on any one request.
 		/// Default is 10.
@@ -73,8 +79,8 @@ namespace DotNetOpenId {
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static UntrustedWebRequest() {
-			ReadWriteTimeout = TimeSpan.FromMilliseconds(800);
-			Timeout = TimeSpan.FromSeconds(10);
+			ReadWriteTimeout = Configuration.ReadWriteTimeout;
+			Timeout = Configuration.Timeout;
 #if LONGTIMEOUT
 			ReadWriteTimeout = TimeSpan.FromHours(1);
 			Timeout = TimeSpan.FromHours(1);
@@ -90,25 +96,25 @@ namespace DotNetOpenId {
 			return true;
 		}
 		static ICollection<string> allowableSchemes = new List<string> { "http", "https" };
-		static ICollection<string> whitelistHosts = new List<string>();
+		static ICollection<string> whitelistHosts = new List<string>(Configuration.WhitelistHosts.KeysAsStrings);
 		/// <summary>
 		/// A collection of host name literals that should be allowed even if they don't
 		/// pass standard security checks.
 		/// </summary>
 		public static ICollection<string> WhitelistHosts { get { return whitelistHosts; } }
-		static ICollection<Regex> whitelistHostsRegex = new List<Regex>();
+		static ICollection<Regex> whitelistHostsRegex = new List<Regex>(Configuration.WhitelistHostsRegex.KeysAsRegexs);
 		/// <summary>
 		/// A collection of host name regular expressions that indicate hosts that should
 		/// be allowed even though they don't pass standard security checks.
 		/// </summary>
 		public static ICollection<Regex> WhitelistHostsRegex { get { return whitelistHostsRegex; } }
-		static ICollection<string> blacklistHosts = new List<string>();
+		static ICollection<string> blacklistHosts = new List<string>(Configuration.BlacklistHosts.KeysAsStrings);
 		/// <summary>
 		/// A collection of host name literals that should be rejected even if they 
 		/// pass standard security checks.
 		/// </summary>
 		public static ICollection<string> BlacklistHosts { get { return blacklistHosts; } }
-		static ICollection<Regex> blacklistHostsRegex = new List<Regex>();
+		static ICollection<Regex> blacklistHostsRegex = new List<Regex>(Configuration.BlacklistHostsRegex.KeysAsRegexs);
 		/// <summary>
 		/// A collection of host name regular expressions that indicate hosts that should
 		/// be rjected even if they pass standard security checks.

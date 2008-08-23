@@ -6,7 +6,7 @@ using DotNetOpenId;
 using DotNetOpenId.RelyingParty;
 using IProviderAssociationStore = DotNetOpenId.IAssociationStore<DotNetOpenId.AssociationRelyingPartyType>;
 
-namespace ProviderCustomStore {
+namespace ProviderPortal.Code {
 	/// <summary>
 	/// This custom store serializes all elements to demonstrate peristent and/or shared storage.
 	/// This is common in a web farm, for example.
@@ -18,8 +18,7 @@ namespace ProviderCustomStore {
 	/// that using a database is possible.
 	/// </remarks>
 	public class CustomStore : IProviderAssociationStore {
-		public static CustomStore Instance = new CustomStore();
-		public CustomStoreDataSet dataSet = new CustomStoreDataSet();
+		static CustomStoreDataSet dataSet = new CustomStoreDataSet();
 
 		#region IAssociationStore<AssociationRelyingPartyType> Members
 

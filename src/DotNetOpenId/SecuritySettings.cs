@@ -9,11 +9,12 @@ namespace DotNetOpenId {
 	public class SecuritySettings {
 		internal SecuritySettings(bool isProvider) {
 			if (isProvider) {
-				maximumHashBitLength = 512;
+				maximumHashBitLength = maximumHashBitLengthOPDefault;
 			}
 		}
 
-		int minimumHashBitLength = 160;
+		internal const int minimumHashBitLengthDefault = 160;
+		int minimumHashBitLength = minimumHashBitLengthDefault;
 		/// <summary>
 		/// Gets/sets the minimum hash length (in bits) allowed to be used in an <see cref="Association"/>
 		/// with the remote party.  The default is 160.
@@ -29,7 +30,9 @@ namespace DotNetOpenId {
 			get { return minimumHashBitLength; }
 			set { minimumHashBitLength = value; }
 		}
-		int maximumHashBitLength = 256;
+		internal const int maximumHashBitLengthRPDefault = 256;
+		internal const int maximumHashBitLengthOPDefault = 512;
+		int maximumHashBitLength = maximumHashBitLengthRPDefault;
 		/// <summary>
 		/// Gets/sets the maximum hash length (in bits) allowed to be used in an <see cref="Association"/>
 		/// with the remote party.  The default is 256 for relying parties and 512 for providers.

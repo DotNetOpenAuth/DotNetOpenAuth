@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Configuration;
 using System.Diagnostics;
 using System.Web;
+using DotNetOpenId.Configuration;
 
 namespace DotNetOpenId.RelyingParty {
 	/// <summary>
@@ -82,7 +84,7 @@ namespace DotNetOpenId.RelyingParty {
 	///}
 	/// </code>
 	/// </example>
-	[DebuggerDisplay("isAuthenticationResponseReady: {isAuthenticationResponseReady}, stateless: {store == null}")]
+	[DebuggerDisplay("isAuthenticationResponseReady: {isAuthenticationResponseReady}, stateless: {Store == null}")]
 	public class OpenIdRelyingParty {
 		internal IRelyingPartyApplicationStore Store;
 		Uri request;
@@ -101,7 +103,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// This method requires a current ASP.NET HttpContext.
 		/// </remarks>
 		public OpenIdRelyingParty()
-			: this(HttpApplicationStore,
+			: this(Configuration.Store.CreateInstanceOfStore(HttpApplicationStore),
 				Util.GetRequestUrlFromContext(), Util.GetQueryFromContext()) { }
 		/// <summary>
 		/// Constructs an OpenId consumer that uses a given querystring and IAssociationStore.
@@ -135,8 +137,10 @@ namespace DotNetOpenId.RelyingParty {
 			this(store, requestUrl, Util.NameValueCollectionToDictionary(query)) {
 		}
 		OpenIdRelyingParty(IRelyingPartyApplicationStore store, Uri requestUrl, IDictionary<string, string> query) {
-			Settings = new RelyingPartySecuritySettings();
+			// Initialize settings with defaults and config section
+			Settings = Configuration.SecuritySettings.CreateSecuritySettings();
 			Settings.RequireSslChanged += new EventHandler(Settings_RequireSslChanged);
+
 			this.Store = store;
 			if (store != null) {
 				store.ClearExpiredAssociations(); // every so often we should do this.
@@ -403,6 +407,13 @@ namespace DotNetOpenId.RelyingParty {
 			// reset response that may have been calculated to force 
 			// reconsideration with new security policy.
 			response = null;
+		}
+
+		/// <summary>
+		/// Gets the relevant Configuration section for this OpenIdRelyingParty.
+		/// </summary>
+		internal static RelyingPartySection Configuration {
+			get { return RelyingPartySection.Configuration; }
 		}
 	}
 
