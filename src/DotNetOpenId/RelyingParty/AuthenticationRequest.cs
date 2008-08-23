@@ -171,7 +171,15 @@ namespace DotNetOpenId.RelyingParty {
 		static Association getAssociation(OpenIdRelyingParty relyingParty, ServiceEndpoint provider, bool createNewAssociationIfNeeded) {
 			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
 			if (provider == null) throw new ArgumentNullException("provider");
+			// TODO: we need a way to lookup an association that fulfills a given set of security
+			// requirements.  We may have a SHA-1 association and a SHA-256 association that need
+			// to be called for specifically. (a bizzare scenario, admittedly, making this low priority).
 			Association assoc = relyingParty.Store.GetAssociation(provider.ProviderEndpoint);
+
+			// If the returned association does not fulfill security requirements, ignore it.
+			if (assoc != null && !relyingParty.Settings.IsAssociationInPermittedRange(provider.Protocol, assoc.GetAssociationType(provider.Protocol))) {
+				assoc = null;
+			}
 
 			if ((assoc == null || !assoc.HasUsefulLifeRemaining) && createNewAssociationIfNeeded) {
 				var req = AssociateRequest.Create(relyingParty, provider);
