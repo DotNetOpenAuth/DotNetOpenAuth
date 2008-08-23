@@ -21,7 +21,7 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <DocumentationFile>..\..\bin\debug\DotNetOpenId.xml</DocumentationFile>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRules>-Microsoft.Design#CA1054;-Microsoft.Design#CA1056;-Microsoft.Design#CA1055</CodeAnalysisRules>
     <NoWarn>
     </NoWarn>
@@ -49,6 +49,7 @@
       <HintPath>..\..\lib\log4net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
@@ -59,10 +60,18 @@
     <Compile Include="Association.cs" />
     <Compile Include="AssociationMemoryStore.cs" />
     <Compile Include="Associations.cs" />
+    <Compile Include="Configuration\UntrustedWebRequestSection.cs" />
+    <Compile Include="Configuration\WhiteBlackListCollection.cs" />
+    <Compile Include="Configuration\WhiteBlackListElement.cs" />
     <Compile Include="DiffieHellmanUtil.cs" />
     <Compile Include="Provider\ProviderSecuritySettings.cs" />
     <Compile Include="RelyingParty\OpenIdAjaxTextBox.cs" />
+    <Compile Include="Configuration\ProviderSecuritySettingsElement.cs" />
+    <Compile Include="Configuration\ProviderSection.cs" />
+    <Compile Include="Configuration\RelyingPartySection.cs" />
     <Compile Include="RelyingParty\RelyingPartySecuritySettings.cs" />
+    <Compile Include="Configuration\RelyingPartySecuritySettingsElement.cs" />
+    <Compile Include="Configuration\StoreElement.cs" />
     <Compile Include="SecuritySettings.cs" />
     <Compile Include="NoDiscoveryIdentifier.cs" />
     <Compile Include="Provider\SigningMessageEncoder.cs" />

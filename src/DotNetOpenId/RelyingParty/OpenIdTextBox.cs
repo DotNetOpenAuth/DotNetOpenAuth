@@ -613,12 +613,19 @@ namespace DotNetOpenId.RelyingParty
 		}
 
 		private OpenIdRelyingParty createRelyingParty() {
+			// If we're in stateful mode, first use the explicitly given one on this control if there
+			// is one.  Then try the configuration file specified one.  Finally, use the default
+			// in-memory one that's built into OpenIdRelyingParty.
 			IRelyingPartyApplicationStore store = Stateless ? null :
-				(CustomApplicationStore ?? OpenIdRelyingParty.HttpApplicationStore);
+				(CustomApplicationStore ?? OpenIdRelyingParty.Configuration.Store.CreateInstanceOfStore(OpenIdRelyingParty.HttpApplicationStore));
 			Uri request = OpenIdRelyingParty.DefaultRequestUrl;
 			NameValueCollection query = OpenIdRelyingParty.DefaultQuery;
 			var rp = new OpenIdRelyingParty(store, request, query);
-			rp.Settings.RequireSsl = RequireSsl;
+			// Only set RequireSsl to true, as we don't want to override 
+			// a .config setting of true with false.
+			if (RequireSsl) {
+				rp.Settings.RequireSsl = true;
+			}
 			return rp;
 		}
 

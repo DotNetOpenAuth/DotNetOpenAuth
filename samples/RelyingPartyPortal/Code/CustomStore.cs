@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using DotNetOpenId;
 using DotNetOpenId.RelyingParty;
 
-namespace RelyingPartyCustomStore {
+namespace ConsumerPortal.Code {
 	/// <summary>
 	/// This custom store serializes all elements to demonstrate peristent and/or shared storage.
 	/// This is common in a web farm, for example.
@@ -17,8 +17,7 @@ namespace RelyingPartyCustomStore {
 	/// that using a database is possible.
 	/// </remarks>
 	public class CustomStore : IRelyingPartyApplicationStore {
-		public static CustomStore Instance = new CustomStore();
-		public CustomStoreDataSet dataSet = new CustomStoreDataSet();
+		static CustomStoreDataSet dataSet = new CustomStoreDataSet();
 
 		#region IAssociationStore<Uri> Members
 
@@ -66,7 +65,7 @@ namespace RelyingPartyCustomStore {
 
 		#region INonceStore Members
 
-		byte[] secretSigningKey;
+		static byte[] secretSigningKey;
 		public byte[] SecretSigningKey {
 			get {
 				if (secretSigningKey == null) {
@@ -75,7 +74,7 @@ namespace RelyingPartyCustomStore {
 							// initialize in a local variable before setting in field for thread safety.
 							byte[] auth_key = new byte[64];
 							new RNGCryptoServiceProvider().GetBytes(auth_key);
-							this.secretSigningKey = auth_key;
+							CustomStore.secretSigningKey = auth_key;
 						}
 					}
 				}
@@ -115,6 +114,5 @@ namespace RelyingPartyCustomStore {
 			for (int i = view.Count - 1; i >= 0; i--)
 				view.Delete(i);
 		}
-
 	}
 }

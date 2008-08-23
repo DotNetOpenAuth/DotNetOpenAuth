@@ -6,11 +6,6 @@ using System.Web;
 
 namespace ProviderPortal {
 	public class Global : System.Web.HttpApplication {
-		public Global() {
-			// since this is a sample, and will often be used with localhost
-			DotNetOpenId.UntrustedWebRequest.WhitelistHosts.Add("localhost");
-		}
-
 		public static log4net.ILog Logger = log4net.LogManager.GetLogger(typeof(Global));
 
 		protected void Application_Start(object sender, EventArgs e) {

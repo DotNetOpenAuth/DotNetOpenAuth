@@ -1,12 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Text;
+using System.Configuration;
+using System.Diagnostics;
 using System.Web;
 using IProviderAssociationStore = DotNetOpenId.IAssociationStore<DotNetOpenId.AssociationRelyingPartyType>;
 using ProviderMemoryStore = DotNetOpenId.AssociationMemoryStore<DotNetOpenId.AssociationRelyingPartyType>;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Net;
+using DotNetOpenId.Configuration;
 
 namespace DotNetOpenId.Provider {
 	/// <summary>
@@ -47,7 +47,7 @@ namespace DotNetOpenId.Provider {
 		/// This method requires a current ASP.NET HttpContext.
 		/// </remarks>
 		public OpenIdProvider()
-			: this(HttpApplicationStore,
+			: this(Configuration.Store.CreateInstanceOfStore(HttpApplicationStore),
 			getProviderEndpointFromContext(), Util.GetRequestUrlFromContext(), Util.GetQueryFromContext()) { }
 		/// <summary>
 		/// Constructs an OpenId server that uses a given query and IAssociationStore.
@@ -200,6 +200,17 @@ namespace DotNetOpenId.Provider {
 			builder.Query = null;
 			builder.Fragment = null;
 			return builder.Uri;
+		}
+
+		/// <summary>
+		/// Gets the relevant Configuration section for this OpenIdRelyingParty.
+		/// </summary>
+		/// <remarks>
+		/// This is not a static member because depending on the context within which we are
+		/// invoked, the configuration section might be different. (location tag, for example).
+		/// </remarks>
+		internal static ProviderSection Configuration {
+			get { return ProviderSection.Configuration; }
 		}
 	}
 }

@@ -8,11 +8,6 @@ namespace ConsumerPortal {
 	public class Global : System.Web.HttpApplication {
 		internal static StringBuilder LogMessages = new StringBuilder();
 
-		public Global() {
-			// since this is a sample, and will often be used with localhost
-			DotNetOpenId.UntrustedWebRequest.WhitelistHosts.Add("localhost");
-		}
-
 		public static log4net.ILog Logger = log4net.LogManager.GetLogger(typeof(Global));
 
 		protected void Application_Start(object sender, EventArgs e) {
