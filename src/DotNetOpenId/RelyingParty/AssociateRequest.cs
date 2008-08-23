@@ -25,10 +25,15 @@ namespace DotNetOpenId.RelyingParty {
 			if (provider == null) throw new ArgumentNullException("provider");
 
 			string assoc_type, session_type;
-			HmacShaAssociation.TryFindBestAssociation(provider.Protocol,
+			if (HmacShaAssociation.TryFindBestAssociation(provider.Protocol,
 				relyingParty.Settings.MinimumHashBitLength, relyingParty.Settings.MaximumHashBitLength,
-				true, out assoc_type, out session_type);
-			return Create(relyingParty, provider, assoc_type, session_type);
+				true, out assoc_type, out session_type)) {
+				return Create(relyingParty, provider, assoc_type, session_type);
+			} else {
+				// There are no associations that meet all requirements.
+				Logger.Warn("Security requirements and protocol combination knock out all possible association types.  Dumb mode forced.");
+				return null;
+			}
 		}
 
 		public static AssociateRequest Create(OpenIdRelyingParty relyingParty, ServiceEndpoint provider, string assoc_type, string session_type) {
