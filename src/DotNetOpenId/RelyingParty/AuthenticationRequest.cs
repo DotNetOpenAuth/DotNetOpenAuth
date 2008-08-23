@@ -178,7 +178,7 @@ namespace DotNetOpenId.RelyingParty {
 						Logger.InfoFormat("Association with {0} established.", provider.ProviderEndpoint);
 						store.StoreAssociation(provider.ProviderEndpoint, assoc);
 					} else {
-						Logger.ErrorFormat("Association attempt with {0} provider failed.", provider);
+						Logger.ErrorFormat("Association attempt with {0} provider failed.", provider.ProviderEndpoint);
 					}
 				}
 			}
