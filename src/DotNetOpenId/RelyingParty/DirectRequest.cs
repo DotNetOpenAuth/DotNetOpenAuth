@@ -22,7 +22,7 @@ namespace DotNetOpenId.RelyingParty {
 		}
 		protected ServiceEndpoint Provider { get; private set; }
 		protected Protocol Protocol { get { return Provider.Protocol; } }
-		protected IDictionary<string, string> Args { get; private set; }
+		protected internal IDictionary<string, string> Args { get; private set; }
 		protected OpenIdRelyingParty RelyingParty { get; private set; }
 
 		protected IDictionary<string, string> GetResponse() {
