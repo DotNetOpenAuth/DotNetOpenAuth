@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Web;
 
 namespace ConsumerPortal {
 	public class Global : System.Web.HttpApplication {
+		internal static StringBuilder LogMessages = new StringBuilder();
+
 		public static log4net.ILog Logger = log4net.LogManager.GetLogger(typeof(Global));
 
 		protected void Application_Start(object sender, EventArgs e) {
