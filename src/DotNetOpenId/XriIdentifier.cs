@@ -22,7 +22,7 @@ namespace DotNetOpenId {
 			if (requireSsl) {
 				// Indicate to xri.net that we require SSL to be used for delegated resolution
 				// of community i-names.
-				xriResolverProxy += "&ssl=true";
+				xriResolverProxy += ";https=true";
 			}
 			OriginalXri = xri;
 			CanonicalXri = canonicalizeXri(xri);
