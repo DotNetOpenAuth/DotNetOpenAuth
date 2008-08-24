@@ -85,7 +85,7 @@ namespace DotNetOpenId {
 		}
 
 		internal override IEnumerable<ServiceEndpoint> Discover() {
-			return downloadXrds().CreateServiceEndpoints(this, this);
+			return downloadXrds().CreateServiceEndpoints(this);
 		}
 
 		/// <summary>
@@ -93,7 +93,7 @@ namespace DotNetOpenId {
 		/// instances that treat another given identifier as the user-supplied identifier.
 		/// </summary>
 		internal IEnumerable<ServiceEndpoint> Discover(XriIdentifier userSuppliedIdentifier) {
-			return downloadXrds().CreateServiceEndpoints(this, userSuppliedIdentifier);
+			return downloadXrds().CreateServiceEndpoints(userSuppliedIdentifier);
 		}
 
 		internal override Identifier TrimFragment() {

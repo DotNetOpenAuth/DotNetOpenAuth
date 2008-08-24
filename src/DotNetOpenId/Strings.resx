@@ -126,6 +126,9 @@
   <data name="BadAssociationPrivateData" xml:space="preserve">
     <value>The private data supplied does not meet the requirements of any known Association type.  Its length may be too short, or it may have been corrupted.</value>
   </data>
+  <data name="CIDVerificationFailed" xml:space="preserve">
+    <value>XRI CanonicalID verification failed.</value>
+  </data>
   <data name="ClaimedIdentifierMustBeSetFirst" xml:space="preserve">
     <value>The ClaimedIdentifier property must be set first.</value>
   </data>

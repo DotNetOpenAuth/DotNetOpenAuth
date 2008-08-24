@@ -359,19 +359,10 @@ uEyb50RJ7DWmXctSC0b3eymZ2lSXxAWNOsNy
 </XRD>";
 			MockHttpRequest.RegisterMockXrdsResponses(new Dictionary<string, string> {
 				{ "https://xri.net/@llli?_xrd_r=application/xrd%2Bxml;sep=false", llliResponse},
-				{ "https://xri.net/@!72CD.A072.157E.A9C6?_xrd_r=application/xrd%2Bxml;sep=false", llliResponse},
-
 				{ "https://xri.net/@llli*area?_xrd_r=application/xrd%2Bxml;sep=false", llliAreaResponse},
-				{ "https://xri.net/@!72CD.A072.157E.A9C6!0000.0000.3B9A.CA0C?_xrd_r=application/xrd%2Bxml;sep=false", llliAreaResponse},
-	
 				{ "https://xri.net/@llli*area*canada.unattached?_xrd_r=application/xrd%2Bxml;sep=false", llliAreaCanadaUnattachedResponse},
-				{ "https://xri.net/@!72CD.A072.157E.A9C6!0000.0000.3B9A.CA0C!0000.0000.3B9A.CA41?_xrd_r=application/xrd%2Bxml;sep=false", llliAreaCanadaUnattachedResponse},
-				
 				{ "https://xri.net/@llli*area*canada.unattached*ada?_xrd_r=application/xrd%2Bxml;sep=false", llliAreaCanadaUnattachedAdaResponse},
-				{ "https://xri.net/@!72CD.A072.157E.A9C6!0000.0000.3B9A.CA0C!0000.0000.3B9A.CA41!0000.0000.3B9A.CA01?_xrd_r=application/xrd%2Bxml;sep=false", llliAreaCanadaUnattachedAdaResponse},
-
 				{ "https://xri.net/=Web?_xrd_r=application/xrd%2Bxml;sep=false", webResponse},
-				{ "https://xri.net/=!91F2.8153.F600.AE24?_xrd_r=application/xrd%2Bxml;sep=false", webResponse},
 			});
 			verifyCanonicalId("@llli", "@!72CD.A072.157E.A9C6");
 			verifyCanonicalId("@llli*area", "@!72CD.A072.157E.A9C6!0000.0000.3B9A.CA0C");

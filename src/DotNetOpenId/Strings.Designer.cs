@@ -88,6 +88,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to XRI CanonicalID verification failed..
+        /// </summary>
+        internal static string CIDVerificationFailed {
+            get {
+                return ResourceManager.GetString("CIDVerificationFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The ClaimedIdentifier property must be set first..
         /// </summary>
         internal static string ClaimedIdentifierMustBeSetFirst {

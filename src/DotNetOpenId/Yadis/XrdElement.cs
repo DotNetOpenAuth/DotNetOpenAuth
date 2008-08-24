@@ -29,6 +29,13 @@ namespace DotNetOpenId.Yadis {
 			}
 		}
 
+		public bool IsCanonicalIdVerified {
+			get {
+				var n = Node.SelectSingleNode("xrd:Status", XmlNamespaceResolver);
+				return n != null && string.Equals(n.GetAttribute("cid", ""), "verified", StringComparison.Ordinal);
+			}
+		}
+
 		IEnumerable<ServiceElement> searchForServiceTypeUris(Util.Func<Protocol, string> p) {
 			var xpath = new StringBuilder();
 			xpath.Append("xrd:Service[");

@@ -204,6 +204,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 			string xrds = @"<?xml version='1.0' encoding='UTF-8'?>
 <XRD xmlns='xri://$xrd*($v*2.0)'>
  <Query>=MultipleEndpoint</Query>
+ <Status cid='verified' />
  <ProviderID>=!91F2.8153.F600.AE24</ProviderID>
  <CanonicalID>=!91F2.8153.F600.AE24</CanonicalID>
  <Service>
@@ -237,7 +238,6 @@ namespace DotNetOpenId.Test.RelyingParty {
 </XRD>";
 			MockHttpRequest.RegisterMockXrdsResponses(new Dictionary<string, string> {
 				{"https://xri.net/=MultipleEndpoint?_xrd_r=application/xrd%2Bxml;sep=false", xrds},
-				{"https://xri.net/=!91F2.8153.F600.AE24?_xrd_r=application/xrd%2Bxml;sep=false", xrds},
 			});
 			OpenIdRelyingParty rp = new OpenIdRelyingParty(null, null, null);
 			Realm realm = new Realm("http://somerealm");
