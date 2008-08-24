@@ -81,7 +81,11 @@ namespace DotNetOpenId {
 
 		XrdsDocument downloadXrds() {
 			var xrdsResponse = UntrustedWebRequest.Request(XrdsUrl);
-			return new XrdsDocument(XmlReader.Create(xrdsResponse.ResponseStream));
+			XrdsDocument doc = new XrdsDocument(XmlReader.Create(xrdsResponse.ResponseStream));
+			if (!doc.IsXrdResolutionSuccessful) {
+				throw new OpenIdException(Strings.XriResolutionFailed);
+			}
+			return doc;
 		}
 
 		internal override IEnumerable<ServiceEndpoint> Discover() {

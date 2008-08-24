@@ -301,4 +301,10 @@ Discovered endpoint info:
   <data name="UnspecifiedDateTimeKindNotAllowed" xml:space="preserve">
     <value>Providing a DateTime whose Kind is Unspecified is not allowed.</value>
   </data>
+  <data name="XriResolutionFailed" xml:space="preserve">
+    <value>XRI resolution failed.</value>
+  </data>
+  <data name="XriResolutionStatusMissing" xml:space="preserve">
+    <value>Could not find XRI resolution Status tag or code attribute was invalid.</value>
+  </data>
 </root>

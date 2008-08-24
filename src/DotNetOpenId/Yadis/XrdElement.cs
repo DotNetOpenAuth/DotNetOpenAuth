@@ -22,6 +22,28 @@ namespace DotNetOpenId.Yadis {
 			}
 		}
 
+
+		int XriResolutionStatusCode {
+			get {
+				var n = Node.SelectSingleNode("xrd:Status", XmlNamespaceResolver);
+				string codeString;
+				if (n == null || string.IsNullOrEmpty(codeString = n.GetAttribute("code", ""))) {
+					throw new OpenIdException(Strings.XriResolutionStatusMissing);
+				}
+				int code;
+				if (!int.TryParse(codeString, out code) || code < 100 || code > 399) {
+					throw new OpenIdException(Strings.XriResolutionStatusMissing);
+				}
+				return code;
+			}
+		}
+
+		public bool IsXriResolutionSuccessful {
+			get {
+				return XriResolutionStatusCode == 100;
+			}
+		}
+
 		public string CanonicalID {
 			get {
 				var n = Node.SelectSingleNode("xrd:CanonicalID", XmlNamespaceResolver);

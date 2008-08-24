@@ -86,7 +86,7 @@ namespace DotNetOpenId.Yadis {
 						Logger.WarnFormat(Strings.MissingCanonicalIDElement, userSuppliedIdentifier);
 						break; // skip on to next service
 					}
-					if (!IsCanonicalIDVerified) {
+					if (!service.Xrd.IsCanonicalIdVerified) {
 						throw new OpenIdException(Strings.CIDVerificationFailed, userSuppliedIdentifier);
 					}
 					// In the case of XRI names, the ClaimedId is actually the CanonicalID.
@@ -134,10 +134,10 @@ namespace DotNetOpenId.Yadis {
 			}
 		}
 
-		bool IsCanonicalIDVerified {
+		internal bool IsXrdResolutionSuccessful {
 			get {
 				foreach (var xrd in XrdElements) {
-					if (!xrd.IsCanonicalIdVerified) {
+					if (!xrd.IsXriResolutionSuccessful) {
 						return false;
 					}
 				}

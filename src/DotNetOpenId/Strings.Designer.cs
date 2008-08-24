@@ -603,5 +603,23 @@ namespace DotNetOpenId {
                 return ResourceManager.GetString("UnspecifiedDateTimeKindNotAllowed", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to XRI resolution failed..
+        /// </summary>
+        internal static string XriResolutionFailed {
+            get {
+                return ResourceManager.GetString("XriResolutionFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find XRI resolution Status tag or code attribute was invalid..
+        /// </summary>
+        internal static string XriResolutionStatusMissing {
+            get {
+                return ResourceManager.GetString("XriResolutionStatusMissing", resourceCulture);
+            }
+        }
     }
 }
