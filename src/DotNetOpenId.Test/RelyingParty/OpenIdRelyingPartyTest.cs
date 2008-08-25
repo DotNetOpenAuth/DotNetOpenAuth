@@ -204,7 +204,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 			string xrds = @"<?xml version='1.0' encoding='UTF-8'?>
 <XRD xmlns='xri://$xrd*($v*2.0)'>
  <Query>=MultipleEndpoint</Query>
- <Status cid='verified' />
+ <Status cid='verified' code='100' />
  <ProviderID>=!91F2.8153.F600.AE24</ProviderID>
  <CanonicalID>=!91F2.8153.F600.AE24</CanonicalID>
  <Service>
