@@ -23,7 +23,7 @@ namespace DotNetOpenId.RelyingParty {
 						if (Array.IndexOf(Protocol.Args.SignatureAlgorithm.All, assoc_type) >= 0 &&
 							Array.IndexOf(Protocol.Args.SessionType.All, session_type) >= 0 &&
 							RelyingParty.Settings.IsAssociationInPermittedRange(Protocol, assoc_type)) {
-							SecondAttempt = AssociateRequest.Create(RelyingParty, Provider, assoc_type, session_type);
+							SecondAttempt = AssociateRequest.Create(RelyingParty, Provider, assoc_type, session_type, false);
 						}
 					}
 				}
