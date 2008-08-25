@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
+using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -41,10 +41,10 @@ namespace DotNetOpenId.RelyingParty {
 					string formAuthData = Page.Request.Form["openidAuthData"];
 
 					// First see if there is fresh auth data to be processed into a response.
-					if (!string.Equals(viewstateAuthData, formAuthData, StringComparison.Ordinal)) {
+					if (formAuthData != null && !string.Equals(viewstateAuthData, formAuthData, StringComparison.Ordinal)) {
 						ViewState[authDataViewStateKey] = formAuthData;
 
-						Uri authUri = new Uri(formAuthData);
+						Uri authUri = new Uri(formAuthData ?? viewstateAuthData);
 						var authDataFields = HttpUtility.ParseQueryString(authUri.Query);
 						var rp = new OpenIdRelyingParty(OpenIdRelyingParty.HttpApplicationStore,
 							authUri, authDataFields);
@@ -275,6 +275,12 @@ namespace DotNetOpenId.RelyingParty {
 			base.OnLoad(e);
 
 			if (Page.IsPostBack) {
+				// If the control was temporarily hidden, it won't be in the Form data,
+				// and we'll just implicitly keep the last Text setting.
+				if (Page.Request.Form[Name] != null) {
+					Text = Page.Request.Form[Name];
+				}
+
 				// If there is a response, and it is fresh (live object, not a snapshot object)...
 				if (AuthenticationResponse != null && AuthenticationResponse is AuthenticationResponse) {
 					switch (AuthenticationResponse.Status) {
@@ -342,12 +348,17 @@ if (!openidbox.onSubmit()) {{ return false; }}
 			base.OnPreRender(e);
 
 			prepareClientJavascript();
+			StringBuilder startupScript = new StringBuilder();
+			startupScript.AppendLine("<script language='javascript'>");
+			startupScript.AppendFormat("var box = document.getElementsByName('{0}')[0];{1}", Name, Environment.NewLine);
 			if (focusCalled) {
-				Page.ClientScript.RegisterStartupScript(GetType(), "focus", string.Format(CultureInfo.InvariantCulture, @"
-<script language='javascript'>
-document.getElementsByName('{0}')[0].focus();
-</script>", Name));
+				startupScript.AppendLine("box.focus();");
 			}
+			if (AuthenticationResponse != null && AuthenticationResponse.Status == AuthenticationStatus.Authenticated) {
+				startupScript.AppendFormat("box.openidAuthResult('{0}');{1}", ViewState[authDataViewStateKey].ToString().Replace("'", "\\'"), Environment.NewLine);
+			}
+			startupScript.AppendLine("</script>");
+			Page.ClientScript.RegisterStartupScript(GetType(), "focus", startupScript.ToString());
 		}
 
 		/// <summary>

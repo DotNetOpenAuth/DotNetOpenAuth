@@ -11,7 +11,6 @@ namespace DotNetOpenId.RelyingParty {
 			ClaimedIdentifier = copyFrom.ClaimedIdentifier;
 			FriendlyIdentifierForDisplay = copyFrom.FriendlyIdentifierForDisplay;
 			Status = copyFrom.Status;
-			Exception = copyFrom.Exception;
 		}
 
 		#region IAuthenticationResponse Members
@@ -30,7 +29,9 @@ namespace DotNetOpenId.RelyingParty {
 
 		public AuthenticationStatus Status { get; private set; }
 
-		public Exception Exception { get; private set; }
+		public Exception Exception {
+			get { throw new NotSupportedException(Strings.NotSupportedByAuthenticationSnapshot); }
+		}
 
 		#endregion
 	}

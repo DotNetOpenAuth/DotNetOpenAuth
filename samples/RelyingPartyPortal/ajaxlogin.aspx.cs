@@ -17,15 +17,18 @@ namespace ConsumerPortal {
 			});
 		}
 
+		protected void OpenIdAjaxTextBox1_LoggedIn(object sender, OpenIdEventArgs e) {
+			var claims = OpenIdAjaxTextBox1.AuthenticationResponse.GetExtension<ClaimsResponse>();
+			if (claims != null) {
+				((Label)commentSubmitted.FindControl("emailLabel")).Text = claims.Email;
+			}
+		}
+
 		protected void submitButton_Click(object sender, EventArgs e) {
 			if (OpenIdAjaxTextBox1.AuthenticationResponse != null) {
 				if (OpenIdAjaxTextBox1.AuthenticationResponse.Status == AuthenticationStatus.Authenticated) {
 					// Save comment here!
 					multiView.ActiveViewIndex = 1;
-					var claims = OpenIdAjaxTextBox1.AuthenticationResponse.GetExtension<ClaimsResponse>();
-					if (claims != null) {
-						((Label)commentSubmitted.FindControl("emailLabel")).Text = claims.Email;
-					}
 				} else {
 					multiView.ActiveViewIndex = 2;
 				}
