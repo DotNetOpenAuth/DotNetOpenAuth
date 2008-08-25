@@ -3,56 +3,59 @@
 	//window.status = msg;
 }
 
-function constructButton(box, text, tooltip, onclick) {
-	var button = document.createElement('button');
-	button.textContent = text; // Mozilla
-	button.value = text; // IE
-	button.title = tooltip;
-	button.onclick = onclick;
-	button.style.visibility = 'hidden';
-	button.style.position = 'absolute';
-	button.style.padding = "0px";
-	button.style.fontSize = '8px';
-	button.style.top = "1px";
-	button.style.bottom = "1px";
-	button.style.right = "2px";
-	box.parentNode.appendChild(button);
-	return button;
-}
-
-function constructIcon(box, imageUrl, tooltip) {
-	var icon = document.createElement('img');
-	icon.src = imageUrl;
-	icon.title = tooltip;
-	icon.style.visibility = 'hidden';
-	icon.style.position = 'absolute';
-	icon.style.top = "2px";
-	icon.style.right = "2px";
-	box.parentNode.appendChild(icon);
-	return icon;
-}
-
 function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 	box.originalBackground = box.style.background;
 	box.timeout = timeout;
 
-	box.loginButton = constructButton(box, "LOG IN", "Click here to log in using a pop-up window.", function() {
+	box.constructButton = function (text, tooltip, onclick) {
+		var button = document.createElement('button');
+		button.textContent = text; // Mozilla
+		button.value = text; // IE
+		button.title = tooltip;
+		button.onclick = onclick;
+		button.style.visibility = 'hidden';
+		button.style.position = 'absolute';
+		button.style.padding = "0px";
+		button.style.fontSize = '8px';
+		button.style.top = "1px";
+		button.style.bottom = "1px";
+		button.style.right = "2px";
+		box.parentNode.appendChild(button);
+		return button;
+	}
+
+	box.constructIcon = function (imageUrl, tooltip) {
+		var icon = document.createElement('img');
+		icon.src = imageUrl;
+		icon.title = tooltip;
+		icon.style.visibility = 'hidden';
+		icon.style.position = 'absolute';
+		icon.style.top = "2px";
+		icon.style.right = "2px";
+		box.parentNode.appendChild(icon);
+		return icon;
+	}
+
+	box.prefetchImage = function(imageUrl) {
+		var img = document.createElement('img');
+		img.src = imageUrl;
+		img.style.display = 'none';
+		box.parentNode.appendChild(img);
+		return img;
+	}
+
+	box.loginButton = box.constructButton("LOG IN", "Click here to log in using a pop-up window.", function() {
 		box.popup = window.open(getAuthenticationUrl(), 'opLogin', 'status=0,toolbar=0,resizable=1,scrollbars=1,width=800,height=600');
 		self.waiting_openidBox = box;
 		return false;
 	});
-	box.retryButton = constructButton(box, "RETRY", "Retry a failed identifier discovery.", function() {
+	box.retryButton = box.constructButton("RETRY", "Retry a failed identifier discovery.", function() {
 		box.timeout += 5000; // give the retry attempt 5s longer than the last attempt
 		box.performDiscovery();
 		return false;
 	});
-	box.spinner = constructIcon(box, spinner_url, "Discovering/authenticating");
-
-	// pre-fetch the DNOI icon
-	var prefetchImage = document.createElement('img');
-	prefetchImage.src = dotnetopenid_logo_url;
-	prefetchImage.style.display = 'none';
-	box.parentNode.appendChild(prefetchImage);
+	box.spinner = box.constructIcon(spinner_url, "Discovering/authenticating");
+	box.prefetchImage(dotnetopenid_logo_url);
 
 	box.setVisualCue = function(state) {
 		box.spinner.style.visibility = 'hidden';
