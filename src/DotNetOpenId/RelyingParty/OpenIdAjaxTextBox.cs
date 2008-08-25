@@ -248,7 +248,6 @@ namespace DotNetOpenId.RelyingParty {
 		protected override void OnLoad(EventArgs e) {
 			base.OnLoad(e);
 
-			prepareClientJavascript();
 			if (!Page.IsPostBack) {
 				string userSuppliedIdentifier = Page.Request.QueryString["dotnetopenid.userSuppliedIdentifier"];
 				if (!string.IsNullOrEmpty(userSuppliedIdentifier)) {
@@ -269,11 +268,15 @@ namespace DotNetOpenId.RelyingParty {
 			Page.ClientScript.RegisterStartupScript(GetType(), "ajaxstartup", string.Format(CultureInfo.InvariantCulture, @"
 <script language='javascript'>
 var openidbox = document.getElementsByName('{0}')[0];
-if (openidbox) {{ initAjaxOpenId(openidbox, '{1}', '{2}', {3}); }}
+initAjaxOpenId(openidbox, '{1}', '{2}', {3});
 </script>", Name,
 				Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedDotNetOpenIdLogoResourceName),
 				Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedSpinnerResourceName),
 				Timeout.TotalMilliseconds));
+			Page.ClientScript.RegisterOnSubmitStatement(GetType(), "loginvalidation", string.Format(CultureInfo.InvariantCulture, @"
+var openidbox = document.getElementsByName('{0}')[0];
+if (!openidbox.onSubmit()) {{ return false; }}
+", Name));
 		}
 
 		private void performDiscovery(string userSuppliedIdentifier) {
@@ -300,6 +303,7 @@ if (openidbox) {{ initAjaxOpenId(openidbox, '{1}', '{2}', {3}); }}
 		protected override void OnPreRender(EventArgs e) {
 			base.OnPreRender(e);
 
+			prepareClientJavascript();
 			if (focusCalled) {
 				Page.ClientScript.RegisterStartupScript(GetType(), "focus", string.Format(CultureInfo.InvariantCulture, @"
 <script language='javascript'>

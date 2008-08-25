@@ -7,7 +7,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 	box.originalBackground = box.style.background;
 	box.timeout = timeout;
 
-	box.constructButton = function (text, tooltip, onclick) {
+	box.constructButton = function(text, tooltip, onclick) {
 		var button = document.createElement('button');
 		button.textContent = text; // Mozilla
 		button.value = text; // IE
@@ -24,7 +24,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 		return button;
 	}
 
-	box.constructIcon = function (imageUrl, tooltip) {
+	box.constructIcon = function(imageUrl, tooltip) {
 		var icon = document.createElement('img');
 		icon.src = imageUrl;
 		icon.title = tooltip;
@@ -83,6 +83,10 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 			box.retryButton.style.visibility = 'visible';
 			window.status = "Authentication failed.";
 			box.title = "Authentication failed.";
+		} else if (state == 'required') {
+			box.style.background = box.originalBackground;
+			box.style.backgroundColor = 'pink';
+			box.title = "This field is required.";
 		} else if (state = '' || state == null) {
 			box.style.background = box.originalBackground;
 			box.title = null;
@@ -92,6 +96,26 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 		}
 	}
 
+	box.isBusy = function() {
+		return box.discoveryIFrame != null;
+	};
+
+	box.onSubmit = function() {
+		if (box.lastAuthenticationResult != 'authenticated') {
+			if (box.isBusy()) {
+				alert('Please wait for login to complete.');
+			} else {
+				if (box.value.length > 0) {
+					alert('Please correct errors in OpenID identifier and allow login to complete before submitting.');
+				} else {
+					box.setVisualCue('required');
+				}
+			}
+			return false;
+		}
+		return true;
+	}
+
 	this.getAuthenticationUrl = function(immediateMode) {
 		var frameLocation = new Uri(document.location.href);
 		var discoveryUri = frameLocation.trimQueryAndFragment().toString() + '?' + 'dotnetopenid.userSuppliedIdentifier=' + escape(box.value);
@@ -99,7 +123,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 			discoveryUri += "&dotnetopenid.immediate=true";
 		}
 		return discoveryUri;
-	}
+	};
 
 	box.performDiscovery = function() {
 		box.closeDiscoveryIFrame();
@@ -113,7 +137,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 		}
 		trace('Performing discovery using url: ' + discoveryUri);
 		box.discoveryIFrame = createHiddenFrame(discoveryUri);
-	}
+	};
 
 	function findParentForm(element) {
 		if (element == null || element.nodeName == "FORM") {
@@ -121,7 +145,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 		}
 
 		return findParentForm(element.parentNode);
-	}
+	};
 
 	function findOrCreateHiddenField(form, name) {
 		if (box.hiddenField) {
@@ -133,7 +157,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 		box.hiddenField.setAttribute("type", "hidden");
 		form.appendChild(box.hiddenField);
 		return box.hiddenField;
-	}
+	};
 
 	function createHiddenFrame(url) {
 		var iframe = document.createElement("iframe");
@@ -145,7 +169,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 		box.parentNode.insertBefore(iframe, box);
 		box.discoveryTimeout = setTimeout(function() { trace("timeout"); box.openidDiscoveryFailure("Timed out"); }, box.timeout);
 		return iframe;
-	}
+	};
 
 	this.parentForm = findParentForm(box);
 
@@ -155,7 +179,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 		box.lastAuthenticationResult = 'failed';
 		box.setVisualCue('failed');
 		box.title = msg;
-	}
+	};
 
 	box.closeDiscoveryIFrame = function() {
 		if (box.discoveryTimeout) {
@@ -165,7 +189,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 			box.discoveryIFrame.parentNode.removeChild(box.discoveryIFrame);
 			box.discoveryIFrame = null;
 		}
-	}
+	};
 
 	box.openidAuthResult = function(resultUrl) {
 		self.waiting_openidBox = null;
@@ -198,7 +222,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 			box.setVisualCue('setup');
 			box.lastAuthenticationResult = 'setup';
 		}
-	}
+	};
 
 	function isAuthSuccessful(resultUri) {
 		if (isOpenID2Response(resultUri)) {
@@ -206,11 +230,11 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 		} else {
 			return resultUri.getQueryArgValue("openid.mode") == "id_res" && !resultUri.containsQueryArg("openid.user_setup_url");
 		}
-	}
+	};
 
 	function isOpenID2Response(resultUri) {
 		return resultUri.containsQueryArg("openid.ns");
-	}
+	};
 
 	box.onblur = function(event) {
 		if (box.lastDiscoveredIdentifier != box.value) {
@@ -222,7 +246,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 			box.oldvalue = box.value;
 		}
 		return true;
-	}
+	};
 	box.onkeyup = function(event) {
 		if (box.lastDiscoveredIdentifier != box.value) {
 			box.setVisualCue();
@@ -230,7 +254,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 			box.setVisualCue(box.lastAuthenticationResult);
 		}
 		return true;
-	}
+	};
 }
 
 function Uri(url) {
@@ -238,7 +262,7 @@ function Uri(url) {
 
 	this.toString = function() {
 		return this.originalUri;
-	}
+	};
 
 	this.trimQueryAndFragment = function() {
 		var qmark = this.originalUri.indexOf('?');
@@ -246,12 +270,12 @@ function Uri(url) {
 		if (qmark < 0) { qmark = this.originalUri.length; }
 		if (hashmark < 0) { hashmark = this.originalUri.length; }
 		return new Uri(this.originalUri.substr(0, Math.min(qmark, hashmark)));
-	}
+	};
 
 	function KeyValuePair(key, value) {
 		this.key = key;
 		this.value = value;
-	}
+	};
 
 	this.Pairs = Array();
 
@@ -264,7 +288,7 @@ function Uri(url) {
 			var pair = queryStringPairs[i].split('=');
 			this.Pairs.push(new KeyValuePair(unescape(pair[0]), unescape(pair[1])))
 		}
-	}
+	};
 
 	this.getQueryArgValue = function(key) {
 		for (var i = 0; i < this.Pairs.length; i++) {
@@ -272,16 +296,15 @@ function Uri(url) {
 				return this.Pairs[i].value;
 			}
 		}
-	}
+	};
 
 	this.containsQueryArg = function(key) {
 		return this.getQueryArgValue(key);
-	}
+	};
 
 	this.indexOf = function(args) {
 		return this.originalUri.indexOf(args);
-	}
+	};
 
 	return this;
-}
-
+};
