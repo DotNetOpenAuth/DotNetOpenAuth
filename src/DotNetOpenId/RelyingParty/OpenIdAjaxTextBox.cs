@@ -24,6 +24,8 @@ namespace DotNetOpenId.RelyingParty {
 
 		#region Properties
 
+		const string authenticationResponseViewStateKey = "AuthenticationResponse";
+		const string authDataViewStateKey = "AuthData";
 		IAuthenticationResponse authenticationResponse;
 		/// <summary>
 		/// Gets the completed authentication response.
@@ -31,13 +33,28 @@ namespace DotNetOpenId.RelyingParty {
 		public IAuthenticationResponse AuthenticationResponse {
 			get {
 				if (authenticationResponse == null) {
-					string authData = Page.Request.Form["openidAuthData"];
-					if (!string.IsNullOrEmpty(authData)) {
-						Uri authUri = new Uri(authData);
+					// We will either validate a new response and return a live AuthenticationResponse
+					// or we will try to deserialize a previous IAuthenticationResponse (snapshot)
+					// from viewstate and return that.
+					IAuthenticationResponse viewstateResponse = ViewState[authenticationResponseViewStateKey] as IAuthenticationResponse;
+					string viewstateAuthData = ViewState[authDataViewStateKey] as string;
+					string formAuthData = Page.Request.Form["openidAuthData"];
+
+					// First see if there is fresh auth data to be processed into a response.
+					if (!string.Equals(viewstateAuthData, formAuthData, StringComparison.Ordinal)) {
+						ViewState[authDataViewStateKey] = formAuthData;
+
+						Uri authUri = new Uri(formAuthData);
 						var authDataFields = HttpUtility.ParseQueryString(authUri.Query);
 						var rp = new OpenIdRelyingParty(OpenIdRelyingParty.HttpApplicationStore,
 							authUri, authDataFields);
 						authenticationResponse = rp.Response;
+
+						// Save out the authentication response to viewstate so we can find it on
+						// a subsequent postback.
+						ViewState[authenticationResponseViewStateKey] = new AuthenticationResponseSnapshot(authenticationResponse);
+					} else {
+						authenticationResponse = viewstateResponse;
 					}
 				}
 				return authenticationResponse;
@@ -258,7 +275,8 @@ namespace DotNetOpenId.RelyingParty {
 			base.OnLoad(e);
 
 			if (Page.IsPostBack) {
-				if (AuthenticationResponse != null) {
+				// If there is a response, and it is fresh (live object, not a snapshot object)...
+				if (AuthenticationResponse != null && AuthenticationResponse is AuthenticationResponse) {
 					switch (AuthenticationResponse.Status) {
 						case AuthenticationStatus.Authenticated:
 							OnLoggedIn(AuthenticationResponse);

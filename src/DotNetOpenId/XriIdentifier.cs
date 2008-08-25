@@ -8,6 +8,7 @@ using System.IO;
 using System.Xml;
 
 namespace DotNetOpenId {
+	[Serializable]
 	class XriIdentifier : Identifier {
 		internal static readonly char[] GlobalContextSymbols = { '=', '@', '+', '$', '!' };
 		const string xriScheme = "xri://";

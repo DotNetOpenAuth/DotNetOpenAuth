@@ -250,6 +250,9 @@ Discovered endpoint info:
   <data name="NoRelyingPartyEndpointDiscovered" xml:space="preserve">
     <value>No XRDS document containing OpenId relying party endpoint information could be found at {0}.</value>
   </data>
+  <data name="NotSupportedByAuthenticationSnapshot" xml:space="preserve">
+    <value>This operation is not supported by serialized authentication responses.  Try this operation from the LoggedIn event handler.</value>
+  </data>
   <data name="OpenIdEndpointNotFound" xml:space="preserve">
     <value>No OpenId endpoint found.</value>
   </data>

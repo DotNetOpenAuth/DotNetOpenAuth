@@ -7,6 +7,7 @@ using DotNetOpenId.RelyingParty;
 using DotNetOpenId.Yadis;
 
 namespace DotNetOpenId {
+	[Serializable]
 	class UriIdentifier : Identifier {
 		static readonly string[] allowedSchemes = { "http", "https" };
 		public static implicit operator Uri(UriIdentifier identifier) {

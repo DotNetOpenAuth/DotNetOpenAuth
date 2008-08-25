@@ -31,5 +31,9 @@ namespace ConsumerPortal {
 				}
 			}
 		}
+
+		protected void editComment_Click(object sender, EventArgs e) {
+			multiView.ActiveViewIndex = 0;
+		}
 	}
 }

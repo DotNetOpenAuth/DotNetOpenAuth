@@ -452,6 +452,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This operation is not supported by serialized authentication responses.  Try this operation from the LoggedIn event handler..
+        /// </summary>
+        internal static string NotSupportedByAuthenticationSnapshot {
+            get {
+                return ResourceManager.GetString("NotSupportedByAuthenticationSnapshot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No OpenId endpoint found..
         /// </summary>
         internal static string OpenIdEndpointNotFound {
