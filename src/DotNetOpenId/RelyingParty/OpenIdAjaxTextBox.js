@@ -152,6 +152,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 	box.openidDiscoveryFailure = function(msg) {
 		box.closeDiscoveryIFrame();
 		trace('Discovery failure: ' + msg);
+		box.lastAuthenticationResult = 'failed';
 		box.setVisualCue('failed');
 		box.title = msg;
 	}
