@@ -162,6 +162,10 @@ namespace DotNetOpenId.RelyingParty {
 			}
 		}
 
+		public bool IsTypeUriPresent(string typeUri) {
+			return IsExtensionSupported(typeUri);
+		}
+
 		public bool IsExtensionSupported(string extensionUri) {
 			if (ProviderSupportedServiceTypeUris == null)
 				throw new InvalidOperationException("Cannot lookup extension support on a rehydrated ServiceEndpoint.");
