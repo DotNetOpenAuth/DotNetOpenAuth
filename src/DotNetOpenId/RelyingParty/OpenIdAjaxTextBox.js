@@ -3,39 +3,49 @@
 	//window.status = msg;
 }
 
+function constructButton(box, text, tooltip, onclick) {
+	var button = document.createElement('button');
+	button.textContent = text; // Mozilla
+	button.value = text; // IE
+	button.title = tooltip;
+	button.onclick = onclick;
+	button.style.visibility = 'hidden';
+	button.style.position = 'absolute';
+	button.style.padding = "0px";
+	button.style.fontSize = '8px';
+	button.style.top = "1px";
+	button.style.bottom = "1px";
+	button.style.right = "2px";
+	box.parentNode.appendChild(button);
+	return button;
+}
+
+function constructIcon(box, imageUrl) {
+	var icon = document.createElement('img');
+	icon.src = imageUrl;
+	icon.style.visibility = 'hidden';
+	icon.style.position = 'absolute';
+	icon.style.top = "2px";
+	icon.style.right = "2px";
+	box.parentNode.appendChild(icon);
+	return icon;
+}
+
 function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 	box.originalBackground = box.style.background;
 	box.timeout = timeout;
 
-	// Construct the login button
-	var loginButton = document.createElement('button');
-	loginButton.textContent = "LOG IN"; // Mozilla
-	loginButton.value = "LOG IN"; // IE
-	loginButton.title = "Click here to log in using a pop-up window."
-	loginButton.onclick = function() {
+	box.loginButton = constructButton(box, "LOG IN", "Click here to log in using a pop-up window.", function() {
 		box.popup = window.open(getAuthenticationUrl(), 'opLogin', 'status=0,toolbar=0,resizable=1,scrollbars=1,width=800,height=600');
 		self.waiting_openidBox = box;
 		return false;
-	};
-	loginButton.style.visibility = 'hidden';
-	loginButton.style.position = 'absolute';
-	loginButton.style.padding = "0px";
-	loginButton.style.fontSize = '8px';
-	loginButton.style.top = "1px";
-	loginButton.style.bottom = "1px";
-	loginButton.style.right = "2px";
-	box.parentNode.appendChild(loginButton);
-	box.loginButton = loginButton;
-
-	// Construct the "discovering" busy icon
-	var spinner = document.createElement('img');
-	spinner.src = spinner_url;
-	spinner.style.visibility = 'hidden';
-	spinner.style.position = 'absolute';
-	spinner.style.top = "2px";
-	spinner.style.right = "2px";
-	box.parentNode.appendChild(spinner);
-	box.spinner = spinner;
+	});
+	box.retryButton = constructButton(box, "RETRY", "Retry a failed identifier discovery.", function() {
+		box.timeout += 5000; // give the retry attempt 5s longer than the last attempt
+		box.performDiscovery();
+		return false;
+	});
+	box.spinner = constructIcon(box, spinner_url);
 
 	// pre-fetch the DNOI icon
 	var prefetchImage = document.createElement('img');
@@ -46,6 +56,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 	box.setVisualCue = function(state) {
 		box.spinner.style.visibility = 'hidden';
 		box.loginButton.style.visibility = 'hidden';
+		box.retryButton.style.visibility = 'hidden';
 		box.title = null;
 		if (state == "discovering") {
 			box.style.background = 'url(' + dotnetopenid_logo_url + ') no-repeat';
@@ -65,6 +76,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 		} else if (state == "failed") {
 			box.style.background = box.originalBackground;
 			box.style.backgroundColor = 'pink';
+			box.retryButton.style.visibility = 'visible';
 			window.status = "Authentication failed.";
 			box.title = "Authentication failed.";
 		} else if (state = '' || state == null) {
