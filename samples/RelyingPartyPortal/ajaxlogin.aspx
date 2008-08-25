@@ -11,7 +11,8 @@
 						OpenID
 					</td>
 					<td>
-						<cc1:OpenIdAjaxTextBox ID="OpenIdAjaxTextBox1" runat="server" OnLoggingIn="OpenIdAjaxTextBox_LoggingIn" />
+						<cc1:OpenIdAjaxTextBox ID="OpenIdAjaxTextBox1" runat="server" 
+							OnLoggingIn="OpenIdAjaxTextBox1_LoggingIn" />
 					</td>
 				</tr>
 				<tr>

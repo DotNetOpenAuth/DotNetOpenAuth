@@ -11,7 +11,7 @@ namespace ConsumerPortal {
 			}
 		}
 
-		protected void OpenIdAjaxTextBox_LoggingIn(object sender, OpenIdEventArgs e) {
+		protected void OpenIdAjaxTextBox1_LoggingIn(object sender, OpenIdEventArgs e) {
 			e.Request.AddExtension(new ClaimsRequest {
 				Email = DemandLevel.Request,
 			});

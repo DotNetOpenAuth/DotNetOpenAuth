@@ -26,15 +26,8 @@ namespace DotNetOpenId.RelyingParty {
 
 		IAuthenticationResponse authenticationResponse;
 		/// <summary>
-		/// Gets the completed authentication response in a postback.
+		/// Gets the completed authentication response.
 		/// </summary>
-		/// <remarks>
-		/// Calling this property's getter causes the authentication process to complete,
-		/// which prevents the authentication from completing (again) on any subsequent postback.
-		/// Only call this property from the host page when ready to handle completed authentication
-		/// and store the result somewhere so subsequent postbacks or pages on the hosting site
-		/// can access the authentication result.
-		/// </remarks>
 		public IAuthenticationResponse AuthenticationResponse {
 			get {
 				if (authenticationResponse == null) {
@@ -250,13 +243,31 @@ namespace DotNetOpenId.RelyingParty {
 			}
 		}
 
+		public event EventHandler<OpenIdEventArgs> LoggedIn;
+		protected virtual void OnLoggedIn(IAuthenticationResponse response) {
+			var loggedIn = LoggedIn;
+			if (loggedIn != null) {
+				loggedIn(this, new OpenIdEventArgs(response));
+			}
+		}
+
 		/// <summary>
 		/// Prepares the control for loading.
 		/// </summary>
 		protected override void OnLoad(EventArgs e) {
 			base.OnLoad(e);
 
-			if (!Page.IsPostBack) {
+			if (Page.IsPostBack) {
+				if (AuthenticationResponse != null) {
+					switch (AuthenticationResponse.Status) {
+						case AuthenticationStatus.Authenticated:
+							OnLoggedIn(AuthenticationResponse);
+							break;
+						default:
+							break;
+					}
+				}
+			} else {
 				string userSuppliedIdentifier = Page.Request.QueryString["dotnetopenid.userSuppliedIdentifier"];
 				if (!string.IsNullOrEmpty(userSuppliedIdentifier)) {
 					Logger.Info("AJAX (iframe) request detected.");
