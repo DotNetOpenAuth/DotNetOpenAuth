@@ -22,7 +22,7 @@ namespace DotNetOpenId {
 			if (requireSsl) {
 				// Indicate to xri.net that we require SSL to be used for delegated resolution
 				// of community i-names.
-				xriResolverProxy += "&ssl=true";
+				xriResolverProxy += ";https=true";
 			}
 			OriginalXri = xri;
 			CanonicalXri = canonicalizeXri(xri);
@@ -52,6 +52,7 @@ namespace DotNetOpenId {
 		/// Takes any valid form of XRI string and returns the canonical form of the same XRI.
 		/// </summary>
 		static string canonicalizeXri(string xri) {
+			xri = xri.Trim();
 			if (xri.StartsWith(xriScheme, StringComparison.OrdinalIgnoreCase))
 				xri = xri.Substring(xriScheme.Length);
 			return xri;
@@ -81,11 +82,15 @@ namespace DotNetOpenId {
 
 		XrdsDocument downloadXrds() {
 			var xrdsResponse = UntrustedWebRequest.Request(XrdsUrl);
-			return new XrdsDocument(XmlReader.Create(xrdsResponse.ResponseStream));
+			XrdsDocument doc = new XrdsDocument(XmlReader.Create(xrdsResponse.ResponseStream));
+			if (!doc.IsXrdResolutionSuccessful) {
+				throw new OpenIdException(Strings.XriResolutionFailed);
+			}
+			return doc;
 		}
 
 		internal override IEnumerable<ServiceEndpoint> Discover() {
-			return downloadXrds().CreateServiceEndpoints(this, this);
+			return downloadXrds().CreateServiceEndpoints(this);
 		}
 
 		/// <summary>
@@ -93,7 +98,7 @@ namespace DotNetOpenId {
 		/// instances that treat another given identifier as the user-supplied identifier.
 		/// </summary>
 		internal IEnumerable<ServiceEndpoint> Discover(XriIdentifier userSuppliedIdentifier) {
-			return downloadXrds().CreateServiceEndpoints(this, userSuppliedIdentifier);
+			return downloadXrds().CreateServiceEndpoints(userSuppliedIdentifier);
 		}
 
 		internal override Identifier TrimFragment() {

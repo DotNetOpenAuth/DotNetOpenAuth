@@ -51,6 +51,16 @@ public partial class loginProgrammatic : System.Web.UI.Page {
 
 	protected void Page_Load(object sender, EventArgs e) {
 		openIdBox.Focus();
+		// For debugging/testing, we allow remote clearing of all associations...
+		// NOT a good idea on a production site.
+		if (Request.QueryString["clearAssociations"] == "1") {
+			Application.Remove("DotNetOpenId.RelyingParty.RelyingParty.AssociationStore");
+			// Force a redirect now to prevent the user from logging in while associations
+			// are constantly being cleared.
+			UriBuilder builder = new UriBuilder(Request.Url);
+			builder.Query = null;
+			Response.Redirect(builder.Uri.AbsoluteUri);
+		}
 
 		OpenIdRelyingParty openid = createRelyingParty();
 		if (openid.Response != null) {

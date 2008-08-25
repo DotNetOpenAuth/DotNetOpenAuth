@@ -18,11 +18,12 @@ namespace DotNetOpenId.RelyingParty {
 			// Make sure that the OP fulfills the required OpenID version.
 			// We don't use Provider.Protocol here because that's just a cache of
 			// what we _thought_ the OP would support, and our purpose is to double-check this.
-			if (Protocol.Detect(args).ProtocolVersion < relyingParty.Settings.MinimumRequiredOpenIdVersion) {
+			ProtocolVersion detectedProtocol = Protocol.DetectFromDirectResponse(args).ProtocolVersion;
+			if (detectedProtocol < relyingParty.Settings.MinimumRequiredOpenIdVersion) {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.MinimumOPVersionRequirementNotMet,
 					Protocol.Lookup(relyingParty.Settings.MinimumRequiredOpenIdVersion).Version,
-					provider.Protocol.Version));
+					Protocol.Lookup(detectedProtocol).Version));
 			}
 
 			if (Logger.IsErrorEnabled) {
