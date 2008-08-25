@@ -232,6 +232,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The Provider requested association type {0} and session type {1}, which are not compatible with each other..
+        /// </summary>
+        internal static string IncompatibleAssociationAndSessionTypes {
+            get {
+                return ResourceManager.GetString("IncompatibleAssociationAndSessionTypes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Inconsistent setting of application state.  Authentication request was sent with application state available, but authentication response was received without it available.  This makes it impossible to validate the token&apos;s signature and will cause assertion verification failure..
         /// </summary>
         internal static string InconsistentAppState {

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Org.Mentalis.Security.Cryptography;
 using System.Diagnostics;
+using System.Globalization;
+using Org.Mentalis.Security.Cryptography;
 
 namespace DotNetOpenId.RelyingParty {
 	[DebuggerDisplay("Mode: {Args[\"openid.mode\"]}, {Args[\"openid.assoc_type\"]}, OpenId: {Protocol.Version}")]
@@ -43,6 +43,11 @@ namespace DotNetOpenId.RelyingParty {
 			if (session_type == null) throw new ArgumentNullException("session_type");
 			Debug.Assert(Array.IndexOf(provider.Protocol.Args.SignatureAlgorithm.All, assoc_type) >= 0);
 			Debug.Assert(Array.IndexOf(provider.Protocol.Args.SessionType.All, session_type) >= 0);
+
+			if (!HmacShaAssociation.IsDHSessionCompatible(provider.Protocol, assoc_type, session_type)) {
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
+					Strings.IncompatibleAssociationAndSessionTypes, assoc_type, session_type));
+			}
 
 			var args = new Dictionary<string, string>();
 			Protocol protocol = provider.Protocol;
