@@ -252,6 +252,11 @@ namespace DotNetOpenId.RelyingParty {
 			// of any of its parent containers.
 		}
 
+		/// <summary>
+		/// Fired when the user has typed in their identifier, discovery was successful
+		/// and a login attempt is about to begin.
+		/// </summary>
+		[Description("Fired when the user has typed in their identifier, discovery was successful and a login attempt is about to begin.")]
 		public event EventHandler<OpenIdEventArgs> LoggingIn;
 		protected virtual void OnLoggingIn(IAuthenticationRequest request) {
 			var loggingIn = LoggingIn;
@@ -260,6 +265,10 @@ namespace DotNetOpenId.RelyingParty {
 			}
 		}
 
+		/// <summary>
+		/// Fired when authentication has completed successfully.
+		/// </summary>
+		[Description("Fired when authentication has completed successfully.")]
 		public event EventHandler<OpenIdEventArgs> LoggedIn;
 		protected virtual void OnLoggedIn(IAuthenticationResponse response) {
 			var loggedIn = LoggedIn;
@@ -307,15 +316,25 @@ namespace DotNetOpenId.RelyingParty {
 		private void prepareClientJavascript() {
 			// Import the .js file where most of the code is.
 			Page.ClientScript.RegisterClientScriptResource(typeof(OpenIdAjaxTextBox), EmbeddedScriptResourceName);
-			// Cal into the .js file with initialization information.
-			Page.ClientScript.RegisterStartupScript(GetType(), "ajaxstartup", string.Format(CultureInfo.InvariantCulture, @"
-<script language='javascript'>
-var openidbox = document.getElementsByName('{0}')[0];
-initAjaxOpenId(openidbox, '{1}', '{2}', {3});
-</script>", Name,
+			// Call into the .js file with initialization information.
+			StringBuilder startupScript = new StringBuilder();
+			startupScript.AppendLine("<script language='javascript'>");
+			startupScript.AppendFormat("var box = document.getElementsByName('{0}')[0];{1}", Name, Environment.NewLine);
+			if (focusCalled) {
+				startupScript.AppendLine("box.focus();");
+			}
+			startupScript.AppendFormat("initAjaxOpenId(box, '{0}', '{1}', {2});{3}",
 				Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedDotNetOpenIdLogoResourceName),
 				Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedSpinnerResourceName),
-				Timeout.TotalMilliseconds));
+				Timeout.TotalMilliseconds,
+				Environment.NewLine);
+
+			if (AuthenticationResponse != null && AuthenticationResponse.Status == AuthenticationStatus.Authenticated) {
+				startupScript.AppendFormat("box.openidAuthResult('{0}');{1}", ViewState[authDataViewStateKey].ToString().Replace("'", "\\'"), Environment.NewLine);
+			}
+			startupScript.AppendLine("</script>");
+
+			Page.ClientScript.RegisterStartupScript(GetType(), "ajaxstartup", startupScript.ToString());
 			Page.ClientScript.RegisterOnSubmitStatement(GetType(), "loginvalidation", string.Format(CultureInfo.InvariantCulture, @"
 var openidbox = document.getElementsByName('{0}')[0];
 if (!openidbox.onSubmit()) {{ return false; }}
@@ -348,17 +367,6 @@ if (!openidbox.onSubmit()) {{ return false; }}
 			base.OnPreRender(e);
 
 			prepareClientJavascript();
-			StringBuilder startupScript = new StringBuilder();
-			startupScript.AppendLine("<script language='javascript'>");
-			startupScript.AppendFormat("var box = document.getElementsByName('{0}')[0];{1}", Name, Environment.NewLine);
-			if (focusCalled) {
-				startupScript.AppendLine("box.focus();");
-			}
-			if (AuthenticationResponse != null && AuthenticationResponse.Status == AuthenticationStatus.Authenticated) {
-				startupScript.AppendFormat("box.openidAuthResult('{0}');{1}", ViewState[authDataViewStateKey].ToString().Replace("'", "\\'"), Environment.NewLine);
-			}
-			startupScript.AppendLine("</script>");
-			Page.ClientScript.RegisterStartupScript(GetType(), "focus", startupScript.ToString());
 		}
 
 		/// <summary>
