@@ -20,9 +20,10 @@ function constructButton(box, text, tooltip, onclick) {
 	return button;
 }
 
-function constructIcon(box, imageUrl) {
+function constructIcon(box, imageUrl, tooltip) {
 	var icon = document.createElement('img');
 	icon.src = imageUrl;
+	icon.title = tooltip;
 	icon.style.visibility = 'hidden';
 	icon.style.position = 'absolute';
 	icon.style.top = "2px";
@@ -45,7 +46,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 		box.performDiscovery();
 		return false;
 	});
-	box.spinner = constructIcon(box, spinner_url);
+	box.spinner = constructIcon(box, spinner_url, "Discovering/authenticating");
 
 	// pre-fetch the DNOI icon
 	var prefetchImage = document.createElement('img');
