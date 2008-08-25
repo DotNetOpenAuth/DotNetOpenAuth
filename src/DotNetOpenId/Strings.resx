@@ -175,7 +175,7 @@
     <value>ClaimedIdentifier and LocalIdentifier must be the same when IsIdentifierSelect is true.</value>
   </data>
   <data name="IncompatibleAssociationAndSessionTypes" xml:space="preserve">
-    <value>The Provider requested association type {0} and session type {1}, which are not compatible with each other.</value>
+    <value>The Provider requested association type '{0}' and session type '{1}', which are not compatible with each other.</value>
   </data>
   <data name="InconsistentAppState" xml:space="preserve">
     <value>Inconsistent setting of application state.  Authentication request was sent with application state available, but authentication response was received without it available.  This makes it impossible to validate the token's signature and will cause assertion verification failure.</value>

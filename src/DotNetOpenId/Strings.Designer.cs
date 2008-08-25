@@ -232,7 +232,7 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The Provider requested association type {0} and session type {1}, which are not compatible with each other..
+        ///   Looks up a localized string similar to The Provider requested association type &apos;{0}&apos; and session type &apos;{1}&apos;, which are not compatible with each other..
         /// </summary>
         internal static string IncompatibleAssociationAndSessionTypes {
             get {
