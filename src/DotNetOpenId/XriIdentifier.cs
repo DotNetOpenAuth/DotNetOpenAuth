@@ -52,6 +52,7 @@ namespace DotNetOpenId {
 		/// Takes any valid form of XRI string and returns the canonical form of the same XRI.
 		/// </summary>
 		static string canonicalizeXri(string xri) {
+			xri = xri.Trim();
 			if (xri.StartsWith(xriScheme, StringComparison.OrdinalIgnoreCase))
 				xri = xri.Substring(xriScheme.Length);
 			return xri;
