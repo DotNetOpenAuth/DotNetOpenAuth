@@ -231,14 +231,15 @@ namespace DotNetOpenId.RelyingParty {
 		}
 		#endregion
 
+		bool focusCalled;
 		/// <summary>
 		/// Places focus on the text box when the page is rendered on the browser.
 		/// </summary>
 		public override void Focus() {
-			Page.ClientScript.RegisterStartupScript(GetType(), "focus", string.Format(CultureInfo.InvariantCulture, @"
-<script language='javascript'>
-document.getElementsByName('{0}')[0].focus();
-</script>", Name));
+			focusCalled = true;
+			// we don't emit the code to focus the control immediately, in case the control
+			// is never rendered to the page because its Visible property is false or that
+			// of any of its parent containers.
 		}
 
 		/// <summary>
@@ -294,6 +295,17 @@ if (openidbox) {{ initAjaxOpenId(openidbox, '{1}', '{2}', {3}); }}
 		private void reportDiscoveryResult() {
 			Logger.InfoFormat("AJAX (iframe) callback from OP: {0}", Page.Request.Url);
 			callbackUserAgentMethod("openidAuthResult(document.URL)");
+		}
+
+		protected override void OnPreRender(EventArgs e) {
+			base.OnPreRender(e);
+
+			if (focusCalled) {
+				Page.ClientScript.RegisterStartupScript(GetType(), "focus", string.Format(CultureInfo.InvariantCulture, @"
+<script language='javascript'>
+document.getElementsByName('{0}')[0].focus();
+</script>", Name));
+			}
 		}
 
 		/// <summary>
