@@ -242,6 +242,14 @@ namespace DotNetOpenId.RelyingParty {
 			// of any of its parent containers.
 		}
 
+		public event EventHandler<OpenIdEventArgs> LoggingIn;
+		protected virtual void OnLoggingIn(IAuthenticationRequest request) {
+			var loggingIn = LoggingIn;
+			if (loggingIn != null) {
+				loggingIn(this, new OpenIdEventArgs(request));
+			}
+		}
+
 		/// <summary>
 		/// Prepares the control for loading.
 		/// </summary>
@@ -289,6 +297,7 @@ if (!openidbox.onSubmit()) {{ return false; }}
 				if (Page.Request.QueryString["dotnetopenid.immediate"] == "true") {
 					req.Mode = AuthenticationRequestMode.Immediate;
 				}
+				OnLoggingIn(req);
 				req.RedirectToProvider();
 			} catch (OpenIdException ex) {
 				callbackUserAgentMethod("openidDiscoveryFailure('" + ex.Message.Replace("'", "\\'") + "')");

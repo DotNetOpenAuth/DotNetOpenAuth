@@ -11,7 +11,7 @@
 						OpenID
 					</td>
 					<td>
-						<cc1:OpenIdAjaxTextBox ID="OpenIdAjaxTextBox1" runat="server" />
+						<cc1:OpenIdAjaxTextBox ID="OpenIdAjaxTextBox1" runat="server" OnLoggingIn="OpenIdAjaxTextBox_LoggingIn" />
 					</td>
 				</tr>
 				<tr>
@@ -31,8 +31,8 @@
 			</table>
 		</asp:View>
 		<asp:View runat="server" ID="commentSubmitted">
-			<p>Congratulations! Your comment was received (and discarded... this is just a demo 
-				after all).</p>
+			<p>Congratulations, <asp:Label runat="server" ID="emailLabel" />! 
+			Your comment was received (and discarded... this is just a demo after all).</p>
 		</asp:View>
 		<asp:View runat="server" ID="commentFailed">
 			<p>Your comment submission failed.</p>
