@@ -237,7 +237,7 @@ namespace DotNetOpenId.RelyingParty {
 		public override void Focus() {
 			Page.ClientScript.RegisterStartupScript(GetType(), "focus", string.Format(CultureInfo.InvariantCulture, @"
 <script language='javascript'>
-document.getElementsByName({0})[0].focus();
+document.getElementsByName('{0}')[0].focus();
 </script>", Name));
 		}
 
