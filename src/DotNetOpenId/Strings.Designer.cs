@@ -88,6 +88,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to XRI CanonicalID verification failed..
+        /// </summary>
+        internal static string CIDVerificationFailed {
+            get {
+                return ResourceManager.GetString("CIDVerificationFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The ClaimedIdentifier property must be set first..
         /// </summary>
         internal static string ClaimedIdentifierMustBeSetFirst {
@@ -219,6 +228,15 @@ namespace DotNetOpenId {
         internal static string IdentifierSelectRequiresMatchingIdentifiers {
             get {
                 return ResourceManager.GetString("IdentifierSelectRequiresMatchingIdentifiers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Provider requested association type &apos;{0}&apos; and session type &apos;{1}&apos;, which are not compatible with each other..
+        /// </summary>
+        internal static string IncompatibleAssociationAndSessionTypes {
+            get {
+                return ResourceManager.GetString("IncompatibleAssociationAndSessionTypes", resourceCulture);
             }
         }
         
@@ -601,6 +619,24 @@ namespace DotNetOpenId {
         internal static string WebRequestFailed {
             get {
                 return ResourceManager.GetString("WebRequestFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to XRI resolution failed..
+        /// </summary>
+        internal static string XriResolutionFailed {
+            get {
+                return ResourceManager.GetString("XriResolutionFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find XRI resolution Status tag or code attribute was invalid..
+        /// </summary>
+        internal static string XriResolutionStatusMissing {
+            get {
+                return ResourceManager.GetString("XriResolutionStatusMissing", resourceCulture);
             }
         }
     }

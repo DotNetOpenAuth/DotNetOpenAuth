@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Security.Cryptography;
-using System.Collections.Generic;
 using System.Diagnostics;
+using System.Security.Cryptography;
 
 namespace DotNetOpenId {
 	internal class HmacShaAssociation : Association {
@@ -99,6 +98,24 @@ namespace DotNetOpenId {
 					continue;
 				associationType = sha.GetAssociationType(protocol);
 				return true;
+			}
+			return false;
+		}
+
+		internal static bool IsDHSessionCompatible(Protocol protocol, string associationType, string sessionType) {
+			// Under HTTPS, no DH encryption is required regardless of association type.
+			if (string.Equals(sessionType, protocol.Args.SessionType.NoEncryption, StringComparison.Ordinal)) {
+				return true;
+			}
+			// When there _is_ a DH session, it must match in hash length with the association type.
+			foreach (HmacSha sha in HmacShaAssociationTypes) {
+				if (string.Equals(associationType, sha.GetAssociationType(protocol), StringComparison.Ordinal)) {
+					int hashSizeInBits = sha.SecretLength * 8;
+					string matchingSessionName = DiffieHellmanUtil.GetNameForSize(protocol, hashSizeInBits);
+					if (string.Equals(sessionType, matchingSessionName, StringComparison.Ordinal)) {
+						return true;
+					}
+				}
 			}
 			return false;
 		}

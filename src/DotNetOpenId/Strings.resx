@@ -126,6 +126,9 @@
   <data name="BadAssociationPrivateData" xml:space="preserve">
     <value>The private data supplied does not meet the requirements of any known Association type.  Its length may be too short, or it may have been corrupted.</value>
   </data>
+  <data name="CIDVerificationFailed" xml:space="preserve">
+    <value>XRI CanonicalID verification failed.</value>
+  </data>
   <data name="ClaimedIdentifierMustBeSetFirst" xml:space="preserve">
     <value>The ClaimedIdentifier property must be set first.</value>
   </data>
@@ -170,6 +173,9 @@
   </data>
   <data name="IdentifierSelectRequiresMatchingIdentifiers" xml:space="preserve">
     <value>ClaimedIdentifier and LocalIdentifier must be the same when IsIdentifierSelect is true.</value>
+  </data>
+  <data name="IncompatibleAssociationAndSessionTypes" xml:space="preserve">
+    <value>The Provider requested association type '{0}' and session type '{1}', which are not compatible with each other.</value>
   </data>
   <data name="InconsistentAppState" xml:space="preserve">
     <value>Inconsistent setting of application state.  Authentication request was sent with application state available, but authentication response was received without it available.  This makes it impossible to validate the token's signature and will cause assertion verification failure.</value>
@@ -300,5 +306,11 @@ Discovered endpoint info:
   </data>
   <data name="WebRequestFailed" xml:space="preserve">
     <value>Web request to '{0}' failed.</value>
+  </data>
+  <data name="XriResolutionFailed" xml:space="preserve">
+    <value>XRI resolution failed.</value>
+  </data>
+  <data name="XriResolutionStatusMissing" xml:space="preserve">
+    <value>Could not find XRI resolution Status tag or code attribute was invalid.</value>
   </data>
 </root>

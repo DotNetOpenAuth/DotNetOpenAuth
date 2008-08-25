@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Org.Mentalis.Security.Cryptography;
 using System.Diagnostics;
+using System.Globalization;
+using Org.Mentalis.Security.Cryptography;
 
 namespace DotNetOpenId.RelyingParty {
 	[DebuggerDisplay("Mode: {Args[\"openid.mode\"]}, {Args[\"openid.assoc_type\"]}, OpenId: {Protocol.Version}")]
@@ -28,7 +28,7 @@ namespace DotNetOpenId.RelyingParty {
 			if (HmacShaAssociation.TryFindBestAssociation(provider.Protocol,
 				relyingParty.Settings.MinimumHashBitLength, relyingParty.Settings.MaximumHashBitLength,
 				true, out assoc_type, out session_type)) {
-				return Create(relyingParty, provider, assoc_type, session_type);
+				return Create(relyingParty, provider, assoc_type, session_type, true);
 			} else {
 				// There are no associations that meet all requirements.
 				Logger.Warn("Security requirements and protocol combination knock out all possible association types.  Dumb mode forced.");
@@ -36,13 +36,18 @@ namespace DotNetOpenId.RelyingParty {
 			}
 		}
 
-		public static AssociateRequest Create(OpenIdRelyingParty relyingParty, ServiceEndpoint provider, string assoc_type, string session_type) {
+		public static AssociateRequest Create(OpenIdRelyingParty relyingParty, ServiceEndpoint provider, string assoc_type, string session_type, bool allowNoSession) {
 			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
 			if (provider == null) throw new ArgumentNullException("provider");
 			if (assoc_type == null) throw new ArgumentNullException("assoc_type");
 			if (session_type == null) throw new ArgumentNullException("session_type");
 			Debug.Assert(Array.IndexOf(provider.Protocol.Args.SignatureAlgorithm.All, assoc_type) >= 0);
 			Debug.Assert(Array.IndexOf(provider.Protocol.Args.SessionType.All, session_type) >= 0);
+
+			if (!HmacShaAssociation.IsDHSessionCompatible(provider.Protocol, assoc_type, session_type)) {
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
+					Strings.IncompatibleAssociationAndSessionTypes, assoc_type, session_type));
+			}
 
 			var args = new Dictionary<string, string>();
 			Protocol protocol = provider.Protocol;
@@ -52,7 +57,7 @@ namespace DotNetOpenId.RelyingParty {
 
 			DiffieHellman dh = null;
 
-			if (provider.ProviderEndpoint.Scheme == Uri.UriSchemeHttps) {
+			if (provider.ProviderEndpoint.Scheme == Uri.UriSchemeHttps && allowNoSession) {
 				Logger.InfoFormat("Requesting association with {0} (assoc_type = '{1}', session_type = '{2}').",
 						provider.ProviderEndpoint, assoc_type, protocol.Args.SessionType.NoEncryption);
 				args.Add(protocol.openid.session_type, protocol.Args.SessionType.NoEncryption);

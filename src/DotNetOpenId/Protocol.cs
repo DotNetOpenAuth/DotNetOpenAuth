@@ -112,11 +112,19 @@ namespace DotNetOpenId {
 		}
 		/// <summary>
 		/// Attempts to detect the right OpenID protocol version based on the contents
-		/// of an incoming query string.
+		/// of an incoming OpenID <i>indirect</i> message or <i>direct request</i>.
 		/// </summary>
 		internal static Protocol Detect(IDictionary<string, string> Query) {
 			if (Query == null) throw new ArgumentNullException("Query");
 			return Query.ContainsKey(v20.openid.ns) ? v20 : v11;
+		}
+		/// <summary>
+		/// Attempts to detect the right OpenID protocol version based on the contents
+		/// of an incoming OpenID <i>direct</i> response message.
+		/// </summary>
+		internal static Protocol DetectFromDirectResponse(IDictionary<string, string> Query) {
+			if (Query == null) throw new ArgumentNullException("Query");
+			return Query.ContainsKey(v20.openidnp.ns) ? v20 : v11;
 		}
 		/// <summary>
 		/// Attemps to detect the highest OpenID protocol version supported given a set

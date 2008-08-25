@@ -15,6 +15,7 @@ namespace DotNetOpenId.RelyingParty {
 			byte[] body = ProtocolMessages.Http.GetBytes(fields);
 			IDictionary<string, string> args;
 			UntrustedWebResponse resp = null;
+			string fullResponseText = null;
 			try {
 				resp = UntrustedWebRequest.Request(provider.ProviderEndpoint, body);
 				// If an internal server error occurred, there won't be any KV-form stream
@@ -25,10 +26,15 @@ namespace DotNetOpenId.RelyingParty {
 					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 						Strings.ProviderRespondedWithError, errorStream));
 				}
+				if (Logger.IsDebugEnabled) {
+					fullResponseText = resp.ReadResponseString();
+				}
 				args = ProtocolMessages.KeyValueForm.GetDictionary(resp.ResponseStream);
 				Logger.DebugFormat("Received direct response from {0}: {1}{2}", provider.ProviderEndpoint,
 					Environment.NewLine, Util.ToString(args));
 			} catch (ArgumentException e) {
+				Logger.DebugFormat("Full response from provider (where KVF was expected):{0}{1}",
+					Environment.NewLine, fullResponseText);
 				throw new OpenIdException("Failure decoding Key-Value Form response from provider.", e);
 			} catch (WebException e) {
 				throw new OpenIdException("Failure while connecting to provider.", e);
