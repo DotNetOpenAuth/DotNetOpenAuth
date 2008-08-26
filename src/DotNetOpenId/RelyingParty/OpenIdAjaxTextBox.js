@@ -68,12 +68,22 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 			box.title = null;
 			window.status = "Discovering OpenID Identifier '" + box.value + "'...";
 		} else if (state == "authenticated") {
-			box.style.background = box.originalBackground;
+			var opLogo = box.deriveOPFavIcon();
+			if (opLogo) {
+				box.style.background = 'url(' + opLogo + ') no-repeat';
+			} else {
+				box.style.background = box.originalBackground;
+			}
 			box.style.backgroundColor = 'lightgreen';
 			box.title = box.claimedIdentifier;
 			window.status = "Authenticated as " + box.value;
 		} else if (state == "setup") {
-			box.style.background = box.originalBackground;
+			var opLogo = box.deriveOPFavIcon();
+			if (opLogo) {
+				box.style.background = 'url(' + opLogo + ') no-repeat';
+			} else {
+				box.style.background = box.originalBackground;
+			}
 			box.style.backgroundColor = 'pink';
 			box.loginButton.style.visibility = 'visible';
 			window.status = "Authentication requires setup.";
@@ -157,6 +167,19 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 		box.hiddenField.setAttribute("type", "hidden");
 		form.appendChild(box.hiddenField);
 		return box.hiddenField;
+	};
+
+	box.deriveOPFavIcon = function() {
+		if (!box.hiddenField) return;
+		var authResult = new Uri(box.hiddenField.value);
+		var opUri;
+		if (authResult.getQueryArgValue("openid.op_endpoint")) {
+			opUri = new Uri(authResult.getQueryArgValue("openid.op_endpoint"));
+		} else if (authResult.getQueryArgValue("openid.user_setup_url")) {
+			opUri = new Uri(authResult.getQueryArgValue("openid.user_setup_url"));
+		}
+		var favicon = opUri.getAuthority() + "/favicon.ico";
+		return favicon;
 	};
 
 	function createHiddenFrame(url) {
@@ -264,6 +287,24 @@ function Uri(url) {
 		return this.originalUri;
 	};
 
+	this.getAuthority = function() {
+		var authority = this.getScheme() + "://" + this.getHost();
+		return authority;
+	}
+
+	this.getHost = function() {
+		var hostStartIdx = this.originalUri.indexOf("://") + 3;
+		var hostEndIndex = this.originalUri.indexOf("/", hostStartIdx);
+		if (hostEndIndex < 0) hostEndIndex = this.originalUri.length;
+		var host = this.originalUri.substr(hostStartIdx, hostEndIndex - hostStartIdx);
+		return host;
+	}
+
+	this.getScheme = function() {
+		var schemeStartIdx = this.indexOf("://");
+		return this.originalUri.substr(this.originalUri, schemeStartIdx);
+	}
+
 	this.trimQueryAndFragment = function() {
 		var qmark = this.originalUri.indexOf('?');
 		var hashmark = this.originalUri.indexOf('#');
@@ -279,7 +320,7 @@ function Uri(url) {
 
 	this.Pairs = Array();
 
-	var queryBeginsAt = url.indexOf('?');
+	var queryBeginsAt = this.originalUri.indexOf('?');
 	if (queryBeginsAt >= 0) {
 		this.queryString = url.substr(queryBeginsAt + 1);
 		var queryStringPairs = this.queryString.split('&');
