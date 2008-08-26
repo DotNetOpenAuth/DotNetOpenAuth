@@ -177,7 +177,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 			opUri = new Uri(authResult.getQueryArgValue("openid.op_endpoint"));
 		} else if (authResult.getQueryArgValue("openid.user_setup_url")) {
 			opUri = new Uri(authResult.getQueryArgValue("openid.user_setup_url"));
-		}
+		} else return null;
 		var favicon = opUri.getAuthority() + "/favicon.ico";
 		return favicon;
 	};
