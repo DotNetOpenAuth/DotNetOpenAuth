@@ -28,6 +28,9 @@ namespace DotNetOpenId.Yadis {
 
 		public int CompareTo(UriElement other) {
 			if (other == null) return -1;
+			int compare = Service.CompareTo(other.Service);
+			if (compare != 0) return compare;
+	
 			if (Priority.HasValue && other.Priority.HasValue) {
 				return Priority.Value.CompareTo(other.Priority.Value);
 			} else {
