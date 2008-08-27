@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Web;
 
 namespace ProviderPortal {
 	public class Global : System.Web.HttpApplication {
+		internal static StringBuilder LogMessages = new StringBuilder();
+
 		public Global() {
 			// since this is a sample, and will often be used with localhost
 			DotNetOpenId.UntrustedWebRequest.WhitelistHosts.Add("localhost");
