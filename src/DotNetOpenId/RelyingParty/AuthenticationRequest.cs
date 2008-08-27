@@ -203,13 +203,13 @@ namespace DotNetOpenId.RelyingParty {
 							StringComparison.Ordinal) ||
 							!string.Equals(
 							req.Args[provider.Protocol.openid.session_type],
-							Util.GetRequiredArg(req.Response.Args, provider.Protocol.openidnp.session_type),
+							Util.GetRequiredArgAllowEmptyValue(req.Response.Args, provider.Protocol.openidnp.session_type),
 							StringComparison.Ordinal)) {
 							Logger.ErrorFormat("Provider responded with contradicting association parameters.  Requested [{0}, {1}] but got [{2}, {3}] back.",
 								req.Args[provider.Protocol.openid.assoc_type],
 								req.Args[provider.Protocol.openid.session_type],
 								Util.GetRequiredArg(req.Response.Args, provider.Protocol.openidnp.assoc_type),
-								Util.GetRequiredArg(req.Response.Args, provider.Protocol.openidnp.session_type));
+								Util.GetRequiredArgAllowEmptyValue(req.Response.Args, provider.Protocol.openidnp.session_type));
 
 							assoc = null;
 						}
