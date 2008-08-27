@@ -65,6 +65,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Code\ReadOnlyXmlMembershipProvider.cs" />
+    <Compile Include="Code\TracePageAppender.cs" />
     <Compile Include="Code\URLRewriter.cs" />
     <Compile Include="Code\Util.cs" />
     <Compile Include="decide.aspx.cs">
@@ -99,6 +100,13 @@
     <Compile Include="server.aspx.designer.cs">
       <DependentUpon>server.aspx</DependentUpon>
     </Compile>
+    <Compile Include="TracePage.aspx.cs">
+      <DependentUpon>TracePage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="TracePage.aspx.designer.cs">
+      <DependentUpon>TracePage.aspx</DependentUpon>
+    </Compile>
     <Compile Include="user.aspx.cs">
       <DependentUpon>user.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -118,6 +126,7 @@
     <Content Include="images\dotnetopenid_tiny.gif" />
     <Content Include="Site.Master" />
     <Content Include="styles.css" />
+    <Content Include="TracePage.aspx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Code\CustomStoreDataSet.xsc">

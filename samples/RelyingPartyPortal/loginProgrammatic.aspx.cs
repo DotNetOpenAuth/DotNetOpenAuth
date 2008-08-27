@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Web.Security;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -42,6 +43,11 @@ public partial class loginProgrammatic : System.Web.UI.Page {
 			// Send your visitor to their Provider for authentication.
 			request.RedirectToProvider();
 		} catch (OpenIdException ex) {
+			// The user probably entered an Identifier that 
+			// was not a valid OpenID endpoint.
+			openidValidator.Text = ex.Message;
+			openidValidator.IsValid = false;
+		} catch (WebException ex) {
 			// The user probably entered an Identifier that 
 			// was not a valid OpenID endpoint.
 			openidValidator.Text = ex.Message;
