@@ -238,12 +238,11 @@ namespace DotNetOpenId {
 			int i;
 			for (i = 0; i < MaximumRedirections; i++) {
 				UntrustedWebResponse response = RequestInternal(uri, body, acceptTypes, requireSsl, false, originalRequestUri);
-				Debug.Assert(response.RequestUri == response.FinalUri, "Redirects shouldn't have been allowed!");
 				if (response.StatusCode == HttpStatusCode.MovedPermanently ||
 					response.StatusCode == HttpStatusCode.Redirect ||
 					response.StatusCode == HttpStatusCode.RedirectMethod ||
 					response.StatusCode == HttpStatusCode.RedirectKeepVerb) {
-					uri = new Uri(response.Headers[HttpResponseHeader.Location]);
+					uri = new Uri(response.FinalUri, response.Headers[HttpResponseHeader.Location]);
 				} else {
 					return response;
 				}
