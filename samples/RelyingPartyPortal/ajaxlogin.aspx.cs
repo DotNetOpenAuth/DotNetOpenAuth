@@ -19,9 +19,8 @@ namespace ConsumerPortal {
 
 		protected void OpenIdAjaxTextBox1_LoggedIn(object sender, OpenIdEventArgs e) {
 			var claims = OpenIdAjaxTextBox1.AuthenticationResponse.GetExtension<ClaimsResponse>();
-			if (claims != null) {
-				((Label)commentSubmitted.FindControl("emailLabel")).Text = claims.Email;
-			}
+			Label label = ((Label)commentSubmitted.FindControl("emailLabel"));
+			label.Text = claims != null ? claims.Email : "stranger (no email)";
 		}
 
 		protected void submitButton_Click(object sender, EventArgs e) {
