@@ -4,10 +4,12 @@
 }
 
 function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
-	box.originalBackground = box.style.background;
+	box.dnoi_internal = new Object();
+
+	box.dnoi_internal.originalBackground = box.style.background;
 	box.timeout = timeout;
 
-	box.constructButton = function(text, tooltip, onclick) {
+	box.dnoi_internal.constructButton = function(text, tooltip, onclick) {
 		var button = document.createElement('button');
 		button.textContent = text; // Mozilla
 		button.value = text; // IE
@@ -24,7 +26,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 		return button;
 	}
 
-	box.constructIcon = function(imageUrl, tooltip) {
+	box.dnoi_internal.constructIcon = function(imageUrl, tooltip) {
 		var icon = document.createElement('img');
 		icon.src = imageUrl;
 		icon.title = tooltip;
@@ -36,7 +38,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 		return icon;
 	}
 
-	box.prefetchImage = function(imageUrl) {
+	box.dnoi_internal.prefetchImage = function(imageUrl) {
 		var img = document.createElement('img');
 		img.src = imageUrl;
 		img.style.display = 'none';
@@ -44,61 +46,61 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 		return img;
 	}
 
-	box.loginButton = box.constructButton("LOG IN", "Click here to log in using a pop-up window.", function() {
+	box.dnoi_internal.loginButton = box.dnoi_internal.constructButton("LOG IN", "Click here to log in using a pop-up window.", function() {
 		box.popup = window.open(getAuthenticationUrl(), 'opLogin', 'status=0,toolbar=0,resizable=1,scrollbars=1,width=800,height=600');
 		self.waiting_openidBox = box;
 		return false;
 	});
-	box.retryButton = box.constructButton("RETRY", "Retry a failed identifier discovery.", function() {
+	box.dnoi_internal.retryButton = box.dnoi_internal.constructButton("RETRY", "Retry a failed identifier discovery.", function() {
 		box.timeout += 5000; // give the retry attempt 5s longer than the last attempt
-		box.performDiscovery();
+		box.dnoi_internal.performDiscovery();
 		return false;
 	});
-	box.spinner = box.constructIcon(spinner_url, "Discovering/authenticating");
-	box.prefetchImage(dotnetopenid_logo_url);
+	box.dnoi_internal.spinner = box.dnoi_internal.constructIcon(spinner_url, "Discovering/authenticating");
+	box.dnoi_internal.prefetchImage(dotnetopenid_logo_url);
 
-	box.setVisualCue = function(state) {
-		box.spinner.style.visibility = 'hidden';
-		box.loginButton.style.visibility = 'hidden';
-		box.retryButton.style.visibility = 'hidden';
+	box.dnoi_internal.setVisualCue = function(state) {
+		box.dnoi_internal.spinner.style.visibility = 'hidden';
+		box.dnoi_internal.loginButton.style.visibility = 'hidden';
+		box.dnoi_internal.retryButton.style.visibility = 'hidden';
 		box.title = null;
 		if (state == "discovering") {
 			box.style.background = 'url(' + dotnetopenid_logo_url + ') no-repeat';
-			box.spinner.style.visibility = 'visible';
+			box.dnoi_internal.spinner.style.visibility = 'visible';
 			box.title = null;
 			window.status = "Discovering OpenID Identifier '" + box.value + "'...";
 		} else if (state == "authenticated") {
-			var opLogo = box.deriveOPFavIcon();
+			var opLogo = box.dnoi_internal.deriveOPFavIcon();
 			if (opLogo) {
 				box.style.background = 'url(' + opLogo + ') no-repeat';
 			} else {
-				box.style.background = box.originalBackground;
+				box.style.background = box.dnoi_internal.originalBackground;
 			}
 			box.style.backgroundColor = 'lightgreen';
 			box.title = box.claimedIdentifier;
 			window.status = "Authenticated as " + box.value;
 		} else if (state == "setup") {
-			var opLogo = box.deriveOPFavIcon();
+			var opLogo = box.dnoi_internal.deriveOPFavIcon();
 			if (opLogo) {
 				box.style.background = 'url(' + opLogo + ') no-repeat';
 			} else {
-				box.style.background = box.originalBackground;
+				box.style.background = box.dnoi_internal.originalBackground;
 			}
 			box.style.backgroundColor = 'pink';
-			box.loginButton.style.visibility = 'visible';
+			box.dnoi_internal.loginButton.style.visibility = 'visible';
 			window.status = "Authentication requires setup.";
 		} else if (state == "failed") {
-			box.style.background = box.originalBackground;
+			box.style.background = box.dnoi_internal.originalBackground;
 			box.style.backgroundColor = 'pink';
-			box.retryButton.style.visibility = 'visible';
+			box.dnoi_internal.retryButton.style.visibility = 'visible';
 			window.status = "Authentication failed.";
 			box.title = "Authentication failed.";
 		} else if (state == 'required') {
-			box.style.background = box.originalBackground;
+			box.style.background = box.dnoi_internal.originalBackground;
 			box.style.backgroundColor = 'pink';
 			box.title = "This field is required.";
 		} else if (state = '' || state == null) {
-			box.style.background = box.originalBackground;
+			box.style.background = box.dnoi_internal.originalBackground;
 			box.title = null;
 			window.status = null;
 		} else {
@@ -106,19 +108,19 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 		}
 	}
 
-	box.isBusy = function() {
+	box.dnoi_internal.isBusy = function() {
 		return box.discoveryIFrame != null;
 	};
 
-	box.onSubmit = function() {
+	box.dnoi_internal.onSubmit = function() {
 		if (box.lastAuthenticationResult != 'authenticated') {
-			if (box.isBusy()) {
+			if (box.dnoi_internal.isBusy()) {
 				alert('Please wait for login to complete.');
 			} else {
 				if (box.value.length > 0) {
 					alert('Please correct errors in OpenID identifier and allow login to complete before submitting.');
 				} else {
-					box.setVisualCue('required');
+					box.dnoi_internal.setVisualCue('required');
 				}
 			}
 			return false;
@@ -126,7 +128,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 		return true;
 	}
 
-	this.getAuthenticationUrl = function(immediateMode) {
+	box.dnoi_internal.getAuthenticationUrl = function(immediateMode) {
 		var frameLocation = new Uri(document.location.href);
 		var discoveryUri = frameLocation.trimQueryAndFragment().toString() + '?' + 'dotnetopenid.userSuppliedIdentifier=' + escape(box.value);
 		if (immediateMode) {
@@ -135,12 +137,12 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 		return discoveryUri;
 	};
 
-	box.performDiscovery = function() {
-		box.closeDiscoveryIFrame();
-		box.setVisualCue('discovering');
+	box.dnoi_internal.performDiscovery = function() {
+		box.dnoi_internal.closeDiscoveryIFrame();
+		box.dnoi_internal.setVisualCue('discovering');
 		box.lastDiscoveredIdentifier = box.value;
 		box.lastAuthenticationResult = null;
-		var discoveryUri = getAuthenticationUrl(true);
+		var discoveryUri = box.dnoi_internal.getAuthenticationUrl(true);
 		if (box.discoveryIFrame) {
 			box.discoveryIFrame.parentNode.removeChild(box.discoveryIFrame);
 			box.discoveryIFrame = null;
@@ -169,7 +171,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 		return box.hiddenField;
 	};
 
-	box.deriveOPFavIcon = function() {
+	box.dnoi_internal.deriveOPFavIcon = function() {
 		if (!box.hiddenField) return;
 		var authResult = new Uri(box.hiddenField.value);
 		var opUri;
@@ -190,21 +192,21 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 		iframe.setAttribute("src", url);
 		iframe.openidBox = box;
 		box.parentNode.insertBefore(iframe, box);
-		box.discoveryTimeout = setTimeout(function() { trace("timeout"); box.openidDiscoveryFailure("Timed out"); }, box.timeout);
+		box.discoveryTimeout = setTimeout(function() { trace("timeout"); box.dnoi_internal.openidDiscoveryFailure("Timed out"); }, box.timeout);
 		return iframe;
 	};
 
 	this.parentForm = findParentForm(box);
 
-	box.openidDiscoveryFailure = function(msg) {
-		box.closeDiscoveryIFrame();
+	box.dnoi_internal.openidDiscoveryFailure = function(msg) {
+		box.dnoi_internal.closeDiscoveryIFrame();
 		trace('Discovery failure: ' + msg);
 		box.lastAuthenticationResult = 'failed';
-		box.setVisualCue('failed');
+		box.dnoi_internal.setVisualCue('failed');
 		box.title = msg;
 	};
 
-	box.closeDiscoveryIFrame = function() {
+	box.dnoi_internal.closeDiscoveryIFrame = function() {
 		if (box.discoveryTimeout) {
 			clearTimeout(box.discoveryTimeout);
 		}
@@ -214,11 +216,11 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 		}
 	};
 
-	box.openidAuthResult = function(resultUrl) {
+	box.dnoi_internal.openidAuthResult = function(resultUrl) {
 		self.waiting_openidBox = null;
 		trace('openidAuthResult ' + resultUrl);
 		if (box.discoveryIFrame) {
-			box.closeDiscoveryIFrame();
+			box.dnoi_internal.closeDiscoveryIFrame();
 		} else if (box.popup) {
 			box.popup.close();
 			box.popup = null;
@@ -238,11 +240,11 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 		if (isAuthSuccessful(resultUri)) {
 			// visual cue that auth was successful
 			box.claimedIdentifier = isOpenID2Response(resultUri) ? resultUri.getQueryArgValue("openid.claimed_id") : resultUri.getQueryArgValue("openid.identity");
-			box.setVisualCue('authenticated');
+			box.dnoi_internal.setVisualCue('authenticated');
 			box.lastAuthenticationResult = 'authenticated';
 		} else {
 			// visual cue that auth failed
-			box.setVisualCue('setup');
+			box.dnoi_internal.setVisualCue('setup');
 			box.lastAuthenticationResult = 'setup';
 		}
 	};
@@ -262,9 +264,9 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 	box.onblur = function(event) {
 		if (box.lastDiscoveredIdentifier != box.value) {
 			if (box.value.length > 0) {
-				box.performDiscovery();
+				box.dnoi_internal.performDiscovery();
 			} else {
-				box.setVisualCue();
+				box.dnoi_internal.setVisualCue();
 			}
 			box.oldvalue = box.value;
 		}
@@ -272,9 +274,9 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 	};
 	box.onkeyup = function(event) {
 		if (box.lastDiscoveredIdentifier != box.value) {
-			box.setVisualCue();
+			box.dnoi_internal.setVisualCue();
 		} else {
-			box.setVisualCue(box.lastAuthenticationResult);
+			box.dnoi_internal.setVisualCue(box.lastAuthenticationResult);
 		}
 		return true;
 	};

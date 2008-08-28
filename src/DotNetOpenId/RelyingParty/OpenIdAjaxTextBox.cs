@@ -330,14 +330,14 @@ namespace DotNetOpenId.RelyingParty {
 				Environment.NewLine);
 
 			if (AuthenticationResponse != null && AuthenticationResponse.Status == AuthenticationStatus.Authenticated) {
-				startupScript.AppendFormat("box.openidAuthResult('{0}');{1}", ViewState[authDataViewStateKey].ToString().Replace("'", "\\'"), Environment.NewLine);
+				startupScript.AppendFormat("box.dnoi_internal.openidAuthResult('{0}');{1}", ViewState[authDataViewStateKey].ToString().Replace("'", "\\'"), Environment.NewLine);
 			}
 			startupScript.AppendLine("</script>");
 
 			Page.ClientScript.RegisterStartupScript(GetType(), "ajaxstartup", startupScript.ToString());
 			Page.ClientScript.RegisterOnSubmitStatement(GetType(), "loginvalidation", string.Format(CultureInfo.InvariantCulture, @"
 var openidbox = document.getElementsByName('{0}')[0];
-if (!openidbox.onSubmit()) {{ return false; }}
+if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 ", Name));
 		}
 
@@ -354,13 +354,13 @@ if (!openidbox.onSubmit()) {{ return false; }}
 				OnLoggingIn(req);
 				req.RedirectToProvider();
 			} catch (OpenIdException ex) {
-				callbackUserAgentMethod("openidDiscoveryFailure('" + ex.Message.Replace("'", "\\'") + "')");
+				callbackUserAgentMethod("dnoi_internal.openidDiscoveryFailure('" + ex.Message.Replace("'", "\\'") + "')");
 			}
 		}
 
 		private void reportDiscoveryResult() {
 			Logger.InfoFormat("AJAX (iframe) callback from OP: {0}", Page.Request.Url);
-			callbackUserAgentMethod("openidAuthResult(document.URL)");
+			callbackUserAgentMethod("dnoi_internal.openidAuthResult(document.URL)");
 		}
 
 		protected override void OnPreRender(EventArgs e) {
