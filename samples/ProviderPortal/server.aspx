@@ -7,6 +7,13 @@
 </head>
 <body>
 	<form runat='server'>
+	<%-- This page provides an example of how to use the ProviderEndpoint control on an ASPX page
+	     to host an OpenID Provider.  Alternatively for greater performance an .ashx file can be used.
+	     See Provider.ashx for an example. A typical web site will NOT use both .ashx and .aspx 
+	     provider endpoints.
+	     This server.aspx page is the default provider endpoint to use.  To switch to the .ashx handler,
+	     change the user_xrds.aspx file to point to provider.ashx instead of server.aspx.
+	     --%>
 	<openid:ProviderEndpoint runat="server" OnAuthenticationChallenge="provider_AuthenticationChallenge" />
 	<p>
 		<asp:Label ID="serverEndpointUrl" runat="server" EnableViewState="false" />

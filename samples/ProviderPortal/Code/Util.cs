@@ -24,4 +24,24 @@ public class Util {
 		username = username.Substring(0, 1).ToUpperInvariant() + username.Substring(1).ToLowerInvariant();
 		return new Uri(HttpContext.Current.Request.Url, "/user/" + username);
 	}
+	internal static void ProcessAuthenticationChallenge(IAuthenticationRequest idrequest) {
+		if (idrequest.Immediate) {
+			if (idrequest.IsDirectedIdentity) {
+				if (HttpContext.Current.User.Identity.IsAuthenticated) {
+					idrequest.LocalIdentifier = Util.BuildIdentityUrl();
+					idrequest.IsAuthenticated = true;
+				} else {
+					idrequest.IsAuthenticated = false;
+				}
+			} else {
+				string userOwningOpenIdUrl = Util.ExtractUserName(idrequest.LocalIdentifier);
+				// NOTE: in a production provider site, you may want to only 
+				// respond affirmatively if the user has already authorized this consumer
+				// to know the answer.
+				idrequest.IsAuthenticated = userOwningOpenIdUrl == HttpContext.Current.User.Identity.Name;
+			}
+		} else {
+			HttpContext.Current.Response.Redirect("~/decide.aspx", true);
+		}
+	}
 }
