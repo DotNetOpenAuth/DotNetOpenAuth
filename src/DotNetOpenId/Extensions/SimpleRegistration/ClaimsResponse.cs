@@ -239,7 +239,7 @@ namespace DotNetOpenId.Extensions.SimpleRegistration
 			if (sreg.TryGetValue(Constants.timezone, out timeZone)) {
 				builder.Append(createAddFieldJS(Constants.timezone, timeZone));
 			}
-
+			if (builder[builder.Length - 1] == ',') builder.Length -= 1;
 			builder.Append("}");
 			return builder.ToString();
 		}
