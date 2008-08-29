@@ -3,8 +3,11 @@
 	//window.status = msg;
 }
 
-function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
+function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout, assertionReceivedCode) {
 	box.dnoi_internal = new Object();
+	if (assertionReceivedCode) {
+		box.dnoi_internal.onauthenticated = function(sender, e) { eval(assertionReceivedCode); }
+	}
 
 	box.dnoi_internal.originalBackground = box.style.background;
 	box.timeout = timeout;
@@ -67,6 +70,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 		if (state == "discovering") {
 			box.style.background = 'url(' + dotnetopenid_logo_url + ') no-repeat';
 			box.dnoi_internal.spinner.style.visibility = 'visible';
+			box.dnoi_internal.claimedIdentifier = null;
 			box.title = null;
 			window.status = "Discovering OpenID Identifier '" + box.value + "'...";
 		} else if (state == "authenticated") {
@@ -77,7 +81,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 				box.style.background = box.dnoi_internal.originalBackground;
 			}
 			box.style.backgroundColor = 'lightgreen';
-			box.title = box.claimedIdentifier;
+			box.title = box.dnoi_internal.claimedIdentifier;
 			window.status = "Authenticated as " + box.value;
 		} else if (state == "setup") {
 			var opLogo = box.dnoi_internal.deriveOPFavIcon();
@@ -88,22 +92,27 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 			}
 			box.style.backgroundColor = 'pink';
 			box.dnoi_internal.loginButton.style.visibility = 'visible';
+			box.dnoi_internal.claimedIdentifier = null;
 			window.status = "Authentication requires setup.";
 		} else if (state == "failed") {
 			box.style.background = box.dnoi_internal.originalBackground;
 			box.style.backgroundColor = 'pink';
 			box.dnoi_internal.retryButton.style.visibility = 'visible';
+			box.dnoi_internal.claimedIdentifier = null;
 			window.status = "Authentication failed.";
 			box.title = "Authentication failed.";
 		} else if (state == 'required') {
 			box.style.background = box.dnoi_internal.originalBackground;
 			box.style.backgroundColor = 'pink';
+			box.dnoi_internal.claimedIdentifier = null;
 			box.title = "This field is required.";
 		} else if (state = '' || state == null) {
 			box.style.background = box.dnoi_internal.originalBackground;
 			box.title = null;
+			box.dnoi_internal.claimedIdentifier = null;
 			window.status = null;
 		} else {
+			box.dnoi_internal.claimedIdentifier = null;
 			trace('unrecognized state ' + state);
 		}
 	}
@@ -239,9 +248,12 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 
 		if (isAuthSuccessful(resultUri)) {
 			// visual cue that auth was successful
-			box.claimedIdentifier = isOpenID2Response(resultUri) ? resultUri.getQueryArgValue("openid.claimed_id") : resultUri.getQueryArgValue("openid.identity");
+			box.dnoi_internal.claimedIdentifier = isOpenID2Response(resultUri) ? resultUri.getQueryArgValue("openid.claimed_id") : resultUri.getQueryArgValue("openid.identity");
 			box.dnoi_internal.setVisualCue('authenticated');
 			box.lastAuthenticationResult = 'authenticated';
+			if (box.dnoi_internal.onauthenticated) {
+				box.dnoi_internal.onauthenticated(box);
+			}
 		} else {
 			// visual cue that auth failed
 			box.dnoi_internal.setVisualCue('setup');
@@ -280,6 +292,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout) {
 		}
 		return true;
 	};
+	box.getClaimedIdentifier = function() { return box.dnoi_internal.claimedIdentifier; };
 }
 
 function Uri(url) {

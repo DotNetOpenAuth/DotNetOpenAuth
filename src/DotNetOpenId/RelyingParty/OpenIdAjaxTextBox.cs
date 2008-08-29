@@ -252,6 +252,8 @@ namespace DotNetOpenId.RelyingParty {
 			// of any of its parent containers.
 		}
 
+		#region Events
+
 		/// <summary>
 		/// Fired when the user has typed in their identifier, discovery was successful
 		/// and a login attempt is about to begin.
@@ -276,6 +278,32 @@ namespace DotNetOpenId.RelyingParty {
 				loggedIn(this, new OpenIdEventArgs(response));
 			}
 		}
+
+		const string onClientAssertionReceivedViewStateKey = "OnClientAssertionReceived";
+		/// <summary>
+		/// Gets or sets the client-side script that executes when an authentication
+		/// assertion is received (but before it is verified).
+		/// </summary>
+		/// <remarks>
+		/// <para>In the context of the executing javascript set in this property, the 
+		/// local variable <i>sender</i> is set to the openid_identifier input box
+		/// that is executing this code.  
+		/// This variable has a getClaimedIdentifier() method that may be used to
+		/// identify the user who is being authenticated.</para>
+		/// <para>It is <b>very</b> important to note that when this code executes,
+		/// the authentication has not been verified and may have been spoofed.
+		/// No security-sensitive operations should take place in this javascript code.
+		/// The authentication is verified on the server by the time the 
+		/// <see cref="LoggedIn"/> server-side event fires.</para>
+		/// </remarks>
+		[Description("Gets or sets the client-side script that executes when an authentication assertion is received (but before it is verified).")]
+		[Bindable(true), DefaultValue(""), Category("Behavior")]
+		public string OnClientAssertionReceived {
+			get { return ViewState[onClientAssertionReceivedViewStateKey] as string; }
+			set { ViewState[onClientAssertionReceivedViewStateKey] = value; }
+		}
+
+		#endregion
 
 		/// <summary>
 		/// Prepares the control for loading.
@@ -323,10 +351,11 @@ namespace DotNetOpenId.RelyingParty {
 			if (focusCalled) {
 				startupScript.AppendLine("box.focus();");
 			}
-			startupScript.AppendFormat("initAjaxOpenId(box, '{0}', '{1}', {2});{3}",
+			startupScript.AppendFormat("initAjaxOpenId(box, '{0}', '{1}', {2}, {3});{4}",
 				Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedDotNetOpenIdLogoResourceName),
 				Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedSpinnerResourceName),
 				Timeout.TotalMilliseconds,
+				string.IsNullOrEmpty(OnClientAssertionReceived) ? "null" : "'" + OnClientAssertionReceived.Replace(@"\", @"\\").Replace("'", @"\'") + "'",
 				Environment.NewLine);
 
 			if (AuthenticationResponse != null && AuthenticationResponse.Status == AuthenticationStatus.Authenticated) {

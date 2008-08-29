@@ -13,7 +13,8 @@
 					<td>
 						<cc1:OpenIdAjaxTextBox ID="OpenIdAjaxTextBox1" runat="server" 
 							OnLoggingIn="OpenIdAjaxTextBox1_LoggingIn" 
-							onloggedin="OpenIdAjaxTextBox1_LoggedIn" />
+							OnLoggedIn="OpenIdAjaxTextBox1_LoggedIn"
+							OnClientAssertionReceived="alert('Demonstration of page-injected javascript handling authentication:\nClaimed Identifier is ' + sender.getClaimedIdentifier())" />
 					</td>
 				</tr>
 				<tr>
