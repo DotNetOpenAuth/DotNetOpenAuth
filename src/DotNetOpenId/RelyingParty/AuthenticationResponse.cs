@@ -112,7 +112,17 @@ namespace DotNetOpenId.RelyingParty {
 			get { return new Uri(Util.GetRequiredArg(signedArguments, Provider.Protocol.openid.return_to)); }
 		}
 
-		internal string GetExtensionClientScript(IClientScriptExtension extension) {
+		internal string GetExtensionClientScript(Type extensionType) {
+			if (extensionType == null) throw new ArgumentNullException("extensionType");
+			if (!typeof(DotNetOpenId.Extensions.IClientScriptExtensionResponse).IsAssignableFrom(extensionType))
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
+					Strings.TypeMustImplementX, typeof(IClientScriptExtensionResponse).FullName),
+					"extensionType");
+			var extension = (IClientScriptExtensionResponse)Activator.CreateInstance(extensionType);
+			return GetExtensionClientScript(extension);
+		}
+
+		internal string GetExtensionClientScript(IClientScriptExtensionResponse extension) {
 			var fields = IncomingExtensions.GetExtensionArguments(extension.TypeUri);
 			if (fields != null) {
 				// The extension was found using the preferred TypeUri.

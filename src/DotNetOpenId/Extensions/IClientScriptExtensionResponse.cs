@@ -2,7 +2,11 @@
 using DotNetOpenId.RelyingParty;
 
 namespace DotNetOpenId.Extensions {
-	public interface IClientScriptExtension : IExtension {
+	/// <summary>
+	/// An interface that OpenID extensions can implement to allow authentication response
+	/// messages with included extensions to be processed by Javascript on the user agent.
+	/// </summary>
+	public interface IClientScriptExtensionResponse : IExtension {
 		/// <summary>
 		/// Reads the extension information on an authentication response from the provider.
 		/// </summary>

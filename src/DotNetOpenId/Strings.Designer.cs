@@ -88,6 +88,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A Simple Registration request must be deserialized before CreateResponse can be called..
+        /// </summary>
+        internal static string CallDeserializeBeforeCreateResponse {
+            get {
+                return ResourceManager.GetString("CallDeserializeBeforeCreateResponse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to XRI CanonicalID verification failed..
         /// </summary>
         internal static string CIDVerificationFailed {
@@ -115,11 +124,11 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An extension with this extension type URI (&apos;{0}&apos;) has already been registered..
+        ///   Looks up a localized string similar to The extension &apos;{0}&apos; has already been registered..
         /// </summary>
-        internal static string ClientScriptExtensionTypeUriCollision {
+        internal static string ClientScriptExtensionTypeCollision {
             get {
-                return ResourceManager.GetString("ClientScriptExtensionTypeUriCollision", resourceCulture);
+                return ResourceManager.GetString("ClientScriptExtensionTypeCollision", resourceCulture);
             }
         }
         

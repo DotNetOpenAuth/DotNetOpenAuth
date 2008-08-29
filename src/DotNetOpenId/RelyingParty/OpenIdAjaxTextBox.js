@@ -195,9 +195,9 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout, assert
 
 	function createHiddenFrame(url) {
 		var iframe = document.createElement("iframe");
-		iframe.setAttribute("width", 0);
-		iframe.setAttribute("height", 0);
-		iframe.setAttribute("style", "display: none");
+//		iframe.setAttribute("width", 0);
+//		iframe.setAttribute("height", 0);
+//		iframe.setAttribute("style", "display: none");
 		iframe.setAttribute("src", url);
 		iframe.openidBox = box;
 		box.parentNode.insertBefore(iframe, box);

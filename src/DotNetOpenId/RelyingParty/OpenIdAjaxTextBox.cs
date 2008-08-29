@@ -335,28 +335,30 @@ namespace DotNetOpenId.RelyingParty {
 
 		#endregion
 
-		Dictionary<IClientScriptExtension, string> clientScriptExtensions = new Dictionary<IClientScriptExtension, string>();
+		Dictionary<Type, string> clientScriptExtensions = new Dictionary<Type, string>();
 		/// <summary>
 		/// Allows an OpenID extension to read data out of an unverified positive authentication assertion
 		/// and send it down to the client browser so that Javascript running on the page can perform
 		/// some preprocessing on the extension data.
 		/// </summary>
-		/// <param name="extension">The extension that will read data from the assertion.</param>
+		/// <typeparam name="T">The extension <i>response</i> type that will read data from the assertion.</typeparam>
 		/// <param name="propertyName">The property name on the openid_identifier input box object that will be used to store the extension data.  For example: sreg</param>
-		public void RegisterClientScriptExtension(IClientScriptExtension extension, string propertyName) {
-			if (extension == null) throw new ArgumentNullException("extension");
+		/// <remarks>
+		/// This method should be called from the <see cref="UnconfirmedPositiveAssertion"/> event handler.
+		/// </remarks>
+		public void RegisterClientScriptExtension<T>(string propertyName) where T : IClientScriptExtensionResponse {
 			if (String.IsNullOrEmpty(propertyName)) throw new ArgumentNullException("propertyName");
 			if (clientScriptExtensions.ContainsValue(propertyName)) {
 				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
 					Strings.ClientScriptExtensionPropertyNameCollision, propertyName), "propertyName");
 			}
-			foreach (IClientScriptExtension ext in clientScriptExtensions.Keys) {
-				if (ext.TypeUri == extension.TypeUri) {
+			foreach (var ext in clientScriptExtensions.Keys) {
+				if (ext == typeof(T)) {
 					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
-						Strings.ClientScriptExtensionTypeUriCollision, extension.TypeUri), "extension");
+						Strings.ClientScriptExtensionTypeCollision, typeof(T).FullName));
 				}
 			}
-			clientScriptExtensions.Add(extension, propertyName);
+			clientScriptExtensions.Add(typeof(T), propertyName);
 		}
 
 		/// <summary>

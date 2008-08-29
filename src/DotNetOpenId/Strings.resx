@@ -126,6 +126,9 @@
   <data name="BadAssociationPrivateData" xml:space="preserve">
     <value>The private data supplied does not meet the requirements of any known Association type.  Its length may be too short, or it may have been corrupted.</value>
   </data>
+  <data name="CallDeserializeBeforeCreateResponse" xml:space="preserve">
+    <value>A Simple Registration request must be deserialized before CreateResponse can be called.</value>
+  </data>
   <data name="CIDVerificationFailed" xml:space="preserve">
     <value>XRI CanonicalID verification failed.</value>
   </data>
@@ -135,8 +138,8 @@
   <data name="ClientScriptExtensionPropertyNameCollision" xml:space="preserve">
     <value>An extension with this property name ('{0}') has already been registered.</value>
   </data>
-  <data name="ClientScriptExtensionTypeUriCollision" xml:space="preserve">
-    <value>An extension with this extension type URI ('{0}') has already been registered.</value>
+  <data name="ClientScriptExtensionTypeCollision" xml:space="preserve">
+    <value>The extension '{0}' has already been registered.</value>
   </data>
   <data name="CreateRequestAlreadyCalled" xml:space="preserve">
     <value>An authentication request has already been created using CreateRequest().</value>

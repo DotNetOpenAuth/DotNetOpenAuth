@@ -183,6 +183,9 @@ namespace DotNetOpenId.Extensions.SimpleRegistration {
 		/// version of Simple Registration used in the request message.
 		/// </summary>
 		public ClaimsResponse CreateResponse() {
+			if (typeUriDeserializedFrom == null) {
+				throw new InvalidOperationException(Strings.CallDeserializeBeforeCreateResponse);
+			}
 			return new ClaimsResponse(typeUriDeserializedFrom);
 		}
 

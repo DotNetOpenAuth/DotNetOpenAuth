@@ -1,9 +1,9 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="ajaxlogin.aspx.cs" Inherits="ConsumerPortal.ajaxlogin"
 	ValidateRequest="false" MasterPageFile="~/Site.Master" %>
 
-<%@ Register Assembly="DotNetOpenId" Namespace="DotNetOpenId.RelyingParty" TagPrefix="cc1" %>
+<%@ Register Assembly="DotNetOpenId" Namespace="DotNetOpenId.RelyingParty" TagPrefix="openid" %>
 <asp:Content runat="server" ContentPlaceHolderID="head">
-<style>
+<style type="text/css">
 .textbox
 {
 	width: 200px;
@@ -41,7 +41,7 @@ td
 						OpenID
 					</td>
 					<td>
-						<cc1:OpenIdAjaxTextBox ID="OpenIdAjaxTextBox1" runat="server" CssClass="openidtextbox"
+						<openid:OpenIdAjaxTextBox ID="OpenIdAjaxTextBox1" runat="server" CssClass="openidtextbox"
 							OnLoggingIn="OpenIdAjaxTextBox1_LoggingIn" 
 							OnLoggedIn="OpenIdAjaxTextBox1_LoggedIn"
 							OnClientAssertionReceived="onauthenticated(sender)"

@@ -47,7 +47,7 @@ namespace ConsumerPortal {
 		protected void OpenIdAjaxTextBox1_UnconfirmedPositiveAssertion(object sender, OpenIdEventArgs e) {
 			// This is where we register extensions that we want to have available in javascript
 			// on the browser.
-			OpenIdAjaxTextBox1.RegisterClientScriptExtension(new ClaimsResponse(), "sreg");
+			OpenIdAjaxTextBox1.RegisterClientScriptExtension<ClaimsResponse>("sreg");
 		}
 	}
 }

@@ -21,7 +21,7 @@ namespace DotNetOpenId.Extensions.SimpleRegistration
 	/// authenticating user.
 	/// </summary>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2218:OverrideGetHashCodeOnOverridingEquals"), Serializable()]
-	public sealed class ClaimsResponse : IExtensionResponse, IClientScriptExtension
+	public sealed class ClaimsResponse : IExtensionResponse, IClientScriptExtensionResponse
 	{
 		string typeUriToUse;
 
@@ -207,7 +207,7 @@ namespace DotNetOpenId.Extensions.SimpleRegistration
 				propertyName, Util.GetSafeJavascriptValue(value));
 		}
 
-		string IClientScriptExtension.InitializeJavascriptData(IDictionary<string, string> sreg, IAuthenticationResponse response, string typeUri) {
+		string IClientScriptExtensionResponse.InitializeJavascriptData(IDictionary<string, string> sreg, IAuthenticationResponse response, string typeUri) {
 			StringBuilder builder = new StringBuilder();
 			builder.Append("{ ");
 			
