@@ -62,12 +62,20 @@ namespace DotNetOpenId.Test {
 
 			var rpResponse = TestSupport.CreateRelyingPartyResponseThroughProvider(request,
 				opReq => {
-					opReq.ClaimedIdentifier = claimedUrl;
 					opReq.IsAuthenticated = expectedResult == AuthenticationStatus.Authenticated;
+					if (opReq.IsAuthenticated.Value) {
+						opReq.ClaimedIdentifier = claimedUrl;
+					}
 				});
 			Assert.AreEqual(expectedResult, rpResponse.Status);
 			if (rpResponse.Status == AuthenticationStatus.Authenticated) {
 				Assert.AreEqual(claimedUrl, rpResponse.ClaimedIdentifier);
+			} else if (rpResponse.Status == AuthenticationStatus.SetupRequired) {
+				Assert.IsNull(rpResponse.ClaimedIdentifier);
+				Assert.IsNull(rpResponse.FriendlyIdentifierForDisplay);
+				Assert.IsNull(rpResponse.Exception);
+				Assert.IsInstanceOfType(typeof(ISetupRequiredAuthenticationResponse), rpResponse);
+				Assert.AreEqual(opIdentifier.ToString(), ((ISetupRequiredAuthenticationResponse)rpResponse).ClaimedOrProviderIdentifier.ToString());
 			}
 		}
 		[Test]

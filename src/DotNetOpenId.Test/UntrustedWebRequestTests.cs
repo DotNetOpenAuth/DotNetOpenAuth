@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
-using System.Text.RegularExpressions;
+using System.IO;
 using System.Net;
+using System.Text.RegularExpressions;
+using DotNetOpenId.Test.Mocks;
+using NUnit.Framework;
 
 namespace DotNetOpenId.Test {
 	[TestFixture]
@@ -25,7 +24,7 @@ namespace DotNetOpenId.Test {
 
 		[Test]
 		public void DisallowUnsafeHosts() {
-			string[] unsafeHosts = new [] {
+			string[] unsafeHosts = new[] {
 				// IPv4 loopback representations
 				"http://127.0.0.1",
 				"http://127.100.0.1",
@@ -88,6 +87,39 @@ namespace DotNetOpenId.Test {
 		public void BlacklistRegex() {
 			UntrustedWebRequest.BlacklistHostsRegex.Add(new Regex(@"\Wmicrosoft.com$"));
 			UntrustedWebRequest.Request(new Uri("http://WWW.MICROSOFT.COM"));
+		}
+
+		/// <summary>
+		/// Tests an implicit redirect where the HTTP server changes the responding URI without even
+		/// redirecting the client.
+		/// </summary>
+		[Test]
+		public void Redirects() {
+			UntrustedWebRequest.WhitelistHosts.Add("localhost");
+			UntrustedWebResponse resp = new UntrustedWebResponse(
+				new Uri("http://localhost/req"), new Uri("http://localhost/resp"),
+					new WebHeaderCollection(), HttpStatusCode.OK, "text/html", null, new MemoryStream());
+			MockHttpRequest.RegisterMockResponse(resp);
+			Assert.AreSame(resp, UntrustedWebRequest.Request(new Uri("http://localhost/req")));
+		}
+
+		/// <summary>
+		/// Tests that HTTP Location headers that only use a relative path get interpreted correctly.
+		/// </summary>
+		[Test]
+		public void RelativeRedirect() {
+			UntrustedWebRequest.WhitelistHosts.Add("localhost");
+			UntrustedWebResponse resp1 = new UntrustedWebResponse(
+				new Uri("http://localhost/dir/file1"), new Uri("http://localhost/dir/file1"),
+				new WebHeaderCollection {
+					{ HttpResponseHeader.Location, "file2" },
+				}, HttpStatusCode.Redirect, "text/html", null, new MemoryStream());
+			MockHttpRequest.RegisterMockResponse(resp1);
+			UntrustedWebResponse resp2 = new UntrustedWebResponse(
+				new Uri("http://localhost/dir/file2"), new Uri("http://localhost/dir/file2"),
+				new WebHeaderCollection(), HttpStatusCode.OK, "text/html", null, new MemoryStream());
+			MockHttpRequest.RegisterMockResponse(resp2);
+			Assert.AreSame(resp2, UntrustedWebRequest.Request(new Uri("http://localhost/dir/file1")));
 		}
 	}
 }

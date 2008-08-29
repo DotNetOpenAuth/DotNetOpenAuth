@@ -36,16 +36,17 @@ namespace DotNetOpenId.Provider {
 			// as appropriate by the Signatory.Sign method.
 		}
 
-		public static void CreateNegativeAssertion(EncodableResponse message,
-			bool immediateMode, Uri setupUrl) {
+		public static void CreateNegativeAssertion(EncodableResponse message, CheckIdRequest request) {
 			if (message == null) throw new ArgumentNullException("message");
+			if (request == null) throw new ArgumentNullException("request");
+
 			Protocol protocol = message.Protocol;
-			if (immediateMode) {
+			if (request.Immediate) {
 				if (protocol.Version.Major >= 2) {
 					message.Fields[protocol.openidnp.mode] = protocol.Args.Mode.setup_needed;
 				} else {
 					message.Fields[protocol.openidnp.mode] = protocol.Args.Mode.id_res;
-					message.Fields[protocol.openidnp.user_setup_url] = setupUrl.AbsoluteUri;
+					message.Fields[protocol.openidnp.user_setup_url] = request.SetupUrl.AbsoluteUri;
 				}
 			} else {
 				message.Fields[protocol.openidnp.mode] = protocol.Args.Mode.cancel;
@@ -62,7 +63,7 @@ namespace DotNetOpenId.Provider {
 					request.LocalIdentifier, request.ClaimedIdentifier);
 				Logger.InfoFormat("Created positive assertion for {0}.", request.ClaimedIdentifier);
 			} else {
-				AssertionMessage.CreateNegativeAssertion(response, request.Immediate, request.SetupUrl);
+				AssertionMessage.CreateNegativeAssertion(response, request);
 				Logger.InfoFormat("Created negative assertion for {0}.", request.ClaimedIdentifier);
 			}
 			return response;
