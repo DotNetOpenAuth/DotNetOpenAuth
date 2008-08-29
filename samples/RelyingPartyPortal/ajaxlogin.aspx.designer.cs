@@ -41,6 +41,15 @@ namespace ConsumerPortal {
         protected global::DotNetOpenId.RelyingParty.OpenIdAjaxTextBox OpenIdAjaxTextBox1;
         
         /// <summary>
+        /// emailAddressBox control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox emailAddressBox;
+        
+        /// <summary>
         /// commentsBox control.
         /// </summary>
         /// <remarks>

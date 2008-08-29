@@ -18,6 +18,14 @@
 				</tr>
 				<tr>
 					<td>
+						Email
+					</td>
+					<td>
+						<asp:TextBox runat="server" ID="emailAddressBox" />
+					</td>
+				</tr>
+				<tr>
+					<td>
 						Comments
 					</td>
 					<td>
