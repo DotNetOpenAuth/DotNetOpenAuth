@@ -2,7 +2,37 @@
 	ValidateRequest="false" MasterPageFile="~/Site.Master" %>
 
 <%@ Register Assembly="DotNetOpenId" Namespace="DotNetOpenId.RelyingParty" TagPrefix="cc1" %>
+<asp:Content runat="server" ContentPlaceHolderID="head">
+<style>
+.textbox
+{
+	width: 200px;
+}
+.openidtextbox
+{
+	width: 185px;
+}
+td
+{
+	vertical-align: top;
+}
+</style>
+</asp:Content>
+
 <asp:Content runat="server" ContentPlaceHolderID="Main">
+<script type="text/javascript">
+	function onauthenticated(sender) {
+		var emailBox = document.getElementById('ctl00_Main_emailAddressBox');
+		emailBox.disabled = false;
+		emailBox.title = null; // remove tooltip describing why the box was disabled.
+		// the sreg response may not always be included.
+		if (sender.sreg) {
+			// and the email field may not always be included in the sreg response.
+			if (sender.sreg.email) { emailBox.value = sender.sreg.email; }
+		}
+	}
+</script>
+
 	<asp:MultiView runat="server" ID="multiView" ActiveViewIndex='0'>
 		<asp:View runat="server" ID="commentSubmission">
 			<table>
@@ -11,11 +41,11 @@
 						OpenID
 					</td>
 					<td>
-						<cc1:OpenIdAjaxTextBox ID="OpenIdAjaxTextBox1" runat="server" 
+						<cc1:OpenIdAjaxTextBox ID="OpenIdAjaxTextBox1" runat="server" CssClass="openidtextbox"
 							OnLoggingIn="OpenIdAjaxTextBox1_LoggingIn" 
 							OnLoggedIn="OpenIdAjaxTextBox1_LoggedIn"
-							OnClientAssertionReceived="alert('Demonstration of page-injected javascript handling authentication:\nClaimed Identifier is ' + sender.getClaimedIdentifier() + '\nEmail: ' + sender.sreg.email + '\nNickname: ' + sender.sreg.nickname)" 
-							onunconfirmedpositiveassertion="OpenIdAjaxTextBox1_UnconfirmedPositiveAssertion" />
+							OnClientAssertionReceived="onauthenticated(sender)"
+							OnUnconfirmedPositiveAssertion="OpenIdAjaxTextBox1_UnconfirmedPositiveAssertion" />
 					</td>
 				</tr>
 				<tr>
@@ -23,7 +53,7 @@
 						Email
 					</td>
 					<td>
-						<asp:TextBox runat="server" ID="emailAddressBox" />
+						<asp:TextBox runat="server" ID="emailAddressBox" Enabled="false" CssClass="textbox" ToolTip="This field will be enabled after you log in with your OpenID." />
 					</td>
 				</tr>
 				<tr>
@@ -31,7 +61,7 @@
 						Comments
 					</td>
 					<td>
-						<asp:TextBox runat="server" ID="commentsBox" />
+						<asp:TextBox runat="server" ID="commentsBox" TextMode="MultiLine" Rows="5" CssClass="textbox" />
 					</td>
 				</tr>
 				<tr>

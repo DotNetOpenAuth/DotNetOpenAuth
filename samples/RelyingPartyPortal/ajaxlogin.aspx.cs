@@ -18,9 +18,15 @@ namespace ConsumerPortal {
 		}
 
 		protected void OpenIdAjaxTextBox1_LoggedIn(object sender, OpenIdEventArgs e) {
-			var claims = OpenIdAjaxTextBox1.AuthenticationResponse.GetExtension<ClaimsResponse>();
 			Label label = ((Label)commentSubmitted.FindControl("emailLabel"));
-			label.Text = claims != null ? claims.Email : "stranger (no email)";
+			label.Text = e.Response.FriendlyIdentifierForDisplay;
+
+			// We COULD get the sreg extension response here for the email, but since we let the user
+			// potentially change the email in the HTML form, we'll use that instead.
+			//var claims = OpenIdAjaxTextBox1.AuthenticationResponse.GetExtension<ClaimsResponse>();
+			if (emailAddressBox.Text.Length > 0) {
+				label.Text += " (" + emailAddressBox.Text + ")";
+			}
 		}
 
 		protected void submitButton_Click(object sender, EventArgs e) {
@@ -39,6 +45,8 @@ namespace ConsumerPortal {
 		}
 
 		protected void OpenIdAjaxTextBox1_UnconfirmedPositiveAssertion(object sender, OpenIdEventArgs e) {
+			// This is where we register extensions that we want to have available in javascript
+			// on the browser.
 			OpenIdAjaxTextBox1.RegisterClientScriptExtension(new ClaimsResponse(), "sreg");
 		}
 	}

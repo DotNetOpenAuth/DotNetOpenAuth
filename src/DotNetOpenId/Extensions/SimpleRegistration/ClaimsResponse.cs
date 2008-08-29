@@ -204,7 +204,7 @@ namespace DotNetOpenId.Extensions.SimpleRegistration
 
 		string createAddFieldJS(string propertyName, string value) {
 			return string.Format(CultureInfo.InvariantCulture, "{0}: '{1}',",
-				propertyName, Util.MakeSafeJavascriptValue(value));
+				propertyName, Util.GetSafeJavascriptValue(value));
 		}
 
 		string IClientScriptExtension.InitializeJavascriptData(IDictionary<string, string> sreg, IAuthenticationResponse response, string typeUri) {
