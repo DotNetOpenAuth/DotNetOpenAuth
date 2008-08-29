@@ -132,6 +132,12 @@
   <data name="ClaimedIdentifierMustBeSetFirst" xml:space="preserve">
     <value>The ClaimedIdentifier property must be set first.</value>
   </data>
+  <data name="ClientScriptExtensionPropertyNameCollision" xml:space="preserve">
+    <value>An extension with this property name ('{0}') has already been registered.</value>
+  </data>
+  <data name="ClientScriptExtensionTypeUriCollision" xml:space="preserve">
+    <value>An extension with this extension type URI ('{0}') has already been registered.</value>
+  </data>
   <data name="CreateRequestAlreadyCalled" xml:space="preserve">
     <value>An authentication request has already been created using CreateRequest().</value>
   </data>

@@ -284,7 +284,7 @@ namespace DotNetOpenId.RelyingParty {
 			get {
 				if (response == null && isAuthenticationResponseReady) {
 					try {
-						response = AuthenticationResponse.Parse(query, this, request);
+						response = AuthenticationResponse.Parse(query, this, request, true);
 					} catch (OpenIdException ex) {
 						response = new FailedAuthenticationResponse(ex);
 					}

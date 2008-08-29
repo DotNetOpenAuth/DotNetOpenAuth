@@ -112,6 +112,26 @@ namespace DotNetOpenId.RelyingParty {
 			get { return new Uri(Util.GetRequiredArg(signedArguments, Provider.Protocol.openid.return_to)); }
 		}
 
+		internal string GetExtensionClientScript(IClientScriptExtension extension) {
+			var fields = IncomingExtensions.GetExtensionArguments(extension.TypeUri);
+			if (fields != null) {
+				// The extension was found using the preferred TypeUri.
+				return extension.InitializeJavascriptData(fields, this, extension.TypeUri);
+			} else {
+				// The extension may still be found using secondary TypeUris.
+				if (extension.AdditionalSupportedTypeUris != null) {
+					foreach (string typeUri in extension.AdditionalSupportedTypeUris) {
+						fields = IncomingExtensions.GetExtensionArguments(typeUri);
+						if (fields != null) {
+							// We found one of the older ones.
+							return extension.InitializeJavascriptData(fields, this, typeUri);
+						}
+					}
+				}
+			}
+			return null;
+		}
+
 		bool getExtension(IExtensionResponse extension) {
 			var fields = IncomingExtensions.GetExtensionArguments(extension.TypeUri);
 			if (fields != null) {
@@ -153,7 +173,7 @@ namespace DotNetOpenId.RelyingParty {
 		}
 
 		internal static AuthenticationResponse Parse(IDictionary<string, string> query,
-			OpenIdRelyingParty relyingParty, Uri requestUrl) {
+			OpenIdRelyingParty relyingParty, Uri requestUrl, bool verifySignature) {
 			if (query == null) throw new ArgumentNullException("query");
 			if (requestUrl == null) throw new ArgumentNullException("requestUrl");
 
@@ -203,7 +223,7 @@ namespace DotNetOpenId.RelyingParty {
 				// verified.
 				// For the error-handling and cancellation cases, the info does not have to
 				// be verified, so we'll use whichever one is available.
-				return parseIdResResponse(query, tokenEndpoint, responseEndpoint, relyingParty, requestUrl);
+				return parseIdResResponse(query, tokenEndpoint, responseEndpoint, relyingParty, requestUrl, verifySignature);
 			} else {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.InvalidOpenIdQueryParameterValue,
@@ -213,7 +233,7 @@ namespace DotNetOpenId.RelyingParty {
 
 		static AuthenticationResponse parseIdResResponse(IDictionary<string, string> query,
 			ServiceEndpoint tokenEndpoint, ServiceEndpoint responseEndpoint,
-			OpenIdRelyingParty relyingParty, Uri requestUrl) {
+			OpenIdRelyingParty relyingParty, Uri requestUrl, bool verifyMessageSignature) {
 			// Use responseEndpoint if it is available so we get the
 			// Claimed Identifer correct in the AuthenticationResponse.
 			ServiceEndpoint unverifiedEndpoint = responseEndpoint ?? tokenEndpoint;
@@ -226,8 +246,10 @@ namespace DotNetOpenId.RelyingParty {
 
 			verifyReturnTo(query, unverifiedEndpoint, requestUrl);
 			verifyDiscoveredInfoMatchesAssertedInfo(relyingParty, query, tokenEndpoint, responseEndpoint);
-			verifyNonceUnused(query, unverifiedEndpoint, relyingParty.Store);
-			verifySignature(relyingParty, query, unverifiedEndpoint);
+			if (verifyMessageSignature) {
+				verifyNonceUnused(query, unverifiedEndpoint, relyingParty.Store);
+				verifySignature(relyingParty, query, unverifiedEndpoint);
+			}
 
 			return new AuthenticationResponse(AuthenticationStatus.Authenticated, unverifiedEndpoint, query);
 		}

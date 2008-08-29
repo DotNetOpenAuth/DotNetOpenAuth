@@ -37,5 +37,9 @@ namespace ConsumerPortal {
 		protected void editComment_Click(object sender, EventArgs e) {
 			multiView.ActiveViewIndex = 0;
 		}
+
+		protected void OpenIdAjaxTextBox1_UnconfirmedPositiveAssertion(object sender, OpenIdEventArgs e) {
+			OpenIdAjaxTextBox1.RegisterClientScriptExtension(new ClaimsResponse(), "sreg");
+		}
 	}
 }

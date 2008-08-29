@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using DotNetOpenId.Extensions;
 
 [assembly: WebResource(DotNetOpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedScriptResourceName, "text/javascript")]
 [assembly: WebResource(DotNetOpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedDotNetOpenIdLogoResourceName, "image/gif")]
@@ -333,6 +335,30 @@ namespace DotNetOpenId.RelyingParty {
 
 		#endregion
 
+		Dictionary<IClientScriptExtension, string> clientScriptExtensions = new Dictionary<IClientScriptExtension, string>();
+		/// <summary>
+		/// Allows an OpenID extension to read data out of an unverified positive authentication assertion
+		/// and send it down to the client browser so that Javascript running on the page can perform
+		/// some preprocessing on the extension data.
+		/// </summary>
+		/// <param name="extension">The extension that will read data from the assertion.</param>
+		/// <param name="propertyName">The property name on the openid_identifier input box object that will be used to store the extension data.  For example: sreg</param>
+		public void RegisterClientScriptExtension(IClientScriptExtension extension, string propertyName) {
+			if (extension == null) throw new ArgumentNullException("extension");
+			if (String.IsNullOrEmpty(propertyName)) throw new ArgumentNullException("propertyName");
+			if (clientScriptExtensions.ContainsValue(propertyName)) {
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
+					Strings.ClientScriptExtensionPropertyNameCollision, propertyName), "propertyName");
+			}
+			foreach (IClientScriptExtension ext in clientScriptExtensions.Keys) {
+				if (ext.TypeUri == extension.TypeUri) {
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
+						Strings.ClientScriptExtensionTypeUriCollision, extension.TypeUri), "extension");
+				}
+			}
+			clientScriptExtensions.Add(extension, propertyName);
+		}
+
 		/// <summary>
 		/// Prepares the control for loading.
 		/// </summary>
@@ -418,9 +444,27 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 
 		private void reportDiscoveryResult() {
 			Logger.InfoFormat("AJAX (iframe) callback from OP: {0}", Page.Request.Url);
-			callbackUserAgentMethod("dnoi_internal.openidAuthResult(document.URL)");
+			List<string> assignments = new List<string>();
+
+			OpenIdRelyingParty rp = new OpenIdRelyingParty();
+			var f = Util.NameValueCollectionToDictionary(HttpUtility.ParseQueryString(Page.Request.Url.Query));
+			var authResponse = RelyingParty.AuthenticationResponse.Parse(f, rp, Page.Request.Url, false);
+			if (authResponse.Status == AuthenticationStatus.Authenticated) {
+				foreach (var pair in clientScriptExtensions) {
+					string js = authResponse.GetExtensionClientScript(pair.Key);
+					if (string.IsNullOrEmpty(js)) {
+						js = "null";
+					}
+					assignments.Add(pair.Value + " = " + js);
+				}
+			}
+
+			callbackUserAgentMethod("dnoi_internal.openidAuthResult(document.URL)", assignments.ToArray());
 		}
 
+		/// <summary>
+		/// Prepares to render the control.
+		/// </summary>
 		protected override void OnPreRender(EventArgs e) {
 			base.OnPreRender(e);
 
@@ -475,13 +519,30 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 		/// <param name="methodCall">The method to call on the OpenIdAjaxTextBox, including
 		/// parameters.  (i.e. "callback('arg1', 2)").  No escaping is done by this method.</param>
 		private void callbackUserAgentMethod(string methodCall) {
+			callbackUserAgentMethod(methodCall, null);
+		}
+
+		/// <summary>
+		/// Invokes a method on a parent frame/window's OpenIdAjaxTextBox,
+		/// and closes the calling popup window if applicable.
+		/// </summary>
+		/// <param name="methodCall">The method to call on the OpenIdAjaxTextBox, including
+		/// parameters.  (i.e. "callback('arg1', 2)").  No escaping is done by this method.</param>
+		/// <param name="preAssignments">An optional list of assignments to make to the input box object before placing the method call.</param>
+		private void callbackUserAgentMethod(string methodCall, string[] preAssignments) {
 			Logger.InfoFormat("Sending Javascript callback: {0}", methodCall);
+			Page.Response.Write(@"<html><body><script language='javascript'>
+	var objSrc = window.frameElement ? window.frameElement.openidBox : window.opener.waiting_openidBox;
+");
+			if (preAssignments != null) {
+				foreach (string assignment in preAssignments) {
+					Page.Response.Write(string.Format(CultureInfo.InvariantCulture, "	objSrc.{0};{1}", assignment, Environment.NewLine));
+				}
+			}
 			Page.Response.Write(string.Format(CultureInfo.InvariantCulture,
-				@"<html><body><script language='javascript'>
-					var objSrc = window.frameElement ? window.frameElement.openidBox : window.opener.waiting_openidBox;
-					objSrc.{0};
-					if (!window.frameElement) {{ self.close(); }}
-				</script></body></html>", methodCall));
+@"	objSrc.{0};
+	if (!window.frameElement) {{ self.close(); }}
+</script></body></html>", methodCall));
 			Page.Response.End();
 		}
 	}

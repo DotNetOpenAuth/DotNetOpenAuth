@@ -64,6 +64,7 @@
     <Compile Include="Configuration\WhiteBlackListCollection.cs" />
     <Compile Include="Configuration\WhiteBlackListElement.cs" />
     <Compile Include="DiffieHellmanUtil.cs" />
+    <Compile Include="Extensions\IClientScriptExtension.cs" />
     <Compile Include="Provider\ProviderSecuritySettings.cs" />
     <Compile Include="RelyingParty\AuthenticationResponseSnapshot.cs" />
     <Compile Include="RelyingParty\OpenIdAjaxTextBox.cs" />

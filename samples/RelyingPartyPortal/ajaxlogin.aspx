@@ -14,7 +14,8 @@
 						<cc1:OpenIdAjaxTextBox ID="OpenIdAjaxTextBox1" runat="server" 
 							OnLoggingIn="OpenIdAjaxTextBox1_LoggingIn" 
 							OnLoggedIn="OpenIdAjaxTextBox1_LoggedIn"
-							OnClientAssertionReceived="alert('Demonstration of page-injected javascript handling authentication:\nClaimed Identifier is ' + sender.getClaimedIdentifier())" />
+							OnClientAssertionReceived="alert('Demonstration of page-injected javascript handling authentication:\nClaimed Identifier is ' + sender.getClaimedIdentifier() + '\nEmail: ' + sender.sreg.email + '\nNickname: ' + sender.sreg.nickname)" 
+							onunconfirmedpositiveassertion="OpenIdAjaxTextBox1_UnconfirmedPositiveAssertion" />
 					</td>
 				</tr>
 				<tr>
