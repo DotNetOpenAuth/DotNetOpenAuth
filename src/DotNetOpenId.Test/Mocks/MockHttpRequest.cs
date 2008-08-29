@@ -37,7 +37,6 @@ namespace DotNetOpenId.Test.Mocks {
 
 		internal static void RegisterMockResponse(UntrustedWebResponse response) {
 			if (response == null) throw new ArgumentNullException("response");
-			Debug.Assert(response.RequestUri == response.FinalUri, "Implicit mock redirects are not allowed.  Use RegisterMockRedirect.");
 			UntrustedWebRequest.MockRequests = MockRequestResponse;
 			if (registeredMockResponses.ContainsKey(response.RequestUri)) {
 				TestSupport.Logger.WarnFormat("Mock HTTP response already registered for {0}.", response.RequestUri);

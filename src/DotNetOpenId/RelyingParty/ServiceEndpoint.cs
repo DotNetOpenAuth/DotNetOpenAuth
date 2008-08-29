@@ -69,8 +69,7 @@ namespace DotNetOpenId.RelyingParty {
 						if (UserSuppliedIdentifier == null || String.Equals(UserSuppliedIdentifier, ClaimedIdentifier, StringComparison.OrdinalIgnoreCase)) {
 							friendlyIdentifierForDisplay = ClaimedIdentifier;
 						} else {
-							friendlyIdentifierForDisplay = String.Format(CultureInfo.CurrentCulture, "{0} ({1})",
-								ClaimedIdentifier, UserSuppliedIdentifier);
+							friendlyIdentifierForDisplay = UserSuppliedIdentifier;
 						}
 					} else if (uri != null) {
 						string displayUri = uri.Uri.Authority + uri.Uri.PathAndQuery;
