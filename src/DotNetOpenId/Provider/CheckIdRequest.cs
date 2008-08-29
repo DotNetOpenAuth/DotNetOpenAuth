@@ -224,9 +224,14 @@ namespace DotNetOpenId.Provider {
 
 		/// <summary>
 		/// Encode this request as a URL to GET.
+		/// Only used in response to immediate auth requests from OpenID 1.x RPs.
 		/// </summary>
 		internal Uri SetupUrl {
 			get {
+				if (Protocol.Version.Major >= 2) {
+					Debug.Fail("This property only applicable to OpenID 1.x RPs.");
+					throw new InvalidOperationException();
+				}
 				Debug.Assert(Provider.Endpoint != null, "The OpenIdProvider should have guaranteed this.");
 				var q = new Dictionary<string, string>();
 
