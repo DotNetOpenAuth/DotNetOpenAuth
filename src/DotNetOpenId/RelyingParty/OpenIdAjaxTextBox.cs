@@ -260,6 +260,9 @@ namespace DotNetOpenId.RelyingParty {
 		/// </summary>
 		[Description("Fired when the user has typed in their identifier, discovery was successful and a login attempt is about to begin.")]
 		public event EventHandler<OpenIdEventArgs> LoggingIn;
+		/// <summary>
+		/// Fires the <see cref="LoggingIn"/> event.
+		/// </summary>
 		protected virtual void OnLoggingIn(IAuthenticationRequest request) {
 			var loggingIn = LoggingIn;
 			if (loggingIn != null) {
@@ -268,10 +271,35 @@ namespace DotNetOpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Fired when a Provider sends back a positive assertion to this control,
+		/// but the authentication has not yet been verified.
+		/// </summary>
+		/// <remarks>
+		/// <b>No security critical decisions should be made within event handlers
+		/// for this event</b> as the authenticity of the assertion has not been
+		/// verified yet.  All security related code should go in the event handler
+		/// for the <see cref="LoggedIn"/> event.
+		/// </remarks>
+		[Description("Fired when a Provider sends back a positive assertion to this control, but the authentication has not yet been verified.")]
+		public event EventHandler<OpenIdEventArgs> UnconfirmedPositiveAssertion;
+		/// <summary>
+		/// Fires the <see cref="UnconfirmedPositiveAssertion"/> event.
+		/// </summary>
+		protected virtual void OnUnconfirmedPositiveAssertion() {
+			var unconfirmedPositiveAssertion = UnconfirmedPositiveAssertion;
+			if (unconfirmedPositiveAssertion != null) {
+				unconfirmedPositiveAssertion(this, null);
+			}
+		}
+
+		/// <summary>
 		/// Fired when authentication has completed successfully.
 		/// </summary>
 		[Description("Fired when authentication has completed successfully.")]
 		public event EventHandler<OpenIdEventArgs> LoggedIn;
+		/// <summary>
+		/// Fires the <see cref="LoggedIn"/> event.
+		/// </summary>
 		protected virtual void OnLoggedIn(IAuthenticationResponse response) {
 			var loggedIn = LoggedIn;
 			if (loggedIn != null) {
@@ -333,6 +361,7 @@ namespace DotNetOpenId.RelyingParty {
 				if (!string.IsNullOrEmpty(userSuppliedIdentifier)) {
 					Logger.Info("AJAX (iframe) request detected.");
 					if (Page.Request.QueryString["dotnetopenid.phase"] == "2") {
+						OnUnconfirmedPositiveAssertion();
 						reportDiscoveryResult();
 					} else {
 						performDiscovery(userSuppliedIdentifier);
