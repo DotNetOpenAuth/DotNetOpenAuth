@@ -2,12 +2,12 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DotNetOAuth.Test {
-	[TestClass()]
-	public class ServiceProviderTest {
+	[TestClass]
+	public class ServiceProviderTest : TestBase {
 		/// <summary>
 		/// A test for UserAuthorizationUri
 		/// </summary>
-		[TestMethod()]
+		[TestMethod]
 		public void UserAuthorizationUriTest() {
 			ServiceProvider target = new ServiceProvider();
 			Uri expected = new Uri("http://localhost/authorization");

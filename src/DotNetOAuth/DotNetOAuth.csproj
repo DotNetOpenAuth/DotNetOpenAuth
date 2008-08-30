@@ -73,6 +73,11 @@
     <Compile Include="IndirectMessage.cs" />
     <Compile Include="IndirectMessageEncoder.cs" />
     <Compile Include="IProtocolMessage.cs" />
+    <Compile Include="Logger.cs" />
+    <Compile Include="Loggers\ILog.cs" />
+    <Compile Include="Loggers\Log4NetLogger.cs" />
+    <Compile Include="Loggers\NoOpLogger.cs" />
+    <Compile Include="Loggers\TraceLogger.cs" />
     <Compile Include="MessageScheme.cs" />
     <Compile Include="ProtocolException.cs" />
     <Compile Include="ProtocolMessageSerializer.cs" />
