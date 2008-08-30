@@ -51,7 +51,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout, assert
 	}
 
 	box.dnoi_internal.loginButton = box.dnoi_internal.constructButton(loginButtonText, loginButtonToolTip, function() {
-		box.popup = window.open(box.dnoi_internal.getAuthenticationUrl(), 'opLogin', 'status=0,toolbar=0,resizable=1,scrollbars=1,width=800,height=600');
+		box.dnoi_internal.popup = window.open(box.dnoi_internal.getAuthenticationUrl(), 'opLogin', 'status=0,toolbar=0,resizable=1,scrollbars=1,width=800,height=600');
 		self.waiting_openidBox = box;
 		return false;
 	});
@@ -196,9 +196,9 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout, assert
 
 	function createHiddenFrame(url) {
 		var iframe = document.createElement("iframe");
-//		iframe.setAttribute("width", 0);
-//		iframe.setAttribute("height", 0);
-//		iframe.setAttribute("style", "display: none");
+		iframe.setAttribute("width", 0);
+		iframe.setAttribute("height", 0);
+		iframe.setAttribute("style", "display: none");
 		iframe.setAttribute("src", url);
 		iframe.openidBox = box;
 		box.parentNode.insertBefore(iframe, box);
@@ -231,9 +231,9 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout, assert
 		trace('openidAuthResult ' + resultUrl);
 		if (box.discoveryIFrame) {
 			box.dnoi_internal.closeDiscoveryIFrame();
-		} else if (box.popup) {
-			box.popup.close();
-			box.popup = null;
+		} else if (box.dnoi_internal.popup) {
+			box.dnoi_internal.popup.close();
+			box.dnoi_internal.popup = null;
 		}
 		var resultUri = new Uri(resultUrl);
 

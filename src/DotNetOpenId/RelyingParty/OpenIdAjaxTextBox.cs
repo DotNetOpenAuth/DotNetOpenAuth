@@ -591,7 +591,8 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 		private void callbackUserAgentMethod(string methodCall, string[] preAssignments) {
 			Logger.InfoFormat("Sending Javascript callback: {0}", methodCall);
 			Page.Response.Write(@"<html><body><script language='javascript'>
-	var objSrc = window.frameElement ? window.frameElement.openidBox : window.opener.waiting_openidBox;
+	var inPopup = !window.frameElement;
+	var objSrc = inPopup ? window.opener.waiting_openidBox : window.frameElement.openidBox;
 ");
 			if (preAssignments != null) {
 				foreach (string assignment in preAssignments) {
@@ -600,7 +601,7 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 			}
 			Page.Response.Write(string.Format(CultureInfo.InvariantCulture,
 @"	objSrc.{0};
-	if (!window.frameElement) {{ self.close(); }}
+	if (inPopup) window.self.close();
 </script></body></html>", methodCall));
 			Page.Response.End();
 		}
