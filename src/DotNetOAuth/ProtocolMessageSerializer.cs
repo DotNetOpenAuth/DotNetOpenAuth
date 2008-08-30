@@ -23,7 +23,7 @@ namespace DotNetOAuth {
 		internal IDictionary<string, string> Serialize(T message) {
 			if (message == null) throw new ArgumentNullException("message");
 
-			var fields = new Dictionary<string, string>();
+			var fields = new Dictionary<string, string>(StringComparer.Ordinal);
 			Serialize(fields, message);
 			return fields;
 		}
@@ -46,7 +46,13 @@ namespace DotNetOAuth {
 			if (fields == null) throw new ArgumentNullException("fields");
 
 			var reader = DictionaryXmlReader.Create(rootElement, fields);
-			T result = (T)serializer.ReadObject(reader, false);
+			T result;
+			try {
+				result = (T)serializer.ReadObject(reader, false);
+			} catch (SerializationException ex) {
+				// Missing required fields is one cause of this exception.
+				throw new ProtocolException(Strings.InvalidIncomingMessage, ex);
+			}
 			result.EnsureValidMessage();
 			return result;
 		}

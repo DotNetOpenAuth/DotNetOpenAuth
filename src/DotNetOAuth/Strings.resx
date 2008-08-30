@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="InvalidIncomingMessage" xml:space="preserve">
+    <value>An invalid OAuth message received and discarded.</value>
+  </data>
   <data name="RequestUrlMustNotHaveOAuthParameters" xml:space="preserve">
     <value>The request URL query MUST NOT contain any OAuth Protocol Parameters.</value>
   </data>

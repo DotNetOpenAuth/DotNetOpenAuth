@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace DotNetOAuth {
+	/// <summary>
+	/// The methods available for the Consumer to send messages to the Service Provider.
+	/// </summary>
+	/// <remarks>
+	/// See 1.0 spec section 5.2.
+	/// </remarks>
 	internal enum MessageScheme {
 		/// <summary>
 		/// In the HTTP Authorization header as defined in OAuth HTTP Authorization Scheme (OAuth HTTP Authorization Scheme).

@@ -98,22 +98,19 @@ namespace DotNetOAuth.Test {
 			Assert.IsNull(actual.EmptyMember);
 		}
 
-		[TestMethod()]
+		[TestMethod, ExpectedException(typeof(ProtocolException))]
 		public void DeserializeEmpty() {
 			var serializer = new ProtocolMessageSerializer<Mocks.TestMessage>();
-			Dictionary<string, string> fields = new Dictionary<string, string>(StringComparer.Ordinal);
-			var actual = serializer.Deserialize(fields);
-			Assert.AreEqual(0, actual.Age);
-			Assert.IsNull(actual.Name);
-			Assert.IsNull(actual.EmptyMember);
+			var fields = new Dictionary<string, string>(StringComparer.Ordinal);
+			serializer.Deserialize(fields);
 		}
 
 		[TestMethod, ExpectedException(typeof(ProtocolException))]
 		public void DeserializeInvalidMessage() {
 			var serializer = new ProtocolMessageSerializer<Mocks.TestMessage>();
 			Dictionary<string, string> fields = new Dictionary<string, string>(StringComparer.Ordinal);
-			// Put in a value where the field should be empty.
-			fields["EmptyMember"] = "15";
+			// Set an disallowed value.
+			fields["age"] = "-1";
 			serializer.Deserialize(fields);
 		}
 	}

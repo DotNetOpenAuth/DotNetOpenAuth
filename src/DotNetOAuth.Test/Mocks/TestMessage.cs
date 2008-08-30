@@ -4,7 +4,7 @@ using System;
 namespace DotNetOAuth.Test.Mocks {
 	[DataContract(Namespace = Protocol.DataContractNamespace)]
 	class TestMessage : IProtocolMessage {
-		[DataMember(Name = "age")]
+		[DataMember(Name = "age", IsRequired = true)]
 		public int Age { get; set; }
 		[DataMember]
 		public string Name { get; set; }
