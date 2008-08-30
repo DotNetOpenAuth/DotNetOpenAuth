@@ -35,9 +35,9 @@ namespace DotNetOAuth.Test {
 		[TestMethod()]
 		public void SerializeTest() {
 			var serializer = new ProtocolMessageSerializer<Mocks.TestMessage>();
-			var message = new Mocks.TestMessage { Age = 15, Name = "Andrew" };
+			var message = new Mocks.TestMessage { Age = 15, Name = "Andrew", Location = new Uri("http://localhost") };
 			IDictionary<string, string> actual = serializer.Serialize(message);
-			Assert.AreEqual(2, actual.Count);
+			Assert.AreEqual(3, actual.Count);
 
 			// Test case sensitivity of generated dictionary
 			Assert.IsFalse(actual.ContainsKey("Age"));
@@ -46,6 +46,7 @@ namespace DotNetOAuth.Test {
 			// Test contents of dictionary
 			Assert.AreEqual("15", actual["age"]);
 			Assert.AreEqual("Andrew", actual["Name"]);
+			Assert.AreEqual("http://localhost/", actual["Location"]);
 			Assert.IsFalse(actual.ContainsKey("EmptyMember"));
 		}
 

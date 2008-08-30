@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using System;
 
 namespace DotNetOAuth.Test.Mocks {
 	[DataContract(Namespace = Protocol.DataContractNamespace)]
@@ -9,6 +10,8 @@ namespace DotNetOAuth.Test.Mocks {
 		public string Name { get; set; }
 		[DataMember]
 		public string EmptyMember { get; set; }
+		[DataMember]
+		public Uri Location { get; set; }
 
 		#region IProtocolMessage Members
 
