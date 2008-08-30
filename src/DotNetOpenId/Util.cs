@@ -281,6 +281,8 @@ namespace DotNetOpenId {
 			foreach (var pair in javascriptStaticStringEscaping) {
 				builder.Replace(pair.Key, pair.Value);
 			}
+			builder.Insert(0, '\'');
+			builder.Append('\'');
 			return builder.ToString();
 		}
 

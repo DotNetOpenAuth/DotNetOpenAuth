@@ -3,7 +3,8 @@
 	//window.status = msg;
 }
 
-function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout, assertionReceivedCode) {
+function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout, assertionReceivedCode,
+		loginButtonText, loginButtonToolTip, retryButtonText, retryButtonToolTip, busyToolTip) {
 	box.dnoi_internal = new Object();
 	if (assertionReceivedCode) {
 		box.dnoi_internal.onauthenticated = function(sender, e) { eval(assertionReceivedCode); }
@@ -49,17 +50,17 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout, assert
 		return img;
 	}
 
-	box.dnoi_internal.loginButton = box.dnoi_internal.constructButton("LOG IN", "Click here to log in using a pop-up window.", function() {
+	box.dnoi_internal.loginButton = box.dnoi_internal.constructButton(loginButtonText, loginButtonToolTip, function() {
 		box.popup = window.open(box.dnoi_internal.getAuthenticationUrl(), 'opLogin', 'status=0,toolbar=0,resizable=1,scrollbars=1,width=800,height=600');
 		self.waiting_openidBox = box;
 		return false;
 	});
-	box.dnoi_internal.retryButton = box.dnoi_internal.constructButton("RETRY", "Retry a failed identifier discovery.", function() {
+	box.dnoi_internal.retryButton = box.dnoi_internal.constructButton(retryButtonText, retryButtonToolTip, function() {
 		box.timeout += 5000; // give the retry attempt 5s longer than the last attempt
 		box.dnoi_internal.performDiscovery();
 		return false;
 	});
-	box.dnoi_internal.spinner = box.dnoi_internal.constructIcon(spinner_url, "Discovering/authenticating");
+	box.dnoi_internal.spinner = box.dnoi_internal.constructIcon(spinner_url, busyToolTip);
 	box.dnoi_internal.prefetchImage(dotnetopenid_logo_url);
 
 	box.dnoi_internal.setVisualCue = function(state) {

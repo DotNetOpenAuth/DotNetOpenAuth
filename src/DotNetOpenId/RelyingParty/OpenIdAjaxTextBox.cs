@@ -120,6 +120,21 @@ namespace DotNetOpenId.RelyingParty {
 			}
 		}
 
+		const string timeoutViewStateKey = "Timeout";
+		readonly TimeSpan timeoutDefault = TimeSpan.FromSeconds(8);
+		/// <summary>
+		/// Gets/sets the time duration for the AJAX control to wait for an OP to respond before reporting failure to the user.
+		/// </summary>
+		[Browsable(true), DefaultValue(typeof(TimeSpan), "00:00:08"), Category("Behavior")]
+		[Description("The time duration for the AJAX control to wait for an OP to respond before reporting failure to the user.")]
+		public TimeSpan Timeout {
+			get { return (TimeSpan)(ViewState[timeoutViewStateKey] ?? timeoutDefault); }
+			set {
+				if (value.TotalMilliseconds <= 0) throw new ArgumentOutOfRangeException("value");
+				ViewState[timeoutViewStateKey] = value;
+			}
+		}
+
 		const string logonTextViewStateKey = "LoginText";
 		const string logonTextDefault = "LOG IN";
 		/// <summary>
@@ -136,19 +151,56 @@ namespace DotNetOpenId.RelyingParty {
 			}
 		}
 
-		const string timeoutViewStateKey = "Timeout";
-		readonly TimeSpan timeoutDefault = TimeSpan.FromSeconds(8);
+		const string logonToolTipViewStateKey = "LoginToolTip";
+		const string logonToolTipDefault = "Click here to log in using a pop-up window.";
 		/// <summary>
-		/// Gets/sets the time duration for the AJAX control to wait for an OP to respond before reporting failure to the user.
+		/// Gets/sets the rool tip text that appears on the LOG IN button in cases where immediate (invisible) authentication fails.
 		/// </summary>
-		[Browsable(true), DefaultValue(typeof(TimeSpan), "00:00:08"), Category("Behavior")]
-		[Description("The time duration for the AJAX control to wait for an OP to respond before reporting failure to the user.")]
-		public TimeSpan Timeout {
-			get { return (TimeSpan)(ViewState[timeoutViewStateKey] ?? timeoutDefault); }
+		[Bindable(true), DefaultValue(logonToolTipDefault), Localizable(true), Category("Appearance")]
+		[Description("The tool tip text that appears on the LOG IN button in cases where immediate (invisible) authentication fails.")]
+		public string LogOnToolTip {
+			get { return (string)(ViewState[logonToolTipViewStateKey] ?? logonToolTipDefault); }
+			set { ViewState[logonToolTipViewStateKey] = value ?? string.Empty; }
+		}
+
+		const string retryTextViewStateKey = "RetryText";
+		const string retryTextDefault = "RETRY";
+		/// <summary>
+		/// Gets/sets the text that appears on the RETRY button in cases where authentication times out.
+		/// </summary>
+		[Bindable(true), DefaultValue(retryTextDefault), Localizable(true), Category("Appearance")]
+		[Description("The text that appears on the RETRY button in cases where authentication times out.")]
+		public string RetryText {
+			get { return (string)(ViewState[retryTextViewStateKey] ?? retryTextDefault); }
 			set {
-				if (value.TotalMilliseconds <= 0) throw new ArgumentOutOfRangeException("value");
-				ViewState[timeoutViewStateKey] = value;
+				if (string.IsNullOrEmpty(value))
+					throw new ArgumentNullException("value");
+				ViewState[retryTextViewStateKey] = value ?? string.Empty;
 			}
+		}
+
+		const string retryToolTipViewStateKey = "RetryToolTip";
+		const string retryToolTipDefault = "Retry a failed identifier discovery.";
+		/// <summary>
+		/// Gets/sets the tool tip text that appears on the RETRY button in cases where authentication times out.
+		/// </summary>
+		[Bindable(true), DefaultValue(retryToolTipDefault), Localizable(true), Category("Appearance")]
+		[Description("The tool tip text that appears on the RETRY button in cases where authentication times out.")]
+		public string RetryToolTip {
+			get { return (string)(ViewState[retryToolTipViewStateKey] ?? retryToolTipDefault); }
+			set { ViewState[retryToolTipViewStateKey] = value ?? string.Empty; }
+		}
+
+		const string busyToolTipViewStateKey = "BusyToolTip";
+		const string busyToolTipDefault = "Discovering/authenticating";
+		/// <summary>
+		/// Gets/sets the tool tip text that appears over the text box when it is discovering and authenticating.
+		/// </summary>
+		[Bindable(true), DefaultValue(busyToolTipDefault), Localizable(true), Category("Appearance")]
+		[Description("The tool tip text that appears over the text box when it is discovering and authenticating.")]
+		public string BusyToolTip {
+			get { return (string)(ViewState[busyToolTipViewStateKey] ?? busyToolTipDefault); }
+			set { ViewState[busyToolTipViewStateKey] = value ?? string.Empty; }
 		}
 
 		#endregion
@@ -408,11 +460,16 @@ namespace DotNetOpenId.RelyingParty {
 			if (focusCalled) {
 				startupScript.AppendLine("box.focus();");
 			}
-			startupScript.AppendFormat("initAjaxOpenId(box, '{0}', '{1}', {2}, {3});{4}",
+			startupScript.AppendFormat("initAjaxOpenId(box, '{0}', '{1}', {2}, {3}, {4}, {5}, {6}, {7}, {8});{9}",
 				Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedDotNetOpenIdLogoResourceName),
 				Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedSpinnerResourceName),
 				Timeout.TotalMilliseconds,
 				string.IsNullOrEmpty(OnClientAssertionReceived) ? "null" : "'" + OnClientAssertionReceived.Replace(@"\", @"\\").Replace("'", @"\'") + "'",
+				Util.GetSafeJavascriptValue(LogOnText),
+				Util.GetSafeJavascriptValue(LogOnToolTip),
+				Util.GetSafeJavascriptValue(RetryText),
+				Util.GetSafeJavascriptValue(RetryToolTip),
+				Util.GetSafeJavascriptValue(BusyToolTip),
 				Environment.NewLine);
 
 			if (AuthenticationResponse != null && AuthenticationResponse.Status == AuthenticationStatus.Authenticated) {
