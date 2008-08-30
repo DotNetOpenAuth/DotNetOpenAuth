@@ -203,6 +203,30 @@ namespace DotNetOpenId.RelyingParty {
 			set { ViewState[busyToolTipViewStateKey] = value ?? string.Empty; }
 		}
 
+		const string identifierRequiredMessageViewStateKey = "BusyToolTip";
+		const string identifierRequiredMessageDefault = "Please correct errors in OpenID identifier and allow login to complete before submitting.";
+		/// <summary>
+		/// Gets/sets the message that is displayed if a postback is about to occur before the identifier has been supplied.
+		/// </summary>
+		[Bindable(true), DefaultValue(identifierRequiredMessageDefault), Localizable(true), Category("Appearance")]
+		[Description("The message that is displayed if a postback is about to occur before the identifier has been supplied.")]
+		public string IdentifierRequiredMessage {
+			get { return (string)(ViewState[identifierRequiredMessageViewStateKey] ?? identifierRequiredMessageDefault); }
+			set { ViewState[identifierRequiredMessageViewStateKey] = value ?? string.Empty; }
+		}
+
+		const string loginInProgressMessageViewStateKey = "BusyToolTip";
+		const string loginInProgressMessageDefault = "Please wait for login to complete.";
+		/// <summary>
+		/// Gets/sets the message that is displayed if a postback is attempted while login is in process.
+		/// </summary>
+		[Bindable(true), DefaultValue(loginInProgressMessageDefault), Localizable(true), Category("Appearance")]
+		[Description("The message that is displayed if a postback is attempted while login is in process.")]
+		public string LoginInProgressMessage {
+			get { return (string)(ViewState[loginInProgressMessageViewStateKey] ?? loginInProgressMessageDefault); }
+			set { ViewState[loginInProgressMessageViewStateKey] = value ?? string.Empty; }
+		}
+
 		#endregion
 
 		#region Properties to hide
@@ -460,7 +484,7 @@ namespace DotNetOpenId.RelyingParty {
 			if (focusCalled) {
 				startupScript.AppendLine("box.focus();");
 			}
-			startupScript.AppendFormat("initAjaxOpenId(box, '{0}', '{1}', {2}, {3}, {4}, {5}, {6}, {7}, {8});{9}",
+			startupScript.AppendFormat("initAjaxOpenId(box, '{0}', '{1}', {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10});{11}",
 				Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedDotNetOpenIdLogoResourceName),
 				Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedSpinnerResourceName),
 				Timeout.TotalMilliseconds,
@@ -470,6 +494,8 @@ namespace DotNetOpenId.RelyingParty {
 				Util.GetSafeJavascriptValue(RetryText),
 				Util.GetSafeJavascriptValue(RetryToolTip),
 				Util.GetSafeJavascriptValue(BusyToolTip),
+				Util.GetSafeJavascriptValue(IdentifierRequiredMessage),
+				Util.GetSafeJavascriptValue(LoginInProgressMessage),
 				Environment.NewLine);
 
 			if (AuthenticationResponse != null && AuthenticationResponse.Status == AuthenticationStatus.Authenticated) {
@@ -596,12 +622,19 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 ");
 			if (preAssignments != null) {
 				foreach (string assignment in preAssignments) {
-					Page.Response.Write(string.Format(CultureInfo.InvariantCulture, "	objSrc.{0};{1}", assignment, Environment.NewLine));
+					Page.Response.Write(string.Format(CultureInfo.InvariantCulture, "	objSrc.{0};\n", assignment));
 				}
 			}
+			// Something about calling objSrc.{0} can somehow cause FireFox to forget about the inPopup variable,
+			// so we have to actually put the test for it ABOVE the call to objSrc.{0} so that it already 
+			// whether to call window.self.close() after the call.
 			Page.Response.Write(string.Format(CultureInfo.InvariantCulture,
-@"	objSrc.{0};
-	if (inPopup) window.self.close();
+@"	if (inPopup) {{
+	objSrc.{0};
+	window.self.close();
+}} else {{
+	objSrc.{0};
+}}
 </script></body></html>", methodCall));
 			Page.Response.End();
 		}

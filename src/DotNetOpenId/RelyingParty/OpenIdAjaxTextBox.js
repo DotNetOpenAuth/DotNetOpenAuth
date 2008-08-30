@@ -4,7 +4,8 @@
 }
 
 function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout, assertionReceivedCode,
-		loginButtonText, loginButtonToolTip, retryButtonText, retryButtonToolTip, busyToolTip) {
+		loginButtonText, loginButtonToolTip, retryButtonText, retryButtonToolTip, busyToolTip,
+		identifierRequiredMessage, loginInProgressMessage) {
 	box.dnoi_internal = new Object();
 	if (assertionReceivedCode) {
 		box.dnoi_internal.onauthenticated = function(sender, e) { eval(assertionReceivedCode); }
@@ -125,10 +126,10 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout, assert
 	box.dnoi_internal.onSubmit = function() {
 		if (box.lastAuthenticationResult != 'authenticated') {
 			if (box.dnoi_internal.isBusy()) {
-				alert('Please wait for login to complete.');
+				alert(loginInProgressMessage);
 			} else {
 				if (box.value.length > 0) {
-					alert('Please correct errors in OpenID identifier and allow login to complete before submitting.');
+					alert(identifierRequiredMessage);
 				} else {
 					box.dnoi_internal.setVisualCue('required');
 				}
