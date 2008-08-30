@@ -9,5 +9,15 @@ namespace DotNetOAuth.Test.Mocks {
 		public string Name { get; set; }
 		[DataMember]
 		public string EmptyMember { get; set; }
+
+		#region IProtocolMessage Members
+
+		void IProtocolMessage.EnsureValidMessage() {
+			if (EmptyMember != null || Age < 0) {
+				throw new ProtocolException();
+			}
+		}
+
+		#endregion
 	}
 }

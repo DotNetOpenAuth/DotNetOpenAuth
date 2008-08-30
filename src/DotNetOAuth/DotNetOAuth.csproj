@@ -74,6 +74,7 @@
     <Compile Include="IndirectMessageEncoder.cs" />
     <Compile Include="IProtocolMessage.cs" />
     <Compile Include="MessageScheme.cs" />
+    <Compile Include="ProtocolException.cs" />
     <Compile Include="ProtocolMessageSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util.cs" />

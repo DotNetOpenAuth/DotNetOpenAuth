@@ -28,10 +28,18 @@ namespace DotNetOAuth {
 			if (message == null) throw new ArgumentNullException("message");
 
 			var fields = new Dictionary<string, string>();
+			Serialize(fields, message);
+			return fields;
+		}
+
+		internal void Serialize(IDictionary<string, string> fields, T message) {
+			if (fields == null) throw new ArgumentNullException("fields");
+			if (message == null) throw new ArgumentNullException("message");
+
+			message.EnsureValidMessage();
 			using (XmlWriter writer = DictionaryXmlWriter.Create(fields)) {
 				serializer.WriteObjectContent(writer, message);
 			}
-			return fields;
 		}
 
 		/// <summary>
@@ -43,6 +51,7 @@ namespace DotNetOAuth {
 
 			var reader = DictionaryXmlReader.Create(rootElement, fields);
 			T result = (T)serializer.ReadObject(reader, false);
+			result.EnsureValidMessage();
 			return result;
 		}
 	}
