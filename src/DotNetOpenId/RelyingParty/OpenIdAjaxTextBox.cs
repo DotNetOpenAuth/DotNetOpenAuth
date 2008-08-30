@@ -191,6 +191,18 @@ namespace DotNetOpenId.RelyingParty {
 			set { ViewState[retryToolTipViewStateKey] = value ?? string.Empty; }
 		}
 
+		const string authenticationFailedToolTipViewStateKey = "AuthenticationFailedToolTip";
+		const string authenticationFailedToolTipDefault = "Authentication failed.";
+		/// <summary>
+		/// Gets/sets the tool tip text that appears when authentication fails.
+		/// </summary>
+		[Bindable(true), DefaultValue(authenticationFailedToolTipDefault), Localizable(true), Category("Appearance")]
+		[Description("The tool tip text that appears when authentication fails.")]
+		public string AuthenticationFailedToolTip {
+			get { return (string)(ViewState[authenticationFailedToolTipViewStateKey] ?? authenticationFailedToolTipDefault); }
+			set { ViewState[authenticationFailedToolTipViewStateKey] = value ?? string.Empty; }
+		}
+
 		const string busyToolTipViewStateKey = "BusyToolTip";
 		const string busyToolTipDefault = "Discovering/authenticating";
 		/// <summary>
@@ -484,7 +496,7 @@ namespace DotNetOpenId.RelyingParty {
 			if (focusCalled) {
 				startupScript.AppendLine("box.focus();");
 			}
-			startupScript.AppendFormat("initAjaxOpenId(box, '{0}', '{1}', {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10});{11}",
+			startupScript.AppendFormat("initAjaxOpenId(box, '{0}', '{1}', {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11});{11}",
 				Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedDotNetOpenIdLogoResourceName),
 				Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedSpinnerResourceName),
 				Timeout.TotalMilliseconds,
@@ -496,6 +508,7 @@ namespace DotNetOpenId.RelyingParty {
 				Util.GetSafeJavascriptValue(BusyToolTip),
 				Util.GetSafeJavascriptValue(IdentifierRequiredMessage),
 				Util.GetSafeJavascriptValue(LoginInProgressMessage),
+				Util.GetSafeJavascriptValue(AuthenticationFailedToolTip),
 				Environment.NewLine);
 
 			if (AuthenticationResponse != null && AuthenticationResponse.Status == AuthenticationStatus.Authenticated) {

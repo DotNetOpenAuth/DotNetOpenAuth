@@ -5,7 +5,7 @@
 
 function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout, assertionReceivedCode,
 		loginButtonText, loginButtonToolTip, retryButtonText, retryButtonToolTip, busyToolTip,
-		identifierRequiredMessage, loginInProgressMessage) {
+		identifierRequiredMessage, loginInProgressMessage, authenticationFailedToolTip) {
 	box.dnoi_internal = new Object();
 	if (assertionReceivedCode) {
 		box.dnoi_internal.onauthenticated = function(sender, e) { eval(assertionReceivedCode); }
@@ -101,13 +101,13 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout, assert
 			box.style.backgroundColor = 'pink';
 			box.dnoi_internal.retryButton.style.visibility = 'visible';
 			box.dnoi_internal.claimedIdentifier = null;
-			window.status = "Authentication failed.";
-			box.title = "Authentication failed.";
+			window.status = authenticationFailedToolTip;
+			box.title = authenticationFailedToolTip;
 		} else if (state == 'required') {
 			box.style.background = box.dnoi_internal.originalBackground;
 			box.style.backgroundColor = 'pink';
 			box.dnoi_internal.claimedIdentifier = null;
-			box.title = "This field is required.";
+			box.title = identifierRequiredMessage;
 		} else if (state = '' || state == null) {
 			box.style.background = box.dnoi_internal.originalBackground;
 			box.title = null;
