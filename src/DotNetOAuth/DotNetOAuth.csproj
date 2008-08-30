@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{3191B653-F76D-4C1A-9A5A-347BC3AAAAB7}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -67,6 +67,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Consumer.cs" />
+    <Compile Include="DictionaryXmlReader.cs" />
+    <Compile Include="DictionaryXmlWriter.cs" />
     <Compile Include="DirectMessageChannel.cs" />
     <Compile Include="IndirectMessage.cs" />
     <Compile Include="IndirectMessageEncoder.cs" />

@@ -31,7 +31,21 @@ namespace DotNetOAuth.Test {
 			var actual = serializer.Deserialize(fields);
 			Assert.AreEqual(15, actual.Age);
 			Assert.AreEqual("Andrew", actual.Name);
-			Assert.AreEqual(null, actual.EmptyMember);
+			Assert.IsNull(actual.EmptyMember);
+		}
+
+		[TestMethod]
+		public void DeserializeWithExtraFields() {
+			var serializer = new ProtocolMessageSerializer<Mocks.TestMessage>();
+			Dictionary<string, string> fields = new Dictionary<string, string>(StringComparer.Ordinal);
+			fields["age"] = "15";
+			// Add some field that is not recognized by the class.  This simulates a querystring with
+			// more parameters than are actually interesting to the protocol message.
+			fields["someExtraField"] = "asdf";
+			var actual = serializer.Deserialize(fields);
+			Assert.AreEqual(15, actual.Age);
+			Assert.IsNull(actual.Name);
+			Assert.IsNull(actual.EmptyMember);
 		}
 
 		/// <summary>
