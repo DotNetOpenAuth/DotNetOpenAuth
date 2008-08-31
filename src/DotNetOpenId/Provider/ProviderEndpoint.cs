@@ -28,7 +28,7 @@ namespace DotNetOpenId.Provider {
 		/// before responding to the relying party's authentication request.
 		/// </remarks>
 		public static IAuthenticationRequest PendingAuthenticationRequest {
-			get { return HttpContext.Current.Session[pendingAuthenticationRequestKey] as CheckIdRequest; }
+			get { return HttpContext.Current.Session[pendingAuthenticationRequestKey] as IAuthenticationRequest; }
 			set { HttpContext.Current.Session[pendingAuthenticationRequestKey] = value; }
 		}
 
