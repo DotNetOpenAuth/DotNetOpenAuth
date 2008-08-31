@@ -13,12 +13,6 @@ namespace ProviderPortal {
 	/// site will have EITHER this .ashx handler OR the .aspx page -- NOT both.
 	/// </remarks>
 	public class Provider : IHttpHandler, IRequiresSessionState {
-		const string pendingAuthenticationRequestKey = "pendingAuthenticationRequestKey";
-		internal static IAuthenticationRequest PendingAuthenticationRequest {
-			get { return HttpContext.Current.Session[pendingAuthenticationRequestKey] as IAuthenticationRequest; }
-			set { HttpContext.Current.Session[pendingAuthenticationRequestKey] = value; }
-		}
-
 		public void ProcessRequest(HttpContext context) {
 			OpenIdProvider provider = new OpenIdProvider();
 			if (provider.Request != null) {
@@ -31,7 +25,7 @@ namespace ProviderPortal {
 					// redirects and user prompts can appear and eventually some page can decide
 					// to respond to the OpenID authentication request either affirmatively or
 					// negatively.
-					PendingAuthenticationRequest = idrequest;
+					ProviderEndpoint.PendingAuthenticationRequest = idrequest;
 					// We delegate that approval process to our utility method that we share
 					// with our other Provider sample page server.aspx.
 					Util.ProcessAuthenticationChallenge(idrequest);
@@ -44,13 +38,13 @@ namespace ProviderPortal {
 					// Some other automatable OpenID request is coming down, so clear
 					// any previously session stored authentication request that might be
 					// stored for this user.
-					PendingAuthenticationRequest = null;
+					ProviderEndpoint.PendingAuthenticationRequest = null;
 				}
 				// Whether this was an automated message or an authentication message,
 				// if there is a response ready to send back immediately, do so.
 				if (provider.Request.IsResponseReady) {
 					provider.Request.Response.Send();
-					PendingAuthenticationRequest = null;
+					ProviderEndpoint.PendingAuthenticationRequest = null;
 				}
 			}
 		}
