@@ -1,0 +1,162 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<Import Project="$(MSBuildProjectDirectory)\tools\YOURLIBNAME.Common.Settings.targets"/>
+	<PropertyGroup>
+		<AutomatedBuild>true</AutomatedBuild>
+	</PropertyGroup>
+
+	<Import Project="$(ProjectRoot)\tools\$(ProductName).Versioning.targets"/>
+	<Import Project="$(ProjectRoot)\tools\Documentation.targets"/>
+	<UsingTask AssemblyFile="$(ProjectRoot)\lib\MSBuild.Community.Tasks.dll" TaskName="Zip"/>
+
+	<ItemGroup>
+		<!--<SampleDirectories Include="" />-->
+		<Samples Include="$(ProjectRoot)\samples\**\*.csproj" />
+	</ItemGroup>
+	
+	<Target Name="Clean" DependsOnTargets="CleanDocumentation">
+		<MSBuild Projects="$(ProjectRoot)\src\$(ProductName).sln" Targets="Clean" />
+		<ItemGroup>
+			<DirtyDirectories Include="
+			                           $(ProjectRoot)\bin;
+			                           $(ProjectRoot)\**\obj;
+			                           $(ProjectRoot)\doc\api;
+			                           $(ProjectRoot)\drops;
+			                           $(ProjectRoot)\src\PrecompiledWeb;
+			                           " />
+			<DirtyDirectories Include="@(SampleDirectories->'%(FullPath)\bin')" />
+			<DirtyDirectories Include="@(SampleDirectories->'%(FullPath)\obj')" />
+			<DirtyFiles Include="
+			                     $(ProjectRoot)\**\*~;
+			                     $(ProjectRoot)\**\*.log*;
+			                     $(ProjectRoot)\doc\$(ProductName).chm;
+			                     " />
+		</ItemGroup>
+		<Delete Files="@(DirtyFiles)" />
+		<RemoveDir Directories="@(DirtyDirectories)" />
+	</Target>
+
+	<Target Name="BuildProduct">
+		<MSBuild Projects="$(ProjectRoot)\src\$(ProductName)\$(ProductName).csproj" />
+	</Target>
+
+	<Target Name="BuildTests">
+		<MSBuild Projects="$(ProjectRoot)\src\$(ProductName).Test\$(ProductName).Test.csproj" />
+	</Target>
+
+	<Target Name="BuildSamples">
+		<!-- poor man's list of samples until we decide to maintain the real list here. -->
+		<MSBuild Projects="@(Samples)" />
+	</Target>
+
+	<Target Name="Build">
+		<!-- We explicitly pass the Sign property in because if properties are set
+		     inside this very .proj file instead of being passed on the command-line, their
+		     values won't propagate automatically. -->
+		<MSBuild Projects="$(ProjectRoot)\src\$(ProductName).sln" Properties="Sign=$(Sign)" />
+	</Target>
+
+	<Target Name="Rebuild">
+		<!-- We explicitly pass the Sign property in because if properties are set
+		     inside this very .proj file instead of being passed on the command-line, their
+		     values won't propagate automatically. -->
+		<MSBuild Projects="$(ProjectRoot)\src\$(ProductName).sln" Targets="Rebuild" Properties="Sign=$(Sign)" />
+	</Target>
+
+	<Target Name="Documentation" DependsOnTargets="BuildProduct;Chm">
+	</Target>
+
+	<!-- Test depends on "Build" rather than "BuildTests" until we can figure out how to build the 
+	     no-.csproj file test project (to copy binaries to Bin directory). -->
+	<Target Name="Test" DependsOnTargets="Build"
+	        Inputs="$(OutputPath)\$(ProductName).Test.dll"
+	        Outputs='$(OutputPath)\Test-results.xml;$(OutputPath)\Test-output-results.log'>
+		<Exec Command='"mstest.exe" /testcontainer:"$(OutputPath)\$(ProductName).Test.dll"' />
+	</Target>
+
+	<Target Name="_SetDropProperties">
+		<!-- This target is necessary because PropertyGroups within the same Target as 
+		     where CallTarget is fired do NOT affect those called targets. -->
+		<PropertyGroup>
+			<Sign>true</Sign>
+		</PropertyGroup>
+	</Target>
+
+	<Target Name="_EnsureCleanDrop">
+		<!-- This target only does a clean sufficient to guarantee that our YOURLIBNAME.dll is rebuilt, but
+		     we don't usually want to clean our documentation because that takes forever to build froms scratch. -->
+		<MSBuild Projects="$(ProjectRoot)\src\$(ProductName).sln" Targets="Clean" />
+	</Target>
+
+	<Target Name="Drop" DependsOnTargets="_SetDropProperties;GetBuildVersion;_EnsureCleanDrop;Build;Documentation">
+		<Warning Condition=" '$(Configuration)' != 'release' " Text="Building $(Configuration) instead of Release!" />
+		<PropertyGroup>
+			<DropDirectory>$(ProjectRoot)\drops\$(ProductName)-$(BuildVersion)</DropDirectory>
+			<DropZip>$(DropDirectory).zip</DropZip>
+			<DropBinDirectory>$(DropDirectory)\Bin</DropBinDirectory>
+			<DropSamplesDirectory>$(DropDirectory)\Samples</DropSamplesDirectory>
+			<DropSpecsDirectory>$(DropDirectory)\Specs</DropSpecsDirectory>
+		</PropertyGroup>
+		<ItemGroup>
+			<DropDirectories Include="
+						 $(DropDirectory);
+						 $(DropBinDirectory);
+						 $(DropSamplesDirectory);
+						 $(DropSpecsDirectory);
+										 " />
+
+			<DropSourceFiles Include="
+			                          $(ProjectRoot)\Doc\$(ProductName).chm;
+			                          $(ProjectRoot)\Doc\*.htm*;
+			                          " />
+			<DropBinSourceFiles Include="$(OutputPath)\$(ProductName).???" />
+			<DropSamplesSourceFiles Include="$(ProjectRoot)\Samples\**" Exclude="
+															$(ProjectRoot)\**\obj\**;
+															$(ProjectRoot)\**\*.user;
+															$(ProjectRoot)\**\*.sln.cache;
+															$(ProjectRoot)\**\*.suo;
+															$(ProjectRoot)\**\*.user;
+															$(ProjectRoot)\**\*.gitignore;
+															$(ProjectRoot)\**\*.ldf;
+															$(ProjectRoot)\**\*.log*;
+															$(ProjectRoot)\**\*~;
+															" />
+			<DropSpecsSourceFiles Include="$(ProjectRoot)\Doc\specs\*.htm*" />
+
+			<DropFiles Include="@(DropSourceFiles->'$(DropDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
+			<DropBinFiles Include="@(DropBinSourceFiles->'$(DropBinDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
+			<DropSamplesFiles Include="@(DropSamplesSourceFiles->'$(DropSamplesDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
+			<DropSpecsFiles Include="@(DropSpecsSourceFiles->'$(DropSpecsDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
+
+			<AllDropSources Include="
+										@(DropSourceFiles);
+										@(DropBinSourceFiles);
+										@(DropSamplesSourceFiles);
+										@(DropDocSourceFiles);
+										@(DropSpecsSourceFiles);
+										" />
+
+			<AllDropTargets Include="
+										@(DropFiles);
+										@(DropBinFiles);
+										@(DropSamplesFiles);
+										@(DropDocFiles);
+										@(DropSpecsFiles)
+										" />
+		</ItemGroup>
+
+		<MakeDir Directories="@(DropDirectories)" />
+		<Copy SourceFiles="@(AllDropSources)" DestinationFiles="@(AllDropTargets)" SkipUnchangedFiles="true" />
+		<!-- fix up the samples so that they will compile right out of the drop -->
+		<ItemGroup>
+			<SampleProjectTargets Include="$(DropSamplesDirectory)\**\*.csproj" />
+		</ItemGroup>
+		<ChangeProjectReferenceToAssemblyReference Projects="@(SampleProjectTargets)"
+		  ProjectReference="..\..\src\$(ProductName)\$(ProductName).csproj" Reference="..\..\Bin\$(ProductName).dll" />
+		<Zip Files="@(AllDropTargets)" ZipFileName="$(DropZip)" WorkingDirectory="$(ProjectRoot)\drops" />
+	</Target>
+
+	<Target Name="Nightly" DependsOnTargets="Drop;Test">
+
+	</Target>
+
+</Project>

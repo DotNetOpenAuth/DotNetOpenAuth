@@ -1,0 +1,154 @@
+<?xml version="1.0"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTarget="Build">
+	<PropertyGroup>
+		<PresentationStyle Condition="'$(PresentationStyle)' == ''">vs2005</PresentationStyle>
+		<!-- Environment -->
+		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\..\..</ProjectRoot>
+		<Framework>$(WINDIR)\Microsoft.NET\Framework\v2.0.50727</Framework>
+		<DxRoot>$(ProjectRoot)\tools\Sandcastle</DxRoot>
+		<ProductionTools>$(DxRoot)\ProductionTools</ProductionTools>
+		<ProductionTransforms>$(DxRoot)\ProductionTransforms</ProductionTransforms>
+		<Presentation>$(DxRoot)\Presentation\$(PresentationStyle)</Presentation>
+		<HHC>$(PROGRAMFILES)\Html Help Workshop\hhc.exe</HHC>
+
+		<OutputAssemblyFile>$(OutputPath)\$(OutputAssembly).dll</OutputAssemblyFile>
+
+		<DocOutputApiPath>$(DocOutputPath)\api</DocOutputApiPath>
+		<DocIntermediatePath>$(ProjectRoot)\obj\Doc\$(Configuration)</DocIntermediatePath>
+		<FxReflectionIntermediatePath>$(ProjectRoot)\obj\Doc\Tmp</FxReflectionIntermediatePath>
+		<FxReflectionOutputPath>$(ProjectRoot)\obj\Doc\Reflection</FxReflectionOutputPath>
+		<ChmDir>$(DocIntermediatePath)\chm</ChmDir>
+
+		<TocFile>$(ChmDir)\toc.xml</TocFile>
+		<ChmFile>$(DocOutputPath)\$(OutputAssembly).chm</ChmFile>
+		<HxtFile>$(DocOutputPath)\$(OutputAssembly).HxT</HxtFile>
+		<HxsFile>$(DocOutputPath)\$(OutputAssembly).hxs</HxsFile>
+		<HxcFile>$(DocOutputPath)\$(OutputAssembly).hxc</HxcFile>
+		<HhkFile>$(chmDir)\$(OutputAssembly).hhk</HhkFile>
+		<HhpFile>$(chmDir)\$(OutputAssembly).hhp</HhpFile>
+		<ReflectionFile>$(DocIntermediatePath)\reflection.xml</ReflectionFile>
+		<ManifestFile>$(DocIntermediatePath)\manifest.xml</ManifestFile>
+		<ReflectionBaseFile>$(DocIntermediatePath)\reflection_base.xml</ReflectionBaseFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<AssemblyFolders Include="$(WINDIR)\Microsoft.NET\Framework\v2.0.50727\*.dll"/>
+		<AssemblyFolders Include="$(WINDIR)\Microsoft.NET\Framework\v3.0\**\*.dll" Condition="$(NetfxVer)>2.0"/>
+		<AssemblyFolders Include="$(ProgramFiles)\Reference Assemblies\Microsoft\Framework\v3.0\*.dll" Condition="$(NetfxVer)>2.0"/>
+		<AssemblyFolders Include="$(WINDIR)\Microsoft.NET\Framework\v3.5\**\*.dll" Condition="$(NetfxVer)>3.0"/>
+		<AssemblyFolders Include="$(ProgramFiles)\Reference Assemblies\Microsoft\Framework\v3.5\*.dll" Condition="$(NetfxVer)>3.0"/>
+	</ItemGroup>
+
+	<Target Name="CleanDocumentation">
+		<Delete Files="$(ReflectionFile);$(ManifestFile);$(ReflectionBaseFile);$(ChmFile)" TreatErrorsAsWarnings="true"/>
+		<RemoveDir Directories="$(DocOutputApiPath);$(DocIntermediatePath);$(ChmDir)" ContinueOnError="true"/>
+		<RemoveDir Directories="$(FxReflectionIntermediatePath)" ContinueOnError="true" />
+		<!--<RemoveDir Directories="$(FxReflectionOutputPath)" ContinueOnError="true" />-->
+	</Target>
+
+	<Target Name="CreateIntermediatePath">
+		<MakeDir Directories="$(DocIntermediatePath)" Condition="!Exists('$(DocIntermediatePath)')" />
+	</Target>
+
+	<Target Name="SetEnvironmentVars">
+		<SetEnvironmentVariable Name="DxRoot" Value="$(DxRoot)" />
+		<SetEnvironmentVariable Name="DocumentationFile" Value="$(DocumentationFile)" />
+		<SetEnvironmentVariable Name="ReflectionXmlFile" Value="$(ReflectionFile)" />
+		<SetEnvironmentVariable Name="OutputHtml" Value="$(DocOutputApiPath)\html" />
+		<SetEnvironmentVariable Name="FxReflectionData" Value="$(FxReflectionOutputPath)" />
+	</Target>
+
+	<Target Name="FxReflection" Condition="!Exists('$(FxReflectionOutputPath)')">
+		<MakeDir Directories="$(FxReflectionIntermediatePath)" Condition="!Exists('$(FxReflectionIntermediatePath)')" />
+		<MakeDir Directories="$(FxReflectionOutputPath)" Condition="!Exists('$(FxReflectionOutputPath)')" />
+		<CreateItem Include="@(AssemblyFolders->'%(FullPath)')">
+			<Output ItemName="Assemblies" TaskParameter="Include"/>
+		</CreateItem>
+		<!--<Message Text="%(Assemblies.FullPath)" />-->
+		<Exec ContinueOnError="true" IgnoreExitCode="true"
+			Command='"$(ProductionTools)\Mrefbuilder.exe" "%(Assemblies.FullPath)" /out:"$(FxReflectionIntermediatePath)\%(Assemblies.FileName).xml"' />
+		<Exec Condition="'$(PresentationStyle)' == 'prototype'" ContinueOnError="true" IgnoreExitCode="true"
+			Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\ApplyPrototypeDocModel.xsl" /xsl:"$(ProductionTransforms)\AddGuidFilenames.xsl" "$(FxReflectionIntermediatePath)\%(Assemblies.FileName).xml" /out:"$(FxReflectionOutputPath)\%(Assemblies.FileName).xml" /arg:IncludeAllMembersTopic=false /arg:IncludeInheritedOverloadTopics=true' />
+		<Exec Condition="'$(PresentationStyle)' == 'vs2005'" ContinueOnError="true" IgnoreExitCode="true"
+			Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\ApplyVSDocModel.xsl" /xsl:"$(ProductionTransforms)\AddFriendlyFilenames.xsl" "$(FxReflectionIntermediatePath)\%(Assemblies.FileName).xml" /out:"$(FxReflectionOutputPath)\%(Assemblies.FileName).xml" /arg:IncludeAllMembersTopic=true /arg:IncludeInheritedOverloadTopics=true' />
+		<Exec Condition="'$(PresentationStyle)' == 'hana'" ContinueOnError="true" IgnoreExitCode="true"
+			Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\ApplyVSDocModel.xsl" /xsl:"$(ProductionTransforms)\AddFriendlyFilenames.xsl" "$(FxReflectionIntermediatePath)\%(Assemblies.FileName).xml" /out:"$(FxReflectionOutputPath)\%(Assemblies.FileName).xml" /arg:IncludeAllMembersTopic=false /arg:IncludeInheritedOverloadTopics=true' />
+	</Target>
+
+	<ItemGroup>
+		<IconFiles Include="$(Presentation)\icons\**\*.*"/>
+		<ScriptFiles Include="$(Presentation)\scripts\**\*.*"/>
+		<StyleFiles Include="$(Presentation)\styles\**\*.*"/>
+		<IconDestFiles Include="@(IconFiles->'$(DocOutputApiPath)\icons\%(RecursiveDir)%(FileName)%(Extension)')"/>
+		<ScriptDestFiles Include="@(ScriptFiles->'$(DocOutputApiPath)\scripts\%(RecursiveDir)%(FileName)%(Extension)')"/>
+		<StyleDestFiles Include="@(StyleFiles->'$(DocOutputApiPath)\styles\%(RecursiveDir)%(FileName)%(Extension)')"/>
+	</ItemGroup>
+
+	<Target Name="Template">
+		<Copy SourceFiles="@(IconFiles)" DestinationFiles="@(IconDestFiles)" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(ScriptFiles)" DestinationFiles="@(ScriptDestFiles)" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(StyleFiles)" DestinationFiles="@(StyleDestFiles)" SkipUnchangedFiles="true"/>
+		<MakeDir Directories="$(DocOutputApiPath)\html;$(DocOutputApiPath)\media;$(DocOutputApiPath)\intellisense"/>
+	</Target>
+
+	<Target Name="ReflectionBase" Inputs="$(OutputAssemblyFile)" Outputs="$(ReflectionBaseFile)" 
+					DependsOnTargets="SetEnvironmentVars;CreateIntermediatePath">
+		<Exec Command='"$(ProductionTools)\MRefBuilder.exe" "$(OutputAssemblyFile)" /out:"$(ReflectionBaseFile)"' />
+	</Target>
+
+	<Target Name="ReflectionData" DependsOnTargets="FxReflection;ReflectionBase" Inputs="$(ReflectionBaseFile)" Outputs="$(ReflectionFile)">
+		<Exec Condition="'$(PresentationStyle)' == 'prototype'" Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\ApplyPrototypeDocModel.xsl" /xsl:"$(ProductionTransforms)\AddGuidFilenames.xsl" "$(ReflectionBaseFile)" /out:"$(ReflectionFile)"' />
+		<Exec Condition="'$(PresentationStyle)' == 'vs2005'" Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\ApplyVSDocModel.xsl" /xsl:"$(ProductionTransforms)\AddFriendlyFilenames.xsl" "$(ReflectionBaseFile)" /out:"$(ReflectionFile)" /arg:IncludeAllMembersTopic=true /arg:IncludeInheritedOverloadTopics=true' />
+		<Exec Condition="'$(PresentationStyle)' == 'hana'" Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\ApplyVSDocModel.xsl" /xsl:"$(ProductionTransforms)\AddFriendlyFilenames.xsl" "$(ReflectionBaseFile)" /out:"$(ReflectionFile)" /arg:IncludeAllMembersTopic=false /arg:IncludeInheritedOverloadTopics=true' />
+	</Target>
+
+	<Target Name="Manifest" DependsOnTargets="ReflectionData" Inputs="$(ReflectionFile)" Outputs="$(ManifestFile)">
+		<Exec Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\ReflectionToManifest.xsl" "$(ReflectionFile)" /out:"$(ManifestFile)"' />
+	</Target>
+
+	<Target Name="Html"
+	      Inputs="$(ManifestFile);$(ReflectionFile);$(DocumentationFile)"
+	      Outputs="$(DocOutputApiPath)\html\N_ProductName.htm"
+	      DependsOnTargets="SetEnvironmentVars;Template;Manifest">
+		<Exec Command='"$(ProductionTools)\BuildAssembler.exe" /config:"$(Presentation)\configuration\sandcastle.config" "$(ManifestFile)"' />
+	</Target>
+
+	<Target Name="Chm" Inputs="$(DocOutputApiPath)\html\N_ProductName.htm;$(ReflectionFile)" Outputs="$(ChmFile)" DependsOnTargets="Html">
+		<MakeDir Directories="$(chmDir)" Condition="!Exists('$(chmDir)')" />
+		<MakeDir Directories="$(chmDir)\Html" Condition="!Exists('$(chmDir)\Html')" />
+		<MakeDir Directories="$(chmDir)\Icons" Condition="!Exists('$(chmDir)\Icons')" />
+		<MakeDir Directories="$(chmDir)\Scripts" Condition="!Exists('$(chmDir)\Scripts')" />
+		<MakeDir Directories="$(chmDir)\Styles" Condition="!Exists('$(chmDir)\Styles')" />
+		<MakeDir Directories="$(chmDir)\Local" Condition="!Exists('$(chmDir)\Local')" />
+
+		<Exec Condition="'$(PresentationStyle)' == 'prototype'" Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\CreatePrototypeToc.xsl" "$(ReflectionFile)" /out:"$(TocFile)"' />
+		<Exec Condition="'$(PresentationStyle)' != 'prototype'" Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\CreateVSToc.xsl" "$(ReflectionFile)" /out:"$(TocFile)"' />
+
+		<!--copy directories from hxs -->
+		<Copy SourceFiles="@(IconFiles)" DestinationFolder="$(chmDir)\icons\%(RecursiveDir)" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(ScriptFiles)" DestinationFolder="$(chmDir)\scripts\%(RecursiveDir)" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(StyleFiles)" DestinationFolder="$(chmDir)\styles\%(RecursiveDir)" SkipUnchangedFiles="true"/>
+		<Exec Condition="Exists('$(chmDir)s\Local')" Command='xcopy.exe "$(chmDir)\Local\*" "$(chmDir)\Local\" /y /r'/>
+
+		<!-- generate CHM-specific HTML and HH* files -->
+		<Exec Command='"$(ProductionTools)\ChmBuilder.exe" /project:$(OutputAssembly) /html:"$(DocOutputApiPath)\html" /lcid:1033 /toc:"$(TocFile)" /out:"$(chmDir)"'/>
+
+		<Exec Condition="'$(PresentationStyle)' == 'prototype'" Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\ReflectionToChmIndex.xsl" "$(ReflectionFile)" /out:"$(HhkFile)"' />
+		<Exec Command='"$(ProductionTools)\DBCSFix.exe" /d:$(chmDir) /l:1033'/>
+
+		<Exec Command='"$(HHC)" "$(HhpFile)"' IgnoreExitCode="true" />
+
+		<Copy SourceFiles="$(ChmDir)\$(OutputAssembly).chm" DestinationFiles="$(ChmFile)" />
+	</Target>
+
+	<Target Name="HxS"
+	  DependsOnTargets="Build"
+	  Inputs="$(DocOutputPath)\html\*.htm;$(TocFile)"
+	  Outputs="$(HxsFile)">
+		<Copy SourceFiles="@(HxsFiles)" DestinationFiles="@(HxsFiles->'$(OutputPath)\%(RecursiveDir)%(FileName)%(Extension)')"/>
+		<Exec Command='"$(DxRoot)\Presentation\shared\copyhavana.bat" $(OutputAssembly)' />
+		<Exec Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\CreateHxc.xsl" "$(TocFile)" /arg:fileNamePrefix="$(OutputAssembly)" /out:"$(HxcFile)"' />
+		<Exec Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\TocToHxSContents.xsl" "$(TocFile)" /out:"$(HxtFile)"' />
+		<Exec Command='hxcomp.exe -p "$(HxcFile)"' IgnoreExitCode="true" />
+	</Target>
+</Project>

@@ -1,0 +1,15 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<NetfxVer>2.0</NetfxVer>
+		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\..\..</ProjectRoot>
+		<OutputAssembly>YOURLIBNAME</OutputAssembly>
+		<OutputPath>$(ProjectRoot)\bin\$(Configuration)</OutputPath>
+		<DocOutputPath>$(ProjectRoot)\doc</DocOutputPath>
+		<IntermediatePath>$(ProjectRoot)\obj\$(Configuration)</IntermediatePath>
+		<DocumentationFile>$(OutputPath)\$(OutputAssembly).xml</DocumentationFile>
+	</PropertyGroup>
+
+	<Import Project="$(ProjectRoot)\Tools\sandcastle.targets" />
+
+</Project>

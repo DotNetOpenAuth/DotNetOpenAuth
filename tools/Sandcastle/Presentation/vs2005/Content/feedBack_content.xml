@@ -1,0 +1,30 @@
+<content xml:space="preserve">
+
+  <item id="fb_alias">YOURLIBNAME@googlegroups.com</item>
+  <item id="fb_product"></item>
+  <item id="fb_deliverable"></item>
+
+  <item id="fb_body"></item>
+ 
+   <item id="fb_headerFeedBack">Send Feedback</item>
+  
+
+   <!-- feedback values for sandcastle scenario -->
+
+   <item id="feedback_alias"></item>
+   <item id="feedback_product"></item>
+   <item id="feedback_deliverable"></item>
+   <item id="feedback_fileVersion"></item>
+   <item id="feedback_topicVersion"></item>
+   <item id="feedback_body"></item>
+
+   <item id="fb_Introduction">We value your feedback. To rate this topic and send feedback about this topic to the documentation team, click a rating, and then click <b>Send Feedback</b>. For assistance with support issues, refer to the technical support information included with the product.</item>
+
+   <item id="fb_Send">Send Feedback</item>
+   <item id="fb_Poor">Poor</item>
+   <item id="fb_Excellent">Outstanding</item>
+   <item id="fb_EnterFeedbackText">To e-mail your feedback, click here:</item>
+   <item id="fb_Title">Documentation Feedback</item>
+   <item id="fb_altIcon">Display feedback instructions at the bottom of the page.</item>
+
+</content>
