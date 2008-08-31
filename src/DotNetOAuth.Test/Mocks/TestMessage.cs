@@ -21,6 +21,10 @@ namespace DotNetOAuth.Test.Mocks {
 			}
 		}
 
+		MessageTransport IProtocolMessage.Transport {
+			get { return MessageTransport.Direct;  }
+		}
+
 		#endregion
 	}
 }

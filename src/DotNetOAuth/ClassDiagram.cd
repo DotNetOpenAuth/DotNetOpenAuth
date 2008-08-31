@@ -8,57 +8,52 @@
     </TypeIdentifier>
   </Class>
   <Class Name="DotNetOAuth.Consumer">
-    <Position X="2.75" Y="0.5" Width="1.5" />
+    <Position X="2.75" Y="0.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Consumer.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DotNetOAuth.DirectMessageChannel">
-    <Position X="5.75" Y="2" Width="2" />
+    <Position X="5" Y="2.75" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>DirectMessageChannel.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DotNetOAuth.IndirectMessageEncoder">
-    <Position X="5.75" Y="3.25" Width="2" />
+    <Position X="5" Y="4" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IndirectMessageEncoder.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DotNetOAuth.IndirectMessage" Collapsed="true">
-    <Position X="5.75" Y="4.5" Width="2" />
+    <Position X="5" Y="5.25" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAEAABAAAAAAEABAAAACAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IndirectMessage.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DotNetOAuth.ProtocolMessageSerializer&lt;T&gt;">
-    <Position X="6" Y="0.5" Width="1.5" />
-    <NestedTypes>
-      <Class Name="DotNetOAuth.ProtocolMessageSerializer&lt;T&gt;.PseudoXmlWriter" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>ProtocolMessageSerializer.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Class>
-      <Class Name="DotNetOAuth.ProtocolMessageSerializer&lt;T&gt;.PseudoXmlReader" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>ProtocolMessageSerializer.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Class>
-    </NestedTypes>
+    <Position X="5" Y="0.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAIAAAAAAAAAAAAAAAACBAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAIAAAAAAAAAAAAAAEACBAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>ProtocolMessageSerializer.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Interface Name="DotNetOAuth.IProtocolMessage">
-    <Position X="2.75" Y="1.5" Width="1.5" />
+    <Position X="2.75" Y="1.5" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAQAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IProtocolMessage.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DotNetOAuth.IProtocolMessageRequest">
+    <Position X="2.75" Y="3.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IProtocolMessageRequest.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Enum Name="DotNetOAuth.MessageScheme">
@@ -66,6 +61,13 @@
     <TypeIdentifier>
       <HashCode>AQAAAAAAAAAAAAIAAAAAAACAAAAAAAgAAAAAAAAAAAA=</HashCode>
       <FileName>MessageScheme.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DotNetOAuth.MessageTransport">
+    <Position X="0.5" Y="4.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAACAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MessageTransport.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Font Name="Segoe UI" Size="9" />

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DotNetOAuth {
 	/// <summary>
-	/// The methods available for the Consumer to send messages to the Service Provider.
+	/// The methods available for the Consumer to send direct messages to the Service Provider.
 	/// </summary>
 	/// <remarks>
 	/// See 1.0 spec section 5.2.

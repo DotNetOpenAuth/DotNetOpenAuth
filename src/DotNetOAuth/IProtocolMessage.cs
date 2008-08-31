@@ -9,6 +9,10 @@ namespace DotNetOAuth {
 	/// </summary>
 	interface IProtocolMessage {
 		/// <summary>
+		/// Gets whether this is a direct or indirect message.
+		/// </summary>
+		MessageTransport Transport { get; }
+		/// <summary>
 		/// Checks the message state for conformity to the protocol specification
 		/// and throws an exception if the message is invalid.
 		/// </summary>

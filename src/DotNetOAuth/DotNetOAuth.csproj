@@ -70,6 +70,7 @@
     <Compile Include="DictionaryXmlReader.cs" />
     <Compile Include="DictionaryXmlWriter.cs" />
     <Compile Include="DirectMessageChannel.cs" />
+    <Compile Include="IProtocolMessageRequest.cs" />
     <Compile Include="IndirectMessage.cs" />
     <Compile Include="IndirectMessageEncoder.cs" />
     <Compile Include="IProtocolMessage.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="Loggers\NoOpLogger.cs" />
     <Compile Include="Loggers\TraceLogger.cs" />
     <Compile Include="MessageScheme.cs" />
+    <Compile Include="MessageTransport.cs" />
     <Compile Include="ProtocolException.cs" />
     <Compile Include="ProtocolMessageSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
