@@ -1,10 +1,10 @@
-﻿using System.Reflection;
-using log4net;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿namespace YOURLIBNAME.Test {
+	using System.Reflection;
+	using log4net;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace YOURLIBNAME.Test {
 	public class TestBase {
-		internal readonly static ILog Logger = LogManager.GetLogger("YOURLIBNAME.Test");
+		internal static readonly ILog Logger = LogManager.GetLogger("YOURLIBNAME.Test");
 
 		/// <summary>
 		/// Gets or sets the test context which provides

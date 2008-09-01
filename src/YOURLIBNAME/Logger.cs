@@ -1,8 +1,8 @@
-using System;
-using System.Globalization;
-using YOURLIBNAME.Loggers;
-
 namespace YOURLIBNAME {
+	using System;
+	using System.Globalization;
+	using YOURLIBNAME.Loggers;
+
 	/// <summary>
 	/// A general logger for the entire YOURLIBNAME library.
 	/// </summary>
@@ -12,17 +12,31 @@ namespace YOURLIBNAME {
 	/// <see cref="CultureInfo.InvariantCulture"/> is used implicitly.
 	/// </remarks>
 	static class Logger {
-		static ILog facade = initializeFacade();
-
-		static ILog initializeFacade() {
-			ILog result = Log4NetLogger.Initialize() ?? TraceLogger.Initialize() ?? NoOpLogger.Initialize();
-			result.Info(Util.LibraryVersion);
-			return result;
-		}
+		static ILog facade = InitializeFacade();
 
 		#region ILog Members
-		// Although this static class doesn't literally implement the ILog interface, 
-		// we implement (mostly) all the same methods in a static way.
+		//// Although this static class doesn't literally implement the ILog interface, 
+		//// we implement (mostly) all the same methods in a static way.
+
+		public static bool IsDebugEnabled {
+			get { return facade.IsDebugEnabled; }
+		}
+
+		public static bool IsInfoEnabled {
+			get { return facade.IsInfoEnabled; }
+		}
+
+		public static bool IsWarnEnabled {
+			get { return facade.IsWarnEnabled; }
+		}
+
+		public static bool IsErrorEnabled {
+			get { return facade.IsErrorEnabled; }
+		}
+
+		public static bool IsFatalEnabled {
+			get { return facade.IsFatalEnabled; }
+		}
 
 		public static void Debug(object message) {
 			facade.Debug(message);
@@ -174,26 +188,12 @@ namespace YOURLIBNAME {
 		}
 		*/
 
-		public static bool IsDebugEnabled {
-			get { return facade.IsDebugEnabled; }
-		}
-
-		public static bool IsInfoEnabled {
-			get { return facade.IsInfoEnabled; }
-		}
-
-		public static bool IsWarnEnabled {
-			get { return facade.IsWarnEnabled; }
-		}
-
-		public static bool IsErrorEnabled {
-			get { return facade.IsErrorEnabled; }
-		}
-
-		public static bool IsFatalEnabled {
-			get { return facade.IsFatalEnabled; }
-		}
-
 		#endregion
+
+		static ILog InitializeFacade() {
+			ILog result = Log4NetLogger.Initialize() ?? TraceLogger.Initialize() ?? NoOpLogger.Initialize();
+			result.Info(Util.LibraryVersion);
+			return result;
+		}
 	}
 }

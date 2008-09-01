@@ -1,4 +1,10 @@
-﻿// Uncomment this line to build a partially trusted assembly.
+﻿//-----------------------------------------------------------------------
+// <copyright file="AssemblyInfo.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+// Uncomment this line to build a partially trusted assembly.
 // This has some security bonuses in that if there was a way to
 // hijack this assembly to do something it is not designed to do,
 // it will fail before doing much damage.
@@ -8,7 +14,7 @@
 // strong-name signed assembly must use AllowPartiallyTrustedCallers 
 // to be called from a web page, but defining PARTIAL_TRUST below also
 // accomplishes this.
-//#define PARTIAL_TRUST
+////#define PARTIAL_TRUST
 
 // We DON'T put an AssemblyVersionAttribute in here because it is generated in the build.
 
@@ -37,6 +43,7 @@ using System.Web.UI;
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguage("en-US")]
 [assembly: CLSCompliant(true)]
+
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
 // COM, set the ComVisible attribute to true on that type.
@@ -62,6 +69,7 @@ using System.Web.UI;
 
 // We need to be allowed to execute code.  Besides, it gives a good baseline RequestMinimum permission.
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, Execution = true)]
+
 // Allows the consumer to call out to the web server.  This is unnecessary in provider-only scenarios.
 // Note: we don't use a single demand for https?://.* because the regex pattern must exactly
 // match the one used by hosting providers.  Listing them individually seems to be more common.

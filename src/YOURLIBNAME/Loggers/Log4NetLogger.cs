@@ -1,9 +1,9 @@
-﻿using System;
-using System.Globalization;
-using System.IO;
-using System.Reflection;
+﻿namespace YOURLIBNAME.Loggers {
+	using System;
+	using System.Globalization;
+	using System.IO;
+	using System.Reflection;
 
-namespace YOURLIBNAME.Loggers {
 	class Log4NetLogger : ILog {
 		private log4net.ILog log4netLogger;
 
@@ -11,14 +11,7 @@ namespace YOURLIBNAME.Loggers {
 			log4netLogger = logger;
 		}
 
-		/// <summary>
-		/// Returns a new log4net logger if it exists, or returns null if the assembly cannot be found.
-		/// </summary>
-		internal static ILog Initialize() {
-			return isLog4NetPresent ? createLogger() : null;
-		}
-
-		static bool isLog4NetPresent {
+		static bool IsLog4NetPresent {
 			get {
 				try {
 					Assembly.Load("log4net");
@@ -29,14 +22,27 @@ namespace YOURLIBNAME.Loggers {
 			}
 		}
 
-		/// <summary>
-		/// Creates the log4net.LogManager.  Call ONLY once log4net.dll is known to be present.
-		/// </summary>
-		static ILog createLogger() {
-			return new Log4NetLogger(log4net.LogManager.GetLogger("YOURLIBNAME"));
+		#region ILog Members
+
+		public bool IsDebugEnabled {
+			get { return log4netLogger.IsDebugEnabled; }
 		}
 
-		#region ILog Members
+		public bool IsInfoEnabled {
+			get { return log4netLogger.IsInfoEnabled; }
+		}
+
+		public bool IsWarnEnabled {
+			get { return log4netLogger.IsWarnEnabled; }
+		}
+
+		public bool IsErrorEnabled {
+			get { return log4netLogger.IsErrorEnabled; }
+		}
+
+		public bool IsFatalEnabled {
+			get { return log4netLogger.IsFatalEnabled; }
+		}
 
 		public void Debug(object message) {
 			log4netLogger.Debug(message);
@@ -178,26 +184,22 @@ namespace YOURLIBNAME.Loggers {
 			log4netLogger.FatalFormat(provider, format, args);
 		}
 
-		public bool IsDebugEnabled {
-			get { return log4netLogger.IsDebugEnabled; }
-		}
-
-		public bool IsInfoEnabled {
-			get { return log4netLogger.IsInfoEnabled; }
-		}
-
-		public bool IsWarnEnabled {
-			get { return log4netLogger.IsWarnEnabled; }
-		}
-
-		public bool IsErrorEnabled {
-			get { return log4netLogger.IsErrorEnabled; }
-		}
-
-		public bool IsFatalEnabled {
-			get { return log4netLogger.IsFatalEnabled; }
-		}
-
 		#endregion
+
+		/// <summary>
+		/// Returns a new log4net logger if it exists, or returns null if the assembly cannot be found.
+		/// </summary>
+		/// <returns>The created <see cref="ILog"/> instance.</returns>
+		internal static ILog Initialize() {
+			return IsLog4NetPresent ? CreateLogger() : null;
+		}
+
+		/// <summary>
+		/// Creates the log4net.LogManager.  Call ONLY after log4net.dll is known to be present.
+		/// </summary>
+		/// <returns>The created <see cref="ILog"/> instance.</returns>
+		static ILog CreateLogger() {
+			return new Log4NetLogger(log4net.LogManager.GetLogger("YOURLIBNAME"));
+		}
 	}
 }

@@ -1,16 +1,28 @@
-﻿using System;
+﻿namespace YOURLIBNAME.Loggers {
+	using System;
 
-namespace YOURLIBNAME.Loggers {
 	class NoOpLogger : ILog {
+		#region ILog Members
 
-		/// <summary>
-		/// Returns a new logger that does nothing when invoked.
-		/// </summary>
-		internal static ILog Initialize() {
-			return new NoOpLogger();
+		public bool IsDebugEnabled {
+			get { return false; }
 		}
 
-		#region ILog Members
+		public bool IsInfoEnabled {
+			get { return false; }
+		}
+
+		public bool IsWarnEnabled {
+			get { return false; }
+		}
+
+		public bool IsErrorEnabled {
+			get { return false; }
+		}
+
+		public bool IsFatalEnabled {
+			get { return false; }
+		}
 
 		public void Debug(object message) {
 			return;
@@ -152,26 +164,14 @@ namespace YOURLIBNAME.Loggers {
 			return;
 		}
 
-		public bool IsDebugEnabled {
-			get { return false; }
-		}
-
-		public bool IsInfoEnabled {
-			get { return false; }
-		}
-
-		public bool IsWarnEnabled {
-			get { return false; }
-		}
-
-		public bool IsErrorEnabled {
-			get { return false; }
-		}
-
-		public bool IsFatalEnabled {
-			get { return false; }
-		}
-
 		#endregion
+
+		/// <summary>
+		/// Returns a new logger that does nothing when invoked.
+		/// </summary>
+		/// <returns>The created <see cref="ILog"/> instance.</returns>
+		internal static ILog Initialize() {
+			return new NoOpLogger();
+		}
 	}
 }

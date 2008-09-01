@@ -1,21 +1,13 @@
-﻿using System;
-using System.Diagnostics;
-using System.Security;
-using System.Security.Permissions;
+﻿namespace YOURLIBNAME.Loggers {
+	using System;
+	using System.Diagnostics;
+	using System.Security;
+	using System.Security.Permissions;
 
-namespace YOURLIBNAME.Loggers {
 	class TraceLogger : ILog {
 		TraceSwitch traceSwitch = new TraceSwitch("OpenID", "OpenID Trace Switch");
 
-		/// <summary>
-		/// Returns a new logger that uses the <see cref="System.Diagnostics.Trace"/> class 
-		/// if sufficient CAS permissions are granted to use it, otherwise returns false.
-		/// </summary>
-		internal static ILog Initialize() {
-			return isSufficientPermissionGranted ? new TraceLogger() : null;
-		}
-
-		static bool isSufficientPermissionGranted {
+		static bool IsSufficientPermissionGranted {
 			get {
 				PermissionSet permissions = new PermissionSet(PermissionState.None);
 				permissions.AddPermission(new KeyContainerPermission(PermissionState.Unrestricted));
@@ -35,6 +27,26 @@ namespace YOURLIBNAME.Loggers {
 		}
 
 		#region ILog Members
+
+		public bool IsDebugEnabled {
+			get { return traceSwitch.TraceVerbose; }
+		}
+
+		public bool IsInfoEnabled {
+			get { return traceSwitch.TraceInfo; }
+		}
+
+		public bool IsWarnEnabled {
+			get { return traceSwitch.TraceWarning; }
+		}
+
+		public bool IsErrorEnabled {
+			get { return traceSwitch.TraceError; }
+		}
+
+		public bool IsFatalEnabled {
+			get { return traceSwitch.TraceError; }
+		}
 
 		public void Debug(object message) {
 			Trace.TraceInformation(message.ToString());
@@ -176,26 +188,15 @@ namespace YOURLIBNAME.Loggers {
 			Trace.TraceError(format, args);
 		}
 
-		public bool IsDebugEnabled {
-			get { return traceSwitch.TraceVerbose; }
-		}
-
-		public bool IsInfoEnabled {
-			get { return traceSwitch.TraceInfo; }
-		}
-
-		public bool IsWarnEnabled {
-			get { return traceSwitch.TraceWarning; }
-		}
-
-		public bool IsErrorEnabled {
-			get { return traceSwitch.TraceError; }
-		}
-
-		public bool IsFatalEnabled {
-			get { return traceSwitch.TraceError; }
-		}
-
 		#endregion
+
+		/// <summary>
+		/// Returns a new logger that uses the <see cref="System.Diagnostics.Trace"/> class 
+		/// if sufficient CAS permissions are granted to use it, otherwise returns false.
+		/// </summary>
+		/// <returns>The created <see cref="ILog"/> instance.</returns>
+		internal static ILog Initialize() {
+			return IsSufficientPermissionGranted ? new TraceLogger() : null;
+		}
 	}
 }
