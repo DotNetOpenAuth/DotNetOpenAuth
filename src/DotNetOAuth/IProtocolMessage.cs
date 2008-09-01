@@ -1,4 +1,10 @@
-﻿namespace DotNetOAuth {
+﻿//-----------------------------------------------------------------------
+// <copyright file="IProtocolMessage.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOAuth {
 	using System;
 	using System.Collections.Generic;
 	using System.Text;
@@ -7,11 +13,17 @@
 	/// The interface that classes must implement to be serialized/deserialized
 	/// as OAuth messages.
 	/// </summary>
-	interface IProtocolMessage {
+	internal interface IProtocolMessage {
+		/// <summary>
+		/// Gets the version of the protocol this message is prepared to implement.
+		/// </summary>
+		Protocol Protocol { get; }
+
 		/// <summary>
 		/// Gets whether this is a direct or indirect message.
 		/// </summary>
 		MessageTransport Transport { get; }
+
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification
 		/// and throws an exception if the message is invalid.

@@ -1,9 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Web;
+﻿//-----------------------------------------------------------------------
+// <copyright file="ServiceProvider.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
 
 namespace DotNetOAuth {
+	using System;
+	using System.Collections.Generic;
+	using System.Text;
+	using System.Web;
+
 	/// <summary>
 	/// A web application that allows access via OAuth.
 	/// </summary>
@@ -16,32 +22,41 @@ namespace DotNetOAuth {
 	/// </list>
 	/// </remarks>
 	internal class ServiceProvider {
+		/// <summary>
+		/// The field used to store the value of the <see cref="RequestTokenUri"/> property.
+		/// </summary>
 		private Uri requestTokenUri;
 
 		/// <summary>
-		/// The URL used to obtain an unauthorized Request Token, described in Section 6.1 (Obtaining an Unauthorized Request Token).
+		/// Gets or sets the URL used to obtain an unauthorized Request Token,
+		/// described in Section 6.1 (Obtaining an Unauthorized Request Token).
 		/// </summary>
 		/// <remarks>
 		/// The request URL query MUST NOT contain any OAuth Protocol Parameters.
 		/// </remarks>
 		/// <exception cref="ArgumentException">Thrown if this property is set to a URI with OAuth protocol parameters.</exception>
 		public Uri RequestTokenUri {
-			get { return requestTokenUri; }
+			get {
+				return this.requestTokenUri;
+			}
+
 			set {
 				if (UriUtil.QueryStringContainsOAuthParameters(value)) {
 					throw new ArgumentException(Strings.RequestUrlMustNotHaveOAuthParameters);
 				}
-				requestTokenUri = value;
+				this.requestTokenUri = value;
 			}
 		}
 
 		/// <summary>
-		/// The URL used to obtain User authorization for Consumer access, described in Section 6.2 (Obtaining User Authorization).
+		/// Gets or sets the URL used to obtain User authorization for Consumer access, 
+		/// described in Section 6.2 (Obtaining User Authorization).
 		/// </summary>
-		public Uri UserAuthorizationUri { get; set;  }
+		public Uri UserAuthorizationUri { get; set; }
 
 		/// <summary>
-		/// The URL used to exchange the User-authorized Request Token for an Access Token, described in Section 6.3 (Obtaining an Access Token).
+		/// Gets or sets the URL used to exchange the User-authorized Request Token 
+		/// for an Access Token, described in Section 6.3 (Obtaining an Access Token).
 		/// </summary>
 		public Uri AccessTokenUri { get; set; }
 	}

@@ -1,12 +1,18 @@
-﻿namespace DotNetOAuth {
+﻿//-----------------------------------------------------------------------
+// <copyright file="IProtocolMessageRequest.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOAuth {
 	using System;
 
 	/// <summary>
 	/// Implemented by messages that are sent as requests.
 	/// </summary>
-	interface IProtocolMessageRequest : IProtocolMessage {
+	internal interface IProtocolMessageRequest : IProtocolMessage {
 		/// <summary>
-		/// The URL of the intended receiver of this message.
+		/// Gets or sets the URL of the intended receiver of this message.
 		/// </summary>
 		Uri Recipient {
 			get;

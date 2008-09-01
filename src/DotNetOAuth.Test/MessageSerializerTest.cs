@@ -1,8 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿//-----------------------------------------------------------------------
+// <copyright file="MessageSerializerTest.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
 
 namespace DotNetOAuth.Test {
+	using System;
+	using System.Collections.Generic;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+	/// <summary>
+	/// Tests for the <see cref="MessageSerializer"/> class.
+	/// </summary>
 	[TestClass()]
 	public class MessageSerializerTest : TestBase {
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]

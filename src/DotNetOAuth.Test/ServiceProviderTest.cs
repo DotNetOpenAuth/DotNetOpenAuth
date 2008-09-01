@@ -1,7 +1,16 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿//-----------------------------------------------------------------------
+// <copyright file="ServiceProviderTest.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
 
 namespace DotNetOAuth.Test {
+	using System;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+	/// <summary>
+	/// Tests for the <see cref="ServiceProvider"/> class.
+	/// </summary>
 	[TestClass]
 	public class ServiceProviderTest : TestBase {
 		/// <summary>

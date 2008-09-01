@@ -1,9 +1,15 @@
-﻿using System.Runtime.Serialization;
-using System;
+﻿//-----------------------------------------------------------------------
+// <copyright file="TestMessage.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
 
 namespace DotNetOAuth.Test.Mocks {
-	[DataContract(Namespace = Protocol.DataContractNamespace)]
-	class TestMessage : IProtocolMessage {
+	using System;
+	using System.Runtime.Serialization;
+
+	[DataContract(Namespace = Protocol.DataContractNamespaceV10)]
+	internal class TestMessage : IProtocolMessage {
 		[DataMember(Name = "age", IsRequired = true)]
 		public int Age { get; set; }
 		[DataMember]
@@ -15,14 +21,18 @@ namespace DotNetOAuth.Test.Mocks {
 
 		#region IProtocolMessage Members
 
-		void IProtocolMessage.EnsureValidMessage() {
-			if (EmptyMember != null || Age < 0) {
-				throw new ProtocolException();
-			}
+		Protocol IProtocolMessage.Protocol {
+			get { return Protocol.V10; }
 		}
 
 		MessageTransport IProtocolMessage.Transport {
-			get { return MessageTransport.Direct;  }
+			get { return MessageTransport.Direct; }
+		}
+
+		void IProtocolMessage.EnsureValidMessage() {
+			if (this.EmptyMember != null || this.Age < 0) {
+				throw new ProtocolException();
+			}
 		}
 
 		#endregion

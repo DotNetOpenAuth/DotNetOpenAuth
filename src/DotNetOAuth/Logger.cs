@@ -7,8 +7,8 @@
 namespace DotNetOAuth {
 	using System;
 	using System.Globalization;
-	using log4net.Core;
 	using DotNetOAuth.Loggers;
+	using log4net.Core;
 
 	/// <summary>
 	/// A general logger for the entire YOURLIBNAME library.
