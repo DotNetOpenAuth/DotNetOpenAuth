@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿namespace DotNetOAuth {
+	using System;
 
-namespace DotNetOAuth {
 	/// <summary>
 	/// Implemented by messages that are sent as requests.
 	/// </summary>

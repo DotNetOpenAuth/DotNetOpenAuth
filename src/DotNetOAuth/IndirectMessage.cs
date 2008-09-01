@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Net;
+﻿namespace DotNetOAuth {
+	using System.Net;
 
-namespace DotNetOAuth {
 	public class IndirectMessage {
 		public WebHeaderCollection Headers { get; set; }
 

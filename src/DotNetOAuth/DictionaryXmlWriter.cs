@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml;
+﻿namespace DotNetOAuth {
+	using System;
+	using System.Collections.Generic;
+	using System.Text;
+	using System.Xml;
 
-namespace DotNetOAuth {
 	/// <summary>
 	/// An XmlWriter-looking object that actually saves data to a dictionary.
 	/// </summary>

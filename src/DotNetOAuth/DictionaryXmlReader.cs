@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml;
-using System.Xml.Linq;
-using System.IO;
-using System.Diagnostics;
+﻿namespace DotNetOAuth {
+	using System;
+	using System.Collections.Generic;
+	using System.Diagnostics;
+	using System.IO;
+	using System.Linq;
+	using System.Xml;
+	using System.Xml.Linq;
 
-namespace DotNetOAuth {
 	/// <summary>
 	/// An XmlReader-looking object that actually reads from a dictionary.
 	/// </summary>
@@ -19,7 +18,9 @@ namespace DotNetOAuth {
 		/// <param name="fields">The dictionary to read data from.</param>
 		/// <returns>The XmlReader that will read the data out of the given dictionary.</returns>
 		internal static XmlReader Create(XName rootElement, IDictionary<string, string> fields) {
-			if (fields == null) throw new ArgumentNullException("fields");
+			if (fields == null) {
+				throw new ArgumentNullException("fields");
+			}
 
 			return CreateRoundtripReader(rootElement, fields);
 			// The pseudo reader MAY be more efficient, but it's buggy.
@@ -46,8 +47,12 @@ namespace DotNetOAuth {
 		}
 
 		static void SerializeDictionaryToXml(XmlWriter writer, XName rootElement, IDictionary<string, string> fields) {
-			if (writer == null) throw new ArgumentNullException("writer");
-			if (fields == null) throw new ArgumentNullException("fields");
+			if (writer == null) {
+				throw new ArgumentNullException("writer");
+			}
+			if (fields == null) {
+				throw new ArgumentNullException("fields");
+			}
 
 			writer.WriteStartElement(rootElement.LocalName, rootElement.NamespaceName);
 			// The elements must be serialized in alphabetical order so the DataContractSerializer will see them.
