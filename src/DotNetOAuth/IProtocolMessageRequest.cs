@@ -7,7 +7,7 @@ namespace DotNetOAuth {
 	/// <summary>
 	/// Implemented by messages that are sent as requests.
 	/// </summary>
-	public interface IProtocolMessageRequest : IProtocolMessage {
+	interface IProtocolMessageRequest : IProtocolMessage {
 		/// <summary>
 		/// The URL of the intended receiver of this message.
 		/// </summary>
