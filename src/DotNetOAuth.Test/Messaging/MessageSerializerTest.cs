@@ -4,9 +4,10 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOAuth.Test {
+namespace DotNetOAuth.Test.Messaging {
 	using System;
 	using System.Collections.Generic;
+	using DotNetOAuth.Messaging;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	/// <summary>

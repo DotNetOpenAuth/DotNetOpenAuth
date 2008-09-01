@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOAuth {
+namespace DotNetOAuth.Messaging {
 	/// <summary>
 	/// Manages sending direct messages to a remote party and receiving responses.
 	/// </summary>

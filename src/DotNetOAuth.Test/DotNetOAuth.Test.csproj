@@ -58,7 +58,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MessageSerializerTest.cs" />
+    <Compile Include="Messaging\MessageSerializerTest.cs" />
     <Compile Include="Mocks\TestMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceProviderTest.cs" />

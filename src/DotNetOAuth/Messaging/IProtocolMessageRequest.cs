@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOAuth {
+namespace DotNetOAuth.Messaging {
 	using System;
 
 	/// <summary>

@@ -9,6 +9,7 @@ namespace DotNetOAuth {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using DotNetOAuth.Messaging;
 
 	/// <summary>
 	/// Constants used in the OAuth protocol.

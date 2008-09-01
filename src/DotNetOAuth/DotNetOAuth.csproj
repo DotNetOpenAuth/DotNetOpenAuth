@@ -67,22 +67,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Consumer.cs" />
-    <Compile Include="DictionaryXmlReader.cs" />
-    <Compile Include="DictionaryXmlWriter.cs" />
-    <Compile Include="DirectMessageChannel.cs" />
-    <Compile Include="IProtocolMessageRequest.cs" />
-    <Compile Include="IndirectMessage.cs" />
-    <Compile Include="IndirectMessageEncoder.cs" />
-    <Compile Include="IProtocolMessage.cs" />
+    <Compile Include="Messaging\DictionaryXmlReader.cs" />
+    <Compile Include="Messaging\DictionaryXmlWriter.cs" />
+    <Compile Include="Messaging\DirectMessageChannel.cs" />
+    <Compile Include="Messaging\IProtocolMessageRequest.cs" />
+    <Compile Include="Messaging\IndirectMessage.cs" />
+    <Compile Include="Messaging\IndirectMessageEncoder.cs" />
+    <Compile Include="Messaging\IProtocolMessage.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Loggers\ILog.cs" />
     <Compile Include="Loggers\Log4NetLogger.cs" />
     <Compile Include="Loggers\NoOpLogger.cs" />
     <Compile Include="Loggers\TraceLogger.cs" />
-    <Compile Include="MessageScheme.cs" />
-    <Compile Include="MessageTransport.cs" />
+    <Compile Include="Messaging\MessageScheme.cs" />
+    <Compile Include="Messaging\MessageTransport.cs" />
     <Compile Include="ProtocolException.cs" />
-    <Compile Include="ProtocolMessageSerializer.cs" />
+    <Compile Include="Messaging\ProtocolMessageSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="Protocol.cs" />

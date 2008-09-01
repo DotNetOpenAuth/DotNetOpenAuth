@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOAuth {
+namespace DotNetOAuth.Messaging {
 	/// <summary>
 	/// A message encoder that prepares messages for transmittal.
 	/// </summary>

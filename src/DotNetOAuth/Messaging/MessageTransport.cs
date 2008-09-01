@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOAuth {
+namespace DotNetOAuth.Messaging {
 	/// <summary>
 	/// The type of transport mechanism used for a message: either direct or indirect.
 	/// </summary>

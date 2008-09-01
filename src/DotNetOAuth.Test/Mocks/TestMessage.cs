@@ -7,6 +7,7 @@
 namespace DotNetOAuth.Test.Mocks {
 	using System;
 	using System.Runtime.Serialization;
+	using DotNetOAuth.Messaging;
 
 	[DataContract(Namespace = Protocol.DataContractNamespaceV10)]
 	internal class TestMessage : IProtocolMessage {

@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOAuth {
+namespace DotNetOAuth.Messaging {
 	/// <summary>
 	/// The methods available for the Consumer to send direct messages to the Service Provider.
 	/// </summary>
