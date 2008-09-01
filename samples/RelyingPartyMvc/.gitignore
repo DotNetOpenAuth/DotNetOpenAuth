@@ -2,3 +2,4 @@ Bin
 obj
 *Trace.txt
 *.user
+StyleCop.Cache
