@@ -1,8 +1,20 @@
-﻿namespace YOURLIBNAME {
+﻿//-----------------------------------------------------------------------
+// <copyright file="Util.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+namespace YOURLIBNAME {
 	using System.Globalization;
 	using System.Reflection;
 
-	class Util {
+	/// <summary>
+	/// A grab-bag utility class.
+	/// </summary>
+	internal class Util {
+		/// <summary>
+		/// Gets a human-readable description of the library name and version, including
+		/// whether the build is an official or private one.
+		/// </summary>
 		public static string LibraryVersion {
 			get {
 				string assemblyFullName = Assembly.GetExecutingAssembly().FullName;
