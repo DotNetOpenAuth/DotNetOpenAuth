@@ -7,22 +7,44 @@
 // Copyright (c) 2003 Ben Maurer. All rights reserved
 //
 
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
 using System;
-using System.Security.Cryptography;
 
 namespace Mono.Math.Prime {
 
-	//[CLSCompliant(false)]
 	internal delegate bool PrimalityTest (BigInteger bi, ConfidenceFactor confidence);
 
-	//[CLSCompliant(false)]
 	internal sealed class PrimalityTests {
+
+		private PrimalityTests ()
+		{
+		}
 
 		#region SPP Test
 		
 		private static int GetSPPRounds (BigInteger bi, ConfidenceFactor confidence)
 		{
-			int bc = bi.bitCount();
+			int bc = bi.BitCount();
 
 			int Rounds;
 
@@ -50,9 +72,9 @@ namespace Mono.Math.Prime {
 				case ConfidenceFactor.Medium:
 					return Rounds;
 				case ConfidenceFactor.High:
-					return Rounds <<= 1;
+					return Rounds << 1;
 				case ConfidenceFactor.ExtraHigh:
-					return Rounds <<= 2;
+					return Rounds << 2;
 				case ConfidenceFactor.Provable:
 					throw new Exception ("The Rabin-Miller test can not be executed in a way such that its results are provable");
 				default:
@@ -60,10 +82,19 @@ namespace Mono.Math.Prime {
 			}
 		}
 
+		public static bool Test (BigInteger n, ConfidenceFactor confidence)
+		{
+			// Rabin-Miller fails with smaller primes (at least with our BigInteger code)
+			if (n.BitCount () < 33)
+				return SmallPrimeSppTest (n, confidence);
+			else
+				return RabinMillerTest (n, confidence);
+		}
+
 		/// <summary>
 		///     Probabilistic prime test based on Rabin-Miller's test
 		/// </summary>
-		/// <param name="bi" type="BigInteger.BigInteger">
+		/// <param name="n" type="BigInteger.BigInteger">
 		///     <para>
 		///         The number to test.
 		///     </para>
@@ -82,48 +113,51 @@ namespace Mono.Math.Prime {
 		///		False if "this" is definitely NOT prime.
 		///	</para>
 		/// </returns>
-		public static bool RabinMillerTest (BigInteger bi, ConfidenceFactor confidence)
+		public static bool RabinMillerTest (BigInteger n, ConfidenceFactor confidence)
 		{
-			int Rounds = GetSPPRounds (bi, confidence);
+			int bits = n.BitCount ();
+			int t = GetSPPRounds (bits, confidence);
 
-			// calculate values of s and t
-			BigInteger p_sub1 = bi - 1;
-			int s = p_sub1.LowestSetBit ();
+			// n - 1 == 2^s * r, r is odd
+			BigInteger n_minus_1 = n - 1;
+			int s = n_minus_1.LowestSetBit ();
+			BigInteger r = n_minus_1 >> s;
 
-			BigInteger t = p_sub1 >> s;
+			BigInteger.ModulusRing mr = new BigInteger.ModulusRing (n);
+			
+			// Applying optimization from HAC section 4.50 (base == 2)
+			// not a really random base but an interesting (and speedy) one
+			BigInteger y = null;
+			// FIXME - optimization disable for small primes due to bug #81857
+			if (n.BitCount () > 100)
+				y = mr.Pow (2, r);
 
-			int bits = bi.bitCount ();
-			BigInteger a = null;
-			RandomNumberGenerator rng = RandomNumberGenerator.Create ();
-			BigInteger.ModulusRing mr = new BigInteger.ModulusRing (bi);
+			// still here ? start at round 1 (round 0 was a == 2)
+			for (int round = 0; round < t; round++) {
 
-			for (int round = 0; round < Rounds; round++) {
-				while (true) {		           // generate a < n
-					a = BigInteger.genRandom (bits, rng);
+				if ((round > 0) || (y == null)) {
+					BigInteger a = null;
 
-					// make sure "a" is not 0
-					if (a > 1 && a < bi)
-						break;
+					// check for 2 <= a <= n - 2
+					// ...but we already did a == 2 previously as an optimization
+					do {
+						a = BigInteger.GenerateRandom (bits);
+					} while ((a <= 2) && (a >= n_minus_1));
+
+					y = mr.Pow (a, r);
 				}
 
-				if (a.gcd (bi) != 1) return false;
+				if (y == 1)
+					continue;
 
-				BigInteger b = mr.Pow (a, t);
+				for (int j = 0; ((j < s) && (y != n_minus_1)); j++) {
 
-				if (b == 1) continue;              // a^t mod p = 1
-
-				bool result = false;
-				for (int j = 0; j < s; j++) {
-
-					if (b == p_sub1) {         // a^((2^j)*t) mod p = p-1 for some 0 <= j <= s-1
-						result = true;
-						break;
-					}
-
-					b = (b * b) % bi;
+					y = mr.Pow (y, 2);
+					if (y == 1)
+						return false;
 				}
 
-				if (result == false)
+				if (y != n_minus_1)
 					return false;
 			}
 			return true;
@@ -163,11 +197,9 @@ namespace Mono.Math.Prime {
 					return false;
 			}
 			return true;
-
 		}
 
 		#endregion
-
 
 		// TODO: Implement the Lucus test
 		// TODO: Implement other new primality tests

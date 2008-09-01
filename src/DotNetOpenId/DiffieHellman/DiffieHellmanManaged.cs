@@ -74,18 +74,18 @@ namespace Org.Mentalis.Security.Cryptography {
 
 		// initializes the private variables (throws CryptographicException)
 		private void Initialize(BigInteger p, BigInteger g, BigInteger x, int secretLen, bool checkInput) {
-			if (!p.isProbablePrime() || g <= 0 || g >= p || (x != null && (x <= 0 || x > p - 2)))
+			if (!p.IsProbablePrime() || g <= 0 || g >= p || (x != null && (x <= 0 || x > p - 2)))
 				throw new CryptographicException();
 			// default is to generate a number as large as the prime this
 			// is usually overkill, but it's the most secure thing we can
 			// do if the user doesn't specify a desired secret length ...
 			if (secretLen == 0)
-				secretLen = p.bitCount();
+				secretLen = p.BitCount();
 			m_P = p;
 			m_G = g;
 			if (x == null) {
 				BigInteger pm1 = m_P - 1;
-				for(m_X = BigInteger.genRandom(secretLen); m_X >= pm1 || m_X == 0; m_X = BigInteger.genRandom(secretLen)) {}
+				for(m_X = BigInteger.GenerateRandom(secretLen); m_X >= pm1 || m_X == 0; m_X = BigInteger.GenerateRandom(secretLen)) {}
 			} else {
 				m_X = x;
 			}
@@ -95,8 +95,8 @@ namespace Org.Mentalis.Security.Cryptography {
 		/// </summary>
 		/// <returns>The key exchange data to be sent to the intended recipient.</returns>
 		public override byte[] CreateKeyExchange() {
-			BigInteger y = m_G.modPow(m_X, m_P);
-			byte[] ret = y.getBytes();
+			BigInteger y = m_G.ModPow(m_X, m_P);
+			byte[] ret = y.GetBytes();
 			y.Clear();
 			return ret;
 		}
@@ -107,8 +107,8 @@ namespace Org.Mentalis.Security.Cryptography {
 		/// <returns>The shared key derived from the key exchange data.</returns>
 		public override byte[] DecryptKeyExchange(byte[] keyEx) {
 			BigInteger pvr = new BigInteger(keyEx);
-			BigInteger z = pvr.modPow(m_X, m_P);
-			byte[] ret = z.getBytes();
+			BigInteger z = pvr.ModPow(m_X, m_P);
+			byte[] ret = z.GetBytes();
 			z.Clear();
 			return ret;
 		}
@@ -149,10 +149,10 @@ namespace Org.Mentalis.Security.Cryptography {
 		/// <returns>The parameters for <see cref="DiffieHellman"/>.</returns>
 		public override DHParameters ExportParameters(bool includePrivateParameters) {
 			DHParameters ret = new DHParameters();
-			ret.P = m_P.getBytes();
-			ret.G = m_G.getBytes();
+			ret.P = m_P.GetBytes();
+			ret.G = m_G.GetBytes();
 			if (includePrivateParameters) {
-				ret.X = m_X.getBytes();
+				ret.X = m_X.GetBytes();
 			}
 			return ret;
 		}
@@ -201,7 +201,7 @@ namespace Org.Mentalis.Security.Cryptography {
 				// 4. If g = 1 go to step 2
 			//	BigInteger j = (p - 1) / q;
 			} else { // random
-				p = BigInteger.genPseudoPrime(bitlen);
+				p = BigInteger.GeneratePseudoPrime(bitlen);
 				g = new BigInteger(3); // always use 3 as a generator
 			}
 		}
