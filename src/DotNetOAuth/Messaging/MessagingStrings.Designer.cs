@@ -70,6 +70,15 @@ namespace DotNetOAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error occurred while sending a direct message or gettings the response..
+        /// </summary>
+        internal static string ErrorInRequestReplyMessage {
+            get {
+                return ResourceManager.GetString("ErrorInRequestReplyMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A message response is already queued for sending in the response stream..
         /// </summary>
         internal static string QueuedMessageResponseAlreadyExists {

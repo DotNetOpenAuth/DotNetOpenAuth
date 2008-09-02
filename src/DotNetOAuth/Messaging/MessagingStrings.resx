@@ -120,6 +120,9 @@
   <data name="DerivedTypeNotExpected" xml:space="preserve">
     <value>An instance of type {0} was expected, but received unexpected derived type {1}.</value>
   </data>
+  <data name="ErrorInRequestReplyMessage" xml:space="preserve">
+    <value>Error occurred while sending a direct message or gettings the response.</value>
+  </data>
   <data name="QueuedMessageResponseAlreadyExists" xml:space="preserve">
     <value>A message response is already queued for sending in the response stream.</value>
   </data>

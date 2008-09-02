@@ -6,12 +6,33 @@
 
 namespace DotNetOAuth.Messaging {
 	using System;
+	using System.Collections.Generic;
+	using System.IO;
+	using System.Net;
 	using System.Text;
+	using System.Web;
 
 	/// <summary>
 	/// Manages sending direct messages to a remote party and receiving responses.
 	/// </summary>
 	internal class Channel {
+		IMessageTypeProvider messageTypeProvider;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Channel"/> class.
+		/// </summary>
+		/// <param name="messageTypeProvider">
+		/// A class prepared to analyze incoming messages and indicate what concrete
+		/// message types can deserialize from it.
+		/// </param>
+		internal Channel(IMessageTypeProvider messageTypeProvider) {
+			if (messageTypeProvider == null) {
+				throw new ArgumentNullException("messageTypeProvider");
+			}
+
+			this.messageTypeProvider = messageTypeProvider;
+		}
+
 		/// <summary>
 		/// Gets or sets the message that came in as a request, if any.
 		/// </summary>
@@ -35,20 +56,41 @@ namespace DotNetOAuth.Messaging {
 				throw new ArgumentNullException("request");
 			}
 
+			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(request.Recipient);
+
 			MessageScheme transmissionMethod = MessageScheme.AuthorizationHeaderRequest;
 			switch (transmissionMethod) {
 				case MessageScheme.AuthorizationHeaderRequest:
-					throw new NotImplementedException();
+					this.InitializeRequestAsAuthHeader(httpRequest, request);
 					break;
 				case MessageScheme.PostRequest:
-					throw new NotImplementedException();
+					this.InitializeRequestAsPost(httpRequest, request);
 					break;
 				case MessageScheme.GetRequest:
-					throw new NotImplementedException();
+					this.InitializeRequestAsGet(httpRequest, request);
 					break;
 				default:
 					throw new NotSupportedException();
 			}
+
+			// Submit the request and await the reply.
+			Dictionary<string, string> responseFields;
+			try {
+				using (HttpWebResponse response = (HttpWebResponse)httpRequest.GetResponse()) {
+					using (StreamReader reader = new StreamReader(response.GetResponseStream())) {
+						string queryString = reader.ReadToEnd();
+						responseFields = HttpUtility.ParseQueryString(queryString).ToDictionary();
+					}
+				}
+			} catch (WebException ex) {
+				throw new ProtocolException(MessagingStrings.ErrorInRequestReplyMessage, ex);
+			}
+
+			Type messageType = this.messageTypeProvider.GetMessageType(responseFields);
+			var responseSerialize = MessageSerializer.Get(messageType);
+			var responseMessage = responseSerialize.Deserialize(responseFields);
+
+			return responseMessage;
 		}
 
 		/// <summary>
@@ -82,6 +124,18 @@ namespace DotNetOAuth.Messaging {
 					}
 				}
 			}
+		}
+
+		private void InitializeRequestAsAuthHeader(HttpWebRequest httpRequest, IDirectedProtocolMessage requestMessage) {
+			throw new NotImplementedException();
+		}
+
+		private void InitializeRequestAsPost(HttpWebRequest httpRequest, IDirectedProtocolMessage requestMessage) {
+			throw new NotImplementedException();
+		}
+
+		private void InitializeRequestAsGet(HttpWebRequest httpRequest, IDirectedProtocolMessage requestMessage) {
+			throw new NotImplementedException();
 		}
 
 		private void SendIndirectMessage(IDirectedProtocolMessage directedMessage) {

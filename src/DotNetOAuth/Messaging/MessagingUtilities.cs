@@ -7,6 +7,7 @@
 namespace DotNetOAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.Specialized;
 	using System.Net;
 	using System.Text;
 	using System.Web;
@@ -14,7 +15,7 @@ namespace DotNetOAuth.Messaging {
 	/// <summary>
 	/// A grab-bag of utility methods useful for the channel stack of the protocol.
 	/// </summary>
-	internal class MessagingUtilities {
+	internal static class MessagingUtilities {
 		/// <summary>
 		/// Adds a set of HTTP headers to an <see cref="HttpResponse"/> instance,
 		/// taking care to set some headers to the appropriate properties of
@@ -68,6 +69,24 @@ namespace DotNetOAuth.Messaging {
 			sb.Length--; // remove trailing &
 
 			return sb.ToString();
+		}
+
+		/// <summary>
+		/// Converts a <see cref="NameValueCollection"/> to an IDictionary&lt;string, string&gt;.
+		/// </summary>
+		/// <param name="nvc">The NameValueCollection to convert.  May be null.</param>
+		/// <returns>The generated dictionary, or null if <paramref name="nvc"/> is null.</returns>
+		internal static Dictionary<string, string> ToDictionary(this NameValueCollection nvc) {
+			if (nvc == null) {
+				return null;
+			}
+
+			var dictionary = new Dictionary<string, string>();
+			foreach (string key in nvc) {
+				dictionary.Add(key, nvc[key]);
+			}
+
+			return dictionary;
 		}
 	}
 }
