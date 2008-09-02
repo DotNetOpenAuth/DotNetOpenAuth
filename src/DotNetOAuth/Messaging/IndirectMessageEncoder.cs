@@ -14,7 +14,7 @@ namespace DotNetOAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The indirect message to send.</param>
 		/// <returns>The encoded message to send to the user agent.</returns>
-		internal IndirectMessage Encode(IProtocolMessage message) {
+		internal ProtocolMessageResponse Encode(IProtocolMessage message) {
 			throw new System.NotImplementedException();
 		}
 	}

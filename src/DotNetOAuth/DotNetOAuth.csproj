@@ -71,7 +71,8 @@
     <Compile Include="Messaging\DictionaryXmlWriter.cs" />
     <Compile Include="Messaging\DirectMessageChannel.cs" />
     <Compile Include="Messaging\IProtocolMessageRequest.cs" />
-    <Compile Include="Messaging\IndirectMessage.cs" />
+    <Compile Include="Messaging\MessagingUtilities.cs" />
+    <Compile Include="Messaging\ProtocolMessageResponse.cs" />
     <Compile Include="Messaging\IndirectMessageEncoder.cs" />
     <Compile Include="Messaging\IProtocolMessage.cs" />
     <Compile Include="Logger.cs" />

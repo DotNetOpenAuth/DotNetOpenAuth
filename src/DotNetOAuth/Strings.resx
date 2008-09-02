@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="CurrentHttpContextRequired" xml:space="preserve">
+    <value>HttpContext.Current is null.  There must be an ASP.NET request in process for this operation to succeed.</value>
+  </data>
   <data name="InvalidIncomingMessage" xml:space="preserve">
     <value>An invalid OAuth message received and discarded.</value>
   </data>
