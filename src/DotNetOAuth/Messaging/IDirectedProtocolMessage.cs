@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="IProtocolMessageRequest.cs" company="Andrew Arnott">
+// <copyright file="IDirectedProtocolMessage.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -8,9 +8,10 @@ namespace DotNetOAuth.Messaging {
 	using System;
 
 	/// <summary>
-	/// Implemented by messages that are sent as requests.
+	/// Implemented by messages that have explicit recipients
+	/// (direct requests and all indirect messages).
 	/// </summary>
-	internal interface IProtocolMessageRequest : IProtocolMessage {
+	internal interface IDirectedProtocolMessage : IProtocolMessage {
 		/// <summary>
 		/// Gets or sets the URL of the intended receiver of this message.
 		/// </summary>

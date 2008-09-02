@@ -6,7 +6,9 @@
 
 namespace DotNetOAuth.Messaging {
 	using System;
+	using System.Collections.Generic;
 	using System.Net;
+	using System.Text;
 	using System.Web;
 
 	/// <summary>
@@ -39,6 +41,33 @@ namespace DotNetOAuth.Messaging {
 						break;
 				}
 			}
+		}
+
+		/// <summary>
+		/// Concatenates a list of name-value pairs as key=value&amp;key=value,
+		/// taking care to properly encode each key and value for URL
+		/// transmission.  No ? is prefixed to the string.
+		/// </summary>
+		/// <param name="args">The dictionary of key/values to read from.</param>
+		/// <returns>The formulated querystring style string.</returns>
+		internal static string CreateQueryString(IDictionary<string, string> args) {
+			if (args == null) {
+				throw new ArgumentNullException("args");
+			}
+			if (args.Count == 0) {
+				return string.Empty;
+			}
+			StringBuilder sb = new StringBuilder(args.Count * 10);
+
+			foreach (var p in args) {
+				sb.Append(HttpUtility.UrlEncode(p.Key));
+				sb.Append('=');
+				sb.Append(HttpUtility.UrlEncode(p.Value));
+				sb.Append('&');
+			}
+			sb.Length--; // remove trailing &
+
+			return sb.ToString();
 		}
 	}
 }

@@ -22,6 +22,7 @@ namespace DotNetOAuth.Messaging {
 		/// <summary>
 		/// Gets whether this is a direct or indirect message.
 		/// </summary>
+		[Obsolete("Are we using this anywhere?")]
 		MessageTransport Transport { get; }
 
 		/// <summary>

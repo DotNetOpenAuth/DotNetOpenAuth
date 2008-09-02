@@ -23,7 +23,7 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <DocumentationFile>..\..\bin\debug\DotNetOAuth.xml</DocumentationFile>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRules>-Microsoft.Design#CA1054;-Microsoft.Design#CA1056;-Microsoft.Design#CA1055</CodeAnalysisRules>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -69,10 +69,15 @@
     <Compile Include="Consumer.cs" />
     <Compile Include="Messaging\DictionaryXmlReader.cs" />
     <Compile Include="Messaging\DictionaryXmlWriter.cs" />
-    <Compile Include="Messaging\DirectMessageChannel.cs" />
-    <Compile Include="Messaging\IProtocolMessageRequest.cs" />
+    <Compile Include="Messaging\Channel.cs" />
+    <Compile Include="Messaging\IDirectedProtocolMessage.cs" />
+    <Compile Include="Messaging\MessagingStrings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MessagingStrings.resx</DependentUpon>
+    </Compile>
     <Compile Include="Messaging\MessagingUtilities.cs" />
-    <Compile Include="Messaging\ProtocolMessageResponse.cs" />
+    <Compile Include="Messaging\Response.cs" />
     <Compile Include="Messaging\IndirectMessageEncoder.cs" />
     <Compile Include="Messaging\IProtocolMessage.cs" />
     <Compile Include="Logger.cs" />
@@ -83,7 +88,7 @@
     <Compile Include="Messaging\MessageScheme.cs" />
     <Compile Include="Messaging\MessageTransport.cs" />
     <Compile Include="ProtocolException.cs" />
-    <Compile Include="Messaging\ProtocolMessageSerializer.cs" />
+    <Compile Include="Messaging\MessageSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="Protocol.cs" />
@@ -99,6 +104,10 @@
     <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Messaging\MessagingStrings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MessagingStrings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Strings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>

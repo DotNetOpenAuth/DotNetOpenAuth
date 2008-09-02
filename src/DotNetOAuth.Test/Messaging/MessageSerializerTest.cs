@@ -17,25 +17,25 @@ namespace DotNetOAuth.Test.Messaging {
 	public class MessageSerializerTest : TestBase {
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void SerializeNull() {
-			var serializer = new ProtocolMessageSerializer<Mocks.TestMessage>();
+			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			serializer.Serialize(null);
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void SerializeNullFields() {
-			var serializer = new ProtocolMessageSerializer<Mocks.TestMessage>();
+			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			serializer.Serialize(null, new Mocks.TestMessage());
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void SerializeNullMessage() {
-			var serializer = new ProtocolMessageSerializer<Mocks.TestMessage>();
+			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			serializer.Serialize(new Dictionary<string, string>(), null);
 		}
 
 		[TestMethod, ExpectedException(typeof(ProtocolException))]
 		public void SerializeInvalidMessage() {
-			var serializer = new ProtocolMessageSerializer<Mocks.TestMessage>();
+			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			Dictionary<string, string> fields = new Dictionary<string, string>(StringComparer.Ordinal);
 			Mocks.TestMessage message = new DotNetOAuth.Test.Mocks.TestMessage();
 			message.EmptyMember = "invalidvalue";
@@ -44,7 +44,7 @@ namespace DotNetOAuth.Test.Messaging {
 
 		[TestMethod()]
 		public void SerializeTest() {
-			var serializer = new ProtocolMessageSerializer<Mocks.TestMessage>();
+			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			var message = new Mocks.TestMessage { Age = 15, Name = "Andrew", Location = new Uri("http://localhost") };
 			IDictionary<string, string> actual = serializer.Serialize(message);
 			Assert.AreEqual(3, actual.Count);
@@ -62,7 +62,7 @@ namespace DotNetOAuth.Test.Messaging {
 
 		[TestMethod]
 		public void SerializeToExistingDictionary() {
-			var serializer = new ProtocolMessageSerializer<Mocks.TestMessage>();
+			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			var message = new Mocks.TestMessage { Age = 15, Name = "Andrew" };
 			var fields = new Dictionary<string, string>();
 			fields["someExtraField"] = "someValue";
@@ -75,19 +75,19 @@ namespace DotNetOAuth.Test.Messaging {
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void DeserializeNull() {
-			var serializer = new ProtocolMessageSerializer<Mocks.TestMessage>();
+			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			serializer.Deserialize(null);
 		}
 
 		[TestMethod()]
 		public void DeserializeSimple() {
-			var serializer = new ProtocolMessageSerializer<Mocks.TestMessage>();
+			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			Dictionary<string, string> fields = new Dictionary<string, string>(StringComparer.Ordinal);
 			// We deliberately do this OUT of alphabetical order (caps would go first),
 			// since DataContractSerializer demands things to be IN alphabetical order.
 			fields["age"] = "15";
 			fields["Name"] = "Andrew";
-			var actual = serializer.Deserialize(fields);
+			var actual = (Mocks.TestMessage)serializer.Deserialize(fields);
 			Assert.AreEqual(15, actual.Age);
 			Assert.AreEqual("Andrew", actual.Name);
 			Assert.IsNull(actual.EmptyMember);
@@ -95,14 +95,14 @@ namespace DotNetOAuth.Test.Messaging {
 
 		[TestMethod]
 		public void DeserializeWithExtraFields() {
-			var serializer = new ProtocolMessageSerializer<Mocks.TestMessage>();
+			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			Dictionary<string, string> fields = new Dictionary<string, string>(StringComparer.Ordinal);
 			fields["age"] = "15";
 			fields["Name"] = "Andrew";
 			// Add some field that is not recognized by the class.  This simulates a querystring with
 			// more parameters than are actually interesting to the protocol message.
 			fields["someExtraField"] = "asdf";
-			var actual = serializer.Deserialize(fields);
+			var actual = (Mocks.TestMessage)serializer.Deserialize(fields);
 			Assert.AreEqual(15, actual.Age);
 			Assert.AreEqual("Andrew", actual.Name);
 			Assert.IsNull(actual.EmptyMember);
@@ -110,14 +110,14 @@ namespace DotNetOAuth.Test.Messaging {
 
 		[TestMethod, ExpectedException(typeof(ProtocolException))]
 		public void DeserializeEmpty() {
-			var serializer = new ProtocolMessageSerializer<Mocks.TestMessage>();
+			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			var fields = new Dictionary<string, string>(StringComparer.Ordinal);
 			serializer.Deserialize(fields);
 		}
 
 		[TestMethod, ExpectedException(typeof(ProtocolException))]
 		public void DeserializeInvalidMessage() {
-			var serializer = new ProtocolMessageSerializer<Mocks.TestMessage>();
+			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			Dictionary<string, string> fields = new Dictionary<string, string>(StringComparer.Ordinal);
 			// Set an disallowed value.
 			fields["age"] = "-1";

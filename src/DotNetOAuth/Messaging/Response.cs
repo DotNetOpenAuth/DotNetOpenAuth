@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ProtocolMessageResponse.cs" company="Andrew Arnott">
+// <copyright file="Response.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -23,7 +23,7 @@ namespace DotNetOAuth.Messaging {
 	/// can be canceled by calling <see cref="HttpResponse.End"/> after this message
 	/// is sent on the response stream.</para>
 	/// </remarks>
-	public class ProtocolMessageResponse {
+	public class Response {
 		/// <summary>
 		/// Gets the headers that must be included in the response to the user agent.
 		/// </summary>

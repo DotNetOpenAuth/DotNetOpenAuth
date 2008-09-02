@@ -10,11 +10,11 @@ namespace DotNetOAuth.Messaging {
 	/// </summary>
 	internal class IndirectMessageEncoder {
 		/// <summary>
-		/// Prepares a protocol message for sending
+		/// Prepares a message for sending
 		/// </summary>
 		/// <param name="message">The indirect message to send.</param>
 		/// <returns>The encoded message to send to the user agent.</returns>
-		internal ProtocolMessageResponse Encode(IProtocolMessage message) {
+		internal Response Encode(IProtocolMessage message) {
 			throw new System.NotImplementedException();
 		}
 	}
