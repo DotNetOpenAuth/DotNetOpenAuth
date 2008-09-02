@@ -8,6 +8,10 @@ namespace DotNetOAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
 
+	/// <summary>
+	/// A tool to analyze an incoming message to figure out what concrete class
+	/// is designed to deserialize it.
+	/// </summary>
 	internal interface IMessageTypeProvider {
 		/// <summary>
 		/// Analyzes an incoming request message payload to discover what kind of 

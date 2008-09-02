@@ -13,6 +13,9 @@ namespace DotNetOAuth {
 	using System.Web;
 	using DotNetOAuth.Messaging;
 
+	/// <summary>
+	/// An OAuth-specific implementation of the <see cref="Channel"/> class.
+	/// </summary>
 	internal class OAuthChannel : Channel {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuthChannel"/> class.
@@ -25,6 +28,14 @@ namespace DotNetOAuth {
 			: base(messageTypeProvider) {
 		}
 
+		/// <summary>
+		/// Queues a message for sending in the response stream where the fields
+		/// are sent in the response stream in querystring style.
+		/// </summary>
+		/// <param name="response">The message to send as a response.</param>
+		/// <remarks>
+		/// This method implements spec V1.0 section 5.3.
+		/// </remarks>
 		protected override void SendDirectMessageResponse(IProtocolMessage response) {
 			MessageSerializer serializer = MessageSerializer.Get(response.GetType());
 			var fields = serializer.Serialize(response);
@@ -39,6 +50,11 @@ namespace DotNetOAuth {
 			this.QueueIndirectOrResponseMessage(encodedResponse);
 		}
 
+		/// <summary>
+		/// Sends a direct message to a remote party and waits for the response.
+		/// </summary>
+		/// <param name="request">The message to send.</param>
+		/// <returns>The remote party's response.</returns>
 		protected override IProtocolMessage Request(IDirectedProtocolMessage request) {
 			if (request == null) {
 				throw new ArgumentNullException("request");
@@ -81,14 +97,19 @@ namespace DotNetOAuth {
 			return responseMessage;
 		}
 
-		protected override void SendIndirectMessage(IDirectedProtocolMessage message) {
-			throw new NotImplementedException();
-		}
-
+		/// <summary>
+		/// Reports an error to the user via the user agent.
+		/// </summary>
+		/// <param name="exception">The error information.</param>
 		protected override void ReportErrorToUser(ProtocolException exception) {
 			throw new NotImplementedException();
 		}
 
+		/// <summary>
+		/// Sends an error result directly to the calling remote party according to the
+		/// rules of the protocol.
+		/// </summary>
+		/// <param name="exception">The error information.</param>
 		protected override void ReportErrorAsDirectResponse(ProtocolException exception) {
 			throw new NotImplementedException();
 		}
