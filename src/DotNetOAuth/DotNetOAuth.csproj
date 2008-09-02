@@ -78,6 +78,7 @@
       <DependentUpon>MessagingStrings.resx</DependentUpon>
     </Compile>
     <Compile Include="Messaging\MessagingUtilities.cs" />
+    <Compile Include="OAuthChannel.cs" />
     <Compile Include="Messaging\Response.cs" />
     <Compile Include="Messaging\IndirectMessageEncoder.cs" />
     <Compile Include="Messaging\IProtocolMessage.cs" />

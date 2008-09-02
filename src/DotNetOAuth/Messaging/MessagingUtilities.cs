@@ -72,6 +72,29 @@ namespace DotNetOAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Adds a set of name-value pairs to the end of a given URL
+		/// as part of the querystring piece.  Prefixes a ? or &amp; before
+		/// first element as necessary.
+		/// </summary>
+		/// <param name="builder">The UriBuilder to add arguments to.</param>
+		/// <param name="args">
+		/// The arguments to add to the query.  
+		/// If null, <paramref name="builder"/> is not changed.
+		/// </param>
+		internal static void AppendQueryArgs(UriBuilder builder, IDictionary<string, string> args) {
+			if (args != null && args.Count > 0) {
+				StringBuilder sb = new StringBuilder(50 + (args.Count * 10));
+				if (!string.IsNullOrEmpty(builder.Query)) {
+					sb.Append(builder.Query.Substring(1));
+					sb.Append('&');
+				}
+				sb.Append(CreateQueryString(args));
+
+				builder.Query = sb.ToString();
+			}
+		}
+
+		/// <summary>
 		/// Converts a <see cref="NameValueCollection"/> to an IDictionary&lt;string, string&gt;.
 		/// </summary>
 		/// <param name="nvc">The NameValueCollection to convert.  May be null.</param>

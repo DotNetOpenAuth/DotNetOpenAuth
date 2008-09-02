@@ -15,8 +15,17 @@ namespace DotNetOAuth.Messaging {
 	/// <summary>
 	/// Manages sending direct messages to a remote party and receiving responses.
 	/// </summary>
-	internal class Channel {
-		IMessageTypeProvider messageTypeProvider;
+	internal abstract class Channel {
+		/// <summary>
+		/// A tool that can figure out what kind of message is being received
+		/// so it can be deserialized.
+		/// </summary>
+		private IMessageTypeProvider messageTypeProvider;
+
+		/// <summary>
+		/// Gets or sets the HTTP response to send as a reply to the current incoming HTTP request.
+		/// </summary>
+		private Response queuedIndirectOrResponseMessage;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Channel"/> class.
@@ -25,7 +34,7 @@ namespace DotNetOAuth.Messaging {
 		/// A class prepared to analyze incoming messages and indicate what concrete
 		/// message types can deserialize from it.
 		/// </param>
-		internal Channel(IMessageTypeProvider messageTypeProvider) {
+		protected Channel(IMessageTypeProvider messageTypeProvider) {
 			if (messageTypeProvider == null) {
 				throw new ArgumentNullException("messageTypeProvider");
 			}
@@ -42,55 +51,21 @@ namespace DotNetOAuth.Messaging {
 		internal IProtocolMessage RequestInProcess { get; set; }
 
 		/// <summary>
-		/// Gets or sets the HTTP response to send as a reply to the current incoming HTTP request.
+		/// Gets a tool that can figure out what kind of message is being received
+		/// so it can be deserialized.
 		/// </summary>
-		internal Response QueuedIndirectOrResponseMessage { get; set; }
+		protected IMessageTypeProvider MessageTypeProvider {
+			get { return this.messageTypeProvider; }
+		}
 
 		/// <summary>
-		/// Sends a direct message to a remote party and waits for the response.
+		/// Retrieves the stored response for sending and clears it from the channel.
 		/// </summary>
-		/// <param name="request">The message to send.</param>
-		/// <returns>The remote party's response.</returns>
-		internal IProtocolMessage Request(IDirectedProtocolMessage request) {
-			if (request == null) {
-				throw new ArgumentNullException("request");
-			}
-
-			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(request.Recipient);
-
-			MessageScheme transmissionMethod = MessageScheme.AuthorizationHeaderRequest;
-			switch (transmissionMethod) {
-				case MessageScheme.AuthorizationHeaderRequest:
-					this.InitializeRequestAsAuthHeader(httpRequest, request);
-					break;
-				case MessageScheme.PostRequest:
-					this.InitializeRequestAsPost(httpRequest, request);
-					break;
-				case MessageScheme.GetRequest:
-					this.InitializeRequestAsGet(httpRequest, request);
-					break;
-				default:
-					throw new NotSupportedException();
-			}
-
-			// Submit the request and await the reply.
-			Dictionary<string, string> responseFields;
-			try {
-				using (HttpWebResponse response = (HttpWebResponse)httpRequest.GetResponse()) {
-					using (StreamReader reader = new StreamReader(response.GetResponseStream())) {
-						string queryString = reader.ReadToEnd();
-						responseFields = HttpUtility.ParseQueryString(queryString).ToDictionary();
-					}
-				}
-			} catch (WebException ex) {
-				throw new ProtocolException(MessagingStrings.ErrorInRequestReplyMessage, ex);
-			}
-
-			Type messageType = this.messageTypeProvider.GetMessageType(responseFields);
-			var responseSerialize = MessageSerializer.Get(messageType);
-			var responseMessage = responseSerialize.Deserialize(responseFields);
-
-			return responseMessage;
+		/// <returns>The response to send as the HTTP response.</returns>
+		internal Response DequeueIndirectOrResponseMessage() {
+			Response response = this.queuedIndirectOrResponseMessage;
+			this.queuedIndirectOrResponseMessage = null;
+			return response;
 		}
 
 		/// <summary>
@@ -102,9 +77,6 @@ namespace DotNetOAuth.Messaging {
 			if (message == null) {
 				throw new ArgumentNullException("message");
 			}
-			if (this.QueuedIndirectOrResponseMessage != null) {
-				throw new InvalidOperationException(MessagingStrings.QueuedMessageResponseAlreadyExists);
-			}
 
 			var directedMessage = message as IDirectedProtocolMessage;
 			if (directedMessage == null) {
@@ -115,32 +87,48 @@ namespace DotNetOAuth.Messaging {
 					// This is an indirect message request or reply.
 					this.SendIndirectMessage(directedMessage);
 				} else {
-					if (message is ProtocolException) {
+					ProtocolException exception = message as ProtocolException;
+					if (exception != null) {
 						if (this.RequestInProcess is IDirectedProtocolMessage) {
-							this.ReportErrorAsDirectResponse(directedMessage);
+							this.ReportErrorAsDirectResponse(exception);
 						} else {
-							this.ReportErrorToUser(directedMessage);
+							this.ReportErrorToUser(exception);
 						}
+					} else {
+						throw new InvalidOperationException();
 					}
 				}
 			}
 		}
 
-		private void InitializeRequestAsAuthHeader(HttpWebRequest httpRequest, IDirectedProtocolMessage requestMessage) {
-			throw new NotImplementedException();
+		/// <summary>
+		/// Takes a message and temporarily stores it for sending as the hosting site's
+		/// HTTP response to the current request.
+		/// </summary>
+		/// <param name="response">The message to store for sending.</param>
+		protected void QueueIndirectOrResponseMessage(Response response) {
+			if (response == null) {
+				throw new ArgumentNullException("response");
+			}
+			if (this.queuedIndirectOrResponseMessage != null) {
+				throw new InvalidOperationException(MessagingStrings.QueuedMessageResponseAlreadyExists);
+			}
+
+			this.queuedIndirectOrResponseMessage = response;
 		}
 
-		private void InitializeRequestAsPost(HttpWebRequest httpRequest, IDirectedProtocolMessage requestMessage) {
-			throw new NotImplementedException();
-		}
+		/// <summary>
+		/// Sends a direct message to a remote party and waits for the response.
+		/// </summary>
+		/// <param name="request">The message to send.</param>
+		/// <returns>The remote party's response.</returns>
+		protected abstract IProtocolMessage Request(IDirectedProtocolMessage request);
 
-		private void InitializeRequestAsGet(HttpWebRequest httpRequest, IDirectedProtocolMessage requestMessage) {
-			throw new NotImplementedException();
-		}
-
-		private void SendIndirectMessage(IDirectedProtocolMessage directedMessage) {
-			throw new NotImplementedException();
-		}
+		/// <summary>
+		/// Queues an indirect message for transmittal via the user agent.
+		/// </summary>
+		/// <param name="message">The message to send.</param>
+		protected abstract void SendIndirectMessage(IDirectedProtocolMessage message);
 
 		/// <summary>
 		/// Queues a message for sending in the response stream where the fields
@@ -150,26 +138,19 @@ namespace DotNetOAuth.Messaging {
 		/// <remarks>
 		/// This method implements spec V1.0 section 5.3.
 		/// </remarks>
-		private void SendDirectMessageResponse(IProtocolMessage response) {
-			MessageSerializer serializer = MessageSerializer.Get(response.GetType());
-			var fields = serializer.Serialize(response);
-			string responseBody = MessagingUtilities.CreateQueryString(fields);
+		protected abstract void SendDirectMessageResponse(IProtocolMessage response);
 
-			Response encodedResponse = new Response {
-				Body = Encoding.UTF8.GetBytes(responseBody),
-				OriginalMessage = response,
-				Status = System.Net.HttpStatusCode.OK,
-				Headers = new System.Net.WebHeaderCollection(),
-			};
-			this.QueuedIndirectOrResponseMessage = encodedResponse;
-		}
+		/// <summary>
+		/// Reports an error to the user via the user agent.
+		/// </summary>
+		/// <param name="exception">The error information.</param>
+		protected abstract void ReportErrorToUser(ProtocolException exception);
 
-		private void ReportErrorToUser(IDirectedProtocolMessage directedMessage) {
-			throw new NotImplementedException();
-		}
-
-		private void ReportErrorAsDirectResponse(IDirectedProtocolMessage directedMessage) {
-			throw new NotImplementedException();
-		}
+		/// <summary>
+		/// Sends an error result directly to the calling remote party according to the
+		/// rules of the protocol.
+		/// </summary>
+		/// <param name="exception">The error information.</param>
+		protected abstract void ReportErrorAsDirectResponse(ProtocolException exception);
 	}
 }

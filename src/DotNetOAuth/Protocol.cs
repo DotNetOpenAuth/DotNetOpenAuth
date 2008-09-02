@@ -47,14 +47,9 @@ namespace DotNetOAuth {
 		private string parameterPrefix = "oauth_";
 
 		/// <summary>
-		/// Strings that identify the various message schemes.
+		/// The scheme to use in Authorization header message requests.
 		/// </summary>
-		/// <remarks>
-		/// These strings should be checked with case INsensitivity.
-		/// </remarks>
-		private Dictionary<MessageScheme, string> messageSchemes = new Dictionary<MessageScheme, string> {
-			{ MessageScheme.AuthorizationHeaderRequest, "OAuth" },
-		};
+		private string authorizationHeaderScheme = "OAuth";
 
 		/// <summary>
 		/// Gets the namespace to use for this version of the protocol.
@@ -71,13 +66,10 @@ namespace DotNetOAuth {
 		}
 
 		/// <summary>
-		/// Gets the strings that identify the various message schemes.
+		/// Gets the scheme to use in Authorization header message requests.
 		/// </summary>
-		/// <remarks>
-		/// These strings should be checked with case INsensitivity.
-		/// </remarks>
-		internal IDictionary<MessageScheme, string> MessageSchemes {
-			get { return this.messageSchemes; }
+		internal string AuthorizationHeaderScheme {
+			get { return this.authorizationHeaderScheme; }
 		}
 	}
 }
