@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="MessageSerializerTest.cs" company="Andrew Arnott">
+// <copyright file="MessageSerializerTests.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -14,7 +14,7 @@ namespace DotNetOAuth.Test.Messaging {
 	/// Tests for the <see cref="MessageSerializer"/> class.
 	/// </summary>
 	[TestClass()]
-	public class MessageSerializerTest : TestBase {
+	public class MessageSerializerTests : TestBase {
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void SerializeNull() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
@@ -31,6 +31,21 @@ namespace DotNetOAuth.Test.Messaging {
 		public void SerializeNullMessage() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			serializer.Serialize(new Dictionary<string, string>(), null);
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		public void GetInvalidMessageType() {
+			MessageSerializer.Get(typeof(string));
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		public void GetNullType() {
+			MessageSerializer.Get(null);
+		}
+
+		[TestMethod]
+		public void GetReturnsSameSerializerTwice() {
+			Assert.AreSame(MessageSerializer.Get(typeof(Mocks.TestMessage)), MessageSerializer.Get(typeof(Mocks.TestMessage)));
 		}
 
 		[TestMethod, ExpectedException(typeof(ProtocolException))]

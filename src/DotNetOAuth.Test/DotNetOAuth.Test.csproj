@@ -58,8 +58,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Messaging\MessageSerializerTest.cs" />
+    <Compile Include="Messaging\ChannelTests.cs" />
+    <Compile Include="OAuthChannelTests.cs" />
+    <Compile Include="Messaging\MessageSerializerTests.cs" />
+    <Compile Include="Mocks\TestChannel.cs" />
     <Compile Include="Mocks\TestMessage.cs" />
+    <Compile Include="Mocks\TestMessageTypeProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceProviderTest.cs" />
     <Compile Include="TestBase.cs" />

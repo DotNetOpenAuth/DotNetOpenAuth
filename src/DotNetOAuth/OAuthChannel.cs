@@ -24,8 +24,8 @@ namespace DotNetOAuth {
 		/// A class prepared to analyze incoming messages and indicate what concrete
 		/// message types can deserialize from it.
 		/// </param>
-		internal OAuthChannel(IMessageTypeProvider messageTypeProvider)
-			: base(messageTypeProvider) {
+		internal OAuthChannel()
+			: base(new OAuthMessageTypeProvider()) {
 		}
 
 		/// <summary>
@@ -95,6 +95,42 @@ namespace DotNetOAuth {
 			var responseMessage = responseSerialize.Deserialize(responseFields);
 
 			return responseMessage;
+		}
+
+		/// <summary>
+		/// Searches an incoming HTTP request for data that could be used to assemble
+		/// a protocol request message.
+		/// </summary>
+		/// <param name="request">The HTTP request to search.</param>
+		/// <returns>A dictionary of data in the request.  Should never be null, but may be empty.</returns>
+		protected override Dictionary<string, string> ExtractDataFromRequest(HttpRequest request) {
+			// First search the Authorization header.  Use it exclusively if it's present.
+			if (request.Headers["Authorization"] != null) {
+				string[] authorizationSections = request.Headers["Authorization"].Split(';'); // TODO: is this the right delimiter?
+				string oauthPrefix = Protocol.Default.AuthorizationHeaderScheme + " ";
+
+				// The Authorization header may have multiple uses, and OAuth may be just one of them.
+				// Go through each one looking for an OAuth one.
+				foreach (string auth in authorizationSections) {
+					string trimmedAuth = auth.Trim();
+					if (trimmedAuth.StartsWith(oauthPrefix, StringComparison.Ordinal)) {
+						// We found an Authorization: OAuth header.  
+						// Parse it according to the rules in section 5.4.1 of the V1.0 spec.
+						var fields = new Dictionary<string, string>();
+						foreach (string stringPair in trimmedAuth.Substring(oauthPrefix.Length).Split(',')) {
+							string[] keyValueStringPair = stringPair.Trim().Split('=');
+							string key = Uri.UnescapeDataString(keyValueStringPair[0]);
+							string value = Uri.UnescapeDataString(keyValueStringPair[1].Trim('"'));
+							fields.Add(key, value);
+						}
+
+						return fields;
+					}
+				}
+			}
+
+			// We didn't find an OAuth authorization header.  Revert to other payload methods.
+			return base.ExtractDataFromRequest(request);
 		}
 
 		/// <summary>

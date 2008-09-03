@@ -7,7 +7,6 @@
 namespace DotNetOAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics;
 	using System.IO;
 	using System.Net;
 	using System.Text;
@@ -127,6 +126,66 @@ namespace DotNetOAuth.Messaging {
 					}
 				}
 			}
+		}
+
+		/// <summary>
+		/// Gets the protocol message embedded in the given HTTP request, if present.
+		/// </summary>
+		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
+		/// <remarks>
+		/// Requires an HttpContext.Current context.
+		/// </remarks>
+		internal IProtocolMessage Receive() {
+			return this.Receive(HttpContext.Current.Request);
+		}
+
+		/// <summary>
+		/// Gets the protocol message embedded in the given HTTP request, if present.
+		/// </summary>
+		/// <param name="request">The request to search for an embedded message.</param>
+		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
+		internal virtual IProtocolMessage Receive(HttpRequest request) {
+			if (request == null) {
+				throw new ArgumentNullException("request");
+			}
+
+			// Extract the message data and attempt to determine what kind of message it is.
+			Type messageType = null;
+			var fields = this.ExtractDataFromRequest(request);
+			if (fields != null) {
+				messageType = this.MessageTypeProvider.GetRequestMessageType(fields);
+			}
+
+			// If there was no data, or we couldn't recognize it as a message, abort.
+			if (messageType == null) {
+				return null;
+			}
+
+			// We have a message!  Assemble it.
+			var serializer = MessageSerializer.Get(messageType);
+			IProtocolMessage message = serializer.Deserialize(fields);
+			
+			return message;
+		}
+
+		/// <summary>
+		/// Searches an incoming HTTP request for data that could be used to assemble
+		/// a protocol request message.
+		/// </summary>
+		/// <param name="request">The HTTP request to search.</param>
+		/// <returns>A dictionary of data in the request.  Should never be null, but may be empty.</returns>
+		protected virtual Dictionary<string, string> ExtractDataFromRequest(HttpRequest request) {
+			if (request == null) {
+				throw new ArgumentNullException("request");
+			}
+
+			// Search Form data first, and if nothing is there search the QueryString
+			var fields = request.Form.ToDictionary();
+			if (fields.Count == 0) {
+				fields = request.QueryString.ToDictionary();
+			}
+
+			return fields;
 		}
 
 		/// <summary>

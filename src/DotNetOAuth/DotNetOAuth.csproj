@@ -80,7 +80,6 @@
     <Compile Include="Messaging\MessagingUtilities.cs" />
     <Compile Include="OAuthChannel.cs" />
     <Compile Include="Messaging\Response.cs" />
-    <Compile Include="Messaging\IndirectMessageEncoder.cs" />
     <Compile Include="Messaging\IProtocolMessage.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Loggers\ILog.cs" />
@@ -89,6 +88,7 @@
     <Compile Include="Loggers\TraceLogger.cs" />
     <Compile Include="Messaging\MessageScheme.cs" />
     <Compile Include="Messaging\MessageTransport.cs" />
+    <Compile Include="OAuthMessageTypeProvider.cs" />
     <Compile Include="ProtocolException.cs" />
     <Compile Include="Messaging\MessageSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
