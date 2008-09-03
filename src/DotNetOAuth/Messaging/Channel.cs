@@ -136,22 +136,42 @@ namespace DotNetOAuth.Messaging {
 		/// Requires an HttpContext.Current context.
 		/// </remarks>
 		internal IProtocolMessage Receive() {
-			return this.Receive(HttpContext.Current.Request);
+			return this.Receive(new HttpRequestInfo(HttpContext.Current.Request));
 		}
 
 		/// <summary>
-		/// Gets the protocol message embedded in the given HTTP request, if present.
+		/// Gets the protocol message that may be embedded in the given HTTP request.
 		/// </summary>
 		/// <param name="request">The request to search for an embedded message.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
-		internal virtual IProtocolMessage Receive(HttpRequest request) {
+		protected internal virtual IProtocolMessage Receive(HttpRequestInfo request) {
 			if (request == null) {
 				throw new ArgumentNullException("request");
 			}
 
-			// Extract the message data and attempt to determine what kind of message it is.
+			// Search Form data first, and if nothing is there search the QueryString
+			var fields = request.Form.ToDictionary();
+			if (fields.Count == 0) {
+				fields = request.QueryString.ToDictionary();
+			}
+
+			return this.Receive(fields);
+		}
+
+		/// <summary>
+		/// Gets the protocol message that may be in the given HTTP response stream.
+		/// </summary>
+		/// <param name="responseStream">The response that is anticipated to contain an OAuth message.</param>
+		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
+		protected internal abstract IProtocolMessage Receive(Stream responseStream);
+
+		/// <summary>
+		/// Deserializes a dictionary of values into a message.
+		/// </summary>
+		/// <param name="fields">The dictionary of values that were read from an HTTP request or response.</param>
+		/// <returns>The deserialized message.</returns>
+		protected virtual IProtocolMessage Receive(Dictionary<string, string> fields) {
 			Type messageType = null;
-			var fields = this.ExtractDataFromRequest(request);
 			if (fields != null) {
 				messageType = this.MessageTypeProvider.GetRequestMessageType(fields);
 			}
@@ -164,28 +184,8 @@ namespace DotNetOAuth.Messaging {
 			// We have a message!  Assemble it.
 			var serializer = MessageSerializer.Get(messageType);
 			IProtocolMessage message = serializer.Deserialize(fields);
-			
+
 			return message;
-		}
-
-		/// <summary>
-		/// Searches an incoming HTTP request for data that could be used to assemble
-		/// a protocol request message.
-		/// </summary>
-		/// <param name="request">The HTTP request to search.</param>
-		/// <returns>A dictionary of data in the request.  Should never be null, but may be empty.</returns>
-		protected virtual Dictionary<string, string> ExtractDataFromRequest(HttpRequest request) {
-			if (request == null) {
-				throw new ArgumentNullException("request");
-			}
-
-			// Search Form data first, and if nothing is there search the QueryString
-			var fields = request.Form.ToDictionary();
-			if (fields.Count == 0) {
-				fields = request.QueryString.ToDictionary();
-			}
-
-			return fields;
 		}
 
 		/// <summary>
@@ -258,7 +258,7 @@ namespace DotNetOAuth.Messaging {
 				Body = new byte[0],
 				OriginalMessage = message
 			};
-			
+
 			return response;
 		}
 

@@ -20,6 +20,10 @@ namespace DotNetOAuth.Test.Mocks {
 			throw new NotImplementedException();
 		}
 
+		protected internal override IProtocolMessage Receive(System.IO.Stream responseStream) {
+			throw new NotImplementedException();
+		}
+
 		protected override void SendDirectMessageResponse(IProtocolMessage response) {
 			throw new NotImplementedException();
 		}

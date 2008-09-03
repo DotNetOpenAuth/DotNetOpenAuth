@@ -12,7 +12,6 @@ namespace DotNetOAuth.Test.Mocks {
 	using DotNetOAuth.Messaging;
 
 	internal class TestMessageTypeProvider : IMessageTypeProvider {
-
 		#region IMessageTypeProvider Members
 
 		public Type GetRequestMessageType(IDictionary<string, string> fields) {
@@ -24,7 +23,7 @@ namespace DotNetOAuth.Test.Mocks {
 		}
 
 		public Type GetResponseMessageType(IProtocolMessage request, IDictionary<string, string> fields) {
-			return GetRequestMessageType(fields);
+			return this.GetRequestMessageType(fields);
 		}
 
 		#endregion

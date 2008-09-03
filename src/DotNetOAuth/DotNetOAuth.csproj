@@ -70,6 +70,7 @@
     <Compile Include="Messaging\DictionaryXmlReader.cs" />
     <Compile Include="Messaging\DictionaryXmlWriter.cs" />
     <Compile Include="Messaging\Channel.cs" />
+    <Compile Include="Messaging\HttpRequestInfo.cs" />
     <Compile Include="Messaging\IDirectedProtocolMessage.cs" />
     <Compile Include="Messaging\IMessageTypeProvider.cs" />
     <Compile Include="Messaging\MessagingStrings.Designer.cs">

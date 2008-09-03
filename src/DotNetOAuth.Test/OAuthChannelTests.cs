@@ -9,8 +9,8 @@ namespace DotNetOAuth.Test {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
 	using DotNetOAuth.Messaging;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
 	public class OAuthChannelTests : TestBase {

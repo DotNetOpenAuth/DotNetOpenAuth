@@ -20,12 +20,66 @@ namespace DotNetOAuth {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuthChannel"/> class.
 		/// </summary>
-		/// <param name="messageTypeProvider">
-		/// A class prepared to analyze incoming messages and indicate what concrete
-		/// message types can deserialize from it.
-		/// </param>
 		internal OAuthChannel()
 			: base(new OAuthMessageTypeProvider()) {
+		}
+
+		/// <summary>
+		/// Searches an incoming HTTP request for data that could be used to assemble
+		/// a protocol request message.
+		/// </summary>
+		/// <param name="request">The HTTP request to search.</param>
+		/// <returns>A dictionary of data in the request.  Should never be null, but may be empty.</returns>
+		protected internal override IProtocolMessage Receive(HttpRequestInfo request) {
+			if (request == null) {
+				throw new ArgumentNullException("request");
+			}
+
+			// First search the Authorization header.  Use it exclusively if it's present.
+			string authorization = request.Headers[HttpRequestHeader.Authorization];
+			if (authorization != null) {
+				string[] authorizationSections = authorization.Split(';'); // TODO: is this the right delimiter?
+				string oauthPrefix = Protocol.Default.AuthorizationHeaderScheme + " ";
+
+				// The Authorization header may have multiple uses, and OAuth may be just one of them.
+				// Go through each one looking for an OAuth one.
+				foreach (string auth in authorizationSections) {
+					string trimmedAuth = auth.Trim();
+					if (trimmedAuth.StartsWith(oauthPrefix, StringComparison.Ordinal)) {
+						// We found an Authorization: OAuth header.  
+						// Parse it according to the rules in section 5.4.1 of the V1.0 spec.
+						var fields = new Dictionary<string, string>();
+						foreach (string stringPair in trimmedAuth.Substring(oauthPrefix.Length).Split(',')) {
+							string[] keyValueStringPair = stringPair.Trim().Split('=');
+							string key = Uri.UnescapeDataString(keyValueStringPair[0]);
+							string value = Uri.UnescapeDataString(keyValueStringPair[1].Trim('"'));
+							fields.Add(key, value);
+						}
+
+						return this.Receive(fields);
+					}
+				}
+			}
+
+			// We didn't find an OAuth authorization header.  Revert to other payload methods.
+			return base.Receive(request);
+		}
+
+		/// <summary>
+		/// Gets the protocol message that may be in the given HTTP response stream.
+		/// </summary>
+		/// <param name="responseStream">The response that is anticipated to contain an OAuth message.</param>
+		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
+		protected internal override IProtocolMessage Receive(Stream responseStream) {
+			if (responseStream == null) {
+				throw new ArgumentNullException("responseStream");
+			}
+
+			using (StreamReader reader = new StreamReader(responseStream)) {
+				string response = reader.ReadToEnd();
+				var fields = HttpUtility.ParseQueryString(response).ToDictionary();
+				return Receive(fields);
+			}
 		}
 
 		/// <summary>
@@ -95,42 +149,6 @@ namespace DotNetOAuth {
 			var responseMessage = responseSerialize.Deserialize(responseFields);
 
 			return responseMessage;
-		}
-
-		/// <summary>
-		/// Searches an incoming HTTP request for data that could be used to assemble
-		/// a protocol request message.
-		/// </summary>
-		/// <param name="request">The HTTP request to search.</param>
-		/// <returns>A dictionary of data in the request.  Should never be null, but may be empty.</returns>
-		protected override Dictionary<string, string> ExtractDataFromRequest(HttpRequest request) {
-			// First search the Authorization header.  Use it exclusively if it's present.
-			if (request.Headers["Authorization"] != null) {
-				string[] authorizationSections = request.Headers["Authorization"].Split(';'); // TODO: is this the right delimiter?
-				string oauthPrefix = Protocol.Default.AuthorizationHeaderScheme + " ";
-
-				// The Authorization header may have multiple uses, and OAuth may be just one of them.
-				// Go through each one looking for an OAuth one.
-				foreach (string auth in authorizationSections) {
-					string trimmedAuth = auth.Trim();
-					if (trimmedAuth.StartsWith(oauthPrefix, StringComparison.Ordinal)) {
-						// We found an Authorization: OAuth header.  
-						// Parse it according to the rules in section 5.4.1 of the V1.0 spec.
-						var fields = new Dictionary<string, string>();
-						foreach (string stringPair in trimmedAuth.Substring(oauthPrefix.Length).Split(',')) {
-							string[] keyValueStringPair = stringPair.Trim().Split('=');
-							string key = Uri.UnescapeDataString(keyValueStringPair[0]);
-							string value = Uri.UnescapeDataString(keyValueStringPair[1].Trim('"'));
-							fields.Add(key, value);
-						}
-
-						return fields;
-					}
-				}
-			}
-
-			// We didn't find an OAuth authorization header.  Revert to other payload methods.
-			return base.ExtractDataFromRequest(request);
 		}
 
 		/// <summary>
