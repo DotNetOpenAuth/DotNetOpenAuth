@@ -70,14 +70,6 @@ namespace DotNetOAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Gets or sets the message that came in as a request, if any.
-		/// </summary>
-		/// <remarks>
-		/// This message is used to help determine how to transmit the response.
-		/// </remarks>
-		internal IProtocolMessage RequestInProcess { get; set; }
-
-		/// <summary>
 		/// Gets a tool that can figure out what kind of message is being received
 		/// so it can be deserialized.
 		/// </summary>
@@ -101,6 +93,20 @@ namespace DotNetOAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The one-way message to send</param>
 		internal void Send(IProtocolMessage message) {
+			this.Send(message, null);
+		}
+
+		/// <summary>
+		/// Queues an indirect message (either a request or response) 
+		/// or direct message response for transmission to a remote party.
+		/// </summary>
+		/// <param name="message">The one-way message to send</param>
+		/// <param name="inResponseTo">
+		/// If <paramref name="message"/> is a response to an incoming message, this is the incoming message.
+		/// This is useful for error scenarios in deciding just how to send the response message.
+		/// May be null.
+		/// </param>
+		internal void Send(IProtocolMessage message, IProtocolMessage inResponseTo) {
 			if (message == null) {
 				throw new ArgumentNullException("message");
 			}
@@ -116,7 +122,7 @@ namespace DotNetOAuth.Messaging {
 				} else {
 					ProtocolException exception = message as ProtocolException;
 					if (exception != null) {
-						if (this.RequestInProcess is IDirectedProtocolMessage) {
+						if (inResponseTo is IDirectedProtocolMessage) {
 							this.ReportErrorAsDirectResponse(exception);
 						} else {
 							this.ReportErrorToUser(exception);
@@ -135,8 +141,8 @@ namespace DotNetOAuth.Messaging {
 		/// <remarks>
 		/// Requires an HttpContext.Current context.
 		/// </remarks>
-		internal IProtocolMessage Receive() {
-			return this.Receive(new HttpRequestInfo(HttpContext.Current.Request));
+		internal IProtocolMessage ReadFromRequest() {
+			return this.ReadFromRequest(new HttpRequestInfo(HttpContext.Current.Request));
 		}
 
 		/// <summary>
@@ -144,7 +150,7 @@ namespace DotNetOAuth.Messaging {
 		/// </summary>
 		/// <param name="request">The request to search for an embedded message.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
-		protected internal virtual IProtocolMessage Receive(HttpRequestInfo request) {
+		protected internal virtual IProtocolMessage ReadFromRequest(HttpRequestInfo request) {
 			if (request == null) {
 				throw new ArgumentNullException("request");
 			}
@@ -163,7 +169,14 @@ namespace DotNetOAuth.Messaging {
 		/// </summary>
 		/// <param name="responseStream">The response that is anticipated to contain an OAuth message.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
-		protected internal abstract IProtocolMessage Receive(Stream responseStream);
+		protected internal abstract IProtocolMessage ReadFromResponse(Stream responseStream);
+
+		/// <summary>
+		/// Sends a direct message to a remote party and waits for the response.
+		/// </summary>
+		/// <param name="request">The message to send.</param>
+		/// <returns>The remote party's response.</returns>
+		protected internal abstract IProtocolMessage Request(IDirectedProtocolMessage request);
 
 		/// <summary>
 		/// Deserializes a dictionary of values into a message.
@@ -203,13 +216,6 @@ namespace DotNetOAuth.Messaging {
 
 			this.queuedIndirectOrResponseMessage = response;
 		}
-
-		/// <summary>
-		/// Sends a direct message to a remote party and waits for the response.
-		/// </summary>
-		/// <param name="request">The message to send.</param>
-		/// <returns>The remote party's response.</returns>
-		protected abstract IProtocolMessage Request(IDirectedProtocolMessage request);
 
 		/// <summary>
 		/// Queues an indirect message for transmittal via the user agent.

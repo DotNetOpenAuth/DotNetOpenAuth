@@ -38,7 +38,7 @@ namespace DotNetOAuth.Test.Messaging {
 				Headers = headers,
 				InputStream = new MemoryStream(),
 			};
-			IProtocolMessage requestMessage = this.channel.Receive(request);
+			IProtocolMessage requestMessage = this.channel.ReadFromRequest(request);
 			Assert.IsNotNull(requestMessage);
 			Assert.IsInstanceOfType(requestMessage, typeof(TestMessage));
 			TestMessage testMessage = (TestMessage)requestMessage;
@@ -64,7 +64,7 @@ namespace DotNetOAuth.Test.Messaging {
 				InputStream = ms,
 			};
 
-			IProtocolMessage requestMessage = this.channel.Receive(request);
+			IProtocolMessage requestMessage = this.channel.ReadFromRequest(request);
 			Assert.IsNotNull(requestMessage);
 			Assert.IsInstanceOfType(requestMessage, typeof(TestMessage));
 			TestMessage testMessage = (TestMessage)requestMessage;

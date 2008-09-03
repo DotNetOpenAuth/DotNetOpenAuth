@@ -30,7 +30,7 @@ namespace DotNetOAuth {
 		/// </summary>
 		/// <param name="request">The HTTP request to search.</param>
 		/// <returns>A dictionary of data in the request.  Should never be null, but may be empty.</returns>
-		protected internal override IProtocolMessage Receive(HttpRequestInfo request) {
+		protected internal override IProtocolMessage ReadFromRequest(HttpRequestInfo request) {
 			if (request == null) {
 				throw new ArgumentNullException("request");
 			}
@@ -62,7 +62,7 @@ namespace DotNetOAuth {
 			}
 
 			// We didn't find an OAuth authorization header.  Revert to other payload methods.
-			return base.Receive(request);
+			return base.ReadFromRequest(request);
 		}
 
 		/// <summary>
@@ -70,7 +70,7 @@ namespace DotNetOAuth {
 		/// </summary>
 		/// <param name="responseStream">The response that is anticipated to contain an OAuth message.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
-		protected internal override IProtocolMessage Receive(Stream responseStream) {
+		protected internal override IProtocolMessage ReadFromResponse(Stream responseStream) {
 			if (responseStream == null) {
 				throw new ArgumentNullException("responseStream");
 			}
@@ -83,33 +83,11 @@ namespace DotNetOAuth {
 		}
 
 		/// <summary>
-		/// Queues a message for sending in the response stream where the fields
-		/// are sent in the response stream in querystring style.
-		/// </summary>
-		/// <param name="response">The message to send as a response.</param>
-		/// <remarks>
-		/// This method implements spec V1.0 section 5.3.
-		/// </remarks>
-		protected override void SendDirectMessageResponse(IProtocolMessage response) {
-			MessageSerializer serializer = MessageSerializer.Get(response.GetType());
-			var fields = serializer.Serialize(response);
-			string responseBody = MessagingUtilities.CreateQueryString(fields);
-
-			Response encodedResponse = new Response {
-				Body = Encoding.UTF8.GetBytes(responseBody),
-				OriginalMessage = response,
-				Status = System.Net.HttpStatusCode.OK,
-				Headers = new System.Net.WebHeaderCollection(),
-			};
-			this.QueueIndirectOrResponseMessage(encodedResponse);
-		}
-
-		/// <summary>
 		/// Sends a direct message to a remote party and waits for the response.
 		/// </summary>
 		/// <param name="request">The message to send.</param>
 		/// <returns>The remote party's response.</returns>
-		protected override IProtocolMessage Request(IDirectedProtocolMessage request) {
+		protected internal override IProtocolMessage Request(IDirectedProtocolMessage request) {
 			if (request == null) {
 				throw new ArgumentNullException("request");
 			}
@@ -149,6 +127,28 @@ namespace DotNetOAuth {
 			var responseMessage = responseSerialize.Deserialize(responseFields);
 
 			return responseMessage;
+		}
+
+		/// <summary>
+		/// Queues a message for sending in the response stream where the fields
+		/// are sent in the response stream in querystring style.
+		/// </summary>
+		/// <param name="response">The message to send as a response.</param>
+		/// <remarks>
+		/// This method implements spec V1.0 section 5.3.
+		/// </remarks>
+		protected override void SendDirectMessageResponse(IProtocolMessage response) {
+			MessageSerializer serializer = MessageSerializer.Get(response.GetType());
+			var fields = serializer.Serialize(response);
+			string responseBody = MessagingUtilities.CreateQueryString(fields);
+
+			Response encodedResponse = new Response {
+				Body = Encoding.UTF8.GetBytes(responseBody),
+				OriginalMessage = response,
+				Status = System.Net.HttpStatusCode.OK,
+				Headers = new System.Net.WebHeaderCollection(),
+			};
+			this.QueueIndirectOrResponseMessage(encodedResponse);
 		}
 
 		/// <summary>
