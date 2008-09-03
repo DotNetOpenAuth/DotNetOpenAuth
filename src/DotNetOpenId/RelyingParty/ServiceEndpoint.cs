@@ -72,12 +72,14 @@ namespace DotNetOpenId.RelyingParty {
 							friendlyIdentifierForDisplay = UserSuppliedIdentifier;
 						}
 					} else if (uri != null) {
-						string displayUri = uri.Uri.Authority + uri.Uri.PathAndQuery;
-						displayUri = displayUri.TrimEnd('/');
-						// Multi-byte unicode characters get encoded by the Uri class for transit.
-						// Since this is for display purposes, we want to reverse this and display a readable
-						// representation of these foreign characters.  
-						friendlyIdentifierForDisplay = Uri.UnescapeDataString(displayUri);
+						if (uri != Protocol.ClaimedIdentifierForOPIdentifier) {
+							string displayUri = uri.Uri.Authority + uri.Uri.PathAndQuery;
+							displayUri = displayUri.TrimEnd('/');
+							// Multi-byte unicode characters get encoded by the Uri class for transit.
+							// Since this is for display purposes, we want to reverse this and display a readable
+							// representation of these foreign characters.  
+							friendlyIdentifierForDisplay = Uri.UnescapeDataString(displayUri);
+						}
 					} else {
 						Debug.Fail("Doh!  We never should have reached here.");
 						friendlyIdentifierForDisplay = ClaimedIdentifier;

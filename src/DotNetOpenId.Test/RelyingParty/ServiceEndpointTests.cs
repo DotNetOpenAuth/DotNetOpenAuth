@@ -116,7 +116,9 @@ namespace DotNetOpenId.Test.RelyingParty {
 		public void FriendlyIdentifierForDisplay() {
 			Uri providerEndpoint= new Uri("http://someprovider");
 			Identifier localId = "someuser";
-			string[] serviceTypeUris = new string[0];
+			string[] serviceTypeUris = new string[] {
+				Protocol.v20.ClaimedIdentifierServiceTypeURI,
+			};
 			ServiceEndpoint se;
 
 			// strip of protocol and fragment
