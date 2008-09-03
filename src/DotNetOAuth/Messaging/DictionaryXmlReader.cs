@@ -24,6 +24,9 @@ namespace DotNetOAuth.Messaging {
 		/// <param name="fields">The dictionary to read data from.</param>
 		/// <returns>The XmlReader that will read the data out of the given dictionary.</returns>
 		internal static XmlReader Create(XName rootElement, IDictionary<string, string> fields) {
+			if (rootElement == null) {
+				throw new ArgumentNullException("rootElement");
+			}
 			if (fields == null) {
 				throw new ArgumentNullException("fields");
 			}
@@ -38,6 +41,10 @@ namespace DotNetOAuth.Messaging {
 		/// <param name="fields">The dictionary to list values from.</param>
 		/// <returns>The generated <see cref="XmlReader"/>.</returns>
 		private static XmlReader CreateRoundtripReader(XName rootElement, IDictionary<string, string> fields) {
+			if (rootElement == null) {
+				throw new ArgumentNullException("rootElement");
+			}
+
 			MemoryStream stream = new MemoryStream();
 			XmlWriter writer = XmlWriter.Create(stream);
 			SerializeDictionaryToXml(writer, rootElement, fields);
@@ -61,6 +68,9 @@ namespace DotNetOAuth.Messaging {
 		private static void SerializeDictionaryToXml(XmlWriter writer, XName rootElement, IDictionary<string, string> fields) {
 			if (writer == null) {
 				throw new ArgumentNullException("writer");
+			}
+			if (rootElement == null) {
+				throw new ArgumentNullException("rootElement");
 			}
 			if (fields == null) {
 				throw new ArgumentNullException("fields");

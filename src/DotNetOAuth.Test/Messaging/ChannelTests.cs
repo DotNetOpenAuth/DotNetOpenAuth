@@ -6,6 +6,7 @@
 
 namespace DotNetOAuth.Test.Messaging {
 	using System;
+	using System.Collections.Generic;
 	using System.IO;
 	using System.Net;
 	using DotNetOAuth.Messaging;
@@ -21,6 +22,13 @@ namespace DotNetOAuth.Test.Messaging {
 			base.SetUp();
 
 			this.channel = new TestChannel();
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		public void CtorNull() {
+			// This bad channel is deliberately constructed to pass null to
+			// its protected base class' constructor.
+			new TestBadChannel();
 		}
 
 		[TestMethod]
@@ -73,8 +81,28 @@ namespace DotNetOAuth.Test.Messaging {
 			Assert.AreEqual("http://hostb/pathB", testMessage.Location.AbsoluteUri);
 		}
 
-		private static HttpRequestInfo CreateHttpRequest() {
-			throw new NotImplementedException();
+		private static HttpRequestInfo CreateHttpRequest(string method, IDictionary<string, string> fields) {
+			string query = MessagingUtilities.CreateQueryString(fields);
+			UriBuilder requestUri = new UriBuilder("http://localhost/path");
+			WebHeaderCollection headers = new WebHeaderCollection();
+			MemoryStream ms = new MemoryStream();
+			if (method == "POST") {
+				headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
+				StreamWriter sw = new StreamWriter(ms);
+				sw.Write(query);
+				sw.Flush();
+				ms.Position = 0;
+			} else if (method == "GET") {
+				requestUri.Query = query;
+			}
+			HttpRequestInfo request = new HttpRequestInfo {
+				HttpMethod = method,
+				Url = requestUri.Uri,
+				Headers = headers,
+				InputStream = ms,
+			};
+
+			return request;
 		}
 	}
 }
