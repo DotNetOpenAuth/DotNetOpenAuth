@@ -138,7 +138,7 @@ namespace DotNetOpenId.Test {
 			Assert.AreEqual(Protocol.v10, se.Protocol);
 			Assert.AreEqual("http://1id.com/sso", se.ProviderEndpoint.ToString());
 			Assert.AreEqual(se.ClaimedIdentifier, se.ProviderLocalIdentifier);
-			Assert.AreEqual("=!9B72.7DD1.50A9.5CCD (=Arnott)", se.FriendlyIdentifierForDisplay);
+			Assert.AreEqual("=Arnott", se.FriendlyIdentifierForDisplay);
 		}
 
 		[Test]

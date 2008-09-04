@@ -51,6 +51,10 @@ namespace DotNetOpenId {
 		/// If null, <paramref name="builder"/> is not changed.
 		/// </param>
 		public static void AppendQueryArgs(UriBuilder builder, IDictionary<string, string> args) {
+			if (builder == null) {
+				throw new ArgumentNullException("builder");
+			}
+
 			if (args != null && args.Count > 0) {
 				StringBuilder sb = new StringBuilder(50 + args.Count * 10);
 				if (!string.IsNullOrEmpty(builder.Query)) {

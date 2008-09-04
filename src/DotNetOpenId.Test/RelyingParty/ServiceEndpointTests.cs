@@ -116,7 +116,9 @@ namespace DotNetOpenId.Test.RelyingParty {
 		public void FriendlyIdentifierForDisplay() {
 			Uri providerEndpoint= new Uri("http://someprovider");
 			Identifier localId = "someuser";
-			string[] serviceTypeUris = new string[0];
+			string[] serviceTypeUris = new string[] {
+				Protocol.v20.ClaimedIdentifierServiceTypeURI,
+			};
 			ServiceEndpoint se;
 
 			// strip of protocol and fragment
@@ -132,7 +134,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 			// restore user supplied identifier to XRIs
 			se = ServiceEndpoint.CreateForClaimedIdentifier(new XriIdentifier("=!9B72.7DD1.50A9.5CCD"),
 				new XriIdentifier("=Arnott崎村"), localId, providerEndpoint, serviceTypeUris, null, null);
-			Assert.AreEqual("=!9B72.7DD1.50A9.5CCD (=Arnott崎村)", se.FriendlyIdentifierForDisplay);
+			Assert.AreEqual("=Arnott崎村", se.FriendlyIdentifierForDisplay);
 
 			// If UserSuppliedIdentifier is the same as the ClaimedIdentifier, don't display it twice...
 			se = ServiceEndpoint.CreateForClaimedIdentifier(

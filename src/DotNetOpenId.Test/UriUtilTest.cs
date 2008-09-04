@@ -44,6 +44,16 @@ namespace DotNetOpenId.Test {
 			Assert.AreEqual("http://baseline.org/page?a=b&c%2fd=e%2ff&g=h", uri.Uri.AbsoluteUri);
 		}
 
+		[Test, ExpectedException(typeof(ArgumentNullException))]
+		public void AppendQueryArgsNullUriBuilder() {
+			UriUtil.AppendQueryArgs(null, new Dictionary<string, string>());
+		}
+
+		[Test]
+		public void AppendQueryArgsNullDictionary() {
+			UriUtil.AppendQueryArgs(new UriBuilder(), null);
+		}
+
 		[Test]
 		public void UriBuilderToStringWithImpliedPorts() {
 			Assert.AreEqual("http://localhost/p?q#f", 
