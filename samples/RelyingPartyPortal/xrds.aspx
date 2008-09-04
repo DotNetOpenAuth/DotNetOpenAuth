@@ -16,6 +16,7 @@ is default.aspx.
 			<%-- Every page with an OpenID login should be listed here. --%>
 			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/login.aspx"))%></URI>
 			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/loginProgrammatic.aspx"))%></URI>
+			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/ajaxlogin.aspx"))%></URI>
 		</Service>
 	</XRD>
 </xrds:XRDS>

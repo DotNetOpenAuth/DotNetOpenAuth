@@ -126,11 +126,20 @@
   <data name="BadAssociationPrivateData" xml:space="preserve">
     <value>The private data supplied does not meet the requirements of any known Association type.  Its length may be too short, or it may have been corrupted.</value>
   </data>
+  <data name="CallDeserializeBeforeCreateResponse" xml:space="preserve">
+    <value>A Simple Registration request must be deserialized before CreateResponse can be called.</value>
+  </data>
   <data name="CIDVerificationFailed" xml:space="preserve">
     <value>XRI CanonicalID verification failed.</value>
   </data>
   <data name="ClaimedIdentifierMustBeSetFirst" xml:space="preserve">
     <value>The ClaimedIdentifier property must be set first.</value>
+  </data>
+  <data name="ClientScriptExtensionPropertyNameCollision" xml:space="preserve">
+    <value>An extension with this property name ('{0}') has already been registered.</value>
+  </data>
+  <data name="ClientScriptExtensionTypeCollision" xml:space="preserve">
+    <value>The extension '{0}' has already been registered.</value>
   </data>
   <data name="CreateRequestAlreadyCalled" xml:space="preserve">
     <value>An authentication request has already been created using CreateRequest().</value>
@@ -250,6 +259,9 @@ Discovered endpoint info:
   <data name="NoRelyingPartyEndpointDiscovered" xml:space="preserve">
     <value>No XRDS document containing OpenId relying party endpoint information could be found at {0}.</value>
   </data>
+  <data name="NotSupportedByAuthenticationSnapshot" xml:space="preserve">
+    <value>This operation is not supported by serialized authentication responses.  Try this operation from the LoggedIn event handler.</value>
+  </data>
   <data name="OpenIdEndpointNotFound" xml:space="preserve">
     <value>No OpenId endpoint found.</value>
   </data>
@@ -287,7 +299,7 @@ Discovered endpoint info:
     <value>return_to '{0}' not under realm '{1}'.</value>
   </data>
   <data name="ReturnToParamDoesNotMatchRequestUrl" xml:space="preserve">
-    <value>The {0} parameter does not match the actual URL the request was made with.</value>
+    <value>The {0} parameter ({1}) does not match the actual URL ({2}) the request was made with.</value>
   </data>
   <data name="TamperingDetected" xml:space="preserve">
     <value>The '{0}' parameter was expected to have the value '{1}' but had '{2}' instead.</value>

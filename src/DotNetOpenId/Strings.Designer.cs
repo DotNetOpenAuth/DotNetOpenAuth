@@ -88,6 +88,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A Simple Registration request must be deserialized before CreateResponse can be called..
+        /// </summary>
+        internal static string CallDeserializeBeforeCreateResponse {
+            get {
+                return ResourceManager.GetString("CallDeserializeBeforeCreateResponse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to XRI CanonicalID verification failed..
         /// </summary>
         internal static string CIDVerificationFailed {
@@ -102,6 +111,24 @@ namespace DotNetOpenId {
         internal static string ClaimedIdentifierMustBeSetFirst {
             get {
                 return ResourceManager.GetString("ClaimedIdentifierMustBeSetFirst", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An extension with this property name (&apos;{0}&apos;) has already been registered..
+        /// </summary>
+        internal static string ClientScriptExtensionPropertyNameCollision {
+            get {
+                return ResourceManager.GetString("ClientScriptExtensionPropertyNameCollision", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The extension &apos;{0}&apos; has already been registered..
+        /// </summary>
+        internal static string ClientScriptExtensionTypeCollision {
+            get {
+                return ResourceManager.GetString("ClientScriptExtensionTypeCollision", resourceCulture);
             }
         }
         
@@ -452,6 +479,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This operation is not supported by serialized authentication responses.  Try this operation from the LoggedIn event handler..
+        /// </summary>
+        internal static string NotSupportedByAuthenticationSnapshot {
+            get {
+                return ResourceManager.GetString("NotSupportedByAuthenticationSnapshot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No OpenId endpoint found..
         /// </summary>
         internal static string OpenIdEndpointNotFound {
@@ -560,7 +596,7 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The {0} parameter does not match the actual URL the request was made with..
+        ///   Looks up a localized string similar to The {0} parameter ({1}) does not match the actual URL ({2}) the request was made with..
         /// </summary>
         internal static string ReturnToParamDoesNotMatchRequestUrl {
             get {

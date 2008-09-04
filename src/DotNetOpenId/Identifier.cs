@@ -9,6 +9,7 @@ namespace DotNetOpenId {
 	/// <summary>
 	/// An Identifier is either a "http" or "https" URI, or an XRI.
 	/// </summary>
+	[Serializable]
 	public abstract class Identifier {
 		/// <summary>
 		/// Constructs an <see cref="Identifier"/>.

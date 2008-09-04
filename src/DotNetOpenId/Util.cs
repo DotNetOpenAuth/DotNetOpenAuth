@@ -253,6 +253,43 @@ namespace DotNetOpenId {
 			return true;
 		}
 
+		// The characters to escape here are inspired by 
+		// http://code.google.com/p/doctype/wiki/ArticleXSSInJavaScript
+		static readonly Dictionary<string, string> javascriptStaticStringEscaping = new Dictionary<string,string> {
+			{"\\", @"\\" }, // this WAS just above the & substitution but we moved it here to prevent double-escaping
+			{"\t", @"\t" },
+			{"\n", @"\n" },
+			{"\r", @"\r" },
+			{"\u0085", @"\u0085" },
+			{"\u2028", @"\u2028" },
+			{"\u2029", @"\u2029" },
+			{"'", @"\x27" },
+			{"\"", @"\x22" },
+			{"&", @"\x26" },
+			{"<", @"\x3c" },
+			{">", @"\x3e" },
+			{"=", @"\x3d" },
+		};
+
+		/// <summary>
+		/// Prepares what SHOULD be simply a string value for safe injection into Javascript
+		/// by using appropriate character escaping.
+		/// </summary>
+		/// <param name="value">The untrusted string value to be escaped to protected against XSS attacks.</param>
+		/// <returns>The escaped string.</returns>
+		public static string GetSafeJavascriptValue(string value) {
+			if (value == null) return "null";
+			// We use a StringBuilder because we have potentially many replacements to do,
+			// and we don't want to create a new string for every intermediate replacement step.
+			StringBuilder builder = new StringBuilder(value);
+			foreach (var pair in javascriptStaticStringEscaping) {
+				builder.Replace(pair.Key, pair.Value);
+			}
+			builder.Insert(0, '\'');
+			builder.Append('\'');
+			return builder.ToString();
+		}
+
 		internal delegate R Func<T, R>(T t);
 		/// <summary>
 		/// Scans a list for matches with some element of the OpenID protocol,

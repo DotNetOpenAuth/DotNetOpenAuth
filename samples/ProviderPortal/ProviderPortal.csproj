@@ -126,6 +126,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="favicon.ico" />
     <Content Include="images\dotnetopenid_tiny.gif" />
     <Content Include="Site.Master" />
     <Content Include="styles.css" />
