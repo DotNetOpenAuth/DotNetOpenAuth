@@ -13,11 +13,8 @@ namespace DotNetOAuth.Messaging {
 	/// </summary>
 	internal interface IDirectedProtocolMessage : IProtocolMessage {
 		/// <summary>
-		/// Gets or sets the URL of the intended receiver of this message.
+		/// Gets the URL of the intended receiver of this message.
 		/// </summary>
-		Uri Recipient {
-			get;
-			set;
-		}
+		Uri Recipient { get; }
 	}
 }

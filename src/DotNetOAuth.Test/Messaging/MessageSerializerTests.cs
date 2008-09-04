@@ -52,7 +52,7 @@ namespace DotNetOAuth.Test.Messaging {
 		public void SerializeInvalidMessage() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			Dictionary<string, string> fields = new Dictionary<string, string>(StringComparer.Ordinal);
-			Mocks.TestMessage message = new DotNetOAuth.Test.Mocks.TestMessage();
+			Mocks.TestMessage message = new Mocks.TestMessage();
 			message.EmptyMember = "invalidvalue";
 			serializer.Serialize(message);
 		}

@@ -205,7 +205,7 @@ namespace DotNetOAuth.Loggers {
 		/// </summary>
 		/// <returns>The created <see cref="ILog"/> instance.</returns>
 		private static ILog CreateLogger() {
-			return new Log4NetLogger(log4net.LogManager.GetLogger("YOURLIBNAME"));
+			return new Log4NetLogger(log4net.LogManager.GetLogger("DotNetOAuth"));
 		}
 	}
 }

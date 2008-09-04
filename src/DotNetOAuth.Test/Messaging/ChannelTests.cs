@@ -38,12 +38,29 @@ namespace DotNetOAuth.Test.Messaging {
 
 		[TestMethod]
 		public void ReadFromRequestQueryString() {
-			ParameterizedReceiveTest("GET");
+			this.ParameterizedReceiveTest("GET");
 		}
 
 		[TestMethod]
 		public void ReadFromRequestForm() {
-			ParameterizedReceiveTest("POST");
+			this.ParameterizedReceiveTest("POST");
+		}
+
+		[TestMethod]
+		public void SendIndirectMessage() {
+			IProtocolMessage message = new TestDirectedMessage {
+				Age = 15,
+				Name = "Andrew",
+				Location = new Uri("http://host/path"),
+				Recipient = new Uri("http://provider/path"),
+			};
+			this.channel.Send(message);
+			Response response = this.channel.DequeueIndirectOrResponseMessage();
+			Assert.AreEqual(HttpStatusCode.Redirect, response.Status);
+			StringAssert.StartsWith(response.Headers[HttpResponseHeader.Location], "http://provider/path");
+			StringAssert.Contains(response.Headers[HttpResponseHeader.Location], "age=15");
+			StringAssert.Contains(response.Headers[HttpResponseHeader.Location], "Name=Andrew");
+			StringAssert.Contains(response.Headers[HttpResponseHeader.Location], "Location=http%3a%2f%2fhost%2fpath");
 		}
 
 		private static HttpRequestInfo CreateHttpRequest(string method, IDictionary<string, string> fields) {

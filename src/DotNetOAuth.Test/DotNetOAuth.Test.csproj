@@ -61,6 +61,7 @@
     <Compile Include="MessagingUtilitiesTest.cs" />
     <Compile Include="Messaging\ChannelTests.cs" />
     <Compile Include="Messaging\DictionaryXmlReaderTests.cs" />
+    <Compile Include="Mocks\TestDirectedMessage.cs" />
     <Compile Include="Mocks\TestBadChannel.cs" />
     <Compile Include="OAuthChannelTests.cs" />
     <Compile Include="Messaging\MessageSerializerTests.cs" />

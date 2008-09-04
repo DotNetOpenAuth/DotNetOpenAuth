@@ -128,7 +128,7 @@ namespace DotNetOAuth.Messaging {
 							this.ReportErrorToUser(exception);
 						}
 					} else {
-						throw new InvalidOperationException();
+						throw new InvalidOperationException(MessagingStrings.DirectedMessageMissingRecipient);
 					}
 				}
 			}

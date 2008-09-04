@@ -11,7 +11,7 @@ namespace DotNetOAuth {
 	using log4net.Core;
 
 	/// <summary>
-	/// A general logger for the entire YOURLIBNAME library.
+	/// A general logger for the entire DotNetOAuth library.
 	/// </summary>
 	/// <remarks>
 	/// Because this logger is intended for use with non-localized strings, the

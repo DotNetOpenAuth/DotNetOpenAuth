@@ -70,6 +70,15 @@ namespace DotNetOAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The directed message&apos;s Recipient property must not be null..
+        /// </summary>
+        internal static string DirectedMessageMissingRecipient {
+            get {
+                return ResourceManager.GetString("DirectedMessageMissingRecipient", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error occurred while sending a direct message or gettings the response..
         /// </summary>
         internal static string ErrorInRequestReplyMessage {

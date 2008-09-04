@@ -20,11 +20,6 @@ namespace DotNetOAuth {
 	/// </remarks>
 	internal class Protocol {
 		/// <summary>
-		/// Gets the default <see cref="Protocol"/> instance.
-		/// </summary>
-		internal static Protocol Default { get { return V10; } }
-
-		/// <summary>
 		/// The namespace to use for V1.0 of the protocol.
 		/// </summary>
 		internal const string DataContractNamespaceV10 = "http://oauth.net/core/1.0/";
@@ -50,6 +45,11 @@ namespace DotNetOAuth {
 		/// The scheme to use in Authorization header message requests.
 		/// </summary>
 		private string authorizationHeaderScheme = "OAuth";
+
+		/// <summary>
+		/// Gets the default <see cref="Protocol"/> instance.
+		/// </summary>
+		internal static Protocol Default { get { return V10; } }
 
 		/// <summary>
 		/// Gets the namespace to use for this version of the protocol.
