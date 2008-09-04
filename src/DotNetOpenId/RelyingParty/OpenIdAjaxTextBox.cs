@@ -512,7 +512,8 @@ namespace DotNetOpenId.RelyingParty {
 			if (focusCalled) {
 				startupScript.AppendLine("box.focus();");
 			}
-			startupScript.AppendFormat("initAjaxOpenId(box, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14});{15}",
+			startupScript.AppendFormat("initAjaxOpenId(box, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15});{16}",
+				Util.GetSafeJavascriptValue(Page.ClientScript.GetWebResourceUrl(GetType(), OpenIdTextBox.EmbeddedLogoResourceName)),
 				Util.GetSafeJavascriptValue(Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedDotNetOpenIdLogoResourceName)),
 				Util.GetSafeJavascriptValue(Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedSpinnerResourceName)),
 				Util.GetSafeJavascriptValue(Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedLoginSuccessResourceName)),
@@ -592,9 +593,6 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 		/// Renders the control.
 		/// </summary>
 		protected override void Render(System.Web.UI.HtmlTextWriter writer) {
-			string logoUrl = Page.ClientScript.GetWebResourceUrl(
-				typeof(OpenIdTextBox), OpenIdTextBox.EmbeddedLogoResourceName);
-
 			// We surround the textbox with a span so that the .js file can inject a
 			// login button within the text box with easy placement.
 			writer.WriteBeginTag("span");
@@ -616,9 +614,6 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 				writer.WriteAttribute("class", CssClass);
 			}
 			writer.Write(" style='");
-			writer.WriteStyleAttribute("background", string.Format(CultureInfo.InvariantCulture,
-					"url({0}) no-repeat", HttpUtility.HtmlEncode(logoUrl)));
-			writer.WriteStyleAttribute("background-position", "0 50%");
 			writer.WriteStyleAttribute("padding-left", "18px");
 			writer.WriteStyleAttribute("border-style", "solid");
 			writer.WriteStyleAttribute("border-width", "1px");

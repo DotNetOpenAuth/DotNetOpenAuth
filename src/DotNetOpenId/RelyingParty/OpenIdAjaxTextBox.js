@@ -3,7 +3,7 @@
 	//window.status = msg;
 }
 
-function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, success_icon_url, failure_icon_url,
+function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url, success_icon_url, failure_icon_url,
 		timeout, assertionReceivedCode,
 		loginButtonText, loginButtonToolTip, retryButtonText, retryButtonToolTip, busyToolTip,
 		identifierRequiredMessage, loginInProgressMessage,
@@ -33,14 +33,24 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, success_icon_ur
 		return button;
 	}
 
-	box.dnoi_internal.constructIcon = function(imageUrl, tooltip) {
+	box.dnoi_internal.constructIcon = function(imageUrl, tooltip, rightSide, visible, height) {
 		var icon = document.createElement('img');
 		icon.src = imageUrl;
 		icon.title = tooltip != null ? tooltip : '';
-		icon.style.visibility = 'hidden';
+		if (!visible) {
+			icon.style.visibility = 'hidden';
+		}
 		icon.style.position = 'absolute';
 		icon.style.top = "2px";
-		icon.style.right = "2px";
+		icon.style.bottom = "2px"; // for FireFox (and IE7, I think)
+		if (height) {
+			icon.style.height = height; // for Chrome and IE8
+		}
+		if (rightSide) {
+			icon.style.right = "2px";
+		} else {
+			icon.style.left = "2px";
+		}
 		box.parentNode.appendChild(icon);
 		return icon;
 	}
@@ -63,12 +73,17 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, success_icon_ur
 		box.dnoi_internal.performDiscovery();
 		return false;
 	});
-	box.dnoi_internal.spinner = box.dnoi_internal.constructIcon(spinner_url, busyToolTip);
-	box.dnoi_internal.success_icon = box.dnoi_internal.constructIcon(success_icon_url, authenticationSucceededToolTip);
-	box.dnoi_internal.failure_icon = box.dnoi_internal.constructIcon(failure_icon_url, authenticationFailedToolTip);
-	box.dnoi_internal.prefetchImage(dotnetopenid_logo_url);
+	box.dnoi_internal.openid_logo = box.dnoi_internal.constructIcon(openid_logo_url, null, false, true);
+	box.dnoi_internal.dnoi_logo = box.dnoi_internal.constructIcon(dotnetopenid_logo_url);
+	box.dnoi_internal.op_logo = box.dnoi_internal.constructIcon('', null, false, false, "16px");
+	box.dnoi_internal.spinner = box.dnoi_internal.constructIcon(spinner_url, busyToolTip, true);
+	box.dnoi_internal.success_icon = box.dnoi_internal.constructIcon(success_icon_url, authenticationSucceededToolTip, true);
+	box.dnoi_internal.failure_icon = box.dnoi_internal.constructIcon(failure_icon_url, authenticationFailedToolTip, true);
 
 	box.dnoi_internal.setVisualCue = function(state) {
+		box.dnoi_internal.openid_logo.style.visibility = 'hidden';
+		box.dnoi_internal.dnoi_logo.style.visibility = 'hidden';
+		box.dnoi_internal.op_logo.style.visibility = 'hidden';
 		box.dnoi_internal.spinner.style.visibility = 'hidden';
 		box.dnoi_internal.success_icon.style.visibility = 'hidden';
 		box.dnoi_internal.failure_icon.style.visibility = 'hidden';
@@ -76,7 +91,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, success_icon_ur
 		box.dnoi_internal.retryButton.style.visibility = 'hidden';
 		box.title = null;
 		if (state == "discovering") {
-			box.style.background = 'url(' + dotnetopenid_logo_url + ') no-repeat';
+			box.dnoi_internal.dnoi_logo.style.visibility = 'visible';
 			box.dnoi_internal.spinner.style.visibility = 'visible';
 			box.dnoi_internal.claimedIdentifier = null;
 			box.title = null;
@@ -84,9 +99,10 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, success_icon_ur
 		} else if (state == "authenticated") {
 			var opLogo = box.dnoi_internal.deriveOPFavIcon();
 			if (opLogo) {
-				box.style.background = 'url(' + opLogo + ') no-repeat';
+				box.dnoi_internal.op_logo.src = opLogo;
+				box.dnoi_internal.op_logo.style.visibility = 'visible';
 			} else {
-				box.style.background = box.dnoi_internal.originalBackground;
+				box.dnoi_internal.openid_logo.style.visibility = 'visible';
 			}
 			box.dnoi_internal.success_icon.style.visibility = 'visible';
 			box.title = box.dnoi_internal.claimedIdentifier;
@@ -94,27 +110,28 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, success_icon_ur
 		} else if (state == "setup") {
 			var opLogo = box.dnoi_internal.deriveOPFavIcon();
 			if (opLogo) {
-				box.style.background = 'url(' + opLogo + ') no-repeat';
+				box.dnoi_internal.op_logo.src = opLogo;
+				box.dnoi_internal.op_logo.style.visibility = 'visible';
 			} else {
-				box.style.background = box.dnoi_internal.originalBackground;
+				box.dnoi_internal.openid_logo.style.visibility = 'visible';
 			}
 			box.dnoi_internal.loginButton.style.visibility = 'visible';
 			box.dnoi_internal.claimedIdentifier = null;
 			window.status = "Authentication requires setup.";
 		} else if (state == "failed") {
-			box.style.background = box.dnoi_internal.originalBackground;
+			box.dnoi_internal.openid_logo.style.visibility = 'visible';
 			//box.dnoi_internal.failure_icon.style.visibility = 'visible';
 			box.dnoi_internal.retryButton.style.visibility = 'visible';
 			box.dnoi_internal.claimedIdentifier = null;
 			window.status = authenticationFailedToolTip;
 			box.title = authenticationFailedToolTip;
 		} else if (state == 'required') {
-			box.style.background = box.dnoi_internal.originalBackground;
+			box.dnoi_internal.openid_logo.style.visibility = 'visible';
 			box.dnoi_internal.failure_icon.style.visibility = 'visible';
 			box.dnoi_internal.claimedIdentifier = null;
 			box.title = identifierRequiredMessage;
 		} else if (state = '' || state == null) {
-			box.style.background = box.dnoi_internal.originalBackground;
+			box.dnoi_internal.openid_logo.style.visibility = 'visible';
 			box.title = null;
 			box.dnoi_internal.claimedIdentifier = null;
 			window.status = null;
