@@ -74,11 +74,14 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		return false;
 	});
 	box.dnoi_internal.openid_logo = box.dnoi_internal.constructIcon(openid_logo_url, null, false, true);
-	box.dnoi_internal.dnoi_logo = box.dnoi_internal.constructIcon(dotnetopenid_logo_url);
 	box.dnoi_internal.op_logo = box.dnoi_internal.constructIcon('', null, false, false, "16px");
 	box.dnoi_internal.spinner = box.dnoi_internal.constructIcon(spinner_url, busyToolTip, true);
 	box.dnoi_internal.success_icon = box.dnoi_internal.constructIcon(success_icon_url, authenticationSucceededToolTip, true);
 	box.dnoi_internal.failure_icon = box.dnoi_internal.constructIcon(failure_icon_url, authenticationFailedToolTip, true);
+
+	// Disable the display of the DotNetOpenId logo
+	//box.dnoi_internal.dnoi_logo = box.dnoi_internal.constructIcon(dotnetopenid_logo_url);
+	box.dnoi_internal.dnoi_logo = box.dnoi_internal.openid_logo;
 
 	box.dnoi_internal.setVisualCue = function(state) {
 		box.dnoi_internal.openid_logo.style.visibility = 'hidden';
