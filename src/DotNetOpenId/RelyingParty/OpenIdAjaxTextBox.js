@@ -3,9 +3,11 @@
 	//window.status = msg;
 }
 
-function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout, assertionReceivedCode,
+function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, success_icon_url, failure_icon_url,
+		timeout, assertionReceivedCode,
 		loginButtonText, loginButtonToolTip, retryButtonText, retryButtonToolTip, busyToolTip,
-		identifierRequiredMessage, loginInProgressMessage, authenticationFailedToolTip) {
+		identifierRequiredMessage, loginInProgressMessage,
+		authenticationSucceededToolTip, authenticationFailedToolTip) {
 	box.dnoi_internal = new Object();
 	if (assertionReceivedCode) {
 		box.dnoi_internal.onauthenticated = function(sender, e) { eval(assertionReceivedCode); }
@@ -34,7 +36,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout, assert
 	box.dnoi_internal.constructIcon = function(imageUrl, tooltip) {
 		var icon = document.createElement('img');
 		icon.src = imageUrl;
-		icon.title = tooltip;
+		icon.title = tooltip != null ? tooltip : '';
 		icon.style.visibility = 'hidden';
 		icon.style.position = 'absolute';
 		icon.style.top = "2px";
@@ -62,10 +64,14 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout, assert
 		return false;
 	});
 	box.dnoi_internal.spinner = box.dnoi_internal.constructIcon(spinner_url, busyToolTip);
+	box.dnoi_internal.success_icon = box.dnoi_internal.constructIcon(success_icon_url, authenticationSucceededToolTip);
+	box.dnoi_internal.failure_icon = box.dnoi_internal.constructIcon(failure_icon_url, authenticationFailedToolTip);
 	box.dnoi_internal.prefetchImage(dotnetopenid_logo_url);
 
 	box.dnoi_internal.setVisualCue = function(state) {
 		box.dnoi_internal.spinner.style.visibility = 'hidden';
+		box.dnoi_internal.success_icon.style.visibility = 'hidden';
+		box.dnoi_internal.failure_icon.style.visibility = 'hidden';
 		box.dnoi_internal.loginButton.style.visibility = 'hidden';
 		box.dnoi_internal.retryButton.style.visibility = 'hidden';
 		box.title = null;
@@ -82,7 +88,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout, assert
 			} else {
 				box.style.background = box.dnoi_internal.originalBackground;
 			}
-			box.style.backgroundColor = 'lightgreen';
+			box.dnoi_internal.success_icon.style.visibility = 'visible';
 			box.title = box.dnoi_internal.claimedIdentifier;
 			window.status = "Authenticated as " + box.value;
 		} else if (state == "setup") {
@@ -92,20 +98,19 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, timeout, assert
 			} else {
 				box.style.background = box.dnoi_internal.originalBackground;
 			}
-			box.style.backgroundColor = 'pink';
 			box.dnoi_internal.loginButton.style.visibility = 'visible';
 			box.dnoi_internal.claimedIdentifier = null;
 			window.status = "Authentication requires setup.";
 		} else if (state == "failed") {
 			box.style.background = box.dnoi_internal.originalBackground;
-			box.style.backgroundColor = 'pink';
+			//box.dnoi_internal.failure_icon.style.visibility = 'visible';
 			box.dnoi_internal.retryButton.style.visibility = 'visible';
 			box.dnoi_internal.claimedIdentifier = null;
 			window.status = authenticationFailedToolTip;
 			box.title = authenticationFailedToolTip;
 		} else if (state == 'required') {
 			box.style.background = box.dnoi_internal.originalBackground;
-			box.style.backgroundColor = 'pink';
+			box.dnoi_internal.failure_icon.style.visibility = 'visible';
 			box.dnoi_internal.claimedIdentifier = null;
 			box.title = identifierRequiredMessage;
 		} else if (state = '' || state == null) {

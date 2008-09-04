@@ -11,6 +11,8 @@ using DotNetOpenId.Extensions;
 [assembly: WebResource(DotNetOpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedScriptResourceName, "text/javascript")]
 [assembly: WebResource(DotNetOpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedDotNetOpenIdLogoResourceName, "image/gif")]
 [assembly: WebResource(DotNetOpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedSpinnerResourceName, "image/gif")]
+[assembly: WebResource(DotNetOpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedLoginSuccessResourceName, "image/png")]
+[assembly: WebResource(DotNetOpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedLoginFailureResourceName, "image/png")]
 
 namespace DotNetOpenId.RelyingParty {
 	/// <summary>
@@ -23,6 +25,8 @@ namespace DotNetOpenId.RelyingParty {
 		internal const string EmbeddedScriptResourceName = DotNetOpenId.Util.DefaultNamespace + ".RelyingParty.OpenIdAjaxTextBox.js";
 		internal const string EmbeddedDotNetOpenIdLogoResourceName = DotNetOpenId.Util.DefaultNamespace + ".RelyingParty.dotnetopenid_16x16.gif";
 		internal const string EmbeddedSpinnerResourceName = DotNetOpenId.Util.DefaultNamespace + ".RelyingParty.spinner.gif";
+		internal const string EmbeddedLoginSuccessResourceName = DotNetOpenId.Util.DefaultNamespace + ".RelyingParty.login_success.png";
+		internal const string EmbeddedLoginFailureResourceName = DotNetOpenId.Util.DefaultNamespace + ".RelyingParty.login_failure.png";
 
 		#region Properties
 
@@ -189,6 +193,18 @@ namespace DotNetOpenId.RelyingParty {
 		public string RetryToolTip {
 			get { return (string)(ViewState[retryToolTipViewStateKey] ?? retryToolTipDefault); }
 			set { ViewState[retryToolTipViewStateKey] = value ?? string.Empty; }
+		}
+
+		const string authenticationSucceededToolTipViewStateKey = "AuthenticationSucceededToolTip";
+		const string authenticationSucceededToolTipDefault = "Authenticated.";
+		/// <summary>
+		/// Gets/sets the tool tip text that appears when authentication succeeds.
+		/// </summary>
+		[Bindable(true), DefaultValue(authenticationSucceededToolTipDefault), Localizable(true), Category("Appearance")]
+		[Description("The tool tip text that appears when authentication succeeds.")]
+		public string AuthenticationSucceededToolTip {
+			get { return (string)(ViewState[authenticationSucceededToolTipViewStateKey] ?? authenticationSucceededToolTipDefault); }
+			set { ViewState[authenticationSucceededToolTipViewStateKey] = value ?? string.Empty; }
 		}
 
 		const string authenticationFailedToolTipViewStateKey = "AuthenticationFailedToolTip";
@@ -496,9 +512,11 @@ namespace DotNetOpenId.RelyingParty {
 			if (focusCalled) {
 				startupScript.AppendLine("box.focus();");
 			}
-			startupScript.AppendFormat("initAjaxOpenId(box, '{0}', '{1}', {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11});{11}",
-				Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedDotNetOpenIdLogoResourceName),
-				Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedSpinnerResourceName),
+			startupScript.AppendFormat("initAjaxOpenId(box, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14});{15}",
+				Util.GetSafeJavascriptValue(Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedDotNetOpenIdLogoResourceName)),
+				Util.GetSafeJavascriptValue(Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedSpinnerResourceName)),
+				Util.GetSafeJavascriptValue(Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedLoginSuccessResourceName)),
+				Util.GetSafeJavascriptValue(Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedLoginFailureResourceName)),
 				Timeout.TotalMilliseconds,
 				string.IsNullOrEmpty(OnClientAssertionReceived) ? "null" : "'" + OnClientAssertionReceived.Replace(@"\", @"\\").Replace("'", @"\'") + "'",
 				Util.GetSafeJavascriptValue(LogOnText),
@@ -508,6 +526,7 @@ namespace DotNetOpenId.RelyingParty {
 				Util.GetSafeJavascriptValue(BusyToolTip),
 				Util.GetSafeJavascriptValue(IdentifierRequiredMessage),
 				Util.GetSafeJavascriptValue(LoginInProgressMessage),
+				Util.GetSafeJavascriptValue(AuthenticationSucceededToolTip),
 				Util.GetSafeJavascriptValue(AuthenticationFailedToolTip),
 				Environment.NewLine);
 
