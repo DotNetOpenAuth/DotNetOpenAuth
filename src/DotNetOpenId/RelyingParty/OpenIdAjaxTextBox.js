@@ -128,13 +128,32 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, success_icon_ur
 		return box.discoveryIFrame != null;
 	};
 
+	box.dnoi_internal.blockForSetupCompletion = function() {
+		// block until the popup window closes
+		while (box.dnoi_internal.popup && !box.dnoi_internal.popup.closed);
+	};
+
 	box.dnoi_internal.onSubmit = function() {
 		if (box.lastAuthenticationResult != 'authenticated') {
 			if (box.dnoi_internal.isBusy()) {
 				alert(loginInProgressMessage);
 			} else {
 				if (box.value.length > 0) {
-					alert(identifierRequiredMessage);
+					// submitPending will be true if we've already tried deferring submit for a login,
+					// in which case we just want to display a box to the user.
+					if (box.dnoi_internal.submitPending) {
+						alert(identifierRequiredMessage);
+					} else {
+						// The user hasn't clicked "Login" yet.  We'll click login for him,
+						// after leaving a note for ourselves to automatically click submit
+						// when login is complete.
+						box.dnoi_internal.submitPending = box.dnoi_internal.submitButtonJustClicked;
+						if (box.dnoi_internal.submitPending == null) {
+							box.dnoi_internal.submitPending = true;
+						}
+						box.dnoi_internal.loginButton.onclick();
+						return false; // abort submit for now
+					}
 				} else {
 					box.dnoi_internal.setVisualCue('required');
 				}
@@ -142,7 +161,32 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, success_icon_ur
 			return false;
 		}
 		return true;
-	}
+	};
+
+	box.dnoi_internal.setLastSubmitButtonClicked = function(evt) {
+		var button;
+		if (evt.target) {
+			button = evt.target;
+		} else {
+			button = evt.srcElement;
+		}
+
+		box.dnoi_internal.submitButtonJustClicked = button;
+	};
+
+	// box.hookAllSubmitElements = function(searchNode) {
+		var inputs = document.getElementsByTagName('input');
+		for (var i = 0; i < inputs.length; i++) {
+			var el = inputs[i];
+			if (el.type == 'submit') {
+				if (el.attachEvent) {
+					el.attachEvent("onclick", box.dnoi_internal.setLastSubmitButtonClicked);
+				} else {
+					el.addEventListener("click", box.dnoi_internal.setLastSubmitButtonClicked, true);
+				}
+			}
+		}
+	//};
 
 	box.dnoi_internal.getAuthenticationUrl = function(immediateMode) {
 		var frameLocation = new Uri(document.location.href);
@@ -212,7 +256,7 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, success_icon_ur
 		return iframe;
 	};
 
-	this.parentForm = findParentForm(box);
+	box.parentForm = findParentForm(box);
 
 	box.dnoi_internal.openidDiscoveryFailure = function(msg) {
 		box.dnoi_internal.closeDiscoveryIFrame();
@@ -261,11 +305,22 @@ function initAjaxOpenId(box, dotnetopenid_logo_url, spinner_url, success_icon_ur
 			if (box.dnoi_internal.onauthenticated) {
 				box.dnoi_internal.onauthenticated(box);
 			}
+			if (box.dnoi_internal.submitPending) {
+				// We submit the form BEFORE resetting the submitPending so
+				// the submit handler knows we've already tried this route.
+				if (box.dnoi_internal.submitPending == true) {
+					box.parentForm.submit();
+				} else {
+					box.dnoi_internal.submitPending.click();
+				}
+			}
 		} else {
 			// visual cue that auth failed
 			box.dnoi_internal.setVisualCue('setup');
 			box.lastAuthenticationResult = 'setup';
 		}
+
+		box.dnoi_internal.submitPending = null;
 	};
 
 	function isAuthSuccessful(resultUri) {
