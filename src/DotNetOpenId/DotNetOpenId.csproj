@@ -222,6 +222,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="RelyingParty\login_failure.png" />
+    <EmbeddedResource Include="RelyingParty\login_success %28lock%29.png" />
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="RelyingParty\login_success.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
