@@ -37,48 +37,13 @@ namespace DotNetOAuth.Test.Messaging {
 		}
 
 		[TestMethod]
-		public void ReceiveFromQueryString() {
-			Uri requestUri = new Uri("http://localhost/path?age=15&Name=Andrew&Location=http%3A%2F%2Fhostb%2FpathB");
-			WebHeaderCollection headers = new WebHeaderCollection();
-			HttpRequestInfo request = new HttpRequestInfo {
-				HttpMethod = "GET",
-				Url = requestUri,
-				Headers = headers,
-				InputStream = new MemoryStream(),
-			};
-			IProtocolMessage requestMessage = this.channel.ReadFromRequest(request);
-			Assert.IsNotNull(requestMessage);
-			Assert.IsInstanceOfType(requestMessage, typeof(TestMessage));
-			TestMessage testMessage = (TestMessage)requestMessage;
-			Assert.AreEqual(15, testMessage.Age);
-			Assert.AreEqual("Andrew", testMessage.Name);
-			Assert.AreEqual("http://hostb/pathB", testMessage.Location.AbsoluteUri);
+		public void ReadFromRequestQueryString() {
+			ParameterizedReceiveTest("GET");
 		}
 
 		[TestMethod]
-		public void ReceiveFromForm() {
-			Uri requestUri = new Uri("http://localhost/path");
-			WebHeaderCollection headers = new WebHeaderCollection();
-			headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
-			MemoryStream ms = new MemoryStream();
-			StreamWriter sw = new StreamWriter(ms);
-			sw.Write("age=15&Name=Andrew&Location=http%3A%2F%2Fhostb%2FpathB");
-			sw.Flush();
-			ms.Position = 0;
-			HttpRequestInfo request = new HttpRequestInfo {
-				HttpMethod = "POST",
-				Url = requestUri,
-				Headers = headers,
-				InputStream = ms,
-			};
-
-			IProtocolMessage requestMessage = this.channel.ReadFromRequest(request);
-			Assert.IsNotNull(requestMessage);
-			Assert.IsInstanceOfType(requestMessage, typeof(TestMessage));
-			TestMessage testMessage = (TestMessage)requestMessage;
-			Assert.AreEqual(15, testMessage.Age);
-			Assert.AreEqual("Andrew", testMessage.Name);
-			Assert.AreEqual("http://hostb/pathB", testMessage.Location.AbsoluteUri);
+		public void ReadFromRequestForm() {
+			ParameterizedReceiveTest("POST");
 		}
 
 		private static HttpRequestInfo CreateHttpRequest(string method, IDictionary<string, string> fields) {
@@ -94,6 +59,8 @@ namespace DotNetOAuth.Test.Messaging {
 				ms.Position = 0;
 			} else if (method == "GET") {
 				requestUri.Query = query;
+			} else {
+				throw new ArgumentOutOfRangeException("method", method, "Expected POST or GET");
 			}
 			HttpRequestInfo request = new HttpRequestInfo {
 				HttpMethod = method,
@@ -103,6 +70,21 @@ namespace DotNetOAuth.Test.Messaging {
 			};
 
 			return request;
+		}
+
+		private void ParameterizedReceiveTest(string method) {
+			var fields = new Dictionary<string, string> {
+				{ "age", "15" },
+				{ "Name", "Andrew" },
+				{ "Location", "http://hostb/pathB" },
+			};
+			IProtocolMessage requestMessage = this.channel.ReadFromRequest(CreateHttpRequest(method, fields));
+			Assert.IsNotNull(requestMessage);
+			Assert.IsInstanceOfType(requestMessage, typeof(TestMessage));
+			TestMessage testMessage = (TestMessage)requestMessage;
+			Assert.AreEqual(15, testMessage.Age);
+			Assert.AreEqual("Andrew", testMessage.Name);
+			Assert.AreEqual("http://hostb/pathB", testMessage.Location.AbsoluteUri);
 		}
 	}
 }

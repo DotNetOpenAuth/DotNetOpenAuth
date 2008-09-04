@@ -22,7 +22,7 @@ namespace DotNetOAuth {
 		/// <summary>
 		/// Gets the default <see cref="Protocol"/> instance.
 		/// </summary>
-		internal static readonly Protocol Default = V10;
+		internal static Protocol Default { get { return V10; } }
 
 		/// <summary>
 		/// The namespace to use for V1.0 of the protocol.
