@@ -118,6 +118,7 @@
 			<DropBinSourceFiles Include="$(OutputPath)\DotNetOpenId.???" />
 			<DropSamplesSourceFiles Include="$(ProjectRoot)\Samples\**" Exclude="
 															$(ProjectRoot)\**\obj\**;
+															$(ProjectRoot)\**\log4net.xml;
 															$(ProjectRoot)\**\*.user;
 															$(ProjectRoot)\**\*.sln.cache;
 															$(ProjectRoot)\**\*.suo;
