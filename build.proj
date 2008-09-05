@@ -116,6 +116,7 @@
 			<DropBinSourceFiles Include="$(OutputPath)\DotNetOpenId.???" />
 			<DropSamplesSourceFiles Include="$(ProjectRoot)\Samples\**" Exclude="
 															$(ProjectRoot)\**\obj\**;
+															$(ProjectRoot)\**\log4net.xml;
 															$(ProjectRoot)\**\*.user;
 															$(ProjectRoot)\**\*.sln.cache;
 															$(ProjectRoot)\**\*.suo;
@@ -154,9 +155,16 @@
 		<!-- fix up the samples so that they will compile right out of the drop -->
 		<ItemGroup>
 			<SampleProjectTargets Include="$(DropSamplesDirectory)\**\*.csproj" />
+			<SampleMvcProjectTargets Include="$(DropSamplesDirectory)\**\*Mvc*.csproj" />
 		</ItemGroup>
 		<ChangeProjectReferenceToAssemblyReference Projects="@(SampleProjectTargets)"
 		  ProjectReference="..\..\src\DotNetOpenId\DotNetOpenId.csproj" Reference="..\..\Bin\DotNetOpenId.dll" />
+		<ChangeAssemblyReference Projects="@(SampleMvcProjectTargets)"
+		  OldReference="..\..\lib\System.Web.Abstractions.dll" NewReference="Bin\System.Web.Abstractions.dll" />
+		<ChangeAssemblyReference Projects="@(SampleMvcProjectTargets)"
+		  OldReference="..\..\lib\System.Web.Mvc.dll" NewReference="Bin\System.Web.Mvc.dll" />
+		<ChangeAssemblyReference Projects="@(SampleMvcProjectTargets)"
+		  OldReference="..\..\lib\System.Web.Routing.dll" NewReference="Bin\System.Web.Routing.dll" />
 		<Zip Files="@(AllDropTargets)" ZipFileName="$(DropZip)" WorkingDirectory="$(ProjectRoot)\drops" />
 	</Target>
 
