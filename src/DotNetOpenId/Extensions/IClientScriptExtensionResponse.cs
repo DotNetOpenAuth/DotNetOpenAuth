@@ -22,6 +22,6 @@ namespace DotNetOpenId.Extensions {
 		/// verified.  Therefore all information in these fields should be assumed unreliable
 		/// and potentially falsified.
 		/// </remarks>
-		string InitializeJavascriptData(IDictionary<string, string> fields, IAuthenticationResponse response, string typeUri);
+		string InitializeJavaScriptData(IDictionary<string, string> fields, IAuthenticationResponse response, string typeUri);
 	}
 }

@@ -243,16 +243,16 @@ namespace DotNetOpenId.RelyingParty {
 			set { ViewState[identifierRequiredMessageViewStateKey] = value ?? string.Empty; }
 		}
 
-		const string loginInProgressMessageViewStateKey = "BusyToolTip";
-		const string loginInProgressMessageDefault = "Please wait for login to complete.";
+		const string logOnInProgressMessageViewStateKey = "BusyToolTip";
+		const string logOnInProgressMessageDefault = "Please wait for login to complete.";
 		/// <summary>
 		/// Gets/sets the message that is displayed if a postback is attempted while login is in process.
 		/// </summary>
-		[Bindable(true), DefaultValue(loginInProgressMessageDefault), Localizable(true), Category("Appearance")]
+		[Bindable(true), DefaultValue(logOnInProgressMessageDefault), Localizable(true), Category("Appearance")]
 		[Description("The message that is displayed if a postback is attempted while login is in process.")]
-		public string LoginInProgressMessage {
-			get { return (string)(ViewState[loginInProgressMessageViewStateKey] ?? loginInProgressMessageDefault); }
-			set { ViewState[loginInProgressMessageViewStateKey] = value ?? string.Empty; }
+		public string LogOnInProgressMessage {
+			get { return (string)(ViewState[logOnInProgressMessageViewStateKey] ?? logOnInProgressMessageDefault); }
+			set { ViewState[logOnInProgressMessageViewStateKey] = value ?? string.Empty; }
 		}
 
 		#endregion
@@ -450,6 +450,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// <remarks>
 		/// This method should be called from the <see cref="UnconfirmedPositiveAssertion"/> event handler.
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
 		public void RegisterClientScriptExtension<T>(string propertyName) where T : IClientScriptExtensionResponse {
 			if (String.IsNullOrEmpty(propertyName)) throw new ArgumentNullException("propertyName");
 			if (clientScriptExtensions.ContainsValue(propertyName)) {
@@ -512,7 +513,8 @@ namespace DotNetOpenId.RelyingParty {
 			if (focusCalled) {
 				startupScript.AppendLine("box.focus();");
 			}
-			startupScript.AppendFormat("initAjaxOpenId(box, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15});{16}",
+			startupScript.AppendFormat(CultureInfo.InvariantCulture,
+				"initAjaxOpenId(box, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15});{16}",
 				Util.GetSafeJavascriptValue(Page.ClientScript.GetWebResourceUrl(GetType(), OpenIdTextBox.EmbeddedLogoResourceName)),
 				Util.GetSafeJavascriptValue(Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedDotNetOpenIdLogoResourceName)),
 				Util.GetSafeJavascriptValue(Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedSpinnerResourceName)),
@@ -526,7 +528,7 @@ namespace DotNetOpenId.RelyingParty {
 				Util.GetSafeJavascriptValue(RetryToolTip),
 				Util.GetSafeJavascriptValue(BusyToolTip),
 				Util.GetSafeJavascriptValue(IdentifierRequiredMessage),
-				Util.GetSafeJavascriptValue(LoginInProgressMessage),
+				Util.GetSafeJavascriptValue(LogOnInProgressMessage),
 				Util.GetSafeJavascriptValue(AuthenticationSucceededToolTip),
 				Util.GetSafeJavascriptValue(AuthenticationFailedToolTip),
 				Environment.NewLine);

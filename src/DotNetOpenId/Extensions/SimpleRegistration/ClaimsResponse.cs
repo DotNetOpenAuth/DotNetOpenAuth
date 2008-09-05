@@ -202,12 +202,12 @@ namespace DotNetOpenId.Extensions.SimpleRegistration
 
 		#region IClientScriptExtension Members
 
-		string createAddFieldJS(string propertyName, string value) {
+		static string createAddFieldJS(string propertyName, string value) {
 			return string.Format(CultureInfo.InvariantCulture, "{0}: {1},",
 				propertyName, Util.GetSafeJavascriptValue(value));
 		}
 
-		string IClientScriptExtensionResponse.InitializeJavascriptData(IDictionary<string, string> sreg, IAuthenticationResponse response, string typeUri) {
+		string IClientScriptExtensionResponse.InitializeJavaScriptData(IDictionary<string, string> sreg, IAuthenticationResponse response, string typeUri) {
 			StringBuilder builder = new StringBuilder();
 			builder.Append("{ ");
 			

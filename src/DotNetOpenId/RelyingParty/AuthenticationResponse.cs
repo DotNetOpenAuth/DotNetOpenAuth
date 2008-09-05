@@ -126,7 +126,7 @@ namespace DotNetOpenId.RelyingParty {
 			var fields = IncomingExtensions.GetExtensionArguments(extension.TypeUri);
 			if (fields != null) {
 				// The extension was found using the preferred TypeUri.
-				return extension.InitializeJavascriptData(fields, this, extension.TypeUri);
+				return extension.InitializeJavaScriptData(fields, this, extension.TypeUri);
 			} else {
 				// The extension may still be found using secondary TypeUris.
 				if (extension.AdditionalSupportedTypeUris != null) {
@@ -134,7 +134,7 @@ namespace DotNetOpenId.RelyingParty {
 						fields = IncomingExtensions.GetExtensionArguments(typeUri);
 						if (fields != null) {
 							// We found one of the older ones.
-							return extension.InitializeJavascriptData(fields, this, typeUri);
+							return extension.InitializeJavaScriptData(fields, this, typeUri);
 						}
 					}
 				}

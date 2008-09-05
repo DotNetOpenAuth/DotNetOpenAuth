@@ -369,7 +369,7 @@ namespace Mono.Math
 				case Sign.Negative:
 					throw new ArithmeticException(WouldReturnNegVal);
 				default:
-					throw new Exception();
+					throw new InvalidOperationException();
 			}
 		}
 
@@ -640,7 +640,7 @@ namespace Mono.Math
 		public bool TestBit(int bitNum)
 		{
 			if (bitNum < 0)
-				throw new IndexOutOfRangeException("bitNum out of range");
+				throw new ArgumentOutOfRangeException("bitNum");
 
 			uint bytePos = (uint)bitNum >> 5;             // divide by 32
 			byte bitPos = (byte)(bitNum & 0x1F);    // get the lowest 5 bits
@@ -1078,7 +1078,7 @@ namespace Mono.Math
 						diff = b - a;
 						break;
 					default:
-						throw new Exception();
+						throw new InvalidOperationException();
 				}
 
 				if (diff >= mod)
@@ -1697,7 +1697,7 @@ namespace Mono.Math
 		/// <summary>
 		/// Low level functions for the BigInteger
 		/// </summary>
-		private sealed class Kernel
+		private static class Kernel
 		{
 
 			#region Addition/Subtraction
@@ -2347,6 +2347,7 @@ namespace Mono.Math
 				}
 			}
 
+#if UNUSED
 			public static void SquarePositive(BigInteger bi, ref uint[] wkSpace)
 			{
 				uint[] t = wkSpace;
@@ -2432,7 +2433,7 @@ namespace Mono.Math
 					bi.length--;
 
 			}
-
+#endif
 			/* 
 			 * Never called in BigInteger (and part of a private class)
 			 * 			public static bool Double (uint [] u, int l)
