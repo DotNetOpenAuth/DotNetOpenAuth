@@ -255,6 +255,19 @@ namespace DotNetOpenId.RelyingParty
 			set { WrappedTextBox.Columns = value; }
 		}
 
+		const int maxLengthDefault = 40;
+		/// <summary>
+		/// Gets or sets the maximum number of characters the browser should allow
+		/// </summary>
+		[Bindable(true)]
+		[Category(appearanceCategory)]
+		[DefaultValue(maxLengthDefault)]
+		[Description("The maximum number of characters the browser should allow.")]
+		public int MaxLength {
+			get { return WrappedTextBox.MaxLength; }
+			set { WrappedTextBox.MaxLength = value; }
+		}
+
 		/// <summary>
 		/// Default value for <see cref="TabIndex"/> property.
 		/// </summary>
