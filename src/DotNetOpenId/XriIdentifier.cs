@@ -8,6 +8,9 @@ using System.IO;
 using System.Xml;
 
 namespace DotNetOpenId {
+	/// <summary>
+	/// An XRI style of OpenID Identifier.
+	/// </summary>
 	[Serializable]
 	public sealed class XriIdentifier : Identifier {
 		internal static readonly char[] GlobalContextSymbols = { '=', '@', '+', '$', '!' };
@@ -111,15 +114,25 @@ namespace DotNetOpenId {
 			return true;
 		}
 
+		/// <summary>
+		/// Tests equality between this XRI and another XRI.
+		/// </summary>
 		public override bool Equals(object obj) {
 			XriIdentifier other = obj as XriIdentifier;
 			if (other == null) return false;
 			return this.CanonicalXri == other.CanonicalXri;
 		}
+
+		/// <summary>
+		/// Returns the hash code of this XRI.
+		/// </summary>
 		public override int GetHashCode() {
 			return CanonicalXri.GetHashCode();
 		}
 
+		/// <summary>
+		/// Returns the canonical string form of the XRI.
+		/// </summary>
 		public override string ToString() {
 			return CanonicalXri;
 		}

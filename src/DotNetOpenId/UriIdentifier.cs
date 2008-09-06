@@ -7,13 +7,22 @@ using DotNetOpenId.RelyingParty;
 using DotNetOpenId.Yadis;
 
 namespace DotNetOpenId {
+	/// <summary>
+	/// A URI style of OpenID Identifier.
+	/// </summary>
 	[Serializable]
 	public sealed class UriIdentifier : Identifier {
 		static readonly string[] allowedSchemes = { "http", "https" };
+		/// <summary>
+		/// Converts a <see cref="UriIdentifier"/> instance to a <see cref="Uri"/> instance.
+		/// </summary>
 		public static implicit operator Uri(UriIdentifier identifier) {
 			if (identifier == null) return null;
 			return identifier.Uri;
 		}
+		/// <summary>
+		/// Converts a <see cref="Uri"/> instance to a <see cref="UriIdentifier"/> instance.
+		/// </summary>
 		public static implicit operator UriIdentifier(Uri identifier) {
 			if (identifier == null) return null;
 			return new UriIdentifier(identifier);
@@ -239,14 +248,25 @@ namespace DotNetOpenId {
 			return false;
 		}
 
+		/// <summary>
+		/// Tests equality between this URI and another URI.
+		/// </summary>
 		public override bool Equals(object obj) {
 			UriIdentifier other = obj as UriIdentifier;
 			if (other == null) return false;
 			return this.Uri == other.Uri;
 		}
+
+		/// <summary>
+		/// Returns the hash code of this XRI.
+		/// </summary>
 		public override int GetHashCode() {
 			return Uri.GetHashCode();
 		}
+
+		/// <summary>
+		/// Returns the string form of the URI.
+		/// </summary>
 		public override string ToString() {
 			return Uri.AbsoluteUri;
 		}
