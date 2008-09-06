@@ -12,6 +12,14 @@ namespace DotNetOpenId.RelyingParty {
 
 		#region IAuthenticationResponse Members
 
+		public IDictionary<string, string> GetCallbackArguments() {
+			return new Dictionary<string, string>();
+		}
+
+		public string GetCallbackArgument(string key) {
+			return null;
+		}
+
 		public T GetExtension<T>() where T : DotNetOpenId.Extensions.IExtensionResponse, new() {
 			return default(T);
 		}

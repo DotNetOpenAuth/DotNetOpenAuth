@@ -47,6 +47,8 @@ namespace DotNetOpenId.RelyingParty {
 				Logger.InfoFormat("Negative authentication assertion received: {0}", status);
 			}
 
+			// TODO: verify signature on callback args
+			CallbackArguments = cleanQueryForCallbackArguments(query);
 			Status = status;
 			Provider = provider;
 			signedArguments = new Dictionary<string, string>();
@@ -61,6 +63,26 @@ namespace DotNetOpenId.RelyingParty {
 			}
 			// Only read extensions from signed argument list.
 			IncomingExtensions = ExtensionArgumentsManager.CreateIncomingExtensions(signedArguments);
+		}
+
+		internal IDictionary<string, string> CallbackArguments;
+		public IDictionary<string, string> GetCallbackArguments() {
+			// Return a copy so that the caller cannot change the contents.
+			return new Dictionary<string, string>(CallbackArguments);
+		}
+		/// <summary>
+		/// Gets a callback argument's value that was previously added using 
+		/// <see cref="IAuthenticationRequest.AddCallbackArguments(string, string)"/>.
+		/// </summary>
+		/// <returns>The value of the argument, or null if the named parameter could not be found.</returns>
+		public string GetCallbackArgument(string key) {
+			if (String.IsNullOrEmpty(key)) throw new ArgumentNullException("key");
+
+			string value;
+			if (CallbackArguments.TryGetValue(key, out value)) {
+				return value;
+			}
+			return null;
 		}
 
 		/// <summary>
@@ -436,6 +458,18 @@ namespace DotNetOpenId.RelyingParty {
 				relyingParty.Store.RemoveAssociation(provider.ProviderEndpoint, request.Response.InvalidatedAssociationHandle);
 			if (!request.Response.IsAuthenticationValid)
 				throw new OpenIdException(Strings.InvalidSignature);
+		}
+
+		static IDictionary<string, string> cleanQueryForCallbackArguments(IDictionary<string, string> query) {
+			var dictionary = new Dictionary<string, string>();
+			foreach (var pair in query) {
+				// Disallow lookup of any openid parameters.
+				if (pair.Key.StartsWith("openid.", StringComparison.OrdinalIgnoreCase)) {
+					continue;
+				}
+				dictionary.Add(pair.Key, pair.Value);
+			}
+			return dictionary;
 		}
 
 		#region ISetupRequiredAuthenticationResponse Members

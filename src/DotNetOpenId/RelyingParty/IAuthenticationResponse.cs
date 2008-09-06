@@ -18,6 +18,31 @@ namespace DotNetOpenId.RelyingParty {
 	/// </remarks>
 	public interface IAuthenticationResponse {
 		/// <summary>
+		/// Gets a callback argument's value that was previously added using 
+		/// <see cref="IAuthenticationRequest.AddCallbackArguments(string, string)"/>.
+		/// </summary>
+		/// <returns>The value of the argument, or null if the named parameter could not be found.</returns>
+		/// <remarks>
+		/// <para>This may return any argument on the querystring that came with the authentication response,
+		/// which may include parameters not explicitly added using 
+		/// <see cref="IAuthenticationRequest.AddCallbackArguments(string, string)"/>.</para>
+		/// <para>Note that these values are NOT protected against tampering in transit.</para>
+		/// </remarks>
+		string GetCallbackArgument(string key);
+		/// <summary>
+		/// Gets all the callback arguments that were previously added using 
+		/// <see cref="IAuthenticationRequest.AddCallbackArguments(string, string)"/> or as a natural part
+		/// of the return_to URL.
+		/// </summary>
+		/// <returns>A name-value dictionary.  Never null.</returns>
+		/// <remarks>
+		/// <para>This MAY return any argument on the querystring that came with the authentication response,
+		/// which may include parameters not explicitly added using 
+		/// <see cref="IAuthenticationRequest.AddCallbackArguments(string, string)"/>.</para>
+		/// <para>Note that these values are NOT protected against tampering in transit.</para>
+		/// </remarks>
+		IDictionary<string, string> GetCallbackArguments();
+		/// <summary>
 		/// Tries to get an OpenID extension that may be present in the response.
 		/// </summary>
 		/// <returns>The extension, if it is found.  Null otherwise.</returns>

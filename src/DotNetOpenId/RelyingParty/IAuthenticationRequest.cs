@@ -11,14 +11,24 @@ namespace DotNetOpenId.RelyingParty {
 	/// </summary>
 	public interface IAuthenticationRequest {
 		/// <summary>
-		/// Adds given key/value pairs to the query that the provider will use in
-		/// the request to return to the consumer web site.
+		/// Makes a dictionary of key/value pairs available when the authentication is completed.
 		/// </summary>
+		/// <remarks>
+		/// <para>The values stored here can be retrieved using 
+		/// <see cref="IAuthenticationResponse.GetCallbackArguments"/>.</para>
+		/// <para>Note that these values are NOT protected against tampering in transit.  No 
+		/// security-sensitive data should be stored using this method.</para>
+		/// </remarks>
 		void AddCallbackArguments(IDictionary<string, string> arguments);
 		/// <summary>
-		/// Adds a given key/value pair to the query that the provider will use in
-		/// the request to return to the consumer web site.
+		/// Makes a key/value pair available when the authentication is completed.
 		/// </summary>
+		/// <remarks>
+		/// <para>The value stored here can be retrieved using 
+		/// <see cref="IAuthenticationResponse.GetCallbackArgument"/>.</para>
+		/// <para>Note that these values are NOT protected against tampering in transit.  No 
+		/// security-sensitive data should be stored using this method.</para>
+		/// </remarks>
 		void AddCallbackArguments(string key, string value);
 		/// <summary>
 		/// Adds an OpenID extension to the request directed at the OpenID provider.
