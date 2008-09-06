@@ -9,12 +9,12 @@ using System.Xml;
 
 namespace DotNetOpenId {
 	[Serializable]
-	class XriIdentifier : Identifier {
+	public sealed class XriIdentifier : Identifier {
 		internal static readonly char[] GlobalContextSymbols = { '=', '@', '+', '$', '!' };
 		const string xriScheme = "xri://";
 
-		public XriIdentifier(string xri) : this(xri, false) { }
-		public XriIdentifier(string xri, bool requireSsl)
+		internal XriIdentifier(string xri) : this(xri, false) { }
+		internal XriIdentifier(string xri, bool requireSsl)
 			: base(requireSsl) {
 			if (!IsValidXri(xri))
 				throw new FormatException(string.Format(CultureInfo.CurrentCulture,
@@ -32,11 +32,11 @@ namespace DotNetOpenId {
 		/// <summary>
 		/// The original XRI supplied to the constructor.
 		/// </summary>
-		public string OriginalXri { get; private set; }
+		internal string OriginalXri { get; private set; }
 		/// <summary>
 		/// The canonical form of the XRI string.
 		/// </summary>
-		public string CanonicalXri { get; private set; }
+		internal string CanonicalXri { get; private set; }
 
 		/// <summary>
 		/// Tests whether a given string represents a valid XRI format.
@@ -74,7 +74,7 @@ namespace DotNetOpenId {
 		/// <summary>
 		/// Resolves the XRI to a URL from which an XRDS document may be downloaded.
 		/// </summary>
-		protected virtual Uri XrdsUrl {
+		private Uri XrdsUrl {
 			get {
 				return new Uri(string.Format(CultureInfo.InvariantCulture,
 					xriResolverProxy, this));

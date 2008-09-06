@@ -8,7 +8,7 @@ using DotNetOpenId.Yadis;
 
 namespace DotNetOpenId {
 	[Serializable]
-	class UriIdentifier : Identifier {
+	public sealed class UriIdentifier : Identifier {
 		static readonly string[] allowedSchemes = { "http", "https" };
 		public static implicit operator Uri(UriIdentifier identifier) {
 			if (identifier == null) return null;
@@ -19,8 +19,8 @@ namespace DotNetOpenId {
 			return new UriIdentifier(identifier);
 		}
 
-		public UriIdentifier(string uri) : this(uri, false) { }
-		public UriIdentifier(string uri, bool requireSslDiscovery)
+		internal UriIdentifier(string uri) : this(uri, false) { }
+		internal UriIdentifier(string uri, bool requireSslDiscovery)
 			: base(requireSslDiscovery) {
 			if (string.IsNullOrEmpty(uri)) throw new ArgumentNullException("uri");
 			Uri canonicalUri;
@@ -33,8 +33,8 @@ namespace DotNetOpenId {
 			Uri = canonicalUri;
 			SchemeImplicitlyPrepended = schemePrepended;
 		}
-		public UriIdentifier(Uri uri) : this(uri, false) { }
-		public UriIdentifier(Uri uri, bool requireSslDiscovery)
+		internal UriIdentifier(Uri uri) : this(uri, false) { }
+		internal UriIdentifier(Uri uri, bool requireSslDiscovery)
 			: base(requireSslDiscovery) {
 			if (uri == null) throw new ArgumentNullException("uri");
 			if (!TryCanonicalize(new UriBuilder(uri), out uri))
@@ -46,7 +46,7 @@ namespace DotNetOpenId {
 			SchemeImplicitlyPrepended = false;
 		}
 
-		public Uri Uri { get; private set; }
+		internal Uri Uri { get; private set; }
 		/// <summary>
 		/// Gets whether the scheme was missing when this Identifier was
 		/// created and added automatically as part of the normalization
@@ -134,7 +134,7 @@ namespace DotNetOpenId {
 		/// OpenID 2.0 tags are always used if they are present, otherwise
 		/// OpenID 1.x tags are used if present.
 		/// </remarks>
-		protected virtual ServiceEndpoint DiscoverFromHtml(Uri claimedIdentifier, string html) {
+		private ServiceEndpoint DiscoverFromHtml(Uri claimedIdentifier, string html) {
 			Uri providerEndpoint = null;
 			Protocol discoveredProtocol = null;
 			Identifier providerLocalIdentifier = null;
