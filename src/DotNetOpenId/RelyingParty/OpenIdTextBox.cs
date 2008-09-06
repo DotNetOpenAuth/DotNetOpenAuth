@@ -730,9 +730,8 @@ namespace DotNetOpenId.RelyingParty
 					if (string.IsNullOrEmpty(ReturnToUrl)) {
 						Request = consumer.CreateRequest(userSuppliedIdentifier, typedRealm);
 					} else {
-						UriBuilder returnTo = new UriBuilder(new Uri(Util.GetRequestUrlFromContext(), ReturnToUrl));
-						OpenIdRelyingParty.NormalizeReturnToCapitalization(typedRealm, returnTo);
-						Request = consumer.CreateRequest(userSuppliedIdentifier, typedRealm, returnTo.Uri);
+						Uri returnTo = new Uri(Util.GetRequestUrlFromContext(), ReturnToUrl);
+						Request = consumer.CreateRequest(userSuppliedIdentifier, typedRealm, returnTo);
 					}
 					Request.Mode = ImmediateMode ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;
 					if (EnableRequestProfile) addProfileArgs(Request);

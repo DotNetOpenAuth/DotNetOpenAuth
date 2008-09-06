@@ -627,9 +627,8 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 			if (string.IsNullOrEmpty(ReturnToUrl)) {
 				request = rp.CreateRequest(userSuppliedIdentifier, typedRealm);
 			} else {
-				UriBuilder returnTo = new UriBuilder(new Uri(Util.GetRequestUrlFromContext(), ReturnToUrl));
-				OpenIdRelyingParty.NormalizeReturnToCapitalization(typedRealm, returnTo);
-				request = rp.CreateRequest(userSuppliedIdentifier, typedRealm, returnTo.Uri);
+				Uri returnTo = new Uri(Util.GetRequestUrlFromContext(), ReturnToUrl);
+				request = rp.CreateRequest(userSuppliedIdentifier, typedRealm, returnTo);
 			}
 
 			return request;
