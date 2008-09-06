@@ -22,7 +22,7 @@ td
 <asp:Content runat="server" ContentPlaceHolderID="Main">
 <script type="text/javascript">
 	function onauthenticated(sender) {
-		var emailBox = document.getElementById('ctl00_Main_emailAddressBox');
+		var emailBox = document.getElementById('<%= emailAddressBox.ClientID %>');
 		emailBox.disabled = false;
 		emailBox.title = null; // remove tooltip describing why the box was disabled.
 		// the sreg response may not always be included.

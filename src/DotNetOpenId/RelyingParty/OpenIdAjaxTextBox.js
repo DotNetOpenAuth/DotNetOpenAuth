@@ -148,11 +148,6 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		return box.discoveryIFrame != null;
 	};
 
-	box.dnoi_internal.blockForSetupCompletion = function() {
-		// block until the popup window closes
-		while (box.dnoi_internal.popup && !box.dnoi_internal.popup.closed);
-	};
-
 	box.dnoi_internal.onSubmit = function() {
 		if (box.lastAuthenticationResult != 'authenticated') {
 			if (box.dnoi_internal.isBusy()) {
