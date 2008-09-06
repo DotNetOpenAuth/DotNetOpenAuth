@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -256,6 +258,65 @@ namespace DotNetOpenId.RelyingParty {
 			set { ViewState[logOnInProgressMessageViewStateKey] = value ?? string.Empty; }
 		}
 
+		const string realmUrlViewStateKey = "RealmUrl";
+		const string realmUrlDefault = "~/";
+		/// <summary>
+		/// The OpenID <see cref="Realm"/> of the relying party web site.
+		/// </summary>
+		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenId.Realm"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings"), SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings")]
+		[Bindable(true)]
+		[Category("Behavior")]
+		[DefaultValue(realmUrlDefault)]
+		[Description("The OpenID Realm of the relying party web site.")]
+		public string RealmUrl {
+			get { return (string)(ViewState[realmUrlViewStateKey] ?? realmUrlDefault); }
+			set {
+				if (Page != null && !DesignMode) {
+					// Validate new value by trying to construct a Realm object based on it.
+					new Realm(Util.GetResolvedRealm(Page, value)); // throws an exception on failure.
+				} else {
+					// We can't fully test it, but it should start with either ~/ or a protocol.
+					if (Regex.IsMatch(value, @"^https?://")) {
+						new Uri(value.Replace("*.", "")); // make sure it's fully-qualified, but ignore wildcards
+					} else if (value.StartsWith("~/", StringComparison.Ordinal)) {
+						// this is valid too
+					} else
+						throw new UriFormatException();
+				}
+				ViewState[realmUrlViewStateKey] = value;
+			}
+		}
+
+		const string returnToUrlViewStateKey = "ReturnToUrl";
+		const string returnToUrlDefault = "";
+		/// <summary>
+		/// The OpenID ReturnTo of the relying party web site.
+		/// </summary>
+		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenId.ReturnTo"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings"), SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings")]
+		[Bindable(true)]
+		[Category("Behavior")]
+		[DefaultValue(returnToUrlDefault)]
+		[Description("The OpenID ReturnTo of the relying party web site.")]
+		public string ReturnToUrl {
+			get { return (string)(ViewState[returnToUrlViewStateKey] ?? returnToUrlDefault); }
+			set {
+				if (Page != null && !DesignMode) {
+					// Validate new value by trying to construct a Uri based on it.
+					new Uri(Util.GetRequestUrlFromContext(), Page.ResolveUrl(value)); // throws an exception on failure.
+				} else {
+					// We can't fully test it, but it should start with either ~/ or a protocol.
+					if (Regex.IsMatch(value, @"^https?://")) {
+						new Uri(value); // make sure it's fully-qualified, but ignore wildcards
+					} else if (value.StartsWith("~/", StringComparison.Ordinal)) {
+						// this is valid too
+					} else {
+						throw new UriFormatException();
+					}
+				}
+				ViewState[returnToUrlViewStateKey] = value;
+			}
+		}
+
 		#endregion
 
 		#region Properties to hide
@@ -491,10 +552,9 @@ namespace DotNetOpenId.RelyingParty {
 					}
 				}
 			} else {
-				NameValueCollection query = Util.GetQueryFromContextNVC();
+				NameValueCollection query = Util.GetQueryOrFormFromContextNVC();
 				string userSuppliedIdentifier = query["dotnetopenid.userSuppliedIdentifier"];
 				if (!string.IsNullOrEmpty(userSuppliedIdentifier)) {
-					//Page.Response.Redirect("http://www.microsoft.com");
 					Logger.Info("AJAX (iframe) request detected.");
 					if (query["dotnetopenid.phase"] == "2") {
 						OnUnconfirmedPositiveAssertion();
@@ -548,14 +608,44 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 ", Name));
 		}
 
-		private void performDiscovery(string userSuppliedIdentifier) {
-			if (String.IsNullOrEmpty(userSuppliedIdentifier)) throw new ArgumentNullException("userSuppliedIdentifier");
-			NameValueCollection query = Util.GetQueryFromContextNVC();
-			Logger.InfoFormat("Discovery on {0} requested.", userSuppliedIdentifier);
+		private IAuthenticationRequest createRequest(Identifier userSuppliedIdentifier) {
+			IAuthenticationRequest request;
+
 			OpenIdRelyingParty rp = new OpenIdRelyingParty();
 
+			// Resolve the trust root, and swap out the scheme and port if necessary to match the
+			// return_to URL, since this match is required by OpenId, and the consumer app
+			// may be using HTTP at some times and HTTPS at others.
+			UriBuilder realm = Util.GetResolvedRealm(Page, RealmUrl);
+			realm.Scheme = Page.Request.Url.Scheme;
+			realm.Port = Page.Request.Url.Port;
+
+			// Initiate openid request
+			// We use TryParse here to avoid throwing an exception which 
+			// might slip through our validator control if it is disabled.
+			Realm typedRealm = new Realm(realm);
+			if (string.IsNullOrEmpty(ReturnToUrl)) {
+				request = rp.CreateRequest(userSuppliedIdentifier, typedRealm);
+			} else {
+				UriBuilder returnTo = new UriBuilder(new Uri(Util.GetRequestUrlFromContext(), ReturnToUrl));
+				OpenIdRelyingParty.NormalizeReturnToCapitalization(typedRealm, returnTo);
+				request = rp.CreateRequest(userSuppliedIdentifier, typedRealm, returnTo.Uri);
+			}
+
+			return request;
+		}
+
+		private void performDiscovery(string userSuppliedIdentifier) {
+			if (String.IsNullOrEmpty(userSuppliedIdentifier)) throw new ArgumentNullException("userSuppliedIdentifier");
+			NameValueCollection query = Util.GetQueryOrFormFromContextNVC();
+			Logger.InfoFormat("Discovery on {0} requested.", userSuppliedIdentifier);
+
 			try {
-				IAuthenticationRequest req = rp.CreateRequest(userSuppliedIdentifier);
+				IAuthenticationRequest req = createRequest(userSuppliedIdentifier);
+				// If the ReturnToUrl was explicitly set, we'll need to reset our first parameter
+				if (string.IsNullOrEmpty(HttpUtility.ParseQueryString(req.ReturnToUrl.Query)["dotnetopenid.userSuppliedIdentifier"])) {
+					req.AddCallbackArguments("dotnetopenid.userSuppliedIdentifier", userSuppliedIdentifier);
+				}
 				req.AddCallbackArguments("dotnetopenid.phase", "2");
 				if (query["dotnetopenid.immediate"] == "true") {
 					req.Mode = AuthenticationRequestMode.Immediate;

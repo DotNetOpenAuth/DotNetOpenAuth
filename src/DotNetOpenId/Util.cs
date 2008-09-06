@@ -274,6 +274,35 @@ namespace DotNetOpenId {
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenId.Realm")]
+		internal static UriBuilder GetResolvedRealm(Page page, string realm) {
+			Debug.Assert(page != null, "Current HttpContext required to resolve URLs.");
+			// Allow for *. realm notation, as well as ASP.NET ~/ shortcuts.
+
+			// We have to temporarily remove the *. notation if it's there so that
+			// the rest of our URL manipulation will succeed.
+			bool foundWildcard = false;
+			// Note: we don't just use string.Replace because poorly written URLs
+			// could potentially have multiple :// sequences in them.
+			string realmNoWildcard = Regex.Replace(realm, @"^(\w+://)\*\.",
+				delegate(Match m) {
+					foundWildcard = true;
+					return m.Groups[1].Value;
+				});
+
+			UriBuilder fullyQualifiedRealm = new UriBuilder(
+				new Uri(Util.GetRequestUrlFromContext(), page.ResolveUrl(realmNoWildcard)));
+
+			if (foundWildcard) {
+				fullyQualifiedRealm.Host = "*." + fullyQualifiedRealm.Host;
+			}
+
+			// Is it valid?
+			new Realm(fullyQualifiedRealm); // throws if not valid
+
+			return fullyQualifiedRealm;
+		}
+
 		public static bool ArrayEquals<T>(T[] first, T[] second) {
 			if (first == null) throw new ArgumentNullException("first");
 			if (second == null) throw new ArgumentNullException("second");

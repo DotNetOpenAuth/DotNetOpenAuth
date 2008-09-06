@@ -124,7 +124,7 @@ namespace DotNetOpenId.RelyingParty
 		/// <summary>
 		/// The OpenID <see cref="Realm"/> of the relying party web site.
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenId.Realm"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings"), SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings")]
+		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenId.Realm"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings"), SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings")]
 		[Bindable(true)]
 		[Category(behaviorCategory)]
 		[DefaultValue(realmUrlDefault)]
@@ -137,7 +137,7 @@ namespace DotNetOpenId.RelyingParty
 				if (Page != null && !DesignMode)
 				{
 					// Validate new value by trying to construct a Realm object based on it.
-					new Realm(getResolvedRealm(value)); // throws an exception on failure.
+					new Realm(Util.GetResolvedRealm(Page, value)); // throws an exception on failure.
 				}
 				else
 				{
@@ -154,6 +154,36 @@ namespace DotNetOpenId.RelyingParty
 						throw new UriFormatException();
 				}
 				ViewState[realmUrlViewStateKey] = value; 
+			}
+		}
+
+		const string returnToUrlViewStateKey = "ReturnToUrl";
+		const string returnToUrlDefault = "";
+		/// <summary>
+		/// The OpenID ReturnTo of the relying party web site.
+		/// </summary>
+		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenId.ReturnTo"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings"), SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings")]
+		[Bindable(true)]
+		[Category(behaviorCategory)]
+		[DefaultValue(returnToUrlDefault)]
+		[Description("The OpenID ReturnTo of the relying party web site.")]
+		public string ReturnToUrl {
+			get { return (string)(ViewState[returnToUrlViewStateKey] ?? returnToUrlDefault); }
+			set {
+				if (Page != null && !DesignMode) {
+					// Validate new value by trying to construct a Uri based on it.
+					new Uri(Util.GetRequestUrlFromContext(), Page.ResolveUrl(value)); // throws an exception on failure.
+				} else {
+					// We can't fully test it, but it should start with either ~/ or a protocol.
+					if (Regex.IsMatch(value, @"^https?://")) {
+						new Uri(value); // make sure it's fully-qualified, but ignore wildcards
+					} else if (value.StartsWith("~/", StringComparison.Ordinal)) {
+						// this is valid too
+					} else {
+						throw new UriFormatException();
+					}
+				}
+				ViewState[returnToUrlViewStateKey] = value;
 			}
 		}
 
@@ -687,7 +717,7 @@ namespace DotNetOpenId.RelyingParty
 				// Resolve the trust root, and swap out the scheme and port if necessary to match the
 				// return_to URL, since this match is required by OpenId, and the consumer app
 				// may be using HTTP at some times and HTTPS at others.
-				UriBuilder realm = getResolvedRealm(RealmUrl);
+				UriBuilder realm = Util.GetResolvedRealm(Page, RealmUrl);
 				realm.Scheme = Page.Request.Url.Scheme;
 				realm.Port = Page.Request.Url.Port;
 
@@ -696,7 +726,14 @@ namespace DotNetOpenId.RelyingParty
 				// might slip through our validator control if it is disabled.
 				Identifier userSuppliedIdentifier;
 				if (Identifier.TryParse(Text, out userSuppliedIdentifier)) {
-					Request = consumer.CreateRequest(userSuppliedIdentifier, new Realm(realm));
+					Realm typedRealm = new Realm(realm);
+					if (string.IsNullOrEmpty(ReturnToUrl)) {
+						Request = consumer.CreateRequest(userSuppliedIdentifier, typedRealm);
+					} else {
+						UriBuilder returnTo = new UriBuilder(new Uri(Util.GetRequestUrlFromContext(), ReturnToUrl));
+						OpenIdRelyingParty.NormalizeReturnToCapitalization(typedRealm, returnTo);
+						Request = consumer.CreateRequest(userSuppliedIdentifier, typedRealm, returnTo.Uri);
+					}
 					Request.Mode = ImmediateMode ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;
 					if (EnableRequestProfile) addProfileArgs(Request);
 				} else {
@@ -740,37 +777,6 @@ namespace DotNetOpenId.RelyingParty
 				PolicyUrl = string.IsNullOrEmpty(PolicyUrl) ?
 					null : new Uri(Util.GetRequestUrlFromContext(), Page.ResolveUrl(PolicyUrl)),
 			});
-		}
-
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenId.Realm")]
-		UriBuilder getResolvedRealm(string realm)
-		{
-			Debug.Assert(Page != null, "Current HttpContext required to resolve URLs.");
-			// Allow for *. realm notation, as well as ASP.NET ~/ shortcuts.
-
-			// We have to temporarily remove the *. notation if it's there so that
-			// the rest of our URL manipulation will succeed.
-			bool foundWildcard = false;
-			// Note: we don't just use string.Replace because poorly written URLs
-			// could potentially have multiple :// sequences in them.
-			string realmNoWildcard = Regex.Replace(realm, @"^(\w+://)\*\.",
-				delegate(Match m) {
-					foundWildcard = true;
-					return m.Groups[1].Value;
-				});
-
-			UriBuilder fullyQualifiedRealm = new UriBuilder(
-				new Uri(Util.GetRequestUrlFromContext(), Page.ResolveUrl(realmNoWildcard)));
-
-			if (foundWildcard)
-			{
-				fullyQualifiedRealm.Host = "*." + fullyQualifiedRealm.Host;
-			}
-
-			// Is it valid?
-			new Realm(fullyQualifiedRealm); // throws if not valid
-
-			return fullyQualifiedRealm;
 		}
 
 		#region Events

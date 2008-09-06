@@ -200,13 +200,7 @@ namespace DotNetOpenId.RelyingParty {
 
 			// Build the return_to URL
 			UriBuilder returnTo = new UriBuilder(Util.GetRequestUrlFromContext());
-			// Normalize the portion of the return_to path that correlates to the realm for capitalization.
-			// (so that if a web app base path is /MyApp/, but the URL of this request happens to be
-			// /myapp/login.aspx, we bump up the return_to Url to use /MyApp/ so it matches the realm.
-			if (returnTo.Path.StartsWith(realm.AbsolutePath, StringComparison.OrdinalIgnoreCase) &&
-				!returnTo.Path.StartsWith(realm.AbsolutePath, StringComparison.Ordinal)) {
-				returnTo.Path = realm.AbsolutePath + returnTo.Path.Substring(realm.AbsolutePath.Length);
-			}
+			NormalizeReturnToCapitalization(realm, returnTo);
 			// Trim off any parameters with an "openid." prefix, and a few known others
 			// to avoid carrying state from a prior login attempt.
 			returnTo.Query = string.Empty;
@@ -220,6 +214,16 @@ namespace DotNetOpenId.RelyingParty {
 			UriUtil.AppendQueryArgs(returnTo, returnToParams);
 
 			return CreateRequest(userSuppliedIdentifier, realm, returnTo.Uri);
+		}
+
+		internal static void NormalizeReturnToCapitalization(Realm realm, UriBuilder returnTo) {
+			// Normalize the portion of the return_to path that correlates to the realm for capitalization.
+			// (so that if a web app base path is /MyApp/, but the URL of this request happens to be
+			// /myapp/login.aspx, we bump up the return_to Url to use /MyApp/ so it matches the realm.
+			if (returnTo.Path.StartsWith(realm.AbsolutePath, StringComparison.OrdinalIgnoreCase) &&
+				!returnTo.Path.StartsWith(realm.AbsolutePath, StringComparison.Ordinal)) {
+				returnTo.Path = realm.AbsolutePath + returnTo.Path.Substring(realm.AbsolutePath.Length);
+			}
 		}
 
 		internal static bool ShouldParameterBeStrippedFromReturnToUrl(string parameterName) {
