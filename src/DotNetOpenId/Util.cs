@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using System.Web.UI;
 
 namespace DotNetOpenId {
 	internal static class UriUtil {
@@ -126,14 +127,42 @@ namespace DotNetOpenId {
 			return nvc;
 		}
 
+		/// <summary>
+		/// Gets the query data from the original request (before any URL rewriting has occurred.)
+		/// </summary>
 		public static NameValueCollection GetQueryFromContextNVC() {
 			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
-			var query = HttpContext.Current.Request.RequestType == "GET" ?
-				HttpContext.Current.Request.QueryString : HttpContext.Current.Request.Form;
+			HttpRequest request = HttpContext.Current.Request;
+			// This request URL may have been rewritten by the host site.
+			// For openid protocol purposes, we really need to look at 
+			// the original query parameters before any rewriting took place.
+			if (request.Url.PathAndQuery == request.RawUrl) {
+				// No rewriting has taken place.
+				return request.QueryString;
+			} else {
+				// Rewriting detected!  Recover the original request URI.
+				return HttpUtility.ParseQueryString(GetRequestUrlFromContext().Query);
+			}
+		}
+		/// <summary>
+		/// Gets the query or form data from the original request (before any URL rewriting has occurred.)
+		/// </summary>
+		public static NameValueCollection GetQueryOrFormFromContextNVC() {
+			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
+			HttpRequest request = HttpContext.Current.Request;
+			NameValueCollection query;
+			if (request.RequestType == "GET") {
+				query = GetQueryFromContextNVC();
+			} else {
+				query = request.Form;
+			}
 			return query;
 		}
-		public static IDictionary<string, string> GetQueryFromContext() {
-			return NameValueCollectionToDictionary(GetQueryFromContextNVC());
+		/// <summary>
+		/// Gets the querystring or form data from the original request (before any URL rewriting has occurred.)
+		/// </summary>
+		public static IDictionary<string, string> GetQueryOrFormFromContext() {
+			return NameValueCollectionToDictionary(GetQueryOrFormFromContextNVC());
 		}
 		/// <summary>
 		/// Gets the original request URL, as seen from the browser before any URL rewrites on the server if any.
@@ -244,6 +273,7 @@ namespace DotNetOpenId {
 					Util.GetOptionalArg(query, key)), null, query, ex);
 			}
 		}
+
 		public static bool ArrayEquals<T>(T[] first, T[] second) {
 			if (first == null) throw new ArgumentNullException("first");
 			if (second == null) throw new ArgumentNullException("second");

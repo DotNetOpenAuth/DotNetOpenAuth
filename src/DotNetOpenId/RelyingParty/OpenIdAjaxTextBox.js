@@ -1,6 +1,11 @@
-﻿function trace(msg) {
-	//alert(msg);
-	//window.status = msg;
+﻿// Options that can be set on the host page:
+// window.openid_visible_iframe = true; // causes the hidden iframe to show up
+// window.openid_trace = true; // causes lots of alert boxes
+
+function trace(msg) {
+	if (window.openid_trace) {
+		alert(msg);
+	}
 }
 
 function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url, success_icon_url, failure_icon_url,
@@ -169,6 +174,8 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 						box.dnoi_internal.loginButton.onclick();
 						return false; // abort submit for now
 					}
+				} else {
+					return true;
 				}
 			}
 			return false;
@@ -203,9 +210,10 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 
 	box.dnoi_internal.getAuthenticationUrl = function(immediateMode) {
 		var frameLocation = new Uri(document.location.href);
-		var discoveryUri = frameLocation.trimQueryAndFragment().toString() + '?' + 'dotnetopenid.userSuppliedIdentifier=' + escape(box.value);
+		var discoveryUri = frameLocation.trimFragment();
+		discoveryUri.appendQueryVariable('dotnetopenid.userSuppliedIdentifier', box.value);
 		if (immediateMode) {
-			discoveryUri += "&dotnetopenid.immediate=true";
+			discoveryUri.appendQueryVariable('dotnetopenid.immediate', 'true');
 		}
 		return discoveryUri;
 	};
@@ -259,9 +267,11 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 
 	function createHiddenFrame(url) {
 		var iframe = document.createElement("iframe");
-		iframe.setAttribute("width", 0);
-		iframe.setAttribute("height", 0);
-		iframe.setAttribute("style", "display: none");
+		if (!window.openid_visible_iframe) {
+			iframe.setAttribute("width", 0);
+			iframe.setAttribute("height", 0);
+			iframe.setAttribute("style", "display: none");
+		}
 		iframe.setAttribute("src", url);
 		iframe.openidBox = box;
 		box.parentNode.insertBefore(iframe, box);
@@ -395,12 +405,21 @@ function Uri(url) {
 		return this.originalUri.substr(this.originalUri, schemeStartIdx);
 	}
 
-	this.trimQueryAndFragment = function() {
-		var qmark = this.originalUri.indexOf('?');
+	this.trimFragment = function() {
 		var hashmark = this.originalUri.indexOf('#');
-		if (qmark < 0) { qmark = this.originalUri.length; }
-		if (hashmark < 0) { hashmark = this.originalUri.length; }
-		return new Uri(this.originalUri.substr(0, Math.min(qmark, hashmark)));
+		if (hashmark >= 0) {
+			return new Uri(this.originalUri.substr(0, hashmark));
+		}
+		return this;
+	};
+
+	this.appendQueryVariable = function(name, value) {
+		var pair = encodeURI(name) + "=" + encodeURI(value);
+		if (this.originalUri.indexOf('?') >= 0) {
+			this.originalUri = this.originalUri + "&" + pair;
+		} else {
+			this.originalUri = this.originalUri + "?" + pair;
+		}
 	};
 
 	function KeyValuePair(key, value) {

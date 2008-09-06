@@ -37,7 +37,7 @@ namespace DotNetOpenId.Provider {
 
 		internal static Uri DefaultProviderEndpoint { get { return getProviderEndpointFromContext(); } }
 		internal static Uri DefaultRequestUrl { get { return Util.GetRequestUrlFromContext(); } }
-		internal static NameValueCollection DefaultQuery { get { return Util.GetQueryFromContextNVC(); } }
+		internal static NameValueCollection DefaultQuery { get { return Util.GetQueryOrFormFromContextNVC(); } }
 
 		/// <summary>
 		/// Constructs an OpenId server that uses the HttpApplication dictionary as
@@ -48,7 +48,7 @@ namespace DotNetOpenId.Provider {
 		/// </remarks>
 		public OpenIdProvider()
 			: this(Configuration.Store.CreateInstanceOfStore(HttpApplicationStore),
-			getProviderEndpointFromContext(), Util.GetRequestUrlFromContext(), Util.GetQueryFromContext()) { }
+			getProviderEndpointFromContext(), Util.GetRequestUrlFromContext(), Util.GetQueryOrFormFromContext()) { }
 		/// <summary>
 		/// Constructs an OpenId server that uses a given query and IAssociationStore.
 		/// </summary>

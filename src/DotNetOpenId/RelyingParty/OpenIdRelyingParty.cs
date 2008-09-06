@@ -93,7 +93,7 @@ namespace DotNetOpenId.RelyingParty {
 		internal IDirectMessageChannel DirectMessageChannel = new DirectMessageHttpChannel();
 
 		internal static Uri DefaultRequestUrl { get { return Util.GetRequestUrlFromContext(); } }
-		internal static NameValueCollection DefaultQuery { get { return Util.GetQueryFromContextNVC(); } }
+		internal static NameValueCollection DefaultQuery { get { return Util.GetQueryOrFormFromContextNVC(); } }
 
 		/// <summary>
 		/// Constructs an OpenId consumer that uses the current HttpContext request
@@ -104,7 +104,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// </remarks>
 		public OpenIdRelyingParty()
 			: this(Configuration.Store.CreateInstanceOfStore(HttpApplicationStore),
-				Util.GetRequestUrlFromContext(), Util.GetQueryFromContext()) { }
+				Util.GetRequestUrlFromContext(), Util.GetQueryOrFormFromContext()) { }
 		/// <summary>
 		/// Constructs an OpenId consumer that uses a given querystring and IAssociationStore.
 		/// </summary>
@@ -210,10 +210,11 @@ namespace DotNetOpenId.RelyingParty {
 			// Trim off any parameters with an "openid." prefix, and a few known others
 			// to avoid carrying state from a prior login attempt.
 			returnTo.Query = string.Empty;
-			var returnToParams = new Dictionary<string, string>(HttpContext.Current.Request.QueryString.Count);
-			foreach (string key in HttpContext.Current.Request.QueryString) {
+			NameValueCollection queryParams = Util.GetQueryFromContextNVC();
+			var returnToParams = new Dictionary<string, string>(queryParams.Count);
+			foreach (string key in queryParams) {
 				if (!ShouldParameterBeStrippedFromReturnToUrl(key)) {
-					returnToParams.Add(key, HttpContext.Current.Request.QueryString[key]);
+					returnToParams.Add(key, queryParams[key]);
 				}
 			}
 			UriUtil.AppendQueryArgs(returnTo, returnToParams);

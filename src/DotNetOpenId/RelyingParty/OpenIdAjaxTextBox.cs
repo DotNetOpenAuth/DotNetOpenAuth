@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
 using System.Text;
@@ -490,10 +491,12 @@ namespace DotNetOpenId.RelyingParty {
 					}
 				}
 			} else {
-				string userSuppliedIdentifier = Page.Request.QueryString["dotnetopenid.userSuppliedIdentifier"];
+				NameValueCollection query = Util.GetQueryFromContextNVC();
+				string userSuppliedIdentifier = query["dotnetopenid.userSuppliedIdentifier"];
 				if (!string.IsNullOrEmpty(userSuppliedIdentifier)) {
+					//Page.Response.Redirect("http://www.microsoft.com");
 					Logger.Info("AJAX (iframe) request detected.");
-					if (Page.Request.QueryString["dotnetopenid.phase"] == "2") {
+					if (query["dotnetopenid.phase"] == "2") {
 						OnUnconfirmedPositiveAssertion();
 						reportDiscoveryResult();
 					} else {
@@ -546,13 +549,15 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 		}
 
 		private void performDiscovery(string userSuppliedIdentifier) {
+			if (String.IsNullOrEmpty(userSuppliedIdentifier)) throw new ArgumentNullException("userSuppliedIdentifier");
+			NameValueCollection query = Util.GetQueryFromContextNVC();
 			Logger.InfoFormat("Discovery on {0} requested.", userSuppliedIdentifier);
 			OpenIdRelyingParty rp = new OpenIdRelyingParty();
 
 			try {
 				IAuthenticationRequest req = rp.CreateRequest(userSuppliedIdentifier);
 				req.AddCallbackArguments("dotnetopenid.phase", "2");
-				if (Page.Request.QueryString["dotnetopenid.immediate"] == "true") {
+				if (query["dotnetopenid.immediate"] == "true") {
 					req.Mode = AuthenticationRequestMode.Immediate;
 				}
 				OnLoggingIn(req);
