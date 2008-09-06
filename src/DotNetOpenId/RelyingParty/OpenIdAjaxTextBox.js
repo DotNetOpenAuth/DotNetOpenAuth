@@ -77,7 +77,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	box.dnoi_internal.op_logo = box.dnoi_internal.constructIcon('', null, false, false, "16px");
 	box.dnoi_internal.spinner = box.dnoi_internal.constructIcon(spinner_url, busyToolTip, true);
 	box.dnoi_internal.success_icon = box.dnoi_internal.constructIcon(success_icon_url, authenticationSucceededToolTip, true);
-	box.dnoi_internal.failure_icon = box.dnoi_internal.constructIcon(failure_icon_url, authenticationFailedToolTip, true);
+	//box.dnoi_internal.failure_icon = box.dnoi_internal.constructIcon(failure_icon_url, authenticationFailedToolTip, true);
 
 	// Disable the display of the DotNetOpenId logo
 	//box.dnoi_internal.dnoi_logo = box.dnoi_internal.constructIcon(dotnetopenid_logo_url);
@@ -89,7 +89,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		box.dnoi_internal.op_logo.style.visibility = 'hidden';
 		box.dnoi_internal.spinner.style.visibility = 'hidden';
 		box.dnoi_internal.success_icon.style.visibility = 'hidden';
-		box.dnoi_internal.failure_icon.style.visibility = 'hidden';
+//		box.dnoi_internal.failure_icon.style.visibility = 'hidden';
 		box.dnoi_internal.loginButton.style.visibility = 'hidden';
 		box.dnoi_internal.retryButton.style.visibility = 'hidden';
 		box.title = null;
@@ -128,11 +128,6 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			box.dnoi_internal.claimedIdentifier = null;
 			window.status = authenticationFailedToolTip;
 			box.title = authenticationFailedToolTip;
-		} else if (state == 'required') {
-			box.dnoi_internal.openid_logo.style.visibility = 'visible';
-			box.dnoi_internal.failure_icon.style.visibility = 'visible';
-			box.dnoi_internal.claimedIdentifier = null;
-			box.title = identifierRequiredMessage;
 		} else if (state = '' || state == null) {
 			box.dnoi_internal.openid_logo.style.visibility = 'visible';
 			box.title = null;
@@ -174,8 +169,6 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 						box.dnoi_internal.loginButton.onclick();
 						return false; // abort submit for now
 					}
-				} else {
-					box.dnoi_internal.setVisualCue('required');
 				}
 			}
 			return false;

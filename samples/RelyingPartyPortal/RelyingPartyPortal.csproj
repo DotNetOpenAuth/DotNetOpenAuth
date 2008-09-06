@@ -126,6 +126,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ajaxlogin.aspx" />
+    <EmbeddedResource Include="images\attention.png" />
     <Content Include="images\openid_login.gif" />
     <Content Include="Site.Master" />
     <Content Include="TracePage.aspx" />

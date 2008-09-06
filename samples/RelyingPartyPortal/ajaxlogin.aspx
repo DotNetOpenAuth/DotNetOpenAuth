@@ -46,6 +46,11 @@ td
 							OnLoggedIn="OpenIdAjaxTextBox1_LoggedIn"
 							OnClientAssertionReceived="onauthenticated(sender)"
 							OnUnconfirmedPositiveAssertion="OpenIdAjaxTextBox1_UnconfirmedPositiveAssertion" />
+						<asp:RequiredFieldValidator ID="openidRequiredValidator" runat="server" 
+							ControlToValidate="OpenIdAjaxTextBox1" ValidationGroup="openidVG"
+							ErrorMessage="The OpenID field is required." SetFocusOnError="True">
+							<asp:Image runat="server" ImageUrl="~/images/attention.png" ToolTip="This is a required field" />
+						</asp:RequiredFieldValidator>
 					</td>
 				</tr>
 				<tr>

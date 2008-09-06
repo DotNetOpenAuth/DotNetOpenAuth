@@ -604,6 +604,7 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 
 			writer.WriteBeginTag("input");
 			writer.WriteAttribute("name", Name);
+			writer.WriteAttribute("id", ClientID);
 			writer.WriteAttribute("value", Text);
 			writer.WriteAttribute("size", Columns.ToString(CultureInfo.InvariantCulture));
 			if (TabIndex > 0) {

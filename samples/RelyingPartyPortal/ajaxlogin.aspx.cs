@@ -30,6 +30,7 @@ namespace ConsumerPortal {
 		}
 
 		protected void submitButton_Click(object sender, EventArgs e) {
+			if (!Page.IsValid) return;
 			if (OpenIdAjaxTextBox1.AuthenticationResponse != null) {
 				if (OpenIdAjaxTextBox1.AuthenticationResponse.Status == AuthenticationStatus.Authenticated) {
 					// Save comment here!
