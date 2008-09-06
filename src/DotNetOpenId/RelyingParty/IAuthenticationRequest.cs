@@ -14,20 +14,26 @@ namespace DotNetOpenId.RelyingParty {
 		/// Makes a dictionary of key/value pairs available when the authentication is completed.
 		/// </summary>
 		/// <remarks>
-		/// <para>The values stored here can be retrieved using 
-		/// <see cref="IAuthenticationResponse.GetCallbackArguments"/>.</para>
 		/// <para>Note that these values are NOT protected against tampering in transit.  No 
 		/// security-sensitive data should be stored using this method.</para>
+		/// <para>The values stored here can be retrieved using 
+		/// <see cref="IAuthenticationResponse.GetCallbackArguments"/>.</para>
+		/// <para>Since the data set here is sent in the querystring of the request and some
+		/// servers place limits on the size of a request URL, this data should be kept relatively
+		/// small to ensure successful authentication.  About 1.5KB is about all that should be stored.</para>
 		/// </remarks>
 		void AddCallbackArguments(IDictionary<string, string> arguments);
 		/// <summary>
 		/// Makes a key/value pair available when the authentication is completed.
 		/// </summary>
 		/// <remarks>
-		/// <para>The value stored here can be retrieved using 
-		/// <see cref="IAuthenticationResponse.GetCallbackArgument"/>.</para>
 		/// <para>Note that these values are NOT protected against tampering in transit.  No 
 		/// security-sensitive data should be stored using this method.</para>
+		/// <para>The value stored here can be retrieved using 
+		/// <see cref="IAuthenticationResponse.GetCallbackArgument"/>.</para>
+		/// <para>Since the data set here is sent in the querystring of the request and some
+		/// servers place limits on the size of a request URL, this data should be kept relatively
+		/// small to ensure successful authentication.  About 1.5KB is about all that should be stored.</para>
 		/// </remarks>
 		void AddCallbackArguments(string key, string value);
 		/// <summary>
