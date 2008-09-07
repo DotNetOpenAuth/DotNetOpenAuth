@@ -196,16 +196,16 @@ namespace YOURLIBNAME.Loggers {
 		/// Returns a new log4net logger if it exists, or returns null if the assembly cannot be found.
 		/// </summary>
 		/// <returns>The created <see cref="ILog"/> instance.</returns>
-		internal static ILog Initialize() {
-			return IsLog4NetPresent ? CreateLogger() : null;
+		internal static ILog Initialize(string name) {
+			return IsLog4NetPresent ? CreateLogger(name) : null;
 		}
 
 		/// <summary>
 		/// Creates the log4net.LogManager.  Call ONLY after log4net.dll is known to be present.
 		/// </summary>
 		/// <returns>The created <see cref="ILog"/> instance.</returns>
-		private static ILog CreateLogger() {
-			return new Log4NetLogger(log4net.LogManager.GetLogger("YOURLIBNAME"));
+		private static ILog CreateLogger(string name) {
+			return new Log4NetLogger(log4net.LogManager.GetLogger(name));
 		}
 	}
 }

@@ -7,7 +7,11 @@ namespace YOURLIBNAME.Loggers {
 	using System.Security.Permissions;
 
 	internal class TraceLogger : ILog {
-		private TraceSwitch traceSwitch = new TraceSwitch("OpenID", "OpenID Trace Switch");
+		private TraceSwitch traceSwitch;
+
+		internal TraceLogger(string name) {
+			traceSwitch = new TraceSwitch(name, name + " Trace Switch");
+		}
 
 		#region ILog Properties
 
@@ -321,8 +325,8 @@ namespace YOURLIBNAME.Loggers {
 		/// if sufficient CAS permissions are granted to use it, otherwise returns false.
 		/// </summary>
 		/// <returns>The created <see cref="ILog"/> instance.</returns>
-		internal static ILog Initialize() {
-			return IsSufficientPermissionGranted ? new TraceLogger() : null;
+		internal static ILog Initialize(string name) {
+			return IsSufficientPermissionGranted ? new TraceLogger(name) : null;
 		}
 	}
 }

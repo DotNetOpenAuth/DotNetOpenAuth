@@ -20,9 +20,10 @@ namespace YOURLIBNAME {
 	/// </remarks>
 	internal static class Logger {
 		/// <summary>
-		/// The <see cref="ILog"/> instance that is to be used for the duration of the appdomain.
+		/// The <see cref="ILog"/> instance that is to be used 
+		/// by this static Logger for the duration of the appdomain.
 		/// </summary>
-		private static ILog facade = InitializeFacade();
+		private static ILog facade = Create("YOURLIBNAME");
 
 		#region ILog Members
 		//// Although this static class doesn't literally implement the ILog interface, 
@@ -913,12 +914,39 @@ namespace YOURLIBNAME {
 		#endregion
 
 		/// <summary>
+		/// Creates an additional logger on demand for a subsection of the application.
+		/// </summary>
+		/// <param name="name">A name that will be included in the log file.</param>
+		/// <returns>The <see cref="ILog"/> instance created with the given name.</returns>
+		internal static ILog Create(string name) {
+			if (String.IsNullOrEmpty(name)) {
+				throw new ArgumentNullException("name");
+			}
+
+			return InitializeFacade(name);
+		}
+
+		/// <summary>
+		/// Creates an additional logger on demand for a subsection of the application.
+		/// </summary>
+		/// <param name="type">A type whose full name that will be included in the log file.</param>
+		/// <returns>The <see cref="ILog"/> instance created with the given type name.</returns>
+		internal static ILog Create(Type type) {
+			if (type == null) {
+				throw new ArgumentNullException("type");
+			}
+
+			return Create(type.FullName);
+		}
+
+		/// <summary>
 		/// Discovers the presence of Log4net.dll and other logging mechanisms
 		/// and returns the best available logger.
 		/// </summary>
+		/// <param name="name">The name of the log to initialize.</param>
 		/// <returns>The <see cref="ILog"/> instance of the logger to use.</returns>
-		private static ILog InitializeFacade() {
-			ILog result = Log4NetLogger.Initialize() ?? TraceLogger.Initialize() ?? NoOpLogger.Initialize();
+		private static ILog InitializeFacade(string name) {
+			ILog result = Log4NetLogger.Initialize(name) ?? TraceLogger.Initialize(name) ?? NoOpLogger.Initialize();
 			result.Info(Util.LibraryVersion);
 			return result;
 		}
