@@ -124,7 +124,7 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The nonce has expired..
+        ///   Looks up a localized string similar to The nonce has expired.  It was good until {0} (UTC), and it is now {1} (UTC).  If this looks wrong, check the server&apos;s clock, timezone and daylight savings settings..
         /// </summary>
         internal static string ExpiredNonce {
             get {

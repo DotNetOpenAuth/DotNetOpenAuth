@@ -139,7 +139,7 @@
     <value>OpenID parameter '{0}' was expected to be base64 encoded but is not.</value>
   </data>
   <data name="ExpiredNonce" xml:space="preserve">
-    <value>The nonce has expired.</value>
+    <value>The nonce has expired.  It was good until {0} (UTC), and it is now {1} (UTC).  If this looks wrong, check the server's clock, timezone and daylight savings settings.</value>
   </data>
   <data name="ExtensionAlreadyAddedWithSameTypeURI" xml:space="preserve">
     <value>An extension sharing namespace '{0}' has already been added.  Only one extension per namespace is allowed in a given request.</value>
