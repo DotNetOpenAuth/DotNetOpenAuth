@@ -692,8 +692,10 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 			// We surround the textbox with a span so that the .js file can inject a
 			// login button within the text box with easy placement.
 			writer.WriteBeginTag("span");
+			writer.WriteAttribute("class", CssClass);
 			writer.Write(" style='");
 			writer.WriteStyleAttribute("position", "relative");
+			writer.WriteStyleAttribute("font-size", "16px");
 			writer.Write("'>");
 
 			writer.WriteBeginTag("input");
