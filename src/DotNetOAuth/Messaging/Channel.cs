@@ -299,7 +299,7 @@ namespace DotNetOAuth.Messaging {
 				hiddenFields);
 			bodyWriter.Flush();
 			Response response = new Response {
-				Status = HttpStatusCode.Redirect,
+				Status = HttpStatusCode.OK,
 				Headers = headers,
 				Body = body.ToArray(),
 				OriginalMessage = message

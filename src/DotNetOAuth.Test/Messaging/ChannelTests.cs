@@ -9,6 +9,8 @@ namespace DotNetOAuth.Test.Messaging {
 	using System.Collections.Generic;
 	using System.IO;
 	using System.Net;
+	using System.Text;
+	using System.Web;
 	using DotNetOAuth.Messaging;
 	using DotNetOAuth.Test.Mocks;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -46,8 +48,18 @@ namespace DotNetOAuth.Test.Messaging {
 			this.ParameterizedReceiveTest("POST");
 		}
 
+		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		public void SendNull() {
+			this.channel.Send(null);
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		public void SendNull2() {
+			this.channel.Send(null, new TestDirectedMessage());
+		}
+
 		[TestMethod]
-		public void SendIndirectMessage() {
+		public void SendIndirectMessage301Get() {
 			IProtocolMessage message = new TestDirectedMessage {
 				Age = 15,
 				Name = "Andrew",
@@ -61,6 +73,48 @@ namespace DotNetOAuth.Test.Messaging {
 			StringAssert.Contains(response.Headers[HttpResponseHeader.Location], "age=15");
 			StringAssert.Contains(response.Headers[HttpResponseHeader.Location], "Name=Andrew");
 			StringAssert.Contains(response.Headers[HttpResponseHeader.Location], "Location=http%3a%2f%2fhost%2fpath");
+		}
+
+		[TestMethod]
+		public void SendIndirectMessageFormPost() {
+			// We craft a very large message to force fallback to form POST.
+			// We'll also stick some HTML reserved characters in the string value
+			// to test proper character escaping.
+			var message = new TestDirectedMessage {
+				Age = 15,
+				Name = "c<b" + new string('a', 10 * 1024),
+				Location = new Uri("http://host/path"),
+				Recipient = new Uri("http://provider/path"),
+			};
+			this.channel.Send(message);
+			Response response = this.channel.DequeueIndirectOrResponseMessage();
+			Assert.AreEqual(HttpStatusCode.OK, response.Status, "A form redirect should be an HTTP successful response.");
+			Assert.IsNull(response.Headers[HttpResponseHeader.Location], "There should not be a redirection header in the response.");
+			string body = Encoding.UTF8.GetString(response.Body);
+			StringAssert.Contains(body, "<form ");
+			StringAssert.Contains(body, "action=\"http://provider/path\"");
+			StringAssert.Contains(body, "method=\"post\"");
+			StringAssert.Contains(body, "<input type=\"hidden\" name=\"age\" value=\"15\" />");
+			StringAssert.Contains(body, "<input type=\"hidden\" name=\"Location\" value=\"http://host/path\" />");
+			StringAssert.Contains(body, "<input type=\"hidden\" name=\"Name\" value=\"" + HttpUtility.HtmlEncode(message.Name) + "\" />");
+			StringAssert.Contains(body, ".submit()", "There should be some javascript to automate form submission.");
+		}
+
+		/// <summary>
+		/// Tests that a direct message is sent when the appropriate message type is provided.
+		/// </summary>
+		/// <remarks>
+		/// Since this is a mock channel that doesn't actually formulate a direct message response,
+		/// we just check that the right method was called.
+		/// </remarks>
+		[TestMethod, ExpectedException(typeof(NotImplementedException), "SendDirectMessageResponse")]
+		public void SendDirectMessageResponse() {
+			IProtocolMessage message = new TestMessage {
+				Age = 15,
+				Name = "Andrew",
+				Location = new Uri("http://host/path"),
+			};
+			this.channel.Send(message);
 		}
 
 		private static HttpRequestInfo CreateHttpRequest(string method, IDictionary<string, string> fields) {

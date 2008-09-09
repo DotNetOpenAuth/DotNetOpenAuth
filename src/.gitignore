@@ -1,4 +1,8 @@
 StyleCop.Cache
+PrecompiledWeb
 *.suo
 *.cache
-PrecompiledWeb
+*.user
+bin
+obj
+Bin
