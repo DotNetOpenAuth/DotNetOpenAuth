@@ -41,9 +41,8 @@ namespace DotNetOAuth.Messaging {
 		/// <param name="fields">The dictionary to list values from.</param>
 		/// <returns>The generated <see cref="XmlReader"/>.</returns>
 		private static XmlReader CreateRoundtripReader(XName rootElement, IDictionary<string, string> fields) {
-			if (rootElement == null) {
-				throw new ArgumentNullException("rootElement");
-			}
+			Debug.Assert(rootElement != null, "rootElement == null");
+			Debug.Assert(fields != null, "fields == null");
 
 			MemoryStream stream = new MemoryStream();
 			XmlWriter writer = XmlWriter.Create(stream);
@@ -66,15 +65,9 @@ namespace DotNetOAuth.Messaging {
 		/// <param name="rootElement">The name of the root element to use to surround the dictionary values.</param>
 		/// <param name="fields">The dictionary with values to serialize.</param>
 		private static void SerializeDictionaryToXml(XmlWriter writer, XName rootElement, IDictionary<string, string> fields) {
-			if (writer == null) {
-				throw new ArgumentNullException("writer");
-			}
-			if (rootElement == null) {
-				throw new ArgumentNullException("rootElement");
-			}
-			if (fields == null) {
-				throw new ArgumentNullException("fields");
-			}
+			Debug.Assert(writer != null, "writer == null");
+			Debug.Assert(rootElement != null, "rootElement == null");
+			Debug.Assert(fields != null, "fields == null");
 
 			writer.WriteStartElement(rootElement.LocalName, rootElement.NamespaceName);
 

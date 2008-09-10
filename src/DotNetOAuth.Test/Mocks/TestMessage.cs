@@ -11,6 +11,15 @@ namespace DotNetOAuth.Test.Mocks {
 
 	[DataContract(Namespace = Protocol.DataContractNamespaceV10)]
 	internal class TestMessage : IProtocolMessage {
+		private MessageTransport transport;
+
+		internal TestMessage() : this(MessageTransport.Direct) {
+		}
+
+		internal TestMessage(MessageTransport transport) {
+			this.transport = transport;
+		}
+
 		[DataMember(Name = "age", IsRequired = true)]
 		public int Age { get; set; }
 		[DataMember]
@@ -27,7 +36,7 @@ namespace DotNetOAuth.Test.Mocks {
 		}
 
 		MessageTransport IProtocolMessage.Transport {
-			get { return MessageTransport.Direct; }
+			get { return transport; }
 		}
 
 		void IProtocolMessage.EnsureValidMessage() {

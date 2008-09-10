@@ -25,6 +25,14 @@ namespace DotNetOAuth.Messaging {
 	/// </remarks>
 	public class Response {
 		/// <summary>
+		/// Initializes an instance of the <see cref="Response"/> class.
+		/// </summary>
+		internal Response() {
+			Status = HttpStatusCode.OK;
+			Headers = new WebHeaderCollection();
+		}
+
+		/// <summary>
 		/// Gets the headers that must be included in the response to the user agent.
 		/// </summary>
 		/// <remarks>
@@ -37,7 +45,7 @@ namespace DotNetOAuth.Messaging {
 		/// <summary>
 		/// Gets the body of the HTTP response.
 		/// </summary>
-		public byte[] Body { get; internal set; }
+		public string Body { get; internal set; }
 
 		/// <summary>
 		/// Gets the HTTP status code to use in the HTTP response.
@@ -62,11 +70,9 @@ namespace DotNetOAuth.Messaging {
 			HttpContext.Current.Response.Clear();
 			HttpContext.Current.Response.StatusCode = (int)this.Status;
 			MessagingUtilities.ApplyHeadersToResponse(this.Headers, HttpContext.Current.Response);
-			if (this.Body != null && this.Body.Length > 0) {
-				HttpContext.Current.Response.OutputStream.Write(this.Body, 0, this.Body.Length);
-				HttpContext.Current.Response.OutputStream.Flush();
+			if (this.Body != null) {
+				HttpContext.Current.Response.Output.Write(Body);
 			}
-			HttpContext.Current.Response.OutputStream.Close();
 			HttpContext.Current.Response.End();
 		}
 	}

@@ -120,8 +120,9 @@ namespace DotNetOAuth.Messaging {
 					this.SendIndirectMessage(directedMessage);
 					break;
 				default:
-					Debug.Fail("Unrecogized MessageTransport value.");
-					throw new ArgumentException();
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
+						MessagingStrings.UnrecognizedEnumValue, "Transport", message.Transport),
+						"message");
 			}
 		}
 
@@ -132,7 +133,12 @@ namespace DotNetOAuth.Messaging {
 		/// <remarks>
 		/// Requires an HttpContext.Current context.
 		/// </remarks>
+		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current"/> is null.</exception>
 		internal IProtocolMessage ReadFromRequest() {
+			if (HttpContext.Current == null) {
+				throw new InvalidOperationException(MessagingStrings.HttpContextRequired);
+			}
+
 			return this.ReadFromRequest(new HttpRequestInfo(HttpContext.Current.Request));
 		}
 
@@ -173,12 +179,13 @@ namespace DotNetOAuth.Messaging {
 		/// Deserializes a dictionary of values into a message.
 		/// </summary>
 		/// <param name="fields">The dictionary of values that were read from an HTTP request or response.</param>
-		/// <returns>The deserialized message.</returns>
+		/// <returns>The deserialized message, or null if no message could be recognized in the provided data.</returns>
 		protected virtual IProtocolMessage Receive(Dictionary<string, string> fields) {
-			Type messageType = null;
-			if (fields != null) {
-				messageType = this.MessageTypeProvider.GetRequestMessageType(fields);
+			if (fields == null) {
+				throw new ArgumentNullException("fields");
 			}
+
+			Type messageType = this.MessageTypeProvider.GetRequestMessageType(fields);
 
 			// If there was no data, or we couldn't recognize it as a message, abort.
 			if (messageType == null) {
@@ -255,7 +262,7 @@ namespace DotNetOAuth.Messaging {
 			Response response = new Response {
 				Status = HttpStatusCode.Redirect,
 				Headers = headers,
-				Body = new byte[0],
+				Body = null,
 				OriginalMessage = message
 			};
 
@@ -281,8 +288,7 @@ namespace DotNetOAuth.Messaging {
 			}
 
 			WebHeaderCollection headers = new WebHeaderCollection();
-			MemoryStream body = new MemoryStream();
-			StreamWriter bodyWriter = new StreamWriter(body);
+			StringWriter bodyWriter = new StringWriter();
 			StringBuilder hiddenFields = new StringBuilder();
 			foreach (var field in fields) {
 				hiddenFields.AppendFormat(
@@ -298,7 +304,7 @@ namespace DotNetOAuth.Messaging {
 			Response response = new Response {
 				Status = HttpStatusCode.OK,
 				Headers = headers,
-				Body = body.ToArray(),
+				Body = bodyWriter.ToString(),
 				OriginalMessage = message
 			};
 
@@ -322,9 +328,7 @@ namespace DotNetOAuth.Messaging {
 		/// <param name="fields">The fields that would be included in a message.</param>
 		/// <returns>The size (in bytes) of the message payload.</returns>
 		private static int CalculateSizeOfPayload(IDictionary<string, string> fields) {
-			if (fields == null) {
-				throw new ArgumentNullException("fields");
-			}
+			Debug.Assert(fields != null, "fields == null");
 
 			int size = 0;
 			foreach (var field in fields) {

@@ -129,6 +129,9 @@
   <data name="ExceptionNotConstructedForTransit" xml:space="preserve">
     <value>This exception was not constructed with a root request message that caused it.</value>
   </data>
+  <data name="HttpContextRequired" xml:space="preserve">
+    <value>This method requires a current HttpContext.  Alternatively, use an overload of this method that allows you to pass in information without an HttpContext.</value>
+  </data>
   <data name="IndirectMessagesMustImplementIDirectedProtocolMessage" xml:space="preserve">
     <value>Messages that indicate indirect transport must implement the {0} interface.</value>
   </data>
@@ -137,5 +140,8 @@
   </data>
   <data name="UnexpectedType" xml:space="preserve">
     <value>The type {0} or a derived type was expected, but {1} was given.</value>
+  </data>
+  <data name="UnrecognizedEnumValue" xml:space="preserve">
+    <value>{0} property has unrecognized value {1}.</value>
   </data>
 </root>

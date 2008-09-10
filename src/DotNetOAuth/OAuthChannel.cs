@@ -143,7 +143,7 @@ namespace DotNetOAuth {
 			string responseBody = MessagingUtilities.CreateQueryString(fields);
 
 			Response encodedResponse = new Response {
-				Body = Encoding.UTF8.GetBytes(responseBody),
+				Body = responseBody,
 				OriginalMessage = response,
 				Status = System.Net.HttpStatusCode.OK,
 				Headers = new System.Net.WebHeaderCollection(),

@@ -10,6 +10,7 @@ namespace DotNetOAuth.Messaging {
 	using System.IO;
 	using System.Net;
 	using System.Web;
+	using System.Diagnostics;
 
 	/// <summary>
 	/// A property store of details of an incoming HTTP request.
@@ -122,9 +123,7 @@ namespace DotNetOAuth.Messaging {
 		/// <param name="pairs">The collection a HTTP headers.</param>
 		/// <returns>A new collection of the given headers.</returns>
 		private static WebHeaderCollection GetHeaderCollection(NameValueCollection pairs) {
-			if (pairs == null) {
-				throw new ArgumentNullException("pairs");
-			}
+			Debug.Assert(pairs != null, "pairs == null");
 
 			WebHeaderCollection headers = new WebHeaderCollection();
 			foreach (string key in pairs) {

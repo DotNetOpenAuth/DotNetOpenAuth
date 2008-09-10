@@ -97,6 +97,15 @@ namespace DotNetOAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This method requires a current HttpContext.  Alternatively, use an overload of this method that allows you to pass in information without an HttpContext..
+        /// </summary>
+        internal static string HttpContextRequired {
+            get {
+                return ResourceManager.GetString("HttpContextRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Messages that indicate indirect transport must implement the {0} interface..
         /// </summary>
         internal static string IndirectMessagesMustImplementIDirectedProtocolMessage {
@@ -120,6 +129,15 @@ namespace DotNetOAuth.Messaging {
         internal static string UnexpectedType {
             get {
                 return ResourceManager.GetString("UnexpectedType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} property has unrecognized value {1}..
+        /// </summary>
+        internal static string UnrecognizedEnumValue {
+            get {
+                return ResourceManager.GetString("UnrecognizedEnumValue", resourceCulture);
             }
         }
     }

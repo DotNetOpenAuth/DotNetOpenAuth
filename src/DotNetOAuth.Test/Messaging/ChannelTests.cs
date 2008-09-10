@@ -30,7 +30,7 @@ namespace DotNetOAuth.Test.Messaging {
 		public void CtorNull() {
 			// This bad channel is deliberately constructed to pass null to
 			// its protected base class' constructor.
-			new TestBadChannel();
+			new TestBadChannel(true);
 		}
 
 		[TestMethod]
@@ -53,6 +53,24 @@ namespace DotNetOAuth.Test.Messaging {
 			this.channel.Send(null);
 		}
 
+		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		public void SendIndirectedUndirectedMessage() {
+			IProtocolMessage message = new TestMessage(MessageTransport.Indirect);
+			this.channel.Send(message);
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		public void SendDirectedNoRecipientMessage() {
+			IProtocolMessage message = new TestDirectedMessage(MessageTransport.Indirect);
+			this.channel.Send(message);
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		public void SendInvalidMessageTransport() {
+			IProtocolMessage message = new TestDirectedMessage((MessageTransport)100);
+			this.channel.Send(message);
+		}
+
 		[TestMethod]
 		public void SendIndirectMessage301Get() {
 			IProtocolMessage message = new TestDirectedMessage(MessageTransport.Indirect) {
@@ -70,6 +88,27 @@ namespace DotNetOAuth.Test.Messaging {
 			StringAssert.Contains(response.Headers[HttpResponseHeader.Location], "Location=http%3a%2f%2fhost%2fpath");
 		}
 
+		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		public void SendIndirectMessage301GetNullMessage() {
+			TestBadChannel badChannel = new TestBadChannel(false);
+			badChannel.Create301RedirectResponse(null, new Dictionary<string, string>());
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		public void SendIndirectMessage301GetEmptyRecipient() {
+			TestBadChannel badChannel = new TestBadChannel(false);
+			var message = new TestDirectedMessage(MessageTransport.Indirect);
+			badChannel.Create301RedirectResponse(message, new Dictionary<string, string>());
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		public void SendIndirectMessage301GetNullFields() {
+			TestBadChannel badChannel = new TestBadChannel(false);
+			var message = new TestDirectedMessage(MessageTransport.Indirect);
+			message.Recipient = new Uri("http://someserver");
+			badChannel.Create301RedirectResponse(message, null);
+		}
+
 		[TestMethod]
 		public void SendIndirectMessageFormPost() {
 			// We craft a very large message to force fallback to form POST.
@@ -85,7 +124,7 @@ namespace DotNetOAuth.Test.Messaging {
 			Response response = this.channel.DequeueIndirectOrResponseMessage();
 			Assert.AreEqual(HttpStatusCode.OK, response.Status, "A form redirect should be an HTTP successful response.");
 			Assert.IsNull(response.Headers[HttpResponseHeader.Location], "There should not be a redirection header in the response.");
-			string body = Encoding.UTF8.GetString(response.Body);
+			string body = response.Body;
 			StringAssert.Contains(body, "<form ");
 			StringAssert.Contains(body, "action=\"http://provider/path\"");
 			StringAssert.Contains(body, "method=\"post\"");
@@ -93,6 +132,27 @@ namespace DotNetOAuth.Test.Messaging {
 			StringAssert.Contains(body, "<input type=\"hidden\" name=\"Location\" value=\"http://host/path\" />");
 			StringAssert.Contains(body, "<input type=\"hidden\" name=\"Name\" value=\"" + HttpUtility.HtmlEncode(message.Name) + "\" />");
 			StringAssert.Contains(body, ".submit()", "There should be some javascript to automate form submission.");
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		public void SendIndirectMessageFormPostNullMessage() {
+			TestBadChannel badChannel = new TestBadChannel(false);
+			badChannel.CreateFormPostResponse(null, new Dictionary<string, string>());
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		public void SendIndirectMessageFormPostEmptyRecipient() {
+			TestBadChannel badChannel = new TestBadChannel(false);
+			var message = new TestDirectedMessage(MessageTransport.Indirect);
+			badChannel.CreateFormPostResponse(message, new Dictionary<string, string>());
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		public void SendIndirectMessageFormPostNullFields() {
+			TestBadChannel badChannel = new TestBadChannel(false);
+			var message = new TestDirectedMessage(MessageTransport.Indirect);
+			message.Recipient = new Uri("http://someserver");
+			badChannel.CreateFormPostResponse(message, null);
 		}
 
 		/// <summary>
@@ -112,7 +172,62 @@ namespace DotNetOAuth.Test.Messaging {
 			this.channel.Send(message);
 		}
 
-		private static HttpRequestInfo CreateHttpRequest(string method, IDictionary<string, string> fields) {
+		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		public void QueueIndirectOrResponseMessageNull() {
+			TestBadChannel badChannel = new TestBadChannel(false);
+			badChannel.QueueIndirectOrResponseMessage(null);
+		}
+
+		[TestMethod, ExpectedException(typeof(InvalidOperationException))]
+		public void QueueIndirectOrResponseMessageTwice() {
+			TestBadChannel badChannel = new TestBadChannel(false);
+			Response response = new Response();
+			badChannel.QueueIndirectOrResponseMessage(new Response());
+			badChannel.QueueIndirectOrResponseMessage(new Response());
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		public void SendIndirectMessageNull() {
+			TestBadChannel badChannel = new TestBadChannel(false);
+			badChannel.SendIndirectMessage(null);
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		public void ReceiveNull() {
+			TestBadChannel badChannel = new TestBadChannel(false);
+			badChannel.Receive(null);
+		}
+
+		[TestMethod]
+		public void ReceiveUnrecognizedMessage() {
+			TestBadChannel badChannel = new TestBadChannel(false);
+			Assert.IsNull(badChannel.Receive(new Dictionary<string, string>()));
+		}
+
+		[TestMethod]
+		public void ReadFromRequestWithContext() {
+			// TODO: make this a request with a message in it.
+			HttpRequest request = new HttpRequest("somefile", "http://someurl", "age=15");
+			HttpContext.Current = new HttpContext(request, new HttpResponse(new StringWriter()));
+			IProtocolMessage message = this.channel.ReadFromRequest();
+			Assert.IsNotNull(message);
+			Assert.IsInstanceOfType(message, typeof(TestMessage));
+			Assert.AreEqual(15, ((TestMessage)message).Age);
+		}
+
+		[TestMethod, ExpectedException(typeof(InvalidOperationException))]
+		public void ReadFromRequestNoContext() {
+			TestBadChannel badChannel = new TestBadChannel(false);
+			badChannel.ReadFromRequest();
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		public void ReadFromRequestNull() {
+			TestBadChannel badChannel = new TestBadChannel(false);
+			badChannel.ReadFromRequest(null);
+		}
+
+		private static HttpRequestInfo CreateHttpRequestInfo(string method, IDictionary<string, string> fields) {
 			string query = MessagingUtilities.CreateQueryString(fields);
 			UriBuilder requestUri = new UriBuilder("http://localhost/path");
 			WebHeaderCollection headers = new WebHeaderCollection();
@@ -144,7 +259,7 @@ namespace DotNetOAuth.Test.Messaging {
 				{ "Name", "Andrew" },
 				{ "Location", "http://hostb/pathB" },
 			};
-			IProtocolMessage requestMessage = this.channel.ReadFromRequest(CreateHttpRequest(method, fields));
+			IProtocolMessage requestMessage = this.channel.ReadFromRequest(CreateHttpRequestInfo(method, fields));
 			Assert.IsNotNull(requestMessage);
 			Assert.IsInstanceOfType(requestMessage, typeof(TestMessage));
 			TestMessage testMessage = (TestMessage)requestMessage;

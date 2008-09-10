@@ -12,6 +12,7 @@ namespace DotNetOAuth.Messaging {
 	using System.Runtime.Serialization;
 	using System.Xml;
 	using System.Xml.Linq;
+	using System.Diagnostics;
 
 	/// <summary>
 	/// Serializes/deserializes OAuth messages for/from transit.
@@ -46,9 +47,8 @@ namespace DotNetOAuth.Messaging {
 		/// <param name="messageType">The specific <see cref="IProtocolMessage"/>-derived type
 		/// that will be serialized and deserialized using this class.</param>
 		private MessageSerializer(Type messageType) {
-			if (messageType == null) {
-				throw new ArgumentNullException("messageType");
-			}
+			Debug.Assert(messageType != null, "messageType == null");
+
 			if (!typeof(IProtocolMessage).IsAssignableFrom(messageType)) {
 				throw new ArgumentException(
 					string.Format(
