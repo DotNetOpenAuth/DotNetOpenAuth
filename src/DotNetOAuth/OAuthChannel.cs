@@ -152,23 +152,6 @@ namespace DotNetOAuth {
 		}
 
 		/// <summary>
-		/// Reports an error to the user via the user agent.
-		/// </summary>
-		/// <param name="exception">The error information.</param>
-		protected override void ReportErrorToUser(ProtocolException exception) {
-			throw new NotImplementedException();
-		}
-
-		/// <summary>
-		/// Sends an error result directly to the calling remote party according to the
-		/// rules of the protocol.
-		/// </summary>
-		/// <param name="exception">The error information.</param>
-		protected override void ReportErrorAsDirectResponse(ProtocolException exception) {
-			throw new NotImplementedException();
-		}
-
-		/// <summary>
 		/// Prepares to send a request to the Service Provider via the Authorization header.
 		/// </summary>
 		/// <param name="requestMessage">The message to be transmitted to the ServiceProvider.</param>

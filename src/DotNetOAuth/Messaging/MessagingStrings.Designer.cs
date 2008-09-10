@@ -88,6 +88,24 @@ namespace DotNetOAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This exception was not constructed with a root request message that caused it..
+        /// </summary>
+        internal static string ExceptionNotConstructedForTransit {
+            get {
+                return ResourceManager.GetString("ExceptionNotConstructedForTransit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Messages that indicate indirect transport must implement the {0} interface..
+        /// </summary>
+        internal static string IndirectMessagesMustImplementIDirectedProtocolMessage {
+            get {
+                return ResourceManager.GetString("IndirectMessagesMustImplementIDirectedProtocolMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A message response is already queued for sending in the response stream..
         /// </summary>
         internal static string QueuedMessageResponseAlreadyExists {

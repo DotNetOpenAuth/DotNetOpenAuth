@@ -17,23 +17,15 @@ namespace DotNetOAuth.Test.Mocks {
 		}
 
 		protected internal override IProtocolMessage Request(IDirectedProtocolMessage request) {
-			throw new NotImplementedException();
+			throw new NotImplementedException("Request");
 		}
 
 		protected internal override IProtocolMessage ReadFromResponse(System.IO.Stream responseStream) {
-			throw new NotImplementedException();
+			throw new NotImplementedException("ReadFromResponse");
 		}
 
 		protected override void SendDirectMessageResponse(IProtocolMessage response) {
 			throw new NotImplementedException("SendDirectMessageResponse");
-		}
-
-		protected override void ReportErrorToUser(ProtocolException exception) {
-			throw new NotImplementedException();
-		}
-
-		protected override void ReportErrorAsDirectResponse(ProtocolException exception) {
-			throw new NotImplementedException();
 		}
 	}
 }

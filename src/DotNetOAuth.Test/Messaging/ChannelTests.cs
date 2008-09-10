@@ -53,14 +53,9 @@ namespace DotNetOAuth.Test.Messaging {
 			this.channel.Send(null);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
-		public void SendNull2() {
-			this.channel.Send(null, new TestDirectedMessage());
-		}
-
 		[TestMethod]
 		public void SendIndirectMessage301Get() {
-			IProtocolMessage message = new TestDirectedMessage {
+			IProtocolMessage message = new TestDirectedMessage(MessageTransport.Indirect) {
 				Age = 15,
 				Name = "Andrew",
 				Location = new Uri("http://host/path"),
@@ -80,7 +75,7 @@ namespace DotNetOAuth.Test.Messaging {
 			// We craft a very large message to force fallback to form POST.
 			// We'll also stick some HTML reserved characters in the string value
 			// to test proper character escaping.
-			var message = new TestDirectedMessage {
+			var message = new TestDirectedMessage(MessageTransport.Indirect) {
 				Age = 15,
 				Name = "c<b" + new string('a', 10 * 1024),
 				Location = new Uri("http://host/path"),

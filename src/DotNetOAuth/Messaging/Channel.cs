@@ -7,6 +7,8 @@
 namespace DotNetOAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
+	using System.Globalization;
 	using System.IO;
 	using System.Net;
 	using System.Text;
@@ -93,44 +95,33 @@ namespace DotNetOAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The one-way message to send</param>
 		internal void Send(IProtocolMessage message) {
-			this.Send(message, null);
-		}
-
-		/// <summary>
-		/// Queues an indirect message (either a request or response) 
-		/// or direct message response for transmission to a remote party.
-		/// </summary>
-		/// <param name="message">The one-way message to send</param>
-		/// <param name="inResponseTo">
-		/// If <paramref name="message"/> is a response to an incoming message, this is the incoming message.
-		/// This is useful for error scenarios in deciding just how to send the response message.
-		/// May be null.
-		/// </param>
-		internal void Send(IProtocolMessage message, IProtocolMessage inResponseTo) {
 			if (message == null) {
 				throw new ArgumentNullException("message");
 			}
 
-			var directedMessage = message as IDirectedProtocolMessage;
-			if (directedMessage == null) {
-				// This is a response to a direct message.
-				this.SendDirectMessageResponse(message);
-			} else {
-				if (directedMessage.Recipient != null) {
-					// This is an indirect message request or reply.
-					this.SendIndirectMessage(directedMessage);
-				} else {
-					ProtocolException exception = message as ProtocolException;
-					if (exception != null) {
-						if (inResponseTo is IDirectedProtocolMessage) {
-							this.ReportErrorAsDirectResponse(exception);
-						} else {
-							this.ReportErrorToUser(exception);
-						}
-					} else {
-						throw new InvalidOperationException(MessagingStrings.DirectedMessageMissingRecipient);
+			switch (message.Transport) {
+				case MessageTransport.Direct:
+					// This is a response to a direct message.
+					this.SendDirectMessageResponse(message);
+					break;
+				case MessageTransport.Indirect:
+					var directedMessage = message as IDirectedProtocolMessage;
+					if (directedMessage == null) {
+						throw new ArgumentException(
+							string.Format(
+								CultureInfo.CurrentCulture,
+								MessagingStrings.IndirectMessagesMustImplementIDirectedProtocolMessage,
+								typeof(IDirectedProtocolMessage).FullName),
+							"message");
 					}
-				}
+					if (directedMessage.Recipient == null) {
+						throw new ArgumentException(MessagingStrings.DirectedMessageMissingRecipient, "message");
+					}
+					this.SendIndirectMessage(directedMessage);
+					break;
+				default:
+					Debug.Fail("Unrecogized MessageTransport value.");
+					throw new ArgumentException();
 			}
 		}
 
@@ -249,6 +240,9 @@ namespace DotNetOAuth.Messaging {
 			if (message == null) {
 				throw new ArgumentNullException("message");
 			}
+			if (message.Recipient == null) {
+				throw new ArgumentException(MessagingStrings.DirectedMessageMissingRecipient, "message");
+			}
 			if (fields == null) {
 				throw new ArgumentNullException("fields");
 			}
@@ -278,6 +272,9 @@ namespace DotNetOAuth.Messaging {
 		protected virtual Response CreateFormPostResponse(IDirectedProtocolMessage message, IDictionary<string, string> fields) {
 			if (message == null) {
 				throw new ArgumentNullException("message");
+			}
+			if (message.Recipient == null) {
+				throw new ArgumentException(MessagingStrings.DirectedMessageMissingRecipient, "message");
 			}
 			if (fields == null) {
 				throw new ArgumentNullException("fields");
@@ -317,19 +314,6 @@ namespace DotNetOAuth.Messaging {
 		/// This method implements spec V1.0 section 5.3.
 		/// </remarks>
 		protected abstract void SendDirectMessageResponse(IProtocolMessage response);
-
-		/// <summary>
-		/// Reports an error to the user via the user agent.
-		/// </summary>
-		/// <param name="exception">The error information.</param>
-		protected abstract void ReportErrorToUser(ProtocolException exception);
-
-		/// <summary>
-		/// Sends an error result directly to the calling remote party according to the
-		/// rules of the protocol.
-		/// </summary>
-		/// <param name="exception">The error information.</param>
-		protected abstract void ReportErrorAsDirectResponse(ProtocolException exception);
 
 		/// <summary>
 		/// Calculates a fairly accurate estimation on the size of a message that contains
