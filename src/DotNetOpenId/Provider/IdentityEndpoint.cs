@@ -12,12 +12,15 @@ namespace DotNetOpenId.Provider {
 		}
 
 		/// <summary>
-		/// Gets the portion of the incoming page request URI that is relevant to normalization.
+		/// Gets or sets the portion of the incoming page request URI that is relevant to normalization.
 		/// </summary>
 		/// <remarks>
 		/// This identifier should be used to look up the user whose identity page is being queried.
+		/// It MAY be set in case some clever web server URL rewriting is taking place that ASP.NET
+		/// does not know about but your site does. If this is the case this property should be set
+		/// to whatever the original request URL was.
 		/// </remarks>
-		public Uri UserSuppliedIdentifier { get; private set; }
+		public Uri UserSuppliedIdentifier { get; set; }
 
 		/// <summary>
 		/// Gets/sets the normalized form of the user's identifier, according to the host site's policy.
@@ -155,10 +158,11 @@ namespace DotNetOpenId.Provider {
 				normalizationArgs.NormalizedIdentifier = bestGuessNormalization(normalizationArgs.UserSuppliedIdentifier);
 			}
 			// If we have a normalized form, we should use it.
-			// We only compare path and query because the host name SHOULD NOT be case sensitive,
+			// We compare path and query with case sensitivity and host name without case sensitivity deliberately,
 			// and the fragment will be asserted or cleared by the OP during authentication.
 			if (normalizationArgs.NormalizedIdentifier != null &&
-				!String.Equals(normalizationArgs.NormalizedIdentifier.PathAndQuery, userSuppliedIdentifier.Uri.PathAndQuery, StringComparison.Ordinal)) {
+				(!String.Equals(normalizationArgs.NormalizedIdentifier.Host, normalizationArgs.UserSuppliedIdentifier.Host, StringComparison.OrdinalIgnoreCase) ||
+				!String.Equals(normalizationArgs.NormalizedIdentifier.PathAndQuery, normalizationArgs.UserSuppliedIdentifier.PathAndQuery, StringComparison.Ordinal))) {
 				Page.Response.Redirect(normalizationArgs.NormalizedIdentifier.AbsoluteUri);
 			}
 		}
