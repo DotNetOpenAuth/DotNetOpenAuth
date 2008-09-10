@@ -120,8 +120,12 @@ namespace DotNetOAuth.Messaging {
 					this.SendIndirectMessage(directedMessage);
 					break;
 				default:
-					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
-						MessagingStrings.UnrecognizedEnumValue, "Transport", message.Transport),
+					throw new ArgumentException(
+						string.Format(
+							CultureInfo.CurrentCulture,
+							MessagingStrings.UnrecognizedEnumValue,
+							"Transport",
+							message.Transport),
 						"message");
 			}
 		}

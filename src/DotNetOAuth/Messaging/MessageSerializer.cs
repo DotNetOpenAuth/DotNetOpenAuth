@@ -7,12 +7,12 @@
 namespace DotNetOAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
 	using System.Globalization;
 	using System.Linq;
 	using System.Runtime.Serialization;
 	using System.Xml;
 	using System.Xml.Linq;
-	using System.Diagnostics;
 
 	/// <summary>
 	/// Serializes/deserializes OAuth messages for/from transit.

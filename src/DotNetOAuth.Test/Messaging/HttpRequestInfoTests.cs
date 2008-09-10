@@ -4,17 +4,17 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-using System.Web;
-using DotNetOAuth.Messaging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 namespace DotNetOAuth.Test.Messaging {
+	using System.Web;
+	using DotNetOAuth.Messaging;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 	[TestClass]
 	public class HttpRequestInfoTests : TestBase {
 		[TestMethod]
 		public void CtorRequest() {
 			HttpRequest request = new HttpRequest("file", "http://someserver?a=b", "a=b");
-			//request.Headers["headername"] = "headervalue"; // PlatformNotSupportedException prevents us mocking this up
+			////request.Headers["headername"] = "headervalue"; // PlatformNotSupportedException prevents us mocking this up
 			HttpRequestInfo info = new HttpRequestInfo(request);
 			Assert.AreEqual(request.Headers["headername"], info.Headers["headername"]);
 			Assert.AreEqual(request.Url.Query, info.Query);

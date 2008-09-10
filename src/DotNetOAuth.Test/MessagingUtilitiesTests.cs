@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="MessagingUtilitiesTest.cs" company="Andrew Arnott">
+// <copyright file="MessagingUtilitiesTests.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -16,7 +16,7 @@ namespace DotNetOAuth.Test
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
-	public class MessagingUtilitiesTest : TestBase {
+	public class MessagingUtilitiesTests : TestBase {
 		[TestMethod]
 		public void CreateQueryString() {
 			var args = new Dictionary<string, string>();

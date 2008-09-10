@@ -58,7 +58,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MessagingUtilitiesTest.cs" />
+    <Compile Include="MessagingUtilitiesTests.cs" />
     <Compile Include="Messaging\ChannelTests.cs" />
     <Compile Include="Messaging\DictionaryXmlReaderTests.cs" />
     <Compile Include="Messaging\HttpRequestInfoTests.cs" />
@@ -71,9 +71,11 @@
     <Compile Include="Mocks\TestMessage.cs" />
     <Compile Include="Mocks\TestMessageTypeProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Messaging\ResponseTest.cs" />
-    <Compile Include="ServiceProviderTest.cs" />
+    <Compile Include="Messaging\ResponseTests.cs" />
+    <Compile Include="ProtocolTests.cs" />
+    <Compile Include="ServiceProviderTests.cs" />
     <Compile Include="TestBase.cs" />
+    <Compile Include="UriUtilTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DotNetOAuth\DotNetOAuth.csproj">

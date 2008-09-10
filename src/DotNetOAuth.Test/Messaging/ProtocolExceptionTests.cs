@@ -1,11 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using DotNetOAuth.Messaging;
+﻿//-----------------------------------------------------------------------
+// <copyright file="ProtocolExceptionTests.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
 
 namespace DotNetOAuth.Test.Messaging {
+	using System;
+	using DotNetOAuth.Messaging;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 	[TestClass]
 	public class ProtocolExceptionTests : TestBase {
 		[TestMethod]

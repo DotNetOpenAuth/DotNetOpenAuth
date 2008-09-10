@@ -25,11 +25,11 @@ namespace DotNetOAuth.Messaging {
 	/// </remarks>
 	public class Response {
 		/// <summary>
-		/// Initializes an instance of the <see cref="Response"/> class.
+		/// Initializes a new instance of the <see cref="Response"/> class.
 		/// </summary>
 		internal Response() {
-			Status = HttpStatusCode.OK;
-			Headers = new WebHeaderCollection();
+			this.Status = HttpStatusCode.OK;
+			this.Headers = new WebHeaderCollection();
 		}
 
 		/// <summary>
@@ -71,7 +71,7 @@ namespace DotNetOAuth.Messaging {
 			HttpContext.Current.Response.StatusCode = (int)this.Status;
 			MessagingUtilities.ApplyHeadersToResponse(this.Headers, HttpContext.Current.Response);
 			if (this.Body != null) {
-				HttpContext.Current.Response.Output.Write(Body);
+				HttpContext.Current.Response.Output.Write(this.Body);
 			}
 			HttpContext.Current.Response.End();
 		}

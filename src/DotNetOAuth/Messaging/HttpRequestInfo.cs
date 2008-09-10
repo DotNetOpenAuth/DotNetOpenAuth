@@ -7,10 +7,10 @@
 namespace DotNetOAuth.Messaging {
 	using System;
 	using System.Collections.Specialized;
+	using System.Diagnostics;
 	using System.IO;
 	using System.Net;
 	using System.Web;
-	using System.Diagnostics;
 
 	/// <summary>
 	/// A property store of details of an incoming HTTP request.

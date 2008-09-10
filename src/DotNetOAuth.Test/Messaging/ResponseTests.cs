@@ -1,20 +1,18 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ResponseTest.cs" company="Andrew Arnott">
+// <copyright file="ResponseTests.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
 namespace DotNetOAuth.Test.Messaging {
 	using System;
+	using System.IO;
+	using System.Web;
 	using DotNetOAuth.Messaging;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using System.Web;
-	using System.IO;
-	using System.Threading;
-	using System.Text;
 
 	[TestClass]
-	public class ResponseTest : TestBase {
+	public class ResponseTests : TestBase {
 		[TestMethod, ExpectedException(typeof(InvalidOperationException))]
 		public void SendWithoutAspNetContext() {
 			new Response().Send();
@@ -23,7 +21,7 @@ namespace DotNetOAuth.Test.Messaging {
 		[TestMethod]
 		public void Send() {
 			StringWriter writer = new StringWriter();
-			HttpRequest httpRequest = new HttpRequest("file", "http://server", "");
+			HttpRequest httpRequest = new HttpRequest("file", "http://server", string.Empty);
 			HttpResponse httpResponse = new HttpResponse(writer);
 			HttpContext context = new HttpContext(httpRequest, httpResponse);
 			HttpContext.Current = context;

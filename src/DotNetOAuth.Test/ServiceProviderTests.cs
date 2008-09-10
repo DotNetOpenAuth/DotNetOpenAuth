@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ServiceProviderTest.cs" company="Andrew Arnott">
+// <copyright file="ServiceProviderTests.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -12,7 +12,7 @@ namespace DotNetOAuth.Test {
 	/// Tests for the <see cref="ServiceProvider"/> class.
 	/// </summary>
 	[TestClass]
-	public class ServiceProviderTest : TestBase {
+	public class ServiceProviderTests : TestBase {
 		/// <summary>
 		/// A test for UserAuthorizationUri
 		/// </summary>

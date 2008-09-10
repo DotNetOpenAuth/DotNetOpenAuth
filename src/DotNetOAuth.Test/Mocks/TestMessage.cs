@@ -36,7 +36,7 @@ namespace DotNetOAuth.Test.Mocks {
 		}
 
 		MessageTransport IProtocolMessage.Transport {
-			get { return transport; }
+			get { return this.transport; }
 		}
 
 		void IProtocolMessage.EnsureValidMessage() {
