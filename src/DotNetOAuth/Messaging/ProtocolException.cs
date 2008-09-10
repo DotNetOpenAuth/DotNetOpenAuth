@@ -90,7 +90,12 @@ namespace DotNetOAuth.Messaging {
 		/// This property should only be called when the error is being sent as an indirect response.
 		/// </remarks>
 		Uri IDirectedProtocolMessage.Recipient {
-			get { return this.recipient; }
+			get {
+				if (this.inResponseTo == null) {
+					throw new InvalidOperationException(MessagingStrings.ExceptionNotConstructedForTransit);
+				}
+				return this.recipient;
+			}
 		}
 
 		#endregion
