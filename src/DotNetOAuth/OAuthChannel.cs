@@ -21,7 +21,21 @@ namespace DotNetOAuth {
 		/// Initializes a new instance of the <see cref="OAuthChannel"/> class.
 		/// </summary>
 		internal OAuthChannel()
-			: base(new OAuthMessageTypeProvider()) {
+			: this(new OAuthMessageTypeProvider()) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="OAuthChannel"/> class.
+		/// </summary>
+		/// <param name="messageTypeProvider">
+		/// An injected message type provider instance.
+		/// Except for mock testing, this should always be <see cref="OAuthMessageTypeProvider"/>.
+		/// </param>
+		/// <remarks>
+		/// This overload for testing purposes only.
+		/// </remarks>
+		internal OAuthChannel(IMessageTypeProvider messageTypeProvider)
+			: base(messageTypeProvider) {
 		}
 
 		/// <summary>
@@ -145,7 +159,7 @@ namespace DotNetOAuth {
 			Response encodedResponse = new Response {
 				Body = responseBody,
 				OriginalMessage = response,
-				Status = System.Net.HttpStatusCode.OK,
+				Status = HttpStatusCode.OK,
 				Headers = new System.Net.WebHeaderCollection(),
 			};
 			this.QueueIndirectOrResponseMessage(encodedResponse);

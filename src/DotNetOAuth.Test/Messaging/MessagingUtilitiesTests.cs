@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOAuth.Test
+namespace DotNetOAuth.Test.Messaging
 {
 	using System;
 	using System.Collections.Generic;

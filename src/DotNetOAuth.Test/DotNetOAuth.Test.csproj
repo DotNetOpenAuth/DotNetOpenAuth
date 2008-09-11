@@ -58,7 +58,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MessagingUtilitiesTests.cs" />
+    <Compile Include="Messaging\MessagingUtilitiesTests.cs" />
     <Compile Include="Messaging\ChannelTests.cs" />
     <Compile Include="Messaging\DictionaryXmlReaderTests.cs" />
     <Compile Include="Messaging\HttpRequestInfoTests.cs" />
