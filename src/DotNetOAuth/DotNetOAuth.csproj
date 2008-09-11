@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Consumer.cs" />
+    <Compile Include="IWebRequestHandler.cs" />
     <Compile Include="Messaging\DictionaryXmlReader.cs" />
     <Compile Include="Messaging\DictionaryXmlWriter.cs" />
     <Compile Include="Messaging\Channel.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="Messaging\ProtocolException.cs" />
     <Compile Include="Messaging\MessageSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StandardWebRequestHandler.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="Protocol.cs" />
     <Compile Include="ServiceProvider.cs" />

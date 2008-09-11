@@ -6,6 +6,7 @@
 
 namespace DotNetOAuth.Messaging {
 	using System;
+	using System.IO;
 	using System.Net;
 	using System.Web;
 
@@ -30,6 +31,19 @@ namespace DotNetOAuth.Messaging {
 		internal Response() {
 			this.Status = HttpStatusCode.OK;
 			this.Headers = new WebHeaderCollection();
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Response"/> class
+		/// based on the contents of an <see cref="HttpWebResponse"/>.
+		/// </summary>
+		/// <param name="response">The <see cref="HttpWebResponse"/> to clone.</param>
+		internal Response(HttpWebResponse response) {
+			this.Status = response.StatusCode;
+			this.Headers = response.Headers;
+			using (StreamReader reader = new StreamReader(response.GetResponseStream())) {
+				this.Body = reader.ReadToEnd();
+			}
 		}
 
 		/// <summary>

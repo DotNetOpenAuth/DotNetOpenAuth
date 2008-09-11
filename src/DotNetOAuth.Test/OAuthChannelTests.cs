@@ -18,13 +18,25 @@ namespace DotNetOAuth.Test {
 
 	[TestClass]
 	public class OAuthChannelTests : TestBase {
-		private Channel channel;
+		private OAuthChannel channel;
+		private TestWebRequestHandler webRequestHandler;
 
 		[TestInitialize]
 		public override void SetUp() {
 			base.SetUp();
 
-			this.channel = new OAuthChannel(new TestMessageTypeProvider());
+			this.webRequestHandler = new TestWebRequestHandler();
+			this.channel = new OAuthChannel(new TestMessageTypeProvider(), this.webRequestHandler);
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		public void CtorNullHandler() {
+			new OAuthChannel(new TestMessageTypeProvider(), null);
+		}
+
+		[TestMethod]
+		public void CtorDefault() {
+			new OAuthChannel();
 		}
 
 		[TestMethod]
@@ -90,6 +102,40 @@ namespace DotNetOAuth.Test {
 			Assert.IsNull(testMessage.EmptyMember);
 		}
 
+		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		public void RequestNull() {
+			this.channel.Request(null);
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		public void RequestNullRecipient() {
+			IDirectedProtocolMessage message = new TestDirectedMessage(MessageTransport.Direct);
+			this.channel.Request(message);
+		}
+
+		[TestMethod, ExpectedException(typeof(NotSupportedException))]
+		public void RequestBadPreferredScheme() {
+			TestDirectedMessage message = new TestDirectedMessage(MessageTransport.Direct);
+			message.Recipient = new Uri("http://localtest");
+			this.channel.PreferredTransmissionScheme = (MessageScheme)100;
+			this.channel.Request(message);
+		}
+
+		[TestMethod]
+		public void RequestUsingAuthorizationHeader() {
+			this.ParameterizedRequestTest(MessageScheme.AuthorizationHeaderRequest);
+		}
+
+		[TestMethod]
+		public void RequestUsingGet() {
+			this.ParameterizedRequestTest(MessageScheme.GetRequest);
+		}
+
+		[TestMethod]
+		public void RequestUsingPost() {
+			this.ParameterizedRequestTest(MessageScheme.PostRequest);
+		}
+
 		private static string CreateAuthorizationHeader(IDictionary<string, string> fields) {
 			if (fields == null) {
 				throw new ArgumentNullException("fields");
@@ -144,6 +190,55 @@ namespace DotNetOAuth.Test {
 			};
 
 			return request;
+		}
+
+		private static HttpRequestInfo ConvertToRequestInfo(HttpWebRequest request, Stream postEntity) {
+			HttpRequestInfo info = new HttpRequestInfo {
+				HttpMethod = request.Method,
+				Url = request.RequestUri,
+				Headers = request.Headers,
+				InputStream = postEntity,
+			};
+			return info;
+		}
+
+		private void ParameterizedRequestTest(MessageScheme scheme) {
+			TestDirectedMessage request = new TestDirectedMessage(MessageTransport.Direct) {
+				Age = 15,
+				Name = "Andrew",
+				Location = new Uri("http://hostb/pathB"),
+				Recipient = new Uri("http://localtest"),
+			};
+
+			Response rawResponse = null;
+			this.webRequestHandler.Callback = (req) => {
+				Assert.IsNotNull(req);
+				HttpRequestInfo reqInfo = ConvertToRequestInfo(req, this.webRequestHandler.RequestEntityStream);
+				Assert.AreEqual(scheme == MessageScheme.PostRequest ? "POST" : "GET", reqInfo.HttpMethod);
+				var incomingMessage = this.channel.ReadFromRequest(reqInfo) as TestMessage;
+				Assert.AreEqual(request.Age, incomingMessage.Age);
+				Assert.AreEqual(request.Name, incomingMessage.Name);
+				Assert.AreEqual(request.Location, incomingMessage.Location);
+
+				var responseFields = new Dictionary<string, string> {
+					{ "age", request.Age.ToString() },
+					{ "Name", request.Name },
+					{ "Location", request.Location.AbsoluteUri },
+				};
+				rawResponse = new Response {
+					Body = MessagingUtilities.CreateQueryString(responseFields),
+				};
+				return rawResponse;
+			};
+
+			this.channel.PreferredTransmissionScheme = scheme;
+			IProtocolMessage response = this.channel.Request(request);
+			Assert.IsNotNull(response);
+			Assert.IsInstanceOfType(response, typeof(TestMessage));
+			TestMessage responseMessage = (TestMessage)response;
+			Assert.AreEqual(request.Age, responseMessage.Age);
+			Assert.AreEqual(request.Name, responseMessage.Name);
+			Assert.AreEqual(request.Location, responseMessage.Location);
 		}
 
 		private void ParameterizedReceiveTest(MessageScheme scheme) {

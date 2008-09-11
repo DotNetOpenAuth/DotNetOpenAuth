@@ -18,10 +18,16 @@ namespace DotNetOAuth {
 	/// </summary>
 	internal class OAuthChannel : Channel {
 		/// <summary>
+		/// The object that will transmit <see cref="HttpWebRequest"/> instances
+		/// and return their responses.
+		/// </summary>
+		private IWebRequestHandler webRequestHandler;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuthChannel"/> class.
 		/// </summary>
 		internal OAuthChannel()
-			: this(new OAuthMessageTypeProvider()) {
+			: this(new OAuthMessageTypeProvider(), new StandardWebRequestHandler()) {
 		}
 
 		/// <summary>
@@ -31,12 +37,27 @@ namespace DotNetOAuth {
 		/// An injected message type provider instance.
 		/// Except for mock testing, this should always be <see cref="OAuthMessageTypeProvider"/>.
 		/// </param>
+		/// <param name="webRequestHandler">
+		/// An instance to a <see cref="IWebRequestHandler"/> that will be used when submitting HTTP
+		/// requests and waiting for responses.
+		/// </param>
 		/// <remarks>
 		/// This overload for testing purposes only.
 		/// </remarks>
-		internal OAuthChannel(IMessageTypeProvider messageTypeProvider)
+		internal OAuthChannel(IMessageTypeProvider messageTypeProvider, IWebRequestHandler webRequestHandler)
 			: base(messageTypeProvider) {
+			if (webRequestHandler == null) {
+				throw new ArgumentNullException("webRequestHandler");
+			}
+
+			this.webRequestHandler = webRequestHandler;
+			this.PreferredTransmissionScheme = MessageScheme.AuthorizationHeaderRequest;
 		}
+
+		/// <summary>
+		/// Gets or sets the method used in direct requests to transmit the message payload.
+		/// </summary>
+		internal MessageScheme PreferredTransmissionScheme { get; set; }
 
 		/// <summary>
 		/// Searches an incoming HTTP request for data that could be used to assemble
@@ -105,10 +126,13 @@ namespace DotNetOAuth {
 			if (request == null) {
 				throw new ArgumentNullException("request");
 			}
+			if (request.Recipient == null) {
+				throw new ArgumentException(MessagingStrings.DirectedMessageMissingRecipient, "request");
+			}
 
 			HttpWebRequest httpRequest;
 
-			MessageScheme transmissionMethod = MessageScheme.AuthorizationHeaderRequest;
+			MessageScheme transmissionMethod = this.PreferredTransmissionScheme;
 			switch (transmissionMethod) {
 				case MessageScheme.AuthorizationHeaderRequest:
 					httpRequest = this.InitializeRequestAsAuthHeader(request);
@@ -123,20 +147,15 @@ namespace DotNetOAuth {
 					throw new NotSupportedException();
 			}
 
-			// Submit the request and await the reply.
-			Dictionary<string, string> responseFields;
-			try {
-				using (HttpWebResponse response = (HttpWebResponse)httpRequest.GetResponse()) {
-					using (StreamReader reader = new StreamReader(response.GetResponseStream())) {
-						string queryString = reader.ReadToEnd();
-						responseFields = HttpUtility.ParseQueryString(queryString).ToDictionary();
-					}
-				}
-			} catch (WebException ex) {
-				throw new ProtocolException(MessagingStrings.ErrorInRequestReplyMessage, ex);
+			Response response = this.webRequestHandler.GetResponse(httpRequest);
+			if (response.Body == null) {
+				return null;
 			}
-
+			var responseFields = HttpUtility.ParseQueryString(response.Body).ToDictionary();
 			Type messageType = this.MessageTypeProvider.GetResponseMessageType(request, responseFields);
+			if (messageType == null) {
+				return null;
+			}
 			var responseSerialize = MessageSerializer.Get(messageType);
 			var responseMessage = responseSerialize.Deserialize(responseFields);
 
@@ -214,7 +233,7 @@ namespace DotNetOAuth {
 			httpRequest.ContentType = "application/x-www-form-urlencoded";
 			string requestBody = MessagingUtilities.CreateQueryString(fields);
 			httpRequest.ContentLength = requestBody.Length;
-			using (StreamWriter writer = new StreamWriter(httpRequest.GetRequestStream())) {
+			using (TextWriter writer = this.webRequestHandler.GetRequestStream(httpRequest)) {
 				writer.Write(requestBody);
 			}
 

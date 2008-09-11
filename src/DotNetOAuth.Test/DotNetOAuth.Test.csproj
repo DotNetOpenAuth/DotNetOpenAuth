@@ -65,6 +65,7 @@
     <Compile Include="Messaging\ProtocolExceptionTests.cs" />
     <Compile Include="Mocks\TestDirectedMessage.cs" />
     <Compile Include="Mocks\TestBadChannel.cs" />
+    <Compile Include="Mocks\TestWebRequestHandler.cs" />
     <Compile Include="OAuthChannelTests.cs" />
     <Compile Include="Messaging\MessageSerializerTests.cs" />
     <Compile Include="Mocks\TestChannel.cs" />
