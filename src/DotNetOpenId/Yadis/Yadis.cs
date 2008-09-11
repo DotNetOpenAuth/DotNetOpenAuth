@@ -43,14 +43,22 @@ namespace DotNetOpenId.Yadis {
 			}
 			UntrustedWebResponse response2 = null;
 			if (isXrdsDocument(response)) {
+				Logger.Debug("An XRDS response was received from GET at user-supplied identifier.");
 				response2 = response;
 			} else {
 				string uriString = response.Headers.Get(HeaderName);
 				Uri url = null;
-				if (uriString != null)
-					Uri.TryCreate(uriString, UriKind.Absolute, out url);
-				if (url == null && response.ContentType.MediaType == ContentTypes.Html)
+				if (uriString != null) {
+					if (Uri.TryCreate(uriString, UriKind.Absolute, out url)) {
+						Logger.DebugFormat("{0} found in HTTP header.  Preparing to pull XRDS from {1}", HeaderName, url);
+					}
+				}
+				if (url == null && response.ContentType.MediaType == ContentTypes.Html) {
 					url = FindYadisDocumentLocationInHtmlMetaTags(response.ReadResponseString());
+					if (url != null) {
+						Logger.DebugFormat("{0} found in HTML Http-Equiv tag.  Preparing to pull XRDS from {1}", HeaderName, url);
+					}
+				}
 				if (url != null) {
 					if (!requireSsl || string.Equals(url.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)) {
 						response2 = UntrustedWebRequest.Request(url, null, null, requireSsl);

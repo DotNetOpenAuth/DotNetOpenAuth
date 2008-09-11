@@ -280,7 +280,18 @@ namespace DotNetOpenId.RelyingParty {
 			builder.AppendLine("ClaimedIdentifier: " + ClaimedIdentifier);
 			builder.AppendLine("ProviderLocalIdentifier: " + ProviderLocalIdentifier);
 			builder.AppendLine("ProviderEndpoint: " + ProviderEndpoint.AbsoluteUri);
-			builder.Append("OpenID version: " + Protocol.Version);
+			builder.AppendLine("OpenID version: " + Protocol.Version);
+			builder.AppendLine("Service Type URIs:");
+			foreach (string serviceTypeUri in ProviderSupportedServiceTypeUris) {
+				builder.Append("\t");
+				var matchingExtension = Util.FirstOrDefault(ExtensionManager.RequestExtensions, ext => ext.Key.TypeUri == serviceTypeUri);
+				if (matchingExtension.Key != null) {
+					builder.AppendLine(string.Format(CultureInfo.CurrentCulture, "{0} ({1})", serviceTypeUri, matchingExtension.Value));
+				} else {
+					builder.AppendLine(serviceTypeUri);
+				}
+			}
+			builder.Length -= Environment.NewLine.Length; // trim last newline
 			return builder.ToString();
 		}
 

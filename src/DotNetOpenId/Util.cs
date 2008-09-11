@@ -272,12 +272,40 @@ namespace DotNetOpenId {
 			return null;
 		}
 
+		internal static T FirstOrDefault<T>(IEnumerable<T> sequence, Func<T, bool> predicate) {
+			IEnumerator<T> iterator = Where(sequence, predicate).GetEnumerator();
+			return iterator.MoveNext() ? iterator.Current : default(T);
+		}
 		internal static IEnumerable<T> Where<T>(IEnumerable<T> sequence, Func<T, bool> predicate) {
 			foreach (T item in sequence) {
 				if (predicate(item)) {
 					yield return item;
 				}
 			}
+		}
+		/// <summary>
+		/// Tests two sequences for same contents and ordering.
+		/// </summary>
+		internal static bool AreSequencesEquivalent<T>(IEnumerable<T> sequence1, IEnumerable<T> sequence2) {
+			if (sequence1 == null && sequence2 == null) return true;
+			if (sequence1 == null) throw new ArgumentNullException("sequence1");
+			if (sequence2 == null) throw new ArgumentNullException("sequence2");
+
+			IEnumerator<T> iterator1 = sequence1.GetEnumerator();
+			IEnumerator<T> iterator2 = sequence2.GetEnumerator();
+			bool movenext1 , movenext2;
+			while (true) {
+				movenext1 = iterator1.MoveNext();
+				movenext2 = iterator2.MoveNext();
+				if (!movenext1 || !movenext2) break; // if we've reached the end of at least one sequence
+				object obj1 = iterator1.Current;
+				object obj2 = iterator2.Current;
+				if (obj1 == null && obj2 == null) continue; // both null is ok
+				if (obj1 == null ^ obj2 == null) return false; // exactly one null is different
+				if (!obj1.Equals(obj2)) return false; // if they're not equal to each other
+			}
+
+			return movenext1 == movenext2; // did they both reach the end together?
 		}
 
 		/// <summary>
@@ -299,18 +327,46 @@ namespace DotNetOpenId {
 			});
 		}
 		internal static object ToString<T>(IEnumerable<T> list) {
+			return ToString<T>(list, false);
+		}
+		internal static object ToString<T>(IEnumerable<T> list, bool multiLineElements) {
 			return new DelayedToString<IEnumerable<T>>(list, l => {
 				StringBuilder sb = new StringBuilder();
-				sb.Append("{");
-				foreach (T obj in l) {
-					sb.Append(obj);
-					sb.AppendLine(",");
+				if (multiLineElements) {
+					sb.AppendLine("[{");
+					foreach (T obj in l) {
+						// Prepare the string repersentation of the object
+						string objString = obj != null ? obj.ToString() : "<NULL>";
+						
+						// Indent every line printed
+						objString = objString.Replace(Environment.NewLine, Environment.NewLine + "\t");
+						sb.Append("\t");
+						sb.Append(objString);
+
+						if (!objString.EndsWith(Environment.NewLine)) {
+							sb.AppendLine();
+						}
+						sb.AppendLine("}, {");
+					}
+					if (sb.Length > 2) { // if anything was in the enumeration
+						sb.Length -= 2 + Environment.NewLine.Length; // trim off the last ", {\r\n"
+					} else {
+						sb.Length -= 1; // trim off the opening {
+					}
+					sb.Append("]");
+					return sb.ToString();
+				} else {
+					sb.Append("{");
+					foreach (T obj in l) {
+						sb.Append(obj != null ? obj.ToString() : "<NULL>");
+						sb.AppendLine(",");
+					}
+					if (sb.Length > 1) {
+						sb.Length -= 1;
+					}
+					sb.Append("}");
+					return sb.ToString();
 				}
-				if (sb.Length > 1) {
-					sb.Length -= 1;
-				}
-				sb.Append("}");
-				return sb.ToString();
 			});
 		}
 

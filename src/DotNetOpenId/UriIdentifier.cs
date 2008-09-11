@@ -189,9 +189,19 @@ namespace DotNetOpenId {
 				// Failing YADIS discovery of an XRDS document, we try HTML discovery.
 				if (endpoints.Count == 0) {
 					ServiceEndpoint ep = DiscoverFromHtml(yadisResult.NormalizedUri, yadisResult.ResponseText);
-					if (ep != null && (!IsDiscoverySecureEndToEnd || ep.IsSecure)) {
-						endpoints.Add(ep);
+					if (ep != null) {
+						Logger.Debug("HTML discovery found a service endpoint.");
+						Logger.Debug(ep);
+						if (!IsDiscoverySecureEndToEnd || ep.IsSecure) {
+							endpoints.Add(ep);
+						} else {
+							Logger.Info("Skipping HTML discovered endpoint because it is not secure.");
+						}
+					} else {
+						Logger.Debug("HTML discovery failed to find any endpoints.");
 					}
+				} else {
+					Logger.Debug("Skipping HTML discovery because XRDS contained service endpoints.");
 				}
 			}
 			return endpoints;

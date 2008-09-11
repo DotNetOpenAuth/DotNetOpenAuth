@@ -64,6 +64,7 @@
     <Compile Include="Configuration\WhiteBlackListCollection.cs" />
     <Compile Include="Configuration\WhiteBlackListElement.cs" />
     <Compile Include="DiffieHellmanUtil.cs" />
+    <Compile Include="Extensions\ExtensionManager.cs" />
     <Compile Include="Provider\ProviderSecuritySettings.cs" />
     <Compile Include="Configuration\ProviderSecuritySettingsElement.cs" />
     <Compile Include="Configuration\ProviderSection.cs" />
