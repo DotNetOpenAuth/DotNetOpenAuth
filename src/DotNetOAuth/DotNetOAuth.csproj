@@ -74,6 +74,7 @@
     <Compile Include="Messaging\HttpRequestInfo.cs" />
     <Compile Include="Messaging\IDirectedProtocolMessage.cs" />
     <Compile Include="Messaging\IMessageTypeProvider.cs" />
+    <Compile Include="Messaging\ISignedProtocolMessage.cs" />
     <Compile Include="Messaging\MessagingStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

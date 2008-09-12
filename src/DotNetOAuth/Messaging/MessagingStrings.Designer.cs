@@ -124,6 +124,24 @@ namespace DotNetOAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Message signature was incorrect..
+        /// </summary>
+        internal static string SignatureInvalid {
+            get {
+                return ResourceManager.GetString("SignatureInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This channel does not support signing messages.  To support signing messages, a derived Channel type must override the Sign and IsSignatureValid methods..
+        /// </summary>
+        internal static string SigningNotSupported {
+            get {
+                return ResourceManager.GetString("SigningNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The type {0} or a derived type was expected, but {1} was given..
         /// </summary>
         internal static string UnexpectedType {

@@ -138,6 +138,12 @@
   <data name="QueuedMessageResponseAlreadyExists" xml:space="preserve">
     <value>A message response is already queued for sending in the response stream.</value>
   </data>
+  <data name="SignatureInvalid" xml:space="preserve">
+    <value>Message signature was incorrect.</value>
+  </data>
+  <data name="SigningNotSupported" xml:space="preserve">
+    <value>This channel does not support signing messages.  To support signing messages, a derived Channel type must override the Sign and IsSignatureValid methods.</value>
+  </data>
   <data name="UnexpectedType" xml:space="preserve">
     <value>The type {0} or a derived type was expected, but {1} was given.</value>
   </data>

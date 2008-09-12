@@ -98,6 +98,7 @@ namespace DotNetOAuth.Messaging {
 			if (message == null) {
 				throw new ArgumentNullException("message");
 			}
+			this.SignIfApplicable(message);
 
 			switch (message.Transport) {
 				case MessageTransport.Direct:
@@ -149,10 +150,12 @@ namespace DotNetOAuth.Messaging {
 		/// <summary>
 		/// Gets the protocol message that may be embedded in the given HTTP request.
 		/// </summary>
-		/// <param name="request">The request to search for an embedded message.</param>
+		/// <param name="httpRequest">The request to search for an embedded message.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
-		protected internal IProtocolMessage ReadFromRequest(HttpRequestInfo request) {
-			return this.ReadFromRequestInternal(request);
+		protected internal IProtocolMessage ReadFromRequest(HttpRequestInfo httpRequest) {
+			IProtocolMessage requestMessage = this.ReadFromRequestInternal(httpRequest);
+			this.VerifySignatureIfApplicable(requestMessage);
+			return requestMessage;
 		}
 
 		/// <summary>
@@ -161,7 +164,10 @@ namespace DotNetOAuth.Messaging {
 		/// <param name="request">The message to send.</param>
 		/// <returns>The remote party's response.</returns>
 		protected internal IProtocolMessage Request(IDirectedProtocolMessage request) {
-			return this.RequestInternal(request);
+			this.SignIfApplicable(request);
+			IProtocolMessage response = this.RequestInternal(request);
+			this.VerifySignatureIfApplicable(response);
+			return response;
 		}
 
 		/// <summary>
@@ -170,7 +176,9 @@ namespace DotNetOAuth.Messaging {
 		/// <param name="responseStream">The response that is anticipated to contain an OAuth message.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
 		protected internal IProtocolMessage ReadFromResponse(Stream responseStream) {
-			return this.ReadFromResponseInternal(responseStream);
+			IProtocolMessage message = this.ReadFromResponseInternal(responseStream);
+			this.VerifySignatureIfApplicable(message);
+			return message;
 		}
 
 		/// <summary>
@@ -313,6 +321,26 @@ namespace DotNetOAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Signs a given message according to the rules of the channel.
+		/// </summary>
+		/// <param name="message">The message to sign.</param>
+		protected virtual void Sign(ISignedProtocolMessage message) {
+			Debug.Assert(message != null, "message == null");
+			throw new NotSupportedException(MessagingStrings.SigningNotSupported);
+		}
+
+		/// <summary>
+		/// Gets whether the signature of a signed message is valid or not
+		/// according to the rules of the channel.
+		/// </summary>
+		/// <param name="message">The message whose signature should be verified.</param>
+		/// <returns>True if the signature is valid.  False otherwise.</returns>
+		protected virtual bool IsSignatureValid(ISignedProtocolMessage message) {
+			Debug.Assert(message != null, "message == null");
+			throw new NotSupportedException(MessagingStrings.SigningNotSupported);
+		}
+
+		/// <summary>
 		/// Gets the protocol message that may be in the given HTTP response stream.
 		/// </summary>
 		/// <param name="responseStream">The response that is anticipated to contain an OAuth message.</param>
@@ -368,6 +396,32 @@ namespace DotNetOAuth.Messaging {
 				size += 2; // & and =
 			}
 			return size;
+		}
+
+		/// <summary>
+		/// Signs a given message if the message requires one.
+		/// </summary>
+		/// <param name="message">The message to sign.</param>
+		private void SignIfApplicable(IProtocolMessage message) {
+			ISignedProtocolMessage signedMessage = message as ISignedProtocolMessage;
+			if (signedMessage != null) {
+				this.Sign(signedMessage);
+			}
+		}
+
+		/// <summary>
+		/// Verifies that a given message has a valid signature if the message requires one.
+		/// </summary>
+		/// <param name="message">The message to verify the signature on.</param>
+		/// <exception cref="ProtocolException">Thrown when the signature is invalid.</exception>
+		private void VerifySignatureIfApplicable(IProtocolMessage message) {
+			ISignedProtocolMessage signedMessage = message as ISignedProtocolMessage;
+			if (signedMessage != null) {
+				if (!this.IsSignatureValid(signedMessage)) {
+					// TODO: add inResponseTo and remoteReceiver where applicable
+					throw new ProtocolException(MessagingStrings.SignatureInvalid);
+				}
+			}
 		}
 	}
 }
