@@ -212,19 +212,22 @@ namespace DotNetOpenId.RelyingParty {
 					assoc = req.Response.Association;
 					// Confirm that the association matches the type we requested (section 8.2.1).
 					if (assoc != null) {
+						string responseSessionType = provider.Protocol.Version.Major > 2 ?
+							Util.GetRequiredArg(req.Response.Args, provider.Protocol.openidnp.session_type) :
+							(Util.GetOptionalArg(req.Response.Args, provider.Protocol.openidnp.session_type) ?? string.Empty);
 						if (!string.Equals(
 							req.Args[provider.Protocol.openid.assoc_type],
 							Util.GetRequiredArg(req.Response.Args, provider.Protocol.openidnp.assoc_type),
 							StringComparison.Ordinal) ||
 							!string.Equals(
 							req.Args[provider.Protocol.openid.session_type],
-							Util.GetRequiredArgAllowEmptyValue(req.Response.Args, provider.Protocol.openidnp.session_type),
+							responseSessionType,
 							StringComparison.Ordinal)) {
 							Logger.ErrorFormat("Provider responded with contradicting association parameters.  Requested [{0}, {1}] but got [{2}, {3}] back.",
 								req.Args[provider.Protocol.openid.assoc_type],
 								req.Args[provider.Protocol.openid.session_type],
 								Util.GetRequiredArg(req.Response.Args, provider.Protocol.openidnp.assoc_type),
-								Util.GetRequiredArgAllowEmptyValue(req.Response.Args, provider.Protocol.openidnp.session_type));
+								responseSessionType);
 
 							assoc = null;
 						}
