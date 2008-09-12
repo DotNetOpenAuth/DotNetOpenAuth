@@ -210,24 +210,22 @@ namespace DotNetOpenId.RelyingParty {
 						req = req.Response.SecondAttempt;
 					}
 					assoc = req.Response.Association;
-					// Confirm that the association matches the type we requested (section 8.2.1).
-					if (assoc != null) {
-						string responseSessionType = provider.Protocol.Version.Major > 2 ?
-							Util.GetRequiredArg(req.Response.Args, provider.Protocol.openidnp.session_type) :
-							(Util.GetOptionalArg(req.Response.Args, provider.Protocol.openidnp.session_type) ?? string.Empty);
+					// Confirm that the association matches the type we requested (section 8.2.1)
+					// if this is a 2.0 OP (1.x OPs had freedom to differ from the requested type).
+					if (assoc != null && provider.Protocol.Version.Major >= 2) {
 						if (!string.Equals(
 							req.Args[provider.Protocol.openid.assoc_type],
 							Util.GetRequiredArg(req.Response.Args, provider.Protocol.openidnp.assoc_type),
 							StringComparison.Ordinal) ||
 							!string.Equals(
 							req.Args[provider.Protocol.openid.session_type],
-							responseSessionType,
+							Util.GetRequiredArg(req.Response.Args, provider.Protocol.openidnp.session_type),
 							StringComparison.Ordinal)) {
 							Logger.ErrorFormat("Provider responded with contradicting association parameters.  Requested [{0}, {1}] but got [{2}, {3}] back.",
 								req.Args[provider.Protocol.openid.assoc_type],
 								req.Args[provider.Protocol.openid.session_type],
 								Util.GetRequiredArg(req.Response.Args, provider.Protocol.openidnp.assoc_type),
-								responseSessionType);
+								Util.GetRequiredArg(req.Response.Args, provider.Protocol.openidnp.session_type));
 
 							assoc = null;
 						}
