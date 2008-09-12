@@ -97,6 +97,15 @@ namespace DotNetOAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The message expired at {0} and it is now {1}..
+        /// </summary>
+        internal static string ExpiredMessage {
+            get {
+                return ResourceManager.GetString("ExpiredMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This method requires a current HttpContext.  Alternatively, use an overload of this method that allows you to pass in information without an HttpContext..
         /// </summary>
         internal static string HttpContextRequired {
@@ -120,6 +129,24 @@ namespace DotNetOAuth.Messaging {
         internal static string QueuedMessageResponseAlreadyExists {
             get {
                 return ResourceManager.GetString("QueuedMessageResponseAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This message has already been processed.  This could indicate a replay attack in progress..
+        /// </summary>
+        internal static string ReplayAttackDetected {
+            get {
+                return ResourceManager.GetString("ReplayAttackDetected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This channel does not support replay protection..
+        /// </summary>
+        internal static string ReplayProtectionNotSupported {
+            get {
+                return ResourceManager.GetString("ReplayProtectionNotSupported", resourceCulture);
             }
         }
         

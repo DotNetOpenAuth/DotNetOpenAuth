@@ -68,8 +68,25 @@ namespace DotNetOAuth.Messaging {
 				throw new ArgumentNullException("messageTypeProvider");
 			}
 
+			this.MaximumMessageAge = TimeSpan.FromMinutes(13);
 			this.messageTypeProvider = messageTypeProvider;
 		}
+
+		/// <summary>
+		/// Gets or sets the maximum age a message implementing the 
+		/// <see cref="IExpiringProtocolMessage"/> interface can be before
+		/// being discarded as too old.
+		/// </summary>
+		/// <value>The default value is 13 minutes.</value>
+		/// <remarks>
+		/// This time limit should take into account expected time skew for servers
+		/// across the Internet.  For example, if a server could conceivably have its
+		/// clock d = 5 minutes off UTC time, then any two servers could have
+		/// their clocks disagree by as much as 2*d = 10 minutes.
+		/// If a message should live for at least t = 3 minutes, 
+		/// this property should be set to (2*d + t) = 13 minutes.
+		/// </remarks>
+		protected internal TimeSpan MaximumMessageAge { get; set; }
 
 		/// <summary>
 		/// Gets a tool that can figure out what kind of message is being received
@@ -98,7 +115,7 @@ namespace DotNetOAuth.Messaging {
 			if (message == null) {
 				throw new ArgumentNullException("message");
 			}
-			this.SignIfApplicable(message);
+			this.PrepareMessageForSending(message);
 
 			switch (message.Transport) {
 				case MessageTransport.Direct:
@@ -154,7 +171,7 @@ namespace DotNetOAuth.Messaging {
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
 		protected internal IProtocolMessage ReadFromRequest(HttpRequestInfo httpRequest) {
 			IProtocolMessage requestMessage = this.ReadFromRequestInternal(httpRequest);
-			this.VerifySignatureIfApplicable(requestMessage);
+			this.VerifyMessageAfterReceiving(requestMessage);
 			return requestMessage;
 		}
 
@@ -164,9 +181,9 @@ namespace DotNetOAuth.Messaging {
 		/// <param name="request">The message to send.</param>
 		/// <returns>The remote party's response.</returns>
 		protected internal IProtocolMessage Request(IDirectedProtocolMessage request) {
-			this.SignIfApplicable(request);
+			this.PrepareMessageForSending(request);
 			IProtocolMessage response = this.RequestInternal(request);
-			this.VerifySignatureIfApplicable(response);
+			this.VerifyMessageAfterReceiving(response);
 			return response;
 		}
 
@@ -177,7 +194,7 @@ namespace DotNetOAuth.Messaging {
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
 		protected internal IProtocolMessage ReadFromResponse(Stream responseStream) {
 			IProtocolMessage message = this.ReadFromResponseInternal(responseStream);
-			this.VerifySignatureIfApplicable(message);
+			this.VerifyMessageAfterReceiving(message);
 			return message;
 		}
 
@@ -341,6 +358,36 @@ namespace DotNetOAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Applies replay protection on an outgoing message.
+		/// </summary>
+		/// <param name="message">The message to apply replay protection to.</param>
+		/// <remarks>
+		/// <para>Implementing this method typically involves generating and setting a nonce property
+		/// on the message.</para>
+		/// <para>
+		/// At the time this method is called, the 
+		/// <see cref="IExpiringProtocolMessage.UtcCreationDate"/> property will already be
+		/// set on the <paramref name="message"/>.</para>
+		/// </remarks>
+		protected virtual void ApplyReplayProtection(IReplayProtectedProtocolMessage message) {
+			throw new NotSupportedException(MessagingStrings.ReplayProtectionNotSupported);
+		}
+
+		/// <summary>
+		/// Gets whether this message has already been processed based on the 
+		/// replay protection applied by <see cref="ApplyReplayProtection"/>.
+		/// </summary>
+		/// <param name="message">The message to be checked against the list of recently received messages.</param>
+		/// <returns>True if the message has already been processed.  False otherwise.</returns>
+		/// <remarks>
+		/// An exception should NOT be thrown by this method in case of a message replay.
+		/// The caller will be responsible to handle the replay attack.
+		/// </remarks>
+		protected virtual bool IsMessageReplayed(IReplayProtectedProtocolMessage message) {
+			throw new NotSupportedException(MessagingStrings.ReplayProtectionNotSupported);
+		}
+
+		/// <summary>
 		/// Gets the protocol message that may be in the given HTTP response stream.
 		/// </summary>
 		/// <param name="responseStream">The response that is anticipated to contain an OAuth message.</param>
@@ -399,28 +446,96 @@ namespace DotNetOAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Signs a given message if the message requires one.
+		/// Prepares a message for transmit by applying signatures, nonces, etc.
 		/// </summary>
-		/// <param name="message">The message to sign.</param>
-		private void SignIfApplicable(IProtocolMessage message) {
+		/// <param name="message">The message to prepare for sending.</param>
+		private void PrepareMessageForSending(IProtocolMessage message) {
+			// The order of operations here is important.
 			ISignedProtocolMessage signedMessage = message as ISignedProtocolMessage;
 			if (signedMessage != null) {
+				IExpiringProtocolMessage expiringMessage = message as IExpiringProtocolMessage;
+				if (expiringMessage != null) {
+					IReplayProtectedProtocolMessage nonceMessage = message as IReplayProtectedProtocolMessage;
+					if (nonceMessage != null) {
+						this.ApplyReplayProtection(nonceMessage);
+					}
+
+					expiringMessage.UtcCreationDate = DateTime.UtcNow;
+				}
+
 				this.Sign(signedMessage);
 			}
 		}
 
 		/// <summary>
-		/// Verifies that a given message has a valid signature if the message requires one.
+		/// Verifies the integrity and applicability of an incoming message.
 		/// </summary>
-		/// <param name="message">The message to verify the signature on.</param>
-		/// <exception cref="ProtocolException">Thrown when the signature is invalid.</exception>
-		private void VerifySignatureIfApplicable(IProtocolMessage message) {
+		/// <param name="message">The message just received.</param>
+		/// <exception cref="ProtocolException">
+		/// Thrown when the message is somehow invalid.
+		/// This can be due to tampering, replay attack or expiration, among other things.
+		/// </exception>
+		private void VerifyMessageAfterReceiving(IProtocolMessage message) {
+			// The order of operations is important.
 			ISignedProtocolMessage signedMessage = message as ISignedProtocolMessage;
 			if (signedMessage != null) {
-				if (!this.IsSignatureValid(signedMessage)) {
-					// TODO: add inResponseTo and remoteReceiver where applicable
-					throw new ProtocolException(MessagingStrings.SignatureInvalid);
+				this.VerifyMessageSignature(signedMessage);
+
+				IExpiringProtocolMessage expiringMessage = message as IExpiringProtocolMessage;
+				if (expiringMessage != null) {
+					this.VerifyMessageHasNotExpired(expiringMessage);
+
+					IReplayProtectedProtocolMessage nonceMessage = message as IReplayProtectedProtocolMessage;
+					if (nonceMessage != null) {
+						this.VerifyMessageReplayProtection(nonceMessage);
+					}
 				}
+			}
+		}
+
+		/// <summary>
+		/// Verifies that a message signature is valid.
+		/// </summary>
+		/// <param name="signedMessage">The message whose signature is to be verified.</param>
+		/// <exception cref="ProtocolException">Thrown if the signature is invalid.</exception>
+		private void VerifyMessageSignature(ISignedProtocolMessage signedMessage) {
+			Debug.Assert(signedMessage != null, "signedMessage == null");
+
+			if (!this.IsSignatureValid(signedMessage)) {
+				// TODO: add inResponseTo and remoteReceiver where applicable
+				throw new ProtocolException(MessagingStrings.SignatureInvalid);
+			}
+		}
+
+		/// <summary>
+		/// Verifies that a given message has not grown too old to process.
+		/// </summary>
+		/// <param name="expiringMessage">The message to ensure has not expired.</param>
+		/// <exception cref="ProtocolException">Thrown if the message has already expired.</exception>
+		private void VerifyMessageHasNotExpired(IExpiringProtocolMessage expiringMessage) {
+			Debug.Assert(expiringMessage != null, "expiringMessage == null");
+
+			// Yes the UtcCreationDate is supposed to always be in UTC already,
+			// but just in case a given message failed to guarantee that, we do it here.
+			DateTime expirationDate = expiringMessage.UtcCreationDate.ToUniversalTime() + this.MaximumMessageAge;
+			if (expirationDate < DateTime.UtcNow) {
+				throw new ProtocolException(string.Format(
+					MessagingStrings.ExpiredMessage,
+					expirationDate,
+					DateTime.UtcNow));
+			}
+		}
+
+		/// <summary>
+		/// Verifies that a message has not already been processed.
+		/// </summary>
+		/// <param name="message">The message to verify.</param>
+		/// <exception cref="ProtocolException">Thrown if the message has already been processed.</exception>
+		private void VerifyMessageReplayProtection(IReplayProtectedProtocolMessage message) {
+			Debug.Assert(message != null, "message == null");
+
+			if (this.IsMessageReplayed(message)) {
+				throw new ProtocolException(MessagingStrings.ReplayAttackDetected);
 			}
 		}
 	}
