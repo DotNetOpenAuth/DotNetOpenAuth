@@ -160,16 +160,9 @@ namespace DotNetOpenId {
 			if (query == null) throw new ArgumentNullException("query");
 			if (key == null) throw new ArgumentNullException("key");
 			string value;
-			if (!query.TryGetValue(key, out value)) {
-				//throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
-				//    Strings.MissingOpenIdQueryParameter, key), query);
-
-				// We'll be more forgiving and just log the error that the remote party left out
-				// a required parameter.
-				Logger.ErrorFormat(Strings.MissingOpenIdQueryParameter, key);
-				// And we'll quietly just pretend the parameter was present and empty.
-				value = string.Empty;
-			}
+			if (!query.TryGetValue(key, out value))
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
+					Strings.MissingOpenIdQueryParameter, key), query);
 			return value;
 		}
 		public static string GetOptionalArg(IDictionary<string, string> query, string key) {
