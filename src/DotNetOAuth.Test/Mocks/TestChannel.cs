@@ -16,11 +16,11 @@ namespace DotNetOAuth.Test.Mocks {
 			: base(new TestMessageTypeProvider()) {
 		}
 
-		protected internal override IProtocolMessage Request(IDirectedProtocolMessage request) {
+		protected override IProtocolMessage RequestInternal(IDirectedProtocolMessage request) {
 			throw new NotImplementedException("Request");
 		}
 
-		protected internal override IProtocolMessage ReadFromResponse(System.IO.Stream responseStream) {
+		protected override IProtocolMessage ReadFromResponseInternal(System.IO.Stream responseStream) {
 			throw new NotImplementedException("ReadFromResponse");
 		}
 

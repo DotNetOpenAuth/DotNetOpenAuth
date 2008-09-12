@@ -43,11 +43,11 @@ namespace DotNetOAuth.Test.Mocks {
 			return base.ReadFromRequest(request);
 		}
 
-		protected internal override IProtocolMessage Request(IDirectedProtocolMessage request) {
+		protected override IProtocolMessage RequestInternal(IDirectedProtocolMessage request) {
 			throw new NotImplementedException();
 		}
 
-		protected internal override IProtocolMessage ReadFromResponse(System.IO.Stream responseStream) {
+		protected override IProtocolMessage ReadFromResponseInternal(System.IO.Stream responseStream) {
 			throw new NotImplementedException();
 		}
 

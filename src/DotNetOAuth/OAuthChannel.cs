@@ -65,7 +65,7 @@ namespace DotNetOAuth {
 		/// </summary>
 		/// <param name="request">The HTTP request to search.</param>
 		/// <returns>A dictionary of data in the request.  Should never be null, but may be empty.</returns>
-		protected internal override IProtocolMessage ReadFromRequest(HttpRequestInfo request) {
+		protected override IProtocolMessage ReadFromRequestInternal(HttpRequestInfo request) {
 			if (request == null) {
 				throw new ArgumentNullException("request");
 			}
@@ -97,7 +97,7 @@ namespace DotNetOAuth {
 			}
 
 			// We didn't find an OAuth authorization header.  Revert to other payload methods.
-			return base.ReadFromRequest(request);
+			return base.ReadFromRequestInternal(request);
 		}
 
 		/// <summary>
@@ -105,7 +105,7 @@ namespace DotNetOAuth {
 		/// </summary>
 		/// <param name="responseStream">The response that is anticipated to contain an OAuth message.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
-		protected internal override IProtocolMessage ReadFromResponse(Stream responseStream) {
+		protected override IProtocolMessage ReadFromResponseInternal(Stream responseStream) {
 			if (responseStream == null) {
 				throw new ArgumentNullException("responseStream");
 			}
@@ -122,7 +122,7 @@ namespace DotNetOAuth {
 		/// </summary>
 		/// <param name="request">The message to send.</param>
 		/// <returns>The remote party's response.</returns>
-		protected internal override IProtocolMessage Request(IDirectedProtocolMessage request) {
+		protected override IProtocolMessage RequestInternal(IDirectedProtocolMessage request) {
 			if (request == null) {
 				throw new ArgumentNullException("request");
 			}

@@ -151,7 +151,34 @@ namespace DotNetOAuth.Messaging {
 		/// </summary>
 		/// <param name="request">The request to search for an embedded message.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
-		protected internal virtual IProtocolMessage ReadFromRequest(HttpRequestInfo request) {
+		protected internal IProtocolMessage ReadFromRequest(HttpRequestInfo request) {
+			return this.ReadFromRequestInternal(request);
+		}
+
+		/// <summary>
+		/// Sends a direct message to a remote party and waits for the response.
+		/// </summary>
+		/// <param name="request">The message to send.</param>
+		/// <returns>The remote party's response.</returns>
+		protected internal IProtocolMessage Request(IDirectedProtocolMessage request) {
+			return this.RequestInternal(request);
+		}
+
+		/// <summary>
+		/// Gets the protocol message that may be in the given HTTP response stream.
+		/// </summary>
+		/// <param name="responseStream">The response that is anticipated to contain an OAuth message.</param>
+		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
+		protected internal IProtocolMessage ReadFromResponse(Stream responseStream) {
+			return this.ReadFromResponseInternal(responseStream);
+		}
+
+		/// <summary>
+		/// Gets the protocol message that may be embedded in the given HTTP request.
+		/// </summary>
+		/// <param name="request">The request to search for an embedded message.</param>
+		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
+		protected virtual IProtocolMessage ReadFromRequestInternal(HttpRequestInfo request) {
 			if (request == null) {
 				throw new ArgumentNullException("request");
 			}
@@ -164,20 +191,6 @@ namespace DotNetOAuth.Messaging {
 
 			return this.Receive(fields);
 		}
-
-		/// <summary>
-		/// Gets the protocol message that may be in the given HTTP response stream.
-		/// </summary>
-		/// <param name="responseStream">The response that is anticipated to contain an OAuth message.</param>
-		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
-		protected internal abstract IProtocolMessage ReadFromResponse(Stream responseStream);
-
-		/// <summary>
-		/// Sends a direct message to a remote party and waits for the response.
-		/// </summary>
-		/// <param name="request">The message to send.</param>
-		/// <returns>The remote party's response.</returns>
-		protected internal abstract IProtocolMessage Request(IDirectedProtocolMessage request);
 
 		/// <summary>
 		/// Deserializes a dictionary of values into a message.
@@ -201,22 +214,6 @@ namespace DotNetOAuth.Messaging {
 			IProtocolMessage message = serializer.Deserialize(fields);
 
 			return message;
-		}
-
-		/// <summary>
-		/// Takes a message and temporarily stores it for sending as the hosting site's
-		/// HTTP response to the current request.
-		/// </summary>
-		/// <param name="response">The message to store for sending.</param>
-		protected void QueueIndirectOrResponseMessage(Response response) {
-			if (response == null) {
-				throw new ArgumentNullException("response");
-			}
-			if (this.queuedIndirectOrResponseMessage != null) {
-				throw new InvalidOperationException(MessagingStrings.QueuedMessageResponseAlreadyExists);
-			}
-
-			this.queuedIndirectOrResponseMessage = response;
 		}
 
 		/// <summary>
@@ -316,6 +313,20 @@ namespace DotNetOAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Gets the protocol message that may be in the given HTTP response stream.
+		/// </summary>
+		/// <param name="responseStream">The response that is anticipated to contain an OAuth message.</param>
+		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
+		protected abstract IProtocolMessage ReadFromResponseInternal(Stream responseStream);
+
+		/// <summary>
+		/// Sends a direct message to a remote party and waits for the response.
+		/// </summary>
+		/// <param name="request">The message to send.</param>
+		/// <returns>The remote party's response.</returns>
+		protected abstract IProtocolMessage RequestInternal(IDirectedProtocolMessage request);
+
+		/// <summary>
 		/// Queues a message for sending in the response stream where the fields
 		/// are sent in the response stream in querystring style.
 		/// </summary>
@@ -324,6 +335,22 @@ namespace DotNetOAuth.Messaging {
 		/// This method implements spec V1.0 section 5.3.
 		/// </remarks>
 		protected abstract void SendDirectMessageResponse(IProtocolMessage response);
+
+		/// <summary>
+		/// Takes a message and temporarily stores it for sending as the hosting site's
+		/// HTTP response to the current request.
+		/// </summary>
+		/// <param name="response">The message to store for sending.</param>
+		protected void QueueIndirectOrResponseMessage(Response response) {
+			if (response == null) {
+				throw new ArgumentNullException("response");
+			}
+			if (this.queuedIndirectOrResponseMessage != null) {
+				throw new InvalidOperationException(MessagingStrings.QueuedMessageResponseAlreadyExists);
+			}
+
+			this.queuedIndirectOrResponseMessage = response;
+		}
 
 		/// <summary>
 		/// Calculates a fairly accurate estimation on the size of a message that contains
