@@ -45,6 +45,20 @@ namespace DotNetOAuth.Messaging {
 		/// such that it can be sent as a protocol message response to a remote caller.
 		/// </summary>
 		/// <param name="message">The human-readable exception message.</param>
+		/// <param name="faultedMessage">The message that was the cause of the exception.  May not be null.</param>
+		internal ProtocolException(string message, IProtocolMessage faultedMessage) : base(message) {
+			if (faultedMessage == null) {
+				throw new ArgumentNullException("faultedMessage");
+			}
+
+			this.FaultedMessage = faultedMessage;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ProtocolException"/> class
+		/// such that it can be sent as a protocol message response to a remote caller.
+		/// </summary>
+		/// <param name="message">The human-readable exception message.</param>
 		/// <param name="inResponseTo">
 		/// If <paramref name="message"/> is a response to an incoming message, this is the incoming message.
 		/// This is useful for error scenarios in deciding just how to send the response message.
@@ -61,6 +75,7 @@ namespace DotNetOAuth.Messaging {
 				throw new ArgumentNullException("inResponseTo");
 			}
 			this.inResponseTo = inResponseTo;
+			this.FaultedMessage = inResponseTo;
 
 			if (remoteIndirectReceiver == null && inResponseTo.Transport != MessageTransport.Direct) {
 				// throw an exception, with ourselves as the inner exception (as fully initialized as we can be).
@@ -100,7 +115,7 @@ namespace DotNetOAuth.Messaging {
 
 		#endregion
 
-		#region IProtocolMessage Members
+		#region IProtocolMessage Properties
 
 		/// <summary>
 		/// Gets the version of the protocol this message is prepared to implement.
@@ -125,6 +140,18 @@ namespace DotNetOAuth.Messaging {
 				return this.inResponseTo.Transport;
 			}
 		}
+
+		#endregion
+
+		/// <summary>
+		/// Gets the message that caused the exception.
+		/// </summary>
+		internal IProtocolMessage FaultedMessage {
+			get;
+			private set;
+		}
+
+		#region IProtocolMessage Methods
 
 		/// <summary>
 		/// See <see cref="IProtocolMessage.EnsureValidMessage"/>.

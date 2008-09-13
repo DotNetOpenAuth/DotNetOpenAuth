@@ -503,7 +503,7 @@ namespace DotNetOAuth.Messaging {
 
 			if (!this.IsSignatureValid(signedMessage)) {
 				// TODO: add inResponseTo and remoteReceiver where applicable
-				throw new ProtocolException(MessagingStrings.SignatureInvalid);
+				throw new InvalidSignatureException(signedMessage);
 			}
 		}
 
@@ -519,10 +519,7 @@ namespace DotNetOAuth.Messaging {
 			// but just in case a given message failed to guarantee that, we do it here.
 			DateTime expirationDate = expiringMessage.UtcCreationDate.ToUniversalTime() + this.MaximumMessageAge;
 			if (expirationDate < DateTime.UtcNow) {
-				throw new ProtocolException(string.Format(
-					MessagingStrings.ExpiredMessage,
-					expirationDate,
-					DateTime.UtcNow));
+				throw new ExpiredMessageException(expirationDate, expiringMessage);
 			}
 		}
 
@@ -535,7 +532,7 @@ namespace DotNetOAuth.Messaging {
 			Debug.Assert(message != null, "message == null");
 
 			if (this.IsMessageReplayed(message)) {
-				throw new ProtocolException(MessagingStrings.ReplayAttackDetected);
+				throw new ReplayedMessageException(message);
 			}
 		}
 	}

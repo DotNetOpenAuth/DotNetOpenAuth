@@ -271,7 +271,7 @@ namespace DotNetOAuth.Test.Messaging {
 			this.ParameterizedReceiveTest("GET");
 		}
 
-		[TestMethod, ExpectedException(typeof(ProtocolException))]
+		[TestMethod, ExpectedException(typeof(InvalidSignatureException))]
 		public void ReceivedInvalidSignature() {
 			this.channel = new TestSigningChannel(false, false);
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, true);
@@ -284,7 +284,7 @@ namespace DotNetOAuth.Test.Messaging {
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
 		}
 
-		[TestMethod, ExpectedException(typeof(ProtocolException))]
+		[TestMethod, ExpectedException(typeof(ExpiredMessageException))]
 		public void VerifyBadTimestampIsRejected() {
 			// Create a channel that supports and recognizes signed messages.
 			this.channel = new TestSigningChannel(true, false);
@@ -297,7 +297,7 @@ namespace DotNetOAuth.Test.Messaging {
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
 		}
 
-		[TestMethod, ExpectedException(typeof(ProtocolException))]
+		[TestMethod, ExpectedException(typeof(ReplayedMessageException))]
 		public void ReceivedReplayProtectedMessageTwice() {
 			this.channel = new TestReplayProtectedChannel();
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);

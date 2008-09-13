@@ -68,7 +68,10 @@
   <ItemGroup>
     <Compile Include="Consumer.cs" />
     <Compile Include="IWebRequestHandler.cs" />
+    <Compile Include="Messaging\ReplayedMessageException.cs" />
+    <Compile Include="Messaging\ExpiredMessageException.cs" />
     <Compile Include="Messaging\DataContractMemberComparer.cs" />
+    <Compile Include="Messaging\InvalidSignatureException.cs" />
     <Compile Include="Messaging\IReplayProtectedProtocolMessage.cs" />
     <Compile Include="Messaging\IExpiringProtocolMessage.cs" />
     <Compile Include="Messaging\DictionaryXmlReader.cs" />
