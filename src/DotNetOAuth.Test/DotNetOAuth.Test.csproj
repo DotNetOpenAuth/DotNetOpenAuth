@@ -63,10 +63,15 @@
     <Compile Include="Messaging\DictionaryXmlReaderTests.cs" />
     <Compile Include="Messaging\HttpRequestInfoTests.cs" />
     <Compile Include="Messaging\ProtocolExceptionTests.cs" />
+    <Compile Include="Mocks\TestReplayProtectedChannel.cs" />
     <Compile Include="Mocks\TestBaseMessage.cs" />
     <Compile Include="Mocks\TestDerivedMessage.cs" />
+    <Compile Include="Mocks\TestReplayProtectedMessage.cs" />
     <Compile Include="Mocks\TestDirectedMessage.cs" />
     <Compile Include="Mocks\TestBadChannel.cs" />
+    <Compile Include="Mocks\TestExpiringMessage.cs" />
+    <Compile Include="Mocks\TestSignedDirectedMessage.cs" />
+    <Compile Include="Mocks\TestSigningChannel.cs" />
     <Compile Include="Mocks\TestWebRequestHandler.cs" />
     <Compile Include="OAuthChannelTests.cs" />
     <Compile Include="Messaging\MessageSerializerTests.cs" />

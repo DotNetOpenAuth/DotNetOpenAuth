@@ -9,8 +9,8 @@ namespace DotNetOAuth.Test.Messaging {
 	using System.Collections.Generic;
 	using System.IO;
 	using System.Net;
-	using System.Text;
 	using System.Web;
+	using System.Xml;
 	using DotNetOAuth.Messaging;
 	using DotNetOAuth.Test.Mocks;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -227,6 +227,90 @@ namespace DotNetOAuth.Test.Messaging {
 			badChannel.ReadFromRequest(null);
 		}
 
+		[TestMethod, ExpectedException(typeof(NotSupportedException))]
+		public void SendSigningMessagesNotSupported() {
+			TestSignedDirectedMessage message = new TestSignedDirectedMessage(MessageTransport.Direct);
+			message.Recipient = new Uri("http://localtest");
+			this.channel.Send(message);
+		}
+
+		[TestMethod]
+		public void SendSetsTimestamp() {
+			TestExpiringMessage message = new TestExpiringMessage(MessageTransport.Indirect);
+			message.Recipient = new Uri("http://localtest");
+			((IExpiringProtocolMessage)message).UtcCreationDate = DateTime.Parse("1/1/1990");
+
+			Channel channel = new TestSigningChannel(true, false);
+			channel.Send(message);
+			Assert.IsTrue(DateTime.UtcNow - ((IExpiringProtocolMessage)message).UtcCreationDate < TimeSpan.FromSeconds(3), "The timestamp on the message was not set on send.");
+		}
+
+		[TestMethod, ExpectedException(typeof(NotSupportedException))]
+		public void SendReplayProtectedMessageNotSupported() {
+			TestReplayProtectedMessage message = new TestReplayProtectedMessage(MessageTransport.Indirect);
+			message.Recipient = new Uri("http://localtest");
+
+			Channel channel = new TestSigningChannel(true, false); // use this one to get passed signing NotSupportedException
+			channel.Send(message);
+		}
+
+		[TestMethod]
+		public void SendReplayProtectedMessageSetsNonce() {
+			TestReplayProtectedMessage message = new TestReplayProtectedMessage(MessageTransport.Indirect);
+			message.Recipient = new Uri("http://localtest");
+
+			Channel channel = new TestReplayProtectedChannel();
+			channel.Send(message);
+			Assert.IsNotNull(((IReplayProtectedProtocolMessage)message).Nonce);
+		}
+
+		[TestMethod, ExpectedException(typeof(NotSupportedException))]
+		public void ReceivedSignedMessagesNotSupported() {
+			// Create a channel that doesn't support signed messages, but will recognize one.
+			this.channel = new TestChannel(new TestMessageTypeProvider(true, false, false));
+			this.ParameterizedReceiveTest("GET");
+		}
+
+		[TestMethod, ExpectedException(typeof(ProtocolException))]
+		public void ReceivedInvalidSignature() {
+			this.channel = new TestSigningChannel(false, false);
+			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, true);
+		}
+
+		[TestMethod]
+		public void VerifyGoodTimestampIsAccepted() {
+			// Create a channel that supports and recognizes signed messages.
+			this.channel = new TestSigningChannel(true, false);
+			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
+		}
+
+		[TestMethod, ExpectedException(typeof(ProtocolException))]
+		public void VerifyBadTimestampIsRejected() {
+			// Create a channel that supports and recognizes signed messages.
+			this.channel = new TestSigningChannel(true, false);
+			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow - this.channel.MaximumMessageAge - TimeSpan.FromSeconds(1), false);
+		}
+
+		[TestMethod]
+		public void ReceivedReplayProtectedMessageJustOnce() {
+			this.channel = new TestReplayProtectedChannel();
+			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
+		}
+
+		[TestMethod, ExpectedException(typeof(ProtocolException))]
+		public void ReceivedReplayProtectedMessageTwice() {
+			this.channel = new TestReplayProtectedChannel();
+			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
+			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
+		}
+
+		[TestMethod, ExpectedException(typeof(NotSupportedException))]
+		public void ReceivedReplayProtectedMessagesNotSupported() {
+			// Create a channel that doesn't support replay protected messages, but will recognize one.
+			this.channel = new TestSigningChannel(true, true);
+			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
+		}
+
 		private static HttpRequestInfo CreateHttpRequestInfo(string method, IDictionary<string, string> fields) {
 			string query = MessagingUtilities.CreateQueryString(fields);
 			UriBuilder requestUri = new UriBuilder("http://localhost/path");
@@ -266,6 +350,31 @@ namespace DotNetOAuth.Test.Messaging {
 			Assert.AreEqual(15, testMessage.Age);
 			Assert.AreEqual("Andrew", testMessage.Name);
 			Assert.AreEqual("http://hostb/pathB", testMessage.Location.AbsoluteUri);
+		}
+
+		private void ParameterizedReceiveProtectedTest(DateTime? utcCreatedDate, bool invalidSignature) {
+			var fields = new Dictionary<string, string> {
+				{ "age", "15" },
+				{ "Name", "Andrew" },
+				{ "Location", "http://hostb/pathB" },
+				{ "Signature", invalidSignature ? "badsig" : TestSigningChannel.MessageSignature },
+				{ "Nonce", "someNonce" },
+			};
+			if (utcCreatedDate.HasValue) {
+				utcCreatedDate = DateTime.Parse(utcCreatedDate.Value.ToUniversalTime().ToString()); // round off the milliseconds so comparisons work later
+				fields.Add("created_on", XmlConvert.ToString(utcCreatedDate.Value, XmlDateTimeSerializationMode.Utc));
+			}
+			IProtocolMessage requestMessage = this.channel.ReadFromRequest(CreateHttpRequestInfo("GET", fields));
+			Assert.IsNotNull(requestMessage);
+			Assert.IsInstanceOfType(requestMessage, typeof(TestSignedDirectedMessage));
+			TestSignedDirectedMessage testMessage = (TestSignedDirectedMessage)requestMessage;
+			Assert.AreEqual(15, testMessage.Age);
+			Assert.AreEqual("Andrew", testMessage.Name);
+			Assert.AreEqual("http://hostb/pathB", testMessage.Location.AbsoluteUri);
+			if (utcCreatedDate.HasValue) {
+				IExpiringProtocolMessage expiringMessage = (IExpiringProtocolMessage)requestMessage;
+				Assert.AreEqual(utcCreatedDate.Value, expiringMessage.UtcCreationDate);
+			}
 		}
 	}
 }

@@ -13,7 +13,11 @@ namespace DotNetOAuth.Test.Mocks {
 
 	internal class TestChannel : Channel {
 		internal TestChannel()
-			: base(new TestMessageTypeProvider()) {
+			: this(new TestMessageTypeProvider()) {
+		}
+
+		internal TestChannel(IMessageTypeProvider messageTypeProvider)
+			: base(messageTypeProvider) {
 		}
 
 		protected override IProtocolMessage RequestInternal(IDirectedProtocolMessage request) {
