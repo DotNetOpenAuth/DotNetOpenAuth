@@ -60,9 +60,14 @@ namespace DotNetOAuth.Test.Messaging {
 		[TestMethod()]
 		public void SerializeTest() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
-			var message = new Mocks.TestMessage { Age = 15, Name = "Andrew", Location = new Uri("http://localhost") };
+			var message = new Mocks.TestMessage {
+				Age = 15,
+				Name = "Andrew",
+				Location = new Uri("http://localhost"),
+				Timestamp = DateTime.Parse("1/1/1990"),
+			};
 			IDictionary<string, string> actual = serializer.Serialize(message);
-			Assert.AreEqual(3, actual.Count);
+			Assert.AreEqual(4, actual.Count);
 
 			// Test case sensitivity of generated dictionary
 			Assert.IsFalse(actual.ContainsKey("Age"));
@@ -72,6 +77,7 @@ namespace DotNetOAuth.Test.Messaging {
 			Assert.AreEqual("15", actual["age"]);
 			Assert.AreEqual("Andrew", actual["Name"]);
 			Assert.AreEqual("http://localhost/", actual["Location"]);
+			Assert.AreEqual("1990-01-01T00:00:00", actual["Timestamp"]);
 			Assert.IsFalse(actual.ContainsKey("EmptyMember"));
 		}
 
@@ -82,7 +88,7 @@ namespace DotNetOAuth.Test.Messaging {
 			var fields = new Dictionary<string, string>();
 			fields["someExtraField"] = "someValue";
 			serializer.Serialize(fields, message);
-			Assert.AreEqual(3, fields.Count);
+			Assert.AreEqual(4, fields.Count);
 			Assert.AreEqual("15", fields["age"]);
 			Assert.AreEqual("Andrew", fields["Name"]);
 			Assert.AreEqual("someValue", fields["someExtraField"]);
@@ -100,9 +106,11 @@ namespace DotNetOAuth.Test.Messaging {
 			Dictionary<string, string> fields = new Dictionary<string, string>(StringComparer.Ordinal);
 			fields["Name"] = "Andrew";
 			fields["age"] = "15";
+			fields["Timestamp"] = "1990-01-01T00:00:00";
 			var actual = (Mocks.TestMessage)serializer.Deserialize(fields);
 			Assert.AreEqual(15, actual.Age);
 			Assert.AreEqual("Andrew", actual.Name);
+			Assert.AreEqual(DateTime.Parse("1/1/1990"), actual.Timestamp);
 			Assert.IsNull(actual.EmptyMember);
 		}
 

@@ -28,6 +28,8 @@ namespace DotNetOAuth.Test.Mocks {
 		public string EmptyMember { get; set; }
 		[DataMember]
 		public Uri Location { get; set; }
+		[DataMember]
+		public DateTime Timestamp { get; set; }
 
 		#region IProtocolMessage Members
 
