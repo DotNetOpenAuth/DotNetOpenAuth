@@ -42,6 +42,11 @@ namespace DotNetOAuth.Messaging {
 		private XName rootElement;
 
 		/// <summary>
+		/// A field sorter that puts fields in the right order for the <see cref="DataContractSerializer"/>.
+		/// </summary>
+		private IComparer<string> fieldSorter;
+
+		/// <summary>
 		/// Initializes a new instance of the MessageSerializer class.
 		/// </summary>
 		/// <param name="messageType">The specific <see cref="IProtocolMessage"/>-derived type
@@ -62,6 +67,7 @@ namespace DotNetOAuth.Messaging {
 			this.messageType = messageType;
 			this.serializer = new DataContractSerializer(
 				messageType, this.RootElement.LocalName, this.RootElement.NamespaceName);
+			this.fieldSorter = new DataContractMemberComparer(messageType);
 		}
 
 		/// <summary>
@@ -70,7 +76,25 @@ namespace DotNetOAuth.Messaging {
 		private XName RootElement {
 			get {
 				if (this.rootElement == null) {
-					DataContractAttribute attribute = this.messageType.GetCustomAttributes(typeof(DataContractAttribute), false).OfType<DataContractAttribute>().Single();
+					DataContractAttribute attribute;
+					try {
+						attribute = this.messageType.GetCustomAttributes(typeof(DataContractAttribute), false).OfType<DataContractAttribute>().Single();
+					} catch (InvalidOperationException ex) {
+						throw new ProtocolException(
+							string.Format(
+								CultureInfo.CurrentCulture,
+								MessagingStrings.DataContractMissingFromMessageType,
+								this.messageType.FullName),
+							ex);
+					}
+
+					if (attribute.Namespace == null) {
+						throw new ProtocolException(string.Format(
+							CultureInfo.CurrentCulture,
+							MessagingStrings.DataContractMissingNamespace,
+							this.messageType.FullName));
+					}
+
 					this.rootElement = XName.Get("root", attribute.Namespace);
 				}
 
@@ -152,7 +176,7 @@ namespace DotNetOAuth.Messaging {
 				throw new ArgumentNullException("fields");
 			}
 
-			var reader = DictionaryXmlReader.Create(this.RootElement, fields);
+			var reader = DictionaryXmlReader.Create(this.RootElement, this.fieldSorter, fields);
 			IProtocolMessage result;
 			try {
 				result = (IProtocolMessage)this.serializer.ReadObject(reader, false);

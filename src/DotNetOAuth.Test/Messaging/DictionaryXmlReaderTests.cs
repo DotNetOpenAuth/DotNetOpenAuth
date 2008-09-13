@@ -15,12 +15,19 @@ namespace DotNetOAuth.Test.Messaging {
 	public class DictionaryXmlReaderTests : TestBase {
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void CreateWithNullRootElement() {
-			DictionaryXmlReader.Create(null, new Dictionary<string, string>());
+			IComparer<string> fieldSorter = new DataContractMemberComparer(typeof(Mocks.TestMessage));
+			DictionaryXmlReader.Create(null, fieldSorter, new Dictionary<string, string>());
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		public void CreateWithNullDataContractType() {
+			DictionaryXmlReader.Create(XName.Get("name", "ns"), null, new Dictionary<string, string>());
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void CreateWithNullFields() {
-			DictionaryXmlReader.Create(XName.Get("name", "ns"), null);
+			IComparer<string> fieldSorter = new DataContractMemberComparer(typeof(Mocks.TestMessage));
+			DictionaryXmlReader.Create(XName.Get("name", "ns"), fieldSorter, null);
 		}
 	}
 }

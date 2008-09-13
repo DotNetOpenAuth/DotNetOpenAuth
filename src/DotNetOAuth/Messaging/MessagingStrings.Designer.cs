@@ -61,6 +61,24 @@ namespace DotNetOAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to DataContractSerializer could not be initialized on message type {0}.  Is it missing a [DataContract] attribute?.
+        /// </summary>
+        internal static string DataContractMissingFromMessageType {
+            get {
+                return ResourceManager.GetString("DataContractMissingFromMessageType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DataContractSerializer could not be initialized on message type {0} because the DataContractAttribute.Namespace property is not set..
+        /// </summary>
+        internal static string DataContractMissingNamespace {
+            get {
+                return ResourceManager.GetString("DataContractMissingNamespace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to An instance of type {0} was expected, but received unexpected derived type {1}..
         /// </summary>
         internal static string DerivedTypeNotExpected {

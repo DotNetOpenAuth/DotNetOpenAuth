@@ -94,18 +94,47 @@ namespace DotNetOAuth.Test.Messaging {
 			serializer.Deserialize(null);
 		}
 
-		[TestMethod()]
+		[TestMethod]
 		public void DeserializeSimple() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			Dictionary<string, string> fields = new Dictionary<string, string>(StringComparer.Ordinal);
-			// We deliberately do this OUT of alphabetical order (caps would go first),
-			// since DataContractSerializer demands things to be IN alphabetical order.
-			fields["age"] = "15";
 			fields["Name"] = "Andrew";
+			fields["age"] = "15";
 			var actual = (Mocks.TestMessage)serializer.Deserialize(fields);
 			Assert.AreEqual(15, actual.Age);
 			Assert.AreEqual("Andrew", actual.Name);
 			Assert.IsNull(actual.EmptyMember);
+		}
+
+		/// <summary>
+		/// This tests deserialization of a message that is comprised of [DataMember]'s
+		/// that are defined in multiple places in the inheritance tree.
+		/// </summary>
+		/// <remarks>
+		/// The element sorting rules are first inheritance order, then alphabetical order.
+		/// This test validates correct behavior on both.
+		/// </remarks>
+		[TestMethod]
+		public void DeserializeVerifyElementOrdering() {
+			var serializer = MessageSerializer.Get(typeof(Mocks.TestDerivedMessage));
+			Dictionary<string, string> fields = new Dictionary<string, string>(StringComparer.Ordinal);
+			// We deliberately do this OUT of order,
+			// since DataContractSerializer demands elements to be in 
+			// 1) inheritance then 2) alphabetical order.
+			// Proper xml element order would be: Name, age, Second..., TheFirst...
+			fields["TheFirstDerivedElement"] = "first";
+			fields["age"] = "15";
+			fields["Name"] = "Andrew";
+			fields["SecondDerivedElement"] = "second";
+			fields["explicit"] = "explicitValue";
+			fields["private"] = "privateValue";
+			var actual = (Mocks.TestDerivedMessage)serializer.Deserialize(fields);
+			Assert.AreEqual(15, actual.Age);
+			Assert.AreEqual("Andrew", actual.Name);
+			Assert.AreEqual("first", actual.TheFirstDerivedElement);
+			Assert.AreEqual("second", actual.SecondDerivedElement);
+			Assert.AreEqual("explicitValue", ((Mocks.IBaseMessageExplicitMembers)actual).ExplicitProperty);
+			Assert.AreEqual("privateValue", actual.PrivatePropertyAccessor);
 		}
 
 		[TestMethod]

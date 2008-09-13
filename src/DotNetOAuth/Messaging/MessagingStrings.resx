@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DataContractMissingFromMessageType" xml:space="preserve">
+    <value>DataContractSerializer could not be initialized on message type {0}.  Is it missing a [DataContract] attribute?</value>
+  </data>
+  <data name="DataContractMissingNamespace" xml:space="preserve">
+    <value>DataContractSerializer could not be initialized on message type {0} because the DataContractAttribute.Namespace property is not set.</value>
+  </data>
   <data name="DerivedTypeNotExpected" xml:space="preserve">
     <value>An instance of type {0} was expected, but received unexpected derived type {1}.</value>
   </data>
