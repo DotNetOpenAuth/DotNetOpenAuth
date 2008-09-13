@@ -8,6 +8,7 @@ namespace DotNetOAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
+	using System.Linq;
 	using System.Net;
 	using System.Text;
 	using System.Web;
@@ -114,6 +115,56 @@ namespace DotNetOAuth.Messaging {
 			}
 
 			return dictionary;
+		}
+
+		/// <summary>
+		/// Sorts the elements of a sequence in ascending order by using a specified comparer.
+		/// </summary>
+		/// <typeparam name="TSource">The type of the elements of source.</typeparam>
+		/// <typeparam name="TKey">The type of the key returned by keySelector.</typeparam>
+		/// <param name="source">A sequence of values to order.</param>
+		/// <param name="keySelector">A function to extract a key from an element.</param>
+		/// <param name="comparer">A comparison function to compare keys.</param>
+		/// <returns>An System.Linq.IOrderedEnumerable&lt;TElement&gt; whose elements are sorted according to a key.</returns>
+		internal static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Comparison<TKey> comparer) {
+			return System.Linq.Enumerable.OrderBy<TSource, TKey>(source, keySelector, new ComparisonHelper<TKey>(comparer));
+		}
+
+		/// <summary>
+		/// A class to convert a <see cref="Comparison&lt;T&gt;"/> into an <see cref="IComparer&lt;T&gt;"/>.
+		/// </summary>
+		/// <typeparam name="T">The type of objects being compared.</typeparam>
+		private class ComparisonHelper<T> : IComparer<T> {
+			/// <summary>
+			/// The comparison method to use.
+			/// </summary>
+			private Comparison<T> comparison;
+
+			/// <summary>
+			/// Initializes a new instance of the ComparisonHelper class.
+			/// </summary>
+			/// <param name="comparison">The comparison method to use.</param>
+			internal ComparisonHelper(Comparison<T> comparison) {
+				if (comparison == null) {
+					throw new ArgumentNullException("comparison");
+				}
+
+				this.comparison = comparison;
+			}
+
+			#region IComparer<T> Members
+
+			/// <summary>
+			/// Compares two instances of <typeparamref name="T"/>.
+			/// </summary>
+			/// <param name="x">The first object to compare.</param>
+			/// <param name="y">The second object to compare.</param>
+			/// <returns>Any of -1, 0, or 1 according to standard comparison rules.</returns>
+			public int Compare(T x, T y) {
+				return this.comparison(x, y);
+			}
+
+			#endregion
 		}
 	}
 }

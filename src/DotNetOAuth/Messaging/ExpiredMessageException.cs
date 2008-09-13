@@ -17,7 +17,7 @@ namespace DotNetOAuth.Messaging {
 		/// </summary>
 		/// <param name="utcExpirationDate">The date the message expired.</param>
 		/// <param name="faultedMessage">The expired message.</param>
-		public ExpiredMessageException(DateTime utcExpirationDate, IExpiringProtocolMessage faultedMessage)
+		public ExpiredMessageException(DateTime utcExpirationDate, IProtocolMessage faultedMessage)
 			: base(string.Format(MessagingStrings.ExpiredMessage, utcExpirationDate.ToUniversalTime(), DateTime.UtcNow), faultedMessage) {
 		}
 

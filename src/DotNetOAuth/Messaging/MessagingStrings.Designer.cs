@@ -169,6 +169,15 @@ namespace DotNetOAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The binding element offering the {0} protection requires other protection that is not provided..
+        /// </summary>
+        internal static string RequiredProtectionMissing {
+            get {
+                return ResourceManager.GetString("RequiredProtectionMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Message signature was incorrect..
         /// </summary>
         internal static string SignatureInvalid {
@@ -183,6 +192,15 @@ namespace DotNetOAuth.Messaging {
         internal static string SigningNotSupported {
             get {
                 return ResourceManager.GetString("SigningNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expected at most 1 binding element offering the {0} protection, but found {1}..
+        /// </summary>
+        internal static string TooManyBindingsOfferingSameProtection {
+            get {
+                return ResourceManager.GetString("TooManyBindingsOfferingSameProtection", resourceCulture);
             }
         }
         

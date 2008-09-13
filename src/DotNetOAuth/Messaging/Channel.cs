@@ -7,9 +7,11 @@
 namespace DotNetOAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Diagnostics;
 	using System.Globalization;
 	using System.IO;
+	using System.Linq;
 	using System.Net;
 	using System.Text;
 	using System.Web;
@@ -57,36 +59,41 @@ namespace DotNetOAuth.Messaging {
 		private Response queuedIndirectOrResponseMessage;
 
 		/// <summary>
+		/// A list of binding elements in the order they must be applied to outgoing messages.
+		/// </summary>
+		/// <remarks>
+		/// Incoming messages should have the binding elements applied in reverse order.
+		/// </remarks>
+		private List<IChannelBindingElement> bindingElements = new List<IChannelBindingElement>();
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="Channel"/> class.
 		/// </summary>
 		/// <param name="messageTypeProvider">
 		/// A class prepared to analyze incoming messages and indicate what concrete
 		/// message types can deserialize from it.
 		/// </param>
-		protected Channel(IMessageTypeProvider messageTypeProvider) {
+		/// <param name="bindingElements">The binding elements to use in sending and receiving messages.</param>
+		protected Channel(IMessageTypeProvider messageTypeProvider, params IChannelBindingElement[] bindingElements) {
 			if (messageTypeProvider == null) {
 				throw new ArgumentNullException("messageTypeProvider");
 			}
 
-			this.MaximumMessageAge = TimeSpan.FromMinutes(13);
 			this.messageTypeProvider = messageTypeProvider;
+			this.bindingElements = new List<IChannelBindingElement>(ValidateAndPrepareBindingElements(bindingElements));
 		}
 
 		/// <summary>
-		/// Gets or sets the maximum age a message implementing the 
-		/// <see cref="IExpiringProtocolMessage"/> interface can be before
-		/// being discarded as too old.
+		/// Gets the binding elements used by this channel, in the order they are applied to outgoing messages.
 		/// </summary>
-		/// <value>The default value is 13 minutes.</value>
 		/// <remarks>
-		/// This time limit should take into account expected time skew for servers
-		/// across the Internet.  For example, if a server could conceivably have its
-		/// clock d = 5 minutes off UTC time, then any two servers could have
-		/// their clocks disagree by as much as 2*d = 10 minutes.
-		/// If a message should live for at least t = 3 minutes, 
-		/// this property should be set to (2*d + t) = 13 minutes.
+		/// Incoming messages are processed by this binding elements in the reverse order.
 		/// </remarks>
-		protected internal TimeSpan MaximumMessageAge { get; set; }
+		protected internal ReadOnlyCollection<IChannelBindingElement> BindingElements {
+			get {
+				return this.bindingElements.AsReadOnly();
+			}
+		}
 
 		/// <summary>
 		/// Gets a tool that can figure out what kind of message is being received
@@ -338,56 +345,6 @@ namespace DotNetOAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Signs a given message according to the rules of the channel.
-		/// </summary>
-		/// <param name="message">The message to sign.</param>
-		protected virtual void Sign(ISignedProtocolMessage message) {
-			Debug.Assert(message != null, "message == null");
-			throw new NotSupportedException(MessagingStrings.SigningNotSupported);
-		}
-
-		/// <summary>
-		/// Gets whether the signature of a signed message is valid or not
-		/// according to the rules of the channel.
-		/// </summary>
-		/// <param name="message">The message whose signature should be verified.</param>
-		/// <returns>True if the signature is valid.  False otherwise.</returns>
-		protected virtual bool IsSignatureValid(ISignedProtocolMessage message) {
-			Debug.Assert(message != null, "message == null");
-			throw new NotSupportedException(MessagingStrings.SigningNotSupported);
-		}
-
-		/// <summary>
-		/// Applies replay protection on an outgoing message.
-		/// </summary>
-		/// <param name="message">The message to apply replay protection to.</param>
-		/// <remarks>
-		/// <para>Implementing this method typically involves generating and setting a nonce property
-		/// on the message.</para>
-		/// <para>
-		/// At the time this method is called, the 
-		/// <see cref="IExpiringProtocolMessage.UtcCreationDate"/> property will already be
-		/// set on the <paramref name="message"/>.</para>
-		/// </remarks>
-		protected virtual void ApplyReplayProtection(IReplayProtectedProtocolMessage message) {
-			throw new NotSupportedException(MessagingStrings.ReplayProtectionNotSupported);
-		}
-
-		/// <summary>
-		/// Gets whether this message has already been processed based on the 
-		/// replay protection applied by <see cref="ApplyReplayProtection"/>.
-		/// </summary>
-		/// <param name="message">The message to be checked against the list of recently received messages.</param>
-		/// <returns>True if the message has already been processed.  False otherwise.</returns>
-		/// <remarks>
-		/// An exception should NOT be thrown by this method in case of a message replay.
-		/// The caller will be responsible to handle the replay attack.
-		/// </remarks>
-		protected virtual bool IsMessageReplayed(IReplayProtectedProtocolMessage message) {
-			throw new NotSupportedException(MessagingStrings.ReplayProtectionNotSupported);
-		}
-
-		/// <summary>
 		/// Gets the protocol message that may be in the given HTTP response stream.
 		/// </summary>
 		/// <param name="responseStream">The response that is anticipated to contain an OAuth message.</param>
@@ -446,24 +403,81 @@ namespace DotNetOAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Ensures a consistent and secure set of binding elements and 
+		/// sorts them as necessary for a valid sequence of operations.
+		/// </summary>
+		/// <param name="elements">The binding elements provided to the channel.</param>
+		/// <returns>The properly ordered list of elements.</returns>
+		/// <exception cref="ProtocolException">Thrown when the binding elements are incomplete or inconsistent with each other.</exception>
+		private static IEnumerable<IChannelBindingElement> ValidateAndPrepareBindingElements(IEnumerable<IChannelBindingElement> elements) {
+			// Filter the elements between the mere transforming ones and the protection ones.
+			var transformationElements = new List<IChannelBindingElement>(
+				elements.Where(element => element.Protection == ChannelProtection.None));
+			var protectionElements = new List<IChannelBindingElement>(
+				elements.Where(element => element.Protection != ChannelProtection.None));
+
+			bool wasLastProtectionPresent = true;
+			foreach (ChannelProtection protectionKind in Enum.GetValues(typeof(ChannelProtection))) {
+				if (protectionKind == ChannelProtection.None) {
+					continue;
+				}
+
+				int countProtectionsOfThisKind = protectionElements.Count(element => (element.Protection & protectionKind) == protectionKind);
+				
+				// Each protection binding element is backed by the presence of its dependent protection(s).
+				if (countProtectionsOfThisKind > 0 && !wasLastProtectionPresent) {
+					throw new ProtocolException(
+						string.Format(
+							CultureInfo.CurrentCulture,
+							MessagingStrings.RequiredProtectionMissing,
+							protectionKind));
+				}
+
+				// At most one binding element for each protection type.
+				if (countProtectionsOfThisKind > 1) {
+					throw new ProtocolException(
+						string.Format(
+							CultureInfo.CurrentCulture,
+							MessagingStrings.TooManyBindingsOfferingSameProtection,
+							protectionKind,
+							countProtectionsOfThisKind));
+				}
+				wasLastProtectionPresent = countProtectionsOfThisKind > 0;
+			}
+
+			// Put the binding elements in order so they are correctly applied to outgoing messages.
+			// Start with the transforming (non-protecting) binding elements first and preserve their original order.
+			var orderedList = new List<IChannelBindingElement>(transformationElements);
+
+			// Now sort the protection binding elements among themselves and add them to the list.
+			orderedList.AddRange(protectionElements.OrderBy(element => element.Protection, BindingElementOutgoingMessageApplicationOrder));
+			return orderedList;
+		}
+
+		/// <summary>
+		/// Puts binding elements in their correct outgoing message processing order.
+		/// </summary>
+		/// <param name="protection1">The first protection type to compare.</param>
+		/// <param name="protection2">The second protection type to compare.</param>
+		/// <returns>
+		/// -1 if <paramref name="element1"/> should be applied to an outgoing message before <paramref name="element2"/>.
+		/// 1 if <paramref name="element2"/> should be applied to an outgoing message before <paramref name="element1"/>.
+		/// 0 if it doesn't matter.
+		/// </returns>
+		private static int BindingElementOutgoingMessageApplicationOrder(ChannelProtection protection1, ChannelProtection protection2) {
+			Debug.Assert(protection1 != ChannelProtection.None && protection2 != ChannelProtection.None, "This comparison function should only be used to compare protection binding elements.  Otherwise we change the order of user-defined message transformations.");
+
+			// Now put the protection ones in the right order.
+			return -((int)protection1).CompareTo((int)protection2); // descending flag ordinal order
+		}
+
+		/// <summary>
 		/// Prepares a message for transmit by applying signatures, nonces, etc.
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>
 		private void PrepareMessageForSending(IProtocolMessage message) {
-			// The order of operations here is important.
-			ISignedProtocolMessage signedMessage = message as ISignedProtocolMessage;
-			if (signedMessage != null) {
-				IExpiringProtocolMessage expiringMessage = message as IExpiringProtocolMessage;
-				if (expiringMessage != null) {
-					IReplayProtectedProtocolMessage nonceMessage = message as IReplayProtectedProtocolMessage;
-					if (nonceMessage != null) {
-						this.ApplyReplayProtection(nonceMessage);
-					}
-
-					expiringMessage.UtcCreationDate = DateTime.UtcNow;
-				}
-
-				this.Sign(signedMessage);
+			foreach (IChannelBindingElement bindingElement in this.bindingElements) {
+				bindingElement.PrepareMessageForSending(message);
 			}
 		}
 
@@ -476,63 +490,8 @@ namespace DotNetOAuth.Messaging {
 		/// This can be due to tampering, replay attack or expiration, among other things.
 		/// </exception>
 		private void VerifyMessageAfterReceiving(IProtocolMessage message) {
-			// The order of operations is important.
-			ISignedProtocolMessage signedMessage = message as ISignedProtocolMessage;
-			if (signedMessage != null) {
-				this.VerifyMessageSignature(signedMessage);
-
-				IExpiringProtocolMessage expiringMessage = message as IExpiringProtocolMessage;
-				if (expiringMessage != null) {
-					this.VerifyMessageHasNotExpired(expiringMessage);
-
-					IReplayProtectedProtocolMessage nonceMessage = message as IReplayProtectedProtocolMessage;
-					if (nonceMessage != null) {
-						this.VerifyMessageReplayProtection(nonceMessage);
-					}
-				}
-			}
-		}
-
-		/// <summary>
-		/// Verifies that a message signature is valid.
-		/// </summary>
-		/// <param name="signedMessage">The message whose signature is to be verified.</param>
-		/// <exception cref="ProtocolException">Thrown if the signature is invalid.</exception>
-		private void VerifyMessageSignature(ISignedProtocolMessage signedMessage) {
-			Debug.Assert(signedMessage != null, "signedMessage == null");
-
-			if (!this.IsSignatureValid(signedMessage)) {
-				// TODO: add inResponseTo and remoteReceiver where applicable
-				throw new InvalidSignatureException(signedMessage);
-			}
-		}
-
-		/// <summary>
-		/// Verifies that a given message has not grown too old to process.
-		/// </summary>
-		/// <param name="expiringMessage">The message to ensure has not expired.</param>
-		/// <exception cref="ProtocolException">Thrown if the message has already expired.</exception>
-		private void VerifyMessageHasNotExpired(IExpiringProtocolMessage expiringMessage) {
-			Debug.Assert(expiringMessage != null, "expiringMessage == null");
-
-			// Yes the UtcCreationDate is supposed to always be in UTC already,
-			// but just in case a given message failed to guarantee that, we do it here.
-			DateTime expirationDate = expiringMessage.UtcCreationDate.ToUniversalTime() + this.MaximumMessageAge;
-			if (expirationDate < DateTime.UtcNow) {
-				throw new ExpiredMessageException(expirationDate, expiringMessage);
-			}
-		}
-
-		/// <summary>
-		/// Verifies that a message has not already been processed.
-		/// </summary>
-		/// <param name="message">The message to verify.</param>
-		/// <exception cref="ProtocolException">Thrown if the message has already been processed.</exception>
-		private void VerifyMessageReplayProtection(IReplayProtectedProtocolMessage message) {
-			Debug.Assert(message != null, "message == null");
-
-			if (this.IsMessageReplayed(message)) {
-				throw new ReplayedMessageException(message);
+			foreach (IChannelBindingElement bindingElement in this.bindingElements.Reverse<IChannelBindingElement>()) {
+				bindingElement.PrepareMessageForReceiving(message);
 			}
 		}
 	}

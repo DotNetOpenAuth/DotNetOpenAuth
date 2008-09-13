@@ -3,6 +3,7 @@
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
 namespace DotNetOAuth.Test {
 	using System.Reflection;
 	using log4net;

@@ -16,7 +16,7 @@ namespace DotNetOAuth.Messaging {
 		/// Initializes a new instance of the <see cref="InvalidSignatureException"/> class.
 		/// </summary>
 		/// <param name="faultedMessage">The message with the invalid signature.</param>
-		public InvalidSignatureException(ISignedProtocolMessage faultedMessage)
+		public InvalidSignatureException(IProtocolMessage faultedMessage)
 			: base(MessagingStrings.SignatureInvalid, faultedMessage) { }
 
 		/// <summary>

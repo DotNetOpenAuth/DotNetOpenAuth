@@ -10,22 +10,12 @@ namespace DotNetOAuth.Test.Messaging {
 	using System.IO;
 	using System.Net;
 	using System.Web;
-	using System.Xml;
 	using DotNetOAuth.Messaging;
 	using DotNetOAuth.Test.Mocks;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
-	public class ChannelTests : TestBase {
-		private Channel channel;
-
-		[TestInitialize]
-		public override void SetUp() {
-			base.SetUp();
-
-			this.channel = new TestChannel();
-		}
-
+	public class ChannelTests : MessagingTestBase {
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNull() {
 			// This bad channel is deliberately constructed to pass null to
@@ -35,7 +25,7 @@ namespace DotNetOAuth.Test.Messaging {
 
 		[TestMethod]
 		public void DequeueIndirectOrResponseMessageReturnsNull() {
-			Assert.IsNull(this.channel.DequeueIndirectOrResponseMessage());
+			Assert.IsNull(this.Channel.DequeueIndirectOrResponseMessage());
 		}
 
 		[TestMethod]
@@ -50,25 +40,25 @@ namespace DotNetOAuth.Test.Messaging {
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void SendNull() {
-			this.channel.Send(null);
+			this.Channel.Send(null);
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void SendIndirectedUndirectedMessage() {
 			IProtocolMessage message = new TestMessage(MessageTransport.Indirect);
-			this.channel.Send(message);
+			this.Channel.Send(message);
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void SendDirectedNoRecipientMessage() {
 			IProtocolMessage message = new TestDirectedMessage(MessageTransport.Indirect);
-			this.channel.Send(message);
+			this.Channel.Send(message);
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void SendInvalidMessageTransport() {
 			IProtocolMessage message = new TestDirectedMessage((MessageTransport)100);
-			this.channel.Send(message);
+			this.Channel.Send(message);
 		}
 
 		[TestMethod]
@@ -79,8 +69,8 @@ namespace DotNetOAuth.Test.Messaging {
 				Location = new Uri("http://host/path"),
 				Recipient = new Uri("http://provider/path"),
 			};
-			this.channel.Send(message);
-			Response response = this.channel.DequeueIndirectOrResponseMessage();
+			this.Channel.Send(message);
+			Response response = this.Channel.DequeueIndirectOrResponseMessage();
 			Assert.AreEqual(HttpStatusCode.Redirect, response.Status);
 			StringAssert.StartsWith(response.Headers[HttpResponseHeader.Location], "http://provider/path");
 			StringAssert.Contains(response.Headers[HttpResponseHeader.Location], "age=15");
@@ -120,8 +110,8 @@ namespace DotNetOAuth.Test.Messaging {
 				Location = new Uri("http://host/path"),
 				Recipient = new Uri("http://provider/path"),
 			};
-			this.channel.Send(message);
-			Response response = this.channel.DequeueIndirectOrResponseMessage();
+			this.Channel.Send(message);
+			Response response = this.Channel.DequeueIndirectOrResponseMessage();
 			Assert.AreEqual(HttpStatusCode.OK, response.Status, "A form redirect should be an HTTP successful response.");
 			Assert.IsNull(response.Headers[HttpResponseHeader.Location], "There should not be a redirection header in the response.");
 			string body = response.Body;
@@ -169,7 +159,7 @@ namespace DotNetOAuth.Test.Messaging {
 				Name = "Andrew",
 				Location = new Uri("http://host/path"),
 			};
-			this.channel.Send(message);
+			this.Channel.Send(message);
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
@@ -209,7 +199,7 @@ namespace DotNetOAuth.Test.Messaging {
 			// TODO: make this a request with a message in it.
 			HttpRequest request = new HttpRequest("somefile", "http://someurl", "age=15");
 			HttpContext.Current = new HttpContext(request, new HttpResponse(new StringWriter()));
-			IProtocolMessage message = this.channel.ReadFromRequest();
+			IProtocolMessage message = this.Channel.ReadFromRequest();
 			Assert.IsNotNull(message);
 			Assert.IsInstanceOfType(message, typeof(TestMessage));
 			Assert.AreEqual(15, ((TestMessage)message).Age);
@@ -227,154 +217,72 @@ namespace DotNetOAuth.Test.Messaging {
 			badChannel.ReadFromRequest(null);
 		}
 
-		[TestMethod, ExpectedException(typeof(NotSupportedException))]
-		public void SendSigningMessagesNotSupported() {
-			TestSignedDirectedMessage message = new TestSignedDirectedMessage(MessageTransport.Direct);
-			message.Recipient = new Uri("http://localtest");
-			this.channel.Send(message);
-		}
-
-		[TestMethod]
-		public void SendSetsTimestamp() {
-			TestExpiringMessage message = new TestExpiringMessage(MessageTransport.Indirect);
-			message.Recipient = new Uri("http://localtest");
-			((IExpiringProtocolMessage)message).UtcCreationDate = DateTime.Parse("1/1/1990");
-
-			Channel channel = new TestSigningChannel(true, false);
-			channel.Send(message);
-			Assert.IsTrue(DateTime.UtcNow - ((IExpiringProtocolMessage)message).UtcCreationDate < TimeSpan.FromSeconds(3), "The timestamp on the message was not set on send.");
-		}
-
-		[TestMethod, ExpectedException(typeof(NotSupportedException))]
-		public void SendReplayProtectedMessageNotSupported() {
-			TestReplayProtectedMessage message = new TestReplayProtectedMessage(MessageTransport.Indirect);
-			message.Recipient = new Uri("http://localtest");
-
-			Channel channel = new TestSigningChannel(true, false); // use this one to get passed signing NotSupportedException
-			channel.Send(message);
-		}
-
 		[TestMethod]
 		public void SendReplayProtectedMessageSetsNonce() {
 			TestReplayProtectedMessage message = new TestReplayProtectedMessage(MessageTransport.Indirect);
 			message.Recipient = new Uri("http://localtest");
 
-			Channel channel = new TestReplayProtectedChannel();
-			channel.Send(message);
+			this.Channel = CreateChannel(ChannelProtection.ReplayProtection, ChannelProtection.ReplayProtection);
+			this.Channel.Send(message);
 			Assert.IsNotNull(((IReplayProtectedProtocolMessage)message).Nonce);
-		}
-
-		[TestMethod, ExpectedException(typeof(NotSupportedException))]
-		public void ReceivedSignedMessagesNotSupported() {
-			// Create a channel that doesn't support signed messages, but will recognize one.
-			this.channel = new TestChannel(new TestMessageTypeProvider(true, false, false));
-			this.ParameterizedReceiveTest("GET");
 		}
 
 		[TestMethod, ExpectedException(typeof(InvalidSignatureException))]
 		public void ReceivedInvalidSignature() {
-			this.channel = new TestSigningChannel(false, false);
+			this.Channel = CreateChannel(ChannelProtection.TamperProtection, ChannelProtection.TamperProtection);
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, true);
 		}
 
 		[TestMethod]
-		public void VerifyGoodTimestampIsAccepted() {
-			// Create a channel that supports and recognizes signed messages.
-			this.channel = new TestSigningChannel(true, false);
-			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
-		}
-
-		[TestMethod, ExpectedException(typeof(ExpiredMessageException))]
-		public void VerifyBadTimestampIsRejected() {
-			// Create a channel that supports and recognizes signed messages.
-			this.channel = new TestSigningChannel(true, false);
-			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow - this.channel.MaximumMessageAge - TimeSpan.FromSeconds(1), false);
-		}
-
-		[TestMethod]
 		public void ReceivedReplayProtectedMessageJustOnce() {
-			this.channel = new TestReplayProtectedChannel();
+			this.Channel = CreateChannel(ChannelProtection.ReplayProtection, ChannelProtection.ReplayProtection);
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
 		}
 
 		[TestMethod, ExpectedException(typeof(ReplayedMessageException))]
 		public void ReceivedReplayProtectedMessageTwice() {
-			this.channel = new TestReplayProtectedChannel();
+			this.Channel = CreateChannel(ChannelProtection.ReplayProtection, ChannelProtection.ReplayProtection);
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
 		}
 
-		[TestMethod, ExpectedException(typeof(NotSupportedException))]
-		public void ReceivedReplayProtectedMessagesNotSupported() {
-			// Create a channel that doesn't support replay protected messages, but will recognize one.
-			this.channel = new TestSigningChannel(true, true);
-			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
+		[TestMethod, ExpectedException(typeof(ProtocolException))]
+		public void MessageExpirationWithoutTamperResistance() {
+			new TestChannel(
+				new TestMessageTypeProvider(),
+				new StandardMessageExpirationBindingElement());
 		}
 
-		private static HttpRequestInfo CreateHttpRequestInfo(string method, IDictionary<string, string> fields) {
-			string query = MessagingUtilities.CreateQueryString(fields);
-			UriBuilder requestUri = new UriBuilder("http://localhost/path");
-			WebHeaderCollection headers = new WebHeaderCollection();
-			MemoryStream ms = new MemoryStream();
-			if (method == "POST") {
-				headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
-				StreamWriter sw = new StreamWriter(ms);
-				sw.Write(query);
-				sw.Flush();
-				ms.Position = 0;
-			} else if (method == "GET") {
-				requestUri.Query = query;
-			} else {
-				throw new ArgumentOutOfRangeException("method", method, "Expected POST or GET");
-			}
-			HttpRequestInfo request = new HttpRequestInfo {
-				HttpMethod = method,
-				Url = requestUri.Uri,
-				Headers = headers,
-				InputStream = ms,
-			};
-
-			return request;
+		[TestMethod, ExpectedException(typeof(ProtocolException))]
+		public void TooManyBindingElementsProvidingSameProtection() {
+			new TestChannel(
+				new TestMessageTypeProvider(),
+				new MockSigningBindingElement(),
+				new MockSigningBindingElement());
 		}
 
-		private void ParameterizedReceiveTest(string method) {
-			var fields = new Dictionary<string, string> {
-				{ "age", "15" },
-				{ "Name", "Andrew" },
-				{ "Location", "http://hostb/pathB" },
-			};
-			IProtocolMessage requestMessage = this.channel.ReadFromRequest(CreateHttpRequestInfo(method, fields));
-			Assert.IsNotNull(requestMessage);
-			Assert.IsInstanceOfType(requestMessage, typeof(TestMessage));
-			TestMessage testMessage = (TestMessage)requestMessage;
-			Assert.AreEqual(15, testMessage.Age);
-			Assert.AreEqual("Andrew", testMessage.Name);
-			Assert.AreEqual("http://hostb/pathB", testMessage.Location.AbsoluteUri);
-		}
+		[TestMethod]
+		public void BindingElementsOrdering() {
+			IChannelBindingElement transformA = new MockTransformationBindingElement("a");
+			IChannelBindingElement transformB = new MockTransformationBindingElement("b");
+			IChannelBindingElement sign = new MockSigningBindingElement();
+			IChannelBindingElement replay = new MockReplayProtectionBindingElement();
+			IChannelBindingElement expire = new StandardMessageExpirationBindingElement();
 
-		private void ParameterizedReceiveProtectedTest(DateTime? utcCreatedDate, bool invalidSignature) {
-			var fields = new Dictionary<string, string> {
-				{ "age", "15" },
-				{ "Name", "Andrew" },
-				{ "Location", "http://hostb/pathB" },
-				{ "Signature", invalidSignature ? "badsig" : TestSigningChannel.MessageSignature },
-				{ "Nonce", "someNonce" },
-			};
-			if (utcCreatedDate.HasValue) {
-				utcCreatedDate = DateTime.Parse(utcCreatedDate.Value.ToUniversalTime().ToString()); // round off the milliseconds so comparisons work later
-				fields.Add("created_on", XmlConvert.ToString(utcCreatedDate.Value, XmlDateTimeSerializationMode.Utc));
-			}
-			IProtocolMessage requestMessage = this.channel.ReadFromRequest(CreateHttpRequestInfo("GET", fields));
-			Assert.IsNotNull(requestMessage);
-			Assert.IsInstanceOfType(requestMessage, typeof(TestSignedDirectedMessage));
-			TestSignedDirectedMessage testMessage = (TestSignedDirectedMessage)requestMessage;
-			Assert.AreEqual(15, testMessage.Age);
-			Assert.AreEqual("Andrew", testMessage.Name);
-			Assert.AreEqual("http://hostb/pathB", testMessage.Location.AbsoluteUri);
-			if (utcCreatedDate.HasValue) {
-				IExpiringProtocolMessage expiringMessage = (IExpiringProtocolMessage)requestMessage;
-				Assert.AreEqual(utcCreatedDate.Value, expiringMessage.UtcCreationDate);
-			}
+			Channel channel = new TestChannel(
+				new TestMessageTypeProvider(),
+				sign,
+				replay,
+				expire,
+				transformB,
+				transformA);
+
+			Assert.AreEqual(5, channel.BindingElements.Count);
+			Assert.AreSame(transformB, channel.BindingElements[0]);
+			Assert.AreSame(transformA, channel.BindingElements[1]);
+			Assert.AreSame(replay, channel.BindingElements[2]);
+			Assert.AreSame(expire, channel.BindingElements[3]);
+			Assert.AreSame(sign, channel.BindingElements[4]);
 		}
 	}
 }

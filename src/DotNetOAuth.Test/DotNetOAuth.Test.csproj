@@ -58,12 +58,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Messaging\MessagingTestBase.cs" />
     <Compile Include="Messaging\MessagingUtilitiesTests.cs" />
     <Compile Include="Messaging\ChannelTests.cs" />
     <Compile Include="Messaging\DictionaryXmlReaderTests.cs" />
     <Compile Include="Messaging\HttpRequestInfoTests.cs" />
     <Compile Include="Messaging\ProtocolExceptionTests.cs" />
-    <Compile Include="Mocks\TestReplayProtectedChannel.cs" />
+    <Compile Include="Messaging\StandardMessageExpirationBindingElementTests.cs" />
+    <Compile Include="Mocks\MockTransformationBindingElement.cs" />
+    <Compile Include="Mocks\MockReplayProtectionBindingElement.cs" />
     <Compile Include="Mocks\TestBaseMessage.cs" />
     <Compile Include="Mocks\TestDerivedMessage.cs" />
     <Compile Include="Mocks\TestReplayProtectedMessage.cs" />
@@ -71,7 +74,7 @@
     <Compile Include="Mocks\TestBadChannel.cs" />
     <Compile Include="Mocks\TestExpiringMessage.cs" />
     <Compile Include="Mocks\TestSignedDirectedMessage.cs" />
-    <Compile Include="Mocks\TestSigningChannel.cs" />
+    <Compile Include="Mocks\MockSigningBindingElement.cs" />
     <Compile Include="Mocks\TestWebRequestHandler.cs" />
     <Compile Include="OAuthChannelTests.cs" />
     <Compile Include="Messaging\MessageSerializerTests.cs" />

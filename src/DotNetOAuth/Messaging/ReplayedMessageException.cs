@@ -17,7 +17,7 @@ namespace DotNetOAuth.Messaging {
 		/// Initializes a new instance of the <see cref="ReplayedMessageException"/> class.
 		/// </summary>
 		/// <param name="faultedMessage">The replayed message.</param>
-		public ReplayedMessageException(IReplayProtectedProtocolMessage faultedMessage) : base(MessagingStrings.ReplayAttackDetected, faultedMessage) { }
+		public ReplayedMessageException(IProtocolMessage faultedMessage) : base(MessagingStrings.ReplayAttackDetected, faultedMessage) { }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ReplayedMessageException"/> class.

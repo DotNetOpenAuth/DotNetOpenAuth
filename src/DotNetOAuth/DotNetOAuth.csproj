@@ -68,6 +68,8 @@
   <ItemGroup>
     <Compile Include="Consumer.cs" />
     <Compile Include="IWebRequestHandler.cs" />
+    <Compile Include="Messaging\ChannelProtection.cs" />
+    <Compile Include="Messaging\IChannelBindingElement.cs" />
     <Compile Include="Messaging\ReplayedMessageException.cs" />
     <Compile Include="Messaging\ExpiredMessageException.cs" />
     <Compile Include="Messaging\DataContractMemberComparer.cs" />
@@ -87,6 +89,7 @@
       <DependentUpon>MessagingStrings.resx</DependentUpon>
     </Compile>
     <Compile Include="Messaging\MessagingUtilities.cs" />
+    <Compile Include="Messaging\StandardMessageExpirationBindingElement.cs" />
     <Compile Include="OAuthChannel.cs" />
     <Compile Include="Messaging\Response.cs" />
     <Compile Include="Messaging\IProtocolMessage.cs" />
