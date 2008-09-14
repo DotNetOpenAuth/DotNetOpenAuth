@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DotNetOAuth.Messaging.Bindings.InvalidSignatureException" Collapsed="true">
+    <Position X="8.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Messaging\Bindings\InvalidSignatureException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOAuth.Messaging.Bindings.ReplayedMessageException" Collapsed="true">
+    <Position X="6" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Messaging\Bindings\ReplayedMessageException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOAuth.Messaging.Bindings.ExpiredMessageException" Collapsed="true">
+    <Position X="3.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Messaging\Bindings\ExpiredMessageException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOAuth.Messaging.ProtocolException" Collapsed="true">
+    <Position X="6" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAKAAAAAAAAAAAAAIBAAAAACAQAIAAAAACAAAAAAAA=</HashCode>
+      <FileName>Messaging\ProtocolException.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DotNetOAuth.Messaging.Bindings.StandardExpirationBindingElement" Collapsed="true">
+    <Position X="1" Y="3" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAAAARAAAAAAAEAAAAAIAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Messaging\Bindings\StandardExpirationBindingElement.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="DotNetOAuth.Messaging.IProtocolMessage" Collapsed="true">
+    <Position X="6" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQAAAAAAAAAAAAAYAAAAAAAAAAAACAAAAAAA=</HashCode>
+      <FileName>Messaging\IProtocolMessage.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DotNetOAuth.Messaging.Bindings.IExpiringProtocolMessage" Collapsed="true">
+    <Position X="3.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Messaging\Bindings\IExpiringProtocolMessage.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DotNetOAuth.Messaging.Bindings.IReplayProtectedProtocolMessage" Collapsed="true">
+    <Position X="6" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAA=</HashCode>
+      <FileName>Messaging\Bindings\IReplayProtectedProtocolMessage.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DotNetOAuth.Messaging.Bindings.ISignedOAuthMessage" Collapsed="true">
+    <Position X="8.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE=</HashCode>
+      <FileName>Messaging\Bindings\ISignedOAuthMessage.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DotNetOAuth.Messaging.IChannelBindingElement">
+    <Position X="0.5" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAEAAAAAAAAA=</HashCode>
+      <FileName>Messaging\IChannelBindingElement.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ChannelProtection.cs" company="Andrew Arnott">
+// <copyright file="MessageProtection.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -17,7 +17,7 @@ namespace DotNetOAuth.Messaging {
 	/// tamper protection to prevent a user from changing the timestamp on a message.
 	/// </remarks>
 	[Flags]
-	internal enum ChannelProtection {
+	internal enum MessageProtection {
 		/// <summary>
 		/// No protection.
 		/// </summary>

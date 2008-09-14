@@ -1,32 +1,32 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="StandardMessageExpirationBindingElement.cs" company="Andrew Arnott">
+// <copyright file="StandardExpirationBindingElement.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOAuth.Messaging {
+namespace DotNetOAuth.Messaging.Bindings {
 	using System;
 
 	/// <summary>
 	/// A message expiration enforcing binding element that supports messages
 	/// implementing the <see cref="IExpiringProtocolMessage"/> interface.
 	/// </summary>
-	internal class StandardMessageExpirationBindingElement : IChannelBindingElement {
+	internal class StandardExpirationBindingElement : IChannelBindingElement {
 		/// <summary>
 		/// The default maximum message age to use if the default constructor is called.
 		/// </summary>
 		internal static readonly TimeSpan DefaultMaximumMessageAge = TimeSpan.FromMinutes(13);
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StandardMessageExpirationBindingElement"/> class
+		/// Initializes a new instance of the <see cref="StandardExpirationBindingElement"/> class
 		/// with a default maximum message lifetime of 13 minutes.
 		/// </summary>
-		internal StandardMessageExpirationBindingElement()
+		internal StandardExpirationBindingElement()
 			: this(DefaultMaximumMessageAge) {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StandardMessageExpirationBindingElement"/> class.
+		/// Initializes a new instance of the <see cref="StandardExpirationBindingElement"/> class.
 		/// </summary>
 		/// <param name="maximumAge">
 		/// <para>The maximum age a message implementing the 
@@ -39,7 +39,7 @@ namespace DotNetOAuth.Messaging {
 		/// If a message should live for at least t = 3 minutes, 
 		/// this property should be set to (2*d + t) = 13 minutes.</para>
 		/// </param>
-		internal StandardMessageExpirationBindingElement(TimeSpan maximumAge) {
+		internal StandardExpirationBindingElement(TimeSpan maximumAge) {
 			this.MaximumMessageAge = maximumAge;
 		}
 
@@ -48,9 +48,9 @@ namespace DotNetOAuth.Messaging {
 		/// <summary>
 		/// Gets the protection offered by this binding element.
 		/// </summary>
-		/// <value><see cref="ChannelProtection.Expiration"/></value>
-		ChannelProtection IChannelBindingElement.Protection {
-			get { return ChannelProtection.Expiration; }
+		/// <value><see cref="MessageProtection.Expiration"/></value>
+		MessageProtection IChannelBindingElement.Protection {
+			get { return MessageProtection.Expiration; }
 		}
 
 		#endregion

@@ -33,8 +33,12 @@ namespace DotNetOAuth.Test.Mocks {
 
 		#region IProtocolMessage Members
 
-		Protocol IProtocolMessage.Protocol {
-			get { return Protocol.V10; }
+		Version IProtocolMessage.ProtocolVersion {
+			get { return new Version(1, 0); }
+		}
+
+		MessageProtection IProtocolMessage.RequiredProtection {
+			get { return MessageProtection.None; }
 		}
 
 		MessageTransport IProtocolMessage.Transport {

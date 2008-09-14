@@ -11,6 +11,7 @@ namespace DotNetOAuth.Test {
 	using System.Net;
 	using System.Xml;
 	using DotNetOAuth.Messaging;
+	using DotNetOAuth.Messaging.Bindings;
 	using DotNetOAuth.Test.Mocks;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -53,22 +54,22 @@ namespace DotNetOAuth.Test {
 			return request;
 		}
 
-		internal static Channel CreateChannel(ChannelProtection capabilityAndRecognition) {
+		internal static Channel CreateChannel(MessageProtection capabilityAndRecognition) {
 			return CreateChannel(capabilityAndRecognition, capabilityAndRecognition);
 		}
 
-		internal static Channel CreateChannel(ChannelProtection capability, ChannelProtection recognition) {
+		internal static Channel CreateChannel(MessageProtection capability, MessageProtection recognition) {
 			bool signing = false, expiration = false, replay = false;
 			var bindingElements = new List<IChannelBindingElement>();
-			if (capability >= ChannelProtection.TamperProtection) {
+			if (capability >= MessageProtection.TamperProtection) {
 				bindingElements.Add(new MockSigningBindingElement());
 				signing = true;
 			}
-			if (capability >= ChannelProtection.Expiration) {
-				bindingElements.Add(new StandardMessageExpirationBindingElement());
+			if (capability >= MessageProtection.Expiration) {
+				bindingElements.Add(new StandardExpirationBindingElement());
 				expiration = true;
 			}
-			if (capability >= ChannelProtection.ReplayProtection) {
+			if (capability >= MessageProtection.ReplayProtection) {
 				bindingElements.Add(new MockReplayProtectionBindingElement());
 				replay = true;
 			}

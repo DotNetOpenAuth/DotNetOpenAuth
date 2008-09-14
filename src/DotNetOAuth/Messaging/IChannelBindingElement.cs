@@ -18,7 +18,7 @@ namespace DotNetOAuth.Messaging {
 		/// <summary>
 		/// Gets the protection offered (if any) by this binding element.
 		/// </summary>
-		ChannelProtection Protection { get; }
+		MessageProtection Protection { get; }
 
 		/// <summary>
 		/// Prepares a message for sending based on the rules of this channel binding element.

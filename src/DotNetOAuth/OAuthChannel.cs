@@ -195,11 +195,12 @@ namespace DotNetOAuth {
 		private HttpWebRequest InitializeRequestAsAuthHeader(IDirectedProtocolMessage requestMessage) {
 			var serializer = MessageSerializer.Get(requestMessage.GetType());
 			var fields = serializer.Serialize(requestMessage);
+			var protocol = Protocol.Lookup(requestMessage.ProtocolVersion);
 
 			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(requestMessage.Recipient);
 
 			StringBuilder authorization = new StringBuilder();
-			authorization.Append(requestMessage.Protocol.AuthorizationHeaderScheme);
+			authorization.Append(protocol.AuthorizationHeaderScheme);
 			authorization.Append(" ");
 			foreach (var pair in fields) {
 				string key = Uri.EscapeDataString(pair.Key);

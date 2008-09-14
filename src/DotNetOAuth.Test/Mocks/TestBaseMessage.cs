@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOAuth.Test.Mocks {
+	using System;
 	using System.Runtime.Serialization;
 	using DotNetOAuth.Messaging;
 
@@ -23,8 +24,12 @@ namespace DotNetOAuth.Test.Mocks {
 		[DataMember(Name = "explicit")]
 		string IBaseMessageExplicitMembers.ExplicitProperty { get; set; }
 
-		Protocol IProtocolMessage.Protocol {
-			get { return Protocol.V10; }
+		Version IProtocolMessage.ProtocolVersion {
+			get { return new Version(1, 0); }
+		}
+
+		MessageProtection IProtocolMessage.RequiredProtection {
+			get { return MessageProtection.None; }
 		}
 
 		MessageTransport IProtocolMessage.Transport {

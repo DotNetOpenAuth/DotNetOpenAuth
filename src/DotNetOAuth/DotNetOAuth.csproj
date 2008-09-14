@@ -68,28 +68,28 @@
   <ItemGroup>
     <Compile Include="Consumer.cs" />
     <Compile Include="IWebRequestHandler.cs" />
-    <Compile Include="Messaging\ChannelProtection.cs" />
+    <Compile Include="Messaging\MessageProtection.cs" />
     <Compile Include="Messaging\IChannelBindingElement.cs" />
-    <Compile Include="Messaging\ReplayedMessageException.cs" />
-    <Compile Include="Messaging\ExpiredMessageException.cs" />
+    <Compile Include="Messaging\Bindings\ReplayedMessageException.cs" />
+    <Compile Include="Messaging\Bindings\ExpiredMessageException.cs" />
     <Compile Include="Messaging\DataContractMemberComparer.cs" />
-    <Compile Include="Messaging\InvalidSignatureException.cs" />
-    <Compile Include="Messaging\IReplayProtectedProtocolMessage.cs" />
-    <Compile Include="Messaging\IExpiringProtocolMessage.cs" />
+    <Compile Include="Messaging\Bindings\InvalidSignatureException.cs" />
+    <Compile Include="Messaging\Bindings\IReplayProtectedProtocolMessage.cs" />
+    <Compile Include="Messaging\Bindings\IExpiringProtocolMessage.cs" />
     <Compile Include="Messaging\DictionaryXmlReader.cs" />
     <Compile Include="Messaging\DictionaryXmlWriter.cs" />
     <Compile Include="Messaging\Channel.cs" />
     <Compile Include="Messaging\HttpRequestInfo.cs" />
     <Compile Include="Messaging\IDirectedProtocolMessage.cs" />
     <Compile Include="Messaging\IMessageTypeProvider.cs" />
-    <Compile Include="Messaging\ISignedProtocolMessage.cs" />
+    <Compile Include="Messaging\Bindings\ISignedOAuthMessage.cs" />
     <Compile Include="Messaging\MessagingStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>MessagingStrings.resx</DependentUpon>
     </Compile>
     <Compile Include="Messaging\MessagingUtilities.cs" />
-    <Compile Include="Messaging\StandardMessageExpirationBindingElement.cs" />
+    <Compile Include="Messaging\Bindings\StandardExpirationBindingElement.cs" />
     <Compile Include="OAuthChannel.cs" />
     <Compile Include="Messaging\Response.cs" />
     <Compile Include="Messaging\IProtocolMessage.cs" />
@@ -117,6 +117,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
+    <None Include="Messaging\Bindings\Bindings.cd" />
+    <None Include="Messaging\Exceptions.cd" />
+    <None Include="Messaging\Messaging.cd" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Messaging\MessagingStrings.resx">

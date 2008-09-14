@@ -5,11 +5,8 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOAuth.Test.Mocks {
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
 	using DotNetOAuth.Messaging;
+	using DotNetOAuth.Messaging.Bindings;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	internal class MockReplayProtectionBindingElement : IChannelBindingElement {
@@ -17,8 +14,8 @@ namespace DotNetOAuth.Test.Mocks {
 
 		#region IChannelBindingElement Members
 
-		ChannelProtection IChannelBindingElement.Protection {
-			get { return ChannelProtection.ReplayProtection; }
+		MessageProtection IChannelBindingElement.Protection {
+			get { return MessageProtection.ReplayProtection; }
 		}
 
 		void IChannelBindingElement.PrepareMessageForSending(IProtocolMessage message) {

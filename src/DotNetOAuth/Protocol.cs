@@ -71,5 +71,17 @@ namespace DotNetOAuth {
 		internal string AuthorizationHeaderScheme {
 			get { return this.authorizationHeaderScheme; }
 		}
+
+		/// <summary>
+		/// Gets an instance of <see cref="Protocol"/> given a <see cref="Version"/>.
+		/// </summary>
+		/// <param name="version">The version of the protocol that is desired.</param>
+		/// <returns>The <see cref="Protocol"/> instance representing the requested version.</returns>
+		internal static Protocol Lookup(Version version) {
+			switch (version.Major) {
+				case 1: return Protocol.V10;
+				default: throw new ArgumentOutOfRangeException("version");
+			}
+		}
 	}
 }

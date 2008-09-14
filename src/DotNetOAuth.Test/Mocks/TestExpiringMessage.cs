@@ -9,6 +9,7 @@ namespace DotNetOAuth.Test.Mocks {
 	using System.Diagnostics;
 	using System.Runtime.Serialization;
 	using DotNetOAuth.Messaging;
+	using DotNetOAuth.Messaging.Bindings;
 
 	[DataContract(Namespace = Protocol.DataContractNamespaceV10)]
 	internal class TestExpiringMessage : TestSignedDirectedMessage, IExpiringProtocolMessage {

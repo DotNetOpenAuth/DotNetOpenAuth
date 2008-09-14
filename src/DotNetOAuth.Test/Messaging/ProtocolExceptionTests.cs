@@ -38,7 +38,7 @@ namespace DotNetOAuth.Test.Messaging {
 			IDirectedProtocolMessage msg = (IDirectedProtocolMessage)ex;
 			Assert.AreEqual("some error occurred", ex.Message);
 			Assert.AreSame(receiver, msg.Recipient);
-			Assert.AreEqual(request.Protocol, msg.Protocol);
+			Assert.AreEqual(request.ProtocolVersion, msg.ProtocolVersion);
 			Assert.AreEqual(request.Transport, msg.Transport);
 			msg.EnsureValidMessage();
 		}
@@ -62,15 +62,15 @@ namespace DotNetOAuth.Test.Messaging {
 			ProtocolException ex = new ProtocolException("message", request, null);
 			IDirectedProtocolMessage msg = (IDirectedProtocolMessage)ex;
 			Assert.IsNull(msg.Recipient);
-			Assert.AreEqual(request.Protocol, msg.Protocol);
+			Assert.AreEqual(request.ProtocolVersion, msg.ProtocolVersion);
 			Assert.AreEqual(request.Transport, msg.Transport);
 		}
 
 		[TestMethod, ExpectedException(typeof(InvalidOperationException))]
-		public void ProtocolWithoutMessage() {
+		public void ProtocolVersionWithoutMessage() {
 			ProtocolException ex = new ProtocolException();
 			IDirectedProtocolMessage msg = (IDirectedProtocolMessage)ex;
-			var temp = msg.Protocol;
+			var temp = msg.ProtocolVersion;
 		}
 
 		[TestMethod, ExpectedException(typeof(InvalidOperationException))]

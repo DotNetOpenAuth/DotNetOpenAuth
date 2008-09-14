@@ -17,7 +17,12 @@ namespace DotNetOAuth.Messaging {
 		/// <summary>
 		/// Gets the version of the protocol this message is prepared to implement.
 		/// </summary>
-		Protocol Protocol { get; }
+		Version ProtocolVersion { get; }
+
+		/// <summary>
+		/// Gets the level of protection this message requires.
+		/// </summary>
+		MessageProtection RequiredProtection { get; }
 
 		/// <summary>
 		/// Gets whether this is a direct or indirect message.

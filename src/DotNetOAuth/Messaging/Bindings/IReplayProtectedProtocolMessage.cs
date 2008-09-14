@@ -4,8 +4,9 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOAuth.Messaging {
+namespace DotNetOAuth.Messaging.Bindings {
 	using System;
+	using DotNetOAuth.Messaging;
 
 	/// <summary>
 	/// The contract a message that has an allowable time window for processing must implement.
@@ -14,7 +15,7 @@ namespace DotNetOAuth.Messaging {
 	/// All replay-protected messages must also be set to expire so the nonces do not have
 	/// to be stored indefinitely.
 	/// </remarks>
-	internal interface IReplayProtectedProtocolMessage : IExpiringProtocolMessage {
+	internal interface IReplayProtectedProtocolMessage : IProtocolMessage {
 		/// <summary>
 		/// Gets or sets the nonce that will protect the message from replay attacks.
 		/// </summary>

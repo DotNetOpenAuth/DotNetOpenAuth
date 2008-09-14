@@ -64,7 +64,7 @@
     <Compile Include="Messaging\DictionaryXmlReaderTests.cs" />
     <Compile Include="Messaging\HttpRequestInfoTests.cs" />
     <Compile Include="Messaging\ProtocolExceptionTests.cs" />
-    <Compile Include="Messaging\StandardMessageExpirationBindingElementTests.cs" />
+    <Compile Include="Messaging\StandardExpirationBindingElementTests.cs" />
     <Compile Include="Mocks\MockTransformationBindingElement.cs" />
     <Compile Include="Mocks\MockReplayProtectionBindingElement.cs" />
     <Compile Include="Mocks\TestBaseMessage.cs" />

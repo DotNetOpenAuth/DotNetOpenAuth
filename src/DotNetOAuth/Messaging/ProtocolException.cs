@@ -120,13 +120,20 @@ namespace DotNetOAuth.Messaging {
 		/// <summary>
 		/// Gets the version of the protocol this message is prepared to implement.
 		/// </summary>
-		Protocol IProtocolMessage.Protocol {
+		Version IProtocolMessage.ProtocolVersion {
 			get {
 				if (this.inResponseTo == null) {
 					throw new InvalidOperationException(MessagingStrings.ExceptionNotConstructedForTransit);
 				}
-				return this.inResponseTo.Protocol;
+				return this.inResponseTo.ProtocolVersion;
 			}
+		}
+
+		/// <summary>
+		/// Gets the level of protection this exception requires when transmitted as a message.
+		/// </summary>
+		MessageProtection IProtocolMessage.RequiredProtection {
+			get { return MessageProtection.None; }
 		}
 
 		/// <summary>

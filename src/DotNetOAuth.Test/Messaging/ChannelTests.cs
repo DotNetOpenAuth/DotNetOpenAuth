@@ -11,6 +11,7 @@ namespace DotNetOAuth.Test.Messaging {
 	using System.Net;
 	using System.Web;
 	using DotNetOAuth.Messaging;
+	using DotNetOAuth.Messaging.Bindings;
 	using DotNetOAuth.Test.Mocks;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -222,26 +223,26 @@ namespace DotNetOAuth.Test.Messaging {
 			TestReplayProtectedMessage message = new TestReplayProtectedMessage(MessageTransport.Indirect);
 			message.Recipient = new Uri("http://localtest");
 
-			this.Channel = CreateChannel(ChannelProtection.ReplayProtection, ChannelProtection.ReplayProtection);
+			this.Channel = CreateChannel(MessageProtection.ReplayProtection, MessageProtection.ReplayProtection);
 			this.Channel.Send(message);
 			Assert.IsNotNull(((IReplayProtectedProtocolMessage)message).Nonce);
 		}
 
 		[TestMethod, ExpectedException(typeof(InvalidSignatureException))]
 		public void ReceivedInvalidSignature() {
-			this.Channel = CreateChannel(ChannelProtection.TamperProtection, ChannelProtection.TamperProtection);
+			this.Channel = CreateChannel(MessageProtection.TamperProtection, MessageProtection.TamperProtection);
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, true);
 		}
 
 		[TestMethod]
 		public void ReceivedReplayProtectedMessageJustOnce() {
-			this.Channel = CreateChannel(ChannelProtection.ReplayProtection, ChannelProtection.ReplayProtection);
+			this.Channel = CreateChannel(MessageProtection.ReplayProtection, MessageProtection.ReplayProtection);
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
 		}
 
 		[TestMethod, ExpectedException(typeof(ReplayedMessageException))]
 		public void ReceivedReplayProtectedMessageTwice() {
-			this.Channel = CreateChannel(ChannelProtection.ReplayProtection, ChannelProtection.ReplayProtection);
+			this.Channel = CreateChannel(MessageProtection.ReplayProtection, MessageProtection.ReplayProtection);
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
 		}
@@ -250,7 +251,7 @@ namespace DotNetOAuth.Test.Messaging {
 		public void MessageExpirationWithoutTamperResistance() {
 			new TestChannel(
 				new TestMessageTypeProvider(),
-				new StandardMessageExpirationBindingElement());
+				new StandardExpirationBindingElement());
 		}
 
 		[TestMethod, ExpectedException(typeof(ProtocolException))]
@@ -267,7 +268,7 @@ namespace DotNetOAuth.Test.Messaging {
 			IChannelBindingElement transformB = new MockTransformationBindingElement("b");
 			IChannelBindingElement sign = new MockSigningBindingElement();
 			IChannelBindingElement replay = new MockReplayProtectionBindingElement();
-			IChannelBindingElement expire = new StandardMessageExpirationBindingElement();
+			IChannelBindingElement expire = new StandardExpirationBindingElement();
 
 			Channel channel = new TestChannel(
 				new TestMessageTypeProvider(),

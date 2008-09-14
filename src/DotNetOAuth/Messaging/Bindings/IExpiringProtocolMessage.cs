@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOAuth.Messaging {
+namespace DotNetOAuth.Messaging.Bindings {
 	using System;
 
 	/// <summary>
@@ -13,7 +13,7 @@ namespace DotNetOAuth.Messaging {
 	/// <remarks>
 	/// All expiring messages must also be signed to prevent tampering with the creation date.
 	/// </remarks>
-	internal interface IExpiringProtocolMessage : ISignedProtocolMessage {
+	internal interface IExpiringProtocolMessage : IProtocolMessage {
 		/// <summary>
 		/// Gets or sets the UTC date/time the message was originally sent onto the network.
 		/// </summary>

@@ -64,6 +64,7 @@ namespace DotNetOAuth.Messaging {
 		/// <remarks>
 		/// Incoming messages should have the binding elements applied in reverse order.
 		/// </remarks>
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private List<IChannelBindingElement> bindingElements = new List<IChannelBindingElement>();
 
 		/// <summary>
@@ -412,13 +413,13 @@ namespace DotNetOAuth.Messaging {
 		private static IEnumerable<IChannelBindingElement> ValidateAndPrepareBindingElements(IEnumerable<IChannelBindingElement> elements) {
 			// Filter the elements between the mere transforming ones and the protection ones.
 			var transformationElements = new List<IChannelBindingElement>(
-				elements.Where(element => element.Protection == ChannelProtection.None));
+				elements.Where(element => element.Protection == MessageProtection.None));
 			var protectionElements = new List<IChannelBindingElement>(
-				elements.Where(element => element.Protection != ChannelProtection.None));
+				elements.Where(element => element.Protection != MessageProtection.None));
 
 			bool wasLastProtectionPresent = true;
-			foreach (ChannelProtection protectionKind in Enum.GetValues(typeof(ChannelProtection))) {
-				if (protectionKind == ChannelProtection.None) {
+			foreach (MessageProtection protectionKind in Enum.GetValues(typeof(MessageProtection))) {
+				if (protectionKind == MessageProtection.None) {
 					continue;
 				}
 
@@ -464,8 +465,8 @@ namespace DotNetOAuth.Messaging {
 		/// 1 if <paramref name="element2"/> should be applied to an outgoing message before <paramref name="element1"/>.
 		/// 0 if it doesn't matter.
 		/// </returns>
-		private static int BindingElementOutgoingMessageApplicationOrder(ChannelProtection protection1, ChannelProtection protection2) {
-			Debug.Assert(protection1 != ChannelProtection.None && protection2 != ChannelProtection.None, "This comparison function should only be used to compare protection binding elements.  Otherwise we change the order of user-defined message transformations.");
+		private static int BindingElementOutgoingMessageApplicationOrder(MessageProtection protection1, MessageProtection protection2) {
+			Debug.Assert(protection1 != MessageProtection.None && protection2 != MessageProtection.None, "This comparison function should only be used to compare protection binding elements.  Otherwise we change the order of user-defined message transformations.");
 
 			// Now put the protection ones in the right order.
 			return -((int)protection1).CompareTo((int)protection2); // descending flag ordinal order
