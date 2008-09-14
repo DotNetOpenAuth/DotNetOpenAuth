@@ -223,26 +223,26 @@ namespace DotNetOAuth.Test.Messaging {
 			TestReplayProtectedMessage message = new TestReplayProtectedMessage(MessageTransport.Indirect);
 			message.Recipient = new Uri("http://localtest");
 
-			this.Channel = CreateChannel(MessageProtection.ReplayProtection, MessageProtection.ReplayProtection);
+			this.Channel = CreateChannel(MessageProtection.ReplayProtection);
 			this.Channel.Send(message);
 			Assert.IsNotNull(((IReplayProtectedProtocolMessage)message).Nonce);
 		}
 
 		[TestMethod, ExpectedException(typeof(InvalidSignatureException))]
 		public void ReceivedInvalidSignature() {
-			this.Channel = CreateChannel(MessageProtection.TamperProtection, MessageProtection.TamperProtection);
+			this.Channel = CreateChannel(MessageProtection.TamperProtection);
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, true);
 		}
 
 		[TestMethod]
 		public void ReceivedReplayProtectedMessageJustOnce() {
-			this.Channel = CreateChannel(MessageProtection.ReplayProtection, MessageProtection.ReplayProtection);
+			this.Channel = CreateChannel(MessageProtection.ReplayProtection);
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
 		}
 
 		[TestMethod, ExpectedException(typeof(ReplayedMessageException))]
 		public void ReceivedReplayProtectedMessageTwice() {
-			this.Channel = CreateChannel(MessageProtection.ReplayProtection, MessageProtection.ReplayProtection);
+			this.Channel = CreateChannel(MessageProtection.ReplayProtection);
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
 		}
