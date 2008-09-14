@@ -29,19 +29,25 @@ namespace DotNetOAuth.Test.Mocks {
 			get { return MessageProtection.None; }
 		}
 
-		void IChannelBindingElement.PrepareMessageForSending(IProtocolMessage message) {
+		bool IChannelBindingElement.PrepareMessageForSending(IProtocolMessage message) {
 			var testMessage = message as TestMessage;
 			if (testMessage != null) {
 				testMessage.Name = this.transform + testMessage.Name;
+				return true;
 			}
+
+			return false;
 		}
 
-		void IChannelBindingElement.PrepareMessageForReceiving(IProtocolMessage message) {
+		bool IChannelBindingElement.PrepareMessageForReceiving(IProtocolMessage message) {
 			var testMessage = message as TestMessage;
 			if (testMessage != null) {
 				StringAssert.StartsWith(testMessage.Name, this.transform);
 				testMessage.Name = testMessage.Name.Substring(this.transform.Length);
+				return true;
 			}
+
+			return false;
 		}
 
 		#endregion

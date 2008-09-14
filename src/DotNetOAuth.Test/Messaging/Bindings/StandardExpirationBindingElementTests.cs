@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOAuth.Test.Messaging {
+namespace DotNetOAuth.Test.Messaging.Bindings {
 	using System;
 	using DotNetOAuth.Messaging;
 	using DotNetOAuth.Messaging.Bindings;

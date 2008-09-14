@@ -285,5 +285,18 @@ namespace DotNetOAuth.Test.Messaging {
 			Assert.AreSame(expire, channel.BindingElements[3]);
 			Assert.AreSame(sign, channel.BindingElements[4]);
 		}
+
+		[TestMethod, ExpectedException(typeof(UnprotectedMessageException))]
+		public void InsufficientlyProtectedMessageSent() {
+			var message = new TestSignedDirectedMessage(MessageTransport.Direct);
+			message.Recipient = new Uri("http://localtest");
+			this.Channel.Send(message);
+		}
+
+		[TestMethod, ExpectedException(typeof(UnprotectedMessageException))]
+		public void InsufficientlyProtectedMessageReceived() {
+			this.Channel = CreateChannel(MessageProtection.None, MessageProtection.TamperProtection);
+			this.ParameterizedReceiveProtectedTest(DateTime.Now, false);
+		}
 	}
 }

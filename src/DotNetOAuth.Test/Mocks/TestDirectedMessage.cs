@@ -39,7 +39,7 @@ namespace DotNetOAuth.Test.Mocks {
 		}
 
 		MessageProtection IProtocolMessage.RequiredProtection {
-			get { return MessageProtection.None; }
+			get { return this.RequiredProtection; }
 		}
 
 		MessageTransport IProtocolMessage.Transport {
@@ -53,5 +53,9 @@ namespace DotNetOAuth.Test.Mocks {
 		}
 
 		#endregion
+
+		protected virtual MessageProtection RequiredProtection {
+			get { return MessageProtection.None; }
+		}
 	}
 }

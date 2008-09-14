@@ -18,14 +18,17 @@ namespace DotNetOAuth.Test.Mocks {
 			get { return MessageProtection.ReplayProtection; }
 		}
 
-		void IChannelBindingElement.PrepareMessageForSending(IProtocolMessage message) {
+		bool IChannelBindingElement.PrepareMessageForSending(IProtocolMessage message) {
 			var replayMessage = message as IReplayProtectedProtocolMessage;
 			if (replayMessage != null) {
 				replayMessage.Nonce = "someNonce";
+				return true;
 			}
+
+			return false;
 		}
 
-		void IChannelBindingElement.PrepareMessageForReceiving(IProtocolMessage message) {
+		bool IChannelBindingElement.PrepareMessageForReceiving(IProtocolMessage message) {
 			var replayMessage = message as IReplayProtectedProtocolMessage;
 			if (replayMessage != null) {
 				Assert.AreEqual("someNonce", replayMessage.Nonce, "The nonce didn't serialize correctly, or something");
@@ -34,7 +37,10 @@ namespace DotNetOAuth.Test.Mocks {
 					throw new ReplayedMessageException(message);
 				}
 				this.messageReceived = true;
+				return true;
 			}
+
+			return false;
 		}
 
 		#endregion

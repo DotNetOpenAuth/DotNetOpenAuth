@@ -189,9 +189,16 @@ namespace DotNetOAuth.Messaging {
 		/// <param name="request">The message to send.</param>
 		/// <returns>The remote party's response.</returns>
 		protected internal IProtocolMessage Request(IDirectedProtocolMessage request) {
+			if (request == null) {
+				throw new ArgumentNullException("request");
+			}
+
 			this.PrepareMessageForSending(request);
 			IProtocolMessage response = this.RequestInternal(request);
-			this.VerifyMessageAfterReceiving(response);
+			if (response != null) {
+				this.VerifyMessageAfterReceiving(response);
+			}
+
 			return response;
 		}
 
@@ -466,7 +473,7 @@ namespace DotNetOAuth.Messaging {
 		/// 0 if it doesn't matter.
 		/// </returns>
 		private static int BindingElementOutgoingMessageApplicationOrder(MessageProtection protection1, MessageProtection protection2) {
-			Debug.Assert(protection1 != MessageProtection.None && protection2 != MessageProtection.None, "This comparison function should only be used to compare protection binding elements.  Otherwise we change the order of user-defined message transformations.");
+			Debug.Assert(protection1 != MessageProtection.None || protection2 != MessageProtection.None, "This comparison function should only be used to compare protection binding elements.  Otherwise we change the order of user-defined message transformations.");
 
 			// Now put the protection ones in the right order.
 			return -((int)protection1).CompareTo((int)protection2); // descending flag ordinal order
@@ -477,8 +484,18 @@ namespace DotNetOAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>
 		private void PrepareMessageForSending(IProtocolMessage message) {
+			Debug.Assert(message != null, "message == null");
+
+			MessageProtection appliedProtection = MessageProtection.None;
 			foreach (IChannelBindingElement bindingElement in this.bindingElements) {
-				bindingElement.PrepareMessageForSending(message);
+				if (bindingElement.PrepareMessageForSending(message)) {
+					appliedProtection |= bindingElement.Protection;
+				}
+			}
+
+			// Ensure that the message's protection requirements have been satisfied.
+			if ((message.RequiredProtection & appliedProtection) != message.RequiredProtection) {
+				throw new UnprotectedMessageException(message, appliedProtection);
 			}
 		}
 
@@ -491,8 +508,18 @@ namespace DotNetOAuth.Messaging {
 		/// This can be due to tampering, replay attack or expiration, among other things.
 		/// </exception>
 		private void VerifyMessageAfterReceiving(IProtocolMessage message) {
+			Debug.Assert(message != null, "message == null");
+
+			MessageProtection appliedProtection = MessageProtection.None;
 			foreach (IChannelBindingElement bindingElement in this.bindingElements.Reverse<IChannelBindingElement>()) {
-				bindingElement.PrepareMessageForReceiving(message);
+				if (bindingElement.PrepareMessageForReceiving(message)) {
+					appliedProtection |= bindingElement.Protection;
+				}
+			}
+
+			// Ensure that the message's protection requirements have been satisfied.
+			if ((message.RequiredProtection & appliedProtection) != message.RequiredProtection) {
+				throw new UnprotectedMessageException(message, appliedProtection);
 			}
 		}
 	}

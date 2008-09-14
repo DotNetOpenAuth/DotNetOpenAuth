@@ -144,6 +144,9 @@
   <data name="IndirectMessagesMustImplementIDirectedProtocolMessage" xml:space="preserve">
     <value>Messages that indicate indirect transport must implement the {0} interface.</value>
   </data>
+  <data name="InsufficentMessageProtection" xml:space="preserve">
+    <value>The message required protections {0} but the channel could only apply {1}.</value>
+  </data>
   <data name="QueuedMessageResponseAlreadyExists" xml:space="preserve">
     <value>A message response is already queued for sending in the response stream.</value>
   </data>

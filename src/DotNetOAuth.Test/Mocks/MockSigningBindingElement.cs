@@ -21,20 +21,26 @@ namespace DotNetOAuth.Test.Mocks {
 			get { return MessageProtection.TamperProtection; }
 		}
 
-		void IChannelBindingElement.PrepareMessageForSending(IProtocolMessage message) {
+		bool IChannelBindingElement.PrepareMessageForSending(IProtocolMessage message) {
 			ISignedOAuthMessage signedMessage = message as ISignedOAuthMessage;
 			if (signedMessage != null) {
 				signedMessage.Signature = MessageSignature;
+				return true;
 			}
+
+			return false;
 		}
 
-		void IChannelBindingElement.PrepareMessageForReceiving(IProtocolMessage message) {
+		bool IChannelBindingElement.PrepareMessageForReceiving(IProtocolMessage message) {
 			ISignedOAuthMessage signedMessage = message as ISignedOAuthMessage;
 			if (signedMessage != null) {
 				if (signedMessage.Signature != MessageSignature) {
 					throw new InvalidSignatureException(message);
 				}
+				return true;
 			}
+
+			return false;
 		}
 
 		#endregion

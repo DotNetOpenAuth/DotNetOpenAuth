@@ -71,11 +71,14 @@ namespace DotNetOAuth.Messaging.Bindings {
 		/// Sets the timestamp on an outgoing message.
 		/// </summary>
 		/// <param name="message">The outgoing message.</param>
-		void IChannelBindingElement.PrepareMessageForSending(IProtocolMessage message) {
+		bool IChannelBindingElement.PrepareMessageForSending(IProtocolMessage message) {
 			IExpiringProtocolMessage expiringMessage = message as IExpiringProtocolMessage;
 			if (expiringMessage != null) {
 				expiringMessage.UtcCreationDate = DateTime.UtcNow;
+				return true;
 			}
+
+			return false;
 		}
 
 		/// <summary>
@@ -83,7 +86,7 @@ namespace DotNetOAuth.Messaging.Bindings {
 		/// </summary>
 		/// <param name="message">The incoming message.</param>
 		/// <exception cref="ExpiredMessageException">Thrown if the given message has already expired.</exception>
-		void IChannelBindingElement.PrepareMessageForReceiving(IProtocolMessage message) {
+		bool IChannelBindingElement.PrepareMessageForReceiving(IProtocolMessage message) {
 			IExpiringProtocolMessage expiringMessage = message as IExpiringProtocolMessage;
 			if (expiringMessage != null) {
 				// Yes the UtcCreationDate is supposed to always be in UTC already,
@@ -92,7 +95,11 @@ namespace DotNetOAuth.Messaging.Bindings {
 				if (expirationDate < DateTime.UtcNow) {
 					throw new ExpiredMessageException(expirationDate, expiringMessage);
 				}
+
+				return true;
 			}
+
+			return false;
 		}
 
 		#endregion

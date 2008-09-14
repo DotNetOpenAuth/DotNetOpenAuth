@@ -90,6 +90,7 @@
     </Compile>
     <Compile Include="Messaging\MessagingUtilities.cs" />
     <Compile Include="Messaging\Bindings\StandardExpirationBindingElement.cs" />
+    <Compile Include="Messaging\UnprotectedMessageException.cs" />
     <Compile Include="OAuthChannel.cs" />
     <Compile Include="Messaging\Response.cs" />
     <Compile Include="Messaging\IProtocolMessage.cs" />

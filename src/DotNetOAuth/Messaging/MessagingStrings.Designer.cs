@@ -142,6 +142,15 @@ namespace DotNetOAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The message required protections {0} but the channel could only apply {1}..
+        /// </summary>
+        internal static string InsufficentMessageProtection {
+            get {
+                return ResourceManager.GetString("InsufficentMessageProtection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A message response is already queued for sending in the response stream..
         /// </summary>
         internal static string QueuedMessageResponseAlreadyExists {
