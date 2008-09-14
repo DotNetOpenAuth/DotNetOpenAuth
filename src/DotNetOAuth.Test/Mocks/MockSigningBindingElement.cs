@@ -22,7 +22,7 @@ namespace DotNetOAuth.Test.Mocks {
 		}
 
 		bool IChannelBindingElement.PrepareMessageForSending(IProtocolMessage message) {
-			ISignedOAuthMessage signedMessage = message as ISignedOAuthMessage;
+			ITamperResistantProtocolMessage signedMessage = message as ITamperResistantProtocolMessage;
 			if (signedMessage != null) {
 				signedMessage.Signature = MessageSignature;
 				return true;
@@ -32,7 +32,7 @@ namespace DotNetOAuth.Test.Mocks {
 		}
 
 		bool IChannelBindingElement.PrepareMessageForReceiving(IProtocolMessage message) {
-			ISignedOAuthMessage signedMessage = message as ISignedOAuthMessage;
+			ITamperResistantProtocolMessage signedMessage = message as ITamperResistantProtocolMessage;
 			if (signedMessage != null) {
 				if (signedMessage.Signature != MessageSignature) {
 					throw new InvalidSignatureException(message);

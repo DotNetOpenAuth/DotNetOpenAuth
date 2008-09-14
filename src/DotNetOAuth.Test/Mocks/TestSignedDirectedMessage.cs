@@ -10,7 +10,7 @@ namespace DotNetOAuth.Test.Mocks {
 	using DotNetOAuth.Messaging.Bindings;
 
 	[DataContract(Namespace = Protocol.DataContractNamespaceV10)]
-	internal class TestSignedDirectedMessage : TestDirectedMessage, ISignedOAuthMessage {
+	internal class TestSignedDirectedMessage : TestDirectedMessage, ITamperResistantProtocolMessage {
 		internal TestSignedDirectedMessage(MessageTransport transport)
 			: base(transport) {
 		}
