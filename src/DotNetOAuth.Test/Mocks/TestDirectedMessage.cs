@@ -32,7 +32,7 @@ namespace DotNetOAuth.Test.Mocks {
 
 		#endregion
 
-		#region IProtocolMessage Members
+		#region IProtocolMessage Properties
 
 		Version IProtocolMessage.ProtocolVersion {
 			get { return new Version(1, 0); }
@@ -46,6 +46,14 @@ namespace DotNetOAuth.Test.Mocks {
 			get { return this.transport; }
 		}
 
+		#endregion
+
+		protected virtual MessageProtection RequiredProtection {
+			get { return MessageProtection.None; }
+		}
+
+		#region IProtocolMessage Methods
+
 		void IProtocolMessage.EnsureValidMessage() {
 			if (this.EmptyMember != null || this.Age < 0) {
 				throw new ProtocolException();
@@ -53,9 +61,5 @@ namespace DotNetOAuth.Test.Mocks {
 		}
 
 		#endregion
-
-		protected virtual MessageProtection RequiredProtection {
-			get { return MessageProtection.None; }
-		}
 	}
 }

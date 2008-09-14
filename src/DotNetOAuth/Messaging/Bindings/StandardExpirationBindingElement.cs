@@ -71,6 +71,10 @@ namespace DotNetOAuth.Messaging.Bindings {
 		/// Sets the timestamp on an outgoing message.
 		/// </summary>
 		/// <param name="message">The outgoing message.</param>
+		/// <returns>
+		/// True if the <paramref name="message"/> applied to this binding element
+		/// and the operation was successful.  False otherwise.
+		/// </returns>
 		bool IChannelBindingElement.PrepareMessageForSending(IProtocolMessage message) {
 			IExpiringProtocolMessage expiringMessage = message as IExpiringProtocolMessage;
 			if (expiringMessage != null) {
@@ -85,7 +89,15 @@ namespace DotNetOAuth.Messaging.Bindings {
 		/// Reads the timestamp on a message and throws an exception if the message is too old.
 		/// </summary>
 		/// <param name="message">The incoming message.</param>
+		/// <returns>
+		/// True if the <paramref name="message"/> applied to this binding element
+		/// and the operation was successful.  False if the operation did not apply to this message.
+		/// </returns>
 		/// <exception cref="ExpiredMessageException">Thrown if the given message has already expired.</exception>
+		/// <exception cref="ProtocolException">
+		/// Thrown when the binding element rules indicate that this message is invalid and should
+		/// NOT be processed.
+		/// </exception>
 		bool IChannelBindingElement.PrepareMessageForReceiving(IProtocolMessage message) {
 			IExpiringProtocolMessage expiringMessage = message as IExpiringProtocolMessage;
 			if (expiringMessage != null) {

@@ -1,10 +1,17 @@
-﻿namespace DotNetOAuth.Messaging {
+﻿//-----------------------------------------------------------------------
+// <copyright file="UnprotectedMessageException.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOAuth.Messaging {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
 	using System.Globalization;
 
+	/// <summary>
+	/// An exception thrown when messages cannot receive all the protections they require.
+	/// </summary>
+	[Serializable]
 	internal class UnprotectedMessageException : ProtocolException {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UnprotectedMessageException"/> class.
