@@ -6,6 +6,7 @@
 
 namespace DotNetOAuth.Messaging {
 	using System;
+	using System.Collections.Generic;
 
 	/// <summary>
 	/// An exception to represent errors in the local or remote implementation of the protocol.
@@ -21,6 +22,11 @@ namespace DotNetOAuth.Messaging {
 		/// The indirect message receiver this exception should be delivered to, if any.
 		/// </summary>
 		private Uri recipient;
+
+		/// <summary>
+		/// A cache for extra name/value pairs tacked on as data when this exception is sent as a message.
+		/// </summary>
+		private Dictionary<string, string> extraData = new Dictionary<string, string>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ProtocolException"/> class.
@@ -146,6 +152,13 @@ namespace DotNetOAuth.Messaging {
 				}
 				return this.inResponseTo.Transport;
 			}
+		}
+
+		/// <summary>
+		/// Gets the dictionary of additional name/value fields tacked on to this message.
+		/// </summary>
+		IDictionary<string, string> IProtocolMessage.ExtraData {
+			get { return this.extraData; }
 		}
 
 		#endregion

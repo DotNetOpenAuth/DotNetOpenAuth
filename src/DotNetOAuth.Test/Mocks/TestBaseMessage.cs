@@ -6,6 +6,7 @@
 
 namespace DotNetOAuth.Test.Mocks {
 	using System;
+	using System.Collections.Generic;
 	using System.Runtime.Serialization;
 	using DotNetOAuth.Messaging;
 
@@ -15,6 +16,8 @@ namespace DotNetOAuth.Test.Mocks {
 
 	[DataContract(Namespace = Protocol.DataContractNamespaceV10)]
 	internal class TestBaseMessage : IProtocolMessage, IBaseMessageExplicitMembers {
+		private Dictionary<string, string> extraData = new Dictionary<string, string>();
+
 		[DataMember(Name = "age", IsRequired = true)]
 		public int Age { get; set; }
 
@@ -34,6 +37,10 @@ namespace DotNetOAuth.Test.Mocks {
 
 		MessageTransport IProtocolMessage.Transport {
 			get { return MessageTransport.Indirect; }
+		}
+
+		IDictionary<string, string> IProtocolMessage.ExtraData {
+			get { return this.extraData; }
 		}
 
 		internal string PrivatePropertyAccessor {

@@ -151,6 +151,15 @@ namespace DotNetOAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An item with the same key has already been added..
+        /// </summary>
+        internal static string KeyAlreadyExists {
+            get {
+                return ResourceManager.GetString("KeyAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A message response is already queued for sending in the response stream..
         /// </summary>
         internal static string QueuedMessageResponseAlreadyExists {

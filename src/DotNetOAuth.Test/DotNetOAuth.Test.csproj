@@ -58,6 +58,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Messaging\CollectionAssert.cs" />
+    <Compile Include="Messaging\Reflection\MessageDictionaryTest.cs" />
     <Compile Include="Messaging\MessagingTestBase.cs" />
     <Compile Include="Messaging\MessagingUtilitiesTests.cs" />
     <Compile Include="Messaging\ChannelTests.cs" />

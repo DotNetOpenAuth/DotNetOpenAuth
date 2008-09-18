@@ -147,6 +147,9 @@
   <data name="InsufficentMessageProtection" xml:space="preserve">
     <value>The message required protections {0} but the channel could only apply {1}.</value>
   </data>
+  <data name="KeyAlreadyExists" xml:space="preserve">
+    <value>An item with the same key has already been added.</value>
+  </data>
   <data name="QueuedMessageResponseAlreadyExists" xml:space="preserve">
     <value>A message response is already queued for sending in the response stream.</value>
   </data>

@@ -6,14 +6,17 @@
 
 namespace DotNetOAuth.Test.Mocks {
 	using System;
+	using System.Collections.Generic;
 	using System.Runtime.Serialization;
 	using DotNetOAuth.Messaging;
 
 	[DataContract(Namespace = Protocol.DataContractNamespaceV10)]
 	internal class TestMessage : IProtocolMessage {
 		private MessageTransport transport;
+		private Dictionary<string, string> extraData = new Dictionary<string, string>();
 
-		internal TestMessage() : this(MessageTransport.Direct) {
+		internal TestMessage()
+			: this(MessageTransport.Direct) {
 		}
 
 		internal TestMessage(MessageTransport transport) {
@@ -21,14 +24,19 @@ namespace DotNetOAuth.Test.Mocks {
 		}
 
 		[DataMember(Name = "age", IsRequired = true)]
+		[MessagePart("age")]
 		public int Age { get; set; }
 		[DataMember]
+		[MessagePart(Optional = true)]
 		public string Name { get; set; }
 		[DataMember]
+		[MessagePart(Optional = true)]
 		public string EmptyMember { get; set; }
 		[DataMember]
+		[MessagePart(Optional = true)]
 		public Uri Location { get; set; }
 		[DataMember]
+		[MessagePart(Optional = true)]
 		public DateTime Timestamp { get; set; }
 
 		#region IProtocolMessage Members
@@ -43,6 +51,10 @@ namespace DotNetOAuth.Test.Mocks {
 
 		MessageTransport IProtocolMessage.Transport {
 			get { return this.transport; }
+		}
+
+		IDictionary<string, string> IProtocolMessage.ExtraData {
+			get { return this.extraData; }
 		}
 
 		void IProtocolMessage.EnsureValidMessage() {

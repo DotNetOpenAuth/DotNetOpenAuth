@@ -6,12 +6,15 @@
 
 namespace DotNetOAuth.Test.Mocks {
 	using System;
+	using System.Collections.Generic;
 	using System.Runtime.Serialization;
 	using DotNetOAuth.Messaging;
 
 	[DataContract(Namespace = Protocol.DataContractNamespaceV10)]
 	internal class TestDirectedMessage : IDirectedProtocolMessage {
 		private MessageTransport transport;
+
+		private Dictionary<string, string> extraData = new Dictionary<string, string>();
 
 		internal TestDirectedMessage(MessageTransport transport) {
 			this.transport = transport;
@@ -44,6 +47,10 @@ namespace DotNetOAuth.Test.Mocks {
 
 		MessageTransport IProtocolMessage.Transport {
 			get { return this.transport; }
+		}
+
+		IDictionary<string, string> IProtocolMessage.ExtraData {
+			get { return this.extraData; }
 		}
 
 		#endregion
