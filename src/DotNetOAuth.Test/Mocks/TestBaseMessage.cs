@@ -9,6 +9,7 @@ namespace DotNetOAuth.Test.Mocks {
 	using System.Collections.Generic;
 	using System.Runtime.Serialization;
 	using DotNetOAuth.Messaging;
+	using DotNetOAuth.Messaging.Reflection;
 
 	internal interface IBaseMessageExplicitMembers {
 		string ExplicitProperty { get; set; }
@@ -18,13 +19,13 @@ namespace DotNetOAuth.Test.Mocks {
 	internal class TestBaseMessage : IProtocolMessage, IBaseMessageExplicitMembers {
 		private Dictionary<string, string> extraData = new Dictionary<string, string>();
 
-		[DataMember(Name = "age", IsRequired = true)]
+		[MessagePart(Name = "age", IsRequired = true)]
 		public int Age { get; set; }
 
-		[DataMember]
+		[MessagePart]
 		public string Name { get; set; }
 
-		[DataMember(Name = "explicit")]
+		[MessagePart(Name = "explicit")]
 		string IBaseMessageExplicitMembers.ExplicitProperty { get; set; }
 
 		Version IProtocolMessage.ProtocolVersion {
@@ -48,7 +49,7 @@ namespace DotNetOAuth.Test.Mocks {
 			set { this.PrivateProperty = value; }
 		}
 
-		[DataMember(Name = "private")]
+		[MessagePart(Name = "private")]
 		private string PrivateProperty { get; set; }
 
 		void IProtocolMessage.EnsureValidMessage() { }

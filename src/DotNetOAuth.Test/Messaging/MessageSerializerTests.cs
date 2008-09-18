@@ -21,18 +21,6 @@ namespace DotNetOAuth.Test.Messaging {
 			serializer.Serialize(null);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
-		public void SerializeNullFields() {
-			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
-			serializer.Serialize(null, new Mocks.TestMessage());
-		}
-
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
-		public void SerializeNullMessage() {
-			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
-			serializer.Serialize(new Dictionary<string, string>(), null);
-		}
-
 		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void GetInvalidMessageType() {
 			MessageSerializer.Get(typeof(string));
@@ -41,11 +29,6 @@ namespace DotNetOAuth.Test.Messaging {
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void GetNullType() {
 			MessageSerializer.Get(null);
-		}
-
-		[TestMethod]
-		public void GetReturnsSameSerializerTwice() {
-			Assert.AreSame(MessageSerializer.Get(typeof(Mocks.TestMessage)), MessageSerializer.Get(typeof(Mocks.TestMessage)));
 		}
 
 		[TestMethod, ExpectedException(typeof(ProtocolException))]
@@ -81,19 +64,6 @@ namespace DotNetOAuth.Test.Messaging {
 			Assert.IsFalse(actual.ContainsKey("EmptyMember"));
 		}
 
-		[TestMethod]
-		public void SerializeToExistingDictionary() {
-			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
-			var message = new Mocks.TestMessage { Age = 15, Name = "Andrew" };
-			var fields = new Dictionary<string, string>();
-			fields["someExtraField"] = "someValue";
-			serializer.Serialize(fields, message);
-			Assert.AreEqual(4, fields.Count);
-			Assert.AreEqual("15", fields["age"]);
-			Assert.AreEqual("Andrew", fields["Name"]);
-			Assert.AreEqual("someValue", fields["someExtraField"]);
-		}
-
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void DeserializeNull() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
@@ -115,7 +85,7 @@ namespace DotNetOAuth.Test.Messaging {
 		}
 
 		/// <summary>
-		/// This tests deserialization of a message that is comprised of [DataMember]'s
+		/// This tests deserialization of a message that is comprised of [MessagePart]'s
 		/// that are defined in multiple places in the inheritance tree.
 		/// </summary>
 		/// <remarks>

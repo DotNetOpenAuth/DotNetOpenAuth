@@ -19,6 +19,10 @@ namespace DotNetOAuth.Messaging.Reflection {
 
 		private FieldInfo field;
 
+		private Type memberDeclaredType;
+
+		private object defaultMemberValue;
+
 		static MessagePart() {
 			Map<Uri>(uri => uri.AbsoluteUri, str => new Uri(str));
 		}
@@ -40,10 +44,11 @@ namespace DotNetOAuth.Messaging.Reflection {
 
 			this.Name = attribute.Name ?? member.Name;
 			this.Signed = attribute.Signed;
-			this.IsRequired = !attribute.Optional;
+			this.IsRequired = attribute.IsRequired;
+			this.memberDeclaredType = (this.field != null) ? this.field.FieldType : this.property.PropertyType;
+			this.defaultMemberValue = deriveDefaultValue(this.memberDeclaredType);
 
-			if (!converters.TryGetValue(member.DeclaringType, out this.converter)) {
-				Type memberDeclaredType = (this.field != null) ? this.field.FieldType : this.property.PropertyType;
+			if (!converters.TryGetValue(this.memberDeclaredType, out this.converter)) {
 				this.converter = new ValueMapping(
 					obj => obj != null ? obj.ToString() : null,
 					str => str != null ? Convert.ChangeType(str, memberDeclaredType) : null);
@@ -73,10 +78,34 @@ namespace DotNetOAuth.Messaging.Reflection {
 		}
 
 		internal string GetValue(IProtocolMessage message) {
-			if (this.property != null) {
-				return this.ToString(this.property.GetValue(message, null));
+			return this.ToString(this.GetValueAsObject(message));
+		}
+
+		internal bool IsNondefaultValueSet(IProtocolMessage message) {
+			if (this.memberDeclaredType.IsValueType) {
+				return !GetValueAsObject(message).Equals(this.defaultMemberValue);
 			} else {
-				return this.ToString(this.field.GetValue(message));
+				return this.defaultMemberValue != GetValueAsObject(message);
+			}
+		}
+
+		internal bool IsValidValue(IProtocolMessage message) {
+			return true;
+		}
+
+		private static object deriveDefaultValue(Type type) {
+			if (type.IsValueType) {
+				return Activator.CreateInstance(type);
+			} else {
+				return null;
+			}
+		}
+
+		private object GetValueAsObject(IProtocolMessage message) {
+			if (this.property != null) {
+				return this.property.GetValue(message, null);
+			} else {
+				return this.field.GetValue(message);
 			}
 		}
 

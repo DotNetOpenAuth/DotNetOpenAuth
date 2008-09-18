@@ -9,6 +9,7 @@ namespace DotNetOAuth.Test.Mocks {
 	using System.Collections.Generic;
 	using System.Runtime.Serialization;
 	using DotNetOAuth.Messaging;
+	using DotNetOAuth.Messaging.Reflection;
 
 	[DataContract(Namespace = Protocol.DataContractNamespaceV10)]
 	internal class TestMessage : IProtocolMessage {
@@ -23,20 +24,15 @@ namespace DotNetOAuth.Test.Mocks {
 			this.transport = transport;
 		}
 
-		[DataMember(Name = "age", IsRequired = true)]
-		[MessagePart("age")]
+		[MessagePart(Name = "age", IsRequired = true)]
 		public int Age { get; set; }
-		[DataMember]
-		[MessagePart(Optional = true)]
+		[MessagePart]
 		public string Name { get; set; }
-		[DataMember]
-		[MessagePart(Optional = true)]
+		[MessagePart]
 		public string EmptyMember { get; set; }
-		[DataMember]
-		[MessagePart(Optional = true)]
+		[MessagePart]
 		public Uri Location { get; set; }
-		[DataMember]
-		[MessagePart(Optional = true)]
+		[MessagePart]
 		public DateTime Timestamp { get; set; }
 
 		#region IProtocolMessage Members

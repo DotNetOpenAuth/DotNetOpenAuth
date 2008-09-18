@@ -9,6 +9,7 @@ namespace DotNetOAuth.Test.Mocks {
 	using System.Collections.Generic;
 	using System.Runtime.Serialization;
 	using DotNetOAuth.Messaging;
+	using DotNetOAuth.Messaging.Reflection;
 
 	[DataContract(Namespace = Protocol.DataContractNamespaceV10)]
 	internal class TestDirectedMessage : IDirectedProtocolMessage {
@@ -16,17 +17,20 @@ namespace DotNetOAuth.Test.Mocks {
 
 		private Dictionary<string, string> extraData = new Dictionary<string, string>();
 
+		internal TestDirectedMessage() {
+		}
+
 		internal TestDirectedMessage(MessageTransport transport) {
 			this.transport = transport;
 		}
 
-		[DataMember(Name = "age", IsRequired = true)]
+		[MessagePart(Name = "age", IsRequired = true)]
 		public int Age { get; set; }
-		[DataMember]
+		[MessagePart]
 		public string Name { get; set; }
-		[DataMember]
+		[MessagePart]
 		public string EmptyMember { get; set; }
-		[DataMember]
+		[MessagePart]
 		public Uri Location { get; set; }
 
 		#region IDirectedProtocolMessage Members

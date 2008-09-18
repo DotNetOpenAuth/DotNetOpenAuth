@@ -19,32 +19,10 @@ namespace DotNetOAuth.Messaging {
 	/// </summary>
 	internal class MessageSerializer {
 		/// <summary>
-		/// The serializer that will be used as a reflection engine to extract
-		/// the OAuth message properties out of their containing <see cref="IProtocolMessage"/>
-		/// objects.
-		/// </summary>
-		private readonly DataContractSerializer serializer;
-
-		/// <summary>
 		/// The specific <see cref="IProtocolMessage"/>-derived type
 		/// that will be serialized and deserialized using this class.
 		/// </summary>
 		private readonly Type messageType;
-
-		/// <summary>
-		/// An AppDomain-wide cache of shared serializers for optimization purposes.
-		/// </summary>
-		private static Dictionary<Type, MessageSerializer> prebuiltSerializers = new Dictionary<Type, MessageSerializer>();
-
-		/// <summary>
-		/// Backing field for the <see cref="RootElement"/> property
-		/// </summary>
-		private XName rootElement;
-
-		/// <summary>
-		/// A field sorter that puts fields in the right order for the <see cref="DataContractSerializer"/>.
-		/// </summary>
-		private IComparer<string> fieldSorter;
 
 		/// <summary>
 		/// Initializes a new instance of the MessageSerializer class.
@@ -65,71 +43,19 @@ namespace DotNetOAuth.Messaging {
 			}
 
 			this.messageType = messageType;
-			this.serializer = new DataContractSerializer(
-				messageType, this.RootElement.LocalName, this.RootElement.NamespaceName);
-			this.fieldSorter = new DataContractMemberComparer(messageType);
 		}
 
 		/// <summary>
-		/// Gets the XML element that is used to surround all the XML values from the dictionary.
-		/// </summary>
-		private XName RootElement {
-			get {
-				if (this.rootElement == null) {
-					DataContractAttribute attribute;
-					try {
-						attribute = this.messageType.GetCustomAttributes(typeof(DataContractAttribute), false).OfType<DataContractAttribute>().Single();
-					} catch (InvalidOperationException ex) {
-						throw new ProtocolException(
-							string.Format(
-								CultureInfo.CurrentCulture,
-								MessagingStrings.DataContractMissingFromMessageType,
-								this.messageType.FullName),
-							ex);
-					}
-
-					if (attribute.Namespace == null) {
-						throw new ProtocolException(string.Format(
-							CultureInfo.CurrentCulture,
-							MessagingStrings.DataContractMissingNamespace,
-							this.messageType.FullName));
-					}
-
-					this.rootElement = XName.Get("root", attribute.Namespace);
-				}
-
-				return this.rootElement;
-			}
-		}
-
-		/// <summary>
-		/// Returns a message serializer from a reusable collection of serializers.
+		/// Creates or reuses a message serializer for a given message type.
 		/// </summary>
 		/// <param name="messageType">The type of message that will be serialized/deserialized.</param>
-		/// <returns>A previously created serializer if one exists, or a newly created one.</returns>
+		/// <returns>A message serializer for the given message type.</returns>
 		internal static MessageSerializer Get(Type messageType) {
 			if (messageType == null) {
 				throw new ArgumentNullException("messageType");
 			}
 
-			// We do this as efficiently as possible by first trying to fetch the
-			// serializer out of the dictionary without taking a lock.
-			MessageSerializer serializer;
-			if (prebuiltSerializers.TryGetValue(messageType, out serializer)) {
-				return serializer;
-			}
-			
-			// Since it wasn't there, we'll be trying to write to the dictionary so
-			// we take a lock and try reading again first, then creating the serializer
-			// and storing it when we're sure it absolutely necessary.
-			lock (prebuiltSerializers) {
-				if (prebuiltSerializers.TryGetValue(messageType, out serializer)) {
-					return serializer;
-				}
-				serializer = new MessageSerializer(messageType);
-				prebuiltSerializers.Add(messageType, serializer);
-			}
-			return serializer;
+			return new MessageSerializer(messageType);
 		}
 
 		/// <summary>
@@ -142,28 +68,7 @@ namespace DotNetOAuth.Messaging {
 				throw new ArgumentNullException("message");
 			}
 
-			var fields = new Dictionary<string, string>(StringComparer.Ordinal);
-			this.Serialize(fields, message);
-			return fields;
-		}
-
-		/// <summary>
-		/// Saves the [DataMember] properties of a message to an existing dictionary.
-		/// </summary>
-		/// <param name="fields">The dictionary to save values to.</param>
-		/// <param name="message">The message to pull values from.</param>
-		internal void Serialize(IDictionary<string, string> fields, IProtocolMessage message) {
-			if (fields == null) {
-				throw new ArgumentNullException("fields");
-			}
-			if (message == null) {
-				throw new ArgumentNullException("message");
-			}
-
-			message.EnsureValidMessage();
-			using (XmlWriter writer = DictionaryXmlWriter.Create(fields)) {
-				this.serializer.WriteObjectContent(writer, message);
-			}
+			return new Reflection.MessageDictionary(message);
 		}
 
 		/// <summary>
@@ -176,13 +81,15 @@ namespace DotNetOAuth.Messaging {
 				throw new ArgumentNullException("fields");
 			}
 
-			var reader = DictionaryXmlReader.Create(this.RootElement, this.fieldSorter, fields);
-			IProtocolMessage result;
+			IProtocolMessage result ;
 			try {
-				result = (IProtocolMessage)this.serializer.ReadObject(reader, false);
-			} catch (SerializationException ex) {
-				// Missing required fields is one cause of this exception.
-				throw new ProtocolException(Strings.InvalidIncomingMessage, ex);
+				result = (IProtocolMessage)Activator.CreateInstance(this.messageType, true);
+			} catch (MissingMethodException ex) {
+				throw new ProtocolException("Failed to instantiate type " + this.messageType.FullName, ex);
+			}
+			foreach (var pair in fields) {
+				IDictionary<string, string> dictionary = new Reflection.MessageDictionary(result);
+				dictionary.Add(pair);
 			}
 			result.EnsureValidMessage();
 			return result;

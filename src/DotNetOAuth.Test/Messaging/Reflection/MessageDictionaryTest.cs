@@ -37,9 +37,6 @@ namespace DotNetOAuth.Test.Messaging.Reflection {
 			IDictionary<string, string> target = new MessageDictionary(this.message);
 			Collection<string> expected = new Collection<string> {
 				this.message.Age.ToString(),
-				this.message.EmptyMember,
-				null, // this.message.Location.AbsoluteUri, (Location is null)
-				this.message.Name,
 				this.message.Timestamp.ToString(),
 			};
 			CollectionAssert<string>.AreEquivalent(expected, target.Values);
@@ -50,7 +47,6 @@ namespace DotNetOAuth.Test.Messaging.Reflection {
 			target["extra"] = "a";
 			expected = new Collection<string> {
 				this.message.Age.ToString(),
-				this.message.EmptyMember,
 				this.message.Location.AbsoluteUri,
 				this.message.Name,
 				this.message.Timestamp.ToString(),
@@ -67,13 +63,12 @@ namespace DotNetOAuth.Test.Messaging.Reflection {
 			IDictionary<string, string> target = new MessageDictionary(this.message);
 			Collection<string> expected = new Collection<string> {
 				"age",
-				"EmptyMember",
-				"Location",
-				"Name",
 				"Timestamp",
 			};
 			CollectionAssert<string>.AreEquivalent(expected, target.Keys);
 
+			this.message.Name = "Andrew";
+			expected.Add("Name");
 			target["extraField"] = string.Empty;
 			expected.Add("extraField");
 			CollectionAssert<string>.AreEquivalent(expected, target.Keys);
@@ -213,9 +208,7 @@ namespace DotNetOAuth.Test.Messaging.Reflection {
 		public void ContainsKeyTest() {
 			IDictionary<string, string> target = new MessageDictionary(this.message);
 			Assert.IsTrue(target.ContainsKey("age"), "Value type declared element should have a key.");
-			Assert.IsTrue(target.ContainsKey("Name"), "Null declared element should have a key.");
-			target.Remove("Name");
-			Assert.IsTrue(target.ContainsKey("Name"), "Removed declared element should still have a key.");
+			Assert.IsFalse(target.ContainsKey("Name"), "Null declared element should NOT have a key.");
 
 			Assert.IsFalse(target.ContainsKey("extra"));
 			target["extra"] = "value";
@@ -256,6 +249,23 @@ namespace DotNetOAuth.Test.Messaging.Reflection {
 			IDictionary<string, string> target = new MessageDictionary(this.message);
 			target.Add("Name", "andrew");
 			target.Add("Name", "andrew");
+		}
+
+		[TestMethod]
+		public void DefaultReferenceTypeDeclaredPropertyHasNoKey() {
+			IDictionary<string, string> target = new MessageDictionary(this.message);
+			Assert.IsFalse(target.ContainsKey("Name"), "A null value should result in no key.");
+			Assert.IsFalse(target.Keys.Contains("Name"), "A null value should result in no key.");
+		}
+
+		[TestMethod]
+		public void RemoveStructDeclaredProperty() {
+			IDictionary<string, string> target = new MessageDictionary(this.message);
+			this.message.Age = 5;
+			Assert.IsTrue(target.ContainsKey("age"));
+			target.Remove("age");
+			Assert.IsTrue(target.ContainsKey("age"));
+			Assert.AreEqual(0, this.message.Age);
 		}
 
 		/// <summary>
@@ -314,9 +324,8 @@ namespace DotNetOAuth.Test.Messaging.Reflection {
 			this.message.Name = "Andrew";
 			this.message.Age = 15;
 			targetAsDictionary["extra"] = "value";
-			int countBeforeClear = targetAsDictionary.Count;
 			target.Clear();
-			Assert.AreEqual(countBeforeClear - 1, target.Count, "Clearing with one extra parameter should reduce count by 1.");
+			Assert.AreEqual(2, target.Count, "Clearing should remove all keys except for declared non-nullable structs.");
 			Assert.IsFalse(targetAsDictionary.ContainsKey("extra"));
 			Assert.IsNull(this.message.Name);
 			Assert.AreEqual(0, this.message.Age);

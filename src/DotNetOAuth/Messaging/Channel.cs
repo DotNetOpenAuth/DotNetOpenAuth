@@ -179,7 +179,10 @@ namespace DotNetOAuth.Messaging {
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
 		protected internal IProtocolMessage ReadFromRequest(HttpRequestInfo httpRequest) {
 			IProtocolMessage requestMessage = this.ReadFromRequestInternal(httpRequest);
-			this.VerifyMessageAfterReceiving(requestMessage);
+			if (requestMessage != null) {
+				this.VerifyMessageAfterReceiving(requestMessage);
+			}
+
 			return requestMessage;
 		}
 
@@ -521,6 +524,11 @@ namespace DotNetOAuth.Messaging {
 			if ((message.RequiredProtection & appliedProtection) != message.RequiredProtection) {
 				throw new UnprotectedMessageException(message, appliedProtection);
 			}
+
+			// TODO: call MessagePart.IsValidValue()
+
+
+			message.EnsureValidMessage();
 		}
 	}
 }

@@ -216,6 +216,7 @@ namespace DotNetOAuth.Test {
 				HttpRequestInfo reqInfo = ConvertToRequestInfo(req, this.webRequestHandler.RequestEntityStream);
 				Assert.AreEqual(scheme == MessageScheme.PostRequest ? "POST" : "GET", reqInfo.HttpMethod);
 				var incomingMessage = this.channel.ReadFromRequest(reqInfo) as TestMessage;
+				Assert.IsNotNull(incomingMessage);
 				Assert.AreEqual(request.Age, incomingMessage.Age);
 				Assert.AreEqual(request.Name, incomingMessage.Name);
 				Assert.AreEqual(request.Location, incomingMessage.Location);

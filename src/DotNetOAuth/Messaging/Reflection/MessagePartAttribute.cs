@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOAuth.Messaging {
+namespace DotNetOAuth.Messaging.Reflection {
 	using System;
 	using System.Net.Security;
 	using System.Reflection;
@@ -28,7 +28,7 @@ namespace DotNetOAuth.Messaging {
 
 		public ProtectionLevel Signed { get; set; }
 
-		public bool Optional { get; set; }
+		public bool IsRequired { get; set; }
 
 		internal void Initialize(MemberInfo member) {
 			if (member == null) {
