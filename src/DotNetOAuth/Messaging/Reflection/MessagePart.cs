@@ -9,6 +9,8 @@ namespace DotNetOAuth.Messaging.Reflection {
 	using System.Collections.Generic;
 	using System.Net.Security;
 	using System.Reflection;
+	using System.Xml;
+	using System.Globalization;
 
 	internal class MessagePart {
 		private static readonly Dictionary<Type, ValueMapping> converters = new Dictionary<Type, ValueMapping>();
@@ -25,6 +27,7 @@ namespace DotNetOAuth.Messaging.Reflection {
 
 		static MessagePart() {
 			Map<Uri>(uri => uri.AbsoluteUri, str => new Uri(str));
+			Map<DateTime>(dt => XmlConvert.ToString(dt, XmlDateTimeSerializationMode.Utc), str => DateTime.Parse(str));
 		}
 
 		internal MessagePart(MemberInfo member, MessagePartAttribute attribute) {
@@ -53,6 +56,9 @@ namespace DotNetOAuth.Messaging.Reflection {
 					obj => obj != null ? obj.ToString() : null,
 					str => str != null ? Convert.ChangeType(str, memberDeclaredType) : null);
 			}
+
+			// Validate a sane combination of settings
+			ValidateSettings();
 		}
 
 		internal string Name { get; set; }
@@ -109,12 +115,34 @@ namespace DotNetOAuth.Messaging.Reflection {
 			}
 		}
 
-		private static void Map<T>(Func<T, string> toString, Func<string, T> toValue) where T : class {
+		private static void Map<T>(Func<T, string> toString, Func<string, T> toValue) {
 			converters.Add(
 				typeof(T),
 				new ValueMapping(
 					obj => obj != null ? toString((T)obj) : null,
-					str => str != null ? toValue(str) : null));
+					str => str != null ? toValue(str) : default(T)));
+		}
+
+		private void ValidateSettings() {
+			// An optional tag on a non-nullable value type is a contradiction.
+			if (!this.IsRequired && IsNonNullableValueType(this.memberDeclaredType)) {
+				MemberInfo member = (MemberInfo)this.field ?? this.property;
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
+					"Invalid combination: {0} on message type {1} is a non-nullable value type but is marked as optional.",
+					member.Name, member.DeclaringType));
+			}
+		}
+
+		private static bool IsNonNullableValueType(Type type) {
+			if (!type.IsValueType) {
+				return false;
+			}
+
+			if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>)) {
+				return false;
+			}
+
+			return true;
 		}
 	}
 }

@@ -31,15 +31,6 @@ namespace DotNetOAuth.Test.Messaging {
 			MessageSerializer.Get(null);
 		}
 
-		[TestMethod, ExpectedException(typeof(ProtocolException))]
-		public void SerializeInvalidMessage() {
-			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
-			Dictionary<string, string> fields = new Dictionary<string, string>(StringComparer.Ordinal);
-			Mocks.TestMessage message = new Mocks.TestMessage();
-			message.EmptyMember = "invalidvalue";
-			serializer.Serialize(message);
-		}
-
 		[TestMethod()]
 		public void SerializeTest() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
@@ -47,7 +38,7 @@ namespace DotNetOAuth.Test.Messaging {
 				Age = 15,
 				Name = "Andrew",
 				Location = new Uri("http://localhost"),
-				Timestamp = DateTime.Parse("1/1/1990"),
+				Timestamp = DateTime.SpecifyKind(DateTime.Parse("1/1/1990"), DateTimeKind.Utc),
 			};
 			IDictionary<string, string> actual = serializer.Serialize(message);
 			Assert.AreEqual(4, actual.Count);
@@ -60,7 +51,7 @@ namespace DotNetOAuth.Test.Messaging {
 			Assert.AreEqual("15", actual["age"]);
 			Assert.AreEqual("Andrew", actual["Name"]);
 			Assert.AreEqual("http://localhost/", actual["Location"]);
-			Assert.AreEqual("1990-01-01T00:00:00", actual["Timestamp"]);
+			Assert.AreEqual("1990-01-01T00:00:00Z", actual["Timestamp"]);
 			Assert.IsFalse(actual.ContainsKey("EmptyMember"));
 		}
 
@@ -128,13 +119,6 @@ namespace DotNetOAuth.Test.Messaging {
 			Assert.AreEqual(15, actual.Age);
 			Assert.AreEqual("Andrew", actual.Name);
 			Assert.IsNull(actual.EmptyMember);
-		}
-
-		[TestMethod, ExpectedException(typeof(ProtocolException))]
-		public void DeserializeEmpty() {
-			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
-			var fields = new Dictionary<string, string>(StringComparer.Ordinal);
-			serializer.Deserialize(fields);
 		}
 
 		[TestMethod, ExpectedException(typeof(ProtocolException))]

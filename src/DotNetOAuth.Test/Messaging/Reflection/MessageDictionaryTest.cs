@@ -12,6 +12,7 @@ namespace DotNetOAuth.Test.Messaging.Reflection {
 	using DotNetOAuth.Messaging;
 	using DotNetOAuth.Messaging.Reflection;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using System.Xml;
 
 	[TestClass]
 	public class MessageDictionaryTest : MessagingTestBase {
@@ -37,7 +38,7 @@ namespace DotNetOAuth.Test.Messaging.Reflection {
 			IDictionary<string, string> target = new MessageDictionary(this.message);
 			Collection<string> expected = new Collection<string> {
 				this.message.Age.ToString(),
-				this.message.Timestamp.ToString(),
+				XmlConvert.ToString(DateTime.SpecifyKind(this.message.Timestamp, DateTimeKind.Utc), XmlDateTimeSerializationMode.Utc),
 			};
 			CollectionAssert<string>.AreEquivalent(expected, target.Values);
 
@@ -49,7 +50,7 @@ namespace DotNetOAuth.Test.Messaging.Reflection {
 				this.message.Age.ToString(),
 				this.message.Location.AbsoluteUri,
 				this.message.Name,
-				this.message.Timestamp.ToString(),
+				XmlConvert.ToString(DateTime.SpecifyKind(this.message.Timestamp, DateTimeKind.Utc), XmlDateTimeSerializationMode.Utc),
 				"a",
 			};
 			CollectionAssert<string>.AreEquivalent(expected, target.Values);
@@ -80,7 +81,7 @@ namespace DotNetOAuth.Test.Messaging.Reflection {
 		[TestMethod]
 		public void ItemTest() {
 			IDictionary<string, string> target = new MessageDictionary(this.message);
-			
+
 			// Test setting of declared message properties.
 			this.message.Age = 15;
 			Assert.AreEqual("15", target["age"]);
@@ -194,7 +195,7 @@ namespace DotNetOAuth.Test.Messaging.Reflection {
 			Assert.IsTrue(target.Remove("Name"));
 			Assert.IsNull(this.message.Name);
 			Assert.IsFalse(target.Remove("Name"));
-			
+
 			Assert.IsFalse(target.Remove("extra"));
 			target["extra"] = "value";
 			Assert.IsTrue(target.Remove("extra"));

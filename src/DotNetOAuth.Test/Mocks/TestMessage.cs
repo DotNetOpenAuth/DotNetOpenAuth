@@ -32,7 +32,7 @@ namespace DotNetOAuth.Test.Mocks {
 		public string EmptyMember { get; set; }
 		[MessagePart]
 		public Uri Location { get; set; }
-		[MessagePart]
+		[MessagePart(IsRequired = true)]
 		public DateTime Timestamp { get; set; }
 
 		#region IProtocolMessage Members

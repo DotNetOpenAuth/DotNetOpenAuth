@@ -151,6 +151,15 @@ namespace DotNetOAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Some part(s) of the message have invalid values: {0}.
+        /// </summary>
+        internal static string InvalidMessageParts {
+            get {
+                return ResourceManager.GetString("InvalidMessageParts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to An item with the same key has already been added..
         /// </summary>
         internal static string KeyAlreadyExists {

@@ -16,12 +16,29 @@ namespace DotNetOAuth.Test.Messaging.Reflection {
 			[MessagePart(IsRequired = false)]
 			internal int optionalInt;
 		}
+		class MessageWithNullableOptionalStruct {
+			/// <summary>
+			/// Optional structs like int must be nullable for Optional to make sense.
+			/// </summary>
+			[MessagePart(IsRequired = false)]
+			internal int? optionalInt;
+		}
+		
 
 		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void OptionalNonNullableStruct() {
-			FieldInfo field = typeof(MessageWithNonNullableOptionalStruct).GetField("optionalInt", BindingFlags.NonPublic | BindingFlags.Instance);
+			ParameterizedMessageTypeTest(typeof(MessageWithNonNullableOptionalStruct));
+		}
+
+		[TestMethod]
+		public void OptionalNullableStruct() {
+			ParameterizedMessageTypeTest(typeof(MessageWithNullableOptionalStruct));
+		}
+
+		private void ParameterizedMessageTypeTest(Type messageType) {
+			FieldInfo field = messageType.GetField("optionalInt", BindingFlags.NonPublic | BindingFlags.Instance);
 			MessagePartAttribute attribute = field.GetCustomAttributes(typeof(MessagePartAttribute), true).OfType<MessagePartAttribute>().Single();
-			new MessagePart(field, attribute); // should recognize invalid optional non-nullable struct
+			new MessagePart(field, attribute);
 		}
 	}
 }

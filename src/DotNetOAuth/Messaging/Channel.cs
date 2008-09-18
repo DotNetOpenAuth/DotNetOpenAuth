@@ -15,6 +15,7 @@ namespace DotNetOAuth.Messaging {
 	using System.Net;
 	using System.Text;
 	using System.Web;
+	using DotNetOAuth.Messaging.Reflection;
 
 	/// <summary>
 	/// Manages sending direct messages to a remote party and receiving responses.
@@ -525,10 +526,21 @@ namespace DotNetOAuth.Messaging {
 				throw new UnprotectedMessageException(message, appliedProtection);
 			}
 
-			// TODO: call MessagePart.IsValidValue()
-
-
+			EnsureValidMessageParts(message);
 			message.EnsureValidMessage();
+		}
+
+		private void EnsureValidMessageParts(IProtocolMessage message) {
+			Debug.Assert(message != null, "message == null");
+			// TODO: call MessagePart.IsValidValue()
+			MessageDescription description = new MessageDescription(message.GetType());
+			List<MessagePart> invalidParts = description.Mapping.Values.Where(part => !part.IsValidValue(message)).ToList();
+			if (invalidParts.Count > 0) {
+				throw new ProtocolException(string.Format(
+					CultureInfo.CurrentCulture,
+					MessagingStrings.InvalidMessageParts,
+					string.Join(", ", invalidParts.Select(part => part.Name).ToArray())));
+			}
 		}
 	}
 }
