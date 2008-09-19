@@ -12,32 +12,12 @@ namespace DotNetOAuth.Test.Mocks {
 	using DotNetOAuth.Messaging.Reflection;
 
 	[DataContract(Namespace = Protocol.DataContractNamespaceV10)]
-	internal class TestDirectedMessage : IDirectedProtocolMessage {
-		private MessageTransport transport;
-
-		private Dictionary<string, string> extraData = new Dictionary<string, string>();
-
+	internal class TestDirectedMessage : TestMessage, IDirectedProtocolMessage {
 		internal TestDirectedMessage() {
 		}
 
-		internal TestDirectedMessage(MessageTransport transport) {
-			this.transport = transport;
+		internal TestDirectedMessage(MessageTransport transport) : base(transport) {
 		}
-
-		[MessagePart(Name = "age", IsRequired = true)]
-		public int Age { get; set; }
-		
-		[MessagePart]
-		public string Name { get; set; }
-		
-		[MessagePart]
-		public string EmptyMember { get; set; }
-		
-		[MessagePart]
-		public Uri Location { get; set; }
-		
-		[MessagePart(IsRequired = true)]
-		public DateTime Timestamp { get; set; }
 
 		#region IDirectedProtocolMessage Members
 
@@ -47,20 +27,8 @@ namespace DotNetOAuth.Test.Mocks {
 
 		#region IProtocolMessage Properties
 
-		Version IProtocolMessage.ProtocolVersion {
-			get { return new Version(1, 0); }
-		}
-
 		MessageProtection IProtocolMessage.RequiredProtection {
 			get { return this.RequiredProtection; }
-		}
-
-		MessageTransport IProtocolMessage.Transport {
-			get { return this.transport; }
-		}
-
-		IDictionary<string, string> IProtocolMessage.ExtraData {
-			get { return this.extraData; }
 		}
 
 		#endregion
@@ -68,15 +36,5 @@ namespace DotNetOAuth.Test.Mocks {
 		protected virtual MessageProtection RequiredProtection {
 			get { return MessageProtection.None; }
 		}
-
-		#region IProtocolMessage Methods
-
-		void IProtocolMessage.EnsureValidMessage() {
-			if (this.EmptyMember != null || this.Age < 0) {
-				throw new ProtocolException();
-			}
-		}
-
-		#endregion
 	}
 }
