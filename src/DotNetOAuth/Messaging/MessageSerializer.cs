@@ -13,6 +13,7 @@ namespace DotNetOAuth.Messaging {
 	using System.Runtime.Serialization;
 	using System.Xml;
 	using System.Xml.Linq;
+	using DotNetOAuth.Messaging.Reflection;
 
 	/// <summary>
 	/// Serializes/deserializes OAuth messages for/from transit.
@@ -68,7 +69,9 @@ namespace DotNetOAuth.Messaging {
 				throw new ArgumentNullException("message");
 			}
 
-			return new Reflection.MessageDictionary(message);
+			var result = new Reflection.MessageDictionary(message);
+
+			return result;
 		}
 
 		/// <summary>
@@ -81,6 +84,9 @@ namespace DotNetOAuth.Messaging {
 				throw new ArgumentNullException("fields");
 			}
 
+			// Before we deserialize the message, make sure all the required parts are present.
+			MessageDescription.Get(this.messageType).EnsureRequiredMessagePartsArePresent(fields.Keys);
+
 			IProtocolMessage result ;
 			try {
 				result = (IProtocolMessage)Activator.CreateInstance(this.messageType, true);
@@ -88,7 +94,7 @@ namespace DotNetOAuth.Messaging {
 				throw new ProtocolException("Failed to instantiate type " + this.messageType.FullName, ex);
 			}
 			foreach (var pair in fields) {
-				IDictionary<string, string> dictionary = new Reflection.MessageDictionary(result);
+				IDictionary<string, string> dictionary = new MessageDictionary(result);
 				dictionary.Add(pair);
 			}
 			result.EnsureValidMessage();

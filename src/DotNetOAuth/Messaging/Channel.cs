@@ -16,6 +16,7 @@ namespace DotNetOAuth.Messaging {
 	using System.Text;
 	using System.Web;
 	using DotNetOAuth.Messaging.Reflection;
+	using DotNetOAuth.Messaging.Bindings;
 
 	/// <summary>
 	/// Manages sending direct messages to a remote party and receiving responses.
@@ -83,6 +84,9 @@ namespace DotNetOAuth.Messaging {
 
 			this.messageTypeProvider = messageTypeProvider;
 			this.bindingElements = new List<IChannelBindingElement>(ValidateAndPrepareBindingElements(bindingElements));
+			
+			// Add a complete message check as a last outgoing step.
+			this.bindingElements.Add(new EnsureCompleteMessageBindingElement());
 		}
 
 		/// <summary>
@@ -532,8 +536,7 @@ namespace DotNetOAuth.Messaging {
 
 		private void EnsureValidMessageParts(IProtocolMessage message) {
 			Debug.Assert(message != null, "message == null");
-			// TODO: call MessagePart.IsValidValue()
-			MessageDescription description = new MessageDescription(message.GetType());
+			MessageDescription description = MessageDescription.Get(message.GetType());
 			List<MessagePart> invalidParts = description.Mapping.Values.Where(part => !part.IsValidValue(message)).ToList();
 			if (invalidParts.Count > 0) {
 				throw new ProtocolException(string.Format(

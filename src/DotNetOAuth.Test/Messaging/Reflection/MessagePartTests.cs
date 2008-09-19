@@ -14,20 +14,32 @@ namespace DotNetOAuth.Test.Messaging.Reflection {
 			/// Optional structs like int must be nullable for Optional to make sense.
 			/// </summary>
 			[MessagePart(IsRequired = false)]
-			internal int optionalInt;
+			internal int optionalInt = 0;
+		}
+		class MessageWithNonNullableRequiredStruct {
+			/// <summary>
+			/// This should work because a required field will always have a value so it
+			/// need not be nullable.
+			/// </summary>
+			[MessagePart(IsRequired = true)]
+			internal int optionalInt = 0;
 		}
 		class MessageWithNullableOptionalStruct {
 			/// <summary>
 			/// Optional structs like int must be nullable for Optional to make sense.
 			/// </summary>
 			[MessagePart(IsRequired = false)]
-			internal int? optionalInt;
+			internal int? optionalInt = 0;
 		}
-		
 
 		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void OptionalNonNullableStruct() {
 			ParameterizedMessageTypeTest(typeof(MessageWithNonNullableOptionalStruct));
+		}
+
+		[TestMethod]
+		public void RequiredNonNullableStruct() {
+			ParameterizedMessageTypeTest(typeof(MessageWithNonNullableRequiredStruct));
 		}
 
 		[TestMethod]

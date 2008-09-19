@@ -26,12 +26,18 @@ namespace DotNetOAuth.Test.Mocks {
 
 		[MessagePart(Name = "age", IsRequired = true)]
 		public int Age { get; set; }
+		
 		[MessagePart]
 		public string Name { get; set; }
+		
 		[MessagePart]
 		public string EmptyMember { get; set; }
+		
 		[MessagePart]
 		public Uri Location { get; set; }
+		
+		[MessagePart(IsRequired = true)]
+		public DateTime Timestamp { get; set; }
 
 		#region IDirectedProtocolMessage Members
 

@@ -196,6 +196,15 @@ namespace DotNetOAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The following required parameters were missing from the {0} message: {1}.
+        /// </summary>
+        internal static string RequiredParametersMissing {
+            get {
+                return ResourceManager.GetString("RequiredParametersMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The binding element offering the {0} protection requires other protection that is not provided..
         /// </summary>
         internal static string RequiredProtectionMissing {

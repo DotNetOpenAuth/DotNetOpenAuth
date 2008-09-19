@@ -14,6 +14,7 @@ namespace DotNetOAuth.Test.Messaging {
 	using DotNetOAuth.Messaging.Bindings;
 	using DotNetOAuth.Test.Mocks;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using System.Xml;
 
 	[TestClass]
 	public class ChannelTests : MessagingTestBase {
@@ -198,7 +199,11 @@ namespace DotNetOAuth.Test.Messaging {
 		[TestMethod]
 		public void ReadFromRequestWithContext() {
 			// TODO: make this a request with a message in it.
-			HttpRequest request = new HttpRequest("somefile", "http://someurl", "age=15");
+			var fields = new Dictionary<string, string>() {
+				{ "age", "15" },
+				{ "Timestamp", XmlConvert.ToString(DateTime.UtcNow, XmlDateTimeSerializationMode.Utc) },
+			};
+			HttpRequest request = new HttpRequest("somefile", "http://someurl", MessagingUtilities.CreateQueryString(fields));
 			HttpContext.Current = new HttpContext(request, new HttpResponse(new StringWriter()));
 			IProtocolMessage message = this.Channel.ReadFromRequest();
 			Assert.IsNotNull(message);
@@ -278,12 +283,15 @@ namespace DotNetOAuth.Test.Messaging {
 				transformB,
 				transformA);
 
-			Assert.AreEqual(5, channel.BindingElements.Count);
+			Assert.AreEqual(6, channel.BindingElements.Count);
 			Assert.AreSame(transformB, channel.BindingElements[0]);
 			Assert.AreSame(transformA, channel.BindingElements[1]);
 			Assert.AreSame(replay, channel.BindingElements[2]);
 			Assert.AreSame(expire, channel.BindingElements[3]);
 			Assert.AreSame(sign, channel.BindingElements[4]);
+			
+			// This last one is added by the channel.
+			Assert.IsInstanceOfType(channel.BindingElements[5], typeof(EnsureCompleteMessageBindingElement));
 		}
 
 		[TestMethod, ExpectedException(typeof(UnprotectedMessageException))]
@@ -297,6 +305,15 @@ namespace DotNetOAuth.Test.Messaging {
 		public void InsufficientlyProtectedMessageReceived() {
 			this.Channel = CreateChannel(MessageProtection.None, MessageProtection.TamperProtection);
 			this.ParameterizedReceiveProtectedTest(DateTime.Now, false);
+		}
+
+		[TestMethod, ExpectedException(typeof(ProtocolException))]
+		public void IncomingMessageMissingRequiredParameters() {
+			var fields = new Dictionary<string, string> {
+				{ "age", "15" },
+				// missing required Timestamp parameter.
+			};
+			this.Channel.ReadFromRequest(CreateHttpRequestInfo("GET", fields));
 		}
 	}
 }

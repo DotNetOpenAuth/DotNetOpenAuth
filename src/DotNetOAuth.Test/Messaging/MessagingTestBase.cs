@@ -90,6 +90,7 @@ namespace DotNetOAuth.Test {
 				{ "age", "15" },
 				{ "Name", "Andrew" },
 				{ "Location", "http://hostb/pathB" },
+				{ "Timestamp", XmlConvert.ToString(DateTime.UtcNow, XmlDateTimeSerializationMode.Utc) },
 			};
 			IProtocolMessage requestMessage = this.Channel.ReadFromRequest(CreateHttpRequestInfo(method, fields));
 			Assert.IsNotNull(requestMessage);
@@ -107,6 +108,7 @@ namespace DotNetOAuth.Test {
 				{ "Location", "http://hostb/pathB" },
 				{ "Signature", invalidSignature ? "badsig" : MockSigningBindingElement.MessageSignature },
 				{ "Nonce", "someNonce" },
+				{ "Timestamp", XmlConvert.ToString(DateTime.UtcNow, XmlDateTimeSerializationMode.Utc) },
 			};
 			if (utcCreatedDate.HasValue) {
 				utcCreatedDate = DateTime.Parse(utcCreatedDate.Value.ToUniversalTime().ToString()); // round off the milliseconds so comparisons work later

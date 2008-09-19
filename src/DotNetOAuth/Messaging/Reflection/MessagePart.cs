@@ -27,7 +27,7 @@ namespace DotNetOAuth.Messaging.Reflection {
 
 		static MessagePart() {
 			Map<Uri>(uri => uri.AbsoluteUri, str => new Uri(str));
-			Map<DateTime>(dt => XmlConvert.ToString(dt, XmlDateTimeSerializationMode.Utc), str => DateTime.Parse(str));
+			Map<DateTime>(dt => XmlConvert.ToString(dt, XmlDateTimeSerializationMode.Utc), str => XmlConvert.ToDateTime(str, XmlDateTimeSerializationMode.Utc));
 		}
 
 		internal MessagePart(MemberInfo member, MessagePartAttribute attribute) {

@@ -26,7 +26,7 @@ namespace DotNetOAuth.Messaging.Reflection {
 			}
 
 			this.message = message;
-			this.description = new MessageDescription(message.GetType());
+			this.description = MessageDescription.Get(message.GetType());
 		}
 
 		#region IDictionary<string,string> Members

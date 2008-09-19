@@ -162,6 +162,9 @@
   <data name="ReplayProtectionNotSupported" xml:space="preserve">
     <value>This channel does not support replay protection.</value>
   </data>
+  <data name="RequiredParametersMissing" xml:space="preserve">
+    <value>The following required parameters were missing from the {0} message: {1}</value>
+  </data>
   <data name="RequiredProtectionMissing" xml:space="preserve">
     <value>The binding element offering the {0} protection requires other protection that is not provided.</value>
   </data>

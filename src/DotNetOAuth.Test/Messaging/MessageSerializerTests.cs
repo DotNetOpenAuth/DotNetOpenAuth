@@ -9,6 +9,7 @@ namespace DotNetOAuth.Test.Messaging {
 	using System.Collections.Generic;
 	using DotNetOAuth.Messaging;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using System.Xml;
 
 	/// <summary>
 	/// Tests for the <see cref="MessageSerializer"/> class.
@@ -112,6 +113,7 @@ namespace DotNetOAuth.Test.Messaging {
 			Dictionary<string, string> fields = new Dictionary<string, string>(StringComparer.Ordinal);
 			fields["age"] = "15";
 			fields["Name"] = "Andrew";
+			fields["Timestamp"] = XmlConvert.ToString(DateTime.UtcNow, XmlDateTimeSerializationMode.Utc);
 			// Add some field that is not recognized by the class.  This simulates a querystring with
 			// more parameters than are actually interesting to the protocol message.
 			fields["someExtraField"] = "asdf";
