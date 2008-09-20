@@ -95,7 +95,8 @@ namespace DotNetOpenId {
 
 		internal void Consume(INonceStore store) {
 			if (IsExpired)
-				throw new OpenIdException(Strings.ExpiredNonce);
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
+					Strings.ExpiredNonce, ExpirationDate, DateTime.UtcNow));
 
 			// We could store unused nonces and remove them as they are used, or
 			// we could store used nonces and check that they do not previously exist.

@@ -37,6 +37,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "DotNetOpenId.TestWeb", "Dot
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "22205"
 		DefaultWebSiteLanguage = "Visual C#"
+		StartServerOnDebug = "false"
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RelyingPartyCustomStore", "..\samples\RelyingPartyCustomStore\RelyingPartyCustomStore.csproj", "{DB54DC19-BA56-4C22-A8A0-C49289EA4F53}"
