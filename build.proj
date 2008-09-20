@@ -121,6 +121,7 @@
 															$(ProjectRoot)\**\log4net.xml;
 															$(ProjectRoot)\**\*.user;
 															$(ProjectRoot)\**\*.sln.cache;
+															$(ProjectRoot)\**\StyleCop.Cache;
 															$(ProjectRoot)\**\*.suo;
 															$(ProjectRoot)\**\*.user;
 															$(ProjectRoot)\**\*.gitignore;
