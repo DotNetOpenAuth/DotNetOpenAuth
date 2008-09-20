@@ -145,7 +145,7 @@
     <value>OpenID parameter '{0}' was expected to be base64 encoded but is not.</value>
   </data>
   <data name="ExpiredNonce" xml:space="preserve">
-    <value>The nonce has expired.</value>
+    <value>The nonce has expired.  It was good until {0} (UTC), and it is now {1} (UTC).  If this looks wrong, check the server's clock, time zone and daylight savings settings.</value>
   </data>
   <data name="ExplicitHttpUriSuppliedWithSslRequirement" xml:space="preserve">
     <value>URI is not SSL yet requireSslDiscovery is set to true.</value>

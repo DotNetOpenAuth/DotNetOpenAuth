@@ -38,6 +38,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "DotNetOpenId.TestWeb", "Dot
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "22205"
 		DefaultWebSiteLanguage = "Visual C#"
+		StartServerOnDebug = "false"
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RelyingPartyMvc", "..\samples\RelyingPartyMvc\RelyingPartyMvc.csproj", "{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB}"

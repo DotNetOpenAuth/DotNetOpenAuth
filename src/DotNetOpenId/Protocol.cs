@@ -350,7 +350,7 @@ namespace DotNetOpenId {
 		/// <remarks>
 		/// This is used to calculate the length of time that nonces are stored.
 		/// This is internal until we can decide whether to leave this static, or make
-		/// it an instance member, or put it inside the IConsumerAppliationStore interface.
+		/// it an instance member, or put it inside the IConsumerApplicationStore interface.
 		/// </remarks>
 		internal static TimeSpan MaximumUserAgentAuthenticationTime = TimeSpan.FromMinutes(5);
 		/// <summary>
