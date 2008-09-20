@@ -43,6 +43,8 @@ namespace DotNetOpenId.Yadis {
 			if (endpoints.Count == 0) {
 				endpoints.AddRange(generateClaimedIdentifierServiceEndpoints(claimedIdentifier));
 			}
+			Logger.DebugFormat("Total services discovered in XRDS: {0}", endpoints.Count);
+			Logger.Debug(Util.ToString(endpoints, true));
 			return endpoints;
 		}
 
@@ -54,6 +56,8 @@ namespace DotNetOpenId.Yadis {
 			if (endpoints.Count == 0) {
 				endpoints.AddRange(generateClaimedIdentifierServiceEndpoints(userSuppliedIdentifier));
 			}
+			Logger.DebugFormat("Total services discovered in XRDS: {0}", endpoints.Count);
+			Logger.Debug(Util.ToString(endpoints, true));
 			return endpoints;
 		}
 

@@ -90,7 +90,7 @@ namespace DotNetOpenId.RelyingParty {
 		}
 		/// <summary>
 		/// Gets the list of services available at this OP Endpoint for the
-		/// claimed Identifier.
+		/// claimed Identifier.  May be null.
 		/// </summary>
 		public string[] ProviderSupportedServiceTypeUris { get; private set; }
 
@@ -280,7 +280,22 @@ namespace DotNetOpenId.RelyingParty {
 			builder.AppendLine("ClaimedIdentifier: " + ClaimedIdentifier);
 			builder.AppendLine("ProviderLocalIdentifier: " + ProviderLocalIdentifier);
 			builder.AppendLine("ProviderEndpoint: " + ProviderEndpoint.AbsoluteUri);
-			builder.Append("OpenID version: " + Protocol.Version);
+			builder.AppendLine("OpenID version: " + Protocol.Version);
+			builder.AppendLine("Service Type URIs:");
+			if (ProviderSupportedServiceTypeUris != null) {
+				foreach (string serviceTypeUri in ProviderSupportedServiceTypeUris) {
+					builder.Append("\t");
+					var matchingExtension = Util.FirstOrDefault(ExtensionManager.RequestExtensions, ext => ext.Key.TypeUri == serviceTypeUri);
+					if (matchingExtension.Key != null) {
+						builder.AppendLine(string.Format(CultureInfo.CurrentCulture, "{0} ({1})", serviceTypeUri, matchingExtension.Value));
+					} else {
+						builder.AppendLine(serviceTypeUri);
+					}
+				}
+			} else {
+				builder.AppendLine("\t(unavailable)");
+			}
+			builder.Length -= Environment.NewLine.Length; // trim last newline
 			return builder.ToString();
 		}
 
