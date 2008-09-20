@@ -65,19 +65,21 @@ namespace DotNetOAuth.Test.Messaging {
 
 		[TestMethod]
 		public void SendIndirectMessage301Get() {
-			IProtocolMessage message = new TestDirectedMessage(MessageTransport.Indirect) {
-				Age = 15,
-				Name = "Andrew",
-				Location = new Uri("http://host/path"),
-				Recipient = new Uri("http://provider/path"),
-			};
+			TestDirectedMessage message = new TestDirectedMessage(MessageTransport.Indirect);
+			GetStandardTestMessage(FieldFill.CompleteBeforeBindings, message);
+			message.Recipient = new Uri("http://provider/path");
+			var expected = GetStandardTestFields(FieldFill.CompleteBeforeBindings);
+
 			this.Channel.Send(message);
 			Response response = this.Channel.DequeueIndirectOrResponseMessage();
 			Assert.AreEqual(HttpStatusCode.Redirect, response.Status);
 			StringAssert.StartsWith(response.Headers[HttpResponseHeader.Location], "http://provider/path");
-			StringAssert.Contains(response.Headers[HttpResponseHeader.Location], "age=15");
-			StringAssert.Contains(response.Headers[HttpResponseHeader.Location], "Name=Andrew");
-			StringAssert.Contains(response.Headers[HttpResponseHeader.Location], "Location=http%3a%2f%2fhost%2fpath");
+			foreach (var pair in expected) {
+				string key = HttpUtility.UrlEncode(pair.Key);
+				string value = HttpUtility.UrlEncode(pair.Value);
+				string substring = string.Format("{0}={1}", key, value);
+				StringAssert.Contains(response.Headers[HttpResponseHeader.Location], substring);
+			}
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
@@ -199,16 +201,14 @@ namespace DotNetOAuth.Test.Messaging {
 		[TestMethod]
 		public void ReadFromRequestWithContext() {
 			// TODO: make this a request with a message in it.
-			var fields = new Dictionary<string, string>() {
-				{ "age", "15" },
-				{ "Timestamp", XmlConvert.ToString(DateTime.UtcNow, XmlDateTimeSerializationMode.Utc) },
-			};
+			var fields = GetStandardTestFields(FieldFill.AllRequired);
+			TestMessage expectedMessage = GetStandardTestMessage(FieldFill.AllRequired);
 			HttpRequest request = new HttpRequest("somefile", "http://someurl", MessagingUtilities.CreateQueryString(fields));
 			HttpContext.Current = new HttpContext(request, new HttpResponse(new StringWriter()));
 			IProtocolMessage message = this.Channel.ReadFromRequest();
 			Assert.IsNotNull(message);
 			Assert.IsInstanceOfType(message, typeof(TestMessage));
-			Assert.AreEqual(15, ((TestMessage)message).Age);
+			Assert.AreEqual(expectedMessage.Age, ((TestMessage)message).Age);
 		}
 
 		[TestMethod, ExpectedException(typeof(InvalidOperationException))]
@@ -309,10 +309,7 @@ namespace DotNetOAuth.Test.Messaging {
 
 		[TestMethod, ExpectedException(typeof(ProtocolException))]
 		public void IncomingMessageMissingRequiredParameters() {
-			var fields = new Dictionary<string, string> {
-				{ "age", "15" },
-				// missing required Timestamp parameter.
-			};
+			var fields = GetStandardTestFields(FieldFill.IdentifiableButNotAllRequired);
 			this.Channel.ReadFromRequest(CreateHttpRequestInfo("GET", fields));
 		}
 	}

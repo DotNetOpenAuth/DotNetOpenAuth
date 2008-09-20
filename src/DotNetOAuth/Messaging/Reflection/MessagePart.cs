@@ -38,7 +38,11 @@ namespace DotNetOAuth.Messaging.Reflection {
 			this.field = member as FieldInfo;
 			this.property = member as PropertyInfo;
 			if (this.field == null && this.property == null) {
-				throw new ArgumentOutOfRangeException("member"); // TODO: add descriptive message
+				throw new ArgumentException(string.Format(
+					CultureInfo.CurrentCulture,
+					MessagingStrings.UnexpectedType,
+					typeof(FieldInfo).Name + ", " + typeof(PropertyInfo).Name,
+					member.GetType().Name), "member");
 			}
 
 			if (attribute == null) {

@@ -29,19 +29,5 @@ namespace DotNetOAuth.Messaging.Reflection {
 		public ProtectionLevel Signed { get; set; }
 
 		public bool IsRequired { get; set; }
-
-		internal void Initialize(MemberInfo member) {
-			if (member == null) {
-				throw new ArgumentNullException("member");
-			}
-
-			if (!this.initialized) {
-				if (String.IsNullOrEmpty(this.Name)) {
-					this.Name = member.Name;
-				}
-
-				this.initialized = true;
-			}
-		}
 	}
 }

@@ -10,6 +10,7 @@ namespace DotNetOAuth.Messaging.Reflection {
 	using System.Linq;
 	using System.Reflection;
 	using System.Globalization;
+	using System.Diagnostics;
 
 	internal class MessageDescription {
 		private static Dictionary<Type, MessageDescription> reflectedMessageTypes = new Dictionary<Type,MessageDescription>();
@@ -17,12 +18,14 @@ namespace DotNetOAuth.Messaging.Reflection {
 		private Dictionary<string, MessagePart> mapping;
 
 		private MessageDescription(Type messageType) {
-			if (messageType == null) {
-				throw new ArgumentNullException("messageType");
-			}
+			Debug.Assert(messageType != null, "messageType == null");
 
 			if (!typeof(IProtocolMessage).IsAssignableFrom(messageType)) {
-				throw new ArgumentOutOfRangeException(); // TODO: better message
+				throw new ArgumentException(string.Format(
+					CultureInfo.CurrentCulture,
+					MessagingStrings.UnexpectedType,
+					typeof(IProtocolMessage),
+					messageType));
 			}
 
 			this.messageType = messageType;
@@ -44,10 +47,6 @@ namespace DotNetOAuth.Messaging.Reflection {
 			}
 
 			return result;
-		}
-
-		internal Type MessageType {
-			get { return this.messageType; }
 		}
 
 		internal IDictionary<string, MessagePart> Mapping {

@@ -26,11 +26,11 @@ namespace DotNetOAuth.Test.Mocks {
 
 		[MessagePart(Name = "age", IsRequired = true)]
 		public int Age { get; set; }
-		[MessagePart]
+		[MessagePart("Name")]
 		public string Name { get; set; }
 		[MessagePart]
 		public string EmptyMember { get; set; }
-		[MessagePart]
+		[MessagePart(Name = null)] // null name tests that Location is still the name.
 		public Uri Location { get; set; }
 		[MessagePart(IsRequired = true)]
 		public DateTime Timestamp { get; set; }

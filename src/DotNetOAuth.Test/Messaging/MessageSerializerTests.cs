@@ -15,7 +15,7 @@ namespace DotNetOAuth.Test.Messaging {
 	/// Tests for the <see cref="MessageSerializer"/> class.
 	/// </summary>
 	[TestClass()]
-	public class MessageSerializerTests : TestBase {
+	public class MessageSerializerTests : MessagingTestBase {
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void SerializeNull() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
@@ -35,12 +35,8 @@ namespace DotNetOAuth.Test.Messaging {
 		[TestMethod()]
 		public void SerializeTest() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
-			var message = new Mocks.TestMessage {
-				Age = 15,
-				Name = "Andrew",
-				Location = new Uri("http://localhost"),
-				Timestamp = DateTime.SpecifyKind(DateTime.Parse("1/1/1990"), DateTimeKind.Utc),
-			};
+			var message = GetStandardTestMessage(FieldFill.CompleteBeforeBindings);
+			var expected = GetStandardTestFields(FieldFill.CompleteBeforeBindings);
 			IDictionary<string, string> actual = serializer.Serialize(message);
 			Assert.AreEqual(4, actual.Count);
 
@@ -49,10 +45,10 @@ namespace DotNetOAuth.Test.Messaging {
 			Assert.IsTrue(actual.ContainsKey("age"));
 
 			// Test contents of dictionary
-			Assert.AreEqual("15", actual["age"]);
-			Assert.AreEqual("Andrew", actual["Name"]);
-			Assert.AreEqual("http://localhost/", actual["Location"]);
-			Assert.AreEqual("1990-01-01T00:00:00Z", actual["Timestamp"]);
+			Assert.AreEqual(expected["age"], actual["age"]);
+			Assert.AreEqual(expected["Name"], actual["Name"]);
+			Assert.AreEqual(expected["Location"], actual["Location"]);
+			Assert.AreEqual(expected["Timestamp"], actual["Timestamp"]);
 			Assert.IsFalse(actual.ContainsKey("EmptyMember"));
 		}
 
@@ -126,9 +122,8 @@ namespace DotNetOAuth.Test.Messaging {
 		[TestMethod, ExpectedException(typeof(ProtocolException))]
 		public void DeserializeInvalidMessage() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
-			Dictionary<string, string> fields = new Dictionary<string, string>(StringComparer.Ordinal);
-			// Set an disallowed value.
-			fields["age"] = "-1";
+			var fields = GetStandardTestFields(FieldFill.AllRequired);
+			fields["age"] = "-1"; // Set an disallowed value.
 			serializer.Deserialize(fields);
 		}
 	}
