@@ -33,6 +33,7 @@ namespace DotNetOAuth {
 		/// </summary>
 		/// <remarks>
 		/// The request URL query MUST NOT contain any OAuth Protocol Parameters.
+		/// This is the URL that <see cref="Messages.RequestTokenMessage"/> messages are directed to.
 		/// </remarks>
 		/// <exception cref="ArgumentException">Thrown if this property is set to a URI with OAuth protocol parameters.</exception>
 		public Uri RequestTokenUri {
@@ -52,12 +53,19 @@ namespace DotNetOAuth {
 		/// Gets or sets the URL used to obtain User authorization for Consumer access, 
 		/// described in Section 6.2 (Obtaining User Authorization).
 		/// </summary>
+		/// <remarks>
+		/// This is the URL that <see cref="Messages.DirectUserToServiceProviderMessage"/> messages are
+		/// indirectly (via the user agent) sent to.
+		/// </remarks>
 		public Uri UserAuthorizationUri { get; set; }
 
 		/// <summary>
 		/// Gets or sets the URL used to exchange the User-authorized Request Token 
 		/// for an Access Token, described in Section 6.3 (Obtaining an Access Token).
 		/// </summary>
+		/// <remarks>
+		/// This is the URL that <see cref="Messages.RequestAccessTokenMessage"/> messages are directed to.
+		/// </remarks>
 		public Uri AccessTokenUri { get; set; }
 	}
 }

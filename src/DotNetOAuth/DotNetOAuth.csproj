@@ -68,6 +68,8 @@
   <ItemGroup>
     <Compile Include="Consumer.cs" />
     <Compile Include="IWebRequestHandler.cs" />
+    <Compile Include="Messages\MessageBase.cs" />
+    <Compile Include="Messages\RequestAccessTokenMessage.cs" />
     <Compile Include="Messaging\MessagePartAttribute.cs" />
     <Compile Include="Messaging\MessageProtection.cs" />
     <Compile Include="Messaging\IChannelBindingElement.cs" />
@@ -76,6 +78,12 @@
     <Compile Include="Messaging\Bindings\InvalidSignatureException.cs" />
     <Compile Include="Messaging\Bindings\IReplayProtectedProtocolMessage.cs" />
     <Compile Include="Messaging\Bindings\IExpiringProtocolMessage.cs" />
+    <Compile Include="Messages\AccessProtectedResourcesMessage.cs" />
+    <Compile Include="Messages\GrantAccessTokenMessage.cs" />
+    <Compile Include="Messages\IOAuthProtocolDirectedMessage.cs" />
+    <Compile Include="Messages\DirectUserToConsumerMessage.cs" />
+    <Compile Include="Messages\DirectUserToServiceProviderMessage.cs" />
+    <Compile Include="Messages\UnauthorizedRequestTokenMessage.cs" />
     <Compile Include="Messaging\Channel.cs" />
     <Compile Include="Messaging\HttpRequestInfo.cs" />
     <Compile Include="Messaging\IDirectedProtocolMessage.cs" />
@@ -107,6 +115,7 @@
     <Compile Include="OAuthMessageTypeProvider.cs" />
     <Compile Include="Messaging\ProtocolException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Messages\RequestTokenMessage.cs" />
     <Compile Include="StandardWebRequestHandler.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="Protocol.cs" />
