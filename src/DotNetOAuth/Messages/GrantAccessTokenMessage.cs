@@ -9,21 +9,28 @@ namespace DotNetOAuth.Messages {
 	using System.Runtime.Serialization;
 	using DotNetOAuth.Messaging;
 
+	/// <summary>
+	/// A direct message sent from Service Provider to Consumer in response to 
+	/// a Consumer's <see cref="RequestAccessTokenMessage"/> request.
+	/// </summary>
 	internal class GrantAccessTokenMessage : MessageBase {
-		internal GrantAccessTokenMessage() {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GrantAccessTokenMessage"/> class.
+		/// </summary>
+		internal GrantAccessTokenMessage()
+			: base(MessageProtection.None, MessageTransport.Direct) {
 		}
 
+		/// <summary>
+		/// Gets or sets the Access Token assigned by the Service Provider.
+		/// </summary>
 		[MessagePart(Name = "oauth_token", IsRequired = true)]
 		public string AccessToken { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Token Secret.
+		/// </summary>
 		[MessagePart(Name = "oauth_token_secret", IsRequired = true)]
 		public string TokenSecret { get; set; }
-
-		protected override MessageTransport Transport {
-			get { return MessageTransport.Direct; }
-		}
-
-		protected override MessageProtection RequiredProtection {
-			get { return MessageProtection.None; }
-		}
 	}
 }

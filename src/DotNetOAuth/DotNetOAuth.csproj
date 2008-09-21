@@ -68,6 +68,7 @@
   <ItemGroup>
     <Compile Include="Consumer.cs" />
     <Compile Include="IWebRequestHandler.cs" />
+    <Compile Include="Messages\ITamperResistantOAuthMessage.cs" />
     <Compile Include="Messages\MessageBase.cs" />
     <Compile Include="Messages\RequestAccessTokenMessage.cs" />
     <Compile Include="Messaging\MessagePartAttribute.cs" />
@@ -129,6 +130,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
+    <None Include="Messages\OAuth Messages.cd" />
     <None Include="Messaging\Bindings\Bindings.cd" />
     <None Include="Messaging\Exceptions.cd" />
     <None Include="Messaging\Messaging.cd" />

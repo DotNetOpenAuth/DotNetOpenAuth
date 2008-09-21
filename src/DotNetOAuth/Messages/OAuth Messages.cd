@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DotNetOAuth.Messages.AccessProtectedResourcesMessage">
+    <Position X="5" Y="5" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAAAAAAAAAgAAEAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Messages\AccessProtectedResourcesMessage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOAuth.Messages.UnauthorizedRequestTokenMessage">
+    <Position X="9" Y="0.75" Width="3" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAIAAIAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Messages\UnauthorizedRequestTokenMessage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOAuth.Messages.DirectUserToConsumerMessage">
+    <Position X="9" Y="2.75" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Messages\DirectUserToConsumerMessage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOAuth.Messages.DirectUserToServiceProviderMessage">
+    <Position X="1.5" Y="2.75" Width="3" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAQAA=</HashCode>
+      <FileName>Messages\DirectUserToServiceProviderMessage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOAuth.Messages.GrantAccessTokenMessage">
+    <Position X="9" Y="4.5" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <InheritanceLine Type="DotNetOAuth.Messages.MessageBase" FixedFromPoint="true">
+      <Path>
+        <Point X="8.5" Y="4.5" />
+        <Point X="8.74" Y="4.5" />
+        <Point X="8.74" Y="5.342" />
+        <Point X="9" Y="5.342" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAEAAAIAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Messages\GrantAccessTokenMessage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOAuth.Messages.MessageBase">
+    <Position X="5" Y="1" Width="3.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAKFAAAYIAAAAAAAICAAAAAAAQEIAAAQgCAACAAAAA=</HashCode>
+      <FileName>Messages\MessageBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DotNetOAuth.Messages.RequestAccessTokenMessage">
+    <Position X="1.5" Y="4.75" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <InheritanceLine Type="DotNetOAuth.Messages.MessageBase" FixedFromPoint="true">
+      <Path>
+        <Point X="5" Y="4.312" />
+        <Point X="4.76" Y="4.312" />
+        <Point X="4.76" Y="5.688" />
+        <Point X="4" Y="5.688" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAAAAAAAAAgAAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Messages\RequestAccessTokenMessage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOAuth.Messages.RequestTokenMessage">
+    <Position X="1.5" Y="0.75" Width="2" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Messages\RequestTokenMessage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -25,7 +25,7 @@ namespace DotNetOAuth.Messaging {
 		MessageProtection RequiredProtection { get; }
 
 		/// <summary>
-		/// Gets whether this is a direct or indirect message.
+		/// Gets a value indicating whether this is a direct or indirect message.
 		/// </summary>
 		MessageTransport Transport { get; }
 

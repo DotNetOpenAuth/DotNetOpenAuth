@@ -49,7 +49,7 @@ namespace DotNetOAuth {
 				// which have all the same parameters, by figuring out what type of token
 				// is in the token parameter.
 				bool tokenTypeIsAccessToken = false; // TODO
-				
+
 				return tokenTypeIsAccessToken ? typeof(AccessProtectedResourcesMessage) :
 					typeof(RequestAccessTokenMessage);
 			}

@@ -9,46 +9,38 @@ namespace DotNetOAuth.Messages {
 	using System.Runtime.Serialization;
 	using DotNetOAuth.Messaging;
 
-	internal class AccessProtectedResourcesMessage : MessageBase, IDirectedProtocolMessage {
-		private Uri serviceProvider;
-
-		internal AccessProtectedResourcesMessage(Uri serviceProvider) {
-			if (serviceProvider == null) {
-				throw new ArgumentNullException("serviceProvider");
-			}
-
-			this.serviceProvider = serviceProvider;
+	/// <summary>
+	/// A message attached to a request for protected resources that provides the necessary
+	/// credentials to be granted access to those resources.
+	/// </summary>
+	internal class AccessProtectedResourcesMessage : MessageBase {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AccessProtectedResourcesMessage"/> class.
+		/// </summary>
+		/// <param name="serviceProvider">The URI of the Service Provider endpoint to send this message to.</param>
+		internal AccessProtectedResourcesMessage(Uri serviceProvider)
+			: base(MessageProtection.All, MessageTransport.Direct, serviceProvider) {
 		}
 
+		/// <summary>
+		/// Gets or sets the Consumer key.
+		/// </summary>
 		[MessagePart(Name = "oauth_consumer_key", IsRequired = true)]
 		public string ConsumerKey { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Access Token.
+		/// </summary>
 		[MessagePart(Name = "oauth_token", IsRequired = true)]
 		public string AccessToken { get; set; }
-		[MessagePart(Name = "oauth_signature_method", IsRequired = true)]
-		public string SignatureMethod { get; set; }
-		[MessagePart(Name = "oauth_signature", IsRequired = true)]
-		public string Signature { get; set; }
-		[MessagePart(Name = "oauth_timestamp", IsRequired = true)]
-		public Uri Timestamp { get; set; }
-		[MessagePart(Name = "oauth_nonce", IsRequired = true)]
-		public Uri Nonce { get; set; }
+
+		/// <summary>
+		/// Gets or sets the protocol version used in the construction of this message.
+		/// </summary>
 		[MessagePart(Name = "oauth_version", IsRequired = false)]
-		public Uri Version { get; set; }
-
-		protected override MessageTransport Transport {
-			get { return MessageTransport.Direct; }
+		public string Version {
+			get { return this.VersionString; }
+			set { this.VersionString = value; }
 		}
-
-		protected override MessageProtection RequiredProtection {
-			get { return MessageProtection.All; }
-		}
-	
-		#region IDirectedProtocolMessage Members
-
-		Uri IDirectedProtocolMessage.Recipient {
-			get { return this.serviceProvider; }
-		}
-
-		#endregion
 	}
 }

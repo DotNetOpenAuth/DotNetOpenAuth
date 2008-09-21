@@ -9,31 +9,22 @@ namespace DotNetOAuth.Messages {
 	using System.Runtime.Serialization;
 	using DotNetOAuth.Messaging;
 
-	internal class DirectUserToConsumerMessage : MessageBase, IDirectedProtocolMessage {
-		private Uri consumer;
-
-		internal DirectUserToConsumerMessage(Uri consumer) {
-			this.consumer = consumer;
+	/// <summary>
+	/// A message used to redirect the user from a Service Provider to a Consumer's web site.
+	/// </summary>
+	internal class DirectUserToConsumerMessage : MessageBase {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DirectUserToConsumerMessage"/> class.
+		/// </summary>
+		/// <param name="consumer">The URI of the Consumer endpoint to send this message to.</param>
+		internal DirectUserToConsumerMessage(Uri consumer)
+			: base(MessageProtection.None, MessageTransport.Indirect, consumer) {
 		}
 
-		// TODO: graph in spec says this is optional, but in text is suggests it is required.
-		[MessagePart(Name = "oauth_token", IsRequired = true)]
+		/// <summary>
+		/// Gets or sets the Request Token.
+		/// </summary>
+		[MessagePart(Name = "oauth_token", IsRequired = true)] // TODO: graph in spec says this is optional, but in text is suggests it is required.
 		public string RequestToken { get; set; }
-
-		protected override MessageTransport Transport {
-			get { return MessageTransport.Indirect; }
-		}
-
-		protected override MessageProtection RequiredProtection {
-			get { return MessageProtection.None; }
-		}
-
-		#region IDirectedProtocolMessage Members
-
-		Uri IDirectedProtocolMessage.Recipient {
-			get { return this.consumer; }
-		}
-
-		#endregion
 	}
 }

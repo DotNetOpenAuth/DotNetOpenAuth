@@ -8,46 +8,38 @@ namespace DotNetOAuth.Messages {
 	using System;
 	using DotNetOAuth.Messaging;
 
-	internal class RequestAccessTokenMessage : MessageBase, IDirectedProtocolMessage {
-		private Uri serviceProvider;
-
-		internal RequestAccessTokenMessage(Uri serviceProvider) {
-			if (serviceProvider == null) {
-				throw new ArgumentNullException("serviceProvider");
-			}
-
-			this.serviceProvider = serviceProvider;
+	/// <summary>
+	/// A direct message sent by the Consumer to exchange a Request Token for an Access Token
+	/// and Token Secret.
+	/// </summary>
+	internal class RequestAccessTokenMessage : MessageBase {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RequestAccessTokenMessage"/> class.
+		/// </summary>
+		/// <param name="serviceProvider">The URI of the Service Provider endpoint to send this message to.</param>
+		internal RequestAccessTokenMessage(Uri serviceProvider)
+			: base(MessageProtection.All, MessageTransport.Direct, serviceProvider) {
 		}
 
+		/// <summary>
+		/// Gets or sets the Consumer Key.
+		/// </summary>
 		[MessagePart(Name = "oauth_consumer_key", IsRequired = true)]
 		public string ConsumerKey { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Request Token.
+		/// </summary>
 		[MessagePart(Name = "oauth_token", IsRequired = true)]
 		public string RequestToken { get; set; }
-		[MessagePart(Name = "oauth_signature_method", IsRequired = true)]
-		public string SignatureMethod { get; set; }
-		[MessagePart(Name = "oauth_signature", IsRequired = true)]
-		public string Signature { get; set; }
-		[MessagePart(Name = "oauth_timestamp", IsRequired = true)]
-		public Uri Timestamp { get; set; }
-		[MessagePart(Name = "oauth_nonce", IsRequired = true)]
-		public Uri Nonce { get; set; }
+
+		/// <summary>
+		/// Gets or sets the protocol version used in the construction of this message.
+		/// </summary>
 		[MessagePart(Name = "oauth_version", IsRequired = false)]
-		public Uri Version { get; set; }
-
-		protected override DotNetOAuth.Messaging.MessageTransport Transport {
-			get { return MessageTransport.Direct; }
+		public string Version {
+			get { return this.VersionString; }
+			set { this.VersionString = value; }
 		}
-
-		protected override DotNetOAuth.Messaging.MessageProtection RequiredProtection {
-			get { return MessageProtection.All; }
-		}
-
-		#region IDirectedProtocolMessage Members
-
-		Uri IDirectedProtocolMessage.Recipient {
-			get { return this.serviceProvider; }
-		}
-
-		#endregion
 	}
 }
