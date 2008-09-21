@@ -59,19 +59,19 @@ namespace DotNetOAuth.Messaging {
 		/// Gets or sets the verb in the request (i.e. GET, POST, etc.)
 		/// </summary>
 		internal string HttpMethod { get; set; }
-		
+
 		/// <summary>
 		/// Gets or sets the entire URL of the request.
 		/// </summary>
 		internal Uri Url { get; set; }
-		
+
 		/// <summary>
 		/// Gets the query part of the URL (The ? and everything after it).
 		/// </summary>
 		internal string Query {
 			get { return this.Url != null ? this.Url.Query : null; }
 		}
-		
+
 		/// <summary>
 		/// Gets or sets the collection of headers that came in with the request.
 		/// </summary>

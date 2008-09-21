@@ -135,13 +135,13 @@ namespace DotNetOAuth {
 			MessageScheme transmissionMethod = this.PreferredTransmissionScheme;
 			switch (transmissionMethod) {
 				case MessageScheme.AuthorizationHeaderRequest:
-					httpRequest = this.InitializeRequestAsAuthHeader(request);
+					httpRequest = InitializeRequestAsAuthHeader(request);
 					break;
 				case MessageScheme.PostRequest:
 					httpRequest = this.InitializeRequestAsPost(request);
 					break;
 				case MessageScheme.GetRequest:
-					httpRequest = this.InitializeRequestAsGet(request);
+					httpRequest = InitializeRequestAsGet(request);
 					break;
 				default:
 					throw new NotSupportedException();
@@ -192,7 +192,7 @@ namespace DotNetOAuth {
 		/// <remarks>
 		/// This method implements OAuth 1.0 section 5.2, item #1 (described in section 5.4).
 		/// </remarks>
-		private HttpWebRequest InitializeRequestAsAuthHeader(IDirectedProtocolMessage requestMessage) {
+		private static HttpWebRequest InitializeRequestAsAuthHeader(IDirectedProtocolMessage requestMessage) {
 			var serializer = MessageSerializer.Get(requestMessage.GetType());
 			var fields = serializer.Serialize(requestMessage);
 			var protocol = Protocol.Lookup(requestMessage.ProtocolVersion);
@@ -218,6 +218,25 @@ namespace DotNetOAuth {
 		}
 
 		/// <summary>
+		/// Prepares to send a request to the Service Provider as the query string in a GET request.
+		/// </summary>
+		/// <param name="requestMessage">The message to be transmitted to the ServiceProvider.</param>
+		/// <returns>The web request ready to send.</returns>
+		/// <remarks>
+		/// This method implements OAuth 1.0 section 5.2, item #3.
+		/// </remarks>
+		private static HttpWebRequest InitializeRequestAsGet(IDirectedProtocolMessage requestMessage) {
+			var serializer = MessageSerializer.Get(requestMessage.GetType());
+			var fields = serializer.Serialize(requestMessage);
+
+			UriBuilder builder = new UriBuilder(requestMessage.Recipient);
+			MessagingUtilities.AppendQueryArgs(builder, fields);
+			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(builder.Uri);
+
+			return httpRequest;
+		}
+
+		/// <summary>
 		/// Prepares to send a request to the Service Provider as the payload of a POST request.
 		/// </summary>
 		/// <param name="requestMessage">The message to be transmitted to the ServiceProvider.</param>
@@ -237,25 +256,6 @@ namespace DotNetOAuth {
 			using (TextWriter writer = this.webRequestHandler.GetRequestStream(httpRequest)) {
 				writer.Write(requestBody);
 			}
-
-			return httpRequest;
-		}
-
-		/// <summary>
-		/// Prepares to send a request to the Service Provider as the query string in a GET request.
-		/// </summary>
-		/// <param name="requestMessage">The message to be transmitted to the ServiceProvider.</param>
-		/// <returns>The web request ready to send.</returns>
-		/// <remarks>
-		/// This method implements OAuth 1.0 section 5.2, item #3.
-		/// </remarks>
-		private HttpWebRequest InitializeRequestAsGet(IDirectedProtocolMessage requestMessage) {
-			var serializer = MessageSerializer.Get(requestMessage.GetType());
-			var fields = serializer.Serialize(requestMessage);
-
-			UriBuilder builder = new UriBuilder(requestMessage.Recipient);
-			MessagingUtilities.AppendQueryArgs(builder, fields);
-			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(builder.Uri);
 
 			return httpRequest;
 		}

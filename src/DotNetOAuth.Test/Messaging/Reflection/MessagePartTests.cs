@@ -1,61 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using DotNetOAuth.Messaging.Reflection;
-using System.Reflection;
-using DotNetOAuth.Test.Mocks;
-using DotNetOAuth.Messaging;
+﻿//-----------------------------------------------------------------------
+// <copyright file="MessagePartTests.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
 
 namespace DotNetOAuth.Test.Messaging.Reflection {
-	[TestClass]
-	public class MessagePartTests :MessagingTestBase {
-		class MessageWithNonNullableOptionalStruct : TestMessage {
-			/// <summary>
-			/// Optional structs like int must be nullable for Optional to make sense.
-			/// </summary>
-			[MessagePart(IsRequired = false)]
-			internal int optionalInt = 0;
-		}
-		class MessageWithNonNullableRequiredStruct : TestMessage {
-			/// <summary>
-			/// This should work because a required field will always have a value so it
-			/// need not be nullable.
-			/// </summary>
-			[MessagePart(IsRequired = true)]
-			internal int optionalInt = 0;
-		}
-		class MessageWithNullableOptionalStruct : TestMessage {
-			/// <summary>
-			/// Optional structs like int must be nullable for Optional to make sense.
-			/// </summary>
-			[MessagePart(IsRequired = false)]
-			internal int? optionalInt = 0;
-		}
-		class MessageWithNullableRequiredStruct : TestMessage {
-			[MessagePart(IsRequired = true)]
-			internal int? optionalInt = null;
-		}
+	using System;
+	using System.Linq;
+	using System.Reflection;
+	using DotNetOAuth.Messaging;
+	using DotNetOAuth.Messaging.Reflection;
+	using DotNetOAuth.Test.Mocks;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+	[TestClass]
+	public class MessagePartTests : MessagingTestBase {
 		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void OptionalNonNullableStruct() {
-			ParameterizedMessageTypeTest(typeof(MessageWithNonNullableOptionalStruct));
+			this.ParameterizedMessageTypeTest(typeof(MessageWithNonNullableOptionalStruct));
 		}
 
 		[TestMethod]
 		public void RequiredNonNullableStruct() {
-			ParameterizedMessageTypeTest(typeof(MessageWithNonNullableRequiredStruct));
+			this.ParameterizedMessageTypeTest(typeof(MessageWithNonNullableRequiredStruct));
 		}
 
 		[TestMethod]
 		public void OptionalNullableStruct() {
-			ParameterizedMessageTypeTest(typeof(MessageWithNullableOptionalStruct));
+			this.ParameterizedMessageTypeTest(typeof(MessageWithNullableOptionalStruct));
 		}
 
 		[TestMethod]
 		public void RequiredNullableStruct() {
-			ParameterizedMessageTypeTest(typeof(MessageWithNullableRequiredStruct));
+			this.ParameterizedMessageTypeTest(typeof(MessageWithNullableRequiredStruct));
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
@@ -65,23 +42,23 @@ namespace DotNetOAuth.Test.Messaging.Reflection {
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullAttribute() {
-			FieldInfo field = typeof(MessageWithNullableOptionalStruct).GetField("optionalInt", BindingFlags.NonPublic | BindingFlags.Instance);
+			PropertyInfo field = typeof(MessageWithNullableOptionalStruct).GetProperty("OptionalInt", BindingFlags.NonPublic | BindingFlags.Instance);
 			new MessagePart(field, null);
 		}
 
 		[TestMethod]
 		public void SetValue() {
 			var message = new MessageWithNonNullableRequiredStruct();
-			MessagePart part = ParameterizedMessageTypeTest(message.GetType());
+			MessagePart part = this.ParameterizedMessageTypeTest(message.GetType());
 			part.SetValue(message, "5");
-			Assert.AreEqual(5, message.optionalInt);
+			Assert.AreEqual(5, message.OptionalInt);
 		}
 
 		[TestMethod]
 		public void GetValue() {
 			var message = new MessageWithNonNullableRequiredStruct();
-			message.optionalInt = 8;
-			MessagePart part = ParameterizedMessageTypeTest(message.GetType());
+			message.OptionalInt = 8;
+			MessagePart part = this.ParameterizedMessageTypeTest(message.GetType());
 			Assert.AreEqual("8", part.GetValue(message));
 		}
 
@@ -92,9 +69,33 @@ namespace DotNetOAuth.Test.Messaging.Reflection {
 		}
 
 		private MessagePart ParameterizedMessageTypeTest(Type messageType) {
-			FieldInfo field = messageType.GetField("optionalInt", BindingFlags.NonPublic | BindingFlags.Instance);
+			PropertyInfo field = messageType.GetProperty("OptionalInt", BindingFlags.NonPublic | BindingFlags.Instance);
 			MessagePartAttribute attribute = field.GetCustomAttributes(typeof(MessagePartAttribute), true).OfType<MessagePartAttribute>().Single();
 			return new MessagePart(field, attribute);
+		}
+
+		private class MessageWithNonNullableOptionalStruct : TestMessage {
+			// Optional structs like int must be nullable for Optional to make sense.
+			[MessagePart(IsRequired = false)]
+			internal int OptionalInt { get; set; }
+		}
+
+		private class MessageWithNonNullableRequiredStruct : TestMessage {
+			// This should work because a required field will always have a value so it
+			// need not be nullable.
+			[MessagePart(IsRequired = true)]
+			internal int OptionalInt { get; set; }
+		}
+
+		private class MessageWithNullableOptionalStruct : TestMessage {
+			// Optional structs like int must be nullable for Optional to make sense.
+			[MessagePart(IsRequired = false)]
+			internal int? OptionalInt { get; set; }
+		}
+
+		private class MessageWithNullableRequiredStruct : TestMessage {
+			[MessagePart(IsRequired = true)]
+			private int? OptionalInt { get; set; }
 		}
 	}
 }

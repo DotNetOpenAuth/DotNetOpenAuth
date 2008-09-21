@@ -6,6 +6,7 @@
 
 namespace DotNetOAuth.Messaging.Bindings {
 	using System;
+using System.Globalization;
 
 	/// <summary>
 	/// An exception thrown when a message is received that exceeds the maximum message age limit.
@@ -18,7 +19,7 @@ namespace DotNetOAuth.Messaging.Bindings {
 		/// <param name="utcExpirationDate">The date the message expired.</param>
 		/// <param name="faultedMessage">The expired message.</param>
 		public ExpiredMessageException(DateTime utcExpirationDate, IProtocolMessage faultedMessage)
-			: base(string.Format(MessagingStrings.ExpiredMessage, utcExpirationDate.ToUniversalTime(), DateTime.UtcNow), faultedMessage) {
+			: base(string.Format(CultureInfo.CurrentCulture, MessagingStrings.ExpiredMessage, utcExpirationDate.ToUniversalTime(), DateTime.UtcNow), faultedMessage) {
 		}
 
 		/// <summary>

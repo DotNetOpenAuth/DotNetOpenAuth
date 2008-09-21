@@ -15,7 +15,7 @@ namespace DotNetOAuth.Test.Mocks {
 		private StringBuilder postEntity;
 
 		internal Func<HttpWebRequest, Response> Callback { get; set; }
-		
+
 		internal Stream RequestEntityStream {
 			get {
 				if (this.postEntity == null) {

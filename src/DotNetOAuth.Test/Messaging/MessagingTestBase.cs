@@ -19,6 +19,30 @@ namespace DotNetOAuth.Test {
 	/// The base class that all messaging test classes inherit from.
 	/// </summary>
 	public class MessagingTestBase : TestBase {
+		internal enum FieldFill {
+			/// <summary>
+			/// An empty dictionary is returned.
+			/// </summary>
+			None,
+
+			/// <summary>
+			/// Only enough fields for the <see cref="TestMessageTypeProvider"/>
+			/// to identify the message are included.
+			/// </summary>
+			IdentifiableButNotAllRequired,
+
+			/// <summary>
+			/// All fields marked as required are included.
+			/// </summary>
+			AllRequired,
+
+			/// <summary>
+			/// All user-fillable fields in the message, leaving out those whose
+			/// values are to be set by channel binding elements.
+			/// </summary>
+			CompleteBeforeBindings,
+		}
+
 		internal Channel Channel { get; set; }
 
 		[TestInitialize]
@@ -85,30 +109,6 @@ namespace DotNetOAuth.Test {
 			return new TestChannel(typeProvider, bindingElements.ToArray());
 		}
 
-		internal enum FieldFill {
-			/// <summary>
-			/// An empty dictionary is returned.
-			/// </summary>
-			None,
-
-			/// <summary>
-			/// Only enough fields for the <see cref="TestMessageTypeProvider"/>
-			/// to identify the message are included.
-			/// </summary>
-			IdentifiableButNotAllRequired,
-			
-			/// <summary>
-			/// All fields marked as required are included.
-			/// </summary>
-			AllRequired,
-
-			/// <summary>
-			/// All user-fillable fields in the message, leaving out those whose
-			/// values are to be set by channel binding elements.
-			/// </summary>
-			CompleteBeforeBindings,
-		}
-
 		internal static IDictionary<string, string> GetStandardTestFields(FieldFill fill) {
 			TestMessage expectedMessage = GetStandardTestMessage(fill);
 
@@ -152,8 +152,8 @@ namespace DotNetOAuth.Test {
 
 		internal void ParameterizedReceiveTest(string method) {
 			var fields = GetStandardTestFields(FieldFill.CompleteBeforeBindings);
-			TestMessage expectedMessage = GetStandardTestMessage(FieldFill.CompleteBeforeBindings); ;
-			
+			TestMessage expectedMessage = GetStandardTestMessage(FieldFill.CompleteBeforeBindings);
+
 			IProtocolMessage requestMessage = this.Channel.ReadFromRequest(CreateHttpRequestInfo(method, fields));
 			Assert.IsNotNull(requestMessage);
 			Assert.IsInstanceOfType(requestMessage, typeof(TestMessage));
@@ -164,7 +164,7 @@ namespace DotNetOAuth.Test {
 		}
 
 		internal void ParameterizedReceiveProtectedTest(DateTime? utcCreatedDate, bool invalidSignature) {
-			TestMessage expectedMessage = GetStandardTestMessage(FieldFill.CompleteBeforeBindings); ;
+			TestMessage expectedMessage = GetStandardTestMessage(FieldFill.CompleteBeforeBindings);
 			var fields = GetStandardTestFields(FieldFill.CompleteBeforeBindings);
 			fields.Add("Signature", invalidSignature ? "badsig" : MockSigningBindingElement.MessageSignature);
 			fields.Add("Nonce", "someNonce");

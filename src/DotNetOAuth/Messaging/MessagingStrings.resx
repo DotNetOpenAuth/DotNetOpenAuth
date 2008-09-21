@@ -130,7 +130,7 @@
     <value>The directed message's Recipient property must not be null.</value>
   </data>
   <data name="ErrorInRequestReplyMessage" xml:space="preserve">
-    <value>Error occurred while sending a direct message or gettings the response.</value>
+    <value>Error occurred while sending a direct message or getting the response.</value>
   </data>
   <data name="ExceptionNotConstructedForTransit" xml:space="preserve">
     <value>This exception was not constructed with a root request message that caused it.</value>

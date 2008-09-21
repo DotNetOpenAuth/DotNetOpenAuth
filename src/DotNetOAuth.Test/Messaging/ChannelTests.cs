@@ -14,7 +14,6 @@ namespace DotNetOAuth.Test.Messaging {
 	using DotNetOAuth.Messaging.Bindings;
 	using DotNetOAuth.Test.Mocks;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using System.Xml;
 
 	[TestClass]
 	public class ChannelTests : MessagingTestBase {

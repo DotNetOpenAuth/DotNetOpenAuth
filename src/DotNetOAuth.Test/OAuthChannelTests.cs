@@ -12,10 +12,10 @@ namespace DotNetOAuth.Test {
 	using System.Net;
 	using System.Text;
 	using System.Web;
+	using System.Xml;
 	using DotNetOAuth.Messaging;
 	using DotNetOAuth.Test.Mocks;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using System.Xml;
 
 	[TestClass]
 	public class OAuthChannelTests : TestBase {

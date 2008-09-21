@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="MessageDictionaryTest.cs" company="Andrew Arnott">
+// <copyright file="MessageDictionaryTests.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -9,10 +9,10 @@ namespace DotNetOAuth.Test.Messaging.Reflection {
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.Xml;
 	using DotNetOAuth.Messaging;
 	using DotNetOAuth.Messaging.Reflection;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using System.Xml;
 
 	[TestClass]
 	public class MessageDictionaryTests : MessagingTestBase {

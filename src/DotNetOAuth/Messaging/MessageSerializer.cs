@@ -64,6 +64,7 @@ namespace DotNetOAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The message to be serialized.</param>
 		/// <returns>The dictionary of values to send for the message.</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Parallel design with Deserialize method.")]
 		internal IDictionary<string, string> Serialize(IProtocolMessage message) {
 			if (message == null) {
 				throw new ArgumentNullException("message");
@@ -87,7 +88,7 @@ namespace DotNetOAuth.Messaging {
 			// Before we deserialize the message, make sure all the required parts are present.
 			MessageDescription.Get(this.messageType).EnsureRequiredMessagePartsArePresent(fields.Keys);
 
-			IProtocolMessage result ;
+			IProtocolMessage result;
 			try {
 				result = (IProtocolMessage)Activator.CreateInstance(this.messageType, true);
 			} catch (MissingMethodException ex) {

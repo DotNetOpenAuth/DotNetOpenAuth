@@ -16,7 +16,6 @@ namespace DotNetOAuth.Messaging {
 	using System.Text;
 	using System.Web;
 	using DotNetOAuth.Messaging.Reflection;
-	using DotNetOAuth.Messaging.Bindings;
 
 	/// <summary>
 	/// Manages sending direct messages to a remote party and receiving responses.
@@ -334,7 +333,7 @@ namespace DotNetOAuth.Messaging {
 			}
 
 			WebHeaderCollection headers = new WebHeaderCollection();
-			StringWriter bodyWriter = new StringWriter();
+			StringWriter bodyWriter = new StringWriter(CultureInfo.InvariantCulture);
 			StringBuilder hiddenFields = new StringBuilder();
 			foreach (var field in fields) {
 				hiddenFields.AppendFormat(
@@ -436,7 +435,7 @@ namespace DotNetOAuth.Messaging {
 				}
 
 				int countProtectionsOfThisKind = protectionElements.Count(element => (element.Protection & protectionKind) == protectionKind);
-				
+
 				// Each protection binding element is backed by the presence of its dependent protection(s).
 				if (countProtectionsOfThisKind > 0 && !wasLastProtectionPresent) {
 					throw new ProtocolException(
@@ -485,6 +484,22 @@ namespace DotNetOAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Verifies that all required message parts are initialized to values
+		/// prior to sending the message to a remote party.
+		/// </summary>
+		/// <param name="message">The message to verify.</param>
+		/// <exception cref="ProtocolException">
+		/// Thrown when any required message part does not have a value.
+		/// </exception>
+		private static void EnsureValidMessageParts(IProtocolMessage message) {
+			Debug.Assert(message != null, "message == null");
+
+			MessageDictionary dictionary = new MessageDictionary(message);
+			MessageDescription description = MessageDescription.Get(message.GetType());
+			description.EnsureRequiredMessagePartsArePresent(dictionary.Keys);
+		}
+
+		/// <summary>
 		/// Prepares a message for transmit by applying signatures, nonces, etc.
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>
@@ -530,16 +545,10 @@ namespace DotNetOAuth.Messaging {
 				throw new UnprotectedMessageException(message, appliedProtection);
 			}
 
-			EnsureValidMessageParts(message);
+			// We do NOT verify that all required message parts are present here... the 
+			// message deserializer did for us.  It would be too late to do it here since
+			// they might look initialized by the time we have an IProtocolMessage instance.
 			message.EnsureValidMessage();
-		}
-
-		private void EnsureValidMessageParts(IProtocolMessage message) {
-			Debug.Assert(message != null, "message == null");
-
-			MessageDictionary dictionary = new MessageDictionary(message);
-			MessageDescription description = MessageDescription.Get(message.GetType());
-			description.EnsureRequiredMessagePartsArePresent(dictionary.Keys);
 		}
 	}
 }

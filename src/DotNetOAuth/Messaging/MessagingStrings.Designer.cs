@@ -97,7 +97,7 @@ namespace DotNetOAuth.Messaging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error occurred while sending a direct message or gettings the response..
+        ///   Looks up a localized string similar to Error occurred while sending a direct message or getting the response..
         /// </summary>
         internal static string ErrorInRequestReplyMessage {
             get {

@@ -7,9 +7,9 @@
 namespace DotNetOAuth.Test.Messaging {
 	using System;
 	using System.Collections.Generic;
+	using System.Xml;
 	using DotNetOAuth.Messaging;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using System.Xml;
 
 	/// <summary>
 	/// Tests for the <see cref="MessageSerializer"/> class.

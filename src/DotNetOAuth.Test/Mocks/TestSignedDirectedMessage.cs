@@ -5,10 +5,9 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOAuth.Test.Mocks {
-	using System.Runtime.Serialization;
 	using DotNetOAuth.Messaging;
-	using DotNetOAuth.Messaging.Reflection;
 	using DotNetOAuth.Messaging.Bindings;
+	using DotNetOAuth.Messaging.Reflection;
 
 	internal class TestSignedDirectedMessage : TestDirectedMessage, ITamperResistantProtocolMessage {
 		internal TestSignedDirectedMessage() { }
