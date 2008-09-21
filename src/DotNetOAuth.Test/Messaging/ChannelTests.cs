@@ -283,15 +283,12 @@ namespace DotNetOAuth.Test.Messaging {
 				transformB,
 				transformA);
 
-			Assert.AreEqual(6, channel.BindingElements.Count);
+			Assert.AreEqual(5, channel.BindingElements.Count);
 			Assert.AreSame(transformB, channel.BindingElements[0]);
 			Assert.AreSame(transformA, channel.BindingElements[1]);
 			Assert.AreSame(replay, channel.BindingElements[2]);
 			Assert.AreSame(expire, channel.BindingElements[3]);
 			Assert.AreSame(sign, channel.BindingElements[4]);
-			
-			// This last one is added by the channel.
-			Assert.IsInstanceOfType(channel.BindingElements[5], typeof(EnsureCompleteMessageBindingElement));
 		}
 
 		[TestMethod, ExpectedException(typeof(UnprotectedMessageException))]

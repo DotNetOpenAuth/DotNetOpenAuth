@@ -84,9 +84,6 @@ namespace DotNetOAuth.Messaging {
 
 			this.messageTypeProvider = messageTypeProvider;
 			this.bindingElements = new List<IChannelBindingElement>(ValidateAndPrepareBindingElements(bindingElements));
-			
-			// Add a complete message check as a last outgoing step.
-			this.bindingElements.Add(new EnsureCompleteMessageBindingElement());
 		}
 
 		/// <summary>
@@ -505,6 +502,9 @@ namespace DotNetOAuth.Messaging {
 			if ((message.RequiredProtection & appliedProtection) != message.RequiredProtection) {
 				throw new UnprotectedMessageException(message, appliedProtection);
 			}
+
+			EnsureValidMessageParts(message);
+			message.EnsureValidMessage();
 		}
 
 		/// <summary>
@@ -536,14 +536,10 @@ namespace DotNetOAuth.Messaging {
 
 		private void EnsureValidMessageParts(IProtocolMessage message) {
 			Debug.Assert(message != null, "message == null");
+
+			MessageDictionary dictionary = new MessageDictionary(message);
 			MessageDescription description = MessageDescription.Get(message.GetType());
-			List<MessagePart> invalidParts = description.Mapping.Values.Where(part => !part.IsValidValue(message)).ToList();
-			if (invalidParts.Count > 0) {
-				throw new ProtocolException(string.Format(
-					CultureInfo.CurrentCulture,
-					MessagingStrings.InvalidMessageParts,
-					string.Join(", ", invalidParts.Select(part => part.Name).ToArray())));
-			}
+			description.EnsureRequiredMessagePartsArePresent(dictionary.Keys);
 		}
 	}
 }

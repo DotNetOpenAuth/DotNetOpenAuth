@@ -99,10 +99,6 @@ namespace DotNetOAuth.Messaging.Reflection {
 			}
 		}
 
-		internal bool IsValidValue(IProtocolMessage message) {
-			return true;
-		}
-
 		private static object deriveDefaultValue(Type type) {
 			if (type.IsValueType) {
 				return Activator.CreateInstance(type);

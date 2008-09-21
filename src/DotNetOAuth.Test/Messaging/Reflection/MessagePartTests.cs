@@ -32,6 +32,10 @@ namespace DotNetOAuth.Test.Messaging.Reflection {
 			[MessagePart(IsRequired = false)]
 			internal int? optionalInt = 0;
 		}
+		class MessageWithNullableRequiredStruct : TestMessage {
+			[MessagePart(IsRequired = true)]
+			internal int? optionalInt;
+		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void OptionalNonNullableStruct() {
@@ -46,6 +50,11 @@ namespace DotNetOAuth.Test.Messaging.Reflection {
 		[TestMethod]
 		public void OptionalNullableStruct() {
 			ParameterizedMessageTypeTest(typeof(MessageWithNullableOptionalStruct));
+		}
+
+		[TestMethod]
+		public void RequiredNullableStruct() {
+			ParameterizedMessageTypeTest(typeof(MessageWithNullableRequiredStruct));
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
