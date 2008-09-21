@@ -68,21 +68,20 @@
   <ItemGroup>
     <Compile Include="Consumer.cs" />
     <Compile Include="IWebRequestHandler.cs" />
+    <Compile Include="Messaging\Reflection\MessagePartAttribute.cs" />
     <Compile Include="Messaging\MessageProtection.cs" />
     <Compile Include="Messaging\IChannelBindingElement.cs" />
     <Compile Include="Messaging\Bindings\ReplayedMessageException.cs" />
     <Compile Include="Messaging\Bindings\ExpiredMessageException.cs" />
-    <Compile Include="Messaging\DataContractMemberComparer.cs" />
     <Compile Include="Messaging\Bindings\InvalidSignatureException.cs" />
     <Compile Include="Messaging\Bindings\IReplayProtectedProtocolMessage.cs" />
     <Compile Include="Messaging\Bindings\IExpiringProtocolMessage.cs" />
-    <Compile Include="Messaging\DictionaryXmlReader.cs" />
-    <Compile Include="Messaging\DictionaryXmlWriter.cs" />
     <Compile Include="Messaging\Channel.cs" />
     <Compile Include="Messaging\HttpRequestInfo.cs" />
     <Compile Include="Messaging\IDirectedProtocolMessage.cs" />
     <Compile Include="Messaging\IMessageTypeProvider.cs" />
     <Compile Include="Messaging\Bindings\ITamperResistantProtocolMessage.cs" />
+    <Compile Include="Messaging\MessageSerializer.cs" />
     <Compile Include="Messaging\MessagingStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -90,6 +89,10 @@
     </Compile>
     <Compile Include="Messaging\MessagingUtilities.cs" />
     <Compile Include="Messaging\Bindings\StandardExpirationBindingElement.cs" />
+    <Compile Include="Messaging\Reflection\ValueMapping.cs" />
+    <Compile Include="Messaging\Reflection\MessageDescription.cs" />
+    <Compile Include="Messaging\Reflection\MessageDictionary.cs" />
+    <Compile Include="Messaging\Reflection\MessagePart.cs" />
     <Compile Include="Messaging\UnprotectedMessageException.cs" />
     <Compile Include="OAuthChannel.cs" />
     <Compile Include="Messaging\Response.cs" />
@@ -103,7 +106,6 @@
     <Compile Include="Messaging\MessageTransport.cs" />
     <Compile Include="OAuthMessageTypeProvider.cs" />
     <Compile Include="Messaging\ProtocolException.cs" />
-    <Compile Include="Messaging\MessageSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StandardWebRequestHandler.cs" />
     <Compile Include="Util.cs" />

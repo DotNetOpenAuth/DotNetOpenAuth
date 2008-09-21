@@ -151,6 +151,24 @@ namespace DotNetOAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Some part(s) of the message have invalid values: {0}.
+        /// </summary>
+        internal static string InvalidMessageParts {
+            get {
+                return ResourceManager.GetString("InvalidMessageParts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An item with the same key has already been added..
+        /// </summary>
+        internal static string KeyAlreadyExists {
+            get {
+                return ResourceManager.GetString("KeyAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A message response is already queued for sending in the response stream..
         /// </summary>
         internal static string QueuedMessageResponseAlreadyExists {
@@ -174,6 +192,15 @@ namespace DotNetOAuth.Messaging {
         internal static string ReplayProtectionNotSupported {
             get {
                 return ResourceManager.GetString("ReplayProtectionNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The following required parameters were missing from the {0} message: {1}.
+        /// </summary>
+        internal static string RequiredParametersMissing {
+            get {
+                return ResourceManager.GetString("RequiredParametersMissing", resourceCulture);
             }
         }
         

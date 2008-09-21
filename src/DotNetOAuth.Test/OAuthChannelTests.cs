@@ -15,6 +15,7 @@ namespace DotNetOAuth.Test {
 	using DotNetOAuth.Messaging;
 	using DotNetOAuth.Test.Mocks;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using System.Xml;
 
 	[TestClass]
 	public class OAuthChannelTests : TestBase {
@@ -85,6 +86,7 @@ namespace DotNetOAuth.Test {
 				{ "age", "15" },
 				{ "Name", "Andrew" },
 				{ "Location", "http://hostb/pathB" },
+				{ "Timestamp", XmlConvert.ToString(DateTime.UtcNow, XmlDateTimeSerializationMode.Utc) },
 			};
 
 			MemoryStream ms = new MemoryStream();
@@ -208,6 +210,7 @@ namespace DotNetOAuth.Test {
 				Name = "Andrew",
 				Location = new Uri("http://hostb/pathB"),
 				Recipient = new Uri("http://localtest"),
+				Timestamp = DateTime.UtcNow,
 			};
 
 			Response rawResponse = null;
@@ -216,14 +219,17 @@ namespace DotNetOAuth.Test {
 				HttpRequestInfo reqInfo = ConvertToRequestInfo(req, this.webRequestHandler.RequestEntityStream);
 				Assert.AreEqual(scheme == MessageScheme.PostRequest ? "POST" : "GET", reqInfo.HttpMethod);
 				var incomingMessage = this.channel.ReadFromRequest(reqInfo) as TestMessage;
+				Assert.IsNotNull(incomingMessage);
 				Assert.AreEqual(request.Age, incomingMessage.Age);
 				Assert.AreEqual(request.Name, incomingMessage.Name);
 				Assert.AreEqual(request.Location, incomingMessage.Location);
+				Assert.AreEqual(request.Timestamp, incomingMessage.Timestamp);
 
 				var responseFields = new Dictionary<string, string> {
 					{ "age", request.Age.ToString() },
 					{ "Name", request.Name },
 					{ "Location", request.Location.AbsoluteUri },
+					{ "Timestamp", XmlConvert.ToString(request.Timestamp, XmlDateTimeSerializationMode.Utc) },
 				};
 				rawResponse = new Response {
 					Body = MessagingUtilities.CreateQueryString(responseFields),
@@ -246,6 +252,7 @@ namespace DotNetOAuth.Test {
 				{ "age", "15" },
 				{ "Name", "Andrew" },
 				{ "Location", "http://hostb/pathB" },
+				{ "Timestamp", XmlConvert.ToString(DateTime.UtcNow, XmlDateTimeSerializationMode.Utc) },
 			};
 			IProtocolMessage requestMessage = this.channel.ReadFromRequest(CreateHttpRequestInfo(scheme, fields));
 			Assert.IsNotNull(requestMessage);

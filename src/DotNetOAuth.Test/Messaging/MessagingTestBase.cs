@@ -85,29 +85,89 @@ namespace DotNetOAuth.Test {
 			return new TestChannel(typeProvider, bindingElements.ToArray());
 		}
 
+		internal enum FieldFill {
+			/// <summary>
+			/// An empty dictionary is returned.
+			/// </summary>
+			None,
+
+			/// <summary>
+			/// Only enough fields for the <see cref="TestMessageTypeProvider"/>
+			/// to identify the message are included.
+			/// </summary>
+			IdentifiableButNotAllRequired,
+			
+			/// <summary>
+			/// All fields marked as required are included.
+			/// </summary>
+			AllRequired,
+
+			/// <summary>
+			/// All user-fillable fields in the message, leaving out those whose
+			/// values are to be set by channel binding elements.
+			/// </summary>
+			CompleteBeforeBindings,
+		}
+
+		internal static IDictionary<string, string> GetStandardTestFields(FieldFill fill) {
+			TestMessage expectedMessage = GetStandardTestMessage(fill);
+
+			var fields = new Dictionary<string, string>();
+			if (fill >= FieldFill.IdentifiableButNotAllRequired) {
+				fields.Add("age", expectedMessage.Age.ToString());
+			}
+			if (fill >= FieldFill.AllRequired) {
+				fields.Add("Timestamp", XmlConvert.ToString(expectedMessage.Timestamp, XmlDateTimeSerializationMode.Utc));
+			}
+			if (fill >= FieldFill.CompleteBeforeBindings) {
+				fields.Add("Name", expectedMessage.Name);
+				fields.Add("Location", expectedMessage.Location.AbsoluteUri);
+			}
+
+			return fields;
+		}
+
+		internal static TestMessage GetStandardTestMessage(FieldFill fill) {
+			TestMessage message = new TestMessage();
+			GetStandardTestMessage(fill, message);
+			return message;
+		}
+
+		internal static void GetStandardTestMessage(FieldFill fill, TestMessage message) {
+			if (message == null) {
+				throw new ArgumentNullException("message");
+			}
+
+			if (fill >= FieldFill.IdentifiableButNotAllRequired) {
+				message.Age = 15;
+			}
+			if (fill >= FieldFill.AllRequired) {
+				message.Timestamp = DateTime.SpecifyKind(DateTime.Parse("9/19/2008 8 AM"), DateTimeKind.Utc);
+			}
+			if (fill >= FieldFill.CompleteBeforeBindings) {
+				message.Name = "Andrew";
+				message.Location = new Uri("http://localtest/path");
+			}
+		}
+
 		internal void ParameterizedReceiveTest(string method) {
-			var fields = new Dictionary<string, string> {
-				{ "age", "15" },
-				{ "Name", "Andrew" },
-				{ "Location", "http://hostb/pathB" },
-			};
+			var fields = GetStandardTestFields(FieldFill.CompleteBeforeBindings);
+			TestMessage expectedMessage = GetStandardTestMessage(FieldFill.CompleteBeforeBindings); ;
+			
 			IProtocolMessage requestMessage = this.Channel.ReadFromRequest(CreateHttpRequestInfo(method, fields));
 			Assert.IsNotNull(requestMessage);
 			Assert.IsInstanceOfType(requestMessage, typeof(TestMessage));
-			TestMessage testMessage = (TestMessage)requestMessage;
-			Assert.AreEqual(15, testMessage.Age);
-			Assert.AreEqual("Andrew", testMessage.Name);
-			Assert.AreEqual("http://hostb/pathB", testMessage.Location.AbsoluteUri);
+			TestMessage actualMessage = (TestMessage)requestMessage;
+			Assert.AreEqual(expectedMessage.Age, actualMessage.Age);
+			Assert.AreEqual(expectedMessage.Name, actualMessage.Name);
+			Assert.AreEqual(expectedMessage.Location, actualMessage.Location);
 		}
 
 		internal void ParameterizedReceiveProtectedTest(DateTime? utcCreatedDate, bool invalidSignature) {
-			var fields = new Dictionary<string, string> {
-				{ "age", "15" },
-				{ "Name", "Andrew" },
-				{ "Location", "http://hostb/pathB" },
-				{ "Signature", invalidSignature ? "badsig" : MockSigningBindingElement.MessageSignature },
-				{ "Nonce", "someNonce" },
-			};
+			TestMessage expectedMessage = GetStandardTestMessage(FieldFill.CompleteBeforeBindings); ;
+			var fields = GetStandardTestFields(FieldFill.CompleteBeforeBindings);
+			fields.Add("Signature", invalidSignature ? "badsig" : MockSigningBindingElement.MessageSignature);
+			fields.Add("Nonce", "someNonce");
 			if (utcCreatedDate.HasValue) {
 				utcCreatedDate = DateTime.Parse(utcCreatedDate.Value.ToUniversalTime().ToString()); // round off the milliseconds so comparisons work later
 				fields.Add("created_on", XmlConvert.ToString(utcCreatedDate.Value, XmlDateTimeSerializationMode.Utc));
@@ -115,10 +175,10 @@ namespace DotNetOAuth.Test {
 			IProtocolMessage requestMessage = this.Channel.ReadFromRequest(CreateHttpRequestInfo("GET", fields));
 			Assert.IsNotNull(requestMessage);
 			Assert.IsInstanceOfType(requestMessage, typeof(TestSignedDirectedMessage));
-			TestSignedDirectedMessage testMessage = (TestSignedDirectedMessage)requestMessage;
-			Assert.AreEqual(15, testMessage.Age);
-			Assert.AreEqual("Andrew", testMessage.Name);
-			Assert.AreEqual("http://hostb/pathB", testMessage.Location.AbsoluteUri);
+			TestSignedDirectedMessage actualMessage = (TestSignedDirectedMessage)requestMessage;
+			Assert.AreEqual(expectedMessage.Age, actualMessage.Age);
+			Assert.AreEqual(expectedMessage.Name, actualMessage.Name);
+			Assert.AreEqual(expectedMessage.Location, actualMessage.Location);
 			if (utcCreatedDate.HasValue) {
 				IExpiringProtocolMessage expiringMessage = (IExpiringProtocolMessage)requestMessage;
 				Assert.AreEqual(utcCreatedDate.Value, expiringMessage.UtcCreationDate);

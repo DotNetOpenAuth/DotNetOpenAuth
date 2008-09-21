@@ -15,6 +15,8 @@ namespace DotNetOAuth.Messaging {
 	using System.Net;
 	using System.Text;
 	using System.Web;
+	using DotNetOAuth.Messaging.Reflection;
+	using DotNetOAuth.Messaging.Bindings;
 
 	/// <summary>
 	/// Manages sending direct messages to a remote party and receiving responses.
@@ -179,7 +181,10 @@ namespace DotNetOAuth.Messaging {
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
 		protected internal IProtocolMessage ReadFromRequest(HttpRequestInfo httpRequest) {
 			IProtocolMessage requestMessage = this.ReadFromRequestInternal(httpRequest);
-			this.VerifyMessageAfterReceiving(requestMessage);
+			if (requestMessage != null) {
+				this.VerifyMessageAfterReceiving(requestMessage);
+			}
+
 			return requestMessage;
 		}
 
@@ -497,6 +502,9 @@ namespace DotNetOAuth.Messaging {
 			if ((message.RequiredProtection & appliedProtection) != message.RequiredProtection) {
 				throw new UnprotectedMessageException(message, appliedProtection);
 			}
+
+			EnsureValidMessageParts(message);
+			message.EnsureValidMessage();
 		}
 
 		/// <summary>
@@ -521,6 +529,17 @@ namespace DotNetOAuth.Messaging {
 			if ((message.RequiredProtection & appliedProtection) != message.RequiredProtection) {
 				throw new UnprotectedMessageException(message, appliedProtection);
 			}
+
+			EnsureValidMessageParts(message);
+			message.EnsureValidMessage();
+		}
+
+		private void EnsureValidMessageParts(IProtocolMessage message) {
+			Debug.Assert(message != null, "message == null");
+
+			MessageDictionary dictionary = new MessageDictionary(message);
+			MessageDescription description = MessageDescription.Get(message.GetType());
+			description.EnsureRequiredMessagePartsArePresent(dictionary.Keys);
 		}
 	}
 }

@@ -6,25 +6,18 @@
 
 namespace DotNetOAuth.Test.Mocks {
 	using System;
+	using System.Collections.Generic;
 	using System.Runtime.Serialization;
 	using DotNetOAuth.Messaging;
+	using DotNetOAuth.Messaging.Reflection;
 
 	[DataContract(Namespace = Protocol.DataContractNamespaceV10)]
-	internal class TestDirectedMessage : IDirectedProtocolMessage {
-		private MessageTransport transport;
-
-		internal TestDirectedMessage(MessageTransport transport) {
-			this.transport = transport;
+	internal class TestDirectedMessage : TestMessage, IDirectedProtocolMessage {
+		internal TestDirectedMessage() {
 		}
 
-		[DataMember(Name = "age", IsRequired = true)]
-		public int Age { get; set; }
-		[DataMember]
-		public string Name { get; set; }
-		[DataMember]
-		public string EmptyMember { get; set; }
-		[DataMember]
-		public Uri Location { get; set; }
+		internal TestDirectedMessage(MessageTransport transport) : base(transport) {
+		}
 
 		#region IDirectedProtocolMessage Members
 
@@ -34,16 +27,8 @@ namespace DotNetOAuth.Test.Mocks {
 
 		#region IProtocolMessage Properties
 
-		Version IProtocolMessage.ProtocolVersion {
-			get { return new Version(1, 0); }
-		}
-
 		MessageProtection IProtocolMessage.RequiredProtection {
 			get { return this.RequiredProtection; }
-		}
-
-		MessageTransport IProtocolMessage.Transport {
-			get { return this.transport; }
 		}
 
 		#endregion
@@ -51,15 +36,5 @@ namespace DotNetOAuth.Test.Mocks {
 		protected virtual MessageProtection RequiredProtection {
 			get { return MessageProtection.None; }
 		}
-
-		#region IProtocolMessage Methods
-
-		void IProtocolMessage.EnsureValidMessage() {
-			if (this.EmptyMember != null || this.Age < 0) {
-				throw new ProtocolException();
-			}
-		}
-
-		#endregion
 	}
 }

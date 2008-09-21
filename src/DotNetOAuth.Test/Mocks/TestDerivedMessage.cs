@@ -6,6 +6,7 @@
 
 namespace DotNetOAuth.Test.Mocks {
 	using System.Runtime.Serialization;
+	using DotNetOAuth.Messaging.Reflection;
 
 	[DataContract(Namespace = Protocol.DataContractNamespaceV10)]
 	internal class TestDerivedMessage : TestBaseMessage {
@@ -17,7 +18,7 @@ namespace DotNetOAuth.Test.Mocks {
 		/// due to alphabetical ordering rules, but after all the elements in the
 		/// base class due to inheritance rules.
 		/// </remarks>
-		[DataMember]
+		[MessagePart]
 		public string TheFirstDerivedElement { get; set; }
 
 		/// <summary>
@@ -27,7 +28,7 @@ namespace DotNetOAuth.Test.Mocks {
 		/// This element should appear BEFORE <see cref="TheFirstDerivedElement"/>,
 		/// but after all the elements in the base class.
 		/// </remarks>
-		[DataMember]
+		[MessagePart]
 		public string SecondDerivedElement { get; set; }
 	}
 }

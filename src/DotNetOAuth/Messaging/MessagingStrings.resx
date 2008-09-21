@@ -147,6 +147,12 @@
   <data name="InsufficentMessageProtection" xml:space="preserve">
     <value>The message required protections {0} but the channel could only apply {1}.</value>
   </data>
+  <data name="InvalidMessageParts" xml:space="preserve">
+    <value>Some part(s) of the message have invalid values: {0}</value>
+  </data>
+  <data name="KeyAlreadyExists" xml:space="preserve">
+    <value>An item with the same key has already been added.</value>
+  </data>
   <data name="QueuedMessageResponseAlreadyExists" xml:space="preserve">
     <value>A message response is already queued for sending in the response stream.</value>
   </data>
@@ -155,6 +161,9 @@
   </data>
   <data name="ReplayProtectionNotSupported" xml:space="preserve">
     <value>This channel does not support replay protection.</value>
+  </data>
+  <data name="RequiredParametersMissing" xml:space="preserve">
+    <value>The following required parameters were missing from the {0} message: {1}</value>
   </data>
   <data name="RequiredProtectionMissing" xml:space="preserve">
     <value>The binding element offering the {0} protection requires other protection that is not provided.</value>
