@@ -11,7 +11,6 @@ namespace DotNetOAuth.Test.Mocks {
 	using DotNetOAuth.Messaging;
 	using DotNetOAuth.Messaging.Reflection;
 
-	[DataContract(Namespace = Protocol.DataContractNamespaceV10)]
 	internal class TestMessage : IProtocolMessage {
 		private MessageTransport transport;
 		private Dictionary<string, string> extraData = new Dictionary<string, string>();

@@ -4,14 +4,13 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOAuth.Messaging.Reflection {
+namespace DotNetOAuth.Messaging {
 	using System;
 	using System.Net.Security;
 	using System.Reflection;
 
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = true, AllowMultiple = false)]
 	internal sealed class MessagePartAttribute : Attribute {
-		private bool initialized;
 		private string name;
 
 		internal MessagePartAttribute() {

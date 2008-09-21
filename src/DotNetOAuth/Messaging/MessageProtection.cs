@@ -37,5 +37,10 @@ namespace DotNetOAuth.Messaging {
 		/// A binding element that prepares messages for replay detection and detects replayed messages on the receiving side.
 		/// </summary>
 		ReplayProtection = 0x4,
+
+		/// <summary>
+		/// All forms of protection together.
+		/// </summary>
+		All = TamperProtection | Expiration | ReplayProtection,
 	}
 }

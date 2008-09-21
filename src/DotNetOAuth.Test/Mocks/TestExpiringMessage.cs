@@ -12,7 +12,6 @@ namespace DotNetOAuth.Test.Mocks {
 	using DotNetOAuth.Messaging.Bindings;
 	using DotNetOAuth.Messaging.Reflection;
 
-	[DataContract(Namespace = Protocol.DataContractNamespaceV10)]
 	internal class TestExpiringMessage : TestSignedDirectedMessage, IExpiringProtocolMessage {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private DateTime utcCreationDate;

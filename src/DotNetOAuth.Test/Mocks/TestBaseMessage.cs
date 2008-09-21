@@ -15,7 +15,6 @@ namespace DotNetOAuth.Test.Mocks {
 		string ExplicitProperty { get; set; }
 	}
 
-	[DataContract(Namespace = Protocol.DataContractNamespaceV10)]
 	internal class TestBaseMessage : IProtocolMessage, IBaseMessageExplicitMembers {
 		private Dictionary<string, string> extraData = new Dictionary<string, string>();
 

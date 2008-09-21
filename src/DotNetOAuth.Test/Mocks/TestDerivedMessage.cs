@@ -6,9 +6,8 @@
 
 namespace DotNetOAuth.Test.Mocks {
 	using System.Runtime.Serialization;
-	using DotNetOAuth.Messaging.Reflection;
+	using DotNetOAuth.Messaging;
 
-	[DataContract(Namespace = Protocol.DataContractNamespaceV10)]
 	internal class TestDerivedMessage : TestBaseMessage {
 		/// <summary>
 		/// Gets or sets the first value.

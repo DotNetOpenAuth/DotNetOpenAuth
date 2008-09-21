@@ -68,7 +68,7 @@
   <ItemGroup>
     <Compile Include="Consumer.cs" />
     <Compile Include="IWebRequestHandler.cs" />
-    <Compile Include="Messaging\Reflection\MessagePartAttribute.cs" />
+    <Compile Include="Messaging\MessagePartAttribute.cs" />
     <Compile Include="Messaging\MessageProtection.cs" />
     <Compile Include="Messaging\IChannelBindingElement.cs" />
     <Compile Include="Messaging\Bindings\ReplayedMessageException.cs" />

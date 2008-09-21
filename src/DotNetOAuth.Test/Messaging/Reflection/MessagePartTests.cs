@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using DotNetOAuth.Messaging.Reflection;
 using System.Reflection;
 using DotNetOAuth.Test.Mocks;
+using DotNetOAuth.Messaging;
 
 namespace DotNetOAuth.Test.Messaging.Reflection {
 	[TestClass]
@@ -34,7 +35,7 @@ namespace DotNetOAuth.Test.Messaging.Reflection {
 		}
 		class MessageWithNullableRequiredStruct : TestMessage {
 			[MessagePart(IsRequired = true)]
-			internal int? optionalInt;
+			internal int? optionalInt = null;
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentException))]
