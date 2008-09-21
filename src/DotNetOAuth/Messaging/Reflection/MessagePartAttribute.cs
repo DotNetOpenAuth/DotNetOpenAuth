@@ -26,7 +26,7 @@ namespace DotNetOAuth.Messaging.Reflection {
 			set { this.name = string.IsNullOrEmpty(value) ? null : value; }
 		}
 
-		public ProtectionLevel Signed { get; set; }
+		public ProtectionLevel RequiredProtection { get; set; }
 
 		public bool IsRequired { get; set; }
 	}

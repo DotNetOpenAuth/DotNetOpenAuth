@@ -50,7 +50,7 @@ namespace DotNetOAuth.Messaging.Reflection {
 			}
 
 			this.Name = attribute.Name ?? member.Name;
-			this.Signed = attribute.Signed;
+			this.RequiredProtection = attribute.RequiredProtection;
 			this.IsRequired = attribute.IsRequired;
 			this.memberDeclaredType = (this.field != null) ? this.field.FieldType : this.property.PropertyType;
 			this.defaultMemberValue = deriveDefaultValue(this.memberDeclaredType);
@@ -67,7 +67,7 @@ namespace DotNetOAuth.Messaging.Reflection {
 
 		internal string Name { get; set; }
 
-		internal ProtectionLevel Signed { get; set; }
+		internal ProtectionLevel RequiredProtection { get; set; }
 
 		internal bool IsRequired { get; set; }
 

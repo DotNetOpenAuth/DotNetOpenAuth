@@ -18,7 +18,8 @@ namespace DotNetOAuth {
 		#region IWebRequestHandler Members
 
 		/// <summary>
-		/// Prepares an <see cref="HttpWebRequest"/> that contains an POST entity for sending the entity.
+		/// Prepares a POST <see cref="HttpWebRequest"/> and returns the request stream 
+		/// for writing out the POST entity data.
 		/// </summary>
 		/// <param name="request">The <see cref="HttpWebRequest"/> that should contain the entity.</param>
 		/// <returns>The stream the caller should write out the entity data to.</returns>
