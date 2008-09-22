@@ -14,7 +14,7 @@ namespace DotNetOAuth.Messages {
 	/// <summary>
 	/// A base class for all OAuth messages.
 	/// </summary>
-	internal abstract class MessageBase : IDirectedProtocolMessage, ITamperResistantOAuthMessage, IExpiringProtocolMessage, IReplayProtectedProtocolMessage {
+	internal abstract class MessageBase : IDirectedProtocolMessage {
 		/// <summary>
 		/// A store for extra name/value data pairs that are attached to this message.
 		/// </summary>
@@ -103,60 +103,6 @@ namespace DotNetOAuth.Messages {
 		}
 
 		#endregion
-
-		#region ITamperResistantOAuthMessage Members
-
-		/// <summary>
-		/// Gets or sets the message signature.
-		/// </summary>
-		[MessagePart("oauth_signature")]
-		string ITamperResistantProtocolMessage.Signature { get; set; }
-
-		/// <summary>
-		/// Gets or sets the signature method used to sign the request.
-		/// </summary>
-		[MessagePart("oauth_signature_method")]
-		string ITamperResistantOAuthMessage.SignatureMethod { get; set; }
-
-		#endregion
-
-		#region IExpiringProtocolMessage Members
-
-		/// <summary>
-		/// Gets or sets the OAuth timestamp of the message.
-		/// </summary>
-		[MessagePart("oauth_timestamp")]
-		DateTime IExpiringProtocolMessage.UtcCreationDate { get; set; }
-
-		#endregion
-
-		#region IReplayProtectedProtocolMessage Members
-
-		/// <summary>
-		/// Gets or sets the message nonce used for replay detection.
-		/// </summary>
-		[MessagePart("oauth_nonce")]
-		string IReplayProtectedProtocolMessage.Nonce { get; set; }
-
-		#endregion
-
-		/// <summary>
-		/// Gets or sets the version of the protocol this message was created with.
-		/// </summary>
-		/// <remarks>
-		/// This property is useful for handling the oauth_version message part.
-		/// </remarks>
-		protected string VersionString {
-			get {
-				return ((IProtocolMessage)this).ProtocolVersion.ToString();
-			}
-
-			set {
-				if (value != this.VersionString) {
-					throw new ArgumentOutOfRangeException("value");
-				}
-			}
-		}
 
 		#region IProtocolMessage Methods
 

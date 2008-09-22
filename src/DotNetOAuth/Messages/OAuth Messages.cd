@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ClassDiagram MajorVersion="1" MinorVersion="1">
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access">
   <Class Name="DotNetOAuth.Messages.AccessProtectedResourcesMessage">
-    <Position X="5" Y="5" Width="3.5" />
+    <Position X="0.5" Y="7.5" Width="3.5" />
     <TypeIdentifier>
-      <HashCode>IAAAAAAAAAAAAAAAAAAAAgAAEAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAgAAEAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Messages\AccessProtectedResourcesMessage.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -44,10 +44,10 @@
     </Compartments>
     <InheritanceLine Type="DotNetOAuth.Messages.MessageBase" FixedFromPoint="true">
       <Path>
-        <Point X="8.5" Y="4.5" />
-        <Point X="8.74" Y="4.5" />
-        <Point X="8.74" Y="5.342" />
-        <Point X="9" Y="5.342" />
+        <Point X="8.5" Y="4.098" />
+        <Point X="8.74" Y="4.098" />
+        <Point X="8.74" Y="5.438" />
+        <Point X="9" Y="5.438" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
@@ -61,7 +61,7 @@
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAKFAAAYIAAAAAAAICAAAAAAAQEIAAAQgCAACAAAAA=</HashCode>
+      <HashCode>AAAKAAAAYAAAAAAAAIAAAAAAAAQEIAAAAgCAACAAAAA=</HashCode>
       <FileName>Messages\MessageBase.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -71,28 +71,57 @@
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
-    <InheritanceLine Type="DotNetOAuth.Messages.MessageBase" FixedFromPoint="true">
+    <InheritanceLine Type="DotNetOAuth.Messages.SignedMessageBase" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="5" Y="4.312" />
-        <Point X="4.76" Y="4.312" />
-        <Point X="4.76" Y="5.688" />
-        <Point X="4" Y="5.688" />
+        <Point X="4.75" Y="7.625" />
+        <Point X="4.5" Y="7.625" />
+        <Point X="4.5" Y="7.153" />
+        <Point X="3.125" Y="7.153" />
+        <Point X="3.125" Y="6.627" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>IAAAAAAAAAAAAAAAAAAAAgAAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAgAAAIAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Messages\RequestAccessTokenMessage.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DotNetOAuth.Messages.RequestTokenMessage">
     <Position X="1.5" Y="0.75" Width="2" />
     <Compartments>
+      <Compartment Name="Internal" Collapsed="true" />
+      <Compartment Name="Private" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
+    <InheritanceLine Type="DotNetOAuth.Messages.SignedMessageBase" FixedFromPoint="true">
+      <Path>
+        <Point X="4.75" Y="6.875" />
+        <Point X="4.375" Y="6.875" />
+        <Point X="4.375" Y="4.877" />
+        <Point X="4.75" Y="4.877" />
+        <Point X="4.75" Y="1.496" />
+        <Point X="3.5" Y="1.496" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>IAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Messages\RequestTokenMessage.cs</FileName>
     </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOAuth.Messages.SignedMessageBase">
+    <Position X="4.75" Y="6.75" Width="3.5" />
+    <InheritanceLine Type="DotNetOAuth.Messages.MessageBase" ManuallyRouted="true" FixedToPoint="true">
+      <Path>
+        <Point X="6.75" Y="4.478" />
+        <Point X="6.75" Y="5.104" />
+        <Point X="7.5" Y="5.104" />
+        <Point X="7.5" Y="6.75" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>IAAAFAAAAIAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Messages\SignedMessageBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>

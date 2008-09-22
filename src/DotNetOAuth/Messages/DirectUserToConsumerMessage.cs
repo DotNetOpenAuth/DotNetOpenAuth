@@ -6,7 +6,6 @@
 
 namespace DotNetOAuth.Messages {
 	using System;
-	using System.Runtime.Serialization;
 	using DotNetOAuth.Messaging;
 
 	/// <summary>

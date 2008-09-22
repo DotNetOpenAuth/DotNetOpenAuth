@@ -6,7 +6,7 @@
 
 namespace DotNetOAuth.Messaging.Bindings {
 	using System;
-using System.Globalization;
+	using System.Globalization;
 
 	/// <summary>
 	/// An exception thrown when a message is received that exceeds the maximum message age limit.

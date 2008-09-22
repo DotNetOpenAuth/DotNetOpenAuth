@@ -9,10 +9,6 @@ namespace DotNetOAuth.Messaging {
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Globalization;
-	using System.Linq;
-	using System.Runtime.Serialization;
-	using System.Xml;
-	using System.Xml.Linq;
 	using DotNetOAuth.Messaging.Reflection;
 
 	/// <summary>
