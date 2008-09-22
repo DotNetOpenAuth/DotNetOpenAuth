@@ -65,6 +65,11 @@ using DotNetOAuth.Messaging.Bindings;
 		internal MessageScheme PreferredTransmissionScheme { get; set; }
 
 		/// <summary>
+		/// Gets or sets the Consumer web application path.
+		/// </summary>
+		internal Uri Realm { get; set; }
+
+		/// <summary>
 		/// Searches an incoming HTTP request for data that could be used to assemble
 		/// a protocol request message.
 		/// </summary>
@@ -140,7 +145,7 @@ using DotNetOAuth.Messaging.Bindings;
 			MessageScheme transmissionMethod = this.PreferredTransmissionScheme;
 			switch (transmissionMethod) {
 				case MessageScheme.AuthorizationHeaderRequest:
-					httpRequest = InitializeRequestAsAuthHeader(request);
+					httpRequest = this.InitializeRequestAsAuthHeader(request);
 					break;
 				case MessageScheme.PostRequest:
 					httpRequest = this.InitializeRequestAsPost(request);
@@ -190,6 +195,25 @@ using DotNetOAuth.Messaging.Bindings;
 		}
 
 		/// <summary>
+		/// Prepares to send a request to the Service Provider as the query string in a GET request.
+		/// </summary>
+		/// <param name="requestMessage">The message to be transmitted to the ServiceProvider.</param>
+		/// <returns>The web request ready to send.</returns>
+		/// <remarks>
+		/// This method implements OAuth 1.0 section 5.2, item #3.
+		/// </remarks>
+		private static HttpWebRequest InitializeRequestAsGet(IDirectedProtocolMessage requestMessage) {
+			var serializer = MessageSerializer.Get(requestMessage.GetType());
+			var fields = serializer.Serialize(requestMessage);
+
+			UriBuilder builder = new UriBuilder(requestMessage.Recipient);
+			MessagingUtilities.AppendQueryArgs(builder, fields);
+			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(builder.Uri);
+
+			return httpRequest;
+		}
+
+		/// <summary>
 		/// Prepares to send a request to the Service Provider via the Authorization header.
 		/// </summary>
 		/// <param name="requestMessage">The message to be transmitted to the ServiceProvider.</param>
@@ -197,10 +221,13 @@ using DotNetOAuth.Messaging.Bindings;
 		/// <remarks>
 		/// This method implements OAuth 1.0 section 5.2, item #1 (described in section 5.4).
 		/// </remarks>
-		private static HttpWebRequest InitializeRequestAsAuthHeader(IDirectedProtocolMessage requestMessage) {
+		private HttpWebRequest InitializeRequestAsAuthHeader(IDirectedProtocolMessage requestMessage) {
 			var serializer = MessageSerializer.Get(requestMessage.GetType());
-			var fields = serializer.Serialize(requestMessage);
+			var fields = new Dictionary<string, string>(serializer.Serialize(requestMessage)); // copy so as to not modify original
 			var protocol = Protocol.Lookup(requestMessage.ProtocolVersion);
+			if (this.Realm != null) {
+				fields.Add("realm", this.Realm.AbsoluteUri);
+			}
 
 			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(requestMessage.Recipient);
 
@@ -218,25 +245,6 @@ using DotNetOAuth.Messaging.Bindings;
 			authorization.Length--; // remove trailing comma
 
 			httpRequest.Headers.Add(HttpRequestHeader.Authorization, authorization.ToString());
-
-			return httpRequest;
-		}
-
-		/// <summary>
-		/// Prepares to send a request to the Service Provider as the query string in a GET request.
-		/// </summary>
-		/// <param name="requestMessage">The message to be transmitted to the ServiceProvider.</param>
-		/// <returns>The web request ready to send.</returns>
-		/// <remarks>
-		/// This method implements OAuth 1.0 section 5.2, item #3.
-		/// </remarks>
-		private static HttpWebRequest InitializeRequestAsGet(IDirectedProtocolMessage requestMessage) {
-			var serializer = MessageSerializer.Get(requestMessage.GetType());
-			var fields = serializer.Serialize(requestMessage);
-
-			UriBuilder builder = new UriBuilder(requestMessage.Recipient);
-			MessagingUtilities.AppendQueryArgs(builder, fields);
-			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(builder.Uri);
 
 			return httpRequest;
 		}
