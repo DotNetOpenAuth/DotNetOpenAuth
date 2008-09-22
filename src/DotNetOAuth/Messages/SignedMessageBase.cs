@@ -15,6 +15,17 @@ namespace DotNetOAuth.Messages {
 	/// </summary>
 	internal class SignedMessageBase : MessageBase, ITamperResistantOAuthMessage, IExpiringProtocolMessage, IReplayProtectedProtocolMessage {
 		/// <summary>
+		/// The reference date and time for calculating time stamps.
+		/// </summary>
+		private static readonly DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+		/// <summary>
+		/// The number of seconds since 1/1/1970, consistent with the OAuth timestamp requirement.
+		/// </summary>
+		[MessagePart("oauth_timestamp")]
+		private long timestamp;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="SignedMessageBase"/> class.
 		/// </summary>
 		/// <param name="transport">A value indicating whether this message requires a direct or indirect transport.</param>
@@ -52,8 +63,10 @@ namespace DotNetOAuth.Messages {
 		/// <summary>
 		/// Gets or sets the OAuth timestamp of the message.
 		/// </summary>
-		[MessagePart("oauth_timestamp")]
-		DateTime IExpiringProtocolMessage.UtcCreationDate { get; set; }
+		DateTime IExpiringProtocolMessage.UtcCreationDate {
+			get { return epoch + TimeSpan.FromSeconds(this.timestamp); }
+			set { this.timestamp = (long)(value - epoch).TotalSeconds; }
+		}
 
 		#endregion
 
