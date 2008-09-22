@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOAuth.Test {
+namespace DotNetOAuth.Test.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
@@ -13,7 +13,9 @@ namespace DotNetOAuth.Test {
 	using System.Text;
 	using System.Web;
 	using System.Xml;
+	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.Messaging;
+	using DotNetOAuth.Messaging.Bindings;
 	using DotNetOAuth.Test.Mocks;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -21,23 +23,37 @@ namespace DotNetOAuth.Test {
 	public class OAuthChannelTests : TestBase {
 		private OAuthChannel channel;
 		private TestWebRequestHandler webRequestHandler;
+		private SigningBindingElementBase signingElement;
+		private INonceStore nonceStore;
 
 		[TestInitialize]
 		public override void SetUp() {
 			base.SetUp();
 
 			this.webRequestHandler = new TestWebRequestHandler();
-			this.channel = new OAuthChannel(new TestMessageTypeProvider(), this.webRequestHandler);
+			this.signingElement = new RsaSha1SigningBindingElement();
+			this.nonceStore = new NonceMemoryStore();
+			this.channel = new OAuthChannel(this.signingElement, this.nonceStore, new TestMessageTypeProvider(), this.webRequestHandler);
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullHandler() {
-			new OAuthChannel(new TestMessageTypeProvider(), null);
+			new OAuthChannel(this.signingElement, this.nonceStore, new TestMessageTypeProvider(), null);
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		public void CtorNullSigner() {
+			new OAuthChannel(null, this.nonceStore, new TestMessageTypeProvider(), this.webRequestHandler);
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		public void CtorNullStore() {
+			new OAuthChannel(this.signingElement, null, new TestMessageTypeProvider(), this.webRequestHandler);
 		}
 
 		[TestMethod]
-		public void CtorDefault() {
-			new OAuthChannel();
+		public void CtorSimple() {
+			new OAuthChannel(this.signingElement, this.nonceStore);
 		}
 
 		[TestMethod]

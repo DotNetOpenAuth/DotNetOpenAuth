@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOAuth {
+namespace DotNetOAuth.ChannelElements {
 	using System;
 	using System.IO;
 	using System.Net;

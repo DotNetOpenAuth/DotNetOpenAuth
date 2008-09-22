@@ -9,6 +9,7 @@ namespace DotNetOAuth.Test.Mocks {
 	using System.IO;
 	using System.Net;
 	using System.Text;
+	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.Messaging;
 
 	internal class TestWebRequestHandler : IWebRequestHandler {

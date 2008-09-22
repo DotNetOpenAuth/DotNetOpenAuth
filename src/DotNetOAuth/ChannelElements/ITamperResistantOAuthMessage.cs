@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOAuth.Messages {
+namespace DotNetOAuth.ChannelElements {
 	using DotNetOAuth.Messaging.Bindings;
 
 	/// <summary>

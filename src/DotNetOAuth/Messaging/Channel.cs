@@ -422,6 +422,13 @@ namespace DotNetOAuth.Messaging {
 		/// <returns>The properly ordered list of elements.</returns>
 		/// <exception cref="ProtocolException">Thrown when the binding elements are incomplete or inconsistent with each other.</exception>
 		private static IEnumerable<IChannelBindingElement> ValidateAndPrepareBindingElements(IEnumerable<IChannelBindingElement> elements) {
+			if (elements == null) {
+				return new IChannelBindingElement[0];
+			}
+			if (elements.Contains(null)) {
+				throw new ArgumentException(MessagingStrings.SequenceContainsNullElement, "elements");
+			}
+
 			// Filter the elements between the mere transforming ones and the protection ones.
 			var transformationElements = new List<IChannelBindingElement>(
 				elements.Where(element => element.Protection == MessageProtection.None));

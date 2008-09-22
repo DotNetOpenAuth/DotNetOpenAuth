@@ -15,7 +15,7 @@ namespace DotNetOAuth.Messaging.Bindings {
 	/// All replay-protected messages must also be set to expire so the nonces do not have
 	/// to be stored indefinitely.
 	/// </remarks>
-	internal interface IReplayProtectedProtocolMessage : IProtocolMessage {
+	internal interface IReplayProtectedProtocolMessage : IExpiringProtocolMessage {
 		/// <summary>
 		/// Gets or sets the nonce that will protect the message from replay attacks.
 		/// </summary>

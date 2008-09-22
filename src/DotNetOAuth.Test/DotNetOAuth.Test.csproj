@@ -81,7 +81,7 @@
     <Compile Include="Mocks\TestSignedDirectedMessage.cs" />
     <Compile Include="Mocks\MockSigningBindingElement.cs" />
     <Compile Include="Mocks\TestWebRequestHandler.cs" />
-    <Compile Include="OAuthChannelTests.cs" />
+    <Compile Include="ChannelElements\OAuthChannelTests.cs" />
     <Compile Include="Mocks\TestChannel.cs" />
     <Compile Include="Mocks\TestMessage.cs" />
     <Compile Include="Mocks\TestMessageTypeProvider.cs" />

@@ -7,8 +7,7 @@
 namespace DotNetOAuth.Messages {
 	using System;
 	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
+	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.Messaging;
 	using DotNetOAuth.Messaging.Bindings;
 

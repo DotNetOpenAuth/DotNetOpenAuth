@@ -160,6 +160,15 @@ namespace DotNetOAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The incoming message had an invalid or missing nonce..
+        /// </summary>
+        internal static string InvalidNonceReceived {
+            get {
+                return ResourceManager.GetString("InvalidNonceReceived", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to An item with the same key has already been added..
         /// </summary>
         internal static string KeyAlreadyExists {
@@ -210,6 +219,15 @@ namespace DotNetOAuth.Messaging {
         internal static string RequiredProtectionMissing {
             get {
                 return ResourceManager.GetString("RequiredProtectionMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The list contains a null element..
+        /// </summary>
+        internal static string SequenceContainsNullElement {
+            get {
+                return ResourceManager.GetString("SequenceContainsNullElement", resourceCulture);
             }
         }
         

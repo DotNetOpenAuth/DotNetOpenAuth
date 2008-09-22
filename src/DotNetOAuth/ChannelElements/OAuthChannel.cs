@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOAuth {
+namespace DotNetOAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.IO;
@@ -12,6 +12,7 @@ namespace DotNetOAuth {
 	using System.Text;
 	using System.Web;
 	using DotNetOAuth.Messaging;
+using DotNetOAuth.Messaging.Bindings;
 
 	/// <summary>
 	/// An OAuth-specific implementation of the <see cref="Channel"/> class.
@@ -26,13 +27,17 @@ namespace DotNetOAuth {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuthChannel"/> class.
 		/// </summary>
-		internal OAuthChannel()
-			: this(new OAuthMessageTypeProvider(), new StandardWebRequestHandler()) {
+		/// <param name="signingBindingElement">The binding element to use for signing.</param>
+		/// <param name="store">The web application store to use for nonces.</param>
+		internal OAuthChannel(SigningBindingElementBase signingBindingElement, INonceStore store)
+			: this(signingBindingElement, store, new OAuthMessageTypeProvider(), new StandardWebRequestHandler()) {
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuthChannel"/> class.
 		/// </summary>
+		/// <param name="signingBindingElement">The binding element to use for signing.</param>
+		/// <param name="store">The web application store to use for nonces.</param>
 		/// <param name="messageTypeProvider">
 		/// An injected message type provider instance.
 		/// Except for mock testing, this should always be <see cref="OAuthMessageTypeProvider"/>.
@@ -44,8 +49,8 @@ namespace DotNetOAuth {
 		/// <remarks>
 		/// This overload for testing purposes only.
 		/// </remarks>
-		internal OAuthChannel(IMessageTypeProvider messageTypeProvider, IWebRequestHandler webRequestHandler)
-			: base(messageTypeProvider) {
+		internal OAuthChannel(SigningBindingElementBase signingBindingElement, INonceStore store, IMessageTypeProvider messageTypeProvider, IWebRequestHandler webRequestHandler)
+			: base(messageTypeProvider, signingBindingElement, new StandardExpirationBindingElement(), new StandardReplayProtectionBindingElement(store)) {
 			if (webRequestHandler == null) {
 				throw new ArgumentNullException("webRequestHandler");
 			}

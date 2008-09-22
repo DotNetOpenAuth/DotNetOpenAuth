@@ -150,6 +150,9 @@
   <data name="InvalidMessageParts" xml:space="preserve">
     <value>Some part(s) of the message have invalid values: {0}</value>
   </data>
+  <data name="InvalidNonceReceived" xml:space="preserve">
+    <value>The incoming message had an invalid or missing nonce.</value>
+  </data>
   <data name="KeyAlreadyExists" xml:space="preserve">
     <value>An item with the same key has already been added.</value>
   </data>
@@ -167,6 +170,9 @@
   </data>
   <data name="RequiredProtectionMissing" xml:space="preserve">
     <value>The binding element offering the {0} protection requires other protection that is not provided.</value>
+  </data>
+  <data name="SequenceContainsNullElement" xml:space="preserve">
+    <value>The list contains a null element.</value>
   </data>
   <data name="SignatureInvalid" xml:space="preserve">
     <value>Message signature was incorrect.</value>
