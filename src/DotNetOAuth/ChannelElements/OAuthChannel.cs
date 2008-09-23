@@ -12,7 +12,8 @@ namespace DotNetOAuth.ChannelElements {
 	using System.Text;
 	using System.Web;
 	using DotNetOAuth.Messaging;
-using DotNetOAuth.Messaging.Bindings;
+	using DotNetOAuth.Messaging.Bindings;
+	using DotNetOAuth.Messaging.Reflection;
 
 	/// <summary>
 	/// An OAuth-specific implementation of the <see cref="Channel"/> class.
@@ -68,6 +69,23 @@ using DotNetOAuth.Messaging.Bindings;
 		/// Gets or sets the Consumer web application path.
 		/// </summary>
 		internal Uri Realm { get; set; }
+
+		/// <summary>
+		/// Encodes the names and values that are part of the message per OAuth 1.0 section 5.1.
+		/// </summary>
+		/// <param name="message">The message with data to encode.</param>
+		/// <returns>A dictionary of name-value pairs with their strings encoded.</returns>
+		internal static IDictionary<string, string> GetEncodedParameters(IProtocolMessage message) {
+			var encodedDictionary = new Dictionary<string, string>();
+			MessageDictionary messageDictionary = new MessageDictionary(message);
+			foreach (var pair in messageDictionary) {
+				var key = Uri.EscapeDataString(pair.Key);
+				var value = Uri.EscapeDataString(pair.Value);
+				encodedDictionary.Add(key, value);
+			}
+
+			return encodedDictionary;
+		}
 
 		/// <summary>
 		/// Searches an incoming HTTP request for data that could be used to assemble

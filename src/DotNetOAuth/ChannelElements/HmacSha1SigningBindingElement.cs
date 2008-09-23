@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="RsaSha1SigningBindingElement.cs" company="Andrew Arnott">
+// <copyright file="HmacSha1SigningBindingElement.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -15,12 +15,12 @@ namespace DotNetOAuth.ChannelElements {
 	/// <summary>
 	/// A binding element that signs outgoing messages and verifies the signature on incoming messages.
 	/// </summary>
-	internal class RsaSha1SigningBindingElement : SigningBindingElementBase {
+	internal class HmacSha1SigningBindingElement : SigningBindingElementBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RsaSha1SigningBindingElement"/> class.
+		/// Initializes a new instance of the <see cref="HmacSha1SigningBindingElement"/> class.
 		/// </summary>
-		internal RsaSha1SigningBindingElement()
-			: base("RSA-SHA1") {
+		internal HmacSha1SigningBindingElement()
+			: base("HMAC-SHA1") {
 		}
 
 		/// <summary>

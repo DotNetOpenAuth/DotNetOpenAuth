@@ -13,7 +13,7 @@ namespace DotNetOAuth {
 	/// <summary>
 	/// Utility methods for working with URIs.
 	/// </summary>
-	internal class UriUtil {
+	internal static class UriUtil {
 		/// <summary>
 		/// Tests a URI for the presence of an OAuth payload.
 		/// </summary>
