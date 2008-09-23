@@ -77,14 +77,28 @@ namespace DotNetOAuth.ChannelElements {
 		/// <returns>A dictionary of name-value pairs with their strings encoded.</returns>
 		internal static IDictionary<string, string> GetEncodedParameters(IProtocolMessage message) {
 			var encodedDictionary = new Dictionary<string, string>();
-			MessageDictionary messageDictionary = new MessageDictionary(message);
-			foreach (var pair in messageDictionary) {
-				var key = Uri.EscapeDataString(pair.Key);
-				var value = Uri.EscapeDataString(pair.Value);
-				encodedDictionary.Add(key, value);
+			EncodeParameters(new MessageDictionary(message), encodedDictionary);
+			return encodedDictionary;
+		}
+
+		/// <summary>
+		/// Encodes the names and values in a dictionary per OAuth 1.0 section 5.1.
+		/// </summary>
+		/// <param name="source">The dictionary with names and values to encode.</param>
+		/// <param name="destination">The dictionary to add the encoded pairs to.</param>
+		internal static void EncodeParameters(IDictionary<string, string> source, IDictionary<string, string> destination) {
+			if (source == null) {
+				throw new ArgumentNullException("source");
+			}
+			if (destination == null) {
+				throw new ArgumentNullException("destination");
 			}
 
-			return encodedDictionary;
+			foreach (var pair in source) {
+				var key = Uri.EscapeDataString(pair.Key);
+				var value = Uri.EscapeDataString(pair.Value);
+				destination.Add(key, value);
+			}
 		}
 
 		/// <summary>

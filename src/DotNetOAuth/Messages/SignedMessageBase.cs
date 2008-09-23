@@ -6,6 +6,7 @@
 
 namespace DotNetOAuth.Messages {
 	using System;
+	using System.Collections.Generic;
 	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.Messaging;
 	using DotNetOAuth.Messaging.Bindings;
@@ -45,16 +46,44 @@ namespace DotNetOAuth.Messages {
 		#region ITamperResistantOAuthMessage Members
 
 		/// <summary>
-		/// Gets or sets the message signature.
-		/// </summary>
-		[MessagePart("oauth_signature")]
-		string ITamperResistantProtocolMessage.Signature { get; set; }
-
-		/// <summary>
 		/// Gets or sets the signature method used to sign the request.
 		/// </summary>
 		[MessagePart("oauth_signature_method")]
 		string ITamperResistantOAuthMessage.SignatureMethod { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Token Secret used to sign the message.
+		/// Only applicable to Consumer.
+		/// </summary>
+		string ITamperResistantOAuthMessage.TokenSecret { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Consumer Secret used to sign the message.
+		/// Only applicable to Consumer.
+		/// </summary>
+		string ITamperResistantOAuthMessage.ConsumerSecret { get; set; }
+
+		/// <summary>
+		/// Gets or sets the HTTP method that will be used to transmit the message.
+		/// Only applicable to Consumer.
+		/// </summary>
+		string ITamperResistantOAuthMessage.HttpMethod { get; set; }
+
+		/// <summary>
+		/// Gets or sets the extra, non-OAuth parameters that will be included in the request.
+		/// Only applicable to Consumer.
+		/// </summary>
+		IDictionary<string, string> ITamperResistantOAuthMessage.AdditionalParametersInHttpRequest { get; set; }
+
+		#endregion
+
+		#region ITamperResistantProtocolMessage Members
+
+		/// <summary>
+		/// Gets or sets the message signature.
+		/// </summary>
+		[MessagePart("oauth_signature")]
+		string ITamperResistantProtocolMessage.Signature { get; set; }
 
 		#endregion
 

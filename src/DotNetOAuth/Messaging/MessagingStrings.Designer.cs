@@ -61,6 +61,15 @@ namespace DotNetOAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Argument&apos;s {0}.{1} property is required but is empty or null..
+        /// </summary>
+        internal static string ArgumentPropertyMissing {
+            get {
+                return ResourceManager.GetString("ArgumentPropertyMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to DataContractSerializer could not be initialized on message type {0}.  Is it missing a [DataContract] attribute?.
         /// </summary>
         internal static string DataContractMissingFromMessageType {

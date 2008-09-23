@@ -7,11 +7,10 @@
 namespace DotNetOAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
-	using System.Linq;
+	using System.Globalization;
 	using System.Text;
 	using DotNetOAuth.Messaging;
 	using DotNetOAuth.Messaging.Bindings;
-	using DotNetOAuth.Messaging.Reflection;
 
 	/// <summary>
 	/// A binding element that signs outgoing messages and verifies the signature on incoming messages.
@@ -48,7 +47,7 @@ namespace DotNetOAuth.ChannelElements {
 			var signedMessage = message as ITamperResistantOAuthMessage;
 			if (signedMessage != null) {
 				signedMessage.SignatureMethod = this.signatureMethod;
-				this.Sign(signedMessage);
+				signedMessage.Signature = this.GetSignature(signedMessage);
 				return true;
 			}
 
@@ -69,7 +68,8 @@ namespace DotNetOAuth.ChannelElements {
 					throw new InvalidSignatureException(message);
 				}
 
-				if (!this.IsSignatureValid(signedMessage)) {
+				string signature = this.GetSignature(signedMessage);
+				if (signedMessage.Signature != signature) {
 					Logger.Error("Signature verification failed.");
 					throw new InvalidSignatureException(message);
 				}
@@ -86,34 +86,32 @@ namespace DotNetOAuth.ChannelElements {
 		/// Constructs the OAuth Signature Base String and returns the result.
 		/// </summary>
 		/// <param name="message">The message to derive the signature base string from.</param>
-		/// <param name="httpMethod">
-		/// The HTTP method to be used in sending the request.
-		/// </param>
-		/// <param name="additionalParameters">
-		/// Parameters outside the OAuth message that are appended to the query string 
-		/// or included in a POST entity where the content-type is application/x-www-form-urlencoded.
-		/// </param>
 		/// <returns>The signature base string.</returns>
 		/// <remarks>
 		/// This method implements OAuth 1.0 section 9.1.
 		/// </remarks>
-		protected static string ConstructSignatureBaseString(ITamperResistantOAuthMessage message, string httpMethod, IDictionary<string, string> additionalParameters) {
-			if (String.IsNullOrEmpty(httpMethod)) {
-				throw new ArgumentNullException("httpMethod");
+		protected static string ConstructSignatureBaseString(ITamperResistantOAuthMessage message) {
+			if (String.IsNullOrEmpty(message.HttpMethod)) {
+				throw new ArgumentException(
+					string.Format(
+					CultureInfo.CurrentCulture,
+					MessagingStrings.ArgumentPropertyMissing,
+					typeof(ITamperResistantOAuthMessage).Name,
+					"HttpMethod"),
+					"message");
 			}
 
 			List<string> signatureBaseStringElements = new List<string>(3);
 
-			signatureBaseStringElements.Add(httpMethod.ToUpperInvariant());
+			signatureBaseStringElements.Add(message.HttpMethod.ToUpperInvariant());
 
 			UriBuilder endpoint = new UriBuilder(message.Recipient);
 			endpoint.Query = null;
 			endpoint.Fragment = null;
 			signatureBaseStringElements.Add(endpoint.Uri.AbsoluteUri);
 
-			// TODO: figure out whether parameters passed by other means in the same HttpWebRequest
-			// must also be signed.
 			var encodedDictionary = OAuthChannel.GetEncodedParameters(message);
+			OAuthChannel.EncodeParameters(message.AdditionalParametersInHttpRequest, encodedDictionary);
 			encodedDictionary.Remove("oauth_signature");
 			var sortedKeyValueList = new List<KeyValuePair<string, string>>(encodedDictionary);
 			sortedKeyValueList.Sort(SignatureBaseStringParameterComparer);
@@ -143,18 +141,11 @@ namespace DotNetOAuth.ChannelElements {
 		}
 
 		/// <summary>
-		/// Applies a signature to the message.
+		/// Calculates a signature for a given message.
 		/// </summary>
 		/// <param name="message">The message to sign.</param>
-		protected abstract void Sign(ITamperResistantOAuthMessage message);
-
-		/// <summary>
-		/// Validates the signature on a message.
-		/// Does NOT throw an exception on failing signature verification.
-		/// </summary>
-		/// <param name="message">The message with a signature to verify.</param>
-		/// <returns>True if the signature is valid.  False otherwise.</returns>
-		protected abstract bool IsSignatureValid(ITamperResistantOAuthMessage message);
+		/// <returns>The signature for the message.</returns>
+		protected abstract string GetSignature(ITamperResistantOAuthMessage message);
 
 		/// <summary>
 		/// Sorts parameters according to OAuth signature base string rules.

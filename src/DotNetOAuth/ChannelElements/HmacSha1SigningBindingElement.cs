@@ -6,11 +6,8 @@
 
 namespace DotNetOAuth.ChannelElements {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
+	using System.Security.Cryptography;
 	using System.Text;
-	using DotNetOAuth.Messaging;
-	using DotNetOAuth.Messaging.Bindings;
 
 	/// <summary>
 	/// A binding element that signs outgoing messages and verifies the signature on incoming messages.
@@ -24,21 +21,18 @@ namespace DotNetOAuth.ChannelElements {
 		}
 
 		/// <summary>
-		/// Applies a signature to the message.
+		/// Calculates a signature for a given message.
 		/// </summary>
 		/// <param name="message">The message to sign.</param>
-		protected override void Sign(ITamperResistantOAuthMessage message) {
-			throw new NotImplementedException();
-		}
-
-		/// <summary>
-		/// Validates the signature on a message.
-		/// Does NOT throw an exception on failing signature verification.
-		/// </summary>
-		/// <param name="message">The message with a signature to verify.</param>
-		/// <returns>True if the signature is valid.  False otherwise.</returns>
-		protected override bool IsSignatureValid(ITamperResistantOAuthMessage message) {
-			throw new NotImplementedException();
+		/// <returns>The signature for the message.</returns>
+		/// <remarks>
+		/// This method signs the message per OAuth 1.0 section 9.2.
+		/// </remarks>
+		protected override string GetSignature(ITamperResistantOAuthMessage message) {
+			string key = Uri.EscapeDataString(message.ConsumerSecret) + "&" + Uri.EscapeDataString(message.TokenSecret);
+			HashAlgorithm hasher = new HMACSHA1(Encoding.UTF8.GetBytes(key));
+			byte[] digest = hasher.ComputeHash(Encoding.UTF8.GetBytes(ConstructSignatureBaseString(message)));
+			return Uri.EscapeDataString(Convert.ToBase64String(digest));
 		}
 	}
 }

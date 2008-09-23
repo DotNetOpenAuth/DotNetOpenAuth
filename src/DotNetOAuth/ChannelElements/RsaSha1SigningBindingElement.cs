@@ -24,20 +24,14 @@ namespace DotNetOAuth.ChannelElements {
 		}
 
 		/// <summary>
-		/// Applies a signature to the message.
+		/// Calculates a signature for a given message.
 		/// </summary>
 		/// <param name="message">The message to sign.</param>
-		protected override void Sign(ITamperResistantOAuthMessage message) {
-			throw new NotImplementedException();
-		}
-
-		/// <summary>
-		/// Validates the signature on a message.
-		/// Does NOT throw an exception on failing signature verification.
-		/// </summary>
-		/// <param name="message">The message with a signature to verify.</param>
-		/// <returns>True if the signature is valid.  False otherwise.</returns>
-		protected override bool IsSignatureValid(ITamperResistantOAuthMessage message) {
+		/// <returns>The signature for the message.</returns>
+		/// <remarks>
+		/// This method signs the message per OAuth 1.0 section 9.3.
+		/// </remarks>
+		protected override string GetSignature(ITamperResistantOAuthMessage message) {
 			throw new NotImplementedException();
 		}
 	}
