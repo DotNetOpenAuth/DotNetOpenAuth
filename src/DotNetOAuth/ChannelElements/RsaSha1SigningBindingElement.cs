@@ -6,11 +6,8 @@
 
 namespace DotNetOAuth.ChannelElements {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
+	using System.Security.Cryptography;
 	using System.Text;
-	using DotNetOAuth.Messaging;
-	using DotNetOAuth.Messaging.Bindings;
 
 	/// <summary>
 	/// A binding element that signs outgoing messages and verifies the signature on incoming messages.
@@ -32,7 +29,11 @@ namespace DotNetOAuth.ChannelElements {
 		/// This method signs the message per OAuth 1.0 section 9.3.
 		/// </remarks>
 		protected override string GetSignature(ITamperResistantOAuthMessage message) {
-			throw new NotImplementedException();
+			AsymmetricAlgorithm provider = new RSACryptoServiceProvider();
+			AsymmetricSignatureFormatter hasher = new RSAPKCS1SignatureFormatter(provider);
+			hasher.SetHashAlgorithm("SHA1");
+			byte[] digest = hasher.CreateSignature(Encoding.ASCII.GetBytes(ConstructSignatureBaseString(message)));
+			return Uri.EscapeDataString(Convert.ToBase64String(digest));
 		}
 	}
 }
