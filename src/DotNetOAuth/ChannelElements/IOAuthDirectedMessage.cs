@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="IOAuthProtocolDirectedMessage.cs" company="Andrew Arnott">
+// <copyright file="IOAuthDirectedMessage.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -10,10 +10,10 @@ namespace DotNetOAuth.ChannelElements {
 	/// <summary>
 	/// Additional properties that apply specifically to OAuth messages.
 	/// </summary>
-	internal interface IOAuthProtocolDirectedMessage {
+	internal interface IOAuthDirectedMessage : IDirectedProtocolMessage {
 		/// <summary>
 		/// Gets the preferred method of transport for the message.
 		/// </summary>
-		MessageScheme PreferredScheme { get; }
+		HttpDeliveryMethod HttpMethods { get; }
 	}
 }

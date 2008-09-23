@@ -6,12 +6,10 @@
 
 namespace DotNetOAuth.Test.Mocks {
 	using System;
-	using System.Collections.Generic;
-	using System.Runtime.Serialization;
+	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.Messaging;
-	using DotNetOAuth.Messaging.Reflection;
 
-	internal class TestDirectedMessage : TestMessage, IDirectedProtocolMessage {
+	internal class TestDirectedMessage : TestMessage, IOAuthDirectedMessage {
 		internal TestDirectedMessage() {
 		}
 
@@ -29,6 +27,12 @@ namespace DotNetOAuth.Test.Mocks {
 		MessageProtection IProtocolMessage.RequiredProtection {
 			get { return this.RequiredProtection; }
 		}
+
+		#endregion
+
+		#region IOAuthDirectedMessage Members
+
+		public HttpDeliveryMethod HttpMethods { get; internal set; }
 
 		#endregion
 

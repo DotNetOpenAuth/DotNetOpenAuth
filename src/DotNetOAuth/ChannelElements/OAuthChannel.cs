@@ -7,6 +7,7 @@
 namespace DotNetOAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Globalization;
 	using System.IO;
 	using System.Net;
 	using System.Text;
@@ -57,13 +58,7 @@ namespace DotNetOAuth.ChannelElements {
 			}
 
 			this.webRequestHandler = webRequestHandler;
-			this.PreferredTransmissionScheme = MessageScheme.AuthorizationHeaderRequest;
 		}
-
-		/// <summary>
-		/// Gets or sets the method used in direct requests to transmit the message payload.
-		/// </summary>
-		internal MessageScheme PreferredTransmissionScheme { get; set; }
 
 		/// <summary>
 		/// Gets or sets the Consumer web application path.
@@ -171,22 +166,27 @@ namespace DotNetOAuth.ChannelElements {
 			if (request.Recipient == null) {
 				throw new ArgumentException(MessagingStrings.DirectedMessageMissingRecipient, "request");
 			}
+			IOAuthDirectedMessage oauthRequest = request as IOAuthDirectedMessage;
+			if (oauthRequest == null) {
+				throw new ArgumentException(
+					string.Format(
+						CultureInfo.CurrentCulture,
+						MessagingStrings.UnexpectedType,
+						typeof(IOAuthDirectedMessage),
+						request.GetType()));
+			}
 
 			HttpWebRequest httpRequest;
 
-			MessageScheme transmissionMethod = this.PreferredTransmissionScheme;
-			switch (transmissionMethod) {
-				case MessageScheme.AuthorizationHeaderRequest:
-					httpRequest = this.InitializeRequestAsAuthHeader(request);
-					break;
-				case MessageScheme.PostRequest:
-					httpRequest = this.InitializeRequestAsPost(request);
-					break;
-				case MessageScheme.GetRequest:
-					httpRequest = InitializeRequestAsGet(request);
-					break;
-				default:
-					throw new NotSupportedException();
+			HttpDeliveryMethod transmissionMethod = oauthRequest.HttpMethods;
+			if ((transmissionMethod & HttpDeliveryMethod.AuthorizationHeaderRequest) != 0) {
+				httpRequest = this.InitializeRequestAsAuthHeader(request);
+			} else if ((transmissionMethod & HttpDeliveryMethod.PostRequest) != 0) {
+				httpRequest = this.InitializeRequestAsPost(request);
+			} else if ((transmissionMethod & HttpDeliveryMethod.GetRequest) != 0) {
+				httpRequest = InitializeRequestAsGet(request);
+			} else {
+				throw new NotSupportedException();
 			}
 
 			Response response = this.webRequestHandler.GetResponse(httpRequest);

@@ -6,6 +6,7 @@
 
 namespace DotNetOAuth.Test {
 	using System;
+	using DotNetOAuth.Messaging;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	/// <summary>
@@ -19,24 +20,30 @@ namespace DotNetOAuth.Test {
 		[TestMethod]
 		public void UserAuthorizationUriTest() {
 			ServiceProvider target = new ServiceProvider();
-			Uri expected = new Uri("http://localhost/authorization");
-			Uri actual;
-			target.UserAuthorizationUri = expected;
-			actual = target.UserAuthorizationUri;
+			ServiceProviderEndpoint expected = new ServiceProviderEndpoint("http://localhost/authorization", HttpDeliveryMethod.GetRequest);
+			ServiceProviderEndpoint actual;
+			target.UserAuthorizationEndpoint = expected;
+			actual = target.UserAuthorizationEndpoint;
 			Assert.AreEqual(expected, actual);
+
+			target.UserAuthorizationEndpoint = null;
+			Assert.IsNull(target.UserAuthorizationEndpoint);
 		}
 
 		/// <summary>
 		/// A test for RequestTokenUri
 		/// </summary>
-		[TestMethod()]
+		[TestMethod]
 		public void RequestTokenUriTest() {
 			ServiceProvider target = new ServiceProvider();
-			Uri expected = new Uri("http://localhost/requesttoken");
-			Uri actual;
-			target.RequestTokenUri = expected;
-			actual = target.RequestTokenUri;
+			ServiceProviderEndpoint expected = new ServiceProviderEndpoint("http://localhost/requesttoken", HttpDeliveryMethod.GetRequest);
+			ServiceProviderEndpoint actual;
+			target.RequestTokenEndpoint = expected;
+			actual = target.RequestTokenEndpoint;
 			Assert.AreEqual(expected, actual);
+
+			target.RequestTokenEndpoint = null;
+			Assert.IsNull(target.RequestTokenEndpoint);
 		}
 
 		/// <summary>
@@ -46,20 +53,23 @@ namespace DotNetOAuth.Test {
 		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void RequestTokenUriWithOAuthParametersTest() {
 			ServiceProvider target = new ServiceProvider();
-			target.RequestTokenUri = new Uri("http://localhost/requesttoken?oauth_token=something");
+			target.RequestTokenEndpoint = new ServiceProviderEndpoint("http://localhost/requesttoken?oauth_token=something", HttpDeliveryMethod.GetRequest);
 		}
 
 		/// <summary>
 		/// A test for AccessTokenUri
 		/// </summary>
-		[TestMethod()]
+		[TestMethod]
 		public void AccessTokenUriTest() {
 			ServiceProvider target = new ServiceProvider();
-			Uri expected = new Uri("http://localhost/accesstoken");
-			Uri actual;
-			target.AccessTokenUri = expected;
-			actual = target.AccessTokenUri;
+			ServiceProviderEndpoint expected = new ServiceProviderEndpoint("http://localhost/accesstoken", HttpDeliveryMethod.GetRequest);
+			ServiceProviderEndpoint actual;
+			target.AccessTokenEndpoint = expected;
+			actual = target.AccessTokenEndpoint;
 			Assert.AreEqual(expected, actual);
+
+			target.AccessTokenEndpoint = null;
+			Assert.IsNull(target.AccessTokenEndpoint);
 		}
 	}
 }

@@ -14,7 +14,7 @@ namespace DotNetOAuth.Messages {
 	/// <summary>
 	/// A base class for all OAuth messages.
 	/// </summary>
-	internal abstract class MessageBase : IDirectedProtocolMessage {
+	internal abstract class MessageBase : IOAuthDirectedMessage {
 		/// <summary>
 		/// A store for extra name/value data pairs that are attached to this message.
 		/// </summary>
@@ -33,7 +33,7 @@ namespace DotNetOAuth.Messages {
 		/// <summary>
 		/// The URI to the remote endpoint to send this message to.
 		/// </summary>
-		private Uri recipient;
+		private ServiceProviderEndpoint recipient;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MessageBase"/> class.
@@ -51,7 +51,7 @@ namespace DotNetOAuth.Messages {
 		/// <param name="protectionRequired">The level of protection the message requires.</param>
 		/// <param name="transport">A value indicating whether this message requires a direct or indirect transport.</param>
 		/// <param name="recipient">The URI that a directed message will be delivered to.</param>
-		protected MessageBase(MessageProtection protectionRequired, MessageTransport transport, Uri recipient) {
+		protected MessageBase(MessageProtection protectionRequired, MessageTransport transport, ServiceProviderEndpoint recipient) {
 			if (recipient == null) {
 				throw new ArgumentNullException("recipient");
 			}
@@ -99,7 +99,18 @@ namespace DotNetOAuth.Messages {
 		/// Gets the URI to the Service Provider endpoint to send this message to.
 		/// </summary>
 		Uri IDirectedProtocolMessage.Recipient {
-			get { return this.recipient; }
+			get { return this.recipient.Location; }
+		}
+
+		#endregion
+
+		#region IOAuthDirectedMessage Properties
+
+		/// <summary>
+		/// Gets the preferred method of transport for the message.
+		/// </summary>
+		HttpDeliveryMethod IOAuthDirectedMessage.HttpMethods {
+			get { return this.recipient.AllowedMethods; }
 		}
 
 		#endregion

@@ -52,6 +52,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data" />
     <Reference Include="System.Web" />
     <Reference Include="System.XML" />
   </ItemGroup>
@@ -78,7 +79,7 @@
     <Compile Include="Messaging\Bindings\IExpiringProtocolMessage.cs" />
     <Compile Include="Messages\AccessProtectedResourcesMessage.cs" />
     <Compile Include="Messages\GrantAccessTokenMessage.cs" />
-    <Compile Include="ChannelElements\IOAuthProtocolDirectedMessage.cs" />
+    <Compile Include="ChannelElements\IOAuthDirectedMessage.cs" />
     <Compile Include="Messages\DirectUserToConsumerMessage.cs" />
     <Compile Include="Messages\DirectUserToServiceProviderMessage.cs" />
     <Compile Include="Messages\UnauthorizedRequestTokenMessage.cs" />
@@ -108,7 +109,7 @@
     <Compile Include="Loggers\Log4NetLogger.cs" />
     <Compile Include="Loggers\NoOpLogger.cs" />
     <Compile Include="Loggers\TraceLogger.cs" />
-    <Compile Include="Messaging\MessageScheme.cs" />
+    <Compile Include="Messaging\HttpDeliveryMethod.cs" />
     <Compile Include="Messaging\MessageTransport.cs" />
     <Compile Include="ChannelElements\OAuthMessageTypeProvider.cs" />
     <Compile Include="Messaging\ProtocolException.cs" />
@@ -116,6 +117,7 @@
     <Compile Include="Messages\RequestTokenMessage.cs" />
     <Compile Include="ChannelElements\RsaSha1SigningBindingElement.cs" />
     <Compile Include="ChannelElements\StandardWebRequestHandler.cs" />
+    <Compile Include="ServiceProviderEndpoint.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="Protocol.cs" />
     <Compile Include="ServiceProvider.cs" />

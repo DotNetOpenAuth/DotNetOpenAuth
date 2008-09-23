@@ -16,7 +16,7 @@ namespace DotNetOAuth.Messages {
 		/// Initializes a new instance of the <see cref="DirectUserToConsumerMessage"/> class.
 		/// </summary>
 		/// <param name="consumer">The URI of the Consumer endpoint to send this message to.</param>
-		internal DirectUserToConsumerMessage(Uri consumer)
+		internal DirectUserToConsumerMessage(ServiceProviderEndpoint consumer)
 			: base(MessageProtection.None, MessageTransport.Indirect, consumer) {
 		}
 

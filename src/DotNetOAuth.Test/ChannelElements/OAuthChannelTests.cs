@@ -58,17 +58,17 @@ namespace DotNetOAuth.Test.ChannelElements {
 
 		[TestMethod]
 		public void ReadFromRequestAuthorization() {
-			this.ParameterizedReceiveTest(MessageScheme.AuthorizationHeaderRequest);
+			this.ParameterizedReceiveTest(HttpDeliveryMethod.AuthorizationHeaderRequest);
 		}
 
 		[TestMethod]
 		public void ReadFromRequestForm() {
-			this.ParameterizedReceiveTest(MessageScheme.PostRequest);
+			this.ParameterizedReceiveTest(HttpDeliveryMethod.PostRequest);
 		}
 
 		[TestMethod]
 		public void ReadFromRequestQueryString() {
-			this.ParameterizedReceiveTest(MessageScheme.GetRequest);
+			this.ParameterizedReceiveTest(HttpDeliveryMethod.GetRequest);
 		}
 
 		[TestMethod]
@@ -135,23 +135,23 @@ namespace DotNetOAuth.Test.ChannelElements {
 		public void RequestBadPreferredScheme() {
 			TestDirectedMessage message = new TestDirectedMessage(MessageTransport.Direct);
 			message.Recipient = new Uri("http://localtest");
-			this.channel.PreferredTransmissionScheme = (MessageScheme)100;
+			message.HttpMethods = HttpDeliveryMethod.None;
 			this.channel.Request(message);
 		}
 
 		[TestMethod]
 		public void RequestUsingAuthorizationHeader() {
-			this.ParameterizedRequestTest(MessageScheme.AuthorizationHeaderRequest);
+			this.ParameterizedRequestTest(HttpDeliveryMethod.AuthorizationHeaderRequest);
 		}
 
 		[TestMethod]
 		public void RequestUsingGet() {
-			this.ParameterizedRequestTest(MessageScheme.GetRequest);
+			this.ParameterizedRequestTest(HttpDeliveryMethod.GetRequest);
 		}
 
 		[TestMethod]
 		public void RequestUsingPost() {
-			this.ParameterizedRequestTest(MessageScheme.PostRequest);
+			this.ParameterizedRequestTest(HttpDeliveryMethod.PostRequest);
 		}
 
 		private static string CreateAuthorizationHeader(IDictionary<string, string> fields) {
@@ -174,14 +174,14 @@ namespace DotNetOAuth.Test.ChannelElements {
 			return authorization.ToString();
 		}
 
-		private static HttpRequestInfo CreateHttpRequestInfo(MessageScheme scheme, IDictionary<string, string> fields) {
+		private static HttpRequestInfo CreateHttpRequestInfo(HttpDeliveryMethod scheme, IDictionary<string, string> fields) {
 			string query = MessagingUtilities.CreateQueryString(fields);
 			UriBuilder requestUri = new UriBuilder("http://localhost/path");
 			WebHeaderCollection headers = new WebHeaderCollection();
 			MemoryStream ms = new MemoryStream();
 			string method;
 			switch (scheme) {
-				case MessageScheme.PostRequest:
+				case HttpDeliveryMethod.PostRequest:
 					method = "POST";
 					headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
 					StreamWriter sw = new StreamWriter(ms);
@@ -189,11 +189,11 @@ namespace DotNetOAuth.Test.ChannelElements {
 					sw.Flush();
 					ms.Position = 0;
 					break;
-				case MessageScheme.GetRequest:
+				case HttpDeliveryMethod.GetRequest:
 					method = "GET";
 					requestUri.Query = query;
 					break;
-				case MessageScheme.AuthorizationHeaderRequest:
+				case HttpDeliveryMethod.AuthorizationHeaderRequest:
 					method = "GET";
 					headers.Add(HttpRequestHeader.Authorization, CreateAuthorizationHeader(fields));
 					break;
@@ -220,20 +220,21 @@ namespace DotNetOAuth.Test.ChannelElements {
 			return info;
 		}
 
-		private void ParameterizedRequestTest(MessageScheme scheme) {
+		private void ParameterizedRequestTest(HttpDeliveryMethod scheme) {
 			TestDirectedMessage request = new TestDirectedMessage(MessageTransport.Direct) {
 				Age = 15,
 				Name = "Andrew",
 				Location = new Uri("http://hostb/pathB"),
 				Recipient = new Uri("http://localtest"),
 				Timestamp = DateTime.UtcNow,
+				HttpMethods = scheme,
 			};
 
 			Response rawResponse = null;
 			this.webRequestHandler.Callback = (req) => {
 				Assert.IsNotNull(req);
 				HttpRequestInfo reqInfo = ConvertToRequestInfo(req, this.webRequestHandler.RequestEntityStream);
-				Assert.AreEqual(scheme == MessageScheme.PostRequest ? "POST" : "GET", reqInfo.HttpMethod);
+				Assert.AreEqual(scheme == HttpDeliveryMethod.PostRequest ? "POST" : "GET", reqInfo.HttpMethod);
 				var incomingMessage = this.channel.ReadFromRequest(reqInfo) as TestMessage;
 				Assert.IsNotNull(incomingMessage);
 				Assert.AreEqual(request.Age, incomingMessage.Age);
@@ -253,7 +254,6 @@ namespace DotNetOAuth.Test.ChannelElements {
 				return rawResponse;
 			};
 
-			this.channel.PreferredTransmissionScheme = scheme;
 			IProtocolMessage response = this.channel.Request(request);
 			Assert.IsNotNull(response);
 			Assert.IsInstanceOfType(response, typeof(TestMessage));
@@ -263,7 +263,7 @@ namespace DotNetOAuth.Test.ChannelElements {
 			Assert.AreEqual(request.Location, responseMessage.Location);
 		}
 
-		private void ParameterizedReceiveTest(MessageScheme scheme) {
+		private void ParameterizedReceiveTest(HttpDeliveryMethod scheme) {
 			var fields = new Dictionary<string, string> {
 				{ "age", "15" },
 				{ "Name", "Andrew" },
