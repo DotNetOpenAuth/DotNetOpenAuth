@@ -12,6 +12,7 @@ namespace DotNetOAuth.Test.Scenarios {
 	using System.Threading;
 	using DotNetOAuth.Messaging;
 	using DotNetOAuth.ChannelElements;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	/// <summary>
 	/// Runs a Consumer and Service Provider simultaneously so they can interact in a full simulation.
@@ -59,12 +60,35 @@ namespace DotNetOAuth.Test.Scenarios {
 			consumerChannel.RemoteChannel = serviceProviderChannel;
 			serviceProviderChannel.RemoteChannel = consumerChannel;
 
-			Thread consumerThread = new Thread(() => { consumerAction(consumerChannel); });
-			Thread serviceProviderThread = new Thread(() => { serviceProviderAction(serviceProviderChannel); });
+			Thread consumerThread = null, serviceProviderThread = null;
+			Exception failingException = null;
+
+			Action<Actor, OAuthChannel> safeWrapper = (actor, channel) => {
+				try {
+					actor(channel);
+				} catch (Exception ex) {
+					// We may be the second thread in an ThreadAbortException, so check the "flag"
+					if (failingException == null) {
+						failingException = ex;
+						if (Thread.CurrentThread == consumerThread) {
+							serviceProviderThread.Abort();
+						} else {
+							consumerThread.Abort();
+						}
+					}
+				}
+			};
+
+			consumerThread = new Thread(() => { safeWrapper(consumerAction, consumerChannel); });
+			serviceProviderThread = new Thread(() => { safeWrapper(serviceProviderAction, serviceProviderChannel); });
 			consumerThread.Start();
 			serviceProviderThread.Start();
 			consumerThread.Join();
 			serviceProviderThread.Join();
+
+			if (failingException != null) {
+				throw new AssertFailedException("Coordinator thread threw unhandled exception: " + failingException, failingException);
+			}
 		}
 	}
 }
