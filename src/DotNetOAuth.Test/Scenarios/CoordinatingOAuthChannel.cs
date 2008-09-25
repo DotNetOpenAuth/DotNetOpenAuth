@@ -8,12 +8,14 @@ namespace DotNetOAuth.Test.Scenarios {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Reflection;
 	using System.Text;
 	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.Messaging.Bindings;
 	using DotNetOAuth.Messaging;
-using System.Threading;
+	using System.Threading;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using DotNetOAuth.Messaging.Reflection;
 
 	/// <summary>
 	/// A special channel used in test simulations to pass messages directly between two parties.
@@ -40,7 +42,7 @@ using System.Threading;
 		protected override IProtocolMessage RequestInternal(IDirectedProtocolMessage request) {
 			TestBase.TestLogger.InfoFormat("Sending request: {0}", request);
 			// Drop the outgoing message in the other channel's in-slot and let them know it's there.
-			RemoteChannel.incomingMessage = request;
+			RemoteChannel.incomingMessage = CloneSerializedParts(request);
 			RemoteChannel.incomingMessageSignal.Set();
 			// Now wait for a response...
 			return AwaitIncomingMessage();
@@ -48,7 +50,7 @@ using System.Threading;
 
 		protected override void SendDirectMessageResponse(IProtocolMessage response) {
 			TestBase.TestLogger.InfoFormat("Sending response: {0}", response);
-			RemoteChannel.incomingMessage = response;
+			RemoteChannel.incomingMessage = CloneSerializedParts(response);
 			RemoteChannel.incomingMessageSignal.Set();
 		}
 
@@ -71,6 +73,40 @@ using System.Threading;
 			IProtocolMessage response = this.incomingMessage;
 			this.incomingMessage = null;
 			return response;
+		}
+
+		private T CloneSerializedParts<T>(T message) where T : class, IProtocolMessage {
+			if (message == null) {
+				throw new ArgumentNullException("message");
+			}
+
+			T cloned;
+			var directedMessage = message as IOAuthDirectedMessage;
+			if (directedMessage != null) {
+				// Some OAuth messages take just the recipient, while others take the whole endpoint
+				ConstructorInfo ctor;
+				if ((ctor = message.GetType().GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { typeof(Uri) }, null)) != null) {
+					cloned = (T)ctor.Invoke(new object[] { directedMessage.Recipient });
+				} else if ((ctor = message.GetType().GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { typeof(ServiceProviderEndpoint) }, null)) != null) {
+					ServiceProviderEndpoint endpoint = new ServiceProviderEndpoint(
+						directedMessage.Recipient,
+						directedMessage.HttpMethods);
+					cloned = (T)ctor.Invoke(new object[] { endpoint });
+				} else {
+					throw new InvalidOperationException("Unrecognized constructor signature.");
+				}
+			} else {
+				cloned = (T)Activator.CreateInstance(message.GetType(), true);
+			}
+
+			var messageDictionary = new MessageDictionary(message);
+			var clonedDictionary = new MessageDictionary(cloned);
+
+			foreach (var pair in messageDictionary) {
+				clonedDictionary[pair.Key] = pair.Value;
+			}
+
+			return cloned;
 		}
 	}
 }
