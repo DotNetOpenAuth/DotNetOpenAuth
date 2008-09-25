@@ -13,6 +13,7 @@ namespace DotNetOAuth.Test.Scenarios {
 	using DotNetOAuth.Messaging.Bindings;
 	using DotNetOAuth.Messaging;
 using System.Threading;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	/// <summary>
 	/// A special channel used in test simulations to pass messages directly between two parties.
@@ -37,6 +38,7 @@ using System.Threading;
 		private IProtocolMessage incomingMessage;
 
 		protected override IProtocolMessage RequestInternal(IDirectedProtocolMessage request) {
+			TestBase.TestLogger.InfoFormat("Sending request: {0}", request);
 			// Drop the outgoing message in the other channel's in-slot and let them know it's there.
 			RemoteChannel.incomingMessage = request;
 			RemoteChannel.incomingMessageSignal.Set();
@@ -45,11 +47,13 @@ using System.Threading;
 		}
 
 		protected override void SendDirectMessageResponse(IProtocolMessage response) {
+			TestBase.TestLogger.InfoFormat("Sending response: {0}", response);
 			RemoteChannel.incomingMessage = response;
 			RemoteChannel.incomingMessageSignal.Set();
 		}
 
 		protected override void SendIndirectMessage(IDirectedProtocolMessage message) {
+			TestBase.TestLogger.InfoFormat("Sending indirect message: {0}", message);
 			// In this mock transport, direct and indirect messages are the same.
 			SendDirectMessageResponse(message);
 		}

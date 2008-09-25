@@ -10,6 +10,9 @@ namespace DotNetOAuth.Messages {
 	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.Messaging;
 	using DotNetOAuth.Messaging.Bindings;
+	using DotNetOAuth.Messaging.Reflection;
+	using System.Text;
+	using System.Globalization;
 
 	/// <summary>
 	/// A base class for all OAuth messages.
@@ -115,6 +118,11 @@ namespace DotNetOAuth.Messages {
 
 		#endregion
 
+		/// <summary>
+		/// Gets or sets whether security sensitive strings are emitted from the ToString() method.
+		/// </summary>
+		internal static bool LowSecurityMode { get; set; }
+
 		#region IProtocolMessage Methods
 
 		/// <summary>
@@ -126,6 +134,25 @@ namespace DotNetOAuth.Messages {
 		}
 
 		#endregion
+
+		public override string ToString() {
+			StringBuilder builder = new StringBuilder();
+			builder.AppendFormat(CultureInfo.InvariantCulture, "{0} message", GetType().Name);
+			builder.AppendLine();
+			MessageDictionary dictionary = new MessageDictionary(this);
+			foreach (var pair in dictionary) {
+				string value = pair.Value;
+				if (pair.Key == "oauth_signature" && !LowSecurityMode) {
+					value = "xxxxxxxxxxxxx (not shown)";
+				}
+				builder.Append('\t');
+				builder.Append(pair.Key);
+				builder.Append(": ");
+				builder.AppendLine(value);
+			}
+
+			return builder.ToString();
+		}
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification

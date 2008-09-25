@@ -5,12 +5,8 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOAuth.Test {
-	using System;
-	using System.Collections.Generic;
 	using System.Reflection;
-	using System.Threading;
-	using DotNetOAuth.ChannelElements;
-	using DotNetOAuth.Messaging;
+	using DotNetOAuth.Messages;
 	using log4net;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -21,7 +17,7 @@ namespace DotNetOAuth.Test {
 		/// <summary>
 		/// The logger that tests should use.
 		/// </summary>
-		internal static readonly ILog Logger = LogManager.GetLogger("DotNetOAuth.Test");
+		internal static readonly ILog TestLogger = LogManager.GetLogger("DotNetOAuth.Test");
 
 		/// <summary>
 		/// Gets or sets the test context which provides
@@ -35,6 +31,7 @@ namespace DotNetOAuth.Test {
 		[TestInitialize]
 		public virtual void SetUp() {
 			log4net.Config.XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("DotNetOAuth.Test.Logging.config"));
+			MessageBase.LowSecurityMode = true;
 		}
 
 		/// <summary>
