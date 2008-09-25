@@ -58,6 +58,12 @@ namespace DotNetOAuth.Messages {
 		public string TokenSecret { get; set; }
 
 		/// <summary>
+		/// Gets or sets the Consumer key.
+		/// </summary>
+		[MessagePart(Name = "oauth_consumer_key", IsRequired = true)]
+		public string ConsumerKey { get; set; }
+
+		/// <summary>
 		/// Gets or sets the Consumer Secret used to sign the message.
 		/// Only applicable to Consumer.
 		/// </summary>
@@ -71,7 +77,6 @@ namespace DotNetOAuth.Messages {
 
 		/// <summary>
 		/// Gets or sets the extra, non-OAuth parameters that will be included in the request.
-		/// Only applicable to Consumer.
 		/// </summary>
 		IDictionary<string, string> ITamperResistantOAuthMessage.AdditionalParametersInHttpRequest { get; set; }
 

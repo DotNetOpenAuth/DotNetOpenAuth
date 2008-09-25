@@ -8,45 +8,50 @@ namespace DotNetOAuth.Test {
 	using System;
 	using System.Collections.Specialized;
 	using System.IO;
+	using System.Linq;
 	using System.Net;
 	using System.Web;
 	using DotNetOAuth.Messaging;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 	using DotNetOAuth.Test.Scenarios;
 	using DotNetOAuth.ChannelElements;
+	using System.Collections.Generic;
+	using DotNetOAuth.Test.Mocks;
 
 	[TestClass]
 	public class AppendixScenarios : TestBase {
 		[TestMethod]
 		public void SpecAppendixAExample() {
-			ServiceProvider sp = new ServiceProvider {
+			ServiceProviderEndpoints spEndpoints = new ServiceProviderEndpoints() {
 				RequestTokenEndpoint = new ServiceProviderEndpoint("https://photos.example.net/request_token", HttpDeliveryMethod.PostRequest),
 				UserAuthorizationEndpoint = new ServiceProviderEndpoint("http://photos.example.net/authorize", HttpDeliveryMethod.GetRequest),
 				AccessTokenEndpoint = new ServiceProviderEndpoint("https://photos.example.net/access_token", HttpDeliveryMethod.PostRequest),
 			};
+			var tokenManager = new InMemoryTokenManager();
+			var sp = new ServiceProvider(spEndpoints, tokenManager);
+			Consumer consumer = new Consumer {
+				ConsumerKey = "dpf43f3p2l4k3l03",
+				ConsumerSecret = "kd94hf93k423kf44",
+				ServiceProvider = spEndpoints,
+			};
 
 			Coordinator coordinator = new Coordinator(
 				channel => {
-					Consumer consumer = new Consumer {
-						Channel = channel,
-						ConsumerKey = "dpf43f3p2l4k3l03",
-						ConsumerSecret = "kd94hf93k423kf44",
-						ServiceProvider = sp,
-					};
-
+					consumer.Channel = channel;
 					string requestTokenSecret = consumer.RequestUserAuthorization(new Uri("http://printer.example.com/request_token_ready"));
 					var accessTokenMessage = consumer.ProcessUserAuthorization(requestTokenSecret);
 				},
 				channel => {
+					tokenManager.AddConsumer(consumer.ConsumerKey, consumer.ConsumerSecret);
 					sp.Channel = channel;
 					var requestTokenMessage = sp.ReadTokenRequest();
-					sp.SendUnauthorizedTokenResponse("hh5s93j4hdidpola", "hdhd0244k9j7ao03");
+					sp.SendUnauthorizedTokenResponse(requestTokenMessage);
 					var authRequest = sp.ReadAuthorizationRequest();
 					sp.SendAuthorizationResponse(authRequest);
 					var accessRequest = sp.ReadAccessTokenRequest();
-					sp.SendAccessToken("nnch734d00sl2jdk", "pfkkdhi9sl3r4s00");
+					sp.SendAccessToken(accessRequest);
 				});
-			coordinator.SigningElement = new PlainTextSigningBindingElement();
+			coordinator.SigningElement = (SigningBindingElementBase)sp.Channel.BindingElements.Single(el => el is SigningBindingElementBase);
 			coordinator.Start();
 		}
 	}

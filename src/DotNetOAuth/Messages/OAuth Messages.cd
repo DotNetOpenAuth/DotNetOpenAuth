@@ -3,7 +3,7 @@
   <Class Name="DotNetOAuth.Messages.AccessProtectedResourcesMessage">
     <Position X="0.5" Y="7.5" Width="3.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAgAAEAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Messages\AccessProtectedResourcesMessage.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -61,7 +61,7 @@
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAKAAAAYAAAAAAAAIAAAAAAAAQEIAAAAgCAACAAAAA=</HashCode>
+      <HashCode>AAAKAAAAYAAAAAAEAIAAAAAAAAQEIBAAIgCAACAAAAA=</HashCode>
       <FileName>Messages\MessageBase.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -73,15 +73,15 @@
     </Compartments>
     <InheritanceLine Type="DotNetOAuth.Messages.SignedMessageBase" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="4.75" Y="7.625" />
-        <Point X="4.5" Y="7.625" />
+        <Point X="4.75" Y="7.669" />
+        <Point X="4.5" Y="7.669" />
         <Point X="4.5" Y="7.153" />
         <Point X="3.125" Y="7.153" />
-        <Point X="3.125" Y="6.627" />
+        <Point X="3.125" Y="6.435" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAgAAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Messages\RequestAccessTokenMessage.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -94,34 +94,33 @@
     </Compartments>
     <InheritanceLine Type="DotNetOAuth.Messages.SignedMessageBase" FixedFromPoint="true">
       <Path>
-        <Point X="4.75" Y="6.875" />
-        <Point X="4.375" Y="6.875" />
+        <Point X="4.75" Y="6.881" />
+        <Point X="4.375" Y="6.881" />
         <Point X="4.375" Y="4.877" />
         <Point X="4.75" Y="4.877" />
-        <Point X="4.75" Y="1.496" />
-        <Point X="3.5" Y="1.496" />
+        <Point X="4.75" Y="1.27" />
+        <Point X="3.5" Y="1.27" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Messages\RequestTokenMessage.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DotNetOAuth.Messages.SignedMessageBase">
     <Position X="4.75" Y="6.75" Width="3.5" />
-    <InheritanceLine Type="DotNetOAuth.Messages.MessageBase" ManuallyRouted="true" FixedToPoint="true">
-      <Path>
-        <Point X="6.75" Y="4.478" />
-        <Point X="6.75" Y="5.104" />
-        <Point X="7.5" Y="5.104" />
-        <Point X="7.5" Y="6.75" />
-      </Path>
-    </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>IAAAFAAAAIAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>IAAAFAAAAIAAAAAAAACAAgAAAgAAIAQAAAAAoAAQAAA=</HashCode>
       <FileName>Messages\SignedMessageBase.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
+  <Interface Name="DotNetOAuth.ChannelElements.ITamperResistantOAuthMessage" Collapsed="true">
+    <Position X="10.25" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAIAAAhAAAAAAIAQAAAAAAAAAAAA=</HashCode>
+      <FileName>ChannelElements\ITamperResistantOAuthMessage.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>

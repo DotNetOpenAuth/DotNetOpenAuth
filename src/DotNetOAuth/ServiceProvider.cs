@@ -25,60 +25,28 @@ namespace DotNetOAuth {
 	/// </remarks>
 	public class ServiceProvider {
 		/// <summary>
-		/// The field used to store the value of the <see cref="RequestTokenEndpoint"/> property.
-		/// </summary>
-		private ServiceProviderEndpoint requestTokenEndpoint;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="ServiceProvider"/> class.
 		/// </summary>
-		public ServiceProvider() {
-			SigningBindingElementBase signingElement = new PlainTextSigningBindingElement(/*TODO*/);
+		public ServiceProvider(ServiceProviderEndpoints endpoints, ITokenManager tokenManager) {
+			if (endpoints == null) {
+				throw new ArgumentNullException("endpoints");
+			}
+			if (tokenManager == null) {
+				throw new ArgumentNullException("tokenManager");
+			}
+
+			SigningBindingElementBase signingElement = new PlainTextSigningBindingElement(TokenSignatureVerificationCallback);
 			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
+			this.Endpoints = endpoints;
 			this.Channel = new OAuthChannel(signingElement, store);
+			this.TokenGenerator = new StandardTokenGenerator();
+			this.TokenManager = tokenManager;
 		}
 
 		/// <summary>
-		/// Gets or sets the URL used to obtain an unauthorized Request Token,
-		/// described in Section 6.1 (Obtaining an Unauthorized Request Token).
+		/// Gets the endpoints exposed by this Service Provider.
 		/// </summary>
-		/// <remarks>
-		/// The request URL query MUST NOT contain any OAuth Protocol Parameters.
-		/// This is the URL that <see cref="Messages.RequestTokenMessage"/> messages are directed to.
-		/// </remarks>
-		/// <exception cref="ArgumentException">Thrown if this property is set to a URI with OAuth protocol parameters.</exception>
-		public ServiceProviderEndpoint RequestTokenEndpoint {
-			get {
-				return this.requestTokenEndpoint;
-			}
-
-			set {
-				if (value != null && UriUtil.QueryStringContainsOAuthParameters(value.Location)) {
-					throw new ArgumentException(Strings.RequestUrlMustNotHaveOAuthParameters);
-				}
-
-				this.requestTokenEndpoint = value;
-			}
-		}
-
-		/// <summary>
-		/// Gets or sets the URL used to obtain User authorization for Consumer access, 
-		/// described in Section 6.2 (Obtaining User Authorization).
-		/// </summary>
-		/// <remarks>
-		/// This is the URL that <see cref="Messages.DirectUserToServiceProviderMessage"/> messages are
-		/// indirectly (via the user agent) sent to.
-		/// </remarks>
-		public ServiceProviderEndpoint UserAuthorizationEndpoint { get; set; }
-
-		/// <summary>
-		/// Gets or sets the URL used to exchange the User-authorized Request Token 
-		/// for an Access Token, described in Section 6.3 (Obtaining an Access Token).
-		/// </summary>
-		/// <remarks>
-		/// This is the URL that <see cref="Messages.RequestAccessTokenMessage"/> messages are directed to.
-		/// </remarks>
-		public ServiceProviderEndpoint AccessTokenEndpoint { get; set; }
+		public ServiceProviderEndpoints Endpoints { get; private set; }
 
 		/// <summary>
 		/// Gets or sets the channel to use for sending/receiving messages.
@@ -89,6 +57,10 @@ namespace DotNetOAuth {
 		/// Gets the pending user agent redirect based message to be sent as an HttpResponse.
 		/// </summary>
 		public Response PendingRequest { get; private set; }
+
+		internal ITokenGenerator TokenGenerator { get; set; }
+
+		internal ITokenManager TokenManager { get; private set; }
 
 		internal RequestTokenMessage ReadTokenRequest() {
 			return this.Channel.ReadFromRequest<RequestTokenMessage>();
@@ -102,7 +74,10 @@ namespace DotNetOAuth {
 			return this.Channel.ReadFromRequest<RequestTokenMessage>(request);
 		}
 
-		internal void SendUnauthorizedTokenResponse(string token, string secret) {
+		internal void SendUnauthorizedTokenResponse(RequestTokenMessage request) {
+			string token = TokenGenerator.GenerateRequestToken(request.ConsumerKey);
+			string secret = TokenGenerator.GenerateSecret();
+			TokenManager.StoreNewRequestToken(request.ConsumerKey, token, secret, null/*add params*/);
 			UnauthorizedRequestTokenMessage response = new UnauthorizedRequestTokenMessage {
 				RequestToken = token,
 				TokenSecret = secret,
@@ -143,13 +118,29 @@ namespace DotNetOAuth {
 			return this.Channel.ReadFromRequest<RequestAccessTokenMessage>(request);
 		}
 
-		internal void SendAccessToken(string accessToken, string tokenSecret) {
+		internal void SendAccessToken(RequestAccessTokenMessage request) {
+			string accessToken = TokenGenerator.GenerateAccessToken(request.ConsumerKey);
+			string tokenSecret = TokenGenerator.GenerateSecret();
+			TokenManager.ExpireRequestTokenAndStoreNewAccessToken(request.ConsumerKey, request.RequestToken, accessToken, tokenSecret);
 			var grantAccess = new GrantAccessTokenMessage {
 				AccessToken = accessToken,
 				TokenSecret = tokenSecret,
 			};
 
 			this.Channel.Send(grantAccess);
+		}
+
+		private void TokenSignatureVerificationCallback(ITamperResistantOAuthMessage message) {
+			message.ConsumerSecret = TokenManager.GetConsumerSecret(message.ConsumerKey);
+
+			var tokenMessage = message as ITokenContainingMessage;
+			if (tokenMessage != null) {
+				message.TokenSecret = TokenManager.GetTokenSecret(tokenMessage.Token);
+			}
+
+			//message.Recipient
+			//message.AdditionalParametersInHttpRequest
+			//message.HttpMethod
 		}
 	}
 }

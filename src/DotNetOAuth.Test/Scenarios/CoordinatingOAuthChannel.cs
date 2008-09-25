@@ -16,6 +16,7 @@ namespace DotNetOAuth.Test.Scenarios {
 	using System.Threading;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 	using DotNetOAuth.Messaging.Reflection;
+	using DotNetOAuth.Messages;
 
 	/// <summary>
 	/// A special channel used in test simulations to pass messages directly between two parties.
@@ -92,8 +93,10 @@ namespace DotNetOAuth.Test.Scenarios {
 						directedMessage.Recipient,
 						directedMessage.HttpMethods);
 					cloned = (T)ctor.Invoke(new object[] { endpoint });
+				} else if ((ctor = message.GetType().GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[0], null)) != null) {
+					cloned = (T)ctor.Invoke(new object[0]);
 				} else {
-					throw new InvalidOperationException("Unrecognized constructor signature.");
+					throw new InvalidOperationException("Unrecognized constructor signature on type " + message.GetType());
 				}
 			} else {
 				cloned = (T)Activator.CreateInstance(message.GetType(), true);

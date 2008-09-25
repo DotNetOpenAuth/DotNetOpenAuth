@@ -70,6 +70,7 @@
     <Compile Include="Messaging\Bindings\StandardExpirationBindingElementTests.cs" />
     <Compile Include="Messaging\Reflection\MessagePartTests.cs" />
     <Compile Include="Messaging\Reflection\ValueMappingTests.cs" />
+    <Compile Include="Mocks\InMemoryTokenManager.cs" />
     <Compile Include="Mocks\MockTransformationBindingElement.cs" />
     <Compile Include="Mocks\MockReplayProtectionBindingElement.cs" />
     <Compile Include="Mocks\TestBaseMessage.cs" />
@@ -91,7 +92,7 @@
     <Compile Include="Scenarios\AppendixScenarios.cs" />
     <Compile Include="Scenarios\CoordinatingOAuthChannel.cs" />
     <Compile Include="Scenarios\Coordinator.cs" />
-    <Compile Include="ServiceProviderTests.cs" />
+    <Compile Include="ServiceProviderEndpointsTests.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="UriUtilTests.cs" />
   </ItemGroup>

@@ -7,6 +7,7 @@
 namespace DotNetOAuth.Messages {
 	using System;
 	using DotNetOAuth.Messaging;
+using System.Collections.Generic;
 
 	/// <summary>
 	/// A direct message sent from Consumer to Service Provider to request a token.
@@ -19,11 +20,5 @@ namespace DotNetOAuth.Messages {
 		internal RequestTokenMessage(ServiceProviderEndpoint serviceProvider)
 			: base(MessageTransport.Direct, serviceProvider) {
 		}
-
-		/// <summary>
-		/// Gets or sets the consumer key.
-		/// </summary>
-		[MessagePart(Name = "oauth_consumer_key", IsRequired = true)]
-		public string ConsumerKey { get; set; }
 	}
 }

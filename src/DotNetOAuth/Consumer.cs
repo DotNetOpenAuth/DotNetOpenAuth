@@ -39,7 +39,7 @@ namespace DotNetOAuth {
 		/// <summary>
 		/// Gets or sets the Service Provider that will be accessed.
 		/// </summary>
-		public ServiceProvider ServiceProvider { get; set; }
+		public ServiceProviderEndpoints ServiceProvider { get; set; }
 
 		/// <summary>
 		/// Gets the pending user agent redirect based message to be sent as an HttpResponse.

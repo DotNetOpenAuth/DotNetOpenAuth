@@ -57,8 +57,13 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChannelElements\ITokenGenerator.cs" />
+    <Compile Include="ChannelElements\ITokenManager.cs" />
     <Compile Include="ChannelElements\PlainTextSigningBindingElement.cs" />
     <Compile Include="ChannelElements\HmacSha1SigningBindingElement.cs" />
+    <Compile Include="ChannelElements\StandardTokenGenerator.cs" />
+    <Compile Include="ServiceProviderEndpoints.cs" />
+    <Compile Include="Messages\ITokenContainingMessage.cs" />
     <Compile Include="Messages\SignedMessageBase.cs" />
     <Compile Include="Messaging\Bindings\NonceMemoryStore.cs" />
     <Compile Include="ChannelElements\SigningBindingElementBase.cs" />

@@ -12,7 +12,7 @@ namespace DotNetOAuth.Messages {
 	/// A message attached to a request for protected resources that provides the necessary
 	/// credentials to be granted access to those resources.
 	/// </summary>
-	internal class AccessProtectedResourcesMessage : SignedMessageBase {
+	internal class AccessProtectedResourcesMessage : SignedMessageBase, ITokenContainingMessage {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessProtectedResourcesMessage"/> class.
 		/// </summary>
@@ -22,15 +22,17 @@ namespace DotNetOAuth.Messages {
 		}
 
 		/// <summary>
-		/// Gets or sets the Consumer key.
-		/// </summary>
-		[MessagePart(Name = "oauth_consumer_key", IsRequired = true)]
-		public string ConsumerKey { get; set; }
-
-		/// <summary>
 		/// Gets or sets the Access Token.
 		/// </summary>
 		[MessagePart(Name = "oauth_token", IsRequired = true)]
 		public string AccessToken { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Token.
+		/// </summary>
+		string ITokenContainingMessage.Token {
+			get { return this.AccessToken; }
+			set { this.AccessToken = value; }
+		}
 	}
 }

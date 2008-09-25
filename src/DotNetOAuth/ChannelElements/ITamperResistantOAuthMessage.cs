@@ -24,6 +24,11 @@ namespace DotNetOAuth.ChannelElements {
 		string TokenSecret { get; set; }
 
 		/// <summary>
+		/// Gets or sets the Consumer key.
+		/// </summary>
+		string ConsumerKey { get; set; }
+
+		/// <summary>
 		/// Gets or sets the Consumer Secret used to sign the message.
 		/// </summary>
 		string ConsumerSecret { get; set; }
