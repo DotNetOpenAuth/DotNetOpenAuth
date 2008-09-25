@@ -183,6 +183,9 @@
   <data name="SignatureInvalid" xml:space="preserve">
     <value>Message signature was incorrect.</value>
   </data>
+  <data name="SignatureVerificationCallbackMissing" xml:space="preserve">
+    <value>Signature verification required, but required callback delegate was not provided.</value>
+  </data>
   <data name="SigningNotSupported" xml:space="preserve">
     <value>This channel does not support signing messages.  To support signing messages, a derived Channel type must override the Sign and IsSignatureValid methods.</value>
   </data>

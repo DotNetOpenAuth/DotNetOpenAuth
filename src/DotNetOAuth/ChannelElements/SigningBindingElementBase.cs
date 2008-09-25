@@ -22,11 +22,27 @@ namespace DotNetOAuth.ChannelElements {
 		private string signatureMethod;
 
 		/// <summary>
+		/// The delegate that will initialize the non-serialized properties necessary on a signed
+		/// message so that its signature can be correctly calculated for verification.
+		/// </summary>
+		private readonly Action<ITamperResistantOAuthMessage> incomingMessageSignatureVerificationCallback;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="SigningBindingElementBase"/> class.
 		/// </summary>
 		/// <param name="signatureMethod">The OAuth signature method that the binding element uses.</param>
-		internal SigningBindingElementBase(string signatureMethod) {
+		/// <param name="signatureVerificationCallback">
+		/// The delegate that will initialize the non-serialized properties necessary on a signed
+		/// message so that its signature can be correctly calculated for verification.
+		/// May be null for Consumers (who never have to verify signatures).
+		/// </param>
+		internal SigningBindingElementBase(string signatureMethod, Action<ITamperResistantOAuthMessage> signatureVerificationCallback) {
+			if (String.IsNullOrEmpty(signatureMethod)) {
+				throw new ArgumentNullException("signatureMethod");
+			}
+
 			this.signatureMethod = signatureMethod;
+			this.incomingMessageSignatureVerificationCallback = signatureVerificationCallback;
 		}
 
 		#region IChannelBindingElement Members
@@ -66,6 +82,12 @@ namespace DotNetOAuth.ChannelElements {
 				if (!string.Equals(signedMessage.SignatureMethod, this.signatureMethod, StringComparison.Ordinal)) {
 					Logger.ErrorFormat("Expected signature method '{0}' but received message with a signature method of '{1}'.", this.signatureMethod, signedMessage.SignatureMethod);
 					throw new InvalidSignatureException(message);
+				}
+
+				if (this.incomingMessageSignatureVerificationCallback != null) {
+					this.incomingMessageSignatureVerificationCallback(signedMessage);
+				} else {
+					throw new InvalidOperationException(MessagingStrings.SignatureVerificationCallbackMissing);
 				}
 
 				string signature = this.GetSignature(signedMessage);

@@ -33,7 +33,7 @@ namespace DotNetOAuth {
 		/// Initializes a new instance of the <see cref="ServiceProvider"/> class.
 		/// </summary>
 		public ServiceProvider() {
-			SigningBindingElementBase signingElement = new PlainTextSigningBindingElement();
+			SigningBindingElementBase signingElement = new PlainTextSigningBindingElement(/*TODO*/);
 			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
 			this.Channel = new OAuthChannel(signingElement, store);
 		}

@@ -259,6 +259,15 @@ namespace DotNetOAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Signature verification required, but required callback delegate was not provided..
+        /// </summary>
+        internal static string SignatureVerificationCallbackMissing {
+            get {
+                return ResourceManager.GetString("SignatureVerificationCallbackMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This channel does not support signing messages.  To support signing messages, a derived Channel type must override the Sign and IsSignatureValid methods..
         /// </summary>
         internal static string SigningNotSupported {

@@ -20,19 +20,16 @@ namespace DotNetOAuth.ChannelElements {
 
 		/// <summary>
 		/// Gets or sets the Token Secret used to sign the message.
-		/// Only applicable to Consumer.
 		/// </summary>
 		string TokenSecret { get; set; }
 
 		/// <summary>
 		/// Gets or sets the Consumer Secret used to sign the message.
-		/// Only applicable to Consumer.
 		/// </summary>
 		string ConsumerSecret { get; set; }
 
 		/// <summary>
 		/// Gets or sets the HTTP method that will be used to transmit the message.
-		/// Only applicable to Consumer.
 		/// </summary>
 		string HttpMethod { get; set; }
 

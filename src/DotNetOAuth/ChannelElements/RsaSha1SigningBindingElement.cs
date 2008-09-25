@@ -14,10 +14,23 @@ namespace DotNetOAuth.ChannelElements {
 	/// </summary>
 	internal class RsaSha1SigningBindingElement : SigningBindingElementBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RsaSha1SigningBindingElement"/> class.
+		/// Initializes a new instance of the <see cref="RsaSha1SigningBindingElement"/> class
+		/// for use by Consumers.
 		/// </summary>
 		internal RsaSha1SigningBindingElement()
-			: base("RSA-SHA1") {
+			: this(null) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RsaSha1SigningBindingElement"/> class.
+		/// </summary>
+		/// <param name="signatureVerificationCallback">
+		/// The delegate that will initialize the non-serialized properties necessary on a signed
+		/// message so that its signature can be correctly calculated for verification.
+		/// May be null for Consumers (who never have to verify signatures).
+		/// </param>
+		internal RsaSha1SigningBindingElement(Action<ITamperResistantOAuthMessage> signatureVerificationCallback)
+			: base("RSA-SHA1", signatureVerificationCallback) {
 		}
 
 		/// <summary>
