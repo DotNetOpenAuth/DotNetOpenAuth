@@ -23,7 +23,7 @@ namespace DotNetOAuth {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ServiceProviderEndpoints"/> class.
 		/// </summary>
-		public ServiceProviderEndpoints(){
+		public ServiceProviderEndpoints() {
 		}
 
 		/// <summary>

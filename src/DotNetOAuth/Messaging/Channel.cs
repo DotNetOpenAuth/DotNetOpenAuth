@@ -166,14 +166,33 @@ namespace DotNetOAuth.Messaging {
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current"/> is null.</exception>
 		internal IProtocolMessage ReadFromRequest() {
-			return this.ReadFromRequest(GetRequestFromContext());
+			return this.ReadFromRequest(this.GetRequestFromContext());
 		}
 
+		/// <summary>
+		/// Gets the protocol message embedded in the given HTTP request, if present.
+		/// </summary>
+		/// <typeparam name="TREQUEST">The expected type of the message to be received.</typeparam>
+		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
+		/// <remarks>
+		/// Requires an HttpContext.Current context.
+		/// </remarks>
+		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current"/> is null.</exception>
 		internal TREQUEST ReadFromRequest<TREQUEST>()
 			where TREQUEST : class, IProtocolMessage {
-			return this.ReadFromRequest<TREQUEST>(GetRequestFromContext());
+			return this.ReadFromRequest<TREQUEST>(this.GetRequestFromContext());
 		}
 
+		/// <summary>
+		/// Gets the protocol message that may be embedded in the given HTTP request.
+		/// </summary>
+		/// <typeparam name="TREQUEST">The expected type of the message to be received.</typeparam>
+		/// <param name="httpRequest">The request to search for an embedded message.</param>
+		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
+		/// <exception cref="ProtocolException">
+		/// Thrown if no message is recognized in the request 
+		/// or an unexpected type of message is received.
+		/// </exception>
 		protected internal TREQUEST ReadFromRequest<TREQUEST>(HttpRequestInfo httpRequest)
 			where TREQUEST : class, IProtocolMessage {
 			IProtocolMessage request = this.ReadFromRequest(httpRequest);
@@ -212,6 +231,16 @@ namespace DotNetOAuth.Messaging {
 			return requestMessage;
 		}
 
+		/// <summary>
+		/// Sends a direct message to a remote party and waits for the response.
+		/// </summary>
+		/// <typeparam name="TRESPONSE">The expected type of the message to be received.</typeparam>
+		/// <param name="request">The message to send.</param>
+		/// <returns>The remote party's response.</returns>
+		/// <exception cref="ProtocolException">
+		/// Thrown if no message is recognized in the response
+		/// or an unexpected type of message is received.
+		/// </exception>
 		protected internal TRESPONSE Request<TRESPONSE>(IDirectedProtocolMessage request)
 			where TRESPONSE : class, IProtocolMessage {
 			IProtocolMessage response = this.Request(request);

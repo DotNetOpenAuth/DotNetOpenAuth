@@ -7,12 +7,11 @@
 namespace DotNetOAuth.Messages {
 	using System;
 	using System.Collections.Generic;
+	using System.Globalization;
+	using System.Text;
 	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.Messaging;
-	using DotNetOAuth.Messaging.Bindings;
 	using DotNetOAuth.Messaging.Reflection;
-	using System.Text;
-	using System.Globalization;
 
 	/// <summary>
 	/// A base class for all OAuth messages.
@@ -119,7 +118,8 @@ namespace DotNetOAuth.Messages {
 		#endregion
 
 		/// <summary>
-		/// Gets or sets whether security sensitive strings are emitted from the ToString() method.
+		/// Gets or sets a value indicating whether security sensitive strings are 
+		/// emitted from the ToString() method.
 		/// </summary>
 		internal static bool LowSecurityMode { get; set; }
 
@@ -135,11 +135,15 @@ namespace DotNetOAuth.Messages {
 
 		#endregion
 
+		/// <summary>
+		/// Returns a human-friendly string describing the message and all serializable properties.
+		/// </summary>
+		/// <returns>The string representation of this object.</returns>
 		public override string ToString() {
 			StringBuilder builder = new StringBuilder();
 			builder.AppendFormat(CultureInfo.InvariantCulture, "{0} message", GetType().Name);
-			if (recipient != null) {
-				builder.AppendFormat(CultureInfo.InvariantCulture, " as {0} to {1}", recipient.AllowedMethods, recipient.Location);
+			if (this.recipient != null) {
+				builder.AppendFormat(CultureInfo.InvariantCulture, " as {0} to {1}", this.recipient.AllowedMethods, this.recipient.Location);
 			}
 			builder.AppendLine();
 			MessageDictionary dictionary = new MessageDictionary(this);

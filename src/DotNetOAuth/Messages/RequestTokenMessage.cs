@@ -5,9 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOAuth.Messages {
-	using System;
 	using DotNetOAuth.Messaging;
-using System.Collections.Generic;
 
 	/// <summary>
 	/// A direct message sent from Consumer to Service Provider to request a token.

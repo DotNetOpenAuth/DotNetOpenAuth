@@ -27,6 +27,8 @@ namespace DotNetOAuth {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ServiceProvider"/> class.
 		/// </summary>
+		/// <param name="endpoints">The endpoints on the Service Provider.</param>
+		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
 		public ServiceProvider(ServiceProviderEndpoints endpoints, ITokenManager tokenManager) {
 			if (endpoints == null) {
 				throw new ArgumentNullException("endpoints");
@@ -35,7 +37,7 @@ namespace DotNetOAuth {
 				throw new ArgumentNullException("tokenManager");
 			}
 
-			SigningBindingElementBase signingElement = new PlainTextSigningBindingElement(TokenSignatureVerificationCallback);
+			SigningBindingElementBase signingElement = new PlainTextSigningBindingElement(this.TokenSignatureVerificationCallback);
 			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
 			this.Endpoints = endpoints;
 			this.Channel = new OAuthChannel(signingElement, store);
@@ -49,17 +51,23 @@ namespace DotNetOAuth {
 		public ServiceProviderEndpoints Endpoints { get; private set; }
 
 		/// <summary>
+		/// Gets the pending user agent redirect based message to be sent as an HttpResponse.
+		/// </summary>
+		public Response PendingRequest { get; private set; }
+
+		/// <summary>
 		/// Gets or sets the channel to use for sending/receiving messages.
 		/// </summary>
 		internal OAuthChannel Channel { get; set; }
 
 		/// <summary>
-		/// Gets the pending user agent redirect based message to be sent as an HttpResponse.
+		/// Gets or sets the generator responsible for generating new tokens and secrets.
 		/// </summary>
-		public Response PendingRequest { get; private set; }
-
 		internal ITokenGenerator TokenGenerator { get; set; }
 
+		/// <summary>
+		/// Gets the persistence store for tokens and secrets.
+		/// </summary>
 		internal ITokenManager TokenManager { get; private set; }
 
 		internal RequestTokenMessage ReadTokenRequest() {
@@ -75,9 +83,9 @@ namespace DotNetOAuth {
 		}
 
 		internal void SendUnauthorizedTokenResponse(RequestTokenMessage request) {
-			string token = TokenGenerator.GenerateRequestToken(request.ConsumerKey);
-			string secret = TokenGenerator.GenerateSecret();
-			TokenManager.StoreNewRequestToken(request.ConsumerKey, token, secret, null/*add params*/);
+			string token = this.TokenGenerator.GenerateRequestToken(request.ConsumerKey);
+			string secret = this.TokenGenerator.GenerateSecret();
+			this.TokenManager.StoreNewRequestToken(request.ConsumerKey, token, secret, null/*add params*/);
 			UnauthorizedRequestTokenMessage response = new UnauthorizedRequestTokenMessage {
 				RequestToken = token,
 				TokenSecret = secret,
@@ -119,9 +127,9 @@ namespace DotNetOAuth {
 		}
 
 		internal void SendAccessToken(RequestAccessTokenMessage request) {
-			string accessToken = TokenGenerator.GenerateAccessToken(request.ConsumerKey);
-			string tokenSecret = TokenGenerator.GenerateSecret();
-			TokenManager.ExpireRequestTokenAndStoreNewAccessToken(request.ConsumerKey, request.RequestToken, accessToken, tokenSecret);
+			string accessToken = this.TokenGenerator.GenerateAccessToken(request.ConsumerKey);
+			string tokenSecret = this.TokenGenerator.GenerateSecret();
+			this.TokenManager.ExpireRequestTokenAndStoreNewAccessToken(request.ConsumerKey, request.RequestToken, accessToken, tokenSecret);
 			var grantAccess = new GrantAccessTokenMessage {
 				AccessToken = accessToken,
 				TokenSecret = tokenSecret,
@@ -131,16 +139,17 @@ namespace DotNetOAuth {
 		}
 
 		private void TokenSignatureVerificationCallback(ITamperResistantOAuthMessage message) {
-			message.ConsumerSecret = TokenManager.GetConsumerSecret(message.ConsumerKey);
+			message.ConsumerSecret = this.TokenManager.GetConsumerSecret(message.ConsumerKey);
 
 			var tokenMessage = message as ITokenContainingMessage;
 			if (tokenMessage != null) {
-				message.TokenSecret = TokenManager.GetTokenSecret(tokenMessage.Token);
+				message.TokenSecret = this.TokenManager.GetTokenSecret(tokenMessage.Token);
 			}
 
-			//message.Recipient
-			//message.AdditionalParametersInHttpRequest
-			//message.HttpMethod
+			// TODO: more complete filling of message properties.
+			////message.Recipient = 
+			////message.AdditionalParametersInHttpRequest = 
+			////message.HttpMethod = 
 		}
 	}
 }

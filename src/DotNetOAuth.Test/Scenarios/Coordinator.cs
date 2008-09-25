@@ -6,11 +6,7 @@
 
 namespace DotNetOAuth.Test.Scenarios {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
 	using System.Threading;
-	using DotNetOAuth.Messaging;
 	using DotNetOAuth.ChannelElements;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -18,8 +14,8 @@ namespace DotNetOAuth.Test.Scenarios {
 	/// Runs a Consumer and Service Provider simultaneously so they can interact in a full simulation.
 	/// </summary>
 	internal class Coordinator {
-		Actor consumerAction;
-		Actor serviceProviderAction;
+		private Actor consumerAction;
+		private Actor serviceProviderAction;
 
 		/// <summary>Initializes a new instance of the <see cref="Coordinator"/> class.</summary>
 		/// <param name="consumerAction">The code path of the Consumer.</param>
@@ -36,6 +32,8 @@ namespace DotNetOAuth.Test.Scenarios {
 			this.serviceProviderAction = serviceProviderAction;
 		}
 
+		internal delegate void Actor(OAuthChannel channel);
+
 		/// <summary>
 		/// Gets or sets the signing element the Consumer channel should use.
 		/// </summary>
@@ -44,19 +42,17 @@ namespace DotNetOAuth.Test.Scenarios {
 		/// </remarks>
 		internal SigningBindingElementBase SigningElement { get; set; }
 
-		internal delegate void Actor(OAuthChannel channel);
-
 		/// <summary>
 		/// Starts the simulation.
 		/// </summary>
 		internal void Start() {
-			if (SigningElement == null) {
+			if (this.SigningElement == null) {
 				throw new InvalidOperationException("SigningElement must be set first.");
 			}
 
 			// Prepare channels that will pass messages directly back and forth.
-			CoordinatingOAuthChannel consumerChannel = new CoordinatingOAuthChannel(SigningElement);
-			CoordinatingOAuthChannel serviceProviderChannel = new CoordinatingOAuthChannel(SigningElement);
+			CoordinatingOAuthChannel consumerChannel = new CoordinatingOAuthChannel(this.SigningElement);
+			CoordinatingOAuthChannel serviceProviderChannel = new CoordinatingOAuthChannel(this.SigningElement);
 			consumerChannel.RemoteChannel = serviceProviderChannel;
 			serviceProviderChannel.RemoteChannel = consumerChannel;
 

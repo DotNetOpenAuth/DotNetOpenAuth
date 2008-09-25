@@ -1,45 +1,39 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="Scenarios.cs" company="Andrew Arnott">
+// <copyright file="AppendixScenarios.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
 namespace DotNetOAuth.Test {
 	using System;
-	using System.Collections.Specialized;
-	using System.IO;
 	using System.Linq;
-	using System.Net;
-	using System.Web;
-	using DotNetOAuth.Messaging;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using DotNetOAuth.Test.Scenarios;
 	using DotNetOAuth.ChannelElements;
-	using System.Collections.Generic;
+	using DotNetOAuth.Messaging;
 	using DotNetOAuth.Test.Mocks;
+	using DotNetOAuth.Test.Scenarios;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
 	public class AppendixScenarios : TestBase {
 		[TestMethod]
 		public void SpecAppendixAExample() {
-			ServiceProviderEndpoints spEndpoints = new ServiceProviderEndpoints() {
+			ServiceProviderEndpoints endpoints = new ServiceProviderEndpoints() {
 				RequestTokenEndpoint = new ServiceProviderEndpoint("https://photos.example.net/request_token", HttpDeliveryMethod.PostRequest),
 				UserAuthorizationEndpoint = new ServiceProviderEndpoint("http://photos.example.net/authorize", HttpDeliveryMethod.GetRequest),
 				AccessTokenEndpoint = new ServiceProviderEndpoint("https://photos.example.net/access_token", HttpDeliveryMethod.PostRequest),
 			};
 			var tokenManager = new InMemoryTokenManager();
-			var sp = new ServiceProvider(spEndpoints, tokenManager);
-			Consumer consumer = new Consumer {
+			var sp = new ServiceProvider(endpoints, tokenManager);
+			Consumer consumer = new Consumer(endpoints, new InMemoryTokenManager()) {
 				ConsumerKey = "dpf43f3p2l4k3l03",
 				ConsumerSecret = "kd94hf93k423kf44",
-				ServiceProvider = spEndpoints,
 			};
 
 			Coordinator coordinator = new Coordinator(
 				channel => {
 					consumer.Channel = channel;
-					string requestTokenSecret = consumer.RequestUserAuthorization(new Uri("http://printer.example.com/request_token_ready"));
-					var accessTokenMessage = consumer.ProcessUserAuthorization(requestTokenSecret);
+					consumer.RequestUserAuthorization(new Uri("http://printer.example.com/request_token_ready"));
+					var accessTokenMessage = consumer.ProcessUserAuthorization();
 				},
 				channel => {
 					tokenManager.AddConsumer(consumer.ConsumerKey, consumer.ConsumerSecret);

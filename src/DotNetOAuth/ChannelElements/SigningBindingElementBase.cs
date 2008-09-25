@@ -17,15 +17,15 @@ namespace DotNetOAuth.ChannelElements {
 	/// </summary>
 	internal abstract class SigningBindingElementBase : IChannelBindingElement {
 		/// <summary>
-		/// The signature method this binding element uses.
-		/// </summary>
-		private string signatureMethod;
-
-		/// <summary>
 		/// The delegate that will initialize the non-serialized properties necessary on a signed
 		/// message so that its signature can be correctly calculated for verification.
 		/// </summary>
 		private readonly Action<ITamperResistantOAuthMessage> incomingMessageSignatureVerificationCallback;
+
+		/// <summary>
+		/// The signature method this binding element uses.
+		/// </summary>
+		private string signatureMethod;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SigningBindingElementBase"/> class.

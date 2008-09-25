@@ -5,7 +5,10 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOAuth.Messages {
-	interface ITokenContainingMessage {
+	/// <summary>
+	/// An interface implemented by all OAuth messages that have a request or access token property.
+	/// </summary>
+	internal interface ITokenContainingMessage {
 		/// <summary>
 		/// Gets or sets the Request or Access Token.
 		/// </summary>

@@ -6,22 +6,20 @@
 
 namespace DotNetOAuth.Test.Scenarios {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
 	using System.Reflection;
-	using System.Text;
-	using DotNetOAuth.ChannelElements;
-	using DotNetOAuth.Messaging.Bindings;
-	using DotNetOAuth.Messaging;
 	using System.Threading;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using DotNetOAuth.ChannelElements;
+	using DotNetOAuth.Messaging;
+	using DotNetOAuth.Messaging.Bindings;
 	using DotNetOAuth.Messaging.Reflection;
-	using DotNetOAuth.Messages;
 
 	/// <summary>
 	/// A special channel used in test simulations to pass messages directly between two parties.
 	/// </summary>
 	internal class CoordinatingOAuthChannel : OAuthChannel {
+		private EventWaitHandle incomingMessageSignal = new AutoResetEvent(false);
+		private IProtocolMessage incomingMessage;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CoordinatingOAuthChannel"/> class for Consumers.
 		/// </summary>
@@ -37,32 +35,29 @@ namespace DotNetOAuth.Test.Scenarios {
 		/// </summary>
 		internal CoordinatingOAuthChannel RemoteChannel { get; set; }
 
-		private EventWaitHandle incomingMessageSignal = new AutoResetEvent(false);
-		private IProtocolMessage incomingMessage;
-
 		protected override IProtocolMessage RequestInternal(IDirectedProtocolMessage request) {
 			TestBase.TestLogger.InfoFormat("Sending request: {0}", request);
 			// Drop the outgoing message in the other channel's in-slot and let them know it's there.
-			RemoteChannel.incomingMessage = CloneSerializedParts(request);
-			RemoteChannel.incomingMessageSignal.Set();
+			this.RemoteChannel.incomingMessage = CloneSerializedParts(request);
+			this.RemoteChannel.incomingMessageSignal.Set();
 			// Now wait for a response...
-			return AwaitIncomingMessage();
+			return this.AwaitIncomingMessage();
 		}
 
 		protected override void SendDirectMessageResponse(IProtocolMessage response) {
 			TestBase.TestLogger.InfoFormat("Sending response: {0}", response);
-			RemoteChannel.incomingMessage = CloneSerializedParts(response);
-			RemoteChannel.incomingMessageSignal.Set();
+			this.RemoteChannel.incomingMessage = CloneSerializedParts(response);
+			this.RemoteChannel.incomingMessageSignal.Set();
 		}
 
 		protected override void SendIndirectMessage(IDirectedProtocolMessage message) {
 			TestBase.TestLogger.Info("Next response is an indirect message...");
 			// In this mock transport, direct and indirect messages are the same.
-			SendDirectMessageResponse(message);
+			this.SendDirectMessageResponse(message);
 		}
 
 		protected override HttpRequestInfo GetRequestFromContext() {
-			return new HttpRequestInfo(AwaitIncomingMessage());
+			return new HttpRequestInfo(this.AwaitIncomingMessage());
 		}
 
 		protected override IProtocolMessage ReadFromRequestInternal(HttpRequestInfo request) {
