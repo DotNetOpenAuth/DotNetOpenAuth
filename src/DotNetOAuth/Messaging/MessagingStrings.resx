@@ -138,6 +138,9 @@
   <data name="ExceptionNotConstructedForTransit" xml:space="preserve">
     <value>This exception was not constructed with a root request message that caused it.</value>
   </data>
+  <data name="ExpectedMessageNotReceived" xml:space="preserve">
+    <value>Expected message {0} but received no recognizable message.</value>
+  </data>
   <data name="ExpiredMessage" xml:space="preserve">
     <value>The message expired at {0} and it is now {1}.</value>
   </data>
@@ -185,6 +188,9 @@
   </data>
   <data name="TooManyBindingsOfferingSameProtection" xml:space="preserve">
     <value>Expected at most 1 binding element offering the {0} protection, but found {1}.</value>
+  </data>
+  <data name="UnexpectedMessageReceived" xml:space="preserve">
+    <value>Expected message {0} but received {1} instead.</value>
   </data>
   <data name="UnexpectedType" xml:space="preserve">
     <value>The type {0} or a derived type was expected, but {1} was given.</value>

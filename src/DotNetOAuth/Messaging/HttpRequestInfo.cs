@@ -56,6 +56,19 @@ namespace DotNetOAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
+		/// </summary>
+		/// <param name="message">The message being passed in through a mock transport.</param>
+		internal HttpRequestInfo(IProtocolMessage message) {
+			this.Message = message;
+		}
+
+		/// <summary>
+		/// Gets the message that is being sent over a mock transport (for testing).
+		/// </summary>
+		internal IProtocolMessage Message { get; private set; }
+
+		/// <summary>
 		/// Gets or sets the verb in the request (i.e. GET, POST, etc.)
 		/// </summary>
 		internal string HttpMethod { get; set; }

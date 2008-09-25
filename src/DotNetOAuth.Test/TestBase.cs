@@ -5,7 +5,12 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOAuth.Test {
+	using System;
+	using System.Collections.Generic;
 	using System.Reflection;
+	using System.Threading;
+	using DotNetOAuth.ChannelElements;
+	using DotNetOAuth.Messaging;
 	using log4net;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 

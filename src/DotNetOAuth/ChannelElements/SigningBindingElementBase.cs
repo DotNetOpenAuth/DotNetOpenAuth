@@ -148,6 +148,23 @@ namespace DotNetOAuth.ChannelElements {
 		protected abstract string GetSignature(ITamperResistantOAuthMessage message);
 
 		/// <summary>
+		/// Gets the ConsumerSecret&amp;TokenSecret" string, allowing either property to be empty or null.
+		/// </summary>
+		/// <param name="message">The message to extract the secrets from.</param>
+		/// <returns>The concatenated string.</returns>
+		protected string GetConsumerAndTokenSecretString(ITamperResistantOAuthMessage message) {
+			StringBuilder builder = new StringBuilder();
+			if (!string.IsNullOrEmpty(message.ConsumerSecret)) {
+				builder.Append(Uri.EscapeDataString(message.ConsumerSecret));
+			}
+			builder.Append("&");
+			if (!string.IsNullOrEmpty(message.TokenSecret)) {
+				builder.Append(Uri.EscapeDataString(message.TokenSecret));
+			}
+			return builder.ToString();
+		}
+
+		/// <summary>
 		/// Sorts parameters according to OAuth signature base string rules.
 		/// </summary>
 		/// <param name="left">The first parameter to compare.</param>

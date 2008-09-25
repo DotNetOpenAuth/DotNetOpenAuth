@@ -23,7 +23,7 @@ namespace DotNetOAuth.Messages {
 		/// <summary>
 		/// The number of seconds since 1/1/1970, consistent with the OAuth timestamp requirement.
 		/// </summary>
-		[MessagePart("oauth_timestamp")]
+		[MessagePart("oauth_timestamp", IsRequired = true)]
 		private long timestamp;
 
 		/// <summary>
@@ -48,20 +48,20 @@ namespace DotNetOAuth.Messages {
 		/// <summary>
 		/// Gets or sets the signature method used to sign the request.
 		/// </summary>
-		[MessagePart("oauth_signature_method")]
+		[MessagePart("oauth_signature_method", IsRequired = true)]
 		string ITamperResistantOAuthMessage.SignatureMethod { get; set; }
 
 		/// <summary>
 		/// Gets or sets the Token Secret used to sign the message.
 		/// Only applicable to Consumer.
 		/// </summary>
-		string ITamperResistantOAuthMessage.TokenSecret { get; set; }
+		public string TokenSecret { get; set; }
 
 		/// <summary>
 		/// Gets or sets the Consumer Secret used to sign the message.
 		/// Only applicable to Consumer.
 		/// </summary>
-		string ITamperResistantOAuthMessage.ConsumerSecret { get; set; }
+		public string ConsumerSecret { get; set; }
 
 		/// <summary>
 		/// Gets or sets the HTTP method that will be used to transmit the message.
@@ -82,7 +82,7 @@ namespace DotNetOAuth.Messages {
 		/// <summary>
 		/// Gets or sets the message signature.
 		/// </summary>
-		[MessagePart("oauth_signature")]
+		[MessagePart("oauth_signature", IsRequired = true)]
 		string ITamperResistantProtocolMessage.Signature { get; set; }
 
 		#endregion
@@ -104,7 +104,7 @@ namespace DotNetOAuth.Messages {
 		/// <summary>
 		/// Gets or sets the message nonce used for replay detection.
 		/// </summary>
-		[MessagePart("oauth_nonce")]
+		[MessagePart("oauth_nonce", IsRequired = true)]
 		string IReplayProtectedProtocolMessage.Nonce { get; set; }
 
 		#endregion

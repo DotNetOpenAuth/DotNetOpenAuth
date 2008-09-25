@@ -124,6 +124,15 @@ namespace DotNetOAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Expected message {0} but received no recognizable message..
+        /// </summary>
+        internal static string ExpectedMessageNotReceived {
+            get {
+                return ResourceManager.GetString("ExpectedMessageNotReceived", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The message expired at {0} and it is now {1}..
         /// </summary>
         internal static string ExpiredMessage {
@@ -264,6 +273,15 @@ namespace DotNetOAuth.Messaging {
         internal static string TooManyBindingsOfferingSameProtection {
             get {
                 return ResourceManager.GetString("TooManyBindingsOfferingSameProtection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expected message {0} but received {1} instead..
+        /// </summary>
+        internal static string UnexpectedMessageReceived {
+            get {
+                return ResourceManager.GetString("UnexpectedMessageReceived", resourceCulture);
             }
         }
         

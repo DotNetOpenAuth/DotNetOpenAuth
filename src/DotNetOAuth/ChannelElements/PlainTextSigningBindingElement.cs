@@ -32,11 +32,7 @@ namespace DotNetOAuth.ChannelElements {
 		/// This method signs the message according to OAuth 1.0 section 9.4.1.
 		/// </remarks>
 		protected override string GetSignature(ITamperResistantOAuthMessage message) {
-			StringBuilder builder = new StringBuilder();
-			builder.Append(Uri.EscapeDataString(message.ConsumerSecret));
-			builder.Append("&");
-			builder.Append(Uri.EscapeDataString(message.TokenSecret));
-			return Uri.EscapeDataString(builder.ToString());
+			return Uri.EscapeDataString(GetConsumerAndTokenSecretString(message));
 		}
 	}
 }

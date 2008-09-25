@@ -29,7 +29,7 @@ namespace DotNetOAuth.ChannelElements {
 		/// This method signs the message per OAuth 1.0 section 9.2.
 		/// </remarks>
 		protected override string GetSignature(ITamperResistantOAuthMessage message) {
-			string key = Uri.EscapeDataString(message.ConsumerSecret) + "&" + Uri.EscapeDataString(message.TokenSecret);
+			string key = GetConsumerAndTokenSecretString(message);
 			HashAlgorithm hasher = new HMACSHA1(Encoding.ASCII.GetBytes(key));
 			byte[] digest = hasher.ComputeHash(Encoding.ASCII.GetBytes(ConstructSignatureBaseString(message)));
 			return Uri.EscapeDataString(Convert.ToBase64String(digest));

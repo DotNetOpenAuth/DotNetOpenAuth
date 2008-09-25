@@ -36,6 +36,6 @@ namespace DotNetOAuth.Messages {
 		/// to the Consumer when Obtaining User Authorization is complete. Optional.
 		/// </summary>
 		[MessagePart(Name = "oauth_callback", IsRequired = false)]
-		public string Callback { get; set; }
+		public Uri Callback { get; set; }
 	}
 }

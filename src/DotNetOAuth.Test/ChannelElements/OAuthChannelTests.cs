@@ -32,7 +32,7 @@ namespace DotNetOAuth.Test.ChannelElements {
 
 			this.webRequestHandler = new TestWebRequestHandler();
 			this.signingElement = new RsaSha1SigningBindingElement();
-			this.nonceStore = new NonceMemoryStore();
+			this.nonceStore = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
 			this.channel = new OAuthChannel(this.signingElement, this.nonceStore, new TestMessageTypeProvider(), this.webRequestHandler);
 		}
 

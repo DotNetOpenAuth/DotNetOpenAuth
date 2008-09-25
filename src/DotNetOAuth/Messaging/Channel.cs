@@ -166,11 +166,36 @@ namespace DotNetOAuth.Messaging {
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current"/> is null.</exception>
 		internal IProtocolMessage ReadFromRequest() {
-			if (HttpContext.Current == null) {
-				throw new InvalidOperationException(MessagingStrings.HttpContextRequired);
+			return this.ReadFromRequest(GetRequestFromContext());
+		}
+
+		internal TREQUEST ReadFromRequest<TREQUEST>()
+			where TREQUEST : class, IProtocolMessage {
+			return this.ReadFromRequest<TREQUEST>(GetRequestFromContext());
+		}
+
+		protected internal TREQUEST ReadFromRequest<TREQUEST>(HttpRequestInfo httpRequest)
+			where TREQUEST : class, IProtocolMessage {
+			IProtocolMessage request = this.ReadFromRequest(httpRequest);
+			if (request == null) {
+				throw new ProtocolException(
+					string.Format(
+						CultureInfo.CurrentCulture,
+						MessagingStrings.ExpectedMessageNotReceived,
+						typeof(TREQUEST)));
 			}
 
-			return this.ReadFromRequest(new HttpRequestInfo(HttpContext.Current.Request));
+			var expectedRequest = request as TREQUEST;
+			if (expectedRequest == null) {
+				throw new ProtocolException(
+					string.Format(
+						CultureInfo.CurrentCulture,
+						MessagingStrings.UnexpectedMessageReceived,
+						typeof(TREQUEST),
+						request.GetType()));
+			}
+
+			return expectedRequest;
 		}
 
 		/// <summary>
@@ -185,6 +210,30 @@ namespace DotNetOAuth.Messaging {
 			}
 
 			return requestMessage;
+		}
+
+		protected internal TRESPONSE Request<TRESPONSE>(IDirectedProtocolMessage request)
+			where TRESPONSE : class, IProtocolMessage {
+			IProtocolMessage response = this.Request(request);
+			if (response == null) {
+				throw new ProtocolException(
+					string.Format(
+						CultureInfo.CurrentCulture,
+						MessagingStrings.ExpectedMessageNotReceived,
+						typeof(TRESPONSE)));
+			}
+
+			var expectedResponse = response as TRESPONSE;
+			if (expectedResponse == null) {
+				throw new ProtocolException(
+					string.Format(
+						CultureInfo.CurrentCulture,
+						MessagingStrings.UnexpectedMessageReceived,
+						typeof(TRESPONSE),
+						response.GetType()));
+			}
+
+			return expectedResponse;
 		}
 
 		/// <summary>
@@ -215,6 +264,22 @@ namespace DotNetOAuth.Messaging {
 			IProtocolMessage message = this.ReadFromResponseInternal(responseStream);
 			this.VerifyMessageAfterReceiving(message);
 			return message;
+		}
+
+		/// <summary>
+		/// Gets the current HTTP request being processed.
+		/// </summary>
+		/// <returns>The HttpRequestInfo for the current request.</returns>
+		/// <remarks>
+		/// Requires an HttpContext.Current context.
+		/// </remarks>
+		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current"/> is null.</exception>
+		protected virtual HttpRequestInfo GetRequestFromContext() {
+			if (HttpContext.Current == null) {
+				throw new InvalidOperationException(MessagingStrings.HttpContextRequired);
+			}
+
+			return new HttpRequestInfo(HttpContext.Current.Request);
 		}
 
 		/// <summary>

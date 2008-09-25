@@ -16,6 +16,22 @@ namespace DotNetOAuth.Messaging.Bindings {
 	/// NOT for web farms.
 	/// </summary>
 	internal class NonceMemoryStore : INonceStore {
+		/// <summary>
+		/// The maximum age a message can be before it is discarded.
+		/// </summary>
+		/// <remarks>
+		/// This is useful for knowing how long used nonces must be retained.
+		/// </remarks>
+		private readonly TimeSpan maximumMessageAge;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="NonceMemoryStore"/> class.
+		/// </summary>
+		/// <param name="maximumMessageAge">The maximum age a message can be before it is discarded.</param>
+		internal NonceMemoryStore(TimeSpan maximumMessageAge) {
+			this.maximumMessageAge = maximumMessageAge;
+		}
+
 		#region INonceStore Members
 
 		/// <summary>
@@ -40,7 +56,9 @@ namespace DotNetOAuth.Messaging.Bindings {
 		/// <see cref="StandardExpirationBindingElement.MaximumMessageAge"/> property.
 		/// </remarks>
 		public bool StoreNonce(string nonce, DateTime timestamp) {
-			throw new NotImplementedException();
+			// TODO: implement actual nonce checking.
+			Logger.Warn("Nonce checking not implemented yet.");
+			return true;
 		}
 
 		#endregion
