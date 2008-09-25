@@ -64,7 +64,8 @@ namespace DotNetOAuth {
 		/// Begins an OAuth authorization request and redirects the user to the Service Provider
 		/// to provide that authorization.
 		/// </summary>
-		public void RequestUserAuthorization(Uri callback) {
+		/// <returns>The Request Token Secret.</returns>
+		public string RequestUserAuthorization(Uri callback) {
 			// Obtain an unauthorized request token.
 			var requestToken = new RequestTokenMessage(ServiceProvider.RequestTokenEndpoint) {
 				ConsumerKey = this.ConsumerKey,
@@ -79,14 +80,16 @@ namespace DotNetOAuth {
 			};
 			this.Channel.Send(requestAuthorization);
 			this.PendingRequest = this.Channel.DequeueIndirectOrResponseMessage();
+			return requestTokenResponse.TokenSecret;
 		}
 
-		internal GrantAccessTokenMessage ProcessUserAuthorization() {
+		internal GrantAccessTokenMessage ProcessUserAuthorization(string requestTokenSecret) {
 			var authorizationMessage = this.Channel.ReadFromRequest<DirectUserToConsumerMessage>();
 			
 			// Exchange request token for access token.
 			var requestAccess = new RequestAccessTokenMessage(ServiceProvider.AccessTokenEndpoint) {
 				RequestToken = authorizationMessage.RequestToken,
+				TokenSecret = requestTokenSecret,
 				ConsumerKey = this.ConsumerKey,
 				ConsumerSecret = this.ConsumerSecret,
 			};

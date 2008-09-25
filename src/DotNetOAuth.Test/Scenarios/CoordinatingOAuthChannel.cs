@@ -53,7 +53,7 @@ using System.Threading;
 		}
 
 		protected override void SendIndirectMessage(IDirectedProtocolMessage message) {
-			TestBase.TestLogger.InfoFormat("Sending indirect message: {0}", message);
+			TestBase.TestLogger.Info("Next response is an indirect message...");
 			// In this mock transport, direct and indirect messages are the same.
 			SendDirectMessageResponse(message);
 		}

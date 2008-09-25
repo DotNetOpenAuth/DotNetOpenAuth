@@ -34,8 +34,8 @@ namespace DotNetOAuth.Test {
 						ServiceProvider = sp,
 					};
 
-					consumer.RequestUserAuthorization(new Uri("http://printer.example.com/request_token_ready"));
-					var accessTokenMessage = consumer.ProcessUserAuthorization();
+					string requestTokenSecret = consumer.RequestUserAuthorization(new Uri("http://printer.example.com/request_token_ready"));
+					var accessTokenMessage = consumer.ProcessUserAuthorization(requestTokenSecret);
 				},
 				channel => {
 					sp.Channel = channel;

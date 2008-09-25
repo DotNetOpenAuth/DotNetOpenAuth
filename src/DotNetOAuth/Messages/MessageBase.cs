@@ -138,6 +138,9 @@ namespace DotNetOAuth.Messages {
 		public override string ToString() {
 			StringBuilder builder = new StringBuilder();
 			builder.AppendFormat(CultureInfo.InvariantCulture, "{0} message", GetType().Name);
+			if (recipient != null) {
+				builder.AppendFormat(CultureInfo.InvariantCulture, " as {0} to {1}", recipient.AllowedMethods, recipient.Location);
+			}
 			builder.AppendLine();
 			MessageDictionary dictionary = new MessageDictionary(this);
 			foreach (var pair in dictionary) {
