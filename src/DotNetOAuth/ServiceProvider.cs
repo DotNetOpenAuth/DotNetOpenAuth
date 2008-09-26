@@ -6,6 +6,7 @@
 
 namespace DotNetOAuth {
 	using System;
+	using System.Globalization;
 	using System.Web;
 	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.Messages;
@@ -127,6 +128,14 @@ namespace DotNetOAuth {
 		}
 
 		internal void SendAccessToken(RequestAccessTokenMessage request) {
+			if (!this.TokenManager.IsRequestTokenAuthorized(request.RequestToken)) {
+				throw new ProtocolException(
+					string.Format(
+						CultureInfo.CurrentCulture,
+						Strings.AccessTokenNotAuthorized,
+						request.RequestToken));
+			}
+
 			string accessToken = this.TokenGenerator.GenerateAccessToken(request.ConsumerKey);
 			string tokenSecret = this.TokenGenerator.GenerateSecret();
 			this.TokenManager.ExpireRequestTokenAndStoreNewAccessToken(request.ConsumerKey, request.RequestToken, accessToken, tokenSecret);

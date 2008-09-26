@@ -41,6 +41,7 @@ namespace DotNetOAuth.Test {
 					var requestTokenMessage = sp.ReadTokenRequest();
 					sp.SendUnauthorizedTokenResponse(requestTokenMessage);
 					var authRequest = sp.ReadAuthorizationRequest();
+					tokenManager.AuthorizedRequestToken(authRequest.RequestToken);
 					sp.SendAuthorizationResponse(authRequest);
 					var accessRequest = sp.ReadAccessTokenRequest();
 					sp.SendAccessToken(accessRequest);

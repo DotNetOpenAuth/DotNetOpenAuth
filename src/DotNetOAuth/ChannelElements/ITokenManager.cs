@@ -39,6 +39,18 @@ namespace DotNetOAuth.ChannelElements {
 		void StoreNewRequestToken(string consumerKey, string requestToken, string requestTokenSecret, IDictionary<string, string> parameters);
 
 		/// <summary>
+		/// Checks whether a given request token has already been authorized
+		/// by some user for use by the Consumer that requested it.
+		/// </summary>
+		/// <param name="requestToken">The Consumer's request token.</param>
+		/// <returns>
+		/// True if the request token has already been fully authorized by the user
+		/// who owns the relevant protected resources.  False if the token has not yet
+		/// been authorized, has expired or does not exist.
+		/// </returns>
+		bool IsRequestTokenAuthorized(string requestToken);
+
+		/// <summary>
 		/// Deletes a request token and its associated secret and stores a new access token and secret.
 		/// </summary>
 		/// <param name="consumerKey">The Consumer that is exchanging its request token for an access token.</param>

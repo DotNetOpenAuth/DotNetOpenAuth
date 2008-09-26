@@ -61,6 +61,15 @@ namespace DotNetOAuth {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot send access token to Consumer for request token &apos;{0}&apos; before it has been authorized..
+        /// </summary>
+        internal static string AccessTokenNotAuthorized {
+            get {
+                return ResourceManager.GetString("AccessTokenNotAuthorized", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to HttpContext.Current is null.  There must be an ASP.NET request in process for this operation to succeed..
         /// </summary>
         internal static string CurrentHttpContextRequired {
