@@ -31,8 +31,9 @@ namespace DotNetOAuth.ChannelElements {
 		/// </summary>
 		/// <param name="signingBindingElement">The binding element to use for signing.</param>
 		/// <param name="store">The web application store to use for nonces.</param>
-		internal OAuthChannel(SigningBindingElementBase signingBindingElement, INonceStore store)
-			: this(signingBindingElement, store, new OAuthMessageTypeProvider(), new StandardWebRequestHandler()) {
+		/// <param name="tokenManager">The token manager instance to use.</param>
+		internal OAuthChannel(SigningBindingElementBase signingBindingElement, INonceStore store, ITokenManager tokenManager)
+			: this(signingBindingElement, store, new OAuthMessageTypeProvider(tokenManager), new StandardWebRequestHandler()) {
 		}
 
 		/// <summary>

@@ -15,6 +15,23 @@ namespace DotNetOAuth.ChannelElements {
 	/// interface.
 	/// </summary>
 	internal class OAuthMessageTypeProvider : IMessageTypeProvider {
+		/// <summary>
+		/// The token manager to use for discerning between request and access tokens.
+		/// </summary>
+		private ITokenManager tokenManager;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="OAuthMessageTypeProvider"/> class.
+		/// </summary>
+		/// <param name="tokenManager">The token manager instance to use.</param>
+		internal OAuthMessageTypeProvider(ITokenManager tokenManager) {
+			if (tokenManager == null) {
+				throw new ArgumentNullException("tokenManager");
+			}
+
+			this.tokenManager = tokenManager;
+		}
+
 		#region IMessageTypeProvider Members
 
 		/// <summary>
@@ -48,7 +65,7 @@ namespace DotNetOAuth.ChannelElements {
 				// Discern between RequestAccessToken and AccessProtectedResources,
 				// which have all the same parameters, by figuring out what type of token
 				// is in the token parameter.
-				bool tokenTypeIsAccessToken = false; // TODO
+				bool tokenTypeIsAccessToken = this.tokenManager.GetTokenType(fields["oauth_token"]) == TokenType.AccessToken;
 
 				return tokenTypeIsAccessToken ? typeof(AccessProtectedResourcesMessage) :
 					typeof(RequestAccessTokenMessage);
