@@ -70,6 +70,15 @@ namespace DotNetOAuth {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The access token &apos;{0}&apos; is invalid or expired..
+        /// </summary>
+        internal static string BadAccessTokenInProtectedResourceRequest {
+            get {
+                return ResourceManager.GetString("BadAccessTokenInProtectedResourceRequest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to HttpContext.Current is null.  There must be an ASP.NET request in process for this operation to succeed..
         /// </summary>
         internal static string CurrentHttpContextRequired {

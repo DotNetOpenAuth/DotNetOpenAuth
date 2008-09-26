@@ -97,6 +97,22 @@ namespace DotNetOAuth.ChannelElements {
 		}
 
 		/// <summary>
+		/// Initializes a web request for sending by attaching a message to it.
+		/// Use this method to prepare a protected resource request that you do NOT
+		/// expect an OAuth message response to.
+		/// </summary>
+		/// <param name="request">The message to attach.</param>
+		/// <returns>The initialized web request.</returns>
+		internal HttpWebRequest InitializeRequest(IDirectedProtocolMessage request) {
+			if (request == null) {
+				throw new ArgumentNullException("request");
+			}
+
+			PrepareMessageForSending(request);
+			return this.InitializeRequestInternal(request);
+		}
+
+		/// <summary>
 		/// Searches an incoming HTTP request for data that could be used to assemble
 		/// a protocol request message.
 		/// </summary>
@@ -160,34 +176,7 @@ namespace DotNetOAuth.ChannelElements {
 		/// <param name="request">The message to send.</param>
 		/// <returns>The remote party's response.</returns>
 		protected override IProtocolMessage RequestInternal(IDirectedProtocolMessage request) {
-			if (request == null) {
-				throw new ArgumentNullException("request");
-			}
-			if (request.Recipient == null) {
-				throw new ArgumentException(MessagingStrings.DirectedMessageMissingRecipient, "request");
-			}
-			IOAuthDirectedMessage oauthRequest = request as IOAuthDirectedMessage;
-			if (oauthRequest == null) {
-				throw new ArgumentException(
-					string.Format(
-						CultureInfo.CurrentCulture,
-						MessagingStrings.UnexpectedType,
-						typeof(IOAuthDirectedMessage),
-						request.GetType()));
-			}
-
-			HttpWebRequest httpRequest;
-
-			HttpDeliveryMethod transmissionMethod = oauthRequest.HttpMethods;
-			if ((transmissionMethod & HttpDeliveryMethod.AuthorizationHeaderRequest) != 0) {
-				httpRequest = this.InitializeRequestAsAuthHeader(request);
-			} else if ((transmissionMethod & HttpDeliveryMethod.PostRequest) != 0) {
-				httpRequest = this.InitializeRequestAsPost(request);
-			} else if ((transmissionMethod & HttpDeliveryMethod.GetRequest) != 0) {
-				httpRequest = InitializeRequestAsGet(request);
-			} else {
-				throw new NotSupportedException();
-			}
+			HttpWebRequest httpRequest = this.InitializeRequestInternal(request);
 
 			Response response = this.webRequestHandler.GetResponse(httpRequest);
 			if (response.Body == null) {
@@ -242,6 +231,43 @@ namespace DotNetOAuth.ChannelElements {
 			MessagingUtilities.AppendQueryArgs(builder, fields);
 			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(builder.Uri);
 
+			return httpRequest;
+		}
+
+		/// <summary>
+		/// Initializes a web request by attaching a message to it.
+		/// </summary>
+		/// <param name="request">The message to attach.</param>
+		/// <returns>The initialized web request.</returns>
+		private HttpWebRequest InitializeRequestInternal(IDirectedProtocolMessage request) {
+			if (request == null) {
+				throw new ArgumentNullException("request");
+			}
+			if (request.Recipient == null) {
+				throw new ArgumentException(MessagingStrings.DirectedMessageMissingRecipient, "request");
+			}
+			IOAuthDirectedMessage oauthRequest = request as IOAuthDirectedMessage;
+			if (oauthRequest == null) {
+				throw new ArgumentException(
+					string.Format(
+						CultureInfo.CurrentCulture,
+						MessagingStrings.UnexpectedType,
+						typeof(IOAuthDirectedMessage),
+						request.GetType()));
+			}
+
+			HttpWebRequest httpRequest;
+
+			HttpDeliveryMethod transmissionMethod = oauthRequest.HttpMethods;
+			if ((transmissionMethod & HttpDeliveryMethod.AuthorizationHeaderRequest) != 0) {
+				httpRequest = this.InitializeRequestAsAuthHeader(request);
+			} else if ((transmissionMethod & HttpDeliveryMethod.PostRequest) != 0) {
+				httpRequest = this.InitializeRequestAsPost(request);
+			} else if ((transmissionMethod & HttpDeliveryMethod.GetRequest) != 0) {
+				httpRequest = InitializeRequestAsGet(request);
+			} else {
+				throw new NotSupportedException();
+			}
 			return httpRequest;
 		}
 

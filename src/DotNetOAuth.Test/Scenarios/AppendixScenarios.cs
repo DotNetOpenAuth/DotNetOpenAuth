@@ -7,6 +7,7 @@
 namespace DotNetOAuth.Test {
 	using System;
 	using System.Linq;
+	using System.Net;
 	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.Messaging;
 	using DotNetOAuth.Test.Mocks;
@@ -22,6 +23,7 @@ namespace DotNetOAuth.Test {
 				UserAuthorizationEndpoint = new ServiceProviderEndpoint("http://photos.example.net/authorize", HttpDeliveryMethod.GetRequest),
 				AccessTokenEndpoint = new ServiceProviderEndpoint("https://photos.example.net/access_token", HttpDeliveryMethod.PostRequest),
 			};
+			ServiceProviderEndpoint accessPhotoEndpoint = new ServiceProviderEndpoint("http://photos.example.net/photos?file=vacation.jpg&size=original", HttpDeliveryMethod.AuthorizationHeaderRequest);
 			var tokenManager = new InMemoryTokenManager();
 			var sp = new ServiceProvider(endpoints, tokenManager);
 			Consumer consumer = new Consumer(endpoints, new InMemoryTokenManager()) {
@@ -33,7 +35,11 @@ namespace DotNetOAuth.Test {
 				channel => {
 					consumer.Channel = channel;
 					consumer.RequestUserAuthorization(new Uri("http://printer.example.com/request_token_ready"));
-					var accessTokenMessage = consumer.ProcessUserAuthorization();
+					string accessToken = consumer.ProcessUserAuthorization();
+					WebRequest photoRequest = consumer.CreateAuthorizedRequest(accessPhotoEndpoint, accessToken);
+					Assert.IsNotNull(photoRequest);
+					Assert.IsFalse(string.IsNullOrEmpty(photoRequest.Headers[HttpRequestHeader.Authorization]));
+					TestContext.WriteLine("OAuth Authorization: {0}", photoRequest.Headers[HttpRequestHeader.Authorization]);
 				},
 				channel => {
 					tokenManager.AddConsumer(consumer.ConsumerKey, consumer.ConsumerSecret);
@@ -41,7 +47,7 @@ namespace DotNetOAuth.Test {
 					var requestTokenMessage = sp.ReadTokenRequest();
 					sp.SendUnauthorizedTokenResponse(requestTokenMessage);
 					var authRequest = sp.ReadAuthorizationRequest();
-					tokenManager.AuthorizedRequestToken(authRequest.RequestToken);
+					tokenManager.AuthorizeRequestToken(authRequest.RequestToken);
 					sp.SendAuthorizationResponse(authRequest);
 					var accessRequest = sp.ReadAccessTokenRequest();
 					sp.SendAccessToken(accessRequest);

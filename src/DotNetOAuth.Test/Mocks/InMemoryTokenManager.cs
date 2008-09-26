@@ -7,14 +7,22 @@
 namespace DotNetOAuth.Test.Mocks {
 	using System;
 	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
+	using System.Diagnostics;
 	using DotNetOAuth.ChannelElements;
 
 	internal class InMemoryTokenManager : ITokenManager {
 		private Dictionary<string, string> consumersAndSecrets = new Dictionary<string, string>();
 		private Dictionary<string, string> tokensAndSecrets = new Dictionary<string, string>();
-		private List<string> authorizedRequestTokens = new List<string>();
+
+		/// <summary>
+		/// Request tokens that have been issued, and whether they have been authorized yet.
+		/// </summary>
+		private Dictionary<string, bool> requestTokens = new Dictionary<string, bool>();
+
+		/// <summary>
+		/// Access tokens that have been issued and have not yet expired.
+		/// </summary>
+		private List<string> accessTokens = new List<string>();
 
 		#region ITokenManager Members
 
@@ -28,6 +36,7 @@ namespace DotNetOAuth.Test.Mocks {
 
 		public void StoreNewRequestToken(string consumerKey, string requestToken, string requestTokenSecret, IDictionary<string, string> parameters) {
 			this.tokensAndSecrets[requestToken] = requestTokenSecret;
+			this.requestTokens.Add(requestToken, false);
 		}
 
 		/// <summary>
@@ -41,13 +50,33 @@ namespace DotNetOAuth.Test.Mocks {
 		/// been authorized, has expired or does not exist.
 		/// </returns>
 		public bool IsRequestTokenAuthorized(string requestToken) {
-			return this.authorizedRequestTokens.Contains(requestToken);
+			return this.requestTokens[requestToken];
 		}
 
 		public void ExpireRequestTokenAndStoreNewAccessToken(string consumerKey, string requestToken, string accessToken, string accessTokenSecret) {
-			this.authorizedRequestTokens.Remove(requestToken);
+			// The following line is commented out because consumers don't mark their own tokens
+			// as authorized... only the SPs do.  And since we multi-purpose this test class for
+			// both SPs and Consumers, we won't do this extra check.
+			////Debug.Assert(this.requestTokens[requestToken], "Unauthorized token should not be exchanged for access token.");
+			this.requestTokens.Remove(requestToken);
+			this.accessTokens.Add(accessToken);
 			this.tokensAndSecrets.Remove(requestToken);
 			this.tokensAndSecrets[accessToken] = accessTokenSecret;
+		}
+
+		/// <summary>
+		/// Classifies a token as a request token or an access token.
+		/// </summary>
+		/// <param name="token">The token to classify.</param>
+		/// <returns>Request or Access token, or invalid if the token is not recognized.</returns>
+		public TokenType GetTokenType(string token) {
+			if (this.requestTokens.ContainsKey(token)) {
+				return TokenType.RequestToken;
+			} else if (this.accessTokens.Contains(token)) {
+				return TokenType.AccessToken;
+			} else {
+				return TokenType.InvalidToken;
+			}
 		}
 
 		#endregion
@@ -56,12 +85,12 @@ namespace DotNetOAuth.Test.Mocks {
 			this.consumersAndSecrets.Add(key, secret);
 		}
 
-		internal void AuthorizedRequestToken(string requestToken) {
+		internal void AuthorizeRequestToken(string requestToken) {
 			if (requestToken == null) {
 				throw new ArgumentNullException("requestToken");
 			}
 
-			this.authorizedRequestTokens.Add(requestToken);
+			this.requestTokens[requestToken] = true;
 		}
 	}
 }

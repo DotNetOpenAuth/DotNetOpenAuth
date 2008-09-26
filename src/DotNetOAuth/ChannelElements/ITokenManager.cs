@@ -26,6 +26,7 @@ namespace DotNetOAuth.ChannelElements {
 		/// </summary>
 		/// <param name="token">The request or access token.</param>
 		/// <returns>The secret associated with the given token.</returns>
+		/// <exception cref="ArgumentException">Thrown if the secret cannot be found for the given token.</exception>
 		string GetTokenSecret(string token);
 
 		/// <summary>
@@ -63,5 +64,12 @@ namespace DotNetOAuth.ChannelElements {
 		/// to the new Access Token.
 		/// </remarks>
 		void ExpireRequestTokenAndStoreNewAccessToken(string consumerKey, string requestToken, string accessToken, string accessTokenSecret);
+
+		/// <summary>
+		/// Classifies a token as a request token or an access token.
+		/// </summary>
+		/// <param name="token">The token to classify.</param>
+		/// <returns>Request or Access token, or invalid if the token is not recognized.</returns>
+		TokenType GetTokenType(string token);
 	}
 }

@@ -147,6 +147,19 @@ namespace DotNetOAuth {
 			this.Channel.Send(grantAccess);
 		}
 
+		internal string GetAccessTokenInRequest() {
+			var accessMessage = this.Channel.ReadFromRequest<AccessProtectedResourcesMessage>();
+			if (this.TokenManager.GetTokenType(accessMessage.AccessToken) != TokenType.AccessToken) {
+				throw new ProtocolException(
+					string.Format(
+						CultureInfo.CurrentCulture,
+						Strings.BadAccessTokenInProtectedResourceRequest,
+						accessMessage.AccessToken));
+			}
+
+			return accessMessage.AccessToken;
+		}
+
 		private void TokenSignatureVerificationCallback(ITamperResistantOAuthMessage message) {
 			message.ConsumerSecret = this.TokenManager.GetConsumerSecret(message.ConsumerKey);
 

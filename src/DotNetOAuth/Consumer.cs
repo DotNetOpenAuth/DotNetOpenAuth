@@ -106,7 +106,7 @@ namespace DotNetOAuth {
 		/// Processes an incoming authorization-granted message from an SP and obtains an access token.
 		/// </summary>
 		/// <returns>The access token.</returns>
-		internal string ProcessUserAuthorization() {
+		public string ProcessUserAuthorization() {
 			var authorizationMessage = this.Channel.ReadFromRequest<DirectUserToConsumerMessage>();
 
 			// Exchange request token for access token.
@@ -120,6 +120,60 @@ namespace DotNetOAuth {
 			var grantAccess = this.Channel.Request<GrantAccessTokenMessage>(requestAccess);
 			this.TokenManager.ExpireRequestTokenAndStoreNewAccessToken(this.ConsumerKey, authorizationMessage.RequestToken, grantAccess.AccessToken, grantAccess.TokenSecret);
 			return grantAccess.AccessToken;
+		}
+
+		/// <summary>
+		/// Creates a web request prepared with OAuth authorization 
+		/// that may be further tailored by adding parameters by the caller.
+		/// </summary>
+		/// <param name="endpoint">The URL and method on the Service Provider to send the request to.</param>
+		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
+		/// <returns>The initialized WebRequest object.</returns>
+		public WebRequest CreateAuthorizedRequest(ServiceProviderEndpoint endpoint, string accessToken) {
+			if (endpoint == null) {
+				throw new ArgumentNullException("endpoint");
+			}
+			if (String.IsNullOrEmpty(accessToken)) {
+				throw new ArgumentNullException("accessToken");
+			}
+
+			AccessProtectedResourcesMessage message = new AccessProtectedResourcesMessage(endpoint) {
+				AccessToken = accessToken,
+				TokenSecret = this.TokenManager.GetTokenSecret(accessToken),
+				ConsumerKey = this.ConsumerKey,
+				ConsumerSecret = this.ConsumerSecret,
+			};
+
+			WebRequest wr = this.Channel.InitializeRequest(message);
+			return wr;
+		}
+
+		/// <summary>
+		/// Creates a web request prepared with OAuth authorization 
+		/// that may be further tailored by adding parameters by the caller.
+		/// </summary>
+		/// <param name="endpoint">The URL and method on the Service Provider to send the request to.</param>
+		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
+		/// <returns>The initialized WebRequest object.</returns>
+		/// <exception cref="WebException">Thrown if the request fails for any reason after it is sent to the Service Provider.</exception>
+		public Response SendAuthorizedRequest(ServiceProviderEndpoint endpoint, string accessToken) {
+			if (endpoint == null) {
+				throw new ArgumentNullException("endpoint");
+			}
+			if (String.IsNullOrEmpty(accessToken)) {
+				throw new ArgumentNullException("accessToken");
+			}
+
+			AccessProtectedResourcesMessage message = new AccessProtectedResourcesMessage(endpoint) {
+				AccessToken = accessToken,
+				TokenSecret = this.TokenManager.GetTokenSecret(accessToken),
+				ConsumerKey = this.ConsumerKey,
+				ConsumerSecret = this.ConsumerSecret,
+			};
+
+			HttpWebRequest wr = this.Channel.InitializeRequest(message);
+			Response response = new Response((HttpWebResponse)wr.GetResponse());
+			return response;
 		}
 	}
 }

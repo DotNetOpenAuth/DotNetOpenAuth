@@ -491,6 +491,35 @@ namespace DotNetOAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Prepares a message for transmit by applying signatures, nonces, etc.
+		/// </summary>
+		/// <param name="message">The message to prepare for sending.</param>
+		/// <remarks>
+		/// This method should NOT be called by derived types
+		/// except when sending ONE WAY request messages.
+		/// </remarks>
+		protected void PrepareMessageForSending(IProtocolMessage message) {
+			if (message == null) {
+				throw new ArgumentNullException("message");
+			}
+
+			MessageProtection appliedProtection = MessageProtection.None;
+			foreach (IChannelBindingElement bindingElement in this.bindingElements) {
+				if (bindingElement.PrepareMessageForSending(message)) {
+					appliedProtection |= bindingElement.Protection;
+				}
+			}
+
+			// Ensure that the message's protection requirements have been satisfied.
+			if ((message.RequiredProtection & appliedProtection) != message.RequiredProtection) {
+				throw new UnprotectedMessageException(message, appliedProtection);
+			}
+
+			EnsureValidMessageParts(message);
+			message.EnsureValidMessage();
+		}
+
+		/// <summary>
 		/// Calculates a fairly accurate estimation on the size of a message that contains
 		/// a given set of fields.
 		/// </summary>
@@ -598,29 +627,6 @@ namespace DotNetOAuth.Messaging {
 			MessageDictionary dictionary = new MessageDictionary(message);
 			MessageDescription description = MessageDescription.Get(message.GetType());
 			description.EnsureRequiredMessagePartsArePresent(dictionary.Keys);
-		}
-
-		/// <summary>
-		/// Prepares a message for transmit by applying signatures, nonces, etc.
-		/// </summary>
-		/// <param name="message">The message to prepare for sending.</param>
-		private void PrepareMessageForSending(IProtocolMessage message) {
-			Debug.Assert(message != null, "message == null");
-
-			MessageProtection appliedProtection = MessageProtection.None;
-			foreach (IChannelBindingElement bindingElement in this.bindingElements) {
-				if (bindingElement.PrepareMessageForSending(message)) {
-					appliedProtection |= bindingElement.Protection;
-				}
-			}
-
-			// Ensure that the message's protection requirements have been satisfied.
-			if ((message.RequiredProtection & appliedProtection) != message.RequiredProtection) {
-				throw new UnprotectedMessageException(message, appliedProtection);
-			}
-
-			EnsureValidMessageParts(message);
-			message.EnsureValidMessage();
 		}
 
 		/// <summary>

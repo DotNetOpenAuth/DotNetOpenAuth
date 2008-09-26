@@ -120,6 +120,9 @@
   <data name="AccessTokenNotAuthorized" xml:space="preserve">
     <value>Cannot send access token to Consumer for request token '{0}' before it has been authorized.</value>
   </data>
+  <data name="BadAccessTokenInProtectedResourceRequest" xml:space="preserve">
+    <value>The access token '{0}' is invalid or expired.</value>
+  </data>
   <data name="CurrentHttpContextRequired" xml:space="preserve">
     <value>HttpContext.Current is null.  There must be an ASP.NET request in process for this operation to succeed.</value>
   </data>
