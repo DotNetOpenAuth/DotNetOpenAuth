@@ -47,5 +47,14 @@ namespace DotNetOAuth.ChannelElements {
 		protected override string GetSignature(ITamperResistantOAuthMessage message) {
 			return Uri.EscapeDataString(GetConsumerAndTokenSecretString(message));
 		}
+
+		/// <summary>
+		/// Checks whether this binding element applies to this message.
+		/// </summary>
+		/// <param name="message">The message that needs to be signed.</param>
+		/// <returns>True if this binding element can be used to sign the message.  False otherwise.</returns>
+		protected override bool IsMessageApplicable(ITamperResistantOAuthMessage message) {
+			return string.Equals(message.Recipient.Scheme, "https", StringComparison.OrdinalIgnoreCase);
+		}
 	}
 }

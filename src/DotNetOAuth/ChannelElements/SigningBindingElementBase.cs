@@ -61,7 +61,7 @@ namespace DotNetOAuth.ChannelElements {
 		/// <returns>True if the message was signed.  False otherwise.</returns>
 		public bool PrepareMessageForSending(IProtocolMessage message) {
 			var signedMessage = message as ITamperResistantOAuthMessage;
-			if (signedMessage != null) {
+			if (signedMessage != null && this.IsMessageApplicable(signedMessage)) {
 				signedMessage.SignatureMethod = this.signatureMethod;
 				signedMessage.Signature = this.GetSignature(signedMessage);
 				return true;
@@ -168,6 +168,15 @@ namespace DotNetOAuth.ChannelElements {
 		/// <param name="message">The message to sign.</param>
 		/// <returns>The signature for the message.</returns>
 		protected abstract string GetSignature(ITamperResistantOAuthMessage message);
+
+		/// <summary>
+		/// Checks whether this binding element applies to this message.
+		/// </summary>
+		/// <param name="message">The message that needs to be signed.</param>
+		/// <returns>True if this binding element can be used to sign the message.  False otherwise.</returns>
+		protected virtual bool IsMessageApplicable(ITamperResistantOAuthMessage message) {
+			return true;
+		}
 
 		/// <summary>
 		/// Gets the ConsumerSecret&amp;TokenSecret" string, allowing either property to be empty or null.
