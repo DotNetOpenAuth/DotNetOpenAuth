@@ -8,6 +8,7 @@ namespace DotNetOAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
+	using System.IO;
 	using System.Linq;
 	using System.Net;
 	using System.Text;
@@ -42,6 +43,36 @@ namespace DotNetOAuth.Messaging {
 						response.AddHeader(headerName, headers[headerName]);
 						break;
 				}
+			}
+		}
+
+		/// <summary>
+		/// Copies the contents of one stream to another.
+		/// </summary>
+		/// <param name="copyFrom">The stream to copy from, at the position where copying should begin.</param>
+		/// <param name="copyTo">The stream to copy to, at the position where bytes should be written.</param>
+		/// <remarks>
+		/// Copying begins at the streams' current positions.
+		/// The positions are NOT reset after copying is complete.
+		/// </remarks>
+		internal static void CopyTo(this Stream copyFrom, Stream copyTo) {
+			if (copyFrom == null) {
+				throw new ArgumentNullException("copyFrom");
+			}
+			if (copyTo == null) {
+				throw new ArgumentNullException("copyTo");
+			}
+			if (!copyFrom.CanRead) {
+				throw new ArgumentException(MessagingStrings.StreamUnreadable, "copyFrom");
+			}
+			if (!copyTo.CanWrite) {
+				throw new ArgumentException(MessagingStrings.StreamUnwritable, "copyTo");
+			}
+
+			byte[] buffer = new byte[1024];
+			int readBytes;
+			while ((readBytes = copyFrom.Read(buffer, 0, 1024)) > 0) {
+				copyTo.Write(buffer, 0, readBytes);
 			}
 		}
 

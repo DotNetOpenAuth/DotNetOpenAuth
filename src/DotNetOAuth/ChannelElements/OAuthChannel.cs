@@ -180,7 +180,7 @@ namespace DotNetOAuth.ChannelElements {
 			HttpWebRequest httpRequest = this.InitializeRequestInternal(request);
 
 			Response response = this.webRequestHandler.GetResponse(httpRequest);
-			if (response.Body == null) {
+			if (response.ResponseStream == null) {
 				return null;
 			}
 			var responseFields = HttpUtility.ParseQueryString(response.Body).ToDictionary();

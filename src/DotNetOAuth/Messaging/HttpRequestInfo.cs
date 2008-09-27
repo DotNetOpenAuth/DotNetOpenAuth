@@ -58,6 +58,17 @@ namespace DotNetOAuth.Messaging {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
 		/// </summary>
+		/// <param name="request">The HttpWebRequest (that was never used) to copy from.</param>
+		internal HttpRequestInfo(WebRequest request) {
+			this.HttpMethod = request.Method;
+			this.Url = request.RequestUri;
+			this.Headers = GetHeaderCollection(request.Headers);
+			this.InputStream = null;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
+		/// </summary>
 		/// <param name="message">The message being passed in through a mock transport.</param>
 		internal HttpRequestInfo(IProtocolMessage message) {
 			this.Message = message;

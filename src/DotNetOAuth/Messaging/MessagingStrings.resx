@@ -189,6 +189,12 @@
   <data name="SigningNotSupported" xml:space="preserve">
     <value>This channel does not support signing messages.  To support signing messages, a derived Channel type must override the Sign and IsSignatureValid methods.</value>
   </data>
+  <data name="StreamUnreadable" xml:space="preserve">
+    <value>The stream's CanRead property returned false.</value>
+  </data>
+  <data name="StreamUnwritable" xml:space="preserve">
+    <value>The stream's CanWrite property returned false.</value>
+  </data>
   <data name="TooManyBindingsOfferingSameProtection" xml:space="preserve">
     <value>Expected at most 1 binding element offering the {0} protection, but found {1}.</value>
   </data>

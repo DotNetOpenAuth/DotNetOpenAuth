@@ -6,6 +6,7 @@
 
 namespace DotNetOAuth.Test {
 	using System;
+	using System.IO;
 	using System.Linq;
 	using System.Net;
 	using DotNetOAuth.ChannelElements;
@@ -36,10 +37,12 @@ namespace DotNetOAuth.Test {
 					consumer.Channel = channel;
 					consumer.RequestUserAuthorization(new Uri("http://printer.example.com/request_token_ready"));
 					string accessToken = consumer.ProcessUserAuthorization();
-					WebRequest photoRequest = consumer.CreateAuthorizedRequest(accessPhotoEndpoint, accessToken);
-					Assert.IsNotNull(photoRequest);
-					Assert.IsFalse(string.IsNullOrEmpty(photoRequest.Headers[HttpRequestHeader.Authorization]));
-					TestContext.WriteLine("OAuth Authorization: {0}", photoRequest.Headers[HttpRequestHeader.Authorization]);
+					var photoRequest = consumer.CreateAuthorizedRequestInternal(accessPhotoEndpoint, accessToken);
+					Response protectedPhoto = channel.RequestProtectedResource(photoRequest);
+					Assert.IsNotNull(protectedPhoto);
+					Assert.AreEqual(HttpStatusCode.OK, protectedPhoto.Status);
+					Assert.AreEqual("image/jpeg", protectedPhoto.Headers[HttpResponseHeader.ContentType]);
+					Assert.AreNotEqual(0, protectedPhoto.ResponseStream.Length);
 				},
 				channel => {
 					tokenManager.AddConsumer(consumer.ConsumerKey, consumer.ConsumerSecret);
@@ -51,9 +54,16 @@ namespace DotNetOAuth.Test {
 					sp.SendAuthorizationResponse(authRequest);
 					var accessRequest = sp.ReadAccessTokenRequest();
 					sp.SendAccessToken(accessRequest);
+					string accessToken = sp.GetAccessTokenInRequest();
+					channel.SendDirectRawResponse(new Response {
+						ResponseStream = new MemoryStream(new byte[] { 0x33, 0x66 }),
+						Headers = new WebHeaderCollection {
+									{ HttpResponseHeader.ContentType, "image/jpeg" },
+								},
+					});
 				});
 			coordinator.SigningElement = (SigningBindingElementBase)sp.Channel.BindingElements.Single(el => el is SigningBindingElementBase);
-			coordinator.Start();
+			coordinator.Run();
 		}
 	}
 }

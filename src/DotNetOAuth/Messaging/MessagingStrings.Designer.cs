@@ -277,6 +277,24 @@ namespace DotNetOAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The stream&apos;s CanRead property returned false..
+        /// </summary>
+        internal static string StreamUnreadable {
+            get {
+                return ResourceManager.GetString("StreamUnreadable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stream&apos;s CanWrite property returned false..
+        /// </summary>
+        internal static string StreamUnwritable {
+            get {
+                return ResourceManager.GetString("StreamUnwritable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Expected at most 1 binding element offering the {0} protection, but found {1}..
         /// </summary>
         internal static string TooManyBindingsOfferingSameProtection {

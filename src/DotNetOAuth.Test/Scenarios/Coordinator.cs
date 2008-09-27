@@ -32,7 +32,7 @@ namespace DotNetOAuth.Test.Scenarios {
 			this.serviceProviderAction = serviceProviderAction;
 		}
 
-		internal delegate void Actor(OAuthChannel channel);
+		internal delegate void Actor(CoordinatingOAuthChannel channel);
 
 		/// <summary>
 		/// Gets or sets the signing element the Consumer channel should use.
@@ -45,7 +45,7 @@ namespace DotNetOAuth.Test.Scenarios {
 		/// <summary>
 		/// Starts the simulation.
 		/// </summary>
-		internal void Start() {
+		internal void Run() {
 			if (this.SigningElement == null) {
 				throw new InvalidOperationException("SigningElement must be set first.");
 			}
@@ -59,7 +59,9 @@ namespace DotNetOAuth.Test.Scenarios {
 			Thread consumerThread = null, serviceProviderThread = null;
 			Exception failingException = null;
 
-			Action<Actor, OAuthChannel> safeWrapper = (actor, channel) => {
+			// Each thread we create needs a surrounding exception catcher so that we can
+			// terminate the other thread and inform the test host that the test failed.
+			Action<Actor, CoordinatingOAuthChannel> safeWrapper = (actor, channel) => {
 				try {
 					actor(channel);
 				} catch (Exception ex) {
@@ -75,13 +77,22 @@ namespace DotNetOAuth.Test.Scenarios {
 				}
 			};
 
+			// Run the threads, and wait for them to complete.
+			// If this main thread is aborted (test run aborted), go ahead and abort the other two threads.
 			consumerThread = new Thread(() => { safeWrapper(consumerAction, consumerChannel); });
 			serviceProviderThread = new Thread(() => { safeWrapper(serviceProviderAction, serviceProviderChannel); });
-			consumerThread.Start();
-			serviceProviderThread.Start();
-			consumerThread.Join();
-			serviceProviderThread.Join();
+			try {
+				consumerThread.Start();
+				serviceProviderThread.Start();
+				consumerThread.Join();
+				serviceProviderThread.Join();
+			} catch (ThreadAbortException) {
+				consumerThread.Abort();
+				serviceProviderThread.Abort();
+				throw;
+			}
 
+			// Use the failing reason of a failing sub-thread as our reason, if anything failed.
 			if (failingException != null) {
 				throw new AssertFailedException("Coordinator thread threw unhandled exception: " + failingException, failingException);
 			}

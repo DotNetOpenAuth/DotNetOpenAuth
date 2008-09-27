@@ -9,6 +9,7 @@ namespace DotNetOAuth.Test.Scenarios {
 	using System.Reflection;
 	using System.Threading;
 	using DotNetOAuth.ChannelElements;
+	using DotNetOAuth.Messages;
 	using DotNetOAuth.Messaging;
 	using DotNetOAuth.Messaging.Bindings;
 	using DotNetOAuth.Messaging.Reflection;
@@ -20,6 +21,7 @@ namespace DotNetOAuth.Test.Scenarios {
 	internal class CoordinatingOAuthChannel : OAuthChannel {
 		private EventWaitHandle incomingMessageSignal = new AutoResetEvent(false);
 		private IProtocolMessage incomingMessage;
+		private Response incomingRawResponse;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CoordinatingOAuthChannel"/> class for Consumers.
@@ -39,6 +41,20 @@ namespace DotNetOAuth.Test.Scenarios {
 		/// Gets or sets the coordinating channel used by the other party.
 		/// </summary>
 		internal CoordinatingOAuthChannel RemoteChannel { get; set; }
+
+		internal Response RequestProtectedResource(AccessProtectedResourcesMessage request) {
+			TestBase.TestLogger.InfoFormat("Sending protected resource request: {0}", request);
+			PrepareMessageForSending(request);
+			// Drop the outgoing message in the other channel's in-slot and let them know it's there.
+			this.RemoteChannel.incomingMessage = request;
+			this.RemoteChannel.incomingMessageSignal.Set();
+			return this.AwaitIncomingRawResponse();
+		}
+
+		internal void SendDirectRawResponse(Response response) {
+			this.RemoteChannel.incomingRawResponse = response;
+			this.RemoteChannel.incomingMessageSignal.Set();
+		}
 
 		protected override IProtocolMessage RequestInternal(IDirectedProtocolMessage request) {
 			TestBase.TestLogger.InfoFormat("Sending request: {0}", request);
@@ -66,13 +82,20 @@ namespace DotNetOAuth.Test.Scenarios {
 		}
 
 		protected override IProtocolMessage ReadFromRequestInternal(HttpRequestInfo request) {
-			return request.Message;
+			return request.Message ?? base.ReadFromRequestInternal(request);
 		}
 
 		private IProtocolMessage AwaitIncomingMessage() {
 			this.incomingMessageSignal.WaitOne();
 			IProtocolMessage response = this.incomingMessage;
 			this.incomingMessage = null;
+			return response;
+		}
+
+		private Response AwaitIncomingRawResponse() {
+			this.incomingMessageSignal.WaitOne();
+			Response response = this.incomingRawResponse;
+			this.incomingRawResponse = null;
 			return response;
 		}
 
