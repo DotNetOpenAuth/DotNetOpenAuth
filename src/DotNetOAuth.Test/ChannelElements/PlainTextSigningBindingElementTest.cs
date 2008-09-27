@@ -14,7 +14,7 @@ namespace DotNetOAuth.Test.ChannelElements
 	[TestClass]
 	public class PlainTextSigningBindingElementTest {
 		[TestMethod]
-		public void GetSignatureTest() {
+		public void HttpsSignatureGeneration() {
 			SigningBindingElementBase target = new PlainTextSigningBindingElement();
 			ServiceProviderEndpoint endpoint = new ServiceProviderEndpoint("https://localtest", HttpDeliveryMethod.GetRequest);
 			ITamperResistantOAuthMessage message = new RequestTokenMessage(endpoint);
@@ -26,7 +26,31 @@ namespace DotNetOAuth.Test.ChannelElements
 		}
 
 		[TestMethod]
-		public void GetNonEncryptedSignature() {
+		public void HttpsSignatureVerification() {
+			ServiceProviderEndpoint endpoint = new ServiceProviderEndpoint("https://localtest", HttpDeliveryMethod.GetRequest);
+			ITamperProtectionChannelBindingElement target = new PlainTextSigningBindingElement();
+			ITamperResistantOAuthMessage message = new RequestTokenMessage(endpoint);
+			message.ConsumerSecret = "cs";
+			message.TokenSecret = "ts";
+			message.SignatureMethod = "PLAINTEXT";
+			message.Signature = "cs%26ts";
+			Assert.IsTrue(target.PrepareMessageForReceiving(message));
+		}
+
+		[TestMethod]
+		public void HttpsSignatureVerificationNotApplicable() {
+			SigningBindingElementBase target = new PlainTextSigningBindingElement();
+			ServiceProviderEndpoint endpoint = new ServiceProviderEndpoint("https://localtest", HttpDeliveryMethod.GetRequest);
+			ITamperResistantOAuthMessage message = new RequestTokenMessage(endpoint);
+			message.ConsumerSecret = "cs";
+			message.TokenSecret = "ts";
+			message.SignatureMethod = "ANOTHERALGORITHM";
+			message.Signature = "somethingelse";
+			Assert.IsFalse(target.PrepareMessageForReceiving(message), "PLAINTEXT binding element should opt-out where it doesn't understand.");
+		}
+
+		[TestMethod]
+		public void HttpSignatureGeneration() {
 			SigningBindingElementBase target = new PlainTextSigningBindingElement();
 			ServiceProviderEndpoint endpoint = new ServiceProviderEndpoint("http://localtest", HttpDeliveryMethod.GetRequest);
 			ITamperResistantOAuthMessage message = new RequestTokenMessage(endpoint);
@@ -37,6 +61,18 @@ namespace DotNetOAuth.Test.ChannelElements
 			Assert.IsFalse(target.PrepareMessageForSending(message));
 			Assert.IsNull(message.SignatureMethod);
 			Assert.IsNull(message.Signature);
+		}
+
+		[TestMethod]
+		public void HttpSignatureVerification() {
+			SigningBindingElementBase target = new PlainTextSigningBindingElement();
+			ServiceProviderEndpoint endpoint = new ServiceProviderEndpoint("http://localtest", HttpDeliveryMethod.GetRequest);
+			ITamperResistantOAuthMessage message = new RequestTokenMessage(endpoint);
+			message.ConsumerSecret = "cs";
+			message.TokenSecret = "ts";
+			message.SignatureMethod = "PLAINTEXT";
+			message.Signature = "cs%26ts";
+			Assert.IsFalse(target.PrepareMessageForReceiving(message), "PLAINTEXT signature binding element should refuse to participate in non-encrypted messages.");
 		}
 	}
 }

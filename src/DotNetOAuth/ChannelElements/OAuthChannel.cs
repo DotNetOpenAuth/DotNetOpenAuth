@@ -32,7 +32,7 @@ namespace DotNetOAuth.ChannelElements {
 		/// <param name="signingBindingElement">The binding element to use for signing.</param>
 		/// <param name="store">The web application store to use for nonces.</param>
 		/// <param name="tokenManager">The token manager instance to use.</param>
-		internal OAuthChannel(SigningBindingElementBase signingBindingElement, INonceStore store, ITokenManager tokenManager)
+		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager)
 			: this(signingBindingElement, store, new OAuthMessageTypeProvider(tokenManager), new StandardWebRequestHandler()) {
 		}
 
@@ -52,7 +52,7 @@ namespace DotNetOAuth.ChannelElements {
 		/// <remarks>
 		/// This overload for testing purposes only.
 		/// </remarks>
-		internal OAuthChannel(SigningBindingElementBase signingBindingElement, INonceStore store, IMessageTypeProvider messageTypeProvider, IWebRequestHandler webRequestHandler)
+		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IMessageTypeProvider messageTypeProvider, IWebRequestHandler webRequestHandler)
 			: base(messageTypeProvider, signingBindingElement, new StandardExpirationBindingElement(), new StandardReplayProtectionBindingElement(store)) {
 			if (webRequestHandler == null) {
 				throw new ArgumentNullException("webRequestHandler");

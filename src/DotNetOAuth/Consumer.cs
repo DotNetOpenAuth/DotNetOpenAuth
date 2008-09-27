@@ -30,7 +30,10 @@ namespace DotNetOAuth {
 			}
 
 			this.WebRequestHandler = new StandardWebRequestHandler();
-			SigningBindingElementBase signingElement = new PlainTextSigningBindingElement();
+			ITamperProtectionChannelBindingElement signingElement = new SigningBindingElementChain(new ITamperProtectionChannelBindingElement[] {
+				new PlainTextSigningBindingElement(),
+				new HmacSha1SigningBindingElement(),
+			});
 			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
 			this.Channel = new OAuthChannel(signingElement, store, new OAuthMessageTypeProvider(tokenManager), this.WebRequestHandler);
 			this.ServiceProvider = endpoints;

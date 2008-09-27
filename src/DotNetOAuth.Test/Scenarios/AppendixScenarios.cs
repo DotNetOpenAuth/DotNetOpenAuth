@@ -62,7 +62,7 @@ namespace DotNetOAuth.Test {
 								},
 					});
 				});
-			coordinator.SigningElement = (SigningBindingElementBase)sp.Channel.BindingElements.Single(el => el is SigningBindingElementBase);
+			coordinator.SigningElement = (ITamperProtectionChannelBindingElement)sp.Channel.BindingElements.Single(el => el is ITamperProtectionChannelBindingElement);
 			coordinator.Run();
 		}
 	}

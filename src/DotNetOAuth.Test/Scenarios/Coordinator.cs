@@ -7,7 +7,7 @@
 namespace DotNetOAuth.Test.Scenarios {
 	using System;
 	using System.Threading;
-	using DotNetOAuth.ChannelElements;
+	using DotNetOAuth.Messaging;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	/// <summary>
@@ -40,7 +40,7 @@ namespace DotNetOAuth.Test.Scenarios {
 		/// <remarks>
 		/// The Service Provider never signs a message, so no property is necessary for that.
 		/// </remarks>
-		internal SigningBindingElementBase SigningElement { get; set; }
+		internal ITamperProtectionChannelBindingElement SigningElement { get; set; }
 
 		/// <summary>
 		/// Starts the simulation.

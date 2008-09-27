@@ -29,7 +29,7 @@ namespace DotNetOAuth.Test.Scenarios {
 		/// <param name="signingBindingElement">
 		/// The signing element for the Consumer to use.  Null for the Service Provider.
 		/// </param>
-		internal CoordinatingOAuthChannel(SigningBindingElementBase signingBindingElement)
+		internal CoordinatingOAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement)
 			: base(
 			signingBindingElement,
 			new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge),

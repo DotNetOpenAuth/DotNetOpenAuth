@@ -132,4 +132,7 @@
   <data name="RequestUrlMustNotHaveOAuthParameters" xml:space="preserve">
     <value>The request URL query MUST NOT contain any OAuth Protocol Parameters.</value>
   </data>
+  <data name="SigningElementsMustShareSameProtection" xml:space="preserve">
+    <value>All signing elements must offer the same message protection.</value>
+  </data>
 </root>

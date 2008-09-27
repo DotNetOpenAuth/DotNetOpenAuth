@@ -241,6 +241,15 @@ namespace DotNetOAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The list is empty..
+        /// </summary>
+        internal static string SequenceContainsNoElements {
+            get {
+                return ResourceManager.GetString("SequenceContainsNoElements", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The list contains a null element..
         /// </summary>
         internal static string SequenceContainsNullElement {
@@ -255,15 +264,6 @@ namespace DotNetOAuth.Messaging {
         internal static string SignatureInvalid {
             get {
                 return ResourceManager.GetString("SignatureInvalid", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Signature verification required, but required callback delegate was not provided..
-        /// </summary>
-        internal static string SignatureVerificationCallbackMissing {
-            get {
-                return ResourceManager.GetString("SignatureVerificationCallbackMissing", resourceCulture);
             }
         }
         

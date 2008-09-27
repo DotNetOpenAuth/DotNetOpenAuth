@@ -38,7 +38,11 @@ namespace DotNetOAuth {
 				throw new ArgumentNullException("tokenManager");
 			}
 
-			SigningBindingElementBase signingElement = new PlainTextSigningBindingElement(this.TokenSignatureVerificationCallback);
+			ITamperProtectionChannelBindingElement signingElement = new SigningBindingElementChain(new ITamperProtectionChannelBindingElement[] {
+				new PlainTextSigningBindingElement(),
+				new HmacSha1SigningBindingElement(),
+			});
+			signingElement.SignatureVerificationCallback = this.TokenSignatureVerificationCallback;
 			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
 			this.Endpoints = endpoints;
 			this.Channel = new OAuthChannel(signingElement, store, tokenManager);

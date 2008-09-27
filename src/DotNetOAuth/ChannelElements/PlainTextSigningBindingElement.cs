@@ -17,23 +17,10 @@ namespace DotNetOAuth.ChannelElements {
 	/// </summary>
 	internal class PlainTextSigningBindingElement : SigningBindingElementBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="PlainTextSigningBindingElement"/> class
-		/// for use by Consumers.
-		/// </summary>
-		internal PlainTextSigningBindingElement()
-			: this(null) {
-		}
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="PlainTextSigningBindingElement"/> class.
 		/// </summary>
-		/// <param name="signatureVerificationCallback">
-		/// The delegate that will initialize the non-serialized properties necessary on a signed
-		/// message so that its signature can be correctly calculated for verification.
-		/// May be null for Consumers (who never have to verify signatures).
-		/// </param>
-		internal PlainTextSigningBindingElement(Action<ITamperResistantOAuthMessage> signatureVerificationCallback)
-			: base("PLAINTEXT", signatureVerificationCallback) {
+		internal PlainTextSigningBindingElement()
+			: base("PLAINTEXT") {
 		}
 
 		/// <summary>

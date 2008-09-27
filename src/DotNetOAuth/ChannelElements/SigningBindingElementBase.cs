@@ -15,13 +15,7 @@ namespace DotNetOAuth.ChannelElements {
 	/// <summary>
 	/// A binding element that signs outgoing messages and verifies the signature on incoming messages.
 	/// </summary>
-	internal abstract class SigningBindingElementBase : IChannelBindingElement {
-		/// <summary>
-		/// The delegate that will initialize the non-serialized properties necessary on a signed
-		/// message so that its signature can be correctly calculated for verification.
-		/// </summary>
-		private readonly Action<ITamperResistantOAuthMessage> incomingMessageSignatureVerificationCallback;
-
+	internal abstract class SigningBindingElementBase : ITamperProtectionChannelBindingElement {
 		/// <summary>
 		/// The signature method this binding element uses.
 		/// </summary>
@@ -31,19 +25,19 @@ namespace DotNetOAuth.ChannelElements {
 		/// Initializes a new instance of the <see cref="SigningBindingElementBase"/> class.
 		/// </summary>
 		/// <param name="signatureMethod">The OAuth signature method that the binding element uses.</param>
-		/// <param name="signatureVerificationCallback">
-		/// The delegate that will initialize the non-serialized properties necessary on a signed
-		/// message so that its signature can be correctly calculated for verification.
-		/// May be null for Consumers (who never have to verify signatures).
-		/// </param>
-		internal SigningBindingElementBase(string signatureMethod, Action<ITamperResistantOAuthMessage> signatureVerificationCallback) {
-			if (String.IsNullOrEmpty(signatureMethod)) {
-				throw new ArgumentNullException("signatureMethod");
-			}
-
+		internal SigningBindingElementBase(string signatureMethod) {
 			this.signatureMethod = signatureMethod;
-			this.incomingMessageSignatureVerificationCallback = signatureVerificationCallback;
 		}
+
+		#region ITamperProtectionChannelBindingElement members
+
+		/// <summary>
+		/// Gets or sets the delegate that will initialize the non-serialized properties necessary on a signed
+		/// message so that its signature can be correctly calculated for verification.
+		/// </summary>
+		public Action<ITamperResistantOAuthMessage> SignatureVerificationCallback { get; set; }
+
+		#endregion
 
 		#region IChannelBindingElement Members
 
@@ -78,16 +72,16 @@ namespace DotNetOAuth.ChannelElements {
 		/// <exception cref="InvalidSignatureException">Thrown if the signature is invalid.</exception>
 		public bool PrepareMessageForReceiving(IProtocolMessage message) {
 			var signedMessage = message as ITamperResistantOAuthMessage;
-			if (signedMessage != null) {
+			if (signedMessage != null && this.IsMessageApplicable(signedMessage)) {
 				if (!string.Equals(signedMessage.SignatureMethod, this.signatureMethod, StringComparison.Ordinal)) {
-					Logger.ErrorFormat("Expected signature method '{0}' but received message with a signature method of '{1}'.", this.signatureMethod, signedMessage.SignatureMethod);
-					throw new InvalidSignatureException(message);
+					Logger.WarnFormat("Expected signature method '{0}' but received message with a signature method of '{1}'.", this.signatureMethod, signedMessage.SignatureMethod);
+					return false;
 				}
 
-				if (this.incomingMessageSignatureVerificationCallback != null) {
-					this.incomingMessageSignatureVerificationCallback(signedMessage);
+				if (this.SignatureVerificationCallback != null) {
+					this.SignatureVerificationCallback(signedMessage);
 				} else {
-					throw new InvalidOperationException(MessagingStrings.SignatureVerificationCallbackMissing);
+					Logger.Warn("Signature verification required, but callback delegate was not provided to provide additional data for signing.");
 				}
 
 				string signature = this.GetSignature(signedMessage);
@@ -175,7 +169,7 @@ namespace DotNetOAuth.ChannelElements {
 		/// <param name="message">The message that needs to be signed.</param>
 		/// <returns>True if this binding element can be used to sign the message.  False otherwise.</returns>
 		protected virtual bool IsMessageApplicable(ITamperResistantOAuthMessage message) {
-			return true;
+			return string.IsNullOrEmpty(message.SignatureMethod) || message.SignatureMethod == this.signatureMethod;
 		}
 
 		/// <summary>

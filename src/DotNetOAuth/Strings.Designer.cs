@@ -104,5 +104,14 @@ namespace DotNetOAuth {
                 return ResourceManager.GetString("RequestUrlMustNotHaveOAuthParameters", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All signing elements must offer the same message protection..
+        /// </summary>
+        internal static string SigningElementsMustShareSameProtection {
+            get {
+                return ResourceManager.GetString("SigningElementsMustShareSameProtection", resourceCulture);
+            }
+        }
     }
 }

@@ -15,22 +15,9 @@ namespace DotNetOAuth.ChannelElements {
 	internal class HmacSha1SigningBindingElement : SigningBindingElementBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HmacSha1SigningBindingElement"/> class
-		/// for use by Consumers.
 		/// </summary>
 		internal HmacSha1SigningBindingElement()
-			: this(null) {
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="HmacSha1SigningBindingElement"/> class.
-		/// </summary>
-		/// <param name="signatureVerificationCallback">
-		/// The delegate that will initialize the non-serialized properties necessary on a signed
-		/// message so that its signature can be correctly calculated for verification.
-		/// May be null for Consumers (who never have to verify signatures).
-		/// </param>
-		internal HmacSha1SigningBindingElement(Action<ITamperResistantOAuthMessage> signatureVerificationCallback)
-			: base("HMAC-SHA1", signatureVerificationCallback) {
+			: base("HMAC-SHA1") {
 		}
 
 		/// <summary>

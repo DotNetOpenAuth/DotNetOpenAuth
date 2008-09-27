@@ -61,8 +61,10 @@
     <Compile Include="ChannelElements\ITokenManager.cs" />
     <Compile Include="ChannelElements\PlainTextSigningBindingElement.cs" />
     <Compile Include="ChannelElements\HmacSha1SigningBindingElement.cs" />
+    <Compile Include="ChannelElements\SigningBindingElementChain.cs" />
     <Compile Include="ChannelElements\StandardTokenGenerator.cs" />
     <Compile Include="ChannelElements\TokenType.cs" />
+    <Compile Include="Messaging\ITamperProtectionChannelBindingElement.cs" />
     <Compile Include="ServiceProviderEndpoints.cs" />
     <Compile Include="Messages\ITokenContainingMessage.cs" />
     <Compile Include="Messages\SignedMessageBase.cs" />
