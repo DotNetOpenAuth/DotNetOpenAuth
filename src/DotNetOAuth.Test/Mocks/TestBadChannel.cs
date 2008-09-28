@@ -35,8 +35,8 @@ namespace DotNetOAuth.Test.Mocks {
 			base.SendIndirectMessage(message);
 		}
 
-		internal new IProtocolMessage Receive(Dictionary<string, string> fields) {
-			return base.Receive(fields);
+		internal new IProtocolMessage Receive(Dictionary<string, string> fields, MessageReceivingEndpoint recipient) {
+			return base.Receive(fields, recipient);
 		}
 
 		internal new IProtocolMessage ReadFromRequest(HttpRequestInfo request) {

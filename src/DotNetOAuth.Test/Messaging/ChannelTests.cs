@@ -188,13 +188,13 @@ namespace DotNetOAuth.Test.Messaging {
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void ReceiveNull() {
 			TestBadChannel badChannel = new TestBadChannel(false);
-			badChannel.Receive(null);
+			badChannel.Receive(null, null);
 		}
 
 		[TestMethod]
 		public void ReceiveUnrecognizedMessage() {
 			TestBadChannel badChannel = new TestBadChannel(false);
-			Assert.IsNull(badChannel.Receive(new Dictionary<string, string>()));
+			Assert.IsNull(badChannel.Receive(new Dictionary<string, string>(), null));
 		}
 
 		[TestMethod]

@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOAuth.ChannelElements {
+	using System;
 	using DotNetOAuth.Messaging;
 
 	/// <summary>
@@ -15,5 +16,10 @@ namespace DotNetOAuth.ChannelElements {
 		/// Gets the preferred method of transport for the message.
 		/// </summary>
 		HttpDeliveryMethod HttpMethods { get; }
+
+		/// <summary>
+		/// Gets or sets the URL of the intended receiver of this message.
+		/// </summary>
+		new Uri Recipient { get; set; }
 	}
 }

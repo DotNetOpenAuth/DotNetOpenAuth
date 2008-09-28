@@ -9,6 +9,8 @@ namespace DotNetOAuth.Messaging {
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Globalization;
+	using System.Reflection;
+	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.Messaging.Reflection;
 
 	/// <summary>
@@ -75,8 +77,9 @@ namespace DotNetOAuth.Messaging {
 		/// Reads name=value pairs into an OAuth message.
 		/// </summary>
 		/// <param name="fields">The name=value pairs that were read in from the transport.</param>
+		/// <param name="recipient">The recipient of the message.</param>
 		/// <returns>The instantiated and initialized <see cref="IProtocolMessage"/> instance.</returns>
-		internal IProtocolMessage Deserialize(IDictionary<string, string> fields) {
+		internal IProtocolMessage Deserialize(IDictionary<string, string> fields, MessageReceivingEndpoint recipient) {
 			if (fields == null) {
 				throw new ArgumentNullException("fields");
 			}
@@ -84,17 +87,48 @@ namespace DotNetOAuth.Messaging {
 			// Before we deserialize the message, make sure all the required parts are present.
 			MessageDescription.Get(this.messageType).EnsureRequiredMessagePartsArePresent(fields.Keys);
 
-			IProtocolMessage result;
-			try {
-				result = (IProtocolMessage)Activator.CreateInstance(this.messageType, true);
-			} catch (MissingMethodException ex) {
-				throw new ProtocolException("Failed to instantiate type " + this.messageType.FullName, ex);
-			}
+			IProtocolMessage result = this.CreateMessage(recipient);
 			foreach (var pair in fields) {
 				IDictionary<string, string> dictionary = new MessageDictionary(result);
-				dictionary.Add(pair);
+				dictionary[pair.Key] = pair.Value;
 			}
 			result.EnsureValidMessage();
+			return result;
+		}
+
+		/// <summary>
+		/// Instantiates a new message to deserialize data into.
+		/// </summary>
+		/// <param name="recipient">The recipient this message is directed to, if any.</param>
+		/// <returns>The newly created message object.</returns>
+		private IProtocolMessage CreateMessage(MessageReceivingEndpoint recipient) {
+			IProtocolMessage result;
+			if (typeof(IOAuthDirectedMessage).IsAssignableFrom(this.messageType)) {
+				// Some OAuth messages take just the recipient, while others take the whole endpoint
+				ConstructorInfo ctor;
+				if ((ctor = this.messageType.GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { typeof(Uri) }, null)) != null) {
+					if (recipient == null) {
+						// We need a recipient to deserialize directed messages.
+						throw new ArgumentNullException("recipient");
+					}
+
+					result = (IProtocolMessage)ctor.Invoke(new object[] { recipient.Location });
+				} else if ((ctor = this.messageType.GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { typeof(MessageReceivingEndpoint) }, null)) != null) {
+					if (recipient == null) {
+						// We need a recipient to deserialize directed messages.
+						throw new ArgumentNullException("recipient");
+					}
+
+					result = (IProtocolMessage)ctor.Invoke(new object[] { recipient });
+				} else if ((ctor = this.messageType.GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[0], null)) != null) {
+					result = (IProtocolMessage)ctor.Invoke(new object[0]);
+				} else {
+					throw new InvalidOperationException("Unrecognized constructor signature on type " + this.messageType);
+				}
+			} else {
+				result = (IProtocolMessage)Activator.CreateInstance(this.messageType, true);
+			}
+
 			return result;
 		}
 	}

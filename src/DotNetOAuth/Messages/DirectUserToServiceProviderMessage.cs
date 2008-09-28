@@ -16,7 +16,7 @@ namespace DotNetOAuth.Messages {
 		/// Initializes a new instance of the <see cref="DirectUserToServiceProviderMessage"/> class.
 		/// </summary>
 		/// <param name="serviceProvider">The URI of the Service Provider endpoint to send this message to.</param>
-		internal DirectUserToServiceProviderMessage(ServiceProviderEndpoint serviceProvider)
+		internal DirectUserToServiceProviderMessage(MessageReceivingEndpoint serviceProvider)
 			: base(MessageProtection.None, MessageTransport.Indirect, serviceProvider) {
 		}
 

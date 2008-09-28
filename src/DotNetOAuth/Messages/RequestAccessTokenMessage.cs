@@ -17,7 +17,7 @@ namespace DotNetOAuth.Messages {
 		/// Initializes a new instance of the <see cref="RequestAccessTokenMessage"/> class.
 		/// </summary>
 		/// <param name="serviceProvider">The URI of the Service Provider endpoint to send this message to.</param>
-		internal RequestAccessTokenMessage(ServiceProviderEndpoint serviceProvider)
+		internal RequestAccessTokenMessage(MessageReceivingEndpoint serviceProvider)
 			: base(MessageTransport.Direct, serviceProvider) {
 		}
 

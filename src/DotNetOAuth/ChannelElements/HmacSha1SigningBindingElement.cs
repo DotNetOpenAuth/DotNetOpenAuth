@@ -31,7 +31,9 @@ namespace DotNetOAuth.ChannelElements {
 		protected override string GetSignature(ITamperResistantOAuthMessage message) {
 			string key = GetConsumerAndTokenSecretString(message);
 			HashAlgorithm hasher = new HMACSHA1(Encoding.ASCII.GetBytes(key));
-			byte[] digest = hasher.ComputeHash(Encoding.ASCII.GetBytes(ConstructSignatureBaseString(message)));
+			string baseString = ConstructSignatureBaseString(message);
+			Logger.DebugFormat("Signing message with signature base string: {0}", baseString);
+			byte[] digest = hasher.ComputeHash(Encoding.ASCII.GetBytes(baseString));
 			return Uri.EscapeDataString(Convert.ToBase64String(digest));
 		}
 	}

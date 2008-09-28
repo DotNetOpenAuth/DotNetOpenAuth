@@ -75,9 +75,9 @@ namespace DotNetOAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Gets the message that is being sent over a mock transport (for testing).
+		/// Gets or sets the message that is being sent over a mock transport (for testing).
 		/// </summary>
-		internal IProtocolMessage Message { get; private set; }
+		internal IProtocolMessage Message { get; set; }
 
 		/// <summary>
 		/// Gets or sets the verb in the request (i.e. GET, POST, etc.)

@@ -55,7 +55,7 @@ namespace DotNetOAuth.Test.Messaging {
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void DeserializeNull() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
-			serializer.Deserialize(null);
+			serializer.Deserialize(null, null);
 		}
 
 		[TestMethod]
@@ -65,7 +65,7 @@ namespace DotNetOAuth.Test.Messaging {
 			fields["Name"] = "Andrew";
 			fields["age"] = "15";
 			fields["Timestamp"] = "1990-01-01T00:00:00";
-			var actual = (Mocks.TestMessage)serializer.Deserialize(fields);
+			var actual = (Mocks.TestMessage)serializer.Deserialize(fields, null);
 			Assert.AreEqual(15, actual.Age);
 			Assert.AreEqual("Andrew", actual.Name);
 			Assert.AreEqual(DateTime.Parse("1/1/1990"), actual.Timestamp);
@@ -94,7 +94,7 @@ namespace DotNetOAuth.Test.Messaging {
 			fields["SecondDerivedElement"] = "second";
 			fields["explicit"] = "explicitValue";
 			fields["private"] = "privateValue";
-			var actual = (Mocks.TestDerivedMessage)serializer.Deserialize(fields);
+			var actual = (Mocks.TestDerivedMessage)serializer.Deserialize(fields, null);
 			Assert.AreEqual(15, actual.Age);
 			Assert.AreEqual("Andrew", actual.Name);
 			Assert.AreEqual("first", actual.TheFirstDerivedElement);
@@ -113,7 +113,7 @@ namespace DotNetOAuth.Test.Messaging {
 			// Add some field that is not recognized by the class.  This simulates a querystring with
 			// more parameters than are actually interesting to the protocol message.
 			fields["someExtraField"] = "asdf";
-			var actual = (Mocks.TestMessage)serializer.Deserialize(fields);
+			var actual = (Mocks.TestMessage)serializer.Deserialize(fields, null);
 			Assert.AreEqual(15, actual.Age);
 			Assert.AreEqual("Andrew", actual.Name);
 			Assert.IsNull(actual.EmptyMember);
@@ -124,7 +124,7 @@ namespace DotNetOAuth.Test.Messaging {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			var fields = GetStandardTestFields(FieldFill.AllRequired);
 			fields["age"] = "-1"; // Set an disallowed value.
-			serializer.Deserialize(fields);
+			serializer.Deserialize(fields, null);
 		}
 	}
 }

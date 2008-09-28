@@ -145,13 +145,22 @@ namespace DotNetOAuth.ChannelElements {
 							fields.Add(key, value);
 						}
 
-						return this.Receive(fields);
+						return this.Receive(fields, request.GetRecipient());
 					}
 				}
 			}
 
 			// We didn't find an OAuth authorization header.  Revert to other payload methods.
-			return base.ReadFromRequestInternal(request);
+			IProtocolMessage message = base.ReadFromRequestInternal(request);
+
+			// Add receiving HTTP transport information required for signature generation.
+			var signedMessage = message as ITamperResistantOAuthMessage;
+			if (signedMessage != null) {
+				signedMessage.Recipient = request.Url;
+				signedMessage.HttpMethod = request.HttpMethod;
+			}
+
+			return message;
 		}
 
 		/// <summary>
@@ -167,7 +176,7 @@ namespace DotNetOAuth.ChannelElements {
 			using (StreamReader reader = new StreamReader(responseStream)) {
 				string response = reader.ReadToEnd();
 				var fields = HttpUtility.ParseQueryString(response).ToDictionary();
-				return Receive(fields);
+				return Receive(fields, null);
 			}
 		}
 
@@ -189,7 +198,7 @@ namespace DotNetOAuth.ChannelElements {
 				return null;
 			}
 			var responseSerialize = MessageSerializer.Get(messageType);
-			var responseMessage = responseSerialize.Deserialize(responseFields);
+			var responseMessage = responseSerialize.Deserialize(responseFields, null);
 
 			return responseMessage;
 		}

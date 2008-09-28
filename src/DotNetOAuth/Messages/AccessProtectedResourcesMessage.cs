@@ -17,7 +17,7 @@ namespace DotNetOAuth.Messages {
 		/// Initializes a new instance of the <see cref="AccessProtectedResourcesMessage"/> class.
 		/// </summary>
 		/// <param name="serviceProvider">The URI of the Service Provider endpoint to send this message to.</param>
-		internal AccessProtectedResourcesMessage(ServiceProviderEndpoint serviceProvider)
+		internal AccessProtectedResourcesMessage(MessageReceivingEndpoint serviceProvider)
 			: base(MessageTransport.Direct, serviceProvider) {
 		}
 

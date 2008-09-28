@@ -17,7 +17,7 @@ namespace DotNetOAuth.Messages {
 		/// </summary>
 		/// <param name="consumer">The URI of the Consumer endpoint to send this message to.</param>
 		internal DirectUserToConsumerMessage(Uri consumer)
-			: base(MessageProtection.None, MessageTransport.Indirect, new ServiceProviderEndpoint(consumer, HttpDeliveryMethod.GetRequest)) {
+			: base(MessageProtection.None, MessageTransport.Indirect, new MessageReceivingEndpoint(consumer, HttpDeliveryMethod.GetRequest)) {
 		}
 
 		/// <summary>

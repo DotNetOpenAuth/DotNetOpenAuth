@@ -20,11 +20,11 @@ namespace DotNetOAuth.Test {
 		[TestMethod]
 		public void SpecAppendixAExample() {
 			ServiceProviderEndpoints endpoints = new ServiceProviderEndpoints() {
-				RequestTokenEndpoint = new ServiceProviderEndpoint("https://photos.example.net/request_token", HttpDeliveryMethod.PostRequest),
-				UserAuthorizationEndpoint = new ServiceProviderEndpoint("http://photos.example.net/authorize", HttpDeliveryMethod.GetRequest),
-				AccessTokenEndpoint = new ServiceProviderEndpoint("https://photos.example.net/access_token", HttpDeliveryMethod.PostRequest),
+				RequestTokenEndpoint = new MessageReceivingEndpoint("https://photos.example.net/request_token", HttpDeliveryMethod.PostRequest),
+				UserAuthorizationEndpoint = new MessageReceivingEndpoint("http://photos.example.net/authorize", HttpDeliveryMethod.GetRequest),
+				AccessTokenEndpoint = new MessageReceivingEndpoint("https://photos.example.net/access_token", HttpDeliveryMethod.PostRequest),
 			};
-			ServiceProviderEndpoint accessPhotoEndpoint = new ServiceProviderEndpoint("http://photos.example.net/photos?file=vacation.jpg&size=original", HttpDeliveryMethod.AuthorizationHeaderRequest);
+			MessageReceivingEndpoint accessPhotoEndpoint = new MessageReceivingEndpoint("http://photos.example.net/photos?file=vacation.jpg&size=original", HttpDeliveryMethod.AuthorizationHeaderRequest);
 			var tokenManager = new InMemoryTokenManager();
 			var sp = new ServiceProvider(endpoints, tokenManager);
 			Consumer consumer = new Consumer(endpoints, new InMemoryTokenManager()) {

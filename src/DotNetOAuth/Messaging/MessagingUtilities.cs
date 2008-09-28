@@ -131,6 +131,15 @@ namespace DotNetOAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Extracts the recipient from an HttpRequestInfo.
+		/// </summary>
+		/// <param name="request">The request to get recipient information from.</param>
+		/// <returns>The recipient.</returns>
+		internal static MessageReceivingEndpoint GetRecipient(this HttpRequestInfo request) {
+			return new MessageReceivingEndpoint(request.Url, request.HttpMethod == "GET" ? HttpDeliveryMethod.GetRequest : HttpDeliveryMethod.PostRequest);
+		}
+
+		/// <summary>
 		/// Converts a <see cref="NameValueCollection"/> to an IDictionary&lt;string, string&gt;.
 		/// </summary>
 		/// <param name="nvc">The NameValueCollection to convert.  May be null.</param>

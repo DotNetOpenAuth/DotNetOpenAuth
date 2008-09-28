@@ -12,7 +12,7 @@ namespace DotNetOAuth.ChannelElements {
 	/// <summary>
 	/// An interface that OAuth messages implement to support signing.
 	/// </summary>
-	internal interface ITamperResistantOAuthMessage : IDirectedProtocolMessage, ITamperResistantProtocolMessage {
+	internal interface ITamperResistantOAuthMessage : IOAuthDirectedMessage, ITamperResistantProtocolMessage {
 		/// <summary>
 		/// Gets or sets the method used to sign the message.
 		/// </summary>
@@ -40,7 +40,7 @@ namespace DotNetOAuth.ChannelElements {
 
 		/// <summary>
 		/// Gets or sets the extra, non-OAuth parameters that will be included in the request.
-		/// Only applicable to Consumer.
+		/// Only applicable to Consumer (SPs will receive these extra parameters via the ExtraData dictionary).
 		/// </summary>
 		IDictionary<string, string> AdditionalParametersInHttpRequest { get; set; }
 	}

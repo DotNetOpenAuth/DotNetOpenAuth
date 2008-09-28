@@ -39,7 +39,7 @@ namespace DotNetOAuth.Messages {
 		/// </summary>
 		/// <param name="transport">A value indicating whether this message requires a direct or indirect transport.</param>
 		/// <param name="recipient">The URI that a directed message will be delivered to.</param>
-		internal SignedMessageBase(MessageTransport transport, ServiceProviderEndpoint recipient)
+		internal SignedMessageBase(MessageTransport transport, MessageReceivingEndpoint recipient)
 			: base(MessageProtection.All, transport, recipient) {
 		}
 

@@ -18,7 +18,7 @@ namespace DotNetOAuth {
 		/// <summary>
 		/// The field used to store the value of the <see cref="RequestTokenEndpoint"/> property.
 		/// </summary>
-		private ServiceProviderEndpoint requestTokenEndpoint;
+		private MessageReceivingEndpoint requestTokenEndpoint;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ServiceProviderEndpoints"/> class.
@@ -35,7 +35,7 @@ namespace DotNetOAuth {
 		/// This is the URL that <see cref="Messages.RequestTokenMessage"/> messages are directed to.
 		/// </remarks>
 		/// <exception cref="ArgumentException">Thrown if this property is set to a URI with OAuth protocol parameters.</exception>
-		public ServiceProviderEndpoint RequestTokenEndpoint {
+		public MessageReceivingEndpoint RequestTokenEndpoint {
 			get {
 				return this.requestTokenEndpoint;
 			}
@@ -57,7 +57,7 @@ namespace DotNetOAuth {
 		/// This is the URL that <see cref="Messages.DirectUserToServiceProviderMessage"/> messages are
 		/// indirectly (via the user agent) sent to.
 		/// </remarks>
-		public ServiceProviderEndpoint UserAuthorizationEndpoint { get; set; }
+		public MessageReceivingEndpoint UserAuthorizationEndpoint { get; set; }
 
 		/// <summary>
 		/// Gets or sets the URL used to exchange the User-authorized Request Token 
@@ -66,6 +66,6 @@ namespace DotNetOAuth {
 		/// <remarks>
 		/// This is the URL that <see cref="Messages.RequestAccessTokenMessage"/> messages are directed to.
 		/// </remarks>
-		public ServiceProviderEndpoint AccessTokenEndpoint { get; set; }
+		public MessageReceivingEndpoint AccessTokenEndpoint { get; set; }
 	}
 }

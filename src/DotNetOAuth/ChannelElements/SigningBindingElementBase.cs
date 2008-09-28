@@ -127,7 +127,9 @@ namespace DotNetOAuth.ChannelElements {
 			signatureBaseStringElements.Add(endpoint.Uri.AbsoluteUri);
 
 			var encodedDictionary = OAuthChannel.GetEncodedParameters(message);
-			OAuthChannel.EncodeParameters(message.AdditionalParametersInHttpRequest, encodedDictionary);
+			if (message.AdditionalParametersInHttpRequest != null) {
+				OAuthChannel.EncodeParameters(message.AdditionalParametersInHttpRequest, encodedDictionary);
+			}
 			encodedDictionary.Remove("oauth_signature");
 			var sortedKeyValueList = new List<KeyValuePair<string, string>>(encodedDictionary);
 			sortedKeyValueList.Sort(SignatureBaseStringParameterComparer);

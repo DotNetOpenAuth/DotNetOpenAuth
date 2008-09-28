@@ -6,11 +6,12 @@
 namespace DotNetOAuth {
 	using System.Globalization;
 	using System.Reflection;
+	using DotNetOAuth.Messaging;
 
 	/// <summary>
 	/// A grab-bag utility class.
 	/// </summary>
-	internal class Util {
+	internal static class Util {
 		/// <summary>
 		/// Gets a human-readable description of the library name and version, including
 		/// whether the build is an official or private one.

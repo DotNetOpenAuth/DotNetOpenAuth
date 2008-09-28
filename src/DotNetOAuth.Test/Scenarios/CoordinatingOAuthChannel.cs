@@ -43,10 +43,12 @@ namespace DotNetOAuth.Test.Scenarios {
 		internal CoordinatingOAuthChannel RemoteChannel { get; set; }
 
 		internal Response RequestProtectedResource(AccessProtectedResourcesMessage request) {
-			TestBase.TestLogger.InfoFormat("Sending protected resource request: {0}", request);
-			PrepareMessageForSending(request);
+			((ITamperResistantOAuthMessage)request).HttpMethod = this.GetHttpMethod(((ITamperResistantOAuthMessage)request).HttpMethods);
+			this.PrepareMessageForSending(request);
+			HttpRequestInfo requestInfo = this.SpoofHttpMethod(request);
+			TestBase.TestLogger.InfoFormat("Sending protected resource request: {0}", requestInfo.Message);
 			// Drop the outgoing message in the other channel's in-slot and let them know it's there.
-			this.RemoteChannel.incomingMessage = request;
+			this.RemoteChannel.incomingMessage = requestInfo.Message;
 			this.RemoteChannel.incomingMessageSignal.Set();
 			return this.AwaitIncomingRawResponse();
 		}
@@ -57,9 +59,10 @@ namespace DotNetOAuth.Test.Scenarios {
 		}
 
 		protected override IProtocolMessage RequestInternal(IDirectedProtocolMessage request) {
-			TestBase.TestLogger.InfoFormat("Sending request: {0}", request);
+			HttpRequestInfo requestInfo = this.SpoofHttpMethod(request);
+			TestBase.TestLogger.InfoFormat("Sending request: {0}", requestInfo.Message);
 			// Drop the outgoing message in the other channel's in-slot and let them know it's there.
-			this.RemoteChannel.incomingMessage = CloneSerializedParts(request);
+			this.RemoteChannel.incomingMessage = requestInfo.Message;
 			this.RemoteChannel.incomingMessageSignal.Set();
 			// Now wait for a response...
 			return this.AwaitIncomingMessage();
@@ -67,7 +70,8 @@ namespace DotNetOAuth.Test.Scenarios {
 
 		protected override void SendDirectMessageResponse(IProtocolMessage response) {
 			TestBase.TestLogger.InfoFormat("Sending response: {0}", response);
-			this.RemoteChannel.incomingMessage = CloneSerializedParts(response);
+			this.RemoteChannel.incomingMessage = CloneSerializedParts(response, null);
+			this.CopyDirectionalParts(response, this.RemoteChannel.incomingMessage);
 			this.RemoteChannel.incomingMessageSignal.Set();
 		}
 
@@ -82,7 +86,29 @@ namespace DotNetOAuth.Test.Scenarios {
 		}
 
 		protected override IProtocolMessage ReadFromRequestInternal(HttpRequestInfo request) {
-			return request.Message ?? base.ReadFromRequestInternal(request);
+			return request.Message ?? base.ReadFromRequestInternal(request); // TODO: trim off ?? and after?
+		}
+
+		/// <summary>
+		/// Spoof HTTP request information for signing/verification purposes.
+		/// </summary>
+		/// <param name="message">The message to add a pretend HTTP method to.</param>
+		/// <returns>A spoofed HttpRequestInfo that wraps the new message.</returns>
+		private HttpRequestInfo SpoofHttpMethod(IDirectedProtocolMessage message) {
+			HttpRequestInfo requestInfo = new HttpRequestInfo(message);
+
+			var signedMessage = message as ITamperResistantOAuthMessage;
+			if (signedMessage != null) {
+				string httpMethod = this.GetHttpMethod(signedMessage.HttpMethods);
+				requestInfo.HttpMethod = httpMethod;
+				requestInfo.Url = message.Recipient;
+				signedMessage.HttpMethod = httpMethod;
+			}
+
+			requestInfo.Message = this.CloneSerializedParts(message, requestInfo);
+			this.CopyDirectionalParts(message, requestInfo.Message); // Remove since its body is empty.
+
+			return requestInfo;
 		}
 
 		private IProtocolMessage AwaitIncomingMessage() {
@@ -99,40 +125,31 @@ namespace DotNetOAuth.Test.Scenarios {
 			return response;
 		}
 
-		private T CloneSerializedParts<T>(T message) where T : class, IProtocolMessage {
+		private T CloneSerializedParts<T>(T message, HttpRequestInfo requestInfo) where T : class, IProtocolMessage {
 			if (message == null) {
 				throw new ArgumentNullException("message");
 			}
 
-			T cloned;
-			var directedMessage = message as IOAuthDirectedMessage;
-			if (directedMessage != null) {
-				// Some OAuth messages take just the recipient, while others take the whole endpoint
-				ConstructorInfo ctor;
-				if ((ctor = message.GetType().GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { typeof(Uri) }, null)) != null) {
-					cloned = (T)ctor.Invoke(new object[] { directedMessage.Recipient });
-				} else if ((ctor = message.GetType().GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { typeof(ServiceProviderEndpoint) }, null)) != null) {
-					ServiceProviderEndpoint endpoint = new ServiceProviderEndpoint(
-						directedMessage.Recipient,
-						directedMessage.HttpMethods);
-					cloned = (T)ctor.Invoke(new object[] { endpoint });
-				} else if ((ctor = message.GetType().GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[0], null)) != null) {
-					cloned = (T)ctor.Invoke(new object[0]);
-				} else {
-					throw new InvalidOperationException("Unrecognized constructor signature on type " + message.GetType());
-				}
-			} else {
-				cloned = (T)Activator.CreateInstance(message.GetType(), true);
+			MessageReceivingEndpoint recipient = null;
+			IOAuthDirectedMessage directedMessage = message as IOAuthDirectedMessage;
+			if (directedMessage != null && directedMessage.Recipient != null) {
+				recipient = new MessageReceivingEndpoint(directedMessage.Recipient, directedMessage.HttpMethods);
 			}
 
-			var messageDictionary = new MessageDictionary(message);
-			var clonedDictionary = new MessageDictionary(cloned);
+			MessageSerializer serializer = MessageSerializer.Get(message.GetType());
+			return (T)serializer.Deserialize(serializer.Serialize(message), recipient);
+		}
 
-			foreach (var pair in messageDictionary) {
-				clonedDictionary[pair.Key] = pair.Value;
+		private void CopyDirectionalParts(IProtocolMessage original, IProtocolMessage copy) {
+			var signedOriginal = original as ITamperResistantOAuthMessage;
+			var signedCopy = copy as ITamperResistantOAuthMessage;
+			if (signedOriginal != null && signedCopy != null) {
+				signedCopy.HttpMethod = signedOriginal.HttpMethod;
 			}
+		}
 
-			return cloned;
+		private string GetHttpMethod(HttpDeliveryMethod methods) {
+			return (methods & HttpDeliveryMethod.PostRequest) != 0 ? "POST" : "GET";
 		}
 	}
 }

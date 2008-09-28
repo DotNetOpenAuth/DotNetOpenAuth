@@ -132,7 +132,7 @@ namespace DotNetOAuth {
 		/// <param name="endpoint">The URL and method on the Service Provider to send the request to.</param>
 		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
 		/// <returns>The initialized WebRequest object.</returns>
-		public WebRequest CreateAuthorizedRequest(ServiceProviderEndpoint endpoint, string accessToken) {
+		public WebRequest CreateAuthorizedRequest(MessageReceivingEndpoint endpoint, string accessToken) {
 			IDirectedProtocolMessage message = this.CreateAuthorizedRequestInternal(endpoint, accessToken);
 			WebRequest wr = this.Channel.InitializeRequest(message);
 			return wr;
@@ -146,7 +146,7 @@ namespace DotNetOAuth {
 		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
 		/// <returns>The initialized WebRequest object.</returns>
 		/// <exception cref="WebException">Thrown if the request fails for any reason after it is sent to the Service Provider.</exception>
-		public Response SendAuthorizedRequest(ServiceProviderEndpoint endpoint, string accessToken) {
+		public Response SendAuthorizedRequest(MessageReceivingEndpoint endpoint, string accessToken) {
 			IDirectedProtocolMessage message = this.CreateAuthorizedRequestInternal(endpoint, accessToken);
 			HttpWebRequest wr = this.Channel.InitializeRequest(message);
 			return this.WebRequestHandler.GetResponse(wr);
@@ -159,7 +159,7 @@ namespace DotNetOAuth {
 		/// <param name="endpoint">The URL and method on the Service Provider to send the request to.</param>
 		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
 		/// <returns>The initialized WebRequest object.</returns>
-		internal AccessProtectedResourcesMessage CreateAuthorizedRequestInternal(ServiceProviderEndpoint endpoint, string accessToken) {
+		internal AccessProtectedResourcesMessage CreateAuthorizedRequestInternal(MessageReceivingEndpoint endpoint, string accessToken) {
 			if (endpoint == null) {
 				throw new ArgumentNullException("endpoint");
 			}

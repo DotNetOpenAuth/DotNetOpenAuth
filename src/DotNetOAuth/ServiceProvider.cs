@@ -171,11 +171,6 @@ namespace DotNetOAuth {
 			if (tokenMessage != null) {
 				message.TokenSecret = this.TokenManager.GetTokenSecret(tokenMessage.Token);
 			}
-
-			// TODO: more complete filling of message properties.
-			////message.Recipient = 
-			////message.AdditionalParametersInHttpRequest = 
-			////message.HttpMethod = 
 		}
 	}
 }

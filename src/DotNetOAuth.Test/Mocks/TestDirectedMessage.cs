@@ -18,7 +18,7 @@ namespace DotNetOAuth.Test.Mocks {
 
 		#region IDirectedProtocolMessage Members
 
-		public Uri Recipient { get; internal set; }
+		public Uri Recipient { get; set; }
 
 		#endregion
 

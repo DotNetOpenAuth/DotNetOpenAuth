@@ -16,7 +16,7 @@ namespace DotNetOAuth.Test.ChannelElements
 		[TestMethod]
 		public void HttpsSignatureGeneration() {
 			SigningBindingElementBase target = new PlainTextSigningBindingElement();
-			ServiceProviderEndpoint endpoint = new ServiceProviderEndpoint("https://localtest", HttpDeliveryMethod.GetRequest);
+			MessageReceivingEndpoint endpoint = new MessageReceivingEndpoint("https://localtest", HttpDeliveryMethod.GetRequest);
 			ITamperResistantOAuthMessage message = new RequestTokenMessage(endpoint);
 			message.ConsumerSecret = "cs";
 			message.TokenSecret = "ts";
@@ -27,7 +27,7 @@ namespace DotNetOAuth.Test.ChannelElements
 
 		[TestMethod]
 		public void HttpsSignatureVerification() {
-			ServiceProviderEndpoint endpoint = new ServiceProviderEndpoint("https://localtest", HttpDeliveryMethod.GetRequest);
+			MessageReceivingEndpoint endpoint = new MessageReceivingEndpoint("https://localtest", HttpDeliveryMethod.GetRequest);
 			ITamperProtectionChannelBindingElement target = new PlainTextSigningBindingElement();
 			ITamperResistantOAuthMessage message = new RequestTokenMessage(endpoint);
 			message.ConsumerSecret = "cs";
@@ -40,7 +40,7 @@ namespace DotNetOAuth.Test.ChannelElements
 		[TestMethod]
 		public void HttpsSignatureVerificationNotApplicable() {
 			SigningBindingElementBase target = new PlainTextSigningBindingElement();
-			ServiceProviderEndpoint endpoint = new ServiceProviderEndpoint("https://localtest", HttpDeliveryMethod.GetRequest);
+			MessageReceivingEndpoint endpoint = new MessageReceivingEndpoint("https://localtest", HttpDeliveryMethod.GetRequest);
 			ITamperResistantOAuthMessage message = new RequestTokenMessage(endpoint);
 			message.ConsumerSecret = "cs";
 			message.TokenSecret = "ts";
@@ -52,7 +52,7 @@ namespace DotNetOAuth.Test.ChannelElements
 		[TestMethod]
 		public void HttpSignatureGeneration() {
 			SigningBindingElementBase target = new PlainTextSigningBindingElement();
-			ServiceProviderEndpoint endpoint = new ServiceProviderEndpoint("http://localtest", HttpDeliveryMethod.GetRequest);
+			MessageReceivingEndpoint endpoint = new MessageReceivingEndpoint("http://localtest", HttpDeliveryMethod.GetRequest);
 			ITamperResistantOAuthMessage message = new RequestTokenMessage(endpoint);
 			message.ConsumerSecret = "cs";
 			message.TokenSecret = "ts";
@@ -66,7 +66,7 @@ namespace DotNetOAuth.Test.ChannelElements
 		[TestMethod]
 		public void HttpSignatureVerification() {
 			SigningBindingElementBase target = new PlainTextSigningBindingElement();
-			ServiceProviderEndpoint endpoint = new ServiceProviderEndpoint("http://localtest", HttpDeliveryMethod.GetRequest);
+			MessageReceivingEndpoint endpoint = new MessageReceivingEndpoint("http://localtest", HttpDeliveryMethod.GetRequest);
 			ITamperResistantOAuthMessage message = new RequestTokenMessage(endpoint);
 			message.ConsumerSecret = "cs";
 			message.TokenSecret = "ts";

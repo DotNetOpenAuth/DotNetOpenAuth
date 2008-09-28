@@ -125,7 +125,7 @@
     <Compile Include="Messages\RequestTokenMessage.cs" />
     <Compile Include="ChannelElements\RsaSha1SigningBindingElement.cs" />
     <Compile Include="ChannelElements\StandardWebRequestHandler.cs" />
-    <Compile Include="ServiceProviderEndpoint.cs" />
+    <Compile Include="Messaging\MessageReceivingEndpoint.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="Protocol.cs" />
     <Compile Include="ServiceProvider.cs" />

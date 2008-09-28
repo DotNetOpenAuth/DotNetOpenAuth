@@ -20,8 +20,8 @@ namespace DotNetOAuth.Test {
 		[TestMethod]
 		public void UserAuthorizationUriTest() {
 			ServiceProviderEndpoints target = new ServiceProviderEndpoints();
-			ServiceProviderEndpoint expected = new ServiceProviderEndpoint("http://localhost/authorization", HttpDeliveryMethod.GetRequest);
-			ServiceProviderEndpoint actual;
+			MessageReceivingEndpoint expected = new MessageReceivingEndpoint("http://localhost/authorization", HttpDeliveryMethod.GetRequest);
+			MessageReceivingEndpoint actual;
 			target.UserAuthorizationEndpoint = expected;
 			actual = target.UserAuthorizationEndpoint;
 			Assert.AreEqual(expected, actual);
@@ -36,8 +36,8 @@ namespace DotNetOAuth.Test {
 		[TestMethod]
 		public void RequestTokenUriTest() {
 			var target = new ServiceProviderEndpoints();
-			ServiceProviderEndpoint expected = new ServiceProviderEndpoint("http://localhost/requesttoken", HttpDeliveryMethod.GetRequest);
-			ServiceProviderEndpoint actual;
+			MessageReceivingEndpoint expected = new MessageReceivingEndpoint("http://localhost/requesttoken", HttpDeliveryMethod.GetRequest);
+			MessageReceivingEndpoint actual;
 			target.RequestTokenEndpoint = expected;
 			actual = target.RequestTokenEndpoint;
 			Assert.AreEqual(expected, actual);
@@ -53,7 +53,7 @@ namespace DotNetOAuth.Test {
 		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void RequestTokenUriWithOAuthParametersTest() {
 			var target = new ServiceProviderEndpoints();
-			target.RequestTokenEndpoint = new ServiceProviderEndpoint("http://localhost/requesttoken?oauth_token=something", HttpDeliveryMethod.GetRequest);
+			target.RequestTokenEndpoint = new MessageReceivingEndpoint("http://localhost/requesttoken?oauth_token=something", HttpDeliveryMethod.GetRequest);
 		}
 
 		/// <summary>
@@ -62,8 +62,8 @@ namespace DotNetOAuth.Test {
 		[TestMethod]
 		public void AccessTokenUriTest() {
 			var target = new ServiceProviderEndpoints();
-			ServiceProviderEndpoint expected = new ServiceProviderEndpoint("http://localhost/accesstoken", HttpDeliveryMethod.GetRequest);
-			ServiceProviderEndpoint actual;
+			MessageReceivingEndpoint expected = new MessageReceivingEndpoint("http://localhost/accesstoken", HttpDeliveryMethod.GetRequest);
+			MessageReceivingEndpoint actual;
 			target.AccessTokenEndpoint = expected;
 			actual = target.AccessTokenEndpoint;
 			Assert.AreEqual(expected, actual);

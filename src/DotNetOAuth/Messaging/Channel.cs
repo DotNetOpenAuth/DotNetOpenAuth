@@ -327,15 +327,16 @@ namespace DotNetOAuth.Messaging {
 				fields = request.QueryString.ToDictionary();
 			}
 
-			return this.Receive(fields);
+			return this.Receive(fields, request.GetRecipient());
 		}
 
 		/// <summary>
 		/// Deserializes a dictionary of values into a message.
 		/// </summary>
 		/// <param name="fields">The dictionary of values that were read from an HTTP request or response.</param>
+		/// <param name="recipient">Information about where the message was been directed.  Null for direct response messages.</param>
 		/// <returns>The deserialized message, or null if no message could be recognized in the provided data.</returns>
-		protected virtual IProtocolMessage Receive(Dictionary<string, string> fields) {
+		protected virtual IProtocolMessage Receive(Dictionary<string, string> fields, MessageReceivingEndpoint recipient) {
 			if (fields == null) {
 				throw new ArgumentNullException("fields");
 			}
@@ -349,7 +350,7 @@ namespace DotNetOAuth.Messaging {
 
 			// We have a message!  Assemble it.
 			var serializer = MessageSerializer.Get(messageType);
-			IProtocolMessage message = serializer.Deserialize(fields);
+			IProtocolMessage message = serializer.Deserialize(fields, recipient);
 
 			return message;
 		}

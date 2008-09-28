@@ -35,7 +35,7 @@ namespace DotNetOAuth.Messages {
 		/// <summary>
 		/// The URI to the remote endpoint to send this message to.
 		/// </summary>
-		private ServiceProviderEndpoint recipient;
+		private MessageReceivingEndpoint recipient;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MessageBase"/> class.
@@ -53,7 +53,7 @@ namespace DotNetOAuth.Messages {
 		/// <param name="protectionRequired">The level of protection the message requires.</param>
 		/// <param name="transport">A value indicating whether this message requires a direct or indirect transport.</param>
 		/// <param name="recipient">The URI that a directed message will be delivered to.</param>
-		protected MessageBase(MessageProtection protectionRequired, MessageTransport transport, ServiceProviderEndpoint recipient) {
+		protected MessageBase(MessageProtection protectionRequired, MessageTransport transport, MessageReceivingEndpoint recipient) {
 			if (recipient == null) {
 				throw new ArgumentNullException("recipient");
 			}
@@ -112,7 +112,24 @@ namespace DotNetOAuth.Messages {
 		/// Gets the preferred method of transport for the message.
 		/// </summary>
 		HttpDeliveryMethod IOAuthDirectedMessage.HttpMethods {
-			get { return this.recipient.AllowedMethods; }
+			get { return this.recipient != null ? this.recipient.AllowedMethods : HttpDeliveryMethod.None; }
+		}
+
+		/// <summary>
+		/// Gets or sets the URI to the Service Provider endpoint to send this message to.
+		/// </summary>
+		Uri IOAuthDirectedMessage.Recipient {
+			get {
+				return this.recipient != null ? this.recipient.Location : null;
+			}
+
+			set {
+				if (this.recipient != null) {
+					this.recipient = new MessageReceivingEndpoint(value, this.recipient.AllowedMethods);
+				} else if (value != null) {
+					throw new InvalidOperationException();
+				}
+			}
 		}
 
 		#endregion
