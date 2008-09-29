@@ -13,6 +13,7 @@ namespace DotNetOAuth.Messaging {
 	using System.Net;
 	using System.Text;
 	using System.Web;
+	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.Messaging.Reflection;
 
 	/// <summary>
@@ -145,7 +146,7 @@ namespace DotNetOAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The message to copy the extra data into.</param>
 		/// <param name="extraParameters">The extra data to copy into the message.  May be null to do nothing.</param>
-		internal static void AddExtraFields(this IProtocolMessage message, IDictionary<string, string> extraParameters) {
+		internal static void AddNonOAuthParameters(this ITamperResistantOAuthMessage message, IDictionary<string, string> extraParameters) {
 			if (message == null) {
 				throw new ArgumentNullException("message");
 			}

@@ -92,7 +92,7 @@ namespace DotNetOAuth {
 				ConsumerKey = this.ConsumerKey,
 				ConsumerSecret = this.ConsumerSecret,
 			};
-			requestToken.AddExtraFields(extraParameters);
+			requestToken.AddNonOAuthParameters(extraParameters);
 			var requestTokenResponse = this.Channel.Request<UnauthorizedRequestTokenMessage>(requestToken);
 			this.TokenManager.StoreNewRequestToken(this.ConsumerKey, requestTokenResponse.RequestToken, requestTokenResponse.TokenSecret, null/*TODO*/);
 

@@ -65,6 +65,18 @@ namespace DotNetOAuth.Messaging.Reflection {
 		public ICollection<string> Keys {
 			get {
 				List<string> keys = new List<string>(this.message.ExtraData.Count + this.description.Mapping.Count);
+				keys.AddRange(this.DeclaredKeys);
+				keys.AddRange(this.AdditionalKeys);
+				return keys.AsReadOnly();
+			}
+		}
+
+		/// <summary>
+		/// Gets the set of official OAuth keys that have non-null values associated with them.
+		/// </summary>
+		public ICollection<string> DeclaredKeys {
+			get {
+				List<string> keys = new List<string>(this.description.Mapping.Count);
 				foreach (var pair in this.description.Mapping) {
 					// Don't include keys with null values, but default values for structs is ok
 					if (pair.Value.GetValue(this.message) != null) {
@@ -72,12 +84,15 @@ namespace DotNetOAuth.Messaging.Reflection {
 					}
 				}
 
-				foreach (string key in this.message.ExtraData.Keys) {
-					keys.Add(key);
-				}
-
 				return keys.AsReadOnly();
 			}
+		}
+
+		/// <summary>
+		/// Gets the keys that are in the message but not declared as official OAuth properties.
+		/// </summary>
+		public ICollection<string> AdditionalKeys {
+			get { return this.message.ExtraData.Keys; }
 		}
 
 		/// <summary>

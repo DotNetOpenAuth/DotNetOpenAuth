@@ -30,11 +30,10 @@ namespace DotNetOAuth.Messaging {
 		MessageTransport Transport { get; }
 
 		/// <summary>
-		/// Gets the dictionary of additional name/value fields tacked on to this message.
+		/// Gets the extra, non-OAuth parameters that will be included in the request.
 		/// </summary>
 		/// <remarks>
-		/// Implementations of <see cref="IProtocolMessage"/> should ensure that this property
-		/// never returns null.
+		/// Implementations of this interface should ensure that this property never returns null.
 		/// </remarks>
 		IDictionary<string, string> ExtraData { get; }
 

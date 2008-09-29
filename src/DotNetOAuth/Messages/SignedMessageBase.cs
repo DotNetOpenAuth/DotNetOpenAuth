@@ -75,11 +75,6 @@ namespace DotNetOAuth.Messages {
 		/// </summary>
 		string ITamperResistantOAuthMessage.HttpMethod { get; set; }
 
-		/// <summary>
-		/// Gets or sets the extra, non-OAuth parameters that will be included in the request.
-		/// </summary>
-		IDictionary<string, string> ITamperResistantOAuthMessage.AdditionalParametersInHttpRequest { get; set; }
-
 		#endregion
 
 		#region ITamperResistantProtocolMessage Members

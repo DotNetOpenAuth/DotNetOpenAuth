@@ -290,14 +290,21 @@ namespace DotNetOAuth.ChannelElements {
 		/// This method implements OAuth 1.0 section 5.2, item #1 (described in section 5.4).
 		/// </remarks>
 		private HttpWebRequest InitializeRequestAsAuthHeader(IDirectedProtocolMessage requestMessage) {
-			var serializer = MessageSerializer.Get(requestMessage.GetType());
-			var fields = new Dictionary<string, string>(serializer.Serialize(requestMessage)); // copy so as to not modify original
 			var protocol = Protocol.Lookup(requestMessage.ProtocolVersion);
+			var dictionary = new MessageDictionary(requestMessage);
+
+			// copy so as to not modify original
+			var fields = new Dictionary<string, string>();
+			foreach (string key in dictionary.DeclaredKeys) {
+				fields.Add(key, dictionary[key]);
+			}
 			if (this.Realm != null) {
 				fields.Add("realm", this.Realm.AbsoluteUri);
 			}
 
-			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(requestMessage.Recipient);
+			UriBuilder builder = new UriBuilder(requestMessage.Recipient);
+			MessagingUtilities.AppendQueryArgs(builder, requestMessage.ExtraData);
+			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(builder.Uri);
 
 			StringBuilder authorization = new StringBuilder();
 			authorization.Append(protocol.AuthorizationHeaderScheme);

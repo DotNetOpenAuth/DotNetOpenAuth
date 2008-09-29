@@ -37,11 +37,5 @@ namespace DotNetOAuth.ChannelElements {
 		/// Gets or sets the HTTP method that will be used to transmit the message.
 		/// </summary>
 		string HttpMethod { get; set; }
-
-		/// <summary>
-		/// Gets or sets the extra, non-OAuth parameters that will be included in the request.
-		/// Only applicable to Consumer (SPs will receive these extra parameters via the ExtraData dictionary).
-		/// </summary>
-		IDictionary<string, string> AdditionalParametersInHttpRequest { get; set; }
 	}
 }
