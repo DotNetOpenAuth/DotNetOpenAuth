@@ -53,7 +53,7 @@ namespace DotNetOAuth.ChannelElements {
 		/// This overload for testing purposes only.
 		/// </remarks>
 		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IMessageTypeProvider messageTypeProvider, IWebRequestHandler webRequestHandler)
-			: base(messageTypeProvider, signingBindingElement, new StandardExpirationBindingElement(), new StandardReplayProtectionBindingElement(store)) {
+			: base(messageTypeProvider, new OAuthHttpMethodBindingElement(), signingBindingElement, new StandardExpirationBindingElement(), new StandardReplayProtectionBindingElement(store)) {
 			if (webRequestHandler == null) {
 				throw new ArgumentNullException("webRequestHandler");
 			}

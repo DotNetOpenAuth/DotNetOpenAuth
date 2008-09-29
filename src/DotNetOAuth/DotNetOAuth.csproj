@@ -59,6 +59,7 @@
   <ItemGroup>
     <Compile Include="ChannelElements\ITokenGenerator.cs" />
     <Compile Include="ChannelElements\ITokenManager.cs" />
+    <Compile Include="ChannelElements\OAuthHttpMethodBindingElement.cs" />
     <Compile Include="ChannelElements\PlainTextSigningBindingElement.cs" />
     <Compile Include="ChannelElements\HmacSha1SigningBindingElement.cs" />
     <Compile Include="ChannelElements\SigningBindingElementChain.cs" />
