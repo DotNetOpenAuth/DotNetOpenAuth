@@ -1,6 +1,8 @@
 bin
+Bin
 obj
 TestResults
 TestResult.xml
 drops
 *.VisualState.xml
+StyleCop.Cache
