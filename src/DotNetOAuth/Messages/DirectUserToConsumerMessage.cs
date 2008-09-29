@@ -23,7 +23,7 @@ namespace DotNetOAuth.Messages {
 		/// <summary>
 		/// Gets or sets the Request Token.
 		/// </summary>
-		[MessagePart(Name = "oauth_token", IsRequired = true)] // TODO: graph in spec says this is optional, but in text is suggests it is required.
+		[MessagePart(Name = "oauth_token", IsRequired = true)]
 		public string RequestToken { get; set; }
 	}
 }

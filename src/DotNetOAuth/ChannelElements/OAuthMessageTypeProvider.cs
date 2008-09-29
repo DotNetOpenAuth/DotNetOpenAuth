@@ -14,6 +14,9 @@ namespace DotNetOAuth.ChannelElements {
 	/// An OAuth-protocol specific implementation of the <see cref="IMessageTypeProvider"/>
 	/// interface.
 	/// </summary>
+	/// <remarks>
+	/// TODO: split this up into a Consumer and SP provider.
+	/// </remarks>
 	internal class OAuthMessageTypeProvider : IMessageTypeProvider {
 		/// <summary>
 		/// The token manager to use for discerning between request and access tokens.
