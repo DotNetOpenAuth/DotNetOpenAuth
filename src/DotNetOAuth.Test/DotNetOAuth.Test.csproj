@@ -93,7 +93,7 @@
     <Compile Include="Scenarios\AppendixScenarios.cs" />
     <Compile Include="Scenarios\CoordinatingOAuthChannel.cs" />
     <Compile Include="Scenarios\Coordinator.cs" />
-    <Compile Include="ServiceProviderEndpointsTests.cs" />
+    <Compile Include="ServiceProviderDescriptionTests.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="UriUtilTests.cs" />
   </ItemGroup>

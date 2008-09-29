@@ -19,21 +19,21 @@ namespace DotNetOAuth {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Consumer"/> class.
 		/// </summary>
-		/// <param name="endpoints">The endpoints on the Service Provider.</param>
+		/// <param name="serviceDescription">The endpoints and behavior of the Service Provider.</param>
 		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
-		internal Consumer(ServiceProviderEndpoints endpoints, ITokenManager tokenManager, params ITamperProtectionChannelBindingElement[] signingElements) {
-			if (endpoints == null) {
-				throw new ArgumentNullException("endpoints");
+		internal Consumer(ServiceProviderDescription serviceDescription, ITokenManager tokenManager) {
+			if (serviceDescription == null) {
+				throw new ArgumentNullException("serviceDescription");
 			}
 			if (tokenManager == null) {
 				throw new ArgumentNullException("tokenManager");
 			}
 
 			this.WebRequestHandler = new StandardWebRequestHandler();
-			ITamperProtectionChannelBindingElement signingElement = new SigningBindingElementChain(signingElements);
+			ITamperProtectionChannelBindingElement signingElement = serviceDescription.CreateTamperProtectionElement();
 			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
 			this.Channel = new OAuthChannel(signingElement, store, new OAuthMessageTypeProvider(tokenManager), this.WebRequestHandler);
-			this.ServiceProvider = endpoints;
+			this.ServiceProvider = serviceDescription;
 			this.TokenManager = tokenManager;
 		}
 
@@ -50,7 +50,7 @@ namespace DotNetOAuth {
 		/// <summary>
 		/// Gets the Service Provider that will be accessed.
 		/// </summary>
-		public ServiceProviderEndpoints ServiceProvider { get; private set; }
+		public ServiceProviderDescription ServiceProvider { get; private set; }
 
 		/// <summary>
 		/// Gets the persistence store for tokens and secrets.

@@ -65,7 +65,7 @@
     <Compile Include="ChannelElements\StandardTokenGenerator.cs" />
     <Compile Include="ChannelElements\TokenType.cs" />
     <Compile Include="Messaging\ITamperProtectionChannelBindingElement.cs" />
-    <Compile Include="ServiceProviderEndpoints.cs" />
+    <Compile Include="ServiceProviderDescription.cs" />
     <Compile Include="Messages\ITokenContainingMessage.cs" />
     <Compile Include="Messages\SignedMessageBase.cs" />
     <Compile Include="Messaging\Bindings\NonceMemoryStore.cs" />

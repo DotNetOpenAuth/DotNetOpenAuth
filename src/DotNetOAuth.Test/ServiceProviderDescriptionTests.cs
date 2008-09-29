@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ServiceProviderEndpointsTests.cs" company="Andrew Arnott">
+// <copyright file="ServiceProviderDescriptionTests.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -13,13 +13,13 @@ namespace DotNetOAuth.Test {
 	/// Tests for the <see cref="ServiceProviderEndpoints"/> class.
 	/// </summary>
 	[TestClass]
-	public class ServiceProviderEndpointsTests : TestBase {
+	public class ServiceProviderDescriptionTests : TestBase {
 		/// <summary>
 		/// A test for UserAuthorizationUri
 		/// </summary>
 		[TestMethod]
 		public void UserAuthorizationUriTest() {
-			ServiceProviderEndpoints target = new ServiceProviderEndpoints();
+			ServiceProviderDescription target = new ServiceProviderDescription();
 			MessageReceivingEndpoint expected = new MessageReceivingEndpoint("http://localhost/authorization", HttpDeliveryMethod.GetRequest);
 			MessageReceivingEndpoint actual;
 			target.UserAuthorizationEndpoint = expected;
@@ -35,7 +35,7 @@ namespace DotNetOAuth.Test {
 		/// </summary>
 		[TestMethod]
 		public void RequestTokenUriTest() {
-			var target = new ServiceProviderEndpoints();
+			var target = new ServiceProviderDescription();
 			MessageReceivingEndpoint expected = new MessageReceivingEndpoint("http://localhost/requesttoken", HttpDeliveryMethod.GetRequest);
 			MessageReceivingEndpoint actual;
 			target.RequestTokenEndpoint = expected;
@@ -52,7 +52,7 @@ namespace DotNetOAuth.Test {
 		/// </summary>
 		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void RequestTokenUriWithOAuthParametersTest() {
-			var target = new ServiceProviderEndpoints();
+			var target = new ServiceProviderDescription();
 			target.RequestTokenEndpoint = new MessageReceivingEndpoint("http://localhost/requesttoken?oauth_token=something", HttpDeliveryMethod.GetRequest);
 		}
 
@@ -61,7 +61,7 @@ namespace DotNetOAuth.Test {
 		/// </summary>
 		[TestMethod]
 		public void AccessTokenUriTest() {
-			var target = new ServiceProviderEndpoints();
+			var target = new ServiceProviderDescription();
 			MessageReceivingEndpoint expected = new MessageReceivingEndpoint("http://localhost/accesstoken", HttpDeliveryMethod.GetRequest);
 			MessageReceivingEndpoint actual;
 			target.AccessTokenEndpoint = expected;

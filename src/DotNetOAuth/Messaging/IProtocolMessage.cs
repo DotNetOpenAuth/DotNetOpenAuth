@@ -13,7 +13,7 @@ namespace DotNetOAuth.Messaging {
 	/// The interface that classes must implement to be serialized/deserialized
 	/// as OAuth messages.
 	/// </summary>
-	internal interface IProtocolMessage {
+	public interface IProtocolMessage {
 		/// <summary>
 		/// Gets the version of the protocol this message is prepared to implement.
 		/// </summary>

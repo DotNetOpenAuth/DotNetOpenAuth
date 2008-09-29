@@ -12,7 +12,7 @@ namespace DotNetOAuth.ChannelElements {
 	/// <summary>
 	/// An interface that OAuth messages implement to support signing.
 	/// </summary>
-	internal interface ITamperResistantOAuthMessage : IOAuthDirectedMessage, ITamperResistantProtocolMessage {
+	public interface ITamperResistantOAuthMessage : IOAuthDirectedMessage, ITamperResistantProtocolMessage {
 		/// <summary>
 		/// Gets or sets the method used to sign the message.
 		/// </summary>

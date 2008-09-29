@@ -17,7 +17,7 @@ namespace DotNetOAuth.Messaging {
 	/// tamper protection to prevent a user from changing the timestamp on a message.
 	/// </remarks>
 	[Flags]
-	internal enum MessageProtection {
+	public enum MessageProtection {
 		/// <summary>
 		/// No protection.
 		/// </summary>

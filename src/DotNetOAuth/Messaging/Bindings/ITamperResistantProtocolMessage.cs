@@ -8,7 +8,7 @@ namespace DotNetOAuth.Messaging.Bindings {
 	/// <summary>
 	/// The contract a message that is signed must implement.
 	/// </summary>
-	internal interface ITamperResistantProtocolMessage : IProtocolMessage {
+	public interface ITamperResistantProtocolMessage : IProtocolMessage {
 		/// <summary>
 		/// Gets or sets the message signature.
 		/// </summary>

@@ -28,29 +28,29 @@ namespace DotNetOAuth {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ServiceProvider"/> class.
 		/// </summary>
-		/// <param name="endpoints">The endpoints on the Service Provider.</param>
+		/// <param name="serviceDescription">The endpoints and behavior on the Service Provider.</param>
 		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
-		internal ServiceProvider(ServiceProviderEndpoints endpoints, ITokenManager tokenManager, params ITamperProtectionChannelBindingElement[] signingElements) {
-			if (endpoints == null) {
-				throw new ArgumentNullException("endpoints");
+		internal ServiceProvider(ServiceProviderDescription serviceDescription, ITokenManager tokenManager) {
+			if (serviceDescription == null) {
+				throw new ArgumentNullException("serviceDescription");
 			}
 			if (tokenManager == null) {
 				throw new ArgumentNullException("tokenManager");
 			}
 
-			ITamperProtectionChannelBindingElement signingElement = new SigningBindingElementChain(signingElements);
+			var signingElement = serviceDescription.CreateTamperProtectionElement();
 			signingElement.SignatureVerificationCallback = this.TokenSignatureVerificationCallback;
 			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
-			this.Endpoints = endpoints;
+			this.Description = serviceDescription;
 			this.Channel = new OAuthChannel(signingElement, store, tokenManager);
 			this.TokenGenerator = new StandardTokenGenerator();
 			this.TokenManager = tokenManager;
 		}
 
 		/// <summary>
-		/// Gets the endpoints exposed by this Service Provider.
+		/// Gets the description of this Service Provider.
 		/// </summary>
-		public ServiceProviderEndpoints Endpoints { get; private set; }
+		public ServiceProviderDescription Description { get; private set; }
 
 		/// <summary>
 		/// Gets the pending user agent redirect based message to be sent as an HttpResponse.

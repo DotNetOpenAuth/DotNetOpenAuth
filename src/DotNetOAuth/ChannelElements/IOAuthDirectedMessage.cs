@@ -11,7 +11,7 @@ namespace DotNetOAuth.ChannelElements {
 	/// <summary>
 	/// Additional properties that apply specifically to OAuth messages.
 	/// </summary>
-	internal interface IOAuthDirectedMessage : IDirectedProtocolMessage {
+	public interface IOAuthDirectedMessage : IDirectedProtocolMessage {
 		/// <summary>
 		/// Gets the preferred method of transport for the message.
 		/// </summary>

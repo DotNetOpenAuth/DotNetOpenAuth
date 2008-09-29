@@ -1,29 +1,27 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ServiceProviderEndpoints.cs" company="Andrew Arnott">
+// <copyright file="ServiceProviderDescription.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
 namespace DotNetOAuth {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
+	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.Messaging;
 
 	/// <summary>
 	/// A description of the endpoints on a Service Provider.
 	/// </summary>
-	public class ServiceProviderEndpoints {
+	public class ServiceProviderDescription {
 		/// <summary>
 		/// The field used to store the value of the <see cref="RequestTokenEndpoint"/> property.
 		/// </summary>
 		private MessageReceivingEndpoint requestTokenEndpoint;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ServiceProviderEndpoints"/> class.
+		/// Initializes a new instance of the <see cref="ServiceProviderDescription"/> class.
 		/// </summary>
-		public ServiceProviderEndpoints() {
+		public ServiceProviderDescription() {
 		}
 
 		/// <summary>
@@ -67,5 +65,18 @@ namespace DotNetOAuth {
 		/// This is the URL that <see cref="Messages.RequestAccessTokenMessage"/> messages are directed to.
 		/// </remarks>
 		public MessageReceivingEndpoint AccessTokenEndpoint { get; set; }
+
+		/// <summary>
+		/// Gets or sets the signing policies that apply to this Service Provider.
+		/// </summary>
+		public ITamperProtectionChannelBindingElement[] TamperProtectionElements { get; set; }
+
+		/// <summary>
+		/// Creates a signing element that includes all the signing elements this service provider supports.
+		/// </summary>
+		/// <returns>The created signing element.</returns>
+		internal ITamperProtectionChannelBindingElement CreateTamperProtectionElement() {
+			return new SigningBindingElementChain(this.TamperProtectionElements);
+		}
 	}
 }

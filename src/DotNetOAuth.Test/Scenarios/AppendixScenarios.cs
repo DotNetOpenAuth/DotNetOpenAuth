@@ -19,19 +19,19 @@ namespace DotNetOAuth.Test {
 	public class AppendixScenarios : TestBase {
 		[TestMethod]
 		public void SpecAppendixAExample() {
-			ServiceProviderEndpoints endpoints = new ServiceProviderEndpoints() {
+			ServiceProviderDescription serviceDescription = new ServiceProviderDescription() {
 				RequestTokenEndpoint = new MessageReceivingEndpoint("https://photos.example.net/request_token", HttpDeliveryMethod.PostRequest),
 				UserAuthorizationEndpoint = new MessageReceivingEndpoint("http://photos.example.net/authorize", HttpDeliveryMethod.GetRequest),
 				AccessTokenEndpoint = new MessageReceivingEndpoint("https://photos.example.net/access_token", HttpDeliveryMethod.PostRequest),
+				TamperProtectionElements = new ITamperProtectionChannelBindingElement[] {
+					new PlainTextSigningBindingElement(),
+					new HmacSha1SigningBindingElement(),
+				},
 			};
 			MessageReceivingEndpoint accessPhotoEndpoint = new MessageReceivingEndpoint("http://photos.example.net/photos?file=vacation.jpg&size=original", HttpDeliveryMethod.AuthorizationHeaderRequest);
 			var tokenManager = new InMemoryTokenManager();
-			ITamperProtectionChannelBindingElement[] signers = new ITamperProtectionChannelBindingElement[] {
-				new PlainTextSigningBindingElement(),
-				new HmacSha1SigningBindingElement(),
-			};
-			var sp = new ServiceProvider(endpoints, tokenManager, signers);
-			Consumer consumer = new Consumer(endpoints, new InMemoryTokenManager(), signers) {
+			var sp = new ServiceProvider(serviceDescription, tokenManager);
+			Consumer consumer = new Consumer(serviceDescription, new InMemoryTokenManager()) {
 				ConsumerKey = "dpf43f3p2l4k3l03",
 				ConsumerSecret = "kd94hf93k423kf44",
 			};

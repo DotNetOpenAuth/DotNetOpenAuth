@@ -14,7 +14,7 @@ namespace DotNetOAuth.Messaging {
 	/// An interface that must be implemented by message transforms/validators in order
 	/// to be included in the channel stack.
 	/// </summary>
-	internal interface IChannelBindingElement {
+	public interface IChannelBindingElement {
 		/// <summary>
 		/// Gets the protection offered (if any) by this binding element.
 		/// </summary>

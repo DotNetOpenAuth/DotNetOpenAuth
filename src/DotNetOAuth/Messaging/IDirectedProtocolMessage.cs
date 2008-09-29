@@ -11,7 +11,7 @@ namespace DotNetOAuth.Messaging {
 	/// Implemented by messages that have explicit recipients
 	/// (direct requests and all indirect messages).
 	/// </summary>
-	internal interface IDirectedProtocolMessage : IProtocolMessage {
+	public interface IDirectedProtocolMessage : IProtocolMessage {
 		/// <summary>
 		/// Gets the URL of the intended receiver of this message.
 		/// </summary>
