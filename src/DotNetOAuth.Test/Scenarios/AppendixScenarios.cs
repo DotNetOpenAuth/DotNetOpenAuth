@@ -26,8 +26,12 @@ namespace DotNetOAuth.Test {
 			};
 			MessageReceivingEndpoint accessPhotoEndpoint = new MessageReceivingEndpoint("http://photos.example.net/photos?file=vacation.jpg&size=original", HttpDeliveryMethod.AuthorizationHeaderRequest);
 			var tokenManager = new InMemoryTokenManager();
-			var sp = new ServiceProvider(endpoints, tokenManager);
-			Consumer consumer = new Consumer(endpoints, new InMemoryTokenManager()) {
+			ITamperProtectionChannelBindingElement[] signers = new ITamperProtectionChannelBindingElement[] {
+				new PlainTextSigningBindingElement(),
+				new HmacSha1SigningBindingElement(),
+			};
+			var sp = new ServiceProvider(endpoints, tokenManager, signers);
+			Consumer consumer = new Consumer(endpoints, new InMemoryTokenManager(), signers) {
 				ConsumerKey = "dpf43f3p2l4k3l03",
 				ConsumerSecret = "kd94hf93k423kf44",
 			};

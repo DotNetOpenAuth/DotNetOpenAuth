@@ -199,7 +199,6 @@ namespace DotNetOAuth.Test.Messaging {
 
 		[TestMethod]
 		public void ReadFromRequestWithContext() {
-			// TODO: make this a request with a message in it.
 			var fields = GetStandardTestFields(FieldFill.AllRequired);
 			TestMessage expectedMessage = GetStandardTestMessage(FieldFill.AllRequired);
 			HttpRequest request = new HttpRequest("somefile", "http://someurl", MessagingUtilities.CreateQueryString(fields));

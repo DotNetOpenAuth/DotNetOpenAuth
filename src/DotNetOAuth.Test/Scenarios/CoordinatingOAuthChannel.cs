@@ -86,7 +86,7 @@ namespace DotNetOAuth.Test.Scenarios {
 		}
 
 		protected override IProtocolMessage ReadFromRequestInternal(HttpRequestInfo request) {
-			return request.Message ?? base.ReadFromRequestInternal(request); // TODO: trim off ?? and after?
+			return request.Message;
 		}
 
 		/// <summary>

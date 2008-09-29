@@ -30,7 +30,7 @@ namespace DotNetOAuth {
 		/// </summary>
 		/// <param name="endpoints">The endpoints on the Service Provider.</param>
 		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
-		public ServiceProvider(ServiceProviderEndpoints endpoints, ITokenManager tokenManager) {
+		internal ServiceProvider(ServiceProviderEndpoints endpoints, ITokenManager tokenManager, params ITamperProtectionChannelBindingElement[] signingElements) {
 			if (endpoints == null) {
 				throw new ArgumentNullException("endpoints");
 			}
@@ -38,10 +38,7 @@ namespace DotNetOAuth {
 				throw new ArgumentNullException("tokenManager");
 			}
 
-			ITamperProtectionChannelBindingElement signingElement = new SigningBindingElementChain(new ITamperProtectionChannelBindingElement[] {
-				new PlainTextSigningBindingElement(),
-				new HmacSha1SigningBindingElement(),
-			});
+			ITamperProtectionChannelBindingElement signingElement = new SigningBindingElementChain(signingElements);
 			signingElement.SignatureVerificationCallback = this.TokenSignatureVerificationCallback;
 			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
 			this.Endpoints = endpoints;
