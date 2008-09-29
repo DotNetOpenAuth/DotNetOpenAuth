@@ -1,0 +1,22 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="HmacSha1SigningBindingElementTests.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOAuth.Test.ChannelElements {
+	using DotNetOAuth.ChannelElements;
+	using DotNetOAuth.Messages;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+	[TestClass]
+	public class HmacSha1SigningBindingElementTests : MessagingTestBase {
+		[TestMethod]
+		public void SignatureTest() {
+			RequestTokenMessage message = SigningBindingElementBaseTests.CreateTestRequestTokenMessage();
+
+			HmacSha1SigningBindingElement_Accessor hmac = new HmacSha1SigningBindingElement_Accessor();
+			Assert.AreEqual("kR0LhH8UqylaLfR%2FesXVVlP4sQI%3D", hmac.GetSignature(message));
+		}
+	}
+}

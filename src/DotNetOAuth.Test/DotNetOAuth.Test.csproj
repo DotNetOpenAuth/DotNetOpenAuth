@@ -58,6 +58,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChannelElements\SigningBindingElementBaseTests.cs" />
+    <Compile Include="ChannelElements\HmacSha1SigningBindingElementTests.cs" />
     <Compile Include="Messaging\CollectionAssert.cs" />
     <Compile Include="Messaging\MessageSerializerTests.cs" />
     <Compile Include="Messaging\Reflection\MessageDescriptionTests.cs" />

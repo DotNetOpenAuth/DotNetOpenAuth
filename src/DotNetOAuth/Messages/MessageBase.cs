@@ -38,6 +38,9 @@ namespace DotNetOAuth.Messages {
 		private MessageReceivingEndpoint recipient;
 
 #if DEBUG
+		/// <summary>
+		/// Initializes static members of the <see cref="MessageBase"/> class.
+		/// </summary>
 		static MessageBase() {
 			LowSecurityMode = true;
 		}
