@@ -13,6 +13,7 @@ namespace DotNetOAuth.Messaging {
 	using System.Net;
 	using System.Text;
 	using System.Web;
+	using DotNetOAuth.Messaging.Reflection;
 
 	/// <summary>
 	/// A grab-bag of utility methods useful for the channel stack of the protocol.
@@ -137,6 +138,19 @@ namespace DotNetOAuth.Messaging {
 		/// <returns>The recipient.</returns>
 		internal static MessageReceivingEndpoint GetRecipient(this HttpRequestInfo request) {
 			return new MessageReceivingEndpoint(request.Url, request.HttpMethod == "GET" ? HttpDeliveryMethod.GetRequest : HttpDeliveryMethod.PostRequest);
+		}
+
+		internal static void AddExtraFields(this IProtocolMessage message, IDictionary<string, string> extraParameters) {
+			if (message == null) {
+				throw new ArgumentNullException("message");
+			}
+
+			if (extraParameters != null) {
+				MessageDictionary messageDictionary = new MessageDictionary(message);
+				foreach (var pair in extraParameters) {
+					messageDictionary.Add(pair);
+				}
+			}
 		}
 
 		/// <summary>

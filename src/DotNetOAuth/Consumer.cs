@@ -6,6 +6,7 @@
 
 namespace DotNetOAuth {
 	using System;
+	using System.Collections.Generic;
 	using System.Net;
 	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.Messages;
@@ -84,12 +85,14 @@ namespace DotNetOAuth {
 		/// An optional Consumer URL that the Service Provider should redirect the 
 		/// User Agent to upon successful authorization.
 		/// </param>
-		public void RequestUserAuthorization(Uri callback) {
+		/// <param name="extraParameters">Extra parameters to add to the request token message.  Optional.</param>
+		public void RequestUserAuthorization(Uri callback, IDictionary<string, string> extraParameters) {
 			// Obtain an unauthorized request token.
 			var requestToken = new RequestTokenMessage(this.ServiceProvider.RequestTokenEndpoint) {
 				ConsumerKey = this.ConsumerKey,
 				ConsumerSecret = this.ConsumerSecret,
 			};
+			requestToken.AddExtraFields(extraParameters);
 			var requestTokenResponse = this.Channel.Request<UnauthorizedRequestTokenMessage>(requestToken);
 			this.TokenManager.StoreNewRequestToken(this.ConsumerKey, requestTokenResponse.RequestToken, requestTokenResponse.TokenSecret, null/*TODO*/);
 

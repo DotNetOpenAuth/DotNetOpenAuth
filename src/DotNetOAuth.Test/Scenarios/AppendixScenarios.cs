@@ -39,7 +39,7 @@ namespace DotNetOAuth.Test {
 			Coordinator coordinator = new Coordinator(
 				channel => {
 					consumer.Channel = channel;
-					consumer.RequestUserAuthorization(new Uri("http://printer.example.com/request_token_ready"));
+					consumer.RequestUserAuthorization(new Uri("http://printer.example.com/request_token_ready"), null);
 					string accessToken = consumer.ProcessUserAuthorization();
 					var photoRequest = consumer.CreateAuthorizedRequestInternal(accessPhotoEndpoint, accessToken);
 					Response protectedPhoto = channel.RequestProtectedResource(photoRequest);
