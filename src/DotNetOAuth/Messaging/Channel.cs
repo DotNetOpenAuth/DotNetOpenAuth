@@ -125,6 +125,7 @@ namespace DotNetOAuth.Messaging {
 				throw new ArgumentNullException("message");
 			}
 			this.PrepareMessageForSending(message);
+			Logger.DebugFormat("Sending message: {0}", message);
 
 			switch (message.Transport) {
 				case MessageTransport.Direct:
@@ -276,9 +277,12 @@ namespace DotNetOAuth.Messaging {
 			}
 
 			this.PrepareMessageForSending(request);
+			Logger.DebugFormat("Sending request: {0}", request);
 			IProtocolMessage response = this.RequestInternal(request);
 			if (response != null) {
+				Logger.DebugFormat("Received response: {0}", response);
 				this.VerifyMessageAfterReceiving(response);
+				Logger.DebugFormat("Response verified.");
 			}
 
 			return response;

@@ -47,10 +47,16 @@ namespace DotNetOAuth.ChannelElements {
 			}
 
 			try {
+				Logger.DebugFormat("HTTP {0} {1}", request.Method, request.RequestUri);
 				using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
 					return new Response(response);
 				}
 			} catch (WebException ex) {
+				if (Logger.IsErrorEnabled) {
+					using (var reader = new StreamReader(ex.Response.GetResponseStream())) {
+						Logger.ErrorFormat("WebException from {0}: {1}", ex.Response.ResponseUri, reader.ReadToEnd());
+					}
+				}
 				throw new ProtocolException(MessagingStrings.ErrorInRequestReplyMessage, ex);
 			}
 		}
