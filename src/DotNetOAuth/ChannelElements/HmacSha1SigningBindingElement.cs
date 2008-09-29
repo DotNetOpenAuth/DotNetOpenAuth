@@ -12,11 +12,11 @@ namespace DotNetOAuth.ChannelElements {
 	/// <summary>
 	/// A binding element that signs outgoing messages and verifies the signature on incoming messages.
 	/// </summary>
-	internal class HmacSha1SigningBindingElement : SigningBindingElementBase {
+	public class HmacSha1SigningBindingElement : SigningBindingElementBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HmacSha1SigningBindingElement"/> class
 		/// </summary>
-		internal HmacSha1SigningBindingElement()
+		public HmacSha1SigningBindingElement()
 			: base("HMAC-SHA1") {
 		}
 

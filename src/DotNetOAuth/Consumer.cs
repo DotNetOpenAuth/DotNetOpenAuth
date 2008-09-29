@@ -22,7 +22,7 @@ namespace DotNetOAuth {
 		/// </summary>
 		/// <param name="serviceDescription">The endpoints and behavior of the Service Provider.</param>
 		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
-		internal Consumer(ServiceProviderDescription serviceDescription, ITokenManager tokenManager) {
+		public Consumer(ServiceProviderDescription serviceDescription, ITokenManager tokenManager) {
 			if (serviceDescription == null) {
 				throw new ArgumentNullException("serviceDescription");
 			}

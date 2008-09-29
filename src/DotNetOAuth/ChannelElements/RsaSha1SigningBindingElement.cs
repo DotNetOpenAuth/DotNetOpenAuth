@@ -12,7 +12,7 @@ namespace DotNetOAuth.ChannelElements {
 	/// <summary>
 	/// A binding element that signs outgoing messages and verifies the signature on incoming messages.
 	/// </summary>
-	internal class RsaSha1SigningBindingElement : SigningBindingElementBase {
+	public class RsaSha1SigningBindingElement : SigningBindingElementBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RsaSha1SigningBindingElement"/> class.
 		/// </summary>

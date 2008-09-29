@@ -15,11 +15,11 @@ namespace DotNetOAuth.ChannelElements {
 	/// <summary>
 	/// A binding element that signs outgoing messages and verifies the signature on incoming messages.
 	/// </summary>
-	internal class PlainTextSigningBindingElement : SigningBindingElementBase {
+	public class PlainTextSigningBindingElement : SigningBindingElementBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PlainTextSigningBindingElement"/> class.
 		/// </summary>
-		internal PlainTextSigningBindingElement()
+		public PlainTextSigningBindingElement()
 			: base("PLAINTEXT") {
 		}
 

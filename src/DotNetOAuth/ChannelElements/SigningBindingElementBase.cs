@@ -15,7 +15,7 @@ namespace DotNetOAuth.ChannelElements {
 	/// <summary>
 	/// A binding element that signs outgoing messages and verifies the signature on incoming messages.
 	/// </summary>
-	internal abstract class SigningBindingElementBase : ITamperProtectionChannelBindingElement {
+	public abstract class SigningBindingElementBase : ITamperProtectionChannelBindingElement {
 		/// <summary>
 		/// The signature method this binding element uses.
 		/// </summary>
