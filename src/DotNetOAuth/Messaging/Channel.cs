@@ -328,7 +328,7 @@ namespace DotNetOAuth.Messaging {
 		/// Requires an HttpContext.Current context.
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current"/> is null.</exception>
-		protected virtual HttpRequestInfo GetRequestFromContext() {
+		protected internal virtual HttpRequestInfo GetRequestFromContext() {
 			if (HttpContext.Current == null) {
 				throw new InvalidOperationException(MessagingStrings.HttpContextRequired);
 			}

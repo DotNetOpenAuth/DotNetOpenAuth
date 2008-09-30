@@ -59,6 +59,10 @@ namespace DotNetOAuth.Test.Scenarios {
 			this.RemoteChannel.incomingMessageSignal.Set();
 		}
 
+		protected internal override HttpRequestInfo GetRequestFromContext() {
+			return new HttpRequestInfo(this.AwaitIncomingMessage());
+		}
+
 		protected override IProtocolMessage RequestInternal(IDirectedProtocolMessage request) {
 			HttpRequestInfo requestInfo = this.SpoofHttpMethod(request);
 			TestBase.TestLogger.InfoFormat("Sending request: {0}", requestInfo.Message);
@@ -81,10 +85,6 @@ namespace DotNetOAuth.Test.Scenarios {
 			TestBase.TestLogger.Info("Next response is an indirect message...");
 			// In this mock transport, direct and indirect messages are the same.
 			return this.SendDirectMessageResponse(message);
-		}
-
-		protected override HttpRequestInfo GetRequestFromContext() {
-			return new HttpRequestInfo(this.AwaitIncomingMessage());
 		}
 
 		protected override IProtocolMessage ReadFromRequestInternal(HttpRequestInfo request) {

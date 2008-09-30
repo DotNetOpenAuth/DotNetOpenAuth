@@ -8,7 +8,7 @@ namespace DotNetOAuth.ChannelElements {
 	/// <summary>
 	/// An interface allowing OAuth hosts to inject their own algorithm for generating tokens and secrets.
 	/// </summary>
-	internal interface ITokenGenerator {
+	public interface ITokenGenerator {
 		/// <summary>
 		/// Generates a new token to represent a not-yet-authorized request to access protected resources.
 		/// </summary>

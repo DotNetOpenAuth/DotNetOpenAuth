@@ -8,6 +8,7 @@ namespace DotNetOAuth {
 	using System;
 	using System.Collections.Generic;
 	using System.Net;
+	using System.Web;
 	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.Messages;
 	using DotNetOAuth.Messaging;
@@ -123,23 +124,20 @@ namespace DotNetOAuth {
 		/// Processes an incoming authorization-granted message from an SP and obtains an access token.
 		/// </summary>
 		/// <returns>The access token, or null if no incoming authorization message was recognized.</returns>
+		/// <remarks>
+		/// Requires HttpContext.Current.
+		/// </remarks>
 		public string ProcessUserAuthorization() {
-			DirectUserToConsumerMessage authorizationMessage;
-			if (this.Channel.TryReadFromRequest<DirectUserToConsumerMessage>(out authorizationMessage)) {
-				// Exchange request token for access token.
-				string requestTokenSecret = this.TokenManager.GetTokenSecret(authorizationMessage.RequestToken);
-				var requestAccess = new RequestAccessTokenMessage(this.ServiceProvider.AccessTokenEndpoint) {
-					RequestToken = authorizationMessage.RequestToken,
-					TokenSecret = requestTokenSecret,
-					ConsumerKey = this.ConsumerKey,
-					ConsumerSecret = this.ConsumerSecret,
-				};
-				var grantAccess = this.Channel.Request<GrantAccessTokenMessage>(requestAccess);
-				this.TokenManager.ExpireRequestTokenAndStoreNewAccessToken(this.ConsumerKey, authorizationMessage.RequestToken, grantAccess.AccessToken, grantAccess.TokenSecret);
-				return grantAccess.AccessToken;
-			} else {
-				return null;
-			}
+			return this.ProcessUserAuthorization(this.Channel.GetRequestFromContext());
+		}
+
+		/// <summary>
+		/// Processes an incoming authorization-granted message from an SP and obtains an access token.
+		/// </summary>
+		/// <param name="request">The incoming HTTP request.</param>
+		/// <returns>The access token, or null if no incoming authorization message was recognized.</returns>
+		public string ProcessUserAuthorization(HttpRequest request) {
+			return this.ProcessUserAuthorization(new HttpRequestInfo(request));
 		}
 
 		/// <summary>
@@ -167,6 +165,30 @@ namespace DotNetOAuth {
 			IDirectedProtocolMessage message = this.CreateAuthorizedRequestInternal(endpoint, accessToken);
 			HttpWebRequest wr = this.Channel.InitializeRequest(message);
 			return this.WebRequestHandler.GetResponse(wr);
+		}
+
+		/// <summary>
+		/// Processes an incoming authorization-granted message from an SP and obtains an access token.
+		/// </summary>
+		/// <param name="request">The incoming HTTP request.</param>
+		/// <returns>The access token, or null if no incoming authorization message was recognized.</returns>
+		internal string ProcessUserAuthorization(HttpRequestInfo request) {
+			DirectUserToConsumerMessage authorizationMessage;
+			if (this.Channel.TryReadFromRequest<DirectUserToConsumerMessage>(request, out authorizationMessage)) {
+				// Exchange request token for access token.
+				string requestTokenSecret = this.TokenManager.GetTokenSecret(authorizationMessage.RequestToken);
+				var requestAccess = new RequestAccessTokenMessage(this.ServiceProvider.AccessTokenEndpoint) {
+					RequestToken = authorizationMessage.RequestToken,
+					TokenSecret = requestTokenSecret,
+					ConsumerKey = this.ConsumerKey,
+					ConsumerSecret = this.ConsumerSecret,
+				};
+				var grantAccess = this.Channel.Request<GrantAccessTokenMessage>(requestAccess);
+				this.TokenManager.ExpireRequestTokenAndStoreNewAccessToken(this.ConsumerKey, authorizationMessage.RequestToken, grantAccess.AccessToken, grantAccess.TokenSecret);
+				return grantAccess.AccessToken;
+			} else {
+				return null;
+			}
 		}
 
 		/// <summary>

@@ -6,13 +6,13 @@
 
 namespace DotNetOAuth {
 	using System;
+	using System.Collections.Generic;
 	using System.Globalization;
 	using System.Web;
 	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.Messages;
 	using DotNetOAuth.Messaging;
 	using DotNetOAuth.Messaging.Bindings;
-using System.Collections.Generic;
 
 	/// <summary>
 	/// A web application that allows access via OAuth.
@@ -31,7 +31,7 @@ using System.Collections.Generic;
 		/// </summary>
 		/// <param name="serviceDescription">The endpoints and behavior on the Service Provider.</param>
 		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
-		internal ServiceProvider(ServiceProviderDescription serviceDescription, ITokenManager tokenManager) {
+		public ServiceProvider(ServiceProviderDescription serviceDescription, ITokenManager tokenManager) {
 			if (serviceDescription == null) {
 				throw new ArgumentNullException("serviceDescription");
 			}
@@ -61,12 +61,12 @@ using System.Collections.Generic;
 		/// <summary>
 		/// Gets or sets the generator responsible for generating new tokens and secrets.
 		/// </summary>
-		internal ITokenGenerator TokenGenerator { get; set; }
+		public ITokenGenerator TokenGenerator { get; set; }
 
 		/// <summary>
 		/// Gets the persistence store for tokens and secrets.
 		/// </summary>
-		internal ITokenManager TokenManager { get; private set; }
+		public ITokenManager TokenManager { get; private set; }
 
 		internal RequestTokenMessage ReadTokenRequest() {
 			return this.Channel.ReadFromRequest<RequestTokenMessage>();
