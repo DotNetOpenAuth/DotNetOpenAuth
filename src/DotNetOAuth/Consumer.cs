@@ -59,11 +59,6 @@ namespace DotNetOAuth {
 		public ITokenManager TokenManager { get; private set; }
 
 		/// <summary>
-		/// Gets the pending user agent redirect based message to be sent as an HttpResponse.
-		/// </summary>
-		public Response PendingRequest { get; private set; }
-
-		/// <summary>
 		/// Gets or sets the object that processes <see cref="HttpWebRequest"/>s.
 		/// </summary>
 		/// <remarks>
@@ -86,7 +81,8 @@ namespace DotNetOAuth {
 		/// User Agent to upon successful authorization.
 		/// </param>
 		/// <param name="extraParameters">Extra parameters to add to the request token message.  Optional.</param>
-		public void RequestUserAuthorization(Uri callback, IDictionary<string, string> extraParameters) {
+		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
+		public Response RequestUserAuthorization(Uri callback, IDictionary<string, string> extraParameters) {
 			// Obtain an unauthorized request token.
 			var requestToken = new RequestTokenMessage(this.ServiceProvider.RequestTokenEndpoint) {
 				ConsumerKey = this.ConsumerKey,
@@ -101,8 +97,7 @@ namespace DotNetOAuth {
 				Callback = callback,
 				RequestToken = requestTokenResponse.RequestToken,
 			};
-			this.Channel.Send(requestAuthorization);
-			this.PendingRequest = this.Channel.DequeueIndirectOrResponseMessage();
+			return this.Channel.Send(requestAuthorization);
 		}
 
 		/// <summary>

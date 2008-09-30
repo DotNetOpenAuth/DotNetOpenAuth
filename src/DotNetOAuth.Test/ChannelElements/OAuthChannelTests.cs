@@ -78,9 +78,8 @@ namespace DotNetOAuth.Test.ChannelElements {
 				Name = "Andrew",
 				Location = new Uri("http://hostb/pathB"),
 			};
-			this.channel.Send(message);
 
-			Response response = this.channel.DequeueIndirectOrResponseMessage();
+			Response response = this.channel.Send(message);
 			Assert.AreSame(message, response.OriginalMessage);
 			Assert.AreEqual(HttpStatusCode.OK, response.Status);
 			Assert.AreEqual(0, response.Headers.Count);

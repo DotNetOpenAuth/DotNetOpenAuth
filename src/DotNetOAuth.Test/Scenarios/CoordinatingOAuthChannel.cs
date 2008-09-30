@@ -68,17 +68,18 @@ namespace DotNetOAuth.Test.Scenarios {
 			return this.AwaitIncomingMessage();
 		}
 
-		protected override void SendDirectMessageResponse(IProtocolMessage response) {
+		protected override Response SendDirectMessageResponse(IProtocolMessage response) {
 			TestBase.TestLogger.InfoFormat("Sending response: {0}", response);
 			this.RemoteChannel.incomingMessage = CloneSerializedParts(response, null);
 			this.CopyDirectionalParts(response, this.RemoteChannel.incomingMessage);
 			this.RemoteChannel.incomingMessageSignal.Set();
+			return null;
 		}
 
-		protected override void SendIndirectMessage(IDirectedProtocolMessage message) {
+		protected override Response SendIndirectMessage(IDirectedProtocolMessage message) {
 			TestBase.TestLogger.Info("Next response is an indirect message...");
 			// In this mock transport, direct and indirect messages are the same.
-			this.SendDirectMessageResponse(message);
+			return this.SendDirectMessageResponse(message);
 		}
 
 		protected override HttpRequestInfo GetRequestFromContext() {

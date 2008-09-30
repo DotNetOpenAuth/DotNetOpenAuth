@@ -55,11 +55,6 @@ namespace DotNetOAuth.Messaging {
 		private IMessageTypeProvider messageTypeProvider;
 
 		/// <summary>
-		/// Gets or sets the HTTP response to send as a reply to the current incoming HTTP request.
-		/// </summary>
-		private Response queuedIndirectOrResponseMessage;
-
-		/// <summary>
 		/// A list of binding elements in the order they must be applied to outgoing messages.
 		/// </summary>
 		/// <remarks>
@@ -106,21 +101,12 @@ namespace DotNetOAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Retrieves the stored response for sending and clears it from the channel.
-		/// </summary>
-		/// <returns>The response to send as the HTTP response.</returns>
-		internal Response DequeueIndirectOrResponseMessage() {
-			Response response = this.queuedIndirectOrResponseMessage;
-			this.queuedIndirectOrResponseMessage = null;
-			return response;
-		}
-
-		/// <summary>
 		/// Queues an indirect message (either a request or response) 
 		/// or direct message response for transmission to a remote party.
 		/// </summary>
 		/// <param name="message">The one-way message to send</param>
-		internal void Send(IProtocolMessage message) {
+		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
+		internal Response Send(IProtocolMessage message) {
 			if (message == null) {
 				throw new ArgumentNullException("message");
 			}
@@ -130,8 +116,7 @@ namespace DotNetOAuth.Messaging {
 			switch (message.Transport) {
 				case MessageTransport.Direct:
 					// This is a response to a direct message.
-					this.SendDirectMessageResponse(message);
-					break;
+					return this.SendDirectMessageResponse(message);
 				case MessageTransport.Indirect:
 					var directedMessage = message as IDirectedProtocolMessage;
 					if (directedMessage == null) {
@@ -145,8 +130,7 @@ namespace DotNetOAuth.Messaging {
 					if (directedMessage.Recipient == null) {
 						throw new ArgumentException(MessagingStrings.DirectedMessageMissingRecipient, "message");
 					}
-					this.SendIndirectMessage(directedMessage);
-					break;
+					return this.SendIndirectMessage(directedMessage);
 				default:
 					throw new ArgumentException(
 						string.Format(
@@ -363,7 +347,8 @@ namespace DotNetOAuth.Messaging {
 		/// Queues an indirect message for transmittal via the user agent.
 		/// </summary>
 		/// <param name="message">The message to send.</param>
-		protected virtual void SendIndirectMessage(IDirectedProtocolMessage message) {
+		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
+		protected virtual Response SendIndirectMessage(IDirectedProtocolMessage message) {
 			if (message == null) {
 				throw new ArgumentNullException("message");
 			}
@@ -377,7 +362,7 @@ namespace DotNetOAuth.Messaging {
 				response = this.Create301RedirectResponse(message, fields);
 			}
 
-			this.QueueIndirectOrResponseMessage(response);
+			return response;
 		}
 
 		/// <summary>
@@ -474,26 +459,11 @@ namespace DotNetOAuth.Messaging {
 		/// are sent in the response stream in querystring style.
 		/// </summary>
 		/// <param name="response">The message to send as a response.</param>
+		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
 		/// <remarks>
 		/// This method implements spec V1.0 section 5.3.
 		/// </remarks>
-		protected abstract void SendDirectMessageResponse(IProtocolMessage response);
-
-		/// <summary>
-		/// Takes a message and temporarily stores it for sending as the hosting site's
-		/// HTTP response to the current request.
-		/// </summary>
-		/// <param name="response">The message to store for sending.</param>
-		protected void QueueIndirectOrResponseMessage(Response response) {
-			if (response == null) {
-				throw new ArgumentNullException("response");
-			}
-			if (this.queuedIndirectOrResponseMessage != null) {
-				throw new InvalidOperationException(MessagingStrings.QueuedMessageResponseAlreadyExists);
-			}
-
-			this.queuedIndirectOrResponseMessage = response;
-		}
+		protected abstract Response SendDirectMessageResponse(IProtocolMessage response);
 
 		/// <summary>
 		/// Prepares a message for transmit by applying signatures, nonces, etc.

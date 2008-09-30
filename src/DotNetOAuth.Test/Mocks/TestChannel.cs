@@ -28,7 +28,7 @@ namespace DotNetOAuth.Test.Mocks {
 			throw new NotImplementedException("ReadFromResponse");
 		}
 
-		protected override void SendDirectMessageResponse(IProtocolMessage response) {
+		protected override Response SendDirectMessageResponse(IProtocolMessage response) {
 			throw new NotImplementedException("SendDirectMessageResponse");
 		}
 	}

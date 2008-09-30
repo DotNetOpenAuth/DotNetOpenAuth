@@ -208,10 +208,11 @@ namespace DotNetOAuth.ChannelElements {
 		/// are sent in the response stream in querystring style.
 		/// </summary>
 		/// <param name="response">The message to send as a response.</param>
+		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
 		/// <remarks>
 		/// This method implements spec V1.0 section 5.3.
 		/// </remarks>
-		protected override void SendDirectMessageResponse(IProtocolMessage response) {
+		protected override Response SendDirectMessageResponse(IProtocolMessage response) {
 			MessageSerializer serializer = MessageSerializer.Get(response.GetType());
 			var fields = serializer.Serialize(response);
 			string responseBody = MessagingUtilities.CreateQueryString(fields);
@@ -222,7 +223,7 @@ namespace DotNetOAuth.ChannelElements {
 				Status = HttpStatusCode.OK,
 				Headers = new System.Net.WebHeaderCollection(),
 			};
-			this.QueueIndirectOrResponseMessage(encodedResponse);
+			return encodedResponse;
 		}
 
 		/// <summary>

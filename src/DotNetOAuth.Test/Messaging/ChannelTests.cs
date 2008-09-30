@@ -25,11 +25,6 @@ namespace DotNetOAuth.Test.Messaging {
 		}
 
 		[TestMethod]
-		public void DequeueIndirectOrResponseMessageReturnsNull() {
-			Assert.IsNull(this.Channel.DequeueIndirectOrResponseMessage());
-		}
-
-		[TestMethod]
 		public void ReadFromRequestQueryString() {
 			this.ParameterizedReceiveTest("GET");
 		}
@@ -69,8 +64,7 @@ namespace DotNetOAuth.Test.Messaging {
 			message.Recipient = new Uri("http://provider/path");
 			var expected = GetStandardTestFields(FieldFill.CompleteBeforeBindings);
 
-			this.Channel.Send(message);
-			Response response = this.Channel.DequeueIndirectOrResponseMessage();
+			Response response = this.Channel.Send(message);
 			Assert.AreEqual(HttpStatusCode.Redirect, response.Status);
 			StringAssert.StartsWith(response.Headers[HttpResponseHeader.Location], "http://provider/path");
 			foreach (var pair in expected) {
@@ -113,8 +107,7 @@ namespace DotNetOAuth.Test.Messaging {
 				Location = new Uri("http://host/path"),
 				Recipient = new Uri("http://provider/path"),
 			};
-			this.Channel.Send(message);
-			Response response = this.Channel.DequeueIndirectOrResponseMessage();
+			Response response = this.Channel.Send(message);
 			Assert.AreEqual(HttpStatusCode.OK, response.Status, "A form redirect should be an HTTP successful response.");
 			Assert.IsNull(response.Headers[HttpResponseHeader.Location], "There should not be a redirection header in the response.");
 			string body = response.Body;
@@ -163,20 +156,6 @@ namespace DotNetOAuth.Test.Messaging {
 				Location = new Uri("http://host/path"),
 			};
 			this.Channel.Send(message);
-		}
-
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
-		public void QueueIndirectOrResponseMessageNull() {
-			TestBadChannel badChannel = new TestBadChannel(false);
-			badChannel.QueueIndirectOrResponseMessage(null);
-		}
-
-		[TestMethod, ExpectedException(typeof(InvalidOperationException))]
-		public void QueueIndirectOrResponseMessageTwice() {
-			TestBadChannel badChannel = new TestBadChannel(false);
-			Response response = new Response();
-			badChannel.QueueIndirectOrResponseMessage(new Response());
-			badChannel.QueueIndirectOrResponseMessage(new Response());
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]

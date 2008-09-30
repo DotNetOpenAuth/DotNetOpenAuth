@@ -27,10 +27,6 @@ namespace DotNetOAuth.Test.Mocks {
 			base.CreateFormPostResponse(message, fields);
 		}
 
-		internal new void QueueIndirectOrResponseMessage(Response response) {
-			base.QueueIndirectOrResponseMessage(response);
-		}
-
 		internal new void SendIndirectMessage(IDirectedProtocolMessage message) {
 			base.SendIndirectMessage(message);
 		}
@@ -51,7 +47,7 @@ namespace DotNetOAuth.Test.Mocks {
 			throw new NotImplementedException();
 		}
 
-		protected override void SendDirectMessageResponse(IProtocolMessage response) {
+		protected override Response SendDirectMessageResponse(IProtocolMessage response) {
 			throw new NotImplementedException();
 		}
 	}

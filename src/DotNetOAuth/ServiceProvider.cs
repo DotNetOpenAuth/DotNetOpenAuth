@@ -53,11 +53,6 @@ namespace DotNetOAuth {
 		public ServiceProviderDescription Description { get; private set; }
 
 		/// <summary>
-		/// Gets the pending user agent redirect based message to be sent as an HttpResponse.
-		/// </summary>
-		public Response PendingRequest { get; private set; }
-
-		/// <summary>
 		/// Gets or sets the channel to use for sending/receiving messages.
 		/// </summary>
 		internal OAuthChannel Channel { get; set; }
@@ -108,12 +103,16 @@ namespace DotNetOAuth {
 			return this.Channel.ReadFromRequest<DirectUserToServiceProviderMessage>(request);
 		}
 
-		internal void SendAuthorizationResponse(DirectUserToServiceProviderMessage request) {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="request"></param>
+		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
+		internal Response SendAuthorizationResponse(DirectUserToServiceProviderMessage request) {
 			var authorization = new DirectUserToConsumerMessage(request.Callback) {
 				RequestToken = request.RequestToken,
 			};
-			this.Channel.Send(authorization);
-			this.PendingRequest = this.Channel.DequeueIndirectOrResponseMessage();
+			return this.Channel.Send(authorization);
 		}
 
 		internal RequestAccessTokenMessage ReadAccessTokenRequest() {
