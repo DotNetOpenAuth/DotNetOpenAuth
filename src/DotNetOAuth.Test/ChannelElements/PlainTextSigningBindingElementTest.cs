@@ -22,7 +22,7 @@ namespace DotNetOAuth.Test.ChannelElements
 			message.TokenSecret = "ts";
 			Assert.IsTrue(target.PrepareMessageForSending(message));
 			Assert.AreEqual("PLAINTEXT", message.SignatureMethod);
-			Assert.AreEqual("cs%26ts", message.Signature);
+			Assert.AreEqual("cs&ts", message.Signature);
 		}
 
 		[TestMethod]
@@ -33,7 +33,7 @@ namespace DotNetOAuth.Test.ChannelElements
 			message.ConsumerSecret = "cs";
 			message.TokenSecret = "ts";
 			message.SignatureMethod = "PLAINTEXT";
-			message.Signature = "cs%26ts";
+			message.Signature = "cs&ts";
 			Assert.IsTrue(target.PrepareMessageForReceiving(message));
 		}
 

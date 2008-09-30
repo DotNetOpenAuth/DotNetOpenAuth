@@ -33,7 +33,7 @@ namespace DotNetOAuth.ChannelElements {
 			AsymmetricSignatureFormatter hasher = new RSAPKCS1SignatureFormatter(provider);
 			hasher.SetHashAlgorithm("SHA1");
 			byte[] digest = hasher.CreateSignature(Encoding.ASCII.GetBytes(ConstructSignatureBaseString(message)));
-			return Uri.EscapeDataString(Convert.ToBase64String(digest));
+			return Convert.ToBase64String(digest);
 		}
 	}
 }

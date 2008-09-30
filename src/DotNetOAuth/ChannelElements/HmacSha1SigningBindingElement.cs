@@ -34,7 +34,7 @@ namespace DotNetOAuth.ChannelElements {
 			string baseString = ConstructSignatureBaseString(message);
 			Logger.DebugFormat("Signing message with signature base string: {0}", baseString);
 			byte[] digest = hasher.ComputeHash(Encoding.ASCII.GetBytes(baseString));
-			return Uri.EscapeDataString(Convert.ToBase64String(digest));
+			return Convert.ToBase64String(digest);
 		}
 	}
 }
