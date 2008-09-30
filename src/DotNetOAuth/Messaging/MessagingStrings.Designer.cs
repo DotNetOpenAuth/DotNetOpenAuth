@@ -70,6 +70,15 @@ namespace DotNetOAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to HttpContext.Current is null.  There must be an ASP.NET request in process for this operation to succeed..
+        /// </summary>
+        internal static string CurrentHttpContextRequired {
+            get {
+                return ResourceManager.GetString("CurrentHttpContextRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to DataContractSerializer could not be initialized on message type {0}.  Is it missing a [DataContract] attribute?.
         /// </summary>
         internal static string DataContractMissingFromMessageType {

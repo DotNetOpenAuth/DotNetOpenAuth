@@ -79,15 +79,6 @@ namespace DotNetOAuth {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HttpContext.Current is null.  There must be an ASP.NET request in process for this operation to succeed..
-        /// </summary>
-        internal static string CurrentHttpContextRequired {
-            get {
-                return ResourceManager.GetString("CurrentHttpContextRequired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to An invalid OAuth message received and discarded..
         /// </summary>
         internal static string InvalidIncomingMessage {

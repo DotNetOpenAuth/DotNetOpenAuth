@@ -133,6 +133,27 @@ namespace DotNetOAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Gets the original request URL, as seen from the browser before any URL rewrites on the server if any.
+		/// Cookieless session directory (if applicable) is also included.
+		/// </summary>
+		/// <returns>The URL in the user agent's Location bar.</returns>
+		internal static Uri GetRequestUrlFromContext() {
+			HttpContext context = HttpContext.Current;
+			if (context == null) {
+				throw new InvalidOperationException(MessagingStrings.CurrentHttpContextRequired);
+			}
+
+			// We use Request.Url for the full path to the server, and modify it
+			// with Request.RawUrl to capture both the cookieless session "directory" if it exists
+			// and the original path in case URL rewriting is going on.  We don't want to be
+			// fooled by URL rewriting because we're comparing the actual URL with what's in
+			// the return_to parameter in some cases.
+			// Response.ApplyAppPathModifier(builder.Path) would have worked for the cookieless
+			// session, but not the URL rewriting problem.
+			return new Uri(context.Request.Url, context.Request.RawUrl);
+		}
+
+		/// <summary>
 		/// Extracts the recipient from an HttpRequestInfo.
 		/// </summary>
 		/// <param name="request">The request to get recipient information from.</param>
@@ -146,7 +167,7 @@ namespace DotNetOAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The message to copy the extra data into.</param>
 		/// <param name="extraParameters">The extra data to copy into the message.  May be null to do nothing.</param>
-		internal static void AddNonOAuthParameters(this ITamperResistantOAuthMessage message, IDictionary<string, string> extraParameters) {
+		internal static void AddNonOAuthParameters(this IProtocolMessage message, IDictionary<string, string> extraParameters) {
 			if (message == null) {
 				throw new ArgumentNullException("message");
 			}

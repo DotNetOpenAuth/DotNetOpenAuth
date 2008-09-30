@@ -29,6 +29,7 @@ namespace DotNetOAuth.Test.Scenarios {
 		/// <param name="signingBindingElement">
 		/// The signing element for the Consumer to use.  Null for the Service Provider.
 		/// </param>
+		/// <param name="isConsumer">True if this channel is constructed for a Consumer.</param>
 		internal CoordinatingOAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, bool isConsumer)
 			: base(
 			signingBindingElement,

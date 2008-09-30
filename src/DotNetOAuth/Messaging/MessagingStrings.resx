@@ -120,6 +120,9 @@
   <data name="ArgumentPropertyMissing" xml:space="preserve">
     <value>Argument's {0}.{1} property is required but is empty or null.</value>
   </data>
+  <data name="CurrentHttpContextRequired" xml:space="preserve">
+    <value>HttpContext.Current is null.  There must be an ASP.NET request in process for this operation to succeed.</value>
+  </data>
   <data name="DataContractMissingFromMessageType" xml:space="preserve">
     <value>DataContractSerializer could not be initialized on message type {0}.  Is it missing a [DataContract] attribute?</value>
   </data>

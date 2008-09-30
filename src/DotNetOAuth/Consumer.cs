@@ -16,6 +16,10 @@ namespace DotNetOAuth {
 	/// <summary>
 	/// A website or application that uses OAuth to access the Service Provider on behalf of the User.
 	/// </summary>
+	/// <remarks>
+	/// The methods on this class are thread-safe.  Provided the properties are set and not changed
+	/// afterward, a single instance of this class may be used by an entire web application safely.
+	/// </remarks>
 	public class Consumer {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Consumer"/> class.
@@ -74,21 +78,35 @@ namespace DotNetOAuth {
 
 		/// <summary>
 		/// Begins an OAuth authorization request and redirects the user to the Service Provider
+		/// to provide that authorization.  Upon successful authorization, the user is redirected
+		/// back to the current page.
+		/// </summary>
+		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
+		/// <remarks>
+		/// Requires HttpContext.Current.
+		/// </remarks>
+		public Response RequestUserAuthorization() {
+			return this.RequestUserAuthorization(MessagingUtilities.GetRequestUrlFromContext(), null, null);
+		}
+
+		/// <summary>
+		/// Begins an OAuth authorization request and redirects the user to the Service Provider
 		/// to provide that authorization.
 		/// </summary>
 		/// <param name="callback">
 		/// An optional Consumer URL that the Service Provider should redirect the 
 		/// User Agent to upon successful authorization.
 		/// </param>
-		/// <param name="extraParameters">Extra parameters to add to the request token message.  Optional.</param>
+		/// <param name="requestParameters">Extra parameters to add to the request token message.  Optional.</param>
+		/// <param name="redirectParameters">Extra parameters to add to the redirect to Service Provider message.  Optional.</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
-		public Response RequestUserAuthorization(Uri callback, IDictionary<string, string> extraParameters) {
+		public Response RequestUserAuthorization(Uri callback, IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters) {
 			// Obtain an unauthorized request token.
 			var requestToken = new RequestTokenMessage(this.ServiceProvider.RequestTokenEndpoint) {
 				ConsumerKey = this.ConsumerKey,
 				ConsumerSecret = this.ConsumerSecret,
 			};
-			requestToken.AddNonOAuthParameters(extraParameters);
+			requestToken.AddNonOAuthParameters(requestParameters);
 			var requestTokenResponse = this.Channel.Request<UnauthorizedRequestTokenMessage>(requestToken);
 			this.TokenManager.StoreNewRequestToken(this.ConsumerKey, requestTokenResponse.RequestToken, requestTokenResponse.TokenSecret, null/*TODO*/);
 
@@ -97,6 +115,7 @@ namespace DotNetOAuth {
 				Callback = callback,
 				RequestToken = requestTokenResponse.RequestToken,
 			};
+			requestAuthorization.AddNonOAuthParameters(redirectParameters);
 			return this.Channel.Send(requestAuthorization);
 		}
 
@@ -132,7 +151,7 @@ namespace DotNetOAuth {
 		/// <returns>The initialized WebRequest object.</returns>
 		public WebRequest CreateAuthorizedRequest(MessageReceivingEndpoint endpoint, string accessToken) {
 			IDirectedProtocolMessage message = this.CreateAuthorizedRequestInternal(endpoint, accessToken);
-			WebRequest wr = this.Channel.InitializeRequest(message);
+			HttpWebRequest wr = this.Channel.InitializeRequest(message);
 			return wr;
 		}
 

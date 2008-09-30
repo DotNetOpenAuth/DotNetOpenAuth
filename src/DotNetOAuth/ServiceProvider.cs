@@ -12,6 +12,7 @@ namespace DotNetOAuth {
 	using DotNetOAuth.Messages;
 	using DotNetOAuth.Messaging;
 	using DotNetOAuth.Messaging.Bindings;
+using System.Collections.Generic;
 
 	/// <summary>
 	/// A web application that allows access via OAuth.
@@ -79,7 +80,7 @@ namespace DotNetOAuth {
 			return this.Channel.ReadFromRequest<RequestTokenMessage>(request);
 		}
 
-		internal void SendUnauthorizedTokenResponse(RequestTokenMessage request) {
+		internal void SendUnauthorizedTokenResponse(RequestTokenMessage request, IDictionary<string, string> extraParameters) {
 			string token = this.TokenGenerator.GenerateRequestToken(request.ConsumerKey);
 			string secret = this.TokenGenerator.GenerateSecret();
 			this.TokenManager.StoreNewRequestToken(request.ConsumerKey, token, secret, null/*add params*/);
@@ -87,6 +88,7 @@ namespace DotNetOAuth {
 				RequestToken = token,
 				TokenSecret = secret,
 			};
+			response.AddNonOAuthParameters(extraParameters);
 
 			this.Channel.Send(response);
 		}
@@ -127,7 +129,7 @@ namespace DotNetOAuth {
 			return this.Channel.ReadFromRequest<RequestAccessTokenMessage>(request);
 		}
 
-		internal void SendAccessToken(RequestAccessTokenMessage request) {
+		internal void SendAccessToken(RequestAccessTokenMessage request, IDictionary<string, string> extraParameters) {
 			if (!this.TokenManager.IsRequestTokenAuthorized(request.RequestToken)) {
 				throw new ProtocolException(
 					string.Format(
@@ -143,6 +145,7 @@ namespace DotNetOAuth {
 				AccessToken = accessToken,
 				TokenSecret = tokenSecret,
 			};
+			grantAccess.AddNonOAuthParameters(extraParameters);
 
 			this.Channel.Send(grantAccess);
 		}

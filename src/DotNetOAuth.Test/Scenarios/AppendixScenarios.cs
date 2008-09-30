@@ -39,7 +39,7 @@ namespace DotNetOAuth.Test {
 			Coordinator coordinator = new Coordinator(
 				channel => {
 					consumer.Channel = channel;
-					consumer.RequestUserAuthorization(new Uri("http://printer.example.com/request_token_ready"), null);
+					consumer.RequestUserAuthorization(new Uri("http://printer.example.com/request_token_ready"), null, null);
 					string accessToken = consumer.ProcessUserAuthorization();
 					var photoRequest = consumer.CreateAuthorizedRequestInternal(accessPhotoEndpoint, accessToken);
 					Response protectedPhoto = channel.RequestProtectedResource(photoRequest);
@@ -52,12 +52,12 @@ namespace DotNetOAuth.Test {
 					tokenManager.AddConsumer(consumer.ConsumerKey, consumer.ConsumerSecret);
 					sp.Channel = channel;
 					var requestTokenMessage = sp.ReadTokenRequest();
-					sp.SendUnauthorizedTokenResponse(requestTokenMessage);
+					sp.SendUnauthorizedTokenResponse(requestTokenMessage, null);
 					var authRequest = sp.ReadAuthorizationRequest();
 					tokenManager.AuthorizeRequestToken(authRequest.RequestToken);
 					sp.SendAuthorizationResponse(authRequest);
 					var accessRequest = sp.ReadAccessTokenRequest();
-					sp.SendAccessToken(accessRequest);
+					sp.SendAccessToken(accessRequest, null);
 					string accessToken = sp.GetAccessTokenInRequest();
 					channel.SendDirectRawResponse(new Response {
 						ResponseStream = new MemoryStream(new byte[] { 0x33, 0x66 }),

@@ -109,7 +109,7 @@ namespace DotNetOAuth.Messaging {
 		/// </summary>
 		public void Send() {
 			if (HttpContext.Current == null) {
-				throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
+				throw new InvalidOperationException(MessagingStrings.CurrentHttpContextRequired);
 			}
 
 			HttpContext.Current.Response.Clear();
