@@ -32,8 +32,13 @@ namespace DotNetOAuth.ChannelElements {
 		/// <param name="signingBindingElement">The binding element to use for signing.</param>
 		/// <param name="store">The web application store to use for nonces.</param>
 		/// <param name="tokenManager">The token manager instance to use.</param>
-		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager)
-			: this(signingBindingElement, store, new OAuthMessageTypeProvider(tokenManager), new StandardWebRequestHandler()) {
+		/// <param name="isConsumer">A value indicating whether this channel is being constructed for a Consumer (as opposed to a Service Provider).</param>
+		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, bool isConsumer)
+			: this(
+			signingBindingElement,
+			store,
+			isConsumer ? (IMessageTypeProvider)new OAuthConsumerMessageTypeProvider(tokenManager) : new OAuthServiceProviderMessageTypeProvider(tokenManager),
+			new StandardWebRequestHandler()) {
 		}
 
 		/// <summary>
@@ -43,7 +48,8 @@ namespace DotNetOAuth.ChannelElements {
 		/// <param name="store">The web application store to use for nonces.</param>
 		/// <param name="messageTypeProvider">
 		/// An injected message type provider instance.
-		/// Except for mock testing, this should always be <see cref="OAuthMessageTypeProvider"/>.
+		/// Except for mock testing, this should always be one of
+		/// <see cref="OAuthConsumerMessageTypeProvider"/> or <see cref="OAuthServiceProviderMessageTypeProvider"/>.
 		/// </param>
 		/// <param name="webRequestHandler">
 		/// An instance to a <see cref="IWebRequestHandler"/> that will be used when submitting HTTP

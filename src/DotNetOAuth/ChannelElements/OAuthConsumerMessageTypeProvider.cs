@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="OAuthMessageTypeProvider.cs" company="Andrew Arnott">
+// <copyright file="OAuthConsumerMessageTypeProvider.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -14,20 +14,17 @@ namespace DotNetOAuth.ChannelElements {
 	/// An OAuth-protocol specific implementation of the <see cref="IMessageTypeProvider"/>
 	/// interface.
 	/// </summary>
-	/// <remarks>
-	/// TODO: split this up into a Consumer and SP provider.
-	/// </remarks>
-	internal class OAuthMessageTypeProvider : IMessageTypeProvider {
+	internal class OAuthConsumerMessageTypeProvider : IMessageTypeProvider {
 		/// <summary>
 		/// The token manager to use for discerning between request and access tokens.
 		/// </summary>
 		private ITokenManager tokenManager;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OAuthMessageTypeProvider"/> class.
+		/// Initializes a new instance of the <see cref="OAuthConsumerMessageTypeProvider"/> class.
 		/// </summary>
 		/// <param name="tokenManager">The token manager instance to use.</param>
-		internal OAuthMessageTypeProvider(ITokenManager tokenManager) {
+		internal OAuthConsumerMessageTypeProvider(ITokenManager tokenManager) {
 			if (tokenManager == null) {
 				throw new ArgumentNullException("tokenManager");
 			}
@@ -44,10 +41,7 @@ namespace DotNetOAuth.ChannelElements {
 		/// <param name="fields">The name/value pairs that make up the message payload.</param>
 		/// <remarks>
 		/// The request messages are:
-		/// RequestTokenMessage
-		/// RequestAccessTokenMessage
-		/// DirectUserToServiceProviderMessage
-		/// AccessProtectedResourcesMessage
+		/// DirectUserToConsumerMessage
 		/// </remarks>
 		/// <returns>
 		/// The <see cref="IProtocolMessage"/>-derived concrete class that this message can
@@ -58,24 +52,11 @@ namespace DotNetOAuth.ChannelElements {
 				throw new ArgumentNullException("fields");
 			}
 
-			if (fields.ContainsKey("oauth_consumer_key") &&
-				!fields.ContainsKey("oauth_token")) {
-				return typeof(RequestTokenMessage);
+			if (fields.ContainsKey("oauth_token")) {
+				return typeof(DirectUserToConsumerMessage);
 			}
 
-			if (fields.ContainsKey("oauth_consumer_key") &&
-				fields.ContainsKey("oauth_token")) {
-				// Discern between RequestAccessToken and AccessProtectedResources,
-				// which have all the same parameters, by figuring out what type of token
-				// is in the token parameter.
-				bool tokenTypeIsAccessToken = this.tokenManager.GetTokenType(fields["oauth_token"]) == TokenType.AccessToken;
-
-				return tokenTypeIsAccessToken ? typeof(AccessProtectedResourcesMessage) :
-					typeof(RequestAccessTokenMessage);
-			}
-
-			// fail over to the message with no required fields at all.
-			return typeof(DirectUserToServiceProviderMessage);
+			return null;
 		}
 
 		/// <summary>
@@ -93,8 +74,7 @@ namespace DotNetOAuth.ChannelElements {
 		/// </returns>
 		/// <remarks>
 		/// The response messages are:
-		/// UnauthorizedRequestTookenMessage
-		/// DirectUserToConsumerMessage
+		/// UnauthorizedRequestTokenMessage
 		/// GrantAccessTokenMessage
 		/// </remarks>
 		public Type GetResponseMessageType(IProtocolMessage request, IDictionary<string, string> fields) {
@@ -107,11 +87,7 @@ namespace DotNetOAuth.ChannelElements {
 				return null;
 			}
 
-			if (request == null) {
-				return typeof(DirectUserToConsumerMessage);
-			}
-
-			// All direct message responses should haev the oauth_token_secret field.
+			// All direct message responses should have the oauth_token_secret field.
 			if (!fields.ContainsKey("oauth_token_secret")) {
 				Logger.Error("An OAuth message was expected to contain an oauth_token_secret but didn't.");
 				return null;

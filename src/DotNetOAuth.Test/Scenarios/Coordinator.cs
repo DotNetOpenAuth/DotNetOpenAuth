@@ -51,8 +51,8 @@ namespace DotNetOAuth.Test.Scenarios {
 			}
 
 			// Prepare channels that will pass messages directly back and forth.
-			CoordinatingOAuthChannel consumerChannel = new CoordinatingOAuthChannel(this.SigningElement);
-			CoordinatingOAuthChannel serviceProviderChannel = new CoordinatingOAuthChannel(this.SigningElement);
+			CoordinatingOAuthChannel consumerChannel = new CoordinatingOAuthChannel(this.SigningElement, true);
+			CoordinatingOAuthChannel serviceProviderChannel = new CoordinatingOAuthChannel(this.SigningElement, false);
 			consumerChannel.RemoteChannel = serviceProviderChannel;
 			serviceProviderChannel.RemoteChannel = consumerChannel;
 

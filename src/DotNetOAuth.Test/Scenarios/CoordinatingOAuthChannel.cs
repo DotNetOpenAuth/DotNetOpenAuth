@@ -29,11 +29,11 @@ namespace DotNetOAuth.Test.Scenarios {
 		/// <param name="signingBindingElement">
 		/// The signing element for the Consumer to use.  Null for the Service Provider.
 		/// </param>
-		internal CoordinatingOAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement)
+		internal CoordinatingOAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, bool isConsumer)
 			: base(
 			signingBindingElement,
 			new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge),
-			new OAuthMessageTypeProvider(new InMemoryTokenManager()),
+			isConsumer ? (IMessageTypeProvider)new OAuthConsumerMessageTypeProvider(new InMemoryTokenManager()) : new OAuthServiceProviderMessageTypeProvider(new InMemoryTokenManager()),
 			new TestWebRequestHandler()) {
 		}
 

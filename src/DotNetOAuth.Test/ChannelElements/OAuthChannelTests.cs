@@ -52,8 +52,13 @@ namespace DotNetOAuth.Test.ChannelElements {
 		}
 
 		[TestMethod]
-		public void CtorSimple() {
-			new OAuthChannel(this.signingElement, this.nonceStore, new InMemoryTokenManager());
+		public void CtorSimpleConsumer() {
+			new OAuthChannel(this.signingElement, this.nonceStore, new InMemoryTokenManager(), true);
+		}
+
+		[TestMethod]
+		public void CtorSimpleServiceProvider() {
+			new OAuthChannel(this.signingElement, this.nonceStore, new InMemoryTokenManager(), false);
 		}
 
 		[TestMethod]

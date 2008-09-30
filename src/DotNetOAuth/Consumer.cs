@@ -33,7 +33,7 @@ namespace DotNetOAuth {
 			this.WebRequestHandler = new StandardWebRequestHandler();
 			ITamperProtectionChannelBindingElement signingElement = serviceDescription.CreateTamperProtectionElement();
 			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
-			this.Channel = new OAuthChannel(signingElement, store, new OAuthMessageTypeProvider(tokenManager), this.WebRequestHandler);
+			this.Channel = new OAuthChannel(signingElement, store, new OAuthConsumerMessageTypeProvider(tokenManager), this.WebRequestHandler);
 			this.ServiceProvider = serviceDescription;
 			this.TokenManager = tokenManager;
 		}
@@ -103,21 +103,24 @@ namespace DotNetOAuth {
 		/// <summary>
 		/// Processes an incoming authorization-granted message from an SP and obtains an access token.
 		/// </summary>
-		/// <returns>The access token.</returns>
+		/// <returns>The access token, or null if no incoming authorization message was recognized.</returns>
 		public string ProcessUserAuthorization() {
-			var authorizationMessage = this.Channel.ReadFromRequest<DirectUserToConsumerMessage>();
-
-			// Exchange request token for access token.
-			string requestTokenSecret = this.TokenManager.GetTokenSecret(authorizationMessage.RequestToken);
-			var requestAccess = new RequestAccessTokenMessage(this.ServiceProvider.AccessTokenEndpoint) {
-				RequestToken = authorizationMessage.RequestToken,
-				TokenSecret = requestTokenSecret,
-				ConsumerKey = this.ConsumerKey,
-				ConsumerSecret = this.ConsumerSecret,
-			};
-			var grantAccess = this.Channel.Request<GrantAccessTokenMessage>(requestAccess);
-			this.TokenManager.ExpireRequestTokenAndStoreNewAccessToken(this.ConsumerKey, authorizationMessage.RequestToken, grantAccess.AccessToken, grantAccess.TokenSecret);
-			return grantAccess.AccessToken;
+			DirectUserToConsumerMessage authorizationMessage;
+			if (this.Channel.TryReadFromRequest<DirectUserToConsumerMessage>(out authorizationMessage)) {
+				// Exchange request token for access token.
+				string requestTokenSecret = this.TokenManager.GetTokenSecret(authorizationMessage.RequestToken);
+				var requestAccess = new RequestAccessTokenMessage(this.ServiceProvider.AccessTokenEndpoint) {
+					RequestToken = authorizationMessage.RequestToken,
+					TokenSecret = requestTokenSecret,
+					ConsumerKey = this.ConsumerKey,
+					ConsumerSecret = this.ConsumerSecret,
+				};
+				var grantAccess = this.Channel.Request<GrantAccessTokenMessage>(requestAccess);
+				this.TokenManager.ExpireRequestTokenAndStoreNewAccessToken(this.ConsumerKey, authorizationMessage.RequestToken, grantAccess.AccessToken, grantAccess.TokenSecret);
+				return grantAccess.AccessToken;
+			} else {
+				return null;
+			}
 		}
 
 		/// <summary>

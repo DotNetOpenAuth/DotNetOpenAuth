@@ -42,7 +42,7 @@ namespace DotNetOAuth {
 			signingElement.SignatureVerificationCallback = this.TokenSignatureVerificationCallback;
 			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
 			this.Description = serviceDescription;
-			this.Channel = new OAuthChannel(signingElement, store, tokenManager);
+			this.Channel = new OAuthChannel(signingElement, store, tokenManager, false);
 			this.TokenGenerator = new StandardTokenGenerator();
 			this.TokenManager = tokenManager;
 		}

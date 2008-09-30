@@ -158,11 +158,61 @@ namespace DotNetOAuth.Messaging {
 		/// Gets the protocol message embedded in the given HTTP request, if present.
 		/// </summary>
 		/// <typeparam name="TREQUEST">The expected type of the message to be received.</typeparam>
-		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
+		/// <param name="request">The deserialized message, if one is found.  Null otherwise.</param>
+		/// <returns>True if the expected message was recognized and deserialized.  False otherwise.</returns>
 		/// <remarks>
 		/// Requires an HttpContext.Current context.
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current"/> is null.</exception>
+		/// <exception cref="ProtocolException">Thrown when a request message of an unexpected type is received.</exception>
+		internal bool TryReadFromRequest<TREQUEST>(out TREQUEST request)
+			where TREQUEST : class, IProtocolMessage {
+			return TryReadFromRequest<TREQUEST>(this.GetRequestFromContext(), out request);
+		}
+
+		/// <summary>
+		/// Gets the protocol message embedded in the given HTTP request, if present.
+		/// </summary>
+		/// <typeparam name="TREQUEST">The expected type of the message to be received.</typeparam>
+		/// <param name="httpRequest">The request to search for an embedded message.</param>
+		/// <param name="request">The deserialized message, if one is found.  Null otherwise.</param>
+		/// <returns>True if the expected message was recognized and deserialized.  False otherwise.</returns>
+		/// <remarks>
+		/// Requires an HttpContext.Current context.
+		/// </remarks>
+		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current"/> is null.</exception>
+		/// <exception cref="ProtocolException">Thrown when a request message of an unexpected type is received.</exception>
+		internal bool TryReadFromRequest<TREQUEST>(HttpRequestInfo httpRequest, out TREQUEST request)
+			where TREQUEST : class, IProtocolMessage {
+			IProtocolMessage untypedRequest = this.ReadFromRequest(httpRequest);
+			if (untypedRequest == null) {
+				request = null;
+				return false;
+			}
+
+			request = untypedRequest as TREQUEST;
+			if (request == null) {
+				throw new ProtocolException(
+					string.Format(
+						CultureInfo.CurrentCulture,
+						MessagingStrings.UnexpectedMessageReceived,
+						typeof(TREQUEST),
+						untypedRequest.GetType()));
+			}
+
+			return true;
+		}
+
+		/// <summary>
+		/// Gets the protocol message embedded in the given HTTP request, if present.
+		/// </summary>
+		/// <typeparam name="TREQUEST">The expected type of the message to be received.</typeparam>
+		/// <returns>The deserialized message.</returns>
+		/// <remarks>
+		/// Requires an HttpContext.Current context.
+		/// </remarks>
+		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current"/> is null.</exception>
+		/// <exception cref="ProtocolException">Thrown if the expected message was not recognized in the response.</exception>
 		internal TREQUEST ReadFromRequest<TREQUEST>()
 			where TREQUEST : class, IProtocolMessage {
 			return this.ReadFromRequest<TREQUEST>(this.GetRequestFromContext());
@@ -174,32 +224,19 @@ namespace DotNetOAuth.Messaging {
 		/// <typeparam name="TREQUEST">The expected type of the message to be received.</typeparam>
 		/// <param name="httpRequest">The request to search for an embedded message.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
-		/// <exception cref="ProtocolException">
-		/// Thrown if no message is recognized in the request 
-		/// or an unexpected type of message is received.
-		/// </exception>
+		/// <exception cref="ProtocolException">Thrown if the expected message was not recognized in the response.</exception>
 		protected internal TREQUEST ReadFromRequest<TREQUEST>(HttpRequestInfo httpRequest)
 			where TREQUEST : class, IProtocolMessage {
-			IProtocolMessage request = this.ReadFromRequest(httpRequest);
-			if (request == null) {
+			TREQUEST request;
+			if (this.TryReadFromRequest<TREQUEST>(httpRequest, out request)) {
+				return request;
+			} else {
 				throw new ProtocolException(
 					string.Format(
 						CultureInfo.CurrentCulture,
 						MessagingStrings.ExpectedMessageNotReceived,
 						typeof(TREQUEST)));
 			}
-
-			var expectedRequest = request as TREQUEST;
-			if (expectedRequest == null) {
-				throw new ProtocolException(
-					string.Format(
-						CultureInfo.CurrentCulture,
-						MessagingStrings.UnexpectedMessageReceived,
-						typeof(TREQUEST),
-						request.GetType()));
-			}
-
-			return expectedRequest;
 		}
 
 		/// <summary>

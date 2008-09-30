@@ -57,6 +57,7 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChannelElements\OAuthConsumerMessageTypeProvider.cs" />
     <Compile Include="ChannelElements\ITokenGenerator.cs" />
     <Compile Include="ChannelElements\ITokenManager.cs" />
     <Compile Include="ChannelElements\OAuthHttpMethodBindingElement.cs" />
@@ -120,7 +121,7 @@
     <Compile Include="Loggers\TraceLogger.cs" />
     <Compile Include="Messaging\HttpDeliveryMethod.cs" />
     <Compile Include="Messaging\MessageTransport.cs" />
-    <Compile Include="ChannelElements\OAuthMessageTypeProvider.cs" />
+    <Compile Include="ChannelElements\OAuthServiceProviderMessageTypeProvider.cs" />
     <Compile Include="Messaging\ProtocolException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Messages\RequestTokenMessage.cs" />
