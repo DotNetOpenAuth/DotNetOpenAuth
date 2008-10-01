@@ -40,7 +40,7 @@ namespace DotNetOAuth.Test {
 				channel => {
 					consumer.Channel = channel;
 					consumer.RequestUserAuthorization(new Uri("http://printer.example.com/request_token_ready"), null, null);
-					string accessToken = consumer.ProcessUserAuthorization();
+					string accessToken = consumer.ProcessUserAuthorization().AccessToken;
 					var photoRequest = consumer.CreateAuthorizedRequestInternal(accessPhotoEndpoint, accessToken);
 					Response protectedPhoto = channel.RequestProtectedResource(photoRequest);
 					Assert.IsNotNull(protectedPhoto);

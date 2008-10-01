@@ -11,7 +11,7 @@ namespace DotNetOAuth.Messages {
 	/// A direct message sent from Service Provider to Consumer in response to 
 	/// a Consumer's <see cref="RequestAccessTokenMessage"/> request.
 	/// </summary>
-	internal class GrantAccessTokenMessage : MessageBase {
+	public class GrantAccessTokenMessage : MessageBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GrantAccessTokenMessage"/> class.
 		/// </summary>
@@ -23,7 +23,7 @@ namespace DotNetOAuth.Messages {
 		/// Gets or sets the Access Token assigned by the Service Provider.
 		/// </summary>
 		[MessagePart(Name = "oauth_token", IsRequired = true)]
-		internal string AccessToken { get; set; }
+		public string AccessToken { get; set; }
 
 		/// <summary>
 		/// Gets or sets the Token Secret.

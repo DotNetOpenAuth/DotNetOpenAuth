@@ -42,7 +42,7 @@ namespace DotNetOAuth {
 			var signingElement = serviceDescription.CreateTamperProtectionElement();
 			signingElement.SignatureVerificationCallback = this.TokenSignatureVerificationCallback;
 			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
-			this.Description = serviceDescription;
+			this.ServiceDescription = serviceDescription;
 			this.Channel = new OAuthChannel(signingElement, store, tokenManager, false);
 			this.TokenGenerator = new StandardTokenGenerator();
 			this.TokenManager = tokenManager;
@@ -51,7 +51,7 @@ namespace DotNetOAuth {
 		/// <summary>
 		/// Gets the description of this Service Provider.
 		/// </summary>
-		public ServiceProviderDescription Description { get; private set; }
+		public ServiceProviderDescription ServiceDescription { get; private set; }
 
 		/// <summary>
 		/// Gets or sets the generator responsible for generating new tokens and secrets.

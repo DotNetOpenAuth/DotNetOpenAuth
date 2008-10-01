@@ -127,7 +127,7 @@ namespace DotNetOAuth {
 		/// <remarks>
 		/// Requires HttpContext.Current.
 		/// </remarks>
-		public string ProcessUserAuthorization() {
+		public GrantAccessTokenMessage ProcessUserAuthorization() {
 			return this.ProcessUserAuthorization(this.Channel.GetRequestFromContext());
 		}
 
@@ -136,7 +136,7 @@ namespace DotNetOAuth {
 		/// </summary>
 		/// <param name="request">The incoming HTTP request.</param>
 		/// <returns>The access token, or null if no incoming authorization message was recognized.</returns>
-		public string ProcessUserAuthorization(HttpRequest request) {
+		public GrantAccessTokenMessage ProcessUserAuthorization(HttpRequest request) {
 			return this.ProcessUserAuthorization(new HttpRequestInfo(request));
 		}
 
@@ -172,7 +172,7 @@ namespace DotNetOAuth {
 		/// </summary>
 		/// <param name="request">The incoming HTTP request.</param>
 		/// <returns>The access token, or null if no incoming authorization message was recognized.</returns>
-		internal string ProcessUserAuthorization(HttpRequestInfo request) {
+		internal GrantAccessTokenMessage ProcessUserAuthorization(HttpRequestInfo request) {
 			DirectUserToConsumerMessage authorizationMessage;
 			if (this.Channel.TryReadFromRequest<DirectUserToConsumerMessage>(request, out authorizationMessage)) {
 				// Exchange request token for access token.
@@ -185,7 +185,7 @@ namespace DotNetOAuth {
 				};
 				var grantAccess = this.Channel.Request<GrantAccessTokenMessage>(requestAccess);
 				this.TokenManager.ExpireRequestTokenAndStoreNewAccessToken(this.ConsumerKey, authorizationMessage.RequestToken, grantAccess.AccessToken, grantAccess.TokenSecret);
-				return grantAccess.AccessToken;
+				return grantAccess;
 			} else {
 				return null;
 			}
