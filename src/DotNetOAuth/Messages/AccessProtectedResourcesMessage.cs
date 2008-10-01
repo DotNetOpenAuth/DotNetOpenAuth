@@ -22,17 +22,17 @@ namespace DotNetOAuth.Messages {
 		}
 
 		/// <summary>
-		/// Gets or sets the Access Token.
-		/// </summary>
-		[MessagePart(Name = "oauth_token", IsRequired = true)]
-		public string AccessToken { get; set; }
-
-		/// <summary>
 		/// Gets or sets the Token.
 		/// </summary>
 		string ITokenContainingMessage.Token {
 			get { return this.AccessToken; }
 			set { this.AccessToken = value; }
 		}
+
+		/// <summary>
+		/// Gets or sets the Access Token.
+		/// </summary>
+		[MessagePart(Name = "oauth_token", IsRequired = true)]
+		internal string AccessToken { get; set; }
 	}
 }

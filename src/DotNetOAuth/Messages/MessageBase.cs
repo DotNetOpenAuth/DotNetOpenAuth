@@ -16,7 +16,7 @@ namespace DotNetOAuth.Messages {
 	/// <summary>
 	/// A base class for all OAuth messages.
 	/// </summary>
-	internal abstract class MessageBase : IOAuthDirectedMessage {
+	public abstract class MessageBase : IOAuthDirectedMessage {
 		/// <summary>
 		/// A store for extra name/value data pairs that are attached to this message.
 		/// </summary>

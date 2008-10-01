@@ -12,7 +12,7 @@ namespace DotNetOAuth.Messages {
 	/// A direct message sent by the Consumer to exchange a Request Token for an Access Token
 	/// and Token Secret.
 	/// </summary>
-	internal class RequestAccessTokenMessage : SignedMessageBase, ITokenContainingMessage {
+	public class RequestAccessTokenMessage : SignedMessageBase, ITokenContainingMessage {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RequestAccessTokenMessage"/> class.
 		/// </summary>
@@ -22,17 +22,17 @@ namespace DotNetOAuth.Messages {
 		}
 
 		/// <summary>
-		/// Gets or sets the Request Token.
-		/// </summary>
-		[MessagePart(Name = "oauth_token", IsRequired = true)]
-		public string RequestToken { get; set; }
-
-		/// <summary>
 		/// Gets or sets the Token.
 		/// </summary>
 		string ITokenContainingMessage.Token {
 			get { return this.RequestToken; }
 			set { this.RequestToken = value; }
 		}
+
+		/// <summary>
+		/// Gets or sets the Request Token.
+		/// </summary>
+		[MessagePart(Name = "oauth_token", IsRequired = true)]
+		internal string RequestToken { get; set; }
 	}
 }

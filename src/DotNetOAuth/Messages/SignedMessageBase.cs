@@ -14,7 +14,7 @@ namespace DotNetOAuth.Messages {
 	/// <summary>
 	/// A base class for all signed OAuth messages.
 	/// </summary>
-	internal class SignedMessageBase : MessageBase, ITamperResistantOAuthMessage, IExpiringProtocolMessage, IReplayProtectedProtocolMessage {
+	public class SignedMessageBase : MessageBase, ITamperResistantOAuthMessage, IExpiringProtocolMessage, IReplayProtectedProtocolMessage {
 		/// <summary>
 		/// The reference date and time for calculating time stamps.
 		/// </summary>

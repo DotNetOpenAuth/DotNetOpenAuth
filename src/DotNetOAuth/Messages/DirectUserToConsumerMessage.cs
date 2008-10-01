@@ -24,6 +24,6 @@ namespace DotNetOAuth.Messages {
 		/// Gets or sets the Request Token.
 		/// </summary>
 		[MessagePart(Name = "oauth_token", IsRequired = true)]
-		public string RequestToken { get; set; }
+		internal string RequestToken { get; set; }
 	}
 }

@@ -54,11 +54,6 @@ namespace DotNetOAuth {
 		public ServiceProviderDescription Description { get; private set; }
 
 		/// <summary>
-		/// Gets or sets the channel to use for sending/receiving messages.
-		/// </summary>
-		internal OAuthChannel Channel { get; set; }
-
-		/// <summary>
 		/// Gets or sets the generator responsible for generating new tokens and secrets.
 		/// </summary>
 		public ITokenGenerator TokenGenerator { get; set; }
@@ -68,19 +63,20 @@ namespace DotNetOAuth {
 		/// </summary>
 		public ITokenManager TokenManager { get; private set; }
 
-		internal RequestTokenMessage ReadTokenRequest() {
+		/// <summary>
+		/// Gets or sets the channel to use for sending/receiving messages.
+		/// </summary>
+		internal OAuthChannel Channel { get; set; }
+
+		public RequestTokenMessage ReadTokenRequest() {
 			return this.Channel.ReadFromRequest<RequestTokenMessage>();
 		}
 
-		internal RequestTokenMessage ReadTokenRequest(HttpRequest request) {
+		public RequestTokenMessage ReadTokenRequest(HttpRequest request) {
 			return this.ReadTokenRequest(new HttpRequestInfo(request));
 		}
 
-		internal RequestTokenMessage ReadTokenRequest(HttpRequestInfo request) {
-			return this.Channel.ReadFromRequest<RequestTokenMessage>(request);
-		}
-
-		internal void SendUnauthorizedTokenResponse(RequestTokenMessage request, IDictionary<string, string> extraParameters) {
+		public Response SendUnauthorizedTokenResponse(RequestTokenMessage request, IDictionary<string, string> extraParameters) {
 			string token = this.TokenGenerator.GenerateRequestToken(request.ConsumerKey);
 			string secret = this.TokenGenerator.GenerateSecret();
 			this.TokenManager.StoreNewRequestToken(request.ConsumerKey, token, secret, null/*add params*/);
@@ -90,46 +86,49 @@ namespace DotNetOAuth {
 			};
 			response.AddNonOAuthParameters(extraParameters);
 
-			this.Channel.Send(response);
+			return this.Channel.Send(response);
 		}
 
-		internal DirectUserToServiceProviderMessage ReadAuthorizationRequest() {
+		public DirectUserToServiceProviderMessage ReadAuthorizationRequest() {
 			return this.Channel.ReadFromRequest<DirectUserToServiceProviderMessage>();
 		}
 
-		internal DirectUserToServiceProviderMessage ReadAuthorizationRequest(HttpRequest request) {
+		public DirectUserToServiceProviderMessage ReadAuthorizationRequest(HttpRequest request) {
 			return this.ReadAuthorizationRequest(new HttpRequestInfo(request));
-		}
-
-		internal DirectUserToServiceProviderMessage ReadAuthorizationRequest(HttpRequestInfo request) {
-			return this.Channel.ReadFromRequest<DirectUserToServiceProviderMessage>(request);
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="request"></param>
-		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
-		internal Response SendAuthorizationResponse(DirectUserToServiceProviderMessage request) {
-			var authorization = new DirectUserToConsumerMessage(request.Callback) {
-				RequestToken = request.RequestToken,
-			};
-			return this.Channel.Send(authorization);
+		/// <returns>
+		/// The pending user agent redirect based message to be sent as an HttpResponse,
+		/// or null if the Consumer requested no callback.
+		/// </returns>
+		public Response SendAuthorizationResponse(DirectUserToServiceProviderMessage request) {
+			if (request == null) {
+				throw new ArgumentNullException("request");
+			}
+
+			if (request.Callback != null) {
+				var authorization = new DirectUserToConsumerMessage(request.Callback) {
+					RequestToken = request.RequestToken,
+				};
+				return this.Channel.Send(authorization);
+			} else {
+				return null;
+			}
 		}
 
-		internal RequestAccessTokenMessage ReadAccessTokenRequest() {
+		public RequestAccessTokenMessage ReadAccessTokenRequest() {
 			return this.Channel.ReadFromRequest<RequestAccessTokenMessage>();
 		}
 
-		internal RequestAccessTokenMessage ReadAccessTokenRequest(HttpRequest request) {
+		public RequestAccessTokenMessage ReadAccessTokenRequest(HttpRequest request) {
 			return this.ReadAccessTokenRequest(new HttpRequestInfo(request));
 		}
 
-		internal RequestAccessTokenMessage ReadAccessTokenRequest(HttpRequestInfo request) {
-			return this.Channel.ReadFromRequest<RequestAccessTokenMessage>(request);
-		}
-
-		internal void SendAccessToken(RequestAccessTokenMessage request, IDictionary<string, string> extraParameters) {
+		public Response SendAccessToken(RequestAccessTokenMessage request, IDictionary<string, string> extraParameters) {
 			if (!this.TokenManager.IsRequestTokenAuthorized(request.RequestToken)) {
 				throw new ProtocolException(
 					string.Format(
@@ -147,10 +146,10 @@ namespace DotNetOAuth {
 			};
 			grantAccess.AddNonOAuthParameters(extraParameters);
 
-			this.Channel.Send(grantAccess);
+			return this.Channel.Send(grantAccess);
 		}
 
-		internal string GetAccessTokenInRequest() {
+		public string GetAccessTokenInRequest() {
 			var accessMessage = this.Channel.ReadFromRequest<AccessProtectedResourcesMessage>();
 			if (this.TokenManager.GetTokenType(accessMessage.AccessToken) != TokenType.AccessToken) {
 				throw new ProtocolException(
@@ -161,6 +160,18 @@ namespace DotNetOAuth {
 			}
 
 			return accessMessage.AccessToken;
+		}
+
+		internal RequestTokenMessage ReadTokenRequest(HttpRequestInfo request) {
+			return this.Channel.ReadFromRequest<RequestTokenMessage>(request);
+		}
+
+		internal DirectUserToServiceProviderMessage ReadAuthorizationRequest(HttpRequestInfo request) {
+			return this.Channel.ReadFromRequest<DirectUserToServiceProviderMessage>(request);
+		}
+
+		internal RequestAccessTokenMessage ReadAccessTokenRequest(HttpRequestInfo request) {
+			return this.Channel.ReadFromRequest<RequestAccessTokenMessage>(request);
 		}
 
 		private void TokenSignatureVerificationCallback(ITamperResistantOAuthMessage message) {

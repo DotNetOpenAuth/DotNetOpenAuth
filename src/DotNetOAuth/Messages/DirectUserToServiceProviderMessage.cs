@@ -11,7 +11,7 @@ namespace DotNetOAuth.Messages {
 	/// <summary>
 	/// A message used to redirect the user from a Consumer to a Service Provider's web site.
 	/// </summary>
-	internal class DirectUserToServiceProviderMessage : MessageBase {
+	public class DirectUserToServiceProviderMessage : MessageBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DirectUserToServiceProviderMessage"/> class.
 		/// </summary>
@@ -36,6 +36,6 @@ namespace DotNetOAuth.Messages {
 		/// to the Consumer when Obtaining User Authorization is complete. Optional.
 		/// </summary>
 		[MessagePart(Name = "oauth_callback", IsRequired = false)]
-		public Uri Callback { get; set; }
+		internal Uri Callback { get; set; }
 	}
 }

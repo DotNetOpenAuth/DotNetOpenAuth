@@ -23,12 +23,12 @@ namespace DotNetOAuth.Messages {
 		/// Gets or sets the Access Token assigned by the Service Provider.
 		/// </summary>
 		[MessagePart(Name = "oauth_token", IsRequired = true)]
-		public string AccessToken { get; set; }
+		internal string AccessToken { get; set; }
 
 		/// <summary>
 		/// Gets or sets the Token Secret.
 		/// </summary>
 		[MessagePart(Name = "oauth_token_secret", IsRequired = true)]
-		public string TokenSecret { get; set; }
+		internal string TokenSecret { get; set; }
 	}
 }

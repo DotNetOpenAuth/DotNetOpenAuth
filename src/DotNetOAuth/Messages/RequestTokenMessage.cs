@@ -10,7 +10,7 @@ namespace DotNetOAuth.Messages {
 	/// <summary>
 	/// A direct message sent from Consumer to Service Provider to request a token.
 	/// </summary>
-	internal class RequestTokenMessage : SignedMessageBase {
+	public class RequestTokenMessage : SignedMessageBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RequestTokenMessage"/> class.
 		/// </summary>
