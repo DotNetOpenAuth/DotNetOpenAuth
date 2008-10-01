@@ -42,6 +42,10 @@ namespace DotNetOAuth.Messaging {
 		/// </summary>
 		/// <param name="request">The ASP.NET structure to copy from.</param>
 		internal HttpRequestInfo(HttpRequest request) {
+			if (request == null) {
+				throw new ArgumentNullException("request");
+			}
+
 			this.HttpMethod = request.HttpMethod;
 			this.Url = request.Url;
 			this.Headers = GetHeaderCollection(request.Headers);

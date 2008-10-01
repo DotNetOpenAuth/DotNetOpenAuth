@@ -58,7 +58,7 @@ namespace DotNetOAuth.Test {
 					sp.SendAuthorizationResponse(authRequest);
 					var accessRequest = sp.ReadAccessTokenRequest();
 					sp.SendAccessToken(accessRequest, null);
-					string accessToken = sp.GetAccessTokenInRequest();
+					string accessToken = sp.GetProtectedResourceAuthorization().AccessToken;
 					channel.SendDirectRawResponse(new Response {
 						ResponseStream = new MemoryStream(new byte[] { 0x33, 0x66 }),
 						Headers = new WebHeaderCollection {

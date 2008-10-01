@@ -12,7 +12,7 @@ namespace DotNetOAuth.Messages {
 	/// A message attached to a request for protected resources that provides the necessary
 	/// credentials to be granted access to those resources.
 	/// </summary>
-	internal class AccessProtectedResourcesMessage : SignedMessageBase, ITokenContainingMessage {
+	public class AccessProtectedResourcesMessage : SignedMessageBase, ITokenContainingMessage {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessProtectedResourcesMessage"/> class.
 		/// </summary>
@@ -33,6 +33,6 @@ namespace DotNetOAuth.Messages {
 		/// Gets or sets the Access Token.
 		/// </summary>
 		[MessagePart(Name = "oauth_token", IsRequired = true)]
-		internal string AccessToken { get; set; }
+		public string AccessToken { get; set; }
 	}
 }
