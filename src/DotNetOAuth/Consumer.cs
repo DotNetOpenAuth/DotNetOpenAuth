@@ -102,22 +102,19 @@ namespace DotNetOAuth {
 		/// <param name="redirectParameters">Extra parameters to add to the redirect to Service Provider message.  Optional.</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
 		public Response RequestUserAuthorization(Uri callback, IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters) {
-			// Obtain an unauthorized request token.
-			var requestToken = new RequestTokenMessage(this.ServiceProvider.RequestTokenEndpoint) {
-				ConsumerKey = this.ConsumerKey,
-				ConsumerSecret = this.ConsumerSecret,
-			};
-			requestToken.AddNonOAuthParameters(requestParameters);
-			var requestTokenResponse = this.Channel.Request<UnauthorizedRequestTokenMessage>(requestToken);
-			this.TokenManager.StoreNewRequestToken(this.ConsumerKey, requestTokenResponse.RequestToken, requestTokenResponse.TokenSecret, null/*TODO*/);
+			string token;
+			return this.RequestUserAuthorization(callback, requestParameters, redirectParameters, out token);
+		}
 
-			// Request user authorization.
-			var requestAuthorization = new DirectUserToServiceProviderMessage(this.ServiceProvider.UserAuthorizationEndpoint) {
-				Callback = callback,
-				RequestToken = requestTokenResponse.RequestToken,
-			};
-			requestAuthorization.AddNonOAuthParameters(redirectParameters);
-			return this.Channel.Send(requestAuthorization);
+		/// <summary>
+		/// Begins an OAuth authorization request from a desktop client app.
+		/// </summary>
+		/// <param name="requestParameters">Extra parameters to add to the request token message.  Optional.</param>
+		/// <param name="redirectParameters">Extra parameters to add to the redirect to Service Provider message.  Optional.</param>
+		/// <param name="requestToken">The request token that must be exchanged for an access token after the user has provided authorization.</param>
+		/// <returns>The URL to open a browser window to allow the user to provide authorization.</returns>
+		public Uri RequestUserAuthorization(IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, out string requestToken) {
+			return this.RequestUserAuthorization(null, requestParameters, redirectParameters, out requestToken).DirectUriRequest;
 		}
 
 		/// <summary>
@@ -138,6 +135,24 @@ namespace DotNetOAuth {
 		/// <returns>The access token, or null if no incoming authorization message was recognized.</returns>
 		public GrantAccessTokenMessage ProcessUserAuthorization(HttpRequest request) {
 			return this.ProcessUserAuthorization(new HttpRequestInfo(request));
+		}
+
+		/// <summary>
+		/// Exchanges a given request token for access token.
+		/// </summary>
+		/// <param name="requestToken">The request token that the user has authorized.</param>
+		/// <returns>The access token assigned by the Service Provider.</returns>
+		public GrantAccessTokenMessage ProcessUserAuthorization(string requestToken) {
+			string requestTokenSecret = this.TokenManager.GetTokenSecret(requestToken);
+			var requestAccess = new RequestAccessTokenMessage(this.ServiceProvider.AccessTokenEndpoint) {
+				RequestToken = requestToken,
+				TokenSecret = requestTokenSecret,
+				ConsumerKey = this.ConsumerKey,
+				ConsumerSecret = this.ConsumerSecret,
+			};
+			var grantAccess = this.Channel.Request<GrantAccessTokenMessage>(requestAccess);
+			this.TokenManager.ExpireRequestTokenAndStoreNewAccessToken(this.ConsumerKey, requestToken, grantAccess.AccessToken, grantAccess.TokenSecret);
+			return grantAccess;
 		}
 
 		/// <summary>
@@ -168,6 +183,38 @@ namespace DotNetOAuth {
 		}
 
 		/// <summary>
+		/// Begins an OAuth authorization request and redirects the user to the Service Provider
+		/// to provide that authorization.
+		/// </summary>
+		/// <param name="callback">
+		/// An optional Consumer URL that the Service Provider should redirect the 
+		/// User Agent to upon successful authorization.
+		/// </param>
+		/// <param name="requestParameters">Extra parameters to add to the request token message.  Optional.</param>
+		/// <param name="redirectParameters">Extra parameters to add to the redirect to Service Provider message.  Optional.</param>
+		/// <param name="token">The request token that must be exchanged for an access token after the user has provided authorization.</param>
+		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
+		internal Response RequestUserAuthorization(Uri callback, IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, out string token) {
+			// Obtain an unauthorized request token.
+			var requestToken = new RequestTokenMessage(this.ServiceProvider.RequestTokenEndpoint) {
+				ConsumerKey = this.ConsumerKey,
+				ConsumerSecret = this.ConsumerSecret,
+			};
+			requestToken.AddNonOAuthParameters(requestParameters);
+			var requestTokenResponse = this.Channel.Request<UnauthorizedRequestTokenMessage>(requestToken);
+			this.TokenManager.StoreNewRequestToken(this.ConsumerKey, requestTokenResponse.RequestToken, requestTokenResponse.TokenSecret, null/*TODO*/);
+
+			// Request user authorization.
+			var requestAuthorization = new DirectUserToServiceProviderMessage(this.ServiceProvider.UserAuthorizationEndpoint) {
+				Callback = callback,
+				RequestToken = requestTokenResponse.RequestToken,
+			};
+			requestAuthorization.AddNonOAuthParameters(redirectParameters);
+			token = requestAuthorization.RequestToken;
+			return this.Channel.Send(requestAuthorization);
+		}
+
+		/// <summary>
 		/// Processes an incoming authorization-granted message from an SP and obtains an access token.
 		/// </summary>
 		/// <param name="request">The incoming HTTP request.</param>
@@ -175,17 +222,8 @@ namespace DotNetOAuth {
 		internal GrantAccessTokenMessage ProcessUserAuthorization(HttpRequestInfo request) {
 			DirectUserToConsumerMessage authorizationMessage;
 			if (this.Channel.TryReadFromRequest<DirectUserToConsumerMessage>(request, out authorizationMessage)) {
-				// Exchange request token for access token.
-				string requestTokenSecret = this.TokenManager.GetTokenSecret(authorizationMessage.RequestToken);
-				var requestAccess = new RequestAccessTokenMessage(this.ServiceProvider.AccessTokenEndpoint) {
-					RequestToken = authorizationMessage.RequestToken,
-					TokenSecret = requestTokenSecret,
-					ConsumerKey = this.ConsumerKey,
-					ConsumerSecret = this.ConsumerSecret,
-				};
-				var grantAccess = this.Channel.Request<GrantAccessTokenMessage>(requestAccess);
-				this.TokenManager.ExpireRequestTokenAndStoreNewAccessToken(this.ConsumerKey, authorizationMessage.RequestToken, grantAccess.AccessToken, grantAccess.TokenSecret);
-				return grantAccess;
+				string requestToken = authorizationMessage.RequestToken;
+				return this.ProcessUserAuthorization(requestToken);
 			} else {
 				return null;
 			}

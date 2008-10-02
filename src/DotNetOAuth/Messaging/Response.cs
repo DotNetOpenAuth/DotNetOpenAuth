@@ -90,6 +90,25 @@ namespace DotNetOAuth.Messaging {
 		internal IProtocolMessage OriginalMessage { get; set; }
 
 		/// <summary>
+		/// Gets the URI that, when requested with an HTTP GET request,
+		/// would transmit the message that normally be transmitted via a user agent redirect.
+		/// </summary>
+		internal Uri DirectUriRequest {
+			get {
+				var message = this.OriginalMessage as IDirectedProtocolMessage;
+				if (message == null) {
+					throw new InvalidOperationException(); // this only makes sense for directed messages (indirect responses)
+				}
+
+				var serializer = MessageSerializer.Get(message.GetType());
+				var fields = serializer.Serialize(message);
+				UriBuilder builder = new UriBuilder(message.Recipient);
+				MessagingUtilities.AppendQueryArgs(builder, fields);
+				return builder.Uri;
+			}
+		}
+
+		/// <summary>
 		/// Creates a text reader for the response stream.
 		/// </summary>
 		/// <returns>The text reader, initialized for the proper encoding.</returns>
