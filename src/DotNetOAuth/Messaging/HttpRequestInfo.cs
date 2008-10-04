@@ -10,6 +10,7 @@ namespace DotNetOAuth.Messaging {
 	using System.Diagnostics;
 	using System.IO;
 	using System.Net;
+	using System.ServiceModel.Channels;
 	using System.Web;
 
 	/// <summary>
@@ -57,6 +58,21 @@ namespace DotNetOAuth.Messaging {
 			// these as well.
 			this.form = request.Form;
 			this.queryString = request.QueryString;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
+		/// </summary>
+		/// <param name="request">The WCF incoming request structure to get the HTTP information from.</param>
+		/// <param name="requestUri">The URI of the service endpoint.</param>
+		internal HttpRequestInfo(HttpRequestMessageProperty request, Uri requestUri) {
+			if (request == null) {
+				throw new ArgumentNullException("request");
+			}
+
+			this.HttpMethod = request.Method;
+			this.Headers = request.Headers;
+			this.Url = requestUri;
 		}
 
 		/// <summary>

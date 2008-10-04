@@ -8,6 +8,7 @@ namespace DotNetOAuth {
 	using System;
 	using System.Collections.Generic;
 	using System.Globalization;
+	using System.ServiceModel.Channels;
 	using System.Web;
 	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.Messages;
@@ -69,6 +70,23 @@ namespace DotNetOAuth {
 		internal OAuthChannel Channel { get; set; }
 
 		/// <summary>
+		/// Reads any incoming OAuth message.
+		/// </summary>
+		/// <returns>The deserialized message.</returns>
+		public IProtocolMessage ReadRequest() {
+			return this.Channel.ReadFromRequest();
+		}
+
+		/// <summary>
+		/// Reads any incoming OAuth message.
+		/// </summary>
+		/// <param name="request">The HTTP request to read the message from.</param>
+		/// <returns>The deserialized message.</returns>
+		public IProtocolMessage ReadRequest(HttpRequest request) {
+			return this.Channel.ReadFromRequest(new HttpRequestInfo(request));
+		}
+
+		/// <summary>
 		/// Gets the incoming request for an unauthorized token, if any.
 		/// </summary>
 		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
@@ -77,7 +95,7 @@ namespace DotNetOAuth {
 		/// Requires HttpContext.Current.
 		/// </remarks>
 		public RequestTokenMessage ReadTokenRequest() {
-			return this.Channel.ReadFromRequest<RequestTokenMessage>();
+			return this.ReadTokenRequest(this.Channel.GetRequestFromContext());
 		}
 
 		/// <summary>
@@ -95,7 +113,7 @@ namespace DotNetOAuth {
 		/// for subsequent authorization.
 		/// </summary>
 		/// <param name="request">The token request message the Consumer sent that the Service Provider is now responding to.</param>
-		/// <param name="extraParameters">Any extra parameters the Consumer should receive with the OAuth message.</param>
+		/// <param name="extraParameters">Any extra parameters the Consumer should receive with the OAuth message.  May be null.</param>
 		/// <returns>The actual response the Service Provider will need to forward as the HTTP response.</returns>
 		public Response SendUnauthorizedTokenResponse(RequestTokenMessage request, IDictionary<string, string> extraParameters) {
 			string token = this.TokenGenerator.GenerateRequestToken(request.ConsumerKey);
@@ -183,7 +201,7 @@ namespace DotNetOAuth {
 		/// Prepares and sends an access token to a Consumer, and invalidates the request token.
 		/// </summary>
 		/// <param name="request">The Consumer's message requesting an access token.</param>
-		/// <param name="extraParameters">Any extra parameters the Service Provider wishes to send to the Consumer.</param>
+		/// <param name="extraParameters">Any extra parameters the Consumer should receive with the OAuth message.  May be null.</param>
 		/// <returns>The HTTP response to actually send to the Consumer.</returns>
 		public Response SendAccessToken(RequestAccessTokenMessage request, IDictionary<string, string> extraParameters) {
 			if (request == null) {
@@ -221,18 +239,38 @@ namespace DotNetOAuth {
 		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown if an unexpected message is attached to the request.</exception>
 		public AccessProtectedResourcesMessage GetProtectedResourceAuthorization() {
-			AccessProtectedResourcesMessage accessMessage;
-			if (this.Channel.TryReadFromRequest<AccessProtectedResourcesMessage>(out accessMessage)) {
-				if (this.TokenManager.GetTokenType(accessMessage.AccessToken) != TokenType.AccessToken) {
-					throw new ProtocolException(
-						string.Format(
-							CultureInfo.CurrentCulture,
-							Strings.BadAccessTokenInProtectedResourceRequest,
-							accessMessage.AccessToken));
-				}
-			}
+			return this.GetProtectedResourceAuthorization(this.Channel.GetRequestFromContext());
+		}
 
-			return accessMessage;
+		/// <summary>
+		/// Gets the authorization (access token) for accessing some protected resource.
+		/// </summary>
+		/// <param name="request">The incoming HTTP request.</param>
+		/// <returns>The authorization message sent by the Consumer, or null if no authorization message is attached.</returns>
+		/// <remarks>
+		/// This method verifies that the access token and token secret are valid.
+		/// It falls on the caller to verify that the access token is actually authorized
+		/// to access the resources being requested.
+		/// </remarks>
+		/// <exception cref="ProtocolException">Thrown if an unexpected message is attached to the request.</exception>
+		public AccessProtectedResourcesMessage GetProtectedResourceAuthorization(HttpRequest request) {
+			return this.GetProtectedResourceAuthorization(new HttpRequestInfo(request));
+		}
+
+		/// <summary>
+		/// Gets the authorization (access token) for accessing some protected resource.
+		/// </summary>
+		/// <param name="request">HTTP details from an incoming WCF message.</param>
+		/// <param name="requestUri">The URI of the WCF service endpoint.</param>
+		/// <returns>The authorization message sent by the Consumer, or null if no authorization message is attached.</returns>
+		/// <remarks>
+		/// This method verifies that the access token and token secret are valid.
+		/// It falls on the caller to verify that the access token is actually authorized
+		/// to access the resources being requested.
+		/// </remarks>
+		/// <exception cref="ProtocolException">Thrown if an unexpected message is attached to the request.</exception>
+		public AccessProtectedResourcesMessage GetProtectedResourceAuthorization(HttpRequestMessageProperty request, Uri requestUri) {
+			return this.GetProtectedResourceAuthorization(new HttpRequestInfo(request, requestUri));
 		}
 
 		/// <summary>
@@ -270,6 +308,36 @@ namespace DotNetOAuth {
 			RequestAccessTokenMessage message;
 			this.Channel.TryReadFromRequest(request, out message);
 			return message;
+		}
+
+		/// <summary>
+		/// Gets the authorization (access token) for accessing some protected resource.
+		/// </summary>
+		/// <param name="request">The incoming HTTP request.</param>
+		/// <returns>The authorization message sent by the Consumer, or null if no authorization message is attached.</returns>
+		/// <remarks>
+		/// This method verifies that the access token and token secret are valid.
+		/// It falls on the caller to verify that the access token is actually authorized
+		/// to access the resources being requested.
+		/// </remarks>
+		/// <exception cref="ProtocolException">Thrown if an unexpected message is attached to the request.</exception>
+		internal AccessProtectedResourcesMessage GetProtectedResourceAuthorization(HttpRequestInfo request) {
+			if (request == null) {
+				throw new ArgumentNullException("request");
+			}
+
+			AccessProtectedResourcesMessage accessMessage;
+			if (this.Channel.TryReadFromRequest<AccessProtectedResourcesMessage>(request, out accessMessage)) {
+				if (this.TokenManager.GetTokenType(accessMessage.AccessToken) != TokenType.AccessToken) {
+					throw new ProtocolException(
+						string.Format(
+							CultureInfo.CurrentCulture,
+							Strings.BadAccessTokenInProtectedResourceRequest,
+							accessMessage.AccessToken));
+				}
+			}
+
+			return accessMessage;
 		}
 
 		/// <summary>
