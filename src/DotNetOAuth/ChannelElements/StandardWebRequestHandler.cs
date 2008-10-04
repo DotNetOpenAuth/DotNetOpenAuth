@@ -53,8 +53,12 @@ namespace DotNetOAuth.ChannelElements {
 				}
 			} catch (WebException ex) {
 				if (Logger.IsErrorEnabled) {
-					using (var reader = new StreamReader(ex.Response.GetResponseStream())) {
-						Logger.ErrorFormat("WebException from {0}: {1}", ex.Response.ResponseUri, reader.ReadToEnd());
+					if (ex.Response != null) {
+						using (var reader = new StreamReader(ex.Response.GetResponseStream())) {
+							Logger.ErrorFormat("WebException from {0}: {1}", ex.Response.ResponseUri, reader.ReadToEnd());
+						}
+					} else {
+						Logger.ErrorFormat("WebException {1} from {0}, no response available.", request.RequestUri, ex.Status);
 					}
 				}
 				throw new ProtocolException(MessagingStrings.ErrorInRequestReplyMessage, ex);
