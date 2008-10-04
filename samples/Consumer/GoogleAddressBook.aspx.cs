@@ -65,6 +65,8 @@ public partial class GoogleAddressBook : System.Web.UI.Page {
 		var extraParameters = new Dictionary<string, string> {
 			{ "scope", Constants.GoogleScopes.Contacts },
 		};
-		google.RequestUserAuthorization(new Uri(Request.Url, Request.RawUrl), extraParameters, null).Send();
+		UriBuilder callback = new UriBuilder(new Uri(Request.Url, Request.RawUrl));
+		callback.Query = null;
+		google.RequestUserAuthorization(callback.Uri, extraParameters, null).Send();
 	}
 }
