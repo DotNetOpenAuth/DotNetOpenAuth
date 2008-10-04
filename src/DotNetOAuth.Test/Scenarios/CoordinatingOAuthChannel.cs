@@ -76,7 +76,6 @@ namespace DotNetOAuth.Test.Scenarios {
 		protected override Response SendDirectMessageResponse(IProtocolMessage response) {
 			TestBase.TestLogger.InfoFormat("Sending response: {0}", response);
 			this.RemoteChannel.incomingMessage = CloneSerializedParts(response, null);
-			this.CopyDirectionalParts(response, this.RemoteChannel.incomingMessage);
 			this.RemoteChannel.incomingMessageSignal.Set();
 			return null;
 		}
@@ -108,7 +107,6 @@ namespace DotNetOAuth.Test.Scenarios {
 			}
 
 			requestInfo.Message = this.CloneSerializedParts(message, requestInfo);
-			this.CopyDirectionalParts(message, requestInfo.Message); // Remove since its body is empty.
 
 			return requestInfo;
 		}
@@ -140,14 +138,6 @@ namespace DotNetOAuth.Test.Scenarios {
 
 			MessageSerializer serializer = MessageSerializer.Get(message.GetType());
 			return (T)serializer.Deserialize(serializer.Serialize(message), recipient);
-		}
-
-		private void CopyDirectionalParts(IProtocolMessage original, IProtocolMessage copy) {
-			var signedOriginal = original as ITamperResistantOAuthMessage;
-			var signedCopy = copy as ITamperResistantOAuthMessage;
-			if (signedOriginal != null && signedCopy != null) {
-				signedCopy.HttpMethod = signedOriginal.HttpMethod;
-			}
 		}
 
 		private string GetHttpMethod(HttpDeliveryMethod methods) {

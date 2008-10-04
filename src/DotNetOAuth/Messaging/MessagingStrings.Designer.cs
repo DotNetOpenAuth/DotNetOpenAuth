@@ -151,6 +151,15 @@ namespace DotNetOAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to At least one of GET or POST flags must be present..
+        /// </summary>
+        internal static string GetOrPostFlagsRequired {
+            get {
+                return ResourceManager.GetString("GetOrPostFlagsRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This method requires a current HttpContext.  Alternatively, use an overload of this method that allows you to pass in information without an HttpContext..
         /// </summary>
         internal static string HttpContextRequired {

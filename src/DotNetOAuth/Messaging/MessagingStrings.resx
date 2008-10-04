@@ -147,6 +147,9 @@
   <data name="ExpiredMessage" xml:space="preserve">
     <value>The message expired at {0} and it is now {1}.</value>
   </data>
+  <data name="GetOrPostFlagsRequired" xml:space="preserve">
+    <value>At least one of GET or POST flags must be present.</value>
+  </data>
   <data name="HttpContextRequired" xml:space="preserve">
     <value>This method requires a current HttpContext.  Alternatively, use an overload of this method that allows you to pass in information without an HttpContext.</value>
   </data>

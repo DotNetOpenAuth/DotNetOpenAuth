@@ -37,9 +37,7 @@ namespace DotNetOAuth.ChannelElements {
 
 			if (oauthMessage != null) {
 				HttpDeliveryMethod transmissionMethod = oauthMessage.HttpMethods;
-				if ((transmissionMethod & HttpDeliveryMethod.AuthorizationHeaderRequest) != 0) {
-					oauthMessage.HttpMethod = "GET";
-				} else if ((transmissionMethod & HttpDeliveryMethod.PostRequest) != 0) {
+				if ((transmissionMethod & HttpDeliveryMethod.PostRequest) != 0) {
 					oauthMessage.HttpMethod = "POST";
 				} else if ((transmissionMethod & HttpDeliveryMethod.GetRequest) != 0) {
 					oauthMessage.HttpMethod = "GET";

@@ -30,17 +30,12 @@ namespace DotNetOAuth.Messages {
 		/// Initializes a new instance of the <see cref="SignedMessageBase"/> class.
 		/// </summary>
 		/// <param name="transport">A value indicating whether this message requires a direct or indirect transport.</param>
-		internal SignedMessageBase(MessageTransport transport)
-			: base(MessageProtection.All, transport) {
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="SignedMessageBase"/> class.
-		/// </summary>
-		/// <param name="transport">A value indicating whether this message requires a direct or indirect transport.</param>
 		/// <param name="recipient">The URI that a directed message will be delivered to.</param>
 		internal SignedMessageBase(MessageTransport transport, MessageReceivingEndpoint recipient)
 			: base(MessageProtection.All, transport, recipient) {
+			ITamperResistantOAuthMessage self = (ITamperResistantOAuthMessage)this;
+			HttpDeliveryMethod methods = ((IOAuthDirectedMessage)this).HttpMethods;
+			self.HttpMethod = (methods & HttpDeliveryMethod.PostRequest) != 0 ? "POST" : "GET";
 		}
 
 		#region ITamperResistantOAuthMessage Members
@@ -53,7 +48,6 @@ namespace DotNetOAuth.Messages {
 
 		/// <summary>
 		/// Gets or sets the Token Secret used to sign the message.
-		/// Only applicable to Consumer.
 		/// </summary>
 		public string TokenSecret { get; set; }
 
@@ -65,13 +59,11 @@ namespace DotNetOAuth.Messages {
 
 		/// <summary>
 		/// Gets or sets the Consumer Secret used to sign the message.
-		/// Only applicable to Consumer.
 		/// </summary>
 		public string ConsumerSecret { get; set; }
 
 		/// <summary>
 		/// Gets or sets the HTTP method that will be used to transmit the message.
-		/// Only applicable to Consumer.
 		/// </summary>
 		string ITamperResistantOAuthMessage.HttpMethod { get; set; }
 

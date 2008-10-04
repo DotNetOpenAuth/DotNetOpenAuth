@@ -6,10 +6,12 @@
 
 namespace DotNetOAuth.Messaging {
 	using System;
+	using System.Diagnostics;
 
 	/// <summary>
 	/// An immutable description of a URL that receives messages.
 	/// </summary>
+	[DebuggerDisplay("{AllowedMethods} {Location}")]
 	public class MessageReceivingEndpoint {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MessageReceivingEndpoint"/> class.
@@ -30,6 +32,9 @@ namespace DotNetOAuth.Messaging {
 			}
 			if (method == HttpDeliveryMethod.None) {
 				throw new ArgumentOutOfRangeException("method");
+			}
+			if ((method & (HttpDeliveryMethod.PostRequest | HttpDeliveryMethod.GetRequest)) == 0) {
+				throw new ArgumentOutOfRangeException("method", MessagingStrings.GetOrPostFlagsRequired);
 			}
 
 			this.Location = location;

@@ -6,6 +6,7 @@
 
 namespace DotNetOAuth {
 	using System;
+	using System.Diagnostics;
 	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.Messaging;
 
@@ -16,6 +17,7 @@ namespace DotNetOAuth {
 		/// <summary>
 		/// The field used to store the value of the <see cref="RequestTokenEndpoint"/> property.
 		/// </summary>
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private MessageReceivingEndpoint requestTokenEndpoint;
 
 		/// <summary>
