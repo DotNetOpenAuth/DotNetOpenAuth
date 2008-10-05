@@ -29,6 +29,16 @@ public partial class SampleWcf : System.Web.UI.Page {
 	}
 
 	protected void getNameButton_Click(object sender, EventArgs e) {
+		string name = CallService(client => client.GetName());
+		Response.Write(name);
+	}
+
+	protected void getAgeButton_Click(object sender, EventArgs e) {
+		int age = CallService(client => client.GetAge());
+		Response.Write(age);
+	}
+
+	private T CallService<T>(Func<DataApiClient, T> predicate) {
 		DataApiClient client = new DataApiClient();
 		var serviceEndpoint = new MessageReceivingEndpoint(client.Endpoint.Address.Uri, HttpDeliveryMethod.AuthorizationHeaderRequest | HttpDeliveryMethod.PostRequest);
 		var accessToken = Session["WcfAccessToken"] as string;
@@ -37,15 +47,10 @@ public partial class SampleWcf : System.Web.UI.Page {
 
 		HttpRequestMessageProperty httpDetails = new HttpRequestMessageProperty();
 		httpDetails.Headers[HttpRequestHeader.Authorization] = httpRequest.Headers[HttpRequestHeader.Authorization];
-		string name;
 		using (OperationContextScope scope = new OperationContextScope(client.InnerChannel)) {
 			OperationContext.Current.OutgoingMessageProperties[HttpRequestMessageProperty.Name] = httpDetails;
-			name = client.GetName();
+			return predicate(client);
 		}
-		Response.Write(name);
-	}
-
-	protected void getAgeButton_Click(object sender, EventArgs e) {
 	}
 
 	private Consumer CreateConsumer() {
