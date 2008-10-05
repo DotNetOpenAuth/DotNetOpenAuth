@@ -87,7 +87,8 @@ namespace DotNetOAuth {
 		/// Requires HttpContext.Current.
 		/// </remarks>
 		public Response RequestUserAuthorization() {
-			return this.RequestUserAuthorization(MessagingUtilities.GetRequestUrlFromContext(), null, null);
+			Uri callback = MessagingUtilities.GetRequestUrlFromContext().StripQueryArgumentsWithPrefix(Protocol.Default.ParameterPrefix);
+			return this.RequestUserAuthorization(callback, null, null);
 		}
 
 		/// <summary>
