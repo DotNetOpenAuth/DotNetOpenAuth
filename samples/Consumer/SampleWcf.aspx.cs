@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Net;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
@@ -18,6 +19,7 @@ public partial class SampleWcf : System.Web.UI.Page {
 				var accessTokenMessage = consumer.ProcessUserAuthorization();
 				if (accessTokenMessage != null) {
 					Session["WcfAccessToken"] = accessTokenMessage.AccessToken;
+					authorizationLabel.Text = "Authorized!  Access token: " + accessTokenMessage.AccessToken;
 				}
 			}
 		}
@@ -29,13 +31,12 @@ public partial class SampleWcf : System.Web.UI.Page {
 	}
 
 	protected void getNameButton_Click(object sender, EventArgs e) {
-		string name = CallService(client => client.GetName());
-		Response.Write(name);
+		nameLabel.Text = CallService(client => client.GetName());
 	}
 
 	protected void getAgeButton_Click(object sender, EventArgs e) {
 		int age = CallService(client => client.GetAge());
-		Response.Write(age);
+		ageLabel.Text = age.ToString(CultureInfo.CurrentCulture);
 	}
 
 	private T CallService<T>(Func<DataApiClient, T> predicate) {
