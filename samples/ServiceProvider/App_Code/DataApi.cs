@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
+﻿using System.Globalization;
 using System.ServiceModel;
-using System.Text;
 
 public class DataApi : IDataApi {
 	public int GetAge() {
@@ -11,6 +7,8 @@ public class DataApi : IDataApi {
 	}
 
 	public string GetName() {
-		return "Andrew";
+		string consumerKey = OperationContext.Current.IncomingMessageProperties["OAuthConsumerKey"] as string;
+		string accessToken = OperationContext.Current.IncomingMessageProperties["OAuthAccessToken"] as string;
+		return string.Format(CultureInfo.InvariantCulture, "Andrew_{0}_{1}", consumerKey.Substring(0, 1), accessToken.Substring(0, 1));
 	}
 }

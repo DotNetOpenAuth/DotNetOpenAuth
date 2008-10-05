@@ -20,10 +20,8 @@ public class OAuthAuthorizationManager : ServiceAuthorizationManager {
 		ServiceProvider sp = Constants.CreateServiceProvider();
 		var auth = sp.GetProtectedResourceAuthorization(httpDetails, requestUri);
 		if (auth != null) {
-			string consumer = auth.ConsumerKey;
-
-			//// TODO: pass the consumer along to the operation somehow
-
+			operationContext.IncomingMessageProperties["OAuthConsumerKey"] = auth.ConsumerKey;
+			operationContext.IncomingMessageProperties["OAuthAccessToken"] = auth.AccessToken;
 			return true;
 		}
 

@@ -14,7 +14,7 @@ public partial class SampleWcf : System.Web.UI.Page {
 	protected void Page_Load(object sender, EventArgs e) {
 		if (!IsPostBack) {
 			if (Session["WcfTokenManager"] != null) {
-				Consumer consumer = CreateConsumer();
+				Consumer consumer = this.CreateConsumer();
 				var accessTokenMessage = consumer.ProcessUserAuthorization();
 				if (accessTokenMessage != null) {
 					Session["WcfAccessToken"] = accessTokenMessage.AccessToken;
@@ -24,15 +24,15 @@ public partial class SampleWcf : System.Web.UI.Page {
 	}
 
 	protected void getAuthorizationButton_Click(object sender, EventArgs e) {
-		Consumer consumer = CreateConsumer();
+		Consumer consumer = this.CreateConsumer();
 		consumer.RequestUserAuthorization().Send();
 	}
-	
+
 	protected void getNameButton_Click(object sender, EventArgs e) {
 		DataApiClient client = new DataApiClient();
 		var serviceEndpoint = new MessageReceivingEndpoint(client.Endpoint.Address.Uri, HttpDeliveryMethod.AuthorizationHeaderRequest | HttpDeliveryMethod.PostRequest);
 		var accessToken = Session["WcfAccessToken"] as string;
-		Consumer consumer = CreateConsumer();
+		Consumer consumer = this.CreateConsumer();
 		WebRequest httpRequest = consumer.CreateAuthorizedRequest(serviceEndpoint, accessToken);
 
 		HttpRequestMessageProperty httpDetails = new HttpRequestMessageProperty();
@@ -44,7 +44,7 @@ public partial class SampleWcf : System.Web.UI.Page {
 		}
 		Response.Write(name);
 	}
-	
+
 	protected void getAgeButton_Click(object sender, EventArgs e) {
 	}
 
@@ -59,17 +59,19 @@ public partial class SampleWcf : System.Web.UI.Page {
 		MessageReceivingEndpoint oauthEndpoint = new MessageReceivingEndpoint(
 			new Uri("http://localhost:65169/ServiceProvider/OAuth.ashx"),
 			HttpDeliveryMethod.PostRequest);
-		Consumer consumer = new Consumer(new ServiceProviderDescription {
-			RequestTokenEndpoint = oauthEndpoint,
-			UserAuthorizationEndpoint = oauthEndpoint,
-			AccessTokenEndpoint = oauthEndpoint,
-			TamperProtectionElements = new DotNetOAuth.Messaging.ITamperProtectionChannelBindingElement[] {
-				new HmacSha1SigningBindingElement(),
+		Consumer consumer = new Consumer(
+			new ServiceProviderDescription {
+				RequestTokenEndpoint = oauthEndpoint,
+				UserAuthorizationEndpoint = oauthEndpoint,
+				AccessTokenEndpoint = oauthEndpoint,
+				TamperProtectionElements = new DotNetOAuth.Messaging.ITamperProtectionChannelBindingElement[] {
+					new HmacSha1SigningBindingElement(),
+				},
 			},
-		}, tokenManager) {
-			ConsumerKey = consumerKey,
-			ConsumerSecret = consumerSecret,
-		};
+			tokenManager) {
+				ConsumerKey = consumerKey,
+				ConsumerSecret = consumerSecret,
+			};
 
 		return consumer;
 	}
