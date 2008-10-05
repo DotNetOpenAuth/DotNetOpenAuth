@@ -28,7 +28,7 @@ namespace DotNetOAuth.Test {
 					new HmacSha1SigningBindingElement(),
 				},
 			};
-			MessageReceivingEndpoint accessPhotoEndpoint = new MessageReceivingEndpoint("http://photos.example.net/photos?file=vacation.jpg&size=original", HttpDeliveryMethod.AuthorizationHeaderRequest);
+			MessageReceivingEndpoint accessPhotoEndpoint = new MessageReceivingEndpoint("http://photos.example.net/photos?file=vacation.jpg&size=original", HttpDeliveryMethod.AuthorizationHeaderRequest | HttpDeliveryMethod.GetRequest);
 			var tokenManager = new InMemoryTokenManager();
 			var sp = new ServiceProvider(serviceDescription, tokenManager);
 			Consumer consumer = new Consumer(serviceDescription, new InMemoryTokenManager()) {
