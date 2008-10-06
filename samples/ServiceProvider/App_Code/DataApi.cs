@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Globalization;
 using System.ServiceModel;
+using System.Text;
 
 public class DataApi : IDataApi {
 	public int? GetAge() {
@@ -9,6 +10,10 @@ public class DataApi : IDataApi {
 
 	public string GetName() {
 		return AccessToken.User.FullName;
+	}
+
+	public string[] GetFavoriteSites() {
+		return AccessToken.User.FavoriteSites.Select(site => site.SiteUrl).ToArray();
 	}
 
 	private static OAuthToken AccessToken {

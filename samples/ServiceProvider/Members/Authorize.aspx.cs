@@ -15,7 +15,8 @@ public partial class Authorize : System.Web.UI.Page {
 			if (Global.PendingOAuthAuthorization == null) {
 				Response.Redirect("~/Members/AuthorizedConsumers.aspx");
 			} else {
-				desiredAccessLabel.Text = "name and age";
+				var token = Global.DataContext.OAuthTokens.Single(t => t.Token == Global.PendingOAuthAuthorization.RequestToken);
+				desiredAccessLabel.Text = token.Scope;
 			}
 		}
 	}

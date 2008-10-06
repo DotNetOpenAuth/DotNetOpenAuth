@@ -12,4 +12,7 @@ public interface IDataApi {
 
 	[OperationContract]
 	string GetName();
+
+	[OperationContract]
+	string[] GetFavoriteSites();
 }

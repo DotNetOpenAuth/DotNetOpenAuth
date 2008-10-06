@@ -629,6 +629,8 @@ public partial class OAuthToken : INotifyPropertyChanging, INotifyPropertyChange
 	
 	private System.Nullable<int> _UserId;
 	
+	private string _Scope;
+	
 	private EntityRef<OAuthConsumer> _OAuthConsumer;
 	
 	private EntityRef<User> _User;
@@ -651,6 +653,8 @@ public partial class OAuthToken : INotifyPropertyChanging, INotifyPropertyChange
     partial void OnConsumerIdChanged();
     partial void OnUserIdChanging(System.Nullable<int> value);
     partial void OnUserIdChanged();
+    partial void OnScopeChanging(string value);
+    partial void OnScopeChanged();
     #endregion
 	
 	public OAuthToken()
@@ -804,6 +808,26 @@ public partial class OAuthToken : INotifyPropertyChanging, INotifyPropertyChange
 				this._UserId = value;
 				this.SendPropertyChanged("UserId");
 				this.OnUserIdChanged();
+			}
+		}
+	}
+	
+	[Column(Storage="_Scope", DbType="nvarchar(MAX)", CanBeNull=false)]
+	public string Scope
+	{
+		get
+		{
+			return this._Scope;
+		}
+		set
+		{
+			if ((this._Scope != value))
+			{
+				this.OnScopeChanging(value);
+				this.SendPropertyChanging();
+				this._Scope = value;
+				this.SendPropertyChanged("Scope");
+				this.OnScopeChanged();
 			}
 		}
 	}

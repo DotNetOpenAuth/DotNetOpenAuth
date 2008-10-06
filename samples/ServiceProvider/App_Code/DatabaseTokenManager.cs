@@ -10,6 +10,7 @@ using System.Data.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using DotNetOAuth.ChannelElements;
+using DotNetOAuth.Messaging;
 
 public class DatabaseTokenManager : ITokenManager {
 	#region ITokenManager Members
@@ -36,11 +37,13 @@ public class DatabaseTokenManager : ITokenManager {
 
 	public void StoreNewRequestToken(string consumerKey, string requestToken, string requestTokenSecret, IDictionary<string, string> parameters) {
 		var consumer = Global.DataContext.OAuthConsumers.Single(consumerRow => consumerRow.ConsumerKey == consumerKey);
+		string scope = parameters["scope"];
 		OAuthToken newToken = new OAuthToken {
 			OAuthConsumer = consumer,
 			Token = requestToken,
 			TokenSecret = requestTokenSecret,
 			IssueDate = DateTime.UtcNow,
+			Scope = scope,
 		};
 
 		Global.DataContext.OAuthTokens.InsertOnSubmit(newToken);

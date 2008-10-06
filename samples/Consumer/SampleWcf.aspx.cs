@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Globalization;
 using System.Net;
 using System.ServiceModel;
@@ -7,6 +8,9 @@ using DotNetOAuth;
 using DotNetOAuth.ChannelElements;
 using DotNetOAuth.Messaging;
 using SampleServiceProvider;
+using System.Collections.Generic;
+using System.Web.UI.WebControls;
+using System.ServiceModel.Security;
 
 /// <summary>
 /// Sample consumer of our Service Provider sample's WCF service.
@@ -27,22 +31,50 @@ public partial class SampleWcf : System.Web.UI.Page {
 
 	protected void getAuthorizationButton_Click(object sender, EventArgs e) {
 		Consumer consumer = this.CreateConsumer();
-		consumer.RequestUserAuthorization().Send();
+		UriBuilder callback = new UriBuilder(Request.Url);
+		callback.Query = null;
+		string scope = string.Join("|", (from item in scopeList.Items.OfType<ListItem>()
+													where item.Selected
+													select item.Value).ToArray());
+		var requestParams = new Dictionary<string, string> {
+			{ "scope", scope },
+		};
+		consumer.RequestUserAuthorization(callback.Uri, requestParams, null).Send();
 	}
 
 	protected void getNameButton_Click(object sender, EventArgs e) {
-		nameLabel.Text = CallService(client => client.GetName());
+		try {
+			nameLabel.Text = CallService(client => client.GetName());
+		} catch (SecurityAccessDeniedException) {
+			nameLabel.Text = "Access denied!";
+		}
 	}
 
 	protected void getAgeButton_Click(object sender, EventArgs e) {
-		int? age = CallService(client => client.GetAge());
-		ageLabel.Text = age.HasValue ? age.Value.ToString(CultureInfo.CurrentCulture) : "not available";
+		try {
+			int? age = CallService(client => client.GetAge());
+			ageLabel.Text = age.HasValue ? age.Value.ToString(CultureInfo.CurrentCulture) : "not available";
+		} catch (SecurityAccessDeniedException) {
+			ageLabel.Text = "Access denied!";
+		}
+	}
+
+	protected void getFavoriteSites_Click(object sender, EventArgs e) {
+		try {
+			string[] favoriteSites = CallService(client => client.GetFavoriteSites());
+			favoriteSitesLabel.Text = string.Join(", ", favoriteSites);
+		} catch (SecurityAccessDeniedException) {
+			favoriteSitesLabel.Text = "Access denied!";
+		}
 	}
 
 	private T CallService<T>(Func<DataApiClient, T> predicate) {
 		DataApiClient client = new DataApiClient();
 		var serviceEndpoint = new MessageReceivingEndpoint(client.Endpoint.Address.Uri, HttpDeliveryMethod.AuthorizationHeaderRequest | HttpDeliveryMethod.PostRequest);
 		var accessToken = Session["WcfAccessToken"] as string;
+		if (accessToken == null) {
+			throw new InvalidOperationException("No access token!");
+		}
 		Consumer consumer = this.CreateConsumer();
 		WebRequest httpRequest = consumer.CreateAuthorizedRequest(serviceEndpoint, accessToken);
 
