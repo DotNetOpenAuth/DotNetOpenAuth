@@ -6,3 +6,4 @@ TestResult.xml
 drops
 *.VisualState.xml
 StyleCop.Cache
+*.LDF

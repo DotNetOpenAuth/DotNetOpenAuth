@@ -8,7 +8,7 @@ using System.Text;
 [ServiceContract]
 public interface IDataApi {
 	[OperationContract]
-	int GetAge();
+	int? GetAge();
 
 	[OperationContract]
 	string GetName();

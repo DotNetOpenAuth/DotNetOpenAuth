@@ -35,8 +35,8 @@ public partial class SampleWcf : System.Web.UI.Page {
 	}
 
 	protected void getAgeButton_Click(object sender, EventArgs e) {
-		int age = CallService(client => client.GetAge());
-		ageLabel.Text = age.ToString(CultureInfo.CurrentCulture);
+		int? age = CallService(client => client.GetAge());
+		ageLabel.Text = age.HasValue ? age.Value.ToString(CultureInfo.CurrentCulture) : "not available";
 	}
 
 	private T CallService<T>(Func<DataApiClient, T> predicate) {

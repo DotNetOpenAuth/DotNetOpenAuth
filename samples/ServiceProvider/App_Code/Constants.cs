@@ -7,8 +7,6 @@ using DotNetOAuth.Messaging;
 /// Service Provider definitions.
 /// </summary>
 public static class Constants {
-	public static InMemoryTokenManager TokenManager { get; set; }
-
 	public static Uri WebRootUrl { get; set; }
 
 	public static ServiceProviderDescription SelfDescription {
@@ -27,6 +25,6 @@ public static class Constants {
 	}
 
 	public static ServiceProvider CreateServiceProvider() {
-		return new ServiceProvider(SelfDescription, TokenManager);
+		return new ServiceProvider(SelfDescription, Global.TokenManager);
 	}
 }

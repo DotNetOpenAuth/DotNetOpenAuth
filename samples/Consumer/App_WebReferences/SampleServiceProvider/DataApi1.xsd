@@ -8,7 +8,7 @@
   <xs:element name="GetAgeResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="GetAgeResult" type="xs:int" />
+        <xs:element minOccurs="0" name="GetAgeResult" nillable="true" type="xs:int" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>

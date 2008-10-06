@@ -9,11 +9,11 @@ using System.Web.UI.WebControls;
 /// </summary>
 public partial class TracePage : System.Web.UI.Page {
 	protected void Page_Load(object sender, EventArgs e) {
-		placeHolder1.Controls.Add(new Label { Text = Logging.LogMessages.ToString() });
+		placeHolder1.Controls.Add(new Label { Text = Global.LogMessages.ToString() });
 	}
 
 	protected void clearLogButton_Click(object sender, EventArgs e) {
-		Logging.LogMessages.Length = 0;
+		Global.LogMessages.Length = 0;
 
 		// clear the page immediately, and allow for F5 without a Postback warning.
 		Response.Redirect(Request.Url.AbsoluteUri);

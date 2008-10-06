@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using DotNetOAuth;
@@ -20,8 +21,8 @@ public class OAuthAuthorizationManager : ServiceAuthorizationManager {
 		ServiceProvider sp = Constants.CreateServiceProvider();
 		var auth = sp.GetProtectedResourceAuthorization(httpDetails, requestUri);
 		if (auth != null) {
-			operationContext.IncomingMessageProperties["OAuthConsumerKey"] = auth.ConsumerKey;
-			operationContext.IncomingMessageProperties["OAuthAccessToken"] = auth.AccessToken;
+			var accessToken = Global.DataContext.OAuthTokens.Single(token => token.Token == auth.AccessToken);
+			operationContext.IncomingMessageProperties["OAuthAccessToken"] = accessToken;
 			return true;
 		}
 
