@@ -22,6 +22,7 @@ public class OAuthAuthorizationManager : ServiceAuthorizationManager {
 		var auth = sp.GetProtectedResourceAuthorization(httpDetails, requestUri);
 		if (auth != null) {
 			var accessToken = Global.DataContext.OAuthTokens.Single(token => token.Token == auth.AccessToken);
+
 			// Only allow this method call if the access token scope permits it.
 			string[] scopes = accessToken.Scope.Split('|');
 			if (scopes.Contains(operationContext.IncomingMessageHeaders.Action)) {

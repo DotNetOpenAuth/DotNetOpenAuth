@@ -1,16 +1,16 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
+using System.ServiceModel.Security;
+using System.Web.UI.WebControls;
 using DotNetOAuth;
 using DotNetOAuth.ChannelElements;
 using DotNetOAuth.Messaging;
 using SampleServiceProvider;
-using System.Collections.Generic;
-using System.Web.UI.WebControls;
-using System.ServiceModel.Security;
 
 /// <summary>
 /// Sample consumer of our Service Provider sample's WCF service.
@@ -33,9 +33,10 @@ public partial class SampleWcf : System.Web.UI.Page {
 		Consumer consumer = this.CreateConsumer();
 		UriBuilder callback = new UriBuilder(Request.Url);
 		callback.Query = null;
-		string scope = string.Join("|", (from item in scopeList.Items.OfType<ListItem>()
-													where item.Selected
-													select item.Value).ToArray());
+		string[] scopes = (from item in scopeList.Items.OfType<ListItem>()
+		                   where item.Selected
+		                   select item.Value).ToArray();
+		string scope = string.Join("|", scopes);
 		var requestParams = new Dictionary<string, string> {
 			{ "scope", scope },
 		};

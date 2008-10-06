@@ -5,12 +5,10 @@
 //-----------------------------------------------------------------------
 
 using System;
-using System.Linq;
-using System.Data.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using DotNetOAuth.ChannelElements;
-using DotNetOAuth.Messaging;
 
 public class DatabaseTokenManager : ITokenManager {
 	#region ITokenManager Members

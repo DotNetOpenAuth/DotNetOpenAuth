@@ -32,6 +32,7 @@ public partial class Authorize : System.Web.UI.Page {
 			response.Send();
 		}
 	}
+
 	protected void denyAccessButton_Click(object sender, EventArgs e) {
 		// erase the request token.
 		multiView.ActiveViewIndex = 2;

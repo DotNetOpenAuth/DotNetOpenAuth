@@ -1,9 +1,11 @@
 ﻿using System.Linq;
-using System.Globalization;
 using System.ServiceModel;
-using System.Text;
 
 public class DataApi : IDataApi {
+	private static OAuthToken AccessToken {
+		get { return OperationContext.Current.IncomingMessageProperties["OAuthAccessToken"] as OAuthToken; }
+	}
+
 	public int? GetAge() {
 		return AccessToken.User.Age;
 	}
@@ -14,9 +16,5 @@ public class DataApi : IDataApi {
 
 	public string[] GetFavoriteSites() {
 		return AccessToken.User.FavoriteSites.Select(site => site.SiteUrl).ToArray();
-	}
-
-	private static OAuthToken AccessToken {
-		get { return OperationContext.Current.IncomingMessageProperties["OAuthAccessToken"] as OAuthToken; }
 	}
 }

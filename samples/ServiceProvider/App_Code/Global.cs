@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Text;
 using System.ServiceModel;
+using System.Text;
+using System.Web;
 using DotNetOAuth.Messages;
 
 /// <summary>
-/// Summary description for Global
+/// The web application global events and properties.
 /// </summary>
 public class Global : HttpApplication {
 	/// <summary>
@@ -19,32 +18,6 @@ public class Global : HttpApplication {
 	/// The logger for this sample to use.
 	/// </summary>
 	public static log4net.ILog Logger = log4net.LogManager.GetLogger("DotNetOAuth.ConsumerSample");
-
-	private static DataClassesDataContext dataContextSimple {
-		get {
-			if (HttpContext.Current != null) {
-				return HttpContext.Current.Items["DataContext"] as DataClassesDataContext;
-			} else if (OperationContext.Current != null) {
-				object data;
-				if (OperationContext.Current.IncomingMessageProperties.TryGetValue("DataContext", out data)) {
-					return data as DataClassesDataContext;
-				} else {
-					return null;
-				}
-			} else {
-				throw new InvalidOperationException();
-			}
-		}
-		set {
-			if (HttpContext.Current != null) {
-				HttpContext.Current.Items["DataContext"] = value;
-			} else if (OperationContext.Current != null) {
-				OperationContext.Current.IncomingMessageProperties["DataContext"] = value;
-			} else {
-				throw new InvalidOperationException();
-			}
-		}
-	}
 
 	/// <summary>
 	/// Gets the transaction-protected database connection for the current request.
@@ -74,6 +47,38 @@ public class Global : HttpApplication {
 		set { HttpContext.Current.Session["authrequest"] = value; }
 	}
 
+	private static DataClassesDataContext dataContextSimple {
+		get {
+			if (HttpContext.Current != null) {
+				return HttpContext.Current.Items["DataContext"] as DataClassesDataContext;
+			} else if (OperationContext.Current != null) {
+				object data;
+				if (OperationContext.Current.IncomingMessageProperties.TryGetValue("DataContext", out data)) {
+					return data as DataClassesDataContext;
+				} else {
+					return null;
+				}
+			} else {
+				throw new InvalidOperationException();
+			}
+		}
+
+		set {
+			if (HttpContext.Current != null) {
+				HttpContext.Current.Items["DataContext"] = value;
+			} else if (OperationContext.Current != null) {
+				OperationContext.Current.IncomingMessageProperties["DataContext"] = value;
+			} else {
+				throw new InvalidOperationException();
+			}
+		}
+	}
+
+	public static void AuthorizePendingRequestToken() {
+		TokenManager.AuthorizeRequestToken(PendingOAuthAuthorization.RequestToken, LoggedInUser);
+		PendingOAuthAuthorization = null;
+	}
+
 	private static void CommitAndCloseDatabaseIfNecessary() {
 		var dataContext = dataContextSimple;
 		if (dataContext != null) {
@@ -93,6 +98,7 @@ public class Global : HttpApplication {
 
 	private void Application_End(object sender, EventArgs e) {
 		Logger.Info("Sample shutting down...");
+
 		// this would be automatic, but in partial trust scenarios it is not.
 		log4net.LogManager.Shutdown();
 	}
@@ -103,10 +109,5 @@ public class Global : HttpApplication {
 
 	private void Application_EndRequest(object sender, EventArgs e) {
 		CommitAndCloseDatabaseIfNecessary();
-	}
-
-	public static void AuthorizePendingRequestToken() {
-		TokenManager.AuthorizeRequestToken(PendingOAuthAuthorization.RequestToken, LoggedInUser);
-		PendingOAuthAuthorization = null;
 	}
 }
