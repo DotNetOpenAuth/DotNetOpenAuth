@@ -62,8 +62,8 @@ namespace DotNetOAuth.Test {
 					channel.SendDirectRawResponse(new Response {
 						ResponseStream = new MemoryStream(new byte[] { 0x33, 0x66 }),
 						Headers = new WebHeaderCollection {
-									{ HttpResponseHeader.ContentType, "image/jpeg" },
-								},
+							{ HttpResponseHeader.ContentType, "image/jpeg" },
+						},
 					});
 				});
 			coordinator.SigningElement = (ITamperProtectionChannelBindingElement)sp.Channel.BindingElements.Single(el => el is ITamperProtectionChannelBindingElement);

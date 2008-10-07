@@ -18,8 +18,8 @@ public static class Constants {
 		UserAuthorizationEndpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthAuthorizeToken", HttpDeliveryMethod.AuthorizationHeaderRequest),
 		AccessTokenEndpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthGetAccessToken", HttpDeliveryMethod.AuthorizationHeaderRequest),
 		TamperProtectionElements = new ITamperProtectionChannelBindingElement[] {
-				new HmacSha1SigningBindingElement(),
-			},
+			new HmacSha1SigningBindingElement(),
+		},
 	};
 
 	/// <summary>
