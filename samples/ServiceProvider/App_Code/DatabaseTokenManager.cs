@@ -33,9 +33,9 @@ public class DatabaseTokenManager : ITokenManager {
 		return tokenRow.TokenSecret;
 	}
 
-	public void StoreNewRequestToken(string consumerKey, string requestToken, string requestTokenSecret, IDictionary<string, string> parameters) {
+	public void StoreNewRequestToken(string consumerKey, string requestToken, string requestTokenSecret, IDictionary<string, string> requestParameters, IDictionary<string, string> responseParameters) {
 		var consumer = Global.DataContext.OAuthConsumers.Single(consumerRow => consumerRow.ConsumerKey == consumerKey);
-		string scope = parameters["scope"];
+		string scope = requestParameters["scope"];
 		OAuthToken newToken = new OAuthToken {
 			OAuthConsumer = consumer,
 			Token = requestToken,

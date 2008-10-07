@@ -118,7 +118,7 @@ namespace DotNetOAuth {
 		public Response SendUnauthorizedTokenResponse(RequestTokenMessage request, IDictionary<string, string> extraParameters) {
 			string token = this.TokenGenerator.GenerateRequestToken(request.ConsumerKey);
 			string secret = this.TokenGenerator.GenerateSecret();
-			this.TokenManager.StoreNewRequestToken(request.ConsumerKey, token, secret, ((IProtocolMessage)request).ExtraData);
+			this.TokenManager.StoreNewRequestToken(request.ConsumerKey, token, secret, ((IProtocolMessage)request).ExtraData, extraParameters);
 			UnauthorizedRequestTokenMessage response = new UnauthorizedRequestTokenMessage {
 				RequestToken = token,
 				TokenSecret = secret,

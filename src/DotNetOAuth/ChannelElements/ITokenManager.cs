@@ -41,9 +41,10 @@ namespace DotNetOAuth.ChannelElements {
 		/// <param name="consumerKey">The key of the Consumer that requested this token.</param>
 		/// <param name="requestToken">The token to store.</param>
 		/// <param name="requestTokenSecret">The secret to store as associated with the request token.</param>
-		/// <param name="parameters">The optional application-specific parameters of this request.</param>
+		/// <param name="requestParameters">The optional application-specific parameters sent in the request message.</param>
+		/// <param name="responseParameters">The optional application-specific parameters sent in the response message.</param>
 		/// <exception cref="ArgumentException">Thrown if the consumer key is not registered, or a required parameter was not found in the parameters collection.</exception>
-		void StoreNewRequestToken(string consumerKey, string requestToken, string requestTokenSecret, IDictionary<string, string> parameters);
+		void StoreNewRequestToken(string consumerKey, string requestToken, string requestTokenSecret, IDictionary<string, string> requestParameters, IDictionary<string, string> responseParameters);
 
 		/// <summary>
 		/// Checks whether a given request token has already been authorized
