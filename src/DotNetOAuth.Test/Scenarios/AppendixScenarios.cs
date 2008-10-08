@@ -29,8 +29,7 @@ namespace DotNetOAuth.Test {
 				},
 			};
 			MessageReceivingEndpoint accessPhotoEndpoint = new MessageReceivingEndpoint("http://photos.example.net/photos?file=vacation.jpg&size=original", HttpDeliveryMethod.AuthorizationHeaderRequest | HttpDeliveryMethod.GetRequest);
-			var tokenManager = new InMemoryTokenManager();
-			var sp = new ServiceProvider(serviceDescription, tokenManager);
+			var sp = new ServiceProvider(serviceDescription, new InMemoryTokenManager());
 			Consumer consumer = new Consumer(serviceDescription, new InMemoryTokenManager()) {
 				ConsumerKey = "dpf43f3p2l4k3l03",
 				ConsumerSecret = "kd94hf93k423kf44",
@@ -49,12 +48,12 @@ namespace DotNetOAuth.Test {
 					Assert.AreNotEqual(0, protectedPhoto.ResponseStream.Length);
 				},
 				channel => {
-					tokenManager.AddConsumer(consumer.ConsumerKey, consumer.ConsumerSecret);
 					sp.Channel = channel;
+					((InMemoryTokenManager)sp.TokenManager).AddConsumer(consumer.ConsumerKey, consumer.ConsumerSecret);
 					var requestTokenMessage = sp.ReadTokenRequest();
 					sp.SendUnauthorizedTokenResponse(requestTokenMessage, null);
 					var authRequest = sp.ReadAuthorizationRequest();
-					tokenManager.AuthorizeRequestToken(authRequest.RequestToken);
+					((InMemoryTokenManager)sp.TokenManager).AuthorizeRequestToken(authRequest.RequestToken);
 					sp.SendAuthorizationResponse(authRequest);
 					var accessRequest = sp.ReadAccessTokenRequest();
 					sp.SendAccessToken(accessRequest, null);
@@ -66,7 +65,8 @@ namespace DotNetOAuth.Test {
 						},
 					});
 				});
-			coordinator.SigningElement = (ITamperProtectionChannelBindingElement)sp.Channel.BindingElements.Single(el => el is ITamperProtectionChannelBindingElement);
+
+			coordinator.SigningElement = (ITamperProtectionChannelBindingElement)consumer.Channel.BindingElements.Single(el => el is ITamperProtectionChannelBindingElement);
 			coordinator.Run();
 		}
 	}

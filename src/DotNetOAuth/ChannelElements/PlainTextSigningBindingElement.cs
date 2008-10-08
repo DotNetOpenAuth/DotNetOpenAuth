@@ -43,5 +43,13 @@ namespace DotNetOAuth.ChannelElements {
 		protected override bool IsMessageApplicable(ITamperResistantOAuthMessage message) {
 			return string.Equals(message.Recipient.Scheme, "https", StringComparison.OrdinalIgnoreCase);
 		}
+
+		/// <summary>
+		/// Clones this instance.
+		/// </summary>
+		/// <returns>A new instance of the binding element.</returns>
+		protected override object Clone() {
+			return new PlainTextSigningBindingElement();
+		}
 	}
 }

@@ -12,7 +12,7 @@ namespace DotNetOAuth.Messaging {
 	/// An interface that must be implemented by message transforms/validators in order
 	/// to be included in the channel stack.
 	/// </summary>
-	public interface ITamperProtectionChannelBindingElement : IChannelBindingElement {
+	public interface ITamperProtectionChannelBindingElement : IChannelBindingElement, ICloneable {
 		/// <summary>
 		/// Gets or sets the delegate that will initialize the non-serialized properties necessary on a signed
 		/// message so that its signature can be correctly calculated for verification.

@@ -35,5 +35,13 @@ namespace DotNetOAuth.ChannelElements {
 			byte[] digest = hasher.CreateSignature(Encoding.ASCII.GetBytes(ConstructSignatureBaseString(message)));
 			return Convert.ToBase64String(digest);
 		}
+
+		/// <summary>
+		/// Clones this instance.
+		/// </summary>
+		/// <returns>A new instance of the binding element.</returns>
+		protected override object Clone() {
+			return new RsaSha1SigningBindingElement();
+		}
 	}
 }

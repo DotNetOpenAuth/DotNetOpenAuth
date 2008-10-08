@@ -38,9 +38,8 @@ namespace DotNetOAuth {
 			this.WebRequestHandler = new StandardWebRequestHandler();
 			ITamperProtectionChannelBindingElement signingElement = serviceDescription.CreateTamperProtectionElement();
 			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
-			this.Channel = new OAuthChannel(signingElement, store, new OAuthConsumerMessageTypeProvider(tokenManager), this.WebRequestHandler);
+			this.Channel = new OAuthChannel(signingElement, store, tokenManager, new OAuthConsumerMessageTypeProvider(tokenManager), this.WebRequestHandler);
 			this.ServiceProvider = serviceDescription;
-			this.TokenManager = tokenManager;
 		}
 
 		/// <summary>
@@ -61,7 +60,9 @@ namespace DotNetOAuth {
 		/// <summary>
 		/// Gets the persistence store for tokens and secrets.
 		/// </summary>
-		public ITokenManager TokenManager { get; private set; }
+		public ITokenManager TokenManager {
+			get { return this.Channel.TokenManager; }
+		}
 
 		/// <summary>
 		/// Gets or sets the object that processes <see cref="HttpWebRequest"/>s.

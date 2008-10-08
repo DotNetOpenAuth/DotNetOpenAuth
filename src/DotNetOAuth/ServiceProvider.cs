@@ -54,12 +54,10 @@ namespace DotNetOAuth {
 			}
 
 			var signingElement = serviceDescription.CreateTamperProtectionElement();
-			signingElement.SignatureVerificationCallback = this.TokenSignatureVerificationCallback;
 			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
 			this.ServiceDescription = serviceDescription;
-			this.Channel = new OAuthChannel(signingElement, store, messageTypeProvider, new StandardWebRequestHandler());
+			this.Channel = new OAuthChannel(signingElement, store, tokenManager, messageTypeProvider, new StandardWebRequestHandler());
 			this.TokenGenerator = new StandardTokenGenerator();
-			this.TokenManager = tokenManager;
 		}
 
 		/// <summary>
@@ -75,7 +73,9 @@ namespace DotNetOAuth {
 		/// <summary>
 		/// Gets the persistence store for tokens and secrets.
 		/// </summary>
-		public ITokenManager TokenManager { get; private set; }
+		public ITokenManager TokenManager {
+			get { return this.Channel.TokenManager; }
+		}
 
 		/// <summary>
 		/// Gets or sets the channel to use for sending/receiving messages.
@@ -86,8 +86,11 @@ namespace DotNetOAuth {
 		/// Reads any incoming OAuth message.
 		/// </summary>
 		/// <returns>The deserialized message.</returns>
-		public IProtocolMessage ReadRequest() {
-			return this.Channel.ReadFromRequest();
+		/// <remarks>
+		/// Requires HttpContext.Current.
+		/// </remarks>
+		public IOAuthDirectedMessage ReadRequest() {
+			return (IOAuthDirectedMessage)this.Channel.ReadFromRequest();
 		}
 
 		/// <summary>
@@ -95,8 +98,8 @@ namespace DotNetOAuth {
 		/// </summary>
 		/// <param name="request">The HTTP request to read the message from.</param>
 		/// <returns>The deserialized message.</returns>
-		public IProtocolMessage ReadRequest(HttpRequest request) {
-			return this.Channel.ReadFromRequest(new HttpRequestInfo(request));
+		public IOAuthDirectedMessage ReadRequest(HttpRequest request) {
+			return (IOAuthDirectedMessage)this.Channel.ReadFromRequest(new HttpRequestInfo(request));
 		}
 
 		/// <summary>
@@ -351,19 +354,6 @@ namespace DotNetOAuth {
 			}
 
 			return accessMessage;
-		}
-
-		/// <summary>
-		/// Fills out the secrets in an incoming message so that signature verification can be performed.
-		/// </summary>
-		/// <param name="message">The incoming message.</param>
-		private void TokenSignatureVerificationCallback(ITamperResistantOAuthMessage message) {
-			message.ConsumerSecret = this.TokenManager.GetConsumerSecret(message.ConsumerKey);
-
-			var tokenMessage = message as ITokenContainingMessage;
-			if (tokenMessage != null) {
-				message.TokenSecret = this.TokenManager.GetTokenSecret(tokenMessage.Token);
-			}
 		}
 	}
 }

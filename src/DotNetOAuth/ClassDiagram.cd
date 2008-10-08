@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ClassDiagram MajorVersion="1" MinorVersion="1">
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
   <Class Name="DotNetOAuth.ServiceProvider">
-    <Position X="0.5" Y="0.5" Width="3.5" />
+    <Position X="0.5" Y="0.5" Width="5.75" />
     <TypeIdentifier>
       <HashCode>EAoAAAAgAAACAAABCAAEAAAAAAAIAAEAAQAIAAAAAQA=</HashCode>
       <FileName>ServiceProvider.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DotNetOAuth.Consumer">
-    <Position X="4.25" Y="0.5" Width="3" />
+    <Position X="6.5" Y="0.5" Width="4.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAgAAABEAAAAIAABgAAACAIAAQAAYAAAAAAAAA=</HashCode>
       <FileName>Consumer.cs</FileName>

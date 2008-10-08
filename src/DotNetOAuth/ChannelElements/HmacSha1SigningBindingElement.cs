@@ -36,5 +36,13 @@ namespace DotNetOAuth.ChannelElements {
 			byte[] digest = hasher.ComputeHash(Encoding.ASCII.GetBytes(baseString));
 			return Convert.ToBase64String(digest);
 		}
+
+		/// <summary>
+		/// Clones this instance.
+		/// </summary>
+		/// <returns>A new instance of the binding element.</returns>
+		protected override object Clone() {
+			return new HmacSha1SigningBindingElement();
+		}
 	}
 }

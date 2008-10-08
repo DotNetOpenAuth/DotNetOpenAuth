@@ -12,6 +12,7 @@ namespace DotNetOAuth.ChannelElements {
 	using System.Net;
 	using System.Text;
 	using System.Web;
+	using DotNetOAuth.Messages;
 	using DotNetOAuth.Messaging;
 	using DotNetOAuth.Messaging.Bindings;
 	using DotNetOAuth.Messaging.Reflection;
@@ -37,6 +38,7 @@ namespace DotNetOAuth.ChannelElements {
 			: this(
 			signingBindingElement,
 			store,
+			tokenManager,
 			isConsumer ? (IMessageTypeProvider)new OAuthConsumerMessageTypeProvider(tokenManager) : new OAuthServiceProviderMessageTypeProvider(tokenManager),
 			new StandardWebRequestHandler()) {
 		}
@@ -46,6 +48,7 @@ namespace DotNetOAuth.ChannelElements {
 		/// </summary>
 		/// <param name="signingBindingElement">The binding element to use for signing.</param>
 		/// <param name="store">The web application store to use for nonces.</param>
+		/// <param name="tokenManager">The ITokenManager instance to use.</param>
 		/// <param name="messageTypeProvider">
 		/// An injected message type provider instance.
 		/// Except for mock testing, this should always be one of
@@ -58,19 +61,33 @@ namespace DotNetOAuth.ChannelElements {
 		/// <remarks>
 		/// This overload for testing purposes only.
 		/// </remarks>
-		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IMessageTypeProvider messageTypeProvider, IWebRequestHandler webRequestHandler)
+		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, IMessageTypeProvider messageTypeProvider, IWebRequestHandler webRequestHandler)
 			: base(messageTypeProvider, new OAuthHttpMethodBindingElement(), signingBindingElement, new StandardExpirationBindingElement(), new StandardReplayProtectionBindingElement(store)) {
+			if (tokenManager == null) {
+				throw new ArgumentNullException("tokenManager");
+			}
 			if (webRequestHandler == null) {
 				throw new ArgumentNullException("webRequestHandler");
 			}
 
 			this.webRequestHandler = webRequestHandler;
+			this.TokenManager = tokenManager;
+			if (signingBindingElement.SignatureVerificationCallback != null) {
+				throw new ArgumentException(Strings.SigningElementAlreadyAssociatedWithChannel, "signingBindingElement");
+			}
+
+			signingBindingElement.SignatureVerificationCallback = this.TokenSignatureVerificationCallback;
 		}
 
 		/// <summary>
 		/// Gets or sets the Consumer web application path.
 		/// </summary>
 		internal Uri Realm { get; set; }
+
+		/// <summary>
+		/// Gets the token manager being used.
+		/// </summary>
+		protected internal ITokenManager TokenManager { get; private set; }
 
 		/// <summary>
 		/// Encodes the names and values that are part of the message per OAuth 1.0 section 5.1.
@@ -353,6 +370,23 @@ namespace DotNetOAuth.ChannelElements {
 			}
 
 			return httpRequest;
+		}
+
+		/// <summary>
+		/// Fills out the secrets in an incoming message so that signature verification can be performed.
+		/// </summary>
+		/// <param name="message">The incoming message.</param>
+		private void TokenSignatureVerificationCallback(ITamperResistantOAuthMessage message) {
+			try {
+				message.ConsumerSecret = this.TokenManager.GetConsumerSecret(message.ConsumerKey);
+
+				var tokenMessage = message as ITokenContainingMessage;
+				if (tokenMessage != null) {
+					message.TokenSecret = this.TokenManager.GetTokenSecret(tokenMessage.Token);
+				}
+			} catch (KeyNotFoundException ex) {
+				throw new ProtocolException(Strings.ConsumerOrTokenSecretNotFound, ex);
+			}
 		}
 	}
 }

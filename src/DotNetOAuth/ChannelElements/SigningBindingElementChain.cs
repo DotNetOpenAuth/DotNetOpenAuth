@@ -46,7 +46,7 @@ namespace DotNetOAuth.ChannelElements {
 			this.signers = signers;
 		}
 
-		#region ITamperProtectionChannelBindingElement Members
+		#region ITamperProtectionChannelBindingElement Properties
 
 		/// <summary>
 		/// Gets or sets the delegate that will initialize the non-serialized properties necessary on a signed
@@ -111,6 +111,20 @@ namespace DotNetOAuth.ChannelElements {
 			}
 
 			return false;
+		}
+
+		#endregion
+
+		#region ITamperProtectionChannelBindingElement Methods
+
+		/// <summary>
+		/// Creates a new object that is a copy of the current instance.
+		/// </summary>
+		/// <returns>
+		/// A new object that is a copy of this instance.
+		/// </returns>
+		object ICloneable.Clone() {
+			return new SigningBindingElementChain(this.signers.Select(el => (ITamperProtectionChannelBindingElement)el.Clone()).ToArray());
 		}
 
 		#endregion

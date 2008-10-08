@@ -79,6 +79,15 @@ namespace DotNetOAuth {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failure looking up secret for consumer or token..
+        /// </summary>
+        internal static string ConsumerOrTokenSecretNotFound {
+            get {
+                return ResourceManager.GetString("ConsumerOrTokenSecretNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to An invalid OAuth message received and discarded..
         /// </summary>
         internal static string InvalidIncomingMessage {
@@ -93,6 +102,15 @@ namespace DotNetOAuth {
         internal static string RequestUrlMustNotHaveOAuthParameters {
             get {
                 return ResourceManager.GetString("RequestUrlMustNotHaveOAuthParameters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The signing element already has been associated with a channel..
+        /// </summary>
+        internal static string SigningElementAlreadyAssociatedWithChannel {
+            get {
+                return ResourceManager.GetString("SigningElementAlreadyAssociatedWithChannel", resourceCulture);
             }
         }
         

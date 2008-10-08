@@ -35,11 +35,8 @@ namespace DotNetOAuth.Test.Scenarios {
 		internal delegate void Actor(CoordinatingOAuthChannel channel);
 
 		/// <summary>
-		/// Gets or sets the signing element the Consumer channel should use.
+		/// Gets or sets the signing element the channels should clone and use.
 		/// </summary>
-		/// <remarks>
-		/// The Service Provider never signs a message, so no property is necessary for that.
-		/// </remarks>
 		internal ITamperProtectionChannelBindingElement SigningElement { get; set; }
 
 		/// <summary>
@@ -50,9 +47,15 @@ namespace DotNetOAuth.Test.Scenarios {
 				throw new InvalidOperationException("SigningElement must be set first.");
 			}
 
+			// Clone and reset the template signing binding element.
+			var consumerSigningElement = (ITamperProtectionChannelBindingElement)this.SigningElement.Clone();
+			var spSigningElement = (ITamperProtectionChannelBindingElement)this.SigningElement.Clone();
+			consumerSigningElement.SignatureVerificationCallback = null;
+			spSigningElement.SignatureVerificationCallback = null;
+
 			// Prepare channels that will pass messages directly back and forth.
-			CoordinatingOAuthChannel consumerChannel = new CoordinatingOAuthChannel(this.SigningElement, true);
-			CoordinatingOAuthChannel serviceProviderChannel = new CoordinatingOAuthChannel(this.SigningElement, false);
+			CoordinatingOAuthChannel consumerChannel = new CoordinatingOAuthChannel(consumerSigningElement, true);
+			CoordinatingOAuthChannel serviceProviderChannel = new CoordinatingOAuthChannel(spSigningElement, false);
 			consumerChannel.RemoteChannel = serviceProviderChannel;
 			serviceProviderChannel.RemoteChannel = consumerChannel;
 

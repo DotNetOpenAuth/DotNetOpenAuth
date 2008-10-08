@@ -29,6 +29,17 @@ namespace DotNetOAuth.ChannelElements {
 			this.signatureMethod = signatureMethod;
 		}
 
+		#region IChannelBindingElement Properties
+
+		/// <summary>
+		/// Gets the message protection provided by this binding element.
+		/// </summary>
+		public MessageProtection Protection {
+			get { return MessageProtection.TamperProtection; }
+		}
+
+		#endregion
+
 		#region ITamperProtectionChannelBindingElement members
 
 		/// <summary>
@@ -37,16 +48,21 @@ namespace DotNetOAuth.ChannelElements {
 		/// </summary>
 		public Action<ITamperResistantOAuthMessage> SignatureVerificationCallback { get; set; }
 
+		/// <summary>
+		/// Creates a new object that is a copy of the current instance.
+		/// </summary>
+		/// <returns>
+		/// A new object that is a copy of this instance.
+		/// </returns>
+		object ICloneable.Clone() {
+			var clone = (SigningBindingElementBase)this.Clone();
+			clone.SignatureVerificationCallback = this.SignatureVerificationCallback;
+			return clone;
+		}
+
 		#endregion
 
-		#region IChannelBindingElement Members
-
-		/// <summary>
-		/// Gets the message protection provided by this binding element.
-		/// </summary>
-		public MessageProtection Protection {
-			get { return MessageProtection.TamperProtection; }
-		}
+		#region IChannelBindingElement Methods
 
 		/// <summary>
 		/// Signs the outgoing message.
@@ -154,6 +170,16 @@ namespace DotNetOAuth.ChannelElements {
 
 			return signatureBaseString.ToString();
 		}
+
+		/// <summary>
+		/// Clones this instance.
+		/// </summary>
+		/// <returns>A new instance of the binding element.</returns>
+		/// <remarks>
+		/// Implementations of this method need not clone the SignatureVerificationCallback member, as the
+		/// <see cref="SigningBindingElementBase"/> class does this.
+		/// </remarks>
+		protected abstract object Clone();
 
 		/// <summary>
 		/// Calculates a signature for a given message.

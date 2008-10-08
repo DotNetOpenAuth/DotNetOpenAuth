@@ -7,6 +7,7 @@
 namespace DotNetOAuth {
 	using System;
 	using System.Diagnostics;
+	using System.Linq;
 	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.Messaging;
 
@@ -78,7 +79,7 @@ namespace DotNetOAuth {
 		/// </summary>
 		/// <returns>The created signing element.</returns>
 		internal ITamperProtectionChannelBindingElement CreateTamperProtectionElement() {
-			return new SigningBindingElementChain(this.TamperProtectionElements);
+			return new SigningBindingElementChain(this.TamperProtectionElements.Select(el => (ITamperProtectionChannelBindingElement)el.Clone()).ToArray());
 		}
 	}
 }
