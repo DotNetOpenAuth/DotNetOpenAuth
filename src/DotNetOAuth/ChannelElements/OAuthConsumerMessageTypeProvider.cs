@@ -14,7 +14,7 @@ namespace DotNetOAuth.ChannelElements {
 	/// An OAuth-protocol specific implementation of the <see cref="IMessageTypeProvider"/>
 	/// interface.
 	/// </summary>
-	internal class OAuthConsumerMessageTypeProvider : IMessageTypeProvider {
+	public class OAuthConsumerMessageTypeProvider : IMessageTypeProvider {
 		/// <summary>
 		/// The token manager to use for discerning between request and access tokens.
 		/// </summary>
@@ -24,7 +24,7 @@ namespace DotNetOAuth.ChannelElements {
 		/// Initializes a new instance of the <see cref="OAuthConsumerMessageTypeProvider"/> class.
 		/// </summary>
 		/// <param name="tokenManager">The token manager instance to use.</param>
-		internal OAuthConsumerMessageTypeProvider(ITokenManager tokenManager) {
+		protected internal OAuthConsumerMessageTypeProvider(ITokenManager tokenManager) {
 			if (tokenManager == null) {
 				throw new ArgumentNullException("tokenManager");
 			}
@@ -47,7 +47,7 @@ namespace DotNetOAuth.ChannelElements {
 		/// The <see cref="IProtocolMessage"/>-derived concrete class that this message can
 		/// deserialize to.  Null if the request isn't recognized as a valid protocol message.
 		/// </returns>
-		public Type GetRequestMessageType(IDictionary<string, string> fields) {
+		public virtual Type GetRequestMessageType(IDictionary<string, string> fields) {
 			if (fields == null) {
 				throw new ArgumentNullException("fields");
 			}
@@ -77,7 +77,7 @@ namespace DotNetOAuth.ChannelElements {
 		/// UnauthorizedRequestTokenMessage
 		/// GrantAccessTokenMessage
 		/// </remarks>
-		public Type GetResponseMessageType(IProtocolMessage request, IDictionary<string, string> fields) {
+		public virtual Type GetResponseMessageType(IProtocolMessage request, IDictionary<string, string> fields) {
 			if (fields == null) {
 				throw new ArgumentNullException("fields");
 			}

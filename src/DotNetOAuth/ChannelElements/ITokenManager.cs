@@ -9,6 +9,7 @@ namespace DotNetOAuth.ChannelElements {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using DotNetOAuth.Messages;
 
 	/// <summary>
 	/// An interface OAuth hosts must implement for persistent storage and recall of tokens and secrets.
@@ -38,13 +39,10 @@ namespace DotNetOAuth.ChannelElements {
 		/// Stores a newly generated unauthorized request token, secret, and optional
 		/// application-specific parameters for later recall.
 		/// </summary>
-		/// <param name="consumerKey">The key of the Consumer that requested this token.</param>
-		/// <param name="requestToken">The token to store.</param>
-		/// <param name="requestTokenSecret">The secret to store as associated with the request token.</param>
-		/// <param name="requestParameters">The optional application-specific parameters sent in the request message.</param>
-		/// <param name="responseParameters">The optional application-specific parameters sent in the response message.</param>
+		/// <param name="request">The request message that resulted in the generation of a new unauthorized request token.</param>
+		/// <param name="response">The response message that includes the unauthorized request token.</param>
 		/// <exception cref="ArgumentException">Thrown if the consumer key is not registered, or a required parameter was not found in the parameters collection.</exception>
-		void StoreNewRequestToken(string consumerKey, string requestToken, string requestTokenSecret, IDictionary<string, string> requestParameters, IDictionary<string, string> responseParameters);
+		void StoreNewRequestToken(RequestTokenMessage request, UnauthorizedRequestTokenMessage response);
 
 		/// <summary>
 		/// Checks whether a given request token has already been authorized

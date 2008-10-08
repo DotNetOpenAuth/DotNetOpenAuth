@@ -13,7 +13,7 @@ namespace DotNetOAuth.Messaging {
 	/// Applied to fields and properties that form a key/value in a protocol message.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = true, AllowMultiple = false)]
-	internal sealed class MessagePartAttribute : Attribute {
+	public sealed class MessagePartAttribute : Attribute {
 		/// <summary>
 		/// The overridden name to use as the serialized name for the property.
 		/// </summary>
@@ -22,7 +22,7 @@ namespace DotNetOAuth.Messaging {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MessagePartAttribute"/> class.
 		/// </summary>
-		internal MessagePartAttribute() {
+		public MessagePartAttribute() {
 		}
 
 		/// <summary>
@@ -32,7 +32,7 @@ namespace DotNetOAuth.Messaging {
 		/// A special name to give the value of this member in the serialized message.
 		/// When null or empty, the name of the member will be used in the serialized message.
 		/// </param>
-		internal MessagePartAttribute(string name) {
+		public MessagePartAttribute(string name) {
 			this.Name = name;
 		}
 

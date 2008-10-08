@@ -203,8 +203,7 @@ namespace DotNetOAuth {
 			};
 			requestToken.AddNonOAuthParameters(requestParameters);
 			var requestTokenResponse = this.Channel.Request<UnauthorizedRequestTokenMessage>(requestToken);
-			IDictionary<string, string> responseParameters = ((IProtocolMessage)requestTokenResponse).ExtraData;
-			this.TokenManager.StoreNewRequestToken(this.ConsumerKey, requestTokenResponse.RequestToken, requestTokenResponse.TokenSecret, requestParameters, responseParameters);
+			this.TokenManager.StoreNewRequestToken(requestToken, requestTokenResponse);
 
 			// Request user authorization.
 			var requestAuthorization = new DirectUserToServiceProviderMessage(this.ServiceProvider.UserAuthorizationEndpoint) {

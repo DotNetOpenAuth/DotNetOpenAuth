@@ -11,11 +11,11 @@ namespace DotNetOAuth.Messages {
 	/// A direct message sent from Service Provider to Consumer in response to 
 	/// a Consumer's <see cref="RequestTokenMessage"/> request.
 	/// </summary>
-	internal class UnauthorizedRequestTokenMessage : MessageBase {
+	public class UnauthorizedRequestTokenMessage : MessageBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UnauthorizedRequestTokenMessage"/> class.
 		/// </summary>
-		internal UnauthorizedRequestTokenMessage()
+		protected internal UnauthorizedRequestTokenMessage()
 			: base(MessageProtection.None, MessageTransport.Direct) {
 		}
 
@@ -23,12 +23,12 @@ namespace DotNetOAuth.Messages {
 		/// Gets or sets the Request Token.
 		/// </summary>
 		[MessagePart(Name = "oauth_token", IsRequired = true)]
-		internal string RequestToken { get; set; }
+		public string RequestToken { get; set; }
 
 		/// <summary>
 		/// Gets or sets the Token Secret.
 		/// </summary>
 		[MessagePart(Name = "oauth_token_secret", IsRequired = true)]
-		internal string TokenSecret { get; set; }
+		public string TokenSecret { get; set; }
 	}
 }

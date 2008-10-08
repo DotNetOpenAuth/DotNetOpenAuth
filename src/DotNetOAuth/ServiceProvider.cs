@@ -32,19 +32,32 @@ namespace DotNetOAuth {
 		/// </summary>
 		/// <param name="serviceDescription">The endpoints and behavior on the Service Provider.</param>
 		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
-		public ServiceProvider(ServiceProviderDescription serviceDescription, ITokenManager tokenManager) {
+		public ServiceProvider(ServiceProviderDescription serviceDescription, ITokenManager tokenManager)
+			: this(serviceDescription, tokenManager, new OAuthServiceProviderMessageTypeProvider(tokenManager)) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ServiceProvider"/> class.
+		/// </summary>
+		/// <param name="serviceDescription">The endpoints and behavior on the Service Provider.</param>
+		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
+		/// <param name="messageTypeProvider">An object that can figure out what type of message is being received for deserialization.</param>
+		public ServiceProvider(ServiceProviderDescription serviceDescription, ITokenManager tokenManager, OAuthServiceProviderMessageTypeProvider messageTypeProvider) {
 			if (serviceDescription == null) {
 				throw new ArgumentNullException("serviceDescription");
 			}
 			if (tokenManager == null) {
 				throw new ArgumentNullException("tokenManager");
 			}
+			if (messageTypeProvider == null) {
+				throw new ArgumentNullException("messageTypeProvider");
+			}
 
 			var signingElement = serviceDescription.CreateTamperProtectionElement();
 			signingElement.SignatureVerificationCallback = this.TokenSignatureVerificationCallback;
 			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
 			this.ServiceDescription = serviceDescription;
-			this.Channel = new OAuthChannel(signingElement, store, tokenManager, false);
+			this.Channel = new OAuthChannel(signingElement, store, messageTypeProvider, new StandardWebRequestHandler());
 			this.TokenGenerator = new StandardTokenGenerator();
 			this.TokenManager = tokenManager;
 		}
@@ -118,12 +131,12 @@ namespace DotNetOAuth {
 		public Response SendUnauthorizedTokenResponse(RequestTokenMessage request, IDictionary<string, string> extraParameters) {
 			string token = this.TokenGenerator.GenerateRequestToken(request.ConsumerKey);
 			string secret = this.TokenGenerator.GenerateSecret();
-			this.TokenManager.StoreNewRequestToken(request.ConsumerKey, token, secret, ((IProtocolMessage)request).ExtraData, extraParameters);
 			UnauthorizedRequestTokenMessage response = new UnauthorizedRequestTokenMessage {
 				RequestToken = token,
 				TokenSecret = secret,
 			};
 			response.AddNonOAuthParameters(extraParameters);
+			this.TokenManager.StoreNewRequestToken(request, response);
 
 			return this.Channel.Send(response);
 		}

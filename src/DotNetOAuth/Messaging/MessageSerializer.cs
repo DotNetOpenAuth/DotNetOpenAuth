@@ -103,24 +103,25 @@ namespace DotNetOAuth.Messaging {
 		/// <returns>The newly created message object.</returns>
 		private IProtocolMessage CreateMessage(MessageReceivingEndpoint recipient) {
 			IProtocolMessage result;
+			BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 			if (typeof(IOAuthDirectedMessage).IsAssignableFrom(this.messageType)) {
 				// Some OAuth messages take just the recipient, while others take the whole endpoint
 				ConstructorInfo ctor;
-				if ((ctor = this.messageType.GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { typeof(Uri) }, null)) != null) {
+				if ((ctor = this.messageType.GetConstructor(bindingFlags, null, new Type[] { typeof(Uri) }, null)) != null) {
 					if (recipient == null) {
 						// We need a recipient to deserialize directed messages.
 						throw new ArgumentNullException("recipient");
 					}
 
 					result = (IProtocolMessage)ctor.Invoke(new object[] { recipient.Location });
-				} else if ((ctor = this.messageType.GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { typeof(MessageReceivingEndpoint) }, null)) != null) {
+				} else if ((ctor = this.messageType.GetConstructor(bindingFlags, null, new Type[] { typeof(MessageReceivingEndpoint) }, null)) != null) {
 					if (recipient == null) {
 						// We need a recipient to deserialize directed messages.
 						throw new ArgumentNullException("recipient");
 					}
 
 					result = (IProtocolMessage)ctor.Invoke(new object[] { recipient });
-				} else if ((ctor = this.messageType.GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[0], null)) != null) {
+				} else if ((ctor = this.messageType.GetConstructor(bindingFlags, null, new Type[0], null)) != null) {
 					result = (IProtocolMessage)ctor.Invoke(new object[0]);
 				} else {
 					throw new InvalidOperationException("Unrecognized constructor signature on type " + this.messageType);

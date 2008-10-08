@@ -15,7 +15,7 @@ namespace DotNetOAuth.Messages {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GrantAccessTokenMessage"/> class.
 		/// </summary>
-		internal GrantAccessTokenMessage()
+		protected internal GrantAccessTokenMessage()
 			: base(MessageProtection.None, MessageTransport.Direct) {
 		}
 

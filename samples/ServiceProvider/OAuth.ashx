@@ -13,15 +13,15 @@ public class OAuth : IHttpHandler, IRequiresSessionState {
 	ServiceProvider sp;
 
 	public OAuth() {
-		sp = new ServiceProvider(Constants.SelfDescription, Global.TokenManager);
+		sp = new ServiceProvider(Constants.SelfDescription, Global.TokenManager, new CustomOAuthTypeProvider(Global.TokenManager));
 	}
 
 	public void ProcessRequest(HttpContext context) {
 		IProtocolMessage request = sp.ReadRequest();
-		RequestTokenMessage requestToken;
+		RequestScopedTokenMessage requestToken;
 		DirectUserToServiceProviderMessage requestAuth;
 		RequestAccessTokenMessage requestAccessToken;
-		if ((requestToken = request as RequestTokenMessage) != null) {
+		if ((requestToken = request as RequestScopedTokenMessage) != null) {
 			sp.SendUnauthorizedTokenResponse(requestToken, null).Send();
 		} else if ((requestAuth = request as DirectUserToServiceProviderMessage) != null) {
 			Global.PendingOAuthAuthorization = requestAuth;

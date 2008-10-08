@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using DotNetOAuth.ChannelElements;
+using DotNetOAuth.Messages;
 
 public class InMemoryTokenManager : ITokenManager {
 	private Dictionary<string, string> tokensAndSecrets = new Dictionary<string, string>();
@@ -35,8 +36,8 @@ public class InMemoryTokenManager : ITokenManager {
 		return this.tokensAndSecrets[token];
 	}
 
-	public void StoreNewRequestToken(string consumerKey, string requestToken, string requestTokenSecret, IDictionary<string, string> requestParameters, IDictionary<string, string> responseParameters) {
-		this.tokensAndSecrets[requestToken] = requestTokenSecret;
+	public void StoreNewRequestToken(RequestTokenMessage request, UnauthorizedRequestTokenMessage response) {
+		this.tokensAndSecrets[response.RequestToken] = response.TokenSecret;
 	}
 
 	/// <summary>
