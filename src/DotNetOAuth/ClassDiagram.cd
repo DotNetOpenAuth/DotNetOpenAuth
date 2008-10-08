@@ -3,7 +3,7 @@
   <Class Name="DotNetOAuth.ServiceProvider">
     <Position X="0.5" Y="0.5" Width="5.75" />
     <TypeIdentifier>
-      <HashCode>EAoAAAAgAAACAAABCAAEAAAAAAAIAAEAAQAIAAAAAQA=</HashCode>
+      <HashCode>EAoAAAAgAAAAAAABCAAEAAAAAAAIAAEAAQAIAAAAAQA=</HashCode>
       <FileName>ServiceProvider.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -14,12 +14,15 @@
       <FileName>Consumer.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Enum Name="DotNetOAuth.Messaging.MessageTransport">
-    <Position X="0.5" Y="4.5" Width="2" />
+  <Class Name="DotNetOAuth.ServiceProviderDescription">
+    <Position X="1.25" Y="4.5" Width="4.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
-      <HashCode>AAACAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Messaging\MessageTransport.cs</FileName>
+      <HashCode>AAACAAgAAAAEAAAQAAAAAAAAAAAAACAAAAAgAAAAAAA=</HashCode>
+      <FileName>ServiceProviderDescription.cs</FileName>
     </TypeIdentifier>
-  </Enum>
+  </Class>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>

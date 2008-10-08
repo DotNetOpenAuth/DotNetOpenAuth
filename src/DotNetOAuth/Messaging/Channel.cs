@@ -247,6 +247,7 @@ namespace DotNetOAuth.Messaging {
 		protected internal IProtocolMessage ReadFromRequest(HttpRequestInfo httpRequest) {
 			IProtocolMessage requestMessage = this.ReadFromRequestInternal(httpRequest);
 			if (requestMessage != null) {
+				Logger.DebugFormat("Incoming request received: {0}", requestMessage);
 				this.VerifyMessageAfterReceiving(requestMessage);
 			}
 
@@ -303,7 +304,6 @@ namespace DotNetOAuth.Messaging {
 			if (response != null) {
 				Logger.DebugFormat("Received response: {0}", response);
 				this.VerifyMessageAfterReceiving(response);
-				Logger.DebugFormat("Response verified.");
 			}
 
 			return response;
@@ -316,6 +316,7 @@ namespace DotNetOAuth.Messaging {
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
 		protected internal IProtocolMessage ReadFromResponse(Stream responseStream) {
 			IProtocolMessage message = this.ReadFromResponseInternal(responseStream);
+			Logger.DebugFormat("Received message response: {0}", message);
 			this.VerifyMessageAfterReceiving(message);
 			return message;
 		}

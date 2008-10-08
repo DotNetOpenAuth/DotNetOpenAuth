@@ -33,7 +33,6 @@ namespace DotNetOAuth.ChannelElements {
 			string key = GetConsumerAndTokenSecretString(message);
 			HashAlgorithm hasher = new HMACSHA1(Encoding.ASCII.GetBytes(key));
 			string baseString = ConstructSignatureBaseString(message);
-			Logger.DebugFormat("Signing message with signature base string: {0}", baseString);
 			byte[] digest = hasher.ComputeHash(Encoding.ASCII.GetBytes(baseString));
 			return Convert.ToBase64String(digest);
 		}

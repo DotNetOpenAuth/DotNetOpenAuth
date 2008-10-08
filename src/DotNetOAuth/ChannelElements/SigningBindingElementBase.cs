@@ -73,6 +73,7 @@ namespace DotNetOAuth.ChannelElements {
 			var signedMessage = message as ITamperResistantOAuthMessage;
 			if (signedMessage != null && this.IsMessageApplicable(signedMessage)) {
 				signedMessage.SignatureMethod = this.signatureMethod;
+				Logger.DebugFormat("Signing {0} message using {1}.", message.GetType().Name, this.signatureMethod);
 				signedMessage.Signature = this.GetSignature(signedMessage);
 				return true;
 			}
@@ -89,6 +90,8 @@ namespace DotNetOAuth.ChannelElements {
 		public bool PrepareMessageForReceiving(IProtocolMessage message) {
 			var signedMessage = message as ITamperResistantOAuthMessage;
 			if (signedMessage != null && this.IsMessageApplicable(signedMessage)) {
+				Logger.DebugFormat("Verifying incoming {0} message signature of: {1}", message.GetType().Name, signedMessage.Signature);
+
 				if (!string.Equals(signedMessage.SignatureMethod, this.signatureMethod, StringComparison.Ordinal)) {
 					Logger.WarnFormat("Expected signature method '{0}' but received message with a signature method of '{1}'.", this.signatureMethod, signedMessage.SignatureMethod);
 					return false;
@@ -168,6 +171,7 @@ namespace DotNetOAuth.ChannelElements {
 				signatureBaseString.Append(Uri.EscapeDataString(element));
 			}
 
+			Logger.DebugFormat("Constructed signature base string: {0}", signatureBaseString);
 			return signatureBaseString.ToString();
 		}
 
