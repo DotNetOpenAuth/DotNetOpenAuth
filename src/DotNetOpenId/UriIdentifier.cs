@@ -143,7 +143,7 @@ namespace DotNetOpenId {
 		/// OpenID 2.0 tags are always used if they are present, otherwise
 		/// OpenID 1.x tags are used if present.
 		/// </remarks>
-		private ServiceEndpoint DiscoverFromHtml(Uri claimedIdentifier, string html) {
+		private static ServiceEndpoint DiscoverFromHtml(Uri claimedIdentifier, string html) {
 			Uri providerEndpoint = null;
 			Protocol discoveredProtocol = null;
 			Identifier providerLocalIdentifier = null;

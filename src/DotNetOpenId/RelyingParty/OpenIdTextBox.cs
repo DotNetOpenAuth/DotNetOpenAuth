@@ -705,6 +705,7 @@ namespace DotNetOpenId.RelyingParty
 		/// <para>The Simple Registration extension arguments are added to the request 
 		/// before returning if <see cref="EnableRequestProfile"/> is set to true.</para>
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
 		public IAuthenticationRequest CreateRequest() {
 			if (Request != null)
 				throw new InvalidOperationException(Strings.CreateRequestAlreadyCalled);

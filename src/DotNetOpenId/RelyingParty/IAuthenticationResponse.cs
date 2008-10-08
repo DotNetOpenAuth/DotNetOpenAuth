@@ -41,6 +41,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// <see cref="IAuthenticationRequest.AddCallbackArguments(string, string)"/>.</para>
 		/// <para>Note that these values are NOT protected against tampering in transit.</para>
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
 		IDictionary<string, string> GetCallbackArguments();
 		/// <summary>
 		/// Tries to get an OpenID extension that may be present in the response.
