@@ -58,7 +58,7 @@ namespace DotNetOAuth.Test.Scenarios {
 			// Prepare token managers
 			InMemoryTokenManager consumerTokenManager = new InMemoryTokenManager();
 			InMemoryTokenManager serviceTokenManager = new InMemoryTokenManager();
-			serviceTokenManager.AddConsumer(this.consumerDescription.ConsumerKey, this.consumerDescription.ConsumerSecret);
+			serviceTokenManager.AddConsumer(this.consumerDescription);
 
 			// Prepare channels that will pass messages directly back and forth.
 			CoordinatingOAuthChannel consumerChannel = new CoordinatingOAuthChannel(consumerSigningElement, true, consumerTokenManager);

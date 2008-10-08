@@ -82,10 +82,19 @@ namespace DotNetOAuth.Test.Mocks {
 
 		#endregion
 
-		internal void AddConsumer(string key, string secret) {
-			this.consumersAndSecrets.Add(key, secret);
+		/// <summary>
+		/// Tells a Service Provider's token manager about a consumer and its secret
+		/// so that the SP can verify the Consumer's signed messages.
+		/// </summary>
+		/// <param name="consumerDescription">The consumer description.</param>
+		internal void AddConsumer(ConsumerDescription consumerDescription) {
+			this.consumersAndSecrets.Add(consumerDescription.ConsumerKey, consumerDescription.ConsumerSecret);
 		}
 
+		/// <summary>
+		/// Marks an existing token as authorized.
+		/// </summary>
+		/// <param name="requestToken">The request token.</param>
 		internal void AuthorizeRequestToken(string requestToken) {
 			if (requestToken == null) {
 				throw new ArgumentNullException("requestToken");

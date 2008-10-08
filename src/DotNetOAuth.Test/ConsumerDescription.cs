@@ -9,6 +9,9 @@ namespace DotNetOAuth.Test {
 	/// Information necessary to initialize a <see cref="Consumer"/>,
 	/// and to tell a <see cref="ServiceProvider"/> about it.
 	/// </summary>
+	/// <remarks>
+	/// Immutable.
+	/// </remarks>
 	internal class ConsumerDescription {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ConsumerDescription"/> class.
@@ -21,15 +24,15 @@ namespace DotNetOAuth.Test {
 		}
 
 		/// <summary>
-		/// Gets or sets the consumer key.
+		/// Gets the consumer key.
 		/// </summary>
 		/// <value>The consumer key.</value>
-		internal string ConsumerKey { get; set; }
+		internal string ConsumerKey { get; private set; }
 
 		/// <summary>
-		/// Gets or sets the consumer secret.
+		/// Gets the consumer secret.
 		/// </summary>
 		/// <value>The consumer secret.</value>
-		internal string ConsumerSecret { get; set; }
+		internal string ConsumerSecret { get; private set; }
 	}
 }
