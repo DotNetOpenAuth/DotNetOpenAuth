@@ -29,14 +29,12 @@ namespace DotNetOAuth.Test {
 				},
 			};
 			MessageReceivingEndpoint accessPhotoEndpoint = new MessageReceivingEndpoint("http://photos.example.net/photos?file=vacation.jpg&size=original", HttpDeliveryMethod.AuthorizationHeaderRequest | HttpDeliveryMethod.GetRequest);
-			string consumerKey = "dpf43f3p2l4k3l03";
-			string consumerSecret = "kd94hf93k423kf44";
+			ConsumerDescription consumerDescription = new ConsumerDescription("dpf43f3p2l4k3l03", "kd94hf93k423kf44");
 
 			Coordinator coordinator = new Coordinator(
+				consumerDescription,
 				serviceDescription,
 				consumer => {
-					consumer.ConsumerKey = consumerKey;
-					consumer.ConsumerSecret = consumerSecret;
 					consumer.RequestUserAuthorization(new Uri("http://printer.example.com/request_token_ready"), null, null);
 					string accessToken = consumer.ProcessUserAuthorization().AccessToken;
 					var photoRequest = consumer.CreateAuthorizedRequestInternal(accessPhotoEndpoint, accessToken);
@@ -47,7 +45,6 @@ namespace DotNetOAuth.Test {
 					Assert.AreNotEqual(0, protectedPhoto.ResponseStream.Length);
 				},
 				sp => {
-					((InMemoryTokenManager)sp.TokenManager).AddConsumer(consumerKey, consumerSecret);
 					var requestTokenMessage = sp.ReadTokenRequest();
 					sp.SendUnauthorizedTokenResponse(requestTokenMessage, null);
 					var authRequest = sp.ReadAuthorizationRequest();
