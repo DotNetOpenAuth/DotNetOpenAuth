@@ -29,27 +29,25 @@ namespace DotNetOAuth.Test {
 				},
 			};
 			MessageReceivingEndpoint accessPhotoEndpoint = new MessageReceivingEndpoint("http://photos.example.net/photos?file=vacation.jpg&size=original", HttpDeliveryMethod.AuthorizationHeaderRequest | HttpDeliveryMethod.GetRequest);
-			var sp = new ServiceProvider(serviceDescription, new InMemoryTokenManager());
-			Consumer consumer = new Consumer(serviceDescription, new InMemoryTokenManager()) {
-				ConsumerKey = "dpf43f3p2l4k3l03",
-				ConsumerSecret = "kd94hf93k423kf44",
-			};
+			string consumerKey = "dpf43f3p2l4k3l03";
+			string consumerSecret = "kd94hf93k423kf44";
 
 			Coordinator coordinator = new Coordinator(
-				channel => {
-					consumer.Channel = channel;
+				serviceDescription,
+				consumer => {
+					consumer.ConsumerKey = consumerKey;
+					consumer.ConsumerSecret = consumerSecret;
 					consumer.RequestUserAuthorization(new Uri("http://printer.example.com/request_token_ready"), null, null);
 					string accessToken = consumer.ProcessUserAuthorization().AccessToken;
 					var photoRequest = consumer.CreateAuthorizedRequestInternal(accessPhotoEndpoint, accessToken);
-					Response protectedPhoto = channel.RequestProtectedResource(photoRequest);
+					Response protectedPhoto = ((CoordinatingOAuthChannel)consumer.Channel).RequestProtectedResource(photoRequest);
 					Assert.IsNotNull(protectedPhoto);
 					Assert.AreEqual(HttpStatusCode.OK, protectedPhoto.Status);
 					Assert.AreEqual("image/jpeg", protectedPhoto.Headers[HttpResponseHeader.ContentType]);
 					Assert.AreNotEqual(0, protectedPhoto.ResponseStream.Length);
 				},
-				channel => {
-					sp.Channel = channel;
-					((InMemoryTokenManager)sp.TokenManager).AddConsumer(consumer.ConsumerKey, consumer.ConsumerSecret);
+				sp => {
+					((InMemoryTokenManager)sp.TokenManager).AddConsumer(consumerKey, consumerSecret);
 					var requestTokenMessage = sp.ReadTokenRequest();
 					sp.SendUnauthorizedTokenResponse(requestTokenMessage, null);
 					var authRequest = sp.ReadAuthorizationRequest();
@@ -58,7 +56,7 @@ namespace DotNetOAuth.Test {
 					var accessRequest = sp.ReadAccessTokenRequest();
 					sp.SendAccessToken(accessRequest, null);
 					string accessToken = sp.GetProtectedResourceAuthorization().AccessToken;
-					channel.SendDirectRawResponse(new Response {
+					((CoordinatingOAuthChannel)sp.Channel).SendDirectRawResponse(new Response {
 						ResponseStream = new MemoryStream(new byte[] { 0x33, 0x66 }),
 						Headers = new WebHeaderCollection {
 							{ HttpResponseHeader.ContentType, "image/jpeg" },
@@ -66,7 +64,6 @@ namespace DotNetOAuth.Test {
 					});
 				});
 
-			coordinator.SigningElement = (ITamperProtectionChannelBindingElement)consumer.Channel.BindingElements.Single(el => el is ITamperProtectionChannelBindingElement);
 			coordinator.Run();
 		}
 	}

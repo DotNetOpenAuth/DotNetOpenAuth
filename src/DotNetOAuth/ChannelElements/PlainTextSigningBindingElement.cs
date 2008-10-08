@@ -48,7 +48,7 @@ namespace DotNetOAuth.ChannelElements {
 		/// Clones this instance.
 		/// </summary>
 		/// <returns>A new instance of the binding element.</returns>
-		protected override object Clone() {
+		protected override ITamperProtectionChannelBindingElement Clone() {
 			return new PlainTextSigningBindingElement();
 		}
 	}

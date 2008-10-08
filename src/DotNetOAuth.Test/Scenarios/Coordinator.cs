@@ -6,21 +6,28 @@
 
 namespace DotNetOAuth.Test.Scenarios {
 	using System;
+	using System.Linq;
 	using System.Threading;
 	using DotNetOAuth.Messaging;
+	using DotNetOAuth.Test.Mocks;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	/// <summary>
 	/// Runs a Consumer and Service Provider simultaneously so they can interact in a full simulation.
 	/// </summary>
 	internal class Coordinator {
-		private Actor consumerAction;
-		private Actor serviceProviderAction;
+		private ServiceProviderDescription serviceDescription;
+		private Action<Consumer> consumerAction;
+		private Action<ServiceProvider> serviceProviderAction;
 
 		/// <summary>Initializes a new instance of the <see cref="Coordinator"/> class.</summary>
+		/// <param name="serviceDescription">The service description that will be used to construct the Consumer and ServiceProvider objects.</param>
 		/// <param name="consumerAction">The code path of the Consumer.</param>
 		/// <param name="serviceProviderAction">The code path of the Service Provider.</param>
-		internal Coordinator(Actor consumerAction, Actor serviceProviderAction) {
+		internal Coordinator(ServiceProviderDescription serviceDescription, Action<Consumer> consumerAction, Action<ServiceProvider> serviceProviderAction) {
+			if (serviceDescription == null) {
+				throw new ArgumentNullException("serviceDescription");
+			}
 			if (consumerAction == null) {
 				throw new ArgumentNullException("consumerAction");
 			}
@@ -28,30 +35,19 @@ namespace DotNetOAuth.Test.Scenarios {
 				throw new ArgumentNullException("serviceProviderAction");
 			}
 
+			this.serviceDescription = serviceDescription;
 			this.consumerAction = consumerAction;
 			this.serviceProviderAction = serviceProviderAction;
 		}
-
-		internal delegate void Actor(CoordinatingOAuthChannel channel);
-
-		/// <summary>
-		/// Gets or sets the signing element the channels should clone and use.
-		/// </summary>
-		internal ITamperProtectionChannelBindingElement SigningElement { get; set; }
 
 		/// <summary>
 		/// Starts the simulation.
 		/// </summary>
 		internal void Run() {
-			if (this.SigningElement == null) {
-				throw new InvalidOperationException("SigningElement must be set first.");
-			}
-
-			// Clone and reset the template signing binding element.
-			var consumerSigningElement = (ITamperProtectionChannelBindingElement)this.SigningElement.Clone();
-			var spSigningElement = (ITamperProtectionChannelBindingElement)this.SigningElement.Clone();
-			consumerSigningElement.SignatureVerificationCallback = null;
-			spSigningElement.SignatureVerificationCallback = null;
+			// Clone the template signing binding element.
+			var signingElement = this.serviceDescription.CreateTamperProtectionElement();
+			var consumerSigningElement = signingElement.Clone();
+			var spSigningElement = signingElement.Clone();
 
 			// Prepare channels that will pass messages directly back and forth.
 			CoordinatingOAuthChannel consumerChannel = new CoordinatingOAuthChannel(consumerSigningElement, true);
@@ -59,14 +55,22 @@ namespace DotNetOAuth.Test.Scenarios {
 			consumerChannel.RemoteChannel = serviceProviderChannel;
 			serviceProviderChannel.RemoteChannel = consumerChannel;
 
+			// Prepare the Consumer and Service Provider objects
+			Consumer consumer = new Consumer(this.serviceDescription, new InMemoryTokenManager()) {
+				Channel = consumerChannel,
+			};
+			ServiceProvider serviceProvider = new ServiceProvider(this.serviceDescription, new InMemoryTokenManager()) {
+				Channel = serviceProviderChannel,
+			};
+
 			Thread consumerThread = null, serviceProviderThread = null;
 			Exception failingException = null;
 
 			// Each thread we create needs a surrounding exception catcher so that we can
 			// terminate the other thread and inform the test host that the test failed.
-			Action<Actor, CoordinatingOAuthChannel> safeWrapper = (actor, channel) => {
+			Action<Action> safeWrapper = (action) => {
 				try {
-					actor(channel);
+					action();
 				} catch (Exception ex) {
 					// We may be the second thread in an ThreadAbortException, so check the "flag"
 					if (failingException == null) {
@@ -82,8 +86,8 @@ namespace DotNetOAuth.Test.Scenarios {
 
 			// Run the threads, and wait for them to complete.
 			// If this main thread is aborted (test run aborted), go ahead and abort the other two threads.
-			consumerThread = new Thread(() => { safeWrapper(consumerAction, consumerChannel); });
-			serviceProviderThread = new Thread(() => { safeWrapper(serviceProviderAction, serviceProviderChannel); });
+			consumerThread = new Thread(() => { safeWrapper(() => { consumerAction(consumer); }); });
+			serviceProviderThread = new Thread(() => { safeWrapper(() => { serviceProviderAction(serviceProvider); }); });
 			try {
 				consumerThread.Start();
 				serviceProviderThread.Start();

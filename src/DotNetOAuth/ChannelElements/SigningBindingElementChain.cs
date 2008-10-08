@@ -123,7 +123,7 @@ namespace DotNetOAuth.ChannelElements {
 		/// <returns>
 		/// A new object that is a copy of this instance.
 		/// </returns>
-		object ICloneable.Clone() {
+		ITamperProtectionChannelBindingElement ITamperProtectionChannelBindingElement.Clone() {
 			return new SigningBindingElementChain(this.signers.Select(el => (ITamperProtectionChannelBindingElement)el.Clone()).ToArray());
 		}
 

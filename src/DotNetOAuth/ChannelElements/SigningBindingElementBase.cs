@@ -54,8 +54,8 @@ namespace DotNetOAuth.ChannelElements {
 		/// <returns>
 		/// A new object that is a copy of this instance.
 		/// </returns>
-		object ICloneable.Clone() {
-			var clone = (SigningBindingElementBase)this.Clone();
+		ITamperProtectionChannelBindingElement ITamperProtectionChannelBindingElement.Clone() {
+			ITamperProtectionChannelBindingElement clone = this.Clone();
 			clone.SignatureVerificationCallback = this.SignatureVerificationCallback;
 			return clone;
 		}
@@ -179,7 +179,7 @@ namespace DotNetOAuth.ChannelElements {
 		/// Implementations of this method need not clone the SignatureVerificationCallback member, as the
 		/// <see cref="SigningBindingElementBase"/> class does this.
 		/// </remarks>
-		protected abstract object Clone();
+		protected abstract ITamperProtectionChannelBindingElement Clone();
 
 		/// <summary>
 		/// Calculates a signature for a given message.

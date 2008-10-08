@@ -8,6 +8,7 @@ namespace DotNetOAuth.ChannelElements {
 	using System;
 	using System.Security.Cryptography;
 	using System.Text;
+	using DotNetOAuth.Messaging;
 
 	/// <summary>
 	/// A binding element that signs outgoing messages and verifies the signature on incoming messages.
@@ -41,7 +42,7 @@ namespace DotNetOAuth.ChannelElements {
 		/// Clones this instance.
 		/// </summary>
 		/// <returns>A new instance of the binding element.</returns>
-		protected override object Clone() {
+		protected override ITamperProtectionChannelBindingElement Clone() {
 			return new HmacSha1SigningBindingElement();
 		}
 	}
