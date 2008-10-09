@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="Consumer.cs" company="Andrew Arnott">
+// <copyright file="ConsumerBase.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -15,19 +15,15 @@ namespace DotNetOAuth {
 	using DotNetOAuth.Messaging.Bindings;
 
 	/// <summary>
-	/// A website or application that uses OAuth to access the Service Provider on behalf of the User.
+	/// Base class for <see cref="WebConsumer"/> and <see cref="DesktopConsumer"/> types.
 	/// </summary>
-	/// <remarks>
-	/// The methods on this class are thread-safe.  Provided the properties are set and not changed
-	/// afterward, a single instance of this class may be used by an entire web application safely.
-	/// </remarks>
-	public class Consumer {
+	public class ConsumerBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Consumer"/> class.
+		/// Initializes a new instance of the <see cref="ConsumerBase"/> class.
 		/// </summary>
 		/// <param name="serviceDescription">The endpoints and behavior of the Service Provider.</param>
 		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
-		public Consumer(ServiceProviderDescription serviceDescription, ITokenManager tokenManager) {
+		protected ConsumerBase(ServiceProviderDescription serviceDescription, ITokenManager tokenManager) {
 			if (serviceDescription == null) {
 				throw new ArgumentNullException("serviceDescription");
 			}
@@ -79,85 +75,6 @@ namespace DotNetOAuth {
 		internal OAuthChannel Channel { get; set; }
 
 		/// <summary>
-		/// Begins an OAuth authorization request and redirects the user to the Service Provider
-		/// to provide that authorization.  Upon successful authorization, the user is redirected
-		/// back to the current page.
-		/// </summary>
-		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
-		/// <remarks>
-		/// Requires HttpContext.Current.
-		/// </remarks>
-		public Response RequestUserAuthorization() {
-			Uri callback = MessagingUtilities.GetRequestUrlFromContext().StripQueryArgumentsWithPrefix(Protocol.Default.ParameterPrefix);
-			return this.RequestUserAuthorization(callback, null, null);
-		}
-
-		/// <summary>
-		/// Begins an OAuth authorization request and redirects the user to the Service Provider
-		/// to provide that authorization.
-		/// </summary>
-		/// <param name="callback">
-		/// An optional Consumer URL that the Service Provider should redirect the 
-		/// User Agent to upon successful authorization.
-		/// </param>
-		/// <param name="requestParameters">Extra parameters to add to the request token message.  Optional.</param>
-		/// <param name="redirectParameters">Extra parameters to add to the redirect to Service Provider message.  Optional.</param>
-		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
-		public Response RequestUserAuthorization(Uri callback, IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters) {
-			string token;
-			return this.RequestUserAuthorization(callback, requestParameters, redirectParameters, out token);
-		}
-
-		/// <summary>
-		/// Begins an OAuth authorization request from a desktop client app.
-		/// </summary>
-		/// <param name="requestParameters">Extra parameters to add to the request token message.  Optional.</param>
-		/// <param name="redirectParameters">Extra parameters to add to the redirect to Service Provider message.  Optional.</param>
-		/// <param name="requestToken">The request token that must be exchanged for an access token after the user has provided authorization.</param>
-		/// <returns>The URL to open a browser window to allow the user to provide authorization.</returns>
-		public Uri RequestUserAuthorization(IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, out string requestToken) {
-			return this.RequestUserAuthorization(null, requestParameters, redirectParameters, out requestToken).DirectUriRequest;
-		}
-
-		/// <summary>
-		/// Processes an incoming authorization-granted message from an SP and obtains an access token.
-		/// </summary>
-		/// <returns>The access token, or null if no incoming authorization message was recognized.</returns>
-		/// <remarks>
-		/// Requires HttpContext.Current.
-		/// </remarks>
-		public GrantAccessTokenMessage ProcessUserAuthorization() {
-			return this.ProcessUserAuthorization(this.Channel.GetRequestFromContext());
-		}
-
-		/// <summary>
-		/// Processes an incoming authorization-granted message from an SP and obtains an access token.
-		/// </summary>
-		/// <param name="request">The incoming HTTP request.</param>
-		/// <returns>The access token, or null if no incoming authorization message was recognized.</returns>
-		public GrantAccessTokenMessage ProcessUserAuthorization(HttpRequest request) {
-			return this.ProcessUserAuthorization(new HttpRequestInfo(request));
-		}
-
-		/// <summary>
-		/// Exchanges a given request token for access token.
-		/// </summary>
-		/// <param name="requestToken">The request token that the user has authorized.</param>
-		/// <returns>The access token assigned by the Service Provider.</returns>
-		public GrantAccessTokenMessage ProcessUserAuthorization(string requestToken) {
-			string requestTokenSecret = this.TokenManager.GetTokenSecret(requestToken);
-			var requestAccess = new GetAccessTokenMessage(this.ServiceProvider.AccessTokenEndpoint) {
-				RequestToken = requestToken,
-				TokenSecret = requestTokenSecret,
-				ConsumerKey = this.ConsumerKey,
-				ConsumerSecret = this.ConsumerSecret,
-			};
-			var grantAccess = this.Channel.Request<GrantAccessTokenMessage>(requestAccess);
-			this.TokenManager.ExpireRequestTokenAndStoreNewAccessToken(this.ConsumerKey, requestToken, grantAccess.AccessToken, grantAccess.TokenSecret);
-			return grantAccess;
-		}
-
-		/// <summary>
 		/// Creates a web request prepared with OAuth authorization 
 		/// that may be further tailored by adding parameters by the caller.
 		/// </summary>
@@ -196,7 +113,7 @@ namespace DotNetOAuth {
 		/// <param name="redirectParameters">Extra parameters to add to the redirect to Service Provider message.  Optional.</param>
 		/// <param name="token">The request token that must be exchanged for an access token after the user has provided authorization.</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
-		internal Response RequestUserAuthorization(Uri callback, IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, out string token) {
+		protected internal Response RequestUserAuthorization(Uri callback, IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, out string token) {
 			// Obtain an unauthorized request token.
 			var requestToken = new GetRequestTokenMessage(this.ServiceProvider.RequestTokenEndpoint) {
 				ConsumerKey = this.ConsumerKey,
@@ -217,28 +134,13 @@ namespace DotNetOAuth {
 		}
 
 		/// <summary>
-		/// Processes an incoming authorization-granted message from an SP and obtains an access token.
-		/// </summary>
-		/// <param name="request">The incoming HTTP request.</param>
-		/// <returns>The access token, or null if no incoming authorization message was recognized.</returns>
-		internal GrantAccessTokenMessage ProcessUserAuthorization(HttpRequestInfo request) {
-			DirectUserToConsumerMessage authorizationMessage;
-			if (this.Channel.TryReadFromRequest<DirectUserToConsumerMessage>(request, out authorizationMessage)) {
-				string requestToken = authorizationMessage.RequestToken;
-				return this.ProcessUserAuthorization(requestToken);
-			} else {
-				return null;
-			}
-		}
-
-		/// <summary>
 		/// Creates a web request prepared with OAuth authorization 
 		/// that may be further tailored by adding parameters by the caller.
 		/// </summary>
 		/// <param name="endpoint">The URL and method on the Service Provider to send the request to.</param>
 		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
 		/// <returns>The initialized WebRequest object.</returns>
-		internal AccessProtectedResourceMessage CreateAuthorizingMessage(MessageReceivingEndpoint endpoint, string accessToken) {
+		protected internal AccessProtectedResourceMessage CreateAuthorizingMessage(MessageReceivingEndpoint endpoint, string accessToken) {
 			if (endpoint == null) {
 				throw new ArgumentNullException("endpoint");
 			}
@@ -254,6 +156,24 @@ namespace DotNetOAuth {
 			};
 
 			return message;
+		}
+
+		/// <summary>
+		/// Exchanges a given request token for access token.
+		/// </summary>
+		/// <param name="requestToken">The request token that the user has authorized.</param>
+		/// <returns>The access token assigned by the Service Provider.</returns>
+		protected GrantAccessTokenMessage ProcessUserAuthorization(string requestToken) {
+			string requestTokenSecret = this.TokenManager.GetTokenSecret(requestToken);
+			var requestAccess = new GetAccessTokenMessage(this.ServiceProvider.AccessTokenEndpoint) {
+				RequestToken = requestToken,
+				TokenSecret = requestTokenSecret,
+				ConsumerKey = this.ConsumerKey,
+				ConsumerSecret = this.ConsumerSecret,
+			};
+			var grantAccess = this.Channel.Request<GrantAccessTokenMessage>(requestAccess);
+			this.TokenManager.ExpireRequestTokenAndStoreNewAccessToken(this.ConsumerKey, requestToken, grantAccess.AccessToken, grantAccess.TokenSecret);
+			return grantAccess;
 		}
 	}
 }

@@ -18,7 +18,7 @@ namespace DotNetOAuth.Test.Scenarios {
 	internal class Coordinator {
 		private ConsumerDescription consumerDescription;
 		private ServiceProviderDescription serviceDescription;
-		private Action<Consumer> consumerAction;
+		private Action<WebConsumer> consumerAction;
 		private Action<ServiceProvider> serviceProviderAction;
 
 		/// <summary>Initializes a new instance of the <see cref="Coordinator"/> class.</summary>
@@ -26,7 +26,7 @@ namespace DotNetOAuth.Test.Scenarios {
 		/// <param name="serviceDescription">The service description that will be used to construct the Consumer and ServiceProvider objects.</param>
 		/// <param name="consumerAction">The code path of the Consumer.</param>
 		/// <param name="serviceProviderAction">The code path of the Service Provider.</param>
-		internal Coordinator(ConsumerDescription consumerDescription, ServiceProviderDescription serviceDescription, Action<Consumer> consumerAction, Action<ServiceProvider> serviceProviderAction) {
+		internal Coordinator(ConsumerDescription consumerDescription, ServiceProviderDescription serviceDescription, Action<WebConsumer> consumerAction, Action<ServiceProvider> serviceProviderAction) {
 			if (consumerDescription == null) {
 				throw new ArgumentNullException("consumerDescription");
 			}
@@ -67,7 +67,7 @@ namespace DotNetOAuth.Test.Scenarios {
 			serviceProviderChannel.RemoteChannel = consumerChannel;
 
 			// Prepare the Consumer and Service Provider objects
-			Consumer consumer = new Consumer(this.serviceDescription, consumerTokenManager) {
+			WebConsumer consumer = new WebConsumer(this.serviceDescription, consumerTokenManager) {
 				Channel = consumerChannel,
 				ConsumerKey = this.consumerDescription.ConsumerKey,
 				ConsumerSecret = this.consumerDescription.ConsumerSecret,

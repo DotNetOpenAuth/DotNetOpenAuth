@@ -69,13 +69,15 @@
     <Compile Include="ChannelElements\SigningBindingElementChain.cs" />
     <Compile Include="ChannelElements\StandardTokenGenerator.cs" />
     <Compile Include="ChannelElements\TokenType.cs" />
+    <Compile Include="ConsumerBase.cs" />
+    <Compile Include="DesktopConsumer.cs" />
     <Compile Include="Messaging\ITamperProtectionChannelBindingElement.cs" />
     <Compile Include="ServiceProviderDescription.cs" />
     <Compile Include="Messages\ITokenContainingMessage.cs" />
     <Compile Include="Messages\SignedMessageBase.cs" />
     <Compile Include="Messaging\Bindings\NonceMemoryStore.cs" />
     <Compile Include="ChannelElements\SigningBindingElementBase.cs" />
-    <Compile Include="Consumer.cs" />
+    <Compile Include="WebConsumer.cs" />
     <Compile Include="ChannelElements\IWebRequestHandler.cs" />
     <Compile Include="ChannelElements\ITamperResistantOAuthMessage.cs" />
     <Compile Include="Messages\MessageBase.cs" />

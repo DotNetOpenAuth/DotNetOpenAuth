@@ -22,13 +22,13 @@
 	/// </summary>
 	public partial class MainWindow : Window {
 		private InMemoryTokenManager tokenManager = new InMemoryTokenManager();
-		private Consumer google;
+		private DesktopConsumer google;
 		private string requestToken;
 
 		public MainWindow() {
 			InitializeComponent();
 
-			this.google = new Consumer(Constants.GoogleDescription, this.tokenManager);
+			this.google = new DesktopConsumer(Constants.GoogleDescription, this.tokenManager);
 		}
 
 		private void beginAuthorizationButton_Click(object sender, RoutedEventArgs e) {

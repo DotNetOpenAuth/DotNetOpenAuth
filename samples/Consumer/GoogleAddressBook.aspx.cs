@@ -18,7 +18,7 @@ public partial class GoogleAddressBook : System.Web.UI.Page {
 		if (!IsPostBack) {
 			if (Session["TokenManager"] != null) {
 				InMemoryTokenManager tokenManager = (InMemoryTokenManager)Session["TokenManager"];
-				Consumer google = new Consumer(Constants.GoogleDescription, tokenManager) {
+				WebConsumer google = new WebConsumer(Constants.GoogleDescription, tokenManager) {
 					ConsumerKey = tokenManager.ConsumerKey,
 					ConsumerSecret = tokenManager.ConsumerSecret,
 				};
@@ -58,7 +58,7 @@ public partial class GoogleAddressBook : System.Web.UI.Page {
 
 		InMemoryTokenManager tokenManager = new InMemoryTokenManager(consumerKeyBox.Text, consumerSecretBox.Text);
 		Session["TokenManager"] = tokenManager;
-		Consumer google = new Consumer(Constants.GoogleDescription, tokenManager);
+		WebConsumer google = new WebConsumer(Constants.GoogleDescription, tokenManager);
 		google.ConsumerKey = consumerKeyBox.Text;
 		google.ConsumerSecret = consumerSecretBox.Text;
 

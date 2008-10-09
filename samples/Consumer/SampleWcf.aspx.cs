@@ -19,7 +19,7 @@ public partial class SampleWcf : System.Web.UI.Page {
 	protected void Page_Load(object sender, EventArgs e) {
 		if (!IsPostBack) {
 			if (Session["WcfTokenManager"] != null) {
-				Consumer consumer = this.CreateConsumer();
+				WebConsumer consumer = this.CreateConsumer();
 				var accessTokenMessage = consumer.ProcessUserAuthorization();
 				if (accessTokenMessage != null) {
 					Session["WcfAccessToken"] = accessTokenMessage.AccessToken;
@@ -30,7 +30,7 @@ public partial class SampleWcf : System.Web.UI.Page {
 	}
 
 	protected void getAuthorizationButton_Click(object sender, EventArgs e) {
-		Consumer consumer = this.CreateConsumer();
+		WebConsumer consumer = this.CreateConsumer();
 		UriBuilder callback = new UriBuilder(Request.Url);
 		callback.Query = null;
 		string[] scopes = (from item in scopeList.Items.OfType<ListItem>()
@@ -76,7 +76,7 @@ public partial class SampleWcf : System.Web.UI.Page {
 		if (accessToken == null) {
 			throw new InvalidOperationException("No access token!");
 		}
-		Consumer consumer = this.CreateConsumer();
+		WebConsumer consumer = this.CreateConsumer();
 		WebRequest httpRequest = consumer.PrepareAuthorizedRequest(serviceEndpoint, accessToken);
 
 		HttpRequestMessageProperty httpDetails = new HttpRequestMessageProperty();
@@ -87,7 +87,7 @@ public partial class SampleWcf : System.Web.UI.Page {
 		}
 	}
 
-	private Consumer CreateConsumer() {
+	private WebConsumer CreateConsumer() {
 		string consumerKey = "sampleconsumer";
 		string consumerSecret = "samplesecret";
 		var tokenManager = Session["WcfTokenManager"] as InMemoryTokenManager;
@@ -98,7 +98,7 @@ public partial class SampleWcf : System.Web.UI.Page {
 		MessageReceivingEndpoint oauthEndpoint = new MessageReceivingEndpoint(
 			new Uri("http://localhost:65169/ServiceProvider/OAuth.ashx"),
 			HttpDeliveryMethod.PostRequest);
-		Consumer consumer = new Consumer(
+		WebConsumer consumer = new WebConsumer(
 			new ServiceProviderDescription {
 				RequestTokenEndpoint = oauthEndpoint,
 				UserAuthorizationEndpoint = oauthEndpoint,

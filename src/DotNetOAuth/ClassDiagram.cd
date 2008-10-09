@@ -7,11 +7,12 @@
       <FileName>ServiceProvider.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="DotNetOAuth.Consumer">
-    <Position X="6.5" Y="0.5" Width="4.75" />
+  <Class Name="DotNetOAuth.DesktopConsumer">
+    <Position X="11.5" Y="4.5" Width="4.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAgAAABEAAAAIAABgAAACAIAAQAAYAAAAAAAAA=</HashCode>
-      <FileName>Consumer.cs</FileName>
+      <HashCode>AAAAAAAAAAAAEAAAAAAABAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DesktopConsumer.cs</FileName>
+      <NewMemberFileName>WebConsumer.cs</NewMemberFileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DotNetOAuth.ServiceProviderDescription">
@@ -22,6 +23,28 @@
     <TypeIdentifier>
       <HashCode>AAACAAgAAAAEAAAQAAAAAAAAAAAAACAAAAAgAAAAAAA=</HashCode>
       <FileName>ServiceProviderDescription.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOAuth.WebConsumer">
+    <Position X="6.5" Y="4.5" Width="4.75" />
+    <InheritanceLine Type="DotNetOAuth.ConsumerBase" FixedToPoint="true">
+      <Path>
+        <Point X="8.875" Y="3.978" />
+        <Point X="8.875" Y="4.2" />
+        <Point X="8.125" Y="4.2" />
+        <Point X="8.125" Y="4.5" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEAAAAAAABAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>WebConsumer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOAuth.ConsumerBase">
+    <Position X="6.5" Y="0.5" Width="4.75" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAgAAABEAAAAAAABgAAAAAIAAQAAQAAAAAAABA=</HashCode>
+      <FileName>ConsumerBase.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />
