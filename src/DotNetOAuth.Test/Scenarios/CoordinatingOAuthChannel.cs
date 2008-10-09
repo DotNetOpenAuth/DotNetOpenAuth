@@ -45,7 +45,7 @@ namespace DotNetOAuth.Test.Scenarios {
 		/// </summary>
 		internal CoordinatingOAuthChannel RemoteChannel { get; set; }
 
-		internal Response RequestProtectedResource(AccessProtectedResourcesMessage request) {
+		internal Response RequestProtectedResource(AccessProtectedResourceMessage request) {
 			((ITamperResistantOAuthMessage)request).HttpMethod = this.GetHttpMethod(((ITamperResistantOAuthMessage)request).HttpMethods);
 			this.PrepareMessageForSending(request);
 			HttpRequestInfo requestInfo = this.SpoofHttpMethod(request);

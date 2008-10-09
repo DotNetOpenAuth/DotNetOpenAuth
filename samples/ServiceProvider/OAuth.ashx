@@ -20,13 +20,13 @@ public class OAuth : IHttpHandler, IRequiresSessionState {
 		IProtocolMessage request = sp.ReadRequest();
 		RequestScopedTokenMessage requestToken;
 		DirectUserToServiceProviderMessage requestAuth;
-		RequestAccessTokenMessage requestAccessToken;
+		GetAccessTokenMessage requestAccessToken;
 		if ((requestToken = request as RequestScopedTokenMessage) != null) {
 			sp.SendUnauthorizedTokenResponse(requestToken, null).Send();
 		} else if ((requestAuth = request as DirectUserToServiceProviderMessage) != null) {
 			Global.PendingOAuthAuthorization = requestAuth;
 			HttpContext.Current.Response.Redirect("~/Members/Authorize.aspx");
-		} else if ((requestAccessToken = request as RequestAccessTokenMessage) != null) {
+		} else if ((requestAccessToken = request as GetAccessTokenMessage) != null) {
 			sp.SendAccessToken(requestAccessToken, null).Send();
 		} else {
 			throw new InvalidOperationException();

@@ -74,7 +74,7 @@ namespace DotNetOAuth.ChannelElements {
 		/// </returns>
 		/// <remarks>
 		/// The response messages are:
-		/// UnauthorizedRequestTokenMessage
+		/// GrantRequestTokenMessage
 		/// GrantAccessTokenMessage
 		/// </remarks>
 		public virtual Type GetResponseMessageType(IProtocolMessage request, IDictionary<string, string> fields) {
@@ -93,9 +93,9 @@ namespace DotNetOAuth.ChannelElements {
 				return null;
 			}
 
-			if (request is RequestTokenMessage) {
-				return typeof(UnauthorizedRequestTokenMessage);
-			} else if (request is RequestAccessTokenMessage) {
+			if (request is GetRequestTokenMessage) {
+				return typeof(GrantRequestTokenMessage);
+			} else if (request is GetAccessTokenMessage) {
 				return typeof(GrantAccessTokenMessage);
 			} else {
 				Logger.ErrorFormat("Unexpected response message given the request type {0}", request.GetType().Name);

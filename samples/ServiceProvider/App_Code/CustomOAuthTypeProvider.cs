@@ -21,7 +21,7 @@ public class CustomOAuthTypeProvider : OAuthServiceProviderMessageTypeProvider {
 		Type type = base.GetRequestMessageType(fields);
 
 		// inject our own type here to replace the standard one
-		if (type == typeof(RequestTokenMessage)) {
+		if (type == typeof(GetRequestTokenMessage)) {
 			type = typeof(RequestScopedTokenMessage);
 		}
 

@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="UnauthorizedRequestTokenMessage.cs" company="Andrew Arnott">
+// <copyright file="GrantRequestTokenMessage.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -9,13 +9,13 @@ namespace DotNetOAuth.Messages {
 
 	/// <summary>
 	/// A direct message sent from Service Provider to Consumer in response to 
-	/// a Consumer's <see cref="RequestTokenMessage"/> request.
+	/// a Consumer's <see cref="GetRequestTokenMessage"/> request.
 	/// </summary>
-	public class UnauthorizedRequestTokenMessage : MessageBase {
+	public class GrantRequestTokenMessage : MessageBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="UnauthorizedRequestTokenMessage"/> class.
+		/// Initializes a new instance of the <see cref="GrantRequestTokenMessage"/> class.
 		/// </summary>
-		protected internal UnauthorizedRequestTokenMessage()
+		protected internal GrantRequestTokenMessage()
 			: base(MessageProtection.None, MessageTransport.Direct) {
 		}
 

@@ -4,7 +4,7 @@ using DotNetOAuth.Messaging;
 /// <summary>
 /// A custom web app version of the message sent to request an unauthorized token.
 /// </summary>
-public class RequestScopedTokenMessage : RequestTokenMessage {
+public class RequestScopedTokenMessage : GetRequestTokenMessage {
 	/// <summary>
 	/// Initializes a new instance of the <see cref="RequestScopedTokenMessage"/> class.
 	/// </summary>

@@ -46,7 +46,7 @@
 
 		private void completeAuthorizationButton_Click(object sender, RoutedEventArgs e) {
 			var grantedAccess = this.google.ProcessUserAuthorization(this.requestToken);
-			Response contactsResponse = this.google.SendAuthorizedRequest(Constants.GoogleScopes.GetContacts, grantedAccess.AccessToken);
+			Response contactsResponse = this.google.PrepareAuthorizedRequestAndSend(Constants.GoogleScopes.GetContacts, grantedAccess.AccessToken);
 			XDocument contactsDocument = XDocument.Parse(contactsResponse.Body);
 			var contacts = from entry in contactsDocument.Root.Elements(XName.Get("entry", "http://www.w3.org/2005/Atom"))
 								select new {

@@ -146,7 +146,7 @@ namespace DotNetOAuth {
 		/// <returns>The access token assigned by the Service Provider.</returns>
 		public GrantAccessTokenMessage ProcessUserAuthorization(string requestToken) {
 			string requestTokenSecret = this.TokenManager.GetTokenSecret(requestToken);
-			var requestAccess = new RequestAccessTokenMessage(this.ServiceProvider.AccessTokenEndpoint) {
+			var requestAccess = new GetAccessTokenMessage(this.ServiceProvider.AccessTokenEndpoint) {
 				RequestToken = requestToken,
 				TokenSecret = requestTokenSecret,
 				ConsumerKey = this.ConsumerKey,
@@ -164,8 +164,8 @@ namespace DotNetOAuth {
 		/// <param name="endpoint">The URL and method on the Service Provider to send the request to.</param>
 		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
 		/// <returns>The initialized WebRequest object.</returns>
-		public WebRequest CreateAuthorizedRequest(MessageReceivingEndpoint endpoint, string accessToken) {
-			IDirectedProtocolMessage message = this.CreateAuthorizedRequestInternal(endpoint, accessToken);
+		public WebRequest PrepareAuthorizedRequest(MessageReceivingEndpoint endpoint, string accessToken) {
+			IDirectedProtocolMessage message = this.CreateAuthorizingMessage(endpoint, accessToken);
 			HttpWebRequest wr = this.Channel.InitializeRequest(message);
 			return wr;
 		}
@@ -178,8 +178,8 @@ namespace DotNetOAuth {
 		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
 		/// <returns>The initialized WebRequest object.</returns>
 		/// <exception cref="WebException">Thrown if the request fails for any reason after it is sent to the Service Provider.</exception>
-		public Response SendAuthorizedRequest(MessageReceivingEndpoint endpoint, string accessToken) {
-			IDirectedProtocolMessage message = this.CreateAuthorizedRequestInternal(endpoint, accessToken);
+		public Response PrepareAuthorizedRequestAndSend(MessageReceivingEndpoint endpoint, string accessToken) {
+			IDirectedProtocolMessage message = this.CreateAuthorizingMessage(endpoint, accessToken);
 			HttpWebRequest wr = this.Channel.InitializeRequest(message);
 			return this.WebRequestHandler.GetResponse(wr);
 		}
@@ -198,12 +198,12 @@ namespace DotNetOAuth {
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
 		internal Response RequestUserAuthorization(Uri callback, IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, out string token) {
 			// Obtain an unauthorized request token.
-			var requestToken = new RequestTokenMessage(this.ServiceProvider.RequestTokenEndpoint) {
+			var requestToken = new GetRequestTokenMessage(this.ServiceProvider.RequestTokenEndpoint) {
 				ConsumerKey = this.ConsumerKey,
 				ConsumerSecret = this.ConsumerSecret,
 			};
 			requestToken.AddNonOAuthParameters(requestParameters);
-			var requestTokenResponse = this.Channel.Request<UnauthorizedRequestTokenMessage>(requestToken);
+			var requestTokenResponse = this.Channel.Request<GrantRequestTokenMessage>(requestToken);
 			this.TokenManager.StoreNewRequestToken(requestToken, requestTokenResponse);
 
 			// Request user authorization.
@@ -238,7 +238,7 @@ namespace DotNetOAuth {
 		/// <param name="endpoint">The URL and method on the Service Provider to send the request to.</param>
 		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
 		/// <returns>The initialized WebRequest object.</returns>
-		internal AccessProtectedResourcesMessage CreateAuthorizedRequestInternal(MessageReceivingEndpoint endpoint, string accessToken) {
+		internal AccessProtectedResourceMessage CreateAuthorizingMessage(MessageReceivingEndpoint endpoint, string accessToken) {
 			if (endpoint == null) {
 				throw new ArgumentNullException("endpoint");
 			}
@@ -246,7 +246,7 @@ namespace DotNetOAuth {
 				throw new ArgumentNullException("accessToken");
 			}
 
-			AccessProtectedResourcesMessage message = new AccessProtectedResourcesMessage(endpoint) {
+			AccessProtectedResourceMessage message = new AccessProtectedResourceMessage(endpoint) {
 				AccessToken = accessToken,
 				TokenSecret = this.TokenManager.GetTokenSecret(accessToken),
 				ConsumerKey = this.ConsumerKey,

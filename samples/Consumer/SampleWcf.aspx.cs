@@ -77,7 +77,7 @@ public partial class SampleWcf : System.Web.UI.Page {
 			throw new InvalidOperationException("No access token!");
 		}
 		Consumer consumer = this.CreateConsumer();
-		WebRequest httpRequest = consumer.CreateAuthorizedRequest(serviceEndpoint, accessToken);
+		WebRequest httpRequest = consumer.PrepareAuthorizedRequest(serviceEndpoint, accessToken);
 
 		HttpRequestMessageProperty httpDetails = new HttpRequestMessageProperty();
 		httpDetails.Headers[HttpRequestHeader.Authorization] = httpRequest.Headers[HttpRequestHeader.Authorization];

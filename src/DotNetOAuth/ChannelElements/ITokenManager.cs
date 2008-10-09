@@ -42,7 +42,7 @@ namespace DotNetOAuth.ChannelElements {
 		/// <param name="request">The request message that resulted in the generation of a new unauthorized request token.</param>
 		/// <param name="response">The response message that includes the unauthorized request token.</param>
 		/// <exception cref="ArgumentException">Thrown if the consumer key is not registered, or a required parameter was not found in the parameters collection.</exception>
-		void StoreNewRequestToken(RequestTokenMessage request, UnauthorizedRequestTokenMessage response);
+		void StoreNewRequestToken(GetRequestTokenMessage request, GrantRequestTokenMessage response);
 
 		/// <summary>
 		/// Checks whether a given request token has already been authorized

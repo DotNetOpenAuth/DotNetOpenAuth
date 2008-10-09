@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AccessProtectedResourcesMessage.cs" company="Andrew Arnott">
+// <copyright file="AccessProtectedResourceMessage.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -12,12 +12,12 @@ namespace DotNetOAuth.Messages {
 	/// A message attached to a request for protected resources that provides the necessary
 	/// credentials to be granted access to those resources.
 	/// </summary>
-	public class AccessProtectedResourcesMessage : SignedMessageBase, ITokenContainingMessage {
+	public class AccessProtectedResourceMessage : SignedMessageBase, ITokenContainingMessage {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AccessProtectedResourcesMessage"/> class.
+		/// Initializes a new instance of the <see cref="AccessProtectedResourceMessage"/> class.
 		/// </summary>
 		/// <param name="serviceProvider">The URI of the Service Provider endpoint to send this message to.</param>
-		protected internal AccessProtectedResourcesMessage(MessageReceivingEndpoint serviceProvider)
+		protected internal AccessProtectedResourceMessage(MessageReceivingEndpoint serviceProvider)
 			: base(MessageTransport.Direct, serviceProvider) {
 		}
 

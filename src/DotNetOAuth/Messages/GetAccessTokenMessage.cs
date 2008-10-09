@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="RequestAccessTokenMessage.cs" company="Andrew Arnott">
+// <copyright file="GetAccessTokenMessage.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -9,15 +9,15 @@ namespace DotNetOAuth.Messages {
 	using DotNetOAuth.Messaging;
 
 	/// <summary>
-	/// A direct message sent by the Consumer to exchange a Request Token for an Access Token
-	/// and Token Secret.
+	/// A direct message sent by the Consumer to exchange an authorized Request Token
+	/// for an Access Token and Token Secret.
 	/// </summary>
-	public class RequestAccessTokenMessage : SignedMessageBase, ITokenContainingMessage {
+	public class GetAccessTokenMessage : SignedMessageBase, ITokenContainingMessage {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RequestAccessTokenMessage"/> class.
+		/// Initializes a new instance of the <see cref="GetAccessTokenMessage"/> class.
 		/// </summary>
 		/// <param name="serviceProvider">The URI of the Service Provider endpoint to send this message to.</param>
-		protected internal RequestAccessTokenMessage(MessageReceivingEndpoint serviceProvider)
+		protected internal GetAccessTokenMessage(MessageReceivingEndpoint serviceProvider)
 			: base(MessageTransport.Direct, serviceProvider) {
 		}
 

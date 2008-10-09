@@ -9,7 +9,7 @@ namespace DotNetOAuth.Messages {
 
 	/// <summary>
 	/// A direct message sent from Service Provider to Consumer in response to 
-	/// a Consumer's <see cref="RequestAccessTokenMessage"/> request.
+	/// a Consumer's <see cref="GetAccessTokenMessage"/> request.
 	/// </summary>
 	public class GrantAccessTokenMessage : MessageBase {
 		/// <summary>

@@ -41,10 +41,10 @@ namespace DotNetOAuth.ChannelElements {
 		/// <param name="fields">The name/value pairs that make up the message payload.</param>
 		/// <remarks>
 		/// The request messages are:
-		/// RequestTokenMessage
-		/// RequestAccessTokenMessage
+		/// GetRequestTokenMessage
+		/// GetAccessTokenMessage
 		/// DirectUserToServiceProviderMessage
-		/// AccessProtectedResourcesMessage
+		/// AccessProtectedResourceMessage
 		/// </remarks>
 		/// <returns>
 		/// The <see cref="IProtocolMessage"/>-derived concrete class that this message can
@@ -57,7 +57,7 @@ namespace DotNetOAuth.ChannelElements {
 
 			if (fields.ContainsKey("oauth_consumer_key") &&
 				!fields.ContainsKey("oauth_token")) {
-				return typeof(RequestTokenMessage);
+				return typeof(GetRequestTokenMessage);
 			}
 
 			if (fields.ContainsKey("oauth_consumer_key") &&
@@ -67,8 +67,8 @@ namespace DotNetOAuth.ChannelElements {
 				// is in the token parameter.
 				bool tokenTypeIsAccessToken = this.tokenManager.GetTokenType(fields["oauth_token"]) == TokenType.AccessToken;
 
-				return tokenTypeIsAccessToken ? typeof(AccessProtectedResourcesMessage) :
-					typeof(RequestAccessTokenMessage);
+				return tokenTypeIsAccessToken ? typeof(AccessProtectedResourceMessage) :
+					typeof(GetAccessTokenMessage);
 			}
 
 			// fail over to the message with no required fields at all.

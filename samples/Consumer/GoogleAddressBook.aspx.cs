@@ -29,7 +29,7 @@ public partial class GoogleAddressBook : System.Web.UI.Page {
 					MultiView1.ActiveViewIndex = 1;
 					resultsPlaceholder.Controls.Add(new Label { Text = accessTokenMessage.AccessToken });
 
-					Response contactsResponse = google.SendAuthorizedRequest(Constants.GoogleScopes.GetContacts, accessTokenMessage.AccessToken);
+					Response contactsResponse = google.PrepareAuthorizedRequestAndSend(Constants.GoogleScopes.GetContacts, accessTokenMessage.AccessToken);
 					XDocument contactsDocument = XDocument.Parse(contactsResponse.Body);
 					var contacts = from entry in contactsDocument.Root.Elements(XName.Get("entry", "http://www.w3.org/2005/Atom"))
 										select new {
