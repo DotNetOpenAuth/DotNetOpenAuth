@@ -49,7 +49,7 @@ namespace DotNetOAuth.Messages {
 		/// <summary>
 		/// Gets or sets the Token Secret used to sign the message.
 		/// </summary>
-		public string TokenSecret { get; set; }
+		string ITamperResistantOAuthMessage.TokenSecret { get; set; }
 
 		/// <summary>
 		/// Gets or sets the Consumer key.
@@ -60,7 +60,7 @@ namespace DotNetOAuth.Messages {
 		/// <summary>
 		/// Gets or sets the Consumer Secret used to sign the message.
 		/// </summary>
-		public string ConsumerSecret { get; set; }
+		string ITamperResistantOAuthMessage.ConsumerSecret { get; set; }
 
 		/// <summary>
 		/// Gets or sets the HTTP method that will be used to transmit the message.

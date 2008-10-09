@@ -144,7 +144,6 @@ namespace DotNetOAuth {
 
 			AccessProtectedResourceMessage message = new AccessProtectedResourceMessage(endpoint) {
 				AccessToken = accessToken,
-				TokenSecret = this.TokenManager.GetTokenSecret(accessToken),
 				ConsumerKey = this.ConsumerKey,
 			};
 
@@ -157,10 +156,8 @@ namespace DotNetOAuth {
 		/// <param name="requestToken">The request token that the user has authorized.</param>
 		/// <returns>The access token assigned by the Service Provider.</returns>
 		protected GrantAccessTokenMessage ProcessUserAuthorization(string requestToken) {
-			string requestTokenSecret = this.TokenManager.GetTokenSecret(requestToken);
 			var requestAccess = new GetAccessTokenMessage(this.ServiceProvider.AccessTokenEndpoint) {
 				RequestToken = requestToken,
-				TokenSecret = requestTokenSecret,
 				ConsumerKey = this.ConsumerKey,
 			};
 			var grantAccess = this.Channel.Request<GrantAccessTokenMessage>(requestAccess);

@@ -26,7 +26,7 @@ namespace DotNetOAuth.Test.ChannelElements {
 			MessageReceivingEndpoint endpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthGetRequestToken", HttpDeliveryMethod.AuthorizationHeaderRequest | HttpDeliveryMethod.GetRequest);
 			GetRequestTokenMessage message = new GetRequestTokenMessage(endpoint);
 			message.ConsumerKey = "nerdbank.org";
-			message.ConsumerSecret = "nerdbanksecret";
+			((ITamperResistantOAuthMessage)message).ConsumerSecret = "nerdbanksecret";
 			var signedMessage = (ITamperResistantOAuthMessage)message;
 			signedMessage.HttpMethod = "GET";
 			signedMessage.SignatureMethod = "HMAC-SHA1";
