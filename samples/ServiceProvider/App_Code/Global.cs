@@ -75,7 +75,8 @@ public class Global : HttpApplication {
 	}
 
 	public static void AuthorizePendingRequestToken() {
-		TokenManager.AuthorizeRequestToken(PendingOAuthAuthorization.RequestToken, LoggedInUser);
+		ITokenContainingMessage tokenMessage = PendingOAuthAuthorization;
+		TokenManager.AuthorizeRequestToken(tokenMessage.Token, LoggedInUser);
 		PendingOAuthAuthorization = null;
 	}
 

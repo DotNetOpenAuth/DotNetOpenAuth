@@ -35,8 +35,8 @@ namespace DotNetOAuth.Samples.ConsumerWpf {
 			return this.tokensAndSecrets[token];
 		}
 
-		public void StoreNewRequestToken(GetRequestTokenMessage request, GrantRequestTokenMessage response) {
-			this.tokensAndSecrets[response.RequestToken] = response.TokenSecret;
+		public void StoreNewRequestToken(GetRequestTokenMessage request, ITokenSecretContainingMessage response) {
+			this.tokensAndSecrets[response.Token] = response.TokenSecret;
 		}
 
 		/// <summary>

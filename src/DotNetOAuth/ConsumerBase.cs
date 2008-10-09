@@ -118,9 +118,9 @@ namespace DotNetOAuth {
 			this.TokenManager.StoreNewRequestToken(requestToken, requestTokenResponse);
 
 			// Request user authorization.
-			var requestAuthorization = new DirectUserToServiceProviderMessage(this.ServiceProvider.UserAuthorizationEndpoint) {
+			ITokenContainingMessage assignedRequestToken = requestTokenResponse;
+			var requestAuthorization = new DirectUserToServiceProviderMessage(this.ServiceProvider.UserAuthorizationEndpoint, assignedRequestToken.Token) {
 				Callback = callback,
-				RequestToken = requestTokenResponse.RequestToken,
 			};
 			requestAuthorization.AddNonOAuthParameters(redirectParameters);
 			token = requestAuthorization.RequestToken;

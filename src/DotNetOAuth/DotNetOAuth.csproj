@@ -71,6 +71,7 @@
     <Compile Include="ChannelElements\TokenType.cs" />
     <Compile Include="ConsumerBase.cs" />
     <Compile Include="DesktopConsumer.cs" />
+    <Compile Include="Messages\ITokenSecretContainingMessage.cs" />
     <Compile Include="Messaging\ITamperProtectionChannelBindingElement.cs" />
     <Compile Include="ServiceProviderDescription.cs" />
     <Compile Include="Messages\ITokenContainingMessage.cs" />

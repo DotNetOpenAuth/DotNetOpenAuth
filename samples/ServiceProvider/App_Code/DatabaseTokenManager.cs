@@ -34,13 +34,13 @@ public class DatabaseTokenManager : ITokenManager {
 		return tokenRow.TokenSecret;
 	}
 
-	public void StoreNewRequestToken(GetRequestTokenMessage request, GrantRequestTokenMessage response) {
+	public void StoreNewRequestToken(GetRequestTokenMessage request, ITokenSecretContainingMessage response) {
 		RequestScopedTokenMessage scopedRequest = (RequestScopedTokenMessage)request;
 		var consumer = Global.DataContext.OAuthConsumers.Single(consumerRow => consumerRow.ConsumerKey == request.ConsumerKey);
 		string scope = scopedRequest.Scope;
 		OAuthToken newToken = new OAuthToken {
 			OAuthConsumer = consumer,
-			Token = response.RequestToken,
+			Token = response.Token,
 			TokenSecret = response.TokenSecret,
 			IssueDate = DateTime.UtcNow,
 			Scope = scope,

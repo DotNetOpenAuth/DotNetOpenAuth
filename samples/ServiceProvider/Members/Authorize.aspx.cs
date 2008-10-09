@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using DotNetOAuth;
+using DotNetOAuth.Messages;
 
 /// <summary>
 /// Conducts the user through a Consumer authorization process.
@@ -15,7 +16,8 @@ public partial class Authorize : System.Web.UI.Page {
 			if (Global.PendingOAuthAuthorization == null) {
 				Response.Redirect("~/Members/AuthorizedConsumers.aspx");
 			} else {
-				var token = Global.DataContext.OAuthTokens.Single(t => t.Token == Global.PendingOAuthAuthorization.RequestToken);
+				ITokenContainingMessage pendingToken = Global.PendingOAuthAuthorization;
+				var token = Global.DataContext.OAuthTokens.Single(t => t.Token == pendingToken.Token);
 				desiredAccessLabel.Text = token.Scope;
 			}
 		}

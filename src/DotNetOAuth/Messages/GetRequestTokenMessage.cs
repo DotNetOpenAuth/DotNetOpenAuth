@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOAuth.Messages {
+	using System.Collections.Generic;
 	using DotNetOAuth.Messaging;
 
 	/// <summary>
@@ -17,6 +18,13 @@ namespace DotNetOAuth.Messages {
 		/// <param name="serviceProvider">The URI of the Service Provider endpoint to send this message to.</param>
 		protected internal GetRequestTokenMessage(MessageReceivingEndpoint serviceProvider)
 			: base(MessageTransport.Direct, serviceProvider) {
+		}
+
+		/// <summary>
+		/// Gets the extra, non-OAuth parameters that will be included in the message.
+		/// </summary>
+		public IDictionary<string, string> ExtraData {
+			get { return ((IProtocolMessage)this).ExtraData; }
 		}
 	}
 }

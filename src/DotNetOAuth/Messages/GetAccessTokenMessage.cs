@@ -12,12 +12,15 @@ namespace DotNetOAuth.Messages {
 	/// A direct message sent by the Consumer to exchange an authorized Request Token
 	/// for an Access Token and Token Secret.
 	/// </summary>
-	public class GetAccessTokenMessage : SignedMessageBase, ITokenContainingMessage {
+	/// <remarks>
+	/// The class is sealed because the OAuth spec forbids adding parameters to this message.
+	/// </remarks>
+	public sealed class GetAccessTokenMessage : SignedMessageBase, ITokenContainingMessage {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GetAccessTokenMessage"/> class.
 		/// </summary>
 		/// <param name="serviceProvider">The URI of the Service Provider endpoint to send this message to.</param>
-		protected internal GetAccessTokenMessage(MessageReceivingEndpoint serviceProvider)
+		internal GetAccessTokenMessage(MessageReceivingEndpoint serviceProvider)
 			: base(MessageTransport.Direct, serviceProvider) {
 		}
 

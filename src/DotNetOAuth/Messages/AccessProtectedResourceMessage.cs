@@ -32,6 +32,12 @@ namespace DotNetOAuth.Messages {
 		/// <summary>
 		/// Gets or sets the Access Token.
 		/// </summary>
+		/// <remarks>
+		/// In addition to just allowing OAuth to verify a valid message,
+		/// this property is useful on the Service Provider to verify that the access token
+		/// has proper authorization for the resource being requested, and to know the
+		/// context around which user provided the authorization.
+		/// </remarks>
 		[MessagePart(Name = "oauth_token", IsRequired = true)]
 		public string AccessToken { get; set; }
 	}

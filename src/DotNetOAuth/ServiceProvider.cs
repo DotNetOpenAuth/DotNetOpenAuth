@@ -134,10 +134,7 @@ namespace DotNetOAuth {
 		public Response SendUnauthorizedTokenResponse(GetRequestTokenMessage request, IDictionary<string, string> extraParameters) {
 			string token = this.TokenGenerator.GenerateRequestToken(request.ConsumerKey);
 			string secret = this.TokenGenerator.GenerateSecret();
-			GrantRequestTokenMessage response = new GrantRequestTokenMessage {
-				RequestToken = token,
-				TokenSecret = secret,
-			};
+			GrantRequestTokenMessage response = new GrantRequestTokenMessage(token, secret);
 			response.AddNonOAuthParameters(extraParameters);
 			this.TokenManager.StoreNewRequestToken(request, response);
 
