@@ -72,11 +72,11 @@ namespace DotNetOAuth.ChannelElements {
 
 			this.webRequestHandler = webRequestHandler;
 			this.TokenManager = tokenManager;
-			if (signingBindingElement.SignatureVerificationCallback != null) {
+			if (signingBindingElement.SignatureCallback != null) {
 				throw new ArgumentException(Strings.SigningElementAlreadyAssociatedWithChannel, "signingBindingElement");
 			}
 
-			signingBindingElement.SignatureVerificationCallback = this.TokenSignatureVerificationCallback;
+			signingBindingElement.SignatureCallback = this.SignatureCallback;
 		}
 
 		/// <summary>
@@ -373,11 +373,12 @@ namespace DotNetOAuth.ChannelElements {
 		}
 
 		/// <summary>
-		/// Fills out the secrets in an incoming message so that signature verification can be performed.
+		/// Fills out the secrets in a message so that signing/verification can be performed.
 		/// </summary>
-		/// <param name="message">The incoming message.</param>
-		private void TokenSignatureVerificationCallback(ITamperResistantOAuthMessage message) {
+		/// <param name="message">The message about to be signed or whose signature is about to be verified.</param>
+		private void SignatureCallback(ITamperResistantOAuthMessage message) {
 			try {
+				Logger.Debug("Applying secrets to message to prepare for signing or signature verification.");
 				message.ConsumerSecret = this.TokenManager.GetConsumerSecret(message.ConsumerKey);
 
 				var tokenMessage = message as ITokenContainingMessage;

@@ -14,11 +14,10 @@ namespace DotNetOAuth.Messaging {
 	/// </summary>
 	public interface ITamperProtectionChannelBindingElement : IChannelBindingElement {
 		/// <summary>
-		/// Gets or sets the delegate that will initialize the non-serialized properties necessary on a signed
-		/// message so that its signature can be correctly calculated for verification.
-		/// May be null for Consumers (who never have to verify signatures).
+		/// Gets or sets the delegate that will initialize the non-serialized properties necessary on a
+		/// signable message so that its signature can be correctly calculated or verified.
 		/// </summary>
-		Action<ITamperResistantOAuthMessage> SignatureVerificationCallback { get; set; }
+		Action<ITamperResistantOAuthMessage> SignatureCallback { get; set; }
 
 		/// <summary>
 		/// Clones this instance.

@@ -46,7 +46,7 @@ namespace DotNetOAuth.ChannelElements {
 		/// Gets or sets the delegate that will initialize the non-serialized properties necessary on a signed
 		/// message so that its signature can be correctly calculated for verification.
 		/// </summary>
-		public Action<ITamperResistantOAuthMessage> SignatureVerificationCallback { get; set; }
+		public Action<ITamperResistantOAuthMessage> SignatureCallback { get; set; }
 
 		/// <summary>
 		/// Creates a new object that is a copy of the current instance.
@@ -56,7 +56,7 @@ namespace DotNetOAuth.ChannelElements {
 		/// </returns>
 		ITamperProtectionChannelBindingElement ITamperProtectionChannelBindingElement.Clone() {
 			ITamperProtectionChannelBindingElement clone = this.Clone();
-			clone.SignatureVerificationCallback = this.SignatureVerificationCallback;
+			clone.SignatureCallback = this.SignatureCallback;
 			return clone;
 		}
 
@@ -72,6 +72,12 @@ namespace DotNetOAuth.ChannelElements {
 		public bool PrepareMessageForSending(IProtocolMessage message) {
 			var signedMessage = message as ITamperResistantOAuthMessage;
 			if (signedMessage != null && this.IsMessageApplicable(signedMessage)) {
+				if (this.SignatureCallback != null) {
+					this.SignatureCallback(signedMessage);
+				} else {
+					Logger.Warn("Signing required, but callback delegate was not provided to provide additional data for signing.");
+				}
+
 				signedMessage.SignatureMethod = this.signatureMethod;
 				Logger.DebugFormat("Signing {0} message using {1}.", message.GetType().Name, this.signatureMethod);
 				signedMessage.Signature = this.GetSignature(signedMessage);
@@ -97,8 +103,8 @@ namespace DotNetOAuth.ChannelElements {
 					return false;
 				}
 
-				if (this.SignatureVerificationCallback != null) {
-					this.SignatureVerificationCallback(signedMessage);
+				if (this.SignatureCallback != null) {
+					this.SignatureCallback(signedMessage);
 				} else {
 					Logger.Warn("Signature verification required, but callback delegate was not provided to provide additional data for signing.");
 				}

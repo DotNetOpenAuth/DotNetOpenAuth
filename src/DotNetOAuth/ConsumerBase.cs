@@ -44,11 +44,6 @@ namespace DotNetOAuth {
 		public string ConsumerKey { get; set; }
 
 		/// <summary>
-		/// Gets or sets the Consumer Secret used to communicate with the Service Provider.
-		/// </summary>
-		public string ConsumerSecret { get; set; }
-
-		/// <summary>
 		/// Gets the Service Provider that will be accessed.
 		/// </summary>
 		public ServiceProviderDescription ServiceProvider { get; private set; }
@@ -117,7 +112,6 @@ namespace DotNetOAuth {
 			// Obtain an unauthorized request token.
 			var requestToken = new GetRequestTokenMessage(this.ServiceProvider.RequestTokenEndpoint) {
 				ConsumerKey = this.ConsumerKey,
-				ConsumerSecret = this.ConsumerSecret,
 			};
 			requestToken.AddNonOAuthParameters(requestParameters);
 			var requestTokenResponse = this.Channel.Request<GrantRequestTokenMessage>(requestToken);
@@ -152,7 +146,6 @@ namespace DotNetOAuth {
 				AccessToken = accessToken,
 				TokenSecret = this.TokenManager.GetTokenSecret(accessToken),
 				ConsumerKey = this.ConsumerKey,
-				ConsumerSecret = this.ConsumerSecret,
 			};
 
 			return message;
@@ -169,7 +162,6 @@ namespace DotNetOAuth {
 				RequestToken = requestToken,
 				TokenSecret = requestTokenSecret,
 				ConsumerKey = this.ConsumerKey,
-				ConsumerSecret = this.ConsumerSecret,
 			};
 			var grantAccess = this.Channel.Request<GrantAccessTokenMessage>(requestAccess);
 			this.TokenManager.ExpireRequestTokenAndStoreNewAccessToken(this.ConsumerKey, requestToken, grantAccess.AccessToken, grantAccess.TokenSecret);

@@ -35,7 +35,6 @@
 			this.tokenManager.ConsumerKey = consumerKeyBox.Text;
 			this.tokenManager.ConsumerSecret = consumerSecretBox.Text;
 			this.google.ConsumerKey = consumerKeyBox.Text;
-			this.google.ConsumerSecret = consumerSecretBox.Text;
 
 			var extraParameters = new Dictionary<string, string> {
 				{ "scope", Constants.GoogleScopes.Contacts },

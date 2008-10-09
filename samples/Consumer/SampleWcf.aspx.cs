@@ -109,7 +109,6 @@ public partial class SampleWcf : System.Web.UI.Page {
 			},
 			tokenManager) {
 				ConsumerKey = consumerKey,
-				ConsumerSecret = consumerSecret,
 			};
 
 		return consumer;

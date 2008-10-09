@@ -20,7 +20,6 @@ public partial class GoogleAddressBook : System.Web.UI.Page {
 				InMemoryTokenManager tokenManager = (InMemoryTokenManager)Session["TokenManager"];
 				WebConsumer google = new WebConsumer(Constants.GoogleDescription, tokenManager) {
 					ConsumerKey = tokenManager.ConsumerKey,
-					ConsumerSecret = tokenManager.ConsumerSecret,
 				};
 
 				var accessTokenMessage = google.ProcessUserAuthorization();
@@ -60,7 +59,6 @@ public partial class GoogleAddressBook : System.Web.UI.Page {
 		Session["TokenManager"] = tokenManager;
 		WebConsumer google = new WebConsumer(Constants.GoogleDescription, tokenManager);
 		google.ConsumerKey = consumerKeyBox.Text;
-		google.ConsumerSecret = consumerSecretBox.Text;
 
 		var extraParameters = new Dictionary<string, string> {
 			{ "scope", Constants.GoogleScopes.Contacts },

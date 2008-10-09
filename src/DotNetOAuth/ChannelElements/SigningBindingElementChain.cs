@@ -53,14 +53,14 @@ namespace DotNetOAuth.ChannelElements {
 		/// message so that its signature can be correctly calculated for verification.
 		/// May be null for Consumers (who never have to verify signatures).
 		/// </summary>
-		public Action<ITamperResistantOAuthMessage> SignatureVerificationCallback {
+		public Action<ITamperResistantOAuthMessage> SignatureCallback {
 			get {
-				return this.signers[0].SignatureVerificationCallback;
+				return this.signers[0].SignatureCallback;
 			}
 
 			set {
 				foreach (ITamperProtectionChannelBindingElement signer in this.signers) {
-					signer.SignatureVerificationCallback = value;
+					signer.SignatureCallback = value;
 				}
 			}
 		}

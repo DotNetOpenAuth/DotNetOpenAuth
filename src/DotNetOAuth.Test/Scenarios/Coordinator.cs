@@ -58,6 +58,7 @@ namespace DotNetOAuth.Test.Scenarios {
 			// Prepare token managers
 			InMemoryTokenManager consumerTokenManager = new InMemoryTokenManager();
 			InMemoryTokenManager serviceTokenManager = new InMemoryTokenManager();
+			consumerTokenManager.AddConsumer(this.consumerDescription);
 			serviceTokenManager.AddConsumer(this.consumerDescription);
 
 			// Prepare channels that will pass messages directly back and forth.
@@ -70,7 +71,6 @@ namespace DotNetOAuth.Test.Scenarios {
 			WebConsumer consumer = new WebConsumer(this.serviceDescription, consumerTokenManager) {
 				Channel = consumerChannel,
 				ConsumerKey = this.consumerDescription.ConsumerKey,
-				ConsumerSecret = this.consumerDescription.ConsumerSecret,
 			};
 			ServiceProvider serviceProvider = new ServiceProvider(this.serviceDescription, serviceTokenManager) {
 				Channel = serviceProviderChannel,
