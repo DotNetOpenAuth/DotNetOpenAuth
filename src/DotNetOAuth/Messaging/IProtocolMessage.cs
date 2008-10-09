@@ -30,7 +30,7 @@ namespace DotNetOAuth.Messaging {
 		MessageTransport Transport { get; }
 
 		/// <summary>
-		/// Gets the extra, non-OAuth parameters that will be included in the request.
+		/// Gets the extra, non-OAuth parameters included in the message.
 		/// </summary>
 		/// <remarks>
 		/// Implementations of this interface should ensure that this property never returns null.
