@@ -14,6 +14,7 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 		/// </summary>
 		public PolicyRequest() {
 			PreferredPolicies = new List<string>(1);
+			PreferredAuthLevelTypes = new List<string>(1);
 		}
 
 		/// <summary>
@@ -33,6 +34,11 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 		public IList<string> PreferredPolicies { get; private set; }
 
 		/// <summary>
+		/// Zero or more name spaces of the custom Assurance Level the RP requests, in the order of its preference.
+		/// </summary>
+		public IList<string> PreferredAuthLevelTypes { get; private set; }
+
+		/// <summary>
 		/// Tests equality between two <see cref="PolicyRequest"/> instances.
 		/// </summary>
 		public override bool Equals(object obj) {
@@ -42,6 +48,10 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 			if (PreferredPolicies.Count != other.PreferredPolicies.Count) return false;
 			foreach(string policy in PreferredPolicies) {
 				if (!other.PreferredPolicies.Contains(policy)) return false;
+			}
+			if (PreferredAuthLevelTypes.Count != other.PreferredAuthLevelTypes.Count) return false;
+			foreach (string authLevel in PreferredAuthLevelTypes) {
+				if (!other.PreferredAuthLevelTypes.Contains(authLevel)) return false;
 			}
 			return true;
 		}
@@ -66,6 +76,19 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 			// Even if empty, this parameter is required as part of the request message.
 			fields.Add(Constants.RequestParameters.PreferredAuthPolicies, SerializePolicies(PreferredPolicies));
 
+			if (PreferredAuthLevelTypes.Count > 0) {
+				AliasManager authLevelAliases = new AliasManager();
+				authLevelAliases.AssignAliases(PreferredAuthLevelTypes, Constants.AuthenticationLevels.PreferredTypeUriToAliasMap);
+
+				// Add a definition for each Auth Level Type alias.
+				foreach (string alias in authLevelAliases.Aliases) {
+					fields.Add(Constants.AuthLevelNamespaceDeclarationPrefix + alias, authLevelAliases.ResolveAlias(alias));
+				}
+
+				// Now use the aliases for those type URIs to list a preferred order.
+				fields.Add(Constants.RequestParameters.PreferredAuthLevelTypes, SerializeAuthLevels(PreferredAuthLevelTypes, authLevelAliases));
+			}
+
 			return fields;
 		}
 
@@ -82,6 +105,16 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 			foreach (string policy in preferredPolicies) {
 				if (policy.Length > 0)
 					PreferredPolicies.Add(policy);
+			}
+
+			PreferredAuthLevelTypes.Clear();
+			AliasManager authLevelAliases = FindIncomingAliases(fields);
+			string preferredAuthLevelAliases;
+			if (fields.TryGetValue(Constants.RequestParameters.PreferredAuthLevelTypes, out preferredAuthLevelAliases)) {
+				foreach (string authLevelAlias in preferredAuthLevelAliases.Split(' ')) {
+					if (authLevelAlias.Length == 0) continue;
+					PreferredAuthLevelTypes.Add(authLevelAliases.ResolveAlias(authLevelAlias));
+				}
 			}
 
 			return true;
@@ -102,20 +135,54 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 		#endregion
 
 		static internal string SerializePolicies(IList<string> policies) {
-			Debug.Assert(policies != null);
-			StringBuilder policyList = new StringBuilder();
-			foreach (string policy in GetUniqueItems(policies)) {
-				if (policy.Contains(" ")) {
-					throw new FormatException(string.Format(CultureInfo.CurrentCulture,
-						Strings.InvalidUri, policy));
-				}
-				policyList.Append(policy);
-				policyList.Append(" ");
-			}
-			if (policyList.Length > 0)
-				policyList.Length -= 1; // remove trailing space
-			return policyList.ToString();
+			return ConcatenateListOfElements(policies);
 		}
+
+		private static string SerializeAuthLevels(IList<string> preferredAuthLevelTypes, AliasManager aliases) {
+			var aliasList = new List<string>();
+			foreach (string typeUri in preferredAuthLevelTypes) {
+				aliasList.Add(aliases.GetAlias(typeUri));
+			}
+			
+			return ConcatenateListOfElements(aliasList);
+		}
+
+		/// <summary>
+		/// Looks at the incoming fields and figures out what the aliases and name spaces for auth level types are.
+		/// </summary>
+		internal static AliasManager FindIncomingAliases(IDictionary<string, string> fields) {
+			AliasManager aliasManager = new AliasManager();
+
+			foreach (var pair in fields) {
+				if (!pair.Key.StartsWith(Constants.AuthLevelNamespaceDeclarationPrefix, StringComparison.Ordinal)) {
+					continue;
+				}
+
+				string alias = pair.Key.Substring(Constants.AuthLevelNamespaceDeclarationPrefix.Length);
+				aliasManager.SetAlias(alias, pair.Value);
+			}
+
+			aliasManager.SetPreferredAliasesWhereNotSet(Constants.AuthenticationLevels.PreferredTypeUriToAliasMap);
+
+			return aliasManager;
+		}
+
+		static string ConcatenateListOfElements(IList<string> values) {
+			Debug.Assert(values != null);
+			StringBuilder valuesList = new StringBuilder();
+			foreach (string value in GetUniqueItems(values)) {
+				if (value.Contains(" ")) {
+					throw new FormatException(string.Format(CultureInfo.CurrentCulture,
+						Strings.InvalidUri, value));
+				}
+				valuesList.Append(value);
+				valuesList.Append(" ");
+			}
+			if (valuesList.Length > 0)
+				valuesList.Length -= 1; // remove trailing space
+			return valuesList.ToString();
+		}
+
 		static internal IEnumerable<T> GetUniqueItems<T>(IList<T> list) {
 			List<T> itemsSeen = new List<T>(list.Count);
 			foreach (T item in list) {
