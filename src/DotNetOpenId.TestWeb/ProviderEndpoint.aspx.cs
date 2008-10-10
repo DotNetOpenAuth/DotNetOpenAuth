@@ -58,6 +58,9 @@ public partial class ProviderEndpoint : System.Web.UI.Page {
 					if (papeRequest.MaximumAuthenticationAge.HasValue) {
 						papeResponse.AuthenticationTimeUtc = DateTime.UtcNow - (papeRequest.MaximumAuthenticationAge.Value - TimeSpan.FromSeconds(30));
 					}
+					if (papeRequest.PreferredAuthLevelTypes.Contains("http://csrc.nist.gov/publications/nistpubs/800-63/SP800-63V1_0_2.pdf")) {
+						papeResponse.NistAssuranceLevel = NistAssuranceLevel.Level1;
+					}
 				}
 				break;
 			case TestSupport.Scenarios.ExtensionPartialCooperation:
