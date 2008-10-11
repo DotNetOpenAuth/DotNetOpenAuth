@@ -8,6 +8,7 @@ using DotNetOpenId.RelyingParty;
 using NUnit.Framework;
 using OPRequest = DotNetOpenId.Provider.IAuthenticationRequest;
 using SregDemandLevel = DotNetOpenId.Extensions.SimpleRegistration.DemandLevel;
+using PapeConstants = DotNetOpenId.Extensions.ProviderAuthenticationPolicy.Constants;
 
 namespace DotNetOpenId.Test.Extensions {
 	public class ExtensionTestBase {
@@ -80,6 +81,9 @@ namespace DotNetOpenId.Test.Extensions {
 					if (papeRequest != null) {
 						if (papeRequest.MaximumAuthenticationAge.HasValue) {
 							papeResponse.AuthenticationTimeUtc = DateTime.UtcNow - (papeRequest.MaximumAuthenticationAge.Value - TimeSpan.FromSeconds(30));
+						}
+						if (papeRequest.PreferredAuthLevelTypes.Contains(PapeConstants.AuthenticationLevels.NistTypeUri)) {
+							papeResponse.NistAssuranceLevel = NistAssuranceLevel.Level1;
 						}
 					}
 					break;

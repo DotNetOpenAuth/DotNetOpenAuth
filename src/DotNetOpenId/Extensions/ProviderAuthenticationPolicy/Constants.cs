@@ -12,6 +12,24 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 		/// </summary>
 		internal const string TypeUri = "http://specs.openid.net/extensions/pape/1.0";
 		/// <summary>
+		/// The namespace alias to use for OpenID 1.x interop, where aliases are not defined in the message.
+		/// </summary>
+		internal const string pape_compatibility_alias = "pape";
+		/// <summary>
+		/// The string to prepend on an Auth Level Type alias definition.
+		/// </summary>
+		internal const string AuthLevelNamespaceDeclarationPrefix = "auth_level.ns.";
+
+		internal static class AuthenticationLevels {
+			internal static readonly IDictionary<string, string> PreferredTypeUriToAliasMap = new Dictionary<string, string> {
+				{ NistTypeUri, nist_compatibility_alias },
+			};
+
+			internal const string nist_compatibility_alias = "nist";
+			internal const string NistTypeUri = "http://csrc.nist.gov/publications/nistpubs/800-63/SP800-63V1_0_2.pdf";
+		}
+
+		/// <summary>
 		/// Parameters to be included with PAPE requests.
 		/// </summary>
 		internal static class RequestParameters {
@@ -31,6 +49,10 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 			/// If no policies are requested, the RP may be interested in other information such as the authentication age.
 			/// </remarks>
 			internal const string PreferredAuthPolicies = "preferred_auth_policies";
+			/// <summary>
+			/// The space separated list of the name spaces of the custom Assurance Level that RP requests, in the order of its preference.
+			/// </summary>
+			internal const string PreferredAuthLevelTypes = "preferred_auth_level_types";
 		}
 		/// <summary>
 		/// Parameters to be included with PAPE responses.
@@ -58,13 +80,11 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 			/// </remarks>
 			internal const string AuthTime = "auth_time";
 			/// <summary>
-			/// Optional. The Assurance Level as defined by the National Institute of Standards and Technology (NIST) in Special Publication 800-63 (Burr, W., Dodson, D., and W. Polk, Ed., “Electronic Authentication Guideline,” April 2006.) [NIST_SP800‑63] corresponding to the authentication method and policies employed by the OP when authenticating the End User.
+			/// The first part of a parameter name that gives the custom string value for
+			/// the assurance level.  The second part of the parameter name is the alias for
+			/// that assurance level.
 			/// </summary>
-			/// <value>Integer value between 0 and 4 inclusive.</value>
-			/// <remarks>
-			/// Level 0 is not an assurance level defined by NIST, but rather SHOULD be used to signify that the OP recognizes the parameter and the End User authentication did not meet the requirements of Level 1. See Appendix A.1.2 (NIST Assurance Levels) for high-level example classifications of authentication methods within the defined levels.
-			/// </remarks>
-			internal const string NistAuthLevel = "nist_auth_level";
+			internal const string AuthLevelAliasPrefix = "auth_level.";
 		}
 	}
 }

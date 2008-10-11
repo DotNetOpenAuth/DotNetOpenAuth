@@ -13,6 +13,13 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 	/// </remarks>
 	public static class AuthenticationPolicies {
 		/// <summary>
+		/// Used in a PAPE response to indicate that no PAPE authentication policies could be satisfied.
+		/// </summary>
+		/// <remarks>
+		/// Used internally by the PAPE extension, so that users don't have to know about it.
+		/// </remarks>
+		internal const string None = "http://schemas.openid.net/pape/policies/2007/06/none";
+		/// <summary>
 		/// An authentication mechanism where the End User does not provide a shared secret to a party potentially under the control of the Relying Party. (Note that the potentially malicious Relying Party controls where the User-Agent is redirected to and thus may not send it to the End User's actual OpenID Provider).
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Phishing")]
