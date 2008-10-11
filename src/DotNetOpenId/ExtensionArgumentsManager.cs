@@ -22,6 +22,7 @@ namespace DotNetOpenId {
 		/// </summary>
 		static readonly Dictionary<string, string> typeUriToAliasAffinity = new Dictionary<string, string> {
 			{ Extensions.SimpleRegistration.Constants.sreg_ns, Extensions.SimpleRegistration.Constants.sreg_compatibility_alias },
+			{ Extensions.ProviderAuthenticationPolicy.Constants.TypeUri, Extensions.ProviderAuthenticationPolicy.Constants.pape_compatibility_alias },
 		};
 
 		private ExtensionArgumentsManager() { }

@@ -13,6 +13,8 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 	/// before asserting or interpreting what these levels signify, notwithstanding
 	/// the brief summaries attached to each level in DotNetOpenId documentation.
 	/// http://csrc.nist.gov/publications/nistpubs/800-63/SP800-63V1_0_2.pdf
+	///
+	/// See PAPE spec Appendix A.1.2 (NIST Assurance Levels) for high-level example classifications of authentication methods within the defined levels.
 	/// </remarks>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Nist")]
 	public enum NistAssuranceLevel {

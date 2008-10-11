@@ -17,6 +17,7 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 		/// </summary>
 		public PolicyResponse() {
 			ActualPolicies = new List<string>(1);
+			AssuranceLevels = new Dictionary<string, string>(1);
 		}
 
 		/// <summary>
@@ -46,13 +47,37 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 				}
 			}
 		}
+
 		/// <summary>
-		/// Optional. The Assurance Level as defined by the National Institute of Standards and Technology (NIST) in Special Publication 800-63 (Burr, W., Dodson, D., and W. Polk, Ed., “Electronic Authentication Guideline,” April 2006.) [NIST_SP800‑63] corresponding to the authentication method and policies employed by the OP when authenticating the End User.
+		/// Optional. The Assurance Level as defined by the National Institute of Standards and Technology (NIST) in Special Publication 800-63 (Burr, W., Dodson, D., and W. Polk, Ed., “Electronic Authentication Guideline,” April 2006.) [NIST_SP800‑63] corresponding to the authentication method and policies employed by the OP when authenticating the End User.		/// </summary>
+		/// <remarks>		/// See PAPE spec Appendix A.1.2 (NIST Assurance Levels) for high-level example classifications of authentication methods within the defined levels.		/// </remarks>
+		public NistAssuranceLevel? NistAssuranceLevel {
+			get {
+				string levelString;
+				if (AssuranceLevels.TryGetValue(Constants.AuthenticationLevels.NistTypeUri, out levelString)) {
+					return (NistAssuranceLevel)Enum.Parse(typeof(NistAssuranceLevel), levelString);
+				} else {
+					return null;
+				}
+			}
+			set {
+				if (value != null) {
+					AssuranceLevels[Constants.AuthenticationLevels.NistTypeUri] = ((int)value).ToString(CultureInfo.InvariantCulture);
+				} else {
+					AssuranceLevels.Remove(Constants.AuthenticationLevels.NistTypeUri);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets a dictionary where keys are the authentication level type URIs and
+		/// the values are the per authentication level defined custom value.
 		/// </summary>
 		/// <remarks>
-		/// See PAPE spec Appendix A.1.2 (NIST Assurance Levels) for high-level example classifications of authentication methods within the defined levels.
+		/// A very common key is <see cref="Constants.AuthenticationLevels.NistTypeUri"/>
+		/// and values for this key are available in <see cref="NistAssuranceLevel"/>.
 		/// </remarks>
-		public NistAssuranceLevel? NistAssuranceLevel { get; set; }
+		public IDictionary<string, string> AssuranceLevels { get; private set; }
 
 		/// <summary>
 		/// Tests equality between two <see cref="PolicyResponse"/> instances.
@@ -61,7 +86,10 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 			PolicyResponse other = obj as PolicyResponse;
 			if (other == null) return false;
 			if (AuthenticationTimeUtc != other.AuthenticationTimeUtc) return false;
-			if (NistAssuranceLevel != other.NistAssuranceLevel) return false;
+			if (AssuranceLevels.Count != other.AssuranceLevels.Count) return false;
+			foreach (var pair in AssuranceLevels) {
+				if (!other.AssuranceLevels.Contains(pair)) return false;
+			}
 			if (ActualPolicies.Count != other.ActualPolicies.Count) return false;
 			foreach (string policy in ActualPolicies) {
 				if (!other.ActualPolicies.Contains(policy)) return false;
@@ -81,12 +109,24 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 		IDictionary<string, string> IExtensionResponse.Serialize(DotNetOpenId.Provider.IRequest authenticationRequest) {
 			var fields = new Dictionary<string, string>();
 
-			fields.Add(Constants.ResponseParameters.AuthPolicies, PolicyRequest.SerializePolicies(ActualPolicies));
+			fields.Add(Constants.ResponseParameters.AuthPolicies, SerializePolicies(ActualPolicies));
 			if (AuthenticationTimeUtc.HasValue) {
 				fields.Add(Constants.ResponseParameters.AuthTime, AuthenticationTimeUtc.Value.ToUniversalTime().ToString(PermissibleDateTimeFormats[0], CultureInfo.InvariantCulture));
 			}
-			if (NistAssuranceLevel.HasValue) {
-				fields.Add(Constants.ResponseParameters.NistAuthLevel, ((int)NistAssuranceLevel).ToString(CultureInfo.InvariantCulture));
+
+			if (AssuranceLevels.Count > 0) {
+				AliasManager aliases = new AliasManager();
+				aliases.AssignAliases(AssuranceLevels.Keys, Constants.AuthenticationLevels.PreferredTypeUriToAliasMap);
+
+				// Add a definition for each Auth Level Type alias.
+				foreach (string alias in aliases.Aliases) {
+					fields.Add(Constants.AuthLevelNamespaceDeclarationPrefix + alias, aliases.ResolveAlias(alias));
+				}
+
+				// Now use the aliases for those type URIs to list the individual values.
+				foreach (var pair in AssuranceLevels) {
+					fields.Add(Constants.ResponseParameters.AuthLevelAliasPrefix + aliases.GetAlias(pair.Key), pair.Value);
+				}
 			}
 
 			return fields;
@@ -99,7 +139,7 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 			ActualPolicies.Clear();
 			string[] actualPolicies = fields[Constants.ResponseParameters.AuthPolicies].Split(' ');
 			foreach (string policy in actualPolicies) {
-				if (policy.Length > 0)
+				if (policy.Length > 0 && policy != AuthenticationPolicies.None)
 					ActualPolicies.Add(policy);
 			}
 
@@ -116,15 +156,13 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 				}
 			}
 
-			NistAssuranceLevel = null;
-			string nistAuthLevel;
-			if (fields.TryGetValue(Constants.ResponseParameters.NistAuthLevel, out nistAuthLevel)) {
-				int nistAuthLevelNumber;
-				if (int.TryParse(nistAuthLevel, out nistAuthLevelNumber) &&
-					nistAuthLevelNumber >= 0 && nistAuthLevelNumber <= 4) {
-					NistAssuranceLevel = (NistAssuranceLevel)nistAuthLevelNumber;
-				} else {
-					Logger.Error("Invalid NIST level.");
+			AssuranceLevels.Clear();
+			AliasManager authLevelAliases = PolicyRequest.FindIncomingAliases(fields);
+			foreach (string authLevelAlias in authLevelAliases.Aliases) {
+				string authValue;
+				if (fields.TryGetValue(Constants.ResponseParameters.AuthLevelAliasPrefix + authLevelAlias, out authValue)) {
+					string authLevelType = authLevelAliases.ResolveAlias(authLevelAlias);
+					AssuranceLevels[authLevelType] = authValue;
 				}
 			}
 
@@ -144,5 +182,13 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 		}
 
 		#endregion
+
+		static internal string SerializePolicies(IList<string> policies) {
+			if (policies.Count == 0) {
+				return AuthenticationPolicies.None;
+			} else {
+				return PolicyRequest.ConcatenateListOfElements(policies);
+			}
+		}
 	}
 }
