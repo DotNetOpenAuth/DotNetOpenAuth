@@ -109,7 +109,7 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 		IDictionary<string, string> IExtensionResponse.Serialize(DotNetOpenId.Provider.IRequest authenticationRequest) {
 			var fields = new Dictionary<string, string>();
 
-			fields.Add(Constants.ResponseParameters.AuthPolicies, PolicyRequest.SerializePolicies(ActualPolicies));
+			fields.Add(Constants.ResponseParameters.AuthPolicies, SerializePolicies(ActualPolicies));
 			if (AuthenticationTimeUtc.HasValue) {
 				fields.Add(Constants.ResponseParameters.AuthTime, AuthenticationTimeUtc.Value.ToUniversalTime().ToString(PermissibleDateTimeFormats[0], CultureInfo.InvariantCulture));
 			}
@@ -139,7 +139,7 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 			ActualPolicies.Clear();
 			string[] actualPolicies = fields[Constants.ResponseParameters.AuthPolicies].Split(' ');
 			foreach (string policy in actualPolicies) {
-				if (policy.Length > 0)
+				if (policy.Length > 0 && policy != AuthenticationPolicies.None)
 					ActualPolicies.Add(policy);
 			}
 
@@ -182,5 +182,13 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 		}
 
 		#endregion
+
+		static internal string SerializePolicies(IList<string> policies) {
+			if (policies.Count == 0) {
+				return AuthenticationPolicies.None;
+			} else {
+				return PolicyRequest.ConcatenateListOfElements(policies);
+			}
+		}
 	}
 }

@@ -167,7 +167,7 @@ namespace DotNetOpenId.Extensions.ProviderAuthenticationPolicy {
 			return aliasManager;
 		}
 
-		static string ConcatenateListOfElements(IList<string> values) {
+		internal static string ConcatenateListOfElements(IList<string> values) {
 			Debug.Assert(values != null);
 			StringBuilder valuesList = new StringBuilder();
 			foreach (string value in GetUniqueItems(values)) {

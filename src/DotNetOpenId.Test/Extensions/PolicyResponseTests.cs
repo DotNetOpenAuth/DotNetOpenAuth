@@ -214,6 +214,7 @@ namespace DotNetOpenId.Test.Extensions {
 			var fields = ((IExtensionResponse)resp).Serialize(null);
 			Assert.AreEqual(1, fields.Count);
 			Assert.IsTrue(fields.ContainsKey("auth_policies"));
+			Assert.AreEqual(AuthenticationPolicies.None, fields["auth_policies"]);
 
 			resp.ActualPolicies.Add(AuthenticationPolicies.PhishingResistant);
 			fields = ((IExtensionResponse)resp).Serialize(null);
