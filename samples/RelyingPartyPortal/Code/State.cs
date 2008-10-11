@@ -1,5 +1,7 @@
 using System.Web;
 using DotNetOpenId.Extensions.SimpleRegistration;
+using System.Collections.Generic;
+using DotNetOpenId.Extensions.ProviderAuthenticationPolicy;
 
 /// <summary>
 /// Strong-typed bag of session state.
@@ -8,6 +10,7 @@ public class State {
 	public static void Clear() {
 		ProfileFields = null;
 		FriendlyLoginName = null;
+		PapePolicies = null;
 	}
 	public static ClaimsResponse ProfileFields {
 		get { return HttpContext.Current.Session["ProfileFields"] as ClaimsResponse; }
@@ -16,5 +19,9 @@ public class State {
 	public static string FriendlyLoginName {
 		get { return HttpContext.Current.Session["FriendlyUsername"] as string; }
 		set { HttpContext.Current.Session["FriendlyUsername"] = value; }
+	}
+	public static PolicyResponse PapePolicies {
+		get { return HttpContext.Current.Session["PapePolicies"] as PolicyResponse; }
+		set { HttpContext.Current.Session["PapePolicies"] = value; }
 	}
 }
