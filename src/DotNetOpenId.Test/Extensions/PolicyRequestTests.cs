@@ -5,6 +5,7 @@ using System.Text;
 using NUnit.Framework;
 using DotNetOpenId.Extensions.ProviderAuthenticationPolicy;
 using DotNetOpenId.Extensions;
+using System.Globalization;
 
 namespace DotNetOpenId.Test.Extensions {
 	[TestFixture]
@@ -50,6 +51,14 @@ namespace DotNetOpenId.Test.Extensions {
 		}
 
 		[Test]
+		public void AddAuthLevelTypes() {
+			PolicyRequest req = new PolicyRequest();
+			req.PreferredAuthLevelTypes.Add(Constants.AuthenticationLevels.NistTypeUri);
+			Assert.AreEqual(1, req.PreferredAuthLevelTypes.Count);
+			Assert.IsTrue(req.PreferredAuthLevelTypes.Contains(Constants.AuthenticationLevels.NistTypeUri));
+		}
+
+		[Test]
 		public void EqualsTest() {
 			PolicyRequest req = new PolicyRequest();
 			PolicyRequest req2 = new PolicyRequest();
@@ -76,6 +85,15 @@ namespace DotNetOpenId.Test.Extensions {
 			req.MaximumAuthenticationAge = TimeSpan.FromHours(1);
 			Assert.AreNotEqual(req, req2);
 			req2.MaximumAuthenticationAge = req.MaximumAuthenticationAge;
+			Assert.AreEqual(req, req2);
+
+			// Test PreferredAuthLevelTypes comparison.
+			req.PreferredAuthLevelTypes.Add("authlevel1");
+			Assert.AreNotEqual(req, req2);
+			req2.PreferredAuthLevelTypes.Add("authlevel2");
+			Assert.AreNotEqual(req, req2);
+			req.PreferredAuthLevelTypes.Add("authlevel2");
+			req2.PreferredAuthLevelTypes.Add("authlevel1");
 			Assert.AreEqual(req, req2);
 		}
 
@@ -105,14 +123,16 @@ namespace DotNetOpenId.Test.Extensions {
 			// Test with all fields set
 			req2 = new PolicyRequest();
 			req.PreferredPolicies.Add(AuthenticationPolicies.MultiFactor);
+			req.PreferredAuthLevelTypes.Add(Constants.AuthenticationLevels.NistTypeUri);
 			req.MaximumAuthenticationAge = TimeSpan.FromHours(1);
 			fields = ((IExtensionRequest)req).Serialize(null);
 			Assert.IsTrue(((IExtensionRequest)req2).Deserialize(fields, null, Constants.TypeUri));
 			Assert.AreEqual(req, req2);
 
-			// Test with an extra policy
+			// Test with an extra policy and auth level
 			req2 = new PolicyRequest();
 			req.PreferredPolicies.Add(AuthenticationPolicies.PhishingResistant);
+			req.PreferredAuthLevelTypes.Add("customAuthLevel");
 			fields = ((IExtensionRequest)req).Serialize(null);
 			Assert.IsTrue(((IExtensionRequest)req2).Deserialize(fields, null, Constants.TypeUri));
 			Assert.AreEqual(req, req2);
@@ -121,13 +141,54 @@ namespace DotNetOpenId.Test.Extensions {
 			// the doubled policies out.
 			req2 = new PolicyRequest();
 			req.PreferredPolicies.Add(AuthenticationPolicies.PhishingResistant);
+			req.PreferredAuthLevelTypes.Add(Constants.AuthenticationLevels.NistTypeUri);
 			fields = ((IExtensionRequest)req).Serialize(null);
 			Assert.IsTrue(((IExtensionRequest)req2).Deserialize(fields, null, Constants.TypeUri));
 			Assert.AreNotEqual(req, req2);
 			// Now go ahead and add the doubled one so we can do our equality test.
 			req2.PreferredPolicies.Add(AuthenticationPolicies.PhishingResistant);
+			req2.PreferredAuthLevelTypes.Add(Constants.AuthenticationLevels.NistTypeUri);
 			Assert.AreEqual(req, req2);
+		}
 
+		[Test]
+		public void Serialize() {
+			PolicyRequest req = new PolicyRequest();
+			var fields = ((IExtensionRequest)req).Serialize(null);
+			Assert.AreEqual(1, fields.Count);
+			Assert.IsTrue(fields.ContainsKey("preferred_auth_policies"));
+			Assert.IsEmpty(fields["preferred_auth_policies"]);
+
+			req.MaximumAuthenticationAge = TimeSpan.FromHours(1);
+			fields = ((IExtensionRequest)req).Serialize(null);
+			Assert.AreEqual(2, fields.Count);
+			Assert.IsTrue(fields.ContainsKey("max_auth_age"));
+			Assert.AreEqual(TimeSpan.FromHours(1).TotalSeconds.ToString(CultureInfo.InvariantCulture), fields["max_auth_age"]);
+
+			req.PreferredPolicies.Add("http://pol1/");
+			fields = ((IExtensionRequest)req).Serialize(null);
+			Assert.AreEqual("http://pol1/", fields["preferred_auth_policies"]);
+
+			req.PreferredPolicies.Add("http://pol2/");
+			fields = ((IExtensionRequest)req).Serialize(null);
+			Assert.AreEqual("http://pol1/ http://pol2/", fields["preferred_auth_policies"]);
+
+			req.PreferredAuthLevelTypes.Add("http://authtype1/");
+			fields = ((IExtensionRequest)req).Serialize(null);
+			Assert.AreEqual(4, fields.Count);
+			Assert.IsTrue(fields.ContainsKey("auth_level.ns.alias1"));
+			Assert.AreEqual("http://authtype1/", fields["auth_level.ns.alias1"]);
+			Assert.IsTrue(fields.ContainsKey("preferred_auth_level_types"));
+			Assert.AreEqual("alias1", fields["preferred_auth_level_types"]);
+
+			req.PreferredAuthLevelTypes.Add(Constants.AuthenticationLevels.NistTypeUri);
+			fields = ((IExtensionRequest)req).Serialize(null);
+			Assert.AreEqual(5, fields.Count);
+			Assert.IsTrue(fields.ContainsKey("auth_level.ns.alias2"));
+			Assert.AreEqual("http://authtype1/", fields["auth_level.ns.alias2"]);
+			Assert.IsTrue(fields.ContainsKey("auth_level.ns.nist"));
+			Assert.AreEqual(Constants.AuthenticationLevels.NistTypeUri, fields["auth_level.ns.nist"]);
+			Assert.AreEqual("alias2 nist", fields["preferred_auth_level_types"]);
 		}
 	}
 }
