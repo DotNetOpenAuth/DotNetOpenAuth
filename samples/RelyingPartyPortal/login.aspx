@@ -6,9 +6,17 @@
 	<h2>Login Page </h2>
 	<cc1:OpenIdLogin ID="OpenIdLogin1" runat="server" CssClass="openid_login" RequestCountry="Request"
 		RequestEmail="Request" RequestGender="Require" RequestPostalCode="Require" RequestTimeZone="Require"
-		RememberMeVisible="True" PolicyUrl="~/PrivacyPolicy.aspx" TabIndex="1" OnLoggedIn="OpenIdLogin1_LoggedIn"
+		RememberMeVisible="True" PolicyUrl="~/PrivacyPolicy.aspx" TabIndex="1"
+		OnLoggedIn="OpenIdLogin1_LoggedIn" OnLoggingIn="OpenIdLogin1_LoggingIn"
 		OnCanceled="OpenIdLogin1_Canceled" OnFailed="OpenIdLogin1_Failed" OnSetupRequired="OpenIdLogin1_SetupRequired" />
-	<asp:CheckBox ID="immediateCheckBox" runat="server" Text="Immediate mode" />
+	<fieldset title="Knobs">
+		<asp:CheckBox ID="immediateCheckBox" runat="server" Text="Immediate mode" />
+		<asp:CheckBoxList runat="server" ID="papePolicies">
+			<asp:ListItem Text="Request phishing resistant authentication" Value="http://schemas.openid.net/pape/policies/2007/06/phishing-resistant" />
+			<asp:ListItem Text="Request multi-factor authentication" Value="http://schemas.openid.net/pape/policies/2007/06/multi-factor" />
+			<asp:ListItem Text="Request physical multi-factor authentication" Value="http://schemas.openid.net/pape/policies/2007/06/multi-factor-physical" />
+		</asp:CheckBoxList>
+	</fieldset>
 	<br />
 	<asp:Label ID="loginFailedLabel" runat="server" EnableViewState="False" Text="Login failed"
 		Visible="False" />

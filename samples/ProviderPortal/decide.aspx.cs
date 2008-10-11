@@ -4,6 +4,7 @@ using System.Web.Security;
 using System.Web.UI;
 using DotNetOpenId.Extensions.SimpleRegistration;
 using DotNetOpenId.Provider;
+using DotNetOpenId.Extensions.ProviderAuthenticationPolicy;
 
 /// <summary>
 /// Page for giving the user the option to continue or cancel out of authentication with a consumer.
@@ -46,11 +47,17 @@ public partial class decide : Page {
 		ClaimsResponse sregResponse = null;
 		if (sregRequest != null) {
 			sregResponse = profileFields.GetOpenIdProfileFields(sregRequest);
-		}
-		ProviderEndpoint.PendingAuthenticationRequest.IsAuthenticated = true;
-		if (sregResponse != null) {
 			ProviderEndpoint.PendingAuthenticationRequest.AddResponseExtension(sregResponse);
 		}
+		var papeRequest = ProviderEndpoint.PendingAuthenticationRequest.GetExtension<PolicyRequest>();
+		PolicyResponse papeResponse = null;
+		if (papeRequest != null) {
+			papeResponse = new PolicyResponse();
+			papeResponse.NistAssuranceLevel = NistAssuranceLevel.InsufficientForLevel1;
+			ProviderEndpoint.PendingAuthenticationRequest.AddResponseExtension(papeResponse);
+		}
+
+		ProviderEndpoint.PendingAuthenticationRequest.IsAuthenticated = true;
 		Debug.Assert(ProviderEndpoint.PendingAuthenticationRequest.IsResponseReady);
 		ProviderEndpoint.PendingAuthenticationRequest.Response.Send();
 		ProviderEndpoint.PendingAuthenticationRequest = null;

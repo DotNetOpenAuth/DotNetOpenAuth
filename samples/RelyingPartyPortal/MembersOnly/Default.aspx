@@ -9,6 +9,18 @@
 		You have completed the OpenID login process.
 	</p>
 
+<% if (State.PapePolicies != null) { %>
+	<p>A PAPE extension was included in the authentication with this content: </p>
+	<ul>
+	<% if (State.PapePolicies.NistAssuranceLevel != null) {%>
+		<li>Nist: <%=HttpUtility.HtmlEncode(State.PapePolicies.NistAssuranceLevel.Value.ToString())%></li>
+	<% }
+	foreach (string policy in State.PapePolicies.ActualPolicies) { %>
+		<li><%=HttpUtility.HtmlEncode(policy) %></li>
+	<% } %>
+	</ul>
+<% } %>
+
 <% if (State.ProfileFields != null) { %>
 	<p>
 		In addition to authenticating you, your OpenID Provider may
