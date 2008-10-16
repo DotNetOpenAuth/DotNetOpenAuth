@@ -217,6 +217,9 @@ idselector_input_id = '" + WrappedTextBox.ClientID + @"';
 			base.RenderChildren(writer);
 		}
 
+		/// <summary>
+		/// Adds failure handling to display an error message to the user.
+		/// </summary>
 		protected override void OnFailed(IAuthenticationResponse response) {
 			base.OnFailed(response);
 
@@ -226,6 +229,9 @@ idselector_input_id = '" + WrappedTextBox.ClientID + @"';
 			}
 		}
 
+		/// <summary>
+		/// Adds authentication cancellation behavior to display a message to the user.
+		/// </summary>
 		protected override void OnCanceled(IAuthenticationResponse response) {
 			base.OnCanceled(response);
 
