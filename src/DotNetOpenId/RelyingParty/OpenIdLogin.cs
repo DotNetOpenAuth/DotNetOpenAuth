@@ -34,6 +34,7 @@ namespace DotNetOpenId.RelyingParty
 		HyperLink registerLink;
 		CheckBox rememberMeCheckBox;
 		Literal idselectorJavascript;
+		Label errorLabel;
 
 		const short textBoxTabIndexOffset = 0;
 		const short loginButtonTabIndexOffset = 1;
@@ -121,6 +122,12 @@ namespace DotNetOpenId.RelyingParty
 			identifierFormatValidator.ControlToValidate = WrappedTextBox.ID;
 			identifierFormatValidator.ValidationGroup = validationGroupDefault;
 			cell.Controls.Add(identifierFormatValidator);
+			errorLabel = new Label();
+			errorLabel.EnableViewState = false;
+			errorLabel.ForeColor = System.Drawing.Color.Red;
+			errorLabel.Style[HtmlTextWriterStyle.Display] = "block"; // puts it on its own line
+			errorLabel.Visible = false;
+			cell.Controls.Add(errorLabel);
 			examplePrefixLabel = new Label();
 			examplePrefixLabel.Text = examplePrefixDefault;
 			cell.Controls.Add(examplePrefixLabel);
@@ -208,6 +215,24 @@ idselector_input_id = '" + WrappedTextBox.ClientID + @"';
 			}
 
 			base.RenderChildren(writer);
+		}
+
+		protected override void OnFailed(IAuthenticationResponse response) {
+			base.OnFailed(response);
+
+			if (!string.IsNullOrEmpty(FailedMessageText)) {
+				errorLabel.Text = string.Format(FailedMessageText, response.Exception.Message);
+				errorLabel.Visible = true;
+			}
+		}
+
+		protected override void OnCanceled(IAuthenticationResponse response) {
+			base.OnCanceled(response);
+
+			if (!string.IsNullOrEmpty(CanceledText)) {
+				errorLabel.Text = CanceledText;
+				errorLabel.Visible = true;
+			}
 		}
 
 		#region Properties
@@ -389,6 +414,36 @@ idselector_input_id = '" + WrappedTextBox.ClientID + @"';
 		public string RememberMeText {
 			get { return rememberMeCheckBox.Text; }
 			set { rememberMeCheckBox.Text = value; }
+		}
+
+		const string failedMessageTextViewStateKey = "FailedMessageText";
+		const string failedMessageTextDefault = "Login failed: {0}";
+		/// <summary>
+		/// Gets or sets the message display in the event of a failed authentication.  {0} may be used to insert the actual error.
+		/// </summary>
+		[Bindable(true)]
+		[Category("Appearance")]
+		[DefaultValue(failedMessageTextDefault)]
+		[Localizable(true)]
+		[Description("The message display in the event of a failed authentication.  {0} may be used to insert the actual error.")]
+		public string FailedMessageText {
+			get { return (string)ViewState[failedMessageTextViewStateKey] ?? failedMessageTextDefault; }
+			set { ViewState[failedMessageTextViewStateKey] = value; }
+		}
+
+		const string canceledTextViewStateKey = "CanceledText";
+		const string canceledTextDefault = "Login canceled.";
+		/// <summary>
+		/// Gets or sets the text to display in the event of an authentication canceled at the Provider.
+		/// </summary>
+		[Bindable(true)]
+		[Category("Appearance")]
+		[DefaultValue(canceledTextDefault)]
+		[Localizable(true)]
+		[Description("The text to display in the event of an authentication canceled at the Provider.")]
+		public string CanceledText {
+			get { return (string)ViewState[canceledTextViewStateKey] ?? canceledTextDefault; }
+			set { ViewState[canceledTextViewStateKey] = value; }
 		}
 
 		const bool rememberMeVisibleDefault = false;

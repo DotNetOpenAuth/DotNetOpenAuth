@@ -8,7 +8,7 @@
 		RequestEmail="Request" RequestGender="Require" RequestPostalCode="Require" RequestTimeZone="Require"
 		RememberMeVisible="True" PolicyUrl="~/PrivacyPolicy.aspx" TabIndex="1"
 		OnLoggedIn="OpenIdLogin1_LoggedIn" OnLoggingIn="OpenIdLogin1_LoggingIn"
-		OnCanceled="OpenIdLogin1_Canceled" OnFailed="OpenIdLogin1_Failed" OnSetupRequired="OpenIdLogin1_SetupRequired" />
+		OnSetupRequired="OpenIdLogin1_SetupRequired" />
 	<fieldset title="Knobs">
 		<asp:CheckBox ID="immediateCheckBox" runat="server" Text="Immediate mode" />
 		<asp:CheckBoxList runat="server" ID="papePolicies">
@@ -18,9 +18,7 @@
 		</asp:CheckBoxList>
 	</fieldset>
 	<br />
-	<asp:Label ID="loginFailedLabel" runat="server" EnableViewState="False" Text="Login failed"
-		Visible="False" />
-	<asp:Label ID="loginCanceledLabel" runat="server" EnableViewState="False" Text="Login canceled"
+	<asp:Label ID="setupRequiredLabel" runat="server" EnableViewState="False" Text="You must log into your Provider first to use Immediate mode."
 		Visible="False" />
 	<p>
 		<asp:ImageButton runat="server" ImageUrl="~/images/yahoo.png" ID="yahooLoginButton"

@@ -24,16 +24,8 @@ public partial class login : System.Web.UI.Page {
 		State.ProfileFields = e.Response.GetExtension<ClaimsResponse>();
 		State.PapePolicies = e.Response.GetExtension<PolicyResponse>();
 	}
-	protected void OpenIdLogin1_Failed(object sender, OpenIdEventArgs e) {
-		loginFailedLabel.Visible = true;
-		loginFailedLabel.Text += ": " + e.Response.Exception.Message;
-	}
-	protected void OpenIdLogin1_Canceled(object sender, OpenIdEventArgs e) {
-		loginCanceledLabel.Visible = true;
-	}
 	protected void OpenIdLogin1_SetupRequired(object sender, OpenIdEventArgs e) {
-		loginFailedLabel.Text = "You must log into your Provider first to use Immediate mode.";
-		loginFailedLabel.Visible = true;
+		setupRequiredLabel.Visible = true;
 	}
 
 	protected void yahooLoginButton_Click(object sender, ImageClickEventArgs e) {

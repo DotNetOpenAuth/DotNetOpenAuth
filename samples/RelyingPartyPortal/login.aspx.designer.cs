@@ -40,22 +40,13 @@ public partial class login {
     protected global::System.Web.UI.WebControls.CheckBoxList papePolicies;
     
     /// <summary>
-    /// loginFailedLabel control.
+    /// setupRequiredLabel control.
     /// </summary>
     /// <remarks>
     /// Auto-generated field.
     /// To modify move field declaration from designer file to code-behind file.
     /// </remarks>
-    protected global::System.Web.UI.WebControls.Label loginFailedLabel;
-    
-    /// <summary>
-    /// loginCanceledLabel control.
-    /// </summary>
-    /// <remarks>
-    /// Auto-generated field.
-    /// To modify move field declaration from designer file to code-behind file.
-    /// </remarks>
-    protected global::System.Web.UI.WebControls.Label loginCanceledLabel;
+    protected global::System.Web.UI.WebControls.Label setupRequiredLabel;
     
     /// <summary>
     /// yahooLoginButton control.
