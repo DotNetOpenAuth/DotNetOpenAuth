@@ -8,6 +8,7 @@ namespace DotNetOpenId {
 	using System.Globalization;
 	using System.IO;
 	using System.Net;
+	using System.Net.Cache;
 	using System.Text.RegularExpressions;
 	using System.Configuration;
 	using DotNetOpenId.Configuration;
@@ -66,6 +67,16 @@ namespace DotNetOpenId {
 		/// Default is 5 seconds.
 		/// </summary>
 		public static TimeSpan Timeout { get; set; }
+
+		/// <summary>
+		/// Gets or sets the default cache policy to use for HTTP requests.
+		/// </summary>
+		internal static RequestCachePolicy DefaultCachePolicy = HttpWebRequest.DefaultCachePolicy;
+
+		/// <summary>
+		/// Gets or sets the cache that can be used for HTTP requests made during identifier discovery.
+		/// </summary>
+		internal static RequestCachePolicy IdentifierDiscoveryCachePolicy = new System.Net.Cache.HttpRequestCachePolicy(System.Net.Cache.HttpRequestCacheLevel.CacheIfAvailable);
 
 		internal delegate UntrustedWebResponse MockRequestResponse(Uri uri, byte[] body, string[] acceptTypes);
 		/// <summary>
@@ -226,10 +237,10 @@ namespace DotNetOpenId {
 		}
 
 		internal static UntrustedWebResponse Request(Uri uri, byte[] body, string[] acceptTypes) {
-			return Request(uri, body, acceptTypes, false);
+			return Request(uri, body, acceptTypes, false, DefaultCachePolicy);
 		}
 
-		internal static UntrustedWebResponse Request(Uri uri, byte[] body, string[] acceptTypes, bool requireSsl) {
+		internal static UntrustedWebResponse Request(Uri uri, byte[] body, string[] acceptTypes, bool requireSsl, RequestCachePolicy cachePolicy) {
 			// Since we may require SSL for every redirect, we handle each redirect manually
 			// in order to detect and fail if any redirect sends us to an HTTP url.
 			// We COULD allow automatic redirect in the cases where HTTPS is not required,
@@ -237,7 +248,7 @@ namespace DotNetOpenId {
 			Uri originalRequestUri = uri;
 			int i;
 			for (i = 0; i < MaximumRedirections; i++) {
-				UntrustedWebResponse response = RequestInternal(uri, body, acceptTypes, requireSsl, false, originalRequestUri);
+				UntrustedWebResponse response = RequestInternal(uri, body, acceptTypes, requireSsl, false, originalRequestUri, cachePolicy);
 				if (response.StatusCode == HttpStatusCode.MovedPermanently ||
 					response.StatusCode == HttpStatusCode.Redirect ||
 					response.StatusCode == HttpStatusCode.RedirectMethod ||
@@ -251,7 +262,7 @@ namespace DotNetOpenId {
 		}
 
 		static UntrustedWebResponse RequestInternal(Uri uri, byte[] body, string[] acceptTypes,
-			bool requireSsl, bool avoidSendingExpect100Continue, Uri originalRequestUri) {
+			bool requireSsl, bool avoidSendingExpect100Continue, Uri originalRequestUri, RequestCachePolicy cachePolicy) {
 			if (uri == null) throw new ArgumentNullException("uri");
 			if (originalRequestUri == null) throw new ArgumentNullException("originalRequestUri");
 			if (!isUriAllowable(uri)) throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
@@ -273,6 +284,7 @@ namespace DotNetOpenId {
 			request.ReadWriteTimeout = (int)ReadWriteTimeout.TotalMilliseconds;
 			request.Timeout = (int)Timeout.TotalMilliseconds;
 			request.KeepAlive = false;
+			request.CachePolicy = cachePolicy;
 			if (acceptTypes != null)
 				request.Accept = string.Join(",", acceptTypes);
 			if (body != null) {
@@ -307,7 +319,7 @@ namespace DotNetOpenId {
 					if (response != null) {
 						if (response.StatusCode == HttpStatusCode.ExpectationFailed) {
 							if (!avoidSendingExpect100Continue) { // must only try this once more
-								return RequestInternal(uri, body, acceptTypes, requireSsl, true, originalRequestUri);
+								return RequestInternal(uri, body, acceptTypes, requireSsl, true, originalRequestUri, cachePolicy);
 							}
 						}
 						return getResponse(originalRequestUri, response);

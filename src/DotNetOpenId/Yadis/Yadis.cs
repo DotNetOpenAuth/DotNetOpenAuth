@@ -32,7 +32,8 @@ namespace DotNetOpenId.Yadis {
 					return null;
 				}
 				response = UntrustedWebRequest.Request(uri, null,
-					new[] { ContentTypes.Html, ContentTypes.XHtml, ContentTypes.Xrds }, requireSsl);
+					new[] { ContentTypes.Html, ContentTypes.XHtml, ContentTypes.Xrds }, requireSsl,
+					UntrustedWebRequest.IdentifierDiscoveryCachePolicy);
 				if (response.StatusCode != System.Net.HttpStatusCode.OK) {
 					return null;
 				}
@@ -61,7 +62,7 @@ namespace DotNetOpenId.Yadis {
 				}
 				if (url != null) {
 					if (!requireSsl || string.Equals(url.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)) {
-						response2 = UntrustedWebRequest.Request(url, null, null, requireSsl);
+						response2 = UntrustedWebRequest.Request(url, null, null, requireSsl, UntrustedWebRequest.IdentifierDiscoveryCachePolicy);
 						if (response2.StatusCode != System.Net.HttpStatusCode.OK) {
 							return null;
 						}
