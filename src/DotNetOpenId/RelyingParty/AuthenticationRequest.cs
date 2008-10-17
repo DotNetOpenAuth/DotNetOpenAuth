@@ -51,8 +51,14 @@ namespace DotNetOpenId.RelyingParty {
 			if (token != null)
 				AddCallbackArguments(DotNetOpenId.RelyingParty.Token.TokenKey, token);
 		}
-		internal static AuthenticationRequest Create(Identifier userSuppliedIdentifier,
+
+		/// <summary>
+		/// Performs identifier discovery and creates associations and generates authentication requests
+		/// on-demand for as long as new ones can be generated based on the results of Identifier discovery.
+		/// </summary>
+		internal static IEnumerable<AuthenticationRequest> Create(Identifier userSuppliedIdentifier,
 			OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl) {
+			// We have a long data validation and preparation process
 			if (userSuppliedIdentifier == null) throw new ArgumentNullException("userSuppliedIdentifier");
 			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
 			if (realm == null) throw new ArgumentNullException("realm");
@@ -63,10 +69,6 @@ namespace DotNetOpenId.RelyingParty {
 				// We'll wait for secure discovery to fail on the new identifier.
 				userSuppliedIdentifier.TryRequireSsl(out userSuppliedIdentifier);
 			}
-			Logger.InfoFormat("Creating authentication request for user supplied Identifier: {0}",
-				userSuppliedIdentifier);
-			Logger.DebugFormat("Realm: {0}", realm);
-			Logger.DebugFormat("Return To: {0}", returnToUrl);
 
 			if (Logger.IsWarnEnabled && returnToUrl.Query != null) {
 				NameValueCollection returnToArgs = HttpUtility.ParseQueryString(returnToUrl.Query);
@@ -78,11 +80,6 @@ namespace DotNetOpenId.RelyingParty {
 				}
 			}
 
-			var endpoints = new List<ServiceEndpoint>(userSuppliedIdentifier.Discover());
-			ServiceEndpoint endpoint = selectEndpoint(endpoints.AsReadOnly(), relyingParty);
-			if (endpoint == null)
-				throw new OpenIdException(Strings.OpenIdEndpointNotFound);
-
 			// Throw an exception now if the realm and the return_to URLs don't match
 			// as required by the provider.  We could wait for the provider to test this and
 			// fail, but this will be faster and give us a better error message.
@@ -90,19 +87,82 @@ namespace DotNetOpenId.RelyingParty {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.ReturnToNotUnderRealm, returnToUrl, realm));
 
-			string token = new Token(endpoint).Serialize(relyingParty.Store);
-			// Retrieve the association, but don't create one, as a creation was already
-			// attempted by the selectEndpoint method.
-			Association association = relyingParty.Store != null ? getAssociation(relyingParty, endpoint, false) : null;
+			// Call another method to perform the deferred part of our execution.
+			return CreateInternal(userSuppliedIdentifier, relyingParty, realm, returnToUrl);
+		}
 
-			return new AuthenticationRequest(
-				token, association, endpoint, realm, returnToUrl, relyingParty);
+		/// <summary>
+		/// Performs discovery and request generation for the <see cref="Create"/> method.
+		/// All data validation and cleansing steps must have ALREADY taken place.
+		/// </summary>
+		private static IEnumerable<AuthenticationRequest> CreateInternal(Identifier userSuppliedIdentifier,
+			OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl) {
+			Logger.InfoFormat("Performing discovery on user-supplied identifier: {0}", userSuppliedIdentifier);
+			IEnumerable<ServiceEndpoint> endpoints = filterAndSortEndpoints(userSuppliedIdentifier.Discover(), relyingParty);
+
+			// Maintain a list of endpoints that we could not form an association with.
+			// We'll fallback to generating requests to these if the ones we CAN create
+			// an association with run out.
+			var failedAssociationEndpoints = new List<ServiceEndpoint>(0);
+
+			foreach (var endpoint in endpoints) {
+				Logger.InfoFormat("Creating authentication request for user supplied Identifier: {0}", userSuppliedIdentifier);
+				Logger.DebugFormat("Realm: {0}", realm);
+				Logger.DebugFormat("Return To: {0}", returnToUrl);
+
+				// The strategy here is to prefer endpoints with whom we can create associations.
+				Association association = null;
+				if (relyingParty.Store != null) {
+					association = getAssociation(relyingParty, endpoint, true);
+					if (association == null) {
+						Logger.WarnFormat("Failed to create association with {0}.  Skipping to next endpoint.", endpoint.ProviderEndpoint);
+						// No association could be created.  Add it to the list of failed association
+						// endpoints and skip to the next available endpoint.
+						failedAssociationEndpoints.Add(endpoint);
+						continue;
+					}
+				}
+
+				string token = new Token(endpoint).Serialize(relyingParty.Store);
+				yield return new AuthenticationRequest(
+					token, association, endpoint, realm, returnToUrl, relyingParty);
+			}
+
+			// Now that we've run out of endpoints that respond to association requests,
+			// since we apparently are still running, the caller must want another request.
+			// We'll go ahead and generate the requests to OPs that may be down.
+			if (failedAssociationEndpoints.Count > 0) {
+				Logger.WarnFormat("Now generating requests for Provider endpoints that failed initial association attempts.");
+
+				foreach (var endpoint in failedAssociationEndpoints) {
+					Logger.WarnFormat("Creating authentication request for user supplied Identifier: {0}", userSuppliedIdentifier);
+					Logger.DebugFormat("Realm: {0}", realm);
+					Logger.DebugFormat("Return To: {0}", returnToUrl);
+
+					Association association = null; // don't try to create it again.
+					string token = new Token(endpoint).Serialize(relyingParty.Store);
+					yield return new AuthenticationRequest(
+						token, association, endpoint, realm, returnToUrl, relyingParty);
+				}
+			}
+		}
+
+		internal static AuthenticationRequest CreateSingle(Identifier userSuppliedIdentifier,
+			OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl) {
+
+			// Just return the first generated request.
+			var requests = Create(userSuppliedIdentifier, relyingParty, realm, returnToUrl).GetEnumerator();
+			if (requests.MoveNext()) {
+				return requests.Current;
+			} else {
+				throw new OpenIdException(Strings.OpenIdEndpointNotFound);
+			}
 		}
 
 		/// <summary>
 		/// Returns a filtered and sorted list of the available OP endpoints for a discovered Identifier.
 		/// </summary>
-		private static List<ServiceEndpoint> filterAndSortEndpoints(ReadOnlyCollection<ServiceEndpoint> endpoints,
+		private static List<ServiceEndpoint> filterAndSortEndpoints(IEnumerable<ServiceEndpoint> endpoints,
 			OpenIdRelyingParty relyingParty) {
 			if (endpoints == null) throw new ArgumentNullException("endpoints");
 			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
@@ -111,10 +171,13 @@ namespace DotNetOpenId.RelyingParty {
 			EndpointSelector versionFilter = ep => ((ServiceEndpoint)ep).Protocol.Version >= Protocol.Lookup(relyingParty.Settings.MinimumRequiredOpenIdVersion).Version;
 			EndpointSelector hostingSiteFilter = relyingParty.EndpointFilter ?? (ep => true);
 
-			var filteredEndpoints = new List<IXrdsProviderEndpoint>(endpoints.Count);
+			bool anyFilteredOut = false;
+			var filteredEndpoints = new List<IXrdsProviderEndpoint>();
 			foreach (ServiceEndpoint endpoint in endpoints) {
 				if (versionFilter(endpoint) && hostingSiteFilter(endpoint)) {
 					filteredEndpoints.Add(endpoint);
+				} else {
+					anyFilteredOut = true;
 				}
 			}
 
@@ -125,6 +188,19 @@ namespace DotNetOpenId.RelyingParty {
 			foreach (ServiceEndpoint endpoint in filteredEndpoints) {
 				endpointList.Add(endpoint);
 			}
+
+			if (anyFilteredOut) {
+				Logger.DebugFormat("Some endpoints were filtered out.  Total endpoints remaining: {0}", filteredEndpoints.Count);
+			}
+			if (Logger.IsDebugEnabled) {
+				if (Util.AreSequencesEquivalent(endpoints, endpointList)) {
+					Logger.Debug("Filtering and sorting of endpoints did not affect the list.");
+				} else {
+					Logger.Debug("After filtering and sorting service endpoints, this is the new prioritized list:");
+					Logger.Debug(Util.ToString(filteredEndpoints, true));
+				}
+			}
+
 			return endpointList;
 		}
 
@@ -136,17 +212,6 @@ namespace DotNetOpenId.RelyingParty {
 			OpenIdRelyingParty relyingParty) {
 
 			List<ServiceEndpoint> filteredEndpoints = filterAndSortEndpoints(endpoints, relyingParty);
-			if (filteredEndpoints.Count != endpoints.Count) {
-				Logger.DebugFormat("Some endpoints were filtered out.  Total endpoints remaining: {0}", filteredEndpoints.Count);
-			}
-			if (Logger.IsDebugEnabled) {
-				if (Util.AreSequencesEquivalent(endpoints, filteredEndpoints)) {
-					Logger.Debug("Filtering and sorting of endpoints did not affect the list.");
-				} else {
-					Logger.Debug("After filtering and sorting service endpoints, this is the new prioritized list:");
-					Logger.Debug(Util.ToString(filteredEndpoints, true));
-				}
-			}
 
 			// If there are no endpoint candidates...
 			if (filteredEndpoints.Count == 0) {

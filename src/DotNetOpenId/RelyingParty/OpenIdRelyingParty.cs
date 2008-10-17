@@ -182,7 +182,7 @@ namespace DotNetOpenId.RelyingParty {
 				returnTo.Path = realm.AbsolutePath + returnTo.Path.Substring(realm.AbsolutePath.Length);
 			}
 
-			return AuthenticationRequest.Create(userSuppliedIdentifier, this, realm, returnTo.Uri);
+			return AuthenticationRequest.CreateSingle(userSuppliedIdentifier, this, realm, returnTo.Uri);
 		}
 
 		/// <summary>
@@ -224,12 +224,6 @@ namespace DotNetOpenId.RelyingParty {
 			return CreateRequest(userSuppliedIdentifier, realm, returnTo.Uri);
 		}
 
-		internal static bool ShouldParameterBeStrippedFromReturnToUrl(string parameterName) {
-			Protocol protocol = Protocol.Default;
-			return parameterName.StartsWith(protocol.openid.Prefix, StringComparison.OrdinalIgnoreCase)
-				|| parameterName == Token.TokenKey;
-		}
-
 		/// <summary>
 		/// Creates an authentication request to verify that a user controls
 		/// some given Identifier.
@@ -261,6 +255,12 @@ namespace DotNetOpenId.RelyingParty {
 				realmUrl.Path += "/";
 
 			return CreateRequest(userSuppliedIdentifier, new Realm(realmUrl.Uri));
+		}
+
+		internal static bool ShouldParameterBeStrippedFromReturnToUrl(string parameterName) {
+			Protocol protocol = Protocol.Default;
+			return parameterName.StartsWith(protocol.openid.Prefix, StringComparison.OrdinalIgnoreCase)
+				|| parameterName == Token.TokenKey;
 		}
 
 		/// <summary>
