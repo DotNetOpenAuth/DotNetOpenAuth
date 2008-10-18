@@ -314,7 +314,7 @@ namespace DotNetOpenId {
 
 		// The characters to escape here are inspired by 
 		// http://code.google.com/p/doctype/wiki/ArticleXSSInJavaScript
-		static readonly Dictionary<string, string> javascriptStaticStringEscaping = new Dictionary<string,string> {
+		static readonly Dictionary<string, string> javascriptStaticStringEscaping = new Dictionary<string, string> {
 			{"\\", @"\\" }, // this WAS just above the & substitution but we moved it here to prevent double-escaping
 			{"\t", @"\t" },
 			{"\n", @"\n" },
@@ -379,6 +379,20 @@ namespace DotNetOpenId {
 				}
 			}
 		}
+		internal static IEnumerable<T> OfType<T>(System.Collections.IEnumerable sequence) {
+			foreach (object item in sequence) {
+				yield return (T)item;
+			}
+		}
+		internal static int Count(System.Collections.IEnumerable sequence) {
+			int count = 0;
+			foreach (object item in sequence) {
+				count++;
+			}
+
+			return count;
+		}
+
 		/// <summary>
 		/// Tests two sequences for same contents and ordering.
 		/// </summary>
@@ -389,7 +403,7 @@ namespace DotNetOpenId {
 
 			IEnumerator<T> iterator1 = sequence1.GetEnumerator();
 			IEnumerator<T> iterator2 = sequence2.GetEnumerator();
-			bool movenext1 , movenext2;
+			bool movenext1, movenext2;
 			while (true) {
 				movenext1 = iterator1.MoveNext();
 				movenext2 = iterator2.MoveNext();
@@ -433,7 +447,7 @@ namespace DotNetOpenId {
 					foreach (T obj in l) {
 						// Prepare the string repersentation of the object
 						string objString = obj != null ? obj.ToString() : "<NULL>";
-						
+
 						// Indent every line printed
 						objString = objString.Replace(Environment.NewLine, Environment.NewLine + "\t");
 						sb.Append("\t");

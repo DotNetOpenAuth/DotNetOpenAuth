@@ -14,6 +14,41 @@ namespace DotNetOpenId.Test.RelyingParty {
 		readonly Realm realm = new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri);
 		readonly Uri returnTo = TestSupport.GetFullUrl(TestSupport.ConsumerPage);
 		Uri simpleNonOpenIdRequest = new Uri("http://localhost/hi");
+		const string multipleEndpointXrds = @"<?xml version='1.0' encoding='UTF-8'?>
+<XRD xmlns='xri://$xrd*($v*2.0)'>
+ <Query>=MultipleEndpoint</Query>
+ <Status cid='verified' code='100' />
+ <ProviderID>=!91F2.8153.F600.AE24</ProviderID>
+ <CanonicalID>=!91F2.8153.F600.AE24</CanonicalID>
+ <Service>
+  <ProviderID>@!7F6F.F50.A4E4.1133</ProviderID>
+  <Type select='true'>xri://+i-service*(+contact)*($v*1.0)</Type>
+  <Type match='null'/>
+  <Path select='true'>(+contact)</Path>
+  <Path match='null'/>
+  <MediaType match='default'/>
+  <URI append='qxri'>http://contact.freexri.com/contact/</URI>
+ </Service>
+ <Service priority='20'>
+  <ProviderID>@!7F6F.F50.A4E4.1133</ProviderID>
+  <Type select='true'>http://openid.net/signon/1.0</Type>
+  <Path select='true'>(+login)</Path>
+  <Path match='default'/>
+  <MediaType match='default'/>
+  <URI append='none' priority='2'>http://authn.freexri.com/auth10/</URI>
+  <URI append='none' priority='1'>https://authn.freexri.com/auth10/</URI>
+ </Service>
+ <Service priority='10'>
+  <ProviderID>@!7F6F.F50.A4E4.1133</ProviderID>
+  <Type select='true'>http://specs.openid.net/auth/2.0/signon</Type>
+  <Path select='true'>(+login)</Path>
+  <Path match='default'/>
+  <MediaType match='default'/>
+  <URI append='none' priority='2'>http://authn.freexri.com/auth20/</URI>
+  <URI append='none' priority='1'>https://authn.freexri.com/auth20/</URI>
+ </Service>
+ <ServedBy>OpenXRI</ServedBy>
+</XRD>";
 
 		[SetUp]
 		public void Setup() {
@@ -66,6 +101,34 @@ namespace DotNetOpenId.Test.RelyingParty {
 			Assert.IsTrue(mockIdentifer.ToString().EndsWith("#c"), "Test broken");
 			IAuthenticationRequest request = consumer.CreateRequest(mockIdentifer, TestSupport.Realm, TestSupport.ReturnTo);
 			Assert.AreEqual(0, new Uri(request.ClaimedIdentifier).Fragment.Length);
+		}
+
+		/// <summary>
+		/// Verifies that the deferred generation of request objects does not result in
+		/// deferred input validation.
+		/// </summary>
+		[Test, ExpectedException(typeof(ArgumentNullException))]
+		public void CreateRequestsPerformsImmediateValidation() {
+			var consumer = TestSupport.CreateRelyingParty(null);
+			consumer.CreateRequests(null, realm, returnTo);
+		}
+
+		[Test]
+		public void CreateRequestsReturnsEmpty() {
+			MockHttpRequest.RegisterMockResponse(new Uri("http://host/"), "text/html", "<html/>");
+			var consumer = TestSupport.CreateRelyingParty(null);
+			CollectionAssert.IsEmpty(consumer.CreateRequests("http://host/", realm, returnTo));
+		}
+
+		[Test]
+		public void CreateRequestsReturnsMultiple() {
+			MockHttpRequest.RegisterMockXrdsResponses(new Dictionary<string, string> {
+				{"https://xri.net/=MultipleEndpoint?_xrd_r=application/xrd%2Bxml;sep=false", multipleEndpointXrds},
+			});
+			var consumer = TestSupport.CreateRelyingParty(null);
+			var requests = consumer.CreateRequests("=MultipleEndpoint", realm, returnTo);
+			int count = Util.Count(requests);
+			Assert.Greater(count, 1, "Expected more than one auth request to be generated.");
 		}
 
 		[Test]
@@ -201,43 +264,8 @@ namespace DotNetOpenId.Test.RelyingParty {
 
 		[Test]
 		public void MultipleServiceEndpoints() {
-			string xrds = @"<?xml version='1.0' encoding='UTF-8'?>
-<XRD xmlns='xri://$xrd*($v*2.0)'>
- <Query>=MultipleEndpoint</Query>
- <Status cid='verified' code='100' />
- <ProviderID>=!91F2.8153.F600.AE24</ProviderID>
- <CanonicalID>=!91F2.8153.F600.AE24</CanonicalID>
- <Service>
-  <ProviderID>@!7F6F.F50.A4E4.1133</ProviderID>
-  <Type select='true'>xri://+i-service*(+contact)*($v*1.0)</Type>
-  <Type match='null'/>
-  <Path select='true'>(+contact)</Path>
-  <Path match='null'/>
-  <MediaType match='default'/>
-  <URI append='qxri'>http://contact.freexri.com/contact/</URI>
- </Service>
- <Service priority='20'>
-  <ProviderID>@!7F6F.F50.A4E4.1133</ProviderID>
-  <Type select='true'>http://openid.net/signon/1.0</Type>
-  <Path select='true'>(+login)</Path>
-  <Path match='default'/>
-  <MediaType match='default'/>
-  <URI append='none' priority='2'>http://authn.freexri.com/auth10/</URI>
-  <URI append='none' priority='1'>https://authn.freexri.com/auth10/</URI>
- </Service>
- <Service priority='10'>
-  <ProviderID>@!7F6F.F50.A4E4.1133</ProviderID>
-  <Type select='true'>http://specs.openid.net/auth/2.0/signon</Type>
-  <Path select='true'>(+login)</Path>
-  <Path match='default'/>
-  <MediaType match='default'/>
-  <URI append='none' priority='2'>http://authn.freexri.com/auth20/</URI>
-  <URI append='none' priority='1'>https://authn.freexri.com/auth20/</URI>
- </Service>
- <ServedBy>OpenXRI</ServedBy>
-</XRD>";
 			MockHttpRequest.RegisterMockXrdsResponses(new Dictionary<string, string> {
-				{"https://xri.net/=MultipleEndpoint?_xrd_r=application/xrd%2Bxml;sep=false", xrds},
+				{"https://xri.net/=MultipleEndpoint?_xrd_r=application/xrd%2Bxml;sep=false", multipleEndpointXrds},
 			});
 			OpenIdRelyingParty rp = new OpenIdRelyingParty(null, null, null);
 			Realm realm = new Realm("http://somerealm");

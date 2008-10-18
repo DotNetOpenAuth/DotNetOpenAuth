@@ -87,18 +87,21 @@ namespace DotNetOpenId.RelyingParty {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.ReturnToNotUnderRealm, returnToUrl, realm));
 
-			// Call another method to perform the deferred part of our execution.
-			return CreateInternal(userSuppliedIdentifier, relyingParty, realm, returnToUrl);
+			// Perform discovery right now (not deferred).
+			var serviceEndpoints = userSuppliedIdentifier.Discover();
+
+			// Call another method that defers request generation.
+			return CreateInternal(userSuppliedIdentifier, relyingParty, realm, returnToUrl, serviceEndpoints);
 		}
 
 		/// <summary>
-		/// Performs discovery and request generation for the <see cref="Create"/> method.
+		/// Performs request generation for the <see cref="Create"/> method.
 		/// All data validation and cleansing steps must have ALREADY taken place.
 		/// </summary>
 		private static IEnumerable<AuthenticationRequest> CreateInternal(Identifier userSuppliedIdentifier,
-			OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl) {
+			OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl, IEnumerable<ServiceEndpoint> serviceEndpoints) {
 			Logger.InfoFormat("Performing discovery on user-supplied identifier: {0}", userSuppliedIdentifier);
-			IEnumerable<ServiceEndpoint> endpoints = filterAndSortEndpoints(userSuppliedIdentifier.Discover(), relyingParty);
+			IEnumerable<ServiceEndpoint> endpoints = filterAndSortEndpoints(serviceEndpoints, relyingParty);
 
 			// Maintain a list of endpoints that we could not form an association with.
 			// We'll fallback to generating requests to these if the ones we CAN create

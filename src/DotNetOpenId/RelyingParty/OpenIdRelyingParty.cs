@@ -172,17 +172,14 @@ namespace DotNetOpenId.RelyingParty {
 		/// An authentication request object that describes the HTTP response to
 		/// send to the user agent to initiate the authentication.
 		/// </returns>
+		/// <exception cref="OpenIdException">Thrown if no OpenID endpoint could be found.</exception>
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl) {
-			// Normalize the portion of the return_to path that correlates to the realm for capitalization.
-			// (so that if a web app base path is /MyApp/, but the URL of this request happens to be
-			// /myapp/login.aspx, we bump up the return_to Url to use /MyApp/ so it matches the realm.
-			UriBuilder returnTo = new UriBuilder(returnToUrl);
-			if (returnTo.Path.StartsWith(realm.AbsolutePath, StringComparison.OrdinalIgnoreCase) &&
-				!returnTo.Path.StartsWith(realm.AbsolutePath, StringComparison.Ordinal)) {
-				returnTo.Path = realm.AbsolutePath + returnTo.Path.Substring(realm.AbsolutePath.Length);
+			var requests = CreateRequests(userSuppliedIdentifier, realm, returnToUrl).GetEnumerator();
+			if (requests.MoveNext()) {
+				return requests.Current;
+			} else {
+				throw new OpenIdException(Strings.OpenIdEndpointNotFound);
 			}
-
-			return AuthenticationRequest.CreateSingle(userSuppliedIdentifier, this, realm, returnTo.Uri);
 		}
 
 		/// <summary>
@@ -204,24 +201,14 @@ namespace DotNetOpenId.RelyingParty {
 		/// <remarks>
 		/// This method requires an ASP.NET HttpContext.
 		/// </remarks>
+		/// <exception cref="OpenIdException">Thrown if no OpenID endpoint could be found.</exception>
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm) {
-			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
-
-			// Build the return_to URL
-			UriBuilder returnTo = new UriBuilder(Util.GetRequestUrlFromContext());
-			// Trim off any parameters with an "openid." prefix, and a few known others
-			// to avoid carrying state from a prior login attempt.
-			returnTo.Query = string.Empty;
-			NameValueCollection queryParams = Util.GetQueryFromContextNVC();
-			var returnToParams = new Dictionary<string, string>(queryParams.Count);
-			foreach (string key in queryParams) {
-				if (!ShouldParameterBeStrippedFromReturnToUrl(key)) {
-					returnToParams.Add(key, queryParams[key]);
-				}
+			var requests = CreateRequests(userSuppliedIdentifier, realm).GetEnumerator();
+			if (requests.MoveNext()) {
+				return requests.Current;
+			} else {
+				throw new OpenIdException(Strings.OpenIdEndpointNotFound);
 			}
-			UriUtil.AppendQueryArgs(returnTo, returnToParams);
-
-			return CreateRequest(userSuppliedIdentifier, realm, returnTo.Uri);
 		}
 
 		/// <summary>
@@ -238,7 +225,124 @@ namespace DotNetOpenId.RelyingParty {
 		/// <remarks>
 		/// This method requires an ASP.NET HttpContext.
 		/// </remarks>
+		/// <exception cref="OpenIdException">Thrown if no OpenID endpoint could be found.</exception>
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier) {
+			var requests = CreateRequests(userSuppliedIdentifier).GetEnumerator();
+			if (requests.MoveNext()) {
+				return requests.Current;
+			} else {
+				throw new OpenIdException(Strings.OpenIdEndpointNotFound);
+			}
+		}
+
+		/// <summary>
+		/// Generates the authentication requests that can satisfy the requirements of some OpenID Identifier.
+		/// </summary>
+		/// <param name="userSuppliedIdentifier">
+		/// The Identifier supplied by the user.  This may be a URL, an XRI or i-name.
+		/// </param>
+		/// <param name="realm">
+		/// The shorest URL that describes this relying party web site's address.
+		/// For example, if your login page is found at https://www.example.com/login.aspx,
+		/// your realm would typically be https://www.example.com/.
+		/// </param>
+		/// <param name="returnToUrl">
+		/// The URL of the login page, or the page prepared to receive authentication 
+		/// responses from the OpenID Provider.
+		/// </param>
+		/// <returns>
+		/// An authentication request object that describes the HTTP response to
+		/// send to the user agent to initiate the authentication.
+		/// </returns>
+		/// <remarks>
+		/// <para>Any individual generated request can satisfy the authentication.  
+		/// The generated requests are sorted in preferred order.
+		/// Each request is generated as it is enumerated to, and associations are formed
+		/// in the process.  Enumerating beyond the first request is therefore costly
+		/// and should only be done if the first request fails.</para>
+		/// <para>No exception is thrown if no OpenID endpoints were discovered.  
+		/// An empty enumerable is returned instead.</para>
+		/// </remarks>
+		public IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl) {
+			if (realm == null) throw new ArgumentNullException("realm");
+			if (returnToUrl == null) throw new ArgumentNullException("returnToUrl");
+
+			// Normalize the portion of the return_to path that correlates to the realm for capitalization.
+			// (so that if a web app base path is /MyApp/, but the URL of this request happens to be
+			// /myapp/login.aspx, we bump up the return_to Url to use /MyApp/ so it matches the realm.
+			UriBuilder returnTo = new UriBuilder(returnToUrl);
+			if (returnTo.Path.StartsWith(realm.AbsolutePath, StringComparison.OrdinalIgnoreCase) &&
+				!returnTo.Path.StartsWith(realm.AbsolutePath, StringComparison.Ordinal)) {
+				returnTo.Path = realm.AbsolutePath + returnTo.Path.Substring(realm.AbsolutePath.Length);
+			}
+
+			return Util.OfType<IAuthenticationRequest>(AuthenticationRequest.Create(userSuppliedIdentifier, this, realm, returnTo.Uri));
+		}
+
+		/// <summary>
+		/// Generates the authentication requests that can satisfy the requirements of some OpenID Identifier.
+		/// </summary>
+		/// <param name="userSuppliedIdentifier">
+		/// The Identifier supplied by the user.  This may be a URL, an XRI or i-name.
+		/// </param>
+		/// <param name="realm">
+		/// The shorest URL that describes this relying party web site's address.
+		/// For example, if your login page is found at https://www.example.com/login.aspx,
+		/// your realm would typically be https://www.example.com/.
+		/// </param>
+		/// <returns>
+		/// An authentication request object that describes the HTTP response to
+		/// send to the user agent to initiate the authentication.
+		/// </returns>
+		/// <remarks>
+		/// <para>Any individual generated request can satisfy the authentication.  
+		/// The generated requests are sorted in preferred order.
+		/// Each request is generated as it is enumerated to, and associations are formed
+		/// in the process.  Enumerating beyond the first request is therefore costly
+		/// and should only be done if the first request fails.</para>
+		/// <para>No exception is thrown if no OpenID endpoints were discovered.  
+		/// An empty enumerable is returned instead.</para>
+		/// </remarks>
+		public IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm) {
+			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
+
+			// Build the return_to URL
+			UriBuilder returnTo = new UriBuilder(Util.GetRequestUrlFromContext());
+			// Trim off any parameters with an "openid." prefix, and a few known others
+			// to avoid carrying state from a prior login attempt.
+			returnTo.Query = string.Empty;
+			NameValueCollection queryParams = Util.GetQueryFromContextNVC();
+			var returnToParams = new Dictionary<string, string>(queryParams.Count);
+			foreach (string key in queryParams) {
+				if (!ShouldParameterBeStrippedFromReturnToUrl(key)) {
+					returnToParams.Add(key, queryParams[key]);
+				}
+			}
+			UriUtil.AppendQueryArgs(returnTo, returnToParams);
+
+			return CreateRequests(userSuppliedIdentifier, realm, returnTo.Uri);
+		}
+
+		/// <summary>
+		/// Generates the authentication requests that can satisfy the requirements of some OpenID Identifier.
+		/// </summary>
+		/// <param name="userSuppliedIdentifier">
+		/// The Identifier supplied by the user.  This may be a URL, an XRI or i-name.
+		/// </param>
+		/// <returns>
+		/// An authentication request object that describes the HTTP response to
+		/// send to the user agent to initiate the authentication.
+		/// </returns>
+		/// <remarks>
+		/// <para>Any individual generated request can satisfy the authentication.  
+		/// The generated requests are sorted in preferred order.
+		/// Each request is generated as it is enumerated to, and associations are formed
+		/// in the process.  Enumerating beyond the first request is therefore costly
+		/// and should only be done if the first request fails.</para>
+		/// <para>No exception is thrown if no OpenID endpoints were discovered.  
+		/// An empty enumerable is returned instead.</para>
+		/// </remarks>
+		public IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier) {
 			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
 
 			// Build the realm URL
@@ -254,7 +358,7 @@ namespace DotNetOpenId.RelyingParty {
 			if (!realmUrl.Path.EndsWith("/", StringComparison.Ordinal))
 				realmUrl.Path += "/";
 
-			return CreateRequest(userSuppliedIdentifier, new Realm(realmUrl.Uri));
+			return CreateRequests(userSuppliedIdentifier, new Realm(realmUrl.Uri));
 		}
 
 		internal static bool ShouldParameterBeStrippedFromReturnToUrl(string parameterName) {
