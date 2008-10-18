@@ -67,6 +67,7 @@
     <Compile Include="Extensions\IClientScriptExtensionResponse.cs" />
     <Compile Include="Extensions\ExtensionManager.cs" />
     <Compile Include="Provider\ProviderSecuritySettings.cs" />
+    <Compile Include="RelyingParty\AssociationPreference.cs" />
     <Compile Include="RelyingParty\AuthenticationResponseSnapshot.cs" />
     <Compile Include="RelyingParty\OpenIdAjaxTextBox.cs" />
     <Compile Include="Configuration\ProviderSecuritySettingsElement.cs" />

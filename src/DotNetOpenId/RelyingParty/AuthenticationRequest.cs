@@ -27,19 +27,18 @@ namespace DotNetOpenId.RelyingParty {
 
 	[DebuggerDisplay("ClaimedIdentifier: {ClaimedIdentifier}, Mode: {Mode}, OpenId: {protocol.Version}")]
 	class AuthenticationRequest : IAuthenticationRequest {
-		Association assoc;
+		AssociationPreference associationPreference = AssociationPreference.IfPossible;
 		ServiceEndpoint endpoint;
 		Protocol protocol { get { return endpoint.Protocol; } }
 		internal OpenIdRelyingParty RelyingParty;
 
-		AuthenticationRequest(Association assoc, ServiceEndpoint endpoint,
+		AuthenticationRequest(ServiceEndpoint endpoint,
 			Realm realm, Uri returnToUrl, OpenIdRelyingParty relyingParty) {
 			if (endpoint == null) throw new ArgumentNullException("endpoint");
 			if (realm == null) throw new ArgumentNullException("realm");
 			if (returnToUrl == null) throw new ArgumentNullException("returnToUrl");
 			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
 
-			this.assoc = assoc;
 			this.endpoint = endpoint;
 			RelyingParty = relyingParty;
 			Realm = realm;
@@ -103,7 +102,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// </summary>
 		private static IEnumerable<AuthenticationRequest> CreateInternal(Identifier userSuppliedIdentifier,
 			OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl,
-			IEnumerable<ServiceEndpoint> serviceEndpoints, bool createNewAssociationsIfNeeded) {
+			IEnumerable<ServiceEndpoint> serviceEndpoints, bool createNewAssociationsAsNeeded) {
 			Logger.InfoFormat("Performing discovery on user-supplied identifier: {0}", userSuppliedIdentifier);
 			IEnumerable<ServiceEndpoint> endpoints = filterAndSortEndpoints(serviceEndpoints, relyingParty);
 
@@ -123,8 +122,8 @@ namespace DotNetOpenId.RelyingParty {
 					// In some scenarios (like the AJAX control wanting ALL auth requests possible),
 					// we don't want to create associations with every Provider.  But we'll use
 					// associations where they are already formed from previous authentications.
-					association = getAssociation(relyingParty, endpoint, createNewAssociationsIfNeeded);
-					if (association == null && createNewAssociationsIfNeeded) {
+					association = getAssociation(relyingParty, endpoint, createNewAssociationsAsNeeded);
+					if (association == null && createNewAssociationsAsNeeded) {
 						Logger.WarnFormat("Failed to create association with {0}.  Skipping to next endpoint.", endpoint.ProviderEndpoint);
 						// No association could be created.  Add it to the list of failed association
 						// endpoints and skip to the next available endpoint.
@@ -133,8 +132,7 @@ namespace DotNetOpenId.RelyingParty {
 					}
 				}
 
-				yield return new AuthenticationRequest(
-					association, endpoint, realm, returnToUrl, relyingParty);
+				yield return new AuthenticationRequest(endpoint, realm, returnToUrl, relyingParty);
 			}
 
 			// Now that we've run out of endpoints that respond to association requests,
@@ -148,9 +146,11 @@ namespace DotNetOpenId.RelyingParty {
 					Logger.DebugFormat("Realm: {0}", realm);
 					Logger.DebugFormat("Return To: {0}", returnToUrl);
 
-					Association association = null; // don't try to create it again.
-					yield return new AuthenticationRequest(
-						association, endpoint, realm, returnToUrl, relyingParty);
+					// Create the auth request, but prevent it from attempting to create an association
+					// because we've already tried.  Let's not have it waste time trying again.
+					var authRequest = new AuthenticationRequest(endpoint, realm, returnToUrl, relyingParty);
+					authRequest.associationPreference = AssociationPreference.IfAlreadyEstablished;
+					yield return authRequest;
 				}
 			}
 		}
@@ -259,6 +259,12 @@ namespace DotNetOpenId.RelyingParty {
 		static Association getAssociation(OpenIdRelyingParty relyingParty, ServiceEndpoint provider, bool createNewAssociationIfNeeded) {
 			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
 			if (provider == null) throw new ArgumentNullException("provider");
+
+			// If the RP has no application store for associations, there's no point in creating one.
+			if (relyingParty.Store == null) {
+				return null;
+			}
+
 			// TODO: we need a way to lookup an association that fulfills a given set of security
 			// requirements.  We may have a SHA-1 association and a SHA-256 association that need
 			// to be called for specifically. (a bizzare scenario, admittedly, making this low priority).
@@ -367,8 +373,17 @@ namespace DotNetOpenId.RelyingParty {
 				qsArgs.Add(protocol.openid.Realm, Realm);
 				qsArgs.Add(protocol.openid.return_to, returnToBuilder.Uri.AbsoluteUri);
 
-				if (this.assoc != null)
-					qsArgs.Add(protocol.openid.assoc_handle, this.assoc.Handle);
+				Association association = null;
+				if (associationPreference != AssociationPreference.Never) {
+					association = getAssociation(RelyingParty, endpoint, associationPreference == AssociationPreference.IfPossible);
+					if (association != null) {
+						qsArgs.Add(protocol.openid.assoc_handle, association.Handle);
+					} else {
+						// Avoid trying to create the association again if the redirecting response
+						// is generated again.
+						associationPreference = AssociationPreference.IfAlreadyEstablished;
+					}
+				}
 
 				// Add on extension arguments
 				foreach (var pair in OutgoingExtensions.GetArgumentsToSend(true))
