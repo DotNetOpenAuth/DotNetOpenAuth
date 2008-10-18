@@ -263,7 +263,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// <para>No exception is thrown if no OpenID endpoints were discovered.  
 		/// An empty enumerable is returned instead.</para>
 		/// </remarks>
-		public IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl) {
+		internal IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl) {
 			if (realm == null) throw new ArgumentNullException("realm");
 			if (returnToUrl == null) throw new ArgumentNullException("returnToUrl");
 
@@ -303,7 +303,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// <para>No exception is thrown if no OpenID endpoints were discovered.  
 		/// An empty enumerable is returned instead.</para>
 		/// </remarks>
-		public IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm) {
+		internal IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm) {
 			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
 
 			// Build the return_to URL
@@ -342,7 +342,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// <para>No exception is thrown if no OpenID endpoints were discovered.  
 		/// An empty enumerable is returned instead.</para>
 		/// </remarks>
-		public IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier) {
+		internal IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier) {
 			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
 
 			// Build the realm URL
