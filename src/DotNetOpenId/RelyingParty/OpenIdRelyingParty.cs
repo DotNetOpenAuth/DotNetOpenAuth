@@ -173,6 +173,10 @@ namespace DotNetOpenId.RelyingParty {
 		/// send to the user agent to initiate the authentication.
 		/// </returns>
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl) {
+			if (userSuppliedIdentifier == null) throw new ArgumentNullException("userSuppliedIdentifier");
+			if (realm == null) throw new ArgumentNullException("realm");
+			if (returnToUrl == null) throw new ArgumentNullException("returnToUrl");
+
 			// Normalize the portion of the return_to path that correlates to the realm for capitalization.
 			// (so that if a web app base path is /MyApp/, but the URL of this request happens to be
 			// /myapp/login.aspx, we bump up the return_to Url to use /MyApp/ so it matches the realm.
