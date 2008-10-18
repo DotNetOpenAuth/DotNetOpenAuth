@@ -32,7 +32,7 @@ namespace DotNetOpenId.RelyingParty {
 		Protocol protocol { get { return endpoint.Protocol; } }
 		internal OpenIdRelyingParty RelyingParty;
 
-		AuthenticationRequest(string token, Association assoc, ServiceEndpoint endpoint,
+		AuthenticationRequest(Association assoc, ServiceEndpoint endpoint,
 			Realm realm, Uri returnToUrl, OpenIdRelyingParty relyingParty) {
 			if (endpoint == null) throw new ArgumentNullException("endpoint");
 			if (realm == null) throw new ArgumentNullException("realm");
@@ -48,8 +48,11 @@ namespace DotNetOpenId.RelyingParty {
 			Mode = AuthenticationRequestMode.Setup;
 			OutgoingExtensions = ExtensionArgumentsManager.CreateOutgoingExtensions(endpoint.Protocol);
 			ReturnToArgs = new Dictionary<string, string>();
-			if (token != null)
+
+			string token = new Token(endpoint).Serialize(relyingParty.Store);
+			if (token != null) {
 				AddCallbackArguments(DotNetOpenId.RelyingParty.Token.TokenKey, token);
+			}
 		}
 
 		/// <summary>
@@ -57,7 +60,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// on-demand for as long as new ones can be generated based on the results of Identifier discovery.
 		/// </summary>
 		internal static IEnumerable<AuthenticationRequest> Create(Identifier userSuppliedIdentifier,
-			OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl) {
+			OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl, bool createNewAssociationsAsNeeded) {
 			// We have a long data validation and preparation process
 			if (userSuppliedIdentifier == null) throw new ArgumentNullException("userSuppliedIdentifier");
 			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
@@ -91,7 +94,7 @@ namespace DotNetOpenId.RelyingParty {
 			var serviceEndpoints = userSuppliedIdentifier.Discover();
 
 			// Call another method that defers request generation.
-			return CreateInternal(userSuppliedIdentifier, relyingParty, realm, returnToUrl, serviceEndpoints);
+			return CreateInternal(userSuppliedIdentifier, relyingParty, realm, returnToUrl, serviceEndpoints, createNewAssociationsAsNeeded);
 		}
 
 		/// <summary>
@@ -99,7 +102,8 @@ namespace DotNetOpenId.RelyingParty {
 		/// All data validation and cleansing steps must have ALREADY taken place.
 		/// </summary>
 		private static IEnumerable<AuthenticationRequest> CreateInternal(Identifier userSuppliedIdentifier,
-			OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl, IEnumerable<ServiceEndpoint> serviceEndpoints) {
+			OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl,
+			IEnumerable<ServiceEndpoint> serviceEndpoints, bool createNewAssociationsIfNeeded) {
 			Logger.InfoFormat("Performing discovery on user-supplied identifier: {0}", userSuppliedIdentifier);
 			IEnumerable<ServiceEndpoint> endpoints = filterAndSortEndpoints(serviceEndpoints, relyingParty);
 
@@ -116,8 +120,11 @@ namespace DotNetOpenId.RelyingParty {
 				// The strategy here is to prefer endpoints with whom we can create associations.
 				Association association = null;
 				if (relyingParty.Store != null) {
-					association = getAssociation(relyingParty, endpoint, true);
-					if (association == null) {
+					// In some scenarios (like the AJAX control wanting ALL auth requests possible),
+					// we don't want to create associations with every Provider.  But we'll use
+					// associations where they are already formed from previous authentications.
+					association = getAssociation(relyingParty, endpoint, createNewAssociationsIfNeeded);
+					if (association == null && createNewAssociationsIfNeeded) {
 						Logger.WarnFormat("Failed to create association with {0}.  Skipping to next endpoint.", endpoint.ProviderEndpoint);
 						// No association could be created.  Add it to the list of failed association
 						// endpoints and skip to the next available endpoint.
@@ -126,9 +133,8 @@ namespace DotNetOpenId.RelyingParty {
 					}
 				}
 
-				string token = new Token(endpoint).Serialize(relyingParty.Store);
 				yield return new AuthenticationRequest(
-					token, association, endpoint, realm, returnToUrl, relyingParty);
+					association, endpoint, realm, returnToUrl, relyingParty);
 			}
 
 			// Now that we've run out of endpoints that respond to association requests,
@@ -143,9 +149,8 @@ namespace DotNetOpenId.RelyingParty {
 					Logger.DebugFormat("Return To: {0}", returnToUrl);
 
 					Association association = null; // don't try to create it again.
-					string token = new Token(endpoint).Serialize(relyingParty.Store);
 					yield return new AuthenticationRequest(
-						token, association, endpoint, realm, returnToUrl, relyingParty);
+						association, endpoint, realm, returnToUrl, relyingParty);
 				}
 			}
 		}
@@ -154,7 +159,7 @@ namespace DotNetOpenId.RelyingParty {
 			OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl) {
 
 			// Just return the first generated request.
-			var requests = Create(userSuppliedIdentifier, relyingParty, realm, returnToUrl).GetEnumerator();
+			var requests = Create(userSuppliedIdentifier, relyingParty, realm, returnToUrl, true).GetEnumerator();
 			if (requests.MoveNext()) {
 				return requests.Current;
 			} else {
