@@ -27,7 +27,7 @@ namespace DotNetOpenId.RelyingParty {
 
 	[DebuggerDisplay("ClaimedIdentifier: {ClaimedIdentifier}, Mode: {Mode}, OpenId: {protocol.Version}")]
 	class AuthenticationRequest : IAuthenticationRequest {
-		AssociationPreference associationPreference = AssociationPreference.IfPossible;
+		internal AssociationPreference associationPreference = AssociationPreference.IfPossible;
 		ServiceEndpoint endpoint;
 		Protocol protocol { get { return endpoint.Protocol; } }
 		internal OpenIdRelyingParty RelyingParty;

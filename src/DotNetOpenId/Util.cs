@@ -379,6 +379,15 @@ namespace DotNetOpenId {
 				}
 			}
 		}
+		internal static bool Contains<T>(IEnumerable<T> sequence, Func<T, bool> predicate) {
+			foreach (T item in sequence) {
+				if (predicate(item)) {
+					return true;
+				}
+			}
+
+			return false;
+		}
 		internal static IEnumerable<T> OfType<T>(System.Collections.IEnumerable sequence) {
 			foreach (object item in sequence) {
 				yield return (T)item;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
@@ -24,7 +25,7 @@ namespace DotNetOpenId.RelyingParty {
 	/// </summary>
 	[DefaultProperty("Text"), ValidationProperty("Text")]
 	[ToolboxData("<{0}:OpenIdAjaxTextBox runat=\"server\" />")]
-	public class OpenIdAjaxTextBox : WebControl {
+	public class OpenIdAjaxTextBox : WebControl, ICallbackEventHandler {
 		internal const string EmbeddedScriptResourceName = DotNetOpenId.Util.DefaultNamespace + ".RelyingParty.OpenIdAjaxTextBox.js";
 		internal const string EmbeddedDotNetOpenIdLogoResourceName = DotNetOpenId.Util.DefaultNamespace + ".RelyingParty.dotnetopenid_16x16.gif";
 		internal const string EmbeddedSpinnerResourceName = DotNetOpenId.Util.DefaultNamespace + ".RelyingParty.spinner.gif";
@@ -128,7 +129,16 @@ namespace DotNetOpenId.RelyingParty {
 		}
 
 		const string timeoutViewStateKey = "Timeout";
-		readonly TimeSpan timeoutDefault = TimeSpan.FromSeconds(8);
+		TimeSpan timeoutDefault {
+			get {
+				if (Debugger.IsAttached) {
+					Logger.Warn("Debugger is attached.  Inflating default OpenIdAjaxTextbox.Timeout value to infinity.");
+					return TimeSpan.MaxValue;
+				} else {
+					return TimeSpan.FromSeconds(8);
+				}
+			}
+		}
 		/// <summary>
 		/// Gets/sets the time duration for the AJAX control to wait for an OP to respond before reporting failure to the user.
 		/// </summary>
@@ -199,7 +209,7 @@ namespace DotNetOpenId.RelyingParty {
 		}
 
 		const string authenticationSucceededToolTipViewStateKey = "AuthenticationSucceededToolTip";
-		const string authenticationSucceededToolTipDefault = "Authenticated.";
+		const string authenticationSucceededToolTipDefault = "Authenticated by {0}.";
 		/// <summary>
 		/// Gets/sets the tool tip text that appears when authentication succeeds.
 		/// </summary>
@@ -557,16 +567,17 @@ namespace DotNetOpenId.RelyingParty {
 				if (!string.IsNullOrEmpty(userSuppliedIdentifier)) {
 					Logger.Info("AJAX (iframe) request detected.");
 					if (query["dotnetopenid.phase"] == "2") {
-						OnUnconfirmedPositiveAssertion();
-						reportDiscoveryResult();
-					} else {
-						performDiscovery(userSuppliedIdentifier);
+						reportAuthenticationResult();
 					}
 				}
 			}
 		}
 
 		private void prepareClientJavascript() {
+			string identifierParameterName = "identifier";
+			string discoveryCallbackResultParameterName = "resultFunction";
+			string discoveryCallback = Page.ClientScript.GetCallbackEventReference(this, identifierParameterName, discoveryCallbackResultParameterName, identifierParameterName);
+
 			// Import the .js file where most of the code is.
 			Page.ClientScript.RegisterClientScriptResource(typeof(OpenIdAjaxTextBox), EmbeddedScriptResourceName);
 			// Call into the .js file with initialization information.
@@ -577,7 +588,7 @@ namespace DotNetOpenId.RelyingParty {
 				startupScript.AppendLine("box.focus();");
 			}
 			startupScript.AppendFormat(CultureInfo.InvariantCulture,
-				"initAjaxOpenId(box, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15});{16}",
+				"initAjaxOpenId(box, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, function({16}, {17}) {{{18}}});{19}",
 				Util.GetSafeJavascriptValue(Page.ClientScript.GetWebResourceUrl(GetType(), OpenIdTextBox.EmbeddedLogoResourceName)),
 				Util.GetSafeJavascriptValue(Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedDotNetOpenIdLogoResourceName)),
 				Util.GetSafeJavascriptValue(Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedSpinnerResourceName)),
@@ -594,6 +605,9 @@ namespace DotNetOpenId.RelyingParty {
 				Util.GetSafeJavascriptValue(LogOnInProgressMessage),
 				Util.GetSafeJavascriptValue(AuthenticationSucceededToolTip),
 				Util.GetSafeJavascriptValue(AuthenticationFailedToolTip),
+				identifierParameterName,
+				discoveryCallbackResultParameterName,
+				discoveryCallback,
 				Environment.NewLine);
 
 			if (AuthenticationResponse != null && AuthenticationResponse.Status == AuthenticationStatus.Authenticated) {
@@ -608,8 +622,8 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 ", Name));
 		}
 
-		private IAuthenticationRequest createRequest(Identifier userSuppliedIdentifier) {
-			IAuthenticationRequest request;
+		private List<IAuthenticationRequest> createRequests(Identifier userSuppliedIdentifier, bool immediate) {
+			var requests = new List<IAuthenticationRequest>();
 
 			OpenIdRelyingParty rp = new OpenIdRelyingParty();
 
@@ -625,38 +639,53 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 			// might slip through our validator control if it is disabled.
 			Realm typedRealm = new Realm(realm);
 			if (string.IsNullOrEmpty(ReturnToUrl)) {
-				request = rp.CreateRequest(userSuppliedIdentifier, typedRealm);
+				requests.AddRange(rp.CreateRequests(userSuppliedIdentifier, typedRealm));
 			} else {
 				Uri returnTo = new Uri(Util.GetRequestUrlFromContext(), ReturnToUrl);
-				request = rp.CreateRequest(userSuppliedIdentifier, typedRealm, returnTo);
+				requests.AddRange(rp.CreateRequests(userSuppliedIdentifier, typedRealm, returnTo));
 			}
 
-			return request;
-		}
+			// Some OPs may be listed multiple times (one with HTTPS and the other with HTTP, for example).
+			// Since we're gathering OPs to try one after the other, just take the first choice of each OP
+			// and don't try it multiple times.
+			requests = RemoveDuplicateEndpoints(requests);
 
-		private void performDiscovery(string userSuppliedIdentifier) {
-			if (String.IsNullOrEmpty(userSuppliedIdentifier)) throw new ArgumentNullException("userSuppliedIdentifier");
+			// Configure each generated request.
 			NameValueCollection query = Util.GetQueryOrFormFromContextNVC();
-			Logger.InfoFormat("Discovery on {0} requested.", userSuppliedIdentifier);
-
-			try {
-				IAuthenticationRequest req = createRequest(userSuppliedIdentifier);
+			foreach (var req in requests) {
 				// If the ReturnToUrl was explicitly set, we'll need to reset our first parameter
 				if (string.IsNullOrEmpty(HttpUtility.ParseQueryString(req.ReturnToUrl.Query)["dotnetopenid.userSuppliedIdentifier"])) {
 					req.AddCallbackArguments("dotnetopenid.userSuppliedIdentifier", userSuppliedIdentifier);
 				}
-				req.AddCallbackArguments("dotnetopenid.phase", "2");
-				if (query["dotnetopenid.immediate"] == "true") {
-					req.Mode = AuthenticationRequestMode.Immediate;
+				// Our javascript needs to let the user know which endpoint responded.  So we force it here.
+				if (req.Provider.Version.Major < 2) {
+					req.AddCallbackArguments("openid.op_endpoint", req.Provider.Uri.AbsoluteUri);
 				}
-				OnLoggingIn(req);
-				req.RedirectToProvider();
-			} catch (OpenIdException ex) {
-				callbackUserAgentMethod("dnoi_internal.openidDiscoveryFailure('" + ex.Message.Replace("'", "\\'") + "')");
+				req.AddCallbackArguments("dotnetopenid.phase", "2");
+				if (immediate) {
+					req.Mode = AuthenticationRequestMode.Immediate;
+					((AuthenticationRequest)req).associationPreference = AssociationPreference.IfAlreadyEstablished;
+				}
 			}
+
+			return requests;
 		}
 
-		private void reportDiscoveryResult() {
+		private List<IAuthenticationRequest> RemoveDuplicateEndpoints(List<IAuthenticationRequest> requests) {
+			var filteredRequests = new List<IAuthenticationRequest>(requests.Count);
+			foreach (IAuthenticationRequest request in requests) {
+				// We'll distinguish based on the host name only, which
+				// admittedly is only a heuristic, but if we remove one that really wasn't a duplicate, well,
+				// this multiple OP attempt thing was just a convenience feature anyway.
+				if (!Util.Contains(filteredRequests, req => string.Equals(req.Provider.Uri.Host, request.Provider.Uri.Host, StringComparison.OrdinalIgnoreCase))) {
+					filteredRequests.Add(request);
+				}
+			}
+
+			return filteredRequests;
+		}
+
+		private void reportAuthenticationResult() {
 			Logger.InfoFormat("AJAX (iframe) callback from OP: {0}", Page.Request.Url);
 			List<string> assignments = new List<string>();
 
@@ -664,6 +693,7 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 			var f = Util.NameValueCollectionToDictionary(HttpUtility.ParseQueryString(Page.Request.Url.Query));
 			var authResponse = RelyingParty.AuthenticationResponse.Parse(f, rp, Page.Request.Url, false);
 			if (authResponse.Status == AuthenticationStatus.Authenticated) {
+				OnUnconfirmedPositiveAssertion();
 				foreach (var pair in clientScriptExtensions) {
 					string js = authResponse.GetExtensionClientScript(pair.Key);
 					if (string.IsNullOrEmpty(js)) {
@@ -764,5 +794,71 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 </script></body></html>", methodCall));
 			Page.Response.End();
 		}
+
+		#region ICallbackEventHandler Members
+
+		private string discoveryResult;
+
+		/// <summary>
+		/// Returns the result of discovery on some Identifier passed to <see cref="ICallbackEventHandler.RaiseCallbackEvent"/>.
+		/// </summary>
+		/// <value>A whitespace delimited list of URLs that can be used to initiate authentication.</value>
+		string ICallbackEventHandler.GetCallbackResult() {
+			return discoveryResult;
+		}
+
+		/// <summary>
+		/// Performs discovery on some OpenID Identifier.  Called directly from the user agent via
+		/// AJAX callback mechanisms.
+		/// </summary>
+		/// <param name="eventArgument">The identifier to perform discovery on.</param>
+		void ICallbackEventHandler.RaiseCallbackEvent(string eventArgument) {
+			string userSuppliedIdentifier = eventArgument;
+
+			if (String.IsNullOrEmpty(userSuppliedIdentifier)) throw new ArgumentNullException("userSuppliedIdentifier");
+			Logger.InfoFormat("Discovery on {0} requested.", userSuppliedIdentifier);
+
+			// We prepare a JSON object with this interface:
+			// class jsonResponse {
+			//    Array requests; // never null
+			//    string error; // null if no error
+			// }
+			// Each element in the requests array looks like this:
+			// class jsonAuthRequest {
+			//    string immediate; // URL to initiate an immediate request
+			//    string setup;     // URL to initiate a setup request.
+			// }
+			StringBuilder discoveryResultBuilder = new StringBuilder();
+			discoveryResultBuilder.Append("{");
+			try {
+				List<IAuthenticationRequest> requests = createRequests(userSuppliedIdentifier, true);
+				if (requests.Count > 0) {
+					discoveryResultBuilder.Append("requests: [");
+					foreach (IAuthenticationRequest request in requests) {
+						OnLoggingIn(request);
+						discoveryResultBuilder.Append("{");
+						request.Mode = AuthenticationRequestMode.Immediate;
+						Response response = (Response)request.RedirectingResponse;
+						discoveryResultBuilder.AppendFormat("immediate: {0},", Util.GetSafeJavascriptValue(response.IndirectMessageAsRequestUri.AbsoluteUri));
+						request.Mode = AuthenticationRequestMode.Setup;
+						response = (Response)request.RedirectingResponse;
+						discoveryResultBuilder.AppendFormat("setup: {0}", Util.GetSafeJavascriptValue(response.IndirectMessageAsRequestUri.AbsoluteUri));
+						discoveryResultBuilder.Append("},");
+					}
+					discoveryResultBuilder.Length -= 1; // trim off last comma
+					discoveryResultBuilder.Append("]");
+				} else {
+					discoveryResultBuilder.Append("requests: new Array(),");
+					discoveryResultBuilder.AppendFormat("error: {0}", Util.GetSafeJavascriptValue(Strings.OpenIdEndpointNotFound));
+				}
+			} catch (OpenIdException ex) {
+				discoveryResultBuilder.Append("requests: new Array(),");
+				discoveryResultBuilder.AppendFormat("error: {0}", Util.GetSafeJavascriptValue(ex.Message));
+			}
+			discoveryResultBuilder.Append("}");
+			discoveryResult = discoveryResultBuilder.ToString();
+		}
+
+		#endregion
 	}
 }

@@ -12,7 +12,8 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		timeout, assertionReceivedCode,
 		loginButtonText, loginButtonToolTip, retryButtonText, retryButtonToolTip, busyToolTip,
 		identifierRequiredMessage, loginInProgressMessage,
-		authenticationSucceededToolTip, authenticationFailedToolTip) {
+		authenticationSucceededToolTip, authenticationFailedToolTip,
+		discoverCallback) {
 	box.dnoi_internal = new Object();
 	if (assertionReceivedCode) {
 		box.dnoi_internal.onauthenticated = function(sender, e) { eval(assertionReceivedCode); }
@@ -20,6 +21,8 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 
 	box.dnoi_internal.originalBackground = box.style.background;
 	box.timeout = timeout;
+	box.dnoi_internal.discoverIdentifier = discoverCallback;
+	box.dnoi_internal.authenticationRequests = new Array();
 
 	box.dnoi_internal.constructButton = function(text, tooltip, onclick) {
 		var button = document.createElement('button');
@@ -42,6 +45,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		var icon = document.createElement('img');
 		icon.src = imageUrl;
 		icon.title = tooltip != null ? tooltip : '';
+		icon.originalTitle = icon.title;
 		if (!visible) {
 			icon.style.visibility = 'hidden';
 		}
@@ -69,7 +73,10 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	}
 
 	box.dnoi_internal.loginButton = box.dnoi_internal.constructButton(loginButtonText, loginButtonToolTip, function() {
-		box.dnoi_internal.popup = window.open(box.dnoi_internal.getAuthenticationUrl(), 'opLogin', 'status=0,toolbar=0,location=1,resizable=1,scrollbars=1,width=800,height=600');
+		// The login button always sends a setup message to the first OP.
+		box.dnoi_internal.popup = window.open(
+			box.dnoi_internal.authenticationRequests[box.lastDiscoveredIdentifier][0].setup,
+			'opLogin', 'status=0,toolbar=0,location=1,resizable=1,scrollbars=1,width=800,height=600');
 		self.waiting_openidBox = box;
 		return false;
 	});
@@ -88,7 +95,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	//box.dnoi_internal.dnoi_logo = box.dnoi_internal.constructIcon(dotnetopenid_logo_url);
 	box.dnoi_internal.dnoi_logo = box.dnoi_internal.openid_logo;
 
-	box.dnoi_internal.setVisualCue = function(state) {
+	box.dnoi_internal.setVisualCue = function(state, data) {
 		box.dnoi_internal.openid_logo.style.visibility = 'hidden';
 		box.dnoi_internal.dnoi_logo.style.visibility = 'hidden';
 		box.dnoi_internal.op_logo.style.visibility = 'hidden';
@@ -113,6 +120,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 				box.dnoi_internal.openid_logo.style.visibility = 'visible';
 			}
 			box.dnoi_internal.success_icon.style.visibility = 'visible';
+			box.dnoi_internal.success_icon.title = box.dnoi_internal.success_icon.originalTitle.replace('{0}', new Uri(data).getHost());
 			box.title = box.dnoi_internal.claimedIdentifier;
 			window.status = "Authenticated as " + box.value;
 		} else if (state == "setup") {
@@ -203,28 +211,43 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		}
 	//};
 
-	box.dnoi_internal.getAuthenticationUrl = function(immediateMode) {
-		var frameLocation = new Uri(document.location.href);
-		var discoveryUri = frameLocation.trimFragment();
-		discoveryUri.appendQueryVariable('dotnetopenid.userSuppliedIdentifier', box.value);
-		if (immediateMode) {
-			discoveryUri.appendQueryVariable('dotnetopenid.immediate', 'true');
+	box.dnoi_internal.tryNextAuthenticationRequest = function(identifier) {
+		box.dnoi_internal.closeDiscoveryIFrame();
+		if ((authRequests = box.dnoi_internal.authenticationRequests[identifier]) != null) {
+			// Find the first immediate mode auth request
+			for (var i = 0; i < authRequests.length; i++) {
+				if (nextRequest = authRequests[i].immediate) {
+					trace('Trying authentication against: ' + (new Uri(nextRequest)).getHost());
+					box.discoveryIFrame = createHiddenFrame(nextRequest);
+					authRequests[i].immediate = null; // mark this as tried by nulling it out.
+					return true;
+				}
+			}
 		}
-		return discoveryUri;
-	};
+		return false;
+	}
 
+	box.dnoi_internal.discoveryResult = function(discoveryResult, identifier) {
+		if (identifier != box.lastDiscoveredIdentifier) {
+			// This discovery result is for an identifier we're no longer interested in.  Just ignore it.
+			return;
+		}
+
+		discoveryResult = eval('(' + discoveryResult + ')');
+		if (discoveryResult.requests.length > 0) {
+			box.dnoi_internal.authenticationRequests[identifier] = discoveryResult.requests;
+			box.dnoi_internal.tryNextAuthenticationRequest(identifier);
+		} else {
+			box.dnoi_internal.openidDiscoveryFailure(discoveryResult.error);
+		}
+	}
+	
 	box.dnoi_internal.performDiscovery = function() {
 		box.dnoi_internal.closeDiscoveryIFrame();
 		box.dnoi_internal.setVisualCue('discovering');
 		box.lastDiscoveredIdentifier = box.value;
 		box.lastAuthenticationResult = null;
-		var discoveryUri = box.dnoi_internal.getAuthenticationUrl(true);
-		if (box.discoveryIFrame) {
-			box.discoveryIFrame.parentNode.removeChild(box.discoveryIFrame);
-			box.discoveryIFrame = null;
-		}
-		trace('Performing discovery using url: ' + discoveryUri);
-		box.discoveryIFrame = createHiddenFrame(discoveryUri);
+		box.dnoi_internal.discoverIdentifier(box.value, box.dnoi_internal.discoveryResult);
 	};
 
 	function findParentForm(element) {
@@ -278,10 +301,14 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 
 	box.dnoi_internal.openidDiscoveryFailure = function(msg) {
 		box.dnoi_internal.closeDiscoveryIFrame();
-		trace('Discovery failure: ' + msg);
-		box.lastAuthenticationResult = 'failed';
-		box.dnoi_internal.setVisualCue('failed');
-		box.title = msg;
+		if (msg == "Timed out" && box.dnoi_internal.tryNextAuthenticationRequest(box.lastDiscoveredIdentifier)) {
+			// We'll try the next one before reporting an error.
+		} else {
+			trace('Discovery failure: ' + msg);
+			box.lastAuthenticationResult = 'failed';
+			box.dnoi_internal.setVisualCue('failed');
+			box.title = msg;
+		}
 	};
 
 	box.dnoi_internal.closeDiscoveryIFrame = function() {
@@ -318,7 +345,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		if (isAuthSuccessful(resultUri)) {
 			// visual cue that auth was successful
 			box.dnoi_internal.claimedIdentifier = isOpenID2Response(resultUri) ? resultUri.getQueryArgValue("openid.claimed_id") : resultUri.getQueryArgValue("openid.identity");
-			box.dnoi_internal.setVisualCue('authenticated');
+			box.dnoi_internal.setVisualCue('authenticated', resultUri.getQueryArgValue('openid.op_endpoint'));
 			box.lastAuthenticationResult = 'authenticated';
 			if (box.dnoi_internal.onauthenticated) {
 				box.dnoi_internal.onauthenticated(box);
@@ -336,6 +363,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			// visual cue that auth failed
 			box.dnoi_internal.setVisualCue('setup');
 			box.lastAuthenticationResult = 'setup';
+			box.dnoi_internal.tryNextAuthenticationRequest(box.lastDiscoveredIdentifier);
 		}
 
 		box.dnoi_internal.submitPending = null;
@@ -422,7 +450,7 @@ function Uri(url) {
 		this.value = value;
 	};
 
-	this.Pairs = Array();
+	this.Pairs = new Array();
 
 	var queryBeginsAt = this.originalUri.indexOf('?');
 	if (queryBeginsAt >= 0) {

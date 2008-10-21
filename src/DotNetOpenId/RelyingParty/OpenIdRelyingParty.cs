@@ -257,9 +257,8 @@ namespace DotNetOpenId.RelyingParty {
 		/// <remarks>
 		/// <para>Any individual generated request can satisfy the authentication.  
 		/// The generated requests are sorted in preferred order.
-		/// Each request is generated as it is enumerated to, and associations are formed
-		/// in the process.  Enumerating beyond the first request is therefore costly
-		/// and should only be done if the first request fails.</para>
+		/// Each request is generated as it is enumerated to.  Associations are created only as
+		/// <see cref="IAuthenticationRequest.RedirectingResponse"/> is called.</para>
 		/// <para>No exception is thrown if no OpenID endpoints were discovered.  
 		/// An empty enumerable is returned instead.</para>
 		/// </remarks>
@@ -297,9 +296,8 @@ namespace DotNetOpenId.RelyingParty {
 		/// <remarks>
 		/// <para>Any individual generated request can satisfy the authentication.  
 		/// The generated requests are sorted in preferred order.
-		/// Each request is generated as it is enumerated to, and associations are formed
-		/// in the process.  Enumerating beyond the first request is therefore costly
-		/// and should only be done if the first request fails.</para>
+		/// Each request is generated as it is enumerated to.  Associations are created only as
+		/// <see cref="IAuthenticationRequest.RedirectingResponse"/> is called.</para>
 		/// <para>No exception is thrown if no OpenID endpoints were discovered.  
 		/// An empty enumerable is returned instead.</para>
 		/// </remarks>
@@ -336,9 +334,8 @@ namespace DotNetOpenId.RelyingParty {
 		/// <remarks>
 		/// <para>Any individual generated request can satisfy the authentication.  
 		/// The generated requests are sorted in preferred order.
-		/// Each request is generated as it is enumerated to, and associations are formed
-		/// in the process.  Enumerating beyond the first request is therefore costly
-		/// and should only be done if the first request fails.</para>
+		/// Each request is generated as it is enumerated to.  Associations are created only as
+		/// <see cref="IAuthenticationRequest.RedirectingResponse"/> is called.</para>
 		/// <para>No exception is thrown if no OpenID endpoints were discovered.  
 		/// An empty enumerable is returned instead.</para>
 		/// </remarks>

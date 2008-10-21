@@ -50,5 +50,20 @@ namespace DotNetOpenId {
 			HttpContext.Current.Response.OutputStream.Close();
 			HttpContext.Current.Response.End();
 		}
+
+		/// <summary>
+		/// Gets the indirect message as it would appear as a single URI request.
+		/// </summary>
+		internal Uri IndirectMessageAsRequestUri {
+			get {
+				if (EncodableMessage != null && EncodableMessage.RedirectUrl != null && EncodableMessage.EncodingType == EncodingType.IndirectMessage) {
+					UriBuilder builder = new UriBuilder(EncodableMessage.RedirectUrl);
+					UriUtil.AppendQueryArgs(builder, EncodableMessage.EncodedFields);
+					return builder.Uri;
+				} else {
+					throw new InvalidOperationException();
+				}
+			}
+		}
 	}
 }
