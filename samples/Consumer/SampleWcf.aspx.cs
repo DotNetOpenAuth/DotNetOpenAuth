@@ -71,7 +71,7 @@ public partial class SampleWcf : System.Web.UI.Page {
 
 	private T CallService<T>(Func<DataApiClient, T> predicate) {
 		DataApiClient client = new DataApiClient();
-		var serviceEndpoint = new MessageReceivingEndpoint(client.Endpoint.Address.Uri, HttpDeliveryMethod.AuthorizationHeaderRequest | HttpDeliveryMethod.PostRequest);
+		var serviceEndpoint = new MessageReceivingEndpoint(client.Endpoint.Address.Uri, HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.PostRequest);
 		var accessToken = Session["WcfAccessToken"] as string;
 		if (accessToken == null) {
 			throw new InvalidOperationException("No access token!");
@@ -97,7 +97,7 @@ public partial class SampleWcf : System.Web.UI.Page {
 		}
 		MessageReceivingEndpoint oauthEndpoint = new MessageReceivingEndpoint(
 			new Uri("http://localhost:65169/ServiceProvider/OAuth.ashx"),
-			HttpDeliveryMethod.PostRequest);
+			HttpDeliveryMethods.PostRequest);
 		WebConsumer consumer = new WebConsumer(
 			new ServiceProviderDescription {
 				RequestTokenEndpoint = oauthEndpoint,

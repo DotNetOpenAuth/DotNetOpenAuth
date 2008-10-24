@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOAuth.Messages {
-	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using DotNetOAuth.Messaging;
 
 	/// <summary>
@@ -24,6 +24,7 @@ namespace DotNetOAuth.Messages {
 		/// <summary>
 		/// Gets or sets the Token.
 		/// </summary>
+		[SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "This property IS accessible by a different name.")]
 		string ITokenContainingMessage.Token {
 			get { return this.AccessToken; }
 			set { this.AccessToken = value; }
@@ -38,7 +39,7 @@ namespace DotNetOAuth.Messages {
 		/// has proper authorization for the resource being requested, and to know the
 		/// context around which user provided the authorization.
 		/// </remarks>
-		[MessagePart(Name = "oauth_token", IsRequired = true)]
+		[MessagePart("oauth_token", IsRequired = true)]
 		public string AccessToken { get; set; }
 	}
 }

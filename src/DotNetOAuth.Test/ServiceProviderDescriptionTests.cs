@@ -20,7 +20,7 @@ namespace DotNetOAuth.Test {
 		[TestMethod]
 		public void UserAuthorizationUriTest() {
 			ServiceProviderDescription target = new ServiceProviderDescription();
-			MessageReceivingEndpoint expected = new MessageReceivingEndpoint("http://localhost/authorization", HttpDeliveryMethod.GetRequest);
+			MessageReceivingEndpoint expected = new MessageReceivingEndpoint("http://localhost/authorization", HttpDeliveryMethods.GetRequest);
 			MessageReceivingEndpoint actual;
 			target.UserAuthorizationEndpoint = expected;
 			actual = target.UserAuthorizationEndpoint;
@@ -36,7 +36,7 @@ namespace DotNetOAuth.Test {
 		[TestMethod]
 		public void RequestTokenUriTest() {
 			var target = new ServiceProviderDescription();
-			MessageReceivingEndpoint expected = new MessageReceivingEndpoint("http://localhost/requesttoken", HttpDeliveryMethod.GetRequest);
+			MessageReceivingEndpoint expected = new MessageReceivingEndpoint("http://localhost/requesttoken", HttpDeliveryMethods.GetRequest);
 			MessageReceivingEndpoint actual;
 			target.RequestTokenEndpoint = expected;
 			actual = target.RequestTokenEndpoint;
@@ -53,7 +53,7 @@ namespace DotNetOAuth.Test {
 		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void RequestTokenUriWithOAuthParametersTest() {
 			var target = new ServiceProviderDescription();
-			target.RequestTokenEndpoint = new MessageReceivingEndpoint("http://localhost/requesttoken?oauth_token=something", HttpDeliveryMethod.GetRequest);
+			target.RequestTokenEndpoint = new MessageReceivingEndpoint("http://localhost/requesttoken?oauth_token=something", HttpDeliveryMethods.GetRequest);
 		}
 
 		/// <summary>
@@ -62,7 +62,7 @@ namespace DotNetOAuth.Test {
 		[TestMethod]
 		public void AccessTokenUriTest() {
 			var target = new ServiceProviderDescription();
-			MessageReceivingEndpoint expected = new MessageReceivingEndpoint("http://localhost/accesstoken", HttpDeliveryMethod.GetRequest);
+			MessageReceivingEndpoint expected = new MessageReceivingEndpoint("http://localhost/accesstoken", HttpDeliveryMethods.GetRequest);
 			MessageReceivingEndpoint actual;
 			target.AccessTokenEndpoint = expected;
 			actual = target.AccessTokenEndpoint;

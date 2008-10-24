@@ -7,6 +7,7 @@
 namespace DotNetOAuth.Messaging.Reflection {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Globalization;
 	using System.Net.Security;
 	using System.Reflection;
@@ -49,6 +50,7 @@ namespace DotNetOAuth.Messaging.Reflection {
 		/// <summary>
 		/// Initializes static members of the <see cref="MessagePart"/> class.
 		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "Much more efficient initialization when we can call methods.")]
 		static MessagePart() {
 			Map<Uri>(uri => uri.AbsoluteUri, str => new Uri(str));
 			Map<DateTime>(dt => XmlConvert.ToString(dt, XmlDateTimeSerializationMode.Utc), str => XmlConvert.ToDateTime(str, XmlDateTimeSerializationMode.Utc));

@@ -18,7 +18,7 @@ namespace DotNetOAuth.Messaging {
 		/// </summary>
 		/// <param name="faultedMessage">The message whose protection requirements could not be met.</param>
 		/// <param name="appliedProtection">The protection requirements that were fulfilled.</param>
-		internal UnprotectedMessageException(IProtocolMessage faultedMessage, MessageProtection appliedProtection)
+		internal UnprotectedMessageException(IProtocolMessage faultedMessage, MessageProtections appliedProtection)
 			: base(string.Format(CultureInfo.CurrentCulture, MessagingStrings.InsufficentMessageProtection, faultedMessage.RequiredProtection, appliedProtection), faultedMessage) {
 		}
 

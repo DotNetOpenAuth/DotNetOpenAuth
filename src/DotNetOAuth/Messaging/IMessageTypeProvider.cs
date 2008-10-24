@@ -12,7 +12,7 @@ namespace DotNetOAuth.Messaging {
 	/// A tool to analyze an incoming message to figure out what concrete class
 	/// is designed to deserialize it.
 	/// </summary>
-	internal interface IMessageTypeProvider {
+	public interface IMessageTypeProvider {
 		/// <summary>
 		/// Analyzes an incoming request message payload to discover what kind of 
 		/// message is embedded in it and returns the type, or null if no match is found.

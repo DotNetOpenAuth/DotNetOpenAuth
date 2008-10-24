@@ -37,11 +37,11 @@ namespace DotNetOAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Gets or sets the name of the serialized form of this member in the message.
+		/// Gets the name of the serialized form of this member in the message.
 		/// </summary>
 		public string Name {
 			get { return this.name; }
-			set { this.name = string.IsNullOrEmpty(value) ? null : value; }
+			private set { this.name = string.IsNullOrEmpty(value) ? null : value; }
 		}
 
 		/// <summary>

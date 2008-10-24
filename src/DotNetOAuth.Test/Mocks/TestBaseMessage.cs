@@ -18,21 +18,21 @@ namespace DotNetOAuth.Test.Mocks {
 	internal class TestBaseMessage : IProtocolMessage, IBaseMessageExplicitMembers {
 		private Dictionary<string, string> extraData = new Dictionary<string, string>();
 
-		[MessagePart(Name = "age", IsRequired = true)]
+		[MessagePart("age", IsRequired = true)]
 		public int Age { get; set; }
 
 		[MessagePart]
 		public string Name { get; set; }
 
-		[MessagePart(Name = "explicit")]
+		[MessagePart("explicit")]
 		string IBaseMessageExplicitMembers.ExplicitProperty { get; set; }
 
 		Version IProtocolMessage.ProtocolVersion {
 			get { return new Version(1, 0); }
 		}
 
-		MessageProtection IProtocolMessage.RequiredProtection {
-			get { return MessageProtection.None; }
+		MessageProtections IProtocolMessage.RequiredProtection {
+			get { return MessageProtections.None; }
 		}
 
 		MessageTransport IProtocolMessage.Transport {
@@ -48,7 +48,7 @@ namespace DotNetOAuth.Test.Mocks {
 			set { this.PrivateProperty = value; }
 		}
 
-		[MessagePart(Name = "private")]
+		[MessagePart("private")]
 		private string PrivateProperty { get; set; }
 
 		void IProtocolMessage.EnsureValidMessage() { }

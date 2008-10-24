@@ -7,8 +7,8 @@
 namespace DotNetOAuth {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Net;
-	using System.Web;
 	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.Messages;
 	using DotNetOAuth.Messaging;
@@ -34,7 +34,7 @@ namespace DotNetOAuth {
 			this.WebRequestHandler = new StandardWebRequestHandler();
 			ITamperProtectionChannelBindingElement signingElement = serviceDescription.CreateTamperProtectionElement();
 			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
-			this.Channel = new OAuthChannel(signingElement, store, tokenManager, new OAuthConsumerMessageTypeProvider(tokenManager), this.WebRequestHandler);
+			this.Channel = new OAuthChannel(signingElement, store, tokenManager, new OAuthConsumerMessageTypeProvider(), this.WebRequestHandler);
 			this.ServiceProvider = serviceDescription;
 		}
 
@@ -106,16 +106,17 @@ namespace DotNetOAuth {
 		/// </param>
 		/// <param name="requestParameters">Extra parameters to add to the request token message.  Optional.</param>
 		/// <param name="redirectParameters">Extra parameters to add to the redirect to Service Provider message.  Optional.</param>
-		/// <param name="token">The request token that must be exchanged for an access token after the user has provided authorization.</param>
+		/// <param name="requestToken">The request token that must be exchanged for an access token after the user has provided authorization.</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
-		protected internal Response RequestUserAuthorization(Uri callback, IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, out string token) {
+		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "3#", Justification = "Two results")]
+		protected internal Response RequestUserAuthorization(Uri callback, IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, out string requestToken) {
 			// Obtain an unauthorized request token.
-			var requestToken = new GetRequestTokenMessage(this.ServiceProvider.RequestTokenEndpoint) {
+			var token = new GetRequestTokenMessage(this.ServiceProvider.RequestTokenEndpoint) {
 				ConsumerKey = this.ConsumerKey,
 			};
-			requestToken.AddNonOAuthParameters(requestParameters);
-			var requestTokenResponse = this.Channel.Request<GrantRequestTokenMessage>(requestToken);
-			this.TokenManager.StoreNewRequestToken(requestToken, requestTokenResponse);
+			token.AddNonOAuthParameters(requestParameters);
+			var requestTokenResponse = this.Channel.Request<GrantRequestTokenMessage>(token);
+			this.TokenManager.StoreNewRequestToken(token, requestTokenResponse);
 
 			// Request user authorization.
 			ITokenContainingMessage assignedRequestToken = requestTokenResponse;
@@ -123,7 +124,7 @@ namespace DotNetOAuth {
 				Callback = callback,
 			};
 			requestAuthorization.AddNonOAuthParameters(redirectParameters);
-			token = requestAuthorization.RequestToken;
+			requestToken = requestAuthorization.RequestToken;
 			return this.Channel.Send(requestAuthorization);
 		}
 

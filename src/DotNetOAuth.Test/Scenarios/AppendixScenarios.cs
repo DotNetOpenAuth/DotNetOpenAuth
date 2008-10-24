@@ -20,15 +20,15 @@ namespace DotNetOAuth.Test {
 		[TestMethod]
 		public void SpecAppendixAExample() {
 			ServiceProviderDescription serviceDescription = new ServiceProviderDescription() {
-				RequestTokenEndpoint = new MessageReceivingEndpoint("https://photos.example.net/request_token", HttpDeliveryMethod.PostRequest),
-				UserAuthorizationEndpoint = new MessageReceivingEndpoint("http://photos.example.net/authorize", HttpDeliveryMethod.GetRequest),
-				AccessTokenEndpoint = new MessageReceivingEndpoint("https://photos.example.net/access_token", HttpDeliveryMethod.PostRequest),
+				RequestTokenEndpoint = new MessageReceivingEndpoint("https://photos.example.net/request_token", HttpDeliveryMethods.PostRequest),
+				UserAuthorizationEndpoint = new MessageReceivingEndpoint("http://photos.example.net/authorize", HttpDeliveryMethods.GetRequest),
+				AccessTokenEndpoint = new MessageReceivingEndpoint("https://photos.example.net/access_token", HttpDeliveryMethods.PostRequest),
 				TamperProtectionElements = new ITamperProtectionChannelBindingElement[] {
-					new PlainTextSigningBindingElement(),
+					new PlaintextSigningBindingElement(),
 					new HmacSha1SigningBindingElement(),
 				},
 			};
-			MessageReceivingEndpoint accessPhotoEndpoint = new MessageReceivingEndpoint("http://photos.example.net/photos?file=vacation.jpg&size=original", HttpDeliveryMethod.AuthorizationHeaderRequest | HttpDeliveryMethod.GetRequest);
+			MessageReceivingEndpoint accessPhotoEndpoint = new MessageReceivingEndpoint("http://photos.example.net/photos?file=vacation.jpg&size=original", HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.GetRequest);
 			ConsumerDescription consumerDescription = new ConsumerDescription("dpf43f3p2l4k3l03", "kd94hf93k423kf44");
 
 			Coordinator coordinator = new Coordinator(

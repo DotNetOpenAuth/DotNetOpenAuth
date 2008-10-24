@@ -19,20 +19,20 @@ namespace DotNetOAuth.Test.Messaging.Bindings {
 			message.Recipient = new Uri("http://localtest");
 			((IExpiringProtocolMessage)message).UtcCreationDate = DateTime.Parse("1/1/1990");
 
-			Channel channel = CreateChannel(MessageProtection.Expiration);
+			Channel channel = CreateChannel(MessageProtections.Expiration);
 			channel.Send(message);
 			Assert.IsTrue(DateTime.UtcNow - ((IExpiringProtocolMessage)message).UtcCreationDate < TimeSpan.FromSeconds(3), "The timestamp on the message was not set on send.");
 		}
 
 		[TestMethod]
 		public void VerifyGoodTimestampIsAccepted() {
-			this.Channel = CreateChannel(MessageProtection.Expiration);
+			this.Channel = CreateChannel(MessageProtections.Expiration);
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
 		}
 
 		[TestMethod, ExpectedException(typeof(ExpiredMessageException))]
 		public void VerifyBadTimestampIsRejected() {
-			this.Channel = CreateChannel(MessageProtection.Expiration);
+			this.Channel = CreateChannel(MessageProtections.Expiration);
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow - StandardExpirationBindingElement.DefaultMaximumMessageAge - TimeSpan.FromSeconds(1), false);
 		}
 	}

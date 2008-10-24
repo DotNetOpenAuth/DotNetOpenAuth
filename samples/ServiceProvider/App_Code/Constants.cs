@@ -12,9 +12,9 @@ public static class Constants {
 	public static ServiceProviderDescription SelfDescription {
 		get {
 			ServiceProviderDescription description = new ServiceProviderDescription {
-				AccessTokenEndpoint = new MessageReceivingEndpoint(new Uri(WebRootUrl, "/OAuth.ashx"), HttpDeliveryMethod.PostRequest),
-				RequestTokenEndpoint = new MessageReceivingEndpoint(new Uri(WebRootUrl, "/OAuth.ashx"), HttpDeliveryMethod.PostRequest),
-				UserAuthorizationEndpoint = new MessageReceivingEndpoint(new Uri(WebRootUrl, "/OAuth.ashx"), HttpDeliveryMethod.PostRequest),
+				AccessTokenEndpoint = new MessageReceivingEndpoint(new Uri(WebRootUrl, "/OAuth.ashx"), HttpDeliveryMethods.PostRequest),
+				RequestTokenEndpoint = new MessageReceivingEndpoint(new Uri(WebRootUrl, "/OAuth.ashx"), HttpDeliveryMethods.PostRequest),
+				UserAuthorizationEndpoint = new MessageReceivingEndpoint(new Uri(WebRootUrl, "/OAuth.ashx"), HttpDeliveryMethods.PostRequest),
 				TamperProtectionElements = new ITamperProtectionChannelBindingElement[] {
 					new HmacSha1SigningBindingElement(),
 				},

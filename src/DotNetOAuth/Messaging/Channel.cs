@@ -516,7 +516,7 @@ namespace DotNetOAuth.Messaging {
 				throw new ArgumentNullException("message");
 			}
 
-			MessageProtection appliedProtection = MessageProtection.None;
+			MessageProtections appliedProtection = MessageProtections.None;
 			foreach (IChannelBindingElement bindingElement in this.bindingElements) {
 				if (bindingElement.PrepareMessageForSending(message)) {
 					appliedProtection |= bindingElement.Protection;
@@ -567,13 +567,13 @@ namespace DotNetOAuth.Messaging {
 
 			// Filter the elements between the mere transforming ones and the protection ones.
 			var transformationElements = new List<IChannelBindingElement>(
-				elements.Where(element => element.Protection == MessageProtection.None));
+				elements.Where(element => element.Protection == MessageProtections.None));
 			var protectionElements = new List<IChannelBindingElement>(
-				elements.Where(element => element.Protection != MessageProtection.None));
+				elements.Where(element => element.Protection != MessageProtections.None));
 
 			bool wasLastProtectionPresent = true;
-			foreach (MessageProtection protectionKind in Enum.GetValues(typeof(MessageProtection))) {
-				if (protectionKind == MessageProtection.None) {
+			foreach (MessageProtections protectionKind in Enum.GetValues(typeof(MessageProtections))) {
+				if (protectionKind == MessageProtections.None) {
 					continue;
 				}
 
@@ -619,8 +619,8 @@ namespace DotNetOAuth.Messaging {
 		/// 1 if <paramref name="element2"/> should be applied to an outgoing message before <paramref name="element1"/>.
 		/// 0 if it doesn't matter.
 		/// </returns>
-		private static int BindingElementOutgoingMessageApplicationOrder(MessageProtection protection1, MessageProtection protection2) {
-			Debug.Assert(protection1 != MessageProtection.None || protection2 != MessageProtection.None, "This comparison function should only be used to compare protection binding elements.  Otherwise we change the order of user-defined message transformations.");
+		private static int BindingElementOutgoingMessageApplicationOrder(MessageProtections protection1, MessageProtections protection2) {
+			Debug.Assert(protection1 != MessageProtections.None || protection2 != MessageProtections.None, "This comparison function should only be used to compare protection binding elements.  Otherwise we change the order of user-defined message transformations.");
 
 			// Now put the protection ones in the right order.
 			return -((int)protection1).CompareTo((int)protection2); // descending flag ordinal order
@@ -653,7 +653,7 @@ namespace DotNetOAuth.Messaging {
 		private void VerifyMessageAfterReceiving(IProtocolMessage message) {
 			Debug.Assert(message != null, "message == null");
 
-			MessageProtection appliedProtection = MessageProtection.None;
+			MessageProtections appliedProtection = MessageProtections.None;
 			foreach (IChannelBindingElement bindingElement in this.bindingElements.Reverse<IChannelBindingElement>()) {
 				if (bindingElement.PrepareMessageForReceiving(message)) {
 					appliedProtection |= bindingElement.Protection;

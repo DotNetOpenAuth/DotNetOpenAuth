@@ -7,6 +7,7 @@
 namespace DotNetOAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
+	using System.Security.Permissions;
 
 	/// <summary>
 	/// An exception to represent errors in the local or remote implementation of the protocol.
@@ -52,7 +53,8 @@ namespace DotNetOAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The human-readable exception message.</param>
 		/// <param name="faultedMessage">The message that was the cause of the exception.  May not be null.</param>
-		internal ProtocolException(string message, IProtocolMessage faultedMessage) : base(message) {
+		internal ProtocolException(string message, IProtocolMessage faultedMessage)
+			: base(message) {
 			if (faultedMessage == null) {
 				throw new ArgumentNullException("faultedMessage");
 			}
@@ -100,7 +102,34 @@ namespace DotNetOAuth.Messaging {
 		protected ProtocolException(
 		  System.Runtime.Serialization.SerializationInfo info,
 		  System.Runtime.Serialization.StreamingContext context)
-			: base(info, context) { }
+			: base(info, context) {
+			throw new NotImplementedException();
+		}
+
+		#region IProtocolMessage Properties
+
+		/// <summary>
+		/// Gets the version of the protocol this message is prepared to implement.
+		/// </summary>
+		Version IProtocolMessage.ProtocolVersion {
+			get { return this.ProtocolVersion; }
+		}
+
+		/// <summary>
+		/// Gets the level of protection this exception requires when transmitted as a message.
+		/// </summary>
+		MessageProtections IProtocolMessage.RequiredProtection {
+			get { return RequiredProtection; }
+		}
+
+		/// <summary>
+		/// Gets whether this is a direct or indirect message.
+		/// </summary>
+		MessageTransport IProtocolMessage.Transport {
+			get { return this.Transport; }
+		}
+
+		#endregion
 
 		#region IDirectedProtocolMessage Members
 
@@ -111,6 +140,40 @@ namespace DotNetOAuth.Messaging {
 		/// This property should only be called when the error is being sent as an indirect response.
 		/// </remarks>
 		Uri IDirectedProtocolMessage.Recipient {
+			get { return this.Recipient; }
+		}
+
+		#endregion
+
+		/// <summary>
+		/// Gets the dictionary of additional name/value fields tacked on to this message.
+		/// </summary>
+		IDictionary<string, string> IProtocolMessage.ExtraData {
+			get { return this.ExtraData; }
+		}
+
+		/// <summary>
+		/// Gets the message that caused the exception.
+		/// </summary>
+		internal IProtocolMessage FaultedMessage {
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Gets the level of protection this exception requires when transmitted as a message.
+		/// </summary>
+		protected static MessageProtections RequiredProtection {
+			get { return MessageProtections.None; }
+		}
+
+		/// <summary>
+		/// Gets the URL of the intended receiver of this message.
+		/// </summary>
+		/// <remarks>
+		/// This property should only be called when the error is being sent as an indirect response.
+		/// </remarks>
+		protected Uri Recipient {
 			get {
 				if (this.inResponseTo == null) {
 					throw new InvalidOperationException(MessagingStrings.ExceptionNotConstructedForTransit);
@@ -119,14 +182,10 @@ namespace DotNetOAuth.Messaging {
 			}
 		}
 
-		#endregion
-
-		#region IProtocolMessage Properties
-
 		/// <summary>
 		/// Gets the version of the protocol this message is prepared to implement.
 		/// </summary>
-		Version IProtocolMessage.ProtocolVersion {
+		protected Version ProtocolVersion {
 			get {
 				if (this.inResponseTo == null) {
 					throw new InvalidOperationException(MessagingStrings.ExceptionNotConstructedForTransit);
@@ -136,16 +195,9 @@ namespace DotNetOAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Gets the level of protection this exception requires when transmitted as a message.
-		/// </summary>
-		MessageProtection IProtocolMessage.RequiredProtection {
-			get { return MessageProtection.None; }
-		}
-
-		/// <summary>
 		/// Gets whether this is a direct or indirect message.
 		/// </summary>
-		MessageTransport IProtocolMessage.Transport {
+		protected MessageTransport Transport {
 			get {
 				if (this.inResponseTo == null) {
 					throw new InvalidOperationException(MessagingStrings.ExceptionNotConstructedForTransit);
@@ -157,18 +209,26 @@ namespace DotNetOAuth.Messaging {
 		/// <summary>
 		/// Gets the dictionary of additional name/value fields tacked on to this message.
 		/// </summary>
-		IDictionary<string, string> IProtocolMessage.ExtraData {
+		protected IDictionary<string, string> ExtraData {
 			get { return this.extraData; }
 		}
 
-		#endregion
-
 		/// <summary>
-		/// Gets the message that caused the exception.
+		/// When overridden in a derived class, sets the <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with information about the exception.
 		/// </summary>
-		internal IProtocolMessage FaultedMessage {
-			get;
-			private set;
+		/// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
+		/// <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.</param>
+		/// <exception cref="T:System.ArgumentNullException">
+		/// The <paramref name="info"/> parameter is a null reference (Nothing in Visual Basic).
+		/// </exception>
+		/// <PermissionSet>
+		/// 	<IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Read="*AllFiles*" PathDiscovery="*AllFiles*"/>
+		/// 	<IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="SerializationFormatter"/>
+		/// </PermissionSet>
+		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
+		public override void GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) {
+			base.GetObjectData(info, context);
+			throw new NotImplementedException();
 		}
 
 		#region IProtocolMessage Methods
@@ -177,6 +237,13 @@ namespace DotNetOAuth.Messaging {
 		/// See <see cref="IProtocolMessage.EnsureValidMessage"/>.
 		/// </summary>
 		void IProtocolMessage.EnsureValidMessage() {
+			this.EnsureValidMessage();
+		}
+
+		/// <summary>
+		/// See <see cref="IProtocolMessage.EnsureValidMessage"/>.
+		/// </summary>
+		protected virtual void EnsureValidMessage() {
 			if (this.inResponseTo == null) {
 				throw new InvalidOperationException(MessagingStrings.ExceptionNotConstructedForTransit);
 			}

@@ -64,13 +64,14 @@
     <Compile Include="ChannelElements\ITokenGenerator.cs" />
     <Compile Include="ChannelElements\ITokenManager.cs" />
     <Compile Include="ChannelElements\OAuthHttpMethodBindingElement.cs" />
-    <Compile Include="ChannelElements\PlainTextSigningBindingElement.cs" />
+    <Compile Include="ChannelElements\PlaintextSigningBindingElement.cs" />
     <Compile Include="ChannelElements\HmacSha1SigningBindingElement.cs" />
     <Compile Include="ChannelElements\SigningBindingElementChain.cs" />
     <Compile Include="ChannelElements\StandardTokenGenerator.cs" />
     <Compile Include="ChannelElements\TokenType.cs" />
     <Compile Include="ConsumerBase.cs" />
     <Compile Include="DesktopConsumer.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Messages\ITokenSecretContainingMessage.cs" />
     <Compile Include="Messaging\ITamperProtectionChannelBindingElement.cs" />
     <Compile Include="ServiceProviderDescription.cs" />
@@ -86,7 +87,7 @@
     <Compile Include="Messaging\Bindings\INonceStore.cs" />
     <Compile Include="Messaging\Bindings\StandardReplayProtectionBindingElement.cs" />
     <Compile Include="Messaging\MessagePartAttribute.cs" />
-    <Compile Include="Messaging\MessageProtection.cs" />
+    <Compile Include="Messaging\MessageProtections.cs" />
     <Compile Include="Messaging\IChannelBindingElement.cs" />
     <Compile Include="Messaging\Bindings\ReplayedMessageException.cs" />
     <Compile Include="Messaging\Bindings\ExpiredMessageException.cs" />
@@ -103,7 +104,7 @@
     <Compile Include="Messaging\HttpRequestInfo.cs" />
     <Compile Include="Messaging\IDirectedProtocolMessage.cs" />
     <Compile Include="Messaging\IMessageTypeProvider.cs" />
-    <Compile Include="Messaging\Bindings\ITamperResistantProtocolMessage.cs" />
+    <Compile Include="Messaging\ITamperResistantProtocolMessage.cs" />
     <Compile Include="Messaging\MessageSerializer.cs" />
     <Compile Include="Messaging\MessagingStrings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -125,7 +126,7 @@
     <Compile Include="Loggers\Log4NetLogger.cs" />
     <Compile Include="Loggers\NoOpLogger.cs" />
     <Compile Include="Loggers\TraceLogger.cs" />
-    <Compile Include="Messaging\HttpDeliveryMethod.cs" />
+    <Compile Include="Messaging\HttpDeliveryMethods.cs" />
     <Compile Include="Messaging\MessageTransport.cs" />
     <Compile Include="ChannelElements\OAuthServiceProviderMessageTypeProvider.cs" />
     <Compile Include="Messaging\ProtocolException.cs" />

@@ -36,7 +36,7 @@ namespace DotNetOAuth.Test.Scenarios {
 			signingBindingElement,
 			new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge),
 			tokenManager,
-			isConsumer ? (IMessageTypeProvider)new OAuthConsumerMessageTypeProvider(tokenManager) : new OAuthServiceProviderMessageTypeProvider(tokenManager),
+			isConsumer ? (IMessageTypeProvider)new OAuthConsumerMessageTypeProvider() : new OAuthServiceProviderMessageTypeProvider(tokenManager),
 			new TestWebRequestHandler()) {
 		}
 
@@ -139,8 +139,8 @@ namespace DotNetOAuth.Test.Scenarios {
 			return (T)serializer.Deserialize(serializer.Serialize(message), recipient);
 		}
 
-		private string GetHttpMethod(HttpDeliveryMethod methods) {
-			return (methods & HttpDeliveryMethod.PostRequest) != 0 ? "POST" : "GET";
+		private string GetHttpMethod(HttpDeliveryMethods methods) {
+			return (methods & HttpDeliveryMethods.PostRequest) != 0 ? "POST" : "GET";
 		}
 	}
 }

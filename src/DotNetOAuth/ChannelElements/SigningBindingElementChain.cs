@@ -38,7 +38,7 @@ namespace DotNetOAuth.ChannelElements {
 			if (signers.Contains(null)) {
 				throw new ArgumentException(MessagingStrings.SequenceContainsNullElement, "signers");
 			}
-			MessageProtection protection = signers[0].Protection;
+			MessageProtections protection = signers[0].Protection;
 			if (signers.Any(element => element.Protection != protection)) {
 				throw new ArgumentException(Strings.SigningElementsMustShareSameProtection, "signers");
 			}
@@ -72,7 +72,7 @@ namespace DotNetOAuth.ChannelElements {
 		/// <summary>
 		/// Gets the protection offered (if any) by this binding element.
 		/// </summary>
-		public MessageProtection Protection {
+		public MessageProtections Protection {
 			get { return this.signers[0].Protection; }
 		}
 

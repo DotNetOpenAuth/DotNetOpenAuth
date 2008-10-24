@@ -16,20 +16,9 @@ namespace DotNetOAuth.ChannelElements {
 	/// </summary>
 	public class OAuthConsumerMessageTypeProvider : IMessageTypeProvider {
 		/// <summary>
-		/// The token manager to use for discerning between request and access tokens.
-		/// </summary>
-		private ITokenManager tokenManager;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuthConsumerMessageTypeProvider"/> class.
 		/// </summary>
-		/// <param name="tokenManager">The token manager instance to use.</param>
-		protected internal OAuthConsumerMessageTypeProvider(ITokenManager tokenManager) {
-			if (tokenManager == null) {
-				throw new ArgumentNullException("tokenManager");
-			}
-
-			this.tokenManager = tokenManager;
+		protected internal OAuthConsumerMessageTypeProvider() {
 		}
 
 		#region IMessageTypeProvider Members

@@ -18,7 +18,7 @@ namespace DotNetOAuth.Messaging {
 		/// </summary>
 		/// <param name="locationUri">The URL of this endpoint.</param>
 		/// <param name="method">The HTTP method(s) allowed.</param>
-		public MessageReceivingEndpoint(string locationUri, HttpDeliveryMethod method)
+		public MessageReceivingEndpoint(string locationUri, HttpDeliveryMethods method)
 			: this(new Uri(locationUri), method) { }
 
 		/// <summary>
@@ -26,14 +26,14 @@ namespace DotNetOAuth.Messaging {
 		/// </summary>
 		/// <param name="location">The URL of this endpoint.</param>
 		/// <param name="method">The HTTP method(s) allowed.</param>
-		public MessageReceivingEndpoint(Uri location, HttpDeliveryMethod method) {
+		public MessageReceivingEndpoint(Uri location, HttpDeliveryMethods method) {
 			if (location == null) {
 				throw new ArgumentNullException("location");
 			}
-			if (method == HttpDeliveryMethod.None) {
+			if (method == HttpDeliveryMethods.None) {
 				throw new ArgumentOutOfRangeException("method");
 			}
-			if ((method & (HttpDeliveryMethod.PostRequest | HttpDeliveryMethod.GetRequest)) == 0) {
+			if ((method & (HttpDeliveryMethods.PostRequest | HttpDeliveryMethods.GetRequest)) == 0) {
 				throw new ArgumentOutOfRangeException("method", MessagingStrings.GetOrPostFlagsRequired);
 			}
 
@@ -49,6 +49,6 @@ namespace DotNetOAuth.Messaging {
 		/// <summary>
 		/// Gets the HTTP method(s) allowed.
 		/// </summary>
-		public HttpDeliveryMethod AllowedMethods { get; private set; }
+		public HttpDeliveryMethods AllowedMethods { get; private set; }
 	}
 }

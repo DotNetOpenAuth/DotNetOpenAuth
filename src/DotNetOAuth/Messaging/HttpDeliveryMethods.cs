@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="HttpDeliveryMethod.cs" company="Andrew Arnott">
+// <copyright file="HttpDeliveryMethods.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -14,7 +14,7 @@ namespace DotNetOAuth.Messaging {
 	/// See 1.0 spec section 5.2.
 	/// </remarks>
 	[Flags]
-	public enum HttpDeliveryMethod {
+	public enum HttpDeliveryMethods {
 		/// <summary>
 		/// No HTTP methods are allowed.
 		/// </summary>

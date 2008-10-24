@@ -25,7 +25,7 @@ namespace DotNetOAuth.Messages {
 		/// <summary>
 		/// Gets a value indicating whether signing this message is required.
 		/// </summary>
-		private MessageProtection protectionRequired;
+		private MessageProtections protectionRequired;
 
 		/// <summary>
 		/// Gets a value indicating whether this is a direct or indirect message.
@@ -51,7 +51,7 @@ namespace DotNetOAuth.Messages {
 		/// </summary>
 		/// <param name="protectionRequired">The level of protection the message requires.</param>
 		/// <param name="transport">A value indicating whether this message requires a direct or indirect transport.</param>
-		protected MessageBase(MessageProtection protectionRequired, MessageTransport transport) {
+		protected MessageBase(MessageProtections protectionRequired, MessageTransport transport) {
 			this.protectionRequired = protectionRequired;
 			this.transport = transport;
 		}
@@ -62,7 +62,7 @@ namespace DotNetOAuth.Messages {
 		/// <param name="protectionRequired">The level of protection the message requires.</param>
 		/// <param name="transport">A value indicating whether this message requires a direct or indirect transport.</param>
 		/// <param name="recipient">The URI that a directed message will be delivered to.</param>
-		protected MessageBase(MessageProtection protectionRequired, MessageTransport transport, MessageReceivingEndpoint recipient) {
+		protected MessageBase(MessageProtections protectionRequired, MessageTransport transport, MessageReceivingEndpoint recipient) {
 			if (recipient == null) {
 				throw new ArgumentNullException("recipient");
 			}
@@ -78,28 +78,28 @@ namespace DotNetOAuth.Messages {
 		/// Gets the version of the protocol this message is prepared to implement.
 		/// </summary>
 		Version IProtocolMessage.ProtocolVersion {
-			get { return new Version(1, 0); }
+			get { return this.ProtocolVersion; }
 		}
 
 		/// <summary>
 		/// Gets the level of protection this message requires.
 		/// </summary>
-		MessageProtection IProtocolMessage.RequiredProtection {
-			get { return this.protectionRequired; }
+		MessageProtections IProtocolMessage.RequiredProtection {
+			get { return this.RequiredProtection; }
 		}
 
 		/// <summary>
 		/// Gets a value indicating whether this is a direct or indirect message.
 		/// </summary>
 		MessageTransport IProtocolMessage.Transport {
-			get { return this.transport; }
+			get { return this.Transport; }
 		}
 
 		/// <summary>
 		/// Gets the dictionary of additional name/value fields tacked on to this message.
 		/// </summary>
 		IDictionary<string, string> IProtocolMessage.ExtraData {
-			get { return this.extraData; }
+			get { return this.ExtraData; }
 		}
 
 		#endregion
@@ -120,14 +120,65 @@ namespace DotNetOAuth.Messages {
 		/// <summary>
 		/// Gets the preferred method of transport for the message.
 		/// </summary>
-		HttpDeliveryMethod IOAuthDirectedMessage.HttpMethods {
-			get { return this.recipient != null ? this.recipient.AllowedMethods : HttpDeliveryMethod.None; }
+		HttpDeliveryMethods IOAuthDirectedMessage.HttpMethods {
+			get { return this.HttpMethods; }
 		}
 
 		/// <summary>
 		/// Gets or sets the URI to the Service Provider endpoint to send this message to.
 		/// </summary>
 		Uri IOAuthDirectedMessage.Recipient {
+			get { return this.Recipient; }
+			set { this.Recipient = value; }
+		}
+
+		#endregion
+
+		/// <summary>
+		/// Gets or sets a value indicating whether security sensitive strings are 
+		/// emitted from the ToString() method.
+		/// </summary>
+		internal static bool LowSecurityMode { get; set; }
+
+		/// <summary>
+		/// Gets the version of the protocol this message is prepared to implement.
+		/// </summary>
+		protected virtual Version ProtocolVersion {
+			get { return new Version(1, 0); }
+		}
+
+		/// <summary>
+		/// Gets the level of protection this message requires.
+		/// </summary>
+		protected MessageProtections RequiredProtection {
+			get { return this.protectionRequired; }
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether this is a direct or indirect message.
+		/// </summary>
+		protected MessageTransport Transport {
+			get { return this.transport; }
+		}
+
+		/// <summary>
+		/// Gets the dictionary of additional name/value fields tacked on to this message.
+		/// </summary>
+		protected IDictionary<string, string> ExtraData {
+			get { return this.extraData; }
+		}
+
+		/// <summary>
+		/// Gets the preferred method of transport for the message.
+		/// </summary>
+		protected HttpDeliveryMethods HttpMethods {
+			get { return this.recipient != null ? this.recipient.AllowedMethods : HttpDeliveryMethods.None; }
+		}
+
+		/// <summary>
+		/// Gets or sets the URI to the Service Provider endpoint to send this message to.
+		/// </summary>
+		protected Uri Recipient {
 			get {
 				return this.recipient != null ? this.recipient.Location : null;
 			}
@@ -140,14 +191,6 @@ namespace DotNetOAuth.Messages {
 				}
 			}
 		}
-
-		#endregion
-
-		/// <summary>
-		/// Gets or sets a value indicating whether security sensitive strings are 
-		/// emitted from the ToString() method.
-		/// </summary>
-		internal static bool LowSecurityMode { get; set; }
 
 		#region IProtocolMessage Methods
 

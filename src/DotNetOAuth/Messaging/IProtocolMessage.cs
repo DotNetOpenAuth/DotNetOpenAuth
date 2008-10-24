@@ -22,7 +22,7 @@ namespace DotNetOAuth.Messaging {
 		/// <summary>
 		/// Gets the level of protection this message requires.
 		/// </summary>
-		MessageProtection RequiredProtection { get; }
+		MessageProtections RequiredProtection { get; }
 
 		/// <summary>
 		/// Gets a value indicating whether this is a direct or indirect message.

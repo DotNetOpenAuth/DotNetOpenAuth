@@ -24,7 +24,7 @@ namespace DotNetOAuth.Test.Mocks {
 
 		#region IProtocolMessage Properties
 
-		MessageProtection IProtocolMessage.RequiredProtection {
+		MessageProtections IProtocolMessage.RequiredProtection {
 			get { return this.RequiredProtection; }
 		}
 
@@ -32,12 +32,12 @@ namespace DotNetOAuth.Test.Mocks {
 
 		#region IOAuthDirectedMessage Members
 
-		public HttpDeliveryMethod HttpMethods { get; internal set; }
+		public HttpDeliveryMethods HttpMethods { get; internal set; }
 
 		#endregion
 
-		protected virtual MessageProtection RequiredProtection {
-			get { return MessageProtection.None; }
+		protected virtual MessageProtections RequiredProtection {
+			get { return MessageProtections.None; }
 		}
 	}
 }

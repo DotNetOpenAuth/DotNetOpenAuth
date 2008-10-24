@@ -24,7 +24,7 @@ namespace DotNetOAuth.Test.Mocks {
 
 		#region IExpiringProtocolMessage Members
 
-		[MessagePart(Name = "created_on", IsRequired = true)]
+		[MessagePart("created_on", IsRequired = true)]
 		DateTime IExpiringProtocolMessage.UtcCreationDate {
 			get { return this.utcCreationDate; }
 			set { this.utcCreationDate = value.ToUniversalTime(); }

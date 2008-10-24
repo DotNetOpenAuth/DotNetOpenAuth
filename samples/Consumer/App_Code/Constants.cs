@@ -14,9 +14,9 @@ public static class Constants {
 	/// The Consumer to use for accessing Google data APIs.
 	/// </summary>
 	public static readonly ServiceProviderDescription GoogleDescription = new ServiceProviderDescription {
-		RequestTokenEndpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthGetRequestToken", HttpDeliveryMethod.AuthorizationHeaderRequest),
-		UserAuthorizationEndpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthAuthorizeToken", HttpDeliveryMethod.AuthorizationHeaderRequest),
-		AccessTokenEndpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthGetAccessToken", HttpDeliveryMethod.AuthorizationHeaderRequest),
+		RequestTokenEndpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthGetRequestToken", HttpDeliveryMethods.AuthorizationHeaderRequest),
+		UserAuthorizationEndpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthAuthorizeToken", HttpDeliveryMethods.AuthorizationHeaderRequest),
+		AccessTokenEndpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthGetAccessToken", HttpDeliveryMethods.AuthorizationHeaderRequest),
 		TamperProtectionElements = new ITamperProtectionChannelBindingElement[] {
 			new HmacSha1SigningBindingElement(),
 		},
@@ -35,6 +35,6 @@ public static class Constants {
 		/// <summary>
 		/// The URI to get contacts once authorization is granted.
 		/// </summary>
-		public static readonly MessageReceivingEndpoint GetContacts = new MessageReceivingEndpoint("http://www.google.com/m8/feeds/contacts/default/full/", HttpDeliveryMethod.GetRequest);
+		public static readonly MessageReceivingEndpoint GetContacts = new MessageReceivingEndpoint("http://www.google.com/m8/feeds/contacts/default/full/", HttpDeliveryMethods.GetRequest);
 	}
 }

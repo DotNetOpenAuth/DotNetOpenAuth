@@ -48,9 +48,9 @@ namespace DotNetOAuth.Messaging.Bindings {
 		/// <summary>
 		/// Gets the protection offered by this binding element.
 		/// </summary>
-		/// <value><see cref="MessageProtection.Expiration"/></value>
-		MessageProtection IChannelBindingElement.Protection {
-			get { return MessageProtection.Expiration; }
+		/// <value><see cref="MessageProtections.Expiration"/></value>
+		MessageProtections IChannelBindingElement.Protection {
+			get { return MessageProtections.Expiration; }
 		}
 
 		#endregion

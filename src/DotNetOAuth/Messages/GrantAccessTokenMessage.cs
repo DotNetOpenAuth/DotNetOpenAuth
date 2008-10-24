@@ -6,6 +6,7 @@
 
 namespace DotNetOAuth.Messages {
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using DotNetOAuth.Messaging;
 
 	/// <summary>
@@ -17,18 +18,19 @@ namespace DotNetOAuth.Messages {
 		/// Initializes a new instance of the <see cref="GrantAccessTokenMessage"/> class.
 		/// </summary>
 		protected internal GrantAccessTokenMessage()
-			: base(MessageProtection.None, MessageTransport.Direct) {
+			: base(MessageProtections.None, MessageTransport.Direct) {
 		}
 
 		/// <summary>
 		/// Gets or sets the Access Token assigned by the Service Provider.
 		/// </summary>
-		[MessagePart(Name = "oauth_token", IsRequired = true)]
+		[MessagePart("oauth_token", IsRequired = true)]
 		public string AccessToken { get; set; }
 
 		/// <summary>
 		/// Gets or sets the Request or Access Token.
 		/// </summary>
+		[SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "This property IS accessible by a different name.")]
 		string ITokenContainingMessage.Token {
 			get { return this.AccessToken; }
 			set { this.AccessToken = value; }
@@ -45,14 +47,14 @@ namespace DotNetOAuth.Messages {
 		/// <summary>
 		/// Gets the extra, non-OAuth parameters that will be included in the message.
 		/// </summary>
-		public IDictionary<string, string> ExtraData {
-			get { return ((IProtocolMessage)this).ExtraData; }
+		public new IDictionary<string, string> ExtraData {
+			get { return base.ExtraData; }
 		}
 
 		/// <summary>
 		/// Gets or sets the Token Secret.
 		/// </summary>
-		[MessagePart(Name = "oauth_token_secret", IsRequired = true)]
-		internal string TokenSecret { get; set; }
+		[MessagePart("oauth_token_secret", IsRequired = true)]
+		protected internal string TokenSecret { get; set; }
 	}
 }

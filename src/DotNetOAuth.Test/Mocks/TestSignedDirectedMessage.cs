@@ -26,8 +26,8 @@ namespace DotNetOAuth.Test.Mocks {
 
 		#endregion
 
-		protected override MessageProtection RequiredProtection {
-			get { return MessageProtection.TamperProtection; }
+		protected override MessageProtections RequiredProtection {
+			get { return MessageProtections.TamperProtection; }
 		}
 	}
 }

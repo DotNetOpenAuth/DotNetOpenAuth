@@ -34,8 +34,8 @@ namespace DotNetOAuth.ChannelElements {
 		/// <summary>
 		/// Gets the message protection provided by this binding element.
 		/// </summary>
-		public MessageProtection Protection {
-			get { return MessageProtection.TamperProtection; }
+		public MessageProtections Protection {
+			get { return MessageProtections.TamperProtection; }
 		}
 
 		#endregion
@@ -182,6 +182,23 @@ namespace DotNetOAuth.ChannelElements {
 		}
 
 		/// <summary>
+		/// Gets the ConsumerSecret&amp;TokenSecret" string, allowing either property to be empty or null.
+		/// </summary>
+		/// <param name="message">The message to extract the secrets from.</param>
+		/// <returns>The concatenated string.</returns>
+		protected static string GetConsumerAndTokenSecretString(ITamperResistantOAuthMessage message) {
+			StringBuilder builder = new StringBuilder();
+			if (!string.IsNullOrEmpty(message.ConsumerSecret)) {
+				builder.Append(Uri.EscapeDataString(message.ConsumerSecret));
+			}
+			builder.Append("&");
+			if (!string.IsNullOrEmpty(message.TokenSecret)) {
+				builder.Append(Uri.EscapeDataString(message.TokenSecret));
+			}
+			return builder.ToString();
+		}
+
+		/// <summary>
 		/// Clones this instance.
 		/// </summary>
 		/// <returns>A new instance of the binding element.</returns>
@@ -205,23 +222,6 @@ namespace DotNetOAuth.ChannelElements {
 		/// <returns>True if this binding element can be used to sign the message.  False otherwise.</returns>
 		protected virtual bool IsMessageApplicable(ITamperResistantOAuthMessage message) {
 			return string.IsNullOrEmpty(message.SignatureMethod) || message.SignatureMethod == this.signatureMethod;
-		}
-
-		/// <summary>
-		/// Gets the ConsumerSecret&amp;TokenSecret" string, allowing either property to be empty or null.
-		/// </summary>
-		/// <param name="message">The message to extract the secrets from.</param>
-		/// <returns>The concatenated string.</returns>
-		protected string GetConsumerAndTokenSecretString(ITamperResistantOAuthMessage message) {
-			StringBuilder builder = new StringBuilder();
-			if (!string.IsNullOrEmpty(message.ConsumerSecret)) {
-				builder.Append(Uri.EscapeDataString(message.ConsumerSecret));
-			}
-			builder.Append("&");
-			if (!string.IsNullOrEmpty(message.TokenSecret)) {
-				builder.Append(Uri.EscapeDataString(message.TokenSecret));
-			}
-			return builder.ToString();
 		}
 
 		/// <summary>

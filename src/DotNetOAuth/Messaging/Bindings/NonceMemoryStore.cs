@@ -56,6 +56,12 @@ namespace DotNetOAuth.Messaging.Bindings {
 		/// <see cref="StandardExpirationBindingElement.MaximumMessageAge"/> property.
 		/// </remarks>
 		public bool StoreNonce(string nonce, DateTime timestamp) {
+			if (timestamp.ToUniversalTime() + this.maximumMessageAge < DateTime.UtcNow) {
+				// The expiration binding element should have taken care of this, but perhaps
+				// it's at the boundary case.  We should fail just to be safe.
+				return false;
+			}
+
 			// TODO: implement actual nonce checking.
 			Logger.Warn("Nonce checking not implemented yet.");
 			return true;

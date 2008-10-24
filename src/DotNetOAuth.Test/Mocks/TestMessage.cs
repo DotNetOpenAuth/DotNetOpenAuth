@@ -23,13 +23,13 @@ namespace DotNetOAuth.Test.Mocks {
 			this.transport = transport;
 		}
 
-		[MessagePart(Name = "age", IsRequired = true)]
+		[MessagePart("age", IsRequired = true)]
 		public int Age { get; set; }
 		[MessagePart("Name")]
 		public string Name { get; set; }
 		[MessagePart]
 		public string EmptyMember { get; set; }
-		[MessagePart(Name = null)] // null name tests that Location is still the name.
+		[MessagePart(null)] // null name tests that Location is still the name.
 		public Uri Location { get; set; }
 		[MessagePart(IsRequired = true)]
 		public DateTime Timestamp { get; set; }
@@ -40,8 +40,8 @@ namespace DotNetOAuth.Test.Mocks {
 			get { return new Version(1, 0); }
 		}
 
-		MessageProtection IProtocolMessage.RequiredProtection {
-			get { return MessageProtection.None; }
+		MessageProtections IProtocolMessage.RequiredProtection {
+			get { return MessageProtections.None; }
 		}
 
 		MessageTransport IProtocolMessage.Transport {

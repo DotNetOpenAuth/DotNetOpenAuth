@@ -14,8 +14,8 @@ namespace DotNetOAuth.Test.Mocks {
 
 		#region IChannelBindingElement Members
 
-		MessageProtection IChannelBindingElement.Protection {
-			get { return MessageProtection.ReplayProtection; }
+		MessageProtections IChannelBindingElement.Protection {
+			get { return MessageProtections.ReplayProtection; }
 		}
 
 		bool IChannelBindingElement.PrepareMessageForSending(IProtocolMessage message) {

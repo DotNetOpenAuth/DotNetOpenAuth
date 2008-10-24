@@ -39,7 +39,7 @@ namespace DotNetOAuth.ChannelElements {
 			signingBindingElement,
 			store,
 			tokenManager,
-			isConsumer ? (IMessageTypeProvider)new OAuthConsumerMessageTypeProvider(tokenManager) : new OAuthServiceProviderMessageTypeProvider(tokenManager),
+			isConsumer ? (IMessageTypeProvider)new OAuthConsumerMessageTypeProvider() : new OAuthServiceProviderMessageTypeProvider(tokenManager),
 			new StandardWebRequestHandler()) {
 		}
 
@@ -292,12 +292,12 @@ namespace DotNetOAuth.ChannelElements {
 
 			HttpWebRequest httpRequest;
 
-			HttpDeliveryMethod transmissionMethod = oauthRequest.HttpMethods;
-			if ((transmissionMethod & HttpDeliveryMethod.AuthorizationHeaderRequest) != 0) {
+			HttpDeliveryMethods transmissionMethod = oauthRequest.HttpMethods;
+			if ((transmissionMethod & HttpDeliveryMethods.AuthorizationHeaderRequest) != 0) {
 				httpRequest = this.InitializeRequestAsAuthHeader(request);
-			} else if ((transmissionMethod & HttpDeliveryMethod.PostRequest) != 0) {
+			} else if ((transmissionMethod & HttpDeliveryMethods.PostRequest) != 0) {
 				httpRequest = this.InitializeRequestAsPost(request);
-			} else if ((transmissionMethod & HttpDeliveryMethod.GetRequest) != 0) {
+			} else if ((transmissionMethod & HttpDeliveryMethods.GetRequest) != 0) {
 				httpRequest = InitializeRequestAsGet(request);
 			} else {
 				throw new NotSupportedException();

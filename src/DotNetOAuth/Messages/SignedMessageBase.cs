@@ -6,7 +6,7 @@
 
 namespace DotNetOAuth.Messages {
 	using System;
-	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.Messaging;
 	using DotNetOAuth.Messaging.Bindings;
@@ -32,10 +32,10 @@ namespace DotNetOAuth.Messages {
 		/// <param name="transport">A value indicating whether this message requires a direct or indirect transport.</param>
 		/// <param name="recipient">The URI that a directed message will be delivered to.</param>
 		internal SignedMessageBase(MessageTransport transport, MessageReceivingEndpoint recipient)
-			: base(MessageProtection.All, transport, recipient) {
+			: base(MessageProtections.All, transport, recipient) {
 			ITamperResistantOAuthMessage self = (ITamperResistantOAuthMessage)this;
-			HttpDeliveryMethod methods = ((IOAuthDirectedMessage)this).HttpMethods;
-			self.HttpMethod = (methods & HttpDeliveryMethod.PostRequest) != 0 ? "POST" : "GET";
+			HttpDeliveryMethods methods = ((IOAuthDirectedMessage)this).HttpMethods;
+			self.HttpMethod = (methods & HttpDeliveryMethods.PostRequest) != 0 ? "POST" : "GET";
 		}
 
 		#region ITamperResistantOAuthMessage Members
@@ -43,29 +43,40 @@ namespace DotNetOAuth.Messages {
 		/// <summary>
 		/// Gets or sets the signature method used to sign the request.
 		/// </summary>
-		[MessagePart("oauth_signature_method", IsRequired = true)]
-		string ITamperResistantOAuthMessage.SignatureMethod { get; set; }
+		string ITamperResistantOAuthMessage.SignatureMethod {
+			get { return this.SignatureMethod; }
+			set { this.SignatureMethod = value; }
+		}
 
 		/// <summary>
 		/// Gets or sets the Token Secret used to sign the message.
 		/// </summary>
-		string ITamperResistantOAuthMessage.TokenSecret { get; set; }
+		string ITamperResistantOAuthMessage.TokenSecret {
+			get { return this.TokenSecret; }
+			set { this.TokenSecret = value; }
+		}
 
 		/// <summary>
 		/// Gets or sets the Consumer key.
 		/// </summary>
-		[MessagePart(Name = "oauth_consumer_key", IsRequired = true)]
+		[MessagePart("oauth_consumer_key", IsRequired = true)]
 		public string ConsumerKey { get; set; }
 
 		/// <summary>
 		/// Gets or sets the Consumer Secret used to sign the message.
 		/// </summary>
-		string ITamperResistantOAuthMessage.ConsumerSecret { get; set; }
+		string ITamperResistantOAuthMessage.ConsumerSecret {
+			get { return this.ConsumerSecret; }
+			set { this.ConsumerSecret = value; }
+		}
 
 		/// <summary>
 		/// Gets or sets the HTTP method that will be used to transmit the message.
 		/// </summary>
-		string ITamperResistantOAuthMessage.HttpMethod { get; set; }
+		string ITamperResistantOAuthMessage.HttpMethod {
+			get { return this.HttpMethod; }
+			set { this.HttpMethod = value; }
+		}
 
 		#endregion
 
@@ -74,8 +85,10 @@ namespace DotNetOAuth.Messages {
 		/// <summary>
 		/// Gets or sets the message signature.
 		/// </summary>
-		[MessagePart("oauth_signature", IsRequired = true)]
-		string ITamperResistantProtocolMessage.Signature { get; set; }
+		string ITamperResistantProtocolMessage.Signature {
+			get { return this.Signature; }
+			set { this.Signature = value; }
+		}
 
 		#endregion
 
@@ -102,12 +115,40 @@ namespace DotNetOAuth.Messages {
 		#endregion
 
 		/// <summary>
+		/// Gets or sets the signature method used to sign the request.
+		/// </summary>
+		[MessagePart("oauth_signature_method", IsRequired = true)]
+		protected string SignatureMethod { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Token Secret used to sign the message.
+		/// </summary>
+		protected string TokenSecret { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Consumer Secret used to sign the message.
+		/// </summary>
+		protected string ConsumerSecret { get; set; }
+
+		/// <summary>
+		/// Gets or sets the HTTP method that will be used to transmit the message.
+		/// </summary>
+		protected string HttpMethod { get; set; }
+
+		/// <summary>
+		/// Gets or sets the message signature.
+		/// </summary>
+		[MessagePart("oauth_signature", IsRequired = true)]
+		protected string Signature { get; set; }
+
+		/// <summary>
 		/// Gets or sets the version of the protocol this message was created with.
 		/// </summary>
-		[MessagePart(Name = "oauth_version", IsRequired = false)]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Accessed via reflection.")]
+		[MessagePart("oauth_version", IsRequired = false)]
 		private string Version {
 			get {
-				return ((IProtocolMessage)this).ProtocolVersion.ToString();
+				return ProtocolVersion.ToString();
 			}
 
 			set {

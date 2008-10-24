@@ -6,6 +6,7 @@
 
 namespace DotNetOAuth.Messaging {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using System.IO;
 	using System.Net;
 	using System.Text;
@@ -112,6 +113,7 @@ namespace DotNetOAuth.Messaging {
 		/// Creates a text reader for the response stream.
 		/// </summary>
 		/// <returns>The text reader, initialized for the proper encoding.</returns>
+		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Costly operation")]
 		public StreamReader GetResponseReader() {
 			this.ResponseStream.Seek(0, SeekOrigin.Begin);
 			string contentEncoding = this.Headers[HttpResponseHeader.ContentEncoding];

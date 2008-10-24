@@ -20,8 +20,8 @@ namespace DotNetOAuth.ChannelElements {
 		/// <summary>
 		/// Gets the protection offered (if any) by this binding element.
 		/// </summary>
-		public MessageProtection Protection {
-			get { return MessageProtection.None; }
+		public MessageProtections Protection {
+			get { return MessageProtections.None; }
 		}
 
 		/// <summary>
@@ -36,10 +36,10 @@ namespace DotNetOAuth.ChannelElements {
 			var oauthMessage = message as ITamperResistantOAuthMessage;
 
 			if (oauthMessage != null) {
-				HttpDeliveryMethod transmissionMethod = oauthMessage.HttpMethods;
-				if ((transmissionMethod & HttpDeliveryMethod.PostRequest) != 0) {
+				HttpDeliveryMethods transmissionMethod = oauthMessage.HttpMethods;
+				if ((transmissionMethod & HttpDeliveryMethods.PostRequest) != 0) {
 					oauthMessage.HttpMethod = "POST";
-				} else if ((transmissionMethod & HttpDeliveryMethod.GetRequest) != 0) {
+				} else if ((transmissionMethod & HttpDeliveryMethods.GetRequest) != 0) {
 					oauthMessage.HttpMethod = "GET";
 				} else {
 					return false;

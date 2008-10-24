@@ -15,7 +15,7 @@ namespace DotNetOAuth.ChannelElements {
 		/// <summary>
 		/// Gets the preferred method of transport for the message.
 		/// </summary>
-		HttpDeliveryMethod HttpMethods { get; }
+		HttpDeliveryMethods HttpMethods { get; }
 
 		/// <summary>
 		/// Gets or sets the URL of the intended receiver of this message.

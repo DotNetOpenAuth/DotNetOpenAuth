@@ -180,7 +180,7 @@ namespace DotNetOAuth.Messaging {
 		/// <param name="request">The request to get recipient information from.</param>
 		/// <returns>The recipient.</returns>
 		internal static MessageReceivingEndpoint GetRecipient(this HttpRequestInfo request) {
-			return new MessageReceivingEndpoint(request.Url, request.HttpMethod == "GET" ? HttpDeliveryMethod.GetRequest : HttpDeliveryMethod.PostRequest);
+			return new MessageReceivingEndpoint(request.Url, request.HttpMethod == "GET" ? HttpDeliveryMethods.GetRequest : HttpDeliveryMethods.PostRequest);
 		}
 
 		/// <summary>

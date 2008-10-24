@@ -23,7 +23,7 @@ namespace DotNetOAuth.Test.ChannelElements {
 		}
 
 		internal static GetRequestTokenMessage CreateTestRequestTokenMessage() {
-			MessageReceivingEndpoint endpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthGetRequestToken", HttpDeliveryMethod.AuthorizationHeaderRequest | HttpDeliveryMethod.GetRequest);
+			MessageReceivingEndpoint endpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthGetRequestToken", HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.GetRequest);
 			GetRequestTokenMessage message = new GetRequestTokenMessage(endpoint);
 			message.ConsumerKey = "nerdbank.org";
 			((ITamperResistantOAuthMessage)message).ConsumerSecret = "nerdbanksecret";

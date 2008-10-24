@@ -7,6 +7,7 @@
 namespace DotNetOAuth.Messages {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using DotNetOAuth.Messaging;
 
 	/// <summary>
@@ -28,12 +29,13 @@ namespace DotNetOAuth.Messages {
 		/// </summary>
 		/// <param name="serviceProvider">The URI of the Service Provider endpoint to send this message to.</param>
 		internal DirectUserToServiceProviderMessage(MessageReceivingEndpoint serviceProvider)
-			: base(MessageProtection.None, MessageTransport.Indirect, serviceProvider) {
+			: base(MessageProtections.None, MessageTransport.Indirect, serviceProvider) {
 		}
 
 		/// <summary>
 		/// Gets or sets the Request or Access Token.
 		/// </summary>
+		[SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "This property IS accessible by a different name.")]
 		string ITokenContainingMessage.Token {
 			get { return this.RequestToken; }
 			set { this.RequestToken = value; }
@@ -42,8 +44,8 @@ namespace DotNetOAuth.Messages {
 		/// <summary>
 		/// Gets the extra, non-OAuth parameters that will be included in the message.
 		/// </summary>
-		public IDictionary<string, string> ExtraData {
-			get { return ((IProtocolMessage)this).ExtraData; }
+		public new IDictionary<string, string> ExtraData {
+			get { return base.ExtraData; }
 		}
 
 		/// <summary>
@@ -54,14 +56,14 @@ namespace DotNetOAuth.Messages {
 		/// accept requests to the User Authorization URL without it, in which 
 		/// case it will prompt the User to enter it manually.
 		/// </remarks>
-		[MessagePart(Name = "oauth_token", IsRequired = false)]
+		[MessagePart("oauth_token", IsRequired = false)]
 		internal string RequestToken { get; set; }
 
 		/// <summary>
 		/// Gets or sets a URL the Service Provider will use to redirect the User back 
 		/// to the Consumer when Obtaining User Authorization is complete. Optional.
 		/// </summary>
-		[MessagePart(Name = "oauth_callback", IsRequired = false)]
+		[MessagePart("oauth_callback", IsRequired = false)]
 		internal Uri Callback { get; set; }
 	}
 }

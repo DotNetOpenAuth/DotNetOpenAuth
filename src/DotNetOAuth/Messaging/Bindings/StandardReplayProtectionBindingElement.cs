@@ -49,8 +49,8 @@ namespace DotNetOAuth.Messaging.Bindings {
 		/// <summary>
 		/// Gets the protection that this binding element provides messages.
 		/// </summary>
-		public MessageProtection Protection {
-			get { return MessageProtection.ReplayProtection; }
+		public MessageProtections Protection {
+			get { return MessageProtections.ReplayProtection; }
 		}
 
 		#endregion

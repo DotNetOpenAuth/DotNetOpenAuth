@@ -78,30 +78,30 @@ namespace DotNetOAuth.Test {
 			return request;
 		}
 
-		internal static Channel CreateChannel(MessageProtection capabilityAndRecognition) {
+		internal static Channel CreateChannel(MessageProtections capabilityAndRecognition) {
 			return CreateChannel(capabilityAndRecognition, capabilityAndRecognition);
 		}
 
-		internal static Channel CreateChannel(MessageProtection capability, MessageProtection recognition) {
+		internal static Channel CreateChannel(MessageProtections capability, MessageProtections recognition) {
 			var bindingElements = new List<IChannelBindingElement>();
-			if (capability >= MessageProtection.TamperProtection) {
+			if (capability >= MessageProtections.TamperProtection) {
 				bindingElements.Add(new MockSigningBindingElement());
 			}
-			if (capability >= MessageProtection.Expiration) {
+			if (capability >= MessageProtections.Expiration) {
 				bindingElements.Add(new StandardExpirationBindingElement());
 			}
-			if (capability >= MessageProtection.ReplayProtection) {
+			if (capability >= MessageProtections.ReplayProtection) {
 				bindingElements.Add(new MockReplayProtectionBindingElement());
 			}
 
 			bool signing = false, expiration = false, replay = false;
-			if (recognition >= MessageProtection.TamperProtection) {
+			if (recognition >= MessageProtections.TamperProtection) {
 				signing = true;
 			}
-			if (recognition >= MessageProtection.Expiration) {
+			if (recognition >= MessageProtections.Expiration) {
 				expiration = true;
 			}
-			if (recognition >= MessageProtection.ReplayProtection) {
+			if (recognition >= MessageProtections.ReplayProtection) {
 				replay = true;
 			}
 

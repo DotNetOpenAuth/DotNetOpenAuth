@@ -19,7 +19,7 @@ namespace DotNetOAuth.Test.Mocks {
 
 		#region IReplayProtectedProtocolMessage Members
 
-		[MessagePart(Name = "Nonce")]
+		[MessagePart("Nonce")]
 		string IReplayProtectedProtocolMessage.Nonce {
 			get;
 			set;

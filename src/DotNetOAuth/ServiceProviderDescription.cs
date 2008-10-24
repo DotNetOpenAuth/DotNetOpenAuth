@@ -7,6 +7,7 @@
 namespace DotNetOAuth {
 	using System;
 	using System.Diagnostics;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.Messaging;
@@ -72,6 +73,7 @@ namespace DotNetOAuth {
 		/// <summary>
 		/// Gets or sets the signing policies that apply to this Service Provider.
 		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Justification = "Type initializers require this format.")]
 		public ITamperProtectionChannelBindingElement[] TamperProtectionElements { get; set; }
 
 		/// <summary>
