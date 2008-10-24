@@ -16,7 +16,7 @@ namespace DotNetOAuth {
 	/// </summary>
 	/// <remarks>
 	/// The methods on this class are thread-safe.  Provided the properties are set and not changed
-	/// afterward, a single instance of this class may be used by an entire web application safely.
+	/// afterward, a single instance of this class may be used by an entire desktop application safely.
 	/// </remarks>
 	public class DesktopConsumer : ConsumerBase {
 		/// <summary>

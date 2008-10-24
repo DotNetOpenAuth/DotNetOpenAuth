@@ -29,9 +29,9 @@
     <Position X="6.5" Y="4.5" Width="4.75" />
     <InheritanceLine Type="DotNetOAuth.ConsumerBase" FixedToPoint="true">
       <Path>
-        <Point X="8.875" Y="3.786" />
-        <Point X="8.875" Y="4.2" />
-        <Point X="8.125" Y="4.2" />
+        <Point X="11.375" Y="3.786" />
+        <Point X="11.375" Y="4.125" />
+        <Point X="8.125" Y="4.125" />
         <Point X="8.125" Y="4.5" />
       </Path>
     </InheritanceLine>
@@ -41,7 +41,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="DotNetOAuth.ConsumerBase">
-    <Position X="6.5" Y="0.5" Width="4.75" />
+    <Position X="9" Y="0.5" Width="4.75" />
     <TypeIdentifier>
       <HashCode>ACAAAAAgAAABEAAAAAAABgAAAAAIAAAAAQAAAAAAABA=</HashCode>
       <FileName>ConsumerBase.cs</FileName>
