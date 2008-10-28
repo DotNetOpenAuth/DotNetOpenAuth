@@ -36,6 +36,7 @@ namespace DotNetOpenId.RelyingParty {
 
 		const string authenticationResponseViewStateKey = "AuthenticationResponse";
 		const string authDataViewStateKey = "AuthData";
+		const string openidAuthDataFormKey = "openidAuthData";
 		IAuthenticationResponse authenticationResponse;
 		/// <summary>
 		/// Gets the completed authentication response.
@@ -48,7 +49,7 @@ namespace DotNetOpenId.RelyingParty {
 					// from viewstate and return that.
 					IAuthenticationResponse viewstateResponse = ViewState[authenticationResponseViewStateKey] as IAuthenticationResponse;
 					string viewstateAuthData = ViewState[authDataViewStateKey] as string;
-					string formAuthData = Page.Request.Form["openidAuthData"];
+					string formAuthData = Page.Request.Form[openidAuthDataFormKey];
 
 					// First see if there is fresh auth data to be processed into a response.
 					if (formAuthData != null && !string.Equals(viewstateAuthData, formAuthData, StringComparison.Ordinal)) {
@@ -674,9 +675,9 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 					req.AddCallbackArguments("dotnetopenid.userSuppliedIdentifier", userSuppliedIdentifier);
 				}
 				// Our javascript needs to let the user know which endpoint responded.  So we force it here.
-				if (req.Provider.Version.Major < 2) {
-					req.AddCallbackArguments("openid.op_endpoint", req.Provider.Uri.AbsoluteUri);
-				}
+				// This gives us the info even for 1.0 OPs and 2.0 setup_required responses.
+				req.AddCallbackArguments("dotnetopenid.op_endpoint", req.Provider.Uri.AbsoluteUri);
+				req.AddCallbackArguments("dotnetopenid.claimed_id", req.ClaimedIdentifier);
 				req.AddCallbackArguments("dotnetopenid.phase", "2");
 				if (immediate) {
 					req.Mode = AuthenticationRequestMode.Immediate;
@@ -747,7 +748,7 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 			writer.WriteBeginTag("input");
 			writer.WriteAttribute("name", Name);
 			writer.WriteAttribute("id", ClientID);
-			writer.WriteAttribute("value", Text);
+			writer.WriteAttribute("value", Text, true);
 			writer.WriteAttribute("size", Columns.ToString(CultureInfo.InvariantCulture));
 			if (TabIndex > 0) {
 				writer.WriteAttribute("tabindex", TabIndex.ToString(CultureInfo.InvariantCulture));
@@ -767,6 +768,17 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 			writer.Write(" />");
 
 			writer.WriteEndTag("span");
+
+			// Emit a hidden field to let the javascript on the user agent know if an
+			// authentication has already successfully taken place.
+			string viewstateAuthData = ViewState[authDataViewStateKey] as string;
+			if (!string.IsNullOrEmpty(viewstateAuthData)) {
+				writer.WriteBeginTag("input");
+				writer.WriteAttribute("type", "hidden");
+				writer.WriteAttribute("name", openidAuthDataFormKey);
+				writer.WriteAttribute("value", viewstateAuthData, true);
+				writer.Write(" />");
+			}
 		}
 
 		/// <summary>

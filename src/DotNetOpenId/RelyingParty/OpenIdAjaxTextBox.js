@@ -138,15 +138,16 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	box.parentForm = findParentForm(box);
 
 	function findOrCreateHiddenField(form, name) {
-		if (box.hiddenField) {
-			return box.hiddenField;
+		var existing = window.document.getElementsByName(name);
+		if (existing && existing.length > 0) {
+			return existing[0];
 		}
 
-		box.hiddenField = document.createElement('input');
-		box.hiddenField.setAttribute("name", name);
-		box.hiddenField.setAttribute("type", "hidden");
-		form.appendChild(box.hiddenField);
-		return box.hiddenField;
+		var hiddenField = document.createElement('input');
+		hiddenField.setAttribute("name", name);
+		hiddenField.setAttribute("type", "hidden");
+		form.appendChild(hiddenField);
+		return hiddenField;
 	};
 
 	box.dnoi_internal.loginButton = box.dnoi_internal.constructButton(loginButtonText, loginButtonToolTip, function() {
@@ -293,11 +294,14 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	//};
 
 	box.dnoi_internal.deriveOPFavIcon = function() {
-		if (!box.hiddenField) return;
-		var authResult = new Uri(box.hiddenField.value);
+		var hiddenField = findOrCreateHiddenField(box.parentForm, 'openidAuthData');
+		if (!hiddenField) return;
+		var authResult = new Uri(hiddenField.value);
 		var opUri;
 		if (authResult.getQueryArgValue("openid.op_endpoint")) {
 			opUri = new Uri(authResult.getQueryArgValue("openid.op_endpoint"));
+		} if (authResult.getQueryArgValue("dotnetopenid.op_endpoint")) {
+			opUri = new Uri(authResult.getQueryArgValue("dotnetopenid.op_endpoint"));
 		} else if (authResult.getQueryArgValue("openid.user_setup_url")) {
 			opUri = new Uri(authResult.getQueryArgValue("openid.user_setup_url"));
 		} else return null;
@@ -307,10 +311,18 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 
 	box.dnoi_internal.createDiscoveryInfo = function(discoveryInfo, identifier) {
 		this.identifier = identifier;
+		// The claimed identifier may be null if the user provided an OP Identifier.
 		this.claimedIdentifier = discoveryInfo.claimedIdentifier;
 		trace('Discovered claimed identifier: ' + this.claimedIdentifier);
 
 		// Add extra tracking bits and behaviors.
+		this.findByEndpoint = function(opEndpoint) {
+			for (var i = 0; i < this.length; i++) {
+				if (this[i].endpoint == opEndpoint) {
+					return this[i];
+				}
+			}
+		};
 		this.findSuccessfulRequest = function() {
 			for (var i = 0; i < this.length; i++) {
 				if (this[i].result == authSuccess) {
@@ -339,12 +351,13 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	};
 
 	box.dnoi_internal.createTrackingRequest = function(requestInfo, identifier) {
-		this.immediate = new Uri(requestInfo.immediate);
-		this.setup = new Uri(requestInfo.setup);
+		// It's possible during a postback that discovered request URLs are not available.
+		this.immediate = requestInfo.immediate ? new Uri(requestInfo.immediate) : null;
+		this.setup = requestInfo.setup ? new Uri(requestInfo.setup) : null;
 		this.endpoint = new Uri(requestInfo.endpoint);
 		this.identifier = identifier;
 
-		this.host = this.immediate.getHost();
+		this.host = this.endpoint.getHost();
 
 		this.getDiscoveryInfo = function() {
 			return box.dnoi_internal.authenticationRequests[this.identifier];
@@ -476,8 +489,9 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			trace('openidAuthResult called but no userSuppliedIdentifier parameter was found.  Exiting function.');
 			return;
 		}
-		var tracker = discoveryInfo[resultUri.getQueryArgValue('index')];
-		trace('Auth result for ' + tracker.host + ' (' + resultUri.getQueryArgValue('index') + ') received:\n' + resultUrl);
+		var opEndpoint = resultUri.getQueryArgValue("openid.op_endpoint") ? resultUri.getQueryArgValue("openid.op_endpoint") : resultUri.getQueryArgValue("dotnetopenid.op_endpoint");
+		var tracker = discoveryInfo.findByEndpoint(opEndpoint);
+		trace('Auth result for ' + tracker.host + ' received:\n' + resultUrl);
 
 		if (isAuthSuccessful(resultUri)) {
 			tracker.authSuccess(resultUri);
@@ -545,7 +559,26 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		box.dnoi_internal.setVisualCue();
 		return true;
 	};
+
 	box.getClaimedIdentifier = function() { return box.dnoi_internal.claimedIdentifier; };
+
+	// Restore a previously achieved state (from pre-postback) if it is given.
+	var oldAuth = findOrCreateHiddenField(box.parentForm, 'openidAuthData').value;
+	if (oldAuth.length > 0) {
+		var oldAuthResult = new Uri(oldAuth);
+		// The control ensures that we ALWAYS have an OpenID 2.0-style claimed_id attribute, even against
+		// 1.0 Providers via the return_to URL mechanism.
+		var claimedId = oldAuthResult.getQueryArgValue("dotnetopenid.claimed_id");
+		var endpoint = oldAuthResult.getQueryArgValue("dotnetopenid.op_endpoint");
+		// We weren't given a full discovery history, but we can spoof this much from the
+		// authentication assertion.
+		box.dnoi_internal.authenticationRequests[box.value] = new box.dnoi_internal.createDiscoveryInfo({
+			claimedIdentifier: claimedId,
+			requests: [{ endpoint: endpoint }]
+		}, box.value);
+
+		box.dnoi_internal.openidAuthResult(oldAuthResult.toString());
+	}
 }
 
 function Uri(url) {
