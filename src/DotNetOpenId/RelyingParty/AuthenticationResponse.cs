@@ -285,12 +285,13 @@ namespace DotNetOpenId.RelyingParty {
 				}
 			} else {
 				// In 2.0, we definitely have a responseEndpoint, but may not have a 
-				// tokenEndpoint. If we don't have a tokenEndpoint or if the user 
-				// gave us an OP Identifier originally, we need to perform discovery on
+				// tokenEndpoint. If we don't have a tokenEndpoint, or it doesn't match the assertion,
+				// or if the user gave us an OP Identifier originally, then we need to perform discovery on
 				// the responseEndpoint.ClaimedIdentifier to verify the OP has authority
 				// to speak for it.
-				if (tokenEndpoint == null ||
-					tokenEndpoint.ClaimedIdentifier == tokenEndpoint.Protocol.ClaimedIdentifierForOPIdentifier) {
+				if (tokenEndpoint == null || // no token included (unsolicited assertion)
+					tokenEndpoint != responseEndpoint || // the OP is asserting something different than we asked for
+					tokenEndpoint.ClaimedIdentifier == tokenEndpoint.Protocol.ClaimedIdentifierForOPIdentifier) { // or directed identity is in effect
 					Identifier claimedIdentifier = Util.GetRequiredArg(query, responseEndpoint.Protocol.openid.claimed_id);
 					// Require SSL where appropriate.  This will filter out insecure identifiers, 
 					// redirects and provider endpoints automatically.  If we find a match after all that
@@ -298,6 +299,7 @@ namespace DotNetOpenId.RelyingParty {
 					if (relyingParty.Settings.RequireSsl && !claimedIdentifier.TryRequireSsl(out claimedIdentifier)) {
 						throw new OpenIdException(Strings.InsecureWebRequestWithSslRequired, query);
 					}
+					Logger.InfoFormat("Provider asserted an identifier that requires (re)discovery to confirm.");
 					List<ServiceEndpoint> discoveredEndpoints = new List<ServiceEndpoint>(claimedIdentifier.Discover());
 					// Make sure the response endpoint matches one of the discovered endpoints.
 					if (!discoveredEndpoints.Contains(responseEndpoint)) {
@@ -305,12 +307,6 @@ namespace DotNetOpenId.RelyingParty {
 							Strings.IssuedAssertionFailsIdentifierDiscovery,
 							responseEndpoint, Util.ToString(discoveredEndpoints)));
 					}
-				} else {
-					// Check that the assertion matches the service endpoint we know about.
-					if (responseEndpoint != tokenEndpoint)
-						throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
-						Strings.IssuedAssertionFailsIdentifierDiscovery,
-						responseEndpoint, tokenEndpoint));
 				}
 			}
 		}
