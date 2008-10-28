@@ -251,6 +251,20 @@ namespace DotNetOpenId.RelyingParty
 			set { ViewState[showLogoViewStateKey] = value; }
 		}
 
+		const string presetBorderViewStateKey = "PresetBorder";
+		const bool presetBorderDefault = true;
+		/// <summary>
+		/// Gets/sets whether to use inline styling to force a solid gray border.
+		/// </summary>
+		[Bindable(true)]
+		[Category(appearanceCategory)]
+		[DefaultValue(presetBorderDefault)]
+		[Description("Whether to use inline styling to force a solid gray border.")]
+		public bool PresetBorder {
+			get { return (bool)(ViewState[presetBorderViewStateKey] ?? presetBorderDefault); }
+			set { ViewState[presetBorderViewStateKey] = value; }
+		}
+
 		const string usePersistentCookieViewStateKey = "UsePersistentCookie";
 		/// <summary>
 		/// Default value of <see cref="UsePersistentCookie"/>.
@@ -678,14 +692,17 @@ namespace DotNetOpenId.RelyingParty
 		protected override void OnPreRender(EventArgs e) {
 			base.OnPreRender(e);
 
-			if (ShowLogo)
-			{
+			if (ShowLogo) {
 				string logoUrl = Page.ClientScript.GetWebResourceUrl(
 					typeof(OpenIdTextBox), EmbeddedLogoResourceName);
-				WrappedTextBox.Style["background"] = string.Format(CultureInfo.InvariantCulture,
-					"url({0}) no-repeat", HttpUtility.HtmlEncode(logoUrl));
+				WrappedTextBox.Style[HtmlTextWriterStyle.BackgroundImage] = string.Format(
+					CultureInfo.InvariantCulture, "url({0})", HttpUtility.HtmlEncode(logoUrl));
+				WrappedTextBox.Style["background-repeat"] = "no-repeat";
 				WrappedTextBox.Style["background-position"] = "0 50%";
 				WrappedTextBox.Style[HtmlTextWriterStyle.PaddingLeft] = "18px";
+			}
+
+			if (PresetBorder) {
 				WrappedTextBox.Style[HtmlTextWriterStyle.BorderStyle] = "solid";
 				WrappedTextBox.Style[HtmlTextWriterStyle.BorderWidth] = "1px";
 				WrappedTextBox.Style[HtmlTextWriterStyle.BorderColor] = "lightgray";
