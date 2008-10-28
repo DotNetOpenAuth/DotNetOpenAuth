@@ -168,9 +168,6 @@
   <data name="IAssociationStoreRequiredWhenNoHttpContextAvailable" xml:space="preserve">
     <value>No current HttpContext was detected, so an IAssociationStore must be explicitly provided. Call the Server constructor overload that takes an IAssociationStore.</value>
   </data>
-  <data name="IdentifierSelectModeOnly" xml:space="preserve">
-    <value>This operation is only allowed when IsIdentifierSelect is true.</value>
-  </data>
   <data name="IdentifierSelectRequiresMatchingIdentifiers" xml:space="preserve">
     <value>ClaimedIdentifier and LocalIdentifier must be the same when IsIdentifierSelect is true.</value>
   </data>
