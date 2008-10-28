@@ -186,6 +186,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		box.dnoi_internal.loginButton.style.visibility = 'hidden';
 		box.dnoi_internal.retryButton.style.visibility = 'hidden';
 		box.title = '';
+		box.dnoi_internal.state = state;
 		if (state == "discovering") {
 			box.dnoi_internal.dnoi_logo.style.visibility = 'visible';
 			box.dnoi_internal.spinner.style.visibility = 'visible';
@@ -235,7 +236,15 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	}
 
 	box.dnoi_internal.isBusy = function() {
-		// TODO: code here
+		return box.dnoi_internal.state == 'discovering' || 
+			box.dnoi_internal.authenticationRequests[box.lastDiscoveredIdentifier].busy();
+	};
+
+	box.dnoi_internal.canAttemptLogin = function() {
+		if (box.value.length == 0) return false;
+		if (box.dnoi_internal.authenticationRequests[box.value] == null) return false;
+		if (box.dnoi_internal.state == 'failed') return false;
+		return true;
 	};
 
 	box.dnoi_internal.onSubmit = function() {
@@ -246,7 +255,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 				if (box.value.length > 0) {
 					// submitPending will be true if we've already tried deferring submit for a login,
 					// in which case we just want to display a box to the user.
-					if (box.dnoi_internal.submitPending) {
+					if (box.dnoi_internal.submitPending || !box.dnoi_internal.canAttemptLogin()) {
 						alert(identifierRequiredMessage);
 					} else {
 						// The user hasn't clicked "Login" yet.  We'll click login for him,
@@ -503,7 +512,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			if (hiddenField.parentNode == null) {
 				box.parentForm.appendChild(hiddenField);
 			}
-			// TODO: clear the openidAuthData field when the auth goes invalid (cause the user changed the identifier).
+			// TODO: clear the openidAuthData field when the auth goes invalid (because the user changed the identifier).
 
 			// visual cue that auth was successful
 			box.dnoi_internal.claimedIdentifier = discoveryInfo.claimedIdentifier;
