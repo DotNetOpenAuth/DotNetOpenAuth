@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+	<title>OpenIdAjaxTextBox specification</title>
+</head>
+<body>
+
+	<h1>OpenIdAjaxTextBox specification</h1>
+	<h2>Requirements</h2>
+	<ol>
+		<li>User supplied text value preserved across postbacks</li>
+		<li>Successful authentication results, if any, preserved across postbacks both in 
+			the user agent and server contexts.</li>
+		<li>Asserting Provider&#39;s logo, where available, should appear in the place of the 
+			OpenID logo when successful assertion is provided.</li>
+		<li>Identity assertion should be verified by the RP web server during the first 
+			postback of that web page where a positive assertion is available.</li>
+		<li>Visual indication of when discovery and authentication are taking place.</li>
+		<li>Authentication to be attempted in asynchronous immediate mode with each 
+			Provider authorized by the claimed identifier until an authentication is 
+			achieved if possible.</li>
+		<li>If no OpenID endpoint will assert the user&#39;s identity in immediate mode, assist 
+			the user in &quot;setup&quot; mode authentication with the preferred Provider using a 
+			popup window.</li>
+		<li>In a single page visit, all user supplied identifiers entered into the box 
+			resulting in discovery will have the discovery results saved in temporary memory&nbsp; 
+			at the user agent, and will be reused rather than performing rediscovery if the 
+			user re-enters a previously entered identifier.</li>
+		<li>In a single page visit, if the user enters multiple user supplied identifiers 
+			that on discovery resolve to the same claimed identifier, any authentication 
+			attempt made on that claimed identifier will be used for the other user supplied 
+			identifiers that resolve to the same claimed identifier.&nbsp; For example, if 
+			the user types &quot;blog.nerdbank.net&quot; and authenticates to it, then changes the 
+			value to &quot;<a href="http://blog.nerdbank.net">http://blog.nerdbank.net</a>&quot; then 
+			when discovery reveals this as the same identifier, the successful 
+			authentication from &quot;blog.nerdbank.net&quot; will be applied to the new identifier 
+			implicitly.</li>
+	</ol>
+	<h2>Non-requirements</h2>
+	<ol>
+		<li>Multiple authentication attempt logs preserved across postbacks</li>
+		<li></li>
+	</ol>
+
+	<h2>Design considerations</h2>
+	<p>A throttle should be placed to limit how many immediate requests are made to 
+		Providers simultaneously, to avoid XRDS files with many Providers causing the 
+		login control to initiate so many connections that the browser slows down.</p>
+
+</body>
+</html>
