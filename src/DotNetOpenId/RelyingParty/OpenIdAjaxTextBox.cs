@@ -52,10 +52,10 @@ namespace DotNetOpenId.RelyingParty {
 					string formAuthData = Page.Request.Form[openidAuthDataFormKey];
 
 					// First see if there is fresh auth data to be processed into a response.
-					if (formAuthData != null && !string.Equals(viewstateAuthData, formAuthData, StringComparison.Ordinal)) {
+					if (!string.IsNullOrEmpty(formAuthData) && !string.Equals(viewstateAuthData, formAuthData, StringComparison.Ordinal)) {
 						ViewState[authDataViewStateKey] = formAuthData;
 
-						Uri authUri = new Uri(formAuthData ?? viewstateAuthData);
+						Uri authUri = new Uri(formAuthData);
 						var authDataFields = HttpUtility.ParseQueryString(authUri.Query);
 						var rp = new OpenIdRelyingParty(OpenIdRelyingParty.HttpApplicationStore,
 							authUri, authDataFields);
