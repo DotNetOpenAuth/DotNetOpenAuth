@@ -248,7 +248,12 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	};
 
 	box.dnoi_internal.onSubmit = function() {
-		if (box.lastAuthenticationResult != 'authenticated') {
+		var hiddenField = findOrCreateHiddenField(box.parentForm, "openidAuthData");
+		if (box.lastAuthenticationResult == 'authenticated') {
+			// stick the result in a hidden field so the RP can verify it
+			hiddenField.setAttribute("value", box.dnoi_internal.authenticationRequests[box.value].successAuthData);
+		} else {
+			hiddenField.setAttribute("value", '');
 			if (box.dnoi_internal.isBusy()) {
 				alert(loginInProgressMessage);
 			} else {
@@ -505,14 +510,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		if (isAuthSuccessful(resultUri)) {
 			tracker.authSuccess(resultUri);
 
-			// stick the result in a hidden field so the RP can verify it
-			var hiddenField = findOrCreateHiddenField(box.parentForm, "openidAuthData");
-			hiddenField.setAttribute("value", resultUri.toString());
-			trace("set openidAuthData = " + resultUri.queryString);
-			if (hiddenField.parentNode == null) {
-				box.parentForm.appendChild(hiddenField);
-			}
-			// TODO: clear the openidAuthData field when the auth goes invalid (because the user changed the identifier).
+			discoveryInfo.successAuthData = resultUrl;
 
 			// visual cue that auth was successful
 			box.dnoi_internal.claimedIdentifier = discoveryInfo.claimedIdentifier;
