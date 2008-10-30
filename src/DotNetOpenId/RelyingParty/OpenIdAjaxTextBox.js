@@ -77,6 +77,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		return frames;
 	}
 	
+	// TODO: implement throttling, then lower this number 10 to a 3 or some variable .
 	box.dnoi_internal.authenticationIFrames = initializeIFrameManagement(10);
 
 	box.dnoi_internal.constructButton = function(text, tooltip, onclick) {
@@ -247,9 +248,17 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		return true;
 	};
 
+	box.dnoi_internal.getUserSuppliedIdentifierResults = function() {
+		return box.dnoi_internal.authenticationRequests[box.value];
+	}
+
+	box.dnoi_internal.isAuthenticated = function() {
+		return box.dnoi_internal.getUserSuppliedIdentifierResults().findSuccessfulRequest() != null;
+	}
+
 	box.dnoi_internal.onSubmit = function() {
 		var hiddenField = findOrCreateHiddenField(box.parentForm, "openidAuthData");
-		if (box.lastAuthenticationResult == 'authenticated') {
+		if (box.dnoi_internal.isAuthenticated()) {
 			// stick the result in a hidden field so the RP can verify it
 			hiddenField.setAttribute("value", box.dnoi_internal.authenticationRequests[box.value].successAuthData);
 		} else {
@@ -400,7 +409,6 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 				trace('No asynchronous authentication attempt is in progress.  Display setup view.');
 				// visual cue that auth failed
 				box.dnoi_internal.setVisualCue('setup');
-				box.lastAuthenticationResult = 'setup';
 			}
 
 			return true;
@@ -456,13 +464,11 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		box.dnoi_internal.authenticationIFrames.closeFrames();
 		box.dnoi_internal.setVisualCue('discovering');
 		box.lastDiscoveredIdentifier = identifier;
-		box.lastAuthenticationResult = null;
 		box.dnoi_internal.discoverIdentifier(identifier, box.dnoi_internal.discoveryResult, box.dnoi_internal.discoveryFailed);
 	};
 
 	/// <summary>Callback that is invoked when discovery fails.</summary>
 	box.dnoi_internal.discoveryFailed = function(message, identifier) {
-		box.lastAuthenticationResult = 'failed';
 		box.dnoi_internal.setVisualCue('failed');
 		if (message) { box.title = message; }
 	}
@@ -515,7 +521,6 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			// visual cue that auth was successful
 			box.dnoi_internal.claimedIdentifier = discoveryInfo.claimedIdentifier;
 			box.dnoi_internal.setVisualCue('authenticated', tracker.endpoint, discoveryInfo.claimedIdentifier);
-			box.lastAuthenticationResult = 'authenticated';
 			if (box.dnoi_internal.onauthenticated) {
 				box.dnoi_internal.onauthenticated(box);
 			}
