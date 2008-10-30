@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Web;
 using DotNetOpenId.RelyingParty;
@@ -7,6 +8,7 @@ namespace DotNetOpenId.Interop {
 	/// <summary>
 	/// The COM type used to provide details of an authentication result to a relying party COM client.
 	/// </summary>
+	[SuppressMessage("Microsoft.Interoperability", "CA1409:ComVisibleTypesShouldBeCreatable")]
 	[ComVisible(true)]
 	public class AuthenticationResponseShim {
 		private readonly IAuthenticationResponse response;

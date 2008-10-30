@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Web;
 using DotNetOpenId.RelyingParty;
@@ -75,6 +76,7 @@ namespace DotNetOpenId.Interop {
 		/// send to the user agent to initiate the authentication.
 		/// </returns>
 		/// <exception cref="OpenIdException">Thrown if no OpenID endpoint could be found.</exception>
+		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
 		public string CreateRequest(string userSuppliedIdentifier, string realm, string returnToUrl) {
 			OpenIdRelyingParty rp = new OpenIdRelyingParty(null, null, null);
 			Response response = (Response)rp.CreateRequest(userSuppliedIdentifier, realm, new Uri(returnToUrl)).RedirectingResponse;
