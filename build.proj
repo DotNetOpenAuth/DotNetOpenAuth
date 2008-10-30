@@ -18,6 +18,7 @@
 		                            $(ProjectRoot)\samples\ProviderPortal;
 		                            $(ProjectRoot)\samples\RelyingPartyMvc;
 		                            $(ProjectRoot)\samples\RelyingPartyPortal;
+		                            $(ProjectRoot)\samples\RelyingPartyClassicAsp;
 		" />
 		<Samples Include="$(ProjectRoot)\samples\**\*.csproj" />
 	</ItemGroup>
