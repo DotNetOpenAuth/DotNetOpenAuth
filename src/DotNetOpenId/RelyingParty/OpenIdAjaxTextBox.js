@@ -292,6 +292,11 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		return true;
 	};
 
+	/// <summary>
+	/// Records which submit button caused this openid box to question whether it
+	/// was ready to submit the user's identifier so that that button can be re-invoked
+	/// automatically after authentication completes.
+	/// </summary>
 	box.dnoi_internal.setLastSubmitButtonClicked = function(evt) {
 		var button;
 		if (evt.target) {
@@ -303,20 +308,23 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		box.dnoi_internal.submitButtonJustClicked = button;
 	};
 
-	// box.hookAllSubmitElements = function(searchNode) {
-		var inputs = document.getElementsByTagName('input');
-		for (var i = 0; i < inputs.length; i++) {
-			var el = inputs[i];
-			if (el.type == 'submit') {
-				if (el.attachEvent) {
-					el.attachEvent("onclick", box.dnoi_internal.setLastSubmitButtonClicked);
-				} else {
-					el.addEventListener("click", box.dnoi_internal.setLastSubmitButtonClicked, true);
-				}
+	// Find all submit buttons and hook their click events so that we can validate
+	// whether we are ready for the user to postback.
+	var inputs = document.getElementsByTagName('input');
+	for (var i = 0; i < inputs.length; i++) {
+		var el = inputs[i];
+		if (el.type == 'submit') {
+			if (el.attachEvent) {
+				el.attachEvent("onclick", box.dnoi_internal.setLastSubmitButtonClicked);
+			} else {
+				el.addEventListener("click", box.dnoi_internal.setLastSubmitButtonClicked, true);
 			}
 		}
-	//};
+	}
 
+	/// <summary>
+	/// Retrns the URL of the authenticating OP's logo so it can be displayed to the user.
+	/// </summary>
 	box.dnoi_internal.deriveOPFavIcon = function() {
 		var hiddenField = findOrCreateHiddenField();
 		if (hiddenField.value.length == 0) return;
