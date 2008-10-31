@@ -717,7 +717,7 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 				}
 			}
 
-			callbackUserAgentMethod("dnoi_internal.openidAuthResult(document.URL)", assignments.ToArray());
+			callbackUserAgentMethod("dnoi_internal.processAuthorizationResult(document.URL)", assignments.ToArray());
 		}
 
 		/// <summary>

@@ -507,15 +507,15 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 
 	/// <summary>Invoked by RP web server when an authentication has completed.</summary>
 	/// <remarks>The duty of this method is to distribute the notification to the appropriate tracking object.</remarks>
-	box.dnoi_internal.openidAuthResult = function(resultUrl) {
+	box.dnoi_internal.processAuthorizationResult = function(resultUrl) {
 		self.waiting_openidBox = null;
-		//trace('openidAuthResult ' + resultUrl);
+		//trace('processAuthorizationResult ' + resultUrl);
 		var resultUri = new Uri(resultUrl);
 
 		// Find the tracking object responsible for this request.
 		var discoveryInfo = box.dnoi_internal.authenticationRequests[resultUri.getQueryArgValue('dotnetopenid.userSuppliedIdentifier')];
 		if (discoveryInfo == null) {
-			trace('openidAuthResult called but no userSuppliedIdentifier parameter was found.  Exiting function.');
+			trace('processAuthorizationResult called but no userSuppliedIdentifier parameter was found.  Exiting function.');
 			return;
 		}
 		var opEndpoint = resultUri.getQueryArgValue("openid.op_endpoint") ? resultUri.getQueryArgValue("openid.op_endpoint") : resultUri.getQueryArgValue("dotnetopenid.op_endpoint");
@@ -598,7 +598,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			requests: [{ endpoint: endpoint }]
 		}, box.value);
 
-		box.dnoi_internal.openidAuthResult(oldAuthResult.toString());
+		box.dnoi_internal.processAuthorizationResult(oldAuthResult.toString());
 	}
 }
 
