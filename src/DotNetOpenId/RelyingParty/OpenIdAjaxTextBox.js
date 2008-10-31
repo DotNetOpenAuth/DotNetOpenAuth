@@ -377,7 +377,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 				this[i].abort();
 			}
 		};
-		this.tryAuthenticate = function() {
+		this.tryImmediate = function() {
 			if (this.length > 0) {
 				for (var i = 0; i < this.length; i++) {
 					this[i].tryImmediate();
@@ -506,7 +506,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		// If the user already changed the identifier since discovery was initiated,
 		// we aren't interested in it any more.
 		if (identifier == box.lastDiscoveredIdentifier) {
-			discoveryBehavior.tryAuthenticate();
+			discoveryBehavior.tryImmediate();
 		}
 	}
 
@@ -578,7 +578,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			if ((priorSuccess = discoveryInfo.findSuccessfulRequest())) {
 				box.dnoi_internal.setVisualCue('authenticated', priorSuccess.endpoint, discoveryInfo.claimedIdentifier);
 			} else {
-				discoveryInfo.tryAuthenticate();
+				discoveryInfo.tryImmediate();
 			}
 		}
 		return true;
