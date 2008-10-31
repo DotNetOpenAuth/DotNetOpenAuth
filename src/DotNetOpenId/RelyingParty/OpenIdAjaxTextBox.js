@@ -182,6 +182,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		box.dnoi_internal.openid_logo.style.visibility = 'hidden';
 		box.dnoi_internal.dnoi_logo.style.visibility = 'hidden';
 		box.dnoi_internal.op_logo.style.visibility = 'hidden';
+		box.dnoi_internal.openid_logo.title = box.dnoi_internal.openid_logo.originalTitle;
 		box.dnoi_internal.spinner.style.visibility = 'hidden';
 		box.dnoi_internal.success_icon.style.visibility = 'hidden';
 		//		box.dnoi_internal.failure_icon.style.visibility = 'hidden';
@@ -203,6 +204,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 				box.dnoi_internal.op_logo.title = box.dnoi_internal.op_logo.originalTitle.replace('{0}', authenticatedBy.getHost());
 			} else {
 				box.dnoi_internal.openid_logo.style.visibility = 'visible';
+				box.dnoi_internal.openid_logo.title = box.dnoi_internal.op_logo.originalTitle.replace('{0}', authenticatedBy.getHost());
 			}
 			box.dnoi_internal.success_icon.style.visibility = 'visible';
 			box.dnoi_internal.success_icon.title = box.dnoi_internal.success_icon.originalTitle.replace('{0}', authenticatedAs);
@@ -323,12 +325,12 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	}
 
 	/// <summary>
-	/// Retrns the URL of the authenticating OP's logo so it can be displayed to the user.
+	/// Returns the URL of the authenticating OP's logo so it can be displayed to the user.
 	/// </summary>
 	box.dnoi_internal.deriveOPFavIcon = function() {
-		var hiddenField = findOrCreateHiddenField();
-		if (hiddenField.value.length == 0) return;
-		var authResult = new Uri(hiddenField.value);
+		var response = box.dnoi_internal.getUserSuppliedIdentifierResults().successAuthData;
+		if (!response || response.length == 0) return;
+		var authResult = new Uri(response);
 		var opUri;
 		if (authResult.getQueryArgValue("openid.op_endpoint")) {
 			opUri = new Uri(authResult.getQueryArgValue("openid.op_endpoint"));
