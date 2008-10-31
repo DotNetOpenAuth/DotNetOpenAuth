@@ -36,7 +36,7 @@ namespace DotNetOpenId.RelyingParty {
 
 		const string authenticationResponseViewStateKey = "AuthenticationResponse";
 		const string authDataViewStateKey = "AuthData";
-		const string openidAuthDataFormKey = "openidAuthData";
+		string openidAuthDataFormKey { get { return Name + "_openidAuthData"; } }
 		IAuthenticationResponse authenticationResponse;
 		/// <summary>
 		/// Gets the completed authentication response.

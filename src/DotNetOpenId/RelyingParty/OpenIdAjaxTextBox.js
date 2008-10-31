@@ -138,7 +138,8 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 
 	box.parentForm = findParentForm(box);
 
-	function findOrCreateHiddenField(form, name) {
+	function findOrCreateHiddenField() {
+		var name = box.name + '_openidAuthData';
 		var existing = window.document.getElementsByName(name);
 		if (existing && existing.length > 0) {
 			return existing[0];
@@ -147,7 +148,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		var hiddenField = document.createElement('input');
 		hiddenField.setAttribute("name", name);
 		hiddenField.setAttribute("type", "hidden");
-		form.appendChild(hiddenField);
+		box.parentForm.appendChild(hiddenField);
 		return hiddenField;
 	};
 
@@ -257,7 +258,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	}
 
 	box.dnoi_internal.onSubmit = function() {
-		var hiddenField = findOrCreateHiddenField(box.parentForm, "openidAuthData");
+		var hiddenField = findOrCreateHiddenField();
 		if (box.dnoi_internal.isAuthenticated()) {
 			// stick the result in a hidden field so the RP can verify it
 			hiddenField.setAttribute("value", box.dnoi_internal.authenticationRequests[box.value].successAuthData);
@@ -317,8 +318,8 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	//};
 
 	box.dnoi_internal.deriveOPFavIcon = function() {
-		var hiddenField = findOrCreateHiddenField(box.parentForm, 'openidAuthData');
-		if (!hiddenField) return;
+		var hiddenField = findOrCreateHiddenField();
+		if (hiddenField.value.length == 0) return;
 		var authResult = new Uri(hiddenField.value);
 		var opUri;
 		if (authResult.getQueryArgValue("openid.op_endpoint")) {
@@ -575,7 +576,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	box.getClaimedIdentifier = function() { return box.dnoi_internal.claimedIdentifier; };
 
 	// Restore a previously achieved state (from pre-postback) if it is given.
-	var oldAuth = findOrCreateHiddenField(box.parentForm, 'openidAuthData').value;
+	var oldAuth = findOrCreateHiddenField().value;
 	if (oldAuth.length > 0) {
 		var oldAuthResult = new Uri(oldAuth);
 		// The control ensures that we ALWAYS have an OpenID 2.0-style claimed_id attribute, even against
