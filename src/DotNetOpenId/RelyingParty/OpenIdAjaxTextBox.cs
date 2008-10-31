@@ -625,9 +625,6 @@ namespace DotNetOpenId.RelyingParty {
 				discoveryCallback,
 				Environment.NewLine);
 
-			if (AuthenticationResponse != null && AuthenticationResponse.Status == AuthenticationStatus.Authenticated) {
-				startupScript.AppendFormat("box.dnoi_internal.openidAuthResult('{0}');{1}", ViewState[authDataViewStateKey].ToString().Replace("'", "\\'"), Environment.NewLine);
-			}
 			startupScript.AppendLine("</script>");
 
 			Page.ClientScript.RegisterStartupScript(GetType(), "ajaxstartup", startupScript.ToString());
