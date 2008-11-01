@@ -845,6 +845,7 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 		/// </summary>
 		/// <value>A whitespace delimited list of URLs that can be used to initiate authentication.</value>
 		string ICallbackEventHandler.GetCallbackResult() {
+			Page.Response.ContentType = "text/javascript";
 			return discoveryResult;
 		}
 
