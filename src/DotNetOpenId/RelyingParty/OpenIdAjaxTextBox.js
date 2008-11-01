@@ -1,6 +1,6 @@
 ﻿// Options that can be set on the host page:
 //window.openid_visible_iframe = true; // causes the hidden iframe to show up
-window.openid_trace = true; // causes lots of alert boxes
+//window.openid_trace = true; // causes lots of alert boxes
 
 function trace(msg) {
 	if (window.openid_trace) {
