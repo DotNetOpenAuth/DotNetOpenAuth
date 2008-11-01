@@ -33,7 +33,7 @@ Array.prototype.remove = function(element) {
 };
 
 function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url, success_icon_url, failure_icon_url,
-		timeout, assertionReceivedCode,
+		throttle, timeout, assertionReceivedCode,
 		loginButtonText, loginButtonToolTip, retryButtonText, retryButtonToolTip, busyToolTip,
 		identifierRequiredMessage, loginInProgressMessage,
 		authenticatedByToolTip, authenticatedAsToolTip, authenticationFailedToolTip,
@@ -117,8 +117,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		};
 	}
 	
-	// TODO: implement throttling, then lower this number 10 to a 3 or some variable .
-	box.dnoi_internal.authenticationIFrames = new FrameManager(2);
+	box.dnoi_internal.authenticationIFrames = new FrameManager(throttle);
 
 	box.dnoi_internal.constructButton = function(text, tooltip, onclick) {
 		var button = document.createElement('button');

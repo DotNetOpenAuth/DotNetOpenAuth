@@ -153,6 +153,21 @@ namespace DotNetOpenId.RelyingParty {
 			}
 		}
 
+		const string throttleViewStateKey = "Throttle";
+		const int throttleDefault = 3;
+		/// <summary>
+		/// Gets/sets the maximum number of OpenID Providers to simultaneously try to authenticate with.
+		/// </summary>
+		[Browsable(true), DefaultValue(throttleDefault), Category("Behavior")]
+		[Description("The maximum number of OpenID Providers to simultaneously try to authenticate with.")]
+		public int Throttle {
+			get { return (int)(ViewState[throttleViewStateKey] ?? throttleDefault); }
+			set {
+				if (value <= 0) throw new ArgumentOutOfRangeException("value");
+				ViewState[throttleViewStateKey] = value;
+			}
+		}
+	
 		const string logonTextViewStateKey = "LoginText";
 		const string logonTextDefault = "LOG IN";
 		/// <summary>
@@ -601,12 +616,13 @@ namespace DotNetOpenId.RelyingParty {
 				startupScript.AppendLine("box.focus();");
 			}
 			startupScript.AppendFormat(CultureInfo.InvariantCulture,
-				"initAjaxOpenId(box, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, function({17}, {18}, {19}) {{{20}}});{21}",
+				"initAjaxOpenId(box, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17}, function({18}, {19}, {20}) {{{21}}});{22}",
 				Util.GetSafeJavascriptValue(Page.ClientScript.GetWebResourceUrl(GetType(), OpenIdTextBox.EmbeddedLogoResourceName)),
 				Util.GetSafeJavascriptValue(Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedDotNetOpenIdLogoResourceName)),
 				Util.GetSafeJavascriptValue(Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedSpinnerResourceName)),
 				Util.GetSafeJavascriptValue(Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedLoginSuccessResourceName)),
 				Util.GetSafeJavascriptValue(Page.ClientScript.GetWebResourceUrl(GetType(), EmbeddedLoginFailureResourceName)),
+				Throttle,
 				Timeout.TotalMilliseconds,
 				string.IsNullOrEmpty(OnClientAssertionReceived) ? "null" : "'" + OnClientAssertionReceived.Replace(@"\", @"\\").Replace("'", @"\'") + "'",
 				Util.GetSafeJavascriptValue(LogOnText),
