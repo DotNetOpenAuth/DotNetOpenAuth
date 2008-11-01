@@ -1,18 +1,43 @@
 ﻿// Options that can be set on the host page:
-// window.openid_visible_iframe = true; // causes the hidden iframe to show up
-// window.openid_trace = true; // causes lots of alert boxes
+//window.openid_visible_iframe = true; // causes the hidden iframe to show up
+//window.openid_trace = true; // causes lots of alert boxes
 
 function trace(msg) {
 	if (window.openid_trace) {
-		alert(msg);
+		if (!window.tracediv) {
+			window.tracediv = document.createElement("ol");
+			document.body.appendChild(window.tracediv);
+		}
+		var el = document.createElement("li");
+		el.appendChild(document.createTextNode(msg));
+		window.tracediv.appendChild(el);
+		//alert(msg);
 	}
 }
 
+/// <summary>Removes a given element from the array.</summary>
+/// <returns>True if the element was in the array, or false if it was not found.</returns>
+Array.prototype.remove = function(element) {
+	function elementToRemoveLast(a, b) {
+		if (a == element) { return 1; }
+		if (b == element) { return -1; }
+		return 0;
+	}
+	this.sort(elementToRemoveLast);
+	if (this[this.length - 1] == element) {
+		this.pop();
+		return true;
+	} else {
+		return false;
+	}
+};
+
 function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url, success_icon_url, failure_icon_url,
-		timeout, assertionReceivedCode,
+		throttle, timeout, assertionReceivedCode,
 		loginButtonText, loginButtonToolTip, retryButtonText, retryButtonToolTip, busyToolTip,
 		identifierRequiredMessage, loginInProgressMessage,
-		authenticationSucceededToolTip, authenticationFailedToolTip) {
+		authenticatedByToolTip, authenticatedAsToolTip, authenticationFailedToolTip,
+		discoverCallback, discoveryFailedCallback) {
 	box.dnoi_internal = new Object();
 	if (assertionReceivedCode) {
 		box.dnoi_internal.onauthenticated = function(sender, e) { eval(assertionReceivedCode); }
@@ -20,12 +45,85 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 
 	box.dnoi_internal.originalBackground = box.style.background;
 	box.timeout = timeout;
+	box.dnoi_internal.discoverIdentifier = discoverCallback;
+	box.dnoi_internal.authenticationRequests = new Array();
+
+	// The possible authentication results
+	var authSuccess = new Object();
+	var authRefused = new Object();
+	var timedOut = new Object();
+
+	function FrameManager(maxFrames) {
+		this.queuedWork = new Array();
+		this.frames = new Array();
+		this.maxFrames = maxFrames;
+
+		/// <summary>Called to queue up some work that will use an iframe as soon as it is available.</summary>
+		/// <param name="job">
+		/// A delegate that must return the url to point to iframe to.  
+		/// Its first parameter is the iframe created to service the request.
+		/// It will only be called when the work actually begins.
+		/// </param>
+		this.enqueueWork = function(job) {
+			// Assign an iframe to this task immediately if there is one available.
+			if (this.frames.length < this.maxFrames) {
+				this.createIFrame(job);
+			} else {
+				this.queuedWork.unshift(job);
+			}
+		};
+
+		/// <summary>Clears the job queue and immediately closes all iframes.</summary>
+		this.cancelAllWork = function() {
+			trace('Canceling all open and pending iframes.');
+			while (this.queuedWork.pop());
+			this.closeFrames();
+		};
+
+		/// <summary>An event fired when a frame is closing.</summary>
+		this.onJobCompleted = function() {
+			// If there is a job in the queue, go ahead and start it up.
+			if (job = this.queuedWork.pop()) {
+				this.createIFrame(job);
+			}
+		}
+
+		this.createIFrame = function(job) {
+			var iframe = document.createElement("iframe");
+			if (!window.openid_visible_iframe) {
+				iframe.setAttribute("width", 0);
+				iframe.setAttribute("height", 0);
+				iframe.setAttribute("style", "display: none");
+			}
+			iframe.setAttribute("src", job(iframe));
+			iframe.openidBox = box;
+			box.parentNode.insertBefore(iframe, box);
+			this.frames.push(iframe);
+			return iframe;
+		};
+		this.closeFrames = function() {
+			if (this.frames.length == 0) { return false; }
+			for (var i = 0; i < this.frames.length; i++) {
+				if (this.frames[i].parentNode) { this.frames[i].parentNode.removeChild(this.frames[i]); }
+			}
+			while (this.frames.length > 0) { this.frames.pop(); }
+			return true;
+		};
+		this.closeFrame = function(frame) {
+			if (frame.parentNode) { frame.parentNode.removeChild(frame); }
+			var removed = this.frames.remove(frame);
+			this.onJobCompleted();
+			return removed;
+		};
+	}
+	
+	box.dnoi_internal.authenticationIFrames = new FrameManager(throttle);
 
 	box.dnoi_internal.constructButton = function(text, tooltip, onclick) {
 		var button = document.createElement('button');
 		button.textContent = text; // Mozilla
 		button.value = text; // IE
-		button.title = tooltip;
+		button.title = tooltip != null ? tooltip : '';
 		button.onclick = onclick;
 		button.style.visibility = 'hidden';
 		button.style.position = 'absolute';
@@ -42,6 +140,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		var icon = document.createElement('img');
 		icon.src = imageUrl;
 		icon.title = tooltip != null ? tooltip : '';
+		icon.originalTitle = icon.title;
 		if (!visible) {
 			icon.style.visibility = 'hidden';
 		}
@@ -68,51 +167,86 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		return img;
 	}
 
+	function findParentForm(element) {
+		if (element == null || element.nodeName == "FORM") {
+			return element;
+		}
+
+		return findParentForm(element.parentNode);
+	};
+
+	box.parentForm = findParentForm(box);
+
+	function findOrCreateHiddenField() {
+		var name = box.name + '_openidAuthData';
+		var existing = window.document.getElementsByName(name);
+		if (existing && existing.length > 0) {
+			return existing[0];
+		}
+
+		var hiddenField = document.createElement('input');
+		hiddenField.setAttribute("name", name);
+		hiddenField.setAttribute("type", "hidden");
+		box.parentForm.appendChild(hiddenField);
+		return hiddenField;
+	};
+
 	box.dnoi_internal.loginButton = box.dnoi_internal.constructButton(loginButtonText, loginButtonToolTip, function() {
-		box.dnoi_internal.popup = window.open(box.dnoi_internal.getAuthenticationUrl(), 'opLogin', 'status=0,toolbar=0,location=1,resizable=1,scrollbars=1,width=800,height=600');
-		self.waiting_openidBox = box;
+		var discoveryInfo = box.dnoi_internal.authenticationRequests[box.lastDiscoveredIdentifier];
+		if (discoveryInfo == null) {
+			trace('Ooops!  Somehow the login button click event was invoked, but no openid discovery information for ' + box.lastDiscoveredIdentifier + ' is available.');
+			return;
+		}
+		// The login button always sends a setup message to the first OP.
+		var selectedProvider = discoveryInfo[0];
+		selectedProvider.trySetup();
 		return false;
 	});
 	box.dnoi_internal.retryButton = box.dnoi_internal.constructButton(retryButtonText, retryButtonToolTip, function() {
 		box.timeout += 5000; // give the retry attempt 5s longer than the last attempt
-		box.dnoi_internal.performDiscovery();
+		box.dnoi_internal.performDiscovery(box.value);
 		return false;
 	});
 	box.dnoi_internal.openid_logo = box.dnoi_internal.constructIcon(openid_logo_url, null, false, true);
-	box.dnoi_internal.op_logo = box.dnoi_internal.constructIcon('', null, false, false, "16px");
+	box.dnoi_internal.op_logo = box.dnoi_internal.constructIcon('', authenticatedByToolTip, false, false, "16px");
 	box.dnoi_internal.spinner = box.dnoi_internal.constructIcon(spinner_url, busyToolTip, true);
-	box.dnoi_internal.success_icon = box.dnoi_internal.constructIcon(success_icon_url, authenticationSucceededToolTip, true);
+	box.dnoi_internal.success_icon = box.dnoi_internal.constructIcon(success_icon_url, authenticatedAsToolTip, true);
 	//box.dnoi_internal.failure_icon = box.dnoi_internal.constructIcon(failure_icon_url, authenticationFailedToolTip, true);
 
 	// Disable the display of the DotNetOpenId logo
 	//box.dnoi_internal.dnoi_logo = box.dnoi_internal.constructIcon(dotnetopenid_logo_url);
 	box.dnoi_internal.dnoi_logo = box.dnoi_internal.openid_logo;
 
-	box.dnoi_internal.setVisualCue = function(state) {
+	box.dnoi_internal.setVisualCue = function(state, authenticatedBy, authenticatedAs) {
 		box.dnoi_internal.openid_logo.style.visibility = 'hidden';
 		box.dnoi_internal.dnoi_logo.style.visibility = 'hidden';
 		box.dnoi_internal.op_logo.style.visibility = 'hidden';
+		box.dnoi_internal.openid_logo.title = box.dnoi_internal.openid_logo.originalTitle;
 		box.dnoi_internal.spinner.style.visibility = 'hidden';
 		box.dnoi_internal.success_icon.style.visibility = 'hidden';
-//		box.dnoi_internal.failure_icon.style.visibility = 'hidden';
+		//		box.dnoi_internal.failure_icon.style.visibility = 'hidden';
 		box.dnoi_internal.loginButton.style.visibility = 'hidden';
 		box.dnoi_internal.retryButton.style.visibility = 'hidden';
-		box.title = null;
+		box.title = '';
+		box.dnoi_internal.state = state;
 		if (state == "discovering") {
 			box.dnoi_internal.dnoi_logo.style.visibility = 'visible';
 			box.dnoi_internal.spinner.style.visibility = 'visible';
 			box.dnoi_internal.claimedIdentifier = null;
-			box.title = null;
+			box.title = '';
 			window.status = "Discovering OpenID Identifier '" + box.value + "'...";
 		} else if (state == "authenticated") {
 			var opLogo = box.dnoi_internal.deriveOPFavIcon();
 			if (opLogo) {
 				box.dnoi_internal.op_logo.src = opLogo;
 				box.dnoi_internal.op_logo.style.visibility = 'visible';
+				box.dnoi_internal.op_logo.title = box.dnoi_internal.op_logo.originalTitle.replace('{0}', authenticatedBy.getHost());
 			} else {
 				box.dnoi_internal.openid_logo.style.visibility = 'visible';
+				box.dnoi_internal.openid_logo.title = box.dnoi_internal.op_logo.originalTitle.replace('{0}', authenticatedBy.getHost());
 			}
 			box.dnoi_internal.success_icon.style.visibility = 'visible';
+			box.dnoi_internal.success_icon.title = box.dnoi_internal.success_icon.originalTitle.replace('{0}', authenticatedAs);
 			box.title = box.dnoi_internal.claimedIdentifier;
 			window.status = "Authenticated as " + box.value;
 		} else if (state == "setup") {
@@ -135,7 +269,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			box.title = authenticationFailedToolTip;
 		} else if (state = '' || state == null) {
 			box.dnoi_internal.openid_logo.style.visibility = 'visible';
-			box.title = null;
+			box.title = '';
 			box.dnoi_internal.claimedIdentifier = null;
 			window.status = null;
 		} else {
@@ -145,18 +279,39 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	}
 
 	box.dnoi_internal.isBusy = function() {
-		return box.discoveryIFrame != null;
+		return box.dnoi_internal.state == 'discovering' || 
+			box.dnoi_internal.authenticationRequests[box.lastDiscoveredIdentifier].busy();
 	};
 
+	box.dnoi_internal.canAttemptLogin = function() {
+		if (box.value.length == 0) return false;
+		if (box.dnoi_internal.authenticationRequests[box.value] == null) return false;
+		if (box.dnoi_internal.state == 'failed') return false;
+		return true;
+	};
+
+	box.dnoi_internal.getUserSuppliedIdentifierResults = function() {
+		return box.dnoi_internal.authenticationRequests[box.value];
+	}
+
+	box.dnoi_internal.isAuthenticated = function() {
+		return box.dnoi_internal.getUserSuppliedIdentifierResults().findSuccessfulRequest() != null;
+	}
+
 	box.dnoi_internal.onSubmit = function() {
-		if (box.lastAuthenticationResult != 'authenticated') {
+		var hiddenField = findOrCreateHiddenField();
+		if (box.dnoi_internal.isAuthenticated()) {
+			// stick the result in a hidden field so the RP can verify it
+			hiddenField.setAttribute("value", box.dnoi_internal.authenticationRequests[box.value].successAuthData);
+		} else {
+			hiddenField.setAttribute("value", '');
 			if (box.dnoi_internal.isBusy()) {
 				alert(loginInProgressMessage);
 			} else {
 				if (box.value.length > 0) {
 					// submitPending will be true if we've already tried deferring submit for a login,
 					// in which case we just want to display a box to the user.
-					if (box.dnoi_internal.submitPending) {
+					if (box.dnoi_internal.submitPending || !box.dnoi_internal.canAttemptLogin()) {
 						alert(identifierRequiredMessage);
 					} else {
 						// The user hasn't clicked "Login" yet.  We'll click login for him,
@@ -178,6 +333,11 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		return true;
 	};
 
+	/// <summary>
+	/// Records which submit button caused this openid box to question whether it
+	/// was ready to submit the user's identifier so that that button can be re-invoked
+	/// automatically after authentication completes.
+	/// </summary>
 	box.dnoi_internal.setLastSubmitButtonClicked = function(evt) {
 		var button;
 		if (evt.target) {
@@ -189,70 +349,32 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		box.dnoi_internal.submitButtonJustClicked = button;
 	};
 
-	// box.hookAllSubmitElements = function(searchNode) {
-		var inputs = document.getElementsByTagName('input');
-		for (var i = 0; i < inputs.length; i++) {
-			var el = inputs[i];
-			if (el.type == 'submit') {
-				if (el.attachEvent) {
-					el.attachEvent("onclick", box.dnoi_internal.setLastSubmitButtonClicked);
-				} else {
-					el.addEventListener("click", box.dnoi_internal.setLastSubmitButtonClicked, true);
-				}
+	// Find all submit buttons and hook their click events so that we can validate
+	// whether we are ready for the user to postback.
+	var inputs = document.getElementsByTagName('input');
+	for (var i = 0; i < inputs.length; i++) {
+		var el = inputs[i];
+		if (el.type == 'submit') {
+			if (el.attachEvent) {
+				el.attachEvent("onclick", box.dnoi_internal.setLastSubmitButtonClicked);
+			} else {
+				el.addEventListener("click", box.dnoi_internal.setLastSubmitButtonClicked, true);
 			}
 		}
-	//};
+	}
 
-	box.dnoi_internal.getAuthenticationUrl = function(immediateMode) {
-		var frameLocation = new Uri(document.location.href);
-		var discoveryUri = frameLocation.trimFragment();
-		discoveryUri.appendQueryVariable('dotnetopenid.userSuppliedIdentifier', box.value);
-		if (immediateMode) {
-			discoveryUri.appendQueryVariable('dotnetopenid.immediate', 'true');
-		}
-		return discoveryUri;
-	};
-
-	box.dnoi_internal.performDiscovery = function() {
-		box.dnoi_internal.closeDiscoveryIFrame();
-		box.dnoi_internal.setVisualCue('discovering');
-		box.lastDiscoveredIdentifier = box.value;
-		box.lastAuthenticationResult = null;
-		var discoveryUri = box.dnoi_internal.getAuthenticationUrl(true);
-		if (box.discoveryIFrame) {
-			box.discoveryIFrame.parentNode.removeChild(box.discoveryIFrame);
-			box.discoveryIFrame = null;
-		}
-		trace('Performing discovery using url: ' + discoveryUri);
-		box.discoveryIFrame = createHiddenFrame(discoveryUri);
-	};
-
-	function findParentForm(element) {
-		if (element == null || element.nodeName == "FORM") {
-			return element;
-		}
-
-		return findParentForm(element.parentNode);
-	};
-
-	function findOrCreateHiddenField(form, name) {
-		if (box.hiddenField) {
-			return box.hiddenField;
-		}
-
-		box.hiddenField = document.createElement('input');
-		box.hiddenField.setAttribute("name", name);
-		box.hiddenField.setAttribute("type", "hidden");
-		form.appendChild(box.hiddenField);
-		return box.hiddenField;
-	};
-
+	/// <summary>
+	/// Returns the URL of the authenticating OP's logo so it can be displayed to the user.
+	/// </summary>
 	box.dnoi_internal.deriveOPFavIcon = function() {
-		if (!box.hiddenField) return;
-		var authResult = new Uri(box.hiddenField.value);
+		var response = box.dnoi_internal.getUserSuppliedIdentifierResults().successAuthData;
+		if (!response || response.length == 0) return;
+		var authResult = new Uri(response);
 		var opUri;
 		if (authResult.getQueryArgValue("openid.op_endpoint")) {
 			opUri = new Uri(authResult.getQueryArgValue("openid.op_endpoint"));
+		} if (authResult.getQueryArgValue("dotnetopenid.op_endpoint")) {
+			opUri = new Uri(authResult.getQueryArgValue("dotnetopenid.op_endpoint"));
 		} else if (authResult.getQueryArgValue("openid.user_setup_url")) {
 			opUri = new Uri(authResult.getQueryArgValue("openid.user_setup_url"));
 		} else return null;
@@ -260,66 +382,207 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		return favicon;
 	};
 
-	function createHiddenFrame(url) {
-		var iframe = document.createElement("iframe");
-		if (!window.openid_visible_iframe) {
-			iframe.setAttribute("width", 0);
-			iframe.setAttribute("height", 0);
-			iframe.setAttribute("style", "display: none");
+	box.dnoi_internal.createDiscoveryInfo = function(discoveryInfo, identifier) {
+		this.identifier = identifier;
+		// The claimed identifier may be null if the user provided an OP Identifier.
+		this.claimedIdentifier = discoveryInfo.claimedIdentifier;
+		trace('Discovered claimed identifier: ' + this.claimedIdentifier);
+
+		// Add extra tracking bits and behaviors.
+		this.findByEndpoint = function(opEndpoint) {
+			for (var i = 0; i < this.length; i++) {
+				if (this[i].endpoint == opEndpoint) {
+					return this[i];
+				}
+			}
+		};
+		this.findSuccessfulRequest = function() {
+			for (var i = 0; i < this.length; i++) {
+				if (this[i].result == authSuccess) {
+					return this[i];
+				}
+			}
+		};
+		this.busy = function() {
+			for (var i = 0; i < this.length; i++) {
+				if (this[i].busy()) {
+					return true;
+				}
+			}
+		};
+		this.abortAll = function() {
+			// Abort all other asynchronous authentication attempts that may be in progress.
+			box.dnoi_internal.authenticationIFrames.cancelAllWork();
+			for (var i = 0; i < this.length; i++) {
+				this[i].abort();
+			}
+		};
+		this.tryImmediate = function() {
+			if (this.length > 0) {
+				for (var i = 0; i < this.length; i++) {
+					box.dnoi_internal.authenticationIFrames.enqueueWork(this[i].tryImmediate);
+				}
+			} else {
+				box.dnoi_internal.discoveryFailed(null, this.identifier);
+			}
+		};
+
+		this.length = discoveryInfo.requests.length;
+		for (var i = 0; i < discoveryInfo.requests.length; i++) {
+			this[i] = new box.dnoi_internal.createTrackingRequest(discoveryInfo.requests[i], identifier);
 		}
-		iframe.setAttribute("src", url);
-		iframe.openidBox = box;
-		box.parentNode.insertBefore(iframe, box);
-		box.discoveryTimeout = setTimeout(function() { trace("timeout"); box.dnoi_internal.openidDiscoveryFailure("Timed out"); }, box.timeout);
-		return iframe;
 	};
 
-	box.parentForm = findParentForm(box);
+	box.dnoi_internal.createTrackingRequest = function(requestInfo, identifier) {
+		// It's possible during a postback that discovered request URLs are not available.
+		this.immediate = requestInfo.immediate ? new Uri(requestInfo.immediate) : null;
+		this.setup = requestInfo.setup ? new Uri(requestInfo.setup) : null;
+		this.endpoint = new Uri(requestInfo.endpoint);
+		this.identifier = identifier;
+		var self = this; // closure so that delegates have the right instance
 
-	box.dnoi_internal.openidDiscoveryFailure = function(msg) {
-		box.dnoi_internal.closeDiscoveryIFrame();
-		trace('Discovery failure: ' + msg);
-		box.lastAuthenticationResult = 'failed';
+		this.host = self.endpoint.getHost();
+
+		this.getDiscoveryInfo = function() {
+			return box.dnoi_internal.authenticationRequests[self.identifier];
+		}
+
+		this.busy = function() {
+			return self.iframe != null || self.popup != null;
+		};
+
+		this.completeAttempt = function() {
+			if (!self.busy()) return false;
+			if (self.iframe) {
+				trace('iframe hosting ' + self.endpoint + ' now CLOSING.');
+				box.dnoi_internal.authenticationIFrames.closeFrame(self.iframe);
+				self.iframe = null;
+			}
+			if (self.popup) {
+				self.popup.close();
+				self.popup = null;
+			}
+			if (self.timeout) {
+				window.clearTimeout(self.timeout);
+				self.timeout = null;
+			}
+
+			if (!self.getDiscoveryInfo().busy() && self.getDiscoveryInfo().findSuccessfulRequest() == null) {
+				trace('No asynchronous authentication attempt is in progress.  Display setup view.');
+				// visual cue that auth failed
+				box.dnoi_internal.setVisualCue('setup');
+			}
+
+			return true;
+		};
+
+		this.authenticationTimedOut = function() {
+			if (self.completeAttempt()) {
+				trace(self.host + " timed out");
+				self.result = timedOut;
+			}
+		};
+		this.authSuccess = function(authUri) {
+			if (self.completeAttempt()) {
+				trace(self.host + " authenticated!");
+				self.result = authSuccess;
+				self.response = authUri;
+				box.dnoi_internal.authenticationRequests[self.identifier].abortAll();
+			}
+		};
+		this.authFailed = function() {
+			if (self.completeAttempt()) {
+				//trace(self.host + " failed authentication");
+				self.result = authRefused;
+			}
+		};
+		this.abort = function() {
+			if (self.completeAttempt()) {
+				trace(self.host + " aborted");
+				// leave the result as whatever it was before.
+			}
+		};
+
+		this.tryImmediate = function(iframe) {
+			self.abort(); // ensure no concurrent attempts
+			self.timeout = setTimeout(function() { self.authenticationTimedOut(); }, box.timeout);
+			trace('iframe hosting ' + self.endpoint + ' now OPENING.');
+			self.iframe = iframe;
+			//trace('initiating auth attempt with: ' + self.immediate);
+			return self.immediate;
+		};
+		this.trySetup = function() {
+			self.abort(); // ensure no concurrent attempts
+			window.waiting_openidBox = box;
+			self.popup = window.open(self.setup, 'opLogin', 'status=0,toolbar=0,location=1,resizable=1,scrollbars=1,width=800,height=600');
+		};
+	};
+
+	/*****************************************
+	* Flow
+	*****************************************/
+
+	/// <summary>Called to initiate discovery on some identifier.</summary>
+	box.dnoi_internal.performDiscovery = function(identifier) {
+		box.dnoi_internal.authenticationIFrames.closeFrames();
+		box.dnoi_internal.setVisualCue('discovering');
+		box.lastDiscoveredIdentifier = identifier;
+		box.dnoi_internal.discoverIdentifier(identifier, box.dnoi_internal.discoveryResult, box.dnoi_internal.discoveryFailed);
+	};
+
+	/// <summary>Callback that is invoked when discovery fails.</summary>
+	box.dnoi_internal.discoveryFailed = function(message, identifier) {
 		box.dnoi_internal.setVisualCue('failed');
-		box.title = msg;
-	};
+		if (message) { box.title = message; }
+	}
 
-	box.dnoi_internal.closeDiscoveryIFrame = function() {
-		if (box.discoveryTimeout) {
-			clearTimeout(box.discoveryTimeout);
-		}
-		if (box.discoveryIFrame) {
-			box.discoveryIFrame.parentNode.removeChild(box.discoveryIFrame);
-			box.discoveryIFrame = null;
-		}
-	};
+	/// <summary>Callback that is invoked when discovery results are available.</summary>
+	/// <param name="discoveryResult">The JSON object containing the OpenID auth requests.</param>
+	/// <param name="identifier">The identifier that discovery was performed on.</param>
+	box.dnoi_internal.discoveryResult = function(discoveryResult, identifier) {
+		// Deserialize the JSON object and store the result if it was a successful discovery.
+		discoveryResult = eval('(' + discoveryResult + ')');
+		// Store the discovery results and added behavior for later use.
+		box.dnoi_internal.authenticationRequests[identifier] = discoveryBehavior = new box.dnoi_internal.createDiscoveryInfo(discoveryResult, identifier);
 
-	box.dnoi_internal.openidAuthResult = function(resultUrl) {
+		// Only act on the discovery event if we're still interested in the result.
+		// If the user already changed the identifier since discovery was initiated,
+		// we aren't interested in it any more.
+		if (identifier == box.lastDiscoveredIdentifier) {
+			discoveryBehavior.tryImmediate();
+		}
+	}
+
+	/// <summary>Invoked by RP web server when an authentication has completed.</summary>
+	/// <remarks>The duty of this method is to distribute the notification to the appropriate tracking object.</remarks>
+	box.dnoi_internal.processAuthorizationResult = function(resultUrl) {
 		self.waiting_openidBox = null;
-		trace('openidAuthResult ' + resultUrl);
-		if (box.discoveryIFrame) {
-			box.dnoi_internal.closeDiscoveryIFrame();
-		} else if (box.dnoi_internal.popup) {
-			box.dnoi_internal.popup.close();
-			box.dnoi_internal.popup = null;
-		}
+		//trace('processAuthorizationResult ' + resultUrl);
 		var resultUri = new Uri(resultUrl);
 
-		// stick the result in a hidden field so the RP can verify it (positive or negative)
-		var form = findParentForm(box);
-		var hiddenField = findOrCreateHiddenField(form, "openidAuthData");
-		hiddenField.setAttribute("value", resultUri.toString());
-		trace("set openidAuthData = " + resultUri.queryString);
-		if (hiddenField.parentNode == null) {
-			form.appendChild(hiddenField);
+		// Find the tracking object responsible for this request.
+		var discoveryInfo = box.dnoi_internal.authenticationRequests[resultUri.getQueryArgValue('dotnetopenid.userSuppliedIdentifier')];
+		if (discoveryInfo == null) {
+			trace('processAuthorizationResult called but no userSuppliedIdentifier parameter was found.  Exiting function.');
+			return;
 		}
-		trace("review: " + box.hiddenField.value);
+		var opEndpoint = resultUri.getQueryArgValue("openid.op_endpoint") ? resultUri.getQueryArgValue("openid.op_endpoint") : resultUri.getQueryArgValue("dotnetopenid.op_endpoint");
+		var tracker = discoveryInfo.findByEndpoint(opEndpoint);
+		//trace('Auth result for ' + tracker.host + ' received:\n' + resultUrl);
 
 		if (isAuthSuccessful(resultUri)) {
+			tracker.authSuccess(resultUri);
+
+			discoveryInfo.successAuthData = resultUrl;
+			var claimed_id = resultUri.getQueryArgValue("openid.claimed_id");
+			if (claimed_id && claimed_id != discoveryInfo.claimedIdentifier) {
+				discoveryInfo.claimedIdentifier = resultUri.getQueryArgValue("openid.claimed_id");
+				trace('Authenticated as ' + claimed_id);
+			}
+
 			// visual cue that auth was successful
-			box.dnoi_internal.claimedIdentifier = isOpenID2Response(resultUri) ? resultUri.getQueryArgValue("openid.claimed_id") : resultUri.getQueryArgValue("openid.identity");
-			box.dnoi_internal.setVisualCue('authenticated');
-			box.lastAuthenticationResult = 'authenticated';
+			box.dnoi_internal.claimedIdentifier = discoveryInfo.claimedIdentifier;
+			box.dnoi_internal.setVisualCue('authenticated', tracker.endpoint, discoveryInfo.claimedIdentifier);
 			if (box.dnoi_internal.onauthenticated) {
 				box.dnoi_internal.onauthenticated(box);
 			}
@@ -333,9 +596,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 				}
 			}
 		} else {
-			// visual cue that auth failed
-			box.dnoi_internal.setVisualCue('setup');
-			box.lastAuthenticationResult = 'setup';
+			tracker.authFailed();
 		}
 
 		box.dnoi_internal.submitPending = null;
@@ -354,25 +615,46 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	};
 
 	box.onblur = function(event) {
-		if (box.lastDiscoveredIdentifier != box.value) {
+		var discoveryInfo = box.dnoi_internal.authenticationRequests[box.value];
+		if (discoveryInfo == null) {
 			if (box.value.length > 0) {
-				box.dnoi_internal.performDiscovery();
+				box.dnoi_internal.performDiscovery(box.value);
 			} else {
 				box.dnoi_internal.setVisualCue();
 			}
-			box.oldvalue = box.value;
+		} else {
+			if ((priorSuccess = discoveryInfo.findSuccessfulRequest())) {
+				box.dnoi_internal.setVisualCue('authenticated', priorSuccess.endpoint, discoveryInfo.claimedIdentifier);
+			} else {
+				discoveryInfo.tryImmediate();
+			}
 		}
 		return true;
 	};
 	box.onkeyup = function(event) {
-		if (box.lastDiscoveredIdentifier != box.value) {
-			box.dnoi_internal.setVisualCue();
-		} else {
-			box.dnoi_internal.setVisualCue(box.lastAuthenticationResult);
-		}
+		box.dnoi_internal.setVisualCue();
 		return true;
 	};
+
 	box.getClaimedIdentifier = function() { return box.dnoi_internal.claimedIdentifier; };
+
+	// Restore a previously achieved state (from pre-postback) if it is given.
+	var oldAuth = findOrCreateHiddenField().value;
+	if (oldAuth.length > 0) {
+		var oldAuthResult = new Uri(oldAuth);
+		// The control ensures that we ALWAYS have an OpenID 2.0-style claimed_id attribute, even against
+		// 1.0 Providers via the return_to URL mechanism.
+		var claimedId = oldAuthResult.getQueryArgValue("dotnetopenid.claimed_id");
+		var endpoint = oldAuthResult.getQueryArgValue("dotnetopenid.op_endpoint");
+		// We weren't given a full discovery history, but we can spoof this much from the
+		// authentication assertion.
+		box.dnoi_internal.authenticationRequests[box.value] = new box.dnoi_internal.createDiscoveryInfo({
+			claimedIdentifier: claimedId,
+			requests: [{ endpoint: endpoint }]
+		}, box.value);
+
+		box.dnoi_internal.processAuthorizationResult(oldAuthResult.toString());
+	}
 }
 
 function Uri(url) {
@@ -422,7 +704,7 @@ function Uri(url) {
 		this.value = value;
 	};
 
-	this.Pairs = Array();
+	this.Pairs = new Array();
 
 	var queryBeginsAt = this.originalUri.indexOf('?');
 	if (queryBeginsAt >= 0) {

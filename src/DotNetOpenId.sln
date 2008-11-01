@@ -43,6 +43,11 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "DotNetOpenId.TestWeb", "Dot
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RelyingPartyMvc", "..\samples\RelyingPartyMvc\RelyingPartyMvc.csproj", "{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Specs", "Specs", "{44A45E8C-5AB9-4D40-A687-81565F2878DB}"
+	ProjectSection(SolutionItems) = preProject
+		specs\OpenIdAjaxTextBox.htm = specs\OpenIdAjaxTextBox.htm
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|.NET = Debug|.NET

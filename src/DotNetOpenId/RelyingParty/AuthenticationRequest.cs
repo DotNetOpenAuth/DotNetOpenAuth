@@ -27,7 +27,7 @@ namespace DotNetOpenId.RelyingParty {
 
 	[DebuggerDisplay("ClaimedIdentifier: {ClaimedIdentifier}, Mode: {Mode}, OpenId: {protocol.Version}")]
 	class AuthenticationRequest : IAuthenticationRequest {
-		AssociationPreference associationPreference = AssociationPreference.IfPossible;
+		internal AssociationPreference associationPreference = AssociationPreference.IfPossible;
 		ServiceEndpoint endpoint;
 		Protocol protocol { get { return endpoint.Protocol; } }
 		internal OpenIdRelyingParty RelyingParty;
@@ -47,11 +47,6 @@ namespace DotNetOpenId.RelyingParty {
 			Mode = AuthenticationRequestMode.Setup;
 			OutgoingExtensions = ExtensionArgumentsManager.CreateOutgoingExtensions(endpoint.Protocol);
 			ReturnToArgs = new Dictionary<string, string>();
-
-			string token = new Token(endpoint).Serialize(relyingParty.Store);
-			if (token != null) {
-				AddCallbackArguments(DotNetOpenId.RelyingParty.Token.TokenKey, token);
-			}
 		}
 
 		/// <summary>
@@ -359,6 +354,13 @@ namespace DotNetOpenId.RelyingParty {
 			get {
 				UriBuilder returnToBuilder = new UriBuilder(ReturnToUrl);
 				UriUtil.AppendQueryArgs(returnToBuilder, this.ReturnToArgs);
+
+				string token = new Token(endpoint).Serialize(this.RelyingParty.Store);
+				if (token != null) {
+					UriUtil.AppendQueryArgs(returnToBuilder, new Dictionary<string, string> {
+						{ DotNetOpenId.RelyingParty.Token.TokenKey, token },
+					});
+				}
 
 				var qsArgs = new Dictionary<string, string>();
 
