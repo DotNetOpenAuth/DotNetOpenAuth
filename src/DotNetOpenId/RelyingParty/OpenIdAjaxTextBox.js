@@ -4,9 +4,33 @@
 
 function trace(msg) {
 	if (window.openid_trace) {
-		alert(msg);
+		if (!window.tracediv) {
+			window.tracediv = document.createElement("ol");
+			document.body.appendChild(window.tracediv);
+		}
+		var el = document.createElement("li");
+		el.appendChild(document.createTextNode(msg));
+		window.tracediv.appendChild(el);
+		//alert(msg);
 	}
 }
+
+/// <summary>Removes a given element from the array.</summary>
+/// <returns>True if the element was in the array, or false if it was not found.</returns>
+Array.prototype.remove = function(element) {
+	function elementToRemoveLast(a, b) {
+		if (a == element) { return 1; }
+		if (b == element) { return -1; }
+		return 0;
+	}
+	this.sort(elementToRemoveLast);
+	if (this[this.length - 1] == element) {
+		this.pop();
+		return true;
+	} else {
+		return false;
+	}
+};
 
 function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url, success_icon_url, failure_icon_url,
 		timeout, assertionReceivedCode,
@@ -29,56 +53,65 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	var authRefused = new Object();
 	var timedOut = new Object();
 
-	function initializeIFrameManagement(maxFrames) {
-		var frames = new Array();
-		for (var i = 0; i < maxFrames; i++) {
-			frames.push(null);
+	function FrameManager(maxFrames) {
+		this.queuedWork = new Array();
+		this.frames = new Array();
+		this.maxFrames = maxFrames;
+
+		/// <summary>Called to queue up some work that will use an iframe as soon as it is available.</summary>
+		/// <param name="job">
+		/// A delegate that must return the url to point to iframe to.  
+		/// Its first parameter is the iframe created to service the request.
+		/// It will only be called when the work actually begins.
+		/// </param>
+		this.enqueueWork = function(job) {
+			// Assign an iframe to this task immediately if there is one available.
+			if (this.frames.length < this.maxFrames) {
+				this.createIFrame(job);
+			} else {
+				this.queuedWork.unshift(job);
+			}
+		};
+
+		/// <summary>An event fired when a frame is closing.</summary>
+		this.onJobCompleted = function() {
+			// If there is a job in the queue, go ahead and start it up.
+			if (job = this.queuedWork.pop()) {
+				this.createIFrame(job);
+			}
 		}
-		
-		frames.createHiddenFrame = function(url) {
+
+		this.createIFrame = function(job) {
 			var iframe = document.createElement("iframe");
 			if (!window.openid_visible_iframe) {
 				iframe.setAttribute("width", 0);
 				iframe.setAttribute("height", 0);
 				iframe.setAttribute("style", "display: none");
 			}
-			iframe.setAttribute("src", url);
+			iframe.setAttribute("src", job(iframe));
 			iframe.openidBox = box;
 			box.parentNode.insertBefore(iframe, box);
+			this.frames.push(iframe);
 			return iframe;
 		};
-		frames.assignFrame = function(url) {
-			for (var i = 0; i < frames.length; i++) {
-				if (frames[i] == null) {
-					return frames[i] = frames.createHiddenFrame(url);
-				}
+		this.closeFrames = function() {
+			if (this.frames.length == 0) { return false; }
+			for (var i = 0; i < this.frames.length; i++) {
+				this.frames[i].parentNode.removeChild(this.frames[i]);
 			}
+			while (this.frames.length > 0) { this.frames.pop(); }
+			return true;
 		};
-		frames.closeFrames = function() {
-			anyClosed = false;
-			for (var i = 0; i < frames.length; i++) {
-				if (frames[i]) {
-					frames.closeFrame(frames[i]);
-					anyClosed = true;
-				}
-			}
-			return anyClosed;
+		this.closeFrame = function(frame) {
+			frame.parentNode.removeChild(frame);
+			var removed = this.frames.remove(frame);
+			this.onJobCompleted();
+			return removed;
 		};
-		frames.closeFrame = function(frame) {
-			for (var i = 0; i < frames.length; i++) {
-				if (frames[i] == frame) {
-					frame.parentNode.removeChild(frame);
-					frames[i] = null;
-					return true;
-				}
-			}
-		};
-
-		return frames;
 	}
 	
 	// TODO: implement throttling, then lower this number 10 to a 3 or some variable .
-	box.dnoi_internal.authenticationIFrames = initializeIFrameManagement(10);
+	box.dnoi_internal.authenticationIFrames = new FrameManager(2);
 
 	box.dnoi_internal.constructButton = function(text, tooltip, onclick) {
 		var button = document.createElement('button');
@@ -380,7 +413,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		this.tryImmediate = function() {
 			if (this.length > 0) {
 				for (var i = 0; i < this.length; i++) {
-					this[i].tryImmediate();
+					box.dnoi_internal.authenticationIFrames.enqueueWork(this[i].tryImmediate);
 				}
 			} else {
 				box.dnoi_internal.discoveryFailed(null, this.identifier);
@@ -399,33 +432,35 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		this.setup = requestInfo.setup ? new Uri(requestInfo.setup) : null;
 		this.endpoint = new Uri(requestInfo.endpoint);
 		this.identifier = identifier;
+		var self = this; // closure so that delegates have the right instance
 
-		this.host = this.endpoint.getHost();
+		this.host = self.endpoint.getHost();
 
 		this.getDiscoveryInfo = function() {
-			return box.dnoi_internal.authenticationRequests[this.identifier];
+			return box.dnoi_internal.authenticationRequests[self.identifier];
 		}
 
 		this.busy = function() {
-			return this.iframe != null || this.popup != null;
+			return self.iframe != null || self.popup != null;
 		};
 
 		this.completeAttempt = function() {
-			if (!this.busy()) return false;
-			if (this.iframe) {
-				box.dnoi_internal.authenticationIFrames.closeFrame(this.iframe);
-				this.iframe = null;
+			if (!self.busy()) return false;
+			if (self.iframe) {
+				trace('iframe hosting ' + self.endpoint + ' now CLOSING.');
+				box.dnoi_internal.authenticationIFrames.closeFrame(self.iframe);
+				self.iframe = null;
 			}
-			if (this.popup) {
-				this.popup.close();
-				this.popup = null;
+			if (self.popup) {
+				self.popup.close();
+				self.popup = null;
 			}
-			if (this.timeout) {
-				window.clearTimeout(this.timeout);
-				this.timeout = null;
+			if (self.timeout) {
+				window.clearTimeout(self.timeout);
+				self.timeout = null;
 			}
 
-			if (!this.getDiscoveryInfo().busy() && this.getDiscoveryInfo().findSuccessfulRequest() == null) {
+			if (!self.getDiscoveryInfo().busy() && self.getDiscoveryInfo().findSuccessfulRequest() == null) {
 				trace('No asynchronous authentication attempt is in progress.  Display setup view.');
 				// visual cue that auth failed
 				box.dnoi_internal.setVisualCue('setup');
@@ -435,43 +470,44 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		};
 
 		this.authenticationTimedOut = function() {
-			if (this.completeAttempt()) {
-				trace(this.host + " timed out");
-				this.result = timedOut;
+			if (self.completeAttempt()) {
+				trace(self.host + " timed out");
+				self.result = timedOut;
 			}
 		};
 		this.authSuccess = function(authUri) {
-			if (this.completeAttempt()) {
-				trace(this.host + " authenticated!");
-				this.result = authSuccess;
-				this.response = authUri;
-				box.dnoi_internal.authenticationRequests[this.identifier].abortAll();
+			if (self.completeAttempt()) {
+				trace(self.host + " authenticated!");
+				self.result = authSuccess;
+				self.response = authUri;
+				box.dnoi_internal.authenticationRequests[self.identifier].abortAll();
 			}
 		};
 		this.authFailed = function() {
-			if (this.completeAttempt()) {
-				//trace(this.host + " failed authentication");
-				this.result = authRefused;
+			if (self.completeAttempt()) {
+				//trace(self.host + " failed authentication");
+				self.result = authRefused;
 			}
 		};
 		this.abort = function() {
-			if (this.completeAttempt()) {
-				trace(this.host + " aborted");
+			if (self.completeAttempt()) {
+				trace(self.host + " aborted");
 				// leave the result as whatever it was before.
 			}
 		};
 
-		this.tryImmediate = function() {
-			this.abort(); // ensure no concurrent attempts
-			var self = this; // closure so that timer handler has the right instance
-			this.timeout = setTimeout(function() { self.authenticationTimedOut(); }, box.timeout);
-			this.iframe = box.dnoi_internal.authenticationIFrames.assignFrame(this.immediate);
-			//trace('initiating auth attempt with: ' + this.immediate);
+		this.tryImmediate = function(iframe) {
+			self.abort(); // ensure no concurrent attempts
+			self.timeout = setTimeout(function() { self.authenticationTimedOut(); }, box.timeout);
+			trace('iframe hosting ' + self.endpoint + ' now OPENING.');
+			self.iframe = iframe;
+			//trace('initiating auth attempt with: ' + self.immediate);
+			return self.immediate;
 		};
 		this.trySetup = function() {
-			this.abort(); // ensure no concurrent attempts
-			self.waiting_openidBox = box;
-			this.popup = window.open(this.setup, 'opLogin', 'status=0,toolbar=0,location=1,resizable=1,scrollbars=1,width=800,height=600');
+			self.abort(); // ensure no concurrent attempts
+			window.waiting_openidBox = box;
+			self.popup = window.open(self.setup, 'opLogin', 'status=0,toolbar=0,location=1,resizable=1,scrollbars=1,width=800,height=600');
 		};
 	};
 
@@ -525,7 +561,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		}
 		var opEndpoint = resultUri.getQueryArgValue("openid.op_endpoint") ? resultUri.getQueryArgValue("openid.op_endpoint") : resultUri.getQueryArgValue("dotnetopenid.op_endpoint");
 		var tracker = discoveryInfo.findByEndpoint(opEndpoint);
-		trace('Auth result for ' + tracker.host + ' received:\n' + resultUrl);
+		//trace('Auth result for ' + tracker.host + ' received:\n' + resultUrl);
 
 		if (isAuthSuccessful(resultUri)) {
 			tracker.authSuccess(resultUri);
