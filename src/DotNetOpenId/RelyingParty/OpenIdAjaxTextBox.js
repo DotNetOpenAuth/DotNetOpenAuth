@@ -1,6 +1,6 @@
 ﻿// Options that can be set on the host page:
 //window.openid_visible_iframe = true; // causes the hidden iframe to show up
-//window.openid_trace = true; // causes lots of alert boxes
+window.openid_trace = true; // causes lots of alert boxes
 
 function trace(msg) {
 	if (window.openid_trace) {
@@ -73,6 +73,13 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			}
 		};
 
+		/// <summary>Clears the job queue and immediately closes all iframes.</summary>
+		this.cancelAllWork = function() {
+			trace('Canceling all open and pending iframes.');
+			while (this.queuedWork.pop());
+			this.closeFrames();
+		};
+
 		/// <summary>An event fired when a frame is closing.</summary>
 		this.onJobCompleted = function() {
 			// If there is a job in the queue, go ahead and start it up.
@@ -97,13 +104,13 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		this.closeFrames = function() {
 			if (this.frames.length == 0) { return false; }
 			for (var i = 0; i < this.frames.length; i++) {
-				this.frames[i].parentNode.removeChild(this.frames[i]);
+				if (this.frames[i].parentNode) { this.frames[i].parentNode.removeChild(this.frames[i]); }
 			}
 			while (this.frames.length > 0) { this.frames.pop(); }
 			return true;
 		};
 		this.closeFrame = function(frame) {
-			frame.parentNode.removeChild(frame);
+			if (frame.parentNode) { frame.parentNode.removeChild(frame); }
 			var removed = this.frames.remove(frame);
 			this.onJobCompleted();
 			return removed;
@@ -406,6 +413,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		};
 		this.abortAll = function() {
 			// Abort all other asynchronous authentication attempts that may be in progress.
+			box.dnoi_internal.authenticationIFrames.cancelAllWork();
 			for (var i = 0; i < this.length; i++) {
 				this[i].abort();
 			}
@@ -567,6 +575,11 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			tracker.authSuccess(resultUri);
 
 			discoveryInfo.successAuthData = resultUrl;
+			var claimed_id = resultUri.getQueryArgValue("openid.claimed_id");
+			if (claimed_id && claimed_id != discoveryInfo.claimedIdentifier) {
+				discoveryInfo.claimedIdentifier = resultUri.getQueryArgValue("openid.claimed_id");
+				trace('Authenticated as ' + claimed_id);
+			}
 
 			// visual cue that auth was successful
 			box.dnoi_internal.claimedIdentifier = discoveryInfo.claimedIdentifier;
