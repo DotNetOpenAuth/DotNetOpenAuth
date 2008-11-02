@@ -21,7 +21,7 @@ namespace DotNetOAuth.Messaging {
 	/// ASP.NET does not let us fully initialize that class, so we have to write one
 	/// of our one.
 	/// </remarks>
-	internal class HttpRequestInfo {
+	public class HttpRequestInfo {
 		/// <summary>
 		/// The key/value pairs found in the entity of a POST request.
 		/// </summary>

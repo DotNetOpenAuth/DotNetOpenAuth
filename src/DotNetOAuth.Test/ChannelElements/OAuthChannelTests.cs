@@ -102,7 +102,8 @@ namespace DotNetOAuth.Test.ChannelElements {
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void ReadFromResponseNull() {
-			this.channel.ReadFromResponse(null);
+			Channel_Accessor accessor = Channel_Accessor.AttachShadow(this.channel);
+			accessor.ReadFromResponse(null);
 		}
 
 		[TestMethod]
@@ -119,7 +120,8 @@ namespace DotNetOAuth.Test.ChannelElements {
 			writer.Write(MessagingUtilities.CreateQueryString(fields));
 			writer.Flush();
 			ms.Seek(0, SeekOrigin.Begin);
-			IProtocolMessage message = this.channel.ReadFromResponse(ms);
+			Channel_Accessor channelAccessor = Channel_Accessor.AttachShadow(this.channel);
+			IProtocolMessage message = channelAccessor.ReadFromResponse(ms);
 			Assert.IsNotNull(message);
 			Assert.IsInstanceOfType(message, typeof(TestMessage));
 			TestMessage testMessage = (TestMessage)message;

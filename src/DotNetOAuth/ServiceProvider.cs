@@ -56,7 +56,7 @@ namespace DotNetOAuth {
 			var signingElement = serviceDescription.CreateTamperProtectionElement();
 			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
 			this.ServiceDescription = serviceDescription;
-			this.Channel = new OAuthChannel(signingElement, store, tokenManager, messageTypeProvider, new StandardWebRequestHandler());
+			this.OAuthChannel = new OAuthChannel(signingElement, store, tokenManager, messageTypeProvider, new StandardWebRequestHandler());
 			this.TokenGenerator = new StandardTokenGenerator();
 		}
 
@@ -74,13 +74,20 @@ namespace DotNetOAuth {
 		/// Gets the persistence store for tokens and secrets.
 		/// </summary>
 		public ITokenManager TokenManager {
-			get { return this.Channel.TokenManager; }
+			get { return this.OAuthChannel.TokenManager; }
+		}
+
+		/// <summary>
+		/// Gets the channel to use for sending/receiving messages.
+		/// </summary>
+		public Channel Channel {
+			get { return this.OAuthChannel; }
 		}
 
 		/// <summary>
 		/// Gets or sets the channel to use for sending/receiving messages.
 		/// </summary>
-		internal OAuthChannel Channel { get; set; }
+		internal OAuthChannel OAuthChannel { get; set; }
 
 		/// <summary>
 		/// Reads any incoming OAuth message.
@@ -216,7 +223,7 @@ namespace DotNetOAuth {
 		/// <param name="request">The Consumer's message requesting an access token.</param>
 		/// <param name="extraParameters">Any extra parameters the Consumer should receive with the OAuth message.  May be null.</param>
 		/// <returns>The HTTP response to actually send to the Consumer.</returns>
-		public Response SendAccessToken(GetAccessTokenMessage request, IDictionary<string, string> extraParameters) {
+		public GrantAccessTokenMessage PrepareAccessTokenMessage(GetAccessTokenMessage request) {
 			if (request == null) {
 				throw new ArgumentNullException("request");
 			}
@@ -236,8 +243,19 @@ namespace DotNetOAuth {
 				AccessToken = accessToken,
 				TokenSecret = tokenSecret,
 			};
-			grantAccess.AddNonOAuthParameters(extraParameters);
 
+			return grantAccess;
+		}
+
+		/// <summary>
+		/// Prepares and sends an access token to a Consumer, and invalidates the request token.
+		/// </summary>
+		/// <param name="request">The Consumer's message requesting an access token.</param>
+		/// <param name="extraParameters">Any extra parameters the Consumer should receive with the OAuth message.  May be null.</param>
+		/// <returns>The HTTP response to actually send to the Consumer.</returns>
+		public Response SendAccessToken(GetAccessTokenMessage request, IDictionary<string, string> extraParameters) {
+			var grantAccess = PrepareAccessTokenMessage(request);
+			grantAccess.AddNonOAuthParameters(extraParameters);
 			return this.Channel.Send(grantAccess);
 		}
 

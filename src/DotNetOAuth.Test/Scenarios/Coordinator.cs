@@ -73,7 +73,7 @@ namespace DotNetOAuth.Test.Scenarios {
 				ConsumerKey = this.consumerDescription.ConsumerKey,
 			};
 			ServiceProvider serviceProvider = new ServiceProvider(this.serviceDescription, serviceTokenManager) {
-				Channel = serviceProviderChannel,
+				OAuthChannel = serviceProviderChannel,
 			};
 
 			Thread consumerThread = null, serviceProviderThread = null;

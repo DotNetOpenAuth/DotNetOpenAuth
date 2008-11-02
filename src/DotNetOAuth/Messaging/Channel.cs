@@ -20,7 +20,7 @@ namespace DotNetOAuth.Messaging {
 	/// <summary>
 	/// Manages sending direct messages to a remote party and receiving responses.
 	/// </summary>
-	internal abstract class Channel {
+	public abstract class Channel {
 		/// <summary>
 		/// The maximum allowable size for a 301 Redirect response before we send
 		/// a 200 OK response with a scripted form POST with the parameters instead
@@ -106,7 +106,7 @@ namespace DotNetOAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The one-way message to send</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
-		internal Response Send(IProtocolMessage message) {
+		public Response Send(IProtocolMessage message) {
 			if (message == null) {
 				throw new ArgumentNullException("message");
 			}
@@ -150,7 +150,7 @@ namespace DotNetOAuth.Messaging {
 		/// Requires an HttpContext.Current context.
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current"/> is null.</exception>
-		internal IProtocolMessage ReadFromRequest() {
+		public IProtocolMessage ReadFromRequest() {
 			return this.ReadFromRequest(this.GetRequestFromContext());
 		}
 
@@ -165,7 +165,7 @@ namespace DotNetOAuth.Messaging {
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current"/> is null.</exception>
 		/// <exception cref="ProtocolException">Thrown when a request message of an unexpected type is received.</exception>
-		internal bool TryReadFromRequest<TREQUEST>(out TREQUEST request)
+		public bool TryReadFromRequest<TREQUEST>(out TREQUEST request)
 			where TREQUEST : class, IProtocolMessage {
 			return TryReadFromRequest<TREQUEST>(this.GetRequestFromContext(), out request);
 		}
@@ -177,12 +177,9 @@ namespace DotNetOAuth.Messaging {
 		/// <param name="httpRequest">The request to search for an embedded message.</param>
 		/// <param name="request">The deserialized message, if one is found.  Null otherwise.</param>
 		/// <returns>True if the expected message was recognized and deserialized.  False otherwise.</returns>
-		/// <remarks>
-		/// Requires an HttpContext.Current context.
-		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current"/> is null.</exception>
 		/// <exception cref="ProtocolException">Thrown when a request message of an unexpected type is received.</exception>
-		internal bool TryReadFromRequest<TREQUEST>(HttpRequestInfo httpRequest, out TREQUEST request)
+		public bool TryReadFromRequest<TREQUEST>(HttpRequestInfo httpRequest, out TREQUEST request)
 			where TREQUEST : class, IProtocolMessage {
 			IProtocolMessage untypedRequest = this.ReadFromRequest(httpRequest);
 			if (untypedRequest == null) {
@@ -213,7 +210,7 @@ namespace DotNetOAuth.Messaging {
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current"/> is null.</exception>
 		/// <exception cref="ProtocolException">Thrown if the expected message was not recognized in the response.</exception>
-		internal TREQUEST ReadFromRequest<TREQUEST>()
+		public TREQUEST ReadFromRequest<TREQUEST>()
 			where TREQUEST : class, IProtocolMessage {
 			return this.ReadFromRequest<TREQUEST>(this.GetRequestFromContext());
 		}
@@ -225,7 +222,7 @@ namespace DotNetOAuth.Messaging {
 		/// <param name="httpRequest">The request to search for an embedded message.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
 		/// <exception cref="ProtocolException">Thrown if the expected message was not recognized in the response.</exception>
-		protected internal TREQUEST ReadFromRequest<TREQUEST>(HttpRequestInfo httpRequest)
+		public TREQUEST ReadFromRequest<TREQUEST>(HttpRequestInfo httpRequest)
 			where TREQUEST : class, IProtocolMessage {
 			TREQUEST request;
 			if (this.TryReadFromRequest<TREQUEST>(httpRequest, out request)) {
@@ -244,7 +241,7 @@ namespace DotNetOAuth.Messaging {
 		/// </summary>
 		/// <param name="httpRequest">The request to search for an embedded message.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
-		protected internal IProtocolMessage ReadFromRequest(HttpRequestInfo httpRequest) {
+		public IProtocolMessage ReadFromRequest(HttpRequestInfo httpRequest) {
 			IProtocolMessage requestMessage = this.ReadFromRequestInternal(httpRequest);
 			if (requestMessage != null) {
 				Logger.DebugFormat("Incoming request received: {0}", requestMessage);
@@ -264,7 +261,7 @@ namespace DotNetOAuth.Messaging {
 		/// Thrown if no message is recognized in the response
 		/// or an unexpected type of message is received.
 		/// </exception>
-		protected internal TRESPONSE Request<TRESPONSE>(IDirectedProtocolMessage request)
+		public TRESPONSE Request<TRESPONSE>(IDirectedProtocolMessage request)
 			where TRESPONSE : class, IProtocolMessage {
 			IProtocolMessage response = this.Request(request);
 			if (response == null) {
@@ -293,7 +290,7 @@ namespace DotNetOAuth.Messaging {
 		/// </summary>
 		/// <param name="request">The message to send.</param>
 		/// <returns>The remote party's response.</returns>
-		protected internal IProtocolMessage Request(IDirectedProtocolMessage request) {
+		public IProtocolMessage Request(IDirectedProtocolMessage request) {
 			if (request == null) {
 				throw new ArgumentNullException("request");
 			}
@@ -314,7 +311,7 @@ namespace DotNetOAuth.Messaging {
 		/// </summary>
 		/// <param name="responseStream">The response that is anticipated to contain an OAuth message.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
-		protected internal IProtocolMessage ReadFromResponse(Stream responseStream) {
+		private IProtocolMessage ReadFromResponse(Stream responseStream) {
 			IProtocolMessage message = this.ReadFromResponseInternal(responseStream);
 			Logger.DebugFormat("Received message response: {0}", message);
 			this.VerifyMessageAfterReceiving(message);
