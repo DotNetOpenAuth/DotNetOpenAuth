@@ -56,15 +56,6 @@ namespace DotNetOAuth {
 		}
 
 		/// <summary>
-		/// Gets or sets the object that processes <see cref="HttpWebRequest"/>s.
-		/// </summary>
-		/// <remarks>
-		/// This defaults to a straightforward implementation, but can be set
-		/// to a mock object for testing purposes.
-		/// </remarks>
-		internal IWebRequestHandler WebRequestHandler { get; set; }
-
-		/// <summary>
 		/// Gets the channel to use for sending/receiving messages.
 		/// </summary>
 		public Channel Channel {
@@ -75,6 +66,15 @@ namespace DotNetOAuth {
 		/// Gets or sets the channel to use for sending/receiving messages.
 		/// </summary>
 		internal OAuthChannel OAuthChannel { get; set; }
+
+		/// <summary>
+		/// Gets or sets the object that processes <see cref="HttpWebRequest"/>s.
+		/// </summary>
+		/// <remarks>
+		/// This defaults to a straightforward implementation, but can be set
+		/// to a mock object for testing purposes.
+		/// </remarks>
+		internal IWebRequestHandler WebRequestHandler { get; set; }
 
 		/// <summary>
 		/// Creates a web request prepared with OAuth authorization 

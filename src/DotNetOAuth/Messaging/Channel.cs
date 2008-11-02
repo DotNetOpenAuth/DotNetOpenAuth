@@ -81,6 +81,11 @@ namespace DotNetOAuth.Messaging {
 		}
 
 		/// <summary>
+		/// An event fired whenever a message is about to be encoded and sent.
+		/// </summary>
+		internal event EventHandler<ChannelEventArgs> Sending;
+
+		/// <summary>
 		/// Gets the binding elements used by this channel, in the order they are applied to outgoing messages.
 		/// </summary>
 		/// <remarks>
@@ -92,24 +97,6 @@ namespace DotNetOAuth.Messaging {
 			}
 		}
 
-		/// <summary>
-		/// An event fired whenever a message is about to be encoded and sent.
-		/// </summary>
-		internal event EventHandler<ChannelEventArgs> Sending;
-
-		/// <summary>
-		/// Fires the <see cref="Sending"/> event.
-		/// </summary>
-		/// <param name="message">The message about to be encoded and sent.</param>
-		protected virtual void OnSending(IProtocolMessage message) {
-			if (message == null) throw new ArgumentNullException("message");
-
-			var sending = this.Sending;
-			if (sending != null) {
-				sending(this, new ChannelEventArgs(message));
-			}
-		}
-	
 		/// <summary>
 		/// Gets a tool that can figure out what kind of message is being received
 		/// so it can be deserialized.
@@ -325,18 +312,6 @@ namespace DotNetOAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Gets the protocol message that may be in the given HTTP response stream.
-		/// </summary>
-		/// <param name="responseStream">The response that is anticipated to contain an OAuth message.</param>
-		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
-		private IProtocolMessage ReadFromResponse(Stream responseStream) {
-			IProtocolMessage message = this.ReadFromResponseInternal(responseStream);
-			Logger.DebugFormat("Received message response: {0}", message);
-			this.VerifyMessageAfterReceiving(message);
-			return message;
-		}
-
-		/// <summary>
 		/// Gets the current HTTP request being processed.
 		/// </summary>
 		/// <returns>The HttpRequestInfo for the current request.</returns>
@@ -350,6 +325,21 @@ namespace DotNetOAuth.Messaging {
 			}
 
 			return new HttpRequestInfo(HttpContext.Current.Request);
+		}
+
+		/// <summary>
+		/// Fires the <see cref="Sending"/> event.
+		/// </summary>
+		/// <param name="message">The message about to be encoded and sent.</param>
+		protected virtual void OnSending(IProtocolMessage message) {
+			if (message == null) {
+				throw new ArgumentNullException("message");
+			}
+
+			var sending = this.Sending;
+			if (sending != null) {
+				sending(this, new ChannelEventArgs(message));
+			}
 		}
 
 		/// <summary>
@@ -550,6 +540,22 @@ namespace DotNetOAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Verifies that all required message parts are initialized to values
+		/// prior to sending the message to a remote party.
+		/// </summary>
+		/// <param name="message">The message to verify.</param>
+		/// <exception cref="ProtocolException">
+		/// Thrown when any required message part does not have a value.
+		/// </exception>
+		private static void EnsureValidMessageParts(IProtocolMessage message) {
+			Debug.Assert(message != null, "message == null");
+
+			MessageDictionary dictionary = new MessageDictionary(message);
+			MessageDescription description = MessageDescription.Get(message.GetType());
+			description.EnsureRequiredMessagePartsArePresent(dictionary.Keys);
+		}
+
+		/// <summary>
 		/// Calculates a fairly accurate estimation on the size of a message that contains
 		/// a given set of fields.
 		/// </summary>
@@ -644,19 +650,15 @@ namespace DotNetOAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Verifies that all required message parts are initialized to values
-		/// prior to sending the message to a remote party.
+		/// Gets the protocol message that may be in the given HTTP response stream.
 		/// </summary>
-		/// <param name="message">The message to verify.</param>
-		/// <exception cref="ProtocolException">
-		/// Thrown when any required message part does not have a value.
-		/// </exception>
-		private static void EnsureValidMessageParts(IProtocolMessage message) {
-			Debug.Assert(message != null, "message == null");
-
-			MessageDictionary dictionary = new MessageDictionary(message);
-			MessageDescription description = MessageDescription.Get(message.GetType());
-			description.EnsureRequiredMessagePartsArePresent(dictionary.Keys);
+		/// <param name="responseStream">The response that is anticipated to contain an OAuth message.</param>
+		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
+		private IProtocolMessage ReadFromResponse(Stream responseStream) {
+			IProtocolMessage message = this.ReadFromResponseInternal(responseStream);
+			Logger.DebugFormat("Received message response: {0}", message);
+			this.VerifyMessageAfterReceiving(message);
+			return message;
 		}
 
 		/// <summary>

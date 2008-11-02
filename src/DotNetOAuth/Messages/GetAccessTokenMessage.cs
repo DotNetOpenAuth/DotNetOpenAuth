@@ -5,9 +5,8 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOAuth.Messages {
-	using System;
-	using DotNetOAuth.Messaging;
 	using System.Globalization;
+	using DotNetOAuth.Messaging;
 
 	/// <summary>
 	/// A direct message sent by the Consumer to exchange an authorized Request Token

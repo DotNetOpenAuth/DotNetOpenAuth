@@ -5,10 +5,10 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOAuth.Messages {
+	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using DotNetOAuth.Messaging;
-	using System;
 
 	/// <summary>
 	/// A direct message sent from Service Provider to Consumer in response to 
@@ -25,9 +25,15 @@ namespace DotNetOAuth.Messages {
 		/// This constructor is used by the Service Provider to send the message.
 		/// </remarks>
 		protected internal GrantRequestTokenMessage(GetRequestTokenMessage requestMessage, string requestToken, string tokenSecret) : this() {
-			if (requestMessage == null) throw new ArgumentNullException("requestMessage");
-			if (string.IsNullOrEmpty(requestToken)) throw new ArgumentNullException("requestToken");
-			if (string.IsNullOrEmpty(tokenSecret)) throw new ArgumentNullException("tokenSecret");
+			if (requestMessage == null) {
+				throw new ArgumentNullException("requestMessage");
+			}
+			if (string.IsNullOrEmpty(requestToken)) {
+				throw new ArgumentNullException("requestToken");
+			}
+			if (string.IsNullOrEmpty(tokenSecret)) {
+				throw new ArgumentNullException("tokenSecret");
+			}
 
 			this.RequestMessage = requestMessage;
 			this.RequestToken = requestToken;
@@ -72,7 +78,10 @@ namespace DotNetOAuth.Messages {
 		[MessagePart("oauth_token", IsRequired = true)]
 		internal string RequestToken { get; set; }
 
-		internal GetRequestTokenMessage RequestMessage { get; set; }
+		/// <summary>
+		/// Gets the original request for an unauthorized token.
+		/// </summary>
+		internal GetRequestTokenMessage RequestMessage { get; private set; }
 
 		/// <summary>
 		/// Gets or sets the Token Secret.

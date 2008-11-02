@@ -27,6 +27,9 @@ namespace DotNetOAuth {
 	/// </list>
 	/// </remarks>
 	public class ServiceProvider {
+		/// <summary>
+		/// The field behind the <see cref="OAuthChannel"/> property.
+		/// </summary>
 		private OAuthChannel channel;
 
 		/// <summary>
@@ -63,19 +66,6 @@ namespace DotNetOAuth {
 		}
 
 		/// <summary>
-		/// Hooks the channel in order to perform some operations on some outgoing messages.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="DotNetOAuth.Messaging.ChannelEventArgs"/> instance containing the event data.</param>
-		private void OAuthChannel_Sending(object sender, ChannelEventArgs e) {
-			// Hook to store the token and secret on its way down to the Consumer.
-			var grantRequestTokenResponse = e.Message as GrantRequestTokenMessage;
-			if (grantRequestTokenResponse != null) {
-				this.TokenManager.StoreNewRequestToken(grantRequestTokenResponse.RequestMessage, grantRequestTokenResponse);
-			}
-		}
-
-		/// <summary>
 		/// Gets the description of this Service Provider.
 		/// </summary>
 		public ServiceProviderDescription ServiceDescription { get; private set; }
@@ -106,15 +96,16 @@ namespace DotNetOAuth {
 			get {
 				return this.channel;
 			}
+
 			set {
 				if (this.channel != null) {
-					this.channel.Sending -= OAuthChannel_Sending;
+					this.channel.Sending -= this.OAuthChannel_Sending;
 				}
 
 				this.channel = value;
 
 				if (this.channel != null) {
-					this.channel.Sending += OAuthChannel_Sending;
+					this.channel.Sending += this.OAuthChannel_Sending;
 				}
 			}
 		}
@@ -180,7 +171,9 @@ namespace DotNetOAuth {
 		/// <param name="request">The token request message the Consumer sent that the Service Provider is now responding to.</param>
 		/// <returns>The response message to send using the <see cref="Channel"/>, after optionally adding extra data to it.</returns>
 		public GrantRequestTokenMessage PrepareUnauthorizedTokenMessage(GetRequestTokenMessage request) {
-			if (request == null) throw new ArgumentNullException("request");
+			if (request == null) {
+				throw new ArgumentNullException("request");
+			}
 
 			string token = this.TokenGenerator.GenerateRequestToken(request.ConsumerKey);
 			string secret = this.TokenGenerator.GenerateSecret();
@@ -386,6 +379,19 @@ namespace DotNetOAuth {
 			}
 
 			return accessMessage;
+		}
+
+		/// <summary>
+		/// Hooks the channel in order to perform some operations on some outgoing messages.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="DotNetOAuth.Messaging.ChannelEventArgs"/> instance containing the event data.</param>
+		private void OAuthChannel_Sending(object sender, ChannelEventArgs e) {
+			// Hook to store the token and secret on its way down to the Consumer.
+			var grantRequestTokenResponse = e.Message as GrantRequestTokenMessage;
+			if (grantRequestTokenResponse != null) {
+				this.TokenManager.StoreNewRequestToken(grantRequestTokenResponse.RequestMessage, grantRequestTokenResponse);
+			}
 		}
 	}
 }
