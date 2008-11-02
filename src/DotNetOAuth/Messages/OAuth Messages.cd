@@ -7,14 +7,14 @@
     <Position X="4.36" Y="0.683" Height="0.291" Width="2.02" />
   </Comment>
   <Class Name="DotNetOAuth.Messages.AccessProtectedResourceMessage">
-    <Position X="3.75" Y="8.5" Width="3.5" />
+    <Position X="3.75" Y="8.75" Width="3.5" />
     <InheritanceLine Type="DotNetOAuth.Messages.SignedMessageBase" ManuallyRouted="true" FixedToPoint="true">
       <Path>
         <Point X="2.25" Y="6.588" />
         <Point X="2.25" Y="6.828" />
         <Point X="3.51" Y="6.828" />
-        <Point X="3.51" Y="9.312" />
-        <Point X="3.75" Y="9.312" />
+        <Point X="3.51" Y="9.562" />
+        <Point X="3.75" Y="9.562" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
@@ -29,13 +29,13 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAACAAAAAAAAAAAAAAAAAIAAIAAAIAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAACAAAAAAAAAAEAAAAAAIAAIAAAIAAAAAAAAAA=</HashCode>
       <FileName>Messages\GrantRequestTokenMessage.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="DotNetOAuth.Messages.DirectUserToConsumerMessage">
-    <Position X="7.5" Y="5" Width="3" />
+    <Position X="7.5" Y="5.25" Width="3" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
@@ -50,10 +50,10 @@
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
-    <InheritanceLine Type="DotNetOAuth.Messages.MessageBase" FixedToPoint="true">
+    <InheritanceLine Type="DotNetOAuth.Messages.MessageBase" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="10.75" Y="4.625" />
-        <Point X="7.25" Y="4.625" />
+        <Point X="10.75" Y="4.875" />
+        <Point X="7.25" Y="4.875" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
@@ -63,7 +63,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="DotNetOAuth.Messages.GrantAccessTokenMessage">
-    <Position X="7.5" Y="7.25" Width="3" />
+    <Position X="7.5" Y="7.5" Width="3" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
@@ -72,8 +72,8 @@
         <Point X="12.5" Y="7.112" />
         <Point X="12.5" Y="7.487" />
         <Point X="10.875" Y="7.487" />
-        <Point X="10.875" Y="8.25" />
-        <Point X="10.5" Y="8.25" />
+        <Point X="10.875" Y="8.5" />
+        <Point X="10.5" Y="8.5" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
@@ -100,14 +100,12 @@
     </Compartments>
     <InheritanceLine Type="DotNetOAuth.Messages.SignedMessageBase" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="4" Y="5.125" />
-        <Point X="4.123" Y="5.125" />
-        <Point X="4.123" Y="6.11" />
-        <Point X="4.25" Y="6.11" />
+        <Point X="4" Y="6.125" />
+        <Point X="4.25" Y="6.125" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAACAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAACQAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Messages\GetAccessTokenMessage.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
