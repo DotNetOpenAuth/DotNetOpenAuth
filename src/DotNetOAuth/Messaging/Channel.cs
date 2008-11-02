@@ -93,6 +93,24 @@ namespace DotNetOAuth.Messaging {
 		}
 
 		/// <summary>
+		/// An event fired whenever a message is about to be encoded and sent.
+		/// </summary>
+		internal event EventHandler<ChannelEventArgs> Sending;
+
+		/// <summary>
+		/// Fires the <see cref="Sending"/> event.
+		/// </summary>
+		/// <param name="message">The message about to be encoded and sent.</param>
+		protected virtual void OnSending(IProtocolMessage message) {
+			if (message == null) throw new ArgumentNullException("message");
+
+			var sending = this.Sending;
+			if (sending != null) {
+				sending(this, new ChannelEventArgs(message));
+			}
+		}
+	
+		/// <summary>
 		/// Gets a tool that can figure out what kind of message is being received
 		/// so it can be deserialized.
 		/// </summary>
@@ -512,6 +530,8 @@ namespace DotNetOAuth.Messaging {
 			if (message == null) {
 				throw new ArgumentNullException("message");
 			}
+
+			this.OnSending(message);
 
 			MessageProtections appliedProtection = MessageProtections.None;
 			foreach (IChannelBindingElement bindingElement in this.bindingElements) {

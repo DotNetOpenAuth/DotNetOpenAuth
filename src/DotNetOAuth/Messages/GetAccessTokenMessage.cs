@@ -7,6 +7,7 @@
 namespace DotNetOAuth.Messages {
 	using System;
 	using DotNetOAuth.Messaging;
+	using System.Globalization;
 
 	/// <summary>
 	/// A direct message sent by the Consumer to exchange an authorized Request Token
@@ -37,5 +38,17 @@ namespace DotNetOAuth.Messages {
 		/// </summary>
 		[MessagePart("oauth_token", IsRequired = true)]
 		internal string RequestToken { get; set; }
+
+		/// <summary>
+		/// Checks the message state for conformity to the protocol specification
+		/// and throws an exception if the message is invalid.
+		/// </summary>
+		protected override void EnsureValidMessage() {
+			base.EnsureValidMessage();
+
+			if (this.ExtraData.Count > 0) {
+				throw new ProtocolException(string.Format(CultureInfo.CurrentCulture, Strings.MessageNotAllowedExtraParameters, GetType().Name));
+			}
+		}
 	}
 }

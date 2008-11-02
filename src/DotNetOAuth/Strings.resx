@@ -129,6 +129,9 @@
   <data name="InvalidIncomingMessage" xml:space="preserve">
     <value>An invalid OAuth message received and discarded.</value>
   </data>
+  <data name="MessageNotAllowedExtraParameters" xml:space="preserve">
+    <value>The {0} message included extra data which is not allowed.</value>
+  </data>
   <data name="RequestUrlMustNotHaveOAuthParameters" xml:space="preserve">
     <value>The request URL query MUST NOT contain any OAuth Protocol Parameters.</value>
   </data>

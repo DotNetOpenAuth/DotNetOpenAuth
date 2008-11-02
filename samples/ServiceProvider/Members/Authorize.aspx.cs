@@ -29,9 +29,9 @@ public partial class Authorize : System.Web.UI.Page {
 		multiView.ActiveViewIndex = 1;
 
 		ServiceProvider sp = new ServiceProvider(Constants.SelfDescription, Global.TokenManager);
-		var response = sp.SendAuthorizationResponse(pending);
+		var response = sp.PrepareAuthorizationResponse(pending);
 		if (response != null) {
-			response.Send();
+			sp.Channel.Send(response).Send();
 		}
 	}
 

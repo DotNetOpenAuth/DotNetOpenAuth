@@ -73,6 +73,7 @@
     <Compile Include="DesktopConsumer.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Messages\ITokenSecretContainingMessage.cs" />
+    <Compile Include="Messaging\ChannelEventArgs.cs" />
     <Compile Include="Messaging\ITamperProtectionChannelBindingElement.cs" />
     <Compile Include="ServiceProviderDescription.cs" />
     <Compile Include="Messages\ITokenContainingMessage.cs" />

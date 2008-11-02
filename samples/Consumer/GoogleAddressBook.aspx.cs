@@ -65,6 +65,7 @@ public partial class GoogleAddressBook : System.Web.UI.Page {
 		};
 		UriBuilder callback = new UriBuilder(new Uri(Request.Url, Request.RawUrl));
 		callback.Query = null;
-		google.RequestUserAuthorization(callback.Uri, extraParameters, null).Send();
+		var response = google.PrepareRequestUserAuthorization(callback.Uri, extraParameters, null);
+		google.Channel.Send(response).Send();
 	}
 }

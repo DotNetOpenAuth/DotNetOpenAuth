@@ -11,14 +11,14 @@ namespace DotNetOAuth.Messages {
 	/// <summary>
 	/// A message used to redirect the user from a Service Provider to a Consumer's web site.
 	/// </summary>
-	internal sealed class DirectUserToConsumerMessage : MessageBase, ITokenContainingMessage {
+	/// <remarks>
+	/// The class is sealed because extra parameters are determined by the callback URI provided by the Consumer.
+	/// </remarks>
+	public sealed class DirectUserToConsumerMessage : MessageBase, ITokenContainingMessage {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DirectUserToConsumerMessage"/> class.
 		/// </summary>
 		/// <param name="consumer">The URI of the Consumer endpoint to send this message to.</param>
-		/// <remarks>
-		/// The class is sealed because extra parameters are determined by the callback URI provided by the Consumer.
-		/// </remarks>
 		internal DirectUserToConsumerMessage(Uri consumer)
 			: base(MessageProtections.None, MessageTransport.Indirect, new MessageReceivingEndpoint(consumer, HttpDeliveryMethods.GetRequest)) {
 		}

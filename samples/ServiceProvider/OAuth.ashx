@@ -22,12 +22,14 @@ public class OAuth : IHttpHandler, IRequiresSessionState {
 		DirectUserToServiceProviderMessage requestAuth;
 		GetAccessTokenMessage requestAccessToken;
 		if ((requestToken = request as RequestScopedTokenMessage) != null) {
-			sp.SendUnauthorizedTokenResponse(requestToken, null).Send();
+			var response = sp.PrepareUnauthorizedTokenMessage(requestToken);
+			sp.Channel.Send(response).Send();
 		} else if ((requestAuth = request as DirectUserToServiceProviderMessage) != null) {
 			Global.PendingOAuthAuthorization = requestAuth;
 			HttpContext.Current.Response.Redirect("~/Members/Authorize.aspx");
 		} else if ((requestAccessToken = request as GetAccessTokenMessage) != null) {
-			sp.SendAccessToken(requestAccessToken, null).Send();
+			var response = sp.PrepareAccessTokenMessage(requestAccessToken);
+			sp.Channel.Send(response).Send();
 		} else {
 			throw new InvalidOperationException();
 		}

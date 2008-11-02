@@ -236,6 +236,8 @@ namespace DotNetOAuth.ChannelElements {
 		/// This method implements spec V1.0 section 5.3.
 		/// </remarks>
 		protected override Response SendDirectMessageResponse(IProtocolMessage response) {
+			if (response == null) throw new ArgumentNullException("response");
+
 			MessageSerializer serializer = MessageSerializer.Get(response.GetType());
 			var fields = serializer.Serialize(response);
 			string responseBody = MessagingUtilities.CreateQueryString(fields);

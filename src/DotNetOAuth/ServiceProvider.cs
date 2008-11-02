@@ -27,6 +27,8 @@ namespace DotNetOAuth {
 	/// </list>
 	/// </remarks>
 	public class ServiceProvider {
+		private OAuthChannel channel;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ServiceProvider"/> class.
 		/// </summary>
@@ -61,6 +63,19 @@ namespace DotNetOAuth {
 		}
 
 		/// <summary>
+		/// Hooks the channel in order to perform some operations on some outgoing messages.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="DotNetOAuth.Messaging.ChannelEventArgs"/> instance containing the event data.</param>
+		private void OAuthChannel_Sending(object sender, ChannelEventArgs e) {
+			// Hook to store the token and secret on its way down to the Consumer.
+			var grantRequestTokenResponse = e.Message as GrantRequestTokenMessage;
+			if (grantRequestTokenResponse != null) {
+				this.TokenManager.StoreNewRequestToken(grantRequestTokenResponse.RequestMessage, grantRequestTokenResponse);
+			}
+		}
+
+		/// <summary>
 		/// Gets the description of this Service Provider.
 		/// </summary>
 		public ServiceProviderDescription ServiceDescription { get; private set; }
@@ -87,7 +102,22 @@ namespace DotNetOAuth {
 		/// <summary>
 		/// Gets or sets the channel to use for sending/receiving messages.
 		/// </summary>
-		internal OAuthChannel OAuthChannel { get; set; }
+		internal OAuthChannel OAuthChannel {
+			get {
+				return this.channel;
+			}
+			set {
+				if (this.channel != null) {
+					this.channel.Sending -= OAuthChannel_Sending;
+				}
+
+				this.channel = value;
+
+				if (this.channel != null) {
+					this.channel.Sending += OAuthChannel_Sending;
+				}
+			}
+		}
 
 		/// <summary>
 		/// Reads any incoming OAuth message.
@@ -132,20 +162,31 @@ namespace DotNetOAuth {
 		}
 
 		/// <summary>
-		/// Sends an unauthorized token back to the Consumer for use in a user agent redirect
-		/// for subsequent authorization.
+		/// Reads a request for an unauthorized token from the incoming HTTP request.
+		/// </summary>
+		/// <param name="request">The HTTP request to read from.</param>
+		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
+		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
+		public GetRequestTokenMessage ReadTokenRequest(HttpRequestInfo request) {
+			GetRequestTokenMessage message;
+			this.Channel.TryReadFromRequest(request, out message);
+			return message;
+		}
+
+		/// <summary>
+		/// Prepares a message containing an unauthorized token for the Consumer to use in a 
+		/// user agent redirect for subsequent authorization.
 		/// </summary>
 		/// <param name="request">The token request message the Consumer sent that the Service Provider is now responding to.</param>
-		/// <param name="extraParameters">Any extra parameters the Consumer should receive with the OAuth message.  May be null.</param>
-		/// <returns>The actual response the Service Provider will need to forward as the HTTP response.</returns>
-		public Response SendUnauthorizedTokenResponse(GetRequestTokenMessage request, IDictionary<string, string> extraParameters) {
+		/// <returns>The response message to send using the <see cref="Channel"/>, after optionally adding extra data to it.</returns>
+		public GrantRequestTokenMessage PrepareUnauthorizedTokenMessage(GetRequestTokenMessage request) {
+			if (request == null) throw new ArgumentNullException("request");
+
 			string token = this.TokenGenerator.GenerateRequestToken(request.ConsumerKey);
 			string secret = this.TokenGenerator.GenerateSecret();
-			GrantRequestTokenMessage response = new GrantRequestTokenMessage(token, secret);
-			response.AddNonOAuthParameters(extraParameters);
-			this.TokenManager.StoreNewRequestToken(request, response);
+			GrantRequestTokenMessage response = new GrantRequestTokenMessage(request, token, secret);
 
-			return this.Channel.Send(response);
+			return response;
 		}
 
 		/// <summary>
@@ -173,14 +214,28 @@ namespace DotNetOAuth {
 		}
 
 		/// <summary>
-		/// Completes user authorization of a token by redirecting the user agent back to the Consumer.
+		/// Reads in a Consumer's request for the Service Provider to obtain permission from
+		/// the user to authorize the Consumer's access of some protected resource(s).
+		/// </summary>
+		/// <param name="request">The HTTP request to read from.</param>
+		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
+		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
+		public DirectUserToServiceProviderMessage ReadAuthorizationRequest(HttpRequestInfo request) {
+			DirectUserToServiceProviderMessage message;
+			this.Channel.TryReadFromRequest(request, out message);
+			return message;
+		}
+
+		/// <summary>
+		/// Prepares the message to send back to the consumer following proper authorization of
+		/// a token by an interactive user at the Service Provider's web site.
 		/// </summary>
 		/// <param name="request">The Consumer's original authorization request.</param>
 		/// <returns>
-		/// The pending user agent redirect based message to be sent as an HttpResponse,
-		/// or null if the Consumer requested no callback.
+		/// The message to send to the Consumer using <see cref="Channel"/> if one is necessary.
+		/// Null if the Consumer did not request a callback.
 		/// </returns>
-		public Response SendAuthorizationResponse(DirectUserToServiceProviderMessage request) {
+		public DirectUserToConsumerMessage PrepareAuthorizationResponse(DirectUserToServiceProviderMessage request) {
 			if (request == null) {
 				throw new ArgumentNullException("request");
 			}
@@ -189,7 +244,7 @@ namespace DotNetOAuth {
 				var authorization = new DirectUserToConsumerMessage(request.Callback) {
 					RequestToken = request.RequestToken,
 				};
-				return this.Channel.Send(authorization);
+				return authorization;
 			} else {
 				return null;
 			}
@@ -218,10 +273,21 @@ namespace DotNetOAuth {
 		}
 
 		/// <summary>
+		/// Reads in a Consumer's request to exchange an authorized request token for an access token.
+		/// </summary>
+		/// <param name="request">The HTTP request to read from.</param>
+		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
+		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
+		public GetAccessTokenMessage ReadAccessTokenRequest(HttpRequestInfo request) {
+			GetAccessTokenMessage message;
+			this.Channel.TryReadFromRequest(request, out message);
+			return message;
+		}
+
+		/// <summary>
 		/// Prepares and sends an access token to a Consumer, and invalidates the request token.
 		/// </summary>
 		/// <param name="request">The Consumer's message requesting an access token.</param>
-		/// <param name="extraParameters">Any extra parameters the Consumer should receive with the OAuth message.  May be null.</param>
 		/// <returns>The HTTP response to actually send to the Consumer.</returns>
 		public GrantAccessTokenMessage PrepareAccessTokenMessage(GetAccessTokenMessage request) {
 			if (request == null) {
@@ -248,18 +314,6 @@ namespace DotNetOAuth {
 		}
 
 		/// <summary>
-		/// Prepares and sends an access token to a Consumer, and invalidates the request token.
-		/// </summary>
-		/// <param name="request">The Consumer's message requesting an access token.</param>
-		/// <param name="extraParameters">Any extra parameters the Consumer should receive with the OAuth message.  May be null.</param>
-		/// <returns>The HTTP response to actually send to the Consumer.</returns>
-		public Response SendAccessToken(GetAccessTokenMessage request, IDictionary<string, string> extraParameters) {
-			var grantAccess = PrepareAccessTokenMessage(request);
-			grantAccess.AddNonOAuthParameters(extraParameters);
-			return this.Channel.Send(grantAccess);
-		}
-
-		/// <summary>
 		/// Gets the authorization (access token) for accessing some protected resource.
 		/// </summary>
 		/// <returns>The authorization message sent by the Consumer, or null if no authorization message is attached.</returns>
@@ -269,8 +323,8 @@ namespace DotNetOAuth {
 		/// to access the resources being requested.
 		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown if an unexpected message is attached to the request.</exception>
-		public AccessProtectedResourceMessage GetProtectedResourceAuthorization() {
-			return this.GetProtectedResourceAuthorization(this.Channel.GetRequestFromContext());
+		public AccessProtectedResourceMessage ReadProtectedResourceAuthorization() {
+			return this.ReadProtectedResourceAuthorization(this.Channel.GetRequestFromContext());
 		}
 
 		/// <summary>
@@ -284,8 +338,8 @@ namespace DotNetOAuth {
 		/// to access the resources being requested.
 		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown if an unexpected message is attached to the request.</exception>
-		public AccessProtectedResourceMessage GetProtectedResourceAuthorization(HttpRequest request) {
-			return this.GetProtectedResourceAuthorization(new HttpRequestInfo(request));
+		public AccessProtectedResourceMessage ReadProtectedResourceAuthorization(HttpRequest request) {
+			return this.ReadProtectedResourceAuthorization(new HttpRequestInfo(request));
 		}
 
 		/// <summary>
@@ -300,45 +354,8 @@ namespace DotNetOAuth {
 		/// to access the resources being requested.
 		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown if an unexpected message is attached to the request.</exception>
-		public AccessProtectedResourceMessage GetProtectedResourceAuthorization(HttpRequestMessageProperty request, Uri requestUri) {
-			return this.GetProtectedResourceAuthorization(new HttpRequestInfo(request, requestUri));
-		}
-
-		/// <summary>
-		/// Reads a request for an unauthorized token from the incoming HTTP request.
-		/// </summary>
-		/// <param name="request">The HTTP request to read from.</param>
-		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
-		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
-		internal GetRequestTokenMessage ReadTokenRequest(HttpRequestInfo request) {
-			GetRequestTokenMessage message;
-			this.Channel.TryReadFromRequest(request, out message);
-			return message;
-		}
-
-		/// <summary>
-		/// Reads in a Consumer's request for the Service Provider to obtain permission from
-		/// the user to authorize the Consumer's access of some protected resource(s).
-		/// </summary>
-		/// <param name="request">The HTTP request to read from.</param>
-		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
-		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
-		internal DirectUserToServiceProviderMessage ReadAuthorizationRequest(HttpRequestInfo request) {
-			DirectUserToServiceProviderMessage message;
-			this.Channel.TryReadFromRequest(request, out message);
-			return message;
-		}
-
-		/// <summary>
-		/// Reads in a Consumer's request to exchange an authorized request token for an access token.
-		/// </summary>
-		/// <param name="request">The HTTP request to read from.</param>
-		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
-		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
-		internal GetAccessTokenMessage ReadAccessTokenRequest(HttpRequestInfo request) {
-			GetAccessTokenMessage message;
-			this.Channel.TryReadFromRequest(request, out message);
-			return message;
+		public AccessProtectedResourceMessage ReadProtectedResourceAuthorization(HttpRequestMessageProperty request, Uri requestUri) {
+			return this.ReadProtectedResourceAuthorization(new HttpRequestInfo(request, requestUri));
 		}
 
 		/// <summary>
@@ -352,7 +369,7 @@ namespace DotNetOAuth {
 		/// to access the resources being requested.
 		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown if an unexpected message is attached to the request.</exception>
-		internal AccessProtectedResourceMessage GetProtectedResourceAuthorization(HttpRequestInfo request) {
+		public AccessProtectedResourceMessage ReadProtectedResourceAuthorization(HttpRequestInfo request) {
 			if (request == null) {
 				throw new ArgumentNullException("request");
 			}

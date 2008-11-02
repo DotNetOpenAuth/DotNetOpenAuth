@@ -10,6 +10,7 @@ namespace DotNetOAuth {
 	using System.Diagnostics.CodeAnalysis;
 	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.Messages;
+	using DotNetOAuth.Messaging;
 
 	/// <summary>
 	/// Used by a desktop application to use OAuth to access the Service Provider on behalf of the User.
@@ -37,7 +38,9 @@ namespace DotNetOAuth {
 		/// <returns>The URL to open a browser window to allow the user to provide authorization.</returns>
 		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "2#", Justification = "Two results")]
 		public Uri RequestUserAuthorization(IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, out string requestToken) {
-			return this.RequestUserAuthorization(null, requestParameters, redirectParameters, out requestToken).DirectUriRequest;
+			var message = this.PrepareRequestUserAuthorization(null, requestParameters, redirectParameters, out requestToken);
+			Response response = this.Channel.Send(message);
+			return response.DirectUriRequest;
 		}
 
 		/// <summary>

@@ -8,6 +8,7 @@ namespace DotNetOAuth.Messages {
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using DotNetOAuth.Messaging;
+	using System;
 
 	/// <summary>
 	/// A direct message sent from Service Provider to Consumer in response to 
@@ -17,9 +18,18 @@ namespace DotNetOAuth.Messages {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GrantRequestTokenMessage"/> class.
 		/// </summary>
+		/// <param name="requestMessage">The unauthorized request token message that this message is being generated in response to.</param>
 		/// <param name="requestToken">The request token.</param>
 		/// <param name="tokenSecret">The token secret.</param>
-		protected internal GrantRequestTokenMessage(string requestToken, string tokenSecret) : this() {
+		/// <remarks>
+		/// This constructor is used by the Service Provider to send the message.
+		/// </remarks>
+		protected internal GrantRequestTokenMessage(GetRequestTokenMessage requestMessage, string requestToken, string tokenSecret) : this() {
+			if (requestMessage == null) throw new ArgumentNullException("requestMessage");
+			if (string.IsNullOrEmpty(requestToken)) throw new ArgumentNullException("requestToken");
+			if (string.IsNullOrEmpty(tokenSecret)) throw new ArgumentNullException("tokenSecret");
+
+			this.RequestMessage = requestMessage;
 			this.RequestToken = requestToken;
 			this.TokenSecret = tokenSecret;
 		}
@@ -27,6 +37,7 @@ namespace DotNetOAuth.Messages {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GrantRequestTokenMessage"/> class.
 		/// </summary>
+		/// <remarks>This constructor is used by the consumer to deserialize the message.</remarks>
 		protected internal GrantRequestTokenMessage()
 			: base(MessageProtections.None, MessageTransport.Direct) {
 		}
@@ -60,6 +71,8 @@ namespace DotNetOAuth.Messages {
 		/// </summary>
 		[MessagePart("oauth_token", IsRequired = true)]
 		internal string RequestToken { get; set; }
+
+		internal GetRequestTokenMessage RequestMessage { get; set; }
 
 		/// <summary>
 		/// Gets or sets the Token Secret.

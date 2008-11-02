@@ -19,7 +19,7 @@ public class OAuthAuthorizationManager : ServiceAuthorizationManager {
 		HttpRequestMessageProperty httpDetails = operationContext.RequestContext.RequestMessage.Properties[HttpRequestMessageProperty.Name] as HttpRequestMessageProperty;
 		Uri requestUri = operationContext.RequestContext.RequestMessage.Properties["OriginalHttpRequestUri"] as Uri;
 		ServiceProvider sp = Constants.CreateServiceProvider();
-		var auth = sp.GetProtectedResourceAuthorization(httpDetails, requestUri);
+		var auth = sp.ReadProtectedResourceAuthorization(httpDetails, requestUri);
 		if (auth != null) {
 			var accessToken = Global.DataContext.OAuthTokens.Single(token => token.Token == auth.AccessToken);
 

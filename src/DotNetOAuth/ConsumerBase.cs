@@ -34,7 +34,7 @@ namespace DotNetOAuth {
 			this.WebRequestHandler = new StandardWebRequestHandler();
 			ITamperProtectionChannelBindingElement signingElement = serviceDescription.CreateTamperProtectionElement();
 			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
-			this.Channel = new OAuthChannel(signingElement, store, tokenManager, new OAuthConsumerMessageTypeProvider(), this.WebRequestHandler);
+			this.OAuthChannel = new OAuthChannel(signingElement, store, tokenManager, new OAuthConsumerMessageTypeProvider(), this.WebRequestHandler);
 			this.ServiceProvider = serviceDescription;
 		}
 
@@ -52,7 +52,7 @@ namespace DotNetOAuth {
 		/// Gets the persistence store for tokens and secrets.
 		/// </summary>
 		public ITokenManager TokenManager {
-			get { return this.Channel.TokenManager; }
+			get { return this.OAuthChannel.TokenManager; }
 		}
 
 		/// <summary>
@@ -65,9 +65,16 @@ namespace DotNetOAuth {
 		internal IWebRequestHandler WebRequestHandler { get; set; }
 
 		/// <summary>
+		/// Gets the channel to use for sending/receiving messages.
+		/// </summary>
+		public Channel Channel {
+			get { return this.OAuthChannel; }
+		}
+
+		/// <summary>
 		/// Gets or sets the channel to use for sending/receiving messages.
 		/// </summary>
-		internal OAuthChannel Channel { get; set; }
+		internal OAuthChannel OAuthChannel { get; set; }
 
 		/// <summary>
 		/// Creates a web request prepared with OAuth authorization 
@@ -78,7 +85,7 @@ namespace DotNetOAuth {
 		/// <returns>The initialized WebRequest object.</returns>
 		public WebRequest PrepareAuthorizedRequest(MessageReceivingEndpoint endpoint, string accessToken) {
 			IDirectedProtocolMessage message = this.CreateAuthorizingMessage(endpoint, accessToken);
-			HttpWebRequest wr = this.Channel.InitializeRequest(message);
+			HttpWebRequest wr = this.OAuthChannel.InitializeRequest(message);
 			return wr;
 		}
 
@@ -92,13 +99,13 @@ namespace DotNetOAuth {
 		/// <exception cref="WebException">Thrown if the request fails for any reason after it is sent to the Service Provider.</exception>
 		public Response PrepareAuthorizedRequestAndSend(MessageReceivingEndpoint endpoint, string accessToken) {
 			IDirectedProtocolMessage message = this.CreateAuthorizingMessage(endpoint, accessToken);
-			HttpWebRequest wr = this.Channel.InitializeRequest(message);
+			HttpWebRequest wr = this.OAuthChannel.InitializeRequest(message);
 			return this.WebRequestHandler.GetResponse(wr);
 		}
 
 		/// <summary>
-		/// Begins an OAuth authorization request and redirects the user to the Service Provider
-		/// to provide that authorization.
+		/// Prepares an OAuth message that begins an authorization request that will 
+		/// redirect the user to the Service Provider to provide that authorization.
 		/// </summary>
 		/// <param name="callback">
 		/// An optional Consumer URL that the Service Provider should redirect the 
@@ -109,7 +116,7 @@ namespace DotNetOAuth {
 		/// <param name="requestToken">The request token that must be exchanged for an access token after the user has provided authorization.</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
 		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "3#", Justification = "Two results")]
-		protected internal Response RequestUserAuthorization(Uri callback, IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, out string requestToken) {
+		protected internal DirectUserToServiceProviderMessage PrepareRequestUserAuthorization(Uri callback, IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, out string requestToken) {
 			// Obtain an unauthorized request token.
 			var token = new GetRequestTokenMessage(this.ServiceProvider.RequestTokenEndpoint) {
 				ConsumerKey = this.ConsumerKey,
@@ -125,7 +132,7 @@ namespace DotNetOAuth {
 			};
 			requestAuthorization.AddNonOAuthParameters(redirectParameters);
 			requestToken = requestAuthorization.RequestToken;
-			return this.Channel.Send(requestAuthorization);
+			return requestAuthorization;
 		}
 
 		/// <summary>

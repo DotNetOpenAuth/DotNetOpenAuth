@@ -97,6 +97,15 @@ namespace DotNetOAuth {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The {0} message included extra data which is not allowed..
+        /// </summary>
+        internal static string MessageNotAllowedExtraParameters {
+            get {
+                return ResourceManager.GetString("MessageNotAllowedExtraParameters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The request URL query MUST NOT contain any OAuth Protocol Parameters..
         /// </summary>
         internal static string RequestUrlMustNotHaveOAuthParameters {

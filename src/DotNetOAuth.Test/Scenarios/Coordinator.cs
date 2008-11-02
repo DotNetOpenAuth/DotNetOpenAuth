@@ -69,7 +69,7 @@ namespace DotNetOAuth.Test.Scenarios {
 
 			// Prepare the Consumer and Service Provider objects
 			WebConsumer consumer = new WebConsumer(this.serviceDescription, consumerTokenManager) {
-				Channel = consumerChannel,
+				OAuthChannel = consumerChannel,
 				ConsumerKey = this.consumerDescription.ConsumerKey,
 			};
 			ServiceProvider serviceProvider = new ServiceProvider(this.serviceDescription, serviceTokenManager) {

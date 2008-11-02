@@ -40,7 +40,8 @@ public partial class SampleWcf : System.Web.UI.Page {
 		var requestParams = new Dictionary<string, string> {
 			{ "scope", scope },
 		};
-		consumer.RequestUserAuthorization(callback.Uri, requestParams, null).Send();
+		var response = consumer.PrepareRequestUserAuthorization(callback.Uri, requestParams, null);
+		consumer.Channel.Send(response).Send();
 	}
 
 	protected void getNameButton_Click(object sender, EventArgs e) {

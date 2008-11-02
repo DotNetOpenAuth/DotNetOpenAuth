@@ -35,7 +35,7 @@ namespace DotNetOAuth.Test {
 				consumerDescription,
 				serviceDescription,
 				consumer => {
-					consumer.RequestUserAuthorization(new Uri("http://printer.example.com/request_token_ready"), null, null);
+					consumer.Channel.Send(consumer.PrepareRequestUserAuthorization(new Uri("http://printer.example.com/request_token_ready"), null, null)); // .Send() dropped because this is just a simulation
 					string accessToken = consumer.ProcessUserAuthorization().AccessToken;
 					var photoRequest = consumer.CreateAuthorizingMessage(accessPhotoEndpoint, accessToken);
 					Response protectedPhoto = ((CoordinatingOAuthChannel)consumer.Channel).RequestProtectedResource(photoRequest);
@@ -46,13 +46,13 @@ namespace DotNetOAuth.Test {
 				},
 				sp => {
 					var requestTokenMessage = sp.ReadTokenRequest();
-					sp.SendUnauthorizedTokenResponse(requestTokenMessage, null);
+					sp.Channel.Send(sp.PrepareUnauthorizedTokenMessage(requestTokenMessage)); // .Send() dropped because this is just a simulation
 					var authRequest = sp.ReadAuthorizationRequest();
 					((InMemoryTokenManager)sp.TokenManager).AuthorizeRequestToken(authRequest.RequestToken);
-					sp.SendAuthorizationResponse(authRequest);
+					sp.Channel.Send(sp.PrepareAuthorizationResponse(authRequest)); // .Send() dropped because this is just a simulation
 					var accessRequest = sp.ReadAccessTokenRequest();
-					sp.SendAccessToken(accessRequest, null);
-					string accessToken = sp.GetProtectedResourceAuthorization().AccessToken;
+					sp.Channel.Send(sp.PrepareAccessTokenMessage(accessRequest)); // .Send() dropped because this is just a simulation
+					string accessToken = sp.ReadProtectedResourceAuthorization().AccessToken;
 					((CoordinatingOAuthChannel)sp.Channel).SendDirectRawResponse(new Response {
 						ResponseStream = new MemoryStream(new byte[] { 0x33, 0x66 }),
 						Headers = new WebHeaderCollection {

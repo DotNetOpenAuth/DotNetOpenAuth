@@ -40,14 +40,14 @@ namespace DotNetOAuth {
 		/// <remarks>
 		/// Requires HttpContext.Current.
 		/// </remarks>
-		public Response RequestUserAuthorization() {
+		public DirectUserToServiceProviderMessage PrepareRequestUserAuthorization() {
 			Uri callback = MessagingUtilities.GetRequestUrlFromContext().StripQueryArgumentsWithPrefix(Protocol.Default.ParameterPrefix);
-			return this.RequestUserAuthorization(callback, null, null);
+			return this.PrepareRequestUserAuthorization(callback, null, null);
 		}
 
 		/// <summary>
-		/// Begins an OAuth authorization request and redirects the user to the Service Provider
-		/// to provide that authorization.
+		/// Prepares an OAuth message that begins an authorization request that will 
+		/// redirect the user to the Service Provider to provide that authorization.
 		/// </summary>
 		/// <param name="callback">
 		/// An optional Consumer URL that the Service Provider should redirect the 
@@ -56,9 +56,9 @@ namespace DotNetOAuth {
 		/// <param name="requestParameters">Extra parameters to add to the request token message.  Optional.</param>
 		/// <param name="redirectParameters">Extra parameters to add to the redirect to Service Provider message.  Optional.</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
-		public Response RequestUserAuthorization(Uri callback, IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters) {
+		public DirectUserToServiceProviderMessage PrepareRequestUserAuthorization(Uri callback, IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters) {
 			string token;
-			return this.RequestUserAuthorization(callback, requestParameters, redirectParameters, out token);
+			return this.PrepareRequestUserAuthorization(callback, requestParameters, redirectParameters, out token);
 		}
 
 		/// <summary>
