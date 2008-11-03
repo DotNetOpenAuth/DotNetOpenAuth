@@ -42,8 +42,8 @@ public class Global : HttpApplication {
 		get { return Global.DataContext.Users.SingleOrDefault(user => user.OpenIDClaimedIdentifier == HttpContext.Current.User.Identity.Name); }
 	}
 
-	public static DirectUserToServiceProviderMessage PendingOAuthAuthorization {
-		get { return HttpContext.Current.Session["authrequest"] as DirectUserToServiceProviderMessage; }
+	public static UserAuthorizationRequest PendingOAuthAuthorization {
+		get { return HttpContext.Current.Session["authrequest"] as UserAuthorizationRequest; }
 		set { HttpContext.Current.Session["authrequest"] = value; }
 	}
 

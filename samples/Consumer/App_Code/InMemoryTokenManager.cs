@@ -36,7 +36,7 @@ public class InMemoryTokenManager : ITokenManager {
 		return this.tokensAndSecrets[token];
 	}
 
-	public void StoreNewRequestToken(GetRequestTokenMessage request, ITokenSecretContainingMessage response) {
+	public void StoreNewRequestToken(UnauthorizedTokenRequest request, ITokenSecretContainingMessage response) {
 		this.tokensAndSecrets[response.Token] = response.TokenSecret;
 	}
 

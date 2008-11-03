@@ -13,7 +13,7 @@ namespace DotNetOAuth.Test.ChannelElements {
 	public class HmacSha1SigningBindingElementTests : MessagingTestBase {
 		[TestMethod]
 		public void SignatureTest() {
-			GetRequestTokenMessage message = SigningBindingElementBaseTests.CreateTestRequestTokenMessage();
+			UnauthorizedTokenRequest message = SigningBindingElementBaseTests.CreateTestRequestTokenMessage();
 
 			HmacSha1SigningBindingElement_Accessor hmac = new HmacSha1SigningBindingElement_Accessor();
 			Assert.AreEqual("kR0LhH8UqylaLfR/esXVVlP4sQI=", hmac.GetSignature(message));

@@ -30,7 +30,7 @@ namespace DotNetOAuth.ChannelElements {
 		/// <param name="fields">The name/value pairs that make up the message payload.</param>
 		/// <remarks>
 		/// The request messages are:
-		/// DirectUserToConsumerMessage
+		/// UserAuthorizationResponse
 		/// </remarks>
 		/// <returns>
 		/// The <see cref="IProtocolMessage"/>-derived concrete class that this message can
@@ -42,7 +42,7 @@ namespace DotNetOAuth.ChannelElements {
 			}
 
 			if (fields.ContainsKey("oauth_token")) {
-				return typeof(DirectUserToConsumerMessage);
+				return typeof(UserAuthorizationResponse);
 			}
 
 			return null;
@@ -63,8 +63,8 @@ namespace DotNetOAuth.ChannelElements {
 		/// </returns>
 		/// <remarks>
 		/// The response messages are:
-		/// GrantRequestTokenMessage
-		/// GrantAccessTokenMessage
+		/// UnauthorizedTokenResponse
+		/// AuthorizedTokenResponse
 		/// </remarks>
 		public virtual Type GetResponseMessageType(IProtocolMessage request, IDictionary<string, string> fields) {
 			if (fields == null) {
@@ -82,10 +82,10 @@ namespace DotNetOAuth.ChannelElements {
 				return null;
 			}
 
-			if (request is GetRequestTokenMessage) {
-				return typeof(GrantRequestTokenMessage);
-			} else if (request is GetAccessTokenMessage) {
-				return typeof(GrantAccessTokenMessage);
+			if (request is UnauthorizedTokenRequest) {
+				return typeof(UnauthorizedTokenResponse);
+			} else if (request is AuthorizedTokenRequest) {
+				return typeof(AuthorizedTokenResponse);
 			} else {
 				Logger.ErrorFormat("Unexpected response message given the request type {0}", request.GetType().Name);
 				throw new ProtocolException(Strings.InvalidIncomingMessage);

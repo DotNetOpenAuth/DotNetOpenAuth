@@ -84,7 +84,7 @@
     <Compile Include="ChannelElements\IWebRequestHandler.cs" />
     <Compile Include="ChannelElements\ITamperResistantOAuthMessage.cs" />
     <Compile Include="Messages\MessageBase.cs" />
-    <Compile Include="Messages\GetAccessTokenMessage.cs" />
+    <Compile Include="Messages\AuthorizedTokenRequest.cs" />
     <Compile Include="Messaging\Bindings\INonceStore.cs" />
     <Compile Include="Messaging\Bindings\StandardReplayProtectionBindingElement.cs" />
     <Compile Include="Messaging\MessagePartAttribute.cs" />
@@ -95,12 +95,12 @@
     <Compile Include="Messaging\Bindings\InvalidSignatureException.cs" />
     <Compile Include="Messaging\Bindings\IReplayProtectedProtocolMessage.cs" />
     <Compile Include="Messaging\Bindings\IExpiringProtocolMessage.cs" />
-    <Compile Include="Messages\AccessProtectedResourceMessage.cs" />
-    <Compile Include="Messages\GrantAccessTokenMessage.cs" />
+    <Compile Include="Messages\AccessProtectedResourceRequest.cs" />
+    <Compile Include="Messages\AuthorizedTokenResponse.cs" />
     <Compile Include="ChannelElements\IOAuthDirectedMessage.cs" />
-    <Compile Include="Messages\DirectUserToConsumerMessage.cs" />
-    <Compile Include="Messages\DirectUserToServiceProviderMessage.cs" />
-    <Compile Include="Messages\GrantRequestTokenMessage.cs" />
+    <Compile Include="Messages\UserAuthorizationResponse.cs" />
+    <Compile Include="Messages\UserAuthorizationRequest.cs" />
+    <Compile Include="Messages\UnauthorizedTokenResponse.cs" />
     <Compile Include="Messaging\Channel.cs" />
     <Compile Include="Messaging\HttpRequestInfo.cs" />
     <Compile Include="Messaging\IDirectedProtocolMessage.cs" />
@@ -132,7 +132,7 @@
     <Compile Include="ChannelElements\OAuthServiceProviderMessageTypeProvider.cs" />
     <Compile Include="Messaging\ProtocolException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Messages\GetRequestTokenMessage.cs" />
+    <Compile Include="Messages\UnauthorizedTokenRequest.cs" />
     <Compile Include="ChannelElements\RsaSha1SigningBindingElement.cs" />
     <Compile Include="ChannelElements\StandardWebRequestHandler.cs" />
     <Compile Include="Messaging\MessageReceivingEndpoint.cs" />

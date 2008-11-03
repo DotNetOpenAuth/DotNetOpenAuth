@@ -34,7 +34,7 @@ public class DatabaseTokenManager : ITokenManager {
 		return tokenRow.TokenSecret;
 	}
 
-	public void StoreNewRequestToken(GetRequestTokenMessage request, ITokenSecretContainingMessage response) {
+	public void StoreNewRequestToken(UnauthorizedTokenRequest request, ITokenSecretContainingMessage response) {
 		RequestScopedTokenMessage scopedRequest = (RequestScopedTokenMessage)request;
 		var consumer = Global.DataContext.OAuthConsumers.Single(consumerRow => consumerRow.ConsumerKey == request.ConsumerKey);
 		string scope = scopedRequest.Scope;

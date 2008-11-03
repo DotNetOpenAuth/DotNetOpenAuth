@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="DirectUserToConsumerMessage.cs" company="Andrew Arnott">
+// <copyright file="UserAuthorizationResponse.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -14,12 +14,12 @@ namespace DotNetOAuth.Messages {
 	/// <remarks>
 	/// The class is sealed because extra parameters are determined by the callback URI provided by the Consumer.
 	/// </remarks>
-	public sealed class DirectUserToConsumerMessage : MessageBase, ITokenContainingMessage {
+	public sealed class UserAuthorizationResponse : MessageBase, ITokenContainingMessage {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DirectUserToConsumerMessage"/> class.
+		/// Initializes a new instance of the <see cref="UserAuthorizationResponse"/> class.
 		/// </summary>
 		/// <param name="consumer">The URI of the Consumer endpoint to send this message to.</param>
-		internal DirectUserToConsumerMessage(Uri consumer)
+		internal UserAuthorizationResponse(Uri consumer)
 			: base(MessageProtections.None, MessageTransport.Indirect, new MessageReceivingEndpoint(consumer, HttpDeliveryMethods.GetRequest)) {
 		}
 

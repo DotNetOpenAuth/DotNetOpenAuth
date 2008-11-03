@@ -40,7 +40,7 @@ namespace DotNetOAuth {
 		/// <remarks>
 		/// Requires HttpContext.Current.
 		/// </remarks>
-		public DirectUserToServiceProviderMessage PrepareRequestUserAuthorization() {
+		public UserAuthorizationRequest PrepareRequestUserAuthorization() {
 			Uri callback = MessagingUtilities.GetRequestUrlFromContext().StripQueryArgumentsWithPrefix(Protocol.Default.ParameterPrefix);
 			return this.PrepareRequestUserAuthorization(callback, null, null);
 		}
@@ -56,7 +56,7 @@ namespace DotNetOAuth {
 		/// <param name="requestParameters">Extra parameters to add to the request token message.  Optional.</param>
 		/// <param name="redirectParameters">Extra parameters to add to the redirect to Service Provider message.  Optional.</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
-		public DirectUserToServiceProviderMessage PrepareRequestUserAuthorization(Uri callback, IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters) {
+		public UserAuthorizationRequest PrepareRequestUserAuthorization(Uri callback, IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters) {
 			string token;
 			return this.PrepareRequestUserAuthorization(callback, requestParameters, redirectParameters, out token);
 		}
@@ -68,7 +68,7 @@ namespace DotNetOAuth {
 		/// <remarks>
 		/// Requires HttpContext.Current.
 		/// </remarks>
-		public GrantAccessTokenMessage ProcessUserAuthorization() {
+		public AuthorizedTokenResponse ProcessUserAuthorization() {
 			return this.ProcessUserAuthorization(this.Channel.GetRequestFromContext());
 		}
 
@@ -77,7 +77,7 @@ namespace DotNetOAuth {
 		/// </summary>
 		/// <param name="request">The incoming HTTP request.</param>
 		/// <returns>The access token, or null if no incoming authorization message was recognized.</returns>
-		public GrantAccessTokenMessage ProcessUserAuthorization(HttpRequest request) {
+		public AuthorizedTokenResponse ProcessUserAuthorization(HttpRequest request) {
 			return this.ProcessUserAuthorization(new HttpRequestInfo(request));
 		}
 
@@ -86,9 +86,9 @@ namespace DotNetOAuth {
 		/// </summary>
 		/// <param name="request">The incoming HTTP request.</param>
 		/// <returns>The access token, or null if no incoming authorization message was recognized.</returns>
-		internal GrantAccessTokenMessage ProcessUserAuthorization(HttpRequestInfo request) {
-			DirectUserToConsumerMessage authorizationMessage;
-			if (this.Channel.TryReadFromRequest<DirectUserToConsumerMessage>(request, out authorizationMessage)) {
+		internal AuthorizedTokenResponse ProcessUserAuthorization(HttpRequestInfo request) {
+			UserAuthorizationResponse authorizationMessage;
+			if (this.Channel.TryReadFromRequest<UserAuthorizationResponse>(request, out authorizationMessage)) {
 				string requestToken = authorizationMessage.RequestToken;
 				return this.ProcessUserAuthorization(requestToken);
 			} else {

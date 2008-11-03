@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="GetRequestTokenMessage.cs" company="Andrew Arnott">
+// <copyright file="UnauthorizedTokenRequest.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -11,12 +11,12 @@ namespace DotNetOAuth.Messages {
 	/// <summary>
 	/// A direct message sent from Consumer to Service Provider to request a Request Token.
 	/// </summary>
-	public class GetRequestTokenMessage : SignedMessageBase {
+	public class UnauthorizedTokenRequest : SignedMessageBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GetRequestTokenMessage"/> class.
+		/// Initializes a new instance of the <see cref="UnauthorizedTokenRequest"/> class.
 		/// </summary>
 		/// <param name="serviceProvider">The URI of the Service Provider endpoint to send this message to.</param>
-		protected internal GetRequestTokenMessage(MessageReceivingEndpoint serviceProvider)
+		protected internal UnauthorizedTokenRequest(MessageReceivingEndpoint serviceProvider)
 			: base(MessageTransport.Direct, serviceProvider) {
 		}
 

@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="DirectUserToServiceProviderMessage.cs" company="Andrew Arnott">
+// <copyright file="UserAuthorizationRequest.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -11,24 +11,26 @@ namespace DotNetOAuth.Messages {
 	using DotNetOAuth.Messaging;
 
 	/// <summary>
-	/// A message used to redirect the user from a Consumer to a Service Provider's web site.
+	/// A message used to redirect the user from a Consumer to a Service Provider's web site
+	/// so the Service Provider can ask the user to authorize the Consumer's access to some
+	/// protected resource(s).
 	/// </summary>
-	public class DirectUserToServiceProviderMessage : MessageBase, ITokenContainingMessage {
+	public class UserAuthorizationRequest : MessageBase, ITokenContainingMessage {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DirectUserToServiceProviderMessage"/> class.
+		/// Initializes a new instance of the <see cref="UserAuthorizationRequest"/> class.
 		/// </summary>
 		/// <param name="serviceProvider">The URI of the Service Provider endpoint to send this message to.</param>
 		/// <param name="requestToken">The request token.</param>
-		internal DirectUserToServiceProviderMessage(MessageReceivingEndpoint serviceProvider, string requestToken)
+		internal UserAuthorizationRequest(MessageReceivingEndpoint serviceProvider, string requestToken)
 			: this(serviceProvider) {
 			this.RequestToken = requestToken;
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DirectUserToServiceProviderMessage"/> class.
+		/// Initializes a new instance of the <see cref="UserAuthorizationRequest"/> class.
 		/// </summary>
 		/// <param name="serviceProvider">The URI of the Service Provider endpoint to send this message to.</param>
-		internal DirectUserToServiceProviderMessage(MessageReceivingEndpoint serviceProvider)
+		internal UserAuthorizationRequest(MessageReceivingEndpoint serviceProvider)
 			: base(MessageProtections.None, MessageTransport.Indirect, serviceProvider) {
 		}
 

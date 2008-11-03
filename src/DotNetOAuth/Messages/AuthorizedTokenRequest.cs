@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="GetAccessTokenMessage.cs" company="Andrew Arnott">
+// <copyright file="AuthorizedTokenRequest.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -15,12 +15,12 @@ namespace DotNetOAuth.Messages {
 	/// <remarks>
 	/// The class is sealed because the OAuth spec forbids adding parameters to this message.
 	/// </remarks>
-	public sealed class GetAccessTokenMessage : SignedMessageBase, ITokenContainingMessage {
+	public sealed class AuthorizedTokenRequest : SignedMessageBase, ITokenContainingMessage {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GetAccessTokenMessage"/> class.
+		/// Initializes a new instance of the <see cref="AuthorizedTokenRequest"/> class.
 		/// </summary>
 		/// <param name="serviceProvider">The URI of the Service Provider endpoint to send this message to.</param>
-		internal GetAccessTokenMessage(MessageReceivingEndpoint serviceProvider)
+		internal AuthorizedTokenRequest(MessageReceivingEndpoint serviceProvider)
 			: base(MessageTransport.Direct, serviceProvider) {
 		}
 
@@ -33,7 +33,7 @@ namespace DotNetOAuth.Messages {
 		}
 
 		/// <summary>
-		/// Gets or sets the Request Token.
+		/// Gets or sets the unauthorized Request Token used to obtain authorization.
 		/// </summary>
 		[MessagePart("oauth_token", IsRequired = true)]
 		internal string RequestToken { get; set; }

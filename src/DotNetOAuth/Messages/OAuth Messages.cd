@@ -6,84 +6,117 @@
   <Comment CommentText="Messages from Consumer">
     <Position X="4.36" Y="0.683" Height="0.291" Width="2.02" />
   </Comment>
-  <Class Name="DotNetOAuth.Messages.AccessProtectedResourceMessage">
-    <Position X="3.75" Y="8.75" Width="3.5" />
-    <InheritanceLine Type="DotNetOAuth.Messages.SignedMessageBase" ManuallyRouted="true" FixedToPoint="true">
+  <Class Name="DotNetOAuth.Messages.AccessProtectedResourceRequest">
+    <Position X="4.25" Y="7.75" Width="3" />
+    <Members>
+      <Property Name="ITokenContainingMessage.Token" Hidden="true" />
+    </Members>
+    <InheritanceLine Type="DotNetOAuth.Messages.SignedMessageBase" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="2.25" Y="6.588" />
-        <Point X="2.25" Y="6.828" />
-        <Point X="3.51" Y="6.828" />
-        <Point X="3.51" Y="9.562" />
-        <Point X="3.75" Y="9.562" />
+        <Point X="3.5" Y="5.626" />
+        <Point X="3.5" Y="8.25" />
+        <Point X="4.25" Y="8.25" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
       <HashCode>AAAAAAACAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Messages\AccessProtectedResourceMessage.cs</FileName>
+      <FileName>Messages\AccessProtectedResourceRequest.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="DotNetOAuth.Messages.GrantRequestTokenMessage">
+  <Class Name="DotNetOAuth.Messages.UnauthorizedTokenResponse">
     <Position X="7.5" Y="1.5" Width="3" />
+    <Members>
+      <Property Name="ITokenContainingMessage.Token" Hidden="true" />
+      <Property Name="ITokenSecretContainingMessage.TokenSecret" Hidden="true" />
+    </Members>
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
       <HashCode>AAAAAAACAAAAAAAAAAEAAAAAAIAAIAAAIAAAAAAAAAA=</HashCode>
-      <FileName>Messages\GrantRequestTokenMessage.cs</FileName>
+      <FileName>Messages\UnauthorizedTokenResponse.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="DotNetOAuth.Messages.DirectUserToConsumerMessage">
-    <Position X="7.5" Y="5.25" Width="3" />
-    <Compartments>
-      <Compartment Name="Methods" Collapsed="true" />
-    </Compartments>
-    <TypeIdentifier>
-      <HashCode>AAAAAAACAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Messages\DirectUserToConsumerMessage.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="DotNetOAuth.Messages.DirectUserToServiceProviderMessage">
-    <Position X="4.25" Y="3" Width="3" />
+  <Class Name="DotNetOAuth.Messages.UserAuthorizationResponse">
+    <Position X="7.5" Y="4.5" Width="3" />
+    <Members>
+      <Property Name="ITokenContainingMessage.Token" Hidden="true" />
+    </Members>
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <InheritanceLine Type="DotNetOAuth.Messages.MessageBase" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="10.75" Y="4.875" />
-        <Point X="7.25" Y="4.875" />
+        <Point X="10.75" Y="4.688" />
+        <Point X="10.5" Y="4.688" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Messages\UserAuthorizationResponse.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DotNetOAuth.Messages.UserAuthorizationRequest">
+    <Position X="4.25" Y="3" Width="3" />
+    <Members>
+      <Property Name="ITokenContainingMessage.Token" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <InheritanceLine Type="DotNetOAuth.Messages.MessageBase" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="10.75" Y="4.125" />
+        <Point X="7.25" Y="4.125" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
       <HashCode>AAAAAAACAAAAAAAAAAAAAAAAAIAAAAAAIAAAAAAAQAA=</HashCode>
-      <FileName>Messages\DirectUserToServiceProviderMessage.cs</FileName>
+      <FileName>Messages\UserAuthorizationRequest.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="DotNetOAuth.Messages.GrantAccessTokenMessage">
-    <Position X="7.5" Y="7.5" Width="3" />
+  <Class Name="DotNetOAuth.Messages.AuthorizedTokenResponse">
+    <Position X="7.5" Y="6.25" Width="3" />
+    <Members>
+      <Property Name="ITokenContainingMessage.Token" Hidden="true" />
+      <Property Name="ITokenSecretContainingMessage.TokenSecret" Hidden="true" />
+    </Members>
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
-    <InheritanceLine Type="DotNetOAuth.Messages.MessageBase" FixedToPoint="true">
+    <InheritanceLine Type="DotNetOAuth.Messages.MessageBase" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="12.5" Y="7.112" />
-        <Point X="12.5" Y="7.487" />
-        <Point X="10.875" Y="7.487" />
-        <Point X="10.875" Y="8.5" />
-        <Point X="10.5" Y="8.5" />
+        <Point X="11" Y="4.805" />
+        <Point X="11" Y="7.013" />
+        <Point X="10.5" Y="7.013" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
       <HashCode>AAAAAAACAAAAAAAAAAAAAAAAEAAAIAAAIAAAAAAAAAA=</HashCode>
-      <FileName>Messages\GrantAccessTokenMessage.cs</FileName>
+      <FileName>Messages\AuthorizedTokenResponse.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="DotNetOAuth.Messages.MessageBase">
     <Position X="10.75" Y="1" Width="3.5" />
+    <Members>
+      <Field Name="extraData" Hidden="true" />
+      <Property Name="IDirectedProtocolMessage.Recipient" Hidden="true" />
+      <Property Name="IOAuthDirectedMessage.HttpMethods" Hidden="true" />
+      <Property Name="IOAuthDirectedMessage.Recipient" Hidden="true" />
+      <Method Name="IProtocolMessage.EnsureValidMessage" Hidden="true" />
+      <Property Name="IProtocolMessage.ExtraData" Hidden="true" />
+      <Property Name="IProtocolMessage.ProtocolVersion" Hidden="true" />
+      <Property Name="IProtocolMessage.RequiredProtection" Hidden="true" />
+      <Property Name="IProtocolMessage.Transport" Hidden="true" />
+      <Field Name="protectionRequired" Hidden="true" />
+      <Field Name="recipient" Hidden="true" />
+      <Field Name="transport" Hidden="true" />
+    </Members>
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
@@ -93,24 +126,29 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="DotNetOAuth.Messages.GetAccessTokenMessage">
-    <Position X="4.25" Y="6" Width="3" />
+  <Class Name="DotNetOAuth.Messages.AuthorizedTokenRequest">
+    <Position X="4.25" Y="5.5" Width="3" />
+    <Members>
+      <Property Name="ITokenContainingMessage.Token" Hidden="true" />
+    </Members>
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <InheritanceLine Type="DotNetOAuth.Messages.SignedMessageBase" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="4" Y="6.125" />
-        <Point X="4.25" Y="6.125" />
+        <Point X="4" Y="4.947" />
+        <Point X="4.123" Y="4.947" />
+        <Point X="4.123" Y="5.75" />
+        <Point X="4.25" Y="5.75" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
       <HashCode>AAAAAAACQAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Messages\GetAccessTokenMessage.cs</FileName>
+      <FileName>Messages\AuthorizedTokenRequest.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="DotNetOAuth.Messages.GetRequestTokenMessage">
+  <Class Name="DotNetOAuth.Messages.UnauthorizedTokenRequest">
     <Position X="4.25" Y="1" Width="3" />
     <Compartments>
       <Compartment Name="Internal" Collapsed="true" />
@@ -119,17 +157,24 @@
     </Compartments>
     <InheritanceLine Type="DotNetOAuth.Messages.SignedMessageBase" FixedFromPoint="true">
       <Path>
-        <Point X="4" Y="1.938" />
-        <Point X="4.25" Y="1.938" />
+        <Point X="4" Y="1.855" />
+        <Point X="4.25" Y="1.855" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAA=</HashCode>
-      <FileName>Messages\GetRequestTokenMessage.cs</FileName>
+      <FileName>Messages\UnauthorizedTokenRequest.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DotNetOAuth.Messages.SignedMessageBase">
     <Position X="0.5" Y="1.5" Width="3.5" />
+    <Members>
+      <Property Name="ITamperResistantOAuthMessage.ConsumerSecret" Hidden="true" />
+      <Property Name="ITamperResistantOAuthMessage.HttpMethod" Hidden="true" />
+      <Property Name="ITamperResistantOAuthMessage.SignatureMethod" Hidden="true" />
+      <Property Name="ITamperResistantOAuthMessage.TokenSecret" Hidden="true" />
+      <Property Name="ITamperResistantProtocolMessage.Signature" Hidden="true" />
+    </Members>
     <InheritanceLine Type="DotNetOAuth.Messages.MessageBase" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="12.875" Y="1" />
@@ -145,14 +190,14 @@
     <Lollipop Position="0.2" />
   </Class>
   <Interface Name="DotNetOAuth.ChannelElements.ITamperResistantOAuthMessage">
-    <Position X="11.25" Y="7.75" Width="2.5" />
+    <Position X="11.25" Y="5.25" Width="2.5" />
     <TypeIdentifier>
       <HashCode>AIAAAAAAAAAAAAAAAIAAAgAAAAAAIAQAAAAAAAAAAAA=</HashCode>
       <FileName>ChannelElements\ITamperResistantOAuthMessage.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="DotNetOAuth.Messages.ITokenSecretContainingMessage">
-    <Position X="1" Y="8.5" Width="2" />
+    <Position X="1" Y="7.5" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAA=</HashCode>
       <FileName>Messages\ITokenSecretContainingMessage.cs</FileName>
@@ -160,7 +205,7 @@
     </TypeIdentifier>
   </Interface>
   <Interface Name="DotNetOAuth.Messages.ITokenContainingMessage">
-    <Position X="1" Y="7" Width="2" />
+    <Position X="1" Y="6" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAA=</HashCode>
       <FileName>Messages\ITokenContainingMessage.cs</FileName>

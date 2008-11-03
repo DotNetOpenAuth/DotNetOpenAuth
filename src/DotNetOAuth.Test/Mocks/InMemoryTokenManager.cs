@@ -35,7 +35,7 @@ namespace DotNetOAuth.Test.Mocks {
 			return this.tokensAndSecrets[token];
 		}
 
-		public void StoreNewRequestToken(GetRequestTokenMessage request, ITokenSecretContainingMessage response) {
+		public void StoreNewRequestToken(UnauthorizedTokenRequest request, ITokenSecretContainingMessage response) {
 			this.tokensAndSecrets[response.Token] = response.TokenSecret;
 			this.requestTokens.Add(response.Token, false);
 		}

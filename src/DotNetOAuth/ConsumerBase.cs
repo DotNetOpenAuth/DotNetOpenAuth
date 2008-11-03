@@ -116,18 +116,18 @@ namespace DotNetOAuth {
 		/// <param name="requestToken">The request token that must be exchanged for an access token after the user has provided authorization.</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
 		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "3#", Justification = "Two results")]
-		protected internal DirectUserToServiceProviderMessage PrepareRequestUserAuthorization(Uri callback, IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, out string requestToken) {
+		protected internal UserAuthorizationRequest PrepareRequestUserAuthorization(Uri callback, IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, out string requestToken) {
 			// Obtain an unauthorized request token.
-			var token = new GetRequestTokenMessage(this.ServiceProvider.RequestTokenEndpoint) {
+			var token = new UnauthorizedTokenRequest(this.ServiceProvider.RequestTokenEndpoint) {
 				ConsumerKey = this.ConsumerKey,
 			};
 			token.AddNonOAuthParameters(requestParameters);
-			var requestTokenResponse = this.Channel.Request<GrantRequestTokenMessage>(token);
+			var requestTokenResponse = this.Channel.Request<UnauthorizedTokenResponse>(token);
 			this.TokenManager.StoreNewRequestToken(token, requestTokenResponse);
 
 			// Request user authorization.
 			ITokenContainingMessage assignedRequestToken = requestTokenResponse;
-			var requestAuthorization = new DirectUserToServiceProviderMessage(this.ServiceProvider.UserAuthorizationEndpoint, assignedRequestToken.Token) {
+			var requestAuthorization = new UserAuthorizationRequest(this.ServiceProvider.UserAuthorizationEndpoint, assignedRequestToken.Token) {
 				Callback = callback,
 			};
 			requestAuthorization.AddNonOAuthParameters(redirectParameters);
@@ -142,7 +142,7 @@ namespace DotNetOAuth {
 		/// <param name="endpoint">The URL and method on the Service Provider to send the request to.</param>
 		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
 		/// <returns>The initialized WebRequest object.</returns>
-		protected internal AccessProtectedResourceMessage CreateAuthorizingMessage(MessageReceivingEndpoint endpoint, string accessToken) {
+		protected internal AccessProtectedResourceRequest CreateAuthorizingMessage(MessageReceivingEndpoint endpoint, string accessToken) {
 			if (endpoint == null) {
 				throw new ArgumentNullException("endpoint");
 			}
@@ -150,7 +150,7 @@ namespace DotNetOAuth {
 				throw new ArgumentNullException("accessToken");
 			}
 
-			AccessProtectedResourceMessage message = new AccessProtectedResourceMessage(endpoint) {
+			AccessProtectedResourceRequest message = new AccessProtectedResourceRequest(endpoint) {
 				AccessToken = accessToken,
 				ConsumerKey = this.ConsumerKey,
 			};
@@ -163,12 +163,12 @@ namespace DotNetOAuth {
 		/// </summary>
 		/// <param name="requestToken">The request token that the user has authorized.</param>
 		/// <returns>The access token assigned by the Service Provider.</returns>
-		protected GrantAccessTokenMessage ProcessUserAuthorization(string requestToken) {
-			var requestAccess = new GetAccessTokenMessage(this.ServiceProvider.AccessTokenEndpoint) {
+		protected AuthorizedTokenResponse ProcessUserAuthorization(string requestToken) {
+			var requestAccess = new AuthorizedTokenRequest(this.ServiceProvider.AccessTokenEndpoint) {
 				RequestToken = requestToken,
 				ConsumerKey = this.ConsumerKey,
 			};
-			var grantAccess = this.Channel.Request<GrantAccessTokenMessage>(requestAccess);
+			var grantAccess = this.Channel.Request<AuthorizedTokenResponse>(requestAccess);
 			this.TokenManager.ExpireRequestTokenAndStoreNewAccessToken(this.ConsumerKey, requestToken, grantAccess.AccessToken, grantAccess.TokenSecret);
 			return grantAccess;
 		}

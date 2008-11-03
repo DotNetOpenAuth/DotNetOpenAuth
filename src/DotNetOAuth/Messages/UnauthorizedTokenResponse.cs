@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="GrantRequestTokenMessage.cs" company="Andrew Arnott">
+// <copyright file="UnauthorizedTokenResponse.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -12,11 +12,11 @@ namespace DotNetOAuth.Messages {
 
 	/// <summary>
 	/// A direct message sent from Service Provider to Consumer in response to 
-	/// a Consumer's <see cref="GetRequestTokenMessage"/> request.
+	/// a Consumer's <see cref="UnauthorizedTokenRequest"/> request.
 	/// </summary>
-	public class GrantRequestTokenMessage : MessageBase, ITokenSecretContainingMessage {
+	public class UnauthorizedTokenResponse : MessageBase, ITokenSecretContainingMessage {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GrantRequestTokenMessage"/> class.
+		/// Initializes a new instance of the <see cref="UnauthorizedTokenResponse"/> class.
 		/// </summary>
 		/// <param name="requestMessage">The unauthorized request token message that this message is being generated in response to.</param>
 		/// <param name="requestToken">The request token.</param>
@@ -24,7 +24,7 @@ namespace DotNetOAuth.Messages {
 		/// <remarks>
 		/// This constructor is used by the Service Provider to send the message.
 		/// </remarks>
-		protected internal GrantRequestTokenMessage(GetRequestTokenMessage requestMessage, string requestToken, string tokenSecret) : this() {
+		protected internal UnauthorizedTokenResponse(UnauthorizedTokenRequest requestMessage, string requestToken, string tokenSecret) : this() {
 			if (requestMessage == null) {
 				throw new ArgumentNullException("requestMessage");
 			}
@@ -41,10 +41,10 @@ namespace DotNetOAuth.Messages {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GrantRequestTokenMessage"/> class.
+		/// Initializes a new instance of the <see cref="UnauthorizedTokenResponse"/> class.
 		/// </summary>
 		/// <remarks>This constructor is used by the consumer to deserialize the message.</remarks>
-		protected internal GrantRequestTokenMessage()
+		protected internal UnauthorizedTokenResponse()
 			: base(MessageProtections.None, MessageTransport.Direct) {
 		}
 
@@ -81,7 +81,7 @@ namespace DotNetOAuth.Messages {
 		/// <summary>
 		/// Gets the original request for an unauthorized token.
 		/// </summary>
-		internal GetRequestTokenMessage RequestMessage { get; private set; }
+		internal UnauthorizedTokenRequest RequestMessage { get; private set; }
 
 		/// <summary>
 		/// Gets or sets the Token Secret.

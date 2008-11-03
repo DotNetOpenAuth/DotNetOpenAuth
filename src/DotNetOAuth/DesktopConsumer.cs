@@ -48,7 +48,7 @@ namespace DotNetOAuth {
 		/// </summary>
 		/// <param name="requestToken">The request token that the user has authorized.</param>
 		/// <returns>The access token assigned by the Service Provider.</returns>
-		public new GrantAccessTokenMessage ProcessUserAuthorization(string requestToken) {
+		public new AuthorizedTokenResponse ProcessUserAuthorization(string requestToken) {
 			return base.ProcessUserAuthorization(requestToken);
 		}
 	}

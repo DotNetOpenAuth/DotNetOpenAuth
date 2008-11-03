@@ -19,15 +19,15 @@ public class OAuth : IHttpHandler, IRequiresSessionState {
 	public void ProcessRequest(HttpContext context) {
 		IProtocolMessage request = sp.ReadRequest();
 		RequestScopedTokenMessage requestToken;
-		DirectUserToServiceProviderMessage requestAuth;
-		GetAccessTokenMessage requestAccessToken;
+		UserAuthorizationRequest requestAuth;
+		AuthorizedTokenRequest requestAccessToken;
 		if ((requestToken = request as RequestScopedTokenMessage) != null) {
 			var response = sp.PrepareUnauthorizedTokenMessage(requestToken);
 			sp.Channel.Send(response).Send();
-		} else if ((requestAuth = request as DirectUserToServiceProviderMessage) != null) {
+		} else if ((requestAuth = request as UserAuthorizationRequest) != null) {
 			Global.PendingOAuthAuthorization = requestAuth;
 			HttpContext.Current.Response.Redirect("~/Members/Authorize.aspx");
-		} else if ((requestAccessToken = request as GetAccessTokenMessage) != null) {
+		} else if ((requestAccessToken = request as AuthorizedTokenRequest) != null) {
 			var response = sp.PrepareAccessTokenMessage(requestAccessToken);
 			sp.Channel.Send(response).Send();
 		} else {
