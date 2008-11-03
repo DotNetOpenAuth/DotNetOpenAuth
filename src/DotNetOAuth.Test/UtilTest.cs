@@ -1,17 +1,18 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="CommonConsumerBaseTest.cs" company="Andrew Arnott">
+// <copyright file="UtilTest.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOAuth.Test.CommonConsumers {
+namespace DotNetOAuth.Test {
+	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-	using DotNetOAuth.CommonConsumers;
+	using System.Text;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
-	public class CommonConsumerBaseTest : TestBase {
+	public class UtilTest {
 		private enum SomeFlags : int {
 			None = 0,
 			Flag1 = 0x1,
@@ -23,12 +24,12 @@ namespace DotNetOAuth.Test.CommonConsumers {
 
 		[TestMethod]
 		public void GetIndividualFlagsTest() {
-			Assert.IsFalse(CommonConsumerBase_Accessor.GetIndividualFlags(SomeFlags.None).Any());
-			Assert.AreEqual(SomeFlags.Flag1, (SomeFlags)CommonConsumerBase_Accessor.GetIndividualFlags(SomeFlags.Flag1).Single());
-			IList<long> flags = CommonConsumerBase_Accessor.GetIndividualFlags(SomeFlags.Flag1and2).ToList();
+			Assert.IsFalse(Util.GetIndividualFlags(SomeFlags.None).Any());
+			Assert.AreEqual(SomeFlags.Flag1, (SomeFlags)Util.GetIndividualFlags(SomeFlags.Flag1).Single());
+			IList<long> flags = Util.GetIndividualFlags(SomeFlags.Flag1and2).ToList();
 			Assert.AreEqual(SomeFlags.Flag1, (SomeFlags)flags[0]);
 			Assert.AreEqual(SomeFlags.Flag2, (SomeFlags)flags[1]);
-			flags = CommonConsumerBase_Accessor.GetIndividualFlags(SomeFlags.All).ToList();
+			flags = Util.GetIndividualFlags(SomeFlags.All).ToList();
 			Assert.AreEqual(SomeFlags.Flag1, (SomeFlags)flags[0]);
 			Assert.AreEqual(SomeFlags.Flag2, (SomeFlags)flags[1]);
 			Assert.AreEqual(SomeFlags.Flag3, (SomeFlags)flags[2]);

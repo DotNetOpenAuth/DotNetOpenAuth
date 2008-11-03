@@ -15,15 +15,15 @@ public partial class GoogleAddressBook : System.Web.UI.Page {
 		if (!IsPostBack) {
 			if (Session["TokenManager"] != null) {
 				InMemoryTokenManager tokenManager = (InMemoryTokenManager)Session["TokenManager"];
-				GoogleConsumer google = new GoogleConsumer(tokenManager, tokenManager.ConsumerKey);
+				var google = GoogleConsumer.CreateWebConsumer(tokenManager, tokenManager.ConsumerKey);
 
-				var accessToken = google.GetAccessToken();
-				if (accessToken != null) {
+				var accessTokenResponse = google.ProcessUserAuthorization();
+				if (accessTokenResponse != null) {
 					// User has approved access
 					MultiView1.ActiveViewIndex = 1;
-					resultsPlaceholder.Controls.Add(new Label { Text = accessToken });
+					resultsPlaceholder.Controls.Add(new Label { Text = accessTokenResponse.AccessToken });
 
-					XDocument contactsDocument = google.GetContacts(accessToken);
+					XDocument contactsDocument = GoogleConsumer.GetContacts(google, accessTokenResponse.AccessToken);
 					var contacts = from entry in contactsDocument.Root.Elements(XName.Get("entry", "http://www.w3.org/2005/Atom"))
 						select new {
 							Name = entry.Element(XName.Get("title", "http://www.w3.org/2005/Atom")).Value,
@@ -51,7 +51,7 @@ public partial class GoogleAddressBook : System.Web.UI.Page {
 
 		InMemoryTokenManager tokenManager = new InMemoryTokenManager(consumerKeyBox.Text, consumerSecretBox.Text);
 		Session["TokenManager"] = tokenManager;
-		var google = new GoogleConsumer(tokenManager, consumerKeyBox.Text);
-		google.RequestAuthorization(GoogleConsumer.Applications.Contacts);
+		var google = GoogleConsumer.CreateWebConsumer(tokenManager, consumerKeyBox.Text);
+		GoogleConsumer.RequestAuthorization(google, GoogleConsumer.Applications.Contacts);
 	}
 }

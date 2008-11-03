@@ -15,7 +15,7 @@ namespace DotNetOAuth.CommonConsumers {
 	/// <summary>
 	/// A consumer capable of communicating with Google Data APIs.
 	/// </summary>
-	public class GoogleConsumer : CommonConsumerBase {
+	public static class GoogleConsumer {
 		/// <summary>
 		/// The Consumer to use for accessing Google data APIs.
 		/// </summary>
@@ -40,15 +40,6 @@ namespace DotNetOAuth.CommonConsumers {
 		private static readonly MessageReceivingEndpoint GetContactsEndpoint = new MessageReceivingEndpoint("http://www.google.com/m8/feeds/contacts/default/full/", HttpDeliveryMethods.GetRequest);
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GoogleConsumer"/> class.
-		/// </summary>
-		/// <param name="tokenManager">The token manager.</param>
-		/// <param name="consumerKey">The consumer key.</param>
-		public GoogleConsumer(ITokenManager tokenManager, string consumerKey)
-			: base(GoogleDescription, tokenManager, consumerKey) {
-		}
-
-		/// <summary>
 		/// The many specific authorization scopes Google offers.
 		/// </summary>
 		[Flags]
@@ -65,46 +56,63 @@ namespace DotNetOAuth.CommonConsumers {
 		}
 
 		/// <summary>
-		/// Requests authorization from Google to access data from a set of Google applications.
+		/// Initializes a new instance of the <see cref="WebConsumer"/> class that is prepared to communicate with Google.
 		/// </summary>
-		/// <param name="requestedAccessScope">The requested access scope.</param>
-		public void RequestAuthorization(Applications requestedAccessScope) {
-			Uri callback = MessagingUtilities.GetRequestUrlFromContext().StripQueryArgumentsWithPrefix(Protocol.Default.ParameterPrefix);
-			var extraParameters = new Dictionary<string, string> {
-				{ "scope", this.GetScopeUri(requestedAccessScope) },
+		/// <param name="tokenManager">The token manager.</param>
+		/// <param name="consumerKey">The consumer key.</param>
+		/// <returns>The newly instantiated <see cref="WebConsumer"/>.</returns>
+		public static WebConsumer CreateWebConsumer(ITokenManager tokenManager, string consumerKey)
+		{
+			return new WebConsumer(GoogleDescription, tokenManager) {
+				ConsumerKey = consumerKey,
 			};
-			var request = this.Consumer.PrepareRequestUserAuthorization(callback, extraParameters, null);
-			this.Consumer.Channel.Send(request).Send();
 		}
 
 		/// <summary>
-		/// Gets the access token on the next page request after a call to <see cref="RequestAuthorization"/>.
+		/// Initializes a new instance of the <see cref="DesktopConsumer"/> class that is prepared to communicate with Google.
 		/// </summary>
-		/// <returns>The access token that should be stored for later use.</returns>
-		public string GetAccessToken() {
-			var response = this.Consumer.ProcessUserAuthorization();
-			return response != null ? response.AccessToken : null;
+		/// <param name="tokenManager">The token manager.</param>
+		/// <param name="consumerKey">The consumer key.</param>
+		/// <returns>The newly instantiated <see cref="DesktopConsumer"/>.</returns>
+		public static DesktopConsumer CreateDesktopConsumer(ITokenManager tokenManager, string consumerKey) {
+			return new DesktopConsumer(GoogleDescription, tokenManager) {
+				ConsumerKey = consumerKey,
+			};
+		}
+
+		/// <summary>
+		/// Requests authorization from Google to access data from a set of Google applications.
+		/// </summary>
+		/// <param name="consumer">The Google consumer previously constructed using <see cref="CreateWebConsumer"/> or <see cref="CreateDesktopConsumer"/>.</param>
+		/// <param name="requestedAccessScope">The requested access scope.</param>
+		public static void RequestAuthorization(ConsumerBase consumer, Applications requestedAccessScope) {
+			if (consumer == null) {
+				throw new ArgumentNullException("consumer");
+			}
+
+			Uri callback = MessagingUtilities.GetRequestUrlFromContext().StripQueryArgumentsWithPrefix(Protocol.Default.ParameterPrefix);
+			var extraParameters = new Dictionary<string, string> {
+				{ "scope", GetScopeUri(requestedAccessScope) },
+			};
+			string requestToken;
+			var request = consumer.PrepareRequestUserAuthorization(callback, extraParameters, null, out requestToken);
+			consumer.Channel.Send(request).Send();
 		}
 
 		/// <summary>
 		/// Gets the Gmail address book's contents.
 		/// </summary>
-		/// <param name="accessToken">The access token previously retrieved from the <see cref="GetAccessToken"/> method.</param>
+		/// <param name="consumer">The Google consumer previously constructed using <see cref="CreateWebConsumer"/> or <see cref="CreateDesktopConsumer"/>.</param>
+		/// <param name="accessToken">The access token previously retrieved.</param>
 		/// <returns>An XML document returned by Google.</returns>
-		public XDocument GetContacts(string accessToken) {
-			var response = this.PrepareAuthorizedRequestAndSend(GetContactsEndpoint, accessToken);
+		public static XDocument GetContacts(ConsumerBase consumer, string accessToken) {
+			if (consumer == null) {
+				throw new ArgumentNullException("consumer");
+			}
+
+			var response = consumer.PrepareAuthorizedRequestAndSend(GetContactsEndpoint, accessToken);
 			XDocument result = XDocument.Parse(response.Body);
 			return result;
-		}
-
-		/// <summary>
-		/// A general method for sending OAuth-authorized requests for user data from Google.
-		/// </summary>
-		/// <param name="endpoint">The Google URL to retrieve the data from.</param>
-		/// <param name="accessToken">The access token previously retrieved from the <see cref="GetAccessToken"/> method.</param>
-		/// <returns>Whatever the response Google sends.</returns>
-		public Response PrepareAuthorizedRequestAndSend(MessageReceivingEndpoint endpoint, string accessToken) {
-			return this.Consumer.PrepareAuthorizedRequestAndSend(endpoint, accessToken);
 		}
 
 		/// <summary>
@@ -112,8 +120,8 @@ namespace DotNetOAuth.CommonConsumers {
 		/// </summary>
 		/// <param name="scope">The scope, which may include one or several Google applications.</param>
 		/// <returns>A space-delimited list of URIs for the requested Google applications.</returns>
-		private string GetScopeUri(Applications scope) {
-			return string.Join(" ", GetIndividualFlags(scope).Select(app => DataScopeUris[(Applications)app]).ToArray());
+		private static string GetScopeUri(Applications scope) {
+			return string.Join(" ", Util.GetIndividualFlags(scope).Select(app => DataScopeUris[(Applications)app]).ToArray());
 		}
 	}
 }

@@ -60,7 +60,6 @@
   <ItemGroup>
     <Compile Include="ChannelElements\SigningBindingElementBaseTests.cs" />
     <Compile Include="ChannelElements\HmacSha1SigningBindingElementTests.cs" />
-    <Compile Include="CommonConsumers\CommonConsumerBaseTest.cs" />
     <Compile Include="ConsumerDescription.cs" />
     <Compile Include="Messaging\CollectionAssert.cs" />
     <Compile Include="Messaging\MessageSerializerTests.cs" />
@@ -100,6 +99,7 @@
     <Compile Include="ServiceProviderDescriptionTests.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="UriUtilTests.cs" />
+    <Compile Include="UtilTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DotNetOAuth\DotNetOAuth.csproj">
