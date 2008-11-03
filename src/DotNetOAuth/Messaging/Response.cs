@@ -92,8 +92,12 @@ namespace DotNetOAuth.Messaging {
 
 		/// <summary>
 		/// Gets the URI that, when requested with an HTTP GET request,
-		/// would transmit the message that normally be transmitted via a user agent redirect.
+		/// would transmit the message that normally would be transmitted via a user agent redirect.
 		/// </summary>
+		/// <remarks>
+		/// This is useful for desktop applications that will spawn a user agent to transmit the message
+		/// rather than cause a redirect.
+		/// </remarks>
 		internal Uri DirectUriRequest {
 			get {
 				var message = this.OriginalMessage as IDirectedProtocolMessage;

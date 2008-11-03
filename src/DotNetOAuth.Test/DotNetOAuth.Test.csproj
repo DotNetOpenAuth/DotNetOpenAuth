@@ -99,7 +99,6 @@
     <Compile Include="ServiceProviderDescriptionTests.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="UriUtilTests.cs" />
-    <Compile Include="UtilTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DotNetOAuth\DotNetOAuth.csproj">

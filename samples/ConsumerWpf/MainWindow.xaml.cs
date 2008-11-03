@@ -16,7 +16,7 @@
 	using System.Xml.Linq;
 	using DotNetOAuth;
 	using DotNetOAuth.ChannelElements;
-	using DotNetOAuth.CommonConsumers;
+	using DotNetOAuth.ApplicationBlock;
 	using DotNetOAuth.Messaging;
 
 	/// <summary>

@@ -26,22 +26,5 @@ namespace DotNetOAuth {
 				return string.Format(CultureInfo.InvariantCulture, "{0} ({1})", assemblyFullName, official ? "official" : "private");
 			}
 		}
-
-		/// <summary>
-		/// Enumerates through the individual set bits in a flag enum.
-		/// </summary>
-		/// <param name="flags">The flags enum value.</param>
-		/// <returns>An enumeration of just the <i>set</i> bits in the flags enum.</returns>
-		internal static IEnumerable<long> GetIndividualFlags(Enum flags) {
-			long flagsLong = Convert.ToInt64(flags);
-			for (int i = 0; i < sizeof(long) * 8; i++) { // long is the type behind the largest enum
-				// Select an individual application from the scopes.
-				long individualFlagPosition = (long)Math.Pow(2, i);
-				long individualFlag = flagsLong & individualFlagPosition;
-				if (individualFlag == individualFlagPosition) {
-					yield return individualFlag;
-				}
-			}
-		}
 	}
 }

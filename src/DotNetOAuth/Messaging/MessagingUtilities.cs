@@ -19,7 +19,7 @@ namespace DotNetOAuth.Messaging {
 	/// <summary>
 	/// A grab-bag of utility methods useful for the channel stack of the protocol.
 	/// </summary>
-	internal static class MessagingUtilities {
+	public static class MessagingUtilities {
 		/// <summary>
 		/// Adds a set of HTTP headers to an <see cref="HttpResponse"/> instance,
 		/// taking care to set some headers to the appropriate properties of
@@ -137,7 +137,7 @@ namespace DotNetOAuth.Messaging {
 		/// Cookieless session directory (if applicable) is also included.
 		/// </summary>
 		/// <returns>The URL in the user agent's Location bar.</returns>
-		internal static Uri GetRequestUrlFromContext() {
+		public static Uri GetRequestUrlFromContext() {
 			HttpContext context = HttpContext.Current;
 			if (context == null) {
 				throw new InvalidOperationException(MessagingStrings.CurrentHttpContextRequired);
@@ -159,7 +159,7 @@ namespace DotNetOAuth.Messaging {
 		/// <param name="uri">The URI that may have a query with parameters to remove.</param>
 		/// <param name="prefix">The prefix for parameters to remove.</param>
 		/// <returns>Either a new Uri with the parameters removed if there were any to remove, or the same Uri instance if no parameters needed to be removed.</returns>
-		internal static Uri StripQueryArgumentsWithPrefix(this Uri uri, string prefix) {
+		public static Uri StripQueryArgumentsWithPrefix(this Uri uri, string prefix) {
 			NameValueCollection queryArgs = HttpUtility.ParseQueryString(uri.Query);
 			var matchingKeys = queryArgs.Keys.OfType<string>().Where(key => key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)).ToList();
 			if (matchingKeys.Count > 0) {

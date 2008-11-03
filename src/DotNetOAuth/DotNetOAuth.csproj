@@ -72,7 +72,6 @@
     <Compile Include="ChannelElements\SigningBindingElementChain.cs" />
     <Compile Include="ChannelElements\StandardTokenGenerator.cs" />
     <Compile Include="ChannelElements\TokenType.cs" />
-    <Compile Include="CommonConsumers\GoogleConsumer.cs" />
     <Compile Include="ConsumerBase.cs" />
     <Compile Include="DesktopConsumer.cs" />
     <Compile Include="GlobalSuppressions.cs" />

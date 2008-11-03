@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Xml.Linq;
-using DotNetOAuth.CommonConsumers;
+using DotNetOAuth.ApplicationBlock;
 
 /// <summary>
 /// A page to demonstrate downloading a Gmail address book using OAuth.
