@@ -10,6 +10,7 @@ namespace DotNetOAuth.CommonConsumers {
 	using System.Linq;
 	using System.Xml.Linq;
 	using DotNetOAuth.ChannelElements;
+	using DotNetOAuth.Messages;
 	using DotNetOAuth.Messaging;
 
 	/// <summary>
@@ -61,8 +62,7 @@ namespace DotNetOAuth.CommonConsumers {
 		/// <param name="tokenManager">The token manager.</param>
 		/// <param name="consumerKey">The consumer key.</param>
 		/// <returns>The newly instantiated <see cref="WebConsumer"/>.</returns>
-		public static WebConsumer CreateWebConsumer(ITokenManager tokenManager, string consumerKey)
-		{
+		public static WebConsumer CreateWebConsumer(ITokenManager tokenManager, string consumerKey) {
 			return new WebConsumer(GoogleDescription, tokenManager) {
 				ConsumerKey = consumerKey,
 			};
@@ -85,18 +85,23 @@ namespace DotNetOAuth.CommonConsumers {
 		/// </summary>
 		/// <param name="consumer">The Google consumer previously constructed using <see cref="CreateWebConsumer"/> or <see cref="CreateDesktopConsumer"/>.</param>
 		/// <param name="requestedAccessScope">The requested access scope.</param>
-		public static void RequestAuthorization(ConsumerBase consumer, Applications requestedAccessScope) {
-			if (consumer == null) {
-				throw new ArgumentNullException("consumer");
-			}
-
+		public static void RequestAuthorization(WebConsumer consumer, Applications requestedAccessScope) {
 			Uri callback = MessagingUtilities.GetRequestUrlFromContext().StripQueryArgumentsWithPrefix(Protocol.Default.ParameterPrefix);
-			var extraParameters = new Dictionary<string, string> {
-				{ "scope", GetScopeUri(requestedAccessScope) },
-			};
 			string requestToken;
-			var request = consumer.PrepareRequestUserAuthorization(callback, extraParameters, null, out requestToken);
+			var request = RequestAuthorizationInternal(consumer, callback, requestedAccessScope, out requestToken);
 			consumer.Channel.Send(request).Send();
+		}
+
+		/// <summary>
+		/// Requests authorization from Google to access data from a set of Google applications.
+		/// </summary>
+		/// <param name="consumer">The Google consumer previously constructed using <see cref="CreateWebConsumer"/> or <see cref="CreateDesktopConsumer"/>.</param>
+		/// <param name="requestedAccessScope">The requested access scope.</param>
+		/// <param name="requestToken">The unauthorized request token assigned by Google.</param>
+		/// <returns>The request token</returns>
+		public static Uri RequestAuthorization(DesktopConsumer consumer, Applications requestedAccessScope, out string requestToken) {
+			var request = RequestAuthorizationInternal(consumer, null, requestedAccessScope, out requestToken);
+			return consumer.Channel.Send(request).DirectUriRequest;
 		}
 
 		/// <summary>
@@ -122,6 +127,25 @@ namespace DotNetOAuth.CommonConsumers {
 		/// <returns>A space-delimited list of URIs for the requested Google applications.</returns>
 		private static string GetScopeUri(Applications scope) {
 			return string.Join(" ", Util.GetIndividualFlags(scope).Select(app => DataScopeUris[(Applications)app]).ToArray());
+		}
+
+		/// <summary>
+		/// Requests authorization from Google to access data from a set of Google applications.
+		/// </summary>
+		/// <param name="consumer">The Google consumer previously constructed using <see cref="CreateWebConsumer"/> or <see cref="CreateDesktopConsumer"/>.</param>
+		/// <param name="callback">The callback URI, if in web mode.</param>
+		/// <param name="requestedAccessScope">The requested access scope.</param>
+		/// <param name="requestToken">The unauthorized request token assigned by Google.</param>
+		/// <returns>The request token</returns>
+		private static UserAuthorizationRequest RequestAuthorizationInternal(ConsumerBase consumer, Uri callback, Applications requestedAccessScope, out string requestToken) {
+			if (consumer == null) {
+				throw new ArgumentNullException("consumer");
+			}
+
+			var extraParameters = new Dictionary<string, string> {
+				{ "scope", GetScopeUri(requestedAccessScope) },
+			};
+			return consumer.PrepareRequestUserAuthorization(callback, extraParameters, null, out requestToken);
 		}
 	}
 }

@@ -69,7 +69,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Constants.cs" />
     <Compile Include="InMemoryTokenManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

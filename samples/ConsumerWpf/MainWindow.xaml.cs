@@ -15,6 +15,7 @@
 	using System.Xml.Linq;
 	using DotNetOAuth;
 	using DotNetOAuth.ChannelElements;
+	using DotNetOAuth.CommonConsumers;
 	using DotNetOAuth.Messaging;
 
 	/// <summary>
@@ -28,7 +29,7 @@
 		public MainWindow() {
 			InitializeComponent();
 
-			this.google = new DesktopConsumer(Constants.GoogleDescription, this.tokenManager);
+			this.google = GoogleConsumer.CreateDesktopConsumer(this.tokenManager, string.Empty);
 		}
 
 		private void beginAuthorizationButton_Click(object sender, RoutedEventArgs e) {
@@ -36,22 +37,18 @@
 			this.tokenManager.ConsumerSecret = consumerSecretBox.Text;
 			this.google.ConsumerKey = consumerKeyBox.Text;
 
-			var extraParameters = new Dictionary<string, string> {
-				{ "scope", Constants.GoogleScopes.Contacts },
-			};
-			Uri browserAuthorizationLocation = this.google.RequestUserAuthorization(extraParameters, null, out this.requestToken);
+			Uri browserAuthorizationLocation = GoogleConsumer.RequestAuthorization(this.google, GoogleConsumer.Applications.Contacts, out this.requestToken);
 			System.Diagnostics.Process.Start(browserAuthorizationLocation.AbsoluteUri);
 		}
 
 		private void completeAuthorizationButton_Click(object sender, RoutedEventArgs e) {
 			var grantedAccess = this.google.ProcessUserAuthorization(this.requestToken);
-			Response contactsResponse = this.google.PrepareAuthorizedRequestAndSend(Constants.GoogleScopes.GetContacts, grantedAccess.AccessToken);
-			XDocument contactsDocument = XDocument.Parse(contactsResponse.Body);
+			XDocument contactsDocument = GoogleConsumer.GetContacts(this.google, grantedAccess.AccessToken);
 			var contacts = from entry in contactsDocument.Root.Elements(XName.Get("entry", "http://www.w3.org/2005/Atom"))
-								select new {
-									Name = entry.Element(XName.Get("title", "http://www.w3.org/2005/Atom")).Value,
-									Email = entry.Element(XName.Get("email", "http://schemas.google.com/g/2005")).Attribute("address").Value,
-								};
+				select new {
+					Name = entry.Element(XName.Get("title", "http://www.w3.org/2005/Atom")).Value,
+					Email = entry.Element(XName.Get("email", "http://schemas.google.com/g/2005")).Attribute("address").Value,
+				};
 			contactsGrid.Children.Clear();
 			foreach (var contact in contacts) {
 				contactsGrid.RowDefinitions.Add(new RowDefinition());
