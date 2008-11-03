@@ -3,6 +3,7 @@
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
 	using System.Windows;
 	using System.Windows.Controls;
 	using System.Windows.Data;
@@ -37,8 +38,18 @@
 			this.tokenManager.ConsumerSecret = consumerSecretBox.Text;
 			this.google.ConsumerKey = consumerKeyBox.Text;
 
-			Uri browserAuthorizationLocation = GoogleConsumer.RequestAuthorization(this.google, GoogleConsumer.Applications.Contacts, out this.requestToken);
-			System.Diagnostics.Process.Start(browserAuthorizationLocation.AbsoluteUri);
+			Cursor original = this.Cursor;
+			this.Cursor = Cursors.Wait;
+			beginAuthorizationButton.IsEnabled = false;
+			ThreadPool.QueueUserWorkItem(delegate(object state) {
+				Uri browserAuthorizationLocation = GoogleConsumer.RequestAuthorization(this.google, GoogleConsumer.Applications.Contacts, out this.requestToken);
+				System.Diagnostics.Process.Start(browserAuthorizationLocation.AbsoluteUri);
+				this.Dispatcher.BeginInvoke(new Action(() => {
+					this.Cursor = original;
+					beginAuthorizationButton.IsEnabled = true;
+					completeAuthorizationButton.IsEnabled = true;
+				}));
+			});
 		}
 
 		private void completeAuthorizationButton_Click(object sender, RoutedEventArgs e) {

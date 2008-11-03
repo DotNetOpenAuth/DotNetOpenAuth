@@ -16,7 +16,7 @@
 		</Grid.RowDefinitions>
 		<StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="3">
 			<Button Name="beginAuthorizationButton" Click="beginAuthorizationButton_Click">Start authorize</Button>
-			<Button Name="completeAuthorizationButton" Margin="5,0,0,0" Click="completeAuthorizationButton_Click">Complete authorization</Button>
+			<Button Name="completeAuthorizationButton" Margin="5,0,0,0" Click="completeAuthorizationButton_Click" IsEnabled="false">Complete authorization</Button>
 		</StackPanel>
 		<Label>Consumer Key</Label>
 		<TextBox Grid.Column="1" Name="consumerKeyBox"/>
