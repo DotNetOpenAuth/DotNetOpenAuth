@@ -9,7 +9,7 @@ namespace DotNetOpenId.Interop {
 	/// The COM type used to provide details of an authentication result to a relying party COM client.
 	/// </summary>
 	[SuppressMessage("Microsoft.Interoperability", "CA1409:ComVisibleTypesShouldBeCreatable")]
-	[ComVisible(true)]
+	[ComVisible(true), Obsolete("This class acts as a COM Server and should not be called directly from .NET code.")]
 	public class AuthenticationResponseShim {
 		private readonly IAuthenticationResponse response;
 

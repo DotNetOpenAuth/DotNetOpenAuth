@@ -42,7 +42,9 @@ namespace DotNetOpenId.Interop {
 		/// <param name="url">The incoming request URL .</param>
 		/// <param name="form">The form data that may have been included in the case of a POST request.</param>
 		/// <returns>The Provider's response to a previous authentication request, or null if no response is present.</returns>
+#pragma warning disable 0618 // we're using the COM type properly
 		AuthenticationResponseShim ProcessAuthentication(string url, string form);
+#pragma warning restore 0618
 	}
 
 	/// <summary>
@@ -51,7 +53,7 @@ namespace DotNetOpenId.Interop {
 	/// </summary>
 	[Guid("4D6FB236-1D66-4311-B761-972C12BB85E8")]
 	[ProgId("DotNetOpenId.RelyingParty.OpenIdRelyingParty")]
-	[ComVisible(true)]
+	[ComVisible(true), Obsolete("This class acts as a COM Server and should not be called directly from .NET code.", true)]
 	[ClassInterface(ClassInterfaceType.None)]
 	[ComSourceInterfaces(typeof(IOpenIdRelyingParty))]
 	public class OpenIdRelyingPartyShim : IOpenIdRelyingParty {
