@@ -58,6 +58,9 @@
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChannelElements\OAuthConsumerMessageTypeProvider.cs" />
@@ -69,6 +72,8 @@
     <Compile Include="ChannelElements\SigningBindingElementChain.cs" />
     <Compile Include="ChannelElements\StandardTokenGenerator.cs" />
     <Compile Include="ChannelElements\TokenType.cs" />
+    <Compile Include="CommonConsumers\CommonConsumerBase.cs" />
+    <Compile Include="CommonConsumers\GoogleConsumer.cs" />
     <Compile Include="ConsumerBase.cs" />
     <Compile Include="DesktopConsumer.cs" />
     <Compile Include="GlobalSuppressions.cs" />

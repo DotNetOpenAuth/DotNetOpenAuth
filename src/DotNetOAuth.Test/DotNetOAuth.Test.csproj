@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="ChannelElements\SigningBindingElementBaseTests.cs" />
     <Compile Include="ChannelElements\HmacSha1SigningBindingElementTests.cs" />
+    <Compile Include="CommonConsumers\CommonConsumerBaseTest.cs" />
     <Compile Include="ConsumerDescription.cs" />
     <Compile Include="Messaging\CollectionAssert.cs" />
     <Compile Include="Messaging\MessageSerializerTests.cs" />

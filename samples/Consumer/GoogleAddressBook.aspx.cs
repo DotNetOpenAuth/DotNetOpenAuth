@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Xml.Linq;
-using DotNetOAuth;
-using DotNetOAuth.ChannelElements;
-using DotNetOAuth.Messaging;
+using DotNetOAuth.CommonConsumers;
 
 /// <summary>
 /// A page to demonstrate downloading a Gmail address book using OAuth.
@@ -18,23 +15,20 @@ public partial class GoogleAddressBook : System.Web.UI.Page {
 		if (!IsPostBack) {
 			if (Session["TokenManager"] != null) {
 				InMemoryTokenManager tokenManager = (InMemoryTokenManager)Session["TokenManager"];
-				WebConsumer google = new WebConsumer(Constants.GoogleDescription, tokenManager) {
-					ConsumerKey = tokenManager.ConsumerKey,
-				};
+				GoogleConsumer google = new GoogleConsumer(tokenManager, tokenManager.ConsumerKey);
 
-				var accessTokenMessage = google.ProcessUserAuthorization();
-				if (accessTokenMessage != null) {
+				var accessToken = google.GetAccessToken();
+				if (accessToken != null) {
 					// User has approved access
 					MultiView1.ActiveViewIndex = 1;
-					resultsPlaceholder.Controls.Add(new Label { Text = accessTokenMessage.AccessToken });
+					resultsPlaceholder.Controls.Add(new Label { Text = accessToken });
 
-					Response contactsResponse = google.PrepareAuthorizedRequestAndSend(Constants.GoogleScopes.GetContacts, accessTokenMessage.AccessToken);
-					XDocument contactsDocument = XDocument.Parse(contactsResponse.Body);
+					XDocument contactsDocument = google.GetContacts(accessToken);
 					var contacts = from entry in contactsDocument.Root.Elements(XName.Get("entry", "http://www.w3.org/2005/Atom"))
-										select new {
-											Name = entry.Element(XName.Get("title", "http://www.w3.org/2005/Atom")).Value,
-											Email = entry.Element(XName.Get("email", "http://schemas.google.com/g/2005")).Attribute("address").Value,
-										};
+						select new {
+							Name = entry.Element(XName.Get("title", "http://www.w3.org/2005/Atom")).Value,
+							Email = entry.Element(XName.Get("email", "http://schemas.google.com/g/2005")).Attribute("address").Value,
+						};
 					StringBuilder tableBuilder = new StringBuilder();
 					tableBuilder.Append("<table><tr><td>Name</td><td>Email</td></tr>");
 					foreach (var contact in contacts) {
@@ -57,15 +51,7 @@ public partial class GoogleAddressBook : System.Web.UI.Page {
 
 		InMemoryTokenManager tokenManager = new InMemoryTokenManager(consumerKeyBox.Text, consumerSecretBox.Text);
 		Session["TokenManager"] = tokenManager;
-		WebConsumer google = new WebConsumer(Constants.GoogleDescription, tokenManager);
-		google.ConsumerKey = consumerKeyBox.Text;
-
-		var extraParameters = new Dictionary<string, string> {
-			{ "scope", Constants.GoogleScopes.Contacts },
-		};
-		UriBuilder callback = new UriBuilder(new Uri(Request.Url, Request.RawUrl));
-		callback.Query = null;
-		var response = google.PrepareRequestUserAuthorization(callback.Uri, extraParameters, null);
-		google.Channel.Send(response).Send();
+		var google = new GoogleConsumer(tokenManager, consumerKeyBox.Text);
+		google.RequestAuthorization(GoogleConsumer.Applications.Contacts);
 	}
 }
