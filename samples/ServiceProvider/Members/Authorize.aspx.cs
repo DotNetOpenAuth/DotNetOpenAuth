@@ -4,9 +4,9 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using DotNetOAuth;
-using DotNetOAuth.OAuth;
-using DotNetOAuth.OAuth.Messages;
+using DotNetOpenAuth;
+using DotNetOpenAuth.OAuth;
+using DotNetOpenAuth.OAuth.Messages;
 
 /// <summary>
 /// Conducts the user through a Consumer authorization process.

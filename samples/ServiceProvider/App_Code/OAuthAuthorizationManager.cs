@@ -2,8 +2,8 @@
 using System.Linq;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
-using DotNetOAuth;
-using DotNetOAuth.OAuth;
+using DotNetOpenAuth;
+using DotNetOpenAuth.OAuth;
 
 /// <summary>
 /// A WCF extension to authenticate incoming messages using OAuth.

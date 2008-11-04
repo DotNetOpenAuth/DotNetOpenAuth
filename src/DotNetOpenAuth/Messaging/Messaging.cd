@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access">
+  <Class Name="DotNetOpenAuth.Messaging.Channel">
+    <Position X="5.25" Y="0.75" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Protected" Collapsed="true" />
+      <Compartment Name="Internal" Collapsed="true" />
+      <Compartment Name="Private" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>gBgQgAIAAQAEAIgAAEAAAARBIAAQgAAQEEAAAABAMAA=</HashCode>
+      <FileName>Messaging\Channel.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="BindingElements" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Interface Name="DotNetOpenAuth.Messaging.IChannelBindingElement">
+    <Position X="1.75" Y="1.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAEAAAAAAAAA=</HashCode>
+      <FileName>Messaging\IChannelBindingElement.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Protection" />
+    </ShowAsAssociation>
+  </Interface>
+  <Interface Name="DotNetOpenAuth.Messaging.IProtocolMessage">
+    <Position X="5.25" Y="3.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQAAAAAAAAAAAAAYAAAAAAAAAAAACAAAAAAA=</HashCode>
+      <FileName>Messaging\IProtocolMessage.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="RequiredProtection" />
+      <Property Name="Transport" />
+    </ShowAsAssociation>
+  </Interface>
+  <Interface Name="DotNetOpenAuth.Messaging.IDirectedProtocolMessage">
+    <Position X="5" Y="5.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Messaging\IDirectedProtocolMessage.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="DotNetOpenAuth.Messaging.MessageProtection">
+    <Position X="2" Y="3.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AIAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAEAAAA=</HashCode>
+      <FileName>Messaging\MessageProtection.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DotNetOpenAuth.Messaging.MessageTransport">
+    <Position X="8" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Messaging\MessageTransport.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

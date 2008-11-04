@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DotNetOAuth.Samples.ConsumerWpf.Properties {
+namespace DotNetOpenAuth.Samples.ConsumerWpf.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace DotNetOAuth.Samples.ConsumerWpf.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DotNetOAuth.Samples.ConsumerWpf.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DotNetOpenAuth.Samples.ConsumerWpf.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

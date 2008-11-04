@@ -1,4 +1,4 @@
-﻿<%@ Page Title="DotNetOAuth Consumer samples" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" %>
+﻿<%@ Page Title="DotNetOpenAuth Consumer samples" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" %>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="Body" runat="Server">
 	<p>OAuth allows this web site to access your private data with your authorization,

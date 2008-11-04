@@ -7,8 +7,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using DotNetOAuth.OAuth.ChannelElements;
-using DotNetOAuth.OAuth.Messages;
+using DotNetOpenAuth.OAuth.ChannelElements;
+using DotNetOpenAuth.OAuth.Messages;
 
 public class InMemoryTokenManager : ITokenManager {
 	private Dictionary<string, string> tokensAndSecrets = new Dictionary<string, string>();

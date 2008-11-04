@@ -8,8 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using DotNetOAuth.OAuth.ChannelElements;
-using DotNetOAuth.OAuth.Messages;
+using DotNetOpenAuth.OAuth.ChannelElements;
+using DotNetOpenAuth.OAuth.Messages;
 
 public class DatabaseTokenManager : ITokenManager {
 	#region ITokenManager Members

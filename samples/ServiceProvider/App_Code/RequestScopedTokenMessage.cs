@@ -1,5 +1,5 @@
-﻿using DotNetOAuth.Messaging;
-using DotNetOAuth.OAuth.Messages;
+﻿using DotNetOpenAuth.Messaging;
+using DotNetOpenAuth.OAuth.Messages;
 
 /// <summary>
 /// A custom web app version of the message sent to request an unauthorized token.

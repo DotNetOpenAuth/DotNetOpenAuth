@@ -3,7 +3,7 @@
 		<NetfxVer>2.0</NetfxVer>
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\..\..</ProjectRoot>
-		<OutputAssembly>DotNetOAuth</OutputAssembly>
+		<OutputAssembly>DotNetOpenAuth</OutputAssembly>
 		<OutputPath>$(ProjectRoot)\bin\$(Configuration)</OutputPath>
 		<DocOutputPath>$(ProjectRoot)\doc</DocOutputPath>
 		<IntermediatePath>$(ProjectRoot)\obj\$(Configuration)</IntermediatePath>

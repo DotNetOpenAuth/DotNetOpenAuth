@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DotNetOAuth.Samples.ConsumerWpf.Properties {
+namespace DotNetOpenAuth.Samples.ConsumerWpf.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

@@ -1,4 +1,4 @@
-﻿<%@ Page Title="DotNetOAuth Service Provider Sample" Language="C#" MasterPageFile="~/MasterPage.master" %>
+﻿<%@ Page Title="DotNetOpenAuth Service Provider Sample" Language="C#" MasterPageFile="~/MasterPage.master" %>
 
 <script runat="server">
 

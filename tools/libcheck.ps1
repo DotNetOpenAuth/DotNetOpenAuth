@@ -26,12 +26,12 @@ function Checkout($Version) {
 }
 
 function Build() {
-	msbuild.exe "$RootDir\src\DotNetOAuth\DotNetOAuth.csproj" /p:Configuration=$Configuration
+	msbuild.exe "$RootDir\src\DotNetOpenAuth\DotNetOpenAuth.csproj" /p:Configuration=$Configuration
 }
 
 function Generate-Metadata($Version) {
 	Push-Location $LibCheckTmpDir
-	& ".\libcheck.exe" -store "DotNetOAuth.dll" $Version -full "$BinDir\$Configuration"
+	& ".\libcheck.exe" -store "DotNetOpenAuth.dll" $Version -full "$BinDir\$Configuration"
 	Pop-Location
 }
 
@@ -43,7 +43,7 @@ function Compare-Metadata() {
 
 function ShadowCopy-Libcheck() {
 	# This function copies LibCheck from the checked out version to a temp
-	# directory so that as we git checkout other versions of DotNetOAuth,
+	# directory so that as we git checkout other versions of DotNetOpenAuth,
 	# we can be sure of running one consistent version of LibCheck.
 	Remove-Item -Recurse $LibCheckTmpDir
 	Copy-Item -Recurse "$ToolsDir\LibCheck" (Split-Path $LibCheckTmpDir)

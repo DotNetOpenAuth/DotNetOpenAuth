@@ -7,10 +7,10 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Security;
 using System.Web.UI.WebControls;
-using DotNetOAuth;
-using DotNetOAuth.Messaging;
-using DotNetOAuth.OAuth;
-using DotNetOAuth.OAuth.ChannelElements;
+using DotNetOpenAuth;
+using DotNetOpenAuth.Messaging;
+using DotNetOpenAuth.OAuth;
+using DotNetOpenAuth.OAuth.ChannelElements;
 using SampleServiceProvider;
 
 /// <summary>
@@ -105,7 +105,7 @@ public partial class SampleWcf : System.Web.UI.Page {
 				RequestTokenEndpoint = oauthEndpoint,
 				UserAuthorizationEndpoint = oauthEndpoint,
 				AccessTokenEndpoint = oauthEndpoint,
-				TamperProtectionElements = new DotNetOAuth.Messaging.ITamperProtectionChannelBindingElement[] {
+				TamperProtectionElements = new DotNetOpenAuth.Messaging.ITamperProtectionChannelBindingElement[] {
 					new HmacSha1SigningBindingElement(),
 				},
 			},

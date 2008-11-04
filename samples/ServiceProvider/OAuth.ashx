@@ -4,10 +4,10 @@ using System;
 using System.Linq;
 using System.Web;
 using System.Web.SessionState;
-using DotNetOAuth.OAuth;
-using DotNetOAuth.OAuth.ChannelElements;
-using DotNetOAuth.OAuth.Messages;
-using DotNetOAuth.Messaging;
+using DotNetOpenAuth.OAuth;
+using DotNetOpenAuth.OAuth.ChannelElements;
+using DotNetOpenAuth.OAuth.Messages;
+using DotNetOpenAuth.Messaging;
 
 public class OAuth : IHttpHandler, IRequiresSessionState {
 	ServiceProvider sp;

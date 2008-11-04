@@ -1,5 +1,5 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<Import Project="$(MSBuildProjectDirectory)\tools\DotNetOAuth.Common.Settings.targets"/>
+	<Import Project="$(MSBuildProjectDirectory)\tools\DotNetOpenAuth.Common.Settings.targets"/>
 	<PropertyGroup>
 		<AutomatedBuild>true</AutomatedBuild>
 	</PropertyGroup>
@@ -82,7 +82,7 @@
 	</Target>
 
 	<Target Name="_EnsureCleanDrop">
-		<!-- This target only does a clean sufficient to guarantee that our DotNetOAuth.dll is rebuilt, but
+		<!-- This target only does a clean sufficient to guarantee that our DotNetOpenAuth.dll is rebuilt, but
 		     we don't usually want to clean our documentation because that takes forever to build froms scratch. -->
 		<MSBuild Projects="$(ProjectRoot)\src\$(ProductName).sln" Targets="Clean" />
 	</Target>

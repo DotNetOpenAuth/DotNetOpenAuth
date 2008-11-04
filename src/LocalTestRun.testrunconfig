@@ -3,7 +3,7 @@
   <Description>This is a default test run configuration for a local test run.</Description>
   <CodeCoverage enabled="true">
     <Regular>
-      <CodeCoverageItem binaryFile="C:\git\dotnetoauth\bin\Debug\DotNetOAuth.dll" pdbFile="C:\git\dotnetoauth\bin\Debug\DotNetOAuth.pdb" instrumentInPlace="true" />
+      <CodeCoverageItem binaryFile="C:\git\dotnetoauth\bin\Debug\DotNetOpenAuth.dll" pdbFile="C:\git\dotnetoauth\bin\Debug\DotNetOpenAuth.pdb" instrumentInPlace="true" />
     </Regular>
   </CodeCoverage>
   <TestTypeSpecific>

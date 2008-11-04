@@ -16,5 +16,5 @@ public static class Logging {
 	/// <summary>
 	/// The logger for this sample to use.
 	/// </summary>
-	public static log4net.ILog Logger = log4net.LogManager.GetLogger("DotNetOAuth.ConsumerSample");
+	public static log4net.ILog Logger = log4net.LogManager.GetLogger("DotNetOpenAuth.ConsumerSample");
 }

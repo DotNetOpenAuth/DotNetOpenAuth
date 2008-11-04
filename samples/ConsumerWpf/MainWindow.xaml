@@ -1,7 +1,7 @@
-﻿<Window x:Class="DotNetOAuth.Samples.ConsumerWpf.MainWindow"
+﻿<Window x:Class="DotNetOpenAuth.Samples.ConsumerWpf.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="DotNetOAuth Consumer (sample)" Height="248" Width="429">
+        Title="DotNetOpenAuth Consumer (sample)" Height="248" Width="429">
 	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="Auto" />

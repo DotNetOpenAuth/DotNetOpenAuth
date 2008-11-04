@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using DotNetOAuth.OAuth.ChannelElements;
-using DotNetOAuth.OAuth.Messages;
+using DotNetOpenAuth.OAuth.ChannelElements;
+using DotNetOpenAuth.OAuth.Messages;
 
 /// <summary>
 /// A custom class that will cause the OAuth library to use our custom message types

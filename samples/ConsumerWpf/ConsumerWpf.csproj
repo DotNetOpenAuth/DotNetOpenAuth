@@ -8,7 +8,7 @@
     <ProjectGuid>{6EC36418-DBC5-4AD1-A402-413604AA7A08}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DotNetOAuth.Samples.ConsumerWpf</RootNamespace>
+    <RootNamespace>DotNetOpenAuth.Samples.ConsumerWpf</RootNamespace>
     <AssemblyName>ConsumerWpf</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -95,11 +95,11 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\DotNetOAuth\DotNetOAuth.csproj">
+    <ProjectReference Include="..\..\src\DotNetOpenAuth\DotNetOpenAuth.csproj">
       <Project>{3191B653-F76D-4C1A-9A5A-347BC3AAAAB7}</Project>
-      <Name>DotNetOAuth</Name>
+      <Name>DotNetOpenAuth</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DotNetOAuth.ApplicationBlock\DotNetOAuth.ApplicationBlock.csproj">
+    <ProjectReference Include="..\DotNetOpenAuth.ApplicationBlock\DotNetOpenAuth.ApplicationBlock.csproj">
       <Project>{AA78D112-D889-414B-A7D4-467B34C7B663}</Project>
       <Name>DotNetOAuth.ApplicationBlock</Name>
     </ProjectReference>

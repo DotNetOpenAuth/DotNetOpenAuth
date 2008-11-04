@@ -1,4 +1,4 @@
-﻿namespace DotNetOAuth.Samples.ConsumerWpf {
+﻿namespace DotNetOpenAuth.Samples.ConsumerWpf {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
@@ -14,11 +14,11 @@
 	using System.Windows.Navigation;
 	using System.Windows.Shapes;
 	using System.Xml.Linq;
-	using DotNetOAuth;
-	using DotNetOAuth.ApplicationBlock;
-	using DotNetOAuth.Messaging;
-	using DotNetOAuth.OAuth;
-	using DotNetOAuth.OAuth.ChannelElements;
+	using DotNetOpenAuth;
+	using DotNetOpenAuth.ApplicationBlock;
+	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuth;
+	using DotNetOpenAuth.OAuth.ChannelElements;
 
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml

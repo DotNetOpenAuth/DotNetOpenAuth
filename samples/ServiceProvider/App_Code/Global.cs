@@ -3,7 +3,7 @@ using System.Linq;
 using System.ServiceModel;
 using System.Text;
 using System.Web;
-using DotNetOAuth.OAuth.Messages;
+using DotNetOpenAuth.OAuth.Messages;
 
 /// <summary>
 /// The web application global events and properties.
@@ -17,7 +17,7 @@ public class Global : HttpApplication {
 	/// <summary>
 	/// The logger for this sample to use.
 	/// </summary>
-	public static log4net.ILog Logger = log4net.LogManager.GetLogger("DotNetOAuth.ConsumerSample");
+	public static log4net.ILog Logger = log4net.LogManager.GetLogger("DotNetOpenAuth.ConsumerSample");
 
 	/// <summary>
 	/// Gets the transaction-protected database connection for the current request.
