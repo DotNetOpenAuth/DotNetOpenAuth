@@ -13,7 +13,6 @@ namespace DotNetOAuth.Messaging {
 	using System.Net;
 	using System.Text;
 	using System.Web;
-	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.Messaging.Reflection;
 
 	/// <summary>

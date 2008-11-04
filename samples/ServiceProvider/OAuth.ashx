@@ -4,9 +4,9 @@ using System;
 using System.Linq;
 using System.Web;
 using System.Web.SessionState;
-using DotNetOAuth;
-using DotNetOAuth.ChannelElements;
-using DotNetOAuth.Messages;
+using DotNetOAuth.OAuth;
+using DotNetOAuth.OAuth.ChannelElements;
+using DotNetOAuth.OAuth.Messages;
 using DotNetOAuth.Messaging;
 
 public class OAuth : IHttpHandler, IRequiresSessionState {

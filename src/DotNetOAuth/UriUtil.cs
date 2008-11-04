@@ -25,7 +25,7 @@ namespace DotNetOAuth {
 			}
 
 			NameValueCollection nvc = HttpUtility.ParseQueryString(uri.Query);
-			return nvc.Keys.OfType<string>().Any(key => key.StartsWith(Protocol.V10.ParameterPrefix, StringComparison.Ordinal));
+			return nvc.Keys.OfType<string>().Any(key => key.StartsWith(OAuth.Protocol.V10.ParameterPrefix, StringComparison.Ordinal));
 		}
 	}
 }

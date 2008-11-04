@@ -4,14 +4,15 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOAuth.Test {
+namespace DotNetOAuth.OAuth.Test {
 	using System;
 	using System.IO;
-	using System.Linq;
 	using System.Net;
-	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.Messaging;
+	using DotNetOAuth.OAuth.ChannelElements;
+	using DotNetOAuth.Test;
 	using DotNetOAuth.Test.Mocks;
+	using DotNetOAuth.Test.OAuth;
 	using DotNetOAuth.Test.Scenarios;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 

@@ -6,7 +6,7 @@
 
 namespace DotNetOAuth.Messaging {
 	using System;
-	using DotNetOAuth.ChannelElements;
+	using DotNetOAuth.OAuth.ChannelElements;
 
 	/// <summary>
 	/// An interface that must be implemented by message transforms/validators in order

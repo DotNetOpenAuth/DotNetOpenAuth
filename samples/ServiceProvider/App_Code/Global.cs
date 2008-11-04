@@ -3,7 +3,7 @@ using System.Linq;
 using System.ServiceModel;
 using System.Text;
 using System.Web;
-using DotNetOAuth.Messages;
+using DotNetOAuth.OAuth.Messages;
 
 /// <summary>
 /// The web application global events and properties.

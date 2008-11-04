@@ -10,8 +10,8 @@ namespace DotNetOAuth.Messaging {
 	using System.Diagnostics;
 	using System.Globalization;
 	using System.Reflection;
-	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.Messaging.Reflection;
+	using DotNetOAuth.OAuth.ChannelElements;
 
 	/// <summary>
 	/// Serializes/deserializes OAuth messages for/from transit.

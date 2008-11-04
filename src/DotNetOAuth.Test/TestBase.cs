@@ -6,7 +6,7 @@
 
 namespace DotNetOAuth.Test {
 	using System.Reflection;
-	using DotNetOAuth.Messages;
+	using DotNetOAuth.OAuth.Messages;
 	using log4net;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 

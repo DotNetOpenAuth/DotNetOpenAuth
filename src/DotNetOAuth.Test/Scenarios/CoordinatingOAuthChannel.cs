@@ -6,13 +6,11 @@
 
 namespace DotNetOAuth.Test.Scenarios {
 	using System;
-	using System.Reflection;
 	using System.Threading;
-	using DotNetOAuth.ChannelElements;
-	using DotNetOAuth.Messages;
 	using DotNetOAuth.Messaging;
 	using DotNetOAuth.Messaging.Bindings;
-	using DotNetOAuth.Messaging.Reflection;
+	using DotNetOAuth.OAuth.ChannelElements;
+	using DotNetOAuth.OAuth.Messages;
 	using DotNetOAuth.Test.Mocks;
 
 	/// <summary>

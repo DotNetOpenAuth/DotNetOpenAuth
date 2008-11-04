@@ -9,9 +9,9 @@ namespace DotNetOAuth.ApplicationBlock {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Xml.Linq;
-	using DotNetOAuth.ChannelElements;
-	using DotNetOAuth.Messages;
 	using DotNetOAuth.Messaging;
+	using DotNetOAuth.OAuth;
+	using DotNetOAuth.OAuth.ChannelElements;
 
 	/// <summary>
 	/// A consumer capable of communicating with Google Data APIs.

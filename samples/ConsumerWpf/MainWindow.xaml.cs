@@ -15,9 +15,10 @@
 	using System.Windows.Shapes;
 	using System.Xml.Linq;
 	using DotNetOAuth;
-	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.ApplicationBlock;
 	using DotNetOAuth.Messaging;
+	using DotNetOAuth.OAuth;
+	using DotNetOAuth.OAuth.ChannelElements;
 
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml

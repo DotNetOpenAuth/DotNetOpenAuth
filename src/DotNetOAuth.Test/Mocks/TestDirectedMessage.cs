@@ -6,8 +6,8 @@
 
 namespace DotNetOAuth.Test.Mocks {
 	using System;
-	using DotNetOAuth.ChannelElements;
 	using DotNetOAuth.Messaging;
+	using DotNetOAuth.OAuth.ChannelElements;
 
 	internal class TestDirectedMessage : TestMessage, IOAuthDirectedMessage {
 		internal TestDirectedMessage() {

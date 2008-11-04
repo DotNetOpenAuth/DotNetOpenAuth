@@ -8,8 +8,9 @@ using System.ServiceModel.Channels;
 using System.ServiceModel.Security;
 using System.Web.UI.WebControls;
 using DotNetOAuth;
-using DotNetOAuth.ChannelElements;
 using DotNetOAuth.Messaging;
+using DotNetOAuth.OAuth;
+using DotNetOAuth.OAuth.ChannelElements;
 using SampleServiceProvider;
 
 /// <summary>

@@ -8,8 +8,8 @@ namespace DotNetOAuth.Samples.ConsumerWpf {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
-	using DotNetOAuth.ChannelElements;
-	using DotNetOAuth.Messages;
+	using DotNetOAuth.OAuth.ChannelElements;
+	using DotNetOAuth.OAuth.Messages;
 
 	internal class InMemoryTokenManager : ITokenManager {
 		private Dictionary<string, string> tokensAndSecrets = new Dictionary<string, string>();

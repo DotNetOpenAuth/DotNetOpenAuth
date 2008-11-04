@@ -6,10 +6,10 @@
 
 namespace DotNetOAuth.Test.Scenarios {
 	using System;
-	using System.Linq;
 	using System.Threading;
-	using DotNetOAuth.Messaging;
+	using DotNetOAuth.OAuth;
 	using DotNetOAuth.Test.Mocks;
+	using DotNetOAuth.Test.OAuth;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	/// <summary>

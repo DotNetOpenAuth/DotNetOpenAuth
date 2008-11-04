@@ -9,7 +9,7 @@
 // "In Project Suppression File". 
 // You do not need to add suppressions to this file manually. 
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sha", Scope = "type", Target = "DotNetOAuth.ChannelElements.HmacSha1SigningBindingElement")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Hmac", Scope = "type", Target = "DotNetOAuth.ChannelElements.HmacSha1SigningBindingElement")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Rsa", Scope = "type", Target = "DotNetOAuth.ChannelElements.RsaSha1SigningBindingElement")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sha", Scope = "type", Target = "DotNetOAuth.ChannelElements.RsaSha1SigningBindingElement")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sha", Scope = "type", Target = "DotNetOAuth.OAuth.ChannelElements.HmacSha1SigningBindingElement")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Hmac", Scope = "type", Target = "DotNetOAuth.OAuth.ChannelElements.HmacSha1SigningBindingElement")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Rsa", Scope = "type", Target = "DotNetOAuth.OAuth.ChannelElements.RsaSha1SigningBindingElement")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sha", Scope = "type", Target = "DotNetOAuth.OAuth.ChannelElements.RsaSha1SigningBindingElement")]

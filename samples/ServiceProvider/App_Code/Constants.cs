@@ -1,7 +1,7 @@
 ﻿using System;
-using DotNetOAuth;
-using DotNetOAuth.ChannelElements;
 using DotNetOAuth.Messaging;
+using DotNetOAuth.OAuth;
+using DotNetOAuth.OAuth.ChannelElements;
 
 /// <summary>
 /// Service Provider definitions.

@@ -8,8 +8,9 @@ namespace DotNetOAuth.Test.Mocks {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
-	using DotNetOAuth.ChannelElements;
-	using DotNetOAuth.Messages;
+	using DotNetOAuth.OAuth.ChannelElements;
+	using DotNetOAuth.OAuth.Messages;
+	using DotNetOAuth.Test.OAuth;
 
 	internal class InMemoryTokenManager : ITokenManager {
 		private Dictionary<string, string> consumersAndSecrets = new Dictionary<string, string>();
