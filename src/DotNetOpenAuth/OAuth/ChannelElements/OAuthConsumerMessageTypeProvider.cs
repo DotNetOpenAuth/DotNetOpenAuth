@@ -88,7 +88,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				return typeof(AuthorizedTokenResponse);
 			} else {
 				Logger.ErrorFormat("Unexpected response message given the request type {0}", request.GetType().Name);
-				throw new ProtocolException(Strings.InvalidIncomingMessage);
+				throw new ProtocolException(OAuthStrings.InvalidIncomingMessage);
 			}
 		}
 

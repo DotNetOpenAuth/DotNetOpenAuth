@@ -73,7 +73,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			this.webRequestHandler = webRequestHandler;
 			this.TokenManager = tokenManager;
 			if (signingBindingElement.SignatureCallback != null) {
-				throw new ArgumentException(Strings.SigningElementAlreadyAssociatedWithChannel, "signingBindingElement");
+				throw new ArgumentException(OAuthStrings.SigningElementAlreadyAssociatedWithChannel, "signingBindingElement");
 			}
 
 			signingBindingElement.SignatureCallback = this.SignatureCallback;
@@ -390,7 +390,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 					message.TokenSecret = this.TokenManager.GetTokenSecret(tokenMessage.Token);
 				}
 			} catch (KeyNotFoundException ex) {
-				throw new ProtocolException(Strings.ConsumerOrTokenSecretNotFound, ex);
+				throw new ProtocolException(OAuthStrings.ConsumerOrTokenSecretNotFound, ex);
 			}
 		}
 	}

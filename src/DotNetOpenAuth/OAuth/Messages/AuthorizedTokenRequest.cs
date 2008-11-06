@@ -46,7 +46,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 			base.EnsureValidMessage();
 
 			if (this.ExtraData.Count > 0) {
-				throw new ProtocolException(string.Format(CultureInfo.CurrentCulture, Strings.MessageNotAllowedExtraParameters, GetType().Name));
+				throw new ProtocolException(string.Format(CultureInfo.CurrentCulture, OAuthStrings.MessageNotAllowedExtraParameters, GetType().Name));
 			}
 		}
 	}

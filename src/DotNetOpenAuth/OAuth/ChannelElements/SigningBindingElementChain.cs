@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			}
 			MessageProtections protection = signers[0].Protection;
 			if (signers.Any(element => element.Protection != protection)) {
-				throw new ArgumentException(Strings.SigningElementsMustShareSameProtection, "signers");
+				throw new ArgumentException(OAuthStrings.SigningElementsMustShareSameProtection, "signers");
 			}
 
 			this.signers = signers;

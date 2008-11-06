@@ -83,6 +83,11 @@
     <Compile Include="OAuth\Messages\ITokenSecretContainingMessage.cs" />
     <Compile Include="Messaging\ChannelEventArgs.cs" />
     <Compile Include="Messaging\ITamperProtectionChannelBindingElement.cs" />
+    <Compile Include="OAuth\OAuthStrings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>OAuthStrings.resx</DependentUpon>
+    </Compile>
     <Compile Include="OAuth\ServiceProviderDescription.cs" />
     <Compile Include="OAuth\Messages\ITokenContainingMessage.cs" />
     <Compile Include="OAuth\Messages\SignedMessageBase.cs" />
@@ -165,6 +170,10 @@
     <EmbeddedResource Include="Messaging\MessagingStrings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>MessagingStrings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OAuth\OAuthStrings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>OAuthStrings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Strings.resx">
       <Generator>ResXFileCodeGenerator</Generator>

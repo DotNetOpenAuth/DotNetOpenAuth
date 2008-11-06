@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.OAuth {
 
 			set {
 				if (value != null && UriUtil.QueryStringContainsOAuthParameters(value.Location)) {
-					throw new ArgumentException(Strings.RequestUrlMustNotHaveOAuthParameters);
+					throw new ArgumentException(OAuthStrings.RequestUrlMustNotHaveOAuthParameters);
 				}
 
 				this.requestTokenEndpoint = value;

@@ -290,7 +290,7 @@ namespace DotNetOpenAuth.OAuth {
 				throw new ProtocolException(
 					string.Format(
 						CultureInfo.CurrentCulture,
-						Strings.AccessTokenNotAuthorized,
+						OAuthStrings.AccessTokenNotAuthorized,
 						request.RequestToken));
 			}
 
@@ -372,7 +372,7 @@ namespace DotNetOpenAuth.OAuth {
 					throw new ProtocolException(
 						string.Format(
 							CultureInfo.CurrentCulture,
-							Strings.BadAccessTokenInProtectedResourceRequest,
+							OAuthStrings.BadAccessTokenInProtectedResourceRequest,
 							accessMessage.AccessToken));
 				}
 			}
