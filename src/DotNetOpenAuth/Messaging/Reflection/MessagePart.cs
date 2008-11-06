@@ -23,6 +23,11 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		private static readonly Dictionary<Type, ValueMapping> converters = new Dictionary<Type, ValueMapping>();
 
 		/// <summary>
+		/// A map of instantiated custom encoders used to encode/decode message parts.
+		/// </summary>
+		private static readonly Dictionary<Type, IMessagePartEncoder> encoders = new Dictionary<Type, IMessagePartEncoder>();
+
+		/// <summary>
 		/// The string-object conversion routines to use for this individual message part.
 		/// </summary>
 		private ValueMapping converter;
@@ -54,6 +59,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		static MessagePart() {
 			Map<Uri>(uri => uri.AbsoluteUri, str => new Uri(str));
 			Map<DateTime>(dt => XmlConvert.ToString(dt, XmlDateTimeSerializationMode.Utc), str => XmlConvert.ToDateTime(str, XmlDateTimeSerializationMode.Utc));
+			Map<byte[]>(bytes => Convert.ToBase64String(bytes), str => Convert.FromBase64String(str));
 		}
 
 		/// <summary>
@@ -91,13 +97,27 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			this.Name = attribute.Name ?? member.Name;
 			this.RequiredProtection = attribute.RequiredProtection;
 			this.IsRequired = attribute.IsRequired;
+			this.AllowEmpty = attribute.AllowEmpty;
 			this.memberDeclaredType = (this.field != null) ? this.field.FieldType : this.property.PropertyType;
 			this.defaultMemberValue = DeriveDefaultValue(this.memberDeclaredType);
 
-			if (!converters.TryGetValue(this.memberDeclaredType, out this.converter)) {
+			if (attribute.Encoder == null) {
+				if (!converters.TryGetValue(this.memberDeclaredType, out this.converter)) {
+					this.converter = new ValueMapping(
+						obj => obj != null ? obj.ToString() : null,
+						str => str != null ? Convert.ChangeType(str, this.memberDeclaredType, CultureInfo.InvariantCulture) : null);
+				}
+			} else {
+				var encoder = GetEncoder(attribute.Encoder);
 				this.converter = new ValueMapping(
-					obj => obj != null ? obj.ToString() : null,
-					str => str != null ? Convert.ChangeType(str, this.memberDeclaredType, CultureInfo.InvariantCulture) : null);
+					obj => encoder.Encode(obj),
+					str => encoder.Decode(str));
+			}
+
+			if (this.field != null && (this.field.Attributes & FieldAttributes.InitOnly) != 0) {
+				this.IsConstantValue = true;
+			} else if (this.property != null && !this.property.CanWrite) {
+				this.IsConstantValue = true;
 			}
 
 			// Validate a sane combination of settings
@@ -121,16 +141,47 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		internal bool IsRequired { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether the string value is allowed to be empty in the serialized message.
+		/// </summary>
+		internal bool AllowEmpty { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the field or property must remain its default value.
+		/// </summary>
+		internal bool IsConstantValue { get; set; }
+
+		/// <summary>
 		/// Sets the member of a given message to some given value.
 		/// Used in deserialization.
 		/// </summary>
 		/// <param name="message">The message instance containing the member whose value should be set.</param>
 		/// <param name="value">The string representation of the value to set.</param>
 		internal void SetValue(IProtocolMessage message, string value) {
-			if (this.property != null) {
-				this.property.SetValue(message, this.ToValue(value), null);
-			} else {
-				this.field.SetValue(message, this.ToValue(value));
+			if (message == null) {
+				throw new ArgumentNullException("message");
+			}
+
+			try {
+				if (this.IsConstantValue) {
+					string constantValue = this.GetValue(message);
+					if (!string.Equals(constantValue, value)) {
+						throw new ArgumentException(string.Format(
+							CultureInfo.CurrentCulture,
+							MessagingStrings.UnexpectedMessagePartValueForConstant,
+							message.GetType().Name,
+							this.Name,
+							constantValue,
+							value));
+					}
+				} else {
+					if (this.property != null) {
+						this.property.SetValue(message, this.ToValue(value), null);
+					} else {
+						this.field.SetValue(message, this.ToValue(value));
+					}
+				}
+			} catch (FormatException ex) {
+				throw ErrorUtilities.Wrap(ex, MessagingStrings.MessagePartReadFailure, message.GetType(), this.Name, value);
 			}
 		}
 
@@ -141,7 +192,12 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="message">The message instance to read the value from.</param>
 		/// <returns>The string representation of the member's value.</returns>
 		internal string GetValue(IProtocolMessage message) {
-			return this.ToString(this.GetValueAsObject(message));
+			try {
+				object value = this.GetValueAsObject(message);
+				return this.ToString(value);
+			} catch (FormatException ex) {
+				throw ErrorUtilities.Wrap(ex, MessagingStrings.MessagePartWriteFailure, message.GetType(), this.Name);
+			}
 		}
 
 		/// <summary>
@@ -200,21 +256,39 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		}
 
 		/// <summary>
+		/// Retrieves a previously instantiated encoder of a given type, or creates a new one and stores it for later retrieval as well.
+		/// </summary>
+		/// <param name="messagePartEncoder">The message part encoder type.</param>
+		/// <returns>An instance of the desired encoder.</returns>
+		private static IMessagePartEncoder GetEncoder(Type messagePartEncoder) {
+			IMessagePartEncoder encoder;
+			if (!encoders.TryGetValue(messagePartEncoder, out encoder)) {
+				encoder = encoders[messagePartEncoder] = (IMessagePartEncoder)Activator.CreateInstance(messagePartEncoder);
+			}
+
+			return encoder;
+		}
+
+		/// <summary>
 		/// Converts a string representation of the member's value to the appropriate type.
 		/// </summary>
 		/// <param name="value">The string representation of the member's value.</param>
-		/// <returns>An instance of the appropriate type for setting the member.</returns>
+		/// <returns>
+		/// An instance of the appropriate type for setting the member.
+		/// </returns>
 		private object ToValue(string value) {
-			return this.converter.StringToValue(value);
+			return value == null ? null : this.converter.StringToValue(value);
 		}
 
 		/// <summary>
 		/// Converts the member's value to its string representation.
 		/// </summary>
 		/// <param name="value">The value of the member.</param>
-		/// <returns>The string representation of the member's value.</returns>
+		/// <returns>
+		/// The string representation of the member's value.
+		/// </returns>
 		private string ToString(object value) {
-			return this.converter.ValueToString(value);
+			return value == null ? null : this.converter.ValueToString(value);
 		}
 
 		/// <summary>

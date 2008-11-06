@@ -115,6 +115,15 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error while deserializing message {0}..
+        /// </summary>
+        internal static string ErrorDeserializingMessage {
+            get {
+                return ResourceManager.GetString("ErrorDeserializingMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error occurred while sending a direct message or getting the response..
         /// </summary>
         internal static string ErrorInRequestReplyMessage {
@@ -214,6 +223,42 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The value for {0}.{1} on member {1} was expected to derive from {2} but was {3}..
+        /// </summary>
+        internal static string MessagePartEncoderWrongType {
+            get {
+                return ResourceManager.GetString("MessagePartEncoderWrongType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error while reading message &apos;{0}&apos; parameter &apos;{1}&apos; with value &apos;{2}&apos;..
+        /// </summary>
+        internal static string MessagePartReadFailure {
+            get {
+                return ResourceManager.GetString("MessagePartReadFailure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message parameter &apos;{0}&apos; with value &apos;{1}&apos; failed to base64 decode..
+        /// </summary>
+        internal static string MessagePartValueBase64DecodingFault {
+            get {
+                return ResourceManager.GetString("MessagePartValueBase64DecodingFault", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error while preparing message &apos;{0}&apos; parameter &apos;{1}&apos; for sending..
+        /// </summary>
+        internal static string MessagePartWriteFailure {
+            get {
+                return ResourceManager.GetString("MessagePartWriteFailure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A message response is already queued for sending in the response stream..
         /// </summary>
         internal static string QueuedMessageResponseAlreadyExists {
@@ -237,6 +282,15 @@ namespace DotNetOpenAuth.Messaging {
         internal static string ReplayProtectionNotSupported {
             get {
                 return ResourceManager.GetString("ReplayProtectionNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The following required non-empty parameters were empty in the {0} message: {1}.
+        /// </summary>
+        internal static string RequiredNonEmptyParameterWasEmpty {
+            get {
+                return ResourceManager.GetString("RequiredNonEmptyParameterWasEmpty", resourceCulture);
             }
         }
         
@@ -318,6 +372,24 @@ namespace DotNetOpenAuth.Messaging {
         internal static string TooManyBindingsOfferingSameProtection {
             get {
                 return ResourceManager.GetString("TooManyBindingsOfferingSameProtection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message parameter &apos;{0}&apos; had unexpected value &apos;{1}&apos;..
+        /// </summary>
+        internal static string UnexpectedMessagePartValue {
+            get {
+                return ResourceManager.GetString("UnexpectedMessagePartValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expected message {0} parameter &apos;{1}&apos; to have value &apos;{2}&apos; but had &apos;{3}&apos; instead..
+        /// </summary>
+        internal static string UnexpectedMessagePartValueForConstant {
+            get {
+                return ResourceManager.GetString("UnexpectedMessagePartValueForConstant", resourceCulture);
             }
         }
         

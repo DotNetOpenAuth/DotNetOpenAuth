@@ -126,6 +126,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// that type member is set.  Otherwise the key/value is stored in a
 		/// dictionary for extra (weakly typed) strings.
 		/// </remarks>
+		/// <exception cref="ArgumentException">Thrown when setting a value that is not allowed for a given <paramref name="key"/>.</exception>
 		public string this[string key] {
 			get {
 				MessagePart part;

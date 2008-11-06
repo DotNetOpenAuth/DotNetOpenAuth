@@ -23,6 +23,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Initializes a new instance of the <see cref="MessagePartAttribute"/> class.
 		/// </summary>
 		public MessagePartAttribute() {
+			this.AllowEmpty = true;
 		}
 
 		/// <summary>
@@ -32,7 +33,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// A special name to give the value of this member in the serialized message.
 		/// When null or empty, the name of the member will be used in the serialized message.
 		/// </param>
-		public MessagePartAttribute(string name) {
+		public MessagePartAttribute(string name) : this() {
 			this.Name = name;
 		}
 
@@ -53,5 +54,16 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets or sets a value indicating whether this member is a required part of the serialized message.
 		/// </summary>
 		public bool IsRequired { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the string value is allowed to be empty in the serialized message.
+		/// </summary>
+		/// <value>Default is true.</value>
+		public bool AllowEmpty { get; set; }
+
+		/// <summary>
+		/// Gets or sets a custom encoder to use to translate the applied member to and from a string.
+		/// </summary>
+		public Type Encoder { get; set; }
 	}
 }

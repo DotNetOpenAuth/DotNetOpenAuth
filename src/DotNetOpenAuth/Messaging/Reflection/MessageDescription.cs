@@ -106,12 +106,21 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		}
 
 		/// <summary>
+		/// Ensures the message parts pass basic validation.
+		/// </summary>
+		/// <param name="parts">The key/value pairs of the serialzied message.</param>
+		internal void EnsureMessagePartsPassBasicValidation(IDictionary<string, string> parts) {
+			this.EnsureRequiredMessagePartsArePresent(parts.Keys);
+			this.EnsureRequiredProtocolMessagePartsAreNotEmpty(parts);
+		}
+
+		/// <summary>
 		/// Verifies that a given set of keys include all the required parameters
 		/// for this message type or throws an exception.
 		/// </summary>
 		/// <param name="keys">The names of all parameters included in a message.</param>
 		/// <exception cref="ProtocolException">Thrown when required parts of a message are not in <paramref name="keys"/></exception>
-		internal void EnsureRequiredMessagePartsArePresent(IEnumerable<string> keys) {
+		private void EnsureRequiredMessagePartsArePresent(IEnumerable<string> keys) {
 			var missingKeys = (from part in Mapping.Values
 							   where part.IsRequired && !keys.Contains(part.Name)
 							   select part.Name).ToArray();
@@ -122,6 +131,25 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 						MessagingStrings.RequiredParametersMissing,
 						this.messageType.FullName,
 						string.Join(", ", missingKeys)));
+			}
+		}
+
+		/// <summary>
+		/// Ensures the protocol message parts that must not be empty are in fact not empty.
+		/// </summary>
+		/// <param name="partValues">A dictionary of key/value pairs that make up the serialized message.</param>
+		private void EnsureRequiredProtocolMessagePartsAreNotEmpty(IDictionary<string, string> partValues) {
+			string value;
+			var emptyValuedKeys = (from part in Mapping.Values
+								   where !part.AllowEmpty && partValues.TryGetValue(part.Name, out value) && value.Length == 0
+								   select part.Name).ToArray();
+			if (emptyValuedKeys.Length > 0) {
+				throw new ProtocolException(
+					string.Format(
+						CultureInfo.CurrentCulture,
+						MessagingStrings.RequiredNonEmptyParameterWasEmpty,
+						this.messageType.FullName,
+						string.Join(", ", emptyValuedKeys)));
 			}
 		}
 	}

@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 	using System;
 	using System.Linq;
 	using System.Reflection;
+	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.Test.Mocks;
@@ -62,10 +63,42 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 			Assert.AreEqual("8", part.GetValue(message));
 		}
 
+		[TestMethod]
+		public void Base64Member() {
+			var message = new MessageWithBase64EncodedString();
+			message.LastName = "andrew";
+			MessagePart part = GetMessagePart(message.GetType(), "nameBytes");
+			Assert.AreEqual("YW5kcmV3", part.GetValue(message));
+			part.SetValue(message, "YXJub3R0");
+			Assert.AreEqual("arnott", message.LastName);
+		}
+
+		[TestMethod]
+		public void ConstantFieldMemberValidValues() {
+			var message = new MessageWithConstantField();
+			MessagePart part = GetMessagePart(message.GetType(), "ConstantField");
+			Assert.AreEqual("abc", part.GetValue(message));
+			part.SetValue(message, "abc");
+			Assert.AreEqual("abc", part.GetValue(message));
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		public void ConstantFieldMemberInvalidValues() {
+			var message = new MessageWithConstantField();
+			MessagePart part = GetMessagePart(message.GetType(), "ConstantField");
+			part.SetValue(message, "def");
+		}
+
 		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void NonFieldOrPropertyMember() {
 			MemberInfo method = typeof(MessageWithNullableOptionalStruct).GetMethod("Equals", BindingFlags.Public | BindingFlags.Instance);
 			new MessagePart(method, new MessagePartAttribute());
+		}
+
+		private static MessagePart GetMessagePart(Type messageType, string memberName) {
+			FieldInfo field = messageType.GetField(memberName, BindingFlags.NonPublic | BindingFlags.Instance);
+			MessagePartAttribute attribute = field.GetCustomAttributes(typeof(MessagePartAttribute), true).OfType<MessagePartAttribute>().Single();
+			return new MessagePart(field, attribute);
 		}
 
 		private MessagePart ParameterizedMessageTypeTest(Type messageType) {
@@ -96,6 +129,23 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 		private class MessageWithNullableRequiredStruct : TestMessage {
 			[MessagePart(IsRequired = true)]
 			private int? OptionalInt { get; set; }
+		}
+
+		private class MessageWithBase64EncodedString : TestMessage {
+			[MessagePart]
+			private byte[] nameBytes;
+
+			public string LastName {
+				get { return this.nameBytes != null ? Encoding.UTF8.GetString(this.nameBytes) : null; }
+				set { this.nameBytes = value != null ? Encoding.UTF8.GetBytes(value) : null; }
+			}
+		}
+
+		private class MessageWithConstantField : TestMessage {
+			[MessagePart(IsRequired = true)]
+#pragma warning disable 0414 // read by reflection
+			private readonly string ConstantField = "abc";
+#pragma warning restore 0414
 		}
 	}
 }

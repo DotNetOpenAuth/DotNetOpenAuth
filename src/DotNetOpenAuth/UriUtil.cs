@@ -27,5 +27,20 @@ namespace DotNetOpenAuth {
 			NameValueCollection nvc = HttpUtility.ParseQueryString(uri.Query);
 			return nvc.Keys.OfType<string>().Any(key => key.StartsWith(OAuth.Protocol.V10.ParameterPrefix, StringComparison.Ordinal));
 		}
+
+		/// <summary>
+		/// Determines whether some <see cref="Uri"/> is using HTTPS.
+		/// </summary>
+		/// <param name="uri">The Uri being tested for security.</param>
+		/// <returns>
+		/// 	<c>true</c> if the URI represents an encrypted request; otherwise, <c>false</c>.
+		/// </returns>
+		internal static bool IsTransportSecure(this Uri uri) {
+			if (uri == null) {
+				throw new ArgumentNullException("uri");
+			}
+
+			return string.Equals(uri.Scheme, "https", StringComparison.OrdinalIgnoreCase);
+		}
 	}
 }

@@ -79,18 +79,23 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="fields">The name=value pairs that were read in from the transport.</param>
 		/// <param name="recipient">The recipient of the message.</param>
 		/// <returns>The instantiated and initialized <see cref="IProtocolMessage"/> instance.</returns>
+		/// <exception cref="ProtocolException">Thrown when protocol rules are broken by the incoming message.</exception>
 		internal IProtocolMessage Deserialize(IDictionary<string, string> fields, MessageReceivingEndpoint recipient) {
 			if (fields == null) {
 				throw new ArgumentNullException("fields");
 			}
 
 			// Before we deserialize the message, make sure all the required parts are present.
-			MessageDescription.Get(this.messageType).EnsureRequiredMessagePartsArePresent(fields.Keys);
+			MessageDescription.Get(this.messageType).EnsureMessagePartsPassBasicValidation(fields);
 
 			IProtocolMessage result = this.CreateMessage(recipient);
-			foreach (var pair in fields) {
-				IDictionary<string, string> dictionary = new MessageDictionary(result);
-				dictionary[pair.Key] = pair.Value;
+			try {
+				foreach (var pair in fields) {
+					IDictionary<string, string> dictionary = new MessageDictionary(result);
+					dictionary[pair.Key] = pair.Value;
+				}
+			} catch (ArgumentException ex) {
+				throw ErrorUtilities.Wrap(ex, MessagingStrings.ErrorDeserializingMessage, this.messageType.Name);
 			}
 			result.EnsureValidMessage();
 			return result;

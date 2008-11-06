@@ -552,7 +552,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			MessageDictionary dictionary = new MessageDictionary(message);
 			MessageDescription description = MessageDescription.Get(message.GetType());
-			description.EnsureRequiredMessagePartsArePresent(dictionary.Keys);
+			description.EnsureMessagePartsPassBasicValidation(dictionary);
 		}
 
 		/// <summary>
