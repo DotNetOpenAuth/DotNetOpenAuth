@@ -144,6 +144,20 @@
     <Compile Include="Messaging\MessageTransport.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthServiceProviderMessageTypeProvider.cs" />
     <Compile Include="Messaging\ProtocolException.cs" />
+    <Compile Include="OpenId\Messages\AssociateDiffieHellmanRequest.cs" />
+    <Compile Include="OpenId\Messages\AssociateDiffieHellmanResponse.cs" />
+    <Compile Include="OpenId\Messages\AssociateRequest.cs" />
+    <Compile Include="OpenId\Messages\AssociateSuccessfulResponse.cs" />
+    <Compile Include="OpenId\Messages\AssociateUnencryptedResponse.cs" />
+    <Compile Include="OpenId\Messages\AssociateUnsuccessfulResponse.cs" />
+    <Compile Include="OpenId\Messages\RequestBase.cs" />
+    <Compile Include="OpenId\Messages\ResponseBase.cs" />
+    <Compile Include="OpenId\OpenIdStrings.Designer.cs">
+      <DependentUpon>OpenIdStrings.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="OpenId\Protocol.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OAuth\Messages\UnauthorizedTokenRequest.cs" />
     <Compile Include="OAuth\ChannelElements\RsaSha1SigningBindingElement.cs" />
@@ -174,6 +188,10 @@
     <EmbeddedResource Include="OAuth\OAuthStrings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>OAuthStrings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OpenId\OpenIdStrings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>OpenIdStrings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Strings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
