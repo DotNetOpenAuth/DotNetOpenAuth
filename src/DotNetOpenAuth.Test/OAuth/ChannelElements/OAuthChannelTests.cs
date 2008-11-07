@@ -33,27 +33,23 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			this.webRequestHandler = new TestWebRequestHandler();
 			this.signingElement = new RsaSha1SigningBindingElement();
 			this.nonceStore = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
-			this.channel = new OAuthChannel(this.signingElement, this.nonceStore, new InMemoryTokenManager(), new TestMessageTypeProvider(), this.webRequestHandler);
-		}
-
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
-		public void CtorNullHandler() {
-			new OAuthChannel(new RsaSha1SigningBindingElement(), this.nonceStore, new InMemoryTokenManager(), new TestMessageTypeProvider(), null);
+			this.channel = new OAuthChannel(this.signingElement, this.nonceStore, new InMemoryTokenManager(), new TestMessageTypeProvider());
+			this.channel.WebRequestHandler = this.webRequestHandler;
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void CtorNullSigner() {
-			new OAuthChannel(null, this.nonceStore, new InMemoryTokenManager(), new TestMessageTypeProvider(), this.webRequestHandler);
+			new OAuthChannel(null, this.nonceStore, new InMemoryTokenManager(), new TestMessageTypeProvider());
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullStore() {
-			new OAuthChannel(new RsaSha1SigningBindingElement(), null, new InMemoryTokenManager(), new TestMessageTypeProvider(), this.webRequestHandler);
+			new OAuthChannel(new RsaSha1SigningBindingElement(), null, new InMemoryTokenManager(), new TestMessageTypeProvider());
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullTokenManager() {
-			new OAuthChannel(new RsaSha1SigningBindingElement(), this.nonceStore, null, new TestMessageTypeProvider(), this.webRequestHandler);
+			new OAuthChannel(new RsaSha1SigningBindingElement(), this.nonceStore, null, new TestMessageTypeProvider());
 		}
 
 		[TestMethod]
@@ -100,12 +96,6 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			Assert.AreEqual("http://hostb/pathB", body["Location"]);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
-		public void ReadFromResponseNull() {
-			Channel_Accessor accessor = Channel_Accessor.AttachShadow(this.channel);
-			accessor.ReadFromResponse(null);
-		}
-
 		[TestMethod]
 		public void ReadFromResponse() {
 			var fields = new Dictionary<string, string> {
@@ -121,14 +111,11 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			writer.Flush();
 			ms.Seek(0, SeekOrigin.Begin);
 			Channel_Accessor channelAccessor = Channel_Accessor.AttachShadow(this.channel);
-			IProtocolMessage message = channelAccessor.ReadFromResponse(ms);
-			Assert.IsNotNull(message);
-			Assert.IsInstanceOfType(message, typeof(TestMessage));
-			TestMessage testMessage = (TestMessage)message;
-			Assert.AreEqual(15, testMessage.Age);
-			Assert.AreEqual("Andrew", testMessage.Name);
-			Assert.AreEqual("http://hostb/pathB", testMessage.Location.AbsoluteUri);
-			Assert.IsNull(testMessage.EmptyMember);
+			IDictionary<string, string> deserializedFields = channelAccessor.ReadFromResponseInternal(new Response { ResponseStream = ms });
+			Assert.AreEqual(fields.Count, deserializedFields.Count);
+			foreach (string key in fields.Keys) {
+				Assert.AreEqual(fields[key], deserializedFields[key]);
+			}
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]

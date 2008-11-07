@@ -7,8 +7,6 @@
 namespace DotNetOpenAuth.Test.Mocks {
 	using System;
 	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -39,11 +37,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return base.ReadFromRequest(request);
 		}
 
-		protected override IProtocolMessage RequestInternal(IDirectedProtocolMessage request) {
-			throw new NotImplementedException();
-		}
-
-		protected override IProtocolMessage ReadFromResponseInternal(System.IO.Stream responseStream) {
+		protected override IDictionary<string, string> ReadFromResponseInternal(Response response) {
 			throw new NotImplementedException();
 		}
 

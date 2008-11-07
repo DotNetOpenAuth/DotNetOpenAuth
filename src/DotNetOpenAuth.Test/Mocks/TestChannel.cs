@@ -7,8 +7,7 @@
 namespace DotNetOpenAuth.Test.Mocks {
 	using System;
 	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
+	using System.Net;
 	using DotNetOpenAuth.Messaging;
 
 	internal class TestChannel : Channel {
@@ -20,12 +19,12 @@ namespace DotNetOpenAuth.Test.Mocks {
 			: base(messageTypeProvider, bindingElements) {
 		}
 
-		protected override IProtocolMessage RequestInternal(IDirectedProtocolMessage request) {
-			throw new NotImplementedException("Request");
+		protected override IDictionary<string, string> ReadFromResponseInternal(Response response) {
+			throw new NotImplementedException("ReadFromResponseInternal");
 		}
 
-		protected override IProtocolMessage ReadFromResponseInternal(System.IO.Stream responseStream) {
-			throw new NotImplementedException("ReadFromResponse");
+		protected override HttpWebRequest CreateHttpRequest(IDirectedProtocolMessage request) {
+			throw new NotImplementedException("CreateHttpRequest");
 		}
 
 		protected override Response SendDirectMessageResponse(IProtocolMessage response) {

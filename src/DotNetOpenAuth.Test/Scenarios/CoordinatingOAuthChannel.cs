@@ -11,7 +11,6 @@ namespace DotNetOpenAuth.Test.Scenarios {
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
-	using DotNetOpenAuth.Test.Mocks;
 
 	/// <summary>
 	/// A special channel used in test simulations to pass messages directly between two parties.
@@ -34,8 +33,7 @@ namespace DotNetOpenAuth.Test.Scenarios {
 			signingBindingElement,
 			new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge),
 			tokenManager,
-			isConsumer ? (IMessageTypeProvider)new OAuthConsumerMessageTypeProvider() : new OAuthServiceProviderMessageTypeProvider(tokenManager),
-			new TestWebRequestHandler()) {
+			isConsumer ? (IMessageTypeProvider)new OAuthConsumerMessageTypeProvider() : new OAuthServiceProviderMessageTypeProvider(tokenManager)) {
 		}
 
 		/// <summary>

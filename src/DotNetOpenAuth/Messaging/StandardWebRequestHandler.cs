@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OAuth.ChannelElements {
+namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.IO;
 	using System.Net;

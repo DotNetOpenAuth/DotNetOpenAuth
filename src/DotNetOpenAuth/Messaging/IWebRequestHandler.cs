@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OAuth.ChannelElements {
+namespace DotNetOpenAuth.Messaging {
 	using System.IO;
 	using System.Net;
 	using DotNetOpenAuth.Messaging;
@@ -12,7 +12,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	/// <summary>
 	/// A contract for <see cref="HttpWebRequest"/> handling.
 	/// </summary>
-	internal interface IWebRequestHandler {
+	public interface IWebRequestHandler {
 		/// <summary>
 		/// Prepares an <see cref="HttpWebRequest"/> that contains an POST entity for sending the entity.
 		/// </summary>

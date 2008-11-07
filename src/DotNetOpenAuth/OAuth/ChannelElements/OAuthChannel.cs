@@ -22,12 +22,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	/// </summary>
 	internal class OAuthChannel : Channel {
 		/// <summary>
-		/// The object that will transmit <see cref="HttpWebRequest"/> instances
-		/// and return their responses.
-		/// </summary>
-		private IWebRequestHandler webRequestHandler;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuthChannel"/> class.
 		/// </summary>
 		/// <param name="signingBindingElement">The binding element to use for signing.</param>
@@ -39,8 +33,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			signingBindingElement,
 			store,
 			tokenManager,
-			isConsumer ? (IMessageTypeProvider)new OAuthConsumerMessageTypeProvider() : new OAuthServiceProviderMessageTypeProvider(tokenManager),
-			new StandardWebRequestHandler()) {
+			isConsumer ? (IMessageTypeProvider)new OAuthConsumerMessageTypeProvider() : new OAuthServiceProviderMessageTypeProvider(tokenManager)) {
 		}
 
 		/// <summary>
@@ -54,23 +47,15 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Except for mock testing, this should always be one of
 		/// <see cref="OAuthConsumerMessageTypeProvider"/> or <see cref="OAuthServiceProviderMessageTypeProvider"/>.
 		/// </param>
-		/// <param name="webRequestHandler">
-		/// An instance to a <see cref="IWebRequestHandler"/> that will be used when submitting HTTP
-		/// requests and waiting for responses.
-		/// </param>
 		/// <remarks>
 		/// This overload for testing purposes only.
 		/// </remarks>
-		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, IMessageTypeProvider messageTypeProvider, IWebRequestHandler webRequestHandler)
+		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, IMessageTypeProvider messageTypeProvider)
 			: base(messageTypeProvider, new OAuthHttpMethodBindingElement(), signingBindingElement, new StandardExpirationBindingElement(), new StandardReplayProtectionBindingElement(store)) {
 			if (tokenManager == null) {
 				throw new ArgumentNullException("tokenManager");
 			}
-			if (webRequestHandler == null) {
-				throw new ArgumentNullException("webRequestHandler");
-			}
 
-			this.webRequestHandler = webRequestHandler;
 			this.TokenManager = tokenManager;
 			if (signingBindingElement.SignatureCallback != null) {
 				throw new ArgumentException(OAuthStrings.SigningElementAlreadyAssociatedWithChannel, "signingBindingElement");
@@ -133,7 +118,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			}
 
 			PrepareMessageForSending(request);
-			return this.InitializeRequestInternal(request);
+			return this.CreateHttpRequest(request);
 		}
 
 		/// <summary>
@@ -187,43 +172,57 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		}
 
 		/// <summary>
-		/// Gets the protocol message that may be in the given HTTP response stream.
+		/// Gets the protocol message that may be in the given HTTP response.
 		/// </summary>
-		/// <param name="responseStream">The response that is anticipated to contain an OAuth message.</param>
-		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
-		protected override IProtocolMessage ReadFromResponseInternal(Stream responseStream) {
-			if (responseStream == null) {
-				throw new ArgumentNullException("responseStream");
+		/// <param name="response">The response that is anticipated to contain an protocol message.</param>
+		/// <returns>
+		/// The deserialized message parts, if found.  Null otherwise.
+		/// </returns>
+		protected override IDictionary<string, string> ReadFromResponseInternal(Response response) {
+			if (response == null) {
+				throw new ArgumentNullException("response");
 			}
 
-			using (StreamReader reader = new StreamReader(responseStream)) {
-				string response = reader.ReadToEnd();
-				var fields = HttpUtility.ParseQueryString(response).ToDictionary();
-				return Receive(fields, null);
-			}
+			return HttpUtility.ParseQueryString(response.Body).ToDictionary();
 		}
 
 		/// <summary>
-		/// Sends a direct message to a remote party and waits for the response.
+		/// Prepares an HTTP request that carries a given message.
 		/// </summary>
 		/// <param name="request">The message to send.</param>
-		/// <returns>The remote party's response.</returns>
-		protected override IProtocolMessage RequestInternal(IDirectedProtocolMessage request) {
-			HttpWebRequest httpRequest = this.InitializeRequestInternal(request);
-
-			Response response = this.webRequestHandler.GetResponse(httpRequest);
-			if (response.ResponseStream == null) {
-				return null;
+		/// <returns>
+		/// The <see cref="HttpRequest"/> prepared to send the request.
+		/// </returns>
+		protected override HttpWebRequest CreateHttpRequest(IDirectedProtocolMessage request) {
+			if (request == null) {
+				throw new ArgumentNullException("request");
 			}
-			var responseFields = HttpUtility.ParseQueryString(response.Body).ToDictionary();
-			Type messageType = this.MessageTypeProvider.GetResponseMessageType(request, responseFields);
-			if (messageType == null) {
-				return null;
+			if (request.Recipient == null) {
+				throw new ArgumentException(MessagingStrings.DirectedMessageMissingRecipient, "request");
 			}
-			var responseSerialize = MessageSerializer.Get(messageType);
-			var responseMessage = responseSerialize.Deserialize(responseFields, null);
+			IOAuthDirectedMessage oauthRequest = request as IOAuthDirectedMessage;
+			if (oauthRequest == null) {
+				throw new ArgumentException(
+					string.Format(
+						CultureInfo.CurrentCulture,
+						MessagingStrings.UnexpectedType,
+						typeof(IOAuthDirectedMessage),
+						request.GetType()));
+			}
 
-			return responseMessage;
+			HttpWebRequest httpRequest;
+
+			HttpDeliveryMethods transmissionMethod = oauthRequest.HttpMethods;
+			if ((transmissionMethod & HttpDeliveryMethods.AuthorizationHeaderRequest) != 0) {
+				httpRequest = this.InitializeRequestAsAuthHeader(request);
+			} else if ((transmissionMethod & HttpDeliveryMethods.PostRequest) != 0) {
+				httpRequest = this.InitializeRequestAsPost(request);
+			} else if ((transmissionMethod & HttpDeliveryMethods.GetRequest) != 0) {
+				httpRequest = InitializeRequestAsGet(request);
+			} else {
+				throw new NotSupportedException();
+			}
+			return httpRequest;
 		}
 
 		/// <summary>
@@ -269,43 +268,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			MessagingUtilities.AppendQueryArgs(builder, fields);
 			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(builder.Uri);
 
-			return httpRequest;
-		}
-
-		/// <summary>
-		/// Initializes a web request by attaching a message to it.
-		/// </summary>
-		/// <param name="request">The message to attach.</param>
-		/// <returns>The initialized web request.</returns>
-		private HttpWebRequest InitializeRequestInternal(IDirectedProtocolMessage request) {
-			if (request == null) {
-				throw new ArgumentNullException("request");
-			}
-			if (request.Recipient == null) {
-				throw new ArgumentException(MessagingStrings.DirectedMessageMissingRecipient, "request");
-			}
-			IOAuthDirectedMessage oauthRequest = request as IOAuthDirectedMessage;
-			if (oauthRequest == null) {
-				throw new ArgumentException(
-					string.Format(
-						CultureInfo.CurrentCulture,
-						MessagingStrings.UnexpectedType,
-						typeof(IOAuthDirectedMessage),
-						request.GetType()));
-			}
-
-			HttpWebRequest httpRequest;
-
-			HttpDeliveryMethods transmissionMethod = oauthRequest.HttpMethods;
-			if ((transmissionMethod & HttpDeliveryMethods.AuthorizationHeaderRequest) != 0) {
-				httpRequest = this.InitializeRequestAsAuthHeader(request);
-			} else if ((transmissionMethod & HttpDeliveryMethods.PostRequest) != 0) {
-				httpRequest = this.InitializeRequestAsPost(request);
-			} else if ((transmissionMethod & HttpDeliveryMethods.GetRequest) != 0) {
-				httpRequest = InitializeRequestAsGet(request);
-			} else {
-				throw new NotSupportedException();
-			}
 			return httpRequest;
 		}
 
@@ -369,7 +331,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			httpRequest.ContentType = "application/x-www-form-urlencoded";
 			string requestBody = MessagingUtilities.CreateQueryString(fields);
 			httpRequest.ContentLength = requestBody.Length;
-			using (TextWriter writer = this.webRequestHandler.GetRequestStream(httpRequest)) {
+			using (TextWriter writer = this.WebRequestHandler.GetRequestStream(httpRequest)) {
 				writer.Write(requestBody);
 			}
 

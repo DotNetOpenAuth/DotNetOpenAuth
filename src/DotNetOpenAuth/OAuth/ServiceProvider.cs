@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.OAuth {
 			var signingElement = serviceDescription.CreateTamperProtectionElement();
 			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
 			this.ServiceDescription = serviceDescription;
-			this.OAuthChannel = new OAuthChannel(signingElement, store, tokenManager, messageTypeProvider, new StandardWebRequestHandler());
+			this.OAuthChannel = new OAuthChannel(signingElement, store, tokenManager, messageTypeProvider);
 			this.TokenGenerator = new StandardTokenGenerator();
 		}
 

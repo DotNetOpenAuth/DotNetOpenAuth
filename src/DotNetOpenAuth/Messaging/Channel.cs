@@ -77,6 +77,7 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			this.messageTypeProvider = messageTypeProvider;
+			this.WebRequestHandler = new StandardWebRequestHandler();
 			this.bindingElements = new List<IChannelBindingElement>(ValidateAndPrepareBindingElements(bindingElements));
 		}
 
@@ -84,6 +85,16 @@ namespace DotNetOpenAuth.Messaging {
 		/// An event fired whenever a message is about to be encoded and sent.
 		/// </summary>
 		internal event EventHandler<ChannelEventArgs> Sending;
+
+		/// <summary>
+		/// Gets or sets an instance to a <see cref="IWebRequestHandler"/> that will be used when 
+		/// submitting HTTP requests and waiting for responses.
+		/// </summary>
+		/// <remarks>
+		/// This defaults to a straightforward implementation, but can be set
+		/// to a mock object for testing purposes.
+		/// </remarks>
+		public IWebRequestHandler WebRequestHandler { get; set; }
 
 		/// <summary>
 		/// Gets the binding elements used by this channel, in the order they are applied to outgoing messages.
@@ -302,13 +313,12 @@ namespace DotNetOpenAuth.Messaging {
 
 			this.PrepareMessageForSending(request);
 			Logger.DebugFormat("Sending request: {0}", request);
-			IProtocolMessage response = this.RequestInternal(request);
-			if (response != null) {
-				Logger.DebugFormat("Received response: {0}", response);
-				this.VerifyMessageAfterReceiving(response);
-			}
+			var responseMessage = this.RequestInternal(request);
 
-			return response;
+			Logger.DebugFormat("Received message response: {0}", responseMessage);
+			this.VerifyMessageAfterReceiving(responseMessage);
+
+			return responseMessage;
 		}
 
 		/// <summary>
@@ -340,6 +350,36 @@ namespace DotNetOpenAuth.Messaging {
 			if (sending != null) {
 				sending(this, new ChannelEventArgs(message));
 			}
+		}
+
+		/// <summary>
+		/// Submits a direct request message to some remote party and blocks waiting for an immediately reply.
+		/// </summary>
+		/// <param name="request">The request message.</param>
+		/// <returns>The response message, or null if the response did not carry a message.</returns>
+		/// <remarks>
+		/// Typically a deriving channel will override <see cref="CreateHttpRequest"/> to customize this method's
+		/// behavior.  However in non-HTTP frameworks, such as unit test mocks, it may be appropriate to override 
+		/// this method to eliminate all use of an HTTP transport.
+		/// </remarks>
+		protected virtual IProtocolMessage RequestInternal(IDirectedProtocolMessage request) {
+			HttpWebRequest webRequest = this.CreateHttpRequest(request);
+
+			Response response = this.WebRequestHandler.GetResponse(webRequest);
+			if (response.ResponseStream == null) {
+				return null;
+			}
+
+			var responseFields = this.ReadFromResponseInternal(response);
+			Type messageType = this.MessageTypeProvider.GetResponseMessageType(request, responseFields);
+			if (messageType == null) {
+				return null;
+			}
+
+			var responseSerialize = MessageSerializer.Get(messageType);
+			var responseMessage = responseSerialize.Deserialize(responseFields, null);
+
+			return responseMessage;
 		}
 
 		/// <summary>
@@ -484,18 +524,24 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Gets the protocol message that may be in the given HTTP response stream.
+		/// Gets the protocol message that may be in the given HTTP response.
 		/// </summary>
-		/// <param name="responseStream">The response that is anticipated to contain an OAuth message.</param>
-		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
-		protected abstract IProtocolMessage ReadFromResponseInternal(Stream responseStream);
+		/// <param name="response">The response that is anticipated to contain an protocol message.</param>
+		/// <returns>The deserialized message parts, if found.  Null otherwise.</returns>
+		protected abstract IDictionary<string, string> ReadFromResponseInternal(Response response);
 
 		/// <summary>
-		/// Sends a direct message to a remote party and waits for the response.
+		/// Prepares an HTTP request that carries a given message.
 		/// </summary>
 		/// <param name="request">The message to send.</param>
-		/// <returns>The remote party's response.</returns>
-		protected abstract IProtocolMessage RequestInternal(IDirectedProtocolMessage request);
+		/// <returns>The <see cref="HttpWebRequest"/> prepared to send the request.</returns>
+		/// <remarks>
+		/// This method must be overridden by a derived class, unless the <see cref="RequestInternal"/> method
+		/// is overridden and does not require this method.
+		/// </remarks>
+		protected virtual HttpWebRequest CreateHttpRequest(IDirectedProtocolMessage request) {
+			throw new NotImplementedException();
+		}
 
 		/// <summary>
 		/// Queues a message for sending in the response stream where the fields
@@ -647,18 +693,6 @@ namespace DotNetOpenAuth.Messaging {
 
 			// Now put the protection ones in the right order.
 			return -((int)protection1).CompareTo((int)protection2); // descending flag ordinal order
-		}
-
-		/// <summary>
-		/// Gets the protocol message that may be in the given HTTP response stream.
-		/// </summary>
-		/// <param name="responseStream">The response that is anticipated to contain an OAuth message.</param>
-		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
-		private IProtocolMessage ReadFromResponse(Stream responseStream) {
-			IProtocolMessage message = this.ReadFromResponseInternal(responseStream);
-			Logger.DebugFormat("Received message response: {0}", message);
-			this.VerifyMessageAfterReceiving(message);
-			return message;
 		}
 
 		/// <summary>

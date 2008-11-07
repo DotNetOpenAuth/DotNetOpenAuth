@@ -94,7 +94,7 @@
     <Compile Include="Messaging\Bindings\NonceMemoryStore.cs" />
     <Compile Include="OAuth\ChannelElements\SigningBindingElementBase.cs" />
     <Compile Include="OAuth\WebConsumer.cs" />
-    <Compile Include="OAuth\ChannelElements\IWebRequestHandler.cs" />
+    <Compile Include="Messaging\IWebRequestHandler.cs" />
     <Compile Include="OAuth\ChannelElements\ITamperResistantOAuthMessage.cs" />
     <Compile Include="OAuth\Messages\MessageBase.cs" />
     <Compile Include="OAuth\Messages\AuthorizedTokenRequest.cs" />
@@ -144,6 +144,7 @@
     <Compile Include="Messaging\MessageTransport.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthServiceProviderMessageTypeProvider.cs" />
     <Compile Include="Messaging\ProtocolException.cs" />
+    <Compile Include="OpenId\ChannelElements\OpenIdChannel.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanRequest.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanResponse.cs" />
     <Compile Include="OpenId\Messages\AssociateRequest.cs" />
@@ -161,7 +162,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OAuth\Messages\UnauthorizedTokenRequest.cs" />
     <Compile Include="OAuth\ChannelElements\RsaSha1SigningBindingElement.cs" />
-    <Compile Include="OAuth\ChannelElements\StandardWebRequestHandler.cs" />
+    <Compile Include="Messaging\StandardWebRequestHandler.cs" />
     <Compile Include="Messaging\MessageReceivingEndpoint.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="OAuth\Protocol.cs" />
