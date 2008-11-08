@@ -98,17 +98,16 @@ namespace DotNetOpenId.Provider {
 		public Identifier LocalIdentifier {
 			get { return localIdentifier; }
 			set {
+				// Keep LocalIdentifier and ClaimedIdentifier in sync for directed identity.
 				if (IsDirectedIdentity) {
-					// Keep LocalIdentifier and ClaimedIdentifier in sync
 					if (ClaimedIdentifier != null && ClaimedIdentifier != value) {
 						throw new InvalidOperationException(Strings.IdentifierSelectRequiresMatchingIdentifiers);
-					} else {
-						localIdentifier = value;
-						claimedIdentifier = value;
 					}
-				} else {
-					throw new InvalidOperationException(Strings.IdentifierSelectModeOnly);
+
+					claimedIdentifier = value;
 				}
+
+				localIdentifier = value;
 			}
 		}
 		Identifier claimedIdentifier;
@@ -118,17 +117,16 @@ namespace DotNetOpenId.Provider {
 		public Identifier ClaimedIdentifier {
 			get { return claimedIdentifier; }
 			set {
+				// Keep LocalIdentifier and ClaimedIdentifier in sync for directed identity.
 				if (IsDirectedIdentity) {
-					// Keep LocalIdentifier and ClaimedIdentifier in sync
 					if (LocalIdentifier != null && LocalIdentifier != value) {
 						throw new InvalidOperationException(Strings.IdentifierSelectRequiresMatchingIdentifiers);
-					} else {
-						claimedIdentifier = value;
-						localIdentifier = value;
 					}
-				} else {
-					throw new InvalidOperationException(Strings.IdentifierSelectModeOnly);
+
+					localIdentifier = value;
 				}
+				
+				claimedIdentifier = value;
 			}
 		}
 
