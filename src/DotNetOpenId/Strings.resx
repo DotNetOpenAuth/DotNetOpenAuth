@@ -322,4 +322,7 @@ Discovered endpoint info:
   <data name="XriResolutionStatusMissing" xml:space="preserve">
     <value>Could not find XRI resolution Status tag or code attribute was invalid.</value>
   </data>
+  <data name="ClaimedIdentifierCannotBeSetOnDelegatedAuthentication" xml:space="preserve">
+    <value>The ClaimedIdentifier property cannot be set when IsDelegatedIdentifier is true to avoid breaking OpenID URL delegation.</value>
+  </data>
 </root>

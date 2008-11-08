@@ -91,6 +91,17 @@ namespace DotNetOpenId.Provider {
 		/// to send back to the relying party.
 		/// </summary>
 		public bool IsDirectedIdentity { get; private set; }
+		/// <summary>
+		/// A value indicating whether the requesting Relying Party is using a delegated URL.
+		/// </summary>
+		/// <remarks>
+		/// When delegated identifiers are used, the <see cref="ClaimedIdentifier"/> should not
+		/// be changed at the Provider during authentication.
+		/// Delegation is only detectable on requests originating from OpenID 2.0 relying parties.
+		/// A relying party implementing only OpenID 1.x may use delegation and this property will
+		/// return false anyway.
+		/// </remarks>
+		public bool IsDelegatedIdentifier { get; private set; }
 		Identifier localIdentifier;
 		/// <summary>
 		/// The user identifier used by this particular provider.
@@ -124,15 +135,10 @@ namespace DotNetOpenId.Provider {
 					}
 
 					localIdentifier = value;
-				} else {
-					// Help warn the Provider if they are inadvertently breaking URL delegation
-					UriIdentifier oldUriClaimedIdentifier = claimedIdentifier as UriIdentifier;
-					if (oldUriClaimedIdentifier != null) {
-						UriIdentifier newUriClaimedIdentifier = value as UriIdentifier;
-						if (newUriClaimedIdentifier == null || !string.Equals(oldUriClaimedIdentifier.Uri.Host, newUriClaimedIdentifier.Uri.Host, StringComparison.OrdinalIgnoreCase)) {
-							Logger.WarnFormat("Changing the Claimed Identifier from {0} to {1} may be breaking OpenID URL delegation.  Consider normalizing the ClaimedIdentifier at the identity page using redirects, or by setting the ClaimedIdentifier in the assertion only if the hostname of the old and new claimed identifiers are the same.", claimedIdentifier, value);
-						}
-					}
+				}
+
+				if (IsDelegatedIdentifier) {
+					throw new InvalidOperationException(Strings.ClaimedIdentifierCannotBeSetOnDelegatedAuthentication);
 				}
 				
 				claimedIdentifier = value;
@@ -253,6 +259,11 @@ namespace DotNetOpenId.Provider {
 				claimedIdentifier = null;
 				localIdentifier = null;
 			}
+
+			// URL delegation is only detectable from 2.0 RPs, since openid.claimed_id isn't included from 1.0 RPs.
+			// If the openid.claimed_id is present, and if it's different than the openid.identity argument, then
+			// the RP has discovered a claimed identifier that has delegated authentication to this Provider.
+			IsDelegatedIdentifier = ClaimedIdentifier != null && ClaimedIdentifier != LocalIdentifier;
 		}
 
 		protected override IEncodable CreateResponse() {
