@@ -605,6 +605,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid birthdate value.  Must be in the form yyyy-MM-dd..
+        /// </summary>
+        internal static string SregInvalidBirthdate {
+            get {
+                return ResourceManager.GetString("SregInvalidBirthdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The &apos;{0}&apos; parameter was expected to have the value &apos;{1}&apos; but had &apos;{2}&apos; instead..
         /// </summary>
         internal static string TamperingDetected {

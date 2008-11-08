@@ -7,9 +7,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Net.Mail;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 using DotNetOpenId.RelyingParty;
 
@@ -20,9 +22,17 @@ namespace DotNetOpenId.Extensions.SimpleRegistration
 	/// A struct storing Simple Registration field values describing an
 	/// authenticating user.
 	/// </summary>
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2218:OverrideGetHashCodeOnOverridingEquals"), Serializable()]
+	[SuppressMessage("Microsoft.Usage", "CA2218:OverrideGetHashCodeOnOverridingEquals"), Serializable()]
 	public sealed class ClaimsResponse : IExtensionResponse, IClientScriptExtensionResponse
 	{
+		/// <summary>
+		/// Storage for the raw string birthdate value.
+		/// </summary>
+		private string birthDateRaw;
+		private DateTime? birthDate;
+
+		private static readonly Regex birthDateValidator = new Regex(@"^\d\d\d\d-\d\d-\d\d$");
+
 		string typeUriToUse;
 
 		/// <summary>
@@ -66,7 +76,49 @@ namespace DotNetOpenId.Extensions.SimpleRegistration
 		/// <summary>
 		/// The user's birthdate.
 		/// </summary>
-		public DateTime? BirthDate { get; set; }
+		public DateTime? BirthDate {
+			get { return this.birthDate; }
+			set {
+				this.birthDate = value;
+				// Don't use property accessor for peer property to avoid infinite loop between the two proeprty accessors.
+				if (value.HasValue) {
+					this.birthDateRaw = value.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+				} else {
+					this.birthDateRaw = null;
+				}
+			}
+		}
+		/// <summary>
+		/// The string value of the birthdate.  Useful for getting/setting when month and/or day information is not included in the date
+		/// thus preventing use of <see cref="DateTime"/>.
+		/// </summary>
+		/// <value>May be null, or exactly 10 characters in length in the form yyyy-MM-dd.</value>
+		/// <remarks>Setting this property </remarks>
+		public string BirthDateRaw {
+			get { return this.birthDateRaw; }
+			set {
+				if (value != null) {
+					if (!birthDateValidator.IsMatch(value)) {
+						throw new ArgumentException(Strings.SregInvalidBirthdate, "value");
+					}
+					// Update the BirthDate property, if possible. 
+					// Don't use property accessor for peer property to avoid infinite loop between the two proeprty accessors.
+					// Some valid sreg dob values like "2000-00-00" will not work as a DateTime struct, 
+					// in which case we null it out, but don't show any error.
+					DateTime newBirthDate;
+					if (DateTime.TryParse(value, out newBirthDate)) {
+						this.birthDate = newBirthDate;
+					} else {
+						Logger.InfoFormat("Simple Registration birthdate '{0}' could not be parsed into a DateTime and may not include month and/or day information.  Setting BirthDate property to null.", value);
+						this.birthDate = null;
+					}
+				} else {
+					this.birthDate = null;
+				}
+
+				this.birthDateRaw = value;
+			}
+		}
 		/// <summary>
 		/// The gender of the user.
 		/// </summary>
@@ -126,12 +178,12 @@ namespace DotNetOpenId.Extensions.SimpleRegistration
 		/// Adds the values of this struct to an authentication response being prepared
 		/// by an OpenID Provider.
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
+		[SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
 		IDictionary<string, string> IExtensionResponse.Serialize(Provider.IRequest authenticationRequest) {
 			if (authenticationRequest == null) throw new ArgumentNullException("authenticationRequest");
 			Dictionary<string, string> fields = new Dictionary<string, string>();
-			if (BirthDate != null) {
-				fields.Add(Constants.dob, BirthDate.ToString());
+			if (BirthDateRaw != null) {
+				fields.Add(Constants.dob, BirthDateRaw);
 			}
 			if (!String.IsNullOrEmpty(Country)) {
 				fields.Add(Constants.country, Country);
@@ -176,9 +228,11 @@ namespace DotNetOpenId.Extensions.SimpleRegistration
 			sreg.TryGetValue(Constants.fullname, out fullName);
 			FullName = fullName;
 			if (sreg.TryGetValue(Constants.dob, out dob)) {
-				DateTime bd;
-				if (DateTime.TryParse(dob, out bd))
-					BirthDate = bd;
+				if (dob.Length == 10 && birthDateValidator.IsMatch(dob)) {
+					this.BirthDateRaw = dob;
+				} else {
+					Logger.ErrorFormat("Simple Registration response included invalid value for openid.sreg.dob: {0}", dob);
+				}
 			}
 			if (sreg.TryGetValue(Constants.gender, out genderString)) {
 				switch (genderString) {
