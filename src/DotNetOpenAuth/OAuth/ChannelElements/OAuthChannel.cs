@@ -253,25 +253,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		}
 
 		/// <summary>
-		/// Prepares to send a request to the Service Provider as the query string in a GET request.
-		/// </summary>
-		/// <param name="requestMessage">The message to be transmitted to the ServiceProvider.</param>
-		/// <returns>The web request ready to send.</returns>
-		/// <remarks>
-		/// This method implements OAuth 1.0 section 5.2, item #3.
-		/// </remarks>
-		private static HttpWebRequest InitializeRequestAsGet(IDirectedProtocolMessage requestMessage) {
-			var serializer = MessageSerializer.Get(requestMessage.GetType());
-			var fields = serializer.Serialize(requestMessage);
-
-			UriBuilder builder = new UriBuilder(requestMessage.Recipient);
-			MessagingUtilities.AppendQueryArgs(builder, fields);
-			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(builder.Uri);
-
-			return httpRequest;
-		}
-
-		/// <summary>
 		/// Prepares to send a request to the Service Provider via the Authorization header.
 		/// </summary>
 		/// <param name="requestMessage">The message to be transmitted to the ServiceProvider.</param>
@@ -310,30 +291,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			authorization.Length--; // remove trailing comma
 
 			httpRequest.Headers.Add(HttpRequestHeader.Authorization, authorization.ToString());
-
-			return httpRequest;
-		}
-
-		/// <summary>
-		/// Prepares to send a request to the Service Provider as the payload of a POST request.
-		/// </summary>
-		/// <param name="requestMessage">The message to be transmitted to the ServiceProvider.</param>
-		/// <returns>The web request ready to send.</returns>
-		/// <remarks>
-		/// This method implements OAuth 1.0 section 5.2, item #2.
-		/// </remarks>
-		private HttpWebRequest InitializeRequestAsPost(IDirectedProtocolMessage requestMessage) {
-			var serializer = MessageSerializer.Get(requestMessage.GetType());
-			var fields = serializer.Serialize(requestMessage);
-
-			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(requestMessage.Recipient);
-			httpRequest.Method = "POST";
-			httpRequest.ContentType = "application/x-www-form-urlencoded";
-			string requestBody = MessagingUtilities.CreateQueryString(fields);
-			httpRequest.ContentLength = requestBody.Length;
-			using (TextWriter writer = this.WebRequestHandler.GetRequestStream(httpRequest)) {
-				writer.Write(requestBody);
-			}
 
 			return httpRequest;
 		}

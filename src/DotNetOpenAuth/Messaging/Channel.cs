@@ -586,6 +586,60 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Prepares to send a request to the Service Provider as the query string in a GET request.
+		/// </summary>
+		/// <param name="requestMessage">The message to be transmitted to the ServiceProvider.</param>
+		/// <returns>The web request ready to send.</returns>
+		/// <remarks>
+		/// This method is simply a standard HTTP Get request with the message parts serialized to the query string.
+		/// This method satisfies OAuth 1.0 section 5.2, item #3.
+		/// </remarks>
+		protected virtual HttpWebRequest InitializeRequestAsGet(IDirectedProtocolMessage requestMessage) {
+			if (requestMessage == null) {
+				throw new ArgumentNullException("requestMessage");
+			}
+
+			var serializer = MessageSerializer.Get(requestMessage.GetType());
+			var fields = serializer.Serialize(requestMessage);
+
+			UriBuilder builder = new UriBuilder(requestMessage.Recipient);
+			MessagingUtilities.AppendQueryArgs(builder, fields);
+			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(builder.Uri);
+
+			return httpRequest;
+		}
+
+		/// <summary>
+		/// Prepares to send a request to the Service Provider as the payload of a POST request.
+		/// </summary>
+		/// <param name="requestMessage">The message to be transmitted to the ServiceProvider.</param>
+		/// <returns>The web request ready to send.</returns>
+		/// <remarks>
+		/// This method is simply a standard HTTP POST request with the message parts serialized to the POST entity
+		/// with the application/x-www-form-urlencoded content type
+		/// This method satisfies OAuth 1.0 section 5.2, item #2 and OpenID 2.0 section 4.1.2.
+		/// </remarks>
+		protected virtual HttpWebRequest InitializeRequestAsPost(IDirectedProtocolMessage requestMessage) {
+			if (requestMessage == null) {
+				throw new ArgumentNullException("requestMessage");
+			}
+
+			var serializer = MessageSerializer.Get(requestMessage.GetType());
+			var fields = serializer.Serialize(requestMessage);
+
+			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(requestMessage.Recipient);
+			httpRequest.Method = "POST";
+			httpRequest.ContentType = "application/x-www-form-urlencoded";
+			string requestBody = MessagingUtilities.CreateQueryString(fields);
+			httpRequest.ContentLength = requestBody.Length;
+			using (TextWriter writer = this.WebRequestHandler.GetRequestStream(httpRequest)) {
+				writer.Write(requestBody);
+			}
+
+			return httpRequest;
+		}
+
+		/// <summary>
 		/// Verifies that all required message parts are initialized to values
 		/// prior to sending the message to a remote party.
 		/// </summary>
