@@ -75,34 +75,14 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		protected internal ITokenManager TokenManager { get; private set; }
 
 		/// <summary>
-		/// Encodes the names and values that are part of the message per OAuth 1.0 section 5.1.
+		/// Uri-escapes the names and values in a dictionary per OAuth 1.0 section 5.1.
 		/// </summary>
 		/// <param name="message">The message with data to encode.</param>
 		/// <returns>A dictionary of name-value pairs with their strings encoded.</returns>
-		internal static IDictionary<string, string> GetEncodedParameters(IProtocolMessage message) {
+		internal static IDictionary<string, string> GetUriEscapedParameters(IProtocolMessage message) {
 			var encodedDictionary = new Dictionary<string, string>();
-			EncodeParameters(new MessageDictionary(message), encodedDictionary);
+			UriEscapeParameters(new MessageDictionary(message), encodedDictionary);
 			return encodedDictionary;
-		}
-
-		/// <summary>
-		/// Encodes the names and values in a dictionary per OAuth 1.0 section 5.1.
-		/// </summary>
-		/// <param name="source">The dictionary with names and values to encode.</param>
-		/// <param name="destination">The dictionary to add the encoded pairs to.</param>
-		internal static void EncodeParameters(IDictionary<string, string> source, IDictionary<string, string> destination) {
-			if (source == null) {
-				throw new ArgumentNullException("source");
-			}
-			if (destination == null) {
-				throw new ArgumentNullException("destination");
-			}
-
-			foreach (var pair in source) {
-				var key = Uri.EscapeDataString(pair.Key);
-				var value = Uri.EscapeDataString(pair.Value);
-				destination.Add(key, value);
-			}
 		}
 
 		/// <summary>
@@ -250,6 +230,26 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				Headers = new System.Net.WebHeaderCollection(),
 			};
 			return encodedResponse;
+		}
+
+		/// <summary>
+		/// Uri-escapes the names and values in a dictionary per OAuth 1.0 section 5.1.
+		/// </summary>
+		/// <param name="source">The dictionary with names and values to encode.</param>
+		/// <param name="destination">The dictionary to add the encoded pairs to.</param>
+		private static void UriEscapeParameters(IDictionary<string, string> source, IDictionary<string, string> destination) {
+			if (source == null) {
+				throw new ArgumentNullException("source");
+			}
+			if (destination == null) {
+				throw new ArgumentNullException("destination");
+			}
+
+			foreach (var pair in source) {
+				var key = Uri.EscapeDataString(pair.Key);
+				var value = Uri.EscapeDataString(pair.Value);
+				destination.Add(key, value);
+			}
 		}
 
 		/// <summary>

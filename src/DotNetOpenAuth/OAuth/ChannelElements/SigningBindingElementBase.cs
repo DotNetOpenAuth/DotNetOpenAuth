@@ -151,7 +151,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			endpoint.Fragment = null;
 			signatureBaseStringElements.Add(endpoint.Uri.AbsoluteUri);
 
-			var encodedDictionary = OAuthChannel.GetEncodedParameters(message);
+			var encodedDictionary = OAuthChannel.GetUriEscapedParameters(message);
 			encodedDictionary.Remove("oauth_signature");
 			var sortedKeyValueList = new List<KeyValuePair<string, string>>(encodedDictionary);
 			sortedKeyValueList.Sort(SignatureBaseStringParameterComparer);
