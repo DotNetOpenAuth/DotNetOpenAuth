@@ -124,6 +124,15 @@ namespace DotNetOpenId.Provider {
 					}
 
 					localIdentifier = value;
+				} else {
+					// Help warn the Provider if they are inadvertently breaking URL delegation
+					UriIdentifier oldUriClaimedIdentifier = claimedIdentifier as UriIdentifier;
+					if (oldUriClaimedIdentifier != null) {
+						UriIdentifier newUriClaimedIdentifier = value as UriIdentifier;
+						if (newUriClaimedIdentifier == null || !string.Equals(oldUriClaimedIdentifier.Uri.Host, newUriClaimedIdentifier.Uri.Host, StringComparison.OrdinalIgnoreCase)) {
+							Logger.WarnFormat("Changing the Claimed Identifier from {0} to {1} may be breaking OpenID URL delegation.  Consider normalizing the ClaimedIdentifier at the identity page using redirects, or by setting the ClaimedIdentifier in the assertion only if the hostname of the old and new claimed identifiers are the same.", claimedIdentifier, value);
+						}
+					}
 				}
 				
 				claimedIdentifier = value;
