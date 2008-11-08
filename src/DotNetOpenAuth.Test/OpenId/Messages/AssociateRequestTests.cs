@@ -29,6 +29,11 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 		}
 
 		[TestMethod]
+		public void Mode() {
+			Assert.AreEqual("associate", this.request.Mode);
+		}
+
+		[TestMethod]
 		public void MessagePartsTest() {
 			this.request.AssociationType = "HMAC-SHA1";
 			this.request.SessionType = "no-encryption";
@@ -58,6 +63,16 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			this.request.AssociationType = "HMAC-SHA1";
 			this.request.SessionType = "no-encryption";
 			this.request.EnsureValidMessage(); // no-encryption only allowed for secure channels.
+		}
+
+		[TestMethod]
+		public void RequiredProtection() {
+			Assert.AreEqual(MessageProtections.None, this.request.RequiredProtection);
+		}
+
+		[TestMethod]
+		public void Transport() {
+			Assert.AreEqual(MessageTransport.Direct, this.request.Transport);
 		}
 	}
 }

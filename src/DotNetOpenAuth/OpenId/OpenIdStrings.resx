@@ -117,6 +117,15 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="InvalidCharacterInKeyValueFormInput" xml:space="preserve">
+    <value>Cannot encode '{0}' because it contains an illegal character for Key-Value Form encoding.  (line {1}: '{2}')</value>
+  </data>
+  <data name="InvalidKeyValueFormCharacterMissing" xml:space="preserve">
+    <value>Cannot decode Key-Value Form because a line was found without a '{0}' character.  (line {1}: '{2}')</value>
+  </data>
+  <data name="KeysListAndDictionaryDoNotMatch" xml:space="preserve">
+    <value>The list of keys do not match the provided dictionary.</value>
+  </data>
   <data name="NoEncryptionSessionRequiresHttps" xml:space="preserve">
     <value>Unless using transport layer encryption, "no-encryption" MUST NOT be used.</value>
   </data>

@@ -28,6 +28,12 @@ namespace DotNetOpenAuth.OpenId.Messages {
 #pragma warning restore 0414
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="AssociateUnsuccessfulResponse"/> class.
+		/// </summary>
+		internal AssociateUnsuccessfulResponse() {
+		}
+
+		/// <summary>
 		/// Gets or sets a human-readable message indicating why the association request failed. 
 		/// </summary>
 		[MessagePart("error", IsRequired = true, AllowEmpty = true)]

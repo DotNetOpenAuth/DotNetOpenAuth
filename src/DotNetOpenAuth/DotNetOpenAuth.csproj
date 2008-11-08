@@ -144,7 +144,9 @@
     <Compile Include="Messaging\MessageTransport.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthServiceProviderMessageTypeProvider.cs" />
     <Compile Include="Messaging\ProtocolException.cs" />
+    <Compile Include="OpenId\ChannelElements\KeyValueFormEncoding.cs" />
     <Compile Include="OpenId\ChannelElements\OpenIdChannel.cs" />
+    <Compile Include="OpenId\ChannelElements\OpenIdMessageTypeProvider.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanRequest.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanResponse.cs" />
     <Compile Include="OpenId\Messages\AssociateRequest.cs" />

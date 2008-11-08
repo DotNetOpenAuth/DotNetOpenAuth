@@ -61,6 +61,33 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot encode &apos;{0}&apos; because it contains an illegal character for Key-Value Form encoding.  (line {1}: &apos;{2}&apos;).
+        /// </summary>
+        internal static string InvalidCharacterInKeyValueFormInput {
+            get {
+                return ResourceManager.GetString("InvalidCharacterInKeyValueFormInput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot decode Key-Value Form because a line was found without a &apos;{0}&apos; character.  (line {1}: &apos;{2}&apos;).
+        /// </summary>
+        internal static string InvalidKeyValueFormCharacterMissing {
+            get {
+                return ResourceManager.GetString("InvalidKeyValueFormCharacterMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The list of keys do not match the provided dictionary..
+        /// </summary>
+        internal static string KeysListAndDictionaryDoNotMatch {
+            get {
+                return ResourceManager.GetString("KeysListAndDictionaryDoNotMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unless using transport layer encryption, &quot;no-encryption&quot; MUST NOT be used..
         /// </summary>
         internal static string NoEncryptionSessionRequiresHttps {

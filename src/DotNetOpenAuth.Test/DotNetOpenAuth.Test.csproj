@@ -92,7 +92,11 @@
     <Compile Include="OAuth\ConsumerDescription.cs" />
     <Compile Include="OAuth\ProtocolTests.cs" />
     <Compile Include="OAuth\ServiceProviderDescriptionTests.cs" />
+    <Compile Include="OpenId\Messages\AssociateDiffieHellmanRequestTests.cs" />
     <Compile Include="OpenId\Messages\AssociateRequestTests.cs" />
+    <Compile Include="OpenId\Messages\AssociateUnsuccessfulResponseTests.cs" />
+    <Compile Include="OpenId\Messages\AssociateUnencryptedResponseTests.cs" />
+    <Compile Include="OpenId\OpenIdChannelTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Messaging\ResponseTests.cs" />
     <Compile Include="Scenarios\AppendixScenarios.cs" />
