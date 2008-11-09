@@ -102,6 +102,8 @@
     <Compile Include="OpenId\ChannelElements\OpenIdChannelTests.cs" />
     <Compile Include="OpenId\Messages\DirectErrorResponseTests.cs" />
     <Compile Include="OpenId\Messages\IndirectErrorResponseTests.cs" />
+    <Compile Include="OpenId\OpenIdCoordinator.cs" />
+    <Compile Include="OpenId\ScenarioTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Messaging\ResponseTests.cs" />
     <Compile Include="OAuth\AppendixScenarios.cs" />

@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.Test {
 		/// <summary>
 		/// Starts the simulation.
 		/// </summary>
-		internal void Run() {
+		internal override void Run() {
 			// Clone the template signing binding element.
 			var signingElement = this.serviceDescription.CreateTamperProtectionElement();
 			var consumerSigningElement = signingElement.Clone();

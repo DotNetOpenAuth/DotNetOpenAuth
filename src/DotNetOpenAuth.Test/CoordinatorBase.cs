@@ -22,6 +22,8 @@ namespace DotNetOpenAuth.Test {
 			this.party2Action = party2Action;
 		}
 
+		internal abstract void Run();
+
 		protected void RunCore(T1 party1Object, T2 party2Object) {
 			Thread party1Thread = null, party2Thread = null;
 			Exception failingException = null;
