@@ -15,8 +15,14 @@ namespace DotNetOpenAuth.Test.Mocks {
 	internal class TestWebRequestHandler : IWebRequestHandler {
 		private StringBuilder postEntity;
 
+		/// <summary>
+		/// Gets or sets the callback used to provide the mock response for the mock request.
+		/// </summary>
 		internal Func<HttpWebRequest, Response> Callback { get; set; }
 
+		/// <summary>
+		/// Gets the stream that was written out as if on an HTTP request.
+		/// </summary>
 		internal Stream RequestEntityStream {
 			get {
 				if (this.postEntity == null) {
@@ -26,13 +32,37 @@ namespace DotNetOpenAuth.Test.Mocks {
 			}
 		}
 
+		/// <summary>
+		/// Gets the stream that was written out as if on an HTTP request as an ordinary string.
+		/// </summary>
+		internal string RequestEntityAsString {
+			get {
+				return this.postEntity != null ? this.postEntity.ToString() : null;
+			}
+		}
+
 		#region IWebRequestHandler Members
 
+		/// <summary>
+		/// Prepares an <see cref="HttpWebRequest"/> that contains an POST entity for sending the entity.
+		/// </summary>
+		/// <param name="request">The <see cref="HttpWebRequest"/> that should contain the entity.</param>
+		/// <returns>
+		/// The writer the caller should write out the entity data to.
+		/// </returns>
 		public TextWriter GetRequestStream(HttpWebRequest request) {
 			this.postEntity = new StringBuilder();
 			return new StringWriter(this.postEntity);
 		}
 
+		/// <summary>
+		/// Processes an <see cref="HttpWebRequest"/> and converts the
+		/// <see cref="HttpWebResponse"/> to a <see cref="Response"/> instance.
+		/// </summary>
+		/// <param name="request">The <see cref="HttpWebRequest"/> to handle.</param>
+		/// <returns>
+		/// An instance of <see cref="Response"/> describing the response.
+		/// </returns>
 		public Response GetResponse(HttpWebRequest request) {
 			if (this.Callback == null) {
 				throw new InvalidOperationException("Set the Callback property first.");

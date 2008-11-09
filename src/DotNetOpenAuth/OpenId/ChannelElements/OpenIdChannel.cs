@@ -20,6 +20,12 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <summary>
 		/// The HTTP Content-Type to use in Key-Value Form responses.
 		/// </summary>
+		/// <remarks>
+		/// OpenID 2.0 section 5.1.2 says this SHOULD be text/plain.  But this value 
+		/// does not prevent free hosters like GoDaddy from tacking on their ads
+		/// to the end of the direct response, corrupting the data.  So we deviate
+		/// from the spec a bit here to improve the story for free Providers.
+		/// </remarks>
 		private const string KeyValueFormContentType = "application/x-openid-kvf";
 
 		/// <summary>
@@ -89,7 +95,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			byte[] keyValueEncoding = this.keyValueForm.GetBytes(fields);
 
 			Response preparedResponse = new Response();
-			preparedResponse.Headers.Add(HttpResponseHeader.ContentType, "application/x-openid-kvf");
+			preparedResponse.Headers.Add(HttpResponseHeader.ContentType, KeyValueFormContentType);
 			preparedResponse.OriginalMessage = response;
 			preparedResponse.ResponseStream = new MemoryStream(keyValueEncoding);
 
