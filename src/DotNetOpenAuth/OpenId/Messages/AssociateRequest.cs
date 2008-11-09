@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		/// <param name="providerEndpoint">The OpenID Provider endpoint.</param>
 		internal AssociateRequest(Uri providerEndpoint)
-			: base(providerEndpoint, "associate") {
+			: base(providerEndpoint, "associate", MessageTransport.Direct) {
 		}
 
 		/// <summary>

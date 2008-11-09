@@ -30,7 +30,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		/// <param name="providerEndpoint">The OpenID Provider endpoint.</param>
 		/// <param name="mode">The value for the openid.mode parameter.</param>
-		protected RequestBase(Uri providerEndpoint, string mode) {
+		/// <param name="transport">A value indicating whether the message will be transmitted directly or indirectly.</param>
+		protected RequestBase(Uri providerEndpoint, string mode, MessageTransport transport) {
 			if (providerEndpoint == null) {
 				throw new ArgumentNullException("providerEndpoint");
 			}
@@ -40,6 +41,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 
 			this.Recipient = providerEndpoint;
 			this.Mode = mode;
+			this.Transport = transport;
 		}
 
 		/// <summary>
@@ -83,9 +85,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Gets a value indicating whether this is a direct or indirect message.
 		/// </summary>
 		/// <value><see cref="MessageTransport.Direct"/></value>
-		public MessageTransport Transport {
-			get { return MessageTransport.Direct; }
-		}
+		public MessageTransport Transport { get; private set; }
 
 		/// <summary>
 		/// Gets the extra, non-OAuth parameters included in the message.

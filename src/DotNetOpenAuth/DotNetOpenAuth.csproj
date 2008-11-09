@@ -153,6 +153,8 @@
     <Compile Include="OpenId\Messages\AssociateSuccessfulResponse.cs" />
     <Compile Include="OpenId\Messages\AssociateUnencryptedResponse.cs" />
     <Compile Include="OpenId\Messages\AssociateUnsuccessfulResponse.cs" />
+    <Compile Include="OpenId\Messages\IndirectErrorResponse.cs" />
+    <Compile Include="OpenId\Messages\DirectErrorResponse.cs" />
     <Compile Include="OpenId\Messages\RequestBase.cs" />
     <Compile Include="OpenId\Messages\ResponseBase.cs" />
     <Compile Include="OpenId\OpenIdStrings.Designer.cs">
