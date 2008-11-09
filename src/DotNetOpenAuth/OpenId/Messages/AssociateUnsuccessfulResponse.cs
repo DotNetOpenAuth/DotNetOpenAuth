@@ -5,10 +5,6 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId.Messages {
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -17,7 +13,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// <remarks>
 	/// This message type described in OpenID 2.0 section 8.2.4.
 	/// </remarks>
-	internal class AssociateUnsuccessfulResponse : ResponseBase {
+	internal class AssociateUnsuccessfulResponse : DirectErrorResponse {
 		/// <summary>
 		/// A hard-coded string indicating an error occurred.
 		/// </summary>
@@ -32,12 +28,6 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		internal AssociateUnsuccessfulResponse() {
 		}
-
-		/// <summary>
-		/// Gets or sets a human-readable message indicating why the association request failed. 
-		/// </summary>
-		[MessagePart("error", IsRequired = true, AllowEmpty = true)]
-		internal string ErrorMessage { get; set; }
 
 		/// <summary>
 		/// Gets or sets an association type supported by the OP from Section 8.3 (Association Types). 
