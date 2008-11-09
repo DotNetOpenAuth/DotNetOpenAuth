@@ -222,6 +222,9 @@
   <data name="TooManyBindingsOfferingSameProtection" xml:space="preserve">
     <value>Expected at most 1 binding element offering the {0} protection, but found {1}.</value>
   </data>
+  <data name="UnexpectedEmptyString" xml:space="preserve">
+    <value>The empty string is not allowed.</value>
+  </data>
   <data name="UnexpectedMessagePartValue" xml:space="preserve">
     <value>Message parameter '{0}' had unexpected value '{1}'.</value>
   </data>

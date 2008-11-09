@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.Test.Scenarios {
+namespace DotNetOpenAuth.Test.Mocks {
 	using System;
 	using System.Threading;
 	using DotNetOpenAuth.Messaging;

@@ -376,6 +376,15 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The empty string is not allowed..
+        /// </summary>
+        internal static string UnexpectedEmptyString {
+            get {
+                return ResourceManager.GetString("UnexpectedEmptyString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Message parameter &apos;{0}&apos; had unexpected value &apos;{1}&apos;..
         /// </summary>
         internal static string UnexpectedMessagePartValue {

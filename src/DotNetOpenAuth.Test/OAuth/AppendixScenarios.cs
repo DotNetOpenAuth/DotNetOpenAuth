@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.Test {
+namespace DotNetOpenAuth.Test.OAuth {
 	using System;
 	using System.IO;
 	using System.Net;
@@ -12,7 +12,6 @@ namespace DotNetOpenAuth.Test {
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.Test.Mocks;
-	using DotNetOpenAuth.Test.Scenarios;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
@@ -31,7 +30,7 @@ namespace DotNetOpenAuth.Test {
 			MessageReceivingEndpoint accessPhotoEndpoint = new MessageReceivingEndpoint("http://photos.example.net/photos?file=vacation.jpg&size=original", HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.GetRequest);
 			ConsumerDescription consumerDescription = new ConsumerDescription("dpf43f3p2l4k3l03", "kd94hf93k423kf44");
 
-			Coordinator coordinator = new Coordinator(
+			OAuthCoordinator coordinator = new OAuthCoordinator(
 				consumerDescription,
 				serviceDescription,
 				consumer => {

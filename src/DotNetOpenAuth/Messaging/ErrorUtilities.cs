@@ -50,5 +50,31 @@ namespace DotNetOpenAuth.Messaging {
 					args));
 			}
 		}
+
+		/// <summary>
+		/// Verifies that some given value is not null.
+		/// </summary>
+		/// <param name="value">The value to check.</param>
+		/// <param name="paramName">Name of the parameter, which will be used in the <see cref="ArgumentException"/>, if thrown.</param>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="value"/> is null.</exception>
+		internal static void VerifyArgumentNotNull(object value, string paramName) {
+			if (Object.ReferenceEquals(value, null)) {
+				throw new ArgumentNullException(paramName);
+			}
+		}
+
+		/// <summary>
+		/// Verifies that some string is not null and has non-zero length.
+		/// </summary>
+		/// <param name="value">The value to check.</param>
+		/// <param name="paramName">Name of the parameter, which will be used in the <see cref="ArgumentException"/>, if thrown.</param>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="value"/> is null.</exception>
+		/// <exception cref="ArgumentException">Thrown if <paramref name="value"/> has zero length.</exception>
+		internal static void VerifyNonZeroLength(string value, string paramName) {
+			VerifyArgumentNotNull(value, paramName);
+			if (value.Length == 0) {
+				throw new ArgumentException(MessagingStrings.UnexpectedEmptyString, paramName);
+			}
+		}
 	}
 }
