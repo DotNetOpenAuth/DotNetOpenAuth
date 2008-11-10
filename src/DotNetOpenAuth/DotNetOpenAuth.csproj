@@ -146,6 +146,16 @@
     <Compile Include="OpenId\ChannelElements\KeyValueFormEncoding.cs" />
     <Compile Include="OpenId\ChannelElements\OpenIdChannel.cs" />
     <Compile Include="OpenId\ChannelElements\OpenIdMessageTypeProvider.cs" />
+    <Compile Include="OpenId\DiffieHellman\DHKeyGeneration.cs" />
+    <Compile Include="OpenId\DiffieHellman\DHParameters.cs" />
+    <Compile Include="OpenId\DiffieHellman\DiffieHellman.cs" />
+    <Compile Include="OpenId\DiffieHellman\DiffieHellmanManaged.cs" />
+    <Compile Include="OpenId\DiffieHellman\mono\BigInteger.cs" />
+    <Compile Include="OpenId\DiffieHellman\mono\ConfidenceFactor.cs" />
+    <Compile Include="OpenId\DiffieHellman\mono\NextPrimeFinder.cs" />
+    <Compile Include="OpenId\DiffieHellman\mono\PrimalityTests.cs" />
+    <Compile Include="OpenId\DiffieHellman\mono\PrimeGeneratorBase.cs" />
+    <Compile Include="OpenId\DiffieHellman\mono\SequentialSearchPrimeGeneratorBase.cs" />
     <Compile Include="OpenId\OpenIdProvider.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanRequest.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanResponse.cs" />
