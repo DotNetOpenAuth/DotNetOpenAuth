@@ -106,6 +106,15 @@ namespace DotNetOpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The ClaimedIdentifier property cannot be set when IsDelegatedIdentifier is true to avoid breaking OpenID URL delegation..
+        /// </summary>
+        internal static string ClaimedIdentifierCannotBeSetOnDelegatedAuthentication {
+            get {
+                return ResourceManager.GetString("ClaimedIdentifierCannotBeSetOnDelegatedAuthentication", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The ClaimedIdentifier property must be set first..
         /// </summary>
         internal static string ClaimedIdentifierMustBeSetFirst {
@@ -237,15 +246,6 @@ namespace DotNetOpenId {
         internal static string IAssociationStoreRequiredWhenNoHttpContextAvailable {
             get {
                 return ResourceManager.GetString("IAssociationStoreRequiredWhenNoHttpContextAvailable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This operation is only allowed when IsIdentifierSelect is true..
-        /// </summary>
-        internal static string IdentifierSelectModeOnly {
-            get {
-                return ResourceManager.GetString("IdentifierSelectModeOnly", resourceCulture);
             }
         }
         

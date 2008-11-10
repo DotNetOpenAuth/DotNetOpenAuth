@@ -125,5 +125,22 @@ namespace DotNetOpenId.Test.RelyingParty {
 			Assert.IsNotNull(response.Exception);
 		}
 
+		[Test]
+		public void ClaimedIdentifierChangesAtProviderUnexpectedly() {
+			OpenIdRelyingParty rp = TestSupport.CreateRelyingParty(null);
+			Identifier id = TestSupport.GetMockIdentifier(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20);
+			Identifier newClaimedId = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
+			Identifier newLocalId = TestSupport.GetDelegateUrl(TestSupport.Scenarios.AutoApproval);
+			MockHttpRequest.RegisterMockXrdsResponse(new Uri(newClaimedId), newClaimedId.Discover());
+			var request = rp.CreateRequest(id, realm, returnTo);
+			var provider = TestSupport.CreateProviderForRequest(request);
+			var opRequest = provider.Request as DotNetOpenId.Provider.IAuthenticationRequest;
+			opRequest.IsAuthenticated = true;
+			opRequest.ClaimedIdentifier = newClaimedId;
+			opRequest.LocalIdentifier = newLocalId;
+			var assertion = opRequest.Response.ExtractUrl();
+			var response = TestSupport.CreateRelyingParty(TestSupport.RelyingPartyStore, assertion, HttpUtility.ParseQueryString(assertion.Query)).Response;
+			Assert.AreEqual(AuthenticationStatus.Authenticated, response.Status);
+		}
 	}
 }

@@ -177,9 +177,6 @@
   <data name="IAssociationStoreRequiredWhenNoHttpContextAvailable" xml:space="preserve">
     <value>No current HttpContext was detected, so an IAssociationStore must be explicitly provided. Call the Server constructor overload that takes an IAssociationStore.</value>
   </data>
-  <data name="IdentifierSelectModeOnly" xml:space="preserve">
-    <value>This operation is only allowed when IsIdentifierSelect is true.</value>
-  </data>
   <data name="IdentifierSelectRequiresMatchingIdentifiers" xml:space="preserve">
     <value>ClaimedIdentifier and LocalIdentifier must be the same when IsIdentifierSelect is true.</value>
   </data>
@@ -327,5 +324,8 @@ Discovered endpoint info:
   </data>
   <data name="SregInvalidBirthdate" xml:space="preserve">
     <value>Invalid birthdate value.  Must be in the form yyyy-MM-dd.</value>
+  </data>
+  <data name="ClaimedIdentifierCannotBeSetOnDelegatedAuthentication" xml:space="preserve">
+    <value>The ClaimedIdentifier property cannot be set when IsDelegatedIdentifier is true to avoid breaking OpenID URL delegation.</value>
   </data>
 </root>

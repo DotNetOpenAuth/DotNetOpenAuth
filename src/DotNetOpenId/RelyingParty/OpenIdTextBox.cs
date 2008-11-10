@@ -265,6 +265,7 @@ namespace DotNetOpenId.RelyingParty
 			set { ViewState[presetBorderViewStateKey] = value; }
 		}
 
+		const string usePersistentCookieCallbackKey = "OpenIdTextBox_UsePersistentCookie";
 		const string usePersistentCookieViewStateKey = "UsePersistentCookie";
 		/// <summary>
 		/// Default value of <see cref="UsePersistentCookie"/>.
@@ -650,6 +651,12 @@ namespace DotNetOpenId.RelyingParty
 			if (!Enabled || Page.IsPostBack) return;
 			var consumer = createRelyingParty();
 			if (consumer.Response != null) {
+				string persistentString = consumer.Response.GetCallbackArgument(usePersistentCookieCallbackKey);
+				bool persistentBool;
+				if (persistentString != null && bool.TryParse(persistentString, out persistentBool)) {
+					UsePersistentCookie = persistentBool;
+				}
+
 				switch (consumer.Response.Status) {
 					case AuthenticationStatus.Canceled:
 						OnCanceled(consumer.Response);
@@ -753,6 +760,9 @@ namespace DotNetOpenId.RelyingParty
 					}
 					Request.Mode = ImmediateMode ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;
 					if (EnableRequestProfile) addProfileArgs(Request);
+
+					// Add state that needs to survive across the redirect.
+					Request.AddCallbackArguments(usePersistentCookieCallbackKey, UsePersistentCookie.ToString(CultureInfo.InvariantCulture));
 				} else {
 					Logger.WarnFormat("An invalid identifier was entered ({0}), but not caught by any validation routine.", Text);
 					Request = null;

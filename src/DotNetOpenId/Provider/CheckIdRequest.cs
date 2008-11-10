@@ -91,6 +91,17 @@ namespace DotNetOpenId.Provider {
 		/// to send back to the relying party.
 		/// </summary>
 		public bool IsDirectedIdentity { get; private set; }
+		/// <summary>
+		/// A value indicating whether the requesting Relying Party is using a delegated URL.
+		/// </summary>
+		/// <remarks>
+		/// When delegated identifiers are used, the <see cref="ClaimedIdentifier"/> should not
+		/// be changed at the Provider during authentication.
+		/// Delegation is only detectable on requests originating from OpenID 2.0 relying parties.
+		/// A relying party implementing only OpenID 1.x may use delegation and this property will
+		/// return false anyway.
+		/// </remarks>
+		public bool IsDelegatedIdentifier { get; private set; }
 		Identifier localIdentifier;
 		/// <summary>
 		/// The user identifier used by this particular provider.
@@ -98,17 +109,16 @@ namespace DotNetOpenId.Provider {
 		public Identifier LocalIdentifier {
 			get { return localIdentifier; }
 			set {
+				// Keep LocalIdentifier and ClaimedIdentifier in sync for directed identity.
 				if (IsDirectedIdentity) {
-					// Keep LocalIdentifier and ClaimedIdentifier in sync
 					if (ClaimedIdentifier != null && ClaimedIdentifier != value) {
 						throw new InvalidOperationException(Strings.IdentifierSelectRequiresMatchingIdentifiers);
-					} else {
-						localIdentifier = value;
-						claimedIdentifier = value;
 					}
-				} else {
-					throw new InvalidOperationException(Strings.IdentifierSelectModeOnly);
+
+					claimedIdentifier = value;
 				}
+
+				localIdentifier = value;
 			}
 		}
 		Identifier claimedIdentifier;
@@ -118,17 +128,20 @@ namespace DotNetOpenId.Provider {
 		public Identifier ClaimedIdentifier {
 			get { return claimedIdentifier; }
 			set {
+				// Keep LocalIdentifier and ClaimedIdentifier in sync for directed identity.
 				if (IsDirectedIdentity) {
-					// Keep LocalIdentifier and ClaimedIdentifier in sync
 					if (LocalIdentifier != null && LocalIdentifier != value) {
 						throw new InvalidOperationException(Strings.IdentifierSelectRequiresMatchingIdentifiers);
-					} else {
-						claimedIdentifier = value;
-						localIdentifier = value;
 					}
-				} else {
-					throw new InvalidOperationException(Strings.IdentifierSelectModeOnly);
+
+					localIdentifier = value;
 				}
+
+				if (IsDelegatedIdentifier) {
+					throw new InvalidOperationException(Strings.ClaimedIdentifierCannotBeSetOnDelegatedAuthentication);
+				}
+				
+				claimedIdentifier = value;
 			}
 		}
 
@@ -246,6 +259,11 @@ namespace DotNetOpenId.Provider {
 				claimedIdentifier = null;
 				localIdentifier = null;
 			}
+
+			// URL delegation is only detectable from 2.0 RPs, since openid.claimed_id isn't included from 1.0 RPs.
+			// If the openid.claimed_id is present, and if it's different than the openid.identity argument, then
+			// the RP has discovered a claimed identifier that has delegated authentication to this Provider.
+			IsDelegatedIdentifier = ClaimedIdentifier != null && ClaimedIdentifier != LocalIdentifier;
 		}
 
 		protected override IEncodable CreateResponse() {

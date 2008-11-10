@@ -91,6 +91,24 @@ namespace DotNetOpenId.Test.RelyingParty {
 			consumer.CreateRequest(simpleOpenId, realm);
 		}
 
+		[Test, ExpectedException(typeof(ArgumentNullException))]
+		public void CreateRequestNullIdentifier() {
+			var consumer = TestSupport.CreateRelyingParty(null);
+			consumer.CreateRequest(null, realm, returnTo);
+		}
+
+		[Test, ExpectedException(typeof(ArgumentNullException))]
+		public void CreateRequestNullRealm() {
+			var consumer = TestSupport.CreateRelyingParty(null);
+			consumer.CreateRequest("=someEndpoint", null, returnTo);
+		}
+
+		[Test, ExpectedException(typeof(ArgumentNullException))]
+		public void CreateRequestNullReturnTo() {
+			var consumer = TestSupport.CreateRelyingParty(null);
+			consumer.CreateRequest("=someEndpoint", realm, null);
+		}
+
 		[Test]
 		public void CreateRequestStripsFragment() {
 			var consumer = TestSupport.CreateRelyingParty(null);
