@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		internal SignedMessageBase(MessageTransport transport, MessageReceivingEndpoint recipient)
 			: base(MessageProtections.All, transport, recipient) {
 			ITamperResistantOAuthMessage self = (ITamperResistantOAuthMessage)this;
-			HttpDeliveryMethods methods = ((IOAuthDirectedMessage)this).HttpMethods;
+			HttpDeliveryMethods methods = ((IDirectedProtocolMessage)this).HttpMethods;
 			self.HttpMethod = (methods & HttpDeliveryMethods.PostRequest) != 0 ? "POST" : "GET";
 		}
 
@@ -76,6 +76,14 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		string ITamperResistantOAuthMessage.HttpMethod {
 			get { return this.HttpMethod; }
 			set { this.HttpMethod = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the URI to the Service Provider endpoint to send this message to.
+		/// </summary>
+		Uri ITamperResistantOAuthMessage.Recipient {
+			get { return this.Recipient; }
+			set { this.Recipient = value; }
 		}
 
 		#endregion

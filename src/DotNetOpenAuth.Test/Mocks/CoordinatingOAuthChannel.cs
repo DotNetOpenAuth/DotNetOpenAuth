@@ -58,7 +58,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		protected internal override HttpRequestInfo GetRequestFromContext() {
-			return new HttpRequestInfo(this.AwaitIncomingMessage());
+			return new HttpRequestInfo((IDirectedProtocolMessage)this.AwaitIncomingMessage());
 		}
 
 		protected override IProtocolMessage RequestInternal(IDirectedProtocolMessage request) {
@@ -81,7 +81,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return this.SendDirectMessageResponse(message);
 		}
 
-		protected override IProtocolMessage ReadFromRequestInternal(HttpRequestInfo request) {
+		protected override IDirectedProtocolMessage ReadFromRequestInternal(HttpRequestInfo request) {
 			return request.Message;
 		}
 
@@ -126,7 +126,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			}
 
 			MessageReceivingEndpoint recipient = null;
-			IOAuthDirectedMessage directedMessage = message as IOAuthDirectedMessage;
+			IDirectedProtocolMessage directedMessage = message as IDirectedProtocolMessage;
 			if (directedMessage != null && directedMessage.Recipient != null) {
 				recipient = new MessageReceivingEndpoint(directedMessage.Recipient, directedMessage.HttpMethods);
 			}

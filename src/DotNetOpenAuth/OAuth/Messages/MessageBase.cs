@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 	/// <summary>
 	/// A base class for all OAuth messages.
 	/// </summary>
-	public abstract class MessageBase : IOAuthDirectedMessage {
+	public abstract class MessageBase : IDirectedProtocolMessage {
 		/// <summary>
 		/// A store for extra name/value data pairs that are attached to this message.
 		/// </summary>
@@ -110,26 +110,14 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// Gets the URI to the Service Provider endpoint to send this message to.
 		/// </summary>
 		Uri IDirectedProtocolMessage.Recipient {
-			get { return this.recipient.Location; }
+			get { return this.recipient != null ? this.recipient.Location : null; }
 		}
-
-		#endregion
-
-		#region IOAuthDirectedMessage Properties
 
 		/// <summary>
 		/// Gets the preferred method of transport for the message.
 		/// </summary>
-		HttpDeliveryMethods IOAuthDirectedMessage.HttpMethods {
+		HttpDeliveryMethods IDirectedProtocolMessage.HttpMethods {
 			get { return this.HttpMethods; }
-		}
-
-		/// <summary>
-		/// Gets or sets the URI to the Service Provider endpoint to send this message to.
-		/// </summary>
-		Uri IOAuthDirectedMessage.Recipient {
-			get { return this.Recipient; }
-			set { this.Recipient = value; }
 		}
 
 		#endregion

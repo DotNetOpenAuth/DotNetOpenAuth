@@ -7,11 +7,13 @@
 namespace DotNetOpenAuth.OpenId.Messages {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
-	/// A common base class for OpenID request messages.
+	/// A common base class for OpenID request messages and indirect responses (since they are ultimately requests).
 	/// </summary>
+	[DebuggerDisplay("OpenID {ProtocolVersion} {Mode}")]
 	internal class RequestBase : IDirectedProtocolMessage {
 		/// <summary>
 		/// The openid.ns parameter in the message.
@@ -51,6 +53,23 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		public string Mode { get; private set; }
 
 		#region IDirectedProtocolMessage Members
+
+		/// <summary>
+		/// Gets the preferred method of transport for the message.
+		/// </summary>
+		/// <value>
+		/// For direct messages this is the OpenID mandated POST.  
+		/// For indirect messages both GET and POST are allowed.
+		/// </value>
+		HttpDeliveryMethods IDirectedProtocolMessage.HttpMethods {
+			get {
+				HttpDeliveryMethods methods = HttpDeliveryMethods.PostRequest;
+				if (this.Transport == MessageTransport.Indirect) {
+					methods |= HttpDeliveryMethods.GetRequest;
+				}
+				return methods;
+			}
+		}
 
 		/// <summary>
 		/// Gets the recipient of the message.

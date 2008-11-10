@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId.Messages {
+	using System.Diagnostics;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -13,6 +14,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// <remarks>
 	/// This message type described in OpenID 2.0 section 8.2.4.
 	/// </remarks>
+	[DebuggerDisplay("OpenID {ProtocolVersion} associate (failed) response")]
 	internal class AssociateUnsuccessfulResponse : DirectErrorResponse {
 		/// <summary>
 		/// A hard-coded string indicating an error occurred.

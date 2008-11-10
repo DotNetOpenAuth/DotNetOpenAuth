@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 					}
 					return typeof(TestSignedDirectedMessage);
 				}
-				return typeof(TestMessage);
+				return typeof(TestDirectedMessage);
 			}
 			return null;
 		}

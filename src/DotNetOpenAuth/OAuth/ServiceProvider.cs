@@ -116,8 +116,8 @@ namespace DotNetOpenAuth.OAuth {
 		/// <remarks>
 		/// Requires HttpContext.Current.
 		/// </remarks>
-		public IOAuthDirectedMessage ReadRequest() {
-			return (IOAuthDirectedMessage)this.Channel.ReadFromRequest();
+		public IDirectedProtocolMessage ReadRequest() {
+			return (IDirectedProtocolMessage)this.Channel.ReadFromRequest();
 		}
 
 		/// <summary>
@@ -125,8 +125,8 @@ namespace DotNetOpenAuth.OAuth {
 		/// </summary>
 		/// <param name="request">The HTTP request to read the message from.</param>
 		/// <returns>The deserialized message.</returns>
-		public IOAuthDirectedMessage ReadRequest(HttpRequest request) {
-			return (IOAuthDirectedMessage)this.Channel.ReadFromRequest(new HttpRequestInfo(request));
+		public IDirectedProtocolMessage ReadRequest(HttpRequest request) {
+			return this.Channel.ReadFromRequest(new HttpRequestInfo(request));
 		}
 
 		/// <summary>

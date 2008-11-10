@@ -107,7 +107,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <param name="request">The HTTP request to search.</param>
 		/// <returns>A dictionary of data in the request.  Should never be null, but may be empty.</returns>
-		protected override IProtocolMessage ReadFromRequestInternal(HttpRequestInfo request) {
+		protected override IDirectedProtocolMessage ReadFromRequestInternal(HttpRequestInfo request) {
 			if (request == null) {
 				throw new ArgumentNullException("request");
 			}
@@ -133,13 +133,13 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 							fields.Add(key, value);
 						}
 
-						return this.Receive(fields, request.GetRecipient());
+						return (IDirectedProtocolMessage)this.Receive(fields, request.GetRecipient());
 					}
 				}
 			}
 
 			// We didn't find an OAuth authorization header.  Revert to other payload methods.
-			IProtocolMessage message = base.ReadFromRequestInternal(request);
+			IDirectedProtocolMessage message = base.ReadFromRequestInternal(request);
 
 			// Add receiving HTTP transport information required for signature generation.
 			var signedMessage = message as ITamperResistantOAuthMessage;
@@ -180,13 +180,13 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			if (request.Recipient == null) {
 				throw new ArgumentException(MessagingStrings.DirectedMessageMissingRecipient, "request");
 			}
-			IOAuthDirectedMessage oauthRequest = request as IOAuthDirectedMessage;
+			IDirectedProtocolMessage oauthRequest = request as IDirectedProtocolMessage;
 			if (oauthRequest == null) {
 				throw new ArgumentException(
 					string.Format(
 						CultureInfo.CurrentCulture,
 						MessagingStrings.UnexpectedType,
-						typeof(IOAuthDirectedMessage),
+						typeof(IDirectedProtocolMessage),
 						request.GetType()));
 			}
 

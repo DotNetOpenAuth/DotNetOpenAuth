@@ -109,8 +109,8 @@ namespace DotNetOpenAuth.Messaging {
 		private IProtocolMessage CreateMessage(MessageReceivingEndpoint recipient) {
 			IProtocolMessage result;
 			BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-			if (typeof(IOAuthDirectedMessage).IsAssignableFrom(this.messageType)) {
-				// Some OAuth messages take just the recipient, while others take the whole endpoint
+			if (typeof(IDirectedProtocolMessage).IsAssignableFrom(this.messageType)) {
+				// Some directed messages take just the recipient, while others take the whole endpoint
 				ConstructorInfo ctor;
 				if ((ctor = this.messageType.GetConstructor(bindingFlags, null, new Type[] { typeof(Uri) }, null)) != null) {
 					if (recipient == null) {

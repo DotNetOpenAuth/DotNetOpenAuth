@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ResponseBase.cs" company="Andrew Arnott">
+// <copyright file="DirectResponseBase.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -7,12 +7,14 @@
 namespace DotNetOpenAuth.OpenId.Messages {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
-	/// A common base class for OpenID response messages.
+	/// A common base class for OpenID direct message responses.
 	/// </summary>
-	internal class ResponseBase : IProtocolMessage {
+	[DebuggerDisplay("OpenID {ProtocolVersion} response")]
+	internal class DirectResponseBase : IProtocolMessage {
 		/// <summary>
 		/// The openid.ns parameter in the message.
 		/// </summary>
@@ -29,9 +31,9 @@ namespace DotNetOpenAuth.OpenId.Messages {
 #pragma warning restore 0414
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ResponseBase"/> class.
+		/// Initializes a new instance of the <see cref="DirectResponseBase"/> class.
 		/// </summary>
-		protected ResponseBase() {
+		protected DirectResponseBase() {
 		}
 
 		#region IProtocolMessage Members

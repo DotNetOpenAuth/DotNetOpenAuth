@@ -8,10 +8,10 @@ namespace DotNetOpenAuth.Messaging {
 	using System;
 
 	/// <summary>
-	/// The methods available for the Consumer to send direct messages to the Service Provider.
+	/// The methods available for the local party to send messages to a remote party.
 	/// </summary>
 	/// <remarks>
-	/// See 1.0 spec section 5.2.
+	/// See OAuth 1.0 spec section 5.2.
 	/// </remarks>
 	[Flags]
 	public enum HttpDeliveryMethods {
@@ -34,10 +34,5 @@ namespace DotNetOpenAuth.Messaging {
 		/// Added to the URLs in the query part (as defined by [RFC3986] (Berners-Lee, T., “Uniform Resource Identifiers (URI): Generic Syntax,” .) section 3).
 		/// </summary>
 		GetRequest = 0x4,
-
-		/// <summary>
-		/// All HTTP requests are acceptable.
-		/// </summary>
-		All = AuthorizationHeaderRequest | PostRequest | GetRequest,
 	}
 }

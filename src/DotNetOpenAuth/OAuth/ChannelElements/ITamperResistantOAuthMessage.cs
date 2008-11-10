@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuth.ChannelElements {
+	using System;
 	using System.Collections.Generic;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
@@ -12,7 +13,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	/// <summary>
 	/// An interface that OAuth messages implement to support signing.
 	/// </summary>
-	public interface ITamperResistantOAuthMessage : IOAuthDirectedMessage, ITamperResistantProtocolMessage {
+	public interface ITamperResistantOAuthMessage : IDirectedProtocolMessage, ITamperResistantProtocolMessage {
 		/// <summary>
 		/// Gets or sets the method used to sign the message.
 		/// </summary>
@@ -37,5 +38,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Gets or sets the HTTP method that will be used to transmit the message.
 		/// </summary>
 		string HttpMethod { get; set; }
+
+		/// <summary>
+		/// Gets or sets the URL of the intended receiver of this message.
+		/// </summary>
+		new Uri Recipient { get; set; }
 	}
 }

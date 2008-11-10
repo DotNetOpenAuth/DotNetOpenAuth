@@ -154,7 +154,7 @@ namespace DotNetOpenAuth.Test {
 			var fields = GetStandardTestFields(FieldFill.CompleteBeforeBindings);
 			TestMessage expectedMessage = GetStandardTestMessage(FieldFill.CompleteBeforeBindings);
 
-			IProtocolMessage requestMessage = this.Channel.ReadFromRequest(CreateHttpRequestInfo(method, fields));
+			IDirectedProtocolMessage requestMessage = this.Channel.ReadFromRequest(CreateHttpRequestInfo(method, fields));
 			Assert.IsNotNull(requestMessage);
 			Assert.IsInstanceOfType(requestMessage, typeof(TestMessage));
 			TestMessage actualMessage = (TestMessage)requestMessage;

@@ -134,6 +134,17 @@ namespace DotNetOpenAuth.Messaging {
 		#region IDirectedProtocolMessage Members
 
 		/// <summary>
+		/// Gets the preferred method of transport for the message.
+		/// </summary>
+		/// <remarks>
+		/// This exception may be delivered as an indirect message or a direct response.  This property
+		/// only applies to the former.  The latter will never query this property.
+		/// </remarks>
+		HttpDeliveryMethods IDirectedProtocolMessage.HttpMethods {
+			get { return HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.PostRequest; }
+		}
+
+		/// <summary>
 		/// Gets the URL of the intended receiver of this message.
 		/// </summary>
 		/// <remarks>

@@ -20,19 +20,12 @@ namespace DotNetOpenAuth.OpenId {
 		/// Initializes a new instance of the <see cref="OpenIdProvider"/> class.
 		/// </summary>
 		public OpenIdProvider() {
-			this.OpenIdChannel = new OpenIdChannel();
+			this.Channel = new OpenIdChannel();
 		}
 
 		/// <summary>
 		/// Gets the channel to use for sending/receiving messages.
 		/// </summary>
-		public Channel Channel {
-			get { return this.OpenIdChannel; }
-		}
-
-		/// <summary>
-		/// Gets or sets the channel to use for sending/receiving messages.
-		/// </summary>
-		internal OpenIdChannel OpenIdChannel { get; set; }
+		public Channel Channel { get; internal set; }
 	}
 }

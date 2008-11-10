@@ -166,7 +166,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Requires an HttpContext.Current context.
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current"/> is null.</exception>
-		public IProtocolMessage ReadFromRequest() {
+		public IDirectedProtocolMessage ReadFromRequest() {
 			return this.ReadFromRequest(this.GetRequestFromContext());
 		}
 
@@ -257,8 +257,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="httpRequest">The request to search for an embedded message.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
-		public IProtocolMessage ReadFromRequest(HttpRequestInfo httpRequest) {
-			IProtocolMessage requestMessage = this.ReadFromRequestInternal(httpRequest);
+		public IDirectedProtocolMessage ReadFromRequest(HttpRequestInfo httpRequest) {
+			IDirectedProtocolMessage requestMessage = this.ReadFromRequestInternal(httpRequest);
 			if (requestMessage != null) {
 				Logger.DebugFormat("Incoming request received: {0}", requestMessage);
 				this.VerifyMessageAfterReceiving(requestMessage);
@@ -387,7 +387,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="request">The request to search for an embedded message.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
-		protected virtual IProtocolMessage ReadFromRequestInternal(HttpRequestInfo request) {
+		protected virtual IDirectedProtocolMessage ReadFromRequestInternal(HttpRequestInfo request) {
 			if (request == null) {
 				throw new ArgumentNullException("request");
 			}
@@ -398,7 +398,7 @@ namespace DotNetOpenAuth.Messaging {
 				fields = request.QueryString.ToDictionary();
 			}
 
-			return this.Receive(fields, request.GetRecipient());
+			return (IDirectedProtocolMessage)this.Receive(fields, request.GetRecipient());
 		}
 
 		/// <summary>

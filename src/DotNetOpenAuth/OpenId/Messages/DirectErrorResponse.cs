@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// This message must be sent with an HTTP status code of 400.
 	/// This class satisfies OpenID 2.0 section 5.1.2.2.
 	/// </remarks>
-	internal class DirectErrorResponse : ResponseBase {
+	internal class DirectErrorResponse : DirectResponseBase {
 		/// <summary>
 		/// Gets or sets a human-readable message indicating why the request failed. 
 		/// </summary>

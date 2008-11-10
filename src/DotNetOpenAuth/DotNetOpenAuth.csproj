@@ -110,7 +110,6 @@
     <Compile Include="Messaging\Bindings\IExpiringProtocolMessage.cs" />
     <Compile Include="OAuth\Messages\AccessProtectedResourceRequest.cs" />
     <Compile Include="OAuth\Messages\AuthorizedTokenResponse.cs" />
-    <Compile Include="OAuth\ChannelElements\IOAuthDirectedMessage.cs" />
     <Compile Include="OAuth\Messages\UserAuthorizationResponse.cs" />
     <Compile Include="OAuth\Messages\UserAuthorizationRequest.cs" />
     <Compile Include="OAuth\Messages\UnauthorizedTokenResponse.cs" />
@@ -157,7 +156,7 @@
     <Compile Include="OpenId\Messages\IndirectErrorResponse.cs" />
     <Compile Include="OpenId\Messages\DirectErrorResponse.cs" />
     <Compile Include="OpenId\Messages\RequestBase.cs" />
-    <Compile Include="OpenId\Messages\ResponseBase.cs" />
+    <Compile Include="OpenId\Messages\DirectResponseBase.cs" />
     <Compile Include="OpenId\OpenIdRelyingParty.cs" />
     <Compile Include="OpenId\OpenIdStrings.Designer.cs">
       <DependentUpon>OpenIdStrings.resx</DependentUpon>

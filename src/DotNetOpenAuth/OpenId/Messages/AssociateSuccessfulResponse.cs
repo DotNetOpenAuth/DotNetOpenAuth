@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.Messages {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -17,7 +18,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// <remarks>
 	/// Association response messages are described in OpenID 2.0 section 8.2.  This type covers section 8.2.1.
 	/// </remarks>
-	internal abstract class AssociateSuccessfulResponse : ResponseBase {
+	[DebuggerDisplay("OpenID {ProtocolVersion} associate response {AssociationHandle} {AssociationType} {SessionType}")]
+	internal abstract class AssociateSuccessfulResponse : DirectResponseBase {
 		/// <summary>
 		/// Gets or sets the association handle is used as a key to refer to this association in subsequent messages. 
 		/// </summary>
