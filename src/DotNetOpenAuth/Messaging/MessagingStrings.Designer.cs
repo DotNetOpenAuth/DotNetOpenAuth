@@ -376,6 +376,15 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The array must not be empty..
+        /// </summary>
+        internal static string UnexpectedEmptyArray {
+            get {
+                return ResourceManager.GetString("UnexpectedEmptyArray", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The empty string is not allowed..
         /// </summary>
         internal static string UnexpectedEmptyString {

@@ -82,7 +82,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 
 		#endregion
 
-		#region IProtocolMessage Members
+		#region IProtocolMessage Properties
 
 		/// <summary>
 		/// Gets the version of the protocol this message is prepared to implement.
@@ -113,6 +113,17 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		public IDictionary<string, string> ExtraData {
 			get { return EmptyDictionary<string, string>.Instance; }
 		}
+
+		#endregion 
+
+		/// <summary>
+		/// Gets the protocol used by this message.
+		/// </summary>
+		protected Protocol Protocol {
+			get { return Protocol.Lookup(this.ProtocolVersion); }
+		}
+
+		#region IProtocolMessage Methods
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification

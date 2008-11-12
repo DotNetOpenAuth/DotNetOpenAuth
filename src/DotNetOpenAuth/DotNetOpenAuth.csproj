@@ -143,9 +143,14 @@
     <Compile Include="Messaging\MessageTransport.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthServiceProviderMessageTypeProvider.cs" />
     <Compile Include="Messaging\ProtocolException.cs" />
+    <Compile Include="OpenId\Association.cs" />
+    <Compile Include="OpenId\ChannelElements\ITamperResistantOpenIdMessage.cs" />
+    <Compile Include="OpenId\ChannelElements\SigningBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\KeyValueFormEncoding.cs" />
     <Compile Include="OpenId\ChannelElements\OpenIdChannel.cs" />
     <Compile Include="OpenId\ChannelElements\OpenIdMessageTypeProvider.cs" />
+    <Compile Include="OpenId\Configuration.cs" />
+    <Compile Include="OpenId\DiffieHellmanUtilities.cs" />
     <Compile Include="OpenId\DiffieHellman\DHKeyGeneration.cs" />
     <Compile Include="OpenId\DiffieHellman\DHParameters.cs" />
     <Compile Include="OpenId\DiffieHellman\DiffieHellman.cs" />
@@ -156,6 +161,9 @@
     <Compile Include="OpenId\DiffieHellman\mono\PrimalityTests.cs" />
     <Compile Include="OpenId\DiffieHellman\mono\PrimeGeneratorBase.cs" />
     <Compile Include="OpenId\DiffieHellman\mono\SequentialSearchPrimeGeneratorBase.cs" />
+    <Compile Include="OpenId\HmacShaAssociation.cs" />
+    <Compile Include="OpenId\IAssociationStore.cs" />
+    <Compile Include="OpenId\Messages\AssociateUnencryptedRequest.cs" />
     <Compile Include="OpenId\OpenIdProvider.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanRequest.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanResponse.cs" />

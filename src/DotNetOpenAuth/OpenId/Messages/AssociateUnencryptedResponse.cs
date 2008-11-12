@@ -16,6 +16,13 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// </remarks>
 	internal class AssociateUnencryptedResponse : AssociateSuccessfulResponse {
 		/// <summary>
+		/// Initializes a new instance of the <see cref="AssociateUnencryptedResponse"/> class.
+		/// </summary>
+		internal AssociateUnencryptedResponse() {
+			SessionType = Protocol.Args.SessionType.NoEncryption;
+		}
+
+		/// <summary>
 		/// Gets or sets the MAC key (shared secret) for this association, Base 64 (Josefsson, S., “The Base16, Base32, and Base64 Data Encodings,” .) [RFC3548] encoded. 
 		/// </summary>
 		[MessagePart("mac_key", IsRequired = true, AllowEmpty = false)]

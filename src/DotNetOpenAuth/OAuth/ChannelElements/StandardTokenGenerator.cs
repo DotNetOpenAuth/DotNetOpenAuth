@@ -7,16 +7,12 @@
 namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
 	using System.Security.Cryptography;
+	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
 	/// A cryptographically strong random string generator for tokens and secrets.
 	/// </summary>
 	internal class StandardTokenGenerator : ITokenGenerator {
-		/// <summary>
-		/// The cryptographically strong random string generator for tokens and secrets.
-		/// </summary>
-		private RandomNumberGenerator cryptoProvider = new RNGCryptoServiceProvider();
-
 		#region ITokenGenerator Members
 
 		/// <summary>
@@ -61,7 +57,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <returns>The new random string.</returns>
 		private string GenerateCryptographicallyStrongString() {
 			byte[] buffer = new byte[20];
-			this.cryptoProvider.GetBytes(buffer);
+			MessagingUtilities.CryptoRandomDataGenerator.GetBytes(buffer);
 			return Convert.ToBase64String(buffer);
 		}
 	}

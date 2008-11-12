@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System.Globalization;
 	using System.IO;
 	using System.Text;
+	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
 	/// Indicates the level of strictness to require when decoding a
@@ -87,60 +88,33 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 		/// <summary>
 		/// Encodes key/value pairs to Key-Value Form.
-		/// Do not use for dictionaries of signed fields!  Instead use the overload
-		/// that accepts a list of in-order keys.
 		/// </summary>
-		/// <param name="dictionary">The dictionary with key/value pairs to encode in Key-Value Form.</param>
-		/// <returns>The UTF8 byte array.</returns>
-		/// <remarks>
-		/// Because dictionaries do not guarantee ordering,
-		/// encoding a dictionary without an explicitly given key order
-		/// is useless in OpenID scenarios where a signature must match.
-		/// </remarks>
-		public byte[] GetBytes(IDictionary<string, string> dictionary) {
-			string[] keys = new string[dictionary.Count];
-			dictionary.Keys.CopyTo(keys, 0);
-			return this.GetBytes(dictionary, keys);
-		}
-
-		/// <summary>
-		/// Encodes key/value pairs to Key-Value Form.
-		/// </summary>
-		/// <param name="dictionary">
+		/// <param name="keysAndValues">
 		/// The dictionary of key/value pairs to convert to a byte stream.
 		/// </param>
-		/// <param name="keyOrder">
-		/// The order in which to encode the key/value pairs.
-		/// Useful in scenarios where a byte[] must be exactly reproduced.
-		/// </param>
 		/// <returns>The UTF8 byte array.</returns>
-		public byte[] GetBytes(IDictionary<string, string> dictionary, IList<string> keyOrder) {
-			if (dictionary == null) {
-				throw new ArgumentNullException("dictionary");
-			}
-			if (keyOrder == null) {
-				throw new ArgumentNullException("keyOrder");
-			}
-			if (dictionary.Count != keyOrder.Count) {
-				throw new ArgumentException(OpenIdStrings.KeysListAndDictionaryDoNotMatch);
-			}
+		/// <remarks>
+		/// Enumerating a Dictionary&lt;TKey, TValue&gt; has undeterministic ordering.
+		/// If ordering of the key=value pairs is important, a deterministic enumerator must
+		/// be used.
+		/// </remarks>
+		public byte[] GetBytes(IEnumerable<KeyValuePair<string, string>> keysAndValues) {
+			ErrorUtilities.VerifyArgumentNotNull(keysAndValues, "keysAndValues");
 
 			MemoryStream ms = new MemoryStream();
 			using (StreamWriter sw = new StreamWriter(ms, textEncoding)) {
 				sw.NewLine = NewLineCharacters;
-				foreach (string keyInOrder in keyOrder) {
-					string key = keyInOrder.Trim();
-					string value = dictionary[key].Trim();
-					if (key.IndexOfAny(IllegalKeyCharacters) >= 0) {
-						throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, OpenIdStrings.InvalidCharacterInKeyValueFormInput, key));
+				foreach (var pair in keysAndValues) {
+					if (pair.Key.IndexOfAny(IllegalKeyCharacters) >= 0) {
+						throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, OpenIdStrings.InvalidCharacterInKeyValueFormInput, pair.Key));
 					}
-					if (value.IndexOfAny(IllegalValueCharacters) >= 0) {
-						throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, OpenIdStrings.InvalidCharacterInKeyValueFormInput, value));
+					if (pair.Value.IndexOfAny(IllegalValueCharacters) >= 0) {
+						throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, OpenIdStrings.InvalidCharacterInKeyValueFormInput, pair.Value));
 					}
 
-					sw.Write(key);
+					sw.Write(pair.Key);
 					sw.Write(':');
-					sw.Write(value);
+					sw.Write(pair.Value);
 					sw.WriteLine();
 				}
 			}

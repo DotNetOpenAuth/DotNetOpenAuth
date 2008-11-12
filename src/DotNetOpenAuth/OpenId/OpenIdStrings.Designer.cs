@@ -61,6 +61,24 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The private data supplied does not meet the requirements of any known Association type.  Its length may be too short, or it may have been corrupted..
+        /// </summary>
+        internal static string BadAssociationPrivateData {
+            get {
+                return ResourceManager.GetString("BadAssociationPrivateData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The following properties must be set before the Diffie-Hellman algorithm can generate a public key: {0}.
+        /// </summary>
+        internal static string DiffieHellmanRequiredPropertiesNotSet {
+            get {
+                return ResourceManager.GetString("DiffieHellmanRequiredPropertiesNotSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot encode &apos;{0}&apos; because it contains an illegal character for Key-Value Form encoding.  (line {1}: &apos;{2}&apos;).
         /// </summary>
         internal static string InvalidCharacterInKeyValueFormInput {

@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Security.Cryptography;
 	using System.Text;
 	using System.Web;
 	using DotNetOpenAuth.Messaging.Reflection;
@@ -19,6 +20,12 @@ namespace DotNetOpenAuth.Messaging {
 	/// A grab-bag of utility methods useful for the channel stack of the protocol.
 	/// </summary>
 	public static class MessagingUtilities {
+		/// <summary>
+		/// The cryptographically strong random data generator used for creating secrets.
+		/// </summary>
+		/// <remarks>The random number generator is thread-safe.</remarks>
+		internal static readonly RandomNumberGenerator CryptoRandomDataGenerator = new RNGCryptoServiceProvider();
+
 		/// <summary>
 		/// Gets the original request URL, as seen from the browser before any URL rewrites on the server if any.
 		/// Cookieless session directory (if applicable) is also included.
@@ -59,6 +66,17 @@ namespace DotNetOpenAuth.Messaging {
 			} else {
 				return uri;
 			}
+		}
+
+		/// <summary>
+		/// Gets a cryptographically strong random sequence of values.
+		/// </summary>
+		/// <param name="length">The length of the sequence to generate.</param>
+		/// <returns>The generated values, which may contain zeros.</returns>
+		internal static byte[] GetCryptoRandomData(int length) {
+			byte[] buffer = new byte[length];
+			CryptoRandomDataGenerator.GetBytes(buffer);
+			return buffer;
 		}
 
 		/// <summary>
@@ -117,6 +135,43 @@ namespace DotNetOpenAuth.Messaging {
 			while ((readBytes = copyFrom.Read(buffer, 0, 1024)) > 0) {
 				copyTo.Write(buffer, 0, readBytes);
 			}
+		}
+
+		/// <summary>
+		/// Tests whether two arrays are equal in length and contents.
+		/// </summary>
+		/// <typeparam name="T">The type of elements in the arrays.</typeparam>
+		/// <param name="first">The first array in the comparison.  May not be null.</param>
+		/// <param name="second">The second array in the comparison. May not be null.</param>
+		/// <returns>True if the arrays equal; false otherwise.</returns>
+		internal static bool AreEquivalent<T>(T[] first, T[] second) {
+			if (first == null) {
+				throw new ArgumentNullException("first");
+			}
+			if (second == null) {
+				throw new ArgumentNullException("second");
+			}
+			if (first.Length != second.Length) {
+				return false;
+			}
+			for (int i = 0; i < first.Length; i++) {
+				if (!first[i].Equals(second[i])) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		/// <summary>
+		/// Tests whether two dictionaries are equal in length and contents.
+		/// </summary>
+		/// <typeparam name="TKey">The type of keys in the dictionaries.</typeparam>
+		/// <typeparam name="TValue">The type of values in the dictionaries.</typeparam>
+		/// <param name="first">The first dictionary in the comparison.  May not be null.</param>
+		/// <param name="second">The second dictionary in the comparison. May not be null.</param>
+		/// <returns>True if the arrays equal; false otherwise.</returns>
+		internal static bool AreEquivalent<TKey, TValue>(IDictionary<TKey, TValue> first, IDictionary<TKey, TValue> second) {
+			return AreEquivalent(first.ToArray(), second.ToArray());
 		}
 
 		/// <summary>

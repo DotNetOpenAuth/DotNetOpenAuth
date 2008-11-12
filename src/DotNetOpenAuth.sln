@@ -34,7 +34,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Consumer", "..\samples\Cons
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "33321"
+		VWDPort = "48147"
 		DefaultWebSiteLanguage = "Visual C#"
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
@@ -63,7 +63,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ServiceProvider", "..\sampl
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "37480"
+		VWDPort = "48149"
 		DefaultWebSiteLanguage = "Visual C#"
 	EndProjectSection
 EndProject

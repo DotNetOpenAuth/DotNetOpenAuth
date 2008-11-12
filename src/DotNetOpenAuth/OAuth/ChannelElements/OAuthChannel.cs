@@ -299,14 +299,15 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Fills out the secrets in a message so that signing/verification can be performed.
 		/// </summary>
 		/// <param name="message">The message about to be signed or whose signature is about to be verified.</param>
-		private void SignatureCallback(ITamperResistantOAuthMessage message) {
+		private void SignatureCallback(ITamperResistantProtocolMessage message) {
+			var oauthMessage = message as ITamperResistantOAuthMessage;
 			try {
 				Logger.Debug("Applying secrets to message to prepare for signing or signature verification.");
-				message.ConsumerSecret = this.TokenManager.GetConsumerSecret(message.ConsumerKey);
+				oauthMessage.ConsumerSecret = this.TokenManager.GetConsumerSecret(oauthMessage.ConsumerKey);
 
 				var tokenMessage = message as ITokenContainingMessage;
 				if (tokenMessage != null) {
-					message.TokenSecret = this.TokenManager.GetTokenSecret(tokenMessage.Token);
+					oauthMessage.TokenSecret = this.TokenManager.GetTokenSecret(tokenMessage.Token);
 				}
 			} catch (KeyNotFoundException ex) {
 				throw new ProtocolException(OAuthStrings.ConsumerOrTokenSecretNotFound, ex);

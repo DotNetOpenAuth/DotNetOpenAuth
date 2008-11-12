@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="BadAssociationPrivateData" xml:space="preserve">
+    <value>The private data supplied does not meet the requirements of any known Association type.  Its length may be too short, or it may have been corrupted.</value>
+  </data>
+  <data name="DiffieHellmanRequiredPropertiesNotSet" xml:space="preserve">
+    <value>The following properties must be set before the Diffie-Hellman algorithm can generate a public key: {0}</value>
+  </data>
   <data name="InvalidCharacterInKeyValueFormInput" xml:space="preserve">
     <value>Cannot encode '{0}' because it contains an illegal character for Key-Value Form encoding.  (line {1}: '{2}')</value>
   </data>

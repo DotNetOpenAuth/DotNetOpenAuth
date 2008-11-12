@@ -67,7 +67,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			Assert.AreEqual(expectedContentType, directResponse.Headers[HttpResponseHeader.ContentType]);
 			byte[] actualBytes = new byte[directResponse.ResponseStream.Length];
 			directResponse.ResponseStream.Read(actualBytes, 0, actualBytes.Length);
-			Assert.IsTrue(TestUtilities.AreEquivalent(expectedBytes, actualBytes));
+			Assert.IsTrue(MessagingUtilities.AreEquivalent(expectedBytes, actualBytes));
 		}
 
 		/// <summary>
@@ -83,7 +83,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			Response response = new Response {
 				ResponseStream = new MemoryStream(kvf.GetBytes(fields)),
 			};
-			Assert.IsTrue(TestUtilities.AreEquivalent(fields, this.accessor.ReadFromResponseInternal(response)));
+			Assert.IsTrue(MessagingUtilities.AreEquivalent(fields, this.accessor.ReadFromResponseInternal(response)));
 		}
 	}
 }

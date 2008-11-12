@@ -67,7 +67,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			}
 			if ((mode & TestMode.Encoder) == TestMode.Encoder) {
 				var e = this.keyValueForm.GetBytes(dict);
-				Assert.IsTrue(TestUtilities.AreEquivalent(e, kvform), "Encoder did not produced expected result.");
+				Assert.IsTrue(MessagingUtilities.AreEquivalent(e, kvform), "Encoder did not produced expected result.");
 			}
 		}
 

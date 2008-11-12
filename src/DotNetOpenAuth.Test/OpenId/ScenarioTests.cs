@@ -10,31 +10,39 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
 	public class ScenarioTests {
+		private readonly Protocol Protocol = Protocol.V20;
+
 		[TestMethod]
-		public void Associate() {
-			// TODO: This is a VERY trivial association scenario that doesn't actually do anything significant.  It needs to get beefed up.
+		public void AssociateDiffieHellmanMessages() {
+			Association rpAssociation = null, opAssociation = null;
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
 				rp => {
-					var associateRequest = new AssociateRequest(new Uri("http://host"));
-					associateRequest.AssociationType = "HMAC-SHA1";
-					associateRequest.SessionType = "DH-SHA1";
-					IProtocolMessage responseMessage = rp.Channel.Request(associateRequest);
+					var associateRequest = new AssociateDiffieHellmanRequest(new Uri("http://host"));
+					associateRequest.AssociationType = Protocol.Args.SignatureAlgorithm.HMAC_SHA1;
+					associateRequest.SessionType = Protocol.Args.SessionType.DH_SHA1;
+					associateRequest.InitializeRequest();
+					var associateResponse = rp.Channel.Request<AssociateDiffieHellmanResponse>(associateRequest);
+					rpAssociation = associateResponse.CreateAssociation(associateRequest);
+					Assert.IsNotNull(rpAssociation);
+					Assert.IsFalse(MessagingUtilities.AreEquivalent(associateResponse.EncodedMacKey, rpAssociation.SecretKey), "Key should have been encrypted.");
 				},
 				op => {
-					var associateRequest = op.Channel.ReadFromRequest<AssociateRequest>();
-					var response = new AssociateUnencryptedResponse();
+					var associateRequest = op.Channel.ReadFromRequest<AssociateDiffieHellmanRequest>();
+					var response = new AssociateDiffieHellmanResponse();
 					response.AssociationType = associateRequest.AssociationType;
-					response.SessionType = associateRequest.SessionType;
-					response.AssociationHandle = "{somehandle}";
-					response.MacKey = new byte[] { 0x22, 0x33, 0x44 };
+					opAssociation = response.CreateAssociation(associateRequest);
 					op.Channel.Send(response);
 				});
 			coordinator.Run();
+			Assert.AreEqual(opAssociation.Handle, rpAssociation.Handle);
+			Assert.IsTrue(Math.Abs(opAssociation.SecondsTillExpiration - rpAssociation.SecondsTillExpiration) < 60);
+			Assert.IsTrue(MessagingUtilities.AreEquivalent(opAssociation.SecretKey, rpAssociation.SecretKey));
 		}
 	}
 }

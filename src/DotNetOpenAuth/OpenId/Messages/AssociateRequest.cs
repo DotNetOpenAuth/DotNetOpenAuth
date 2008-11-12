@@ -16,12 +16,12 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// An OpenID direct request from Relying Party to Provider to initiate an association.
 	/// </summary>
 	[DebuggerDisplay("OpenID {ProtocolVersion} {Mode} {AssociationType} {SessionType}")]
-	internal class AssociateRequest : RequestBase {
+	internal abstract class AssociateRequest : RequestBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssociateRequest"/> class.
 		/// </summary>
 		/// <param name="providerEndpoint">The OpenID Provider endpoint.</param>
-		internal AssociateRequest(Uri providerEndpoint)
+		protected AssociateRequest(Uri providerEndpoint)
 			: base(providerEndpoint, "associate", MessageTransport.Direct) {
 		}
 
@@ -56,7 +56,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			base.EnsureValidMessage();
 
 			ErrorUtilities.Verify(
-				this.SessionType != "no-encryption" || this.Recipient.IsTransportSecure(),
+				!string.Equals(this.SessionType, Protocol.Args.SessionType.NoEncryption, StringComparison.Ordinal) || this.Recipient.IsTransportSecure(),
 				OpenIdStrings.NoEncryptionSessionRequiresHttps,
 				this);
 		}

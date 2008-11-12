@@ -14,13 +14,14 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 
 	[TestClass]
 	public class AssociateRequestTests {
+		private readonly Protocol protocol = Protocol.V20;
 		private Uri secureRecipient = new Uri("https://hi");
 		private Uri insecureRecipient = new Uri("http://hi");
 		private AssociateRequest request;
 
 		[TestInitialize]
 		public void Setup() {
-			this.request = new AssociateRequest(this.secureRecipient);
+			this.request = new AssociateUnencryptedRequest(this.secureRecipient);
 		}
 
 		[TestMethod]
@@ -30,38 +31,36 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 
 		[TestMethod]
 		public void Mode() {
-			Assert.AreEqual("associate", this.request.Mode);
+			Assert.AreEqual(this.protocol.Args.Mode.associate, this.request.Mode);
 		}
 
 		[TestMethod]
 		public void MessagePartsTest() {
-			this.request.AssociationType = "HMAC-SHA1";
-			this.request.SessionType = "no-encryption";
+			this.request.AssociationType = this.protocol.Args.SignatureAlgorithm.HMAC_SHA1;
+			this.request.SessionType = this.protocol.Args.SessionType.NoEncryption;
 
-			Assert.AreEqual("associate", this.request.Mode);
-			Assert.AreEqual("HMAC-SHA1", this.request.AssociationType);
-			Assert.AreEqual("no-encryption", this.request.SessionType);
+			Assert.AreEqual(this.protocol.Args.Mode.associate, this.request.Mode);
+			Assert.AreEqual(this.protocol.Args.SignatureAlgorithm.HMAC_SHA1, this.request.AssociationType);
+			Assert.AreEqual(this.protocol.Args.SessionType.NoEncryption, this.request.SessionType);
 
 			var dict = new MessageDictionary(this.request);
-			Assert.AreEqual(Protocol.OpenId2Namespace, dict["openid.ns"]);
-			Assert.AreEqual("associate", dict["openid.mode"]);
-			Assert.AreEqual("HMAC-SHA1", dict["openid.assoc_type"]);
-			Assert.AreEqual("no-encryption", dict["openid.session_type"]);
+			Assert.AreEqual(Protocol.OpenId2Namespace, dict[this.protocol.openid.ns]);
+			Assert.AreEqual(this.protocol.Args.Mode.associate, dict[this.protocol.openid.mode]);
+			Assert.AreEqual(this.protocol.Args.SignatureAlgorithm.HMAC_SHA1, dict[this.protocol.openid.assoc_type]);
+			Assert.AreEqual(this.protocol.Args.SessionType.NoEncryption, dict[this.protocol.openid.session_type]);
 		}
 
 		[TestMethod]
 		public void ValidMessageTest() {
-			this.request = new AssociateRequest(this.secureRecipient);
-			this.request.AssociationType = "HMAC-SHA1";
-			this.request.SessionType = "no-encryption";
+			this.request = new AssociateUnencryptedRequest(this.secureRecipient);
+			this.request.AssociationType = this.protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 			this.request.EnsureValidMessage();
 		}
 
 		[TestMethod, ExpectedException(typeof(ProtocolException))]
 		public void InvalidMessageTest() {
-			this.request = new AssociateRequest(this.insecureRecipient);
-			this.request.AssociationType = "HMAC-SHA1";
-			this.request.SessionType = "no-encryption";
+			this.request = new AssociateUnencryptedRequest(this.insecureRecipient);
+			this.request.AssociationType = this.protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 			this.request.EnsureValidMessage(); // no-encryption only allowed for secure channels.
 		}
 
