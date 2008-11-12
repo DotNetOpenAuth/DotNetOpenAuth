@@ -35,12 +35,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="totalLifeLength">How long the association will be useful.</param>
 		/// <param name="issued">When this association was originally issued by the Provider.</param>
 		protected Association(string handle, byte[] secret, TimeSpan totalLifeLength, DateTime issued) {
-			if (string.IsNullOrEmpty(handle)) {
-				throw new ArgumentNullException("handle");
-			}
-			if (secret == null) {
-				throw new ArgumentNullException("secret");
-			}
+			ErrorUtilities.VerifyNonZeroLength(handle, "handle");
+			ErrorUtilities.VerifyArgumentNotNull(secret, "secret");
+
 			this.Handle = handle;
 			this.SecretKey = secret;
 			this.TotalLifeLength = totalLifeLength;

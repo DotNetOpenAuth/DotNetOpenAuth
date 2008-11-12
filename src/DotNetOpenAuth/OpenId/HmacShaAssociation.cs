@@ -58,6 +58,8 @@ namespace DotNetOpenAuth.OpenId {
 		private HmacShaAssociation(HmacSha typeIdentity, string handle, byte[] secret, TimeSpan totalLifeLength)
 			: base(handle, secret, totalLifeLength, DateTime.UtcNow) {
 			ErrorUtilities.VerifyArgumentNotNull(typeIdentity, "typeIdentity");
+			ErrorUtilities.VerifyNonZeroLength(handle, "handle");
+			ErrorUtilities.VerifyArgumentNotNull(secret, "secret");
 			ErrorUtilities.Verify(secret.Length == typeIdentity.SecretLength, OpenIdStrings.AssociationSecretAndTypeLengthMismatch, secret.Length, typeIdentity.GetAssociationType(Protocol.Default));
 
 			this.typeIdentity = typeIdentity;
