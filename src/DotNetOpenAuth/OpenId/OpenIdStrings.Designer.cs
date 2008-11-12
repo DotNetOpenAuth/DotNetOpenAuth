@@ -61,6 +61,24 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The length of the shared secret ({0}) does not match the length required by the association type (&apos;{1}&apos;)..
+        /// </summary>
+        internal static string AssociationSecretAndTypeLengthMismatch {
+            get {
+                return ResourceManager.GetString("AssociationSecretAndTypeLengthMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The length of the encrypted shared secret ({0}) does not match the length of the hashing algorithm ({1})..
+        /// </summary>
+        internal static string AssociationSecretHashLengthMismatch {
+            get {
+                return ResourceManager.GetString("AssociationSecretHashLengthMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The private data supplied does not meet the requirements of any known Association type.  Its length may be too short, or it may have been corrupted..
         /// </summary>
         internal static string BadAssociationPrivateData {
@@ -106,11 +124,38 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No recognized association type matches the requested length of {0}..
+        /// </summary>
+        internal static string NoAssociationTypeFoundByLength {
+            get {
+                return ResourceManager.GetString("NoAssociationTypeFoundByLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No recognized association type matches the requested name of &apos;{0}&apos;..
+        /// </summary>
+        internal static string NoAssociationTypeFoundByName {
+            get {
+                return ResourceManager.GetString("NoAssociationTypeFoundByName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unless using transport layer encryption, &quot;no-encryption&quot; MUST NOT be used..
         /// </summary>
         internal static string NoEncryptionSessionRequiresHttps {
             get {
                 return ResourceManager.GetString("NoEncryptionSessionRequiresHttps", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Diffie-Hellman session type &apos;{0}&apos; not found for OpenID {1}..
+        /// </summary>
+        internal static string NoSessionTypeFound {
+            get {
+                return ResourceManager.GetString("NoSessionTypeFound", resourceCulture);
             }
         }
     }

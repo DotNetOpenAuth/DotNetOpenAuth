@@ -7,12 +7,19 @@
 namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Diagnostics;
+	using System.Linq;
 	using System.Security.Cryptography;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
 
+	/// <summary>
+	/// An association that uses the HMAC-SHA family of algorithms for message signing.
+	/// </summary>
 	internal class HmacShaAssociation : Association {
+		/// <summary>
+		/// A list of HMAC-SHA algorithms in order of decreasing bit lengths.
+		/// </summary>
 		private static HmacSha[] hmacShaAssociationTypes = {
 			new HmacSha {
 				CreateHasher = secretKey => new HMACSHA512(secretKey),
@@ -36,39 +43,72 @@ namespace DotNetOpenAuth.OpenId {
 			},
 		};
 
+		/// <summary>
+		/// The specific variety of HMAC-SHA this association is based on (whether it be HMAC-SHA1, HMAC-SHA256, etc.)
+		/// </summary>
 		private HmacSha typeIdentity;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HmacShaAssociation"/> class.
 		/// </summary>
-		/// <param name="typeIdentity"></param>
+		/// <param name="typeIdentity">The specific variety of HMAC-SHA this association is based on (whether it be HMAC-SHA1, HMAC-SHA256, etc.)</param>
 		/// <param name="handle">The association handle.</param>
 		/// <param name="secret">The association secret.</param>
 		/// <param name="totalLifeLength">The time duration the association will be good for.</param>
 		private HmacShaAssociation(HmacSha typeIdentity, string handle, byte[] secret, TimeSpan totalLifeLength)
 			: base(handle, secret, totalLifeLength, DateTime.UtcNow) {
 			ErrorUtilities.VerifyArgumentNotNull(typeIdentity, "typeIdentity");
+			ErrorUtilities.Verify(secret.Length == typeIdentity.SecretLength, OpenIdStrings.AssociationSecretAndTypeLengthMismatch, secret.Length, typeIdentity.GetAssociationType(Protocol.Default));
 
-			Debug.Assert(secret.Length == typeIdentity.SecretLength);
 			this.typeIdentity = typeIdentity;
 		}
 
+		/// <summary>
+		/// Creates an HMAC-SHA association.
+		/// </summary>
+		/// <param name="protocol">The OpenID protocol version that the request for an association came in on.</param>
+		/// <param name="associationType">The value of the openid.assoc_type parameter.</param>
+		/// <param name="handle">The association handle.</param>
+		/// <param name="secret">The association secret.</param>
+		/// <param name="totalLifeLength">How long the association will be good for.</param>
+		/// <returns>The newly created association.</returns>
 		public static HmacShaAssociation Create(Protocol protocol, string associationType, string handle, byte[] secret, TimeSpan totalLifeLength) {
-			foreach (HmacSha shaType in hmacShaAssociationTypes) {
-				if (String.Equals(shaType.GetAssociationType(protocol), associationType, StringComparison.Ordinal)) {
-					return new HmacShaAssociation(shaType, handle, secret, totalLifeLength);
-				}
-			}
-			throw new ArgumentOutOfRangeException("associationType");
+			ErrorUtilities.VerifyArgumentNotNull(protocol, "protocol");
+			ErrorUtilities.VerifyNonZeroLength(associationType, "associationType");
+			ErrorUtilities.VerifyArgumentNotNull(secret, "secret");
+
+			HmacSha match = hmacShaAssociationTypes.FirstOrDefault(sha => String.Equals(sha.GetAssociationType(protocol), associationType, StringComparison.Ordinal));
+			ErrorUtilities.Verify(match != null, OpenIdStrings.NoAssociationTypeFoundByName, associationType);
+			return new HmacShaAssociation(match, handle, secret, totalLifeLength);
 		}
 
-		public static HmacShaAssociation Create(int secretLength, string handle, byte[] secret, TimeSpan totalLifeLength) {
-			foreach (HmacSha shaType in hmacShaAssociationTypes) {
-				if (shaType.SecretLength == secretLength) {
-					return new HmacShaAssociation(shaType, handle, secret, totalLifeLength);
-				}
-			}
-			throw new ArgumentOutOfRangeException("secretLength");
+		/// <summary>
+		/// Creates an association with the specified handle, secret, and lifetime.
+		/// </summary>
+		/// <param name="handle">The handle.</param>
+		/// <param name="secret">The secret.</param>
+		/// <param name="totalLifeLength">Total lifetime.</param>
+		/// <returns>The newly created association.</returns>
+		public static HmacShaAssociation Create(string handle, byte[] secret, TimeSpan totalLifeLength) {
+			ErrorUtilities.VerifyNonZeroLength(handle, "handle");
+			ErrorUtilities.VerifyArgumentNotNull(secret, "secret");
+
+			HmacSha shaType = hmacShaAssociationTypes.FirstOrDefault(sha => sha.SecretLength == secret.Length);
+			ErrorUtilities.Verify(shaType != null, OpenIdStrings.NoAssociationTypeFoundByLength, secret.Length);
+			return new HmacShaAssociation(shaType, handle, secret, totalLifeLength);
+		}
+
+		/// <summary>
+		/// Returns the length of the shared secret (in bytes).
+		/// </summary>
+		/// <param name="protocol">The protocol version being used that will be used to lookup the text in <paramref name="associationType"/></param>
+		/// <param name="associationType">The value of the protocol argument specifying the type of association.  For example: "HMAC-SHA1".</param>
+		/// <returns>The length (in bytes) of the association secret.</returns>
+		/// <exception cref="ProtocolException">Thrown if no association can be found by the given name.</exception>
+		public static int GetSecretLength(Protocol protocol, string associationType) {
+			HmacSha match = hmacShaAssociationTypes.FirstOrDefault(shaType => String.Equals(shaType.GetAssociationType(protocol), associationType, StringComparison.Ordinal));
+			ErrorUtilities.Verify(match != null, OpenIdStrings.NoAssociationTypeFoundByName, associationType);
+			return match.SecretLength;
 		}
 
 		/// <summary>
@@ -97,21 +137,6 @@ namespace DotNetOpenAuth.OpenId {
 			TimeSpan lifetime = associationUse == AssociationRelyingPartyType.Smart ? SmartAssociationLifetime : DumbSecretLifetime;
 
 			return Create(protocol, associationType, handle, secret, lifetime);
-		}
-
-		/// <summary>
-		/// Returns the length of the shared secret (in bytes).
-		/// </summary>
-		/// <param name="protocol">The protocol version being used that will be used to lookup the text in <paramref name="associationType"/></param>
-		/// <param name="associationType">The value of the protocol argument specifying the type of association.  For example: "HMAC-SHA1".</param>
-		/// <returns>The length (in bytes) of the association secret.</returns>
-		public static int GetSecretLength(Protocol protocol, string associationType) {
-			foreach (HmacSha shaType in hmacShaAssociationTypes) {
-				if (String.Equals(shaType.GetAssociationType(protocol), associationType, StringComparison.Ordinal)) {
-					return shaType.SecretLength;
-				}
-			}
-			throw new ArgumentOutOfRangeException("associationType");
 		}
 
 		/// <summary>
@@ -149,41 +174,69 @@ namespace DotNetOpenAuth.OpenId {
 			return false;
 		}
 
+		/// <summary>
+		/// Determines whether a named Diffie-Hellman session type and association type can be used together.
+		/// </summary>
+		/// <param name="protocol">The protocol carrying the names of the session and association types.</param>
+		/// <param name="associationType">The value of the openid.assoc_type parameter.</param>
+		/// <param name="sessionType">The value of the openid.session_type parameter.</param>
+		/// <returns>
+		/// 	<c>true</c> if the named association and session types are compatible; otherwise, <c>false</c>.
+		/// </returns>
 		internal static bool IsDHSessionCompatible(Protocol protocol, string associationType, string sessionType) {
-			// Under HTTPS, no DH encryption is required regardless of association type.
+			ErrorUtilities.VerifyArgumentNotNull(protocol, "protocol");
+			ErrorUtilities.VerifyNonZeroLength(associationType, "associationType");
+			ErrorUtilities.VerifyArgumentNotNull(sessionType, "sessionType");
+
+			// All association types can work when no DH session is used at all.
 			if (string.Equals(sessionType, protocol.Args.SessionType.NoEncryption, StringComparison.Ordinal)) {
 				return true;
 			}
 
 			// When there _is_ a DH session, it must match in hash length with the association type.
-			foreach (HmacSha sha in hmacShaAssociationTypes) {
-				if (string.Equals(associationType, sha.GetAssociationType(protocol), StringComparison.Ordinal)) {
-					int hashSizeInBits = sha.SecretLength * 8;
-					string matchingSessionName = DiffieHellmanUtilities.GetNameForSize(protocol, hashSizeInBits);
-					if (string.Equals(sessionType, matchingSessionName, StringComparison.Ordinal)) {
-						return true;
-					}
-				}
-			}
-			return false;
+			int associationSecretLengthInBytes = GetSecretLength(protocol, associationType);
+			int sessionHashLengthInBytes = DiffieHellmanUtilities.Lookup(protocol, sessionType).HashSize / 8;
+			return associationSecretLengthInBytes == sessionHashLengthInBytes;
 		}
 
+		/// <summary>
+		/// Gets the string to pass as the assoc_type value in the OpenID protocol.
+		/// </summary>
+		/// <param name="protocol">The protocol version of the message that the assoc_type value will be included in.</param>
+		/// <returns>
+		/// The value that should be used for  the openid.assoc_type parameter.
+		/// </returns>
 		internal override string GetAssociationType(Protocol protocol) {
 			return this.typeIdentity.GetAssociationType(protocol);
 		}
 
+		/// <summary>
+		/// Returns the specific hash algorithm used for message signing.
+		/// </summary>
+		/// <returns>
+		/// The hash algorithm used for message signing.
+		/// </returns>
 		protected override HashAlgorithm CreateHasher() {
 			return this.typeIdentity.CreateHasher(SecretKey);
 		}
 
+		/// <summary>
+		/// Provides information about some HMAC-SHA hashing algorithm that OpenID supports.
+		/// </summary>
 		private class HmacSha {
 			/// <summary>
-			/// Gets or sets the function that takes a particular OpenID version and returns the name of the association in that protocol.
+			/// Gets or sets the function that takes a particular OpenID version and returns the value of the openid.assoc_type parameter in that protocol.
 			/// </summary>
 			internal Func<Protocol, string> GetAssociationType { get; set; }
 
+			/// <summary>
+			/// Gets or sets a function that will create the <see cref="HashAlgorithm"/> using a given shared secret for the mac.
+			/// </summary>
 			internal Func<byte[], HashAlgorithm> CreateHasher { get; set; }
 
+			/// <summary>
+			/// Gets or sets the base hash algorithm.
+			/// </summary>
 			internal HashAlgorithm BaseHashAlgorithm { get; set; }
 
 			/// <summary>

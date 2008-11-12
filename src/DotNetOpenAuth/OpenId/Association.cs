@@ -28,16 +28,6 @@ namespace DotNetOpenAuth.OpenId {
 	[DebuggerDisplay("Handle = {Handle}, Expires = {Expires}")]
 	public abstract class Association {
 		/// <summary>
-		/// The duration any association and secret key the Provider generates will be good for.
-		/// </summary>
-		protected static readonly TimeSpan SmartAssociationLifetime = TimeSpan.FromDays(14);
-
-		/// <summary>
-		/// The duration a secret key used for signing dumb client requests will be good for.
-		/// </summary>
-		protected static readonly TimeSpan DumbSecretLifetime = TimeSpan.FromMinutes(5);
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="Association"/> class.
 		/// </summary>
 		/// <param name="handle">The handle.</param>
@@ -106,6 +96,20 @@ namespace DotNetOpenAuth.OpenId {
 		protected internal byte[] SecretKey { get; private set; }
 
 		/// <summary>
+		/// Gets the duration any association and secret key the Provider generates will be good for.
+		/// </summary>
+		protected static TimeSpan SmartAssociationLifetime {
+			get { return Configuration.SmartAssociationLifetime; }
+		}
+
+		/// <summary>
+		/// Gets the duration a secret key used for signing dumb client requests will be good for.
+		/// </summary>
+		protected static TimeSpan DumbSecretLifetime {
+			get { return Configuration.DumbSecretLifetime; }
+		}
+
+		/// <summary>
 		/// Gets the lifetime the OpenID provider permits this <see cref="Association"/>.
 		/// </summary>
 		protected TimeSpan TotalLifeLength { get; private set; }
@@ -158,7 +162,7 @@ namespace DotNetOpenAuth.OpenId {
 			byte[] secret = privateData; // the whole of privateData is the secret key for now.
 			// We figure out what derived type to instantiate based on the length of the secret.
 			try {
-				return HmacShaAssociation.Create(secret.Length, handle, secret, remainingLifeLength);
+				return HmacShaAssociation.Create(handle, secret, remainingLifeLength);
 			} catch (ArgumentException ex) {
 				throw new ArgumentException(OpenIdStrings.BadAssociationPrivateData, "privateData", ex);
 			}

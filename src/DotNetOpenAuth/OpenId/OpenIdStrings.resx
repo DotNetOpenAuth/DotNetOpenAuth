@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AssociationSecretAndTypeLengthMismatch" xml:space="preserve">
+    <value>The length of the shared secret ({0}) does not match the length required by the association type ('{1}').</value>
+  </data>
+  <data name="AssociationSecretHashLengthMismatch" xml:space="preserve">
+    <value>The length of the encrypted shared secret ({0}) does not match the length of the hashing algorithm ({1}).</value>
+  </data>
   <data name="BadAssociationPrivateData" xml:space="preserve">
     <value>The private data supplied does not meet the requirements of any known Association type.  Its length may be too short, or it may have been corrupted.</value>
   </data>
@@ -132,7 +138,16 @@
   <data name="KeysListAndDictionaryDoNotMatch" xml:space="preserve">
     <value>The list of keys do not match the provided dictionary.</value>
   </data>
+  <data name="NoAssociationTypeFoundByLength" xml:space="preserve">
+    <value>No recognized association type matches the requested length of {0}.</value>
+  </data>
+  <data name="NoAssociationTypeFoundByName" xml:space="preserve">
+    <value>No recognized association type matches the requested name of '{0}'.</value>
+  </data>
   <data name="NoEncryptionSessionRequiresHttps" xml:space="preserve">
     <value>Unless using transport layer encryption, "no-encryption" MUST NOT be used.</value>
+  </data>
+  <data name="NoSessionTypeFound" xml:space="preserve">
+    <value>Diffie-Hellman session type '{0}' not found for OpenID {1}.</value>
   </data>
 </root>
