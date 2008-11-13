@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
+	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
 	/// Security settings that are applicable to relying parties.

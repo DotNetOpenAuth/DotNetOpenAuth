@@ -10,13 +10,19 @@ namespace DotNetOpenAuth.OpenId {
 	/// </summary>
 	public class SecuritySettings {
 		/// <summary>
-		/// Initializes static members of the <see cref="SecuritySettings"/> class.
+		/// Gets the default minimum hash bit length.
 		/// </summary>
-		static SecuritySettings() {
-			MinimumHashBitLengthDefault = 160;
-			MaximumHashBitLengthRPDefault = 256;
-			MaximumHashBitLengthOPDefault = 512;
-		}
+		internal const int MinimumHashBitLengthDefault = 160;
+
+		/// <summary>
+		/// Gets the maximum hash bit length default for relying parties.
+		/// </summary>
+		internal const int MaximumHashBitLengthRPDefault = 256;
+
+		/// <summary>
+		/// Gets the maximum hash bit length default for providers.
+		/// </summary>
+		internal const int MaximumHashBitLengthOPDefault = 512;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SecuritySettings"/> class.
@@ -53,21 +59,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// without these side-effects.
 		/// </remarks>
 		public int MaximumHashBitLength { get; set; }
-
-		/// <summary>
-		/// Gets the default minimum hash bit length.
-		/// </summary>
-		internal static int MinimumHashBitLengthDefault { get; private set; }
-
-		/// <summary>
-		/// Gets the maximum hash bit length default for relying parties.
-		/// </summary>
-		internal static int MaximumHashBitLengthRPDefault { get; private set; }
-
-		/// <summary>
-		/// Gets the maximum hash bit length default for providers.
-		/// </summary>
-		internal static int MaximumHashBitLengthOPDefault { get; private set; }
 
 		/// <summary>
 		/// Determines whether a named association fits the security requirements.

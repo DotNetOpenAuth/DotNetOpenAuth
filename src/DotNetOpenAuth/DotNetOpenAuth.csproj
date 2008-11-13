@@ -49,6 +49,7 @@
       <HintPath>..\..\lib\log4net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -63,6 +64,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\ProviderSection.cs" />
+    <Compile Include="Configuration\ProviderSecuritySettingsElement.cs" />
+    <Compile Include="Configuration\RelyingPartySection.cs" />
+    <Compile Include="Configuration\RelyingPartySecuritySettingsElement.cs" />
+    <Compile Include="Configuration\TypeConfigurationElement.cs" />
+    <Compile Include="Configuration\UntrustedWebRequestSection.cs" />
+    <Compile Include="Configuration\HostNameOrRegexCollection.cs" />
+    <Compile Include="Configuration\HostNameElement.cs" />
     <Compile Include="Messaging\EmptyDictionary.cs" />
     <Compile Include="Messaging\EmptyEnumerator.cs" />
     <Compile Include="Messaging\EmptyList.cs" />
