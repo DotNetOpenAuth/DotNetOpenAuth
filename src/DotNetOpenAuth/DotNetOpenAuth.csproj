@@ -153,6 +153,8 @@
     <Compile Include="OAuth\ChannelElements\OAuthServiceProviderMessageTypeProvider.cs" />
     <Compile Include="Messaging\ProtocolException.cs" />
     <Compile Include="OpenId\Association.cs" />
+    <Compile Include="OpenId\AssociationMemoryStore.cs" />
+    <Compile Include="OpenId\Associations.cs" />
     <Compile Include="OpenId\ChannelElements\ITamperResistantOpenIdMessage.cs" />
     <Compile Include="OpenId\ChannelElements\SigningBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\KeyValueFormEncoding.cs" />
