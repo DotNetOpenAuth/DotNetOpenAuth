@@ -280,10 +280,10 @@ namespace DotNetOpenAuth.Messaging {
 		public TRESPONSE Request<TRESPONSE>(IDirectedProtocolMessage request)
 			where TRESPONSE : class, IProtocolMessage {
 			IProtocolMessage response = this.Request(request);
-			ErrorUtilities.Verify(response != null, MessagingStrings.ExpectedMessageNotReceived, typeof(TRESPONSE));
+			ErrorUtilities.VerifyProtocol(response != null, MessagingStrings.ExpectedMessageNotReceived, typeof(TRESPONSE));
 
 			var expectedResponse = response as TRESPONSE;
-			ErrorUtilities.Verify(expectedResponse != null, MessagingStrings.UnexpectedMessageReceived, typeof(TRESPONSE), response.GetType());
+			ErrorUtilities.VerifyProtocol(expectedResponse != null, MessagingStrings.UnexpectedMessageReceived, typeof(TRESPONSE), response.GetType());
 
 			return expectedResponse;
 		}
@@ -302,7 +302,7 @@ namespace DotNetOpenAuth.Messaging {
 			this.PrepareMessageForSending(request);
 			Logger.DebugFormat("Sending request: {0}", request);
 			var responseMessage = this.RequestInternal(request);
-			ErrorUtilities.Verify(responseMessage != null, MessagingStrings.ExpectedMessageNotReceived, typeof(IProtocolMessage).Name);
+			ErrorUtilities.VerifyProtocol(responseMessage != null, MessagingStrings.ExpectedMessageNotReceived, typeof(IProtocolMessage).Name);
 
 			Logger.DebugFormat("Received message response: {0}", responseMessage);
 			this.VerifyMessageAfterReceiving(responseMessage);

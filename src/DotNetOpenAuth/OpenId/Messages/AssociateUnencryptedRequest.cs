@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		public override void EnsureValidMessage() {
 			base.EnsureValidMessage();
 
-			ErrorUtilities.Verify(
+			ErrorUtilities.VerifyProtocol(
 				string.Equals(SessionType, Protocol.Args.SessionType.NoEncryption, StringComparison.Ordinal),
 				MessagingStrings.UnexpectedMessagePartValueForConstant,
 				GetType().Name,

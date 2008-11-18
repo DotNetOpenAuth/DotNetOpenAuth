@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.OpenId {
 			ErrorUtilities.VerifyArgumentNotNull(typeIdentity, "typeIdentity");
 			ErrorUtilities.VerifyNonZeroLength(handle, "handle");
 			ErrorUtilities.VerifyArgumentNotNull(secret, "secret");
-			ErrorUtilities.Verify(secret.Length == typeIdentity.SecretLength, OpenIdStrings.AssociationSecretAndTypeLengthMismatch, secret.Length, typeIdentity.GetAssociationType(Protocol.Default));
+			ErrorUtilities.VerifyProtocol(secret.Length == typeIdentity.SecretLength, OpenIdStrings.AssociationSecretAndTypeLengthMismatch, secret.Length, typeIdentity.GetAssociationType(Protocol.Default));
 
 			this.typeIdentity = typeIdentity;
 		}
@@ -80,7 +80,7 @@ namespace DotNetOpenAuth.OpenId {
 			ErrorUtilities.VerifyArgumentNotNull(secret, "secret");
 
 			HmacSha match = hmacShaAssociationTypes.FirstOrDefault(sha => String.Equals(sha.GetAssociationType(protocol), associationType, StringComparison.Ordinal));
-			ErrorUtilities.Verify(match != null, OpenIdStrings.NoAssociationTypeFoundByName, associationType);
+			ErrorUtilities.VerifyProtocol(match != null, OpenIdStrings.NoAssociationTypeFoundByName, associationType);
 			return new HmacShaAssociation(match, handle, secret, totalLifeLength);
 		}
 
@@ -96,7 +96,7 @@ namespace DotNetOpenAuth.OpenId {
 			ErrorUtilities.VerifyArgumentNotNull(secret, "secret");
 
 			HmacSha shaType = hmacShaAssociationTypes.FirstOrDefault(sha => sha.SecretLength == secret.Length);
-			ErrorUtilities.Verify(shaType != null, OpenIdStrings.NoAssociationTypeFoundByLength, secret.Length);
+			ErrorUtilities.VerifyProtocol(shaType != null, OpenIdStrings.NoAssociationTypeFoundByLength, secret.Length);
 			return new HmacShaAssociation(shaType, handle, secret, totalLifeLength);
 		}
 
@@ -109,7 +109,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <exception cref="ProtocolException">Thrown if no association can be found by the given name.</exception>
 		public static int GetSecretLength(Protocol protocol, string associationType) {
 			HmacSha match = hmacShaAssociationTypes.FirstOrDefault(shaType => String.Equals(shaType.GetAssociationType(protocol), associationType, StringComparison.Ordinal));
-			ErrorUtilities.Verify(match != null, OpenIdStrings.NoAssociationTypeFoundByName, associationType);
+			ErrorUtilities.VerifyProtocol(match != null, OpenIdStrings.NoAssociationTypeFoundByName, associationType);
 			return match.SecretLength;
 		}
 

@@ -55,7 +55,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		public override void EnsureValidMessage() {
 			base.EnsureValidMessage();
 
-			ErrorUtilities.Verify(
+			ErrorUtilities.VerifyProtocol(
 				!string.Equals(this.SessionType, Protocol.Args.SessionType.NoEncryption, StringComparison.Ordinal) || this.Recipient.IsTransportSecure(),
 				OpenIdStrings.NoEncryptionSessionRequiresHttps,
 				this);

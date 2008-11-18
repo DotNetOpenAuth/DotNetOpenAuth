@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.OpenId {
 
 			// We COULD use just First instead of FirstOrDefault, but we want to throw ProtocolException instead of InvalidOperationException.
 			DHSha match = diffieHellmanSessionTypes.FirstOrDefault(dhsha => String.Equals(dhsha.GetName(protocol), sessionType, StringComparison.Ordinal));
-			ErrorUtilities.Verify(match != null, OpenIdStrings.NoSessionTypeFound, sessionType, protocol.Version);
+			ErrorUtilities.VerifyProtocol(match != null, OpenIdStrings.NoSessionTypeFound, sessionType, protocol.Version);
 			return match.Algorithm;
 		}
 
@@ -79,7 +79,7 @@ namespace DotNetOpenAuth.OpenId {
 
 			byte[] sharedBlock = dh.DecryptKeyExchange(remotePublicKey);
 			byte[] sharedBlockHash = hasher.ComputeHash(EnsurePositive(sharedBlock));
-			ErrorUtilities.Verify(sharedBlockHash.Length == plainOrEncryptedSecret.Length, OpenIdStrings.AssociationSecretHashLengthMismatch, plainOrEncryptedSecret.Length, sharedBlockHash.Length);
+			ErrorUtilities.VerifyProtocol(sharedBlockHash.Length == plainOrEncryptedSecret.Length, OpenIdStrings.AssociationSecretHashLengthMismatch, plainOrEncryptedSecret.Length, sharedBlockHash.Length);
 
 			byte[] secret = new byte[plainOrEncryptedSecret.Length];
 			for (int i = 0; i < plainOrEncryptedSecret.Length; i++) {

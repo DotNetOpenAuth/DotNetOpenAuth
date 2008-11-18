@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="faultedMessage">The message being processed that would be responsible for the exception if thrown.</param>
 		/// <param name="errorMessage">The error message for the exception.</param>
 		/// <param name="args">The string formatting arguments, if any.</param>
-		internal static void Verify(bool condition, IProtocolMessage faultedMessage, string errorMessage, params object[] args) {
+		internal static void VerifyProtocol(bool condition, IProtocolMessage faultedMessage, string errorMessage, params object[] args) {
 			if (!condition) {
 				throw new ProtocolException(string.Format(CultureInfo.CurrentCulture, errorMessage, args), faultedMessage);
 			}
@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="condition">True to do nothing; false to throw the exception.</param>
 		/// <param name="message">The error message for the exception.</param>
 		/// <param name="args">The string formatting arguments, if any.</param>
-		internal static void Verify(bool condition, string message, params object[] args) {
+		internal static void VerifyProtocol(bool condition, string message, params object[] args) {
 			if (!condition) {
 				throw new ProtocolException(string.Format(
 					CultureInfo.CurrentCulture,
