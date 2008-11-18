@@ -161,6 +161,7 @@
     <Compile Include="OpenId\ChannelElements\OpenIdChannel.cs" />
     <Compile Include="OpenId\ChannelElements\OpenIdMessageTypeProvider.cs" />
     <Compile Include="OpenId\Configuration.cs" />
+    <Compile Include="OpenId\RelyingPartyDescription.cs" />
     <Compile Include="OpenId\DiffieHellmanUtilities.cs" />
     <Compile Include="OpenId\DiffieHellman\DHKeyGeneration.cs" />
     <Compile Include="OpenId\DiffieHellman\DHParameters.cs" />
@@ -193,6 +194,7 @@
       <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="OpenId\Protocol.cs" />
+    <Compile Include="OpenId\ProviderDescription.cs" />
     <Compile Include="OpenId\Provider\ProviderSecuritySettings.cs" />
     <Compile Include="OpenId\RelyingParty\RelyingPartySecuritySettings.cs" />
     <Compile Include="OpenId\SecuritySettings.cs" />

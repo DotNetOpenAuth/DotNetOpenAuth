@@ -33,7 +33,25 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		internal byte[] EncodedMacKey { get; set; }
 
 		/// <summary>
-		/// Called to create the Association based on a provided request previously given by the Relying Party.
+		/// Called to create the Association based on a request previously given by the Relying Party.
+		/// </summary>
+		/// <param name="request">The prior request for an association.</param>
+		/// <returns>The created association.</returns>
+		/// <remarks>
+		/// 	<para>The response message is updated to include the details of the created association by this method,
+		/// but the resulting association is <i>not</i> added to the association store and must be done by the caller.</para>
+		/// 	<para>This method is called by both the Provider and the Relying Party, but actually performs
+		/// quite different operations in either scenario.</para>
+		/// </remarks>
+		protected internal override Association CreateAssociation(AssociateRequest request) {
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			ErrorUtilities.VerifyArgument(request is AssociateDiffieHellmanRequest, "request");
+
+			return this.CreateAssociation((AssociateDiffieHellmanRequest)request);
+		}
+
+		/// <summary>
+		/// Called to create the Association based on a request previously given by the Relying Party.
 		/// </summary>
 		/// <param name="request">The request for an association.</param>
 		/// <returns>The created association.</returns>
@@ -43,7 +61,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <para>This method is called by both the Provider and the Relying Party, but actually performs
 		/// quite different operations in either scenario.</para>
 		/// </remarks>
-		internal Association CreateAssociation(AssociateDiffieHellmanRequest request) {
+		private Association CreateAssociation(AssociateDiffieHellmanRequest request) {
 			// If the encoded mac key is already set, then this is an incoming message at the Relying Party.
 			if (this.EncodedMacKey == null) {
 				return this.CreateAssociationAtProvider(request);

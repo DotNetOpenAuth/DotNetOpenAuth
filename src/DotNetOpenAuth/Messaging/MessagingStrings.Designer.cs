@@ -142,7 +142,7 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Expected message {0} but received no recognizable message..
+        ///   Looks up a localized string similar to Expected {0} message but received no recognizable message..
         /// </summary>
         internal static string ExpectedMessageNotReceived {
             get {
@@ -417,6 +417,15 @@ namespace DotNetOpenAuth.Messaging {
         internal static string UnexpectedMessageReceived {
             get {
                 return ResourceManager.GetString("UnexpectedMessageReceived", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unexpected message type received..
+        /// </summary>
+        internal static string UnexpectedMessageReceivedOfMany {
+            get {
+                return ResourceManager.GetString("UnexpectedMessageReceivedOfMany", resourceCulture);
             }
         }
         

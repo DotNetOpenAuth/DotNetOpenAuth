@@ -21,14 +21,11 @@ namespace DotNetOpenAuth.Test.OpenId {
 		[TestMethod]
 		public void AssociateDiffieHellmanMessages() {
 			Association rpAssociation = null, opAssociation = null;
+			AssociateDiffieHellmanResponse associateResponse = null;
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
 				rp => {
-					var associateRequest = new AssociateDiffieHellmanRequest(new Uri("http://host"));
-					associateRequest.AssociationType = Protocol.Args.SignatureAlgorithm.HMAC_SHA1;
-					associateRequest.SessionType = Protocol.Args.SessionType.DH_SHA1;
-					associateRequest.InitializeRequest();
-					var associateResponse = rp.Channel.Request<AssociateDiffieHellmanResponse>(associateRequest);
-					rpAssociation = associateResponse.CreateAssociation(associateRequest);
+					var op = new ProviderEndpointDescription(new Uri("http://host"), Protocol);
+					rpAssociation = rp.GetAssociation(op);
 					Assert.IsNotNull(rpAssociation);
 					Assert.IsFalse(MessagingUtilities.AreEquivalent(associateResponse.EncodedMacKey, rpAssociation.SecretKey), "Key should have been encrypted.");
 				},
@@ -39,6 +36,13 @@ namespace DotNetOpenAuth.Test.OpenId {
 					opAssociation = response.CreateAssociation(associateRequest);
 					op.Channel.Send(response);
 				});
+			coordinator.IncomingMessageFilter = (message) => {
+				var associateResponseMessage = message as AssociateDiffieHellmanResponse;
+				if (associateResponseMessage != null) {
+					// capture this message so we can analyze it later
+					associateResponse = associateResponseMessage;
+				}
+			};
 			coordinator.Run();
 			Assert.AreEqual(opAssociation.Handle, rpAssociation.Handle);
 			Assert.IsTrue(Math.Abs(opAssociation.SecondsTillExpiration - rpAssociation.SecondsTillExpiration) < 60);

@@ -60,5 +60,27 @@ namespace DotNetOpenAuth.OpenId.Messages {
 				OpenIdStrings.NoEncryptionSessionRequiresHttps,
 				this);
 		}
+
+		/// <summary>
+		/// Creates an association request message that is appropriate for a given Provider.
+		/// </summary>
+		/// <param name="provider">The provider to create an association with.</param>
+		/// <returns>The message to send to the Provider to request an association.</returns>
+		internal static AssociateRequest Create(ProviderEndpointDescription provider) {
+			AssociateRequest associateRequest;
+			if (provider.Endpoint.IsTransportSecure()) {
+				associateRequest = new AssociateUnencryptedRequest(provider.Endpoint);
+			} else {
+				// TODO: apply security policies and our knowledge of the provider's OpenID version
+				// to select the right association here.
+				var diffieHellmanAssociateRequest = new AssociateDiffieHellmanRequest(provider.Endpoint);
+				diffieHellmanAssociateRequest.AssociationType = provider.Protocol.Args.SignatureAlgorithm.HMAC_SHA1;
+				diffieHellmanAssociateRequest.SessionType = provider.Protocol.Args.SessionType.DH_SHA1;
+				diffieHellmanAssociateRequest.InitializeRequest();
+				associateRequest = diffieHellmanAssociateRequest;
+			}
+
+			return associateRequest;
+		}
 	}
 }

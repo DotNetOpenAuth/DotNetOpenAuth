@@ -22,6 +22,10 @@ namespace DotNetOpenAuth.Test {
 			this.party2Action = party2Action;
 		}
 
+		protected internal Action<IProtocolMessage> IncomingMessageFilter { get; set; }
+
+		protected internal Action<IProtocolMessage> OutgoingMessageFilter { get; set; }
+
 		internal abstract void Run();
 
 		protected void RunCore(T1 party1Object, T2 party2Object) {

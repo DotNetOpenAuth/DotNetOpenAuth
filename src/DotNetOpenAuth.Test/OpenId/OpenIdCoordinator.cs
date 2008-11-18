@@ -21,8 +21,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 			OpenIdRelyingParty rp = new OpenIdRelyingParty();
 			OpenIdProvider op = new OpenIdProvider();
 
-			var rpCoordinatingChannel = new CoordinatingChannel(rp.Channel);
-			var opCoordinatingChannel = new CoordinatingChannel(op.Channel);
+			var rpCoordinatingChannel = new CoordinatingChannel(rp.Channel, this.IncomingMessageFilter, this.OutgoingMessageFilter);
+			var opCoordinatingChannel = new CoordinatingChannel(op.Channel, this.IncomingMessageFilter, this.OutgoingMessageFilter);
 			rpCoordinatingChannel.RemoteChannel = opCoordinatingChannel;
 			opCoordinatingChannel.RemoteChannel = rpCoordinatingChannel;
 

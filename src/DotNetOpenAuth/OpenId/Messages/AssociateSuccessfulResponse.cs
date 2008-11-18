@@ -50,5 +50,18 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <value>An integer, represented in base 10 ASCII. </value>
 		[MessagePart("expires_in", IsRequired = true)]
 		internal long ExpiresIn { get; set; }
+
+		/// <summary>
+		/// Called to create the Association based on a request previously given by the Relying Party.
+		/// </summary>
+		/// <param name="request">The prior request for an association.</param>
+		/// <returns>The created association.</returns>
+		/// <remarks>
+		/// <para>The response message is updated to include the details of the created association by this method, 
+		/// but the resulting association is <i>not</i> added to the association store and must be done by the caller.</para>
+		/// <para>This method is called by both the Provider and the Relying Party, but actually performs
+		/// quite different operations in either scenario.</para>
+		/// </remarks>
+		protected internal abstract Association CreateAssociation(AssociateRequest request);
 	}
 }

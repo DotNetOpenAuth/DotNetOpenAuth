@@ -17,12 +17,16 @@ namespace DotNetOpenAuth.Test.Mocks {
 		private EventWaitHandle incomingMessageSignal = new AutoResetEvent(false);
 		private IProtocolMessage incomingMessage;
 		private Response incomingRawResponse;
+		private Action<IProtocolMessage> incomingMessageFilter;
+		private Action<IProtocolMessage> outgoingMessageFilter;
 
-		internal CoordinatingChannel(Channel wrappedChannel)
+		internal CoordinatingChannel(Channel wrappedChannel, Action<IProtocolMessage> incomingMessageFilter, Action<IProtocolMessage> outgoingMessageFilter)
 			: base(GetMessageTypeProvider(wrappedChannel), wrappedChannel.BindingElements.ToArray()) {
 			ErrorUtilities.VerifyArgumentNotNull(wrappedChannel, "wrappedChannel");
 
 			this.wrappedChannel = wrappedChannel;
+			this.incomingMessageFilter = incomingMessageFilter;
+			this.outgoingMessageFilter = outgoingMessageFilter;
 		}
 
 		/// <summary>
@@ -35,26 +39,32 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		protected override IProtocolMessage RequestInternal(IDirectedProtocolMessage request) {
+			this.ProcessMessageFilter(request, true);
 			HttpRequestInfo requestInfo = this.SpoofHttpMethod(request);
 			// Drop the outgoing message in the other channel's in-slot and let them know it's there.
 			this.RemoteChannel.incomingMessage = requestInfo.Message;
 			this.RemoteChannel.incomingMessageSignal.Set();
 			// Now wait for a response...
-			return this.AwaitIncomingMessage();
+			IProtocolMessage response = this.AwaitIncomingMessage();
+			this.ProcessMessageFilter(response, false);
+			return response;
 		}
 
 		protected override Response SendDirectMessageResponse(IProtocolMessage response) {
+			this.ProcessMessageFilter(response, true);
 			this.RemoteChannel.incomingMessage = CloneSerializedParts(response, null);
 			this.RemoteChannel.incomingMessageSignal.Set();
 			return null;
 		}
 
 		protected override Response SendIndirectMessage(IDirectedProtocolMessage message) {
+			this.ProcessMessageFilter(message, true);
 			// In this mock transport, direct and indirect messages are the same.
 			return this.SendDirectMessageResponse(message);
 		}
 
 		protected override IDirectedProtocolMessage ReadFromRequestInternal(HttpRequestInfo request) {
+			this.ProcessMessageFilter(request.Message, false);
 			return request.Message;
 		}
 
@@ -103,6 +113,18 @@ namespace DotNetOpenAuth.Test.Mocks {
 			IProtocolMessage response = this.incomingMessage;
 			this.incomingMessage = null;
 			return response;
+		}
+
+		private void ProcessMessageFilter(IProtocolMessage message, bool outgoing) {
+			if (outgoing) {
+				if (this.outgoingMessageFilter != null) {
+					this.outgoingMessageFilter(message);
+				}
+			} else {
+				if (this.incomingMessageFilter != null) {
+					this.incomingMessageFilter(message);
+				}
+			}
 		}
 	}
 }
