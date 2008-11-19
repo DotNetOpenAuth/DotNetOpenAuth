@@ -326,9 +326,9 @@ namespace DotNetOpenAuth.OpenId {
 				public string[] All { get { return new[] { DH_SHA512, DH_SHA384, DH_SHA256, DH_SHA1, NoEncryption }; } }
 				public string[] AllDiffieHellman { get { return new[] { DH_SHA512, DH_SHA384, DH_SHA256, DH_SHA1 }; } }
 				public string DH_SHA1 = "DH-SHA1";
-				public string DH_SHA256 = null;
-				public string DH_SHA384 = null;
-				public string DH_SHA512 = null;
+				public string DH_SHA256;
+				public string DH_SHA384;
+				public string DH_SHA512;
 				public string NoEncryption = string.Empty;
 				public string Best {
 					get {
@@ -347,9 +347,9 @@ namespace DotNetOpenAuth.OpenId {
 				/// </summary>
 				public string[] All { get { return new[] { HMAC_SHA512, HMAC_SHA384, HMAC_SHA256, HMAC_SHA1 }; } }
 				public string HMAC_SHA1 = "HMAC-SHA1";
-				public string HMAC_SHA256 = null;
-				public string HMAC_SHA384 = null;
-				public string HMAC_SHA512 = null;
+				public string HMAC_SHA256;
+				public string HMAC_SHA384;
+				public string HMAC_SHA512;
 				public string Best {
 					get {
 						foreach (string algorithmName in All) {
@@ -369,7 +369,7 @@ namespace DotNetOpenAuth.OpenId {
 				public string checkid_setup = "checkid_setup";
 				public string check_authentication = "check_authentication";
 				public string associate = "associate";
-				public string setup_needed = null;
+				public string setup_needed;
 			}
 			internal class IsValidValues {
 				public string True = "true";

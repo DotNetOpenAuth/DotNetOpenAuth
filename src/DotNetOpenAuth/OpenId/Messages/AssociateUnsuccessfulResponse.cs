@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Diagnostics;
+	using System.Diagnostics.CodeAnalysis;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -20,6 +21,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// A hard-coded string indicating an error occurred.
 		/// </summary>
 		/// <value>"unsupported-type" </value>
+		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Read by reflection")]
 		[MessagePart("error_code", IsRequired = true, AllowEmpty = false)]
 #pragma warning disable 0414 // read by reflection
 		private readonly string Error = "unsupported-type";

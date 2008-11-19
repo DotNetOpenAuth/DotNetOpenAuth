@@ -98,7 +98,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// If ordering of the key=value pairs is important, a deterministic enumerator must
 		/// be used.
 		/// </remarks>
-		public byte[] GetBytes(IEnumerable<KeyValuePair<string, string>> keysAndValues) {
+		public static byte[] GetBytes(IEnumerable<KeyValuePair<string, string>> keysAndValues) {
 			ErrorUtilities.VerifyArgumentNotNull(keysAndValues, "keysAndValues");
 
 			MemoryStream ms = new MemoryStream();

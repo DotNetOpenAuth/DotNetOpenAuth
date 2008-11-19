@@ -26,7 +26,6 @@ namespace DotNetOpenAuth.Test.OpenId {
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
 				rp => {
 					rpAssociation = rp.GetAssociation(opDescription);
-					Assert.IsNotNull(rpAssociation);
 				},
 				op => {
 					op.AutoRespond();
@@ -39,6 +38,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 				}
 			};
 			coordinator.Run();
+			Assert.IsNotNull(rpAssociation);
 			Assert.AreSame(rpAssociation, coordinator.RelyingParty.AssociationStore.GetAssociation(opDescription.Endpoint, rpAssociation.Handle));
 			opAssociation = coordinator.Provider.AssociationStore.GetAssociation(AssociationRelyingPartyType.Smart, rpAssociation.Handle);
 			Assert.IsNotNull(opAssociation, "The Provider should have stored the association.");
@@ -58,7 +58,6 @@ namespace DotNetOpenAuth.Test.OpenId {
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
 				rp => {
 					rpAssociation = rp.GetAssociation(opDescription);
-					Assert.IsNotNull(rpAssociation);
 				},
 				op => {
 					op.AutoRespond();
@@ -75,6 +74,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 				unencryptedRequestSent |= message is AssociateUnencryptedRequest;
 			};
 			coordinator.Run();
+			Assert.IsNotNull(rpAssociation);
 			Assert.AreSame(rpAssociation, coordinator.RelyingParty.AssociationStore.GetAssociation(opDescription.Endpoint, rpAssociation.Handle));
 			opAssociation = coordinator.Provider.AssociationStore.GetAssociation(AssociationRelyingPartyType.Smart, rpAssociation.Handle);
 			Assert.IsNotNull(opAssociation, "The Provider should have stored the association.");

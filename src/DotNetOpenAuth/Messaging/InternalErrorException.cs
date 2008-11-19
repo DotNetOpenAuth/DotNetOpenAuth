@@ -6,9 +6,7 @@
 
 namespace DotNetOpenAuth.Messaging {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
+	using System.Diagnostics.CodeAnalysis;
 
 	/// <summary>
 	/// An internal exception to throw if an internal error within the library requires
@@ -18,7 +16,8 @@ namespace DotNetOpenAuth.Messaging {
 	/// This exception is internal to prevent clients of the library from catching what is
 	/// really an unexpected, potentially unrecoverable exception.
 	/// </remarks>
-	[global::System.Serializable]
+	[SuppressMessage("Microsoft.Design", "CA1064:ExceptionsShouldBePublic", Justification = "We want this to be internal so clients cannot catch it.")]
+	[Serializable]
 	internal class InternalErrorException : Exception {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="InternalErrorException"/> class.

@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Diagnostics.CodeAnalysis;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -25,6 +26,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Future versions of the specification may define different values in order to allow message 
 		/// recipients to properly interpret the request. 
 		/// </remarks>
+		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Read by reflection.")]
 		[MessagePart("ns", IsRequired = true, AllowEmpty = false)]
 #pragma warning disable 0414 // read by reflection
 		private readonly string OpenIdNamespace = Protocol.OpenId2Namespace;

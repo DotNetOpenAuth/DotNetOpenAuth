@@ -162,6 +162,14 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether this message was deserialized as an incoming message.
+		/// </summary>
+		protected bool Incoming {
+			get { return ((IProtocolMessage)this).Incoming; }
+			set { ((IProtocolMessage)this).Incoming = value; }
+		}
+
+		/// <summary>
 		/// Gets the preferred method of transport for the message.
 		/// </summary>
 		protected HttpDeliveryMethods HttpMethods {

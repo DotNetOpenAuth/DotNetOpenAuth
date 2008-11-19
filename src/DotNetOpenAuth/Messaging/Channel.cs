@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Diagnostics;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Globalization;
 	using System.IO;
 	using System.Linq;
@@ -173,7 +174,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Gets the protocol message embedded in the given HTTP request, if present.
 		/// </summary>
-		/// <typeparam name="TREQUEST">The expected type of the message to be received.</typeparam>
+		/// <typeparam name="TRequest">The expected type of the message to be received.</typeparam>
 		/// <param name="request">The deserialized message, if one is found.  Null otherwise.</param>
 		/// <returns>True if the expected message was recognized and deserialized.  False otherwise.</returns>
 		/// <remarks>
@@ -181,35 +182,35 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current"/> is null.</exception>
 		/// <exception cref="ProtocolException">Thrown when a request message of an unexpected type is received.</exception>
-		public bool TryReadFromRequest<TREQUEST>(out TREQUEST request)
-			where TREQUEST : class, IProtocolMessage {
-			return TryReadFromRequest<TREQUEST>(this.GetRequestFromContext(), out request);
+		public bool TryReadFromRequest<TRequest>(out TRequest request)
+			where TRequest : class, IProtocolMessage {
+			return TryReadFromRequest<TRequest>(this.GetRequestFromContext(), out request);
 		}
 
 		/// <summary>
 		/// Gets the protocol message embedded in the given HTTP request, if present.
 		/// </summary>
-		/// <typeparam name="TREQUEST">The expected type of the message to be received.</typeparam>
+		/// <typeparam name="TRequest">The expected type of the message to be received.</typeparam>
 		/// <param name="httpRequest">The request to search for an embedded message.</param>
 		/// <param name="request">The deserialized message, if one is found.  Null otherwise.</param>
 		/// <returns>True if the expected message was recognized and deserialized.  False otherwise.</returns>
 		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current"/> is null.</exception>
 		/// <exception cref="ProtocolException">Thrown when a request message of an unexpected type is received.</exception>
-		public bool TryReadFromRequest<TREQUEST>(HttpRequestInfo httpRequest, out TREQUEST request)
-			where TREQUEST : class, IProtocolMessage {
+		public bool TryReadFromRequest<TRequest>(HttpRequestInfo httpRequest, out TRequest request)
+			where TRequest : class, IProtocolMessage {
 			IProtocolMessage untypedRequest = this.ReadFromRequest(httpRequest);
 			if (untypedRequest == null) {
 				request = null;
 				return false;
 			}
 
-			request = untypedRequest as TREQUEST;
+			request = untypedRequest as TRequest;
 			if (request == null) {
 				throw new ProtocolException(
 					string.Format(
 						CultureInfo.CurrentCulture,
 						MessagingStrings.UnexpectedMessageReceived,
-						typeof(TREQUEST),
+						typeof(TRequest),
 						untypedRequest.GetType()));
 			}
 
@@ -219,36 +220,38 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Gets the protocol message embedded in the given HTTP request, if present.
 		/// </summary>
-		/// <typeparam name="TREQUEST">The expected type of the message to be received.</typeparam>
+		/// <typeparam name="TRequest">The expected type of the message to be received.</typeparam>
 		/// <returns>The deserialized message.</returns>
 		/// <remarks>
 		/// Requires an HttpContext.Current context.
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current"/> is null.</exception>
 		/// <exception cref="ProtocolException">Thrown if the expected message was not recognized in the response.</exception>
-		public TREQUEST ReadFromRequest<TREQUEST>()
-			where TREQUEST : class, IProtocolMessage {
-			return this.ReadFromRequest<TREQUEST>(this.GetRequestFromContext());
+		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "This returns and verifies the appropriate message type.")]
+		public TRequest ReadFromRequest<TRequest>()
+			where TRequest : class, IProtocolMessage {
+			return this.ReadFromRequest<TRequest>(this.GetRequestFromContext());
 		}
 
 		/// <summary>
 		/// Gets the protocol message that may be embedded in the given HTTP request.
 		/// </summary>
-		/// <typeparam name="TREQUEST">The expected type of the message to be received.</typeparam>
+		/// <typeparam name="TRequest">The expected type of the message to be received.</typeparam>
 		/// <param name="httpRequest">The request to search for an embedded message.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
 		/// <exception cref="ProtocolException">Thrown if the expected message was not recognized in the response.</exception>
-		public TREQUEST ReadFromRequest<TREQUEST>(HttpRequestInfo httpRequest)
-			where TREQUEST : class, IProtocolMessage {
-			TREQUEST request;
-			if (this.TryReadFromRequest<TREQUEST>(httpRequest, out request)) {
+		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "This returns and verifies the appropriate message type.")]
+		public TRequest ReadFromRequest<TRequest>(HttpRequestInfo httpRequest)
+			where TRequest : class, IProtocolMessage {
+			TRequest request;
+			if (this.TryReadFromRequest<TRequest>(httpRequest, out request)) {
 				return request;
 			} else {
 				throw new ProtocolException(
 					string.Format(
 						CultureInfo.CurrentCulture,
 						MessagingStrings.ExpectedMessageNotReceived,
-						typeof(TREQUEST)));
+						typeof(TRequest)));
 			}
 		}
 
@@ -270,20 +273,21 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Sends a direct message to a remote party and waits for the response.
 		/// </summary>
-		/// <typeparam name="TRESPONSE">The expected type of the message to be received.</typeparam>
-		/// <param name="request">The message to send.</param>
+		/// <typeparam name="TResponse">The expected type of the message to be received.</typeparam>
+		/// <param name="requestMessage">The message to send.</param>
 		/// <returns>The remote party's response.</returns>
 		/// <exception cref="ProtocolException">
 		/// Thrown if no message is recognized in the response
 		/// or an unexpected type of message is received.
 		/// </exception>
-		public TRESPONSE Request<TRESPONSE>(IDirectedProtocolMessage request)
-			where TRESPONSE : class, IProtocolMessage {
-			IProtocolMessage response = this.Request(request);
-			ErrorUtilities.VerifyProtocol(response != null, MessagingStrings.ExpectedMessageNotReceived, typeof(TRESPONSE));
+		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "This returns and verifies the appropriate message type.")]
+		public TResponse Request<TResponse>(IDirectedProtocolMessage requestMessage)
+			where TResponse : class, IProtocolMessage {
+			IProtocolMessage response = this.Request(requestMessage);
+			ErrorUtilities.VerifyProtocol(response != null, MessagingStrings.ExpectedMessageNotReceived, typeof(TResponse));
 
-			var expectedResponse = response as TRESPONSE;
-			ErrorUtilities.VerifyProtocol(expectedResponse != null, MessagingStrings.UnexpectedMessageReceived, typeof(TRESPONSE), response.GetType());
+			var expectedResponse = response as TResponse;
+			ErrorUtilities.VerifyProtocol(expectedResponse != null, MessagingStrings.UnexpectedMessageReceived, typeof(TResponse), response.GetType());
 
 			return expectedResponse;
 		}
@@ -291,17 +295,17 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Sends a direct message to a remote party and waits for the response.
 		/// </summary>
-		/// <param name="request">The message to send.</param>
+		/// <param name="requestMessage">The message to send.</param>
 		/// <returns>The remote party's response.  Guaranteed to never be null.</returns>
 		/// <exception cref="ProtocolException">Thrown if the response does not include a protocol message.</exception>
-		public IProtocolMessage Request(IDirectedProtocolMessage request) {
-			if (request == null) {
-				throw new ArgumentNullException("request");
+		public IProtocolMessage Request(IDirectedProtocolMessage requestMessage) {
+			if (requestMessage == null) {
+				throw new ArgumentNullException("requestMessage");
 			}
 
-			this.PrepareMessageForSending(request);
-			Logger.DebugFormat("Sending request: {0}", request);
-			var responseMessage = this.RequestInternal(request);
+			this.PrepareMessageForSending(requestMessage);
+			Logger.DebugFormat("Sending request: {0}", requestMessage);
+			var responseMessage = this.RequestInternal(requestMessage);
 			ErrorUtilities.VerifyProtocol(responseMessage != null, MessagingStrings.ExpectedMessageNotReceived, typeof(IProtocolMessage).Name);
 
 			Logger.DebugFormat("Received message response: {0}", responseMessage);
@@ -318,6 +322,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Requires an HttpContext.Current context.
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current"/> is null.</exception>
+		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Costly call should not be a property.")]
 		protected internal virtual HttpRequestInfo GetRequestFromContext() {
 			if (HttpContext.Current == null) {
 				throw new InvalidOperationException(MessagingStrings.HttpContextRequired);

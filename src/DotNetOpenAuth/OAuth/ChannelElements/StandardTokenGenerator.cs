@@ -25,7 +25,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// This will be done in <see cref="ITokenManager.StoreNewRequestToken"/>.
 		/// </remarks>
 		public string GenerateRequestToken(string consumerKey) {
-			return this.GenerateCryptographicallyStrongString();
+			return GenerateCryptographicallyStrongString();
 		}
 
 		/// <summary>
@@ -38,7 +38,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// This will be done in <see cref="ITokenManager.ExpireRequestTokenAndStoreNewAccessToken"/>.
 		/// </remarks>
 		public string GenerateAccessToken(string consumerKey) {
-			return this.GenerateCryptographicallyStrongString();
+			return GenerateCryptographicallyStrongString();
 		}
 
 		/// <summary>
@@ -46,7 +46,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <returns>The generated string.</returns>
 		public string GenerateSecret() {
-			return this.GenerateCryptographicallyStrongString();
+			return GenerateCryptographicallyStrongString();
 		}
 
 		#endregion
@@ -55,7 +55,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Returns a new random string.
 		/// </summary>
 		/// <returns>The new random string.</returns>
-		private string GenerateCryptographicallyStrongString() {
+		private static string GenerateCryptographicallyStrongString() {
 			byte[] buffer = new byte[20];
 			MessagingUtilities.CryptoRandomDataGenerator.GetBytes(buffer);
 			return Convert.ToBase64String(buffer);

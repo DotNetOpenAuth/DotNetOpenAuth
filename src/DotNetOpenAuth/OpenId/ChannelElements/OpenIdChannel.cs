@@ -92,7 +92,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 			var serializer = MessageSerializer.Get(response.GetType());
 			var fields = serializer.Serialize(response);
-			byte[] keyValueEncoding = this.keyValueForm.GetBytes(fields);
+			byte[] keyValueEncoding = KeyValueFormEncoding.GetBytes(fields);
 
 			Response preparedResponse = new Response();
 			preparedResponse.Headers.Add(HttpResponseHeader.ContentType, KeyValueFormContentType);

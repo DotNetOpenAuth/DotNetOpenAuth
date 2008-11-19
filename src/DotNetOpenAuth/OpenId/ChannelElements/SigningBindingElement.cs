@@ -64,8 +64,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					// TODO: code here
 					////signedMessage.AssociationHandle = 
 				}
-				signedMessage.SignedParameterOrder = this.GetSignedParameterOrder(signedMessage);
-				signedMessage.Signature = this.GetSignature(signedMessage);
+				signedMessage.SignedParameterOrder = GetSignedParameterOrder(signedMessage);
+				signedMessage.Signature = GetSignature(signedMessage);
 				return true;
 			}
 
@@ -90,7 +90,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			if (signedMessage != null) {
 				Logger.DebugFormat("Verifying incoming {0} message signature of: {1}", message.GetType().Name, signedMessage.Signature);
 
-				string signature = this.GetSignature(signedMessage);
+				string signature = GetSignature(signedMessage);
 				if (!string.Equals(signedMessage.Signature, signature, StringComparison.Ordinal)) {
 					Logger.Error("Signature verification failed.");
 					throw new InvalidSignatureException(message);
@@ -105,6 +105,27 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		#endregion
 
 		/// <summary>
+		/// Calculates the signature for a given message.
+		/// </summary>
+		/// <param name="signedMessage">The message to sign.</param>
+		/// <returns>The calculated signature of the method.</returns>
+		private static string GetSignature(ITamperResistantOpenIdMessage signedMessage) {
+			ErrorUtilities.VerifyArgumentNotNull(signedMessage, "signedMessage");
+			ErrorUtilities.VerifyNonZeroLength(signedMessage.SignedParameterOrder, "signedMessage.SignedParameterOrder");
+
+			MessageDictionary dictionary = new MessageDictionary(signedMessage);
+			var parametersToSign = from name in signedMessage.SignedParameterOrder.Split(',')
+								   let prefixedName = Protocol.V20.openid.Prefix + name
+								   select new KeyValuePair<string, string>(prefixedName, dictionary[prefixedName]);
+
+			byte[] dataToSign = KeyValueFormEncoding.GetBytes(parametersToSign);
+
+			Association association = null; // TODO: fetch the association to use
+			string signature = Convert.ToBase64String(association.Sign(dataToSign));
+			return signature;
+		}
+
+		/// <summary>
 		/// Gets the value to use for the openid.signed parameter.
 		/// </summary>
 		/// <param name="signedMessage">The signable message.</param>
@@ -112,7 +133,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// A comma-delimited list of parameter names, omitting the 'openid.' prefix, that determines
 		/// the inclusion and order of message parts that will be signed.
 		/// </returns>
-		private string GetSignedParameterOrder(ITamperResistantOpenIdMessage signedMessage) {
+		private static string GetSignedParameterOrder(ITamperResistantOpenIdMessage signedMessage) {
 			ErrorUtilities.VerifyArgumentNotNull(signedMessage, "signedMessage");
 
 			MessageDescription description = MessageDescription.Get(signedMessage.GetType());
@@ -124,28 +145,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			int skipLength = prefix.Length;
 			string signedFields = string.Join(",", signedParts.Select(name => name.Substring(skipLength)).ToArray());
 			return signedFields;
-		}
-
-		/// <summary>
-		/// Calculates the signature for a given message.
-		/// </summary>
-		/// <param name="signedMessage">The message to sign.</param>
-		/// <returns>The calculated signature of the method.</returns>
-		private string GetSignature(ITamperResistantOpenIdMessage signedMessage) {
-			ErrorUtilities.VerifyArgumentNotNull(signedMessage, "signedMessage");
-			ErrorUtilities.VerifyNonZeroLength(signedMessage.SignedParameterOrder, "signedMessage.SignedParameterOrder");
-
-			MessageDictionary dictionary = new MessageDictionary(signedMessage);
-			var parametersToSign = from name in signedMessage.SignedParameterOrder.Split(',')
-								   let prefixedName = Protocol.V20.openid.Prefix + name
-								   select new KeyValuePair<string, string>(prefixedName, dictionary[prefixedName]);
-
-			KeyValueFormEncoding keyValueForm = new KeyValueFormEncoding();
-			byte[] dataToSign = keyValueForm.GetBytes(parametersToSign);
-
-			Association association = null; // TODO: fetch the association to use
-			string signature = Convert.ToBase64String(association.Sign(dataToSign));
-			return signature;
 		}
 	}
 }

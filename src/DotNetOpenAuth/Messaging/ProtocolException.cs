@@ -184,6 +184,13 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Gets the preferred method of transport for the message.
+		/// </summary>
+		protected HttpDeliveryMethods HttpMethods {
+			get { return ((IDirectedProtocolMessage)this).HttpMethods; }
+		}
+
+		/// <summary>
 		/// Gets the URL of the intended receiver of this message.
 		/// </summary>
 		/// <remarks>
@@ -227,6 +234,14 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		protected IDictionary<string, string> ExtraData {
 			get { return this.extraData; }
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this message was deserialized as an incoming message.
+		/// </summary>
+		protected bool Incoming {
+			get { return ((IProtocolMessage)this).Incoming; }
+			set { ((IProtocolMessage)this).Incoming = value; }
 		}
 
 		/// <summary>

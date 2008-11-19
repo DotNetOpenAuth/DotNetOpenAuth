@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
+	using System.Diagnostics.CodeAnalysis;
 	using System.IO;
 	using System.Linq;
 	using System.Net;
@@ -31,6 +32,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// Cookieless session directory (if applicable) is also included.
 		/// </summary>
 		/// <returns>The URL in the user agent's Location bar.</returns>
+		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "The Uri merging requires use of a string value.")]
+		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Expensive call should not be a property.")]
 		public static Uri GetRequestUrlFromContext() {
 			HttpContext context = HttpContext.Current;
 			if (context == null) {

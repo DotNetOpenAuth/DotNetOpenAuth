@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		public void DirectResponsesSentUsingKeyValueForm() {
 			IProtocolMessage message = MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired);
 			MessageDictionary messageFields = new MessageDictionary(message);
-			byte[] expectedBytes = new KeyValueFormEncoding().GetBytes(messageFields);
+			byte[] expectedBytes = KeyValueFormEncoding.GetBytes(messageFields);
 			string expectedContentType = OpenIdChannel_Accessor.KeyValueFormContentType;
 
 			Response directResponse = this.accessor.SendDirectMessageResponse(message);
@@ -79,9 +79,8 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 				{ "var1", "value1" },
 				{ "var2", "value2" },
 			};
-			KeyValueFormEncoding kvf = new KeyValueFormEncoding();
 			Response response = new Response {
-				ResponseStream = new MemoryStream(kvf.GetBytes(fields)),
+				ResponseStream = new MemoryStream(KeyValueFormEncoding.GetBytes(fields)),
 			};
 			Assert.IsTrue(MessagingUtilities.AreEquivalent(fields, this.accessor.ReadFromResponseInternal(response)));
 		}

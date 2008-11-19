@@ -35,9 +35,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 
 		[TestMethod]
 		public void BasicEncodingTest() {
-			var kvf = new KeyValueFormEncoding();
-
-			byte[] kvfBytes = kvf.GetBytes(this.sampleData);
+			byte[] kvfBytes = KeyValueFormEncoding.GetBytes(this.sampleData);
 			string responseString = Encoding.UTF8.GetString(kvfBytes);
 
 			Assert.IsFalse(responseString.Contains("\n\n"));
@@ -66,7 +64,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 				}
 			}
 			if ((mode & TestMode.Encoder) == TestMode.Encoder) {
-				var e = this.keyValueForm.GetBytes(dict);
+				var e = KeyValueFormEncoding.GetBytes(dict);
 				Assert.IsTrue(MessagingUtilities.AreEquivalent(e, kvform), "Encoder did not produced expected result.");
 			}
 		}

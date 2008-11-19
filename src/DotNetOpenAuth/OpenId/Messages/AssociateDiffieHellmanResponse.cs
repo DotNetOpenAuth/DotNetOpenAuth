@@ -42,8 +42,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </remarks>
 		protected override Association CreateAssociationAtRelyingParty(AssociateRequest request) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
-			ErrorUtilities.VerifyArgument(request is AssociateDiffieHellmanRequest, "request");
-			var diffieHellmanRequest = (AssociateDiffieHellmanRequest)request;
+			var diffieHellmanRequest = request as AssociateDiffieHellmanRequest;
+			ErrorUtilities.VerifyArgument(diffieHellmanRequest != null, "request");
 
 			HashAlgorithm hasher = DiffieHellmanUtilities.Lookup(Protocol, this.SessionType);
 			byte[] associationSecret = DiffieHellmanUtilities.SHAHashXorSecret(hasher, diffieHellmanRequest.Algorithm, this.DiffieHellmanServerPublic, this.EncodedMacKey);
@@ -63,8 +63,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </remarks>
 		protected override Association CreateAssociationAtProvider(AssociateRequest request) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
-			ErrorUtilities.VerifyArgument(request is AssociateDiffieHellmanRequest, "request");
-			var diffieHellmanRequest = (AssociateDiffieHellmanRequest)request;
+			var diffieHellmanRequest = request as AssociateDiffieHellmanRequest;
+			ErrorUtilities.VerifyArgument(diffieHellmanRequest != null, "request");
 
 			this.SessionType = this.SessionType ?? request.SessionType;
 
