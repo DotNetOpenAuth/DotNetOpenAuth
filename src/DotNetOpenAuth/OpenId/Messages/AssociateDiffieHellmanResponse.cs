@@ -33,44 +33,6 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		internal byte[] EncodedMacKey { get; set; }
 
 		/// <summary>
-		/// Called to create the Association based on a request previously given by the Relying Party.
-		/// </summary>
-		/// <param name="request">The prior request for an association.</param>
-		/// <returns>The created association.</returns>
-		/// <remarks>
-		/// 	<para>The response message is updated to include the details of the created association by this method,
-		/// but the resulting association is <i>not</i> added to the association store and must be done by the caller.</para>
-		/// 	<para>This method is called by both the Provider and the Relying Party, but actually performs
-		/// quite different operations in either scenario.</para>
-		/// </remarks>
-		protected internal override Association CreateAssociation(AssociateRequest request) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
-			ErrorUtilities.VerifyArgument(request is AssociateDiffieHellmanRequest, "request");
-
-			return this.CreateAssociation((AssociateDiffieHellmanRequest)request);
-		}
-
-		/// <summary>
-		/// Called to create the Association based on a request previously given by the Relying Party.
-		/// </summary>
-		/// <param name="request">The request for an association.</param>
-		/// <returns>The created association.</returns>
-		/// <remarks>
-		/// <para>The response message is updated to include the details of the created association by this method, 
-		/// but the resulting association is <i>not</i> added to the association store and must be done by the caller.</para>
-		/// <para>This method is called by both the Provider and the Relying Party, but actually performs
-		/// quite different operations in either scenario.</para>
-		/// </remarks>
-		private Association CreateAssociation(AssociateDiffieHellmanRequest request) {
-			// If the encoded mac key is already set, then this is an incoming message at the Relying Party.
-			if (this.EncodedMacKey == null) {
-				return this.CreateAssociationAtProvider(request);
-			} else {
-				return this.CreateAssociationAtRelyingParty(request);
-			}
-		}
-
-		/// <summary>
 		/// Creates the association at relying party side after the association response has been received.
 		/// </summary>
 		/// <param name="request">The original association request that was already sent and responded to.</param>
@@ -78,11 +40,13 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <remarks>
 		/// The resulting association is <i>not</i> added to the association store and must be done by the caller.
 		/// </remarks>
-		private Association CreateAssociationAtRelyingParty(AssociateDiffieHellmanRequest request) {
+		protected override Association CreateAssociationAtRelyingParty(AssociateRequest request) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			ErrorUtilities.VerifyArgument(request is AssociateDiffieHellmanRequest, "request");
+			var diffieHellmanRequest = (AssociateDiffieHellmanRequest)request;
 
 			HashAlgorithm hasher = DiffieHellmanUtilities.Lookup(Protocol, this.SessionType);
-			byte[] associationSecret = DiffieHellmanUtilities.SHAHashXorSecret(hasher, request.Algorithm, this.DiffieHellmanServerPublic, this.EncodedMacKey);
+			byte[] associationSecret = DiffieHellmanUtilities.SHAHashXorSecret(hasher, diffieHellmanRequest.Algorithm, this.DiffieHellmanServerPublic, this.EncodedMacKey);
 
 			Association association = HmacShaAssociation.Create(Protocol, this.AssociationType, this.AssociationHandle, associationSecret, TimeSpan.FromSeconds(this.ExpiresIn));
 			return association;
@@ -97,8 +61,10 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// The response message is updated to include the details of the created association by this method, 
 		/// but the resulting association is <i>not</i> added to the association store and must be done by the caller.
 		/// </remarks>
-		private Association CreateAssociationAtProvider(AssociateDiffieHellmanRequest request) {
+		protected override Association CreateAssociationAtProvider(AssociateRequest request) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			ErrorUtilities.VerifyArgument(request is AssociateDiffieHellmanRequest, "request");
+			var diffieHellmanRequest = (AssociateDiffieHellmanRequest)request;
 
 			this.SessionType = this.SessionType ?? request.SessionType;
 
@@ -113,12 +79,12 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			// using its part of a DH secret in order to decrypt the shared secret we just invented 
 			// above when we created the association.
 			DiffieHellman dh = new DiffieHellmanManaged(
-				request.DiffieHellmanModulus ?? AssociateDiffieHellmanRequest.DefaultMod,
-				request.DiffieHellmanGen ?? AssociateDiffieHellmanRequest.DefaultGen,
+				diffieHellmanRequest.DiffieHellmanModulus ?? AssociateDiffieHellmanRequest.DefaultMod,
+				diffieHellmanRequest.DiffieHellmanGen ?? AssociateDiffieHellmanRequest.DefaultGen,
 				AssociateDiffieHellmanRequest.DefaultX);
 			HashAlgorithm hasher = DiffieHellmanUtilities.Lookup(this.Protocol, this.SessionType);
 			this.DiffieHellmanServerPublic = DiffieHellmanUtilities.EnsurePositive(dh.CreateKeyExchange());
-			this.EncodedMacKey = DiffieHellmanUtilities.SHAHashXorSecret(hasher, dh, request.DiffieHellmanConsumerPublic, association.SecretKey);
+			this.EncodedMacKey = DiffieHellmanUtilities.SHAHashXorSecret(hasher, dh, diffieHellmanRequest.DiffieHellmanConsumerPublic, association.SecretKey);
 
 			return association;
 		}

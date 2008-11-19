@@ -20,6 +20,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class.
 		/// </summary>
+		/// <param name="associationStore">The association store.  If null, the relying party will always operate in "dumb mode".</param>
 		public OpenIdRelyingParty(IAssociationStore<Uri> associationStore) {
 			ErrorUtilities.VerifyArgumentNotNull(associationStore, "associationStore");
 

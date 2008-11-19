@@ -35,14 +35,28 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="request">The prior request for an association.</param>
 		/// <returns>The created association.</returns>
 		/// <remarks>
+		/// 	<para>The caller will update this message's 
+		/// <see cref="AssociateSuccessfulResponse.ExpiresIn"/> and 
+		/// <see cref="AssociateSuccessfulResponse.AssociationHandle"/>
+		/// properties based on the <see cref="Association"/> returned by this method, but any other
+		/// association type specific properties must be set by this method.</para>
 		/// 	<para>The response message is updated to include the details of the created association by this method,
 		/// but the resulting association is <i>not</i> added to the association store and must be done by the caller.</para>
-		/// 	<para>This method is called by both the Provider and the Relying Party, but actually performs
-		/// quite different operations in either scenario.</para>
 		/// </remarks>
-		protected internal override Association CreateAssociation(AssociateRequest request) {
-			////return HmacShaAssociation.Create(Protocol, this.AssociationType, AssociationRelyingPartyType.
-			throw new NotImplementedException();
+		protected override Association CreateAssociationAtProvider(AssociateRequest request) {
+			Association association = HmacShaAssociation.Create(Protocol, this.AssociationType, AssociationRelyingPartyType.Smart);
+			this.MacKey = association.SecretKey;
+			return association;
+		}
+
+		/// <summary>
+		/// Called to create the Association based on a request previously given by the Relying Party.
+		/// </summary>
+		/// <param name="request">The prior request for an association.</param>
+		/// <returns>The created association.</returns>
+		protected override Association CreateAssociationAtRelyingParty(AssociateRequest request) {
+			Association association = HmacShaAssociation.Create(Protocol, this.AssociationType, this.AssociationHandle, this.MacKey, TimeSpan.FromSeconds(this.ExpiresIn));
+			return association;
 		}
 	}
 }

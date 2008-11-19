@@ -52,6 +52,8 @@ namespace DotNetOpenAuth.Test.Mocks {
 			get { return this.extraData; }
 		}
 
+		bool IProtocolMessage.Incoming { get; set; }
+
 		void IProtocolMessage.EnsureValidMessage() {
 			if (this.EmptyMember != null || this.Age < 0) {
 				throw new ProtocolException();

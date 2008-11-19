@@ -50,17 +50,9 @@ namespace DotNetOpenAuth.OpenId {
 			var associateRequest = request as AssociateRequest;
 			if (associateRequest != null) {
 				var associateDiffieHellmanRequest = request as AssociateDiffieHellmanRequest;
+				var associateUnencryptedRequest = request as AssociateUnencryptedRequest;
 
-				AssociateSuccessfulResponse response;
-				if (associateDiffieHellmanRequest != null) {
-					response = new AssociateDiffieHellmanResponse();
-				} else {
-					// TODO: code here
-					throw new NotImplementedException();
-				}
-				response.AssociationType = associateDiffieHellmanRequest.AssociationType;
-				Association association = response.CreateAssociation(associateRequest);
-				this.AssociationStore.StoreAssociation(AssociationRelyingPartyType.Smart, association);
+				IProtocolMessage response = associateRequest.CreateResponse(this.AssociationStore);
 				this.Channel.Send(response);
 			} else {
 				// TODO: code here

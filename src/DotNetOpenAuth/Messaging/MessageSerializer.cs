@@ -135,6 +135,7 @@ namespace DotNetOpenAuth.Messaging {
 				result = (IProtocolMessage)Activator.CreateInstance(this.messageType, true);
 			}
 
+			result.Incoming = true;
 			return result;
 		}
 	}

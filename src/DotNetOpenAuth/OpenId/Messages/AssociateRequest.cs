@@ -70,6 +70,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			AssociateRequest associateRequest;
 			if (provider.Endpoint.IsTransportSecure()) {
 				associateRequest = new AssociateUnencryptedRequest(provider.Endpoint);
+				associateRequest.AssociationType = provider.Protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 			} else {
 				// TODO: apply security policies and our knowledge of the provider's OpenID version
 				// to select the right association here.
@@ -82,5 +83,48 @@ namespace DotNetOpenAuth.OpenId.Messages {
 
 			return associateRequest;
 		}
+
+		/// <summary>
+		/// Creates a Provider's response to an incoming association request.
+		/// </summary>
+		/// <param name="associationStore">The association store where a new association (if created) will be stored.  Must not be null.</param>
+		/// <returns>
+		/// The appropriate association response that is ready to be sent back to the Relying Party.
+		/// </returns>
+		/// <remarks>
+		/// <para>If an association is created, it will be automatically be added to the provided
+		/// association store.</para>
+		/// <para>Successful association response messages will derive from <see cref="AssociateSuccessfulResponse"/>.
+		/// Failed association response messages will derive from <see cref="AssociateUnsuccessfulResponse"/>.</para>
+		/// </remarks>
+		internal IProtocolMessage CreateResponse(IAssociationStore<AssociationRelyingPartyType> associationStore) {
+			ErrorUtilities.VerifyArgumentNotNull(associationStore, "associationStore");
+
+			var response = this.CreateResponseCore();
+
+			// Create and store the association if this is a successful response.
+			var successResponse = response as AssociateSuccessfulResponse;
+			if (successResponse != null) {
+				Association association = successResponse.CreateAssociation(this);
+				associationStore.StoreAssociation(AssociationRelyingPartyType.Smart, association);
+			}
+
+			return response;
+		}
+
+		/// <summary>
+		/// Creates a Provider's response to an incoming association request.
+		/// </summary>
+		/// <returns>
+		/// The appropriate association response message.
+		/// </returns>
+		/// <remarks>
+		/// <para>If an association can be successfully created, the 
+		/// <see cref="AssociateSuccessfulResponse.CreateAssociation"/> method must not be
+		/// called by this method.</para>
+		/// <para>Successful association response messages will derive from <see cref="AssociateSuccessfulResponse"/>.
+		/// Failed association response messages will derive from <see cref="AssociateUnsuccessfulResponse"/>.</para>
+		/// </remarks>
+		protected abstract IProtocolMessage CreateResponseCore();
 	}
 }

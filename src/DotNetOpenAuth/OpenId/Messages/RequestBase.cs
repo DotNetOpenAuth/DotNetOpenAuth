@@ -114,7 +114,12 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			get { return EmptyDictionary<string, string>.Instance; }
 		}
 
-		#endregion 
+		/// <summary>
+		/// Gets or sets a value indicating whether this message was deserialized as an incoming message.
+		/// </summary>
+		public bool Incoming { get; set; }
+
+		#endregion
 
 		/// <summary>
 		/// Gets the protocol used by this message.

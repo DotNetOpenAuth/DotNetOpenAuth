@@ -129,6 +129,11 @@ namespace DotNetOpenAuth.Messaging {
 			get { return this.Transport; }
 		}
 
+		/// <summary>
+		/// Gets or sets a value indicating whether this message was deserialized as an incoming message.
+		/// </summary>
+		bool IProtocolMessage.Incoming { get; set; }
+
 		#endregion
 
 		#region IDirectedProtocolMessage Members

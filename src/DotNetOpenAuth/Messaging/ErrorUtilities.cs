@@ -24,6 +24,17 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Checks a condition and throws an internal error exception if it evaluates to false.
+		/// </summary>
+		/// <param name="condition">The condition to check.</param>
+		/// <param name="errorMessage">The message to include in the exception, if created.</param>
+		internal static void VerifyInternal(bool condition, string errorMessage) {
+			if (!condition) {
+				throw new InternalErrorException(errorMessage);
+			}
+		}
+
+		/// <summary>
 		/// Throws a <see cref="ProtocolException"/> if some <paramref name="condition"/> evaluates to false.
 		/// </summary>
 		/// <param name="condition">True to do nothing; false to throw the exception.</param>

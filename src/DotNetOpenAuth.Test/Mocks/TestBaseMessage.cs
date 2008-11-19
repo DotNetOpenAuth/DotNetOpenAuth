@@ -43,6 +43,8 @@ namespace DotNetOpenAuth.Test.Mocks {
 			get { return this.extraData; }
 		}
 
+		bool IProtocolMessage.Incoming { get; set; }
+
 		internal string PrivatePropertyAccessor {
 			get { return this.PrivateProperty; }
 			set { this.PrivateProperty = value; }
