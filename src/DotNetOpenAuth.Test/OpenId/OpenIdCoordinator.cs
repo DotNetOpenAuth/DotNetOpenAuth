@@ -17,19 +17,31 @@ namespace DotNetOpenAuth.Test.OpenId {
 			: base(rpAction, opAction) {
 		}
 
-		internal override void Run() {
-			OpenIdRelyingParty rp = new OpenIdRelyingParty();
-			OpenIdProvider op = new OpenIdProvider();
+		internal OpenIdProvider Provider { get; set; }
 
-			var rpCoordinatingChannel = new CoordinatingChannel(rp.Channel, this.IncomingMessageFilter, this.OutgoingMessageFilter);
-			var opCoordinatingChannel = new CoordinatingChannel(op.Channel, this.IncomingMessageFilter, this.OutgoingMessageFilter);
+		internal OpenIdRelyingParty RelyingParty { get; set; }
+
+		internal override void Run() {
+			this.EnsurePartiesAreInitialized();
+			var rpCoordinatingChannel = new CoordinatingChannel(this.RelyingParty.Channel, this.IncomingMessageFilter, this.OutgoingMessageFilter);
+			var opCoordinatingChannel = new CoordinatingChannel(this.Provider.Channel, this.IncomingMessageFilter, this.OutgoingMessageFilter);
 			rpCoordinatingChannel.RemoteChannel = opCoordinatingChannel;
 			opCoordinatingChannel.RemoteChannel = rpCoordinatingChannel;
 
-			rp.Channel = rpCoordinatingChannel;
-			op.Channel = opCoordinatingChannel;
+			this.RelyingParty.Channel = rpCoordinatingChannel;
+			this.Provider.Channel = opCoordinatingChannel;
 
-			RunCore(rp, op);
+			RunCore(this.RelyingParty, this.Provider);
+		}
+
+		private void EnsurePartiesAreInitialized() {
+			if (this.RelyingParty == null) {
+				this.RelyingParty = new OpenIdRelyingParty(new AssociationMemoryStore<Uri>());
+			}
+
+			if (this.Provider == null) {
+				this.Provider = new OpenIdProvider(new AssociationMemoryStore<AssociationRelyingPartyType>());
+			}
 		}
 	}
 }

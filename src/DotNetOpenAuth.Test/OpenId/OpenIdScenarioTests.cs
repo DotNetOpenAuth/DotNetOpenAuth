@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ScenarioTests.cs" company="Andrew Arnott">
+// <copyright file="OpenIdScenarioTests.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -15,26 +15,22 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
-	public class ScenarioTests {
+	public class OpenIdScenarioTests {
 		private readonly Protocol Protocol = Protocol.V20;
 
 		[TestMethod]
 		public void AssociateDiffieHellmanMessages() {
-			Association rpAssociation = null, opAssociation = null;
+			Association rpAssociation = null, opAssociation;
 			AssociateDiffieHellmanResponse associateResponse = null;
+			var opDescription = new ProviderEndpointDescription(new Uri("http://host"), Protocol);
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
 				rp => {
-					var op = new ProviderEndpointDescription(new Uri("http://host"), Protocol);
-					rpAssociation = rp.GetAssociation(op);
+					rpAssociation = rp.GetAssociation(opDescription);
 					Assert.IsNotNull(rpAssociation);
 					Assert.IsFalse(MessagingUtilities.AreEquivalent(associateResponse.EncodedMacKey, rpAssociation.SecretKey), "Key should have been encrypted.");
 				},
 				op => {
-					var associateRequest = op.Channel.ReadFromRequest<AssociateDiffieHellmanRequest>();
-					var response = new AssociateDiffieHellmanResponse();
-					response.AssociationType = associateRequest.AssociationType;
-					opAssociation = response.CreateAssociation(associateRequest);
-					op.Channel.Send(response);
+					op.AutoRespond();
 				});
 			coordinator.IncomingMessageFilter = (message) => {
 				var associateResponseMessage = message as AssociateDiffieHellmanResponse;
@@ -44,6 +40,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 				}
 			};
 			coordinator.Run();
+			Assert.AreSame(rpAssociation, coordinator.RelyingParty.AssociationStore.GetAssociation(opDescription.Endpoint, rpAssociation.Handle));
+			opAssociation = coordinator.Provider.AssociationStore.GetAssociation(AssociationRelyingPartyType.Smart, rpAssociation.Handle);
+			Assert.IsNotNull(opAssociation, "The Provider should have stored the association.");
 			Assert.AreEqual(opAssociation.Handle, rpAssociation.Handle);
 			Assert.IsTrue(Math.Abs(opAssociation.SecondsTillExpiration - rpAssociation.SecondsTillExpiration) < 60);
 			Assert.IsTrue(MessagingUtilities.AreEquivalent(opAssociation.SecretKey, rpAssociation.SecretKey));

@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;
+	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
 	/// Offers services for a web page that is acting as an OpenID identity server.
@@ -19,13 +20,52 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdProvider"/> class.
 		/// </summary>
-		public OpenIdProvider() {
+		/// <param name="associationStore">The association store to use.  Cannot be null.</param>
+		public OpenIdProvider(IAssociationStore<AssociationRelyingPartyType> associationStore) {
+			ErrorUtilities.VerifyArgumentNotNull(associationStore, "associationStore");
+
 			this.Channel = new OpenIdChannel();
+			this.AssociationStore = associationStore;
 		}
 
 		/// <summary>
 		/// Gets the channel to use for sending/receiving messages.
 		/// </summary>
 		public Channel Channel { get; internal set; }
+
+		/// <summary>
+		/// Gets the association store.
+		/// </summary>
+		internal IAssociationStore<AssociationRelyingPartyType> AssociationStore { get; private set; }
+
+		/// <summary>
+		/// Responds automatically to the incoming message.
+		/// </summary>
+		/// <remarks>
+		/// The design of a method like this is flawed... but it helps us get tests going for now.
+		/// </remarks>
+		internal void AutoRespond() {
+			var request = this.Channel.ReadFromRequest();
+
+			var associateRequest = request as AssociateRequest;
+			if (associateRequest != null) {
+				var associateDiffieHellmanRequest = request as AssociateDiffieHellmanRequest;
+
+				AssociateSuccessfulResponse response;
+				if (associateDiffieHellmanRequest != null) {
+					response = new AssociateDiffieHellmanResponse();
+				} else {
+					// TODO: code here
+					throw new NotImplementedException();
+				}
+				response.AssociationType = associateDiffieHellmanRequest.AssociationType;
+				Association association = response.CreateAssociation(associateRequest);
+				this.AssociationStore.StoreAssociation(AssociationRelyingPartyType.Smart, association);
+				this.Channel.Send(response);
+			} else {
+				// TODO: code here
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

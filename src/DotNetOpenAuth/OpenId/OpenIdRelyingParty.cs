@@ -20,14 +20,22 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class.
 		/// </summary>
-		public OpenIdRelyingParty() {
+		public OpenIdRelyingParty(IAssociationStore<Uri> associationStore) {
+			ErrorUtilities.VerifyArgumentNotNull(associationStore, "associationStore");
+
 			this.Channel = new OpenIdChannel();
+			this.AssociationStore = associationStore;
 		}
 
 		/// <summary>
 		/// Gets the channel to use for sending/receiving messages.
 		/// </summary>
 		public Channel Channel { get; internal set; }
+
+		/// <summary>
+		/// Gets the association store.
+		/// </summary>
+		internal IAssociationStore<Uri> AssociationStore { get; private set; }
 
 		/// <summary>
 		/// Gets an association between this Relying Party and a given Provider.
@@ -43,7 +51,9 @@ namespace DotNetOpenAuth.OpenId {
 			var associateSuccessfulResponse = associateResponse as AssociateSuccessfulResponse;
 			var associateUnsuccessfulResponse = associateResponse as AssociateUnsuccessfulResponse;
 			if (associateSuccessfulResponse != null) {
-				return associateSuccessfulResponse.CreateAssociation(associateRequest);
+				Association association = associateSuccessfulResponse.CreateAssociation(associateRequest);
+				this.AssociationStore.StoreAssociation(provider.Endpoint, association);
+				return association;
 			} else if (associateUnsuccessfulResponse != null) {
 				// TODO: code here
 				throw new NotImplementedException();
