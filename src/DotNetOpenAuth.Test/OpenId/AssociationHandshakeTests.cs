@@ -6,26 +6,43 @@
 
 namespace DotNetOpenAuth.Test.OpenId {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
-	public class AssociationHandshakeTests {
+	public class AssociationHandshakeTests : OpenIdTestBase {
 		[TestMethod]
-		public void AssociateDiffieHellmanMessages() {
+		public void DHv2() {
 			var opDescription = new ProviderEndpointDescription(new Uri("http://host"), Protocol.V20);
-			ParameterizedAssociationTest(opDescription, true, Protocol.V20.Args.SignatureAlgorithm.HMAC_SHA1);
+			this.ParameterizedAssociationTest(
+				opDescription,
+				Protocol.V20.Args.SignatureAlgorithm.HMAC_SHA256);
 		}
 
 		[TestMethod]
-		public void AssociateUnencryptedMessages() {
+		public void DHv1() {
+			var opDescription = new ProviderEndpointDescription(new Uri("http://host"), Protocol.V10);
+			this.ParameterizedAssociationTest(
+				opDescription,
+				Protocol.V20.Args.SignatureAlgorithm.HMAC_SHA1);
+		}
+
+		[TestMethod]
+		public void PTv2() {
 			var opDescription = new ProviderEndpointDescription(new Uri("https://host"), Protocol.V20);
-			ParameterizedAssociationTest(opDescription, false, Protocol.V20.Args.SignatureAlgorithm.HMAC_SHA1);
+			this.ParameterizedAssociationTest(
+				opDescription,
+				Protocol.V20.Args.SignatureAlgorithm.HMAC_SHA256);
+		}
+
+		[TestMethod]
+		public void PTv1() {
+			var opDescription = new ProviderEndpointDescription(new Uri("https://host"), Protocol.V11);
+			this.ParameterizedAssociationTest(
+				opDescription,
+				Protocol.V20.Args.SignatureAlgorithm.HMAC_SHA1);
 		}
 
 		/// <summary>
@@ -35,24 +52,25 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// The description of the Provider that the relying party uses to formulate the request.  
 		/// The specific host is not used, but the scheme is significant.
 		/// </param>
-		/// <param name="expectDiffieHellman">True if a DH session is expected to be used.</param>
 		/// <param name="expectedAssociationType">
 		/// The value of the openid.assoc_type parameter expected,
 		/// or null if a failure is anticipated.
 		/// </param>
 		private void ParameterizedAssociationTest(
 			ProviderEndpointDescription opDescription,
-			bool expectDiffieHellman,
 			string expectedAssociationType) {
 			bool expectSuccess = expectedAssociationType != null;
+			bool expectDiffieHellman = !opDescription.Endpoint.IsTransportSecure();
 			Association rpAssociation = null, opAssociation;
 			AssociateSuccessfulResponse associateSuccessfulResponse = null;
 			AssociateUnsuccessfulResponse associateUnsuccessfulResponse = null;
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
 				rp => {
+					rp.SecuritySettings = this.RelyingPartySecuritySettings;
 					rpAssociation = rp.GetAssociation(opDescription);
 				},
 				op => {
+					op.SecuritySettings = this.ProviderSecuritySettings;
 					op.AutoRespond();
 				});
 			coordinator.IncomingMessageFilter = (message) => {

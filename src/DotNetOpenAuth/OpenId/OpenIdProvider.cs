@@ -6,9 +6,7 @@
 
 namespace DotNetOpenAuth.OpenId {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -26,12 +24,18 @@ namespace DotNetOpenAuth.OpenId {
 
 			this.Channel = new OpenIdChannel();
 			this.AssociationStore = associationStore;
+			this.SecuritySettings = ProviderSection.Configuration.SecuritySettings.CreateSecuritySettings();
 		}
 
 		/// <summary>
 		/// Gets the channel to use for sending/receiving messages.
 		/// </summary>
 		public Channel Channel { get; internal set; }
+
+		/// <summary>
+		/// Gets the security settings used by this Provider.
+		/// </summary>
+		public Provider.ProviderSecuritySettings SecuritySettings { get; internal set; }
 
 		/// <summary>
 		/// Gets the association store.

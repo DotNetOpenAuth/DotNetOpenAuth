@@ -8,7 +8,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// <summary>
 	/// Security settings that are applicable to providers.
 	/// </summary>
-	internal sealed class ProviderSecuritySettings : SecuritySettings {
+	public sealed class ProviderSecuritySettings : SecuritySettings {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ProviderSecuritySettings"/> class.
 		/// </summary>

@@ -41,6 +41,7 @@
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -105,6 +106,7 @@
     <Compile Include="OpenId\Messages\IndirectErrorResponseTests.cs" />
     <Compile Include="OpenId\OpenIdCoordinator.cs" />
     <Compile Include="OpenId\AssociationHandshakeTests.cs" />
+    <Compile Include="OpenId\OpenIdTestBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Messaging\ResponseTests.cs" />
     <Compile Include="OAuth\AppendixScenarios.cs" />
