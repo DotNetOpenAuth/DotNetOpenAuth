@@ -20,34 +20,38 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		[TestMethod]
 		public void DHv2() {
-			var opDescription = new ProviderEndpointDescription(new Uri("http://host"), Protocol.V20);
+			Protocol protocol = Protocol.V20;
+			var opDescription = new ProviderEndpointDescription(new Uri("http://host"), protocol.Version);
 			this.ParameterizedAssociationTest(
 				opDescription,
-				Protocol.V20.Args.SignatureAlgorithm.HMAC_SHA256);
+				protocol.Args.SignatureAlgorithm.HMAC_SHA256);
 		}
 
 		[TestMethod]
 		public void DHv1() {
-			var opDescription = new ProviderEndpointDescription(new Uri("http://host"), Protocol.V10);
+			Protocol protocol = Protocol.V11;
+			var opDescription = new ProviderEndpointDescription(new Uri("http://host"), protocol.Version);
 			this.ParameterizedAssociationTest(
 				opDescription,
-				Protocol.V20.Args.SignatureAlgorithm.HMAC_SHA1);
+				protocol.Args.SignatureAlgorithm.HMAC_SHA1);
 		}
 
 		[TestMethod]
 		public void PTv2() {
-			var opDescription = new ProviderEndpointDescription(new Uri("https://host"), Protocol.V20);
+			Protocol protocol = Protocol.V20;
+			var opDescription = new ProviderEndpointDescription(new Uri("https://host"), protocol.Version);
 			this.ParameterizedAssociationTest(
 				opDescription,
-				Protocol.V20.Args.SignatureAlgorithm.HMAC_SHA256);
+				protocol.Args.SignatureAlgorithm.HMAC_SHA256);
 		}
 
 		[TestMethod]
 		public void PTv1() {
-			var opDescription = new ProviderEndpointDescription(new Uri("https://host"), Protocol.V11);
+			Protocol protocol = Protocol.V11;
+			var opDescription = new ProviderEndpointDescription(new Uri("https://host"), protocol.Version);
 			this.ParameterizedAssociationTest(
 				opDescription,
-				Protocol.V20.Args.SignatureAlgorithm.HMAC_SHA1);
+				protocol.Args.SignatureAlgorithm.HMAC_SHA1);
 		}
 
 		/// <summary>
@@ -64,6 +68,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		private void ParameterizedAssociationTest(
 			ProviderEndpointDescription opDescription,
 			string expectedAssociationType) {
+			Protocol protocol = Protocol.Lookup(opDescription.ProtocolVersion);
 			bool expectSuccess = expectedAssociationType != null;
 			bool expectDiffieHellman = !opDescription.Endpoint.IsTransportSecure();
 			Association rpAssociation = null, opAssociation;
@@ -79,7 +84,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					op.AutoRespond();
 				});
 			coordinator.IncomingMessageFilter = message => {
-				Assert.AreSame(opDescription.Protocol.Version, message.ProtocolVersion, "The message was for version {0} but was expected to be for {1}.", message.ProtocolVersion, opDescription.Protocol.Version);
+				Assert.AreSame(opDescription.ProtocolVersion, message.ProtocolVersion, "The message was recognized as version {0} but was expected to be {1}.", message.ProtocolVersion, opDescription.ProtocolVersion);
 				var associateSuccess = message as AssociateSuccessfulResponse;
 				var associateFailed = message as AssociateUnsuccessfulResponse;
 				if (associateSuccess != null) {
@@ -90,7 +95,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 				}
 			};
 			coordinator.OutgoingMessageFilter = message => {
-				Assert.AreSame(opDescription.Protocol.Version, message.ProtocolVersion, "The message was for version {0} but was expected to be for {1}.", message.ProtocolVersion, opDescription.Protocol.Version);
+				Assert.AreSame(opDescription.ProtocolVersion, message.ProtocolVersion, "The message was for version {0} but was expected to be for {1}.", message.ProtocolVersion, opDescription.ProtocolVersion);
 			};
 			coordinator.Run();
 
@@ -101,8 +106,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 				Assert.IsNotNull(opAssociation, "The Provider should have stored the association.");
 
 				Assert.AreEqual(opAssociation.Handle, rpAssociation.Handle);
-				Assert.AreEqual(expectedAssociationType, rpAssociation.GetAssociationType(opDescription.Protocol));
-				Assert.AreEqual(expectedAssociationType, opAssociation.GetAssociationType(opDescription.Protocol));
+				Assert.AreEqual(expectedAssociationType, rpAssociation.GetAssociationType(protocol));
+				Assert.AreEqual(expectedAssociationType, opAssociation.GetAssociationType(protocol));
 				Assert.IsTrue(Math.Abs(opAssociation.SecondsTillExpiration - rpAssociation.SecondsTillExpiration) < 60);
 				Assert.IsTrue(MessagingUtilities.AreEquivalent(opAssociation.SecretKey, rpAssociation.SecretKey));
 

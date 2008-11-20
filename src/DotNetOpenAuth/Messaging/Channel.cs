@@ -53,7 +53,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// A tool that can figure out what kind of message is being received
 		/// so it can be deserialized.
 		/// </summary>
-		private IMessageTypeProvider messageTypeProvider;
+		private IMessageFactory messageTypeProvider;
 
 		/// <summary>
 		/// A list of binding elements in the order they must be applied to outgoing messages.
@@ -72,7 +72,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// message types can deserialize from it.
 		/// </param>
 		/// <param name="bindingElements">The binding elements to use in sending and receiving messages.</param>
-		protected Channel(IMessageTypeProvider messageTypeProvider, params IChannelBindingElement[] bindingElements) {
+		protected Channel(IMessageFactory messageTypeProvider, params IChannelBindingElement[] bindingElements) {
 			if (messageTypeProvider == null) {
 				throw new ArgumentNullException("messageTypeProvider");
 			}
@@ -113,7 +113,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets a tool that can figure out what kind of message is being received
 		/// so it can be deserialized.
 		/// </summary>
-		protected IMessageTypeProvider MessageTypeProvider {
+		protected IMessageFactory MessageFactory {
 			get { return this.messageTypeProvider; }
 		}
 
@@ -365,13 +365,13 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			var responseFields = this.ReadFromResponseInternal(response);
-			Type messageType = this.MessageTypeProvider.GetResponseMessageType(request, responseFields);
-			if (messageType == null) {
+			IDirectResponseProtocolMessage responseMessage = this.MessageFactory.GetNewResponseMessage(request, responseFields);
+			if (responseMessage == null) {
 				return null;
 			}
 
-			var responseSerialize = MessageSerializer.Get(messageType);
-			var responseMessage = responseSerialize.Deserialize(responseFields, null);
+			var responseSerialize = MessageSerializer.Get(responseMessage.GetType());
+			responseSerialize.Deserialize(responseFields, responseMessage);
 
 			return responseMessage;
 		}
@@ -406,16 +406,16 @@ namespace DotNetOpenAuth.Messaging {
 				throw new ArgumentNullException("fields");
 			}
 
-			Type messageType = this.MessageTypeProvider.GetRequestMessageType(fields);
+			IProtocolMessage message = this.MessageFactory.GetNewRequestMessage(recipient, fields);
 
 			// If there was no data, or we couldn't recognize it as a message, abort.
-			if (messageType == null) {
+			if (message == null) {
 				return null;
 			}
 
 			// We have a message!  Assemble it.
-			var serializer = MessageSerializer.Get(messageType);
-			IProtocolMessage message = serializer.Deserialize(fields, recipient);
+			var serializer = MessageSerializer.Get(message.GetType());
+			serializer.Deserialize(fields, message);
 
 			return message;
 		}

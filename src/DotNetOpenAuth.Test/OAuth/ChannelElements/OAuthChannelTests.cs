@@ -33,23 +33,23 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			this.webRequestHandler = new TestWebRequestHandler();
 			this.signingElement = new RsaSha1SigningBindingElement();
 			this.nonceStore = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
-			this.channel = new OAuthChannel(this.signingElement, this.nonceStore, new InMemoryTokenManager(), new TestMessageTypeProvider());
+			this.channel = new OAuthChannel(this.signingElement, this.nonceStore, new InMemoryTokenManager(), new TestMessageFactory());
 			this.channel.WebRequestHandler = this.webRequestHandler;
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void CtorNullSigner() {
-			new OAuthChannel(null, this.nonceStore, new InMemoryTokenManager(), new TestMessageTypeProvider());
+			new OAuthChannel(null, this.nonceStore, new InMemoryTokenManager(), new TestMessageFactory());
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullStore() {
-			new OAuthChannel(new RsaSha1SigningBindingElement(), null, new InMemoryTokenManager(), new TestMessageTypeProvider());
+			new OAuthChannel(new RsaSha1SigningBindingElement(), null, new InMemoryTokenManager(), new TestMessageFactory());
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullTokenManager() {
-			new OAuthChannel(new RsaSha1SigningBindingElement(), this.nonceStore, null, new TestMessageTypeProvider());
+			new OAuthChannel(new RsaSha1SigningBindingElement(), this.nonceStore, null, new TestMessageFactory());
 		}
 
 		[TestMethod]
@@ -79,7 +79,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 
 		[TestMethod]
 		public void SendDirectMessageResponse() {
-			IProtocolMessage message = new TestMessage {
+			IProtocolMessage message = new TestDirectedMessage {
 				Age = 15,
 				Name = "Andrew",
 				Location = new Uri("http://hostb/pathB"),

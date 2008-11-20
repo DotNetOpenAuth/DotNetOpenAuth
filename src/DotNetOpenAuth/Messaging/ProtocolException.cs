@@ -130,9 +130,14 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether this message was deserialized as an incoming message.
+		/// Gets a value indicating whether this message was deserialized as an incoming message.
 		/// </summary>
-		bool IProtocolMessage.Incoming { get; set; }
+		/// <remarks>
+		/// Always false because exceptions are not a valid message to deserialize.
+		/// </remarks>
+		bool IProtocolMessage.Incoming {
+			get { return false; }
+		}
 
 		#endregion
 
@@ -237,11 +242,10 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether this message was deserialized as an incoming message.
+		/// Gets a value indicating whether this message was deserialized as an incoming message.
 		/// </summary>
 		protected bool Incoming {
-			get { return ((IProtocolMessage)this).Incoming; }
-			set { ((IProtocolMessage)this).Incoming = value; }
+			get { return false; }
 		}
 
 		/// <summary>

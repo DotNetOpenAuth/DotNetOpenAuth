@@ -13,7 +13,7 @@ public class OAuth : IHttpHandler, IRequiresSessionState {
 	ServiceProvider sp;
 
 	public OAuth() {
-		sp = new ServiceProvider(Constants.SelfDescription, Global.TokenManager, new CustomOAuthTypeProvider(Global.TokenManager));
+		sp = new ServiceProvider(Constants.SelfDescription, Global.TokenManager, new CustomOAuthMessageFactory(Global.TokenManager));
 	}
 
 	public void ProcessRequest(HttpContext context) {

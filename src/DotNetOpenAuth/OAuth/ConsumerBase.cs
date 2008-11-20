@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.OAuth {
 
 			ITamperProtectionChannelBindingElement signingElement = serviceDescription.CreateTamperProtectionElement();
 			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
-			this.OAuthChannel = new OAuthChannel(signingElement, store, tokenManager, new OAuthConsumerMessageTypeProvider());
+			this.OAuthChannel = new OAuthChannel(signingElement, store, tokenManager, new OAuthConsumerMessageFactory());
 			this.ServiceProvider = serviceDescription;
 		}
 

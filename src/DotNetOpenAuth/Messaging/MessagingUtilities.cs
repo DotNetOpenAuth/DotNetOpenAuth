@@ -290,6 +290,41 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Determines whether the specified message is a request (indirect message or direct request).
+		/// </summary>
+		/// <param name="message">The message in question.</param>
+		/// <returns>
+		/// 	<c>true</c> if the specified message is a request; otherwise, <c>false</c>.
+		/// </returns>
+		/// <remarks>
+		/// Although an <see cref="IProtocolMessage"/> may implement the <see cref="IDirectedProtocolMessage"/>
+		/// interface, it may only be doing that for its derived classes.  These objects are only requests
+		/// if their <see cref="IDirectedProtocolMessage.Recipient"/> property is non-null.
+		/// </remarks>
+		internal static bool IsRequest(this IDirectedProtocolMessage message) {
+			ErrorUtilities.VerifyArgumentNotNull(message, "message");
+			return message.Recipient != null;
+		}
+
+		/// <summary>
+		/// Determines whether the specified message is a direct response.
+		/// </summary>
+		/// <param name="message">The message in question.</param>
+		/// <returns>
+		/// 	<c>true</c> if the specified message is a direct response; otherwise, <c>false</c>.
+		/// </returns>
+		/// <remarks>
+		/// Although an <see cref="IProtocolMessage"/> may implement the 
+		/// <see cref="IDirectResponseProtocolMessage"/> interface, it may only be doing 
+		/// that for its derived classes.  These objects are only requests if their 
+		/// <see cref="IDirectResponseProtocolMessage.OriginatingRequest"/> property is non-null.
+		/// </remarks>
+		internal static bool IsDirectResponse(this IDirectResponseProtocolMessage message) {
+			ErrorUtilities.VerifyArgumentNotNull(message, "message");
+			return message.OriginatingRequest != null;
+		}
+
+		/// <summary>
 		/// A class to convert a <see cref="Comparison&lt;T&gt;"/> into an <see cref="IComparer&lt;T&gt;"/>.
 		/// </summary>
 		/// <typeparam name="T">The type of objects being compared.</typeparam>

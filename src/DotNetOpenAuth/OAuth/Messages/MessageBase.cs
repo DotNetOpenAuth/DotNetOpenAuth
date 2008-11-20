@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 	/// <summary>
 	/// A base class for all OAuth messages.
 	/// </summary>
-	public abstract class MessageBase : IDirectedProtocolMessage {
+	public abstract class MessageBase : IDirectedProtocolMessage, IDirectResponseProtocolMessage {
 		/// <summary>
 		/// A store for extra name/value data pairs that are attached to this message.
 		/// </summary>
@@ -37,6 +37,16 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// </summary>
 		private MessageReceivingEndpoint recipient;
 
+		/// <summary>
+		/// Backing store for the <see cref="OriginatingRequest"/> properties.
+		/// </summary>
+		private IDirectedProtocolMessage originatingRequest;
+
+		/// <summary>
+		/// Backing store for the <see cref="Incoming"/> properties.
+		/// </summary>
+		private bool incoming;
+
 #if DEBUG
 		/// <summary>
 		/// Initializes static members of the <see cref="MessageBase"/> class.
@@ -47,17 +57,20 @@ namespace DotNetOpenAuth.OAuth.Messages {
 #endif
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="MessageBase"/> class.
+		/// Initializes a new instance of the <see cref="MessageBase"/> class for direct response messages.
 		/// </summary>
 		/// <param name="protectionRequired">The level of protection the message requires.</param>
-		/// <param name="transport">A value indicating whether this message requires a direct or indirect transport.</param>
-		protected MessageBase(MessageProtections protectionRequired, MessageTransport transport) {
+		/// <param name="originatingRequest">The request that asked for this direct response.</param>
+		protected MessageBase(MessageProtections protectionRequired, IDirectedProtocolMessage originatingRequest) {
+			ErrorUtilities.VerifyArgumentNotNull(originatingRequest, "originatingRequest");
+
 			this.protectionRequired = protectionRequired;
-			this.transport = transport;
+			this.transport = MessageTransport.Direct;
+			this.originatingRequest = originatingRequest;
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="MessageBase"/> class.
+		/// Initializes a new instance of the <see cref="MessageBase"/> class for direct requests or indirect messages.
 		/// </summary>
 		/// <param name="protectionRequired">The level of protection the message requires.</param>
 		/// <param name="transport">A value indicating whether this message requires a direct or indirect transport.</param>
@@ -103,9 +116,11 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether this message was deserialized as an incoming message.
+		/// Gets a value indicating whether this message was deserialized as an incoming message.
 		/// </summary>
-		bool IProtocolMessage.Incoming { get; set; }
+		bool IProtocolMessage.Incoming {
+			get { return this.incoming; }
+		}
 
 		#endregion
 
@@ -123,6 +138,17 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// </summary>
 		HttpDeliveryMethods IDirectedProtocolMessage.HttpMethods {
 			get { return this.HttpMethods; }
+		}
+
+		#endregion
+
+		#region IDirectResponseProtocolMessage Members
+
+		/// <summary>
+		/// Gets the originating request message that caused this response to be formed.
+		/// </summary>
+		IDirectedProtocolMessage IDirectResponseProtocolMessage.OriginatingRequest {
+			get { return this.originatingRequest; }
 		}
 
 		#endregion
@@ -162,11 +188,10 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether this message was deserialized as an incoming message.
+		/// Gets a value indicating whether this message was deserialized as an incoming message.
 		/// </summary>
 		protected bool Incoming {
-			get { return ((IProtocolMessage)this).Incoming; }
-			set { ((IProtocolMessage)this).Incoming = value; }
+			get { return this.incoming; }
 		}
 
 		/// <summary>
@@ -191,6 +216,13 @@ namespace DotNetOpenAuth.OAuth.Messages {
 					throw new InvalidOperationException();
 				}
 			}
+		}
+
+		/// <summary>
+		/// Gets the originating request message that caused this response to be formed.
+		/// </summary>
+		protected IDirectedProtocolMessage OriginatingRequest {
+			get { return this.originatingRequest; }
 		}
 
 		#region IProtocolMessage Methods
@@ -229,6 +261,13 @@ namespace DotNetOpenAuth.OAuth.Messages {
 			}
 
 			return builder.ToString();
+		}
+
+		/// <summary>
+		/// Sets a flag indicating that this message is received (as opposed to sent).
+		/// </summary>
+		internal void SetAsIncoming() {
+			this.incoming = true;
 		}
 
 		/// <summary>

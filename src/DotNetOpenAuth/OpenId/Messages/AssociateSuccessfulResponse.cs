@@ -26,6 +26,14 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		private bool associationCreated;
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="AssociateSuccessfulResponse"/> class.
+		/// </summary>
+		/// <param name="originatingRequest">The originating request.</param>
+		internal AssociateSuccessfulResponse(AssociateRequest originatingRequest)
+			: base(originatingRequest) {
+		}
+
+		/// <summary>
 		/// Gets or sets the association handle is used as a key to refer to this association in subsequent messages. 
 		/// </summary>
 		/// <value>A string 255 characters or less in length. It MUST consist only of ASCII characters in the range 33-126 inclusive (printable non-whitespace characters). </value>

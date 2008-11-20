@@ -19,6 +19,14 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// </remarks>
 	internal class AssociateDiffieHellmanResponse : AssociateSuccessfulResponse {
 		/// <summary>
+		/// Initializes a new instance of the <see cref="AssociateDiffieHellmanResponse"/> class.
+		/// </summary>
+		/// <param name="originatingRequest">The originating request.</param>
+		internal AssociateDiffieHellmanResponse(AssociateDiffieHellmanRequest originatingRequest)
+			: base(originatingRequest) {
+		}
+
+		/// <summary>
 		/// Gets or sets the Provider's Diffie-Hellman public key. 
 		/// </summary>
 		/// <value>btwoc(g ^ xb mod p)</value>

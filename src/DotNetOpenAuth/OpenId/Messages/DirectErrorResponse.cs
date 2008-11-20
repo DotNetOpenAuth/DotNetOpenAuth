@@ -16,6 +16,14 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// </remarks>
 	internal class DirectErrorResponse : DirectResponseBase {
 		/// <summary>
+		/// Initializes a new instance of the <see cref="DirectErrorResponse"/> class.
+		/// </summary>
+		/// <param name="originatingRequest">The originating request.</param>
+		internal DirectErrorResponse(IDirectedProtocolMessage originatingRequest)
+			: base(originatingRequest) {
+		}
+
+		/// <summary>
 		/// Gets or sets a human-readable message indicating why the request failed. 
 		/// </summary>
 		[MessagePart("error", IsRequired = true, AllowEmpty = true)]

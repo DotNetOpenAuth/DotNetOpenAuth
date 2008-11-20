@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 	/// </summary>
 	internal class TestBadChannel : Channel {
 		internal TestBadChannel(bool badConstructorParam)
-			: base(badConstructorParam ? null : new TestMessageTypeProvider()) {
+			: base(badConstructorParam ? null : new TestMessageFactory()) {
 		}
 
 		internal new void Create301RedirectResponse(IDirectedProtocolMessage message, IDictionary<string, string> fields) {

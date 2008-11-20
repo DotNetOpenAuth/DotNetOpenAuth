@@ -45,9 +45,10 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssociateDiffieHellmanRequest"/> class.
 		/// </summary>
+		/// <param name="version">The OpenID version this message must comply with.</param>
 		/// <param name="providerEndpoint">The OpenID Provider endpoint.</param>
-		internal AssociateDiffieHellmanRequest(Uri providerEndpoint)
-			: base(providerEndpoint) {
+		internal AssociateDiffieHellmanRequest(Version version, Uri providerEndpoint)
+			: base(version, providerEndpoint) {
 			this.DiffieHellmanModulus = DefaultMod;
 			this.DiffieHellmanGen = DefaultGen;
 		}
@@ -110,7 +111,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Failed association response messages will derive from <see cref="AssociateUnsuccessfulResponse"/>.</para>
 		/// </remarks>
 		protected override IProtocolMessage CreateResponseCore() {
-			var response = new AssociateDiffieHellmanResponse();
+			var response = new AssociateDiffieHellmanResponse(this);
 			response.AssociationType = this.AssociationType;
 			return response;
 		}

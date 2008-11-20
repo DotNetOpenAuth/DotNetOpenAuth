@@ -32,7 +32,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 
 		[TestMethod]
 		public void CtorWithProtocolMessage() {
-			IProtocolMessage request = new Mocks.TestMessage();
+			IProtocolMessage request = new Mocks.TestDirectedMessage();
 			Uri receiver = new Uri("http://receiver");
 			ProtocolException ex = new ProtocolException("some error occurred", request, receiver);
 			IDirectedProtocolMessage msg = (IDirectedProtocolMessage)ex;

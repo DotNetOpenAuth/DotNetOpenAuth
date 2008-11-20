@@ -5,18 +5,22 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Test.OpenId.Messages {
+	using System;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
-	public class DirectErrorResponseTests {
+	public class DirectErrorResponseTests : OpenIdTestBase {
 		private DirectErrorResponse response;
 
 		[TestInitialize]
-		public void Setup() {
-			this.response = new DirectErrorResponse();
+		public override void SetUp() {
+			base.SetUp();
+
+			var request = new AssociateUnencryptedRequest(Protocol.V20.Version, new Uri("http://host"));
+			this.response = new DirectErrorResponse(request);
 		}
 
 		[TestMethod]

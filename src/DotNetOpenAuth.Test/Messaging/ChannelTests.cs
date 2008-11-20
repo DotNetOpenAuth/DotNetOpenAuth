@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 
 		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void SendIndirectedUndirectedMessage() {
-			IProtocolMessage message = new TestMessage(MessageTransport.Indirect);
+			IProtocolMessage message = new TestDirectedMessage(MessageTransport.Indirect);
 			this.Channel.Send(message);
 		}
 
@@ -150,7 +150,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// </remarks>
 		[TestMethod, ExpectedException(typeof(NotImplementedException), "SendDirectMessageResponse")]
 		public void SendDirectMessageResponse() {
-			IProtocolMessage message = new TestMessage {
+			IProtocolMessage message = new TestDirectedMessage {
 				Age = 15,
 				Name = "Andrew",
 				Location = new Uri("http://host/path"),
@@ -232,14 +232,14 @@ namespace DotNetOpenAuth.Test.Messaging {
 		[TestMethod, ExpectedException(typeof(ProtocolException))]
 		public void MessageExpirationWithoutTamperResistance() {
 			new TestChannel(
-				new TestMessageTypeProvider(),
+				new TestMessageFactory(),
 				new StandardExpirationBindingElement());
 		}
 
 		[TestMethod, ExpectedException(typeof(ProtocolException))]
 		public void TooManyBindingElementsProvidingSameProtection() {
 			new TestChannel(
-				new TestMessageTypeProvider(),
+				new TestMessageFactory(),
 				new MockSigningBindingElement(),
 				new MockSigningBindingElement());
 		}
@@ -253,7 +253,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			IChannelBindingElement expire = new StandardExpirationBindingElement();
 
 			Channel channel = new TestChannel(
-				new TestMessageTypeProvider(),
+				new TestMessageFactory(),
 				sign,
 				replay,
 				expire,

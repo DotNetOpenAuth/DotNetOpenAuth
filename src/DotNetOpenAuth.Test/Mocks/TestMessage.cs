@@ -11,15 +11,16 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
 
-	internal class TestMessage : IProtocolMessage {
+	internal abstract class TestMessage : IDirectResponseProtocolMessage {
 		private MessageTransport transport;
 		private Dictionary<string, string> extraData = new Dictionary<string, string>();
+		private bool incoming;
 
-		internal TestMessage()
+		protected TestMessage()
 			: this(MessageTransport.Direct) {
 		}
 
-		internal TestMessage(MessageTransport transport) {
+		protected TestMessage(MessageTransport transport) {
 			this.transport = transport;
 		}
 
@@ -34,7 +35,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		[MessagePart(IsRequired = true)]
 		public DateTime Timestamp { get; set; }
 
-		#region IProtocolMessage Members
+		#region IProtocolMessage Properties
 
 		Version IProtocolMessage.ProtocolVersion {
 			get { return new Version(1, 0); }
@@ -52,7 +53,19 @@ namespace DotNetOpenAuth.Test.Mocks {
 			get { return this.extraData; }
 		}
 
-		bool IProtocolMessage.Incoming { get; set; }
+		bool IProtocolMessage.Incoming {
+			get { return this.incoming; }
+		}
+
+		#endregion
+
+		#region IDirectResponseProtocolMessage Members
+
+		public IDirectedProtocolMessage OriginatingRequest { get; set; }
+
+		#endregion
+
+		#region IProtocolMessage Methods
 
 		void IProtocolMessage.EnsureValidMessage() {
 			if (this.EmptyMember != null || this.Age < 0) {
@@ -61,5 +74,9 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		#endregion
+
+		internal void SetAsIncoming() {
+			this.incoming = true;
+		}
 	}
 }

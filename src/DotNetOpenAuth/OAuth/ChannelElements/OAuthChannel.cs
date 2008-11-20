@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			signingBindingElement,
 			store,
 			tokenManager,
-			isConsumer ? (IMessageTypeProvider)new OAuthConsumerMessageTypeProvider() : new OAuthServiceProviderMessageTypeProvider(tokenManager)) {
+			isConsumer ? (IMessageFactory)new OAuthConsumerMessageFactory() : new OAuthServiceProviderMessageFactory(tokenManager)) {
 		}
 
 		/// <summary>
@@ -45,12 +45,12 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="messageTypeProvider">
 		/// An injected message type provider instance.
 		/// Except for mock testing, this should always be one of
-		/// <see cref="OAuthConsumerMessageTypeProvider"/> or <see cref="OAuthServiceProviderMessageTypeProvider"/>.
+		/// <see cref="OAuthConsumerMessageFactory"/> or <see cref="OAuthServiceProviderMessageFactory"/>.
 		/// </param>
 		/// <remarks>
 		/// This overload for testing purposes only.
 		/// </remarks>
-		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, IMessageTypeProvider messageTypeProvider)
+		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, IMessageFactory messageTypeProvider)
 			: base(messageTypeProvider, new OAuthHttpMethodBindingElement(), signingBindingElement, new StandardExpirationBindingElement(), new StandardReplayProtectionBindingElement(store)) {
 			if (tokenManager == null) {
 				throw new ArgumentNullException("tokenManager");

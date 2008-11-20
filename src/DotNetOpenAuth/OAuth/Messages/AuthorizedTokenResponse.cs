@@ -17,8 +17,9 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AuthorizedTokenResponse"/> class.
 		/// </summary>
-		protected internal AuthorizedTokenResponse()
-			: base(MessageProtections.None, MessageTransport.Direct) {
+		/// <param name="originatingRequest">The originating request.</param>
+		protected internal AuthorizedTokenResponse(AuthorizedTokenRequest originatingRequest)
+			: base(MessageProtections.None, originatingRequest) {
 		}
 
 		/// <summary>

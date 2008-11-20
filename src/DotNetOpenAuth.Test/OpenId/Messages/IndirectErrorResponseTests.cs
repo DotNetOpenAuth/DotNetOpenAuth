@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 
 		[TestInitialize]
 		public void Setup() {
-			this.response = new IndirectErrorResponse(this.recipient);
+			this.response = new IndirectErrorResponse(Protocol.V20.Version, this.recipient);
 		}
 
 		[TestMethod]

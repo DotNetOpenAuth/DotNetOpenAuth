@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="OAuthConsumerMessageTypeProvider.cs" company="Andrew Arnott">
+// <copyright file="OAuthConsumerMessageFactory.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -11,41 +11,47 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using DotNetOpenAuth.OAuth.Messages;
 
 	/// <summary>
-	/// An OAuth-protocol specific implementation of the <see cref="IMessageTypeProvider"/>
+	/// An OAuth-protocol specific implementation of the <see cref="IMessageFactory"/>
 	/// interface.
 	/// </summary>
-	public class OAuthConsumerMessageTypeProvider : IMessageTypeProvider {
+	public class OAuthConsumerMessageFactory : IMessageFactory {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OAuthConsumerMessageTypeProvider"/> class.
+		/// Initializes a new instance of the <see cref="OAuthConsumerMessageFactory"/> class.
 		/// </summary>
-		protected internal OAuthConsumerMessageTypeProvider() {
+		protected internal OAuthConsumerMessageFactory() {
 		}
 
-		#region IMessageTypeProvider Members
+		#region IMessageFactory Members
 
 		/// <summary>
-		/// Analyzes an incoming request message payload to discover what kind of 
+		/// Analyzes an incoming request message payload to discover what kind of
 		/// message is embedded in it and returns the type, or null if no match is found.
 		/// </summary>
+		/// <param name="recipient">The intended or actual recipient of the request message.</param>
 		/// <param name="fields">The name/value pairs that make up the message payload.</param>
+		/// <returns>
+		/// A newly instantiated <see cref="IProtocolMessage"/>-derived object that this message can
+		/// deserialize to.  Null if the request isn't recognized as a valid protocol message.
+		/// </returns>
 		/// <remarks>
 		/// The request messages are:
 		/// UserAuthorizationResponse
 		/// </remarks>
-		/// <returns>
-		/// The <see cref="IProtocolMessage"/>-derived concrete class that this message can
-		/// deserialize to.  Null if the request isn't recognized as a valid protocol message.
-		/// </returns>
-		public virtual Type GetRequestMessageType(IDictionary<string, string> fields) {
-			if (fields == null) {
-				throw new ArgumentNullException("fields");
-			}
+		public virtual IDirectedProtocolMessage GetNewRequestMessage(MessageReceivingEndpoint recipient, IDictionary<string, string> fields) {
+			ErrorUtilities.VerifyArgumentNotNull(recipient, "recipient");
+			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
+
+			MessageBase message = null;
 
 			if (fields.ContainsKey("oauth_token")) {
-				return typeof(UserAuthorizationResponse);
+				message = new UserAuthorizationResponse(recipient.Location);
 			}
 
-			return null;
+			if (message != null) {
+				message.SetAsIncoming();
+			}
+
+			return message;
 		}
 
 		/// <summary>
@@ -58,7 +64,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </param>
 		/// <param name="fields">The name/value pairs that make up the message payload.</param>
 		/// <returns>
-		/// The <see cref="IProtocolMessage"/>-derived concrete class that this message can
+		/// A newly instantiated <see cref="IProtocolMessage"/>-derived object that this message can
 		/// deserialize to.  Null if the request isn't recognized as a valid protocol message.
 		/// </returns>
 		/// <remarks>
@@ -66,10 +72,11 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// UnauthorizedTokenResponse
 		/// AuthorizedTokenResponse
 		/// </remarks>
-		public virtual Type GetResponseMessageType(IProtocolMessage request, IDictionary<string, string> fields) {
-			if (fields == null) {
-				throw new ArgumentNullException("fields");
-			}
+		public virtual IDirectResponseProtocolMessage GetNewResponseMessage(IDirectedProtocolMessage request, IDictionary<string, string> fields) {
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
+
+			MessageBase message = null;
 
 			// All response messages have the oauth_token field.
 			if (!fields.ContainsKey("oauth_token")) {
@@ -82,14 +89,22 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				return null;
 			}
 
-			if (request is UnauthorizedTokenRequest) {
-				return typeof(UnauthorizedTokenResponse);
-			} else if (request is AuthorizedTokenRequest) {
-				return typeof(AuthorizedTokenResponse);
+			var unauthorizedTokenRequest = request as UnauthorizedTokenRequest;
+			var authorizedTokenRequest = request as AuthorizedTokenRequest;
+			if (unauthorizedTokenRequest != null) {
+				message = new UnauthorizedTokenResponse(unauthorizedTokenRequest);
+			} else if (authorizedTokenRequest != null) {
+				message = new AuthorizedTokenResponse(authorizedTokenRequest);
 			} else {
 				Logger.ErrorFormat("Unexpected response message given the request type {0}", request.GetType().Name);
 				throw new ProtocolException(OAuthStrings.InvalidIncomingMessage);
 			}
+
+			if (message != null) {
+				message.SetAsIncoming();
+			}
+
+			return message;
 		}
 
 		#endregion

@@ -37,14 +37,14 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Initializes a new instance of the <see cref="OpenIdChannel"/> class.
 		/// </summary>
 		internal OpenIdChannel()
-			: this(new OpenIdMessageTypeProvider()) {
+			: this(new OpenIdMessageFactory()) {
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdChannel"/> class.
 		/// </summary>
 		/// <param name="messageTypeProvider">An object that knows how to distinguish the various OpenID message types for deserialization purposes.</param>
-		private OpenIdChannel(IMessageTypeProvider messageTypeProvider) :
+		private OpenIdChannel(IMessageFactory messageTypeProvider) :
 			base(messageTypeProvider) {
 		}
 

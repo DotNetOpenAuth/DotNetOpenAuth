@@ -12,10 +12,10 @@ namespace DotNetOpenAuth.Test.Mocks {
 
 	internal class TestChannel : Channel {
 		internal TestChannel()
-			: this(new TestMessageTypeProvider()) {
+			: this(new TestMessageFactory()) {
 		}
 
-		internal TestChannel(IMessageTypeProvider messageTypeProvider, params IChannelBindingElement[] bindingElements)
+		internal TestChannel(IMessageFactory messageTypeProvider, params IChannelBindingElement[] bindingElements)
 			: base(messageTypeProvider, bindingElements) {
 		}
 

@@ -24,18 +24,11 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// <remarks>
 		/// This constructor is used by the Service Provider to send the message.
 		/// </remarks>
-		protected internal UnauthorizedTokenResponse(UnauthorizedTokenRequest requestMessage, string requestToken, string tokenSecret) : this() {
-			if (requestMessage == null) {
-				throw new ArgumentNullException("requestMessage");
-			}
-			if (string.IsNullOrEmpty(requestToken)) {
-				throw new ArgumentNullException("requestToken");
-			}
-			if (string.IsNullOrEmpty(tokenSecret)) {
-				throw new ArgumentNullException("tokenSecret");
-			}
+		protected internal UnauthorizedTokenResponse(UnauthorizedTokenRequest requestMessage, string requestToken, string tokenSecret)
+			: this(requestMessage) {
+			ErrorUtilities.VerifyArgumentNotNull(requestToken, "requestToken");
+			ErrorUtilities.VerifyArgumentNotNull(tokenSecret, "tokenSecret");
 
-			this.RequestMessage = requestMessage;
 			this.RequestToken = requestToken;
 			this.TokenSecret = tokenSecret;
 		}
@@ -43,9 +36,10 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UnauthorizedTokenResponse"/> class.
 		/// </summary>
+		/// <param name="originatingRequest">The originating request.</param>
 		/// <remarks>This constructor is used by the consumer to deserialize the message.</remarks>
-		protected internal UnauthorizedTokenResponse()
-			: base(MessageProtections.None, MessageTransport.Direct) {
+		protected internal UnauthorizedTokenResponse(UnauthorizedTokenRequest originatingRequest)
+			: base(MessageProtections.None, originatingRequest) {
 		}
 
 		/// <summary>
@@ -81,7 +75,9 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// <summary>
 		/// Gets the original request for an unauthorized token.
 		/// </summary>
-		internal UnauthorizedTokenRequest RequestMessage { get; private set; }
+		internal UnauthorizedTokenRequest RequestMessage {
+			get { return (UnauthorizedTokenRequest)this.OriginatingRequest; }
+		}
 
 		/// <summary>
 		/// Gets or sets the Token Secret.

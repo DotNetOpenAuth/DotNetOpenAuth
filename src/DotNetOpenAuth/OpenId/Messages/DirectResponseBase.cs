@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// A common base class for OpenID direct message responses.
 	/// </summary>
 	[DebuggerDisplay("OpenID {ProtocolVersion} response")]
-	internal class DirectResponseBase : IProtocolMessage {
+	internal class DirectResponseBase : IDirectResponseProtocolMessage {
 		/// <summary>
 		/// The openid.ns parameter in the message.
 		/// </summary>
@@ -33,9 +33,24 @@ namespace DotNetOpenAuth.OpenId.Messages {
 #pragma warning restore 0414
 
 		/// <summary>
+		/// Backing store for the <see cref="OriginatingRequest"/> properties.
+		/// </summary>
+		private IDirectedProtocolMessage originatingRequest;
+
+		/// <summary>
+		/// Backing store for the <see cref="Incoming"/> properties.
+		/// </summary>
+		private bool incoming;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="DirectResponseBase"/> class.
 		/// </summary>
-		protected DirectResponseBase() {
+		/// <param name="originatingRequest">The originating request.</param>
+		protected DirectResponseBase(IDirectedProtocolMessage originatingRequest) {
+			ErrorUtilities.VerifyArgumentNotNull(originatingRequest, "originatingRequest");
+
+			this.originatingRequest = originatingRequest;
+			this.ProtocolVersion = originatingRequest.ProtocolVersion;
 		}
 
 		#region IProtocolMessage Properties
@@ -44,9 +59,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Gets the version of the protocol this message is prepared to implement.
 		/// </summary>
 		/// <value>Version 2.0</value>
-		public Version ProtocolVersion {
-			get { return new Version(2, 0); }
-		}
+		public Version ProtocolVersion { get; private set; }
 
 		/// <summary>
 		/// Gets the level of protection this message requires.
@@ -73,9 +86,22 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether this message was deserialized as an incoming message.
+		/// Gets a value indicating whether this message was deserialized as an incoming message.
 		/// </summary>
-		public bool Incoming { get; set; }
+		bool IProtocolMessage.Incoming {
+			get { return this.incoming; }
+		}
+
+		#endregion
+
+		#region IDirectResponseProtocolMessage Members
+
+		/// <summary>
+		/// Gets the originating request message that caused this response to be formed.
+		/// </summary>
+		IDirectedProtocolMessage IDirectResponseProtocolMessage.OriginatingRequest {
+			get { return this.originatingRequest; }
+		}
 
 		#endregion
 
@@ -84,6 +110,20 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		protected Protocol Protocol {
 			get { return Protocol.Lookup(this.ProtocolVersion); }
+		}
+
+		/// <summary>
+		/// Gets the originating request message that caused this response to be formed.
+		/// </summary>
+		protected IDirectedProtocolMessage OriginatingRequest {
+			get { return this.originatingRequest; }
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether this message was deserialized as an incoming message.
+		/// </summary>
+		protected bool Incoming {
+			get { return this.incoming; }
 		}
 
 		#region IProtocolMessage methods
@@ -104,5 +144,12 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Sets a flag indicating that this message is received (as opposed to sent).
+		/// </summary>
+		internal void SetAsIncoming() {
+			this.incoming = true;
+		}
 	}
 }

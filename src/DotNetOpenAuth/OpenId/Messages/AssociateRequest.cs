@@ -21,9 +21,10 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssociateRequest"/> class.
 		/// </summary>
+		/// <param name="version">The OpenID version this message must comply with.</param>
 		/// <param name="providerEndpoint">The OpenID Provider endpoint.</param>
-		protected AssociateRequest(Uri providerEndpoint)
-			: base(providerEndpoint, "associate", MessageTransport.Direct) {
+		protected AssociateRequest(Version version, Uri providerEndpoint)
+			: base(version, providerEndpoint, "associate", MessageTransport.Direct) {
 		}
 
 		/// <summary>
@@ -83,17 +84,17 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			bool unencryptedAllowed = provider.Endpoint.IsTransportSecure();
 			bool useDiffieHellman = !unencryptedAllowed;
 			string associationType, sessionType;
-			if (!HmacShaAssociation.TryFindBestAssociation(provider.Protocol, securityRequirements, useDiffieHellman, out associationType, out sessionType)) {
+			if (!HmacShaAssociation.TryFindBestAssociation(Protocol.Lookup(provider.ProtocolVersion), securityRequirements, useDiffieHellman, out associationType, out sessionType)) {
 				// There are no associations that meet all requirements.
 				Logger.Warn("Security requirements and protocol combination knock out all possible association types.  Dumb mode forced.");
 				return null;
 			}
 
 			if (unencryptedAllowed) {
-				associateRequest = new AssociateUnencryptedRequest(provider.Endpoint);
+				associateRequest = new AssociateUnencryptedRequest(provider.ProtocolVersion, provider.Endpoint);
 				associateRequest.AssociationType = associationType;
 			} else {
-				var diffieHellmanAssociateRequest = new AssociateDiffieHellmanRequest(provider.Endpoint);
+				var diffieHellmanAssociateRequest = new AssociateDiffieHellmanRequest(provider.ProtocolVersion, provider.Endpoint);
 				diffieHellmanAssociateRequest.AssociationType = associationType;
 				diffieHellmanAssociateRequest.SessionType = sessionType;
 				diffieHellmanAssociateRequest.InitializeRequest();

@@ -22,13 +22,13 @@ namespace DotNetOpenAuth.OpenId {
 		/// Initializes a new instance of the <see cref="ProviderEndpointDescription"/> class.
 		/// </summary>
 		/// <param name="providerEndpoint">The OpenID Provider endpoint URL.</param>
-		/// <param name="version">The OpenID version supported by this particular endpoint.</param>
-		internal ProviderEndpointDescription(Uri providerEndpoint, Protocol version) {
+		/// <param name="openIdVersion">The OpenID version supported by this particular endpoint.</param>
+		internal ProviderEndpointDescription(Uri providerEndpoint, Version openIdVersion) {
 			ErrorUtilities.VerifyArgumentNotNull(providerEndpoint, "providerEndpoint");
-			ErrorUtilities.VerifyArgumentNotNull(version, "version");
+			ErrorUtilities.VerifyArgumentNotNull(openIdVersion, "version");
 
 			this.Endpoint = providerEndpoint;
-			this.Protocol = version;
+			this.ProtocolVersion = openIdVersion;
 		}
 
 		/// <summary>
@@ -43,6 +43,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// If an endpoint supports multiple versions, each version must be represented
 		/// by its own <see cref="ProviderEndpointDescription"/> object.
 		/// </remarks>
-		internal Protocol Protocol { get; private set; }
+		internal Version ProtocolVersion { get; private set; }
 	}
 }

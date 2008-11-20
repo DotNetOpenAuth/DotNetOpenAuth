@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="OAuthServiceProviderMessageTypeProvider.cs" company="Andrew Arnott">
+// <copyright file="OAuthServiceProviderMessageFactory.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -11,34 +11,37 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using DotNetOpenAuth.OAuth.Messages;
 
 	/// <summary>
-	/// An OAuth-protocol specific implementation of the <see cref="IMessageTypeProvider"/>
+	/// An OAuth-protocol specific implementation of the <see cref="IMessageFactory"/>
 	/// interface.
 	/// </summary>
-	public class OAuthServiceProviderMessageTypeProvider : IMessageTypeProvider {
+	public class OAuthServiceProviderMessageFactory : IMessageFactory {
 		/// <summary>
 		/// The token manager to use for discerning between request and access tokens.
 		/// </summary>
 		private ITokenManager tokenManager;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OAuthServiceProviderMessageTypeProvider"/> class.
+		/// Initializes a new instance of the <see cref="OAuthServiceProviderMessageFactory"/> class.
 		/// </summary>
 		/// <param name="tokenManager">The token manager instance to use.</param>
-		protected internal OAuthServiceProviderMessageTypeProvider(ITokenManager tokenManager) {
-			if (tokenManager == null) {
-				throw new ArgumentNullException("tokenManager");
-			}
+		protected internal OAuthServiceProviderMessageFactory(ITokenManager tokenManager) {
+			ErrorUtilities.VerifyArgumentNotNull(tokenManager, "tokenManager");
 
 			this.tokenManager = tokenManager;
 		}
 
-		#region IMessageTypeProvider Members
+		#region IMessageFactory Members
 
 		/// <summary>
-		/// Analyzes an incoming request message payload to discover what kind of 
+		/// Analyzes an incoming request message payload to discover what kind of
 		/// message is embedded in it and returns the type, or null if no match is found.
 		/// </summary>
+		/// <param name="recipient">The intended or actual recipient of the request message.</param>
 		/// <param name="fields">The name/value pairs that make up the message payload.</param>
+		/// <returns>
+		/// A newly instantiated <see cref="IProtocolMessage"/>-derived object that this message can
+		/// deserialize to.  Null if the request isn't recognized as a valid protocol message.
+		/// </returns>
 		/// <remarks>
 		/// The request messages are:
 		/// UnauthorizedTokenRequest
@@ -46,33 +49,34 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// UserAuthorizationRequest
 		/// AccessProtectedResourceRequest
 		/// </remarks>
-		/// <returns>
-		/// The <see cref="IProtocolMessage"/>-derived concrete class that this message can
-		/// deserialize to.  Null if the request isn't recognized as a valid protocol message.
-		/// </returns>
-		public virtual Type GetRequestMessageType(IDictionary<string, string> fields) {
-			if (fields == null) {
-				throw new ArgumentNullException("fields");
-			}
+		public virtual IDirectedProtocolMessage GetNewRequestMessage(MessageReceivingEndpoint recipient, IDictionary<string, string> fields) {
+			ErrorUtilities.VerifyArgumentNotNull(recipient, "recipient");
+			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
+
+			MessageBase message = null;
 
 			if (fields.ContainsKey("oauth_consumer_key") &&
 				!fields.ContainsKey("oauth_token")) {
-				return typeof(UnauthorizedTokenRequest);
-			}
-
-			if (fields.ContainsKey("oauth_consumer_key") &&
+				message = new UnauthorizedTokenRequest(recipient);
+			} else if (fields.ContainsKey("oauth_consumer_key") &&
 				fields.ContainsKey("oauth_token")) {
 				// Discern between RequestAccessToken and AccessProtectedResources,
 				// which have all the same parameters, by figuring out what type of token
 				// is in the token parameter.
 				bool tokenTypeIsAccessToken = this.tokenManager.GetTokenType(fields["oauth_token"]) == TokenType.AccessToken;
 
-				return tokenTypeIsAccessToken ? typeof(AccessProtectedResourceRequest) :
-					typeof(AuthorizedTokenRequest);
+				message = tokenTypeIsAccessToken ? (MessageBase)new AccessProtectedResourceRequest(recipient) :
+					new AuthorizedTokenRequest(recipient);
+			} else {
+				// fail over to the message with no required fields at all.
+				message = new UserAuthorizationRequest(recipient);
 			}
 
-			// fail over to the message with no required fields at all.
-			return typeof(UserAuthorizationRequest);
+			if (message != null) {
+				message.SetAsIncoming();
+			}
+
+			return message;
 		}
 
 		/// <summary>
@@ -92,10 +96,9 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// The response messages are:
 		/// None.
 		/// </remarks>
-		public virtual Type GetResponseMessageType(IProtocolMessage request, IDictionary<string, string> fields) {
-			if (fields == null) {
-				throw new ArgumentNullException("fields");
-			}
+		public virtual IDirectResponseProtocolMessage GetNewResponseMessage(IDirectedProtocolMessage request, IDictionary<string, string> fields) {
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
 
 			Logger.Error("Service Providers are not expected to ever receive responses.");
 			return null;

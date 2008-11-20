@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 		public override void SetUp() {
 			base.SetUp();
 
-			this.message = new Mocks.TestMessage();
+			this.message = new Mocks.TestDirectedMessage();
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]

@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="TestMessageTypeProvider.cs" company="Andrew Arnott">
+// <copyright file="TestMessageFactory.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -11,16 +11,16 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 
-	internal class TestMessageTypeProvider : IMessageTypeProvider {
+	internal class TestMessageFactory : IMessageFactory {
 		private bool signedMessages;
 		private bool expiringMessages;
 		private bool replayMessages;
 
-		internal TestMessageTypeProvider()
+		internal TestMessageFactory()
 			: this(false, false, false) {
 		}
 
-		internal TestMessageTypeProvider(bool signed, bool expiring, bool replay) {
+		internal TestMessageFactory(bool signed, bool expiring, bool replay) {
 			if ((!signed && expiring) || (!expiring && replay)) {
 				throw new ArgumentException("Invalid combination of protection.");
 			}
@@ -29,26 +29,30 @@ namespace DotNetOpenAuth.Test.Mocks {
 			this.replayMessages = replay;
 		}
 
-		#region IMessageTypeProvider Members
+		#region IMessageFactory Members
 
-		public Type GetRequestMessageType(IDictionary<string, string> fields) {
+		public IDirectedProtocolMessage GetNewRequestMessage(MessageReceivingEndpoint recipient, IDictionary<string, string> fields) {
+			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
+
 			if (fields.ContainsKey("age")) {
 				if (this.signedMessages) {
 					if (this.expiringMessages) {
 						if (this.replayMessages) {
-							return typeof(TestReplayProtectedMessage);
+							return new TestReplayProtectedMessage();
 						}
-						return typeof(TestExpiringMessage);
+						return new TestExpiringMessage();
 					}
-					return typeof(TestSignedDirectedMessage);
+					return new TestSignedDirectedMessage();
 				}
-				return typeof(TestDirectedMessage);
+				return new TestDirectedMessage();
 			}
 			return null;
 		}
 
-		public Type GetResponseMessageType(IProtocolMessage request, IDictionary<string, string> fields) {
-			return this.GetRequestMessageType(fields);
+		public IDirectResponseProtocolMessage GetNewResponseMessage(IDirectedProtocolMessage request, IDictionary<string, string> fields) {
+			TestMessage message = (TestMessage)this.GetNewRequestMessage(null, fields);
+			message.OriginatingRequest = request;
+			return message;
 		}
 
 		#endregion

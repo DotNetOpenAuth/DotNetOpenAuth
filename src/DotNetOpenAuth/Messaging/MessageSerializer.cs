@@ -77,66 +77,24 @@ namespace DotNetOpenAuth.Messaging {
 		/// Reads name=value pairs into an OAuth message.
 		/// </summary>
 		/// <param name="fields">The name=value pairs that were read in from the transport.</param>
-		/// <param name="recipient">The recipient of the message.</param>
-		/// <returns>The instantiated and initialized <see cref="IProtocolMessage"/> instance.</returns>
+		/// <param name="message">The message to deserialize into.</param>
 		/// <exception cref="ProtocolException">Thrown when protocol rules are broken by the incoming message.</exception>
-		internal IProtocolMessage Deserialize(IDictionary<string, string> fields, MessageReceivingEndpoint recipient) {
-			if (fields == null) {
-				throw new ArgumentNullException("fields");
-			}
+		internal void Deserialize(IDictionary<string, string> fields, IProtocolMessage message) {
+			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
+			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
 			// Before we deserialize the message, make sure all the required parts are present.
 			MessageDescription.Get(this.messageType).EnsureMessagePartsPassBasicValidation(fields);
 
-			IProtocolMessage result = this.CreateMessage(recipient);
 			try {
 				foreach (var pair in fields) {
-					IDictionary<string, string> dictionary = new MessageDictionary(result);
+					IDictionary<string, string> dictionary = new MessageDictionary(message);
 					dictionary[pair.Key] = pair.Value;
 				}
 			} catch (ArgumentException ex) {
 				throw ErrorUtilities.Wrap(ex, MessagingStrings.ErrorDeserializingMessage, this.messageType.Name);
 			}
-			result.EnsureValidMessage();
-			return result;
-		}
-
-		/// <summary>
-		/// Instantiates a new message to deserialize data into.
-		/// </summary>
-		/// <param name="recipient">The recipient this message is directed to, if any.</param>
-		/// <returns>The newly created message object.</returns>
-		private IProtocolMessage CreateMessage(MessageReceivingEndpoint recipient) {
-			IProtocolMessage result;
-			BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-			if (typeof(IDirectedProtocolMessage).IsAssignableFrom(this.messageType)) {
-				// Some directed messages take just the recipient, while others take the whole endpoint
-				ConstructorInfo ctor;
-				if ((ctor = this.messageType.GetConstructor(bindingFlags, null, new Type[] { typeof(Uri) }, null)) != null) {
-					if (recipient == null) {
-						// We need a recipient to deserialize directed messages.
-						throw new ArgumentNullException("recipient");
-					}
-
-					result = (IProtocolMessage)ctor.Invoke(new object[] { recipient.Location });
-				} else if ((ctor = this.messageType.GetConstructor(bindingFlags, null, new Type[] { typeof(MessageReceivingEndpoint) }, null)) != null) {
-					if (recipient == null) {
-						// We need a recipient to deserialize directed messages.
-						throw new ArgumentNullException("recipient");
-					}
-
-					result = (IProtocolMessage)ctor.Invoke(new object[] { recipient });
-				} else if ((ctor = this.messageType.GetConstructor(bindingFlags, null, new Type[0], null)) != null) {
-					result = (IProtocolMessage)ctor.Invoke(new object[0]);
-				} else {
-					throw new InvalidOperationException("Unrecognized constructor signature on type " + this.messageType);
-				}
-			} else {
-				result = (IProtocolMessage)Activator.CreateInstance(this.messageType, true);
-			}
-
-			result.Incoming = true;
-			return result;
+			message.EnsureValidMessage();
 		}
 	}
 }

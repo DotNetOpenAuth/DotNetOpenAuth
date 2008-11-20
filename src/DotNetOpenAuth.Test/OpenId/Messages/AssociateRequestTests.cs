@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 
 		[TestInitialize]
 		public void Setup() {
-			this.request = new AssociateUnencryptedRequest(this.secureRecipient);
+			this.request = new AssociateUnencryptedRequest(this.protocol.Version, this.secureRecipient);
 		}
 
 		[TestMethod]
@@ -52,14 +52,14 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 
 		[TestMethod]
 		public void ValidMessageTest() {
-			this.request = new AssociateUnencryptedRequest(this.secureRecipient);
+			this.request = new AssociateUnencryptedRequest(Protocol.V20.Version, this.secureRecipient);
 			this.request.AssociationType = this.protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 			this.request.EnsureValidMessage();
 		}
 
 		[TestMethod, ExpectedException(typeof(ProtocolException))]
 		public void InvalidMessageTest() {
-			this.request = new AssociateUnencryptedRequest(this.insecureRecipient);
+			this.request = new AssociateUnencryptedRequest(Protocol.V20.Version, this.insecureRecipient);
 			this.request.AssociationType = this.protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 			this.request.EnsureValidMessage(); // no-encryption only allowed for secure channels.
 		}

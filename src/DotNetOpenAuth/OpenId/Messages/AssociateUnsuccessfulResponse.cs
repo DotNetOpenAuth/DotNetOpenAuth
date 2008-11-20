@@ -30,7 +30,9 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssociateUnsuccessfulResponse"/> class.
 		/// </summary>
-		internal AssociateUnsuccessfulResponse() {
+		/// <param name="originatingRequest">The originating request.</param>
+		internal AssociateUnsuccessfulResponse(AssociateRequest originatingRequest)
+			: base(originatingRequest) {
 		}
 
 		/// <summary>

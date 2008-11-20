@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.Test.OpenId.Messages {
 	using System;
+	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -16,7 +17,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 
 		[TestInitialize]
 		public void Setup() {
-			this.request = new AssociateDiffieHellmanRequest(Recipient);
+			this.request = new AssociateDiffieHellmanRequest(Protocol.V20.Version, Recipient);
 		}
 
 		[TestMethod]

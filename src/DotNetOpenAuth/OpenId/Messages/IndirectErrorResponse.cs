@@ -21,9 +21,10 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="IndirectErrorResponse"/> class.
 		/// </summary>
+		/// <param name="version">The OpenID version this message must comply with.</param>
 		/// <param name="relyingPartyReturnTo">The value of the Relying Party's openid.return_to argument.</param>
-		internal IndirectErrorResponse(Uri relyingPartyReturnTo)
-			: base(relyingPartyReturnTo, "error", MessageTransport.Indirect) {
+		internal IndirectErrorResponse(Version version, Uri relyingPartyReturnTo)
+			: base(version, relyingPartyReturnTo, "error", MessageTransport.Indirect) {
 		}
 
 		/// <summary>

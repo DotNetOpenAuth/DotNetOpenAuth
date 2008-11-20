@@ -72,13 +72,14 @@
     <Compile Include="Configuration\UntrustedWebRequestSection.cs" />
     <Compile Include="Configuration\HostNameOrRegexCollection.cs" />
     <Compile Include="Configuration\HostNameElement.cs" />
+    <Compile Include="Messaging\IDirectResponseProtocolMessage.cs" />
     <Compile Include="Messaging\EmptyDictionary.cs" />
     <Compile Include="Messaging\EmptyEnumerator.cs" />
     <Compile Include="Messaging\EmptyList.cs" />
     <Compile Include="Messaging\ErrorUtilities.cs" />
     <Compile Include="Messaging\InternalErrorException.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
-    <Compile Include="OAuth\ChannelElements\OAuthConsumerMessageTypeProvider.cs" />
+    <Compile Include="OAuth\ChannelElements\OAuthConsumerMessageFactory.cs" />
     <Compile Include="OAuth\ChannelElements\ITokenGenerator.cs" />
     <Compile Include="OAuth\ChannelElements\ITokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthHttpMethodBindingElement.cs" />
@@ -126,7 +127,7 @@
     <Compile Include="Messaging\Channel.cs" />
     <Compile Include="Messaging\HttpRequestInfo.cs" />
     <Compile Include="Messaging\IDirectedProtocolMessage.cs" />
-    <Compile Include="Messaging\IMessageTypeProvider.cs" />
+    <Compile Include="Messaging\IMessageFactory.cs" />
     <Compile Include="Messaging\ITamperResistantProtocolMessage.cs" />
     <Compile Include="Messaging\MessageSerializer.cs" />
     <Compile Include="Messaging\MessagingStrings.Designer.cs">
@@ -151,7 +152,7 @@
     <Compile Include="Loggers\TraceLogger.cs" />
     <Compile Include="Messaging\HttpDeliveryMethods.cs" />
     <Compile Include="Messaging\MessageTransport.cs" />
-    <Compile Include="OAuth\ChannelElements\OAuthServiceProviderMessageTypeProvider.cs" />
+    <Compile Include="OAuth\ChannelElements\OAuthServiceProviderMessageFactory.cs" />
     <Compile Include="Messaging\ProtocolException.cs" />
     <Compile Include="OpenId\Association.cs" />
     <Compile Include="OpenId\AssociationMemoryStore.cs" />
@@ -160,7 +161,7 @@
     <Compile Include="OpenId\ChannelElements\SigningBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\KeyValueFormEncoding.cs" />
     <Compile Include="OpenId\ChannelElements\OpenIdChannel.cs" />
-    <Compile Include="OpenId\ChannelElements\OpenIdMessageTypeProvider.cs" />
+    <Compile Include="OpenId\ChannelElements\OpenIdMessageFactory.cs" />
     <Compile Include="OpenId\Configuration.cs" />
     <Compile Include="OpenId\RelyingPartyDescription.cs" />
     <Compile Include="OpenId\DiffieHellmanUtilities.cs" />

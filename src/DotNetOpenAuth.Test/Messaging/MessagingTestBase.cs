@@ -26,7 +26,7 @@ namespace DotNetOpenAuth.Test {
 			None,
 
 			/// <summary>
-			/// Only enough fields for the <see cref="TestMessageTypeProvider"/>
+			/// Only enough fields for the <see cref="TestMessageFactory"/>
 			/// to identify the message are included.
 			/// </summary>
 			IdentifiableButNotAllRequired,
@@ -105,7 +105,7 @@ namespace DotNetOpenAuth.Test {
 				replay = true;
 			}
 
-			var typeProvider = new TestMessageTypeProvider(signing, expiration, replay);
+			var typeProvider = new TestMessageFactory(signing, expiration, replay);
 			return new TestChannel(typeProvider, bindingElements.ToArray());
 		}
 
@@ -128,7 +128,7 @@ namespace DotNetOpenAuth.Test {
 		}
 
 		internal static TestMessage GetStandardTestMessage(FieldFill fill) {
-			TestMessage message = new TestMessage();
+			TestMessage message = new TestDirectedMessage();
 			GetStandardTestMessage(fill, message);
 			return message;
 		}

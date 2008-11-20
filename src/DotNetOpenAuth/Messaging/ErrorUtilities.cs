@@ -63,6 +63,15 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Throws a <see cref="ProtocolException"/>.
+		/// </summary>
+		/// <param name="message">The message to set in the exception.</param>
+		/// <param name="args">The formatting arguments of the message.</param>
+		internal static void ThrowProtocol(string message, params object[] args) {
+			VerifyProtocol(false, message, args);
+		}
+
+		/// <summary>
 		/// Verifies something about the argument supplied to a method.
 		/// </summary>
 		/// <param name="condition">The condition that must evaluate to true to avoid an exception.</param>

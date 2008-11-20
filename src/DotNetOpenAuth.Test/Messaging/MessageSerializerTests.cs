@@ -65,7 +65,8 @@ namespace DotNetOpenAuth.Test.Messaging {
 			fields["Name"] = "Andrew";
 			fields["age"] = "15";
 			fields["Timestamp"] = "1990-01-01T00:00:00";
-			var actual = (Mocks.TestMessage)serializer.Deserialize(fields, null);
+			var actual = new Mocks.TestDirectedMessage();
+			serializer.Deserialize(fields, actual);
 			Assert.AreEqual(15, actual.Age);
 			Assert.AreEqual("Andrew", actual.Name);
 			Assert.AreEqual(DateTime.Parse("1/1/1990"), actual.Timestamp);
@@ -94,7 +95,8 @@ namespace DotNetOpenAuth.Test.Messaging {
 			fields["SecondDerivedElement"] = "second";
 			fields["explicit"] = "explicitValue";
 			fields["private"] = "privateValue";
-			var actual = (Mocks.TestDerivedMessage)serializer.Deserialize(fields, null);
+			var actual = new Mocks.TestDerivedMessage();
+			serializer.Deserialize(fields, actual);
 			Assert.AreEqual(15, actual.Age);
 			Assert.AreEqual("Andrew", actual.Name);
 			Assert.AreEqual("first", actual.TheFirstDerivedElement);
@@ -113,7 +115,8 @@ namespace DotNetOpenAuth.Test.Messaging {
 			// Add some field that is not recognized by the class.  This simulates a querystring with
 			// more parameters than are actually interesting to the protocol message.
 			fields["someExtraField"] = "asdf";
-			var actual = (Mocks.TestMessage)serializer.Deserialize(fields, null);
+			var actual = new Mocks.TestDirectedMessage();
+			serializer.Deserialize(fields, actual);
 			Assert.AreEqual(15, actual.Age);
 			Assert.AreEqual("Andrew", actual.Name);
 			Assert.IsNull(actual.EmptyMember);
@@ -121,10 +124,11 @@ namespace DotNetOpenAuth.Test.Messaging {
 
 		[TestMethod, ExpectedException(typeof(ProtocolException))]
 		public void DeserializeInvalidMessage() {
-			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
+			IProtocolMessage message = new Mocks.TestDirectedMessage();
+			var serializer = MessageSerializer.Get(message.GetType());
 			var fields = GetStandardTestFields(FieldFill.AllRequired);
 			fields["age"] = "-1"; // Set an disallowed value.
-			serializer.Deserialize(fields, null);
+			serializer.Deserialize(fields, message);
 		}
 	}
 }

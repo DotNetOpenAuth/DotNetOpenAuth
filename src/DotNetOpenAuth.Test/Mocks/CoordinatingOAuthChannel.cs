@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			signingBindingElement,
 			new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge),
 			tokenManager,
-			isConsumer ? (IMessageTypeProvider)new OAuthConsumerMessageTypeProvider() : new OAuthServiceProviderMessageTypeProvider(tokenManager)) {
+			isConsumer ? (IMessageFactory)new OAuthConsumerMessageFactory() : new OAuthServiceProviderMessageFactory(tokenManager)) {
 		}
 
 		/// <summary>
@@ -121,18 +121,31 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		private T CloneSerializedParts<T>(T message, HttpRequestInfo requestInfo) where T : class, IProtocolMessage {
-			if (message == null) {
-				throw new ArgumentNullException("message");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(message, "message");
+
+			IProtocolMessage clonedMessage;
+			MessageSerializer serializer = MessageSerializer.Get(message.GetType());
+			var fields = serializer.Serialize(message);
 
 			MessageReceivingEndpoint recipient = null;
-			IDirectedProtocolMessage directedMessage = message as IDirectedProtocolMessage;
-			if (directedMessage != null && directedMessage.Recipient != null) {
-				recipient = new MessageReceivingEndpoint(directedMessage.Recipient, directedMessage.HttpMethods);
+			var directedMessage = message as IDirectedProtocolMessage;
+			var directResponse = message as IDirectResponseProtocolMessage;
+			if (directedMessage != null && directedMessage.IsRequest()) {
+				if (directedMessage.Recipient != null) {
+					recipient = new MessageReceivingEndpoint(directedMessage.Recipient, directedMessage.HttpMethods);
+				}
+
+				clonedMessage = this.RemoteChannel.MessageFactory.GetNewRequestMessage(recipient, fields);
+			} else if (directResponse != null && directResponse.IsDirectResponse()) {
+				clonedMessage = this.RemoteChannel.MessageFactory.GetNewResponseMessage(directResponse.OriginatingRequest, fields);
+			} else {
+				throw new InvalidOperationException("Totally expected a message to implement one of the two derived interface types.");
 			}
 
-			MessageSerializer serializer = MessageSerializer.Get(message.GetType());
-			return (T)serializer.Deserialize(serializer.Serialize(message), recipient);
+			// Fill the cloned message with data.
+			serializer.Deserialize(fields, clonedMessage);
+
+			return (T)clonedMessage;
 		}
 
 		private string GetHttpMethod(HttpDeliveryMethods methods) {

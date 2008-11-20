@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Test.OpenId.Messages {
+	using System;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -16,7 +17,8 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 
 		[TestInitialize]
 		public void Setup() {
-			this.response = new AssociateUnsuccessfulResponse();
+			var request = new AssociateUnencryptedRequest(Protocol.V20.Version, new Uri("http://host"));
+			this.response = new AssociateUnsuccessfulResponse(request);
 		}
 
 		[TestMethod]

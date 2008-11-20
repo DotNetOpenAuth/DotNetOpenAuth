@@ -16,9 +16,10 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssociateUnencryptedRequest"/> class.
 		/// </summary>
+		/// <param name="version">The OpenID version this message must comply with.</param>
 		/// <param name="providerEndpoint">The OpenID Provider endpoint.</param>
-		internal AssociateUnencryptedRequest(Uri providerEndpoint)
-			: base(providerEndpoint) {
+		internal AssociateUnencryptedRequest(Version version, Uri providerEndpoint)
+			: base(version, providerEndpoint) {
 			SessionType = Protocol.Args.SessionType.NoEncryption;
 		}
 
@@ -60,7 +61,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Failed association response messages will derive from <see cref="AssociateUnsuccessfulResponse"/>.</para>
 		/// </remarks>
 		protected override IProtocolMessage CreateResponseCore() {
-			var response = new AssociateUnencryptedResponse();
+			var response = new AssociateUnencryptedResponse(this);
 			response.AssociationType = this.AssociationType;
 			return response;
 		}

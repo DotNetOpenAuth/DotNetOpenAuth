@@ -30,12 +30,18 @@ namespace DotNetOpenAuth.OpenId.Messages {
 #pragma warning restore 0414
 
 		/// <summary>
+		/// Backing store for the <see cref="Incoming"/> properties.
+		/// </summary>
+		private bool incoming;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="RequestBase"/> class.
 		/// </summary>
+		/// <param name="version">The OpenID version this message must comply with.</param>
 		/// <param name="providerEndpoint">The OpenID Provider endpoint.</param>
 		/// <param name="mode">The value for the openid.mode parameter.</param>
 		/// <param name="transport">A value indicating whether the message will be transmitted directly or indirectly.</param>
-		protected RequestBase(Uri providerEndpoint, string mode, MessageTransport transport) {
+		protected RequestBase(Version version, Uri providerEndpoint, string mode, MessageTransport transport) {
 			if (providerEndpoint == null) {
 				throw new ArgumentNullException("providerEndpoint");
 			}
@@ -46,6 +52,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			this.Recipient = providerEndpoint;
 			this.Mode = mode;
 			this.Transport = transport;
+			this.ProtocolVersion = version;
 		}
 
 		/// <summary>
@@ -90,9 +97,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Gets the version of the protocol this message is prepared to implement.
 		/// </summary>
 		/// <value>Version 2.0</value>
-		public Version ProtocolVersion {
-			get { return new Version(2, 0); }
-		}
+		public Version ProtocolVersion { get; private set; }
 
 		/// <summary>
 		/// Gets the level of protection this message requires.
@@ -117,9 +122,11 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether this message was deserialized as an incoming message.
+		/// Gets a value indicating whether this message was deserialized as an incoming message.
 		/// </summary>
-		public bool Incoming { get; set; }
+		bool IProtocolMessage.Incoming {
+			get { return this.incoming; }
+		}
 
 		#endregion
 
@@ -128,6 +135,13 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		protected Protocol Protocol {
 			get { return Protocol.Lookup(this.ProtocolVersion); }
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether this message was deserialized as an incoming message.
+		/// </summary>
+		protected bool Incoming {
+			get { return this.incoming; }
 		}
 
 		#region IProtocolMessage Methods
@@ -148,5 +162,12 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Sets a flag indicating that this message is received (as opposed to sent).
+		/// </summary>
+		internal void SetAsIncoming() {
+			this.incoming = true;
+		}
 	}
 }
