@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			}
 
 			this.message = message;
-			this.description = MessageDescription.Get(message.GetType());
+			this.description = MessageDescription.Get(message.GetType(), message.ProtocolVersion);
 		}
 
 		#region ICollection<KeyValuePair<string,string>> Properties

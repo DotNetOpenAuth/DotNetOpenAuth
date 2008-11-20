@@ -12,7 +12,7 @@ namespace DotNetOpenAuth.Messaging {
 	/// <summary>
 	/// Applied to fields and properties that form a key/value in a protocol message.
 	/// </summary>
-	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = true, AllowMultiple = false)]
+	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = true, AllowMultiple = true)]
 	public sealed class MessagePartAttribute : Attribute {
 		/// <summary>
 		/// The overridden name to use as the serialized name for the property.
@@ -24,6 +24,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		public MessagePartAttribute() {
 			this.AllowEmpty = true;
+			this.MinVersionValue = new Version(0, 0);
 		}
 
 		/// <summary>
@@ -65,5 +66,22 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets or sets a custom encoder to use to translate the applied member to and from a string.
 		/// </summary>
 		public Type Encoder { get; set; }
+
+		/// <summary>
+		/// Gets or sets the minimum version of the protocol this attribute applies to
+		/// and overrides any attributes with lower values for this property.
+		/// </summary>
+		/// <value>Defaults to 0.0.</value>
+		public string MinVersion {
+			get { return this.MinVersionValue.ToString(); }
+			set { this.MinVersionValue = new Version(value); }
+		}
+
+		/// <summary>
+		/// Gets or sets the minimum version of the protocol this attribute applies to
+		/// and overrides any attributes with lower values for this property.
+		/// </summary>
+		/// <value>Defaults to 0.0.</value>
+		internal Version MinVersionValue { get; set; }
 	}
 }

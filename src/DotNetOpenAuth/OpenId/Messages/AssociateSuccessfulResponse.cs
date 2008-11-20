@@ -54,7 +54,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		/// <value>Value: A valid association session type from Section 8.4 (Association Session Types). </value>
 		/// <remarks>Note: Unless using transport layer encryption, "no-encryption" MUST NOT be used. </remarks>
-		[MessagePart("session_type", IsRequired = true, AllowEmpty = false)]
+		[MessagePart("session_type", IsRequired = true, AllowEmpty = true)]
+		[MessagePart("session_type", IsRequired = true, AllowEmpty = false, MinVersion = "2.0")]
 		internal string SessionType { get; set; }
 
 		/// <summary>

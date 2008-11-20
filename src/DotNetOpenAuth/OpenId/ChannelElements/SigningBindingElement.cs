@@ -136,7 +136,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		private static string GetSignedParameterOrder(ITamperResistantOpenIdMessage signedMessage) {
 			ErrorUtilities.VerifyArgumentNotNull(signedMessage, "signedMessage");
 
-			MessageDescription description = MessageDescription.Get(signedMessage.GetType());
+			MessageDescription description = MessageDescription.Get(signedMessage.GetType(), signedMessage.ProtocolVersion);
 			var signedParts = from part in description.Mapping.Values
 							where (part.RequiredProtection & System.Net.Security.ProtectionLevel.Sign) != 0
 							select part.Name;
