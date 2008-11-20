@@ -78,7 +78,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 					op.SecuritySettings = this.ProviderSecuritySettings;
 					op.AutoRespond();
 				});
-			coordinator.IncomingMessageFilter = (message) => {
+			coordinator.IncomingMessageFilter = message => {
+				Assert.AreSame(opDescription.Protocol.Version, message.ProtocolVersion, "The message was for version {0} but was expected to be for {1}.", message.ProtocolVersion, opDescription.Protocol.Version);
 				var associateSuccess = message as AssociateSuccessfulResponse;
 				var associateFailed = message as AssociateUnsuccessfulResponse;
 				if (associateSuccess != null) {
@@ -87,6 +88,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 				if (associateFailed != null) {
 					associateUnsuccessfulResponse = associateFailed;
 				}
+			};
+			coordinator.OutgoingMessageFilter = message => {
+				Assert.AreSame(opDescription.Protocol.Version, message.ProtocolVersion, "The message was for version {0} but was expected to be for {1}.", message.ProtocolVersion, opDescription.Protocol.Version);
 			};
 			coordinator.Run();
 
