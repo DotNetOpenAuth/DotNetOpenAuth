@@ -39,12 +39,14 @@ namespace DotNetOpenAuth.Test {
 					action();
 				} catch (Exception ex) {
 					// We may be the second thread in an ThreadAbortException, so check the "flag"
-					if (failingException == null) {
-						failingException = ex;
-						if (Thread.CurrentThread == party1Thread) {
-							party2Thread.Abort();
-						} else {
-							party1Thread.Abort();
+					lock (this) {
+						if (failingException == null || (failingException is ThreadAbortException && !(ex is ThreadAbortException))) {
+							failingException = ex;
+							if (Thread.CurrentThread == party1Thread) {
+								party2Thread.Abort();
+							} else {
+								party1Thread.Abort();
+							}
 						}
 					}
 				}

@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// An OpenID direct request from Relying Party to Provider to initiate an association.
@@ -64,19 +65,37 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Creates an association request message that is appropriate for a given Provider.
 		/// </summary>
+		/// <param name="securityRequirements">The set of requirements the selected association type must comply to.</param>
 		/// <param name="provider">The provider to create an association with.</param>
-		/// <returns>The message to send to the Provider to request an association.</returns>
-		internal static AssociateRequest Create(ProviderEndpointDescription provider) {
+		/// <returns>
+		/// The message to send to the Provider to request an association.
+		/// Null if no association could be created that meet the security requirements
+		/// and the provider OpenID version.
+		/// </returns>
+		internal static AssociateRequest Create(SecuritySettings securityRequirements, ProviderEndpointDescription provider) {
+			ErrorUtilities.VerifyArgumentNotNull(securityRequirements, "securityRequirements");
+			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
+
 			AssociateRequest associateRequest;
-			if (provider.Endpoint.IsTransportSecure()) {
+
+			// Apply our knowledge of the endpoint's transport, OpenID version, and
+			// security requirements to decide the best association 
+			bool unencryptedAllowed = provider.Endpoint.IsTransportSecure();
+			bool useDiffieHellman = !unencryptedAllowed;
+			string associationType, sessionType;
+			if (!HmacShaAssociation.TryFindBestAssociation(provider.Protocol, securityRequirements, useDiffieHellman, out associationType, out sessionType)) {
+				// There are no associations that meet all requirements.
+				Logger.Warn("Security requirements and protocol combination knock out all possible association types.  Dumb mode forced.");
+				return null;
+			}
+
+			if (unencryptedAllowed) {
 				associateRequest = new AssociateUnencryptedRequest(provider.Endpoint);
-				associateRequest.AssociationType = provider.Protocol.Args.SignatureAlgorithm.HMAC_SHA1;
+				associateRequest.AssociationType = associationType;
 			} else {
-				// TODO: apply security policies and our knowledge of the provider's OpenID version
-				// to select the right association here.
 				var diffieHellmanAssociateRequest = new AssociateDiffieHellmanRequest(provider.Endpoint);
-				diffieHellmanAssociateRequest.AssociationType = provider.Protocol.Args.SignatureAlgorithm.HMAC_SHA1;
-				diffieHellmanAssociateRequest.SessionType = provider.Protocol.Args.SessionType.DH_SHA1;
+				diffieHellmanAssociateRequest.AssociationType = associationType;
+				diffieHellmanAssociateRequest.SessionType = sessionType;
 				diffieHellmanAssociateRequest.InitializeRequest();
 				associateRequest = diffieHellmanAssociateRequest;
 			}

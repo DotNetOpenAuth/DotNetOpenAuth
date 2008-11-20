@@ -13,6 +13,11 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 	[TestClass]
 	public class AssociationHandshakeTests : OpenIdTestBase {
+		[TestInitialize]
+		public override void SetUp() {
+			base.SetUp();
+		}
+
 		[TestMethod]
 		public void DHv2() {
 			var opDescription = new ProviderEndpointDescription(new Uri("http://host"), Protocol.V20);

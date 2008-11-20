@@ -146,24 +146,25 @@ namespace DotNetOpenAuth.OpenId {
 		/// and perhaps a matching Diffie-Hellman session type.
 		/// </summary>
 		/// <param name="protocol">The OpenID version that dictates which associations are available.</param>
-		/// <param name="minimumHashSizeInBits">The minimum required hash length given security settings.</param>
-		/// <param name="maximumHashSizeInBits">The maximum hash length to even attempt.  Useful for the RP side where we support SHA512 but most OPs do not -- why waste time trying?</param>
+		/// <param name="securityRequirements">The set of requirements the selected association type must comply to.</param>
 		/// <param name="requireMatchingDHSessionType">True for HTTP associations, False for HTTPS associations.</param>
 		/// <param name="associationType">The resulting association type's well known protocol name.  (i.e. HMAC-SHA256)</param>
 		/// <param name="sessionType">The resulting session type's well known protocol name, if a matching one is available.  (i.e. DH-SHA256)</param>
 		/// <returns>True if a qualifying association could be found; false otherwise.</returns>
-		internal static bool TryFindBestAssociation(Protocol protocol, int? minimumHashSizeInBits, int? maximumHashSizeInBits, bool requireMatchingDHSessionType, out string associationType, out string sessionType) {
+		internal static bool TryFindBestAssociation(Protocol protocol, SecuritySettings securityRequirements, bool requireMatchingDHSessionType, out string associationType, out string sessionType) {
 			ErrorUtilities.VerifyArgumentNotNull(protocol, "protocol");
+			ErrorUtilities.VerifyArgumentNotNull(securityRequirements, "securityRequirements");
+
 			associationType = null;
 			sessionType = null;
 
 			// We assume this enumeration is in decreasing bit length order.
 			foreach (HmacSha sha in hmacShaAssociationTypes) {
 				int hashSizeInBits = sha.SecretLength * 8;
-				if (maximumHashSizeInBits.HasValue && hashSizeInBits > maximumHashSizeInBits.Value) {
+				if (hashSizeInBits > securityRequirements.MaximumHashBitLength) {
 					continue;
 				}
-				if (minimumHashSizeInBits.HasValue && hashSizeInBits < minimumHashSizeInBits.Value) {
+				if (hashSizeInBits < securityRequirements.MinimumHashBitLength) {
 					break;
 				}
 				sessionType = DiffieHellmanUtilities.GetNameForSize(protocol, hashSizeInBits);
@@ -171,8 +172,13 @@ namespace DotNetOpenAuth.OpenId {
 					continue;
 				}
 				associationType = sha.GetAssociationType(protocol);
+				if (associationType == null) {
+					continue;
+				}
+
 				return true;
 			}
+
 			return false;
 		}
 

@@ -16,6 +16,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// </summary>
 	public sealed class OpenIdRelyingParty {
 		/// <summary>
+		/// Backing field for the <see cref="SecuritySettings"/> property.
+		/// </summary>
+		private RelyingPartySecuritySettings securitySettings;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class.
 		/// </summary>
 		/// <param name="associationStore">The association store.  If null, the relying party will always operate in "dumb mode".</param>
@@ -35,7 +40,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets the security settings used by this Relying Party.
 		/// </summary>
-		public RelyingParty.RelyingPartySecuritySettings SecuritySettings { get; internal set; }
+		public RelyingPartySecuritySettings SecuritySettings {
+			get {
+				return this.securitySettings;
+			}
+
+			internal set {
+				if (value == null) {
+					throw new ArgumentNullException("value");
+				}
+
+				this.securitySettings = value;
+			}
+		}
 
 		/// <summary>
 		/// Gets the association store.
@@ -51,7 +68,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		internal Association GetAssociation(ProviderEndpointDescription provider) {
 			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
 
-			var associateRequest = AssociateRequest.Create(provider);
+			var associateRequest = AssociateRequest.Create(this.SecuritySettings, provider);
+			if (associateRequest == null) {
+				return null;
+			}
+
 			var associateResponse = this.Channel.Request(associateRequest);
 			var associateSuccessfulResponse = associateResponse as AssociateSuccessfulResponse;
 			var associateUnsuccessfulResponse = associateResponse as AssociateUnsuccessfulResponse;

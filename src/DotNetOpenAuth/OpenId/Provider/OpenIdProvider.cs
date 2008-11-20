@@ -16,6 +16,11 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// </summary>
 	public sealed class OpenIdProvider {
 		/// <summary>
+		/// Backing field for the <see cref="SecuritySettings"/> property.
+		/// </summary>
+		private ProviderSecuritySettings securitySettings;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdProvider"/> class.
 		/// </summary>
 		/// <param name="associationStore">The association store to use.  Cannot be null.</param>
@@ -35,7 +40,19 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Gets the security settings used by this Provider.
 		/// </summary>
-		public Provider.ProviderSecuritySettings SecuritySettings { get; internal set; }
+		public ProviderSecuritySettings SecuritySettings {
+			get {
+				return this.securitySettings;
+			}
+
+			internal set {
+				if (value == null) {
+					throw new ArgumentNullException("value");
+				}
+
+				this.securitySettings = value;
+			}
+		}
 
 		/// <summary>
 		/// Gets the association store.
