@@ -177,7 +177,7 @@
     <Compile Include="OpenId\HmacShaAssociation.cs" />
     <Compile Include="OpenId\IAssociationStore.cs" />
     <Compile Include="OpenId\Messages\AssociateUnencryptedRequest.cs" />
-    <Compile Include="OpenId\OpenIdProvider.cs" />
+    <Compile Include="OpenId\Provider\OpenIdProvider.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanRequest.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanResponse.cs" />
     <Compile Include="OpenId\Messages\AssociateRequest.cs" />
@@ -188,7 +188,7 @@
     <Compile Include="OpenId\Messages\DirectErrorResponse.cs" />
     <Compile Include="OpenId\Messages\RequestBase.cs" />
     <Compile Include="OpenId\Messages\DirectResponseBase.cs" />
-    <Compile Include="OpenId\OpenIdRelyingParty.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdRelyingParty.cs" />
     <Compile Include="OpenId\OpenIdStrings.Designer.cs">
       <DependentUpon>OpenIdStrings.resx</DependentUpon>
       <DesignTime>True</DesignTime>

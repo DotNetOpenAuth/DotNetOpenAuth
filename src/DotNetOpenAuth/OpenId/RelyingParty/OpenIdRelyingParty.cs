@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OpenId {
+namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
