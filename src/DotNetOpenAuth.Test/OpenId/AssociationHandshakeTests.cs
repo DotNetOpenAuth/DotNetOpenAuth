@@ -19,39 +19,31 @@ namespace DotNetOpenAuth.Test.OpenId {
 		}
 
 		[TestMethod]
-		public void DHv2() {
-			Protocol protocol = Protocol.V20;
-			var opDescription = new ProviderEndpointDescription(new Uri("http://host"), protocol.Version);
-			this.ParameterizedAssociationTest(
-				opDescription,
-				protocol.Args.SignatureAlgorithm.HMAC_SHA256);
+		public void AssociateUnencrypted() {
+			this.ParameterizedAssociationTest(new Uri("https://host"));
 		}
 
 		[TestMethod]
-		public void DHv1() {
-			Protocol protocol = Protocol.V11;
-			var opDescription = new ProviderEndpointDescription(new Uri("http://host"), protocol.Version);
-			this.ParameterizedAssociationTest(
-				opDescription,
-				protocol.Args.SignatureAlgorithm.HMAC_SHA1);
+		public void AssociateDiffieHellman() {
+			this.ParameterizedAssociationTest(new Uri("http://host"));
 		}
 
-		[TestMethod]
-		public void PTv2() {
-			Protocol protocol = Protocol.V20;
-			var opDescription = new ProviderEndpointDescription(new Uri("https://host"), protocol.Version);
-			this.ParameterizedAssociationTest(
-				opDescription,
-				protocol.Args.SignatureAlgorithm.HMAC_SHA256);
+		[TestMethod, Ignore]
+		public void AssociateDiffieHellmanOverHttps() {
+			// TODO: test the RP and OP agreeing to use Diffie-Hellman over HTTPS.
+			throw new NotImplementedException();
 		}
 
-		[TestMethod]
-		public void PTv1() {
-			Protocol protocol = Protocol.V11;
-			var opDescription = new ProviderEndpointDescription(new Uri("https://host"), protocol.Version);
-			this.ParameterizedAssociationTest(
-				opDescription,
-				protocol.Args.SignatureAlgorithm.HMAC_SHA1);
+		/// <summary>
+		/// Runs a parameterized association flow test using all supported OpenID versions.
+		/// </summary>
+		/// <param name="opEndpoint">The OP endpoint to simulate using.</param>
+		private void ParameterizedAssociationTest(Uri opEndpoint) {
+			foreach (Protocol protocol in Protocol.AllPracticalVersions) {
+				var endpoint = new ProviderEndpointDescription(opEndpoint, protocol.Version);
+				var associationType = protocol.Version.Major < 2 ? protocol.Args.SignatureAlgorithm.HMAC_SHA1 : protocol.Args.SignatureAlgorithm.HMAC_SHA256;
+				this.ParameterizedAssociationTest(endpoint, associationType);
+			}
 		}
 
 		/// <summary>

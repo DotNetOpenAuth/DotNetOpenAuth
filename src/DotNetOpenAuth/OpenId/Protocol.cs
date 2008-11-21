@@ -118,10 +118,18 @@ namespace DotNetOpenAuth.OpenId {
 				},
 			},
 		};
+
 		/// <summary>
 		/// A list of all supported OpenID versions, in order starting from newest version.
 		/// </summary>
 		public readonly static List<Protocol> AllVersions = new List<Protocol>() { V20, V11, V10 };
+
+		/// <summary>
+		/// A list of all supported OpenID versions, in order starting from newest version.
+		/// V1.1 and V1.0 are considered the same and only V1.1 is in the list.
+		/// </summary>
+		public readonly static List<Protocol> AllPracticalVersions = new List<Protocol>() { V20, V11 };
+
 		/// <summary>
 		/// The default (or most recent) supported version of the OpenID protocol.
 		/// </summary>
