@@ -35,6 +35,74 @@ namespace DotNetOpenAuth.Test.OpenId {
 		}
 
 		/// <summary>
+		/// Verifies that the RP and OP can renegotiate an association type if the RP's
+		/// initial request for an association is for a type the OP doesn't support.
+		/// </summary>
+		[TestMethod, Ignore]
+		public void AssociateRenegotiateBitLength() {
+			// TODO: test where the RP asks for an association type that the OP doesn't support
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Verifies that the RP cannot get caught in an infinite loop if a bad OP
+		/// keeps sending it association retry messages.
+		/// </summary>
+		[TestMethod, Ignore]
+		public void AssociateRenegotiateBitLengthRPStopsAfterOneRetry() {
+			// TODO: code here
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Verifies security settings limit RP's initial associate request
+		/// </summary>
+		[TestMethod, Ignore]
+		public void AssociateRequestDeterminedBySecuritySettings() {
+			// TODO: Code here
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Verifies security settings limit RP's acceptance of OP's counter-suggestion
+		/// </summary>
+		[TestMethod, Ignore]
+		public void AssociateRenegotiateLimitedByRPSecuritySettings() {
+			// TODO: Code here
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Verifies security settings limit OP's set of acceptable association types.
+		/// </summary>
+		[TestMethod, Ignore]
+		public void AssociateLimitedByOPSecuritySettings() {
+			// TODO: Code here
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Verifies the RP can recover with no association after receiving an
+		/// associate error response from the OP when no suggested association
+		/// type is included.
+		/// </summary>
+		[TestMethod, Ignore]
+		public void AssociateContinueAfterOpenIdError() {
+			// TODO: Code here
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Verifies that the RP can recover from an invalid or non-existent 
+		/// response from the OP, for example in the HTTP timeout case.
+		/// </summary>
+		[TestMethod, Ignore]
+		public void AssociateContinueAfterHttpError() {
+			// TODO: Code here
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
 		/// Runs a parameterized association flow test using all supported OpenID versions.
 		/// </summary>
 		/// <param name="opEndpoint">The OP endpoint to simulate using.</param>

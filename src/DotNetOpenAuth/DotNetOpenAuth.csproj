@@ -163,6 +163,8 @@
     <Compile Include="OpenId\ChannelElements\OpenIdChannel.cs" />
     <Compile Include="OpenId\ChannelElements\OpenIdMessageFactory.cs" />
     <Compile Include="OpenId\Configuration.cs" />
+    <Compile Include="OpenId\Messages\CheckIdRequest.cs" />
+    <Compile Include="OpenId\Realm.cs" />
     <Compile Include="OpenId\RelyingPartyDescription.cs" />
     <Compile Include="OpenId\DiffieHellmanUtilities.cs" />
     <Compile Include="OpenId\DiffieHellman\DHKeyGeneration.cs" />

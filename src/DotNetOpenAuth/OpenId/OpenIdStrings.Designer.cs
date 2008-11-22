@@ -88,6 +88,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The openid.claimed_id and openid.identity parameters must both be present or both be absent..
+        /// </summary>
+        internal static string ClaimedIdAndLocalIdMustBothPresentOrAbsent {
+            get {
+                return ResourceManager.GetString("ClaimedIdAndLocalIdMustBothPresentOrAbsent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The following properties must be set before the Diffie-Hellman algorithm can generate a public key: {0}.
         /// </summary>
         internal static string DiffieHellmanRequiredPropertiesNotSet {
@@ -111,6 +120,15 @@ namespace DotNetOpenAuth.OpenId {
         internal static string InvalidKeyValueFormCharacterMissing {
             get {
                 return ResourceManager.GetString("InvalidKeyValueFormCharacterMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The scheme must be http or https but was &apos;{0}&apos;..
+        /// </summary>
+        internal static string InvalidScheme {
+            get {
+                return ResourceManager.GetString("InvalidScheme", resourceCulture);
             }
         }
         
@@ -156,6 +174,15 @@ namespace DotNetOpenAuth.OpenId {
         internal static string NoSessionTypeFound {
             get {
                 return ResourceManager.GetString("NoSessionTypeFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to return_to &apos;{0}&apos; not under realm &apos;{1}&apos;..
+        /// </summary>
+        internal static string ReturnToNotUnderRealm {
+            get {
+                return ResourceManager.GetString("ReturnToNotUnderRealm", resourceCulture);
             }
         }
     }

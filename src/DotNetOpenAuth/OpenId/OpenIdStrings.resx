@@ -126,6 +126,9 @@
   <data name="BadAssociationPrivateData" xml:space="preserve">
     <value>The private data supplied does not meet the requirements of any known Association type.  Its length may be too short, or it may have been corrupted.</value>
   </data>
+  <data name="ClaimedIdAndLocalIdMustBothPresentOrAbsent" xml:space="preserve">
+    <value>The openid.claimed_id and openid.identity parameters must both be present or both be absent.</value>
+  </data>
   <data name="DiffieHellmanRequiredPropertiesNotSet" xml:space="preserve">
     <value>The following properties must be set before the Diffie-Hellman algorithm can generate a public key: {0}</value>
   </data>
@@ -134,6 +137,9 @@
   </data>
   <data name="InvalidKeyValueFormCharacterMissing" xml:space="preserve">
     <value>Cannot decode Key-Value Form because a line was found without a '{0}' character.  (line {1}: '{2}')</value>
+  </data>
+  <data name="InvalidScheme" xml:space="preserve">
+    <value>The scheme must be http or https but was '{0}'.</value>
   </data>
   <data name="KeysListAndDictionaryDoNotMatch" xml:space="preserve">
     <value>The list of keys do not match the provided dictionary.</value>
@@ -149,5 +155,8 @@
   </data>
   <data name="NoSessionTypeFound" xml:space="preserve">
     <value>Diffie-Hellman session type '{0}' not found for OpenID {1}.</value>
+  </data>
+  <data name="ReturnToNotUnderRealm" xml:space="preserve">
+    <value>return_to '{0}' not under realm '{1}'.</value>
   </data>
 </root>

@@ -1,0 +1,1593 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en"><head><title>OpenID Authentication 1.1</title>
+
+
+<meta http-equiv="Expires" content="Tue, 13 Jun 2006 19:04:16 +0000">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="description" content="OpenID Authentication 1.1">
+<meta name="generator" content="xml2rfc v1.30 (http://xml.resource.org/)">
+<style type="text/css">
+<!--
+    body {
+        font-family: verdana, charcoal, helvetica, arial, sans-serif;
+        margin: 2em;
+        font-size: small ; color: #000000 ; background-color: #ffffff ; }
+    .title { color: #990000; font-size: x-large ;
+        font-weight: bold; text-align: right;
+        font-family: helvetica, monaco, "MS Sans Serif", arial, sans-serif;
+        background-color: transparent; }
+    .filename { color: #666666; font-size: 18px; line-height: 28px;
+        font-weight: bold; text-align: right;
+        font-family: helvetica, arial, sans-serif;
+        background-color: transparent; }
+    td.rfcbug { background-color: #000000 ; width: 30px ; height: 30px ;
+        text-align: justify; vertical-align: middle ; padding-top: 2px ; }
+    td.rfcbug span.RFC { color: #666666; font-weight: bold; text-decoration: none;
+        background-color: #000000 ;
+        font-family: monaco, charcoal, geneva, "MS Sans Serif", helvetica, verdana, sans-serif;
+        font-size: x-small ; }
+    td.rfcbug span.hotText { color: #ffffff; font-weight: normal; text-decoration: none;
+        text-align: center ;
+        font-family: charcoal, monaco, geneva, "MS Sans Serif", helvetica, verdana, sans-serif;
+        font-size: x-small ; background-color: #000000; }
+    /* info code from SantaKlauss at http://www.madaboutstyle.com/tooltip2.html */
+    div#counter{margin-top: 100px}
+
+    a.info{
+        position:relative; /*this is the key*/
+        z-index:24;
+        text-decoration:none}
+
+    a.info:hover{z-index:25; background-color:#990000 ; color: #ffffff ;}
+
+    a.info span{display: none}
+
+    a.info:hover span.info{ /*the span will display just on :hover state*/
+        display:block;
+        position:absolute;
+        font-size: smaller ;
+        top:2em; left:2em; width:15em;
+        padding: 2px ;
+        border:1px solid #333333;
+        background-color:#eeeeee; color:#990000;
+        text-align: left ;}
+
+     A { font-weight: bold; }
+     A:link { color: #990000; background-color: transparent ; }
+     A:visited { color: #333333; background-color: transparent ; }
+     A:active { color: #333333; background-color: transparent ; }
+
+    p { margin-left: 2em; margin-right: 2em; }
+    p.copyright { font-size: x-small ; }
+    p.toc { font-size: small ; font-weight: bold ; margin-left: 3em ;}
+    table.toc { margin: 0 0 0 3em; padding: 0; border: 0; vertical-align: text-top; }
+    td.toc { font-size: small; font-weight: bold; vertical-align: text-top; }
+
+    span.emph { font-style: italic; }
+    span.strong { font-weight: bold; }
+    span.verb, span.vbare { font-family: "Courier New", Courier, monospace ; }
+
+    span.vemph { font-style: italic; font-family: "Courier New", Courier, monospace ; }
+    span.vstrong { font-weight: bold; font-family: "Courier New", Courier, monospace ; }
+    span.vdeluxe { font-weight: bold; font-style: italic; font-family: "Courier New", Courier, monospace ; }
+
+    ol.text { margin-left: 2em; margin-right: 2em; }
+    ul.text { margin-left: 2em; margin-right: 2em; }
+    li { margin-left: 3em;  }
+
+    pre { margin-left: 3em; color: #333333;  background-color: transparent;
+        font-family: "Courier New", Courier, monospace ; font-size: small ;
+        text-align: left;
+        }
+
+    h3 { color: #333333; font-size: medium ;
+        font-family: helvetica, arial, sans-serif ;
+        background-color: transparent; }
+    h4 { font-size: small; font-family: helvetica, arial, sans-serif ; }
+
+    table.bug { width: 30px ; height: 15px ; }
+    td.bug { color: #ffffff ; background-color: #990000 ;
+        text-align: center ; width: 30px ; height: 15px ;
+         }
+    td.bug A.link2 { color: #ffffff ; font-weight: bold;
+        text-decoration: none;
+        font-family: monaco, charcoal, geneva, "MS Sans Serif", helvetica, sans-serif;
+        font-size: x-small ; background-color: transparent }
+
+    td.header { color: #ffffff; font-size: x-small ;
+        font-family: arial, helvetica, sans-serif; vertical-align: top;
+        background-color: #666666 ; width: 33% ; }
+    td.author { font-weight: bold; margin-left: 4em; font-size: x-small ; }
+    td.author-text { font-size: x-small; }
+    table.full { vertical-align: top ; border-collapse: collapse ;
+        border-style: solid solid solid solid ;
+        border-color: black black black black ;
+        font-size: small ; text-align: center ; }
+    table.headers, table.none { vertical-align: top ; border-collapse: collapse ;
+        border-style: none;
+        font-size: small ; text-align: center ; }
+    table.full th { font-weight: bold ;
+        border-style: solid ;
+        border-color: black black black black ; }
+    table.headers th { font-weight: bold ;
+        border-style: none none solid none;
+        border-color: black black black black ; }
+    table.none th { font-weight: bold ;
+        border-style: none; }
+    table.full td {
+        border-style: solid solid solid solid ;
+        border-color: #333333 #333333 #333333 #333333 ; }
+    table.headers td, table.none td { border-style: none; }
+
+    hr { height: 1px }
+-->
+</style></head><body>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<table summary="layout" border="0" cellpadding="0" cellspacing="0" width="66%"><tbody><tr><td><table summary="layout" border="0" cellpadding="2" cellspacing="1" width="100%">
+<tbody><tr><td class="header">&nbsp;</td><td class="header">D. Recordon</td></tr>
+<tr><td class="header">&nbsp;</td><td class="header">B. Fitzpatrick</td></tr>
+<tr><td class="header">&nbsp;</td><td class="header">May 2006</td></tr>
+</tbody></table></td></tr></tbody></table>
+<div align="right"><span class="title"><br>OpenID Authentication 1.1</span></div>
+
+<h3>Abstract</h3>
+
+<p>OpenID Authenticaion provides a way to prove that an End User
+      owns an Identity URL. It does this without passing around their
+      password, email address, or anything they don't want it
+      to.
+</p>
+<p>OpenID is completely decentralized meaning that anyone
+      can choose to be a Consumer or Identity Provider without having
+      to register or be approved by any central authority.  End User's
+      can pick which Identity Provider they wish to use and preserve
+      their Identity as they move between Providers.
+</p>
+<p>While nothing in the protocol requires JavaScript or modern
+      browsers, the authentication scheme plays nicely with
+      "AJAX"-style setups, so an End User can prove their Identity to
+      a Consumer without having to leave the page they are on.
+</p>
+<p>The OpenID Authentication specification does not provide any
+      mechanism to exchange profile information, though Consumers of
+      an Identity can learn more about an End User from any public,
+      semantically interesting documents linked thereunder (FOAF, RSS,
+      Atom, vCARD, etc.).  Extensions are being built on top of the
+      foundation created by OpenID Authentication to provide
+      mechanisms to exchange profile information.
+</p><a name="toc"></a><br><hr>
+<h3>Table of Contents</h3>
+<p class="toc">
+<a href="#anchor1">1.</a>&nbsp;
+Requirements Notation<br>
+<a href="#anchor2">2.</a>&nbsp;
+Terminology<br>
+<a href="#anchor3">3.</a>&nbsp;
+Overview<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor4">3.1.</a>&nbsp;
+Transforming a HTML Document Into an Identifier<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#delegating_authentication">3.1.1.</a>&nbsp;
+Delegating Authentication<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor6">3.2.</a>&nbsp;
+Submitting a Claimed Identifier<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor8">3.3.</a>&nbsp;
+Consumer Site Fetches the Identifier URL<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#smart_vs_dumb">3.4.</a>&nbsp;
+Smart vs Dumb Mode<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor11">3.5.</a>&nbsp;
+Consumer Verifies the Identifier<br>
+<a href="#anchor12">4.</a>&nbsp;
+Modes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#mode_associate">4.1.</a>&nbsp;
+associate<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor13">4.1.1.</a>&nbsp;
+Request Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor14">4.1.2.</a>&nbsp;
+Response Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor15">4.1.3.</a>&nbsp;
+Extra Notes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#mode_checkid_immediate">4.2.</a>&nbsp;
+checkid_immediate<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor16">4.2.1.</a>&nbsp;
+Request Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor17">4.2.2.</a>&nbsp;
+Response Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor21">4.2.3.</a>&nbsp;
+Extra Notes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#mode_checkid_setup">4.3.</a>&nbsp;
+checkid_setup<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor22">4.3.1.</a>&nbsp;
+Request Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor23">4.3.2.</a>&nbsp;
+Respone Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor26">4.3.3.</a>&nbsp;
+Extra Notes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#mode_check_authentication">4.4.</a>&nbsp;
+check_authentication<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor27">4.4.1.</a>&nbsp;
+Request Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor28">4.4.2.</a>&nbsp;
+Response Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor29">4.4.3.</a>&nbsp;
+Extra Notes<br>
+<a href="#anchor30">5.</a>&nbsp;
+Security Considerations<br>
+<a href="#defaults">Appendix&nbsp;A.</a>&nbsp;
+Default Values<br>
+<a href="#pvalue">Appendix&nbsp;A.1.</a>&nbsp;
+Diffie-Hellman P Value<br>
+<a href="#anchor31">Appendix&nbsp;B.</a>&nbsp;
+Error Responses<br>
+<a href="#anchor32">Appendix&nbsp;C.</a>&nbsp;
+Key-Value Format<br>
+<a href="#limits">Appendix&nbsp;D.</a>&nbsp;
+Limits<br>
+<a href="#anchor33">Appendix&nbsp;E.</a>&nbsp;
+Misc<br>
+<a href="#rfc.references1">6.</a>&nbsp;
+Normative References<br>
+<a href="#rfc.authors">§</a>&nbsp;
+Authors' Addresses<br>
+</p>
+<br clear="all">
+
+<a name="anchor1"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.1"></a><h3>1.&nbsp;Requirements Notation</h3>
+
+<p>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL",
+      "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY",
+      and "OPTIONAL" in this document are to be interpreted as
+      described in <a class="info" href="#RFC2119">[RFC2119]<span> (</span><span class="info">Bradner, B., “Key words for use in RFCs to Indicate Requirement Levels,” .</span><span>)</span></a>.
+</p>
+<a name="anchor2"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.2"></a><h3>2.&nbsp;Terminology</h3>
+
+<p>
+	</p>
+<blockquote class="text"><dl>
+<dt>End User:</dt>
+<dd>The actual human user who wants to
+	  prove their Identity to a Consumer.
+</dd>
+<dt>Identifier:</dt>
+<dd>An Identifier is just a URL. The whole
+	  flow of the OpenID Authentication protocol is about proving
+	  that an End User is, owns, a URL.
+</dd>
+<dt>Claimed Identifier:</dt>
+<dd>An Identifier that the End
+	  User says they own, though that has not yet been verified by
+	  the Consumer.
+</dd>
+<dt>Verified Identifier:</dt>
+<dd>An Identifier that the
+	  End User has proven to a Consumer that they own.
+</dd>
+<dt>Consumer:</dt>
+<dd>A web service that wants proof that
+	  the End User owns the Claimed Identifier.
+</dd>
+<dt>Identity Provider:</dt>
+<dd>Also called "IdP" or
+	  "Server". This is the OpenID Authentication server
+	  that a Consumer contacts for cryptographic proof that the
+	  End User owns the Claimed Identifier.
+	  <br>
+
+	  How the End User authenticates to their Identity Provider is
+	  outside of the scope of OpenID Authenticaiton.
+	  
+</dd>
+<dt>User-Agent:</dt>
+<dd>The End User's web browser. No
+	  special plug-ins or JavaScript required.
+</dd>
+</dl></blockquote><p>
+      
+</p>
+<a name="anchor3"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.3"></a><h3>3.&nbsp;Overview</h3>
+
+<a name="anchor4"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.3.1"></a><h3>3.1.&nbsp;Transforming a HTML Document Into an Identifier</h3>
+
+<p>In order for a Consumer to know the Identity Provider
+	authoritative for an Identifier, the End User must add markup to
+	the HEAD section of the HTML document located at their
+	URL. The host of the HTML document is NOT REQUIRED to also be
+	the End User's Identity Provider; the Identifier URL and
+	Identity Provider can be fully decoupled services.
+</p>
+<p>To use http://example.com/ as the End User's Identifier
+	http://openid.example.com as their Identity Provider, the
+	following tag would be added to the HEAD section of the HTML
+	document returned when fetching their Identifier URL.
+</p>
+<p>&lt;link rel="openid.server"
+	href="http://openid.example.com/"&gt;
+</p>
+<a name="delegating_authentication"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.3.1.1"></a><h3>3.1.1.&nbsp;Delegating Authentication</h3>
+
+<p>If the End User's host is not capable of running an
+	  Identity Provider, or the End User wishes to use one running
+	  on a different host, they will need to delegate their
+	  authentication. For example, if they want to use their
+	  website, http://www.example.com/, as their Identifier, but
+	  don't have the means, or desire, to run an Identity
+	  Provider.
+</p>
+<p>If they have a LiveJournal account (say, user
+	  "exampleuser"), and know that LiveJournal provides an OpenID
+	  Identity Provider and that it'll assert that they control
+	  the Identifier http://exampleuser.livejournal.com/ they would
+	  be able to delegate their authentication to LiveJournal's
+	  Identity Provider..
+</p>
+<p>So, to use www.example.com as their Identifier, but have
+	  Consumers actually verify
+	  http://exampleuser.livejournal.com/ with the Identity
+	  Provider located at
+	  http://www.livejournal.com/openid/server.bml, they'd add the
+	  following tags to the HEAD section of the HTML document
+	  returned when fetching their Identifier URL.
+</p>
+<p>&lt;link rel="openid.server"
+	  href="http://www.livejournal.com/openid/server.bml"&gt;
+</p>
+<p>&lt;link rel="openid.delegate"
+	  href="http://exampleuser.livejournal.com/"&gt;
+</p>
+<p>Now, when a Consumer sees that, it'll talk to
+	  http://www.livejournal.com/openid/server.bml and ask if
+	  the End User is exampleuser.livejournal.com, never mentioning
+	  www.example.com anywhere on the wire.
+</p>
+<p>The main advantage of this is that an End User can keep
+	  their Identifier over many years, even as services come and
+	  go; they'll just keep changing who they delegate to.
+</p>
+<a name="anchor5"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.3.1.2"></a><h3>3.1.2.&nbsp;Important Notes</h3>
+
+<p>
+	    </p>
+<ul class="text">
+<li>The declared openid.server URL MAY contain existing
+	      query parameters and they MUST be properly preserved when
+	      appending extra query parameters. For example, not adding
+	      a second question mark if one already exists.
+</li>
+<li>The openid.server and openid.delegate URLs MUST
+	      be absolute URLs. Consumers MUST NOT attempt to
+	      resolve relative URLs.
+</li>
+<li>The openid.server and openid.delegate URLs MUST
+	      NOT include entities other than &amp;, &lt;, &gt;,
+	      and ". Other characters that would not be
+	      valid in the HTML document or that cannot be
+	      represented in the document's character encoding
+	      MUST be escaped using the %xx mechanism as described
+	      in <a class="info" href="#RFC2396">[RFC2396]<span> (</span><span class="info">Berners-Lee, T., “Uniform Resource Identifiers (URI): Generic Syntax,” .</span><span>)</span></a>.
+</li>
+</ul><p>
+	  
+</p>
+<a name="anchor6"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.3.2"></a><h3>3.2.&nbsp;Submitting a Claimed Identifier</h3>
+
+<p>Continuing this example, the End User visits a Consumer
+	site which supports OpenID Authentication.  The Consumer
+	presents the End User with a form field for them to enter
+	their Identifier URL.
+</p>
+<p>
+	  
+</p><p>For Example:
+</p><pre>	      ----------------------------------
+	      |[logo]example.com               | [Login Button]
+	      ----------------------------------
+</pre>
+	
+
+<a name="anchor7"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.3.2.1"></a><h3>3.2.1.&nbsp;Important Notes</h3>
+
+<p>
+	    </p>
+<ul class="text">
+<li>It is RECOMMENDED that every Consumer place the
+	      <a href="http://openid.net/login-bg.gif">OpenID
+	      logo</a> at the beginning of the form field where the
+	      End User enters their Identifier URL.
+</li>
+<li>The End User is NOT REQUIRED to prefix
+	      their Identifier URL with "http://" or postfix it with a
+	      trailing slash. Consumers MUST canonicalize the Identifier
+	      URL, following redirects,	and note the final URL.
+	      The final, canonicalized URL is the End User's
+	      Identifier.
+</li>
+<li>It is RECOMMENDED that the form field be named
+	      "openid_url" so User-Agent's will auto-complete the End
+	      User's Identifier URL in the same way the eCommerce world
+	      tends to use conventions like "address1" and
+	      "address2".
+</li>
+</ul><p>
+	  
+</p>
+<a name="anchor8"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.3.3"></a><h3>3.3.&nbsp;Consumer Site Fetches the Identifier URL</h3>
+
+<p>Now the Consumer site fetchs the document located at the End
+	User's Claimed Identifier. The Consumer then parses the HEAD
+	section for the "openid.server" and the	optional
+	"openid.delegate" declarations.
+</p>
+<a name="anchor9"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.3.3.1"></a><h3>3.3.1.&nbsp;Important Notes</h3>
+
+<p>
+	    </p>
+<ul class="text">
+<li>The End User could be malicious and try to make the
+	      Consumer connect to an internal network, tarpit, etc. It
+	      is RECOMMENDED that Consumers use a paranoid HTTP library like <a href="http://search.cpan.org/%7Ebradfitz/LWPx-ParanoidAgent-1.02/lib/LWPx/ParanoidAgent.pm">LWPx::ParanoidAgent</a> that protects against these sorts of attacks.
+</li>
+<li>Consumers MUST implement support for <a class="info" href="#delegating_authentication">Delegation<span> (</span><span class="info">Delegating Authentication</span><span>)</span></a>.
+</li>
+</ul><p>
+	  
+</p>
+<a name="smart_vs_dumb"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.3.4"></a><h3>3.4.&nbsp;Smart vs Dumb Mode</h3>
+
+<p>OpenID Authentication supports both a "smart mode" and
+	"dumb mode" to accomodate Consumers of differing
+	capabilities. A smart Consumer does a little more work at the
+	beginning to save itself work later, but requires local
+	caching of state information. A dumb Consumer is completely
+	stateless, but requires extra an HTTP request.
+</p>
+<a name="anchor10"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.3.4.1"></a><h3>3.4.1.&nbsp;Important Notes for Smart Mode</h3>
+
+<p>
+	    </p>
+<ul class="text">
+<li>It's RECOMMENDED that a Consumer first submit an
+	      <a class="info" href="#mode_associate">associate request<span> (</span><span class="info">associate</span><span>)</span></a>
+	      to the End User's Identity Provider and request a shared
+	      secret if the Consumer does not already have one
+	      cached. This shared secret SHOULD be used as the
+	      HMAC-SHA1 key in future identity check requests until it
+	      expires.
+</li>
+<li>The shared secret can be exchanged either in
+	      plain-text or encrypted with a Diffie-Hellman-negotiated
+	      secret. Note that if Diffie-Hellman is used, it's only
+	      used in the associate mode. The <a class="info" href="#mode_checkid_immediate">checkid_immediate<span> (</span><span class="info">checkid_immediate</span><span>)</span></a>
+	      and <a class="info" href="#mode_checkid_setup">checkid_setup<span> (</span><span class="info">checkid_setup</span><span>)</span></a>
+	      modes assume the Consumer already has a shared secret,
+	      regardless of how it got it.
+</li>
+</ul><p>
+	  
+</p>
+<a name="anchor11"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.3.5"></a><h3>3.5.&nbsp;Consumer Verifies the Identifier</h3>
+
+<p>The Consumer now constructs a URL to the Identity
+	Provider's <a class="info" href="#mode_checkid_immediate">checkid_immediate<span> (</span><span class="info">checkid_immediate</span><span>)</span></a> (or
+	<a class="info" href="#mode_checkid_setup">checkid_setup<span> (</span><span class="info">checkid_setup</span><span>)</span></a>) URLs
+	and sends the User-Agent to it.
+</p>
+<p>By sending the User-Agent there, the End User's cookies and
+	whatever other login credentials are sent back to their
+	trusted Identity Provider. The Identity Provider does its
+	work, appends its response onto the supplied openid.return_to
+	URL, and sends the User-Agent back to the Consumer.
+</p>
+<a name="anchor12"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4"></a><h3>4.&nbsp;Modes</h3>
+
+<a name="mode_associate"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4.1"></a><h3>4.1.&nbsp;associate</h3>
+
+<p>
+	  </p>
+<ul class="text">
+<li>Description: Establish a shared secret between Consumer
+	    and Identity Provider.
+</li>
+<li>HTTP method: POST
+</li>
+<li>Flow: Consumer -&gt; IdP -&gt; Consumer
+</li>
+</ul><p>
+	
+</p>
+<a name="anchor13"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4.1.1"></a><h3>4.1.1.&nbsp;Request Parameters</h3>
+
+<p>
+	    </p>
+<ul class="text">
+<li>
+		openid.mode
+		
+<blockquote class="text">
+<p>Value: "associate"
+</p>
+</blockquote>
+	      
+</li>
+<li>
+		openid.assoc_type
+		
+<blockquote class="text">
+<p>Value: Preferred association type
+</p>
+<p>Default: "HMAC-SHA1"
+</p>
+<p>Note: Optional; Currently only one value.
+</p>
+</blockquote>
+	      
+</li>
+<li>
+		openid.session_type
+		
+<blockquote class="text">
+<p>Value: Blank or "DH-SHA1"
+</p>
+<p>Default: Blank. (cleartext)
+</p>
+<p>Note: It is RECOMMENDED that DH-SHA1 mode is used
+		  to encrypt the shared secret.
+</p>
+</blockquote>
+	      
+</li>
+<li>
+		openid.dh_modulus
+		
+<blockquote class="text">
+<p>Value: base64(btwoc(p))
+</p>
+<p>Note: See <a class="info" href="#pvalue">Appendix&nbsp;A.1<span> (</span><span class="info">Diffie-Hellman P Value</span><span>)</span></a> for default p value.
+</p>
+</blockquote>
+	      
+</li>
+<li>
+		openid.dh_gen
+		
+<blockquote class="text">
+<p>Value: base64(btwoc(g))
+</p>
+<p>Default: g = 2
+</p>
+<p>Note: Only if using DH-SHA1 session_type.  Should
+		  be specified if openid.dh_modulus is specified.
+</p>
+</blockquote>
+	      
+</li>
+<li>
+		openid.dh_consumer_public
+		
+<blockquote class="text">
+<p>Value: base64(btwoc(g ^ x mod p))
+</p>
+<p>Note: REQUIRED if using DH-SHA1 session_type.
+</p>
+</blockquote>
+	      
+</li>
+</ul><p>
+	  
+</p>
+<a name="anchor14"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4.1.2"></a><h3>4.1.2.&nbsp;Response Parameters</h3>
+
+<p>Response format: Key-Value Pairs
+</p>
+<p>
+	    </p>
+<ul class="text">
+<li>
+		assoc_type
+		
+<blockquote class="text">
+<p>Value: The association type for the returned handle.
+</p>
+<p>Note: The only current mode is HMAC-SHA1, and all
+		  Consumers MUST support it. When caching, the
+		  Consumer MUST map an assoc_handle to both its secret
+		  and its assoc_type.
+</p>
+</blockquote>
+	      
+</li>
+<li>
+		assoc_handle
+		
+<blockquote class="text">
+<p>Value: The association handle to be provided in future
+		  transactions.
+</p>
+<p>Note: Consumers MUST NOT reuse this association
+		  handle after the corresponding expires_in value.
+</p>
+</blockquote>
+	      
+</li>
+<li>
+		expires_in
+		
+<blockquote class="text">
+<p>Value: The number of seconds this association
+		  handle is good for in base10 ASCII.
+</p>
+</blockquote>
+	      
+</li>
+<li>
+		session_type
+		
+<blockquote class="text">
+<p>Value: The encryption mode that the Provider chose. MAY be
+		blank, absent, or "DH-SHA1".
+</p>
+</blockquote>
+	      
+</li>
+<li>
+		dh_server_public
+		
+<blockquote class="text">
+<p>Value: base64(btwoc(g ^ y mod p))
+</p>
+<p>Description: The Provider's <a class="info" href="#RFC2631">Diffie-Hellman public key<span> (</span><span class="info">Rescorla, E., “Diffie-Hellman Key Agreement Method,” .</span><span>)</span></a> [RFC2631], if
+		using DH-SHA1.
+</p>
+</blockquote>
+	      
+</li>
+<li>
+		enc_mac_key
+		
+<blockquote class="text">
+<p>Value: base64(SHA1(btwoc(g ^ (xy) mod p)) XOR secret(assoc_handle))
+</p>
+<p>Description: The encrypted shared secret, if using
+		  DH-SHA1.
+</p>
+</blockquote>
+	      
+</li>
+<li>
+		mac_key
+		
+<blockquote class="text">
+<p>Value: base64(secret(assoc_handle))
+</p>
+<p>Description: The plaintext shared secret, if not
+		  using DH-SHA1.
+</p>
+</blockquote>
+	      
+</li>
+</ul><p>
+	  
+</p>
+<a name="anchor15"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4.1.3"></a><h3>4.1.3.&nbsp;Extra Notes</h3>
+
+<p>
+	    </p>
+<ul class="text">
+<li>A Consumer can ask a server for DH-SHA1 encryption and
+	      get back a plaintext secret. If this troubles you, don't
+	      use the handle and instead use dumb mode with that
+	      Identity Provider.
+	      <br>
+<br>
+
+	      If somebody sniffed the plaintext secret, it won't
+	      matter, since you'll never accept queries using that
+	      association handle. If the Identity Provider can't do
+	      DH-SHA1, it's probably limited in some way, but using
+	      dumb mode is still safe, if not a little slower.
+</li>
+<li>If the Identity Provider chooses the server private
+	      key 1 &lt;= y &lt; p-1. The shared DH-SHA1 secret is
+	      thus g ^ xy mod p = (g ^ x) ^ y mod p = (g ^ y) ^ x mod
+	      p. For more information, read the <a href="http://search.cpan.org/%7Ebtrott/Crypt-DH-0.06/lib/Crypt/DH.pm">Crypt::DH docs.</a>
+</li>
+<li>The underlying mac_key MUST be the same length as the
+	      output of H, the hash function - in this instance, 160
+	      bits (20 bytes) for DH-SHA1.
+</li>
+<li>If the Provider does not support DH-SHA1, they WILL ignore
+	      the DH-SHA1 fields in the request and reply exactly as to a
+	      non-DH-SHA1 request.
+</li>
+<li>When using DH-SHA1, the resulting key SHOULD be treated
+	      as a binary string.
+</li>
+<li>Most integers are represented in big-endian signed two's
+	      complement, Base64 encoded. In other words, btwoc is a
+	      function that takes a bigint and returns its shortest
+	      big-endian two's complement notation
+</li>
+</ul><p>
+	  
+</p>
+<a name="mode_checkid_immediate"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4.2"></a><h3>4.2.&nbsp;checkid_immediate</h3>
+
+<p>
+	  </p>
+<ul class="text">
+<li>Description: Ask an Identity Provider if a End User owns the
+	    Claimed Identifier, getting back an immediate "yes" or "can't say"
+	    answer.
+</li>
+<li>HTTP method: GET
+</li>
+<li>Flow: Consumer -&gt; User-Agent -&gt; IdP -&gt; User-Agent -&gt;
+	    Consumer
+</li>
+</ul><p>
+	
+</p>
+<a name="anchor16"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4.2.1"></a><h3>4.2.1.&nbsp;Request Parameters</h3>
+
+<p>
+	    </p>
+<ul class="text">
+<li>
+		openid.mode
+		
+<blockquote class="text">
+<p>Value: "checkid_immediate"
+</p>
+</blockquote>
+	      
+</li>
+<li>
+		openid.identity
+		
+<blockquote class="text">
+<p>Value: Claimed Identifier
+</p>
+</blockquote>
+	      
+</li>
+<li>
+		openid.assoc_handle
+		
+<blockquote class="text">
+<p>Value: The assoc_handle from the associate request.
+</p>
+<p>Note: Optional; Consumer MUST use
+		  check_authentication if an association handle isn't
+		  provided or the Identity Provider feels it is invalid.
+</p>
+</blockquote>
+	      
+</li>
+<li>
+		openid.return_to
+		
+<blockquote class="text">
+<p>Value: URL where the Provider SHOULD return the
+		  User-Agent back to.
+</p>
+</blockquote>
+	      
+</li>
+<li>
+		openid.trust_root
+		
+<blockquote class="text">
+<p>Value: URL the Provider SHALL ask the End User to trust.
+</p>
+<p>Default: return_to URL
+</p>
+<p>Optional; the URL which the End User SHALL
+		  actually see to approve.
+</p>
+</blockquote>
+	      
+</li>
+</ul><p>
+	  
+</p>
+<a name="anchor17"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4.2.2"></a><h3>4.2.2.&nbsp;Response Parameters</h3>
+
+<p>Response format: query string arguments
+</p>
+<a name="anchor18"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4.2.2.1"></a><h3>4.2.2.1.&nbsp;Always Sent</h3>
+
+<p>
+	      </p>
+<ul class="text">
+<li>
+		  openid.mode
+		  
+<blockquote class="text">
+<p>Value: "id_res"
+</p>
+</blockquote>
+		
+</li>
+</ul><p>
+	    
+</p>
+<a name="anchor19"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4.2.2.2"></a><h3>4.2.2.2.&nbsp;Sent on Failed Assertion</h3>
+
+<p>
+	      </p>
+<ul class="text">
+<li>
+		  openid.user_setup_url
+		  
+<blockquote class="text">
+<p>Value: URL to redirect User-Agent to so the End
+		    User can do whatever's necessary to fulfill the
+		    assertion.
+</p>
+</blockquote>
+		
+</li>
+</ul><p>
+	    
+</p>
+<a name="anchor20"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4.2.2.3"></a><h3>4.2.2.3.&nbsp;Sent on Positive Assertion</h3>
+
+<p>
+	      </p>
+<ul class="text">
+<li>
+		  openid.identity
+		  
+<blockquote class="text">
+<p>Value: Verified Identifier
+</p>
+</blockquote>
+		
+</li>
+<li>
+		  openid.assoc_handle
+		  
+<blockquote class="text">
+<p>Value: Opaque association handle being used to
+		    find the HMAC key for the signature.
+</p>
+</blockquote>
+		
+</li>
+<li>
+		  openid.return_to
+		  
+<blockquote class="text">
+<p>Value: Verbatim copy of the return_to URL
+		    parameter sent in the request, before the Provider
+		    modified it.
+</p>
+</blockquote>
+		
+</li>
+<li>
+		  openid.signed
+		  
+<blockquote class="text">
+<p>Value: Comma-seperated list of signed fields.
+</p>
+<p>Note: Fields without the "openid." prefix that
+		    the signature covers. For example,
+		    "mode,identity,return_to".
+</p>
+</blockquote>
+		
+</li>
+<li>
+		  openid.sig
+		  
+<blockquote class="text">
+<p>Value: base64(HMAC(secret(assoc_handle), token_contents)
+</p>
+<p>Note: Where token_contents is a key-value
+		    format string of all the signed keys and values in
+		    this response. They MUST be in the same order as
+		    listed in the openid.signed field. Consumer SHALL
+		    recreate the token_contents string prior to
+		    checking the signature.  See <a class="info" href="#limits">Appendix&nbsp;D<span> (</span><span class="info">Limits</span><span>)</span></a>.
+</p>
+</blockquote>
+		
+</li>
+<li>
+		  openid.invalidate_handle
+		  
+<blockquote class="text">
+<p>Value: Optional; The association handle sent in
+		    the request if the Provider did not accept or
+		    recognize it.
+</p>
+</blockquote>
+		
+</li>
+</ul><p>
+	    
+</p>
+<a name="anchor21"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4.2.3"></a><h3>4.2.3.&nbsp;Extra Notes</h3>
+
+<p>
+	    </p>
+<ul class="text">
+<li>This mode is commonly used for "AJAX"-style
+	      setups. The more classic mode to check a Claimed
+	      Identifier is <a class="info" href="#mode_checkid_setup">checkid_setup<span> (</span><span class="info">checkid_setup</span><span>)</span></a>.
+</li>
+<li>An Identity Provider SHOULD only assert URLs that it
+	      manages/produces directly. If a End User wants to assert
+	      other URLs outside of that Identity Provider's realm,
+	      they MUST use <a class="info" href="#delegating_authentication">delegation<span> (</span><span class="info">Delegating Authentication</span><span>)</span></a>.
+</li>
+<li>The openid.return_to URL provided MAY contain an
+	      existing query string, and the Provider MUST preserve it
+	      when appending the response parameters. OpenID Consumer's
+	      SHOULD add a self-signed nonce with
+	      Consumer-local timestamp in the openid.return_to URL
+	      parameters to prevent replay attacks. Details of that
+	      are left up to the Consumer.
+	      <br>
+<br>
+
+	      However, because the openid.return_to URL is signed by
+	      the Idenity Provide, a Consumer can make sure outside
+	      parties haven't sent id_res responses with mismatching
+	      openid.return_to URLs and signatures.
+</li>
+<li>If the Identity Provider didn't accept/recognize the
+	      provided assoc_handle for whatever reason, it'll choose
+	      its own to use, and copy the one provided back into
+	      openid.invalidate_handle, to tell the Consumer to stop
+	      using it. The Consumer SHOULD then send it along in a
+	      <a class="info" href="#mode_check_authentication">check_authentication<span> (</span><span class="info">check_authentication</span><span>)</span></a>
+	      request to verify it actually is no longer valid.
+</li>
+<li>If the Identifier assertion fails, the Identity
+	      Provider provides the openid.user_setup_url for where
+	      the End User can do whatever's necessary to fulfill the
+	      assertion, be it login, setup permissions, etc. The
+	      server SHOULD return a URL which doesn't imply anything
+	      about what's needed, so the Consumer is left in the dark
+	      about why the assertion failed.
+	      <br>
+<br>
+
+	      The Identity Provider handling SHOULD eventually return
+	      the End User to the openid.return_to URL, acting like a
+	      checkid_setup response, with either a "id_res" or "cancel"
+	      mode.
+</li>
+<li>The openid.return_to URL MUST descend from the
+	      openid.trust_root, or the Identity Provider SHOULD
+	      return an error. Namely, the URL scheme and port MUST
+	      match. The path, if present, MUST be equal to or below
+	      the value of openid.trust_root, and the domains on both
+	      MUST match, or, the openid.trust_root value contain a
+	      wildcard like http://*.example.com. The wildcard SHALL
+	      only be at the beginning. It is RECOMMENDED Identity
+	      Provider's protect their End Users from requests for
+	      things like http://*.com/ or http://*.co.uk/.
+</li>
+<li>In the response, the Identity Provider's signature
+	      MUST cover openid.identity and openid.return_to.
+</li>
+</ul><p>
+	  
+</p>
+<a name="mode_checkid_setup"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4.3"></a><h3>4.3.&nbsp;checkid_setup</h3>
+
+<p>
+	  </p>
+<ul class="text">
+<li>Description: Ask an Identity Provider if a End User owns the
+	    Claimed Identifier, but be willing to wait for the reply.
+	    The Consumer will pass the User-Agent to the Identity
+	    Provider for a short period of time which will return
+	    either a "yes" or "cancel" answer.
+</li>
+<li>HTTP method: GET
+</li>
+<li>Flow: Consumer -&gt; User-Agent -&gt; [IdP -&gt; User-Agent
+	    -&gt;]+ Consumer
+</li>
+</ul><p>
+	
+</p>
+<a name="anchor22"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4.3.1"></a><h3>4.3.1.&nbsp;Request Parameters</h3>
+
+<p>
+	    </p>
+<ul class="text">
+<li>
+		openid.mode
+		
+<blockquote class="text">
+<p>Value: "checkid_setup"
+</p>
+</blockquote>
+	      
+</li>
+<li>
+		openid.identity
+		
+<blockquote class="text">
+<p>Value: Claimed Identifier
+</p>
+</blockquote>
+	      
+</li>
+<li>
+		openid.assoc_handle
+		
+<blockquote class="text">
+<p>Value: The assoc_handle from the associate request.
+</p>
+<p>Note: Optional; Consumer MUST use
+		  check_authentication if an association handle isn't
+		  provided or the Identity Provider feels it is invalid.
+</p>
+</blockquote>
+	      
+</li>
+<li>
+		openid.return_to
+		
+<blockquote class="text">
+<p>Value: URL where the Provider SHOULD return the
+		  User-Agent back to.
+</p>
+</blockquote>
+	      
+</li>
+<li>
+		openid.trust_root
+		
+<blockquote class="text">
+<p>Value: URL the Provider SHALL ask the End User to trust.
+</p>
+<p>Default: return_to URL
+</p>
+<p>Optional; the URL which the End User SHALL
+		  actually see to approve.
+</p>
+</blockquote>
+	      
+</li>
+</ul><p>
+	  
+</p>
+<a name="anchor23"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4.3.2"></a><h3>4.3.2.&nbsp;Respone Parameters</h3>
+
+<p>Response format: query string arguments
+</p>
+<a name="anchor24"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4.3.2.1"></a><h3>4.3.2.1.&nbsp;Always Sent</h3>
+
+<p>
+	      </p>
+<ul class="text">
+<li>
+		  openid.mode
+		  
+<blockquote class="text">
+<p>Value: "id_res" or "cancel"
+</p>
+</blockquote>
+		
+</li>
+</ul><p>
+	    
+</p>
+<a name="anchor25"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4.3.2.2"></a><h3>4.3.2.2.&nbsp;Sent on Positive Assertion</h3>
+
+<p>
+	      </p>
+<ul class="text">
+<li>
+		  openid.identity
+		  
+<blockquote class="text">
+<p>Value: Verified Identifier
+</p>
+</blockquote>
+		
+</li>
+<li>
+		  openid.assoc_handle
+		  
+<blockquote class="text">
+<p>Value: Opaque association handle being used to
+		    fine the HMAC key for the signature.
+</p>
+</blockquote>
+		
+</li>
+<li>
+		  openid.return_to
+		  
+<blockquote class="text">
+<p>Value: Verbatim copy of the return_to URL
+		    parameter sent in the request, before the Provider
+		    modified it.
+</p>
+</blockquote>
+		
+</li>
+<li>
+		  openid.signed
+		  
+<blockquote class="text">
+<p>Value: Comma-seperated list of signed fields.
+</p>
+<p>Note: Fields without the "openid." prefix that
+		    the signature covers. For example,
+		    "mode,identity,return_to".
+</p>
+</blockquote>
+		
+</li>
+<li>
+		  openid.sig
+		  
+<blockquote class="text">
+<p>Value: base64(HMAC(secret(assoc_handle), token_contents)
+</p>
+<p>Note: Where token_contents is a key-value
+		    format string of all the signed keys and values in
+		    this response. They MUST be in the same order as
+		    listed in the openid.signed field. Consumer SHALL
+		    recreate the token_contents string prior to
+		    checking the signature.  See <a class="info" href="#limits">Appendix&nbsp;D<span> (</span><span class="info">Limits</span><span>)</span></a>.
+</p>
+</blockquote>
+		
+</li>
+<li>
+		  openid.invalidate_handle
+		  
+<blockquote class="text">
+<p>Value: Optional; The association handle sent in
+		    the request if the Provider did not accept or
+		    recognize it.
+</p>
+</blockquote>
+		
+</li>
+</ul><p>
+	    
+</p>
+<a name="anchor26"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4.3.3"></a><h3>4.3.3.&nbsp;Extra Notes</h3>
+
+<p>
+	    </p>
+<ul class="text">
+<li>In the response, the Identity Provider's signature
+	      MUST cover openid.identity and openid.return_to.
+</li>
+<li>In a lot of cases, the Consumer won't get a cancel mode; the
+	      End User will just quit or press back within their
+	      User-Agent. But if it is returned, the Consumer SHOULD
+	      return to what it was doing. In the case of a cancel
+	      mode, the rest of the response parameters will be
+	      absent.
+</li>
+</ul><p>
+	  
+</p>
+<a name="mode_check_authentication"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4.4"></a><h3>4.4.&nbsp;check_authentication</h3>
+
+<p>
+	  </p>
+<ul class="text">
+<li>Description: Ask an Identity Provider if a message is
+	    valid. For dumb, stateless Consumers or when verifying an
+	    invalidate_handle response.
+	    <br>
+<br>
+
+	    <span class="strong">WARNING: Only validates signatures
+	    with stateless association handles. Identity Providers
+	    MUST NOT ever validate a signature for an association
+	    handle whose secret has been shared with anybody.  They
+	    MUST differentiate its stateless vs. associated
+	    association handles, and only offer check_authentication
+	    service on the stateless handles.</span>
+	    
+</li>
+<li>HTTP method: POST
+</li>
+<li>Flow: Consumer -&gt; IdP -&gt; Consumer
+</li>
+</ul><p>
+	
+</p>
+<a name="anchor27"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4.4.1"></a><h3>4.4.1.&nbsp;Request Parameters</h3>
+
+<p>
+	    </p>
+<ul class="text">
+<li>
+		openid.mode
+		
+<blockquote class="text">
+<p>Value: "check_authentication"
+</p>
+</blockquote>
+	      
+</li>
+<li>
+		openid.assoc_handle
+		
+<blockquote class="text">
+<p>Value: The association handle from  checkid_setup
+		  or checkid_immediate response.
+</p>
+</blockquote>
+	      
+</li>
+<li>
+		openid.sig
+		
+<blockquote class="text">
+<p>Value: The signature from the checkid_setup or
+		  checkid_immediate request the Consumer wishes to
+		  verify.
+</p>
+</blockquote>
+	      
+</li>
+<li>
+		  openid.signed
+		  
+<blockquote class="text">
+<p>Value: The list of signed fields from the checkid_setup
+		    or checkid_immediate request the Consumer wishes to
+		    verify the signature of.
+</p>
+</blockquote>
+	      
+</li>
+<li>
+		openid.*
+		
+<blockquote class="text">
+<p>Value: The Consumer MUST send all the openid.* response
+		  parameters from the openid.signed list which they'd
+		  previously gotten back from a checkid_setup or
+		  checkid_immediate request, with their values being
+		  exactly what were returned from the Provider.
+</p>
+</blockquote>
+	      
+</li>
+<li>
+		openid.invalidate_handle
+		
+<blockquote class="text">
+<p>Value: Optional; association handle returned via
+		  invalidate_handle.
+</p>
+</blockquote>
+	      
+</li>
+</ul><p>
+	  
+</p>
+<a name="anchor28"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4.4.2"></a><h3>4.4.2.&nbsp;Response Parameters</h3>
+
+<p>Response format: Key-Value Pairs
+</p>
+<p>
+	    </p>
+<ul class="text">
+<li>
+		openid.mode
+		
+<blockquote class="text">
+<p>Value: "id_res"
+</p>
+</blockquote>
+	      
+</li>
+<li>
+		is_valid
+		
+<blockquote class="text">
+<p>Value: "true" or "false"
+</p>
+<p>Description: Boolean; whether the signature is
+		  valid.
+</p>
+</blockquote>
+	      
+</li>
+<li>
+		invalidate_handle
+		
+<blockquote class="text">
+<p>Value: opaque association handle
+</p>
+<p>Description: If present, the Consumer SHOULD
+		  uncache the returned association handle.
+</p>
+</blockquote>
+	      
+</li>
+</ul><p>
+	  
+</p>
+<a name="anchor29"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4.4.3"></a><h3>4.4.3.&nbsp;Extra Notes</h3>
+
+<p>
+	    </p>
+<ul class="text">
+<li>Identity Providers MUST implement this mode for error
+	      recovery and dumb Consumers, which can't keep state
+	      locally, but it's RECOMMENDED that it is used as little
+	      as possible, as it shouldn't be necessary most the
+	      time. It's good for debugging, though, as you develop
+	      your Consumer library.
+</li>
+<li>If you got an invalidate_handle response during a
+	      checkid_setup or checkid_immediate request, that means
+	      the Identity Provider didn't recognize the association
+	      handle, maybe it lost it, and had to pick its own.
+	      <br>
+<br>
+
+	      This means the Consumer will have to fallback to dumb
+	      mode, since you don't have the shared secret which the
+	      Identity Provider is using. While doing this
+	      check_authentication request, also send along the
+	      invalidate_handle response from the Identity Provider
+	      and it'll be checked to see if it actually is
+	      missing/bogus.
+</li>
+<li>When verifying the signature using openid.* query
+	      values, the openid.mode value must be changed to
+	      "id_res".
+</li>
+</ul><p>
+	  
+</p>
+<a name="anchor30"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.5"></a><h3>5.&nbsp;Security Considerations</h3>
+
+<p>
+	</p>
+<ul class="text">
+<li>While the OpenID Authentication protocol often refers to
+	  using HTTP, HTTPS can be used for additional security.  It is
+	  RECOMMENDED it is used during the <a class="info" href="#mode_associate">associate mode<span> (</span><span class="info">associate</span><span>)</span></a> and helps to
+	  protect against man in the middle, DNS, and some phishing
+	  attacks.
+</li>
+<li>Consumers SHOULD NOT use IFrames or popup's when requesting
+	  an End User login via OpenID.
+</li>
+</ul><p>
+      
+</p>
+<a name="defaults"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.A"></a><h3>Appendix A.&nbsp;Default Values</h3>
+
+<a name="pvalue"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.A.1"></a><h3>Appendix A.1.&nbsp;Diffie-Hellman P Value</h3>
+
+<p>
+	    1551728981814736974712322577637155\
+	    3991572480196691540447970779531405\
+	    7629378541917580651227423698188993\
+	    7278161526466314385615958256881888\
+	    8995127215884267541995034125870655\
+	    6549803580104870537681476726513255\
+	    7470407658574792912915723345106432\
+	    4509471500722962109419434978392598\
+	    4760375594985848253359305585439638443
+	  
+</p>
+<a name="anchor31"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.B"></a><h3>Appendix B.&nbsp;Error Responses</h3>
+
+<p>This section pertains to protocol/run-time errors, not
+      authentication errors. Authentication errors are defined in
+      the protocol.
+</p>
+<p>
+	</p>
+<ul class="text">
+<li>No error codes have been defined; just unstructured natural
+	  language error text.
+</li>
+<li>If it's a GET request with bad arguments, but a valid
+	  openid.return_to URL, the Identity Provider SHALL redirect
+	  the User-Agent with openid.mode=error and
+	  openid.error=Error+Text set.
+</li>
+<li>If it's a GET request with bad arguments, and no valid
+	  openid.return_to URL, the Identity Provider SHALL return a
+	  "400 Bad Request" with any content-type and error message it
+	  wants.
+</li>
+<li>If it's a GET request with no arguments, the Identity
+	  Provider SHALL show a 200 text/html error saying "This is an
+	  OpenID server endpoint. For more information, see
+	  http://openid.net/".
+</li>
+<li>If it's a POST request with bad/no arguments, the
+	  Identity Provider SHALL return a 400 Bad Eequest with the
+	  Key-Value response format containing a single key "error"
+	  with the natural language text. The Identity Provider can
+	  add any additonal keys it wishes in this case.
+</li>
+</ul><p>
+      
+</p>
+<a name="anchor32"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.C"></a><h3>Appendix C.&nbsp;Key-Value Format</h3>
+
+<p>Lines of:
+</p>
+<p>
+	</p>
+<ul class="text">
+<li>some_key:some value
+</li>
+<li>There MUST NOT be a space before or after the colon.
+</li>
+<li>Newline characters MUST be Unix-style, just ASCII character 10
+	  ("\n").
+</li>
+<li>Newlines MUST BE at end of each line as well as between lines.
+</li>
+<li>MIME type is unspecified, but text/plain is
+	  RECOMMENDED.
+</li>
+<li>Character encoding MUST BE UTF-8.
+</li>
+</ul><p>
+      
+</p>
+<a name="limits"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.D"></a><h3>Appendix D.&nbsp;Limits</h3>
+
+<p>
+	</p>
+<ul class="text">
+<li>Identifier URL: 255 max bytes
+</li>
+<li>Identity Provider URL: 2047 max bytes, after Consumer-added
+	  URL arguments. The raw endpoint URL SHOULD be kept well
+	  below this.
+</li>
+<li>return_to URL: 2047 max bytes, after Identity Provider
+	  added URL arguments. The raw return_to URL SHOULD be kept
+	  well below this.
+</li>
+<li>assoc_handle: 255 characters or less, and consist only of
+	  ASCII characters in the range 33-126 inclusive (ie printable
+	  non-whitespace characters).
+</li>
+</ul><p>
+      
+</p>
+<a name="anchor33"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.E"></a><h3>Appendix E.&nbsp;Misc</h3>
+
+<p>
+      </p>
+<ul class="text">
+<li>Timestamps must be in w3c format, and must be in the UTC
+	timezone, indicated with a "Z". For example:
+	2005-05-15T17:11:51Z
+</li>
+</ul><p>
+      
+</p>
+<a name="rfc.references1"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<h3>6.&nbsp;Normative References</h3>
+<table border="0" width="99%">
+<tbody><tr><td class="author-text" valign="top"><a name="RFC2119">[RFC2119]</a></td>
+<td class="author-text">Bradner, B., “Key words for use in RFCs to Indicate Requirement Levels.”</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC2396">[RFC2396]</a></td>
+<td class="author-text">Berners-Lee, T., “Uniform Resource Identifiers (URI): Generic Syntax.”</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC2631">[RFC2631]</a></td>
+<td class="author-text">Rescorla, E., “Diffie-Hellman Key Agreement Method.”</td></tr>
+</tbody></table>
+
+<a name="rfc.authors"></a><br><hr>
+<table summary="layout" class="bug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<h3>Authors' Addresses</h3>
+<table border="0" cellpadding="0" cellspacing="0" width="99%">
+<tbody><tr><td class="author-text">&nbsp;</td>
+<td class="author-text">David
+							Recordon</td></tr>
+<tr><td class="author" align="right">Email:&nbsp;</td>
+<td class="author-text"><a href="mailto:drecordon@verisign.com">drecordon@verisign.com</a></td></tr>
+<tr cellpadding="3"><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td class="author-text">&nbsp;</td>
+<td class="author-text">Brad
+							   Fitzpatrick</td></tr>
+<tr><td class="author" align="right">Email:&nbsp;</td>
+<td class="author-text"><a href="mailto:brad@danga.com">brad@danga.com</a></td></tr>
+</tbody></table>
+
+</body></html>
