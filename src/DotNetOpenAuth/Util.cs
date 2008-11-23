@@ -27,5 +27,27 @@ namespace DotNetOpenAuth {
 				return string.Format(CultureInfo.InvariantCulture, "{0} ({1})", assemblyFullName, official ? "official" : "private");
 			}
 		}
+
+		/// <summary>
+		/// Tests for equality between two objects.  Safely handles the case where one or both are null.
+		/// </summary>
+		/// <typeparam name="T">The type of objects been checked for equality.</typeparam>
+		/// <param name="first">The first object.</param>
+		/// <param name="second">The second object.</param>
+		/// <returns><c>true</c> if the two objects are equal; <c>false</c> otherwise.</returns>
+		internal static bool EqualsNullSafe<T>(this T first, T second) where T : class {
+			// If one is null and the other is not...
+			if (object.ReferenceEquals(first, null) ^ object.ReferenceEquals(second, null)) {
+				return false;
+			}
+
+			// If both are null... (we only check one because we already know both are either null or non-null)
+			if (object.ReferenceEquals(first, null)) {
+				return true;
+			}
+
+			// Neither are null.  Delegate to the Equals method.
+			return first.Equals(second);
+		}
 	}
 }

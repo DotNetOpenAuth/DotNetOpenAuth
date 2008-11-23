@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Globalization;
 	using System.Text.RegularExpressions;
 	using System.Xml;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Provider;
 
 	/// <summary>
@@ -23,131 +24,16 @@ namespace DotNetOpenAuth.OpenId {
 	/// </remarks>
 	public class Realm {
 		/// <summary>
-		/// Implicitly converts the string-form of a URI to a <see cref="Realm"/> object.
+		/// A regex used to detect a wildcard that is being used in the realm.
 		/// </summary>
-		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
-		[SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads")]
-		public static implicit operator Realm(string uri) {
-			return uri != null ? new Realm(uri) : null;
-		}
+		private const string WildcardDetectionPattern = @"^(\w+://)\*\.";
 
 		/// <summary>
-		/// Implicitly converts a <see cref="Uri"/> to a <see cref="Realm"/> object.
+		/// A (more or less) comprehensive list of top-level (i.e. ".com") domains,
+		/// for use by <see cref="IsSane"/> in order to disallow overly-broad realms
+		/// that allow all web sites ending with '.com', for example.
 		/// </summary>
-		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
-		public static implicit operator Realm(Uri uri) {
-			return uri != null ? new Realm(uri.AbsoluteUri) : null;
-		}
-
-		/// <summary>
-		/// Implicitly converts a <see cref="Realm"/> object to its <see cref="String"/> form.
-		/// </summary>
-		public static implicit operator string(Realm realm) {
-			return realm != null ? realm.ToString() : null;
-		}
-
-		/// <summary>
-		/// Instantiates a <see cref="Realm"/> from its string representation.
-		/// </summary>
-		[SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads"), SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase")]
-		public Realm(string realmUrl) {
-			if (realmUrl == null) throw new ArgumentNullException("realmUrl");
-			DomainWildcard = Regex.IsMatch(realmUrl, wildcardDetectionPattern);
-			uri = new Uri(Regex.Replace(realmUrl, wildcardDetectionPattern, m => m.Groups[1].Value));
-			if (!uri.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) &&
-				!uri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
-				throw new UriFormatException(string.Format(CultureInfo.CurrentCulture,
-					OpenIdStrings.InvalidScheme, uri.Scheme));
-		}
-
-		/// <summary>
-		/// Instantiates a <see cref="Realm"/> from its <see cref="Uri"/> representation.
-		/// </summary>
-		public Realm(Uri realmUrl) {
-			if (realmUrl == null) throw new ArgumentNullException("realmUrl");
-			uri = realmUrl;
-			if (!uri.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) &&
-				!uri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
-				throw new UriFormatException(string.Format(CultureInfo.CurrentCulture,
-					OpenIdStrings.InvalidScheme, uri.Scheme));
-		}
-
-		/// <summary>
-		/// Instantiates a <see cref="Realm"/> from its <see cref="UriBuilder"/> representation.
-		/// </summary>
-		/// <remarks>
-		/// This is useful because UriBuilder can construct a host with a wildcard 
-		/// in the Host property, but once there it can't be converted to a Uri.
-		/// </remarks>
-		internal Realm(UriBuilder realmUriBuilder)
-			: this(safeUriBuilderToString(realmUriBuilder)) { }
-		static string safeUriBuilderToString(UriBuilder realmUriBuilder) {
-			if (realmUriBuilder == null) throw new ArgumentNullException("realmUriBuilder");
-			// Note: we MUST use ToString.  Uri property throws if wildcard is present.
-			return realmUriBuilder.ToString();
-		}
-
-		Uri uri;
-		const string wildcardDetectionPattern = @"^(\w+://)\*\.";
-
-		/// <summary>
-		/// Whether a '*.' prefix to the hostname is used in the realm to allow
-		/// subdomains or hosts to be added to the URL.
-		/// </summary>
-		public bool DomainWildcard { get; private set; }
-		
-		/// <summary>
-		/// Gets the host component of this instance.
-		/// </summary>
-		public string Host { get { return uri.Host; } }
-		
-		/// <summary>
-		/// Gets the scheme name for this URI.
-		/// </summary>
-		public string Scheme { get { return uri.Scheme; } }
-		
-		/// <summary>
-		/// Gets the port number of this URI.
-		/// </summary>
-		public int Port { get { return uri.Port; } }
-		
-		/// <summary>
-		/// Gets the absolute path of the URI.
-		/// </summary>
-		public string AbsolutePath { get { return uri.AbsolutePath; } }
-		
-		/// <summary>
-		/// Gets the System.Uri.AbsolutePath and System.Uri.Query properties separated
-		/// by a question mark (?).
-		/// </summary>
-		public string PathAndQuery { get { return uri.PathAndQuery; } }
-		
-		/// <summary>
-		/// Gets the realm URL.  If the realm includes a wildcard, it is not included here.
-		/// </summary>
-		internal Uri NoWildcardUri { get { return uri; } }
-		
-		/// <summary>
-		/// Produces the Realm URL.  If the realm URL had a wildcard in it,
-		/// the wildcard is replaced with a "www." prefix.
-		/// </summary>
-		/// <remarks>
-		/// See OpenID 2.0 spec section 9.2.1 for the explanation on the addition of
-		/// the "www" prefix.
-		/// </remarks>
-		internal Uri UriWithWildcardChangedToWww {
-			get {
-				if (DomainWildcard) {
-					UriBuilder builder = new UriBuilder(NoWildcardUri);
-					builder.Host = "www." + builder.Host;
-					return builder.Uri;
-				} else {
-					return NoWildcardUri;
-				}
-			}
-		}
-
-		static string[] topLevelDomains = { "com", "edu", "gov", "int", "mil", "net", "org", "biz", "info", "name", "museum", "coop", "aero", "ac", "ad", "ae",
+		private static readonly string[] topLevelDomains = { "com", "edu", "gov", "int", "mil", "net", "org", "biz", "info", "name", "museum", "coop", "aero", "ac", "ad", "ae",
 			"af", "ag", "ai", "al", "am", "an", "ao", "aq", "ar", "as", "at", "au", "aw", "az", "ba", "bb", "bd", "be", "bf", "bg", "bh", "bi", "bj",
 			"bm", "bn", "bo", "br", "bs", "bt", "bv", "bw", "by", "bz", "ca", "cc", "cd", "cf", "cg", "ch", "ci", "ck", "cl", "cm", "cn", "co", "cr",
 			"cu", "cv", "cx", "cy", "cz", "de", "dj", "dk", "dm", "do", "dz", "ec", "ee", "eg", "eh", "er", "es", "et", "fi", "fj", "fk", "fm", "fo",
@@ -161,7 +47,109 @@ namespace DotNetOpenAuth.OpenId {
 			"vn", "vu", "wf", "ws", "ye", "yt", "yu", "za", "zm", "zw" };
 
 		/// <summary>
-		/// This method checks the to see if a trust root represents a reasonable (sane) set of URLs.
+		/// The Uri of the realm, with the wildcard (if any) removed.
+		/// </summary>
+		private Uri uri;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Realm"/> class.
+		/// </summary>
+		/// <param name="realmUrl">The realm URL to use in the new instance.</param>
+		[SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads", Justification = "TODO")]
+		public Realm(string realmUrl) {
+			ErrorUtilities.VerifyArgumentNotNull(realmUrl, "realmUrl");
+			this.DomainWildcard = Regex.IsMatch(realmUrl, WildcardDetectionPattern);
+			this.uri = new Uri(Regex.Replace(realmUrl, WildcardDetectionPattern, m => m.Groups[1].Value));
+			if (!this.uri.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) &&
+				!this.uri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase)) {
+				throw new UriFormatException(
+					string.Format(CultureInfo.CurrentCulture, OpenIdStrings.InvalidScheme, this.uri.Scheme));
+			}
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Realm"/> class.
+		/// </summary>
+		/// <param name="realmUrl">The realm URL of the Relying Party.</param>
+		public Realm(Uri realmUrl) {
+			ErrorUtilities.VerifyArgumentNotNull(realmUrl, "realmUrl");
+			this.uri = realmUrl;
+			if (!this.uri.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) &&
+				!this.uri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase)) {
+				throw new UriFormatException(
+					string.Format(CultureInfo.CurrentCulture, OpenIdStrings.InvalidScheme, this.uri.Scheme));
+			}
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Realm"/> class.
+		/// </summary>
+		/// <param name="realmUriBuilder">The realm URI builder.</param>
+		/// <remarks>
+		/// This is useful because UriBuilder can construct a host with a wildcard
+		/// in the Host property, but once there it can't be converted to a Uri.
+		/// </remarks>
+		internal Realm(UriBuilder realmUriBuilder)
+			: this(SafeUriBuilderToString(realmUriBuilder)) { }
+
+		/// <summary>
+		/// Gets a value indicating whether a '*.' prefix to the hostname is 
+		/// used in the realm to allow subdomains or hosts to be added to the URL.
+		/// </summary>
+		public bool DomainWildcard { get; private set; }
+
+		/// <summary>
+		/// Gets the host component of this instance.
+		/// </summary>
+		public string Host { get { return this.uri.Host; } }
+
+		/// <summary>
+		/// Gets the scheme name for this URI.
+		/// </summary>
+		public string Scheme { get { return this.uri.Scheme; } }
+
+		/// <summary>
+		/// Gets the port number of this URI.
+		/// </summary>
+		public int Port { get { return this.uri.Port; } }
+
+		/// <summary>
+		/// Gets the absolute path of the URI.
+		/// </summary>
+		public string AbsolutePath { get { return this.uri.AbsolutePath; } }
+
+		/// <summary>
+		/// Gets the System.Uri.AbsolutePath and System.Uri.Query properties separated
+		/// by a question mark (?).
+		/// </summary>
+		public string PathAndQuery { get { return this.uri.PathAndQuery; } }
+
+		/// <summary>
+		/// Gets the realm URL.  If the realm includes a wildcard, it is not included here.
+		/// </summary>
+		internal Uri NoWildcardUri { get { return this.uri; } }
+
+		/// <summary>
+		/// Gets the Realm discovery URL, where the wildcard (if present) is replaced with "www.".
+		/// </summary>
+		/// <remarks>
+		/// See OpenID 2.0 spec section 9.2.1 for the explanation on the addition of
+		/// the "www" prefix.
+		/// </remarks>
+		internal Uri UriWithWildcardChangedToWww {
+			get {
+				if (this.DomainWildcard) {
+					UriBuilder builder = new UriBuilder(this.NoWildcardUri);
+					builder.Host = "www." + builder.Host;
+					return builder.Uri;
+				} else {
+					return this.NoWildcardUri;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether this realm represents a reasonable (sane) set of URLs.
 		/// </summary>
 		/// <remarks>
 		/// 'http://*.com/', for example is not a reasonable pattern, as it cannot meaningfully 
@@ -171,22 +159,26 @@ namespace DotNetOpenAuth.OpenId {
 		/// </remarks>
 		internal bool IsSane {
 			get {
-				if (Host.Equals("localhost", StringComparison.OrdinalIgnoreCase))
+				if (this.Host.Equals("localhost", StringComparison.OrdinalIgnoreCase)) {
 					return true;
+				}
 
-				string[] host_parts = Host.Split('.');
+				string[] host_parts = this.Host.Split('.');
 
 				string tld = host_parts[host_parts.Length - 1];
 
-				if (Array.IndexOf(topLevelDomains, tld) < 0)
+				if (Array.IndexOf(topLevelDomains, tld) < 0) {
 					return false;
+				}
 
 				if (tld.Length == 2) {
-					if (host_parts.Length == 1)
+					if (host_parts.Length == 1) {
 						return false;
+					}
 
-					if (host_parts[host_parts.Length - 2].Length <= 3)
+					if (host_parts[host_parts.Length - 2].Length <= 3) {
 						return host_parts.Length > 2;
+					}
 				} else {
 					return host_parts.Length > 1;
 				}
@@ -196,12 +188,86 @@ namespace DotNetOpenAuth.OpenId {
 		}
 
 		/// <summary>
+		/// Implicitly converts the string-form of a URI to a <see cref="Realm"/> object.
+		/// </summary>
+		/// <param name="uri">The URI that the new Realm instance will represent.</param>
+		/// <returns>The result of the conversion.</returns>
+		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "TODO")]
+		[SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads", Justification = "TODO")]
+		public static implicit operator Realm(string uri) {
+			return uri != null ? new Realm(uri) : null;
+		}
+
+		/// <summary>
+		/// Implicitly converts a <see cref="Uri"/> to a <see cref="Realm"/> object.
+		/// </summary>
+		/// <param name="uri">The URI to convert to a realm.</param>
+		/// <returns>The result of the conversion.</returns>
+		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "TODO")]
+		public static implicit operator Realm(Uri uri) {
+			return uri != null ? new Realm(uri.AbsoluteUri) : null;
+		}
+
+		/// <summary>
+		/// Implicitly converts a <see cref="Realm"/> object to its <see cref="String"/> form.
+		/// </summary>
+		/// <param name="realm">The realm to convert to a string value.</param>
+		/// <returns>The result of the conversion.</returns>
+		public static implicit operator string(Realm realm) {
+			return realm != null ? realm.ToString() : null;
+		}
+
+		/// <summary>
+		/// Checks whether one <see cref="Realm"/> is equal to another.
+		/// </summary>
+		/// <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:System.Object"/>.</param>
+		/// <returns>
+		/// true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>; otherwise, false.
+		/// </returns>
+		/// <exception cref="T:System.NullReferenceException">
+		/// The <paramref name="obj"/> parameter is null.
+		/// </exception>
+		public override bool Equals(object obj) {
+			Realm other = obj as Realm;
+			if (other == null) {
+				return false;
+			}
+			return this.uri.Equals(other.uri) && this.DomainWildcard == other.DomainWildcard;
+		}
+
+		/// <summary>
+		/// Returns the hash code used for storing this object in a hash table.
+		/// </summary>
+		/// <returns>
+		/// A hash code for the current <see cref="T:System.Object"/>.
+		/// </returns>
+		public override int GetHashCode() {
+			return this.uri.GetHashCode() + (this.DomainWildcard ? 1 : 0);
+		}
+
+		/// <summary>
+		/// Returns the string form of this <see cref="Realm"/>.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+		/// </returns>
+		public override string ToString() {
+			if (this.DomainWildcard) {
+				UriBuilder builder = new UriBuilder(this.uri);
+				builder.Host = "*." + builder.Host;
+				return builder.ToStringWithImpliedPorts();
+			} else {
+				return this.uri.AbsoluteUri;
+			}
+		}
+
+		/// <summary>
 		/// Validates a URL against this trust root.
 		/// </summary>
 		/// <param name="url">A string specifying URL to check.</param>
 		/// <returns>Whether the given URL is within this trust root.</returns>
 		internal bool Contains(string url) {
-			return Contains(new Uri(url));
+			return this.Contains(new Uri(url));
 		}
 
 		/// <summary>
@@ -210,26 +276,29 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="url">The URL to check.</param>
 		/// <returns>Whether the given URL is within this trust root.</returns>
 		internal bool Contains(Uri url) {
-			if (url.Scheme != Scheme)
+			if (url.Scheme != this.Scheme) {
 				return false;
+			}
 
-			if (url.Port != Port)
+			if (url.Port != this.Port) {
 				return false;
+			}
 
-			if (!DomainWildcard) {
-				if (url.Host != Host) {
+			if (!this.DomainWildcard) {
+				if (url.Host != this.Host) {
 					return false;
 				}
 			} else {
-				Debug.Assert(!string.IsNullOrEmpty(Host), "The host part of the Regex should evaluate to at least one char for successful parsed trust roots.");
-				string[] host_parts = Host.Split('.');
+				Debug.Assert(!string.IsNullOrEmpty(this.Host), "The host part of the Regex should evaluate to at least one char for successful parsed trust roots.");
+				string[] host_parts = this.Host.Split('.');
 				string[] url_parts = url.Host.Split('.');
 
 				// If the domain containing the wildcard has more parts than the URL to match against,
 				// it naturally can't be valid.
 				// Unless *.example.com actually matches example.com too.
-				if (host_parts.Length > url_parts.Length)
+				if (host_parts.Length > url_parts.Length) {
 					return false;
+				}
 
 				// Compare last part first and move forward.
 				// Maybe could be done by using EndsWith, but piecewies helps ensure that
@@ -245,95 +314,89 @@ namespace DotNetOpenAuth.OpenId {
 
 			// If path matches or is specified to root ... 
 			// (deliberately case sensitive to protect security on case sensitive systems)
-			if (PathAndQuery.Equals(url.PathAndQuery, StringComparison.Ordinal)
-				|| PathAndQuery.Equals("/", StringComparison.Ordinal))
+			if (this.PathAndQuery.Equals(url.PathAndQuery, StringComparison.Ordinal)
+				|| this.PathAndQuery.Equals("/", StringComparison.Ordinal)) {
 				return true;
+			}
 
 			// If trust root has a longer path, the return URL must be invalid.
-			if (PathAndQuery.Length > url.PathAndQuery.Length)
+			if (this.PathAndQuery.Length > url.PathAndQuery.Length) {
 				return false;
+			}
 
 			// The following code assures that http://example.com/directory isn't below http://example.com/dir,
 			// but makes sure http://example.com/dir/ectory is below http://example.com/dir
-			int path_len = PathAndQuery.Length;
+			int path_len = this.PathAndQuery.Length;
 			string url_prefix = url.PathAndQuery.Substring(0, path_len);
 
-			if (PathAndQuery != url_prefix)
+			if (this.PathAndQuery != url_prefix) {
 				return false;
+			}
 
 			// If trust root includes a query string ...
-			if (PathAndQuery.Contains("?")) {
+			if (this.PathAndQuery.Contains("?")) {
 				// ... make sure return URL begins with a new argument
 				return url.PathAndQuery[path_len] == '&';
 			}
 
 			// Or make sure a query string is introduced or a path below trust root
-			return PathAndQuery.EndsWith("/", StringComparison.Ordinal)
+			return this.PathAndQuery.EndsWith("/", StringComparison.Ordinal)
 				|| url.PathAndQuery[path_len] == '?'
 				|| url.PathAndQuery[path_len] == '/';
 		}
 
 #if DISCOVERY // TODO: Add discovery and then re-enable this code block
-		/// <summary>
-		/// Searches for an XRDS document at the realm URL, and if found, searches
-		/// for a description of a relying party endpoints (OpenId login pages).
-		/// </summary>
-		/// <param name="allowRedirects">
-		/// Whether redirects may be followed when discovering the Realm.
-		/// This may be true when creating an unsolicited assertion, but must be
-		/// false when performing return URL verification per 2.0 spec section 9.2.1.
-		/// </param>
-		/// <returns>The details of the endpoints if found, otherwise null.</returns>
-		internal IEnumerable<DotNetOpenId.Provider.RelyingPartyReceivingEndpoint> Discover(bool allowRedirects) {
-			// Attempt YADIS discovery
-			DiscoveryResult yadisResult = Yadis.Yadis.Discover(UriWithWildcardChangedToWww, false);
-			if (yadisResult != null) {
-				if (!allowRedirects && yadisResult.NormalizedUri != yadisResult.RequestUri) {
-					// Redirect occurred when it was not allowed.
-					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
-						Strings.RealmCausedRedirectUponDiscovery, yadisResult.RequestUri));
-				}
-				if (yadisResult.IsXrds) {
-					try {
-						XrdsDocument xrds = new XrdsDocument(yadisResult.ResponseText);
-						return xrds.FindRelyingPartyReceivingEndpoints();
-					} catch (XmlException ex) {
-						throw new OpenIdException(Strings.InvalidXRDSDocument, ex);
-					}
-				}
-			}
-			return new RelyingPartyReceivingEndpoint[0];
-		}
+		/////// <summary>
+		/////// Searches for an XRDS document at the realm URL, and if found, searches
+		/////// for a description of a relying party endpoints (OpenId login pages).
+		/////// </summary>
+		/////// <param name="allowRedirects">
+		/////// Whether redirects may be followed when discovering the Realm.
+		/////// This may be true when creating an unsolicited assertion, but must be
+		/////// false when performing return URL verification per 2.0 spec section 9.2.1.
+		/////// </param>
+		/////// <returns>The details of the endpoints if found, otherwise null.</returns>
+		////internal IEnumerable<DotNetOpenId.Provider.RelyingPartyReceivingEndpoint> Discover(bool allowRedirects) {
+		////    // Attempt YADIS discovery
+		////    DiscoveryResult yadisResult = Yadis.Yadis.Discover(UriWithWildcardChangedToWww, false);
+		////    if (yadisResult != null) {
+		////        if (!allowRedirects && yadisResult.NormalizedUri != yadisResult.RequestUri) {
+		////            // Redirect occurred when it was not allowed.
+		////            throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
+		////                Strings.RealmCausedRedirectUponDiscovery, yadisResult.RequestUri));
+		////        }
+		////        if (yadisResult.IsXrds) {
+		////            try {
+		////                XrdsDocument xrds = new XrdsDocument(yadisResult.ResponseText);
+		////                return xrds.FindRelyingPartyReceivingEndpoints();
+		////            } catch (XmlException ex) {
+		////                throw new OpenIdException(Strings.InvalidXRDSDocument, ex);
+		////            }
+		////        }
+		////    }
+		////    return new RelyingPartyReceivingEndpoint[0];
+		////}
 #endif
 
 		/// <summary>
-		/// Checks whether one <see cref="Realm"/> is equal to another.
+		/// Calls <see cref="UriBuilder.ToString"/> if the argument is non-null.
+		/// Otherwise throws <see cref="ArgumentNullException"/>.
 		/// </summary>
-		public override bool Equals(object obj) {
-			Realm other = obj as Realm;
-			if (other == null) return false;
-			return uri.Equals(other.uri) && DomainWildcard == other.DomainWildcard;
-		}
-		
-		/// <summary>
-		/// Returns the hash code used for storing this object in a hash table.
-		/// </summary>
-		/// <returns></returns>
-		public override int GetHashCode() {
-			return uri.GetHashCode() + (DomainWildcard ? 1 : 0);
-		}
-		
-		/// <summary>
-		/// Returns the string form of this <see cref="Realm"/>.
-		/// </summary>
-		public override string ToString() {
-			if (DomainWildcard) {
-				UriBuilder builder = new UriBuilder(uri);
-				builder.Host = "*." + builder.Host;
-				return builder.ToStringWithImpliedPorts();
-			} else {
-				return uri.AbsoluteUri;
-			}
+		/// <param name="realmUriBuilder">The realm URI builder.</param>
+		/// <returns>The result of UriBuilder.ToString()</returns>
+		/// <remarks>
+		/// This simple method is worthwhile because it checks for null
+		/// before dereferencing the UriBuilder.  Since this is called from
+		/// within a constructor's base(...) call, this avoids a <see cref="NullReferenceException"/>
+		/// when we should be throwing an <see cref="ArgumentNullException"/>.
+		/// </remarks>
+		private static string SafeUriBuilderToString(UriBuilder realmUriBuilder) {
+			ErrorUtilities.VerifyArgumentNotNull(realmUriBuilder, "realmUriBuilder");
+
+			// Note: we MUST use ToString.  Uri property throws if wildcard is present.
+			// TODO: I now know that Uri.ToString and Uri.AbsoluteUri are very different
+			//       for some strings.  Do we have to worry about that here?
+			return realmUriBuilder.ToString();
 		}
 	}
 }

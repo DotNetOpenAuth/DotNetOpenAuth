@@ -9,42 +9,41 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using DotNetOpenAuth.OpenId.Messages;
-	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.Messages;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
 	public class CheckIdRequestTests : OpenIdTestBase {
-		private Uri ProviderEndpoint;
+		private Uri providerEndpoint;
 		private CheckIdRequest immediatev1;
 		private CheckIdRequest setupv1;
 		private CheckIdRequest immediatev2;
 		private CheckIdRequest setupv2;
 
-
 		[TestInitialize]
 		public override void SetUp() {
 			base.SetUp();
 
-			ProviderEndpoint = new Uri("http://host");
+			this.providerEndpoint = new Uri("http://host");
 
-			immediatev1 = new CheckIdRequest(Protocol.V11.Version, ProviderEndpoint, true);
-			setupv1 = new CheckIdRequest(Protocol.V11.Version, ProviderEndpoint, false);
+			this.immediatev1 = new CheckIdRequest(Protocol.V11.Version, this.providerEndpoint, true);
+			this.setupv1 = new CheckIdRequest(Protocol.V11.Version, this.providerEndpoint, false);
 
-			immediatev2 = new CheckIdRequest(Protocol.V20.Version, ProviderEndpoint, true);
-			setupv2 = new CheckIdRequest(Protocol.V20.Version, ProviderEndpoint, false);
+			this.immediatev2 = new CheckIdRequest(Protocol.V20.Version, this.providerEndpoint, true);
+			this.setupv2 = new CheckIdRequest(Protocol.V20.Version, this.providerEndpoint, false);
 
 			// Prepare all message versions so that they SHOULD be valid by default.
 			// In particular, V1 messages require ReturnTo.
-			immediatev1.ReturnTo = new Uri("http://returnto/");
-			setupv1.ReturnTo = new Uri("http://returnto/");
+			this.immediatev1.ReturnTo = new Uri("http://returnto/");
+			this.setupv1.ReturnTo = new Uri("http://returnto/");
 
 			try {
-				immediatev1.EnsureValidMessage();
-				setupv1.EnsureValidMessage();
-				immediatev2.EnsureValidMessage();
-				setupv2.EnsureValidMessage();
+				this.immediatev1.EnsureValidMessage();
+				this.setupv1.EnsureValidMessage();
+				this.immediatev2.EnsureValidMessage();
+				this.setupv2.EnsureValidMessage();
 			} catch (ProtocolException ex) {
 				Assert.Inconclusive("All messages ought to be valid before tests run, but got: {0}", ex.Message);
 			}
@@ -56,8 +55,8 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 		/// </summary>
 		[TestMethod, ExpectedException(typeof(ProtocolException))]
 		public void ClaimedIdentifierWithoutIdentity() {
-			setupv2.ClaimedIdentifier = "http://andrew.arnott.myopenid.com/";
-			setupv2.EnsureValidMessage();
+			this.setupv2.ClaimedIdentifier = "http://andrew.arnott.myopenid.com/";
+			this.setupv2.EnsureValidMessage();
 		}
 
 		/// <summary>
@@ -66,8 +65,8 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 		/// </summary>
 		[TestMethod, ExpectedException(typeof(ProtocolException))]
 		public void LocalIdentifierWithoutClaimedIdentifier() {
-			setupv2.LocalIdentifier = "http://andrew.arnott.myopenid.com/";
-			setupv2.EnsureValidMessage();
+			this.setupv2.LocalIdentifier = "http://andrew.arnott.myopenid.com/";
+			this.setupv2.EnsureValidMessage();
 		}
 
 		/// <summary>
@@ -76,8 +75,8 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 		/// </summary>
 		[TestMethod]
 		public void LocalIdentifierWithoutClaimedIdentifierV1() {
-			setupv1.LocalIdentifier = "http://andrew.arnott.myopenid.com/";
-			setupv1.EnsureValidMessage();
+			this.setupv1.LocalIdentifier = "http://andrew.arnott.myopenid.com/";
+			this.setupv1.EnsureValidMessage();
 		}
 
 		/// <summary>
@@ -86,9 +85,9 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 		/// </summary>
 		[TestMethod, ExpectedException(typeof(ProtocolException))]
 		public void RealmReturnToMismatchV2() {
-			setupv2.Realm = "http://somehost/";
-			setupv2.ReturnTo = new Uri("http://someotherhost/");
-			setupv2.EnsureValidMessage();
+			this.setupv2.Realm = "http://somehost/";
+			this.setupv2.ReturnTo = new Uri("http://someotherhost/");
+			this.setupv2.EnsureValidMessage();
 		}
 
 		/// <summary>
@@ -97,9 +96,9 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 		/// </summary>
 		[TestMethod, ExpectedException(typeof(ProtocolException))]
 		public void RealmReturnToMismatchV1() {
-			setupv1.Realm = "http://somehost/";
-			setupv1.ReturnTo = new Uri("http://someotherhost/");
-			setupv1.EnsureValidMessage();
+			this.setupv1.Realm = "http://somehost/";
+			this.setupv1.ReturnTo = new Uri("http://someotherhost/");
+			this.setupv1.EnsureValidMessage();
 		}
 	}
 }

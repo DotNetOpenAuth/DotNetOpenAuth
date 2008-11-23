@@ -228,9 +228,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// Null if the Consumer did not request a callback.
 		/// </returns>
 		public UserAuthorizationResponse PrepareAuthorizationResponse(UserAuthorizationRequest request) {
-			if (request == null) {
-				throw new ArgumentNullException("request");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			if (request.Callback != null) {
 				var authorization = new UserAuthorizationResponse(request.Callback) {

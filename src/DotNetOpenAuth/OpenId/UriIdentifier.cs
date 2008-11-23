@@ -1,8 +1,16 @@
-﻿namespace DotNetOpenAuth.OpenId {
+﻿//-----------------------------------------------------------------------
+// <copyright file="UriIdentifier.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Text.RegularExpressions;
 	using System.Web.UI.HtmlControls;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
@@ -10,84 +18,133 @@
 	/// </summary>
 	[Serializable]
 	public sealed class UriIdentifier : Identifier {
-		static readonly string[] allowedSchemes = { "http", "https" };
 		/// <summary>
-		/// Converts a <see cref="UriIdentifier"/> instance to a <see cref="Uri"/> instance.
+		/// The allowed protocol schemes in a URI Identifier.
 		/// </summary>
-		public static implicit operator Uri(UriIdentifier identifier) {
-			if (identifier == null) return null;
-			return identifier.Uri;
-		}
-		/// <summary>
-		/// Converts a <see cref="Uri"/> instance to a <see cref="UriIdentifier"/> instance.
-		/// </summary>
-		public static implicit operator UriIdentifier(Uri identifier) {
-			if (identifier == null) return null;
-			return new UriIdentifier(identifier);
-		}
+		private static readonly string[] allowedSchemes = { "http", "https" };
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UriIdentifier"/> class.
+		/// </summary>
+		/// <param name="uri">The value this identifier will represent.</param>
 		internal UriIdentifier(string uri) : this(uri, false) { }
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UriIdentifier"/> class.
+		/// </summary>
+		/// <param name="uri">The value this identifier will represent.</param>
+		/// <param name="requireSslDiscovery">if set to <c>true</c> [require SSL discovery].</param>
 		internal UriIdentifier(string uri, bool requireSslDiscovery)
 			: base(requireSslDiscovery) {
-			if (string.IsNullOrEmpty(uri)) throw new ArgumentNullException("uri");
+			ErrorUtilities.VerifyNonZeroLength(uri, "uri");
 			Uri canonicalUri;
 			bool schemePrepended;
-			if (!TryCanonicalize(uri, out canonicalUri, requireSslDiscovery, out schemePrepended))
+			if (!TryCanonicalize(uri, out canonicalUri, requireSslDiscovery, out schemePrepended)) {
 				throw new UriFormatException();
+			}
 			if (requireSslDiscovery && canonicalUri.Scheme != Uri.UriSchemeHttps) {
 				throw new ArgumentException(OpenIdStrings.ExplicitHttpUriSuppliedWithSslRequirement);
 			}
-			Uri = canonicalUri;
-			SchemeImplicitlyPrepended = schemePrepended;
+			this.Uri = canonicalUri;
+			this.SchemeImplicitlyPrepended = schemePrepended;
 		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UriIdentifier"/> class.
+		/// </summary>
+		/// <param name="uri">The value this identifier will represent.</param>
 		internal UriIdentifier(Uri uri) : this(uri, false) { }
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UriIdentifier"/> class.
+		/// </summary>
+		/// <param name="uri">The value this identifier will represent.</param>
+		/// <param name="requireSslDiscovery">if set to <c>true</c> [require SSL discovery].</param>
 		internal UriIdentifier(Uri uri, bool requireSslDiscovery)
 			: base(requireSslDiscovery) {
-			if (uri == null) throw new ArgumentNullException("uri");
-			if (!TryCanonicalize(new UriBuilder(uri), out uri))
+			ErrorUtilities.VerifyArgumentNotNull(uri, "uri");
+			if (!TryCanonicalize(new UriBuilder(uri), out uri)) {
 				throw new UriFormatException();
+			}
 			if (requireSslDiscovery && uri.Scheme != Uri.UriSchemeHttps) {
 				throw new ArgumentException(OpenIdStrings.ExplicitHttpUriSuppliedWithSslRequirement);
 			}
-			Uri = uri;
-			SchemeImplicitlyPrepended = false;
+			this.Uri = uri;
+			this.SchemeImplicitlyPrepended = false;
 		}
 
-		internal Uri Uri { get; private set; }
 		/// <summary>
-		/// Gets whether the scheme was missing when this Identifier was
-		/// created and added automatically as part of the normalization
-		/// process.
+		/// Gets the URI this instance represents.
+		/// </summary>
+		internal Uri Uri { get; private set; }
+
+		/// <summary>
+		/// Gets a value indicating whether the scheme was missing when this 
+		/// Identifier was created and added automatically as part of the 
+		/// normalization process.
 		/// </summary>
 		internal bool SchemeImplicitlyPrepended { get; private set; }
 
-		static bool isAllowedScheme(string uri) {
-			if (string.IsNullOrEmpty(uri)) return false;
-			return Array.FindIndex(allowedSchemes, s => uri.StartsWith(
-				s + Uri.SchemeDelimiter, StringComparison.OrdinalIgnoreCase)) >= 0;
+		/// <summary>
+		/// Converts a <see cref="UriIdentifier"/> instance to a <see cref="Uri"/> instance.
+		/// </summary>
+		/// <param name="identifier">The identifier to convert to an ordinary <see cref="Uri"/> instance.</param>
+		/// <returns>The result of the conversion.</returns>
+		public static implicit operator Uri(UriIdentifier identifier) {
+			if (identifier == null) {
+				return null;
+			}
+			return identifier.Uri;
 		}
-		static bool isAllowedScheme(Uri uri) {
-			if (uri == null) return false;
-			return Array.FindIndex(allowedSchemes, s =>
-				uri.Scheme.Equals(s, StringComparison.OrdinalIgnoreCase)) >= 0;
+
+		/// <summary>
+		/// Converts a <see cref="Uri"/> instance to a <see cref="UriIdentifier"/> instance.
+		/// </summary>
+		/// <param name="identifier">The <see cref="Uri"/> instance to turn into a <see cref="UriIdentifier"/>.</param>
+		/// <returns>The result of the conversion.</returns>
+		public static implicit operator UriIdentifier(Uri identifier) {
+			if (identifier == null) {
+				return null;
+			}
+			return new UriIdentifier(identifier);
 		}
-		static bool TryCanonicalize(string uri, out Uri canonicalUri, bool forceHttpsDefaultScheme, out bool schemePrepended) {
-			canonicalUri = null;
-			schemePrepended = false;
-			try {
-				// Assume http:// scheme if an allowed scheme isn't given, and strip
-				// fragments off.  Consistent with spec section 7.2#3
-				if (!isAllowedScheme(uri)) {
-					uri = (forceHttpsDefaultScheme ? Uri.UriSchemeHttps : Uri.UriSchemeHttp) +
-						Uri.SchemeDelimiter + uri;
-					schemePrepended = true;
-				}
-				// Use a UriBuilder because it helps to normalize the URL as well.
-				return TryCanonicalize(new UriBuilder(uri), out canonicalUri);
-			} catch (UriFormatException) {
-				// We try not to land here with checks in the try block, but just in case.
+
+		/// <summary>
+		/// Tests equality between this URI and another URI.
+		/// </summary>
+		/// <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:System.Object"/>.</param>
+		/// <returns>
+		/// true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>; otherwise, false.
+		/// </returns>
+		/// <exception cref="T:System.NullReferenceException">
+		/// The <paramref name="obj"/> parameter is null.
+		/// </exception>
+		public override bool Equals(object obj) {
+			UriIdentifier other = obj as UriIdentifier;
+			if (other == null) {
 				return false;
 			}
+			return this.Uri == other.Uri;
+		}
+
+		/// <summary>
+		/// Returns the hash code of this XRI.
+		/// </summary>
+		/// <returns>
+		/// A hash code for the current <see cref="T:System.Object"/>.
+		/// </returns>
+		public override int GetHashCode() {
+			return Uri.GetHashCode();
+		}
+
+		/// <summary>
+		/// Returns the string form of the URI.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+		/// </returns>
+		public override string ToString() {
+			return Uri.AbsoluteUri;
 		}
 #if UNUSED
 		static bool TryCanonicalize(string uri, out string canonicalUri) {
@@ -98,29 +155,41 @@
 		}
 #endif
 		/// <summary>
-		/// Removes the fragment from a URL and sets the host to lowercase.
+		/// Determines whether a URI is a valid OpenID Identifier (of any kind).
 		/// </summary>
+		/// <param name="uri">The URI to test for OpenID validity.</param>
+		/// <returns>
+		/// 	<c>true</c> if the identifier is valid; otherwise, <c>false</c>.
+		/// </returns>
 		/// <remarks>
-		/// This does NOT standardize an OpenID URL for storage in a database, as
-		/// it does nothing to convert the URL to a Claimed Identifier, besides the fact
-		/// that it only deals with URLs whereas OpenID 2.0 supports XRIs.
-		/// For this, you should lookup the value stored in IAuthenticationResponse.ClaimedIdentifier.
+		/// A valid URI is absolute (not relative) and uses an http(s) scheme.
 		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase")]
-		static bool TryCanonicalize(UriBuilder uriBuilder, out Uri canonicalUri) {
-			uriBuilder.Host = uriBuilder.Host.ToLowerInvariant();
-			canonicalUri = uriBuilder.Uri;
-			return true;
-		}
 		internal static bool IsValidUri(string uri) {
 			Uri normalized;
 			bool schemePrepended;
 			return TryCanonicalize(uri, out normalized, false, out schemePrepended);
 		}
+
+		/// <summary>
+		/// Determines whether a URI is a valid OpenID Identifier (of any kind).
+		/// </summary>
+		/// <param name="uri">The URI to test for OpenID validity.</param>
+		/// <returns>
+		/// 	<c>true</c> if the identifier is valid; otherwise, <c>false</c>.
+		/// </returns>
+		/// <remarks>
+		/// A valid URI is absolute (not relative) and uses an http(s) scheme.
+		/// </remarks>
 		internal static bool IsValidUri(Uri uri) {
-			if (uri == null) return false;
-			if (!uri.IsAbsoluteUri) return false;
-			if (!isAllowedScheme(uri)) return false;
+			if (uri == null) {
+				return false;
+			}
+			if (!uri.IsAbsoluteUri) {
+				return false;
+			}
+			if (!IsAllowedScheme(uri)) {
+				return false;
+			}
 			return true;
 		}
 
@@ -217,10 +286,20 @@
 		}
 #endif
 
+		/// <summary>
+		/// Returns an <see cref="Identifier"/> that has no URI fragment.
+		/// Quietly returns the original <see cref="Identifier"/> if it is not
+		/// a <see cref="UriIdentifier"/> or no fragment exists.
+		/// </summary>
+		/// <returns>
+		/// A new <see cref="Identifier"/> instance if there was a
+		/// fragment to remove, otherwise this same instance..
+		/// </returns>
 		internal override Identifier TrimFragment() {
 			// If there is no fragment, we have no need to rebuild the Identifier.
-			if (Uri.Fragment == null || Uri.Fragment.Length == 0)
+			if (Uri.Fragment == null || Uri.Fragment.Length == 0) {
 				return this;
+			}
 
 			// Strip the fragment.
 			UriBuilder builder = new UriBuilder(Uri);
@@ -228,6 +307,18 @@
 			return builder.Uri;
 		}
 
+		/// <summary>
+		/// Converts a given identifier to its secure equivalent.
+		/// UriIdentifiers originally created with an implied HTTP scheme change to HTTPS.
+		/// Discovery is made to require SSL for the entire resolution process.
+		/// </summary>
+		/// <param name="secureIdentifier">The newly created secure identifier.
+		/// If the conversion fails, <paramref name="secureIdentifier"/> retains
+		/// <i>this</i> identifiers identity, but will never discover any endpoints.</param>
+		/// <returns>
+		/// True if the secure conversion was successful.
+		/// False if the Identifier was originally created with an explicit HTTP scheme.
+		/// </returns>
 		internal override bool TryRequireSsl(out Identifier secureIdentifier) {
 			// If this Identifier is already secure, reuse it.
 			if (IsDiscoverySecureEndToEnd) {
@@ -243,7 +334,7 @@
 			}
 
 			// Otherwise, try to make this Identifier secure by normalizing to HTTPS instead of HTTP.
-			if (SchemeImplicitlyPrepended) {
+			if (this.SchemeImplicitlyPrepended) {
 				UriBuilder newIdentifierUri = new UriBuilder(this.Uri);
 				newIdentifierUri.Scheme = Uri.UriSchemeHttps;
 				if (newIdentifierUri.Port == 80) {
@@ -259,26 +350,95 @@
 		}
 
 		/// <summary>
-		/// Tests equality between this URI and another URI.
+		/// Determines whether the given URI is using a scheme in the list of allowed schemes.
 		/// </summary>
-		public override bool Equals(object obj) {
-			UriIdentifier other = obj as UriIdentifier;
-			if (other == null) return false;
-			return this.Uri == other.Uri;
+		/// <param name="uri">The URI whose scheme is to be checked.</param>
+		/// <returns>
+		/// 	<c>true</c> if the scheme is allowed; otherwise, <c>false</c>.
+		/// 	<c>false</c> is also returned if <paramref name="uri"/> is null.
+		/// </returns>
+		private static bool IsAllowedScheme(string uri) {
+			if (string.IsNullOrEmpty(uri)) {
+				return false;
+			}
+			return Array.FindIndex(
+				allowedSchemes,
+				s => uri.StartsWith(s + Uri.SchemeDelimiter, StringComparison.OrdinalIgnoreCase)) >= 0;
 		}
 
 		/// <summary>
-		/// Returns the hash code of this XRI.
+		/// Determines whether the given URI is using a scheme in the list of allowed schemes.
 		/// </summary>
-		public override int GetHashCode() {
-			return Uri.GetHashCode();
+		/// <param name="uri">The URI whose scheme is to be checked.</param>
+		/// <returns>
+		/// 	<c>true</c> if the scheme is allowed; otherwise, <c>false</c>.
+		/// 	<c>false</c> is also returned if <paramref name="uri"/> is null.
+		/// </returns>
+		private static bool IsAllowedScheme(Uri uri) {
+			if (uri == null) {
+				return false;
+			}
+			return Array.FindIndex(
+				allowedSchemes,
+				s => uri.Scheme.Equals(s, StringComparison.OrdinalIgnoreCase)) >= 0;
 		}
 
 		/// <summary>
-		/// Returns the string form of the URI.
+		/// Tries to canonicalize a user-supplied identifier.
+		/// This does NOT convert a user-supplied identifier to a Claimed Identifier!
 		/// </summary>
-		public override string ToString() {
-			return Uri.AbsoluteUri;
+		/// <param name="uri">The user-supplied identifier.</param>
+		/// <param name="canonicalUri">The resulting canonical URI.</param>
+		/// <param name="forceHttpsDefaultScheme">If set to <c>true</c> and the user-supplied identifier lacks a scheme, the "https://" scheme will be prepended instead of the standard "http://" one.</param>
+		/// <param name="schemePrepended">if set to <c>true</c> [scheme prepended].</param>
+		/// <returns>
+		/// <c>true</c> if the identifier was valid and could be canonicalized.
+		/// <c>false</c> if the identifier is outside the scope of allowed inputs and should be rejected.
+		/// </returns>
+		/// <remarks>
+		/// Canonicalization is done by adding a scheme in front of an
+		/// identifier if it isn't already present.  Other trivial changes that do not
+		/// require network access are also done, such as lower-casing the hostname in the URI.
+		/// </remarks>
+		private static bool TryCanonicalize(string uri, out Uri canonicalUri, bool forceHttpsDefaultScheme, out bool schemePrepended) {
+			ErrorUtilities.VerifyNonZeroLength(uri, "uri");
+
+			canonicalUri = null;
+			schemePrepended = false;
+			try {
+				// Assume http:// scheme if an allowed scheme isn't given, and strip
+				// fragments off.  Consistent with spec section 7.2#3
+				if (!IsAllowedScheme(uri)) {
+					uri = (forceHttpsDefaultScheme ? Uri.UriSchemeHttps : Uri.UriSchemeHttp) +
+						Uri.SchemeDelimiter + uri;
+					schemePrepended = true;
+				}
+
+				// Use a UriBuilder because it helps to normalize the URL as well.
+				return TryCanonicalize(new UriBuilder(uri), out canonicalUri);
+			} catch (UriFormatException) {
+				// We try not to land here with checks in the try block, but just in case.
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// Removes the fragment from a URL and sets the host to lowercase.
+		/// </summary>
+		/// <param name="uriBuilder">The URI builder with the value to canonicalize.</param>
+		/// <param name="canonicalUri">The resulting canonical URI.</param>
+		/// <returns><c>true</c> if the canonicalization was successful; <c>false</c> otherwise.</returns>
+		/// <remarks>
+		/// This does NOT standardize an OpenID URL for storage in a database, as
+		/// it does nothing to convert the URL to a Claimed Identifier, besides the fact
+		/// that it only deals with URLs whereas OpenID 2.0 supports XRIs.
+		/// For this, you should lookup the value stored in IAuthenticationResponse.ClaimedIdentifier.
+		/// </remarks>
+		[SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "The user will see the result of this operation and they want to see it in lower case.")]
+		private static bool TryCanonicalize(UriBuilder uriBuilder, out Uri canonicalUri) {
+			uriBuilder.Host = uriBuilder.Host.ToLowerInvariant();
+			canonicalUri = uriBuilder.Uri;
+			return true;
 		}
 	}
 }

@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
@@ -17,63 +18,82 @@ namespace DotNetOpenAuth.OpenId {
 	[Serializable]
 	public abstract class Identifier {
 		/// <summary>
-		/// Constructs an <see cref="Identifier"/>.
+		/// Initializes a new instance of the <see cref="Identifier"/> class.
 		/// </summary>
 		/// <param name="isDiscoverySecureEndToEnd">
 		/// Whether the derived class is prepared to guarantee end-to-end discovery
 		/// and initial redirect for authentication is performed using SSL.
 		/// </param>
 		protected Identifier(bool isDiscoverySecureEndToEnd) {
-			IsDiscoverySecureEndToEnd = isDiscoverySecureEndToEnd;
+			this.IsDiscoverySecureEndToEnd = isDiscoverySecureEndToEnd;
 		}
 
 		/// <summary>
-		/// Whether this Identifier will ensure SSL is used throughout the discovery phase
-		/// and initial redirect of authentication.
+		/// Gets a value indicating whether this Identifier will ensure SSL is 
+		/// used throughout the discovery phase and initial redirect of authentication.
 		/// </summary>
 		/// <remarks>
-		/// If this is False, a value of True may be obtained by calling <see cref="TryRequireSsl"/>.
+		/// If this is <c>false</c>, a value of <c>true</c> may be obtained by calling 
+		/// <see cref="TryRequireSsl"/>.
 		/// </remarks>
 		protected internal bool IsDiscoverySecureEndToEnd { get; private set; }
 
 		/// <summary>
 		/// Converts the string representation of an Identifier to its strong type.
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates"), SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads")]
+		/// <param name="identifier">The identifier.</param>
+		/// <returns>The particular Identifier instance to represent the value given.</returns>
+		[SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates", Justification = "Our named alternate is Parse.")]
+		[SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads", Justification = "TODO")]
 		public static implicit operator Identifier(string identifier) {
-			if (identifier == null) return null;
+			if (identifier == null) {
+				return null;
+			}
 			return Parse(identifier);
 		}
+
 		/// <summary>
-		/// Returns a strongly-typed Identifier for a given Uri.
+		/// Converts a given Uri to a strongly-typed Identifier.
 		/// </summary>
-		[SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates")]
+		/// <param name="identifier">The identifier to convert.</param>
+		/// <returns>The result of the conversion.</returns>
+		[SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates", Justification = "TODO")]
 		public static implicit operator Identifier(Uri identifier) {
-			if (identifier == null) return null;
+			if (identifier == null) {
+				return null;
+			}
 			return new UriIdentifier(identifier);
 		}
+
 		/// <summary>
 		/// Converts an Identifier to its string representation.
 		/// </summary>
-		[SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates")]
+		/// <param name="identifier">The identifier to convert to a string.</param>
+		/// <returns>The result of the conversion.</returns>
+		[SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates", Justification = "TODO")]
 		public static implicit operator string(Identifier identifier) {
-			if (identifier == null) return null;
+			if (identifier == null) {
+				return null;
+			}
 			return identifier.ToString();
 		}
+
 		/// <summary>
 		/// Parses an identifier string and automatically determines
 		/// whether it is an XRI or URI.
 		/// </summary>
 		/// <param name="identifier">Either a URI or XRI identifier.</param>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
+		/// <returns>An <see cref="Identifier"/> instance for the given value.</returns>
+		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "TODO")]
 		public static Identifier Parse(string identifier) {
-			if (string.IsNullOrEmpty(identifier)) throw new ArgumentNullException("identifier");
+			ErrorUtilities.VerifyArgumentNotNull(identifier, "identifier");
 			if (XriIdentifier.IsValidXri(identifier)) {
 				return new XriIdentifier(identifier);
 			} else {
 				return new UriIdentifier(identifier);
 			}
 		}
+
 		/// <summary>
 		/// Attempts to parse a string for an OpenId Identifier.
 		/// </summary>
@@ -91,10 +111,15 @@ namespace DotNetOpenAuth.OpenId {
 				return false;
 			}
 		}
+
 		/// <summary>
-		/// Gets whether a given string represents a valid Identifier format.
+		/// Checks the validity of a given string representation of some Identifier.
 		/// </summary>
-		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
+		/// <param name="identifier">The identifier.</param>
+		/// <returns>
+		/// 	<c>true</c> if the specified identifier is valid; otherwise, <c>false</c>.
+		/// </returns>
+		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "TODO")]
 		public static bool IsValid(string identifier) {
 			return XriIdentifier.IsValidXri(identifier) || UriIdentifier.IsValidUri(identifier);
 		}
@@ -112,27 +137,48 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Tests equality between two <see cref="Identifier"/>s.
 		/// </summary>
+		/// <param name="id1">The first Identifier.</param>
+		/// <param name="id2">The second Identifier.</param>
+		/// <returns>
+		/// <c>true</c> if the two instances should be considered equal; <c>false</c> otherwise.
+		/// </returns>
 		public static bool operator ==(Identifier id1, Identifier id2) {
-			if ((object)id1 == null ^ (object)id2 == null) return false;
-			if ((object)id1 == null) return true;
-			return id1.Equals(id2);
+			return id1.EqualsNullSafe(id2);
 		}
+
 		/// <summary>
 		/// Tests inequality between two <see cref="Identifier"/>s.
 		/// </summary>
+		/// <param name="id1">The first Identifier.</param>
+		/// <param name="id2">The second Identifier.</param>
+		/// <returns>
+		/// <c>true</c> if the two instances should be considered unequal; <c>false</c> if they are equal.
+		/// </returns>
 		public static bool operator !=(Identifier id1, Identifier id2) {
-			return !(id1 == id2);
+			return !id1.EqualsNullSafe(id2);
 		}
+
 		/// <summary>
 		/// Tests equality between two <see cref="Identifier"/>s.
 		/// </summary>
+		/// <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:System.Object"/>.</param>
+		/// <returns>
+		/// true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>; otherwise, false.
+		/// </returns>
+		/// <exception cref="T:System.NullReferenceException">
+		/// The <paramref name="obj"/> parameter is null.
+		/// </exception>
 		public override bool Equals(object obj) {
 			Debug.Fail("This should be overridden in every derived class.");
 			return base.Equals(obj);
 		}
+
 		/// <summary>
 		/// Gets the hash code for an <see cref="Identifier"/> for storage in a hashtable.
 		/// </summary>
+		/// <returns>
+		/// A hash code for the current <see cref="T:System.Object"/>.
+		/// </returns>
 		public override int GetHashCode() {
 			Debug.Fail("This should be overridden in every derived class.");
 			return base.GetHashCode();
@@ -140,9 +186,11 @@ namespace DotNetOpenAuth.OpenId {
 
 		/// <summary>
 		/// Returns an <see cref="Identifier"/> that has no URI fragment.
-		/// Quietly returns the original <see cref="Identifier"/> if it is not 
+		/// Quietly returns the original <see cref="Identifier"/> if it is not
 		/// a <see cref="UriIdentifier"/> or no fragment exists.
 		/// </summary>
+		/// <returns>A new <see cref="Identifier"/> instance if there was a 
+		/// fragment to remove, otherwise this same instance..</returns>
 		internal abstract Identifier TrimFragment();
 
 		/// <summary>
