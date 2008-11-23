@@ -132,6 +132,9 @@
   <data name="DiffieHellmanRequiredPropertiesNotSet" xml:space="preserve">
     <value>The following properties must be set before the Diffie-Hellman algorithm can generate a public key: {0}</value>
   </data>
+  <data name="ExplicitHttpUriSuppliedWithSslRequirement" xml:space="preserve">
+    <value>URI is not SSL yet requireSslDiscovery is set to true.</value>
+  </data>
   <data name="InvalidCharacterInKeyValueFormInput" xml:space="preserve">
     <value>Cannot encode '{0}' because it contains an illegal character for Key-Value Form encoding.  (line {1}: '{2}')</value>
   </data>
@@ -140,6 +143,12 @@
   </data>
   <data name="InvalidScheme" xml:space="preserve">
     <value>The scheme must be http or https but was '{0}'.</value>
+  </data>
+  <data name="InvalidUri" xml:space="preserve">
+    <value>The value '{0}' is not a valid URI.</value>
+  </data>
+  <data name="InvalidXri" xml:space="preserve">
+    <value>Not a recognized XRI format: '{0}'.</value>
   </data>
   <data name="KeysListAndDictionaryDoNotMatch" xml:space="preserve">
     <value>The list of keys do not match the provided dictionary.</value>

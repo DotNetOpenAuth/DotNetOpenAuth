@@ -273,7 +273,7 @@ namespace DotNetOpenAuth.OpenId {
 				|| url.PathAndQuery[path_len] == '/';
 		}
 
-#if TODO // TODO: Add discovery and then re-enable this code block
+#if DISCOVERY // TODO: Add discovery and then re-enable this code block
 		/// <summary>
 		/// Searches for an XRDS document at the realm URL, and if found, searches
 		/// for a description of a relying party endpoints (OpenId login pages).

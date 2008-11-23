@@ -106,6 +106,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to URI is not SSL yet requireSslDiscovery is set to true..
+        /// </summary>
+        internal static string ExplicitHttpUriSuppliedWithSslRequirement {
+            get {
+                return ResourceManager.GetString("ExplicitHttpUriSuppliedWithSslRequirement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot encode &apos;{0}&apos; because it contains an illegal character for Key-Value Form encoding.  (line {1}: &apos;{2}&apos;).
         /// </summary>
         internal static string InvalidCharacterInKeyValueFormInput {
@@ -129,6 +138,24 @@ namespace DotNetOpenAuth.OpenId {
         internal static string InvalidScheme {
             get {
                 return ResourceManager.GetString("InvalidScheme", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The value &apos;{0}&apos; is not a valid URI..
+        /// </summary>
+        internal static string InvalidUri {
+            get {
+                return ResourceManager.GetString("InvalidUri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not a recognized XRI format: &apos;{0}&apos;..
+        /// </summary>
+        internal static string InvalidXri {
+            get {
+                return ResourceManager.GetString("InvalidXri", resourceCulture);
             }
         }
         
