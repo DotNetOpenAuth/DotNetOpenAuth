@@ -115,28 +115,65 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="copyFrom">The stream to copy from, at the position where copying should begin.</param>
 		/// <param name="copyTo">The stream to copy to, at the position where bytes should be written.</param>
+		/// <returns>The total number of bytes copied.</returns>
 		/// <remarks>
 		/// Copying begins at the streams' current positions.
 		/// The positions are NOT reset after copying is complete.
 		/// </remarks>
-		internal static void CopyTo(this Stream copyFrom, Stream copyTo) {
-			if (copyFrom == null) {
-				throw new ArgumentNullException("copyFrom");
-			}
-			if (copyTo == null) {
-				throw new ArgumentNullException("copyTo");
-			}
-			if (!copyFrom.CanRead) {
-				throw new ArgumentException(MessagingStrings.StreamUnreadable, "copyFrom");
-			}
-			if (!copyTo.CanWrite) {
-				throw new ArgumentException(MessagingStrings.StreamUnwritable, "copyTo");
-			}
+		internal static int CopyTo(this Stream copyFrom, Stream copyTo) {
+			return CopyTo(copyFrom, copyTo, int.MaxValue);
+		}
+
+		/// <summary>
+		/// Copies the contents of one stream to another.
+		/// </summary>
+		/// <param name="copyFrom">The stream to copy from, at the position where copying should begin.</param>
+		/// <param name="copyTo">The stream to copy to, at the position where bytes should be written.</param>
+		/// <returns>The total number of bytes copied.</returns>
+		/// <remarks>
+		/// Copying begins at the streams' current positions.
+		/// The positions are NOT reset after copying is complete.
+		/// </remarks>
+		internal static int CopyTo(this Stream copyFrom, Stream copyTo, int maximumBytesToCopy) {
+			ErrorUtilities.VerifyArgumentNotNull(copyFrom, "copyFrom");
+			ErrorUtilities.VerifyArgumentNotNull(copyTo, "copyTo");
+			ErrorUtilities.VerifyArgument(copyFrom.CanRead, MessagingStrings.StreamUnreadable);
+			ErrorUtilities.VerifyArgument(copyTo.CanWrite, MessagingStrings.StreamUnwritable, "copyTo");
 
 			byte[] buffer = new byte[1024];
 			int readBytes;
+			int totalCopiedBytes = 0;
 			while ((readBytes = copyFrom.Read(buffer, 0, 1024)) > 0) {
-				copyTo.Write(buffer, 0, readBytes);
+				int writeBytes = Math.Min(maximumBytesToCopy, readBytes);
+				copyTo.Write(buffer, 0, writeBytes);
+				totalCopiedBytes += writeBytes;
+				maximumBytesToCopy -= writeBytes;
+			}
+
+			return totalCopiedBytes;
+		}
+
+		/// <summary>
+		/// Creates a snapshot of some stream so it is seekable, and the original can be closed.
+		/// </summary>
+		/// <param name="copyFrom">The stream to copy bytes from.</param>
+		/// <returns>A seekable stream with the same contents as the original.</returns>
+		internal static Stream CreateSnapshot(this Stream copyFrom) {
+			ErrorUtilities.VerifyArgumentNotNull(copyFrom, "copyFrom");
+
+			MemoryStream copyTo = new MemoryStream(copyFrom.CanSeek ? (int)copyFrom.Length : 4 * 1024);
+			copyFrom.CopyTo(copyTo);
+			copyTo.Position = 0;
+			return copyTo;
+		}
+
+		internal static Stream CreateSnapshotAndClose(this Stream copyFrom) {
+			ErrorUtilities.VerifyArgumentNotNull(copyFrom, "copyFrom");
+
+			try {
+				return CreateSnapshot(copyFrom);
+			} finally {
+				copyFrom.Dispose();
 			}
 		}
 

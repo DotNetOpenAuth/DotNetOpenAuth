@@ -187,6 +187,15 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Insecure web request for &apos;{0}&apos; aborted due to security requirements demanding HTTPS..
+        /// </summary>
+        internal static string InsecureWebRequestWithSslRequired {
+            get {
+                return ResourceManager.GetString("InsecureWebRequestWithSslRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The message required protections {0} but the channel could only apply {1}..
         /// </summary>
         internal static string InsufficentMessageProtection {
@@ -376,6 +385,15 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The maximum allowable number of redirects were exceeded while requesting &apos;{0}&apos;..
+        /// </summary>
+        internal static string TooManyRedirects {
+            get {
+                return ResourceManager.GetString("TooManyRedirects", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The array must not be empty..
         /// </summary>
         internal static string UnexpectedEmptyArray {
@@ -444,6 +462,24 @@ namespace DotNetOpenAuth.Messaging {
         internal static string UnrecognizedEnumValue {
             get {
                 return ResourceManager.GetString("UnrecognizedEnumValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The URL &apos;{0}&apos; is rated unsafe and cannot be requested this way..
+        /// </summary>
+        internal static string UnsafeWebRequestDetected {
+            get {
+                return ResourceManager.GetString("UnsafeWebRequestDetected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Web request to &apos;{0}&apos; failed..
+        /// </summary>
+        internal static string WebRequestFailed {
+            get {
+                return ResourceManager.GetString("WebRequestFailed", resourceCulture);
             }
         }
     }

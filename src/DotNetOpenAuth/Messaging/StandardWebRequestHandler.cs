@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.Messaging {
 	/// The default handler for transmitting <see cref="HttpWebRequest"/> instances
 	/// and returning the responses.
 	/// </summary>
-	internal class StandardWebRequestHandler : IWebRequestHandler {
+	internal class StandardWebRequestHandler : IDirectWebRequestHandler {
 		#region IWebRequestHandler Members
 
 		/// <summary>
@@ -24,9 +24,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The <see cref="HttpWebRequest"/> that should contain the entity.</param>
 		/// <returns>The stream the caller should write out the entity data to.</returns>
 		public TextWriter GetRequestStream(HttpWebRequest request) {
-			if (request == null) {
-				throw new ArgumentNullException("request");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			try {
 				return new StreamWriter(request.GetRequestStream());
@@ -37,19 +35,17 @@ namespace DotNetOpenAuth.Messaging {
 
 		/// <summary>
 		/// Processes an <see cref="HttpWebRequest"/> and converts the 
-		/// <see cref="HttpWebResponse"/> to a <see cref="Response"/> instance.
+		/// <see cref="HttpWebResponse"/> to a <see cref="DirectWebResponse"/> instance.
 		/// </summary>
 		/// <param name="request">The <see cref="HttpWebRequest"/> to handle.</param>
-		/// <returns>An instance of <see cref="Response"/> describing the response.</returns>
-		public Response GetResponse(HttpWebRequest request) {
-			if (request == null) {
-				throw new ArgumentNullException("request");
-			}
+		/// <returns>An instance of <see cref="DirectWebResponse"/> describing the response.</returns>
+		public DirectWebResponse GetResponse(HttpWebRequest request) {
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			try {
 				Logger.DebugFormat("HTTP {0} {1}", request.Method, request.RequestUri);
 				using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
-					return new Response(response);
+					return new DirectWebResponse(request.RequestUri, response);
 				}
 			} catch (WebException ex) {
 				if (Logger.IsErrorEnabled) {

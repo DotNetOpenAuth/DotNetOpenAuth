@@ -9,6 +9,8 @@ namespace DotNetOpenAuth {
 	using System.Globalization;
 	using System.Linq;
 	using System.Reflection;
+	using System.Text;
+	using System.Net;
 
 	/// <summary>
 	/// A grab-bag utility class.
@@ -48,6 +50,88 @@ namespace DotNetOpenAuth {
 
 			// Neither are null.  Delegate to the Equals method.
 			return first.Equals(second);
+		}
+
+		/// <summary>
+		/// Prepares a dictionary for printing as a string.
+		/// </summary>
+		/// <remarks>
+		/// The work isn't done until (and if) the 
+		/// <see cref="Object.ToString"/> method is actually called, which makes it great
+		/// for logging complex objects without being in a conditional block.
+		/// </remarks>
+		internal static object ToStringDeferred<K, V>(this IEnumerable<KeyValuePair<K, V>> pairs) {
+			return new DelayedToString<IEnumerable<KeyValuePair<K, V>>>(pairs, p => {
+				var dictionary = pairs as IDictionary<K, V>;
+				StringBuilder sb = new StringBuilder(dictionary != null ? dictionary.Count * 40 : 200);
+				foreach (var pair in pairs) {
+					sb.AppendFormat("\t{0}: {1}{2}", pair.Key, pair.Value, Environment.NewLine);
+				}
+				return sb.ToString();
+			});
+		}
+		internal static object ToStringDeferred<T>(this IEnumerable<T> list) {
+			return ToStringDeferred<T>(list, false);
+		}
+		internal static object ToStringDeferred<T>(this IEnumerable<T> list, bool multiLineElements) {
+			return new DelayedToString<IEnumerable<T>>(list, l => {
+				StringBuilder sb = new StringBuilder();
+				if (multiLineElements) {
+					sb.AppendLine("[{");
+					foreach (T obj in l) {
+						// Prepare the string repersentation of the object
+						string objString = obj != null ? obj.ToString() : "<NULL>";
+
+						// Indent every line printed
+						objString = objString.Replace(Environment.NewLine, Environment.NewLine + "\t");
+						sb.Append("\t");
+						sb.Append(objString);
+
+						if (!objString.EndsWith(Environment.NewLine)) {
+							sb.AppendLine();
+						}
+						sb.AppendLine("}, {");
+					}
+					if (sb.Length > 2) { // if anything was in the enumeration
+						sb.Length -= 2 + Environment.NewLine.Length; // trim off the last ", {\r\n"
+					} else {
+						sb.Length -= 1; // trim off the opening {
+					}
+					sb.Append("]");
+					return sb.ToString();
+				} else {
+					sb.Append("{");
+					foreach (T obj in l) {
+						sb.Append(obj != null ? obj.ToString() : "<NULL>");
+						sb.AppendLine(",");
+					}
+					if (sb.Length > 1) {
+						sb.Length -= 1;
+					}
+					sb.Append("}");
+					return sb.ToString();
+				}
+			});
+		}
+
+		private class DelayedToString<T> {
+			public DelayedToString(T obj, Func<T, string> toString) {
+				this.obj = obj;
+				this.toString = toString;
+			}
+			T obj;
+			Func<T, string> toString;
+			public override string ToString() {
+				return toString(obj);
+			}
+		}
+
+		internal static HttpWebRequest CreatePostRequest(Uri requestUri, string body) {
+			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(requestUri);
+			request.ContentType = "application/x-www-form-urlencoded";
+			request.ContentLength = body.Length;
+			request.Method = "POST";
+			return request;
 		}
 	}
 }

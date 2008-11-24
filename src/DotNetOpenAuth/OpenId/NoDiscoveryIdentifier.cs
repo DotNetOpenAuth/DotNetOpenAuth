@@ -30,11 +30,10 @@ namespace DotNetOpenAuth.OpenId {
 			this.wrappedIdentifier = wrappedIdentifier;
 		}
 
-#if DISCOVERY // TODO: Add discovery and then re-enable this code block
 		internal override IEnumerable<ServiceEndpoint> Discover() {
 			return new ServiceEndpoint[0];
 		}
-#endif
+
 		/// <summary>
 		/// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
 		/// </summary>

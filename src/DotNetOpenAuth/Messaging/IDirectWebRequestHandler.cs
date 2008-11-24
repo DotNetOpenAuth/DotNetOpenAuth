@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="IWebRequestHandler.cs" company="Andrew Arnott">
+// <copyright file="IDirectWebRequestHandler.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -12,7 +12,7 @@ namespace DotNetOpenAuth.Messaging {
 	/// <summary>
 	/// A contract for <see cref="HttpWebRequest"/> handling.
 	/// </summary>
-	public interface IWebRequestHandler {
+	public interface IDirectWebRequestHandler {
 		/// <summary>
 		/// Prepares an <see cref="HttpWebRequest"/> that contains an POST entity for sending the entity.
 		/// </summary>
@@ -22,10 +22,10 @@ namespace DotNetOpenAuth.Messaging {
 
 		/// <summary>
 		/// Processes an <see cref="HttpWebRequest"/> and converts the 
-		/// <see cref="HttpWebResponse"/> to a <see cref="Response"/> instance.
+		/// <see cref="HttpWebResponse"/> to a <see cref="DirectWebResponse"/> instance.
 		/// </summary>
 		/// <param name="request">The <see cref="HttpWebRequest"/> to handle.</param>
-		/// <returns>An instance of <see cref="Response"/> describing the response.</returns>
-		Response GetResponse(HttpWebRequest request);
+		/// <returns>An instance of <see cref="DirectWebResponse"/> describing the response.</returns>
+		DirectWebResponse GetResponse(HttpWebRequest request);
 	}
 }

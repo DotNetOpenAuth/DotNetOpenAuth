@@ -205,11 +205,38 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to determine the version of the OpenID protocol implemented by the Provider at endpoint &apos;{0}&apos;..
+        /// </summary>
+        internal static string ProviderVersionUnrecognized {
+            get {
+                return ResourceManager.GetString("ProviderVersionUnrecognized", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An HTTP request to the realm URL ({0}) resulted in a redirect, which is not allowed during relying party discovery..
+        /// </summary>
+        internal static string RealmCausedRedirectUponDiscovery {
+            get {
+                return ResourceManager.GetString("RealmCausedRedirectUponDiscovery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to return_to &apos;{0}&apos; not under realm &apos;{1}&apos;..
         /// </summary>
         internal static string ReturnToNotUnderRealm {
             get {
                 return ResourceManager.GetString("ReturnToNotUnderRealm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to XRI resolution failed..
+        /// </summary>
+        internal static string XriResolutionFailed {
+            get {
+                return ResourceManager.GetString("XriResolutionFailed", resourceCulture);
             }
         }
     }

@@ -14,6 +14,9 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Xml;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Provider;
+	using DotNetOpenAuth.Yadis;
+	using DotNetOpenAuth.Xrds;
+	using System.Linq;
 
 	/// <summary>
 	/// A trust root to validate requests and match return URLs against.
@@ -345,38 +348,33 @@ namespace DotNetOpenAuth.OpenId {
 				|| url.PathAndQuery[path_len] == '/';
 		}
 
-#if DISCOVERY // TODO: Add discovery and then re-enable this code block
-		/////// <summary>
-		/////// Searches for an XRDS document at the realm URL, and if found, searches
-		/////// for a description of a relying party endpoints (OpenId login pages).
-		/////// </summary>
-		/////// <param name="allowRedirects">
-		/////// Whether redirects may be followed when discovering the Realm.
-		/////// This may be true when creating an unsolicited assertion, but must be
-		/////// false when performing return URL verification per 2.0 spec section 9.2.1.
-		/////// </param>
-		/////// <returns>The details of the endpoints if found, otherwise null.</returns>
-		////internal IEnumerable<DotNetOpenId.Provider.RelyingPartyReceivingEndpoint> Discover(bool allowRedirects) {
-		////    // Attempt YADIS discovery
-		////    DiscoveryResult yadisResult = Yadis.Yadis.Discover(UriWithWildcardChangedToWww, false);
-		////    if (yadisResult != null) {
-		////        if (!allowRedirects && yadisResult.NormalizedUri != yadisResult.RequestUri) {
-		////            // Redirect occurred when it was not allowed.
-		////            throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
-		////                Strings.RealmCausedRedirectUponDiscovery, yadisResult.RequestUri));
-		////        }
-		////        if (yadisResult.IsXrds) {
-		////            try {
-		////                XrdsDocument xrds = new XrdsDocument(yadisResult.ResponseText);
-		////                return xrds.FindRelyingPartyReceivingEndpoints();
-		////            } catch (XmlException ex) {
-		////                throw new OpenIdException(Strings.InvalidXRDSDocument, ex);
-		////            }
-		////        }
-		////    }
-		////    return new RelyingPartyReceivingEndpoint[0];
-		////}
-#endif
+		/// <summary>
+		/// Searches for an XRDS document at the realm URL, and if found, searches
+		/// for a description of a relying party endpoints (OpenId login pages).
+		/// </summary>
+		/// <param name="allowRedirects">
+		/// Whether redirects may be followed when discovering the Realm.
+		/// This may be true when creating an unsolicited assertion, but must be
+		/// false when performing return URL verification per 2.0 spec section 9.2.1.
+		/// </param>
+		/// <returns>The details of the endpoints if found, otherwise null.</returns>
+		internal IEnumerable<RelyingPartyEndpointDescription> Discover(bool allowRedirects) {
+			// Attempt YADIS discovery
+			DiscoveryResult yadisResult = Yadis.Discover(UriWithWildcardChangedToWww, false);
+			if (yadisResult != null) {
+				// Detect disallowed redirects, since realm discovery never allows them for security.
+				ErrorUtilities.VerifyProtocol(allowRedirects || yadisResult.NormalizedUri == yadisResult.RequestUri, OpenIdStrings.RealmCausedRedirectUponDiscovery, yadisResult.RequestUri);
+				if (yadisResult.IsXrds) {
+					try {
+						XrdsDocument xrds = new XrdsDocument(yadisResult.ResponseText);
+						return xrds.FindRelyingPartyReceivingEndpoints();
+					} catch (XmlException ex) {
+						throw ErrorUtilities.Wrap(ex, XrdsStrings.InvalidXRDSDocument);
+					}
+				}
+			}
+			return Enumerable.Empty<RelyingPartyEndpointDescription>();
+		}
 
 		/// <summary>
 		/// Calls <see cref="UriBuilder.ToString"/> if the argument is non-null.

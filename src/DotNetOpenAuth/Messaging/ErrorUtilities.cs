@@ -77,7 +77,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="condition">The condition that must evaluate to true to avoid an exception.</param>
 		/// <param name="message">The message to use in the exception if the condition is false.</param>
 		/// <param name="args">The string formatting arguments, if any.</param>
-		internal static void VerifyArgument(bool condition, string message, params string[] args) {
+		internal static void VerifyArgument(bool condition, string message, params object[] args) {
 			if (!condition) {
 				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, message, args));
 			}

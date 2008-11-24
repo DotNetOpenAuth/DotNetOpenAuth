@@ -6,12 +6,15 @@
 
 namespace DotNetOpenAuth.OpenId {
 	using System;
+	using System.Linq;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Text.RegularExpressions;
 	using System.Web.UI.HtmlControls;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using DotNetOpenAuth.Yadis;
+	using DotNetOpenAuth.Xrds;
 
 	/// <summary>
 	/// A URI style of OpenID Identifier.
@@ -193,7 +196,6 @@ namespace DotNetOpenAuth.OpenId {
 			return true;
 		}
 
-#if DISCOVERY // TODO: Add discovery and then re-enable this code block
 		/// <summary>
 		/// Searches HTML for the HEAD META tags that describe OpenID provider services.
 		/// </summary>
@@ -215,7 +217,7 @@ namespace DotNetOpenAuth.OpenId {
 			Uri providerEndpoint = null;
 			Protocol discoveredProtocol = null;
 			Identifier providerLocalIdentifier = null;
-			var linkTags = new List<HtmlLink>(Yadis.HtmlParser.HeadTags<HtmlLink>(html));
+			var linkTags = new List<HtmlLink>(HtmlParser.HeadTags<HtmlLink>(html));
 			foreach (var protocol in Protocol.AllVersions) {
 				foreach (var linkTag in linkTags) {
 					// rel attributes are supposed to be interpreted with case INsensitivity, 
@@ -253,14 +255,14 @@ namespace DotNetOpenAuth.OpenId {
 		internal override IEnumerable<ServiceEndpoint> Discover() {
 			List<ServiceEndpoint> endpoints = new List<ServiceEndpoint>();
 			// Attempt YADIS discovery
-			DiscoveryResult yadisResult = Yadis.Yadis.Discover(this, IsDiscoverySecureEndToEnd);
+			DiscoveryResult yadisResult = Yadis.Discover(this, IsDiscoverySecureEndToEnd);
 			if (yadisResult != null) {
 				if (yadisResult.IsXrds) {
 					XrdsDocument xrds = new XrdsDocument(yadisResult.ResponseText);
 					var xrdsEndpoints = xrds.CreateServiceEndpoints(yadisResult.NormalizedUri);
 					// Filter out insecure endpoints if high security is required.
 					if (IsDiscoverySecureEndToEnd) {
-						xrdsEndpoints = Util.Where(xrdsEndpoints, se => se.IsSecure);
+						xrdsEndpoints = xrdsEndpoints.Where(se => se.IsSecure);
 					}
 					endpoints.AddRange(xrdsEndpoints);
 				}
@@ -284,7 +286,6 @@ namespace DotNetOpenAuth.OpenId {
 			}
 			return endpoints;
 		}
-#endif
 
 		/// <summary>
 		/// Returns an <see cref="Identifier"/> that has no URI fragment.

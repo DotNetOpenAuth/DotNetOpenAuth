@@ -68,7 +68,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return request.Message;
 		}
 
-		protected override IDictionary<string, string> ReadFromResponseInternal(Response response) {
+		protected override IDictionary<string, string> ReadFromResponseInternal(DirectWebResponse response) {
 			Channel_Accessor accessor = Channel_Accessor.AttachShadow(this.wrappedChannel);
 			return accessor.ReadFromResponseInternal(response);
 		}

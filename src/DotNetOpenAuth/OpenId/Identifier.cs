@@ -124,7 +124,6 @@ namespace DotNetOpenAuth.OpenId {
 			return XriIdentifier.IsValidXri(identifier) || UriIdentifier.IsValidUri(identifier);
 		}
 
-#if DISCOVERY // TODO: Add discovery and then re-enable this code block
 		/// <summary>
 		/// Performs discovery on the Identifier.
 		/// </summary>
@@ -132,7 +131,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// An initialized structure containing the discovered provider endpoint information.
 		/// </returns>
 		internal abstract IEnumerable<ServiceEndpoint> Discover();
-#endif
 
 		/// <summary>
 		/// Tests equality between two <see cref="Identifier"/>s.

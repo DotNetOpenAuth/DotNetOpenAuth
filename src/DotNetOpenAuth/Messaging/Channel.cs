@@ -95,7 +95,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// This defaults to a straightforward implementation, but can be set
 		/// to a mock object for testing purposes.
 		/// </remarks>
-		public IWebRequestHandler WebRequestHandler { get; set; }
+		public IDirectWebRequestHandler WebRequestHandler { get; set; }
 
 		/// <summary>
 		/// Gets the binding elements used by this channel, in the order they are applied to outgoing messages.
@@ -359,7 +359,7 @@ namespace DotNetOpenAuth.Messaging {
 		protected virtual IProtocolMessage RequestInternal(IDirectedProtocolMessage request) {
 			HttpWebRequest webRequest = this.CreateHttpRequest(request);
 
-			Response response = this.WebRequestHandler.GetResponse(webRequest);
+			DirectWebResponse response = this.WebRequestHandler.GetResponse(webRequest);
 			if (response.ResponseStream == null) {
 				return null;
 			}
@@ -522,7 +522,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="response">The response that is anticipated to contain an protocol message.</param>
 		/// <returns>The deserialized message parts, if found.  Null otherwise.</returns>
-		protected abstract IDictionary<string, string> ReadFromResponseInternal(Response response);
+		protected abstract IDictionary<string, string> ReadFromResponseInternal(DirectWebResponse response);
 
 		/// <summary>
 		/// Prepares an HTTP request that carries a given message.

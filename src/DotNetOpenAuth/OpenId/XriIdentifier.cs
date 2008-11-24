@@ -11,6 +11,8 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Xml;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using DotNetOpenAuth.Xrds;
+	using DotNetOpenAuth.Yadis;
 
 	/// <summary>
 	/// An XRI style of OpenID Identifier.
@@ -48,7 +50,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// Initializes a new instance of the <see cref="XriIdentifier"/> class.
 		/// </summary>
 		/// <param name="xri">The string value of the XRI.</param>
-		internal XriIdentifier(string xri) : this(xri, false) { }
+		internal XriIdentifier(string xri)
+			: this(xri, false) {
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="XriIdentifier"/> class.
@@ -145,28 +149,24 @@ namespace DotNetOpenAuth.OpenId {
 				|| xri.StartsWith(XriScheme, StringComparison.OrdinalIgnoreCase);
 		}
 
-#if DISCOVERY // TODO: Add discovery and then re-enable this code block
-		////private XrdsDocument downloadXrds() {
-		////    var xrdsResponse = UntrustedWebRequest.Request(XrdsUrl);
-		////    XrdsDocument doc = new XrdsDocument(XmlReader.Create(xrdsResponse.ResponseStream));
-		////    if (!doc.IsXrdResolutionSuccessful) {
-		////        throw new OpenIdException(Strings.XriResolutionFailed);
-		////    }
-		////    return doc;
-		////}
+		private XrdsDocument downloadXrds() {
+			var xrdsResponse = Yadis.Request(this.XrdsUrl, this.IsDiscoverySecureEndToEnd);
+			XrdsDocument doc = new XrdsDocument(XmlReader.Create(xrdsResponse.ResponseStream));
+			ErrorUtilities.VerifyProtocol(doc.IsXrdResolutionSuccessful, OpenIdStrings.XriResolutionFailed);
+			return doc;
+		}
 
-		////internal override IEnumerable<ServiceEndpoint> Discover() {
-		////    return downloadXrds().CreateServiceEndpoints(this);
-		////}
+		internal override IEnumerable<ServiceEndpoint> Discover() {
+			return downloadXrds().CreateServiceEndpoints(this);
+		}
 
-		/////// <summary>
-		/////// Performs discovery on THIS identifier, but generates <see cref="ServiceEndpoint"/>
-		/////// instances that treat another given identifier as the user-supplied identifier.
-		/////// </summary>
-		////internal IEnumerable<ServiceEndpoint> Discover(XriIdentifier userSuppliedIdentifier) {
-		////    return downloadXrds().CreateServiceEndpoints(userSuppliedIdentifier);
-		////}
-#endif
+		/// <summary>
+		/// Performs discovery on THIS identifier, but generates <see cref="ServiceEndpoint"/>
+		/// instances that treat another given identifier as the user-supplied identifier.
+		/// </summary>
+		internal IEnumerable<ServiceEndpoint> Discover(XriIdentifier userSuppliedIdentifier) {
+			return downloadXrds().CreateServiceEndpoints(userSuppliedIdentifier);
+		}
 
 		/// <summary>
 		/// Returns an <see cref="Identifier"/> that has no URI fragment.

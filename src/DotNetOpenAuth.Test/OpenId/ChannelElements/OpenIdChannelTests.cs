@@ -79,7 +79,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 				{ "var1", "value1" },
 				{ "var2", "value2" },
 			};
-			Response response = new Response {
+			var response = new DirectWebResponse {
 				ResponseStream = new MemoryStream(KeyValueFormEncoding.GetBytes(fields)),
 			};
 			Assert.IsTrue(MessagingUtilities.AreEquivalent(fields, this.accessor.ReadFromResponseInternal(response)));
