@@ -103,7 +103,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		public void IsValid() {
 			Assert.IsTrue(UriIdentifier.IsValidUri(this.goodUri));
 			Assert.IsFalse(UriIdentifier.IsValidUri(this.badUri));
-			Assert.IsTrue(UriIdentifier.IsValidUri(relativeUri), "URL lacking http:// prefix should have worked anyway.");
+			Assert.IsTrue(UriIdentifier.IsValidUri(this.relativeUri), "URL lacking http:// prefix should have worked anyway.");
 		}
 
 		[TestMethod]
@@ -161,8 +161,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		[TestMethod]
 		public void XrdsDiscoveryFromHead() {
-			this.mockResponder.RegisterMockResponse(new Uri("http://localhost/xrds1020.xml"),
-				"application/xrds+xml", TestSupport.LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds1020.xml"));
+			this.MockResponder.RegisterMockResponse(new Uri("http://localhost/xrds1020.xml"), "application/xrds+xml", TestSupport.LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds1020.xml"));
 			this.DiscoverXrds("XrdsReferencedInHead.html", ProtocolVersion.V10, null);
 		}
 
@@ -170,7 +169,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		public void XrdsDiscoveryFromHttpHeader() {
 			WebHeaderCollection headers = new WebHeaderCollection();
 			headers.Add("X-XRDS-Location", TestSupport.GetFullUrl("http://localhost/xrds1020.xml").AbsoluteUri);
-			this.mockResponder.RegisterMockResponse(new Uri("http://localhost/xrds1020.xml"), "application/xrds+xml", TestSupport.LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds1020.xml"));
+			this.MockResponder.RegisterMockResponse(new Uri("http://localhost/xrds1020.xml"), "application/xrds+xml", TestSupport.LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds1020.xml"));
 			this.DiscoverXrds("XrdsReferencedInHttpHeader.html", ProtocolVersion.V10, null, headers);
 		}
 
@@ -215,17 +214,17 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		[TestMethod]
 		public void DiscoveryWithRedirects() {
-			Identifier claimedId = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, this.mockResponder, ProtocolVersion.V20);
+			Identifier claimedId = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, this.MockResponder, ProtocolVersion.V20);
 
 			// Add a couple of chained redirect pages that lead to the claimedId.
 			Uri userSuppliedUri = TestSupport.GetFullUrl("/someSecurePage", null, true);
 			Uri insecureMidpointUri = TestSupport.GetFullUrl("/insecureStop");
-			this.mockResponder.RegisterMockRedirect(userSuppliedUri, insecureMidpointUri);
-			this.mockResponder.RegisterMockRedirect(insecureMidpointUri, new Uri(claimedId.ToString()));
+			this.MockResponder.RegisterMockRedirect(userSuppliedUri, insecureMidpointUri);
+			this.MockResponder.RegisterMockRedirect(insecureMidpointUri, new Uri(claimedId.ToString()));
 
 			// don't require secure SSL discovery for this test.
 			Identifier userSuppliedIdentifier = new UriIdentifier(userSuppliedUri, false);
-			Assert.AreEqual(1, userSuppliedIdentifier.Discover(this.requestHandler).Count());
+			Assert.AreEqual(1, userSuppliedIdentifier.Discover(this.RequestHandler).Count());
 		}
 
 		[TestMethod]
@@ -249,80 +248,81 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.IsFalse(id.TryRequireSsl(out secureId));
 			Assert.IsFalse(secureId.IsDiscoverySecureEndToEnd);
 			Assert.AreEqual("http://www.yahoo.com/", secureId.ToString());
-			Assert.AreEqual(0, secureId.Discover(this.requestHandler).Count());
+			Assert.AreEqual(0, secureId.Discover(this.RequestHandler).Count());
 
 			id = new UriIdentifier("http://www.yahoo.com");
 			Assert.IsFalse(id.TryRequireSsl(out secureId));
 			Assert.IsFalse(secureId.IsDiscoverySecureEndToEnd);
 			Assert.AreEqual("http://www.yahoo.com/", secureId.ToString());
-			Assert.AreEqual(0, secureId.Discover(this.requestHandler).Count());
+			Assert.AreEqual(0, secureId.Discover(this.RequestHandler).Count());
 		}
 
 		[TestMethod]
 		public void DiscoverRequireSslWithSecureRedirects() {
-			Identifier claimedId = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, this.mockResponder, ProtocolVersion.V20, true);
+			Identifier claimedId = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, this.MockResponder, ProtocolVersion.V20, true);
 
 			// Add a couple of chained redirect pages that lead to the claimedId.
 			// All redirects should be secure.
 			Uri userSuppliedUri = TestSupport.GetFullUrl("/someSecurePage", null, true);
 			Uri secureMidpointUri = TestSupport.GetFullUrl("/secureStop", null, true);
-			this.mockResponder.RegisterMockRedirect(userSuppliedUri, secureMidpointUri);
-			this.mockResponder.RegisterMockRedirect(secureMidpointUri, new Uri(claimedId.ToString()));
+			this.MockResponder.RegisterMockRedirect(userSuppliedUri, secureMidpointUri);
+			this.MockResponder.RegisterMockRedirect(secureMidpointUri, new Uri(claimedId.ToString()));
 
 			Identifier userSuppliedIdentifier = new UriIdentifier(userSuppliedUri, true);
-			Assert.AreEqual(1, userSuppliedIdentifier.Discover(this.requestHandler).Count());
+			Assert.AreEqual(1, userSuppliedIdentifier.Discover(this.RequestHandler).Count());
 		}
 
 		[TestMethod, ExpectedException(typeof(ProtocolException))]
 		public void DiscoverRequireSslWithInsecureRedirect() {
-			Identifier claimedId = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, this.mockResponder, ProtocolVersion.V20, true);
+			Identifier claimedId = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, this.MockResponder, ProtocolVersion.V20, true);
 
 			// Add a couple of chained redirect pages that lead to the claimedId.
 			// Include an insecure HTTP jump in those redirects to verify that
 			// the ultimate endpoint is never found as a result of high security profile.
 			Uri userSuppliedUri = TestSupport.GetFullUrl("/someSecurePage", null, true);
 			Uri insecureMidpointUri = TestSupport.GetFullUrl("/insecureStop");
-			this.mockResponder.RegisterMockRedirect(userSuppliedUri, insecureMidpointUri);
-			this.mockResponder.RegisterMockRedirect(insecureMidpointUri, new Uri(claimedId.ToString()));
+			this.MockResponder.RegisterMockRedirect(userSuppliedUri, insecureMidpointUri);
+			this.MockResponder.RegisterMockRedirect(insecureMidpointUri, new Uri(claimedId.ToString()));
 
 			Identifier userSuppliedIdentifier = new UriIdentifier(userSuppliedUri, true);
-			userSuppliedIdentifier.Discover(this.requestHandler);
+			userSuppliedIdentifier.Discover(this.RequestHandler);
 		}
 
 		[TestMethod]
 		public void DiscoveryRequireSslWithInsecureXrdsInSecureHtmlHead() {
-			var insecureXrdsSource = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, this.mockResponder, ProtocolVersion.V20, false);
+			var insecureXrdsSource = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, this.MockResponder, ProtocolVersion.V20, false);
 			Uri secureClaimedUri = TestSupport.GetFullUrl("/secureId", null, true);
 
 			string html = string.Format("<html><head><meta http-equiv='X-XRDS-Location' content='{0}'/></head><body></body></html>", insecureXrdsSource);
-			this.mockResponder.RegisterMockResponse(secureClaimedUri, "text/html", html);
+			this.MockResponder.RegisterMockResponse(secureClaimedUri, "text/html", html);
 
 			Identifier userSuppliedIdentifier = new UriIdentifier(secureClaimedUri, true);
-			Assert.AreEqual(0, userSuppliedIdentifier.Discover(this.requestHandler).Count());
+			Assert.AreEqual(0, userSuppliedIdentifier.Discover(this.RequestHandler).Count());
 		}
 
 		[TestMethod]
 		public void DiscoveryRequireSslWithInsecureXrdsInSecureHttpHeader() {
-			var insecureXrdsSource = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, this.mockResponder, ProtocolVersion.V20, false);
+			var insecureXrdsSource = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, this.MockResponder, ProtocolVersion.V20, false);
 			Uri secureClaimedUri = TestSupport.GetFullUrl("/secureId", null, true);
 
 			string html = "<html><head></head><body></body></html>";
 			WebHeaderCollection headers = new WebHeaderCollection {
 				{ "X-XRDS-Location", insecureXrdsSource }
 			};
-			this.mockResponder.RegisterMockResponse(secureClaimedUri, secureClaimedUri, "text/html", headers, html);
+			this.MockResponder.RegisterMockResponse(secureClaimedUri, secureClaimedUri, "text/html", headers, html);
 
 			Identifier userSuppliedIdentifier = new UriIdentifier(secureClaimedUri, true);
-			Assert.AreEqual(0, userSuppliedIdentifier.Discover(this.requestHandler).Count());
+			Assert.AreEqual(0, userSuppliedIdentifier.Discover(this.RequestHandler).Count());
 		}
 
 		[TestMethod]
 		public void DiscoveryRequireSslWithInsecureXrdsButSecureLinkTags() {
-			var insecureXrdsSource = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, this.mockResponder, ProtocolVersion.V20, false);
+			var insecureXrdsSource = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, this.MockResponder, ProtocolVersion.V20, false);
 			Uri secureClaimedUri = TestSupport.GetFullUrl("/secureId", null, true);
 
 			Identifier localIdForLinkTag = TestSupport.GetDelegateUrl(TestSupport.Scenarios.AlwaysDeny, true);
-			string html = string.Format(@"
+			string html = string.Format(
+				@"
 	<html><head>
 		<meta http-equiv='X-XRDS-Location' content='{0}'/> <!-- this one will be insecure and ignored -->
 		<link rel='openid2.provider' href='{1}' />
@@ -331,10 +331,10 @@ namespace DotNetOpenAuth.Test.OpenId {
 				HttpUtility.HtmlEncode(insecureXrdsSource),
 				HttpUtility.HtmlEncode(TestSupport.GetFullUrl("/" + TestSupport.ProviderPage, null, true).AbsoluteUri),
 				HttpUtility.HtmlEncode(localIdForLinkTag.ToString()));
-			this.mockResponder.RegisterMockResponse(secureClaimedUri, "text/html", html);
+			this.MockResponder.RegisterMockResponse(secureClaimedUri, "text/html", html);
 
 			Identifier userSuppliedIdentifier = new UriIdentifier(secureClaimedUri, true);
-			Assert.AreEqual(localIdForLinkTag, userSuppliedIdentifier.Discover(this.requestHandler).Single().ProviderLocalIdentifier);
+			Assert.AreEqual(localIdForLinkTag, userSuppliedIdentifier.Discover(this.RequestHandler).Single().ProviderLocalIdentifier);
 		}
 
 		[TestMethod]
@@ -342,8 +342,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 			var insecureEndpoint = TestSupport.GetServiceEndpoint(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20, 10, false);
 			var secureEndpoint = TestSupport.GetServiceEndpoint(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20, 20, true);
 			UriIdentifier secureClaimedId = new UriIdentifier(TestSupport.GetFullUrl("/claimedId", null, true), true);
-			this.mockResponder.RegisterMockXrdsResponse(secureClaimedId, new ServiceEndpoint[] { insecureEndpoint, secureEndpoint });
-			Assert.AreEqual(secureEndpoint.ProviderLocalIdentifier, secureClaimedId.Discover(this.requestHandler).Single().ProviderLocalIdentifier);
+			this.MockResponder.RegisterMockXrdsResponse(secureClaimedId, new ServiceEndpoint[] { insecureEndpoint, secureEndpoint });
+			Assert.AreEqual(secureEndpoint.ProviderLocalIdentifier, secureClaimedId.Discover(this.RequestHandler).Single().ProviderLocalIdentifier);
 		}
 
 		private void Discover(string url, ProtocolVersion version, Identifier expectedLocalId, bool expectSreg, bool useRedirect) {
@@ -368,9 +368,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 			} else {
 				throw new InvalidOperationException();
 			}
-			this.mockResponder.RegisterMockResponse(new Uri(idToDiscover), claimedId, contentType, headers ?? new WebHeaderCollection(), TestSupport.LoadEmbeddedFile(url));
+			this.MockResponder.RegisterMockResponse(new Uri(idToDiscover), claimedId, contentType, headers ?? new WebHeaderCollection(), TestSupport.LoadEmbeddedFile(url));
 
-			ServiceEndpoint se = idToDiscover.Discover(this.requestHandler).FirstOrDefault();
+			ServiceEndpoint se = idToDiscover.Discover(this.RequestHandler).FirstOrDefault();
 			Assert.IsNotNull(se, url + " failed to be discovered.");
 			Assert.AreSame(protocol, se.Protocol);
 			Assert.AreEqual(claimedId, se.ClaimedIdentifier);
@@ -387,7 +387,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 		}
 
 		private void DiscoverXrds(string page, ProtocolVersion version, Identifier expectedLocalId, WebHeaderCollection headers) {
-			if (!page.Contains(".")) page += ".xml";
+			if (!page.Contains(".")) {
+				page += ".xml";
+			}
 			this.Discover("/Discovery/xrdsdiscovery/" + page, version, expectedLocalId, true, false, headers);
 			this.Discover("/Discovery/xrdsdiscovery/" + page, version, expectedLocalId, true, true, headers);
 		}
@@ -405,9 +407,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 		private void FailDiscover(string url) {
 			UriIdentifier userSuppliedId = TestSupport.GetFullUrl(url);
 
-			this.mockResponder.RegisterMockResponse(new Uri(userSuppliedId), userSuppliedId, "text/html", TestSupport.LoadEmbeddedFile(url));
+			this.MockResponder.RegisterMockResponse(new Uri(userSuppliedId), userSuppliedId, "text/html", TestSupport.LoadEmbeddedFile(url));
 
-			Assert.AreEqual(0, userSuppliedId.Discover(this.requestHandler).Count()); // ... but that no endpoint info is discoverable
+			Assert.AreEqual(0, userSuppliedId.Discover(this.RequestHandler).Count()); // ... but that no endpoint info is discoverable
 		}
 
 		private void FailDiscoverHtml(string scenario) {

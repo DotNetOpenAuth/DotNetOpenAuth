@@ -11,7 +11,7 @@ namespace DotNetOpenAuth.Test.Hosting {
 	using System.Net;
 	using System.Threading;
 
-	class HttpHost : IDisposable {
+	internal class HttpHost : IDisposable {
 		private HttpListener listener;
 		private Thread listenerThread;
 		private AspNetHost aspNetHost;
@@ -33,11 +33,15 @@ namespace DotNetOpenAuth.Test.Hosting {
 				}
 				throw;
 			}
-			this.listenerThread = new Thread(ProcessRequests);
+			this.listenerThread = new Thread(this.ProcessRequests);
 			this.listenerThread.Start();
 		}
 
 		public int Port { get; private set; }
+
+		public Uri BaseUri {
+			get { return new Uri("http://localhost:" + this.Port.ToString() + "/"); }
+		}
 
 		public static HttpHost CreateHost(AspNetHost aspNetHost) {
 			return new HttpHost(aspNetHost);
@@ -46,17 +50,13 @@ namespace DotNetOpenAuth.Test.Hosting {
 		public static HttpHost CreateHost(string webDirectory) {
 			return new HttpHost(AspNetHost.CreateHost(webDirectory));
 		}
-		
-		public Uri BaseUri {
-			get { return new Uri("http://localhost:" + this.Port.ToString() + "/"); }
-		}
-		
+
 		public string ProcessRequest(string url) {
-			return ProcessRequest(url, null);
+			return this.ProcessRequest(url, null);
 		}
-		
+
 		public string ProcessRequest(string url, string body) {
-			WebRequest request = WebRequest.Create(new Uri(BaseUri, url));
+			WebRequest request = WebRequest.Create(new Uri(this.BaseUri, url));
 			if (body != null) {
 				request.Method = "POST";
 				request.ContentLength = body.Length;
@@ -81,9 +81,9 @@ namespace DotNetOpenAuth.Test.Hosting {
 		#region IDisposable Members
 
 		public void Dispose() {
-			listener.Close();
-			listenerThread.Join(1000);
-			listenerThread.Abort();
+			this.listener.Close();
+			this.listenerThread.Join(1000);
+			this.listenerThread.Abort();
 		}
 
 		#endregion

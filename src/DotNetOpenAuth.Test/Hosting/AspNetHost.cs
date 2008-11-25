@@ -22,13 +22,13 @@ namespace DotNetOpenAuth.Test.Hosting {
 		private HttpHost httpHost;
 
 		public AspNetHost() {
-			httpHost = HttpHost.CreateHost(this);
+			this.httpHost = HttpHost.CreateHost(this);
 			////if (!UntrustedWebRequestHandler.WhitelistHosts.Contains("localhost"))
 			////    UntrustedWebRequestHandler.WhitelistHosts.Add("localhost");
 		}
 
 		public Uri BaseUri {
-			get { return httpHost.BaseUri; }
+			get { return this.httpHost.BaseUri; }
 		}
 
 		public static AspNetHost CreateHost(string webDirectory) {
@@ -38,11 +38,11 @@ namespace DotNetOpenAuth.Test.Hosting {
 		}
 
 		public string ProcessRequest(string url) {
-			return httpHost.ProcessRequest(url);
+			return this.httpHost.ProcessRequest(url);
 		}
 
 		public string ProcessRequest(string url, string body) {
-			return httpHost.ProcessRequest(url, body);
+			return this.httpHost.ProcessRequest(url, body);
 		}
 
 		public void BeginProcessRequest(HttpListenerContext context) {
@@ -61,7 +61,7 @@ namespace DotNetOpenAuth.Test.Hosting {
 		}
 
 		public void CloseHttp() {
-			httpHost.Dispose();
+			this.httpHost.Dispose();
 		}
 	}
 }

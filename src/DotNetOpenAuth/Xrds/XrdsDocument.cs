@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Xrds {
 	using System.Collections.Generic;
 	using System.IO;
+	using System.Linq;
 	using System.Xml;
 	using System.Xml.XPath;
 	using DotNetOpenAuth.Messaging;
@@ -20,8 +21,10 @@ namespace DotNetOpenAuth.Xrds {
 			XmlNamespaceResolver.AddNamespace("xrds", XrdsNode.XrdsNamespace);
 			XmlNamespaceResolver.AddNamespace("openid10", Protocol.V10.XmlNamespace);
 		}
+
 		public XrdsDocument(XmlReader reader)
 			: this(new XPathDocument(reader).CreateNavigator()) { }
+
 		public XrdsDocument(string xml)
 			: this(new XPathDocument(new StringReader(xml)).CreateNavigator()) { }
 
@@ -41,9 +44,14 @@ namespace DotNetOpenAuth.Xrds {
 			}
 		}
 
+		internal bool IsXrdResolutionSuccessful {
+			get { return this.XrdElements.All(xrd => xrd.IsXriResolutionSuccessful); }
+		}
+
 		internal IEnumerable<ServiceEndpoint> CreateServiceEndpoints(UriIdentifier claimedIdentifier) {
 			var endpoints = new List<ServiceEndpoint>();
 			endpoints.AddRange(this.GenerateOPIdentifierServiceEndpoints(claimedIdentifier));
+
 			// If any OP Identifier service elements were found, we must not proceed
 			// to return any Claimed Identifier services.
 			if (endpoints.Count == 0) {
@@ -57,6 +65,7 @@ namespace DotNetOpenAuth.Xrds {
 		internal IEnumerable<ServiceEndpoint> CreateServiceEndpoints(XriIdentifier userSuppliedIdentifier) {
 			var endpoints = new List<ServiceEndpoint>();
 			endpoints.AddRange(this.GenerateOPIdentifierServiceEndpoints(userSuppliedIdentifier));
+
 			// If any OP Identifier service elements were found, we must not proceed
 			// to return any Claimed Identifier services.
 			if (endpoints.Count == 0) {
@@ -68,43 +77,22 @@ namespace DotNetOpenAuth.Xrds {
 		}
 
 		internal IEnumerable<RelyingPartyEndpointDescription> FindRelyingPartyReceivingEndpoints() {
-			foreach (var service in FindReturnToServices()) {
-				foreach (var uri in service.UriElements) {
-					yield return new RelyingPartyEndpointDescription(uri.Uri, service.TypeElementUris);
-				}
-			}
-		}
-
-		internal bool IsXrdResolutionSuccessful {
-			get {
-				foreach (var xrd in this.XrdElements) {
-					if (!xrd.IsXriResolutionSuccessful) {
-						return false;
-					}
-				}
-				return true;
-			}
+			return from service in this.FindReturnToServices()
+				   from uri in service.UriElements
+				   select new RelyingPartyEndpointDescription(uri.Uri, service.TypeElementUris);
 		}
 
 		private IEnumerable<ServiceEndpoint> GenerateOPIdentifierServiceEndpoints(Identifier opIdentifier) {
-			foreach (var service in FindOPIdentifierServices()) {
-				foreach (var uri in service.UriElements) {
-					var protocol = Protocol.FindBestVersion(p => p.OPIdentifierServiceTypeURI, service.TypeElementUris);
-					yield return ServiceEndpoint.CreateForProviderIdentifier(
-						opIdentifier, uri.Uri, service.TypeElementUris,
-						service.Priority, uri.Priority);
-				}
-			}
+			return from service in this.FindOPIdentifierServices()
+				   from uri in service.UriElements
+				   let protocol = Protocol.FindBestVersion(p => p.OPIdentifierServiceTypeURI, service.TypeElementUris)
+				   select ServiceEndpoint.CreateForProviderIdentifier(opIdentifier, uri.Uri, service.TypeElementUris, service.Priority, uri.Priority);
 		}
 
 		private IEnumerable<ServiceEndpoint> GenerateClaimedIdentifierServiceEndpoints(UriIdentifier claimedIdentifier) {
-			foreach (var service in FindClaimedIdentifierServices()) {
-				foreach (var uri in service.UriElements) {
-					yield return ServiceEndpoint.CreateForClaimedIdentifier(
-						claimedIdentifier, service.ProviderLocalIdentifier,
-						uri.Uri, service.TypeElementUris, service.Priority, uri.Priority);
-				}
-			}
+			return from service in this.FindClaimedIdentifierServices()
+				   from uri in service.UriElements
+				   select ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, service.ProviderLocalIdentifier, uri.Uri, service.TypeElementUris, service.Priority, uri.Priority);
 		}
 
 		private IEnumerable<ServiceEndpoint> GenerateClaimedIdentifierServiceEndpoints(XriIdentifier userSuppliedIdentifier) {
@@ -116,41 +104,35 @@ namespace DotNetOpenAuth.Xrds {
 						break; // skip on to next service
 					}
 					ErrorUtilities.VerifyProtocol(service.Xrd.IsCanonicalIdVerified, XrdsStrings.CIDVerificationFailed, userSuppliedIdentifier);
+
 					// In the case of XRI names, the ClaimedId is actually the CanonicalID.
 					var claimedIdentifier = new XriIdentifier(service.Xrd.CanonicalID);
-					yield return ServiceEndpoint.CreateForClaimedIdentifier(
-						claimedIdentifier, userSuppliedIdentifier, service.ProviderLocalIdentifier,
-						uri.Uri, service.TypeElementUris, service.Priority, uri.Priority);
+					yield return ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, userSuppliedIdentifier, service.ProviderLocalIdentifier, uri.Uri, service.TypeElementUris, service.Priority, uri.Priority);
 				}
 			}
 		}
 
 		private IEnumerable<ServiceElement> FindOPIdentifierServices() {
-			foreach (var xrd in this.XrdElements) {
-				foreach (var service in xrd.OpenIdProviderIdentifierServices) {
-					yield return service;
-				}
-			}
+			return from xrd in this.XrdElements
+				   from service in xrd.OpenIdProviderIdentifierServices
+				   select service;
 		}
 
 		/// <summary>
 		/// Returns the OpenID-compatible services described by a given XRDS document,
 		/// in priority order.
 		/// </summary>
+		/// <returns>A sequence of the services offered.</returns>
 		private IEnumerable<ServiceElement> FindClaimedIdentifierServices() {
-			foreach (var xrd in this.XrdElements) {
-				foreach (var service in xrd.OpenIdClaimedIdentifierServices) {
-					yield return service;
-				}
-			}
+			return from xrd in this.XrdElements
+				   from service in xrd.OpenIdClaimedIdentifierServices
+				   select service;
 		}
 
 		private IEnumerable<ServiceElement> FindReturnToServices() {
-			foreach (var xrd in this.XrdElements) {
-				foreach (var service in xrd.OpenIdRelyingPartyReturnToServices) {
-					yield return service;
-				}
-			}
+			return from xrd in this.XrdElements
+				   from service in xrd.OpenIdRelyingPartyReturnToServices
+				   select service;
 		}
 	}
 }

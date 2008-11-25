@@ -309,7 +309,7 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		private bool IsHostBlacklisted(string host) {
-			return IsHostInList(host, BlacklistHosts, BlacklistHostsRegex);
+			return this.IsHostInList(host, this.BlacklistHosts, this.BlacklistHostsRegex);
 		}
 
 		private bool IsHostInList(string host, ICollection<string> stringList, ICollection<Regex> regexList) {
@@ -341,7 +341,7 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		private bool IsUriAllowable(Uri uri) {
-			Debug.Assert(uri != null);
+			ErrorUtilities.VerifyArgumentNotNull(uri, "uri");
 			if (!this.allowableSchemes.Contains(uri.Scheme)) {
 				Logger.WarnFormat("Rejecting URL {0} because it uses a disallowed scheme.", uri);
 				return false;
@@ -365,6 +365,7 @@ namespace DotNetOpenAuth.Messaging {
 			IPAddress hostIPAddress;
 			if (IPAddress.TryParse(uri.DnsSafeHost, out hostIPAddress)) {
 				byte[] addressBytes = hostIPAddress.GetAddressBytes();
+
 				// The host is actually an IP address.
 				switch (hostIPAddress.AddressFamily) {
 					case System.Net.Sockets.AddressFamily.InterNetwork:

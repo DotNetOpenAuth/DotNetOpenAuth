@@ -198,18 +198,21 @@ namespace DotNetOpenAuth.OpenId {
 
 		internal override IEnumerable<ServiceEndpoint> Discover(IDirectSslWebRequestHandler requestHandler) {
 			List<ServiceEndpoint> endpoints = new List<ServiceEndpoint>();
+
 			// Attempt YADIS discovery
 			DiscoveryResult yadisResult = Yadis.Discover(requestHandler, this, IsDiscoverySecureEndToEnd);
 			if (yadisResult != null) {
 				if (yadisResult.IsXrds) {
 					XrdsDocument xrds = new XrdsDocument(yadisResult.ResponseText);
 					var xrdsEndpoints = xrds.CreateServiceEndpoints(yadisResult.NormalizedUri);
+
 					// Filter out insecure endpoints if high security is required.
 					if (IsDiscoverySecureEndToEnd) {
 						xrdsEndpoints = xrdsEndpoints.Where(se => se.IsSecure);
 					}
 					endpoints.AddRange(xrdsEndpoints);
 				}
+
 				// Failing YADIS discovery of an XRDS document, we try HTML discovery.
 				if (endpoints.Count == 0) {
 					ServiceEndpoint ep = DiscoverFromHtml(yadisResult.NormalizedUri, yadisResult.ResponseText);
@@ -334,6 +337,7 @@ namespace DotNetOpenAuth.OpenId {
 			if (providerEndpoint == null) {
 				return null; // html did not contain openid.server link
 			}
+
 			// See if a LocalId tag of the discovered version exists
 			foreach (var linkTag in linkTags) {
 				if (Regex.IsMatch(linkTag.Attributes["rel"], @"\b" + Regex.Escape(discoveredProtocol.HtmlDiscoveryLocalIdKey) + @"\b", RegexOptions.IgnoreCase)) {

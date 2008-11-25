@@ -14,63 +14,80 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Mocks;
-	//using DotNetOpenAuth.Test.UI;
+	////using DotNetOpenAuth.Test.UI;
 	using log4net;
 
 	public class TestSupport {
-		public static readonly string TestWebDirectory = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\src\DotNetOpenId.TestWeb"));
 		public const string HostTestPage = "HostTest.aspx";
+
 		public const string ProviderPage = "ProviderEndpoint.aspx";
+
 		public const string DirectedProviderEndpoint = "DirectedProviderEndpoint.aspx";
+
 		public const string MobileConsumerPage = "RelyingPartyMobile.aspx";
+
 		public const string ConsumerPage = "RelyingParty.aspx";
+
 		public const string OPDefaultPage = "OPDefault.aspx";
-		public static Uri ReturnTo {
-			get { return TestSupport.GetFullUrl(TestSupport.ConsumerPage); }
-		}
-		public static Realm Realm {
-			get { return new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri); }
-		}
-		public readonly static ILog Logger = LogManager.GetLogger("DotNetOpenId.Test");
+
+		public static readonly ILog Logger = LogManager.GetLogger("DotNetOpenId.Test");
+
+		public static readonly string TestWebDirectory = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\src\DotNetOpenId.TestWeb"));
+
 		private const string IdentityPage = "IdentityEndpoint.aspx";
+
 		private const string DirectedIdentityPage = "DirectedIdentityEndpoint.aspx";
 
 		public enum Scenarios {
 			// Authentication test scenarios
 			AutoApproval,
+
 			AutoApprovalAddFragment,
+
 			ApproveOnSetup,
+
 			AlwaysDeny,
 
-			// Extension test scenarios
+			/* Extension test scenarios */
+
 			/// <summary>
 			/// Provides all required and requested fields.
 			/// </summary>
 			ExtensionFullCooperation,
+
 			/// <summary>
 			/// Provides only those fields marked as required.
 			/// </summary>
 			ExtensionPartialCooperation,
 		}
 
+		public static Uri ReturnTo {
+			get { return TestSupport.GetFullUrl(TestSupport.ConsumerPage); }
+		}
+
+		public static Realm Realm {
+			get { return new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri); }
+		}
+
 		public static Identifier GetDelegateUrl(Scenarios scenario) {
 			return GetDelegateUrl(scenario, false);
 		}
-		
+
 		public static Identifier GetDelegateUrl(Scenarios scenario, bool useSsl) {
 			return new UriIdentifier(GetFullUrl("/" + scenario, null, useSsl));
 		}
-		
+
 		public static Uri GetFullUrl(string url) {
 			return GetFullUrl(url, null, false);
 		}
-		
+
 		public static Uri GetFullUrl(string url, string key, object value) {
-			return GetFullUrl(url, new Dictionary<string, string> {
-		    { key, value.ToString() },
-		}, false);
+			var dictionary = new Dictionary<string, string> {
+				{ key, value.ToString() },
+			};
+			return GetFullUrl(url, dictionary, false);
 		}
-		
+
 		public static Uri GetFullUrl(string url, IDictionary<string, string> args, bool useSsl) {
 			Uri defaultUriBase = new Uri(useSsl ? "https://localhost/" : "http://localhost/");
 			Uri baseUri = UITestSupport.Host != null ? UITestSupport.Host.BaseUri : defaultUriBase;
@@ -84,8 +101,11 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// </summary>
 		/// <param name="path">The path of the file as it appears within the project,
 		/// where the leading / marks the root directory of the project.</param>
+		/// <returns>The content of the requested resource.</returns>
 		internal static string LoadEmbeddedFile(string path) {
-			if (!path.StartsWith("/")) path = "/" + path;
+			if (!path.StartsWith("/")) {
+				path = "/" + path;
+			}
 			path = "DotNetOpenAuth.Test.OpenId" + path.Replace('/', '.');
 			Stream resource = Assembly.GetExecutingAssembly().GetManifestResourceStream(path);
 			if (resource == null) {
@@ -105,23 +125,24 @@ namespace DotNetOpenAuth.Test.OpenId {
 		internal static UriIdentifier GetIdentityUrl(Scenarios scenario, ProtocolVersion providerVersion) {
 			return GetIdentityUrl(scenario, providerVersion, false);
 		}
-		
+
 		internal static UriIdentifier GetIdentityUrl(Scenarios scenario, ProtocolVersion providerVersion, bool useSsl) {
-			return new UriIdentifier(GetFullUrl("/" + IdentityPage, new Dictionary<string, string> {
-		    { "user", scenario.ToString() },
-		    { "version", providerVersion.ToString() },
-		}, useSsl));
+			var dictionary = new Dictionary<string, string> {
+				{ "user", scenario.ToString() },
+				{ "version", providerVersion.ToString() },
+			};
+			return new UriIdentifier(GetFullUrl("/" + IdentityPage, dictionary, useSsl));
 		}
-		
+
 		internal static MockIdentifier GetMockIdentifier(Scenarios scenario, MockHttpRequest mockRequest, ProtocolVersion providerVersion) {
 			return GetMockIdentifier(scenario, mockRequest, providerVersion, false);
 		}
-		
+
 		internal static MockIdentifier GetMockIdentifier(Scenarios scenario, MockHttpRequest mockRequest, ProtocolVersion providerVersion, bool useSsl) {
 			ServiceEndpoint se = GetServiceEndpoint(scenario, providerVersion, 10, useSsl);
 			return new MockIdentifier(GetIdentityUrl(scenario, providerVersion, useSsl), mockRequest, new ServiceEndpoint[] { se });
 		}
-		
+
 		internal static ServiceEndpoint GetServiceEndpoint(Scenarios scenario, ProtocolVersion providerVersion, int servicePriority, bool useSsl) {
 			return ServiceEndpoint.CreateForClaimedIdentifier(
 				GetIdentityUrl(scenario, providerVersion, useSsl),

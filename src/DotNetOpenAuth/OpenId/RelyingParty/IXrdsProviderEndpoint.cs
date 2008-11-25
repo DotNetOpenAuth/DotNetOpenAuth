@@ -11,7 +11,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// An <see cref="IProviderEndpoint"/> interface with additional members for use
 	/// in sorting for most preferred endpoint.
 	/// </summary>
-	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Xrds")]
+	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Xrds", Justification = "Xrds is an acronym.")]
 	public interface IXrdsProviderEndpoint : IProviderEndpoint {
 		/// <summary>
 		/// Gets the priority associated with this service that may have been given
@@ -31,6 +31,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Checks for the presence of a given Type URI in an XRDS service.
 		/// </summary>
+		/// <param name="typeUri">The type URI to check for.</param>
+		/// <returns><c>true</c> if the service type uri is present; <c>false</c> otherwise.</returns>
 		bool IsTypeUriPresent(string typeUri);
 	}
 }

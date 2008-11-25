@@ -1,3 +1,9 @@
+//-----------------------------------------------------------------------
+// <copyright file="ServiceEndpoint.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
@@ -30,9 +36,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.uriPriority = uriPriority;
 		}
 
-		/// <summary>
+		/// <remarks>
 		/// Used for deserializing <see cref="ServiceEndpoint"/> from authentication responses.
-		/// </summary>
+		/// </remarks>
 		private ServiceEndpoint(Identifier claimedIdentifier, Identifier userSuppliedIdentifier, Uri providerEndpoint, Identifier providerLocalIdentifier, Protocol protocol) {
 			this.ClaimedIdentifier = claimedIdentifier;
 			this.UserSuppliedIdentifier = userSuppliedIdentifier;
@@ -52,15 +58,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		public Uri ProviderEndpoint { get; private set; }
 
-		/// <summary>
-		/// Returns true if the <see cref="ProviderEndpoint"/> is using an encrypted channel.
-		/// </summary>
 		/*
 		/// <summary>
 		/// An Identifier for an OpenID Provider.
 		/// </summary>
 		public Identifier ProviderIdentifier { get; private set; }
 		*/
+
 		/// <summary>
 		/// Gets the Identifier that was presented by the end user to the Relying Party, 
 		/// or selected by the user at the OpenID Provider. 
@@ -92,7 +96,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					XriIdentifier xri = this.ClaimedIdentifier as XriIdentifier;
 					UriIdentifier uri = this.ClaimedIdentifier as UriIdentifier;
 					if (xri != null) {
-						if (UserSuppliedIdentifier == null || String.Equals(UserSuppliedIdentifier, ClaimedIdentifier, StringComparison.OrdinalIgnoreCase)) {
+						if (this.UserSuppliedIdentifier == null || String.Equals(this.UserSuppliedIdentifier, this.ClaimedIdentifier, StringComparison.OrdinalIgnoreCase)) {
 							this.friendlyIdentifierForDisplay = this.ClaimedIdentifier;
 						} else {
 							this.friendlyIdentifierForDisplay = this.UserSuppliedIdentifier;
@@ -101,10 +105,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 						if (uri != this.Protocol.ClaimedIdentifierForOPIdentifier) {
 							string displayUri = uri.Uri.Authority + uri.Uri.PathAndQuery;
 							displayUri = displayUri.TrimEnd('/');
+
 							// Multi-byte unicode characters get encoded by the Uri class for transit.
 							// Since this is for display purposes, we want to reverse this and display a readable
 							// representation of these foreign characters.  
-							friendlyIdentifierForDisplay = Uri.UnescapeDataString(displayUri);
+							this.friendlyIdentifierForDisplay = Uri.UnescapeDataString(displayUri);
 						}
 					} else {
 						Debug.Fail("Doh!  We never should have reached here.");
@@ -127,7 +132,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public Protocol Protocol {
 			get {
 				if (this.protocol == null) {
-					this.protocol = Protocol.Detect(ProviderSupportedServiceTypeUris);
+					this.protocol = Protocol.Detect(this.ProviderSupportedServiceTypeUris);
 				}
 				if (this.protocol != null) {
 					return this.protocol;
@@ -155,10 +160,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 		#endregion
 
-		internal bool IsSecure {
-			get { return string.Equals(this.ProviderEndpoint.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase); }
-		}
-
 		public static bool operator ==(ServiceEndpoint se1, ServiceEndpoint se2) {
 			return se1.EqualsNullSafe(se2);
 		}
@@ -168,7 +169,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		public bool IsTypeUriPresent(string typeUri) {
-			return IsExtensionSupported(typeUri);
+			return this.IsExtensionSupported(typeUri);
 		}
 
 		public bool IsExtensionSupported(string extensionUri) {
@@ -213,11 +214,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 		Version IProviderEndpoint.Version { get { return Protocol.Version; } }
 
+		/// <summary>
+		/// Gets a value indicating whether the <see cref="ProviderEndpoint"/> is using an encrypted channel.
+		/// </summary>
+		internal bool IsSecure {
+			get { return string.Equals(this.ProviderEndpoint.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase); }
+		}
+
 		public override bool Equals(object obj) {
 			ServiceEndpoint other = obj as ServiceEndpoint;
 			if (other == null) {
 				return false;
 			}
+
 			// We specifically do not check our ProviderSupportedServiceTypeUris array
 			// or the priority field
 			// as that is not persisted in our tokens, and it is not part of the 
@@ -230,20 +239,20 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		public override int GetHashCode() {
-			return ClaimedIdentifier.GetHashCode();
+			return this.ClaimedIdentifier.GetHashCode();
 		}
 
 		public override string ToString() {
 			StringBuilder builder = new StringBuilder();
-			builder.AppendLine("ClaimedIdentifier: " + ClaimedIdentifier);
-			builder.AppendLine("ProviderLocalIdentifier: " + ProviderLocalIdentifier);
-			builder.AppendLine("ProviderEndpoint: " + ProviderEndpoint.AbsoluteUri);
-			builder.AppendLine("OpenID version: " + Protocol.Version);
+			builder.AppendLine("ClaimedIdentifier: " + this.ClaimedIdentifier);
+			builder.AppendLine("ProviderLocalIdentifier: " + this.ProviderLocalIdentifier);
+			builder.AppendLine("ProviderEndpoint: " + this.ProviderEndpoint.AbsoluteUri);
+			builder.AppendLine("OpenID version: " + this.Protocol.Version);
 			builder.AppendLine("Service Type URIs:");
-			if (ProviderSupportedServiceTypeUris != null) {
-				foreach (string serviceTypeUri in ProviderSupportedServiceTypeUris) {
+			if (this.ProviderSupportedServiceTypeUris != null) {
+				foreach (string serviceTypeUri in this.ProviderSupportedServiceTypeUris) {
 					builder.Append("\t");
-					// TODO: uncomment when we support extensions
+					//// TODO: uncomment when we support extensions
 					////var matchingExtension = Util.FirstOrDefault(ExtensionManager.RequestExtensions, ext => ext.Key.TypeUri == serviceTypeUri);
 					////if (matchingExtension.Key != null) {
 					////    builder.AppendLine(string.Format(CultureInfo.CurrentCulture, "{0} ({1})", serviceTypeUri, matchingExtension.Value));
@@ -262,6 +271,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Reads previously discovered information about an endpoint
 		/// from a solicited authentication assertion for validation.
 		/// </summary>
+		/// <param name="reader">The reader from which to deserialize the <see cref="ServiceEndpoint"/>.</param>
 		/// <returns>
 		/// A <see cref="ServiceEndpoint"/> object that has everything
 		/// except the <see cref="ProviderSupportedServiceTypeUris"/>
@@ -279,14 +289,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			return new ServiceEndpoint(claimedIdentifier, userSuppliedIdentifier, providerEndpoint, providerLocalIdentifier, protocol);
 		}
 
-		internal static ServiceEndpoint CreateForProviderIdentifier(
-			Identifier providerIdentifier, Uri providerEndpoint,
-			string[] providerSupportedServiceTypeUris, int? servicePriority, int? uriPriority) {
+		internal static ServiceEndpoint CreateForProviderIdentifier(Identifier providerIdentifier, Uri providerEndpoint, string[] providerSupportedServiceTypeUris, int? servicePriority, int? uriPriority) {
 			Protocol protocol = Protocol.Detect(providerSupportedServiceTypeUris);
 
-			return new ServiceEndpoint(protocol.ClaimedIdentifierForOPIdentifier, providerIdentifier,
-				providerEndpoint, protocol.ClaimedIdentifierForOPIdentifier,
-				providerSupportedServiceTypeUris, servicePriority, uriPriority);
+			return new ServiceEndpoint(
+				protocol.ClaimedIdentifierForOPIdentifier,
+				providerIdentifier,
+				providerEndpoint,
+				protocol.ClaimedIdentifierForOPIdentifier,
+				providerSupportedServiceTypeUris,
+				servicePriority,
+				uriPriority);
 		}
 
 		internal static ServiceEndpoint CreateForClaimedIdentifier(Identifier claimedIdentifier, Identifier providerLocalIdentifier, Uri providerEndpoint, string[] providerSupportedServiceTypeUris, int? servicePriority, int? uriPriority) {
@@ -307,6 +320,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			writer.WriteLine(this.UserSuppliedIdentifier);
 			writer.WriteLine(this.ProviderEndpoint);
 			writer.WriteLine(this.Protocol.Version);
+
 			// No reason to serialize priority. We only needed priority to decide whether to use this endpoint.
 		}
 	}

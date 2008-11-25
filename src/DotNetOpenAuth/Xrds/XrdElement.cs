@@ -7,12 +7,13 @@
 namespace DotNetOpenAuth.Xrds {
 	using System;
 	using System.Collections.Generic;
+	using System.Linq;
 	using System.Text;
 	using System.Xml.XPath;
-	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId;
 
-	class XrdElement : XrdsNode {
+	internal class XrdElement : XrdsNode {
 		public XrdElement(XPathNavigator xrdElement, XrdsDocument parent) :
 			base(xrdElement, parent) {
 		}
@@ -31,7 +32,7 @@ namespace DotNetOpenAuth.Xrds {
 
 		public bool IsXriResolutionSuccessful {
 			get {
-				return XriResolutionStatusCode == 100;
+				return this.XriResolutionStatusCode == 100;
 			}
 		}
 
@@ -49,6 +50,35 @@ namespace DotNetOpenAuth.Xrds {
 			}
 		}
 
+		/// <summary>
+		/// Gets the services for OP Identifiers.
+		/// </summary>
+		public IEnumerable<ServiceElement> OpenIdProviderIdentifierServices {
+			get { return this.SearchForServiceTypeUris(p => p.OPIdentifierServiceTypeURI); }
+		}
+
+		/// <summary>
+		/// Gets the services for Claimed Identifiers.
+		/// </summary>
+		public IEnumerable<ServiceElement> OpenIdClaimedIdentifierServices {
+			get { return this.SearchForServiceTypeUris(p => p.ClaimedIdentifierServiceTypeURI); }
+		}
+
+		public IEnumerable<ServiceElement> OpenIdRelyingPartyReturnToServices {
+			get { return this.SearchForServiceTypeUris(p => p.RPReturnToTypeURI); }
+		}
+
+		/// <summary>
+		/// Gets an enumeration of all Service/URI elements, sorted in priority order.
+		/// </summary>
+		public IEnumerable<UriElement> ServiceUris {
+			get {
+				return from service in this.Services
+					   from uri in service.UriElements
+					   select uri;
+			}
+		}
+
 		private int XriResolutionStatusCode {
 			get {
 				var n = Node.SelectSingleNode("xrd:Status", XmlNamespaceResolver);
@@ -60,43 +90,14 @@ namespace DotNetOpenAuth.Xrds {
 			}
 		}
 
-		/// <summary>
-		/// Returns services for OP Identifiers.
-		/// </summary>
-		public IEnumerable<ServiceElement> OpenIdProviderIdentifierServices {
-			get { return SearchForServiceTypeUris(p => p.OPIdentifierServiceTypeURI); }
-		}
-
-		/// <summary>
-		/// Returns services for Claimed Identifiers.
-		/// </summary>
-		public IEnumerable<ServiceElement> OpenIdClaimedIdentifierServices {
-			get { return SearchForServiceTypeUris(p => p.ClaimedIdentifierServiceTypeURI); }
-		}
-
-		public IEnumerable<ServiceElement> OpenIdRelyingPartyReturnToServices {
-			get { return SearchForServiceTypeUris(p => p.RPReturnToTypeURI); }
-		}
-
-		/// <summary>
-		/// An enumeration of all Service/URI elements, sorted in priority order.
-		/// </summary>
-		public IEnumerable<UriElement> ServiceUris {
-			get {
-				foreach (ServiceElement service in Services) {
-					foreach (UriElement uri in service.UriElements) {
-						yield return uri;
-					}
-				}
-			}
-		}
-
 		private IEnumerable<ServiceElement> SearchForServiceTypeUris(Func<Protocol, string> p) {
 			var xpath = new StringBuilder();
 			xpath.Append("xrd:Service[");
 			foreach (var protocol in Protocol.AllVersions) {
 				string typeUri = p(protocol);
-				if (typeUri == null) continue;
+				if (typeUri == null) {
+					continue;
+				}
 				xpath.Append("xrd:Type/text()='");
 				xpath.Append(typeUri);
 				xpath.Append("' or ");
@@ -107,6 +108,7 @@ namespace DotNetOpenAuth.Xrds {
 			foreach (XPathNavigator service in Node.Select(xpath.ToString(), XmlNamespaceResolver)) {
 				services.Add(new ServiceElement(service, this));
 			}
+
 			// Put the services in their own defined priority order
 			services.Sort();
 			return services;

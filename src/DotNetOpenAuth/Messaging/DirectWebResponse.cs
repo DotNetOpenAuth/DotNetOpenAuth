@@ -210,7 +210,7 @@ namespace DotNetOpenAuth.Messaging {
 					// Now read and cache the network stream
 					Stream networkStream = this.ResponseStream;
 					this.ResponseStream = new MemoryStream(this.httpWebResponse.ContentLength < 0 ? 4 * 1024 : Math.Min((int)this.httpWebResponse.ContentLength, maximumBytesToRead));
-					// BUGBUG: strictly speaking, is the response were exactly the limit, we'd report it as truncated here.
+					//// BUGBUG: strictly speaking, is the response were exactly the limit, we'd report it as truncated here.
 					this.IsResponseTruncated = networkStream.CopyTo(this.ResponseStream, maximumBytesToRead) == maximumBytesToRead;
 					this.ResponseStream.Seek(0, SeekOrigin.Begin);
 

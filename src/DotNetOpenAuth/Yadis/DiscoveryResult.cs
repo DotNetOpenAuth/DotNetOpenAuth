@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.Yadis {
 		}
 
 		/// <summary>
-		/// The URI of the original YADIS discovery request.  
+		/// Gets the URI of the original YADIS discovery request.  
 		/// This is the user supplied Identifier as given in the original
 		/// YADIS discovery request.
 		/// </summary>
@@ -59,7 +59,7 @@ namespace DotNetOpenAuth.Yadis {
 		public Uri YadisLocation { get; private set; }
 
 		/// <summary>
-		/// The Content-Type associated with the <see cref="ResponseText"/>.
+		/// Gets the Content-Type associated with the <see cref="ResponseText"/>.
 		/// </summary>
 		public ContentType ContentType { get; private set; }
 
@@ -77,10 +77,11 @@ namespace DotNetOpenAuth.Yadis {
 		public bool IsXrds { get; private set; }
 
 		/// <summary>
-		/// Gets whether discovery resulted in an XRDS document at a referred location.
+		/// Gets a value indicating whether discovery resulted in an 
+		/// XRDS document at a referred location.
 		/// </summary>
-		/// <value><c>true</c> if the response to the userSuppliedIdentifier pointed to a different URL
-		/// for the XRDS document.</value>
+		/// <value><c>true</c> if the response to the userSuppliedIdentifier 
+		/// pointed to a different URL for the XRDS document.</value>
 		public bool UsedYadisLocation {
 			get { return this.YadisLocation != null; }
 		}

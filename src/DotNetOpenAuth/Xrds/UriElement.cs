@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.Xrds {
 			if (other == null) {
 				return -1;
 			}
-			int compare = Service.CompareTo(other.Service);
+			int compare = this.Service.CompareTo(other.Service);
 			if (compare != 0) {
 				return compare;
 			}

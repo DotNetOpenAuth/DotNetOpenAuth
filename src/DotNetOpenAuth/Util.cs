@@ -60,14 +60,16 @@ namespace DotNetOpenAuth {
 		/// for logging complex objects without being in a conditional block.
 		/// </remarks>
 		internal static object ToStringDeferred<K, V>(this IEnumerable<KeyValuePair<K, V>> pairs) {
-			return new DelayedToString<IEnumerable<KeyValuePair<K, V>>>(pairs, p => {
-				var dictionary = pairs as IDictionary<K, V>;
-				StringBuilder sb = new StringBuilder(dictionary != null ? dictionary.Count * 40 : 200);
-				foreach (var pair in pairs) {
-					sb.AppendFormat("\t{0}: {1}{2}", pair.Key, pair.Value, Environment.NewLine);
-				}
-				return sb.ToString();
-			});
+			return new DelayedToString<IEnumerable<KeyValuePair<K, V>>>(
+				pairs,
+				p => {
+					var dictionary = pairs as IDictionary<K, V>;
+					StringBuilder sb = new StringBuilder(dictionary != null ? dictionary.Count * 40 : 200);
+					foreach (var pair in pairs) {
+						sb.AppendFormat("\t{0}: {1}{2}", pair.Key, pair.Value, Environment.NewLine);
+					}
+					return sb.ToString();
+				});
 		}
 
 		internal static object ToStringDeferred<T>(this IEnumerable<T> list) {
@@ -75,44 +77,46 @@ namespace DotNetOpenAuth {
 		}
 
 		internal static object ToStringDeferred<T>(this IEnumerable<T> list, bool multiLineElements) {
-			return new DelayedToString<IEnumerable<T>>(list, l => {
-				StringBuilder sb = new StringBuilder();
-				if (multiLineElements) {
-					sb.AppendLine("[{");
-					foreach (T obj in l) {
-						// Prepare the string repersentation of the object
-						string objString = obj != null ? obj.ToString() : "<NULL>";
+			return new DelayedToString<IEnumerable<T>>(
+				list,
+				l => {
+					StringBuilder sb = new StringBuilder();
+					if (multiLineElements) {
+						sb.AppendLine("[{");
+						foreach (T obj in l) {
+							// Prepare the string repersentation of the object
+							string objString = obj != null ? obj.ToString() : "<NULL>";
 
-						// Indent every line printed
-						objString = objString.Replace(Environment.NewLine, Environment.NewLine + "\t");
-						sb.Append("\t");
-						sb.Append(objString);
+							// Indent every line printed
+							objString = objString.Replace(Environment.NewLine, Environment.NewLine + "\t");
+							sb.Append("\t");
+							sb.Append(objString);
 
-						if (!objString.EndsWith(Environment.NewLine)) {
-							sb.AppendLine();
+							if (!objString.EndsWith(Environment.NewLine)) {
+								sb.AppendLine();
+							}
+							sb.AppendLine("}, {");
 						}
-						sb.AppendLine("}, {");
-					}
-					if (sb.Length > 2) { // if anything was in the enumeration
-						sb.Length -= 2 + Environment.NewLine.Length; // trim off the last ", {\r\n"
+						if (sb.Length > 2) { // if anything was in the enumeration
+							sb.Length -= 2 + Environment.NewLine.Length; // trim off the last ", {\r\n"
+						} else {
+							sb.Length -= 1; // trim off the opening {
+						}
+						sb.Append("]");
+						return sb.ToString();
 					} else {
-						sb.Length -= 1; // trim off the opening {
+						sb.Append("{");
+						foreach (T obj in l) {
+							sb.Append(obj != null ? obj.ToString() : "<NULL>");
+							sb.AppendLine(",");
+						}
+						if (sb.Length > 1) {
+							sb.Length -= 1;
+						}
+						sb.Append("}");
+						return sb.ToString();
 					}
-					sb.Append("]");
-					return sb.ToString();
-				} else {
-					sb.Append("{");
-					foreach (T obj in l) {
-						sb.Append(obj != null ? obj.ToString() : "<NULL>");
-						sb.AppendLine(",");
-					}
-					if (sb.Length > 1) {
-						sb.Length -= 1;
-					}
-					sb.Append("}");
-					return sb.ToString();
-				}
-			});
+				});
 		}
 
 		internal static HttpWebRequest CreatePostRequest(Uri requestUri, string body) {
@@ -134,7 +138,7 @@ namespace DotNetOpenAuth {
 			}
 
 			public override string ToString() {
-				return this.toString(obj);
+				return this.toString(this.obj);
 			}
 		}
 	}

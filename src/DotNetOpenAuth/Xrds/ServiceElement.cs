@@ -68,7 +68,9 @@ namespace DotNetOpenAuth.Xrds {
 		#region IComparable<ServiceElement> Members
 
 		public int CompareTo(ServiceElement other) {
-			if (other == null) return -1;
+			if (other == null) {
+				return -1;
+			}
 			if (this.Priority.HasValue && other.Priority.HasValue) {
 				return this.Priority.Value.CompareTo(other.Priority.Value);
 			} else {

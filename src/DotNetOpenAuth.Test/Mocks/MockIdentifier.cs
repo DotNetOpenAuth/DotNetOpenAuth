@@ -7,9 +7,9 @@
 namespace DotNetOpenAuth.Test.Mocks {
 	using System;
 	using System.Collections.Generic;
-	using DotNetOpenAuth.OpenId.RelyingParty;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
-using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// Performs similar to an ordinary <see cref="Identifier"/>, but when called upon
@@ -18,7 +18,9 @@ using DotNetOpenAuth.Messaging;
 	/// </summary>
 	internal class MockIdentifier : Identifier {
 		private IEnumerable<ServiceEndpoint> endpoints;
+
 		private MockHttpRequest mockHttpRequest;
+
 		private Identifier wrappedIdentifier;
 
 		public MockIdentifier(Identifier wrappedIdentifier, MockHttpRequest mockHttpRequest, IEnumerable<ServiceEndpoint> endpoints)
@@ -36,6 +38,18 @@ using DotNetOpenAuth.Messaging;
 			mockHttpRequest.RegisterMockXrdsResponse(new Uri(wrappedIdentifier.ToString()), endpoints);
 		}
 
+		public override string ToString() {
+			return this.wrappedIdentifier.ToString();
+		}
+
+		public override bool Equals(object obj) {
+			return this.wrappedIdentifier.Equals(obj);
+		}
+
+		public override int GetHashCode() {
+			return this.wrappedIdentifier.GetHashCode();
+		}
+
 		internal override IEnumerable<ServiceEndpoint> Discover(IDirectSslWebRequestHandler requestHandler) {
 			return this.endpoints;
 		}
@@ -48,21 +62,9 @@ using DotNetOpenAuth.Messaging;
 			// We take special care to make our wrapped identifier secure, but still
 			// return a mocked (secure) identifier.
 			Identifier secureWrappedIdentifier;
-			bool result = wrappedIdentifier.TryRequireSsl(out secureWrappedIdentifier);
+			bool result = this.wrappedIdentifier.TryRequireSsl(out secureWrappedIdentifier);
 			secureIdentifier = new MockIdentifier(secureWrappedIdentifier, this.mockHttpRequest, this.endpoints);
 			return result;
-		}
-
-		public override string ToString() {
-			return this.wrappedIdentifier.ToString();
-		}
-
-		public override bool Equals(object obj) {
-			return this.wrappedIdentifier.Equals(obj);
-		}
-
-		public override int GetHashCode() {
-			return this.wrappedIdentifier.GetHashCode();
 		}
 	}
 }

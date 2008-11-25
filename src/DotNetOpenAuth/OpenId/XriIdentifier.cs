@@ -150,7 +150,7 @@ namespace DotNetOpenAuth.OpenId {
 		}
 
 		internal override IEnumerable<ServiceEndpoint> Discover(IDirectSslWebRequestHandler requestHandler) {
-			return downloadXrds(requestHandler).CreateServiceEndpoints(this);
+			return this.DownloadXrds(requestHandler).CreateServiceEndpoints(this);
 		}
 
 		/// <summary>
@@ -158,7 +158,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// instances that treat another given identifier as the user-supplied identifier.
 		/// </summary>
 		internal IEnumerable<ServiceEndpoint> Discover(IDirectSslWebRequestHandler requestHandler, XriIdentifier userSuppliedIdentifier) {
-			return this.downloadXrds(requestHandler).CreateServiceEndpoints(userSuppliedIdentifier);
+			return this.DownloadXrds(requestHandler).CreateServiceEndpoints(userSuppliedIdentifier);
 		}
 
 		/// <summary>
@@ -209,7 +209,7 @@ namespace DotNetOpenAuth.OpenId {
 			return xri;
 		}
 
-		private XrdsDocument downloadXrds(IDirectSslWebRequestHandler requestHandler) {
+		private XrdsDocument DownloadXrds(IDirectSslWebRequestHandler requestHandler) {
 			XrdsDocument doc;
 			using (var xrdsResponse = Yadis.Request(requestHandler, this.XrdsUrl, this.IsDiscoverySecureEndToEnd)) {
 				doc = new XrdsDocument(XmlReader.Create(xrdsResponse.ResponseStream));

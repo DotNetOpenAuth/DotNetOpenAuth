@@ -26,7 +26,7 @@ namespace DotNetOpenAuth.Messaging {
 	/// can be canceled by calling <see cref="HttpResponse.End"/> after this message
 	/// is sent on the response stream.</para>
 	/// </remarks>
-	public class UserAgentResponse { // TODO: rename this to UserAgentResponse
+	public class UserAgentResponse {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UserAgentResponse"/> class.
 		/// </summary>

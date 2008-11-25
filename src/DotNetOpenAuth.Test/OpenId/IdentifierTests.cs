@@ -50,11 +50,11 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.IsInstanceOfType(id, typeof(UriIdentifier));
 			Assert.AreEqual(this.uri, ((UriIdentifier)id).Uri.AbsoluteUri);
 			// verify an HTTPS Uri
-			id = Identifier.Parse(uriHttps);
+			id = Identifier.Parse(this.uriHttps);
 			Assert.IsInstanceOfType(id, typeof(UriIdentifier));
-			Assert.AreEqual(uriHttps, ((UriIdentifier)id).Uri.AbsoluteUri);
+			Assert.AreEqual(this.uriHttps, ((UriIdentifier)id).Uri.AbsoluteUri);
 			// verify that if the scheme is missing it is added automatically
-			id = Identifier.Parse(uriNoScheme);
+			id = Identifier.Parse(this.uriNoScheme);
 			Assert.IsInstanceOfType(id, typeof(UriIdentifier));
 			Assert.AreEqual(this.uri, ((UriIdentifier)id).Uri.AbsoluteUri);
 		}

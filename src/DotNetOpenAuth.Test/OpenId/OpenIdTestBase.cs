@@ -13,12 +13,13 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	public class OpenIdTestBase : TestBase {
+		internal IDirectSslWebRequestHandler RequestHandler;
+
+		internal MockHttpRequest MockResponder;
+
 		protected RelyingPartySecuritySettings RelyingPartySecuritySettings { get; private set; }
 
 		protected ProviderSecuritySettings ProviderSecuritySettings { get; private set; }
-
-		internal IDirectSslWebRequestHandler requestHandler;
-		internal MockHttpRequest mockResponder;
 
 		[TestInitialize]
 		public override void SetUp() {
@@ -27,8 +28,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 			this.RelyingPartySecuritySettings = RelyingPartySection.Configuration.SecuritySettings.CreateSecuritySettings();
 			this.ProviderSecuritySettings = ProviderSection.Configuration.SecuritySettings.CreateSecuritySettings();
 
-			this.mockResponder = MockHttpRequest.CreateUntrustedMockHttpHandler();
-			this.requestHandler = this.mockResponder.MockWebRequestHandler;
+			this.MockResponder = MockHttpRequest.CreateUntrustedMockHttpHandler();
+			this.RequestHandler = this.MockResponder.MockWebRequestHandler;
 		}
 	}
 }

@@ -22,17 +22,18 @@ namespace DotNetOpenAuth.Xrds {
 		protected XrdsNode(XPathNavigator node, XrdsNode parentNode) {
 			this.Node = node;
 			this.ParentNode = parentNode;
-			this.XmlNamespaceResolver = ParentNode.XmlNamespaceResolver;
+			this.XmlNamespaceResolver = this.ParentNode.XmlNamespaceResolver;
 		}
+
 		protected XrdsNode(XPathNavigator document) {
 			this.Node = document;
 			this.XmlNamespaceResolver = new XmlNamespaceManager(document.NameTable);
 		}
 
 		protected XPathNavigator Node { get; private set; }
-		
+
 		protected XrdsNode ParentNode { get; private set; }
-		
+
 		protected XmlNamespaceManager XmlNamespaceResolver { get; private set; }
 	}
 }

@@ -7,14 +7,13 @@
 namespace DotNetOpenAuth.Yadis {
 	using System;
 	using System.IO;
-	using System.Net.Mime;
+	using System.Net;
+	using System.Net.Cache;
 	using System.Web.UI.HtmlControls;
 	using System.Xml;
-	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.Xrds;
-	using System.Net.Cache;
-	using System.Net;
 
 	internal class Yadis {
 		internal const string HeaderName = "X-XRDS-Location";
@@ -22,19 +21,7 @@ namespace DotNetOpenAuth.Yadis {
 		/// <summary>
 		/// Gets or sets the cache that can be used for HTTP requests made during identifier discovery.
 		/// </summary>
-		internal readonly static RequestCachePolicy IdentifierDiscoveryCachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.CacheIfAvailable);
-
-		internal static DirectWebResponse Request(IDirectSslWebRequestHandler requestHandler, Uri uri, bool requireSsl, params string[] acceptTypes) {
-			ErrorUtilities.VerifyArgumentNotNull(uri, "uri");
-
-			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-			request.CachePolicy = IdentifierDiscoveryCachePolicy;
-			if (acceptTypes != null) {
-				request.Accept = string.Join(",", acceptTypes);
-			}
-
-			return requestHandler.GetResponse(request, requireSsl);
-		}
+		internal static readonly RequestCachePolicy IdentifierDiscoveryCachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.CacheIfAvailable);
 
 		/// <summary>
 		/// Performs YADIS discovery on some identifier.
@@ -66,7 +53,7 @@ namespace DotNetOpenAuth.Yadis {
 				return null;
 			}
 			DirectWebResponse response2 = null;
-			if (isXrdsDocument(response)) {
+			if (IsXrdsDocument(response)) {
 				Logger.Debug("An XRDS response was received from GET at user-supplied identifier.");
 				response2 = response;
 			} else {
@@ -98,7 +85,38 @@ namespace DotNetOpenAuth.Yadis {
 			return new DiscoveryResult(uri, response, response2);
 		}
 
-		private static bool isXrdsDocument(DirectWebResponse response) {
+		/// <summary>
+		/// Searches an HTML document for a 
+		/// &lt;meta http-equiv="X-XRDS-Location" content="{YadisURL}"&gt;
+		/// tag and returns the content of YadisURL.
+		/// </summary>
+		public static Uri FindYadisDocumentLocationInHtmlMetaTags(string html) {
+			foreach (var metaTag in HtmlParser.HeadTags<HtmlMeta>(html)) {
+				if (HeaderName.Equals(metaTag.HttpEquiv, StringComparison.OrdinalIgnoreCase)) {
+					if (metaTag.Content != null) {
+						Uri uri;
+						if (Uri.TryCreate(metaTag.Content, UriKind.Absolute, out uri)) {
+							return uri;
+						}
+					}
+				}
+			}
+			return null;
+		}
+
+		internal static DirectWebResponse Request(IDirectSslWebRequestHandler requestHandler, Uri uri, bool requireSsl, params string[] acceptTypes) {
+			ErrorUtilities.VerifyArgumentNotNull(uri, "uri");
+
+			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
+			request.CachePolicy = IdentifierDiscoveryCachePolicy;
+			if (acceptTypes != null) {
+				request.Accept = string.Join(",", acceptTypes);
+			}
+
+			return requestHandler.GetResponse(request, requireSsl);
+		}
+
+		private static bool IsXrdsDocument(DirectWebResponse response) {
 			if (response.ContentType.MediaType == ContentTypes.Xrds) {
 				return true;
 			}
@@ -115,24 +133,6 @@ namespace DotNetOpenAuth.Yadis {
 			}
 
 			return false;
-		}
-
-		/// <summary>
-		/// Searches an HTML document for a 
-		/// &lt;meta http-equiv="X-XRDS-Location" content="{YadisURL}"&gt;
-		/// tag and returns the content of YadisURL.
-		/// </summary>
-		public static Uri FindYadisDocumentLocationInHtmlMetaTags(string html) {
-			foreach (var metaTag in HtmlParser.HeadTags<HtmlMeta>(html)) {
-				if (HeaderName.Equals(metaTag.HttpEquiv, StringComparison.OrdinalIgnoreCase)) {
-					if (metaTag.Content != null) {
-						Uri uri;
-						if (Uri.TryCreate(metaTag.Content, UriKind.Absolute, out uri))
-							return uri;
-					}
-				}
-			}
-			return null;
 		}
 	}
 }
