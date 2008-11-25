@@ -7,10 +7,9 @@
 namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Linq;
-	using System.Text;
 	using DotNetOpenAuth.Messaging;
-using System.Collections.ObjectModel;
 
 	/// <summary>
 	/// Describes some OpenID Provider endpoint and its capabilities.

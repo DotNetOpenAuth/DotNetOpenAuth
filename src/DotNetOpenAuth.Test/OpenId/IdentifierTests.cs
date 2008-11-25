@@ -1,21 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using DotNetOpenAuth.OpenId;
+﻿//-----------------------------------------------------------------------
+// <copyright file="IdentifierTests.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Test.OpenId {
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using DotNetOpenAuth.OpenId;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 	[TestClass]
 	public class IdentifierTests {
-		string uri = "http://www.yahoo.com/";
-		string uriNoScheme = "www.yahoo.com";
-		string uriHttps = "https://www.yahoo.com/";
-		string xri = "=arnott*andrew";
+		private string uri = "http://www.yahoo.com/";
+		private string uriNoScheme = "www.yahoo.com";
+		private string uriHttps = "https://www.yahoo.com/";
+		private string xri = "=arnott*andrew";
 
 		[TestMethod]
 		public void Parse() {
-			Assert.IsInstanceOfType(Identifier.Parse(uri), typeof(UriIdentifier));
-			Assert.IsInstanceOfType(Identifier.Parse(xri), typeof(XriIdentifier));
+			Assert.IsInstanceOfType(Identifier.Parse(this.uri), typeof(UriIdentifier));
+			Assert.IsInstanceOfType(Identifier.Parse(this.xri), typeof(XriIdentifier));
 		}
 
 		/// <summary>
@@ -40,9 +46,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 		[TestMethod]
 		public void ParseEndUserSuppliedUriIdentifier() {
 			// verify a fully-qualified Uri
-			var id = Identifier.Parse(uri);
+			var id = Identifier.Parse(this.uri);
 			Assert.IsInstanceOfType(id, typeof(UriIdentifier));
-			Assert.AreEqual(uri, ((UriIdentifier)id).Uri.AbsoluteUri);
+			Assert.AreEqual(this.uri, ((UriIdentifier)id).Uri.AbsoluteUri);
 			// verify an HTTPS Uri
 			id = Identifier.Parse(uriHttps);
 			Assert.IsInstanceOfType(id, typeof(UriIdentifier));
@@ -50,7 +56,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			// verify that if the scheme is missing it is added automatically
 			id = Identifier.Parse(uriNoScheme);
 			Assert.IsInstanceOfType(id, typeof(UriIdentifier));
-			Assert.AreEqual(uri, ((UriIdentifier)id).Uri.AbsoluteUri);
+			Assert.AreEqual(this.uri, ((UriIdentifier)id).Uri.AbsoluteUri);
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]

@@ -1,17 +1,21 @@
-﻿namespace DotNetOpenAuth.Test.OpenId {
+﻿//-----------------------------------------------------------------------
+// <copyright file="XriIdentifierTests.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.Test.OpenId {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-	using DotNetOpenAuth.OpenId.RelyingParty;
-	using DotNetOpenAuth.Test.Mocks;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
 	using DotNetOpenAuth.OpenId;
-	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.RelyingParty;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
 	public class XriIdentifierTests : OpenIdTestBase {
-		string goodXri = "=Andrew*Arnott";
-		string badXri = "some\\wacky%^&*()non-XRI";
+		private string goodXri = "=Andrew*Arnott";
+		private string badXri = "some\\wacky%^&*()non-XRI";
 
 		[TestInitialize]
 		public override void SetUp() {
@@ -30,29 +34,29 @@
 
 		[TestMethod, ExpectedException(typeof(FormatException))]
 		public void CtorBadXri() {
-			new XriIdentifier(badXri);
+			new XriIdentifier(this.badXri);
 		}
 
 		[TestMethod]
 		public void CtorGoodXri() {
-			var xri = new XriIdentifier(goodXri);
-			Assert.AreEqual(goodXri, xri.OriginalXri);
-			Assert.AreEqual(goodXri, xri.CanonicalXri); // assumes 'goodXri' is canonical already
+			var xri = new XriIdentifier(this.goodXri);
+			Assert.AreEqual(this.goodXri, xri.OriginalXri);
+			Assert.AreEqual(this.goodXri, xri.CanonicalXri); // assumes 'goodXri' is canonical already
 			Assert.IsFalse(xri.IsDiscoverySecureEndToEnd);
 		}
 
 		[TestMethod]
 		public void CtorGoodXriSecure() {
-			var xri = new XriIdentifier(goodXri, true);
-			Assert.AreEqual(goodXri, xri.OriginalXri);
-			Assert.AreEqual(goodXri, xri.CanonicalXri); // assumes 'goodXri' is canonical already
+			var xri = new XriIdentifier(this.goodXri, true);
+			Assert.AreEqual(this.goodXri, xri.OriginalXri);
+			Assert.AreEqual(this.goodXri, xri.CanonicalXri); // assumes 'goodXri' is canonical already
 			Assert.IsTrue(xri.IsDiscoverySecureEndToEnd);
 		}
 
 		[TestMethod]
 		public void IsValid() {
-			Assert.IsTrue(XriIdentifier.IsValidXri(goodXri));
-			Assert.IsFalse(XriIdentifier.IsValidXri(badXri));
+			Assert.IsTrue(XriIdentifier.IsValidXri(this.goodXri));
+			Assert.IsFalse(XriIdentifier.IsValidXri(this.badXri));
 		}
 
 		/// <summary>
@@ -60,40 +64,28 @@
 		/// </summary>
 		[TestMethod]
 		public void StripXriScheme() {
-			var xri = new XriIdentifier("xri://" + goodXri);
-			Assert.AreEqual("xri://" + goodXri, xri.OriginalXri);
-			Assert.AreEqual(goodXri, xri.CanonicalXri);
+			var xri = new XriIdentifier("xri://" + this.goodXri);
+			Assert.AreEqual("xri://" + this.goodXri, xri.OriginalXri);
+			Assert.AreEqual(this.goodXri, xri.CanonicalXri);
 		}
 
 		[TestMethod]
 		public void TrimFragment() {
-			Identifier xri = new XriIdentifier(goodXri);
+			Identifier xri = new XriIdentifier(this.goodXri);
 			Assert.AreSame(xri, xri.TrimFragment());
 		}
 
 		[TestMethod]
 		public void ToStringTest() {
-			Assert.AreEqual(goodXri, new XriIdentifier(goodXri).ToString());
+			Assert.AreEqual(this.goodXri, new XriIdentifier(this.goodXri).ToString());
 		}
 
 		[TestMethod]
 		public void EqualsTest() {
-			Assert.AreEqual(new XriIdentifier(goodXri), new XriIdentifier(goodXri));
-			Assert.AreNotEqual(new XriIdentifier(goodXri), new XriIdentifier(goodXri + "a"));
-			Assert.AreNotEqual(null, new XriIdentifier(goodXri));
-			Assert.AreEqual(goodXri, new XriIdentifier(goodXri));
-		}
-
-		private ServiceEndpoint verifyCanonicalId(Identifier iname, string expectedClaimedIdentifier) {
-			ServiceEndpoint se = iname.Discover(this.requestHandler).FirstOrDefault();
-			if (expectedClaimedIdentifier != null) {
-				Assert.IsNotNull(se);
-				Assert.AreEqual(expectedClaimedIdentifier, se.ClaimedIdentifier.ToString(), "i-name {0} discovery resulted in unexpected CanonicalId", iname);
-				Assert.IsTrue(se.ProviderSupportedServiceTypeUris.Length > 0);
-			} else {
-				Assert.IsNull(se);
-			}
-			return se;
+			Assert.AreEqual(new XriIdentifier(this.goodXri), new XriIdentifier(this.goodXri));
+			Assert.AreNotEqual(new XriIdentifier(this.goodXri), new XriIdentifier(this.goodXri + "a"));
+			Assert.AreNotEqual(null, new XriIdentifier(this.goodXri));
+			Assert.AreEqual(this.goodXri, new XriIdentifier(this.goodXri));
 		}
 
 		[TestMethod]
@@ -136,7 +128,7 @@
 			this.mockResponder.RegisterMockXrdsResponses(mocks);
 
 			string expectedCanonicalId = "=!9B72.7DD1.50A9.5CCD";
-			ServiceEndpoint se = verifyCanonicalId("=Arnott", expectedCanonicalId);
+			ServiceEndpoint se = this.VerifyCanonicalId("=Arnott", expectedCanonicalId);
 			Assert.AreEqual(Protocol.V10, se.Protocol);
 			Assert.AreEqual("http://1id.com/sso", se.ProviderEndpoint.ToString());
 			Assert.AreEqual(se.ClaimedIdentifier, se.ProviderLocalIdentifier);
@@ -366,11 +358,11 @@ uEyb50RJ7DWmXctSC0b3eymZ2lSXxAWNOsNy
 				{ "https://xri.net/@llli*area*canada.unattached*ada?_xrd_r=application/xrd%2Bxml;sep=false", llliAreaCanadaUnattachedAdaResponse },
 				{ "https://xri.net/=Web?_xrd_r=application/xrd%2Bxml;sep=false", webResponse },
 			});
-			verifyCanonicalId("@llli", "@!72CD.A072.157E.A9C6");
-			verifyCanonicalId("@llli*area", "@!72CD.A072.157E.A9C6!0000.0000.3B9A.CA0C");
-			verifyCanonicalId("@llli*area*canada.unattached", "@!72CD.A072.157E.A9C6!0000.0000.3B9A.CA0C!0000.0000.3B9A.CA41");
-			verifyCanonicalId("@llli*area*canada.unattached*ada", "@!72CD.A072.157E.A9C6!0000.0000.3B9A.CA0C!0000.0000.3B9A.CA41!0000.0000.3B9A.CA01");
-			verifyCanonicalId("=Web", "=!91F2.8153.F600.AE24");
+			this.VerifyCanonicalId("@llli", "@!72CD.A072.157E.A9C6");
+			this.VerifyCanonicalId("@llli*area", "@!72CD.A072.157E.A9C6!0000.0000.3B9A.CA0C");
+			this.VerifyCanonicalId("@llli*area*canada.unattached", "@!72CD.A072.157E.A9C6!0000.0000.3B9A.CA0C!0000.0000.3B9A.CA41");
+			this.VerifyCanonicalId("@llli*area*canada.unattached*ada", "@!72CD.A072.157E.A9C6!0000.0000.3B9A.CA0C!0000.0000.3B9A.CA41!0000.0000.3B9A.CA01");
+			this.VerifyCanonicalId("=Web", "=!91F2.8153.F600.AE24");
 		}
 
 		[TestMethod]
@@ -456,14 +448,26 @@ uEyb50RJ7DWmXctSC0b3eymZ2lSXxAWNOsNy
 			});
 			// Consistent with spec section 7.3.2.3, we do not permit
 			// delegation on XRI discovery when there is no CanonicalID present.
-			verifyCanonicalId("=Web*andrew.arnott", null);
-			verifyCanonicalId("@id*andrewarnott", null);
+			this.VerifyCanonicalId("=Web*andrew.arnott", null);
+			this.VerifyCanonicalId("@id*andrewarnott", null);
 		}
 
 		////[TestMethod, Ignore("XRI parsing and normalization is not implemented (yet).")]
 		public void NormalizeCase() {
 			Identifier id = "=!9B72.7dd1.50a9.5ccd";
 			Assert.AreEqual("=!9B72.7DD1.50A9.5CCD", id.ToString());
+		}
+
+		private ServiceEndpoint VerifyCanonicalId(Identifier iname, string expectedClaimedIdentifier) {
+			ServiceEndpoint se = iname.Discover(this.requestHandler).FirstOrDefault();
+			if (expectedClaimedIdentifier != null) {
+				Assert.IsNotNull(se);
+				Assert.AreEqual(expectedClaimedIdentifier, se.ClaimedIdentifier.ToString(), "i-name {0} discovery resulted in unexpected CanonicalId", iname);
+				Assert.IsTrue(se.ProviderSupportedServiceTypeUris.Length > 0);
+			} else {
+				Assert.IsNull(se);
+			}
+			return se;
 		}
 	}
 }

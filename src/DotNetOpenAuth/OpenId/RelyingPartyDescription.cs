@@ -30,12 +30,12 @@ namespace DotNetOpenAuth.OpenId {
 		}
 
 		/// <summary>
-		/// The URL to the login page on the discovered relying party web site.
+		/// Gets the URL to the login page on the discovered relying party web site.
 		/// </summary>
 		public Uri ReturnToEndpoint { get; private set; }
 
 		/// <summary>
-		/// The OpenId protocol that the discovered relying party supports.
+		/// Gets the OpenId protocol that the discovered relying party supports.
 		/// </summary>
 		public Protocol Protocol { get; private set; }
 

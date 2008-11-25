@@ -7,10 +7,9 @@ namespace DotNetOpenAuth {
 	using System;
 	using System.Collections.Generic;
 	using System.Globalization;
-	using System.Linq;
+	using System.Net;
 	using System.Reflection;
 	using System.Text;
-	using System.Net;
 
 	/// <summary>
 	/// A grab-bag utility class.
@@ -70,9 +69,11 @@ namespace DotNetOpenAuth {
 				return sb.ToString();
 			});
 		}
+
 		internal static object ToStringDeferred<T>(this IEnumerable<T> list) {
 			return ToStringDeferred<T>(list, false);
 		}
+
 		internal static object ToStringDeferred<T>(this IEnumerable<T> list, bool multiLineElements) {
 			return new DelayedToString<IEnumerable<T>>(list, l => {
 				StringBuilder sb = new StringBuilder();
@@ -114,24 +115,27 @@ namespace DotNetOpenAuth {
 			});
 		}
 
-		private class DelayedToString<T> {
-			public DelayedToString(T obj, Func<T, string> toString) {
-				this.obj = obj;
-				this.toString = toString;
-			}
-			T obj;
-			Func<T, string> toString;
-			public override string ToString() {
-				return toString(obj);
-			}
-		}
-
 		internal static HttpWebRequest CreatePostRequest(Uri requestUri, string body) {
 			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(requestUri);
 			request.ContentType = "application/x-www-form-urlencoded";
 			request.ContentLength = body.Length;
 			request.Method = "POST";
 			return request;
+		}
+
+		private class DelayedToString<T> {
+			private T obj;
+
+			private Func<T, string> toString;
+
+			public DelayedToString(T obj, Func<T, string> toString) {
+				this.obj = obj;
+				this.toString = toString;
+			}
+
+			public override string ToString() {
+				return this.toString(obj);
+			}
 		}
 	}
 }

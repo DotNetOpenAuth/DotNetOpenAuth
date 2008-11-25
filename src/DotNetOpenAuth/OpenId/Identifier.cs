@@ -125,15 +125,6 @@ namespace DotNetOpenAuth.OpenId {
 		}
 
 		/// <summary>
-		/// Performs discovery on the Identifier.
-		/// </summary>
-		/// <param name="requestHandler">The web request handler to use for discovery.</param>
-		/// <returns>
-		/// An initialized structure containing the discovered provider endpoint information.
-		/// </returns>
-		internal abstract IEnumerable<ServiceEndpoint> Discover(IDirectSslWebRequestHandler requestHandler);
-
-		/// <summary>
 		/// Tests equality between two <see cref="Identifier"/>s.
 		/// </summary>
 		/// <param name="id1">The first Identifier.</param>
@@ -182,6 +173,15 @@ namespace DotNetOpenAuth.OpenId {
 			Debug.Fail("This should be overridden in every derived class.");
 			return base.GetHashCode();
 		}
+
+		/// <summary>
+		/// Performs discovery on the Identifier.
+		/// </summary>
+		/// <param name="requestHandler">The web request handler to use for discovery.</param>
+		/// <returns>
+		/// An initialized structure containing the discovered provider endpoint information.
+		/// </returns>
+		internal abstract IEnumerable<ServiceEndpoint> Discover(IDirectSslWebRequestHandler requestHandler);
 
 		/// <summary>
 		/// Returns an <see cref="Identifier"/> that has no URI fragment.

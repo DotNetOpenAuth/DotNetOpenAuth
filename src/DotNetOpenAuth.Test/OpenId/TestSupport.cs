@@ -7,29 +7,19 @@
 namespace DotNetOpenAuth.Test.OpenId {
 	using System;
 	using System.Collections.Generic;
-	using System.Collections.Specialized;
-	using System.Diagnostics;
 	using System.IO;
 	using System.Reflection;
-	using System.Web;
-	using DotNetOpenAuth;
+	using DotNetOAuth.Test.OpenId.UI;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
-	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Mocks;
 	//using DotNetOpenAuth.Test.UI;
 	using log4net;
-	using IProviderAssociationStore = DotNetOpenAuth.OpenId.IAssociationStore<DotNetOpenAuth.OpenId.AssociationRelyingPartyType>;
-	using ProviderMemoryStore = DotNetOpenAuth.OpenId.AssociationMemoryStore<DotNetOpenAuth.OpenId.AssociationRelyingPartyType>;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using DotNetOAuth.Test.OpenId.UI;
-	using DotNetOpenAuth.Messaging;
 
 	public class TestSupport {
 		public static readonly string TestWebDirectory = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\src\DotNetOpenId.TestWeb"));
 		public const string HostTestPage = "HostTest.aspx";
-		const string identityPage = "IdentityEndpoint.aspx";
-		const string directedIdentityPage = "DirectedIdentityEndpoint.aspx";
 		public const string ProviderPage = "ProviderEndpoint.aspx";
 		public const string DirectedProviderEndpoint = "DirectedProviderEndpoint.aspx";
 		public const string MobileConsumerPage = "RelyingPartyMobile.aspx";
@@ -42,6 +32,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 			get { return new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri); }
 		}
 		public readonly static ILog Logger = LogManager.GetLogger("DotNetOpenId.Test");
+		private const string IdentityPage = "IdentityEndpoint.aspx";
+		private const string DirectedIdentityPage = "DirectedIdentityEndpoint.aspx";
 
 		public enum Scenarios {
 			// Authentication test scenarios
@@ -61,82 +53,24 @@ namespace DotNetOpenAuth.Test.OpenId {
 			ExtensionPartialCooperation,
 		}
 
-		////internal static UriIdentifier GetOPIdentityUrl(Scenarios scenario, bool useSsl) {
-		////    var args = new Dictionary<string, string> {
-		////    { "user", scenario.ToString() },
-		////};
-		////    return new UriIdentifier(GetFullUrl("/" + OPDefaultPage, args, useSsl));
-		////}
-		internal static UriIdentifier GetIdentityUrl(Scenarios scenario, ProtocolVersion providerVersion) {
-			return GetIdentityUrl(scenario, providerVersion, false);
-		}
-		internal static UriIdentifier GetIdentityUrl(Scenarios scenario, ProtocolVersion providerVersion, bool useSsl) {
-			return new UriIdentifier(GetFullUrl("/" + identityPage, new Dictionary<string, string> {
-		    { "user", scenario.ToString() },
-		    { "version", providerVersion.ToString() },
-		}, useSsl));
-		}
-		////internal static UriIdentifier GetDirectedIdentityUrl(Scenarios scenario, ProtocolVersion providerVersion) {
-		////    return GetDirectedIdentityUrl(scenario, providerVersion, false);
-		////}
-		////internal static UriIdentifier GetDirectedIdentityUrl(Scenarios scenario, ProtocolVersion providerVersion, bool useSsl) {
-		////    return new UriIdentifier(GetFullUrl("/" + directedIdentityPage, new Dictionary<string, string> {
-		////    { "user", scenario.ToString() },
-		////    { "version", providerVersion.ToString() },
-		////}, useSsl));
-		////}
 		public static Identifier GetDelegateUrl(Scenarios scenario) {
 			return GetDelegateUrl(scenario, false);
 		}
+		
 		public static Identifier GetDelegateUrl(Scenarios scenario, bool useSsl) {
 			return new UriIdentifier(GetFullUrl("/" + scenario, null, useSsl));
 		}
-		internal static MockIdentifier GetMockIdentifier(Scenarios scenario, MockHttpRequest mockRequest, ProtocolVersion providerVersion) {
-			return GetMockIdentifier(scenario, mockRequest, providerVersion, false);
-		}
-		internal static MockIdentifier GetMockIdentifier(Scenarios scenario, MockHttpRequest mockRequest, ProtocolVersion providerVersion, bool useSsl) {
-			ServiceEndpoint se = GetServiceEndpoint(scenario, providerVersion, 10, useSsl);
-			return new MockIdentifier(GetIdentityUrl(scenario, providerVersion, useSsl), mockRequest, new ServiceEndpoint[] { se });
-		}
-		internal static ServiceEndpoint GetServiceEndpoint(Scenarios scenario, ProtocolVersion providerVersion, int servicePriority, bool useSsl) {
-			return ServiceEndpoint.CreateForClaimedIdentifier(
-				GetIdentityUrl(scenario, providerVersion, useSsl),
-				GetDelegateUrl(scenario, useSsl),
-				GetFullUrl("/" + ProviderPage, null, useSsl),
-				new string[] { Protocol.Lookup(providerVersion).ClaimedIdentifierServiceTypeURI },
-				servicePriority,
-				10);
-		}
-		////internal static MockIdentifier GetMockOPIdentifier(Scenarios scenario, UriIdentifier expectedClaimedId) {
-		////    return GetMockOPIdentifier(scenario, expectedClaimedId, false, false);
-		////}
-		////internal static MockIdentifier GetMockOPIdentifier(Scenarios scenario, UriIdentifier expectedClaimedId, bool useSslOpIdentifier, bool useSslProviderEndpoint) {
-		////    var fields = new Dictionary<string, string> {
-		////    { "user", scenario.ToString() },
-		////};
-		////    Uri opEndpoint = GetFullUrl(DirectedProviderEndpoint, fields, useSslProviderEndpoint);
-		////    Uri opIdentifier = GetOPIdentityUrl(scenario, useSslOpIdentifier);
-		////    ServiceEndpoint se = ServiceEndpoint.CreateForProviderIdentifier(
-		////        opIdentifier,
-		////        opEndpoint,
-		////        new string[] { Protocol.V20.OPIdentifierServiceTypeURI },
-		////        10,
-		////        10);
-
-		////    // Register the Claimed Identifier that directed identity will choose so that RP
-		////    // discovery on that identifier can be mocked up.
-		////    MockHttpRequest.RegisterMockXrdsResponse(expectedClaimedId, se);
-
-		////    return new MockIdentifier(opIdentifier, new ServiceEndpoint[] { se });
-		////}
+		
 		public static Uri GetFullUrl(string url) {
 			return GetFullUrl(url, null, false);
 		}
+		
 		public static Uri GetFullUrl(string url, string key, object value) {
 			return GetFullUrl(url, new Dictionary<string, string> {
 		    { key, value.ToString() },
 		}, false);
 		}
+		
 		public static Uri GetFullUrl(string url, IDictionary<string, string> args, bool useSsl) {
 			Uri defaultUriBase = new Uri(useSsl ? "https://localhost/" : "http://localhost/");
 			Uri baseUri = UITestSupport.Host != null ? UITestSupport.Host.BaseUri : defaultUriBase;
@@ -154,11 +88,59 @@ namespace DotNetOpenAuth.Test.OpenId {
 			if (!path.StartsWith("/")) path = "/" + path;
 			path = "DotNetOpenAuth.Test.OpenId" + path.Replace('/', '.');
 			Stream resource = Assembly.GetExecutingAssembly().GetManifestResourceStream(path);
-			if (resource == null) throw new ArgumentException();
+			if (resource == null) {
+				throw new ArgumentException();
+			}
 			using (StreamReader sr = new StreamReader(resource)) {
 				return sr.ReadToEnd();
 			}
 		}
+
+		////internal static UriIdentifier GetOPIdentityUrl(Scenarios scenario, bool useSsl) {
+		////    var args = new Dictionary<string, string> {
+		////    { "user", scenario.ToString() },
+		////};
+		////    return new UriIdentifier(GetFullUrl("/" + OPDefaultPage, args, useSsl));
+		////}
+		internal static UriIdentifier GetIdentityUrl(Scenarios scenario, ProtocolVersion providerVersion) {
+			return GetIdentityUrl(scenario, providerVersion, false);
+		}
+		
+		internal static UriIdentifier GetIdentityUrl(Scenarios scenario, ProtocolVersion providerVersion, bool useSsl) {
+			return new UriIdentifier(GetFullUrl("/" + IdentityPage, new Dictionary<string, string> {
+		    { "user", scenario.ToString() },
+		    { "version", providerVersion.ToString() },
+		}, useSsl));
+		}
+		
+		internal static MockIdentifier GetMockIdentifier(Scenarios scenario, MockHttpRequest mockRequest, ProtocolVersion providerVersion) {
+			return GetMockIdentifier(scenario, mockRequest, providerVersion, false);
+		}
+		
+		internal static MockIdentifier GetMockIdentifier(Scenarios scenario, MockHttpRequest mockRequest, ProtocolVersion providerVersion, bool useSsl) {
+			ServiceEndpoint se = GetServiceEndpoint(scenario, providerVersion, 10, useSsl);
+			return new MockIdentifier(GetIdentityUrl(scenario, providerVersion, useSsl), mockRequest, new ServiceEndpoint[] { se });
+		}
+		
+		internal static ServiceEndpoint GetServiceEndpoint(Scenarios scenario, ProtocolVersion providerVersion, int servicePriority, bool useSsl) {
+			return ServiceEndpoint.CreateForClaimedIdentifier(
+				GetIdentityUrl(scenario, providerVersion, useSsl),
+				GetDelegateUrl(scenario, useSsl),
+				GetFullUrl("/" + ProviderPage, null, useSsl),
+				new string[] { Protocol.Lookup(providerVersion).ClaimedIdentifierServiceTypeURI },
+				servicePriority,
+				10);
+		}
+
+		////internal static UriIdentifier GetDirectedIdentityUrl(Scenarios scenario, ProtocolVersion providerVersion) {
+		////    return GetDirectedIdentityUrl(scenario, providerVersion, false);
+		////}
+		////internal static UriIdentifier GetDirectedIdentityUrl(Scenarios scenario, ProtocolVersion providerVersion, bool useSsl) {
+		////    return new UriIdentifier(GetFullUrl("/" + directedIdentityPage, new Dictionary<string, string> {
+		////    { "user", scenario.ToString() },
+		////    { "version", providerVersion.ToString() },
+		////}, useSsl));
+		////}
 
 		////internal static IRelyingPartyApplicationStore RelyingPartyStore;
 		////internal static IProviderAssociationStore ProviderStore;
@@ -359,6 +341,28 @@ namespace DotNetOpenAuth.Test.OpenId {
 		////    get {
 		////        return DotNetOpenId.Provider.OpenIdProvider.HttpApplicationStore;
 		////    }
+		////}
+		////internal static MockIdentifier GetMockOPIdentifier(Scenarios scenario, UriIdentifier expectedClaimedId) {
+		////    return GetMockOPIdentifier(scenario, expectedClaimedId, false, false);
+		////}
+		////internal static MockIdentifier GetMockOPIdentifier(Scenarios scenario, UriIdentifier expectedClaimedId, bool useSslOpIdentifier, bool useSslProviderEndpoint) {
+		////    var fields = new Dictionary<string, string> {
+		////    { "user", scenario.ToString() },
+		////};
+		////    Uri opEndpoint = GetFullUrl(DirectedProviderEndpoint, fields, useSslProviderEndpoint);
+		////    Uri opIdentifier = GetOPIdentityUrl(scenario, useSslOpIdentifier);
+		////    ServiceEndpoint se = ServiceEndpoint.CreateForProviderIdentifier(
+		////        opIdentifier,
+		////        opEndpoint,
+		////        new string[] { Protocol.V20.OPIdentifierServiceTypeURI },
+		////        10,
+		////        10);
+
+		////    // Register the Claimed Identifier that directed identity will choose so that RP
+		////    // discovery on that identifier can be mocked up.
+		////    MockHttpRequest.RegisterMockXrdsResponse(expectedClaimedId, se);
+
+		////    return new MockIdentifier(opIdentifier, new ServiceEndpoint[] { se });
 		////}
 	}
 }

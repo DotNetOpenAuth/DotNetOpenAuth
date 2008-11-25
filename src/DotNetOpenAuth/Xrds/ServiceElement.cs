@@ -69,10 +69,10 @@ namespace DotNetOpenAuth.Xrds {
 
 		public int CompareTo(ServiceElement other) {
 			if (other == null) return -1;
-			if (Priority.HasValue && other.Priority.HasValue) {
-				return Priority.Value.CompareTo(other.Priority.Value);
+			if (this.Priority.HasValue && other.Priority.HasValue) {
+				return this.Priority.Value.CompareTo(other.Priority.Value);
 			} else {
-				if (Priority.HasValue) {
+				if (this.Priority.HasValue) {
 					return -1;
 				} else if (other.Priority.HasValue) {
 					return 1;

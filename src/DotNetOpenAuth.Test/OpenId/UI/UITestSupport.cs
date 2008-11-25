@@ -1,4 +1,10 @@
-﻿namespace DotNetOAuth.Test.OpenId.UI {
+﻿//-----------------------------------------------------------------------
+// <copyright file="UITestSupport.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOAuth.Test.OpenId.UI {
 	using DotNetOpenAuth.Test.Hosting;
 
 	////[SetUpFixture]

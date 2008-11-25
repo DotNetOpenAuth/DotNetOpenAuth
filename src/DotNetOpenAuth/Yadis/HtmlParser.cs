@@ -52,7 +52,7 @@ namespace DotNetOpenAuth.Yadis {
 			}
 		}
 
-		static Regex tagMatcher(string tagName, params string[] closeTags) {
+		private static Regex tagMatcher(string tagName, params string[] closeTags) {
 			string text2;
 			if (closeTags.Length > 0) {
 				StringBuilder builder = new StringBuilder();
@@ -74,7 +74,7 @@ namespace DotNetOpenAuth.Yadis {
 				tagExpr, tagName, text2), flags);
 		}
 
-		static Regex startTagMatcher(string tag_name) {
+		private static Regex startTagMatcher(string tag_name) {
 			return new Regex(string.Format(CultureInfo.InvariantCulture, startTagExpr, tag_name), flags);
 		}
 	}

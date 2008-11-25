@@ -6,15 +6,15 @@
 
 namespace DotNetOpenAuth.OpenId {
 	using System;
-	using System.Linq;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Linq;
 	using System.Text.RegularExpressions;
 	using System.Web.UI.HtmlControls;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using DotNetOpenAuth.Yadis;
 	using DotNetOpenAuth.Xrds;
+	using DotNetOpenAuth.Yadis;
 
 	/// <summary>
 	/// A URI style of OpenID Identifier.
@@ -196,62 +196,6 @@ namespace DotNetOpenAuth.OpenId {
 			return true;
 		}
 
-		/// <summary>
-		/// Searches HTML for the HEAD META tags that describe OpenID provider services.
-		/// </summary>
-		/// <param name="claimedIdentifier">
-		/// The final URL that provided this HTML document.  
-		/// This may not be the same as (this) userSuppliedIdentifier if the 
-		/// userSuppliedIdentifier pointed to a 301 Redirect.
-		/// </param>
-		/// <param name="html">The HTML that was downloaded and should be searched.</param>
-		/// <returns>
-		/// An initialized ServiceEndpoint if the OpenID Provider information was
-		/// found.  Otherwise null.
-		/// </returns>
-		/// <remarks>
-		/// OpenID 2.0 tags are always used if they are present, otherwise
-		/// OpenID 1.x tags are used if present.
-		/// </remarks>
-		private static ServiceEndpoint DiscoverFromHtml(Uri claimedIdentifier, string html) {
-			Uri providerEndpoint = null;
-			Protocol discoveredProtocol = null;
-			Identifier providerLocalIdentifier = null;
-			var linkTags = new List<HtmlLink>(HtmlParser.HeadTags<HtmlLink>(html));
-			foreach (var protocol in Protocol.AllVersions) {
-				foreach (var linkTag in linkTags) {
-					// rel attributes are supposed to be interpreted with case INsensitivity, 
-					// and is a space-delimited list of values. (http://www.htmlhelp.com/reference/html40/values.html#linktypes)
-					if (Regex.IsMatch(linkTag.Attributes["rel"], @"\b" + Regex.Escape(protocol.HtmlDiscoveryProviderKey) + @"\b", RegexOptions.IgnoreCase)) {
-						if (Uri.TryCreate(linkTag.Href, UriKind.Absolute, out providerEndpoint)) {
-							discoveredProtocol = protocol;
-							break;
-						}
-					}
-				}
-				if (providerEndpoint != null) break;
-			}
-			if (providerEndpoint == null)
-				return null; // html did not contain openid.server link
-			// See if a LocalId tag of the discovered version exists
-			foreach (var linkTag in linkTags) {
-				if (Regex.IsMatch(linkTag.Attributes["rel"], @"\b" + Regex.Escape(discoveredProtocol.HtmlDiscoveryLocalIdKey) + @"\b", RegexOptions.IgnoreCase)) {
-					if (Identifier.IsValid(linkTag.Href)) {
-						providerLocalIdentifier = linkTag.Href;
-						break;
-					} else {
-						Logger.WarnFormat("Skipping endpoint data because local id is badly formed ({0}).", linkTag.Href);
-						return null; // badly formed URL used as LocalId
-					}
-				}
-			}
-
-			// Choose the TypeURI to match the OpenID version detected.
-			string[] typeURIs = { discoveredProtocol.ClaimedIdentifierServiceTypeURI };
-			return ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, providerLocalIdentifier,
-				providerEndpoint, typeURIs, (int?)null, (int?)null);
-		}
-
 		internal override IEnumerable<ServiceEndpoint> Discover(IDirectSslWebRequestHandler requestHandler) {
 			List<ServiceEndpoint> endpoints = new List<ServiceEndpoint>();
 			// Attempt YADIS discovery
@@ -348,6 +292,64 @@ namespace DotNetOpenAuth.OpenId {
 			// This identifier is explicitly NOT https, so we cannot change it.
 			secureIdentifier = new NoDiscoveryIdentifier(this);
 			return false;
+		}
+
+		/// <summary>
+		/// Searches HTML for the HEAD META tags that describe OpenID provider services.
+		/// </summary>
+		/// <param name="claimedIdentifier">
+		/// The final URL that provided this HTML document.  
+		/// This may not be the same as (this) userSuppliedIdentifier if the 
+		/// userSuppliedIdentifier pointed to a 301 Redirect.
+		/// </param>
+		/// <param name="html">The HTML that was downloaded and should be searched.</param>
+		/// <returns>
+		/// An initialized ServiceEndpoint if the OpenID Provider information was
+		/// found.  Otherwise null.
+		/// </returns>
+		/// <remarks>
+		/// OpenID 2.0 tags are always used if they are present, otherwise
+		/// OpenID 1.x tags are used if present.
+		/// </remarks>
+		private static ServiceEndpoint DiscoverFromHtml(Uri claimedIdentifier, string html) {
+			Uri providerEndpoint = null;
+			Protocol discoveredProtocol = null;
+			Identifier providerLocalIdentifier = null;
+			var linkTags = new List<HtmlLink>(HtmlParser.HeadTags<HtmlLink>(html));
+			foreach (var protocol in Protocol.AllVersions) {
+				foreach (var linkTag in linkTags) {
+					// rel attributes are supposed to be interpreted with case INsensitivity, 
+					// and is a space-delimited list of values. (http://www.htmlhelp.com/reference/html40/values.html#linktypes)
+					if (Regex.IsMatch(linkTag.Attributes["rel"], @"\b" + Regex.Escape(protocol.HtmlDiscoveryProviderKey) + @"\b", RegexOptions.IgnoreCase)) {
+						if (Uri.TryCreate(linkTag.Href, UriKind.Absolute, out providerEndpoint)) {
+							discoveredProtocol = protocol;
+							break;
+						}
+					}
+				}
+				if (providerEndpoint != null) {
+					break;
+				}
+			}
+			if (providerEndpoint == null) {
+				return null; // html did not contain openid.server link
+			}
+			// See if a LocalId tag of the discovered version exists
+			foreach (var linkTag in linkTags) {
+				if (Regex.IsMatch(linkTag.Attributes["rel"], @"\b" + Regex.Escape(discoveredProtocol.HtmlDiscoveryLocalIdKey) + @"\b", RegexOptions.IgnoreCase)) {
+					if (Identifier.IsValid(linkTag.Href)) {
+						providerLocalIdentifier = linkTag.Href;
+						break;
+					} else {
+						Logger.WarnFormat("Skipping endpoint data because local id is badly formed ({0}).", linkTag.Href);
+						return null; // badly formed URL used as LocalId
+					}
+				}
+			}
+
+			// Choose the TypeURI to match the OpenID version detected.
+			string[] typeURIs = { discoveredProtocol.ClaimedIdentifierServiceTypeURI };
+			return ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, providerLocalIdentifier, providerEndpoint, typeURIs, (int?)null, (int?)null);
 		}
 
 		/// <summary>

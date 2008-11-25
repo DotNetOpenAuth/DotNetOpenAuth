@@ -23,18 +23,18 @@ namespace DotNetOpenAuth.Yadis {
 		/// <param name="initialResponse">The initial response.</param>
 		/// <param name="finalResponse">The final response.</param>
 		public DiscoveryResult(Uri requestUri, DirectWebResponse initialResponse, DirectWebResponse finalResponse) {
-			RequestUri = requestUri;
-			NormalizedUri = initialResponse.FinalUri;
+			this.RequestUri = requestUri;
+			this.NormalizedUri = initialResponse.FinalUri;
 			if (finalResponse == null) {
-				ContentType = initialResponse.ContentType;
-				ResponseText = initialResponse.Body;
-				IsXrds = ContentType.MediaType == ContentTypes.Xrds;
+				this.ContentType = initialResponse.ContentType;
+				this.ResponseText = initialResponse.Body;
+				this.IsXrds = ContentType.MediaType == ContentTypes.Xrds;
 			} else {
-				ContentType = finalResponse.ContentType;
-				ResponseText = finalResponse.Body;
-				IsXrds = true;
+				this.ContentType = finalResponse.ContentType;
+				this.ResponseText = finalResponse.Body;
+				this.IsXrds = true;
 				if (initialResponse != finalResponse) {
-					YadisLocation = finalResponse.RequestUri;
+					this.YadisLocation = finalResponse.RequestUri;
 				}
 			}
 		}
@@ -82,7 +82,7 @@ namespace DotNetOpenAuth.Yadis {
 		/// <value><c>true</c> if the response to the userSuppliedIdentifier pointed to a different URL
 		/// for the XRDS document.</value>
 		public bool UsedYadisLocation {
-			get { return YadisLocation != null; }
+			get { return this.YadisLocation != null; }
 		}
 	}
 }

@@ -10,13 +10,12 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Globalization;
+	using System.Linq;
 	using System.Text.RegularExpressions;
 	using System.Xml;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OpenId.Provider;
-	using DotNetOpenAuth.Yadis;
 	using DotNetOpenAuth.Xrds;
-	using System.Linq;
+	using DotNetOpenAuth.Yadis;
 
 	/// <summary>
 	/// A trust root to validate requests and match return URLs against.
@@ -361,7 +360,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </returns>
 		internal IEnumerable<RelyingPartyEndpointDescription> Discover(IDirectSslWebRequestHandler requestHandler, bool allowRedirects) {
 			// Attempt YADIS discovery
-			DiscoveryResult yadisResult = Yadis.Discover(requestHandler, UriWithWildcardChangedToWww, false);
+			DiscoveryResult yadisResult = Yadis.Discover(requestHandler, this.UriWithWildcardChangedToWww, false);
 			if (yadisResult != null) {
 				// Detect disallowed redirects, since realm discovery never allows them for security.
 				ErrorUtilities.VerifyProtocol(allowRedirects || yadisResult.NormalizedUri == yadisResult.RequestUri, OpenIdStrings.RealmCausedRedirectUponDiscovery, yadisResult.RequestUri);

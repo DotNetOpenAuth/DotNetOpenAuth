@@ -16,10 +16,10 @@ using DotNetOpenAuth.Messaging;
 	/// to perform discovery, it returns a preset list of sevice endpoints to avoid
 	/// having a dependency on a hosted web site to actually perform discovery on.
 	/// </summary>
-	class MockIdentifier : Identifier {
-		IEnumerable<ServiceEndpoint> endpoints;
-		MockHttpRequest mockHttpRequest;
-		Identifier wrappedIdentifier;
+	internal class MockIdentifier : Identifier {
+		private IEnumerable<ServiceEndpoint> endpoints;
+		private MockHttpRequest mockHttpRequest;
+		private Identifier wrappedIdentifier;
 
 		public MockIdentifier(Identifier wrappedIdentifier, MockHttpRequest mockHttpRequest, IEnumerable<ServiceEndpoint> endpoints)
 			: base(false) {
@@ -37,7 +37,7 @@ using DotNetOpenAuth.Messaging;
 		}
 
 		internal override IEnumerable<ServiceEndpoint> Discover(IDirectSslWebRequestHandler requestHandler) {
-			return endpoints;
+			return this.endpoints;
 		}
 
 		internal override Identifier TrimFragment() {
@@ -54,15 +54,15 @@ using DotNetOpenAuth.Messaging;
 		}
 
 		public override string ToString() {
-			return wrappedIdentifier.ToString();
+			return this.wrappedIdentifier.ToString();
 		}
 
 		public override bool Equals(object obj) {
-			return wrappedIdentifier.Equals(obj);
+			return this.wrappedIdentifier.Equals(obj);
 		}
 
 		public override int GetHashCode() {
-			return wrappedIdentifier.GetHashCode();
+			return this.wrappedIdentifier.GetHashCode();
 		}
 	}
 }

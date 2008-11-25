@@ -168,16 +168,6 @@ namespace DotNetOpenAuth.Messaging {
 			return copyTo;
 		}
 
-		internal static Stream CreateSnapshotAndClose(this Stream copyFrom) {
-			ErrorUtilities.VerifyArgumentNotNull(copyFrom, "copyFrom");
-
-			try {
-				return CreateSnapshot(copyFrom);
-			} finally {
-				copyFrom.Dispose();
-			}
-		}
-
 		/// <summary>
 		/// Tests whether two arrays are equal in length and contents.
 		/// </summary>

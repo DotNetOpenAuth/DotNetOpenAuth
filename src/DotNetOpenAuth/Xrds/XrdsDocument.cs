@@ -9,10 +9,9 @@ namespace DotNetOpenAuth.Xrds {
 	using System.IO;
 	using System.Xml;
 	using System.Xml.XPath;
-	using DotNetOpenAuth.OpenId.Provider;
-	using DotNetOpenAuth.OpenId.RelyingParty;
-	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	internal class XrdsDocument : XrdsNode {
 		public XrdsDocument(XPathNavigator xrdsNavigator)
@@ -44,11 +43,11 @@ namespace DotNetOpenAuth.Xrds {
 
 		internal IEnumerable<ServiceEndpoint> CreateServiceEndpoints(UriIdentifier claimedIdentifier) {
 			var endpoints = new List<ServiceEndpoint>();
-			endpoints.AddRange(this.generateOPIdentifierServiceEndpoints(claimedIdentifier));
+			endpoints.AddRange(this.GenerateOPIdentifierServiceEndpoints(claimedIdentifier));
 			// If any OP Identifier service elements were found, we must not proceed
 			// to return any Claimed Identifier services.
 			if (endpoints.Count == 0) {
-				endpoints.AddRange(this.generateClaimedIdentifierServiceEndpoints(claimedIdentifier));
+				endpoints.AddRange(this.GenerateClaimedIdentifierServiceEndpoints(claimedIdentifier));
 			}
 			Logger.DebugFormat("Total services discovered in XRDS: {0}", endpoints.Count);
 			Logger.Debug(endpoints.ToStringDeferred(true));
@@ -57,19 +56,38 @@ namespace DotNetOpenAuth.Xrds {
 
 		internal IEnumerable<ServiceEndpoint> CreateServiceEndpoints(XriIdentifier userSuppliedIdentifier) {
 			var endpoints = new List<ServiceEndpoint>();
-			endpoints.AddRange(this.generateOPIdentifierServiceEndpoints(userSuppliedIdentifier));
+			endpoints.AddRange(this.GenerateOPIdentifierServiceEndpoints(userSuppliedIdentifier));
 			// If any OP Identifier service elements were found, we must not proceed
 			// to return any Claimed Identifier services.
 			if (endpoints.Count == 0) {
-				endpoints.AddRange(generateClaimedIdentifierServiceEndpoints(userSuppliedIdentifier));
+				endpoints.AddRange(this.GenerateClaimedIdentifierServiceEndpoints(userSuppliedIdentifier));
 			}
 			Logger.DebugFormat("Total services discovered in XRDS: {0}", endpoints.Count);
 			Logger.Debug(endpoints.ToStringDeferred(true));
 			return endpoints;
 		}
 
-		IEnumerable<ServiceEndpoint> generateOPIdentifierServiceEndpoints(Identifier opIdentifier) {
-			foreach (var service in findOPIdentifierServices()) {
+		internal IEnumerable<RelyingPartyEndpointDescription> FindRelyingPartyReceivingEndpoints() {
+			foreach (var service in FindReturnToServices()) {
+				foreach (var uri in service.UriElements) {
+					yield return new RelyingPartyEndpointDescription(uri.Uri, service.TypeElementUris);
+				}
+			}
+		}
+
+		internal bool IsXrdResolutionSuccessful {
+			get {
+				foreach (var xrd in this.XrdElements) {
+					if (!xrd.IsXriResolutionSuccessful) {
+						return false;
+					}
+				}
+				return true;
+			}
+		}
+
+		private IEnumerable<ServiceEndpoint> GenerateOPIdentifierServiceEndpoints(Identifier opIdentifier) {
+			foreach (var service in FindOPIdentifierServices()) {
 				foreach (var uri in service.UriElements) {
 					var protocol = Protocol.FindBestVersion(p => p.OPIdentifierServiceTypeURI, service.TypeElementUris);
 					yield return ServiceEndpoint.CreateForProviderIdentifier(
@@ -79,8 +97,8 @@ namespace DotNetOpenAuth.Xrds {
 			}
 		}
 
-		IEnumerable<ServiceEndpoint> generateClaimedIdentifierServiceEndpoints(UriIdentifier claimedIdentifier) {
-			foreach (var service in findClaimedIdentifierServices()) {
+		private IEnumerable<ServiceEndpoint> GenerateClaimedIdentifierServiceEndpoints(UriIdentifier claimedIdentifier) {
+			foreach (var service in FindClaimedIdentifierServices()) {
 				foreach (var uri in service.UriElements) {
 					yield return ServiceEndpoint.CreateForClaimedIdentifier(
 						claimedIdentifier, service.ProviderLocalIdentifier,
@@ -89,8 +107,8 @@ namespace DotNetOpenAuth.Xrds {
 			}
 		}
 
-		IEnumerable<ServiceEndpoint> generateClaimedIdentifierServiceEndpoints(XriIdentifier userSuppliedIdentifier) {
-			foreach (var service in findClaimedIdentifierServices()) {
+		private IEnumerable<ServiceEndpoint> GenerateClaimedIdentifierServiceEndpoints(XriIdentifier userSuppliedIdentifier) {
+			foreach (var service in this.FindClaimedIdentifierServices()) {
 				foreach (var uri in service.UriElements) {
 					// spec section 7.3.2.3 on Claimed Id -> CanonicalID substitution
 					if (service.Xrd.CanonicalID == null) {
@@ -107,15 +125,7 @@ namespace DotNetOpenAuth.Xrds {
 			}
 		}
 
-		internal IEnumerable<RelyingPartyEndpointDescription> FindRelyingPartyReceivingEndpoints() {
-			foreach (var service in findReturnToServices()) {
-				foreach (var uri in service.UriElements) {
-					yield return new RelyingPartyEndpointDescription(uri.Uri, service.TypeElementUris);
-				}
-			}
-		}
-
-		IEnumerable<ServiceElement> findOPIdentifierServices() {
+		private IEnumerable<ServiceElement> FindOPIdentifierServices() {
 			foreach (var xrd in this.XrdElements) {
 				foreach (var service in xrd.OpenIdProviderIdentifierServices) {
 					yield return service;
@@ -127,7 +137,7 @@ namespace DotNetOpenAuth.Xrds {
 		/// Returns the OpenID-compatible services described by a given XRDS document,
 		/// in priority order.
 		/// </summary>
-		IEnumerable<ServiceElement> findClaimedIdentifierServices() {
+		private IEnumerable<ServiceElement> FindClaimedIdentifierServices() {
 			foreach (var xrd in this.XrdElements) {
 				foreach (var service in xrd.OpenIdClaimedIdentifierServices) {
 					yield return service;
@@ -135,22 +145,11 @@ namespace DotNetOpenAuth.Xrds {
 			}
 		}
 
-		IEnumerable<ServiceElement> findReturnToServices() {
+		private IEnumerable<ServiceElement> FindReturnToServices() {
 			foreach (var xrd in this.XrdElements) {
 				foreach (var service in xrd.OpenIdRelyingPartyReturnToServices) {
 					yield return service;
 				}
-			}
-		}
-
-		internal bool IsXrdResolutionSuccessful {
-			get {
-				foreach (var xrd in this.XrdElements) {
-					if (!xrd.IsXriResolutionSuccessful) {
-						return false;
-					}
-				}
-				return true;
 			}
 		}
 	}

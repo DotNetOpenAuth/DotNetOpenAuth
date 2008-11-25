@@ -6,11 +6,11 @@
 
 namespace DotNetOpenAuth.Test.OpenId {
 	using DotNetOpenAuth.Configuration;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
 	using DotNetOpenAuth.Test.Mocks;
-	using DotNetOpenAuth.Messaging;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	public class OpenIdTestBase : TestBase {
 		protected RelyingPartySecuritySettings RelyingPartySecuritySettings { get; private set; }

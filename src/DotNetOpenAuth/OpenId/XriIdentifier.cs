@@ -149,15 +149,6 @@ namespace DotNetOpenAuth.OpenId {
 				|| xri.StartsWith(XriScheme, StringComparison.OrdinalIgnoreCase);
 		}
 
-		private XrdsDocument downloadXrds(IDirectSslWebRequestHandler requestHandler) {
-			XrdsDocument doc;
-			using (var xrdsResponse = Yadis.Request(requestHandler, this.XrdsUrl, this.IsDiscoverySecureEndToEnd)) {
-				doc = new XrdsDocument(XmlReader.Create(xrdsResponse.ResponseStream));
-			}
-			ErrorUtilities.VerifyProtocol(doc.IsXrdResolutionSuccessful, OpenIdStrings.XriResolutionFailed);
-			return doc;
-		}
-
 		internal override IEnumerable<ServiceEndpoint> Discover(IDirectSslWebRequestHandler requestHandler) {
 			return downloadXrds(requestHandler).CreateServiceEndpoints(this);
 		}
@@ -167,7 +158,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// instances that treat another given identifier as the user-supplied identifier.
 		/// </summary>
 		internal IEnumerable<ServiceEndpoint> Discover(IDirectSslWebRequestHandler requestHandler, XriIdentifier userSuppliedIdentifier) {
-			return downloadXrds(requestHandler).CreateServiceEndpoints(userSuppliedIdentifier);
+			return this.downloadXrds(requestHandler).CreateServiceEndpoints(userSuppliedIdentifier);
 		}
 
 		/// <summary>
@@ -216,6 +207,15 @@ namespace DotNetOpenAuth.OpenId {
 				xri = xri.Substring(XriScheme.Length);
 			}
 			return xri;
+		}
+
+		private XrdsDocument downloadXrds(IDirectSslWebRequestHandler requestHandler) {
+			XrdsDocument doc;
+			using (var xrdsResponse = Yadis.Request(requestHandler, this.XrdsUrl, this.IsDiscoverySecureEndToEnd)) {
+				doc = new XrdsDocument(XmlReader.Create(xrdsResponse.ResponseStream));
+			}
+			ErrorUtilities.VerifyProtocol(doc.IsXrdResolutionSuccessful, OpenIdStrings.XriResolutionFailed);
+			return doc;
 		}
 	}
 }

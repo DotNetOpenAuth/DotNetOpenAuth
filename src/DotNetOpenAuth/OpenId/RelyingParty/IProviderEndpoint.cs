@@ -1,7 +1,13 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿//-----------------------------------------------------------------------
+// <copyright file="IProviderEndpoint.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId.RelyingParty {
+	using System;
+	using System.Diagnostics.CodeAnalysis;
+
 	/// <summary>
 	/// Information published about an OpenId Provider by the
 	/// OpenId discovery documents found at a user's Claimed Identifier.
@@ -38,12 +44,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/////// the extension in the request and see if a response comes back for that extension.
 		/////// </remarks>
 		////bool IsExtensionSupported(Type extensionType);
+
 		/// <summary>
-		/// The detected version of OpenID implemented by the Provider.
+		/// Gets the detected version of OpenID implemented by the Provider.
 		/// </summary>
 		Version Version { get; }
+
 		/// <summary>
-		/// The URL that the OpenID Provider receives authentication requests at.
+		/// Gets the URL that the OpenID Provider receives authentication requests at.
 		/// </summary>
 		Uri Uri { get; }
 	}

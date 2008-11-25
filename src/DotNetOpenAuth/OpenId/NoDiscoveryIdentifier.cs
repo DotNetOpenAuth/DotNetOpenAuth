@@ -5,11 +5,10 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId {
-	using System;
 	using System.Collections.Generic;
+	using System.Linq;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using System.Linq;
 
 	/// <summary>
 	/// Wraps an existing Identifier and prevents it from performing discovery.
@@ -29,10 +28,6 @@ namespace DotNetOpenAuth.OpenId {
 			ErrorUtilities.VerifyArgumentNotNull(wrappedIdentifier, "wrappedIdentifier");
 
 			this.wrappedIdentifier = wrappedIdentifier;
-		}
-
-		internal override IEnumerable<ServiceEndpoint> Discover(IDirectSslWebRequestHandler requestHandler) {
-			return Enumerable.Empty<ServiceEndpoint>();
 		}
 
 		/// <summary>
@@ -67,6 +62,17 @@ namespace DotNetOpenAuth.OpenId {
 		/// </returns>
 		public override int GetHashCode() {
 			return this.wrappedIdentifier.GetHashCode();
+		}
+
+		/// <summary>
+		/// Performs discovery on the Identifier.
+		/// </summary>
+		/// <param name="requestHandler">The web request handler to use for discovery.</param>
+		/// <returns>
+		/// An initialized structure containing the discovered provider endpoint information.
+		/// </returns>
+		internal override IEnumerable<ServiceEndpoint> Discover(IDirectSslWebRequestHandler requestHandler) {
+			return Enumerable.Empty<ServiceEndpoint>();
 		}
 
 		/// <summary>

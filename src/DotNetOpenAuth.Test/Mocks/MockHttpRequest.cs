@@ -26,26 +26,7 @@
 			return mock;
 		}
 
-		private MockHttpRequest(IDirectSslWebRequestHandler mockHandler) {
-			ErrorUtilities.VerifyArgumentNotNull(mockHandler, "mockHandler");
-			this.MockWebRequestHandler = mockHandler;
-		}
-
 		internal IDirectSslWebRequestHandler MockWebRequestHandler { get; private set; }
-
-		private DirectWebResponse GetMockResponse(HttpWebRequest request) {
-			DirectWebResponse response;
-			if (this.registeredMockResponses.TryGetValue(request.RequestUri, out response)) {
-				// reset response stream position so this response can be reused on a subsequent request.
-				response.ResponseStream.Seek(0, SeekOrigin.Begin);
-				return response;
-			} else {
-				////Assert.Fail("Unexpected HTTP request: {0}", uri);
-				Logger.WarnFormat("Unexpected HTTP request: {0}", request.RequestUri);
-				return new DirectWebResponse(request.RequestUri, request.RequestUri, new WebHeaderCollection(), HttpStatusCode.NotFound,
-					"text/html", null, new MemoryStream());
-			}
-		}
 
 		internal void RegisterMockResponse(DirectWebResponse response) {
 			if (response == null) throw new ArgumentNullException("response");
@@ -134,6 +115,7 @@
 
 			RegisterMockResponse(respondingUri, ContentTypes.Xrds, xrds.ToString());
 		}
+
 		internal void RegisterMockXrdsResponse(UriIdentifier directedIdentityAssignedIdentifier, ServiceEndpoint providerEndpoint) {
 			ServiceEndpoint identityEndpoint = ServiceEndpoint.CreateForClaimedIdentifier(
 				directedIdentityAssignedIdentifier,
@@ -144,11 +126,13 @@
 				10);
 			RegisterMockXrdsResponse(identityEndpoint);
 		}
+
 		internal Identifier RegisterMockXrdsResponse(string embeddedResourcePath) {
 			UriIdentifier id = TestSupport.GetFullUrl(embeddedResourcePath);
 			RegisterMockResponse(id, "application/xrds+xml", TestSupport.LoadEmbeddedFile(embeddedResourcePath));
 			return id;
 		}
+
 		internal void RegisterMockRPDiscovery() {
 			Uri rpRealmUri = TestSupport.Realm.UriWithWildcardChangedToWww;
 
@@ -178,6 +162,25 @@
 			DirectWebResponse response = new DirectWebResponse(origin, origin,
 				redirectionHeaders, HttpStatusCode.Redirect, null, null, new MemoryStream());
 			RegisterMockResponse(response);
+		}
+
+		private MockHttpRequest(IDirectSslWebRequestHandler mockHandler) {
+			ErrorUtilities.VerifyArgumentNotNull(mockHandler, "mockHandler");
+			this.MockWebRequestHandler = mockHandler;
+		}
+
+		private DirectWebResponse GetMockResponse(HttpWebRequest request) {
+			DirectWebResponse response;
+			if (this.registeredMockResponses.TryGetValue(request.RequestUri, out response)) {
+				// reset response stream position so this response can be reused on a subsequent request.
+				response.ResponseStream.Seek(0, SeekOrigin.Begin);
+				return response;
+			} else {
+				////Assert.Fail("Unexpected HTTP request: {0}", uri);
+				Logger.WarnFormat("Unexpected HTTP request: {0}", request.RequestUri);
+				return new DirectWebResponse(request.RequestUri, request.RequestUri, new WebHeaderCollection(), HttpStatusCode.NotFound,
+					"text/html", null, new MemoryStream());
+			}
 		}
 	}
 }

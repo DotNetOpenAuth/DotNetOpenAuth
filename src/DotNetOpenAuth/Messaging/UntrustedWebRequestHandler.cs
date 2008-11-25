@@ -38,29 +38,40 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Gets or sets the default cache policy to use for HTTP requests.
 		/// </summary>
-		internal readonly static RequestCachePolicy DefaultCachePolicy = HttpWebRequest.DefaultCachePolicy;
+		internal static readonly RequestCachePolicy DefaultCachePolicy = HttpWebRequest.DefaultCachePolicy;
 
-		private static DotNetOpenAuth.Configuration.UntrustedWebRequestSection Configuration {
-			get { return UntrustedWebRequestSection.Configuration; }
-		}
+		private ICollection<Regex> blacklistHostsRegex = new List<Regex>(Configuration.BlacklistHostsRegex.KeysAsRegexs);
+
+		private ICollection<string> allowableSchemes = new List<string> { "http", "https" };
+
+		private ICollection<Regex> whitelistHostsRegex = new List<Regex>(Configuration.WhitelistHostsRegex.KeysAsRegexs);
+
+		private ICollection<string> whitelistHosts = new List<string>(Configuration.WhitelistHosts.KeysAsStrings);
+
+		private ICollection<string> blacklistHosts = new List<string>(Configuration.BlacklistHosts.KeysAsStrings);
+
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private int maximumRedirections = Configuration.MaximumRedirections;
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private int maximumBytesToRead = Configuration.MaximumBytesToRead;
 
 		/// <summary>
-		/// The default maximum bytes to read in any given HTTP request.
-		/// Default is 1MB.  Cannot be less than 2KB.
+		/// Gets or sets the default maximum bytes to read in any given HTTP request.
 		/// </summary>
+		/// <value>Default is 1MB.  Cannot be less than 2KB.</value>
 		public int MaximumBytesToRead {
-			get { return maximumBytesToRead; }
+			get {
+				return this.maximumBytesToRead;
+			}
+
 			set {
-				if (value < 2048) throw new ArgumentOutOfRangeException("value");
-				maximumBytesToRead = value;
+				if (value < 2048) {
+					throw new ArgumentOutOfRangeException("value");
+				}
+				this.maximumBytesToRead = value;
 			}
 		}
-
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private int maximumRedirections = Configuration.MaximumRedirections;
 
 		private IDirectWebRequestHandler chainedWebRequestHandler;
 
@@ -92,10 +103,15 @@ namespace DotNetOpenAuth.Messaging {
 		/// Default is 10.
 		/// </summary>
 		public int MaximumRedirections {
-			get { return maximumRedirections; }
+			get {
+				return this.maximumRedirections;
+			}
+
 			set {
-				if (value < 0) throw new ArgumentOutOfRangeException("value");
-				maximumRedirections = value;
+				if (value < 0) {
+					throw new ArgumentOutOfRangeException("value");
+				}
+				this.maximumRedirections = value;
 			}
 		}
 
@@ -111,31 +127,33 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		public TimeSpan Timeout { get; set; }
 
-		private ICollection<string> allowableSchemes = new List<string> { "http", "https" };
-		private ICollection<string> whitelistHosts = new List<string>(Configuration.WhitelistHosts.KeysAsStrings);
 		/// <summary>
-		/// A collection of host name literals that should be allowed even if they don't
+		/// Gets a collection of host name literals that should be allowed even if they don't
 		/// pass standard security checks.
 		/// </summary>
-		public ICollection<string> WhitelistHosts { get { return whitelistHosts; } }
-		private ICollection<Regex> whitelistHostsRegex = new List<Regex>(Configuration.WhitelistHostsRegex.KeysAsRegexs);
+		public ICollection<string> WhitelistHosts { get { return this.whitelistHosts; } }
+
 		/// <summary>
-		/// A collection of host name regular expressions that indicate hosts that should
+		/// Gets a collection of host name regular expressions that indicate hosts that should
 		/// be allowed even though they don't pass standard security checks.
 		/// </summary>
-		public ICollection<Regex> WhitelistHostsRegex { get { return whitelistHostsRegex; } }
-		private ICollection<string> blacklistHosts = new List<string>(Configuration.BlacklistHosts.KeysAsStrings);
+		public ICollection<Regex> WhitelistHostsRegex { get { return this.whitelistHostsRegex; } }
+
 		/// <summary>
-		/// A collection of host name literals that should be rejected even if they 
+		/// Gets a collection of host name literals that should be rejected even if they 
 		/// pass standard security checks.
 		/// </summary>
-		public ICollection<string> BlacklistHosts { get { return blacklistHosts; } }
-		private ICollection<Regex> blacklistHostsRegex = new List<Regex>(Configuration.BlacklistHostsRegex.KeysAsRegexs);
+		public ICollection<string> BlacklistHosts { get { return this.blacklistHosts; } }
+
 		/// <summary>
-		/// A collection of host name regular expressions that indicate hosts that should
+		/// Gets a collection of host name regular expressions that indicate hosts that should
 		/// be rjected even if they pass standard security checks.
 		/// </summary>
-		public ICollection<Regex> BlacklistHostsRegex { get { return blacklistHostsRegex; } }
+		public ICollection<Regex> BlacklistHostsRegex { get { return this.blacklistHostsRegex; } }
+
+		private static DotNetOpenAuth.Configuration.UntrustedWebRequestSection Configuration {
+			get { return UntrustedWebRequestSection.Configuration; }
+		}
 
 		#region IDirectSslWebRequestHandler Members
 
@@ -218,7 +236,7 @@ namespace DotNetOpenAuth.Messaging {
 			// but our mock request infrastructure can't do redirects on its own either.
 			Uri originalRequestUri = request.RequestUri;
 			int i;
-			for (i = 0; i < MaximumRedirections; i++) {
+			for (i = 0; i < this.MaximumRedirections; i++) {
 				DirectWebResponse response = this.RequestCore(request, null, originalRequestUri, requireSsl);
 				if (response.Status == HttpStatusCode.MovedPermanently ||
 					response.Status == HttpStatusCode.Redirect ||
@@ -286,25 +304,27 @@ namespace DotNetOpenAuth.Messaging {
 			return newRequest;
 		}
 
-		private bool isHostWhitelisted(string host) {
-			return isHostInList(host, WhitelistHosts, WhitelistHostsRegex);
+		private bool IsHostWhitelisted(string host) {
+			return this.IsHostInList(host, this.WhitelistHosts, this.WhitelistHostsRegex);
 		}
 
-		private bool isHostBlacklisted(string host) {
-			return isHostInList(host, BlacklistHosts, BlacklistHostsRegex);
+		private bool IsHostBlacklisted(string host) {
+			return IsHostInList(host, BlacklistHosts, BlacklistHostsRegex);
 		}
 
-		private bool isHostInList(string host, ICollection<string> stringList, ICollection<Regex> regexList) {
-			Debug.Assert(!string.IsNullOrEmpty(host));
-			Debug.Assert(stringList != null);
-			Debug.Assert(regexList != null);
+		private bool IsHostInList(string host, ICollection<string> stringList, ICollection<Regex> regexList) {
+			ErrorUtilities.VerifyNonZeroLength(host, "host");
+			ErrorUtilities.VerifyArgumentNotNull(stringList, "stringList");
+			ErrorUtilities.VerifyArgumentNotNull(regexList, "regexList");
 			foreach (string testHost in stringList) {
-				if (string.Equals(host, testHost, StringComparison.OrdinalIgnoreCase))
+				if (string.Equals(host, testHost, StringComparison.OrdinalIgnoreCase)) {
 					return true;
+				}
 			}
 			foreach (Regex regex in regexList) {
-				if (regex.IsMatch(host))
+				if (regex.IsMatch(host)) {
 					return true;
+				}
 			}
 			return false;
 		}
@@ -315,21 +335,23 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="requestUri">The request URI.</param>
 		/// <param name="requireSsl">If set to <c>true</c>, only web requests that can be made entirely over SSL will succeed.</param>
 		private void EnsureAllowableRequestUri(Uri requestUri, bool requireSsl) {
-			ErrorUtilities.VerifyArgument(this.isUriAllowable(requestUri), MessagingStrings.UnsafeWebRequestDetected, requestUri);
+			ErrorUtilities.VerifyArgument(this.IsUriAllowable(requestUri), MessagingStrings.UnsafeWebRequestDetected, requestUri);
 
 			ErrorUtilities.VerifyProtocol(!requireSsl || String.Equals(requestUri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase), MessagingStrings.InsecureWebRequestWithSslRequired, requestUri);
 		}
 
-		private bool isUriAllowable(Uri uri) {
+		private bool IsUriAllowable(Uri uri) {
 			Debug.Assert(uri != null);
-			if (!allowableSchemes.Contains(uri.Scheme)) {
+			if (!this.allowableSchemes.Contains(uri.Scheme)) {
 				Logger.WarnFormat("Rejecting URL {0} because it uses a disallowed scheme.", uri);
 				return false;
 			}
 
 			// Allow for whitelist or blacklist to override our detection.
 			Func<string, bool> failsUnlessWhitelisted = (string reason) => {
-				if (isHostWhitelisted(uri.DnsSafeHost)) return true;
+				if (IsHostWhitelisted(uri.DnsSafeHost)) {
+					return true;
+				}
 				Logger.WarnFormat("Rejecting URL {0} because {1}.", uri, reason);
 				return false;
 			};
@@ -346,12 +368,14 @@ namespace DotNetOpenAuth.Messaging {
 				// The host is actually an IP address.
 				switch (hostIPAddress.AddressFamily) {
 					case System.Net.Sockets.AddressFamily.InterNetwork:
-						if (addressBytes[0] == 127 || addressBytes[0] == 10)
+						if (addressBytes[0] == 127 || addressBytes[0] == 10) {
 							return failsUnlessWhitelisted("it is a loopback address.");
+						}
 						break;
 					case System.Net.Sockets.AddressFamily.InterNetworkV6:
-						if (isIPv6Loopback(hostIPAddress))
+						if (this.IsIPv6Loopback(hostIPAddress)) {
 							return failsUnlessWhitelisted("it is a loopback address.");
+						}
 						break;
 					default:
 						return failsUnlessWhitelisted("it does not use an IPv4 or IPv6 address.");
@@ -363,26 +387,31 @@ namespace DotNetOpenAuth.Messaging {
 					return failsUnlessWhitelisted("it does not contain a period in the host name.");
 				}
 			}
-			if (isHostBlacklisted(uri.DnsSafeHost)) {
+			if (this.IsHostBlacklisted(uri.DnsSafeHost)) {
 				Logger.WarnFormat("Rejected URL {0} because it is blacklisted.", uri);
 				return false;
 			}
 			return true;
 		}
 
-		private bool isIPv6Loopback(IPAddress ip) {
-			Debug.Assert(ip != null);
+		private bool IsIPv6Loopback(IPAddress ip) {
+			ErrorUtilities.VerifyArgumentNotNull(ip, "ip");
 			byte[] addressBytes = ip.GetAddressBytes();
-			for (int i = 0; i < addressBytes.Length - 1; i++)
-				if (addressBytes[i] != 0) return false;
-			if (addressBytes[addressBytes.Length - 1] != 1) return false;
+			for (int i = 0; i < addressBytes.Length - 1; i++) {
+				if (addressBytes[i] != 0) {
+					return false;
+				}
+			}
+			if (addressBytes[addressBytes.Length - 1] != 1) {
+				return false;
+			}
 			return true;
 		}
 
 		private HttpWebRequest PrepareRequest(HttpWebRequest request) {
 			// Set/override a few properties of the request to apply our policies for untrusted requests.
-			request.ReadWriteTimeout = (int)ReadWriteTimeout.TotalMilliseconds;
-			request.Timeout = (int)Timeout.TotalMilliseconds;
+			request.ReadWriteTimeout = (int)this.ReadWriteTimeout.TotalMilliseconds;
+			request.Timeout = (int)this.Timeout.TotalMilliseconds;
 			request.KeepAlive = false;
 
 			// If SSL is required throughout, we cannot allow auto redirects because
@@ -396,7 +425,7 @@ namespace DotNetOpenAuth.Messaging {
 		private DirectWebResponse RequestCore(HttpWebRequest request, Stream postEntity, Uri originalRequestUri, bool requireSsl) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 			ErrorUtilities.VerifyArgumentNotNull(originalRequestUri, "originalRequestUri");
-			EnsureAllowableRequestUri(request.RequestUri, requireSsl);
+			this.EnsureAllowableRequestUri(request.RequestUri, requireSsl);
 
 			int postEntityLength = 0;
 			try {
@@ -407,7 +436,7 @@ namespace DotNetOpenAuth.Messaging {
 				}
 
 				DirectWebResponse response = this.chainedWebRequestHandler.GetResponse(request);
-				response.CacheNetworkStreamAndClose(MaximumBytesToRead);
+				response.CacheNetworkStreamAndClose(this.MaximumBytesToRead);
 				return response;
 			} catch (WebException e) {
 				using (HttpWebResponse response = (HttpWebResponse)e.Response) {
@@ -425,11 +454,11 @@ namespace DotNetOpenAuth.Messaging {
 								request.ServicePoint.Expect100Continue = false; // TODO: investigate that CAS may throw here, and we can use request.Expect instead.
 								postEntity.Seek(-postEntityLength, SeekOrigin.Current);
 								request = CloneRequestWithNewUrl(request, request.RequestUri);
-								return RequestCore(request, postEntity, originalRequestUri, requireSsl);
+								return this.RequestCore(request, postEntity, originalRequestUri, requireSsl);
 							}
 						}
 						var directResponse = new DirectWebResponse(originalRequestUri, response);
-						directResponse.CacheNetworkStreamAndClose(MaximumBytesToRead);
+						directResponse.CacheNetworkStreamAndClose(this.MaximumBytesToRead);
 						return directResponse;
 					} else {
 						throw ErrorUtilities.Wrap(e, MessagingStrings.WebRequestFailed, originalRequestUri);

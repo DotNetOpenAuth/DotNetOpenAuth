@@ -1,4 +1,10 @@
-﻿namespace DotNetOpenAuth.OpenId.RelyingParty {
+﻿//-----------------------------------------------------------------------
+// <copyright file="IXrdsProviderEndpoint.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Diagnostics.CodeAnalysis;
 
 	/// <summary>
@@ -8,14 +14,11 @@
 	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Xrds")]
 	public interface IXrdsProviderEndpoint : IProviderEndpoint {
 		/// <summary>
-		/// Checks for the presence of a given Type URI in an XRDS service.
-		/// </summary>
-		bool IsTypeUriPresent(string typeUri);
-		/// <summary>
 		/// Gets the priority associated with this service that may have been given
 		/// in the XRDS document.
 		/// </summary>
 		int? ServicePriority { get; }
+
 		/// <summary>
 		/// Gets the priority associated with the service endpoint URL.
 		/// </summary>
@@ -24,5 +27,10 @@
 		/// <see cref="ServicePriority"/>.
 		/// </remarks>
 		int? UriPriority { get; }
+
+		/// <summary>
+		/// Checks for the presence of a given Type URI in an XRDS service.
+		/// </summary>
+		bool IsTypeUriPresent(string typeUri);
 	}
 }

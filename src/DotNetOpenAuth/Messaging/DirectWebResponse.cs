@@ -1,14 +1,18 @@
-﻿namespace DotNetOpenAuth.Messaging {
+﻿//-----------------------------------------------------------------------
+// <copyright file="DirectWebResponse.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.Messaging {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
 	using System.Diagnostics;
-	using System.IO;
-	using System.Globalization;
-	using System.Net.Mime;
-	using System.Net;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Globalization;
+	using System.IO;
+	using System.Net;
+	using System.Net.Mime;
+	using System.Text;
 
 	/// <summary>
 	/// Details on the response from a direct web request to a remote party.
@@ -16,15 +20,36 @@
 	[Serializable]
 	[DebuggerDisplay("{Status} {ContentType.MediaType}: {Body.Substring(4,50)}")]
 	public class DirectWebResponse : IDisposable {
+		/// <summary>
+		/// The encoding to use in reading a response that does not declare its own content encoding.
+		/// </summary>
 		private const string DefaultContentEncoding = "ISO-8859-1";
+
+		/// <summary>
+		/// The network response object, used to initialize this instance, that still needs 
+		/// to be closed if applicable.
+		/// </summary>
 		private HttpWebResponse httpWebResponse;
+
+		/// <summary>
+		/// An object to be locked whenever the <see cref="httpWebResponse"/> or the
+		/// <see cref="ResponseStream"/> members are being accessed.
+		/// </summary>
 		private object responseLock = new object();
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DirectWebResponse"/> class.
+		/// </summary>
 		internal DirectWebResponse() {
 			this.Status = HttpStatusCode.OK;
 			this.Headers = new WebHeaderCollection();
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DirectWebResponse"/> class.
+		/// </summary>
+		/// <param name="requestUri">The original request URI.</param>
+		/// <param name="response">The response to initialize from.  The network stream is used by this class directly.</param>
 		internal DirectWebResponse(Uri requestUri, HttpWebResponse response) {
 			ErrorUtilities.VerifyArgumentNotNull(requestUri, "requestUri");
 			ErrorUtilities.VerifyArgumentNotNull(response, "response");
@@ -41,32 +66,17 @@
 			this.ResponseStream = response.GetResponseStream();
 		}
 
-		internal void CacheNetworkStreamAndClose() {
-			this.CacheNetworkStreamAndClose(int.MaxValue);
-		}
-
-		internal void CacheNetworkStreamAndClose(int maximumBytesToRead) {
-			lock (responseLock) {
-				if (this.httpWebResponse != null) {
-					// Now read and cache the network stream
-					Stream networkStream = this.ResponseStream;
-					this.ResponseStream = new MemoryStream(this.httpWebResponse.ContentLength < 0 ? 4 * 1024 : Math.Min((int)this.httpWebResponse.ContentLength, maximumBytesToRead));
-					// BUGBUG: strictly speaking, is the response were exactly the limit, we'd report it as truncated here.
-					this.IsResponseTruncated = networkStream.CopyTo(this.ResponseStream, maximumBytesToRead) == maximumBytesToRead;
-					this.ResponseStream.Seek(0, SeekOrigin.Begin);
-
-					networkStream.Dispose();
-					this.httpWebResponse.Close();
-					this.httpWebResponse = null;
-				}
-			}
-		}
-
 		/// <summary>
-		/// Constructs a mock web response.
+		/// Initializes a new instance of the <see cref="DirectWebResponse"/> class.
 		/// </summary>
-		internal DirectWebResponse(Uri requestUri, Uri responseUri, WebHeaderCollection headers,
-			HttpStatusCode statusCode, string contentType, string contentEncoding, Stream responseStream) {
+		/// <param name="requestUri">The request URI.</param>
+		/// <param name="responseUri">The final URI to respond to the request.</param>
+		/// <param name="headers">The headers.</param>
+		/// <param name="statusCode">The status code.</param>
+		/// <param name="contentType">Type of the content.</param>
+		/// <param name="contentEncoding">The content encoding.</param>
+		/// <param name="responseStream">The response stream.</param>
+		internal DirectWebResponse(Uri requestUri, Uri responseUri, WebHeaderCollection headers, HttpStatusCode statusCode, string contentType, string contentEncoding, Stream responseStream) {
 			ErrorUtilities.VerifyArgumentNotNull(requestUri, "requestUri");
 			ErrorUtilities.VerifyArgumentNotNull(responseStream, "responseStream");
 			this.RequestUri = requestUri;
@@ -81,22 +91,22 @@
 		}
 
 		/// <summary>
-		/// Gets or sets the type of the content.
+		/// Gets the type of the content.
 		/// </summary>
 		public ContentType ContentType { get; private set; }
 
 		/// <summary>
-		/// Gets or sets the content encoding.
+		/// Gets the content encoding.
 		/// </summary>
 		public string ContentEncoding { get; private set; }
 
 		/// <summary>
-		/// Gets or sets the URI of the initial request.
+		/// Gets the URI of the initial request.
 		/// </summary>
 		public Uri RequestUri { get; private set; }
 
 		/// <summary>
-		/// Gets or sets the URI that finally responded to the request.
+		/// Gets the URI that finally responded to the request.
 		/// </summary>
 		/// <remarks>
 		/// This can be different from the <see cref="RequestUri"/> in cases of 
@@ -159,6 +169,7 @@
 			sb.AppendLine(this.Body);
 			return sb.ToString();
 		}
+
 		/// <summary>
 		/// Creates a text reader for the response stream.
 		/// </summary>
@@ -174,6 +185,41 @@
 			}
 		}
 
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		public void Dispose() {
+			this.Dispose(true);
+			GC.SuppressFinalize(true);
+		}
+
+		/// <summary>
+		/// Caches the network stream and closes it if it is open.
+		/// </summary>
+		internal void CacheNetworkStreamAndClose() {
+			this.CacheNetworkStreamAndClose(int.MaxValue);
+		}
+
+		/// <summary>
+		/// Caches the network stream and closes it if it is open.
+		/// </summary>
+		/// <param name="maximumBytesToRead">The maximum bytes to cache.</param>
+		internal void CacheNetworkStreamAndClose(int maximumBytesToRead) {
+			lock (this.responseLock) {
+				if (this.httpWebResponse != null) {
+					// Now read and cache the network stream
+					Stream networkStream = this.ResponseStream;
+					this.ResponseStream = new MemoryStream(this.httpWebResponse.ContentLength < 0 ? 4 * 1024 : Math.Min((int)this.httpWebResponse.ContentLength, maximumBytesToRead));
+					// BUGBUG: strictly speaking, is the response were exactly the limit, we'd report it as truncated here.
+					this.IsResponseTruncated = networkStream.CopyTo(this.ResponseStream, maximumBytesToRead) == maximumBytesToRead;
+					this.ResponseStream.Seek(0, SeekOrigin.Begin);
+
+					networkStream.Dispose();
+					this.httpWebResponse.Close();
+					this.httpWebResponse = null;
+				}
+			}
+		}
 
 		/// <summary>
 		/// Sets the response to some string, encoded as UTF-8.
@@ -193,16 +239,6 @@
 			writer.Flush();
 			this.ResponseStream.Seek(0, SeekOrigin.Begin);
 		}
-	
-		#region IDisposable Members
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose() {
-			this.Dispose(true);
-			GC.SuppressFinalize(true);
-		}
 
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources
@@ -210,7 +246,7 @@
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
 		protected void Dispose(bool disposing) {
 			if (disposing) {
-				lock (responseLock) {
+				lock (this.responseLock) {
 					if (this.ResponseStream != null) {
 						this.ResponseStream.Dispose();
 						this.ResponseStream = null;
@@ -222,7 +258,5 @@
 				}
 			}
 		}
-
-		#endregion
 	}
 }

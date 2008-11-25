@@ -31,14 +31,18 @@ namespace DotNetOpenAuth.Xrds {
 		#region IComparable<UriElement> Members
 
 		public int CompareTo(UriElement other) {
-			if (other == null) return -1;
+			if (other == null) {
+				return -1;
+			}
 			int compare = Service.CompareTo(other.Service);
-			if (compare != 0) return compare;
+			if (compare != 0) {
+				return compare;
+			}
 
-			if (Priority.HasValue && other.Priority.HasValue) {
-				return Priority.Value.CompareTo(other.Priority.Value);
+			if (this.Priority.HasValue && other.Priority.HasValue) {
+				return this.Priority.Value.CompareTo(other.Priority.Value);
 			} else {
-				if (Priority.HasValue) {
+				if (this.Priority.HasValue) {
 					return -1;
 				} else if (other.Priority.HasValue) {
 					return 1;

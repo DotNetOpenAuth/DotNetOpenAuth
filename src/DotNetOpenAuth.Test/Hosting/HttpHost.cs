@@ -1,4 +1,10 @@
-﻿namespace DotNetOpenAuth.Test.Hosting {
+﻿//-----------------------------------------------------------------------
+// <copyright file="HttpHost.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.Test.Hosting {
 	using System;
 	using System.Globalization;
 	using System.IO;
@@ -6,32 +12,32 @@
 	using System.Threading;
 
 	class HttpHost : IDisposable {
-		HttpListener listener;
-		public int Port { get; private set; }
-		Thread listenerThread;
-		AspNetHost aspNetHost;
+		private HttpListener listener;
+		private Thread listenerThread;
+		private AspNetHost aspNetHost;
 
-		HttpHost(AspNetHost aspNetHost) {
+		private HttpHost(AspNetHost aspNetHost) {
 			this.aspNetHost = aspNetHost;
 
-			Port = 59687;
+			this.Port = 59687;
 			Random r = new Random();
 		tryAgain:
 			try {
-				listener = new HttpListener();
-				listener.Prefixes.Add(string.Format(CultureInfo.InvariantCulture,
-					"http://localhost:{0}/", Port));
-				listener.Start();
+				this.listener = new HttpListener();
+				this.listener.Prefixes.Add(string.Format(CultureInfo.InvariantCulture, "http://localhost:{0}/", this.Port));
+				this.listener.Start();
 			} catch (HttpListenerException ex) {
 				if (ex.Message.Contains("conflicts")) {
-					Port += r.Next(1, 20);
+					this.Port += r.Next(1, 20);
 					goto tryAgain;
 				}
 				throw;
 			}
-			listenerThread = new Thread(processRequests);
-			listenerThread.Start();
+			this.listenerThread = new Thread(ProcessRequests);
+			this.listenerThread.Start();
 		}
+
+		public int Port { get; private set; }
 
 		public static HttpHost CreateHost(AspNetHost aspNetHost) {
 			return new HttpHost(aspNetHost);
@@ -40,23 +46,15 @@
 		public static HttpHost CreateHost(string webDirectory) {
 			return new HttpHost(AspNetHost.CreateHost(webDirectory));
 		}
-		void processRequests() {
-			try {
-				while (true) {
-					var context = listener.GetContext();
-					aspNetHost.BeginProcessRequest(context);
-				}
-			} catch (HttpListenerException) {
-				// the listener is probably being shut down
-			}
-		}
-
+		
 		public Uri BaseUri {
-			get { return new Uri("http://localhost:" + Port.ToString() + "/"); }
+			get { return new Uri("http://localhost:" + this.Port.ToString() + "/"); }
 		}
+		
 		public string ProcessRequest(string url) {
 			return ProcessRequest(url, null);
 		}
+		
 		public string ProcessRequest(string url, string body) {
 			WebRequest request = WebRequest.Create(new Uri(BaseUri, url));
 			if (body != null) {
@@ -89,5 +87,16 @@
 		}
 
 		#endregion
+
+		private void ProcessRequests() {
+			try {
+				while (true) {
+					var context = this.listener.GetContext();
+					this.aspNetHost.BeginProcessRequest(context);
+				}
+			} catch (HttpListenerException) {
+				// the listener is probably being shut down
+			}
+		}
 	}
 }

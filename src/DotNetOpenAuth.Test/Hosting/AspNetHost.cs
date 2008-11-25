@@ -1,4 +1,10 @@
-﻿namespace DotNetOpenAuth.Test.Hosting {
+﻿//-----------------------------------------------------------------------
+// <copyright file="AspNetHost.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.Test.Hosting {
 	using System;
 	using System.IO;
 	using System.Net;
@@ -12,8 +18,8 @@
 	/// Hosts a 'portable' version of the OpenIdProvider for testing itself and the
 	/// RelyingParty against it.
 	/// </summary>
-	class AspNetHost : MarshalByRefObject {
-		HttpHost httpHost;
+	internal class AspNetHost : MarshalByRefObject {
+		private HttpHost httpHost;
 
 		public AspNetHost() {
 			httpHost = HttpHost.CreateHost(this);

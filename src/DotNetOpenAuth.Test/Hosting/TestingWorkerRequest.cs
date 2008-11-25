@@ -1,10 +1,20 @@
-﻿namespace DotNetOpenAuth.Test.Hosting {
+﻿//-----------------------------------------------------------------------
+// <copyright file="TestingWorkerRequest.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.Test.Hosting {
 	using System;
 	using System.IO;
 	using System.Net;
 	using System.Web.Hosting;
 
-	class TestingWorkerRequest : SimpleWorkerRequest {
+	internal class TestingWorkerRequest : SimpleWorkerRequest {
+		private Stream entityStream;
+		private HttpListenerContext context;
+		private TextWriter writer;
+
 		public TestingWorkerRequest(string page, string query, Stream entityStream, TextWriter writer)
 			: base(page, query, writer) {
 			this.entityStream = entityStream;
@@ -17,74 +27,71 @@
 			this.writer = output;
 		}
 
-		Stream entityStream;
-		HttpListenerContext context;
-		TextWriter writer;
 		public override string GetFilePath() {
-			string filePath = context.Request.Url.LocalPath.Replace("/", "\\");
+			string filePath = this.context.Request.Url.LocalPath.Replace("/", "\\");
 			if (filePath.EndsWith("\\", StringComparison.Ordinal))
 				filePath += "default.aspx";
 			return filePath;
 		}
 		public override int GetLocalPort() {
-			return context.Request.Url.Port;
+			return this.context.Request.Url.Port;
 		}
 		public override string GetServerName() {
-			return context.Request.Url.Host;
+			return this.context.Request.Url.Host;
 		}
 		public override string GetQueryString() {
-			return context.Request.Url.Query.TrimStart('?');
+			return this.context.Request.Url.Query.TrimStart('?');
 		}
 		public override string GetHttpVerbName() {
-			return context.Request.HttpMethod;
+			return this.context.Request.HttpMethod;
 		}
 		public override string GetLocalAddress() {
-			return context.Request.LocalEndPoint.Address.ToString();
+			return this.context.Request.LocalEndPoint.Address.ToString();
 		}
 		public override string GetHttpVersion() {
 			return "HTTP/1.1";
 		}
 		public override string GetProtocol() {
-			return context.Request.Url.Scheme;
+			return this.context.Request.Url.Scheme;
 		}
 		public override string GetRawUrl() {
-			return context.Request.RawUrl;
+			return this.context.Request.RawUrl;
 		}
 		public override int GetTotalEntityBodyLength() {
-			return (int)context.Request.ContentLength64;
+			return (int)this.context.Request.ContentLength64;
 		}
 		public override string GetKnownRequestHeader(int index) {
-			return context.Request.Headers[GetKnownRequestHeaderName(index)];
+			return this.context.Request.Headers[GetKnownRequestHeaderName(index)];
 		}
 		public override string GetUnknownRequestHeader(string name) {
-			return context.Request.Headers[name];
+			return this.context.Request.Headers[name];
 		}
 		public override bool IsEntireEntityBodyIsPreloaded() {
 			return false;
 		}
 		public override int ReadEntityBody(byte[] buffer, int size) {
-			return entityStream.Read(buffer, 0, size);
+			return this.entityStream.Read(buffer, 0, size);
 		}
 		public override int ReadEntityBody(byte[] buffer, int offset, int size) {
-			return entityStream.Read(buffer, offset, size);
+			return this.entityStream.Read(buffer, offset, size);
 		}
 		public override void SendCalculatedContentLength(int contentLength) {
-			context.Response.ContentLength64 = contentLength;
+			this.context.Response.ContentLength64 = contentLength;
 		}
 		public override void SendStatus(int statusCode, string statusDescription) {
-			if (context != null) {
-				context.Response.StatusCode = statusCode;
-				context.Response.StatusDescription = statusDescription;
+			if (this.context != null) {
+				this.context.Response.StatusCode = statusCode;
+				this.context.Response.StatusDescription = statusDescription;
 			}
 		}
 		public override void SendKnownResponseHeader(int index, string value) {
-			if (context != null) {
-				context.Response.Headers[(HttpResponseHeader)index] = value;
+			if (this.context != null) {
+				this.context.Response.Headers[(HttpResponseHeader)index] = value;
 			}
 		}
 		public override void SendUnknownResponseHeader(string name, string value) {
-			if (context != null) {
-				context.Response.Headers[name] = value;
+			if (this.context != null) {
+				this.context.Response.Headers[name] = value;
 			}
 		}
 	}
