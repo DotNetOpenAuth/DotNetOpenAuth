@@ -150,8 +150,10 @@ namespace DotNetOpenAuth.OpenId {
 		}
 
 		private XrdsDocument downloadXrds(IDirectSslWebRequestHandler requestHandler) {
-			var xrdsResponse = Yadis.Request(requestHandler, this.XrdsUrl, this.IsDiscoverySecureEndToEnd);
-			XrdsDocument doc = new XrdsDocument(XmlReader.Create(xrdsResponse.ResponseStream));
+			XrdsDocument doc;
+			using (var xrdsResponse = Yadis.Request(requestHandler, this.XrdsUrl, this.IsDiscoverySecureEndToEnd)) {
+				doc = new XrdsDocument(XmlReader.Create(xrdsResponse.ResponseStream));
+			}
 			ErrorUtilities.VerifyProtocol(doc.IsXrdResolutionSuccessful, OpenIdStrings.XriResolutionFailed);
 			return doc;
 		}

@@ -55,6 +55,7 @@ namespace DotNetOpenAuth.Yadis {
 					return null;
 				}
 				response = Request(requestHandler, uri, requireSsl, ContentTypes.Html, ContentTypes.XHtml, ContentTypes.Xrds);
+				response.CacheNetworkStreamAndClose();
 				if (response.Status != System.Net.HttpStatusCode.OK) {
 					return null;
 				}
@@ -84,6 +85,7 @@ namespace DotNetOpenAuth.Yadis {
 				if (url != null) {
 					if (!requireSsl || string.Equals(url.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)) {
 						response2 = Request(requestHandler, url, requireSsl);
+						response2.CacheNetworkStreamAndClose();
 						if (response2.Status != System.Net.HttpStatusCode.OK) {
 							return null;
 						}

@@ -14,13 +14,24 @@
 
 	internal class MockHttpRequest {
 		private readonly Dictionary<Uri, DirectWebResponse> registeredMockResponses = new Dictionary<Uri, DirectWebResponse>();
-		private readonly TestWebRequestHandler mockHandler;
 
-		internal MockHttpRequest(TestWebRequestHandler mockHandler) {
-			ErrorUtilities.VerifyArgumentNotNull(mockHandler, "mockHandler");
-			this.mockHandler = mockHandler;
-			this.mockHandler.Callback = this.GetMockResponse;
+		internal static MockHttpRequest CreateUntrustedMockHttpHandler() {
+			TestWebRequestHandler testHandler = new TestWebRequestHandler();
+			UntrustedWebRequestHandler untrustedHandler = new UntrustedWebRequestHandler(testHandler);
+			if (!untrustedHandler.WhitelistHosts.Contains("localhost")) {
+				untrustedHandler.WhitelistHosts.Add("localhost");
+			}
+			MockHttpRequest mock = new MockHttpRequest(untrustedHandler);
+			testHandler.Callback = mock.GetMockResponse;
+			return mock;
 		}
+
+		private MockHttpRequest(IDirectSslWebRequestHandler mockHandler) {
+			ErrorUtilities.VerifyArgumentNotNull(mockHandler, "mockHandler");
+			this.MockWebRequestHandler = mockHandler;
+		}
+
+		internal IDirectSslWebRequestHandler MockWebRequestHandler { get; private set; }
 
 		private DirectWebResponse GetMockResponse(HttpWebRequest request) {
 			DirectWebResponse response;
@@ -34,13 +45,6 @@
 				return new DirectWebResponse(request.RequestUri, request.RequestUri, new WebHeaderCollection(), HttpStatusCode.NotFound,
 					"text/html", null, new MemoryStream());
 			}
-		}
-
-		/// <summary>
-		/// Clears all all mock HTTP responses and deactivates HTTP mocking.
-		/// </summary>
-		internal void Reset() {
-			this.registeredMockResponses.Clear();
 		}
 
 		internal void RegisterMockResponse(DirectWebResponse response) {

@@ -62,10 +62,23 @@ namespace DotNetOpenAuth.Messaging {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private int maximumRedirections = Configuration.MaximumRedirections;
 
+		private IDirectWebRequestHandler chainedWebRequestHandler;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UntrustedWebRequestHandler"/> class.
 		/// </summary>
-		public UntrustedWebRequestHandler() {
+		public UntrustedWebRequestHandler()
+			: this(new StandardWebRequestHandler()) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UntrustedWebRequestHandler"/> class.
+		/// </summary>
+		/// <param name="chainedWebRequestHandler">The chained web request handler.</param>
+		public UntrustedWebRequestHandler(IDirectWebRequestHandler chainedWebRequestHandler) {
+			ErrorUtilities.VerifyArgumentNotNull(chainedWebRequestHandler, "chainedWebRequestHandler");
+
+			this.chainedWebRequestHandler = chainedWebRequestHandler;
 			this.ReadWriteTimeout = Configuration.ReadWriteTimeout;
 			this.Timeout = Configuration.Timeout;
 #if LONGTIMEOUT
@@ -124,7 +137,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		public ICollection<Regex> BlacklistHostsRegex { get { return blacklistHostsRegex; } }
 
-		#region IDirectUntrustedWebRequestHandler Members
+		#region IDirectSslWebRequestHandler Members
 
 		/// <summary>
 		/// Prepares an <see cref="HttpWebRequest"/> that contains an POST entity for sending the entity.
@@ -146,11 +159,7 @@ namespace DotNetOpenAuth.Messaging {
 			request.AllowAutoRedirect = false;
 
 			// Submit the request and get the request stream back.
-			try {
-				return new StreamWriter(request.GetRequestStream());
-			} catch (WebException ex) {
-				throw ErrorUtilities.Wrap(ex, MessagingStrings.ErrorInRequestReplyMessage);
-			}
+			return this.chainedWebRequestHandler.GetRequestStream(request);
 		}
 
 		/// <summary>
@@ -170,8 +179,7 @@ namespace DotNetOpenAuth.Messaging {
 			// we have no guarantee, so do it just to be safe.
 			this.PrepareRequest(request);
 
-			// TODO: Code here
-			throw new NotImplementedException();
+			return this.RequestWithManagedRedirects(request, requireSsl);
 		}
 
 		#endregion
@@ -198,7 +206,7 @@ namespace DotNetOpenAuth.Messaging {
 		DirectWebResponse IDirectWebRequestHandler.GetResponse(HttpWebRequest request) {
 			return this.GetResponse(request, false);
 		}
-		
+
 		#endregion
 
 		internal DirectWebResponse RequestWithManagedRedirects(HttpWebRequest request, bool requireSsl) {
@@ -237,15 +245,15 @@ namespace DotNetOpenAuth.Messaging {
 			newRequest.AutomaticDecompression = request.AutomaticDecompression;
 			newRequest.CachePolicy = request.CachePolicy;
 			newRequest.ClientCertificates = request.ClientCertificates;
-			newRequest.Connection = request.Connection;
 			newRequest.ConnectionGroupName = request.ConnectionGroupName;
-			newRequest.ContentLength = request.ContentLength;
+			if (request.ContentLength >= 0) {
+				newRequest.ContentLength = request.ContentLength;
+			}
 			newRequest.ContentType = request.ContentType;
 			newRequest.ContinueDelegate = request.ContinueDelegate;
 			newRequest.CookieContainer = request.CookieContainer;
 			newRequest.Credentials = request.Credentials;
 			newRequest.Expect = request.Expect;
-			newRequest.Headers = request.Headers;
 			newRequest.IfModifiedSince = request.IfModifiedSince;
 			newRequest.ImpersonationLevel = request.ImpersonationLevel;
 			newRequest.KeepAlive = request.KeepAlive;
@@ -265,6 +273,15 @@ namespace DotNetOpenAuth.Messaging {
 			newRequest.UnsafeAuthenticatedConnectionSharing = request.UnsafeAuthenticatedConnectionSharing;
 			newRequest.UseDefaultCredentials = request.UseDefaultCredentials;
 			newRequest.UserAgent = request.UserAgent;
+
+			// We copy headers last, and only those that do not yet exist as a result
+			// of setting these properties, so as to avoid exceptions thrown because 
+			// there are properties .NET wants us to use rather than direct headers.
+			foreach (string header in request.Headers) {
+				if (string.IsNullOrEmpty(newRequest.Headers[header])) {
+					newRequest.Headers.Add(header, request.Headers[header]);
+				}
+			}
 
 			return newRequest;
 		}
@@ -388,9 +405,9 @@ namespace DotNetOpenAuth.Messaging {
 					}
 				}
 
-				using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
-					return new DirectWebResponse(originalRequestUri, response, MaximumBytesToRead);
-				}
+				DirectWebResponse response = this.chainedWebRequestHandler.GetResponse(request);
+				response.CacheNetworkStreamAndClose(MaximumBytesToRead);
+				return response;
 			} catch (WebException e) {
 				using (HttpWebResponse response = (HttpWebResponse)e.Response) {
 					if (response != null) {
@@ -410,7 +427,9 @@ namespace DotNetOpenAuth.Messaging {
 								return RequestCore(request, postEntity, originalRequestUri, requireSsl);
 							}
 						}
-						return new DirectWebResponse(originalRequestUri, response, MaximumBytesToRead);
+						var directResponse = new DirectWebResponse(originalRequestUri, response);
+						directResponse.CacheNetworkStreamAndClose(MaximumBytesToRead);
+						return directResponse;
 					} else {
 						throw ErrorUtilities.Wrap(e, MessagingStrings.WebRequestFailed, originalRequestUri);
 					}

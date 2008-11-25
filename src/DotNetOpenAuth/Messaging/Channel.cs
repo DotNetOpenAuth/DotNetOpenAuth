@@ -358,13 +358,16 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		protected virtual IProtocolMessage RequestInternal(IDirectedProtocolMessage request) {
 			HttpWebRequest webRequest = this.CreateHttpRequest(request);
+			IDictionary<string, string> responseFields;
 
-			DirectWebResponse response = this.WebRequestHandler.GetResponse(webRequest);
-			if (response.ResponseStream == null) {
-				return null;
+			using (DirectWebResponse response = this.WebRequestHandler.GetResponse(webRequest)) {
+				if (response.ResponseStream == null) {
+					return null;
+				}
+
+				responseFields = this.ReadFromResponseInternal(response);
 			}
 
-			var responseFields = this.ReadFromResponseInternal(response);
 			IDirectResponseProtocolMessage responseMessage = this.MessageFactory.GetNewResponseMessage(request, responseFields);
 			if (responseMessage == null) {
 				return null;

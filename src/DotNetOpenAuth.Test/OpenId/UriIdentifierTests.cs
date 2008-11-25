@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using DotNetOpenAuth.Test.Mocks;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 	using DotNetOpenAuth.OpenId;
-using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging;
 
 	[TestClass]
 	public class UriIdentifierTests : OpenIdTestBase {
@@ -320,7 +320,6 @@ using DotNetOpenAuth.Messaging;
 
 		[TestMethod]
 		public void DiscoverRequireSslWithSecureRedirects() {
-			this.mockResponder.Reset();
 			Identifier claimedId = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, this.mockResponder, ProtocolVersion.V20, true);
 
 			// Add a couple of chained redirect pages that lead to the claimedId.
