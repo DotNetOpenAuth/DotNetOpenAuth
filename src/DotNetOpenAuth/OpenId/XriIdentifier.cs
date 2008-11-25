@@ -149,23 +149,23 @@ namespace DotNetOpenAuth.OpenId {
 				|| xri.StartsWith(XriScheme, StringComparison.OrdinalIgnoreCase);
 		}
 
-		private XrdsDocument downloadXrds() {
-			var xrdsResponse = Yadis.Request(this.XrdsUrl, this.IsDiscoverySecureEndToEnd);
+		private XrdsDocument downloadXrds(IDirectSslWebRequestHandler requestHandler) {
+			var xrdsResponse = Yadis.Request(requestHandler, this.XrdsUrl, this.IsDiscoverySecureEndToEnd);
 			XrdsDocument doc = new XrdsDocument(XmlReader.Create(xrdsResponse.ResponseStream));
 			ErrorUtilities.VerifyProtocol(doc.IsXrdResolutionSuccessful, OpenIdStrings.XriResolutionFailed);
 			return doc;
 		}
 
-		internal override IEnumerable<ServiceEndpoint> Discover() {
-			return downloadXrds().CreateServiceEndpoints(this);
+		internal override IEnumerable<ServiceEndpoint> Discover(IDirectSslWebRequestHandler requestHandler) {
+			return downloadXrds(requestHandler).CreateServiceEndpoints(this);
 		}
 
 		/// <summary>
 		/// Performs discovery on THIS identifier, but generates <see cref="ServiceEndpoint"/>
 		/// instances that treat another given identifier as the user-supplied identifier.
 		/// </summary>
-		internal IEnumerable<ServiceEndpoint> Discover(XriIdentifier userSuppliedIdentifier) {
-			return downloadXrds().CreateServiceEndpoints(userSuppliedIdentifier);
+		internal IEnumerable<ServiceEndpoint> Discover(IDirectSslWebRequestHandler requestHandler, XriIdentifier userSuppliedIdentifier) {
+			return downloadXrds(requestHandler).CreateServiceEndpoints(userSuppliedIdentifier);
 		}
 
 		/// <summary>

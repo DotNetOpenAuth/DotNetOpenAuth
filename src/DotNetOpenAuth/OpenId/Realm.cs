@@ -358,9 +358,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// false when performing return URL verification per 2.0 spec section 9.2.1.
 		/// </param>
 		/// <returns>The details of the endpoints if found, otherwise null.</returns>
-		internal IEnumerable<RelyingPartyEndpointDescription> Discover(bool allowRedirects) {
+		internal IEnumerable<RelyingPartyEndpointDescription> Discover(IDirectSslWebRequestHandler requestHandler, bool allowRedirects) {
 			// Attempt YADIS discovery
-			DiscoveryResult yadisResult = Yadis.Discover(UriWithWildcardChangedToWww, false);
+			DiscoveryResult yadisResult = Yadis.Discover(requestHandler, UriWithWildcardChangedToWww, false);
 			if (yadisResult != null) {
 				// Detect disallowed redirects, since realm discovery never allows them for security.
 				ErrorUtilities.VerifyProtocol(allowRedirects || yadisResult.NormalizedUri == yadisResult.RequestUri, OpenIdStrings.RealmCausedRedirectUponDiscovery, yadisResult.RequestUri);

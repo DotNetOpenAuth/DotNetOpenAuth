@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Collections.Generic;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using System.Linq;
 
 	/// <summary>
 	/// Wraps an existing Identifier and prevents it from performing discovery.
@@ -30,8 +31,8 @@ namespace DotNetOpenAuth.OpenId {
 			this.wrappedIdentifier = wrappedIdentifier;
 		}
 
-		internal override IEnumerable<ServiceEndpoint> Discover() {
-			return new ServiceEndpoint[0];
+		internal override IEnumerable<ServiceEndpoint> Discover(IDirectSslWebRequestHandler requestHandler) {
+			return Enumerable.Empty<ServiceEndpoint>();
 		}
 
 		/// <summary>

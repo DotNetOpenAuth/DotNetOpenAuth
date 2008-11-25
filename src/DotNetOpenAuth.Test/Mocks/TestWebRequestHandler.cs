@@ -12,7 +12,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 
-	internal class TestWebRequestHandler : IDirectWebRequestHandler {
+	internal class TestWebRequestHandler : IDirectSslWebRequestHandler {
 		private StringBuilder postEntity;
 
 		/// <summary>
@@ -69,6 +69,22 @@ namespace DotNetOpenAuth.Test.Mocks {
 			}
 
 			return this.Callback(request);
+		}
+
+		#endregion
+
+		#region IDirectSslWebRequestHandler Members
+
+		public TextWriter GetRequestStream(HttpWebRequest request, bool requireSsl) {
+			ErrorUtilities.VerifyProtocol(!requireSsl || request.RequestUri.Scheme == Uri.UriSchemeHttps, "disallowed request");
+			return this.GetRequestStream(request);
+		}
+
+		public DirectWebResponse GetResponse(HttpWebRequest request, bool requireSsl) {
+			ErrorUtilities.VerifyProtocol(!requireSsl || request.RequestUri.Scheme == Uri.UriSchemeHttps, "disallowed request");
+			var result = this.GetResponse(request);
+			ErrorUtilities.VerifyProtocol(!requireSsl || result.FinalUri.Scheme == Uri.UriSchemeHttps, "disallowed request");
+			return result;
 		}
 
 		#endregion

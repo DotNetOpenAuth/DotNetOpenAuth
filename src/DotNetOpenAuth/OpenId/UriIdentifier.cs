@@ -252,10 +252,10 @@ namespace DotNetOpenAuth.OpenId {
 				providerEndpoint, typeURIs, (int?)null, (int?)null);
 		}
 
-		internal override IEnumerable<ServiceEndpoint> Discover() {
+		internal override IEnumerable<ServiceEndpoint> Discover(IDirectSslWebRequestHandler requestHandler) {
 			List<ServiceEndpoint> endpoints = new List<ServiceEndpoint>();
 			// Attempt YADIS discovery
-			DiscoveryResult yadisResult = Yadis.Discover(this, IsDiscoverySecureEndToEnd);
+			DiscoveryResult yadisResult = Yadis.Discover(requestHandler, this, IsDiscoverySecureEndToEnd);
 			if (yadisResult != null) {
 				if (yadisResult.IsXrds) {
 					XrdsDocument xrds = new XrdsDocument(yadisResult.ResponseText);

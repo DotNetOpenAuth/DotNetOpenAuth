@@ -1,20 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using DotNetOpenAuth.OpenId.RelyingParty;
-using DotNetOpenAuth.Test.Mocks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using DotNetOpenAuth.OpenId;
+﻿namespace DotNetOpenAuth.Test.OpenId {
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using DotNetOpenAuth.OpenId.RelyingParty;
+	using DotNetOpenAuth.Test.Mocks;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.Messaging;
 
-namespace DotNetOpenAuth.Test.OpenId {
 	[TestClass]
 	public class XriIdentifierTests : OpenIdTestBase {
 		string goodXri = "=Andrew*Arnott";
 		string badXri = "some\\wacky%^&*()non-XRI";
 
-		[TestCleanup]
-		public void TearDown() {
-			MockHttpRequest.Reset();
+		[TestInitialize]
+		public override void SetUp() {
+			base.SetUp();
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
@@ -22,7 +23,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			new XriIdentifier(null);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void CtorBlank() {
 			new XriIdentifier(string.Empty);
 		}
@@ -80,12 +81,11 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.AreEqual(new XriIdentifier(goodXri), new XriIdentifier(goodXri));
 			Assert.AreNotEqual(new XriIdentifier(goodXri), new XriIdentifier(goodXri + "a"));
 			Assert.AreNotEqual(null, new XriIdentifier(goodXri));
-			Assert.AreNotEqual(goodXri, new XriIdentifier(goodXri));
+			Assert.AreEqual(goodXri, new XriIdentifier(goodXri));
 		}
 
-#if DISCOVERY // TODO: Add discovery and then re-enable this code block
 		private ServiceEndpoint verifyCanonicalId(Identifier iname, string expectedClaimedIdentifier) {
-			ServiceEndpoint se = iname.Discover().FirstOrDefault();
+			ServiceEndpoint se = iname.Discover(this.requestHandler).FirstOrDefault();
 			if (expectedClaimedIdentifier != null) {
 				Assert.IsNotNull(se);
 				Assert.AreEqual(expectedClaimedIdentifier, se.ClaimedIdentifier.ToString(), "i-name {0} discovery resulted in unexpected CanonicalId", iname);
@@ -95,7 +95,6 @@ namespace DotNetOpenAuth.Test.OpenId {
 			}
 			return se;
 		}
-#endif
 
 		[TestMethod]
 		public void Discover() {
@@ -134,7 +133,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 				{ "https://xri.net/=Arnott?_xrd_r=application/xrd%2Bxml;sep=false", xrds },
 				{ "https://xri.net/=!9B72.7DD1.50A9.5CCD?_xrd_r=application/xrd%2Bxml;sep=false", xrds },
 			};
-			MockHttpRequest.RegisterMockXrdsResponses(mocks);
+			this.mockResponder.RegisterMockXrdsResponses(mocks);
 
 			string expectedCanonicalId = "=!9B72.7DD1.50A9.5CCD";
 			ServiceEndpoint se = verifyCanonicalId("=Arnott", expectedCanonicalId);
@@ -360,7 +359,7 @@ uEyb50RJ7DWmXctSC0b3eymZ2lSXxAWNOsNy
   </X509Data>
  </KeyInfo>
 </XRD>";
-			MockHttpRequest.RegisterMockXrdsResponses(new Dictionary<string, string> {
+			this.mockResponder.RegisterMockXrdsResponses(new Dictionary<string, string> {
 				{ "https://xri.net/@llli?_xrd_r=application/xrd%2Bxml;sep=false", llliResponse },
 				{ "https://xri.net/@llli*area?_xrd_r=application/xrd%2Bxml;sep=false", llliAreaResponse },
 				{ "https://xri.net/@llli*area*canada.unattached?_xrd_r=application/xrd%2Bxml;sep=false", llliAreaCanadaUnattachedResponse },
@@ -376,7 +375,7 @@ uEyb50RJ7DWmXctSC0b3eymZ2lSXxAWNOsNy
 
 		[TestMethod]
 		public void DiscoveryCommunityInameDelegateWithoutCanonicalID() {
-			MockHttpRequest.RegisterMockXrdsResponses(new Dictionary<string, string> {
+			this.mockResponder.RegisterMockXrdsResponses(new Dictionary<string, string> {
 				{ "https://xri.net/=Web*andrew.arnott?_xrd_r=application/xrd%2Bxml;sep=false", @"<?xml version='1.0' encoding='UTF-8'?>
 <XRD xmlns='xri://$xrd*($v*2.0)'>
  <Query>*andrew.arnott</Query>
