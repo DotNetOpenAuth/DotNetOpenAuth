@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			throw new NotImplementedException();
 		}
 
-		protected override Response SendDirectMessageResponse(IProtocolMessage response) {
+		protected override UserAgentResponse SendDirectMessageResponse(IProtocolMessage response) {
 			throw new NotImplementedException();
 		}
 	}

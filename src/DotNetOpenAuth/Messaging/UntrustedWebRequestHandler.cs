@@ -313,6 +313,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Verify that the request qualifies under our security policies
 		/// </summary>
 		/// <param name="requestUri">The request URI.</param>
+		/// <param name="requireSsl">If set to <c>true</c>, only web requests that can be made entirely over SSL will succeed.</param>
 		private void EnsureAllowableRequestUri(Uri requestUri, bool requireSsl) {
 			ErrorUtilities.VerifyArgument(this.isUriAllowable(requestUri), MessagingStrings.UnsafeWebRequestDetected, requestUri);
 

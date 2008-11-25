@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="Response.cs" company="Andrew Arnott">
+// <copyright file="UserAgentResponse.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -26,22 +26,22 @@ namespace DotNetOpenAuth.Messaging {
 	/// can be canceled by calling <see cref="HttpResponse.End"/> after this message
 	/// is sent on the response stream.</para>
 	/// </remarks>
-	public class Response { // TODO: rename this to UserAgentResponse
+	public class UserAgentResponse { // TODO: rename this to UserAgentResponse
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Response"/> class.
+		/// Initializes a new instance of the <see cref="UserAgentResponse"/> class.
 		/// </summary>
-		internal Response() {
+		internal UserAgentResponse() {
 			this.Status = HttpStatusCode.OK;
 			this.Headers = new WebHeaderCollection();
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Response"/> class
+		/// Initializes a new instance of the <see cref="UserAgentResponse"/> class
 		/// based on the contents of an <see cref="HttpWebResponse"/>.
 		/// </summary>
 		/// <param name="response">The <see cref="HttpWebResponse"/> to clone.</param>
 		/// <param name="maximumBytesToRead">The maximum bytes to read from the response stream.</param>
-		protected internal Response(HttpWebResponse response, int maximumBytesToRead) {
+		protected internal UserAgentResponse(HttpWebResponse response, int maximumBytesToRead) {
 			ErrorUtilities.VerifyArgumentNotNull(response, "response");
 
 			this.Status = response.StatusCode;

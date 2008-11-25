@@ -145,7 +145,7 @@
     <Compile Include="Messaging\Reflection\MessagePart.cs" />
     <Compile Include="Messaging\UnprotectedMessageException.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthChannel.cs" />
-    <Compile Include="Messaging\Response.cs" />
+    <Compile Include="Messaging\UserAgentResponse.cs" />
     <Compile Include="Messaging\IProtocolMessage.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Loggers\ILog.cs" />

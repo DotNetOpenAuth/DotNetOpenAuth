@@ -16,7 +16,6 @@ namespace DotNetOpenAuth.Test.Mocks {
 		private Channel wrappedChannel;
 		private EventWaitHandle incomingMessageSignal = new AutoResetEvent(false);
 		private IProtocolMessage incomingMessage;
-		private Response incomingRawResponse;
 		private Action<IProtocolMessage> incomingMessageFilter;
 		private Action<IProtocolMessage> outgoingMessageFilter;
 
@@ -50,14 +49,14 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return response;
 		}
 
-		protected override Response SendDirectMessageResponse(IProtocolMessage response) {
+		protected override UserAgentResponse SendDirectMessageResponse(IProtocolMessage response) {
 			this.ProcessMessageFilter(response, true);
 			this.RemoteChannel.incomingMessage = CloneSerializedParts(response, null);
 			this.RemoteChannel.incomingMessageSignal.Set();
 			return null;
 		}
 
-		protected override Response SendIndirectMessage(IDirectedProtocolMessage message) {
+		protected override UserAgentResponse SendIndirectMessage(IDirectedProtocolMessage message) {
 			this.ProcessMessageFilter(message, true);
 			// In this mock transport, direct and indirect messages are the same.
 			return this.SendDirectMessageResponse(message);

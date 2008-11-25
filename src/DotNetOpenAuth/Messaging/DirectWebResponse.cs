@@ -10,8 +10,11 @@
 	using System.Net;
 	using System.Diagnostics.CodeAnalysis;
 
+	/// <summary>
+	/// Details on the response from a direct web request to a remote party.
+	/// </summary>
 	[Serializable]
-	[DebuggerDisplay("{Status} {ContentType.MediaType}: {ReadResponseString().Substring(4,50)}")]
+	[DebuggerDisplay("{Status} {ContentType.MediaType}: {Body.Substring(4,50)}")]
 	public class DirectWebResponse : IDisposable {
 		private const string DefaultContentEncoding = "ISO-8859-1";
 		private HttpWebResponse httpWebResponse;
@@ -77,9 +80,28 @@
 			this.FinalUri = responseUri;
 		}
 
+		/// <summary>
+		/// Gets or sets the type of the content.
+		/// </summary>
 		public ContentType ContentType { get; private set; }
+
+		/// <summary>
+		/// Gets or sets the content encoding.
+		/// </summary>
 		public string ContentEncoding { get; private set; }
+
+		/// <summary>
+		/// Gets or sets the URI of the initial request.
+		/// </summary>
 		public Uri RequestUri { get; private set; }
+
+		/// <summary>
+		/// Gets or sets the URI that finally responded to the request.
+		/// </summary>
+		/// <remarks>
+		/// This can be different from the <see cref="RequestUri"/> in cases of 
+		/// redirection during the request.
+		/// </remarks>
 		public Uri FinalUri { get; private set; }
 
 		/// <summary>
@@ -116,6 +138,12 @@
 			set { this.SetResponse(value); }
 		}
 
+		/// <summary>
+		/// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+		/// </returns>
 		public override string ToString() {
 			StringBuilder sb = new StringBuilder();
 			sb.AppendLine(string.Format(CultureInfo.CurrentCulture, "RequestUri = {0}", this.RequestUri));

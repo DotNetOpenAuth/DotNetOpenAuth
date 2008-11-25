@@ -39,6 +39,7 @@ namespace DotNetOpenAuth.Yadis {
 		/// <summary>
 		/// Performs YADIS discovery on some identifier.
 		/// </summary>
+		/// <param name="requestHandler">The mechanism to use for sending HTTP requests.</param>
 		/// <param name="uri">The URI to perform discovery on.</param>
 		/// <param name="requireSsl">Whether discovery should fail if any step of it is not encrypted.</param>
 		/// <returns>

@@ -129,6 +129,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="copyFrom">The stream to copy from, at the position where copying should begin.</param>
 		/// <param name="copyTo">The stream to copy to, at the position where bytes should be written.</param>
+		/// <param name="maximumBytesToCopy">The maximum bytes to copy.</param>
 		/// <returns>The total number of bytes copied.</returns>
 		/// <remarks>
 		/// Copying begins at the streams' current positions.
@@ -143,7 +144,7 @@ namespace DotNetOpenAuth.Messaging {
 			byte[] buffer = new byte[1024];
 			int readBytes;
 			int totalCopiedBytes = 0;
-			while ((readBytes = copyFrom.Read(buffer, 0, 1024)) > 0) {
+			while ((readBytes = copyFrom.Read(buffer, 0, Math.Min(1024, maximumBytesToCopy))) > 0) {
 				int writeBytes = Math.Min(maximumBytesToCopy, readBytes);
 				copyTo.Write(buffer, 0, writeBytes);
 				totalCopiedBytes += writeBytes;

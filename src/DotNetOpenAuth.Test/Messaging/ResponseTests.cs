@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 	public class ResponseTests : TestBase {
 		[TestMethod, ExpectedException(typeof(InvalidOperationException))]
 		public void SendWithoutAspNetContext() {
-			new Response().Send();
+			new UserAgentResponse().Send();
 		}
 
 		[TestMethod]
@@ -26,7 +26,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			HttpContext context = new HttpContext(httpRequest, httpResponse);
 			HttpContext.Current = context;
 
-			Response response = new Response();
+			UserAgentResponse response = new UserAgentResponse();
 			response.Status = System.Net.HttpStatusCode.OK;
 			response.Headers["someHeaderName"] = "someHeaderValue";
 			response.Body = "some body";

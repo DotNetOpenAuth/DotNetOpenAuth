@@ -40,7 +40,7 @@ namespace DotNetOpenAuth {
 		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "2#", Justification = "Two results")]
 		public Uri RequestUserAuthorization(IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, out string requestToken) {
 			var message = this.PrepareRequestUserAuthorization(null, requestParameters, redirectParameters, out requestToken);
-			Response response = this.Channel.Send(message);
+			UserAgentResponse response = this.Channel.Send(message);
 			return response.DirectUriRequest;
 		}
 

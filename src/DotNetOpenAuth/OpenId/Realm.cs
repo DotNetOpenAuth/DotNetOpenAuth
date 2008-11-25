@@ -352,12 +352,13 @@ namespace DotNetOpenAuth.OpenId {
 		/// Searches for an XRDS document at the realm URL, and if found, searches
 		/// for a description of a relying party endpoints (OpenId login pages).
 		/// </summary>
-		/// <param name="allowRedirects">
-		/// Whether redirects may be followed when discovering the Realm.
+		/// <param name="requestHandler">The mechanism to use for sending HTTP requests.</param>
+		/// <param name="allowRedirects">Whether redirects may be followed when discovering the Realm.
 		/// This may be true when creating an unsolicited assertion, but must be
-		/// false when performing return URL verification per 2.0 spec section 9.2.1.
-		/// </param>
-		/// <returns>The details of the endpoints if found, otherwise null.</returns>
+		/// false when performing return URL verification per 2.0 spec section 9.2.1.</param>
+		/// <returns>
+		/// The details of the endpoints if found, otherwise null.
+		/// </returns>
 		internal IEnumerable<RelyingPartyEndpointDescription> Discover(IDirectSslWebRequestHandler requestHandler, bool allowRedirects) {
 			// Attempt YADIS discovery
 			DiscoveryResult yadisResult = Yadis.Discover(requestHandler, UriWithWildcardChangedToWww, false);
