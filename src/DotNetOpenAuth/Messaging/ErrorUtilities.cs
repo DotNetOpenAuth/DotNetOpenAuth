@@ -67,8 +67,16 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The message to set in the exception.</param>
 		/// <param name="args">The formatting arguments of the message.</param>
-		internal static void ThrowProtocol(string message, params object[] args) {
+		/// <returns>
+		/// An InternalErrorException, which may be "thrown" by the caller in order
+		/// to satisfy C# rules to show that code will never be reached, but no value
+		/// actually is ever returned because this method guarantees to throw.
+		/// </returns>
+		internal static Exception ThrowProtocol(string message, params object[] args) {
 			VerifyProtocol(false, message, args);
+
+			// we never reach here, but this allows callers to "throw" this method.
+			return new InternalErrorException();
 		}
 
 		/// <summary>

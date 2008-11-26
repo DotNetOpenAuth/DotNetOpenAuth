@@ -169,6 +169,75 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Clones an <see cref="HttpWebRequest"/> in order to send it again.
+		/// </summary>
+		/// <param name="request">The request to clone.</param>
+		/// <returns>The newly created instance.</returns>
+		internal static HttpWebRequest Clone(this HttpWebRequest request) {
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			return Clone(request, request.RequestUri);
+		}
+
+		/// <summary>
+		/// Clones an <see cref="HttpWebRequest"/> in order to send it again.
+		/// </summary>
+		/// <param name="request">The request to clone.</param>
+		/// <param name="newRequestUri">The new recipient of the request.</param>
+		/// <returns>The newly created instance.</returns>
+		internal static HttpWebRequest Clone(this HttpWebRequest request, Uri newRequestUri) {
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			ErrorUtilities.VerifyArgumentNotNull(newRequestUri, "newRequestUri");
+
+			var newRequest = (HttpWebRequest)WebRequest.Create(newRequestUri);
+			newRequest.Accept = request.Accept;
+			newRequest.AllowAutoRedirect = request.AllowAutoRedirect;
+			newRequest.AllowWriteStreamBuffering = request.AllowWriteStreamBuffering;
+			newRequest.AuthenticationLevel = request.AuthenticationLevel;
+			newRequest.AutomaticDecompression = request.AutomaticDecompression;
+			newRequest.CachePolicy = request.CachePolicy;
+			newRequest.ClientCertificates = request.ClientCertificates;
+			newRequest.ConnectionGroupName = request.ConnectionGroupName;
+			if (request.ContentLength >= 0) {
+				newRequest.ContentLength = request.ContentLength;
+			}
+			newRequest.ContentType = request.ContentType;
+			newRequest.ContinueDelegate = request.ContinueDelegate;
+			newRequest.CookieContainer = request.CookieContainer;
+			newRequest.Credentials = request.Credentials;
+			newRequest.Expect = request.Expect;
+			newRequest.IfModifiedSince = request.IfModifiedSince;
+			newRequest.ImpersonationLevel = request.ImpersonationLevel;
+			newRequest.KeepAlive = request.KeepAlive;
+			newRequest.MaximumAutomaticRedirections = request.MaximumAutomaticRedirections;
+			newRequest.MaximumResponseHeadersLength = request.MaximumResponseHeadersLength;
+			newRequest.MediaType = request.MediaType;
+			newRequest.Method = request.Method;
+			newRequest.Pipelined = request.Pipelined;
+			newRequest.PreAuthenticate = request.PreAuthenticate;
+			newRequest.ProtocolVersion = request.ProtocolVersion;
+			newRequest.Proxy = request.Proxy;
+			newRequest.ReadWriteTimeout = request.ReadWriteTimeout;
+			newRequest.Referer = request.Referer;
+			newRequest.SendChunked = request.SendChunked;
+			newRequest.Timeout = request.Timeout;
+			newRequest.TransferEncoding = request.TransferEncoding;
+			newRequest.UnsafeAuthenticatedConnectionSharing = request.UnsafeAuthenticatedConnectionSharing;
+			newRequest.UseDefaultCredentials = request.UseDefaultCredentials;
+			newRequest.UserAgent = request.UserAgent;
+
+			// We copy headers last, and only those that do not yet exist as a result
+			// of setting these properties, so as to avoid exceptions thrown because 
+			// there are properties .NET wants us to use rather than direct headers.
+			foreach (string header in request.Headers) {
+				if (string.IsNullOrEmpty(newRequest.Headers[header])) {
+					newRequest.Headers.Add(header, request.Headers[header]);
+				}
+			}
+
+			return newRequest;
+		}
+
+		/// <summary>
 		/// Tests whether two arrays are equal in length and contents.
 		/// </summary>
 		/// <typeparam name="T">The type of elements in the arrays.</typeparam>

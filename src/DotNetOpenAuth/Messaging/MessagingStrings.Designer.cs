@@ -475,6 +475,15 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Redirects on POST requests that are to untrusted servers is not supported..
+        /// </summary>
+        internal static string UntrustedRedirectsOnPOSTNotSupported {
+            get {
+                return ResourceManager.GetString("UntrustedRedirectsOnPOSTNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Web request to &apos;{0}&apos; failed..
         /// </summary>
         internal static string WebRequestFailed {

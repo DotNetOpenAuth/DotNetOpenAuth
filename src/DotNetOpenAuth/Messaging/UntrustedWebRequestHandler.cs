@@ -40,39 +40,47 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		internal static readonly RequestCachePolicy DefaultCachePolicy = HttpWebRequest.DefaultCachePolicy;
 
-		private ICollection<Regex> blacklistHostsRegex = new List<Regex>(Configuration.BlacklistHostsRegex.KeysAsRegexs);
-
+		/// <summary>
+		/// The set of URI schemes allowed in untrusted web requests.
+		/// </summary>
 		private ICollection<string> allowableSchemes = new List<string> { "http", "https" };
 
-		private ICollection<Regex> whitelistHostsRegex = new List<Regex>(Configuration.WhitelistHostsRegex.KeysAsRegexs);
-
-		private ICollection<string> whitelistHosts = new List<string>(Configuration.WhitelistHosts.KeysAsStrings);
-
+		/// <summary>
+		/// The collection of blacklisted hosts.
+		/// </summary>
 		private ICollection<string> blacklistHosts = new List<string>(Configuration.BlacklistHosts.KeysAsStrings);
 
+		/// <summary>
+		/// The collection of regular expressions used to identify additional blacklisted hosts.
+		/// </summary>
+		private ICollection<Regex> blacklistHostsRegex = new List<Regex>(Configuration.BlacklistHostsRegex.KeysAsRegexs);
+
+		/// <summary>
+		/// The collection of whitelisted hosts.
+		/// </summary>
+		private ICollection<string> whitelistHosts = new List<string>(Configuration.WhitelistHosts.KeysAsStrings);
+
+		/// <summary>
+		/// The collection of regular expressions used to identify additional whitelisted hosts.
+		/// </summary>
+		private ICollection<Regex> whitelistHostsRegex = new List<Regex>(Configuration.WhitelistHostsRegex.KeysAsRegexs);
+
+		/// <summary>
+		/// The maximum redirections to follow in the course of a single request.
+		/// </summary>
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private int maximumRedirections = Configuration.MaximumRedirections;
 
+		/// <summary>
+		/// The maximum number of bytes to read from the response of an untrusted server.
+		/// </summary>
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private int maximumBytesToRead = Configuration.MaximumBytesToRead;
 
 		/// <summary>
-		/// Gets or sets the default maximum bytes to read in any given HTTP request.
+		/// The handler that will actually send the HTTP request and collect
+		/// the response once the untrusted server gates have been satisfied.
 		/// </summary>
-		/// <value>Default is 1MB.  Cannot be less than 2KB.</value>
-		public int MaximumBytesToRead {
-			get {
-				return this.maximumBytesToRead;
-			}
-
-			set {
-				if (value < 2048) {
-					throw new ArgumentOutOfRangeException("value");
-				}
-				this.maximumBytesToRead = value;
-			}
-		}
-
 		private IDirectWebRequestHandler chainedWebRequestHandler;
 
 		/// <summary>
@@ -96,6 +104,23 @@ namespace DotNetOpenAuth.Messaging {
 			this.ReadWriteTimeout = TimeSpan.FromHours(1);
 			this.Timeout = TimeSpan.FromHours(1);
 #endif
+		}
+
+		/// <summary>
+		/// Gets or sets the default maximum bytes to read in any given HTTP request.
+		/// </summary>
+		/// <value>Default is 1MB.  Cannot be less than 2KB.</value>
+		public int MaximumBytesToRead {
+			get {
+				return this.maximumBytesToRead;
+			}
+
+			set {
+				if (value < 2048) {
+					throw new ArgumentOutOfRangeException("value");
+				}
+				this.maximumBytesToRead = value;
+			}
 		}
 
 		/// <summary>
@@ -147,10 +172,13 @@ namespace DotNetOpenAuth.Messaging {
 
 		/// <summary>
 		/// Gets a collection of host name regular expressions that indicate hosts that should
-		/// be rjected even if they pass standard security checks.
+		/// be rejected even if they pass standard security checks.
 		/// </summary>
 		public ICollection<Regex> BlacklistHostsRegex { get { return this.blacklistHostsRegex; } }
 
+		/// <summary>
+		/// Gets the configuration for this class that is specified in the host's .config file.
+		/// </summary>
 		private static DotNetOpenAuth.Configuration.UntrustedWebRequestSection Configuration {
 			get { return UntrustedWebRequestSection.Configuration; }
 		}
@@ -171,11 +199,6 @@ namespace DotNetOpenAuth.Messaging {
 
 			this.PrepareRequest(request);
 
-			// We don't currently support redirects at URLs where we're POSTing data.
-			// When we want to add this support, we need to be careful to not allow
-			// redirects to non-HTTPS schemes if RequireSsl is true.
-			request.AllowAutoRedirect = false;
-
 			// Submit the request and get the request stream back.
 			return this.chainedWebRequestHandler.GetRequestStream(request);
 		}
@@ -191,13 +214,38 @@ namespace DotNetOpenAuth.Messaging {
 		/// </returns>
 		public DirectWebResponse GetResponse(HttpWebRequest request, bool requireSsl) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
-			this.EnsureAllowableRequestUri(request.RequestUri, requireSsl);
 
 			// This request MAY have already been prepared by GetRequestStream, but
 			// we have no guarantee, so do it just to be safe.
 			this.PrepareRequest(request);
 
-			return this.RequestWithManagedRedirects(request, requireSsl);
+			// Since we may require SSL for every redirect, we handle each redirect manually
+			// in order to detect and fail if any redirect sends us to an HTTP url.
+			// We COULD allow automatic redirect in the cases where HTTPS is not required,
+			// but our mock request infrastructure can't do redirects on its own either.
+			Uri originalRequestUri = request.RequestUri;
+			int i;
+			for (i = 0; i < this.MaximumRedirections; i++) {
+				this.EnsureAllowableRequestUri(request.RequestUri, requireSsl);
+				DirectWebResponse response = this.chainedWebRequestHandler.GetResponse(request);
+				response.CacheNetworkStreamAndClose(this.MaximumBytesToRead);
+				if (response.Status == HttpStatusCode.MovedPermanently ||
+					response.Status == HttpStatusCode.Redirect ||
+					response.Status == HttpStatusCode.RedirectMethod ||
+					response.Status == HttpStatusCode.RedirectKeepVerb) {
+					if (request.Method == "POST") {
+						// We have no copy of the post entity stream to repeat on our manually
+						// cloned HttpWebRequest, so we have to bail.
+						ErrorUtilities.ThrowProtocol(MessagingStrings.UntrustedRedirectsOnPOSTNotSupported);
+					}
+					Uri redirectUri = new Uri(response.FinalUri, response.Headers[HttpResponseHeader.Location]);
+					request = request.Clone(redirectUri);
+				} else {
+					return response;
+				}
+			}
+
+			throw ErrorUtilities.ThrowProtocol(MessagingStrings.TooManyRedirects, originalRequestUri);
 		}
 
 		#endregion
@@ -227,91 +275,30 @@ namespace DotNetOpenAuth.Messaging {
 
 		#endregion
 
-		internal DirectWebResponse RequestWithManagedRedirects(HttpWebRequest request, bool requireSsl) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
-
-			// Since we may require SSL for every redirect, we handle each redirect manually
-			// in order to detect and fail if any redirect sends us to an HTTP url.
-			// We COULD allow automatic redirect in the cases where HTTPS is not required,
-			// but our mock request infrastructure can't do redirects on its own either.
-			Uri originalRequestUri = request.RequestUri;
-			int i;
-			for (i = 0; i < this.MaximumRedirections; i++) {
-				DirectWebResponse response = this.RequestCore(request, null, originalRequestUri, requireSsl);
-				if (response.Status == HttpStatusCode.MovedPermanently ||
-					response.Status == HttpStatusCode.Redirect ||
-					response.Status == HttpStatusCode.RedirectMethod ||
-					response.Status == HttpStatusCode.RedirectKeepVerb) {
-					Uri redirectUri = new Uri(response.FinalUri, response.Headers[HttpResponseHeader.Location]);
-					request = CloneRequestWithNewUrl(request, redirectUri);
-				} else {
-					return response;
-				}
-			}
-			throw new WebException(string.Format(CultureInfo.CurrentCulture, MessagingStrings.TooManyRedirects, originalRequestUri));
-		}
-
-		private static HttpWebRequest CloneRequestWithNewUrl(HttpWebRequest request, Uri newRequestUri) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
-			ErrorUtilities.VerifyArgumentNotNull(newRequestUri, "newRequestUri");
-
-			var newRequest = (HttpWebRequest)WebRequest.Create(newRequestUri);
-			newRequest.Accept = request.Accept;
-			newRequest.AllowAutoRedirect = request.AllowAutoRedirect;
-			newRequest.AllowWriteStreamBuffering = request.AllowWriteStreamBuffering;
-			newRequest.AuthenticationLevel = request.AuthenticationLevel;
-			newRequest.AutomaticDecompression = request.AutomaticDecompression;
-			newRequest.CachePolicy = request.CachePolicy;
-			newRequest.ClientCertificates = request.ClientCertificates;
-			newRequest.ConnectionGroupName = request.ConnectionGroupName;
-			if (request.ContentLength >= 0) {
-				newRequest.ContentLength = request.ContentLength;
-			}
-			newRequest.ContentType = request.ContentType;
-			newRequest.ContinueDelegate = request.ContinueDelegate;
-			newRequest.CookieContainer = request.CookieContainer;
-			newRequest.Credentials = request.Credentials;
-			newRequest.Expect = request.Expect;
-			newRequest.IfModifiedSince = request.IfModifiedSince;
-			newRequest.ImpersonationLevel = request.ImpersonationLevel;
-			newRequest.KeepAlive = request.KeepAlive;
-			newRequest.MaximumAutomaticRedirections = request.MaximumAutomaticRedirections;
-			newRequest.MaximumResponseHeadersLength = request.MaximumResponseHeadersLength;
-			newRequest.MediaType = request.MediaType;
-			newRequest.Method = request.Method;
-			newRequest.Pipelined = request.Pipelined;
-			newRequest.PreAuthenticate = request.PreAuthenticate;
-			newRequest.ProtocolVersion = request.ProtocolVersion;
-			newRequest.Proxy = request.Proxy;
-			newRequest.ReadWriteTimeout = request.ReadWriteTimeout;
-			newRequest.Referer = request.Referer;
-			newRequest.SendChunked = request.SendChunked;
-			newRequest.Timeout = request.Timeout;
-			newRequest.TransferEncoding = request.TransferEncoding;
-			newRequest.UnsafeAuthenticatedConnectionSharing = request.UnsafeAuthenticatedConnectionSharing;
-			newRequest.UseDefaultCredentials = request.UseDefaultCredentials;
-			newRequest.UserAgent = request.UserAgent;
-
-			// We copy headers last, and only those that do not yet exist as a result
-			// of setting these properties, so as to avoid exceptions thrown because 
-			// there are properties .NET wants us to use rather than direct headers.
-			foreach (string header in request.Headers) {
-				if (string.IsNullOrEmpty(newRequest.Headers[header])) {
-					newRequest.Headers.Add(header, request.Headers[header]);
-				}
-			}
-
-			return newRequest;
-		}
-
 		private bool IsHostWhitelisted(string host) {
 			return this.IsHostInList(host, this.WhitelistHosts, this.WhitelistHostsRegex);
 		}
 
+		/// <summary>
+		/// Determines whether a given host is blacklisted.
+		/// </summary>
+		/// <param name="host">The host name to test.</param>
+		/// <returns>
+		/// 	<c>true</c> if the host is blacklisted; otherwise, <c>false</c>.
+		/// </returns>
 		private bool IsHostBlacklisted(string host) {
 			return this.IsHostInList(host, this.BlacklistHosts, this.BlacklistHostsRegex);
 		}
 
+		/// <summary>
+		/// Determines whether the given host name is in a host list or host name regex list.
+		/// </summary>
+		/// <param name="host">The host name.</param>
+		/// <param name="stringList">The list of host names.</param>
+		/// <param name="regexList">The list of regex patterns of host names.</param>
+		/// <returns>
+		/// 	<c>true</c> if the specified host falls within at least one of the given lists; otherwise, <c>false</c>.
+		/// </returns>
 		private bool IsHostInList(string host, ICollection<string> stringList, ICollection<Regex> regexList) {
 			ErrorUtilities.VerifyNonZeroLength(host, "host");
 			ErrorUtilities.VerifyArgumentNotNull(stringList, "stringList");
@@ -336,10 +323,17 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="requireSsl">If set to <c>true</c>, only web requests that can be made entirely over SSL will succeed.</param>
 		private void EnsureAllowableRequestUri(Uri requestUri, bool requireSsl) {
 			ErrorUtilities.VerifyArgument(this.IsUriAllowable(requestUri), MessagingStrings.UnsafeWebRequestDetected, requestUri);
-
 			ErrorUtilities.VerifyProtocol(!requireSsl || String.Equals(requestUri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase), MessagingStrings.InsecureWebRequestWithSslRequired, requestUri);
 		}
 
+		/// <summary>
+		/// Determines whether a URI is allowed based on scheme and host name.
+		/// No requireSSL check is done here
+		/// </summary>
+		/// <param name="uri">The URI.</param>
+		/// <returns>
+		/// 	<c>true</c> if [is URI allowable] [the specified URI]; otherwise, <c>false</c>.
+		/// </returns>
 		private bool IsUriAllowable(Uri uri) {
 			ErrorUtilities.VerifyArgumentNotNull(uri, "uri");
 			if (!this.allowableSchemes.Contains(uri.Scheme)) {
@@ -421,51 +415,6 @@ namespace DotNetOpenAuth.Messaging {
 			request.AllowAutoRedirect = false;
 
 			return request;
-		}
-
-		private DirectWebResponse RequestCore(HttpWebRequest request, Stream postEntity, Uri originalRequestUri, bool requireSsl) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
-			ErrorUtilities.VerifyArgumentNotNull(originalRequestUri, "originalRequestUri");
-			this.EnsureAllowableRequestUri(request.RequestUri, requireSsl);
-
-			int postEntityLength = 0;
-			try {
-				if (postEntity != null) {
-					using (Stream outStream = request.GetRequestStream()) {
-						postEntityLength = postEntity.CopyTo(outStream);
-					}
-				}
-
-				DirectWebResponse response = this.chainedWebRequestHandler.GetResponse(request);
-				response.CacheNetworkStreamAndClose(this.MaximumBytesToRead);
-				return response;
-			} catch (WebException e) {
-				using (HttpWebResponse response = (HttpWebResponse)e.Response) {
-					if (response != null) {
-						if (response.StatusCode == HttpStatusCode.ExpectationFailed) {
-							if (request.ServicePoint.Expect100Continue) { // must only try this once more
-								// Some OpenID servers doesn't understand the Expect header and send 417 error back.
-								// If this server just failed from that, we're trying again without sending the
-								// "Expect: 100-Continue" HTTP header. (see Google Code Issue 72)
-								// We don't just set Expect100Continue = !avoidSendingExpect100Continue
-								// so that future requests don't reset this and have to try twice as well.
-								// We don't want to blindly set all ServicePoints to not use the Expect header
-								// as that would be a security hole allowing any visitor to a web site change
-								// the web site's global behavior when calling that host.
-								request.ServicePoint.Expect100Continue = false; // TODO: investigate that CAS may throw here, and we can use request.Expect instead.
-								postEntity.Seek(-postEntityLength, SeekOrigin.Current);
-								request = CloneRequestWithNewUrl(request, request.RequestUri);
-								return this.RequestCore(request, postEntity, originalRequestUri, requireSsl);
-							}
-						}
-						var directResponse = new DirectWebResponse(originalRequestUri, response);
-						directResponse.CacheNetworkStreamAndClose(this.MaximumBytesToRead);
-						return directResponse;
-					} else {
-						throw ErrorUtilities.Wrap(e, MessagingStrings.WebRequestFailed, originalRequestUri);
-					}
-				}
-			}
 		}
 	}
 }

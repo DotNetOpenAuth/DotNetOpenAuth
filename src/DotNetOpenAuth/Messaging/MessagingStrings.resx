@@ -255,6 +255,9 @@
   <data name="UnsafeWebRequestDetected" xml:space="preserve">
     <value>The URL '{0}' is rated unsafe and cannot be requested this way.</value>
   </data>
+  <data name="UntrustedRedirectsOnPOSTNotSupported" xml:space="preserve">
+    <value>Redirects on POST requests that are to untrusted servers is not supported.</value>
+  </data>
   <data name="WebRequestFailed" xml:space="preserve">
     <value>Web request to '{0}' failed.</value>
   </data>

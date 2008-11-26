@@ -23,6 +23,14 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>
 		/// The writer the caller should write out the entity data to.
 		/// </returns>
+		/// <exception cref="ProtocolException">Thrown for any network error.</exception>
+		/// <remarks>
+		/// <para>The caller should have set the <see cref="HttpWebRequest.ContentLength"/>
+		/// and any other appropriate properties <i>before</i> calling this method.</para>
+		/// <para>Implementations should catch <see cref="WebException"/> and wrap it in a
+		/// <see cref="ProtocolException"/> to abstract away the transport and provide
+		/// a single exception type for hosts to catch.</para>
+		/// </remarks>
 		TextWriter GetRequestStream(HttpWebRequest request);
 
 		/// <summary>
@@ -31,6 +39,12 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="request">The <see cref="HttpWebRequest"/> to handle.</param>
 		/// <returns>An instance of <see cref="DirectWebResponse"/> describing the response.</returns>
+		/// <exception cref="ProtocolException">Thrown for any network error.</exception>
+		/// <remarks>
+		/// Implementations should catch <see cref="WebException"/> and wrap it in a
+		/// <see cref="ProtocolException"/> to abstract away the transport and provide
+		/// a single exception type for hosts to catch.
+		/// </remarks>
 		DirectWebResponse GetResponse(HttpWebRequest request);
 	}
 }
