@@ -12,16 +12,51 @@ namespace DotNetOpenAuth.Yadis {
 	using System.Web;
 	using System.Web.UI.HtmlControls;
 
+	/// <summary>
+	/// An HTML HEAD tag parser.
+	/// </summary>
 	internal static class HtmlParser {
-		private static readonly Regex attrRe = new Regex("\n# Must start with a sequence of word-characters, followed by an equals sign\n(?<attrname>(\\w|-)+)=\n\n# Then either a quoted or unquoted attribute\n(?:\n\n # Match everything that's between matching quote marks\n (?<qopen>[\"\\'])(?<attrval>.*?)\\k<qopen>\n|\n\n # If the value is not quoted, match up to whitespace\n (?<attrval>(?:[^\\s<>/]|/(?!>))+)\n)\n\n|\n\n(?<endtag>[<>])\n    ", Flags);
-		private const RegexOptions Flags = (RegexOptions.IgnorePatternWhitespace | RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
+		/// <summary>
+		/// Common flags to use on regex tests.
+		/// </summary>
+		private const RegexOptions Flags = RegexOptions.IgnorePatternWhitespace | RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase;
+
+		/// <summary>
+		/// A regular expression designed to select tags (?)
+		/// </summary>
 		private const string TagExpr = "\n# Starts with the tag name at a word boundary, where the tag name is\n# not a namespace\n<{0}\\b(?!:)\n    \n# All of the stuff up to a \">\", hopefully attributes.\n(?<attrs>[^>]*?)\n    \n(?: # Match a short tag\n    />\n    \n|   # Match a full tag\n    >\n    \n    (?<contents>.*?)\n    \n    # Closed by\n    (?: # One of the specified close tags\n        </?{1}\\s*>\n    \n    # End of the string\n    |   \\Z\n    \n    )\n    \n)\n    ";
+
+		/// <summary>
+		/// A regular expression designed to select start tags (?)
+		/// </summary>
 		private const string StartTagExpr = "\n# Starts with the tag name at a word boundary, where the tag name is\n# not a namespace\n<{0}\\b(?!:)\n    \n# All of the stuff up to a \">\", hopefully attributes.\n(?<attrs>[^>]*?)\n    \n(?: # Match a short tag\n    />\n    \n|   # Match a full tag\n    >\n    )\n    ";
 
+		/// <summary>
+		/// A regular expression designed to select attributes within a tag.
+		/// </summary>
+		private static readonly Regex attrRe = new Regex("\n# Must start with a sequence of word-characters, followed by an equals sign\n(?<attrname>(\\w|-)+)=\n\n# Then either a quoted or unquoted attribute\n(?:\n\n # Match everything that's between matching quote marks\n (?<qopen>[\"\\'])(?<attrval>.*?)\\k<qopen>\n|\n\n # If the value is not quoted, match up to whitespace\n (?<attrval>(?:[^\\s<>/]|/(?!>))+)\n)\n\n|\n\n(?<endtag>[<>])\n    ", Flags);
+
+		/// <summary>
+		/// A regular expression designed to select the HEAD tag.
+		/// </summary>
 		private static readonly Regex headRe = TagMatcher("head", new[] { "body" });
+
+		/// <summary>
+		/// A regular expression designed to select the HTML tag.
+		/// </summary>
 		private static readonly Regex htmlRe = TagMatcher("html", new string[0]);
+
+		/// <summary>
+		/// A regular expression designed to remove all comments and scripts from a string.
+		/// </summary>
 		private static readonly Regex removedRe = new Regex(@"<!--.*?-->|<!\[CDATA\[.*?\]\]>|<script\b[^>]*>.*?</script>", Flags);
 
+		/// <summary>
+		/// Finds all the HTML HEAD tag child elements that match the tag name of a given type.
+		/// </summary>
+		/// <typeparam name="T">The HTML tag of interest.</typeparam>
+		/// <param name="html">The HTML to scan.</param>
+		/// <returns>A sequence of the matching elements.</returns>
 		public static IEnumerable<T> HeadTags<T>(string html) where T : HtmlControl, new() {
 			html = removedRe.Replace(html, string.Empty);
 			Match match = htmlRe.Match(html);
@@ -52,6 +87,12 @@ namespace DotNetOpenAuth.Yadis {
 			}
 		}
 
+		/// <summary>
+		/// Generates a regular expression that will find a given HTML tag.
+		/// </summary>
+		/// <param name="tagName">Name of the tag.</param>
+		/// <param name="closeTags">The close tags (?).</param>
+		/// <returns>The created regular expression.</returns>
 		private static Regex TagMatcher(string tagName, params string[] closeTags) {
 			string text2;
 			if (closeTags.Length > 0) {
@@ -73,8 +114,13 @@ namespace DotNetOpenAuth.Yadis {
 			return new Regex(string.Format(CultureInfo.InvariantCulture, TagExpr, tagName, text2), Flags);
 		}
 
-		private static Regex StartTagMatcher(string tag_name) {
-			return new Regex(string.Format(CultureInfo.InvariantCulture, StartTagExpr, tag_name), Flags);
+		/// <summary>
+		/// Generates a regular expression designed to find a given tag.
+		/// </summary>
+		/// <param name="tagName">The tag to find.</param>
+		/// <returns>The created regular expression.</returns>
+		private static Regex StartTagMatcher(string tagName) {
+			return new Regex(string.Format(CultureInfo.InvariantCulture, StartTagExpr, tagName), Flags);
 		}
 	}
 }

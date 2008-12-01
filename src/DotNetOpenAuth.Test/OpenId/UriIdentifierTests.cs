@@ -375,8 +375,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.AreSame(protocol, se.Protocol);
 			Assert.AreEqual(claimedId, se.ClaimedIdentifier);
 			Assert.AreEqual(expectedLocalId, se.ProviderLocalIdentifier);
-			Assert.AreEqual(expectSreg ? 2 : 1, se.ProviderSupportedServiceTypeUris.Length);
-			Assert.IsTrue(Array.IndexOf(se.ProviderSupportedServiceTypeUris, protocol.ClaimedIdentifierServiceTypeURI) >= 0);
+			Assert.AreEqual(expectSreg ? 2 : 1, se.ProviderSupportedServiceTypeUris.Count);
+			Assert.IsTrue(se.ProviderSupportedServiceTypeUris.Contains(protocol.ClaimedIdentifierServiceTypeURI));
 
 			// TODO: re-enable this line once extensions support is added back in.
 			////Assert.AreEqual(expectSreg, se.IsExtensionSupported(new ClaimsRequest()));

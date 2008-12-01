@@ -13,11 +13,23 @@ namespace DotNetOpenAuth.Xrds {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 
+	/// <summary>
+	/// The Xrd element in an XRDS document.
+	/// </summary>
 	internal class XrdElement : XrdsNode {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="XrdElement"/> class.
+		/// </summary>
+		/// <param name="xrdElement">The XRD element.</param>
+		/// <param name="parent">The parent.</param>
 		public XrdElement(XPathNavigator xrdElement, XrdsDocument parent) :
 			base(xrdElement, parent) {
 		}
 
+		/// <summary>
+		/// Gets the child service elements.
+		/// </summary>
+		/// <value>The services.</value>
 		public IEnumerable<ServiceElement> Services {
 			get {
 				// We should enumerate them in priority order
@@ -30,12 +42,21 @@ namespace DotNetOpenAuth.Xrds {
 			}
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether this XRD element's resolution at the XRI resolver was successful.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if this XRD's resolution was successful; otherwise, <c>false</c>.
+		/// </value>
 		public bool IsXriResolutionSuccessful {
 			get {
 				return this.XriResolutionStatusCode == 100;
 			}
 		}
 
+		/// <summary>
+		/// Gets the canonical ID (i-number) for this element.
+		/// </summary>
 		public string CanonicalID {
 			get {
 				var n = Node.SelectSingleNode("xrd:CanonicalID", XmlNamespaceResolver);
@@ -43,6 +64,9 @@ namespace DotNetOpenAuth.Xrds {
 			}
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether the <see cref="CanonicalID"/> was verified.
+		/// </summary>
 		public bool IsCanonicalIdVerified {
 			get {
 				var n = Node.SelectSingleNode("xrd:Status", XmlNamespaceResolver);
@@ -64,6 +88,9 @@ namespace DotNetOpenAuth.Xrds {
 			get { return this.SearchForServiceTypeUris(p => p.ClaimedIdentifierServiceTypeURI); }
 		}
 
+		/// <summary>
+		/// Gets the services that would be discoverable at an RP for return_to verification.
+		/// </summary>
 		public IEnumerable<ServiceElement> OpenIdRelyingPartyReturnToServices {
 			get { return this.SearchForServiceTypeUris(p => p.RPReturnToTypeURI); }
 		}
@@ -79,6 +106,9 @@ namespace DotNetOpenAuth.Xrds {
 			}
 		}
 
+		/// <summary>
+		/// Gets the XRI resolution status code.
+		/// </summary>
 		private int XriResolutionStatusCode {
 			get {
 				var n = Node.SelectSingleNode("xrd:Status", XmlNamespaceResolver);
@@ -90,6 +120,12 @@ namespace DotNetOpenAuth.Xrds {
 			}
 		}
 
+		/// <summary>
+		/// Searches for service sub-elements that have Type URI sub-elements that match
+		/// one that we have for a known OpenID protocol version.
+		/// </summary>
+		/// <param name="p">A function that selects what element of the OpenID Protocol we're interested in finding.</param>
+		/// <returns>A sequence of service elements that match the search criteria, sorted in XRDS @priority attribute order.</returns>
 		private IEnumerable<ServiceElement> SearchForServiceTypeUris(Func<Protocol, string> p) {
 			var xpath = new StringBuilder();
 			xpath.Append("xrd:Service[");

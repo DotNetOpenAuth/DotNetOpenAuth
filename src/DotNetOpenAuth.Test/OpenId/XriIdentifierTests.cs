@@ -463,7 +463,7 @@ uEyb50RJ7DWmXctSC0b3eymZ2lSXxAWNOsNy
 			if (expectedClaimedIdentifier != null) {
 				Assert.IsNotNull(se);
 				Assert.AreEqual(expectedClaimedIdentifier, se.ClaimedIdentifier.ToString(), "i-name {0} discovery resulted in unexpected CanonicalId", iname);
-				Assert.IsTrue(se.ProviderSupportedServiceTypeUris.Length > 0);
+				Assert.IsTrue(se.ProviderSupportedServiceTypeUris.Count > 0);
 			} else {
 				Assert.IsNull(se);
 			}

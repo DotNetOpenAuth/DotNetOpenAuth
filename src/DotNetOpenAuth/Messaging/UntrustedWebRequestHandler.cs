@@ -275,6 +275,13 @@ namespace DotNetOpenAuth.Messaging {
 
 		#endregion
 
+		/// <summary>
+		/// Determines whether a given host is whitelisted.
+		/// </summary>
+		/// <param name="host">The host name to test.</param>
+		/// <returns>
+		/// 	<c>true</c> if the host is whitelisted; otherwise, <c>false</c>.
+		/// </returns>
 		private bool IsHostWhitelisted(string host) {
 			return this.IsHostInList(host, this.WhitelistHosts, this.WhitelistHostsRegex);
 		}
@@ -330,7 +337,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Determines whether a URI is allowed based on scheme and host name.
 		/// No requireSSL check is done here
 		/// </summary>
-		/// <param name="uri">The URI.</param>
+		/// <param name="uri">The URI to test for whether it should be allowed.</param>
 		/// <returns>
 		/// 	<c>true</c> if [is URI allowable] [the specified URI]; otherwise, <c>false</c>.
 		/// </returns>
@@ -389,6 +396,13 @@ namespace DotNetOpenAuth.Messaging {
 			return true;
 		}
 
+		/// <summary>
+		/// Determines whether an IP address is the IPv6 equivalent of "localhost/127.0.0.1".
+		/// </summary>
+		/// <param name="ip">The ip address to check.</param>
+		/// <returns>
+		/// 	<c>true</c> if this is a loopback IP address; <c>false</c> otherwise.
+		/// </returns>
 		private bool IsIPv6Loopback(IPAddress ip) {
 			ErrorUtilities.VerifyArgumentNotNull(ip, "ip");
 			byte[] addressBytes = ip.GetAddressBytes();
@@ -403,7 +417,11 @@ namespace DotNetOpenAuth.Messaging {
 			return true;
 		}
 
-		private HttpWebRequest PrepareRequest(HttpWebRequest request) {
+		/// <summary>
+		/// Prepares the request by setting timeout and redirect policies.
+		/// </summary>
+		/// <param name="request">The request to prepare.</param>
+		private void PrepareRequest(HttpWebRequest request) {
 			// Set/override a few properties of the request to apply our policies for untrusted requests.
 			request.ReadWriteTimeout = (int)this.ReadWriteTimeout.TotalMilliseconds;
 			request.Timeout = (int)this.Timeout.TotalMilliseconds;
@@ -413,8 +431,6 @@ namespace DotNetOpenAuth.Messaging {
 			// it may include a pass through an unprotected HTTP request.
 			// We have to follow redirects manually.
 			request.AllowAutoRedirect = false;
-
-			return request;
 		}
 	}
 }

@@ -196,6 +196,13 @@ namespace DotNetOpenAuth.OpenId {
 			return true;
 		}
 
+		/// <summary>
+		/// Performs discovery on the Identifier.
+		/// </summary>
+		/// <param name="requestHandler">The web request handler to use for discovery.</param>
+		/// <returns>
+		/// An initialized structure containing the discovered provider endpoint information.
+		/// </returns>
 		internal override IEnumerable<ServiceEndpoint> Discover(IDirectSslWebRequestHandler requestHandler) {
 			List<ServiceEndpoint> endpoints = new List<ServiceEndpoint>();
 
@@ -353,7 +360,8 @@ namespace DotNetOpenAuth.OpenId {
 
 			// Choose the TypeURI to match the OpenID version detected.
 			string[] typeURIs = { discoveredProtocol.ClaimedIdentifierServiceTypeURI };
-			return ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, providerLocalIdentifier, providerEndpoint, typeURIs, (int?)null, (int?)null);
+			var providerDescription = new ProviderEndpointDescription(providerEndpoint, typeURIs);
+			return ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, providerLocalIdentifier, providerDescription, (int?)null, (int?)null);
 		}
 
 		/// <summary>

@@ -133,7 +133,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 				directedIdentityAssignedIdentifier,
 				directedIdentityAssignedIdentifier,
 				providerEndpoint.ProviderEndpoint,
-				new string[] { providerEndpoint.Protocol.ClaimedIdentifierServiceTypeURI },
+				providerEndpoint.ProviderDescription,
 				10,
 				10);
 			this.RegisterMockXrdsResponse(identityEndpoint);

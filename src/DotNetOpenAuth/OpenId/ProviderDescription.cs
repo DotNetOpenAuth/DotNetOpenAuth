@@ -31,6 +31,11 @@ namespace DotNetOpenAuth.OpenId {
 			this.ProtocolVersion = openIdVersion;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ProviderEndpointDescription"/> class.
+		/// </summary>
+		/// <param name="providerEndpoint">The URI the provider listens on for OpenID requests.</param>
+		/// <param name="serviceTypeURIs">The set of services offered by this endpoint.</param>
 		internal ProviderEndpointDescription(Uri providerEndpoint, IEnumerable<string> serviceTypeURIs) {
 			ErrorUtilities.VerifyArgumentNotNull(providerEndpoint, "providerEndpoint");
 			ErrorUtilities.VerifyArgumentNotNull(serviceTypeURIs, "serviceTypeURIs");

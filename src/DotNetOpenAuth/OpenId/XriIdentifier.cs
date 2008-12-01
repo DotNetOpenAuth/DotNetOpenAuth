@@ -149,6 +149,13 @@ namespace DotNetOpenAuth.OpenId {
 				|| xri.StartsWith(XriScheme, StringComparison.OrdinalIgnoreCase);
 		}
 
+		/// <summary>
+		/// Performs discovery on the Identifier.
+		/// </summary>
+		/// <param name="requestHandler">The web request handler to use for discovery.</param>
+		/// <returns>
+		/// An initialized structure containing the discovered provider endpoint information.
+		/// </returns>
 		internal override IEnumerable<ServiceEndpoint> Discover(IDirectSslWebRequestHandler requestHandler) {
 			return this.DownloadXrds(requestHandler).CreateServiceEndpoints(this);
 		}
@@ -157,6 +164,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// Performs discovery on THIS identifier, but generates <see cref="ServiceEndpoint"/>
 		/// instances that treat another given identifier as the user-supplied identifier.
 		/// </summary>
+		/// <param name="requestHandler">The request handler to use in discovery.</param>
+		/// <param name="userSuppliedIdentifier">The user supplied identifier, which may differ from this XRI instance due to multiple discovery steps.</param>
+		/// <returns>A list of service endpoints offered for this identifier.</returns>
 		internal IEnumerable<ServiceEndpoint> Discover(IDirectSslWebRequestHandler requestHandler, XriIdentifier userSuppliedIdentifier) {
 			return this.DownloadXrds(requestHandler).CreateServiceEndpoints(userSuppliedIdentifier);
 		}
@@ -209,6 +219,11 @@ namespace DotNetOpenAuth.OpenId {
 			return xri;
 		}
 
+		/// <summary>
+		/// Downloads the XRDS document for this XRI.
+		/// </summary>
+		/// <param name="requestHandler">The request handler.</param>
+		/// <returns>The XRDS document.</returns>
 		private XrdsDocument DownloadXrds(IDirectSslWebRequestHandler requestHandler) {
 			XrdsDocument doc;
 			using (var xrdsResponse = Yadis.Request(requestHandler, this.XrdsUrl, this.IsDiscoverySecureEndToEnd)) {

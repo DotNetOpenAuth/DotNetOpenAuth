@@ -54,8 +54,12 @@ namespace DotNetOpenAuth {
 		/// <summary>
 		/// Prepares a dictionary for printing as a string.
 		/// </summary>
+		/// <typeparam name="K">The type of the key.</typeparam>
+		/// <typeparam name="V">The type of the value.</typeparam>
+		/// <param name="pairs">The dictionary or sequence of name-value pairs.</param>
+		/// <returns>An object whose ToString method will perform the actual work of generating the string.</returns>
 		/// <remarks>
-		/// The work isn't done until (and if) the 
+		/// The work isn't done until (and if) the
 		/// <see cref="Object.ToString"/> method is actually called, which makes it great
 		/// for logging complex objects without being in a conditional block.
 		/// </remarks>
@@ -72,10 +76,24 @@ namespace DotNetOpenAuth {
 				});
 		}
 
+		/// <summary>
+		/// Offers deferred ToString processing for a list of elements, that are assumed
+		/// to generate just a single-line string.
+		/// </summary>
+		/// <typeparam name="T">The type of elements contained in the list.</typeparam>
+		/// <param name="list">The list of elements.</param>
+		/// <returns>An object whose ToString method will perform the actual work of generating the string.</returns>
 		internal static object ToStringDeferred<T>(this IEnumerable<T> list) {
 			return ToStringDeferred<T>(list, false);
 		}
 
+		/// <summary>
+		/// Offers deferred ToString processing for a list of elements.
+		/// </summary>
+		/// <typeparam name="T">The type of elements contained in the list.</typeparam>
+		/// <param name="list">The list of elements.</param>
+		/// <param name="multiLineElements">if set to <c>true</c>, special formatting will be applied to the output to make it clear where one element ends and the next begins.</param>
+		/// <returns>An object whose ToString method will perform the actual work of generating the string.</returns>
 		internal static object ToStringDeferred<T>(this IEnumerable<T> list, bool multiLineElements) {
 			return new DelayedToString<IEnumerable<T>>(
 				list,
@@ -119,24 +137,37 @@ namespace DotNetOpenAuth {
 				});
 		}
 
-		internal static HttpWebRequest CreatePostRequest(Uri requestUri, string body) {
-			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(requestUri);
-			request.ContentType = "application/x-www-form-urlencoded";
-			request.ContentLength = body.Length;
-			request.Method = "POST";
-			return request;
-		}
-
+		/// <summary>
+		/// Manages an individual deferred ToString call.
+		/// </summary>
+		/// <typeparam name="T">The type of object to be serialized as a string.</typeparam>
 		private class DelayedToString<T> {
+			/// <summary>
+			/// The object that will be serialized if called upon.
+			/// </summary>
 			private T obj;
 
+			/// <summary>
+			/// The method used to serialize <see cref="obj"/> to string form.
+			/// </summary>
 			private Func<T, string> toString;
 
+			/// <summary>
+			/// Initializes a new instance of the DelayedToString class.
+			/// </summary>
+			/// <param name="obj">The object that may be serialized to string form.</param>
+			/// <param name="toString">The method that will serialize the object if called upon.</param>
 			public DelayedToString(T obj, Func<T, string> toString) {
 				this.obj = obj;
 				this.toString = toString;
 			}
 
+			/// <summary>
+			/// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+			/// </summary>
+			/// <returns>
+			/// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+			/// </returns>
 			public override string ToString() {
 				return this.toString(this.obj);
 			}

@@ -39,6 +39,12 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		public Protocol Protocol { get; private set; }
 
+		/// <summary>
+		/// Derives the highest OpenID protocol that this library and the OpenID Provider have
+		/// in common.
+		/// </summary>
+		/// <param name="supportedServiceTypeUris">The supported service type URIs.</param>
+		/// <returns>The best OpenID protocol version to use when communicating with this Provider.</returns>
 		private static Protocol GetProtocolFromServices(string[] supportedServiceTypeUris) {
 			Protocol protocol = Protocol.FindBestVersion(p => p.RPReturnToTypeURI, supportedServiceTypeUris);
 			if (protocol == null) {

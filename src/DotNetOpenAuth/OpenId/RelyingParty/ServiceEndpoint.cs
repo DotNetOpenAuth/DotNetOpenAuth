@@ -6,9 +6,8 @@
 
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
-	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Diagnostics;
-	using System.Globalization;
 	using System.IO;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -18,20 +17,35 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// </summary>
 	[DebuggerDisplay("ClaimedIdentifier: {ClaimedIdentifier}, ProviderEndpoint: {ProviderEndpoint}, OpenId: {Protocol.Version}")]
 	internal class ServiceEndpoint : IXrdsProviderEndpoint {
+		/// <summary>
+		/// The i-name identifier the user actually typed in
+		/// or the url identifier with the scheme stripped off.
+		/// </summary>
 		private string friendlyIdentifierForDisplay;
+
+		/// <summary>
+		/// The OpenID protocol version used at the identity Provider.
+		/// </summary>
 		private Protocol protocol;
+
+		/// <summary>
+		/// The @priority given in the XRDS document for this specific OP endpoint.
+		/// </summary>
 		private int? uriPriority;
+
+		/// <summary>
+		/// The @priority given in the XRDS document for this service
+		/// (which may consist of several endpoints).
+		/// </summary>
 		private int? servicePriority;
 
-		private ServiceEndpoint(Identifier claimedIdentifier, Identifier userSuppliedIdentifier, Uri providerEndpoint, Identifier providerLocalIdentifier, string[] providerSupportedServiceTypeUris, int? servicePriority, int? uriPriority) {
+		private ServiceEndpoint(ProviderEndpointDescription providerEndpoint, Identifier claimedIdentifier, Identifier userSuppliedIdentifier, Identifier providerLocalIdentifier, int? servicePriority, int? uriPriority) {
 			ErrorUtilities.VerifyArgumentNotNull(claimedIdentifier, "claimedIdentifier");
 			ErrorUtilities.VerifyArgumentNotNull(providerEndpoint, "providerEndpoint");
-			ErrorUtilities.VerifyArgumentNotNull(providerSupportedServiceTypeUris, "providerSupportedServiceTypeUris");
+			this.ProviderDescription = providerEndpoint;
 			this.ClaimedIdentifier = claimedIdentifier;
 			this.UserSuppliedIdentifier = userSuppliedIdentifier;
-			this.ProviderEndpoint = providerEndpoint;
 			this.ProviderLocalIdentifier = providerLocalIdentifier ?? claimedIdentifier;
-			this.ProviderSupportedServiceTypeUris = providerSupportedServiceTypeUris;
 			this.servicePriority = servicePriority;
 			this.uriPriority = uriPriority;
 		}
@@ -42,7 +56,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private ServiceEndpoint(Identifier claimedIdentifier, Identifier userSuppliedIdentifier, Uri providerEndpoint, Identifier providerLocalIdentifier, Protocol protocol) {
 			this.ClaimedIdentifier = claimedIdentifier;
 			this.UserSuppliedIdentifier = userSuppliedIdentifier;
-			this.ProviderEndpoint = providerEndpoint;
+			this.ProviderDescription = new ProviderEndpointDescription(providerEndpoint, protocol.Version);
 			this.ProviderLocalIdentifier = providerLocalIdentifier ?? claimedIdentifier;
 			this.protocol = protocol;
 		}
@@ -56,7 +70,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Obtained by performing discovery on the User-Supplied Identifier. 
 		/// This value MUST be an absolute HTTP or HTTPS URL.
 		/// </remarks>
-		public Uri ProviderEndpoint { get; private set; }
+		public Uri ProviderEndpoint {
+			get { return this.ProviderDescription.Endpoint; }
+		}
 
 		/*
 		/// <summary>
@@ -124,7 +140,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Gets the list of services available at this OP Endpoint for the
 		/// claimed Identifier.  May be null.
 		/// </summary>
-		public string[] ProviderSupportedServiceTypeUris { get; private set; }
+		public ReadOnlyCollection<string> ProviderSupportedServiceTypeUris {
+			get { return this.ProviderDescription.Capabilities; }
+		}
 
 		/// <summary>
 		/// Gets the OpenID protocol used by the Provider.
@@ -160,6 +178,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 		#endregion
 
+		Version IProviderEndpoint.Version { get { return Protocol.Version; } }
+
+		/// <summary>
+		/// Gets a value indicating whether the <see cref="ProviderEndpoint"/> is using an encrypted channel.
+		/// </summary>
+		internal bool IsSecure {
+			get { return string.Equals(this.ProviderEndpoint.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase); }
+		}
+
+		internal ProviderEndpointDescription ProviderDescription { get; set; }
+
 		public static bool operator ==(ServiceEndpoint se1, ServiceEndpoint se2) {
 			return se1.EqualsNullSafe(se2);
 		}
@@ -176,7 +205,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			if (this.ProviderSupportedServiceTypeUris == null) {
 				throw new InvalidOperationException("Cannot lookup extension support on a rehydrated ServiceEndpoint.");
 			}
-			return Array.IndexOf(this.ProviderSupportedServiceTypeUris, extensionUri) >= 0;
+			return this.ProviderSupportedServiceTypeUris.Contains(extensionUri);
 		}
 
 		////public bool IsExtensionSupported(IExtension extension) {
@@ -211,15 +240,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		////    var extension = (Extensions.IExtension)Activator.CreateInstance(extensionType);
 		////    return IsExtensionSupported(extension);
 		////}
-
-		Version IProviderEndpoint.Version { get { return Protocol.Version; } }
-
-		/// <summary>
-		/// Gets a value indicating whether the <see cref="ProviderEndpoint"/> is using an encrypted channel.
-		/// </summary>
-		internal bool IsSecure {
-			get { return string.Equals(this.ProviderEndpoint.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase); }
-		}
 
 		public override bool Equals(object obj) {
 			ServiceEndpoint other = obj as ServiceEndpoint;
@@ -289,25 +309,26 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			return new ServiceEndpoint(claimedIdentifier, userSuppliedIdentifier, providerEndpoint, providerLocalIdentifier, protocol);
 		}
 
-		internal static ServiceEndpoint CreateForProviderIdentifier(Identifier providerIdentifier, Uri providerEndpoint, string[] providerSupportedServiceTypeUris, int? servicePriority, int? uriPriority) {
-			Protocol protocol = Protocol.Detect(providerSupportedServiceTypeUris);
+		internal static ServiceEndpoint CreateForProviderIdentifier(Identifier providerIdentifier, ProviderEndpointDescription providerEndpoint, int? servicePriority, int? uriPriority) {
+			ErrorUtilities.VerifyArgumentNotNull(providerEndpoint, "providerEndpoint");
+
+			Protocol protocol = Protocol.Detect(providerEndpoint.Capabilities);
 
 			return new ServiceEndpoint(
-				protocol.ClaimedIdentifierForOPIdentifier,
-				providerIdentifier,
 				providerEndpoint,
 				protocol.ClaimedIdentifierForOPIdentifier,
-				providerSupportedServiceTypeUris,
+				providerIdentifier,
+				protocol.ClaimedIdentifierForOPIdentifier,
 				servicePriority,
 				uriPriority);
 		}
 
-		internal static ServiceEndpoint CreateForClaimedIdentifier(Identifier claimedIdentifier, Identifier providerLocalIdentifier, Uri providerEndpoint, string[] providerSupportedServiceTypeUris, int? servicePriority, int? uriPriority) {
-			return CreateForClaimedIdentifier(claimedIdentifier, null, providerLocalIdentifier, providerEndpoint, providerSupportedServiceTypeUris, servicePriority, uriPriority);
+		internal static ServiceEndpoint CreateForClaimedIdentifier(Identifier claimedIdentifier, Identifier providerLocalIdentifier, ProviderEndpointDescription providerEndpoint, int? servicePriority, int? uriPriority) {
+			return CreateForClaimedIdentifier(claimedIdentifier, null, providerLocalIdentifier, providerEndpoint, servicePriority, uriPriority);
 		}
 
-		internal static ServiceEndpoint CreateForClaimedIdentifier(Identifier claimedIdentifier, Identifier userSuppliedIdentifier, Identifier providerLocalIdentifier, Uri providerEndpoint, string[] providerSupportedServiceTypeUris, int? servicePriority, int? uriPriority) {
-			return new ServiceEndpoint(claimedIdentifier, userSuppliedIdentifier, providerEndpoint, providerLocalIdentifier, providerSupportedServiceTypeUris, servicePriority, uriPriority);
+		internal static ServiceEndpoint CreateForClaimedIdentifier(Identifier claimedIdentifier, Identifier userSuppliedIdentifier, Identifier providerLocalIdentifier, ProviderEndpointDescription providerEndpoint, int? servicePriority, int? uriPriority) {
+			return new ServiceEndpoint(providerEndpoint, claimedIdentifier, userSuppliedIdentifier, providerLocalIdentifier, servicePriority, uriPriority);
 		}
 
 		/// <summary>

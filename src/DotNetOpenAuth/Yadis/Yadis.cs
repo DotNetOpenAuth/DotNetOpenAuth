@@ -15,7 +15,13 @@ namespace DotNetOpenAuth.Yadis {
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.Xrds;
 
+	/// <summary>
+	/// YADIS discovery manager.
+	/// </summary>
 	internal class Yadis {
+		/// <summary>
+		/// The HTTP header to look for in responses to declare where the XRDS document should be found.
+		/// </summary>
 		internal const string HeaderName = "X-XRDS-Location";
 
 		/// <summary>
@@ -86,10 +92,12 @@ namespace DotNetOpenAuth.Yadis {
 		}
 
 		/// <summary>
-		/// Searches an HTML document for a 
+		/// Searches an HTML document for a
 		/// &lt;meta http-equiv="X-XRDS-Location" content="{YadisURL}"&gt;
 		/// tag and returns the content of YadisURL.
 		/// </summary>
+		/// <param name="html">The HTML to search.</param>
+		/// <returns>The URI of the XRDS document if found; otherwise <c>null</c>.</returns>
 		public static Uri FindYadisDocumentLocationInHtmlMetaTags(string html) {
 			foreach (var metaTag in HtmlParser.HeadTags<HtmlMeta>(html)) {
 				if (HeaderName.Equals(metaTag.HttpEquiv, StringComparison.OrdinalIgnoreCase)) {
@@ -104,6 +112,14 @@ namespace DotNetOpenAuth.Yadis {
 			return null;
 		}
 
+		/// <summary>
+		/// Sends a YADIS HTTP request as part of identifier discovery.
+		/// </summary>
+		/// <param name="requestHandler">The request handler to use to actually submit the request.</param>
+		/// <param name="uri">The URI to GET.</param>
+		/// <param name="requireSsl">Whether only HTTPS URLs should ever be retrieved.</param>
+		/// <param name="acceptTypes">The value of the Accept HTTP header to include in the request.</param>
+		/// <returns>The HTTP response retrieved from the request.</returns>
 		internal static DirectWebResponse Request(IDirectSslWebRequestHandler requestHandler, Uri uri, bool requireSsl, params string[] acceptTypes) {
 			ErrorUtilities.VerifyArgumentNotNull(uri, "uri");
 
@@ -116,6 +132,13 @@ namespace DotNetOpenAuth.Yadis {
 			return requestHandler.GetResponse(request, requireSsl);
 		}
 
+		/// <summary>
+		/// Determines whether a given HTTP response constitutes an XRDS document.
+		/// </summary>
+		/// <param name="response">The response to test.</param>
+		/// <returns>
+		/// 	<c>true</c> if the response constains an XRDS document; otherwise, <c>false</c>.
+		/// </returns>
 		private static bool IsXrdsDocument(DirectWebResponse response) {
 			if (response.ContentType.MediaType == ContentTypes.Xrds) {
 				return true;
