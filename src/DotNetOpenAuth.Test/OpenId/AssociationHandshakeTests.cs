@@ -24,7 +24,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		}
 
 		[TestMethod]
-		public void AssociateDiffieHellman() {
+		public void AssociateDiffieHellmanOverHttp() {
 			this.ParameterizedAssociationTest(new Uri("http://host"));
 		}
 
