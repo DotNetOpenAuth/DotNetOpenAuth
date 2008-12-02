@@ -55,6 +55,8 @@
     <Analyzer AnalyzerId="Microsoft.StyleCop.CSharp.NamingRules">
       <AnalyzerSettings>
         <CollectionProperty Name="Hungarian">
+          <Value>op</Value>
+          <Value>rp</Value>
           <Value>sp</Value>
         </CollectionProperty>
       </AnalyzerSettings>

@@ -16,6 +16,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// </summary>
 	public sealed class OpenIdRelyingParty {
 		/// <summary>
+		/// The untrusted web request handler we use (and share) by default across all RP instances.
+		/// </summary>
+		private static IDirectSslWebRequestHandler defaultUntrustedWebRequestHandler = new UntrustedWebRequestHandler();
+
+		/// <summary>
 		/// Backing field for the <see cref="SecuritySettings"/> property.
 		/// </summary>
 		private RelyingPartySecuritySettings securitySettings;
@@ -30,6 +35,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.Channel = new OpenIdChannel();
 			this.AssociationStore = associationStore;
 			this.SecuritySettings = RelyingPartySection.Configuration.SecuritySettings.CreateSecuritySettings();
+			this.WebRequestHandler = defaultUntrustedWebRequestHandler;
 		}
 
 		/// <summary>
@@ -58,6 +64,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Gets the association store.
 		/// </summary>
 		internal IAssociationStore<Uri> AssociationStore { get; private set; }
+
+		/// <summary>
+		/// Gets the web request handler to use for discovery and the part of
+		/// authentication where direct messages are sent to an untrusted remote party.
+		/// </summary>
+		internal IDirectSslWebRequestHandler WebRequestHandler { get; private set; }
 
 		/// <summary>
 		/// Gets an association between this Relying Party and a given Provider.

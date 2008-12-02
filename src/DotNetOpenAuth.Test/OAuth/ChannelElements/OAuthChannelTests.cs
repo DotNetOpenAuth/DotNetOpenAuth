@@ -85,7 +85,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 				Location = new Uri("http://hostb/pathB"),
 			};
 
-			Response response = this.channel.Send(message);
+			UserAgentResponse response = this.channel.Send(message);
 			Assert.AreSame(message, response.OriginalMessage);
 			Assert.AreEqual(HttpStatusCode.OK, response.Status);
 			Assert.AreEqual(0, response.Headers.Count);
@@ -111,7 +111,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			writer.Flush();
 			ms.Seek(0, SeekOrigin.Begin);
 			Channel_Accessor channelAccessor = Channel_Accessor.AttachShadow(this.channel);
-			IDictionary<string, string> deserializedFields = channelAccessor.ReadFromResponseInternal(new Response { ResponseStream = ms });
+			IDictionary<string, string> deserializedFields = channelAccessor.ReadFromResponseInternal(new DirectWebResponse { ResponseStream = ms });
 			Assert.AreEqual(fields.Count, deserializedFields.Count);
 			foreach (string key in fields.Keys) {
 				Assert.AreEqual(fields[key], deserializedFields[key]);
@@ -228,7 +228,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 				HttpMethods = scheme,
 			};
 
-			Response rawResponse = null;
+			DirectWebResponse rawResponse = null;
 			this.webRequestHandler.Callback = (req) => {
 				Assert.IsNotNull(req);
 				HttpRequestInfo reqInfo = ConvertToRequestInfo(req, this.webRequestHandler.RequestEntityStream);
@@ -246,7 +246,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 					{ "Location", request.Location.AbsoluteUri },
 					{ "Timestamp", XmlConvert.ToString(request.Timestamp, XmlDateTimeSerializationMode.Utc) },
 				};
-				rawResponse = new Response {
+				rawResponse = new DirectWebResponse {
 					Body = MessagingUtilities.CreateQueryString(responseFields),
 				};
 				return rawResponse;

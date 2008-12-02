@@ -8,9 +8,9 @@ namespace DotNetOpenAuth {
 	using System;
 	using System.Collections.Specialized;
 	using System.Linq;
+	using System.Text.RegularExpressions;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
-	using System.Text.RegularExpressions;
 
 	/// <summary>
 	/// Utility methods for working with URIs.
@@ -49,7 +49,9 @@ namespace DotNetOpenAuth {
 		/// Equivalent to UriBuilder.ToString() but omits port # if it may be implied.
 		/// Equivalent to UriBuilder.Uri.ToString(), but doesn't throw an exception if the Host has a wildcard.
 		/// </summary>
-		public static string ToStringWithImpliedPorts(this UriBuilder builder) {
+		/// <param name="builder">The UriBuilder to render as a string.</param>
+		/// <returns>The string version of the Uri.</returns>
+		internal static string ToStringWithImpliedPorts(this UriBuilder builder) {
 			ErrorUtilities.VerifyArgumentNotNull(builder, "builder");
 
 			// We only check for implied ports on HTTP and HTTPS schemes since those
@@ -58,6 +60,7 @@ namespace DotNetOpenAuth {
 				(builder.Port == 443 && string.Equals(builder.Scheme, "https", StringComparison.OrdinalIgnoreCase))) {
 				// An implied port may be removed.
 				string url = builder.ToString();
+
 				// Be really careful to only remove the first :80 or :443 so we are guaranteed
 				// we're removing only the port (and not something in the query string that 
 				// looks like a port.

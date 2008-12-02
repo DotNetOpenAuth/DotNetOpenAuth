@@ -72,11 +72,13 @@
     <Compile Include="Configuration\UntrustedWebRequestSection.cs" />
     <Compile Include="Configuration\HostNameOrRegexCollection.cs" />
     <Compile Include="Configuration\HostNameElement.cs" />
+    <Compile Include="Messaging\DirectWebResponse.cs" />
     <Compile Include="Messaging\IDirectResponseProtocolMessage.cs" />
     <Compile Include="Messaging\EmptyDictionary.cs" />
     <Compile Include="Messaging\EmptyEnumerator.cs" />
     <Compile Include="Messaging\EmptyList.cs" />
     <Compile Include="Messaging\ErrorUtilities.cs" />
+    <Compile Include="Messaging\IDirectSslWebRequestHandler.cs" />
     <Compile Include="Messaging\InternalErrorException.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthConsumerMessageFactory.cs" />
@@ -105,7 +107,7 @@
     <Compile Include="Messaging\Bindings\NonceMemoryStore.cs" />
     <Compile Include="OAuth\ChannelElements\SigningBindingElementBase.cs" />
     <Compile Include="OAuth\WebConsumer.cs" />
-    <Compile Include="Messaging\IWebRequestHandler.cs" />
+    <Compile Include="Messaging\IDirectWebRequestHandler.cs" />
     <Compile Include="OAuth\ChannelElements\ITamperResistantOAuthMessage.cs" />
     <Compile Include="OAuth\Messages\MessageBase.cs" />
     <Compile Include="OAuth\Messages\AuthorizedTokenRequest.cs" />
@@ -143,7 +145,7 @@
     <Compile Include="Messaging\Reflection\MessagePart.cs" />
     <Compile Include="Messaging\UnprotectedMessageException.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthChannel.cs" />
-    <Compile Include="Messaging\Response.cs" />
+    <Compile Include="Messaging\UserAgentResponse.cs" />
     <Compile Include="Messaging\IProtocolMessage.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Loggers\ILog.cs" />
@@ -163,7 +165,9 @@
     <Compile Include="OpenId\ChannelElements\OpenIdChannel.cs" />
     <Compile Include="OpenId\ChannelElements\OpenIdMessageFactory.cs" />
     <Compile Include="OpenId\Configuration.cs" />
+    <Compile Include="OpenId\Identifier.cs" />
     <Compile Include="OpenId\Messages\CheckIdRequest.cs" />
+    <Compile Include="OpenId\NoDiscoveryIdentifier.cs" />
     <Compile Include="OpenId\Realm.cs" />
     <Compile Include="OpenId\RelyingPartyDescription.cs" />
     <Compile Include="OpenId\DiffieHellmanUtilities.cs" />
@@ -191,6 +195,8 @@
     <Compile Include="OpenId\Messages\DirectErrorResponse.cs" />
     <Compile Include="OpenId\Messages\RequestBase.cs" />
     <Compile Include="OpenId\Messages\DirectResponseBase.cs" />
+    <Compile Include="OpenId\RelyingParty\IProviderEndpoint.cs" />
+    <Compile Include="OpenId\RelyingParty\IXrdsProviderEndpoint.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdRelyingParty.cs" />
     <Compile Include="OpenId\OpenIdStrings.Designer.cs">
       <DependentUpon>OpenIdStrings.resx</DependentUpon>
@@ -201,7 +207,12 @@
     <Compile Include="OpenId\ProviderDescription.cs" />
     <Compile Include="OpenId\Provider\ProviderSecuritySettings.cs" />
     <Compile Include="OpenId\RelyingParty\RelyingPartySecuritySettings.cs" />
+    <Compile Include="OpenId\RelyingParty\ServiceEndpoint.cs" />
+    <Compile Include="OpenId\OpenIdXrdsHelper.cs" />
     <Compile Include="OpenId\SecuritySettings.cs" />
+    <Compile Include="Messaging\UntrustedWebRequestHandler.cs" />
+    <Compile Include="OpenId\UriIdentifier.cs" />
+    <Compile Include="OpenId\XriIdentifier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OAuth\Messages\UnauthorizedTokenRequest.cs" />
     <Compile Include="OAuth\ChannelElements\RsaSha1SigningBindingElement.cs" />
@@ -216,6 +227,21 @@
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
     <Compile Include="UriUtil.cs" />
+    <Compile Include="Xrds\XrdsStrings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>XrdsStrings.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Yadis\ContentTypes.cs" />
+    <Compile Include="Yadis\DiscoveryResult.cs" />
+    <Compile Include="Yadis\HtmlParser.cs" />
+    <Compile Include="Xrds\ServiceElement.cs" />
+    <Compile Include="Xrds\TypeElement.cs" />
+    <Compile Include="Xrds\UriElement.cs" />
+    <Compile Include="Xrds\XrdElement.cs" />
+    <Compile Include="Xrds\XrdsDocument.cs" />
+    <Compile Include="Xrds\XrdsNode.cs" />
+    <Compile Include="Yadis\Yadis.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
@@ -241,6 +267,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Xrds\XrdsStrings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>XrdsStrings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

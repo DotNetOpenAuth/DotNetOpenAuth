@@ -106,6 +106,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to URI is not SSL yet requireSslDiscovery is set to true..
+        /// </summary>
+        internal static string ExplicitHttpUriSuppliedWithSslRequirement {
+            get {
+                return ResourceManager.GetString("ExplicitHttpUriSuppliedWithSslRequirement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot encode &apos;{0}&apos; because it contains an illegal character for Key-Value Form encoding.  (line {1}: &apos;{2}&apos;).
         /// </summary>
         internal static string InvalidCharacterInKeyValueFormInput {
@@ -129,6 +138,24 @@ namespace DotNetOpenAuth.OpenId {
         internal static string InvalidScheme {
             get {
                 return ResourceManager.GetString("InvalidScheme", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The value &apos;{0}&apos; is not a valid URI..
+        /// </summary>
+        internal static string InvalidUri {
+            get {
+                return ResourceManager.GetString("InvalidUri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not a recognized XRI format: &apos;{0}&apos;..
+        /// </summary>
+        internal static string InvalidXri {
+            get {
+                return ResourceManager.GetString("InvalidXri", resourceCulture);
             }
         }
         
@@ -178,11 +205,38 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to determine the version of the OpenID protocol implemented by the Provider at endpoint &apos;{0}&apos;..
+        /// </summary>
+        internal static string ProviderVersionUnrecognized {
+            get {
+                return ResourceManager.GetString("ProviderVersionUnrecognized", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An HTTP request to the realm URL ({0}) resulted in a redirect, which is not allowed during relying party discovery..
+        /// </summary>
+        internal static string RealmCausedRedirectUponDiscovery {
+            get {
+                return ResourceManager.GetString("RealmCausedRedirectUponDiscovery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to return_to &apos;{0}&apos; not under realm &apos;{1}&apos;..
         /// </summary>
         internal static string ReturnToNotUnderRealm {
             get {
                 return ResourceManager.GetString("ReturnToNotUnderRealm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to XRI resolution failed..
+        /// </summary>
+        internal static string XriResolutionFailed {
+            get {
+                return ResourceManager.GetString("XriResolutionFailed", resourceCulture);
             }
         }
     }

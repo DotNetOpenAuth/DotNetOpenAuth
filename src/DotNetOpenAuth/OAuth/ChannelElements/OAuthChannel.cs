@@ -158,7 +158,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <returns>
 		/// The deserialized message parts, if found.  Null otherwise.
 		/// </returns>
-		protected override IDictionary<string, string> ReadFromResponseInternal(Response response) {
+		protected override IDictionary<string, string> ReadFromResponseInternal(DirectWebResponse response) {
 			if (response == null) {
 				throw new ArgumentNullException("response");
 			}
@@ -214,7 +214,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <remarks>
 		/// This method implements spec V1.0 section 5.3.
 		/// </remarks>
-		protected override Response SendDirectMessageResponse(IProtocolMessage response) {
+		protected override UserAgentResponse SendDirectMessageResponse(IProtocolMessage response) {
 			if (response == null) {
 				throw new ArgumentNullException("response");
 			}
@@ -223,7 +223,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			var fields = serializer.Serialize(response);
 			string responseBody = MessagingUtilities.CreateQueryString(fields);
 
-			Response encodedResponse = new Response {
+			UserAgentResponse encodedResponse = new UserAgentResponse {
 				Body = responseBody,
 				OriginalMessage = response,
 				Status = HttpStatusCode.OK,

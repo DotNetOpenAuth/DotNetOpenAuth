@@ -43,7 +43,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <para>It is RECOMMENDED that OPs accept XRI identifiers with or without the "xri://" prefix, as specified in the Normalization (Normalization) section. </para>
 		/// </remarks>
 		[MessagePart("openid.claimed_id", IsRequired = false, AllowEmpty = false, MinVersion = "2.0")]
-		internal string ClaimedIdentifier { get; set; }
+		internal Identifier ClaimedIdentifier { get; set; }
 
 		/// <summary>
 		/// Gets or sets the OP Local Identifier.
@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// see openid.claimed_id above). </para>
 		/// </remarks>
 		[MessagePart("openid.identity", IsRequired = false, AllowEmpty = false)]
-		internal string LocalIdentifier { get; set; }
+		internal Identifier LocalIdentifier { get; set; }
 
 		/// <summary>
 		/// Gets or sets the handle of the association the RP would like the Provider

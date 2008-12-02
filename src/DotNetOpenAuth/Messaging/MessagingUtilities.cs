@@ -115,29 +115,126 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="copyFrom">The stream to copy from, at the position where copying should begin.</param>
 		/// <param name="copyTo">The stream to copy to, at the position where bytes should be written.</param>
+		/// <returns>The total number of bytes copied.</returns>
 		/// <remarks>
 		/// Copying begins at the streams' current positions.
 		/// The positions are NOT reset after copying is complete.
 		/// </remarks>
-		internal static void CopyTo(this Stream copyFrom, Stream copyTo) {
-			if (copyFrom == null) {
-				throw new ArgumentNullException("copyFrom");
-			}
-			if (copyTo == null) {
-				throw new ArgumentNullException("copyTo");
-			}
-			if (!copyFrom.CanRead) {
-				throw new ArgumentException(MessagingStrings.StreamUnreadable, "copyFrom");
-			}
-			if (!copyTo.CanWrite) {
-				throw new ArgumentException(MessagingStrings.StreamUnwritable, "copyTo");
-			}
+		internal static int CopyTo(this Stream copyFrom, Stream copyTo) {
+			return CopyTo(copyFrom, copyTo, int.MaxValue);
+		}
+
+		/// <summary>
+		/// Copies the contents of one stream to another.
+		/// </summary>
+		/// <param name="copyFrom">The stream to copy from, at the position where copying should begin.</param>
+		/// <param name="copyTo">The stream to copy to, at the position where bytes should be written.</param>
+		/// <param name="maximumBytesToCopy">The maximum bytes to copy.</param>
+		/// <returns>The total number of bytes copied.</returns>
+		/// <remarks>
+		/// Copying begins at the streams' current positions.
+		/// The positions are NOT reset after copying is complete.
+		/// </remarks>
+		internal static int CopyTo(this Stream copyFrom, Stream copyTo, int maximumBytesToCopy) {
+			ErrorUtilities.VerifyArgumentNotNull(copyFrom, "copyFrom");
+			ErrorUtilities.VerifyArgumentNotNull(copyTo, "copyTo");
+			ErrorUtilities.VerifyArgument(copyFrom.CanRead, MessagingStrings.StreamUnreadable);
+			ErrorUtilities.VerifyArgument(copyTo.CanWrite, MessagingStrings.StreamUnwritable, "copyTo");
 
 			byte[] buffer = new byte[1024];
 			int readBytes;
-			while ((readBytes = copyFrom.Read(buffer, 0, 1024)) > 0) {
-				copyTo.Write(buffer, 0, readBytes);
+			int totalCopiedBytes = 0;
+			while ((readBytes = copyFrom.Read(buffer, 0, Math.Min(1024, maximumBytesToCopy))) > 0) {
+				int writeBytes = Math.Min(maximumBytesToCopy, readBytes);
+				copyTo.Write(buffer, 0, writeBytes);
+				totalCopiedBytes += writeBytes;
+				maximumBytesToCopy -= writeBytes;
 			}
+
+			return totalCopiedBytes;
+		}
+
+		/// <summary>
+		/// Creates a snapshot of some stream so it is seekable, and the original can be closed.
+		/// </summary>
+		/// <param name="copyFrom">The stream to copy bytes from.</param>
+		/// <returns>A seekable stream with the same contents as the original.</returns>
+		internal static Stream CreateSnapshot(this Stream copyFrom) {
+			ErrorUtilities.VerifyArgumentNotNull(copyFrom, "copyFrom");
+
+			MemoryStream copyTo = new MemoryStream(copyFrom.CanSeek ? (int)copyFrom.Length : 4 * 1024);
+			copyFrom.CopyTo(copyTo);
+			copyTo.Position = 0;
+			return copyTo;
+		}
+
+		/// <summary>
+		/// Clones an <see cref="HttpWebRequest"/> in order to send it again.
+		/// </summary>
+		/// <param name="request">The request to clone.</param>
+		/// <returns>The newly created instance.</returns>
+		internal static HttpWebRequest Clone(this HttpWebRequest request) {
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			return Clone(request, request.RequestUri);
+		}
+
+		/// <summary>
+		/// Clones an <see cref="HttpWebRequest"/> in order to send it again.
+		/// </summary>
+		/// <param name="request">The request to clone.</param>
+		/// <param name="newRequestUri">The new recipient of the request.</param>
+		/// <returns>The newly created instance.</returns>
+		internal static HttpWebRequest Clone(this HttpWebRequest request, Uri newRequestUri) {
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			ErrorUtilities.VerifyArgumentNotNull(newRequestUri, "newRequestUri");
+
+			var newRequest = (HttpWebRequest)WebRequest.Create(newRequestUri);
+			newRequest.Accept = request.Accept;
+			newRequest.AllowAutoRedirect = request.AllowAutoRedirect;
+			newRequest.AllowWriteStreamBuffering = request.AllowWriteStreamBuffering;
+			newRequest.AuthenticationLevel = request.AuthenticationLevel;
+			newRequest.AutomaticDecompression = request.AutomaticDecompression;
+			newRequest.CachePolicy = request.CachePolicy;
+			newRequest.ClientCertificates = request.ClientCertificates;
+			newRequest.ConnectionGroupName = request.ConnectionGroupName;
+			if (request.ContentLength >= 0) {
+				newRequest.ContentLength = request.ContentLength;
+			}
+			newRequest.ContentType = request.ContentType;
+			newRequest.ContinueDelegate = request.ContinueDelegate;
+			newRequest.CookieContainer = request.CookieContainer;
+			newRequest.Credentials = request.Credentials;
+			newRequest.Expect = request.Expect;
+			newRequest.IfModifiedSince = request.IfModifiedSince;
+			newRequest.ImpersonationLevel = request.ImpersonationLevel;
+			newRequest.KeepAlive = request.KeepAlive;
+			newRequest.MaximumAutomaticRedirections = request.MaximumAutomaticRedirections;
+			newRequest.MaximumResponseHeadersLength = request.MaximumResponseHeadersLength;
+			newRequest.MediaType = request.MediaType;
+			newRequest.Method = request.Method;
+			newRequest.Pipelined = request.Pipelined;
+			newRequest.PreAuthenticate = request.PreAuthenticate;
+			newRequest.ProtocolVersion = request.ProtocolVersion;
+			newRequest.Proxy = request.Proxy;
+			newRequest.ReadWriteTimeout = request.ReadWriteTimeout;
+			newRequest.Referer = request.Referer;
+			newRequest.SendChunked = request.SendChunked;
+			newRequest.Timeout = request.Timeout;
+			newRequest.TransferEncoding = request.TransferEncoding;
+			newRequest.UnsafeAuthenticatedConnectionSharing = request.UnsafeAuthenticatedConnectionSharing;
+			newRequest.UseDefaultCredentials = request.UseDefaultCredentials;
+			newRequest.UserAgent = request.UserAgent;
+
+			// We copy headers last, and only those that do not yet exist as a result
+			// of setting these properties, so as to avoid exceptions thrown because 
+			// there are properties .NET wants us to use rather than direct headers.
+			foreach (string header in request.Headers) {
+				if (string.IsNullOrEmpty(newRequest.Headers[header])) {
+					newRequest.Headers.Add(header, request.Headers[header]);
+				}
+			}
+
+			return newRequest;
 		}
 
 		/// <summary>

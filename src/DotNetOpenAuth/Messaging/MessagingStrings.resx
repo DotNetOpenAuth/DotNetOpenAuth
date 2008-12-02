@@ -159,6 +159,9 @@
   <data name="IndirectMessagesMustImplementIDirectedProtocolMessage" xml:space="preserve">
     <value>Messages that indicate indirect transport must implement the {0} interface.</value>
   </data>
+  <data name="InsecureWebRequestWithSslRequired" xml:space="preserve">
+    <value>Insecure web request for '{0}' aborted due to security requirements demanding HTTPS.</value>
+  </data>
   <data name="InsufficentMessageProtection" xml:space="preserve">
     <value>The message required protections {0} but the channel could only apply {1}.</value>
   </data>
@@ -222,6 +225,9 @@
   <data name="TooManyBindingsOfferingSameProtection" xml:space="preserve">
     <value>Expected at most 1 binding element offering the {0} protection, but found {1}.</value>
   </data>
+  <data name="TooManyRedirects" xml:space="preserve">
+    <value>The maximum allowable number of redirects were exceeded while requesting '{0}'.</value>
+  </data>
   <data name="UnexpectedEmptyArray" xml:space="preserve">
     <value>The array must not be empty.</value>
   </data>
@@ -245,5 +251,14 @@
   </data>
   <data name="UnrecognizedEnumValue" xml:space="preserve">
     <value>{0} property has unrecognized value {1}.</value>
+  </data>
+  <data name="UnsafeWebRequestDetected" xml:space="preserve">
+    <value>The URL '{0}' is rated unsafe and cannot be requested this way.</value>
+  </data>
+  <data name="UntrustedRedirectsOnPOSTNotSupported" xml:space="preserve">
+    <value>Redirects on POST requests that are to untrusted servers is not supported.</value>
+  </data>
+  <data name="WebRequestFailed" xml:space="preserve">
+    <value>Web request to '{0}' failed.</value>
   </data>
 </root>

@@ -168,7 +168,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// Attemps to detect the highest OpenID protocol version supported given a set
 		/// of XRDS Service Type URIs included for some service.
 		/// </summary>
-		internal static Protocol Detect(string[] serviceTypeURIs) {
+		internal static Protocol Detect(IEnumerable<string> serviceTypeURIs) {
 			if (serviceTypeURIs == null) throw new ArgumentNullException("serviceTypeURIs");
 			return FindBestVersion(p => p.OPIdentifierServiceTypeURI, serviceTypeURIs) ??
 				   FindBestVersion(p => p.ClaimedIdentifierServiceTypeURI, serviceTypeURIs) ??

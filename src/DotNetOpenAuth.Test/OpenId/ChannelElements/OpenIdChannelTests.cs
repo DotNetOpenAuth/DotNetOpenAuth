@@ -63,7 +63,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			byte[] expectedBytes = KeyValueFormEncoding.GetBytes(messageFields);
 			string expectedContentType = OpenIdChannel_Accessor.KeyValueFormContentType;
 
-			Response directResponse = this.accessor.SendDirectMessageResponse(message);
+			UserAgentResponse directResponse = this.accessor.SendDirectMessageResponse(message);
 			Assert.AreEqual(expectedContentType, directResponse.Headers[HttpResponseHeader.ContentType]);
 			byte[] actualBytes = new byte[directResponse.ResponseStream.Length];
 			directResponse.ResponseStream.Read(actualBytes, 0, actualBytes.Length);
@@ -79,7 +79,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 				{ "var1", "value1" },
 				{ "var2", "value2" },
 			};
-			Response response = new Response {
+			var response = new DirectWebResponse {
 				ResponseStream = new MemoryStream(KeyValueFormEncoding.GetBytes(fields)),
 			};
 			Assert.IsTrue(MessagingUtilities.AreEquivalent(fields, this.accessor.ReadFromResponseInternal(response)));

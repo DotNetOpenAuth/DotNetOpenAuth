@@ -197,6 +197,28 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			internal Version Version { get { return this.version; } }
 
 			/// <summary>
+			/// Implements the operator ==.
+			/// </summary>
+			/// <param name="first">The first object to compare.</param>
+			/// <param name="second">The second object to compare.</param>
+			/// <returns>The result of the operator.</returns>
+			public static bool operator ==(MessageTypeAndVersion first, MessageTypeAndVersion second) {
+				// structs cannot be null, so this is safe
+				return first.Equals(second);
+			}
+
+			/// <summary>
+			/// Implements the operator !=.
+			/// </summary>
+			/// <param name="first">The first object to compare.</param>
+			/// <param name="second">The second object to compare.</param>
+			/// <returns>The result of the operator.</returns>
+			public static bool operator !=(MessageTypeAndVersion first, MessageTypeAndVersion second) {
+				// structs cannot be null, so this is safe
+				return !first.Equals(second);
+			}
+
+			/// <summary>
 			/// Indicates whether this instance and a specified object are equal.
 			/// </summary>
 			/// <param name="obj">Another object to compare to.</param>

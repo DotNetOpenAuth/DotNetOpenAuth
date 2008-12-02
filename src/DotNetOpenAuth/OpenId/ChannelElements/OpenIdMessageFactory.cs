@@ -99,7 +99,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				message = new AssociateUnencryptedResponse(associateUnencryptedRequest);
 			}
 
-			// TODO: recognize more message types here
+			//// TODO: recognize more message types here
 
 			if (message != null) {
 				message.SetAsIncoming();
