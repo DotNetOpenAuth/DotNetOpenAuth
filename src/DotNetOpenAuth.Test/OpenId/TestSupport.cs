@@ -156,11 +156,12 @@ namespace DotNetOpenAuth.Test.OpenId {
 		////internal static UriIdentifier GetDirectedIdentityUrl(Scenarios scenario, ProtocolVersion providerVersion) {
 		////    return GetDirectedIdentityUrl(scenario, providerVersion, false);
 		////}
+
 		////internal static UriIdentifier GetDirectedIdentityUrl(Scenarios scenario, ProtocolVersion providerVersion, bool useSsl) {
-		////    return new UriIdentifier(GetFullUrl("/" + directedIdentityPage, new Dictionary<string, string> {
-		////    { "user", scenario.ToString() },
-		////    { "version", providerVersion.ToString() },
-		////}, useSsl));
+		////    return new UriIdentifier(GetFullUrl("/" + DirectedIdentityPage, new Dictionary<string, string> {
+		////        { "user", scenario.ToString() },
+		////        { "version", providerVersion.ToString() },
+		////    }, useSsl));
 		////}
 
 		////internal static IRelyingPartyApplicationStore RelyingPartyStore;

@@ -30,6 +30,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="associationStore">The association store.  If null, the relying party will always operate in "dumb mode".</param>
 		public OpenIdRelyingParty(IAssociationStore<Uri> associationStore) {
+			// TODO: fix this so that a null association store is supported as 'dumb mode only'.
 			ErrorUtilities.VerifyArgumentNotNull(associationStore, "associationStore");
 
 			this.Channel = new OpenIdChannel();

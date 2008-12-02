@@ -115,6 +115,8 @@
     <Compile Include="OpenId\AssociationHandshakeTests.cs" />
     <Compile Include="OpenId\OpenIdTestBase.cs" />
     <Compile Include="OpenId\RealmTests.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyTests.cs" />
+    <Compile Include="OpenId\RelyingParty\RelyingPartySecuritySettingsTests.cs" />
     <Compile Include="OpenId\TestSupport.cs" />
     <Compile Include="OpenId\UI\UITestSupport.cs" />
     <Compile Include="OpenId\UriIdentifierTests.cs" />
