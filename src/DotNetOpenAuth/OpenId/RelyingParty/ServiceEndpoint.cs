@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
-	/// Represents information discovered about a user-supplied Identifier.
+	/// Represents a single OP endpoint from discovery on some OpenID Identifier.
 	/// </summary>
 	[DebuggerDisplay("ClaimedIdentifier: {ClaimedIdentifier}, ProviderEndpoint: {ProviderEndpoint}, OpenId: {Protocol.Version}")]
 	internal class ServiceEndpoint : IXrdsProviderEndpoint {
