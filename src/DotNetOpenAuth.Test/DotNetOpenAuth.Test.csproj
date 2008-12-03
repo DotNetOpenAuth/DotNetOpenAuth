@@ -102,6 +102,7 @@
     <Compile Include="OAuth\ProtocolTests.cs" />
     <Compile Include="OAuth\ServiceProviderDescriptionTests.cs" />
     <Compile Include="OpenId\AssociationsTests.cs" />
+    <Compile Include="OpenId\AssociationTests.cs" />
     <Compile Include="OpenId\ChannelElements\KeyValueFormEncodingTests.cs" />
     <Compile Include="OpenId\IdentifierTests.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanRequestTests.cs" />
