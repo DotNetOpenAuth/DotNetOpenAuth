@@ -95,6 +95,19 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 			new MessagePart(method, new MessagePartAttribute());
 		}
 
+		[TestMethod]
+		public void RequiredMinAndMaxVersions() {
+			Type messageType = typeof(MessageWithMinAndMaxVersionParts);
+			FieldInfo newIn2Field = messageType.GetField("NewIn2", BindingFlags.Public | BindingFlags.Instance);
+			MessagePartAttribute newIn2Attribute = newIn2Field.GetCustomAttributes(typeof(MessagePartAttribute), true).OfType<MessagePartAttribute>().Single();
+
+			FieldInfo removedIn3Field = messageType.GetField("RemovedIn3", BindingFlags.Public | BindingFlags.Instance);
+			MessagePartAttribute removedIn3Attribute = removedIn3Field.GetCustomAttributes(typeof(MessagePartAttribute), true).OfType<MessagePartAttribute>().Single();
+
+			Assert.AreEqual(new Version(2, 0), newIn2Attribute.MinVersionValue);
+			Assert.AreEqual(new Version(2, 5), removedIn3Attribute.MaxVersionValue);
+		}
+
 		private static MessagePart GetMessagePart(Type messageType, string memberName) {
 			FieldInfo field = messageType.GetField(memberName, BindingFlags.NonPublic | BindingFlags.Instance);
 			MessagePartAttribute attribute = field.GetCustomAttributes(typeof(MessagePartAttribute), true).OfType<MessagePartAttribute>().Single();
@@ -146,6 +159,16 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 #pragma warning disable 0414 // read by reflection
 			private readonly string ConstantField = "abc";
 #pragma warning restore 0414
+		}
+
+		private class MessageWithMinAndMaxVersionParts : TestMessage {
+#pragma warning disable 0649 // written to by reflection
+			[MessagePart(MinVersion = "2.0")]
+			public string NewIn2;
+
+			[MessagePart(MaxVersion = "2.5")]
+			public string RemovedIn3;
+#pragma warning restore 0649
 		}
 	}
 }
