@@ -10,15 +10,23 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Bindings;
 
 	/// <summary>
 	/// An interface that OAuth messages implement to support signing.
 	/// </summary>
-	internal interface ITamperResistantOpenIdMessage : ITamperResistantProtocolMessage {
+	internal interface ITamperResistantOpenIdMessage : ITamperResistantProtocolMessage, IReplayProtectedProtocolMessage {
 		/// <summary>
 		/// Gets or sets the association handle used to sign the message.
 		/// </summary>
+		/// <value>The handle for the association that was used to sign this assertion. </value>
 		string AssociationHandle { get; set; }
+
+		/// <summary>
+		/// Gets or sets the association handle that the Provider wants the Relying Party to not use any more.
+		/// </summary>
+		/// <value>If the Relying Party sent an invalid association handle with the request, it SHOULD be included here.</value>
+		string InvalidateHandle { get; set; }
 
 		/// <summary>
 		/// Gets or sets the signed parameter order.
@@ -31,6 +39,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// and if present in the response, "claimed_id" and "identity". 
 		/// Additional keys MAY be signed as part of the message. See Generating Signatures.
 		/// </remarks>
-		string SignedParameterOrder { get; set; }
+		string SignedParameterOrder { get; set; } // TODO: make sure we have a unit test to verify that an incoming message with fewer signed fields than required will be rejected.
 	}
 }

@@ -25,6 +25,7 @@ namespace DotNetOpenAuth.Messaging {
 		public MessagePartAttribute() {
 			this.AllowEmpty = true;
 			this.MinVersionValue = new Version(0, 0);
+			this.MaxVersionValue = new Version(int.MaxValue, 0);
 		}
 
 		/// <summary>
@@ -34,7 +35,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// A special name to give the value of this member in the serialized message.
 		/// When null or empty, the name of the member will be used in the serialized message.
 		/// </param>
-		public MessagePartAttribute(string name) : this() {
+		public MessagePartAttribute(string name)
+			: this() {
 			this.Name = name;
 		}
 
@@ -63,7 +65,8 @@ namespace DotNetOpenAuth.Messaging {
 		public bool AllowEmpty { get; set; }
 
 		/// <summary>
-		/// Gets or sets a custom encoder to use to translate the applied member to and from a string.
+		/// Gets or sets an IMessagePartEncoder custom encoder to use
+		/// to translate the applied member to and from a string.
 		/// </summary>
 		public Type Encoder { get; set; }
 
@@ -78,10 +81,35 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Gets or sets the maximum version of the protocol this attribute applies to.
+		/// </summary>
+		/// <value>Defaults to int.MaxValue for the major version number.</value>
+		/// <remarks>
+		/// Specifying <see cref="MinVersion"/> on another attribute on the same member
+		/// automatically turns this attribute off.  This property should only be set when
+		/// a property is totally dropped from a newer version of the protocol.
+		/// </remarks>
+		public string MaxVersion {
+			get { return this.MaxVersionValue.ToString(); }
+			set { this.MaxVersionValue = new Version(value); }
+		}
+
+		/// <summary>
 		/// Gets or sets the minimum version of the protocol this attribute applies to
 		/// and overrides any attributes with lower values for this property.
 		/// </summary>
 		/// <value>Defaults to 0.0.</value>
 		internal Version MinVersionValue { get; set; }
+
+		/// <summary>
+		/// Gets or sets the maximum version of the protocol this attribute applies to.
+		/// </summary>
+		/// <value>Defaults to int.MaxValue for the major version number.</value>
+		/// <remarks>
+		/// Specifying <see cref="MinVersion"/> on another attribute on the same member
+		/// automatically turns this attribute off.  This property should only be set when
+		/// a property is totally dropped from a newer version of the protocol.
+		/// </remarks>
+		internal Version MaxVersionValue { get; set; }
 	}
 }

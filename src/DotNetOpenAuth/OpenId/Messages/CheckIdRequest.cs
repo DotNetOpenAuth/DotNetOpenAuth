@@ -34,6 +34,15 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		}
 
 		/// <summary>
+		/// Gets a value indicating whether the Provider is allowed to interact with the user
+		/// as part of authentication.
+		/// </summary>
+		/// <value><c>true</c> if using OpenID immediate mode; otherwise, <c>false</c>.</value>
+		internal bool Immediate {
+			get { return String.Equals(this.Mode, Protocol.Args.Mode.checkid_immediate, StringComparison.Ordinal); }
+		}
+
+		/// <summary>
 		/// Gets or sets the Claimed Identifier.
 		/// </summary>
 		/// <remarks>
@@ -123,6 +132,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			base.EnsureValidMessage();
 
 			if (this.ProtocolVersion.Major >= 2) {
+				// Ensure that claimed_id and identity are either both present or both absent.
 				ErrorUtilities.VerifyProtocol((this.ClaimedIdentifier == null) == (this.LocalIdentifier == null), OpenIdStrings.ClaimedIdAndLocalIdMustBothPresentOrAbsent);
 			}
 

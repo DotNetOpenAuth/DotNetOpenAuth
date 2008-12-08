@@ -83,6 +83,10 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 		/// Verifies that the validation check throws if the return_to and the realm
 		/// values are not compatible.
 		/// </summary>
+		/// <remarks>
+		/// This test does not test all the realm-return_to matching rules as that is done in the Realm tests.
+		/// This test merely checks that the compatibility match occurs at all.
+		/// </remarks>
 		[TestMethod, ExpectedException(typeof(ProtocolException))]
 		public void RealmReturnToMismatchV2() {
 			this.setupv2.Realm = "http://somehost/";

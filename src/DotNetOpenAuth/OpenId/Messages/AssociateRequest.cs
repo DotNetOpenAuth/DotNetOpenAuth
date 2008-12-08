@@ -24,7 +24,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="version">The OpenID version this message must comply with.</param>
 		/// <param name="providerEndpoint">The OpenID Provider endpoint.</param>
 		protected AssociateRequest(Version version, Uri providerEndpoint)
-			: base(version, providerEndpoint, "associate", MessageTransport.Direct) {
+			: base(version, providerEndpoint, GetProtocolConstant(version, p => p.Args.Mode.associate), MessageTransport.Direct) {
 		}
 
 		/// <summary>

@@ -169,5 +169,20 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		internal void SetAsIncoming() {
 			this.incoming = true;
 		}
+
+		/// <summary>
+		/// Gets some string from a given version of the OpenID protocol.
+		/// </summary>
+		/// <param name="protocolVersion">The protocol version to use for lookup.</param>
+		/// <param name="mode">A function that can retrieve the desired protocol constant.</param>
+		/// <returns>The value of the constant.</returns>
+		/// <remarks>
+		/// This method can be used by a constructor to throw an <see cref="ArgumentNullException"/>
+		/// instead of a <see cref="NullReferenceException"/>.
+		/// </remarks>
+		protected static string GetProtocolConstant(Version protocolVersion, Func<Protocol, string> mode) {
+			ErrorUtilities.VerifyArgumentNotNull(protocolVersion, "protocolVersion");
+			return mode(Protocol.Lookup(protocolVersion));
+		}
 	}
 }

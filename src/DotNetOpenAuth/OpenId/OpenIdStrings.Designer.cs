@@ -232,6 +232,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The openid.user_setup_url parameter is required when sending negative assertion messages in response to immediate mode requests..
+        /// </summary>
+        internal static string UserSetupUrlRequiredInImmediateNegativeResponse {
+            get {
+                return ResourceManager.GetString("UserSetupUrlRequiredInImmediateNegativeResponse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to XRI resolution failed..
         /// </summary>
         internal static string XriResolutionFailed {

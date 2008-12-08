@@ -100,6 +100,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 							(from a in member.GetCustomAttributes(typeof(MessagePartAttribute), true).OfType<MessagePartAttribute>()
 							 orderby a.MinVersionValue descending
 							 where a.MinVersionValue <= this.messageTypeAndVersion.Version
+							 where a.MaxVersionValue >= this.messageTypeAndVersion.Version
 							 select a).FirstOrDefault();
 						if (partAttribute != null) {
 							MessagePart part = new MessagePart(member, partAttribute);

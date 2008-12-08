@@ -17,14 +17,13 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// <remarks>
 	/// This class satisfies OpenID 2.0 section 5.2.3.
 	/// </remarks>
-	internal class IndirectErrorResponse : RequestBase {
+	internal class IndirectErrorResponse : IndirectResponseBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="IndirectErrorResponse"/> class.
 		/// </summary>
-		/// <param name="version">The OpenID version this message must comply with.</param>
-		/// <param name="relyingPartyReturnTo">The value of the Relying Party's openid.return_to argument.</param>
-		internal IndirectErrorResponse(Version version, Uri relyingPartyReturnTo)
-			: base(version, relyingPartyReturnTo, "error", MessageTransport.Indirect) {
+		/// <param name="request">The request that resulted in this error on the Provider.</param>
+		internal IndirectErrorResponse(CheckIdRequest request)
+			: base(request, "error") {
 		}
 
 		/// <summary>
