@@ -232,6 +232,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The openid.return_to parameter is required in the request message in order to construct a response, but that parameter was missing..
+        /// </summary>
+        internal static string ReturnToRequiredForResponse {
+            get {
+                return ResourceManager.GetString("ReturnToRequiredForResponse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The openid.user_setup_url parameter is required when sending negative assertion messages in response to immediate mode requests..
         /// </summary>
         internal static string UserSetupUrlRequiredInImmediateNegativeResponse {

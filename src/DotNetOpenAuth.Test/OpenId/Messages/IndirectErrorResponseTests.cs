@@ -13,18 +13,20 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 
 	[TestClass]
 	public class IndirectErrorResponseTests {
+		private static readonly Uri provider = new Uri("http://provider");
+		private static readonly Uri rp = new Uri("http://rp");
 		private IndirectErrorResponse response;
-		private Uri recipient = new Uri("http://host");
 
 		[TestInitialize]
 		public void Setup() {
-			CheckIdRequest request = new CheckIdRequest(Protocol.V20.Version, this.recipient, true);
+			CheckIdRequest request = new CheckIdRequest(Protocol.V20.Version, provider, true);
+			request.ReturnTo = rp;
 			this.response = new IndirectErrorResponse(request);
 		}
 
 		[TestMethod]
 		public void Ctor() {
-			Assert.AreEqual(this.recipient, this.response.Recipient);
+			Assert.AreEqual(rp, this.response.Recipient);
 		}
 
 		[TestMethod]

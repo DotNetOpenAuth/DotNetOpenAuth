@@ -70,6 +70,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </remarks>
 		private static Uri GetReturnTo(CheckIdRequest message) {
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
+			ErrorUtilities.VerifyProtocol(message.ReturnTo != null, OpenIdStrings.ReturnToRequiredForResponse);
 			return message.ReturnTo;
 		}
 	}
