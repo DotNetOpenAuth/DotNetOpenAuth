@@ -111,8 +111,12 @@
     <Compile Include="OpenId\Messages\AssociateUnencryptedResponseTests.cs" />
     <Compile Include="OpenId\ChannelElements\OpenIdChannelTests.cs" />
     <Compile Include="OpenId\Messages\CheckIdRequestTests.cs" />
+    <Compile Include="OpenId\Messages\CheckAuthenticationResponseTests.cs" />
+    <Compile Include="OpenId\Messages\CheckAuthenticationRequestTests.cs" />
+    <Compile Include="OpenId\Messages\NegativeAssertionResponseTests.cs" />
     <Compile Include="OpenId\Messages\DirectErrorResponseTests.cs" />
     <Compile Include="OpenId\Messages\IndirectErrorResponseTests.cs" />
+    <Compile Include="OpenId\Messages\PositiveAssertionResponseTests.cs" />
     <Compile Include="OpenId\OpenIdCoordinator.cs" />
     <Compile Include="OpenId\AssociationHandshakeTests.cs" />
     <Compile Include="OpenId\OpenIdTestBase.cs" />

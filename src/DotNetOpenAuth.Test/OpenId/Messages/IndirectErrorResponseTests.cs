@@ -12,21 +12,19 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
-	public class IndirectErrorResponseTests {
-		private static readonly Uri provider = new Uri("http://provider");
-		private static readonly Uri rp = new Uri("http://rp");
+	public class IndirectErrorResponseTests : OpenIdTestBase {
 		private IndirectErrorResponse response;
 
 		[TestInitialize]
 		public void Setup() {
-			CheckIdRequest request = new CheckIdRequest(Protocol.V20.Version, provider, true);
-			request.ReturnTo = rp;
+			CheckIdRequest request = new CheckIdRequest(Protocol.V20.Version, ProviderUri, true);
+			request.ReturnTo = RPUri;
 			this.response = new IndirectErrorResponse(request);
 		}
 
 		[TestMethod]
 		public void Ctor() {
-			Assert.AreEqual(rp, this.response.Recipient);
+			Assert.AreEqual(RPUri, this.response.Recipient);
 		}
 
 		[TestMethod]

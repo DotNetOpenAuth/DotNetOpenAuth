@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Test.OpenId {
+	using System;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Provider;
@@ -16,6 +17,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 		internal IDirectSslWebRequestHandler RequestHandler;
 
 		internal MockHttpRequest MockResponder;
+
+		protected static readonly Uri ProviderUri = new Uri("http://provider");
+		protected static readonly Uri RPUri = new Uri("http://rp");
 
 		protected RelyingPartySecuritySettings RelyingPartySecuritySettings { get; private set; }
 

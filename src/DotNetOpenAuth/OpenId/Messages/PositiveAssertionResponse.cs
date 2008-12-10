@@ -46,6 +46,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			this.ReturnTo = request.ReturnTo;
+			this.ProviderEndpoint = request.Recipient;
 		}
 
 		/// <summary>
@@ -186,7 +187,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 				} else {
 					int indexOfZ = value.IndexOf("Z", StringComparison.Ordinal);
 					ErrorUtilities.VerifyProtocol(indexOfZ >= 0, MessagingStrings.UnexpectedMessagePartValue, Protocol.openid.response_nonce, value);
-					this.creationDateUtc = DateTime.Parse(value.Substring(0, indexOfZ + 1), CultureInfo.InvariantCulture);
+					this.creationDateUtc = DateTime.Parse(value.Substring(0, indexOfZ + 1), CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
 					((IReplayProtectedProtocolMessage)this).Nonce = value.Substring(indexOfZ + 1);
 				}
 			}
