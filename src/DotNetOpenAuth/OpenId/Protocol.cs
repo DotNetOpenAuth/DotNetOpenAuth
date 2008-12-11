@@ -377,7 +377,7 @@ namespace DotNetOpenAuth.OpenId {
 				public string checkid_setup = "checkid_setup";
 				public string check_authentication = "check_authentication";
 				public string associate = "associate";
-				public string setup_needed;
+				public string setup_needed = "id_res"; // V2 overrides this
 			}
 			internal class IsValidValues {
 				public string True = "true";
