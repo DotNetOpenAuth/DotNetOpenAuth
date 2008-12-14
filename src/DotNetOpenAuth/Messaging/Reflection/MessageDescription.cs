@@ -148,7 +148,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		private void EnsureRequiredProtocolMessagePartsAreNotEmpty(IDictionary<string, string> partValues) {
 			string value;
 			var emptyValuedKeys = (from part in Mapping.Values
-								   where !part.AllowEmpty && partValues.TryGetValue(part.Name, out value) && value.Length == 0
+								   where !part.AllowEmpty && partValues.TryGetValue(part.Name, out value) && value != null && value.Length == 0
 								   select part.Name).ToArray();
 			if (emptyValuedKeys.Length > 0) {
 				throw new ProtocolException(

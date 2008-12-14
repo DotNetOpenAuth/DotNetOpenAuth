@@ -50,6 +50,12 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					} else {
 						message = new AssociateUnencryptedRequest(protocol.Version, recipient.Location);
 					}
+				} else if (string.Equals(mode, protocol.Args.Mode.checkid_setup)) {
+					message = new CheckIdRequest(protocol.Version, recipient.Location, false);
+				} else if (string.Equals(mode, protocol.Args.Mode.checkid_immediate)) {
+					message = new CheckIdRequest(protocol.Version, recipient.Location, true);
+				} else if (string.Equals(mode, protocol.Args.Mode.check_authentication)) {
+					message = new CheckAuthenticationRequest(protocol.Version, recipient.Location);
 				} else {
 					ErrorUtilities.ThrowProtocol(MessagingStrings.UnexpectedMessagePartValue, protocol.openid.mode, mode);
 				}

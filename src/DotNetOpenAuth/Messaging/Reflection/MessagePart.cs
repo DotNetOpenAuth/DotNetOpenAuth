@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System.Net.Security;
 	using System.Reflection;
 	using System.Xml;
+	using DotNetOpenAuth.OpenId;
 
 	/// <summary>
 	/// Describes an individual member of a message and assists in its serialization.
@@ -60,6 +61,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			Map<Uri>(uri => uri.AbsoluteUri, str => new Uri(str));
 			Map<DateTime>(dt => XmlConvert.ToString(dt, XmlDateTimeSerializationMode.Utc), str => XmlConvert.ToDateTime(str, XmlDateTimeSerializationMode.Utc));
 			Map<byte[]>(bytes => Convert.ToBase64String(bytes), str => Convert.FromBase64String(str));
+			Map<Realm>(realm => realm.ToString(), str => new Realm(str));
 		}
 
 		/// <summary>

@@ -103,7 +103,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Gets the level of protection this message requires.
 		/// </summary>
 		/// <value><see cref="MessageProtections.None"/></value>
-		public MessageProtections RequiredProtection {
+		public virtual MessageProtections RequiredProtection {
 			get { return MessageProtections.None; }
 		}
 

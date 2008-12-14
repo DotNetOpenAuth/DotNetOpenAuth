@@ -63,6 +63,14 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		}
 
 		/// <summary>
+		/// Gets the level of protection this message requires.
+		/// </summary>
+		/// <value><see cref="MessageProtections.All"/></value>
+		public override MessageProtections RequiredProtection {
+			get { return MessageProtections.All; }
+		}
+
+		/// <summary>
 		/// Gets or sets the message signature.
 		/// </summary>
 		/// <value>Base 64 encoded signature calculated as specified in Section 6 (Generating Signatures).</value>
