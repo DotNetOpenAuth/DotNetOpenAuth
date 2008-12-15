@@ -28,6 +28,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// True if the <paramref name="message"/> applied to this binding element
 		/// and the operation was successful.  False otherwise.
 		/// </returns>
+		/// <remarks>
+		/// Implementations that provide message protection must honor the 
+		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
+		/// </remarks>
 		bool PrepareMessageForSending(IProtocolMessage message);
 
 		/// <summary>
@@ -43,6 +47,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// Thrown when the binding element rules indicate that this message is invalid and should
 		/// NOT be processed.
 		/// </exception>
+		/// <remarks>
+		/// Implementations that provide message protection must honor the 
+		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
+		/// </remarks>
 		bool PrepareMessageForReceiving(IProtocolMessage message);
 	}
 }

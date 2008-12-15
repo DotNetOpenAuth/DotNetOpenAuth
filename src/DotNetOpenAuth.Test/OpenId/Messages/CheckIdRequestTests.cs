@@ -50,36 +50,6 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 		}
 
 		/// <summary>
-		/// Tests that having <see cref="CheckIdRequest.ClaimedIdentifier"/> set without
-		/// <see cref="CheckIdRequest.LocalIdentifier"/> set is recognized as an error in OpenID 2.x.
-		/// </summary>
-		[TestMethod, ExpectedException(typeof(ProtocolException))]
-		public void ClaimedIdentifierWithoutIdentity() {
-			this.setupv2.ClaimedIdentifier = "http://andrew.arnott.myopenid.com/";
-			this.setupv2.EnsureValidMessage();
-		}
-
-		/// <summary>
-		/// Tests that having <see cref="CheckIdRequest.LocalIdentifier"/> set without
-		/// <see cref="CheckIdRequest.ClaimedIdentifier"/> set is recognized as an error in OpenID 2.x.
-		/// </summary>
-		[TestMethod, ExpectedException(typeof(ProtocolException))]
-		public void LocalIdentifierWithoutClaimedIdentifier() {
-			this.setupv2.LocalIdentifier = "http://andrew.arnott.myopenid.com/";
-			this.setupv2.EnsureValidMessage();
-		}
-
-		/// <summary>
-		/// Tests that having <see cref="CheckIdRequest.LocalIdentifier"/> set without 
-		/// <see cref="CheckIdRequest.ClaimedIdentifier"/> set is recognized as valid in OpenID 1.x.
-		/// </summary>
-		[TestMethod]
-		public void LocalIdentifierWithoutClaimedIdentifierV1() {
-			this.setupv1.LocalIdentifier = "http://andrew.arnott.myopenid.com/";
-			this.setupv1.EnsureValidMessage();
-		}
-
-		/// <summary>
 		/// Verifies that the validation check throws if the return_to and the realm
 		/// values are not compatible.
 		/// </summary>

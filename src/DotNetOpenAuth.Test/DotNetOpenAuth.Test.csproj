@@ -114,6 +114,7 @@
     <Compile Include="OpenId\Messages\CheckIdRequestTests.cs" />
     <Compile Include="OpenId\Messages\CheckAuthenticationResponseTests.cs" />
     <Compile Include="OpenId\Messages\CheckAuthenticationRequestTests.cs" />
+    <Compile Include="OpenId\Messages\IndirectSignedResponseTests.cs" />
     <Compile Include="OpenId\Messages\NegativeAssertionResponseTests.cs" />
     <Compile Include="OpenId\Messages\DirectErrorResponseTests.cs" />
     <Compile Include="OpenId\Messages\IndirectErrorResponseTests.cs" />

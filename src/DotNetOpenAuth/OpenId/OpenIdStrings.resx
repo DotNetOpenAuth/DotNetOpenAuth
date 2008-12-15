@@ -177,6 +177,9 @@
   <data name="ReturnToRequiredForResponse" xml:space="preserve">
     <value>The openid.return_to parameter is required in the request message in order to construct a response, but that parameter was missing.</value>
   </data>
+  <data name="SignatureDoesNotIncludeMandatoryParts" xml:space="preserve">
+    <value>The following parameter(s) are not included in the signature but must be: {0}</value>
+  </data>
   <data name="UserSetupUrlRequiredInImmediateNegativeResponse" xml:space="preserve">
     <value>The openid.user_setup_url parameter is required when sending negative assertion messages in response to immediate mode requests.</value>
   </data>

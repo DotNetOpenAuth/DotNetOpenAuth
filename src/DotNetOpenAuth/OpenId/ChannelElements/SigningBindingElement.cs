@@ -9,11 +9,10 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Linq;
-	using System.Text;
+	using System.Net.Security;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
-	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
@@ -100,6 +99,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			if (signedMessage != null) {
 				Logger.DebugFormat("Verifying incoming {0} message signature of: {1}", message.GetType().Name, signedMessage.Signature);
 
+				EnsureParametersRequiringSignatureAreSigned(signedMessage);
+
 				Association association = this.GetSpecificAssociation(signedMessage);
 				if (association != null) {
 					string signature = this.GetSignature(signedMessage, association);
@@ -116,6 +117,27 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Ensures that all message parameters that must be signed are in fact included
+		/// in the signature.
+		/// </summary>
+		/// <param name="signedMessage">The signed message.</param>
+		private static void EnsureParametersRequiringSignatureAreSigned(ITamperResistantOpenIdMessage signedMessage) {
+			// Verify that the signed parameter order includes the mandated fields.
+			// We do this in such a way that derived classes that add mandated fields automatically
+			// get included in the list of checked parameters.
+			Protocol protocol = Protocol.Lookup(signedMessage.ProtocolVersion);
+			var partsRequiringProtection = from part in MessageDescription.Get(signedMessage.GetType(), signedMessage.ProtocolVersion).Mapping.Values
+										   where part.RequiredProtection != ProtectionLevel.None
+										   select part.Name;
+			ErrorUtilities.VerifyInternal(partsRequiringProtection.All(name => name.StartsWith(protocol.openid.Prefix, StringComparison.Ordinal)), "Signing only works when the parameters start with the 'openid.' prefix.");
+			string[] signedParts = signedMessage.SignedParameterOrder.Split(',');
+			var unsignedParts = from partName in partsRequiringProtection
+								where !signedParts.Contains(partName.Substring(protocol.openid.Prefix.Length))
+								select partName;
+			ErrorUtilities.VerifyProtocol(!unsignedParts.Any(), OpenIdStrings.SignatureDoesNotIncludeMandatoryParts, string.Join(", ", unsignedParts.ToArray()));
+		}
 
 		/// <summary>
 		/// Gets the value to use for the openid.signed parameter.

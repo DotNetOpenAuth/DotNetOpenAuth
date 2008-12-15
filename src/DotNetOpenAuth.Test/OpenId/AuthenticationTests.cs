@@ -31,6 +31,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 					var request = new CheckIdRequest(protocol.Version, ProviderUri, false);
 					request.AssociationHandle = association.Handle;
+					request.ClaimedIdentifier = "http://claimedid";
+					request.LocalIdentifier = "http://localid";
 					request.ReturnTo = RPUri;
 					rp.Channel.Send(request);
 					var response = rp.Channel.ReadFromRequest<PositiveAssertionResponse>();

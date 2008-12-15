@@ -50,10 +50,14 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					} else {
 						message = new AssociateUnencryptedRequest(protocol.Version, recipient.Location);
 					}
-				} else if (string.Equals(mode, protocol.Args.Mode.checkid_setup)) {
-					message = new CheckIdRequest(protocol.Version, recipient.Location, false);
-				} else if (string.Equals(mode, protocol.Args.Mode.checkid_immediate)) {
-					message = new CheckIdRequest(protocol.Version, recipient.Location, true);
+				} else if (string.Equals(mode, protocol.Args.Mode.checkid_setup) ||
+					string.Equals(mode, protocol.Args.Mode.checkid_immediate)) {
+					bool immediate = string.Equals(mode, protocol.Args.Mode.checkid_immediate);
+					if (fields.ContainsKey(protocol.openid.identity)) {
+						message = new CheckIdRequest(protocol.Version, recipient.Location, immediate);
+					} else {
+						message = new SignedResponseRequest(protocol.Version, recipient.Location, immediate);
+					}
 				} else if (string.Equals(mode, protocol.Args.Mode.cancel) ||
 					(string.Equals(mode, protocol.Args.Mode.setup_needed) && (protocol.Version.Major >= 2 || fields.ContainsKey(protocol.openid.user_setup_url)))) {
 					message = new NegativeAssertionResponse(protocol.Version, recipient.Location, mode);

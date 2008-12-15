@@ -62,6 +62,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			Map<DateTime>(dt => XmlConvert.ToString(dt, XmlDateTimeSerializationMode.Utc), str => XmlConvert.ToDateTime(str, XmlDateTimeSerializationMode.Utc));
 			Map<byte[]>(bytes => Convert.ToBase64String(bytes), str => Convert.FromBase64String(str));
 			Map<Realm>(realm => realm.ToString(), str => new Realm(str));
+			Map<Identifier>(id => id.ToString(), str => Identifier.Parse(str));
 		}
 
 		/// <summary>

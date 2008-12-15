@@ -51,6 +51,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Gets or sets the level of protection required by this member in the serialized message.
 		/// </summary>
+		/// <remarks>
+		/// Message part protection must be provided and verified by the channel binding element(s)
+		/// that provide security.
+		/// </remarks>
 		public ProtectionLevel RequiredProtection { get; set; }
 
 		/// <summary>

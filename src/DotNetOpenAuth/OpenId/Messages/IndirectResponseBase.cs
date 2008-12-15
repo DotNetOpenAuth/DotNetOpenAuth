@@ -60,10 +60,10 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		}
 
 		/// <summary>
-		/// Gets the <see cref="CheckIdRequest.ReturnTo"/> property of a message.
+		/// Gets the <see cref="SignedResponseRequest.ReturnTo"/> property of a message.
 		/// </summary>
 		/// <param name="message">The message to fetch the ReturnTo from.</param>
-		/// <returns>The value of the <see cref="CheckIdRequest.ReturnTo"/> property.</returns>
+		/// <returns>The value of the <see cref="SignedResponseRequest.ReturnTo"/> property.</returns>
 		/// <remarks>
 		/// This method can be used by a constructor to throw an <see cref="ArgumentNullException"/>
 		/// instead of a <see cref="NullReferenceException"/>.

@@ -172,8 +172,10 @@
     <Compile Include="OpenId\Messages\CheckAuthenticationResponse.cs" />
     <Compile Include="OpenId\Messages\CheckIdRequest.cs" />
     <Compile Include="OpenId\Messages\IndirectResponseBase.cs" />
+    <Compile Include="OpenId\Messages\IndirectSignedResponse.cs" />
     <Compile Include="OpenId\Messages\NegativeAssertionResponse.cs" />
     <Compile Include="OpenId\Messages\PositiveAssertionResponse.cs" />
+    <Compile Include="OpenId\Messages\SignedResponseRequest.cs" />
     <Compile Include="OpenId\NoDiscoveryIdentifier.cs" />
     <Compile Include="OpenId\Realm.cs" />
     <Compile Include="OpenId\RelyingPartyDescription.cs" />

@@ -44,7 +44,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			var signedMessage = message as ITamperResistantOpenIdMessage;
 			if (signedMessage != null) {
 				// TODO: code here
-
 				return true;
 			}
 
@@ -68,7 +67,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			var signedMessage = message as ITamperResistantOpenIdMessage;
 			if (signedMessage != null) {
 				// TODO: code here
-
 				return true;
 			}
 
