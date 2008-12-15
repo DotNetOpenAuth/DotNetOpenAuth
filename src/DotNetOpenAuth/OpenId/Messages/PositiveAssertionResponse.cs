@@ -47,6 +47,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 
 			this.ReturnTo = request.ReturnTo;
 			this.ProviderEndpoint = request.Recipient;
+			((ITamperResistantOpenIdMessage)this).AssociationHandle = request.AssociationHandle;
 		}
 
 		/// <summary>
@@ -220,6 +221,9 @@ namespace DotNetOpenAuth.OpenId.Messages {
 				// Ensure that claimed_id and identity are either both present or both absent.
 				ErrorUtilities.VerifyProtocol((this.ClaimedIdentifier == null) == (this.LocalIdentifier == null), OpenIdStrings.ClaimedIdAndLocalIdMustBothPresentOrAbsent);
 			}
+
+			// Verify that the signed parameter order includes the mandated fields.
+			// TODO: Code here
 		}
 	}
 }

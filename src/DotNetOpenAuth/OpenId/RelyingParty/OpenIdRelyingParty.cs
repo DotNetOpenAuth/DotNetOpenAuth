@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// TODO: fix this so that a null association store is supported as 'dumb mode only'.
 			ErrorUtilities.VerifyArgumentNotNull(associationStore, "associationStore");
 
-			this.Channel = new OpenIdChannel();
+			this.Channel = new OpenIdChannel(associationStore);
 			this.AssociationStore = associationStore;
 			this.SecuritySettings = RelyingPartySection.Configuration.SecuritySettings.CreateSecuritySettings();
 			this.WebRequestHandler = defaultUntrustedWebRequestHandler;

@@ -25,6 +25,16 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		}
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="NegativeAssertionResponse"/> class.
+		/// </summary>
+		/// <param name="version">The version.</param>
+		/// <param name="relyingPartyReturnTo">The relying party return to.</param>
+		/// <param name="mode">The value of the openid.mode parameter.</param>
+		internal NegativeAssertionResponse(Version version, Uri relyingPartyReturnTo, string mode)
+			: base(version, relyingPartyReturnTo, mode) {
+		}
+
+		/// <summary>
 		/// Gets or sets the URL the relying party can use to upgrade their authentication
 		/// request from an immediate to a setup message.
 		/// </summary>
@@ -34,6 +44,27 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </remarks>
 		[MessagePart("openid.user_setup_url", AllowEmpty = false, IsRequired = false, MaxVersion = "1.1")]
 		internal Uri UserSetupUrl { get; set; }
+
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="NegativeAssertionResponse"/>
+		/// is in response to an authentication request made in immediate mode.
+		/// </summary>
+		/// <value><c>true</c> if the request was in immediate mode; otherwise, <c>false</c>.</value>
+		internal bool Immediate {
+			get {
+				if (this.OriginatingRequest != null) {
+					return this.OriginatingRequest.Immediate;
+				} else {
+					if (String.Equals(this.Mode, Protocol.Args.Mode.setup_needed, StringComparison.Ordinal)) {
+						return true;
+					} else if (String.Equals(this.Mode, Protocol.Args.Mode.cancel, StringComparison.Ordinal)) {
+						return false;
+					} else {
+						throw ErrorUtilities.ThrowProtocol(MessagingStrings.UnexpectedMessagePartValue, Protocol.openid.mode, this.Mode);
+					}
+				}
+			}
+		}
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification
@@ -50,7 +81,10 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		public override void EnsureValidMessage() {
 			base.EnsureValidMessage();
 
-			if (OriginatingRequest.Immediate && Protocol.Version.Major < 2) {
+			// Since there are a couple of negative assertion modes, ensure that the mode given is one of the allowed ones.
+			ErrorUtilities.VerifyProtocol(String.Equals(this.Mode, Protocol.Args.Mode.setup_needed, StringComparison.Ordinal) || String.Equals(this.Mode, Protocol.Args.Mode.cancel, StringComparison.Ordinal), MessagingStrings.UnexpectedMessagePartValue, Protocol.openid.mode, this.Mode);
+
+			if (this.Immediate && Protocol.Version.Major < 2) {
 				ErrorUtilities.VerifyProtocol(this.UserSetupUrl != null, OpenIdStrings.UserSetupUrlRequiredInImmediateNegativeResponse);
 			}
 		}

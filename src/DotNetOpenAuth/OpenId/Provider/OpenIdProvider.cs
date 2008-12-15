@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		public OpenIdProvider(IAssociationStore<AssociationRelyingPartyType> associationStore) {
 			ErrorUtilities.VerifyArgumentNotNull(associationStore, "associationStore");
 
-			this.Channel = new OpenIdChannel();
+			this.Channel = new OpenIdChannel(associationStore);
 			this.AssociationStore = associationStore;
 			this.SecuritySettings = ProviderSection.Configuration.SecuritySettings.CreateSecuritySettings();
 		}

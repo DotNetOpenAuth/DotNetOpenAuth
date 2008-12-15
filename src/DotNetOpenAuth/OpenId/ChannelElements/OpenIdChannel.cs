@@ -34,18 +34,41 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		private KeyValueFormEncoding keyValueForm = new KeyValueFormEncoding();
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OpenIdChannel"/> class.
+		/// Initializes a new instance of the <see cref="OpenIdChannel"/> class
+		/// for use by a Relying Party.
 		/// </summary>
-		internal OpenIdChannel()
-			: this(new OpenIdMessageFactory()) {
+		/// <param name="associationStore">The association store to use.</param>
+		internal OpenIdChannel(IAssociationStore<Uri> associationStore)
+			: this(associationStore, new OpenIdMessageFactory()) {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OpenIdChannel"/> class.
+		/// Initializes a new instance of the <see cref="OpenIdChannel"/> class
+		/// for use by a Provider.
 		/// </summary>
+		/// <param name="associationStore">The association store to use.</param>
+		internal OpenIdChannel(IAssociationStore<AssociationRelyingPartyType> associationStore)
+			: this(associationStore, new OpenIdMessageFactory()) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="OpenIdChannel"/> class
+		/// for use by a Relying Party.
+		/// </summary>
+		/// <param name="associationStore">The association store to use.</param>
 		/// <param name="messageTypeProvider">An object that knows how to distinguish the various OpenID message types for deserialization purposes.</param>
-		private OpenIdChannel(IMessageFactory messageTypeProvider) :
-			base(messageTypeProvider) {
+		private OpenIdChannel(IAssociationStore<Uri> associationStore, IMessageFactory messageTypeProvider) :
+			base(messageTypeProvider, new SigningBindingElement(associationStore), new ResponseNonceBindingElement()) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="OpenIdChannel"/> class
+		/// for use by a Provider.
+		/// </summary>
+		/// <param name="associationStore">The association store to use.</param>
+		/// <param name="messageTypeProvider">An object that knows how to distinguish the various OpenID message types for deserialization purposes.</param>
+		private OpenIdChannel(IAssociationStore<AssociationRelyingPartyType> associationStore, IMessageFactory messageTypeProvider) :
+			base(messageTypeProvider, new SigningBindingElement(associationStore), new ResponseNonceBindingElement()) {
 		}
 
 		/// <summary>
