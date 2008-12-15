@@ -83,6 +83,18 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Gets a cryptographically strong random sequence of values.
+		/// </summary>
+		/// <param name="binaryLength">The length of the byte sequence to generate.</param>
+		/// <returns>A base64 encoding of the generated random data, 
+		/// whose length in characters will likely be greater than <paramref name="binaryLength"/>.</returns>
+		internal static string GetCryptoRandomDataAsBase64(int binaryLength) {
+			byte[] uniq_bytes = GetCryptoRandomData(binaryLength);
+			string uniq = Convert.ToBase64String(uniq_bytes);
+			return uniq;
+		}
+
+		/// <summary>
 		/// Adds a set of HTTP headers to an <see cref="HttpResponse"/> instance,
 		/// taking care to set some headers to the appropriate properties of
 		/// <see cref="HttpResponse" />

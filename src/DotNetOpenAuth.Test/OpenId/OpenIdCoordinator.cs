@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.Test.OpenId {
 	using System;
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
@@ -35,11 +36,11 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		private void EnsurePartiesAreInitialized() {
 			if (this.RelyingParty == null) {
-				this.RelyingParty = new OpenIdRelyingParty(new AssociationMemoryStore<Uri>());
+				this.RelyingParty = new OpenIdRelyingParty(new AssociationMemoryStore<Uri>(), new NonceMemoryStore(TimeSpan.FromHours(3)));
 			}
 
 			if (this.Provider == null) {
-				this.Provider = new OpenIdProvider(new AssociationMemoryStore<AssociationRelyingPartyType>());
+				this.Provider = new OpenIdProvider(new AssociationMemoryStore<AssociationRelyingPartyType>(), new NonceMemoryStore(TimeSpan.FromHours(3)));
 			}
 		}
 	}

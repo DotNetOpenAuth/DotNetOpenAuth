@@ -61,6 +61,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The association and nonce stores must either be both null or both non-null..
+        /// </summary>
+        internal static string AssociationAndNonceStoresMustBeBothNullOrBothNonNull {
+            get {
+                return ResourceManager.GetString("AssociationAndNonceStoresMustBeBothNullOrBothNonNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The length of the shared secret ({0}) does not match the length required by the association type (&apos;{1}&apos;)..
         /// </summary>
         internal static string AssociationSecretAndTypeLengthMismatch {

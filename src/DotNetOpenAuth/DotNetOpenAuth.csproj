@@ -161,7 +161,6 @@
     <Compile Include="OpenId\Associations.cs" />
     <Compile Include="OpenId\ChannelElements\ITamperResistantOpenIdMessage.cs" />
     <Compile Include="OpenId\ChannelElements\OriginalStringUriEncoder.cs" />
-    <Compile Include="OpenId\ChannelElements\ResponseNonceBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\SigningBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\KeyValueFormEncoding.cs" />
     <Compile Include="OpenId\ChannelElements\OpenIdChannel.cs" />

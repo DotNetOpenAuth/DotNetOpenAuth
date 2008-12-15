@@ -128,8 +128,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </remarks>
 		internal static HmacShaAssociation Create(Protocol protocol, string associationType, AssociationRelyingPartyType associationUse) {
 			// Generate the handle.  It must be unique, so we use a time element and a random data element to generate it.
-			byte[] uniq_bytes = MessagingUtilities.GetCryptoRandomData(4);
-			string uniq = Convert.ToBase64String(uniq_bytes);
+			string uniq = MessagingUtilities.GetCryptoRandomDataAsBase64(4);
 			string handle = "{" + associationType + "}{" + DateTime.UtcNow.Ticks + "}{" + uniq + "}";
 
 			// Generate the secret that will be used for signing

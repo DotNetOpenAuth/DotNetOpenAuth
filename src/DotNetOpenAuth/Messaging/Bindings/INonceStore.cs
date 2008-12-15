@@ -10,7 +10,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 	/// <summary>
 	/// Describes the contract a nonce store must fulfill.
 	/// </summary>
-	internal interface INonceStore {
+	public interface INonceStore {
 		/// <summary>
 		/// Stores a given nonce and timestamp.
 		/// </summary>

@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
 
@@ -29,11 +30,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class.
 		/// </summary>
 		/// <param name="associationStore">The association store.  If null, the relying party will always operate in "dumb mode".</param>
-		public OpenIdRelyingParty(IAssociationStore<Uri> associationStore) {
+		/// <param name="nonceStore">The nonce store to use.  If null, the relying party will always operate in "dumb mode".</param>
+		public OpenIdRelyingParty(IAssociationStore<Uri> associationStore, INonceStore nonceStore) {
 			// TODO: fix this so that a null association store is supported as 'dumb mode only'.
 			ErrorUtilities.VerifyArgumentNotNull(associationStore, "associationStore");
+			ErrorUtilities.VerifyArgumentNotNull(nonceStore, "nonceStore");
+			ErrorUtilities.VerifyArgument((associationStore == null) == (nonceStore == null), OpenIdStrings.AssociationAndNonceStoresMustBeBothNullOrBothNonNull);
 
-			this.Channel = new OpenIdChannel(associationStore);
+			this.Channel = new OpenIdChannel(associationStore, nonceStore);
 			this.AssociationStore = associationStore;
 			this.SecuritySettings = RelyingPartySection.Configuration.SecuritySettings.CreateSecuritySettings();
 			this.WebRequestHandler = defaultUntrustedWebRequestHandler;

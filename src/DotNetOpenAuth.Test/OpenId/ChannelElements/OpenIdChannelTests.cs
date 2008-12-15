@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 	using System.Net;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.ChannelElements;
@@ -19,6 +20,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 
 	[TestClass]
 	public class OpenIdChannelTests : TestBase {
+		private static readonly TimeSpan maximumMessageAge = TimeSpan.FromHours(3); // good for tests, too long for production
 		private OpenIdChannel channel;
 		private OpenIdChannel_Accessor accessor;
 		private Mocks.TestWebRequestHandler webHandler;
@@ -26,13 +28,24 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		[TestInitialize]
 		public void Setup() {
 			this.webHandler = new Mocks.TestWebRequestHandler();
-			this.channel = new OpenIdChannel(new AssociationMemoryStore<Uri>());
+			this.channel = new OpenIdChannel(new AssociationMemoryStore<Uri>(), new NonceMemoryStore(maximumMessageAge));
 			this.accessor = OpenIdChannel_Accessor.AttachShadow(this.channel);
 			this.channel.WebRequestHandler = this.webHandler;
 		}
 
 		[TestMethod]
 		public void Ctor() {
+			// Verify that the channel stack includes the expected types.
+			// While other binding elements may be substituted for these, we'd then have
+			// to test them.  Since we're not testing them in the OpenID battery of tests,
+			// we make sure they are the standard ones so that we trust they are tested
+			// elsewhere by the testing library.
+			var replayElement = (StandardReplayProtectionBindingElement)this.channel.BindingElements.SingleOrDefault(el => el is StandardReplayProtectionBindingElement);
+			Assert.IsTrue(this.channel.BindingElements.Any(el => el is StandardExpirationBindingElement));
+			Assert.IsNotNull(replayElement);
+
+			// Verify that empty nonces are allowed, since OpenID 2.0 allows this.
+			Assert.IsTrue(replayElement.AllowZeroLengthNonce);
 		}
 
 		/// <summary>

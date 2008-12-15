@@ -105,6 +105,7 @@
     <Compile Include="OpenId\AssociationTests.cs" />
     <Compile Include="OpenId\AuthenticationTests.cs" />
     <Compile Include="OpenId\ChannelElements\KeyValueFormEncodingTests.cs" />
+    <Compile Include="Messaging\Bindings\StandardReplayProtectionBindingElementTests.cs" />
     <Compile Include="OpenId\IdentifierTests.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanRequestTests.cs" />
     <Compile Include="OpenId\Messages\AssociateRequestTests.cs" />

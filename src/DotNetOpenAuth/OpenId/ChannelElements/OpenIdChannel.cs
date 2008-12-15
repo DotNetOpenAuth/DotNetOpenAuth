@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System.Net;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Bindings;
 
 	/// <summary>
 	/// A channel that knows how to send and receive OpenID messages.
@@ -38,8 +39,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// for use by a Relying Party.
 		/// </summary>
 		/// <param name="associationStore">The association store to use.</param>
-		internal OpenIdChannel(IAssociationStore<Uri> associationStore)
-			: this(associationStore, new OpenIdMessageFactory()) {
+		/// <param name="nonceStore">The nonce store to use.</param>
+		internal OpenIdChannel(IAssociationStore<Uri> associationStore, INonceStore nonceStore)
+			: this(associationStore, nonceStore, new OpenIdMessageFactory()) {
 		}
 
 		/// <summary>
@@ -47,8 +49,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// for use by a Provider.
 		/// </summary>
 		/// <param name="associationStore">The association store to use.</param>
-		internal OpenIdChannel(IAssociationStore<AssociationRelyingPartyType> associationStore)
-			: this(associationStore, new OpenIdMessageFactory()) {
+		/// <param name="nonceStore">The nonce store to use.</param>
+		internal OpenIdChannel(IAssociationStore<AssociationRelyingPartyType> associationStore, INonceStore nonceStore)
+			: this(associationStore, nonceStore, new OpenIdMessageFactory()) {
 		}
 
 		/// <summary>
@@ -56,9 +59,10 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// for use by a Relying Party.
 		/// </summary>
 		/// <param name="associationStore">The association store to use.</param>
+		/// <param name="nonceStore">The nonce store to use.</param>
 		/// <param name="messageTypeProvider">An object that knows how to distinguish the various OpenID message types for deserialization purposes.</param>
-		private OpenIdChannel(IAssociationStore<Uri> associationStore, IMessageFactory messageTypeProvider) :
-			base(messageTypeProvider, new SigningBindingElement(associationStore), new ResponseNonceBindingElement()) {
+		private OpenIdChannel(IAssociationStore<Uri> associationStore, INonceStore nonceStore, IMessageFactory messageTypeProvider) :
+			base(messageTypeProvider, new SigningBindingElement(associationStore), new StandardReplayProtectionBindingElement(nonceStore, true), new StandardExpirationBindingElement()) {
 		}
 
 		/// <summary>
@@ -66,9 +70,10 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// for use by a Provider.
 		/// </summary>
 		/// <param name="associationStore">The association store to use.</param>
+		/// <param name="nonceStore">The nonce store to use.</param>
 		/// <param name="messageTypeProvider">An object that knows how to distinguish the various OpenID message types for deserialization purposes.</param>
-		private OpenIdChannel(IAssociationStore<AssociationRelyingPartyType> associationStore, IMessageFactory messageTypeProvider) :
-			base(messageTypeProvider, new SigningBindingElement(associationStore), new ResponseNonceBindingElement()) {
+		private OpenIdChannel(IAssociationStore<AssociationRelyingPartyType> associationStore, INonceStore nonceStore, IMessageFactory messageTypeProvider) :
+			base(messageTypeProvider, new SigningBindingElement(associationStore), new StandardReplayProtectionBindingElement(nonceStore, true), new StandardExpirationBindingElement()) {
 		}
 
 		/// <summary>

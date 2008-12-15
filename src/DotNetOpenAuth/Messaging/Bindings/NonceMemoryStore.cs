@@ -17,12 +17,32 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 	/// </summary>
 	internal class NonceMemoryStore : INonceStore {
 		/// <summary>
+		/// How frequently we should take time to clear out old nonces.
+		/// </summary>
+		private const int AutoCleaningFrequency = 10;
+
+		/// <summary>
 		/// The maximum age a message can be before it is discarded.
 		/// </summary>
 		/// <remarks>
 		/// This is useful for knowing how long used nonces must be retained.
 		/// </remarks>
 		private readonly TimeSpan maximumMessageAge;
+
+		/// <summary>
+		/// A list of the consumed nonces.
+		/// </summary>
+		private readonly SortedDictionary<DateTime, List<string>> usedNonces = new SortedDictionary<DateTime, List<string>>();
+
+		/// <summary>
+		/// A lock object used around accesses to the <see cref="usedNonces"/> field.
+		/// </summary>
+		private object nonceLock = new object();
+
+		/// <summary>
+		/// Where we're currently at in our periodic nonce cleaning cycle.
+		/// </summary>
+		private int nonceClearingCounter;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NonceMemoryStore"/> class.
@@ -62,11 +82,48 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 				return false;
 			}
 
-			// TODO: implement actual nonce checking.
-			Logger.Warn("Nonce checking not implemented yet.");
-			return true;
+			lock (this.nonceLock) {
+				List<string> nonces;
+				if (!this.usedNonces.TryGetValue(timestamp, out nonces)) {
+					this.usedNonces[timestamp] = nonces = new List<string>(4);
+				}
+
+				if (nonces.Contains(nonce)) {
+					return false;
+				}
+
+				nonces.Add(nonce);
+
+				// Clear expired nonces if it's time to take a moment to do that.
+				// Unchecked so that this can int overflow without an exception.
+				unchecked {
+					this.nonceClearingCounter++;
+				}
+				if (this.nonceClearingCounter % AutoCleaningFrequency == 0) {
+					this.ClearExpiredNonces();
+				}
+
+				return true;
+			}
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Clears consumed nonces from the cache that are so old they would be
+		/// rejected if replayed because it is expired.
+		/// </summary>
+		public void ClearExpiredNonces() {
+			lock (this.nonceLock) {
+				var oldNonceLists = this.usedNonces.Keys.Where(time => time.ToUniversalTime() + this.maximumMessageAge < DateTime.UtcNow).ToList();
+				foreach (DateTime time in oldNonceLists) {
+					this.usedNonces.Remove(time);
+				}
+
+				// Reset the auto-clean counter so that if this method was called externally
+				// we don't auto-clean right away.
+				this.nonceClearingCounter = 0;
+			}
+		}
 	}
 }

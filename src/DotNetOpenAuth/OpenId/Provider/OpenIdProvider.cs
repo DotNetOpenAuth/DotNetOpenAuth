@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
 
@@ -24,10 +25,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Initializes a new instance of the <see cref="OpenIdProvider"/> class.
 		/// </summary>
 		/// <param name="associationStore">The association store to use.  Cannot be null.</param>
-		public OpenIdProvider(IAssociationStore<AssociationRelyingPartyType> associationStore) {
+		/// <param name="nonceStore">The nonce store to use.  Cannot be null.</param>
+		public OpenIdProvider(IAssociationStore<AssociationRelyingPartyType> associationStore, INonceStore nonceStore) {
 			ErrorUtilities.VerifyArgumentNotNull(associationStore, "associationStore");
+			ErrorUtilities.VerifyArgumentNotNull(nonceStore, "nonceStore");
 
-			this.Channel = new OpenIdChannel(associationStore);
+			this.Channel = new OpenIdChannel(associationStore, nonceStore);
 			this.AssociationStore = associationStore;
 			this.SecuritySettings = ProviderSection.Configuration.SecuritySettings.CreateSecuritySettings();
 		}

@@ -36,12 +36,20 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// Initializes a new instance of the <see cref="StandardReplayProtectionBindingElement"/> class.
 		/// </summary>
 		/// <param name="nonceStore">The store where nonces will be persisted and checked.</param>
-		internal StandardReplayProtectionBindingElement(INonceStore nonceStore) {
-			if (nonceStore == null) {
-				throw new ArgumentNullException("nonceStore");
-			}
+		internal StandardReplayProtectionBindingElement(INonceStore nonceStore)
+			: this(nonceStore, false) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StandardReplayProtectionBindingElement"/> class.
+		/// </summary>
+		/// <param name="nonceStore">The store where nonces will be persisted and checked.</param>
+		/// <param name="allowEmptyNonces">A value indicating whether zero-length nonces will be allowed.</param>
+		internal StandardReplayProtectionBindingElement(INonceStore nonceStore, bool allowEmptyNonces) {
+			ErrorUtilities.VerifyArgumentNotNull(nonceStore, "nonceStore");
 
 			this.nonceStore = nonceStore;
+			this.AllowZeroLengthNonce = allowEmptyNonces;
 		}
 
 		#region IChannelBindingElement Properties
@@ -75,6 +83,12 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets a value indicating whether empty nonces are allowed.
+		/// </summary>
+		/// <value>Default is <c>false</c>.</value>
+		internal bool AllowZeroLengthNonce { get; set; }
+
 		#region IChannelBindingElement Methods
 
 		/// <summary>
@@ -104,9 +118,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		public bool PrepareMessageForReceiving(IProtocolMessage message) {
 			IReplayProtectedProtocolMessage nonceMessage = message as IReplayProtectedProtocolMessage;
 			if (nonceMessage != null) {
-				if (nonceMessage.Nonce == null || nonceMessage.Nonce.Length <= 0) {
-					throw new ProtocolException(MessagingStrings.InvalidNonceReceived);
-				}
+				ErrorUtilities.VerifyProtocol(nonceMessage.Nonce != null && (nonceMessage.Nonce.Length > 0 || this.AllowZeroLengthNonce), MessagingStrings.InvalidNonceReceived);
 
 				if (!this.nonceStore.StoreNonce(nonceMessage.Nonce, nonceMessage.UtcCreationDate)) {
 					throw new ReplayedMessageException(message);
