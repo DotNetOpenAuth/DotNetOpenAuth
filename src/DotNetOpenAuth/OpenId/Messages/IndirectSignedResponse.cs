@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Backing field for the <see cref="IExpiringProtocolMessage.UtcCreationDate"/> property.
 		/// </summary>
-		private DateTime creationDateUtc;
+		private DateTime creationDateUtc = DateTime.UtcNow;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="IndirectSignedResponse"/> class.

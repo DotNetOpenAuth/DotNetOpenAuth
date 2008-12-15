@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -43,6 +44,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Assert.AreEqual(this.request.ProtocolVersion, this.response.ProtocolVersion);
 			Assert.AreEqual(this.request.ReturnTo, this.response.Recipient);
 			Assert.AreEqual(ProviderUri, this.response.ProviderEndpoint);
+			Assert.IsTrue(DateTime.UtcNow - ((ITamperResistantOpenIdMessage)this.response).UtcCreationDate < TimeSpan.FromSeconds(5));
 		}
 
 		[TestMethod]
@@ -50,6 +52,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Assert.AreEqual(this.protocol.Args.Mode.id_res, this.unsolicited.Mode);
 			Assert.AreEqual(this.protocol.Version, this.unsolicited.ProtocolVersion);
 			Assert.AreEqual(RPUri, this.unsolicited.Recipient);
+			Assert.IsTrue(DateTime.UtcNow - ((ITamperResistantOpenIdMessage)this.unsolicited).UtcCreationDate < TimeSpan.FromSeconds(5));
 
 			Assert.IsNull(this.unsolicited.ProviderEndpoint);
 			this.unsolicited.ProviderEndpoint = ProviderUri;

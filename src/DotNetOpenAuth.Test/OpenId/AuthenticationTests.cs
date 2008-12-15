@@ -37,6 +37,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 					rp.Channel.Send(request);
 					var response = rp.Channel.ReadFromRequest<PositiveAssertionResponse>();
 					Assert.IsNotNull(response);
+					Assert.AreEqual(request.ClaimedIdentifier, response.ClaimedIdentifier);
+					Assert.AreEqual(request.LocalIdentifier, response.LocalIdentifier);
+					Assert.AreEqual(request.ReturnTo, response.ReturnTo);
 				},
 				op => {
 					op.AssociationStore.StoreAssociation(AssociationRelyingPartyType.Smart, association);
