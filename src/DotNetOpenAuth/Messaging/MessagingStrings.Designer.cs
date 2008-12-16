@@ -196,11 +196,11 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The message required protections {{{0}}} but the channel could only apply {{{1}}}..
+        ///   Looks up a localized string similar to The {0} message required protections {{{1}}} but the channel could only apply {{{2}}}..
         /// </summary>
-        internal static string InsufficentMessageProtection {
+        internal static string InsufficientMessageProtection {
             get {
-                return ResourceManager.GetString("InsufficentMessageProtection", resourceCulture);
+                return ResourceManager.GetString("InsufficientMessageProtection", resourceCulture);
             }
         }
         

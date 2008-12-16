@@ -50,7 +50,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// is in response to an authentication request made in immediate mode.
 		/// </summary>
 		/// <value><c>true</c> if the request was in immediate mode; otherwise, <c>false</c>.</value>
-		private bool Immediate {
+		internal bool Immediate {
 			get {
 				if (this.OriginatingRequest != null) {
 					return this.OriginatingRequest.Immediate;

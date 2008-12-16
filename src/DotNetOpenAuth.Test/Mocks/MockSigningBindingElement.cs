@@ -21,6 +21,11 @@ namespace DotNetOpenAuth.Test.Mocks {
 			get { return MessageProtections.TamperProtection; }
 		}
 
+		/// <summary>
+		/// Gets or sets the channel that this binding element belongs to.
+		/// </summary>
+		public Channel Channel { get; set; }
+
 		bool IChannelBindingElement.PrepareMessageForSending(IProtocolMessage message) {
 			ITamperResistantProtocolMessage signedMessage = message as ITamperResistantProtocolMessage;
 			if (signedMessage != null) {

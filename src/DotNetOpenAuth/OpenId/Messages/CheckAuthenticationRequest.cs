@@ -9,6 +9,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.ChannelElements;
 
 	/// <summary>
 	/// A message a Relying Party sends to a Provider to confirm the validity
@@ -26,7 +28,16 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="version">The OpenID version this message must comply with.</param>
 		/// <param name="providerEndpoint">The OpenID Provider endpoint.</param>
 		internal CheckAuthenticationRequest(Version version, Uri providerEndpoint)
-			: base(version, providerEndpoint, GetProtocolConstant(version, p => p.Args.Mode.check_authentication), DotNetOpenAuth.Messaging.MessageTransport.Direct) {
+			: base(version, providerEndpoint, GetProtocolConstant(version, p => p.Args.Mode.check_authentication), MessageTransport.Direct) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CheckAuthenticationRequest"/> class.
+		/// </summary>
+		/// <param name="message">The message whose signature should be verified.</param>
+		internal CheckAuthenticationRequest(IndirectSignedResponse message)
+			: base(message.ProtocolVersion, message.ProviderEndpoint, GetProtocolConstant(message.ProtocolVersion, p => p.Args.Mode.check_authentication), MessageTransport.Direct) {
+			// TODO: code here to copy data from message into this one.
 		}
 	}
 }

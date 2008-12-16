@@ -16,6 +16,14 @@ namespace DotNetOpenAuth.Messaging {
 	/// </summary>
 	public interface IChannelBindingElement {
 		/// <summary>
+		/// Gets or sets the channel that this binding element belongs to.
+		/// </summary>
+		/// <remarks>
+		/// This property is set by the channel when it is first constructed.
+		/// </remarks>
+		Channel Channel { get; set; }
+
+		/// <summary>
 		/// Gets the protection offered (if any) by this binding element.
 		/// </summary>
 		MessageProtections Protection { get; }

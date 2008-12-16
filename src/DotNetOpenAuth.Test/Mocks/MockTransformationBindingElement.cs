@@ -29,6 +29,11 @@ namespace DotNetOpenAuth.Test.Mocks {
 			get { return MessageProtections.None; }
 		}
 
+		/// <summary>
+		/// Gets or sets the channel that this binding element belongs to.
+		/// </summary>
+		public Channel Channel { get; set; }
+
 		bool IChannelBindingElement.PrepareMessageForSending(IProtocolMessage message) {
 			var testMessage = message as TestMessage;
 			if (testMessage != null) {

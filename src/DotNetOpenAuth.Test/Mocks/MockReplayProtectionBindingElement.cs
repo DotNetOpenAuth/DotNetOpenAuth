@@ -17,6 +17,11 @@ namespace DotNetOpenAuth.Test.Mocks {
 		MessageProtections IChannelBindingElement.Protection {
 			get { return MessageProtections.ReplayProtection; }
 		}
+		
+		/// <summary>
+		/// Gets or sets the channel that this binding element belongs to.
+		/// </summary>
+		public Channel Channel { get; set; }
 
 		bool IChannelBindingElement.PrepareMessageForSending(IProtocolMessage message) {
 			var replayMessage = message as IReplayProtectedProtocolMessage;

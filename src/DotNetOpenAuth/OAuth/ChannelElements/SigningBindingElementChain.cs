@@ -77,6 +77,21 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		}
 
 		/// <summary>
+		/// Gets or sets the channel that this binding element belongs to.
+		/// </summary>
+		public Channel Channel {
+			get {
+				return this.signers[0].Channel;
+			}
+
+			set {
+				foreach (var signer in this.signers) {
+					signer.Channel = value;
+				}
+			}
+		}
+
+		/// <summary>
 		/// Prepares a message for sending based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>

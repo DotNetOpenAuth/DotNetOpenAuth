@@ -107,6 +107,8 @@ namespace DotNetOpenAuth.Test.Mocks {
 				throw new InvalidOperationException("Totally expected a message to implement one of the two derived interface types.");
 			}
 
+			ErrorUtilities.VerifyInternal(clonedMessage != null, "Message factory did not generate a message instance for " + message.GetType().Name);
+
 			// Fill the cloned message with data.
 			serializer.Deserialize(fields, clonedMessage);
 

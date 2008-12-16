@@ -105,6 +105,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 			var associateDiffieHellmanRequest = request as AssociateDiffieHellmanRequest;
 			var associateUnencryptedRequest = request as AssociateUnencryptedRequest;
+			var checkAuthenticationRequest = request as CheckAuthenticationRequest;
 
 			if (associateDiffieHellmanRequest != null) {
 				message = new AssociateDiffieHellmanResponse(associateDiffieHellmanRequest);
@@ -114,7 +115,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				message = new AssociateUnencryptedResponse(associateUnencryptedRequest);
 			}
 
-			//// TODO: recognize more message types here
+			if (checkAuthenticationRequest != null) {
+				message = new CheckAuthenticationResponse(checkAuthenticationRequest);
+			}
 
 			if (message != null) {
 				message.SetAsIncoming();

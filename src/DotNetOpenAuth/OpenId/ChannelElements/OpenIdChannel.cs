@@ -62,7 +62,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="nonceStore">The nonce store to use.</param>
 		/// <param name="messageTypeProvider">An object that knows how to distinguish the various OpenID message types for deserialization purposes.</param>
 		private OpenIdChannel(IAssociationStore<Uri> associationStore, INonceStore nonceStore, IMessageFactory messageTypeProvider) :
-			base(messageTypeProvider, new SigningBindingElement(associationStore), new StandardReplayProtectionBindingElement(nonceStore, true), new StandardExpirationBindingElement()) {
+			base(messageTypeProvider, InitializeBindingElements(new SigningBindingElement(associationStore), nonceStore)) {
 		}
 
 		/// <summary>
@@ -73,7 +73,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="nonceStore">The nonce store to use.</param>
 		/// <param name="messageTypeProvider">An object that knows how to distinguish the various OpenID message types for deserialization purposes.</param>
 		private OpenIdChannel(IAssociationStore<AssociationRelyingPartyType> associationStore, INonceStore nonceStore, IMessageFactory messageTypeProvider) :
-			base(messageTypeProvider, new SigningBindingElement(associationStore), new StandardReplayProtectionBindingElement(nonceStore, true), new StandardExpirationBindingElement()) {
+			base(messageTypeProvider, InitializeBindingElements(new SigningBindingElement(associationStore), nonceStore)) {
 		}
 
 		/// <summary>
@@ -128,6 +128,22 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			preparedResponse.ResponseStream = new MemoryStream(keyValueEncoding);
 
 			return preparedResponse;
+		}
+
+		/// <summary>
+		/// Initializes the binding elements.
+		/// </summary>
+		/// <param name="signingElement">The signing element, previously constructed.</param>
+		/// <param name="nonceStore">The nonce store to use.</param>
+		/// <returns>An array of binding elements which may be used to construct the channel.</returns>
+		private static IChannelBindingElement[] InitializeBindingElements(SigningBindingElement signingElement, INonceStore nonceStore) {
+			ErrorUtilities.VerifyArgumentNotNull(signingElement, "signingElement");
+
+			List<IChannelBindingElement> elements = new List<IChannelBindingElement>(3);
+			elements.Add(signingElement);
+			elements.Add(new StandardReplayProtectionBindingElement(nonceStore, true));
+			elements.Add(new StandardExpirationBindingElement());
+			return elements.ToArray();
 		}
 	}
 }

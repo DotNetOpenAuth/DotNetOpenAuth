@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			this.opAssociations = associations;
 		}
 
-		#region IChannelBindingElement Members
+		#region IChannelBindingElement Properties
 
 		/// <summary>
 		/// Gets the protection offered (if any) by this binding element.
@@ -58,6 +58,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		public MessageProtections Protection {
 			get { return MessageProtections.TamperProtection; }
 		}
+
+		/// <summary>
+		/// Gets or sets the channel that this binding element belongs to.
+		/// </summary>
+		public Channel Channel { get; set; }
 
 		/// <summary>
 		/// Prepares a message for sending based on the rules of this channel binding element.
@@ -108,9 +113,19 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 						Logger.Error("Signature verification failed.");
 						throw new InvalidSignatureException(message);
 					}
-
-					return true;
+				} else {
+					ErrorUtilities.VerifyInternal(this.Channel != null, "Cannot verify private association signature because we don't have a channel.");
+					// We did not recognize the association the provider used to sign the message.
+					// Ask the provider to check the signature then.
+					var checkSignatureRequest = new CheckAuthenticationRequest((IndirectSignedResponse)signedMessage);
+					var checkSignatureResponse = this.Channel.Request<CheckAuthenticationResponse>(checkSignatureRequest);
+					if (!checkSignatureResponse.IsValid) {
+						Logger.Error("Provider reports signature verification failed.");
+						throw new InvalidSignatureException(message);
+					}
 				}
+
+				return true;
 			}
 
 			return false;
@@ -152,9 +167,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 			MessageDescription description = MessageDescription.Get(signedMessage.GetType(), signedMessage.ProtocolVersion);
 			var signedParts = from part in description.Mapping.Values
-							  where (part.RequiredProtection & System.Net.Security.ProtectionLevel.Sign) != 0
-							        && part.GetValue(signedMessage) != null
-							  select part.Name;
+			                  where (part.RequiredProtection & System.Net.Security.ProtectionLevel.Sign) != 0
+			                        && part.GetValue(signedMessage) != null
+			                  select part.Name;
 			string prefix = Protocol.V20.openid.Prefix;
 			Debug.Assert(signedParts.All(name => name.StartsWith(prefix, StringComparison.Ordinal)), "All signed message parts must start with 'openid.'.");
 			int skipLength = prefix.Length;

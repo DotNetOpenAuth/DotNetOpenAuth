@@ -65,6 +65,11 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		#region IChannelBindingElement Methods
 
 		/// <summary>
+		/// Gets or sets the channel that this binding element belongs to.
+		/// </summary>
+		public Channel Channel { get; set; }
+
+		/// <summary>
 		/// Signs the outgoing message.
 		/// </summary>
 		/// <param name="message">The message to sign.</param>

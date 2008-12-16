@@ -37,6 +37,11 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Assert.AreEqual("cancel", new NegativeAssertionResponse(setupRequestV1).Mode);
 			Assert.AreEqual("setup_needed", new NegativeAssertionResponse(immediateRequestV2).Mode);
 			Assert.AreEqual("cancel", new NegativeAssertionResponse(setupRequestV2).Mode);
+
+			Assert.IsTrue(new NegativeAssertionResponse(immediateRequestV1).Immediate);
+			Assert.IsFalse(new NegativeAssertionResponse(setupRequestV1).Immediate);
+			Assert.IsTrue(new NegativeAssertionResponse(immediateRequestV2).Immediate);
+			Assert.IsFalse(new NegativeAssertionResponse(setupRequestV2).Immediate);
 		}
 
 		[TestMethod, ExpectedException(typeof(ProtocolException))]

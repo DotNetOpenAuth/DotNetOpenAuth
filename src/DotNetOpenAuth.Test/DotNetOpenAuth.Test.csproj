@@ -120,6 +120,7 @@
     <Compile Include="OpenId\Messages\DirectErrorResponseTests.cs" />
     <Compile Include="OpenId\Messages\IndirectErrorResponseTests.cs" />
     <Compile Include="OpenId\Messages\PositiveAssertionResponseTests.cs" />
+    <Compile Include="OpenId\Messages\SignedResponseRequestTests.cs" />
     <Compile Include="OpenId\OpenIdCoordinator.cs" />
     <Compile Include="OpenId\AssociationHandshakeTests.cs" />
     <Compile Include="OpenId\OpenIdTestBase.cs" />

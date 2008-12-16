@@ -162,8 +162,8 @@
   <data name="InsecureWebRequestWithSslRequired" xml:space="preserve">
     <value>Insecure web request for '{0}' aborted due to security requirements demanding HTTPS.</value>
   </data>
-  <data name="InsufficentMessageProtection" xml:space="preserve">
-    <value>The message required protections {{{0}}} but the channel could only apply {{{1}}}.</value>
+  <data name="InsufficientMessageProtection" xml:space="preserve">
+    <value>The {0} message required protections {{{1}}} but the channel could only apply {{{2}}}.</value>
   </data>
   <data name="InvalidMessageParts" xml:space="preserve">
     <value>Some part(s) of the message have invalid values: {0}</value>

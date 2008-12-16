@@ -80,6 +80,10 @@ namespace DotNetOpenAuth.Messaging {
 			this.messageTypeProvider = messageTypeProvider;
 			this.WebRequestHandler = new StandardWebRequestHandler();
 			this.bindingElements = new List<IChannelBindingElement>(ValidateAndPrepareBindingElements(bindingElements));
+
+			foreach (var element in this.bindingElements) {
+				element.Channel = this;
+			}
 		}
 
 		/// <summary>
