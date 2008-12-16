@@ -25,9 +25,16 @@ namespace DotNetOpenId.Test {
 
 		void parameterizedTest(TestSupport.Scenarios scenario, ProtocolVersion version,
 			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult) {
-			Identifier claimedId = TestSupport.GetMockIdentifier(scenario, version);
-			parameterizedProgrammaticTest(scenario, version, claimedId, requestMode, expectedResult, true);
-			parameterizedProgrammaticTest(scenario, version, claimedId, requestMode, expectedResult, false);
+			
+			bool useSsl = true;
+			Identifier claimedId = TestSupport.GetMockIdentifier(scenario, version, useSsl);
+			parameterizedProgrammaticTest(scenario, version, claimedId, requestMode, expectedResult, true, useSsl);
+			parameterizedProgrammaticTest(scenario, version, claimedId, requestMode, expectedResult, false, useSsl);
+
+			useSsl = false;
+			claimedId = TestSupport.GetMockIdentifier(scenario, version, useSsl);
+			parameterizedProgrammaticTest(scenario, version, claimedId, requestMode, expectedResult, true, useSsl);
+			parameterizedProgrammaticTest(scenario, version, claimedId, requestMode, expectedResult, false, useSsl);
 		}
 		void parameterizedOPIdentifierTest(TestSupport.Scenarios scenario,
 			AuthenticationRequestMode requestMode, AuthenticationStatus expectedResult) {
@@ -37,11 +44,10 @@ namespace DotNetOpenId.Test {
 			parameterizedProgrammaticOPIdentifierTest(opIdentifier, version, claimedIdentifier, requestMode, expectedResult, true);
 			parameterizedProgrammaticOPIdentifierTest(opIdentifier, version, claimedIdentifier, requestMode, expectedResult, false);
 		}
-		void parameterizedProgrammaticTest(TestSupport.Scenarios scenario, ProtocolVersion version, 
-			Identifier claimedUrl, AuthenticationRequestMode requestMode, 
-			AuthenticationStatus expectedResult, bool provideStore) {
-
-			var request = TestSupport.CreateRelyingPartyRequest(!provideStore, scenario, version);
+		void parameterizedProgrammaticTest(TestSupport.Scenarios scenario, ProtocolVersion version,
+			Identifier claimedUrl, AuthenticationRequestMode requestMode,
+			AuthenticationStatus expectedResult, bool provideStore, bool useSsl) {
+			var request = TestSupport.CreateRelyingPartyRequest(!provideStore, scenario, version, useSsl);
 			request.Mode = requestMode;
 
 			var rpResponse = TestSupport.CreateRelyingPartyResponseThroughProvider(request, 
@@ -180,13 +186,13 @@ namespace DotNetOpenId.Test {
 				claimedIdentifier.Uri,
 				AuthenticationRequestMode.Setup,
 				AuthenticationStatus.Authenticated,
-				true
-			);
+				true,
+				false);
 		}
 
 		[Test]
 		public void SampleScriptedTest() {
-			var rpReq = TestSupport.CreateRelyingPartyRequest(false, TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
+			var rpReq = TestSupport.CreateRelyingPartyRequest(false, TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20, false);
 			var rpResp = TestSupport.CreateRelyingPartyResponseThroughProvider(rpReq, opReq => opReq.IsAuthenticated = true);
 			Assert.AreEqual(AuthenticationStatus.Authenticated, rpResp.Status);
 		}

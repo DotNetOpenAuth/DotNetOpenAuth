@@ -150,7 +150,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 		}
 
 		private static void testExplicitPortOnRealmAndReturnTo(Uri returnTo, Realm realm) {
-			var request = TestSupport.CreateRelyingPartyRequest(true, TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
+			var request = TestSupport.CreateRelyingPartyRequest(true, TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20, false);
 			Protocol protocol = Protocol.Lookup(request.Provider.Version);
 			var nvc = HttpUtility.ParseQueryString(request.RedirectingResponse.ExtractUrl().Query);
 			string realmString = nvc[protocol.openid.Realm];
@@ -167,7 +167,7 @@ namespace DotNetOpenId.Test.RelyingParty {
 
 		[Test]
 		public void ReturnToUrlEncodingTest() {
-			var request = TestSupport.CreateRelyingPartyRequest(true, TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
+			var request = TestSupport.CreateRelyingPartyRequest(true, TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20, false);
 			Protocol protocol = Protocol.Lookup(request.Provider.Version);
 			request.AddCallbackArguments("a+b", "c+d");
 			var requestArgs = HttpUtility.ParseQueryString(request.RedirectingResponse.ExtractUrl().Query);

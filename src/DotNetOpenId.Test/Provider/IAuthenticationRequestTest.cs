@@ -22,7 +22,7 @@ namespace DotNetOpenId.Test.Provider {
 
 		[Test]
 		public void UnverifiableReturnUrl() {
-			var request = TestSupport.CreateRelyingPartyRequest(true, TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
+			var request = TestSupport.CreateRelyingPartyRequest(true, TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20, false);
 
 			// Clear out the RP discovery information registered by TestSupport
 			Mocks.MockHttpRequest.DeleteResponse(TestSupport.Realm.UriWithWildcardChangedToWww);

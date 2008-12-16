@@ -97,6 +97,10 @@ namespace DotNetOpenId {
 				if (requireMatchingDHSessionType && sessionType == null)
 					continue;
 				associationType = sha.GetAssociationType(protocol);
+				if (associationType == null) {
+					continue;
+				}
+				
 				return true;
 			}
 			return false;

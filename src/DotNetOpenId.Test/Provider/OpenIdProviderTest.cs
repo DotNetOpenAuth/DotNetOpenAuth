@@ -116,7 +116,7 @@ namespace DotNetOpenId.Test.Provider {
 				((DotNetOpenId.Provider.IAuthenticationRequest)op.Request).RelyingPartyVersion);
 
 			// Verify V2.0 reporting.
-			var rp20Request = TestSupport.CreateRelyingPartyRequest(true, TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
+			var rp20Request = TestSupport.CreateRelyingPartyRequest(true, TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20, false);
 			TestSupport.CreateRelyingPartyResponseThroughProvider(rp20Request, opReq => {
 				Assert.AreEqual(ProtocolVersion.V20, opReq.RelyingPartyVersion);
 				opReq.IsAuthenticated = true;
