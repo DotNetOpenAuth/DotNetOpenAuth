@@ -128,7 +128,8 @@ namespace DotNetOpenId.Test.RelyingParty {
 		[Test]
 		public void ClaimedIdentifierChangesAtProviderUnexpectedly() {
 			OpenIdRelyingParty rp = TestSupport.CreateRelyingParty(null);
-			Identifier id = TestSupport.GetMockIdentifier(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20);
+			MockIdentifier id = TestSupport.GetMockIdentifier(TestSupport.Scenarios.ApproveOnSetup, ProtocolVersion.V20);
+			id = FixLocalIdToMatchClaimedId(id); // don't make it look like a delegated auth
 			Identifier newClaimedId = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
 			Identifier newLocalId = TestSupport.GetDelegateUrl(TestSupport.Scenarios.AutoApproval);
 			MockHttpRequest.RegisterMockXrdsResponse(new Uri(newClaimedId), newClaimedId.Discover());
@@ -141,6 +142,22 @@ namespace DotNetOpenId.Test.RelyingParty {
 			var assertion = opRequest.Response.ExtractUrl();
 			var response = TestSupport.CreateRelyingParty(TestSupport.RelyingPartyStore, assertion, HttpUtility.ParseQueryString(assertion.Query)).Response;
 			Assert.AreEqual(AuthenticationStatus.Authenticated, response.Status);
+		}
+
+		private MockIdentifier FixLocalIdToMatchClaimedId(MockIdentifier identifier) {
+			var newEndpoints = new List<ServiceEndpoint>();
+			foreach (ServiceEndpoint se in identifier.Discover()) {
+				newEndpoints.Add(ServiceEndpoint.CreateForClaimedIdentifier(
+					se.ClaimedIdentifier,
+					se.ClaimedIdentifier,
+					se.ProviderEndpoint,
+					se.ProviderSupportedServiceTypeUris,
+					null,
+					null));
+			}
+
+			MockIdentifier altered = new MockIdentifier(identifier, newEndpoints);
+			return altered;
 		}
 	}
 }
