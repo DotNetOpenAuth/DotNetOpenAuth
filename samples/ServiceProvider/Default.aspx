@@ -7,6 +7,9 @@
 
 	protected void createDatabaseButton_Click(object sender, EventArgs e) {
 		string dbPath = Path.Combine(Server.MapPath(Request.ApplicationPath), "App_Data");
+		if (!Directory.Exists(dbPath)) {
+			Directory.CreateDirectory(dbPath);
+		}
 		string connectionString = ConfigurationManager.ConnectionStrings["DatabaseConnectionString"].ConnectionString.Replace("|DataDirectory|", dbPath);
 		var dc = new DataClassesDataContext(connectionString);
 		if (dc.DatabaseExists()) {
