@@ -641,6 +641,35 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Verifies the integrity and applicability of an incoming message.
+		/// </summary>
+		/// <param name="message">The message just received.</param>
+		/// <exception cref="ProtocolException">
+		/// Thrown when the message is somehow invalid.
+		/// This can be due to tampering, replay attack or expiration, among other things.
+		/// </exception>
+		protected virtual void VerifyMessageAfterReceiving(IProtocolMessage message) {
+			Debug.Assert(message != null, "message == null");
+
+			MessageProtections appliedProtection = MessageProtections.None;
+			foreach (IChannelBindingElement bindingElement in this.bindingElements.Reverse<IChannelBindingElement>()) {
+				if (bindingElement.PrepareMessageForReceiving(message)) {
+					appliedProtection |= bindingElement.Protection;
+				}
+			}
+
+			// Ensure that the message's protection requirements have been satisfied.
+			if ((message.RequiredProtection & appliedProtection) != message.RequiredProtection) {
+				throw new UnprotectedMessageException(message, appliedProtection);
+			}
+
+			// We do NOT verify that all required message parts are present here... the 
+			// message deserializer did for us.  It would be too late to do it here since
+			// they might look initialized by the time we have an IProtocolMessage instance.
+			message.EnsureValidMessage();
+		}
+
+		/// <summary>
 		/// Verifies that all required message parts are initialized to values
 		/// prior to sending the message to a remote party.
 		/// </summary>
@@ -748,35 +777,6 @@ namespace DotNetOpenAuth.Messaging {
 
 			// Now put the protection ones in the right order.
 			return -((int)protection1).CompareTo((int)protection2); // descending flag ordinal order
-		}
-
-		/// <summary>
-		/// Verifies the integrity and applicability of an incoming message.
-		/// </summary>
-		/// <param name="message">The message just received.</param>
-		/// <exception cref="ProtocolException">
-		/// Thrown when the message is somehow invalid.
-		/// This can be due to tampering, replay attack or expiration, among other things.
-		/// </exception>
-		private void VerifyMessageAfterReceiving(IProtocolMessage message) {
-			Debug.Assert(message != null, "message == null");
-
-			MessageProtections appliedProtection = MessageProtections.None;
-			foreach (IChannelBindingElement bindingElement in this.bindingElements.Reverse<IChannelBindingElement>()) {
-				if (bindingElement.PrepareMessageForReceiving(message)) {
-					appliedProtection |= bindingElement.Protection;
-				}
-			}
-
-			// Ensure that the message's protection requirements have been satisfied.
-			if ((message.RequiredProtection & appliedProtection) != message.RequiredProtection) {
-				throw new UnprotectedMessageException(message, appliedProtection);
-			}
-
-			// We do NOT verify that all required message parts are present here... the 
-			// message deserializer did for us.  It would be too late to do it here since
-			// they might look initialized by the time we have an IProtocolMessage instance.
-			message.EnsureValidMessage();
 		}
 	}
 }

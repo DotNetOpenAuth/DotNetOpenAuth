@@ -115,6 +115,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					}
 				} else {
 					ErrorUtilities.VerifyInternal(this.Channel != null, "Cannot verify private association signature because we don't have a channel.");
+
 					// We did not recognize the association the provider used to sign the message.
 					// Ask the provider to check the signature then.
 					var checkSignatureRequest = new CheckAuthenticationRequest((IndirectSignedResponse)signedMessage);
@@ -193,9 +194,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			Protocol protocol = Protocol.Lookup(signedMessage.ProtocolVersion);
 			MessageDictionary dictionary = new MessageDictionary(signedMessage);
 			var parametersToSign = from name in signedMessage.SignedParameterOrder.Split(',')
-								   let prefixedName = Protocol.V20.openid.Prefix + name
-								   let alteredValue = name == protocol.openidnp.mode && dictionary[prefixedName] == protocol.Args.Mode.check_authentication ? protocol.Args.Mode.id_res : dictionary[prefixedName]
-								   select new KeyValuePair<string, string>(prefixedName, alteredValue);
+			                       let prefixedName = Protocol.V20.openid.Prefix + name
+			                       select new KeyValuePair<string, string>(prefixedName, dictionary[prefixedName]);
 
 			byte[] dataToSign = KeyValueFormEncoding.GetBytes(parametersToSign);
 			return Convert.ToBase64String(association.Sign(dataToSign));

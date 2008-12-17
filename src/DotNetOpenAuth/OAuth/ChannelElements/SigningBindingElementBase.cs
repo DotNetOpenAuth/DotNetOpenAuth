@@ -38,6 +38,11 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			get { return MessageProtections.TamperProtection; }
 		}
 
+		/// <summary>
+		/// Gets or sets the channel that this binding element belongs to.
+		/// </summary>
+		public Channel Channel { get; set; }
+
 		#endregion
 
 		#region ITamperProtectionChannelBindingElement members
@@ -63,11 +68,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		#endregion
 
 		#region IChannelBindingElement Methods
-
-		/// <summary>
-		/// Gets or sets the channel that this binding element belongs to.
-		/// </summary>
-		public Channel Channel { get; set; }
 
 		/// <summary>
 		/// Signs the outgoing message.

@@ -30,9 +30,14 @@ namespace DotNetOpenAuth.OpenId.Messages {
 #pragma warning restore 0414
 
 		/// <summary>
-		/// Backing store for the <see cref="Incoming"/> properties.
+		/// Backing store for the <see cref="Incoming"/> property.
 		/// </summary>
 		private bool incoming;
+
+		/// <summary>
+		/// Backing store for the <see cref="ExtraData"/> property.
+		/// </summary>
+		private Dictionary<string, string> extraData = new Dictionary<string, string>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RequestBase"/> class.
@@ -114,11 +119,11 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		public MessageTransport Transport { get; private set; }
 
 		/// <summary>
-		/// Gets the extra, non-OAuth parameters included in the message.
+		/// Gets the extra parameters included in the message.
 		/// </summary>
 		/// <value>An empty dictionary.</value>
 		public IDictionary<string, string> ExtraData {
-			get { return EmptyDictionary<string, string>.Instance; }
+			get { return this.extraData; }
 		}
 
 		/// <summary>

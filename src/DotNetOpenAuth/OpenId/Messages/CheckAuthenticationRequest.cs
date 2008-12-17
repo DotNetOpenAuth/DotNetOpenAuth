@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 
 	/// <summary>
@@ -32,12 +33,43 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CheckAuthenticationRequest"/> class.
+		/// Initializes a new instance of the <see cref="CheckAuthenticationRequest"/> class
+		/// based on the contents of some signed message whose signature must be verified.
 		/// </summary>
 		/// <param name="message">The message whose signature should be verified.</param>
 		internal CheckAuthenticationRequest(IndirectSignedResponse message)
 			: base(message.ProtocolVersion, message.ProviderEndpoint, GetProtocolConstant(message.ProtocolVersion, p => p.Args.Mode.check_authentication), MessageTransport.Direct) {
-			// TODO: code here to copy data from message into this one.
+			// Copy all message parts from the id_res message into this one,
+			// except for the openid.mode parameter.
+			MessageDictionary checkPayload = new MessageDictionary(message);
+			MessageDictionary thisPayload = new MessageDictionary(this);
+			foreach (var pair in checkPayload) {
+				if (!string.Equals(pair.Key, this.Protocol.openid.mode)) {
+					thisPayload[pair.Key] = pair.Value;
+				}
+			}
 		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the signature being verified by this request
+		/// is in fact valid.
+		/// </summary>
+		/// <value><c>true</c> if the signature is valid; otherwise, <c>false</c>.</value>
+		/// <remarks>
+		/// This property is automatically set as the message is received by the channel's
+		/// signing binding element.
+		/// </remarks>
+		internal bool IsValid { get; set; }
+
+		/// <summary>
+		/// Gets or sets the ReturnTo that existed in the original signed message.
+		/// </summary>
+		/// <remarks>
+		/// This exists strictly for convenience in recreating the <see cref="IndirectSignedResponse"/>
+		/// message.
+		/// </remarks>
+		[MessagePart("openid.return_to", IsRequired = true, AllowEmpty = false)]
+		[MessagePart("openid.return_to", IsRequired = false, AllowEmpty = false, MinVersion = "2.0")]
+		internal Uri ReturnTo { get; set; }
 	}
 }

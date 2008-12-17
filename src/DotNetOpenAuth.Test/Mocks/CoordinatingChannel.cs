@@ -72,6 +72,11 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return accessor.ReadFromResponseInternal(response);
 		}
 
+		protected override void VerifyMessageAfterReceiving(IProtocolMessage message) {
+			Channel_Accessor accessor = Channel_Accessor.AttachShadow(this.wrappedChannel);
+			accessor.VerifyMessageAfterReceiving(message);
+		}
+
 		/// <summary>
 		/// Spoof HTTP request information for signing/verification purposes.
 		/// </summary>

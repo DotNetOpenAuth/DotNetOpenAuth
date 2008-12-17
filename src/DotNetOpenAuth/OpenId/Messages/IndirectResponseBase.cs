@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		/// <param name="request">The request that caused this response message to be constructed.</param>
 		/// <param name="mode">The value of the openid.mode parameter.</param>
-		protected IndirectResponseBase(CheckIdRequest request, string mode)
+		protected IndirectResponseBase(SignedResponseRequest request, string mode)
 			: base(GetVersion(request), GetReturnTo(request), mode, MessageTransport.Indirect) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
@@ -43,7 +43,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Gets the originating request message, if applicable.
 		/// </summary>
-		protected CheckIdRequest OriginatingRequest { get; private set; }
+		protected SignedResponseRequest OriginatingRequest { get; private set; }
 
 		/// <summary>
 		/// Gets the <see cref="IProtocolMessage.ProtocolVersion"/> property of a message.
@@ -68,7 +68,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// This method can be used by a constructor to throw an <see cref="ArgumentNullException"/>
 		/// instead of a <see cref="NullReferenceException"/>.
 		/// </remarks>
-		private static Uri GetReturnTo(CheckIdRequest message) {
+		private static Uri GetReturnTo(SignedResponseRequest message) {
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 			ErrorUtilities.VerifyProtocol(message.ReturnTo != null, OpenIdStrings.ReturnToRequiredForResponse);
 			return message.ReturnTo;

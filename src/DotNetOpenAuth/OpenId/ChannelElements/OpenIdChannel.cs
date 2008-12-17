@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
+	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
 	/// A channel that knows how to send and receive OpenID messages.
@@ -74,6 +75,29 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="messageTypeProvider">An object that knows how to distinguish the various OpenID message types for deserialization purposes.</param>
 		private OpenIdChannel(IAssociationStore<AssociationRelyingPartyType> associationStore, INonceStore nonceStore, IMessageFactory messageTypeProvider) :
 			base(messageTypeProvider, InitializeBindingElements(new SigningBindingElement(associationStore), nonceStore)) {
+		}
+
+		/// <summary>
+		/// Verifies the integrity and applicability of an incoming message.
+		/// </summary>
+		/// <param name="message">The message just received.</param>
+		/// <exception cref="ProtocolException">
+		/// Thrown when the message is somehow invalid, except for check_authentication messages.
+		/// This can be due to tampering, replay attack or expiration, among other things.
+		/// </exception>
+		protected override void VerifyMessageAfterReceiving(IProtocolMessage message) {
+			var checkAuthRequest = message as CheckAuthenticationRequest;
+			if (checkAuthRequest != null) {
+				IndirectSignedResponse originalResponse = new IndirectSignedResponse(checkAuthRequest);
+				try {
+					base.VerifyMessageAfterReceiving(originalResponse);
+					checkAuthRequest.IsValid = true;
+				} catch (ProtocolException) {
+					checkAuthRequest.IsValid = false;
+				}
+			} else {
+				base.VerifyMessageAfterReceiving(message);
+			}
 		}
 
 		/// <summary>

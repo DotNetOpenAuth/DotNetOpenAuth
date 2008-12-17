@@ -39,13 +39,31 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="request">
 		/// The authentication request that caused this assertion to be generated.
 		/// </param>
-		internal IndirectSignedResponse(CheckIdRequest request)
+		internal IndirectSignedResponse(SignedResponseRequest request)
 			: base(request, Protocol.Lookup(GetVersion(request)).Args.Mode.id_res) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			this.ReturnTo = request.ReturnTo;
 			this.ProviderEndpoint = request.Recipient;
 			((ITamperResistantOpenIdMessage)this).AssociationHandle = request.AssociationHandle;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="IndirectSignedResponse"/> class
+		/// in order to perform signature verification at the Provider.
+		/// </summary>
+		/// <param name="previouslySignedMessage">The previously signed message.</param>
+		internal IndirectSignedResponse(CheckAuthenticationRequest previouslySignedMessage)
+			: base(GetVersion(previouslySignedMessage), previouslySignedMessage.ReturnTo, Protocol.Lookup(GetVersion(previouslySignedMessage)).Args.Mode.id_res) {
+			// Copy all message parts from the check_authentication message into this one,
+			// except for the openid.mode parameter.
+			MessageDictionary checkPayload = new MessageDictionary(previouslySignedMessage);
+			MessageDictionary thisPayload = new MessageDictionary(this);
+			foreach (var pair in checkPayload) {
+				if (!string.Equals(pair.Key, this.Protocol.openid.mode)) {
+					thisPayload[pair.Key] = pair.Value;
+				}
+			}
 		}
 
 		/// <summary>

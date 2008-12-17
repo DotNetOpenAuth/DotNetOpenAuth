@@ -102,9 +102,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 					Assert.IsNotNull(request);
 					var response = new PositiveAssertionResponse(request);
 					op.Channel.Send(response);
-					var checkauth = op.Channel.ReadFromRequest<CheckAuthenticationRequest>();
-					var checkauthResponse = new CheckAuthenticationResponse(checkauth);
-					checkauthResponse.IsValid = true; // TODO: how do we establish that the signature is good?
+					var checkauthRequest = op.Channel.ReadFromRequest<CheckAuthenticationRequest>();
+					var checkauthResponse = new CheckAuthenticationResponse(checkauthRequest);
+					checkauthResponse.IsValid = checkauthRequest.IsValid;
 					op.Channel.Send(checkauthResponse);
 				});
 			coordinator.Run();
