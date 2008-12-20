@@ -17,7 +17,6 @@ namespace DotNetOpenAuth.Test.Mocks {
 
 	internal class TestBaseMessage : IProtocolMessage, IBaseMessageExplicitMembers {
 		private Dictionary<string, string> extraData = new Dictionary<string, string>();
-		private bool incoming;
 
 		[MessagePart("age", IsRequired = true)]
 		public int Age { get; set; }
@@ -44,10 +43,6 @@ namespace DotNetOpenAuth.Test.Mocks {
 			get { return this.extraData; }
 		}
 
-		bool IMessage.Incoming {
-			get { return this.incoming; }
-		}
-
 		internal string PrivatePropertyAccessor {
 			get { return this.PrivateProperty; }
 			set { this.PrivateProperty = value; }
@@ -57,9 +52,5 @@ namespace DotNetOpenAuth.Test.Mocks {
 		private string PrivateProperty { get; set; }
 
 		void IMessage.EnsureValidMessage() { }
-
-		internal void SetAsIncoming() {
-			this.incoming = true;
-		}
 	}
 }

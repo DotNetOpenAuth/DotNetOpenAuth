@@ -115,13 +115,6 @@ namespace DotNetOpenAuth.OAuth.Messages {
 			get { return this.ExtraData; }
 		}
 
-		/// <summary>
-		/// Gets a value indicating whether this message was deserialized as an incoming message.
-		/// </summary>
-		bool IMessage.Incoming {
-			get { return this.incoming; }
-		}
-
 		#endregion
 
 		#region IDirectedProtocolMessage Members
@@ -190,7 +183,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// <summary>
 		/// Gets a value indicating whether this message was deserialized as an incoming message.
 		/// </summary>
-		protected bool Incoming {
+		protected internal bool Incoming {
 			get { return this.incoming; }
 		}
 

@@ -14,7 +14,6 @@ namespace DotNetOpenAuth.Test.Mocks {
 	internal abstract class TestMessage : IDirectResponseProtocolMessage {
 		private MessageTransport transport;
 		private Dictionary<string, string> extraData = new Dictionary<string, string>();
-		private bool incoming;
 
 		protected TestMessage()
 			: this(MessageTransport.Direct) {
@@ -53,10 +52,6 @@ namespace DotNetOpenAuth.Test.Mocks {
 			get { return this.extraData; }
 		}
 
-		bool IMessage.Incoming {
-			get { return this.incoming; }
-		}
-
 		#endregion
 
 		#region IDirectResponseProtocolMessage Members
@@ -74,9 +69,5 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		#endregion
-
-		internal void SetAsIncoming() {
-			this.incoming = true;
-		}
 	}
 }

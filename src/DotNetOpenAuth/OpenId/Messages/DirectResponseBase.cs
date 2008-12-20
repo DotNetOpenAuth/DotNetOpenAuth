@@ -85,13 +85,6 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			get { return EmptyDictionary<string, string>.Instance; }
 		}
 
-		/// <summary>
-		/// Gets a value indicating whether this message was deserialized as an incoming message.
-		/// </summary>
-		bool IMessage.Incoming {
-			get { return this.incoming; }
-		}
-
 		#endregion
 
 		#region IDirectResponseProtocolMessage Members
@@ -122,7 +115,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Gets a value indicating whether this message was deserialized as an incoming message.
 		/// </summary>
-		protected bool Incoming {
+		protected internal bool Incoming {
 			get { return this.incoming; }
 		}
 

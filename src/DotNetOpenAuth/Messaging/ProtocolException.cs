@@ -129,16 +129,6 @@ namespace DotNetOpenAuth.Messaging {
 			get { return this.Transport; }
 		}
 
-		/// <summary>
-		/// Gets a value indicating whether this message was deserialized as an incoming message.
-		/// </summary>
-		/// <remarks>
-		/// Always false because exceptions are not a valid message to deserialize.
-		/// </remarks>
-		bool IMessage.Incoming {
-			get { return false; }
-		}
-
 		#endregion
 
 		#region IDirectedProtocolMessage Members
@@ -239,13 +229,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		protected IDictionary<string, string> ExtraData {
 			get { return this.extraData; }
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether this message was deserialized as an incoming message.
-		/// </summary>
-		protected bool Incoming {
-			get { return false; }
 		}
 
 		/// <summary>

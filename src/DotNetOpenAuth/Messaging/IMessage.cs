@@ -28,15 +28,6 @@ namespace DotNetOpenAuth.Messaging {
 		IDictionary<string, string> ExtraData { get; }
 
 		/// <summary>
-		/// Gets a value indicating whether this message was deserialized as an incoming message.
-		/// </summary>
-		/// <remarks>
-		/// In message type implementations, this property should default to false and will be set
-		/// to true by the messaging system when the message is deserialized as an incoming message.
-		/// </remarks>
-		bool Incoming { get; }
-
-		/// <summary>
 		/// Checks the message state for conformity to the protocol specification
 		/// and throws an exception if the message is invalid.
 		/// </summary>
