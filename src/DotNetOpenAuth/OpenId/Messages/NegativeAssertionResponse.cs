@@ -97,7 +97,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		private static string GetMode(CheckIdRequest request) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
-			Protocol protocol = Protocol.Lookup(request.ProtocolVersion);
+			Protocol protocol = Protocol.Lookup(request.Version);
 			return request.Immediate ? protocol.Args.Mode.setup_needed : protocol.Args.Mode.cancel;
 		}
 	}

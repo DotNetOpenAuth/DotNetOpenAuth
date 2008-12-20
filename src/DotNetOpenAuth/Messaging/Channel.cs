@@ -681,7 +681,7 @@ namespace DotNetOpenAuth.Messaging {
 			Debug.Assert(message != null, "message == null");
 
 			MessageDictionary dictionary = new MessageDictionary(message);
-			MessageDescription description = MessageDescription.Get(message.GetType(), message.ProtocolVersion);
+			MessageDescription description = MessageDescription.Get(message.GetType(), message.Version);
 			description.EnsureMessagePartsPassBasicValidation(dictionary);
 		}
 

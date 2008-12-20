@@ -28,7 +28,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		[MessagePart("explicit")]
 		string IBaseMessageExplicitMembers.ExplicitProperty { get; set; }
 
-		Version IProtocolMessage.ProtocolVersion {
+		Version IMessage.Version {
 			get { return new Version(1, 0); }
 		}
 
@@ -40,11 +40,11 @@ namespace DotNetOpenAuth.Test.Mocks {
 			get { return MessageTransport.Indirect; }
 		}
 
-		IDictionary<string, string> IProtocolMessage.ExtraData {
+		IDictionary<string, string> IMessage.ExtraData {
 			get { return this.extraData; }
 		}
 
-		bool IProtocolMessage.Incoming {
+		bool IMessage.Incoming {
 			get { return this.incoming; }
 		}
 
@@ -56,7 +56,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		[MessagePart("private")]
 		private string PrivateProperty { get; set; }
 
-		void IProtocolMessage.EnsureValidMessage() { }
+		void IMessage.EnsureValidMessage() { }
 
 		internal void SetAsIncoming() {
 			this.incoming = true;

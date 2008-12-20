@@ -69,7 +69,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// Initializes a new instance of the <see cref="MessagePart"/> class.
 		/// </summary>
 		/// <param name="member">
-		/// A property or field of an <see cref="IProtocolMessage"/> implementing type
+		/// A property or field of an <see cref="IMessage"/> implementing type
 		/// that has a <see cref="MessagePartAttribute"/> attached to it.
 		/// </param>
 		/// <param name="attribute">
@@ -159,7 +159,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		/// <param name="message">The message instance containing the member whose value should be set.</param>
 		/// <param name="value">The string representation of the value to set.</param>
-		internal void SetValue(IProtocolMessage message, string value) {
+		internal void SetValue(IMessage message, string value) {
 			if (message == null) {
 				throw new ArgumentNullException("message");
 			}
@@ -194,7 +194,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		/// <param name="message">The message instance to read the value from.</param>
 		/// <returns>The string representation of the member's value.</returns>
-		internal string GetValue(IProtocolMessage message) {
+		internal string GetValue(IMessage message) {
 			try {
 				object value = this.GetValueAsObject(message);
 				return this.ToString(value);
@@ -208,7 +208,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		/// <param name="message">The message instance to check the value on.</param>
 		/// <returns>True if the value is not the CLR default value.</returns>
-		internal bool IsNondefaultValueSet(IProtocolMessage message) {
+		internal bool IsNondefaultValueSet(IMessage message) {
 			if (this.memberDeclaredType.IsValueType) {
 				return !this.GetValueAsObject(message).Equals(this.defaultMemberValue);
 			} else {
@@ -299,7 +299,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		/// <param name="message">The message instance to read from.</param>
 		/// <returns>The value of the member.</returns>
-		private object GetValueAsObject(IProtocolMessage message) {
+		private object GetValueAsObject(IMessage message) {
 			if (this.property != null) {
 				return this.property.GetValue(message, null);
 			} else {

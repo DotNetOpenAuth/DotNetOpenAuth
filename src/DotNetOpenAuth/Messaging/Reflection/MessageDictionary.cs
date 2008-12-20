@@ -11,15 +11,15 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System.Diagnostics;
 
 	/// <summary>
-	/// Wraps an <see cref="IProtocolMessage"/> instance in a dictionary that
+	/// Wraps an <see cref="IMessage"/> instance in a dictionary that
 	/// provides access to both well-defined message properties and "extra" 
 	/// name/value pairs that have no properties associated with them.
 	/// </summary>
 	internal class MessageDictionary : IDictionary<string, string> {
 		/// <summary>
-		/// The <see cref="IProtocolMessage"/> instance manipulated by this dictionary.
+		/// The <see cref="IMessage"/> instance manipulated by this dictionary.
 		/// </summary>
-		private IProtocolMessage message;
+		private IMessage message;
 
 		/// <summary>
 		/// The <see cref="MessageDescription"/> instance that describes the message type.
@@ -30,13 +30,13 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// Initializes a new instance of the <see cref="MessageDictionary"/> class.
 		/// </summary>
 		/// <param name="message">The message instance whose values will be manipulated by this dictionary.</param>
-		internal MessageDictionary(IProtocolMessage message) {
+		internal MessageDictionary(IMessage message) {
 			if (message == null) {
 				throw new ArgumentNullException("message");
 			}
 
 			this.message = message;
-			this.description = MessageDescription.Get(message.GetType(), message.ProtocolVersion);
+			this.description = MessageDescription.Get(message.GetType(), message.Version);
 		}
 
 		#region ICollection<KeyValuePair<string,string>> Properties

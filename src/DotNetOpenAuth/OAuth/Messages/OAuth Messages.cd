@@ -108,9 +108,9 @@
       <Property Name="IDirectedProtocolMessage.Recipient" Hidden="true" />
       <Property Name="IOAuthDirectedMessage.HttpMethods" Hidden="true" />
       <Property Name="IOAuthDirectedMessage.Recipient" Hidden="true" />
-      <Method Name="IProtocolMessage.EnsureValidMessage" Hidden="true" />
-      <Property Name="IProtocolMessage.ExtraData" Hidden="true" />
-      <Property Name="IProtocolMessage.ProtocolVersion" Hidden="true" />
+      <Method Name="IMessage.EnsureValidMessage" Hidden="true" />
+      <Property Name="IMessage.ExtraData" Hidden="true" />
+      <Property Name="IMessage.Version" Hidden="true" />
       <Property Name="IProtocolMessage.RequiredProtection" Hidden="true" />
       <Property Name="IProtocolMessage.Transport" Hidden="true" />
       <Field Name="protectionRequired" Hidden="true" />

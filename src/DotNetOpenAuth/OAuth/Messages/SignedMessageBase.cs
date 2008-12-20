@@ -154,13 +154,13 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// </summary>
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Accessed via reflection.")]
 		[MessagePart("oauth_version", IsRequired = false)]
-		private string Version {
+		private string OAuthVersion {
 			get {
-				return ProtocolVersion.ToString();
+				return Version.ToString();
 			}
 
 			set {
-				if (value != this.Version) {
+				if (value != this.OAuthVersion) {
 					throw new ArgumentOutOfRangeException("value");
 				}
 			}

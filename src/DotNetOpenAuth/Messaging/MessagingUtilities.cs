@@ -354,10 +354,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The message to copy the extra data into.</param>
 		/// <param name="extraParameters">The extra data to copy into the message.  May be null to do nothing.</param>
-		internal static void AddNonOAuthParameters(this IProtocolMessage message, IDictionary<string, string> extraParameters) {
-			if (message == null) {
-				throw new ArgumentNullException("message");
-			}
+		internal static void AddExtraParameters(this IMessage message, IDictionary<string, string> extraParameters) {
+			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
 			if (extraParameters != null) {
 				MessageDictionary messageDictionary = new MessageDictionary(message);

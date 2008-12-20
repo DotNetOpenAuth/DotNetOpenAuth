@@ -97,6 +97,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A Simple Registration request can only generate a response on the receiving end..
+        /// </summary>
+        internal static string CallDeserializeBeforeCreateResponse {
+            get {
+                return ResourceManager.GetString("CallDeserializeBeforeCreateResponse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The openid.claimed_id and openid.identity parameters must both be present or both be absent..
         /// </summary>
         internal static string ClaimedIdAndLocalIdMustBothPresentOrAbsent {
@@ -120,6 +129,15 @@ namespace DotNetOpenAuth.OpenId {
         internal static string ExplicitHttpUriSuppliedWithSslRequirement {
             get {
                 return ResourceManager.GetString("ExplicitHttpUriSuppliedWithSslRequirement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An extension sharing namespace &apos;{0}&apos; has already been added.  Only one extension per namespace is allowed in a given request..
+        /// </summary>
+        internal static string ExtensionAlreadyAddedWithSameTypeURI {
+            get {
+                return ResourceManager.GetString("ExtensionAlreadyAddedWithSameTypeURI", resourceCulture);
             }
         }
         

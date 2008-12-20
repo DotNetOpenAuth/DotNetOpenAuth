@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// <remarks>
 	/// The significant payload of this message depends entirely upon the
 	/// assertion message, and therefore is all in the 
-	/// <see cref="DotNetOpenAuth.Messaging.IProtocolMessage.ExtraData"/> property bag.
+	/// <see cref="DotNetOpenAuth.Messaging.IMessage.ExtraData"/> property bag.
 	/// </remarks>
 	internal class CheckAuthenticationRequest : RequestBase {
 		/// <summary>
@@ -38,7 +38,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		/// <param name="message">The message whose signature should be verified.</param>
 		internal CheckAuthenticationRequest(IndirectSignedResponse message)
-			: base(message.ProtocolVersion, message.ProviderEndpoint, GetProtocolConstant(message.ProtocolVersion, p => p.Args.Mode.check_authentication), MessageTransport.Direct) {
+			: base(message.Version, message.ProviderEndpoint, GetProtocolConstant(message.Version, p => p.Args.Mode.check_authentication), MessageTransport.Direct) {
 			// Copy all message parts from the id_res message into this one,
 			// except for the openid.mode parameter.
 			MessageDictionary checkPayload = new MessageDictionary(message);

@@ -261,7 +261,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// This method implements OAuth 1.0 section 5.2, item #1 (described in section 5.4).
 		/// </remarks>
 		private HttpWebRequest InitializeRequestAsAuthHeader(IDirectedProtocolMessage requestMessage) {
-			var protocol = Protocol.Lookup(requestMessage.ProtocolVersion);
+			var protocol = Protocol.Lookup(requestMessage.Version);
 			var dictionary = new MessageDictionary(requestMessage);
 
 			// copy so as to not modify original

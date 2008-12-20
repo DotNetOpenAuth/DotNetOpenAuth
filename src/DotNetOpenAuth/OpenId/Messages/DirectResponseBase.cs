@@ -50,7 +50,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			ErrorUtilities.VerifyArgumentNotNull(originatingRequest, "originatingRequest");
 
 			this.originatingRequest = originatingRequest;
-			this.ProtocolVersion = originatingRequest.ProtocolVersion;
+			this.Version = originatingRequest.Version;
 		}
 
 		#region IProtocolMessage Properties
@@ -59,7 +59,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Gets the version of the protocol this message is prepared to implement.
 		/// </summary>
 		/// <value>Version 2.0</value>
-		public Version ProtocolVersion { get; private set; }
+		public Version Version { get; private set; }
 
 		/// <summary>
 		/// Gets the level of protection this message requires.
@@ -88,7 +88,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Gets a value indicating whether this message was deserialized as an incoming message.
 		/// </summary>
-		bool IProtocolMessage.Incoming {
+		bool IMessage.Incoming {
 			get { return this.incoming; }
 		}
 
@@ -109,7 +109,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Gets the protocol used by this message.
 		/// </summary>
 		protected Protocol Protocol {
-			get { return Protocol.Lookup(this.ProtocolVersion); }
+			get { return Protocol.Lookup(this.Version); }
 		}
 
 		/// <summary>

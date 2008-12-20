@@ -111,8 +111,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Gets the version of the protocol this message is prepared to implement.
 		/// </summary>
-		Version IProtocolMessage.ProtocolVersion {
-			get { return this.ProtocolVersion; }
+		Version IMessage.Version {
+			get { return this.Version; }
 		}
 
 		/// <summary>
@@ -135,7 +135,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <remarks>
 		/// Always false because exceptions are not a valid message to deserialize.
 		/// </remarks>
-		bool IProtocolMessage.Incoming {
+		bool IMessage.Incoming {
 			get { return false; }
 		}
 
@@ -169,7 +169,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Gets the dictionary of additional name/value fields tacked on to this message.
 		/// </summary>
-		IDictionary<string, string> IProtocolMessage.ExtraData {
+		IDictionary<string, string> IMessage.ExtraData {
 			get { return this.ExtraData; }
 		}
 
@@ -213,12 +213,12 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Gets the version of the protocol this message is prepared to implement.
 		/// </summary>
-		protected Version ProtocolVersion {
+		protected Version Version {
 			get {
 				if (this.inResponseTo == null) {
 					throw new InvalidOperationException(MessagingStrings.ExceptionNotConstructedForTransit);
 				}
-				return this.inResponseTo.ProtocolVersion;
+				return this.inResponseTo.Version;
 			}
 		}
 
@@ -269,14 +269,14 @@ namespace DotNetOpenAuth.Messaging {
 		#region IProtocolMessage Methods
 
 		/// <summary>
-		/// See <see cref="IProtocolMessage.EnsureValidMessage"/>.
+		/// See <see cref="IMessage.EnsureValidMessage"/>.
 		/// </summary>
-		void IProtocolMessage.EnsureValidMessage() {
+		void IMessage.EnsureValidMessage() {
 			this.EnsureValidMessage();
 		}
 
 		/// <summary>
-		/// See <see cref="IProtocolMessage.EnsureValidMessage"/>.
+		/// See <see cref="IMessage.EnsureValidMessage"/>.
 		/// </summary>
 		protected virtual void EnsureValidMessage() {
 			if (this.inResponseTo == null) {

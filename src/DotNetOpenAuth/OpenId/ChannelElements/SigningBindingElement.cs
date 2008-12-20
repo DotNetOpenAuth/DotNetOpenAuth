@@ -143,8 +143,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			// Verify that the signed parameter order includes the mandated fields.
 			// We do this in such a way that derived classes that add mandated fields automatically
 			// get included in the list of checked parameters.
-			Protocol protocol = Protocol.Lookup(signedMessage.ProtocolVersion);
-			var partsRequiringProtection = from part in MessageDescription.Get(signedMessage.GetType(), signedMessage.ProtocolVersion).Mapping.Values
+			Protocol protocol = Protocol.Lookup(signedMessage.Version);
+			var partsRequiringProtection = from part in MessageDescription.Get(signedMessage.GetType(), signedMessage.Version).Mapping.Values
 										   where part.RequiredProtection != ProtectionLevel.None
 										   select part.Name;
 			ErrorUtilities.VerifyInternal(partsRequiringProtection.All(name => name.StartsWith(protocol.openid.Prefix, StringComparison.Ordinal)), "Signing only works when the parameters start with the 'openid.' prefix.");
@@ -166,7 +166,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		private static string GetSignedParameterOrder(ITamperResistantOpenIdMessage signedMessage) {
 			ErrorUtilities.VerifyArgumentNotNull(signedMessage, "signedMessage");
 
-			MessageDescription description = MessageDescription.Get(signedMessage.GetType(), signedMessage.ProtocolVersion);
+			MessageDescription description = MessageDescription.Get(signedMessage.GetType(), signedMessage.Version);
 			var signedParts = from part in description.Mapping.Values
 			                  where (part.RequiredProtection & System.Net.Security.ProtectionLevel.Sign) != 0
 			                        && part.GetValue(signedMessage) != null
@@ -191,7 +191,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 			// Prepare the parts to sign, taking care to replace an openid.mode value
 			// of check_authentication with its original id_res so the signature matches.
-			Protocol protocol = Protocol.Lookup(signedMessage.ProtocolVersion);
+			Protocol protocol = Protocol.Lookup(signedMessage.Version);
 			MessageDictionary dictionary = new MessageDictionary(signedMessage);
 			var parametersToSign = from name in signedMessage.SignedParameterOrder.Split(',')
 			                       let prefixedName = Protocol.V20.openid.Prefix + name

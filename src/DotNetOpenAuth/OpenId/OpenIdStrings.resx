@@ -129,6 +129,9 @@
   <data name="BadAssociationPrivateData" xml:space="preserve">
     <value>The private data supplied does not meet the requirements of any known Association type.  Its length may be too short, or it may have been corrupted.</value>
   </data>
+  <data name="CallDeserializeBeforeCreateResponse" xml:space="preserve">
+    <value>A Simple Registration request can only generate a response on the receiving end.</value>
+  </data>
   <data name="ClaimedIdAndLocalIdMustBothPresentOrAbsent" xml:space="preserve">
     <value>The openid.claimed_id and openid.identity parameters must both be present or both be absent.</value>
   </data>
@@ -137,6 +140,9 @@
   </data>
   <data name="ExplicitHttpUriSuppliedWithSslRequirement" xml:space="preserve">
     <value>URI is not SSL yet requireSslDiscovery is set to true.</value>
+  </data>
+  <data name="ExtensionAlreadyAddedWithSameTypeURI" xml:space="preserve">
+    <value>An extension sharing namespace '{0}' has already been added.  Only one extension per namespace is allowed in a given request.</value>
   </data>
   <data name="InvalidCharacterInKeyValueFormInput" xml:space="preserve">
     <value>Cannot encode '{0}' because it contains an illegal character for Key-Value Form encoding.  (line {1}: '{2}')</value>

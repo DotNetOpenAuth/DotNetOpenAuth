@@ -111,7 +111,7 @@ namespace DotNetOpenAuth.OAuth {
 			var token = new UnauthorizedTokenRequest(this.ServiceProvider.RequestTokenEndpoint) {
 				ConsumerKey = this.ConsumerKey,
 			};
-			token.AddNonOAuthParameters(requestParameters);
+			token.AddExtraParameters(requestParameters);
 			var requestTokenResponse = this.Channel.Request<UnauthorizedTokenResponse>(token);
 			this.TokenManager.StoreNewRequestToken(token, requestTokenResponse);
 
@@ -120,7 +120,7 @@ namespace DotNetOpenAuth.OAuth {
 			var requestAuthorization = new UserAuthorizationRequest(this.ServiceProvider.UserAuthorizationEndpoint, assignedRequestToken.Token) {
 				Callback = callback,
 			};
-			requestAuthorization.AddNonOAuthParameters(redirectParameters);
+			requestAuthorization.AddExtraParameters(redirectParameters);
 			requestToken = requestAuthorization.RequestToken;
 			return requestAuthorization;
 		}

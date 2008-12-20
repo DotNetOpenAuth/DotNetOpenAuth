@@ -90,8 +90,8 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// <summary>
 		/// Gets the version of the protocol this message is prepared to implement.
 		/// </summary>
-		Version IProtocolMessage.ProtocolVersion {
-			get { return this.ProtocolVersion; }
+		Version IMessage.Version {
+			get { return this.Version; }
 		}
 
 		/// <summary>
@@ -111,14 +111,14 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// <summary>
 		/// Gets the dictionary of additional name/value fields tacked on to this message.
 		/// </summary>
-		IDictionary<string, string> IProtocolMessage.ExtraData {
+		IDictionary<string, string> IMessage.ExtraData {
 			get { return this.ExtraData; }
 		}
 
 		/// <summary>
 		/// Gets a value indicating whether this message was deserialized as an incoming message.
 		/// </summary>
-		bool IProtocolMessage.Incoming {
+		bool IMessage.Incoming {
 			get { return this.incoming; }
 		}
 
@@ -162,7 +162,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// <summary>
 		/// Gets the version of the protocol this message is prepared to implement.
 		/// </summary>
-		protected virtual Version ProtocolVersion {
+		protected virtual Version Version {
 			get { return new Version(1, 0); }
 		}
 
@@ -231,7 +231,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// Checks the message state for conformity to the protocol specification
 		/// and throws an exception if the message is invalid.
 		/// </summary>
-		void IProtocolMessage.EnsureValidMessage() {
+		void IMessage.EnsureValidMessage() {
 			this.EnsureValidMessage();
 		}
 

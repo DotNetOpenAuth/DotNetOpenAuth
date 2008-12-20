@@ -46,17 +46,17 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		protected SignedResponseRequest OriginatingRequest { get; private set; }
 
 		/// <summary>
-		/// Gets the <see cref="IProtocolMessage.ProtocolVersion"/> property of a message.
+		/// Gets the <see cref="IMessage.Version"/> property of a message.
 		/// </summary>
 		/// <param name="message">The message to fetch the protocol version from.</param>
-		/// <returns>The value of the <see cref="IProtocolMessage.ProtocolVersion"/> property.</returns>
+		/// <returns>The value of the <see cref="IMessage.Version"/> property.</returns>
 		/// <remarks>
 		/// This method can be used by a constructor to throw an <see cref="ArgumentNullException"/>
 		/// instead of a <see cref="NullReferenceException"/>.
 		/// </remarks>
 		protected static Version GetVersion(IProtocolMessage message) {
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
-			return message.ProtocolVersion;
+			return message.Version;
 		}
 
 		/// <summary>

@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 		[TestMethod]
 		public void CtorFromRequest() {
 			Assert.AreEqual(this.protocol.Args.Mode.id_res, this.response.Mode);
-			Assert.AreEqual(this.request.ProtocolVersion, this.response.ProtocolVersion);
+			Assert.AreEqual(this.request.Version, this.response.Version);
 			Assert.AreEqual(this.request.ReturnTo, this.response.Recipient);
 			Assert.AreEqual(ProviderUri, this.response.ProviderEndpoint);
 		}
@@ -48,7 +48,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 		[TestMethod]
 		public void CtorUnsolicited() {
 			Assert.AreEqual(this.protocol.Args.Mode.id_res, this.unsolicited.Mode);
-			Assert.AreEqual(this.protocol.Version, this.unsolicited.ProtocolVersion);
+			Assert.AreEqual(this.protocol.Version, this.unsolicited.Version);
 			Assert.AreEqual(RPUri, this.unsolicited.Recipient);
 
 			Assert.IsNull(this.unsolicited.ProviderEndpoint);

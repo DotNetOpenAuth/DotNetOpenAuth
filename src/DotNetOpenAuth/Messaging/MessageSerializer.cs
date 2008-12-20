@@ -84,7 +84,7 @@ namespace DotNetOpenAuth.Messaging {
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
 			// Before we deserialize the message, make sure all the required parts are present.
-			MessageDescription.Get(this.messageType, message.ProtocolVersion).EnsureMessagePartsPassBasicValidation(fields);
+			MessageDescription.Get(this.messageType, message.Version).EnsureMessagePartsPassBasicValidation(fields);
 
 			try {
 				foreach (var pair in fields) {

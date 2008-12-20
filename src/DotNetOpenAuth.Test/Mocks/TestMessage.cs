@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 
 		#region IProtocolMessage Properties
 
-		Version IProtocolMessage.ProtocolVersion {
+		Version IMessage.Version {
 			get { return new Version(1, 0); }
 		}
 
@@ -49,11 +49,11 @@ namespace DotNetOpenAuth.Test.Mocks {
 			get { return this.transport; }
 		}
 
-		IDictionary<string, string> IProtocolMessage.ExtraData {
+		IDictionary<string, string> IMessage.ExtraData {
 			get { return this.extraData; }
 		}
 
-		bool IProtocolMessage.Incoming {
+		bool IMessage.Incoming {
 			get { return this.incoming; }
 		}
 
@@ -65,9 +65,9 @@ namespace DotNetOpenAuth.Test.Mocks {
 
 		#endregion
 
-		#region IProtocolMessage Methods
+		#region IMessage Methods
 
-		void IProtocolMessage.EnsureValidMessage() {
+		void IMessage.EnsureValidMessage() {
 			if (this.EmptyMember != null || this.Age < 0) {
 				throw new ProtocolException();
 			}
