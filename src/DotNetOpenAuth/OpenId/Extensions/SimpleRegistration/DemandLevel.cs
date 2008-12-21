@@ -1,9 +1,8 @@
-/********************************************************
- * Copyright (C) 2007 Andrew Arnott
- * Released under the New BSD License
- * License available here: http://www.opensource.org/licenses/bsd-license.php
- * For news or support on this file: http://blog.nerdbank.net/
- ********************************************************/
+//-----------------------------------------------------------------------
+// <copyright file="DemandLevel.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 	/// <summary>
@@ -15,11 +14,13 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		/// The relying party has no interest in obtaining this field.
 		/// </summary>
 		NoRequest,
+
 		/// <summary>
 		/// The relying party would like the value of this field, but wants
 		/// the Provider to display the field to the user as optionally provided.
 		/// </summary>
 		Request,
+
 		/// <summary>
 		/// The relying party considers this a required field as part of
 		/// authentication.  The Provider and/or user agent MAY still choose to

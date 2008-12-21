@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OpenId.Messages {
 	using System;
+	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Globalization;
 	using System.Net.Security;
@@ -13,7 +14,6 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OpenId.ChannelElements;
-	using System.Collections.Generic;
 
 	/// <summary>
 	/// An indirect message from a Provider to a Relying Party where at least part of the
@@ -84,6 +84,21 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		internal IndirectSignedResponse(Version version, Uri relyingPartyReturnTo)
 			: base(version, relyingPartyReturnTo, Protocol.Lookup(version).Args.Mode.id_res) {
 		}
+
+		#region IProtocolMessageWithExtensions Members
+
+		/// <summary>
+		/// Gets the list of extensions that are included with this message.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>
+		/// Implementations of this interface should ensure that this property never returns null.
+		/// </remarks>
+		public IList<IExtensionMessage> Extensions {
+			get { return this.extensions; }
+		}
+
+		#endregion
 
 		/// <summary>
 		/// Gets the level of protection this message requires.
@@ -199,20 +214,5 @@ namespace DotNetOpenAuth.OpenId.Messages {
 				}
 			}
 		}
-
-		#region IProtocolMessageWithExtensions Members
-
-		/// <summary>
-		/// Gets the list of extensions that are included with this message.
-		/// </summary>
-		/// <value></value>
-		/// <remarks>
-		/// Implementations of this interface should ensure that this property never returns null.
-		/// </remarks>
-		public IList<IExtensionMessage> Extensions {
-			get { return this.extensions; }
-		}
-
-		#endregion
 	}
 }

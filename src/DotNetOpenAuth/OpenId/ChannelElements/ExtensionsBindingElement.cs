@@ -14,9 +14,20 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Messages;
 
+	/// <summary>
+	/// The binding element that serializes/deserializes OpenID extensions to/from
+	/// their carrying OpenID messages.
+	/// </summary>
 	internal class ExtensionsBindingElement : IChannelBindingElement {
+		/// <summary>
+		/// The extension factory.
+		/// </summary>
 		private readonly IOpenIdExtensionFactory extensionFactory;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ExtensionsBindingElement"/> class.
+		/// </summary>
+		/// <param name="extensionFactory">The extension factory.</param>
 		internal ExtensionsBindingElement(IOpenIdExtensionFactory extensionFactory) {
 			ErrorUtilities.VerifyArgumentNotNull(extensionFactory, "extensionFactory");
 			this.extensionFactory = extensionFactory;
@@ -116,7 +127,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					var extensionData = extensionManager.GetExtensionArguments(typeUri);
 
 					// Initialize this particular extension.
-					IOpenIdMessageExtension extension = extensionFactory.Create(typeUri, extensionData, extendableMessage);
+					IOpenIdMessageExtension extension = this.extensionFactory.Create(typeUri, extensionData, extendableMessage);
 					MessageDictionary extensionDictionary = new MessageDictionary(extension);
 					foreach (var pair in extensionData) {
 						extensionDictionary[pair.Key] = pair.Value;

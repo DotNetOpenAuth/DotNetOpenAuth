@@ -7,37 +7,46 @@
 namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Globalization;
 	using System.Net.Mail;
 	using System.Text;
-	using System.Xml.Serialization;
-	using DotNetOpenAuth.OpenId.Messages;
-	using System.Diagnostics.CodeAnalysis;
-	using DotNetOpenAuth.Messaging;
 	using System.Text.RegularExpressions;
+	using System.Xml.Serialization;
+	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.Messages;
 
 #pragma warning disable 0659, 0661
 	/// <summary>
 	/// A struct storing Simple Registration field values describing an
 	/// authenticating user.
 	/// </summary>
-	[SuppressMessage("Microsoft.Usage", "CA2218:OverrideGetHashCodeOnOverridingEquals"), Serializable()]
 	public sealed class ClaimsResponse : ExtensionBase {
+		/// <summary>
+		/// The factory method that may be used in deserialization of this message.
+		/// </summary>
 		internal static readonly OpenIdExtensionFactory.CreateDelegate Factory = (typeUri, data, baseMessage) => {
 			if (typeUri == Constants.sreg_ns && baseMessage is IndirectSignedResponse) {
-				return new ClaimsResponse();
+				return new ClaimsResponse(typeUri);
 			}
 
 			return null;
 		};
 
 		/// <summary>
+		/// The allowed format for birthdates.
+		/// </summary>
+		private static readonly Regex birthDateValidator = new Regex(@"^\d\d\d\d-\d\d-\d\d$");
+
+		/// <summary>
 		/// Storage for the raw string birthdate value.
 		/// </summary>
 		private string birthDateRaw;
-		private DateTime? birthDate;
 
-		private static readonly Regex birthDateValidator = new Regex(@"^\d\d\d\d-\d\d-\d\d$");
+		/// <summary>
+		/// Backing field for the <see cref="BirthDate"/> property.
+		/// </summary>
+		private DateTime? birthDate;
 
 		/// <summary>
 		/// The TypeURI that must be used in the response, based on the one used in the request.
@@ -50,7 +59,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		private CultureInfo culture;
 
 		/// <summary>
-		/// Creates an instance of the <see cref="ClaimsResponse"/> class.
+		/// Initializes a new instance of the <see cref="ClaimsResponse"/> class.
 		/// </summary>
 		[Obsolete("Use ClaimsRequest.CreateResponse() instead.")]
 		public ClaimsResponse()
@@ -71,25 +80,25 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		}
 
 		/// <summary>
-		/// The nickname the user goes by.
+		/// Gets or sets the nickname the user goes by.
 		/// </summary>
 		[MessagePart(Constants.nickname)]
 		public string Nickname { get; set; }
 
 		/// <summary>
-		/// The user's email address.
+		/// Gets or sets the user's email address.
 		/// </summary>
 		[MessagePart(Constants.email)]
 		public string Email { get; set; }
 
 		/// <summary>
-		/// The full name of a user as a single string.
+		/// Gets or sets the full name of a user as a single string.
 		/// </summary>
 		[MessagePart(Constants.fullname)]
 		public string FullName { get; set; }
 
 		/// <summary>
-		/// The user's birthdate.
+		/// Gets or sets the user's birthdate.
 		/// </summary>
 		public DateTime? BirthDate {
 			get {
@@ -98,6 +107,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 
 			set {
 				this.birthDate = value;
+
 				// Don't use property accessor for peer property to avoid infinite loop between the two proeprty accessors.
 				if (value.HasValue) {
 					this.birthDateRaw = value.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
@@ -107,6 +117,10 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the raw birth date string given by the extension.
+		/// </summary>
+		/// <value>A string in the format yyyy-MM-dd.</value>
 		[MessagePart(Constants.dob)]
 		public string BirthDateRaw {
 			get {
@@ -118,6 +132,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 					if (!birthDateValidator.IsMatch(value)) {
 						throw new ArgumentException(OpenIdStrings.SregInvalidBirthdate, "value");
 					}
+
 					// Update the BirthDate property, if possible. 
 					// Don't use property accessor for peer property to avoid infinite loop between the two proeprty accessors.
 					// Some valid sreg dob values like "2000-00-00" will not work as a DateTime struct, 
@@ -138,69 +153,73 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		}
 
 		/// <summary>
-		/// The gender of the user.
+		/// Gets or sets the gender of the user.
 		/// </summary>
 		[MessagePart(Constants.gender, Encoder = typeof(GenderEncoder))]
 		public Gender? Gender { get; set; }
 
 		/// <summary>
-		/// The zip code / postal code of the user.
+		/// Gets or sets the zip code / postal code of the user.
 		/// </summary>
 		[MessagePart(Constants.postcode)]
 		public string PostalCode { get; set; }
 
 		/// <summary>
-		/// The country of the user.
+		/// Gets or sets the country of the user.
 		/// </summary>
 		[MessagePart(Constants.country)]
 		public string Country { get; set; }
 
 		/// <summary>
-		/// The primary/preferred language of the user.
+		/// Gets or sets the primary/preferred language of the user.
 		/// </summary>
 		[MessagePart(Constants.language)]
 		public string Language { get; set; }
 
 		/// <summary>
-		/// The user's timezone.
+		/// Gets or sets the user's timezone.
 		/// </summary>
 		[MessagePart(Constants.timezone)]
 		public string TimeZone { get; set; }
 
 		/// <summary>
-		/// A combination of the user's full name and email address.
+		/// Gets a combination of the user's full name and email address.
 		/// </summary>
 		public MailAddress MailAddress {
 			get {
-				if (string.IsNullOrEmpty(Email)) return null;
-				if (string.IsNullOrEmpty(FullName))
-					return new MailAddress(Email);
-				else
-					return new MailAddress(Email, FullName);
+				if (string.IsNullOrEmpty(this.Email)) {
+					return null;
+				} else if (string.IsNullOrEmpty(this.FullName)) {
+					return new MailAddress(this.Email);
+				} else {
+					return new MailAddress(this.Email, this.FullName);
+				}
 			}
 		}
 
 		/// <summary>
-		/// A combination o the language and country of the user.
+		/// Gets or sets a combination o the language and country of the user.
 		/// </summary>
 		[XmlIgnore]
 		public CultureInfo Culture {
 			get {
-				if (culture == null && !string.IsNullOrEmpty(Language)) {
-					string cultureString = "";
-					cultureString = Language;
-					if (!string.IsNullOrEmpty(Country))
-						cultureString += "-" + Country;
-					culture = CultureInfo.GetCultureInfo(cultureString);
+				if (this.culture == null && !string.IsNullOrEmpty(this.Language)) {
+					string cultureString = string.Empty;
+					cultureString = this.Language;
+					if (!string.IsNullOrEmpty(this.Country)) {
+						cultureString += "-" + this.Country;
+					}
+					this.culture = CultureInfo.GetCultureInfo(cultureString);
 				}
 
-				return culture;
+				return this.culture;
 			}
+
 			set {
-				culture = value;
-				Language = (value != null) ? value.TwoLetterISOLanguageName : null;
+				this.culture = value;
+				this.Language = (value != null) ? value.TwoLetterISOLanguageName : null;
 				int indexOfHyphen = (value != null) ? value.Name.IndexOf('-') : -1;
-				Country = indexOfHyphen > 0 ? value.Name.Substring(indexOfHyphen + 1) : null;
+				this.Country = indexOfHyphen > 0 ? value.Name.Substring(indexOfHyphen + 1) : null;
 			}
 		}
 
@@ -249,6 +268,9 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		/// <summary>
 		/// Tests equality of two <see cref="ClaimsResponse"/> objects.
 		/// </summary>
+		/// <param name="one">One instance to compare.</param>
+		/// <param name="other">Another instance to compare.</param>
+		/// <returns>The result of the operator.</returns>
 		public static bool operator ==(ClaimsResponse one, ClaimsResponse other) {
 			return one.EqualsNullSafe(other);
 		}
@@ -256,6 +278,9 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		/// <summary>
 		/// Tests inequality of two <see cref="ClaimsResponse"/> objects.
 		/// </summary>
+		/// <param name="one">One instance to compare.</param>
+		/// <param name="other">Another instance to compare.</param>
+		/// <returns>The result of the operator.</returns>
 		public static bool operator !=(ClaimsResponse one, ClaimsResponse other) {
 			return !(one == other);
 		}
@@ -263,9 +288,18 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		/// <summary>
 		/// Tests equality of two <see cref="ClaimsResponse"/> objects.
 		/// </summary>
+		/// <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:System.Object"/>.</param>
+		/// <returns>
+		/// true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>; otherwise, false.
+		/// </returns>
+		/// <exception cref="T:System.NullReferenceException">
+		/// The <paramref name="obj"/> parameter is null.
+		/// </exception>
 		public override bool Equals(object obj) {
 			ClaimsResponse other = obj as ClaimsResponse;
-			if (other == null) return false;
+			if (other == null) {
+				return false;
+			}
 
 			return
 				this.BirthDateRaw.EqualsNullSafe(other.BirthDateRaw) &&
@@ -279,8 +313,14 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 				this.TimeZone.EqualsNullSafe(other.TimeZone);
 		}
 
-		private static string createAddFieldJS(string propertyName, string value) {
-			return string.Format(CultureInfo.InvariantCulture, "{0}: {1},", propertyName, Util.GetSafeJavascriptValue(value));
+		/// <summary>
+		/// Serves as a hash function for a particular type.
+		/// </summary>
+		/// <returns>
+		/// A hash code for the current <see cref="T:System.Object"/>.
+		/// </returns>
+		public override int GetHashCode() {
+			return (this.Nickname != null) ? this.Nickname.GetHashCode() : base.GetHashCode();
 		}
 	}
 }

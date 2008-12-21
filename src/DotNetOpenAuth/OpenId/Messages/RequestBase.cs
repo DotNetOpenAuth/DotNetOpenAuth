@@ -129,17 +129,17 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		#endregion
 
 		/// <summary>
-		/// Gets the protocol used by this message.
-		/// </summary>
-		protected Protocol Protocol {
-			get { return Protocol.Lookup(this.Version); }
-		}
-
-		/// <summary>
 		/// Gets a value indicating whether this message was deserialized as an incoming message.
 		/// </summary>
 		protected internal bool Incoming {
 			get { return this.incoming; }
+		}
+
+		/// <summary>
+		/// Gets the protocol used by this message.
+		/// </summary>
+		protected Protocol Protocol {
+			get { return Protocol.Lookup(this.Version); }
 		}
 
 		#region IProtocolMessage Methods

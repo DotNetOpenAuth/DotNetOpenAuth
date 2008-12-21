@@ -159,7 +159,6 @@
     <Compile Include="Messaging\MessageTransport.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthServiceProviderMessageFactory.cs" />
     <Compile Include="Messaging\ProtocolException.cs" />
-    <Compile Include="OpenId\AliasManager.cs" />
     <Compile Include="OpenId\Association.cs" />
     <Compile Include="OpenId\AssociationMemoryStore.cs" />
     <Compile Include="OpenId\Associations.cs" />
@@ -174,10 +173,8 @@
     <Compile Include="OpenId\Configuration.cs" />
     <Compile Include="OpenId\Extensions\AliasManager.cs" />
     <Compile Include="OpenId\Extensions\ExtensionBase.cs" />
-    <Compile Include="OpenId\Extensions\IOutgoingExtensions.cs" />
     <Compile Include="OpenId\Extensions\ExtensionArgumentsManager.cs" />
     <None Include="OpenId\Extensions\IExtension.cs" />
-    <Compile Include="OpenId\Extensions\IIncomingExtensions.cs" />
     <Compile Include="OpenId\Extensions\OpenIdExtensionFactory.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\ClaimsRequest.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\ClaimsResponse.cs" />

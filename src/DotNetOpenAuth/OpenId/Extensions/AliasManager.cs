@@ -7,44 +7,60 @@
 namespace DotNetOpenAuth.OpenId.Extensions {
 	using System;
 	using System.Collections.Generic;
-	using System.Text;
 	using System.Diagnostics;
 	using System.Globalization;
+	using System.Text;
+	using DotNetOpenAuth.Messaging;
 
+	/// <summary>
+	/// Manages a fast, two-way mapping between type URIs and their aliases.
+	/// </summary>
 	internal class AliasManager {
+		/// <summary>
+		/// The format of auto-generated aliases.
+		/// </summary>
 		private readonly string aliasFormat = "alias{0}";
-		
+
 		/// <summary>
 		/// Tracks extension Type URIs and aliases assigned to them.
 		/// </summary>
 		private Dictionary<string, string> typeUriToAliasMap = new Dictionary<string, string>();
-	
+
 		/// <summary>
 		/// Tracks extension aliases and Type URIs assigned to them.
 		/// </summary>
 		private Dictionary<string, string> aliasToTypeUriMap = new Dictionary<string, string>();
 
 		/// <summary>
+		/// Gets the aliases that have been set.
+		/// </summary>
+		public IEnumerable<string> Aliases {
+			get { return this.aliasToTypeUriMap.Keys; }
+		}
+
+		/// <summary>
 		/// Gets an alias assigned for a given Type URI.  A new alias is assigned if necessary.
 		/// </summary>
+		/// <param name="typeUri">The type URI.</param>
+		/// <returns>The alias assigned to this type URI.  Never null.</returns>
 		public string GetAlias(string typeUri) {
-			if (string.IsNullOrEmpty(typeUri)) throw new ArgumentNullException("typeUri");
+			ErrorUtilities.VerifyNonZeroLength(typeUri, "typeUri");
 			string alias;
-			if (typeUriToAliasMap.TryGetValue(typeUri, out alias))
-				return alias;
-			else
-				return assignNewAlias(typeUri);
+			return this.typeUriToAliasMap.TryGetValue(typeUri, out alias) ? alias : this.AssignNewAlias(typeUri);
 		}
 
 		/// <summary>
 		/// Sets an alias and the value that will be returned by <see cref="ResolveAlias"/>.
 		/// </summary>
+		/// <param name="alias">The alias.</param>
+		/// <param name="typeUri">The type URI.</param>
 		public void SetAlias(string alias, string typeUri) {
-			if (string.IsNullOrEmpty(alias)) throw new ArgumentNullException("alias");
-			if (string.IsNullOrEmpty(typeUri)) throw new ArgumentNullException("typeUri");
-			aliasToTypeUriMap.Add(alias, typeUri);
-			typeUriToAliasMap.Add(typeUri, alias);
+			ErrorUtilities.VerifyNonZeroLength(alias, "alias");
+			ErrorUtilities.VerifyNonZeroLength(typeUri, "typeUri");
+			this.aliasToTypeUriMap.Add(alias, typeUri);
+			this.typeUriToAliasMap.Add(typeUri, alias);
 		}
+
 		/// <summary>
 		/// Takes a sequence of type URIs and assigns aliases for all of them.
 		/// </summary>
@@ -54,14 +70,14 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 			// First go through the actually used type URIs and see which ones have matching preferred aliases.
 			if (preferredTypeUriToAliases != null) {
 				foreach (string typeUri in typeUris) {
-					if (typeUriToAliasMap.ContainsKey(typeUri)) {
+					if (this.typeUriToAliasMap.ContainsKey(typeUri)) {
 						// this Type URI is already mapped to an alias.
 						continue;
 					}
 
 					string preferredAlias;
-					if (preferredTypeUriToAliases.TryGetValue(typeUri, out preferredAlias) && !IsAliasUsed(preferredAlias)) {
-						SetAlias(preferredAlias, typeUri);
+					if (preferredTypeUriToAliases.TryGetValue(typeUri, out preferredAlias) && !this.IsAliasUsed(preferredAlias)) {
+						this.SetAlias(preferredAlias, typeUri);
 					}
 				}
 			}
@@ -69,81 +85,98 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 			// Now go through the whole list again and assign whatever is left now that the preferred ones
 			// have gotten their picks where available.
 			foreach (string typeUri in typeUris) {
-				if (typeUriToAliasMap.ContainsKey(typeUri)) {
+				if (this.typeUriToAliasMap.ContainsKey(typeUri)) {
 					// this Type URI is already mapped to an alias.
 					continue;
 				}
 
-				assignNewAlias(typeUri);
+				this.AssignNewAlias(typeUri);
 			}
 		}
-		
+
 		/// <summary>
 		/// Sets up aliases for any Type URIs in a dictionary that do not yet have aliases defined,
 		/// and where the given preferred alias is still available.
 		/// </summary>
 		/// <param name="preferredTypeUriToAliases">A dictionary of type URI keys and alias values.</param>
 		public void SetPreferredAliasesWhereNotSet(IDictionary<string, string> preferredTypeUriToAliases) {
-			if (preferredTypeUriToAliases == null) throw new ArgumentNullException("preferredTypeUriToAliases");
+			ErrorUtilities.VerifyArgumentNotNull(preferredTypeUriToAliases, "preferredTypeUriToAliases");
 
 			foreach (var pair in preferredTypeUriToAliases) {
-				if (typeUriToAliasMap.ContainsKey(pair.Key)) {
+				if (this.typeUriToAliasMap.ContainsKey(pair.Key)) {
 					// type URI is already mapped
 					continue;
 				}
 
-				if (aliasToTypeUriMap.ContainsKey(pair.Value)) {
+				if (this.aliasToTypeUriMap.ContainsKey(pair.Value)) {
 					// alias is already mapped
 					continue;
 				}
 
 				// The type URI and alias are as yet unset, so go ahead and assign them.
-				SetAlias(pair.Value, pair.Key);
+				this.SetAlias(pair.Value, pair.Key);
 			}
 		}
 
 		/// <summary>
 		/// Gets the Type Uri encoded by a given alias.
 		/// </summary>
+		/// <param name="alias">The alias.</param>
+		/// <returns>The Type URI.</returns>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown if the given alias does not have a matching TypeURI.</exception>
 		public string ResolveAlias(string alias) {
-			string typeUri = TryResolveAlias(alias);
-			if (typeUri == null)
+			string typeUri = this.TryResolveAlias(alias);
+			if (typeUri == null) {
 				throw new ArgumentOutOfRangeException("alias");
-			return typeUri;
-		}
-		
-		public string TryResolveAlias(string alias) {
-			if (string.IsNullOrEmpty(alias)) throw new ArgumentNullException("alias");
-			string typeUri = null;
-			aliasToTypeUriMap.TryGetValue(alias, out typeUri);
+			}
 			return typeUri;
 		}
 
-		public IEnumerable<string> Aliases {
-			get { return aliasToTypeUriMap.Keys; }
+		/// <summary>
+		/// Gets the Type Uri encoded by a given alias.
+		/// </summary>
+		/// <param name="alias">The alias.</param>
+		/// <returns>The Type URI for the given alias, or null if none for that alias exist.</returns>
+		public string TryResolveAlias(string alias) {
+			ErrorUtilities.VerifyNonZeroLength(alias, "alias");
+			string typeUri = null;
+			this.aliasToTypeUriMap.TryGetValue(alias, out typeUri);
+			return typeUri;
 		}
-		
+
 		/// <summary>
 		/// Returns a value indicating whether an alias has already been assigned to a type URI.
 		/// </summary>
 		/// <param name="alias">The alias in question.</param>
 		/// <returns>True if the alias has already been assigned.  False otherwise.</returns>
 		public bool IsAliasUsed(string alias) {
-			if (string.IsNullOrEmpty(alias)) throw new ArgumentNullException("alias");
-			return aliasToTypeUriMap.ContainsKey(alias);
-		}
-		
-		public bool IsAliasAssignedTo(string typeUri) {
-			if (string.IsNullOrEmpty("typeUri")) throw new ArgumentNullException("typeUri");
-			return typeUriToAliasMap.ContainsKey(typeUri);
+			ErrorUtilities.VerifyNonZeroLength(alias, "alias");
+			return this.aliasToTypeUriMap.ContainsKey(alias);
 		}
 
-		string assignNewAlias(string typeUri) {
-			Debug.Assert(!string.IsNullOrEmpty(typeUri));
-			Debug.Assert(!typeUriToAliasMap.ContainsKey(typeUri));
-			string alias = string.Format(CultureInfo.InvariantCulture, aliasFormat, typeUriToAliasMap.Count + 1);
-			typeUriToAliasMap.Add(typeUri, alias);
-			aliasToTypeUriMap.Add(alias, typeUri);
+		/// <summary>
+		/// Determines whether a given TypeURI has an associated alias assigned to it.
+		/// </summary>
+		/// <param name="typeUri">The type URI.</param>
+		/// <returns>
+		/// 	<c>true</c> if the given type URI already has an alias assigned; <c>false</c> otherwise.
+		/// </returns>
+		public bool IsAliasAssignedTo(string typeUri) {
+			ErrorUtilities.VerifyArgumentNotNull(typeUri, "typeUri");
+			return this.typeUriToAliasMap.ContainsKey(typeUri);
+		}
+
+		/// <summary>
+		/// Assigns a new alias to a given Type URI.
+		/// </summary>
+		/// <param name="typeUri">The type URI to assign a new alias to.</param>
+		/// <returns>The newly generated alias.</returns>
+		private string AssignNewAlias(string typeUri) {
+			ErrorUtilities.VerifyNonZeroLength(typeUri, "typeUri");
+			ErrorUtilities.VerifyInternal(!this.typeUriToAliasMap.ContainsKey(typeUri), "Oops!  This type URI already has an alias!");
+			string alias = string.Format(CultureInfo.InvariantCulture, this.aliasFormat, this.typeUriToAliasMap.Count + 1);
+			this.typeUriToAliasMap.Add(typeUri, alias);
+			this.aliasToTypeUriMap.Add(alias, typeUri);
 			return alias;
 		}
 	}

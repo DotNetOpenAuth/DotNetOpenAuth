@@ -1,20 +1,27 @@
-﻿namespace DotNetOpenAuth.Test.OpenId.Extensions {
+﻿//-----------------------------------------------------------------------
+// <copyright file="SimpleRegistrationTests.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using System;
 	using System.Collections.Generic;
 	using System.Globalization;
 	using System.Linq;
 	using System.Text;
+	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using DotNetOpenAuth.OpenId;
 
 	[TestClass]
 	public class SimpleRegistrationTests : ExtensionTestBase {
 		[TestMethod]
 		public void Simple() {
-			Roundtrip(Protocol.Default,
-				new[] { new ClaimsRequest() { Nickname = DemandLevel.Request } },
-				new[] { new ClaimsResponse() { Nickname = "Andrew" } });
+			ClaimsRequest request = new ClaimsRequest() { Nickname = DemandLevel.Request };
+			ClaimsResponse response = new ClaimsResponse(Constants.sreg_ns);
+			response.Nickname = "Andrew";
+			Roundtrip(Protocol.Default, new[] { request }, new[] { response });
 		}
 
 		////[TestMethod]

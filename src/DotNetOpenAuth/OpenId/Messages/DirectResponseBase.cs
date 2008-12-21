@@ -99,6 +99,13 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		#endregion
 
 		/// <summary>
+		/// Gets a value indicating whether this message was deserialized as an incoming message.
+		/// </summary>
+		protected internal bool Incoming {
+			get { return this.incoming; }
+		}
+
+		/// <summary>
 		/// Gets the protocol used by this message.
 		/// </summary>
 		protected Protocol Protocol {
@@ -110,13 +117,6 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		protected IDirectedProtocolMessage OriginatingRequest {
 			get { return this.originatingRequest; }
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether this message was deserialized as an incoming message.
-		/// </summary>
-		protected internal bool Incoming {
-			get { return this.incoming; }
 		}
 
 		#region IProtocolMessage methods

@@ -13,8 +13,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
-	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Extensions;
+	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
 	/// A channel that knows how to send and receive OpenID messages.

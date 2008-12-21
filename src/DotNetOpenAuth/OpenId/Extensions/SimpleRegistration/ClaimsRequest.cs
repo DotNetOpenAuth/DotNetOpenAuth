@@ -7,24 +7,21 @@
 namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 	using System;
 	using System.Collections.Generic;
-	using System.Text;
 	using System.Diagnostics;
-	using System.Globalization;
-	using DotNetOpenAuth.OpenId.Messages;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Globalization;
+	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
 	/// Carries the request/require/none demand state of the simple registration fields.
 	/// </summary>
 #pragma warning disable 0659, 0661
-	[SuppressMessage("Microsoft.Usage", "CA2218:OverrideGetHashCodeOnOverridingEquals")]
 	public sealed class ClaimsRequest : ExtensionBase {
-		private static readonly string[] additionalTypeUris = new string[] {
-			Constants.sreg_ns10,
-			Constants.sreg_ns11other,
-		};
-
+		/// <summary>
+		/// The factory method that may be used in deserialization of this message.
+		/// </summary>
 		internal static readonly OpenIdExtensionFactory.CreateDelegate Factory = (typeUri, data, baseMessage) => {
 			if (typeUri == Constants.sreg_ns && baseMessage is SignedResponseRequest) {
 				return new ClaimsRequest();
@@ -32,6 +29,20 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 
 			return null;
 		};
+
+		/// <summary>
+		/// Additional type URIs that this extension is sometimes known by remote parties.
+		/// </summary>
+		private static readonly string[] additionalTypeUris = new string[] {
+			Constants.sreg_ns10,
+			Constants.sreg_ns11other,
+		};
+
+		/// <summary>
+		/// The type URI that this particular (deserialized) extension was read in using,
+		/// allowing a response to alter be crafted using the same type URI.
+		/// </summary>
+		private string typeUriDeserializedFrom;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ClaimsRequest"/> class.
@@ -45,111 +56,120 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		/// by deserializing from a message.
 		/// </summary>
 		/// <param name="typeUri">The type URI this extension was recognized by in the OpenID message.</param>
-		internal ClaimsRequest(string typeUri) : this() {
+		internal ClaimsRequest(string typeUri)
+			: this() {
 			ErrorUtilities.VerifyNonZeroLength(typeUri, "typeUri");
 
 			this.typeUriDeserializedFrom = typeUri;
 		}
 
 		/// <summary>
-		/// The URL the consumer site provides for the authenticating user to review
+		/// Gets or sets the URL the consumer site provides for the authenticating user to review
 		/// for how his claims will be used by the consumer web site.
 		/// </summary>
 		[MessagePart(Constants.policy_url, IsRequired = false)]
 		public Uri PolicyUrl { get; set; }
 
 		/// <summary>
-		/// The level of interest a relying party has in the nickname of the user.
+		/// Gets or sets the level of interest a relying party has in the nickname of the user.
 		/// </summary>
 		public DemandLevel Nickname { get; set; }
 
 		/// <summary>
-		/// The level of interest a relying party has in the email of the user.
+		/// Gets or sets the level of interest a relying party has in the email of the user.
 		/// </summary>
 		public DemandLevel Email { get; set; }
-	
+
 		/// <summary>
-		/// The level of interest a relying party has in the full name of the user.
+		/// Gets or sets the level of interest a relying party has in the full name of the user.
 		/// </summary>
 		public DemandLevel FullName { get; set; }
-		
+
 		/// <summary>
-		/// The level of interest a relying party has in the birthdate of the user.
+		/// Gets or sets the level of interest a relying party has in the birthdate of the user.
 		/// </summary>
 		public DemandLevel BirthDate { get; set; }
-		
+
 		/// <summary>
-		/// The level of interest a relying party has in the gender of the user.
+		/// Gets or sets the level of interest a relying party has in the gender of the user.
 		/// </summary>
 		public DemandLevel Gender { get; set; }
-		
+
 		/// <summary>
-		/// The level of interest a relying party has in the postal code of the user.
+		/// Gets or sets the level of interest a relying party has in the postal code of the user.
 		/// </summary>
 		public DemandLevel PostalCode { get; set; }
-		
+
 		/// <summary>
-		/// The level of interest a relying party has in the Country of the user.
+		/// Gets or sets the level of interest a relying party has in the Country of the user.
 		/// </summary>
 		public DemandLevel Country { get; set; }
-		
+
 		/// <summary>
-		/// The level of interest a relying party has in the language of the user.
+		/// Gets or sets the level of interest a relying party has in the language of the user.
 		/// </summary>
 		public DemandLevel Language { get; set; }
-		
+
 		/// <summary>
-		/// The level of interest a relying party has in the time zone of the user.
+		/// Gets or sets the level of interest a relying party has in the time zone of the user.
 		/// </summary>
 		public DemandLevel TimeZone { get; set; }
 
+		/// <summary>
+		/// Gets or sets the value of the sreg.required parameter.
+		/// </summary>
+		/// <value>A comma-delimited list of sreg fields.</value>
 		[MessagePart(Constants.required, AllowEmpty = true)]
 		private string RequiredList {
-			get { return string.Join(",", assembleProfileFields(DemandLevel.Require)); }
+			get { return string.Join(",", this.AssembleProfileFields(DemandLevel.Require)); }
 			set { this.SetProfileRequestFromList(value.Split(','), DemandLevel.Require); }
 		}
 
+		/// <summary>
+		/// Gets or sets the value of the sreg.optional parameter.
+		/// </summary>
+		/// <value>A comma-delimited list of sreg fields.</value>
 		[MessagePart(Constants.optional, AllowEmpty = true)]
 		private string OptionalList {
-			get { return string.Join(",", assembleProfileFields(DemandLevel.Request)); }
+			get { return string.Join(",", this.AssembleProfileFields(DemandLevel.Request)); }
 			set { this.SetProfileRequestFromList(value.Split(','), DemandLevel.Request); }
 		}
 
-		private string typeUriDeserializedFrom;
-
-		/// <summary>
-		/// Prepares a Simple Registration response extension that is compatible with the
-		/// version of Simple Registration used in the request message.
-		/// </summary>
-		public ClaimsResponse CreateResponse() {
-			if (typeUriDeserializedFrom == null) {
-				throw new InvalidOperationException(OpenIdStrings.CallDeserializeBeforeCreateResponse);
-			}
-			return new ClaimsResponse(typeUriDeserializedFrom);
-		}
-
 		/// <summary>
 		/// Tests equality between two <see cref="ClaimsRequest"/> structs.
 		/// </summary>
+		/// <param name="one">One instance to compare.</param>
+		/// <param name="other">Another instance to compare.</param>
+		/// <returns>The result of the operator.</returns>
 		public static bool operator ==(ClaimsRequest one, ClaimsRequest other) {
-			if ((object)one == null && (object)other == null) return true;
-			if ((object)one == null ^ (object)other == null) return false;
-			return one.Equals(other);
+			return one.EqualsNullSafe(other);
 		}
-	
+
 		/// <summary>
 		/// Tests inequality between two <see cref="ClaimsRequest"/> structs.
 		/// </summary>
+		/// <param name="one">One instance to compare.</param>
+		/// <param name="other">Another instance to compare.</param>
+		/// <returns>The result of the operator.</returns>
 		public static bool operator !=(ClaimsRequest one, ClaimsRequest other) {
 			return !(one == other);
 		}
-		
+
 		/// <summary>
 		/// Tests equality between two <see cref="ClaimsRequest"/> structs.
 		/// </summary>
+		/// <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:System.Object"/>.</param>
+		/// <returns>
+		/// true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>; otherwise, false.
+		/// </returns>
+		/// <exception cref="T:System.NullReferenceException">
+		/// The <paramref name="obj"/> parameter is null.
+		/// </exception>
 		public override bool Equals(object obj) {
 			ClaimsRequest other = obj as ClaimsRequest;
-			if (other == null) return false;
+			if (other == null) {
+				return false;
+			}
 
 			return
 				this.BirthDate.Equals(other.BirthDate) &&
@@ -165,10 +185,29 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		}
 
 		/// <summary>
+		/// Serves as a hash function for a particular type.
+		/// </summary>
+		/// <returns>
+		/// A hash code for the current <see cref="T:System.Object"/>.
+		/// </returns>
+		public override int GetHashCode() {
+			// It's important that if Equals returns true that the hash code also equals,
+			// so returning base.GetHashCode() is a BAD option.
+			// Return 1 is simple and poor for dictionary storage, but considering that every
+			// ClaimsRequest formulated at a single RP will likely have all the same fields,
+			// even a good hash code function will likely generate the same hash code.  So
+			// we just cut to the chase and return a simple one.
+			return 1;
+		}
+
+		/// <summary>
 		/// Renders the requested information as a string.
 		/// </summary>
+		/// <returns>
+		/// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+		/// </returns>
 		public override string ToString() {
-			return string.Format(CultureInfo.CurrentCulture, @"Nickname = '{0}' 
+			string format = @"Nickname = '{0}' 
 Email = '{1}' 
 FullName = '{2}' 
 Birthdate = '{3}'
@@ -176,9 +215,23 @@ Gender = '{4}'
 PostalCode = '{5}'
 Country = '{6}'
 Language = '{7}'
-TimeZone = '{8}'", Nickname, Email, FullName, BirthDate, Gender, PostalCode, Country, Language, TimeZone);
+TimeZone = '{8}'";
+			return string.Format(CultureInfo.CurrentCulture, format, this.Nickname, this.Email, this.FullName, this.BirthDate, this.Gender, this.PostalCode, this.Country, this.Language, this.TimeZone);
 		}
-		
+
+		/// <summary>
+		/// Prepares a Simple Registration response extension that is compatible with the
+		/// version of Simple Registration used in the request message.
+		/// </summary>
+		/// <returns>The newly created <see cref="ClaimsResponse"/> instance.</returns>
+		public ClaimsResponse CreateResponse() {
+			if (this.typeUriDeserializedFrom == null) {
+				throw new InvalidOperationException(OpenIdStrings.CallDeserializeBeforeCreateResponse);
+			}
+
+			return new ClaimsResponse(this.typeUriDeserializedFrom);
+		}
+
 		/// <summary>
 		/// Sets the profile request properties according to a list of
 		/// field names that might have been passed in the OpenId query dictionary.
@@ -193,31 +246,31 @@ TimeZone = '{8}'", Nickname, Email, FullName, BirthDate, Gender, PostalCode, Cou
 			foreach (string field in fieldNames) {
 				switch (field) {
 					case Constants.nickname:
-						Nickname = requestLevel;
+						this.Nickname = requestLevel;
 						break;
 					case Constants.email:
-						Email = requestLevel;
+						this.Email = requestLevel;
 						break;
 					case Constants.fullname:
-						FullName = requestLevel;
+						this.FullName = requestLevel;
 						break;
 					case Constants.dob:
-						BirthDate = requestLevel;
+						this.BirthDate = requestLevel;
 						break;
 					case Constants.gender:
-						Gender = requestLevel;
+						this.Gender = requestLevel;
 						break;
 					case Constants.postcode:
-						PostalCode = requestLevel;
+						this.PostalCode = requestLevel;
 						break;
 					case Constants.country:
-						Country = requestLevel;
+						this.Country = requestLevel;
 						break;
 					case Constants.language:
-						Language = requestLevel;
+						this.Language = requestLevel;
 						break;
 					case Constants.timezone:
-						TimeZone = requestLevel;
+						this.TimeZone = requestLevel;
 						break;
 					default:
 						Logger.WarnFormat("OpenIdProfileRequest.SetProfileRequestFromList: Unrecognized field name '{0}'.", field);
@@ -226,26 +279,32 @@ TimeZone = '{8}'", Nickname, Email, FullName, BirthDate, Gender, PostalCode, Cou
 			}
 		}
 
-		private string[] assembleProfileFields(DemandLevel level) {
+		/// <summary>
+		/// Assembles the profile parameter names that have a given <see cref="DemandLevel"/>.
+		/// </summary>
+		/// <param name="level">The demand level (request, require, none).</param>
+		/// <returns>An array of the profile parameter names that meet the criteria.</returns>
+		private string[] AssembleProfileFields(DemandLevel level) {
 			List<string> fields = new List<string>(10);
-			if (Nickname == level)
+			if (this.Nickname == level) {
 				fields.Add(Constants.nickname);
-			if (Email == level)
+			} if (this.Email == level) {
 				fields.Add(Constants.email);
-			if (FullName == level)
+			} if (this.FullName == level) {
 				fields.Add(Constants.fullname);
-			if (BirthDate == level)
+			} if (this.BirthDate == level) {
 				fields.Add(Constants.dob);
-			if (Gender == level)
+			} if (this.Gender == level) {
 				fields.Add(Constants.gender);
-			if (PostalCode == level)
+			} if (this.PostalCode == level) {
 				fields.Add(Constants.postcode);
-			if (Country == level)
+			} if (this.Country == level) {
 				fields.Add(Constants.country);
-			if (Language == level)
+			} if (this.Language == level) {
 				fields.Add(Constants.language);
-			if (TimeZone == level)
+			} if (this.TimeZone == level) {
 				fields.Add(Constants.timezone);
+			}
 
 			return fields.ToArray();
 		}

@@ -9,22 +9,25 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
-	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.Messages;
 
+	/// <summary>
+	/// A hand base class for built-in extensions.
+	/// </summary>
 	public class ExtensionBase : IOpenIdMessageExtension {
 		/// <summary>
-		/// Backing store for the <see cref="IOpenIdProtocolMessageExtension.TypeUri"/> property.
+		/// Backing store for the <see cref="IOpenIdMessageExtension.TypeUri"/> property.
 		/// </summary>
 		private string typeUri;
 
 		/// <summary>
-		/// Backing store for the <see cref="IOpenIdProtocolMessageExtension.AdditionalSupportedTypeUris"/> property.
+		/// Backing store for the <see cref="IOpenIdMessageExtension.AdditionalSupportedTypeUris"/> property.
 		/// </summary>
 		private IEnumerable<string> additionalSupportedTypeUris;
 
 		/// <summary>
-		/// Backing store for the <see cref="ExtraData"/> property.
+		/// Backing store for the <see cref="IMessage.ExtraData"/> property.
 		/// </summary>
 		private Dictionary<string, string> extraData = new Dictionary<string, string>();
 
@@ -46,18 +49,18 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// Gets the TypeURI the extension uses in the OpenID protocol and in XRDS advertisements.
 		/// </summary>
 		string IOpenIdMessageExtension.TypeUri {
-			get { return typeUri; }
+			get { return this.typeUri; }
 		}
 
 		/// <summary>
-		/// Additional TypeURIs that are supported by this extension, in preferred order.
-		/// May be empty if none other than <see cref="TypeUri"/> is supported, but
+		/// Gets the additional TypeURIs that are supported by this extension, in preferred order.
+		/// May be empty if none other than <see cref="IOpenIdMessageExtension.TypeUri"/> is supported, but
 		/// should not be null.
 		/// </summary>
 		/// <value></value>
 		/// <remarks>
 		/// Useful for reading in messages with an older version of an extension.
-		/// The value in the <see cref="TypeUri"/> property is always checked before
+		/// The value in the <see cref="IOpenIdMessageExtension.TypeUri"/> property is always checked before
 		/// trying this list.
 		/// If you do support multiple versions of an extension using this method,
 		/// consider adding a CreateResponse method to your request extension class

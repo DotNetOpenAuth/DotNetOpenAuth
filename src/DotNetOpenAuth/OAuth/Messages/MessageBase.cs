@@ -153,6 +153,13 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		internal static bool LowSecurityMode { get; set; }
 
 		/// <summary>
+		/// Gets a value indicating whether this message was deserialized as an incoming message.
+		/// </summary>
+		protected internal bool Incoming {
+			get { return this.incoming; }
+		}
+
+		/// <summary>
 		/// Gets the version of the protocol this message is prepared to implement.
 		/// </summary>
 		protected virtual Version Version {
@@ -178,13 +185,6 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// </summary>
 		protected IDictionary<string, string> ExtraData {
 			get { return this.extraData; }
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether this message was deserialized as an incoming message.
-		/// </summary>
-		protected internal bool Incoming {
-			get { return this.incoming; }
 		}
 
 		/// <summary>

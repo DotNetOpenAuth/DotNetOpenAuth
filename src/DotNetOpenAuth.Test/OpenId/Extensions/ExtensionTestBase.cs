@@ -7,20 +7,19 @@
 namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using System;
 	using System.Collections.Generic;
-	using System.Linq;
-	using DotNetOpenId.Extensions;
-	using DotNetOpenAuth.OpenId;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using DotNetOpenAuth.OpenId.Messages;
 	using System.Collections.ObjectModel;
+	using System.Linq;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.Test.Messaging;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	public class ExtensionTestBase : OpenIdTestBase {
 		protected const ProtocolVersion Version = ProtocolVersion.V20;
 
 		[TestInitialize]
-		public virtual void Setup() {
+		public override void SetUp() {
 			base.SetUp();
 		}
 

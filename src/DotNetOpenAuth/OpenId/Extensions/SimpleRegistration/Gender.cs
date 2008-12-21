@@ -1,14 +1,14 @@
-/********************************************************
- * Copyright (C) 2007 Andrew Arnott
- * Released under the New BSD License
- * License available here: http://www.opensource.org/licenses/bsd-license.php
- * For news or support on this file: http://blog.nerdbank.net/
- ********************************************************/
+//-----------------------------------------------------------------------
+// <copyright file="Gender.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
 
-using DotNetOpenAuth.Messaging.Reflection;
-using DotNetOpenAuth.Messaging;
-using System;
 namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
+	using System;
+	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Reflection;
+
 	/// <summary>
 	/// Indicates the gender of a user.
 	/// </summary>
@@ -17,6 +17,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		/// The user is male.
 		/// </summary>
 		Male,
+
 		/// <summary>
 		/// The user is female.
 		/// </summary>

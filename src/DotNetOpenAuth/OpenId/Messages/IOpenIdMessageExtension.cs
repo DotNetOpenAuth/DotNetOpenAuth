@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		string TypeUri { get; }
 
 		/// <summary>
-		/// Additional TypeURIs that are supported by this extension, in preferred order.
+		/// Gets the additional TypeURIs that are supported by this extension, in preferred order.
 		/// May be empty if none other than <see cref="TypeUri"/> is supported, but
 		/// should not be null.
 		/// </summary>
@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// consider adding a CreateResponse method to your request extension class
 		/// so that the response can have the context it needs to remain compatible
 		/// given the version of the extension in the request message.
-		/// The <see cref="SimpleRegistration.ClaimsRequest.CreateResponse"/> for an example.
+		/// The <see cref="Extensions.SimpleRegistration.ClaimsRequest.CreateResponse"/> for an example.
 		/// </remarks>
 		IEnumerable<string> AdditionalSupportedTypeUris { get; }
 	}

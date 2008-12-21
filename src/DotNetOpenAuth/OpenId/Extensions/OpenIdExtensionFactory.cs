@@ -9,17 +9,16 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
-	using DotNetOpenAuth.OpenId.ChannelElements;
-	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
+	using DotNetOpenAuth.OpenId.Messages;
 
+	/// <summary>
+	/// An OpenID extension factory that supports registration so that third-party
+	/// extensions can add themselves to this library's supported extension list.
+	/// </summary>
 	internal class OpenIdExtensionFactory : IOpenIdExtensionFactory {
-		/// <summary>
-		/// A delegate that individual extensions may register with this factory.
-		/// </summary>
-		internal delegate IOpenIdMessageExtension CreateDelegate(string typeUri, IDictionary<string, string> data, IProtocolMessageWithExtensions baseMessage);
-
 		/// <summary>
 		/// A collection of the registered OpenID extensions.
 		/// </summary>
@@ -32,6 +31,18 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 			this.RegisterExtension(ClaimsRequest.Factory);
 			this.RegisterExtension(ClaimsResponse.Factory);
 		}
+
+		/// <summary>
+		/// A delegate that individual extensions may register with this factory.
+		/// </summary>
+		/// <param name="typeUri">The type URI of the extension.</param>
+		/// <param name="data">The parameters associated specifically with this extension.</param>
+		/// <param name="baseMessage">The OpenID message carrying this extension.</param>
+		/// <returns>
+		/// An instance of <see cref="IOpenIdMessageExtension"/> if the factory recognizes
+		/// the extension described in the input parameters; <c>null</c> otherwise.
+		/// </returns>
+		internal delegate IOpenIdMessageExtension CreateDelegate(string typeUri, IDictionary<string, string> data, IProtocolMessageWithExtensions baseMessage);
 
 		#region IOpenIdExtensionFactory Members
 
@@ -50,7 +61,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// that are not bound using <see cref="MessagePartAttribute"/>.
 		/// </remarks>
 		public IOpenIdMessageExtension Create(string typeUri, IDictionary<string, string> data, IProtocolMessageWithExtensions baseMessage) {
-			foreach (var factoryMethod in registeredExtensions) {
+			foreach (var factoryMethod in this.registeredExtensions) {
 				IOpenIdMessageExtension result = factoryMethod(typeUri, data, baseMessage);
 				if (result != null) {
 					return result;
