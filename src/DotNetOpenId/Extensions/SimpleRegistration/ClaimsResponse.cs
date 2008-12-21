@@ -323,7 +323,7 @@ namespace DotNetOpenId.Extensions.SimpleRegistration
 			if (other == null) return false;
 
 			return
-				safeEquals(this.BirthDate, other.BirthDate) &&
+				safeEquals(this.BirthDateRaw, other.BirthDateRaw) &&
 				safeEquals(this.Country, other.Country) &&
 				safeEquals(this.Language, other.Language) &&
 				safeEquals(this.Email, other.Email) &&
