@@ -15,5 +15,12 @@ namespace DotNetOpenAuth.Test.Messaging {
 			ICollection actualNonGeneric = new List<T>(actual);
 			CollectionAssert.AreEquivalent(expectedNonGeneric, actualNonGeneric);
 		}
+
+		internal static void AreEquivalentByEquality(ICollection<T> expected, ICollection<T> actual) {
+			Assert.AreEqual(expected.Count, actual.Count);
+			foreach (T value in expected) {
+				Assert.IsTrue(actual.Contains(value));
+			}
+		}
 	}
 }

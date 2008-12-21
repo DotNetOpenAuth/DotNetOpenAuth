@@ -164,6 +164,7 @@
     <Compile Include="OpenId\AssociationMemoryStore.cs" />
     <Compile Include="OpenId\Associations.cs" />
     <Compile Include="OpenId\ChannelElements\ExtensionsBindingElement.cs" />
+    <Compile Include="OpenId\ChannelElements\IOpenIdExtensionFactory.cs" />
     <Compile Include="OpenId\ChannelElements\ITamperResistantOpenIdMessage.cs" />
     <Compile Include="OpenId\ChannelElements\OriginalStringUriEncoder.cs" />
     <Compile Include="OpenId\ChannelElements\SigningBindingElement.cs" />
@@ -177,6 +178,7 @@
     <Compile Include="OpenId\Extensions\ExtensionArgumentsManager.cs" />
     <None Include="OpenId\Extensions\IExtension.cs" />
     <Compile Include="OpenId\Extensions\IIncomingExtensions.cs" />
+    <Compile Include="OpenId\Extensions\OpenIdExtensionFactory.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\ClaimsRequest.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\ClaimsResponse.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\Constants.cs" />
@@ -188,7 +190,7 @@
     <Compile Include="OpenId\Messages\CheckIdRequest.cs" />
     <Compile Include="OpenId\Messages\IndirectResponseBase.cs" />
     <Compile Include="OpenId\Messages\IndirectSignedResponse.cs" />
-    <Compile Include="OpenId\Messages\IOpenIdProtocolMessageExtension.cs" />
+    <Compile Include="OpenId\Messages\IOpenIdMessageExtension.cs" />
     <Compile Include="OpenId\Messages\NegativeAssertionResponse.cs" />
     <Compile Include="OpenId\Messages\PositiveAssertionResponse.cs" />
     <Compile Include="OpenId\Messages\SignedResponseRequest.cs" />

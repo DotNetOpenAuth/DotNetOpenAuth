@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// <remarks>
 	/// This message type satisfies OpenID 2.0 section 9.1.
 	/// </remarks>
-	[DebuggerDisplay("OpenID {ProtocolVersion} {Mode} {ClaimedIdentifier}")]
+	[DebuggerDisplay("OpenID {Version} {Mode} {ClaimedIdentifier}")]
 	internal class CheckIdRequest : SignedResponseRequest {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CheckIdRequest"/> class.

@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// <summary>
 	/// A common base class for OpenID request messages and indirect responses (since they are ultimately requests).
 	/// </summary>
-	[DebuggerDisplay("OpenID {ProtocolVersion} {Mode}")]
+	[DebuggerDisplay("OpenID {Version} {Mode}")]
 	internal class RequestBase : IDirectedProtocolMessage {
 		/// <summary>
 		/// The openid.ns parameter in the message.

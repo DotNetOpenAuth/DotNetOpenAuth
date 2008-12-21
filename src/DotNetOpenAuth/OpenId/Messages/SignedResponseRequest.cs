@@ -16,7 +16,12 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// An indirect request from a Relying Party to a Provider where the response
 	/// is expected to be signed.
 	/// </summary>
-	internal class SignedResponseRequest : RequestBase {
+	internal class SignedResponseRequest : RequestBase, IProtocolMessageWithExtensions {
+		/// <summary>
+		/// Backing store for the <see cref="Extensions"/> property.
+		/// </summary>
+		private IList<IExtensionMessage> extensions = new List<IExtensionMessage>();
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SignedResponseRequest"/> class.
 		/// </summary>
@@ -29,6 +34,21 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		internal SignedResponseRequest(Version version, Uri providerEndpoint, bool immediate) :
 			base(version, providerEndpoint, GetMode(version, immediate), DotNetOpenAuth.Messaging.MessageTransport.Indirect) {
 		}
+
+		#region IProtocolMessageWithExtensions Members
+
+		/// <summary>
+		/// Gets the list of extensions that are included with this message.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>
+		/// Implementations of this interface should ensure that this property never returns null.
+		/// </remarks>
+		public IList<IExtensionMessage> Extensions {
+			get { return this.extensions; }
+		}
+
+		#endregion
 
 		/// <summary>
 		/// Gets a value indicating whether the Provider is allowed to interact with the user

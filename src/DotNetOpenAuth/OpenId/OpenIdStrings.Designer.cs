@@ -277,6 +277,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid birthdate value.  Must be in the form yyyy-MM-dd..
+        /// </summary>
+        internal static string SregInvalidBirthdate {
+            get {
+                return ResourceManager.GetString("SregInvalidBirthdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The openid.user_setup_url parameter is required when sending negative assertion messages in response to immediate mode requests..
         /// </summary>
         internal static string UserSetupUrlRequiredInImmediateNegativeResponse {

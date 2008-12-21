@@ -15,6 +15,13 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using DotNetOpenAuth.OpenId.Messages;
 
 	internal class ExtensionsBindingElement : IChannelBindingElement {
+		private readonly IOpenIdExtensionFactory extensionFactory;
+
+		internal ExtensionsBindingElement(IOpenIdExtensionFactory extensionFactory) {
+			ErrorUtilities.VerifyArgumentNotNull(extensionFactory, "extensionFactory");
+			this.extensionFactory = extensionFactory;
+		}
+
 		#region IChannelBindingElement Members
 
 		/// <summary>
@@ -56,12 +63,12 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				// all the extensions, their aliases, and their parameters.
 				var extensionManager = ExtensionArgumentsManager.CreateOutgoingExtensions(protocol);
 				foreach (IExtensionMessage protocolExtension in extendableMessage.Extensions) {
-					var extension = protocolExtension as IOpenIdProtocolMessageExtension;
+					var extension = protocolExtension as IOpenIdMessageExtension;
 					if (extension != null) {
 						var extensionDictionary = new MessageDictionary(extension);
 						extensionManager.AddExtensionArguments(extension.TypeUri, extensionDictionary);
 					} else {
-						Logger.WarnFormat("Unexpected extension type {0} did not implement {1}.", protocolExtension.GetType(), typeof(IOpenIdProtocolMessageExtension).Name);
+						Logger.WarnFormat("Unexpected extension type {0} did not implement {1}.", protocolExtension.GetType(), typeof(IOpenIdMessageExtension).Name);
 					}
 				}
 
@@ -99,9 +106,26 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		public bool PrepareMessageForReceiving(IProtocolMessage message) {
 			var extendableMessage = message as IProtocolMessageWithExtensions;
 			if (extendableMessage != null) {
-				// TODO: Implement this
-				throw new NotImplementedException();
-				////return true;
+				Protocol protocol = Protocol.Lookup(message.Version);
+				MessageDictionary baseMessageDictionary = new MessageDictionary(message);
+
+				// We have a helper class that will do all the heavy-lifting of organizing
+				// all the extensions, their aliases, and their parameters.
+				var extensionManager = ExtensionArgumentsManager.CreateIncomingExtensions(baseMessageDictionary);
+				foreach (string typeUri in extensionManager.GetExtensionTypeUris()) {
+					var extensionData = extensionManager.GetExtensionArguments(typeUri);
+
+					// Initialize this particular extension.
+					IOpenIdMessageExtension extension = extensionFactory.Create(typeUri, extensionData, extendableMessage);
+					MessageDictionary extensionDictionary = new MessageDictionary(extension);
+					foreach (var pair in extensionData) {
+						extensionDictionary[pair.Key] = pair.Value;
+					}
+
+					extendableMessage.Extensions.Add(extension);
+				}
+
+				return true;
 			}
 
 			return false;

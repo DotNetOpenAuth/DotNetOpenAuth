@@ -189,6 +189,9 @@
   <data name="SignatureDoesNotIncludeMandatoryParts" xml:space="preserve">
     <value>The following parameter(s) are not included in the signature but must be: {0}</value>
   </data>
+  <data name="SregInvalidBirthdate" xml:space="preserve">
+    <value>Invalid birthdate value.  Must be in the form yyyy-MM-dd.</value>
+  </data>
   <data name="UserSetupUrlRequiredInImmediateNegativeResponse" xml:space="preserve">
     <value>The openid.user_setup_url parameter is required when sending negative assertion messages in response to immediate mode requests.</value>
   </data>

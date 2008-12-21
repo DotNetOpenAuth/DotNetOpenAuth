@@ -90,12 +90,16 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// where type URI, alias, and actual key/values are all defined.
 		/// </summary>
 		public IDictionary<string, string> GetArgumentsToSend(bool includeOpenIdPrefix) {
-			if (isReadMode) throw new InvalidOperationException();
+			if (isReadMode) {
+				throw new InvalidOperationException();
+			}
 			Dictionary<string, string> args = new Dictionary<string, string>();
 			foreach (var typeUriAndExtension in extensions) {
 				string typeUri = typeUriAndExtension.Key;
 				var extensionArgs = typeUriAndExtension.Value;
-				if (extensionArgs.Count == 0) continue;
+				if (extensionArgs.Count == 0) {
+					continue;
+				}
 				string alias = aliasManager.GetAlias(typeUri);
 				// send out the alias declaration
 				string openidPrefix = includeOpenIdPrefix ? protocol.openid.Prefix : string.Empty;
@@ -120,7 +124,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 
 			IDictionary<string, string> extensionArgs;
 			if (!extensions.TryGetValue(extensionTypeUri, out extensionArgs)) {
-				extensions.Add(extensionTypeUri, extensionArgs = new Dictionary<string, string>());
+				extensions.Add(extensionTypeUri, extensionArgs = new Dictionary<string, string>(arguments.Count));
 			}
 
 			ErrorUtilities.VerifyProtocol(extensionArgs.Count == 0, OpenIdStrings.ExtensionAlreadyAddedWithSameTypeURI, extensionTypeUri);
@@ -134,8 +138,11 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// </summary>
 		/// <returns>The fields included in the given extension, or null if the extension is not present.</returns>
 		public IDictionary<string, string> GetExtensionArguments(string extensionTypeUri) {
-			if (!isReadMode) throw new InvalidOperationException();
-			if (string.IsNullOrEmpty(extensionTypeUri)) throw new ArgumentNullException("extensionTypeUri");
+			ErrorUtilities.VerifyNonZeroLength(extensionTypeUri, "extensionTypeUri");
+			if (!isReadMode) {
+				throw new InvalidOperationException();
+			}
+
 			IDictionary<string, string> extensionArgs;
 			extensions.TryGetValue(extensionTypeUri, out extensionArgs);
 			return extensionArgs;
@@ -144,6 +151,10 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		public bool ContainsExtension(string extensionTypeUri) {
 			if (!isReadMode) throw new InvalidOperationException();
 			return extensions.ContainsKey(extensionTypeUri);
+		}
+
+		public IEnumerable<string> GetExtensionTypeUris() {
+			return this.extensions.Keys;
 		}
 	}
 }

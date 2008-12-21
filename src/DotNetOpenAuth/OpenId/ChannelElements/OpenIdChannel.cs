@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.Extensions;
 
 	/// <summary>
 	/// A channel that knows how to send and receive OpenID messages.
@@ -76,6 +77,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		private OpenIdChannel(IAssociationStore<AssociationRelyingPartyType> associationStore, INonceStore nonceStore, IMessageFactory messageTypeProvider) :
 			base(messageTypeProvider, InitializeBindingElements(new SigningBindingElement(associationStore), nonceStore)) {
 		}
+
+		/// <summary>
+		/// Gets the extension factory that can be used to register OpenID extensions.
+		/// </summary>
+		internal OpenIdExtensionFactory Extensions { get; private set; }
 
 		/// <summary>
 		/// Verifies the integrity and applicability of an incoming message.
@@ -167,6 +173,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			elements.Add(signingElement);
 			elements.Add(new StandardReplayProtectionBindingElement(nonceStore, true));
 			elements.Add(new StandardExpirationBindingElement());
+			elements.Add(new ExtensionsBindingElement(new OpenIdExtensionFactory()));
 			return elements.ToArray();
 		}
 	}

@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// <summary>
 	/// An OpenID direct request from Relying Party to Provider to initiate an association.
 	/// </summary>
-	[DebuggerDisplay("OpenID {ProtocolVersion} {Mode} {AssociationType} {SessionType}")]
+	[DebuggerDisplay("OpenID {Version} {Mode} {AssociationType} {SessionType}")]
 	internal abstract class AssociateRequest : RequestBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssociateRequest"/> class.

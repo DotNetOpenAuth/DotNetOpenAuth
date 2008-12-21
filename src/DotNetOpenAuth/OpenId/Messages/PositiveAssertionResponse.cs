@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// An identity assertion from a Provider to a Relying Party, stating that the
 	/// user operating the user agent is in fact some specific user known to the Provider.
 	/// </summary>
-	[DebuggerDisplay("OpenID {ProtocolVersion} {Mode} {LocalIdentifier}")]
+	[DebuggerDisplay("OpenID {Version} {Mode} {LocalIdentifier}")]
 	internal class PositiveAssertionResponse : IndirectSignedResponse {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PositiveAssertionResponse"/> class.

@@ -25,6 +25,14 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 			Constants.sreg_ns11other,
 		};
 
+		internal static readonly OpenIdExtensionFactory.CreateDelegate Factory = (typeUri, data, baseMessage) => {
+			if (typeUri == Constants.sreg_ns && baseMessage is SignedResponseRequest) {
+				return new ClaimsRequest();
+			}
+
+			return null;
+		};
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ClaimsRequest"/> class.
 		/// </summary>

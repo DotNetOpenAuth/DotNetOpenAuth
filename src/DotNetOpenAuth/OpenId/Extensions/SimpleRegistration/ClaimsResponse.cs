@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 	using DotNetOpenAuth.OpenId.Messages;
 	using System.Diagnostics.CodeAnalysis;
 	using DotNetOpenAuth.Messaging;
+	using System.Text.RegularExpressions;
 
 #pragma warning disable 0659, 0661
 	/// <summary>
@@ -22,6 +23,22 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 	/// </summary>
 	[SuppressMessage("Microsoft.Usage", "CA2218:OverrideGetHashCodeOnOverridingEquals"), Serializable()]
 	public sealed class ClaimsResponse : ExtensionBase {
+		internal static readonly OpenIdExtensionFactory.CreateDelegate Factory = (typeUri, data, baseMessage) => {
+			if (typeUri == Constants.sreg_ns && baseMessage is IndirectSignedResponse) {
+				return new ClaimsResponse();
+			}
+
+			return null;
+		};
+
+		/// <summary>
+		/// Storage for the raw string birthdate value.
+		/// </summary>
+		private string birthDateRaw;
+		private DateTime? birthDate;
+
+		private static readonly Regex birthDateValidator = new Regex(@"^\d\d\d\d-\d\d-\d\d$");
+
 		/// <summary>
 		/// The TypeURI that must be used in the response, based on the one used in the request.
 		/// </summary>
@@ -74,8 +91,51 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		/// <summary>
 		/// The user's birthdate.
 		/// </summary>
+		public DateTime? BirthDate {
+			get {
+				return this.birthDate;
+			}
+
+			set {
+				this.birthDate = value;
+				// Don't use property accessor for peer property to avoid infinite loop between the two proeprty accessors.
+				if (value.HasValue) {
+					this.birthDateRaw = value.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+				} else {
+					this.birthDateRaw = null;
+				}
+			}
+		}
+
 		[MessagePart(Constants.dob)]
-		public DateTime? BirthDate { get; set; }
+		public string BirthDateRaw {
+			get {
+				return this.birthDateRaw;
+			}
+
+			set {
+				if (value != null) {
+					if (!birthDateValidator.IsMatch(value)) {
+						throw new ArgumentException(OpenIdStrings.SregInvalidBirthdate, "value");
+					}
+					// Update the BirthDate property, if possible. 
+					// Don't use property accessor for peer property to avoid infinite loop between the two proeprty accessors.
+					// Some valid sreg dob values like "2000-00-00" will not work as a DateTime struct, 
+					// in which case we null it out, but don't show any error.
+					DateTime newBirthDate;
+					if (DateTime.TryParse(value, out newBirthDate)) {
+						this.birthDate = newBirthDate;
+					} else {
+						Logger.WarnFormat("Simple Registration birthdate '{0}' could not be parsed into a DateTime and may not include month and/or day information.  Setting BirthDate property to null.", value);
+						this.birthDate = null;
+					}
+				} else {
+					this.birthDate = null;
+				}
+
+				this.birthDateRaw = value;
+			}
+		}
 
 		/// <summary>
 		/// The gender of the user.
@@ -208,7 +268,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 			if (other == null) return false;
 
 			return
-				this.BirthDate.Equals(other.BirthDate) &&
+				this.BirthDateRaw.EqualsNullSafe(other.BirthDateRaw) &&
 				this.Country.EqualsNullSafe(other.Country) &&
 				this.Language.EqualsNullSafe(other.Language) &&
 				this.Email.EqualsNullSafe(other.Email) &&

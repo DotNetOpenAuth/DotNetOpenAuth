@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="IOpenIdProtocolMessageExtension.cs" company="Andrew Arnott">
+// <copyright file="IOpenIdMessageExtension.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// <summary>
 	/// The contract any OpenID extension for DotNetOpenId must implement.
 	/// </summary>
-	internal interface IOpenIdProtocolMessageExtension : IExtensionMessage {
+	internal interface IOpenIdMessageExtension : IExtensionMessage {
 		/// <summary>
 		/// Gets the TypeURI the extension uses in the OpenID protocol and in XRDS advertisements.
 		/// </summary>

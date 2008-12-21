@@ -12,7 +12,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.Messaging;
 
-	public class ExtensionBase : IOpenIdProtocolMessageExtension {
+	public class ExtensionBase : IOpenIdMessageExtension {
 		/// <summary>
 		/// Backing store for the <see cref="IOpenIdProtocolMessageExtension.TypeUri"/> property.
 		/// </summary>
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <summary>
 		/// Gets the TypeURI the extension uses in the OpenID protocol and in XRDS advertisements.
 		/// </summary>
-		string IOpenIdProtocolMessageExtension.TypeUri {
+		string IOpenIdMessageExtension.TypeUri {
 			get { return typeUri; }
 		}
 
@@ -65,7 +65,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// given the version of the extension in the request message.
 		/// The <see cref="SimpleRegistration.ClaimsRequest.CreateResponse"/> for an example.
 		/// </remarks>
-		IEnumerable<string> IOpenIdProtocolMessageExtension.AdditionalSupportedTypeUris {
+		IEnumerable<string> IOpenIdMessageExtension.AdditionalSupportedTypeUris {
 			get { return this.additionalSupportedTypeUris; }
 		}
 

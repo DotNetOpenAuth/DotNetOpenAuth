@@ -40,11 +40,11 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		private MessageDescription(MessageTypeAndVersion messageTypeAndVersion) {
 			ErrorUtilities.VerifyArgumentNotNull(messageTypeAndVersion, "messageTypeAndVersion");
 
-			if (!typeof(IProtocolMessage).IsAssignableFrom(messageTypeAndVersion.Type)) {
+			if (!typeof(IMessage).IsAssignableFrom(messageTypeAndVersion.Type)) {
 				throw new ArgumentException(string.Format(
 					CultureInfo.CurrentCulture,
 					MessagingStrings.UnexpectedType,
-					typeof(IProtocolMessage),
+					typeof(IMessage),
 					messageTypeAndVersion.Type));
 			}
 
@@ -64,7 +64,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// Gets a <see cref="MessageDescription"/> instance prepared for the
 		/// given message type.
 		/// </summary>
-		/// <param name="messageType">A type that implements <see cref="IProtocolMessage"/>.</param>
+		/// <param name="messageType">A type that implements <see cref="IMessage"/>.</param>
 		/// <param name="messageVersion">The protocol version of the message.</param>
 		/// <returns>A <see cref="MessageDescription"/> instance.</returns>
 		internal static MessageDescription Get(Type messageType, Version messageVersion) {
@@ -86,7 +86,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		}
 
 		/// <summary>
-		/// Reflects over some <see cref="IProtocolMessage"/>-implementing type
+		/// Reflects over some <see cref="IMessage"/>-implementing type
 		/// and prepares to serialize/deserialize instances of that type.
 		/// </summary>
 		internal void ReflectMessageType() {

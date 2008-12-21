@@ -13,13 +13,14 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OpenId.ChannelElements;
+	using System.Collections.Generic;
 
 	/// <summary>
 	/// An indirect message from a Provider to a Relying Party where at least part of the
 	/// payload is signed so the Relying Party can verify it has not been tampered with.
 	/// </summary>
-	[DebuggerDisplay("OpenID {ProtocolVersion} {Mode} (no id assertion)")]
-	internal class IndirectSignedResponse : IndirectResponseBase, ITamperResistantOpenIdMessage {
+	[DebuggerDisplay("OpenID {Version} {Mode} (no id assertion)")]
+	internal class IndirectSignedResponse : IndirectResponseBase, ITamperResistantOpenIdMessage, IProtocolMessageWithExtensions {
 		/// <summary>
 		/// The allowed date/time formats for the response_nonce parameter.
 		/// </summary>
@@ -27,6 +28,11 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// This array of formats is not yet a complete list.
 		/// </remarks>
 		private static readonly string[] PermissibleDateTimeFormats = { "yyyy-MM-ddTHH:mm:ssZ" };
+
+		/// <summary>
+		/// Backing store for the <see cref="Extensions"/> property.
+		/// </summary>
+		private IList<IExtensionMessage> extensions = new List<IExtensionMessage>();
 
 		/// <summary>
 		/// Backing field for the <see cref="IExpiringProtocolMessage.UtcCreationDate"/> property.
@@ -193,5 +199,20 @@ namespace DotNetOpenAuth.OpenId.Messages {
 				}
 			}
 		}
+
+		#region IProtocolMessageWithExtensions Members
+
+		/// <summary>
+		/// Gets the list of extensions that are included with this message.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>
+		/// Implementations of this interface should ensure that this property never returns null.
+		/// </remarks>
+		public IList<IExtensionMessage> Extensions {
+			get { return this.extensions; }
+		}
+
+		#endregion
 	}
 }
