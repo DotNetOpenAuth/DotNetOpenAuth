@@ -20,17 +20,12 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// </summary>
 	internal class ExtensionsBindingElement : IChannelBindingElement {
 		/// <summary>
-		/// The extension factory.
-		/// </summary>
-		private readonly IOpenIdExtensionFactory extensionFactory;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="ExtensionsBindingElement"/> class.
 		/// </summary>
 		/// <param name="extensionFactory">The extension factory.</param>
 		internal ExtensionsBindingElement(IOpenIdExtensionFactory extensionFactory) {
 			ErrorUtilities.VerifyArgumentNotNull(extensionFactory, "extensionFactory");
-			this.extensionFactory = extensionFactory;
+			this.ExtensionFactory = extensionFactory;
 		}
 
 		#region IChannelBindingElement Members
@@ -43,6 +38,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// This property is set by the channel when it is first constructed.
 		/// </remarks>
 		public Channel Channel { get; set; }
+
+		/// <summary>
+		/// The extension factory.
+		/// </summary>
+		public IOpenIdExtensionFactory ExtensionFactory { get; private set; }
 
 		/// <summary>
 		/// Gets the protection offered (if any) by this binding element.
@@ -127,13 +127,17 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					var extensionData = extensionManager.GetExtensionArguments(typeUri);
 
 					// Initialize this particular extension.
-					IOpenIdMessageExtension extension = this.extensionFactory.Create(typeUri, extensionData, extendableMessage);
-					MessageDictionary extensionDictionary = new MessageDictionary(extension);
-					foreach (var pair in extensionData) {
-						extensionDictionary[pair.Key] = pair.Value;
-					}
+					IOpenIdMessageExtension extension = this.ExtensionFactory.Create(typeUri, extensionData, extendableMessage);
+					if (extension != null) {
+						MessageDictionary extensionDictionary = new MessageDictionary(extension);
+						foreach (var pair in extensionData) {
+							extensionDictionary[pair.Key] = pair.Value;
+						}
 
-					extendableMessage.Extensions.Add(extension);
+						extendableMessage.Extensions.Add(extension);
+					} else {
+						Logger.WarnFormat("Extension with type URI '{0}' ignored because it is not a recognized extension.", typeUri);
+					}
 				}
 
 				return true;

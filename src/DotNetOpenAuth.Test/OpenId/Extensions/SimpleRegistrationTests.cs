@@ -15,13 +15,13 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
-	public class SimpleRegistrationTests : ExtensionTestBase {
+	public class SimpleRegistrationTests : OpenIdTestBase {
 		[TestMethod]
 		public void Simple() {
 			ClaimsRequest request = new ClaimsRequest() { Nickname = DemandLevel.Request };
 			ClaimsResponse response = new ClaimsResponse(Constants.sreg_ns);
 			response.Nickname = "Andrew";
-			Roundtrip(Protocol.Default, new[] { request }, new[] { response });
+			ExtensionTestUtilities.Roundtrip(Protocol.Default, new[] { request }, new[] { response });
 		}
 
 		////[TestMethod]

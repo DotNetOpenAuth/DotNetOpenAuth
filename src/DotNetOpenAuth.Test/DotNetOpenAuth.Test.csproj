@@ -80,6 +80,7 @@
     <Compile Include="Mocks\InMemoryTokenManager.cs" />
     <Compile Include="Mocks\MockHttpRequest.cs" />
     <Compile Include="Mocks\MockIdentifier.cs" />
+    <Compile Include="Mocks\MockOpenIdExtension.cs" />
     <Compile Include="Mocks\MockTransformationBindingElement.cs" />
     <Compile Include="Mocks\MockReplayProtectionBindingElement.cs" />
     <Compile Include="Mocks\TestBaseMessage.cs" />
@@ -104,6 +105,7 @@
     <Compile Include="OpenId\AssociationsTests.cs" />
     <Compile Include="OpenId\AssociationTests.cs" />
     <Compile Include="OpenId\AuthenticationTests.cs" />
+    <Compile Include="OpenId\ChannelElements\ExtensionsBindingElementTests.cs" />
     <Compile Include="OpenId\ChannelElements\KeyValueFormEncodingTests.cs" />
     <Compile Include="Messaging\Bindings\StandardReplayProtectionBindingElementTests.cs" />
     <None Include="OpenId\Extensions\ClaimsResponseTests.cs" />

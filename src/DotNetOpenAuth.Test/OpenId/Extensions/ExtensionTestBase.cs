@@ -14,28 +14,24 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.Test.Messaging;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using DotNetOpenAuth.OpenId.ChannelElements;
+	using DotNetOpenAuth.OpenId.Extensions;
 
-	public class ExtensionTestBase : OpenIdTestBase {
-		protected const ProtocolVersion Version = ProtocolVersion.V20;
-
-		[TestInitialize]
-		public override void SetUp() {
-			base.SetUp();
-		}
-
-		internal void Roundtrip(
+	public static class ExtensionTestUtilities {
+		internal static void Roundtrip(
 			Protocol protocol,
 			IEnumerable<IOpenIdMessageExtension> requests,
 			IEnumerable<IOpenIdMessageExtension> responses) {
 			Association association = HmacShaAssociation.Create(protocol, protocol.Args.SignatureAlgorithm.Best, AssociationRelyingPartyType.Smart);
 			var coordinator = new OpenIdCoordinator(
 				rp => {
-					var requestBase = new CheckIdRequest(protocol.Version, ProviderUri, true);
-					rp.AssociationStore.StoreAssociation(ProviderUri, association);
+					RegisterExtension(rp.Channel, Mocks.MockOpenIdExtension.Factory);
+					var requestBase = new CheckIdRequest(protocol.Version, OpenIdTestBase.ProviderUri, true);
+					rp.AssociationStore.StoreAssociation(OpenIdTestBase.ProviderUri, association);
 					requestBase.AssociationHandle = association.Handle;
 					requestBase.ClaimedIdentifier = "http://claimedid";
 					requestBase.LocalIdentifier = "http://localid";
-					requestBase.ReturnTo = RPUri;
+					requestBase.ReturnTo = OpenIdTestBase.RPUri;
 
 					foreach (IOpenIdMessageExtension extension in requests) {
 						requestBase.Extensions.Add(extension);
@@ -48,6 +44,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 					CollectionAssert<IOpenIdMessageExtension>.AreEquivalentByEquality(responses.ToArray(), receivedResponses.ToArray());
 				},
 				op => {
+					RegisterExtension(op.Channel, Mocks.MockOpenIdExtension.Factory);
 					op.AssociationStore.StoreAssociation(AssociationRelyingPartyType.Smart, association);
 					var request = op.Channel.ReadFromRequest<CheckIdRequest>();
 					var response = new PositiveAssertionResponse(request);
@@ -61,6 +58,13 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 					op.Channel.Send(response);
 				});
 			coordinator.Run();
+		}
+
+		internal static void RegisterExtension(Channel channel, OpenIdExtensionFactory.CreateDelegate extensionFactory) {
+			ErrorUtilities.VerifyArgumentNotNull(channel, "channel");
+
+			OpenIdExtensionFactory factory = (OpenIdExtensionFactory)channel.BindingElements.OfType<ExtensionsBindingElement>().Single().ExtensionFactory;
+			factory.RegisterExtension(extensionFactory);
 		}
 	}
 }

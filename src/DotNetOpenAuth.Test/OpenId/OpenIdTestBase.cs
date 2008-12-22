@@ -18,8 +18,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		internal MockHttpRequest MockResponder;
 
-		protected static readonly Uri ProviderUri = new Uri("http://provider");
-		protected static readonly Uri RPUri = new Uri("http://rp");
+		protected internal static readonly Uri ProviderUri = new Uri("http://provider");
+		protected internal static readonly Uri RPUri = new Uri("http://rp");
 
 		protected RelyingPartySecuritySettings RelyingPartySecuritySettings { get; private set; }
 
