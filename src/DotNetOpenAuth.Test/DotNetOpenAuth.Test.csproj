@@ -108,9 +108,9 @@
     <Compile Include="OpenId\ChannelElements\ExtensionsBindingElementTests.cs" />
     <Compile Include="OpenId\ChannelElements\KeyValueFormEncodingTests.cs" />
     <Compile Include="Messaging\Bindings\StandardReplayProtectionBindingElementTests.cs" />
-    <None Include="OpenId\Extensions\ClaimsResponseTests.cs" />
+    <Compile Include="OpenId\Extensions\SimpleRegistration\ClaimsResponseTests.cs" />
     <Compile Include="OpenId\Extensions\ExtensionTestBase.cs" />
-    <Compile Include="OpenId\Extensions\SimpleRegistrationTests.cs" />
+    <Compile Include="OpenId\Extensions\SimpleRegistration\ClaimsRequestTests.cs" />
     <Compile Include="OpenId\IdentifierTests.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanRequestTests.cs" />
     <Compile Include="OpenId\Messages\AssociateRequestTests.cs" />

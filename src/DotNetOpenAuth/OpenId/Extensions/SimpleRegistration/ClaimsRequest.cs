@@ -17,7 +17,6 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 	/// <summary>
 	/// Carries the request/require/none demand state of the simple registration fields.
 	/// </summary>
-#pragma warning disable 0659, 0661
 	public sealed class ClaimsRequest : ExtensionBase {
 		/// <summary>
 		/// The factory method that may be used in deserialization of this message.
@@ -242,7 +241,7 @@ TimeZone = '{8}'";
 		/// the OpenId specification for field names, omitting the 'openid.sreg' prefix.
 		/// </param>
 		/// <param name="requestLevel">The none/request/require state of the listed fields.</param>
-		internal void SetProfileRequestFromList(ICollection<string> fieldNames, DemandLevel requestLevel) {
+		private void SetProfileRequestFromList(ICollection<string> fieldNames, DemandLevel requestLevel) {
 			foreach (string field in fieldNames) {
 				switch (field) {
 					case Constants.nickname:

@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using System.IO;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
+	using System.Globalization;
 
 	[TestClass]
 	public class ClaimsResponseTests {
@@ -37,7 +38,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.IsNull(response.MailAddress);
 		}
 
-		[TestMethod]
+		[TestMethod, Ignore] // serialization no longer supported
 		public void BinarySerialization() {
 			ClaimsResponse fields = getFilledData();
 			MemoryStream ms = new MemoryStream();
@@ -49,7 +50,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.AreEqual(fields, fields2);
 		}
 
-		[TestMethod]
+		[TestMethod, Ignore] // serialization no longer supported
 		public void XmlSerialization() {
 			ClaimsResponse fields = getFilledData();
 			MemoryStream ms = new MemoryStream();
@@ -109,26 +110,6 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.AreNotEqual(fields1, fields2);
 		}
 
-		void parameterizedPreserveVersionFromRequest(string versionTypeUri) {
-			Dictionary<string, string> fields = new Dictionary<string, string>{
-				{"optional", "nickname"},
-			};
-			var req = new ClaimsRequest();
-			Assert.IsTrue(((IExtensionRequest)req).Deserialize(fields, null, versionTypeUri));
-			Assert.AreEqual(DemandLevel.Request, req.Nickname);
-			ClaimsResponse resp = req.CreateResponse();
-			Assert.AreEqual(versionTypeUri, ((IExtensionResponse)resp).TypeUri);
-		}
-
-		[TestMethod]
-		public void PreserveVersionFromRequest() {
-			// some unofficial type URIs...
-			parameterizedPreserveVersionFromRequest("http://openid.net/sreg/1.0");
-			parameterizedPreserveVersionFromRequest("http://openid.net/sreg/1.1");
-			// and the official one.
-			parameterizedPreserveVersionFromRequest("http://openid.net/extensions/sreg/1.1");
-		}
-
 		//[TestMethod]
 		public void AddToResponse() {
 			// TODO
@@ -137,6 +118,41 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		//[TestMethod]
 		public void ReadFromResponse() {
 			// TODO
+		}
+
+		[TestMethod]
+		public void Birthdates() {
+			var response = new ClaimsResponse();
+			// Verify that they both start out as null
+			Assert.IsNull(response.BirthDateRaw);
+			Assert.IsFalse(response.BirthDate.HasValue);
+
+			// Verify that null can be set.
+			response.BirthDate = null;
+			response.BirthDateRaw = null;
+			Assert.IsNull(response.BirthDateRaw);
+			Assert.IsFalse(response.BirthDate.HasValue);
+
+			// Verify that the strong-typed BirthDate property can be set and that it affects the raw property.
+			response.BirthDate = DateTime.Parse("April 4, 1984");
+			Assert.AreEqual(4, response.BirthDate.Value.Month);
+			Assert.AreEqual("1984-04-04", response.BirthDateRaw);
+
+			// Verify that the raw property can be set with a complete birthdate and that it affects the strong-typed property.
+			response.BirthDateRaw = "1998-05-08";
+			Assert.AreEqual("1998-05-08", response.BirthDateRaw);
+			Assert.AreEqual(DateTime.Parse("May 8, 1998", CultureInfo.InvariantCulture), response.BirthDate);
+
+			// Verify that an partial raw birthdate works, and sets the strong-typed property to null since it cannot be represented.
+			response.BirthDateRaw = "2000-00-00";
+			Assert.AreEqual("2000-00-00", response.BirthDateRaw);
+			Assert.IsFalse(response.BirthDate.HasValue);
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		public void InvalidRawBirthdate() {
+			var response = new ClaimsResponse();
+			response.BirthDateRaw = "2008";
 		}
 	}
 }

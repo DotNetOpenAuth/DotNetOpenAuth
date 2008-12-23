@@ -16,7 +16,6 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
 
-#pragma warning disable 0659, 0661
 	/// <summary>
 	/// A struct storing Simple Registration field values describing an
 	/// authenticating user.
@@ -61,8 +60,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ClaimsResponse"/> class.
 		/// </summary>
-		[Obsolete("Use ClaimsRequest.CreateResponse() instead.")]
-		public ClaimsResponse()
+		internal ClaimsResponse()
 			: this(Constants.sreg_ns) {
 		}
 
