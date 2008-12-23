@@ -9,12 +9,11 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using System.Collections.Generic;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Extensions;
+	using DotNetOpenAuth.OpenId.Messages;
 
 	internal class MockOpenIdExtension : IOpenIdMessageExtension {
-		private IDictionary<string, string> extraData = new Dictionary<string, string>();
-		private const string MockTypeUri = "http://mockextension";
+		internal const string MockTypeUri = "http://mockextension";
 
 		internal static readonly OpenIdExtensionFactory.CreateDelegate Factory = (typeUri, data, baseMessage) => {
 			if (typeUri == MockTypeUri) {
@@ -24,9 +23,16 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return null;
 		};
 
+		private IDictionary<string, string> extraData = new Dictionary<string, string>();
+
 		internal MockOpenIdExtension() {
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MockOpenIdExtension"/> class.
+		/// </summary>
+		/// <param name="partValue">The value of the 'Part' parameter.</param>
+		/// <param name="extraValue">The value of the 'data' parameter.</param>
 		internal MockOpenIdExtension(string partValue, string extraValue) {
 			this.Part = partValue;
 			this.Data = extraValue;
@@ -44,7 +50,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 
 		#endregion
 
-		#region IMessage Members
+		#region IMessage Properties
 
 		public Version Version {
 			get { return new Version(1, 0); }
@@ -54,24 +60,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			get { return this.extraData; }
 		}
 
-		public void EnsureValidMessage() {
-		}
-
 		#endregion
-
-		public override bool Equals(object obj) {
-			MockOpenIdExtension other = obj as MockOpenIdExtension;
-			if (other == null) {
-				return false;
-			}
-
-			return this.Part.EqualsNullSafe(other.Part) &&
-				this.Data.EqualsNullSafe(other.Data);
-		}
-
-		public override int GetHashCode() {
-			return 1; // mock doesn't need a good hash code algorithm
-		}
 
 		[MessagePart]
 		internal string Part { get; set; }
@@ -87,5 +76,26 @@ namespace DotNetOpenAuth.Test.Mocks {
 				this.extraData["data"] = value;
 			}
 		}
+
+		public override bool Equals(object obj) {
+			MockOpenIdExtension other = obj as MockOpenIdExtension;
+			if (other == null) {
+				return false;
+			}
+
+			return this.Part.EqualsNullSafe(other.Part) &&
+				this.Data.EqualsNullSafe(other.Data);
+		}
+
+		public override int GetHashCode() {
+			return 1; // mock doesn't need a good hash code algorithm
+		}
+
+		#region IMessage methods
+
+		public void EnsureValidMessage() {
+		}
+
+		#endregion
 	}
 }

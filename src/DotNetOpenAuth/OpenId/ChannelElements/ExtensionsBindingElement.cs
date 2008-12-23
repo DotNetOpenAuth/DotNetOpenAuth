@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		public Channel Channel { get; set; }
 
 		/// <summary>
-		/// The extension factory.
+		/// Gets the extension factory.
 		/// </summary>
 		public IOpenIdExtensionFactory ExtensionFactory { get; private set; }
 
@@ -65,6 +65,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		public bool PrepareMessageForSending(IProtocolMessage message) {
+			ErrorUtilities.VerifyArgumentNotNull(message, "message");
+
 			var extendableMessage = message as IProtocolMessageWithExtensions;
 			if (extendableMessage != null) {
 				Protocol protocol = Protocol.Lookup(message.Version);
