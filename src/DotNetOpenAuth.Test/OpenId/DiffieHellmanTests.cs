@@ -35,8 +35,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 					byte[] pub = dh.CreateKeyExchange();
 					byte[] y = Convert.FromBase64String(parts[1]);
 
-					if (y[0] == 0 && y[1] <= 127)
+					if (y[0] == 0 && y[1] <= 127) {
 						y.CopyTo(y, 1);
+					}
 
 					Assert.AreEqual(
 						Convert.ToBase64String(y),

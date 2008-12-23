@@ -6,41 +6,26 @@
 
 namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using System;
-	using System.Collections.Generic;
-	using System.Text;
+	using System.Globalization;
+	using System.IO;
 	using System.Runtime.Serialization;
 	using System.Runtime.Serialization.Formatters.Binary;
 	using System.Xml.Serialization;
-	using System.IO;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
-	using System.Globalization;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
 	public class ClaimsResponseTests {
-		private ClaimsResponse getFilledData() {
-			return new ClaimsResponse(Constants.sreg_ns) {
-				BirthDate = new DateTime(2005, 2, 3),
-				Culture = new System.Globalization.CultureInfo("en-US"),
-				Email = "a@b.com",
-				FullName = "Jimmy buffet",
-				Gender = Gender.Male,
-				Nickname = "Jimbo",
-				PostalCode = "12345",
-				TimeZone = "PST",
-			};
-		}
-
 		[TestMethod]
 		public void EmptyMailAddress() {
 			ClaimsResponse response = new ClaimsResponse(Constants.sreg_ns);
-			response.Email = "";
+			response.Email = string.Empty;
 			Assert.IsNull(response.MailAddress);
 		}
 
 		[TestMethod, Ignore] // serialization no longer supported
 		public void BinarySerialization() {
-			ClaimsResponse fields = getFilledData();
+			ClaimsResponse fields = this.GetFilledData();
 			MemoryStream ms = new MemoryStream();
 			IFormatter formatter = new BinaryFormatter();
 			formatter.Serialize(ms, fields);
@@ -52,7 +37,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 
 		[TestMethod, Ignore] // serialization no longer supported
 		public void XmlSerialization() {
-			ClaimsResponse fields = getFilledData();
+			ClaimsResponse fields = this.GetFilledData();
 			MemoryStream ms = new MemoryStream();
 			XmlSerializer xs = new XmlSerializer(typeof(ClaimsResponse));
 			xs.Serialize(ms, fields);
@@ -63,13 +48,13 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		}
 
 		[TestMethod]
-		public void TestEquals() {
-			ClaimsResponse fields1 = getFilledData();
+		public void EqualityTest() {
+			ClaimsResponse fields1 = this.GetFilledData();
 
 			Assert.AreNotEqual(fields1, null);
 			Assert.AreNotEqual(fields1, "string");
 
-			ClaimsResponse fields2 = getFilledData();
+			ClaimsResponse fields2 = this.GetFilledData();
 			Assert.AreNotSame(fields1, fields2, "Test sanity check.");
 			Assert.AreEqual(fields1, fields2);
 
@@ -110,16 +95,6 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.AreNotEqual(fields1, fields2);
 		}
 
-		//[TestMethod]
-		public void AddToResponse() {
-			// TODO
-		}
-
-		//[TestMethod]
-		public void ReadFromResponse() {
-			// TODO
-		}
-
 		[TestMethod]
 		public void Birthdates() {
 			var response = new ClaimsResponse();
@@ -153,6 +128,19 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		public void InvalidRawBirthdate() {
 			var response = new ClaimsResponse();
 			response.BirthDateRaw = "2008";
+		}
+
+		private ClaimsResponse GetFilledData() {
+			return new ClaimsResponse(Constants.sreg_ns) {
+				BirthDate = new DateTime(2005, 2, 3),
+				Culture = new System.Globalization.CultureInfo("en-US"),
+				Email = "a@b.com",
+				FullName = "Jimmy buffet",
+				Gender = Gender.Male,
+				Nickname = "Jimbo",
+				PostalCode = "12345",
+				TimeZone = "PST",
+			};
 		}
 	}
 }

@@ -5,26 +5,20 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Test.OpenId.Extensions {
-	using System;
-	using System.Collections.Generic;
-	using System.Globalization;
-	using System.Linq;
-	using System.Text;
-	using DotNetOpenAuth.OpenId;
-	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.Messaging.Reflection;
+	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
+	using DotNetOpenAuth.OpenId.Messages;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
 	public class ClaimsRequestTests : OpenIdTestBase {
 		[TestMethod]
 		public void CreateResponse() {
 			// some unofficial type URIs...
-			ParameterizedTypeUriPreservedTest("http://openid.net/sreg/1.0");
-			ParameterizedTypeUriPreservedTest("http://openid.net/sreg/1.1");
+			this.ParameterizedTypeUriPreservedTest("http://openid.net/sreg/1.0");
+			this.ParameterizedTypeUriPreservedTest("http://openid.net/sreg/1.1");
 			// and the official one.
-			ParameterizedTypeUriPreservedTest("http://openid.net/extensions/sreg/1.1");
+			this.ParameterizedTypeUriPreservedTest("http://openid.net/extensions/sreg/1.1");
 		}
 
 		[TestMethod]
