@@ -108,6 +108,7 @@
     <Compile Include="OpenId\ChannelElements\ExtensionsBindingElementTests.cs" />
     <Compile Include="OpenId\ChannelElements\KeyValueFormEncodingTests.cs" />
     <Compile Include="Messaging\Bindings\StandardReplayProtectionBindingElementTests.cs" />
+    <Compile Include="OpenId\DiffieHellmanTests.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\ClaimsResponseTests.cs" />
     <Compile Include="OpenId\Extensions\ExtensionTestBase.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\ClaimsRequestTests.cs" />
@@ -179,6 +180,9 @@
     <EmbeddedResource Include="OpenId\Discovery\xrdsdiscovery\xrds2010b.xml" />
     <EmbeddedResource Include="OpenId\Discovery\xrdsdiscovery\XrdsReferencedInHead.html" />
     <EmbeddedResource Include="OpenId\Discovery\xrdsdiscovery\XrdsReferencedInHttpHeader.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="OpenId\dhpriv.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\tools\DotNetOpenAuth.Versioning.targets" />
