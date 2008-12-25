@@ -80,6 +80,12 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			this(messageTypeProvider, InitializeBindingElements(new SigningBindingElement(associationStore), nonceStore, null, false)) {
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="OpenIdChannel"/> class.
+		/// </summary>
+		/// <param name="messageTypeProvider">A class prepared to analyze incoming messages and indicate what concrete
+		/// message types can deserialize from it.</param>
+		/// <param name="bindingElements">The binding elements to use in sending and receiving messages.</param>
 		private OpenIdChannel(IMessageFactory messageTypeProvider, IChannelBindingElement[] bindingElements)
 			: base(messageTypeProvider, bindingElements) {
 			// Customize the binding element order, since we play some tricks for higher
@@ -87,7 +93,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			var outgoingBindingElements = new List<IChannelBindingElement>(bindingElements);
 			var incomingBindingElements = new List<IChannelBindingElement>(bindingElements);
 			incomingBindingElements.Reverse();
-			
+
 			// Customize the order of the incoming elements by moving the return_to elements in front.
 			var backwardCompatibility = incomingBindingElements.OfType<BackwardCompatibilityBindingElement>().SingleOrDefault();
 			var returnToSign = incomingBindingElements.OfType<ReturnToSignatureBindingElement>().SingleOrDefault();

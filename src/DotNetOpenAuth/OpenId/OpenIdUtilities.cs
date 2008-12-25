@@ -26,11 +26,23 @@ namespace DotNetOpenAuth.OpenId {
 			return Protocol.Lookup(message.Version);
 		}
 
+		/// <summary>
+		/// Changes the position of some element in a list.
+		/// </summary>
+		/// <typeparam name="T">The type of elements stored in the list.</typeparam>
+		/// <param name="list">The list to be modified.</param>
+		/// <param name="position">The new position for the given element.</param>
+		/// <param name="value">The element to move within the list.</param>
+		/// <exception cref="InternalErrorException">Thrown if the element does not already exist in the list.</exception>
 		internal static void MoveTo<T>(this IList<T> list, int position, T value) {
 			ErrorUtilities.VerifyInternal(list.Remove(value), "Unable to find element in list.");
 			list.Insert(position, value);
 		}
 
+		/// <summary>
+		/// Initializes the private secret if it has not yet been set.
+		/// </summary>
+		/// <param name="secretStore">The secret store.</param>
 		internal static void InitializeSecretIfUnset(this IPrivateSecretStore secretStore) {
 			ErrorUtilities.VerifyArgumentNotNull(secretStore, "secretStore");
 

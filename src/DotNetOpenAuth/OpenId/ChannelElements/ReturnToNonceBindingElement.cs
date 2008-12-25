@@ -25,25 +25,95 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// only on the RP side and only on 1.0 messages.</para>
 	/// </remarks>
 	internal class ReturnToNonceBindingElement : IChannelBindingElement {
+		/// <summary>
+		/// The parameter of the callback parameter we tack onto the return_to URL
+		/// to store the replay-detection nonce.
+		/// </summary>
 		private static readonly string NonceParameter = "dnoi.request_nonce";
+
+		/// <summary>
+		/// The length of the generated nonce's random part.
+		/// </summary>
 		private static readonly int NonceByteLength = 128 / 8; // 128-bit nonce
 
+		/// <summary>
+		/// The nonce store that will allow us to recall which nonces we've seen before.
+		/// </summary>
 		private INonceStore nonceStore;
 
+		/// <summary>
+		/// The standard expiration binding element used in the channel.
+		/// </summary>
+		private StandardExpirationBindingElement expirationElement;
+
+		/// <summary>
+		/// Backing field for the <see cref="Channel"/> property.
+		/// </summary>
+		private Channel channel;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ReturnToNonceBindingElement"/> class.
+		/// </summary>
+		/// <param name="nonceStore">The nonce store to use.</param>
 		internal ReturnToNonceBindingElement(INonceStore nonceStore) {
 			ErrorUtilities.VerifyArgumentNotNull(nonceStore, "nonceStore");
 
 			this.nonceStore = nonceStore;
 		}
 
-		#region IChannelBindingElement Members
+		#region IChannelBindingElement Properties
 
-		public Channel Channel { get; set; }
+		/// <summary>
+		/// Gets or sets the channel that this binding element belongs to.
+		/// </summary>
+		/// <remarks>
+		/// This property is set by the channel when it is first constructed.
+		/// </remarks>
+		public Channel Channel {
+			get {
+				return this.channel;
+			}
 
+			set {
+				if (this.channel == value) {
+					return;
+				}
+
+				this.channel = value;
+				this.expirationElement = this.channel.BindingElements.OfType<StandardExpirationBindingElement>().Single();
+			}
+		}
+
+		/// <summary>
+		/// Gets the protection offered (if any) by this binding element.
+		/// </summary>
 		public MessageProtections Protection {
 			get { return MessageProtections.ReplayProtection; }
 		}
 
+		#endregion
+
+		/// <summary>
+		/// Gets the maximum message age from the standard expiration binding element.
+		/// </summary>
+		private TimeSpan MaximumMessageAge {
+			get { return this.expirationElement.MaximumMessageAge; }
+		}
+
+		#region IChannelBindingElement Methods
+
+		/// <summary>
+		/// Prepares a message for sending based on the rules of this channel binding element.
+		/// </summary>
+		/// <param name="message">The message to prepare for sending.</param>
+		/// <returns>
+		/// True if the <paramref name="message"/> applied to this binding element
+		/// and the operation was successful.  False otherwise.
+		/// </returns>
+		/// <remarks>
+		/// Implementations that provide message protection must honor the
+		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
+		/// </remarks>
 		public bool PrepareMessageForSending(IProtocolMessage message) {
 			// We only add a nonce to 1.x auth requests.
 			SignedResponseRequest request = message as SignedResponseRequest;
@@ -56,6 +126,23 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			return false;
 		}
 
+		/// <summary>
+		/// Performs any transformation on an incoming message that may be necessary and/or
+		/// validates an incoming message based on the rules of this channel binding element.
+		/// </summary>
+		/// <param name="message">The incoming message to process.</param>
+		/// <returns>
+		/// True if the <paramref name="message"/> applied to this binding element
+		/// and the operation was successful.  False if the operation did not apply to this message.
+		/// </returns>
+		/// <exception cref="ProtocolException">
+		/// Thrown when the binding element rules indicate that this message is invalid and should
+		/// NOT be processed.
+		/// </exception>
+		/// <remarks>
+		/// Implementations that provide message protection must honor the
+		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
+		/// </remarks>
 		public bool PrepareMessageForReceiving(IProtocolMessage message) {
 			IndirectSignedResponse response = message as IndirectSignedResponse;
 			if (response != null && response.Version.Major < 2) {
@@ -63,6 +150,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				ErrorUtilities.VerifyProtocol(nonceValue != null, OpenIdStrings.UnsolicitedAssertionsNotAllowedFrom1xOPs);
 
 				CustomNonce nonce = CustomNonce.Deserialize(nonceValue);
+				DateTime expirationDate = nonce.CreationDateUtc + this.MaximumMessageAge;
+				if (expirationDate < DateTime.UtcNow) {
+					throw new ExpiredMessageException(expirationDate, message);
+				}
+
 				ErrorUtilities.VerifyProtocol(this.nonceStore.StoreNonce(nonce.RandomPartAsString, nonce.CreationDateUtc), MessagingStrings.ReplayAttackDetected);
 				return true;
 			}
@@ -72,33 +164,51 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 		#endregion
 
+		/// <summary>
+		/// A special DotNetOpenId-only nonce used by the RP when talking to 1.0 OPs in order
+		/// to protect against replay attacks.
+		/// </summary>
 		private class CustomNonce {
+			/// <summary>
+			/// The random bits generated for the nonce.
+			/// </summary>
 			private byte[] randomPart;
 
+			/// <summary>
+			/// Initializes a new instance of the <see cref="CustomNonce"/> class.
+			/// </summary>
+			/// <param name="creationDate">The creation date of the nonce.</param>
+			/// <param name="randomPart">The random bits that help make the nonce unique.</param>
 			private CustomNonce(DateTime creationDate, byte[] randomPart) {
 				this.CreationDateUtc = creationDate;
 				this.randomPart = randomPart;
 			}
 
-			internal static CustomNonce NewNonce() {
-				return new CustomNonce(DateTime.UtcNow, MessagingUtilities.GetCryptoRandomData(NonceByteLength));
-			}
-
+			/// <summary>
+			/// Gets the creation date.
+			/// </summary>
 			internal DateTime CreationDateUtc { get; private set; }
 
+			/// <summary>
+			/// Gets the random part of the nonce as a base64 encoded string.
+			/// </summary>
 			internal string RandomPartAsString {
 				get { return Convert.ToBase64String(this.randomPart); }
 			}
 
-			internal string Serialize() {
-				byte[] timestamp = BitConverter.GetBytes(this.CreationDateUtc.Ticks);
-				byte[] nonce = new byte[timestamp.Length + this.randomPart.Length];
-				timestamp.CopyTo(nonce, 0);
-				this.randomPart.CopyTo(nonce, timestamp.Length);
-				string base64Nonce = Convert.ToBase64String(nonce);
-				return base64Nonce;
+			/// <summary>
+			/// Creates a new nonce.
+			/// </summary>
+			/// <returns>The newly instantiated instance.</returns>
+			internal static CustomNonce NewNonce() {
+				return new CustomNonce(DateTime.UtcNow, MessagingUtilities.GetCryptoRandomData(NonceByteLength));
 			}
 
+			/// <summary>
+			/// Deserializes a nonce from the return_to parameter.
+			/// </summary>
+			/// <param name="value">The base64-encoded value of the nonce.</param>
+			/// <returns>The instantiated and initialized nonce.</returns>
 			internal static CustomNonce Deserialize(string value) {
 				ErrorUtilities.VerifyNonZeroLength(value, "value");
 
@@ -107,6 +217,19 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				byte[] randomPart = new byte[NonceByteLength];
 				Array.Copy(nonce, sizeof(long), randomPart, 0, NonceByteLength);
 				return new CustomNonce(creationDateUtc, randomPart);
+			}
+
+			/// <summary>
+			/// Serializes the entire nonce for adding to the return_to URL.
+			/// </summary>
+			/// <returns>The base64-encoded string representing the nonce.</returns>
+			internal string Serialize() {
+				byte[] timestamp = BitConverter.GetBytes(this.CreationDateUtc.Ticks);
+				byte[] nonce = new byte[timestamp.Length + this.randomPart.Length];
+				timestamp.CopyTo(nonce, 0);
+				this.randomPart.CopyTo(nonce, timestamp.Length);
+				string base64Nonce = Convert.ToBase64String(nonce);
+				return base64Nonce;
 			}
 		}
 	}

@@ -7,13 +7,11 @@
 namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
+	using System.Collections.Specialized;
+	using System.Security.Cryptography;
+	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
-	using System.Web;
-	using System.Security.Cryptography;
-	using System.Collections.Specialized;
 
 	/// <summary>
 	/// This binding element signs a Relying Party's openid.return_to parameter
@@ -39,10 +37,21 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// </remarks>
 		internal static readonly int OptimalPrivateSecretLength = 64;
 
+		/// <summary>
+		/// The name of the callback parameter we'll tack onto the return_to value
+		/// to store our signature on the return_to parameter.
+		/// </summary>
 		private static readonly string ReturnToSignatureParameterName = "dnoi.return_to_sig";
-	
+
+		/// <summary>
+		/// The hashing algorithm used to generate the private signature on the return_to parameter.
+		/// </summary>
 		private HashAlgorithm signingHasher;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ReturnToSignatureBindingElement"/> class.
+		/// </summary>
+		/// <param name="secretStore">The secret store from which to retrieve the secret used for signing.</param>
 		internal ReturnToSignatureBindingElement(IPrivateSecretStore secretStore) {
 			ErrorUtilities.VerifyArgumentNotNull(secretStore, "secretStore");
 			ErrorUtilities.VerifyInternal(secretStore.PrivateSecret != null, "Private secret should have been set already.");
@@ -50,7 +59,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			if (secretStore.PrivateSecret.Length < OptimalPrivateSecretLength) {
 				Logger.WarnFormat("For best security, the optimal length of a private signing secret is {0} bytes, but the secret we have is only {1} bytes.", OptimalPrivateSecretLength, secretStore.PrivateSecret.Length);
 			}
-		
+
 			this.signingHasher = new HMACSHA256(secretStore.PrivateSecret);
 		}
 
@@ -88,7 +97,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		public bool PrepareMessageForSending(IProtocolMessage message) {
 			SignedResponseRequest request = message as SignedResponseRequest;
 			if (request != null) {
-				string signature = GetReturnToSignature(request.ReturnTo);
+				string signature = this.GetReturnToSignature(request.ReturnTo);
 				request.AddReturnToArguments(ReturnToSignatureParameterName, signature);
 				return true;
 			}
@@ -126,7 +135,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					NameValueCollection returnToParameters = HttpUtility.ParseQueryString(response.ReturnTo.Query);
 
 					// Set the safety flag showing whether the return_to url had a valid signature.
-					string expected = GetReturnToSignature(response.ReturnTo);
+					string expected = this.GetReturnToSignature(response.ReturnTo);
 					string actual = returnToParameters[ReturnToSignatureParameterName];
 					response.ReturnToParametersSignatureValidated = actual == expected;
 					if (!response.ReturnToParametersSignatureValidated) {
@@ -146,7 +155,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Gets the return to signature.
 		/// </summary>
 		/// <param name="returnTo">The return to.</param>
-		/// <returns></returns>
+		/// <returns>The generated signature.</returns>
 		/// <remarks>
 		/// Only the parameters in the return_to URI are signed, rather than the base URI
 		/// itself, in order that OPs that might change the return_to's implicit port :80 part

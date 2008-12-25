@@ -128,6 +128,14 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			}
 		}
 
+		/// <summary>
+		/// Adds parameters to the return_to querystring.
+		/// </summary>
+		/// <param name="keysValues">The keys=value pairs to add to the return_to query string.</param>
+		/// <remarks>
+		/// This method is useful if the Relying Party wants to recall some value
+		/// when and if a positive assertion comes back from the Provider.
+		/// </remarks>
 		internal void AddReturnToArguments(IEnumerable<KeyValuePair<string, string>> keysValues) {
 			ErrorUtilities.VerifyArgumentNotNull(keysValues, "keysValues");
 			UriBuilder returnToBuilder = new UriBuilder(this.ReturnTo);
@@ -135,9 +143,18 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			this.ReturnTo = returnToBuilder.Uri;
 		}
 
+		/// <summary>
+		/// Adds a parameter to the return_to querystring.
+		/// </summary>
+		/// <param name="key">The name of the parameter.</param>
+		/// <param name="value">The value of the argument.</param>
+		/// <remarks>
+		/// This method is useful if the Relying Party wants to recall some value
+		/// when and if a positive assertion comes back from the Provider.
+		/// </remarks>
 		internal void AddReturnToArguments(string key, string value) {
 			var pair = new KeyValuePair<string, string>(key, value);
-			AddReturnToArguments(new[] { pair });
+			this.AddReturnToArguments(new[] { pair });
 		}
 
 		/// <summary>

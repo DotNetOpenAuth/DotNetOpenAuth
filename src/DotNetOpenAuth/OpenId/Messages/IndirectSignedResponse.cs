@@ -42,8 +42,14 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		private DateTime creationDateUtc = DateTime.UtcNow;
 
+		/// <summary>
+		/// Backing store for the <see cref="ReturnToParameters"/> property.
+		/// </summary>
 		private IDictionary<string, string> returnToParameters;
 
+		/// <summary>
+		/// Backing store for the <see cref="ReturnToParametersSignatureValidated"/> property.
+		/// </summary>
 		private bool returnToParametersSignatureValidated;
 
 		/// <summary>
@@ -260,6 +266,9 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			}
 		}
 
+		/// <summary>
+		/// Gets the querystring key=value pairs in the return_to URL.
+		/// </summary>
 		private IDictionary<string, string> ReturnToParameters {
 			get {
 				if (this.returnToParameters == null) {
@@ -295,6 +304,25 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		}
 
 		/// <summary>
+		/// Gets the value of a named parameter in the return_to URL.
+		/// </summary>
+		/// <param name="key">The full name of the parameter whose value is being sought.</param>
+		/// <returns>The value of the parameter if it is present and unaltered from when
+		/// the Relying Party signed it; <c>null</c> otherwise.</returns>
+		/// <remarks>
+		/// This method will always return null on the Provider-side, since Providers
+		/// cannot verify the private signature made by the relying party.
+		/// </remarks>
+		internal string GetReturnToArgument(string key) {
+			ErrorUtilities.VerifyNonZeroLength(key, "key");
+			ErrorUtilities.VerifyInternal(this.ReturnTo != null, "ReturnTo was expected to be required but is null.");
+
+			string value;
+			this.ReturnToParameters.TryGetValue(key, out value);
+			return value;
+		}
+
+		/// <summary>
 		/// Verifies that the openid.return_to field matches the URL of the actual HTTP request.
 		/// </summary>
 		/// <remarks>
@@ -322,15 +350,6 @@ namespace DotNetOpenAuth.OpenId.Messages {
 				Protocol.openid.return_to,
 				this.ReturnTo,
 				this.Recipient);
-		}
-
-		internal string GetReturnToArgument(string key) {
-			ErrorUtilities.VerifyNonZeroLength(key, "key");
-			ErrorUtilities.VerifyInternal(ReturnTo != null, "ReturnTo was expected to be required but is null.");
-
-			string value;
-			this.ReturnToParameters.TryGetValue(key, out value);
-			return value;
 		}
 	}
 }

@@ -588,6 +588,7 @@ namespace DotNetOpenAuth.Messaging {
 			foreach (IChannelBindingElement bindingElement in this.outgoingBindingElements) {
 				if (bindingElement.PrepareMessageForSending(message)) {
 					Logger.DebugFormat("Binding element {0} applied to message.", bindingElement.GetType().FullName);
+
 					// Ensure that only one protection binding element applies to this message
 					// for each protection type.
 					ErrorUtilities.VerifyProtocol((appliedProtection & bindingElement.Protection) == 0, MessagingStrings.TooManyBindingsOfferingSameProtection, bindingElement.Protection);
@@ -677,6 +678,7 @@ namespace DotNetOpenAuth.Messaging {
 			foreach (IChannelBindingElement bindingElement in this.incomingBindingElements) {
 				if (bindingElement.PrepareMessageForReceiving(message)) {
 					Logger.DebugFormat("Binding element {0} applied to message.", bindingElement.GetType().FullName);
+
 					// Ensure that only one protection binding element applies to this message
 					// for each protection type.
 					ErrorUtilities.VerifyInternal((appliedProtection & bindingElement.Protection) == 0, MessagingStrings.TooManyBindingsOfferingSameProtection, bindingElement.Protection);
@@ -697,33 +699,27 @@ namespace DotNetOpenAuth.Messaging {
 			message.EnsureValidMessage();
 		}
 
+		/// <summary>
+		/// Customizes the binding element order for outgoing and incoming messages.
+		/// </summary>
+		/// <param name="outgoingOrder">The outgoing order.</param>
+		/// <param name="incomingOrder">The incoming order.</param>
+		/// <remarks>
+		/// No binding elements can be added or removed from the channel using this method.
+		/// Only a customized order is allowed.
+		/// </remarks>
+		/// <exception cref="ArgumentException">Thrown if a binding element is new or missing in one of the ordered lists.</exception>
 		protected void CustomizeBindingElementOrder(IEnumerable<IChannelBindingElement> outgoingOrder, IEnumerable<IChannelBindingElement> incomingOrder) {
 			ErrorUtilities.VerifyArgumentNotNull(outgoingOrder, "outgoingOrder");
 			ErrorUtilities.VerifyArgumentNotNull(incomingOrder, "incomingOrder");
 
-			ErrorUtilities.VerifyArgument(IsBindingElementOrderValid(outgoingOrder), MessagingStrings.InvalidCustomBindingElementOrder);
-			ErrorUtilities.VerifyArgument(IsBindingElementOrderValid(incomingOrder), MessagingStrings.InvalidCustomBindingElementOrder);
+			ErrorUtilities.VerifyArgument(this.IsBindingElementOrderValid(outgoingOrder), MessagingStrings.InvalidCustomBindingElementOrder);
+			ErrorUtilities.VerifyArgument(this.IsBindingElementOrderValid(incomingOrder), MessagingStrings.InvalidCustomBindingElementOrder);
 
 			this.outgoingBindingElements.Clear();
 			this.outgoingBindingElements.AddRange(outgoingOrder);
 			this.incomingBindingElements.Clear();
 			this.incomingBindingElements.AddRange(incomingOrder);
-		}
-
-		private bool IsBindingElementOrderValid(IEnumerable<IChannelBindingElement> order) {
-			ErrorUtilities.VerifyArgumentNotNull(order, "order");
-
-			// Check that the same number of binding elements are defined.
-			if (order.Count() != this.OutgoingBindingElements.Count) {
-				return false;
-			}
-
-			// Check that every binding element appears exactly once.
-			if (order.Any(el => !this.OutgoingBindingElements.Contains(el))) {
-				return false;
-			}
-
-			return true;
 		}
 
 		/// <summary>
@@ -825,6 +821,30 @@ namespace DotNetOpenAuth.Messaging {
 
 			// Now put the protection ones in the right order.
 			return -((int)protection1).CompareTo((int)protection2); // descending flag ordinal order
+		}
+
+		/// <summary>
+		/// Determines whether a given ordered list of binding elements includes every
+		/// binding element in this channel exactly once.
+		/// </summary>
+		/// <param name="order">The list of binding elements to test.</param>
+		/// <returns>
+		/// 	<c>true</c> if the given list is a valid description of a binding element ordering; otherwise, <c>false</c>.
+		/// </returns>
+		private bool IsBindingElementOrderValid(IEnumerable<IChannelBindingElement> order) {
+			ErrorUtilities.VerifyArgumentNotNull(order, "order");
+
+			// Check that the same number of binding elements are defined.
+			if (order.Count() != this.OutgoingBindingElements.Count) {
+				return false;
+			}
+
+			// Check that every binding element appears exactly once.
+			if (order.Any(el => !this.OutgoingBindingElements.Contains(el))) {
+				return false;
+			}
+
+			return true;
 		}
 	}
 }

@@ -1,11 +1,14 @@
-﻿namespace DotNetOpenAuth.OpenId.ChannelElements {
+﻿//-----------------------------------------------------------------------
+// <copyright file="BackwardCompatibilityBindingElement.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.Messaging.Reflection;
+	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
 	/// Provides a mechanism for Relying Parties to work with OpenID 1.0 Providers
@@ -13,8 +16,16 @@
 	/// are required to send back with positive assertions.
 	/// </summary>
 	internal class BackwardCompatibilityBindingElement : IChannelBindingElement {
+		/// <summary>
+		/// The name of the callback parameter that stores the Provider Endpoint URL
+		/// to tack onto the return_to URI.
+		/// </summary>
 		private static readonly string ProviderEndpointParameterName = "dnoi.op_endpoint";
-		
+
+		/// <summary>
+		/// The name of the callback parameter that stores the Claimed Identifier
+		/// to tack onto the return_to URI.
+		/// </summary>
 		private static readonly string ClaimedIdentifierParameterName = "dnoi.claimed_id";
 
 		#region IChannelBindingElement Members
