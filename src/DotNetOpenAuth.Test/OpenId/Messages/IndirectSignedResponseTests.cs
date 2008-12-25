@@ -107,5 +107,23 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Assert.AreEqual(DateTimeKind.Utc, utcCreationDate.Kind);
 			Assert.AreEqual(this.creationDate.Hour, utcCreationDate.Hour, "The hour should match since both times are UTC time.");
 		}
+
+		[TestMethod]
+		public void ReturnToDoesNotMatchRecipient() {
+			// Make sure its valid first, so we know that when it's invalid
+			// it is due to our tampering.
+			this.response.EnsureValidMessage();
+
+			UriBuilder returnToBuilder = new UriBuilder(this.response.ReturnTo);
+			var extraArgs = new Dictionary<string, string>();
+			extraArgs["a"] = "b";
+			MessagingUtilities.AppendQueryArgs(returnToBuilder, extraArgs);
+			this.response.ReturnTo = returnToBuilder.Uri;
+			try {
+				this.response.EnsureValidMessage();
+				Assert.Fail("Expected ProtocolException not thrown.");
+			} catch (ProtocolException) {
+			}
+		}
 	}
 }

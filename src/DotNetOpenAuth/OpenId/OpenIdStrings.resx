@@ -183,6 +183,9 @@
   <data name="ReturnToNotUnderRealm" xml:space="preserve">
     <value>return_to '{0}' not under realm '{1}'.</value>
   </data>
+  <data name="ReturnToParamDoesNotMatchRequestUrl" xml:space="preserve">
+    <value>The {0} parameter ({1}) does not match the actual URL ({2}) the request was made with.</value>
+  </data>
   <data name="ReturnToRequiredForResponse" xml:space="preserve">
     <value>The openid.return_to parameter is required in the request message in order to construct a response, but that parameter was missing.</value>
   </data>

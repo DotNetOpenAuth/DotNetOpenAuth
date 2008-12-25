@@ -7,9 +7,12 @@
 namespace DotNetOpenAuth.OpenId.Messages {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.Specialized;
 	using System.Diagnostics;
 	using System.Globalization;
+	using System.Linq;
 	using System.Net.Security;
+	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
@@ -213,6 +216,54 @@ namespace DotNetOpenAuth.OpenId.Messages {
 					((IReplayProtectedProtocolMessage)this).Nonce = value.Substring(indexOfZ + 1);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Checks the message state for conformity to the protocol specification
+		/// and throws an exception if the message is invalid.
+		/// </summary>
+		/// <remarks>
+		/// 	<para>Some messages have required fields, or combinations of fields that must relate to each other
+		/// in specialized ways.  After deserializing a message, this method checks the state of the
+		/// message to see if it conforms to the protocol.</para>
+		/// 	<para>Note that this property should <i>not</i> check signatures or perform any state checks
+		/// outside this scope of this particular message.</para>
+		/// </remarks>
+		/// <exception cref="ProtocolException">Thrown if the message is invalid.</exception>
+		public override void EnsureValidMessage() {
+			base.EnsureValidMessage();
+
+			this.VerifyReturnToMatchesRecipient();
+		}
+
+		/// <summary>
+		/// Verifies that the openid.return_to field matches the URL of the actual HTTP request.
+		/// </summary>
+		/// <remarks>
+		/// From OpenId Authentication 2.0 section 11.1:
+		/// To verify that the "openid.return_to" URL matches the URL that is processing this assertion:
+		///  * The URL scheme, authority, and path MUST be the same between the two URLs.
+		///  * Any query parameters that are present in the "openid.return_to" URL MUST 
+		///    also be present with the same values in the URL of the HTTP request the RP received.
+		/// </remarks>
+		private void VerifyReturnToMatchesRecipient() {
+			ErrorUtilities.VerifyProtocol(
+				string.Equals(this.Recipient.Scheme, this.ReturnTo.Scheme, StringComparison.OrdinalIgnoreCase) &&
+				string.Equals(this.Recipient.Authority, this.ReturnTo.Authority, StringComparison.OrdinalIgnoreCase) &&
+				string.Equals(this.Recipient.AbsolutePath, this.ReturnTo.AbsolutePath, StringComparison.Ordinal),
+				OpenIdStrings.ReturnToParamDoesNotMatchRequestUrl,
+				Protocol.openid.return_to,
+				this.ReturnTo,
+				this.Recipient);
+
+			NameValueCollection returnToArgs = HttpUtility.ParseQueryString(this.ReturnTo.Query);
+			NameValueCollection requestArgs = HttpUtility.ParseQueryString(this.Recipient.Query);
+			ErrorUtilities.VerifyProtocol(
+				returnToArgs.Keys.Cast<string>().All(returnToKey => string.Equals(returnToArgs[returnToKey], requestArgs[returnToKey], StringComparison.Ordinal)),
+				OpenIdStrings.ReturnToParamDoesNotMatchRequestUrl,
+				Protocol.openid.return_to,
+				this.ReturnTo,
+				this.Recipient);
 		}
 	}
 }

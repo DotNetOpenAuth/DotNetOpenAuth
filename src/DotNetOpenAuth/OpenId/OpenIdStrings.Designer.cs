@@ -259,6 +259,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The {0} parameter ({1}) does not match the actual URL ({2}) the request was made with..
+        /// </summary>
+        internal static string ReturnToParamDoesNotMatchRequestUrl {
+            get {
+                return ResourceManager.GetString("ReturnToParamDoesNotMatchRequestUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The openid.return_to parameter is required in the request message in order to construct a response, but that parameter was missing..
         /// </summary>
         internal static string ReturnToRequiredForResponse {
