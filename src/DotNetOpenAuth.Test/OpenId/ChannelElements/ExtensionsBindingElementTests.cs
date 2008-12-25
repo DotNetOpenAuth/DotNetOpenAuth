@@ -85,6 +85,14 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			Assert.AreEqual("extra", ext.Data);
 		}
 
+		/// <summary>
+		/// Verifies that unsigned extension responses (where any or all fields are unsigned) are ignored.
+		/// </summary>
+		[TestMethod, Ignore]
+		public void UnsignedExtensionsAreIgnored() {
+			Assert.Inconclusive("Not yet implemented.");
+		}
+
 		private static IEnumerable<string> GetAliases(IDictionary<string, string> extraData) {
 			Regex regex = new Regex(@"^openid\.ns\.(\w+)");
 			return from key in extraData.Keys

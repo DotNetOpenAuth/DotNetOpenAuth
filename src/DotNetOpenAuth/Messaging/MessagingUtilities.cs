@@ -293,16 +293,16 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="args">The dictionary of key/values to read from.</param>
 		/// <returns>The formulated querystring style string.</returns>
-		internal static string CreateQueryString(IDictionary<string, string> args) {
-			if (args == null) {
-				throw new ArgumentNullException("args");
-			}
-			if (args.Count == 0) {
+		internal static string CreateQueryString(IEnumerable<KeyValuePair<string, string>> args) {
+			ErrorUtilities.VerifyArgumentNotNull(args, "args");
+			if (args.Count() == 0) {
 				return string.Empty;
 			}
-			StringBuilder sb = new StringBuilder(args.Count * 10);
+			StringBuilder sb = new StringBuilder(args.Count() * 10);
 
 			foreach (var p in args) {
+				ErrorUtilities.VerifyArgument(p.Key != null, MessagingStrings.UnexpectedNullValue);
+				ErrorUtilities.VerifyArgument(p.Value != null, MessagingStrings.UnexpectedNullValue);
 				sb.Append(HttpUtility.UrlEncode(p.Key));
 				sb.Append('=');
 				sb.Append(HttpUtility.UrlEncode(p.Value));
@@ -323,13 +323,13 @@ namespace DotNetOpenAuth.Messaging {
 		/// The arguments to add to the query.  
 		/// If null, <paramref name="builder"/> is not changed.
 		/// </param>
-		internal static void AppendQueryArgs(UriBuilder builder, IDictionary<string, string> args) {
+		internal static void AppendQueryArgs(this UriBuilder builder, IEnumerable<KeyValuePair<string, string>> args) {
 			if (builder == null) {
 				throw new ArgumentNullException("builder");
 			}
 
-			if (args != null && args.Count > 0) {
-				StringBuilder sb = new StringBuilder(50 + (args.Count * 10));
+			if (args != null && args.Count() > 0) {
+				StringBuilder sb = new StringBuilder(50 + (args.Count() * 10));
 				if (!string.IsNullOrEmpty(builder.Query)) {
 					sb.Append(builder.Query.Substring(1));
 					sb.Append('&');

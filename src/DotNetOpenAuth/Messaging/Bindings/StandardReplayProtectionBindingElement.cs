@@ -122,8 +122,8 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <exception cref="ReplayedMessageException">Thrown when the nonce check revealed a replayed message.</exception>
 		public bool PrepareMessageForReceiving(IProtocolMessage message) {
 			IReplayProtectedProtocolMessage nonceMessage = message as IReplayProtectedProtocolMessage;
-			if (nonceMessage != null) {
-				ErrorUtilities.VerifyProtocol(nonceMessage.Nonce != null && (nonceMessage.Nonce.Length > 0 || this.AllowZeroLengthNonce), MessagingStrings.InvalidNonceReceived);
+			if (nonceMessage != null && nonceMessage.Nonce != null) {
+				ErrorUtilities.VerifyProtocol(nonceMessage.Nonce.Length > 0 || this.AllowZeroLengthNonce, MessagingStrings.InvalidNonceReceived);
 
 				if (!this.nonceStore.StoreNonce(nonceMessage.Nonce, nonceMessage.UtcCreationDate)) {
 					throw new ReplayedMessageException(message);

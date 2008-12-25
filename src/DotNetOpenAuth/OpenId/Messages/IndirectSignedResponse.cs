@@ -42,6 +42,10 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		private DateTime creationDateUtc = DateTime.UtcNow;
 
+		private IDictionary<string, string> returnToParameters;
+
+		private bool returnToParametersSignatureValidated;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="IndirectSignedResponse"/> class.
 		/// </summary>
@@ -106,9 +110,23 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Gets the level of protection this message requires.
 		/// </summary>
-		/// <value><see cref="MessageProtections.All"/></value>
+		/// <value>
+		/// <see cref="MessageProtections.All"/> for OpenID 2.0 messages.
+		/// <see cref="MessageProtections.TamperProtection"/> for OpenID 1.x messages.
+		/// </value>
+		/// <remarks>
+		/// Although the required protection is reduced for OpenID 1.x,
+		/// this library will provide Relying Party hosts with all protections
+		/// by adding its own specially-crafted nonce to the authentication request
+		/// messages.
+		/// </remarks>
 		public override MessageProtections RequiredProtection {
-			get { return MessageProtections.All; }
+			// TODO: Fix up Provider side to only use private associations (dumb mode), 
+			//       and then to add a special nonce value of its own to provide replay
+			//       protection to the Provider's users even when logging into 1.0 RPs.
+			//       When this is done, remove this conditional getter and always return
+			//       that All protections are required.
+			get { return this.Version.Major < 2 ? MessageProtections.TamperProtection : MessageProtections.All; }
 		}
 
 		/// <summary>
@@ -182,6 +200,30 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		internal Uri ReturnTo { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether the <see cref="ReturnTo"/>
+		/// URI's query string is unaltered between when the Relying Party
+		/// sent the original request and when the response was received.
+		/// </summary>
+		/// <remarks>
+		/// This property is not persisted in the transmitted message, and
+		/// has no effect on the Provider-side of the communication.
+		/// </remarks>
+		internal bool ReturnToParametersSignatureValidated {
+			get {
+				return this.returnToParametersSignatureValidated;
+			}
+
+			set {
+				if (this.returnToParametersSignatureValidated == value) {
+					return;
+				}
+
+				this.returnToParametersSignatureValidated = value;
+				this.returnToParameters = null;
+			}
+		}
+
+		/// <summary>
 		/// Gets or sets the nonce that will protect the message from replay attacks.
 		/// </summary>
 		/// <value>
@@ -215,6 +257,22 @@ namespace DotNetOpenAuth.OpenId.Messages {
 					this.creationDateUtc = DateTime.Parse(value.Substring(0, indexOfZ + 1), CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
 					((IReplayProtectedProtocolMessage)this).Nonce = value.Substring(indexOfZ + 1);
 				}
+			}
+		}
+
+		private IDictionary<string, string> ReturnToParameters {
+			get {
+				if (this.returnToParameters == null) {
+					// Only return data that can be validated as untampered with.
+					if (this.ReturnToParametersSignatureValidated) {
+						this.returnToParameters = HttpUtility.ParseQueryString(this.ReturnTo.Query).ToDictionary();
+					} else {
+						// Store an empty dictionary since we can't consider any callback data reliable.
+						this.returnToParameters = new Dictionary<string, string>(0);
+					}
+				}
+
+				return this.returnToParameters;
 			}
 		}
 
@@ -264,6 +322,15 @@ namespace DotNetOpenAuth.OpenId.Messages {
 				Protocol.openid.return_to,
 				this.ReturnTo,
 				this.Recipient);
+		}
+
+		internal string GetReturnToArgument(string key) {
+			ErrorUtilities.VerifyNonZeroLength(key, "key");
+			ErrorUtilities.VerifyInternal(ReturnTo != null, "ReturnTo was expected to be required but is null.");
+
+			string value;
+			this.ReturnToParameters.TryGetValue(key, out value);
+			return value;
 		}
 	}
 }

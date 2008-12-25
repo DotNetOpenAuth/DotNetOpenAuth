@@ -238,10 +238,12 @@ namespace DotNetOpenAuth.Test.Messaging {
 
 		[TestMethod, ExpectedException(typeof(ProtocolException))]
 		public void TooManyBindingElementsProvidingSameProtection() {
-			new TestChannel(
+			Channel channel = new TestChannel(
 				new TestMessageFactory(),
 				new MockSigningBindingElement(),
 				new MockSigningBindingElement());
+			Channel_Accessor accessor = Channel_Accessor.AttachShadow(channel);
+			accessor.PrepareMessageForSending(new TestSignedDirectedMessage());
 		}
 
 		[TestMethod]

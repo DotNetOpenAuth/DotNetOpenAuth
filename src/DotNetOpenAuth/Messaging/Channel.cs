@@ -58,11 +58,13 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// A list of binding elements in the order they must be applied to outgoing messages.
 		/// </summary>
-		/// <remarks>
-		/// Incoming messages should have the binding elements applied in reverse order.
-		/// </remarks>
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private List<IChannelBindingElement> bindingElements = new List<IChannelBindingElement>();
+		private List<IChannelBindingElement> outgoingBindingElements = new List<IChannelBindingElement>();
+
+		/// <summary>
+		/// A list of binding elements in the order they must be applied to incoming messages.
+		/// </summary>
+		private List<IChannelBindingElement> incomingBindingElements = new List<IChannelBindingElement>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Channel"/> class.
@@ -79,9 +81,11 @@ namespace DotNetOpenAuth.Messaging {
 
 			this.messageTypeProvider = messageTypeProvider;
 			this.WebRequestHandler = new StandardWebRequestHandler();
-			this.bindingElements = new List<IChannelBindingElement>(ValidateAndPrepareBindingElements(bindingElements));
+			this.outgoingBindingElements = new List<IChannelBindingElement>(ValidateAndPrepareBindingElements(bindingElements));
+			this.incomingBindingElements = new List<IChannelBindingElement>(this.outgoingBindingElements);
+			this.incomingBindingElements.Reverse();
 
-			foreach (var element in this.bindingElements) {
+			foreach (var element in this.outgoingBindingElements) {
 				element.Channel = this;
 			}
 		}
@@ -102,15 +106,24 @@ namespace DotNetOpenAuth.Messaging {
 		public IDirectWebRequestHandler WebRequestHandler { get; set; }
 
 		/// <summary>
-		/// Gets the binding elements used by this channel, in the order they are applied to outgoing messages.
+		/// Gets the binding elements used by this channel, in no particular guaranteed order.
 		/// </summary>
-		/// <remarks>
-		/// Incoming messages are processed by this binding elements in the reverse order.
-		/// </remarks>
 		protected internal ReadOnlyCollection<IChannelBindingElement> BindingElements {
-			get {
-				return this.bindingElements.AsReadOnly();
-			}
+			get { return this.outgoingBindingElements.AsReadOnly(); }
+		}
+
+		/// <summary>
+		/// Gets the binding elements used by this channel, in the order applied to outgoing messages.
+		/// </summary>
+		protected internal ReadOnlyCollection<IChannelBindingElement> OutgoingBindingElements {
+			get { return this.outgoingBindingElements.AsReadOnly(); }
+		}
+
+		/// <summary>
+		/// Gets the binding elements used by this channel, in the order applied to incoming messages.
+		/// </summary>
+		protected internal ReadOnlyCollection<IChannelBindingElement> IncomingBindingElements {
+			get { return this.incomingBindingElements.AsReadOnly(); }
 		}
 
 		/// <summary>
@@ -568,12 +581,19 @@ namespace DotNetOpenAuth.Messaging {
 				throw new ArgumentNullException("message");
 			}
 
+			Logger.DebugFormat("Preparing to send {0} ({1}) message.", message.GetType().Name, message.Version);
 			this.OnSending(message);
 
 			MessageProtections appliedProtection = MessageProtections.None;
-			foreach (IChannelBindingElement bindingElement in this.bindingElements) {
+			foreach (IChannelBindingElement bindingElement in this.outgoingBindingElements) {
 				if (bindingElement.PrepareMessageForSending(message)) {
+					Logger.DebugFormat("Binding element {0} applied to message.", bindingElement.GetType().FullName);
+					// Ensure that only one protection binding element applies to this message
+					// for each protection type.
+					ErrorUtilities.VerifyProtocol((appliedProtection & bindingElement.Protection) == 0, MessagingStrings.TooManyBindingsOfferingSameProtection, bindingElement.Protection);
 					appliedProtection |= bindingElement.Protection;
+				} else {
+					Logger.DebugFormat("Binding element {0} did not apply to message.", bindingElement.GetType().FullName);
 				}
 			}
 
@@ -651,10 +671,18 @@ namespace DotNetOpenAuth.Messaging {
 		protected virtual void VerifyMessageAfterReceiving(IProtocolMessage message) {
 			Debug.Assert(message != null, "message == null");
 
+			Logger.DebugFormat("Preparing to receive {0} ({1}) message.", message.GetType().Name, message.Version);
+
 			MessageProtections appliedProtection = MessageProtections.None;
-			foreach (IChannelBindingElement bindingElement in this.bindingElements.Reverse<IChannelBindingElement>()) {
+			foreach (IChannelBindingElement bindingElement in this.incomingBindingElements) {
 				if (bindingElement.PrepareMessageForReceiving(message)) {
+					Logger.DebugFormat("Binding element {0} applied to message.", bindingElement.GetType().FullName);
+					// Ensure that only one protection binding element applies to this message
+					// for each protection type.
+					ErrorUtilities.VerifyInternal((appliedProtection & bindingElement.Protection) == 0, MessagingStrings.TooManyBindingsOfferingSameProtection, bindingElement.Protection);
 					appliedProtection |= bindingElement.Protection;
+				} else {
+					Logger.DebugFormat("Binding element {0} did not apply to message.", bindingElement.GetType().FullName);
 				}
 			}
 
@@ -667,6 +695,35 @@ namespace DotNetOpenAuth.Messaging {
 			// message deserializer did for us.  It would be too late to do it here since
 			// they might look initialized by the time we have an IProtocolMessage instance.
 			message.EnsureValidMessage();
+		}
+
+		protected void CustomizeBindingElementOrder(IEnumerable<IChannelBindingElement> outgoingOrder, IEnumerable<IChannelBindingElement> incomingOrder) {
+			ErrorUtilities.VerifyArgumentNotNull(outgoingOrder, "outgoingOrder");
+			ErrorUtilities.VerifyArgumentNotNull(incomingOrder, "incomingOrder");
+
+			ErrorUtilities.VerifyArgument(IsBindingElementOrderValid(outgoingOrder), MessagingStrings.InvalidCustomBindingElementOrder);
+			ErrorUtilities.VerifyArgument(IsBindingElementOrderValid(incomingOrder), MessagingStrings.InvalidCustomBindingElementOrder);
+
+			this.outgoingBindingElements.Clear();
+			this.outgoingBindingElements.AddRange(outgoingOrder);
+			this.incomingBindingElements.Clear();
+			this.incomingBindingElements.AddRange(incomingOrder);
+		}
+
+		private bool IsBindingElementOrderValid(IEnumerable<IChannelBindingElement> order) {
+			ErrorUtilities.VerifyArgumentNotNull(order, "order");
+
+			// Check that the same number of binding elements are defined.
+			if (order.Count() != this.OutgoingBindingElements.Count) {
+				return false;
+			}
+
+			// Check that every binding element appears exactly once.
+			if (order.Any(el => !this.OutgoingBindingElements.Contains(el))) {
+				return false;
+			}
+
+			return true;
 		}
 
 		/// <summary>
@@ -741,15 +798,6 @@ namespace DotNetOpenAuth.Messaging {
 							protectionKind));
 				}
 
-				// At most one binding element for each protection type.
-				if (countProtectionsOfThisKind > 1) {
-					throw new ProtocolException(
-						string.Format(
-							CultureInfo.CurrentCulture,
-							MessagingStrings.TooManyBindingsOfferingSameProtection,
-							protectionKind,
-							countProtectionsOfThisKind));
-				}
 				wasLastProtectionPresent = countProtectionsOfThisKind > 0;
 			}
 

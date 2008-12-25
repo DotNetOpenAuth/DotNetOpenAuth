@@ -205,6 +205,15 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The customized binding element ordering is invalid..
+        /// </summary>
+        internal static string InvalidCustomBindingElementOrder {
+            get {
+                return ResourceManager.GetString("InvalidCustomBindingElementOrder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Some part(s) of the message have invalid values: {0}.
         /// </summary>
         internal static string InvalidMessageParts {
@@ -376,7 +385,7 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Expected at most 1 binding element offering the {0} protection, but found {1}..
+        ///   Looks up a localized string similar to Expected at most 1 binding element to apply the {0} protection, but more than one applied..
         /// </summary>
         internal static string TooManyBindingsOfferingSameProtection {
             get {
@@ -444,6 +453,15 @@ namespace DotNetOpenAuth.Messaging {
         internal static string UnexpectedMessageReceivedOfMany {
             get {
                 return ResourceManager.GetString("UnexpectedMessageReceivedOfMany", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A null value was included and is not allowed..
+        /// </summary>
+        internal static string UnexpectedNullValue {
+            get {
+                return ResourceManager.GetString("UnexpectedNullValue", resourceCulture);
             }
         }
         

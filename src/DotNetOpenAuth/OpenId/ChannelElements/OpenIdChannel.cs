@@ -42,8 +42,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// </summary>
 		/// <param name="associationStore">The association store to use.</param>
 		/// <param name="nonceStore">The nonce store to use.</param>
-		internal OpenIdChannel(IAssociationStore<Uri> associationStore, INonceStore nonceStore)
-			: this(associationStore, nonceStore, new OpenIdMessageFactory()) {
+		/// <param name="secretStore">The secret store to use.</param>
+		internal OpenIdChannel(IAssociationStore<Uri> associationStore, INonceStore nonceStore, IPrivateSecretStore secretStore)
+			: this(associationStore, nonceStore, secretStore, new OpenIdMessageFactory()) {
 		}
 
 		/// <summary>
@@ -62,9 +63,10 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// </summary>
 		/// <param name="associationStore">The association store to use.</param>
 		/// <param name="nonceStore">The nonce store to use.</param>
+		/// <param name="secretStore">The secret store to use.</param>
 		/// <param name="messageTypeProvider">An object that knows how to distinguish the various OpenID message types for deserialization purposes.</param>
-		private OpenIdChannel(IAssociationStore<Uri> associationStore, INonceStore nonceStore, IMessageFactory messageTypeProvider) :
-			base(messageTypeProvider, InitializeBindingElements(new SigningBindingElement(associationStore), nonceStore)) {
+		private OpenIdChannel(IAssociationStore<Uri> associationStore, INonceStore nonceStore, IPrivateSecretStore secretStore, IMessageFactory messageTypeProvider) :
+			this(messageTypeProvider, InitializeBindingElements(new SigningBindingElement(associationStore), nonceStore, secretStore, true)) {
 		}
 
 		/// <summary>
@@ -75,7 +77,26 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="nonceStore">The nonce store to use.</param>
 		/// <param name="messageTypeProvider">An object that knows how to distinguish the various OpenID message types for deserialization purposes.</param>
 		private OpenIdChannel(IAssociationStore<AssociationRelyingPartyType> associationStore, INonceStore nonceStore, IMessageFactory messageTypeProvider) :
-			base(messageTypeProvider, InitializeBindingElements(new SigningBindingElement(associationStore), nonceStore)) {
+			this(messageTypeProvider, InitializeBindingElements(new SigningBindingElement(associationStore), nonceStore, null, false)) {
+		}
+
+		private OpenIdChannel(IMessageFactory messageTypeProvider, IChannelBindingElement[] bindingElements)
+			: base(messageTypeProvider, bindingElements) {
+			// Customize the binding element order, since we play some tricks for higher
+			// security and backward compatibility with older OpenID versions.
+			var outgoingBindingElements = new List<IChannelBindingElement>(bindingElements);
+			var incomingBindingElements = new List<IChannelBindingElement>(bindingElements);
+			incomingBindingElements.Reverse();
+			
+			// Customize the order of the incoming elements by moving the return_to elements in front.
+			var backwardCompatibility = incomingBindingElements.OfType<BackwardCompatibilityBindingElement>().SingleOrDefault();
+			var returnToSign = incomingBindingElements.OfType<ReturnToSignatureBindingElement>().SingleOrDefault();
+			if (backwardCompatibility != null && returnToSign != null) {
+				incomingBindingElements.MoveTo(0, returnToSign);
+				incomingBindingElements.MoveTo(1, backwardCompatibility);
+			}
+
+			CustomizeBindingElementOrder(outgoingBindingElements, incomingBindingElements);
 		}
 
 		/// <summary>
@@ -165,15 +186,31 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// </summary>
 		/// <param name="signingElement">The signing element, previously constructed.</param>
 		/// <param name="nonceStore">The nonce store to use.</param>
-		/// <returns>An array of binding elements which may be used to construct the channel.</returns>
-		private static IChannelBindingElement[] InitializeBindingElements(SigningBindingElement signingElement, INonceStore nonceStore) {
+		/// <param name="secretStore">The secret store to use.</param>
+		/// <param name="isRelyingPartyRole">A value indicating whether this channel is being constructed for a Relying Party (as opposed to a Provider).</param>
+		/// <returns>
+		/// An array of binding elements which may be used to construct the channel.
+		/// </returns>
+		private static IChannelBindingElement[] InitializeBindingElements(SigningBindingElement signingElement, INonceStore nonceStore, IPrivateSecretStore secretStore, bool isRelyingPartyRole) {
 			ErrorUtilities.VerifyArgumentNotNull(signingElement, "signingElement");
 
-			List<IChannelBindingElement> elements = new List<IChannelBindingElement>(3);
-			elements.Add(signingElement);
+			List<IChannelBindingElement> elements = new List<IChannelBindingElement>(7);
+			elements.Add(new ExtensionsBindingElement(new OpenIdExtensionFactory()));
+			if (isRelyingPartyRole) {
+				ErrorUtilities.VerifyArgumentNotNull(secretStore, "secretStore");
+				secretStore.InitializeSecretIfUnset();
+
+				// It is important that the return_to signing element comes last
+				// so that the nonce is included in the signature.
+				elements.Add(new BackwardCompatibilityBindingElement());
+				elements.Add(new ReturnToNonceBindingElement(nonceStore));
+				elements.Add(new ReturnToSignatureBindingElement(secretStore));
+			}
+
 			elements.Add(new StandardReplayProtectionBindingElement(nonceStore, true));
 			elements.Add(new StandardExpirationBindingElement());
-			elements.Add(new ExtensionsBindingElement(new OpenIdExtensionFactory()));
+			elements.Add(signingElement);
+
 			return elements.ToArray();
 		}
 	}

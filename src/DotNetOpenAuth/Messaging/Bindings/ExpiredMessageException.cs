@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <param name="utcExpirationDate">The date the message expired.</param>
 		/// <param name="faultedMessage">The expired message.</param>
 		public ExpiredMessageException(DateTime utcExpirationDate, IProtocolMessage faultedMessage)
-			: base(string.Format(CultureInfo.CurrentCulture, MessagingStrings.ExpiredMessage, utcExpirationDate.ToUniversalTime(), DateTime.UtcNow), faultedMessage) {
+			: base(string.Format(CultureInfo.CurrentCulture, MessagingStrings.ExpiredMessage, utcExpirationDate.ToLocalTime(), DateTime.Now), faultedMessage) {
 		}
 
 		/// <summary>

@@ -80,7 +80,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// True if the <paramref name="message"/> applied to this binding element
 		/// and the operation was successful.  False otherwise.
 		/// </returns>
-		bool IChannelBindingElement.PrepareMessageForSending(IProtocolMessage message) {
+		public bool PrepareMessageForSending(IProtocolMessage message) {
 			IExpiringProtocolMessage expiringMessage = message as IExpiringProtocolMessage;
 			if (expiringMessage != null) {
 				expiringMessage.UtcCreationDate = DateTime.UtcNow;
@@ -103,7 +103,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// Thrown when the binding element rules indicate that this message is invalid and should
 		/// NOT be processed.
 		/// </exception>
-		bool IChannelBindingElement.PrepareMessageForReceiving(IProtocolMessage message) {
+		public bool PrepareMessageForReceiving(IProtocolMessage message) {
 			IExpiringProtocolMessage expiringMessage = message as IExpiringProtocolMessage;
 			if (expiringMessage != null) {
 				// Yes the UtcCreationDate is supposed to always be in UTC already,

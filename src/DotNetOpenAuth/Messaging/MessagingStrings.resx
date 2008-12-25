@@ -165,6 +165,9 @@
   <data name="InsufficientMessageProtection" xml:space="preserve">
     <value>The {0} message required protections {{{1}}} but the channel could only apply {{{2}}}.</value>
   </data>
+  <data name="InvalidCustomBindingElementOrder" xml:space="preserve">
+    <value>The customized binding element ordering is invalid.</value>
+  </data>
   <data name="InvalidMessageParts" xml:space="preserve">
     <value>Some part(s) of the message have invalid values: {0}</value>
   </data>
@@ -223,7 +226,7 @@
     <value>The stream's CanWrite property returned false.</value>
   </data>
   <data name="TooManyBindingsOfferingSameProtection" xml:space="preserve">
-    <value>Expected at most 1 binding element offering the {0} protection, but found {1}.</value>
+    <value>Expected at most 1 binding element to apply the {0} protection, but more than one applied.</value>
   </data>
   <data name="TooManyRedirects" xml:space="preserve">
     <value>The maximum allowable number of redirects were exceeded while requesting '{0}'.</value>
@@ -245,6 +248,9 @@
   </data>
   <data name="UnexpectedMessageReceivedOfMany" xml:space="preserve">
     <value>Unexpected message type received.</value>
+  </data>
+  <data name="UnexpectedNullValue" xml:space="preserve">
+    <value>A null value was included and is not allowed.</value>
   </data>
   <data name="UnexpectedType" xml:space="preserve">
     <value>The type {0} or a derived type was expected, but {1} was given.</value>

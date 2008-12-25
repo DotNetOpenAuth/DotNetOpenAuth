@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		private void EnsurePartiesAreInitialized() {
 			if (this.RelyingParty == null) {
-				this.RelyingParty = new OpenIdRelyingParty(new AssociationMemoryStore<Uri>(), new NonceMemoryStore(TimeSpan.FromHours(3)));
+				this.RelyingParty = new OpenIdRelyingParty(new AssociationMemoryStore<Uri>(), new NonceMemoryStore(TimeSpan.FromHours(3)), new PrivateSecretMemoryStore());
 			}
 
 			if (this.Provider == null) {

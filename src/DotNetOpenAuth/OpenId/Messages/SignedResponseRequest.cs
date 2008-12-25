@@ -128,6 +128,18 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			}
 		}
 
+		internal void AddReturnToArguments(IEnumerable<KeyValuePair<string, string>> keysValues) {
+			ErrorUtilities.VerifyArgumentNotNull(keysValues, "keysValues");
+			UriBuilder returnToBuilder = new UriBuilder(this.ReturnTo);
+			returnToBuilder.AppendQueryArgs(keysValues);
+			this.ReturnTo = returnToBuilder.Uri;
+		}
+
+		internal void AddReturnToArguments(string key, string value) {
+			var pair = new KeyValuePair<string, string>(key, value);
+			AddReturnToArguments(new[] { pair });
+		}
+
 		/// <summary>
 		/// Gets the value of the openid.mode parameter based on the protocol version and immediate flag.
 		/// </summary>

@@ -195,6 +195,9 @@
   <data name="SregInvalidBirthdate" xml:space="preserve">
     <value>Invalid birthdate value.  Must be in the form yyyy-MM-dd.</value>
   </data>
+  <data name="UnsolicitedAssertionsNotAllowedFrom1xOPs" xml:space="preserve">
+    <value>Unsolicited assertions are not allowed from 1.0 OpenID Providers.</value>
+  </data>
   <data name="UserSetupUrlRequiredInImmediateNegativeResponse" xml:space="preserve">
     <value>The openid.user_setup_url parameter is required when sending negative assertion messages in response to immediate mode requests.</value>
   </data>

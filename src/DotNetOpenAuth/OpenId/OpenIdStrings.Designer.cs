@@ -295,6 +295,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unsolicited assertions are not allowed from 1.0 OpenID Providers..
+        /// </summary>
+        internal static string UnsolicitedAssertionsNotAllowedFrom1xOPs {
+            get {
+                return ResourceManager.GetString("UnsolicitedAssertionsNotAllowedFrom1xOPs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The openid.user_setup_url parameter is required when sending negative assertion messages in response to immediate mode requests..
         /// </summary>
         internal static string UserSetupUrlRequiredInImmediateNegativeResponse {

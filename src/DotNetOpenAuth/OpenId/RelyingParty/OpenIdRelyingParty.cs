@@ -31,13 +31,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="associationStore">The association store.  If null, the relying party will always operate in "dumb mode".</param>
 		/// <param name="nonceStore">The nonce store to use.  If null, the relying party will always operate in "dumb mode".</param>
-		public OpenIdRelyingParty(IAssociationStore<Uri> associationStore, INonceStore nonceStore) {
+		/// <param name="secretStore">The secret store to use.  If null, the relying party will always operate in "dumb mode".</param>
+		public OpenIdRelyingParty(IAssociationStore<Uri> associationStore, INonceStore nonceStore, IPrivateSecretStore secretStore) {
 			// TODO: fix this so that a null association store is supported as 'dumb mode only'.
 			ErrorUtilities.VerifyArgumentNotNull(associationStore, "associationStore");
 			ErrorUtilities.VerifyArgumentNotNull(nonceStore, "nonceStore");
+			ErrorUtilities.VerifyArgumentNotNull(secretStore, "secretStore");
 			ErrorUtilities.VerifyArgument((associationStore == null) == (nonceStore == null), OpenIdStrings.AssociationAndNonceStoresMustBeBothNullOrBothNonNull);
 
-			this.Channel = new OpenIdChannel(associationStore, nonceStore);
+			this.Channel = new OpenIdChannel(associationStore, nonceStore, secretStore);
 			this.AssociationStore = associationStore;
 			this.SecuritySettings = RelyingPartySection.Configuration.SecuritySettings.CreateSecuritySettings();
 			this.WebRequestHandler = defaultUntrustedWebRequestHandler;

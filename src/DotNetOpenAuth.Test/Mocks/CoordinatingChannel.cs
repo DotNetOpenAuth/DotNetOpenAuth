@@ -26,6 +26,9 @@ namespace DotNetOpenAuth.Test.Mocks {
 			this.wrappedChannel = wrappedChannel;
 			this.incomingMessageFilter = incomingMessageFilter;
 			this.outgoingMessageFilter = outgoingMessageFilter;
+
+			// Preserve any customized binding element ordering.
+			this.CustomizeBindingElementOrder(this.wrappedChannel.OutgoingBindingElements, this.wrappedChannel.IncomingBindingElements);
 		}
 
 		/// <summary>

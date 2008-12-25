@@ -162,14 +162,18 @@
     <Compile Include="OpenId\Association.cs" />
     <Compile Include="OpenId\AssociationMemoryStore.cs" />
     <Compile Include="OpenId\Associations.cs" />
+    <Compile Include="OpenId\ChannelElements\BackwardCompatibilityBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\ExtensionsBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\IOpenIdExtensionFactory.cs" />
+    <Compile Include="OpenId\ChannelElements\IPrivateSecretStore.cs" />
     <Compile Include="OpenId\ChannelElements\ITamperResistantOpenIdMessage.cs" />
     <Compile Include="OpenId\ChannelElements\OriginalStringUriEncoder.cs" />
+    <Compile Include="OpenId\ChannelElements\ReturnToNonceBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\SigningBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\KeyValueFormEncoding.cs" />
     <Compile Include="OpenId\ChannelElements\OpenIdChannel.cs" />
     <Compile Include="OpenId\ChannelElements\OpenIdMessageFactory.cs" />
+    <Compile Include="OpenId\ChannelElements\ReturnToSignatureBindingElement.cs" />
     <Compile Include="OpenId\Configuration.cs" />
     <Compile Include="OpenId\Extensions\AliasManager.cs" />
     <Compile Include="OpenId\Extensions\ExtensionBase.cs" />
@@ -193,6 +197,7 @@
     <Compile Include="OpenId\Messages\SignedResponseRequest.cs" />
     <Compile Include="OpenId\NoDiscoveryIdentifier.cs" />
     <Compile Include="OpenId\OpenIdUtilities.cs" />
+    <Compile Include="OpenId\PrivateSecretMemoryStore.cs" />
     <Compile Include="OpenId\Realm.cs" />
     <Compile Include="OpenId\RelyingPartyDescription.cs" />
     <Compile Include="OpenId\DiffieHellmanUtilities.cs" />

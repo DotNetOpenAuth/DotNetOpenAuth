@@ -23,12 +23,12 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 
 		[TestMethod, Ignore] // ignored, pending work to make dumb mode a supported scenario.
 		public void CtorNullAssociationStore() {
-			new OpenIdRelyingParty(null, null);
+			new OpenIdRelyingParty(null, null, null);
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void SecuritySettingsSetNull() {
-			var rp = new OpenIdRelyingParty(new AssociationMemoryStore<Uri>(), new NonceMemoryStore(TimeSpan.FromMinutes(5)));
+			var rp = new OpenIdRelyingParty(new AssociationMemoryStore<Uri>(), new NonceMemoryStore(TimeSpan.FromMinutes(5)), new PrivateSecretMemoryStore());
 			rp.SecuritySettings = null;
 		}
 	}

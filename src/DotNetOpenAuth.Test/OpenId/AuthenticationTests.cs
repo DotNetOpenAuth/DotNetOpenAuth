@@ -16,9 +16,6 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using DotNetOpenAuth.OpenId.Messages;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-	// TODO: make all the tests in this class test every version of the protocol.
-	//       Currently this fails because we don't have a "token"-like facility of
-	//       DotNetOpenID yet.
 	[TestClass]
 	public class AuthenticationTests : OpenIdTestBase {
 		[TestInitialize]
@@ -28,7 +25,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		[TestMethod]
 		public void SharedAssociationPositive() {
-			this.ParameterizedPositiveAuthenticationTest(Protocol.Default, true, true, false);
+			this.ParameterizedPositiveAuthenticationTest(true, true, false);
 		}
 
 		/// <summary>
@@ -36,17 +33,17 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// </summary>
 		[TestMethod]
 		public void SharedAssociationTampered() {
-			this.ParameterizedPositiveAuthenticationTest(Protocol.Default, true, true, true);
+			this.ParameterizedPositiveAuthenticationTest(true, true, true);
 		}
 
 		[TestMethod]
 		public void SharedAssociationNegative() {
-			this.ParameterizedPositiveAuthenticationTest(Protocol.V11, true, false, false);
+			this.ParameterizedPositiveAuthenticationTest(true, false, false);
 		}
 
 		[TestMethod]
 		public void PrivateAssociationPositive() {
-			this.ParameterizedPositiveAuthenticationTest(Protocol.Default, false, true, false);
+			this.ParameterizedPositiveAuthenticationTest(false, true, false);
 		}
 
 		/// <summary>
@@ -54,12 +51,12 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// </summary>
 		[TestMethod]
 		public void PrivateAssociationTampered() {
-			this.ParameterizedPositiveAuthenticationTest(Protocol.Default, false, true, true);
+			this.ParameterizedPositiveAuthenticationTest(false, true, true);
 		}
 
 		[TestMethod]
 		public void NoAssociationNegative() {
-			this.ParameterizedPositiveAuthenticationTest(Protocol.Default, false, false, false);
+			this.ParameterizedPositiveAuthenticationTest(false, false, false);
 		}
 
 		private void ParameterizedPositiveAuthenticationTest(bool sharedAssociation, bool positive, bool tamper) {
@@ -132,10 +129,10 @@ namespace DotNetOpenAuth.Test.OpenId {
 				coordinator.IncomingMessageFilter = message => {
 					var assertion = message as PositiveAssertionResponse;
 					if (assertion != null) {
-						// Alter the Claimed Identifier between the Provider and the Relying Party.
+						// Alter the Local Identifier between the Provider and the Relying Party.
 						// If the signature binding element does its job, this should cause the RP
 						// to throw.
-						assertion.ClaimedIdentifier = "http://victim";
+						assertion.LocalIdentifier = "http://victim";
 					}
 				};
 			}
