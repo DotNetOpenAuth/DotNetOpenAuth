@@ -274,7 +274,7 @@
     <Compile Include="Yadis\Yadis.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram.cd" />
+    <None Include="OAuth\ClassDiagram.cd" />
     <None Include="OAuth\Messages\OAuth Messages.cd" />
     <None Include="Messaging\Bindings\Bindings.cd" />
     <None Include="Messaging\Exceptions.cd" />

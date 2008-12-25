@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Class Name="DotNetOpenAuth.DesktopConsumer">
+    <Position X="11.5" Y="5.25" Width="4.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEAAAAAAABAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>OAuth\DesktopConsumer.cs</FileName>
+      <NewMemberFileName>WebConsumer.cs</NewMemberFileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth.WebConsumer">
+    <Position X="6.25" Y="5.25" Width="5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAA=</HashCode>
+      <FileName>OAuth\WebConsumer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth.ServiceProviderDescription">
+    <Position X="0.5" Y="5.25" Width="5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAACAAgAAAAEAAAQAAAAAAAAAAAAACAAAAAgAAAAAAA=</HashCode>
+      <FileName>OAuth\ServiceProviderDescription.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth.ServiceProvider">
+    <Position X="1" Y="0.5" Width="6" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>EAoAAAsgAAAAIAAAEAAAAAAAAAAIAAEAAQAIAAwAAAA=</HashCode>
+      <FileName>OAuth\ServiceProvider.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth.ConsumerBase">
+    <Position X="9" Y="0.5" Width="4.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAEgAAAAAAAAAAAABgAAAAAIAAAAAQAAAAABABA=</HashCode>
+      <FileName>OAuth\ConsumerBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

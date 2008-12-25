@@ -24,7 +24,7 @@
   <Class Name="DotNetOpenAuth.Messaging.ProtocolException" Collapsed="true">
     <Position X="6" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAKAAAAAAAAAAAAAIBAAAAACAQAIAAAAACAAAAAAAA=</HashCode>
+      <HashCode>ICAMAAAAQAAAgAEAAIBAAAYgCgAAIAAAIACAACAAAAA=</HashCode>
       <FileName>Messaging\ProtocolException.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -32,7 +32,7 @@
   <Class Name="DotNetOpenAuth.Messaging.Bindings.StandardExpirationBindingElement" Collapsed="true">
     <Position X="1" Y="3" Width="2.75" />
     <TypeIdentifier>
-      <HashCode>AAAQAAAAAAAARAAAAAAAEAAAAAIAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAgAAAARAAEAAAAAAAAAAIAAAAAAEAAAAAAAAA=</HashCode>
       <FileName>Messaging\Bindings\StandardExpirationBindingElement.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -40,36 +40,36 @@
   <Interface Name="DotNetOpenAuth.Messaging.IProtocolMessage" Collapsed="true">
     <Position X="6" Y="3.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAQAAAAAAAAAAAAAYAAAAAAAAAAAACAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Messaging\IProtocolMessage.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="DotNetOpenAuth.Messaging.Bindings.IExpiringProtocolMessage" Collapsed="true">
-    <Position X="3.75" Y="4.75" Width="1.5" />
+    <Position X="3.75" Y="4.75" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Messaging\Bindings\IExpiringProtocolMessage.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="DotNetOpenAuth.Messaging.Bindings.IReplayProtectedProtocolMessage" Collapsed="true">
-    <Position X="6" Y="4.75" Width="1.5" />
+    <Position X="6" Y="4.75" Width="2.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAA=</HashCode>
       <FileName>Messaging\Bindings\IReplayProtectedProtocolMessage.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="DotNetOpenAuth.Messaging.Bindings.ISignedOAuthMessage" Collapsed="true">
-    <Position X="8.25" Y="4.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE=</HashCode>
-      <FileName>Messaging\Bindings\ISignedOAuthMessage.cs</FileName>
-    </TypeIdentifier>
-  </Interface>
   <Interface Name="DotNetOpenAuth.Messaging.IChannelBindingElement">
     <Position X="0.5" Y="0.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>BAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAEAAAAAAAAA=</HashCode>
+      <HashCode>BAAAAAAgAAAAAAAEAAAAAAAAAAAAAAAAAEAAAAAAAAA=</HashCode>
       <FileName>Messaging\IChannelBindingElement.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DotNetOpenAuth.OAuth.ChannelElements.ITamperResistantOAuthMessage" Collapsed="true">
+    <Position X="8.75" Y="4.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAgAAAAIAAAgAAAAAAIAQAAAAAAAAAAAA=</HashCode>
+      <FileName>OAuth\ChannelElements\ITamperResistantOAuthMessage.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Font Name="Segoe UI" Size="9" />
