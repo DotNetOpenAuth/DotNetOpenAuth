@@ -36,6 +36,14 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// </summary>
 		internal CoordinatingChannel RemoteChannel { get; set; }
 
+		/// <summary>
+		/// Replays the specified message as if it were received again.
+		/// </summary>
+		/// <param name="message">The message to replay.</param>
+		internal void Replay(IProtocolMessage message) {
+			this.VerifyMessageAfterReceiving(CloneSerializedParts(message));
+		}
+
 		protected internal override HttpRequestInfo GetRequestFromContext() {
 			return new HttpRequestInfo((IDirectedProtocolMessage)this.AwaitIncomingMessage());
 		}
@@ -54,7 +62,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 
 		protected override UserAgentResponse SendDirectMessageResponse(IProtocolMessage response) {
 			this.ProcessMessageFilter(response, true);
-			this.RemoteChannel.incomingMessage = CloneSerializedParts(response, null);
+			this.RemoteChannel.incomingMessage = CloneSerializedParts(response);
 			this.RemoteChannel.incomingMessageSignal.Set();
 			return null;
 		}
@@ -88,12 +96,12 @@ namespace DotNetOpenAuth.Test.Mocks {
 		protected virtual HttpRequestInfo SpoofHttpMethod(IDirectedProtocolMessage message) {
 			HttpRequestInfo requestInfo = new HttpRequestInfo(message);
 
-			requestInfo.Message = this.CloneSerializedParts(message, requestInfo);
+			requestInfo.Message = this.CloneSerializedParts(message);
 
 			return requestInfo;
 		}
 
-		protected virtual T CloneSerializedParts<T>(T message, HttpRequestInfo requestInfo) where T : class, IProtocolMessage {
+		protected virtual T CloneSerializedParts<T>(T message) where T : class, IProtocolMessage {
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
 			IProtocolMessage clonedMessage;

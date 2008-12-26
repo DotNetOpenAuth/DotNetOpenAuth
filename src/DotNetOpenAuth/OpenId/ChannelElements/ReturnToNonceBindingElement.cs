@@ -155,7 +155,10 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					throw new ExpiredMessageException(expirationDate, message);
 				}
 
-				ErrorUtilities.VerifyProtocol(this.nonceStore.StoreNonce(nonce.RandomPartAsString, nonce.CreationDateUtc), MessagingStrings.ReplayAttackDetected);
+				if (!this.nonceStore.StoreNonce(nonce.RandomPartAsString, nonce.CreationDateUtc)) {
+					throw new ReplayedMessageException(message);
+				}
+
 				return true;
 			}
 

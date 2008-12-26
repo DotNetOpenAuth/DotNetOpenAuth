@@ -126,21 +126,16 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			IndirectSignedResponse response = message as IndirectSignedResponse;
 
 			if (response != null) {
-				// This binding element tends to get "speedboated" to higher in the channel stack
-				// by the SigningBindingElement.  Only do the work here if it hasn't been done yet
-				// to avoid signing twice (once for the SigningBindingElement and once for the channel).
-				if (!response.ReturnToParametersSignatureValidated) {
-					// We can't use response.GetReturnToArgument(string) because that relies
-					// on us already having validated this signature.
-					NameValueCollection returnToParameters = HttpUtility.ParseQueryString(response.ReturnTo.Query);
+				// We can't use response.GetReturnToArgument(string) because that relies
+				// on us already having validated this signature.
+				NameValueCollection returnToParameters = HttpUtility.ParseQueryString(response.ReturnTo.Query);
 
-					// Set the safety flag showing whether the return_to url had a valid signature.
-					string expected = this.GetReturnToSignature(response.ReturnTo);
-					string actual = returnToParameters[ReturnToSignatureParameterName];
-					response.ReturnToParametersSignatureValidated = actual == expected;
-					if (!response.ReturnToParametersSignatureValidated) {
-						Logger.WarnFormat("The return_to signature failed verification.");
-					}
+				// Set the safety flag showing whether the return_to url had a valid signature.
+				string expected = this.GetReturnToSignature(response.ReturnTo);
+				string actual = returnToParameters[ReturnToSignatureParameterName];
+				response.ReturnToParametersSignatureValidated = actual == expected;
+				if (!response.ReturnToParametersSignatureValidated) {
+					Logger.WarnFormat("The return_to signature failed verification.");
 				}
 
 				return true;

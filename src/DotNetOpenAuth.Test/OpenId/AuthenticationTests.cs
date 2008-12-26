@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.Test.Mocks;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
@@ -96,6 +97,20 @@ namespace DotNetOpenAuth.Test.OpenId {
 							Assert.AreEqual(request.ClaimedIdentifier, response.ClaimedIdentifier);
 							Assert.AreEqual(request.LocalIdentifier, response.LocalIdentifier);
 							Assert.AreEqual(request.ReturnTo, response.ReturnTo);
+
+							// Attempt to replay the message and verify that it fails.
+							// Because in various scenarios and protocol versions different components
+							// notice the replay, we can get one of two exceptions thrown.
+							// When the OP notices the replay we get a generic InvalidSignatureException.
+							// When the RP notices the replay we get a specific ReplayMessageException.
+							Type expectedExceptionType = sharedAssociation || protocol.Version.Major < 2 ? typeof(ReplayedMessageException) : typeof(InvalidSignatureException);
+							try {
+								CoordinatingChannel channel = (CoordinatingChannel)rp.Channel;
+								channel.Replay(response);
+								Assert.Fail("Expected exception {0} was not thrown.", expectedExceptionType.Name);
+							} catch (ProtocolException ex) {
+								Assert.IsInstanceOfType(ex, expectedExceptionType);
+							}
 						}
 					} else {
 						var response = rp.Channel.ReadFromRequest<NegativeAssertionResponse>();
@@ -123,6 +138,14 @@ namespace DotNetOpenAuth.Test.OpenId {
 						var checkauthResponse = new CheckAuthenticationResponse(checkauthRequest);
 						checkauthResponse.IsValid = checkauthRequest.IsValid;
 						op.Channel.Send(checkauthResponse);
+
+						if (!tamper) {
+							// Respond to the replay attack.
+							checkauthRequest = op.Channel.ReadFromRequest<CheckAuthenticationRequest>();
+							checkauthResponse = new CheckAuthenticationResponse(checkauthRequest);
+							checkauthResponse.IsValid = checkauthRequest.IsValid;
+							op.Channel.Send(checkauthResponse);
+						}
 					}
 				});
 			if (tamper) {
