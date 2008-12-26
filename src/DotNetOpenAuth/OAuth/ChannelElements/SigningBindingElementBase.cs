@@ -106,11 +106,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				if (this.SignatureCallback != null) {
 					this.SignatureCallback(signedMessage);
 				} else {
-					Logger.Warn("Signature verification required, but callback delegate was not provided to provide additional data for signing.");
+					Logger.Warn("Signature verification required, but callback delegate was not provided to provide additional data for signature verification.");
 				}
 
-				string signature = this.GetSignature(signedMessage);
-				if (signedMessage.Signature != signature) {
+				if (!this.IsSignatureValid(signedMessage)) {
 					Logger.Error("Signature verification failed.");
 					throw new InvalidSignatureException(message);
 				}
@@ -196,6 +195,18 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				builder.Append(Uri.EscapeDataString(message.TokenSecret));
 			}
 			return builder.ToString();
+		}
+
+		/// <summary>
+		/// Determines whether the signature on some message is valid.
+		/// </summary>
+		/// <param name="message">The message to check the signature on.</param>
+		/// <returns>
+		/// 	<c>true</c> if the signature on the message is valid; otherwise, <c>false</c>.
+		/// </returns>
+		protected virtual bool IsSignatureValid(ITamperResistantOAuthMessage message) {
+			string signature = this.GetSignature(message);
+			return message.Signature == signature;
 		}
 
 		/// <summary>
