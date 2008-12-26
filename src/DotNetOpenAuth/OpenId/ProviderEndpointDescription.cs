@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ProviderDescription.cs" company="Andrew Arnott">
+// <copyright file="ProviderEndpointDescription.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -43,7 +43,7 @@ namespace DotNetOpenAuth.OpenId {
 			this.Endpoint = providerEndpoint;
 			this.Capabilities = new ReadOnlyCollection<string>(serviceTypeURIs.ToList());
 
-			Protocol opIdentifierProtocol = Protocol.FindBestVersion(p => p.ClaimedIdentifierForOPIdentifier, serviceTypeURIs);
+			Protocol opIdentifierProtocol = Protocol.FindBestVersion(p => p.OPIdentifierServiceTypeURI, serviceTypeURIs);
 			Protocol claimedIdentifierProviderVersion = Protocol.FindBestVersion(p => p.ClaimedIdentifierServiceTypeURI, serviceTypeURIs);
 			if (opIdentifierProtocol != null) {
 				this.ProtocolVersion = opIdentifierProtocol.Version;

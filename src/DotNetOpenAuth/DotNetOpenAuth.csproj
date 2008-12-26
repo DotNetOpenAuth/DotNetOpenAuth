@@ -233,7 +233,7 @@
       <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="OpenId\Protocol.cs" />
-    <Compile Include="OpenId\ProviderDescription.cs" />
+    <Compile Include="OpenId\ProviderEndpointDescription.cs" />
     <Compile Include="OpenId\Provider\ProviderSecuritySettings.cs" />
     <Compile Include="OpenId\RelyingParty\RelyingPartySecuritySettings.cs" />
     <Compile Include="OpenId\RelyingParty\ServiceEndpoint.cs" />

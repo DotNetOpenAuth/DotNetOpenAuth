@@ -30,6 +30,7 @@
         <CollectionProperty Name="Hungarian">
           <Value>op</Value>
           <Value>rp</Value>
+          <Value>v</Value>
         </CollectionProperty>
       </AnalyzerSettings>
     </Analyzer>
