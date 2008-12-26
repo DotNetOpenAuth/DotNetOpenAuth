@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// for use by Consumers.
 		/// </summary>
 		/// <param name="signingCertificate">The certificate used to sign outgoing messages.</param>
-		internal RsaSha1SigningBindingElement(X509Certificate2 signingCertificate)
+		public RsaSha1SigningBindingElement(X509Certificate2 signingCertificate)
 			: this() {
 			if (signingCertificate == null) {
 				throw new ArgumentNullException("signingCertificate");
@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Initializes a new instance of the <see cref="RsaSha1SigningBindingElement"/> class
 		/// for use by Service Providers.
 		/// </summary>
-		internal RsaSha1SigningBindingElement()
+		public RsaSha1SigningBindingElement()
 			: base("RSA-SHA1") {
 		}
 
