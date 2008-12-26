@@ -295,6 +295,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The type must implement {0}..
+        /// </summary>
+        internal static string TypeMustImplementX {
+            get {
+                return ResourceManager.GetString("TypeMustImplementX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unsolicited assertions are not allowed from 1.0 OpenID Providers..
         /// </summary>
         internal static string UnsolicitedAssertionsNotAllowedFrom1xOPs {

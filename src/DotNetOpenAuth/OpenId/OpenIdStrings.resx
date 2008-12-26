@@ -195,6 +195,9 @@
   <data name="SregInvalidBirthdate" xml:space="preserve">
     <value>Invalid birthdate value.  Must be in the form yyyy-MM-dd.</value>
   </data>
+  <data name="TypeMustImplementX" xml:space="preserve">
+    <value>The type must implement {0}.</value>
+  </data>
   <data name="UnsolicitedAssertionsNotAllowedFrom1xOPs" xml:space="preserve">
     <value>Unsolicited assertions are not allowed from 1.0 OpenID Providers.</value>
   </data>

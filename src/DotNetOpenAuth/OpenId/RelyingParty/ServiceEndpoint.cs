@@ -8,9 +8,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.ObjectModel;
 	using System.Diagnostics;
+	using System.Globalization;
 	using System.IO;
+	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
 	/// Represents a single OP endpoint from discovery on some OpenID Identifier.
@@ -260,38 +263,56 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			return this.ProviderSupportedServiceTypeUris.Contains(extensionUri);
 		}
 
-		////public bool IsExtensionSupported(IExtension extension) {
-		////    if (extension == null) throw new ArgumentNullException("extension");
+		/// <summary>
+		/// Determines whether a given extension is supported by this endpoint.
+		/// </summary>
+		/// <param name="extension">An instance of the extension to check support for.</param>
+		/// <returns>
+		/// 	<c>true</c> if the extension is supported by this endpoint; otherwise, <c>false</c>.
+		/// </returns>
+		public bool IsExtensionSupported(IOpenIdMessageExtension extension) {
+			ErrorUtilities.VerifyArgumentNotNull(extension, "extension");
 
-		////    // Consider the primary case.
-		////    if (IsExtensionSupported(extension.TypeUri)) {
-		////        return true;
-		////    }
-		////    // Consider the secondary cases.
-		////    if (extension.AdditionalSupportedTypeUris != null) {
-		////        foreach (string extensionTypeUri in extension.AdditionalSupportedTypeUris) {
-		////            if (IsExtensionSupported(extensionTypeUri)) {
-		////                return true;
-		////            }
-		////        }
-		////    }
-		////    return false;
-		////}
+			// Consider the primary case.
+			if (this.IsExtensionSupported(extension.TypeUri)) {
+				return true;
+			}
 
-		////public bool IsExtensionSupported<T>() where T : Extensions.IExtension, new() {
-		////    T extension = new T();
-		////    return IsExtensionSupported(extension);
-		////}
+			// Consider the secondary cases.
+			if (extension.AdditionalSupportedTypeUris != null) {
+				if (extension.AdditionalSupportedTypeUris.Any(typeUri => this.IsExtensionSupported(typeUri))) {
+					return true;
+				}
+			}
 
-		////public bool IsExtensionSupported(Type extensionType) {
-		////    if (extensionType == null) throw new ArgumentNullException("extensionType");
-		////    if (!typeof(Extensions.IExtension).IsAssignableFrom(extensionType))
-		////        throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
-		////            Strings.TypeMustImplementX, typeof(Extensions.IExtension).FullName),
-		////            "extensionType");
-		////    var extension = (Extensions.IExtension)Activator.CreateInstance(extensionType);
-		////    return IsExtensionSupported(extension);
-		////}
+			return false;
+		}
+
+		/// <summary>
+		/// Determines whether a given extension is supported by this endpoint.
+		/// </summary>
+		/// <typeparam name="T">The type of extension to check support for on this endpoint.</typeparam>
+		/// <returns>
+		/// 	<c>true</c> if the extension is supported by this endpoint; otherwise, <c>false</c>.
+		/// </returns>
+		public bool IsExtensionSupported<T>() where T : IOpenIdMessageExtension, new() {
+			T extension = new T();
+			return this.IsExtensionSupported(extension);
+		}
+
+		/// <summary>
+		/// Determines whether a given extension is supported by this endpoint.
+		/// </summary>
+		/// <param name="extensionType">The type of extension to check support for on this endpoint.</param>
+		/// <returns>
+		/// 	<c>true</c> if the extension is supported by this endpoint; otherwise, <c>false</c>.
+		/// </returns>
+		public bool IsExtensionSupported(Type extensionType) {
+			ErrorUtilities.VerifyArgumentNotNull(extensionType, "extensionType");
+			ErrorUtilities.VerifyArgument(typeof(IOpenIdMessageExtension).IsAssignableFrom(extensionType), OpenIdStrings.TypeMustImplementX, typeof(IOpenIdMessageExtension).FullName);
+			var extension = (IOpenIdMessageExtension)Activator.CreateInstance(extensionType);
+			return this.IsExtensionSupported(extension);
+		}
 
 		/// <summary>
 		/// Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>.

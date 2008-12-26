@@ -178,7 +178,6 @@
     <Compile Include="OpenId\Extensions\AliasManager.cs" />
     <Compile Include="OpenId\Extensions\ExtensionBase.cs" />
     <Compile Include="OpenId\Extensions\ExtensionArgumentsManager.cs" />
-    <None Include="OpenId\Extensions\IExtension.cs" />
     <Compile Include="OpenId\Extensions\OpenIdExtensionFactory.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\ClaimsRequest.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\ClaimsResponse.cs" />
