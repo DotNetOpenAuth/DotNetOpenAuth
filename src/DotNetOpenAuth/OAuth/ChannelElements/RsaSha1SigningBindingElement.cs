@@ -105,7 +105,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <returns>A new instance of the binding element.</returns>
 		protected override ITamperProtectionChannelBindingElement Clone() {
-			return new RsaSha1SigningBindingElement();
+			return new RsaSha1SigningBindingElement() {
+				ConsumerCertificateProvider = this.ConsumerCertificateProvider,
+				SigningCertificate = this.SigningCertificate,
+			};
 		}
 	}
 }
