@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Mocks;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -72,7 +73,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Association association = sharedAssociation ? HmacShaAssociation.Create(protocol, protocol.Args.SignatureAlgorithm.Best, AssociationRelyingPartyType.Smart) : null;
 			var coordinator = new OpenIdCoordinator(
 				rp => {
-					var request = new CheckIdRequest(protocol.Version, ProviderUri, true);
+					var request = new CheckIdRequest(protocol.Version, ProviderUri, AuthenticationRequestMode.Immediate);
 
 					if (association != null) {
 						rp.AssociationStore.StoreAssociation(ProviderUri, association);

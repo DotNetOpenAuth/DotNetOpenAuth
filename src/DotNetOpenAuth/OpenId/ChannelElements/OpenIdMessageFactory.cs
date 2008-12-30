@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// Distinguishes the various OpenID message types for deserialization purposes.
@@ -54,9 +55,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					string.Equals(mode, protocol.Args.Mode.checkid_immediate)) {
 					bool immediate = string.Equals(mode, protocol.Args.Mode.checkid_immediate);
 					if (fields.ContainsKey(protocol.openid.identity)) {
-						message = new CheckIdRequest(protocol.Version, recipient.Location, immediate);
+						message = new CheckIdRequest(protocol.Version, recipient.Location, AuthenticationRequestMode.Immediate);
 					} else {
-						message = new SignedResponseRequest(protocol.Version, recipient.Location, immediate);
+						message = new SignedResponseRequest(protocol.Version, recipient.Location, AuthenticationRequestMode.Immediate);
 					}
 				} else if (string.Equals(mode, protocol.Args.Mode.cancel) ||
 					(string.Equals(mode, protocol.Args.Mode.setup_needed) && (protocol.Version.Major >= 2 || fields.ContainsKey(protocol.openid.user_setup_url)))) {

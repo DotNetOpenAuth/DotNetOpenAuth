@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// An indirect request from a Relying Party to a Provider where the response
@@ -27,12 +28,12 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		/// <param name="version">The OpenID version to use.</param>
 		/// <param name="providerEndpoint">The Provider endpoint that receives this message.</param>
-		/// <param name="immediate">
-		/// <c>true</c> for asynchronous javascript clients; 
-		/// <c>false</c> to allow the Provider to interact with the user in order to complete authentication.
+		/// <param name="mode">
+		/// <see cref="AuthenticationRequestMode.Immediate"/> for asynchronous javascript clients;
+		/// <see cref="AuthenticationRequestMode.Setup"/>  to allow the Provider to interact with the user in order to complete authentication.
 		/// </param>
-		internal SignedResponseRequest(Version version, Uri providerEndpoint, bool immediate) :
-			base(version, providerEndpoint, GetMode(version, immediate), DotNetOpenAuth.Messaging.MessageTransport.Indirect) {
+		internal SignedResponseRequest(Version version, Uri providerEndpoint, AuthenticationRequestMode mode) :
+			base(version, providerEndpoint, GetMode(version, mode), DotNetOpenAuth.Messaging.MessageTransport.Indirect) {
 		}
 
 		#region IProtocolMessageWithExtensions Members
@@ -161,16 +162,16 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Gets the value of the openid.mode parameter based on the protocol version and immediate flag.
 		/// </summary>
 		/// <param name="version">The OpenID version to use.</param>
-		/// <param name="immediate">
-		/// <c>true</c> for asynchronous javascript clients;
-		/// <c>false</c> to allow the Provider to interact with the user in order to complete authentication.
+		/// <param name="mode">
+		/// <see cref="AuthenticationRequestMode.Immediate"/> for asynchronous javascript clients;
+		/// <see cref="AuthenticationRequestMode.Setup"/>  to allow the Provider to interact with the user in order to complete authentication.
 		/// </param>
 		/// <returns>checkid_immediate or checkid_setup</returns>
-		private static string GetMode(Version version, bool immediate) {
+		private static string GetMode(Version version, AuthenticationRequestMode mode) {
 			ErrorUtilities.VerifyArgumentNotNull(version, "version");
 
 			Protocol protocol = Protocol.Lookup(version);
-			return immediate ? protocol.Args.Mode.checkid_immediate : protocol.Args.Mode.checkid_setup;
+			return mode == AuthenticationRequestMode.Immediate ? protocol.Args.Mode.checkid_immediate : protocol.Args.Mode.checkid_setup;
 		}
 	}
 }

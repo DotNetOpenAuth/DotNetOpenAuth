@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// An authentication request from a Relying Party to a Provider.
@@ -25,12 +26,12 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		/// <param name="version">The OpenID version to use.</param>
 		/// <param name="providerEndpoint">The Provider endpoint that receives this message.</param>
-		/// <param name="immediate">
-		/// <c>true</c> for asynchronous javascript clients; 
-		/// <c>false</c> to allow the Provider to interact with the user in order to complete authentication.
+		/// <param name="mode">
+		/// <see cref="AuthenticationRequestMode.Immediate"/> for asynchronous javascript clients;
+		/// <see cref="AuthenticationRequestMode.Setup"/>  to allow the Provider to interact with the user in order to complete authentication.
 		/// </param>
-		internal CheckIdRequest(Version version, Uri providerEndpoint, bool immediate) :
-			base(version, providerEndpoint, immediate) {
+		internal CheckIdRequest(Version version, Uri providerEndpoint, AuthenticationRequestMode mode) :
+			base(version, providerEndpoint, mode) {
 		}
 
 		/// <summary>

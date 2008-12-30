@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
@@ -30,7 +31,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			base.SetUp();
 
 			this.protocol = Protocol.V20;
-			this.request = new CheckIdRequest(this.protocol.Version, ProviderUri, false);
+			this.request = new CheckIdRequest(this.protocol.Version, ProviderUri, AuthenticationRequestMode.Setup);
 			this.request.ReturnTo = RPUri;
 			this.response = new PositiveAssertionResponse(this.request);
 

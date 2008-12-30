@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
@@ -25,11 +26,11 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 
 			this.providerEndpoint = new Uri("http://host");
 
-			this.immediatev1 = new SignedResponseRequest(Protocol.V11.Version, this.providerEndpoint, true);
-			this.setupv1 = new SignedResponseRequest(Protocol.V11.Version, this.providerEndpoint, false);
+			this.immediatev1 = new SignedResponseRequest(Protocol.V11.Version, this.providerEndpoint, AuthenticationRequestMode.Immediate);
+			this.setupv1 = new SignedResponseRequest(Protocol.V11.Version, this.providerEndpoint, AuthenticationRequestMode.Setup);
 
-			this.immediatev2 = new SignedResponseRequest(Protocol.V20.Version, this.providerEndpoint, true);
-			this.setupv2 = new SignedResponseRequest(Protocol.V20.Version, this.providerEndpoint, false);
+			this.immediatev2 = new SignedResponseRequest(Protocol.V20.Version, this.providerEndpoint, AuthenticationRequestMode.Immediate);
+			this.setupv2 = new SignedResponseRequest(Protocol.V20.Version, this.providerEndpoint, AuthenticationRequestMode.Setup);
 
 			// Prepare all message versions so that they SHOULD be valid by default.
 			// In particular, V1 messages require ReturnTo.

@@ -224,6 +224,7 @@
     <Compile Include="OpenId\Messages\DirectErrorResponse.cs" />
     <Compile Include="OpenId\Messages\RequestBase.cs" />
     <Compile Include="OpenId\Messages\DirectResponseBase.cs" />
+    <Compile Include="OpenId\RelyingParty\AuthenticationRequestMode.cs" />
     <Compile Include="OpenId\RelyingParty\IProviderEndpoint.cs" />
     <Compile Include="OpenId\RelyingParty\IXrdsProviderEndpoint.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdRelyingParty.cs" />

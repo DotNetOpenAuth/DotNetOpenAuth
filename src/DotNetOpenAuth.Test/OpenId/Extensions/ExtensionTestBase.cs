@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Messaging;
 
 	public static class ExtensionTestUtilities {
@@ -23,7 +24,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			var coordinator = new OpenIdCoordinator(
 				rp => {
 					RegisterExtension(rp.Channel, Mocks.MockOpenIdExtension.Factory);
-					var requestBase = new CheckIdRequest(protocol.Version, OpenIdTestBase.ProviderUri, true);
+					var requestBase = new CheckIdRequest(protocol.Version, OpenIdTestBase.ProviderUri, AuthenticationRequestMode.Immediate);
 					rp.AssociationStore.StoreAssociation(OpenIdTestBase.ProviderUri, association);
 					requestBase.AssociationHandle = association.Handle;
 					requestBase.ClaimedIdentifier = "http://claimedid";

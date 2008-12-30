@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
@@ -17,7 +18,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 
 		[TestInitialize]
 		public void Setup() {
-			CheckIdRequest request = new CheckIdRequest(Protocol.V20.Version, ProviderUri, true);
+			CheckIdRequest request = new CheckIdRequest(Protocol.V20.Version, ProviderUri, AuthenticationRequestMode.Immediate);
 			request.ReturnTo = RPUri;
 			this.response = new IndirectErrorResponse(request);
 		}

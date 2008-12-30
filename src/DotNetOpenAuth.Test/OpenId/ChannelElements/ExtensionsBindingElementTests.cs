@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Mocks;
 	using DotNetOpenAuth.Test.OpenId.Extensions;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -31,7 +32,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			this.factory = new OpenIdExtensionFactory();
 			this.factory.RegisterExtension(MockOpenIdExtension.Factory);
 			this.element = new ExtensionsBindingElement(this.factory);
-			this.request = new SignedResponseRequest(Protocol.Default.Version, OpenIdTestBase.ProviderUri, true);
+			this.request = new SignedResponseRequest(Protocol.Default.Version, OpenIdTestBase.ProviderUri, AuthenticationRequestMode.Immediate);
 		}
 
 		[TestMethod]
