@@ -6,6 +6,11 @@
 
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
+	using System.Collections.Generic;
+	using System.Collections.Specialized;
+	using System.ComponentModel;
+	using System.Linq;
+	using System.Web;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
@@ -20,6 +25,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Backing field for the <see cref="SecuritySettings"/> property.
 		/// </summary>
 		private RelyingPartySecuritySettings securitySettings;
+
+		private Comparison<IXrdsProviderEndpoint> endpointOrder = DefaultEndpointOrder;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class.
@@ -37,6 +44,59 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.Channel = new OpenIdChannel(associationStore, nonceStore, secretStore);
 			this.AssociationStore = associationStore;
 			this.SecuritySettings = RelyingPartySection.Configuration.SecuritySettings.CreateSecuritySettings();
+		}
+
+		/// <summary>
+		/// Gets an XRDS sorting routine that uses the XRDS Service/@Priority 
+		/// attribute to determine order.
+		/// </summary>
+		/// <remarks>
+		/// Endpoints lacking any priority value are sorted to the end of the list.
+		/// </remarks>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
+		public static Comparison<IXrdsProviderEndpoint> DefaultEndpointOrder {
+			get {
+				// Sort first by service type (OpenID 2.0, 1.1, 1.0),
+				// then by Service/@priority, then by Service/Uri/@priority
+				return (se1, se2) => {
+					int result = GetEndpointPrecedenceOrderByServiceType(se1).CompareTo(GetEndpointPrecedenceOrderByServiceType(se2));
+					if (result != 0) {
+						return result;
+					}
+					if (se1.ServicePriority.HasValue && se2.ServicePriority.HasValue) {
+						result = se1.ServicePriority.Value.CompareTo(se2.ServicePriority.Value);
+						if (result != 0) {
+							return result;
+						}
+						if (se1.UriPriority.HasValue && se2.UriPriority.HasValue) {
+							return se1.UriPriority.Value.CompareTo(se2.UriPriority.Value);
+						} else if (se1.UriPriority.HasValue) {
+							return -1;
+						} else if (se2.UriPriority.HasValue) {
+							return 1;
+						} else {
+							return 0;
+						}
+					} else {
+						if (se1.ServicePriority.HasValue) {
+							return -1;
+						} else if (se2.ServicePriority.HasValue) {
+							return 1;
+						} else {
+							// neither service defines a priority, so base ordering by uri priority.
+							if (se1.UriPriority.HasValue && se2.UriPriority.HasValue) {
+								return se1.UriPriority.Value.CompareTo(se2.UriPriority.Value);
+							} else if (se1.UriPriority.HasValue) {
+								return -1;
+							} else if (se2.UriPriority.HasValue) {
+								return 1;
+							} else {
+								return 0;
+							}
+						}
+					}
+				};
+			}
 		}
 
 		/// <summary>
@@ -62,6 +122,37 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Gets or sets the optional Provider Endpoint filter to use.
+		/// </summary>
+		/// <remarks>
+		/// Provides a way to optionally filter the providers that may be used in authenticating a user.
+		/// If provided, the delegate should return true to accept an endpoint, and false to reject it.
+		/// If null, all identity providers will be accepted.  This is the default.
+		/// </remarks>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
+		public EndpointSelector EndpointFilter { get; set; }
+
+		/// <summary>
+		/// Gets or sets the ordering routine that will determine which XRDS 
+		/// Service element to try first 
+		/// </summary>
+		/// <remarks>
+		/// This may never be null.  To reset to default behavior this property 
+		/// can be set to the value of <see cref="DefaultEndpointOrder"/>.
+		/// </remarks>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
+		public Comparison<IXrdsProviderEndpoint> EndpointOrder {
+			get {
+				return this.endpointOrder;
+			}
+
+			set {
+				ErrorUtilities.VerifyArgumentNotNull(value, "value");
+				this.endpointOrder = value;
+			}
+		}
+
+		/// <summary>
 		/// Gets the association store.
 		/// </summary>
 		internal IAssociationStore<Uri> AssociationStore { get; private set; }
@@ -78,16 +169,295 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Gets an association between this Relying Party and a given Provider.
-		/// A new association is created if necessary and possible.
+		/// Creates an authentication request to verify that a user controls
+		/// some given Identifier.
+		/// </summary>
+		/// <param name="userSuppliedIdentifier">
+		/// The Identifier supplied by the user.  This may be a URL, an XRI or i-name.
+		/// </param>
+		/// <param name="realm">
+		/// The shorest URL that describes this relying party web site's address.
+		/// For example, if your login page is found at https://www.example.com/login.aspx,
+		/// your realm would typically be https://www.example.com/.
+		/// </param>
+		/// <param name="returnToUrl">
+		/// The URL of the login page, or the page prepared to receive authentication 
+		/// responses from the OpenID Provider.
+		/// </param>
+		/// <returns>
+		/// An authentication request object that describes the HTTP response to
+		/// send to the user agent to initiate the authentication.
+		/// </returns>
+		/// <exception cref="OpenIdException">Thrown if no OpenID endpoint could be found.</exception>
+		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl) {
+			try {
+				return this.CreateRequests(userSuppliedIdentifier, realm, returnToUrl).First();
+			} catch (InvalidOperationException ex) {
+				throw ErrorUtilities.Wrap(ex, OpenIdStrings.OpenIdEndpointNotFound);
+			}
+		}
+
+		/// <summary>
+		/// Creates an authentication request to verify that a user controls
+		/// some given Identifier.
+		/// </summary>
+		/// <param name="userSuppliedIdentifier">
+		/// The Identifier supplied by the user.  This may be a URL, an XRI or i-name.
+		/// </param>
+		/// <param name="realm">
+		/// The shorest URL that describes this relying party web site's address.
+		/// For example, if your login page is found at https://www.example.com/login.aspx,
+		/// your realm would typically be https://www.example.com/.
+		/// </param>
+		/// <returns>
+		/// An authentication request object that describes the HTTP response to
+		/// send to the user agent to initiate the authentication.
+		/// </returns>
+		/// <remarks>
+		/// This method requires an ASP.NET HttpContext.
+		/// </remarks>
+		/// <exception cref="OpenIdException">Thrown if no OpenID endpoint could be found.</exception>
+		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm) {
+			try {
+				return this.CreateRequests(userSuppliedIdentifier, realm).First();
+			} catch (InvalidOperationException ex) {
+				throw ErrorUtilities.Wrap(ex, OpenIdStrings.OpenIdEndpointNotFound);
+			}
+		}
+
+		/// <summary>
+		/// Creates an authentication request to verify that a user controls
+		/// some given Identifier.
+		/// </summary>
+		/// <param name="userSuppliedIdentifier">
+		/// The Identifier supplied by the user.  This may be a URL, an XRI or i-name.
+		/// </param>
+		/// <returns>
+		/// An authentication request object that describes the HTTP response to
+		/// send to the user agent to initiate the authentication.
+		/// </returns>
+		/// <remarks>
+		/// This method requires an ASP.NET HttpContext.
+		/// </remarks>
+		/// <exception cref="OpenIdException">Thrown if no OpenID endpoint could be found.</exception>
+		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier) {
+			try {
+				return this.CreateRequests(userSuppliedIdentifier).First();
+			} catch (InvalidOperationException ex) {
+				throw ErrorUtilities.Wrap(ex, OpenIdStrings.OpenIdEndpointNotFound);
+			}
+		}
+
+		internal static bool ShouldParameterBeStrippedFromReturnToUrl(string parameterName) {
+			Protocol protocol = Protocol.Default;
+			return parameterName.StartsWith(protocol.openid.Prefix, StringComparison.OrdinalIgnoreCase)
+				|| parameterName.StartsWith("dnoi.", StringComparison.Ordinal);
+		}
+
+		/// <summary>
+		/// Generates the authentication requests that can satisfy the requirements of some OpenID Identifier.
+		/// </summary>
+		/// <param name="userSuppliedIdentifier">
+		/// The Identifier supplied by the user.  This may be a URL, an XRI or i-name.
+		/// </param>
+		/// <param name="realm">
+		/// The shorest URL that describes this relying party web site's address.
+		/// For example, if your login page is found at https://www.example.com/login.aspx,
+		/// your realm would typically be https://www.example.com/.
+		/// </param>
+		/// <param name="returnToUrl">
+		/// The URL of the login page, or the page prepared to receive authentication 
+		/// responses from the OpenID Provider.
+		/// </param>
+		/// <returns>
+		/// An authentication request object that describes the HTTP response to
+		/// send to the user agent to initiate the authentication.
+		/// </returns>
+		/// <remarks>
+		/// <para>Any individual generated request can satisfy the authentication.  
+		/// The generated requests are sorted in preferred order.
+		/// Each request is generated as it is enumerated to.  Associations are created only as
+		/// <see cref="IAuthenticationRequest.RedirectingResponse"/> is called.</para>
+		/// <para>No exception is thrown if no OpenID endpoints were discovered.  
+		/// An empty enumerable is returned instead.</para>
+		/// </remarks>
+		internal IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl) {
+			ErrorUtilities.VerifyArgumentNotNull(realm, "realm");
+			ErrorUtilities.VerifyArgumentNotNull(returnToUrl, "returnToUrl");
+
+			// Normalize the portion of the return_to path that correlates to the realm for capitalization.
+			// (so that if a web app base path is /MyApp/, but the URL of this request happens to be
+			// /myapp/login.aspx, we bump up the return_to Url to use /MyApp/ so it matches the realm.
+			UriBuilder returnTo = new UriBuilder(returnToUrl);
+			if (returnTo.Path.StartsWith(realm.AbsolutePath, StringComparison.OrdinalIgnoreCase) &&
+				!returnTo.Path.StartsWith(realm.AbsolutePath, StringComparison.Ordinal)) {
+				returnTo.Path = realm.AbsolutePath + returnTo.Path.Substring(realm.AbsolutePath.Length);
+			}
+
+			return AuthenticationRequest.Create(userSuppliedIdentifier, this, realm, returnTo.Uri, true).Cast<IAuthenticationRequest>();
+		}
+
+		/// <summary>
+		/// Generates the authentication requests that can satisfy the requirements of some OpenID Identifier.
+		/// </summary>
+		/// <param name="userSuppliedIdentifier">
+		/// The Identifier supplied by the user.  This may be a URL, an XRI or i-name.
+		/// </param>
+		/// <param name="realm">
+		/// The shorest URL that describes this relying party web site's address.
+		/// For example, if your login page is found at https://www.example.com/login.aspx,
+		/// your realm would typically be https://www.example.com/.
+		/// </param>
+		/// <returns>
+		/// An authentication request object that describes the HTTP response to
+		/// send to the user agent to initiate the authentication.
+		/// </returns>
+		/// <remarks>
+		/// <para>Any individual generated request can satisfy the authentication.  
+		/// The generated requests are sorted in preferred order.
+		/// Each request is generated as it is enumerated to.  Associations are created only as
+		/// <see cref="IAuthenticationRequest.RedirectingResponse"/> is called.</para>
+		/// <para>No exception is thrown if no OpenID endpoints were discovered.  
+		/// An empty enumerable is returned instead.</para>
+		/// </remarks>
+		internal IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm) {
+			if (HttpContext.Current == null) {
+				throw new InvalidOperationException(MessagingStrings.HttpContextRequired);
+			}
+
+			// Build the return_to URL
+			UriBuilder returnTo = new UriBuilder(MessagingUtilities.GetRequestUrlFromContext());
+
+			// Trim off any parameters with an "openid." prefix, and a few known others
+			// to avoid carrying state from a prior login attempt.
+			returnTo.Query = string.Empty;
+			NameValueCollection queryParams = MessagingUtilities.GetQueryFromContextNVC();
+			var returnToParams = new Dictionary<string, string>(queryParams.Count);
+			foreach (string key in queryParams) {
+				if (!ShouldParameterBeStrippedFromReturnToUrl(key)) {
+					returnToParams.Add(key, queryParams[key]);
+				}
+			}
+			returnTo.AppendQueryArgs(returnToParams);
+
+			return this.CreateRequests(userSuppliedIdentifier, realm, returnTo.Uri);
+		}
+
+		/// <summary>
+		/// Generates the authentication requests that can satisfy the requirements of some OpenID Identifier.
+		/// </summary>
+		/// <param name="userSuppliedIdentifier">
+		/// The Identifier supplied by the user.  This may be a URL, an XRI or i-name.
+		/// </param>
+		/// <returns>
+		/// An authentication request object that describes the HTTP response to
+		/// send to the user agent to initiate the authentication.
+		/// </returns>
+		/// <remarks>
+		/// <para>Any individual generated request can satisfy the authentication.  
+		/// The generated requests are sorted in preferred order.
+		/// Each request is generated as it is enumerated to.  Associations are created only as
+		/// <see cref="IAuthenticationRequest.RedirectingResponse"/> is called.</para>
+		/// <para>No exception is thrown if no OpenID endpoints were discovered.  
+		/// An empty enumerable is returned instead.</para>
+		/// </remarks>
+		internal IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier) {
+			if (HttpContext.Current == null) {
+				throw new InvalidOperationException(MessagingStrings.HttpContextRequired);
+			}
+
+			// Build the realm URL
+			UriBuilder realmUrl = new UriBuilder(MessagingUtilities.GetRequestUrlFromContext());
+			realmUrl.Path = HttpContext.Current.Request.ApplicationPath;
+			realmUrl.Query = null;
+			realmUrl.Fragment = null;
+
+			// For RP discovery, the realm url MUST NOT redirect.  To prevent this for 
+			// virtual directory hosted apps, we need to make sure that the realm path ends
+			// in a slash (since our calculation above guarantees it doesn't end in a specific
+			// page like default.aspx).
+			if (!realmUrl.Path.EndsWith("/", StringComparison.Ordinal)) {
+				realmUrl.Path += "/";
+			}
+
+			return this.CreateRequests(userSuppliedIdentifier, new Realm(realmUrl.Uri));
+		}
+
+		/// <summary>
+		/// Gets an association between this Relying Party and a given Provider
+		/// if it already exists in the association store.
 		/// </summary>
 		/// <param name="provider">The provider to create an association with.</param>
-		/// <returns>The association if one exists and/or could be created.  Null otherwise.</returns>
-		internal Association GetAssociation(ProviderEndpointDescription provider) {
+		/// <returns>The association if one exists and has useful life remaining.  Otherwise <c>null</c>.</returns>
+		internal Association GetExistingAssociation(ProviderEndpointDescription provider) {
+			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
+
+			Protocol protocol = Protocol.Lookup(provider.ProtocolVersion);
+
+			// If the RP has no application store for associations, there's no point in creating one.
+			if (this.AssociationStore == null) {
+				return null;
+			}
+
+			// TODO: we need a way to lookup an association that fulfills a given set of security
+			// requirements.  We may have a SHA-1 association and a SHA-256 association that need
+			// to be called for specifically. (a bizzare scenario, admittedly, making this low priority).
+			Association association = this.AssociationStore.GetAssociation(provider.Endpoint);
+
+			// If the returned association does not fulfill security requirements, ignore it.
+			if (association != null && !this.SecuritySettings.IsAssociationInPermittedRange(protocol, association.GetAssociationType(protocol))) {
+				association = null;
+			}
+
+			if (association != null && !association.HasUsefulLifeRemaining) {
+				association = null;
+			}
+
+			return association;
+		}
+
+		internal Association GetOrCreateAssociation(ProviderEndpointDescription provider) {
+			return this.GetExistingAssociation(provider) ?? this.CreateNewAssociation(provider);
+		}
+
+		private static double GetEndpointPrecedenceOrderByServiceType(IXrdsProviderEndpoint endpoint) {
+			// The numbers returned from this method only need to compare against other numbers
+			// from this method, which makes them arbitrary but relational to only others here.
+			if (endpoint.IsTypeUriPresent(Protocol.V20.OPIdentifierServiceTypeURI)) {
+				return 0;
+			}
+			if (endpoint.IsTypeUriPresent(Protocol.V20.ClaimedIdentifierServiceTypeURI)) {
+				return 1;
+			}
+			if (endpoint.IsTypeUriPresent(Protocol.V11.ClaimedIdentifierServiceTypeURI)) {
+				return 2;
+			}
+			if (endpoint.IsTypeUriPresent(Protocol.V10.ClaimedIdentifierServiceTypeURI)) {
+				return 3;
+			}
+			return 10;
+		}
+
+		/// <summary>
+		/// Creates a new association with a given Provider.
+		/// </summary>
+		/// <param name="provider">The provider to create an association with.</param>
+		/// <returns>
+		/// The newly created association, or null if no association can be created with
+		/// the given Provider given the current security settings.
+		/// </returns>
+		/// <remarks>
+		/// A new association is created and returned even if one already exists in the
+		/// association store.
+		/// Any new association is automatically added to the <see cref="AssociationStore"/>.
+		/// </remarks>
+		private Association CreateNewAssociation(ProviderEndpointDescription provider) {
 			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
 
 			var associateRequest = AssociateRequest.Create(this.SecuritySettings, provider);
 			if (associateRequest == null) {
+				// this can happen if security requirements and protocol conflict
+				// to where there are no association types to choose from.
 				return null;
 			}
 
@@ -106,4 +476,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 		}
 	}
+
+
+	/// <summary>
+	/// A delegate that decides whether a given OpenID Provider endpoint may be
+	/// considered for authenticating a user.
+	/// </summary>
+	/// <returns>
+	/// True if the endpoint should be considered.  
+	/// False to remove it from the pool of acceptable providers.
+	/// </returns>
+	public delegate bool EndpointSelector(IXrdsProviderEndpoint endpoint);
 }

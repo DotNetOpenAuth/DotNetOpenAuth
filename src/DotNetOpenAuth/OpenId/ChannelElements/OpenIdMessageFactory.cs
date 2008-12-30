@@ -53,11 +53,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					}
 				} else if (string.Equals(mode, protocol.Args.Mode.checkid_setup) ||
 					string.Equals(mode, protocol.Args.Mode.checkid_immediate)) {
-					bool immediate = string.Equals(mode, protocol.Args.Mode.checkid_immediate);
+					AuthenticationRequestMode authMode = string.Equals(mode, protocol.Args.Mode.checkid_immediate) ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;
 					if (fields.ContainsKey(protocol.openid.identity)) {
-						message = new CheckIdRequest(protocol.Version, recipient.Location, AuthenticationRequestMode.Immediate);
+						message = new CheckIdRequest(protocol.Version, recipient.Location, authMode);
 					} else {
-						message = new SignedResponseRequest(protocol.Version, recipient.Location, AuthenticationRequestMode.Immediate);
+						message = new SignedResponseRequest(protocol.Version, recipient.Location, authMode);
 					}
 				} else if (string.Equals(mode, protocol.Args.Mode.cancel) ||
 					(string.Equals(mode, protocol.Args.Mode.setup_needed) && (protocol.Version.Major >= 2 || fields.ContainsKey(protocol.openid.user_setup_url)))) {

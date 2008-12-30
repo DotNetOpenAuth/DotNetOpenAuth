@@ -232,6 +232,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No OpenId endpoint found..
+        /// </summary>
+        internal static string OpenIdEndpointNotFound {
+            get {
+                return ResourceManager.GetString("OpenIdEndpointNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to determine the version of the OpenID protocol implemented by the Provider at endpoint &apos;{0}&apos;..
         /// </summary>
         internal static string ProviderVersionUnrecognized {

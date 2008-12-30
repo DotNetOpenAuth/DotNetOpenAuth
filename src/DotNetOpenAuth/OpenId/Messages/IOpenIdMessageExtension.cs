@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// <summary>
 	/// The contract any OpenID extension for DotNetOpenId must implement.
 	/// </summary>
-	internal interface IOpenIdMessageExtension : IExtensionMessage {
+	public interface IOpenIdMessageExtension : IExtensionMessage {
 		/// <summary>
 		/// Gets the TypeURI the extension uses in the OpenID protocol and in XRDS advertisements.
 		/// </summary>

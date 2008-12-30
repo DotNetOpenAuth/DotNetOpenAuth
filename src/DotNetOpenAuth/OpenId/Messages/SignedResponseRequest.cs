@@ -162,9 +162,9 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Gets the value of the openid.mode parameter based on the protocol version and immediate flag.
 		/// </summary>
 		/// <param name="version">The OpenID version to use.</param>
-		/// <param name="mode">
-		/// <see cref="AuthenticationRequestMode.Immediate"/> for asynchronous javascript clients;
-		/// <see cref="AuthenticationRequestMode.Setup"/>  to allow the Provider to interact with the user in order to complete authentication.
+		/// <param name="immediate">
+		/// <c>true</c> for asynchronous javascript clients;
+		/// <c>false</c> to allow the Provider to interact with the user in order to complete authentication.
 		/// </param>
 		/// <returns>checkid_immediate or checkid_setup</returns>
 		private static string GetMode(Version version, AuthenticationRequestMode mode) {

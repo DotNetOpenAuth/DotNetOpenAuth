@@ -224,8 +224,14 @@
     <Compile Include="OpenId\Messages\DirectErrorResponse.cs" />
     <Compile Include="OpenId\Messages\RequestBase.cs" />
     <Compile Include="OpenId\Messages\DirectResponseBase.cs" />
+    <Compile Include="OpenId\RelyingParty\AssociationPreference.cs" />
+    <Compile Include="OpenId\RelyingParty\AuthenticationRequest.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationRequestMode.cs" />
+    <Compile Include="OpenId\RelyingParty\AuthenticationStatus.cs" />
+    <Compile Include="OpenId\RelyingParty\IAuthenticationRequest.cs" />
+    <Compile Include="OpenId\RelyingParty\IAuthenticationResponse.cs" />
     <Compile Include="OpenId\RelyingParty\IProviderEndpoint.cs" />
+    <Compile Include="OpenId\RelyingParty\ISetupRequiredAuthenticationResponse.cs" />
     <Compile Include="OpenId\RelyingParty\IXrdsProviderEndpoint.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdRelyingParty.cs" />
     <Compile Include="OpenId\OpenIdStrings.Designer.cs">

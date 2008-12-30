@@ -137,7 +137,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
 				rp => {
 					rp.SecuritySettings = this.RelyingPartySecuritySettings;
-					rpAssociation = rp.GetAssociation(opDescription);
+					rpAssociation = rp.GetOrCreateAssociation(opDescription);
 				},
 				op => {
 					op.SecuritySettings = this.ProviderSecuritySettings;

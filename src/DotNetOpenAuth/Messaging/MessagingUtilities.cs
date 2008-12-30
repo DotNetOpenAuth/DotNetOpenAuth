@@ -51,6 +51,28 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Gets the query data from the original request (before any URL rewriting has occurred.)
+		/// </summary>
+		/// <returns>A <see cref="NameValueCollection"/> containing all the parameters in the query string.</returns>
+		public static NameValueCollection GetQueryFromContextNVC() {
+			if (HttpContext.Current == null) {
+				throw new InvalidOperationException(MessagingStrings.HttpContextRequired);
+			}
+
+			HttpRequest request = HttpContext.Current.Request;
+			// This request URL may have been rewritten by the host site.
+			// For openid protocol purposes, we really need to look at 
+			// the original query parameters before any rewriting took place.
+			if (request.Url.PathAndQuery == request.RawUrl) {
+				// No rewriting has taken place.
+				return request.QueryString;
+			} else {
+				// Rewriting detected!  Recover the original request URI.
+				return HttpUtility.ParseQueryString(GetRequestUrlFromContext().Query);
+			}
+		}
+
+		/// <summary>
 		/// Strips any and all URI query parameters that start with some prefix.
 		/// </summary>
 		/// <param name="uri">The URI that may have a query with parameters to remove.</param>
@@ -257,12 +279,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="second">The second array in the comparison. May not be null.</param>
 		/// <returns>True if the arrays equal; false otherwise.</returns>
 		internal static bool AreEquivalent<T>(T[] first, T[] second) {
-			if (first == null) {
-				throw new ArgumentNullException("first");
-			}
-			if (second == null) {
-				throw new ArgumentNullException("second");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(first, "first");
+			ErrorUtilities.VerifyArgumentNotNull(second, "second");
 			if (first.Length != second.Length) {
 				return false;
 			}
@@ -272,6 +290,42 @@ namespace DotNetOpenAuth.Messaging {
 				}
 			}
 			return true;
+		}
+
+		/// <summary>
+		/// Tests two sequences for same contents and ordering.
+		/// </summary>
+		internal static bool AreEquivalent<T>(IEnumerable<T> sequence1, IEnumerable<T> sequence2) {
+			if (sequence1 == null && sequence2 == null) {
+				return true;
+			}
+			if ((sequence1 == null) ^ (sequence2 == null)) {
+				return false;
+			}
+
+			IEnumerator<T> iterator1 = sequence1.GetEnumerator();
+			IEnumerator<T> iterator2 = sequence2.GetEnumerator();
+			bool movenext1, movenext2;
+			while (true) {
+				movenext1 = iterator1.MoveNext();
+				movenext2 = iterator2.MoveNext();
+				if (!movenext1 || !movenext2) { // if we've reached the end of at least one sequence
+					break;
+				}
+				object obj1 = iterator1.Current;
+				object obj2 = iterator2.Current;
+				if (obj1 == null && obj2 == null) {
+					continue; // both null is ok
+				}
+				if (obj1 == null ^ obj2 == null) {
+					return false; // exactly one null is different
+				}
+				if (!obj1.Equals(obj2)) {
+					return false; // if they're not equal to each other
+				}
+			}
+
+			return movenext1 == movenext2; // did they both reach the end together?
 		}
 
 		/// <summary>
