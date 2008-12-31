@@ -18,6 +18,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
+	/// A delegate that decides whether a given OpenID Provider endpoint may be
+	/// considered for authenticating a user.
+	/// </summary>
+	/// <param name="endpoint">The endpoint for consideration.</param>
+	/// <returns>
+	/// <c>True</c> if the endpoint should be considered.  
+	/// <c>False</c> to remove it from the pool of acceptable providers.
+	/// </returns>
+	public delegate bool EndpointSelector(IXrdsProviderEndpoint endpoint);
+
+	/// <summary>
 	/// Provides the programmatic facilities to act as an OpenId consumer.
 	/// </summary>
 	public sealed class OpenIdRelyingParty {
@@ -26,6 +37,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		private RelyingPartySecuritySettings securitySettings;
 
+		/// <summary>
+		/// Backing store for the <see cref="EndpointOrder"/> property.
+		/// </summary>
 		private Comparison<IXrdsProviderEndpoint> endpointOrder = DefaultEndpointOrder;
 
 		/// <summary>
@@ -136,6 +150,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Gets or sets the ordering routine that will determine which XRDS 
 		/// Service element to try first 
 		/// </summary>
+		/// <value>Default is <see cref="DefaultEndpointOrder"/>.</value>
 		/// <remarks>
 		/// This may never be null.  To reset to default behavior this property 
 		/// can be set to the value of <see cref="DefaultEndpointOrder"/>.
@@ -283,6 +298,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 		}
 
+		/// <summary>
+		/// Determines whether some parameter name belongs to OpenID or this library
+		/// as a protocol or internal parameter name.
+		/// </summary>
+		/// <param name="parameterName">Name of the parameter.</param>
+		/// <returns>
+		/// 	<c>true</c> if the named parameter is a library- or protocol-specific parameter; otherwise, <c>false</c>.
+		/// </returns>
 		internal static bool IsOpenIdSupportingParameter(string parameterName) {
 			Protocol protocol = Protocol.Default;
 			return parameterName.StartsWith(protocol.openid.Prefix, StringComparison.OrdinalIgnoreCase)
@@ -451,10 +474,22 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			return association;
 		}
 
+		/// <summary>
+		/// Gets an existing association with the specified Provider, or attempts to create
+		/// a new association of one does not already exist.
+		/// </summary>
+		/// <param name="provider">The provider to get an association for.</param>
+		/// <returns>The existing or new association; <c>null</c> if none existed and one could not be created.</returns>
 		internal Association GetOrCreateAssociation(ProviderEndpointDescription provider) {
 			return this.GetExistingAssociation(provider) ?? this.CreateNewAssociation(provider);
 		}
 
+		/// <summary>
+		/// Gets the priority rating for a given type of endpoint, allowing a
+		/// priority sorting of endpoints.
+		/// </summary>
+		/// <param name="endpoint">The endpoint to prioritize.</param>
+		/// <returns>An arbitary integer, which may be used for sorting against other returned values from this method.</returns>
 		private static double GetEndpointPrecedenceOrderByServiceType(IXrdsProviderEndpoint endpoint) {
 			// The numbers returned from this method only need to compare against other numbers
 			// from this method, which makes them arbitrary but relational to only others here.
@@ -511,15 +546,4 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 		}
 	}
-
-
-	/// <summary>
-	/// A delegate that decides whether a given OpenID Provider endpoint may be
-	/// considered for authenticating a user.
-	/// </summary>
-	/// <returns>
-	/// True if the endpoint should be considered.  
-	/// False to remove it from the pool of acceptable providers.
-	/// </returns>
-	public delegate bool EndpointSelector(IXrdsProviderEndpoint endpoint);
 }

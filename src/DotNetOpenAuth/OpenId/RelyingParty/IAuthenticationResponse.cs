@@ -85,15 +85,18 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		Exception Exception { get; }
 
 		/// <summary>
-		/// Gets a callback argument's value that was previously added using 
+		/// Gets a callback argument's value that was previously added using
 		/// <see cref="IAuthenticationRequest.AddCallbackArguments(string, string)"/>.
 		/// </summary>
-		/// <returns>The value of the argument, or null if the named parameter could not be found.</returns>
+		/// <param name="key">The name of the parameter whose value is sought.</param>
+		/// <returns>
+		/// The value of the argument, or null if the named parameter could not be found.
+		/// </returns>
 		/// <remarks>
-		/// <para>This may return any argument on the querystring that came with the authentication response,
-		/// which may include parameters not explicitly added using 
+		/// 	<para>This may return any argument on the querystring that came with the authentication response,
+		/// which may include parameters not explicitly added using
 		/// <see cref="IAuthenticationRequest.AddCallbackArguments(string, string)"/>.</para>
-		/// <para>Note that these values are NOT protected against tampering in transit.</para>
+		/// 	<para>Note that these values are NOT protected against tampering in transit.</para>
 		/// </remarks>
 		string GetCallbackArgument(string key);
 
@@ -109,20 +112,26 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <see cref="IAuthenticationRequest.AddCallbackArguments(string, string)"/>.</para>
 		/// <para>Note that these values are NOT protected against tampering in transit.</para>
 		/// </remarks>
-		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
-		IDictionary<string, string> GetCallbackArguments();
+		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Historically an expensive operation.")]
+		IDictionary<string, string> GetCallbackArguments(); // TODO: consider changing this to a property since the result can be cached.
 
 		/// <summary>
 		/// Tries to get an OpenID extension that may be present in the response.
 		/// </summary>
-		/// <returns>The extension, if it is found.  Null otherwise.</returns>
-		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+		/// <typeparam name="T">The type of extension to look for in the response message.</typeparam>
+		/// <returns>
+		/// The extension, if it is found.  Null otherwise.
+		/// </returns>
+		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "No parameter at all is required.  T is used for return type.")]
 		T GetExtension<T>() where T : IOpenIdMessageExtension, new();
 
 		/// <summary>
 		/// Tries to get an OpenID extension that may be present in the response.
 		/// </summary>
-		/// <returns>The extension, if it is found.  Null otherwise.</returns>
+		/// <param name="extensionType">Type of the extension to look for in the response.</param>
+		/// <returns>
+		/// The extension, if it is found.  Null otherwise.
+		/// </returns>
 		IOpenIdMessageExtension GetExtension(Type extensionType);
 	}
 }

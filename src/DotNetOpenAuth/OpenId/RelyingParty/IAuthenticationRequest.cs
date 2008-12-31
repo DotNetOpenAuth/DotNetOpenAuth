@@ -78,12 +78,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Makes a dictionary of key/value pairs available when the authentication is completed.
 		/// </summary>
+		/// <param name="arguments">The arguments to add to the request's return_to URI.</param>
 		/// <remarks>
-		/// <para>Note that these values are NOT protected against tampering in transit.  No 
+		/// 	<para>Note that these values are NOT protected against tampering in transit.  No
 		/// security-sensitive data should be stored using this method.</para>
-		/// <para>The values stored here can be retrieved using 
+		/// 	<para>The values stored here can be retrieved using
 		/// <see cref="IAuthenticationResponse.GetCallbackArguments"/>.</para>
-		/// <para>Since the data set here is sent in the querystring of the request and some
+		/// 	<para>Since the data set here is sent in the querystring of the request and some
 		/// servers place limits on the size of a request URL, this data should be kept relatively
 		/// small to ensure successful authentication.  About 1.5KB is about all that should be stored.</para>
 		/// </remarks>
@@ -92,12 +93,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Makes a key/value pair available when the authentication is completed.
 		/// </summary>
+		/// <param name="key">The parameter name.</param>
+		/// <param name="value">The value of the argument.</param>
 		/// <remarks>
-		/// <para>Note that these values are NOT protected against tampering in transit.  No 
+		/// 	<para>Note that these values are NOT protected against tampering in transit.  No
 		/// security-sensitive data should be stored using this method.</para>
-		/// <para>The value stored here can be retrieved using 
+		/// 	<para>The value stored here can be retrieved using
 		/// <see cref="IAuthenticationResponse.GetCallbackArgument"/>.</para>
-		/// <para>Since the data set here is sent in the querystring of the request and some
+		/// 	<para>Since the data set here is sent in the querystring of the request and some
 		/// servers place limits on the size of a request URL, this data should be kept relatively
 		/// small to ensure successful authentication.  About 1.5KB is about all that should be stored.</para>
 		/// </remarks>
@@ -106,6 +109,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Adds an OpenID extension to the request directed at the OpenID provider.
 		/// </summary>
+		/// <param name="extension">The initialized extension to add to the request.</param>
 		void AddExtension(IOpenIdMessageExtension extension);
 
 		/// <summary>

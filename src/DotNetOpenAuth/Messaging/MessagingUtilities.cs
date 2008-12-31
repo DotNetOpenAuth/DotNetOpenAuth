@@ -60,6 +60,7 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			HttpRequest request = HttpContext.Current.Request;
+
 			// This request URL may have been rewritten by the host site.
 			// For openid protocol purposes, we really need to look at 
 			// the original query parameters before any rewriting took place.

@@ -322,6 +322,14 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			return value;
 		}
 
+		/// <summary>
+		/// Gets the names of the callback parameters added to the original authentication request.
+		/// </summary>
+		/// <returns>A sequence of the callback parameter names.</returns>
+		/// <remarks>
+		/// Callback parameters are only available if they are complete and untampered with
+		/// since the original request message (as proven by a signature).
+		/// </remarks>
 		internal IEnumerable<string> GetReturnToParameterNames() {
 			return this.ReturnToParameters.Keys;
 		}

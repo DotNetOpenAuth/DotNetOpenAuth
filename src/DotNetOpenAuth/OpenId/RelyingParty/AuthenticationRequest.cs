@@ -14,12 +14,41 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
 
+	/// <summary>
+	/// Facilitates customization and creation and an authentication request
+	/// that a Relying Party is preparing to send.
+	/// </summary>
 	internal class AuthenticationRequest : IAuthenticationRequest {
-		internal OpenIdRelyingParty RelyingParty;
-		internal AssociationPreference associationPreference = AssociationPreference.IfPossible;
+		/// <summary>
+		/// The name of the internal callback parameter to use to store the user-supplied identifier.
+		/// </summary>
 		internal const string UserSuppliedIdentifierParameterName = "dnoi.userSuppliedIdentifier";
+
+		/// <summary>
+		/// The relying party that created this request object.
+		/// </summary>
+		private readonly OpenIdRelyingParty RelyingParty;
+
+		/// <summary>
+		/// The endpoint that describes the particular OpenID Identifier and Provider that
+		/// will be used to create the authentication request.
+		/// </summary>
 		private readonly ServiceEndpoint endpoint;
+
+		/// <summary>
+		/// The protocol version used at the Provider.
+		/// </summary>
 		private readonly Protocol protocol;
+
+		/// <summary>
+		/// How an association may or should be created or used in the formulation of the 
+		/// authentication request.
+		/// </summary>
+		private AssociationPreference associationPreference = AssociationPreference.IfPossible;
+
+		/// <summary>
+		/// The extensions that have been added to this authentication request.
+		/// </summary>
 		private List<IOpenIdMessageExtension> extensions = new List<IOpenIdMessageExtension>();
 
 		/// <summary>
@@ -28,6 +57,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		private Dictionary<string, string> returnToArgs = new Dictionary<string, string>();
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AuthenticationRequest"/> class.
+		/// </summary>
+		/// <param name="endpoint">The endpoint that describes the OpenID Identifier and Provider that will complete the authentication.</param>
+		/// <param name="realm">The realm, or root URL, of the host web site.</param>
+		/// <param name="returnToUrl">The base return_to URL that the Provider should return the user to to complete authentication.  This should not include callback parameters as these should be added using the <see cref="AddCallbackArguments(string, string)"/> method.</param>
+		/// <param name="relyingParty">The relying party that created this instance.</param>
 		private AuthenticationRequest(ServiceEndpoint endpoint, Realm realm, Uri returnToUrl, OpenIdRelyingParty relyingParty) {
 			ErrorUtilities.VerifyArgumentNotNull(endpoint, "endpoint");
 			ErrorUtilities.VerifyArgumentNotNull(realm, "realm");
@@ -45,32 +81,93 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 		#region IAuthenticationRequest Members
 
+		/// <summary>
+		/// Gets or sets the mode the Provider should use during authentication.
+		/// </summary>
+		/// <value></value>
 		public AuthenticationRequestMode Mode { get; set; }
 
+		/// <summary>
+		/// Gets the HTTP response the relying party should send to the user agent
+		/// to redirect it to the OpenID Provider to start the OpenID authentication process.
+		/// </summary>
+		/// <value></value>
 		public UserAgentResponse RedirectingResponse {
 			get { return this.RelyingParty.Channel.Send(this.CreateRequestMessage()); }
 		}
 
+		/// <summary>
+		/// Gets the URL that the user agent will return to after authentication
+		/// completes or fails at the Provider.
+		/// </summary>
+		/// <value></value>
 		public Uri ReturnToUrl { get; private set; }
 
+		/// <summary>
+		/// Gets the URL that identifies this consumer web application that
+		/// the Provider will display to the end user.
+		/// </summary>
 		public Realm Realm { get; private set; }
 
+		/// <summary>
+		/// Gets the Claimed Identifier that the User Supplied Identifier
+		/// resolved to.  Null if the user provided an OP Identifier
+		/// (directed identity).
+		/// </summary>
+		/// <value></value>
+		/// <remarks>
+		/// Null is returned if the user is using the directed identity feature
+		/// of OpenID 2.0 to make it nearly impossible for a relying party site
+		/// to improperly store the reserved OpenID URL used for directed identity
+		/// as a user's own Identifier.
+		/// However, to test for the Directed Identity feature, please test the
+		/// <see cref="IsDirectedIdentity"/> property rather than testing this
+		/// property for a null value.
+		/// </remarks>
 		public Identifier ClaimedIdentifier {
 			get { return this.IsDirectedIdentity ? null : this.endpoint.ClaimedIdentifier; }
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether the authenticating user has chosen to let the Provider
+		/// determine and send the ClaimedIdentifier after authentication.
+		/// </summary>
+		/// <value></value>
 		public bool IsDirectedIdentity {
 			get { return this.endpoint.ClaimedIdentifier == this.endpoint.Protocol.ClaimedIdentifierForOPIdentifier; }
 		}
 
+		/// <summary>
+		/// Gets information about the OpenId Provider, as advertised by the
+		/// OpenId discovery documents found at the <see cref="ClaimedIdentifier"/>
+		/// location.
+		/// </summary>
+		/// <value></value>
 		IProviderEndpoint IAuthenticationRequest.Provider {
 			get { return this.endpoint; }
 		}
 
+		/// <summary>
+		/// Gets the detected version of OpenID implemented by the Provider.
+		/// </summary>
+		/// <value></value>
 		public Version ProviderVersion {
 			get { return this.endpoint.Protocol.Version; }
 		}
 
+		/// <summary>
+		/// Makes a dictionary of key/value pairs available when the authentication is completed.
+		/// </summary>
+		/// <param name="arguments">The arguments to add to the request's return_to URI.</param>
+		/// <remarks>
+		/// 	<para>Note that these values are NOT protected against tampering in transit.  No
+		/// security-sensitive data should be stored using this method.</para>
+		/// 	<para>The values stored here can be retrieved using
+		/// <see cref="IAuthenticationResponse.GetCallbackArguments"/>.</para>
+		/// 	<para>Since the data set here is sent in the querystring of the request and some
+		/// servers place limits on the size of a request URL, this data should be kept relatively
+		/// small to ensure successful authentication.  About 1.5KB is about all that should be stored.</para>
+		/// </remarks>
 		public void AddCallbackArguments(IDictionary<string, string> arguments) {
 			ErrorUtilities.VerifyArgumentNotNull(arguments, "arguments");
 
@@ -79,15 +176,40 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 		}
 
+		/// <summary>
+		/// Makes a key/value pair available when the authentication is completed.
+		/// </summary>
+		/// <param name="key">The parameter name.</param>
+		/// <param name="value">The value of the argument.</param>
+		/// <remarks>
+		/// 	<para>Note that these values are NOT protected against tampering in transit.  No
+		/// security-sensitive data should be stored using this method.</para>
+		/// 	<para>The value stored here can be retrieved using
+		/// <see cref="IAuthenticationResponse.GetCallbackArgument"/>.</para>
+		/// 	<para>Since the data set here is sent in the querystring of the request and some
+		/// servers place limits on the size of a request URL, this data should be kept relatively
+		/// small to ensure successful authentication.  About 1.5KB is about all that should be stored.</para>
+		/// </remarks>
 		public void AddCallbackArguments(string key, string value) {
 			this.returnToArgs.Add(key, value);
 		}
 
+		/// <summary>
+		/// Adds an OpenID extension to the request directed at the OpenID provider.
+		/// </summary>
+		/// <param name="extension">The initialized extension to add to the request.</param>
 		public void AddExtension(IOpenIdMessageExtension extension) {
 			ErrorUtilities.VerifyArgumentNotNull(extension, "extension");
 			this.extensions.Add(extension);
 		}
 
+		/// <summary>
+		/// Redirects the user agent to the provider for authentication.
+		/// Execution of the current page terminates after this call.
+		/// </summary>
+		/// <remarks>
+		/// This method requires an ASP.NET HttpContext.
+		/// </remarks>
 		public void RedirectToProvider() {
 			this.RedirectingResponse.Send();
 		}
@@ -98,6 +220,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Performs identifier discovery, creates associations and generates authentication requests
 		/// on-demand for as long as new ones can be generated based on the results of Identifier discovery.
 		/// </summary>
+		/// <param name="userSuppliedIdentifier">The user supplied identifier.</param>
+		/// <param name="relyingParty">The relying party.</param>
+		/// <param name="realm">The realm.</param>
+		/// <param name="returnToUrl">The return_to base URL.</param>
+		/// <param name="createNewAssociationsAsNeeded">if set to <c>true</c>, associations that do not exist between this Relying Party and the asserting Providers are created before the authentication request is created.</param>
+		/// <returns>A sequence of authentication requests, any of which constitutes a valid identity assertion on the Claimed Identifier.</returns>
 		internal static IEnumerable<AuthenticationRequest> Create(Identifier userSuppliedIdentifier, OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl, bool createNewAssociationsAsNeeded) {
 			// We have a long data validation and preparation process
 			ErrorUtilities.VerifyArgumentNotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
@@ -134,9 +262,21 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Performs request generation for the <see cref="Create"/> method.
-		/// All data validation and cleansing steps must have ALREADY taken place.
+		/// Performs deferred request generation for the <see cref="Create"/> method.
 		/// </summary>
+		/// <param name="userSuppliedIdentifier">The user supplied identifier.</param>
+		/// <param name="relyingParty">The relying party.</param>
+		/// <param name="realm">The realm.</param>
+		/// <param name="returnToUrl">The return_to base URL.</param>
+		/// <param name="serviceEndpoints">The discovered service endpoints on the Claimed Identifier.</param>
+		/// <param name="createNewAssociationsAsNeeded">if set to <c>true</c>, associations that do not exist between this Relying Party and the asserting Providers are created before the authentication request is created.</param>
+		/// <returns>
+		/// A sequence of authentication requests, any of which constitutes a valid identity assertion on the Claimed Identifier.
+		/// </returns>
+		/// <remarks>
+		/// All data validation and cleansing steps must have ALREADY taken place
+		/// before calling this method.
+		/// </remarks>
 		private static IEnumerable<AuthenticationRequest> CreateInternal(Identifier userSuppliedIdentifier, OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl, IEnumerable<ServiceEndpoint> serviceEndpoints, bool createNewAssociationsAsNeeded) {
 			Logger.InfoFormat("Performing discovery on user-supplied identifier: {0}", userSuppliedIdentifier);
 			IEnumerable<ServiceEndpoint> endpoints = FilterAndSortEndpoints(serviceEndpoints, relyingParty);
@@ -160,6 +300,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					association = createNewAssociationsAsNeeded ? relyingParty.GetOrCreateAssociation(endpoint.ProviderDescription) : relyingParty.GetExistingAssociation(endpoint.ProviderDescription);
 					if (association == null && createNewAssociationsAsNeeded) {
 						Logger.WarnFormat("Failed to create association with {0}.  Skipping to next endpoint.", endpoint.ProviderEndpoint);
+
 						// No association could be created.  Add it to the list of failed association
 						// endpoints and skip to the next available endpoint.
 						failedAssociationEndpoints.Add(endpoint);
@@ -193,6 +334,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Returns a filtered and sorted list of the available OP endpoints for a discovered Identifier.
 		/// </summary>
+		/// <param name="endpoints">The endpoints.</param>
+		/// <param name="relyingParty">The relying party.</param>
+		/// <returns>A filtered and sorted list of endpoints; may be empty if the input was empty or the filter removed all endpoints.</returns>
 		private static List<ServiceEndpoint> FilterAndSortEndpoints(IEnumerable<ServiceEndpoint> endpoints, OpenIdRelyingParty relyingParty) {
 			ErrorUtilities.VerifyArgumentNotNull(endpoints, "endpoints");
 			ErrorUtilities.VerifyArgumentNotNull(relyingParty, "relyingParty");
@@ -234,6 +378,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			return endpointList;
 		}
 
+		/// <summary>
+		/// Creates the authentication request message to send to the Provider,
+		/// based on the properties in this instance.
+		/// </summary>
+		/// <returns>The message to send to the Provider.</returns>
 		private CheckIdRequest CreateRequestMessage() {
 			Association association = this.GetAssociation();
 
@@ -252,6 +401,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			return request;
 		}
 
+		/// <summary>
+		/// Gets the association to use for this authentication request.
+		/// </summary>
+		/// <returns>The association to use; <c>null</c> to use 'dumb mode'.</returns>
 		private Association GetAssociation() {
 			Association association = null;
 			switch (this.associationPreference) {
