@@ -142,6 +142,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} (Contact: {1}, Reference: {2}).
+        /// </summary>
+        internal static string IndirectErrorFormattedMessage {
+            get {
+                return ResourceManager.GetString("IndirectErrorFormattedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot encode &apos;{0}&apos; because it contains an illegal character for Key-Value Form encoding.  (line {1}: &apos;{2}&apos;).
         /// </summary>
         internal static string InvalidCharacterInKeyValueFormInput {
@@ -183,6 +192,19 @@ namespace DotNetOpenAuth.OpenId {
         internal static string InvalidXri {
             get {
                 return ResourceManager.GetString("InvalidXri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The OpenId Provider issued an assertion for an Identifier whose discovery information did not match.  
+        ///Assertion endpoint info: 
+        ///{0}
+        ///Discovered endpoint info:
+        ///{1}.
+        /// </summary>
+        internal static string IssuedAssertionFailsIdentifierDiscovery {
+            get {
+                return ResourceManager.GetString("IssuedAssertionFailsIdentifierDiscovery", resourceCulture);
             }
         }
         
@@ -237,6 +259,15 @@ namespace DotNetOpenAuth.OpenId {
         internal static string OpenIdEndpointNotFound {
             get {
                 return ResourceManager.GetString("OpenIdEndpointNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This operation is only allowed when IAuthenticationResponse.State == AuthenticationStatus.SetupRequired..
+        /// </summary>
+        internal static string OperationOnlyValidForSetupRequiredState {
+            get {
+                return ResourceManager.GetString("OperationOnlyValidForSetupRequiredState", resourceCulture);
             }
         }
         

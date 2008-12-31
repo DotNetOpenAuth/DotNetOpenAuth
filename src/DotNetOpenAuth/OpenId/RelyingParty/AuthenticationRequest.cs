@@ -17,6 +17,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	internal class AuthenticationRequest : IAuthenticationRequest {
 		internal OpenIdRelyingParty RelyingParty;
 		internal AssociationPreference associationPreference = AssociationPreference.IfPossible;
+		internal const string UserSuppliedIdentifierParameterName = "dnoi.userSuppliedIdentifier";
 		private readonly ServiceEndpoint endpoint;
 		private readonly Protocol protocol;
 		private List<IOpenIdMessageExtension> extensions = new List<IOpenIdMessageExtension>();
@@ -113,7 +114,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			if (Logger.IsWarnEnabled && returnToUrl.Query != null) {
 				NameValueCollection returnToArgs = HttpUtility.ParseQueryString(returnToUrl.Query);
 				foreach (string key in returnToArgs) {
-					if (OpenIdRelyingParty.ShouldParameterBeStrippedFromReturnToUrl(key)) {
+					if (OpenIdRelyingParty.IsOpenIdSupportingParameter(key)) {
 						Logger.WarnFormat("OpenId argument \"{0}\" found in return_to URL.  This can corrupt an OpenID response.", key);
 						break;
 					}
@@ -243,6 +244,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			request.ReturnTo = this.ReturnToUrl;
 			request.AssociationHandle = association != null ? association.Handle : null;
 			request.AddReturnToArguments(this.returnToArgs);
+			request.AddReturnToArguments(UserSuppliedIdentifierParameterName, this.endpoint.UserSuppliedIdentifier);
 			foreach (IOpenIdMessageExtension extension in this.extensions) {
 				request.Extensions.Add(extension);
 			}

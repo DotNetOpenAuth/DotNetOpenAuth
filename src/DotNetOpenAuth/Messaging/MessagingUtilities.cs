@@ -295,6 +295,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Tests two sequences for same contents and ordering.
 		/// </summary>
+		/// <typeparam name="T">The type of elements in the arrays.</typeparam>
+		/// <param name="sequence1">The first sequence in the comparison.  May not be null.</param>
+		/// <param name="sequence2">The second sequence in the comparison. May not be null.</param>
+		/// <returns>True if the arrays equal; false otherwise.</returns>
 		internal static bool AreEquivalent<T>(IEnumerable<T> sequence1, IEnumerable<T> sequence2) {
 			if (sequence1 == null && sequence2 == null) {
 				return true;

@@ -188,7 +188,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// An authentication request object that describes the HTTP response to
 		/// send to the user agent to initiate the authentication.
 		/// </returns>
-		/// <exception cref="OpenIdException">Thrown if no OpenID endpoint could be found.</exception>
+		/// <exception cref="ProtocolException">Thrown if no OpenID endpoint could be found.</exception>
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl) {
 			try {
 				return this.CreateRequests(userSuppliedIdentifier, realm, returnToUrl).First();
@@ -216,7 +216,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <remarks>
 		/// This method requires an ASP.NET HttpContext.
 		/// </remarks>
-		/// <exception cref="OpenIdException">Thrown if no OpenID endpoint could be found.</exception>
+		/// <exception cref="ProtocolException">Thrown if no OpenID endpoint could be found.</exception>
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm) {
 			try {
 				return this.CreateRequests(userSuppliedIdentifier, realm).First();
@@ -239,7 +239,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <remarks>
 		/// This method requires an ASP.NET HttpContext.
 		/// </remarks>
-		/// <exception cref="OpenIdException">Thrown if no OpenID endpoint could be found.</exception>
+		/// <exception cref="ProtocolException">Thrown if no OpenID endpoint could be found.</exception>
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier) {
 			try {
 				return this.CreateRequests(userSuppliedIdentifier).First();
@@ -248,7 +248,42 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 		}
 
-		internal static bool ShouldParameterBeStrippedFromReturnToUrl(string parameterName) {
+		/// <summary>
+		/// Gets an authentication response from a Provider.
+		/// </summary>
+		/// <returns>The processed authentication response if there is any; <c>null</c> otherwise.</returns>
+		/// <remarks>
+		/// This method requires an ASP.NET HttpContext.
+		/// </remarks>
+		public IAuthenticationResponse GetResponse() {
+			return this.GetResponse(this.Channel.GetRequestFromContext());
+		}
+
+		/// <summary>
+		/// Gets an authentication response from a Provider.
+		/// </summary>
+		/// <param name="httpRequestInfo">The HTTP request that may be carrying an authentication response from the Provider.</param>
+		/// <returns>The processed authentication response if there is any; <c>null</c> otherwise.</returns>
+		public IAuthenticationResponse GetResponse(HttpRequestInfo httpRequestInfo) {
+			try {
+				var message = this.Channel.ReadFromRequest();
+				PositiveAssertionResponse positiveAssertion;
+				NegativeAssertionResponse negativeAssertion;
+				if ((positiveAssertion = message as PositiveAssertionResponse) != null) {
+					return new PositiveAuthenticationResponse(positiveAssertion, this);
+				} else if ((negativeAssertion = message as NegativeAssertionResponse) != null) {
+					return new NegativeAuthenticationResponse(negativeAssertion);
+				} else if (message != null) {
+					Logger.WarnFormat("Received unexpected message type {0} when expecting an assertion message.", message.GetType().Name);
+				}
+
+				return null;
+			} catch (ProtocolException ex) {
+				return new FailedAuthenticationResponse(ex);
+			}
+		}
+
+		internal static bool IsOpenIdSupportingParameter(string parameterName) {
 			Protocol protocol = Protocol.Default;
 			return parameterName.StartsWith(protocol.openid.Prefix, StringComparison.OrdinalIgnoreCase)
 				|| parameterName.StartsWith("dnoi.", StringComparison.Ordinal);
@@ -334,7 +369,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			NameValueCollection queryParams = MessagingUtilities.GetQueryFromContextNVC();
 			var returnToParams = new Dictionary<string, string>(queryParams.Count);
 			foreach (string key in queryParams) {
-				if (!ShouldParameterBeStrippedFromReturnToUrl(key)) {
+				if (!IsOpenIdSupportingParameter(key)) {
 					returnToParams.Add(key, queryParams[key]);
 				}
 			}

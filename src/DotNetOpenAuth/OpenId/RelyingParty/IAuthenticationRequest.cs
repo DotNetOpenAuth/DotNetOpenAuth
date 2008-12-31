@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// </summary>
 	public interface IAuthenticationRequest {
 		/// <summary>
-		/// Gets/sets the mode the Provider should use during authentication.
+		/// Gets or sets the mode the Provider should use during authentication.
 		/// </summary>
 		AuthenticationRequestMode Mode { get; set; }
 

@@ -144,6 +144,9 @@
   <data name="ExtensionAlreadyAddedWithSameTypeURI" xml:space="preserve">
     <value>An extension sharing namespace '{0}' has already been added.  Only one extension per namespace is allowed in a given request.</value>
   </data>
+  <data name="IndirectErrorFormattedMessage" xml:space="preserve">
+    <value>{0} (Contact: {1}, Reference: {2})</value>
+  </data>
   <data name="InvalidCharacterInKeyValueFormInput" xml:space="preserve">
     <value>Cannot encode '{0}' because it contains an illegal character for Key-Value Form encoding.  (line {1}: '{2}')</value>
   </data>
@@ -159,6 +162,13 @@
   <data name="InvalidXri" xml:space="preserve">
     <value>Not a recognized XRI format: '{0}'.</value>
   </data>
+  <data name="IssuedAssertionFailsIdentifierDiscovery" xml:space="preserve">
+    <value>The OpenId Provider issued an assertion for an Identifier whose discovery information did not match.  
+Assertion endpoint info: 
+{0}
+Discovered endpoint info:
+{1}</value>
+  </data>
   <data name="KeysListAndDictionaryDoNotMatch" xml:space="preserve">
     <value>The list of keys do not match the provided dictionary.</value>
   </data>
@@ -173,6 +183,12 @@
   </data>
   <data name="NoSessionTypeFound" xml:space="preserve">
     <value>Diffie-Hellman session type '{0}' not found for OpenID {1}.</value>
+  </data>
+  <data name="OpenIdEndpointNotFound" xml:space="preserve">
+    <value>No OpenId endpoint found.</value>
+  </data>
+  <data name="OperationOnlyValidForSetupRequiredState" xml:space="preserve">
+    <value>This operation is only allowed when IAuthenticationResponse.State == AuthenticationStatus.SetupRequired.</value>
   </data>
   <data name="ProviderVersionUnrecognized" xml:space="preserve">
     <value>Unable to determine the version of the OpenID protocol implemented by the Provider at endpoint '{0}'.</value>

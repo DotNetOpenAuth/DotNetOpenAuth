@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Globalization;
 	using System.IO;
 	using System.Linq;
 	using System.Net;
@@ -135,6 +136,21 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				}
 			} else {
 				base.VerifyMessageAfterReceiving(message);
+			}
+
+			// Convert an OpenID indirect error message, which we never expect
+			// between two good OpenID implementations, into an exception.
+			// We don't process DirectErrorResponse because associate negotiations
+			// commonly get a derivative of that message type and handle it.
+			var errorMessage = message as IndirectErrorResponse;
+			if (errorMessage != null) {
+				string exceptionMessage = string.Format(
+					CultureInfo.CurrentCulture,
+					OpenIdStrings.IndirectErrorFormattedMessage,
+					errorMessage.ErrorMessage,
+					errorMessage.Contact,
+					errorMessage.Reference);
+				throw new ProtocolException(exceptionMessage, message);
 			}
 		}
 

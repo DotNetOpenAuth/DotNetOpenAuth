@@ -15,10 +15,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Gets the <see cref="Identifier"/> to pass to <see cref="OpenIdRelyingParty.CreateRequest(Identifier)"/>
 		/// in a subsequent authentication attempt.
 		/// </summary>
-		/// <remarks>
-		/// When directed identity is used, this will be the Provider Identifier given by the user.
-		/// Otherwise it will be the Claimed Identifier derived from the user-supplied identifier.
-		/// </remarks>
-		Identifier ClaimedOrProviderIdentifier { get; }
+		Identifier UserSuppliedIdentifier { get; }
 	}
 }

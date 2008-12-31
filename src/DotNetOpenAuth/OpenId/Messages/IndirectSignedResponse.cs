@@ -322,6 +322,10 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			return value;
 		}
 
+		internal IEnumerable<string> GetReturnToParameterNames() {
+			return this.ReturnToParameters.Keys;
+		}
+
 		/// <summary>
 		/// Verifies that the openid.return_to field matches the URL of the actual HTTP request.
 		/// </summary>
