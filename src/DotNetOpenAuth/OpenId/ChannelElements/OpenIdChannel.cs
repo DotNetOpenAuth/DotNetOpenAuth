@@ -103,6 +103,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			}
 
 			CustomizeBindingElementOrder(outgoingBindingElements, incomingBindingElements);
+
+			// Change out the standard web request handler to reflect the standard
+			// OpenID pattern that outgoing web requests are to unknown and untrusted
+			// servers on the Internet.
+			this.WebRequestHandler = new UntrustedWebRequestHandler();
 		}
 
 		/// <summary>
