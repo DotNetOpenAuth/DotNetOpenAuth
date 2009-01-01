@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.IO;
 	using System.Net;
+	using System.Net.Sockets;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -85,6 +86,8 @@ namespace DotNetOpenAuth.Messaging {
 		private static TextWriter GetRequestStreamCore(HttpWebRequest request) {
 			try {
 				return new StreamWriter(request.GetRequestStream());
+			} catch (SocketException ex) {
+				throw ErrorUtilities.Wrap(ex, MessagingStrings.WebRequestFailed, request.RequestUri);
 			} catch (WebException ex) {
 				using (HttpWebResponse response = (HttpWebResponse)ex.Response) {
 					if (response != null && response.StatusCode == HttpStatusCode.ExpectationFailed &&
