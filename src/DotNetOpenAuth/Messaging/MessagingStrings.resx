@@ -177,6 +177,9 @@
   <data name="KeyAlreadyExists" xml:space="preserve">
     <value>An item with the same key has already been added.</value>
   </data>
+  <data name="MessageNotExtensible" xml:space="preserve">
+    <value>The {0} message does not support extensions.</value>
+  </data>
   <data name="MessagePartEncoderWrongType" xml:space="preserve">
     <value>The value for {0}.{1} on member {1} was expected to derive from {2} but was {3}.</value>
   </data>

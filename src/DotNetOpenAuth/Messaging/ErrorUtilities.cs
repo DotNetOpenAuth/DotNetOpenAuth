@@ -48,6 +48,30 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Checks a condition and throws an <see cref="InvalidOperationException"/> if it evaluates to false.
+		/// </summary>
+		/// <param name="condition">The condition to check.</param>
+		/// <param name="errorMessage">The message to include in the exception, if created.</param>
+		internal static void VerifyOperation(bool condition, string errorMessage) {
+			if (!condition) {
+				throw new InvalidOperationException(errorMessage);
+			}
+		}
+
+		/// <summary>
+		/// Checks a condition and throws an <see cref="InvalidOperationException"/> if it evaluates to false.
+		/// </summary>
+		/// <param name="condition">The condition to check.</param>
+		/// <param name="errorMessage">The message to include in the exception, if created.</param>
+		/// <param name="args">The formatting arguments.</param>
+		internal static void VerifyOperation(bool condition, string errorMessage, params object[] args) {
+			if (!condition) {
+				errorMessage = string.Format(CultureInfo.CurrentCulture, errorMessage, args);
+				throw new InvalidOperationException(errorMessage);
+			}
+		}
+
+		/// <summary>
 		/// Throws a <see cref="ProtocolException"/> if some <paramref name="condition"/> evaluates to false.
 		/// </summary>
 		/// <param name="condition">True to do nothing; false to throw the exception.</param>

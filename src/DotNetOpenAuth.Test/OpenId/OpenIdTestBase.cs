@@ -8,6 +8,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using System;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Bindings;
+	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Mocks;
@@ -34,6 +36,24 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 			this.MockResponder = MockHttpRequest.CreateUntrustedMockHttpHandler();
 			this.RequestHandler = this.MockResponder.MockWebRequestHandler;
+		}
+
+		protected Identifier GetMockIdentifier(TestSupport.Scenarios scenario, ProtocolVersion providerVersion) {
+			return this.GetMockIdentifier(scenario, providerVersion, false);
+		}
+
+		protected Identifier GetMockIdentifier(TestSupport.Scenarios scenario, ProtocolVersion providerVersion, bool useSsl) {
+			return TestSupport.GetMockIdentifier(scenario, this.MockResponder, providerVersion, useSsl);
+		}
+
+		/// <summary>
+		/// Creates a standard <see cref="OpenIdRelyingParty"/> instance for general testing.
+		/// </summary>
+		/// <returns>The new instance.</returns>
+		protected OpenIdRelyingParty CreateRelyingParty() {
+			var rp = new OpenIdRelyingParty(new AssociationMemoryStore<Uri>(), new NonceMemoryStore(TimeSpan.FromMinutes(5)), new PrivateSecretMemoryStore());
+			rp.Channel.WebRequestHandler = this.MockResponder.MockWebRequestHandler;
+			return rp;
 		}
 	}
 }

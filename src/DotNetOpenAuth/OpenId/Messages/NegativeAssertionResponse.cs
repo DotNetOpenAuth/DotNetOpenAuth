@@ -22,6 +22,9 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="request">The request that the relying party sent.</param>
 		internal NegativeAssertionResponse(CheckIdRequest request)
 			: base(request, GetMode(request)) {
+			if (this.Version.Major < 2) {
+				// TODO: set a reasonable default for the user_setup_url parameter.
+			}
 		}
 
 		/// <summary>
@@ -40,7 +43,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		/// <value>URL to redirect User-Agent to so the End User can do whatever's necessary to fulfill the assertion.</value>
 		/// <remarks>
-		/// This part is only included 
+		/// This part is only included in OpenID 1.x responses.
 		/// </remarks>
 		[MessagePart("openid.user_setup_url", AllowEmpty = false, IsRequired = false, MaxVersion = "1.1")]
 		internal Uri UserSetupUrl { get; set; }

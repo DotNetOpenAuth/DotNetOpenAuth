@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Diagnostics;
 	using System.Globalization;
 	using System.Text;
+	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;

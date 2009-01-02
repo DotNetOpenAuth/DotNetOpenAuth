@@ -135,6 +135,12 @@
   <data name="ClaimedIdAndLocalIdMustBothPresentOrAbsent" xml:space="preserve">
     <value>The openid.claimed_id and openid.identity parameters must both be present or both be absent.</value>
   </data>
+  <data name="ClaimedIdentifierCannotBeSetOnDelegatedAuthentication" xml:space="preserve">
+    <value>The ClaimedIdentifier property cannot be set when IsDelegatedIdentifier is true to avoid breaking OpenID URL delegation.</value>
+  </data>
+  <data name="ClaimedIdentifierMustBeSetFirst" xml:space="preserve">
+    <value>The ClaimedIdentifier property must be set first.</value>
+  </data>
   <data name="DiffieHellmanRequiredPropertiesNotSet" xml:space="preserve">
     <value>The following properties must be set before the Diffie-Hellman algorithm can generate a public key: {0}</value>
   </data>
@@ -143,6 +149,12 @@
   </data>
   <data name="ExtensionAlreadyAddedWithSameTypeURI" xml:space="preserve">
     <value>An extension sharing namespace '{0}' has already been added.  Only one extension per namespace is allowed in a given request.</value>
+  </data>
+  <data name="FragmentNotAllowedOnXRIs" xml:space="preserve">
+    <value>Fragment segments do not apply to XRI identifiers.</value>
+  </data>
+  <data name="IdentifierSelectRequiresMatchingIdentifiers" xml:space="preserve">
+    <value>ClaimedIdentifier and LocalIdentifier must be the same when IsIdentifierSelect is true.</value>
   </data>
   <data name="IndirectErrorFormattedMessage" xml:space="preserve">
     <value>{0} (Contact: {1}, Reference: {2})</value>
@@ -171,6 +183,9 @@ Discovered endpoint info:
   </data>
   <data name="KeysListAndDictionaryDoNotMatch" xml:space="preserve">
     <value>The list of keys do not match the provided dictionary.</value>
+  </data>
+  <data name="MatchingArgumentsExpected" xml:space="preserve">
+    <value>The '{0}' and '{1}' parameters must both be or not be '{2}'.</value>
   </data>
   <data name="NoAssociationTypeFoundByLength" xml:space="preserve">
     <value>No recognized association type matches the requested length of {0}.</value>

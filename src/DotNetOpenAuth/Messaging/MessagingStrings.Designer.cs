@@ -241,6 +241,15 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The {0} message does not support extensions..
+        /// </summary>
+        internal static string MessageNotExtensible {
+            get {
+                return ResourceManager.GetString("MessageNotExtensible", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The value for {0}.{1} on member {1} was expected to derive from {2} but was {3}..
         /// </summary>
         internal static string MessagePartEncoderWrongType {

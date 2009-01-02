@@ -115,6 +115,24 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The ClaimedIdentifier property cannot be set when IsDelegatedIdentifier is true to avoid breaking OpenID URL delegation..
+        /// </summary>
+        internal static string ClaimedIdentifierCannotBeSetOnDelegatedAuthentication {
+            get {
+                return ResourceManager.GetString("ClaimedIdentifierCannotBeSetOnDelegatedAuthentication", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The ClaimedIdentifier property must be set first..
+        /// </summary>
+        internal static string ClaimedIdentifierMustBeSetFirst {
+            get {
+                return ResourceManager.GetString("ClaimedIdentifierMustBeSetFirst", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The following properties must be set before the Diffie-Hellman algorithm can generate a public key: {0}.
         /// </summary>
         internal static string DiffieHellmanRequiredPropertiesNotSet {
@@ -138,6 +156,24 @@ namespace DotNetOpenAuth.OpenId {
         internal static string ExtensionAlreadyAddedWithSameTypeURI {
             get {
                 return ResourceManager.GetString("ExtensionAlreadyAddedWithSameTypeURI", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fragment segments do not apply to XRI identifiers..
+        /// </summary>
+        internal static string FragmentNotAllowedOnXRIs {
+            get {
+                return ResourceManager.GetString("FragmentNotAllowedOnXRIs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ClaimedIdentifier and LocalIdentifier must be the same when IsIdentifierSelect is true..
+        /// </summary>
+        internal static string IdentifierSelectRequiresMatchingIdentifiers {
+            get {
+                return ResourceManager.GetString("IdentifierSelectRequiresMatchingIdentifiers", resourceCulture);
             }
         }
         
@@ -214,6 +250,15 @@ namespace DotNetOpenAuth.OpenId {
         internal static string KeysListAndDictionaryDoNotMatch {
             get {
                 return ResourceManager.GetString("KeysListAndDictionaryDoNotMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; and &apos;{1}&apos; parameters must both be or not be &apos;{2}&apos;..
+        /// </summary>
+        internal static string MatchingArgumentsExpected {
+            get {
+                return ResourceManager.GetString("MatchingArgumentsExpected", resourceCulture);
             }
         }
         
