@@ -136,7 +136,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Automatically sends the appropriate response to the user agent.
 		/// Requires a current HttpContext.
 		/// </summary>
-		public void Send() {
+		public virtual void Send() {
 			if (HttpContext.Current == null) {
 				throw new InvalidOperationException(MessagingStrings.CurrentHttpContextRequired);
 			}

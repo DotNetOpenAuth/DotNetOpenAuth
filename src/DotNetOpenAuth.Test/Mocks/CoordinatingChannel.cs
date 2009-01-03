@@ -44,6 +44,11 @@ namespace DotNetOpenAuth.Test.Mocks {
 			this.VerifyMessageAfterReceiving(CloneSerializedParts(message));
 		}
 
+		internal void PostMessage(IProtocolMessage message) {
+			this.incomingMessage = CloneSerializedParts(message);
+			this.incomingMessageSignal.Set();
+		}
+
 		protected internal override HttpRequestInfo GetRequestFromContext() {
 			return new HttpRequestInfo((IDirectedProtocolMessage)this.AwaitIncomingMessage());
 		}
@@ -62,9 +67,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 
 		protected override UserAgentResponse SendDirectMessageResponse(IProtocolMessage response) {
 			this.ProcessMessageFilter(response, true);
-			this.RemoteChannel.incomingMessage = CloneSerializedParts(response);
-			this.RemoteChannel.incomingMessageSignal.Set();
-			return null;
+			return new CoordinatingUserAgentResponse(CloneSerializedParts(response), this.RemoteChannel);
 		}
 
 		protected override UserAgentResponse SendIndirectMessage(IDirectedProtocolMessage message) {

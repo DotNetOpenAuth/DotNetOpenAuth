@@ -74,7 +74,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			var associateRequest = request as AssociateRequest;
 			if (associateRequest != null) {
 				IProtocolMessage response = associateRequest.CreateResponse(this.AssociationStore);
-				this.Channel.Send(response);
+				this.Channel.Send(response).Send();
 			} else {
 				// TODO: code here
 				throw new NotImplementedException();
