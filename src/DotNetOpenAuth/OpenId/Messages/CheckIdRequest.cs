@@ -66,14 +66,16 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		public override void EnsureValidMessage() {
 			base.EnsureValidMessage();
 
-			// Ensure that the claimed_id and identity parameters are either both the 
-			// special identifier_select value or both NOT that value.
-			ErrorUtilities.VerifyProtocol(
-				(this.LocalIdentifier == this.Protocol.ClaimedIdentifierForOPIdentifier) == (this.ClaimedIdentifier == this.Protocol.ClaimedIdentifierForOPIdentifier),
-				OpenIdStrings.MatchingArgumentsExpected,
-				Protocol.openid.claimed_id,
-				Protocol.openid.identity,
-				Protocol.ClaimedIdentifierForOPIdentifier);
+			if (this.Protocol.ClaimedIdentifierForOPIdentifier != null) {
+				// Ensure that the claimed_id and identity parameters are either both the 
+				// special identifier_select value or both NOT that value.
+				ErrorUtilities.VerifyProtocol(
+					(this.LocalIdentifier == this.Protocol.ClaimedIdentifierForOPIdentifier) == (this.ClaimedIdentifier == this.Protocol.ClaimedIdentifierForOPIdentifier),
+					OpenIdStrings.MatchingArgumentsExpected,
+					Protocol.openid.claimed_id,
+					Protocol.openid.identity,
+					Protocol.ClaimedIdentifierForOPIdentifier);
+			}
 		}
 	}
 }
