@@ -32,31 +32,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 		public abstract bool IsResponseReady { get; }
 
-		public UserAgentResponse Response {
-			get {
-				if (this.cachedUserAgentResponse == null && this.IsResponseReady) {
-					if (this.extensions.Count > 0) {
-						var extensibleResponse = this.ResponseMessage as IProtocolMessageWithExtensions;
-						ErrorUtilities.VerifyOperation(extensibleResponse != null, MessagingStrings.MessageNotExtensible, this.ResponseMessage.GetType().Name);
-						foreach (var extension in this.extensions) {
-							// It's possible that a prior call to this property
-							// has already added some/all of the extensions to the message.
-							// We don't have to worry about deleting old ones because
-							// this class provides no facility for removing extensions
-							// that are previously added.
-							if (!extensibleResponse.Extensions.Contains(extension)) {
-								extensibleResponse.Extensions.Add(extension);
-							}
-						}
-					}
-
-					this.cachedUserAgentResponse = this.provider.Channel.Send(this.ResponseMessage);
-				}
-
-				return this.cachedUserAgentResponse;
-			}
-		}
-
 		#endregion
 
 		protected OpenIdProvider Provider {
@@ -102,6 +77,29 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			} else {
 				return null;
 			}
+		}
+
+		public UserAgentResponse GetResponse() {
+			if (this.cachedUserAgentResponse == null && this.IsResponseReady) {
+				if (this.extensions.Count > 0) {
+					var extensibleResponse = this.ResponseMessage as IProtocolMessageWithExtensions;
+					ErrorUtilities.VerifyOperation(extensibleResponse != null, MessagingStrings.MessageNotExtensible, this.ResponseMessage.GetType().Name);
+					foreach (var extension in this.extensions) {
+						// It's possible that a prior call to this property
+						// has already added some/all of the extensions to the message.
+						// We don't have to worry about deleting old ones because
+						// this class provides no facility for removing extensions
+						// that are previously added.
+						if (!extensibleResponse.Extensions.Contains(extension)) {
+							extensibleResponse.Extensions.Add(extension);
+						}
+					}
+				}
+
+				this.cachedUserAgentResponse = this.provider.Channel.Send(this.ResponseMessage);
+			}
+
+			return this.cachedUserAgentResponse;
 		}
 
 		#endregion

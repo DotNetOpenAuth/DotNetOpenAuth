@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 				rp => {
 				},
 				op => {
-					op.AutoRespond(); // association
+					op.GetRequest().GetResponse().Send(); // association
 				});
 			var rp2 = this.CreateRelyingParty();
 			Identifier id = this.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);

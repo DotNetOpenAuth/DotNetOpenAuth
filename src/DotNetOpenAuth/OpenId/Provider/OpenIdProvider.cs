@@ -119,24 +119,5 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 			throw ErrorUtilities.ThrowProtocol(MessagingStrings.UnexpectedMessageReceivedOfMany);
 		}
-
-		/// <summary>
-		/// Responds automatically to the incoming message.
-		/// </summary>
-		/// <remarks>
-		/// The design of a method like this is flawed... but it helps us get tests going for now.
-		/// </remarks>
-		internal void AutoRespond() {
-			var request = this.Channel.ReadFromRequest();
-
-			var associateRequest = request as AssociateRequest;
-			if (associateRequest != null) {
-				IProtocolMessage response = associateRequest.CreateResponse(this.AssociationStore);
-				this.Channel.Send(response).Send();
-			} else {
-				// TODO: code here
-				throw new NotImplementedException();
-			}
-		}
 	}
 }

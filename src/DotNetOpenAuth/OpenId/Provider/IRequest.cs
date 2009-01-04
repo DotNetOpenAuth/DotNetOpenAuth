@@ -31,11 +31,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		bool IsResponseReady { get; }
 
 		/// <summary>
-		/// Gets the response to send to the user agent.
-		/// </summary>
-		UserAgentResponse Response { get; }
-
-		/// <summary>
 		/// Adds an extension to the response to send to the relying party.
 		/// </summary>
 		void AddResponseExtension(IOpenIdMessageExtension extension);
@@ -54,5 +49,10 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="extensionType">The type of the extension.</param>
 		/// <returns>An instance of the extension initialized with values passed in with the request.</returns>
 		IOpenIdMessageExtension GetExtension(Type extensionType);
+
+		/// <summary>
+		/// Gets the response to send to the user agent.
+		/// </summary>
+		UserAgentResponse GetResponse();
 	}
 }

@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using DotNetOpenAuth.OpenId.Provider;
 
 	[TestClass]
 	public class AssociationHandshakeTests : OpenIdTestBase {
@@ -141,7 +142,10 @@ namespace DotNetOpenAuth.Test.OpenId {
 				},
 				op => {
 					op.SecuritySettings = this.ProviderSecuritySettings;
-					op.AutoRespond();
+					IRequest req = op.GetRequest();
+					Assert.IsTrue(req.IsResponseReady);
+					UserAgentResponse resp = req.GetResponse();
+					//resp.Send(); // coordinating channel does not require this.
 				});
 			coordinator.IncomingMessageFilter = message => {
 				Assert.AreSame(opDescription.ProtocolVersion, message.Version, "The message was recognized as version {0} but was expected to be {1}.", message.Version, opDescription.ProtocolVersion);
