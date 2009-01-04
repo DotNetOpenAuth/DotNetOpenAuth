@@ -9,8 +9,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
 	using DotNetOpenAuth.OpenId.Provider;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
 	public class AssociationHandshakeTests : OpenIdTestBase {

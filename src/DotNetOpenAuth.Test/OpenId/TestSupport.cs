@@ -12,11 +12,11 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using DotNetOAuth.Test.OpenId.UI;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Mocks;
 	////using DotNetOpenAuth.Test.UI;
 	using log4net;
-using DotNetOpenAuth.OpenId.Provider;
 
 	public class TestSupport {
 		public const string HostTestPage = "HostTest.aspx";
@@ -158,6 +158,7 @@ using DotNetOpenAuth.OpenId.Provider;
 		/// A default implementation of a simple provider that responds to authentication requests
 		/// per the scenario that is being simulated.
 		/// </summary>
+		/// <param name="provider">The OpenIdProvider on which the process messages.</param>
 		/// <remarks>
 		/// This is a very useful method to pass to the OpenIdCoordinator constructor for the Provider argument.
 		/// </remarks>

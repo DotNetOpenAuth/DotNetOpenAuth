@@ -12,13 +12,43 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
 
+	/// <summary>
+	/// Implements the <see cref="IRequest"/> interface for all incoming
+	/// request messages to an OpenID Provider.
+	/// </summary>
 	internal abstract class Request : IRequest {
+		/// <summary>
+		/// The OpenIdProvider that received the incoming request.
+		/// </summary>
 		private readonly OpenIdProvider provider;
+
+		/// <summary>
+		/// The incoming request message.
+		/// </summary>
 		private readonly IDirectedProtocolMessage request;
+
+		/// <summary>
+		/// The incoming request message cast to its extensible form.  
+		/// Or null if the message does not support extensions.
+		/// </summary>
 		private readonly IProtocolMessageWithExtensions extensibleMessage;
-		private List<IOpenIdMessageExtension> extensions = new List<IOpenIdMessageExtension>();
+
+		/// <summary>
+		/// The list of extensions to add to the response message.
+		/// </summary>
+		private List<IOpenIdMessageExtension> responseExtensions = new List<IOpenIdMessageExtension>();
+
+		/// <summary>
+		/// The last created user agent response, if one has been created
+		/// since the last message-altering change has been made to this object.
+		/// </summary>
 		private UserAgentResponse cachedUserAgentResponse;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Request"/> class.
+		/// </summary>
+		/// <param name="provider">The Provider.</param>
+		/// <param name="request">The incoming request message.</param>
 		protected Request(OpenIdProvider provider, IDirectedProtocolMessage request) {
 			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
@@ -35,10 +65,10 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		public UserAgentResponse Response {
 			get {
 				if (this.cachedUserAgentResponse == null && this.IsResponseReady) {
-					if (this.extensions.Count > 0) {
+					if (this.responseExtensions.Count > 0) {
 						var extensibleResponse = this.ResponseMessage as IProtocolMessageWithExtensions;
 						ErrorUtilities.VerifyOperation(extensibleResponse != null, MessagingStrings.MessageNotExtensible, this.ResponseMessage.GetType().Name);
-						foreach (var extension in this.extensions) {
+						foreach (var extension in this.responseExtensions) {
 							// It's possible that a prior call to this property
 							// has already added some/all of the extensions to the message.
 							// We don't have to worry about deleting old ones because
@@ -83,7 +113,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			// some response messages support extensions while others don't,
 			// we just add the extensions to a collection here and add them 
 			// to the response on the way out.
-			this.extensions.Add(extension);
+			this.responseExtensions.Add(extension);
 			this.ResetUserAgentResponse();
 		}
 

@@ -13,12 +13,39 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
 
+	/// <summary>
+	/// Implements the <see cref="IAuthenticationRequest"/> interface
+	/// so that OpenID Provider sites can easily respond to authentication
+	/// requests.
+	/// </summary>
 	internal class AuthenticationRequest : Request, IAuthenticationRequest {
+		/// <summary>
+		/// The positive assertion to send, if the host site chooses to send it.
+		/// </summary>
 		private readonly PositiveAssertionResponse positiveResponse;
+
+		/// <summary>
+		/// The negative assertion to send, if the host site chooses to send it.
+		/// </summary>
 		private readonly NegativeAssertionResponse negativeResponse;
+
+		/// <summary>
+		/// A value indicating whether the host site has decided to assert the
+		/// identity of the user agent operator.
+		/// </summary>
 		private bool? isAuthenticated;
+
+		/// <summary>
+		/// A value indicating whether the return_to URI on the RP was discoverable
+		/// per the OpenID 2.0 specification.
+		/// </summary>
 		private bool? isReturnUrlDiscoverable;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AuthenticationRequest"/> class.
+		/// </summary>
+		/// <param name="provider">The provider that received the request.</param>
+		/// <param name="request">The incoming authentication request message.</param>
 		internal AuthenticationRequest(OpenIdProvider provider, CheckIdRequest request)
 			: base(provider, request) {
 			this.positiveResponse = new PositiveAssertionResponse(request);

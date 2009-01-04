@@ -38,6 +38,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Adds an extension to the response to send to the relying party.
 		/// </summary>
+		/// <param name="extension">The extension to add to the response message.</param>
 		void AddResponseExtension(IOpenIdMessageExtension extension);
 
 		/// <summary>
@@ -45,7 +46,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <typeparam name="T">The type of the extension.</typeparam>
 		/// <returns>An instance of the extension initialized with values passed in with the request.</returns>
-		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "No parameter to make of type T.")]
 		T GetExtension<T>() where T : IOpenIdMessageExtension, new();
 
 		/// <summary>
