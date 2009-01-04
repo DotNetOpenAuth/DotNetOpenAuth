@@ -31,14 +31,11 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		public void Provider() {
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
 				rp => {
+					Identifier id = this.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
+					IAuthenticationRequest request = rp.CreateRequest(id, this.realm, this.returnTo);
+					Assert.IsNotNull(request.Provider);
 				},
-				op => {
-					op.GetRequest().GetResponse().Send(); // association
-				});
-			var rp2 = this.CreateRelyingParty();
-			Identifier id = this.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
-			IAuthenticationRequest request = rp2.CreateRequest(id, this.realm, this.returnTo);
-			Assert.IsNotNull(request.Provider);
+				TestSupport.AutoProvider);
 		}
 	}
 }

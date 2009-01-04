@@ -144,8 +144,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 					op.SecuritySettings = this.ProviderSecuritySettings;
 					IRequest req = op.GetRequest();
 					Assert.IsTrue(req.IsResponseReady);
-					UserAgentResponse resp = req.GetResponse();
-					//resp.Send(); // coordinating channel does not require this.
+					UserAgentResponse resp = req.Response;
+					resp.Send();
 				});
 			coordinator.IncomingMessageFilter = message => {
 				Assert.AreSame(opDescription.ProtocolVersion, message.Version, "The message was recognized as version {0} but was expected to be {1}.", message.Version, opDescription.ProtocolVersion);

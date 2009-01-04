@@ -16,6 +16,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using DotNetOpenAuth.Test.Mocks;
 	////using DotNetOpenAuth.Test.UI;
 	using log4net;
+using DotNetOpenAuth.OpenId.Provider;
 
 	public class TestSupport {
 		public const string HostTestPage = "HostTest.aspx";
@@ -151,6 +152,43 @@ namespace DotNetOpenAuth.Test.OpenId {
 				providerEndpoint,
 				servicePriority,
 				10);
+		}
+
+		/// <summary>
+		/// A default implementation of a simple provider that responds to authentication requests
+		/// per the scenario that is being simulated.
+		/// </summary>
+		/// <remarks>
+		/// This is a very useful method to pass to the OpenIdCoordinator constructor for the Provider argument.
+		/// </remarks>
+		internal static void AutoProvider(OpenIdProvider provider) {
+			IRequest request;
+			while ((request = provider.GetRequest()) != null) {
+				if (!request.IsResponseReady) {
+					var authRequest = (DotNetOpenAuth.OpenId.Provider.IAuthenticationRequest)request;
+					var scenario = (Scenarios)Enum.Parse(typeof(Scenarios), new Uri(authRequest.LocalIdentifier).AbsolutePath.TrimStart('/'));
+					switch (scenario) {
+						case TestSupport.Scenarios.AutoApproval:
+							authRequest.IsAuthenticated = true;
+							break;
+						case Scenarios.AutoApprovalAddFragment:
+							authRequest.SetClaimedIdentifierFragment("frag");
+							authRequest.IsAuthenticated = true;
+							break;
+						case TestSupport.Scenarios.ApproveOnSetup:
+							authRequest.IsAuthenticated = !authRequest.Immediate;
+							break;
+						case Scenarios.AlwaysDeny:
+							authRequest.IsAuthenticated = false;
+							break;
+						default:
+							// All other scenarios are done programmatically only.
+							throw new InvalidOperationException("Unrecognized scenario");
+					}
+				}
+
+				request.Response.Send();
+			}
 		}
 
 		////internal static UriIdentifier GetDirectedIdentityUrl(Scenarios scenario, ProtocolVersion providerVersion) {
