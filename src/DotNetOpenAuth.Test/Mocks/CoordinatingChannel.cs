@@ -13,12 +13,64 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using DotNetOpenAuth.Messaging;
 
 	internal class CoordinatingChannel : Channel {
+		/// <summary>
+		/// A lock to use when checking and setting the <see cref="waitingForMessage"/> 
+		/// or the <see cref="simulationCompleted"/> fields.
+		/// </summary>
+		/// <remarks>
+		/// This is a static member so that all coordinating channels share a lock
+		/// since they peak at each others fields.
+		/// </remarks>
+		private static readonly object waitingForMessageCoordinationLock = new object();
+
+		/// <summary>
+		/// The original product channel whose behavior is being modified to work
+		/// better in automated testing.
+		/// </summary>
 		private Channel wrappedChannel;
+
+		/// <summary>
+		/// A flag set to true when this party in a two-party test has completed
+		/// its part of the testing.
+		/// </summary>
+		private bool simulationCompleted;
+
+		/// <summary>
+		/// A thread-coordinating signal that is set when another thread has a 
+		/// message ready for this channel to receive.
+		/// </summary>
 		private EventWaitHandle incomingMessageSignal = new AutoResetEvent(false);
+
+		/// <summary>
+		/// A flag used to indicate when this channel is waiting for a message
+		/// to arrive.
+		/// </summary>
+		private bool waitingForMessage;
+
+		/// <summary>
+		/// An incoming message that has been posted by a remote channel and 
+		/// is waiting for receipt by this channel.
+		/// </summary>
 		private IProtocolMessage incomingMessage;
+
+		/// <summary>
+		/// A delegate that gets a chance to peak at and fiddle with all 
+		/// incoming messages.
+		/// </summary>
 		private Action<IProtocolMessage> incomingMessageFilter;
+
+		/// <summary>
+		/// A delegate that gets a chance to peak at and fiddle with all 
+		/// outgoing messages.
+		/// </summary>
 		private Action<IProtocolMessage> outgoingMessageFilter;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CoordinatingChannel"/> class.
+		/// </summary>
+		/// <param name="wrappedChannel">The wrapped channel.  Must not be null.</param>
+		/// <param name="incomingMessageFilter">The incoming message filter.  May be null.</param>
+		/// <param name="outgoingMessageFilter">The outgoing message filter.  May be null.</param>
 		internal CoordinatingChannel(Channel wrappedChannel, Action<IProtocolMessage> incomingMessageFilter, Action<IProtocolMessage> outgoingMessageFilter)
 			: base(GetMessageFactory(wrappedChannel), wrappedChannel.BindingElements.ToArray()) {
 			ErrorUtilities.VerifyArgumentNotNull(wrappedChannel, "wrappedChannel");
@@ -35,6 +87,21 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// Gets or sets the coordinating channel used by the other party.
 		/// </summary>
 		internal CoordinatingChannel RemoteChannel { get; set; }
+
+		/// <summary>
+		/// Indicates that the simulation that uses this channel has completed work.
+		/// </summary>
+		/// <remarks>
+		/// Calling this method is not strictly necessary, but it gives the channel
+		/// coordination a chance to recognize when another channel is left dangling
+		/// waiting for a message from another channel that may never come.
+		/// </remarks>
+		internal void Close() {
+			lock (waitingForMessageCoordinationLock) {
+				this.simulationCompleted = true;
+				ErrorUtilities.VerifyInternal(!this.RemoteChannel.waitingForMessage || this.RemoteChannel.incomingMessage != null, "This channel is shutting down, yet the remote channel is expecting a message to arrive from us that won't be coming!");
+			}
+		}
 
 		/// <summary>
 		/// Replays the specified message as if it were received again.
@@ -142,7 +209,31 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		private IProtocolMessage AwaitIncomingMessage() {
+			// Special care should be taken so that we don't indefinitely 
+			// wait for a message that may never come due to a bug in the product
+			// or the test.
+			// There are two scenarios that we need to watch out for:
+			//  1. Two channels are waiting to receive messages from each other.
+			//  2. One channel is waiting for a message that will never come because
+			//     the remote party has already finished executing.
+			lock (waitingForMessageCoordinationLock) {
+				// It's possible that a message was just barely transmitted either to this
+				// or the remote channel.  So it's ok for the remote channel to be waiting
+				// if either it or we are already about to receive a message.
+				ErrorUtilities.VerifyInternal(!this.RemoteChannel.waitingForMessage || this.RemoteChannel.incomingMessage != null || this.incomingMessage != null, "This channel is expecting an incoming message from another channel that is also blocked waiting for an incoming message from us!");
+
+				// It's permissible that the remote channel has already closed if it left a message
+				// for us already.
+				ErrorUtilities.VerifyInternal(!this.RemoteChannel.simulationCompleted || this.incomingMessage != null, "This channel is expecting an incoming message from another channel that has already been closed.");
+				this.waitingForMessage = true;
+			}
+
 			this.incomingMessageSignal.WaitOne();
+
+			lock (waitingForMessageCoordinationLock) {
+				this.waitingForMessage = false;
+			}
+
 			IProtocolMessage response = this.incomingMessage;
 			this.incomingMessage = null;
 			return response;

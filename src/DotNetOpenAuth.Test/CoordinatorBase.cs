@@ -8,6 +8,8 @@ namespace DotNetOpenAuth.Test {
 	using System;
 	using System.Threading;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.RelyingParty;
+	using DotNetOpenAuth.Test.Mocks;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	internal abstract class CoordinatorBase<T1, T2> {

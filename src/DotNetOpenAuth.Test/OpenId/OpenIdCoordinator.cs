@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.Test.OpenId {
 	using System;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Provider;
@@ -14,7 +15,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 	internal class OpenIdCoordinator : CoordinatorBase<OpenIdRelyingParty, OpenIdProvider> {
 		internal OpenIdCoordinator(Action<OpenIdRelyingParty> rpAction, Action<OpenIdProvider> opAction)
-			: base(rpAction, opAction) {
+			: base(WrapAction(rpAction), WrapAction(opAction)) {
 		}
 
 		internal OpenIdProvider Provider { get; set; }
@@ -32,6 +33,24 @@ namespace DotNetOpenAuth.Test.OpenId {
 			this.Provider.Channel = opCoordinatingChannel;
 
 			RunCore(this.RelyingParty, this.Provider);
+		}
+
+		private static Action<OpenIdRelyingParty> WrapAction(Action<OpenIdRelyingParty> action) {
+			ErrorUtilities.VerifyArgumentNotNull(action, "action");
+
+			return rp => {
+				action(rp);
+				((CoordinatingChannel)rp.Channel).Close();
+			};
+		}
+
+		private static Action<OpenIdProvider> WrapAction(Action<OpenIdProvider> action) {
+			ErrorUtilities.VerifyArgumentNotNull(action, "action");
+
+			return op => {
+				action(op);
+				((CoordinatingChannel)op.Channel).Close();
+			};
 		}
 
 		private void EnsurePartiesAreInitialized() {

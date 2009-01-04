@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.Messaging {
 	using System;
+	using System.Diagnostics;
 	using System.Globalization;
 
 	/// <summary>
@@ -30,6 +31,13 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="errorMessage">The message to include in the exception, if created.</param>
 		internal static void VerifyInternal(bool condition, string errorMessage) {
 			if (!condition) {
+				// Since internal errors are really bad, take this chance to
+				// help the developer find the cause by breaking into the
+				// debugger if one is attached.
+				if (Debugger.IsAttached) {
+					Debugger.Break();
+				}
+
 				throw new InternalErrorException(errorMessage);
 			}
 		}
