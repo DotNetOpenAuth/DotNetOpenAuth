@@ -388,7 +388,7 @@ namespace DotNetOpenId {
 
 			return false;
 		}
-		internal static IEnumerable<T> OfType<T>(System.Collections.IEnumerable sequence) {
+		internal static IEnumerable<T> Cast<T>(System.Collections.IEnumerable sequence) {
 			foreach (object item in sequence) {
 				yield return (T)item;
 			}

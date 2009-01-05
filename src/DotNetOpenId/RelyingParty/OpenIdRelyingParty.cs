@@ -275,7 +275,7 @@ namespace DotNetOpenId.RelyingParty {
 				returnTo.Path = realm.AbsolutePath + returnTo.Path.Substring(realm.AbsolutePath.Length);
 			}
 
-			return Util.OfType<IAuthenticationRequest>(AuthenticationRequest.Create(userSuppliedIdentifier, this, realm, returnTo.Uri, true));
+			return Util.Cast<IAuthenticationRequest>(AuthenticationRequest.Create(userSuppliedIdentifier, this, realm, returnTo.Uri, true));
 		}
 
 		/// <summary>
