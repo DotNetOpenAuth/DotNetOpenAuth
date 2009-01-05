@@ -207,50 +207,6 @@ namespace DotNetOpenId.RelyingParty {
 			return endpointList;
 		}
 
-		/// <summary>
-		/// Chooses which provider endpoint is the best one to use.
-		/// </summary>
-		/// <returns>The best endpoint, or null if no acceptable endpoints were found.</returns>
-		private static ServiceEndpoint selectEndpoint(ReadOnlyCollection<ServiceEndpoint> endpoints,
-			OpenIdRelyingParty relyingParty) {
-
-			List<ServiceEndpoint> filteredEndpoints = filterAndSortEndpoints(endpoints, relyingParty);
-
-			// If there are no endpoint candidates...
-			if (filteredEndpoints.Count == 0) {
-				return null;
-			}
-
-			// If we don't have an application store, we have no place to record an association to
-			// and therefore can only take our best shot at one of the endpoints.
-			if (relyingParty.Store == null) {
-				Logger.Debug("No state store, so the first endpoint available is selected.");
-				return filteredEndpoints[0];
-			}
-
-			// Go through each endpoint until we find one that we can successfully create
-			// an association with.  This is our only hint about whether an OP is up and running.
-			// The idea here is that we don't want to redirect the user to a dead OP for authentication.
-			// If the user has multiple OPs listed in his/her XRDS document, then we'll go down the list
-			// and try each one until we find one that's good.
-			int winningEndpointIndex = 0;
-			foreach (ServiceEndpoint endpointCandidate in filteredEndpoints) {
-				winningEndpointIndex++;
-				// One weakness of this method is that an OP that's down, but with whom we already
-				// created an association in the past will still pass this "are you alive?" test.
-				Association association = getAssociation(relyingParty, endpointCandidate, true);
-				if (association != null) {
-					Logger.DebugFormat("Endpoint #{0} (1-based index) responded to an association request.  Selecting that endpoint.", winningEndpointIndex);
-					// We have a winner!
-					return endpointCandidate;
-				}
-			}
-
-			// Since all OPs failed to form an association with us, just return the first endpoint
-			// and hope for the best.
-			Logger.Debug("All endpoints failed to respond to an association request.  Selecting first endpoint to try to authenticate to.");
-			return endpoints[0];
-		}
 		static Association getAssociation(OpenIdRelyingParty relyingParty, ServiceEndpoint provider, bool createNewAssociationIfNeeded) {
 			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
 			if (provider == null) throw new ArgumentNullException("provider");

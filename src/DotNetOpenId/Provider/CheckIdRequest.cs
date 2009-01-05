@@ -194,22 +194,6 @@ namespace DotNetOpenId.Provider {
 					(!IsAuthenticated.Value || !IsDirectedIdentity || (LocalIdentifier != null && ClaimedIdentifier != null));
 			}
 		}
-		/// <summary>
-		/// Get the URL to cancel this request.
-		/// </summary>
-		internal Uri CancelUrl {
-			get {
-				if (Immediate)
-					throw new InvalidOperationException("Cancel is not an appropriate response to immediate mode requests.");
-
-				UriBuilder builder = new UriBuilder(ReturnTo);
-				var args = new Dictionary<string, string>();
-				args.Add(Protocol.openid.mode, Protocol.Args.Mode.cancel);
-				UriUtil.AppendQueryArgs(builder, args);
-
-				return builder.Uri;
-			}
-		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1805:DoNotInitializeUnnecessarily")]
 		internal CheckIdRequest(OpenIdProvider provider) : base(provider) {
