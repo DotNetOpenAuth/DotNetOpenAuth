@@ -36,6 +36,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 					Assert.IsNotNull(request.Provider);
 				},
 				TestSupport.AutoProvider);
+			coordinator.Run();
 		}
 	}
 }

@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using System.Text;
 	using System.Threading;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Test.OpenId;
 
 	internal class CoordinatingChannel : Channel {
 		/// <summary>
@@ -99,7 +100,10 @@ namespace DotNetOpenAuth.Test.Mocks {
 		internal void Close() {
 			lock (waitingForMessageCoordinationLock) {
 				this.simulationCompleted = true;
-				ErrorUtilities.VerifyInternal(!this.RemoteChannel.waitingForMessage || this.RemoteChannel.incomingMessage != null, "This channel is shutting down, yet the remote channel is expecting a message to arrive from us that won't be coming!");
+				if (this.RemoteChannel.waitingForMessage && this.RemoteChannel.incomingMessage == null) {
+					TestSupport.Logger.Debug("CoordinatingChannel is closing while remote channel is waiting for an incoming message.  Signaling channel to unblock it to receive a null message.");
+					this.RemoteChannel.incomingMessageSignal.Set();
+				}
 			}
 		}
 
