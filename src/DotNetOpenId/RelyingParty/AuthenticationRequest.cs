@@ -67,6 +67,7 @@ namespace DotNetOpenId.RelyingParty {
 				userSuppliedIdentifier);
 			Logger.DebugFormat("Realm: {0}", realm);
 			Logger.DebugFormat("Return To: {0}", returnToUrl);
+			Logger.DebugFormat("RequireSsl: {0}", userSuppliedIdentifier.IsDiscoverySecureEndToEnd);
 
 			if (Logger.IsWarnEnabled && returnToUrl.Query != null) {
 				NameValueCollection returnToArgs = HttpUtility.ParseQueryString(returnToUrl.Query);

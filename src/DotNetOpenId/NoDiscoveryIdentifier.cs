@@ -9,8 +9,8 @@ namespace DotNetOpenId {
 	/// </summary>
 	class NoDiscoveryIdentifier : Identifier {
 		Identifier wrappedIdentifier ;
-		internal NoDiscoveryIdentifier(Identifier wrappedIdentifier)
-			: base(false) {
+		internal NoDiscoveryIdentifier(Identifier wrappedIdentifier, bool claimSsl)
+			: base(claimSsl) {
 			if (wrappedIdentifier == null) throw new ArgumentNullException("wrappedIdentifier");
 
 			this.wrappedIdentifier = wrappedIdentifier;
@@ -21,7 +21,7 @@ namespace DotNetOpenId {
 		}
 
 		internal override Identifier TrimFragment() {
-			return new NoDiscoveryIdentifier(wrappedIdentifier.TrimFragment());
+			return new NoDiscoveryIdentifier(wrappedIdentifier.TrimFragment(), IsDiscoverySecureEndToEnd);
 		}
 
 		internal override bool TryRequireSsl(out Identifier secureIdentifier) {
