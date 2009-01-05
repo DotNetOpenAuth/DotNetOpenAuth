@@ -219,6 +219,7 @@ namespace DotNetOpenId.RelyingParty {
 				HttpUtility.ParseQueryString(requestUrl.Query));
 			string token = Util.GetOptionalArg(requestUrlQuery, Token.TokenKey);
 			if (token != null) {
+				token = FixDoublyUriDecodedToken(token);
 				tokenEndpoint = Token.Deserialize(token, relyingParty.Store).Endpoint;
 			}
 
@@ -261,6 +262,35 @@ namespace DotNetOpenId.RelyingParty {
 					Strings.InvalidOpenIdQueryParameterValue,
 					protocol.openid.mode, mode), query);
 			}
+		}
+
+		/// <summary>
+		/// Corrects any URI decoding the Provider may have inappropriately done
+		/// to our return_to URL, resulting in an otherwise corrupted base64 token.
+		/// </summary>
+		/// <param name="token">The token, which MAY have been corrupted by an extra URI decode.</param>
+		/// <returns>The token; corrected if corruption had occurred.</returns>
+		/// <remarks>
+		/// AOL may have incorrectly URI-decoded the token for us in the return_to, 
+		/// resulting in a token URI-decoded twice by the time we see it, and no
+		/// longer being a valid base64 string.
+		/// It turns out that the only symbols from base64 that is also encoded
+		/// in URI encoding rules are the + and / characters.
+		/// AOL decodes the %2b sequence to the + character 
+		/// and the %2f sequence to the / character (it shouldn't decode at all).
+		/// When we do our own URI decoding, the + character becomes a space (corrupting base64)
+		/// but the / character remains a /, so no further corruption happens to this character.
+		/// So to correct this we just need to change any spaces we find in the token
+		/// back to + characters.
+		/// </remarks>
+		private static string FixDoublyUriDecodedToken(string token) {
+			if (token == null) throw new ArgumentNullException("token");
+			if (token.Contains(" ")) {
+				Logger.Error("Deserializing a corrupted token.  The OpenID Provider may have inappropriately decoded the return_to URL before sending it back to us.");
+				token = token.Replace(' ', '+'); // Undo any extra decoding the Provider did
+			}
+
+			return token;
 		}
 
 		static AuthenticationResponse parseIdResResponse(IDictionary<string, string> query,
