@@ -61,7 +61,7 @@ namespace DotNetOpenId.Yadis {
 				}
 				if (url != null) {
 					if (!requireSsl || string.Equals(url.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)) {
-						response2 = UntrustedWebRequest.Request(url, null, null, requireSsl);
+						response2 = UntrustedWebRequest.Request(url, null, new[] { ContentTypes.Xrds }, requireSsl);
 						if (response2.StatusCode != System.Net.HttpStatusCode.OK) {
 							return null;
 						}
