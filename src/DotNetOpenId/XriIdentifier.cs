@@ -46,6 +46,7 @@ namespace DotNetOpenId {
 		/// </summary>
 		internal static bool IsValidXri(string xri) {
 			if (string.IsNullOrEmpty(xri)) throw new ArgumentNullException("xri");
+			xri = xri.Trim();
 			// TODO: better validation code here
 			return xri.IndexOfAny(GlobalContextSymbols) == 0
 				|| xri.StartsWith("(", StringComparison.Ordinal)
