@@ -11,6 +11,7 @@ namespace DotNetOpenId {
 	using System.Text.RegularExpressions;
 	using System.Configuration;
 	using DotNetOpenId.Configuration;
+	using System.Reflection;
 	/// <summary>
 	/// A paranoid HTTP get/post request engine.  It helps to protect against attacks from remote
 	/// server leaving dangling connections, sending too much data, causing requests against 
@@ -26,6 +27,8 @@ namespace DotNetOpenId {
 	/// If a particular host would not be permitted but is in the whitelist, it is allowed.
 	/// </remarks>
 	public static class UntrustedWebRequest {
+		private static string UserAgentValue = Assembly.GetExecutingAssembly().GetName().Name + "/" + Assembly.GetExecutingAssembly().GetName().Version;
+
 		static Configuration.UntrustedWebRequestSection Configuration {
 			get { return UntrustedWebRequestSection.Configuration; }
 		}
@@ -273,6 +276,7 @@ namespace DotNetOpenId {
 			request.ReadWriteTimeout = (int)ReadWriteTimeout.TotalMilliseconds;
 			request.Timeout = (int)Timeout.TotalMilliseconds;
 			request.KeepAlive = false;
+			request.UserAgent = UserAgentValue;
 			if (acceptTypes != null)
 				request.Accept = string.Join(",", acceptTypes);
 			if (body != null) {
