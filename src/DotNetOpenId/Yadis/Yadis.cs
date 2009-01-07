@@ -34,6 +34,7 @@ namespace DotNetOpenId.Yadis {
 				response = UntrustedWebRequest.Request(uri, null,
 					new[] { ContentTypes.Html, ContentTypes.XHtml, ContentTypes.Xrds }, requireSsl);
 				if (response.StatusCode != System.Net.HttpStatusCode.OK) {
+					Logger.ErrorFormat("HTTP error {0} {1} while performing discovery on {2}.", (int)response.StatusCode, response.StatusCode, uri);
 					return null;
 				}
 			} catch (ArgumentException ex) {

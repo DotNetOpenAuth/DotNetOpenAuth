@@ -30,7 +30,9 @@ namespace DotNetOpenId.Yadis {
 					}
 				} else {
 					XPathNavigator node = Node.SelectSingleNode("/xrd:XRD", XmlNamespaceResolver);
-					yield return new XrdElement(node, this);
+					if (node != null) {
+						yield return new XrdElement(node, this);
+					}
 				}
 			}
 		}
