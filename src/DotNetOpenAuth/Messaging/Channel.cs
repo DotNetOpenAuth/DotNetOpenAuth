@@ -452,11 +452,12 @@ namespace DotNetOpenAuth.Messaging {
 
 			var serializer = MessageSerializer.Get(message.GetType());
 			var fields = serializer.Serialize(message);
-			UserAgentResponse response;
-			if (CalculateSizeOfPayload(fields) > indirectMessageGetToPostThreshold) {
+
+			// First try creating a 301 redirect, and fallback to a form POST
+			// if the message is too big.
+			UserAgentResponse response = this.Create301RedirectResponse(message, fields);
+			if (response.Headers[HttpResponseHeader.Location].Length > indirectMessageGetToPostThreshold) {
 				response = this.CreateFormPostResponse(message, fields);
-			} else {
-				response = this.Create301RedirectResponse(message, fields);
 			}
 
 			return response;
@@ -736,24 +737,6 @@ namespace DotNetOpenAuth.Messaging {
 			MessageDictionary dictionary = new MessageDictionary(message);
 			MessageDescription description = MessageDescription.Get(message.GetType(), message.Version);
 			description.EnsureMessagePartsPassBasicValidation(dictionary);
-		}
-
-		/// <summary>
-		/// Calculates a fairly accurate estimation on the size of a message that contains
-		/// a given set of fields.
-		/// </summary>
-		/// <param name="fields">The fields that would be included in a message.</param>
-		/// <returns>The size (in bytes) of the message payload.</returns>
-		private static int CalculateSizeOfPayload(IDictionary<string, string> fields) {
-			Debug.Assert(fields != null, "fields == null");
-
-			int size = 0;
-			foreach (var field in fields) {
-				size += field.Key.Length;
-				size += field.Value.Length;
-				size += 2; // & and =
-			}
-			return size;
 		}
 
 		/// <summary>
