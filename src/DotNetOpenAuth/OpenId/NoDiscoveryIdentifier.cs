@@ -23,8 +23,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// Initializes a new instance of the <see cref="NoDiscoveryIdentifier"/> class.
 		/// </summary>
 		/// <param name="wrappedIdentifier">The ordinary Identifier whose discovery is being masked.</param>
-		internal NoDiscoveryIdentifier(Identifier wrappedIdentifier)
-			: base(false) {
+		/// <param name="claimSsl">Whether this Identifier should claim to be SSL-secure, although no discovery will never generate service endpoints anyway.</param>
+		internal NoDiscoveryIdentifier(Identifier wrappedIdentifier, bool claimSsl)
+			: base(claimSsl) {
 			ErrorUtilities.VerifyArgumentNotNull(wrappedIdentifier, "wrappedIdentifier");
 
 			this.wrappedIdentifier = wrappedIdentifier;
@@ -85,7 +86,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// fragment to remove, otherwise this same instance..
 		/// </returns>
 		internal override Identifier TrimFragment() {
-			return new NoDiscoveryIdentifier(this.wrappedIdentifier.TrimFragment());
+			return new NoDiscoveryIdentifier(this.wrappedIdentifier.TrimFragment(), IsDiscoverySecureEndToEnd);
 		}
 
 		/// <summary>

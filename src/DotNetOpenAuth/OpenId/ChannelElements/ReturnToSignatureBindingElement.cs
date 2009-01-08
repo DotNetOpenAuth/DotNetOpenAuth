@@ -133,6 +133,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				// Set the safety flag showing whether the return_to url had a valid signature.
 				string expected = this.GetReturnToSignature(response.ReturnTo);
 				string actual = returnToParameters[ReturnToSignatureParameterName];
+				actual = OpenIdUtilities.FixDoublyUriDecodedBase64String(actual);
 				response.ReturnToParametersSignatureValidated = actual == expected;
 				if (!response.ReturnToParametersSignatureValidated) {
 					Logger.WarnFormat("The return_to signature failed verification.");
