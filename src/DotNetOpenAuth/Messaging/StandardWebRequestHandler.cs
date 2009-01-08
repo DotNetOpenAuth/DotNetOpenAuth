@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.IO;
 	using System.Net;
 	using System.Net.Sockets;
+	using System.Reflection;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -16,6 +17,11 @@ namespace DotNetOpenAuth.Messaging {
 	/// and returning the responses.
 	/// </summary>
 	internal class StandardWebRequestHandler : IDirectWebRequestHandler {
+		/// <summary>
+		/// The value to use for the User-Agent HTTP header.
+		/// </summary>
+		private static string userAgentValue = Assembly.GetExecutingAssembly().GetName().Name + "/" + Assembly.GetExecutingAssembly().GetName().Version;
+
 		#region IWebRequestHandler Members
 
 		/// <summary>
@@ -84,6 +90,12 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The HTTP request with information about the remote party to contact.</param>
 		/// <returns>The stream where the POST entity can be written.</returns>
 		private static TextWriter GetRequestStreamCore(HttpWebRequest request) {
+			// Some sites, such as Technorati, return 403 Forbidden on identity
+			// pages unless a User-Agent header is included.
+			if (string.IsNullOrEmpty(request.UserAgent)) {
+				request.UserAgent = userAgentValue;
+			}
+
 			try {
 				return new StreamWriter(request.GetRequestStream());
 			} catch (SocketException ex) {
