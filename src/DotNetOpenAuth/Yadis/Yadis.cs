@@ -51,6 +51,7 @@ namespace DotNetOpenAuth.Yadis {
 				response = Request(requestHandler, uri, requireSsl, ContentTypes.Html, ContentTypes.XHtml, ContentTypes.Xrds);
 				response.CacheNetworkStreamAndClose();
 				if (response.Status != System.Net.HttpStatusCode.OK) {
+					Logger.ErrorFormat("HTTP error {0} {1} while performing discovery on {2}.", (int)response.Status, response.Status, uri);
 					return null;
 				}
 			} catch (ArgumentException ex) {
@@ -80,7 +81,8 @@ namespace DotNetOpenAuth.Yadis {
 					if (!requireSsl || string.Equals(url.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)) {
 						response2 = Request(requestHandler, url, requireSsl, ContentTypes.Xrds);
 						response2.CacheNetworkStreamAndClose();
-						if (response2.Status != System.Net.HttpStatusCode.OK) {
+						if (response2.Status != HttpStatusCode.OK) {
+							Logger.ErrorFormat("HTTP error {0} {1} while performing discovery on {2}.", (int)response2.Status, response2.Status, uri);
 							return null;
 						}
 					} else {
