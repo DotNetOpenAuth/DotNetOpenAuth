@@ -418,6 +418,7 @@ namespace DotNetOpenAuth.OpenId {
 		private static bool TryCanonicalize(string uri, out Uri canonicalUri, bool forceHttpsDefaultScheme, out bool schemePrepended) {
 			ErrorUtilities.VerifyNonZeroLength(uri, "uri");
 
+			uri = uri.Trim();
 			canonicalUri = null;
 			schemePrepended = false;
 			try {

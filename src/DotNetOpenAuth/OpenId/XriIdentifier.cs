@@ -142,6 +142,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </returns>
 		internal static bool IsValidXri(string xri) {
 			ErrorUtilities.VerifyNonZeroLength(xri, "xri");
+			xri = xri.Trim();
 
 			// TODO: better validation code here
 			return xri.IndexOfAny(GlobalContextSymbols) == 0
