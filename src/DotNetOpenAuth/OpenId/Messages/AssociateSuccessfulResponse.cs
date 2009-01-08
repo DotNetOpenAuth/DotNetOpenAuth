@@ -54,7 +54,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		/// <value>Value: A valid association session type from Section 8.4 (Association Session Types). </value>
 		/// <remarks>Note: Unless using transport layer encryption, "no-encryption" MUST NOT be used. </remarks>
-		[MessagePart("session_type", IsRequired = true, AllowEmpty = true)]
+		[MessagePart("session_type", IsRequired = false, AllowEmpty = true)]
 		[MessagePart("session_type", IsRequired = true, AllowEmpty = false, MinVersion = "2.0")]
 		internal string SessionType { get; set; }
 
@@ -116,5 +116,31 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="request">The prior request for an association.</param>
 		/// <returns>The created association.</returns>
 		protected abstract Association CreateAssociationAtRelyingParty(AssociateRequest request);
+
+		/// <summary>
+		/// Checks the message state for conformity to the protocol specification
+		/// and throws an exception if the message is invalid.
+		/// </summary>
+		/// <remarks>
+		/// 	<para>Some messages have required fields, or combinations of fields that must relate to each other
+		/// in specialized ways.  After deserializing a message, this method checks the state of the
+		/// message to see if it conforms to the protocol.</para>
+		/// 	<para>Note that this property should <i>not</i> check signatures or perform any state checks
+		/// outside this scope of this particular message.</para>
+		/// </remarks>
+		/// <exception cref="ProtocolException">Thrown if the message is invalid.</exception>
+		public override void EnsureValidMessage() {
+			base.EnsureValidMessage();
+
+			if (this.Version.Major < 2) {
+				ErrorUtilities.VerifyProtocol(
+					string.IsNullOrEmpty(this.SessionType) || string.Equals(this.SessionType, this.Protocol.Args.SessionType.DH_SHA1, StringComparison.Ordinal),
+					MessagingStrings.UnexpectedMessagePartValueForConstant,
+					GetType().Name,
+					Protocol.openid.session_type,
+					this.Protocol.Args.SessionType.DH_SHA1,
+					this.SessionType);
+			}
+		}
 	}
 }
