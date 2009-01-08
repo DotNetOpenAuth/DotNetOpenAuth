@@ -348,20 +348,27 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			ErrorUtilities.VerifyProtocol(
 				string.Equals(this.Recipient.Scheme, this.ReturnTo.Scheme, StringComparison.OrdinalIgnoreCase) &&
 				string.Equals(this.Recipient.Authority, this.ReturnTo.Authority, StringComparison.OrdinalIgnoreCase) &&
-				string.Equals(this.Recipient.AbsolutePath, this.ReturnTo.AbsolutePath, StringComparison.Ordinal),
+				string.Equals(this.Recipient.AbsolutePath, this.ReturnTo.AbsolutePath, StringComparison.Ordinal) &&
+				IsQuerySubsetOf(this.Recipient.Query, this.ReturnTo.Query),
 				OpenIdStrings.ReturnToParamDoesNotMatchRequestUrl,
 				Protocol.openid.return_to,
 				this.ReturnTo,
 				this.Recipient);
+		}
 
-			NameValueCollection returnToArgs = HttpUtility.ParseQueryString(this.ReturnTo.Query);
-			NameValueCollection requestArgs = HttpUtility.ParseQueryString(this.Recipient.Query);
-			ErrorUtilities.VerifyProtocol(
-				returnToArgs.Keys.Cast<string>().All(returnToKey => string.Equals(returnToArgs[returnToKey], requestArgs[returnToKey], StringComparison.Ordinal)),
-				OpenIdStrings.ReturnToParamDoesNotMatchRequestUrl,
-				Protocol.openid.return_to,
-				this.ReturnTo,
-				this.Recipient);
+		/// <summary>
+		/// Determines whether one querystring contains every key=value pair that
+		/// another querystring contains.
+		/// </summary>
+		/// <param name="superset">The querystring that should contain at least all the key=value pairs of the other.</param>
+		/// <param name="subset">The querystring containing the set of key=value pairs to test for in the other.</param>
+		/// <returns>
+		/// 	<c>true</c> if <paramref name="superset"/> contains all the query parameters that <paramref name="subset"/> does; <c>false</c> otherwise.
+		/// </returns>
+		private bool IsQuerySubsetOf(string superset, string subset) {
+			NameValueCollection subsetArgs = HttpUtility.ParseQueryString(subset);
+			NameValueCollection supersetArgs = HttpUtility.ParseQueryString(superset);
+			return subsetArgs.Keys.Cast<string>().All(key => string.Equals(subsetArgs[key], supersetArgs[key], StringComparison.Ordinal));
 		}
 	}
 }
