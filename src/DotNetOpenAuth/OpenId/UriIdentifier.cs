@@ -300,7 +300,7 @@ namespace DotNetOpenAuth.OpenId {
 			}
 
 			// This identifier is explicitly NOT https, so we cannot change it.
-			secureIdentifier = new NoDiscoveryIdentifier(this);
+			secureIdentifier = new NoDiscoveryIdentifier(this, true);
 			return false;
 		}
 
