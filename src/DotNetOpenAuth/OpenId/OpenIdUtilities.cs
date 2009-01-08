@@ -59,17 +59,19 @@ namespace DotNetOpenAuth.OpenId {
 
 		/// <summary>
 		/// Corrects any URI decoding the Provider may have inappropriately done
-		/// to our return_to URL, resulting in an otherwise corrupted base64 token.
+		/// to our return_to URL, resulting in an otherwise corrupted base64 encoded value.
 		/// </summary>
-		/// <param name="token">The token, which MAY have been corrupted by an extra URI decode.</param>
-		/// <returns>The token; corrected if corruption had occurred.</returns>
+		/// <param name="value">The base64 encoded value.</param>
+		/// <returns>
+		/// The value; corrected if corruption had occurred.
+		/// </returns>
 		/// <remarks>
-		/// AOL may have incorrectly URI-decoded the token for us in the return_to, 
+		/// AOL may have incorrectly URI-decoded the token for us in the return_to,
 		/// resulting in a token URI-decoded twice by the time we see it, and no
 		/// longer being a valid base64 string.
 		/// It turns out that the only symbols from base64 that is also encoded
 		/// in URI encoding rules are the + and / characters.
-		/// AOL decodes the %2b sequence to the + character 
+		/// AOL decodes the %2b sequence to the + character
 		/// and the %2f sequence to the / character (it shouldn't decode at all).
 		/// When we do our own URI decoding, the + character becomes a space (corrupting base64)
 		/// but the / character remains a /, so no further corruption happens to this character.
