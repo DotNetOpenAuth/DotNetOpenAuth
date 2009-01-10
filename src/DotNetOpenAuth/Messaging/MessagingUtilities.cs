@@ -55,9 +55,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <returns>A <see cref="NameValueCollection"/> containing all the parameters in the query string.</returns>
 		public static NameValueCollection GetQueryFromContextNVC() {
-			if (HttpContext.Current == null) {
-				throw new InvalidOperationException(MessagingStrings.HttpContextRequired);
-			}
+			ErrorUtilities.VerifyOperation(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
 
 			HttpRequest request = HttpContext.Current.Request;
 
@@ -80,6 +78,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="prefix">The prefix for parameters to remove.</param>
 		/// <returns>Either a new Uri with the parameters removed if there were any to remove, or the same Uri instance if no parameters needed to be removed.</returns>
 		public static Uri StripQueryArgumentsWithPrefix(this Uri uri, string prefix) {
+			ErrorUtilities.VerifyArgumentNotNull(uri, "uri");
+
 			NameValueCollection queryArgs = HttpUtility.ParseQueryString(uri.Query);
 			var matchingKeys = queryArgs.Keys.OfType<string>().Where(key => key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)).ToList();
 			if (matchingKeys.Count > 0) {
@@ -125,12 +125,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="headers">The headers to add.</param>
 		/// <param name="response">The <see cref="HttpResponse"/> instance to set the appropriate values to.</param>
 		internal static void ApplyHeadersToResponse(WebHeaderCollection headers, HttpResponse response) {
-			if (headers == null) {
-				throw new ArgumentNullException("headers");
-			}
-			if (response == null) {
-				throw new ArgumentNullException("response");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(headers, "headers");
+			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+
 			foreach (string headerName in headers) {
 				switch (headerName) {
 					case "Content-Type":

@@ -28,6 +28,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Throws an internal error exception.
 		/// </summary>
 		/// <param name="errorMessage">The error message.</param>
+		/// <exception cref="InternalErrorException">Always thrown.</exception>
 		internal static void ThrowInternal(string errorMessage) {
 			VerifyInternal(false, errorMessage);
 		}
@@ -37,6 +38,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="condition">The condition to check.</param>
 		/// <param name="errorMessage">The message to include in the exception, if created.</param>
+		/// <exception cref="InternalErrorException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		internal static void VerifyInternal(bool condition, string errorMessage) {
 			if (!condition) {
 				// Since internal errors are really bad, take this chance to
@@ -56,6 +58,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="condition">The condition to check.</param>
 		/// <param name="errorMessage">The message to include in the exception, if created.</param>
 		/// <param name="args">The formatting arguments.</param>
+		/// <exception cref="InternalErrorException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		internal static void VerifyInternal(bool condition, string errorMessage, params object[] args) {
 			if (!condition) {
 				errorMessage = string.Format(CultureInfo.CurrentCulture, errorMessage, args);
@@ -68,6 +71,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="condition">The condition to check.</param>
 		/// <param name="errorMessage">The message to include in the exception, if created.</param>
+		/// <exception cref="InvalidOperationException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		internal static void VerifyOperation(bool condition, string errorMessage) {
 			if (!condition) {
 				throw new InvalidOperationException(errorMessage);
@@ -80,6 +84,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="condition">The condition to check.</param>
 		/// <param name="errorMessage">The message to include in the exception, if created.</param>
 		/// <param name="args">The formatting arguments.</param>
+		/// <exception cref="InvalidOperationException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		internal static void VerifyOperation(bool condition, string errorMessage, params object[] args) {
 			if (!condition) {
 				errorMessage = string.Format(CultureInfo.CurrentCulture, errorMessage, args);
@@ -94,6 +99,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="faultedMessage">The message being processed that would be responsible for the exception if thrown.</param>
 		/// <param name="errorMessage">The error message for the exception.</param>
 		/// <param name="args">The string formatting arguments, if any.</param>
+		/// <exception cref="ProtocolException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		internal static void VerifyProtocol(bool condition, IProtocolMessage faultedMessage, string errorMessage, params object[] args) {
 			if (!condition) {
 				throw new ProtocolException(string.Format(CultureInfo.CurrentCulture, errorMessage, args), faultedMessage);
@@ -106,6 +112,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="condition">True to do nothing; false to throw the exception.</param>
 		/// <param name="message">The error message for the exception.</param>
 		/// <param name="args">The string formatting arguments, if any.</param>
+		/// <exception cref="ProtocolException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		internal static void VerifyProtocol(bool condition, string message, params object[] args) {
 			if (!condition) {
 				throw new ProtocolException(string.Format(
@@ -125,6 +132,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// to satisfy C# rules to show that code will never be reached, but no value
 		/// actually is ever returned because this method guarantees to throw.
 		/// </returns>
+		/// <exception cref="ProtocolException">Always thrown.</exception>
 		internal static Exception ThrowProtocol(string message, params object[] args) {
 			VerifyProtocol(false, message, args);
 
@@ -138,9 +146,46 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="condition">The condition that must evaluate to true to avoid an exception.</param>
 		/// <param name="message">The message to use in the exception if the condition is false.</param>
 		/// <param name="args">The string formatting arguments, if any.</param>
+		/// <exception cref="ArgumentException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		internal static void VerifyArgument(bool condition, string message, params object[] args) {
 			if (!condition) {
 				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, message, args));
+			}
+		}
+
+		/// <summary>
+		/// Verifies something about the argument supplied to a method.
+		/// </summary>
+		/// <param name="condition">The condition that must evaluate to true to avoid an exception.</param>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
+		internal static void VerifyArgumentInRange(bool condition, string parameterName) {
+			if (!condition) {
+				throw new ArgumentOutOfRangeException(parameterName);
+			}
+		}
+
+		/// <summary>
+		/// Verifies something about the argument supplied to a method.
+		/// </summary>
+		/// <param name="condition">The condition that must evaluate to true to avoid an exception.</param>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
+		internal static void VerifyArgumentInRange(bool condition, string parameterName, string message, params object[] args) {
+			if (!condition) {
+				throw new ArgumentOutOfRangeException(parameterName, string.Format(message, args));
+			}
+		}
+
+		/// <summary>
+		/// Verifies something about the argument supplied to a method.
+		/// </summary>
+		/// <param name="condition">The condition that must evaluate to true to avoid an exception.</param>
+		/// <param name="parameterName">Name of the parameter.</param>
+		/// <param name="message">The message to use in the exception if the condition is false.</param>
+		/// <param name="args">The string formatting arguments, if any.</param>
+		/// <exception cref="ArgumentException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
+		internal static void VerifyArgumentNamed(bool condition, string parameterName, string message, params object[] args) {
+			if (!condition) {
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, message, args), parameterName);
 			}
 		}
 

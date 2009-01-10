@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.AreNotEqual(s1, s2, "Secret keys should NOT be the same.");
 		}
 
-		[TestMethod]
+		[TestMethod, Timeout(15000)]
 		public void TestPublic() {
 			TextReader reader = new StringReader(TestSupport.LoadEmbeddedFile("dhpriv.txt"));
 

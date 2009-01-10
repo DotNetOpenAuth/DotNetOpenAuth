@@ -57,9 +57,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			}
 
 			this.TokenManager = tokenManager;
-			if (signingBindingElement.SignatureCallback != null) {
-				throw new ArgumentException(OAuthStrings.SigningElementAlreadyAssociatedWithChannel, "signingBindingElement");
-			}
+			ErrorUtilities.VerifyArgumentNamed(signingBindingElement.SignatureCallback == null, "signingBindingElement", OAuthStrings.SigningElementAlreadyAssociatedWithChannel);
 
 			signingBindingElement.SignatureCallback = this.SignatureCallback;
 		}
@@ -93,9 +91,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="request">The message to attach.</param>
 		/// <returns>The initialized web request.</returns>
 		internal HttpWebRequest InitializeRequest(IDirectedProtocolMessage request) {
-			if (request == null) {
-				throw new ArgumentNullException("request");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			PrepareMessageForSending(request);
 			return this.CreateHttpRequest(request);
@@ -108,9 +104,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="request">The HTTP request to search.</param>
 		/// <returns>A dictionary of data in the request.  Should never be null, but may be empty.</returns>
 		protected override IDirectedProtocolMessage ReadFromRequestInternal(HttpRequestInfo request) {
-			if (request == null) {
-				throw new ArgumentNullException("request");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			// First search the Authorization header.  Use it exclusively if it's present.
 			string authorization = request.Headers[HttpRequestHeader.Authorization];
@@ -159,9 +153,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// The deserialized message parts, if found.  Null otherwise.
 		/// </returns>
 		protected override IDictionary<string, string> ReadFromResponseInternal(DirectWebResponse response) {
-			if (response == null) {
-				throw new ArgumentNullException("response");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(response, "response");
 
 			return HttpUtility.ParseQueryString(response.Body).ToDictionary();
 		}
@@ -174,21 +166,11 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// The <see cref="HttpRequest"/> prepared to send the request.
 		/// </returns>
 		protected override HttpWebRequest CreateHttpRequest(IDirectedProtocolMessage request) {
-			if (request == null) {
-				throw new ArgumentNullException("request");
-			}
-			if (request.Recipient == null) {
-				throw new ArgumentException(MessagingStrings.DirectedMessageMissingRecipient, "request");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			ErrorUtilities.VerifyArgumentNamed(request.Recipient != null, "request", MessagingStrings.DirectedMessageMissingRecipient);
+
 			IDirectedProtocolMessage oauthRequest = request as IDirectedProtocolMessage;
-			if (oauthRequest == null) {
-				throw new ArgumentException(
-					string.Format(
-						CultureInfo.CurrentCulture,
-						MessagingStrings.UnexpectedType,
-						typeof(IDirectedProtocolMessage),
-						request.GetType()));
-			}
+			ErrorUtilities.VerifyArgument(oauthRequest != null, MessagingStrings.UnexpectedType, typeof(IDirectedProtocolMessage), request.GetType());
 
 			HttpWebRequest httpRequest;
 
@@ -215,9 +197,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// This method implements spec V1.0 section 5.3.
 		/// </remarks>
 		protected override UserAgentResponse SendDirectMessageResponse(IProtocolMessage response) {
-			if (response == null) {
-				throw new ArgumentNullException("response");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(response, "response");
 
 			MessageSerializer serializer = MessageSerializer.Get(response.GetType());
 			var fields = serializer.Serialize(response);
@@ -238,12 +218,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="source">The dictionary with names and values to encode.</param>
 		/// <param name="destination">The dictionary to add the encoded pairs to.</param>
 		private static void UriEscapeParameters(IDictionary<string, string> source, IDictionary<string, string> destination) {
-			if (source == null) {
-				throw new ArgumentNullException("source");
-			}
-			if (destination == null) {
-				throw new ArgumentNullException("destination");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(source, "source");
+			ErrorUtilities.VerifyArgumentNotNull(destination, "destination");
 
 			foreach (var pair in source) {
 				var key = Uri.EscapeDataString(pair.Key);

@@ -116,9 +116,7 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			set {
-				if (value < 2048) {
-					throw new ArgumentOutOfRangeException("value");
-				}
+				ErrorUtilities.VerifyArgumentInRange(value >= 2048, "value");
 				this.maximumBytesToRead = value;
 			}
 		}
@@ -133,9 +131,7 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			set {
-				if (value < 0) {
-					throw new ArgumentOutOfRangeException("value");
-				}
+				ErrorUtilities.VerifyArgumentInRange(value >= 0, "value");
 				this.maximumRedirections = value;
 			}
 		}
@@ -233,11 +229,9 @@ namespace DotNetOpenAuth.Messaging {
 					response.Status == HttpStatusCode.Redirect ||
 					response.Status == HttpStatusCode.RedirectMethod ||
 					response.Status == HttpStatusCode.RedirectKeepVerb) {
-					if (request.Method == "POST") {
-						// We have no copy of the post entity stream to repeat on our manually
-						// cloned HttpWebRequest, so we have to bail.
-						ErrorUtilities.ThrowProtocol(MessagingStrings.UntrustedRedirectsOnPOSTNotSupported);
-					}
+					// We have no copy of the post entity stream to repeat on our manually
+					// cloned HttpWebRequest, so we have to bail.
+					ErrorUtilities.VerifyProtocol(request.Method != "POST", MessagingStrings.UntrustedRedirectsOnPOSTNotSupported);
 					Uri redirectUri = new Uri(response.FinalUri, response.Headers[HttpResponseHeader.Location]);
 					request = request.Clone(redirectUri);
 				} else {

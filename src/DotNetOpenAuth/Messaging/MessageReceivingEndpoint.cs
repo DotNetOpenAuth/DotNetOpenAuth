@@ -27,15 +27,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="location">The URL of this endpoint.</param>
 		/// <param name="method">The HTTP method(s) allowed.</param>
 		public MessageReceivingEndpoint(Uri location, HttpDeliveryMethods method) {
-			if (location == null) {
-				throw new ArgumentNullException("location");
-			}
-			if (method == HttpDeliveryMethods.None) {
-				throw new ArgumentOutOfRangeException("method");
-			}
-			if ((method & (HttpDeliveryMethods.PostRequest | HttpDeliveryMethods.GetRequest)) == 0) {
-				throw new ArgumentOutOfRangeException("method", MessagingStrings.GetOrPostFlagsRequired);
-			}
+			ErrorUtilities.VerifyArgumentNotNull(location, "location");
+			ErrorUtilities.VerifyArgumentInRange(method != HttpDeliveryMethods.None, "method");
+			ErrorUtilities.VerifyArgumentInRange((method & (HttpDeliveryMethods.PostRequest | HttpDeliveryMethods.GetRequest)) != 0, "method", MessagingStrings.GetOrPostFlagsRequired);
 
 			this.Location = location;
 			this.AllowedMethods = method;

@@ -75,9 +75,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </param>
 		/// <param name="bindingElements">The binding elements to use in sending and receiving messages.</param>
 		protected Channel(IMessageFactory messageTypeProvider, params IChannelBindingElement[] bindingElements) {
-			if (messageTypeProvider == null) {
-				throw new ArgumentNullException("messageTypeProvider");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(messageTypeProvider, "messageTypeProvider");
 
 			this.messageTypeProvider = messageTypeProvider;
 			this.WebRequestHandler = new StandardWebRequestHandler();
@@ -222,14 +220,7 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			request = untypedRequest as TRequest;
-			if (request == null) {
-				throw new ProtocolException(
-					string.Format(
-						CultureInfo.CurrentCulture,
-						MessagingStrings.UnexpectedMessageReceived,
-						typeof(TRequest),
-						untypedRequest.GetType()));
-			}
+			ErrorUtilities.VerifyProtocol(request != null, MessagingStrings.UnexpectedMessageReceived, typeof(TRequest), untypedRequest.GetType());
 
 			return true;
 		}
@@ -264,11 +255,7 @@ namespace DotNetOpenAuth.Messaging {
 			if (this.TryReadFromRequest<TRequest>(httpRequest, out request)) {
 				return request;
 			} else {
-				throw new ProtocolException(
-					string.Format(
-						CultureInfo.CurrentCulture,
-						MessagingStrings.ExpectedMessageNotReceived,
-						typeof(TRequest)));
+				throw ErrorUtilities.ThrowProtocol(MessagingStrings.ExpectedMessageNotReceived, typeof(TRequest));
 			}
 		}
 
@@ -316,9 +303,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The remote party's response.  Guaranteed to never be null.</returns>
 		/// <exception cref="ProtocolException">Thrown if the response does not include a protocol message.</exception>
 		public IProtocolMessage Request(IDirectedProtocolMessage requestMessage) {
-			if (requestMessage == null) {
-				throw new ArgumentNullException("requestMessage");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(requestMessage, "requestMessage");
 
 			this.PrepareMessageForSending(requestMessage);
 			Logger.DebugFormat("Sending request: {0}", requestMessage);
@@ -341,9 +326,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current"/> is null.</exception>
 		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Costly call should not be a property.")]
 		protected internal virtual HttpRequestInfo GetRequestFromContext() {
-			if (HttpContext.Current == null) {
-				throw new InvalidOperationException(MessagingStrings.HttpContextRequired);
-			}
+			ErrorUtilities.VerifyOperation(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
 
 			return new HttpRequestInfo(HttpContext.Current.Request);
 		}
@@ -353,9 +336,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The message about to be encoded and sent.</param>
 		protected virtual void OnSending(IProtocolMessage message) {
-			if (message == null) {
-				throw new ArgumentNullException("message");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
 			var sending = this.Sending;
 			if (sending != null) {
@@ -402,9 +383,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The request to search for an embedded message.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
 		protected virtual IDirectedProtocolMessage ReadFromRequestInternal(HttpRequestInfo request) {
-			if (request == null) {
-				throw new ArgumentNullException("request");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			// Search Form data first, and if nothing is there search the QueryString
 			var fields = request.Form.ToDictionary();
@@ -422,9 +401,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="recipient">Information about where the message was been directed.  Null for direct response messages.</param>
 		/// <returns>The deserialized message, or null if no message could be recognized in the provided data.</returns>
 		protected virtual IProtocolMessage Receive(Dictionary<string, string> fields, MessageReceivingEndpoint recipient) {
-			if (fields == null) {
-				throw new ArgumentNullException("fields");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
 
 			IProtocolMessage message = this.MessageFactory.GetNewRequestMessage(recipient, fields);
 
@@ -446,9 +423,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="message">The message to send.</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
 		protected virtual UserAgentResponse SendIndirectMessage(IDirectedProtocolMessage message) {
-			if (message == null) {
-				throw new ArgumentNullException("message");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
 			var serializer = MessageSerializer.Get(message.GetType());
 			var fields = serializer.Serialize(message);
@@ -471,15 +446,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="fields">The pre-serialized fields from the message.</param>
 		/// <returns>The encoded HTTP response.</returns>
 		protected virtual UserAgentResponse Create301RedirectResponse(IDirectedProtocolMessage message, IDictionary<string, string> fields) {
-			if (message == null) {
-				throw new ArgumentNullException("message");
-			}
-			if (message.Recipient == null) {
-				throw new ArgumentException(MessagingStrings.DirectedMessageMissingRecipient, "message");
-			}
-			if (fields == null) {
-				throw new ArgumentNullException("fields");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(message, "message");
+			ErrorUtilities.VerifyArgumentNamed(message.Recipient != null, "message", MessagingStrings.DirectedMessageMissingRecipient);
+			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
 
 			WebHeaderCollection headers = new WebHeaderCollection();
 			UriBuilder builder = new UriBuilder(message.Recipient);
@@ -504,15 +473,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="fields">The pre-serialized fields from the message.</param>
 		/// <returns>The encoded HTTP response.</returns>
 		protected virtual UserAgentResponse CreateFormPostResponse(IDirectedProtocolMessage message, IDictionary<string, string> fields) {
-			if (message == null) {
-				throw new ArgumentNullException("message");
-			}
-			if (message.Recipient == null) {
-				throw new ArgumentException(MessagingStrings.DirectedMessageMissingRecipient, "message");
-			}
-			if (fields == null) {
-				throw new ArgumentNullException("fields");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(message, "message");
+			ErrorUtilities.VerifyArgumentNamed(message.Recipient != null, "message", MessagingStrings.DirectedMessageMissingRecipient);
+			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
 
 			WebHeaderCollection headers = new WebHeaderCollection();
 			StringWriter bodyWriter = new StringWriter(CultureInfo.InvariantCulture);
@@ -578,9 +541,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// except when sending ONE WAY request messages.
 		/// </remarks>
 		protected void PrepareMessageForSending(IProtocolMessage message) {
-			if (message == null) {
-				throw new ArgumentNullException("message");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
 			Logger.DebugFormat("Preparing to send {0} ({1}) message.", message.GetType().Name, message.Version);
 			this.OnSending(message);
@@ -618,9 +579,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// This method satisfies OAuth 1.0 section 5.2, item #3.
 		/// </remarks>
 		protected virtual HttpWebRequest InitializeRequestAsGet(IDirectedProtocolMessage requestMessage) {
-			if (requestMessage == null) {
-				throw new ArgumentNullException("requestMessage");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(requestMessage, "requestMessage");
 
 			var serializer = MessageSerializer.Get(requestMessage.GetType());
 			var fields = serializer.Serialize(requestMessage);
@@ -643,9 +602,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// This method satisfies OAuth 1.0 section 5.2, item #2 and OpenID 2.0 section 4.1.2.
 		/// </remarks>
 		protected virtual HttpWebRequest InitializeRequestAsPost(IDirectedProtocolMessage requestMessage) {
-			if (requestMessage == null) {
-				throw new ArgumentNullException("requestMessage");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(requestMessage, "requestMessage");
 
 			var serializer = MessageSerializer.Get(requestMessage.GetType());
 			var fields = serializer.Serialize(requestMessage);
@@ -750,9 +707,8 @@ namespace DotNetOpenAuth.Messaging {
 			if (elements == null) {
 				return new IChannelBindingElement[0];
 			}
-			if (elements.Contains(null)) {
-				throw new ArgumentException(MessagingStrings.SequenceContainsNullElement, "elements");
-			}
+
+			ErrorUtilities.VerifyArgumentNamed(!elements.Contains(null), "elements", MessagingStrings.SequenceContainsNullElement);
 
 			// Filter the elements between the mere transforming ones and the protection ones.
 			var transformationElements = new List<IChannelBindingElement>(
@@ -769,13 +725,7 @@ namespace DotNetOpenAuth.Messaging {
 				int countProtectionsOfThisKind = protectionElements.Count(element => (element.Protection & protectionKind) == protectionKind);
 
 				// Each protection binding element is backed by the presence of its dependent protection(s).
-				if (countProtectionsOfThisKind > 0 && !wasLastProtectionPresent) {
-					throw new ProtocolException(
-						string.Format(
-							CultureInfo.CurrentCulture,
-							MessagingStrings.RequiredProtectionMissing,
-							protectionKind));
-				}
+				ErrorUtilities.VerifyProtocol(!(countProtectionsOfThisKind > 0 && !wasLastProtectionPresent), MessagingStrings.RequiredProtectionMissing, protectionKind);
 
 				wasLastProtectionPresent = countProtectionsOfThisKind > 0;
 			}
@@ -800,7 +750,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// 0 if it doesn't matter.
 		/// </returns>
 		private static int BindingElementOutgoingMessageApplicationOrder(MessageProtections protection1, MessageProtections protection2) {
-			Debug.Assert(protection1 != MessageProtections.None || protection2 != MessageProtections.None, "This comparison function should only be used to compare protection binding elements.  Otherwise we change the order of user-defined message transformations.");
+			ErrorUtilities.VerifyInternal(protection1 != MessageProtections.None || protection2 != MessageProtections.None, "This comparison function should only be used to compare protection binding elements.  Otherwise we change the order of user-defined message transformations.");
 
 			// Now put the protection ones in the right order.
 			return -((int)protection1).CompareTo((int)protection2); // descending flag ordinal order
