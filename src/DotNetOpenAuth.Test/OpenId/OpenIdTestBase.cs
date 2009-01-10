@@ -22,6 +22,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		protected internal static readonly Uri ProviderUri = new Uri("http://provider");
 		protected internal static readonly Uri RPUri = new Uri("http://rp");
+		protected const string IdentifierSelect = "http://specs.openid.net/auth/2.0/identifier_select";
 
 		protected RelyingPartySecuritySettings RelyingPartySecuritySettings { get; private set; }
 
