@@ -27,6 +27,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="exception">The exception that resulted in the failed authentication.</param>
 		internal FailedAuthenticationResponse(Exception exception) {
+			ErrorUtilities.VerifyArgumentNotNull(exception, "exception");
+
 			this.Exception = exception;
 		}
 
@@ -98,7 +100,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Gets the details regarding a failed authentication attempt, if available.
 		/// This will be set if and only if <see cref="Status"/> is <see cref="AuthenticationStatus.Failed"/>.
 		/// </summary>
-		/// <value></value>
 		public Exception Exception { get; private set; }
 
 		/// <summary>

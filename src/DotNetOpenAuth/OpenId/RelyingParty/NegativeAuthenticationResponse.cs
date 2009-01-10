@@ -115,9 +115,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <value></value>
 		public Identifier UserSuppliedIdentifier {
 			get {
-				if (this.Status != AuthenticationStatus.SetupRequired) {
-					throw new InvalidOperationException(OpenIdStrings.OperationOnlyValidForSetupRequiredState);
-				}
+				ErrorUtilities.VerifyOperation(this.Status == AuthenticationStatus.SetupRequired, OpenIdStrings.OperationOnlyValidForSetupRequiredState);
 
 				string userSuppliedIdentifier;
 				this.response.ExtraData.TryGetValue(AuthenticationRequest.UserSuppliedIdentifierParameterName, out userSuppliedIdentifier);
