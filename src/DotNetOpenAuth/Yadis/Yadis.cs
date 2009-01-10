@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.Yadis {
 		/// or if <paramref name="requireSsl"/> is true but part of discovery
 		/// is not protected by SSL.
 		/// </returns>
-		public static DiscoveryResult Discover(IDirectSslWebRequestHandler requestHandler, UriIdentifier uri, bool requireSsl) {
+		public static DiscoveryResult Discover(IDirectWebRequestHandler requestHandler, UriIdentifier uri, bool requireSsl) {
 			DirectWebResponse response;
 			try {
 				if (requireSsl && !string.Equals(uri.Uri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)) {
@@ -122,7 +122,8 @@ namespace DotNetOpenAuth.Yadis {
 		/// <param name="requireSsl">Whether only HTTPS URLs should ever be retrieved.</param>
 		/// <param name="acceptTypes">The value of the Accept HTTP header to include in the request.</param>
 		/// <returns>The HTTP response retrieved from the request.</returns>
-		internal static DirectWebResponse Request(IDirectSslWebRequestHandler requestHandler, Uri uri, bool requireSsl, params string[] acceptTypes) {
+		internal static DirectWebResponse Request(IDirectWebRequestHandler requestHandler, Uri uri, bool requireSsl, params string[] acceptTypes) {
+			ErrorUtilities.VerifyArgumentNotNull(requestHandler, "requestHandler");
 			ErrorUtilities.VerifyArgumentNotNull(uri, "uri");
 
 			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
@@ -131,7 +132,13 @@ namespace DotNetOpenAuth.Yadis {
 				request.Accept = string.Join(",", acceptTypes);
 			}
 
-			return requestHandler.GetResponse(request, requireSsl);
+			if (requireSsl) {
+				var sslRequestHandler = requestHandler as IDirectSslWebRequestHandler;
+				ErrorUtilities.VerifyArgument(sslRequestHandler != null, MessagingStrings.SslOnlyRequestNotSupported, typeof(IDirectWebRequestHandler).Name, typeof(IDirectSslWebRequestHandler).Name);
+				return sslRequestHandler.GetResponse(request, requireSsl);
+			} else {
+				return requestHandler.GetResponse(request);
+			}
 		}
 
 		/// <summary>

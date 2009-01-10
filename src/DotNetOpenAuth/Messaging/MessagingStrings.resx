@@ -222,6 +222,9 @@
   <data name="SigningNotSupported" xml:space="preserve">
     <value>This channel does not support signing messages.  To support signing messages, a derived Channel type must override the Sign and IsSignatureValid methods.</value>
   </data>
+  <data name="SslOnlyRequestNotSupported" xml:space="preserve">
+    <value>The provided instance of {0} does not implement the {1} interface, which is required for RequireSsl mode.</value>
+  </data>
   <data name="StreamUnreadable" xml:space="preserve">
     <value>The stream's CanRead property returned false.</value>
   </data>

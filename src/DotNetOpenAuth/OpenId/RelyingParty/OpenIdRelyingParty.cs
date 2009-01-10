@@ -176,11 +176,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Gets the web request handler to use for discovery and the part of
 		/// authentication where direct messages are sent to an untrusted remote party.
 		/// </summary>
-		internal IDirectSslWebRequestHandler WebRequestHandler {
-			// TODO: Since the OpenIdChannel.WebRequestHandler might be set to a non-SSL
-			// implementation, we should consider altering the consumers of this property
-			// to handle either case.
-			get { return this.Channel.WebRequestHandler as IDirectSslWebRequestHandler; }
+		internal IDirectWebRequestHandler WebRequestHandler {
+			get { return this.Channel.WebRequestHandler; }
 		}
 
 		/// <summary>

@@ -376,6 +376,15 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The provided instance of {0} does not implement the {1} interface, which is required for RequireSsl mode..
+        /// </summary>
+        internal static string SslOnlyRequestNotSupported {
+            get {
+                return ResourceManager.GetString("SslOnlyRequestNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The stream&apos;s CanRead property returned false..
         /// </summary>
         internal static string StreamUnreadable {

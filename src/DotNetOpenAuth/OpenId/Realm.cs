@@ -358,7 +358,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>
 		/// The details of the endpoints if found, otherwise null.
 		/// </returns>
-		internal IEnumerable<RelyingPartyEndpointDescription> Discover(IDirectSslWebRequestHandler requestHandler, bool allowRedirects) {
+		internal IEnumerable<RelyingPartyEndpointDescription> Discover(IDirectWebRequestHandler requestHandler, bool allowRedirects) {
 			// Attempt YADIS discovery
 			DiscoveryResult yadisResult = Yadis.Discover(requestHandler, this.UriWithWildcardChangedToWww, false);
 			if (yadisResult != null) {

@@ -157,6 +157,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Verifies something about the argument supplied to a method.
 		/// </summary>
 		/// <param name="condition">The condition that must evaluate to true to avoid an exception.</param>
+		/// <param name="parameterName">Name of the parameter.</param>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		internal static void VerifyArgumentInRange(bool condition, string parameterName) {
 			if (!condition) {
@@ -168,6 +169,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// Verifies something about the argument supplied to a method.
 		/// </summary>
 		/// <param name="condition">The condition that must evaluate to true to avoid an exception.</param>
+		/// <param name="parameterName">Name of the parameter.</param>
+		/// <param name="message">The unformatted message.</param>
+		/// <param name="args">The string formatting arguments.</param>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		internal static void VerifyArgumentInRange(bool condition, string parameterName, string message, params object[] args) {
 			if (!condition) {

@@ -203,7 +203,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>
 		/// An initialized structure containing the discovered provider endpoint information.
 		/// </returns>
-		internal override IEnumerable<ServiceEndpoint> Discover(IDirectSslWebRequestHandler requestHandler) {
+		internal override IEnumerable<ServiceEndpoint> Discover(IDirectWebRequestHandler requestHandler) {
 			List<ServiceEndpoint> endpoints = new List<ServiceEndpoint>();
 
 			// Attempt YADIS discovery
