@@ -211,7 +211,7 @@ namespace DotNetOpenAuth.OpenId {
 			if (yadisResult != null) {
 				if (yadisResult.IsXrds) {
 					XrdsDocument xrds = new XrdsDocument(yadisResult.ResponseText);
-					var xrdsEndpoints = xrds.CreateServiceEndpoints(yadisResult.NormalizedUri);
+					var xrdsEndpoints = xrds.CreateServiceEndpoints(yadisResult.NormalizedUri, this);
 
 					// Filter out insecure endpoints if high security is required.
 					if (IsDiscoverySecureEndToEnd) {
@@ -222,7 +222,7 @@ namespace DotNetOpenAuth.OpenId {
 
 				// Failing YADIS discovery of an XRDS document, we try HTML discovery.
 				if (endpoints.Count == 0) {
-					ServiceEndpoint ep = DiscoverFromHtml(yadisResult.NormalizedUri, yadisResult.ResponseText);
+					ServiceEndpoint ep = DiscoverFromHtml(yadisResult.NormalizedUri, this, yadisResult.ResponseText);
 					if (ep != null) {
 						Logger.Debug("HTML discovery found a service endpoint.");
 						Logger.Debug(ep);
@@ -321,7 +321,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// OpenID 2.0 tags are always used if they are present, otherwise
 		/// OpenID 1.x tags are used if present.
 		/// </remarks>
-		private static ServiceEndpoint DiscoverFromHtml(Uri claimedIdentifier, string html) {
+		private static ServiceEndpoint DiscoverFromHtml(Uri claimedIdentifier, UriIdentifier userSuppliedIdentifier, string html) {
 			Uri providerEndpoint = null;
 			Protocol discoveredProtocol = null;
 			Identifier providerLocalIdentifier = null;
@@ -361,7 +361,7 @@ namespace DotNetOpenAuth.OpenId {
 			// Choose the TypeURI to match the OpenID version detected.
 			string[] typeURIs = { discoveredProtocol.ClaimedIdentifierServiceTypeURI };
 			var providerDescription = new ProviderEndpointDescription(providerEndpoint, typeURIs);
-			return ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, providerLocalIdentifier, providerDescription, (int?)null, (int?)null);
+			return ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, userSuppliedIdentifier, providerLocalIdentifier, providerDescription, (int?)null, (int?)null);
 		}
 
 		/// <summary>

@@ -39,14 +39,14 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>
 		/// A sequence of OpenID Providers that can assert ownership of the <paramref name="claimedIdentifier"/>.
 		/// </returns>
-		internal static IEnumerable<ServiceEndpoint> CreateServiceEndpoints(this XrdsDocument xrds, UriIdentifier claimedIdentifier) {
+		internal static IEnumerable<ServiceEndpoint> CreateServiceEndpoints(this XrdsDocument xrds, UriIdentifier claimedIdentifier, UriIdentifier userSuppliedIdentifier) {
 			var endpoints = new List<ServiceEndpoint>();
 			endpoints.AddRange(xrds.GenerateOPIdentifierServiceEndpoints(claimedIdentifier));
 
 			// If any OP Identifier service elements were found, we must not proceed
 			// to return any Claimed Identifier services.
 			if (endpoints.Count == 0) {
-				endpoints.AddRange(xrds.GenerateClaimedIdentifierServiceEndpoints(claimedIdentifier));
+				endpoints.AddRange(xrds.GenerateClaimedIdentifierServiceEndpoints(claimedIdentifier, userSuppliedIdentifier));
 			}
 			Logger.DebugFormat("Total services discovered in XRDS: {0}", endpoints.Count);
 			Logger.Debug(endpoints.ToStringDeferred(true));
@@ -95,11 +95,11 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="xrds">The XrdsDocument instance to use in this process.</param>
 		/// <param name="claimedIdentifier">The claimed identifier.</param>
 		/// <returns>A sequence of the providers that can assert ownership of the given identifier.</returns>
-		private static IEnumerable<ServiceEndpoint> GenerateClaimedIdentifierServiceEndpoints(this XrdsDocument xrds, UriIdentifier claimedIdentifier) {
+		private static IEnumerable<ServiceEndpoint> GenerateClaimedIdentifierServiceEndpoints(this XrdsDocument xrds, UriIdentifier claimedIdentifier, UriIdentifier userSuppliedIdentifier) {
 			return from service in xrds.FindClaimedIdentifierServices()
 				   from uri in service.UriElements
 				   let providerEndpoint = new ProviderEndpointDescription(uri.Uri, service.TypeElementUris)
-				   select ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, service.ProviderLocalIdentifier, providerEndpoint, service.Priority, uri.Priority);
+				   select ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, userSuppliedIdentifier, service.ProviderLocalIdentifier, providerEndpoint, service.Priority, uri.Priority);
 		}
 
 		/// <summary>
