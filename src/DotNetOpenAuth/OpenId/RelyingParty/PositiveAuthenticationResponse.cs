@@ -224,7 +224,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// comes back in the assertion we can verify that it hasn't changed, without
 			// sending two copies of all the data in the request.
 			var discoveryResults = this.response.ClaimedIdentifier.Discover(this.relyingParty.WebRequestHandler);
-			ErrorUtilities.VerifyProtocol(discoveryResults.Contains(this.endpoint), OpenIdStrings.IssuedAssertionFailsIdentifierDiscovery);
+			ErrorUtilities.VerifyProtocol(discoveryResults.Contains(this.endpoint), OpenIdStrings.IssuedAssertionFailsIdentifierDiscovery, this.endpoint, discoveryResults.ToStringDeferred(true));
 		}
 	}
 }
