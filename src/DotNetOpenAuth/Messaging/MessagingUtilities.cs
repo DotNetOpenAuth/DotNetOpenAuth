@@ -357,8 +357,8 @@ namespace DotNetOpenAuth.Messaging {
 			StringBuilder sb = new StringBuilder(args.Count() * 10);
 
 			foreach (var p in args) {
-				ErrorUtilities.VerifyArgument(p.Key != null, MessagingStrings.UnexpectedNullValue);
-				ErrorUtilities.VerifyArgument(p.Value != null, MessagingStrings.UnexpectedNullValue);
+				ErrorUtilities.VerifyArgument(p.Key != null, MessagingStrings.UnexpectedNullKey);
+				ErrorUtilities.VerifyArgument(p.Value != null, MessagingStrings.UnexpectedNullValue, p.Key);
 				sb.Append(HttpUtility.UrlEncode(p.Key));
 				sb.Append('=');
 				sb.Append(HttpUtility.UrlEncode(p.Value));
