@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using System;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -28,9 +29,17 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		[TestMethod]
 		public void Valid() {
 			PositiveAssertionResponse assertion = this.GetPositiveAssertion();
+			ClaimsResponse extension = new ClaimsResponse();
+			assertion.Extensions.Add(extension);
 			var rp = CreateRelyingParty();
 			var authResponse = new PositiveAuthenticationResponse(assertion, rp);
+			var authResponseAccessor = PositiveAuthenticationResponse_Accessor.AttachShadow(authResponse);
 			Assert.AreEqual(AuthenticationStatus.Authenticated, authResponse.Status);
+			Assert.IsNull(authResponse.Exception);
+			Assert.AreEqual<string>(assertion.ClaimedIdentifier, authResponse.ClaimedIdentifier);
+			Assert.AreEqual<string>(authResponseAccessor.endpoint.FriendlyIdentifierForDisplay, authResponse.FriendlyIdentifierForDisplay);
+			Assert.AreSame(extension, authResponse.GetExtension(typeof(ClaimsResponse)));
+			Assert.AreSame(extension, authResponse.GetExtension<ClaimsResponse>());
 		}
 
 		/// <summary>

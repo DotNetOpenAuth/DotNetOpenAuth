@@ -12,6 +12,8 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
+	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Messaging;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -169,6 +171,65 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 				null,
 				null);
 			Assert.AreEqual("=!9B72.7DD1.50A9.5CCD", se.FriendlyIdentifierForDisplay);
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		public void IsExtensionSupportedNullType() {
+			ServiceEndpoint se = ServiceEndpoint.CreateForClaimedIdentifier(this.claimedXri, this.userSuppliedXri, this.localId, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), this.servicePriority, this.uriPriority);
+			se.IsExtensionSupported((Type)null);
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		public void IsExtensionSupportedNullString() {
+			ServiceEndpoint se = ServiceEndpoint.CreateForClaimedIdentifier(this.claimedXri, this.userSuppliedXri, this.localId, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), this.servicePriority, this.uriPriority);
+			se.IsExtensionSupported((string)null);
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		public void IsExtensionSupportedEmptyString() {
+			ServiceEndpoint se = ServiceEndpoint.CreateForClaimedIdentifier(this.claimedXri, this.userSuppliedXri, this.localId, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), this.servicePriority, this.uriPriority);
+			se.IsExtensionSupported(string.Empty);
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		public void IsExtensionSupportedNullExtension() {
+			ServiceEndpoint se = ServiceEndpoint.CreateForClaimedIdentifier(this.claimedXri, this.userSuppliedXri, this.localId, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), this.servicePriority, this.uriPriority);
+			se.IsExtensionSupported((IOpenIdMessageExtension)null);
+		}
+
+		[TestMethod]
+		public void IsExtensionSupported() {
+			ServiceEndpoint se = ServiceEndpoint.CreateForClaimedIdentifier(this.claimedXri, this.userSuppliedXri, this.localId, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), this.servicePriority, this.uriPriority);
+			Assert.IsFalse(se.IsExtensionSupported<ClaimsRequest>());
+			Assert.IsFalse(se.IsExtensionSupported(new ClaimsRequest()));
+			Assert.IsFalse(se.IsExtensionSupported("http://someextension/typeuri"));
+
+			ProviderEndpointDescription ped = new ProviderEndpointDescription(
+				ProviderUri,
+				new[] { Protocol.V20.ClaimedIdentifierServiceTypeURI, "http://someextension", Constants.sreg_ns });
+			se = ServiceEndpoint.CreateForClaimedIdentifier(this.claimedXri, this.userSuppliedXri, this.localId, ped, this.servicePriority, this.uriPriority);
+			Assert.IsTrue(se.IsExtensionSupported<ClaimsRequest>());
+			Assert.IsTrue(se.IsExtensionSupported(new ClaimsRequest()));
+			Assert.IsTrue(se.IsExtensionSupported("http://someextension"));
+		}
+
+		[TestMethod]
+		public void IsTypeUriPresent() {
+			ServiceEndpoint se = ServiceEndpoint.CreateForClaimedIdentifier(this.claimedXri, this.userSuppliedXri, this.localId, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), this.servicePriority, this.uriPriority);
+			Assert.IsTrue(se.IsTypeUriPresent(Protocol.Default.ClaimedIdentifierServiceTypeURI));
+			Assert.IsFalse(se.IsTypeUriPresent("http://someother"));
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		public void IsTypeUriPresentNull() {
+			ServiceEndpoint se = ServiceEndpoint.CreateForClaimedIdentifier(this.claimedXri, this.userSuppliedXri, this.localId, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), this.servicePriority, this.uriPriority);
+			se.IsTypeUriPresent(null);
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		public void IsTypeUriPresentEmpty() {
+			ServiceEndpoint se = ServiceEndpoint.CreateForClaimedIdentifier(this.claimedXri, this.userSuppliedXri, this.localId, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), this.servicePriority, this.uriPriority);
+			se.IsTypeUriPresent(string.Empty);
 		}
 	}
 }

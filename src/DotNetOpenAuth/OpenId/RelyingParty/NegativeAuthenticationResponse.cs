@@ -168,7 +168,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>
 		/// The extension, if it is found.  Null otherwise.
 		/// </returns>
-		public T GetExtension<T>() where T : IOpenIdMessageExtension, new() {
+		public T GetExtension<T>() where T : IOpenIdMessageExtension {
 			return default(T);
 		}
 

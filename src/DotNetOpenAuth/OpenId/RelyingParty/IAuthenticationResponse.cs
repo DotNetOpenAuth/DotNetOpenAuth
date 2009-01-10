@@ -123,7 +123,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The extension, if it is found.  Null otherwise.
 		/// </returns>
 		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "No parameter at all is required.  T is used for return type.")]
-		T GetExtension<T>() where T : IOpenIdMessageExtension, new();
+		T GetExtension<T>() where T : IOpenIdMessageExtension;
 
 		/// <summary>
 		/// Tries to get an OpenID extension that may be present in the response.

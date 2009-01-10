@@ -126,5 +126,43 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			} catch (ProtocolException) {
 			}
 		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		public void GetReturnToArgumentNullKey() {
+			this.response.GetReturnToArgument(null);
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		public void GetReturnToArgumentEmptyKey() {
+			this.response.GetReturnToArgument(string.Empty);
+		}
+
+		[TestMethod]
+		public void GetReturnToArgumentDoesNotReturnExtraArgs() {
+			this.response.ExtraData["a"] = "b";
+			Assert.IsNull(this.response.GetReturnToArgument("a"));
+			Assert.AreEqual(0, this.response.GetReturnToParameterNames().Count());
+		}
+
+		[TestMethod]
+		public void GetReturnToArgumentAndNames() {
+			UriBuilder returnToBuilder = new UriBuilder(this.response.ReturnTo);
+			returnToBuilder.AppendQueryArgs(new Dictionary<string, string> { { "a", "b" } });
+			this.request.ReturnTo = returnToBuilder.Uri;
+
+			// First pretend that the return_to args were signed.
+			this.response = new IndirectSignedResponse(this.request);
+			this.response.ReturnToParametersSignatureValidated = true;
+			Assert.AreEqual(1, this.response.GetReturnToParameterNames().Count());
+			Assert.IsTrue(this.response.GetReturnToParameterNames().Contains("a"));
+			Assert.AreEqual("b", this.response.GetReturnToArgument("a"));
+
+			// Now simulate them NOT being signed.
+			this.response = new IndirectSignedResponse(this.request);
+			this.response.ReturnToParametersSignatureValidated = false;
+			Assert.AreEqual(0, this.response.GetReturnToParameterNames().Count());
+			Assert.IsFalse(this.response.GetReturnToParameterNames().Contains("a"));
+			Assert.IsNull(this.response.GetReturnToArgument("a"));
+		}
 	}
 }

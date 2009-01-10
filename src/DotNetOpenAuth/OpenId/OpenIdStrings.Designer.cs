@@ -160,6 +160,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot lookup extension support on a rehydrated ServiceEndpoint..
+        /// </summary>
+        internal static string ExtensionLookupSupportUnavailable {
+            get {
+                return ResourceManager.GetString("ExtensionLookupSupportUnavailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Fragment segments do not apply to XRI identifiers..
         /// </summary>
         internal static string FragmentNotAllowedOnXRIs {

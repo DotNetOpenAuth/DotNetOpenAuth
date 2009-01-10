@@ -277,9 +277,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// 	<c>true</c> if the extension is supported; otherwise, <c>false</c>.
 		/// </returns>
 		public bool IsExtensionSupported(string extensionUri) {
-			if (this.ProviderSupportedServiceTypeUris == null) {
-				throw new InvalidOperationException("Cannot lookup extension support on a rehydrated ServiceEndpoint.");
-			}
+			ErrorUtilities.VerifyNonZeroLength(extensionUri, "extensionUri");
+
+			ErrorUtilities.VerifyOperation(this.ProviderSupportedServiceTypeUris != null, OpenIdStrings.ExtensionLookupSupportUnavailable);
 			return this.ProviderSupportedServiceTypeUris.Contains(extensionUri);
 		}
 

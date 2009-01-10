@@ -243,8 +243,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				NameValueCollection returnToArgs = HttpUtility.ParseQueryString(returnToUrl.Query);
 				foreach (string key in returnToArgs) {
 					if (OpenIdRelyingParty.IsOpenIdSupportingParameter(key)) {
-						Logger.WarnFormat("OpenId argument \"{0}\" found in return_to URL.  This can corrupt an OpenID response.", key);
-						break;
+						Logger.WarnFormat("OpenID argument \"{0}\" found in return_to URL.  This can corrupt an OpenID response.", key);
 					}
 				}
 			}

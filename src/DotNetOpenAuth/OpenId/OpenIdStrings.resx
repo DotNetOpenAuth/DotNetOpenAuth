@@ -150,6 +150,9 @@
   <data name="ExtensionAlreadyAddedWithSameTypeURI" xml:space="preserve">
     <value>An extension sharing namespace '{0}' has already been added.  Only one extension per namespace is allowed in a given request.</value>
   </data>
+  <data name="ExtensionLookupSupportUnavailable" xml:space="preserve">
+    <value>Cannot lookup extension support on a rehydrated ServiceEndpoint.</value>
+  </data>
   <data name="FragmentNotAllowedOnXRIs" xml:space="preserve">
     <value>Fragment segments do not apply to XRI identifiers.</value>
   </data>

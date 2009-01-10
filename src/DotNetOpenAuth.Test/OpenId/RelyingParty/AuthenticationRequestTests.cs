@@ -112,6 +112,15 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.AreEqual(this.protocol.Version, authRequest.Provider.Version);
 		}
 
+		/// <summary>
+		/// Verifies that authentication requests are generated first for OPs that respond
+		/// to authentication requests.
+		/// </summary>
+		[TestMethod, Ignore]
+		public void UnresponsiveProvidersComeLast() {
+			Assert.Inconclusive("Not yet implemented.");
+		}
+
 		private AuthenticationRequest_Accessor CreateAuthenticationRequest(Identifier claimedIdentifier, Identifier providerLocalIdentifier) {
 			ProviderEndpointDescription providerEndpoint = new ProviderEndpointDescription(ProviderUri, this.protocol.Version);
 			ServiceEndpoint endpoint = ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, providerLocalIdentifier, providerEndpoint, 10, 5);
