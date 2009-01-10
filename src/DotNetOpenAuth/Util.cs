@@ -160,10 +160,10 @@ namespace DotNetOpenAuth {
 							}
 							sb.AppendLine("}, {");
 						}
-						if (sb.Length > 2) { // if anything was in the enumeration
+						if (sb.Length > 2 + Environment.NewLine.Length) { // if anything was in the enumeration
 							sb.Length -= 2 + Environment.NewLine.Length; // trim off the last ", {\r\n"
 						} else {
-							sb.Length -= 1; // trim off the opening {
+							sb.Length -= 1 + Environment.NewLine.Length; // trim off the opening {
 						}
 						sb.Append("]");
 						return sb.ToString();

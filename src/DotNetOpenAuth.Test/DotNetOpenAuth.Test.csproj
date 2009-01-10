@@ -148,6 +148,7 @@
     <Compile Include="TestBase.cs" />
     <Compile Include="TestUtilities.cs" />
     <Compile Include="UriUtilTests.cs" />
+    <Compile Include="UtilTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DotNetOpenAuth\DotNetOpenAuth.csproj">
