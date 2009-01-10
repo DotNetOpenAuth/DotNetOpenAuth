@@ -7,9 +7,12 @@
 namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.Specialized;
 	using System.Linq;
 	using System.Text;
+	using System.Web;
 	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -32,11 +35,23 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// </summary>
 		[TestMethod]
 		public void IsDirectedIdentity() {
-			var iauthRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
+			IAuthenticationRequest_Accessor iauthRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
 			Assert.IsFalse(iauthRequest.IsDirectedIdentity);
 
 			iauthRequest = this.CreateAuthenticationRequest(IdentifierSelect, IdentifierSelect);
 			Assert.IsTrue(iauthRequest.IsDirectedIdentity);
+		}
+
+		/// <summary>
+		/// Verifies ClaimedIdentifier behavior.
+		/// </summary>
+		[TestMethod]
+		public void ClaimedIdentifier() {
+			IAuthenticationRequest_Accessor iauthRequest = this.CreateAuthenticationRequest(this.claimedId, this.delegatedLocalId);
+			Assert.AreEqual(this.claimedId, iauthRequest.ClaimedIdentifier);
+
+			iauthRequest = this.CreateAuthenticationRequest(IdentifierSelect, IdentifierSelect);
+			Assert.IsNull(iauthRequest.ClaimedIdentifier, "In directed identity mode, the ClaimedIdentifier should be null.");
 		}
 
 		/// <summary>
@@ -52,14 +67,35 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// Verifies RedirectingResponse.
 		/// </summary>
 		[TestMethod]
-		public void RedirectingResponse() {
+		public void CreateRequestMessage() {
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
 				rp => {
 					Identifier id = this.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
 					IAuthenticationRequest authRequest = rp.CreateRequest(id, this.realm, this.returnTo);
-					var response = authRequest.RedirectingResponse;
-					Assert.IsNotNull(response);
-					Assert.IsInstanceOfType(response.OriginalMessage, typeof(CheckIdRequest));
+
+					// Add some callback arguments
+					authRequest.AddCallbackArguments("a", "b");
+					authRequest.AddCallbackArguments(new Dictionary<string, string> { { "c", "d" }, { "e", "f" } });
+
+					// Assembly an extension request.
+					ClaimsRequest sregRequest = new ClaimsRequest();
+					sregRequest.Nickname = DemandLevel.Request;
+					authRequest.AddExtension(sregRequest);
+
+					// Construct the actual authentication request message.
+					var authRequestAccessor = AuthenticationRequest_Accessor.AttachShadow(authRequest);
+					var req = authRequestAccessor.CreateRequestMessage();
+					Assert.IsNotNull(req);
+
+					// Verify that callback arguments were included.
+					NameValueCollection callbackArguments = HttpUtility.ParseQueryString(req.ReturnTo.Query);
+					Assert.AreEqual("b", callbackArguments["a"]);
+					Assert.AreEqual("d", callbackArguments["c"]);
+					Assert.AreEqual("f", callbackArguments["e"]);
+
+					// Verify that extensions were included.
+					Assert.AreEqual(1, req.Extensions.Count);
+					Assert.IsTrue(req.Extensions.Contains(sregRequest));
 				},
 				TestSupport.AutoProvider);
 			coordinator.Run();

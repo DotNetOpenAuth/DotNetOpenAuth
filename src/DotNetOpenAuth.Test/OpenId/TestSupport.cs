@@ -148,6 +148,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			var providerEndpoint = new ProviderEndpointDescription(GetFullUrl("/" + ProviderPage, null, useSsl), new string[] { Protocol.Lookup(providerVersion).ClaimedIdentifierServiceTypeURI });
 			return ServiceEndpoint.CreateForClaimedIdentifier(
 				GetIdentityUrl(scenario, providerVersion, useSsl),
+				GetIdentityUrl(scenario, providerVersion, useSsl),
 				GetDelegateUrl(scenario, useSsl),
 				providerEndpoint,
 				servicePriority,
