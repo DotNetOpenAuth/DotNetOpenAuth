@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		[TestMethod]
 		public void Ctor() {
 			ServiceEndpoint se = ServiceEndpoint.CreateForClaimedIdentifier(this.claimedId, this.localId, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), this.servicePriority, this.uriPriority);
-			Assert.AreSame(this.claimedId, se.ClaimedIdentifier);
+			Assert.AreEqual(this.claimedId, se.ClaimedIdentifier);
 			Assert.AreSame(this.providerEndpoint, se.ProviderEndpoint);
 			Assert.AreSame(this.localId, se.ProviderLocalIdentifier);
 			CollectionAssert<string>.AreEquivalent(this.v20TypeUris, se.ProviderSupportedServiceTypeUris);
@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		[TestMethod]
 		public void CtorImpliedLocalIdentifier() {
 			ServiceEndpoint se = ServiceEndpoint.CreateForClaimedIdentifier(this.claimedId, null, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), this.servicePriority, this.uriPriority);
-			Assert.AreSame(this.claimedId, se.ClaimedIdentifier);
+			Assert.AreEqual(this.claimedId, se.ClaimedIdentifier);
 			Assert.AreSame(this.providerEndpoint, se.ProviderEndpoint);
 			Assert.AreSame(this.claimedId, se.ProviderLocalIdentifier);
 			CollectionAssert<string>.AreEquivalent(this.v20TypeUris, se.ProviderSupportedServiceTypeUris);
