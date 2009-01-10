@@ -1,4 +1,9 @@
-Copyright (c) 2008, Andrew Arnott, Scott Hanselman, Jason Alexander, et. al
+This software is a composite of source code contributed by several authors.
+Every file is bound by the following copyright and license unless explicitly
+indicated otherwise in and for any individual file.
+
+
+Copyright (c) 2008, Andrew Arnott
 All rights reserved.
 
 Microsoft Public License (Ms-PL)
