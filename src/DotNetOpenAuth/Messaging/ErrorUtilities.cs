@@ -25,6 +25,14 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Throws an internal error exception.
+		/// </summary>
+		/// <param name="errorMessage">The error message.</param>
+		internal static void ThrowInternal(string errorMessage) {
+			VerifyInternal(false, errorMessage);
+		}
+
+		/// <summary>
 		/// Checks a condition and throws an internal error exception if it evaluates to false.
 		/// </summary>
 		/// <param name="condition">The condition to check.</param>

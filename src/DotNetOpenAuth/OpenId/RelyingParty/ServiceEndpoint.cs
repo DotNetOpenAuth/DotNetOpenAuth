@@ -27,6 +27,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private string friendlyIdentifierForDisplay;
 
 		/// <summary>
+		/// Backing field for the <see cref="ClaimedIdentifier"/> property.
+		/// </summary>
+		private Identifier claimedIdentifier;
+
+		/// <summary>
 		/// The OpenID protocol version used at the identity Provider.
 		/// </summary>
 		private Protocol protocol;
@@ -74,6 +79,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Used for deserializing <see cref="ServiceEndpoint"/> from authentication responses.
 		/// </remarks>
 		private ServiceEndpoint(Uri providerEndpoint, Identifier claimedIdentifier, Identifier userSuppliedIdentifier, Identifier providerLocalIdentifier, Protocol protocol) {
+			ErrorUtilities.VerifyArgumentNotNull(providerEndpoint, "providerEndpoint");
+			ErrorUtilities.VerifyArgumentNotNull(claimedIdentifier, "claimedIdentifier");
+			ErrorUtilities.VerifyArgumentNotNull(providerLocalIdentifier, "providerLocalIdentifier");
+			ErrorUtilities.VerifyArgumentNotNull(protocol, "protocol");
+
 			this.ClaimedIdentifier = claimedIdentifier;
 			this.UserSuppliedIdentifier = userSuppliedIdentifier;
 			this.ProviderDescription = new ProviderEndpointDescription(providerEndpoint, protocol.Version);
@@ -117,7 +127,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets the Identifier that the end user claims to own.
 		/// </summary>
-		public Identifier ClaimedIdentifier { get; private set; }
+		public Identifier ClaimedIdentifier {
+			get {
+				return this.claimedIdentifier;
+			}
+
+			set {
+				// Take care to reparse the incoming identifier to make sure it's
+				// not a derived type that will override expected behavior.
+				// Elsewhere in this class, we count on the fact that this property
+				// is either UriIdentifier or XriIdentifier.  MockIdentifier messes it up.
+				this.claimedIdentifier = value != null ? Identifier.Parse(value) : null;
+			}
+		}
 
 		/// <summary>
 		/// Gets an alternate Identifier for an end user that is local to a 
@@ -151,7 +173,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 							this.friendlyIdentifierForDisplay = Uri.UnescapeDataString(displayUri);
 						}
 					} else {
-						Debug.Fail("Doh!  We never should have reached here.");
+						ErrorUtilities.ThrowInternal("ServiceEndpoint.ClaimedIdentifier neither XRI nor URI.");
 						this.friendlyIdentifierForDisplay = this.ClaimedIdentifier;
 					}
 				}
@@ -173,12 +195,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public Protocol Protocol {
 			get {
 				if (this.protocol == null) {
-					this.protocol = Protocol.Detect(this.ProviderSupportedServiceTypeUris);
+					this.protocol = Protocol.Lookup(this.ProviderDescription.ProtocolVersion);
 				}
-				if (this.protocol != null) {
-					return this.protocol;
-				}
-				throw new InvalidOperationException("Unable to determine the version of OpenID the Provider supports.");
+
+				return this.protocol;
 			}
 		}
 
