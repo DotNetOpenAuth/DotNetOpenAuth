@@ -60,8 +60,19 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 		#region IRequest Members
 
+		/// <summary>
+		/// Gets a value indicating whether the response is ready to be sent to the user agent.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>
+		/// This property returns false if there are properties that must be set on this
+		/// request instance before the response can be sent.
+		/// </remarks>
 		public abstract bool IsResponseReady { get; }
 
+		/// <summary>
+		/// Gets the response to send to the user agent.
+		/// </summary>
 		public UserAgentResponse Response {
 			get {
 				if (this.cachedUserAgentResponse == null && this.IsResponseReady) {
@@ -89,22 +100,38 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 		#endregion
 
+		/// <summary>
+		/// Gets the instance of the hosting <see cref="OpenIdProvider"/>.
+		/// </summary>
 		protected OpenIdProvider Provider {
 			get { return this.provider; }
 		}
 
+		/// <summary>
+		/// Gets the original request message.
+		/// </summary>
 		protected IDirectedProtocolMessage RequestMessage {
 			get { return this.request; }
 		}
 
+		/// <summary>
+		/// Gets the response message, once <see cref="IsResponseReady"/> is <c>true</c>.
+		/// </summary>
 		protected abstract IProtocolMessage ResponseMessage { get; }
 
+		/// <summary>
+		/// Gets the protocol version used in the request..
+		/// </summary>
 		protected Protocol Protocol {
 			get { return Protocol.Lookup(this.RequestMessage.Version); }
 		}
 
 		#region IRequest Methods
 
+		/// <summary>
+		/// Adds an extension to the response to send to the relying party.
+		/// </summary>
+		/// <param name="extension">The extension to add to the response message.</param>
 		public void AddResponseExtension(IOpenIdMessageExtension extension) {
 			ErrorUtilities.VerifyArgumentNotNull(extension, "extension");
 
@@ -117,6 +144,13 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			this.ResetUserAgentResponse();
 		}
 
+		/// <summary>
+		/// Gets an extension sent from the relying party.
+		/// </summary>
+		/// <typeparam name="T">The type of the extension.</typeparam>
+		/// <returns>
+		/// An instance of the extension initialized with values passed in with the request.
+		/// </returns>
 		public T GetExtension<T>() where T : IOpenIdMessageExtension, new() {
 			if (this.extensibleMessage != null) {
 				return this.extensibleMessage.Extensions.OfType<T>().SingleOrDefault();
@@ -125,6 +159,13 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 		}
 
+		/// <summary>
+		/// Gets an extension sent from the relying party.
+		/// </summary>
+		/// <param name="extensionType">The type of the extension.</param>
+		/// <returns>
+		/// An instance of the extension initialized with values passed in with the request.
+		/// </returns>
 		public IOpenIdMessageExtension GetExtension(Type extensionType) {
 			ErrorUtilities.VerifyArgumentNotNull(extensionType, "extensionType");
 			if (this.extensibleMessage != null) {

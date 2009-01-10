@@ -35,10 +35,20 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			this.response = response;
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether the response is ready to be sent to the user agent.
+		/// </summary>
+		/// <remarks>
+		/// This property returns false if there are properties that must be set on this
+		/// request instance before the response can be sent.
+		/// </remarks>
 		public override bool IsResponseReady {
 			get { return true; }
 		}
 
+		/// <summary>
+		/// Gets the response message, once <see cref="IsResponseReady"/> is <c>true</c>.
+		/// </summary>
 		protected override IProtocolMessage ResponseMessage {
 			get { return this.response; }
 		}

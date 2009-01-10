@@ -307,11 +307,10 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Searches HTML for the HEAD META tags that describe OpenID provider services.
 		/// </summary>
-		/// <param name="claimedIdentifier">
-		/// The final URL that provided this HTML document.  
-		/// This may not be the same as (this) userSuppliedIdentifier if the 
-		/// userSuppliedIdentifier pointed to a 301 Redirect.
-		/// </param>
+		/// <param name="claimedIdentifier">The final URL that provided this HTML document.
+		/// This may not be the same as (this) userSuppliedIdentifier if the
+		/// userSuppliedIdentifier pointed to a 301 Redirect.</param>
+		/// <param name="userSuppliedIdentifier">The user supplied identifier.</param>
 		/// <param name="html">The HTML that was downloaded and should be searched.</param>
 		/// <returns>
 		/// An initialized ServiceEndpoint if the OpenID Provider information was

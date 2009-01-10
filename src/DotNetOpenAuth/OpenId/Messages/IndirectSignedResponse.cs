@@ -349,7 +349,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 				string.Equals(this.Recipient.Scheme, this.ReturnTo.Scheme, StringComparison.OrdinalIgnoreCase) &&
 				string.Equals(this.Recipient.Authority, this.ReturnTo.Authority, StringComparison.OrdinalIgnoreCase) &&
 				string.Equals(this.Recipient.AbsolutePath, this.ReturnTo.AbsolutePath, StringComparison.Ordinal) &&
-				IsQuerySubsetOf(this.Recipient.Query, this.ReturnTo.Query),
+				this.IsQuerySubsetOf(this.Recipient.Query, this.ReturnTo.Query),
 				OpenIdStrings.ReturnToParamDoesNotMatchRequestUrl,
 				Protocol.openid.return_to,
 				this.ReturnTo,

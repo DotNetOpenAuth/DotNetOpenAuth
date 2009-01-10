@@ -125,7 +125,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public Identifier UserSuppliedIdentifier { get; private set; }
 
 		/// <summary>
-		/// Gets the Identifier that the end user claims to own.
+		/// Gets or sets the Identifier that the end user claims to own.
 		/// </summary>
 		public Identifier ClaimedIdentifier {
 			get {

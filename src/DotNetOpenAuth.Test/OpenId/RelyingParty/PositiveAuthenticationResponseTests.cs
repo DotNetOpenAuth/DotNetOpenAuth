@@ -6,18 +6,11 @@
 
 namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using DotNetOpenAuth.OpenId.Provider;
-	using RPAuthRequest = DotNetOpenAuth.OpenId.RelyingParty.IAuthenticationRequest;
-	using OPAuthRequest = DotNetOpenAuth.OpenId.Provider.IAuthenticationRequest;
-	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.Test.Mocks;
 
 	[TestClass]
 	public class PositiveAuthenticationResponseTests : OpenIdTestBase {
@@ -34,7 +27,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// </summary>
 		[TestMethod]
 		public void Valid() {
-			PositiveAssertionResponse assertion = GetPositiveAssertion();
+			PositiveAssertionResponse assertion = this.GetPositiveAssertion();
 			var rp = CreateRelyingParty();
 			var authResponse = new PositiveAuthenticationResponse(assertion, rp);
 			Assert.AreEqual(AuthenticationStatus.Authenticated, authResponse.Status);
@@ -47,7 +40,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// </summary>
 		[TestMethod, ExpectedException(typeof(ProtocolException))]
 		public void SpoofedClaimedIdDetectionSolicited() {
-			PositiveAssertionResponse assertion = GetPositiveAssertion();
+			PositiveAssertionResponse assertion = this.GetPositiveAssertion();
 			assertion.ProviderEndpoint = new Uri("http://rogueOP");
 			var rp = CreateRelyingParty();
 			var authResponse = new PositiveAuthenticationResponse(assertion, rp);
@@ -56,10 +49,10 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 
 		private PositiveAssertionResponse GetPositiveAssertion() {
 			Protocol protocol = Protocol.Default;
-			PositiveAssertionResponse assertion = new PositiveAssertionResponse(protocol.Version, returnTo);
+			PositiveAssertionResponse assertion = new PositiveAssertionResponse(protocol.Version, this.returnTo);
 			assertion.ClaimedIdentifier = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, this.MockResponder, protocol.ProtocolVersion);
 			assertion.LocalIdentifier = TestSupport.GetDelegateUrl(TestSupport.Scenarios.AutoApproval);
-			assertion.ReturnTo = returnTo;
+			assertion.ReturnTo = this.returnTo;
 			assertion.ProviderEndpoint = TestSupport.GetFullUrl("/" + TestSupport.ProviderPage, null, false);
 			return assertion;
 		}

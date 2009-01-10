@@ -65,6 +65,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			this.IsDelegatedIdentifier = this.ClaimedIdentifier != null && this.ClaimedIdentifier != this.LocalIdentifier;
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether the response is ready to be created and sent.
+		/// </summary>
 		public override bool IsResponseReady {
 			get {
 				// The null checks on the identifiers is to make sure that an identifier_select
@@ -76,18 +79,39 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 		#region IAuthenticationRequest Properties
 
+		/// <summary>
+		/// Gets the version of OpenID being used by the relying party that sent the request.
+		/// </summary>
 		public ProtocolVersion RelyingPartyVersion {
 			get { return Protocol.Lookup(this.RequestMessage.Version).ProtocolVersion; }
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether the consumer demands an immediate response.
+		/// If false, the consumer is willing to wait for the identity provider
+		/// to authenticate the user.
+		/// </summary>
 		public bool Immediate {
 			get { return this.RequestMessage.Immediate; }
 		}
 
+		/// <summary>
+		/// Gets the URL the consumer site claims to use as its 'base' address.
+		/// </summary>
 		public Realm Realm {
 			get { return this.RequestMessage.Realm; }
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether verification of the return URL claimed by the Relying Party
+		/// succeeded.
+		/// </summary>
+		/// <remarks>
+		/// Return URL verification is only attempted if this property is queried.
+		/// The result of the verification is cached per request so calling this
+		/// property getter multiple times in one request is not a performance hit.
+		/// See OpenID Authentication 2.0 spec section 9.2.1.
+		/// </remarks>
 		public bool IsReturnUrlDiscoverable {
 			get {
 				ErrorUtilities.VerifyInternal(Realm != null, "Realm should have been read or derived by now.");
@@ -124,10 +148,37 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether the Provider should help the user
+		/// select a Claimed Identifier to send back to the relying party.
+		/// </summary>
 		public bool IsDirectedIdentity { get; private set; }
 
+		/// <summary>
+		/// Gets a value indicating whether the requesting Relying Party is using a delegated URL.
+		/// </summary>
+		/// <remarks>
+		/// When delegated identifiers are used, the <see cref="ClaimedIdentifier"/> should not
+		/// be changed at the Provider during authentication.
+		/// Delegation is only detectable on requests originating from OpenID 2.0 relying parties.
+		/// A relying party implementing only OpenID 1.x may use delegation and this property will
+		/// return false anyway.
+		/// </remarks>
 		public bool IsDelegatedIdentifier { get; private set; }
 
+		/// <summary>
+		/// Gets or sets the Local Identifier to this OpenID Provider of the user attempting
+		/// to authenticate.  Check <see cref="IsDirectedIdentity"/> to see if
+		/// this value is valid.
+		/// </summary>
+		/// <remarks>
+		/// This may or may not be the same as the Claimed Identifier that the user agent
+		/// originally supplied to the relying party.  The Claimed Identifier
+		/// endpoint may be delegating authentication to this provider using
+		/// this provider's local id, which is what this property contains.
+		/// Use this identifier when looking up this user in the provider's user account
+		/// list.
+		/// </remarks>
 		public Identifier LocalIdentifier {
 			get {
 				return this.positiveResponse.LocalIdentifier;
@@ -148,6 +199,21 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the identifier that the user agent is claiming at the relying party site.
+		/// Check <see cref="IsDirectedIdentity"/> to see if this value is valid.
+		/// </summary>
+		/// <remarks>
+		/// 	<para>This property can only be set if <see cref="IsDelegatedIdentifier"/> is
+		/// false, to prevent breaking URL delegation.</para>
+		/// 	<para>This will not be the same as this provider's local identifier for the user
+		/// if the user has set up his/her own identity page that points to this
+		/// provider for authentication.</para>
+		/// 	<para>The provider may use this identifier for displaying to the user when
+		/// asking for the user's permission to authenticate to the relying party.</para>
+		/// </remarks>
+		/// <exception cref="InvalidOperationException">Thrown from the setter
+		/// if <see cref="IsDelegatedIdentifier"/> is true.</exception>
 		public Identifier ClaimedIdentifier {
 			get {
 				return this.positiveResponse.ClaimedIdentifier;
@@ -166,6 +232,11 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets a value indicating whether the provider has determined that the
+		/// <see cref="ClaimedIdentifier"/> belongs to the currently logged in user
+		/// and wishes to share this information with the consumer.
+		/// </summary>
 		public bool? IsAuthenticated {
 			get {
 				return this.isAuthenticated;
@@ -179,10 +250,16 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 		#endregion
 
+		/// <summary>
+		/// Gets the original request message.
+		/// </summary>
 		protected new CheckIdRequest RequestMessage {
 			get { return (CheckIdRequest)base.RequestMessage; }
 		}
 
+		/// <summary>
+		/// Gets the response message, once <see cref="IsResponseReady"/> is <c>true</c>.
+		/// </summary>
 		protected override IProtocolMessage ResponseMessage {
 			get {
 				if (this.isAuthenticated.HasValue) {
@@ -195,6 +272,22 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 		#region IAuthenticationRequest Methods
 
+		/// <summary>
+		/// Adds an optional fragment (#fragment) portion to the ClaimedIdentifier.
+		/// Useful for identifier recycling.
+		/// </summary>
+		/// <param name="fragment">Should not include the # prefix character as that will be added internally.
+		/// May be null or the empty string to clear a previously set fragment.</param>
+		/// <remarks>
+		/// 	<para>Unlike the <see cref="ClaimedIdentifier"/> property, which can only be set if
+		/// using directed identity, this method can be called on any URI claimed identifier.</para>
+		/// 	<para>Because XRI claimed identifiers (the canonical IDs) are never recycled,
+		/// this method should<i>not</i> be called for XRIs.</para>
+		/// </remarks>
+		/// <exception cref="InvalidOperationException">
+		/// Thrown when this method is called on an XRI, or on a directed identity
+		/// request before the <see cref="ClaimedIdentifier"/> property is set.
+		/// </exception>
 		public void SetClaimedIdentifierFragment(string fragment) {
 			ErrorUtilities.VerifyOperation(!(this.IsDirectedIdentity && this.ClaimedIdentifier == null), OpenIdStrings.ClaimedIdentifierMustBeSetFirst);
 			ErrorUtilities.VerifyOperation(!(this.ClaimedIdentifier is XriIdentifier), OpenIdStrings.FragmentNotAllowedOnXRIs);
