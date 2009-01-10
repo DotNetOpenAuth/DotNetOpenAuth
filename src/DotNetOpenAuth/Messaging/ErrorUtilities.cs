@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Diagnostics;
 	using System.Globalization;
+	using System.Web;
 
 	/// <summary>
 	/// A collection of error checking and reporting methods.
@@ -217,6 +218,14 @@ namespace DotNetOpenAuth.Messaging {
 			if (value.Length == 0) {
 				throw new ArgumentException(MessagingStrings.UnexpectedEmptyString, paramName);
 			}
+		}
+
+		/// <summary>
+		/// Verifies that <see cref="HttpContext.Current"/> != <c>null</c>.
+		/// </summary>
+		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current"/> == <c>null</c></exception>
+		internal static void VerifyHttpContext() {
+			ErrorUtilities.VerifyOperation(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
 		}
 	}
 }

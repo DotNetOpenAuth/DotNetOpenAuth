@@ -232,6 +232,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			ErrorUtilities.VerifyArgumentNotNull(relyingParty, "relyingParty");
 			ErrorUtilities.VerifyArgumentNotNull(realm, "realm");
 
+			// Normalize the portion of the return_to path that correlates to the realm for capitalization.
+			// (so that if a web app base path is /MyApp/, but the URL of this request happens to be
+			// /myapp/login.aspx, we bump up the return_to Url to use /MyApp/ so it matches the realm.
+			UriBuilder returnTo = new UriBuilder(returnToUrl);
+			if (returnTo.Path.StartsWith(realm.AbsolutePath, StringComparison.OrdinalIgnoreCase) &&
+				!returnTo.Path.StartsWith(realm.AbsolutePath, StringComparison.Ordinal)) {
+				returnTo.Path = realm.AbsolutePath + returnTo.Path.Substring(realm.AbsolutePath.Length);
+				returnToUrl = returnTo.Uri;
+			}
+
 			userSuppliedIdentifier = userSuppliedIdentifier.TrimFragment();
 			if (relyingParty.SecuritySettings.RequireSsl) {
 				// Rather than check for successful SSL conversion at this stage,

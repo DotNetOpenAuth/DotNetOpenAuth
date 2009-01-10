@@ -35,10 +35,8 @@ namespace DotNetOpenAuth.Messaging {
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "The Uri merging requires use of a string value.")]
 		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Expensive call should not be a property.")]
 		public static Uri GetRequestUrlFromContext() {
+			ErrorUtilities.VerifyHttpContext();
 			HttpContext context = HttpContext.Current;
-			if (context == null) {
-				throw new InvalidOperationException(MessagingStrings.CurrentHttpContextRequired);
-			}
 
 			// We use Request.Url for the full path to the server, and modify it
 			// with Request.RawUrl to capture both the cookieless session "directory" if it exists
@@ -55,7 +53,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <returns>A <see cref="NameValueCollection"/> containing all the parameters in the query string.</returns>
 		public static NameValueCollection GetQueryFromContextNVC() {
-			ErrorUtilities.VerifyOperation(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
+			ErrorUtilities.VerifyHttpContext();
 
 			HttpRequest request = HttpContext.Current.Request;
 

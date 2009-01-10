@@ -340,16 +340,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			ErrorUtilities.VerifyArgumentNotNull(realm, "realm");
 			ErrorUtilities.VerifyArgumentNotNull(returnToUrl, "returnToUrl");
 
-			// Normalize the portion of the return_to path that correlates to the realm for capitalization.
-			// (so that if a web app base path is /MyApp/, but the URL of this request happens to be
-			// /myapp/login.aspx, we bump up the return_to Url to use /MyApp/ so it matches the realm.
-			UriBuilder returnTo = new UriBuilder(returnToUrl);
-			if (returnTo.Path.StartsWith(realm.AbsolutePath, StringComparison.OrdinalIgnoreCase) &&
-				!returnTo.Path.StartsWith(realm.AbsolutePath, StringComparison.Ordinal)) {
-				returnTo.Path = realm.AbsolutePath + returnTo.Path.Substring(realm.AbsolutePath.Length);
-			}
-
-			return AuthenticationRequest.Create(userSuppliedIdentifier, this, realm, returnTo.Uri, true).Cast<IAuthenticationRequest>();
+			return AuthenticationRequest.Create(userSuppliedIdentifier, this, realm, returnToUrl, true).Cast<IAuthenticationRequest>();
 		}
 
 		/// <summary>
@@ -376,9 +367,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// An empty enumerable is returned instead.</para>
 		/// </remarks>
 		internal IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm) {
-			if (HttpContext.Current == null) {
-				throw new InvalidOperationException(MessagingStrings.HttpContextRequired);
-			}
+			ErrorUtilities.VerifyHttpContext();
 
 			// Build the return_to URL
 			UriBuilder returnTo = new UriBuilder(MessagingUtilities.GetRequestUrlFromContext());
