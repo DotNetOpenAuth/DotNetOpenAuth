@@ -1,22 +1,29 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="StandardRelyingPartyApplicationStore.cs" company="Andrew Arnott">
+// <copyright file="StandardProviderApplicationStore.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OpenId.RelyingParty {
+namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging.Bindings;
-	using DotNetOpenAuth.OpenId.ChannelElements;
 
 	/// <summary>
-	/// An in-memory store for Relying Parties, suitable for single server, single process
+	/// An in-memory store for Providers, suitable for single server, single process
 	/// ASP.NET web sites.
 	/// </summary>
-	internal class StandardRelyingPartyApplicationStore : IRelyingPartyApplicationStore {
+	/// <remarks>
+	/// This class provides only a basic implementation that is likely to work
+	/// out of the box on most single-server web sites.  It is highly recommended
+	/// that high traffic web sites consider using a database to store the information
+	/// used by an OpenID Provider and write a custom implementation of the
+	/// <see cref="IProviderApplicationStore"/> interface to use instead of this
+	/// class.
+	/// </remarks>
+	public class StandardProviderApplicationStore : IProviderApplicationStore {
 		/// <summary>
 		/// The nonce store to use.
 		/// </summary>
@@ -25,48 +32,27 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// The association store to use.
 		/// </summary>
-		private readonly IAssociationStore<Uri> associationStore;
+		private readonly IAssociationStore<AssociationRelyingPartyType> associationStore;
 
 		/// <summary>
-		/// The private secret store to use.
+		/// Initializes a new instance of the <see cref="StandardProviderApplicationStore"/> class.
 		/// </summary>
-		private readonly IPrivateSecretStore privateSecretStore;
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="StandardRelyingPartyApplicationStore"/> class.
-		/// </summary>
-		/// <param name="maximumMessageAge">
-		/// The maximum message age that is allowed according to the
+		/// <param name="maximumMessageAge">The maximum message age that is allowed according to the
 		/// <see cref="StandardExpirationBindingElement.MaximumMessageAge"/>
-		/// property.
-		/// </param>
-		internal StandardRelyingPartyApplicationStore(TimeSpan maximumMessageAge) {
+		/// property.</param>
+		public StandardProviderApplicationStore(TimeSpan maximumMessageAge) {
 			this.nonceStore = new NonceMemoryStore(maximumMessageAge);
-			this.associationStore = new AssociationMemoryStore<Uri>();
-			this.privateSecretStore = new PrivateSecretMemoryStore();
+			this.associationStore = new AssociationMemoryStore<AssociationRelyingPartyType>();
 		}
 
-		#region IPrivateSecretStore Members
-
-		/// <summary>
-		/// Gets or sets a secret key that can be used for signing.
-		/// </summary>
-		/// <value>A 64-byte binary value, which may contain null bytes.</value>
-		public byte[] PrivateSecret {
-			get { return this.privateSecretStore.PrivateSecret; }
-			set { this.privateSecretStore.PrivateSecret = value; }
-		}
-
-		#endregion
-
-		#region IAssociationStore<Uri> Members
+		#region IAssociationStore<AssociationRelyingPartyType> Members
 
 		/// <summary>
 		/// Saves an <see cref="Association"/> for later recall.
 		/// </summary>
 		/// <param name="distinguishingFactor">The Uri (for relying parties) or Smart/Dumb (for providers).</param>
 		/// <param name="association">The association to store.</param>
-		public void StoreAssociation(Uri distinguishingFactor, Association association) {
+		public void StoreAssociation(AssociationRelyingPartyType distinguishingFactor, Association association) {
 			this.associationStore.StoreAssociation(distinguishingFactor, association);
 		}
 
@@ -77,7 +63,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>
 		/// The requested association, or null if no unexpired <see cref="Association"/>s exist for the given key.
 		/// </returns>
-		public Association GetAssociation(Uri distinguishingFactor) {
+		public Association GetAssociation(AssociationRelyingPartyType distinguishingFactor) {
 			return this.associationStore.GetAssociation(distinguishingFactor);
 		}
 
@@ -89,7 +75,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>
 		/// The requested association, or null if no unexpired <see cref="Association"/>s exist for the given key and handle.
 		/// </returns>
-		public Association GetAssociation(Uri distinguishingFactor, string handle) {
+		public Association GetAssociation(AssociationRelyingPartyType distinguishingFactor, string handle) {
 			return this.associationStore.GetAssociation(distinguishingFactor, handle);
 		}
 
@@ -105,7 +91,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// No exception should be thrown if the association does not exist in the store
 		/// before this call.
 		/// </remarks>
-		public bool RemoveAssociation(Uri distinguishingFactor, string handle) {
+		public bool RemoveAssociation(AssociationRelyingPartyType distinguishingFactor, string handle) {
 			return this.associationStore.RemoveAssociation(distinguishingFactor, handle);
 		}
 

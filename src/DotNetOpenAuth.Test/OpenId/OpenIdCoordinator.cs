@@ -59,7 +59,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			}
 
 			if (this.Provider == null) {
-				this.Provider = new OpenIdProvider(new AssociationMemoryStore<AssociationRelyingPartyType>(), new NonceMemoryStore(TimeSpan.FromHours(3)));
+				this.Provider = new OpenIdProvider(new StandardProviderApplicationStore(TimeSpan.FromHours(3)));
 			}
 		}
 	}

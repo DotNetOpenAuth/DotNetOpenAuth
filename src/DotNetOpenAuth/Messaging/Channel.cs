@@ -321,12 +321,12 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <returns>The HttpRequestInfo for the current request.</returns>
 		/// <remarks>
-		/// Requires an HttpContext.Current context.
+		/// Requires an <see cref="HttpContext.Current"/> context.
 		/// </remarks>
-		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current"/> is null.</exception>
+		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
 		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Costly call should not be a property.")]
 		protected internal virtual HttpRequestInfo GetRequestFromContext() {
-			ErrorUtilities.VerifyOperation(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
+			ErrorUtilities.VerifyHttpContext();
 
 			return new HttpRequestInfo(HttpContext.Current.Request);
 		}

@@ -248,9 +248,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// send to the user agent to initiate the authentication.
 		/// </returns>
 		/// <remarks>
-		/// This method requires an ASP.NET HttpContext.
+		/// <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
 		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown if no OpenID endpoint could be found.</exception>
+		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm) {
 			try {
 				return this.CreateRequests(userSuppliedIdentifier, realm).First();
@@ -271,9 +272,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// send to the user agent to initiate the authentication.
 		/// </returns>
 		/// <remarks>
-		/// This method requires an ASP.NET HttpContext.
+		/// <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
 		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown if no OpenID endpoint could be found.</exception>
+		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier) {
 			try {
 				return this.CreateRequests(userSuppliedIdentifier).First();
@@ -287,7 +289,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <returns>The processed authentication response if there is any; <c>null</c> otherwise.</returns>
 		/// <remarks>
-		/// This method requires an ASP.NET HttpContext.
+		/// <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
 		/// </remarks>
 		public IAuthenticationResponse GetResponse() {
 			return this.GetResponse(this.Channel.GetRequestFromContext());
@@ -387,7 +389,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <see cref="IAuthenticationRequest.RedirectingResponse"/> is called.</para>
 		/// <para>No exception is thrown if no OpenID endpoints were discovered.  
 		/// An empty enumerable is returned instead.</para>
+		/// <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
 		/// </remarks>
+		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
 		internal IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm) {
 			ErrorUtilities.VerifyHttpContext();
 
@@ -426,11 +430,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <see cref="IAuthenticationRequest.RedirectingResponse"/> is called.</para>
 		/// <para>No exception is thrown if no OpenID endpoints were discovered.  
 		/// An empty enumerable is returned instead.</para>
+		/// <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
 		/// </remarks>
+		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
 		internal IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier) {
-			if (HttpContext.Current == null) {
-				throw new InvalidOperationException(MessagingStrings.HttpContextRequired);
-			}
+			ErrorUtilities.VerifyHttpContext();
 
 			// Build the realm URL
 			UriBuilder realmUrl = new UriBuilder(MessagingUtilities.GetRequestUrlFromContext());

@@ -56,5 +56,15 @@ namespace DotNetOpenAuth.Test.OpenId {
 			rp.Channel.WebRequestHandler = this.MockResponder.MockWebRequestHandler;
 			return rp;
 		}
+
+		/// <summary>
+		/// Creates a standard <see cref="OpenIdProvider"/> instance for general testing.
+		/// </summary>
+		/// <returns>The new instance.</returns>
+		protected OpenIdProvider CreateProvider() {
+			var op = new OpenIdProvider(new StandardProviderApplicationStore(TimeSpan.FromMinutes(5)));
+			op.Channel.WebRequestHandler = this.MockResponder.MockWebRequestHandler;
+			return op;
+		}
 	}
 }

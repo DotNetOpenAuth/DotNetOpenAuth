@@ -28,15 +28,15 @@ namespace DotNetOpenAuth.OpenId {
 		/// Stores a given association for later recall.
 		/// </summary>
 		/// <param name="distinguishingFactor">The distinguishing factor, either an OP Endpoint or smart/dumb mode.</param>
-		/// <param name="assoc">The association to store.</param>
-		public void StoreAssociation(TKey distinguishingFactor, Association assoc) {
+		/// <param name="association">The association to store.</param>
+		public void StoreAssociation(TKey distinguishingFactor, Association association) {
 			lock (this) {
 				if (!this.serverAssocsTable.ContainsKey(distinguishingFactor)) {
 					this.serverAssocsTable.Add(distinguishingFactor, new Associations());
 				}
 				Associations server_assocs = this.serverAssocsTable[distinguishingFactor];
 
-				server_assocs.Set(assoc);
+				server_assocs.Set(association);
 			}
 		}
 
