@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
-	/// A hand base class for built-in extensions.
+	/// A handy base class for built-in extensions.
 	/// </summary>
 	public class ExtensionBase : IOpenIdMessageExtension {
 		/// <summary>

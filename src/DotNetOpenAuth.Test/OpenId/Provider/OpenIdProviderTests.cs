@@ -9,6 +9,9 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -63,6 +66,37 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		[TestMethod, ExpectedException(typeof(InvalidOperationException))]
 		public void GetRequestNoContext() {
 			this.provider.GetRequest();
+		}
+
+		/// <summary>
+		/// Verifies GetRequest throws on null input.
+		/// </summary>
+		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		public void GetRequestNull() {
+			this.provider.GetRequest(null);
+		}
+
+		/// <summary>
+		/// Verifies that GetRequest correctly returns the right messages.
+		/// </summary>
+		[TestMethod]
+		public void GetRequest() {
+			HttpRequestInfo httpInfo = new HttpRequestInfo();
+			httpInfo.Url = new Uri("http://someUri");
+			Assert.IsNull(this.provider.GetRequest(httpInfo), "An irrelevant request should return null.");
+			var providerDescription = new ProviderEndpointDescription(OpenIdTestBase.ProviderUri, Protocol.Default.Version);
+
+			// Test some non-empty request scenario.
+			OpenIdCoordinator coordinator = new OpenIdCoordinator(
+				rp => {
+					rp.Channel.Request(AssociateRequest.Create(rp.SecuritySettings, providerDescription));
+				},
+				op => {
+					IRequest request = op.GetRequest();
+					Assert.IsInstanceOfType(request, typeof(AutoResponsiveRequest));
+					request.Response.Send();
+				});
+			coordinator.Run();
 		}
 	}
 }
