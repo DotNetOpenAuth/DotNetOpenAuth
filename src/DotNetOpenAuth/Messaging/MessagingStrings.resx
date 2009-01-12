@@ -255,8 +255,8 @@
   <data name="UnexpectedMessageReceivedOfMany" xml:space="preserve">
     <value>Unexpected message type received.</value>
   </data>
-  <data name="UnexpectedNullKey" xml:space="preserve">
-    <value>A null key was included and is not allowed.</value>
+  <data name="UnexpectedNullOrEmptyKey" xml:space="preserve">
+    <value>A null or empty key was included and is not allowed.</value>
   </data>
   <data name="UnexpectedNullValue" xml:space="preserve">
     <value>A null value was included for key '{0}' and is not allowed.</value>

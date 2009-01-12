@@ -10,6 +10,8 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.ChannelElements;
+	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -20,14 +22,18 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			base.SetUp();
 		}
 
-		[TestMethod, Ignore] // ignored, pending work to make dumb mode a supported scenario.
-		public void CtorNullAssociationStore() {
-			new OpenIdRelyingParty(null, null, null);
+		[TestMethod]
+		public void CreateRequestDumbMode() {
+			var rp = new OpenIdRelyingParty(null);
+			Identifier id = this.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
+			var authReq = rp.CreateRequest(id, TestSupport.Realm, TestSupport.ReturnTo);
+			CheckIdRequest requestMessage = (CheckIdRequest)authReq.RedirectingResponse.OriginalMessage;
+			Assert.IsNull(requestMessage.AssociationHandle);
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void SecuritySettingsSetNull() {
-			var rp = new OpenIdRelyingParty(new AssociationMemoryStore<Uri>(), new NonceMemoryStore(TimeSpan.FromMinutes(5)), new PrivateSecretMemoryStore());
+			var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(TimeSpan.FromMinutes(5)));
 			rp.SecuritySettings = null;
 		}
 
@@ -48,6 +54,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			var requests = rp.CreateRequests(id, TestSupport.Realm, TestSupport.ReturnTo);
 			Assert.AreEqual(1, requests.Count());
 		}
+
 		[TestMethod, ExpectedException(typeof(ProtocolException))]
 		public void CreateRequestOnNonOpenID() {
 			Uri nonOpenId = new Uri("http://www.microsoft.com/");

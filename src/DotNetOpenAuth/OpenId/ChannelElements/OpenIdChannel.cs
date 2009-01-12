@@ -224,17 +224,31 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			List<IChannelBindingElement> elements = new List<IChannelBindingElement>(7);
 			elements.Add(new ExtensionsBindingElement(new OpenIdExtensionFactory()));
 			if (isRelyingPartyRole) {
-				ErrorUtilities.VerifyArgumentNotNull(secretStore, "secretStore");
-				secretStore.InitializeSecretIfUnset();
-
-				// It is important that the return_to signing element comes last
-				// so that the nonce is included in the signature.
 				elements.Add(new BackwardCompatibilityBindingElement());
-				elements.Add(new ReturnToNonceBindingElement(nonceStore));
-				elements.Add(new ReturnToSignatureBindingElement(secretStore));
+
+				if (secretStore != null) {
+					secretStore.InitializeSecretIfUnset();
+
+					if (nonceStore != null) {
+						// There is no point in having a ReturnToNonceBindingElement without
+						// a ReturnToSignatureBindingElement because the nonce could be
+						// artificially changed without it.
+						elements.Add(new ReturnToNonceBindingElement(nonceStore));
+					}
+
+					// It is important that the return_to signing element comes last
+					// so that the nonce is included in the signature.
+					elements.Add(new ReturnToSignatureBindingElement(secretStore));
+				}
+			} else {
+				// Providers must always have a nonce store.
+				ErrorUtilities.VerifyArgumentNotNull(nonceStore, "nonceStore");
 			}
 
-			elements.Add(new StandardReplayProtectionBindingElement(nonceStore, true));
+			if (nonceStore != null) {
+				elements.Add(new StandardReplayProtectionBindingElement(nonceStore, true));
+			}
+
 			elements.Add(new StandardExpirationBindingElement());
 			elements.Add(signingElement);
 

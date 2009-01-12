@@ -250,9 +250,11 @@
     <Compile Include="OpenId\Protocol.cs" />
     <Compile Include="OpenId\ProviderEndpointDescription.cs" />
     <Compile Include="OpenId\Provider\ProviderSecuritySettings.cs" />
+    <Compile Include="OpenId\RelyingParty\IRelyingPartyApplicationStore.cs" />
     <Compile Include="OpenId\RelyingParty\RelyingPartySecuritySettings.cs" />
     <Compile Include="OpenId\RelyingParty\ServiceEndpoint.cs" />
     <Compile Include="OpenId\OpenIdXrdsHelper.cs" />
+    <Compile Include="OpenId\RelyingParty\StandardRelyingPartyApplicationStore.cs" />
     <Compile Include="OpenId\SecuritySettings.cs" />
     <Compile Include="Messaging\UntrustedWebRequestHandler.cs" />
     <Compile Include="OpenId\UriIdentifier.cs" />

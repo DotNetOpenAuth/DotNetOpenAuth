@@ -45,19 +45,33 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class.
 		/// </summary>
+		/// <param name="applicationStore">The application store.  If null, the relying party will always operate in "dumb mode".</param>
+		public OpenIdRelyingParty(IRelyingPartyApplicationStore applicationStore)
+			: this(applicationStore, applicationStore, applicationStore) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class.
+		/// </summary>
 		/// <param name="associationStore">The association store.  If null, the relying party will always operate in "dumb mode".</param>
 		/// <param name="nonceStore">The nonce store to use.  If null, the relying party will always operate in "dumb mode".</param>
 		/// <param name="secretStore">The secret store to use.  If null, the relying party will always operate in "dumb mode".</param>
-		public OpenIdRelyingParty(IAssociationStore<Uri> associationStore, INonceStore nonceStore, IPrivateSecretStore secretStore) {
-			// TODO: fix this so that a null association store is supported as 'dumb mode only'.
-			ErrorUtilities.VerifyArgumentNotNull(associationStore, "associationStore");
-			ErrorUtilities.VerifyArgumentNotNull(nonceStore, "nonceStore");
-			ErrorUtilities.VerifyArgumentNotNull(secretStore, "secretStore");
-			ErrorUtilities.VerifyArgument((associationStore == null) == (nonceStore == null), OpenIdStrings.AssociationAndNonceStoresMustBeBothNullOrBothNonNull);
+		private OpenIdRelyingParty(IAssociationStore<Uri> associationStore, INonceStore nonceStore, IPrivateSecretStore secretStore) {
+			// If we are a smart-mode RP (supporting associations), then we MUST also be 
+			// capable of storing nonces to prevent replay attacks.
+			// If we're a dumb-mode RP, then 2.0 OPs are responsible for preventing replays.
+			ErrorUtilities.VerifyArgument(associationStore == null || nonceStore != null, OpenIdStrings.AssociationStoreRequiresNonceStore);
 
 			this.Channel = new OpenIdChannel(associationStore, nonceStore, secretStore);
 			this.AssociationStore = associationStore;
 			this.SecuritySettings = RelyingPartySection.Configuration.SecuritySettings.CreateSecuritySettings();
+
+			// Without a nonce store, we must rely on the Provider to protect against
+			// replay attacks.  But only 2.0+ Providers can be expected to provide 
+			// replay protection.
+			if (nonceStore == null) {
+				this.SecuritySettings.MinimumRequiredOpenIdVersion = ProtocolVersion.V20;
+			}
 		}
 
 		/// <summary>
@@ -171,6 +185,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Gets the association store.
 		/// </summary>
 		internal IAssociationStore<Uri> AssociationStore { get; private set; }
+
+		/// <summary>
+		/// Gets a value indicating whether this Relying Party can sign its return_to
+		/// parameter in outgoing authentication requests.
+		/// </summary>
+		internal bool CanSignCallbackArguments {
+			get { return this.Channel.BindingElements.OfType<ReturnToSignatureBindingElement>().Any(); }
+		}
 
 		/// <summary>
 		/// Gets the web request handler to use for discovery and the part of
@@ -509,6 +531,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		private Association CreateNewAssociation(ProviderEndpointDescription provider) {
 			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
+
+			// If there is no association store, there is no point in creating an association.
+			if (this.AssociationStore == null) {
+				return null;
+			}
 
 			var associateRequest = AssociateRequest.Create(this.SecuritySettings, provider);
 			if (associateRequest == null) {

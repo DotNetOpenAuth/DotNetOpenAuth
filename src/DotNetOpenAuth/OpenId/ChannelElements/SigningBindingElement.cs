@@ -34,8 +34,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// </summary>
 		/// <param name="associations">The association store used to look up the secrets needed for signing.</param>
 		internal SigningBindingElement(IAssociationStore<Uri> associations) {
-			ErrorUtilities.VerifyArgumentNotNull(associations, "associations");
-
 			this.rpAssociations = associations;
 		}
 
@@ -63,6 +61,17 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Gets or sets the channel that this binding element belongs to.
 		/// </summary>
 		public Channel Channel { get; set; }
+
+		#endregion
+
+		/// <summary>
+		/// Gets a value indicating whether this binding element is on a Provider channel.
+		/// </summary>
+		private bool IsOnProvider {
+			get { return this.opAssociations != null; }
+		}
+
+		#region IChannelBindingElement Methods
 
 		/// <summary>
 		/// Prepares a message for sending based on the rules of this channel binding element.
@@ -207,13 +216,13 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="signedMessage">The message to sign or verify.</param>
 		/// <returns>The association to use to sign or verify the message.</returns>
 		private Association GetAssociation(ITamperResistantOpenIdMessage signedMessage) {
-			if (this.rpAssociations != null) {
+			if (this.IsOnProvider) {
+				// We're on a Provider to either sign (smart/dumb) or verify a dumb signature.
+				return this.GetSpecificAssociation(signedMessage) ?? this.GetDumbAssociationForSigning();
+			} else {
 				// We're on a Relying Party verifying a signature.
 				IDirectedProtocolMessage directedMessage = (IDirectedProtocolMessage)signedMessage;
 				return this.rpAssociations.GetAssociation(directedMessage.Recipient, signedMessage.AssociationHandle);
-			} else {
-				// We're on a Provider to either sign (smart/dumb) or verify a dumb signature.
-				return this.GetSpecificAssociation(signedMessage) ?? this.GetDumbAssociationForSigning();
 			}
 		}
 
@@ -232,7 +241,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			Association association = null;
 
 			if (!string.IsNullOrEmpty(signedMessage.AssociationHandle)) {
-				if (this.opAssociations != null) {
+				if (this.IsOnProvider) {
 					// Since we have an association handle, we're either signing with a smart association,
 					// or verifying a dumb one.
 					bool signing = string.IsNullOrEmpty(signedMessage.Signature);
@@ -245,7 +254,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 						signedMessage.InvalidateHandle = signedMessage.AssociationHandle;
 						signedMessage.AssociationHandle = null;
 					}
-				} else {
+				} else if (this.rpAssociations != null) { // if on a smart RP
 					Uri providerEndpoint = ((PositiveAssertionResponse)signedMessage).ProviderEndpoint;
 					association = this.rpAssociations.GetAssociation(providerEndpoint, signedMessage.AssociationHandle);
 				}

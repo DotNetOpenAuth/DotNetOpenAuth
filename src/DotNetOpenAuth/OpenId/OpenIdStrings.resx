@@ -117,17 +117,20 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AssociationAndNonceStoresMustBeBothNullOrBothNonNull" xml:space="preserve">
-    <value>The association and nonce stores must either be both null or both non-null.</value>
-  </data>
   <data name="AssociationSecretAndTypeLengthMismatch" xml:space="preserve">
     <value>The length of the shared secret ({0}) does not match the length required by the association type ('{1}').</value>
   </data>
   <data name="AssociationSecretHashLengthMismatch" xml:space="preserve">
     <value>The length of the encrypted shared secret ({0}) does not match the length of the hashing algorithm ({1}).</value>
   </data>
+  <data name="AssociationStoreRequiresNonceStore" xml:space="preserve">
+    <value>If an association store is given, a nonce store must also be provided.</value>
+  </data>
   <data name="BadAssociationPrivateData" xml:space="preserve">
     <value>The private data supplied does not meet the requirements of any known Association type.  Its length may be too short, or it may have been corrupted.</value>
+  </data>
+  <data name="CallbackArgumentsRequireSecretStore" xml:space="preserve">
+    <value>Callback arguments are only supported when a {0} is provided to the {1}.</value>
   </data>
   <data name="CallDeserializeBeforeCreateResponse" xml:space="preserve">
     <value>A Simple Registration request can only generate a response on the receiving end.</value>

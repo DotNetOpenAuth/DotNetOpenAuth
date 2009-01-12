@@ -475,11 +475,11 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A null key was included and is not allowed..
+        ///   Looks up a localized string similar to A null or empty key was included and is not allowed..
         /// </summary>
-        internal static string UnexpectedNullKey {
+        internal static string UnexpectedNullOrEmptyKey {
             get {
-                return ResourceManager.GetString("UnexpectedNullKey", resourceCulture);
+                return ResourceManager.GetString("UnexpectedNullOrEmptyKey", resourceCulture);
             }
         }
         
