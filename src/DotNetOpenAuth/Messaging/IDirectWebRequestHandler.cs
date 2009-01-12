@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="request">The <see cref="HttpWebRequest"/> that should contain the entity.</param>
 		/// <returns>
-		/// The writer the caller should write out the entity data to.
+		/// The stream the caller should write out the entity data to.
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown for any network error.</exception>
 		/// <remarks>
@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <see cref="ProtocolException"/> to abstract away the transport and provide
 		/// a single exception type for hosts to catch.</para>
 		/// </remarks>
-		TextWriter GetRequestStream(HttpWebRequest request);
+		Stream GetRequestStream(HttpWebRequest request);
 
 		/// <summary>
 		/// Processes an <see cref="HttpWebRequest"/> and converts the 

@@ -189,7 +189,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>
 		/// The writer the caller should write out the entity data to.
 		/// </returns>
-		public TextWriter GetRequestStream(HttpWebRequest request, bool requireSsl) {
+		public Stream GetRequestStream(HttpWebRequest request, bool requireSsl) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 			this.EnsureAllowableRequestUri(request.RequestUri, requireSsl);
 
@@ -253,7 +253,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>
 		/// The writer the caller should write out the entity data to.
 		/// </returns>
-		TextWriter IDirectWebRequestHandler.GetRequestStream(HttpWebRequest request) {
+		Stream IDirectWebRequestHandler.GetRequestStream(HttpWebRequest request) {
 			return this.GetRequestStream(request, false);
 		}
 

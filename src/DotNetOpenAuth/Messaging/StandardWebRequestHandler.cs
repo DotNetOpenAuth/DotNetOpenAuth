@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <see cref="ProtocolException"/> to abstract away the transport and provide
 		/// a single exception type for hosts to catch.</para>
 		/// </remarks>
-		public TextWriter GetRequestStream(HttpWebRequest request) {
+		public Stream GetRequestStream(HttpWebRequest request) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			return GetRequestStreamCore(request);
@@ -89,7 +89,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="request">The HTTP request with information about the remote party to contact.</param>
 		/// <returns>The stream where the POST entity can be written.</returns>
-		private static TextWriter GetRequestStreamCore(HttpWebRequest request) {
+		private static Stream GetRequestStreamCore(HttpWebRequest request) {
 			// Some sites, such as Technorati, return 403 Forbidden on identity
 			// pages unless a User-Agent header is included.
 			if (string.IsNullOrEmpty(request.UserAgent)) {
@@ -97,7 +97,7 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			try {
-				return new StreamWriter(request.GetRequestStream());
+				return request.GetRequestStream();
 			} catch (SocketException ex) {
 				throw ErrorUtilities.Wrap(ex, MessagingStrings.WebRequestFailed, request.RequestUri);
 			} catch (WebException ex) {

@@ -50,6 +50,11 @@ namespace DotNetOpenAuth.Messaging {
 ";
 
 		/// <summary>
+		/// The encoding to use when writing out POST entity strings.
+		/// </summary>
+		private static readonly Encoding PostEntityEncoding = new UTF8Encoding(false);
+
+		/// <summary>
 		/// A tool that can figure out what kind of message is being received
 		/// so it can be deserialized.
 		/// </summary>
@@ -610,11 +615,11 @@ namespace DotNetOpenAuth.Messaging {
 			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(requestMessage.Recipient);
 			httpRequest.Method = "POST";
 			httpRequest.ContentType = "application/x-www-form-urlencoded";
+			httpRequest.Headers[HttpRequestHeader.ContentEncoding] = PostEntityEncoding.WebName;
 			string requestBody = MessagingUtilities.CreateQueryString(fields);
-			httpRequest.ContentLength = requestBody.Length;
-			using (TextWriter writer = this.WebRequestHandler.GetRequestStream(httpRequest)) {
-				writer.Write(requestBody);
-			}
+			byte[] requestBytes = PostEntityEncoding.GetBytes(requestBody);
+			httpRequest.ContentLength = requestBytes.Length;
+			this.WebRequestHandler.GetRequestStream(httpRequest).Write(requestBytes, 0, requestBytes.Length);
 
 			return httpRequest;
 		}

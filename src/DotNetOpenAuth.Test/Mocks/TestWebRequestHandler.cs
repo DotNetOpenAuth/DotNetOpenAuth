@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using DotNetOpenAuth.OAuth.ChannelElements;
 
 	internal class TestWebRequestHandler : IDirectSslWebRequestHandler {
-		private StringBuilder postEntity;
+		private Stream postEntity;
 
 		/// <summary>
 		/// Gets or sets the callback used to provide the mock response for the mock request.
@@ -28,7 +28,14 @@ namespace DotNetOpenAuth.Test.Mocks {
 				if (this.postEntity == null) {
 					return null;
 				}
-				return new MemoryStream(Encoding.UTF8.GetBytes(this.postEntity.ToString()));
+
+				Stream result = new MemoryStream();
+				long originalPosition = this.postEntity.Position;
+				this.postEntity.Position = 0;
+				this.postEntity.CopyTo(result);
+				this.postEntity.Position = originalPosition;
+				result.Position = 0;
+				return result;
 			}
 		}
 
@@ -37,7 +44,12 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// </summary>
 		internal string RequestEntityAsString {
 			get {
-				return this.postEntity != null ? this.postEntity.ToString() : null;
+				if (this.postEntity == null) {
+					return null;
+				}
+
+				StreamReader reader = new StreamReader(this.RequestEntityStream);
+				return reader.ReadToEnd();
 			}
 		}
 
@@ -50,9 +62,9 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// <returns>
 		/// The writer the caller should write out the entity data to.
 		/// </returns>
-		public TextWriter GetRequestStream(HttpWebRequest request) {
-			this.postEntity = new StringBuilder();
-			return new StringWriter(this.postEntity);
+		public Stream GetRequestStream(HttpWebRequest request) {
+			this.postEntity = new MemoryStream();
+			return this.postEntity;
 		}
 
 		/// <summary>
@@ -75,7 +87,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 
 		#region IDirectSslWebRequestHandler Members
 
-		public TextWriter GetRequestStream(HttpWebRequest request, bool requireSsl) {
+		public Stream GetRequestStream(HttpWebRequest request, bool requireSsl) {
 			ErrorUtilities.VerifyProtocol(!requireSsl || request.RequestUri.Scheme == Uri.UriSchemeHttps, "disallowed request");
 			return this.GetRequestStream(request);
 		}

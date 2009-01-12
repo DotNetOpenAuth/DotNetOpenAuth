@@ -19,9 +19,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The <see cref="HttpWebRequest"/> that should contain the entity.</param>
 		/// <param name="requireSsl">if set to <c>true</c> all requests made with this instance must be completed using SSL.</param>
 		/// <returns>
-		/// The writer the caller should write out the entity data to.
+		/// The stream the caller should write out the entity data to.
 		/// </returns>
-		TextWriter GetRequestStream(HttpWebRequest request, bool requireSsl);
+		Stream GetRequestStream(HttpWebRequest request, bool requireSsl);
 
 		/// <summary>
 		/// Processes an <see cref="HttpWebRequest"/> and converts the 

@@ -176,6 +176,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The text reader, initialized for the proper encoding.</returns>
 		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Costly operation")]
 		public StreamReader GetResponseReader() {
+			this.CacheNetworkStreamAndClose();
 			this.ResponseStream.Seek(0, SeekOrigin.Begin);
 			string contentEncoding = this.Headers[HttpResponseHeader.ContentEncoding];
 			if (string.IsNullOrEmpty(contentEncoding)) {
