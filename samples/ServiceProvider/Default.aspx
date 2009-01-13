@@ -22,7 +22,17 @@
 				ConsumerKey = "sampleconsumer",
 				ConsumerSecret = "samplesecret",
 			});
-		
+			dc.Users.InsertOnSubmit(new User {
+				OpenIDFriendlyIdentifier = "=arnott",
+				OpenIDClaimedIdentifier = "=!9B72.7DD1.50A9.5CCD",
+				Age = 27,
+				FullName = "Andrew Arnott",
+				FavoriteSites = new System.Data.Linq.EntitySet<FavoriteSite> {
+					new FavoriteSite { SiteUrl = "http://www.microsoft.com" },
+					new FavoriteSite { SiteUrl = "http://www.google.com" },
+				},
+			});
+
 			dc.SubmitChanges();
 			databaseStatus.Visible = true;
 		} catch (System.Data.SqlClient.SqlException ex) {
