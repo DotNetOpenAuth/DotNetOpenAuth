@@ -206,7 +206,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The <see cref="HttpWebRequest"/> to handle.</param>
 		/// <param name="requireSsl">if set to <c>true</c> all requests made with this instance must be completed using SSL.</param>
 		/// <returns>
-		/// An instance of <see cref="DirectWebResponse"/> describing the response.
+		/// An instance of <see cref="CachedDirectWebResponse"/> describing the response.
 		/// </returns>
 		public DirectWebResponse GetResponse(HttpWebRequest request, bool requireSsl) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
@@ -223,8 +223,7 @@ namespace DotNetOpenAuth.Messaging {
 			int i;
 			for (i = 0; i < this.MaximumRedirections; i++) {
 				this.EnsureAllowableRequestUri(request.RequestUri, requireSsl);
-				DirectWebResponse response = this.chainedWebRequestHandler.GetResponse(request);
-				response.CacheNetworkStreamAndClose(this.MaximumBytesToRead);
+				CachedDirectWebResponse response = this.chainedWebRequestHandler.GetResponse(request).GetSnapshot(this.MaximumBytesToRead);
 				if (response.Status == HttpStatusCode.MovedPermanently ||
 					response.Status == HttpStatusCode.Redirect ||
 					response.Status == HttpStatusCode.RedirectMethod ||

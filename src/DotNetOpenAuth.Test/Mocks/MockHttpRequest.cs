@@ -72,7 +72,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			sw.Write(responseBody);
 			sw.Flush();
 			stream.Seek(0, SeekOrigin.Begin);
-			this.RegisterMockResponse(new DirectWebResponse(responseUri, responseUri, headers ?? new WebHeaderCollection(), HttpStatusCode.OK, contentType, contentEncoding, stream));
+			this.RegisterMockResponse(new CachedDirectWebResponse(responseUri, responseUri, headers ?? new WebHeaderCollection(), HttpStatusCode.OK, contentType, contentEncoding, stream));
 		}
 
 		internal void RegisterMockXrdsResponses(IDictionary<string, string> requestUriAndResponseBody) {
@@ -169,7 +169,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			var redirectionHeaders = new WebHeaderCollection {
 				{ HttpResponseHeader.Location, redirectLocation.AbsoluteUri },
 			};
-			DirectWebResponse response = new DirectWebResponse(origin, origin, redirectionHeaders, HttpStatusCode.Redirect, null, null, new MemoryStream());
+			DirectWebResponse response = new CachedDirectWebResponse(origin, origin, redirectionHeaders, HttpStatusCode.Redirect, null, null, new MemoryStream());
 			this.RegisterMockResponse(response);
 		}
 
@@ -182,7 +182,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			} else {
 				////Assert.Fail("Unexpected HTTP request: {0}", uri);
 				Logger.WarnFormat("Unexpected HTTP request: {0}", request.RequestUri);
-				return new DirectWebResponse(request.RequestUri, request.RequestUri, new WebHeaderCollection(), HttpStatusCode.NotFound, "text/html", null, new MemoryStream());
+				return new CachedDirectWebResponse(request.RequestUri, request.RequestUri, new WebHeaderCollection(), HttpStatusCode.NotFound, "text/html", null, new MemoryStream());
 			}
 		}
 	}

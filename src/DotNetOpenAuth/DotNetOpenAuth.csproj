@@ -72,6 +72,7 @@
     <Compile Include="Configuration\UntrustedWebRequestSection.cs" />
     <Compile Include="Configuration\HostNameOrRegexCollection.cs" />
     <Compile Include="Configuration\HostNameElement.cs" />
+    <Compile Include="Messaging\CachedDirectWebResponse.cs" />
     <Compile Include="Messaging\IExtensionMessage.cs" />
     <Compile Include="Messaging\IMessage.cs" />
     <Compile Include="Messaging\DirectWebResponse.cs" />
@@ -83,6 +84,7 @@
     <Compile Include="Messaging\IDirectSslWebRequestHandler.cs" />
     <Compile Include="Messaging\IProtocolMessageWithExtensions.cs" />
     <Compile Include="Messaging\InternalErrorException.cs" />
+    <Compile Include="Messaging\NetworkDirectWebResponse.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthConsumerMessageFactory.cs" />
     <Compile Include="OAuth\ChannelElements\ITokenGenerator.cs" />

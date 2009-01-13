@@ -23,6 +23,11 @@ namespace DotNetOpenAuth.Messaging {
 	/// </summary>
 	public abstract class Channel {
 		/// <summary>
+		/// The encoding to use when writing out POST entity strings.
+		/// </summary>
+		private static readonly Encoding PostEntityEncoding = new UTF8Encoding(false);
+
+		/// <summary>
 		/// The maximum allowable size for a 301 Redirect response before we send
 		/// a 200 OK response with a scripted form POST with the parameters instead
 		/// in order to ensure successfully sending a large payload to another server
@@ -48,11 +53,6 @@ namespace DotNetOpenAuth.Messaging {
 </body>
 </html>
 ";
-
-		/// <summary>
-		/// The encoding to use when writing out POST entity strings.
-		/// </summary>
-		private static readonly Encoding PostEntityEncoding = new UTF8Encoding(false);
 
 		/// <summary>
 		/// A tool that can figure out what kind of message is being received

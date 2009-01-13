@@ -30,6 +30,12 @@ namespace DotNetOpenAuth.Yadis {
 		internal static readonly RequestCachePolicy IdentifierDiscoveryCachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.CacheIfAvailable);
 
 		/// <summary>
+		/// The maximum number of bytes to read from an HTTP response
+		/// in searching for a link to a YADIS document.
+		/// </summary>
+		private const int MaximumResultToScan = 1024 * 1024;
+
+		/// <summary>
 		/// Performs YADIS discovery on some identifier.
 		/// </summary>
 		/// <param name="requestHandler">The mechanism to use for sending HTTP requests.</param>
@@ -42,14 +48,13 @@ namespace DotNetOpenAuth.Yadis {
 		/// is not protected by SSL.
 		/// </returns>
 		public static DiscoveryResult Discover(IDirectWebRequestHandler requestHandler, UriIdentifier uri, bool requireSsl) {
-			DirectWebResponse response;
+			CachedDirectWebResponse response;
 			try {
 				if (requireSsl && !string.Equals(uri.Uri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)) {
 					Logger.WarnFormat("Discovery on insecure identifier '{0}' aborted.", uri);
 					return null;
 				}
-				response = Request(requestHandler, uri, requireSsl, ContentTypes.Html, ContentTypes.XHtml, ContentTypes.Xrds);
-				response.CacheNetworkStreamAndClose();
+				response = Request(requestHandler, uri, requireSsl, ContentTypes.Html, ContentTypes.XHtml, ContentTypes.Xrds).GetSnapshot(MaximumResultToScan);
 				if (response.Status != System.Net.HttpStatusCode.OK) {
 					Logger.ErrorFormat("HTTP error {0} {1} while performing discovery on {2}.", (int)response.Status, response.Status, uri);
 					return null;
@@ -59,7 +64,7 @@ namespace DotNetOpenAuth.Yadis {
 				Logger.WarnFormat("Unsafe OpenId URL detected ({0}).  Request aborted.  {1}", uri, ex);
 				return null;
 			}
-			DirectWebResponse response2 = null;
+			CachedDirectWebResponse response2 = null;
 			if (IsXrdsDocument(response)) {
 				Logger.Debug("An XRDS response was received from GET at user-supplied identifier.");
 				response2 = response;
@@ -79,8 +84,7 @@ namespace DotNetOpenAuth.Yadis {
 				}
 				if (url != null) {
 					if (!requireSsl || string.Equals(url.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)) {
-						response2 = Request(requestHandler, url, requireSsl, ContentTypes.Xrds);
-						response2.CacheNetworkStreamAndClose();
+						response2 = Request(requestHandler, url, requireSsl, ContentTypes.Xrds).GetSnapshot(MaximumResultToScan);
 						if (response2.Status != HttpStatusCode.OK) {
 							Logger.ErrorFormat("HTTP error {0} {1} while performing discovery on {2}.", (int)response2.Status, response2.Status, uri);
 							return null;
@@ -148,7 +152,7 @@ namespace DotNetOpenAuth.Yadis {
 		/// <returns>
 		/// 	<c>true</c> if the response constains an XRDS document; otherwise, <c>false</c>.
 		/// </returns>
-		private static bool IsXrdsDocument(DirectWebResponse response) {
+		private static bool IsXrdsDocument(CachedDirectWebResponse response) {
 			if (response.ContentType.MediaType == ContentTypes.Xrds) {
 				return true;
 			}

@@ -129,7 +129,8 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			}
 
 			var response = consumer.PrepareAuthorizedRequestAndSend(GetContactsEndpoint, accessToken);
-			XDocument result = XDocument.Parse(response.Body);
+			string body = response.GetResponseReader().ReadToEnd();
+			XDocument result = XDocument.Parse(body);
 			return result;
 		}
 

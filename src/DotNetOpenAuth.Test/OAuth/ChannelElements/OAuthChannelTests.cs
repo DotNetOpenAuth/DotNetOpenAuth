@@ -111,7 +111,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			writer.Flush();
 			ms.Seek(0, SeekOrigin.Begin);
 			Channel_Accessor channelAccessor = Channel_Accessor.AttachShadow(this.channel);
-			IDictionary<string, string> deserializedFields = channelAccessor.ReadFromResponseInternal(new DirectWebResponse { ResponseStream = ms });
+			IDictionary<string, string> deserializedFields = channelAccessor.ReadFromResponseInternal(new CachedDirectWebResponse { CachedResponseStream = ms });
 			Assert.AreEqual(fields.Count, deserializedFields.Count);
 			foreach (string key in fields.Keys) {
 				Assert.AreEqual(fields[key], deserializedFields[key]);
@@ -246,7 +246,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 					{ "Location", request.Location.AbsoluteUri },
 					{ "Timestamp", XmlConvert.ToString(request.Timestamp, XmlDateTimeSerializationMode.Utc) },
 				};
-				rawResponse = new DirectWebResponse {
+				rawResponse = new CachedDirectWebResponse {
 					Body = MessagingUtilities.CreateQueryString(responseFields),
 				};
 				return rawResponse;

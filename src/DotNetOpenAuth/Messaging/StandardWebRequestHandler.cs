@@ -64,9 +64,8 @@ namespace DotNetOpenAuth.Messaging {
 
 			try {
 				Logger.DebugFormat("HTTP {0} {1}", request.Method, request.RequestUri);
-				using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
-					return new DirectWebResponse(request.RequestUri, response);
-				}
+				HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+				return new NetworkDirectWebResponse(request.RequestUri, response);
 			} catch (WebException ex) {
 				if (Logger.IsErrorEnabled) {
 					if (ex.Response != null) {

@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.Yadis {
 		/// <param name="requestUri">The user-supplied identifier.</param>
 		/// <param name="initialResponse">The initial response.</param>
 		/// <param name="finalResponse">The final response.</param>
-		public DiscoveryResult(Uri requestUri, DirectWebResponse initialResponse, DirectWebResponse finalResponse) {
+		public DiscoveryResult(Uri requestUri, CachedDirectWebResponse initialResponse, CachedDirectWebResponse finalResponse) {
 			this.RequestUri = requestUri;
 			this.NormalizedUri = initialResponse.FinalUri;
 			if (finalResponse == null) {

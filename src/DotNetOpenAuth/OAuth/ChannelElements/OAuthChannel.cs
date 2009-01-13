@@ -155,7 +155,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		protected override IDictionary<string, string> ReadFromResponseInternal(DirectWebResponse response) {
 			ErrorUtilities.VerifyArgumentNotNull(response, "response");
 
-			return HttpUtility.ParseQueryString(response.Body).ToDictionary();
+			string body = response.GetResponseReader().ReadToEnd();
+			return HttpUtility.ParseQueryString(body).ToDictionary();
 		}
 
 		/// <summary>
