@@ -62,6 +62,10 @@ namespace DotNetOpenAuth.Messaging {
 		public DirectWebResponse GetResponse(HttpWebRequest request) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
+			// This request MAY have already been prepared by GetRequestStream, but
+			// we have no guarantee, so do it just to be safe.
+			PrepareRequest(request, false);
+
 			try {
 				Logger.DebugFormat("HTTP {0} {1}", request.Method, request.RequestUri);
 				HttpWebResponse response = (HttpWebResponse)request.GetResponse();
@@ -89,11 +93,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The HTTP request with information about the remote party to contact.</param>
 		/// <returns>The stream where the POST entity can be written.</returns>
 		private static Stream GetRequestStreamCore(HttpWebRequest request) {
-			// Some sites, such as Technorati, return 403 Forbidden on identity
-			// pages unless a User-Agent header is included.
-			if (string.IsNullOrEmpty(request.UserAgent)) {
-				request.UserAgent = userAgentValue;
-			}
+			PrepareRequest(request, true);
 
 			try {
 				return request.GetRequestStream();
@@ -118,6 +118,24 @@ namespace DotNetOpenAuth.Messaging {
 					} else {
 						throw ErrorUtilities.Wrap(ex, MessagingStrings.WebRequestFailed, request.RequestUri);
 					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Prepares an HTTP request.
+		/// </summary>
+		/// <param name="request">The request.</param>
+		/// <param name="preparingPost"><c>true</c> if this is a POST request whose headers have not yet been sent out; <c>false</c> otherwise.</param>
+		private static void PrepareRequest(HttpWebRequest request, bool preparingPost) {
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+
+			// Be careful to not try to change the HTTP headers that have already gone out.
+			if (preparingPost || request.Method == "GET") {
+				// Some sites, such as Technorati, return 403 Forbidden on identity
+				// pages unless a User-Agent header is included.
+				if (string.IsNullOrEmpty(request.UserAgent)) {
+					request.UserAgent = userAgentValue;
 				}
 			}
 		}

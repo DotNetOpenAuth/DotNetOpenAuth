@@ -193,7 +193,7 @@ namespace DotNetOpenAuth.Messaging {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 			this.EnsureAllowableRequestUri(request.RequestUri, requireSsl);
 
-			this.PrepareRequest(request);
+			this.PrepareRequest(request, true);
 
 			// Submit the request and get the request stream back.
 			return this.chainedWebRequestHandler.GetRequestStream(request);
@@ -213,7 +213,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			// This request MAY have already been prepared by GetRequestStream, but
 			// we have no guarantee, so do it just to be safe.
-			this.PrepareRequest(request);
+			this.PrepareRequest(request, false);
 
 			// Since we may require SSL for every redirect, we handle each redirect manually
 			// in order to detect and fail if any redirect sends us to an HTTP url.
@@ -414,16 +414,22 @@ namespace DotNetOpenAuth.Messaging {
 		/// Prepares the request by setting timeout and redirect policies.
 		/// </summary>
 		/// <param name="request">The request to prepare.</param>
-		private void PrepareRequest(HttpWebRequest request) {
-			// Set/override a few properties of the request to apply our policies for untrusted requests.
-			request.ReadWriteTimeout = (int)this.ReadWriteTimeout.TotalMilliseconds;
-			request.Timeout = (int)this.Timeout.TotalMilliseconds;
-			request.KeepAlive = false;
+		/// <param name="preparingPost"><c>true</c> if this is a POST request whose headers have not yet been sent out; <c>false</c> otherwise.</param>
+		private void PrepareRequest(HttpWebRequest request, bool preparingPost) {
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
-			// If SSL is required throughout, we cannot allow auto redirects because
-			// it may include a pass through an unprotected HTTP request.
-			// We have to follow redirects manually.
-			request.AllowAutoRedirect = false;
+			// Be careful to not try to change the HTTP headers that have already gone out.
+			if (preparingPost || request.Method == "GET") {
+				// Set/override a few properties of the request to apply our policies for untrusted requests.
+				request.ReadWriteTimeout = (int)this.ReadWriteTimeout.TotalMilliseconds;
+				request.Timeout = (int)this.Timeout.TotalMilliseconds;
+				request.KeepAlive = false;
+
+				// If SSL is required throughout, we cannot allow auto redirects because
+				// it may include a pass through an unprotected HTTP request.
+				// We have to follow redirects manually.
+				request.AllowAutoRedirect = false;
+			}
 		}
 	}
 }
