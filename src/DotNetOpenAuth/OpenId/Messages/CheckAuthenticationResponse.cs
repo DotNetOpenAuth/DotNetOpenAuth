@@ -10,6 +10,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.ChannelElements;
+	using DotNetOpenAuth.OpenId.Provider;
 
 	/// <summary>
 	/// The message sent from the Provider to the Relying Party to confirm/deny
@@ -17,11 +19,35 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// </summary>
 	internal class CheckAuthenticationResponse : DirectResponseBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CheckAuthenticationResponse"/> class.
+		/// Initializes a new instance of the <see cref="CheckAuthenticationResponse"/> class
+		/// for use by the Relying Party.
 		/// </summary>
 		/// <param name="request">The request that this message is responding to.</param>
 		internal CheckAuthenticationResponse(CheckAuthenticationRequest request)
 			: base(request) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CheckAuthenticationResponse"/> class
+		/// for use by the Provider.
+		/// </summary>
+		/// <param name="request">The request that this message is responding to.</param>
+		/// <param name="provider">The OpenID Provider that is preparing to send this response.</param>
+		internal CheckAuthenticationResponse(CheckAuthenticationRequest request, OpenIdProvider provider)
+			: base(request) {
+			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
+
+			// The channel's binding elements have already set the request's IsValid property
+			// appropriately.  We just copy it into the response message.
+			this.IsValid = request.IsValid;
+
+			// Confirm the RP should invalidate the association handle only if the association
+			// really doesn't exist.  OpenID 2.0 section 11.4.2.2.
+			IndirectSignedResponse signedResponse = new IndirectSignedResponse(request);
+			string invalidateHandle = ((ITamperResistantOpenIdMessage)signedResponse).InvalidateHandle;
+			if (provider.AssociationStore.GetAssociation(AssociationRelyingPartyType.Smart, invalidateHandle) == null) {
+				this.InvalidateHandle = invalidateHandle;
+			}
 		}
 
 		/// <summary>

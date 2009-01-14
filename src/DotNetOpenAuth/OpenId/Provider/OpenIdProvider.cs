@@ -124,7 +124,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 			var checkAuthMessage = incomingMessage as CheckAuthenticationRequest;
 			if (checkAuthMessage != null) {
-				return new AutoResponsiveRequest(this, incomingMessage, new CheckAuthenticationResponse(checkAuthMessage));
+				return new AutoResponsiveRequest(this, incomingMessage, new CheckAuthenticationResponse(checkAuthMessage, this));
 			}
 
 			var associateMessage = incomingMessage as AssociateRequest;

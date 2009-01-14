@@ -127,11 +127,17 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 					// We did not recognize the association the provider used to sign the message.
 					// Ask the provider to check the signature then.
-					var checkSignatureRequest = new CheckAuthenticationRequest((IndirectSignedResponse)signedMessage);
+					var indirectSignedResponse = (IndirectSignedResponse)signedMessage;
+					var checkSignatureRequest = new CheckAuthenticationRequest(indirectSignedResponse);
 					var checkSignatureResponse = this.Channel.Request<CheckAuthenticationResponse>(checkSignatureRequest);
 					if (!checkSignatureResponse.IsValid) {
 						Logger.Error("Provider reports signature verification failed.");
 						throw new InvalidSignatureException(message);
+					}
+
+					// If the OP confirms that a handle should be invalidated as well, do that.
+					if (!string.IsNullOrEmpty(checkSignatureResponse.InvalidateHandle)) {
+						this.rpAssociations.RemoveAssociation(indirectSignedResponse.ProviderEndpoint, checkSignatureResponse.InvalidateHandle);
 					}
 				}
 
