@@ -86,6 +86,7 @@
     <Compile Include="Messaging\InternalErrorException.cs" />
     <Compile Include="Messaging\NetworkDirectWebResponse.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
+    <Compile Include="OAuth\ChannelElements\IConsumerCertificateProvider.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthConsumerMessageFactory.cs" />
     <Compile Include="OAuth\ChannelElements\ITokenGenerator.cs" />
     <Compile Include="OAuth\ChannelElements\ITokenManager.cs" />
