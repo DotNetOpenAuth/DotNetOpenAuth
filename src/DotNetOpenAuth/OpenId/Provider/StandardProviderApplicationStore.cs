@@ -37,11 +37,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StandardProviderApplicationStore"/> class.
 		/// </summary>
-		/// <param name="maximumMessageAge">The maximum message age that is allowed according to the
-		/// <see cref="StandardExpirationBindingElement.MaximumMessageAge"/>
-		/// property.</param>
-		public StandardProviderApplicationStore(TimeSpan maximumMessageAge) {
-			this.nonceStore = new NonceMemoryStore(maximumMessageAge);
+		public StandardProviderApplicationStore() {
+			this.nonceStore = new NonceMemoryStore(Configuration.MaximumUserAgentAuthenticationTime);
 			this.associationStore = new AssociationMemoryStore<AssociationRelyingPartyType>();
 		}
 

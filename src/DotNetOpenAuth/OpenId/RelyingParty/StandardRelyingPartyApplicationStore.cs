@@ -35,13 +35,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StandardRelyingPartyApplicationStore"/> class.
 		/// </summary>
-		/// <param name="maximumMessageAge">
-		/// The maximum message age that is allowed according to the
-		/// <see cref="StandardExpirationBindingElement.MaximumMessageAge"/>
-		/// property.
-		/// </param>
-		internal StandardRelyingPartyApplicationStore(TimeSpan maximumMessageAge) {
-			this.nonceStore = new NonceMemoryStore(maximumMessageAge);
+		internal StandardRelyingPartyApplicationStore() {
+			this.nonceStore = new NonceMemoryStore(Configuration.MaximumUserAgentAuthenticationTime);
 			this.associationStore = new AssociationMemoryStore<Uri>();
 			this.privateSecretStore = new PrivateSecretMemoryStore();
 		}

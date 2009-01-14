@@ -154,7 +154,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					context.Application.Lock();
 					try {
 						if ((store = (IRelyingPartyApplicationStore)context.Application[ApplicationStoreKey]) == null) {
-							context.Application[ApplicationStoreKey] = store = new StandardRelyingPartyApplicationStore(Configuration.MaximumUserAgentAuthenticationTime);
+							context.Application[ApplicationStoreKey] = store = new StandardRelyingPartyApplicationStore();
 						}
 					} finally {
 						context.Application.UnLock();

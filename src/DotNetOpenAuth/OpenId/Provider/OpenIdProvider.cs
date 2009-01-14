@@ -72,7 +72,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 					context.Application.Lock();
 					try {
 						if ((store = (IProviderApplicationStore)context.Application[ApplicationStoreKey]) == null) {
-							context.Application[ApplicationStoreKey] = store = new StandardProviderApplicationStore(Configuration.MaximumUserAgentAuthenticationTime);
+							context.Application[ApplicationStoreKey] = store = new StandardProviderApplicationStore();
 						}
 					} finally {
 						context.Application.UnLock();
