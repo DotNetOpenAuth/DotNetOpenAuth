@@ -1,4 +1,3 @@
-<<<<<<< HEAD:src/DotNetOpenAuth/OAuth/ChannelElements/SigningBindingElementBase.cs
 ﻿//-----------------------------------------------------------------------
 // <copyright file="SigningBindingElementBase.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
