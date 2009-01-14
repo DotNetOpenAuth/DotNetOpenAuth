@@ -33,6 +33,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// </summary>
 	public sealed class OpenIdRelyingParty {
 		/// <summary>
+		/// The name of the key to use in the HttpApplication cache to store the
+		/// instance of <see cref="StandardRelyingPartyApplicationStore"/> to use.
+		/// </summary>
+		private const string ApplicationStoreKey = "DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingParty.ApplicationStore";
+
+		/// <summary>
 		/// Backing field for the <see cref="SecuritySettings"/> property.
 		/// </summary>
 		private RelyingPartySecuritySettings securitySettings;
@@ -41,6 +47,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Backing store for the <see cref="EndpointOrder"/> property.
 		/// </summary>
 		private Comparison<IXrdsProviderEndpoint> endpointOrder = DefaultEndpointOrder;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class.
+		/// </summary>
+		public OpenIdRelyingParty()
+			: this(DotNetOpenAuth.Configuration.RelyingPartySection.Configuration.ApplicationStore.CreateInstance(HttpApplicationStore)) {
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class.
@@ -124,6 +137,31 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 						}
 					}
 				};
+			}
+		}
+
+		/// <summary>
+		/// Gets the standard state storage mechanism that uses ASP.NET's
+		/// HttpApplication state dictionary to store associations and nonces.
+		/// </summary>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
+		public static IRelyingPartyApplicationStore HttpApplicationStore {
+			get {
+				HttpContext context = HttpContext.Current;
+				ErrorUtilities.VerifyOperation(context != null, OpenIdStrings.StoreRequiredWhenNoHttpContextAvailable, typeof(IRelyingPartyApplicationStore).Name);
+				var store = (IRelyingPartyApplicationStore)context.Application[ApplicationStoreKey];
+				if (store == null) {
+					context.Application.Lock();
+					try {
+						if ((store = (IRelyingPartyApplicationStore)context.Application[ApplicationStoreKey]) == null) {
+							context.Application[ApplicationStoreKey] = store = new StandardRelyingPartyApplicationStore(Configuration.MaximumUserAgentAuthenticationTime);
+						}
+					} finally {
+						context.Application.UnLock();
+					}
+				}
+
+				return store;
 			}
 		}
 

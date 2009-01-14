@@ -244,4 +244,7 @@ Discovered endpoint info:
   <data name="XriResolutionFailed" xml:space="preserve">
     <value>XRI resolution failed.</value>
   </data>
+  <data name="StoreRequiredWhenNoHttpContextAvailable" xml:space="preserve">
+    <value>No current HttpContext was detected, so an {0} instance must be explicitly provided or specified in the .config file.  Call the constructor overload that takes an {0}.</value>
+  </data>
 </root>

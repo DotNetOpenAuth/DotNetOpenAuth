@@ -6,7 +6,7 @@
 
 namespace DotNetOpenAuth.Configuration {
 	using System.Configuration;
-	using IProviderAssociationStore = DotNetOpenAuth.OpenId.IAssociationStore<DotNetOpenAuth.OpenId.AssociationRelyingPartyType>;
+	using DotNetOpenAuth.OpenId.Provider;
 
 	/// <summary>
 	/// The section in the .config file that allows customization of OpenID Provider behaviors.
@@ -38,11 +38,11 @@ namespace DotNetOpenAuth.Configuration {
 		}
 
 		/// <summary>
-		/// Gets or sets the association store type.
+		/// Gets or sets the type to use for storing application state.
 		/// </summary>
 		[ConfigurationProperty(StoreConfigName)]
-		public TypeConfigurationElement<IProviderAssociationStore> AssociationStore {
-			get { return (TypeConfigurationElement<IProviderAssociationStore>)this[StoreConfigName] ?? new TypeConfigurationElement<IProviderAssociationStore>(); }
+		public TypeConfigurationElement<IProviderApplicationStore> ApplicationStore {
+			get { return (TypeConfigurationElement<IProviderApplicationStore>)this[StoreConfigName] ?? new TypeConfigurationElement<IProviderApplicationStore>(); }
 			set { this[StoreConfigName] = value; }
 		}
 

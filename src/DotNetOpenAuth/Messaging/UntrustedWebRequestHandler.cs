@@ -175,7 +175,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Gets the configuration for this class that is specified in the host's .config file.
 		/// </summary>
-		private static DotNetOpenAuth.Configuration.UntrustedWebRequestSection Configuration {
+		private static UntrustedWebRequestSection Configuration {
 			get { return UntrustedWebRequestSection.Configuration; }
 		}
 

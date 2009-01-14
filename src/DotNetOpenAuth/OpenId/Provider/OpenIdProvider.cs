@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
+	using System.ComponentModel;
 	using System.Web;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
@@ -18,9 +19,22 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// </summary>
 	public sealed class OpenIdProvider {
 		/// <summary>
+		/// The name of the key to use in the HttpApplication cache to store the
+		/// instance of <see cref="StandardProviderApplicationStore"/> to use.
+		/// </summary>
+		private const string ApplicationStoreKey = "DotNetOpenAuth.OpenId.Provider.OpenIdProvider.ApplicationStore";
+
+		/// <summary>
 		/// Backing field for the <see cref="SecuritySettings"/> property.
 		/// </summary>
 		private ProviderSecuritySettings securitySettings;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="OpenIdProvider"/> class.
+		/// </summary>
+		public OpenIdProvider()
+			: this(DotNetOpenAuth.Configuration.ProviderSection.Configuration.ApplicationStore.CreateInstance(HttpApplicationStore)) {
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdProvider"/> class.
@@ -45,6 +59,31 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
+		/// Gets the standard state storage mechanism that uses ASP.NET's
+		/// HttpApplication state dictionary to store associations and nonces.
+		/// </summary>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
+		public static IProviderApplicationStore HttpApplicationStore {
+			get {
+				HttpContext context = HttpContext.Current;
+				ErrorUtilities.VerifyOperation(context != null, OpenIdStrings.StoreRequiredWhenNoHttpContextAvailable, typeof(IProviderApplicationStore).Name);
+				var store = (IProviderApplicationStore)context.Application[ApplicationStoreKey];
+				if (store == null) {
+					context.Application.Lock();
+					try {
+						if ((store = (IProviderApplicationStore)context.Application[ApplicationStoreKey]) == null) {
+							context.Application[ApplicationStoreKey] = store = new StandardProviderApplicationStore(Configuration.MaximumUserAgentAuthenticationTime);
+						}
+					} finally {
+						context.Application.UnLock();
+					}
+				}
+
+				return store;
+			}
+		}
+
+		/// <summary>
 		/// Gets the channel to use for sending/receiving messages.
 		/// </summary>
 		public Channel Channel { get; internal set; }
@@ -58,10 +97,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 
 			internal set {
-				if (value == null) {
-					throw new ArgumentNullException("value");
-				}
-
+				ErrorUtilities.VerifyArgumentNotNull(value, "value");
 				this.securitySettings = value;
 			}
 		}

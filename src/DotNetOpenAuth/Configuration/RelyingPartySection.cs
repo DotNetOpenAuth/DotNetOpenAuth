@@ -5,11 +5,8 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Configuration {
-	using System;
 	using System.Configuration;
-	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using IRelyingPartyAssociationStore = DotNetOpenAuth.OpenId.IAssociationStore<System.Uri>;
 
 	/// <summary>
 	/// The section in the .config file that allows customization of OpenID Relying Party behaviors.
@@ -41,11 +38,11 @@ namespace DotNetOpenAuth.Configuration {
 		}
 
 		/// <summary>
-		/// Gets or sets the association store type.
+		/// Gets or sets the type to use for storing application state.
 		/// </summary>
 		[ConfigurationProperty(StoreConfigName)]
-		public TypeConfigurationElement<IRelyingPartyAssociationStore> AssociationStore {
-			get { return (TypeConfigurationElement<IRelyingPartyAssociationStore>)this[StoreConfigName] ?? new TypeConfigurationElement<IRelyingPartyAssociationStore>(); }
+		public TypeConfigurationElement<IRelyingPartyApplicationStore> ApplicationStore {
+			get { return (TypeConfigurationElement<IRelyingPartyApplicationStore>)this[StoreConfigName] ?? new TypeConfigurationElement<IRelyingPartyApplicationStore>(); }
 			set { this[StoreConfigName] = value; }
 		}
 
