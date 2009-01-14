@@ -64,10 +64,29 @@ namespace DotNetOpenAuth.Test.Messaging
 			NameValueCollection nvc = new NameValueCollection();
 			nvc["a"] = "b";
 			nvc["c"] = "d";
+			nvc[string.Empty] = "emptykey";
 			Dictionary<string, string> actual = MessagingUtilities.ToDictionary(nvc);
 			Assert.AreEqual(nvc.Count, actual.Count);
 			Assert.AreEqual(nvc["a"], actual["a"]);
 			Assert.AreEqual(nvc["c"], actual["c"]);
+		}
+
+		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		public void ToDictionaryWithNullKey() {
+			NameValueCollection nvc = new NameValueCollection();
+			nvc[null] = "a";
+			nvc["b"] = "c";
+			nvc.ToDictionary(true);
+		}
+
+		[TestMethod]
+		public void ToDictionaryWithSkippedNullKey() {
+			NameValueCollection nvc = new NameValueCollection();
+			nvc[null] = "a";
+			nvc["b"] = "c";
+			var dictionary = nvc.ToDictionary(false);
+			Assert.AreEqual(1, dictionary.Count);
+			Assert.AreEqual(nvc["b"], dictionary["b"]);
 		}
 
 		[TestMethod]

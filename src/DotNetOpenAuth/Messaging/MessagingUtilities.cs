@@ -424,14 +424,42 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="nvc">The NameValueCollection to convert.  May be null.</param>
 		/// <returns>The generated dictionary, or null if <paramref name="nvc"/> is null.</returns>
+		/// <remarks>
+		/// If a <c>null</c> key is encountered, its value is ignored since
+		/// <c>Dictionary&lt;string, string&gt;</c> does not allow null keys.
+		/// </remarks>
 		internal static Dictionary<string, string> ToDictionary(this NameValueCollection nvc) {
+			return ToDictionary(nvc, false);
+		}
+
+		/// <summary>
+		/// Converts a <see cref="NameValueCollection"/> to an IDictionary&lt;string, string&gt;.
+		/// </summary>
+		/// <param name="nvc">The NameValueCollection to convert.  May be null.</param>
+		/// <param name="throwOnNullKey">
+		/// A value indicating whether a null key in the <see cref="NameValueCollection"/> should be silently skipped since it is not a valid key in a Dictionary.  
+		/// Use <c>true</c> to throw an exception if a null key is encountered.
+		/// Use <c>false</c> to silently continue converting the valid keys.
+		/// </param>
+		/// <returns>The generated dictionary, or null if <paramref name="nvc"/> is null.</returns>
+		/// <exception cref="ArgumentException">Thrown if <paramref name="throwOnNullKey"/> is <c>true</c> and a null key is encountered.</exception>
+		internal static Dictionary<string, string> ToDictionary(this NameValueCollection nvc, bool throwOnNullKey) {
 			if (nvc == null) {
 				return null;
 			}
 
 			var dictionary = new Dictionary<string, string>();
 			foreach (string key in nvc) {
-				dictionary.Add(key, nvc[key]);
+				// NameValueCollection supports a null key, but Dictionary<K,V> does not.
+				if (key == null) {
+					if (throwOnNullKey) {
+						throw new ArgumentException(MessagingStrings.UnexpectedNullKey);
+					} else {
+						Logger.WarnFormat("Null key with value {0} encountered while translating NameValueCollection to Dictionary.", nvc[key]);
+					}
+				} else {
+					dictionary.Add(key, nvc[key]);
+				}
 			}
 
 			return dictionary;
