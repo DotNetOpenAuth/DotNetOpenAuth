@@ -247,4 +247,10 @@ Discovered endpoint info:
   <data name="StoreRequiredWhenNoHttpContextAvailable" xml:space="preserve">
     <value>No current HttpContext was detected, so an {0} instance must be explicitly provided or specified in the .config file.  Call the constructor overload that takes an {0}.</value>
   </data>
+  <data name="AttributeAlreadyAdded" xml:space="preserve">
+    <value>An attribute with type URI '{0}' has already been added.</value>
+  </data>
+  <data name="AttributeTooManyValues" xml:space="preserve">
+    <value>Only {0} values for attribute '{1}' were requested, but {2} were supplied.</value>
+  </data>
 </root>

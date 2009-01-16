@@ -88,6 +88,24 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An attribute with type URI &apos;{0}&apos; has already been added..
+        /// </summary>
+        internal static string AttributeAlreadyAdded {
+            get {
+                return ResourceManager.GetString("AttributeAlreadyAdded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only {0} values for attribute &apos;{1}&apos; were requested, but {2} were supplied..
+        /// </summary>
+        internal static string AttributeTooManyValues {
+            get {
+                return ResourceManager.GetString("AttributeTooManyValues", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The private data supplied does not meet the requirements of any known Association type.  Its length may be too short, or it may have been corrupted..
         /// </summary>
         internal static string BadAssociationPrivateData {
