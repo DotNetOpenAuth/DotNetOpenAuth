@@ -6,14 +6,11 @@
 
 namespace DotNetOpenAuth.Test.OpenId {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
-	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Mocks;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -70,7 +67,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 		private void ParameterizedPositiveAuthenticationTest(Protocol protocol, bool sharedAssociation, bool positive, bool tamper) {
 			ErrorUtilities.VerifyArgument(positive || !tamper, "Cannot tamper with a negative response.");
 			Uri userSetupUrl = protocol.Version.Major < 2 ? new Uri("http://usersetupurl") : null;
-			Association association = sharedAssociation ? HmacShaAssociation.Create(protocol, protocol.Args.SignatureAlgorithm.Best, AssociationRelyingPartyType.Smart) : null;
+			ProviderSecuritySettings securitySettings = new ProviderSecuritySettings();
+			Association association = sharedAssociation ? HmacShaAssociation.Create(protocol, protocol.Args.SignatureAlgorithm.Best, AssociationRelyingPartyType.Smart, securitySettings) : null;
 			var coordinator = new OpenIdCoordinator(
 				rp => {
 					var request = new CheckIdRequest(protocol.Version, ProviderUri, AuthenticationRequestMode.Immediate);

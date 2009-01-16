@@ -52,7 +52,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// </summary>
 		/// <returns>The new instance.</returns>
 		protected OpenIdRelyingParty CreateRelyingParty() {
-			var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(TimeSpan.FromMinutes(5)));
+			var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore());
 			rp.Channel.WebRequestHandler = this.MockResponder.MockWebRequestHandler;
 			return rp;
 		}
@@ -62,7 +62,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// </summary>
 		/// <returns>The new instance.</returns>
 		protected OpenIdProvider CreateProvider() {
-			var op = new OpenIdProvider(new StandardProviderApplicationStore(TimeSpan.FromMinutes(5)));
+			var op = new OpenIdProvider(new StandardProviderApplicationStore());
 			op.Channel.WebRequestHandler = this.MockResponder.MockWebRequestHandler;
 			return op;
 		}

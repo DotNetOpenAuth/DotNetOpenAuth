@@ -14,6 +14,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.Provider;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// Signs and verifies authentication assertions.
@@ -30,21 +32,30 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		private readonly IAssociationStore<AssociationRelyingPartyType> opAssociations;
 
 		/// <summary>
+		/// The security settings at the Provider.
+		/// Only defined when this element is instantiated to service a Provider.
+		/// </summary>
+		private readonly ProviderSecuritySettings opSecuritySettings;
+
+		/// <summary>
 		/// Initializes a new instance of the SigningBindingElement class for use by a Relying Party.
 		/// </summary>
-		/// <param name="associations">The association store used to look up the secrets needed for signing.</param>
-		internal SigningBindingElement(IAssociationStore<Uri> associations) {
-			this.rpAssociations = associations;
+		/// <param name="associationStore">The association store used to look up the secrets needed for signing.  May be null for dumb Relying Parties.</param>
+		internal SigningBindingElement(IAssociationStore<Uri> associationStore) {
+			this.rpAssociations = associationStore;
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the SigningBindingElement class for use by a Provider.
 		/// </summary>
-		/// <param name="associations">The association store used to look up the secrets needed for signing.</param>
-		internal SigningBindingElement(IAssociationStore<AssociationRelyingPartyType> associations) {
-			ErrorUtilities.VerifyArgumentNotNull(associations, "associations");
+		/// <param name="associationStore">The association store used to look up the secrets needed for signing.</param>
+		/// <param name="securitySettings">The security settings.</param>
+		internal SigningBindingElement(IAssociationStore<AssociationRelyingPartyType> associationStore, ProviderSecuritySettings securitySettings) {
+			ErrorUtilities.VerifyArgumentNotNull(associationStore, "associationStore");
+			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
 
-			this.opAssociations = associations;
+			this.opAssociations = associationStore;
+			this.opSecuritySettings = securitySettings;
 		}
 
 		#region IChannelBindingElement Properties
@@ -137,7 +148,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 					// If the OP confirms that a handle should be invalidated as well, do that.
 					if (!string.IsNullOrEmpty(checkSignatureResponse.InvalidateHandle)) {
-						this.rpAssociations.RemoveAssociation(indirectSignedResponse.ProviderEndpoint, checkSignatureResponse.InvalidateHandle);
+						if (this.rpAssociations != null) {
+							this.rpAssociations.RemoveAssociation(indirectSignedResponse.ProviderEndpoint, checkSignatureResponse.InvalidateHandle);
+						}
 					}
 				}
 
@@ -160,13 +173,13 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			// get included in the list of checked parameters.
 			Protocol protocol = Protocol.Lookup(signedMessage.Version);
 			var partsRequiringProtection = from part in MessageDescription.Get(signedMessage.GetType(), signedMessage.Version).Mapping.Values
-										   where part.RequiredProtection != ProtectionLevel.None
-										   select part.Name;
+			                               where part.RequiredProtection != ProtectionLevel.None
+			                               select part.Name;
 			ErrorUtilities.VerifyInternal(partsRequiringProtection.All(name => name.StartsWith(protocol.openid.Prefix, StringComparison.Ordinal)), "Signing only works when the parameters start with the 'openid.' prefix.");
 			string[] signedParts = signedMessage.SignedParameterOrder.Split(',');
 			var unsignedParts = from partName in partsRequiringProtection
-								where !signedParts.Contains(partName.Substring(protocol.openid.Prefix.Length))
-								select partName;
+			                    where !signedParts.Contains(partName.Substring(protocol.openid.Prefix.Length))
+			                    select partName;
 			ErrorUtilities.VerifyProtocol(!unsignedParts.Any(), OpenIdStrings.SignatureDoesNotIncludeMandatoryParts, string.Join(", ", unsignedParts.ToArray()));
 		}
 
@@ -228,7 +241,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			} else {
 				// We're on a Relying Party verifying a signature.
 				IDirectedProtocolMessage directedMessage = (IDirectedProtocolMessage)signedMessage;
-				return this.rpAssociations.GetAssociation(directedMessage.Recipient, signedMessage.AssociationHandle);
+				if (this.rpAssociations != null) {
+					return this.rpAssociations.GetAssociation(directedMessage.Recipient, signedMessage.AssociationHandle);
+				} else {
+					return null;
+				}
 			}
 		}
 
@@ -279,7 +296,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			Protocol protocol = Protocol.Default;
 			Association association = this.opAssociations.GetAssociation(AssociationRelyingPartyType.Dumb);
 			if (association == null) {
-				association = HmacShaAssociation.Create(protocol, protocol.Args.SignatureAlgorithm.HMAC_SHA256, AssociationRelyingPartyType.Dumb);
+				association = HmacShaAssociation.Create(protocol, protocol.Args.SignatureAlgorithm.HMAC_SHA256, AssociationRelyingPartyType.Dumb, this.opSecuritySettings);
 				this.opAssociations.StoreAssociation(AssociationRelyingPartyType.Dumb, association);
 			}
 

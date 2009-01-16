@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Messaging;
 
@@ -20,7 +21,8 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Protocol protocol,
 			IEnumerable<IOpenIdMessageExtension> requests,
 			IEnumerable<IOpenIdMessageExtension> responses) {
-			Association association = HmacShaAssociation.Create(protocol, protocol.Args.SignatureAlgorithm.Best, AssociationRelyingPartyType.Smart);
+			ProviderSecuritySettings securitySettings = new ProviderSecuritySettings();
+			Association association = HmacShaAssociation.Create(protocol, protocol.Args.SignatureAlgorithm.Best, AssociationRelyingPartyType.Smart, securitySettings);
 			var coordinator = new OpenIdCoordinator(
 				rp => {
 					RegisterExtension(rp.Channel, Mocks.MockOpenIdExtension.Factory);

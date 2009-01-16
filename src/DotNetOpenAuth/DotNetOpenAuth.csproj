@@ -64,6 +64,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\AssociationTypeCollection.cs" />
+    <Compile Include="Configuration\AssociationTypeElement.cs" />
     <Compile Include="Configuration\ProviderSection.cs" />
     <Compile Include="Configuration\ProviderSecuritySettingsElement.cs" />
     <Compile Include="Configuration\RelyingPartySection.cs" />

@@ -5,15 +5,32 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId.Provider {
+	using System;
+	using System.Collections.Generic;
+	using DotNetOpenAuth.Messaging;
+
 	/// <summary>
 	/// Security settings that are applicable to providers.
 	/// </summary>
 	public sealed class ProviderSecuritySettings : SecuritySettings {
 		/// <summary>
+		/// The subset of association types and their customized lifetimes.
+		/// </summary>
+		private IDictionary<string, TimeSpan> associationLifetimes = new Dictionary<string, TimeSpan>();
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="ProviderSecuritySettings"/> class.
 		/// </summary>
 		internal ProviderSecuritySettings()
 			: base(true) {
+		}
+
+		/// <summary>
+		/// Gets a subset of the available association types and their
+		/// customized maximum lifetimes.
+		/// </summary>
+		public IDictionary<string, TimeSpan> AssociationLifetimes {
+			get { return this.associationLifetimes; }
 		}
 
 		/// <summary>

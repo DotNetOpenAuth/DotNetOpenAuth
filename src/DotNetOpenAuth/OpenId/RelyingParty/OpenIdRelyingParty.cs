@@ -75,7 +75,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// If we're a dumb-mode RP, then 2.0 OPs are responsible for preventing replays.
 			ErrorUtilities.VerifyArgument(associationStore == null || nonceStore != null, OpenIdStrings.AssociationStoreRequiresNonceStore);
 
-			this.Channel = new OpenIdChannel(associationStore, nonceStore, secretStore);
 			this.AssociationStore = associationStore;
 			this.SecuritySettings = RelyingPartySection.Configuration.SecuritySettings.CreateSecuritySettings();
 
@@ -85,6 +84,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			if (nonceStore == null) {
 				this.SecuritySettings.MinimumRequiredOpenIdVersion = ProtocolVersion.V20;
 			}
+
+			this.Channel = new OpenIdChannel(this.AssociationStore, nonceStore, secretStore);
 		}
 
 		/// <summary>
@@ -590,7 +591,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			var associateSuccessfulResponse = associateResponse as AssociateSuccessfulResponse;
 			var associateUnsuccessfulResponse = associateResponse as AssociateUnsuccessfulResponse;
 			if (associateSuccessfulResponse != null) {
-				Association association = associateSuccessfulResponse.CreateAssociation(associateRequest);
+				Association association = associateSuccessfulResponse.CreateAssociation(associateRequest, null);
 				this.AssociationStore.StoreAssociation(provider.Endpoint, association);
 				return association;
 			} else if (associateUnsuccessfulResponse != null) {

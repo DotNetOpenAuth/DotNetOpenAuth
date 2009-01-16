@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void SecuritySettingsSetNull() {
-			var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(TimeSpan.FromMinutes(5)));
+			var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore());
 			rp.SecuritySettings = null;
 		}
 

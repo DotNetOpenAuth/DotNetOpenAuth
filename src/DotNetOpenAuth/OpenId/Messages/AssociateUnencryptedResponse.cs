@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
+	using DotNetOpenAuth.OpenId.Provider;
 
 	/// <summary>
 	/// The successful unencrypted association response message.
@@ -35,18 +36,19 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Called to create the Association based on a request previously given by the Relying Party.
 		/// </summary>
 		/// <param name="request">The prior request for an association.</param>
+		/// <param name="securitySettings">The security settings of the Provider.</param>
 		/// <returns>The created association.</returns>
 		/// <remarks>
-		/// 	<para>The caller will update this message's 
-		/// <see cref="AssociateSuccessfulResponse.ExpiresIn"/> and 
+		/// 	<para>The caller will update this message's
+		/// <see cref="AssociateSuccessfulResponse.ExpiresIn"/> and
 		/// <see cref="AssociateSuccessfulResponse.AssociationHandle"/>
 		/// properties based on the <see cref="Association"/> returned by this method, but any other
 		/// association type specific properties must be set by this method.</para>
 		/// 	<para>The response message is updated to include the details of the created association by this method,
 		/// but the resulting association is <i>not</i> added to the association store and must be done by the caller.</para>
 		/// </remarks>
-		protected override Association CreateAssociationAtProvider(AssociateRequest request) {
-			Association association = HmacShaAssociation.Create(Protocol, this.AssociationType, AssociationRelyingPartyType.Smart);
+		protected override Association CreateAssociationAtProvider(AssociateRequest request, ProviderSecuritySettings securitySettings) {
+			Association association = HmacShaAssociation.Create(Protocol, this.AssociationType, AssociationRelyingPartyType.Smart, securitySettings);
 			this.MacKey = association.SecretKey;
 			return association;
 		}

@@ -19,8 +19,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		static Configuration() {
 			MaximumUserAgentAuthenticationTime = TimeSpan.FromMinutes(5);
-			SmartAssociationLifetime = TimeSpan.FromDays(14);
-			DumbSecretLifetime = TimeSpan.FromMinutes(5);
 		}
 
 		/// <summary>
@@ -32,15 +30,5 @@ namespace DotNetOpenAuth.OpenId {
 		/// it an instance member, or put it inside the IConsumerApplicationStore interface.
 		/// </remarks>
 		internal static TimeSpan MaximumUserAgentAuthenticationTime { get; private set; }
-
-		/// <summary>
-		/// Gets the duration any association and secret key the Provider generates will be good for.
-		/// </summary>
-		internal static TimeSpan SmartAssociationLifetime { get; private set; }
-
-		/// <summary>
-		/// Gets the duration a secret key used for signing dumb client requests will be good for.
-		/// </summary>
-		internal static TimeSpan DumbSecretLifetime { get; private set; }
 	}
 }

@@ -55,11 +55,11 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		private void EnsurePartiesAreInitialized() {
 			if (this.RelyingParty == null) {
-				this.RelyingParty = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(TimeSpan.FromHours(3)));
+				this.RelyingParty = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore());
 			}
 
 			if (this.Provider == null) {
-				this.Provider = new OpenIdProvider(new StandardProviderApplicationStore(TimeSpan.FromHours(3)));
+				this.Provider = new OpenIdProvider(new StandardProviderApplicationStore());
 			}
 		}
 	}

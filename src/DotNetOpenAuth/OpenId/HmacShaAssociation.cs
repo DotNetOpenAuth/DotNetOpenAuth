@@ -12,11 +12,18 @@ namespace DotNetOpenAuth.OpenId {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.Provider;
 
 	/// <summary>
 	/// An association that uses the HMAC-SHA family of algorithms for message signing.
 	/// </summary>
 	internal class HmacShaAssociation : Association {
+		/// <summary>
+		/// The default lifetime of a shared association when no lifetime is given
+		/// for a specific association type.
+		/// </summary>
+		private static readonly TimeSpan DefaultMaximumLifetime = TimeSpan.FromDays(14);
+
 		/// <summary>
 		/// A list of HMAC-SHA algorithms in order of decreasing bit lengths.
 		/// </summary>
@@ -118,15 +125,18 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		/// <param name="protocol">The protocol.</param>
 		/// <param name="associationType">Type of the association.</param>
-		/// <param name="associationUse">
-		/// A value indicating whether the new association will be used privately by the Provider for "dumb mode" authentication
-		/// or shared with the Relying Party for "smart mode" authentication.
-		/// </param>
+		/// <param name="associationUse">A value indicating whether the new association will be used privately by the Provider for "dumb mode" authentication
+		/// or shared with the Relying Party for "smart mode" authentication.</param>
+		/// <param name="securitySettings">The security settings of the Provider.</param>
 		/// <returns>The newly created association.</returns>
 		/// <remarks>
 		/// The new association is NOT automatically put into an association store.  This must be done by the caller.
 		/// </remarks>
-		internal static HmacShaAssociation Create(Protocol protocol, string associationType, AssociationRelyingPartyType associationUse) {
+		internal static HmacShaAssociation Create(Protocol protocol, string associationType, AssociationRelyingPartyType associationUse, ProviderSecuritySettings securitySettings) {
+			ErrorUtilities.VerifyArgumentNotNull(protocol, "protocol");
+			ErrorUtilities.VerifyNonZeroLength(associationType, "associationType");
+			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
+
 			// Generate the handle.  It must be unique, so we use a time element and a random data element to generate it.
 			string uniq = MessagingUtilities.GetCryptoRandomDataAsBase64(4);
 			string handle = "{" + associationType + "}{" + DateTime.UtcNow.Ticks + "}{" + uniq + "}";
@@ -135,7 +145,14 @@ namespace DotNetOpenAuth.OpenId {
 			int secretLength = GetSecretLength(protocol, associationType);
 			byte[] secret = MessagingUtilities.GetCryptoRandomData(secretLength);
 
-			TimeSpan lifetime = associationUse == AssociationRelyingPartyType.Smart ? SmartAssociationLifetime : DumbSecretLifetime;
+			TimeSpan lifetime;
+			if (associationUse == AssociationRelyingPartyType.Smart) {
+				if (!securitySettings.AssociationLifetimes.TryGetValue(associationType, out lifetime)) {
+					lifetime = DefaultMaximumLifetime;
+				}
+			} else {
+				lifetime = DumbSecretLifetime;
+			}
 
 			return Create(protocol, associationType, handle, secret, lifetime);
 		}

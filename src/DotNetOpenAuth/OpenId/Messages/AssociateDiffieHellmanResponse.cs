@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Security.Cryptography;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
+	using DotNetOpenAuth.OpenId.Provider;
 	using Org.Mentalis.Security.Cryptography;
 
 	/// <summary>
@@ -64,20 +65,22 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Creates the association at the provider side after the association request has been received.
 		/// </summary>
 		/// <param name="request">The association request.</param>
+		/// <param name="securitySettings">The security settings of the Provider.</param>
 		/// <returns>The newly created association.</returns>
 		/// <remarks>
-		/// The response message is updated to include the details of the created association by this method, 
+		/// The response message is updated to include the details of the created association by this method,
 		/// but the resulting association is <i>not</i> added to the association store and must be done by the caller.
 		/// </remarks>
-		protected override Association CreateAssociationAtProvider(AssociateRequest request) {
+		protected override Association CreateAssociationAtProvider(AssociateRequest request, ProviderSecuritySettings securitySettings) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 			var diffieHellmanRequest = request as AssociateDiffieHellmanRequest;
 			ErrorUtilities.VerifyArgument(diffieHellmanRequest != null, "request");
+			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
 
 			this.SessionType = this.SessionType ?? request.SessionType;
 
 			// Go ahead and create the association first, complete with its secret that we're about to share.
-			Association association = HmacShaAssociation.Create(this.Protocol, this.AssociationType, AssociationRelyingPartyType.Smart);
+			Association association = HmacShaAssociation.Create(this.Protocol, this.AssociationType, AssociationRelyingPartyType.Smart, securitySettings);
 			this.AssociationHandle = association.Handle;
 			this.ExpiresIn = association.SecondsTillExpiration;
 

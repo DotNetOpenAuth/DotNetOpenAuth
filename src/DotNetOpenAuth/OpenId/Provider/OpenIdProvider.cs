@@ -53,9 +53,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			ErrorUtilities.VerifyArgumentNotNull(associationStore, "associationStore");
 			ErrorUtilities.VerifyArgumentNotNull(nonceStore, "nonceStore");
 
-			this.Channel = new OpenIdChannel(associationStore, nonceStore);
 			this.AssociationStore = associationStore;
 			this.SecuritySettings = ProviderSection.Configuration.SecuritySettings.CreateSecuritySettings();
+			this.Channel = new OpenIdChannel(this.AssociationStore, nonceStore, this.SecuritySettings);
 		}
 
 		/// <summary>
@@ -165,7 +165,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 			var associateMessage = incomingMessage as AssociateRequest;
 			if (associateMessage != null) {
-				return new AutoResponsiveRequest(this, incomingMessage, associateMessage.CreateResponse(this.AssociationStore));
+				return new AutoResponsiveRequest(this, incomingMessage, associateMessage.CreateResponse(this.AssociationStore, this.SecuritySettings));
 			}
 
 			throw ErrorUtilities.ThrowProtocol(MessagingStrings.UnexpectedMessageReceivedOfMany);

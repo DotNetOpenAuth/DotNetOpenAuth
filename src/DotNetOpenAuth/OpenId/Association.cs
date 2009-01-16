@@ -93,17 +93,10 @@ namespace DotNetOpenAuth.OpenId {
 		protected internal byte[] SecretKey { get; private set; }
 
 		/// <summary>
-		/// Gets the duration any association and secret key the Provider generates will be good for.
-		/// </summary>
-		protected static TimeSpan SmartAssociationLifetime {
-			get { return Configuration.SmartAssociationLifetime; }
-		}
-
-		/// <summary>
 		/// Gets the duration a secret key used for signing dumb client requests will be good for.
 		/// </summary>
 		protected static TimeSpan DumbSecretLifetime {
-			get { return Configuration.DumbSecretLifetime; }
+			get { return Configuration.MaximumUserAgentAuthenticationTime; }
 		}
 
 		/// <summary>

@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// <summary>
 		/// Gets or sets the name of the host on the white or black list.
 		/// </summary>
-		[ConfigurationProperty(NameConfigName, IsRequired = true)]
+		[ConfigurationProperty(NameConfigName, IsRequired = true, IsKey = true)]
 		////[StringValidator(MinLength = 1)]
 		public string Name {
 			get { return (string)this[NameConfigName]; }
