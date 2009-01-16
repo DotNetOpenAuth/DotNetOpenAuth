@@ -13,6 +13,11 @@ namespace DotNetOpenAuth.Configuration {
 	/// </summary>
 	internal class RelyingPartySection : ConfigurationSection {
 		/// <summary>
+		/// The path to the section in a .config file where these settings can be given.
+		/// </summary>
+		private const string SectionName = "dotNetOpenAuth/openid/relyingParty";
+
+		/// <summary>
 		/// The name of the custom store sub-element.
 		/// </summary>
 		private const string StoreConfigName = "store";
@@ -50,7 +55,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// Gets the configuration element from the .config file.
 		/// </summary>
 		internal static RelyingPartySection Configuration {
-			get { return (RelyingPartySection)ConfigurationManager.GetSection("dotNetOpenAuth/openid/relyingParty") ?? new RelyingPartySection(); }
+			get { return (RelyingPartySection)ConfigurationManager.GetSection(SectionName) ?? new RelyingPartySection(); }
 		}
 	}
 }

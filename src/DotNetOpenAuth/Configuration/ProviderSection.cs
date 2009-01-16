@@ -13,6 +13,11 @@ namespace DotNetOpenAuth.Configuration {
 	/// </summary>
 	internal class ProviderSection : ConfigurationSection {
 		/// <summary>
+		/// The path to the section in a .config file where these settings can be given.
+		/// </summary>
+		private const string SectionName = "dotNetOpenAuth/openid/provider";
+
+		/// <summary>
 		/// The name of the security sub-element.
 		/// </summary>
 		private const string SecuritySettingsConfigName = "security";
@@ -50,7 +55,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// Gets the configuration element from the .config file.
 		/// </summary>
 		internal static ProviderSection Configuration {
-			get { return (ProviderSection)ConfigurationManager.GetSection("dotNetOpenAuth/openid/provider") ?? new ProviderSection(); }
+			get { return (ProviderSection)ConfigurationManager.GetSection(SectionName) ?? new ProviderSection(); }
 		}
 	}
 }

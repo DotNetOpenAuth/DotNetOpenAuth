@@ -13,6 +13,11 @@ namespace DotNetOpenAuth.Configuration {
 	/// to user-provided, untrusted servers is controlled.
 	/// </summary>
 	internal class UntrustedWebRequestSection : ConfigurationSection {
+		/// <summary>
+		/// The path to the section in a .config file where these settings can be given.
+		/// </summary>
+		private const string SectionName = "dotNetOpenAuth/messaging/untrustedWebRequest";
+
 		#region Attribute names
 
 		/// <summary>
@@ -148,7 +153,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// Gets the configuration element from the .config file.
 		/// </summary>
 		internal static UntrustedWebRequestSection Configuration {
-			get { return (UntrustedWebRequestSection)ConfigurationManager.GetSection("dotNetOpenAuth/messaging/untrustedWebRequest") ?? new UntrustedWebRequestSection(); }
+			get { return (UntrustedWebRequestSection)ConfigurationManager.GetSection(SectionName) ?? new UntrustedWebRequestSection(); }
 		}
 	}
 }
