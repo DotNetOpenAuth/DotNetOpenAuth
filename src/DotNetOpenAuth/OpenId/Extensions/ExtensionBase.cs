@@ -36,11 +36,11 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// </summary>
 		/// <param name="version">The version of the extension.</param>
 		/// <param name="typeUri">The type URI to use in the OpenID message.</param>
-		/// <param name="additionalSupportedTypeUris">The additional supported type URIs by which this extension might be recognized.</param>
+		/// <param name="additionalSupportedTypeUris">The additional supported type URIs by which this extension might be recognized.  May be null.</param>
 		protected ExtensionBase(Version version, string typeUri, IEnumerable<string> additionalSupportedTypeUris) {
 			this.Version = version;
 			this.typeUri = typeUri;
-			this.additionalSupportedTypeUris = additionalSupportedTypeUris;
+			this.additionalSupportedTypeUris = additionalSupportedTypeUris ?? EmptyList<string>.Instance;
 		}
 
 		#region IOpenIdProtocolMessageExtension Members
@@ -57,7 +57,6 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// May be empty if none other than <see cref="IOpenIdMessageExtension.TypeUri"/> is supported, but
 		/// should not be null.
 		/// </summary>
-		/// <value></value>
 		/// <remarks>
 		/// Useful for reading in messages with an older version of an extension.
 		/// The value in the <see cref="IOpenIdMessageExtension.TypeUri"/> property is always checked before
