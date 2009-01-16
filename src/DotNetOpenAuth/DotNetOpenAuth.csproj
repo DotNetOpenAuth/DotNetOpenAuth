@@ -66,12 +66,15 @@
   <ItemGroup>
     <Compile Include="Configuration\AssociationTypeCollection.cs" />
     <Compile Include="Configuration\AssociationTypeElement.cs" />
-    <Compile Include="Configuration\ProviderSection.cs" />
+    <Compile Include="Configuration\DotNetOpenAuthSection.cs" />
+    <Compile Include="Configuration\MessagingElement.cs" />
+    <Compile Include="Configuration\OpenIdElement.cs" />
+    <Compile Include="Configuration\OpenIdProviderElement.cs" />
     <Compile Include="Configuration\ProviderSecuritySettingsElement.cs" />
-    <Compile Include="Configuration\RelyingPartySection.cs" />
+    <Compile Include="Configuration\OpenIdRelyingPartyElement.cs" />
     <Compile Include="Configuration\RelyingPartySecuritySettingsElement.cs" />
     <Compile Include="Configuration\TypeConfigurationElement.cs" />
-    <Compile Include="Configuration\UntrustedWebRequestSection.cs" />
+    <Compile Include="Configuration\UntrustedWebRequestElement.cs" />
     <Compile Include="Configuration\HostNameOrRegexCollection.cs" />
     <Compile Include="Configuration\HostNameElement.cs" />
     <Compile Include="Messaging\CachedDirectWebResponse.cs" />
@@ -179,7 +182,6 @@
     <Compile Include="OpenId\ChannelElements\OpenIdChannel.cs" />
     <Compile Include="OpenId\ChannelElements\OpenIdMessageFactory.cs" />
     <Compile Include="OpenId\ChannelElements\ReturnToSignatureBindingElement.cs" />
-    <Compile Include="OpenId\Configuration.cs" />
     <Compile Include="OpenId\Extensions\AliasManager.cs" />
     <Compile Include="OpenId\Extensions\ExtensionBase.cs" />
     <Compile Include="OpenId\Extensions\ExtensionArgumentsManager.cs" />

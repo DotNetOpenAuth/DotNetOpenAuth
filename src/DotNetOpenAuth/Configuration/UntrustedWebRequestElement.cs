@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="UntrustedWebRequestSection.cs" company="Andrew Arnott">
+// <copyright file="UntrustedWebRequestElement.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -12,12 +12,7 @@ namespace DotNetOpenAuth.Configuration {
 	/// Represents the section of a .config file where security policies regarding web requests
 	/// to user-provided, untrusted servers is controlled.
 	/// </summary>
-	internal class UntrustedWebRequestSection : ConfigurationSection {
-		/// <summary>
-		/// The path to the section in a .config file where these settings can be given.
-		/// </summary>
-		private const string SectionName = "dotNetOpenAuth/messaging/untrustedWebRequest";
-
+	internal class UntrustedWebRequestElement : ConfigurationElement {
 		#region Attribute names
 
 		/// <summary>
@@ -61,13 +56,6 @@ namespace DotNetOpenAuth.Configuration {
 		private const string BlacklistHostsRegexConfigName = "blacklistHostsRegex";
 
 		#endregion
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="UntrustedWebRequestSection"/> class.
-		/// </summary>
-		public UntrustedWebRequestSection() {
-			SectionInformation.AllowLocation = false;
-		}
 
 		/// <summary>
 		/// Gets or sets the read/write timeout after which an HTTP request will fail.
@@ -147,13 +135,6 @@ namespace DotNetOpenAuth.Configuration {
 		public HostNameOrRegexCollection BlacklistHostsRegex {
 			get { return (HostNameOrRegexCollection)this[BlacklistHostsRegexConfigName] ?? new HostNameOrRegexCollection(); }
 			set { this[BlacklistHostsRegexConfigName] = value; }
-		}
-
-		/// <summary>
-		/// Gets the configuration element from the .config file.
-		/// </summary>
-		internal static UntrustedWebRequestSection Configuration {
-			get { return (UntrustedWebRequestSection)ConfigurationManager.GetSection(SectionName) ?? new UntrustedWebRequestSection(); }
 		}
 	}
 }

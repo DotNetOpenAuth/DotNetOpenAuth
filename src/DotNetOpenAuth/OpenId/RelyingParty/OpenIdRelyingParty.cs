@@ -52,7 +52,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class.
 		/// </summary>
 		public OpenIdRelyingParty()
-			: this(DotNetOpenAuth.Configuration.RelyingPartySection.Configuration.ApplicationStore.CreateInstance(HttpApplicationStore)) {
+			: this(DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.ApplicationStore.CreateInstance(HttpApplicationStore)) {
 		}
 
 		/// <summary>
@@ -76,7 +76,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			ErrorUtilities.VerifyArgument(associationStore == null || nonceStore != null, OpenIdStrings.AssociationStoreRequiresNonceStore);
 
 			this.AssociationStore = associationStore;
-			this.SecuritySettings = RelyingPartySection.Configuration.SecuritySettings.CreateSecuritySettings();
+			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.SecuritySettings.CreateSecuritySettings();
 
 			// Without a nonce store, we must rely on the Provider to protect against
 			// replay attacks.  But only 2.0+ Providers can be expected to provide 

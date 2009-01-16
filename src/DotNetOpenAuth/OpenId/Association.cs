@@ -16,6 +16,7 @@ namespace DotNetOpenAuth.OpenId {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.Configuration;
 
 	/// <summary>
 	/// Stores a secret used in signing and verifying messages.
@@ -96,7 +97,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// Gets the duration a secret key used for signing dumb client requests will be good for.
 		/// </summary>
 		protected static TimeSpan DumbSecretLifetime {
-			get { return Configuration.MaximumUserAgentAuthenticationTime; }
+			get { return DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime; }
 		}
 
 		/// <summary>
@@ -111,7 +112,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// Associations that are not likely to last the duration of a user login are not worth using at all.
 		/// </remarks>
 		private static TimeSpan MinimumUsefulAssociationLifetime {
-			get { return Configuration.MaximumUserAgentAuthenticationTime; }
+			get { return DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime; }
 		}
 
 		/// <summary>

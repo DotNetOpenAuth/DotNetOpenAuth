@@ -5,11 +5,8 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Configuration {
-	using System;
 	using System.Collections.Generic;
 	using System.Configuration;
-	using System.Linq;
-	using System.Text;
 
 	/// <summary>
 	/// Describes a collection of association type sub-elements in a .config file.
@@ -30,7 +27,9 @@ namespace DotNetOpenAuth.Configuration {
 		/// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
 		/// </returns>
 		public new IEnumerator<AssociationTypeElement> GetEnumerator() {
-			return this.Cast<AssociationTypeElement>().GetEnumerator();
+			for (int i = 0; i < Count; i++) {
+				yield return (AssociationTypeElement)BaseGet(i);
+			}
 		}
 
 		#endregion

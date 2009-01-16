@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Text;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.ChannelElements;
+	using DotNetOpenAuth.Configuration;
 
 	/// <summary>
 	/// An in-memory store for Relying Parties, suitable for single server, single process
@@ -36,7 +37,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Initializes a new instance of the <see cref="StandardRelyingPartyApplicationStore"/> class.
 		/// </summary>
 		internal StandardRelyingPartyApplicationStore() {
-			this.nonceStore = new NonceMemoryStore(Configuration.MaximumUserAgentAuthenticationTime);
+			this.nonceStore = new NonceMemoryStore(DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime);
 			this.associationStore = new AssociationMemoryStore<Uri>();
 			this.privateSecretStore = new PrivateSecretMemoryStore();
 		}

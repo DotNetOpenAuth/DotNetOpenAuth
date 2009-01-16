@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Initializes a new instance of the <see cref="OpenIdProvider"/> class.
 		/// </summary>
 		public OpenIdProvider()
-			: this(DotNetOpenAuth.Configuration.ProviderSection.Configuration.ApplicationStore.CreateInstance(HttpApplicationStore)) {
+			: this(DotNetOpenAuthSection.Configuration.OpenId.Provider.ApplicationStore.CreateInstance(HttpApplicationStore)) {
 		}
 
 		/// <summary>
@@ -54,7 +54,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			ErrorUtilities.VerifyArgumentNotNull(nonceStore, "nonceStore");
 
 			this.AssociationStore = associationStore;
-			this.SecuritySettings = ProviderSection.Configuration.SecuritySettings.CreateSecuritySettings();
+			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OpenId.Provider.SecuritySettings.CreateSecuritySettings();
 			this.Channel = new OpenIdChannel(this.AssociationStore, nonceStore, this.SecuritySettings);
 		}
 

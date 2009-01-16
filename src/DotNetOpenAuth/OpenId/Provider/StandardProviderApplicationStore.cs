@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging.Bindings;
+	using DotNetOpenAuth.Configuration;
 
 	/// <summary>
 	/// An in-memory store for Providers, suitable for single server, single process
@@ -38,7 +39,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Initializes a new instance of the <see cref="StandardProviderApplicationStore"/> class.
 		/// </summary>
 		public StandardProviderApplicationStore() {
-			this.nonceStore = new NonceMemoryStore(Configuration.MaximumUserAgentAuthenticationTime);
+			this.nonceStore = new NonceMemoryStore(DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime);
 			this.associationStore = new AssociationMemoryStore<AssociationRelyingPartyType>();
 		}
 
