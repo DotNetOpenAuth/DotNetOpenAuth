@@ -67,6 +67,15 @@ namespace DotNetOpenAuth.Test {
 				party1Thread.Abort();
 				party2Thread.Abort();
 				throw;
+			} catch (ThreadStartException ex) {
+				if (ex.InnerException is ThreadAbortException) {
+					// if party1Thread threw an exception 
+					// (which may even have been intentional for the test)
+					// before party2Thread even started, then this exception
+					// can be thrown, and should be ignored.
+				} else {
+					throw;
+				}
 			}
 
 			// Use the failing reason of a failing sub-thread as our reason, if anything failed.
