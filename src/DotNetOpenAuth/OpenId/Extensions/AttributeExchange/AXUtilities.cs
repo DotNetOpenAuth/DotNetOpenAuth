@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 	/// <summary>
 	/// Helper methods shared by multiple messages in the Attribute Exchange extension.
 	/// </summary>
-	internal class AXUtilities {
+	internal static class AXUtilities {
 		/// <summary>
 		/// Serializes a set of attribute values to a dictionary of fields to send in the message.
 		/// </summary>
