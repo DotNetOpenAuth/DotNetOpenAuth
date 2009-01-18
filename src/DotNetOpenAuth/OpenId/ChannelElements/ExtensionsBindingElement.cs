@@ -78,6 +78,15 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				foreach (IExtensionMessage protocolExtension in extendableMessage.Extensions) {
 					var extension = protocolExtension as IOpenIdMessageExtension;
 					if (extension != null) {
+						// Give extensions that require custom serialization a chance to do their work.
+						var customSerializingExtension = extension as IMessageWithEvents;
+						if (customSerializingExtension != null) {
+							customSerializingExtension.OnSending();
+						}
+
+						// OpenID 2.0 Section 12 forbids two extensions with the same TypeURI in the same message.
+						ErrorUtilities.VerifyProtocol(!extensionManager.ContainsExtension(extension.TypeUri), OpenIdStrings.ExtensionAlreadyAddedWithSameTypeURI, extension.TypeUri);
+
 						var extensionDictionary = new MessageDictionary(extension);
 						extensionManager.AddExtensionArguments(extension.TypeUri, extensionDictionary);
 					} else {
@@ -134,6 +143,12 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 						MessageDictionary extensionDictionary = new MessageDictionary(extension);
 						foreach (var pair in extensionData) {
 							extensionDictionary[pair.Key] = pair.Value;
+						}
+
+						// Give extensions that require custom serialization a chance to do their work.
+						var customSerializingExtension = extension as IMessageWithEvents;
+						if (customSerializingExtension != null) {
+							customSerializingExtension.OnReceiving();
 						}
 
 						extendableMessage.Extensions.Add(extension);

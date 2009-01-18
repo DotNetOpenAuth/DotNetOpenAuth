@@ -551,6 +551,12 @@ namespace DotNetOpenAuth.Messaging {
 			Logger.DebugFormat("Preparing to send {0} ({1}) message.", message.GetType().Name, message.Version);
 			this.OnSending(message);
 
+			// Give the message a chance to do custom serialization.
+			IMessageWithEvents eventedMessage = message as IMessageWithEvents;
+			if (eventedMessage != null) {
+				eventedMessage.OnSending();
+			}
+
 			MessageProtections appliedProtection = MessageProtections.None;
 			foreach (IChannelBindingElement bindingElement in this.outgoingBindingElements) {
 				if (bindingElement.PrepareMessageForSending(message)) {
@@ -654,6 +660,12 @@ namespace DotNetOpenAuth.Messaging {
 			// Ensure that the message's protection requirements have been satisfied.
 			if ((message.RequiredProtection & appliedProtection) != message.RequiredProtection) {
 				throw new UnprotectedMessageException(message, appliedProtection);
+			}
+
+			// Give the message a chance to do custom serialization.
+			IMessageWithEvents eventedMessage = message as IMessageWithEvents;
+			if (eventedMessage != null) {
+				eventedMessage.OnReceiving();
 			}
 
 			// We do NOT verify that all required message parts are present here... the 
