@@ -6,17 +6,13 @@
 
 namespace DotNetOpenAuth.OpenId {
 	using System;
-	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
 	using System.IO;
-	using System.Linq;
 	using System.Security.Cryptography;
 	using System.Text;
-	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OpenId.ChannelElements;
-	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.Configuration;
+	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
 	/// Stores a secret used in signing and verifying messages.

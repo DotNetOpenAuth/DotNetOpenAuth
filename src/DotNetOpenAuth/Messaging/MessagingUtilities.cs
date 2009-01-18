@@ -268,7 +268,7 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Tests whether two arrays are equal in length and contents.
+		/// Tests whether two arrays are equal in contents and ordering.
 		/// </summary>
 		/// <typeparam name="T">The type of elements in the arrays.</typeparam>
 		/// <param name="first">The first array in the comparison.  May not be null.</param>
@@ -326,6 +326,34 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			return movenext1 == movenext2; // did they both reach the end together?
+		}
+
+		/// <summary>
+		/// Tests two unordered collections for same contents.
+		/// </summary>
+		/// <typeparam name="T">The type of elements in the collections.</typeparam>
+		/// <param name="first">The first collection in the comparison.  May not be null.</param>
+		/// <param name="second">The second collection in the comparison. May not be null.</param>
+		/// <returns>True if the collections have the same contents; false otherwise.</returns>
+		internal static bool AreEquivalentUnordered<T>(ICollection<T> first, ICollection<T> second) {
+			if (first == null && second == null) {
+				return true;
+			}
+			if ((first == null) ^ (second == null)) {
+				return false;
+			}
+
+			if (first.Count != second.Count) {
+				return false;
+			}
+
+			foreach (T value in first) {
+				if (!second.Contains(value)) {
+					return false;
+				}
+			}
+
+			return true;
 		}
 
 		/// <summary>

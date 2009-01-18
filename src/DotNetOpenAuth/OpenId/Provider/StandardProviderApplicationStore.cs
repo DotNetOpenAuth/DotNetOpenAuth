@@ -6,11 +6,8 @@
 
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
-	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Configuration;
+	using DotNetOpenAuth.Messaging.Bindings;
 
 	/// <summary>
 	/// An in-memory store for Providers, suitable for single server, single process
