@@ -15,9 +15,6 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 	/// The Attribute Exchange Store message, request leg.
 	/// </summary>
 	public sealed class StoreRequest : ExtensionBase, IMessageWithEvents {
-		[MessagePart("mode", IsRequired = true)]
-		private const string Mode = "store_request";
-
 		/// <summary>
 		/// The factory method that may be used in deserialization of this message.
 		/// </summary>
@@ -31,6 +28,12 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 
 			return null;
 		};
+
+		/// <summary>
+		/// The value of the 'mode' parameter.
+		/// </summary>
+		[MessagePart("mode", IsRequired = true)]
+		private const string Mode = "store_request";
 
 		/// <summary>
 		/// The list of provided attribute values.  This field will never be null.
@@ -52,9 +55,10 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		}
 
 		/// <summary>
-		/// Used by the Relying Party to add a given attribute with one or more values 
-		/// to the request for storage.
+		/// Adds a given attribute with one or more values to the request for storage.
+		/// Applicable to Relying Parties only.
 		/// </summary>
+		/// <param name="attribute">The attribute values.</param>
 		public void AddAttribute(AttributeValues attribute) {
 			ErrorUtilities.VerifyArgumentNotNull(attribute, "attribute");
 			ErrorUtilities.VerifyArgumentNamed(!this.ContainsAttribute(attribute.TypeUri), "attribute", OpenIdStrings.AttributeAlreadyAdded, attribute.TypeUri);
@@ -62,17 +66,21 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		}
 
 		/// <summary>
-		/// Used by the Relying Party to add a given attribute with one or more values 
-		/// to the request for storage.
+		/// Adds a given attribute with one or more values to the request for storage.
+		/// Applicable to Relying Parties only.
 		/// </summary>
+		/// <param name="typeUri">The type URI of the attribute.</param>
+		/// <param name="values">The attribute values.</param>
 		public void AddAttribute(string typeUri, params string[] values) {
 			this.AddAttribute(new AttributeValues(typeUri, values));
 		}
 
 		/// <summary>
-		/// Used by the Provider to gets the value(s) associated with a given attribute
-		/// that should be stored.
+		/// Gets the value(s) associated with a given attribute that should be stored.
+		/// Applicable to Providers only.
 		/// </summary>
+		/// <param name="attributeTypeUri">The type URI of the attribute whose values are being sought.</param>
+		/// <returns>The attribute values.</returns>
 		public AttributeValues GetAttribute(string attributeTypeUri) {
 			return this.attributesProvided.SingleOrDefault(attribute => string.Equals(attribute.TypeUri, attributeTypeUri, StringComparison.Ordinal));
 		}
@@ -87,7 +95,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			var fields = ((IMessage)this).ExtraData;
 			fields.Clear();
 
-			FetchResponse.SerializeAttributes(fields, this.attributesProvided);
+			AXUtilities.SerializeAttributes(fields, this.attributesProvided);
 		}
 
 		/// <summary>
@@ -96,7 +104,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// </summary>
 		void IMessageWithEvents.OnReceiving() {
 			var fields = ((IMessage)this).ExtraData;
-			foreach (var att in FetchResponse.DeserializeAttributes(fields)) {
+			foreach (var att in AXUtilities.DeserializeAttributes(fields)) {
 				this.AddAttribute(att);
 			}
 		}
@@ -119,6 +127,10 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 				return false;
 			}
 
+			if (this.Version != other.Version) {
+				return false;
+			}
+
 			if (!MessagingUtilities.AreEquivalentUnordered(this.Attributes.ToList(), other.Attributes.ToList())) {
 				return false;
 			}
@@ -126,6 +138,29 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			return true;
 		}
 
+		/// <summary>
+		/// Serves as a hash function for a particular type.
+		/// </summary>
+		/// <returns>
+		/// A hash code for the current <see cref="T:System.Object"/>.
+		/// </returns>
+		public override int GetHashCode() {
+			unchecked {
+				int hashCode = this.Version.GetHashCode();
+				foreach (AttributeValues att in this.Attributes) {
+					hashCode += att.GetHashCode();
+				}
+				return hashCode;
+			}
+		}
+
+		/// <summary>
+		/// Determines whether some attribute has values in this store request.
+		/// </summary>
+		/// <param name="typeUri">The type URI of the attribute in question.</param>
+		/// <returns>
+		/// 	<c>true</c> if the specified attribute appears in the store request; otherwise, <c>false</c>.
+		/// </returns>
 		private bool ContainsAttribute(string typeUri) {
 			return this.GetAttribute(typeUri) != null;
 		}

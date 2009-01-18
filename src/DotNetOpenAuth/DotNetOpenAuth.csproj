@@ -186,6 +186,7 @@
     <Compile Include="OpenId\Extensions\AliasManager.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\AttributeRequest.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\AttributeValues.cs" />
+    <Compile Include="OpenId\Extensions\AttributeExchange\AXUtilities.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\Constants.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\FetchRequest.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\FetchResponse.cs" />

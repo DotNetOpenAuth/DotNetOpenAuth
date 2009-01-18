@@ -31,6 +31,9 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			return null;
 		};
 
+		/// <summary>
+		/// The value of the 'mode' parameter.
+		/// </summary>
 		[MessagePart("mode", IsRequired = true)]
 		private const string Mode = "fetch_response";
 
@@ -69,8 +72,10 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		public Uri UpdateUrl { get; set; }
 
 		/// <summary>
-		/// Used by the Provider to add attributes to the response for the relying party.
+		/// Adds attributes to the response for the relying party.
+		/// Applicable to Providers.
 		/// </summary>
+		/// <param name="attribute">The attribute and values to add to the response.</param>
 		public void AddAttribute(AttributeValues attribute) {
 			ErrorUtilities.VerifyArgumentNotNull(attribute, "attribute");
 			ErrorUtilities.VerifyArgumentNamed(!this.ContainsAttribute(attribute.TypeUri), "attribute", OpenIdStrings.AttributeAlreadyAdded, attribute.TypeUri);
@@ -78,9 +83,12 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		}
 
 		/// <summary>
-		/// Used by the Relying Party to get the value(s) returned by the OpenID Provider 
+		/// Gets the value(s) returned by the OpenID Provider
 		/// for a given attribute, or null if that attribute was not provided.
+		/// Applicable to Relying Parties.
 		/// </summary>
+		/// <param name="attributeTypeUri">The type URI of the attribute.</param>
+		/// <returns>The values given by the Provider for the given attribute; or <c>null</c> if the attribute was not included in the message.</returns>
 		public AttributeValues GetAttribute(string attributeTypeUri) {
 			return this.attributesProvided.SingleOrDefault(attribute => string.Equals(attribute.TypeUri, attributeTypeUri, StringComparison.Ordinal));
 		}
@@ -101,6 +109,10 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 				return false;
 			}
 
+			if (this.Version != other.Version) {
+				return false;
+			}
+
 			if (this.UpdateUrl != other.UpdateUrl) {
 				return false;
 			}
@@ -112,6 +124,28 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			return true;
 		}
 
+		/// <summary>
+		/// Serves as a hash function for a particular type.
+		/// </summary>
+		/// <returns>
+		/// A hash code for the current <see cref="T:System.Object"/>.
+		/// </returns>
+		public override int GetHashCode() {
+			unchecked {
+				int hashCode = this.Version.GetHashCode();
+
+				if (this.UpdateUrl != null) {
+					hashCode += this.UpdateUrl.GetHashCode();
+				}
+
+				foreach (AttributeValues value in this.Attributes) {
+					hashCode += value.GetHashCode();
+				}
+
+				return hashCode;
+			}
+		}
+
 		#region IMessageWithEvents Members
 
 		/// <summary>
@@ -120,7 +154,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// </summary>
 		void IMessageWithEvents.OnSending() {
 			var extraData = ((IMessage)this).ExtraData;
-			SerializeAttributes(extraData, this.attributesProvided);
+			AXUtilities.SerializeAttributes(extraData, this.attributesProvided);
 		}
 
 		/// <summary>
@@ -129,71 +163,12 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// </summary>
 		void IMessageWithEvents.OnReceiving() {
 			var extraData = ((IMessage)this).ExtraData;
-			foreach (var att in DeserializeAttributes(extraData)) {
+			foreach (var att in AXUtilities.DeserializeAttributes(extraData)) {
 				this.AddAttribute(att);
 			}
 		}
 
 		#endregion
-
-		internal static void SerializeAttributes(IDictionary<string, string> fields, IEnumerable<AttributeValues> attributes) {
-			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
-			ErrorUtilities.VerifyArgumentNotNull(attributes, "attributes");
-
-			AliasManager aliasManager = new AliasManager();
-			foreach (var att in attributes) {
-				string alias = aliasManager.GetAlias(att.TypeUri);
-				fields.Add("type." + alias, att.TypeUri);
-				if (att.Values == null) {
-					continue;
-				}
-				if (att.Values.Count != 1) {
-					fields.Add("count." + alias, att.Values.Count.ToString(CultureInfo.InvariantCulture));
-					for (int i = 0; i < att.Values.Count; i++) {
-						fields.Add(string.Format(CultureInfo.InvariantCulture, "value.{0}.{1}", alias, i + 1), att.Values[i]);
-					}
-				} else {
-					fields.Add("value." + alias, att.Values[0]);
-				}
-			}
-		}
-
-		internal static IEnumerable<AttributeValues> DeserializeAttributes(IDictionary<string, string> fields) {
-			AliasManager aliasManager = ParseAliases(fields);
-			foreach (string alias in aliasManager.Aliases) {
-				AttributeValues att = new AttributeValues(aliasManager.ResolveAlias(alias));
-				int count = 1;
-				bool countSent = false;
-				string countString;
-				if (fields.TryGetValue("count." + alias, out countString)) {
-					if (!int.TryParse(countString, out count) || count <= 0) {
-						Logger.ErrorFormat("Failed to parse count.{0} value to a positive integer.", alias);
-						continue;
-					}
-					countSent = true;
-				}
-				if (countSent) {
-					for (int i = 1; i <= count; i++) {
-						string value;
-						if (fields.TryGetValue(string.Format(CultureInfo.InvariantCulture, "value.{0}.{1}", alias, i), out value)) {
-							att.Values.Add(value);
-						} else {
-							Logger.ErrorFormat("Missing value for attribute '{0}'.", att.TypeUri);
-							continue;
-						}
-					}
-				} else {
-					string value;
-					if (fields.TryGetValue("value." + alias, out value)) {
-						att.Values.Add(value);
-					} else {
-						Logger.ErrorFormat("Missing value for attribute '{0}'.", att.TypeUri);
-						continue;
-					}
-				}
-				yield return att;
-			}
-		}
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification
@@ -216,24 +191,13 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			}
 		}
 
-		private static AliasManager ParseAliases(IDictionary<string, string> fields) {
-			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
-
-			AliasManager aliasManager = new AliasManager();
-			foreach (var pair in fields) {
-				if (!pair.Key.StartsWith("type.", StringComparison.Ordinal)) {
-					continue;
-				}
-				string alias = pair.Key.Substring(5);
-				if (alias.IndexOfAny(new[] { '.', ',', ':' }) >= 0) {
-					Logger.ErrorFormat("Illegal characters in alias name '{0}'.", alias);
-					continue;
-				}
-				aliasManager.SetAlias(alias, pair.Value);
-			}
-			return aliasManager;
-		}
-
+		/// <summary>
+		/// Determines whether some attribute has values in this fetch response.
+		/// </summary>
+		/// <param name="typeUri">The type URI of the attribute in question.</param>
+		/// <returns>
+		/// 	<c>true</c> if the specified attribute appears in the fetch response; otherwise, <c>false</c>.
+		/// </returns>
 		private bool ContainsAttribute(string typeUri) {
 			return this.GetAttribute(typeUri) != null;
 		}

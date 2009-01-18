@@ -89,6 +89,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// Used by a Provider to create a response to a request for an attribute's value(s)
 		/// using a given array of strings.
 		/// </summary>
+		/// <param name="values">The values for the requested attribute.</param>
 		/// <returns>
 		/// The newly created <see cref="AttributeValues"/> object that should be added to
 		/// the <see cref="FetchResponse"/> object.
@@ -128,6 +129,24 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			}
 
 			return true;
+		}
+
+		/// <summary>
+		/// Serves as a hash function for a particular type.
+		/// </summary>
+		/// <returns>
+		/// A hash code for the current <see cref="T:System.Object"/>.
+		/// </returns>
+		public override int GetHashCode() {
+			int hashCode = this.IsRequired ? 1 : 0;
+			unchecked {
+				hashCode += this.Count;
+				if (this.TypeUri != null) {
+					hashCode += this.TypeUri.GetHashCode();
+				}
+			}
+
+			return hashCode;
 		}
 	}
 }

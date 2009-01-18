@@ -30,10 +30,21 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			return null;
 		};
 
+		/// <summary>
+		/// Characters that may not appear in an attribute alias list.
+		/// </summary>
+		internal static readonly char[] IllegalAliasListCharacters = new[] { '.', '\n' };
+
+		/// <summary>
+		/// Characters that may not appear in an attribute Type URI alias.
+		/// </summary>
+		internal static readonly char[] IllegalAliasCharacters = new[] { '.', ',', ':' };
+
+		/// <summary>
+		/// The value for the 'mode' parameter.
+		/// </summary>
 		[MessagePart("mode", IsRequired = true)]
 		private const string Mode = "fetch_request";
-
-		private static readonly char[] IllegalAliasListCharacters = new[] { '.', '\n' };
 
 		/// <summary>
 		/// The list of requested attributes.  This field will never be null.
@@ -78,8 +89,10 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		private string RequiredAliases { get; set; }
 
 		/// <summary>
-		/// Used by the Relying Party to add a request for the values of a given attribute.
+		/// Adds a request for the values of a given attribute.
+		/// Applicable to Relying Parties.
 		/// </summary>
+		/// <param name="attribute">The attribute.</param>
 		public void AddAttribute(AttributeRequest attribute) {
 			ErrorUtilities.VerifyArgumentNotNull(attribute, "attribute");
 			ErrorUtilities.VerifyArgumentNamed(!this.ContainsAttribute(attribute.TypeUri), "attribute", OpenIdStrings.AttributeAlreadyAdded, attribute.TypeUri);
@@ -87,9 +100,13 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		}
 
 		/// <summary>
-		/// Used by the Provider to find out whether the value(s) of a given attribute is requested.
+		/// Find out whether the value(s) of a given attribute are being requested by the Relying Party.
+		/// Applicable to Providers.
 		/// </summary>
-		/// <returns>Null if the Relying Party did not ask for the values of the given attribute.</returns>
+		/// <param name="attributeTypeUri">The type URI of the attribute.</param>
+		/// <returns>
+		/// The details of a Relying Party's request for the given attribute; or <c>null</c> if the relyign party did not ask for the values of the given attribute.
+		/// </returns>
 		public AttributeRequest GetAttribute(string attributeTypeUri) {
 			return this.attributesRequested.SingleOrDefault(attribute => string.Equals(attribute.TypeUri, attributeTypeUri, StringComparison.Ordinal));
 		}
@@ -110,6 +127,10 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 				return false;
 			}
 
+			if (this.Version != other.Version) {
+				return false;
+			}
+
 			if (this.UpdateUrl != other.UpdateUrl) {
 				return false;
 			}
@@ -119,6 +140,28 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			}
 
 			return true;
+		}
+
+		/// <summary>
+		/// Serves as a hash function for a particular type.
+		/// </summary>
+		/// <returns>
+		/// A hash code for the current <see cref="T:System.Object"/>.
+		/// </returns>
+		public override int GetHashCode() {
+			unchecked {
+				int hashCode = this.Version.GetHashCode();
+
+				if (this.UpdateUrl != null) {
+					hashCode += this.UpdateUrl.GetHashCode();
+				}
+
+				foreach (AttributeRequest att in this.Attributes) {
+					hashCode += att.GetHashCode();
+				}
+
+				return hashCode;
+			}
 		}
 
 		#region IMessageWithEvents Members
@@ -240,6 +283,11 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			}
 		}
 
+		/// <summary>
+		/// Splits a list of aliases by their commas.
+		/// </summary>
+		/// <param name="aliasList">The comma-delimited list of aliases.  May be null or empty.</param>
+		/// <returns>The list of aliases.  Never null, but may be empty.</returns>
 		private static IList<string> ParseAliasList(string aliasList) {
 			if (string.IsNullOrEmpty(aliasList)) {
 				return EmptyList<string>.Instance;
@@ -248,6 +296,13 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			return aliasList.Split(',');
 		}
 
+		/// <summary>
+		/// Determines whether some attribute has values in this fetch request.
+		/// </summary>
+		/// <param name="typeUri">The type URI of the attribute in question.</param>
+		/// <returns>
+		/// 	<c>true</c> if the specified attribute appears in the fetch request; otherwise, <c>false</c>.
+		/// </returns>
 		private bool ContainsAttribute(string typeUri) {
 			return this.GetAttribute(typeUri) != null;
 		}

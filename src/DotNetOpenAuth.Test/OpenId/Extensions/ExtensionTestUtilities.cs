@@ -20,6 +20,9 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// <summary>
 		/// Simulates an extension request and response.
 		/// </summary>
+		/// <param name="protocol">The protocol to use in the roundtripping.</param>
+		/// <param name="requests">The extensions to add to the request message.</param>
+		/// <param name="responses">The extensions to add to the response message.</param>
 		/// <remarks>
 		/// This method relies on the extension objects' Equals methods to verify
 		/// accurate transport.  The Equals methods should be verified by separate tests.

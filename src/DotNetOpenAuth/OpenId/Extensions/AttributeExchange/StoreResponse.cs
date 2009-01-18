@@ -79,9 +79,23 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		[MessagePart("mode", IsRequired = true)]
 		private string Mode { get; set; }
 
+		/// <summary>
+		/// Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>.
+		/// </summary>
+		/// <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:System.Object"/>.</param>
+		/// <returns>
+		/// true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>; otherwise, false.
+		/// </returns>
+		/// <exception cref="T:System.NullReferenceException">
+		/// The <paramref name="obj"/> parameter is null.
+		/// </exception>
 		public override bool Equals(object obj) {
 			var other = obj as StoreResponse;
 			if (other == null) {
+				return false;
+			}
+
+			if (this.Version != other.Version) {
 				return false;
 			}
 
@@ -94,6 +108,24 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			}
 
 			return true;
+		}
+
+		/// <summary>
+		/// Serves as a hash function for a particular type.
+		/// </summary>
+		/// <returns>
+		/// A hash code for the current <see cref="T:System.Object"/>.
+		/// </returns>
+		public override int GetHashCode() {
+			unchecked {
+				int hashCode = this.Version.GetHashCode();
+				hashCode += this.Succeeded ? 0 : 1;
+				if (this.FailureReason != null) {
+					hashCode += this.FailureReason.GetHashCode();
+				}
+
+				return hashCode;
+			}
 		}
 
 		/// <summary>
@@ -113,7 +145,9 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 
 			ErrorUtilities.VerifyProtocol(
 				this.Mode == SuccessMode || this.Mode == FailureMode,
-				MessagingStrings.UnexpectedMessagePartValue, "mode", this.Mode);
+				MessagingStrings.UnexpectedMessagePartValue,
+				"mode",
+				this.Mode);
 		}
 	}
 }

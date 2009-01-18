@@ -19,6 +19,18 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AttributeValues"/> class.
 		/// </summary>
+		/// <param name="typeUri">The TypeURI that uniquely identifies the attribute.</param>
+		/// <param name="values">The values for the attribute.</param>
+		public AttributeValues(string typeUri, params string[] values) {
+			ErrorUtilities.VerifyNonZeroLength(typeUri, "typeUri");
+
+			this.TypeUri = typeUri;
+			this.Values = (IList<string>)values ?? EmptyList<string>.Instance;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AttributeValues"/> class.
+		/// </summary>
 		/// <remarks>
 		/// This is internal because web sites should be using the
 		/// <see cref="AttributeRequest.Respond"/> method to instantiate.
@@ -39,18 +51,6 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AttributeValues"/> class.
-		/// </summary>
-		/// <param name="typeUri">The TypeURI that uniquely identifies the attribute.</param>
-		/// <param name="values">The values for the attribute.</param>
-		public AttributeValues(string typeUri, params string[] values) {
-			ErrorUtilities.VerifyNonZeroLength(typeUri, "typeUri");
-
-			this.TypeUri = typeUri;
-			this.Values = (IList<string>)values ?? EmptyList<string>.Instance;
-		}
-
-		/// <summary>
 		/// Gets the URI uniquely identifying the attribute whose value is being supplied.
 		/// </summary>
 		public string TypeUri { get; internal set; }
@@ -60,6 +60,16 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// </summary>
 		public IList<string> Values { get; private set; }
 
+		/// <summary>
+		/// Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>.
+		/// </summary>
+		/// <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:System.Object"/>.</param>
+		/// <returns>
+		/// true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>; otherwise, false.
+		/// </returns>
+		/// <exception cref="T:System.NullReferenceException">
+		/// The <paramref name="obj"/> parameter is null.
+		/// </exception>
 		public override bool Equals(object obj) {
 			AttributeValues other = obj as AttributeValues;
 			if (other == null) {
@@ -75,6 +85,27 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			}
 
 			return true;
+		}
+
+		/// <summary>
+		/// Serves as a hash function for a particular type.
+		/// </summary>
+		/// <returns>
+		/// A hash code for the current <see cref="T:System.Object"/>.
+		/// </returns>
+		public override int GetHashCode() {
+			int hashCode = 0;
+			unchecked {
+				if (this.TypeUri != null) {
+					hashCode += this.TypeUri.GetHashCode();
+				}
+
+				foreach (string value in this.Values) {
+					hashCode += value.GetHashCode();
+				}
+			}
+
+			return hashCode;
 		}
 	}
 }
