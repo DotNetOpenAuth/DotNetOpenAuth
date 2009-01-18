@@ -6,14 +6,11 @@
 
 namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
-	using DotNetOpenAuth.Messaging.Reflection;
 	using System.Globalization;
+	using DotNetOpenAuth.Messaging.Reflection;
 
 	/// <summary>
-	/// 
+	/// An encoder/decoder design for DateTimes that must conform to the PAPE spec.
 	/// </summary>
 	/// <remarks>
 	/// The timestamp MUST be formatted as specified in section 5.6 of [RFC3339] (Klyne, G. and C. Newman, “Date and Time on the Internet: Timestamps,” .), with the following restrictions:
@@ -29,7 +26,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 		/// TODO: This array of formats is not yet a complete list.
 		/// </remarks>
 		private static readonly string[] PermissibleDateTimeFormats = { "yyyy-MM-ddTHH:mm:ssZ" };
-		
+
 		#region IMessagePartEncoder Members
 
 		/// <summary>
@@ -43,8 +40,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 			DateTime? dateTime = value as DateTime?;
 			if (dateTime.HasValue) {
 				return dateTime.Value.ToUniversalTime().ToString(PermissibleDateTimeFormats[0], CultureInfo.InvariantCulture);
-			}
-			else {
+			} else {
 				return null;
 			}
 		}

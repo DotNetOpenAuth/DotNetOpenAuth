@@ -11,9 +11,6 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 	using DotNetOpenAuth.Test.OpenId.Extensions;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-	/// <summary>
-	/// 
-	/// </summary>
 	[TestClass]
 	public class PapeRoundTripTests : OpenIdTestBase {
 		[TestMethod]
@@ -27,7 +24,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 		public void Full() {
 			var request = new PolicyRequest();
 			request.MaximumAuthenticationAge = TimeSpan.FromMinutes(10);
-			request.PreferredAuthLevelTypes.Add(Constants.AuthenticationLevels.NistTypeUri);
+			request.PreferredAuthLevelTypes.Add(Constants.AssuranceLevels.NistTypeUri);
 			request.PreferredAuthLevelTypes.Add("customAuthLevel");
 			request.PreferredPolicies.Add(AuthenticationPolicies.MultiFactor);
 			request.PreferredPolicies.Add(AuthenticationPolicies.PhishingResistant);
@@ -36,7 +33,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			response.ActualPolicies.Add(AuthenticationPolicies.MultiFactor);
 			response.ActualPolicies.Add(AuthenticationPolicies.PhishingResistant);
 			response.AuthenticationTimeUtc = DateTime.UtcNow - TimeSpan.FromMinutes(5);
-			response.AssuranceLevels[Constants.AuthenticationLevels.NistTypeUri] = "1";
+			response.AssuranceLevels[Constants.AssuranceLevels.NistTypeUri] = "1";
 			response.AssuranceLevels["customlevel"] = "ABC";
 			response.NistAssuranceLevel = NistAssuranceLevel.Level2;
 

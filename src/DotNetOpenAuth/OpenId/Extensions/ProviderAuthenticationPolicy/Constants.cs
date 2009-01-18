@@ -21,19 +21,28 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 		/// <summary>
 		/// The namespace alias to use for OpenID 1.x interop, where aliases are not defined in the message.
 		/// </summary>
-		internal const string pape_compatibility_alias = "pape";
+		internal const string CompatibilityAlias = "pape";
 
 		/// <summary>
 		/// The string to prepend on an Auth Level Type alias definition.
 		/// </summary>
 		internal const string AuthLevelNamespaceDeclarationPrefix = "auth_level.ns.";
 
-		internal static class AuthenticationLevels {
+		/// <summary>
+		/// Well-known assurance level Type URIs.
+		/// </summary>
+		internal static class AssuranceLevels {
+			/// <summary>
+			/// A mapping between the PAPE TypeURI and the alias to use if 
+			/// possible for backward compatibility reasons.
+			/// </summary>
 			internal static readonly IDictionary<string, string> PreferredTypeUriToAliasMap = new Dictionary<string, string> {
-				{ NistTypeUri, nist_compatibility_alias },
+				{ NistTypeUri, "nist" },
 			};
 
-			internal const string nist_compatibility_alias = "nist";
+			/// <summary>
+			/// The Type URI of the NIST assurance level.
+			/// </summary>
 			internal const string NistTypeUri = "http://csrc.nist.gov/publications/nistpubs/800-63/SP800-63V1_0_2.pdf";
 		}
 

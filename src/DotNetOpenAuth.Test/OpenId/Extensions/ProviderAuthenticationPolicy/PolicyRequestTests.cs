@@ -7,13 +7,13 @@
 namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 	using System;
 	using System.Collections.Generic;
+	using System.Globalization;
 	using System.Linq;
 	using System.Text;
-	using System.Globalization;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
-	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Reflection;
+	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
 	public class PolicyRequestTests : OpenIdTestBase {
@@ -60,9 +60,9 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 		[TestMethod]
 		public void AddAuthLevelTypes() {
 			PolicyRequest req = new PolicyRequest();
-			req.PreferredAuthLevelTypes.Add(Constants.AuthenticationLevels.NistTypeUri);
+			req.PreferredAuthLevelTypes.Add(Constants.AssuranceLevels.NistTypeUri);
 			Assert.AreEqual(1, req.PreferredAuthLevelTypes.Count);
-			Assert.IsTrue(req.PreferredAuthLevelTypes.Contains(Constants.AuthenticationLevels.NistTypeUri));
+			Assert.IsTrue(req.PreferredAuthLevelTypes.Contains(Constants.AssuranceLevels.NistTypeUri));
 		}
 
 		[TestMethod]
@@ -137,13 +137,13 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			Assert.IsTrue(fields.ContainsKey("preferred_auth_level_types"));
 			Assert.AreEqual("alias1", fields["preferred_auth_level_types"]);
 
-			req.PreferredAuthLevelTypes.Add(Constants.AuthenticationLevels.NistTypeUri);
+			req.PreferredAuthLevelTypes.Add(Constants.AssuranceLevels.NistTypeUri);
 			reqEvents.OnSending();
 			Assert.AreEqual(5, fields.Count);
 			Assert.IsTrue(fields.ContainsKey("auth_level.ns.alias2"));
 			Assert.AreEqual("http://authtype1/", fields["auth_level.ns.alias2"]);
 			Assert.IsTrue(fields.ContainsKey("auth_level.ns.nist"));
-			Assert.AreEqual(Constants.AuthenticationLevels.NistTypeUri, fields["auth_level.ns.nist"]);
+			Assert.AreEqual(Constants.AssuranceLevels.NistTypeUri, fields["auth_level.ns.nist"]);
 			Assert.AreEqual("alias2 nist", fields["preferred_auth_level_types"]);
 		}
 	}

@@ -9,16 +9,16 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
-	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Reflection;
+	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
 	public class PolicyResponseTests : OpenIdTestBase {
-		private DateTime someLocalTime = new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Local);
-		private DateTime someUtcTime = new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Utc);
-		private DateTime someUnspecifiedTime = new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Unspecified);
+		private static readonly DateTime someLocalTime = new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Local);
+		private static readonly DateTime someUtcTime = new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Utc);
+		private static readonly DateTime someUnspecifiedTime = new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Unspecified);
 
 		[TestMethod]
 		public void Ctor() {
@@ -101,8 +101,8 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			Assert.AreEqual(0, resp.AssuranceLevels.Count);
 			resp.NistAssuranceLevel = NistAssuranceLevel.Level2;
 			Assert.AreEqual(1, resp.AssuranceLevels.Count);
-			Assert.AreEqual("2", resp.AssuranceLevels[Constants.AuthenticationLevels.NistTypeUri]);
-			resp.AssuranceLevels[Constants.AuthenticationLevels.NistTypeUri] = "3";
+			Assert.AreEqual("2", resp.AssuranceLevels[Constants.AssuranceLevels.NistTypeUri]);
+			resp.AssuranceLevels[Constants.AssuranceLevels.NistTypeUri] = "3";
 			Assert.AreEqual(NistAssuranceLevel.Level3, resp.NistAssuranceLevel);
 			resp.AssuranceLevels.Clear();
 			Assert.IsNull(resp.NistAssuranceLevel);
@@ -158,9 +158,9 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			Assert.AreNotEqual(resp, resp2);
 			resp2.AssuranceLevels["custom"] = "b";
 			Assert.AreEqual(resp, resp2);
-			resp.AssuranceLevels[Constants.AuthenticationLevels.NistTypeUri] = "1";
+			resp.AssuranceLevels[Constants.AssuranceLevels.NistTypeUri] = "1";
 			Assert.AreNotEqual(resp, resp2);
-			resp2.AssuranceLevels[Constants.AuthenticationLevels.NistTypeUri] = "1";
+			resp2.AssuranceLevels[Constants.AssuranceLevels.NistTypeUri] = "1";
 			Assert.AreEqual(resp, resp2);
 		}
 
@@ -196,7 +196,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			respEvents.OnSending();
 			Assert.AreEqual(4, fields.Count);
 			Assert.IsTrue(fields.ContainsKey("auth_level.ns.nist"));
-			Assert.AreEqual(Constants.AuthenticationLevels.NistTypeUri, fields["auth_level.ns.nist"]);
+			Assert.AreEqual(Constants.AssuranceLevels.NistTypeUri, fields["auth_level.ns.nist"]);
 			Assert.IsTrue(fields.ContainsKey("auth_level.nist"));
 			Assert.AreEqual("3", fields["auth_level.nist"]);
 
@@ -209,7 +209,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			Assert.AreEqual("CU", fields["auth_level.alias2"]);
 			// and make sure the NIST is still there.
 			Assert.IsTrue(fields.ContainsKey("auth_level.ns.nist"));
-			Assert.AreEqual(Constants.AuthenticationLevels.NistTypeUri, fields["auth_level.ns.nist"]);
+			Assert.AreEqual(Constants.AssuranceLevels.NistTypeUri, fields["auth_level.ns.nist"]);
 			Assert.IsTrue(fields.ContainsKey("auth_level.nist"));
 			Assert.AreEqual("3", fields["auth_level.nist"]);
 		}

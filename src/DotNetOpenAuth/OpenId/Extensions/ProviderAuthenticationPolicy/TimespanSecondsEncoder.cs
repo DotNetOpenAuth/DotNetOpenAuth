@@ -6,11 +6,8 @@
 
 namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
-	using DotNetOpenAuth.Messaging.Reflection;
 	using System.Globalization;
+	using DotNetOpenAuth.Messaging.Reflection;
 
 	/// <summary>
 	/// Encodes and decodes the <see cref="TimeSpan"/> as an integer of total seconds.

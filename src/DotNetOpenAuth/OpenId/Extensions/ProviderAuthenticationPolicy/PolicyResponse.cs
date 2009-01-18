@@ -43,34 +43,42 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 		[MessagePart("auth_policies", IsRequired = true)]
 		private string actualPoliciesString;
 
+		/// <summary>
+		/// Backing field for the <see cref="AuthenticationTimeUtc"/> property.
+		/// </summary>
 		private DateTime? authenticationTimeUtc;
 
 		/// <summary>
-		/// Instantiates a <see cref="PolicyResponse"/>.
+		/// Initializes a new instance of the <see cref="PolicyResponse"/> class.
 		/// </summary>
 		public PolicyResponse()
 			: base(new Version(1, 0), Constants.TypeUri, null) {
-			ActualPolicies = new List<string>(1);
-			AssuranceLevels = new Dictionary<string, string>(1);
+			this.ActualPolicies = new List<string>(1);
+			this.AssuranceLevels = new Dictionary<string, string>(1);
 		}
 
 		/// <summary>
-		/// One or more authentication policy URIs that the OP conformed to when authenticating the End User.
+		/// Gets a list of authentication policy URIs that the 
+		/// OP conformed to when authenticating the End User.
 		/// </summary>
-		/// <remarks>
-		/// If no policies were met though the OP wishes to convey other information in the response, this parameter MUST be included with the value of "none".
-		/// </remarks>
 		public IList<string> ActualPolicies { get; private set; }
 
 		/// <summary>
-		/// Optional. The most recent timestamp when the End User has actively authenticated to the OP in a manner fitting the asserted policies.
+		/// Gets or sets the most recent timestamp when the End User has 
+		/// actively authenticated to the OP in a manner fitting the asserted policies.
 		/// </summary>
 		/// <remarks>
-		/// If the RP's request included the "openid.max_auth_age" parameter then the OP MUST include "openid.auth_time" in its response. If "openid.max_auth_age" was not requested, the OP MAY choose to include "openid.auth_time" in its response.
+		/// If the RP's request included the "openid.max_auth_age" parameter 
+		/// then the OP MUST include "openid.auth_time" in its response. 
+		/// If "openid.max_auth_age" was not requested, the OP MAY choose to include 
+		/// "openid.auth_time" in its response.
 		/// </remarks>
 		[MessagePart("auth_time", Encoder = typeof(DateTimeEncoder))]
 		public DateTime? AuthenticationTimeUtc {
-			get { return authenticationTimeUtc; }
+			get {
+				return this.authenticationTimeUtc;
+			}
+
 			set {
 				// Make sure that whatever is set here, it becomes UTC time.
 				if (value.HasValue) {
@@ -80,33 +88,41 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 
 					// Convert to UTC and cut to the second, since the protocol only allows for
 					// that level of precision.
-					authenticationTimeUtc = OpenIdUtilities.CutToSecond(value.Value.ToUniversalTime());
+					this.authenticationTimeUtc = OpenIdUtilities.CutToSecond(value.Value.ToUniversalTime());
 				} else {
-					authenticationTimeUtc = null;
+					this.authenticationTimeUtc = null;
 				}
 			}
 		}
 
 		/// <summary>
-		/// Optional. The Assurance Level as defined by the National Institute of Standards and Technology (NIST) in Special Publication 800-63 (Burr, W., Dodson, D., and W. Polk, Ed., “Electronic Authentication Guideline,” April 2006.) [NIST_SP800‑63] corresponding to the authentication method and policies employed by the OP when authenticating the End User.
+		/// Gets or sets the Assurance Level as defined by the National 
+		/// Institute of Standards and Technology (NIST) in Special Publication 
+		/// 800-63 (Burr, W., Dodson, D., and W. Polk, Ed., “Electronic 
+		/// Authentication Guideline,” April 2006.) [NIST_SP800‑63] corresponding 
+		/// to the authentication method and policies employed by the OP when 
+		/// authenticating the End User.
 		/// </summary>
 		/// <remarks>
-		/// See PAPE spec Appendix A.1.2 (NIST Assurance Levels) for high-level example classifications of authentication methods within the defined levels.
+		/// See PAPE spec Appendix A.1.2 (NIST Assurance Levels) for high-level 
+		/// example classifications of authentication methods within the defined 
+		/// levels.
 		/// </remarks>
 		public NistAssuranceLevel? NistAssuranceLevel {
 			get {
 				string levelString;
-				if (AssuranceLevels.TryGetValue(Constants.AuthenticationLevels.NistTypeUri, out levelString)) {
+				if (this.AssuranceLevels.TryGetValue(Constants.AssuranceLevels.NistTypeUri, out levelString)) {
 					return (NistAssuranceLevel)Enum.Parse(typeof(NistAssuranceLevel), levelString);
 				} else {
 					return null;
 				}
 			}
+
 			set {
 				if (value != null) {
-					AssuranceLevels[Constants.AuthenticationLevels.NistTypeUri] = ((int)value).ToString(CultureInfo.InvariantCulture);
+					this.AssuranceLevels[Constants.AssuranceLevels.NistTypeUri] = ((int)value).ToString(CultureInfo.InvariantCulture);
 				} else {
-					AssuranceLevels.Remove(Constants.AuthenticationLevels.NistTypeUri);
+					this.AssuranceLevels.Remove(Constants.AssuranceLevels.NistTypeUri);
 				}
 			}
 		}
@@ -116,72 +132,10 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 		/// the values are the per authentication level defined custom value.
 		/// </summary>
 		/// <remarks>
-		/// A very common key is <see cref="Constants.AuthenticationLevels.NistTypeUri"/>
+		/// A very common key is <see cref="Constants.AssuranceLevels.NistTypeUri"/>
 		/// and values for this key are available in <see cref="NistAssuranceLevel"/>.
 		/// </remarks>
 		public IDictionary<string, string> AssuranceLevels { get; private set; }
-
-		/// <summary>
-		/// Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>.
-		/// </summary>
-		/// <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:System.Object"/>.</param>
-		/// <returns>
-		/// true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>; otherwise, false.
-		/// </returns>
-		/// <exception cref="T:System.NullReferenceException">
-		/// The <paramref name="obj"/> parameter is null.
-		/// </exception>
-		public override bool Equals(object obj) {
-			PolicyResponse other = obj as PolicyResponse;
-			if (other == null) {
-				return false;
-			}
-
-			if (AuthenticationTimeUtc != other.AuthenticationTimeUtc) {
-				return false;
-			}
-
-			if (AssuranceLevels.Count != other.AssuranceLevels.Count) {
-				return false;
-			}
-
-			foreach (var pair in AssuranceLevels) {
-				if (!other.AssuranceLevels.Contains(pair)) {
-					return false;
-				}
-			}
-
-			if (ActualPolicies.Count != other.ActualPolicies.Count) {
-				return false;
-			}
-
-			foreach (string policy in ActualPolicies) {
-				if (!other.ActualPolicies.Contains(policy)) {
-					return false;
-				}
-			}
-
-			return true;
-		}
-
-		/// <summary>
-		/// Serves as a hash function for a particular type.
-		/// </summary>
-		/// <returns>
-		/// A hash code for the current <see cref="T:System.Object"/>.
-		/// </returns>
-		public override int GetHashCode() {
-			// TODO: fix this to match Equals
-			return ActualPolicies.GetHashCode();
-		}
-
-		private static string SerializePolicies(IList<string> policies) {
-			if (policies.Count == 0) {
-				return AuthenticationPolicies.None;
-			} else {
-				return PapeUtilities.ConcatenateListOfElements(policies);
-			}
-		}
 
 		#region IMessageWithEvents Members
 
@@ -195,9 +149,9 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 
 			this.actualPoliciesString = SerializePolicies(this.ActualPolicies);
 
-			if (AssuranceLevels.Count > 0) {
+			if (this.AssuranceLevels.Count > 0) {
 				AliasManager aliases = new AliasManager();
-				aliases.AssignAliases(AssuranceLevels.Keys, Constants.AuthenticationLevels.PreferredTypeUriToAliasMap);
+				aliases.AssignAliases(this.AssuranceLevels.Keys, Constants.AssuranceLevels.PreferredTypeUriToAliasMap);
 
 				// Add a definition for each Auth Level Type alias.
 				foreach (string alias in aliases.Aliases) {
@@ -205,7 +159,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 				}
 
 				// Now use the aliases for those type URIs to list the individual values.
-				foreach (var pair in AssuranceLevels) {
+				foreach (var pair in this.AssuranceLevels) {
 					extraData.Add(AuthLevelAliasPrefix + aliases.GetAlias(pair.Key), pair.Value);
 				}
 			}
@@ -219,7 +173,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 			var extraData = ((IMessage)this).ExtraData;
 
 			this.ActualPolicies.Clear();
-			string[] actualPolicies = actualPoliciesString.Split(' ');
+			string[] actualPolicies = this.actualPoliciesString.Split(' ');
 			foreach (string policy in actualPolicies) {
 				if (policy.Length > 0 && policy != AuthenticationPolicies.None) {
 					this.ActualPolicies.Add(policy);
@@ -238,5 +192,73 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>.
+		/// </summary>
+		/// <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:System.Object"/>.</param>
+		/// <returns>
+		/// true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>; otherwise, false.
+		/// </returns>
+		/// <exception cref="T:System.NullReferenceException">
+		/// The <paramref name="obj"/> parameter is null.
+		/// </exception>
+		public override bool Equals(object obj) {
+			PolicyResponse other = obj as PolicyResponse;
+			if (other == null) {
+				return false;
+			}
+
+			if (this.AuthenticationTimeUtc != other.AuthenticationTimeUtc) {
+				return false;
+			}
+
+			if (this.AssuranceLevels.Count != other.AssuranceLevels.Count) {
+				return false;
+			}
+
+			foreach (var pair in this.AssuranceLevels) {
+				if (!other.AssuranceLevels.Contains(pair)) {
+					return false;
+				}
+			}
+
+			if (this.ActualPolicies.Count != other.ActualPolicies.Count) {
+				return false;
+			}
+
+			foreach (string policy in this.ActualPolicies) {
+				if (!other.ActualPolicies.Contains(policy)) {
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		/// <summary>
+		/// Serves as a hash function for a particular type.
+		/// </summary>
+		/// <returns>
+		/// A hash code for the current <see cref="T:System.Object"/>.
+		/// </returns>
+		public override int GetHashCode() {
+			// TODO: fix this to match Equals
+			return this.ActualPolicies.GetHashCode();
+		}
+
+		/// <summary>
+		/// Serializes the applied policies for transmission from the Provider
+		/// to the Relying Party.
+		/// </summary>
+		/// <param name="policies">The applied policies.</param>
+		/// <returns>A space-delimited list of applied policies.</returns>
+		private static string SerializePolicies(IList<string> policies) {
+			if (policies.Count == 0) {
+				return AuthenticationPolicies.None;
+			} else {
+				return PapeUtilities.ConcatenateListOfElements(policies);
+			}
+		}
 	}
 }
