@@ -14,9 +14,10 @@ namespace DotNetOpenAuth.OpenId.Test.Extensions.ProviderAuthenticationPolicy {
 
 	[TestClass]
 	public class PolicyResponseTests {
-		DateTime someLocalTime = new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Local);
-		DateTime someUtcTime = new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Utc);
-		DateTime someUnspecifiedTime = new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Unspecified);
+		private DateTime someLocalTime = new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Local);
+		private DateTime someUtcTime = new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Utc);
+		private DateTime someUnspecifiedTime = new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Unspecified);
+
 		[TestMethod]
 		public void Ctor() {
 			PolicyResponse resp = new PolicyResponse();
@@ -159,18 +160,6 @@ namespace DotNetOpenAuth.OpenId.Test.Extensions.ProviderAuthenticationPolicy {
 			Assert.AreNotEqual(resp, resp2);
 			resp2.AssuranceLevels[Constants.AuthenticationLevels.NistTypeUri] = "1";
 			Assert.AreEqual(resp, resp2);
-		}
-
-		[TestMethod]
-		public void DeserializeNull() {
-			PolicyResponse resp = new PolicyResponse();
-			Assert.IsFalse(((IExtensionResponse)resp).Deserialize(null, null, Constants.TypeUri));
-		}
-
-		[TestMethod]
-		public void DeserializeEmpty() {
-			PolicyResponse resp = new PolicyResponse();
-			Assert.IsFalse(((IExtensionResponse)resp).Deserialize(new Dictionary<string, string>(), null, Constants.TypeUri));
 		}
 
 		[TestMethod]

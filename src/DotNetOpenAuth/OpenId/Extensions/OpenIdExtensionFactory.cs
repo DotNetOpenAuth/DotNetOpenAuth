@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
 
 	/// <summary>
 	/// An OpenID extension factory that supports registration so that third-party
@@ -32,6 +33,8 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 			this.RegisterExtension(FetchResponse.Factory);
 			this.RegisterExtension(StoreRequest.Factory);
 			this.RegisterExtension(StoreResponse.Factory);
+			this.RegisterExtension(PolicyRequest.Factory);
+			this.RegisterExtension(PolicyResponse.Factory);
 		}
 
 		/// <summary>

@@ -7,15 +7,25 @@
 namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 	using System;
 	using System.Collections.Generic;
-	using System.Text;
-	using System.Diagnostics;
 	using System.Globalization;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
 	/// The PAPE response part of an OpenID Authentication response message.
 	/// </summary>
 	public sealed class PolicyResponse : ExtensionBase, IMessageWithEvents {
+		/// <summary>
+		/// The factory method that may be used in deserialization of this message.
+		/// </summary>
+		internal static readonly OpenIdExtensionFactory.CreateDelegate Factory = (typeUri, data, baseMessage) => {
+			if (typeUri == Constants.TypeUri && baseMessage is IndirectSignedResponse) {
+				return new PolicyResponse();
+			}
+
+			return null;
+		};
+
 		/// <summary>
 		/// The first part of a parameter name that gives the custom string value for
 		/// the assurance level.  The second part of the parameter name is the alias for

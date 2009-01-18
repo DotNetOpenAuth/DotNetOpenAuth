@@ -103,18 +103,6 @@ namespace DotNetOpenAuth.OpenId.Test.Extensions.ProviderAuthenticationPolicy {
 		}
 
 		[TestMethod]
-		public void DeserializeNull() {
-			PolicyRequest req = new PolicyRequest();
-			Assert.IsFalse(((IExtensionRequest)req).Deserialize(null, null, Constants.TypeUri));
-		}
-
-		[TestMethod]
-		public void DeserializeEmpty() {
-			PolicyRequest req = new PolicyRequest();
-			Assert.IsFalse(((IExtensionRequest)req).Deserialize(new Dictionary<string, string>(), null, Constants.TypeUri));
-		}
-
-		[TestMethod]
 		public void SerializeRoundTrip() {
 			// This test relies on the PolicyRequest.Equals method.  If this and that test 
 			// are failing, work on EqualsTest first.

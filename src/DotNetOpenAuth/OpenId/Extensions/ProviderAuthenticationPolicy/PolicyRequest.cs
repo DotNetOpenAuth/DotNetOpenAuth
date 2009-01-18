@@ -7,16 +7,24 @@
 namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 	using System;
 	using System.Collections.Generic;
-	using System.Text;
-	using System.Globalization;
-	using System.Diagnostics;
-	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
 	/// The PAPE request part of an OpenID Authentication request message.
 	/// </summary>
 	public sealed class PolicyRequest : ExtensionBase, IMessageWithEvents {
+		/// <summary>
+		/// The factory method that may be used in deserialization of this message.
+		/// </summary>
+		internal static readonly OpenIdExtensionFactory.CreateDelegate Factory = (typeUri, data, baseMessage) => {
+			if (typeUri == Constants.TypeUri && baseMessage is SignedResponseRequest) {
+				return new PolicyRequest();
+			}
+
+			return null;
+		};
+		
 		[MessagePart("preferred_auth_policies", IsRequired = true)]
 		private string preferredPoliciesString;
 

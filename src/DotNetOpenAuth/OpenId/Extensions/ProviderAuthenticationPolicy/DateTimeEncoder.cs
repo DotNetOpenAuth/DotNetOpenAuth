@@ -62,7 +62,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 			if (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out dateTime) && dateTime.Kind == DateTimeKind.Utc) { // may be unspecified per our option above
 				return dateTime;
 			} else {
-				Logger.ErrorFormat("Invalid format for auth_time parameter: {0}", value);
+				Logger.ErrorFormat("Invalid format for message part: {0}", value);
 				return null;
 			}
 		}
