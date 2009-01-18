@@ -19,12 +19,11 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// Inherent attributes about a personality such as gender and bio.
 		/// </summary>
-		[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+		[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "Required for desired autocompletion.")]
 		public static class Person {
 			/// <summary>Gender, either "M" or "F"</summary>
 			/// <example>"M", "F"</example>
 			public const string Gender = "http://axschema.org/person/gender";
-
 
 			/// <summary>Biography (text)</summary>
 			/// <example>"I am the very model of a modern Major General."</example>
@@ -34,7 +33,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// Preferences such as language and timezone.
 		/// </summary>
-		[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+		[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "Required for desired autocompletion.")]
 		public static class Preferences {
 			/// <summary>Preferred language, as per RFC4646</summary>
 			/// <example>"en-US"</example>
@@ -48,22 +47,19 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// The names a person goes by.
 		/// </summary>
-		[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+		[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "Required for desired autocompletion.")]
 		public static class Name {
 			/// <summary>Subject's alias or "screen" name</summary>
 			/// <example>"Johnny5"</example>
 			public const string Alias = "http://axschema.org/namePerson/friendly";
 
-
 			/// <summary>Full name of subject</summary>
 			/// <example>"John Doe"</example>
 			public const string FullName = "http://axschema.org/namePerson";
 
-
 			/// <summary>Honorific prefix for the subject's name</summary>
 			/// <example>"Mr.", "Mrs.", "Dr."</example>
 			public const string Prefix = "http://axschema.org/namePerson/prefix";
-
 
 			/// <summary>First or given name of subject</summary>
 			/// <example>"John"</example>
@@ -85,7 +81,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// Business affiliation.
 		/// </summary>
-		[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+		[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "Required for desired autocompletion.")]
 		public static class Company {
 			/// <summary>Company name (employer)</summary>
 			/// <example>"Springfield Power"</example>
@@ -99,7 +95,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// Information about a person's birthdate.
 		/// </summary>
-		[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+		[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "Required for desired autocompletion.")]
 		public static class BirthDate {
 			/// <summary>Date of birth.</summary>
 			/// <example>"1979-01-01"</example>
@@ -121,7 +117,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// Various ways to contact a person.
 		/// </summary>
-		[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+		[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "Required for desired autocompletion.")]
 		public static class Contact {
 			/// <summary>Internet SMTP email address as per RFC2822</summary>
 			/// <example>"jsmith@isp.example.com"</example>
@@ -130,7 +126,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			/// <summary>
 			/// Various types of phone numbers.
 			/// </summary>
-			[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+			[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "Required for desired autocompletion.")]
 			public static class Phone {
 				/// <summary>Main phone number (preferred)</summary>
 				/// <example>+1-800-555-1234</example>
@@ -156,7 +152,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			/// <summary>
 			/// The many fields that make up an address.
 			/// </summary>
-			[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+			[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "Required for desired autocompletion.")]
 			public static class HomeAddress {
 				/// <summary>Home postal address: street number, name and apartment number</summary>
 				/// <example>"#42 135 East 1st Street"</example>
@@ -186,7 +182,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			/// <summary>
 			/// The many fields that make up an address.
 			/// </summary>
-			[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+			[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "Required for desired autocompletion.")]
 			public static class WorkAddress {
 				/// <summary>Business postal address: street number, name and apartment number</summary>
 				/// <example>"#42 135 East 1st Street"</example>
@@ -216,21 +212,21 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			/// <summary>
 			/// Various handles for instant message clients.
 			/// </summary>
-			[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+			[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "Required for desired autocompletion.")]
 			public static class IM {
 				/// <summary>AOL instant messaging service handle</summary>
 				/// <example>"jsmith421234"</example>
-				[SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "AOL")]
+				[SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "AOL", Justification = "By design")]
 				public const string AOL = "http://axschema.org/contact/IM/AIM";
 
 				/// <summary>ICQ instant messaging service handle</summary>
 				/// <example>"1234567"</example>
-				[SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "ICQ")]
+				[SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "ICQ", Justification = "By design")]
 				public const string ICQ = "http://axschema.org/contact/IM/ICQ";
 
 				/// <summary>MSN instant messaging service handle</summary>
 				/// <example>"jsmith42@hotmail.com"</example>
-				[SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "MSN")]
+				[SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "MSN", Justification = "By design")]
 				public const string MSN = "http://axschema.org/contact/IM/MSN";
 
 				/// <summary>Yahoo! instant messaging service handle</summary>
@@ -243,20 +239,20 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 
 				/// <summary>Skype instant messaging service handle</summary>
 				/// <example>"jsmith42"</example>
-				[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Skype")]
+				[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Skype", Justification = "By design")]
 				public const string Skype = "http://axschema.org/contact/IM/Skype";
 			}
 
 			/// <summary>
 			/// Various web addresses connected with this personality.
 			/// </summary>
-			[SuppressMessage("Microsoft.Naming", "CA1724:TypeNamesShouldNotMatchNamespaces"), SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+			[SuppressMessage("Microsoft.Naming", "CA1724:TypeNamesShouldNotMatchNamespaces", Justification = "By design"), SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "Required for desired autocompletion.")]
 			public static class Web {
 				/// <summary>Web site URL</summary>
 				/// <example>"http://example.com/~jsmith/"</example>
 				public const string Homepage = "http://axschema.org/contact/web/default";
 
-				/// <summary>Blog URL</summary>
+				/// <summary>Blog home page URL</summary>
 				/// <example>"http://example.com/jsmith_blog/"</example>
 				public const string Blog = "http://axschema.org/contact/web/blog";
 
@@ -270,7 +266,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 
 				/// <summary>Flickr URL</summary>
 				/// <example>"http://flickr.com/photos/jsmith42/"</example>
-				[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Flickr")]
+				[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Flickr", Justification = "By design")]
 				public const string Flickr = "http://axschema.org/contact/web/Flickr";
 
 				/// <summary>del.icio.us URL</summary>
@@ -282,7 +278,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// Audio and images of this personality.
 		/// </summary>
-		[SuppressMessage("Microsoft.Naming", "CA1724:TypeNamesShouldNotMatchNamespaces"), SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+		[SuppressMessage("Microsoft.Naming", "CA1724:TypeNamesShouldNotMatchNamespaces", Justification = "By design"), SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "Required for desired autocompletion.")]
 		public static class Media {
 			/// <summary>Spoken name (web URL)</summary>
 			/// <example>"http://example.com/~jsmith/john_smith.wav"</example>
@@ -296,11 +292,10 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			/// <example>"http://example.com/~jsmith/i_greet_you.mov"</example>
 			public const string VideoGreeting = "http://axschema.org/media/greeting/video";
 
-
 			/// <summary>
 			/// Images of this personality.
 			/// </summary>
-			[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+			[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "Required for desired autocompletion.")]
 			public static class Images {
 				/// <summary>Image (web URL); unspecified dimension</summary>
 				/// <example>"http://example.com/~jsmith/image.jpg"</example>
@@ -320,7 +315,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 
 				/// <summary>Image (web URL); favicon format as per FAVICON-W3C. The format for the image must be 16x16 pixels or 32x32 pixels, using either 8-bit or 24-bit colors. The format of the image must be one of PNG (a W3C standard), GIF, or ICO.</summary>
 				/// <example>"http://example.com/~jsmith/image.jpg"</example>
-				[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Fav")]
+				[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Fav", Justification = "By design")]
 				public const string FavIcon = "http://axschema.org/media/image/favicon";
 			}
 		}

@@ -7,8 +7,6 @@
 namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 	using System;
 	using System.Collections.Generic;
-	using System.Text;
-	using System.Collections.ObjectModel;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -41,8 +39,10 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		}
 
 		/// <summary>
-		/// Instantiates an <see cref="AttributeValues"/> object.
+		/// Initializes a new instance of the <see cref="AttributeValues"/> class.
 		/// </summary>
+		/// <param name="typeUri">The TypeURI that uniquely identifies the attribute.</param>
+		/// <param name="values">The values for the attribute.</param>
 		public AttributeValues(string typeUri, params string[] values) {
 			ErrorUtilities.VerifyNonZeroLength(typeUri, "typeUri");
 
@@ -59,5 +59,22 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// Gets the values supplied by the Provider.
 		/// </summary>
 		public IList<string> Values { get; private set; }
+
+		public override bool Equals(object obj) {
+			AttributeValues other = obj as AttributeValues;
+			if (other == null) {
+				return false;
+			}
+
+			if (this.TypeUri != other.TypeUri) {
+				return false;
+			}
+
+			if (!MessagingUtilities.AreEquivalent<string>(this.Values, other.Values)) {
+				return false;
+			}
+
+			return true;
+		}
 	}
 }

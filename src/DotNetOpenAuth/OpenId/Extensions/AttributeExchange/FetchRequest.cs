@@ -7,17 +7,33 @@
 namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 	using System;
 	using System.Collections.Generic;
-	using System.Text;
-	using System.Linq;
 	using System.Globalization;
-	using System.Diagnostics;
+	using System.Linq;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
 	/// The Attribute Exchange Fetch message, request leg.
 	/// </summary>
-	public sealed class FetchRequest : ExtensionBase {
+	public sealed class FetchRequest : ExtensionBase, IMessageWithEvents {
+		/// <summary>
+		/// The factory method that may be used in deserialization of this message.
+		/// </summary>
+		internal static readonly OpenIdExtensionFactory.CreateDelegate Factory = (typeUri, data, baseMessage) => {
+			if (typeUri == Constants.TypeUri && baseMessage is SignedResponseRequest) {
+				string mode;
+				if (data.TryGetValue("mode", out mode) && mode == Mode) {
+					return new FetchRequest();
+				}
+			}
+
+			return null;
+		};
+
+		[MessagePart("mode", IsRequired = true)]
 		private const string Mode = "fetch_request";
+
+		private static readonly char[] IllegalAliasListCharacters = new[] { '.', '\n' };
 
 		/// <summary>
 		/// The list of requested attributes.  This field will never be null.
@@ -35,24 +51,39 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// Gets a sequence of the attributes whose values are requested by the Relying Party.
 		/// </summary>
 		public IEnumerable<AttributeRequest> Attributes {
-			get { return attributesRequested; }
+			get { return this.attributesRequested; }
 		}
 
 		/// <summary>
-		/// If set, the OpenID Provider may re-post the fetch response message to the 
-		/// specified URL at some time after the initial response has been sent, using an
+		/// Gets or sets the URL that the OpenID Provider may re-post the fetch response 
+		/// message to at some time after the initial response has been sent, using an
 		/// OpenID Authentication Positive Assertion to inform the relying party of updates
 		/// to the requested fields.
 		/// </summary>
+		[MessagePart("update_url", IsRequired = false)]
 		public Uri UpdateUrl { get; set; }
+
+		/// <summary>
+		/// Gets or sets a list of aliases for optional attributes.
+		/// </summary>
+		/// <value>A comma-delimited list of aliases.</value>
+		[MessagePart("if_available", IsRequired = false)]
+		private string OptionalAliases { get; set; }
+
+		/// <summary>
+		/// Gets or sets a list of aliases for required attributes.
+		/// </summary>
+		/// <value>A comma-delimited list of aliases.</value>
+		[MessagePart("required", IsRequired = false)]
+		private string RequiredAliases { get; set; }
 
 		/// <summary>
 		/// Used by the Relying Party to add a request for the values of a given attribute.
 		/// </summary>
 		public void AddAttribute(AttributeRequest attribute) {
 			ErrorUtilities.VerifyArgumentNotNull(attribute, "attribute");
-			ErrorUtilities.VerifyArgumentNamed(!ContainsAttribute(attribute.TypeUri), "attribute", OpenIdStrings.AttributeAlreadyAdded, attribute.TypeUri);
-			attributesRequested.Add(attribute);
+			ErrorUtilities.VerifyArgumentNamed(!this.ContainsAttribute(attribute.TypeUri), "attribute", OpenIdStrings.AttributeAlreadyAdded, attribute.TypeUri);
+			this.attributesRequested.Add(attribute);
 		}
 
 		/// <summary>
@@ -63,77 +94,98 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			return this.attributesRequested.SingleOrDefault(attribute => string.Equals(attribute.TypeUri, attributeTypeUri, StringComparison.Ordinal));
 		}
 
-		#region IExtensionRequest Members
+		/// <summary>
+		/// Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>.
+		/// </summary>
+		/// <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:System.Object"/>.</param>
+		/// <returns>
+		/// true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>; otherwise, false.
+		/// </returns>
+		/// <exception cref="T:System.NullReferenceException">
+		/// The <paramref name="obj"/> parameter is null.
+		/// </exception>
+		public override bool Equals(object obj) {
+			FetchRequest other = obj as FetchRequest;
+			if (other == null) {
+				return false;
+			}
 
-		IDictionary<string, string> IExtensionRequest.Serialize(RelyingParty.IAuthenticationRequest authenticationRequest){
-			var fields = new Dictionary<string, string> {
-				{ "mode", Mode },
-			};
-			if (UpdateUrl != null)
-				fields.Add("update_url", UpdateUrl.AbsoluteUri);
+			if (this.UpdateUrl != other.UpdateUrl) {
+				return false;
+			}
+
+			if (!MessagingUtilities.AreEquivalentUnordered(this.Attributes.ToList(), other.Attributes.ToList())) {
+				return false;
+			}
+
+			return true;
+		}
+
+		#region IMessageWithEvents Members
+
+		/// <summary>
+		/// Called when the message is about to be transmitted,
+		/// before it passes through the channel binding elements.
+		/// </summary>
+		void IMessageWithEvents.OnSending() {
+			var fields = ((IMessage)this).ExtraData;
+			fields.Clear();
 
 			List<string> requiredAliases = new List<string>(), optionalAliases = new List<string>();
 			AliasManager aliasManager = new AliasManager();
-			foreach (var att in attributesRequested) {
+			foreach (var att in this.attributesRequested) {
 				string alias = aliasManager.GetAlias(att.TypeUri);
+
 				// define the alias<->typeUri mapping
 				fields.Add("type." + alias, att.TypeUri);
+
 				// set how many values the relying party wants max
 				fields.Add("count." + alias, att.Count.ToString(CultureInfo.InvariantCulture));
-				if (att.IsRequired)
+
+				if (att.IsRequired) {
 					requiredAliases.Add(alias);
-				else
+				} else {
 					optionalAliases.Add(alias);
+				}
 			}
 
 			// Set optional/required lists
-			if (optionalAliases.Count > 0)
-				fields.Add("if_available", string.Join(",", optionalAliases.ToArray()));
-			if (requiredAliases.Count > 0)
-				fields.Add("required", string.Join(",", requiredAliases.ToArray()));
-
-			return fields;
+			this.OptionalAliases = optionalAliases.Count > 0 ? string.Join(",", optionalAliases.ToArray()) : null;
+			this.RequiredAliases = requiredAliases.Count > 0 ? string.Join(",", requiredAliases.ToArray()) : null;
 		}
 
-		bool IExtensionRequest.Deserialize(IDictionary<string, string> fields, DotNetOpenId.Provider.IRequest request, string typeUri) {
-			if (fields == null) return false;
-			string mode;
-			fields.TryGetValue("mode", out mode);
-			if (mode != Mode) return false;
+		/// <summary>
+		/// Called when the message has been received,
+		/// after it passes through the channel binding elements.
+		/// </summary>
+		void IMessageWithEvents.OnReceiving() {
+			var extraData = ((IMessage)this).ExtraData;
+			var requiredAliases = ParseAliasList(this.RequiredAliases);
+			var optionalAliases = ParseAliasList(this.OptionalAliases);
 
-			string updateUrl;
-			fields.TryGetValue("update_url", out updateUrl);
-			Uri updateUri;
-			if (Uri.TryCreate(updateUrl, UriKind.Absolute, out updateUri))
-				UpdateUrl = updateUri;
-
-			string requiredAliasString, optionalAliasString;
-			fields.TryGetValue("if_available", out optionalAliasString);
-			fields.TryGetValue("required", out requiredAliasString);
-			var requiredAliases = parseAliasList(requiredAliasString);
-			var optionalAliases = parseAliasList(optionalAliasString);
 			// if an alias shows up in both lists, an exception will result implicitly.
 			var allAliases = new List<string>(requiredAliases.Count + optionalAliases.Count);
 			allAliases.AddRange(requiredAliases);
 			allAliases.AddRange(optionalAliases);
 			if (allAliases.Count == 0) {
 				Logger.Error("Attribute Exchange extension did not provide any aliases in the if_available or required lists.");
-				return false;
+				return;
 			}
+
 			AliasManager aliasManager = new AliasManager();
 			foreach (var alias in allAliases) {
 				string attributeTypeUri;
-				if (fields.TryGetValue("type." + alias, out attributeTypeUri)) {
+				if (extraData.TryGetValue("type." + alias, out attributeTypeUri)) {
 					aliasManager.SetAlias(alias, attributeTypeUri);
 					AttributeRequest att = new AttributeRequest {
 						TypeUri = attributeTypeUri,
 						IsRequired = requiredAliases.Contains(alias),
 					};
 					string countString;
-					if (fields.TryGetValue("count." + alias, out countString)) {
-						if (countString == "unlimited")
+					if (extraData.TryGetValue("count." + alias, out countString)) {
+						if (countString == "unlimited") {
 							att.Count = int.MaxValue;
-						else {
+						} else {
 							int count;
 							if (int.TryParse(countString, out count) && count > 0) {
 								att.Count = count;
@@ -144,30 +196,60 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 					} else {
 						att.Count = 1;
 					}
-					AddAttribute(att);
+					this.AddAttribute(att);
 				} else {
 					Logger.Error("Type URI definition of alias " + alias + " is missing.");
 				}
 			}
-
-			return true;
-		}
-
-		static List<string> parseAliasList(string aliasList) {
-			List<string> result = new List<string>();
-			if (string.IsNullOrEmpty(aliasList)) return result;
-			if (aliasList.Contains(".") || aliasList.Contains("\n")) {
-				Logger.ErrorFormat("Illegal characters found in Attribute Exchange alias list.");
-				return result;
-			}
-			result.AddRange(aliasList.Split(','));
-			return result;
 		}
 
 		#endregion
 
+		/// <summary>
+		/// Checks the message state for conformity to the protocol specification
+		/// and throws an exception if the message is invalid.
+		/// </summary>
+		/// <remarks>
+		/// 	<para>Some messages have required fields, or combinations of fields that must relate to each other
+		/// in specialized ways.  After deserializing a message, this method checks the state of the
+		/// message to see if it conforms to the protocol.</para>
+		/// 	<para>Note that this property should <i>not</i> check signatures or perform any state checks
+		/// outside this scope of this particular message.</para>
+		/// </remarks>
+		/// <exception cref="ProtocolException">Thrown if the message is invalid.</exception>
+		protected override void EnsureValidMessage() {
+			base.EnsureValidMessage();
+
+			if (this.UpdateUrl != null && !this.UpdateUrl.IsAbsoluteUri) {
+				this.UpdateUrl = null;
+				Logger.ErrorFormat("The AX fetch request update_url parameter was not absolute ('{0}').  Ignoring value.", this.UpdateUrl);
+			}
+
+			if (this.OptionalAliases != null) {
+				if (this.OptionalAliases.IndexOfAny(IllegalAliasListCharacters) >= 0) {
+					Logger.ErrorFormat("Illegal characters found in Attribute Exchange if_available alias list.  Ignoring value.");
+					this.OptionalAliases = null;
+				}
+			}
+
+			if (this.RequiredAliases != null) {
+				if (this.RequiredAliases.IndexOfAny(IllegalAliasListCharacters) >= 0) {
+					Logger.ErrorFormat("Illegal characters found in Attribute Exchange required alias list.  Ignoring value.");
+					this.RequiredAliases = null;
+				}
+			}
+		}
+
+		private static IList<string> ParseAliasList(string aliasList) {
+			if (string.IsNullOrEmpty(aliasList)) {
+				return EmptyList<string>.Instance;
+			}
+
+			return aliasList.Split(',');
+		}
+
 		private bool ContainsAttribute(string typeUri) {
-			return GetAttribute(typeUri) != null;
+			return this.GetAttribute(typeUri) != null;
 		}
 	}
 }

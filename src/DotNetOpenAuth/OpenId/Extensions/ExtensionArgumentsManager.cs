@@ -206,9 +206,6 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <param name="extensionTypeUri">The extension Type URI in question.</param>
 		/// <returns><c>true</c> if this extension is present; <c>false</c> otherwise.</returns>
 		public bool ContainsExtension(string extensionTypeUri) {
-			if (!this.isReadMode) {
-				throw new InvalidOperationException();
-			}
 			return this.extensions.ContainsKey(extensionTypeUri);
 		}
 

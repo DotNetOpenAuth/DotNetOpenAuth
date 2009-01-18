@@ -94,6 +94,28 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			Assert.Inconclusive("Not yet implemented.");
 		}
 
+		/// <summary>
+		/// Verifies that two extensions with the same TypeURI cannot be applied to the same message.
+		/// </summary>
+		/// <remarks>
+		/// OpenID Authentication 2.0 section 12 states that
+		/// "A namespace MUST NOT be assigned more than one alias in the same message".
+		/// </remarks>
+		[TestMethod]
+		public void TwoExtensionsSameTypeUri() {
+			IOpenIdMessageExtension request1 = new MockOpenIdExtension("requestPart1", "requestData1");
+			IOpenIdMessageExtension request2 = new MockOpenIdExtension("requestPart2", "requestData2");
+			try {
+				ExtensionTestUtilities.Roundtrip(
+					Protocol.Default,
+					new IOpenIdMessageExtension[] { request1, request2 },
+					new IOpenIdMessageExtension[0]);
+				Assert.Fail("Expected ProtocolException not thrown.");
+			} catch (AssertFailedException ex) {
+				Assert.IsInstanceOfType(ex.InnerException, typeof(ProtocolException));
+			}
+		}
+
 		private static IEnumerable<string> GetAliases(IDictionary<string, string> extraData) {
 			Regex regex = new Regex(@"^openid\.ns\.(\w+)");
 			return from key in extraData.Keys

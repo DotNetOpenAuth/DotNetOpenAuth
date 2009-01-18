@@ -7,16 +7,31 @@
 namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 	using System;
 	using System.Collections.Generic;
-	using System.Text;
-	using System.Linq;
-	using System.Globalization;
 	using System.Diagnostics;
+	using System.Globalization;
+	using System.Linq;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
 	/// The Attribute Exchange Fetch message, response leg.
 	/// </summary>
-	public sealed class FetchResponse : ExtensionBase {
+	public sealed class FetchResponse : ExtensionBase, IMessageWithEvents {
+		/// <summary>
+		/// The factory method that may be used in deserialization of this message.
+		/// </summary>
+		internal static readonly OpenIdExtensionFactory.CreateDelegate Factory = (typeUri, data, baseMessage) => {
+			if (typeUri == Constants.TypeUri && baseMessage is IndirectSignedResponse) {
+				string mode;
+				if (data.TryGetValue("mode", out mode) && mode == Mode) {
+					return new FetchResponse();
+				}
+			}
+
+			return null;
+		};
+
+		[MessagePart("mode", IsRequired = true)]
 		private const string Mode = "fetch_response";
 
 		/// <summary>
@@ -35,20 +50,22 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// Gets a sequence of the attributes whose values are provided by the OpenID Provider.
 		/// </summary>
 		public IEnumerable<AttributeValues> Attributes {
-			get { return attributesProvided; }
+			get { return this.attributesProvided; }
 		}
 
 		/// <summary>
-		/// Whether the OpenID Provider intends to honor the request for updates.
+		/// Gets a value indicating whether the OpenID Provider intends to
+		/// honor the request for updates.
 		/// </summary>
 		public bool UpdateUrlSupported {
 			get { return this.UpdateUrl != null; }
 		}
 
 		/// <summary>
-		/// The URL the OpenID Provider will post updates to.  Must be set if the Provider
-		/// supports and will use this feature.
+		/// Gets or sets the URL the OpenID Provider will post updates to.  
+		/// Must be set if the Provider supports and will use this feature.
 		/// </summary>
+		[MessagePart("update_url", IsRequired = false)]
 		public Uri UpdateUrl { get; set; }
 
 		/// <summary>
@@ -56,8 +73,8 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// </summary>
 		public void AddAttribute(AttributeValues attribute) {
 			ErrorUtilities.VerifyArgumentNotNull(attribute, "attribute");
-			ErrorUtilities.VerifyArgumentNamed(!ContainsAttribute(attribute.TypeUri), "attribute", OpenIdStrings.AttributeAlreadyAdded, attribute.TypeUri);
-			attributesProvided.Add(attribute);
+			ErrorUtilities.VerifyArgumentNamed(!this.ContainsAttribute(attribute.TypeUri), "attribute", OpenIdStrings.AttributeAlreadyAdded, attribute.TypeUri);
+			this.attributesProvided.Add(attribute);
 		}
 
 		/// <summary>
@@ -68,34 +85,68 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			return this.attributesProvided.SingleOrDefault(attribute => string.Equals(attribute.TypeUri, attributeTypeUri, StringComparison.Ordinal));
 		}
 
-		#region IExtensionResponse Members
+		/// <summary>
+		/// Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>.
+		/// </summary>
+		/// <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:System.Object"/>.</param>
+		/// <returns>
+		/// true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>; otherwise, false.
+		/// </returns>
+		/// <exception cref="T:System.NullReferenceException">
+		/// The <paramref name="obj"/> parameter is null.
+		/// </exception>
+		public override bool Equals(object obj) {
+			FetchResponse other = obj as FetchResponse;
+			if (other == null) {
+				return false;
+			}
 
-		string IExtension.TypeUri { get { return Constants.TypeUri; } }
+			if (this.UpdateUrl != other.UpdateUrl) {
+				return false;
+			}
 
-		IEnumerable<string> IExtension.AdditionalSupportedTypeUris {
-			get { return new string[0]; }
+			if (!MessagingUtilities.AreEquivalentUnordered(this.Attributes.ToList(), other.Attributes.ToList())) {
+				return false;
+			}
+
+			return true;
 		}
 
-		IDictionary<string, string> IExtensionResponse.Serialize(Provider.IRequest authenticationRequest) {
-			var fields = new Dictionary<string, string> {
-				{ "mode", Mode },
-			};
+		#region IMessageWithEvents Members
 
-			if (UpdateUrlSupported)
-				fields.Add("update_url", UpdateUrl.AbsoluteUri);
-
-			SerializeAttributes(fields, attributesProvided);
-
-			return fields;
+		/// <summary>
+		/// Called when the message is about to be transmitted,
+		/// before it passes through the channel binding elements.
+		/// </summary>
+		void IMessageWithEvents.OnSending() {
+			var extraData = ((IMessage)this).ExtraData;
+			SerializeAttributes(extraData, this.attributesProvided);
 		}
 
-		internal static void SerializeAttributes(Dictionary<string, string> fields, IEnumerable<AttributeValues> attributes) {
-			Debug.Assert(fields != null && attributes != null);
+		/// <summary>
+		/// Called when the message has been received,
+		/// after it passes through the channel binding elements.
+		/// </summary>
+		void IMessageWithEvents.OnReceiving() {
+			var extraData = ((IMessage)this).ExtraData;
+			foreach (var att in DeserializeAttributes(extraData)) {
+				this.AddAttribute(att);
+			}
+		}
+
+		#endregion
+
+		internal static void SerializeAttributes(IDictionary<string, string> fields, IEnumerable<AttributeValues> attributes) {
+			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
+			ErrorUtilities.VerifyArgumentNotNull(attributes, "attributes");
+
 			AliasManager aliasManager = new AliasManager();
 			foreach (var att in attributes) {
 				string alias = aliasManager.GetAlias(att.TypeUri);
 				fields.Add("type." + alias, att.TypeUri);
-				if (att.Values == null) continue;
+				if (att.Values == null) {
+					continue;
+				}
 				if (att.Values.Count != 1) {
 					fields.Add("count." + alias, att.Values.Count.ToString(CultureInfo.InvariantCulture));
 					for (int i = 0; i < att.Values.Count; i++) {
@@ -107,26 +158,8 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			}
 		}
 
-		bool IExtensionResponse.Deserialize(IDictionary<string, string> fields, IAuthenticationResponse response, string typeUri) {
-			if (fields == null) return false;
-			string mode;
-			fields.TryGetValue("mode", out mode);
-			if (mode != Mode) return false;
-
-			string updateUrl;
-			fields.TryGetValue("update_url", out updateUrl);
-			Uri updateUri;
-			if (Uri.TryCreate(updateUrl, UriKind.Absolute, out updateUri))
-				UpdateUrl = updateUri;
-
-			foreach (var att in DeserializeAttributes(fields))
-				AddAttribute(att);
-
-			return true;
-		}
-
 		internal static IEnumerable<AttributeValues> DeserializeAttributes(IDictionary<string, string> fields) {
-			AliasManager aliasManager = parseAliases(fields);
+			AliasManager aliasManager = ParseAliases(fields);
 			foreach (string alias in aliasManager.Aliases) {
 				AttributeValues att = new AttributeValues(aliasManager.ResolveAlias(alias));
 				int count = 1;
@@ -151,9 +184,9 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 					}
 				} else {
 					string value;
-					if (fields.TryGetValue("value." + alias, out value))
+					if (fields.TryGetValue("value." + alias, out value)) {
 						att.Values.Add(value);
-					else {
+					} else {
 						Logger.ErrorFormat("Missing value for attribute '{0}'.", att.TypeUri);
 						continue;
 					}
@@ -162,11 +195,35 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			}
 		}
 
-		static AliasManager parseAliases(IDictionary<string, string> fields) {
-			Debug.Assert(fields != null);
+		/// <summary>
+		/// Checks the message state for conformity to the protocol specification
+		/// and throws an exception if the message is invalid.
+		/// </summary>
+		/// <remarks>
+		/// 	<para>Some messages have required fields, or combinations of fields that must relate to each other
+		/// in specialized ways.  After deserializing a message, this method checks the state of the
+		/// message to see if it conforms to the protocol.</para>
+		/// 	<para>Note that this property should <i>not</i> check signatures or perform any state checks
+		/// outside this scope of this particular message.</para>
+		/// </remarks>
+		/// <exception cref="ProtocolException">Thrown if the message is invalid.</exception>
+		protected override void EnsureValidMessage() {
+			base.EnsureValidMessage();
+
+			if (this.UpdateUrl != null && !this.UpdateUrl.IsAbsoluteUri) {
+				this.UpdateUrl = null;
+				Logger.ErrorFormat("The AX fetch response update_url parameter was not absolute ('{0}').  Ignoring value.", this.UpdateUrl);
+			}
+		}
+
+		private static AliasManager ParseAliases(IDictionary<string, string> fields) {
+			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
+
 			AliasManager aliasManager = new AliasManager();
 			foreach (var pair in fields) {
-				if (!pair.Key.StartsWith("type.", StringComparison.Ordinal)) continue;
+				if (!pair.Key.StartsWith("type.", StringComparison.Ordinal)) {
+					continue;
+				}
 				string alias = pair.Key.Substring(5);
 				if (alias.IndexOfAny(new[] { '.', ',', ':' }) >= 0) {
 					Logger.ErrorFormat("Illegal characters in alias name '{0}'.", alias);
@@ -177,10 +234,8 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			return aliasManager;
 		}
 
-		#endregion
-
 		private bool ContainsAttribute(string typeUri) {
-			return GetAttribute(typeUri) != null;
+			return this.GetAttribute(typeUri) != null;
 		}
 	}
 }

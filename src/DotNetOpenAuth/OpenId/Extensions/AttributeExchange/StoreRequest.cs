@@ -7,16 +7,30 @@
 namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 	using System;
 	using System.Collections.Generic;
-	using System.Text;
 	using System.Linq;
-	using System.Globalization;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
 	/// The Attribute Exchange Store message, request leg.
 	/// </summary>
-	public sealed class StoreRequest : ExtensionBase {
+	public sealed class StoreRequest : ExtensionBase, IMessageWithEvents {
+		[MessagePart("mode", IsRequired = true)]
 		private const string Mode = "store_request";
+
+		/// <summary>
+		/// The factory method that may be used in deserialization of this message.
+		/// </summary>
+		internal static readonly OpenIdExtensionFactory.CreateDelegate Factory = (typeUri, data, baseMessage) => {
+			if (typeUri == Constants.TypeUri && baseMessage is SignedResponseRequest) {
+				string mode;
+				if (data.TryGetValue("mode", out mode) && mode == Mode) {
+					return new StoreRequest();
+				}
+			}
+
+			return null;
+		};
 
 		/// <summary>
 		/// The list of provided attribute values.  This field will never be null.
@@ -31,10 +45,10 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		}
 
 		/// <summary>
-		/// Lists all the attributes that are included in the store request.
+		/// Gets a list of all the attributes that are included in the store request.
 		/// </summary>
 		public IEnumerable<AttributeValues> Attributes {
-			get { return attributesProvided; }
+			get { return this.attributesProvided; }
 		}
 
 		/// <summary>
@@ -43,8 +57,8 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// </summary>
 		public void AddAttribute(AttributeValues attribute) {
 			ErrorUtilities.VerifyArgumentNotNull(attribute, "attribute");
-			ErrorUtilities.VerifyArgumentNamed(!ContainsAttribute(attribute.TypeUri), "attribute", OpenIdStrings.AttributeAlreadyAdded, attribute.TypeUri);
-			attributesProvided.Add(attribute);
+			ErrorUtilities.VerifyArgumentNamed(!this.ContainsAttribute(attribute.TypeUri), "attribute", OpenIdStrings.AttributeAlreadyAdded, attribute.TypeUri);
+			this.attributesProvided.Add(attribute);
 		}
 
 		/// <summary>
@@ -52,7 +66,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// to the request for storage.
 		/// </summary>
 		public void AddAttribute(string typeUri, params string[] values) {
-			AddAttribute(new AttributeValues(typeUri, values));
+			this.AddAttribute(new AttributeValues(typeUri, values));
 		}
 
 		/// <summary>
@@ -63,38 +77,57 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			return this.attributesProvided.SingleOrDefault(attribute => string.Equals(attribute.TypeUri, attributeTypeUri, StringComparison.Ordinal));
 		}
 
-		#region IExtensionRequest Members
-		string IExtension.TypeUri { get { return Constants.TypeUri; } }
-		IEnumerable<string> IExtension.AdditionalSupportedTypeUris {
-			get { return new string[0]; }
+		#region IMessageWithEvents Members
+
+		/// <summary>
+		/// Called when the message is about to be transmitted,
+		/// before it passes through the channel binding elements.
+		/// </summary>
+		void IMessageWithEvents.OnSending() {
+			var fields = ((IMessage)this).ExtraData;
+			fields.Clear();
+
+			FetchResponse.SerializeAttributes(fields, this.attributesProvided);
 		}
 
-		IDictionary<string, string> IExtensionRequest.Serialize(RelyingParty.IAuthenticationRequest authenticationRequest) {
-			var fields = new Dictionary<string, string> {
-				{ "mode", Mode },
-			};
-
-			FetchResponse.SerializeAttributes(fields, attributesProvided);
-
-			return fields;
-		}
-
-		bool IExtensionRequest.Deserialize(IDictionary<string, string> fields, DotNetOpenId.Provider.IRequest request, string typeUri) {
-			if (fields == null) return false;
-			string mode;
-			fields.TryGetValue("mode", out mode);
-			if (mode != Mode) return false;
-
-			foreach (var att in FetchResponse.DeserializeAttributes(fields))
-				AddAttribute(att);
-
-			return true;
+		/// <summary>
+		/// Called when the message has been received,
+		/// after it passes through the channel binding elements.
+		/// </summary>
+		void IMessageWithEvents.OnReceiving() {
+			var fields = ((IMessage)this).ExtraData;
+			foreach (var att in FetchResponse.DeserializeAttributes(fields)) {
+				this.AddAttribute(att);
+			}
 		}
 
 		#endregion
 
+		/// <summary>
+		/// Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>.
+		/// </summary>
+		/// <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:System.Object"/>.</param>
+		/// <returns>
+		/// true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>; otherwise, false.
+		/// </returns>
+		/// <exception cref="T:System.NullReferenceException">
+		/// The <paramref name="obj"/> parameter is null.
+		/// </exception>
+		public override bool Equals(object obj) {
+			var other = obj as StoreRequest;
+			if (other == null) {
+				return false;
+			}
+
+			if (!MessagingUtilities.AreEquivalentUnordered(this.Attributes.ToList(), other.Attributes.ToList())) {
+				return false;
+			}
+
+			return true;
+		}
+
 		private bool ContainsAttribute(string typeUri) {
-			return GetAttribute(typeUri) != null;
+			return this.GetAttribute(typeUri) != null;
 		}
 	}
 }

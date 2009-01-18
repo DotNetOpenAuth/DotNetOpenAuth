@@ -111,8 +111,15 @@
     <Compile Include="OpenId\ChannelElements\KeyValueFormEncodingTests.cs" />
     <Compile Include="Messaging\Bindings\StandardReplayProtectionBindingElementTests.cs" />
     <Compile Include="OpenId\DiffieHellmanTests.cs" />
+    <Compile Include="OpenId\Extensions\AttributeExchange\FetchRequestTests.cs" />
+    <Compile Include="OpenId\Extensions\AttributeExchange\FetchResponseTests.cs" />
+    <Compile Include="OpenId\Extensions\AttributeExchange\AttributeExchangeRoundtripTests.cs" />
+    <Compile Include="OpenId\Extensions\AttributeExchange\AttributeRequestTests.cs" />
+    <Compile Include="OpenId\Extensions\AttributeExchange\AttributeValuesTests.cs" />
+    <Compile Include="OpenId\Extensions\AttributeExchange\StoreRequestTests.cs" />
+    <Compile Include="OpenId\Extensions\AttributeExchange\StoreResponseTests.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\ClaimsResponseTests.cs" />
-    <Compile Include="OpenId\Extensions\ExtensionTestBase.cs" />
+    <Compile Include="OpenId\Extensions\ExtensionTestUtilities.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\ClaimsRequestTests.cs" />
     <Compile Include="OpenId\IdentifierTests.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanRequestTests.cs" />

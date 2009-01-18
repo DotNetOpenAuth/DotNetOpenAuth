@@ -6,16 +6,27 @@
 
 namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 	using System;
-	using System.Collections.Generic;
-	using System.Text;
-	using System.Globalization;
-	using System.Diagnostics;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
 	/// The Attribute Exchange Store message, response leg.
 	/// </summary>
 	public sealed class StoreResponse : ExtensionBase {
+		/// <summary>
+		/// The factory method that may be used in deserialization of this message.
+		/// </summary>
+		internal static readonly OpenIdExtensionFactory.CreateDelegate Factory = (typeUri, data, baseMessage) => {
+			if (typeUri == Constants.TypeUri && baseMessage is IndirectSignedResponse) {
+				string mode;
+				if (data.TryGetValue("mode", out mode) && (mode == SuccessMode || mode == FailureMode)) {
+					return new StoreResponse();
+				}
+			}
+
+			return null;
+		};
+
 		/// <summary>
 		/// The value of the mode parameter used to express a successful store operation.
 		/// </summary>
@@ -27,18 +38,32 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		private const string FailureMode = "store_response_failure";
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StoreResponse"/> class.
+		/// Initializes a new instance of the <see cref="StoreResponse"/> class
+		/// to represent a successful store operation.
 		/// </summary>
 		public StoreResponse()
 			: base(new Version(1, 0), Constants.TypeUri, null) {
+			this.Succeeded = true;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StoreResponse"/> class
+		/// to represent a failed store operation.
+		/// </summary>
+		/// <param name="failureReason">The reason for failure.</param>
+		public StoreResponse(string failureReason)
+			: this() {
+			this.Succeeded = false;
+			this.FailureReason = failureReason;
 		}
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the storage request succeeded.
 		/// </summary>
+		/// <value>Defaults to <c>true</c>.</value>
 		public bool Succeeded {
-			get { return this.mode == SuccessMode; }
-			set { this.mode = value ? SuccessMode : FailureMode; }
+			get { return this.Mode == SuccessMode; }
+			set { this.Mode = value ? SuccessMode : FailureMode; }
 		}
 
 		/// <summary>
@@ -52,7 +77,24 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// </summary>
 		/// <value>One of 'store_response_success' or 'store_response_failure'.</value>
 		[MessagePart("mode", IsRequired = true)]
-		private string mode { get; set; }
+		private string Mode { get; set; }
+
+		public override bool Equals(object obj) {
+			var other = obj as StoreResponse;
+			if (other == null) {
+				return false;
+			}
+
+			if (this.Succeeded != other.Succeeded) {
+				return false;
+			}
+
+			if (this.FailureReason != other.FailureReason) {
+				return false;
+			}
+
+			return true;
+		}
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification
@@ -70,8 +112,8 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			base.EnsureValidMessage();
 
 			ErrorUtilities.VerifyProtocol(
-				this.mode == SuccessMode || this.mode == FailureMode,
-				MessagingStrings.UnexpectedMessagePartValue, "mode", this.mode);
+				this.Mode == SuccessMode || this.Mode == FailureMode,
+				MessagingStrings.UnexpectedMessagePartValue, "mode", this.Mode);
 		}
 	}
 }

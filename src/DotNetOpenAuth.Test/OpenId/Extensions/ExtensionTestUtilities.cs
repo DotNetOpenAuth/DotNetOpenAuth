@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ExtensionTestBase.cs" company="Andrew Arnott">
+// <copyright file="ExtensionTestUtilities.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -17,6 +17,13 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using DotNetOpenAuth.Test.Messaging;
 
 	public static class ExtensionTestUtilities {
+		/// <summary>
+		/// Simulates an extension request and response.
+		/// </summary>
+		/// <remarks>
+		/// This method relies on the extension objects' Equals methods to verify
+		/// accurate transport.  The Equals methods should be verified by separate tests.
+		/// </remarks>
 		internal static void Roundtrip(
 			Protocol protocol,
 			IEnumerable<IOpenIdMessageExtension> requests,

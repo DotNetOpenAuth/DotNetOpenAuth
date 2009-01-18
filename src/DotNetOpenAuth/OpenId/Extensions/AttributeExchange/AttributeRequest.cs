@@ -5,10 +5,6 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
-	using System;
-	using System.Collections.Generic;
-	using System.Text;
-	using System.Globalization;
 	using System.Diagnostics;
 	using DotNetOpenAuth.Messaging;
 
@@ -21,7 +17,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// Backing field for the <see cref="Count"/> property.
 		/// </summary>
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		int count = 1;
+		private int count = 1;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AttributeRequest"/> class
@@ -37,7 +33,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// <param name="typeUri">The unique TypeURI for that describes the attribute being sought.</param>
 		public AttributeRequest(string typeUri) {
 			ErrorUtilities.VerifyNonZeroLength(typeUri, "typeUri");
-			TypeUri = typeUri;
+			this.TypeUri = typeUri;
 		}
 
 		/// <summary>
@@ -48,7 +44,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// <param name="isRequired">A value indicating whether the Relying Party considers this attribute to be required for registration.</param>
 		public AttributeRequest(string typeUri, bool isRequired)
 			: this(typeUri) {
-			IsRequired = isRequired;
+			this.IsRequired = isRequired;
 		}
 
 		/// <summary>
@@ -63,18 +59,18 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		}
 
 		/// <summary>
-		/// The URI uniquely identifying the attribute being requested.
+		/// Gets or sets the URI uniquely identifying the attribute being requested.
 		/// </summary>
 		public string TypeUri { get; set; }
 
 		/// <summary>
-		/// Whether the relying party considers this a required field.
+		/// Gets or sets a value indicating whether the relying party considers this a required field.
 		/// Note that even if set to true, the Provider may not provide the value.
 		/// </summary>
 		public bool IsRequired { get; set; }
 
 		/// <summary>
-		/// The maximum number of values for this attribute the 
+		/// Gets or sets the maximum number of values for this attribute the 
 		/// Relying Party wishes to receive from the OpenID Provider.
 		/// A value of int.MaxValue is considered infinity.
 		/// </summary>
@@ -99,8 +95,39 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// </returns>
 		public AttributeValues Respond(params string[] values) {
 			ErrorUtilities.VerifyArgumentNotNull(values, "values");
-			ErrorUtilities.VerifyArgument(values.Length <= Count, OpenIdStrings.AttributeTooManyValues, Count, TypeUri, values.Length);
-			return new AttributeValues(TypeUri, values);
+			ErrorUtilities.VerifyArgument(values.Length <= this.Count, OpenIdStrings.AttributeTooManyValues, this.Count, this.TypeUri, values.Length);
+			return new AttributeValues(this.TypeUri, values);
+		}
+
+		/// <summary>
+		/// Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>.
+		/// </summary>
+		/// <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:System.Object"/>.</param>
+		/// <returns>
+		/// true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>; otherwise, false.
+		/// </returns>
+		/// <exception cref="T:System.NullReferenceException">
+		/// The <paramref name="obj"/> parameter is null.
+		/// </exception>
+		public override bool Equals(object obj) {
+			AttributeRequest other = obj as AttributeRequest;
+			if (other == null) {
+				return false;
+			}
+
+			if (this.TypeUri != other.TypeUri) {
+				return false;
+			}
+
+			if (this.Count != other.Count) {
+				return false;
+			}
+
+			if (this.IsRequired != other.IsRequired) {
+				return false;
+			}
+
+			return true;
 		}
 	}
 }

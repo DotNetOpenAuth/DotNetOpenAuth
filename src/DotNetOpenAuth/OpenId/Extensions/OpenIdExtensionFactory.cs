@@ -5,12 +5,10 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId.Extensions {
-	using System;
 	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;
+	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Messages;
 
@@ -30,6 +28,10 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		internal OpenIdExtensionFactory() {
 			this.RegisterExtension(ClaimsRequest.Factory);
 			this.RegisterExtension(ClaimsResponse.Factory);
+			this.RegisterExtension(FetchRequest.Factory);
+			this.RegisterExtension(FetchResponse.Factory);
+			this.RegisterExtension(StoreRequest.Factory);
+			this.RegisterExtension(StoreResponse.Factory);
 		}
 
 		/// <summary>
