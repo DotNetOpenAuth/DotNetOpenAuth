@@ -117,7 +117,11 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 					str => encoder.Decode(str));
 			}
 
-			if (this.field != null && (this.field.Attributes & FieldAttributes.InitOnly) != 0) {
+			// readonly and const fields are considered legal, and "constants" for message transport.
+			FieldAttributes constAttributes = FieldAttributes.Static | FieldAttributes.Literal | FieldAttributes.HasDefault;
+			if (this.field != null && (
+				(this.field.Attributes & FieldAttributes.InitOnly) == FieldAttributes.InitOnly ||
+				(this.field.Attributes & constAttributes) == constAttributes)) {
 				this.IsConstantValue = true;
 			} else if (this.property != null && !this.property.CanWrite) {
 				this.IsConstantValue = true;

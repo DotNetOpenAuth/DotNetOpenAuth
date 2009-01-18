@@ -94,7 +94,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 
 			Type currentType = this.messageTypeAndVersion.Type;
 			do {
-				foreach (MemberInfo member in currentType.GetMembers(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)) {
+				foreach (MemberInfo member in currentType.GetMembers(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)) {
 					if (member is PropertyInfo || member is FieldInfo) {
 						MessagePartAttribute partAttribute =
 							(from a in member.GetCustomAttributes(typeof(MessagePartAttribute), true).OfType<MessagePartAttribute>()
