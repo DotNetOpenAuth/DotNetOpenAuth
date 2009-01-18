@@ -68,15 +68,19 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 		/// <remarks>
 		/// If the RP's request included the "openid.max_auth_age" parameter then the OP MUST include "openid.auth_time" in its response. If "openid.max_auth_age" was not requested, the OP MAY choose to include "openid.auth_time" in its response.
 		/// </remarks>
-		[MessagePart("auth_time", Encoder=typeof(DateTimeEncoder))]
+		[MessagePart("auth_time", Encoder = typeof(DateTimeEncoder))]
 		public DateTime? AuthenticationTimeUtc {
 			get { return authenticationTimeUtc; }
 			set {
 				// Make sure that whatever is set here, it becomes UTC time.
 				if (value.HasValue) {
-					if (value.Value.Kind == DateTimeKind.Unspecified)
+					if (value.Value.Kind == DateTimeKind.Unspecified) {
 						throw new ArgumentException(OpenIdStrings.UnspecifiedDateTimeKindNotAllowed, "value");
-					authenticationTimeUtc = value.Value.ToUniversalTime();
+					}
+
+					// Convert to UTC and cut to the second, since the protocol only allows for
+					// that level of precision.
+					authenticationTimeUtc = OpenIdUtilities.CutToSecond(value.Value.ToUniversalTime());
 				} else {
 					authenticationTimeUtc = null;
 				}

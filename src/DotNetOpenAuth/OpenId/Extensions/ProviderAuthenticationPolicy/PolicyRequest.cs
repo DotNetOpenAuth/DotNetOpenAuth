@@ -166,7 +166,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 			var extraData = ((IMessage)this).ExtraData;
 
 			PreferredPolicies.Clear();
-			string[] preferredPolicies = extraData[Constants.RequestParameters.PreferredAuthPolicies].Split(' ');
+			string[] preferredPolicies = preferredPoliciesString.Split(' ');
 			foreach (string policy in preferredPolicies) {
 				if (policy.Length > 0)
 					PreferredPolicies.Add(policy);

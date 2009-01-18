@@ -38,7 +38,7 @@ namespace DotNetOpenAuth.OpenId {
 			this.Handle = handle;
 			this.SecretKey = secret;
 			this.TotalLifeLength = totalLifeLength;
-			this.Issued = CutToSecond(issued);
+			this.Issued = OpenIdUtilities.CutToSecond(issued);
 		}
 
 		/// <summary>
@@ -258,14 +258,5 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		/// <returns>The hash algorithm used for message signing.</returns>
 		protected abstract HashAlgorithm CreateHasher();
-
-		/// <summary>
-		/// Rounds the given <see cref="DateTime"/> downward to the whole second.
-		/// </summary>
-		/// <param name="dateTime">The DateTime object to adjust.</param>
-		/// <returns>The new <see cref="DateTime"/> value.</returns>
-		private static DateTime CutToSecond(DateTime dateTime) {
-			return new DateTime(dateTime.Ticks - (dateTime.Ticks % TimeSpan.TicksPerSecond));
-		}
 	}
 }

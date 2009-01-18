@@ -4,16 +4,18 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OpenId.Test.Extensions.ProviderAuthenticationPolicy {
+namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
+	using DotNetOpenAuth.Messaging.Reflection;
+	using DotNetOpenAuth.Messaging;
 
 	[TestClass]
-	public class PolicyResponseTests {
+	public class PolicyResponseTests : OpenIdTestBase {
 		private DateTime someLocalTime = new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Local);
 		private DateTime someUtcTime = new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Utc);
 		private DateTime someUnspecifiedTime = new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Unspecified);
@@ -163,72 +165,35 @@ namespace DotNetOpenAuth.OpenId.Test.Extensions.ProviderAuthenticationPolicy {
 		}
 
 		[TestMethod]
-		public void SerializeRoundTrip() {
-			// This test relies on the PolicyResponse.Equals method.  If this and that test 
-			// are failing, work on EqualsTest first.
-
-			// Most basic test
-			PolicyResponse resp = new PolicyResponse(), resp2 = new PolicyResponse();
-			var fields = ((IExtensionResponse)resp).Serialize(null);
-			Assert.IsTrue(((IExtensionResponse)resp2).Deserialize(fields, null, Constants.TypeUri));
-			Assert.AreEqual(resp, resp2);
-
-			// Test with all fields set
-			resp2 = new PolicyResponse();
-			resp.ActualPolicies.Add(AuthenticationPolicies.MultiFactor);
-			resp.AuthenticationTimeUtc = someUtcTime;
-			resp.NistAssuranceLevel = NistAssuranceLevel.Level2;
-			fields = ((IExtensionResponse)resp).Serialize(null);
-			Assert.IsTrue(((IExtensionResponse)resp2).Deserialize(fields, null, Constants.TypeUri));
-			Assert.AreEqual(resp, resp2);
-
-			// Test with an extra policy
-			resp2 = new PolicyResponse();
-			resp.ActualPolicies.Add(AuthenticationPolicies.PhishingResistant);
-			resp.AssuranceLevels.Add("customlevel", "ABC");
-			fields = ((IExtensionResponse)resp).Serialize(null);
-			Assert.IsTrue(((IExtensionResponse)resp2).Deserialize(fields, null, Constants.TypeUri));
-			Assert.AreEqual(resp, resp2);
-
-			// Test with a policy added twice.  We should see it intelligently leave one of
-			// the doubled policies out.
-			resp2 = new PolicyResponse();
-			resp.ActualPolicies.Add(AuthenticationPolicies.PhishingResistant);
-			fields = ((IExtensionResponse)resp).Serialize(null);
-			Assert.IsTrue(((IExtensionResponse)resp2).Deserialize(fields, null, Constants.TypeUri));
-			Assert.AreNotEqual(resp, resp2);
-			// Now go ahead and add the doubled one so we can do our equality test.
-			resp2.ActualPolicies.Add(AuthenticationPolicies.PhishingResistant);
-			Assert.AreEqual(resp, resp2);
-		}
-
-		[TestMethod]
 		public void Serialize() {
-			PolicyResponse resp = new PolicyResponse(), resp2 = new PolicyResponse();
-			var fields = ((IExtensionResponse)resp).Serialize(null);
+			PolicyResponse resp = new PolicyResponse();
+			IMessageWithEvents respEvents = resp;
+
+			var fields = new MessageDictionary(resp);
+			respEvents.OnSending();
 			Assert.AreEqual(1, fields.Count);
 			Assert.IsTrue(fields.ContainsKey("auth_policies"));
 			Assert.AreEqual(AuthenticationPolicies.None, fields["auth_policies"]);
 
 			resp.ActualPolicies.Add(AuthenticationPolicies.PhishingResistant);
-			fields = ((IExtensionResponse)resp).Serialize(null);
+			respEvents.OnSending();
 			Assert.AreEqual(1, fields.Count);
 			Assert.AreEqual(AuthenticationPolicies.PhishingResistant, fields["auth_policies"]);
 
 			resp.ActualPolicies.Add(AuthenticationPolicies.PhysicalMultiFactor);
-			fields = ((IExtensionResponse)resp).Serialize(null);
+			respEvents.OnSending();
 			Assert.AreEqual(1, fields.Count);
 			Assert.AreEqual(
 				AuthenticationPolicies.PhishingResistant + " " + AuthenticationPolicies.PhysicalMultiFactor,
 				fields["auth_policies"]);
 
 			resp.AuthenticationTimeUtc = DateTime.UtcNow;
-			fields = ((IExtensionResponse)resp).Serialize(null);
+			respEvents.OnSending();
 			Assert.AreEqual(2, fields.Count);
 			Assert.IsTrue(fields.ContainsKey("auth_time"));
 
 			resp.NistAssuranceLevel = NistAssuranceLevel.Level3;
-			fields = ((IExtensionResponse)resp).Serialize(null);
+			respEvents.OnSending();
 			Assert.AreEqual(4, fields.Count);
 			Assert.IsTrue(fields.ContainsKey("auth_level.ns.nist"));
 			Assert.AreEqual(Constants.AuthenticationLevels.NistTypeUri, fields["auth_level.ns.nist"]);
@@ -236,7 +201,7 @@ namespace DotNetOpenAuth.OpenId.Test.Extensions.ProviderAuthenticationPolicy {
 			Assert.AreEqual("3", fields["auth_level.nist"]);
 
 			resp.AssuranceLevels.Add("custom", "CU");
-			fields = ((IExtensionResponse)resp).Serialize(null);
+			respEvents.OnSending();
 			Assert.AreEqual(6, fields.Count);
 			Assert.IsTrue(fields.ContainsKey("auth_level.ns.alias2"));
 			Assert.AreEqual("custom", fields["auth_level.ns.alias2"]);

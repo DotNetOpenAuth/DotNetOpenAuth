@@ -88,5 +88,14 @@ namespace DotNetOpenAuth.OpenId {
 
 			return value;
 		}
+
+		/// <summary>
+		/// Rounds the given <see cref="DateTime"/> downward to the whole second.
+		/// </summary>
+		/// <param name="dateTime">The DateTime object to adjust.</param>
+		/// <returns>The new <see cref="DateTime"/> value.</returns>
+		internal static DateTime CutToSecond(DateTime dateTime) {
+			return new DateTime(dateTime.Ticks - (dateTime.Ticks % TimeSpan.TicksPerSecond), dateTime.Kind);
+		}
 	}
 }
