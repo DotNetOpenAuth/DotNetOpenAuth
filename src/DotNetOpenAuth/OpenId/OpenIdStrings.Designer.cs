@@ -259,6 +259,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The value &apos;{0}&apos; is not a valid URI..
+        /// </summary>
+        internal static string InvalidUri1 {
+            get {
+                return ResourceManager.GetString("InvalidUri1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Not a recognized XRI format: &apos;{0}&apos;..
         /// </summary>
         internal static string InvalidXri {
@@ -439,6 +448,15 @@ namespace DotNetOpenAuth.OpenId {
         internal static string UnsolicitedAssertionsNotAllowedFrom1xOPs {
             get {
                 return ResourceManager.GetString("UnsolicitedAssertionsNotAllowedFrom1xOPs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Providing a DateTime whose Kind is Unspecified is not allowed..
+        /// </summary>
+        internal static string UnspecifiedDateTimeKindNotAllowed {
+            get {
+                return ResourceManager.GetString("UnspecifiedDateTimeKindNotAllowed", resourceCulture);
             }
         }
         

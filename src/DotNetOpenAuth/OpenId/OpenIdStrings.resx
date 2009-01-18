@@ -253,4 +253,10 @@ Discovered endpoint info:
   <data name="AttributeTooManyValues" xml:space="preserve">
     <value>Only {0} values for attribute '{1}' were requested, but {2} were supplied.</value>
   </data>
+  <data name="InvalidUri1" xml:space="preserve">
+    <value>The value '{0}' is not a valid URI.</value>
+  </data>
+  <data name="UnspecifiedDateTimeKindNotAllowed" xml:space="preserve">
+    <value>Providing a DateTime whose Kind is Unspecified is not allowed.</value>
+  </data>
 </root>

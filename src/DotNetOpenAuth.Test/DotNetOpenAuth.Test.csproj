@@ -118,6 +118,9 @@
     <Compile Include="OpenId\Extensions\AttributeExchange\AttributeValuesTests.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\StoreRequestTests.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\StoreResponseTests.cs" />
+    <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\PapeTests.cs" />
+    <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\PolicyRequestTests.cs" />
+    <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\PolicyResponseTests.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\ClaimsResponseTests.cs" />
     <Compile Include="OpenId\Extensions\ExtensionTestUtilities.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\ClaimsRequestTests.cs" />

@@ -196,6 +196,14 @@
     <Compile Include="OpenId\Extensions\ExtensionBase.cs" />
     <Compile Include="OpenId\Extensions\ExtensionArgumentsManager.cs" />
     <Compile Include="OpenId\Extensions\OpenIdExtensionFactory.cs" />
+    <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\AuthenticationPolicies.cs" />
+    <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\Constants.cs" />
+    <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\DateTimeEncoder.cs" />
+    <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\NistAssuranceLevel.cs" />
+    <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\PapeUtilities.cs" />
+    <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\PolicyRequest.cs" />
+    <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\PolicyResponse.cs" />
+    <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\TimespanSecondsEncoder.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\ClaimsRequest.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\ClaimsResponse.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\Constants.cs" />
