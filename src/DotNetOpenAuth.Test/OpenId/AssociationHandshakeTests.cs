@@ -29,10 +29,31 @@ namespace DotNetOpenAuth.Test.OpenId {
 			this.ParameterizedAssociationTest(new Uri("http://host"));
 		}
 
+		/// <summary>
+		/// Verifies that the Provider can do Diffie-Hellman over HTTPS.
+		/// </summary>
+		/// <remarks>
+		/// Some OPs out there flatly refuse to do this, and the spec doesn't forbid
+		/// putting the two together, so we verify that DNOI can handle it.
+		/// </remarks>
 		[TestMethod]
 		public void AssociateDiffieHellmanOverHttps() {
-			// TODO: test the RP and OP agreeing to use Diffie-Hellman over HTTPS.
-			Assert.Inconclusive();
+			Protocol protocol = Protocol.V20;
+			OpenIdCoordinator coordinator = new OpenIdCoordinator(
+				rp => {
+					// We have to formulate the associate request manually,
+					// since the DNOI RP won't voluntarily use DH on HTTPS.
+					AssociateDiffieHellmanRequest request = new AssociateDiffieHellmanRequest(protocol.Version, new Uri("https://Provider"));
+					request.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA256;
+					request.SessionType = protocol.Args.SessionType.DH_SHA256;
+					request.InitializeRequest();
+					var response = rp.Channel.Request<AssociateSuccessfulResponse>(request);
+					Assert.IsNotNull(response);
+					Assert.AreEqual(request.AssociationType, response.AssociationType);
+					Assert.AreEqual(request.SessionType, response.SessionType);
+				},
+				TestSupport.AutoProvider);
+			coordinator.Run();
 		}
 
 		/// <summary>
