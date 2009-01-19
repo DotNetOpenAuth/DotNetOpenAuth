@@ -144,7 +144,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
 
 			IProtocolMessage response;
-			if (securitySettings.IsAssociationInPermittedRange(Protocol, this.AssociationType)) {
+			if (securitySettings.IsAssociationInPermittedRange(Protocol, this.AssociationType) &&
+				HmacShaAssociation.IsDHSessionCompatible(Protocol, this.AssociationType, this.SessionType)) {
 				response = this.CreateResponseCore();
 
 				// Create and store the association if this is a successful response.

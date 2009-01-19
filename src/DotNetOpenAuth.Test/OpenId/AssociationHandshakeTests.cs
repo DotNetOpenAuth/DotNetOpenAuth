@@ -106,9 +106,71 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// when the HMAC and DH bit lengths do not match.
 		/// </summary>
 		[TestMethod]
-		public void OPReceivesAssociateWithMismatchingAssociationAndSessionBitLengths() {
-			// TODO: implement this.
-			Assert.Inconclusive();
+		public void OPRejectsMismatchingAssociationAndSessionTypes() {
+			Protocol protocol = Protocol.V20;
+			OpenIdCoordinator coordinator = new OpenIdCoordinator(
+				rp => {
+					// We have to formulate the associate request manually,
+					// since the DNOI RP won't voluntarily mismatch the association and session types.
+					AssociateDiffieHellmanRequest request = new AssociateDiffieHellmanRequest(protocol.Version, new Uri("https://Provider"));
+					request.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA256;
+					request.SessionType = protocol.Args.SessionType.DH_SHA1;
+					request.InitializeRequest();
+					var response = rp.Channel.Request<AssociateUnsuccessfulResponse>(request);
+					Assert.IsNotNull(response);
+					Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, response.AssociationType);
+					Assert.AreEqual(protocol.Args.SessionType.DH_SHA1, response.SessionType);
+				},
+				TestSupport.AutoProvider);
+			coordinator.Run();
+		}
+
+		/// <summary>
+		/// Verifies that the RP quietly rejects an OP that suggests an unknown association type.
+		/// </summary>
+		[TestMethod]
+		public void RPRejectsUnrecognizedAssociationType() {
+			Protocol protocol = Protocol.V20;
+			OpenIdCoordinator coordinator = new OpenIdCoordinator(
+				rp => {
+					var association = rp.GetOrCreateAssociation(new ProviderEndpointDescription(ProviderUri, protocol.Version));
+					Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
+				},
+				op => {
+					// Receive initial request.
+					var request = op.Channel.ReadFromRequest<AssociateRequest>();
+
+					// Send a response that suggests a foreign association type.
+					AssociateUnsuccessfulResponse renegotiateResponse = new AssociateUnsuccessfulResponse(request);
+					renegotiateResponse.AssociationType = "HMAC-UNKNOWN";
+					renegotiateResponse.SessionType = "DH-UNKNOWN";
+					op.Channel.Send(renegotiateResponse).Send();
+				});
+			coordinator.Run();
+		}
+
+		/// <summary>
+		/// Verifies that the RP quietly rejects an OP that suggests an no encryption over an HTTP channel.
+		/// </summary>
+		[TestMethod]
+		public void RPRejectsUnencryptedSuggestion() {
+			Protocol protocol = Protocol.V20;
+			OpenIdCoordinator coordinator = new OpenIdCoordinator(
+				rp => {
+					var association = rp.GetOrCreateAssociation(new ProviderEndpointDescription(ProviderUri, protocol.Version));
+					Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
+				},
+				op => {
+					// Receive initial request.
+					var request = op.Channel.ReadFromRequest<AssociateRequest>();
+
+					// Send a response that suggests a no encryption.
+					AssociateUnsuccessfulResponse renegotiateResponse = new AssociateUnsuccessfulResponse(request);
+					renegotiateResponse.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA1;
+					renegotiateResponse.SessionType = protocol.Args.SessionType.NoEncryption;
+					op.Channel.Send(renegotiateResponse).Send();
+				});
+			coordinator.Run();
 		}
 
 		/// <summary>
@@ -116,8 +178,24 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// when the HMAC and DH bit lengths do not match.
 		/// </summary>
 		[TestMethod]
-		public void RPReceivesAssociateRenegotiateWithMismatchingAssociationAndSessionBitLengths() {
-			Assert.Inconclusive("Not yet implemented.");
+		public void RPRejectsMismatchingAssociationAndSessionBitLengths() {
+			Protocol protocol = Protocol.V20;
+			OpenIdCoordinator coordinator = new OpenIdCoordinator(
+				rp => {
+					var association = rp.GetOrCreateAssociation(new ProviderEndpointDescription(ProviderUri, protocol.Version));
+					Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
+				},
+				op => {
+					// Receive initial request.
+					var request = op.Channel.ReadFromRequest<AssociateRequest>();
+
+					// Send a mismatched response
+					AssociateUnsuccessfulResponse renegotiateResponse = new AssociateUnsuccessfulResponse(request);
+					renegotiateResponse.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA1;
+					renegotiateResponse.SessionType = protocol.Args.SessionType.DH_SHA256;
+					op.Channel.Send(renegotiateResponse).Send();
+				});
+			coordinator.Run();
 		}
 
 		/// <summary>
@@ -125,9 +203,33 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// keeps sending it association retry messages.
 		/// </summary>
 		[TestMethod]
-		public void AssociateRenegotiateBitLengthRPStopsAfterOneRetry() {
-			// TODO: code here
-			Assert.Inconclusive();
+		public void RPOnlyRenegotiatesOnce() {
+			Protocol protocol = Protocol.V20;
+			OpenIdCoordinator coordinator = new OpenIdCoordinator(
+				rp => {
+					var association = rp.GetOrCreateAssociation(new ProviderEndpointDescription(ProviderUri, protocol.Version));
+					Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
+				},
+				op => {
+					// Receive initial request.
+					var request = op.Channel.ReadFromRequest<AssociateRequest>();
+
+					// Send a renegotiate response
+					AssociateUnsuccessfulResponse renegotiateResponse = new AssociateUnsuccessfulResponse(request);
+					renegotiateResponse.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA1;
+					renegotiateResponse.SessionType = protocol.Args.SessionType.DH_SHA1;
+					op.Channel.Send(renegotiateResponse).Send();
+
+					// Receive second-try
+					request = op.Channel.ReadFromRequest<AssociateRequest>();
+
+					// Send ANOTHER renegotiate response, at which point the DNOI RP should give up.
+					renegotiateResponse = new AssociateUnsuccessfulResponse(request);
+					renegotiateResponse.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA256;
+					renegotiateResponse.SessionType = protocol.Args.SessionType.DH_SHA256;
+					op.Channel.Send(renegotiateResponse).Send();
+				});
+			coordinator.Run();
 		}
 
 		/// <summary>
@@ -153,17 +255,6 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// </summary>
 		[TestMethod]
 		public void AssociateLimitedByOPSecuritySettings() {
-			// TODO: Code here
-			Assert.Inconclusive();
-		}
-
-		/// <summary>
-		/// Verifies the RP can recover with no association after receiving an
-		/// associate error response from the OP when no suggested association
-		/// type is included.
-		/// </summary>
-		[TestMethod]
-		public void AssociateContinueAfterOpenIdError() {
 			// TODO: Code here
 			Assert.Inconclusive();
 		}
