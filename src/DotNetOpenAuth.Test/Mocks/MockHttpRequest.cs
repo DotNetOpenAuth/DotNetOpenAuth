@@ -34,6 +34,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			if (!untrustedHandler.WhitelistHosts.Contains("localhost")) {
 				untrustedHandler.WhitelistHosts.Add("localhost");
 			}
+			untrustedHandler.WhitelistHosts.Add(OpenIdTestBase.ProviderUri.Host);
 			MockHttpRequest mock = new MockHttpRequest(untrustedHandler);
 			testHandler.Callback = mock.GetMockResponse;
 			return mock;
@@ -171,6 +172,18 @@ namespace DotNetOpenAuth.Test.Mocks {
 			};
 			DirectWebResponse response = new CachedDirectWebResponse(origin, origin, redirectionHeaders, HttpStatusCode.Redirect, null, null, new MemoryStream());
 			this.RegisterMockResponse(response);
+		}
+
+		internal void RegisterMockNotFound(Uri requestUri) {
+			CachedDirectWebResponse errorResponse = new CachedDirectWebResponse(
+				requestUri,
+				requestUri,
+				new WebHeaderCollection(),
+				HttpStatusCode.NotFound,
+				"text/plain",
+				Encoding.UTF8.WebName,
+				new MemoryStream(Encoding.UTF8.GetBytes("Not found.")));
+			this.RegisterMockResponse(errorResponse);
 		}
 
 		private DirectWebResponse GetMockResponse(HttpWebRequest request) {

@@ -126,6 +126,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// </summary>
 		/// <param name="data">The stream of Key-Value Form encoded bytes.</param>
 		/// <returns>The deserialized dictionary.</returns>
+		/// <exception cref="FormatException">Thrown when the data is not in the expected format.</exception>
 		public IDictionary<string, string> GetDictionary(Stream data) {
 			using (StreamReader reader = new StreamReader(data, textEncoding)) {
 				var dict = new Dictionary<string, string>();
@@ -140,14 +141,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 						}
 					}
 					string[] parts = line.Split(new[] { ':' }, 2);
-					if (parts.Length != 2) {
-						throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, OpenIdStrings.InvalidKeyValueFormCharacterMissing, ':', line_num, line));
-					}
+					ErrorUtilities.VerifyFormat(parts.Length == 2, OpenIdStrings.InvalidKeyValueFormCharacterMissing, ':', line_num, line);
 					if (this.ConformanceLevel > KeyValueFormConformanceLevel.Loose) {
-						if (char.IsWhiteSpace(parts[0], parts[0].Length - 1) ||
-							char.IsWhiteSpace(parts[1], 0)) {
-							throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, OpenIdStrings.InvalidCharacterInKeyValueFormInput, ' ', line_num, line));
-						}
+						ErrorUtilities.VerifyFormat(!(char.IsWhiteSpace(parts[0], parts[0].Length - 1) || char.IsWhiteSpace(parts[1], 0)), OpenIdStrings.InvalidCharacterInKeyValueFormInput, ' ', line_num, line);
 					}
 					if (this.ConformanceLevel < KeyValueFormConformanceLevel.OpenId20) {
 						parts[0] = parts[0].Trim();
@@ -160,9 +156,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				}
 				if (this.ConformanceLevel > KeyValueFormConformanceLevel.Loose) {
 					reader.BaseStream.Seek(-1, SeekOrigin.End);
-					if (reader.BaseStream.ReadByte() != '\n') {
-						throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, OpenIdStrings.InvalidKeyValueFormCharacterMissing, "\\n", line_num, line));
-					}
+					ErrorUtilities.VerifyFormat(reader.BaseStream.ReadByte() == '\n', OpenIdStrings.InvalidKeyValueFormCharacterMissing, "\\n", line_num, line);
 				}
 				return dict;
 			}

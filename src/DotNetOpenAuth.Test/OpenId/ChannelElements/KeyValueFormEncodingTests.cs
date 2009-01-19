@@ -117,18 +117,18 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			this.KVDictTest(UTF8Encoding.UTF8.GetBytes("east:west\nnorth:south"), d10, TestMode.Decoder);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestMethod, ExpectedException(typeof(FormatException))]
 		public void NoValue() {
 			this.Illegal("x\n", KeyValueFormConformanceLevel.OpenId11);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestMethod, ExpectedException(typeof(FormatException))]
 		public void NoValueLoose() {
 			Dictionary<string, string> d = new Dictionary<string, string>();
 			this.KVDictTest(Encoding.UTF8.GetBytes("x\n"), d, TestMode.Decoder);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestMethod, ExpectedException(typeof(FormatException))]
 		public void EmptyLine() {
 			this.Illegal("x:b\n\n", KeyValueFormConformanceLevel.OpenId20);
 		}
@@ -140,7 +140,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			this.KVDictTest(Encoding.UTF8.GetBytes("x:b\n\n"), d, TestMode.Decoder);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestMethod, ExpectedException(typeof(FormatException))]
 		public void LastLineNotTerminated() {
 			this.Illegal("x:y\na:b", KeyValueFormConformanceLevel.OpenId11);
 		}

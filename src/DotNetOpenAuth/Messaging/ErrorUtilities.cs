@@ -142,6 +142,29 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Throws a <see cref="FormatException"/>.
+		/// </summary>
+		/// <param name="message">The message for the exception.</param>
+		/// <param name="args">The string formatting arguments for <paramref name="message"/>.</param>
+		/// <returns>Nothing.  It's just here so the caller can throw this method for C# compilation check.</returns>
+		internal static Exception ThrowFormat(string message, params object[] args) {
+			throw new FormatException(string.Format(CultureInfo.CurrentCulture, message, args));
+		}
+
+		/// <summary>
+		/// Throws a <see cref="FormatException"/> if some condition is false.
+		/// </summary>
+		/// <param name="condition">The expression to evaluate.  A value of <c>false</c> will cause the exception to be thrown.</param>
+		/// <param name="message">The message for the exception.</param>
+		/// <param name="args">The string formatting arguments for <paramref name="message"/>.</param>
+		/// <exception cref="FormatException">Thrown when <paramref name="condition"/> is <c>false</c>.</exception>
+		internal static void VerifyFormat(bool condition, string message, params object[] args) {
+			if (!condition) {
+				ThrowFormat(message, args);
+			}
+		}
+
+		/// <summary>
 		/// Verifies something about the argument supplied to a method.
 		/// </summary>
 		/// <param name="condition">The condition that must evaluate to true to avoid an exception.</param>

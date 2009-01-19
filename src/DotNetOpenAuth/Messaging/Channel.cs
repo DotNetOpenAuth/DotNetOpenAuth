@@ -511,6 +511,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="response">The response that is anticipated to contain an protocol message.</param>
 		/// <returns>The deserialized message parts, if found.  Null otherwise.</returns>
+		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
 		protected abstract IDictionary<string, string> ReadFromResponseInternal(DirectWebResponse response);
 
 		/// <summary>

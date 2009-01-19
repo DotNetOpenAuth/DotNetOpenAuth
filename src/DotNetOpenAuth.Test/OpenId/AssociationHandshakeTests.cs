@@ -233,30 +233,22 @@ namespace DotNetOpenAuth.Test.OpenId {
 		}
 
 		/// <summary>
-		/// Verifies security settings limit RP's initial associate request
-		/// </summary>
-		[TestMethod]
-		public void AssociateRequestDeterminedBySecuritySettings() {
-			// TODO: Code here
-			Assert.Inconclusive();
-		}
-
-		/// <summary>
 		/// Verifies security settings limit RP's acceptance of OP's counter-suggestion
 		/// </summary>
 		[TestMethod]
 		public void AssociateRenegotiateLimitedByRPSecuritySettings() {
-			// TODO: Code here
-			Assert.Inconclusive();
-		}
-
-		/// <summary>
-		/// Verifies security settings limit OP's set of acceptable association types.
-		/// </summary>
-		[TestMethod]
-		public void AssociateLimitedByOPSecuritySettings() {
-			// TODO: Code here
-			Assert.Inconclusive();
+			Protocol protocol = Protocol.V20;
+			OpenIdCoordinator coordinator = new OpenIdCoordinator(
+				rp => {
+					rp.SecuritySettings.MinimumHashBitLength = 256;
+					var association = rp.GetOrCreateAssociation(new ProviderEndpointDescription(ProviderUri, protocol.Version));
+					Assert.IsNull(association, "No association should have been created when RP and OP could not agree on association strength.");
+				},
+				op => {
+					op.SecuritySettings.MaximumHashBitLength = 160;
+					TestSupport.AutoProvider(op);
+				});
+			coordinator.Run();
 		}
 
 		/// <summary>
@@ -264,9 +256,11 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// response from the OP, for example in the HTTP timeout case.
 		/// </summary>
 		[TestMethod]
-		public void AssociateContinueAfterHttpError() {
-			// TODO: Code here
-			Assert.Inconclusive();
+		public void AssociateQuietlyFailsAfterHttpError() {
+			this.MockResponder.RegisterMockNotFound(ProviderUri);
+			var rp = this.CreateRelyingParty();
+			var association = rp.GetOrCreateAssociation(new ProviderEndpointDescription(ProviderUri, Protocol.V20.Version));
+			Assert.IsNull(association);
 		}
 
 		/// <summary>

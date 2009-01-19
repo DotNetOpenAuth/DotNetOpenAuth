@@ -10,10 +10,11 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
-	public class AssociateRequestTests {
+	public class AssociateRequestTests : OpenIdTestBase {
 		private readonly Protocol protocol = Protocol.V20;
 		private Uri secureRecipient = new Uri("https://hi");
 		private Uri insecureRecipient = new Uri("http://hi");
@@ -72,6 +73,23 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 		[TestMethod]
 		public void Transport() {
 			Assert.AreEqual(MessageTransport.Direct, this.request.Transport);
+		}
+
+		/// <summary>
+		/// Verifies security settings limit RP's initial associate request
+		/// </summary>
+		[TestMethod]
+		public void AssociateRequestDeterminedBySecuritySettings() {
+			Protocol protocol = Protocol.V20;
+			SecuritySettings securitySettings = new RelyingPartySecuritySettings();
+			securitySettings.MinimumHashBitLength = 160;
+			securitySettings.MaximumHashBitLength = 160;
+			ProviderEndpointDescription provider = new ProviderEndpointDescription(ProviderUri, protocol.Version);
+			Assert.AreEqual(AssociateRequest.Create(securitySettings, provider).AssociationType, protocol.Args.SignatureAlgorithm.HMAC_SHA1);
+
+			securitySettings.MinimumHashBitLength = 384;
+			securitySettings.MaximumHashBitLength = 384;
+			Assert.AreEqual(AssociateRequest.Create(securitySettings, provider).AssociationType, protocol.Args.SignatureAlgorithm.HMAC_SHA384);
 		}
 	}
 }
