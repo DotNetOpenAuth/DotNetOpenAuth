@@ -259,4 +259,10 @@ Discovered endpoint info:
   <data name="UnspecifiedDateTimeKindNotAllowed" xml:space="preserve">
     <value>Providing a DateTime whose Kind is Unspecified is not allowed.</value>
   </data>
+  <data name="AssociationOrSessionTypeUnrecognizedOrNotSupported" xml:space="preserve">
+    <value>The requested association type '{0}' with session type '{1}' is unrecognized or not supported by this Provider due to security requirements.</value>
+  </data>
+  <data name="IncompatibleAssociationAndSessionTypes" xml:space="preserve">
+    <value>The Provider requested association type '{0}' and session type '{1}', which are not compatible with each other.</value>
+  </data>
 </root>

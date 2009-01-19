@@ -104,18 +104,25 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				protocol = Protocol.V20;
 			}
 
-			var associateDiffieHellmanRequest = request as AssociateDiffieHellmanRequest;
-			var associateUnencryptedRequest = request as AssociateUnencryptedRequest;
+			var associateRequest = request as AssociateRequest;
+			if (associateRequest != null) {
+				if (fields.ContainsKey(protocol.openidnp.error_code)) {
+					message = new AssociateUnsuccessfulResponse(associateRequest);
+				} else {
+					var associateDiffieHellmanRequest = request as AssociateDiffieHellmanRequest;
+					var associateUnencryptedRequest = request as AssociateUnencryptedRequest;
+
+					if (associateDiffieHellmanRequest != null) {
+						message = new AssociateDiffieHellmanResponse(associateDiffieHellmanRequest);
+					}
+
+					if (associateUnencryptedRequest != null) {
+						message = new AssociateUnencryptedResponse(associateUnencryptedRequest);
+					}
+				}
+			}
+
 			var checkAuthenticationRequest = request as CheckAuthenticationRequest;
-
-			if (associateDiffieHellmanRequest != null) {
-				message = new AssociateDiffieHellmanResponse(associateDiffieHellmanRequest);
-			}
-
-			if (associateUnencryptedRequest != null) {
-				message = new AssociateUnencryptedResponse(associateUnencryptedRequest);
-			}
-
 			if (checkAuthenticationRequest != null) {
 				message = new CheckAuthenticationResponse(checkAuthenticationRequest);
 			}

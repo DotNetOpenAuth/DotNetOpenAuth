@@ -29,57 +29,111 @@ namespace DotNetOpenAuth.Test.OpenId {
 			this.ParameterizedAssociationTest(new Uri("http://host"));
 		}
 
-		[TestMethod, Ignore]
+		[TestMethod]
 		public void AssociateDiffieHellmanOverHttps() {
 			// TODO: test the RP and OP agreeing to use Diffie-Hellman over HTTPS.
-			throw new NotImplementedException();
+			Assert.Inconclusive();
 		}
 
 		/// <summary>
 		/// Verifies that the RP and OP can renegotiate an association type if the RP's
 		/// initial request for an association is for a type the OP doesn't support.
 		/// </summary>
-		[TestMethod, Ignore]
+		[TestMethod]
 		public void AssociateRenegotiateBitLength() {
-			// TODO: test where the RP asks for an association type that the OP doesn't support
-			throw new NotImplementedException();
+			Protocol protocol = Protocol.V20;
+
+			// The strategy is to make a simple request of the RP to establish an association,
+			// and to more carefully observe the Provider-side of things to make sure that both
+			// the OP and RP are behaving as expected.
+			OpenIdCoordinator coordinator = new OpenIdCoordinator(
+				rp => {
+					var opDescription = new ProviderEndpointDescription(ProviderUri, protocol.Version);
+					Association association = rp.GetOrCreateAssociation(opDescription);
+					Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, association.GetAssociationType(protocol));
+				},
+				op => {
+					op.SecuritySettings.MaximumHashBitLength = 160; // Force OP to reject HMAC-SHA256
+
+					// Receive initial request for an HMAC-SHA256 association.
+					AutoResponsiveRequest req = (AutoResponsiveRequest) op.GetRequest();
+					AutoResponsiveRequest_Accessor reqAccessor = AutoResponsiveRequest_Accessor.AttachShadow(req);
+					AssociateRequest associateRequest = (AssociateRequest)reqAccessor.RequestMessage;
+					Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA256, associateRequest.AssociationType);
+
+					// Ensure that the response is a suggestion that the RP try again with HMAC-SHA1
+					AssociateUnsuccessfulResponse renegotiateResponse = (AssociateUnsuccessfulResponse)reqAccessor.ResponseMessage;
+					Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, renegotiateResponse.AssociationType);
+					req.Response.Send();
+
+					// Receive second attempt request for an HMAC-SHA1 association.
+					req = (AutoResponsiveRequest)op.GetRequest();
+					reqAccessor = AutoResponsiveRequest_Accessor.AttachShadow(req);
+					associateRequest = (AssociateRequest)reqAccessor.RequestMessage;
+					Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, associateRequest.AssociationType);
+
+					// Ensure that the response is a success response.
+					AssociateSuccessfulResponse successResponse = (AssociateSuccessfulResponse)reqAccessor.ResponseMessage;
+					Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, successResponse.AssociationType);
+					req.Response.Send();
+				});
+			coordinator.Run();
+		}
+
+		/// <summary>
+		/// Verifies that the OP rejects an associate request
+		/// when the HMAC and DH bit lengths do not match.
+		/// </summary>
+		[TestMethod]
+		public void OPReceivesAssociateWithMismatchingAssociationAndSessionBitLengths() {
+			// TODO: implement this.
+			Assert.Inconclusive();
+		}
+
+		/// <summary>
+		/// Verifies that the RP rejects an associate renegotiate request 
+		/// when the HMAC and DH bit lengths do not match.
+		/// </summary>
+		[TestMethod]
+		public void RPReceivesAssociateRenegotiateWithMismatchingAssociationAndSessionBitLengths() {
+			Assert.Inconclusive("Not yet implemented.");
 		}
 
 		/// <summary>
 		/// Verifies that the RP cannot get caught in an infinite loop if a bad OP
 		/// keeps sending it association retry messages.
 		/// </summary>
-		[TestMethod, Ignore]
+		[TestMethod]
 		public void AssociateRenegotiateBitLengthRPStopsAfterOneRetry() {
 			// TODO: code here
-			throw new NotImplementedException();
+			Assert.Inconclusive();
 		}
 
 		/// <summary>
 		/// Verifies security settings limit RP's initial associate request
 		/// </summary>
-		[TestMethod, Ignore]
+		[TestMethod]
 		public void AssociateRequestDeterminedBySecuritySettings() {
 			// TODO: Code here
-			throw new NotImplementedException();
+			Assert.Inconclusive();
 		}
 
 		/// <summary>
 		/// Verifies security settings limit RP's acceptance of OP's counter-suggestion
 		/// </summary>
-		[TestMethod, Ignore]
+		[TestMethod]
 		public void AssociateRenegotiateLimitedByRPSecuritySettings() {
 			// TODO: Code here
-			throw new NotImplementedException();
+			Assert.Inconclusive();
 		}
 
 		/// <summary>
 		/// Verifies security settings limit OP's set of acceptable association types.
 		/// </summary>
-		[TestMethod, Ignore]
+		[TestMethod]
 		public void AssociateLimitedByOPSecuritySettings() {
 			// TODO: Code here
-			throw new NotImplementedException();
+			Assert.Inconclusive();
 		}
 
 		/// <summary>
@@ -87,20 +141,20 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// associate error response from the OP when no suggested association
 		/// type is included.
 		/// </summary>
-		[TestMethod, Ignore]
+		[TestMethod]
 		public void AssociateContinueAfterOpenIdError() {
 			// TODO: Code here
-			throw new NotImplementedException();
+			Assert.Inconclusive();
 		}
 
 		/// <summary>
 		/// Verifies that the RP can recover from an invalid or non-existent 
 		/// response from the OP, for example in the HTTP timeout case.
 		/// </summary>
-		[TestMethod, Ignore]
+		[TestMethod]
 		public void AssociateContinueAfterHttpError() {
 			// TODO: Code here
-			throw new NotImplementedException();
+			Assert.Inconclusive();
 		}
 
 		/// <summary>

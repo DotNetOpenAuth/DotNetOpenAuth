@@ -79,31 +79,50 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			ErrorUtilities.VerifyArgumentNotNull(securityRequirements, "securityRequirements");
 			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
 
-			AssociateRequest associateRequest;
-
 			// Apply our knowledge of the endpoint's transport, OpenID version, and
-			// security requirements to decide the best association 
+			// security requirements to decide the best association.
 			bool unencryptedAllowed = provider.Endpoint.IsTransportSecure();
 			bool useDiffieHellman = !unencryptedAllowed;
 			string associationType, sessionType;
-			if (!HmacShaAssociation.TryFindBestAssociation(Protocol.Lookup(provider.ProtocolVersion), securityRequirements, useDiffieHellman, out associationType, out sessionType)) {
+			if (!HmacShaAssociation.TryFindBestAssociation(Protocol.Lookup(provider.ProtocolVersion), true, securityRequirements, useDiffieHellman, out associationType, out sessionType)) {
 				// There are no associations that meet all requirements.
 				Logger.Warn("Security requirements and protocol combination knock out all possible association types.  Dumb mode forced.");
 				return null;
 			}
 
-			if (unencryptedAllowed) {
-				associateRequest = new AssociateUnencryptedRequest(provider.ProtocolVersion, provider.Endpoint);
-				associateRequest.AssociationType = associationType;
-			} else {
-				var diffieHellmanAssociateRequest = new AssociateDiffieHellmanRequest(provider.ProtocolVersion, provider.Endpoint);
-				diffieHellmanAssociateRequest.AssociationType = associationType;
-				diffieHellmanAssociateRequest.SessionType = sessionType;
-				diffieHellmanAssociateRequest.InitializeRequest();
-				associateRequest = diffieHellmanAssociateRequest;
-			}
+			return Create(securityRequirements, provider, associationType, sessionType);
+		}
 
-			return associateRequest;
+		/// <summary>
+		/// Creates an association request message that is appropriate for a given Provider.
+		/// </summary>
+		/// <param name="securityRequirements">The set of requirements the selected association type must comply to.</param>
+		/// <param name="provider">The provider to create an association with.</param>
+		/// <param name="associationType">Type of the association.</param>
+		/// <param name="sessionType">Type of the session.</param>
+		/// <returns>
+		/// The message to send to the Provider to request an association.
+		/// Null if no association could be created that meet the security requirements
+		/// and the provider OpenID version.
+		/// </returns>
+		internal static AssociateRequest Create(SecuritySettings securityRequirements, ProviderEndpointDescription provider, string associationType, string sessionType) {
+			ErrorUtilities.VerifyArgumentNotNull(securityRequirements, "securityRequirements");
+			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
+			ErrorUtilities.VerifyNonZeroLength(associationType, "associationType");
+			ErrorUtilities.VerifyArgumentNotNull(sessionType, "sessionType");
+
+			bool unencryptedAllowed = provider.Endpoint.IsTransportSecure();
+			if (unencryptedAllowed) {
+				var associateRequest = new AssociateUnencryptedRequest(provider.ProtocolVersion, provider.Endpoint);
+				associateRequest.AssociationType = associationType;
+				return associateRequest;
+			} else {
+				var associateRequest = new AssociateDiffieHellmanRequest(provider.ProtocolVersion, provider.Endpoint);
+				associateRequest.AssociationType = associationType;
+				associateRequest.SessionType = sessionType;
+				associateRequest.InitializeRequest();
+				return associateRequest;
+			}
 		}
 
 		/// <summary>
@@ -124,13 +143,18 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			ErrorUtilities.VerifyArgumentNotNull(associationStore, "associationStore");
 			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
 
-			var response = this.CreateResponseCore();
+			IProtocolMessage response;
+			if (securitySettings.IsAssociationInPermittedRange(Protocol, this.AssociationType)) {
+				response = this.CreateResponseCore();
 
-			// Create and store the association if this is a successful response.
-			var successResponse = response as AssociateSuccessfulResponse;
-			if (successResponse != null) {
-				Association association = successResponse.CreateAssociation(this, securitySettings);
-				associationStore.StoreAssociation(AssociationRelyingPartyType.Smart, association);
+				// Create and store the association if this is a successful response.
+				var successResponse = response as AssociateSuccessfulResponse;
+				if (successResponse != null) {
+					Association association = successResponse.CreateAssociation(this, securitySettings);
+					associationStore.StoreAssociation(AssociationRelyingPartyType.Smart, association);
+				}
+			} else {
+				response = this.CreateUnsuccessfulResponse(securitySettings);
 			}
 
 			return response;
@@ -150,5 +174,40 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Failed association response messages will derive from <see cref="AssociateUnsuccessfulResponse"/>.</para>
 		/// </remarks>
 		protected abstract IProtocolMessage CreateResponseCore();
+
+		/// <summary>
+		/// Creates a response that notifies the Relying Party that the requested
+		/// association type is not supported by this Provider, and offers
+		/// an alternative association type, if possible.
+		/// </summary>
+		/// <param name="securitySettings">The security settings that apply to this Provider.</param>
+		/// <returns>The response to send to the Relying Party.</returns>
+		private AssociateUnsuccessfulResponse CreateUnsuccessfulResponse(ProviderSecuritySettings securitySettings) {
+			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
+
+			var unsuccessfulResponse = new AssociateUnsuccessfulResponse(this);
+
+			// The strategy here is to suggest that the RP try again with the lowest
+			// permissible security settings, giving the RP the best chance of being
+			// able to match with a compatible request.
+			bool unencryptedAllowed = this.Recipient.IsTransportSecure();
+			bool useDiffieHellman = !unencryptedAllowed;
+			string associationType, sessionType;
+			if (HmacShaAssociation.TryFindBestAssociation(Protocol, false, securitySettings, useDiffieHellman, out associationType, out sessionType)) {
+				ErrorUtilities.VerifyInternal(this.AssociationType != associationType, "The RP asked for an association that should have been allowed, but the OP is trying to suggest the same one as an alternative!");
+				unsuccessfulResponse.AssociationType = associationType;
+				unsuccessfulResponse.SessionType = sessionType;
+				Logger.InfoFormat(
+					"Association requested of type '{0}' and session '{1}', which the Provider does not support.  Sending back suggested alternative of '{0}' with session '{1}'.",
+					this.AssociationType,
+					this.SessionType,
+					unsuccessfulResponse.AssociationType,
+					unsuccessfulResponse.SessionType);
+			} else {
+				Logger.InfoFormat("Association requested of type '{0}' and session '{1}', which the Provider does not support.  No alternative association type qualified for suggesting back to the Relying Party.", this.AssociationType, this.SessionType);
+			}
+
+			return unsuccessfulResponse;
+		}
 	}
 }

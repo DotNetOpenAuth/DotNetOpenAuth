@@ -61,6 +61,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The requested association type &apos;{0}&apos; with session type &apos;{1}&apos; is unrecognized or not supported by this Provider due to security requirements..
+        /// </summary>
+        internal static string AssociationOrSessionTypeUnrecognizedOrNotSupported {
+            get {
+                return ResourceManager.GetString("AssociationOrSessionTypeUnrecognizedOrNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The length of the shared secret ({0}) does not match the length required by the association type (&apos;{1}&apos;)..
         /// </summary>
         internal static string AssociationSecretAndTypeLengthMismatch {
@@ -210,6 +219,15 @@ namespace DotNetOpenAuth.OpenId {
         internal static string IdentifierSelectRequiresMatchingIdentifiers {
             get {
                 return ResourceManager.GetString("IdentifierSelectRequiresMatchingIdentifiers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Provider requested association type &apos;{0}&apos; and session type &apos;{1}&apos;, which are not compatible with each other..
+        /// </summary>
+        internal static string IncompatibleAssociationAndSessionTypes {
+            get {
+                return ResourceManager.GetString("IncompatibleAssociationAndSessionTypes", resourceCulture);
             }
         }
         

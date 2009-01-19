@@ -581,7 +581,25 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			var associateRequest = AssociateRequest.Create(this.SecuritySettings, provider);
-			if (associateRequest == null) {
+
+			const int RenegotiateRetries = 1;
+			return this.CreateNewAssociation(provider, associateRequest, RenegotiateRetries);
+		}
+
+		/// <summary>
+		/// Creates a new association with a given Provider.
+		/// </summary>
+		/// <param name="provider">The provider to create an association with.</param>
+		/// <param name="associateRequest">The associate request.  May be <c>null</c>, which will always result in a <c>null</c> return value..</param>
+		/// <param name="retriesRemaining">The number of times to try the associate request again if the Provider suggests it.</param>
+		/// <returns>
+		/// The newly created association, or null if no association can be created with
+		/// the given Provider given the current security settings.
+		/// </returns>
+		private Association CreateNewAssociation(ProviderEndpointDescription provider, AssociateRequest associateRequest, int retriesRemaining) {
+			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
+
+			if (associateRequest == null || retriesRemaining < 0) {
 				// this can happen if security requirements and protocol conflict
 				// to where there are no association types to choose from.
 				return null;
@@ -595,8 +613,31 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				this.AssociationStore.StoreAssociation(provider.Endpoint, association);
 				return association;
 			} else if (associateUnsuccessfulResponse != null) {
-				// TODO: code here
-				throw new NotImplementedException();
+				if (string.IsNullOrEmpty(associateUnsuccessfulResponse.AssociationType)) {
+					Logger.Debug("Provider rejected an association request and gave no suggestion as to an alternative association type.  Giving up.");
+					return null;
+				}
+
+				if (!this.SecuritySettings.IsAssociationInPermittedRange(Protocol.Lookup(provider.ProtocolVersion), associateUnsuccessfulResponse.AssociationType)) {
+					Logger.DebugFormat("Provider rejected an association request and suggested '{0}' as an association to try, which this Relying Party does not support.  Giving up.");
+					return null;
+				}
+
+				if (retriesRemaining <= 0) {
+					Logger.Debug("Unable to agree on an association type with the Provider in the allowed number of retries.  Giving up.");
+					return null;
+				}
+
+				// Make sure the Provider isn't suggesting an incompatible pair of association/session types.
+				Protocol protocol = Protocol.Lookup(provider.ProtocolVersion);
+				ErrorUtilities.VerifyProtocol(
+					HmacShaAssociation.IsDHSessionCompatible(protocol, associateUnsuccessfulResponse.AssociationType, associateUnsuccessfulResponse.SessionType),
+					OpenIdStrings.IncompatibleAssociationAndSessionTypes,
+					associateUnsuccessfulResponse.AssociationType,
+					associateUnsuccessfulResponse.SessionType);
+
+				associateRequest = AssociateRequest.Create(this.SecuritySettings, provider, associateUnsuccessfulResponse.AssociationType, associateUnsuccessfulResponse.SessionType);
+				return this.CreateNewAssociation(provider, associateRequest, retriesRemaining - 1);
 			} else {
 				throw new ProtocolException(MessagingStrings.UnexpectedMessageReceivedOfMany);
 			}

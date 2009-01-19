@@ -33,6 +33,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="originatingRequest">The originating request.</param>
 		internal AssociateUnsuccessfulResponse(AssociateRequest originatingRequest)
 			: base(originatingRequest) {
+			this.ErrorMessage = string.Format(OpenIdStrings.AssociationOrSessionTypeUnrecognizedOrNotSupported, originatingRequest.AssociationType, originatingRequest.SessionType);
 		}
 
 		/// <summary>

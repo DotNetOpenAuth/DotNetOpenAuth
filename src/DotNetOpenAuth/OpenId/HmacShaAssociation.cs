@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OpenId {
 	using System;
+	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Linq;
 	using System.Security.Cryptography;
@@ -158,30 +159,32 @@ namespace DotNetOpenAuth.OpenId {
 		}
 
 		/// <summary>
-		/// Looks for the longest hash length for a given protocol for which we have an association,
+		/// Looks for the first association type in a preferred-order list that is
+		/// likely to be supported given a specific OpenID version and the security settings,
 		/// and perhaps a matching Diffie-Hellman session type.
 		/// </summary>
 		/// <param name="protocol">The OpenID version that dictates which associations are available.</param>
+		/// <param name="highSecurityIsBetter">A value indicating whether to consider higher strength security to be better.  Use <c>true</c> for initial association requests from the Relying Party; use <c>false</c> from Providers when the Relying Party asks for an unrecognized association in order to pick a suggested alternative that is likely to be supported on both sides.</param>
 		/// <param name="securityRequirements">The set of requirements the selected association type must comply to.</param>
-		/// <param name="requireMatchingDHSessionType">True for HTTP associations, False for HTTPS associations.</param>
+		/// <param name="requireMatchingDHSessionType">Use <c>true</c> for HTTP associations, <c>false</c> for HTTPS associations.</param>
 		/// <param name="associationType">The resulting association type's well known protocol name.  (i.e. HMAC-SHA256)</param>
 		/// <param name="sessionType">The resulting session type's well known protocol name, if a matching one is available.  (i.e. DH-SHA256)</param>
-		/// <returns>True if a qualifying association could be found; false otherwise.</returns>
-		internal static bool TryFindBestAssociation(Protocol protocol, SecuritySettings securityRequirements, bool requireMatchingDHSessionType, out string associationType, out string sessionType) {
+		/// <returns>
+		/// True if a qualifying association could be found; false otherwise.
+		/// </returns>
+		internal static bool TryFindBestAssociation(Protocol protocol, bool highSecurityIsBetter, SecuritySettings securityRequirements, bool requireMatchingDHSessionType, out string associationType, out string sessionType) {
 			ErrorUtilities.VerifyArgumentNotNull(protocol, "protocol");
 			ErrorUtilities.VerifyArgumentNotNull(securityRequirements, "securityRequirements");
 
 			associationType = null;
 			sessionType = null;
 
-			// We assume this enumeration is in decreasing bit length order.
-			foreach (HmacSha sha in hmacShaAssociationTypes) {
+			IEnumerable<HmacSha> preferredOrder = highSecurityIsBetter ? hmacShaAssociationTypes : hmacShaAssociationTypes.Reverse();
+			foreach (HmacSha sha in preferredOrder) {
 				int hashSizeInBits = sha.SecretLength * 8;
-				if (hashSizeInBits > securityRequirements.MaximumHashBitLength) {
+				if (hashSizeInBits > securityRequirements.MaximumHashBitLength ||
+					hashSizeInBits < securityRequirements.MinimumHashBitLength) {
 					continue;
-				}
-				if (hashSizeInBits < securityRequirements.MinimumHashBitLength) {
-					break;
 				}
 				sessionType = DiffieHellmanUtilities.GetNameForSize(protocol, hashSizeInBits);
 				if (requireMatchingDHSessionType && sessionType == null) {
