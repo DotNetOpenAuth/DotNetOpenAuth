@@ -87,6 +87,32 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		}
 
 		/// <summary>
+		/// Verifies that extension responses are included in the OP's signature.
+		/// </summary>
+		[TestMethod]
+		public void ExtensionResponsesAreSigned() {
+			Protocol protocol = Protocol.Default;
+			var op = this.CreateProvider();
+			IndirectSignedResponse response = new IndirectSignedResponse(protocol.Version, RPUri);
+			response.ReturnTo = RPUri;
+			response.ProviderEndpoint = ProviderUri;
+			var ext = new MockOpenIdExtension("pv", "ev");
+			response.Extensions.Add(ext);
+			op.Channel.Send(response);
+			ITamperResistantOpenIdMessage signedResponse = (ITamperResistantOpenIdMessage)response;
+			string extensionAliasKey = signedResponse.ExtraData.Single(kv => kv.Value == MockOpenIdExtension.MockTypeUri).Key;
+			Assert.IsTrue(extensionAliasKey.StartsWith("openid.ns."));
+			string extensionAlias = extensionAliasKey.Substring("openid.ns.".Length);
+
+			// Make sure that the extension members and the alias=namespace declaration are all signed.
+			Assert.IsNotNull(signedResponse.SignedParameterOrder);
+			string[] signedParameters = signedResponse.SignedParameterOrder.Split(',');
+			Assert.IsTrue(signedParameters.Contains(extensionAlias + ".Part"));
+			Assert.IsTrue(signedParameters.Contains(extensionAlias + ".data"));
+			Assert.IsTrue(signedParameters.Contains("ns." + extensionAlias));
+		}
+
+		/// <summary>
 		/// Verifies that unsigned extension responses (where any or all fields are unsigned) are ignored.
 		/// </summary>
 		[TestMethod, Ignore]

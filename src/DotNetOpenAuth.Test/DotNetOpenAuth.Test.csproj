@@ -110,6 +110,7 @@
     <Compile Include="OpenId\ChannelElements\ExtensionsBindingElementTests.cs" />
     <Compile Include="OpenId\ChannelElements\KeyValueFormEncodingTests.cs" />
     <Compile Include="Messaging\Bindings\StandardReplayProtectionBindingElementTests.cs" />
+    <Compile Include="OpenId\ChannelElements\SigningBindingElementTests.cs" />
     <Compile Include="OpenId\DiffieHellmanTests.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\FetchRequestTests.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\FetchResponseTests.cs" />

@@ -194,13 +194,27 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		private static string GetSignedParameterOrder(ITamperResistantOpenIdMessage signedMessage) {
 			ErrorUtilities.VerifyArgumentNotNull(signedMessage, "signedMessage");
 
+			Protocol protocol = Protocol.Lookup(signedMessage.Version);
+
 			MessageDescription description = MessageDescription.Get(signedMessage.GetType(), signedMessage.Version);
 			var signedParts = from part in description.Mapping.Values
 			                  where (part.RequiredProtection & System.Net.Security.ProtectionLevel.Sign) != 0
 			                        && part.GetValue(signedMessage) != null
 			                  select part.Name;
 			string prefix = Protocol.V20.openid.Prefix;
-			Debug.Assert(signedParts.All(name => name.StartsWith(prefix, StringComparison.Ordinal)), "All signed message parts must start with 'openid.'.");
+			ErrorUtilities.VerifyInternal(signedParts.All(name => name.StartsWith(prefix, StringComparison.Ordinal)), "All signed message parts must start with 'openid.'.");
+
+			// Tack on any ExtraData parameters that start with 'openid.'.
+			List<string> extraSignedParameters = new List<string>(signedMessage.ExtraData.Count);
+			foreach (string key in signedMessage.ExtraData.Keys) {
+				if (key.StartsWith(protocol.openid.Prefix, StringComparison.Ordinal)) {
+					extraSignedParameters.Add(key);
+				} else {
+					Logger.DebugFormat("The extra parameter '{0}' will not be signed because it does not start with 'openid.'.", key);
+				}
+			}
+			signedParts = signedParts.Concat(extraSignedParameters);
+
 			int skipLength = prefix.Length;
 			string signedFields = string.Join(",", signedParts.Select(name => name.Substring(skipLength)).ToArray());
 			return signedFields;
