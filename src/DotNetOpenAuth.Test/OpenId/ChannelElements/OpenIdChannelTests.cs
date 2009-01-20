@@ -16,6 +16,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.ChannelElements;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
@@ -28,7 +29,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		[TestInitialize]
 		public void Setup() {
 			this.webHandler = new Mocks.TestWebRequestHandler();
-			this.channel = new OpenIdChannel(new AssociationMemoryStore<Uri>(), new NonceMemoryStore(maximumMessageAge), new PrivateSecretMemoryStore());
+			this.channel = new OpenIdChannel(new AssociationMemoryStore<Uri>(), new NonceMemoryStore(maximumMessageAge), new PrivateSecretMemoryStore(), new RelyingPartySecuritySettings());
 			this.accessor = OpenIdChannel_Accessor.AttachShadow(this.channel);
 			this.channel.WebRequestHandler = this.webHandler;
 		}

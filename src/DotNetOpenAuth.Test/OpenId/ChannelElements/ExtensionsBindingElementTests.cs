@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 	[TestClass]
 	public class ExtensionsBindingElementTests : OpenIdTestBase {
 		private OpenIdExtensionFactory factory;
-		private ExtensionsBindingElement element;
+		private ExtensionsBindingElement rpElement;
 		private IProtocolMessageWithExtensions request;
 
 		[TestInitialize]
@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 
 			this.factory = new OpenIdExtensionFactory();
 			this.factory.RegisterExtension(MockOpenIdExtension.Factory);
-			this.element = new ExtensionsBindingElement(this.factory);
+			this.rpElement = new ExtensionsBindingElement(this.factory, new RelyingPartySecuritySettings());
 			this.request = new SignedResponseRequest(Protocol.Default.Version, OpenIdTestBase.ProviderUri, AuthenticationRequestMode.Immediate);
 		}
 
@@ -47,12 +47,12 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 
 		[TestMethod]
 		public void ExtensionFactory() {
-			Assert.AreSame(this.factory, this.element.ExtensionFactory);
+			Assert.AreSame(this.factory, this.rpElement.ExtensionFactory);
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void PrepareMessageForSendingNull() {
-			this.element.PrepareMessageForSending(null);
+			this.rpElement.PrepareMessageForSending(null);
 		}
 
 		/// <summary>
@@ -61,13 +61,13 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		[TestMethod]
 		public void PrepareMessageForSendingNonExtendableMessage() {
 			IProtocolMessage request = new AssociateDiffieHellmanRequest(Protocol.Default.Version, OpenIdTestBase.ProviderUri);
-			Assert.IsFalse(this.element.PrepareMessageForSending(request));
+			Assert.IsFalse(this.rpElement.PrepareMessageForSending(request));
 		}
 
 		[TestMethod]
 		public void PrepareMessageForSending() {
 			this.request.Extensions.Add(new MockOpenIdExtension("part", "extra"));
-			Assert.IsTrue(this.element.PrepareMessageForSending(this.request));
+			Assert.IsTrue(this.rpElement.PrepareMessageForSending(this.request));
 
 			string alias = GetAliases(this.request.ExtraData).Single();
 			Assert.AreEqual(MockOpenIdExtension.MockTypeUri, this.request.ExtraData["openid.ns." + alias]);
@@ -80,7 +80,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			this.request.ExtraData["openid.ns.mock"] = MockOpenIdExtension.MockTypeUri;
 			this.request.ExtraData["openid.mock.Part"] = "part";
 			this.request.ExtraData["openid.mock.data"] = "extra";
-			Assert.IsTrue(this.element.PrepareMessageForReceiving(this.request));
+			Assert.IsTrue(this.rpElement.PrepareMessageForReceiving(this.request));
 			MockOpenIdExtension ext = this.request.Extensions.OfType<MockOpenIdExtension>().Single();
 			Assert.AreEqual("part", ext.Part);
 			Assert.AreEqual("extra", ext.Data);

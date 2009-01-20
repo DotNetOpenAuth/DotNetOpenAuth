@@ -78,6 +78,20 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public ProtocolVersion MinimumRequiredOpenIdVersion { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether unsigned extension responses will be deserialized.
+		/// </summary>
+		/// <value>
+		/// 	<c>false</c> to ignore unsigned extension responses; <c>true</c> to accept them.
+		/// 	Default is <c>false</c>.
+		/// </value>
+		/// <remarks>
+		/// This is an internal-only property because not requiring signed extensions is
+		/// potentially dangerous.  It is included here as an internal option primarily
+		/// to enable testing.
+		/// </remarks>
+		internal bool AllowUnsignedIncomingExtensions { get; set; }
+
+		/// <summary>
 		/// Fires the <see cref="RequireSslChanged"/> event.
 		/// </summary>
 		private void OnRequireSslChanged() {

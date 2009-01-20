@@ -85,7 +85,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				this.SecuritySettings.MinimumRequiredOpenIdVersion = ProtocolVersion.V20;
 			}
 
-			this.Channel = new OpenIdChannel(this.AssociationStore, nonceStore, secretStore);
+			this.Channel = new OpenIdChannel(this.AssociationStore, nonceStore, secretStore, this.SecuritySettings);
 		}
 
 		/// <summary>

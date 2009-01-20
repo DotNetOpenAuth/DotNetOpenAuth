@@ -23,6 +23,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		internal ProviderSecuritySettings()
 			: base(true) {
+			this.SignOutgoingExtensions = true;
 		}
 
 		/// <summary>
@@ -49,5 +50,18 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// to protect against replay attacks.</para>
 		/// </remarks>
 		internal bool ProtectDownlevelReplayAttacks { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether outgoing extensions are always signed.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if outgoing extensions should be signed; otherwise, <c>false</c>.
+		/// 	The default is <c>true</c>.
+		/// </value>
+		/// <remarks>
+		/// This property is internal because Providers should never turn it off, but it is
+		/// needed for testing the RP's rejection of unsigned extensions.
+		/// </remarks>
+		internal bool SignOutgoingExtensions { get; set; }
 	}
 }

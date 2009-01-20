@@ -98,7 +98,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				Logger.DebugFormat("Signing {0} message.", message.GetType().Name);
 				Association association = this.GetAssociation(signedMessage);
 				signedMessage.AssociationHandle = association.Handle;
-				signedMessage.SignedParameterOrder = GetSignedParameterOrder(signedMessage);
+				signedMessage.SignedParameterOrder = this.GetSignedParameterOrder(signedMessage);
 				signedMessage.Signature = this.GetSignature(signedMessage, association);
 				return true;
 			}
@@ -191,7 +191,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// A comma-delimited list of parameter names, omitting the 'openid.' prefix, that determines
 		/// the inclusion and order of message parts that will be signed.
 		/// </returns>
-		private static string GetSignedParameterOrder(ITamperResistantOpenIdMessage signedMessage) {
+		private string GetSignedParameterOrder(ITamperResistantOpenIdMessage signedMessage) {
 			ErrorUtilities.VerifyArgumentNotNull(signedMessage, "signedMessage");
 
 			Protocol protocol = Protocol.Lookup(signedMessage.Version);
@@ -204,16 +204,18 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			string prefix = Protocol.V20.openid.Prefix;
 			ErrorUtilities.VerifyInternal(signedParts.All(name => name.StartsWith(prefix, StringComparison.Ordinal)), "All signed message parts must start with 'openid.'.");
 
-			// Tack on any ExtraData parameters that start with 'openid.'.
-			List<string> extraSignedParameters = new List<string>(signedMessage.ExtraData.Count);
-			foreach (string key in signedMessage.ExtraData.Keys) {
-				if (key.StartsWith(protocol.openid.Prefix, StringComparison.Ordinal)) {
-					extraSignedParameters.Add(key);
-				} else {
-					Logger.DebugFormat("The extra parameter '{0}' will not be signed because it does not start with 'openid.'.", key);
+			if (this.opSecuritySettings.SignOutgoingExtensions) {
+				// Tack on any ExtraData parameters that start with 'openid.'.
+				List<string> extraSignedParameters = new List<string>(signedMessage.ExtraData.Count);
+				foreach (string key in signedMessage.ExtraData.Keys) {
+					if (key.StartsWith(protocol.openid.Prefix, StringComparison.Ordinal)) {
+						extraSignedParameters.Add(key);
+					} else {
+						Logger.DebugFormat("The extra parameter '{0}' will not be signed because it does not start with 'openid.'.", key);
+					}
 				}
+				signedParts = signedParts.Concat(extraSignedParameters);
 			}
-			signedParts = signedParts.Concat(extraSignedParameters);
 
 			int skipLength = prefix.Length;
 			string signedFields = string.Join(",", signedParts.Select(name => name.Substring(skipLength)).ToArray());

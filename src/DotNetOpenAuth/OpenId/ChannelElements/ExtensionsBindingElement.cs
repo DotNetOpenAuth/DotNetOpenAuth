@@ -13,6 +13,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.Provider;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// The binding element that serializes/deserializes OpenID extensions to/from
@@ -20,12 +22,39 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// </summary>
 	internal class ExtensionsBindingElement : IChannelBindingElement {
 		/// <summary>
+		/// The security settings on the Relying Party that is hosting this binding element.
+		/// </summary>
+		private RelyingPartySecuritySettings rpSecuritySettings;
+
+		/// <summary>
+		/// The security settings on the Provider that is hosting this binding element.
+		/// </summary>
+		private ProviderSecuritySettings opSecuritySettings;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="ExtensionsBindingElement"/> class.
 		/// </summary>
 		/// <param name="extensionFactory">The extension factory.</param>
-		internal ExtensionsBindingElement(IOpenIdExtensionFactory extensionFactory) {
+		/// <param name="securitySettings">The security settings to apply.</param>
+		internal ExtensionsBindingElement(IOpenIdExtensionFactory extensionFactory, RelyingPartySecuritySettings securitySettings) {
 			ErrorUtilities.VerifyArgumentNotNull(extensionFactory, "extensionFactory");
+			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
+
 			this.ExtensionFactory = extensionFactory;
+			this.rpSecuritySettings = securitySettings;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ExtensionsBindingElement"/> class.
+		/// </summary>
+		/// <param name="extensionFactory">The extension factory.</param>
+		/// <param name="securitySettings">The security settings to apply.</param>
+		internal ExtensionsBindingElement(IOpenIdExtensionFactory extensionFactory, ProviderSecuritySettings securitySettings) {
+			ErrorUtilities.VerifyArgumentNotNull(extensionFactory, "extensionFactory");
+			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
+
+			this.ExtensionFactory = extensionFactory;
+			this.opSecuritySettings = securitySettings;
 		}
 
 		#region IChannelBindingElement Members
@@ -130,13 +159,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			if (extendableMessage != null) {
 				Protocol protocol = Protocol.Lookup(message.Version);
 
-				// If this is a signed response, we only want signed extensions.
-				IndirectSignedResponse signedResponse = message as IndirectSignedResponse;
-				IDictionary<string, string> baseMessageDictionary = signedResponse != null ? signedResponse.GetSignedMessageParts() : new MessageDictionary(message);
-
 				// We have a helper class that will do all the heavy-lifting of organizing
 				// all the extensions, their aliases, and their parameters.
-				var extensionManager = ExtensionArgumentsManager.CreateIncomingExtensions(baseMessageDictionary);
+				var extensionManager = ExtensionArgumentsManager.CreateIncomingExtensions(this.GetExtensionsDictionary(message));
 				foreach (string typeUri in extensionManager.GetExtensionTypeUris()) {
 					var extensionData = extensionManager.GetExtensionArguments(typeUri);
 
@@ -167,5 +192,26 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Gets the dictionary of message parts that should be deserialized into extensions.
+		/// </summary>
+		/// <param name="message">The message.</param>
+		/// <returns>A dictionary of message parts, including only signed parts when appropriate.</returns>
+		private IDictionary<string, string> GetExtensionsDictionary(IProtocolMessage message) {
+			// An IndirectSignedResponse message (the only one we care to filter parts for)
+			// can be received both by RPs and OPs (during check_auth).  
+			// Whichever party is reading the extensions, apply their security policy regarding
+			// signing.  (Although OPs have no reason to deserialize extensions during check_auth)
+			// so that scenario might be optimized away eventually.
+			bool extensionsShouldBeSigned = this.rpSecuritySettings != null ? !this.rpSecuritySettings.AllowUnsignedIncomingExtensions : this.opSecuritySettings.SignOutgoingExtensions;
+
+			IndirectSignedResponse signedResponse = message as IndirectSignedResponse;
+			if (signedResponse != null && extensionsShouldBeSigned) {
+				return signedResponse.GetSignedMessageParts();
+			} else {
+				return new MessageDictionary(message);
+			}
+		}
 	}
 }
