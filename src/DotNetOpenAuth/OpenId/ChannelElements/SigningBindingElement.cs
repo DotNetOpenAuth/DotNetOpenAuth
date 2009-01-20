@@ -294,7 +294,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 						signedMessage.AssociationHandle = null;
 					}
 				} else if (this.rpAssociations != null) { // if on a smart RP
-					Uri providerEndpoint = ((PositiveAssertionResponse)signedMessage).ProviderEndpoint;
+					Uri providerEndpoint = ((IndirectSignedResponse)signedMessage).ProviderEndpoint;
 					association = this.rpAssociations.GetAssociation(providerEndpoint, signedMessage.AssociationHandle);
 				}
 			}

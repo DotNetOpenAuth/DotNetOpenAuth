@@ -61,7 +61,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// Corrects any URI decoding the Provider may have inappropriately done
 		/// to our return_to URL, resulting in an otherwise corrupted base64 encoded value.
 		/// </summary>
-		/// <param name="value">The base64 encoded value.</param>
+		/// <param name="value">The base64 encoded value.  May be null.</param>
 		/// <returns>
 		/// The value; corrected if corruption had occurred.
 		/// </returns>
@@ -79,7 +79,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// back to + characters.
 		/// </remarks>
 		internal static string FixDoublyUriDecodedBase64String(string value) {
-			ErrorUtilities.VerifyArgumentNotNull(value, "value");
+			if (value == null) {
+				return null;
+			}
 
 			if (value.Contains(" ")) {
 				Logger.Error("Deserializing a corrupted token.  The OpenID Provider may have inappropriately decoded the return_to URL before sending it back to us.");

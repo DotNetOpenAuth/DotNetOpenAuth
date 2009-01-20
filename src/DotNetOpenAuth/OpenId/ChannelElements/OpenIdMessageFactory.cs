@@ -63,7 +63,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					(string.Equals(mode, protocol.Args.Mode.setup_needed) && (protocol.Version.Major >= 2 || fields.ContainsKey(protocol.openid.user_setup_url)))) {
 					message = new NegativeAssertionResponse(protocol.Version, recipient.Location, mode);
 				} else if (string.Equals(mode, protocol.Args.Mode.id_res)) {
-					message = new PositiveAssertionResponse(protocol.Version, recipient.Location);
+					if (fields.ContainsKey(protocol.openid.claimed_id)) {
+						message = new PositiveAssertionResponse(protocol.Version, recipient.Location);
+					} else {
+						message = new IndirectSignedResponse(protocol.Version, recipient.Location);
+					}
 				} else if (string.Equals(mode, protocol.Args.Mode.check_authentication)) {
 					message = new CheckAuthenticationRequest(protocol.Version, recipient.Location);
 				} else {
