@@ -116,6 +116,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		internal void PostMessage(IProtocolMessage message) {
+			ErrorUtilities.VerifyInternal(this.incomingMessage == null, "Oops, a message is already waiting for the remote party!");
 			this.incomingMessage = CloneSerializedParts(message);
 			this.incomingMessageSignal.Set();
 		}
@@ -128,6 +129,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			this.ProcessMessageFilter(request, true);
 			HttpRequestInfo requestInfo = this.SpoofHttpMethod(request);
 			// Drop the outgoing message in the other channel's in-slot and let them know it's there.
+			ErrorUtilities.VerifyInternal(this.RemoteChannel.incomingMessage == null, "Oops, a message is already waiting for the remote party!");
 			this.RemoteChannel.incomingMessage = requestInfo.Message;
 			this.RemoteChannel.incomingMessageSignal.Set();
 			// Now wait for a response...
@@ -236,11 +238,10 @@ namespace DotNetOpenAuth.Test.Mocks {
 
 			lock (waitingForMessageCoordinationLock) {
 				this.waitingForMessage = false;
+				IProtocolMessage response = this.incomingMessage;
+				this.incomingMessage = null;
+				return response;
 			}
-
-			IProtocolMessage response = this.incomingMessage;
-			this.incomingMessage = null;
-			return response;
 		}
 
 		private void ProcessMessageFilter(IProtocolMessage message, bool outgoing) {
