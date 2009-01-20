@@ -335,6 +335,29 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		}
 
 		/// <summary>
+		/// Gets a dictionary of all the message part names and values
+		/// that are included in the message signature.
+		/// </summary>
+		/// <returns>A dictionary of the signed message parts.</returns>
+		internal IDictionary<string, string> GetSignedMessageParts() {
+			ITamperResistantOpenIdMessage signedSelf = this;
+			if (signedSelf.SignedParameterOrder == null) {
+				return EmptyDictionary<string, string>.Instance;
+			}
+
+			MessageDictionary messageDictionary = new MessageDictionary(this);
+			string[] signedPartNamesWithoutPrefix = signedSelf.SignedParameterOrder.Split(',');
+			Dictionary<string, string> signedParts = new Dictionary<string, string>(signedPartNamesWithoutPrefix.Length);
+
+			var signedPartNames = signedPartNamesWithoutPrefix.Select(part => Protocol.openid.Prefix + part);
+			foreach (string partName in signedPartNames) {
+				signedParts[partName] = messageDictionary[partName];
+			}
+
+			return signedParts;
+		}
+
+		/// <summary>
 		/// Verifies that the openid.return_to field matches the URL of the actual HTTP request.
 		/// </summary>
 		/// <remarks>

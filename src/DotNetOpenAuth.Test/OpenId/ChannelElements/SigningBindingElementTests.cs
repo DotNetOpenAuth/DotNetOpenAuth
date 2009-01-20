@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="SigningBindingElementTests .cs" company="Andrew Arnott">
+// <copyright file="SigningBindingElementTests.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -9,11 +9,11 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.ChannelElements;
+	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
 	public class SigningBindingElementTests : OpenIdTestBase {
@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 
 			Assert.IsTrue(sbe.PrepareMessageForSending(response));
 			ITamperResistantOpenIdMessage signedResponse = (ITamperResistantOpenIdMessage)response;
-			
+
 			// Make sure that the extra parameters are signed.
 			// Since the signing algorithm only allows for signing parameters that start with
 			// 'openid.', other parameters should not be signed.

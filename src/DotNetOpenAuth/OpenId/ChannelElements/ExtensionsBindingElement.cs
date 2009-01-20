@@ -129,7 +129,10 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			var extendableMessage = message as IProtocolMessageWithExtensions;
 			if (extendableMessage != null) {
 				Protocol protocol = Protocol.Lookup(message.Version);
-				MessageDictionary baseMessageDictionary = new MessageDictionary(message);
+
+				// If this is a signed response, we only want signed extensions.
+				IndirectSignedResponse signedResponse = message as IndirectSignedResponse;
+				IDictionary<string, string> baseMessageDictionary = signedResponse != null ? signedResponse.GetSignedMessageParts() : new MessageDictionary(message);
 
 				// We have a helper class that will do all the heavy-lifting of organizing
 				// all the extensions, their aliases, and their parameters.
