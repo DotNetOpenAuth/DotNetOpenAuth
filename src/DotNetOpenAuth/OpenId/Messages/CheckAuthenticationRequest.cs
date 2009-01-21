@@ -68,8 +68,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// This exists strictly for convenience in recreating the <see cref="IndirectSignedResponse"/>
 		/// message.
 		/// </remarks>
-		[MessagePart("openid.return_to", IsRequired = true, AllowEmpty = false)]
-		[MessagePart("openid.return_to", IsRequired = false, AllowEmpty = false, MinVersion = "2.0")]
+		[MessagePart("openid.return_to", IsRequired = true, AllowEmpty = false, Encoder = typeof(OriginalStringUriEncoder))]
+		[MessagePart("openid.return_to", IsRequired = false, AllowEmpty = false, MinVersion = "2.0", Encoder = typeof(OriginalStringUriEncoder))]
 		internal Uri ReturnTo { get; set; }
 	}
 }

@@ -96,6 +96,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// to find the appropriate return_to URL to use.</param>
 		internal IndirectSignedResponse(Version version, Uri relyingPartyReturnTo)
 			: base(version, relyingPartyReturnTo, Protocol.Lookup(version).Args.Mode.id_res) {
+			this.ReturnTo = relyingPartyReturnTo;
 		}
 
 		#region IProtocolMessageWithExtensions Members

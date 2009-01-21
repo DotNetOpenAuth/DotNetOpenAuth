@@ -16,11 +16,17 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using DotNetOpenAuth.Loggers;
 
 	/// <summary>
 	/// Signs and verifies authentication assertions.
 	/// </summary>
 	internal class SigningBindingElement : IChannelBindingElement {
+		/// <summary>
+		/// A logger specifically used for logging verbose text on everything about the signing process.
+		/// </summary>
+		private static ILog SigningLogger = Logger.Create(typeof(SigningBindingElement));
+
 		/// <summary>
 		/// The association store used by Relying Parties to look up the secrets needed for signing.
 		/// </summary>
@@ -242,7 +248,18 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			                       select new KeyValuePair<string, string>(prefixedName, dictionary[prefixedName]);
 
 			byte[] dataToSign = KeyValueFormEncoding.GetBytes(parametersToSign);
-			return Convert.ToBase64String(association.Sign(dataToSign));
+			string signature = Convert.ToBase64String(association.Sign(dataToSign));
+
+			if (SigningLogger.IsDebugEnabled) {
+				SigningLogger.DebugFormat(
+					"Signing these message parts: {0}{1}{0}Base64 representation of signed data: {2}{0}Signature: {3}",
+					Environment.NewLine,
+					parametersToSign.ToStringDeferred(),
+					Convert.ToBase64String(dataToSign),
+					signature);
+			}
+
+			return signature;
 		}
 
 		/// <summary>

@@ -53,5 +53,13 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			this.settings.RequireSsl = !this.settings.RequireSsl;
 			Assert.IsTrue(requireSslChanged);
 		}
+
+		/// <summary>
+		/// Verifies default value for AllowUnsignedIncomingExtensions.
+		/// </summary>
+		[TestMethod]
+		public void AllowUnsignedIncomingExtensionsDefault() {
+			Assert.IsFalse(this.settings.AllowUnsignedIncomingExtensions);
+		}
 	}
 }
