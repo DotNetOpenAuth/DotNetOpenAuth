@@ -42,7 +42,7 @@ public partial class SampleWcf : System.Web.UI.Page {
 			{ "scope", scope },
 		};
 		var response = consumer.PrepareRequestUserAuthorization(callback.Uri, requestParams, null);
-		consumer.Channel.Send(response).Send();
+		consumer.Channel.Send(response);
 	}
 
 	protected void getNameButton_Click(object sender, EventArgs e) {

@@ -36,25 +36,25 @@ namespace DotNetOpenAuth.Test.Messaging {
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void SendNull() {
-			this.Channel.Send(null);
+			this.Channel.PrepareResponse(null);
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void SendIndirectedUndirectedMessage() {
 			IProtocolMessage message = new TestDirectedMessage(MessageTransport.Indirect);
-			this.Channel.Send(message);
+			this.Channel.PrepareResponse(message);
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void SendDirectedNoRecipientMessage() {
 			IProtocolMessage message = new TestDirectedMessage(MessageTransport.Indirect);
-			this.Channel.Send(message);
+			this.Channel.PrepareResponse(message);
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void SendInvalidMessageTransport() {
 			IProtocolMessage message = new TestDirectedMessage((MessageTransport)100);
-			this.Channel.Send(message);
+			this.Channel.PrepareResponse(message);
 		}
 
 		[TestMethod]
@@ -64,7 +64,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			message.Recipient = new Uri("http://provider/path");
 			var expected = GetStandardTestFields(FieldFill.CompleteBeforeBindings);
 
-			UserAgentResponse response = this.Channel.Send(message);
+			UserAgentResponse response = this.Channel.PrepareResponse(message);
 			Assert.AreEqual(HttpStatusCode.Redirect, response.Status);
 			StringAssert.StartsWith(response.Headers[HttpResponseHeader.Location], "http://provider/path");
 			foreach (var pair in expected) {
@@ -107,7 +107,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 				Location = new Uri("http://host/path"),
 				Recipient = new Uri("http://provider/path"),
 			};
-			UserAgentResponse response = this.Channel.Send(message);
+			UserAgentResponse response = this.Channel.PrepareResponse(message);
 			Assert.AreEqual(HttpStatusCode.OK, response.Status, "A form redirect should be an HTTP successful response.");
 			Assert.IsNull(response.Headers[HttpResponseHeader.Location], "There should not be a redirection header in the response.");
 			string body = response.Body;
@@ -155,7 +155,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 				Name = "Andrew",
 				Location = new Uri("http://host/path"),
 			};
-			this.Channel.Send(message);
+			this.Channel.PrepareResponse(message);
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
@@ -206,7 +206,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			message.Recipient = new Uri("http://localtest");
 
 			this.Channel = CreateChannel(MessageProtections.ReplayProtection);
-			this.Channel.Send(message);
+			this.Channel.PrepareResponse(message);
 			Assert.IsNotNull(((IReplayProtectedProtocolMessage)message).Nonce);
 		}
 
@@ -274,7 +274,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		public void InsufficientlyProtectedMessageSent() {
 			var message = new TestSignedDirectedMessage(MessageTransport.Direct);
 			message.Recipient = new Uri("http://localtest");
-			this.Channel.Send(message);
+			this.Channel.PrepareResponse(message);
 		}
 
 		[TestMethod, ExpectedException(typeof(UnprotectedMessageException))]

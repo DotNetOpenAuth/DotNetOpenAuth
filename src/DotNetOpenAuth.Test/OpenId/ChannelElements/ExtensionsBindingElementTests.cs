@@ -94,7 +94,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			Protocol protocol = Protocol.Default;
 			var op = this.CreateProvider();
 			IndirectSignedResponse response = CreateResponseWithExtensions(protocol);
-			op.Channel.Send(response);
+			op.Channel.PrepareResponse(response);
 			ITamperResistantOpenIdMessage signedResponse = (ITamperResistantOpenIdMessage)response;
 			string extensionAliasKey = signedResponse.ExtraData.Single(kv => kv.Value == MockOpenIdExtension.MockTypeUri).Key;
 			Assert.IsTrue(extensionAliasKey.StartsWith("openid.ns."));
@@ -124,10 +124,10 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 				},
 				op => {
 					RegisterMockExtension(op.Channel);
-					op.Channel.Send(CreateResponseWithExtensions(protocol)).Send();
+					op.Channel.Send(CreateResponseWithExtensions(protocol));
 					op.GetRequest().Response.Send(); // check_auth
 					op.SecuritySettings.SignOutgoingExtensions = false;
-					op.Channel.Send(CreateResponseWithExtensions(protocol)).Send();
+					op.Channel.Send(CreateResponseWithExtensions(protocol));
 					op.GetRequest().Response.Send(); // check_auth
 				}
 			);

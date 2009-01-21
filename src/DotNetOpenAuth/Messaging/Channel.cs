@@ -138,15 +138,28 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Queues an indirect message (either a request or response) 
+		/// Sends an indirect message (either a request or response) 
+		/// or direct message response for transmission to a remote party
+		/// and ends execution on the current page or handler.
+		/// </summary>
+		/// <param name="message">The one-way message to send</param>
+		/// <exception cref="ThreadAbortException">Thrown by ASP.NET in order to prevent additional data from the page being sent to the client and corrupting the response.</exception>
+		/// <remarks>
+		/// Requires an HttpContext.Current context.
+		/// </remarks>
+		public void Send(IProtocolMessage message) {
+			PrepareResponse(message).Send();
+		}
+
+		/// <summary>
+		/// Prepares an indirect message (either a request or response) 
 		/// or direct message response for transmission to a remote party.
 		/// </summary>
 		/// <param name="message">The one-way message to send</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
-		public UserAgentResponse Send(IProtocolMessage message) {
-			if (message == null) {
-				throw new ArgumentNullException("message");
-			}
+		public UserAgentResponse PrepareResponse(IProtocolMessage message) {
+			ErrorUtilities.VerifyArgumentNotNull(message, "message");
+
 			this.PrepareMessageForSending(message);
 			Logger.DebugFormat("Sending message: {0}", message);
 

@@ -23,13 +23,13 @@ public class OAuth : IHttpHandler, IRequiresSessionState {
 		AuthorizedTokenRequest requestAccessToken;
 		if ((requestToken = request as RequestScopedTokenMessage) != null) {
 			var response = sp.PrepareUnauthorizedTokenMessage(requestToken);
-			sp.Channel.Send(response).Send();
+			sp.Channel.Send(response);
 		} else if ((requestAuth = request as UserAuthorizationRequest) != null) {
 			Global.PendingOAuthAuthorization = requestAuth;
 			HttpContext.Current.Response.Redirect("~/Members/Authorize.aspx");
 		} else if ((requestAccessToken = request as AuthorizedTokenRequest) != null) {
 			var response = sp.PrepareAccessTokenMessage(requestAccessToken);
-			sp.Channel.Send(response).Send();
+			sp.Channel.Send(response);
 		} else {
 			throw new InvalidOperationException();
 		}

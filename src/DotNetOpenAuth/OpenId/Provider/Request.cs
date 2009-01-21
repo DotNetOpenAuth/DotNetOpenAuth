@@ -91,7 +91,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 						}
 					}
 
-					this.cachedUserAgentResponse = this.provider.Channel.Send(this.ResponseMessage);
+					this.cachedUserAgentResponse = this.provider.Channel.PrepareResponse(this.ResponseMessage);
 				}
 
 				return this.cachedUserAgentResponse;

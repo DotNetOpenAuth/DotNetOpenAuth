@@ -133,9 +133,13 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Automatically sends the appropriate response to the user agent.
-		/// Requires a current HttpContext.
+		/// Automatically sends the appropriate response to the user agent
+		/// and ends execution on the current page or handler.
 		/// </summary>
+		/// <exception cref="ThreadAbortException">Thrown by ASP.NET in order to prevent additional data from the page being sent to the client and corrupting the response.</exception>
+		/// <remarks>
+		/// Requires a current HttpContext.
+		/// </remarks>
 		public virtual void Send() {
 			ErrorUtilities.VerifyOperation(HttpContext.Current != null, MessagingStrings.CurrentHttpContextRequired);
 

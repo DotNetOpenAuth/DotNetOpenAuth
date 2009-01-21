@@ -32,7 +32,7 @@ public partial class Authorize : System.Web.UI.Page {
 		ServiceProvider sp = new ServiceProvider(Constants.SelfDescription, Global.TokenManager);
 		var response = sp.PrepareAuthorizationResponse(pending);
 		if (response != null) {
-			sp.Channel.Send(response).Send();
+			sp.Channel.Send(response);
 		}
 	}
 

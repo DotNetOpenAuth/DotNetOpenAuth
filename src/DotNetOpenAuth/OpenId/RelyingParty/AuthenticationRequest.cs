@@ -94,7 +94,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <value></value>
 		public UserAgentResponse RedirectingResponse {
-			get { return this.RelyingParty.Channel.Send(this.CreateRequestMessage()); }
+			get { return this.RelyingParty.Channel.PrepareResponse(this.CreateRequestMessage()); }
 		}
 
 		/// <summary>

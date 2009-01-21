@@ -85,7 +85,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 				Location = new Uri("http://hostb/pathB"),
 			};
 
-			UserAgentResponse response = this.channel.Send(message);
+			UserAgentResponse response = this.channel.PrepareResponse(message);
 			Assert.AreSame(message, response.OriginalMessage);
 			Assert.AreEqual(HttpStatusCode.OK, response.Status);
 			Assert.AreEqual(0, response.Headers.Count);

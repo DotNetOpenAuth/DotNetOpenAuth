@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.Test.Messaging.Bindings {
 			((IExpiringProtocolMessage)message).UtcCreationDate = DateTime.Parse("1/1/1990");
 
 			Channel channel = CreateChannel(MessageProtections.Expiration);
-			channel.Send(message);
+			channel.PrepareResponse(message);
 			Assert.IsTrue(DateTime.UtcNow - ((IExpiringProtocolMessage)message).UtcCreationDate < TimeSpan.FromSeconds(3), "The timestamp on the message was not set on send.");
 		}
 

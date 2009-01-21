@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.Test.OAuth {
 				consumerDescription,
 				serviceDescription,
 				consumer => {
-					consumer.Channel.Send(consumer.PrepareRequestUserAuthorization(new Uri("http://printer.example.com/request_token_ready"), null, null)); // .Send() dropped because this is just a simulation
+					consumer.Channel.PrepareResponse(consumer.PrepareRequestUserAuthorization(new Uri("http://printer.example.com/request_token_ready"), null, null)); // .Send() dropped because this is just a simulation
 					string accessToken = consumer.ProcessUserAuthorization().AccessToken;
 					var photoRequest = consumer.CreateAuthorizingMessage(accessPhotoEndpoint, accessToken);
 					UserAgentResponse protectedPhoto = ((CoordinatingOAuthChannel)consumer.Channel).RequestProtectedResource(photoRequest);
@@ -45,12 +45,12 @@ namespace DotNetOpenAuth.Test.OAuth {
 				},
 				sp => {
 					var requestTokenMessage = sp.ReadTokenRequest();
-					sp.Channel.Send(sp.PrepareUnauthorizedTokenMessage(requestTokenMessage)); // .Send() dropped because this is just a simulation
+					sp.Channel.PrepareResponse(sp.PrepareUnauthorizedTokenMessage(requestTokenMessage)); // .Send() dropped because this is just a simulation
 					var authRequest = sp.ReadAuthorizationRequest();
 					((InMemoryTokenManager)sp.TokenManager).AuthorizeRequestToken(authRequest.RequestToken);
-					sp.Channel.Send(sp.PrepareAuthorizationResponse(authRequest)); // .Send() dropped because this is just a simulation
+					sp.Channel.PrepareResponse(sp.PrepareAuthorizationResponse(authRequest)); // .Send() dropped because this is just a simulation
 					var accessRequest = sp.ReadAccessTokenRequest();
-					sp.Channel.Send(sp.PrepareAccessTokenMessage(accessRequest)); // .Send() dropped because this is just a simulation
+					sp.Channel.PrepareResponse(sp.PrepareAccessTokenMessage(accessRequest)); // .Send() dropped because this is just a simulation
 					string accessToken = sp.ReadProtectedResourceAuthorization().AccessToken;
 					((CoordinatingOAuthChannel)sp.Channel).SendDirectRawResponse(new UserAgentResponse {
 						ResponseStream = new MemoryStream(new byte[] { 0x33, 0x66 }),

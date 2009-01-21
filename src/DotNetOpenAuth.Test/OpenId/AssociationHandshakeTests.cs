@@ -144,7 +144,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					AssociateUnsuccessfulResponse renegotiateResponse = new AssociateUnsuccessfulResponse(request);
 					renegotiateResponse.AssociationType = "HMAC-UNKNOWN";
 					renegotiateResponse.SessionType = "DH-UNKNOWN";
-					op.Channel.Send(renegotiateResponse).Send();
+					op.Channel.Send(renegotiateResponse);
 				});
 			coordinator.Run();
 		}
@@ -168,7 +168,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					AssociateUnsuccessfulResponse renegotiateResponse = new AssociateUnsuccessfulResponse(request);
 					renegotiateResponse.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 					renegotiateResponse.SessionType = protocol.Args.SessionType.NoEncryption;
-					op.Channel.Send(renegotiateResponse).Send();
+					op.Channel.Send(renegotiateResponse);
 				});
 			coordinator.Run();
 		}
@@ -193,7 +193,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					AssociateUnsuccessfulResponse renegotiateResponse = new AssociateUnsuccessfulResponse(request);
 					renegotiateResponse.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 					renegotiateResponse.SessionType = protocol.Args.SessionType.DH_SHA256;
-					op.Channel.Send(renegotiateResponse).Send();
+					op.Channel.Send(renegotiateResponse);
 				});
 			coordinator.Run();
 		}
@@ -218,7 +218,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					AssociateUnsuccessfulResponse renegotiateResponse = new AssociateUnsuccessfulResponse(request);
 					renegotiateResponse.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 					renegotiateResponse.SessionType = protocol.Args.SessionType.DH_SHA1;
-					op.Channel.Send(renegotiateResponse).Send();
+					op.Channel.Send(renegotiateResponse);
 
 					// Receive second-try
 					request = op.Channel.ReadFromRequest<AssociateRequest>();
@@ -227,7 +227,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					renegotiateResponse = new AssociateUnsuccessfulResponse(request);
 					renegotiateResponse.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA256;
 					renegotiateResponse.SessionType = protocol.Args.SessionType.DH_SHA256;
-					op.Channel.Send(renegotiateResponse).Send();
+					op.Channel.Send(renegotiateResponse);
 				});
 			coordinator.Run();
 		}
