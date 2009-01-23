@@ -25,9 +25,10 @@ namespace DotNetOpenId.RelyingParty {
 			if (provider == null) throw new ArgumentNullException("provider");
 
 			string assoc_type, session_type;
+			bool requireDiffieHellman = !string.Equals(provider.ProviderEndpoint.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase);
 			if (HmacShaAssociation.TryFindBestAssociation(provider.Protocol,
 				relyingParty.Settings.MinimumHashBitLength, relyingParty.Settings.MaximumHashBitLength,
-				true, out assoc_type, out session_type)) {
+				requireDiffieHellman, out assoc_type, out session_type)) {
 				return Create(relyingParty, provider, assoc_type, session_type, true);
 			} else {
 				// There are no associations that meet all requirements.

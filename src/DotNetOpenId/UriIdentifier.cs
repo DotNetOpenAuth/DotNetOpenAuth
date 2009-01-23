@@ -74,6 +74,13 @@ namespace DotNetOpenId {
 				uri.Scheme.Equals(s, StringComparison.OrdinalIgnoreCase)) >= 0;
 		}
 		static bool TryCanonicalize(string uri, out Uri canonicalUri, bool forceHttpsDefaultScheme, out bool schemePrepended) {
+			if (string.IsNullOrEmpty(uri)) {
+				canonicalUri = null;
+				schemePrepended = false;
+				return false;
+			}
+
+			uri = uri.Trim();
 			canonicalUri = null;
 			schemePrepended = false;
 			try {
@@ -254,7 +261,7 @@ namespace DotNetOpenId {
 			}
 
 			// This identifier is explicitly NOT https, so we cannot change it.
-			secureIdentifier = new NoDiscoveryIdentifier(this);
+			secureIdentifier = new NoDiscoveryIdentifier(this, true);
 			return false;
 		}
 

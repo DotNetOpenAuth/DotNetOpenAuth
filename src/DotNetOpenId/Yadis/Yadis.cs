@@ -35,6 +35,7 @@ namespace DotNetOpenId.Yadis {
 					new[] { ContentTypes.Html, ContentTypes.XHtml, ContentTypes.Xrds }, requireSsl,
 					UntrustedWebRequest.IdentifierDiscoveryCachePolicy);
 				if (response.StatusCode != System.Net.HttpStatusCode.OK) {
+					Logger.ErrorFormat("HTTP error {0} {1} while performing discovery on {2}.", (int)response.StatusCode, response.StatusCode, uri);
 					return null;
 				}
 			} catch (ArgumentException ex) {
@@ -62,7 +63,7 @@ namespace DotNetOpenId.Yadis {
 				}
 				if (url != null) {
 					if (!requireSsl || string.Equals(url.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)) {
-						response2 = UntrustedWebRequest.Request(url, null, null, requireSsl, UntrustedWebRequest.IdentifierDiscoveryCachePolicy);
+						response2 = UntrustedWebRequest.Request(url, null, new[] { ContentTypes.Xrds }, requireSsl, UntrustedWebRequest.IdentifierDiscoveryCachePolicy);
 						if (response2.StatusCode != System.Net.HttpStatusCode.OK) {
 							return null;
 						}

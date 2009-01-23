@@ -1,14 +1,18 @@
 using System;
-using System.Web.UI;
-using DotNetOpenId.RelyingParty;
-using DotNetOpenId.Extensions.SimpleRegistration;
-using DotNetOpenId.Extensions.ProviderAuthenticationPolicy;
 using System.Collections.Generic;
+using System.Web.UI;
 using System.Web.UI.WebControls;
+using DotNetOpenId.Extensions.ProviderAuthenticationPolicy;
+using DotNetOpenId.Extensions.SimpleRegistration;
+using DotNetOpenId.RelyingParty;
 
 public partial class login : System.Web.UI.Page {
 	protected void Page_Load(object sender, EventArgs e) {
 		OpenIdLogin1.Focus();
+	}
+
+	protected void requireSslCheckBox_CheckedChanged(object sender, EventArgs e) {
+		this.OpenIdLogin1.RequireSsl = this.requireSslCheckBox.Checked;
 	}
 
 	protected void OpenIdLogin1_LoggingIn(object sender, OpenIdEventArgs e) {

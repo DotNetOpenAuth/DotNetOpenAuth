@@ -29,7 +29,7 @@ namespace DotNetOpenId {
 		/// in order to ensure successfully sending a large payload to another server
 		/// that might have a maximum allowable size restriction on its GET request.
 		/// </summary>
-		internal static int GetToPostThreshold = 2 * 1024; // 2KB, recommended by OpenID group
+		internal static int GetToPostThreshold = 2 * 1024; // 2KB, per OpenID group and http://support.microsoft.com/kb/q208427/
 		// We are intentionally using " instead of the html single quote ' below because
 		// the HtmlEncode'd values that we inject will only escape the double quote, so
 		// only the double-quote used around these values is safe.
@@ -84,14 +84,17 @@ namespace DotNetOpenId {
 			return wr;
 		}
 
+		/// <summary>
+		/// Gets the length of the URL that would be used for a simple redirect to carry
+		/// this indirect message to its recipient.
+		/// </summary>
+		/// <param name="message">The message.</param>
+		/// <returns>The number of characters in the redirect URL.</returns>
 		static int getSizeOfPayload(IEncodable message) {
 			Debug.Assert(message != null);
-			int size = 0;
-			foreach (var field in message.EncodedFields) {
-				size += field.Key.Length;
-				size += field.Value.Length;
-			}
-			return size;
+			UriBuilder redirect = new UriBuilder(message.RedirectUrl);
+			UriUtil.AppendQueryArgs(redirect, message.EncodedFields);
+			return redirect.Uri.AbsoluteUri.Length;
 		}
 		protected virtual Response Create301RedirectResponse(IEncodable message) {
 			WebHeaderCollection headers = new WebHeaderCollection();

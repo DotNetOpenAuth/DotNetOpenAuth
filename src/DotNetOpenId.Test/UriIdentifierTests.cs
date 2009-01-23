@@ -305,13 +305,13 @@ namespace DotNetOpenId.Test {
 			// Try Parse and ctor with explicit http:// scheme
 			id = Identifier.Parse("http://www.yahoo.com");
 			Assert.IsFalse(id.TryRequireSsl(out secureId));
-			Assert.IsFalse(secureId.IsDiscoverySecureEndToEnd);
+			Assert.IsTrue(secureId.IsDiscoverySecureEndToEnd, "Although the TryRequireSsl failed, the created identifier should retain the Ssl status.");
 			Assert.AreEqual("http://www.yahoo.com/", secureId.ToString());
-			Assert.AreEqual(0, secureId.Discover().Count());
+			Assert.AreEqual(0, secureId.Discover().Count(), "Since TryRequireSsl failed, the created Identifier should never discover anything.");
 
 			id = new UriIdentifier("http://www.yahoo.com");
 			Assert.IsFalse(id.TryRequireSsl(out secureId));
-			Assert.IsFalse(secureId.IsDiscoverySecureEndToEnd);
+			Assert.IsTrue(secureId.IsDiscoverySecureEndToEnd);
 			Assert.AreEqual("http://www.yahoo.com/", secureId.ToString());
 			Assert.AreEqual(0, secureId.Discover().Count());
 		}

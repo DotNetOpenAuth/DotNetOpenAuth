@@ -27,7 +27,7 @@ namespace DotNetOpenId.Test.Extensions {
 
 		protected T ParameterizedTest<T>(TestSupport.Scenarios scenario, ProtocolVersion version, IExtensionRequest extension)
 			where T : IExtensionResponse, new() {
-			var rpRequest = TestSupport.CreateRelyingPartyRequest(false, scenario, version);
+			var rpRequest = TestSupport.CreateRelyingPartyRequest(false, scenario, version, false);
 			if (extension != null)
 				rpRequest.AddExtension(extension);
 

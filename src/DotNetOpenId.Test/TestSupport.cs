@@ -174,12 +174,12 @@ public class TestSupport {
 		rp.DirectMessageChannel = new DirectMessageTestRedirector(ProviderStore);
 		return rp;
 	}
-	internal static DotNetOpenId.RelyingParty.IAuthenticationRequest CreateRelyingPartyRequest(bool stateless, Scenarios scenario, ProtocolVersion version) {
+	internal static DotNetOpenId.RelyingParty.IAuthenticationRequest CreateRelyingPartyRequest(bool stateless, Scenarios scenario, ProtocolVersion version, bool useSsl) {
 		// Publish RP discovery information
 		MockHttpRequest.RegisterMockRPDiscovery();
 
 		var rp = TestSupport.CreateRelyingParty(stateless ? null : RelyingPartyStore, null);
-		var rpReq = rp.CreateRequest(TestSupport.GetMockIdentifier(scenario, version), Realm, ReturnTo);
+		var rpReq = rp.CreateRequest(TestSupport.GetMockIdentifier(scenario, version, useSsl), Realm, ReturnTo);
 
 		{
 			// Sidetrack: verify URLs and other default properties

@@ -66,6 +66,11 @@ namespace DotNetOpenId.RelyingParty {
 				// We'll wait for secure discovery to fail on the new identifier.
 				userSuppliedIdentifier.TryRequireSsl(out userSuppliedIdentifier);
 			}
+			Logger.InfoFormat("Creating authentication request for user supplied Identifier: {0}",
+				userSuppliedIdentifier);
+			Logger.DebugFormat("Realm: {0}", realm);
+			Logger.DebugFormat("Return To: {0}", returnToUrl);
+			Logger.DebugFormat("RequireSsl: {0}", userSuppliedIdentifier.IsDiscoverySecureEndToEnd);
 
 			if (Logger.IsWarnEnabled && returnToUrl.Query != null) {
 				NameValueCollection returnToArgs = HttpUtility.ParseQueryString(returnToUrl.Query);

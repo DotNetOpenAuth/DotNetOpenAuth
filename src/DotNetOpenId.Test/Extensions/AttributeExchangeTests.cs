@@ -92,7 +92,7 @@ namespace DotNetOpenId.Test.Extensions {
 		/// </summary>
 		[Test, ExpectedException(typeof(OpenIdException))]
 		public void FetchAndStore() {
-			var request = TestSupport.CreateRelyingPartyRequest(false, TestSupport.Scenarios.ExtensionFullCooperation, Version);
+			var request = TestSupport.CreateRelyingPartyRequest(false, TestSupport.Scenarios.ExtensionFullCooperation, Version, false);
 			request.AddExtension(new FetchRequest());
 			request.AddExtension(new StoreRequest());
 		}
