@@ -49,6 +49,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private Comparison<IXrdsProviderEndpoint> endpointOrder = DefaultEndpointOrder;
 
 		/// <summary>
+		/// Backing field for the <see cref="Channel"/> property.
+		/// </summary>
+		private Channel channel;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class.
 		/// </summary>
 		public OpenIdRelyingParty()
@@ -75,8 +80,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// If we're a dumb-mode RP, then 2.0 OPs are responsible for preventing replays.
 			ErrorUtilities.VerifyArgument(associationStore == null || nonceStore != null, OpenIdStrings.AssociationStoreRequiresNonceStore);
 
-			this.AssociationStore = associationStore;
-			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.SecuritySettings.CreateSecuritySettings();
+			this.securitySettings = DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.SecuritySettings.CreateSecuritySettings();
 
 			// Without a nonce store, we must rely on the Provider to protect against
 			// replay attacks.  But only 2.0+ Providers can be expected to provide 
@@ -85,7 +89,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				this.SecuritySettings.MinimumRequiredOpenIdVersion = ProtocolVersion.V20;
 			}
 
-			this.Channel = new OpenIdChannel(this.AssociationStore, nonceStore, secretStore, this.SecuritySettings);
+			this.channel = new OpenIdChannel(associationStore, nonceStore, secretStore, this.SecuritySettings);
+			this.AssociationManager = new AssociationManager(this.Channel, associationStore, this.SecuritySettings);
 		}
 
 		/// <summary>
@@ -97,48 +102,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public static Comparison<IXrdsProviderEndpoint> DefaultEndpointOrder {
-			get {
-				// Sort first by service type (OpenID 2.0, 1.1, 1.0),
-				// then by Service/@priority, then by Service/Uri/@priority
-				return (se1, se2) => {
-					int result = GetEndpointPrecedenceOrderByServiceType(se1).CompareTo(GetEndpointPrecedenceOrderByServiceType(se2));
-					if (result != 0) {
-						return result;
-					}
-					if (se1.ServicePriority.HasValue && se2.ServicePriority.HasValue) {
-						result = se1.ServicePriority.Value.CompareTo(se2.ServicePriority.Value);
-						if (result != 0) {
-							return result;
-						}
-						if (se1.UriPriority.HasValue && se2.UriPriority.HasValue) {
-							return se1.UriPriority.Value.CompareTo(se2.UriPriority.Value);
-						} else if (se1.UriPriority.HasValue) {
-							return -1;
-						} else if (se2.UriPriority.HasValue) {
-							return 1;
-						} else {
-							return 0;
-						}
-					} else {
-						if (se1.ServicePriority.HasValue) {
-							return -1;
-						} else if (se2.ServicePriority.HasValue) {
-							return 1;
-						} else {
-							// neither service defines a priority, so base ordering by uri priority.
-							if (se1.UriPriority.HasValue && se2.UriPriority.HasValue) {
-								return se1.UriPriority.Value.CompareTo(se2.UriPriority.Value);
-							} else if (se1.UriPriority.HasValue) {
-								return -1;
-							} else if (se2.UriPriority.HasValue) {
-								return 1;
-							} else {
-								return 0;
-							}
-						}
-					}
-				};
-			}
+			get { return ServiceEndpoint.EndpointOrder; }
 		}
 
 		/// <summary>
@@ -169,7 +133,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets the channel to use for sending/receiving messages.
 		/// </summary>
-		public Channel Channel { get; internal set; }
+		public Channel Channel {
+			get {
+				return this.channel;
+			}
+
+			set {
+				ErrorUtilities.VerifyArgumentNotNull(value, "value");
+				this.channel = value;
+				this.AssociationManager.Channel = value;
+			}
+		}
 
 		/// <summary>
 		/// Gets the security settings used by this Relying Party.
@@ -180,11 +154,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			internal set {
-				if (value == null) {
-					throw new ArgumentNullException("value");
-				}
-
+				ErrorUtilities.VerifyArgumentNotNull(value, "value");
 				this.securitySettings = value;
+				this.AssociationManager.SecuritySettings = value;
 			}
 		}
 
@@ -221,11 +193,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Gets the association store.
-		/// </summary>
-		internal IAssociationStore<Uri> AssociationStore { get; private set; }
-
-		/// <summary>
 		/// Gets a value indicating whether this Relying Party can sign its return_to
 		/// parameter in outgoing authentication requests.
 		/// </summary>
@@ -240,6 +207,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		internal IDirectWebRequestHandler WebRequestHandler {
 			get { return this.Channel.WebRequestHandler; }
 		}
+
+		/// <summary>
+		/// Gets the association manager.
+		/// </summary>
+		internal AssociationManager AssociationManager { get; private set; }
 
 		/// <summary>
 		/// Creates an authentication request to verify that a user controls
@@ -490,164 +462,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			return this.CreateRequests(userSuppliedIdentifier, new Realm(realmUrl.Uri));
-		}
-
-		/// <summary>
-		/// Gets an association between this Relying Party and a given Provider
-		/// if it already exists in the association store.
-		/// </summary>
-		/// <param name="provider">The provider to create an association with.</param>
-		/// <returns>The association if one exists and has useful life remaining.  Otherwise <c>null</c>.</returns>
-		internal Association GetExistingAssociation(ProviderEndpointDescription provider) {
-			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
-
-			Protocol protocol = Protocol.Lookup(provider.ProtocolVersion);
-
-			// If the RP has no application store for associations, there's no point in creating one.
-			if (this.AssociationStore == null) {
-				return null;
-			}
-
-			// TODO: we need a way to lookup an association that fulfills a given set of security
-			// requirements.  We may have a SHA-1 association and a SHA-256 association that need
-			// to be called for specifically. (a bizzare scenario, admittedly, making this low priority).
-			Association association = this.AssociationStore.GetAssociation(provider.Endpoint);
-
-			// If the returned association does not fulfill security requirements, ignore it.
-			if (association != null && !this.SecuritySettings.IsAssociationInPermittedRange(protocol, association.GetAssociationType(protocol))) {
-				association = null;
-			}
-
-			if (association != null && !association.HasUsefulLifeRemaining) {
-				association = null;
-			}
-
-			return association;
-		}
-
-		/// <summary>
-		/// Gets an existing association with the specified Provider, or attempts to create
-		/// a new association of one does not already exist.
-		/// </summary>
-		/// <param name="provider">The provider to get an association for.</param>
-		/// <returns>The existing or new association; <c>null</c> if none existed and one could not be created.</returns>
-		internal Association GetOrCreateAssociation(ProviderEndpointDescription provider) {
-			return this.GetExistingAssociation(provider) ?? this.CreateNewAssociation(provider);
-		}
-
-		/// <summary>
-		/// Gets the priority rating for a given type of endpoint, allowing a
-		/// priority sorting of endpoints.
-		/// </summary>
-		/// <param name="endpoint">The endpoint to prioritize.</param>
-		/// <returns>An arbitary integer, which may be used for sorting against other returned values from this method.</returns>
-		private static double GetEndpointPrecedenceOrderByServiceType(IXrdsProviderEndpoint endpoint) {
-			// The numbers returned from this method only need to compare against other numbers
-			// from this method, which makes them arbitrary but relational to only others here.
-			if (endpoint.IsTypeUriPresent(Protocol.V20.OPIdentifierServiceTypeURI)) {
-				return 0;
-			}
-			if (endpoint.IsTypeUriPresent(Protocol.V20.ClaimedIdentifierServiceTypeURI)) {
-				return 1;
-			}
-			if (endpoint.IsTypeUriPresent(Protocol.V11.ClaimedIdentifierServiceTypeURI)) {
-				return 2;
-			}
-			if (endpoint.IsTypeUriPresent(Protocol.V10.ClaimedIdentifierServiceTypeURI)) {
-				return 3;
-			}
-			return 10;
-		}
-
-		/// <summary>
-		/// Creates a new association with a given Provider.
-		/// </summary>
-		/// <param name="provider">The provider to create an association with.</param>
-		/// <returns>
-		/// The newly created association, or null if no association can be created with
-		/// the given Provider given the current security settings.
-		/// </returns>
-		/// <remarks>
-		/// A new association is created and returned even if one already exists in the
-		/// association store.
-		/// Any new association is automatically added to the <see cref="AssociationStore"/>.
-		/// </remarks>
-		private Association CreateNewAssociation(ProviderEndpointDescription provider) {
-			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
-
-			// If there is no association store, there is no point in creating an association.
-			if (this.AssociationStore == null) {
-				return null;
-			}
-
-			var associateRequest = AssociateRequest.Create(this.SecuritySettings, provider);
-
-			const int RenegotiateRetries = 1;
-			return this.CreateNewAssociation(provider, associateRequest, RenegotiateRetries);
-		}
-
-		/// <summary>
-		/// Creates a new association with a given Provider.
-		/// </summary>
-		/// <param name="provider">The provider to create an association with.</param>
-		/// <param name="associateRequest">The associate request.  May be <c>null</c>, which will always result in a <c>null</c> return value..</param>
-		/// <param name="retriesRemaining">The number of times to try the associate request again if the Provider suggests it.</param>
-		/// <returns>
-		/// The newly created association, or null if no association can be created with
-		/// the given Provider given the current security settings.
-		/// </returns>
-		private Association CreateNewAssociation(ProviderEndpointDescription provider, AssociateRequest associateRequest, int retriesRemaining) {
-			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
-
-			if (associateRequest == null || retriesRemaining < 0) {
-				// this can happen if security requirements and protocol conflict
-				// to where there are no association types to choose from.
-				return null;
-			}
-
-			try {
-				var associateResponse = this.Channel.Request(associateRequest);
-				var associateSuccessfulResponse = associateResponse as AssociateSuccessfulResponse;
-				var associateUnsuccessfulResponse = associateResponse as AssociateUnsuccessfulResponse;
-				if (associateSuccessfulResponse != null) {
-					Association association = associateSuccessfulResponse.CreateAssociation(associateRequest, null);
-					this.AssociationStore.StoreAssociation(provider.Endpoint, association);
-					return association;
-				} else if (associateUnsuccessfulResponse != null) {
-					if (string.IsNullOrEmpty(associateUnsuccessfulResponse.AssociationType)) {
-						Logger.Debug("Provider rejected an association request and gave no suggestion as to an alternative association type.  Giving up.");
-						return null;
-					}
-
-					if (!this.SecuritySettings.IsAssociationInPermittedRange(Protocol.Lookup(provider.ProtocolVersion), associateUnsuccessfulResponse.AssociationType)) {
-						Logger.DebugFormat("Provider rejected an association request and suggested '{0}' as an association to try, which this Relying Party does not support.  Giving up.");
-						return null;
-					}
-
-					if (retriesRemaining <= 0) {
-						Logger.Debug("Unable to agree on an association type with the Provider in the allowed number of retries.  Giving up.");
-						return null;
-					}
-
-					// Make sure the Provider isn't suggesting an incompatible pair of association/session types.
-					Protocol protocol = Protocol.Lookup(provider.ProtocolVersion);
-					ErrorUtilities.VerifyProtocol(
-						HmacShaAssociation.IsDHSessionCompatible(protocol, associateUnsuccessfulResponse.AssociationType, associateUnsuccessfulResponse.SessionType),
-						OpenIdStrings.IncompatibleAssociationAndSessionTypes,
-						associateUnsuccessfulResponse.AssociationType,
-						associateUnsuccessfulResponse.SessionType);
-
-					associateRequest = AssociateRequest.Create(this.SecuritySettings, provider, associateUnsuccessfulResponse.AssociationType, associateUnsuccessfulResponse.SessionType);
-					return this.CreateNewAssociation(provider, associateRequest, retriesRemaining - 1);
-				} else {
-					throw new ProtocolException(MessagingStrings.UnexpectedMessageReceivedOfMany);
-				}
-			} catch (ProtocolException ex) {
-				// Since having associations with OPs is not totally critical, we'll log and eat
-				// the exception so that auth may continue in dumb mode.
-				Logger.ErrorFormat("An error occurred while trying to create an association with {0}.  {1}", provider.Endpoint, ex);
-				return null;
-			}
 		}
 	}
 }

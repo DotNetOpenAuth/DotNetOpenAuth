@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 				rp => {
 					RegisterExtension(rp.Channel, Mocks.MockOpenIdExtension.Factory);
 					var requestBase = new CheckIdRequest(protocol.Version, OpenIdTestBase.ProviderUri, AuthenticationRequestMode.Immediate);
-					rp.AssociationStore.StoreAssociation(OpenIdTestBase.ProviderUri, association);
+					TestSupport.StoreAssociation(rp, OpenIdTestBase.ProviderUri, association);
 					requestBase.AssociationHandle = association.Handle;
 					requestBase.ClaimedIdentifier = "http://claimedid";
 					requestBase.LocalIdentifier = "http://localid";

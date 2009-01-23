@@ -311,11 +311,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 				// The strategy here is to prefer endpoints with whom we can create associations.
 				Association association = null;
-				if (relyingParty.AssociationStore != null) {
+				if (relyingParty.AssociationManager.HasAssociationStore) {
 					// In some scenarios (like the AJAX control wanting ALL auth requests possible),
 					// we don't want to create associations with every Provider.  But we'll use
 					// associations where they are already formed from previous authentications.
-					association = createNewAssociationsAsNeeded ? relyingParty.GetOrCreateAssociation(endpoint.ProviderDescription) : relyingParty.GetExistingAssociation(endpoint.ProviderDescription);
+					association = createNewAssociationsAsNeeded ? relyingParty.AssociationManager.GetOrCreateAssociation(endpoint.ProviderDescription) : relyingParty.AssociationManager.GetExistingAssociation(endpoint.ProviderDescription);
 					if (association == null && createNewAssociationsAsNeeded) {
 						Logger.WarnFormat("Failed to create association with {0}.  Skipping to next endpoint.", endpoint.ProviderEndpoint);
 
@@ -427,7 +427,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Association association = null;
 			switch (this.associationPreference) {
 				case AssociationPreference.IfPossible:
-					association = this.RelyingParty.GetOrCreateAssociation(this.endpoint.ProviderDescription);
+					association = this.RelyingParty.AssociationManager.GetOrCreateAssociation(this.endpoint.ProviderDescription);
 					if (association == null) {
 						// Avoid trying to create the association again if the redirecting response
 						// is generated again.
@@ -435,7 +435,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					}
 					break;
 				case AssociationPreference.IfAlreadyEstablished:
-					association = this.RelyingParty.GetExistingAssociation(this.endpoint.ProviderDescription);
+					association = this.RelyingParty.AssociationManager.GetExistingAssociation(this.endpoint.ProviderDescription);
 					break;
 				case AssociationPreference.Never:
 					break;

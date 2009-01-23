@@ -150,7 +150,10 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		protected override IDirectedProtocolMessage ReadFromRequestInternal(HttpRequestInfo request) {
-			this.ProcessMessageFilter(request.Message, false);
+			if (request.Message != null) {
+				this.ProcessMessageFilter(request.Message, false);
+			}
+
 			return request.Message;
 		}
 

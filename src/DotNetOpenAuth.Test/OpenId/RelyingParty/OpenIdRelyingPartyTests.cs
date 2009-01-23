@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		[TestMethod]
 		public void CreateRequest() {
 			var rp = this.CreateRelyingParty();
-			rp.AssociationStore.StoreAssociation(TestSupport.GetFullUrl("/" + TestSupport.ProviderPage), HmacShaAssociation.Create("somehandle", new byte[20], TimeSpan.FromDays(1)));
+			TestSupport.StoreAssociation(rp, TestSupport.GetFullUrl("/" + TestSupport.ProviderPage), HmacShaAssociation.Create("somehandle", new byte[20], TimeSpan.FromDays(1)));
 			Identifier id = Identifier.Parse(GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20));
 			var req = rp.CreateRequest(id, TestSupport.Realm, TestSupport.ReturnTo);
 			Assert.IsNotNull(req);
@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		[TestMethod]
 		public void CreateRequests() {
 			var rp = this.CreateRelyingParty();
-			rp.AssociationStore.StoreAssociation(TestSupport.GetFullUrl("/" + TestSupport.ProviderPage), HmacShaAssociation.Create("somehandle", new byte[20], TimeSpan.FromDays(1)));
+			TestSupport.StoreAssociation(rp, TestSupport.GetFullUrl("/" + TestSupport.ProviderPage), HmacShaAssociation.Create("somehandle", new byte[20], TimeSpan.FromDays(1)));
 			Identifier id = Identifier.Parse(GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20));
 			var requests = rp.CreateRequests(id, TestSupport.Realm, TestSupport.ReturnTo);
 			Assert.AreEqual(1, requests.Count());

@@ -227,6 +227,58 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		Version IProviderEndpoint.Version { get { return Protocol.Version; } }
 
 		/// <summary>
+		/// Gets an XRDS sorting routine that uses the XRDS Service/@Priority 
+		/// attribute to determine order.
+		/// </summary>
+		/// <remarks>
+		/// Endpoints lacking any priority value are sorted to the end of the list.
+		/// </remarks>
+		internal static Comparison<IXrdsProviderEndpoint> EndpointOrder {
+			get {
+				// Sort first by service type (OpenID 2.0, 1.1, 1.0),
+				// then by Service/@priority, then by Service/Uri/@priority
+				return (se1, se2) => {
+					int result = GetEndpointPrecedenceOrderByServiceType(se1).CompareTo(GetEndpointPrecedenceOrderByServiceType(se2));
+					if (result != 0) {
+						return result;
+					}
+					if (se1.ServicePriority.HasValue && se2.ServicePriority.HasValue) {
+						result = se1.ServicePriority.Value.CompareTo(se2.ServicePriority.Value);
+						if (result != 0) {
+							return result;
+						}
+						if (se1.UriPriority.HasValue && se2.UriPriority.HasValue) {
+							return se1.UriPriority.Value.CompareTo(se2.UriPriority.Value);
+						} else if (se1.UriPriority.HasValue) {
+							return -1;
+						} else if (se2.UriPriority.HasValue) {
+							return 1;
+						} else {
+							return 0;
+						}
+					} else {
+						if (se1.ServicePriority.HasValue) {
+							return -1;
+						} else if (se2.ServicePriority.HasValue) {
+							return 1;
+						} else {
+							// neither service defines a priority, so base ordering by uri priority.
+							if (se1.UriPriority.HasValue && se2.UriPriority.HasValue) {
+								return se1.UriPriority.Value.CompareTo(se2.UriPriority.Value);
+							} else if (se1.UriPriority.HasValue) {
+								return -1;
+							} else if (se2.UriPriority.HasValue) {
+								return 1;
+							} else {
+								return 0;
+							}
+						}
+					}
+				};
+			}
+		}
+
+		/// <summary>
 		/// Gets a value indicating whether the <see cref="ProviderEndpoint"/> is using an encrypted channel.
 		/// </summary>
 		internal bool IsSecure {
@@ -486,6 +538,30 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			writer.WriteLine(this.Protocol.Version);
 
 			// No reason to serialize priority. We only needed priority to decide whether to use this endpoint.
+		}
+
+		/// <summary>
+		/// Gets the priority rating for a given type of endpoint, allowing a
+		/// priority sorting of endpoints.
+		/// </summary>
+		/// <param name="endpoint">The endpoint to prioritize.</param>
+		/// <returns>An arbitary integer, which may be used for sorting against other returned values from this method.</returns>
+		private static double GetEndpointPrecedenceOrderByServiceType(IXrdsProviderEndpoint endpoint) {
+			// The numbers returned from this method only need to compare against other numbers
+			// from this method, which makes them arbitrary but relational to only others here.
+			if (endpoint.IsTypeUriPresent(Protocol.V20.OPIdentifierServiceTypeURI)) {
+				return 0;
+			}
+			if (endpoint.IsTypeUriPresent(Protocol.V20.ClaimedIdentifierServiceTypeURI)) {
+				return 1;
+			}
+			if (endpoint.IsTypeUriPresent(Protocol.V11.ClaimedIdentifierServiceTypeURI)) {
+				return 2;
+			}
+			if (endpoint.IsTypeUriPresent(Protocol.V10.ClaimedIdentifierServiceTypeURI)) {
+				return 3;
+			}
+			return 10;
 		}
 	}
 }

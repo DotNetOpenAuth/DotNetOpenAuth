@@ -256,6 +256,7 @@
     <Compile Include="OpenId\Messages\DirectErrorResponse.cs" />
     <Compile Include="OpenId\Messages\RequestBase.cs" />
     <Compile Include="OpenId\Messages\DirectResponseBase.cs" />
+    <Compile Include="OpenId\RelyingParty\AssociationManager.cs" />
     <Compile Include="OpenId\RelyingParty\AssociationPreference.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationRequest.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationRequestMode.cs" />

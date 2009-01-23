@@ -193,6 +193,17 @@ namespace DotNetOpenAuth.Test.OpenId {
 			}
 		}
 
+		/// <summary>
+		/// Forces storage of an association in an RP's association store.
+		/// </summary>
+		/// <param name="relyingParty">The relying party.</param>
+		/// <param name="providerEndpoint">The provider endpoint.</param>
+		/// <param name="association">The association.</param>
+		internal static void StoreAssociation(OpenIdRelyingParty relyingParty, Uri providerEndpoint, Association association) {
+			var associationManagerAccessor = AssociationManager_Accessor.AttachShadow(relyingParty.AssociationManager);
+			associationManagerAccessor.associationStore.StoreAssociation(providerEndpoint, association);
+		}
+
 		////internal static UriIdentifier GetDirectedIdentityUrl(Scenarios scenario, ProtocolVersion providerVersion) {
 		////    return GetDirectedIdentityUrl(scenario, providerVersion, false);
 		////}

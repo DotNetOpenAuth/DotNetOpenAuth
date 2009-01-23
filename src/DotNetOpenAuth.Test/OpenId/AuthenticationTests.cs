@@ -74,7 +74,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					var request = new CheckIdRequest(protocol.Version, ProviderUri, AuthenticationRequestMode.Immediate);
 
 					if (association != null) {
-						rp.AssociationStore.StoreAssociation(ProviderUri, association);
+						TestSupport.StoreAssociation(rp, ProviderUri, association);
 						request.AssociationHandle = association.Handle;
 					}
 
