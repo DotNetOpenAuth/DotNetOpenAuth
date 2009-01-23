@@ -93,7 +93,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		public void ExtensionResponsesAreSigned() {
 			Protocol protocol = Protocol.Default;
 			var op = this.CreateProvider();
-			IndirectSignedResponse response = CreateResponseWithExtensions(protocol);
+			IndirectSignedResponse response = this.CreateResponseWithExtensions(protocol);
 			op.Channel.PrepareResponse(response);
 			ITamperResistantOpenIdMessage signedResponse = (ITamperResistantOpenIdMessage)response;
 			string extensionAliasKey = signedResponse.ExtraData.Single(kv => kv.Value == MockOpenIdExtension.MockTypeUri).Key;
@@ -129,29 +129,8 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 					op.SecuritySettings.SignOutgoingExtensions = false;
 					op.Channel.Send(CreateResponseWithExtensions(protocol));
 					op.GetRequest().Response.Send(); // check_auth
-				}
-			);
+				});
 			coordinator.Run();
-		}
-
-		private static void RegisterMockExtension(Channel channel) {
-			ErrorUtilities.VerifyArgumentNotNull(channel, "channel");
-
-			((OpenIdExtensionFactory)channel.BindingElements.OfType<ExtensionsBindingElement>().Single().ExtensionFactory).RegisterExtension(MockOpenIdExtension.Factory);
-		}
-
-		/// <summary>
-		/// Creates a response message with one extensions.
-		/// </summary>
-		/// <param name="protocol">The protocol to construct the message with.</param>
-		/// <returns>The message ready to send from OP to RP.</returns>
-		private IndirectSignedResponse CreateResponseWithExtensions(Protocol protocol) {
-			ErrorUtilities.VerifyArgumentNotNull(protocol, "protocol");
-
-			IndirectSignedResponse response = new IndirectSignedResponse(protocol.Version, RPUri);
-			response.ProviderEndpoint = ProviderUri;
-			response.Extensions.Add(new MockOpenIdExtension("pv", "ev"));
-			return response;
 		}
 
 		/// <summary>
@@ -182,6 +161,26 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 				   let m = regex.Match(key)
 				   where m.Success
 				   select m.Groups[1].Value;
+		}
+
+		private static void RegisterMockExtension(Channel channel) {
+			ErrorUtilities.VerifyArgumentNotNull(channel, "channel");
+
+			((OpenIdExtensionFactory)channel.BindingElements.OfType<ExtensionsBindingElement>().Single().ExtensionFactory).RegisterExtension(MockOpenIdExtension.Factory);
+		}
+
+		/// <summary>
+		/// Creates a response message with one extensions.
+		/// </summary>
+		/// <param name="protocol">The protocol to construct the message with.</param>
+		/// <returns>The message ready to send from OP to RP.</returns>
+		private IndirectSignedResponse CreateResponseWithExtensions(Protocol protocol) {
+			ErrorUtilities.VerifyArgumentNotNull(protocol, "protocol");
+
+			IndirectSignedResponse response = new IndirectSignedResponse(protocol.Version, RPUri);
+			response.ProviderEndpoint = ProviderUri;
+			response.Extensions.Add(new MockOpenIdExtension("pv", "ev"));
+			return response;
 		}
 	}
 }

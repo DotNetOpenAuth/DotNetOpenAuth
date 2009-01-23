@@ -10,23 +10,18 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System.Diagnostics;
 	using System.Linq;
 	using System.Net.Security;
+	using DotNetOpenAuth.Loggers;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using DotNetOpenAuth.Loggers;
 
 	/// <summary>
 	/// Signs and verifies authentication assertions.
 	/// </summary>
 	internal class SigningBindingElement : IChannelBindingElement {
-		/// <summary>
-		/// A logger specifically used for logging verbose text on everything about the signing process.
-		/// </summary>
-		private static ILog SigningLogger = Logger.Create(typeof(SigningBindingElement));
-
 		/// <summary>
 		/// The association store used by Relying Parties to look up the secrets needed for signing.
 		/// </summary>
@@ -42,6 +37,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Only defined when this element is instantiated to service a Provider.
 		/// </summary>
 		private readonly ProviderSecuritySettings opSecuritySettings;
+
+		/// <summary>
+		/// A logger specifically used for logging verbose text on everything about the signing process.
+		/// </summary>
+		private static ILog signingLogger = Logger.Create(typeof(SigningBindingElement));
 
 		/// <summary>
 		/// Initializes a new instance of the SigningBindingElement class for use by a Relying Party.
@@ -250,8 +250,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			byte[] dataToSign = KeyValueFormEncoding.GetBytes(parametersToSign);
 			string signature = Convert.ToBase64String(association.Sign(dataToSign));
 
-			if (SigningLogger.IsDebugEnabled) {
-				SigningLogger.DebugFormat(
+			if (signingLogger.IsDebugEnabled) {
+				signingLogger.DebugFormat(
 					"Signing these message parts: {0}{1}{0}Base64 representation of signed data: {2}{0}Signature: {3}",
 					Environment.NewLine,
 					parametersToSign.ToStringDeferred(),

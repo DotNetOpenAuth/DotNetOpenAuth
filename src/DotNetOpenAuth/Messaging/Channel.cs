@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Linq;
 	using System.Net;
 	using System.Text;
+	using System.Threading;
 	using System.Web;
 	using DotNetOpenAuth.Messaging.Reflection;
 
@@ -148,7 +149,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Requires an HttpContext.Current context.
 		/// </remarks>
 		public void Send(IProtocolMessage message) {
-			PrepareResponse(message).Send();
+			this.PrepareResponse(message).Send();
 		}
 
 		/// <summary>
