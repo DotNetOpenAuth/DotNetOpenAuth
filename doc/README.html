@@ -1,0 +1,235 @@
+<html>
+<body>
+	<h1>
+		DotNetOpenID Library and samples</h1>
+	<h3>
+		Change history</h3>
+	<ul>
+		<li>2007-03-28 Created by Willem Muller (willem.muller@netidme.com)</li>
+		<li>2007-04-04 Updated by Andrew Arnott (andrewarnott@gmail.com)</li>
+		<li>2008-03-27 Updated by Andrew Arnott (andrewarnott@gmail.com)</li>
+	</ul>
+	<h2>
+		Introduction</h2>
+	<p>
+		Before getting started, make sure you understand the 
+		<a href="http://openid.net/specs/openid-authentication-2_0.html">OpenID Authentication 2.0 spec</a> and the OpenID
+		<a href="http://openid.net/specs/openid-simple-registration-extension-1_0.html">Simple Registration
+		Extension 1.0</a>.
+		Presentations and other explanatory resources are available from 
+		<a href="http://openid.net/">http://openid.net/</a>.
+	</p>
+	<p>
+		The current code base comes from a variety of original contributors:
+		<ul>
+			<li>The codebase for relying party and provider was originally ported from a JanRain
+				library written in the .NET Boo language, which was itself a port from a Python
+				version. Only a few traces remain of the original code as the code has been largely
+				rewritten and refactored since then.</li>
+			<li>The C# implementation comes from several people, chiefly these:
+				<ul>
+					<li><a href="http://hanselman.com/blog">Scott Hanselman</a> - original relying party port from Boo</li>
+					<li><a href="http://jasona.net/">Jason Alexander</a> - original provider port from Boo</li>
+					<li><a href="http://blog.nerdbank.net">Andrew Arnott</a> - ASP.NET Controls (OpenIDLogin and OpenIDTextBox
+						classes), refactoring for our 1.0 version, and added OpenID 2.0 support for our
+						2.0 version. And lots of tests.</li>
+					<li>Several classes used in our crypto area were copied from the FOSS mono project.</li>
+					<li><a href="willem.muller@netidme.com">Willem Muller</a> - original sample web projects, bit
+						of work on server side implementation of Registration Extensions, this document,
+						and few bug bugfixes </li>
+				</ul>
+			</li>
+		</ul>
+	<h2>
+		Getting the samples running</h2>
+	<h3>
+		Prerequisites:</h3>
+	<ul>
+		<li>.NET 2.0</li>
+		<li>Visual Studio 2008 or IIS</li>
+		<li>Microsoft Windows (XP or Vista ought to work)</li>
+		<li><a href="http://www.nunit.org/index.php?p=download">NUnit</a> 2.2.9 for .NET 2.0</li>
+		<li>See the tools section further below for some helpful software </li>
+	</ul>
+	<h3>
+		Testing the relying party/provider samples with each other</h3>
+	<p>
+		In this scenario you can use the Personal Web Server (PWS) that is included in Visual
+		Studio 2008.</p>
+	<ol>
+		<li>Open the DotNetOpenId.sln file in VS2008.</li>
+		<li>Right-click on each web project under the Samples folder and click "View in Browser" to start PWS for each
+			web site.</li>
+		<li>Each web project will be dynamicly assigned a port number.&nbsp; Find the port 
+			number on the URL of the browser window for the Provider.&nbsp; </li>
+		<li>Now log into the Relying Party sample web site with this OpenID: 
+			http://localhost:<i>providerport</i>/user/bob. </li>
+		<li>When the provider prompts you for a password, type in &#39;test&#39;.</li>
+	</ol>
+	<h3>
+		Testing with other relying party/provider sites on the Internet</h3>
+	<ul>
+		<li>You need to have a public IP address to test the Provider sample with other 
+			Relying Party web sites out on the Internet so they can find your Provider.&nbsp; </li>
+		<li>You might need to configure your firewall and/or router to forward traffic to 
+			your computer.</li>
+		<li>Note that some OpenID-enabled sites block URLs that use just IP addresses.&nbsp; 
+			You may need to get a DNS name to point at your public IP address in order for 
+			your scenario to work.</li>
+		<li>Ensure your firewall is configured to allow outbound calls to web ports.</li>
+		<li>Since VS2008 Personal Web Server (PWS) does not allow web requests from other servers
+			(as required by OpenID consumers trying to log into your server), testing with external
+			consumers requires you to use IIS to host your server.</li>
+	</ul>
+	<h3>Setting up the IIS Applications</h3>
+	<ul>
+		<li>Create an IIS web application for each sample.&nbsp; </li>
+		<li>Check that IIS is responding to requests on the port that your router will be 
+			forwarding requests to you on, if applicable.</li>
+		<li>Enable anonymous access to each site.</li>
+		<li>Set up URL rewriting.<ul>
+			<li>This is the process of url conversion like: user/john ->user.aspx?username=john</li>
+			<li>In IIS, go properties on the website (not the virtual directory)</li>
+			<li>Go the Home Directory Tab and click Configuration</li>
+			<li>Insert a wildcard extension </li>
+			<li>Enter 'c:\WINDOWS\Microsoft.NET\Framework\v2.0.50727\aspnet_isapi.dll' for the executable</li>
+			<li>Uncheck the 'Verify that file exists button'</li>
+			<li>OK your way out of everything</li>
+			<li>If you navigate to 'http://localhost:79/ProviderPortal/user/bob' you should see
+			the text: 'OpenID identity page for bob'</li>
+			</ul>
+		</li>
+	</ul>
+	<p>
+		Note: These instructions work on IIS 6 with Windows 2003 Server. Other version of
+		IIS (such as the one with windows XP - IIS 5.1) will vary. For IIS 5.1 , try follow
+		instructions documented toward the end of this article: http://www.codeproject.com/aspnet/URLRewriter.asp.
+		If you still have issues (particularly if you get 404 when trying the demos or experience
+		something like 
+		<a href="http://groups.google.co.uk/group/microsoft.public.inetserver.iis/browse_thread/thread/386efa0bf596234b/ee1fab525c129071?lnk=st&amp;q=URLRewriter+IIS+XP+404&amp;rnum=2&amp;hl=en#ee1fab525c129071">
+		this</a>)
+		try this:
+	</p>
+	<ol>
+		<li>create a file extension mapping for .openid files that maps to asp.net (c:\WINDOWS\Microsoft.NET\Framework\v2.0.50727\aspnet_isapi.dll)</li>
+		<li>browse to .openid eg: http://IP/ProviderPortal/user/bob.openid</li>
+	</ol>
+	<p>
+		Configure VS2008 to use IIS rather than PWS</p>
+	<ol>
+		<li>Right-click on one of the web projects within Solution Explorer.</li>
+		<li>Select Property Pages.</li>
+		<li>Select Start Options on the left.</li>
+		<li>Under the Server section on the right, select Use Custom Server and fill in the
+			Base URL.</li>
+	</ol>
+	<h2>
+		The demos</h2>
+	<p>
+		These will illustrate OpenID in action. You can debug the code to get a good idea
+		of what's going on. The implementations are built on top of ASP.Net's forms authentication.
+		So basically if you're unauthenticated and get to page requiring authentication,
+		it takes you through the Open-ID identity provider, tracks in session that you've
+		left and then recognizes the user when they return to the consumer and only then
+		logs them into FormsAuth and redirects them to their orignally requested page.
+	</p>
+	<h3>
+		The Relying Party Demo
+	</h3>
+	<ol>
+		<li>Kill all session cookies</li>
+		<li>Create an OpenID account with one of the Open Servers listed below OR use the demo
+			Server as the identity provider - using http://[EXTERNAL IP]/ProviderPortal/user/bob
+			with the password 'test'</li>
+		<li>Go to http://[EXTERNAL IP]/RelyingPartyPortal/default.aspx and enter the OpenIDURL</li>
+		<li>You are required to authenticate with the provider. Some fields (eg Name, DoB, Country
+			etc.) are requested, some required and some omitted. Your OpenID provider should
+			prompt you for the relevant fields, or at least make you aware which fields its
+			passing back. The exact page flow and auhentication mechanism will be implemented
+			differently by different identity providers.</li>
+		<li>After providing the required info and loggin in, you are taken back to the http://[EXTERNAL
+			IP]/RelyingPartyPortal/default.aspx and the available profile information is displayed</li>
+	</ol>
+	<h3>
+		The Provider Demo
+	</h3>
+	<ol>
+		<li>Kill all session cookies</li>
+		<li>Get the full openID url for a user based on whats in web.config. By default you
+			can use http://[EXTERNAL IP]/ProviderPortal/user/bob with the password 'test'</li>
+		<li>Go to http://[EXTERNAL IP]/RelyingPartyPortal/default.aspx and enter the OpenIDURL of
+			the local server</li>
+		<li>The user is prompted for their password. The username field is propulated from the
+			openid url and grayed out.</li>
+		<li>The user is presentend with their identity url, a trust root (the site requiring
+			authentication) and set of fields to complete. Only the requested or required fields
+			are presented. Fields with * means the consumer requires it. </li>
+		<li>The user completes the fields and clicks Yes and are taken to http://[EXTERNAL IP]/RelyingPartyPortal/default.aspx
+			with their available profile information.</li>
+	</ol>
+	<h3>
+		Interesting classes and methods</h3>
+	<h4>
+		Relying party</h4>
+<ul>
+	<li>DotNetOpenId.RelyingParty.<b>OpenIdRelyingParty</b> - programmatic access to 
+		everything a relying party web site needs.</li>
+	<li>DotNetOpenId.RelyingParty.<b>OpenIdTextBox</b> - An ASP.NET control that is a 
+		bare-bones text input box with a LogOn method that automatically does all the 
+		OpenId stuff for you.</li>
+	<li>DotNetOpenId.RelyingParty.<b>OpenIdLogin</b> - Like the OpenIdTextBox, but has a 
+		Login button and some other end user-friendly UI built-in.&nbsp; Drop this onto 
+		your web form and you&#39;re all done!</li>
+</ul>
+	<h4>
+		Provider</h4>
+	<ul>
+		<li>DotNetOpenId.Provider.<b>OpenIdProvider</b> - programmatic access to everything 
+			a provider web site needs.</li>
+		<li>DotNetOpenId.Provider.<b>ProviderEndpoint</b> - An ASP.NET control that you can 
+			drop in and have an instant provider endpoint on your page.</li>
+		<li>DotNetOpenId.Provider.<b>IdentityEndpoint</b> - An ASP.NET control that you can 
+			drop onto the page for your own or your customers&#39; individual identity pages for 
+			discovery by Relying Parties.</li>
+	</ul>
+	<h3>
+		Development tips / Issues I found:</h3>
+	<p>
+		Here is a growing list of <a href="http://openiddirectory.com/allcats.html">
+		OpenID enabled sites</a> to test with.
+	</p>
+	<p>
+		Good sites to test with if you're developing a relying party:<ul>
+			<li><a href="http://www.myopenid.com/">http://www.myopenid.com/</a></li>
+			<li><a href="http://claimid.com/">http://claimid.com/</a> (supports registration extensions)</li>
+			<li><a href="http://www.freeyourid.com/">http://www.freeyourid.com/</a> (supports registration extensions)</li>
+		</ul>
+	<p>
+		Good sites to test with if you're developing a server:<ul>
+			<li><a href="http://beta.zooomr.com/home">http://beta.zooomr.com/home</a>&nbsp; *</li>
+			<li><a href="http://cr.unchy.com/">http://cr.unchy.com/</a>&nbsp; (supports registration extensions)</li>
+			<li><a href="http://blog.identity20.eu">http://blog.identity20.eu</a>&nbsp; *</li>
+			<li><a href="http://openiddirectory.com">http://openiddirectory.com</a>&nbsp; *</li>
+			<li><a href="http://www.centernetworks.com/">http://www.centernetworks.com/</a>&nbsp; (supports registration extensions)</li>
+			<li><a href="http://www.loudisrelative.com">http://www.loudisrelative.com</a>&nbsp; (supports registration extensions)</li>
+			<li><a href="http://rssarchive.com/index.html">http://rssarchive.com/index.html</a>&nbsp; </li>
+			<li><a href="http://www.jyte.com">http://www.jyte.com</a>&nbsp; (supports registration extensions)</li>
+			<li><a href="http://dis.covr.us/">http://dis.covr.us/</a>&nbsp; </li>
+		</ul>
+		* These sites seem to block outgoing traffic that is not on a non standard HTTP
+		port like 80 and 443. Therefore you'll need to host on a proper internet domain
+		before doing any testing with them.
+	<p>
+		Useful tools:
+		<ul>
+			<li><a href="http://www.fiddlertool.com/fiddler/">Fiddler</a> - this will allow you to monitor HTTP
+				traffic when using IE</li>
+			<li><a href="http://www.bayden.com/Other/">TamperIE</a> - allows you to change form data before
+				posting it</li>
+			<li><a href="http://www.microsoft.com/downloads/details.aspx?familyid=E59C3964-672D-4511-BB3E-2D5E1DB91038&amp;displaylang=en">IE Developer toolbar</a>
+				- good tool for general IE UI development. Has some neat features for quickly clearing
+				cookies etc.</li>
+			<li><a href="http://www.iopus.com/download/">iMacros</a> - good for automating web testing</li>
+		</ul>
+</body>
+</html>
