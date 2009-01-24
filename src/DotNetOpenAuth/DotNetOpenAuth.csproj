@@ -222,11 +222,13 @@
     <Compile Include="OpenId\NoDiscoveryIdentifier.cs" />
     <Compile Include="OpenId\OpenIdUtilities.cs" />
     <Compile Include="OpenId\PrivateSecretMemoryStore.cs" />
+    <Compile Include="OpenId\Provider\AuthenticationChallengeEventArgs.cs" />
     <Compile Include="OpenId\Provider\AuthenticationRequest.cs" />
     <Compile Include="OpenId\Provider\AutoResponsiveRequest.cs" />
     <Compile Include="OpenId\Provider\IAuthenticationRequest.cs" />
     <Compile Include="OpenId\Provider\IProviderApplicationStore.cs" />
     <Compile Include="OpenId\Provider\IRequest.cs" />
+    <Compile Include="OpenId\Provider\ProviderEndpoint.cs" />
     <Compile Include="OpenId\Provider\Request.cs" />
     <Compile Include="OpenId\Provider\StandardProviderApplicationStore.cs" />
     <Compile Include="OpenId\Realm.cs" />
