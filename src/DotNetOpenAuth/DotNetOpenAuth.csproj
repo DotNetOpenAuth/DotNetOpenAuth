@@ -303,6 +303,7 @@
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
     <Compile Include="UriUtil.cs" />
+    <Compile Include="XrdsPublisher.cs" />
     <Compile Include="Xrds\XrdsStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
