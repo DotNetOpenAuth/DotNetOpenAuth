@@ -265,4 +265,10 @@ Discovered endpoint info:
   <data name="IncompatibleAssociationAndSessionTypes" xml:space="preserve">
     <value>The Provider requested association type '{0}' and session type '{1}', which are not compatible with each other.</value>
   </data>
+  <data name="CreateRequestAlreadyCalled" xml:space="preserve">
+    <value>An authentication request has already been created using CreateRequest().</value>
+  </data>
+  <data name="OpenIdTextBoxEmpty" xml:space="preserve">
+    <value>No OpenId url is provided.</value>
+  </data>
 </root>

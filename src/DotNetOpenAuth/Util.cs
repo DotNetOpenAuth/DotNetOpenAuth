@@ -16,6 +16,11 @@ namespace DotNetOpenAuth {
 	/// </summary>
 	internal static class Util {
 		/// <summary>
+		/// The base namespace for this library from which all other namespaces derive.
+		/// </summary>
+		internal const string DefaultNamespace = "DotNetOpenAuth";
+
+		/// <summary>
 		/// A set of escaping mappings that help secure a string from javscript execution.
 		/// </summary>
 		/// <remarks>

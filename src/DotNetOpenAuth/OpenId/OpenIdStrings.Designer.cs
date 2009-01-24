@@ -169,6 +169,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An authentication request has already been created using CreateRequest()..
+        /// </summary>
+        internal static string CreateRequestAlreadyCalled {
+            get {
+                return ResourceManager.GetString("CreateRequestAlreadyCalled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The following properties must be set before the Diffie-Hellman algorithm can generate a public key: {0}.
         /// </summary>
         internal static string DiffieHellmanRequiredPropertiesNotSet {
@@ -367,6 +376,15 @@ namespace DotNetOpenAuth.OpenId {
         internal static string OpenIdEndpointNotFound {
             get {
                 return ResourceManager.GetString("OpenIdEndpointNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No OpenId url is provided..
+        /// </summary>
+        internal static string OpenIdTextBoxEmpty {
+            get {
+                return ResourceManager.GetString("OpenIdTextBoxEmpty", resourceCulture);
             }
         }
         

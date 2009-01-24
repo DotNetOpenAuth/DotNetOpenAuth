@@ -7,8 +7,11 @@
 namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using System.Text;
+	using System.Text.RegularExpressions;
+	using System.Web.UI;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 
@@ -98,6 +101,43 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>The new <see cref="DateTime"/> value.</returns>
 		internal static DateTime CutToSecond(DateTime dateTime) {
 			return new DateTime(dateTime.Ticks - (dateTime.Ticks % TimeSpan.TicksPerSecond), dateTime.Kind);
+		}
+
+		/// <summary>
+		/// Gets the fully qualified Realm URL, given a Realm that may be relative to a particular page.
+		/// </summary>
+		/// <param name="page">The hosting page that has the realm value to resolve.</param>
+		/// <param name="realm">The realm, which may begin with "*." or "~/".</param>
+		/// <returns>The fully-qualified realm.</returns>
+		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenId.Realm", Justification = "Using Uri ctor for validation.")]
+		internal static UriBuilder GetResolvedRealm(Page page, string realm) {
+			ErrorUtilities.VerifyArgumentNotNull(page, "page");
+
+			// Allow for *. realm notation, as well as ASP.NET ~/ shortcuts.
+
+			// We have to temporarily remove the *. notation if it's there so that
+			// the rest of our URL manipulation will succeed.
+			bool foundWildcard = false;
+
+			// Note: we don't just use string.Replace because poorly written URLs
+			// could potentially have multiple :// sequences in them.
+			MatchEvaluator matchDelegate = delegate(Match m) {
+				foundWildcard = true;
+				return m.Groups[1].Value;
+			};
+			string realmNoWildcard = Regex.Replace(realm, @"^(\w+://)\*\.", matchDelegate);
+
+			UriBuilder fullyQualifiedRealm = new UriBuilder(
+				new Uri(MessagingUtilities.GetRequestUrlFromContext(), page.ResolveUrl(realmNoWildcard)));
+
+			if (foundWildcard) {
+				fullyQualifiedRealm.Host = "*." + fullyQualifiedRealm.Host;
+			}
+
+			// Is it valid?
+			new Realm(fullyQualifiedRealm); // throws if not valid
+
+			return fullyQualifiedRealm;
 		}
 	}
 }
