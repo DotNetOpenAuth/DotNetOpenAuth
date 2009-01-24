@@ -265,6 +265,7 @@
     <Compile Include="OpenId\RelyingParty\AuthenticationRequestMode.cs" />
     <Compile Include="OpenId\RelyingParty\NegativeAuthenticationResponse.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdEventArgs.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdLogin.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdTextBox.cs" />
     <Compile Include="OpenId\RelyingParty\PositiveAuthenticationResponse.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationStatus.cs" />
