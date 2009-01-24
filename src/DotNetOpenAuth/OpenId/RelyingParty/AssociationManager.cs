@@ -18,6 +18,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// </summary>
 	internal class AssociationManager {
 		/// <summary>
+		/// The storage to use for saving and retrieving associations.  May be null.
+		/// </summary>
+		private readonly IAssociationStore<Uri> associationStore;
+
+		/// <summary>
 		/// Backing field for the <see cref="Channel"/> property.
 		/// </summary>
 		private Channel channel;
@@ -26,11 +31,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Backing field for the <see cref="SecuritySettings"/> property.
 		/// </summary>
 		private RelyingPartySecuritySettings securitySettings;
-
-		/// <summary>
-		/// The storage to use for saving and retrieving associations.  May be null.
-		/// </summary>
-		private readonly IAssociationStore<Uri> associationStore;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssociationManager"/> class.
@@ -52,7 +52,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <value>The channel.</value>
 		internal Channel Channel {
-			get { return this.channel; }
+			get {
+				return this.channel;
+			}
 
 			set {
 				ErrorUtilities.VerifyArgumentNotNull(value, "value");
@@ -61,7 +63,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// The security settings to apply in choosing association types to support.
+		/// Gets or sets the security settings to apply in choosing association types to support.
 		/// </summary>
 		internal RelyingPartySecuritySettings SecuritySettings {
 			get {

@@ -131,7 +131,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Gets the channel to use for sending/receiving messages.
+		/// Gets or sets the channel to use for sending/receiving messages.
 		/// </summary>
 		public Channel Channel {
 			get {
