@@ -143,6 +143,7 @@
     <Compile Include="OpenId\OpenIdCoordinator.cs" />
     <Compile Include="OpenId\AssociationHandshakeTests.cs" />
     <Compile Include="OpenId\OpenIdTestBase.cs" />
+    <Compile Include="OpenId\Provider\AuthenticationRequestTest.cs" />
     <Compile Include="OpenId\Provider\OpenIdProviderTests.cs" />
     <Compile Include="OpenId\RealmTests.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationRequestTests.cs" />
