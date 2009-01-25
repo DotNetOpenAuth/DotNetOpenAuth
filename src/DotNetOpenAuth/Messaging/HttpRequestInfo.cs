@@ -36,6 +36,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
 		/// </summary>
 		internal HttpRequestInfo() {
+			this.HttpMethod = "GET";
 		}
 
 		/// <summary>

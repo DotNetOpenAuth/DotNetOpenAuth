@@ -12,6 +12,12 @@ namespace DotNetOpenAuth.Test.Messaging {
 	[TestClass]
 	public class HttpRequestInfoTests : TestBase {
 		[TestMethod]
+		public void CtorDefault() {
+			HttpRequestInfo info = new HttpRequestInfo();
+			Assert.AreEqual("GET", info.HttpMethod);
+		}
+
+		[TestMethod]
 		public void CtorRequest() {
 			HttpRequest request = new HttpRequest("file", "http://someserver?a=b", "a=b");
 			////request.Headers["headername"] = "headervalue"; // PlatformNotSupportedException prevents us mocking this up

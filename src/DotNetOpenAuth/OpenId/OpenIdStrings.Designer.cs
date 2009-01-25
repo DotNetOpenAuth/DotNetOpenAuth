@@ -169,6 +169,24 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An extension with this property name (&apos;{0}&apos;) has already been registered..
+        /// </summary>
+        internal static string ClientScriptExtensionPropertyNameCollision {
+            get {
+                return ResourceManager.GetString("ClientScriptExtensionPropertyNameCollision", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The extension &apos;{0}&apos; has already been registered..
+        /// </summary>
+        internal static string ClientScriptExtensionTypeCollision {
+            get {
+                return ResourceManager.GetString("ClientScriptExtensionTypeCollision", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to An authentication request has already been created using CreateRequest()..
         /// </summary>
         internal static string CreateRequestAlreadyCalled {

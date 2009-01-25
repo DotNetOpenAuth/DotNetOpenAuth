@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Text;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
@@ -64,7 +65,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.VerifyDiscoveryMatchesAssertion();
 		}
 
-		#region IAuthenticationResponse Members
+		#region IAuthenticationResponse Properties
 
 		/// <summary>
 		/// Gets the Identifier that the end user claims to own.  For use with user database storage and lookup.
@@ -136,6 +137,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public Exception Exception {
 			get { return null; }
 		}
+
+		#endregion
+
+		/// <summary>
+		/// Gets the positive assertion response message.
+		/// </summary>
+		internal PositiveAssertionResponse Response {
+			get { return this.response; }
+		}
+
+		#region IAuthenticationResponse methods
 
 		/// <summary>
 		/// Gets a callback argument's value that was previously added using

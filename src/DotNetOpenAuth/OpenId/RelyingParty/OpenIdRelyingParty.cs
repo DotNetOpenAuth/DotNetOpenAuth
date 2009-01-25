@@ -345,6 +345,21 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Creates a relying party that does not verify incoming messages against
+		/// nonce or association stores.  
+		/// </summary>
+		/// <returns>The instantiated <see cref="OpenIdRelyingParty"/>.</returns>
+		/// <remarks>
+		/// Useful for previewing messages while
+		/// allowing them to be fully processed and verified later.
+		/// </remarks>
+		internal static OpenIdRelyingParty CreateNonVerifying() {
+			OpenIdRelyingParty rp = new OpenIdRelyingParty();
+			rp.Channel = new OpenIdChannel(null, null, null, rp.SecuritySettings);
+			return rp;
+		}
+
+		/// <summary>
 		/// Generates the authentication requests that can satisfy the requirements of some OpenID Identifier.
 		/// </summary>
 		/// <param name="userSuppliedIdentifier">

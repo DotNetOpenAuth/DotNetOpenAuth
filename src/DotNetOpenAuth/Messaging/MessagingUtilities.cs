@@ -70,6 +70,22 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Gets the query or form data from the original request (before any URL rewriting has occurred.)
+		/// </summary>
+		/// <returns>A set of name=value pairs.</returns>
+		public static NameValueCollection GetQueryOrFormFromContext() {
+			ErrorUtilities.VerifyHttpContext();
+			HttpRequest request = HttpContext.Current.Request;
+			NameValueCollection query;
+			if (request.RequestType == "GET") {
+				query = GetQueryFromContextNVC();
+			} else {
+				query = request.Form;
+			}
+			return query;
+		}
+
+		/// <summary>
 		/// Strips any and all URI query parameters that start with some prefix.
 		/// </summary>
 		/// <param name="uri">The URI that may have a query with parameters to remove.</param>

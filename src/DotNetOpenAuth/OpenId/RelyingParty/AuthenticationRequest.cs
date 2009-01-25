@@ -156,6 +156,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			get { return this.endpoint.Protocol.Version; }
 		}
 
+		#endregion
+
+		/// <summary>
+		/// Gets or sets how an association may or should be created or used 
+		/// in the formulation of the authentication request.
+		/// </summary>
+		internal AssociationPreference AssociationPreference {
+			get { return this.associationPreference; }
+			set { this.associationPreference = value; }
+		}
+
+		#region IAuthenticationRequest methods
+
 		/// <summary>
 		/// Makes a dictionary of key/value pairs available when the authentication is completed.
 		/// </summary>

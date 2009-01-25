@@ -271,4 +271,10 @@ Discovered endpoint info:
   <data name="OpenIdTextBoxEmpty" xml:space="preserve">
     <value>No OpenId url is provided.</value>
   </data>
+  <data name="ClientScriptExtensionPropertyNameCollision" xml:space="preserve">
+    <value>An extension with this property name ('{0}') has already been registered.</value>
+  </data>
+  <data name="ClientScriptExtensionTypeCollision" xml:space="preserve">
+    <value>The extension '{0}' has already been registered.</value>
+  </data>
 </root>

@@ -196,6 +196,7 @@
     <Compile Include="OpenId\Extensions\AttributeExchange\WellKnownAttributes.cs" />
     <Compile Include="OpenId\Extensions\ExtensionBase.cs" />
     <Compile Include="OpenId\Extensions\ExtensionArgumentsManager.cs" />
+    <Compile Include="OpenId\Extensions\IClientScriptExtensionResponse.cs" />
     <Compile Include="OpenId\Extensions\OpenIdExtensionFactory.cs" />
     <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\AuthenticationPolicies.cs" />
     <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\Constants.cs" />
@@ -264,6 +265,7 @@
     <Compile Include="OpenId\RelyingParty\AuthenticationRequest.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationRequestMode.cs" />
     <Compile Include="OpenId\RelyingParty\NegativeAuthenticationResponse.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdAjaxTextBox.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdEventArgs.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdLogin.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdTextBox.cs" />
@@ -356,6 +358,13 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="OpenId\RelyingParty\openid_login.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="OpenId\RelyingParty\login_failure.png" />
+    <EmbeddedResource Include="OpenId\RelyingParty\login_success %28lock%29.png" />
+    <EmbeddedResource Include="OpenId\RelyingParty\login_success.png" />
+    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdAjaxTextBox.js" />
+    <EmbeddedResource Include="OpenId\RelyingParty\spinner.gif" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\tools\DotNetOpenAuth.Versioning.targets" />
