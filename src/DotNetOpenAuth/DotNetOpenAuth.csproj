@@ -228,6 +228,8 @@
     <Compile Include="OpenId\Provider\AuthenticationRequest.cs" />
     <Compile Include="OpenId\Provider\AutoResponsiveRequest.cs" />
     <Compile Include="OpenId\Provider\IAuthenticationRequest.cs" />
+    <Compile Include="OpenId\Provider\IdentityEndpoint.cs" />
+    <Compile Include="OpenId\Provider\IdentityEndpointNormalizationEventArgs.cs" />
     <Compile Include="OpenId\Provider\IProviderApplicationStore.cs" />
     <Compile Include="OpenId\Provider\IRequest.cs" />
     <Compile Include="OpenId\Provider\ProviderEndpoint.cs" />
