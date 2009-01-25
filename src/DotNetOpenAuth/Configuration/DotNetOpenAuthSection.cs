@@ -38,7 +38,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// Gets the configuration section from the .config file.
 		/// </summary>
 		internal static DotNetOpenAuthSection Configuration {
-			get { return (DotNetOpenAuthSection)ConfigurationManager.GetSection(SectionName); }
+			get { return (DotNetOpenAuthSection)ConfigurationManager.GetSection(SectionName) ?? new DotNetOpenAuthSection(); }
 		}
 
 		/// <summary>
