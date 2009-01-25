@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		internal AuthenticationRequest(OpenIdProvider provider, CheckIdRequest request)
 			: base(provider, request) {
 			this.positiveResponse = new PositiveAssertionResponse(request);
-			this.negativeResponse = new NegativeAssertionResponse(request);
+			this.negativeResponse = new NegativeAssertionResponse(request, provider.Channel);
 
 			if (this.ClaimedIdentifier == Protocol.ClaimedIdentifierForOPIdentifier &&
 				Protocol.ClaimedIdentifierForOPIdentifier != null) {

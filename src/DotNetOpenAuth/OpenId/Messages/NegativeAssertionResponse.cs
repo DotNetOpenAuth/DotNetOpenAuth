@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// The message OpenID Providers send back to Relying Parties to refuse
@@ -21,9 +22,20 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		/// <param name="request">The request that the relying party sent.</param>
 		internal NegativeAssertionResponse(CheckIdRequest request)
+			: this(request, null) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="NegativeAssertionResponse"/> class.
+		/// </summary>
+		/// <param name="request">The request that the relying party sent.</param>
+		/// <param name="channel">The channel to use to simulate construction of the user_setup_url, if applicable.  May be null, but the user_setup_url will not be constructed.</param>
+		internal NegativeAssertionResponse(CheckIdRequest request, Channel channel)
 			: base(request, GetMode(request)) {
-			if (this.Version.Major < 2) {
-				// TODO: set a reasonable default for the user_setup_url parameter.
+			// If appropriate, and when we're provided with a channel to do it,
+			// go ahead and construct the user_setup_url
+			if (this.Version.Major < 2 && request.Immediate && channel != null) {
+				this.UserSetupUrl = ConstructUserSetupUrl(request, channel);
 			}
 		}
 
@@ -90,6 +102,26 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			if (this.Immediate && Protocol.Version.Major < 2) {
 				ErrorUtilities.VerifyProtocol(this.UserSetupUrl != null, OpenIdStrings.UserSetupUrlRequiredInImmediateNegativeResponse);
 			}
+		}
+
+		/// <summary>
+		/// Constructs the value for the user_setup_url parameter to be sent back
+		/// in negative assertions in response to OpenID 1.x RP's checkid_immediate requests.
+		/// </summary>
+		/// <param name="immediateRequest">The immediate request.</param>
+		/// <param name="channel">The channel to use to simulate construction of the message.</param>
+		/// <returns>The value to use for the user_setup_url parameter.</returns>
+		private static Uri ConstructUserSetupUrl(CheckIdRequest immediateRequest, Channel channel) {
+			ErrorUtilities.VerifyArgumentNotNull(immediateRequest, "immediateRequest");
+			ErrorUtilities.VerifyArgumentNotNull(channel, "channel");
+			ErrorUtilities.VerifyInternal(immediateRequest.Immediate, "Only immediate requests should be sent here.");
+
+			var setupRequest = new CheckIdRequest(immediateRequest.Version, immediateRequest.Recipient, AuthenticationRequestMode.Setup);
+			setupRequest.LocalIdentifier = immediateRequest.LocalIdentifier;
+			setupRequest.ReturnTo = immediateRequest.ReturnTo;
+			setupRequest.Realm = immediateRequest.Realm;
+			setupRequest.AssociationHandle = immediateRequest.AssociationHandle;
+			return channel.PrepareResponse(setupRequest).DirectUriRequest;
 		}
 
 		/// <summary>
