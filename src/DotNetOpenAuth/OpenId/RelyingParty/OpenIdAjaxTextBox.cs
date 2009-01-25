@@ -871,29 +871,29 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			try {
 				List<IAuthenticationRequest> requests = this.CreateRequests(userSuppliedIdentifier, true);
 				if (requests.Count > 0) {
-					discoveryResultBuilder.AppendFormat("claimedIdentifier: {0},", Util.GetSafeJavascriptValue(requests[0].ClaimedIdentifier));
+					discoveryResultBuilder.AppendFormat("claimedIdentifier: {0},", MessagingUtilities.GetSafeJavascriptValue(requests[0].ClaimedIdentifier));
 					discoveryResultBuilder.Append("requests: [");
 					foreach (IAuthenticationRequest request in requests) {
 						this.OnLoggingIn(request);
 						discoveryResultBuilder.Append("{");
-						discoveryResultBuilder.AppendFormat("endpoint: {0},", Util.GetSafeJavascriptValue(request.Provider.Uri.AbsoluteUri));
+						discoveryResultBuilder.AppendFormat("endpoint: {0},", MessagingUtilities.GetSafeJavascriptValue(request.Provider.Uri.AbsoluteUri));
 						request.Mode = AuthenticationRequestMode.Immediate;
 						UserAgentResponse response = request.RedirectingResponse;
-						discoveryResultBuilder.AppendFormat("immediate: {0},", Util.GetSafeJavascriptValue(response.DirectUriRequest.AbsoluteUri));
+						discoveryResultBuilder.AppendFormat("immediate: {0},", MessagingUtilities.GetSafeJavascriptValue(response.DirectUriRequest.AbsoluteUri));
 						request.Mode = AuthenticationRequestMode.Setup;
 						response = request.RedirectingResponse;
-						discoveryResultBuilder.AppendFormat("setup: {0}", Util.GetSafeJavascriptValue(response.DirectUriRequest.AbsoluteUri));
+						discoveryResultBuilder.AppendFormat("setup: {0}", MessagingUtilities.GetSafeJavascriptValue(response.DirectUriRequest.AbsoluteUri));
 						discoveryResultBuilder.Append("},");
 					}
 					discoveryResultBuilder.Length -= 1; // trim off last comma
 					discoveryResultBuilder.Append("]");
 				} else {
 					discoveryResultBuilder.Append("requests: new Array(),");
-					discoveryResultBuilder.AppendFormat("error: {0}", Util.GetSafeJavascriptValue(OpenIdStrings.OpenIdEndpointNotFound));
+					discoveryResultBuilder.AppendFormat("error: {0}", MessagingUtilities.GetSafeJavascriptValue(OpenIdStrings.OpenIdEndpointNotFound));
 				}
 			} catch (ProtocolException ex) {
 				discoveryResultBuilder.Append("requests: new Array(),");
-				discoveryResultBuilder.AppendFormat("error: {0}", Util.GetSafeJavascriptValue(ex.Message));
+				discoveryResultBuilder.AppendFormat("error: {0}", MessagingUtilities.GetSafeJavascriptValue(ex.Message));
 			}
 			discoveryResultBuilder.Append("}");
 			this.discoveryResult = discoveryResultBuilder.ToString();
@@ -1122,24 +1122,24 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			startupScript.AppendFormat(
 				CultureInfo.InvariantCulture,
 				"initAjaxOpenId(box, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17}, function({18}, {19}, {20}) {{{21}}});{22}",
-				Util.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), OpenIdTextBox.EmbeddedLogoResourceName)),
-				Util.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedDotNetOpenIdLogoResourceName)),
-				Util.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedSpinnerResourceName)),
-				Util.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedLoginSuccessResourceName)),
-				Util.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedLoginFailureResourceName)),
+				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), OpenIdTextBox.EmbeddedLogoResourceName)),
+				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedDotNetOpenIdLogoResourceName)),
+				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedSpinnerResourceName)),
+				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedLoginSuccessResourceName)),
+				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedLoginFailureResourceName)),
 				this.Throttle,
 				this.Timeout.TotalMilliseconds,
 				string.IsNullOrEmpty(this.OnClientAssertionReceived) ? "null" : "'" + this.OnClientAssertionReceived.Replace(@"\", @"\\").Replace("'", @"\'") + "'",
-				Util.GetSafeJavascriptValue(this.LogOnText),
-				Util.GetSafeJavascriptValue(this.LogOnToolTip),
-				Util.GetSafeJavascriptValue(this.RetryText),
-				Util.GetSafeJavascriptValue(this.RetryToolTip),
-				Util.GetSafeJavascriptValue(this.BusyToolTip),
-				Util.GetSafeJavascriptValue(this.IdentifierRequiredMessage),
-				Util.GetSafeJavascriptValue(this.LogOnInProgressMessage),
-				Util.GetSafeJavascriptValue(this.AuthenticationSucceededToolTip),
-				Util.GetSafeJavascriptValue(this.AuthenticatedAsToolTip),
-				Util.GetSafeJavascriptValue(this.AuthenticationFailedToolTip),
+				MessagingUtilities.GetSafeJavascriptValue(this.LogOnText),
+				MessagingUtilities.GetSafeJavascriptValue(this.LogOnToolTip),
+				MessagingUtilities.GetSafeJavascriptValue(this.RetryText),
+				MessagingUtilities.GetSafeJavascriptValue(this.RetryToolTip),
+				MessagingUtilities.GetSafeJavascriptValue(this.BusyToolTip),
+				MessagingUtilities.GetSafeJavascriptValue(this.IdentifierRequiredMessage),
+				MessagingUtilities.GetSafeJavascriptValue(this.LogOnInProgressMessage),
+				MessagingUtilities.GetSafeJavascriptValue(this.AuthenticationSucceededToolTip),
+				MessagingUtilities.GetSafeJavascriptValue(this.AuthenticatedAsToolTip),
+				MessagingUtilities.GetSafeJavascriptValue(this.AuthenticationFailedToolTip),
 				identifierParameterName,
 				discoveryCallbackResultParameterName,
 				discoveryErrorCallbackParameterName,

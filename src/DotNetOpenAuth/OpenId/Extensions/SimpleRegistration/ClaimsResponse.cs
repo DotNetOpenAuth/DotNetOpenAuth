@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 	/// A struct storing Simple Registration field values describing an
 	/// authenticating user.
 	/// </summary>
-	public sealed class ClaimsResponse : ExtensionBase {
+	public sealed class ClaimsResponse : ExtensionBase, IClientScriptExtensionResponse {
 		/// <summary>
 		/// The factory method that may be used in deserialization of this message.
 		/// </summary>
@@ -221,48 +221,6 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 			}
 		}
 
-		#region IClientScriptExtension Members
-
-		// TODO: re-enable this
-		////string IClientScriptExtensionResponse.InitializeJavaScriptData(IDictionary<string, string> sreg, IAuthenticationResponse response, string typeUri) {
-		////    StringBuilder builder = new StringBuilder();
-		////    builder.Append("{ ");
-
-		////    string nickname, email, fullName, dob, genderString, postalCode, country, language, timeZone;
-		////    if (sreg.TryGetValue(Constants.nickname, out nickname)) {
-		////        builder.Append(createAddFieldJS(Constants.nickname, nickname));
-		////    }
-		////    if (sreg.TryGetValue(Constants.email, out email)) {
-		////        builder.Append(createAddFieldJS(Constants.email, email));
-		////    }
-		////    if (sreg.TryGetValue(Constants.fullname, out fullName)) {
-		////        builder.Append(createAddFieldJS(Constants.fullname, fullName));
-		////    }
-		////    if (sreg.TryGetValue(Constants.dob, out dob)) {
-		////        builder.Append(createAddFieldJS(Constants.dob, dob));
-		////    }
-		////    if (sreg.TryGetValue(Constants.gender, out genderString)) {
-		////        builder.Append(createAddFieldJS(Constants.gender, genderString));
-		////    }
-		////    if (sreg.TryGetValue(Constants.postcode, out postalCode)) {
-		////        builder.Append(createAddFieldJS(Constants.postcode, postalCode));
-		////    }
-		////    if (sreg.TryGetValue(Constants.country, out country)) {
-		////        builder.Append(createAddFieldJS(Constants.country, country));
-		////    }
-		////    if (sreg.TryGetValue(Constants.language, out language)) {
-		////        builder.Append(createAddFieldJS(Constants.language, language));
-		////    }
-		////    if (sreg.TryGetValue(Constants.timezone, out timeZone)) {
-		////        builder.Append(createAddFieldJS(Constants.timezone, timeZone));
-		////    }
-		////    if (builder[builder.Length - 1] == ',') builder.Length -= 1;
-		////    builder.Append("}");
-		////    return builder.ToString();
-		////}
-
-		#endregion
-
 		/// <summary>
 		/// Tests equality of two <see cref="ClaimsResponse"/> objects.
 		/// </summary>
@@ -320,5 +278,42 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		public override int GetHashCode() {
 			return (this.Nickname != null) ? this.Nickname.GetHashCode() : base.GetHashCode();
 		}
+
+		#region IClientScriptExtension Members
+
+		/// <summary>
+		/// Reads the extension information on an authentication response from the provider.
+		/// </summary>
+		/// <param name="response">The incoming OpenID response carrying the extension.</param>
+		/// <returns>
+		/// A Javascript snippet that when executed on the user agent returns an object with
+		/// the information deserialized from the extension response.
+		/// </returns>
+		/// <remarks>
+		/// This method is called <b>before</b> the signature on the assertion response has been
+		/// verified.  Therefore all information in these fields should be assumed unreliable
+		/// and potentially falsified.
+		/// </remarks>
+		string IClientScriptExtensionResponse.InitializeJavaScriptData(IProtocolMessageWithExtensions response) {
+			var sreg = new Dictionary<string, string>(15);
+
+			// Although we could probably whip up a trip with MessageDictionary
+			// to avoid explicitly setting each field, doing so would likely
+			// open ourselves up to security exploits from the OP as it would
+			// make possible sending arbitrary javascript in arbitrary field names.
+			sreg[Constants.nickname] = this.Nickname;
+			sreg[Constants.email] = this.Email;
+			sreg[Constants.fullname] = this.FullName;
+			sreg[Constants.dob] = this.BirthDateRaw;
+			sreg[Constants.gender] = this.Gender.HasValue ? this.Gender.Value.ToString() : null;
+			sreg[Constants.postcode] = this.PostalCode;
+			sreg[Constants.country] = this.Country;
+			sreg[Constants.language] = this.Language;
+			sreg[Constants.timezone] = this.TimeZone;
+
+			return MessagingUtilities.CreateJsonObject(sreg);
+		}
+
+		#endregion
 	}
 }

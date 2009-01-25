@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Globalization;
 	using System.IO;
 	using System.Linq;
 	using System.Net;
@@ -26,6 +27,29 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <remarks>The random number generator is thread-safe.</remarks>
 		internal static readonly RandomNumberGenerator CryptoRandomDataGenerator = new RNGCryptoServiceProvider();
+
+		/// <summary>
+		/// A set of escaping mappings that help secure a string from javscript execution.
+		/// </summary>
+		/// <remarks>
+		/// The characters to escape here are inspired by 
+		/// http://code.google.com/p/doctype/wiki/ArticleXSSInJavaScript
+		/// </remarks>
+		private static readonly Dictionary<string, string> javascriptStaticStringEscaping = new Dictionary<string, string> {
+			{ "\\", @"\\" }, // this WAS just above the & substitution but we moved it here to prevent double-escaping
+			{ "\t", @"\t" },
+			{ "\n", @"\n" },
+			{ "\r", @"\r" },
+			{ "\u0085", @"\u0085" },
+			{ "\u2028", @"\u2028" },
+			{ "\u2029", @"\u2029" },
+			{ "'", @"\x27" },
+			{ "\"", @"\x22" },
+			{ "&", @"\x26" },
+			{ "<", @"\x3c" },
+			{ ">", @"\x3e" },
+			{ "=", @"\x3d" },
+		};
 
 		/// <summary>
 		/// Gets the original request URL, as seen from the browser before any URL rewrites on the server if any.
@@ -555,6 +579,52 @@ namespace DotNetOpenAuth.Messaging {
 		internal static bool IsDirectResponse(this IDirectResponseProtocolMessage message) {
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 			return message.OriginatingRequest != null;
+		}
+
+		/// <summary>
+		/// Constructs a Javascript expression that will create an object
+		/// on the user agent when assigned to a variable.
+		/// </summary>
+		/// <param name="namesAndValues">The untrusted names and untrusted values to inject into the JSON object.</param>
+		/// <returns>The Javascript JSON object as a string.</returns>
+		internal static string CreateJsonObject(IEnumerable<KeyValuePair<string, string>> namesAndValues) {
+			StringBuilder builder = new StringBuilder();
+			builder.Append("{ ");
+
+			foreach (var pair in namesAndValues) {
+				builder.Append(MessagingUtilities.GetSafeJavascriptValue(pair.Key));
+				builder.Append(": ");
+				builder.Append(MessagingUtilities.GetSafeJavascriptValue(pair.Value));
+				builder.Append(",");
+			}
+
+			if (builder[builder.Length - 1] == ',') {
+				builder.Length -= 1;
+			}
+			builder.Append("}");
+			return builder.ToString();
+		}
+
+		/// <summary>
+		/// Prepares what SHOULD be simply a string value for safe injection into Javascript
+		/// by using appropriate character escaping.
+		/// </summary>
+		/// <param name="value">The untrusted string value to be escaped to protected against XSS attacks.  May be null.</param>
+		/// <returns>The escaped string.</returns>
+		internal static string GetSafeJavascriptValue(string value) {
+			if (value == null) {
+				return "null";
+			}
+
+			// We use a StringBuilder because we have potentially many replacements to do,
+			// and we don't want to create a new string for every intermediate replacement step.
+			StringBuilder builder = new StringBuilder(value);
+			foreach (var pair in javascriptStaticStringEscaping) {
+				builder.Replace(pair.Key, pair.Value);
+			}
+			builder.Insert(0, '\'');
+			builder.Append('\'');
+			return builder.ToString();
 		}
 
 		/// <summary>
