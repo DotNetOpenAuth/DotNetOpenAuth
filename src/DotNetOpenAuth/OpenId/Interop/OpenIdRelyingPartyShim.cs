@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.OpenId.Interop {
 		/// An authentication request object that describes the HTTP response to
 		/// send to the user agent to initiate the authentication.
 		/// </returns>
-		/// <exception cref="OpenIdException">Thrown if no OpenID endpoint could be found.</exception>
+		/// <exception cref="ProtocolException">Thrown if no OpenID endpoint could be found.</exception>
 		string CreateRequest(string userSuppliedIdentifier, string realm, string returnToUrl);
 
 		/// <summary>
@@ -86,7 +86,7 @@ namespace DotNetOpenAuth.OpenId.Interop {
 		/// An authentication request object that describes the HTTP response to
 		/// send to the user agent to initiate the authentication.
 		/// </returns>
-		/// <exception cref="OpenIdException">Thrown if no OpenID endpoint could be found.</exception>
+		/// <exception cref="ProtocolException">Thrown if no OpenID endpoint could be found.</exception>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "COM requires primitive types")]
 		public string CreateRequest(string userSuppliedIdentifier, string realm, string returnToUrl) {
 			OpenIdRelyingParty rp = new OpenIdRelyingParty(null);

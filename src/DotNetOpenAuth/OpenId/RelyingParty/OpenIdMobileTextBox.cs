@@ -1,52 +1,36 @@
 //-----------------------------------------------------------------------
-// <copyright file="OpenIdTextBox.cs" company="Andrew Arnott">
+// <copyright file="OpenIdMobileTextBox.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
-[assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdTextBox.EmbeddedLogoResourceName, "image/gif")]
-
-#pragma warning disable 0809 // marking inherited, unsupported properties as obsolete to discourage their use
+[assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdMobileTextBox.EmbeddedLogoResourceName, "image/gif")]
 
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
-	using System.Collections.Generic;
-	using System.Collections.Specialized;
 	using System.ComponentModel;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Globalization;
-	using System.Net;
 	using System.Text.RegularExpressions;
-	using System.Web;
 	using System.Web.Security;
 	using System.Web.UI;
-	using System.Web.UI.WebControls;
+	using System.Web.UI.MobileControls;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 
 	/// <summary>
-	/// An ASP.NET control that provides a minimal text box that is OpenID-aware.
+	/// An ASP.NET control for mobile devices that provides a minimal text box that is OpenID-aware.
 	/// </summary>
-	/// <remarks>
-	/// This control offers greater UI flexibility than the <see cref="OpenIdLogin"/>
-	/// control, but requires more work to be done by the hosting web site to 
-	/// assemble a complete login experience.
-	/// </remarks>
 	[DefaultProperty("Text"), ValidationProperty("Text")]
-	[ToolboxData("<{0}:OpenIdTextBox runat=\"server\" />")]
-	public class OpenIdTextBox : CompositeControl, IEditableTextControl, ITextControl {
+	[ToolboxData("<{0}:OpenIdMobileTextBox runat=\"server\" />")]
+	public class OpenIdMobileTextBox : TextBox {
 		/// <summary>
 		/// The name of the manifest stream containing the
 		/// OpenID logo that is placed inside the text box.
 		/// </summary>
-		internal const string EmbeddedLogoResourceName = Util.DefaultNamespace + ".OpenId.RelyingParty.openid_login.gif";
-
-		/// <summary>
-		/// Default value for <see cref="TabIndex"/> property.
-		/// </summary>
-		protected const short TabIndexDefault = 0;
+		internal const string EmbeddedLogoResourceName = OpenIdTextBox.EmbeddedLogoResourceName;
 
 		/// <summary>
 		/// Default value of <see cref="UsePersistentCookie"/>.
@@ -125,16 +109,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string RequestFullNameViewStateKey = "RequestFullName";
 
 		/// <summary>
-		/// The viewstate key to use for the <see cref="PresetBorder"/> property.
-		/// </summary>
-		private const string PresetBorderViewStateKey = "PresetBorder";
-
-		/// <summary>
-		/// The viewstate key to use for the <see cref="ShowLogo"/> property.
-		/// </summary>
-		private const string ShowLogoViewStateKey = "ShowLogo";
-
-		/// <summary>
 		/// The viewstate key to use for the <see cref="UsePersistentCookie"/> property.
 		/// </summary>
 		private const string UsePersistentCookieViewStateKey = "UsePersistentCookie";
@@ -174,16 +148,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#region Property defaults
 
 		/// <summary>
-		/// The default value for the <see cref="Columns"/> property.
-		/// </summary>
-		private const int ColumnsDefault = 40;
-
-		/// <summary>
-		/// The default value for the <see cref="MaxLength"/> property.
-		/// </summary>
-		private const int MaxLengthDefault = 40;
-
-		/// <summary>
 		/// The default value for the <see cref="EnableRequestProfile"/> property.
 		/// </summary>
 		private const bool EnableRequestProfileDefault = true;
@@ -204,34 +168,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const bool StatelessDefault = false;
 
 		/// <summary>
-		/// The default value for the <see cref="ShowLogo"/> property.
-		/// </summary>
-		private const bool ShowLogoDefault = true;
-
-		/// <summary>
-		/// The default value for the <see cref="PresetBorder"/> property.
-		/// </summary>
-		private const bool PresetBorderDefault = true;
-
-		/// <summary>
 		/// The default value for the <see cref="PolicyUrl"/> property.
 		/// </summary>
 		private const string PolicyUrlDefault = "";
 
 		/// <summary>
-		/// The default value for the <see cref="CssClass"/> property.
-		/// </summary>
-		private const string CssClassDefault = "openid";
-
-		/// <summary>
 		/// The default value for the <see cref="ReturnToUrl"/> property.
 		/// </summary>
 		private const string ReturnToUrlDefault = "";
-
-		/// <summary>
-		/// The default value for the <see cref="Text"/> property.
-		/// </summary>
-		private const string TextDefault = "";
 
 		/// <summary>
 		/// The default value for the <see cref="RealmUrl"/> property.
@@ -291,20 +235,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string UsePersistentCookieCallbackKey = "OpenIdTextBox_UsePersistentCookie";
 
 		/// <summary>
-		/// The text in the text box before the text box is instantiated.
+		/// Initializes a new instance of the <see cref="OpenIdMobileTextBox"/> class.
 		/// </summary>
-		private string text = TextDefault;
-
-		/// <summary>
-		/// The text box itself.
-		/// </summary>
-		private TextBox wrappedTextBox;
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="OpenIdTextBox"/> class.
-		/// </summary>
-		public OpenIdTextBox() {
-			this.InitializeControls();
+		public OpenIdMobileTextBox() {
 		}
 
 		#region Events
@@ -334,37 +267,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public event EventHandler<OpenIdEventArgs> SetupRequired;
 
 		#endregion
-		#region IEditableTextControl Members
-
-		/// <summary>
-		/// Occurs when the content of the text changes between posts to the server.
-		/// </summary>
-		public event EventHandler TextChanged {
-			add { this.WrappedTextBox.TextChanged += value; }
-			remove { this.WrappedTextBox.TextChanged -= value; }
-		}
-
-		#endregion
 
 		#region Properties
-
-		/// <summary>
-		/// Gets or sets the content of the text box.
-		/// </summary>
-		[Bindable(true), DefaultValue(""), Category(AppearanceCategory)]
-		[Description("The content of the text box.")]
-		public string Text {
-			get {
-				return this.WrappedTextBox != null ? this.WrappedTextBox.Text : this.text;
-			}
-
-			set {
-				this.text = value;
-				if (this.WrappedTextBox != null) {
-					this.WrappedTextBox.Text = value;
-				}
-			}
-		}
 
 		/// <summary>
 		/// Gets or sets the OpenID <see cref="Realm"/> of the relying party web site.
@@ -460,36 +364,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Gets or sets the CSS class assigned to the text box.
-		/// </summary>
-		[Bindable(true), DefaultValue(CssClassDefault), Category(AppearanceCategory)]
-		[Description("The CSS class assigned to the text box.")]
-		public override string CssClass {
-			get { return this.WrappedTextBox.CssClass; }
-			set { this.WrappedTextBox.CssClass = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets a value indicating whether to show the OpenID logo in the text box.
-		/// </summary>
-		[Bindable(true), DefaultValue(ShowLogoDefault), Category(AppearanceCategory)]
-		[Description("The visibility of the OpenID logo in the text box.")]
-		public bool ShowLogo {
-			get { return (bool)(this.ViewState[ShowLogoViewStateKey] ?? ShowLogoDefault); }
-			set { this.ViewState[ShowLogoViewStateKey] = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets a value indicating whether to use inline styling to force a solid gray border.
-		/// </summary>
-		[Bindable(true), DefaultValue(PresetBorderDefault), Category(AppearanceCategory)]
-		[Description("Whether to use inline styling to force a solid gray border.")]
-		public bool PresetBorder {
-			get { return (bool)(this.ViewState[PresetBorderViewStateKey] ?? PresetBorderDefault); }
-			set { this.ViewState[PresetBorderViewStateKey] = value; }
-		}
-
-		/// <summary>
 		/// Gets or sets a value indicating whether to send a persistent cookie upon successful 
 		/// login so the user does not have to log in upon returning to this site.
 		/// </summary>
@@ -499,43 +373,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public virtual bool UsePersistentCookie {
 			get { return (bool)(this.ViewState[UsePersistentCookieViewStateKey] ?? UsePersistentCookieDefault); }
 			set { this.ViewState[UsePersistentCookieViewStateKey] = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets the width of the text box in characters.
-		/// </summary>
-		[Bindable(true), DefaultValue(ColumnsDefault), Category(AppearanceCategory)]
-		[Description("The width of the text box in characters.")]
-		public int Columns {
-			get { return this.WrappedTextBox.Columns; }
-			set { this.WrappedTextBox.Columns = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets the maximum number of characters the browser should allow
-		/// </summary>
-		[Bindable(true), DefaultValue(MaxLengthDefault), Category(AppearanceCategory)]
-		[Description("The maximum number of characters the browser should allow.")]
-		public int MaxLength {
-			get { return this.WrappedTextBox.MaxLength; }
-			set { this.WrappedTextBox.MaxLength = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets the tab index of the Web server control.
-		/// </summary>
-		/// <value></value>
-		/// <returns>
-		/// The tab index of the Web server control. The default is 0, which indicates that this property is not set.
-		/// </returns>
-		/// <exception cref="T:System.ArgumentOutOfRangeException">
-		/// The specified tab index is not between -32768 and 32767.
-		/// </exception>
-		[Bindable(true), DefaultValue(TabIndexDefault), Category(BehaviorCategory)]
-		[Description("The tab index of the text box control.")]
-		public override short TabIndex {
-			get { return this.WrappedTextBox.TabIndex; }
-			set { this.WrappedTextBox.TabIndex = value; }
 		}
 
 		/// <summary>
@@ -681,179 +518,22 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 		#endregion
 
-		#region Properties to hide
-
-		/// <summary>
-		/// Gets or sets the foreground color (typically the color of the text) of the Web server control.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="T:System.Drawing.Color"/> that represents the foreground color of the control. The default is <see cref="F:System.Drawing.Color.Empty"/>.
-		/// </returns>
-		[Obsolete, Browsable(false), Bindable(false)]
-		public override System.Drawing.Color ForeColor {
-			get { throw new NotSupportedException(); }
-			set { throw new NotSupportedException(); }
-		}
-
-		/// <summary>
-		/// Gets or sets the background color of the Web server control.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="T:System.Drawing.Color"/> that represents the background color of the control. The default is <see cref="F:System.Drawing.Color.Empty"/>, which indicates that this property is not set.
-		/// </returns>
-		[Obsolete, Browsable(false), Bindable(false)]
-		public override System.Drawing.Color BackColor {
-			get { throw new NotSupportedException(); }
-			set { throw new NotSupportedException(); }
-		}
-
-		/// <summary>
-		/// Gets or sets the border color of the Web control.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="T:System.Drawing.Color"/> that represents the border color of the control. The default is <see cref="F:System.Drawing.Color.Empty"/>, which indicates that this property is not set.
-		/// </returns>
-		[Obsolete, Browsable(false), Bindable(false)]
-		public override System.Drawing.Color BorderColor {
-			get { throw new NotSupportedException(); }
-			set { throw new NotSupportedException(); }
-		}
-
-		/// <summary>
-		/// Gets or sets the border width of the Web server control.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="T:System.Web.UI.WebControls.Unit"/> that represents the border width of a Web server control. The default value is <see cref="F:System.Web.UI.WebControls.Unit.Empty"/>, which indicates that this property is not set.
-		/// </returns>
-		/// <exception cref="T:System.ArgumentException">
-		/// The specified border width is a negative value.
-		/// </exception>
-		[Obsolete, Browsable(false), Bindable(false)]
-		public override Unit BorderWidth {
-			get { return Unit.Empty; }
-			set { throw new NotSupportedException(); }
-		}
-
-		/// <summary>
-		/// Gets or sets the border style of the Web server control.
-		/// </summary>
-		/// <returns>
-		/// One of the <see cref="T:System.Web.UI.WebControls.BorderStyle"/> enumeration values. The default is NotSet.
-		/// </returns>
-		[Obsolete, Browsable(false), Bindable(false)]
-		public override BorderStyle BorderStyle {
-			get { return BorderStyle.None; }
-			set { throw new NotSupportedException(); }
-		}
-
-		/// <summary>
-		/// Gets the font properties associated with the Web server control.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="T:System.Web.UI.WebControls.FontInfo"/> that represents the font properties of the Web server control.
-		/// </returns>
-		[Obsolete, Browsable(false), Bindable(false)]
-		public override FontInfo Font {
-			get { return null; }
-		}
-
-		/// <summary>
-		/// Gets or sets the height of the Web server control.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="T:System.Web.UI.WebControls.Unit"/> that represents the height of the control. The default is <see cref="F:System.Web.UI.WebControls.Unit.Empty"/>.
-		/// </returns>
-		/// <exception cref="T:System.ArgumentException">
-		/// The height was set to a negative value.
-		/// </exception>
-		[Obsolete, Browsable(false), Bindable(false)]
-		public override Unit Height {
-			get { return Unit.Empty; }
-			set { throw new NotSupportedException(); }
-		}
-
-		/// <summary>
-		/// Gets or sets the width of the Web server control.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="T:System.Web.UI.WebControls.Unit"/> that represents the width of the control. The default is <see cref="F:System.Web.UI.WebControls.Unit.Empty"/>.
-		/// </returns>
-		/// <exception cref="T:System.ArgumentException">
-		/// The width of the Web server control was set to a negative value.
-		/// </exception>
-		[Obsolete, Browsable(false), Bindable(false)]
-		public override Unit Width {
-			get { return Unit.Empty; }
-			set { throw new NotSupportedException(); }
-		}
-
-		/// <summary>
-		/// Gets or sets the text displayed when the mouse pointer hovers over the Web server control.
-		/// </summary>
-		/// <returns>
-		/// The text displayed when the mouse pointer hovers over the Web server control. The default is <see cref="F:System.String.Empty"/>.
-		/// </returns>
-		[Obsolete, Browsable(false), Bindable(false)]
-		public override string ToolTip {
-			get { return string.Empty; }
-			set { throw new NotSupportedException(); }
-		}
-
-		/// <summary>
-		/// Gets or sets the skin to apply to the control.
-		/// </summary>
-		/// <returns>
-		/// The name of the skin to apply to the control. The default is <see cref="F:System.String.Empty"/>.
-		/// </returns>
-		/// <exception cref="T:System.ArgumentException">
-		/// The skin specified in the <see cref="P:System.Web.UI.WebControls.WebControl.SkinID"/> property does not exist in the theme.
-		/// </exception>
-		[Obsolete, Browsable(false), Bindable(false)]
-		public override string SkinID {
-			get { return string.Empty; }
-			set { throw new NotSupportedException(); }
-		}
-
-		/// <summary>
-		/// Gets or sets a value indicating whether themes apply to this control.
-		/// </summary>
-		/// <returns>true to use themes; otherwise, false. The default is false.
-		/// </returns>
-		[Obsolete, Browsable(false), Bindable(false)]
-		public override bool EnableTheming {
-			get { return false; }
-			set { throw new NotSupportedException(); }
-		}
-
-		#endregion
-
-		/// <summary>
-		/// Gets the <see cref="TextBox"/> control that this control wraps.
-		/// </summary>
-		protected TextBox WrappedTextBox {
-			get { return this.wrappedTextBox; }
-		}
-
-		/// <summary>
-		/// Gets or sets a value indicating whether the text box should 
-		/// receive input focus when the web page appears.
-		/// </summary>
-		protected bool ShouldBeFocused { get; set; }
-
 		/// <summary>
 		/// Gets or sets the OpenID authentication request that is about to be sent.
 		/// </summary>
 		protected IAuthenticationRequest Request { get; set; }
 
 		/// <summary>
-		/// Sets the input focus to start on the text box when the page appears
-		/// in the user's browser.
+		/// Immediately redirects to the OpenID Provider to verify the Identifier
+		/// provided in the text box.
 		/// </summary>
-		public override void Focus() {
-			if (Controls.Count == 0) {
-				this.ShouldBeFocused = true;
-			} else {
-				this.WrappedTextBox.Focus();
+		public void LogOn() {
+			if (this.Request == null) {
+				this.CreateRequest(); // sets this.Request
+			}
+
+			if (this.Request != null) {
+				this.Request.RedirectToProvider();
 			}
 		}
 
@@ -912,51 +592,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Immediately redirects to the OpenID Provider to verify the Identifier
-		/// provided in the text box.
-		/// </summary>
-		public void LogOn() {
-			if (this.Request == null) {
-				this.CreateRequest(); // sets this.Request
-			}
-
-			if (this.Request != null) {
-				this.Request.RedirectToProvider();
-			}
-		}
-
-		/// <summary>
-		/// Creates the text box control.
-		/// </summary>
-		protected override void CreateChildControls() {
-			base.CreateChildControls();
-
-			this.Controls.Add(this.wrappedTextBox);
-			if (this.ShouldBeFocused) {
-				this.WrappedTextBox.Focus();
-			}
-		}
-
-		/// <summary>
-		/// Initializes the text box control.
-		/// </summary>
-		protected virtual void InitializeControls() {
-			this.wrappedTextBox = new TextBox();
-			this.wrappedTextBox.ID = "wrappedTextBox";
-			this.wrappedTextBox.CssClass = CssClassDefault;
-			this.wrappedTextBox.Columns = ColumnsDefault;
-			this.wrappedTextBox.Text = this.text;
-			this.wrappedTextBox.TabIndex = TabIndexDefault;
-		}
-
-		/// <summary>
 		/// Checks for incoming OpenID authentication responses and fires appropriate events.
 		/// </summary>
 		/// <param name="e">The <see cref="T:System.EventArgs"/> object that contains the event data.</param>
 		protected override void OnLoad(EventArgs e) {
 			base.OnLoad(e);
 
-			if (!Enabled || Page.IsPostBack) {
+			if (Page.IsPostBack) {
 				return;
 			}
 
@@ -985,30 +627,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					default:
 						throw new InvalidOperationException("Unexpected response status code.");
 				}
-			}
-		}
-
-		/// <summary>
-		/// Prepares the text box to be rendered.
-		/// </summary>
-		/// <param name="e">An <see cref="T:System.EventArgs"/> object that contains the event data.</param>
-		protected override void OnPreRender(EventArgs e) {
-			base.OnPreRender(e);
-
-			if (this.ShowLogo) {
-				string logoUrl = Page.ClientScript.GetWebResourceUrl(
-					typeof(OpenIdTextBox), EmbeddedLogoResourceName);
-				this.WrappedTextBox.Style[HtmlTextWriterStyle.BackgroundImage] = string.Format(
-					CultureInfo.InvariantCulture, "url({0})", HttpUtility.HtmlEncode(logoUrl));
-				this.WrappedTextBox.Style["background-repeat"] = "no-repeat";
-				this.WrappedTextBox.Style["background-position"] = "0 50%";
-				this.WrappedTextBox.Style[HtmlTextWriterStyle.PaddingLeft] = "18px";
-			}
-
-			if (this.PresetBorder) {
-				this.WrappedTextBox.Style[HtmlTextWriterStyle.BorderStyle] = "solid";
-				this.WrappedTextBox.Style[HtmlTextWriterStyle.BorderWidth] = "1px";
-				this.WrappedTextBox.Style[HtmlTextWriterStyle.BorderColor] = "lightgray";
 			}
 		}
 

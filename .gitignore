@@ -8,3 +8,7 @@ drops
 StyleCop.Cache
 *.LDF
 *~
+PrecompiledWeb
+*.suo
+*.cache
+*.user
