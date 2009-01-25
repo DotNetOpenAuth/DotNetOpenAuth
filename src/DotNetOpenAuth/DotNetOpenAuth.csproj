@@ -212,6 +212,8 @@
     <Compile Include="OpenId\Extensions\SimpleRegistration\DemandLevel.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\Gender.cs" />
     <Compile Include="OpenId\Identifier.cs" />
+    <Compile Include="OpenId\Interop\AuthenticationResponseShim.cs" />
+    <Compile Include="OpenId\Interop\OpenIdRelyingPartyShim.cs" />
     <Compile Include="OpenId\Messages\CheckAuthenticationRequest.cs" />
     <Compile Include="OpenId\Messages\CheckAuthenticationResponse.cs" />
     <Compile Include="OpenId\Messages\CheckIdRequest.cs" />
