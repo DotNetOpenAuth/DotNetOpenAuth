@@ -147,6 +147,7 @@ namespace DotNetOpenAuth.Messaging {
 			// Now read and cache the network stream
 			Stream networkStream = response.GetResponseStream();
 			MemoryStream cachedStream = new MemoryStream(response.ContentLength < 0 ? 4 * 1024 : Math.Min((int)response.ContentLength, maximumBytesToRead));
+			networkStream.CopyTo(cachedStream);
 			cachedStream.Seek(0, SeekOrigin.Begin);
 
 			networkStream.Dispose();
