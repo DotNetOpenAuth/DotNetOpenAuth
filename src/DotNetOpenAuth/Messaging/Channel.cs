@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Cache;
 	using System.Text;
 	using System.Threading;
 	using System.Web;
@@ -71,6 +72,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// A list of binding elements in the order they must be applied to incoming messages.
 		/// </summary>
 		private List<IChannelBindingElement> incomingBindingElements = new List<IChannelBindingElement>();
+
+		/// <summary>
+		/// Backing store for the <see cref="CachePolicy"/> property.
+		/// </summary>
+		private RequestCachePolicy cachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Channel"/> class.
@@ -136,6 +142,21 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		protected IMessageFactory MessageFactory {
 			get { return this.messageTypeProvider; }
+		}
+
+		/// <summary>
+		/// Gets or sets the cache policy to use for direct message requests.
+		/// </summary>
+		/// <value>Default is <see cref="HttpRequestCacheLevel.NoCacheNoStore"/>.</value>
+		protected RequestCachePolicy CachePolicy {
+			get {
+				return this.cachePolicy;
+			}
+
+			set {
+				ErrorUtilities.VerifyArgumentNotNull(value, "value");
+				this.cachePolicy = value;
+			}
 		}
 
 		/// <summary>
@@ -645,6 +666,7 @@ namespace DotNetOpenAuth.Messaging {
 			var fields = serializer.Serialize(requestMessage);
 
 			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(requestMessage.Recipient);
+			httpRequest.CachePolicy = this.CachePolicy;
 			httpRequest.Method = "POST";
 			httpRequest.ContentType = "application/x-www-form-urlencoded";
 			httpRequest.Headers[HttpRequestHeader.ContentEncoding] = PostEntityEncoding.WebName;
