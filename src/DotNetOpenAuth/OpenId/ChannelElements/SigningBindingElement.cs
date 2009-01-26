@@ -245,7 +245,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			MessageDictionary dictionary = new MessageDictionary(signedMessage);
 			var parametersToSign = from name in signedMessage.SignedParameterOrder.Split(',')
 			                       let prefixedName = Protocol.V20.openid.Prefix + name
-			                       select new KeyValuePair<string, string>(prefixedName, dictionary[prefixedName]);
+			                       select new KeyValuePair<string, string>(name, dictionary[prefixedName]);
 
 			byte[] dataToSign = KeyValueFormEncoding.GetBytes(parametersToSign);
 			string signature = Convert.ToBase64String(association.Sign(dataToSign));
