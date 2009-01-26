@@ -179,7 +179,10 @@ namespace DotNetOpenAuth.OpenId {
 			associationType = null;
 			sessionType = null;
 
-			IEnumerable<HmacSha> preferredOrder = highSecurityIsBetter ? hmacShaAssociationTypes : hmacShaAssociationTypes.Reverse();
+			// We use AsEnumerable() to avoid VerificationException (http://stackoverflow.com/questions/478422/why-does-simple-array-and-linq-generate-verificationexception-operation-could-de)
+			IEnumerable<HmacSha> preferredOrder = highSecurityIsBetter ? 
+				hmacShaAssociationTypes.AsEnumerable() : hmacShaAssociationTypes.Reverse();
+
 			foreach (HmacSha sha in preferredOrder) {
 				int hashSizeInBits = sha.SecretLength * 8;
 				if (hashSizeInBits > securityRequirements.MaximumHashBitLength ||
