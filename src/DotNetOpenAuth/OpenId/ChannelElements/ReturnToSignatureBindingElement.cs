@@ -172,7 +172,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				sortedReturnToParameters.Add(pair.Key, pair.Value);
 			}
 
-			Logger.DebugFormat("ReturnTo signed data: {0}", sortedReturnToParameters.ToStringDeferred());
+			Logger.DebugFormat("ReturnTo signed data: {0}{1}", Environment.NewLine, sortedReturnToParameters.ToStringDeferred());
 
 			// Sign the parameters.
 			byte[] bytesToSign = KeyValueFormEncoding.GetBytes(sortedReturnToParameters);

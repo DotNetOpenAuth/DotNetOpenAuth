@@ -404,6 +404,8 @@ namespace DotNetOpenAuth.Messaging {
 		protected virtual IDirectedProtocolMessage ReadFromRequestInternal(HttpRequestInfo request) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
+			Logger.DebugFormat("Incoming HTTP request: {0}", request.Url.AbsoluteUri);
+
 			// Search Form data first, and if nothing is there search the QueryString
 			var fields = request.Form.ToDictionary();
 			if (fields.Count == 0) {
@@ -593,6 +595,15 @@ namespace DotNetOpenAuth.Messaging {
 
 			EnsureValidMessageParts(message);
 			message.EnsureValidMessage();
+
+			if (Logger.IsDebugEnabled) {
+				Logger.DebugFormat(
+					"Sending {0} ({1}) message: {2}{3}",
+					message.GetType().Name,
+					message.Version,
+					Environment.NewLine,
+					new MessageDictionary(message).ToStringDeferred());
+			}
 		}
 
 		/// <summary>
@@ -656,7 +667,14 @@ namespace DotNetOpenAuth.Messaging {
 		protected virtual void VerifyMessageAfterReceiving(IProtocolMessage message) {
 			Debug.Assert(message != null, "message == null");
 
-			Logger.DebugFormat("Preparing to receive {0} ({1}) message.", message.GetType().Name, message.Version);
+			if (Logger.IsDebugEnabled) {
+				Logger.DebugFormat(
+					"Preparing to receive {0} ({1}) message:{2}{3}",
+					message.GetType().Name,
+					message.Version,
+					Environment.NewLine,
+					new MessageDictionary(message).ToStringDeferred());
+			}
 
 			MessageProtections appliedProtection = MessageProtections.None;
 			foreach (IChannelBindingElement bindingElement in this.incomingBindingElements) {
