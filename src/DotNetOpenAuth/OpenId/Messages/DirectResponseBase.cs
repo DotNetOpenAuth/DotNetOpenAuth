@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// recipients to properly interpret the request. 
 		/// </remarks>
 		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Read by reflection.")]
-		[MessagePart("ns", IsRequired = true, AllowEmpty = false)]
+		[MessagePart("ns", IsRequired = true, AllowEmpty = false, MinVersion = "2.0")]
 #pragma warning disable 0414 // read by reflection
 		private readonly string OpenIdNamespace = Protocol.OpenId2Namespace;
 #pragma warning restore 0414

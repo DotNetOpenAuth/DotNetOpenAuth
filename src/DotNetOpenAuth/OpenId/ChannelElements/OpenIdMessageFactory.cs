@@ -110,7 +110,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 			var associateRequest = request as AssociateRequest;
 			if (associateRequest != null) {
-				if (fields.ContainsKey(protocol.openidnp.error_code)) {
+				if (protocol.Version.Major >= 2 && fields.ContainsKey(protocol.openidnp.error_code)) {
 					message = new AssociateUnsuccessfulResponse(associateRequest);
 				} else {
 					var associateDiffieHellmanRequest = request as AssociateDiffieHellmanRequest;
