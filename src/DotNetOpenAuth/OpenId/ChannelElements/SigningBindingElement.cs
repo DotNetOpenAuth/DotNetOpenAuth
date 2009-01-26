@@ -301,7 +301,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					// Since we have an association handle, we're either signing with a smart association,
 					// or verifying a dumb one.
 					bool signing = string.IsNullOrEmpty(signedMessage.Signature);
-					ErrorUtilities.VerifyInternal(signing == (signedMessage is PositiveAssertionResponse), "Ooops... somehow we think we're signing a message that isn't a positive assertion!");
+					ErrorUtilities.VerifyInternal(signing == (signedMessage is IndirectSignedResponse), "Ooops... somehow we think we're signing a message that isn't a signed response!");
 					AssociationRelyingPartyType type = signing ? AssociationRelyingPartyType.Smart : AssociationRelyingPartyType.Dumb;
 					association = this.opAssociations.GetAssociation(type, signedMessage.AssociationHandle);
 					if (association == null) {
