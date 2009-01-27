@@ -199,7 +199,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		internal static void VerifyArgumentInRange(bool condition, string parameterName, string message, params object[] args) {
 			if (!condition) {
-				throw new ArgumentOutOfRangeException(parameterName, string.Format(message, args));
+				throw new ArgumentOutOfRangeException(parameterName, string.Format(CultureInfo.CurrentCulture, message, args));
 			}
 		}
 

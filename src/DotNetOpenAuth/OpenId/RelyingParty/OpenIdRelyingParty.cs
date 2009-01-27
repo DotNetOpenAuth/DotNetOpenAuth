@@ -313,7 +313,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>The processed authentication response if there is any; <c>null</c> otherwise.</returns>
 		public IAuthenticationResponse GetResponse(HttpRequestInfo httpRequestInfo) {
 			try {
-				var message = this.Channel.ReadFromRequest();
+				var message = this.Channel.ReadFromRequest(httpRequestInfo);
 				PositiveAssertionResponse positiveAssertion;
 				NegativeAssertionResponse negativeAssertion;
 				if ((positiveAssertion = message as PositiveAssertionResponse) != null) {
@@ -427,7 +427,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// Trim off any parameters with an "openid." prefix, and a few known others
 			// to avoid carrying state from a prior login attempt.
 			returnTo.Query = string.Empty;
-			NameValueCollection queryParams = MessagingUtilities.GetQueryFromContextNVC();
+			NameValueCollection queryParams = MessagingUtilities.GetQueryFromContext();
 			var returnToParams = new Dictionary<string, string>(queryParams.Count);
 			foreach (string key in queryParams) {
 				if (!IsOpenIdSupportingParameter(key)) {

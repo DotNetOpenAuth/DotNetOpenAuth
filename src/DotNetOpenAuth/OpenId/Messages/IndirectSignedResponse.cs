@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
 	using System.Diagnostics;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Globalization;
 	using System.Linq;
 	using System.Net.Security;
@@ -248,6 +249,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </list>
 		/// </value>
 		/// <example>2005-05-15T17:11:51ZUNIQUE</example>
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by messaging framework via reflection.")]
 		[MessagePart("openid.response_nonce", IsRequired = true, AllowEmpty = false, RequiredProtection = ProtectionLevel.Sign, MinVersion = "2.0")]
 		private string ResponseNonce {
 			get {
@@ -359,6 +361,21 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		}
 
 		/// <summary>
+		/// Determines whether one querystring contains every key=value pair that
+		/// another querystring contains.
+		/// </summary>
+		/// <param name="superset">The querystring that should contain at least all the key=value pairs of the other.</param>
+		/// <param name="subset">The querystring containing the set of key=value pairs to test for in the other.</param>
+		/// <returns>
+		/// 	<c>true</c> if <paramref name="superset"/> contains all the query parameters that <paramref name="subset"/> does; <c>false</c> otherwise.
+		/// </returns>
+		private static bool IsQuerySubsetOf(string superset, string subset) {
+			NameValueCollection subsetArgs = HttpUtility.ParseQueryString(subset);
+			NameValueCollection supersetArgs = HttpUtility.ParseQueryString(superset);
+			return subsetArgs.Keys.Cast<string>().All(key => string.Equals(subsetArgs[key], supersetArgs[key], StringComparison.Ordinal));
+		}
+
+		/// <summary>
 		/// Verifies that the openid.return_to field matches the URL of the actual HTTP request.
 		/// </summary>
 		/// <remarks>
@@ -373,26 +390,11 @@ namespace DotNetOpenAuth.OpenId.Messages {
 				string.Equals(this.Recipient.Scheme, this.ReturnTo.Scheme, StringComparison.OrdinalIgnoreCase) &&
 				string.Equals(this.Recipient.Authority, this.ReturnTo.Authority, StringComparison.OrdinalIgnoreCase) &&
 				string.Equals(this.Recipient.AbsolutePath, this.ReturnTo.AbsolutePath, StringComparison.Ordinal) &&
-				this.IsQuerySubsetOf(this.Recipient.Query, this.ReturnTo.Query),
+				IsQuerySubsetOf(this.Recipient.Query, this.ReturnTo.Query),
 				OpenIdStrings.ReturnToParamDoesNotMatchRequestUrl,
 				Protocol.openid.return_to,
 				this.ReturnTo,
 				this.Recipient);
-		}
-
-		/// <summary>
-		/// Determines whether one querystring contains every key=value pair that
-		/// another querystring contains.
-		/// </summary>
-		/// <param name="superset">The querystring that should contain at least all the key=value pairs of the other.</param>
-		/// <param name="subset">The querystring containing the set of key=value pairs to test for in the other.</param>
-		/// <returns>
-		/// 	<c>true</c> if <paramref name="superset"/> contains all the query parameters that <paramref name="subset"/> does; <c>false</c> otherwise.
-		/// </returns>
-		private bool IsQuerySubsetOf(string superset, string subset) {
-			NameValueCollection subsetArgs = HttpUtility.ParseQueryString(subset);
-			NameValueCollection supersetArgs = HttpUtility.ParseQueryString(superset);
-			return subsetArgs.Keys.Cast<string>().All(key => string.Equals(subsetArgs[key], supersetArgs[key], StringComparison.Ordinal));
 		}
 	}
 }

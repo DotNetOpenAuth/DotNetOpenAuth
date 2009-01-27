@@ -20,13 +20,13 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// The name of the callback parameter that stores the Provider Endpoint URL
 		/// to tack onto the return_to URI.
 		/// </summary>
-		private static readonly string ProviderEndpointParameterName = "dnoi.op_endpoint";
+		private const string ProviderEndpointParameterName = "dnoi.op_endpoint";
 
 		/// <summary>
 		/// The name of the callback parameter that stores the Claimed Identifier
 		/// to tack onto the return_to URI.
 		/// </summary>
-		private static readonly string ClaimedIdentifierParameterName = "dnoi.claimed_id";
+		private const string ClaimedIdentifierParameterName = "dnoi.claimed_id";
 
 		#region IChannelBindingElement Members
 
@@ -95,7 +95,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		public bool PrepareMessageForReceiving(IProtocolMessage message) {
 			IndirectSignedResponse response = message as IndirectSignedResponse;
 			if (response != null && response.Version.Major < 2) {
-				var dictionary = new MessageDictionary(response);
 				var protocol = Protocol.Lookup(response.Version);
 
 				// Although GetReturnToArgument may return null if the parameters are not signed,

@@ -274,6 +274,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Gets or sets the OpenID <see cref="Realm"/> of the relying party web site.
 		/// </summary>
 		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri", Justification = "Using Uri.ctor for validation.")]
+		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenAuth.OpenId", Justification = "Using ctor for validation.")]
 		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "Bindable property must be simple type")]
 		[Bindable(true), DefaultValue(RealmUrlDefault), Category(BehaviorCategory)]
 		[Description("The OpenID Realm of the relying party web site.")]

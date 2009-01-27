@@ -109,7 +109,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="page">The hosting page that has the realm value to resolve.</param>
 		/// <param name="realm">The realm, which may begin with "*." or "~/".</param>
 		/// <returns>The fully-qualified realm.</returns>
-		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenId.Realm", Justification = "Using Uri ctor for validation.")]
+		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenAuth.OpenId.Realm", Justification = "Using ctor for validation.")]
 		internal static UriBuilder GetResolvedRealm(Page page, string realm) {
 			ErrorUtilities.VerifyArgumentNotNull(page, "page");
 

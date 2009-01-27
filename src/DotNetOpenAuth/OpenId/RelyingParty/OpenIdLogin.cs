@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Web.UI;
 	using System.Web.UI.HtmlControls;
 	using System.Web.UI.WebControls;
+	using System.Globalization;
 
 	/// <summary>
 	/// An ASP.NET control providing a complete OpenID login experience.
@@ -458,6 +459,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets or sets the starting tab index to distribute across the controls.
 		/// </summary>
+		[SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "value+1")]
+		[SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "value+2")]
+		[SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "value+3")]
 		public override short TabIndex {
 			get {
 				return base.TabIndex;
@@ -715,7 +719,7 @@ idselector_input_id = '" + WrappedTextBox.ClientID + @"';
 			base.OnFailed(response);
 
 			if (!string.IsNullOrEmpty(this.FailedMessageText)) {
-				this.errorLabel.Text = string.Format(this.FailedMessageText, response.Exception.Message);
+				this.errorLabel.Text = string.Format(CultureInfo.CurrentCulture, this.FailedMessageText, response.Exception.Message);
 				this.errorLabel.Visible = true;
 			}
 		}

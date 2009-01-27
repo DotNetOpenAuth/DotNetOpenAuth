@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Globalization;
 	using System.Linq;
 	using System.Net.Security;
 	using DotNetOpenAuth.Loggers;
@@ -105,7 +106,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				Association association = this.GetAssociation(signedMessage);
 				signedMessage.AssociationHandle = association.Handle;
 				signedMessage.SignedParameterOrder = this.GetSignedParameterOrder(signedMessage);
-				signedMessage.Signature = this.GetSignature(signedMessage, association);
+				signedMessage.Signature = GetSignature(signedMessage, association);
 				return true;
 			}
 
@@ -134,7 +135,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 				Association association = this.GetSpecificAssociation(signedMessage);
 				if (association != null) {
-					string signature = this.GetSignature(signedMessage, association);
+					string signature = GetSignature(signedMessage, association);
 					if (!string.Equals(signedMessage.Signature, signature, StringComparison.Ordinal)) {
 						Logger.Error("Signature verification failed.");
 						throw new InvalidSignatureException(message);
@@ -190,6 +191,41 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		}
 
 		/// <summary>
+		/// Calculates the signature for a given message.
+		/// </summary>
+		/// <param name="signedMessage">The message to sign or verify.</param>
+		/// <param name="association">The association to use to sign the message.</param>
+		/// <returns>The calculated signature of the method.</returns>
+		private static string GetSignature(ITamperResistantOpenIdMessage signedMessage, Association association) {
+			ErrorUtilities.VerifyArgumentNotNull(signedMessage, "signedMessage");
+			ErrorUtilities.VerifyNonZeroLength(signedMessage.SignedParameterOrder, "signedMessage.SignedParameterOrder");
+			ErrorUtilities.VerifyArgumentNotNull(association, "association");
+
+			// Prepare the parts to sign, taking care to replace an openid.mode value
+			// of check_authentication with its original id_res so the signature matches.
+			Protocol protocol = Protocol.Lookup(signedMessage.Version);
+			MessageDictionary dictionary = new MessageDictionary(signedMessage);
+			var parametersToSign = from name in signedMessage.SignedParameterOrder.Split(',')
+								   let prefixedName = Protocol.V20.openid.Prefix + name
+								   select new KeyValuePair<string, string>(name, dictionary[prefixedName]);
+
+			byte[] dataToSign = KeyValueFormEncoding.GetBytes(parametersToSign);
+			string signature = Convert.ToBase64String(association.Sign(dataToSign));
+
+			if (signingLogger.IsDebugEnabled) {
+				signingLogger.DebugFormat(
+					CultureInfo.InvariantCulture,
+					"Signing these message parts: {0}{1}{0}Base64 representation of signed data: {2}{0}Signature: {3}",
+					Environment.NewLine,
+					parametersToSign.ToStringDeferred(),
+					Convert.ToBase64String(dataToSign),
+					signature);
+			}
+
+			return signature;
+		}
+
+		/// <summary>
 		/// Gets the value to use for the openid.signed parameter.
 		/// </summary>
 		/// <param name="signedMessage">The signable message.</param>
@@ -229,40 +265,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		}
 
 		/// <summary>
-		/// Calculates the signature for a given message.
-		/// </summary>
-		/// <param name="signedMessage">The message to sign or verify.</param>
-		/// <param name="association">The association to use to sign the message.</param>
-		/// <returns>The calculated signature of the method.</returns>
-		private string GetSignature(ITamperResistantOpenIdMessage signedMessage, Association association) {
-			ErrorUtilities.VerifyArgumentNotNull(signedMessage, "signedMessage");
-			ErrorUtilities.VerifyNonZeroLength(signedMessage.SignedParameterOrder, "signedMessage.SignedParameterOrder");
-			ErrorUtilities.VerifyArgumentNotNull(association, "association");
-
-			// Prepare the parts to sign, taking care to replace an openid.mode value
-			// of check_authentication with its original id_res so the signature matches.
-			Protocol protocol = Protocol.Lookup(signedMessage.Version);
-			MessageDictionary dictionary = new MessageDictionary(signedMessage);
-			var parametersToSign = from name in signedMessage.SignedParameterOrder.Split(',')
-			                       let prefixedName = Protocol.V20.openid.Prefix + name
-			                       select new KeyValuePair<string, string>(name, dictionary[prefixedName]);
-
-			byte[] dataToSign = KeyValueFormEncoding.GetBytes(parametersToSign);
-			string signature = Convert.ToBase64String(association.Sign(dataToSign));
-
-			if (signingLogger.IsDebugEnabled) {
-				signingLogger.DebugFormat(
-					"Signing these message parts: {0}{1}{0}Base64 representation of signed data: {2}{0}Signature: {3}",
-					Environment.NewLine,
-					parametersToSign.ToStringDeferred(),
-					Convert.ToBase64String(dataToSign),
-					signature);
-			}
-
-			return signature;
-		}
-
-		/// <summary>
 		/// Gets the association to use to sign or verify a message.
 		/// </summary>
 		/// <param name="signedMessage">The message to sign or verify.</param>
@@ -297,11 +299,12 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			Association association = null;
 
 			if (!string.IsNullOrEmpty(signedMessage.AssociationHandle)) {
+				IndirectSignedResponse indirectSignedMessage = signedMessage as IndirectSignedResponse;
 				if (this.IsOnProvider) {
 					// Since we have an association handle, we're either signing with a smart association,
 					// or verifying a dumb one.
 					bool signing = string.IsNullOrEmpty(signedMessage.Signature);
-					ErrorUtilities.VerifyInternal(signing == (signedMessage is IndirectSignedResponse), "Ooops... somehow we think we're signing a message that isn't a signed response!");
+					ErrorUtilities.VerifyInternal(signing == (indirectSignedMessage != null), "Ooops... somehow we think we're signing a message that isn't a signed response!");
 					AssociationRelyingPartyType type = signing ? AssociationRelyingPartyType.Smart : AssociationRelyingPartyType.Dumb;
 					association = this.opAssociations.GetAssociation(type, signedMessage.AssociationHandle);
 					if (association == null) {
@@ -311,7 +314,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 						signedMessage.AssociationHandle = null;
 					}
 				} else if (this.rpAssociations != null) { // if on a smart RP
-					Uri providerEndpoint = ((IndirectSignedResponse)signedMessage).ProviderEndpoint;
+					Uri providerEndpoint = indirectSignedMessage.ProviderEndpoint;
 					association = this.rpAssociations.GetAssociation(providerEndpoint, signedMessage.AssociationHandle);
 				}
 			}

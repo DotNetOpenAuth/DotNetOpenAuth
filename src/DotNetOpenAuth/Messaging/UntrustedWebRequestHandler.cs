@@ -269,25 +269,24 @@ namespace DotNetOpenAuth.Messaging {
 		#endregion
 
 		/// <summary>
-		/// Determines whether a given host is whitelisted.
+		/// Determines whether an IP address is the IPv6 equivalent of "localhost/127.0.0.1".
 		/// </summary>
-		/// <param name="host">The host name to test.</param>
+		/// <param name="ip">The ip address to check.</param>
 		/// <returns>
-		/// 	<c>true</c> if the host is whitelisted; otherwise, <c>false</c>.
+		/// 	<c>true</c> if this is a loopback IP address; <c>false</c> otherwise.
 		/// </returns>
-		private bool IsHostWhitelisted(string host) {
-			return this.IsHostInList(host, this.WhitelistHosts, this.WhitelistHostsRegex);
-		}
-
-		/// <summary>
-		/// Determines whether a given host is blacklisted.
-		/// </summary>
-		/// <param name="host">The host name to test.</param>
-		/// <returns>
-		/// 	<c>true</c> if the host is blacklisted; otherwise, <c>false</c>.
-		/// </returns>
-		private bool IsHostBlacklisted(string host) {
-			return this.IsHostInList(host, this.BlacklistHosts, this.BlacklistHostsRegex);
+		private static bool IsIPv6Loopback(IPAddress ip) {
+			ErrorUtilities.VerifyArgumentNotNull(ip, "ip");
+			byte[] addressBytes = ip.GetAddressBytes();
+			for (int i = 0; i < addressBytes.Length - 1; i++) {
+				if (addressBytes[i] != 0) {
+					return false;
+				}
+			}
+			if (addressBytes[addressBytes.Length - 1] != 1) {
+				return false;
+			}
+			return true;
 		}
 
 		/// <summary>
@@ -299,7 +298,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>
 		/// 	<c>true</c> if the specified host falls within at least one of the given lists; otherwise, <c>false</c>.
 		/// </returns>
-		private bool IsHostInList(string host, ICollection<string> stringList, ICollection<Regex> regexList) {
+		private static bool IsHostInList(string host, ICollection<string> stringList, ICollection<Regex> regexList) {
 			ErrorUtilities.VerifyNonZeroLength(host, "host");
 			ErrorUtilities.VerifyArgumentNotNull(stringList, "stringList");
 			ErrorUtilities.VerifyArgumentNotNull(regexList, "regexList");
@@ -314,6 +313,28 @@ namespace DotNetOpenAuth.Messaging {
 				}
 			}
 			return false;
+		}
+
+		/// <summary>
+		/// Determines whether a given host is whitelisted.
+		/// </summary>
+		/// <param name="host">The host name to test.</param>
+		/// <returns>
+		/// 	<c>true</c> if the host is whitelisted; otherwise, <c>false</c>.
+		/// </returns>
+		private bool IsHostWhitelisted(string host) {
+			return IsHostInList(host, this.WhitelistHosts, this.WhitelistHostsRegex);
+		}
+
+		/// <summary>
+		/// Determines whether a given host is blacklisted.
+		/// </summary>
+		/// <param name="host">The host name to test.</param>
+		/// <returns>
+		/// 	<c>true</c> if the host is blacklisted; otherwise, <c>false</c>.
+		/// </returns>
+		private bool IsHostBlacklisted(string host) {
+			return IsHostInList(host, this.BlacklistHosts, this.BlacklistHostsRegex);
 		}
 
 		/// <summary>
@@ -369,7 +390,7 @@ namespace DotNetOpenAuth.Messaging {
 						}
 						break;
 					case System.Net.Sockets.AddressFamily.InterNetworkV6:
-						if (this.IsIPv6Loopback(hostIPAddress)) {
+						if (IsIPv6Loopback(hostIPAddress)) {
 							return failsUnlessWhitelisted("it is a loopback address.");
 						}
 						break;
@@ -385,27 +406,6 @@ namespace DotNetOpenAuth.Messaging {
 			}
 			if (this.IsHostBlacklisted(uri.DnsSafeHost)) {
 				Logger.WarnFormat("Rejected URL {0} because it is blacklisted.", uri);
-				return false;
-			}
-			return true;
-		}
-
-		/// <summary>
-		/// Determines whether an IP address is the IPv6 equivalent of "localhost/127.0.0.1".
-		/// </summary>
-		/// <param name="ip">The ip address to check.</param>
-		/// <returns>
-		/// 	<c>true</c> if this is a loopback IP address; <c>false</c> otherwise.
-		/// </returns>
-		private bool IsIPv6Loopback(IPAddress ip) {
-			ErrorUtilities.VerifyArgumentNotNull(ip, "ip");
-			byte[] addressBytes = ip.GetAddressBytes();
-			for (int i = 0; i < addressBytes.Length - 1; i++) {
-				if (addressBytes[i] != 0) {
-					return false;
-				}
-			}
-			if (addressBytes[addressBytes.Length - 1] != 1) {
 				return false;
 			}
 			return true;

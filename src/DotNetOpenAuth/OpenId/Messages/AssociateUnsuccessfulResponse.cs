@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Globalization;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -33,7 +34,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="originatingRequest">The originating request.</param>
 		internal AssociateUnsuccessfulResponse(AssociateRequest originatingRequest)
 			: base(originatingRequest) {
-			this.ErrorMessage = string.Format(OpenIdStrings.AssociationOrSessionTypeUnrecognizedOrNotSupported, originatingRequest.AssociationType, originatingRequest.SessionType);
+			this.ErrorMessage = string.Format(CultureInfo.CurrentCulture, OpenIdStrings.AssociationOrSessionTypeUnrecognizedOrNotSupported, originatingRequest.AssociationType, originatingRequest.SessionType);
 		}
 
 		/// <summary>

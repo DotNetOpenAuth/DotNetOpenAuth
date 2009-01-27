@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.OAuth {
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
+	using System.Diagnostics.CodeAnalysis;
 
 	/// <summary>
 	/// A web application that allows access via OAuth.
@@ -227,6 +228,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// The message to send to the Consumer using <see cref="Channel"/> if one is necessary.
 		/// Null if the Consumer did not request a callback.
 		/// </returns>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Consistent user experience with instance.")]
 		public UserAuthorizationResponse PrepareAuthorizationResponse(UserAuthorizationRequest request) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 

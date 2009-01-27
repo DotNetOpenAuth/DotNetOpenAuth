@@ -370,6 +370,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Gets or sets the OpenID <see cref="Realm"/> of the relying party web site.
 		/// </summary>
 		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri", Justification = "Using Uri.ctor for validation.")]
+		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenAuth.OpenId.Realm", Justification = "Using ctor for validation.")]
 		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "Bindable property must be simple type")]
 		[Bindable(true), DefaultValue(RealmUrlDefault), Category(BehaviorCategory)]
 		[Description("The OpenID Realm of the relying party web site.")]
@@ -399,19 +400,20 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets or sets the OpenID ReturnTo of the relying party web site.
 		/// </summary>
+		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
 		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri", Justification = "Using Uri.ctor for validation.")]
 		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "Bindable property must be simple type")]
 		[Bindable(true), DefaultValue(ReturnToUrlDefault), Category(BehaviorCategory)]
 		[Description("The OpenID ReturnTo of the relying party web site.")]
 		public string ReturnToUrl {
 			get {
-				return (string)(ViewState[ReturnToUrlViewStateKey] ?? ReturnToUrlDefault);
+				return (string)(this.ViewState[ReturnToUrlViewStateKey] ?? ReturnToUrlDefault);
 			}
 
 			set {
-				if (Page != null && !DesignMode) {
+				if (this.Page != null && !this.DesignMode) {
 					// Validate new value by trying to construct a Uri based on it.
-					new Uri(MessagingUtilities.GetRequestUrlFromContext(), Page.ResolveUrl(value)); // throws an exception on failure.
+					new Uri(MessagingUtilities.GetRequestUrlFromContext(), this.Page.ResolveUrl(value)); // throws an exception on failure.
 				} else {
 					// We can't fully test it, but it should start with either ~/ or a protocol.
 					if (Regex.IsMatch(value, @"^https?://")) {
@@ -423,7 +425,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					}
 				}
 
-				ViewState[ReturnToUrlViewStateKey] = value;
+				this.ViewState[ReturnToUrlViewStateKey] = value;
 			}
 		}
 
@@ -689,7 +691,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>
 		/// A <see cref="T:System.Drawing.Color"/> that represents the foreground color of the control. The default is <see cref="F:System.Drawing.Color.Empty"/>.
 		/// </returns>
-		[Obsolete, Browsable(false), Bindable(false)]
+		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
 		public override System.Drawing.Color ForeColor {
 			get { throw new NotSupportedException(); }
 			set { throw new NotSupportedException(); }
@@ -701,7 +703,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>
 		/// A <see cref="T:System.Drawing.Color"/> that represents the background color of the control. The default is <see cref="F:System.Drawing.Color.Empty"/>, which indicates that this property is not set.
 		/// </returns>
-		[Obsolete, Browsable(false), Bindable(false)]
+		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
 		public override System.Drawing.Color BackColor {
 			get { throw new NotSupportedException(); }
 			set { throw new NotSupportedException(); }
@@ -713,7 +715,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>
 		/// A <see cref="T:System.Drawing.Color"/> that represents the border color of the control. The default is <see cref="F:System.Drawing.Color.Empty"/>, which indicates that this property is not set.
 		/// </returns>
-		[Obsolete, Browsable(false), Bindable(false)]
+		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
 		public override System.Drawing.Color BorderColor {
 			get { throw new NotSupportedException(); }
 			set { throw new NotSupportedException(); }
@@ -728,7 +730,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <exception cref="T:System.ArgumentException">
 		/// The specified border width is a negative value.
 		/// </exception>
-		[Obsolete, Browsable(false), Bindable(false)]
+		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
 		public override Unit BorderWidth {
 			get { return Unit.Empty; }
 			set { throw new NotSupportedException(); }
@@ -740,7 +742,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>
 		/// One of the <see cref="T:System.Web.UI.WebControls.BorderStyle"/> enumeration values. The default is NotSet.
 		/// </returns>
-		[Obsolete, Browsable(false), Bindable(false)]
+		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
 		public override BorderStyle BorderStyle {
 			get { return BorderStyle.None; }
 			set { throw new NotSupportedException(); }
@@ -752,7 +754,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>
 		/// A <see cref="T:System.Web.UI.WebControls.FontInfo"/> that represents the font properties of the Web server control.
 		/// </returns>
-		[Obsolete, Browsable(false), Bindable(false)]
+		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
 		public override FontInfo Font {
 			get { return null; }
 		}
@@ -766,7 +768,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <exception cref="T:System.ArgumentException">
 		/// The height was set to a negative value.
 		/// </exception>
-		[Obsolete, Browsable(false), Bindable(false)]
+		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
 		public override Unit Height {
 			get { return Unit.Empty; }
 			set { throw new NotSupportedException(); }
@@ -781,7 +783,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <exception cref="T:System.ArgumentException">
 		/// The width of the Web server control was set to a negative value.
 		/// </exception>
-		[Obsolete, Browsable(false), Bindable(false)]
+		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
 		public override Unit Width {
 			get { return Unit.Empty; }
 			set { throw new NotSupportedException(); }
@@ -793,7 +795,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>
 		/// The text displayed when the mouse pointer hovers over the Web server control. The default is <see cref="F:System.String.Empty"/>.
 		/// </returns>
-		[Obsolete, Browsable(false), Bindable(false)]
+		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
 		public override string ToolTip {
 			get { return string.Empty; }
 			set { throw new NotSupportedException(); }
@@ -808,7 +810,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <exception cref="T:System.ArgumentException">
 		/// The skin specified in the <see cref="P:System.Web.UI.WebControls.WebControl.SkinID"/> property does not exist in the theme.
 		/// </exception>
-		[Obsolete, Browsable(false), Bindable(false)]
+		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
 		public override string SkinID {
 			get { return string.Empty; }
 			set { throw new NotSupportedException(); }
@@ -819,7 +821,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <returns>true to use themes; otherwise, false. The default is false.
 		/// </returns>
-		[Obsolete, Browsable(false), Bindable(false)]
+		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
 		public override bool EnableTheming {
 			get { return false; }
 			set { throw new NotSupportedException(); }

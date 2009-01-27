@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Globalization;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -108,6 +109,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 		/// example classifications of authentication methods within the defined 
 		/// levels.
 		/// </remarks>
+		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Nist", Justification = "Acronym")]
 		public NistAssuranceLevel? NistAssuranceLevel {
 			get {
 				string levelString;

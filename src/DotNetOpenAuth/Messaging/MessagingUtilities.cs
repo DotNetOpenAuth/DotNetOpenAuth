@@ -51,6 +51,9 @@ namespace DotNetOpenAuth.Messaging {
 			{ "=", @"\x3d" },
 		};
 
+		/// <summary>
+		/// HTTP headers that must be copied using their proper properties instead of directly.
+		/// </summary>
 		private static readonly string[] HeadersToNotCopy = new string[] { "Host", "Connection" };
 
 		/// <summary>
@@ -78,7 +81,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets the query data from the original request (before any URL rewriting has occurred.)
 		/// </summary>
 		/// <returns>A <see cref="NameValueCollection"/> containing all the parameters in the query string.</returns>
-		public static NameValueCollection GetQueryFromContextNVC() {
+		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Expensive call")]
+		public static NameValueCollection GetQueryFromContext() {
 			ErrorUtilities.VerifyHttpContext();
 
 			HttpRequest request = HttpContext.Current.Request;
@@ -99,12 +103,13 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets the query or form data from the original request (before any URL rewriting has occurred.)
 		/// </summary>
 		/// <returns>A set of name=value pairs.</returns>
+		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Expensive call")]
 		public static NameValueCollection GetQueryOrFormFromContext() {
 			ErrorUtilities.VerifyHttpContext();
 			HttpRequest request = HttpContext.Current.Request;
 			NameValueCollection query;
 			if (request.RequestType == "GET") {
-				query = GetQueryFromContextNVC();
+				query = GetQueryFromContext();
 			} else {
 				query = request.Form;
 			}

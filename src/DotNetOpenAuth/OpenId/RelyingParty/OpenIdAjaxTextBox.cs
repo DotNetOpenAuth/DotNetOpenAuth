@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// </summary>
 	[DefaultProperty("Text"), ValidationProperty("Text")]
 	[ToolboxData("<{0}:OpenIdAjaxTextBox runat=\"server\" />")]
-	public class OpenIdAjaxTextBox : WebControl, ICallbackEventHandler {
+	public sealed class OpenIdAjaxTextBox : WebControl, ICallbackEventHandler {
 		/// <summary>
 		/// The name of the manifest stream containing the OpenIdAjaxTextBox.js file.
 		/// </summary>
@@ -567,7 +567,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Gets or sets the OpenID <see cref="Realm"/> of the relying party web site.
 		/// </summary>
 		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri", Justification = "Using Uri.ctor for validation.")]
-		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenId.Realm", Justification = "Using ctor for validation.")]
+		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenAuth.OpenId.Realm", Justification = "Using ctor for validation.")]
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Property grid on form designer only supports primitive types.")]
 		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "Property grid on form designer only supports primitive types.")]
 		[Bindable(true)]
@@ -640,7 +640,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>
 		/// A <see cref="T:System.Drawing.Color"/> that represents the foreground color of the control. The default is <see cref="F:System.Drawing.Color.Empty"/>.
 		/// </returns>
-		[Obsolete, Browsable(false), Bindable(false)]
+		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
 		public override System.Drawing.Color ForeColor {
 			get { throw new NotSupportedException(); }
 			set { throw new NotSupportedException(); }
@@ -652,7 +652,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>
 		/// A <see cref="T:System.Drawing.Color"/> that represents the background color of the control. The default is <see cref="F:System.Drawing.Color.Empty"/>, which indicates that this property is not set.
 		/// </returns>
-		[Obsolete, Browsable(false), Bindable(false)]
+		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
 		public override System.Drawing.Color BackColor {
 			get { throw new NotSupportedException(); }
 			set { throw new NotSupportedException(); }
@@ -664,7 +664,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>
 		/// A <see cref="T:System.Drawing.Color"/> that represents the border color of the control. The default is <see cref="F:System.Drawing.Color.Empty"/>, which indicates that this property is not set.
 		/// </returns>
-		[Obsolete, Browsable(false), Bindable(false)]
+		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
 		public override System.Drawing.Color BorderColor {
 			get { throw new NotSupportedException(); }
 			set { throw new NotSupportedException(); }
@@ -679,7 +679,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <exception cref="T:System.ArgumentException">
 		/// The specified border width is a negative value.
 		/// </exception>
-		[Obsolete, Browsable(false), Bindable(false)]
+		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
 		public override Unit BorderWidth {
 			get { return Unit.Empty; }
 			set { throw new NotSupportedException(); }
@@ -691,7 +691,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>
 		/// One of the <see cref="T:System.Web.UI.WebControls.BorderStyle"/> enumeration values. The default is NotSet.
 		/// </returns>
-		[Obsolete, Browsable(false), Bindable(false)]
+		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
 		public override BorderStyle BorderStyle {
 			get { return BorderStyle.None; }
 			set { throw new NotSupportedException(); }
@@ -703,7 +703,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>
 		/// A <see cref="T:System.Web.UI.WebControls.FontInfo"/> that represents the font properties of the Web server control.
 		/// </returns>
-		[Obsolete, Browsable(false), Bindable(false)]
+		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
 		public override FontInfo Font {
 			get { return null; }
 		}
@@ -717,7 +717,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <exception cref="T:System.ArgumentException">
 		/// The height was set to a negative value.
 		/// </exception>
-		[Obsolete, Browsable(false), Bindable(false)]
+		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
 		public override Unit Height {
 			get { return Unit.Empty; }
 			set { throw new NotSupportedException(); }
@@ -732,7 +732,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <exception cref="T:System.ArgumentException">
 		/// The width of the Web server control was set to a negative value.
 		/// </exception>
-		[Obsolete, Browsable(false), Bindable(false)]
+		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
 		public override Unit Width {
 			get { return Unit.Empty; }
 			set { throw new NotSupportedException(); }
@@ -744,7 +744,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>
 		/// The text displayed when the mouse pointer hovers over the Web server control. The default is <see cref="F:System.String.Empty"/>.
 		/// </returns>
-		[Obsolete, Browsable(false), Bindable(false)]
+		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
 		public override string ToolTip {
 			get { return string.Empty; }
 			set { throw new NotSupportedException(); }
@@ -759,7 +759,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <exception cref="T:System.ArgumentException">
 		/// The skin specified in the <see cref="P:System.Web.UI.WebControls.WebControl.SkinID"/> property does not exist in the theme.
 		/// </exception>
-		[Obsolete, Browsable(false), Bindable(false)]
+		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
 		public override string SkinID {
 			get { return string.Empty; }
 			set { throw new NotSupportedException(); }
@@ -770,7 +770,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <returns>true to use themes; otherwise, false. The default is false.
 		/// </returns>
-		[Obsolete, Browsable(false), Bindable(false)]
+		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
 		public override bool EnableTheming {
 			get { return false; }
 			set { throw new NotSupportedException(); }
@@ -902,38 +902,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#endregion
 
 		/// <summary>
-		/// Fires the <see cref="LoggingIn"/> event.
-		/// </summary>
-		/// <param name="request">The request.</param>
-		protected virtual void OnLoggingIn(IAuthenticationRequest request) {
-			var loggingIn = this.LoggingIn;
-			if (loggingIn != null) {
-				loggingIn(this, new OpenIdEventArgs(request));
-			}
-		}
-
-		/// <summary>
-		/// Fires the <see cref="UnconfirmedPositiveAssertion"/> event.
-		/// </summary>
-		protected virtual void OnUnconfirmedPositiveAssertion() {
-			var unconfirmedPositiveAssertion = this.UnconfirmedPositiveAssertion;
-			if (unconfirmedPositiveAssertion != null) {
-				unconfirmedPositiveAssertion(this, null);
-			}
-		}
-
-		/// <summary>
-		/// Fires the <see cref="LoggedIn"/> event.
-		/// </summary>
-		/// <param name="response">The response.</param>
-		protected virtual void OnLoggedIn(IAuthenticationResponse response) {
-			var loggedIn = this.LoggedIn;
-			if (loggedIn != null) {
-				loggedIn(this, new OpenIdEventArgs(response));
-			}
-		}
-
-		/// <summary>
 		/// Prepares the control for loading.
 		/// </summary>
 		/// <param name="e">The <see cref="T:System.EventArgs"/> object that contains the event data.</param>
@@ -1049,6 +1017,38 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>The newly instantiated relying party.</returns>
 		private static OpenIdRelyingParty CreateRelyingParty(bool verifySignature) {
 			return verifySignature ? new OpenIdRelyingParty() : OpenIdRelyingParty.CreateNonVerifying();
+		}
+
+		/// <summary>
+		/// Fires the <see cref="LoggingIn"/> event.
+		/// </summary>
+		/// <param name="request">The request.</param>
+		private void OnLoggingIn(IAuthenticationRequest request) {
+			var loggingIn = this.LoggingIn;
+			if (loggingIn != null) {
+				loggingIn(this, new OpenIdEventArgs(request));
+			}
+		}
+
+		/// <summary>
+		/// Fires the <see cref="UnconfirmedPositiveAssertion"/> event.
+		/// </summary>
+		private void OnUnconfirmedPositiveAssertion() {
+			var unconfirmedPositiveAssertion = this.UnconfirmedPositiveAssertion;
+			if (unconfirmedPositiveAssertion != null) {
+				unconfirmedPositiveAssertion(this, null);
+			}
+		}
+
+		/// <summary>
+		/// Fires the <see cref="LoggedIn"/> event.
+		/// </summary>
+		/// <param name="response">The response.</param>
+		private void OnLoggedIn(IAuthenticationResponse response) {
+			var loggedIn = this.LoggedIn;
+			if (loggedIn != null) {
+				loggedIn(this, new OpenIdEventArgs(response));
+			}
 		}
 
 		/// <summary>

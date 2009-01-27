@@ -43,6 +43,7 @@ namespace DotNetOpenAuth {
 	/// An ASP.NET control that advertises an XRDS document and even responds to specially
 	/// crafted requests to retrieve it.
 	/// </summary>
+	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Xrds", Justification = "Correct spelling")]
 	[DefaultProperty("XrdsLocation")]
 	[ToolboxData("<{0}:XrdsPublisher runat=server></{0}:XrdsPublisher>")]
 	public class XrdsPublisher : Control {

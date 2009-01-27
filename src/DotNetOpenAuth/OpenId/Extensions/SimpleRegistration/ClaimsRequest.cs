@@ -118,6 +118,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		/// Gets or sets the value of the sreg.required parameter.
 		/// </summary>
 		/// <value>A comma-delimited list of sreg fields.</value>
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by messaging framework via reflection.")]
 		[MessagePart(Constants.required, AllowEmpty = true)]
 		private string RequiredList {
 			get { return string.Join(",", this.AssembleProfileFields(DemandLevel.Require)); }
@@ -128,6 +129,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		/// Gets or sets the value of the sreg.optional parameter.
 		/// </summary>
 		/// <value>A comma-delimited list of sreg fields.</value>
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by messaging framework via reflection.")]
 		[MessagePart(Constants.optional, AllowEmpty = true)]
 		private string OptionalList {
 			get { return string.Join(",", this.AssembleProfileFields(DemandLevel.Request)); }
@@ -241,6 +243,7 @@ TimeZone = '{8}'";
 		/// the OpenId specification for field names, omitting the 'openid.sreg' prefix.
 		/// </param>
 		/// <param name="requestLevel">The none/request/require state of the listed fields.</param>
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by messaging framework via reflection.")]
 		private void SetProfileRequestFromList(ICollection<string> fieldNames, DemandLevel requestLevel) {
 			foreach (string field in fieldNames) {
 				switch (field) {
@@ -283,6 +286,7 @@ TimeZone = '{8}'";
 		/// </summary>
 		/// <param name="level">The demand level (request, require, none).</param>
 		/// <returns>An array of the profile parameter names that meet the criteria.</returns>
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by messaging framework via reflection.")]
 		private string[] AssembleProfileFields(DemandLevel level) {
 			List<string> fields = new List<string>(10);
 			if (this.Nickname == level) {

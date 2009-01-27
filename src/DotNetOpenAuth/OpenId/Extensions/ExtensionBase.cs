@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// Gets the TypeURI the extension uses in the OpenID protocol and in XRDS advertisements.
 		/// </summary>
 		string IOpenIdMessageExtension.TypeUri {
-			get { return this.typeUri; }
+			get { return this.TypeUri; }
 		}
 
 		/// <summary>
@@ -68,12 +68,12 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// The <see cref="SimpleRegistration.ClaimsRequest.CreateResponse"/> for an example.
 		/// </remarks>
 		IEnumerable<string> IOpenIdMessageExtension.AdditionalSupportedTypeUris {
-			get { return this.additionalSupportedTypeUris; }
+			get { return this.AdditionalSupportedTypeUris; }
 		}
 
 		#endregion
 
-		#region IMessage Members
+		#region IMessage Properties
 
 		/// <summary>
 		/// Gets the version of the protocol or extension this message is prepared to implement.
@@ -87,8 +87,50 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// Implementations of this interface should ensure that this property never returns null.
 		/// </remarks>
 		IDictionary<string, string> IMessage.ExtraData {
+			get { return this.ExtraData; }
+		}
+
+		#endregion
+
+		/// <summary>
+		/// Gets the TypeURI the extension uses in the OpenID protocol and in XRDS advertisements.
+		/// </summary>
+		protected string TypeUri {
+			get { return this.typeUri; }
+		}
+		
+		/// <summary>
+		/// Gets the additional TypeURIs that are supported by this extension, in preferred order.
+		/// May be empty if none other than <see cref="IOpenIdMessageExtension.TypeUri"/> is supported, but
+		/// should not be null.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>
+		/// Useful for reading in messages with an older version of an extension.
+		/// The value in the <see cref="IOpenIdMessageExtension.TypeUri"/> property is always checked before
+		/// trying this list.
+		/// If you do support multiple versions of an extension using this method,
+		/// consider adding a CreateResponse method to your request extension class
+		/// so that the response can have the context it needs to remain compatible
+		/// given the version of the extension in the request message.
+		/// The <see cref="Extensions.SimpleRegistration.ClaimsRequest.CreateResponse"/> for an example.
+		/// </remarks>
+		protected IEnumerable<string> AdditionalSupportedTypeUris {
+			get { return this.additionalSupportedTypeUris; }
+		}
+
+		/// <summary>
+		/// Gets the extra, non-standard Protocol parameters included in the message.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>
+		/// Implementations of this interface should ensure that this property never returns null.
+		/// </remarks>
+		protected IDictionary<string, string> ExtraData {
 			get { return this.extraData; }
 		}
+
+		#region IMessage Methods
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification

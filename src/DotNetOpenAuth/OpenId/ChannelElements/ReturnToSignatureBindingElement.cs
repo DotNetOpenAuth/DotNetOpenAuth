@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// due to its required order in the channel stack and that it doesn't sign
 	/// anything except a particular message part.</para>
 	/// </remarks>
-	internal class ReturnToSignatureBindingElement : IChannelBindingElement {
+	internal class ReturnToSignatureBindingElement : IChannelBindingElement, IDisposable {
 		/// <summary>
 		/// The optimal length for a private secret used for signing using the HMACSHA256 class.
 		/// </summary>
@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// The name of the callback parameter we'll tack onto the return_to value
 		/// to store our signature on the return_to parameter.
 		/// </summary>
-		private static readonly string ReturnToSignatureParameterName = "dnoi.return_to_sig";
+		private const string ReturnToSignatureParameterName = "dnoi.return_to_sig";
 
 		/// <summary>
 		/// The hashing algorithm used to generate the private signature on the return_to parameter.
@@ -143,6 +143,31 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			}
 
 			return false;
+		}
+
+		#endregion
+
+		#region IDisposable Members
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		public void Dispose() {
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		protected virtual void Dispose(bool disposing) {
+			if (disposing) {
+				IDisposable hasher = this.signingHasher as IDisposable;
+				if (hasher != null) {
+					hasher.Dispose();
+				}
+			}
 		}
 
 		#endregion

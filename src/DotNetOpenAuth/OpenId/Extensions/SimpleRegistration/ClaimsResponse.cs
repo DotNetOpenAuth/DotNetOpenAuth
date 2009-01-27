@@ -48,11 +48,6 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		private DateTime? birthDate;
 
 		/// <summary>
-		/// The TypeURI that must be used in the response, based on the one used in the request.
-		/// </summary>
-		private string typeUriToUse;
-
-		/// <summary>
 		/// Backing field for the <see cref="Culture"/> property.
 		/// </summary>
 		private CultureInfo culture;
@@ -74,7 +69,6 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		internal ClaimsResponse(string typeUriToUse)
 			: base(new Version(1, 0), typeUriToUse, EmptyList<string>.Instance) {
 			ErrorUtilities.VerifyNonZeroLength(typeUriToUse, "typeUriToUse");
-			this.typeUriToUse = typeUriToUse;
 		}
 
 		/// <summary>

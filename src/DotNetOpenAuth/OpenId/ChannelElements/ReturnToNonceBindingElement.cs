@@ -29,12 +29,12 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// The parameter of the callback parameter we tack onto the return_to URL
 		/// to store the replay-detection nonce.
 		/// </summary>
-		private static readonly string NonceParameter = "dnoi.request_nonce";
+		private const string NonceParameter = "dnoi.request_nonce";
 
 		/// <summary>
 		/// The length of the generated nonce's random part.
 		/// </summary>
-		private static readonly int NonceByteLength = 128 / 8; // 128-bit nonce
+		private const int NonceByteLength = 128 / 8; // 128-bit nonce
 
 		/// <summary>
 		/// The nonce store that will allow us to recall which nonces we've seen before.
