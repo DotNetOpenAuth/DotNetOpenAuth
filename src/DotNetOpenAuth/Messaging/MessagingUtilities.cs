@@ -51,6 +51,8 @@ namespace DotNetOpenAuth.Messaging {
 			{ "=", @"\x3d" },
 		};
 
+		private static readonly string[] HeadersToNotCopy = new string[] { "Host", "Connection" };
+
 		/// <summary>
 		/// Gets the original request URL, as seen from the browser before any URL rewrites on the server if any.
 		/// Cookieless session directory (if applicable) is also included.
@@ -299,7 +301,7 @@ namespace DotNetOpenAuth.Messaging {
 			// of setting these properties, so as to avoid exceptions thrown because 
 			// there are properties .NET wants us to use rather than direct headers.
 			foreach (string header in request.Headers) {
-				if (string.IsNullOrEmpty(newRequest.Headers[header])) {
+				if (!HeadersToNotCopy.Contains(header) && string.IsNullOrEmpty(newRequest.Headers[header])) {
 					newRequest.Headers.Add(header, request.Headers[header]);
 				}
 			}
