@@ -113,7 +113,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// This defaults to a straightforward implementation, but can be set
 		/// to a mock object for testing purposes.
 		/// </remarks>
-		public IDirectWebRequestHandler WebRequestHandler { get; set; }
+		public virtual IDirectWebRequestHandler WebRequestHandler { get; set; }
 
 		/// <summary>
 		/// Gets the binding elements used by this channel, in no particular guaranteed order.

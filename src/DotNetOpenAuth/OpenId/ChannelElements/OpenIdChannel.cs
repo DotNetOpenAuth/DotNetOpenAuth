@@ -117,6 +117,30 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			this.WebRequestHandler = new UntrustedWebRequestHandler();
 		}
 
+		public override IDirectWebRequestHandler WebRequestHandler {
+			get {
+				// Unwrap the handler we were originally assigned.
+				var wrappedHandler = (Accept400ErrorDirectWebRequestHandlerWrapper) base.WebRequestHandler;
+				return wrappedHandler.WrappedHandler;
+			}
+			set {
+				if (value == null) {
+					base.WebRequestHandler = null;
+				}
+
+				// Wrap the handler with one that can injest HTTP 400 errors.
+				IDirectWebRequestHandler wrappedHandler;
+				IDirectSslWebRequestHandler sslHandler = value as IDirectSslWebRequestHandler;
+				if (sslHandler != null) {
+					wrappedHandler = new Accept400ErrorDirectSslWebRequestHandlerWrapper(sslHandler);
+				} else {
+					wrappedHandler = new Accept400ErrorDirectWebRequestHandlerWrapper(value);
+				}
+
+				base.WebRequestHandler = wrappedHandler;
+			}
+		}
+
 		/// <summary>
 		/// Gets the extension factory that can be used to register OpenID extensions.
 		/// </summary>
