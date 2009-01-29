@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			base.SetUp();
 
 			this.protocol = Protocol.V20;
-			this.request = new CheckIdRequest(this.protocol.Version, ProviderUri, AuthenticationRequestMode.Setup);
+			this.request = new CheckIdRequest(this.protocol.Version, OPUri, AuthenticationRequestMode.Setup);
 			this.request.ReturnTo = RPUri;
 			this.response = new PositiveAssertionResponse(this.request);
 
@@ -43,7 +43,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Assert.AreEqual(this.protocol.Args.Mode.id_res, this.response.Mode);
 			Assert.AreEqual(this.request.Version, this.response.Version);
 			Assert.AreEqual(this.request.ReturnTo, this.response.Recipient);
-			Assert.AreEqual(ProviderUri, this.response.ProviderEndpoint);
+			Assert.AreEqual(OPUri, this.response.ProviderEndpoint);
 		}
 
 		[TestMethod]
@@ -53,8 +53,8 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Assert.AreEqual(RPUri, this.unsolicited.Recipient);
 
 			Assert.IsNull(this.unsolicited.ProviderEndpoint);
-			this.unsolicited.ProviderEndpoint = ProviderUri;
-			Assert.AreEqual(ProviderUri, this.unsolicited.ProviderEndpoint);
+			this.unsolicited.ProviderEndpoint = OPUri;
+			Assert.AreEqual(OPUri, this.unsolicited.ProviderEndpoint);
 		}
 
 		/// <summary>

@@ -32,7 +32,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			this.factory = new OpenIdExtensionFactory();
 			this.factory.RegisterExtension(MockOpenIdExtension.Factory);
 			this.rpElement = new ExtensionsBindingElement(this.factory, new RelyingPartySecuritySettings());
-			this.request = new SignedResponseRequest(Protocol.Default.Version, OpenIdTestBase.ProviderUri, AuthenticationRequestMode.Immediate);
+			this.request = new SignedResponseRequest(Protocol.Default.Version, OpenIdTestBase.OPUri, AuthenticationRequestMode.Immediate);
 		}
 
 		[TestMethod]
@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// </summary>
 		[TestMethod]
 		public void PrepareMessageForSendingNonExtendableMessage() {
-			IProtocolMessage request = new AssociateDiffieHellmanRequest(Protocol.Default.Version, OpenIdTestBase.ProviderUri);
+			IProtocolMessage request = new AssociateDiffieHellmanRequest(Protocol.Default.Version, OpenIdTestBase.OPUri);
 			Assert.IsFalse(this.rpElement.PrepareMessageForSending(request));
 		}
 
@@ -178,7 +178,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			ErrorUtilities.VerifyArgumentNotNull(protocol, "protocol");
 
 			IndirectSignedResponse response = new IndirectSignedResponse(protocol.Version, RPUri);
-			response.ProviderEndpoint = ProviderUri;
+			response.ProviderEndpoint = OPUri;
 			response.Extensions.Add(new MockOpenIdExtension("pv", "ev"));
 			return response;
 		}

@@ -25,8 +25,8 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		[TestMethod]
 		public void CreateRequestDumbMode() {
 			var rp = new OpenIdRelyingParty(null);
-			Identifier id = this.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
-			var authReq = rp.CreateRequest(id, TestSupport.Realm, TestSupport.ReturnTo);
+			Identifier id = this.GetMockIdentifier(ProtocolVersion.V20);
+			var authReq = rp.CreateRequest(id, RPRealmUri, RPUri);
 			CheckIdRequest requestMessage = (CheckIdRequest)authReq.RedirectingResponse.OriginalMessage;
 			Assert.IsNull(requestMessage.AssociationHandle);
 		}
@@ -40,18 +40,18 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		[TestMethod]
 		public void CreateRequest() {
 			var rp = this.CreateRelyingParty();
-			TestSupport.StoreAssociation(rp, TestSupport.GetFullUrl("/" + TestSupport.ProviderPage), HmacShaAssociation.Create("somehandle", new byte[20], TimeSpan.FromDays(1)));
-			Identifier id = Identifier.Parse(GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20));
-			var req = rp.CreateRequest(id, TestSupport.Realm, TestSupport.ReturnTo);
+			StoreAssociation(rp, OPUri, HmacShaAssociation.Create("somehandle", new byte[20], TimeSpan.FromDays(1)));
+			Identifier id = Identifier.Parse(GetMockIdentifier(ProtocolVersion.V20));
+			var req = rp.CreateRequest(id, RPRealmUri, RPUri);
 			Assert.IsNotNull(req);
 		}
 
 		[TestMethod]
 		public void CreateRequests() {
 			var rp = this.CreateRelyingParty();
-			TestSupport.StoreAssociation(rp, TestSupport.GetFullUrl("/" + TestSupport.ProviderPage), HmacShaAssociation.Create("somehandle", new byte[20], TimeSpan.FromDays(1)));
-			Identifier id = Identifier.Parse(GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20));
-			var requests = rp.CreateRequests(id, TestSupport.Realm, TestSupport.ReturnTo);
+			StoreAssociation(rp, OPUri, HmacShaAssociation.Create("somehandle", new byte[20], TimeSpan.FromDays(1)));
+			Identifier id = Identifier.Parse(GetMockIdentifier(ProtocolVersion.V20));
+			var requests = rp.CreateRequests(id, RPRealmUri, RPUri);
 			Assert.AreEqual(1, requests.Count());
 		}
 
@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Uri nonOpenId = new Uri("http://www.microsoft.com/");
 			var rp = this.CreateRelyingParty();
 			this.MockResponder.RegisterMockResponse(nonOpenId, "text/html", "<html/>");
-			rp.CreateRequest(nonOpenId, TestSupport.Realm, TestSupport.ReturnTo);
+			rp.CreateRequest(nonOpenId, RPRealmUri, RPUri);
 		}
 
 		[TestMethod]
@@ -68,7 +68,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Uri nonOpenId = new Uri("http://www.microsoft.com/");
 			var rp = this.CreateRelyingParty();
 			this.MockResponder.RegisterMockResponse(nonOpenId, "text/html", "<html/>");
-			var requests = rp.CreateRequests(nonOpenId, TestSupport.Realm, TestSupport.ReturnTo);
+			var requests = rp.CreateRequests(nonOpenId, RPRealmUri, RPUri);
 			Assert.AreEqual(0, requests.Count());
 		}
 	}

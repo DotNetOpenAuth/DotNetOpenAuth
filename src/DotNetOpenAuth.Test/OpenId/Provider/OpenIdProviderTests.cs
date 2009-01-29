@@ -84,7 +84,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			HttpRequestInfo httpInfo = new HttpRequestInfo();
 			httpInfo.Url = new Uri("http://someUri");
 			Assert.IsNull(this.provider.GetRequest(httpInfo), "An irrelevant request should return null.");
-			var providerDescription = new ProviderEndpointDescription(OpenIdTestBase.ProviderUri, Protocol.Default.Version);
+			var providerDescription = new ProviderEndpointDescription(OpenIdTestBase.OPUri, Protocol.Default.Version);
 
 			// Test some non-empty request scenario.
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(

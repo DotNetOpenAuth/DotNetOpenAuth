@@ -19,8 +19,8 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 
 	[TestClass]
 	public class AuthenticationRequestTests : OpenIdTestBase {
-		private readonly Realm realm = new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri);
-		private readonly Uri returnTo = TestSupport.GetFullUrl(TestSupport.ConsumerPage);
+		private readonly Realm realm = new Realm("http://localhost/rp.aspx");
+		private readonly Uri returnTo = new Uri("http://localhost/rp.aspx");
 		private readonly Identifier claimedId = "http://claimedId";
 		private readonly Identifier delegatedLocalId = "http://localId";
 		private readonly Protocol protocol = Protocol.Default;
@@ -70,7 +70,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		public void CreateRequestMessage() {
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
 				rp => {
-					Identifier id = this.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20);
+					Identifier id = this.GetMockIdentifier(ProtocolVersion.V20);
 					IAuthenticationRequest authRequest = rp.CreateRequest(id, this.realm, this.returnTo);
 
 					// Add some callback arguments
@@ -97,7 +97,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 					Assert.AreEqual(1, req.Extensions.Count);
 					Assert.IsTrue(req.Extensions.Contains(sregRequest));
 				},
-				TestSupport.AutoProvider);
+				AutoProvider);
 			coordinator.Run();
 		}
 
@@ -108,7 +108,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		public void Provider() {
 			IAuthenticationRequest_Accessor authRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
 			Assert.IsNotNull(authRequest.Provider);
-			Assert.AreEqual(ProviderUri, authRequest.Provider.Uri);
+			Assert.AreEqual(OPUri, authRequest.Provider.Uri);
 			Assert.AreEqual(this.protocol.Version, authRequest.Provider.Version);
 		}
 
@@ -122,7 +122,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		}
 
 		private AuthenticationRequest_Accessor CreateAuthenticationRequest(Identifier claimedIdentifier, Identifier providerLocalIdentifier) {
-			ProviderEndpointDescription providerEndpoint = new ProviderEndpointDescription(ProviderUri, this.protocol.Version);
+			ProviderEndpointDescription providerEndpoint = new ProviderEndpointDescription(OPUri, this.protocol.Version);
 			ServiceEndpoint endpoint = ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, providerLocalIdentifier, providerEndpoint, 10, 5);
 			ServiceEndpoint_Accessor endpointAccessor = ServiceEndpoint_Accessor.AttachShadow(endpoint);
 			OpenIdRelyingParty rp = this.CreateRelyingParty();

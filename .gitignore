@@ -12,3 +12,7 @@ PrecompiledWeb
 *.suo
 *.cache
 *.user
+*.tmp
+*.ldf
+*.mdf
+*.swx

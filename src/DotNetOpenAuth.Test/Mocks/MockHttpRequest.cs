@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			if (!untrustedHandler.WhitelistHosts.Contains("localhost")) {
 				untrustedHandler.WhitelistHosts.Add("localhost");
 			}
-			untrustedHandler.WhitelistHosts.Add(OpenIdTestBase.ProviderUri.Host);
+			untrustedHandler.WhitelistHosts.Add(OpenIdTestBase.OPUri.Host);
 			MockHttpRequest mock = new MockHttpRequest(untrustedHandler);
 			testHandler.Callback = mock.GetMockResponse;
 			return mock;
@@ -141,14 +141,12 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		internal Identifier RegisterMockXrdsResponse(string embeddedResourcePath) {
-			UriIdentifier id = TestSupport.GetFullUrl(embeddedResourcePath);
-			this.RegisterMockResponse(id, "application/xrds+xml", TestSupport.LoadEmbeddedFile(embeddedResourcePath));
+			UriIdentifier id = new Uri(new Uri("http://localhost/"), embeddedResourcePath);
+			this.RegisterMockResponse(id, "application/xrds+xml", OpenIdTestBase.LoadEmbeddedFile(embeddedResourcePath));
 			return id;
 		}
 
 		internal void RegisterMockRPDiscovery() {
-			Uri rpRealmUri = TestSupport.Realm.UriWithWildcardChangedToWww;
-
 			string template = @"<xrds:XRDS xmlns:xrds='xri://$xrds' xmlns:openid='http://openid.net/xmlns/1.0' xmlns='xri://$xrd*($v*2.0)'>
 	<XRD>
 		<Service priority='10'>
@@ -157,9 +155,13 @@ namespace DotNetOpenAuth.Test.Mocks {
 		</Service>
 	</XRD>
 </xrds:XRDS>";
-			string xrds = string.Format(CultureInfo.InvariantCulture, template, HttpUtility.HtmlEncode(Protocol.V20.RPReturnToTypeURI), HttpUtility.HtmlEncode(rpRealmUri.AbsoluteUri));
+			string xrds = string.Format(
+				CultureInfo.InvariantCulture, 
+				template, 
+				HttpUtility.HtmlEncode(Protocol.V20.RPReturnToTypeURI),
+				HttpUtility.HtmlEncode(OpenIdTestBase.RPRealmUri.AbsoluteUri));
 
-			this.RegisterMockResponse(rpRealmUri, ContentTypes.Xrds, xrds);
+			this.RegisterMockResponse(OpenIdTestBase.RPRealmUri, ContentTypes.Xrds, xrds);
 		}
 
 		internal void DeleteResponse(Uri requestUri) {

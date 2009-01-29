@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Test {
+	using System.IO;
 	using System.Reflection;
 	using DotNetOpenAuth.OAuth.Messages;
 	using log4net;
@@ -15,9 +16,16 @@ namespace DotNetOpenAuth.Test {
 	/// </summary>
 	public class TestBase {
 		/// <summary>
-		/// The logger that tests should use.
+		/// The full path to the directory that contains the test ASP.NET site.
 		/// </summary>
-		internal static readonly ILog TestLogger = LogManager.GetLogger("DotNetOpenAuth.Test");
+		internal static readonly string TestWebDirectory = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\src\DotNetOpenAuth.TestWeb"));
+
+		/// <summary>
+		/// Gets the logger that tests should use.
+		/// </summary>
+		internal static ILog TestLogger {
+			get { return TestUtilities.TestLogger; }
+		}
 
 		/// <summary>
 		/// Gets or sets the test context which provides

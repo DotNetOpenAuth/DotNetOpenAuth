@@ -205,7 +205,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.IsFalse(se.IsExtensionSupported("http://someextension/typeuri"));
 
 			ProviderEndpointDescription ped = new ProviderEndpointDescription(
-				ProviderUri,
+				OPUri,
 				new[] { Protocol.V20.ClaimedIdentifierServiceTypeURI, "http://someextension", Constants.sreg_ns });
 			se = ServiceEndpoint.CreateForClaimedIdentifier(this.claimedXri, this.userSuppliedXri, this.localId, ped, this.servicePriority, this.uriPriority);
 			Assert.IsTrue(se.IsExtensionSupported<ClaimsRequest>());

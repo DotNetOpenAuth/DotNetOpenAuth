@@ -15,10 +15,10 @@ namespace DotNetOpenAuth.Test.Hosting {
 	using DotNetOpenAuth.Test.OpenId;
 
 	[TestClass]
-	public class HostingTests {
+	public class HostingTests : TestBase {
 		[TestMethod]
 		public void AspHostBasicTest() {
-			using (AspNetHost host = AspNetHost.CreateHost(TestSupport.TestWebDirectory)) {
+			using (AspNetHost host = AspNetHost.CreateHost(TestWebDirectory)) {
 				HttpWebRequest request = (HttpWebRequest)WebRequest.Create(host.BaseUri);
 				using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
 					Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);

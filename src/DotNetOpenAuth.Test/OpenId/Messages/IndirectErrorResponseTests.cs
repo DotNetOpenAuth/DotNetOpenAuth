@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 
 		[TestInitialize]
 		public void Setup() {
-			CheckIdRequest request = new CheckIdRequest(Protocol.V20.Version, ProviderUri, AuthenticationRequestMode.Immediate);
+			CheckIdRequest request = new CheckIdRequest(Protocol.V20.Version, OPUri, AuthenticationRequestMode.Immediate);
 			request.ReturnTo = RPUri;
 			this.response = new IndirectErrorResponse(request);
 		}

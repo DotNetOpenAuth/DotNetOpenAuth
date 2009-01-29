@@ -71,10 +71,10 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Association association = sharedAssociation ? HmacShaAssociation.Create(protocol, protocol.Args.SignatureAlgorithm.Best, AssociationRelyingPartyType.Smart, securitySettings) : null;
 			var coordinator = new OpenIdCoordinator(
 				rp => {
-					var request = new CheckIdRequest(protocol.Version, ProviderUri, AuthenticationRequestMode.Immediate);
+					var request = new CheckIdRequest(protocol.Version, OPUri, AuthenticationRequestMode.Immediate);
 
 					if (association != null) {
-						TestSupport.StoreAssociation(rp, ProviderUri, association);
+						StoreAssociation(rp, OPUri, association);
 						request.AssociationHandle = association.Handle;
 					}
 

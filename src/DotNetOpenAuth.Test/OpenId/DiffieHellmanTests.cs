@@ -24,7 +24,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		[TestMethod, Timeout(15000)]
 		public void TestPublic() {
-			TextReader reader = new StringReader(TestSupport.LoadEmbeddedFile("dhpriv.txt"));
+			TextReader reader = new StringReader(OpenIdTestBase.LoadEmbeddedFile("dhpriv.txt"));
 
 			try {
 				string line;

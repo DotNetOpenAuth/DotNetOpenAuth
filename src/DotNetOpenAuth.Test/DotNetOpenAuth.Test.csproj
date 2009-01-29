@@ -154,7 +154,6 @@
     <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyTests.cs" />
     <Compile Include="OpenId\RelyingParty\RelyingPartySecuritySettingsTests.cs" />
     <Compile Include="OpenId\RelyingParty\ServiceEndpointTests.cs" />
-    <Compile Include="OpenId\TestSupport.cs" />
     <Compile Include="OpenId\UriIdentifierTests.cs" />
     <Compile Include="OpenId\XriIdentifierTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

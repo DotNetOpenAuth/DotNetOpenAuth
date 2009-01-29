@@ -30,9 +30,9 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			store.StoreAssociation(AssociationRelyingPartyType.Smart, association);
 			SigningBindingElement signer = new SigningBindingElement(store, settings);
 
-			IndirectSignedResponse message = new IndirectSignedResponse(protocol.Version, RPUri);
+			IndirectSignedResponse message = new IndirectSignedResponse(protocol.Version, new Uri("http://rp"));
 			ITamperResistantOpenIdMessage signedMessage = message;
-			message.ProviderEndpoint = ProviderUri;
+			message.ProviderEndpoint = new Uri("http://provider");
 			signedMessage.UtcCreationDate = DateTime.Parse("1/1/2009");
 			signedMessage.AssociationHandle = association.Handle;
 			Assert.IsTrue(signer.PrepareMessageForSending(message));
@@ -48,7 +48,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			SigningBindingElement sbe = new SigningBindingElement(new AssociationMemoryStore<AssociationRelyingPartyType>(), new ProviderSecuritySettings());
 			IndirectSignedResponse response = new IndirectSignedResponse(protocol.Version, RPUri);
 			response.ReturnTo = RPUri;
-			response.ProviderEndpoint = ProviderUri;
+			response.ProviderEndpoint = OPUri;
 
 			response.ExtraData["someunsigned"] = "value";
 			response.ExtraData["openid.somesigned"] = "value";

@@ -24,14 +24,14 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 
 		[TestMethod]
 		public void Mode() {
-			var setupRequestV1 = new CheckIdRequest(Protocol.V10.Version, ProviderUri, AuthenticationRequestMode.Setup);
+			var setupRequestV1 = new CheckIdRequest(Protocol.V10.Version, OPUri, AuthenticationRequestMode.Setup);
 			setupRequestV1.ReturnTo = RPUri;
-			var immediateRequestV1 = new CheckIdRequest(Protocol.V10.Version, ProviderUri, AuthenticationRequestMode.Immediate);
+			var immediateRequestV1 = new CheckIdRequest(Protocol.V10.Version, OPUri, AuthenticationRequestMode.Immediate);
 			immediateRequestV1.ReturnTo = RPUri;
 
-			var setupRequestV2 = new CheckIdRequest(Protocol.V20.Version, ProviderUri, AuthenticationRequestMode.Setup);
+			var setupRequestV2 = new CheckIdRequest(Protocol.V20.Version, OPUri, AuthenticationRequestMode.Setup);
 			setupRequestV2.ReturnTo = RPUri;
-			var immediateRequestV2 = new CheckIdRequest(Protocol.V20.Version, ProviderUri, AuthenticationRequestMode.Immediate);
+			var immediateRequestV2 = new CheckIdRequest(Protocol.V20.Version, OPUri, AuthenticationRequestMode.Immediate);
 			immediateRequestV2.ReturnTo = RPUri;
 
 			Assert.AreEqual("id_res", new NegativeAssertionResponse(immediateRequestV1).Mode);
@@ -47,14 +47,14 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 
 		[TestMethod, ExpectedException(typeof(ProtocolException))]
 		public void UserSetupUrlRequiredInV1Immediate() {
-			var immediateRequestV1 = new CheckIdRequest(Protocol.V10.Version, ProviderUri, AuthenticationRequestMode.Immediate);
+			var immediateRequestV1 = new CheckIdRequest(Protocol.V10.Version, OPUri, AuthenticationRequestMode.Immediate);
 			immediateRequestV1.ReturnTo = RPUri;
 			new NegativeAssertionResponse(immediateRequestV1).EnsureValidMessage();
 		}
 
 		[TestMethod]
 		public void UserSetupUrlSetForV1Immediate() {
-			var immediateRequestV1 = new CheckIdRequest(Protocol.V10.Version, ProviderUri, AuthenticationRequestMode.Immediate);
+			var immediateRequestV1 = new CheckIdRequest(Protocol.V10.Version, OPUri, AuthenticationRequestMode.Immediate);
 			immediateRequestV1.ReturnTo = RPUri;
 			var response = new NegativeAssertionResponse(immediateRequestV1);
 			response.UserSetupUrl = new Uri("http://usersetup");
@@ -63,15 +63,15 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 
 		[TestMethod]
 		public void UserSetupUrlNotRequiredInV1SetupOrV2() {
-			var setupRequestV1 = new CheckIdRequest(Protocol.V10.Version, ProviderUri, AuthenticationRequestMode.Setup);
+			var setupRequestV1 = new CheckIdRequest(Protocol.V10.Version, OPUri, AuthenticationRequestMode.Setup);
 			setupRequestV1.ReturnTo = RPUri;
 			new NegativeAssertionResponse(setupRequestV1).EnsureValidMessage();
 
-			var setupRequestV2 = new CheckIdRequest(Protocol.V20.Version, ProviderUri, AuthenticationRequestMode.Setup);
+			var setupRequestV2 = new CheckIdRequest(Protocol.V20.Version, OPUri, AuthenticationRequestMode.Setup);
 			setupRequestV2.ReturnTo = RPUri;
 			new NegativeAssertionResponse(setupRequestV2).EnsureValidMessage();
 
-			var immediateRequestV2 = new CheckIdRequest(Protocol.V20.Version, ProviderUri, AuthenticationRequestMode.Immediate);
+			var immediateRequestV2 = new CheckIdRequest(Protocol.V20.Version, OPUri, AuthenticationRequestMode.Immediate);
 			immediateRequestV2.ReturnTo = RPUri;
 			new NegativeAssertionResponse(immediateRequestV2).EnsureValidMessage();
 		}

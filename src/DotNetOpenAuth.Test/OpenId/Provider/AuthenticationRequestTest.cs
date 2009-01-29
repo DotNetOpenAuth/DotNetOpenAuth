@@ -22,9 +22,9 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			// Construct a V1 immediate request
 			Protocol protocol = Protocol.V11;
 			OpenIdProvider provider = this.CreateProvider();
-			CheckIdRequest immediateRequest = new CheckIdRequest(protocol.Version, ProviderUri, DotNetOpenAuth.OpenId.RelyingParty.AuthenticationRequestMode.Immediate);
-			immediateRequest.Realm = TestSupport.Realm;
-			immediateRequest.ReturnTo = TestSupport.ReturnTo;
+			CheckIdRequest immediateRequest = new CheckIdRequest(protocol.Version, OPUri, DotNetOpenAuth.OpenId.RelyingParty.AuthenticationRequestMode.Immediate);
+			immediateRequest.Realm = RPRealmUri;
+			immediateRequest.ReturnTo = RPUri;
 			immediateRequest.LocalIdentifier = "http://somebody";
 			AuthenticationRequest request = new AuthenticationRequest(provider, immediateRequest);
 
@@ -50,9 +50,9 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		public void IsReturnUrlDiscoverable() {
 			Protocol protocol = Protocol.Default;
 			OpenIdProvider provider = this.CreateProvider();
-			CheckIdRequest checkIdRequest = new CheckIdRequest(protocol.Version, ProviderUri, DotNetOpenAuth.OpenId.RelyingParty.AuthenticationRequestMode.Setup);
-			checkIdRequest.Realm = TestSupport.Realm;
-			checkIdRequest.ReturnTo = TestSupport.ReturnTo;
+			CheckIdRequest checkIdRequest = new CheckIdRequest(protocol.Version, OPUri, DotNetOpenAuth.OpenId.RelyingParty.AuthenticationRequestMode.Setup);
+			checkIdRequest.Realm = RPRealmUri;
+			checkIdRequest.ReturnTo = RPUri;
 			AuthenticationRequest request = new AuthenticationRequest(provider, checkIdRequest);
 			Assert.IsFalse(request.IsReturnUrlDiscoverable);
 

@@ -84,7 +84,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			SecuritySettings securitySettings = new RelyingPartySecuritySettings();
 			securitySettings.MinimumHashBitLength = 160;
 			securitySettings.MaximumHashBitLength = 160;
-			ProviderEndpointDescription provider = new ProviderEndpointDescription(ProviderUri, protocol.Version);
+			ProviderEndpointDescription provider = new ProviderEndpointDescription(OPUri, protocol.Version);
 			Assert.AreEqual(AssociateRequest.Create(securitySettings, provider).AssociationType, protocol.Args.SignatureAlgorithm.HMAC_SHA1);
 
 			securitySettings.MinimumHashBitLength = 384;

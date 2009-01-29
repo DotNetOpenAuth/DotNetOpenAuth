@@ -15,8 +15,8 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 
 	[TestClass]
 	public class PositiveAuthenticationResponseTests : OpenIdTestBase {
-		private readonly Realm realm = new Realm(TestSupport.GetFullUrl(TestSupport.ConsumerPage).AbsoluteUri);
-		private readonly Uri returnTo = TestSupport.GetFullUrl(TestSupport.ConsumerPage);
+		private readonly Realm realm = new Realm("http://localhost/rp.aspx");
+		private readonly Uri returnTo = new Uri("http://localhost/rp.aspx");
 
 		[TestInitialize]
 		public override void SetUp() {
@@ -61,10 +61,10 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		private PositiveAssertionResponse GetPositiveAssertion() {
 			Protocol protocol = Protocol.Default;
 			PositiveAssertionResponse assertion = new PositiveAssertionResponse(protocol.Version, this.returnTo);
-			assertion.ClaimedIdentifier = TestSupport.GetMockIdentifier(TestSupport.Scenarios.AutoApproval, this.MockResponder, protocol.ProtocolVersion);
-			assertion.LocalIdentifier = TestSupport.GetDelegateUrl(TestSupport.Scenarios.AutoApproval);
+			assertion.ClaimedIdentifier = this.GetMockIdentifier(protocol.ProtocolVersion, false);
+			assertion.LocalIdentifier = OPLocalIdentifiers[0];
 			assertion.ReturnTo = this.returnTo;
-			assertion.ProviderEndpoint = TestSupport.GetFullUrl("/" + TestSupport.ProviderPage, null, false);
+			assertion.ProviderEndpoint = OPUri;
 			return assertion;
 		}
 	}

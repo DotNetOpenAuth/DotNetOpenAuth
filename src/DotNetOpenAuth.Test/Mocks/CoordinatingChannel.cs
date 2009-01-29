@@ -101,7 +101,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			lock (waitingForMessageCoordinationLock) {
 				this.simulationCompleted = true;
 				if (this.RemoteChannel.waitingForMessage && this.RemoteChannel.incomingMessage == null) {
-					TestSupport.Logger.Debug("CoordinatingChannel is closing while remote channel is waiting for an incoming message.  Signaling channel to unblock it to receive a null message.");
+					TestUtilities.TestLogger.Debug("CoordinatingChannel is closing while remote channel is waiting for an incoming message.  Signaling channel to unblock it to receive a null message.");
 					this.RemoteChannel.incomingMessageSignal.Set();
 				}
 			}

@@ -53,7 +53,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					Assert.AreEqual(request.AssociationType, response.AssociationType);
 					Assert.AreEqual(request.SessionType, response.SessionType);
 				},
-				TestSupport.AutoProvider);
+				AutoProvider);
 			coordinator.Run();
 		}
 
@@ -70,7 +70,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			// the OP and RP are behaving as expected.
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
 				rp => {
-					var opDescription = new ProviderEndpointDescription(ProviderUri, protocol.Version);
+					var opDescription = new ProviderEndpointDescription(OPUri, protocol.Version);
 					Association association = rp.AssociationManager.GetOrCreateAssociation(opDescription);
 					Assert.IsNotNull(association, "Association failed to be created.");
 					Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, association.GetAssociationType(protocol));
@@ -123,7 +123,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, response.AssociationType);
 					Assert.AreEqual(protocol.Args.SessionType.DH_SHA1, response.SessionType);
 				},
-				TestSupport.AutoProvider);
+				AutoProvider);
 			coordinator.Run();
 		}
 
@@ -135,7 +135,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Protocol protocol = Protocol.V20;
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
 				rp => {
-					var association = rp.AssociationManager.GetOrCreateAssociation(new ProviderEndpointDescription(ProviderUri, protocol.Version));
+					var association = rp.AssociationManager.GetOrCreateAssociation(new ProviderEndpointDescription(OPUri, protocol.Version));
 					Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
 				},
 				op => {
@@ -159,7 +159,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Protocol protocol = Protocol.V20;
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
 				rp => {
-					var association = rp.AssociationManager.GetOrCreateAssociation(new ProviderEndpointDescription(ProviderUri, protocol.Version));
+					var association = rp.AssociationManager.GetOrCreateAssociation(new ProviderEndpointDescription(OPUri, protocol.Version));
 					Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
 				},
 				op => {
@@ -184,7 +184,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Protocol protocol = Protocol.V20;
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
 				rp => {
-					var association = rp.AssociationManager.GetOrCreateAssociation(new ProviderEndpointDescription(ProviderUri, protocol.Version));
+					var association = rp.AssociationManager.GetOrCreateAssociation(new ProviderEndpointDescription(OPUri, protocol.Version));
 					Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
 				},
 				op => {
@@ -209,7 +209,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Protocol protocol = Protocol.V20;
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
 				rp => {
-					var association = rp.AssociationManager.GetOrCreateAssociation(new ProviderEndpointDescription(ProviderUri, protocol.Version));
+					var association = rp.AssociationManager.GetOrCreateAssociation(new ProviderEndpointDescription(OPUri, protocol.Version));
 					Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
 				},
 				op => {
@@ -243,12 +243,12 @@ namespace DotNetOpenAuth.Test.OpenId {
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
 				rp => {
 					rp.SecuritySettings.MinimumHashBitLength = 256;
-					var association = rp.AssociationManager.GetOrCreateAssociation(new ProviderEndpointDescription(ProviderUri, protocol.Version));
+					var association = rp.AssociationManager.GetOrCreateAssociation(new ProviderEndpointDescription(OPUri, protocol.Version));
 					Assert.IsNull(association, "No association should have been created when RP and OP could not agree on association strength.");
 				},
 				op => {
 					op.SecuritySettings.MaximumHashBitLength = 160;
-					TestSupport.AutoProvider(op);
+					AutoProvider(op);
 				});
 			coordinator.Run();
 		}
@@ -259,9 +259,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// </summary>
 		[TestMethod]
 		public void AssociateQuietlyFailsAfterHttpError() {
-			this.MockResponder.RegisterMockNotFound(ProviderUri);
+			this.MockResponder.RegisterMockNotFound(OPUri);
 			var rp = this.CreateRelyingParty();
-			var association = rp.AssociationManager.GetOrCreateAssociation(new ProviderEndpointDescription(ProviderUri, Protocol.V20.Version));
+			var association = rp.AssociationManager.GetOrCreateAssociation(new ProviderEndpointDescription(OPUri, Protocol.V20.Version));
 			Assert.IsNull(association);
 		}
 
