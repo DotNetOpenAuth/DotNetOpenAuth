@@ -9,7 +9,6 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using System.Collections.Generic;
 	using System.IO;
 	using System.Reflection;
-	using DotNetOAuth.Test.OpenId.UI;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Provider;
@@ -33,7 +32,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		public static readonly ILog Logger = LogManager.GetLogger("DotNetOpenId.Test");
 
-		public static readonly string TestWebDirectory = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\src\DotNetOpenId.TestWeb"));
+		public static readonly string TestWebDirectory = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\src\DotNetOpenAuth.TestWeb"));
 
 		private const string IdentityPage = "IdentityEndpoint.aspx";
 
@@ -91,7 +90,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		public static Uri GetFullUrl(string url, IDictionary<string, string> args, bool useSsl) {
 			Uri defaultUriBase = new Uri(useSsl ? "https://localhost/" : "http://localhost/");
-			Uri baseUri = UITestSupport.Host != null ? UITestSupport.Host.BaseUri : defaultUriBase;
+			Uri baseUri =/* UITestSupport.Host != null ? UITestSupport.Host.BaseUri : */defaultUriBase;
 			UriBuilder builder = new UriBuilder(new Uri(baseUri, url));
 			MessagingUtilities.AppendQueryArgs(builder, args);
 			return builder.Uri;

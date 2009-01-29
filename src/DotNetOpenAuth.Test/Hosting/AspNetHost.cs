@@ -15,12 +15,17 @@ namespace DotNetOpenAuth.Test.Hosting {
 	using DotNetOpenAuth.Test.OpenId;
 
 	/// <summary>
-	/// Hosts a 'portable' version of the OpenIdProvider for testing itself and the
-	/// RelyingParty against it.
+	/// Hosts an ASP.NET web site for placing ASP.NET controls and services on
+	/// for more complete end-to-end testing.
 	/// </summary>
-	internal class AspNetHost : MarshalByRefObject {
+	internal class AspNetHost : MarshalByRefObject, IDisposable {
 		private HttpHost httpHost;
 
+		/// <summary>
+		/// DO NOT CALL DIRECTLY.  This is only here for ASP.NET to call.
+		/// Call the static <see cref="AspNetHost.CreateHost"/> method instead.
+		/// </summary>
+		[Obsolete("Use the CreateHost static method instead.")]
 		public AspNetHost() {
 			this.httpHost = HttpHost.CreateHost(this);
 			////if (!UntrustedWebRequestHandler.WhitelistHosts.Contains("localhost"))
@@ -63,5 +68,20 @@ namespace DotNetOpenAuth.Test.Hosting {
 		public void CloseHttp() {
 			this.httpHost.Dispose();
 		}
+
+		#region IDisposable Members
+
+		public void Dispose() {
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		protected void Dispose(bool disposing) {
+			if (disposing) {
+				CloseHttp();
+			}
+		}
+
+		#endregion
 	}
 }

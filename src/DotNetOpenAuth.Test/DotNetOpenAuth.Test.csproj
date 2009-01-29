@@ -62,6 +62,7 @@
     <Compile Include="Configuration\SectionTests.cs" />
     <Compile Include="CoordinatorBase.cs" />
     <Compile Include="Hosting\AspNetHost.cs" />
+    <Compile Include="Hosting\HostingTests.cs" />
     <Compile Include="Hosting\HttpHost.cs" />
     <Compile Include="Hosting\TestingWorkerRequest.cs" />
     <Compile Include="Messaging\CollectionAssert.cs" />
@@ -154,7 +155,6 @@
     <Compile Include="OpenId\RelyingParty\RelyingPartySecuritySettingsTests.cs" />
     <Compile Include="OpenId\RelyingParty\ServiceEndpointTests.cs" />
     <Compile Include="OpenId\TestSupport.cs" />
-    <Compile Include="OpenId\UI\UITestSupport.cs" />
     <Compile Include="OpenId\UriIdentifierTests.cs" />
     <Compile Include="OpenId\XriIdentifierTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -207,6 +207,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="OpenId\UI\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\tools\DotNetOpenAuth.Versioning.targets" />

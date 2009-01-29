@@ -12,7 +12,7 @@ namespace DotNetOpenAuth.Test.Hosting {
 	using System.Threading;
 
 	internal class HttpHost : IDisposable {
-		private HttpListener listener;
+		private readonly HttpListener listener;
 		private Thread listenerThread;
 		private AspNetHost aspNetHost;
 
@@ -60,13 +60,15 @@ namespace DotNetOpenAuth.Test.Hosting {
 			if (body != null) {
 				request.Method = "POST";
 				request.ContentLength = body.Length;
-				using (StreamWriter sw = new StreamWriter(request.GetRequestStream()))
+				using (StreamWriter sw = new StreamWriter(request.GetRequestStream())) {
 					sw.Write(body);
+				}
 			}
 			try {
 				using (WebResponse response = request.GetResponse()) {
-					using (StreamReader sr = new StreamReader(response.GetResponseStream()))
+					using (StreamReader sr = new StreamReader(response.GetResponseStream())) {
 						return sr.ReadToEnd();
+					}
 				}
 			} catch (WebException ex) {
 				Logger.Error("Exception in HttpHost", ex);
@@ -81,9 +83,16 @@ namespace DotNetOpenAuth.Test.Hosting {
 		#region IDisposable Members
 
 		public void Dispose() {
-			this.listener.Close();
-			this.listenerThread.Join(1000);
-			this.listenerThread.Abort();
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		protected virtual void Dispose(bool disposing) {
+			if (disposing) {
+				this.listener.Close();
+				this.listenerThread.Join(1000);
+				this.listenerThread.Abort();
+			}
 		}
 
 		#endregion

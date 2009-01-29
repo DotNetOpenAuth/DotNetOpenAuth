@@ -75,6 +75,29 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ServiceProvider", "..\sampl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.ApplicationBlock", "..\samples\DotNetOpenAuth.ApplicationBlock\DotNetOpenAuth.ApplicationBlock.csproj", "{AA78D112-D889-414B-A7D4-467B34C7B663}"
 EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "DotNetOpenAuth.TestWeb", "DotNetOpenAuth.TestWeb\", "{47A84EF7-68C3-4D47-926A-9CCEA6518531}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFramework = "3.5"
+		ProjectReferences = "{3191B653-F76D-4C1A-9A5A-347BC3AAAAB7}|DotNetOpenAuth.dll;{4376ECC9-C346-4A99-B13C-FA93C0FBD2C9}|DotNetOpenAuth.Test.dll;"
+		Debug.AspNetCompiler.VirtualPath = "/DotNetOpenAuth.TestWeb"
+		Debug.AspNetCompiler.PhysicalPath = "DotNetOpenAuth.TestWeb\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\DotNetOpenAuth.TestWeb\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/DotNetOpenAuth.TestWeb"
+		Release.AspNetCompiler.PhysicalPath = "DotNetOpenAuth.TestWeb\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\DotNetOpenAuth.TestWeb\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "5073"
+		DefaultWebSiteLanguage = "Visual C#"
+		StartServerOnDebug = "false"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = DotNetOpenAuth.vsmdi
@@ -108,6 +131,10 @@ Global
 		{AA78D112-D889-414B-A7D4-467B34C7B663}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA78D112-D889-414B-A7D4-467B34C7B663}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA78D112-D889-414B-A7D4-467B34C7B663}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47A84EF7-68C3-4D47-926A-9CCEA6518531}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47A84EF7-68C3-4D47-926A-9CCEA6518531}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47A84EF7-68C3-4D47-926A-9CCEA6518531}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{47A84EF7-68C3-4D47-926A-9CCEA6518531}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

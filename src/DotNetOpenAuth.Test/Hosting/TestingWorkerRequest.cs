@@ -10,6 +10,9 @@ namespace DotNetOpenAuth.Test.Hosting {
 	using System.Net;
 	using System.Web.Hosting;
 
+	/// <summary>
+	/// Processes individual incoming ASP.NET requests.
+	/// </summary>
 	internal class TestingWorkerRequest : SimpleWorkerRequest {
 		private Stream entityStream;
 
