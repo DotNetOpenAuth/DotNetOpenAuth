@@ -80,6 +80,7 @@
     <Compile Include="Configuration\HostNameOrRegexCollection.cs" />
     <Compile Include="Configuration\HostNameElement.cs" />
     <Compile Include="Messaging\CachedDirectWebResponse.cs" />
+    <Compile Include="Messaging\IHttpDirectResponse.cs" />
     <Compile Include="Messaging\IExtensionMessage.cs" />
     <Compile Include="Messaging\IMessage.cs" />
     <Compile Include="Messaging\DirectWebResponse.cs" />

@@ -227,9 +227,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// This method implements spec V1.0 section 5.3.
 		/// </remarks>
 		protected override UserAgentResponse SendDirectMessageResponse(IProtocolMessage response) {
-			if (response == null) {
-				throw new ArgumentNullException("response");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(response, "response");
 
 			var serializer = MessageSerializer.Get(response.GetType());
 			var fields = serializer.Serialize(response);
@@ -239,6 +237,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			preparedResponse.Headers.Add(HttpResponseHeader.ContentType, KeyValueFormContentType);
 			preparedResponse.OriginalMessage = response;
 			preparedResponse.ResponseStream = new MemoryStream(keyValueEncoding);
+
+			IHttpDirectResponse httpMessage = response as IHttpDirectResponse;
+			if (httpMessage != null) {
+				preparedResponse.Status = httpMessage.HttpStatusCode;
+			}
 
 			return preparedResponse;
 		}

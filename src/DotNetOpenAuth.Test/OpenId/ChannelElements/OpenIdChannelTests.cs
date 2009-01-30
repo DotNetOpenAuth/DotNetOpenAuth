@@ -18,6 +18,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using DotNetOpenAuth.Test.Mocks;
 
 	[TestClass]
 	public class OpenIdChannelTests : TestBase {
@@ -98,6 +99,22 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 				CachedResponseStream = new MemoryStream(KeyValueFormEncoding.GetBytes(fields)),
 			};
 			Assert.IsTrue(MessagingUtilities.AreEquivalent(fields, this.accessor.ReadFromResponseInternal(response)));
+		}
+
+		/// <summary>
+		/// Verifies that messages asking for special HTTP status codes get them.
+		/// </summary>
+		[TestMethod]
+		public void SendDirectMessageResponseHonorsHttpStatusCodes() {
+			IProtocolMessage message = MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired);
+			UserAgentResponse directResponse = this.accessor.SendDirectMessageResponse(message);
+			Assert.AreEqual(HttpStatusCode.OK, directResponse.Status);
+
+			var httpMessage = new TestDirectResponseMessageWithHttpStatus();
+			MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired, httpMessage);
+			httpMessage.HttpStatusCode = HttpStatusCode.NotAcceptable;
+			directResponse = this.accessor.SendDirectMessageResponse(httpMessage);
+			Assert.AreEqual(HttpStatusCode.NotAcceptable, directResponse.Status);
 		}
 	}
 }

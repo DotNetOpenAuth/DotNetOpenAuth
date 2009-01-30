@@ -22,6 +22,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 	[TestClass]
 	public class OAuthChannelTests : TestBase {
 		private OAuthChannel channel;
+		private OAuthChannel_Accessor accessor;
 		private TestWebRequestHandler webRequestHandler;
 		private SigningBindingElementBase signingElement;
 		private INonceStore nonceStore;
@@ -34,6 +35,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			this.signingElement = new RsaSha1SigningBindingElement();
 			this.nonceStore = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
 			this.channel = new OAuthChannel(this.signingElement, this.nonceStore, new InMemoryTokenManager(), new TestMessageFactory());
+			this.accessor = OAuthChannel_Accessor.AttachShadow(this.channel);
 			this.channel.WebRequestHandler = this.webRequestHandler;
 		}
 
@@ -275,6 +277,22 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			Assert.AreEqual(15, testMessage.Age);
 			Assert.AreEqual("Andrew", testMessage.Name);
 			Assert.AreEqual("http://hostb/pathB", testMessage.Location.AbsoluteUri);
+		}
+
+		/// <summary>
+		/// Verifies that messages asking for special HTTP status codes get them.
+		/// </summary>
+		[TestMethod]
+		public void SendDirectMessageResponseHonorsHttpStatusCodes() {
+			IProtocolMessage message = MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired);
+			UserAgentResponse directResponse = this.accessor.SendDirectMessageResponse(message);
+			Assert.AreEqual(HttpStatusCode.OK, directResponse.Status);
+
+			var httpMessage = new TestDirectResponseMessageWithHttpStatus();
+			MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired, httpMessage);
+			httpMessage.HttpStatusCode = HttpStatusCode.NotAcceptable;
+			directResponse = this.accessor.SendDirectMessageResponse(httpMessage);
+			Assert.AreEqual(HttpStatusCode.NotAcceptable, directResponse.Status);
 		}
 	}
 }

@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using System.Net;
 
 	[TestClass]
 	public class DirectErrorResponseTests : OpenIdTestBase {
@@ -35,6 +36,15 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Assert.AreEqual("Some Error", fields["error"]);
 			Assert.AreEqual("Andrew Arnott", fields["contact"]);
 			Assert.AreEqual("http://blog.nerdbank.net/", fields["reference"]);
+		}
+
+		/// <summary>
+		/// Verifies that error messages are created as HTTP 400 errors.
+		/// </summary>
+		[TestMethod]
+		public void ErrorMessagesAsHttp400() {
+			var httpStatusMessage = (IHttpDirectResponse)this.response;
+			Assert.AreEqual(HttpStatusCode.BadRequest, httpStatusMessage.HttpStatusCode);
 		}
 	}
 }

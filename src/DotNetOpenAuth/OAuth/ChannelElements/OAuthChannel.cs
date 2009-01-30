@@ -210,6 +210,12 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				Status = HttpStatusCode.OK,
 				Headers = new System.Net.WebHeaderCollection(),
 			};
+
+			IHttpDirectResponse httpMessage = response as IHttpDirectResponse;
+			if (httpMessage != null) {
+				encodedResponse.Status = httpMessage.HttpStatusCode;
+			}
+
 			return encodedResponse;
 		}
 
