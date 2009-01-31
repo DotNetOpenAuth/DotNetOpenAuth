@@ -54,7 +54,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// HTTP headers that must be copied using their proper properties instead of directly.
 		/// </summary>
-		private static readonly string[] HeadersToNotCopy = new string[] { "Host", "Connection" };
+		private static readonly string[] HeadersToNotCopy = new string[] { "Host", "Connection", "Proxy-Connection" };
 
 		/// <summary>
 		/// Gets the original request URL, as seen from the browser before any URL rewrites on the server if any.
