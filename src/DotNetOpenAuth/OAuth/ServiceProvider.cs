@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OAuth {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Globalization;
 	using System.ServiceModel.Channels;
 	using System.Web;
@@ -13,7 +14,6 @@ namespace DotNetOpenAuth.OAuth {
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
-	using System.Diagnostics.CodeAnalysis;
 
 	/// <summary>
 	/// A web application that allows access via OAuth.

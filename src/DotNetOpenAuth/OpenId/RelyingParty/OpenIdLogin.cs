@@ -7,12 +7,11 @@
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.ComponentModel;
-	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Globalization;
 	using System.Web.UI;
 	using System.Web.UI.HtmlControls;
 	using System.Web.UI.WebControls;
-	using System.Globalization;
 
 	/// <summary>
 	/// An ASP.NET control providing a complete OpenID login experience.
@@ -459,9 +458,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets or sets the starting tab index to distribute across the controls.
 		/// </summary>
-		[SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "value+1")]
-		[SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "value+2")]
-		[SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "value+3")]
+		[SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "value+1", Justification = "Overflow would provide desired UI behavior.")]
+		[SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "value+2", Justification = "Overflow would provide desired UI behavior.")]
+		[SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "value+3", Justification = "Overflow would provide desired UI behavior.")]
 		public override short TabIndex {
 			get {
 				return base.TabIndex;

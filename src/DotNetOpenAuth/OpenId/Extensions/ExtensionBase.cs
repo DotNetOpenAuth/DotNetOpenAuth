@@ -98,7 +98,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		protected string TypeUri {
 			get { return this.typeUri; }
 		}
-		
+
 		/// <summary>
 		/// Gets the additional TypeURIs that are supported by this extension, in preferred order.
 		/// May be empty if none other than <see cref="IOpenIdMessageExtension.TypeUri"/> is supported, but
