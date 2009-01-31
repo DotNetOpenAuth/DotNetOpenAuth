@@ -497,6 +497,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unexpected HTTP status code {0} {1} received in direct response..
+        /// </summary>
+        internal static string UnexpectedHttpStatusCode {
+            get {
+                return ResourceManager.GetString("UnexpectedHttpStatusCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unsolicited assertions are not allowed from 1.0 OpenID Providers..
         /// </summary>
         internal static string UnsolicitedAssertionsNotAllowedFrom1xOPs {

@@ -115,6 +115,15 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The given set of options ({0}) is not supported by {1}..
+        /// </summary>
+        internal static string DirectWebRequestOptionsNotSupported {
+            get {
+                return ResourceManager.GetString("DirectWebRequestOptionsNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error while deserializing message {0}..
         /// </summary>
         internal static string ErrorDeserializingMessage {
@@ -372,15 +381,6 @@ namespace DotNetOpenAuth.Messaging {
         internal static string SigningNotSupported {
             get {
                 return ResourceManager.GetString("SigningNotSupported", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The provided instance of {0} does not implement the {1} interface, which is required for RequireSsl mode..
-        /// </summary>
-        internal static string SslOnlyRequestNotSupported {
-            get {
-                return ResourceManager.GetString("SslOnlyRequestNotSupported", resourceCulture);
             }
         }
         

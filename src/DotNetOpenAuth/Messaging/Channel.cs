@@ -113,7 +113,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// This defaults to a straightforward implementation, but can be set
 		/// to a mock object for testing purposes.
 		/// </remarks>
-		public virtual IDirectWebRequestHandler WebRequestHandler { get; set; }
+		public IDirectWebRequestHandler WebRequestHandler { get; set; }
 
 		/// <summary>
 		/// Gets the binding elements used by this channel, in no particular guaranteed order.
@@ -385,6 +385,17 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Gets the direct response of a direct HTTP request.
+		/// </summary>
+		/// <param name="webRequest">The web request.</param>
+		/// <returns>The response to the web request.</returns>
+		/// <exception cref="ProtocolException">Thrown on network or protocol errors.</exception>
+		protected virtual DirectWebResponse GetDirectResponse(HttpWebRequest webRequest) {
+			ErrorUtilities.VerifyArgumentNotNull(webRequest, "webRequest");
+			return this.WebRequestHandler.GetResponse(webRequest);
+		}
+
+		/// <summary>
 		/// Submits a direct request message to some remote party and blocks waiting for an immediately reply.
 		/// </summary>
 		/// <param name="request">The request message.</param>
@@ -398,7 +409,7 @@ namespace DotNetOpenAuth.Messaging {
 			HttpWebRequest webRequest = this.CreateHttpRequest(request);
 			IDictionary<string, string> responseFields;
 
-			using (DirectWebResponse response = this.WebRequestHandler.GetResponse(webRequest)) {
+			using (DirectWebResponse response = this.GetDirectResponse(webRequest)) {
 				if (response.ResponseStream == null) {
 					return null;
 				}
@@ -411,8 +422,8 @@ namespace DotNetOpenAuth.Messaging {
 				return null;
 			}
 
-			var responseSerialize = MessageSerializer.Get(responseMessage.GetType());
-			responseSerialize.Deserialize(responseFields, responseMessage);
+			var responseSerializer = MessageSerializer.Get(responseMessage.GetType());
+			responseSerializer.Deserialize(responseFields, responseMessage);
 
 			return responseMessage;
 		}

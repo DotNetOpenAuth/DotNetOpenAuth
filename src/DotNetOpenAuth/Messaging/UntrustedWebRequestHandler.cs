@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.Messaging {
 	/// If a particular host would be permitted but is in the blacklist, it is not allowed.
 	/// If a particular host would not be permitted but is in the whitelist, it is allowed.
 	/// </remarks>
-	public class UntrustedWebRequestHandler : IDirectSslWebRequestHandler {
+	public class UntrustedWebRequestHandler : IDirectWebRequestHandler {
 		/// <summary>
 		/// Gets or sets the default cache policy to use for HTTP requests.
 		/// </summary>
@@ -179,19 +179,39 @@ namespace DotNetOpenAuth.Messaging {
 			get { return DotNetOpenAuthSection.Configuration.Messaging.UntrustedWebRequest; }
 		}
 
-		#region IDirectSslWebRequestHandler Members
+		#region IDirectWebRequestHandler Members
+
+		/// <summary>
+		/// Determines whether this instance can support the specified options.
+		/// </summary>
+		/// <param name="options">The set of options that might be given in a subsequent web request.</param>
+		/// <returns>
+		/// 	<c>true</c> if this instance can support the specified options; otherwise, <c>false</c>.
+		/// </returns>
+		public bool CanSupport(DirectWebRequestOptions options) {
+			// We support whatever our chained handler supports, plus RequireSsl.
+			return this.chainedWebRequestHandler.CanSupport(options & ~DirectWebRequestOptions.RequireSsl);
+		}
 
 		/// <summary>
 		/// Prepares an <see cref="HttpWebRequest"/> that contains an POST entity for sending the entity.
 		/// </summary>
 		/// <param name="request">The <see cref="HttpWebRequest"/> that should contain the entity.</param>
-		/// <param name="requireSsl">if set to <c>true</c> all requests made with this instance must be completed using SSL.</param>
+		/// <param name="options">The options to apply to this web request.</param>
 		/// <returns>
 		/// The writer the caller should write out the entity data to.
 		/// </returns>
-		public Stream GetRequestStream(HttpWebRequest request, bool requireSsl) {
+		/// <exception cref="ProtocolException">Thrown for any network error.</exception>
+		/// <remarks>
+		/// 	<para>The caller should have set the <see cref="HttpWebRequest.ContentLength"/>
+		/// and any other appropriate properties <i>before</i> calling this method.</para>
+		/// 	<para>Implementations should catch <see cref="WebException"/> and wrap it in a
+		/// <see cref="ProtocolException"/> to abstract away the transport and provide
+		/// a single exception type for hosts to catch.</para>
+		/// </remarks>
+		public Stream GetRequestStream(HttpWebRequest request, DirectWebRequestOptions options) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
-			this.EnsureAllowableRequestUri(request.RequestUri, requireSsl);
+			this.EnsureAllowableRequestUri(request.RequestUri, (options & DirectWebRequestOptions.RequireSsl) != 0);
 
 			this.PrepareRequest(request, true);
 
@@ -204,11 +224,17 @@ namespace DotNetOpenAuth.Messaging {
 		/// <see cref="HttpWebResponse"/> to a <see cref="DirectWebResponse"/> instance.
 		/// </summary>
 		/// <param name="request">The <see cref="HttpWebRequest"/> to handle.</param>
-		/// <param name="requireSsl">if set to <c>true</c> all requests made with this instance must be completed using SSL.</param>
+		/// <param name="options">The options to apply to this web request.</param>
 		/// <returns>
 		/// An instance of <see cref="CachedDirectWebResponse"/> describing the response.
 		/// </returns>
-		public DirectWebResponse GetResponse(HttpWebRequest request, bool requireSsl) {
+		/// <exception cref="ProtocolException">Thrown for any network error.</exception>
+		/// <remarks>
+		/// Implementations should catch <see cref="WebException"/> and wrap it in a
+		/// <see cref="ProtocolException"/> to abstract away the transport and provide
+		/// a single exception type for hosts to catch.
+		/// </remarks>
+		public DirectWebResponse GetResponse(HttpWebRequest request, DirectWebRequestOptions options) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			// This request MAY have already been prepared by GetRequestStream, but
@@ -222,8 +248,8 @@ namespace DotNetOpenAuth.Messaging {
 			Uri originalRequestUri = request.RequestUri;
 			int i;
 			for (i = 0; i < this.MaximumRedirections; i++) {
-				this.EnsureAllowableRequestUri(request.RequestUri, requireSsl);
-				CachedDirectWebResponse response = this.chainedWebRequestHandler.GetResponse(request).GetSnapshot(this.MaximumBytesToRead);
+				this.EnsureAllowableRequestUri(request.RequestUri, (options & DirectWebRequestOptions.RequireSsl) != 0);
+				CachedDirectWebResponse response = this.chainedWebRequestHandler.GetResponse(request, options).GetSnapshot(this.MaximumBytesToRead);
 				if (response.Status == HttpStatusCode.MovedPermanently ||
 					response.Status == HttpStatusCode.Redirect ||
 					response.Status == HttpStatusCode.RedirectMethod ||
@@ -241,10 +267,6 @@ namespace DotNetOpenAuth.Messaging {
 			throw ErrorUtilities.ThrowProtocol(MessagingStrings.TooManyRedirects, originalRequestUri);
 		}
 
-		#endregion
-
-		#region IDirectWebRequestHandler Members
-
 		/// <summary>
 		/// Prepares an <see cref="HttpWebRequest"/> that contains an POST entity for sending the entity.
 		/// </summary>
@@ -253,7 +275,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// The writer the caller should write out the entity data to.
 		/// </returns>
 		Stream IDirectWebRequestHandler.GetRequestStream(HttpWebRequest request) {
-			return this.GetRequestStream(request, false);
+			return this.GetRequestStream(request, DirectWebRequestOptions.None);
 		}
 
 		/// <summary>
@@ -263,7 +285,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The <see cref="HttpWebRequest"/> to handle.</param>
 		/// <returns>An instance of <see cref="DirectWebResponse"/> describing the response.</returns>
 		DirectWebResponse IDirectWebRequestHandler.GetResponse(HttpWebRequest request) {
-			return this.GetResponse(request, false);
+			return this.GetResponse(request, DirectWebRequestOptions.None);
 		}
 
 		#endregion

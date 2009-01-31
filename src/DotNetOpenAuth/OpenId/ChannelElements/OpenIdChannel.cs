@@ -117,30 +117,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			this.WebRequestHandler = new UntrustedWebRequestHandler();
 		}
 
-		public override IDirectWebRequestHandler WebRequestHandler {
-			get {
-				// Unwrap the handler we were originally assigned.
-				var wrappedHandler = (Accept400ErrorDirectWebRequestHandlerWrapper) base.WebRequestHandler;
-				return wrappedHandler.WrappedHandler;
-			}
-			set {
-				if (value == null) {
-					base.WebRequestHandler = null;
-				}
-
-				// Wrap the handler with one that can injest HTTP 400 errors.
-				IDirectWebRequestHandler wrappedHandler;
-				IDirectSslWebRequestHandler sslHandler = value as IDirectSslWebRequestHandler;
-				if (sslHandler != null) {
-					wrappedHandler = new Accept400ErrorDirectSslWebRequestHandlerWrapper(sslHandler);
-				} else {
-					wrappedHandler = new Accept400ErrorDirectWebRequestHandlerWrapper(value);
-				}
-
-				base.WebRequestHandler = wrappedHandler;
-			}
-		}
-
 		/// <summary>
 		/// Gets the extension factory that can be used to register OpenID extensions.
 		/// </summary>
@@ -244,6 +220,34 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			}
 
 			return preparedResponse;
+		}
+
+		/// <summary>
+		/// Gets the direct response of a direct HTTP request.
+		/// </summary>
+		/// <param name="webRequest">The web request.</param>
+		/// <returns>The response to the web request.</returns>
+		/// <exception cref="ProtocolException">Thrown on network or protocol errors.</exception>
+		protected override DirectWebResponse GetDirectResponse(HttpWebRequest webRequest) {
+			DirectWebResponse response = this.WebRequestHandler.GetResponse(webRequest, DirectWebRequestOptions.AcceptAllHttpResponses);
+
+			// Filter the responses to the allowable set of HTTP status codes.
+			if (response.Status != HttpStatusCode.OK && response.Status != HttpStatusCode.BadRequest) {
+				if (Logger.IsErrorEnabled) {
+					using (var reader = new StreamReader(response.ResponseStream)) {
+						Logger.ErrorFormat(
+							"Unexpected HTTP status code {0} {1} received in direct response:{2}{3}",
+							(int)response.Status,
+							response.Status,
+							Environment.NewLine,
+							reader.ReadToEnd());
+					}
+				}
+
+				ErrorUtilities.ThrowProtocol(OpenIdStrings.UnexpectedHttpStatusCode, (int)response.Status, response.Status);
+			}
+
+			return response;
 		}
 
 		/// <summary>

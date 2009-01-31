@@ -80,6 +80,7 @@
     <Compile Include="Configuration\HostNameOrRegexCollection.cs" />
     <Compile Include="Configuration\HostNameElement.cs" />
     <Compile Include="Messaging\CachedDirectWebResponse.cs" />
+    <Compile Include="Messaging\DirectWebRequestOptions.cs" />
     <Compile Include="Messaging\IHttpDirectResponse.cs" />
     <Compile Include="Messaging\IExtensionMessage.cs" />
     <Compile Include="Messaging\IMessage.cs" />
@@ -89,7 +90,6 @@
     <Compile Include="Messaging\EmptyEnumerator.cs" />
     <Compile Include="Messaging\EmptyList.cs" />
     <Compile Include="Messaging\ErrorUtilities.cs" />
-    <Compile Include="Messaging\IDirectSslWebRequestHandler.cs" />
     <Compile Include="Messaging\IMessageWithEvents.cs" />
     <Compile Include="Messaging\IProtocolMessageWithExtensions.cs" />
     <Compile Include="Messaging\InternalErrorException.cs" />
@@ -174,7 +174,6 @@
     <Compile Include="OpenId\Association.cs" />
     <Compile Include="OpenId\AssociationMemoryStore.cs" />
     <Compile Include="OpenId\Associations.cs" />
-    <Compile Include="OpenId\ChannelElements\Accept400ErrorWebRequestHandlerWrappers.cs" />
     <Compile Include="OpenId\ChannelElements\BackwardCompatibilityBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\ExtensionsBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\IOpenIdExtensionFactory.cs" />

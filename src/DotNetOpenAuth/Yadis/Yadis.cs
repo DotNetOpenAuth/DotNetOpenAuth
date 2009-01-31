@@ -136,13 +136,12 @@ namespace DotNetOpenAuth.Yadis {
 				request.Accept = string.Join(",", acceptTypes);
 			}
 
+			DirectWebRequestOptions options = DirectWebRequestOptions.None;
 			if (requireSsl) {
-				var sslRequestHandler = requestHandler as IDirectSslWebRequestHandler;
-				ErrorUtilities.VerifyArgument(sslRequestHandler != null, MessagingStrings.SslOnlyRequestNotSupported, typeof(IDirectWebRequestHandler).Name, typeof(IDirectSslWebRequestHandler).Name);
-				return sslRequestHandler.GetResponse(request, requireSsl);
-			} else {
-				return requestHandler.GetResponse(request);
+				options |= DirectWebRequestOptions.RequireSsl;
 			}
+
+			return requestHandler.GetResponse(request, options);
 		}
 
 		/// <summary>

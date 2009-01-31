@@ -21,12 +21,12 @@ namespace DotNetOpenAuth.Test.Mocks {
 	internal class MockHttpRequest {
 		private readonly Dictionary<Uri, DirectWebResponse> registeredMockResponses = new Dictionary<Uri, DirectWebResponse>();
 
-		private MockHttpRequest(IDirectSslWebRequestHandler mockHandler) {
+		private MockHttpRequest(IDirectWebRequestHandler mockHandler) {
 			ErrorUtilities.VerifyArgumentNotNull(mockHandler, "mockHandler");
 			this.MockWebRequestHandler = mockHandler;
 		}
 
-		internal IDirectSslWebRequestHandler MockWebRequestHandler { get; private set; }
+		internal IDirectWebRequestHandler MockWebRequestHandler { get; private set; }
 
 		internal static MockHttpRequest CreateUntrustedMockHttpHandler() {
 			TestWebRequestHandler testHandler = new TestWebRequestHandler();

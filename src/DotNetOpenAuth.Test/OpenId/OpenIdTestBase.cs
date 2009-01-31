@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using System.IO;
 
 	public class OpenIdTestBase : TestBase {
-		internal IDirectSslWebRequestHandler RequestHandler;
+		internal IDirectWebRequestHandler RequestHandler;
 
 		internal MockHttpRequest MockResponder;
 

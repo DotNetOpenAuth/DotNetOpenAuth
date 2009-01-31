@@ -80,6 +80,31 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Checks a condition and throws a <see cref="NotSupportedException"/> if it evaluates to false.
+		/// </summary>
+		/// <param name="condition">The condition to check.</param>
+		/// <param name="errorMessage">The message to include in the exception, if created.</param>
+		/// <exception cref="NotSupportedException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
+		internal static void VerifySupported(bool condition, string errorMessage) {
+			if (!condition) {
+				throw new NotSupportedException(errorMessage);
+			}
+		}
+
+		/// <summary>
+		/// Checks a condition and throws a <see cref="NotSupportedException"/> if it evaluates to false.
+		/// </summary>
+		/// <param name="condition">The condition to check.</param>
+		/// <param name="errorMessage">The message to include in the exception, if created.</param>
+		/// <param name="args">The string formatting arguments for <paramref name="message"/>.</param>
+		/// <exception cref="NotSupportedException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
+		internal static void VerifySupported(bool condition, string errorMessage, params object[] args) {
+			if (!condition) {
+				throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, errorMessage, args));
+			}
+		}
+
+		/// <summary>
 		/// Checks a condition and throws an <see cref="InvalidOperationException"/> if it evaluates to false.
 		/// </summary>
 		/// <param name="condition">The condition to check.</param>

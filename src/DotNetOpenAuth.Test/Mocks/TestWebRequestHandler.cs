@@ -12,7 +12,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 
-	internal class TestWebRequestHandler : IDirectSslWebRequestHandler {
+	internal class TestWebRequestHandler : IDirectWebRequestHandler {
 		private Stream postEntity;
 
 		/// <summary>
@@ -55,6 +55,10 @@ namespace DotNetOpenAuth.Test.Mocks {
 
 		#region IWebRequestHandler Members
 
+		public bool CanSupport(DirectWebRequestOptions options) {
+			return options == DirectWebRequestOptions.None;
+		}
+
 		/// <summary>
 		/// Prepares an <see cref="HttpWebRequest"/> that contains an POST entity for sending the entity.
 		/// </summary>
@@ -63,6 +67,10 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// The writer the caller should write out the entity data to.
 		/// </returns>
 		public Stream GetRequestStream(HttpWebRequest request) {
+			return this.GetRequestStream(request, DirectWebRequestOptions.None);
+		}
+
+		public Stream GetRequestStream(HttpWebRequest request, DirectWebRequestOptions options) {
 			this.postEntity = new MemoryStream();
 			return this.postEntity;
 		}
@@ -76,6 +84,10 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// An instance of <see cref="Response"/> describing the response.
 		/// </returns>
 		public DirectWebResponse GetResponse(HttpWebRequest request) {
+			return this.GetResponse(request, DirectWebRequestOptions.None);
+		}
+
+		public DirectWebResponse GetResponse(HttpWebRequest request, DirectWebRequestOptions options) {
 			if (this.Callback == null) {
 				throw new InvalidOperationException("Set the Callback property first.");
 			}

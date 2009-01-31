@@ -135,6 +135,9 @@
   <data name="DirectedMessageMissingRecipient" xml:space="preserve">
     <value>The directed message's Recipient property must not be null.</value>
   </data>
+  <data name="DirectWebRequestOptionsNotSupported" xml:space="preserve">
+    <value>The given set of options ({0}) is not supported by {1}.</value>
+  </data>
   <data name="ErrorDeserializingMessage" xml:space="preserve">
     <value>Error while deserializing message {0}.</value>
   </data>
@@ -221,9 +224,6 @@
   </data>
   <data name="SigningNotSupported" xml:space="preserve">
     <value>This channel does not support signing messages.  To support signing messages, a derived Channel type must override the Sign and IsSignatureValid methods.</value>
-  </data>
-  <data name="SslOnlyRequestNotSupported" xml:space="preserve">
-    <value>The provided instance of {0} does not implement the {1} interface, which is required for RequireSsl mode.</value>
   </data>
   <data name="StreamUnreadable" xml:space="preserve">
     <value>The stream's CanRead property returned false.</value>
