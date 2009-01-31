@@ -43,6 +43,11 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		private bool incoming;
 
 		/// <summary>
+		/// The dictionary of parameters that are not part of the OpenID specification.
+		/// </summary>
+		private Dictionary<string, string> extraData = new Dictionary<string, string>();
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="DirectResponseBase"/> class.
 		/// </summary>
 		/// <param name="originatingRequest">The originating request.</param>
@@ -80,9 +85,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Gets the extra, non-OAuth parameters included in the message.
 		/// </summary>
-		/// <value>An empty dictionary.</value>
 		public IDictionary<string, string> ExtraData {
-			get { return EmptyDictionary<string, string>.Instance; }
+			get { return this.extraData; }
 		}
 
 		#endregion
