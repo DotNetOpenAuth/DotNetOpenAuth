@@ -1,4 +1,10 @@
-﻿namespace DotNetOpenAuth.Test.Mocks {
+﻿//-----------------------------------------------------------------------
+// <copyright file="TestDirectResponseMessageWithHttpStatus.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.Test.Mocks {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
@@ -15,7 +21,7 @@
 		#region IHttpDirectResponse Members
 
 		/// <summary>
-		/// Gets the HTTP status code that the direct respones should be sent with.
+		/// Gets or sets the HTTP status code that the direct respones should be sent with.
 		/// </summary>
 		/// <value></value>
 		public System.Net.HttpStatusCode HttpStatusCode { get; set;  }

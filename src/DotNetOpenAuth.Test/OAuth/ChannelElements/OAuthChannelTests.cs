@@ -154,6 +154,22 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			this.ParameterizedRequestTest(HttpDeliveryMethods.PostRequest);
 		}
 
+		/// <summary>
+		/// Verifies that messages asking for special HTTP status codes get them.
+		/// </summary>
+		[TestMethod]
+		public void SendDirectMessageResponseHonorsHttpStatusCodes() {
+			IProtocolMessage message = MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired);
+			UserAgentResponse directResponse = this.accessor.SendDirectMessageResponse(message);
+			Assert.AreEqual(HttpStatusCode.OK, directResponse.Status);
+
+			var httpMessage = new TestDirectResponseMessageWithHttpStatus();
+			MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired, httpMessage);
+			httpMessage.HttpStatusCode = HttpStatusCode.NotAcceptable;
+			directResponse = this.accessor.SendDirectMessageResponse(httpMessage);
+			Assert.AreEqual(HttpStatusCode.NotAcceptable, directResponse.Status);
+		}
+
 		private static string CreateAuthorizationHeader(IDictionary<string, string> fields) {
 			if (fields == null) {
 				throw new ArgumentNullException("fields");
@@ -277,22 +293,6 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			Assert.AreEqual(15, testMessage.Age);
 			Assert.AreEqual("Andrew", testMessage.Name);
 			Assert.AreEqual("http://hostb/pathB", testMessage.Location.AbsoluteUri);
-		}
-
-		/// <summary>
-		/// Verifies that messages asking for special HTTP status codes get them.
-		/// </summary>
-		[TestMethod]
-		public void SendDirectMessageResponseHonorsHttpStatusCodes() {
-			IProtocolMessage message = MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired);
-			UserAgentResponse directResponse = this.accessor.SendDirectMessageResponse(message);
-			Assert.AreEqual(HttpStatusCode.OK, directResponse.Status);
-
-			var httpMessage = new TestDirectResponseMessageWithHttpStatus();
-			MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired, httpMessage);
-			httpMessage.HttpStatusCode = HttpStatusCode.NotAcceptable;
-			directResponse = this.accessor.SendDirectMessageResponse(httpMessage);
-			Assert.AreEqual(HttpStatusCode.NotAcceptable, directResponse.Status);
 		}
 	}
 }

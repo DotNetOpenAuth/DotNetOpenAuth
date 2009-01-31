@@ -6,6 +6,8 @@
 
 namespace DotNetOpenAuth.Test.OpenId {
 	using System;
+	using System.IO;
+	using System.Reflection;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
@@ -14,15 +16,13 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Mocks;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using System.Reflection;
-	using System.IO;
 
 	public class OpenIdTestBase : TestBase {
 		internal IDirectWebRequestHandler RequestHandler;
 
 		internal MockHttpRequest MockResponder;
 
-		protected const string IdentifierSelect = "http://specs.openid.net/auth/2.0/identifier_select";
+		protected internal const string IdentifierSelect = "http://specs.openid.net/auth/2.0/identifier_select";
 
 		protected internal static readonly Uri BaseMockUri = new Uri("http://localhost/");
 		protected internal static readonly Uri BaseMockUriSsl = new Uri("https://localhost/");
@@ -48,6 +48,15 @@ namespace DotNetOpenAuth.Test.OpenId {
 			this.AutoProviderScenario = Scenarios.AutoApproval;
 		}
 
+		public enum Scenarios {
+			AutoApproval,
+			AutoApprovalAddFragment,
+			ApproveOnSetup,
+			AlwaysDeny,
+		}
+
+		internal Scenarios AutoProviderScenario { get; set; }
+
 		protected RelyingPartySecuritySettings RelyingPartySecuritySettings { get; private set; }
 
 		protected ProviderSecuritySettings ProviderSecuritySettings { get; private set; }
@@ -63,16 +72,6 @@ namespace DotNetOpenAuth.Test.OpenId {
 			this.RequestHandler = this.MockResponder.MockWebRequestHandler;
 			this.AutoProviderScenario = Scenarios.AutoApproval;
 		}
-
-		public enum Scenarios {
-			AutoApproval,
-			AutoApprovalAddFragment,
-			ApproveOnSetup,
-			AlwaysDeny,
-		}
-
-		internal Scenarios AutoProviderScenario { get; set; }
-
 
 		/// <summary>
 		/// Forces storage of an association in an RP's association store.

@@ -6,11 +6,11 @@
 
 namespace DotNetOpenAuth.Test.OpenId.Messages {
 	using System;
+	using System.Net;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using System.Net;
 
 	[TestClass]
 	public class DirectErrorResponseTests : OpenIdTestBase {

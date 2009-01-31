@@ -156,8 +156,8 @@ namespace DotNetOpenAuth.Test.Mocks {
 	</XRD>
 </xrds:XRDS>";
 			string xrds = string.Format(
-				CultureInfo.InvariantCulture, 
-				template, 
+				CultureInfo.InvariantCulture,
+				template,
 				HttpUtility.HtmlEncode(Protocol.V20.RPReturnToTypeURI),
 				HttpUtility.HtmlEncode(OpenIdTestBase.RPRealmUri.AbsoluteUri));
 

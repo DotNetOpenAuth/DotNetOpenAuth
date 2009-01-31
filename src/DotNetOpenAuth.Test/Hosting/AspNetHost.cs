@@ -22,9 +22,12 @@ namespace DotNetOpenAuth.Test.Hosting {
 		private HttpHost httpHost;
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="AspNetHost"/> class.
+		/// </summary>
+		/// <remarks>
 		/// DO NOT CALL DIRECTLY.  This is only here for ASP.NET to call.
 		/// Call the static <see cref="AspNetHost.CreateHost"/> method instead.
-		/// </summary>
+		/// </remarks>
 		[Obsolete("Use the CreateHost static method instead.")]
 		public AspNetHost() {
 			this.httpHost = HttpHost.CreateHost(this);
@@ -78,7 +81,7 @@ namespace DotNetOpenAuth.Test.Hosting {
 
 		protected void Dispose(bool disposing) {
 			if (disposing) {
-				CloseHttp();
+				this.CloseHttp();
 			}
 		}
 

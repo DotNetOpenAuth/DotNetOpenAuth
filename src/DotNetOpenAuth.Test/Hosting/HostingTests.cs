@@ -7,12 +7,12 @@
 namespace DotNetOpenAuth.Test.Hosting {
 	using System;
 	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using System.Net;
 	using System.IO;
+	using System.Linq;
+	using System.Net;
+	using System.Text;
 	using DotNetOpenAuth.Test.OpenId;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
 	public class HostingTests : TestBase {

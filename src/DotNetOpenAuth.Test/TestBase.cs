@@ -21,17 +21,17 @@ namespace DotNetOpenAuth.Test {
 		internal static readonly string TestWebDirectory = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\src\DotNetOpenAuth.TestWeb"));
 
 		/// <summary>
+		/// Gets or sets the test context which provides
+		/// information about and functionality for the current test run.
+		/// </summary>
+		public TestContext TestContext { get; set; }
+
+		/// <summary>
 		/// Gets the logger that tests should use.
 		/// </summary>
 		internal static ILog TestLogger {
 			get { return TestUtilities.TestLogger; }
 		}
-
-		/// <summary>
-		/// Gets or sets the test context which provides
-		/// information about and functionality for the current test run.
-		/// </summary>
-		public TestContext TestContext { get; set; }
 
 		/// <summary>
 		/// The TestInitialize method for the test cases.

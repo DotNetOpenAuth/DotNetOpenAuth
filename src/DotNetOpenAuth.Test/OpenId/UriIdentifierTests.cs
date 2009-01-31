@@ -353,8 +353,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Protocol protocol = Protocol.Lookup(version);
 			Uri baseUrl = new Uri("http://localhost/");
 			UriIdentifier claimedId = new Uri(baseUrl, url);
-			UriIdentifier userSuppliedIdentifier = new Uri(baseUrl,
-				"Discovery/htmldiscovery/redirect.aspx?target=" + url);
+			UriIdentifier userSuppliedIdentifier = new Uri(baseUrl, "Discovery/htmldiscovery/redirect.aspx?target=" + url);
 			if (expectedLocalId == null) {
 				expectedLocalId = claimedId;
 			}
