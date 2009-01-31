@@ -294,6 +294,7 @@
     <Compile Include="OpenId\ProviderEndpointDescription.cs" />
     <Compile Include="OpenId\Provider\ProviderSecuritySettings.cs" />
     <Compile Include="OpenId\RelyingParty\IRelyingPartyApplicationStore.cs" />
+    <Compile Include="OpenId\RelyingParty\AuthenticationResponseSnapshot.cs" />
     <Compile Include="OpenId\RelyingParty\RelyingPartySecuritySettings.cs" />
     <Compile Include="OpenId\RelyingParty\ServiceEndpoint.cs" />
     <Compile Include="OpenId\OpenIdXrdsHelper.cs" />

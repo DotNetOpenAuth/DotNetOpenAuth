@@ -280,4 +280,7 @@ Discovered endpoint info:
   <data name="UnexpectedHttpStatusCode" xml:space="preserve">
     <value>Unexpected HTTP status code {0} {1} received in direct response.</value>
   </data>
+  <data name="NotSupportedByAuthenticationSnapshot" xml:space="preserve">
+    <value>This operation is not supported by serialized authentication responses.  Try this operation from the LoggedIn event handler.</value>
+  </data>
 </root>

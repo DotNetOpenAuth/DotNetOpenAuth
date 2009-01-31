@@ -358,7 +358,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 						// Save out the authentication response to viewstate so we can find it on
 						// a subsequent postback.
-						this.ViewState[AuthenticationResponseViewStateKey] = this.authenticationResponse;
+						this.ViewState[AuthenticationResponseViewStateKey] = new AuthenticationResponseSnapshot(this.authenticationResponse);
 					} else {
 						this.authenticationResponse = viewstateResponse;
 					}

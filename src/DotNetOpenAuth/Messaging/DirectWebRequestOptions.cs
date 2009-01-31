@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.Messaging {
 	using System;
+	using System.Net;
 
 	/// <summary>
 	/// A set of flags that can control the behavior of an individual web request.
