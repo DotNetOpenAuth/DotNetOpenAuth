@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// necessary to complete authentication.  The lower the time, the less demand on
 		/// the server.  But too short a time can frustrate the user.
 		/// </remarks>
-		[ConfigurationProperty(MaxAuthenticationTimePropertyName, DefaultValue = "5:00")]
+		[ConfigurationProperty(MaxAuthenticationTimePropertyName, DefaultValue = "0:05")] // 5 minutes
 		[PositiveTimeSpanValidator]
 		internal TimeSpan MaxAuthenticationTime {
 			get { return (TimeSpan)this[MaxAuthenticationTimePropertyName]; }
