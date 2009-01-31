@@ -48,6 +48,14 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		}
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="PositiveAssertionResponse"/> class.
+		/// </summary>
+		/// <param name="relyingParty">The relying party return_to endpoint that will receive this positive assertion.</param>
+		internal PositiveAssertionResponse(RelyingPartyEndpointDescription relyingParty)
+			: this(relyingParty.Protocol.Version, relyingParty.ReturnToEndpoint) {
+		}
+
+		/// <summary>
 		/// Gets or sets the Claimed Identifier.
 		/// </summary>
 		/// <remarks>

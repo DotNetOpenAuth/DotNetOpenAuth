@@ -253,9 +253,6 @@ Discovered endpoint info:
   <data name="AttributeTooManyValues" xml:space="preserve">
     <value>Only {0} values for attribute '{1}' were requested, but {2} were supplied.</value>
   </data>
-  <data name="InvalidUri1" xml:space="preserve">
-    <value>The value '{0}' is not a valid URI.</value>
-  </data>
   <data name="UnspecifiedDateTimeKindNotAllowed" xml:space="preserve">
     <value>Providing a DateTime whose Kind is Unspecified is not allowed.</value>
   </data>
@@ -282,5 +279,11 @@ Discovered endpoint info:
   </data>
   <data name="NotSupportedByAuthenticationSnapshot" xml:space="preserve">
     <value>This operation is not supported by serialized authentication responses.  Try this operation from the LoggedIn event handler.</value>
+  </data>
+  <data name="NoRelyingPartyEndpointDiscovered" xml:space="preserve">
+    <value>No XRDS document containing OpenId relying party endpoint information could be found at {0}.</value>
+  </data>
+  <data name="AbsoluteUriRequired" xml:space="preserve">
+    <value>An absolute URI is required for this value.</value>
   </data>
 </root>

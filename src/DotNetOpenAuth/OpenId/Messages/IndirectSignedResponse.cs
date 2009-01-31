@@ -64,7 +64,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			this.ReturnTo = request.ReturnTo;
-			this.ProviderEndpoint = request.Recipient;
+			this.ProviderEndpoint = request.Recipient.StripQueryArgumentsWithPrefix(Protocol.openid.Prefix);
 			((ITamperResistantOpenIdMessage)this).AssociationHandle = request.AssociationHandle;
 		}
 

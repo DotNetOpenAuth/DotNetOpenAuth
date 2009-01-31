@@ -61,6 +61,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An absolute URI is required for this value..
+        /// </summary>
+        internal static string AbsoluteUriRequired {
+            get {
+                return ResourceManager.GetString("AbsoluteUriRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The requested association type &apos;{0}&apos; with session type &apos;{1}&apos; is unrecognized or not supported by this Provider due to security requirements..
         /// </summary>
         internal static string AssociationOrSessionTypeUnrecognizedOrNotSupported {
@@ -304,15 +313,6 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The value &apos;{0}&apos; is not a valid URI..
-        /// </summary>
-        internal static string InvalidUri1 {
-            get {
-                return ResourceManager.GetString("InvalidUri1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Not a recognized XRI format: &apos;{0}&apos;..
         /// </summary>
         internal static string InvalidXri {
@@ -376,6 +376,15 @@ namespace DotNetOpenAuth.OpenId {
         internal static string NoEncryptionSessionRequiresHttps {
             get {
                 return ResourceManager.GetString("NoEncryptionSessionRequiresHttps", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No XRDS document containing OpenId relying party endpoint information could be found at {0}..
+        /// </summary>
+        internal static string NoRelyingPartyEndpointDiscovered {
+            get {
+                return ResourceManager.GetString("NoRelyingPartyEndpointDiscovered", resourceCulture);
             }
         }
         

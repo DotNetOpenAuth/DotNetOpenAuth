@@ -120,10 +120,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// Strips any and all URI query parameters that start with some prefix.
 		/// </summary>
 		/// <param name="uri">The URI that may have a query with parameters to remove.</param>
-		/// <param name="prefix">The prefix for parameters to remove.</param>
+		/// <param name="prefix">The prefix for parameters to remove.  A period is NOT automatically appended.</param>
 		/// <returns>Either a new Uri with the parameters removed if there were any to remove, or the same Uri instance if no parameters needed to be removed.</returns>
 		public static Uri StripQueryArgumentsWithPrefix(this Uri uri, string prefix) {
 			ErrorUtilities.VerifyArgumentNotNull(uri, "uri");
+			ErrorUtilities.VerifyNonZeroLength(prefix, "prefix");
 
 			NameValueCollection queryArgs = HttpUtility.ParseQueryString(uri.Query);
 			var matchingKeys = queryArgs.Keys.OfType<string>().Where(key => key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)).ToList();

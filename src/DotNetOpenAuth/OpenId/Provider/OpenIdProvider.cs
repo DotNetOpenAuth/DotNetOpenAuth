@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.ComponentModel;
+	using System.Linq;
 	using System.Web;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
@@ -169,6 +170,57 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 
 			throw ErrorUtilities.ThrowProtocol(MessagingStrings.UnexpectedMessageReceivedOfMany);
+		}
+
+		/// <summary>
+		/// Send an identity assertion on behalf of one of this Provider's
+		/// members in order to redirect the user agent to a relying party
+		/// web site and log him/her in immediately in one uninterrupted step.
+		/// </summary>
+		/// <param name="providerEndpoint">The absolute URL on the Provider site that receives OpenID messages.</param>
+		/// <param name="relyingParty">The URL of the Relying Party web site.
+		/// This will typically be the home page, but may be a longer URL if
+		/// that Relying Party considers the scope of its realm to be more specific.
+		/// The URL provided here must allow discovery of the Relying Party's
+		/// XRDS document that advertises its OpenID RP endpoint.</param>
+		/// <param name="claimedIdentifier">The Identifier you are asserting your member controls.</param>
+		/// <param name="localIdentifier">The Identifier you know your user by internally.  This will typically
+		/// be the same as <paramref name="claimedIdentifier"/>.</param>
+		/// <param name="extensions">The extensions.</param>
+		/// <returns>
+		/// A <see cref="UserAgentResponse"/> object describing the HTTP response to send
+		/// the user agent to allow the redirect with assertion to happen.
+		/// </returns>
+		public UserAgentResponse PrepareUnsolicitedAssertion(Uri providerEndpoint, Realm relyingParty, Identifier claimedIdentifier, Identifier localIdentifier, params IExtensionMessage[] extensions) {
+			ErrorUtilities.VerifyArgumentNotNull(providerEndpoint, "providerEndpoint");
+			ErrorUtilities.VerifyArgumentNotNull(relyingParty, "relyingParty");
+			ErrorUtilities.VerifyArgumentNotNull(claimedIdentifier, "claimedIdentifier");
+			ErrorUtilities.VerifyArgumentNotNull(localIdentifier, "localIdentifier");
+			ErrorUtilities.VerifyArgumentNamed(providerEndpoint.IsAbsoluteUri, "providerEndpoint", OpenIdStrings.AbsoluteUriRequired);
+
+			// Although the RP should do their due diligence to make sure that this OP
+			// is authorized to send an assertion for the given claimed identifier,
+			// do due diligence by performing our own discovery on the claimed identifier
+			// and make sure that it is tied to this OP and OP local identifier.
+			// TODO: code here
+
+			Logger.InfoFormat("Preparing unsolicited assertion for {0}", claimedIdentifier);
+			var returnToEndpoint = relyingParty.Discover(this.WebRequestHandler, true).FirstOrDefault();
+			ErrorUtilities.VerifyProtocol(returnToEndpoint != null, OpenIdStrings.NoRelyingPartyEndpointDiscovered, relyingParty);
+
+			var positiveAssertion = new PositiveAssertionResponse(returnToEndpoint) {
+				ProviderEndpoint = providerEndpoint,
+				ClaimedIdentifier = claimedIdentifier,
+				LocalIdentifier = localIdentifier,
+			};
+
+			if (extensions != null) {
+				foreach (IExtensionMessage extension in extensions) {
+					positiveAssertion.Extensions.Add(extension);
+				}
+			}
+
+			return this.Channel.PrepareResponse(positiveAssertion);
 		}
 	}
 }
