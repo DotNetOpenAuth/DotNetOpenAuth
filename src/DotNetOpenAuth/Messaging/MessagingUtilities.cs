@@ -52,11 +52,6 @@ namespace DotNetOpenAuth.Messaging {
 		};
 
 		/// <summary>
-		/// HTTP headers that must be copied using their proper properties instead of directly.
-		/// </summary>
-		private static readonly string[] HeadersToNotCopy = new string[] { "Host", "Connection", "Proxy-Connection" };
-
-		/// <summary>
 		/// Gets the original request URL, as seen from the browser before any URL rewrites on the server if any.
 		/// Cookieless session directory (if applicable) is also included.
 		/// </summary>
@@ -267,7 +262,28 @@ namespace DotNetOpenAuth.Messaging {
 			ErrorUtilities.VerifyArgumentNotNull(newRequestUri, "newRequestUri");
 
 			var newRequest = (HttpWebRequest)WebRequest.Create(newRequestUri);
-			newRequest.Accept = request.Accept;
+
+			// First copy headers.  Only set those that are explicitly set on the original request,
+			// because some properties (like IfModifiedSince) activate special behavior when set,
+			// even when set to their "original" values.
+			foreach (string headerName in request.Headers) {
+				switch (headerName) {
+					case "Accept": newRequest.Accept = request.Accept; break;
+					case "Connection": newRequest.Connection = request.Connection; break;
+					case "Content-Length": newRequest.ContentLength = request.ContentLength; break;
+					case "Content-Type": newRequest.ContentType = request.ContentType; break;
+					case "Expect": newRequest.Expect = request.Expect; break;
+					case "Host": break; // implicitly copied as part of the RequestUri
+					case "If-Modified-Since": newRequest.IfModifiedSince = request.IfModifiedSince; break;
+					case "Keep-Alive": newRequest.KeepAlive = request.KeepAlive; break;
+					case "Proxy-Connection": break; // no property equivalent?
+					case "Referer": newRequest.Referer = request.Referer; break;
+					case "Transfer-Encoding": newRequest.TransferEncoding = request.TransferEncoding; break;
+					case "User-Agent": newRequest.UserAgent = request.UserAgent; break;
+					default: newRequest.Headers[headerName] = request.Headers[headerName]; break;
+				}
+			}
+
 			newRequest.AllowAutoRedirect = request.AllowAutoRedirect;
 			newRequest.AllowWriteStreamBuffering = request.AllowWriteStreamBuffering;
 			newRequest.AuthenticationLevel = request.AuthenticationLevel;
@@ -275,17 +291,10 @@ namespace DotNetOpenAuth.Messaging {
 			newRequest.CachePolicy = request.CachePolicy;
 			newRequest.ClientCertificates = request.ClientCertificates;
 			newRequest.ConnectionGroupName = request.ConnectionGroupName;
-			if (request.ContentLength >= 0) {
-				newRequest.ContentLength = request.ContentLength;
-			}
-			newRequest.ContentType = request.ContentType;
 			newRequest.ContinueDelegate = request.ContinueDelegate;
 			newRequest.CookieContainer = request.CookieContainer;
 			newRequest.Credentials = request.Credentials;
-			newRequest.Expect = request.Expect;
-			newRequest.IfModifiedSince = request.IfModifiedSince;
 			newRequest.ImpersonationLevel = request.ImpersonationLevel;
-			newRequest.KeepAlive = request.KeepAlive;
 			newRequest.MaximumAutomaticRedirections = request.MaximumAutomaticRedirections;
 			newRequest.MaximumResponseHeadersLength = request.MaximumResponseHeadersLength;
 			newRequest.MediaType = request.MediaType;
@@ -295,22 +304,10 @@ namespace DotNetOpenAuth.Messaging {
 			newRequest.ProtocolVersion = request.ProtocolVersion;
 			newRequest.Proxy = request.Proxy;
 			newRequest.ReadWriteTimeout = request.ReadWriteTimeout;
-			newRequest.Referer = request.Referer;
 			newRequest.SendChunked = request.SendChunked;
 			newRequest.Timeout = request.Timeout;
-			newRequest.TransferEncoding = request.TransferEncoding;
 			newRequest.UnsafeAuthenticatedConnectionSharing = request.UnsafeAuthenticatedConnectionSharing;
 			newRequest.UseDefaultCredentials = request.UseDefaultCredentials;
-			newRequest.UserAgent = request.UserAgent;
-
-			// We copy headers last, and only those that do not yet exist as a result
-			// of setting these properties, so as to avoid exceptions thrown because 
-			// there are properties .NET wants us to use rather than direct headers.
-			foreach (string header in request.Headers) {
-				if (!HeadersToNotCopy.Contains(header) && string.IsNullOrEmpty(newRequest.Headers[header])) {
-					newRequest.Headers.Add(header, request.Headers[header]);
-				}
-			}
 
 			return newRequest;
 		}
