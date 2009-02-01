@@ -87,7 +87,7 @@
 		<MSBuild Projects="$(ProjectRoot)\src\$(ProductName).sln" Targets="Clean" />
 	</Target>
 
-	<Target Name="Drop" DependsOnTargets="_SetDropProperties;GetBuildVersion;_EnsureCleanDrop;Build;Documentation">
+	<Target Name="Drop" DependsOnTargets="_SetDropProperties;GetBuildVersion;_EnsureCleanDrop;BuildProduct;BuildSamples;Documentation">
 		<Warning Condition=" '$(Configuration)' != 'release' " Text="Building $(Configuration) instead of Release!" />
 		<PropertyGroup>
 			<DropDirectory>$(ProjectRoot)\drops\$(ProductName)-$(BuildVersion)</DropDirectory>
@@ -119,6 +119,8 @@
 															$(ProjectRoot)\**\*.ldf;
 															$(ProjectRoot)\**\*.log*;
 															$(ProjectRoot)\**\*~;
+															$(ProjectRoot)\**\Debug\**;
+															$(ProjectRoot)\**\Settings.StyleCop;
 															" />
 			<DropSpecsSourceFiles Include="$(ProjectRoot)\Doc\specs\*.htm*" />
 
@@ -143,6 +145,10 @@
 										@(DropSpecsFiles)
 										" />
 		</ItemGroup>
+
+		<!-- clean up any previous drop with the same name so we don't aggregate files. -->
+		<Delete Files="$(DropZip)" />
+		<RemoveDir Directories="$(DropDirectory)" />
 
 		<MakeDir Directories="@(DropDirectories)" />
 		<Copy SourceFiles="@(AllDropSources)" DestinationFiles="@(AllDropTargets)" SkipUnchangedFiles="true" />
