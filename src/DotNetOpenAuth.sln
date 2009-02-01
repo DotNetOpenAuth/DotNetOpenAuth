@@ -121,7 +121,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "RelyingPartyClassicAsp", ".
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RelyingPartyWebForms", "..\samples\RelyingPartyWebForms\RelyingPartyWebForms.csproj", "{1E8AEA89-BF69-47A1-B290-E8B0FE588700}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdProviderWebForms", "..\samples\ProviderPortal\OpenIdProviderWebForms.csproj", "{2A59DE0A-B76A-4B42-9A33-04D34548353D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdProviderWebForms", "..\samples\OpenIdProviderWebForms\OpenIdProviderWebForms.csproj", "{2A59DE0A-B76A-4B42-9A33-04D34548353D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RelyingPartyMvc", "..\samples\RelyingPartyMvc\RelyingPartyMvc.csproj", "{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB}"
 EndProject
