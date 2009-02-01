@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 	/// A struct storing Simple Registration field values describing an
 	/// authenticating user.
 	/// </summary>
-	public sealed class ClaimsResponse : ExtensionBase, IClientScriptExtensionResponse {
+	public sealed class ClaimsResponse : ExtensionBase, IClientScriptExtensionResponse, IMessageWithEvents {
 		/// <summary>
 		/// The factory method that may be used in deserialization of this message.
 		/// </summary>
@@ -309,5 +309,40 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		}
 
 		#endregion
+
+		#region IMessageWithEvents Members
+
+		/// <summary>
+		/// Called when the message is about to be transmitted,
+		/// before it passes through the channel binding elements.
+		/// </summary>
+		void IMessageWithEvents.OnSending() {
+			// Null out empty values so we don't send out a lot of empty parameters.
+			this.Country = EmptyToNull(this.Country);
+			this.Email = EmptyToNull(this.Email);
+			this.FullName = EmptyToNull(this.FullName);
+			this.Language = EmptyToNull(this.Language);
+			this.Nickname = EmptyToNull(this.Nickname);
+			this.PostalCode = EmptyToNull(this.PostalCode);
+			this.TimeZone = EmptyToNull(this.TimeZone);
+		}
+
+		/// <summary>
+		/// Called when the message has been received,
+		/// after it passes through the channel binding elements.
+		/// </summary>
+		void IMessageWithEvents.OnReceiving() {
+		}
+
+		#endregion
+
+		/// <summary>
+		/// Translates an empty string value to null, or passes through non-empty values.
+		/// </summary>
+		/// <param name="value">The value to consider changing to null.</param>
+		/// <returns>Either null or a non-empty string.</returns>
+		private static string EmptyToNull(string value) {
+			return string.IsNullOrEmpty(value) ? null : value;
+		}
 	}
 }

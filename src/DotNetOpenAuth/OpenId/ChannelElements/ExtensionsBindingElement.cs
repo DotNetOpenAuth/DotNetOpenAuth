@@ -116,7 +116,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 						// OpenID 2.0 Section 12 forbids two extensions with the same TypeURI in the same message.
 						ErrorUtilities.VerifyProtocol(!extensionManager.ContainsExtension(extension.TypeUri), OpenIdStrings.ExtensionAlreadyAddedWithSameTypeURI, extension.TypeUri);
 
-						var extensionDictionary = new MessageDictionary(extension);
+						var extensionDictionary = MessageSerializer.Get(extension.GetType()).Serialize(extension);
 						extensionManager.AddExtensionArguments(extension.TypeUri, extensionDictionary);
 					} else {
 						Logger.WarnFormat("Unexpected extension type {0} did not implement {1}.", protocolExtension.GetType(), typeof(IOpenIdMessageExtension).Name);

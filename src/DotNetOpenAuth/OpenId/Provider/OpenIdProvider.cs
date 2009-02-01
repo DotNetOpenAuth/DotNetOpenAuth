@@ -202,7 +202,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			// is authorized to send an assertion for the given claimed identifier,
 			// do due diligence by performing our own discovery on the claimed identifier
 			// and make sure that it is tied to this OP and OP local identifier.
-			// TODO: code here
+			//// TODO: code here
 
 			Logger.InfoFormat("Preparing unsolicited assertion for {0}", claimedIdentifier);
 			var returnToEndpoint = relyingParty.Discover(this.WebRequestHandler, true).FirstOrDefault();
