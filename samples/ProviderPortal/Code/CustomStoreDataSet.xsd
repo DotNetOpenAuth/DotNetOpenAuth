@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="CustomStoreDataSet" targetNamespace="http://tempuri.org/CustomStoreDataSet.xsd" xmlns:mstns="http://tempuri.org/CustomStoreDataSet.xsd" xmlns="http://tempuri.org/CustomStoreDataSet.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="CustomStoreDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:Generator_UserDSName="CustomStoreDataSet" msprop:Generator_DataSetName="CustomStoreDataSet" msprop:EnableTableAdapterManager="true">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="Association" msprop:Generator_UserTableName="Association" msprop:Generator_RowDeletedName="AssociationRowDeleted" msprop:Generator_RowChangedName="AssociationRowChanged" msprop:Generator_RowClassName="AssociationRow" msprop:Generator_RowChangingName="AssociationRowChanging" msprop:Generator_RowEvArgName="AssociationRowChangeEvent" msprop:Generator_RowEvHandlerName="AssociationRowChangeEventHandler" msprop:Generator_TableClassName="AssociationDataTable" msprop:Generator_TableVarName="tableAssociation" msprop:Generator_RowDeletingName="AssociationRowDeleting" msprop:Generator_TablePropName="Association">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="DistinguishingFactor" msprop:Generator_UserColumnName="DistinguishingFactor" msprop:Generator_ColumnPropNameInRow="DistinguishingFactor" msprop:Generator_ColumnVarNameInTable="columnDistinguishingFactor" msprop:Generator_ColumnPropNameInTable="DistinguishingFactorColumn" type="xs:string" />
+              <xs:element name="Handle" msprop:Generator_UserColumnName="Handle" msprop:Generator_ColumnPropNameInRow="Handle" msprop:Generator_ColumnVarNameInTable="columnHandle" msprop:Generator_ColumnPropNameInTable="HandleColumn" type="xs:string" />
+              <xs:element name="Expires" msprop:Generator_UserColumnName="Expires" msprop:Generator_ColumnPropNameInRow="Expires" msprop:Generator_ColumnVarNameInTable="columnExpires" msprop:Generator_ColumnPropNameInTable="ExpiresColumn" type="xs:dateTime" />
+              <xs:element name="PrivateData" msprop:Generator_UserColumnName="PrivateData" msprop:Generator_ColumnPropNameInRow="PrivateData" msprop:Generator_ColumnVarNameInTable="columnPrivateData" msprop:Generator_ColumnPropNameInTable="PrivateDataColumn" type="xs:base64Binary" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+    <xs:unique name="PrimaryKey" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:Association" />
+      <xs:field xpath="mstns:DistinguishingFactor" />
+      <xs:field xpath="mstns:Handle" />
+    </xs:unique>
+  </xs:element>
+</xs:schema>

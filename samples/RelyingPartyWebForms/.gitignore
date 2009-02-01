@@ -1,0 +1,5 @@
+Bin
+obj
+*.user
+*.log
+StyleCop.Cache

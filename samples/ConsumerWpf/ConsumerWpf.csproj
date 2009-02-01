@@ -101,7 +101,7 @@
     </ProjectReference>
     <ProjectReference Include="..\DotNetOpenAuth.ApplicationBlock\DotNetOpenAuth.ApplicationBlock.csproj">
       <Project>{AA78D112-D889-414B-A7D4-467B34C7B663}</Project>
-      <Name>DotNetOAuth.ApplicationBlock</Name>
+      <Name>DotNetOpenAuth.ApplicationBlock</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

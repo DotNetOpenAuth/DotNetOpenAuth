@@ -1,0 +1,20 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="Head1" runat="server">
+	<title>OpenID Provider, by DotNetOpenId</title>
+	<link href="/styles.css" rel="stylesheet" type="text/css" />
+	<asp:ContentPlaceHolder ID="head" runat="server" />
+</head>
+<body>
+	<form id="form1" runat="server">
+	<div><a href="http://dotnetopenid.googlecode.com">
+		<img runat="server" src="~/images/dotnetopenid_tiny.gif" title="Jump to the project web site."
+			alt="DotNetOpenId" border='0' /></a> </div>
+	<div>
+		<asp:ContentPlaceHolder ID="Main" runat="server" />
+	</div>
+	</form>
+</body>
+</html>

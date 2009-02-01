@@ -82,14 +82,14 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "DotNetOpenAuth.TestWeb", "D
 		Debug.AspNetCompiler.VirtualPath = "/DotNetOpenAuth.TestWeb"
 		Debug.AspNetCompiler.PhysicalPath = "DotNetOpenAuth.TestWeb\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\DotNetOpenAuth.TestWeb\"
-		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.Updateable = "false"
 		Debug.AspNetCompiler.ForceOverwrite = "true"
 		Debug.AspNetCompiler.FixedNames = "false"
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.VirtualPath = "/DotNetOpenAuth.TestWeb"
 		Release.AspNetCompiler.PhysicalPath = "DotNetOpenAuth.TestWeb\"
 		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\DotNetOpenAuth.TestWeb\"
-		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.Updateable = "false"
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
@@ -97,6 +97,33 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "DotNetOpenAuth.TestWeb", "D
 		DefaultWebSiteLanguage = "Visual C#"
 		StartServerOnDebug = "false"
 	EndProjectSection
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "RelyingPartyClassicAsp", "..\samples\RelyingPartyClassicAsp\", "{97684CCA-BB86-4B77-8124-D73A5514B270}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFramework = "3.5"
+		Debug.AspNetCompiler.VirtualPath = "/RelyingPartyClassicAsp"
+		Debug.AspNetCompiler.PhysicalPath = "..\samples\RelyingPartyClassicAsp\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\RelyingPartyClassicAsp\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/RelyingPartyClassicAsp"
+		Release.AspNetCompiler.PhysicalPath = "..\samples\RelyingPartyClassicAsp\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\RelyingPartyClassicAsp\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "49675"
+		DefaultWebSiteLanguage = "Visual C#"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RelyingPartyWebForms", "..\samples\RelyingPartyWebForms\RelyingPartyWebForms.csproj", "{1E8AEA89-BF69-47A1-B290-E8B0FE588700}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdProviderWebForms", "..\samples\ProviderPortal\OpenIdProviderWebForms.csproj", "{2A59DE0A-B76A-4B42-9A33-04D34548353D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RelyingPartyMvc", "..\samples\RelyingPartyMvc\RelyingPartyMvc.csproj", "{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB}"
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
@@ -135,6 +162,22 @@ Global
 		{47A84EF7-68C3-4D47-926A-9CCEA6518531}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47A84EF7-68C3-4D47-926A-9CCEA6518531}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{47A84EF7-68C3-4D47-926A-9CCEA6518531}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{97684CCA-BB86-4B77-8124-D73A5514B270}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97684CCA-BB86-4B77-8124-D73A5514B270}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97684CCA-BB86-4B77-8124-D73A5514B270}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{97684CCA-BB86-4B77-8124-D73A5514B270}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{1E8AEA89-BF69-47A1-B290-E8B0FE588700}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E8AEA89-BF69-47A1-B290-E8B0FE588700}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E8AEA89-BF69-47A1-B290-E8B0FE588700}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E8AEA89-BF69-47A1-B290-E8B0FE588700}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A59DE0A-B76A-4B42-9A33-04D34548353D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A59DE0A-B76A-4B42-9A33-04D34548353D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A59DE0A-B76A-4B42-9A33-04D34548353D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A59DE0A-B76A-4B42-9A33-04D34548353D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -145,5 +188,9 @@ Global
 		{6EC36418-DBC5-4AD1-A402-413604AA7A08} = {B4C6F647-C046-4B54-BE12-7701C4119EE7}
 		{EC910270-AAB6-4AC6-9B57-99118CFBE557} = {B4C6F647-C046-4B54-BE12-7701C4119EE7}
 		{AA78D112-D889-414B-A7D4-467B34C7B663} = {B4C6F647-C046-4B54-BE12-7701C4119EE7}
+		{97684CCA-BB86-4B77-8124-D73A5514B270} = {B4C6F647-C046-4B54-BE12-7701C4119EE7}
+		{1E8AEA89-BF69-47A1-B290-E8B0FE588700} = {B4C6F647-C046-4B54-BE12-7701C4119EE7}
+		{2A59DE0A-B76A-4B42-9A33-04D34548353D} = {B4C6F647-C046-4B54-BE12-7701C4119EE7}
+		{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB} = {B4C6F647-C046-4B54-BE12-7701C4119EE7}
 	EndGlobalSection
 EndGlobal
