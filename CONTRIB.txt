@@ -1,0 +1,1 @@
+All contributions made to this library must be under terms compatible with the license in the accompanying LICENSE.txt file.  

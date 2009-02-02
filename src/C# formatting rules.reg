@@ -1,0 +1,14 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Microsoft\VisualStudio\9.0\CSharp\Options\Formatting]
+"NewLines_Braces_AnonymousMethod"=dword:00000000
+"NewLines_Braces_AnonymousTypeInitializer"=dword:00000000
+"NewLines_Braces_ObjectInitializer"=dword:00000000
+"NewLines_Braces_ControlFlow"=dword:00000000
+"NewLines_Braces_Method"=dword:00000000
+"NewLines_Braces_Type"=dword:00000000
+"NewLines_Braces_LambdaExpressionBody"=dword:00000000
+"NewLines_Keywords_Catch"=dword:00000000
+"NewLines_Keywords_Else"=dword:00000000
+"NewLines_Keywords_Finally"=dword:00000000
+

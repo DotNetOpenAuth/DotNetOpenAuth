@@ -105,9 +105,11 @@
 										 " />
 
 			<DropSourceFiles Include="
-			                          $(ProjectRoot)\Doc\$(ProductName).chm;
-			                          $(ProjectRoot)\Doc\*.htm*;
-			                          " />
+																$(ProjectRoot)\Doc\$(ProductName).chm;
+																$(ProjectRoot)\Doc\*.htm*;
+																$(ProjectRoot)\LICENSE.txt;
+																$(ProjectRoot)\CONTRIB.txt;
+																" />
 			<DropBinSourceFiles Include="$(OutputPath)\$(ProductName).???" />
 			<DropSamplesSourceFiles Include="$(ProjectRoot)\Samples\**" Exclude="
 															$(ProjectRoot)\**\obj\**;
