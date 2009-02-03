@@ -286,4 +286,7 @@ Discovered endpoint info:
   <data name="AbsoluteUriRequired" xml:space="preserve">
     <value>An absolute URI is required for this value.</value>
   </data>
+  <data name="UnsolicitedAssertionForUnrelatedClaimedIdentifier" xml:space="preserve">
+    <value>An unsolicited assertion cannot be sent for the claimed identifier {0} because this is not an authorized Provider for that identifier.</value>
+  </data>
 </root>

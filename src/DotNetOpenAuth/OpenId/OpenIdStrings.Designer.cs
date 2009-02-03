@@ -524,6 +524,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An unsolicited assertion cannot be sent for the claimed identifier {0} because this is not an authorized Provider for that identifier..
+        /// </summary>
+        internal static string UnsolicitedAssertionForUnrelatedClaimedIdentifier {
+            get {
+                return ResourceManager.GetString("UnsolicitedAssertionForUnrelatedClaimedIdentifier", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unsolicited assertions are not allowed from 1.0 OpenID Providers..
         /// </summary>
         internal static string UnsolicitedAssertionsNotAllowedFrom1xOPs {

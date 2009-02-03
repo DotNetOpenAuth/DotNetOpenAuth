@@ -202,7 +202,17 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			// is authorized to send an assertion for the given claimed identifier,
 			// do due diligence by performing our own discovery on the claimed identifier
 			// and make sure that it is tied to this OP and OP local identifier.
-			//// TODO: code here
+			var serviceEndpoint = DotNetOpenAuth.OpenId.RelyingParty.ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, localIdentifier, new ProviderEndpointDescription(providerEndpoint, Protocol.Default.Version), null, null);
+			var discoveredEndpoints = claimedIdentifier.Discover(this.WebRequestHandler);
+			if (!discoveredEndpoints.Contains(serviceEndpoint)) {
+				Logger.DebugFormat(
+					"Failed to send unsolicited assertion for {0} because its discovered services did not include this endpoint.  This endpoint: {1}{2}  Discovered endpoints: {1}{3}",
+					claimedIdentifier,
+					Environment.NewLine,
+					serviceEndpoint,
+					discoveredEndpoints.ToStringDeferred(true));
+				ErrorUtilities.ThrowProtocol(OpenIdStrings.UnsolicitedAssertionForUnrelatedClaimedIdentifier, claimedIdentifier);
+			}
 
 			Logger.InfoFormat("Preparing unsolicited assertion for {0}", claimedIdentifier);
 			var returnToEndpoint = relyingParty.Discover(this.WebRequestHandler, true).FirstOrDefault();
