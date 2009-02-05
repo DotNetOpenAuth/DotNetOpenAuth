@@ -216,7 +216,7 @@ namespace DotNetOpenAuth.Messaging {
 			this.PrepareRequest(request, true);
 
 			// Submit the request and get the request stream back.
-			return this.chainedWebRequestHandler.GetRequestStream(request);
+			return this.chainedWebRequestHandler.GetRequestStream(request, options & ~DirectWebRequestOptions.RequireSsl);
 		}
 
 		/// <summary>
@@ -249,7 +249,7 @@ namespace DotNetOpenAuth.Messaging {
 			int i;
 			for (i = 0; i < this.MaximumRedirections; i++) {
 				this.EnsureAllowableRequestUri(request.RequestUri, (options & DirectWebRequestOptions.RequireSsl) != 0);
-				CachedDirectWebResponse response = this.chainedWebRequestHandler.GetResponse(request, options).GetSnapshot(this.MaximumBytesToRead);
+				CachedDirectWebResponse response = this.chainedWebRequestHandler.GetResponse(request, options & ~DirectWebRequestOptions.RequireSsl).GetSnapshot(this.MaximumBytesToRead);
 				if (response.Status == HttpStatusCode.MovedPermanently ||
 					response.Status == HttpStatusCode.Redirect ||
 					response.Status == HttpStatusCode.RedirectMethod ||
