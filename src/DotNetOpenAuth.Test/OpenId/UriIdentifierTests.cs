@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -376,9 +377,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.AreEqual(expectedLocalId, se.ProviderLocalIdentifier);
 			Assert.AreEqual(expectSreg ? 2 : 1, se.ProviderSupportedServiceTypeUris.Count);
 			Assert.IsTrue(se.ProviderSupportedServiceTypeUris.Contains(protocol.ClaimedIdentifierServiceTypeURI));
-
-			// TODO: re-enable this line once extensions support is added back in.
-			////Assert.AreEqual(expectSreg, se.IsExtensionSupported(new ClaimsRequest()));
+			Assert.AreEqual(expectSreg, se.IsExtensionSupported(new ClaimsRequest()));
 		}
 
 		private void DiscoverXrds(string page, ProtocolVersion version, Identifier expectedLocalId) {

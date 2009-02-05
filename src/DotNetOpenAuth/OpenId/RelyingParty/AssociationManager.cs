@@ -103,13 +103,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				return null;
 			}
 
-			// TODO: we need a way to lookup an association that fulfills a given set of security
-			// requirements.  We may have a SHA-1 association and a SHA-256 association that need
-			// to be called for specifically. (a bizzare scenario, admittedly, making this low priority).
-			Association association = this.associationStore.GetAssociation(provider.Endpoint);
+			Association association = this.associationStore.GetAssociation(provider.Endpoint, this.SecuritySettings);
 
 			// If the returned association does not fulfill security requirements, ignore it.
-			if (association != null && !this.securitySettings.IsAssociationInPermittedRange(protocol, association.GetAssociationType(protocol))) {
+			if (association != null && !this.SecuritySettings.IsAssociationInPermittedRange(association)) {
 				association = null;
 			}
 

@@ -61,6 +61,11 @@ namespace DotNetOpenAuth.OpenId {
 		}
 
 		/// <summary>
+		/// Gets the length (in bits) of the hash this association creates when signing.
+		/// </summary>
+		public abstract int HashBitLength { get; }
+
+		/// <summary>
 		/// Gets a value indicating whether this instance has useful life remaining.
 		/// </summary>
 		/// <value>
@@ -135,7 +140,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>
 		/// The newly dehydrated <see cref="Association"/>, which can be returned
 		/// from a custom association store's 
-		/// <see cref="IAssociationStore&lt;TKey&gt;.GetAssociation(TKey)"/> method.
+		/// <see cref="IAssociationStore&lt;TKey&gt;.GetAssociation(TKey, SecuritySettings)"/> method.
 		/// </returns>
 		public static Association Deserialize(string handle, DateTime expires, byte[] privateData) {
 			if (string.IsNullOrEmpty(handle)) {

@@ -31,8 +31,6 @@ namespace DotNetOpenAuth.Test.Hosting {
 		[Obsolete("Use the CreateHost static method instead.")]
 		public AspNetHost() {
 			this.httpHost = HttpHost.CreateHost(this);
-			////if (!UntrustedWebRequestHandler.WhitelistHosts.Contains("localhost"))
-			////    UntrustedWebRequestHandler.WhitelistHosts.Add("localhost");
 		}
 
 		public Uri BaseUri {

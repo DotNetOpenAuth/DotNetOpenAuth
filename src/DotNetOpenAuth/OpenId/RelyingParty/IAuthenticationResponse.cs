@@ -113,7 +113,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <para>Note that these values are NOT protected against tampering in transit.</para>
 		/// </remarks>
 		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Historically an expensive operation.")]
-		IDictionary<string, string> GetCallbackArguments(); // TODO: consider changing this to a property since the result can be cached.
+		IDictionary<string, string> GetCallbackArguments(); // TODO: change this to a property, and return a cached ReadOnlyDictionary
 
 		/// <summary>
 		/// Tries to get an OpenID extension that may be present in the response.

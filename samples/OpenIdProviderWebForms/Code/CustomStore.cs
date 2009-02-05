@@ -11,6 +11,7 @@ namespace OpenIdProviderWebForms.Code {
 	using System.Security.Cryptography;
 	using DotNetOpenAuth.OpenId;
 	using IProviderAssociationStore = DotNetOpenAuth.OpenId.IAssociationStore<DotNetOpenAuth.OpenId.AssociationRelyingPartyType>;
+	using DotNetOpenAuth.OpenId.Provider;
 
 	/// <summary>
 	/// This custom store serializes all elements to demonstrate peristent and/or shared storage.
@@ -22,7 +23,7 @@ namespace OpenIdProviderWebForms.Code {
 	/// But we "persist" all associations and nonces into a DataTable to demonstrate
 	/// that using a database is possible.
 	/// </remarks>
-	public class CustomStore : IProviderAssociationStore {
+	public class CustomStore : IProviderApplicationStore {
 		private static CustomStoreDataSet dataSet = new CustomStoreDataSet();
 
 		#region IAssociationStore<AssociationRelyingPartyType> Members
@@ -36,7 +37,8 @@ namespace OpenIdProviderWebForms.Code {
 			dataSet.Association.AddAssociationRow(assocRow);
 		}
 
-		public Association GetAssociation(AssociationRelyingPartyType distinguishingFactor) {
+		public Association GetAssociation(AssociationRelyingPartyType distinguishingFactor, SecuritySettings securitySettings) {
+			// TODO: properly consider the securitySettings when picking an association to return.
 			// properly escape the URL to prevent injection attacks.
 			string value = distinguishingFactor.ToString();
 			string filter = string.Format(
@@ -85,5 +87,53 @@ namespace OpenIdProviderWebForms.Code {
 				view.Delete(i);
 			}
 		}
+
+		#region INonceStore Members
+
+		/// <summary>
+		/// Stores a given nonce and timestamp.
+		/// </summary>
+		/// <param name="nonce">A series of random characters.</param>
+		/// <param name="timestamp">The timestamp that together with the nonce string make it unique.
+		/// The timestamp may also be used by the data store to clear out old nonces.</param>
+		/// <returns>
+		/// True if the nonce+timestamp (combination) was not previously in the database.
+		/// False if the nonce was stored previously with the same timestamp.
+		/// </returns>
+		/// <remarks>
+		/// The nonce must be stored for no less than the maximum time window a message may
+		/// be processed within before being discarded as an expired message.
+		/// If the binding element is applicable to your channel, this expiration window
+		/// is retrieved or set using the
+		/// <see cref="StandardExpirationBindingElement.MaximumMessageAge"/> property.
+		/// </remarks>
+		public bool StoreNonce(string nonce, DateTime timestamp) {
+			// IMPORTANT: If actually persisting to a database that can be reached from
+			// different servers/instances of this class at once, it is vitally important
+			// to protect against race condition attacks by one or more of these:
+			// 1) setting a UNIQUE constraint on the nonce CODE in the SQL table
+			// 2) Using a transaction with repeatable reads to guarantee that a check
+			//    that verified a nonce did not exist will prevent that nonce from being
+			//    added by another process while this process is adding it.
+			// And then you'll want to catch the exception that the SQL database can throw
+			// at you in the result of a race condition somewhere in your web site UI code
+			// and display some message to have the user try to log in again, and possibly
+			// warn them about a replay attack.
+			lock (this) {
+				if (dataSet.Nonce.FindByCode(nonce) != null) {
+					return false;
+				}
+
+				TimeSpan maxMessageAge = DotNetOpenAuth.Configuration.DotNetOpenAuthSection.Configuration.Messaging.MaximumMessageLifetime;
+				dataSet.Nonce.AddNonceRow(nonce, timestamp.ToLocalTime(), (timestamp + maxMessageAge).ToLocalTime());
+				return true;
+			}
+		}
+
+		public void ClearExpiredNonces() {
+			this.removeExpiredRows(dataSet.Nonce, dataSet.Nonce.ExpiresColumn.ColumnName);
+		}
+
+		#endregion
 	}
 }

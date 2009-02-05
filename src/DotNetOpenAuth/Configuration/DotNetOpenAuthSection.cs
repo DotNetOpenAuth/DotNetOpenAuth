@@ -11,7 +11,7 @@ namespace DotNetOpenAuth.Configuration {
 	/// Represents the section in the host's .config file that configures
 	/// this library's settings.
 	/// </summary>
-	internal class DotNetOpenAuthSection : ConfigurationSection {
+	public class DotNetOpenAuthSection : ConfigurationSection {
 		/// <summary>
 		/// The name of the section under which this library's settings must be found.
 		/// </summary>
@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// <summary>
 		/// Gets the configuration section from the .config file.
 		/// </summary>
-		internal static DotNetOpenAuthSection Configuration {
+		public static DotNetOpenAuthSection Configuration {
 			get { return (DotNetOpenAuthSection)ConfigurationManager.GetSection(SectionName) ?? new DotNetOpenAuthSection(); }
 		}
 
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// Gets or sets the configuration for the messaging framework.
 		/// </summary>
 		[ConfigurationProperty(MessagingElementName)]
-		internal MessagingElement Messaging {
+		public MessagingElement Messaging {
 			get { return (MessagingElement)this[MessagingElementName] ?? new MessagingElement(); }
 			set { this[MessagingElementName] = value; }
 		}

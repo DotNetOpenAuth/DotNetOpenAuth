@@ -70,10 +70,10 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 			// make b the best by making a older
 			a.Issued -= TimeSpan.FromHours(1);
-			Assert.AreSame(b, this.assocs.Best);
+			Assert.AreSame(b, this.assocs.Best.FirstOrDefault());
 			// now make a the best
 			b.Issued -= TimeSpan.FromHours(2);
-			Assert.AreSame(a, this.assocs.Best);
+			Assert.AreSame(a, this.assocs.Best.FirstOrDefault());
 		}
 	}
 }

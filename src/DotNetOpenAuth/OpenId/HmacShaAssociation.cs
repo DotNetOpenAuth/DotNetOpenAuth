@@ -74,6 +74,16 @@ namespace DotNetOpenAuth.OpenId {
 		}
 
 		/// <summary>
+		/// Gets the length (in bits) of the hash this association creates when signing.
+		/// </summary>
+		public override int HashBitLength {
+			get {
+				Protocol protocol = Protocol.Default;
+				return HmacShaAssociation.GetSecretLength(protocol, GetAssociationType(protocol)) * 8;
+			}
+		}
+
+		/// <summary>
 		/// Creates an HMAC-SHA association.
 		/// </summary>
 		/// <param name="protocol">The OpenID protocol version that the request for an association came in on.</param>

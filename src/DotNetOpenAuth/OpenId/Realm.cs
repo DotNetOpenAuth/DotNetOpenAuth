@@ -57,7 +57,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// Initializes a new instance of the <see cref="Realm"/> class.
 		/// </summary>
 		/// <param name="realmUrl">The realm URL to use in the new instance.</param>
-		[SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads", Justification = "TODO")]
 		public Realm(string realmUrl) {
 			ErrorUtilities.VerifyArgumentNotNull(realmUrl, "realmUrl");
 			this.DomainWildcard = Regex.IsMatch(realmUrl, WildcardDetectionPattern);
@@ -194,8 +193,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		/// <param name="uri">The URI that the new Realm instance will represent.</param>
 		/// <returns>The result of the conversion.</returns>
-		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "TODO")]
-		[SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads", Justification = "TODO")]
 		public static implicit operator Realm(string uri) {
 			return uri != null ? new Realm(uri) : null;
 		}
@@ -205,7 +202,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		/// <param name="uri">The URI to convert to a realm.</param>
 		/// <returns>The result of the conversion.</returns>
-		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "TODO")]
 		public static implicit operator Realm(Uri uri) {
 			return uri != null ? new Realm(uri.AbsoluteUri) : null;
 		}
@@ -392,8 +388,8 @@ namespace DotNetOpenAuth.OpenId {
 			ErrorUtilities.VerifyArgumentNotNull(realmUriBuilder, "realmUriBuilder");
 
 			// Note: we MUST use ToString.  Uri property throws if wildcard is present.
-			// TODO: I now know that Uri.ToString and Uri.AbsoluteUri are very different
-			//       for some strings.  Do we have to worry about that here?
+			// Note that Uri.ToString() should generally be avoided, but UriBuilder.ToString()
+			// is safe: http://blog.nerdbank.net/2008/04/uriabsoluteuri-and-uritostring-are-not.html
 			return realmUriBuilder.ToString();
 		}
 	}

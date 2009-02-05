@@ -18,29 +18,9 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		internal static readonly TimeSpan DefaultMaximumMessageAge = TimeSpan.FromMinutes(13);
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StandardExpirationBindingElement"/> class
-		/// with a default maximum message lifetime of 13 minutes.
-		/// </summary>
-		internal StandardExpirationBindingElement()
-			: this(DefaultMaximumMessageAge) {
-		}
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="StandardExpirationBindingElement"/> class.
 		/// </summary>
-		/// <param name="maximumAge">
-		/// <para>The maximum age a message implementing the 
-		/// <see cref="IExpiringProtocolMessage"/> interface can be before
-		/// being discarded as too old.</para>
-		/// <para>This time limit should take into account expected time skew for servers
-		/// across the Internet.  For example, if a server could conceivably have its
-		/// clock d = 5 minutes off UTC time, then any two servers could have
-		/// their clocks disagree by as much as 2*d = 10 minutes.
-		/// If a message should live for at least t = 3 minutes, 
-		/// this property should be set to (2*d + t) = 13 minutes.</para>
-		/// </param>
-		internal StandardExpirationBindingElement(TimeSpan maximumAge) {
-			this.MaximumMessageAge = maximumAge;
+		internal StandardExpirationBindingElement() {
 		}
 
 		#region IChannelBindingElement Properties
@@ -66,8 +46,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// being discarded as too old.
 		/// </summary>
 		protected internal TimeSpan MaximumMessageAge {
-			get;
-			private set;
+			get { return Configuration.DotNetOpenAuthSection.Configuration.Messaging.MaximumMessageLifetime; }
 		}
 
 		#region IChannelBindingElement Methods

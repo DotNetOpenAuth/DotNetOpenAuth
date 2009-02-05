@@ -184,8 +184,14 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 		/// A hash code for the current <see cref="T:System.Object"/>.
 		/// </returns>
 		public override int GetHashCode() {
-			// TODO: fix this to match Equals
-			return this.PreferredPolicies.GetHashCode();
+			// This is a poor hash function, but an site that cares will likely have a bunch
+			// of look-alike instances anyway, so a good hash function would still bunch
+			// all the instances into the same hash code.
+			if (this.MaximumAuthenticationAge.HasValue) {
+				return this.MaximumAuthenticationAge.Value.GetHashCode();
+			} else {
+				return 1;
+			}
 		}
 
 		/// <summary>

@@ -133,7 +133,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			//       and then to add a special nonce value of its own to provide replay
 			//       protection to the Provider's users even when logging into 1.0 RPs.
 			//       When this is done, remove this conditional getter and always return
-			//       that All protections are required.
+			//       that All protections are required -- (will this work at the RP side?)
 			get { return this.Version.Major < 2 ? MessageProtections.TamperProtection : MessageProtections.All; }
 		}
 

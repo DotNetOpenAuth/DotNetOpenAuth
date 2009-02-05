@@ -35,16 +35,17 @@ namespace DotNetOpenAuth.OpenId {
 		}
 
 		/// <summary>
-		/// Gets the <see cref="Association"/> issued most recently.  Null if no valid associations exist.
+		/// Gets the <see cref="Association"/>s ordered in order of descending issue date
+		/// (most recently issued comes first).  An empty sequence if no valid associations exist.
 		/// </summary>
 		/// <remarks>
 		/// This property is used by relying parties that are initiating authentication requests.
 		/// It does not apply to Providers, which always need a specific association by handle.
 		/// </remarks>
-		public Association Best {
+		public IEnumerable<Association> Best {
 			get {
 				lock (this.associations) {
-					return this.associations.Values.OrderByDescending(assoc => assoc.Issued).FirstOrDefault();
+					return this.associations.Values.OrderByDescending(assoc => assoc.Issued);
 				}
 			}
 		}

@@ -65,8 +65,8 @@
 					return false;
 				}
 
-				// TODO: calculate the actual expiration date.
-				dataSet.Nonce.AddNonceRow(nonce, timestamp.ToLocalTime(), (timestamp + TimeSpan.FromHours(1)).ToLocalTime());
+				TimeSpan maxMessageAge = DotNetOpenAuth.Configuration.DotNetOpenAuthSection.Configuration.Messaging.MaximumMessageLifetime;
+				dataSet.Nonce.AddNonceRow(nonce, timestamp.ToLocalTime(), (timestamp + maxMessageAge).ToLocalTime());
 				return true;
 			}
 		}
@@ -88,7 +88,8 @@
 			dataSet.Association.AddAssociationRow(assocRow);
 		}
 
-		public Association GetAssociation(Uri distinguishingFactor) {
+		public Association GetAssociation(Uri distinguishingFactor, SecuritySettings securitySettings) {
+			// TODO: properly consider the securitySettings when picking an association to return.
 			// properly escape the URL to prevent injection attacks.
 			string value = distinguishingFactor.AbsoluteUri.Replace("'", "''");
 			string filter = string.Format(

@@ -67,11 +67,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Gets the best association (the one with the longest remaining life) for a given key.
 		/// </summary>
 		/// <param name="distinguishingFactor">The Uri (for relying parties) or Smart/Dumb (for Providers).</param>
+		/// <param name="securitySettings">The security settings.</param>
 		/// <returns>
 		/// The requested association, or null if no unexpired <see cref="Association"/>s exist for the given key.
 		/// </returns>
-		public Association GetAssociation(Uri distinguishingFactor) {
-			return this.associationStore.GetAssociation(distinguishingFactor);
+		public Association GetAssociation(Uri distinguishingFactor, SecuritySettings securitySettings) {
+			return this.associationStore.GetAssociation(distinguishingFactor, securitySettings);
 		}
 
 		/// <summary>

@@ -73,8 +73,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				} else {
 					ErrorUtilities.ThrowProtocol(MessagingStrings.UnexpectedMessagePartValue, protocol.openid.mode, mode);
 				}
-
-				// TODO: handle more modes
 			}
 
 			if (message != null) {

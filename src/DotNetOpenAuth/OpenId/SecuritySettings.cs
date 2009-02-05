@@ -4,6 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using DotNetOpenAuth.Messaging;
 namespace DotNetOpenAuth.OpenId {
 	/// <summary>
 	/// Security settings that may be applicable to both relying parties and providers.
@@ -71,6 +72,18 @@ namespace DotNetOpenAuth.OpenId {
 		internal bool IsAssociationInPermittedRange(Protocol protocol, string associationType) {
 			int lengthInBits = HmacShaAssociation.GetSecretLength(protocol, associationType) * 8;
 			return lengthInBits >= this.MinimumHashBitLength && lengthInBits <= this.MaximumHashBitLength;
+		}
+
+		/// <summary>
+		/// Determines whether a given association fits the security requirements.
+		/// </summary>
+		/// <param name="association">The association to check.</param>
+		/// <returns>
+		/// 	<c>true</c> if the association is permitted given the security requirements; otherwise, <c>false</c>.
+		/// </returns>
+		internal bool IsAssociationInPermittedRange(Association association) {
+			ErrorUtilities.VerifyArgumentNotNull(association, "association");
+			return association.HashBitLength >= this.MinimumHashBitLength && association.HashBitLength <= this.MaximumHashBitLength;
 		}
 	}
 }

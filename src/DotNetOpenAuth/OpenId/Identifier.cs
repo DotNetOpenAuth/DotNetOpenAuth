@@ -44,7 +44,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="identifier">The identifier.</param>
 		/// <returns>The particular Identifier instance to represent the value given.</returns>
 		[SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates", Justification = "Our named alternate is Parse.")]
-		[SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads", Justification = "TODO")]
 		public static implicit operator Identifier(string identifier) {
 			if (identifier == null) {
 				return null;
@@ -57,7 +56,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		/// <param name="identifier">The identifier to convert.</param>
 		/// <returns>The result of the conversion.</returns>
-		[SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates", Justification = "TODO")]
 		public static implicit operator Identifier(Uri identifier) {
 			if (identifier == null) {
 				return null;
@@ -70,7 +68,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		/// <param name="identifier">The identifier to convert to a string.</param>
 		/// <returns>The result of the conversion.</returns>
-		[SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates", Justification = "TODO")]
 		public static implicit operator string(Identifier identifier) {
 			if (identifier == null) {
 				return null;
@@ -84,7 +81,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		/// <param name="identifier">Either a URI or XRI identifier.</param>
 		/// <returns>An <see cref="Identifier"/> instance for the given value.</returns>
-		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "TODO")]
+		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Some of these identifiers are not properly formatted to be Uris at this stage.")]
 		public static Identifier Parse(string identifier) {
 			ErrorUtilities.VerifyArgumentNotNull(identifier, "identifier");
 			if (XriIdentifier.IsValidXri(identifier)) {
@@ -119,7 +116,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>
 		/// 	<c>true</c> if the specified identifier is valid; otherwise, <c>false</c>.
 		/// </returns>
-		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "TODO")]
+		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Some of these identifiers are not properly formatted to be Uris at this stage.")]
 		public static bool IsValid(string identifier) {
 			return XriIdentifier.IsValidXri(identifier) || UriIdentifier.IsValidUri(identifier);
 		}

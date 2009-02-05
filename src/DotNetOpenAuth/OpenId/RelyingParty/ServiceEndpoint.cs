@@ -439,13 +439,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			if (this.ProviderSupportedServiceTypeUris != null) {
 				foreach (string serviceTypeUri in this.ProviderSupportedServiceTypeUris) {
 					builder.Append("\t");
-					//// TODO: uncomment when we support extensions
-					////var matchingExtension = Util.FirstOrDefault(ExtensionManager.RequestExtensions, ext => ext.Key.TypeUri == serviceTypeUri);
-					////if (matchingExtension.Key != null) {
-					////    builder.AppendLine(string.Format(CultureInfo.CurrentCulture, "{0} ({1})", serviceTypeUri, matchingExtension.Value));
-					////} else {
-					////    builder.AppendLine(serviceTypeUri);
-					////}
+					builder.AppendLine(serviceTypeUri);
 				}
 			} else {
 				builder.AppendLine("\t(unavailable)");

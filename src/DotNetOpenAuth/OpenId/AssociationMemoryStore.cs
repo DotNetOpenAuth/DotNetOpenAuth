@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OpenId {
 	using System.Collections.Generic;
+	using System.Linq;
 
 	/// <summary>
 	/// Manages a set of associations in memory only (no database).
@@ -44,12 +45,13 @@ namespace DotNetOpenAuth.OpenId {
 		/// Gets the best association (the one with the longest remaining life) for a given key.
 		/// </summary>
 		/// <param name="distinguishingFactor">The Uri (for relying parties) or Smart/Dumb (for Providers).</param>
+		/// <param name="securitySettings">The security settings.</param>
 		/// <returns>
 		/// The requested association, or null if no unexpired <see cref="Association"/>s exist for the given key.
 		/// </returns>
-		public Association GetAssociation(TKey distinguishingFactor) {
+		public Association GetAssociation(TKey distinguishingFactor, SecuritySettings securitySettings) {
 			lock (this) {
-				return this.GetServerAssociations(distinguishingFactor).Best;
+				return this.GetServerAssociations(distinguishingFactor).Best.FirstOrDefault(assoc => securitySettings.IsAssociationInPermittedRange(assoc));
 			}
 		}
 

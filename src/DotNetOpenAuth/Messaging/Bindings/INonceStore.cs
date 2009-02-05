@@ -28,9 +28,10 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <remarks>
 		/// The nonce must be stored for no less than the maximum time window a message may
 		/// be processed within before being discarded as an expired message.
-		/// If the binding element is applicable to your channel, this expiration window
-		/// is retrieved or set using the 
-		/// <see cref="StandardExpirationBindingElement.MaximumMessageAge"/> property.
+		/// This maximum message age can be looked up via the 
+		/// <see cref="DotNetOpenAuth.Configuration.MessagingElement.MaximumMessageLifetime"/>
+		/// property, accessible via the <see cref="DotNetOpenAuth.Configuration.DotNetOpenAuthSection.Configuration"/>
+		/// property.
 		/// </remarks>
 		bool StoreNonce(string nonce, DateTime timestamp);
 	}
