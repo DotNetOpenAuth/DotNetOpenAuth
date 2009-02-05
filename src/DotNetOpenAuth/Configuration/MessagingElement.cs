@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// The name of the &lt;untrustedWebRequest&gt; sub-element.
 		/// </summary>
 		private const string UntrustedWebRequestElementName = "untrustedWebRequest";
-		
+
 		/// <summary>
 		/// The name of the attribute that stores the association's maximum lifetime.
 		/// </summary>

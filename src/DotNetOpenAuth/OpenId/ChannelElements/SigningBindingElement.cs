@@ -329,7 +329,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			// If no assoc_handle was given or it was invalid, the only thing 
 			// left to do is sign a message using a 'dumb' mode association.
 			Protocol protocol = Protocol.Default;
-			Association association = this.opAssociations.GetAssociation(AssociationRelyingPartyType.Dumb, opSecuritySettings);
+			Association association = this.opAssociations.GetAssociation(AssociationRelyingPartyType.Dumb, this.opSecuritySettings);
 			if (association == null) {
 				association = HmacShaAssociation.Create(protocol, protocol.Args.SignatureAlgorithm.HMAC_SHA256, AssociationRelyingPartyType.Dumb, this.opSecuritySettings);
 				this.opAssociations.StoreAssociation(AssociationRelyingPartyType.Dumb, association);

@@ -79,7 +79,7 @@ namespace DotNetOpenAuth.OpenId {
 		public override int HashBitLength {
 			get {
 				Protocol protocol = Protocol.Default;
-				return HmacShaAssociation.GetSecretLength(protocol, GetAssociationType(protocol)) * 8;
+				return HmacShaAssociation.GetSecretLength(protocol, this.GetAssociationType(protocol)) * 8;
 			}
 		}
 

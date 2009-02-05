@@ -4,8 +4,9 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-using DotNetOpenAuth.Messaging;
 namespace DotNetOpenAuth.OpenId {
+	using DotNetOpenAuth.Messaging;
+
 	/// <summary>
 	/// Security settings that may be applicable to both relying parties and providers.
 	/// </summary>

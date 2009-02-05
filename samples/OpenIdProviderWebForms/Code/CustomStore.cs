@@ -8,9 +8,7 @@ namespace OpenIdProviderWebForms.Code {
 	using System;
 	using System.Data;
 	using System.Globalization;
-	using System.Security.Cryptography;
 	using DotNetOpenAuth.OpenId;
-	using IProviderAssociationStore = DotNetOpenAuth.OpenId.IAssociationStore<DotNetOpenAuth.OpenId.AssociationRelyingPartyType>;
 	using DotNetOpenAuth.OpenId.Provider;
 
 	/// <summary>
@@ -76,18 +74,6 @@ namespace OpenIdProviderWebForms.Code {
 
 		#endregion
 
-		private void removeExpiredRows(DataTable table, string expiredColumnName) {
-			string filter = string.Format(
-				CultureInfo.InvariantCulture,
-				"{0} < #{1}#",
-				expiredColumnName,
-				DateTime.Now);
-			DataView view = new DataView(table, filter, null, DataViewRowState.CurrentRows);
-			for (int i = view.Count - 1; i >= 0; i--) {
-				view.Delete(i);
-			}
-		}
-
 		#region INonceStore Members
 
 		/// <summary>
@@ -135,5 +121,17 @@ namespace OpenIdProviderWebForms.Code {
 		}
 
 		#endregion
+
+		private void removeExpiredRows(DataTable table, string expiredColumnName) {
+			string filter = string.Format(
+				CultureInfo.InvariantCulture,
+				"{0} < #{1}#",
+				expiredColumnName,
+				DateTime.Now);
+			DataView view = new DataView(table, filter, null, DataViewRowState.CurrentRows);
+			for (int i = view.Count - 1; i >= 0; i--) {
+				view.Delete(i);
+			}
+		}
 	}
 }
