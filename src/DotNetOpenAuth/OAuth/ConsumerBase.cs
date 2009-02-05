@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.OAuth {
 	/// <summary>
 	/// Base class for <see cref="WebConsumer"/> and <see cref="DesktopConsumer"/> types.
 	/// </summary>
-	public class ConsumerBase {
+	public class ConsumerBase : IDisposable {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ConsumerBase"/> class.
 		/// </summary>
@@ -162,5 +162,27 @@ namespace DotNetOpenAuth.OAuth {
 			this.TokenManager.ExpireRequestTokenAndStoreNewAccessToken(this.ConsumerKey, requestToken, grantAccess.AccessToken, grantAccess.TokenSecret);
 			return grantAccess;
 		}
+
+		#region IDisposable Members
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		public void Dispose() {
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		protected virtual void Dispose(bool disposing) {
+			if (disposing) {
+				this.Channel.Dispose();
+			}
+		}
+
+		#endregion
 	}
 }

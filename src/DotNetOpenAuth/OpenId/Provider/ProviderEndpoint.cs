@@ -97,23 +97,23 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				// Use the explicitly given state store on this control if there is one.  
 				// Then try the configuration file specified one.  Finally, use the default
 				// in-memory one that's built into OpenIdProvider.
-				OpenIdProvider provider = new OpenIdProvider(this.CustomApplicationStore ?? DotNetOpenAuthSection.Configuration.OpenId.Provider.ApplicationStore.CreateInstance(OpenIdProvider.HttpApplicationStore));
-
-				// determine what incoming message was received
-				IRequest request = provider.GetRequest();
-				if (request != null) {
-					// process the incoming message appropriately and send the response
-					if (!request.IsResponseReady) {
-						var idrequest = (IAuthenticationRequest)request;
-						PendingAuthenticationRequest = idrequest;
-						this.OnAuthenticationChallenge(idrequest);
-					} else {
-						PendingAuthenticationRequest = null;
-					}
-					if (request.IsResponseReady) {
-						request.Response.Send();
-						Page.Response.End();
-						PendingAuthenticationRequest = null;
+				using (OpenIdProvider provider = new OpenIdProvider(this.CustomApplicationStore ?? DotNetOpenAuthSection.Configuration.OpenId.Provider.ApplicationStore.CreateInstance(OpenIdProvider.HttpApplicationStore))) {
+					// determine what incoming message was received
+					IRequest request = provider.GetRequest();
+					if (request != null) {
+						// process the incoming message appropriately and send the response
+						if (!request.IsResponseReady) {
+							var idrequest = (IAuthenticationRequest)request;
+							PendingAuthenticationRequest = idrequest;
+							this.OnAuthenticationChallenge(idrequest);
+						} else {
+							PendingAuthenticationRequest = null;
+						}
+						if (request.IsResponseReady) {
+							request.Response.Send();
+							Page.Response.End();
+							PendingAuthenticationRequest = null;
+						}
 					}
 				}
 			}

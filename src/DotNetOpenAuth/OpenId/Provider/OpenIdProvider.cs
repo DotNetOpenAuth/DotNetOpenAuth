@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// <summary>
 	/// Offers services for a web page that is acting as an OpenID identity server.
 	/// </summary>
-	public sealed class OpenIdProvider {
+	public sealed class OpenIdProvider : IDisposable {
 		/// <summary>
 		/// The name of the key to use in the HttpApplication cache to store the
 		/// instance of <see cref="StandardProviderApplicationStore"/> to use.
@@ -232,5 +232,27 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 			return this.Channel.PrepareResponse(positiveAssertion);
 		}
+
+		#region IDisposable Members
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		public void Dispose() {
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		private void Dispose(bool disposing) {
+			if (disposing) {
+				this.Channel.Dispose();
+			}
+		}
+
+		#endregion
 	}
 }

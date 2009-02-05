@@ -26,7 +26,7 @@ namespace DotNetOpenAuth.OAuth {
 	/// <item>Any additional request parameters that the Service Provider requires in order to obtain a Token. Service Provider specific parameters MUST NOT begin with oauth_.</item>
 	/// </list>
 	/// </remarks>
-	public class ServiceProvider {
+	public class ServiceProvider : IDisposable {
 		/// <summary>
 		/// The field behind the <see cref="OAuthChannel"/> property.
 		/// </summary>
@@ -392,5 +392,27 @@ namespace DotNetOpenAuth.OAuth {
 				this.TokenManager.StoreNewRequestToken(grantRequestTokenResponse.RequestMessage, grantRequestTokenResponse);
 			}
 		}
+
+		#region IDisposable Members
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		public void Dispose() {
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		protected virtual void Dispose(bool disposing) {
+			if (disposing) {
+				this.Channel.Dispose();
+			}
+		}
+
+		#endregion
 	}
 }

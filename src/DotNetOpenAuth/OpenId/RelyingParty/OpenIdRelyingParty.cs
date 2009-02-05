@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// <summary>
 	/// Provides the programmatic facilities to act as an OpenId consumer.
 	/// </summary>
-	public sealed class OpenIdRelyingParty {
+	public sealed class OpenIdRelyingParty : IDisposable {
 		/// <summary>
 		/// The name of the key to use in the HttpApplication cache to store the
 		/// instance of <see cref="StandardRelyingPartyApplicationStore"/> to use.
@@ -478,5 +478,27 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			return this.CreateRequests(userSuppliedIdentifier, new Realm(realmUrl.Uri));
 		}
+
+		#region IDisposable Members
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		public void Dispose() {
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		private void Dispose(bool disposing) {
+			if (disposing) {
+				this.Channel.Dispose();
+			}
+		}
+
+		#endregion
 	}
 }

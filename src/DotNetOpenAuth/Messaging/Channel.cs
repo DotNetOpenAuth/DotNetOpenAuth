@@ -23,7 +23,7 @@ namespace DotNetOpenAuth.Messaging {
 	/// <summary>
 	/// Manages sending direct messages to a remote party and receiving responses.
 	/// </summary>
-	public abstract class Channel {
+	public abstract class Channel : IDisposable {
 		/// <summary>
 		/// The encoding to use when writing out POST entity strings.
 		/// </summary>
@@ -356,6 +356,18 @@ namespace DotNetOpenAuth.Messaging {
 			return responseMessage;
 		}
 
+		#region IDisposable Members
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		public void Dispose() {
+			this.Dispose(true);
+			GC.SuppressFinalize(true);
+		}
+
+		#endregion
+
 		/// <summary>
 		/// Gets the current HTTP request being processed.
 		/// </summary>
@@ -369,6 +381,19 @@ namespace DotNetOpenAuth.Messaging {
 			ErrorUtilities.VerifyHttpContext();
 
 			return new HttpRequestInfo(HttpContext.Current.Request);
+		}
+
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		protected virtual void Dispose(bool disposing) {
+			if (disposing) {
+				// Call dispose on any binding elements that need it.
+				foreach (IDisposable bindingElement in this.BindingElements.OfType<IDisposable>()) {
+					bindingElement.Dispose();
+				}
+			}
 		}
 
 		/// <summary>

@@ -353,12 +353,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 						HttpRequestInfo clientResponseInfo = new HttpRequestInfo {
 							Url = authUri,
 						};
-						var rp = CreateRelyingParty(true);
-						this.authenticationResponse = rp.GetResponse(clientResponseInfo);
+						using (var rp = CreateRelyingParty(true)) {
+							this.authenticationResponse = rp.GetResponse(clientResponseInfo);
 
-						// Save out the authentication response to viewstate so we can find it on
-						// a subsequent postback.
-						this.ViewState[AuthenticationResponseViewStateKey] = new AuthenticationResponseSnapshot(this.authenticationResponse);
+							// Save out the authentication response to viewstate so we can find it on
+							// a subsequent postback.
+							this.ViewState[AuthenticationResponseViewStateKey] = new AuthenticationResponseSnapshot(this.authenticationResponse);
+						}
 					} else {
 						this.authenticationResponse = viewstateResponse;
 					}
@@ -1170,49 +1171,49 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 		private List<IAuthenticationRequest> CreateRequests(string userSuppliedIdentifier, bool immediate) {
 			var requests = new List<IAuthenticationRequest>();
 
-			OpenIdRelyingParty rp = CreateRelyingParty(true);
+			using (OpenIdRelyingParty rp = CreateRelyingParty(true)) {
+				// Resolve the trust root, and swap out the scheme and port if necessary to match the
+				// return_to URL, since this match is required by OpenId, and the consumer app
+				// may be using HTTP at some times and HTTPS at others.
+				UriBuilder realm = OpenIdUtilities.GetResolvedRealm(this.Page, this.RealmUrl);
+				realm.Scheme = Page.Request.Url.Scheme;
+				realm.Port = Page.Request.Url.Port;
 
-			// Resolve the trust root, and swap out the scheme and port if necessary to match the
-			// return_to URL, since this match is required by OpenId, and the consumer app
-			// may be using HTTP at some times and HTTPS at others.
-			UriBuilder realm = OpenIdUtilities.GetResolvedRealm(this.Page, this.RealmUrl);
-			realm.Scheme = Page.Request.Url.Scheme;
-			realm.Port = Page.Request.Url.Port;
-
-			// Initiate openid request
-			// We use TryParse here to avoid throwing an exception which 
-			// might slip through our validator control if it is disabled.
-			Realm typedRealm = new Realm(realm);
-			if (string.IsNullOrEmpty(this.ReturnToUrl)) {
-				requests.AddRange(rp.CreateRequests(userSuppliedIdentifier, typedRealm));
-			} else {
-				Uri returnTo = new Uri(MessagingUtilities.GetRequestUrlFromContext(), this.ReturnToUrl);
-				requests.AddRange(rp.CreateRequests(userSuppliedIdentifier, typedRealm, returnTo));
-			}
-
-			// Some OPs may be listed multiple times (one with HTTPS and the other with HTTP, for example).
-			// Since we're gathering OPs to try one after the other, just take the first choice of each OP
-			// and don't try it multiple times.
-			requests = RemoveDuplicateEndpoints(requests);
-
-			// Configure each generated request.
-			int reqIndex = 0;
-			foreach (var req in requests) {
-				req.AddCallbackArguments("index", (reqIndex++).ToString(CultureInfo.InvariantCulture));
-
-				// If the ReturnToUrl was explicitly set, we'll need to reset our first parameter
-				if (string.IsNullOrEmpty(HttpUtility.ParseQueryString(req.ReturnToUrl.Query)["dotnetopenid.userSuppliedIdentifier"])) {
-					req.AddCallbackArguments("dotnetopenid.userSuppliedIdentifier", userSuppliedIdentifier);
+				// Initiate openid request
+				// We use TryParse here to avoid throwing an exception which 
+				// might slip through our validator control if it is disabled.
+				Realm typedRealm = new Realm(realm);
+				if (string.IsNullOrEmpty(this.ReturnToUrl)) {
+					requests.AddRange(rp.CreateRequests(userSuppliedIdentifier, typedRealm));
+				} else {
+					Uri returnTo = new Uri(MessagingUtilities.GetRequestUrlFromContext(), this.ReturnToUrl);
+					requests.AddRange(rp.CreateRequests(userSuppliedIdentifier, typedRealm, returnTo));
 				}
 
-				// Our javascript needs to let the user know which endpoint responded.  So we force it here.
-				// This gives us the info even for 1.0 OPs and 2.0 setup_required responses.
-				req.AddCallbackArguments("dotnetopenid.op_endpoint", req.Provider.Uri.AbsoluteUri);
-				req.AddCallbackArguments("dotnetopenid.claimed_id", req.ClaimedIdentifier);
-				req.AddCallbackArguments("dotnetopenid.phase", "2");
-				if (immediate) {
-					req.Mode = AuthenticationRequestMode.Immediate;
-					((AuthenticationRequest)req).AssociationPreference = AssociationPreference.IfAlreadyEstablished;
+				// Some OPs may be listed multiple times (one with HTTPS and the other with HTTP, for example).
+				// Since we're gathering OPs to try one after the other, just take the first choice of each OP
+				// and don't try it multiple times.
+				requests = RemoveDuplicateEndpoints(requests);
+
+				// Configure each generated request.
+				int reqIndex = 0;
+				foreach (var req in requests) {
+					req.AddCallbackArguments("index", (reqIndex++).ToString(CultureInfo.InvariantCulture));
+
+					// If the ReturnToUrl was explicitly set, we'll need to reset our first parameter
+					if (string.IsNullOrEmpty(HttpUtility.ParseQueryString(req.ReturnToUrl.Query)["dotnetopenid.userSuppliedIdentifier"])) {
+						req.AddCallbackArguments("dotnetopenid.userSuppliedIdentifier", userSuppliedIdentifier);
+					}
+
+					// Our javascript needs to let the user know which endpoint responded.  So we force it here.
+					// This gives us the info even for 1.0 OPs and 2.0 setup_required responses.
+					req.AddCallbackArguments("dotnetopenid.op_endpoint", req.Provider.Uri.AbsoluteUri);
+					req.AddCallbackArguments("dotnetopenid.claimed_id", req.ClaimedIdentifier);
+					req.AddCallbackArguments("dotnetopenid.phase", "2");
+					if (immediate) {
+						req.Mode = AuthenticationRequestMode.Immediate;
+						((AuthenticationRequest)req).AssociationPreference = AssociationPreference.IfAlreadyEstablished;
+					}
 				}
 			}
 
@@ -1226,19 +1227,20 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 			Logger.InfoFormat("AJAX (iframe) callback from OP: {0}", this.Page.Request.Url);
 			List<string> assignments = new List<string>();
 
-			OpenIdRelyingParty rp = CreateRelyingParty(false);
-			var f = HttpUtility.ParseQueryString(this.Page.Request.Url.Query).ToDictionary();
-			var authResponse = rp.GetResponse();
-			if (authResponse.Status == AuthenticationStatus.Authenticated) {
-				this.OnUnconfirmedPositiveAssertion();
-				foreach (var pair in this.clientScriptExtensions) {
-					IClientScriptExtensionResponse extension = (IClientScriptExtensionResponse)authResponse.GetExtension(pair.Key);
-					var positiveResponse = (PositiveAuthenticationResponse)authResponse;
-					string js = extension.InitializeJavaScriptData(positiveResponse.Response);
-					if (string.IsNullOrEmpty(js)) {
-						js = "null";
+			using (OpenIdRelyingParty rp = CreateRelyingParty(false)) {
+				var f = HttpUtility.ParseQueryString(this.Page.Request.Url.Query).ToDictionary();
+				var authResponse = rp.GetResponse();
+				if (authResponse.Status == AuthenticationStatus.Authenticated) {
+					this.OnUnconfirmedPositiveAssertion();
+					foreach (var pair in this.clientScriptExtensions) {
+						IClientScriptExtensionResponse extension = (IClientScriptExtensionResponse)authResponse.GetExtension(pair.Key);
+						var positiveResponse = (PositiveAuthenticationResponse)authResponse;
+						string js = extension.InitializeJavaScriptData(positiveResponse.Response);
+						if (string.IsNullOrEmpty(js)) {
+							js = "null";
+						}
+						assignments.Add(pair.Value + " = " + js);
 					}
-					assignments.Add(pair.Value + " = " + js);
 				}
 			}
 

@@ -874,37 +874,37 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			ErrorUtilities.VerifyOperation(!string.IsNullOrEmpty(this.Text), OpenIdStrings.OpenIdTextBoxEmpty);
 
 			try {
-				var consumer = this.CreateRelyingParty();
+				using (var consumer = this.CreateRelyingParty()) {
+					// Resolve the trust root, and swap out the scheme and port if necessary to match the
+					// return_to URL, since this match is required by OpenId, and the consumer app
+					// may be using HTTP at some times and HTTPS at others.
+					UriBuilder realm = OpenIdUtilities.GetResolvedRealm(this.Page, this.RealmUrl);
+					realm.Scheme = Page.Request.Url.Scheme;
+					realm.Port = Page.Request.Url.Port;
 
-				// Resolve the trust root, and swap out the scheme and port if necessary to match the
-				// return_to URL, since this match is required by OpenId, and the consumer app
-				// may be using HTTP at some times and HTTPS at others.
-				UriBuilder realm = OpenIdUtilities.GetResolvedRealm(this.Page, this.RealmUrl);
-				realm.Scheme = Page.Request.Url.Scheme;
-				realm.Port = Page.Request.Url.Port;
+					// Initiate openid request
+					// We use TryParse here to avoid throwing an exception which 
+					// might slip through our validator control if it is disabled.
+					Identifier userSuppliedIdentifier;
+					if (Identifier.TryParse(this.Text, out userSuppliedIdentifier)) {
+						Realm typedRealm = new Realm(realm);
+						if (string.IsNullOrEmpty(this.ReturnToUrl)) {
+							this.Request = consumer.CreateRequest(userSuppliedIdentifier, typedRealm);
+						} else {
+							Uri returnTo = new Uri(MessagingUtilities.GetRequestUrlFromContext(), this.ReturnToUrl);
+							this.Request = consumer.CreateRequest(userSuppliedIdentifier, typedRealm, returnTo);
+						}
+						this.Request.Mode = this.ImmediateMode ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;
+						if (this.EnableRequestProfile) {
+							this.AddProfileArgs(this.Request);
+						}
 
-				// Initiate openid request
-				// We use TryParse here to avoid throwing an exception which 
-				// might slip through our validator control if it is disabled.
-				Identifier userSuppliedIdentifier;
-				if (Identifier.TryParse(this.Text, out userSuppliedIdentifier)) {
-					Realm typedRealm = new Realm(realm);
-					if (string.IsNullOrEmpty(this.ReturnToUrl)) {
-						this.Request = consumer.CreateRequest(userSuppliedIdentifier, typedRealm);
+						// Add state that needs to survive across the redirect.
+						this.Request.AddCallbackArguments(UsePersistentCookieCallbackKey, this.UsePersistentCookie.ToString(CultureInfo.InvariantCulture));
 					} else {
-						Uri returnTo = new Uri(MessagingUtilities.GetRequestUrlFromContext(), this.ReturnToUrl);
-						this.Request = consumer.CreateRequest(userSuppliedIdentifier, typedRealm, returnTo);
+						Logger.WarnFormat("An invalid identifier was entered ({0}), but not caught by any validation routine.", this.Text);
+						this.Request = null;
 					}
-					this.Request.Mode = this.ImmediateMode ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;
-					if (this.EnableRequestProfile) {
-						this.AddProfileArgs(this.Request);
-					}
-
-					// Add state that needs to survive across the redirect.
-					this.Request.AddCallbackArguments(UsePersistentCookieCallbackKey, this.UsePersistentCookie.ToString(CultureInfo.InvariantCulture));
-				} else {
-					Logger.WarnFormat("An invalid identifier was entered ({0}), but not caught by any validation routine.", this.Text);
-					this.Request = null;
 				}
 			} catch (ProtocolException ex) {
 				this.OnFailed(new FailedAuthenticationResponse(ex));
@@ -962,30 +962,31 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				return;
 			}
 
-			var rp = this.CreateRelyingParty();
-			var response = rp.GetResponse();
-			if (response != null) {
-				string persistentString = response.GetCallbackArgument(UsePersistentCookieCallbackKey);
-				bool persistentBool;
-				if (persistentString != null && bool.TryParse(persistentString, out persistentBool)) {
-					this.UsePersistentCookie = persistentBool;
-				}
+			using (var rp = this.CreateRelyingParty()) {
+				var response = rp.GetResponse();
+				if (response != null) {
+					string persistentString = response.GetCallbackArgument(UsePersistentCookieCallbackKey);
+					bool persistentBool;
+					if (persistentString != null && bool.TryParse(persistentString, out persistentBool)) {
+						this.UsePersistentCookie = persistentBool;
+					}
 
-				switch (response.Status) {
-					case AuthenticationStatus.Canceled:
-						this.OnCanceled(response);
-						break;
-					case AuthenticationStatus.Authenticated:
-						this.OnLoggedIn(response);
-						break;
-					case AuthenticationStatus.SetupRequired:
-						this.OnSetupRequired(response);
-						break;
-					case AuthenticationStatus.Failed:
-						this.OnFailed(response);
-						break;
-					default:
-						throw new InvalidOperationException("Unexpected response status code.");
+					switch (response.Status) {
+						case AuthenticationStatus.Canceled:
+							this.OnCanceled(response);
+							break;
+						case AuthenticationStatus.Authenticated:
+							this.OnLoggedIn(response);
+							break;
+						case AuthenticationStatus.SetupRequired:
+							this.OnSetupRequired(response);
+							break;
+						case AuthenticationStatus.Failed:
+							this.OnFailed(response);
+							break;
+						default:
+							throw new InvalidOperationException("Unexpected response status code.");
+					}
 				}
 			}
 		}

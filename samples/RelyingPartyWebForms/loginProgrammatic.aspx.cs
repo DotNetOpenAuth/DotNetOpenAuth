@@ -18,16 +18,17 @@
 			if (!this.Page.IsValid) {
 				return; // don't login if custom validation failed.
 			}
-			OpenIdRelyingParty openid = this.createRelyingParty();
 			try {
-				IAuthenticationRequest request = openid.CreateRequest(this.openIdBox.Text);
+				using (OpenIdRelyingParty openid = this.createRelyingParty()) {
+					IAuthenticationRequest request = openid.CreateRequest(this.openIdBox.Text);
 
-				// This is where you would add any OpenID extensions you wanted
-				// to include in the authentication request.
-				////request.AddExtension(someExtensionRequestInstance);
+					// This is where you would add any OpenID extensions you wanted
+					// to include in the authentication request.
+					////request.AddExtension(someExtensionRequestInstance);
 
-				// Send your visitor to their Provider for authentication.
-				request.RedirectToProvider();
+					// Send your visitor to their Provider for authentication.
+					request.RedirectToProvider();
+				}
 			} catch (ProtocolException ex) {
 				// The user probably entered an Identifier that 
 				// was not a valid OpenID endpoint.
