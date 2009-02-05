@@ -363,7 +363,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		public void Dispose() {
 			this.Dispose(true);
-			GC.SuppressFinalize(true);
+			GC.SuppressFinalize(this);
 		}
 
 		#endregion
