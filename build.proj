@@ -81,7 +81,7 @@
 		</PropertyGroup>
 	</Target>
 
-	<Target Name="_EnsureCleanDrop">
+	<Target Name="_EnsureCleanDrop" Condition="'$(NoClean)' != 'true'">
 		<!-- This target only does a clean sufficient to guarantee that our DotNetOpenAuth.dll is rebuilt, but
 		     we don't usually want to clean our documentation because that takes forever to build froms scratch. -->
 		<MSBuild Projects="$(ProjectRoot)\src\$(ProductName).sln" Targets="Clean" />
