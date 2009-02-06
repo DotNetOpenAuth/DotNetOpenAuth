@@ -891,7 +891,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 						if (string.IsNullOrEmpty(this.ReturnToUrl)) {
 							this.Request = consumer.CreateRequest(userSuppliedIdentifier, typedRealm);
 						} else {
-							Uri returnTo = new Uri(MessagingUtilities.GetRequestUrlFromContext(), this.ReturnToUrl);
+							Uri returnTo = new Uri(MessagingUtilities.GetRequestUrlFromContext(), new Uri(this.ReturnToUrl));
 							this.Request = consumer.CreateRequest(userSuppliedIdentifier, typedRealm, returnTo);
 						}
 						this.Request.Mode = this.ImmediateMode ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;

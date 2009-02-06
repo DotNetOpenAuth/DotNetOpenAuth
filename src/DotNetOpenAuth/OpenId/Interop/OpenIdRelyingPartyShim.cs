@@ -102,7 +102,6 @@ namespace DotNetOpenAuth.OpenId.Interop {
 		/// <param name="form">The form data that may have been included in the case of a POST request.</param>
 		/// <returns>The Provider's response to a previous authentication request, or null if no response is present.</returns>
 		public AuthenticationResponseShim ProcessAuthentication(string url, string form) {
-			Uri uri = new Uri(url);
 			OpenIdRelyingParty rp = new OpenIdRelyingParty(null);
 			HttpRequestInfo requestInfo = new HttpRequestInfo { Url = new Uri(url) };
 			if (form != null) {

@@ -330,6 +330,18 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 		}
 
+		#region IDisposable Members
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		public void Dispose() {
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		#endregion
+
 		/// <summary>
 		/// Determines whether some parameter name belongs to OpenID or this library
 		/// as a protocol or internal parameter name.
@@ -479,26 +491,18 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			return this.CreateRequests(userSuppliedIdentifier, new Realm(realmUrl.Uri));
 		}
 
-		#region IDisposable Members
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose() {
-			this.Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
 		private void Dispose(bool disposing) {
 			if (disposing) {
-				this.Channel.Dispose();
+				// Tear off the instance member as a local variable for thread safety.
+				IDisposable disposableChannel = this.channel as IDisposable;
+				if (disposableChannel != null) {
+					disposableChannel.Dispose();
+				}
 			}
 		}
-
-		#endregion
 	}
 }

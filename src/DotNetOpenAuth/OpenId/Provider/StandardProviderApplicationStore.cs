@@ -55,12 +55,21 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Gets the best association (the one with the longest remaining life) for a given key.
 		/// </summary>
 		/// <param name="distinguishingFactor">The Uri (for relying parties) or Smart/Dumb (for Providers).</param>
-		/// <param name="securitySettings">The security settings.</param>
+		/// <param name="securityRequirements">The security requirements that the returned association must meet.</param>
 		/// <returns>
 		/// The requested association, or null if no unexpired <see cref="Association"/>s exist for the given key.
 		/// </returns>
-		public Association GetAssociation(AssociationRelyingPartyType distinguishingFactor, SecuritySettings securitySettings) {
-			return this.associationStore.GetAssociation(distinguishingFactor, securitySettings);
+		/// <remarks>
+		/// In the event that multiple associations exist for the given
+		/// <paramref name="distinguishingFactor"/>, it is important for the
+		/// implementation for this method to use the <paramref name="securityRequirements"/>
+		/// to pick the best (highest grade or longest living as the host's policy may dictate)
+		/// association that fits the security requirements.
+		/// Associations that are returned that do not meet the security requirements will be
+		/// ignored and a new association created.
+		/// </remarks>
+		public Association GetAssociation(AssociationRelyingPartyType distinguishingFactor, SecuritySettings securityRequirements) {
+			return this.associationStore.GetAssociation(distinguishingFactor, securityRequirements);
 		}
 
 		/// <summary>

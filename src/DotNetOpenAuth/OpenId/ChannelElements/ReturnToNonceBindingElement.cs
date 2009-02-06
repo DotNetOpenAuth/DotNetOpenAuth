@@ -42,11 +42,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		private INonceStore nonceStore;
 
 		/// <summary>
-		/// The standard expiration binding element used in the channel.
-		/// </summary>
-		private StandardExpirationBindingElement expirationElement;
-
-		/// <summary>
 		/// Backing field for the <see cref="Channel"/> property.
 		/// </summary>
 		private Channel channel;
@@ -80,7 +75,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				}
 
 				this.channel = value;
-				this.expirationElement = this.channel.BindingElements.OfType<StandardExpirationBindingElement>().Single();
 			}
 		}
 
@@ -96,8 +90,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <summary>
 		/// Gets the maximum message age from the standard expiration binding element.
 		/// </summary>
-		private TimeSpan MaximumMessageAge {
-			get { return this.expirationElement.MaximumMessageAge; }
+		private static TimeSpan MaximumMessageAge {
+			get { return StandardExpirationBindingElement.MaximumMessageAge; }
 		}
 
 		#region IChannelBindingElement Methods
@@ -150,7 +144,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				ErrorUtilities.VerifyProtocol(nonceValue != null, OpenIdStrings.UnsolicitedAssertionsNotAllowedFrom1xOPs);
 
 				CustomNonce nonce = CustomNonce.Deserialize(nonceValue);
-				DateTime expirationDate = nonce.CreationDateUtc + this.MaximumMessageAge;
+				DateTime expirationDate = nonce.CreationDateUtc + MaximumMessageAge;
 				if (expirationDate < DateTime.UtcNow) {
 					throw new ExpiredMessageException(expirationDate, message);
 				}

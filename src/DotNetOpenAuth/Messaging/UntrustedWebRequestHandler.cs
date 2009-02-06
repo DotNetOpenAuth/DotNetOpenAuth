@@ -152,12 +152,14 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets a collection of host name literals that should be allowed even if they don't
 		/// pass standard security checks.
 		/// </summary>
+		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Whitelist", Justification = "Spelling as intended.")]
 		public ICollection<string> WhitelistHosts { get { return this.whitelistHosts; } }
 
 		/// <summary>
 		/// Gets a collection of host name regular expressions that indicate hosts that should
 		/// be allowed even though they don't pass standard security checks.
 		/// </summary>
+		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Whitelist", Justification = "Spelling as intended.")]
 		public ICollection<Regex> WhitelistHostsRegex { get { return this.whitelistHostsRegex; } }
 
 		/// <summary>
@@ -257,7 +259,7 @@ namespace DotNetOpenAuth.Messaging {
 					// We have no copy of the post entity stream to repeat on our manually
 					// cloned HttpWebRequest, so we have to bail.
 					ErrorUtilities.VerifyProtocol(request.Method != "POST", MessagingStrings.UntrustedRedirectsOnPOSTNotSupported);
-					Uri redirectUri = new Uri(response.FinalUri, response.Headers[HttpResponseHeader.Location]);
+					Uri redirectUri = new Uri(response.FinalUri, new Uri(response.Headers[HttpResponseHeader.Location]));
 					request = request.Clone(redirectUri);
 				} else {
 					return response;

@@ -380,19 +380,6 @@ namespace DotNetOpenAuth.OAuth {
 			return accessMessage;
 		}
 
-		/// <summary>
-		/// Hooks the channel in order to perform some operations on some outgoing messages.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="DotNetOpenAuth.Messaging.ChannelEventArgs"/> instance containing the event data.</param>
-		private void OAuthChannel_Sending(object sender, ChannelEventArgs e) {
-			// Hook to store the token and secret on its way down to the Consumer.
-			var grantRequestTokenResponse = e.Message as UnauthorizedTokenResponse;
-			if (grantRequestTokenResponse != null) {
-				this.TokenManager.StoreNewRequestToken(grantRequestTokenResponse.RequestMessage, grantRequestTokenResponse);
-			}
-		}
-
 		#region IDisposable Members
 
 		/// <summary>
@@ -414,5 +401,18 @@ namespace DotNetOpenAuth.OAuth {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Hooks the channel in order to perform some operations on some outgoing messages.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="DotNetOpenAuth.Messaging.ChannelEventArgs"/> instance containing the event data.</param>
+		private void OAuthChannel_Sending(object sender, ChannelEventArgs e) {
+			// Hook to store the token and secret on its way down to the Consumer.
+			var grantRequestTokenResponse = e.Message as UnauthorizedTokenResponse;
+			if (grantRequestTokenResponse != null) {
+				this.TokenManager.StoreNewRequestToken(grantRequestTokenResponse.RequestMessage, grantRequestTokenResponse);
+			}
+		}
 	}
 }

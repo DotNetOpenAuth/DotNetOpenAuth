@@ -93,6 +93,18 @@ namespace DotNetOpenAuth.OAuth {
 			return this.Channel.WebRequestHandler.GetResponse(wr);
 		}
 
+		#region IDisposable Members
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		public void Dispose() {
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		#endregion
+
 		/// <summary>
 		/// Prepares an OAuth message that begins an authorization request that will 
 		/// redirect the user to the Service Provider to provide that authorization.
@@ -163,16 +175,6 @@ namespace DotNetOpenAuth.OAuth {
 			return grantAccess;
 		}
 
-		#region IDisposable Members
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose() {
-			this.Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
@@ -182,7 +184,5 @@ namespace DotNetOpenAuth.OAuth {
 				this.Channel.Dispose();
 			}
 		}
-
-		#endregion
 	}
 }

@@ -192,7 +192,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			if (!string.IsNullOrEmpty(this.ProviderEndpointUrl)) {
 				writer.WriteBeginTag("link");
 				writer.WriteAttribute("rel", this.Protocol.HtmlDiscoveryProviderKey);
-				writer.WriteAttribute("href", new Uri(MessagingUtilities.GetRequestUrlFromContext(), this.Page.ResolveUrl(this.ProviderEndpointUrl)).AbsoluteUri);
+				writer.WriteAttribute("href", new Uri(MessagingUtilities.GetRequestUrlFromContext(), new Uri(this.Page.ResolveUrl(this.ProviderEndpointUrl))).AbsoluteUri);
 				writer.Write(">");
 				writer.WriteEndTag("link");
 				writer.WriteLine();
@@ -200,7 +200,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			if (!string.IsNullOrEmpty(this.ProviderLocalIdentifier)) {
 				writer.WriteBeginTag("link");
 				writer.WriteAttribute("rel", Protocol.HtmlDiscoveryLocalIdKey);
-				writer.WriteAttribute("href", new Uri(MessagingUtilities.GetRequestUrlFromContext(), this.Page.ResolveUrl(this.ProviderLocalIdentifier)).AbsoluteUri);
+				writer.WriteAttribute("href", new Uri(MessagingUtilities.GetRequestUrlFromContext(), new Uri(this.Page.ResolveUrl(this.ProviderLocalIdentifier))).AbsoluteUri);
 				writer.Write(">");
 				writer.WriteEndTag("link");
 				writer.WriteLine();

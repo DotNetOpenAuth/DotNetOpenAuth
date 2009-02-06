@@ -249,7 +249,11 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
 		private void Dispose(bool disposing) {
 			if (disposing) {
-				this.Channel.Dispose();
+				// Tear off the instance member as a local variable for thread safety.
+				IDisposable channel = this.Channel as IDisposable;
+				if (channel != null) {
+					channel.Dispose();
+				}
 			}
 		}
 

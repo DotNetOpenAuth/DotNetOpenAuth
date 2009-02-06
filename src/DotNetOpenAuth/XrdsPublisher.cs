@@ -188,7 +188,7 @@ namespace DotNetOpenAuth {
 		/// <param name="writer">The <see cref="T:System.Web.UI.HtmlTextWriter"/> object that receives the server control content.</param>
 		protected override void Render(HtmlTextWriter writer) {
 			if (this.Enabled && this.Visible && !string.IsNullOrEmpty(this.XrdsUrl)) {
-				Uri xrdsAddress = new Uri(MessagingUtilities.GetRequestUrlFromContext(), Page.Response.ApplyAppPathModifier(this.XrdsUrl));
+				Uri xrdsAddress = new Uri(MessagingUtilities.GetRequestUrlFromContext(), new Uri(Page.Response.ApplyAppPathModifier(this.XrdsUrl)));
 				if ((this.XrdsAdvertisement & XrdsUrlLocations.HttpHeader) != 0) {
 					Page.Response.AddHeader(Yadis.Yadis.HeaderName, xrdsAddress.AbsoluteUri);
 				}

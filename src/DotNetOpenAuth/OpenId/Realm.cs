@@ -57,6 +57,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// Initializes a new instance of the <see cref="Realm"/> class.
 		/// </summary>
 		/// <param name="realmUrl">The realm URL to use in the new instance.</param>
+		[SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads", Justification = "Not all realms are valid URLs (because of wildcards).")]
 		public Realm(string realmUrl) {
 			ErrorUtilities.VerifyArgumentNotNull(realmUrl, "realmUrl");
 			this.DomainWildcard = Regex.IsMatch(realmUrl, WildcardDetectionPattern);
@@ -193,6 +194,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		/// <param name="uri">The URI that the new Realm instance will represent.</param>
 		/// <returns>The result of the conversion.</returns>
+		[SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads", Justification = "Not all realms are valid URLs (because of wildcards).")]
+		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Not all Realms are valid URLs.")]
 		public static implicit operator Realm(string uri) {
 			return uri != null ? new Realm(uri) : null;
 		}
@@ -203,7 +206,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="uri">The URI to convert to a realm.</param>
 		/// <returns>The result of the conversion.</returns>
 		public static implicit operator Realm(Uri uri) {
-			return uri != null ? new Realm(uri.AbsoluteUri) : null;
+			return uri != null ? new Realm(uri) : null;
 		}
 
 		/// <summary>

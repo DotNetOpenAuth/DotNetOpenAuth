@@ -37,11 +37,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private readonly ServiceEndpoint endpoint;
 
 		/// <summary>
-		/// The protocol version used at the Provider.
-		/// </summary>
-		private readonly Protocol protocol;
-
-		/// <summary>
 		/// How an association may or should be created or used in the formulation of the 
 		/// authentication request.
 		/// </summary>
@@ -72,7 +67,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			ErrorUtilities.VerifyArgumentNotNull(relyingParty, "relyingParty");
 
 			this.endpoint = endpoint;
-			this.protocol = endpoint.Protocol;
 			this.RelyingParty = relyingParty;
 			this.Realm = realm;
 			this.ReturnToUrl = returnToUrl;

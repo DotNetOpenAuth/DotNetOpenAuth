@@ -118,11 +118,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		}
 
 		/// <summary>
-		/// Gets the extension factory that can be used to register OpenID extensions.
-		/// </summary>
-		internal OpenIdExtensionFactory Extensions { get; private set; }
-
-		/// <summary>
 		/// Verifies the integrity and applicability of an incoming message.
 		/// </summary>
 		/// <param name="message">The message just received.</param>

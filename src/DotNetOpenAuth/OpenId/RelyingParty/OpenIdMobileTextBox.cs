@@ -273,6 +273,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets or sets the OpenID <see cref="Realm"/> of the relying party web site.
 		/// </summary>
+		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenAuth.OpenId.Realm", Justification = "Using Realm.ctor for validation.")]
 		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri", Justification = "Using Uri.ctor for validation.")]
 		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenAuth.OpenId", Justification = "Using ctor for validation.")]
 		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "Bindable property must be simple type")]
@@ -316,7 +317,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			set {
 				if (Page != null && !DesignMode) {
 					// Validate new value by trying to construct a Uri based on it.
-					new Uri(MessagingUtilities.GetRequestUrlFromContext(), Page.ResolveUrl(value)); // throws an exception on failure.
+					new Uri(MessagingUtilities.GetRequestUrlFromContext(), new Uri(Page.ResolveUrl(value))); // throws an exception on failure.
 				} else {
 					// We can't fully test it, but it should start with either ~/ or a protocol.
 					if (Regex.IsMatch(value, @"^https?://")) {
@@ -571,7 +572,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					if (string.IsNullOrEmpty(this.ReturnToUrl)) {
 						this.Request = consumer.CreateRequest(userSuppliedIdentifier, typedRealm);
 					} else {
-						Uri returnTo = new Uri(MessagingUtilities.GetRequestUrlFromContext(), this.ReturnToUrl);
+						Uri returnTo = new Uri(MessagingUtilities.GetRequestUrlFromContext(), new Uri(this.ReturnToUrl));
 						this.Request = consumer.CreateRequest(userSuppliedIdentifier, typedRealm, returnTo);
 					}
 					this.Request.Mode = this.ImmediateMode ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;
