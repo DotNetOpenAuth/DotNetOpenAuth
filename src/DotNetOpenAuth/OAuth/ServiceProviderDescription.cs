@@ -43,7 +43,7 @@ namespace DotNetOpenAuth.OAuth {
 			}
 
 			set {
-				if (value != null && UriUtil.QueryStringContainsOAuthParameters(value.Location)) {
+				if (value != null && UriUtil.QueryStringContainPrefixedParameters(value.Location, OAuth.Protocol.V10.ParameterPrefix)) {
 					throw new ArgumentException(OAuthStrings.RequestUrlMustNotHaveOAuthParameters);
 				}
 

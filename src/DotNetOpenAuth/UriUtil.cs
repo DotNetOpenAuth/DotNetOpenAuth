@@ -22,14 +22,18 @@ namespace DotNetOpenAuth {
 		/// Tests a URI for the presence of an OAuth payload.
 		/// </summary>
 		/// <param name="uri">The URI to test.</param>
-		/// <returns>True if the URI contains an OAuth message.</returns>
-		internal static bool QueryStringContainsOAuthParameters(Uri uri) {
+		/// <param name="prefix">The prefix.</param>
+		/// <returns>
+		/// True if the URI contains an OAuth message.
+		/// </returns>
+		internal static bool QueryStringContainPrefixedParameters(this Uri uri, string prefix) {
 			if (uri == null) {
 				return false;
 			}
+			ErrorUtilities.VerifyNonZeroLength(prefix, "prefix");
 
 			NameValueCollection nvc = HttpUtility.ParseQueryString(uri.Query);
-			return nvc.Keys.OfType<string>().Any(key => key.StartsWith(OAuth.Protocol.V10.ParameterPrefix, StringComparison.Ordinal));
+			return nvc.Keys.OfType<string>().Any(key => key.StartsWith(prefix, StringComparison.Ordinal));
 		}
 
 		/// <summary>

@@ -14,8 +14,8 @@ namespace DotNetOpenAuth.Test {
 	[TestClass]
 	public class UriUtilTests {
 		[TestMethod]
-		public void QueryStringContainsOAuthParametersNull() {
-			Assert.IsFalse(UriUtil.QueryStringContainsOAuthParameters(null));
+		public void QueryStringContainPrefixedParametersNull() {
+			Assert.IsFalse(UriUtil.QueryStringContainPrefixedParameters(null, "prefix."));
 		}
 	}
 }
