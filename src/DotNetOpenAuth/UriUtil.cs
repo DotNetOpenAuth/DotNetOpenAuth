@@ -27,10 +27,10 @@ namespace DotNetOpenAuth {
 		/// True if the URI contains an OAuth message.
 		/// </returns>
 		internal static bool QueryStringContainPrefixedParameters(this Uri uri, string prefix) {
+			ErrorUtilities.VerifyNonZeroLength(prefix, "prefix");
 			if (uri == null) {
 				return false;
 			}
-			ErrorUtilities.VerifyNonZeroLength(prefix, "prefix");
 
 			NameValueCollection nvc = HttpUtility.ParseQueryString(uri.Query);
 			return nvc.Keys.OfType<string>().Any(key => key.StartsWith(prefix, StringComparison.Ordinal));
