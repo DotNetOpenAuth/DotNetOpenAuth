@@ -93,6 +93,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="message">The message being passed in through a mock transport.</param>
 		internal HttpRequestInfo(IDirectedProtocolMessage message) {
 			this.Message = message;
+			if (message == null || (message.HttpMethods & HttpDeliveryMethods.GetRequest) != 0) {
+				this.HttpMethod = "GET";
+			} else if ((message.HttpMethods & HttpDeliveryMethods.PostRequest) != 0) {
+				this.HttpMethod = "POST";
+			}
 		}
 
 		/// <summary>
