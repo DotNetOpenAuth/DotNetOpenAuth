@@ -23,10 +23,10 @@ namespace DotNetOpenAuth.Test.Configuration {
 			Assert.AreEqual(9, uwr.MaximumRedirections);
 
 			// Verify whitelists and blacklists
-			Assert.AreEqual("positivelyevil", uwr.BlacklistHosts.KeysAsStrings.Single());
-			Assert.AreEqual(".+veryevil.+", uwr.BlacklistHostsRegex.KeysAsStrings.Single());
-			Assert.AreEqual("evilButTrusted", uwr.WhitelistHosts.KeysAsStrings.Single());
-			Assert.AreEqual(".+trusted.+", uwr.WhitelistHostsRegex.KeysAsStrings.Single());
+			Assert.IsTrue(uwr.BlacklistHosts.KeysAsStrings.Contains("positivelyevil"));
+			Assert.IsTrue(uwr.BlacklistHostsRegex.KeysAsStrings.Contains(".+veryevil.+"));
+			Assert.IsTrue(uwr.WhitelistHosts.KeysAsStrings.Contains("evilButTrusted"));
+			Assert.IsTrue(uwr.WhitelistHostsRegex.KeysAsStrings.Contains(".+trusted.+"));
 		}
 
 		[TestMethod]
