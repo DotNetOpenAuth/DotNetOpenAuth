@@ -151,6 +151,15 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This exception must be instantiated with a recipient that will receive the error message, or a direct request message instance that this exception will respond to..
+        /// </summary>
+        internal static string ExceptionUndeliverable {
+            get {
+                return ResourceManager.GetString("ExceptionUndeliverable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Expected {0} message but received no recognizable message..
         /// </summary>
         internal static string ExpectedMessageNotReceived {

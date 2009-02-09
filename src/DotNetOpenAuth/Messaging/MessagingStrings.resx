@@ -279,4 +279,7 @@
   <data name="WebRequestFailed" xml:space="preserve">
     <value>Web request to '{0}' failed.</value>
   </data>
+  <data name="ExceptionUndeliverable" xml:space="preserve">
+    <value>This exception must be instantiated with a recipient that will receive the error message, or a direct request message instance that this exception will respond to.</value>
+  </data>
 </root>

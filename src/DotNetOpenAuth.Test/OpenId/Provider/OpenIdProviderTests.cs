@@ -13,6 +13,8 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
+	using DotNetOpenAuth.OpenId.RelyingParty;
+	using DotNetOpenAuth.Test.Hosting;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
@@ -97,6 +99,36 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 					request.Response.Send();
 				});
 			coordinator.Run();
+		}
+
+		////[TestMethod]
+		////public void BadRequestsGenerateValidErrorResponses() {
+		////    var coordinator = new OpenIdCoordinator(
+		////        rp => {
+		////            var nonOpenIdMessage = new Mocks.TestDirectedMessage();
+		////            nonOpenIdMessage.Recipient = OPUri;
+		////            nonOpenIdMessage.HttpMethods = HttpDeliveryMethods.PostRequest;
+		////            MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired, nonOpenIdMessage);
+		////            var response = rp.Channel.Request<DirectErrorResponse>(nonOpenIdMessage);
+		////            Assert.IsNotNull(response.ErrorMessage);
+		////        },
+		////        AutoProvider);
+
+		////    coordinator.Run();
+		////}
+
+		[TestMethod]
+		public void BadRequestsGenerateValidErrorResponsesHosted() {
+			using (AspNetHost host = AspNetHost.CreateHost(TestWebDirectory)) {
+				Uri opEndpoint = new Uri(host.BaseUri, "/OpenIdProviderEndpoint.ashx");
+				var rp = new OpenIdRelyingParty(null);
+				var nonOpenIdMessage = new Mocks.TestDirectedMessage();
+				nonOpenIdMessage.Recipient = opEndpoint;
+				nonOpenIdMessage.HttpMethods = HttpDeliveryMethods.PostRequest;
+				MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired, nonOpenIdMessage);
+				var response = rp.Channel.Request<DirectErrorResponse>(nonOpenIdMessage);
+				Assert.IsNotNull(response.ErrorMessage);
+			}
 		}
 	}
 }

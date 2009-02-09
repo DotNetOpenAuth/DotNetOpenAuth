@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId.Messages {
+	using System;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -14,13 +15,21 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// This message must be sent with an HTTP status code of 400.
 	/// This class satisfies OpenID 2.0 section 5.1.2.2.
 	/// </remarks>
-	internal class DirectErrorResponse : DirectResponseBase, IHttpDirectResponse {
+	internal class DirectErrorResponse : DirectResponseBase, IErrorMessage, IHttpDirectResponse {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DirectErrorResponse"/> class.
 		/// </summary>
 		/// <param name="originatingRequest">The originating request.</param>
 		internal DirectErrorResponse(IDirectedProtocolMessage originatingRequest)
 			: base(originatingRequest) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DirectErrorResponse"/> class.
+		/// </summary>
+		/// <param name="version">The OpenID version this message should comply with.</param>
+		internal DirectErrorResponse(Version version)
+			: base(version) {
 		}
 
 		#region IHttpDirectResponse Members
@@ -39,19 +48,19 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Gets or sets a human-readable message indicating why the request failed. 
 		/// </summary>
 		[MessagePart("error", IsRequired = true, AllowEmpty = true)]
-		internal string ErrorMessage { get; set; }
+		public string ErrorMessage { get; set; }
 
 		/// <summary>
 		/// Gets or sets the contact address for the administrator of the server. 
 		/// </summary>
 		/// <value>The contact address may take any form, as it is intended to be displayed to a person. </value>
 		[MessagePart("contact", IsRequired = false, AllowEmpty = true)]
-		internal string Contact { get; set; }
+		public string Contact { get; set; }
 
 		/// <summary>
 		/// Gets or sets a reference token, such as a support ticket number or a URL to a news blog, etc. 
 		/// </summary>
 		[MessagePart("reference", IsRequired = false, AllowEmpty = true)]
-		internal string Reference { get; set; }
+		public string Reference { get; set; }
 	}
 }

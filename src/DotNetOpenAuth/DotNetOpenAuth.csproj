@@ -219,6 +219,7 @@
     <Compile Include="OpenId\Messages\CheckAuthenticationRequest.cs" />
     <Compile Include="OpenId\Messages\CheckAuthenticationResponse.cs" />
     <Compile Include="OpenId\Messages\CheckIdRequest.cs" />
+    <Compile Include="OpenId\Messages\IErrorMessage.cs" />
     <Compile Include="OpenId\Messages\IndirectResponseBase.cs" />
     <Compile Include="OpenId\Messages\IndirectSignedResponse.cs" />
     <Compile Include="OpenId\Messages\IOpenIdMessageExtension.cs" />
@@ -234,6 +235,7 @@
     <Compile Include="OpenId\Provider\IAuthenticationRequest.cs" />
     <Compile Include="OpenId\Provider\IdentityEndpoint.cs" />
     <Compile Include="OpenId\Provider\IdentityEndpointNormalizationEventArgs.cs" />
+    <Compile Include="OpenId\Provider\IErrorReporting.cs" />
     <Compile Include="OpenId\Provider\IProviderApplicationStore.cs" />
     <Compile Include="OpenId\Provider\IRequest.cs" />
     <Compile Include="OpenId\Provider\ProviderEndpoint.cs" />

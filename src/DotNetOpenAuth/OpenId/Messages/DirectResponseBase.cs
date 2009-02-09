@@ -58,6 +58,15 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			this.Version = originatingRequest.Version;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DirectResponseBase"/> class.
+		/// </summary>
+		/// <param name="version">The OpenID version to comply with.</param>
+		protected DirectResponseBase(Version version) {
+			ErrorUtilities.VerifyArgumentNotNull(version, "version");
+			this.Version = version;
+		}
+
 		#region IProtocolMessage Properties
 
 		/// <summary>
@@ -96,6 +105,9 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Gets the originating request message that caused this response to be formed.
 		/// </summary>
+		/// <remarks>
+		/// This property may be null if the request message was undecipherable.
+		/// </remarks>
 		IDirectedProtocolMessage IDirectResponseProtocolMessage.OriginatingRequest {
 			get { return this.originatingRequest; }
 		}

@@ -54,7 +54,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// This method can be used by a constructor to throw an <see cref="ArgumentNullException"/>
 		/// instead of a <see cref="NullReferenceException"/>.
 		/// </remarks>
-		protected static Version GetVersion(IProtocolMessage message) {
+		internal static Version GetVersion(IProtocolMessage message) {
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 			return message.Version;
 		}

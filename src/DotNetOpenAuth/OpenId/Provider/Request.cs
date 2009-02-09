@@ -55,7 +55,21 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 			this.provider = provider;
 			this.request = request;
+			this.Protocol = Protocol.Lookup(this.request.Version);
 			this.extensibleMessage = request as IProtocolMessageWithExtensions;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Request"/> class.
+		/// </summary>
+		/// <param name="provider">The provider.</param>
+		/// <param name="version">The version.</param>
+		protected Request(OpenIdProvider provider, Version version) {
+			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
+			ErrorUtilities.VerifyArgumentNotNull(version, "version");
+
+			this.provider = provider;
+			this.Protocol = Protocol.Lookup(version);
 		}
 
 		#region IRequest Members
@@ -110,6 +124,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Gets the original request message.
 		/// </summary>
+		/// <value>This may be null in the case of an unrecognizable message.</value>
 		protected IDirectedProtocolMessage RequestMessage {
 			get { return this.request; }
 		}
@@ -122,9 +137,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Gets the protocol version used in the request..
 		/// </summary>
-		protected Protocol Protocol {
-			get { return Protocol.Lookup(this.RequestMessage.Version); }
-		}
+		protected Protocol Protocol { get; private set; }
 
 		#region IRequest Methods
 

@@ -70,6 +70,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					}
 				} else if (string.Equals(mode, protocol.Args.Mode.check_authentication)) {
 					message = new CheckAuthenticationRequest(protocol.Version, recipient.Location);
+				} else if (string.Equals(mode, protocol.Args.Mode.error)) {
+					message = new IndirectErrorResponse(protocol.Version, recipient.Location);
 				} else {
 					ErrorUtilities.ThrowProtocol(MessagingStrings.UnexpectedMessagePartValue, protocol.openid.mode, mode);
 				}
@@ -106,11 +108,17 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				protocol = Protocol.V20;
 			}
 
+			// Handle error messages generally.
+			if (fields.ContainsKey(protocol.openidnp.error)) {
+				message = new DirectErrorResponse(request);
+			}
+
 			var associateRequest = request as AssociateRequest;
 			if (associateRequest != null) {
 				if (protocol.Version.Major >= 2 && fields.ContainsKey(protocol.openidnp.error_code)) {
+					// This is a special recognized error case that we create a special message for.
 					message = new AssociateUnsuccessfulResponse(associateRequest);
-				} else {
+				} else if (message == null) {
 					var associateDiffieHellmanRequest = request as AssociateDiffieHellmanRequest;
 					var associateUnencryptedRequest = request as AssociateUnencryptedRequest;
 
@@ -125,7 +133,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			}
 
 			var checkAuthenticationRequest = request as CheckAuthenticationRequest;
-			if (checkAuthenticationRequest != null) {
+			if (checkAuthenticationRequest != null && message == null) {
 				message = new CheckAuthenticationResponse(checkAuthenticationRequest);
 			}
 

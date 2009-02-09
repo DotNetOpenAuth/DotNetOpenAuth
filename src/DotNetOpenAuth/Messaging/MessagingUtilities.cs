@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Reflection;
 	using System.Security.Cryptography;
 	using System.Text;
 	using System.Web;
@@ -133,6 +134,31 @@ namespace DotNetOpenAuth.Messaging {
 			} else {
 				return uri;
 			}
+		}
+
+		/// <summary>
+		/// Assemblies a message comprised of the message on a given exception and all inner exceptions.
+		/// </summary>
+		/// <param name="exception">The exception.</param>
+		/// <returns>The assembled message.</returns>
+		internal static string GetAllMessages(this Exception exception) {
+			// The input being null is probably bad, but since this method is called
+			// from a catch block, we don't really want to throw a new exception and
+			// hide the details of this one.  
+			if (exception == null) {
+				Logger.Error("MessagingUtilities.GetAllMessages called with null input.");
+			}
+
+			StringBuilder message = new StringBuilder();
+			while (exception != null) {
+				message.Append(exception.Message);
+				exception = exception.InnerException;
+				if (exception != null) {
+					message.Append("  ");
+				}
+			}
+
+			return message.ToString();
 		}
 
 		/// <summary>

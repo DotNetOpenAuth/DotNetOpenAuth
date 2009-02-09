@@ -104,6 +104,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
+		/// Gets or sets the mechanism a host site can use to receive
+		/// notifications of errors when communicating with remote parties.
+		/// </summary>
+		public IErrorReporting ErrorReporting { get; set; }
+
+		/// <summary>
 		/// Gets the association store.
 		/// </summary>
 		internal IAssociationStore<AssociationRelyingPartyType> AssociationStore { get; private set; }
@@ -145,31 +151,49 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// be authentication requests where the Provider site has to make decisions based
 		/// on its own user database and policies.
 		/// </remarks>
-		/// <exception cref="ProtocolException">Thrown if the incoming message is recognized but deviates from the protocol specification irrecoverably.</exception>
+		/// <exception cref="ProtocolException">Thrown if the incoming message is recognized
+		/// but deviates from the protocol specification irrecoverably.</exception>
 		public IRequest GetRequest(HttpRequestInfo httpRequestInfo) {
 			ErrorUtilities.VerifyArgumentNotNull(httpRequestInfo, "httpRequestInfo");
+			IDirectedProtocolMessage incomingMessage = null;
 
-			IDirectedProtocolMessage incomingMessage = this.Channel.ReadFromRequest(httpRequestInfo);
-			if (incomingMessage == null) {
-				return null;
+			try {
+				incomingMessage = this.Channel.ReadFromRequest(httpRequestInfo);
+				if (incomingMessage == null) {
+					// If the incoming request does not resemble an OpenID message at all,
+					// it's probably a user who just navigated to this URL, and we should
+					// just return null so the host can display a message to the user.
+					if (httpRequestInfo.HttpMethod == "GET" && !httpRequestInfo.Url.QueryStringContainPrefixedParameters(Protocol.Default.openid.Prefix)) {
+						return null;
+					}
+
+					ErrorUtilities.ThrowProtocol(MessagingStrings.UnexpectedMessageReceivedOfMany);
+				}
+
+				var checkIdMessage = incomingMessage as CheckIdRequest;
+				if (checkIdMessage != null) {
+					return new AuthenticationRequest(this, checkIdMessage);
+				}
+
+				var checkAuthMessage = incomingMessage as CheckAuthenticationRequest;
+				if (checkAuthMessage != null) {
+					return new AutoResponsiveRequest(this, incomingMessage, new CheckAuthenticationResponse(checkAuthMessage, this));
+				}
+
+				var associateMessage = incomingMessage as AssociateRequest;
+				if (associateMessage != null) {
+					return new AutoResponsiveRequest(this, incomingMessage, associateMessage.CreateResponse(this.AssociationStore, this.SecuritySettings));
+				}
+
+				throw ErrorUtilities.ThrowProtocol(MessagingStrings.UnexpectedMessageReceivedOfMany);
+			} catch (ProtocolException ex) {
+				IRequest errorResponse = this.GetErrorResponse(ex, httpRequestInfo, incomingMessage);
+				if (errorResponse == null) {
+					throw;
+				}
+
+				return errorResponse;
 			}
-
-			var checkIdMessage = incomingMessage as CheckIdRequest;
-			if (checkIdMessage != null) {
-				return new AuthenticationRequest(this, checkIdMessage);
-			}
-
-			var checkAuthMessage = incomingMessage as CheckAuthenticationRequest;
-			if (checkAuthMessage != null) {
-				return new AutoResponsiveRequest(this, incomingMessage, new CheckAuthenticationResponse(checkAuthMessage, this));
-			}
-
-			var associateMessage = incomingMessage as AssociateRequest;
-			if (associateMessage != null) {
-				return new AutoResponsiveRequest(this, incomingMessage, associateMessage.CreateResponse(this.AssociationStore, this.SecuritySettings));
-			}
-
-			throw ErrorUtilities.ThrowProtocol(MessagingStrings.UnexpectedMessageReceivedOfMany);
 		}
 
 		/// <summary>
@@ -258,5 +282,67 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Prepares the return value for the GetRequest method in the event of an exception.
+		/// </summary>
+		/// <param name="ex">The exception that forms the basis of the error response.  Must not be null.</param>
+		/// <param name="httpRequestInfo">The incoming HTTP request.  Must not be null.</param>
+		/// <param name="incomingMessage">The incoming message.  May be null in the case that it was malformed.</param>
+		/// <returns>
+		/// Either the <see cref="IRequest"/> to return to the host site or null to indicate no response could be reasonably created and that the caller should rethrow the exception.
+		/// </returns>
+		private IRequest GetErrorResponse(ProtocolException ex, HttpRequestInfo httpRequestInfo, IDirectedProtocolMessage incomingMessage) {
+			ErrorUtilities.VerifyArgumentNotNull(ex, "ex");
+			ErrorUtilities.VerifyArgumentNotNull(httpRequestInfo, "httpRequestInfo");
+
+			Logger.Error("An exception was generated while processing an incoming OpenID request.", ex);
+			IErrorMessage errorMessage;
+
+			// We must create the appropriate error message type (direct vs. indirect)
+			// based on what we see in the request.
+			if (httpRequestInfo.QueryString[Protocol.Default.openid.return_to] != null) {
+				// An indirect request message from the RP
+				// We need to return an indirect response error message so the RP can consume it.
+				// Consistent with OpenID 2.0 section 5.2.3.
+				var indirectRequest = incomingMessage as SignedResponseRequest;
+				if (indirectRequest != null) {
+					errorMessage = new IndirectErrorResponse(indirectRequest);
+				} else {
+					errorMessage = new IndirectErrorResponse(Protocol.Default.Version, new Uri(httpRequestInfo.QueryString[Protocol.Default.openid.return_to]));
+				}
+			} else if (httpRequestInfo.HttpMethod == "POST") {
+				// A direct request message from the RP
+				// We need to return a direct response error message so the RP can consume it.
+				// Consistent with OpenID 2.0 section 5.1.2.2.
+				if (incomingMessage != null) {
+					errorMessage = new DirectErrorResponse(incomingMessage);
+				} else {
+					errorMessage = new DirectErrorResponse(Protocol.Default.Version);
+				}
+			} else {
+				// This may be an indirect request from an RP that was so badly
+				// formed that we cannot even return an error to the RP.
+				// The best we can do is display an error to the user.
+				// Returning null cues the caller to "throw;"
+				return null;
+			}
+
+			errorMessage.ErrorMessage = ex.GetAllMessages();
+
+			// Allow host to log this error and issue a ticket #.
+			// We tear off the field to a local var for thread safety.
+			IErrorReporting hostErrorHandler = this.ErrorReporting;
+			if (hostErrorHandler != null) {
+				errorMessage.Contact = hostErrorHandler.Contact;
+				errorMessage.Reference = hostErrorHandler.LogError(ex);
+			}
+
+			if (incomingMessage != null) {
+				return new AutoResponsiveRequest(this, incomingMessage, errorMessage);
+			} else {
+				return new AutoResponsiveRequest(this, errorMessage);
+			}
+		}
 	}
 }
