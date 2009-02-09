@@ -16,3 +16,4 @@ PrecompiledWeb
 *.ldf
 *.mdf
 *.swx
+.dotest

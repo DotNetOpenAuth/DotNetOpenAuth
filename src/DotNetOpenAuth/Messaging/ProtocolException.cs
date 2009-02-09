@@ -13,39 +13,27 @@ namespace DotNetOpenAuth.Messaging {
 	/// An exception to represent errors in the local or remote implementation of the protocol.
 	/// </summary>
 	[Serializable]
-	public class ProtocolException : Exception, IDirectedProtocolMessage {
-		/// <summary>
-		/// The request message being processed when this exception was generated, if any.
-		/// </summary>
-		private IProtocolMessage inResponseTo;
-
-		/// <summary>
-		/// The indirect message receiver this exception should be delivered to, if any.
-		/// </summary>
-		private Uri recipient;
-
-		/// <summary>
-		/// A cache for extra name/value pairs tacked on as data when this exception is sent as a message.
-		/// </summary>
-		private Dictionary<string, string> extraData = new Dictionary<string, string>();
-
+	public class ProtocolException : Exception {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ProtocolException"/> class.
 		/// </summary>
-		public ProtocolException() { }
+		public ProtocolException() {
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ProtocolException"/> class.
 		/// </summary>
 		/// <param name="message">A message describing the specific error the occurred or was detected.</param>
-		public ProtocolException(string message) : base(message) { }
+		public ProtocolException(string message) : base(message) {
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ProtocolException"/> class.
 		/// </summary>
 		/// <param name="message">A message describing the specific error the occurred or was detected.</param>
 		/// <param name="inner">The inner exception to include.</param>
-		public ProtocolException(string message, Exception inner) : base(message, inner) { }
+		public ProtocolException(string message, Exception inner) : base(message, inner) {
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ProtocolException"/> class
@@ -63,36 +51,6 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ProtocolException"/> class
-		/// such that it can be sent as a protocol message response to a remote caller.
-		/// </summary>
-		/// <param name="message">The human-readable exception message.</param>
-		/// <param name="inResponseTo">
-		/// If <paramref name="message"/> is a response to an incoming message, this is the incoming message.
-		/// This is useful for error scenarios in deciding just how to send the response message.
-		/// May be null.
-		/// </param>
-		/// <param name="remoteIndirectReceiver">
-		/// In the case of exceptions that will be sent as indirect messages to the original calling
-		/// remote party, this is the URI of that remote site's receiver.
-		/// May be null only if the <paramref name="inResponseTo"/> message is a direct request.
-		/// </param>
-		internal ProtocolException(string message, IProtocolMessage inResponseTo, Uri remoteIndirectReceiver)
-			: this(message) {
-			if (inResponseTo == null) {
-				throw new ArgumentNullException("inResponseTo");
-			}
-			this.inResponseTo = inResponseTo;
-			this.FaultedMessage = inResponseTo;
-
-			if (remoteIndirectReceiver == null && inResponseTo.Transport != MessageTransport.Direct) {
-				// throw an exception, with ourselves as the inner exception (as fully initialized as we can be).
-				throw new ArgumentNullException("remoteIndirectReceiver");
-			}
-			this.recipient = remoteIndirectReceiver;
-		}
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="ProtocolException"/> class.
 		/// </summary>
 		/// <param name="info">The <see cref="System.Runtime.Serialization.SerializationInfo"/> 
@@ -106,130 +64,10 @@ namespace DotNetOpenAuth.Messaging {
 			throw new NotImplementedException();
 		}
 
-		#region IProtocolMessage Properties
-
-		/// <summary>
-		/// Gets the version of the protocol this message is prepared to implement.
-		/// </summary>
-		Version IMessage.Version {
-			get { return this.Version; }
-		}
-
-		/// <summary>
-		/// Gets the level of protection this exception requires when transmitted as a message.
-		/// </summary>
-		MessageProtections IProtocolMessage.RequiredProtection {
-			get { return RequiredProtection; }
-		}
-
-		/// <summary>
-		/// Gets whether this is a direct or indirect message.
-		/// </summary>
-		MessageTransport IProtocolMessage.Transport {
-			get { return this.Transport; }
-		}
-
-		#endregion
-
-		#region IDirectedProtocolMessage Members
-
-		/// <summary>
-		/// Gets the preferred method of transport for the message.
-		/// </summary>
-		/// <remarks>
-		/// This exception may be delivered as an indirect message or a direct response.  This property
-		/// only applies to the former.  The latter will never query this property.
-		/// </remarks>
-		HttpDeliveryMethods IDirectedProtocolMessage.HttpMethods {
-			get { return HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.PostRequest; }
-		}
-
-		/// <summary>
-		/// Gets the URL of the intended receiver of this message.
-		/// </summary>
-		/// <remarks>
-		/// This property should only be called when the error is being sent as an indirect response.
-		/// </remarks>
-		Uri IDirectedProtocolMessage.Recipient {
-			get { return this.Recipient; }
-		}
-
-		#endregion
-
-		/// <summary>
-		/// Gets the dictionary of additional name/value fields tacked on to this message.
-		/// </summary>
-		IDictionary<string, string> IMessage.ExtraData {
-			get { return this.ExtraData; }
-		}
-
 		/// <summary>
 		/// Gets the message that caused the exception.
 		/// </summary>
-		internal IProtocolMessage FaultedMessage {
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Gets the level of protection this exception requires when transmitted as a message.
-		/// </summary>
-		protected static MessageProtections RequiredProtection {
-			get { return MessageProtections.None; }
-		}
-
-		/// <summary>
-		/// Gets the preferred method of transport for the message.
-		/// </summary>
-		protected HttpDeliveryMethods HttpMethods {
-			get { return ((IDirectedProtocolMessage)this).HttpMethods; }
-		}
-
-		/// <summary>
-		/// Gets the URL of the intended receiver of this message.
-		/// </summary>
-		/// <remarks>
-		/// This property should only be called when the error is being sent as an indirect response.
-		/// </remarks>
-		protected Uri Recipient {
-			get {
-				if (this.inResponseTo == null) {
-					throw new InvalidOperationException(MessagingStrings.ExceptionNotConstructedForTransit);
-				}
-				return this.recipient;
-			}
-		}
-
-		/// <summary>
-		/// Gets the version of the protocol this message is prepared to implement.
-		/// </summary>
-		protected Version Version {
-			get {
-				if (this.inResponseTo == null) {
-					throw new InvalidOperationException(MessagingStrings.ExceptionNotConstructedForTransit);
-				}
-				return this.inResponseTo.Version;
-			}
-		}
-
-		/// <summary>
-		/// Gets whether this is a direct or indirect message.
-		/// </summary>
-		protected MessageTransport Transport {
-			get {
-				if (this.inResponseTo == null) {
-					throw new InvalidOperationException(MessagingStrings.ExceptionNotConstructedForTransit);
-				}
-				return this.inResponseTo.Transport;
-			}
-		}
-
-		/// <summary>
-		/// Gets the dictionary of additional name/value fields tacked on to this message.
-		/// </summary>
-		protected IDictionary<string, string> ExtraData {
-			get { return this.extraData; }
-		}
+		internal IProtocolMessage FaultedMessage { get; private set; }
 
 		/// <summary>
 		/// When overridden in a derived class, sets the <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with information about the exception.
@@ -248,25 +86,5 @@ namespace DotNetOpenAuth.Messaging {
 			base.GetObjectData(info, context);
 			throw new NotImplementedException();
 		}
-
-		#region IProtocolMessage Methods
-
-		/// <summary>
-		/// See <see cref="IMessage.EnsureValidMessage"/>.
-		/// </summary>
-		void IMessage.EnsureValidMessage() {
-			this.EnsureValidMessage();
-		}
-
-		/// <summary>
-		/// See <see cref="IMessage.EnsureValidMessage"/>.
-		/// </summary>
-		protected virtual void EnsureValidMessage() {
-			if (this.inResponseTo == null) {
-				throw new InvalidOperationException(MessagingStrings.ExceptionNotConstructedForTransit);
-			}
-		}
-
-		#endregion
 	}
 }
