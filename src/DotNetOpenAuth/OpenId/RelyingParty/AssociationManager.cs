@@ -188,7 +188,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					}
 
 					if (!this.securitySettings.IsAssociationInPermittedRange(Protocol.Lookup(provider.ProtocolVersion), associateUnsuccessfulResponse.AssociationType)) {
-						Logger.DebugFormat("Provider rejected an association request and suggested '{0}' as an association to try, which this Relying Party does not support.  Giving up.");
+						Logger.DebugFormat("Provider rejected an association request and suggested '{0}' as an association to try, which this Relying Party does not support.  Giving up.", associateUnsuccessfulResponse.AssociationType);
 						return null;
 					}
 
