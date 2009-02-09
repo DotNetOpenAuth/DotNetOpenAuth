@@ -155,7 +155,7 @@ namespace DotNetOpenAuth.Messaging {
 		internal NameValueCollection QueryString {
 			get {
 				if (this.queryString == null) {
-					this.queryString = HttpUtility.ParseQueryString(this.Query);
+					this.queryString = this.Query != null ? HttpUtility.ParseQueryString(this.Query) : new NameValueCollection();
 				}
 
 				return this.queryString;

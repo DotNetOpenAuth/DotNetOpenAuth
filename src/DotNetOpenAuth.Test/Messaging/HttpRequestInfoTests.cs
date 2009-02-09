@@ -38,5 +38,14 @@ namespace DotNetOpenAuth.Test.Messaging {
 			HttpRequestInfo info = new HttpRequestInfo();
 			Assert.IsNull(info.Query);
 		}
+
+		/// <summary>
+		/// Verifies that looking up a querystring variable is gracefully handled without a query in the URL.
+		/// </summary>
+		[TestMethod]
+		public void QueryStringLookupWithoutQuery() {
+			HttpRequestInfo info = new HttpRequestInfo();
+			Assert.IsNull(info.QueryString["hi"]);
+		}
 	}
 }
