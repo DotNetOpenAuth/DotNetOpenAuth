@@ -315,11 +315,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				// A direct request message from the RP
 				// We need to return a direct response error message so the RP can consume it.
 				// Consistent with OpenID 2.0 section 5.1.2.2.
-				if (incomingMessage != null) {
-					errorMessage = new DirectErrorResponse(incomingMessage);
-				} else {
-					errorMessage = new DirectErrorResponse(Protocol.Default.Version);
-				}
+				errorMessage = new DirectErrorResponse(Protocol.Default.Version, incomingMessage);
 			} else {
 				// This may be an indirect request from an RP that was so badly
 				// formed that we cannot even return an error to the RP.

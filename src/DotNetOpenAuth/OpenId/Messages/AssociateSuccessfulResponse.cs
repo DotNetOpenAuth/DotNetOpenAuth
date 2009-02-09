@@ -29,9 +29,10 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssociateSuccessfulResponse"/> class.
 		/// </summary>
+		/// <param name="responseVersion">The OpenID version of the response message.</param>
 		/// <param name="originatingRequest">The originating request.</param>
-		internal AssociateSuccessfulResponse(AssociateRequest originatingRequest)
-			: base(originatingRequest) {
+		internal AssociateSuccessfulResponse(Version responseVersion, AssociateRequest originatingRequest)
+			: base(responseVersion, originatingRequest) {
 		}
 
 		/// <summary>

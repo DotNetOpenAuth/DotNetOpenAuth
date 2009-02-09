@@ -90,12 +90,13 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
 		/// </summary>
-		/// <param name="message">The message being passed in through a mock transport.</param>
-		internal HttpRequestInfo(IDirectedProtocolMessage message) {
+		/// <param name="message">The message being passed in through a mock transport.  May be null.</param>
+		/// <param name="httpMethod">The HTTP method that the incoming request came in on, whether or not <paramref name="message"/> is null.</param>
+		internal HttpRequestInfo(IDirectedProtocolMessage message, HttpDeliveryMethods httpMethod) {
 			this.Message = message;
-			if (message == null || (message.HttpMethods & HttpDeliveryMethods.GetRequest) != 0) {
+			if ((httpMethod & HttpDeliveryMethods.GetRequest) != 0) {
 				this.HttpMethod = "GET";
-			} else if ((message.HttpMethods & HttpDeliveryMethods.PostRequest) != 0) {
+			} else if ((httpMethod & HttpDeliveryMethods.PostRequest) != 0) {
 				this.HttpMethod = "POST";
 			}
 		}

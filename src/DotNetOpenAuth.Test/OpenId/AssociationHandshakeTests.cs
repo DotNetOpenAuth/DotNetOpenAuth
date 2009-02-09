@@ -143,7 +143,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					var request = op.Channel.ReadFromRequest<AssociateRequest>();
 
 					// Send a response that suggests a foreign association type.
-					AssociateUnsuccessfulResponse renegotiateResponse = new AssociateUnsuccessfulResponse(request);
+					AssociateUnsuccessfulResponse renegotiateResponse = new AssociateUnsuccessfulResponse(request.Version, request);
 					renegotiateResponse.AssociationType = "HMAC-UNKNOWN";
 					renegotiateResponse.SessionType = "DH-UNKNOWN";
 					op.Channel.Send(renegotiateResponse);
@@ -167,7 +167,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					var request = op.Channel.ReadFromRequest<AssociateRequest>();
 
 					// Send a response that suggests a no encryption.
-					AssociateUnsuccessfulResponse renegotiateResponse = new AssociateUnsuccessfulResponse(request);
+					AssociateUnsuccessfulResponse renegotiateResponse = new AssociateUnsuccessfulResponse(request.Version, request);
 					renegotiateResponse.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 					renegotiateResponse.SessionType = protocol.Args.SessionType.NoEncryption;
 					op.Channel.Send(renegotiateResponse);
@@ -192,7 +192,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					var request = op.Channel.ReadFromRequest<AssociateRequest>();
 
 					// Send a mismatched response
-					AssociateUnsuccessfulResponse renegotiateResponse = new AssociateUnsuccessfulResponse(request);
+					AssociateUnsuccessfulResponse renegotiateResponse = new AssociateUnsuccessfulResponse(request.Version, request);
 					renegotiateResponse.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 					renegotiateResponse.SessionType = protocol.Args.SessionType.DH_SHA256;
 					op.Channel.Send(renegotiateResponse);
@@ -217,7 +217,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					var request = op.Channel.ReadFromRequest<AssociateRequest>();
 
 					// Send a renegotiate response
-					AssociateUnsuccessfulResponse renegotiateResponse = new AssociateUnsuccessfulResponse(request);
+					AssociateUnsuccessfulResponse renegotiateResponse = new AssociateUnsuccessfulResponse(request.Version, request);
 					renegotiateResponse.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 					renegotiateResponse.SessionType = protocol.Args.SessionType.DH_SHA1;
 					op.Channel.Send(renegotiateResponse);
@@ -226,7 +226,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					request = op.Channel.ReadFromRequest<AssociateRequest>();
 
 					// Send ANOTHER renegotiate response, at which point the DNOI RP should give up.
-					renegotiateResponse = new AssociateUnsuccessfulResponse(request);
+					renegotiateResponse = new AssociateUnsuccessfulResponse(request.Version, request);
 					renegotiateResponse.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA256;
 					renegotiateResponse.SessionType = protocol.Args.SessionType.DH_SHA256;
 					op.Channel.Send(renegotiateResponse);

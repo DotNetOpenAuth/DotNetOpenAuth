@@ -137,6 +137,14 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether this instance is disposed.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if this instance is disposed; otherwise, <c>false</c>.
+		/// </value>
+		protected internal bool IsDisposed { get; set; }
+
+		/// <summary>
 		/// Gets a tool that can figure out what kind of message is being received
 		/// so it can be deserialized.
 		/// </summary>
@@ -393,6 +401,8 @@ namespace DotNetOpenAuth.Messaging {
 				foreach (IDisposable bindingElement in this.BindingElements.OfType<IDisposable>()) {
 					bindingElement.Dispose();
 				}
+
+				this.IsDisposed = true;
 			}
 		}
 

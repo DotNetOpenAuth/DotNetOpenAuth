@@ -39,7 +39,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Consumer", "..\samples\Cons
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "6319"
+		VWDPort = "5248"
 		DefaultWebSiteLanguage = "Visual C#"
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
@@ -115,7 +115,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "RelyingPartyClassicAsp", ".
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "49675"
+		VWDPort = "5364"
 		DefaultWebSiteLanguage = "Visual C#"
 	EndProjectSection
 EndProject

@@ -110,31 +110,31 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 			// Handle error messages generally.
 			if (fields.ContainsKey(protocol.openidnp.error)) {
-				message = new DirectErrorResponse(request);
+				message = new DirectErrorResponse(protocol.Version, request);
 			}
 
 			var associateRequest = request as AssociateRequest;
 			if (associateRequest != null) {
 				if (protocol.Version.Major >= 2 && fields.ContainsKey(protocol.openidnp.error_code)) {
 					// This is a special recognized error case that we create a special message for.
-					message = new AssociateUnsuccessfulResponse(associateRequest);
+					message = new AssociateUnsuccessfulResponse(protocol.Version, associateRequest);
 				} else if (message == null) {
 					var associateDiffieHellmanRequest = request as AssociateDiffieHellmanRequest;
 					var associateUnencryptedRequest = request as AssociateUnencryptedRequest;
 
 					if (associateDiffieHellmanRequest != null) {
-						message = new AssociateDiffieHellmanResponse(associateDiffieHellmanRequest);
+						message = new AssociateDiffieHellmanResponse(protocol.Version, associateDiffieHellmanRequest);
 					}
 
 					if (associateUnencryptedRequest != null) {
-						message = new AssociateUnencryptedResponse(associateUnencryptedRequest);
+						message = new AssociateUnencryptedResponse(protocol.Version, associateUnencryptedRequest);
 					}
 				}
 			}
 
 			var checkAuthenticationRequest = request as CheckAuthenticationRequest;
 			if (checkAuthenticationRequest != null && message == null) {
-				message = new CheckAuthenticationResponse(checkAuthenticationRequest);
+				message = new CheckAuthenticationResponse(protocol.Version, checkAuthenticationRequest);
 			}
 
 			if (message != null) {

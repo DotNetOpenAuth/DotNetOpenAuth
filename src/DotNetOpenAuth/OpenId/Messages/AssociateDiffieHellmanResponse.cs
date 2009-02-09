@@ -22,9 +22,10 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssociateDiffieHellmanResponse"/> class.
 		/// </summary>
+		/// <param name="responseVersion">The OpenID version of the response message.</param>
 		/// <param name="originatingRequest">The originating request.</param>
-		internal AssociateDiffieHellmanResponse(AssociateDiffieHellmanRequest originatingRequest)
-			: base(originatingRequest) {
+		internal AssociateDiffieHellmanResponse(Version responseVersion, AssociateDiffieHellmanRequest originatingRequest)
+			: base(responseVersion, originatingRequest) {
 		}
 
 		/// <summary>

@@ -11,7 +11,9 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using System.Text;
 	using System.Threading;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.Test.OpenId;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	internal class CoordinatingChannel : Channel {
 		/// <summary>
@@ -52,7 +54,9 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// An incoming message that has been posted by a remote channel and 
 		/// is waiting for receipt by this channel.
 		/// </summary>
-		private IProtocolMessage incomingMessage;
+		private IDictionary<string, string> incomingMessage;
+
+		private MessageReceivingEndpoint incomingMessageRecipient;
 
 		/// <summary>
 		/// A delegate that gets a chance to peak at and fiddle with all 
@@ -104,6 +108,8 @@ namespace DotNetOpenAuth.Test.Mocks {
 					TestUtilities.TestLogger.Debug("CoordinatingChannel is closing while remote channel is waiting for an incoming message.  Signaling channel to unblock it to receive a null message.");
 					this.RemoteChannel.incomingMessageSignal.Set();
 				}
+
+				this.Dispose();
 			}
 		}
 
@@ -115,32 +121,60 @@ namespace DotNetOpenAuth.Test.Mocks {
 			this.VerifyMessageAfterReceiving(CloneSerializedParts(message));
 		}
 
+		/// <summary>
+		/// Called from a remote party's thread to post a message to this channel for processing.
+		/// </summary>
+		/// <param name="message">The message that this channel should receive.  This message will be cloned.</param>
 		internal void PostMessage(IProtocolMessage message) {
 			ErrorUtilities.VerifyInternal(this.incomingMessage == null, "Oops, a message is already waiting for the remote party!");
-			this.incomingMessage = CloneSerializedParts(message);
+			this.incomingMessage = new Dictionary<string, string>(new MessageDictionary(message));
+			var directedMessage = message as IDirectedProtocolMessage;
+			this.incomingMessageRecipient = directedMessage != null ? new MessageReceivingEndpoint(directedMessage.Recipient, directedMessage.HttpMethods) : null;
 			this.incomingMessageSignal.Set();
 		}
 
 		protected internal override HttpRequestInfo GetRequestFromContext() {
-			return new HttpRequestInfo((IDirectedProtocolMessage)this.AwaitIncomingMessage());
+			MessageReceivingEndpoint recipient;
+			var messageData = this.AwaitIncomingMessage(out recipient);
+			IDirectedProtocolMessage message = null;
+			if (messageData != null) {
+				message = this.MessageFactory.GetNewRequestMessage(recipient, messageData);
+				if (message != null) {
+					MessageSerializer.Get(message.GetType()).Deserialize(messageData, message);
+				}
+				return new HttpRequestInfo(message, recipient.AllowedMethods);
+			} else {
+				return new HttpRequestInfo(null, HttpDeliveryMethods.GetRequest);
+			}
 		}
 
 		protected override IProtocolMessage RequestInternal(IDirectedProtocolMessage request) {
 			this.ProcessMessageFilter(request, true);
-			HttpRequestInfo requestInfo = this.SpoofHttpMethod(request);
+
 			// Drop the outgoing message in the other channel's in-slot and let them know it's there.
-			ErrorUtilities.VerifyInternal(this.RemoteChannel.incomingMessage == null, "Oops, a message is already waiting for the remote party!");
-			this.RemoteChannel.incomingMessage = requestInfo.Message;
-			this.RemoteChannel.incomingMessageSignal.Set();
+			this.RemoteChannel.PostMessage(request);
+
 			// Now wait for a response...
-			IProtocolMessage response = this.AwaitIncomingMessage();
-			this.ProcessMessageFilter(response, false);
-			return response;
+			MessageReceivingEndpoint recipient;
+			IDictionary<string, string> responseData = this.AwaitIncomingMessage(out recipient);
+			ErrorUtilities.VerifyInternal(recipient == null, "The recipient is expected to be null for direct responses.");
+
+			// And deserialize it.
+			IDirectResponseProtocolMessage responseMessage = this.MessageFactory.GetNewResponseMessage(request, responseData);
+			if (responseMessage == null) {
+				return null;
+			}
+
+			var responseSerializer = MessageSerializer.Get(responseMessage.GetType());
+			responseSerializer.Deserialize(responseData, responseMessage);
+
+			this.ProcessMessageFilter(responseMessage, false);
+			return responseMessage;
 		}
 
 		protected override UserAgentResponse SendDirectMessageResponse(IProtocolMessage response) {
 			this.ProcessMessageFilter(response, true);
-			return new CoordinatingUserAgentResponse(CloneSerializedParts(response), this.RemoteChannel);
+			return new CoordinatingUserAgentResponse(response, this.RemoteChannel);
 		}
 
 		protected override UserAgentResponse SendIndirectMessage(IDirectedProtocolMessage message) {
@@ -168,18 +202,16 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		/// <summary>
-		/// Spoof HTTP request information for signing/verification purposes.
+		/// Clones a message, instantiating the new instance using <i>this</i> channel's
+		/// message factory.
 		/// </summary>
-		/// <param name="message">The message to add a pretend HTTP method to.</param>
-		/// <returns>A spoofed HttpRequestInfo that wraps the new message.</returns>
-		protected virtual HttpRequestInfo SpoofHttpMethod(IDirectedProtocolMessage message) {
-			HttpRequestInfo requestInfo = new HttpRequestInfo(message);
-
-			requestInfo.Message = this.CloneSerializedParts(message);
-
-			return requestInfo;
-		}
-
+		/// <typeparam name="T">The type of message to clone.</typeparam>
+		/// <param name="message">The message to clone.</param>
+		/// <returns>The new instance of the message.</returns>
+		/// <remarks>
+		/// This Clone method should <i>not</i> be used to send message clones to the remote
+		/// channel since their message factory is not used.
+		/// </remarks>
 		protected virtual T CloneSerializedParts<T>(T message) where T : class, IProtocolMessage {
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
@@ -195,9 +227,9 @@ namespace DotNetOpenAuth.Test.Mocks {
 					recipient = new MessageReceivingEndpoint(directedMessage.Recipient, directedMessage.HttpMethods);
 				}
 
-				clonedMessage = this.RemoteChannel.MessageFactory.GetNewRequestMessage(recipient, fields);
+				clonedMessage = this.MessageFactory.GetNewRequestMessage(recipient, fields);
 			} else if (directResponse != null && directResponse.IsDirectResponse()) {
-				clonedMessage = this.RemoteChannel.MessageFactory.GetNewResponseMessage(directResponse.OriginatingRequest, fields);
+				clonedMessage = this.MessageFactory.GetNewResponseMessage(directResponse.OriginatingRequest, fields);
 			} else {
 				throw new InvalidOperationException("Totally expected a message to implement one of the two derived interface types.");
 			}
@@ -217,7 +249,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return accessor.MessageFactory;
 		}
 
-		private IProtocolMessage AwaitIncomingMessage() {
+		private IDictionary<string, string> AwaitIncomingMessage(out MessageReceivingEndpoint recipient) {
 			// Special care should be taken so that we don't indefinitely 
 			// wait for a message that may never come due to a bug in the product
 			// or the test.
@@ -241,8 +273,10 @@ namespace DotNetOpenAuth.Test.Mocks {
 
 			lock (waitingForMessageCoordinationLock) {
 				this.waitingForMessage = false;
-				IProtocolMessage response = this.incomingMessage;
+				var response = this.incomingMessage;
+				recipient = this.incomingMessageRecipient;
 				this.incomingMessage = null;
+				this.incomingMessageRecipient = null;
 				return response;
 			}
 		}

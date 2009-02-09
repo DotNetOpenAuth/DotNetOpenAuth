@@ -111,7 +111,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Failed association response messages will derive from <see cref="AssociateUnsuccessfulResponse"/>.</para>
 		/// </remarks>
 		protected override IProtocolMessage CreateResponseCore() {
-			var response = new AssociateDiffieHellmanResponse(this);
+			var response = new AssociateDiffieHellmanResponse(this.Version, this);
 			response.AssociationType = this.AssociationType;
 			return response;
 		}

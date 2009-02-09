@@ -186,7 +186,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		private AssociateUnsuccessfulResponse CreateUnsuccessfulResponse(ProviderSecuritySettings securitySettings) {
 			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
 
-			var unsuccessfulResponse = new AssociateUnsuccessfulResponse(this);
+			var unsuccessfulResponse = new AssociateUnsuccessfulResponse(this.Version, this);
 
 			// The strategy here is to suggest that the RP try again with the lowest
 			// permissible security settings, giving the RP the best chance of being

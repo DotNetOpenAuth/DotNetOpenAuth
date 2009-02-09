@@ -14,6 +14,11 @@ namespace DotNetOpenAuth.Test.Mocks {
 	internal class CoordinatingUserAgentResponse : UserAgentResponse {
 		private CoordinatingChannel receivingChannel;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CoordinatingUserAgentResponse"/> class.
+		/// </summary>
+		/// <param name="message">The direct response message to send to the remote channel.  This message will be cloned.</param>
+		/// <param name="receivingChannel">The receiving channel.</param>
 		internal CoordinatingUserAgentResponse(IProtocolMessage message, CoordinatingChannel receivingChannel) {
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 			ErrorUtilities.VerifyArgumentNotNull(receivingChannel, "receivingChannel");

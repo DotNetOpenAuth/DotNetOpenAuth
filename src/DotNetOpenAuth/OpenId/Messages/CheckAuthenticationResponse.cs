@@ -22,9 +22,10 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Initializes a new instance of the <see cref="CheckAuthenticationResponse"/> class
 		/// for use by the Relying Party.
 		/// </summary>
+		/// <param name="responseVersion">The OpenID version of the response message.</param>
 		/// <param name="request">The request that this message is responding to.</param>
-		internal CheckAuthenticationResponse(CheckAuthenticationRequest request)
-			: base(request) {
+		internal CheckAuthenticationResponse(Version responseVersion, CheckAuthenticationRequest request)
+			: base(responseVersion, request) {
 		}
 
 		/// <summary>
@@ -34,7 +35,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="request">The request that this message is responding to.</param>
 		/// <param name="provider">The OpenID Provider that is preparing to send this response.</param>
 		internal CheckAuthenticationResponse(CheckAuthenticationRequest request, OpenIdProvider provider)
-			: base(request) {
+			: base(request.Version, request) {
 			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
 
 			// The channel's binding elements have already set the request's IsValid property

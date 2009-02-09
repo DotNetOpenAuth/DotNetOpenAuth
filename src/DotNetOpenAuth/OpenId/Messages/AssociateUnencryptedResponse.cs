@@ -20,9 +20,10 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssociateUnencryptedResponse"/> class.
 		/// </summary>
+		/// <param name="responseVersion">The OpenID version of the response message.</param>
 		/// <param name="originatingRequest">The originating request.</param>
-		internal AssociateUnencryptedResponse(AssociateUnencryptedRequest originatingRequest)
-			: base(originatingRequest) {
+		internal AssociateUnencryptedResponse(Version responseVersion, AssociateUnencryptedRequest originatingRequest)
+			: base(responseVersion, originatingRequest) {
 			SessionType = Protocol.Args.SessionType.NoEncryption;
 		}
 

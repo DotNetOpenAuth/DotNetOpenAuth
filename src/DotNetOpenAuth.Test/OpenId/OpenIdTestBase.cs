@@ -126,8 +126,12 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// This is a very useful method to pass to the OpenIdCoordinator constructor for the Provider argument.
 		/// </remarks>
 		internal void AutoProvider(OpenIdProvider provider) {
-			IRequest request;
-			while ((request = provider.GetRequest()) != null) {
+			while (!((CoordinatingChannel)provider.Channel).RemoteChannel.IsDisposed) {
+				IRequest request = provider.GetRequest();
+				if (request == null) {
+					continue;
+				}
+
 				if (!request.IsResponseReady) {
 					var authRequest = (DotNetOpenAuth.OpenId.Provider.IAuthenticationRequest)request;
 					switch (this.AutoProviderScenario) {

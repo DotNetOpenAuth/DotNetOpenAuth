@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 		[TestInitialize]
 		public void Setup() {
 			var request = new AssociateUnencryptedRequest(Protocol.V20.Version, new Uri("http://host"));
-			this.response = new AssociateUnencryptedResponse(request);
+			this.response = new AssociateUnencryptedResponse(request.Version, request);
 		}
 
 		[TestMethod]

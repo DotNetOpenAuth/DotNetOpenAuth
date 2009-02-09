@@ -19,17 +19,10 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DirectErrorResponse"/> class.
 		/// </summary>
+		/// <param name="responseVersion">The OpenID version of the response message.</param>
 		/// <param name="originatingRequest">The originating request.</param>
-		internal DirectErrorResponse(IDirectedProtocolMessage originatingRequest)
-			: base(originatingRequest) {
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="DirectErrorResponse"/> class.
-		/// </summary>
-		/// <param name="version">The OpenID version this message should comply with.</param>
-		internal DirectErrorResponse(Version version)
-			: base(version) {
+		internal DirectErrorResponse(Version responseVersion, IDirectedProtocolMessage originatingRequest)
+			: base(responseVersion, originatingRequest) {
 		}
 
 		#region IHttpDirectResponse Members

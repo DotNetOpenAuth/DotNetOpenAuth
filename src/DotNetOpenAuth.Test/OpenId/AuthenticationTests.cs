@@ -134,14 +134,14 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 					if (positive && !sharedAssociation) {
 						var checkauthRequest = op.Channel.ReadFromRequest<CheckAuthenticationRequest>();
-						var checkauthResponse = new CheckAuthenticationResponse(checkauthRequest);
+						var checkauthResponse = new CheckAuthenticationResponse(checkauthRequest.Version, checkauthRequest);
 						checkauthResponse.IsValid = checkauthRequest.IsValid;
 						op.Channel.Send(checkauthResponse);
 
 						if (!tamper) {
 							// Respond to the replay attack.
 							checkauthRequest = op.Channel.ReadFromRequest<CheckAuthenticationRequest>();
-							checkauthResponse = new CheckAuthenticationResponse(checkauthRequest);
+							checkauthResponse = new CheckAuthenticationResponse(checkauthRequest.Version, checkauthRequest);
 							checkauthResponse.IsValid = checkauthRequest.IsValid;
 							op.Channel.Send(checkauthResponse);
 						}

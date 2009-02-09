@@ -58,7 +58,8 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		protected internal override HttpRequestInfo GetRequestFromContext() {
-			return new HttpRequestInfo((IDirectedProtocolMessage)this.AwaitIncomingMessage());
+			var directedMessage = (IDirectedProtocolMessage)this.AwaitIncomingMessage();
+			return new HttpRequestInfo(directedMessage, directedMessage.HttpMethods);
 		}
 
 		protected override IProtocolMessage RequestInternal(IDirectedProtocolMessage request) {
@@ -91,7 +92,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// <param name="message">The message to add a pretend HTTP method to.</param>
 		/// <returns>A spoofed HttpRequestInfo that wraps the new message.</returns>
 		private HttpRequestInfo SpoofHttpMethod(IDirectedProtocolMessage message) {
-			HttpRequestInfo requestInfo = new HttpRequestInfo(message);
+			HttpRequestInfo requestInfo = new HttpRequestInfo(message, message.HttpMethods);
 
 			var signedMessage = message as ITamperResistantOAuthMessage;
 			if (signedMessage != null) {

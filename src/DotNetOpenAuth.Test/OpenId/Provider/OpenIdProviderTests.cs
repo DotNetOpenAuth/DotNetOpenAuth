@@ -101,21 +101,22 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			coordinator.Run();
 		}
 
-		////[TestMethod]
-		////public void BadRequestsGenerateValidErrorResponses() {
-		////    var coordinator = new OpenIdCoordinator(
-		////        rp => {
-		////            var nonOpenIdMessage = new Mocks.TestDirectedMessage();
-		////            nonOpenIdMessage.Recipient = OPUri;
-		////            nonOpenIdMessage.HttpMethods = HttpDeliveryMethods.PostRequest;
-		////            MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired, nonOpenIdMessage);
-		////            var response = rp.Channel.Request<DirectErrorResponse>(nonOpenIdMessage);
-		////            Assert.IsNotNull(response.ErrorMessage);
-		////        },
-		////        AutoProvider);
+		[TestMethod]
+		public void BadRequestsGenerateValidErrorResponses() {
+			var coordinator = new OpenIdCoordinator(
+				rp => {
+					var nonOpenIdMessage = new Mocks.TestDirectedMessage();
+					nonOpenIdMessage.Recipient = OPUri;
+					nonOpenIdMessage.HttpMethods = HttpDeliveryMethods.PostRequest;
+					MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired, nonOpenIdMessage);
+					var response = rp.Channel.Request<DirectErrorResponse>(nonOpenIdMessage);
+					Assert.IsNotNull(response.ErrorMessage);
+					Assert.AreEqual(Protocol.Default.Version, response.Version);
+				},
+				AutoProvider);
 
-		////    coordinator.Run();
-		////}
+			coordinator.Run();
+		}
 
 		[TestMethod]
 		public void BadRequestsGenerateValidErrorResponsesHosted() {

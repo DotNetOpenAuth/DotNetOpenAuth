@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId.Messages {
+	using System;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Globalization;
@@ -31,9 +32,10 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssociateUnsuccessfulResponse"/> class.
 		/// </summary>
+		/// <param name="responseVersion">The OpenID version of the response message.</param>
 		/// <param name="originatingRequest">The originating request.</param>
-		internal AssociateUnsuccessfulResponse(AssociateRequest originatingRequest)
-			: base(originatingRequest) {
+		internal AssociateUnsuccessfulResponse(Version responseVersion, AssociateRequest originatingRequest)
+			: base(responseVersion, originatingRequest) {
 			this.ErrorMessage = string.Format(CultureInfo.CurrentCulture, OpenIdStrings.AssociationOrSessionTypeUnrecognizedOrNotSupported, originatingRequest.AssociationType, originatingRequest.SessionType);
 		}
 
