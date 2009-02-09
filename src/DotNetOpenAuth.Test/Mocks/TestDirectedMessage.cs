@@ -20,6 +20,8 @@ namespace DotNetOpenAuth.Test.Mocks {
 
 		public Uri Recipient { get; set; }
 
+		public HttpDeliveryMethods HttpMethods { get; internal set; }
+
 		#endregion
 
 		#region IProtocolMessage Properties
@@ -27,12 +29,6 @@ namespace DotNetOpenAuth.Test.Mocks {
 		MessageProtections IProtocolMessage.RequiredProtection {
 			get { return this.RequiredProtection; }
 		}
-
-		#endregion
-
-		#region IOAuthDirectedMessage Members
-
-		public HttpDeliveryMethods HttpMethods { get; internal set; }
 
 		#endregion
 
