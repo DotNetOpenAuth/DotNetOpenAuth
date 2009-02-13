@@ -143,50 +143,43 @@ namespace DotNetOpenId {
 		/// </param>
 		/// <param name="html">The HTML that was downloaded and should be searched.</param>
 		/// <returns>
-		/// An initialized ServiceEndpoint if the OpenID Provider information was
-		/// found.  Otherwise null.
+		/// A sequence of any discovered ServiceEndpoints.
 		/// </returns>
-		/// <remarks>
-		/// OpenID 2.0 tags are always used if they are present, otherwise
-		/// OpenID 1.x tags are used if present.
-		/// </remarks>
-		private static ServiceEndpoint DiscoverFromHtml(Uri claimedIdentifier, string html) {
-			Uri providerEndpoint = null;
-			Protocol discoveredProtocol = null;
-			Identifier providerLocalIdentifier = null;
+		private static IEnumerable<ServiceEndpoint> DiscoverFromHtml(Uri claimedIdentifier, string html) {
 			var linkTags = new List<HtmlLink>(Yadis.HtmlParser.HeadTags<HtmlLink>(html));
 			foreach (var protocol in Protocol.AllVersions) {
-				foreach (var linkTag in linkTags) {
-					// rel attributes are supposed to be interpreted with case INsensitivity, 
-					// and is a space-delimited list of values. (http://www.htmlhelp.com/reference/html40/values.html#linktypes)
-					if (Regex.IsMatch(linkTag.Attributes["rel"], @"\b" + Regex.Escape(protocol.HtmlDiscoveryProviderKey) + @"\b", RegexOptions.IgnoreCase)) {
-						if (Uri.TryCreate(linkTag.Href, UriKind.Absolute, out providerEndpoint)) {
-							discoveredProtocol = protocol;
-							break;
+				if (protocol.Equals(Protocol.v10)) {
+					// For HTML discovery, this is redunant with v1.1, so skip.
+					continue;
+				}
+
+				// rel attributes are supposed to be interpreted with case INsensitivity, 
+				// and is a space-delimited list of values. (http://www.htmlhelp.com/reference/html40/values.html#linktypes)
+				var serverLinkTag = Util.FirstOrDefault(linkTags, tag => Regex.IsMatch(tag.Attributes["rel"], @"\b" + Regex.Escape(protocol.HtmlDiscoveryProviderKey) + @"\b", RegexOptions.IgnoreCase));
+				if (serverLinkTag == null) {
+					continue;
+				}
+
+				Uri providerEndpoint = null;
+				if (Uri.TryCreate(serverLinkTag.Href, UriKind.Absolute, out providerEndpoint)) {
+					// See if a LocalId tag of the discovered version exists
+					Identifier providerLocalIdentifier = null;
+					var delegateLinkTag = Util.FirstOrDefault(linkTags, tag => Regex.IsMatch(tag.Attributes["rel"], @"\b" + Regex.Escape(protocol.HtmlDiscoveryLocalIdKey) + @"\b", RegexOptions.IgnoreCase));
+					if (delegateLinkTag != null) {
+						if (Identifier.IsValid(delegateLinkTag.Href)) {
+							providerLocalIdentifier = delegateLinkTag.Href;
+						} else {
+							Logger.WarnFormat("Skipping endpoint data because local id is badly formed ({0}).", delegateLinkTag.Href);
+							continue; // skip to next version
 						}
 					}
-				}
-				if (providerEndpoint != null) break;
-			}
-			if (providerEndpoint == null)
-				return null; // html did not contain openid.server link
-			// See if a LocalId tag of the discovered version exists
-			foreach (var linkTag in linkTags) {
-				if (Regex.IsMatch(linkTag.Attributes["rel"], @"\b" + Regex.Escape(discoveredProtocol.HtmlDiscoveryLocalIdKey) + @"\b", RegexOptions.IgnoreCase)) {
-					if (Identifier.IsValid(linkTag.Href)) {
-						providerLocalIdentifier = linkTag.Href;
-						break;
-					} else {
-						Logger.WarnFormat("Skipping endpoint data because local id is badly formed ({0}).", linkTag.Href);
-						return null; // badly formed URL used as LocalId
-					}
-				}
-			}
 
-			// Choose the TypeURI to match the OpenID version detected.
-			string[] typeURIs = { discoveredProtocol.ClaimedIdentifierServiceTypeURI };
-			return ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, providerLocalIdentifier,
-				providerEndpoint, typeURIs, (int?)null, (int?)null);
+					// Choose the TypeURI to match the OpenID version detected.
+					string[] typeURIs = { protocol.ClaimedIdentifierServiceTypeURI };
+					yield return ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, providerLocalIdentifier,
+						providerEndpoint, typeURIs, (int?)null, (int?)null);
+				}
+			}
 		}
 
 		internal override IEnumerable<ServiceEndpoint> Discover() {
@@ -205,14 +198,13 @@ namespace DotNetOpenId {
 				}
 				// Failing YADIS discovery of an XRDS document, we try HTML discovery.
 				if (endpoints.Count == 0) {
-					ServiceEndpoint ep = DiscoverFromHtml(yadisResult.NormalizedUri, yadisResult.ResponseText);
-					if (ep != null) {
-						Logger.Debug("HTML discovery found a service endpoint.");
-						Logger.Debug(ep);
-						if (!IsDiscoverySecureEndToEnd || ep.IsSecure) {
-							endpoints.Add(ep);
-						} else {
-							Logger.Info("Skipping HTML discovered endpoint because it is not secure.");
+					var htmlEndpoints = new List<ServiceEndpoint>(DiscoverFromHtml(yadisResult.NormalizedUri, yadisResult.ResponseText));
+					if (htmlEndpoints.Count > 0) {
+						Logger.DebugFormat("Total services discovered in HTML: {0}", htmlEndpoints.Count);
+						Logger.Debug(Util.ToString(htmlEndpoints, true));
+						endpoints.AddRange(Util.Where(htmlEndpoints, ep => !IsDiscoverySecureEndToEnd || ep.IsSecure));
+						if (endpoints.Count == 0) {
+							Logger.Info("No HTML discovered endpoints met the security requirements.");
 						}
 					} else {
 						Logger.Debug("HTML discovery failed to find any endpoints.");

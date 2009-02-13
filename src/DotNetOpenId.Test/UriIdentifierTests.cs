@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -139,10 +140,10 @@ namespace DotNetOpenId.Test {
 			Assert.AreEqual(Uri.EscapeUriString(unicodeUrl), id.ToString());
 		}
 
-		void discover(string url, ProtocolVersion version, Identifier expectedLocalId, bool expectSreg, bool useRedirect) {
-			discover(url, version, expectedLocalId, expectSreg, useRedirect, null);
+		void discover(string url, ProtocolVersion version, Identifier expectedLocalId, Uri providerEndpoint, bool expectSreg, bool useRedirect) {
+			discover(url, version, expectedLocalId, providerEndpoint, expectSreg, useRedirect, null);
 		}
-		void discover(string url, ProtocolVersion version, Identifier expectedLocalId, bool expectSreg, bool useRedirect, WebHeaderCollection headers) {
+		void discover(string url, ProtocolVersion version, Identifier expectedLocalId, Uri providerEndpoint, bool expectSreg, bool useRedirect, WebHeaderCollection headers) {
 			Protocol protocol = Protocol.Lookup(version);
 			UriIdentifier claimedId = TestSupport.GetFullUrl(url);
 			UriIdentifier userSuppliedIdentifier = TestSupport.GetFullUrl(
@@ -161,30 +162,38 @@ namespace DotNetOpenId.Test {
 			MockHttpRequest.RegisterMockResponse(new Uri(idToDiscover), claimedId, contentType,
 				headers ?? new WebHeaderCollection(), TestSupport.LoadEmbeddedFile(url));
 
-			ServiceEndpoint se = idToDiscover.Discover().FirstOrDefault();
+			ServiceEndpoint expected = ServiceEndpoint.CreateForClaimedIdentifier(
+				claimedId,
+				expectedLocalId,
+				providerEndpoint,
+				new string[] { protocol.ClaimedIdentifierServiceTypeURI }, // this isn't checked by Equals
+				null,
+				null);
+
+			ServiceEndpoint se = idToDiscover.Discover().FirstOrDefault(ep => ep.Equals(expected));
 			Assert.IsNotNull(se, url + " failed to be discovered.");
-			Assert.AreSame(protocol, se.Protocol);
-			Assert.AreEqual(claimedId, se.ClaimedIdentifier);
-			Assert.AreEqual(expectedLocalId, se.ProviderLocalIdentifier);
+
+			// Do extra checking of service type URIs, which aren't included in 
+			// the ServiceEndpoint.Equals method.
 			Assert.AreEqual(expectSreg ? 2 : 1, se.ProviderSupportedServiceTypeUris.Length);
 			Assert.IsTrue(Array.IndexOf(se.ProviderSupportedServiceTypeUris, protocol.ClaimedIdentifierServiceTypeURI) >= 0);
 			Assert.AreEqual(expectSreg, se.IsExtensionSupported(new ClaimsRequest()));
 		}
-		void discoverXrds(string page, ProtocolVersion version, Identifier expectedLocalId) {
-			discoverXrds(page, version, expectedLocalId, null);
+		void discoverXrds(string page, ProtocolVersion version, Identifier expectedLocalId, string providerEndpoint) {
+			discoverXrds(page, version, expectedLocalId, providerEndpoint, null);
 		}
-		void discoverXrds(string page, ProtocolVersion version, Identifier expectedLocalId, WebHeaderCollection headers) {
+		void discoverXrds(string page, ProtocolVersion version, Identifier expectedLocalId, string providerEndpoint, WebHeaderCollection headers) {
 			if (!page.Contains(".")) page += ".xml";
-			discover("/Discovery/xrdsdiscovery/" + page, version, expectedLocalId, true, false, headers);
-			discover("/Discovery/xrdsdiscovery/" + page, version, expectedLocalId, true, true, headers);
+			discover("/Discovery/xrdsdiscovery/" + page, version, expectedLocalId, new Uri(providerEndpoint), true, false, headers);
+			discover("/Discovery/xrdsdiscovery/" + page, version, expectedLocalId, new Uri(providerEndpoint), true, true, headers);
 		}
-		void discoverHtml(string page, ProtocolVersion version, Identifier expectedLocalId, bool useRedirect) {
-			discover("/Discovery/htmldiscovery/" + page, version, expectedLocalId, false, useRedirect);
+		void discoverHtml(string page, ProtocolVersion version, Identifier expectedLocalId, string providerEndpoint, bool useRedirect) {
+			discover("/Discovery/htmldiscovery/" + page, version, expectedLocalId, new Uri(providerEndpoint), false, useRedirect);
 		}
-		void discoverHtml(string scenario, ProtocolVersion version, Identifier expectedLocalId) {
+		void discoverHtml(string scenario, ProtocolVersion version, Identifier expectedLocalId, string providerEndpoint) {
 			string page = scenario + ".html";
-			discoverHtml(page, version, expectedLocalId, false);
-			discoverHtml(page, version, expectedLocalId, true);
+			discoverHtml(page, version, expectedLocalId, providerEndpoint, false);
+			discoverHtml(page, version, expectedLocalId, providerEndpoint, true);
 		}
 		void failDiscover(string url) {
 			UriIdentifier userSuppliedId = TestSupport.GetFullUrl(url);
@@ -202,27 +211,34 @@ namespace DotNetOpenId.Test {
 		}
 		[Test]
 		public void HtmlDiscover_11() {
-			discoverHtml("html10prov", ProtocolVersion.V11, null);
-			discoverHtml("html10both", ProtocolVersion.V11, "http://c/d");
+			discoverHtml("html10prov", ProtocolVersion.V11, null, "http://a/b");
+			discoverHtml("html10both", ProtocolVersion.V11, "http://c/d", "http://a/b");
 			failDiscoverHtml("html10del");
+
+			// Verify that HTML discovery generates the 1.x endpoints when appropriate
+			discoverHtml("html2010", ProtocolVersion.V11, "http://g/h", "http://e/f");
+			discoverHtml("html1020", ProtocolVersion.V11, "http://g/h", "http://e/f");
+			discoverHtml("html2010combinedA", ProtocolVersion.V11, "http://c/d", "http://a/b");
+			discoverHtml("html2010combinedB", ProtocolVersion.V11, "http://c/d", "http://a/b");
+			discoverHtml("html2010combinedC", ProtocolVersion.V11, "http://c/d", "http://a/b");
 		}
 		[Test]
 		public void HtmlDiscover_20() {
-			discoverHtml("html20prov", ProtocolVersion.V20, null);
-			discoverHtml("html20both", ProtocolVersion.V20, "http://c/d");
+			discoverHtml("html20prov", ProtocolVersion.V20, null, "http://a/b");
+			discoverHtml("html20both", ProtocolVersion.V20, "http://c/d", "http://a/b");
 			failDiscoverHtml("html20del");
-			discoverHtml("html2010", ProtocolVersion.V20, "http://c/d");
-			discoverHtml("html1020", ProtocolVersion.V20, "http://c/d");
-			discoverHtml("html2010combinedA", ProtocolVersion.V20, "http://c/d");
-			discoverHtml("html2010combinedB", ProtocolVersion.V20, "http://c/d");
-			discoverHtml("html2010combinedC", ProtocolVersion.V20, "http://c/d");
+			discoverHtml("html2010", ProtocolVersion.V20, "http://c/d", "http://a/b");
+			discoverHtml("html1020", ProtocolVersion.V20, "http://c/d", "http://a/b");
+			discoverHtml("html2010combinedA", ProtocolVersion.V20, "http://c/d", "http://a/b");
+			discoverHtml("html2010combinedB", ProtocolVersion.V20, "http://c/d", "http://a/b");
+			discoverHtml("html2010combinedC", ProtocolVersion.V20, "http://c/d", "http://a/b");
 			failDiscoverHtml("html20relative");
 		}
 		[Test]
 		public void XrdsDiscoveryFromHead() {
 			Mocks.MockHttpRequest.RegisterMockResponse(new Uri("http://localhost/xrds1020.xml"),
 				"application/xrds+xml", TestSupport.LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds1020.xml"));
-			discoverXrds("XrdsReferencedInHead.html", ProtocolVersion.V10, null);
+			discoverXrds("XrdsReferencedInHead.html", ProtocolVersion.V10, null, "http://a/b");
 		}
 		[Test]
 		public void XrdsDiscoveryFromHttpHeader() {
@@ -230,20 +246,20 @@ namespace DotNetOpenId.Test {
 			headers.Add("X-XRDS-Location", TestSupport.GetFullUrl("http://localhost/xrds1020.xml").AbsoluteUri);
 			Mocks.MockHttpRequest.RegisterMockResponse(new Uri("http://localhost/xrds1020.xml"),
 				"application/xrds+xml", TestSupport.LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds1020.xml"));
-			discoverXrds("XrdsReferencedInHttpHeader.html", ProtocolVersion.V10, null, headers);
+			discoverXrds("XrdsReferencedInHttpHeader.html", ProtocolVersion.V10, null, "http://a/b", headers);
 		}
 		[Test]
 		public void XrdsDirectDiscovery_10() {
 			failDiscoverXrds("xrds-irrelevant");
-			discoverXrds("xrds10", ProtocolVersion.V10, null);
-			discoverXrds("xrds11", ProtocolVersion.V11, null);
-			discoverXrds("xrds1020", ProtocolVersion.V10, null);
+			discoverXrds("xrds10", ProtocolVersion.V10, null, "http://a/b");
+			discoverXrds("xrds11", ProtocolVersion.V11, null, "http://a/b");
+			discoverXrds("xrds1020", ProtocolVersion.V10, null, "http://a/b");
 		}
 		[Test]
 		public void XrdsDirectDiscovery_20() {
-			discoverXrds("xrds20", ProtocolVersion.V20, null);
-			discoverXrds("xrds2010a", ProtocolVersion.V20, null);
-			discoverXrds("xrds2010b", ProtocolVersion.V20, null);
+			discoverXrds("xrds20", ProtocolVersion.V20, null, "http://a/b");
+			discoverXrds("xrds2010a", ProtocolVersion.V20, null, "http://a/b");
+			discoverXrds("xrds2010b", ProtocolVersion.V20, null, "http://a/b");
 		}
 
 		[Test]
