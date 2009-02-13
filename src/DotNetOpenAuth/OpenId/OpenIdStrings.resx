@@ -289,4 +289,10 @@ Discovered endpoint info:
   <data name="UnsolicitedAssertionForUnrelatedClaimedIdentifier" xml:space="preserve">
     <value>An unsolicited assertion cannot be sent for the claimed identifier {0} because this is not an authorized Provider for that identifier.</value>
   </data>
+  <data name="MaximumAuthenticationTimeExpired" xml:space="preserve">
+    <value>The maximum time allowed to complete authentication has been exceeded.  Please try again.</value>
+  </data>
+  <data name="PrivateRPSecretNotFound" xml:space="preserve">
+    <value>Unable to find the signing secret by the handle '{0}'.</value>
+  </data>
 </root>

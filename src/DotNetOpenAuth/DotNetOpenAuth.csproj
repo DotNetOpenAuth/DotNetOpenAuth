@@ -177,7 +177,6 @@
     <Compile Include="OpenId\ChannelElements\BackwardCompatibilityBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\ExtensionsBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\IOpenIdExtensionFactory.cs" />
-    <Compile Include="OpenId\ChannelElements\IPrivateSecretStore.cs" />
     <Compile Include="OpenId\ChannelElements\ITamperResistantOpenIdMessage.cs" />
     <Compile Include="OpenId\ChannelElements\OriginalStringUriEncoder.cs" />
     <Compile Include="OpenId\ChannelElements\ReturnToNonceBindingElement.cs" />
@@ -228,7 +227,6 @@
     <Compile Include="OpenId\Messages\SignedResponseRequest.cs" />
     <Compile Include="OpenId\NoDiscoveryIdentifier.cs" />
     <Compile Include="OpenId\OpenIdUtilities.cs" />
-    <Compile Include="OpenId\PrivateSecretMemoryStore.cs" />
     <Compile Include="OpenId\Provider\AuthenticationChallengeEventArgs.cs" />
     <Compile Include="OpenId\Provider\AuthenticationRequest.cs" />
     <Compile Include="OpenId\Provider\AutoResponsiveRequest.cs" />
@@ -297,6 +295,7 @@
     <Compile Include="OpenId\Provider\ProviderSecuritySettings.cs" />
     <Compile Include="OpenId\RelyingParty\IRelyingPartyApplicationStore.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationResponseSnapshot.cs" />
+    <Compile Include="OpenId\RelyingParty\PrivateSecretManager.cs" />
     <Compile Include="OpenId\RelyingParty\RelyingPartySecuritySettings.cs" />
     <Compile Include="OpenId\RelyingParty\ServiceEndpoint.cs" />
     <Compile Include="OpenId\OpenIdXrdsHelper.cs" />

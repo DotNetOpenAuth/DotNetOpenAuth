@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Configuration {
+	using System;
 	using System.Configuration;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
@@ -32,6 +33,11 @@ namespace DotNetOpenAuth.Configuration {
 		/// Gets the name of the @requireSsl attribute.
 		/// </summary>
 		private const string RequireSslConfigName = "requireSsl";
+
+		/// <summary>
+		/// Gets the name of the @privateSecretMaximumAge attribute.
+		/// </summary>
+		private const string PrivateSecretMaximumAgeConfigName = "privateSecretMaximumAge";
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RelyingPartySecuritySettingsElement"/> class.
@@ -80,6 +86,17 @@ namespace DotNetOpenAuth.Configuration {
 		}
 
 		/// <summary>
+		/// Gets or sets the maximum allowable age of the secret a Relying Party
+		/// uses to its return_to URLs and nonces with 1.0 Providers.
+		/// </summary>
+		/// <value>The default value is 7 days.</value>
+		[ConfigurationProperty(PrivateSecretMaximumAgeConfigName, DefaultValue = "07:00:00")]
+		public TimeSpan PrivateSecretMaximumAge {
+			get { return (TimeSpan)this[PrivateSecretMaximumAgeConfigName]; }
+			set { this[PrivateSecretMaximumAgeConfigName] = value; }
+		}
+
+		/// <summary>
 		/// Initializes a programmatically manipulatable bag of these security settings with the settings from the config file.
 		/// </summary>
 		/// <returns>The newly created security settings object.</returns>
@@ -89,6 +106,7 @@ namespace DotNetOpenAuth.Configuration {
 			settings.MinimumRequiredOpenIdVersion = this.MinimumRequiredOpenIdVersion;
 			settings.MinimumHashBitLength = this.MinimumHashBitLength;
 			settings.MaximumHashBitLength = this.MaximumHashBitLength;
+			settings.PrivateSecretMaximumAge = this.PrivateSecretMaximumAge;
 			return settings;
 		}
 	}

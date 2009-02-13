@@ -39,6 +39,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		/// <param name="distinguishingFactor">The Uri (for relying parties) or Smart/Dumb (for providers).</param>
 		/// <param name="association">The association to store.</param>
+		/// <remarks>
+		/// TODO: what should implementations do on association handle conflict?
+		/// </remarks>
 		void StoreAssociation(TKey distinguishingFactor, Association association);
 
 		/// <summary>

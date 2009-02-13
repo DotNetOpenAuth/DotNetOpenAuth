@@ -65,7 +65,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="applicationStore">The application store.  If null, the relying party will always operate in "dumb mode".</param>
 		public OpenIdRelyingParty(IRelyingPartyApplicationStore applicationStore)
-			: this(applicationStore, applicationStore, applicationStore) {
+			: this(applicationStore, applicationStore) {
 		}
 
 		/// <summary>
@@ -73,8 +73,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="associationStore">The association store.  If null, the relying party will always operate in "dumb mode".</param>
 		/// <param name="nonceStore">The nonce store to use.  If null, the relying party will always operate in "dumb mode".</param>
-		/// <param name="secretStore">The secret store to use.  If null, the relying party will always operate in "dumb mode".</param>
-		private OpenIdRelyingParty(IAssociationStore<Uri> associationStore, INonceStore nonceStore, IPrivateSecretStore secretStore) {
+		private OpenIdRelyingParty(IAssociationStore<Uri> associationStore, INonceStore nonceStore) {
 			// If we are a smart-mode RP (supporting associations), then we MUST also be 
 			// capable of storing nonces to prevent replay attacks.
 			// If we're a dumb-mode RP, then 2.0 OPs are responsible for preventing replays.
@@ -89,7 +88,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				this.SecuritySettings.MinimumRequiredOpenIdVersion = ProtocolVersion.V20;
 			}
 
-			this.channel = new OpenIdChannel(associationStore, nonceStore, secretStore, this.SecuritySettings);
+			this.channel = new OpenIdChannel(associationStore, nonceStore, this.SecuritySettings);
 			this.AssociationManager = new AssociationManager(this.Channel, associationStore, this.SecuritySettings);
 		}
 
@@ -367,7 +366,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		internal static OpenIdRelyingParty CreateNonVerifying() {
 			OpenIdRelyingParty rp = new OpenIdRelyingParty();
-			rp.Channel = new OpenIdChannel(null, null, null, rp.SecuritySettings);
+			rp.Channel = new OpenIdChannel(null, null, rp.SecuritySettings);
 			return rp;
 		}
 

@@ -45,10 +45,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// </summary>
 		/// <param name="associationStore">The association store to use.</param>
 		/// <param name="nonceStore">The nonce store to use.</param>
-		/// <param name="secretStore">The secret store to use.</param>
 		/// <param name="securitySettings">The security settings to apply.</param>
-		internal OpenIdChannel(IAssociationStore<Uri> associationStore, INonceStore nonceStore, IPrivateSecretStore secretStore, RelyingPartySecuritySettings securitySettings)
-			: this(associationStore, nonceStore, secretStore, new OpenIdMessageFactory(), securitySettings) {
+		internal OpenIdChannel(IAssociationStore<Uri> associationStore, INonceStore nonceStore, RelyingPartySecuritySettings securitySettings)
+			: this(associationStore, nonceStore, new OpenIdMessageFactory(), securitySettings) {
 		}
 
 		/// <summary>
@@ -68,11 +67,10 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// </summary>
 		/// <param name="associationStore">The association store to use.</param>
 		/// <param name="nonceStore">The nonce store to use.</param>
-		/// <param name="secretStore">The secret store to use.</param>
 		/// <param name="messageTypeProvider">An object that knows how to distinguish the various OpenID message types for deserialization purposes.</param>
 		/// <param name="securitySettings">The security settings to apply.</param>
-		private OpenIdChannel(IAssociationStore<Uri> associationStore, INonceStore nonceStore, IPrivateSecretStore secretStore, IMessageFactory messageTypeProvider, RelyingPartySecuritySettings securitySettings) :
-			this(messageTypeProvider, InitializeBindingElements(new SigningBindingElement(associationStore), nonceStore, secretStore, securitySettings)) {
+		private OpenIdChannel(IAssociationStore<Uri> associationStore, INonceStore nonceStore, IMessageFactory messageTypeProvider, RelyingPartySecuritySettings securitySettings) :
+			this(messageTypeProvider, InitializeBindingElements(associationStore, nonceStore, securitySettings)) {
 		}
 
 		/// <summary>
@@ -84,7 +82,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="messageTypeProvider">An object that knows how to distinguish the various OpenID message types for deserialization purposes.</param>
 		/// <param name="securitySettings">The security settings.</param>
 		private OpenIdChannel(IAssociationStore<AssociationRelyingPartyType> associationStore, INonceStore nonceStore, IMessageFactory messageTypeProvider, ProviderSecuritySettings securitySettings) :
-			this(messageTypeProvider, InitializeBindingElements(new SigningBindingElement(associationStore, securitySettings), nonceStore, null, securitySettings)) {
+			this(messageTypeProvider, InitializeBindingElements(associationStore, nonceStore, securitySettings)) {
 		}
 
 		/// <summary>
@@ -248,30 +246,38 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <summary>
 		/// Initializes the binding elements.
 		/// </summary>
-		/// <param name="signingElement">The signing element, previously constructed.</param>
+		/// <typeparam name="T">The distinguishing factor used by the association store.</typeparam>
+		/// <param name="associationStore">The association store.</param>
 		/// <param name="nonceStore">The nonce store to use.</param>
-		/// <param name="secretStore">The secret store to use.</param>
 		/// <param name="securitySettings">The security settings to apply.  Must be an instance of either <see cref="RelyingPartySecuritySettings"/> or <see cref="ProviderSecuritySettings"/>.</param>
 		/// <returns>
 		/// An array of binding elements which may be used to construct the channel.
 		/// </returns>
-		private static IChannelBindingElement[] InitializeBindingElements(SigningBindingElement signingElement, INonceStore nonceStore, IPrivateSecretStore secretStore, SecuritySettings securitySettings) {
-			ErrorUtilities.VerifyArgumentNotNull(signingElement, "signingElement");
+		private static IChannelBindingElement[] InitializeBindingElements<T>(IAssociationStore<T> associationStore, INonceStore nonceStore, SecuritySettings securitySettings) {
 			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
 
-			RelyingPartySecuritySettings rpSecuritySettings = securitySettings as RelyingPartySecuritySettings;
-			ProviderSecuritySettings opSecuritySettings = securitySettings as ProviderSecuritySettings;
+			var rpSecuritySettings = securitySettings as RelyingPartySecuritySettings;
+			var opSecuritySettings = securitySettings as ProviderSecuritySettings;
 			ErrorUtilities.VerifyInternal(rpSecuritySettings != null || opSecuritySettings != null, "Expected an RP or OP security settings instance.");
 			bool isRelyingPartyRole = rpSecuritySettings != null;
+
+			var rpAssociationStore = associationStore as IAssociationStore<Uri>;
+			var opAssociationStore = associationStore as IAssociationStore<AssociationRelyingPartyType>;
+			ErrorUtilities.VerifyInternal(isRelyingPartyRole || opAssociationStore != null, "Providers MUST have an association store.");
+
+			SigningBindingElement signingElement;
+			if (isRelyingPartyRole) {
+				signingElement = new SigningBindingElement(rpAssociationStore);
+			} else {
+				signingElement = new SigningBindingElement(opAssociationStore, opSecuritySettings);
+			}
 
 			List<IChannelBindingElement> elements = new List<IChannelBindingElement>(7);
 			if (isRelyingPartyRole) {
 				elements.Add(new ExtensionsBindingElement(new OpenIdExtensionFactory(), rpSecuritySettings));
 				elements.Add(new BackwardCompatibilityBindingElement());
 
-				if (secretStore != null) {
-					secretStore.InitializeSecretIfUnset();
-
+				if (associationStore != null) {
 					if (nonceStore != null) {
 						// There is no point in having a ReturnToNonceBindingElement without
 						// a ReturnToSignatureBindingElement because the nonce could be
@@ -281,7 +287,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 					// It is important that the return_to signing element comes last
 					// so that the nonce is included in the signature.
-					elements.Add(new ReturnToSignatureBindingElement(secretStore));
+					elements.Add(new ReturnToSignatureBindingElement(rpAssociationStore, rpSecuritySettings));
 				}
 			} else {
 				elements.Add(new ExtensionsBindingElement(new OpenIdExtensionFactory(), opSecuritySettings));

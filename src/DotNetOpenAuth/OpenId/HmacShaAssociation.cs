@@ -148,7 +148,8 @@ namespace DotNetOpenAuth.OpenId {
 			ErrorUtilities.VerifyNonZeroLength(associationType, "associationType");
 			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
 
-			// Generate the handle.  It must be unique, so we use a time element and a random data element to generate it.
+			// Generate the handle.  It must be unique, and preferably unpredictable,
+			// so we use a time element and a random data element to generate it.
 			string uniq = MessagingUtilities.GetCryptoRandomDataAsBase64(4);
 			string handle = "{" + associationType + "}{" + DateTime.UtcNow.Ticks + "}{" + uniq + "}";
 

@@ -178,7 +178,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		public void AddCallbackArguments(IDictionary<string, string> arguments) {
 			ErrorUtilities.VerifyArgumentNotNull(arguments, "arguments");
-			ErrorUtilities.VerifyOperation(this.RelyingParty.CanSignCallbackArguments, typeof(IPrivateSecretStore).Name, typeof(OpenIdRelyingParty).Name);
+			ErrorUtilities.VerifyOperation(this.RelyingParty.CanSignCallbackArguments, OpenIdStrings.CallbackArgumentsRequireSecretStore, typeof(IAssociationStore<Uri>).Name, typeof(OpenIdRelyingParty).Name);
 
 			foreach (var pair in arguments) {
 				ErrorUtilities.VerifyArgument(!string.IsNullOrEmpty(pair.Key), MessagingStrings.UnexpectedNullOrEmptyKey);
@@ -205,7 +205,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public void AddCallbackArguments(string key, string value) {
 			ErrorUtilities.VerifyNonZeroLength(key, "key");
 			ErrorUtilities.VerifyArgumentNotNull(value, "value");
-			ErrorUtilities.VerifyOperation(this.RelyingParty.CanSignCallbackArguments, typeof(IPrivateSecretStore).Name, typeof(OpenIdRelyingParty).Name);
+			ErrorUtilities.VerifyOperation(this.RelyingParty.CanSignCallbackArguments, OpenIdStrings.CallbackArgumentsRequireSecretStore, typeof(IAssociationStore<Uri>).Name, typeof(OpenIdRelyingParty).Name);
 
 			this.returnToArgs.Add(key, value);
 		}

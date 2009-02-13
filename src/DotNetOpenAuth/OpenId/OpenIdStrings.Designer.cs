@@ -353,6 +353,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The maximum time allowed to complete authentication has been exceeded.  Please try again..
+        /// </summary>
+        internal static string MaximumAuthenticationTimeExpired {
+            get {
+                return ResourceManager.GetString("MaximumAuthenticationTimeExpired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No recognized association type matches the requested length of {0}..
         /// </summary>
         internal static string NoAssociationTypeFoundByLength {
@@ -430,6 +439,15 @@ namespace DotNetOpenAuth.OpenId {
         internal static string OperationOnlyValidForSetupRequiredState {
             get {
                 return ResourceManager.GetString("OperationOnlyValidForSetupRequiredState", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to find the signing secret by the handle &apos;{0}&apos;..
+        /// </summary>
+        internal static string PrivateRPSecretNotFound {
+            get {
+                return ResourceManager.GetString("PrivateRPSecretNotFound", resourceCulture);
             }
         }
         

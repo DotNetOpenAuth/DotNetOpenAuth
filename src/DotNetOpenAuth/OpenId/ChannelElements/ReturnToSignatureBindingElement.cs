@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// This binding element signs a Relying Party's openid.return_to parameter
@@ -27,16 +28,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// due to its required order in the channel stack and that it doesn't sign
 	/// anything except a particular message part.</para>
 	/// </remarks>
-	internal class ReturnToSignatureBindingElement : IChannelBindingElement, IDisposable {
-		/// <summary>
-		/// The optimal length for a private secret used for signing using the HMACSHA256 class.
-		/// </summary>
-		/// <remarks>
-		/// The 64-byte length is optimized for highest security when used with HMACSHA256.
-		/// See HMACSHA256.HMACSHA256(byte[]) documentation for more information.
-		/// </remarks>
-		internal static readonly int OptimalPrivateSecretLength = 64;
-
+	internal class ReturnToSignatureBindingElement : IChannelBindingElement {
 		/// <summary>
 		/// The name of the callback parameter we'll tack onto the return_to value
 		/// to store our signature on the return_to parameter.
@@ -44,23 +36,25 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		private const string ReturnToSignatureParameterName = "dnoi.return_to_sig";
 
 		/// <summary>
+		/// The name of the callback parameter we'll tack onto the return_to value
+		/// to store the handle of the association we use to sign the return_to parameter.
+		/// </summary>
+		private const string ReturnToSignatureHandleParameterName = "dnoi.return_to_sig_handle";
+
+		/// <summary>
 		/// The hashing algorithm used to generate the private signature on the return_to parameter.
 		/// </summary>
-		private HashAlgorithm signingHasher;
+		private PrivateSecretManager secretManager;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ReturnToSignatureBindingElement"/> class.
 		/// </summary>
 		/// <param name="secretStore">The secret store from which to retrieve the secret used for signing.</param>
-		internal ReturnToSignatureBindingElement(IPrivateSecretStore secretStore) {
+		/// <param name="securitySettings">The security settings.</param>
+		internal ReturnToSignatureBindingElement(IAssociationStore<Uri> secretStore, RelyingPartySecuritySettings securitySettings) {
 			ErrorUtilities.VerifyArgumentNotNull(secretStore, "secretStore");
-			ErrorUtilities.VerifyInternal(secretStore.PrivateSecret != null, "Private secret should have been set already.");
 
-			if (secretStore.PrivateSecret.Length < OptimalPrivateSecretLength) {
-				Logger.WarnFormat("For best security, the optimal length of a private signing secret is {0} bytes, but the secret we have is only {1} bytes.", OptimalPrivateSecretLength, secretStore.PrivateSecret.Length);
-			}
-
-			this.signingHasher = new HMACSHA256(secretStore.PrivateSecret);
+			this.secretManager = new PrivateSecretManager(securitySettings, secretStore);
 		}
 
 		#region IChannelBindingElement Members
@@ -97,8 +91,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		public bool PrepareMessageForSending(IProtocolMessage message) {
 			SignedResponseRequest request = message as SignedResponseRequest;
 			if (request != null) {
-				string signature = this.GetReturnToSignature(request.ReturnTo);
-				request.AddReturnToArguments(ReturnToSignatureParameterName, signature);
+				request.AddReturnToArguments(ReturnToSignatureHandleParameterName, this.secretManager.CurrentHandle);
+				request.AddReturnToArguments(ReturnToSignatureParameterName, this.GetReturnToSignature(request.ReturnTo));
 				return true;
 			}
 
@@ -130,44 +124,22 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				// on us already having validated this signature.
 				NameValueCollection returnToParameters = HttpUtility.ParseQueryString(response.ReturnTo.Query);
 
-				// Set the safety flag showing whether the return_to url had a valid signature.
-				string expected = this.GetReturnToSignature(response.ReturnTo);
-				string actual = returnToParameters[ReturnToSignatureParameterName];
-				actual = OpenIdUtilities.FixDoublyUriDecodedBase64String(actual);
-				response.ReturnToParametersSignatureValidated = actual == expected;
-				if (!response.ReturnToParametersSignatureValidated) {
-					Logger.WarnFormat("The return_to signature failed verification.");
-				}
+				// Only check the return_to signature if one is present.
+				if (returnToParameters[ReturnToSignatureHandleParameterName] != null) {
+					// Set the safety flag showing whether the return_to url had a valid signature.
+					string expected = this.GetReturnToSignature(response.ReturnTo);
+					string actual = returnToParameters[ReturnToSignatureParameterName];
+					actual = OpenIdUtilities.FixDoublyUriDecodedBase64String(actual);
+					response.ReturnToParametersSignatureValidated = actual == expected;
+					if (!response.ReturnToParametersSignatureValidated) {
+						Logger.WarnFormat("The return_to signature failed verification.");
+					}
 
-				return true;
+					return true;
+				}
 			}
 
 			return false;
-		}
-
-		#endregion
-
-		#region IDisposable Members
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose() {
-			this.Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		protected virtual void Dispose(bool disposing) {
-			if (disposing) {
-				IDisposable hasher = this.signingHasher as IDisposable;
-				if (hasher != null) {
-					hasher.Dispose();
-				}
-			}
 		}
 
 		#endregion
@@ -190,18 +162,23 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			// the signature).
 			// Also we need to sort the dictionary's keys so that we sign in the same order as we did
 			// the last time.
-			var returnToParameters = HttpUtility.ParseQueryString(returnTo.Query).ToDictionary();
+			var returnToParameters = HttpUtility.ParseQueryString(returnTo.Query);
 			returnToParameters.Remove(ReturnToSignatureParameterName);
 			var sortedReturnToParameters = new SortedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-			foreach (var pair in returnToParameters) {
-				sortedReturnToParameters.Add(pair.Key, pair.Value);
+			foreach (string key in returnToParameters) {
+				sortedReturnToParameters.Add(key, returnToParameters[key]);
 			}
 
 			Logger.DebugFormat("ReturnTo signed data: {0}{1}", Environment.NewLine, sortedReturnToParameters.ToStringDeferred());
 
 			// Sign the parameters.
 			byte[] bytesToSign = KeyValueFormEncoding.GetBytes(sortedReturnToParameters);
-			byte[] signature = this.signingHasher.ComputeHash(bytesToSign);
+			byte[] signature;
+			try {
+				signature = this.secretManager.Sign(bytesToSign, returnToParameters[ReturnToSignatureHandleParameterName]);
+			} catch (ArgumentException ex) {
+				throw ErrorUtilities.Wrap(ex, OpenIdStrings.MaximumAuthenticationTimeExpired);
+			}
 			string signatureBase64 = Convert.ToBase64String(signature);
 			return signatureBase64;
 		}

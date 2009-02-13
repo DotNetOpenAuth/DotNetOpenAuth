@@ -43,24 +43,6 @@ namespace DotNetOpenAuth.OpenId {
 		}
 
 		/// <summary>
-		/// Initializes the private secret if it has not yet been set.
-		/// </summary>
-		/// <param name="secretStore">The secret store.</param>
-		internal static void InitializeSecretIfUnset(this IPrivateSecretStore secretStore) {
-			ErrorUtilities.VerifyArgumentNotNull(secretStore, "secretStore");
-
-			if (secretStore.PrivateSecret == null) {
-				secretStore.PrivateSecret = MessagingUtilities.GetCryptoRandomData(ReturnToSignatureBindingElement.OptimalPrivateSecretLength);
-
-				// Log that we created a new private secret.
-				// If this happens frequently, it's a sign that the store for this secret is not
-				// properly saving the value, and the result will be slower performance for 
-				// Relying Parties (at best) and failed authentications (at worst).
-				Logger.Info("Generated and saved private secret.  This should generally happen only at web application initialization time.");
-			}
-		}
-
-		/// <summary>
 		/// Corrects any URI decoding the Provider may have inappropriately done
 		/// to our return_to URL, resulting in an otherwise corrupted base64 encoded value.
 		/// </summary>

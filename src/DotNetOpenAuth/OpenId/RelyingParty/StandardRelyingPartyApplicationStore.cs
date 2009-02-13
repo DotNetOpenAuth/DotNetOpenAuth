@@ -26,31 +26,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private readonly IAssociationStore<Uri> associationStore;
 
 		/// <summary>
-		/// The private secret store to use.
-		/// </summary>
-		private readonly IPrivateSecretStore privateSecretStore;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="StandardRelyingPartyApplicationStore"/> class.
 		/// </summary>
 		internal StandardRelyingPartyApplicationStore() {
 			this.nonceStore = new NonceMemoryStore(DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime);
 			this.associationStore = new AssociationMemoryStore<Uri>();
-			this.privateSecretStore = new PrivateSecretMemoryStore();
 		}
-
-		#region IPrivateSecretStore Members
-
-		/// <summary>
-		/// Gets or sets a secret key that can be used for signing.
-		/// </summary>
-		/// <value>A 64-byte binary value, which may contain null bytes.</value>
-		public byte[] PrivateSecret {
-			get { return this.privateSecretStore.PrivateSecret; }
-			set { this.privateSecretStore.PrivateSecret = value; }
-		}
-
-		#endregion
 
 		#region IAssociationStore<Uri> Members
 

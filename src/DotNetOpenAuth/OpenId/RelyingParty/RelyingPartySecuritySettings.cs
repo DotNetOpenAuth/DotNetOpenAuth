@@ -22,6 +22,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		internal RelyingPartySecuritySettings()
 			: base(false) {
+			this.PrivateSecretMaximumAge = TimeSpan.FromDays(7);
 		}
 
 		/// <summary>
@@ -76,6 +77,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <value>Defaults to <see cref="ProtocolVersion.V10"/></value>
 		public ProtocolVersion MinimumRequiredOpenIdVersion { get; set; }
+
+		/// <summary>
+		/// Gets or sets the maximum allowable age of the secret a Relying Party
+		/// uses to its return_to URLs and nonces with 1.0 Providers.
+		/// </summary>
+		/// <value>The default value is 7 days.</value>
+		public TimeSpan PrivateSecretMaximumAge { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether unsigned extension responses will be deserialized.
