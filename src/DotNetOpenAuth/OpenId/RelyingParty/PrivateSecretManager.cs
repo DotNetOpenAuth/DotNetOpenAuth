@@ -71,14 +71,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>
 		/// The signature for the given buffer using the provided handle.
 		/// </returns>
-		/// <exception cref="ArgumentException">Thrown when an association with the given handle could not be found.
+		/// <exception cref="ProtocolException">Thrown when an association with the given handle could not be found.
 		/// This most likely happens if the association was near the end of its life and the user took too long to log in.</exception>
 		internal byte[] Sign(byte[] buffer, string handle) {
 			ErrorUtilities.VerifyArgumentNotNull(buffer, "buffer");
 			ErrorUtilities.VerifyNonZeroLength(handle, "handle");
 
 			Association association = this.store.GetAssociation(SecretUri, handle);
-			ErrorUtilities.VerifyArgument(association != null, OpenIdStrings.PrivateRPSecretNotFound, handle);
+			ErrorUtilities.VerifyProtocol(association != null, OpenIdStrings.PrivateRPSecretNotFound, handle);
 			return association.Sign(buffer);
 		}
 

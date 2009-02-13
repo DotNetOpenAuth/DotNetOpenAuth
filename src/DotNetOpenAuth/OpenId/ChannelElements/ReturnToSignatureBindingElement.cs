@@ -176,7 +176,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			byte[] signature;
 			try {
 				signature = this.secretManager.Sign(bytesToSign, returnToParameters[ReturnToSignatureHandleParameterName]);
-			} catch (ArgumentException ex) {
+			} catch (ProtocolException ex) {
 				throw ErrorUtilities.Wrap(ex, OpenIdStrings.MaximumAuthenticationTimeExpired);
 			}
 			string signatureBase64 = Convert.ToBase64String(signature);
