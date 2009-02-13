@@ -358,6 +358,16 @@ namespace DotNetOpenId.RelyingParty {
 			ServiceEndpoint tokenEndpoint, ServiceEndpoint responseEndpoint) {
 
 			Logger.Debug("Verifying assertion matches identifier discovery results...");
+
+			// Verify that the actual version of the OP endpoint matches discovery.
+			Protocol actualProtocol = Protocol.Detect(query);
+			Protocol discoveredProtocol = (tokenEndpoint ?? responseEndpoint).Protocol;
+			if (!actualProtocol.Equals(discoveredProtocol)) {
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
+					Strings.OpenIdDiscoveredAndActualVersionMismatch,
+					actualProtocol.Version, discoveredProtocol.Version));
+			}
+
 			if ((tokenEndpoint ?? responseEndpoint).Protocol.Version.Major < 2) {
 				Debug.Assert(tokenEndpoint != null, "Our OpenID 1.x implementation requires an RP token.  And this should have been verified by our caller.");
 				// For 1.x OPs, we only need to verify that the OP Local Identifier 
