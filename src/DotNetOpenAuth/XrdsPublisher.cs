@@ -186,9 +186,10 @@ namespace DotNetOpenAuth {
 		/// Renders the HTTP Header and/or HTML HEAD tags.
 		/// </summary>
 		/// <param name="writer">The <see cref="T:System.Web.UI.HtmlTextWriter"/> object that receives the server control content.</param>
+		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Uri(Uri, string) accepts second arguments that Uri(Uri, new Uri(string)) does not that we must support.")]
 		protected override void Render(HtmlTextWriter writer) {
 			if (this.Enabled && this.Visible && !string.IsNullOrEmpty(this.XrdsUrl)) {
-				Uri xrdsAddress = new Uri(MessagingUtilities.GetRequestUrlFromContext(), new Uri(Page.Response.ApplyAppPathModifier(this.XrdsUrl)));
+				Uri xrdsAddress = new Uri(MessagingUtilities.GetRequestUrlFromContext(), Page.Response.ApplyAppPathModifier(this.XrdsUrl));
 				if ((this.XrdsAdvertisement & XrdsUrlLocations.HttpHeader) != 0) {
 					Page.Response.AddHeader(Yadis.Yadis.HeaderName, xrdsAddress.AbsoluteUri);
 				}

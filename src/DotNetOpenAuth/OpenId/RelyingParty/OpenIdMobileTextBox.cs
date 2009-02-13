@@ -305,6 +305,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets or sets the OpenID ReturnTo of the relying party web site.
 		/// </summary>
+		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Uri(Uri, string) accepts second arguments that Uri(Uri, new Uri(string)) does not that we must support.")]
 		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri", Justification = "Using Uri.ctor for validation.")]
 		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "Bindable property must be simple type")]
 		[Bindable(true), DefaultValue(ReturnToUrlDefault), Category(BehaviorCategory)]
@@ -317,7 +318,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			set {
 				if (Page != null && !DesignMode) {
 					// Validate new value by trying to construct a Uri based on it.
-					new Uri(MessagingUtilities.GetRequestUrlFromContext(), new Uri(Page.ResolveUrl(value))); // throws an exception on failure.
+					new Uri(MessagingUtilities.GetRequestUrlFromContext(), Page.ResolveUrl(value)); // throws an exception on failure.
 				} else {
 					// We can't fully test it, but it should start with either ~/ or a protocol.
 					if (Regex.IsMatch(value, @"^https?://")) {
@@ -549,6 +550,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// 	<para>The Simple Registration extension arguments are added to the request
 		/// before returning if <see cref="EnableRequestProfile"/> is set to true.</para>
 		/// </remarks>
+		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Uri(Uri, string) accepts second arguments that Uri(Uri, new Uri(string)) does not that we must support.")]
 		public IAuthenticationRequest CreateRequest() {
 			ErrorUtilities.VerifyOperation(this.Request == null, OpenIdStrings.CreateRequestAlreadyCalled);
 			ErrorUtilities.VerifyOperation(!string.IsNullOrEmpty(this.Text), OpenIdStrings.OpenIdTextBoxEmpty);
@@ -572,7 +574,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					if (string.IsNullOrEmpty(this.ReturnToUrl)) {
 						this.Request = consumer.CreateRequest(userSuppliedIdentifier, typedRealm);
 					} else {
-						Uri returnTo = new Uri(MessagingUtilities.GetRequestUrlFromContext(), new Uri(this.ReturnToUrl));
+						Uri returnTo = new Uri(MessagingUtilities.GetRequestUrlFromContext(), this.ReturnToUrl);
 						this.Request = consumer.CreateRequest(userSuppliedIdentifier, typedRealm, returnTo);
 					}
 					this.Request.Mode = this.ImmediateMode ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;

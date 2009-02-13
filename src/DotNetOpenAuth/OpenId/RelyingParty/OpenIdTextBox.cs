@@ -869,6 +869,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// 	<para>The Simple Registration extension arguments are added to the request
 		/// before returning if <see cref="EnableRequestProfile"/> is set to true.</para>
 		/// </remarks>
+		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Uri(Uri, string) accepts second arguments that Uri(Uri, new Uri(string)) does not that we must support.")]
 		public IAuthenticationRequest CreateRequest() {
 			ErrorUtilities.VerifyOperation(this.Request == null, OpenIdStrings.CreateRequestAlreadyCalled);
 			ErrorUtilities.VerifyOperation(!string.IsNullOrEmpty(this.Text), OpenIdStrings.OpenIdTextBoxEmpty);
@@ -891,7 +892,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 						if (string.IsNullOrEmpty(this.ReturnToUrl)) {
 							this.Request = consumer.CreateRequest(userSuppliedIdentifier, typedRealm);
 						} else {
-							Uri returnTo = new Uri(MessagingUtilities.GetRequestUrlFromContext(), new Uri(this.ReturnToUrl));
+							Uri returnTo = new Uri(MessagingUtilities.GetRequestUrlFromContext(), this.ReturnToUrl);
 							this.Request = consumer.CreateRequest(userSuppliedIdentifier, typedRealm, returnTo);
 						}
 						this.Request.Mode = this.ImmediateMode ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;

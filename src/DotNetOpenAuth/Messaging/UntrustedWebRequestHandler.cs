@@ -236,6 +236,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <see cref="ProtocolException"/> to abstract away the transport and provide
 		/// a single exception type for hosts to catch.
 		/// </remarks>
+		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Uri(Uri, string) accepts second arguments that Uri(Uri, new Uri(string)) does not that we must support.")]
 		public DirectWebResponse GetResponse(HttpWebRequest request, DirectWebRequestOptions options) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
@@ -259,7 +260,7 @@ namespace DotNetOpenAuth.Messaging {
 					// We have no copy of the post entity stream to repeat on our manually
 					// cloned HttpWebRequest, so we have to bail.
 					ErrorUtilities.VerifyProtocol(request.Method != "POST", MessagingStrings.UntrustedRedirectsOnPOSTNotSupported);
-					Uri redirectUri = new Uri(response.FinalUri, new Uri(response.Headers[HttpResponseHeader.Location]));
+					Uri redirectUri = new Uri(response.FinalUri, response.Headers[HttpResponseHeader.Location]);
 					request = request.Clone(redirectUri);
 				} else {
 					return response;
