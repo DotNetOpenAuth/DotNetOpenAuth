@@ -157,8 +157,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		public bool PrepareMessageForReceiving(IProtocolMessage message) {
 			var extendableMessage = message as IProtocolMessageWithExtensions;
 			if (extendableMessage != null) {
-				Protocol protocol = Protocol.Lookup(message.Version);
-
 				// We have a helper class that will do all the heavy-lifting of organizing
 				// all the extensions, their aliases, and their parameters.
 				var extensionManager = ExtensionArgumentsManager.CreateIncomingExtensions(this.GetExtensionsDictionary(message));

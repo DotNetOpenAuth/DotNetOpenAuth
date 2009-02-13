@@ -203,7 +203,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 			// Prepare the parts to sign, taking care to replace an openid.mode value
 			// of check_authentication with its original id_res so the signature matches.
-			Protocol protocol = Protocol.Lookup(signedMessage.Version);
 			MessageDictionary dictionary = new MessageDictionary(signedMessage);
 			var parametersToSign = from name in signedMessage.SignedParameterOrder.Split(',')
 								   let prefixedName = Protocol.V20.openid.Prefix + name

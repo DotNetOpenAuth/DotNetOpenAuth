@@ -95,8 +95,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		public bool PrepareMessageForReceiving(IProtocolMessage message) {
 			IndirectSignedResponse response = message as IndirectSignedResponse;
 			if (response != null && response.Version.Major < 2) {
-				var protocol = Protocol.Lookup(response.Version);
-
 				// Although GetReturnToArgument may return null if the parameters are not signed,
 				// the ReturnToSignatureBindingElement should have thrown an exception already
 				// if this is a 1.0 OP signed response without a valid signature since 1.0 OPs

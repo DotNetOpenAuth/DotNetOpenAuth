@@ -96,8 +96,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		internal Association GetExistingAssociation(ProviderEndpointDescription provider) {
 			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
 
-			Protocol protocol = Protocol.Lookup(provider.ProtocolVersion);
-
 			// If the RP has no application store for associations, there's no point in creating one.
 			if (this.associationStore == null) {
 				return null;

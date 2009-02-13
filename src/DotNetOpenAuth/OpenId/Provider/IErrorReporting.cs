@@ -26,7 +26,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Logs the details of an exception for later reference in diagnosing the problem.
 		/// </summary>
-		/// <param name="error">The exception that was generated from the error.</param>
+		/// <param name="exception">The exception that was generated from the error.</param>
 		/// <returns>
 		/// A unique identifier for this particular error that the remote party can
 		/// reference when contacting <see cref="Contact"/> for help with this error.
@@ -38,6 +38,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// party.  When this method is not implemented, it should return null rather
 		/// than throwing <see cref="NotImplementedException"/>.
 		/// </remarks>
-		string LogError(ProtocolException error);
+		string LogError(ProtocolException exception);
 	}
 }

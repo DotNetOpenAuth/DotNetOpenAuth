@@ -1228,7 +1228,6 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 			List<string> assignments = new List<string>();
 
 			using (OpenIdRelyingParty rp = CreateRelyingParty(false)) {
-				var f = HttpUtility.ParseQueryString(this.Page.Request.Url.Query).ToDictionary();
 				var authResponse = rp.GetResponse();
 				if (authResponse.Status == AuthenticationStatus.Authenticated) {
 					this.OnUnconfirmedPositiveAssertion();
