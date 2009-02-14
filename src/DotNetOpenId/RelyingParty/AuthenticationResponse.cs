@@ -363,9 +363,15 @@ namespace DotNetOpenId.RelyingParty {
 			Protocol actualProtocol = Protocol.Detect(query);
 			Protocol discoveredProtocol = (tokenEndpoint ?? responseEndpoint).Protocol;
 			if (!actualProtocol.Equals(discoveredProtocol)) {
-				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
-					Strings.OpenIdDiscoveredAndActualVersionMismatch,
-					actualProtocol.Version, discoveredProtocol.Version));
+				// Allow an exception so that v1.1 and v1.0 can be seen as identical for this
+				// verification.  v1.0 has no spec, and v1.1 and v1.0 cannot be clearly distinguished
+				// from the protocol, so detecting their differences is meaningless, and throwing here
+				// would just break thing unnecessarily.
+				if (!(actualProtocol.Version.Major == 1 && discoveredProtocol.Version.Major == 1)) {
+					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
+						Strings.OpenIdDiscoveredAndActualVersionMismatch,
+						actualProtocol.Version, discoveredProtocol.Version));
+				}
 			}
 
 			if ((tokenEndpoint ?? responseEndpoint).Protocol.Version.Major < 2) {
