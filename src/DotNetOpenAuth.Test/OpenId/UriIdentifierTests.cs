@@ -142,28 +142,35 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		[TestMethod]
 		public void HtmlDiscover_11() {
-			this.DiscoverHtml("html10prov", ProtocolVersion.V11, null);
-			this.DiscoverHtml("html10both", ProtocolVersion.V11, "http://c/d");
+			this.DiscoverHtml("html10prov", ProtocolVersion.V11, null, "http://a/b");
+			this.DiscoverHtml("html10both", ProtocolVersion.V11, "http://c/d", "http://a/b");
 			this.FailDiscoverHtml("html10del");
+
+			// Verify that HTML discovery generates the 1.x endpoints when appropriate
+			this.DiscoverHtml("html2010", ProtocolVersion.V11, "http://g/h", "http://e/f");
+			this.DiscoverHtml("html1020", ProtocolVersion.V11, "http://g/h", "http://e/f");
+			this.DiscoverHtml("html2010combinedA", ProtocolVersion.V11, "http://c/d", "http://a/b");
+			this.DiscoverHtml("html2010combinedB", ProtocolVersion.V11, "http://c/d", "http://a/b");
+			this.DiscoverHtml("html2010combinedC", ProtocolVersion.V11, "http://c/d", "http://a/b");
 		}
 
 		[TestMethod]
 		public void HtmlDiscover_20() {
-			this.DiscoverHtml("html20prov", ProtocolVersion.V20, null);
-			this.DiscoverHtml("html20both", ProtocolVersion.V20, "http://c/d");
+			this.DiscoverHtml("html20prov", ProtocolVersion.V20, null, "http://a/b");
+			this.DiscoverHtml("html20both", ProtocolVersion.V20, "http://c/d", "http://a/b");
 			this.FailDiscoverHtml("html20del");
-			this.DiscoverHtml("html2010", ProtocolVersion.V20, "http://c/d");
-			this.DiscoverHtml("html1020", ProtocolVersion.V20, "http://c/d");
-			this.DiscoverHtml("html2010combinedA", ProtocolVersion.V20, "http://c/d");
-			this.DiscoverHtml("html2010combinedB", ProtocolVersion.V20, "http://c/d");
-			this.DiscoverHtml("html2010combinedC", ProtocolVersion.V20, "http://c/d");
+			this.DiscoverHtml("html2010", ProtocolVersion.V20, "http://c/d", "http://a/b");
+			this.DiscoverHtml("html1020", ProtocolVersion.V20, "http://c/d", "http://a/b");
+			this.DiscoverHtml("html2010combinedA", ProtocolVersion.V20, "http://c/d", "http://a/b");
+			this.DiscoverHtml("html2010combinedB", ProtocolVersion.V20, "http://c/d", "http://a/b");
+			this.DiscoverHtml("html2010combinedC", ProtocolVersion.V20, "http://c/d", "http://a/b");
 			this.FailDiscoverHtml("html20relative");
 		}
 
 		[TestMethod]
 		public void XrdsDiscoveryFromHead() {
 			this.MockResponder.RegisterMockResponse(new Uri("http://localhost/xrds1020.xml"), "application/xrds+xml", LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds1020.xml"));
-			this.DiscoverXrds("XrdsReferencedInHead.html", ProtocolVersion.V10, null);
+			this.DiscoverXrds("XrdsReferencedInHead.html", ProtocolVersion.V10, null, "http://a/b");
 		}
 
 		[TestMethod]
@@ -171,22 +178,22 @@ namespace DotNetOpenAuth.Test.OpenId {
 			WebHeaderCollection headers = new WebHeaderCollection();
 			headers.Add("X-XRDS-Location", new Uri("http://localhost/xrds1020.xml").AbsoluteUri);
 			this.MockResponder.RegisterMockResponse(new Uri("http://localhost/xrds1020.xml"), "application/xrds+xml", LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds1020.xml"));
-			this.DiscoverXrds("XrdsReferencedInHttpHeader.html", ProtocolVersion.V10, null, headers);
+			this.DiscoverXrds("XrdsReferencedInHttpHeader.html", ProtocolVersion.V10, null, "http://a/b", headers);
 		}
 
 		[TestMethod]
 		public void XrdsDirectDiscovery_10() {
 			this.FailDiscoverXrds("xrds-irrelevant");
-			this.DiscoverXrds("xrds10", ProtocolVersion.V10, null);
-			this.DiscoverXrds("xrds11", ProtocolVersion.V11, null);
-			this.DiscoverXrds("xrds1020", ProtocolVersion.V10, null);
+			this.DiscoverXrds("xrds10", ProtocolVersion.V10, null, "http://a/b");
+			this.DiscoverXrds("xrds11", ProtocolVersion.V11, null, "http://a/b");
+			this.DiscoverXrds("xrds1020", ProtocolVersion.V10, null, "http://a/b");
 		}
 
 		[TestMethod]
 		public void XrdsDirectDiscovery_20() {
-			this.DiscoverXrds("xrds20", ProtocolVersion.V20, null);
-			this.DiscoverXrds("xrds2010a", ProtocolVersion.V20, null);
-			this.DiscoverXrds("xrds2010b", ProtocolVersion.V20, null);
+			this.DiscoverXrds("xrds20", ProtocolVersion.V20, null, "http://a/b");
+			this.DiscoverXrds("xrds2010a", ProtocolVersion.V20, null, "http://a/b");
+			this.DiscoverXrds("xrds2010b", ProtocolVersion.V20, null, "http://a/b");
 		}
 
 		[TestMethod]
@@ -346,11 +353,11 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.AreEqual(secureEndpoint.ProviderLocalIdentifier, secureClaimedId.Discover(this.RequestHandler).Single().ProviderLocalIdentifier);
 		}
 
-		private void Discover(string url, ProtocolVersion version, Identifier expectedLocalId, bool expectSreg, bool useRedirect) {
-			this.Discover(url, version, expectedLocalId, expectSreg, useRedirect, null);
+		private void Discover(string url, ProtocolVersion version, Identifier expectedLocalId, string providerEndpoint, bool expectSreg, bool useRedirect) {
+			this.Discover(url, version, expectedLocalId, providerEndpoint, expectSreg, useRedirect, null);
 		}
 
-		private void Discover(string url, ProtocolVersion version, Identifier expectedLocalId, bool expectSreg, bool useRedirect, WebHeaderCollection headers) {
+		private void Discover(string url, ProtocolVersion version, Identifier expectedLocalId, string providerEndpoint, bool expectSreg, bool useRedirect, WebHeaderCollection headers) {
 			Protocol protocol = Protocol.Lookup(version);
 			Uri baseUrl = new Uri("http://localhost/");
 			UriIdentifier claimedId = new Uri(baseUrl, url);
@@ -370,36 +377,45 @@ namespace DotNetOpenAuth.Test.OpenId {
 			}
 			this.MockResponder.RegisterMockResponse(new Uri(idToDiscover), claimedId, contentType, headers ?? new WebHeaderCollection(), LoadEmbeddedFile(url));
 
-			ServiceEndpoint se = idToDiscover.Discover(this.RequestHandler).FirstOrDefault();
+			ServiceEndpoint expected = ServiceEndpoint.CreateForClaimedIdentifier(
+				claimedId,
+				expectedLocalId,
+				new ProviderEndpointDescription(
+					new Uri(providerEndpoint),
+					new string[] { protocol.ClaimedIdentifierServiceTypeURI }), // this isn't checked by Equals
+				null,
+				null);
+
+			ServiceEndpoint se = idToDiscover.Discover(this.RequestHandler).FirstOrDefault(ep => ep.Equals(expected));
 			Assert.IsNotNull(se, url + " failed to be discovered.");
-			Assert.AreSame(protocol, se.Protocol);
-			Assert.AreEqual(claimedId, se.ClaimedIdentifier);
-			Assert.AreEqual(expectedLocalId, se.ProviderLocalIdentifier);
+
+			// Do extra checking of service type URIs, which aren't included in 
+			// the ServiceEndpoint.Equals method.
 			Assert.AreEqual(expectSreg ? 2 : 1, se.ProviderSupportedServiceTypeUris.Count);
 			Assert.IsTrue(se.ProviderSupportedServiceTypeUris.Contains(protocol.ClaimedIdentifierServiceTypeURI));
 			Assert.AreEqual(expectSreg, se.IsExtensionSupported(new ClaimsRequest()));
 		}
 
-		private void DiscoverXrds(string page, ProtocolVersion version, Identifier expectedLocalId) {
-			this.DiscoverXrds(page, version, expectedLocalId, null);
+		private void DiscoverXrds(string page, ProtocolVersion version, Identifier expectedLocalId, string providerEndpoint) {
+			this.DiscoverXrds(page, version, expectedLocalId, providerEndpoint, null);
 		}
 
-		private void DiscoverXrds(string page, ProtocolVersion version, Identifier expectedLocalId, WebHeaderCollection headers) {
+		private void DiscoverXrds(string page, ProtocolVersion version, Identifier expectedLocalId, string providerEndpoint, WebHeaderCollection headers) {
 			if (!page.Contains(".")) {
 				page += ".xml";
 			}
-			this.Discover("/Discovery/xrdsdiscovery/" + page, version, expectedLocalId, true, false, headers);
-			this.Discover("/Discovery/xrdsdiscovery/" + page, version, expectedLocalId, true, true, headers);
+			this.Discover("/Discovery/xrdsdiscovery/" + page, version, expectedLocalId, providerEndpoint, true, false, headers);
+			this.Discover("/Discovery/xrdsdiscovery/" + page, version, expectedLocalId, providerEndpoint, true, true, headers);
 		}
 
-		private void DiscoverHtml(string page, ProtocolVersion version, Identifier expectedLocalId, bool useRedirect) {
-			this.Discover("/Discovery/htmldiscovery/" + page, version, expectedLocalId, false, useRedirect);
+		private void DiscoverHtml(string page, ProtocolVersion version, Identifier expectedLocalId, string providerEndpoint, bool useRedirect) {
+			this.Discover("/Discovery/htmldiscovery/" + page, version, expectedLocalId, providerEndpoint, false, useRedirect);
 		}
 
-		private void DiscoverHtml(string scenario, ProtocolVersion version, Identifier expectedLocalId) {
+		private void DiscoverHtml(string scenario, ProtocolVersion version, Identifier expectedLocalId, string providerEndpoint) {
 			string page = scenario + ".html";
-			this.DiscoverHtml(page, version, expectedLocalId, false);
-			this.DiscoverHtml(page, version, expectedLocalId, true);
+			this.DiscoverHtml(page, version, expectedLocalId, providerEndpoint, false);
+			this.DiscoverHtml(page, version, expectedLocalId, providerEndpoint, true);
 		}
 
 		private void FailDiscover(string url) {
