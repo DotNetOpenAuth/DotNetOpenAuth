@@ -380,9 +380,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			ServiceEndpoint expected = ServiceEndpoint.CreateForClaimedIdentifier(
 				claimedId,
 				expectedLocalId,
-				new ProviderEndpointDescription(
-					new Uri(providerEndpoint),
-					new string[] { protocol.ClaimedIdentifierServiceTypeURI }), // this isn't checked by Equals
+				new ProviderEndpointDescription(new Uri(providerEndpoint), new string[] { protocol.ClaimedIdentifierServiceTypeURI }), // services aren't checked by Equals
 				null,
 				null);
 

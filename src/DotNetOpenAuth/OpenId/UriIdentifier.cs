@@ -344,7 +344,7 @@ namespace DotNetOpenAuth.OpenId {
 						claimedIdentifier,
 						providerLocalIdentifier,
 						new ProviderEndpointDescription(providerEndpoint, typeURIs),
-						(int?)null, 
+						(int?)null,
 						(int?)null);
 				}
 			}
