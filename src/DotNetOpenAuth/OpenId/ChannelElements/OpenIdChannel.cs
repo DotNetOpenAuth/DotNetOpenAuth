@@ -237,6 +237,10 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					}
 				}
 
+				// Call dispose before throwing since we're not including the response in the
+				// exception we're throwing.
+				response.Dispose();
+
 				ErrorUtilities.ThrowProtocol(OpenIdStrings.UnexpectedHttpStatusCode, (int)response.Status, response.Status);
 			}
 

@@ -92,9 +92,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown for any network error.</exception>
 		/// <remarks>
-		/// Implementations should catch <see cref="WebException"/> and wrap it in a
+		/// 	<para>Implementations should catch <see cref="WebException"/> and wrap it in a
 		/// <see cref="ProtocolException"/> to abstract away the transport and provide
-		/// a single exception type for hosts to catch.
+		/// a single exception type for hosts to catch.  The <see cref="WebException.Response"/>
+		/// value, if set, shoud be Closed before throwing.</para>
 		/// </remarks>
 		public DirectWebResponse GetResponse(HttpWebRequest request) {
 			return this.GetResponse(request, DirectWebRequestOptions.None);
@@ -111,9 +112,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown for any network error.</exception>
 		/// <remarks>
-		/// Implementations should catch <see cref="WebException"/> and wrap it in a
+		/// 	<para>Implementations should catch <see cref="WebException"/> and wrap it in a
 		/// <see cref="ProtocolException"/> to abstract away the transport and provide
-		/// a single exception type for hosts to catch.
+		/// a single exception type for hosts to catch.  The <see cref="WebException.Response"/>
+		/// value, if set, shoud be Closed before throwing.</para>
 		/// </remarks>
 		public DirectWebResponse GetResponse(HttpWebRequest request, DirectWebRequestOptions options) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
@@ -128,14 +130,31 @@ namespace DotNetOpenAuth.Messaging {
 				HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 				return new NetworkDirectWebResponse(request.RequestUri, response);
 			} catch (WebException ex) {
-				if ((options & DirectWebRequestOptions.AcceptAllHttpResponses) != 0 && ex.Response != null) {
-					var response = (HttpWebResponse)ex.Response;
+				HttpWebResponse response = (HttpWebResponse)ex.Response;
+				if (response != null && response.StatusCode == HttpStatusCode.ExpectationFailed &&
+					request.ServicePoint.Expect100Continue) {
+					// Some OpenID servers doesn't understand the Expect header and send 417 error back.
+					// If this server just failed from that, alter the ServicePoint for this server
+					// so that we don't send that header again next time (whenever that is).
+					// "Expect: 100-Continue" HTTP header. (see Google Code Issue 72)
+					// We don't want to blindly set all ServicePoints to not use the Expect header
+					// as that would be a security hole allowing any visitor to a web site change
+					// the web site's global behavior when calling that host.
+					request.ServicePoint.Expect100Continue = false; // TODO: investigate that CAS may throw here
+
+					// An alternative to ServicePoint if we don't have permission to set that,
+					// but we'd have to set it BEFORE each request.
+					////request.Expect = "";  
+				}
+
+				if ((options & DirectWebRequestOptions.AcceptAllHttpResponses) != 0 && response != null &&
+					response.StatusCode != HttpStatusCode.ExpectationFailed) {
 					Logger.InfoFormat("The HTTP error code {0} {1} is being accepted because the {2} flag is set.", (int)response.StatusCode, response.StatusCode, DirectWebRequestOptions.AcceptAllHttpResponses);
 					return new NetworkDirectWebResponse(request.RequestUri, response);
 				}
 
 				if (Logger.IsErrorEnabled) {
-					if (ex.Response != null) {
+					if (response != null) {
 						using (var reader = new StreamReader(ex.Response.GetResponseStream())) {
 							Logger.ErrorFormat("WebException from {0}: {1}{2}", ex.Response.ResponseUri, Environment.NewLine, reader.ReadToEnd());
 						}
@@ -143,6 +162,13 @@ namespace DotNetOpenAuth.Messaging {
 						Logger.ErrorFormat("WebException {1} from {0}, no response available.", request.RequestUri, ex.Status);
 					}
 				}
+
+				// Be sure to close the response stream to conserve resources and avoid
+				// filling up all our incoming pipes and denying future requests.
+				// If in the future, some callers actually want to read this response
+				// we'll need to figure out how to reliably call Close on exception
+				// responses at all callers.
+				response.Close();
 
 				throw ErrorUtilities.Wrap(ex, MessagingStrings.ErrorInRequestReplyMessage);
 			}
@@ -166,25 +192,7 @@ namespace DotNetOpenAuth.Messaging {
 			} catch (SocketException ex) {
 				throw ErrorUtilities.Wrap(ex, MessagingStrings.WebRequestFailed, request.RequestUri);
 			} catch (WebException ex) {
-				using (HttpWebResponse response = (HttpWebResponse)ex.Response) {
-					if (response != null && response.StatusCode == HttpStatusCode.ExpectationFailed &&
-						request.ServicePoint.Expect100Continue) {
-						// Some OpenID servers doesn't understand the Expect header and send 417 error back.
-						// If this server just failed from that, we're trying again without sending the
-						// "Expect: 100-Continue" HTTP header. (see Google Code Issue 72)
-						// We don't just set Expect100Continue = !avoidSendingExpect100Continue
-						// so that future requests don't reset this and have to try twice as well.
-						// We don't want to blindly set all ServicePoints to not use the Expect header
-						// as that would be a security hole allowing any visitor to a web site change
-						// the web site's global behavior when calling that host.
-						request = request.Clone();
-						request.ServicePoint.Expect100Continue = false; // TODO: investigate that CAS may throw here, and we can use request.Expect instead.
-						// request.Expect = "";  // alternative to ServicePoint if we don't have permission to set that, but be sure to change the if clause above if we use this.
-						return GetRequestStreamCore(request, options);
-					} else {
-						throw ErrorUtilities.Wrap(ex, MessagingStrings.WebRequestFailed, request.RequestUri);
-					}
-				}
+				throw ErrorUtilities.Wrap(ex, MessagingStrings.WebRequestFailed, request.RequestUri);
 			}
 		}
 

@@ -35,9 +35,12 @@ namespace DotNetOpenAuth.Messaging {
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown for any network error.</exception>
 		/// <remarks>
-		/// <para>The caller should have set the <see cref="HttpWebRequest.ContentLength"/>
-		/// and any other appropriate properties <i>before</i> calling this method.</para>
-		/// <para>Implementations should catch <see cref="WebException"/> and wrap it in a
+		/// 	<para>The caller should have set the <see cref="HttpWebRequest.ContentLength"/>
+		/// and any other appropriate properties <i>before</i> calling this method.
+		/// Callers <i>must</i> close and dispose of the request stream when they are done
+		/// writing to it to avoid taking up the connection too long and causing long waits on
+		/// subsequent requests.</para>
+		/// 	<para>Implementations should catch <see cref="WebException"/> and wrap it in a
 		/// <see cref="ProtocolException"/> to abstract away the transport and provide
 		/// a single exception type for hosts to catch.</para>
 		/// </remarks>
@@ -54,7 +57,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <exception cref="ProtocolException">Thrown for any network error.</exception>
 		/// <remarks>
 		/// 	<para>The caller should have set the <see cref="HttpWebRequest.ContentLength"/>
-		/// and any other appropriate properties <i>before</i> calling this method.</para>
+		/// and any other appropriate properties <i>before</i> calling this method.
+		/// Callers <i>must</i> close and dispose of the request stream when they are done
+		/// writing to it to avoid taking up the connection too long and causing long waits on
+		/// subsequent requests.</para>
 		/// 	<para>Implementations should catch <see cref="WebException"/> and wrap it in a
 		/// <see cref="ProtocolException"/> to abstract away the transport and provide
 		/// a single exception type for hosts to catch.</para>
@@ -69,9 +75,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>An instance of <see cref="DirectWebResponse"/> describing the response.</returns>
 		/// <exception cref="ProtocolException">Thrown for any network error.</exception>
 		/// <remarks>
-		/// Implementations should catch <see cref="WebException"/> and wrap it in a
+		/// 	<para>Implementations should catch <see cref="WebException"/> and wrap it in a
 		/// <see cref="ProtocolException"/> to abstract away the transport and provide
-		/// a single exception type for hosts to catch.
+		/// a single exception type for hosts to catch.  The <see cref="WebException.Response"/>
+		/// value, if set, shoud be Closed before throwing.</para>
 		/// </remarks>
 		DirectWebResponse GetResponse(HttpWebRequest request);
 
@@ -84,9 +91,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>An instance of <see cref="DirectWebResponse"/> describing the response.</returns>
 		/// <exception cref="ProtocolException">Thrown for any network error.</exception>
 		/// <remarks>
-		/// Implementations should catch <see cref="WebException"/> and wrap it in a
+		/// 	<para>Implementations should catch <see cref="WebException"/> and wrap it in a
 		/// <see cref="ProtocolException"/> to abstract away the transport and provide
-		/// a single exception type for hosts to catch.
+		/// a single exception type for hosts to catch.  The <see cref="WebException.Response"/>
+		/// value, if set, shoud be Closed before throwing.</para>
 		/// </remarks>
 		DirectWebResponse GetResponse(HttpWebRequest request, DirectWebRequestOptions options);
 	}

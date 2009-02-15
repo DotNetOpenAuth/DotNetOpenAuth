@@ -719,7 +719,9 @@ namespace DotNetOpenAuth.Messaging {
 			string requestBody = MessagingUtilities.CreateQueryString(fields);
 			byte[] requestBytes = PostEntityEncoding.GetBytes(requestBody);
 			httpRequest.ContentLength = requestBytes.Length;
-			this.WebRequestHandler.GetRequestStream(httpRequest).Write(requestBytes, 0, requestBytes.Length);
+			using (Stream requestStream = this.WebRequestHandler.GetRequestStream(httpRequest)) {
+				requestStream.Write(requestBytes, 0, requestBytes.Length);
+			}
 
 			return httpRequest;
 		}

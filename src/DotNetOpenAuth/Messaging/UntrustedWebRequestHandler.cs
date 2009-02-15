@@ -232,9 +232,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown for any network error.</exception>
 		/// <remarks>
-		/// Implementations should catch <see cref="WebException"/> and wrap it in a
+		/// 	<para>Implementations should catch <see cref="WebException"/> and wrap it in a
 		/// <see cref="ProtocolException"/> to abstract away the transport and provide
-		/// a single exception type for hosts to catch.
+		/// a single exception type for hosts to catch.  The <see cref="WebException.Response"/>
+		/// value, if set, shoud be Closed before throwing.</para>
 		/// </remarks>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Uri(Uri, string) accepts second arguments that Uri(Uri, new Uri(string)) does not that we must support.")]
 		public DirectWebResponse GetResponse(HttpWebRequest request, DirectWebRequestOptions options) {
@@ -282,11 +283,20 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Processes an <see cref="HttpWebRequest"/> and converts the 
+		/// Processes an <see cref="HttpWebRequest"/> and converts the
 		/// <see cref="HttpWebResponse"/> to a <see cref="DirectWebResponse"/> instance.
 		/// </summary>
 		/// <param name="request">The <see cref="HttpWebRequest"/> to handle.</param>
-		/// <returns>An instance of <see cref="DirectWebResponse"/> describing the response.</returns>
+		/// <returns>
+		/// An instance of <see cref="DirectWebResponse"/> describing the response.
+		/// </returns>
+		/// <exception cref="ProtocolException">Thrown for any network error.</exception>
+		/// <remarks>
+		/// 	<para>Implementations should catch <see cref="WebException"/> and wrap it in a
+		/// <see cref="ProtocolException"/> to abstract away the transport and provide
+		/// a single exception type for hosts to catch.  The <see cref="WebException.Response"/>
+		/// value, if set, shoud be Closed before throwing.</para>
+		/// </remarks>
 		DirectWebResponse IDirectWebRequestHandler.GetResponse(HttpWebRequest request) {
 			return this.GetResponse(request, DirectWebRequestOptions.None);
 		}
