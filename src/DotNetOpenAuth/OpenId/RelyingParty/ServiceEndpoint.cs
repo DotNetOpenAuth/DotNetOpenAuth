@@ -410,7 +410,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				this.ClaimedIdentifier == other.ClaimedIdentifier &&
 				this.ProviderEndpoint == other.ProviderEndpoint &&
 				this.ProviderLocalIdentifier == other.ProviderLocalIdentifier &&
-				this.Protocol == other.Protocol;
+				this.Protocol.EqualsPractically(other.Protocol);
 		}
 
 		/// <summary>

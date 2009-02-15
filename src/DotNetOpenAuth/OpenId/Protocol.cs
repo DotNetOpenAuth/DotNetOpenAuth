@@ -407,9 +407,42 @@ namespace DotNetOpenAuth.OpenId {
 		/// </remarks>
 		internal static TimeSpan MaximumAllowableTimeSkew = TimeSpan.FromMinutes(10);
 
+		/// <summary>
+		/// Checks whether a given Protocol version practically equals this one
+		/// for purposes of verifying a match for assertion verification.
+		/// </summary>
+		/// <param name="other">The other version to check against this one.</param>
+		/// <returns><c>true</c> if this and the given Protocol versions are essentially the same.</returns>
+		/// <remarks>
+		/// OpenID v1.0 never had a spec, and 1.0 and 1.1 are indistinguishable because of that.
+		/// Therefore for assertion verification, 1.0 and 1.1 are considered equivalent.
+		/// </remarks>
+		public bool EqualsPractically(Protocol other) {
+			if (other == null) {
+				return false;
+			}
+
+			// Exact version match is definitely equality.
+			if (this.Version == other.Version) {
+				return true;
+			}
+
+			// If both protocol versions are 1.x, it doesn't matter if one
+			// is 1.0 and the other is 1.1 for assertion verification purposes.
+			if (this.Version.Major == 1 && other.Version.Major == 1) {
+				return true;
+			}
+
+			// Different version.
+			return false;
+		}
+
 		public override bool Equals(object obj) {
 			Protocol other = obj as Protocol;
-			if (other == null) return false;
+			if (other == null) {
+				return false;
+			}
+
 			return this.Version == other.Version;
 		}
 		public override int GetHashCode() {
