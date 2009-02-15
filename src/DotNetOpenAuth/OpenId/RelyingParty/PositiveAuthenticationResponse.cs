@@ -230,11 +230,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private void VerifyDiscoveryMatchesAssertion() {
 			Logger.Debug("Verifying assertion matches identifier discovery results...");
 
-			// TODO: optimize this to not perform a second discovery when we could cache it
-			// either through the return_to URL or application state.
-			// PROPOSAL: sign the discovered information in the request so that when it
-			// comes back in the assertion we can verify that it hasn't changed, without
-			// sending two copies of all the data in the request.
+			// While it LOOKS like we're performing discovery over HTTP again
+			// Yadis.IdentifierDiscoveryCachePolicy is set to HttpRequestCacheLevel.CacheIfAvailable
+			// which means that the .NET runtime is caching our discoveries for us.  This turns out
+			// to be very fast and keeps our code clean and easily verifiable as correct and secure.
 			var discoveryResults = this.response.ClaimedIdentifier.Discover(this.relyingParty.WebRequestHandler);
 			ErrorUtilities.VerifyProtocol(discoveryResults.Contains(this.endpoint), OpenIdStrings.IssuedAssertionFailsIdentifierDiscovery, this.endpoint, discoveryResults.ToStringDeferred(true));
 		}
