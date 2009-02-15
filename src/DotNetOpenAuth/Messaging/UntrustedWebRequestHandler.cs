@@ -4,9 +4,6 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#if DEBUG
-#define LONGTIMEOUT
-#endif
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
@@ -98,12 +95,15 @@ namespace DotNetOpenAuth.Messaging {
 			ErrorUtilities.VerifyArgumentNotNull(chainedWebRequestHandler, "chainedWebRequestHandler");
 
 			this.chainedWebRequestHandler = chainedWebRequestHandler;
-			this.ReadWriteTimeout = Configuration.ReadWriteTimeout;
-			this.Timeout = Configuration.Timeout;
-#if LONGTIMEOUT
-			this.ReadWriteTimeout = TimeSpan.FromHours(1);
-			this.Timeout = TimeSpan.FromHours(1);
-#endif
+			if (Debugger.IsAttached) {
+				// Since a debugger is attached, requests may be MUCH slower,
+				// so give ourselves huge timeouts.
+				this.ReadWriteTimeout = TimeSpan.FromHours(1);
+				this.Timeout = TimeSpan.FromHours(1);
+			} else {
+				this.ReadWriteTimeout = Configuration.ReadWriteTimeout;
+				this.Timeout = Configuration.Timeout;
+			}
 		}
 
 		/// <summary>
