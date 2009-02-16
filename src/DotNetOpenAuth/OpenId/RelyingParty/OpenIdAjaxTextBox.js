@@ -6,7 +6,7 @@
 
 // Options that can be set on the host page:
 //window.openid_visible_iframe = true; // causes the hidden iframe to show up
-//window.openid_trace = true; // causes lots of alert boxes
+//window.openid_trace = true; // causes lots of messages
 
 function trace(msg) {
 	if (window.openid_trace) {
@@ -301,7 +301,8 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	}
 
 	box.dnoi_internal.isAuthenticated = function() {
-		return box.dnoi_internal.getUserSuppliedIdentifierResults().findSuccessfulRequest() != null;
+		var results = box.dnoi_internal.getUserSuppliedIdentifierResults();
+		return results != null && results.findSuccessfulRequest() != null;
 	}
 
 	box.dnoi_internal.onSubmit = function() {
