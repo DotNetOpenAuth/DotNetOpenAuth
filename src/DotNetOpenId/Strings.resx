@@ -328,4 +328,7 @@ Discovered endpoint info:
   <data name="ClaimedIdentifierCannotBeSetOnDelegatedAuthentication" xml:space="preserve">
     <value>The ClaimedIdentifier property cannot be set when IsDelegatedIdentifier is true to avoid breaking OpenID URL delegation.</value>
   </data>
+  <data name="OpenIdDiscoveredAndActualVersionMismatch" xml:space="preserve">
+    <value>Positive assertion sent with OpenID version {0} but Identifier discovery suggested it would be {1}.</value>
+  </data>
 </root>

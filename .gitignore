@@ -1,8 +1,10 @@
 bin
 obj
 TestResult.xml
+TestResults
 *.VisualState.xml
 Drop
 drop
+drops
 DotNetOpenId-*
 StyleCop.Cache

@@ -358,6 +358,22 @@ namespace DotNetOpenId.RelyingParty {
 			ServiceEndpoint tokenEndpoint, ServiceEndpoint responseEndpoint) {
 
 			Logger.Debug("Verifying assertion matches identifier discovery results...");
+
+			// Verify that the actual version of the OP endpoint matches discovery.
+			Protocol actualProtocol = Protocol.Detect(query);
+			Protocol discoveredProtocol = (tokenEndpoint ?? responseEndpoint).Protocol;
+			if (!actualProtocol.Equals(discoveredProtocol)) {
+				// Allow an exception so that v1.1 and v1.0 can be seen as identical for this
+				// verification.  v1.0 has no spec, and v1.1 and v1.0 cannot be clearly distinguished
+				// from the protocol, so detecting their differences is meaningless, and throwing here
+				// would just break thing unnecessarily.
+				if (!(actualProtocol.Version.Major == 1 && discoveredProtocol.Version.Major == 1)) {
+					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
+						Strings.OpenIdDiscoveredAndActualVersionMismatch,
+						actualProtocol.Version, discoveredProtocol.Version));
+				}
+			}
+
 			if ((tokenEndpoint ?? responseEndpoint).Protocol.Version.Major < 2) {
 				Debug.Assert(tokenEndpoint != null, "Our OpenID 1.x implementation requires an RP token.  And this should have been verified by our caller.");
 				// For 1.x OPs, we only need to verify that the OP Local Identifier 
