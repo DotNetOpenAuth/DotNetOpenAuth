@@ -1,4 +1,10 @@
-﻿// Options that can be set on the host page:
+﻿//-----------------------------------------------------------------------
+// <copyright file="OpenIdAjaxTextBox.js" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+// Options that can be set on the host page:
 //window.openid_visible_iframe = true; // causes the hidden iframe to show up
 //window.openid_trace = true; // causes lots of alert boxes
 
