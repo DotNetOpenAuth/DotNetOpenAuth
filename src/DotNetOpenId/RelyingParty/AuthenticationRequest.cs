@@ -280,7 +280,7 @@ namespace DotNetOpenId.RelyingParty {
 		public IResponse RedirectingResponse {
 			get {
 				UriBuilder returnToBuilder = new UriBuilder(ReturnToUrl);
-				UriUtil.AppendQueryArgs(returnToBuilder, this.ReturnToArgs);
+				UriUtil.AppendAndReplaceQueryArgs(returnToBuilder, this.ReturnToArgs);
 
 				var qsArgs = new Dictionary<string, string>();
 

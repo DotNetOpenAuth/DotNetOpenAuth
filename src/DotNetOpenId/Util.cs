@@ -69,6 +69,30 @@ namespace DotNetOpenId {
 		}
 
 		/// <summary>
+		/// Adds parameters to a query string, replacing parameters that
+		/// match ones that already exist in the query string.
+		/// </summary>
+		/// <param name="builder">The UriBuilder to add arguments to.</param>
+		/// <param name="args">
+		/// The arguments to add to the query.  
+		/// If null, <paramref name="builder"/> is not changed.
+		/// </param>
+		internal static void AppendAndReplaceQueryArgs(UriBuilder builder, IDictionary<string, string> args) {
+			if (builder == null) {
+				throw new ArgumentNullException("builder");
+			}
+
+			if (args != null && args.Count > 0) {
+				NameValueCollection aggregatedArgs = HttpUtility.ParseQueryString(builder.Query);
+				foreach (var pair in args) {
+					aggregatedArgs[pair.Key] = pair.Value;
+				}
+
+				builder.Query = CreateQueryString(aggregatedArgs);
+			}
+		}
+
+		/// <summary>
 		/// Equivalent to UriBuilder.ToString() but omits port # if it may be implied.
 		/// Equivalent to UriBuilder.Uri.ToString(), but doesn't throw an exception if the Host has a wildcard.
 		/// </summary>
