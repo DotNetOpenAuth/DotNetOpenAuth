@@ -35,7 +35,16 @@ namespace DotNetOpenAuth.Xrds {
 		/// Gets the URI.
 		/// </summary>
 		public Uri Uri {
-			get { return new Uri(Node.Value); }
+			get {
+				if (Node.Value != null) {
+					string value = Node.Value.Trim();
+					if (value.Length > 0) {
+						return new Uri(value);
+					}
+				}
+
+				return null;
+			}
 		}
 
 		/// <summary>

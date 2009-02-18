@@ -102,6 +102,7 @@ namespace DotNetOpenAuth.OpenId {
 		private static IEnumerable<ServiceEndpoint> GenerateClaimedIdentifierServiceEndpoints(this XrdsDocument xrds, UriIdentifier claimedIdentifier, UriIdentifier userSuppliedIdentifier) {
 			return from service in xrds.FindClaimedIdentifierServices()
 				   from uri in service.UriElements
+				   where uri.Uri != null
 				   let providerEndpoint = new ProviderEndpointDescription(uri.Uri, service.TypeElementUris)
 				   select ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, userSuppliedIdentifier, service.ProviderLocalIdentifier, providerEndpoint, service.Priority, uri.Priority);
 		}
