@@ -719,8 +719,16 @@ namespace DotNetOpenAuth.Messaging {
 			string requestBody = MessagingUtilities.CreateQueryString(fields);
 			byte[] requestBytes = PostEntityEncoding.GetBytes(requestBody);
 			httpRequest.ContentLength = requestBytes.Length;
-			using (Stream requestStream = this.WebRequestHandler.GetRequestStream(httpRequest)) {
+			Stream requestStream = this.WebRequestHandler.GetRequestStream(httpRequest);
+			try {
 				requestStream.Write(requestBytes, 0, requestBytes.Length);
+			} finally {
+				// We need to be sure to close the request stream...
+				// unless it is a MemoryStream, which is a clue that we're in
+				// a mock stream situation and closing it would preclude reading it later.
+				if (!(requestStream is MemoryStream)) {
+					requestStream.Dispose();
+				}
 			}
 
 			return httpRequest;
