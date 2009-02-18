@@ -140,7 +140,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		internal void AddReturnToArguments(IEnumerable<KeyValuePair<string, string>> keysValues) {
 			ErrorUtilities.VerifyArgumentNotNull(keysValues, "keysValues");
 			UriBuilder returnToBuilder = new UriBuilder(this.ReturnTo);
-			returnToBuilder.AppendQueryArgs(keysValues);
+			returnToBuilder.AppendAndReplaceQueryArgs(keysValues);
 			this.ReturnTo = returnToBuilder.Uri;
 		}
 

@@ -476,10 +476,12 @@ namespace DotNetOpenAuth.Messaging {
 		/// The arguments to add to the query.  
 		/// If null, <paramref name="builder"/> is not changed.
 		/// </param>
+		/// <remarks>
+		/// If the parameters to add match names of parameters that already are defined
+		/// in the query string, the existing ones are <i>not</i> replaced.
+		/// </remarks>
 		internal static void AppendQueryArgs(this UriBuilder builder, IEnumerable<KeyValuePair<string, string>> args) {
-			if (builder == null) {
-				throw new ArgumentNullException("builder");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(builder, "builder");
 
 			if (args != null && args.Count() > 0) {
 				StringBuilder sb = new StringBuilder(50 + (args.Count() * 10));
@@ -490,6 +492,28 @@ namespace DotNetOpenAuth.Messaging {
 				sb.Append(CreateQueryString(args));
 
 				builder.Query = sb.ToString();
+			}
+		}
+
+		/// <summary>
+		/// Adds parameters to a query string, replacing parameters that
+		/// match ones that already exist in the query string.
+		/// </summary>
+		/// <param name="builder">The UriBuilder to add arguments to.</param>
+		/// <param name="args">
+		/// The arguments to add to the query.  
+		/// If null, <paramref name="builder"/> is not changed.
+		/// </param>
+		internal static void AppendAndReplaceQueryArgs(this UriBuilder builder, IEnumerable<KeyValuePair<string, string>> args) {
+			ErrorUtilities.VerifyArgumentNotNull(builder, "builder");
+
+			if (args != null && args.Count() > 0) {
+				NameValueCollection aggregatedArgs = HttpUtility.ParseQueryString(builder.Query);
+				foreach (var pair in args) {
+					aggregatedArgs[pair.Key] = pair.Value;
+				}
+
+				builder.Query = CreateQueryString(aggregatedArgs.ToDictionary());
 			}
 		}
 

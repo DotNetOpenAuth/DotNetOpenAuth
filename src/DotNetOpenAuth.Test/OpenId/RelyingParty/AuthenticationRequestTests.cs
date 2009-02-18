@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using System.Linq;
 	using System.Text;
 	using System.Web;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -20,14 +21,15 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	[TestClass]
 	public class AuthenticationRequestTests : OpenIdTestBase {
 		private readonly Realm realm = new Realm("http://localhost/rp.aspx");
-		private readonly Uri returnTo = new Uri("http://localhost/rp.aspx");
 		private readonly Identifier claimedId = "http://claimedId";
 		private readonly Identifier delegatedLocalId = "http://localId";
 		private readonly Protocol protocol = Protocol.Default;
+		private Uri returnTo;
 
 		[TestInitialize]
 		public override void SetUp() {
 			base.SetUp();
+			this.returnTo = new Uri("http://localhost/rp.aspx");
 		}
 
 		/// <summary>
@@ -113,11 +115,41 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Verifies that AddCallbackArguments adds query arguments to the return_to URL of the message.
+		/// </summary>
+		[TestMethod]
+		public void AddCallbackArgument() {
+			IAuthenticationRequest_Accessor authRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
+			Assert.AreEqual(this.returnTo, authRequest.ReturnToUrl);
+			authRequest.AddCallbackArguments("p1", "v1");
+			var req = (SignedResponseRequest)authRequest.RedirectingResponse.OriginalMessage;
+			NameValueCollection query = HttpUtility.ParseQueryString(req.ReturnTo.Query);
+			Assert.AreEqual("v1", query["p1"]);
+		}
+
+		/// <summary>
+		/// Verifies that AddCallbackArguments replaces pre-existing parameter values 
+		/// rather than appending them.
+		/// </summary>
+		[TestMethod]
+		public void AddCallbackArgumentClearsPreviousArgument() {
+			UriBuilder returnToWithArgs = new UriBuilder(this.returnTo);
+			returnToWithArgs.AppendQueryArgs(new Dictionary<string, string> { { "p1", "v1" } });
+			this.returnTo = returnToWithArgs.Uri;
+			IAuthenticationRequest_Accessor authRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
+			authRequest.AddCallbackArguments("p1", "v2");
+			var req = (SignedResponseRequest)authRequest.RedirectingResponse.OriginalMessage;
+			NameValueCollection query = HttpUtility.ParseQueryString(req.ReturnTo.Query);
+			Assert.AreEqual("v2", query["p1"]);
+		}
+
+		/// <summary>
 		/// Verifies that authentication requests are generated first for OPs that respond
 		/// to authentication requests.
 		/// </summary>
 		[TestMethod, Ignore]
 		public void UnresponsiveProvidersComeLast() {
+			// TODO: code here
 			Assert.Inconclusive("Not yet implemented.");
 		}
 

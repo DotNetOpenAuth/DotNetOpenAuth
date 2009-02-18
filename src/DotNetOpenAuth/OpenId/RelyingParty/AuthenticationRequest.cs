@@ -418,7 +418,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			request.ReturnTo = this.ReturnToUrl;
 			request.AssociationHandle = association != null ? association.Handle : null;
 			request.AddReturnToArguments(this.returnToArgs);
-			request.AddReturnToArguments(UserSuppliedIdentifierParameterName, this.endpoint.UserSuppliedIdentifier);
+			if (this.endpoint.UserSuppliedIdentifier != null) {
+				request.AddReturnToArguments(UserSuppliedIdentifierParameterName, this.endpoint.UserSuppliedIdentifier);
+			}
 			foreach (IOpenIdMessageExtension extension in this.extensions) {
 				request.Extensions.Add(extension);
 			}
