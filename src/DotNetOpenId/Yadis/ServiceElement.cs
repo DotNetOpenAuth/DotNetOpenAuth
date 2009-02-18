@@ -55,7 +55,14 @@ namespace DotNetOpenId.Yadis {
 			get {
 				var n = Node.SelectSingleNode("xrd:LocalID", XmlNamespaceResolver)
 					?? Node.SelectSingleNode("openid10:Delegate", XmlNamespaceResolver);
-				return (n != null) ? n.Value : null;
+				if (n != null && n.Value != null) {
+					string value = n.Value.Trim();
+					if (value.Length > 0) {
+						return n.Value;
+					}
+				}
+
+				return null;
 			}
 		}
 
