@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// If a message should live for at least t = 3 minutes,
 		/// this property should be set to (2*d + t) = 13 minutes.</para>
 		/// </remarks>
-		[ConfigurationProperty(MaximumMessageLifetimeConfigName, DefaultValue = "00:00:13")]
+		[ConfigurationProperty(MaximumMessageLifetimeConfigName, DefaultValue = "00:13:00")]
 		public TimeSpan MaximumMessageLifetime {
 			get { return (TimeSpan)this[MaximumMessageLifetimeConfigName]; }
 			set { this[MaximumMessageLifetimeConfigName] = value; }
