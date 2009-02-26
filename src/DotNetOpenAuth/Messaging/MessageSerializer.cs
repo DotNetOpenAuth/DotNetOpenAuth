@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Reflection;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuth.ChannelElements;
+	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Serializes/deserializes OAuth messages for/from transit.
@@ -30,7 +31,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="messageType">The specific <see cref="IMessage"/>-derived type
 		/// that will be serialized and deserialized using this class.</param>
 		private MessageSerializer(Type messageType) {
-			Debug.Assert(messageType != null, "messageType == null");
+			Contract.Requires(messageType != null);
 
 			ErrorUtilities.VerifyArgumentNamed(
 				typeof(IMessage).IsAssignableFrom(messageType),
