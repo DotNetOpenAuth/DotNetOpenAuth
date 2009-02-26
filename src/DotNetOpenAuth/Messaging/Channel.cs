@@ -19,6 +19,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Threading;
 	using System.Web;
 	using DotNetOpenAuth.Messaging.Reflection;
+	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Manages sending direct messages to a remote party and receiving responses.
@@ -743,7 +744,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// This can be due to tampering, replay attack or expiration, among other things.
 		/// </exception>
 		protected virtual void VerifyMessageAfterReceiving(IProtocolMessage message) {
-			Debug.Assert(message != null, "message == null");
+			Contract.Requires(message != null);
 
 			if (Logger.IsDebugEnabled) {
 				Logger.DebugFormat(
@@ -817,7 +818,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Thrown when any required message part does not have a value.
 		/// </exception>
 		private static void EnsureValidMessageParts(IProtocolMessage message) {
-			Debug.Assert(message != null, "message == null");
+			Contract.Requires(message != null);
 
 			MessageDictionary dictionary = new MessageDictionary(message);
 			MessageDescription description = MessageDescription.Get(message.GetType(), message.Version);
