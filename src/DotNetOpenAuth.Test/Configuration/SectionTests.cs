@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.Test.Configuration {
 
 		[TestMethod]
 		public void OpenIdMaxAuthenticationTime() {
-			Assert.AreEqual(TimeSpan.Parse("8:17"), DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime);
+			Assert.AreEqual(TimeSpan.Parse("00:08:17"), DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime);
 		}
 
 		[TestMethod]
