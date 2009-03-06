@@ -60,6 +60,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		private void ParameterizedPositiveAuthenticationTest(bool sharedAssociation, bool positive, bool tamper) {
 			foreach (Protocol protocol in Protocol.AllPracticalVersions) {
+				TestLogger.InfoFormat("Beginning authentication test scenario.  OpenID: {3}, Shared: {0}, positive: {1}, tamper: {2}", sharedAssociation, positive, tamper, protocol.Version);
 				this.ParameterizedPositiveAuthenticationTest(protocol, sharedAssociation, positive, tamper);
 			}
 		}
