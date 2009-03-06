@@ -35,15 +35,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
 		/// </summary>
-		internal HttpRequestInfo() {
-			this.HttpMethod = "GET";
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
-		/// </summary>
 		/// <param name="request">The ASP.NET structure to copy from.</param>
-		internal HttpRequestInfo(HttpRequest request) {
+		public HttpRequestInfo(HttpRequest request) {
 			if (request == null) {
 				throw new ArgumentNullException("request");
 			}
@@ -64,9 +57,44 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
 		/// </summary>
+		/// <param name="httpMethod">The HTTP method (i.e. GET or POST) of the incoming request.</param>
+		/// <param name="requestUrl">The URL being requested.</param>
+		/// <param name="headers">Headers in the HTTP request.</param>
+		/// <param name="inputStream">The entity stream, if any.  (POST requests typically have these).  Use <c>null</c> for GET requests.</param>
+		public HttpRequestInfo(string httpMethod, Uri requestUrl, WebHeaderCollection headers, Stream inputStream) {
+			ErrorUtilities.VerifyNonZeroLength(httpMethod, "httpMethod");
+			ErrorUtilities.VerifyArgumentNotNull(requestUrl, "requestUrl");
+			ErrorUtilities.VerifyArgumentNotNull(headers, "headers");
+
+			this.HttpMethod = httpMethod;
+			this.Url = requestUrl;
+			this.Headers = headers;
+			this.InputStream = inputStream;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
+		/// </summary>
+		/// <param name="listenerRequest">Details on the incoming HTTP request.</param>
+		public HttpRequestInfo(HttpListenerRequest listenerRequest) {
+			ErrorUtilities.VerifyArgumentNotNull(listenerRequest, "listenerRequest");
+
+			this.HttpMethod = listenerRequest.HttpMethod;
+			this.Url = listenerRequest.Url;
+			this.Headers = new WebHeaderCollection();
+			foreach (string key in listenerRequest.Headers) {
+				this.Headers[key] = listenerRequest.Headers[key];
+			}
+
+			this.InputStream = listenerRequest.InputStream;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
+		/// </summary>
 		/// <param name="request">The WCF incoming request structure to get the HTTP information from.</param>
 		/// <param name="requestUri">The URI of the service endpoint.</param>
-		internal HttpRequestInfo(HttpRequestMessageProperty request, Uri requestUri) {
+		public HttpRequestInfo(HttpRequestMessageProperty request, Uri requestUri) {
 			if (request == null) {
 				throw new ArgumentNullException("request");
 			}
@@ -74,6 +102,13 @@ namespace DotNetOpenAuth.Messaging {
 			this.HttpMethod = request.Method;
 			this.Headers = request.Headers;
 			this.Url = requestUri;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
+		/// </summary>
+		internal HttpRequestInfo() {
+			this.HttpMethod = "GET";
 		}
 
 		/// <summary>
