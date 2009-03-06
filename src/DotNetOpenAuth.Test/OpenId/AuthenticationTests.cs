@@ -81,6 +81,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					request.ClaimedIdentifier = "http://claimedid";
 					request.LocalIdentifier = "http://localid";
 					request.ReturnTo = RPUri;
+					request.Realm = RPUri;
 					rp.Channel.Send(request);
 					if (positive) {
 						if (tamper) {
