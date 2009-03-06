@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Web;
@@ -195,7 +196,7 @@ namespace DotNetOpenId.Provider {
 			}
 		}
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1805:DoNotInitializeUnnecessarily")]
+		[SuppressMessage("Microsoft.Performance", "CA1805:DoNotInitializeUnnecessarily")]
 		internal CheckIdRequest(OpenIdProvider provider) : base(provider) {
 			// handle the mandatory protocol fields
 			string mode = Util.GetRequiredArg(Query, Protocol.openid.mode);
