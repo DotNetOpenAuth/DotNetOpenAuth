@@ -63,6 +63,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			Map<byte[]>(bytes => Convert.ToBase64String(bytes), str => Convert.FromBase64String(str));
 			Map<Realm>(realm => realm.ToString(), str => new Realm(str));
 			Map<Identifier>(id => id.ToString(), str => Identifier.Parse(str));
+			Map<bool>(value => value.ToString().ToLowerInvariant(), str => bool.Parse(str));
 		}
 
 		/// <summary>
