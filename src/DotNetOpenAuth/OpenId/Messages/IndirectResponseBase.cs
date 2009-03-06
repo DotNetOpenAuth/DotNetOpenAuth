@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// <summary>
 	/// A common base class from which indirect response messages should derive.
 	/// </summary>
+	[Serializable]
 	internal class IndirectResponseBase : RequestBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="IndirectResponseBase"/> class.

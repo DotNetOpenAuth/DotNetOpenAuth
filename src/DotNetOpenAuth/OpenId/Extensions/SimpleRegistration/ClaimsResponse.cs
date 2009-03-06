@@ -20,6 +20,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 	/// A struct storing Simple Registration field values describing an
 	/// authenticating user.
 	/// </summary>
+	[Serializable]
 	public sealed class ClaimsResponse : ExtensionBase, IClientScriptExtensionResponse, IMessageWithEvents {
 		/// <summary>
 		/// The factory method that may be used in deserialization of this message.

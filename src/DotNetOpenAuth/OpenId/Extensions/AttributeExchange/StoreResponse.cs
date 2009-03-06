@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 	/// <summary>
 	/// The Attribute Exchange Store message, response leg.
 	/// </summary>
+	[Serializable]
 	public sealed class StoreResponse : ExtensionBase {
 		/// <summary>
 		/// The factory method that may be used in deserialization of this message.

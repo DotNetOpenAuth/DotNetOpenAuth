@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 	/// <summary>
 	/// The PAPE response part of an OpenID Authentication response message.
 	/// </summary>
+	[Serializable]
 	public sealed class PolicyResponse : ExtensionBase, IMessageWithEvents {
 		/// <summary>
 		/// The factory method that may be used in deserialization of this message.

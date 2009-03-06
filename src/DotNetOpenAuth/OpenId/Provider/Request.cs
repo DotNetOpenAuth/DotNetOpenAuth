@@ -16,6 +16,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// Implements the <see cref="IRequest"/> interface for all incoming
 	/// request messages to an OpenID Provider.
 	/// </summary>
+	[Serializable]
 	internal abstract class Request : IRequest {
 		/// <summary>
 		/// The incoming request message.
@@ -27,6 +28,17 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Or null if the message does not support extensions.
 		/// </summary>
 		private readonly IProtocolMessageWithExtensions extensibleMessage;
+
+		/// <summary>
+		/// The version of the OpenID protocol to use.
+		/// </summary>
+		private readonly Version protocolVersion;
+
+		/// <summary>
+		/// Backing store for the <see cref="Protocol"/> property.
+		/// </summary>
+		[NonSerialized]
+		private Protocol protocol;
 
 		/// <summary>
 		/// The list of extensions to add to the response message.
@@ -41,7 +53,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			this.request = request;
-			this.Protocol = Protocol.Lookup(this.request.Version);
+			this.protocolVersion = this.request.Version;
 			this.extensibleMessage = request as IProtocolMessageWithExtensions;
 		}
 
@@ -52,7 +64,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		protected Request(Version version) {
 			ErrorUtilities.VerifyArgumentNotNull(version, "version");
 
-			this.Protocol = Protocol.Lookup(version);
+			this.protocolVersion = version;
 		}
 
 		#region IRequest Members
@@ -109,9 +121,17 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		protected abstract IProtocolMessage ResponseMessage { get; }
 
 		/// <summary>
-		/// Gets the protocol version used in the request..
+		/// Gets the protocol version used in the request.
 		/// </summary>
-		protected Protocol Protocol { get; private set; }
+		protected Protocol Protocol {
+			get {
+				if (this.protocol == null) {
+					this.protocol = Protocol.Lookup(this.protocolVersion);
+				}
+
+				return this.protocol;
+			}
+		}
 
 		#region IRequest Methods
 

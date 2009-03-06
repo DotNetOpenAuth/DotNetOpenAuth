@@ -18,6 +18,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// so that OpenID Provider sites can easily respond to authentication
 	/// requests.
 	/// </summary>
+	[Serializable]
 	internal class AuthenticationRequest : Request, IAuthenticationRequest {
 		/// <summary>
 		/// The positive assertion to send, if the host site chooses to send it.

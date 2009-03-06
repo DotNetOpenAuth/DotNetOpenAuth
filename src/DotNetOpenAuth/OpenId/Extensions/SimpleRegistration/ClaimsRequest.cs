@@ -17,6 +17,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 	/// <summary>
 	/// Carries the request/require/none demand state of the simple registration fields.
 	/// </summary>
+	[Serializable]
 	public sealed class ClaimsRequest : ExtensionBase {
 		/// <summary>
 		/// The factory method that may be used in deserialization of this message.

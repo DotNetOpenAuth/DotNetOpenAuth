@@ -16,6 +16,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// The message OpenID Providers send back to Relying Parties to refuse
 	/// to assert the identity of a user.
 	/// </summary>
+	[Serializable]
 	internal class NegativeAssertionResponse : IndirectResponseBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NegativeAssertionResponse"/> class.

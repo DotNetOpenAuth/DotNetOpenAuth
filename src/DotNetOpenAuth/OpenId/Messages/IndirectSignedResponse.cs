@@ -24,6 +24,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// payload is signed so the Relying Party can verify it has not been tampered with.
 	/// </summary>
 	[DebuggerDisplay("OpenID {Version} {Mode} (no id assertion)")]
+	[Serializable]
 	internal class IndirectSignedResponse : IndirectResponseBase, ITamperResistantOpenIdMessage, IProtocolMessageWithExtensions {
 		/// <summary>
 		/// The allowed date/time formats for the response_nonce parameter.

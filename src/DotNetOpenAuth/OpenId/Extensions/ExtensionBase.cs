@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 	/// <summary>
 	/// A handy base class for built-in extensions.
 	/// </summary>
+	[Serializable]
 	public class ExtensionBase : IOpenIdMessageExtension {
 		/// <summary>
 		/// Backing store for the <see cref="IOpenIdMessageExtension.TypeUri"/> property.
