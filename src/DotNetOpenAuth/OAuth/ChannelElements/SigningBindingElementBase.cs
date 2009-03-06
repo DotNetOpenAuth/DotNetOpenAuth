@@ -73,8 +73,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Signs the outgoing message.
 		/// </summary>
 		/// <param name="message">The message to sign.</param>
-		/// <returns>True if the message was signed.  False otherwise.</returns>
-		public bool PrepareMessageForSending(IProtocolMessage message) {
+		public MessageProtections? PrepareMessageForSending(IProtocolMessage message) {
 			var signedMessage = message as ITamperResistantOAuthMessage;
 			if (signedMessage != null && this.IsMessageApplicable(signedMessage)) {
 				if (this.SignatureCallback != null) {
@@ -86,26 +85,25 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				signedMessage.SignatureMethod = this.signatureMethod;
 				Logger.DebugFormat("Signing {0} message using {1}.", message.GetType().Name, this.signatureMethod);
 				signedMessage.Signature = this.GetSignature(signedMessage);
-				return true;
+				return MessageProtections.TamperProtection;
 			}
 
-			return false;
+			return null;
 		}
 
 		/// <summary>
 		/// Verifies the signature on an incoming message.
 		/// </summary>
 		/// <param name="message">The message whose signature should be verified.</param>
-		/// <returns>True if the signature was verified.  False if the message had no signature.</returns>
 		/// <exception cref="InvalidSignatureException">Thrown if the signature is invalid.</exception>
-		public bool PrepareMessageForReceiving(IProtocolMessage message) {
+		public MessageProtections? PrepareMessageForReceiving(IProtocolMessage message) {
 			var signedMessage = message as ITamperResistantOAuthMessage;
 			if (signedMessage != null && this.IsMessageApplicable(signedMessage)) {
 				Logger.DebugFormat("Verifying incoming {0} message signature of: {1}", message.GetType().Name, signedMessage.Signature);
 
 				if (!string.Equals(signedMessage.SignatureMethod, this.signatureMethod, StringComparison.Ordinal)) {
 					Logger.WarnFormat("Expected signature method '{0}' but received message with a signature method of '{1}'.", this.signatureMethod, signedMessage.SignatureMethod);
-					return false;
+					return MessageProtections.None;
 				}
 
 				if (this.SignatureCallback != null) {
@@ -119,10 +117,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 					throw new InvalidSignatureException(message);
 				}
 
-				return true;
+				return MessageProtections.TamperProtection;
 			}
 
-			return false;
+			return null;
 		}
 
 		#endregion

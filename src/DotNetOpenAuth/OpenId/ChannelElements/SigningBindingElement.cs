@@ -18,6 +18,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using System.Web;
 
 	/// <summary>
 	/// Signs and verifies authentication assertions.
@@ -95,11 +96,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Prepares a message for sending based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>
-		/// <returns>
-		/// True if the <paramref name="message"/> applied to this binding element
-		/// and the operation was successful.  False otherwise.
-		/// </returns>
-		public bool PrepareMessageForSending(IProtocolMessage message) {
+		public MessageProtections? PrepareMessageForSending(IProtocolMessage message) {
 			var signedMessage = message as ITamperResistantOpenIdMessage;
 			if (signedMessage != null) {
 				Logger.DebugFormat("Signing {0} message.", message.GetType().Name);
@@ -107,10 +104,10 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				signedMessage.AssociationHandle = association.Handle;
 				signedMessage.SignedParameterOrder = this.GetSignedParameterOrder(signedMessage);
 				signedMessage.Signature = GetSignature(signedMessage, association);
-				return true;
+				return MessageProtections.TamperProtection;
 			}
 
-			return false;
+			return null;
 		}
 
 		/// <summary>
@@ -118,15 +115,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// validates an incoming message based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The incoming message to process.</param>
-		/// <returns>
-		/// True if the <paramref name="message"/> applied to this binding element
-		/// and the operation was successful.  False if the operation did not apply to this message.
-		/// </returns>
 		/// <exception cref="ProtocolException">
 		/// Thrown when the binding element rules indicate that this message is invalid and should
 		/// NOT be processed.
 		/// </exception>
-		public bool PrepareMessageForReceiving(IProtocolMessage message) {
+		public MessageProtections? PrepareMessageForReceiving(IProtocolMessage message) {
 			var signedMessage = message as ITamperResistantOpenIdMessage;
 			if (signedMessage != null) {
 				Logger.DebugFormat("Verifying incoming {0} message signature of: {1}", message.GetType().Name, signedMessage.Signature);
@@ -161,10 +154,10 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					}
 				}
 
-				return true;
+				return MessageProtections.TamperProtection;
 			}
 
-			return false;
+			return null;
 		}
 
 		#endregion
@@ -271,7 +264,27 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		private Association GetAssociation(ITamperResistantOpenIdMessage signedMessage) {
 			if (this.IsOnProvider) {
 				// We're on a Provider to either sign (smart/dumb) or verify a dumb signature.
-				return this.GetSpecificAssociation(signedMessage) ?? this.GetDumbAssociationForSigning();
+				bool signing = string.IsNullOrEmpty(signedMessage.Signature);
+
+				if (signing) {
+					// If the RP has no replay protection, coerce use of a private association 
+					// instead of a shared one (if security settings indicate)
+					// to protect the authenticating user from replay attacks.
+					bool forcePrivateAssociation = this.opSecuritySettings.ProtectDownlevelReplayAttacks
+						&& this.IsRelyingPartyVulnerableToReplays(null, (IndirectSignedResponse)signedMessage);
+
+					if (forcePrivateAssociation) {
+						if (!string.IsNullOrEmpty(signedMessage.AssociationHandle)) {
+							signingLogger.Info("An OpenID 1.x authentication request with a shared association handle will be responded to with a private association in order to provide OP-side replay protection.");
+						}
+
+						return this.GetDumbAssociationForSigning();
+					} else {
+						return this.GetSpecificAssociation(signedMessage) ?? this.GetDumbAssociationForSigning();
+					}
+				} else {
+					return this.GetSpecificAssociation(signedMessage);
+				}
 			} else {
 				// We're on a Relying Party verifying a signature.
 				IDirectedProtocolMessage directedMessage = (IDirectedProtocolMessage)signedMessage;
@@ -281,6 +294,47 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					return null;
 				}
 			}
+		}
+
+		/// <summary>
+		/// Determines whether the relying party sending an authentication request is
+		/// vulnerable to replay attacks.
+		/// </summary>
+		/// <param name="request">The request message from the Relying Party.  Useful, but may be null for conservative estimate results.</param>
+		/// <param name="response">The response message to be signed.</param>
+		/// <returns>
+		/// 	<c>true</c> if the relying party is vulnerable; otherwise, <c>false</c>.
+		/// </returns>
+		private bool IsRelyingPartyVulnerableToReplays(SignedResponseRequest request, IndirectSignedResponse response) {
+			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+
+			// OpenID 2.0 includes replay protection as part of the protocol.
+			if (response.Version.Major >= 2) {
+				return false;
+			}
+
+			// This library's RP may be on the remote end, and may be using 1.x merely because
+			// discovery on the Claimed Identifier suggested this was a 1.x OP.  
+			// Since this library's RP has a built-in request_nonce parameter for replay
+			// protection, we'll allow for that.
+			var returnToArgs = HttpUtility.ParseQueryString(response.ReturnTo.Query);
+			if (!string.IsNullOrEmpty(returnToArgs[ReturnToNonceBindingElement.NonceParameter])) {
+				return false;
+			}
+
+			// If the OP endpoint _AND_ RP return_to URL uses HTTPS then no one
+			// can steal and replay the positive assertion.
+			// We can only ascertain this if the request message was handed to us
+			// so we know what our own OP endpoint is.  If we don't have a request
+			// message, then we'll default to assuming it's insecure.
+			if (request != null) {
+				if (request.Recipient.IsTransportSecure() && response.Recipient.IsTransportSecure()) {
+					return false;
+				}
+			}
+
+			// Nothing left to protect against replays.  RP is vulnerable.
+			return true;
 		}
 
 		/// <summary>

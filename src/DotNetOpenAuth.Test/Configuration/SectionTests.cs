@@ -50,7 +50,7 @@ namespace DotNetOpenAuth.Test.Configuration {
 			var op = DotNetOpenAuthSection.Configuration.OpenId.Provider;
 			Assert.IsNull(op.ApplicationStore.CustomType);
 
-			Assert.IsFalse(op.SecuritySettings.ProtectDownlevelReplayAttacks);
+			Assert.IsTrue(op.SecuritySettings.ProtectDownlevelReplayAttacks);
 			Assert.AreEqual(7, op.SecuritySettings.MinimumHashBitLength);
 			Assert.AreEqual(302, op.SecuritySettings.MaximumHashBitLength);
 

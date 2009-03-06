@@ -55,34 +55,26 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// Sets the timestamp on an outgoing message.
 		/// </summary>
 		/// <param name="message">The outgoing message.</param>
-		/// <returns>
-		/// True if the <paramref name="message"/> applied to this binding element
-		/// and the operation was successful.  False otherwise.
-		/// </returns>
-		public bool PrepareMessageForSending(IProtocolMessage message) {
+		public MessageProtections? PrepareMessageForSending(IProtocolMessage message) {
 			IExpiringProtocolMessage expiringMessage = message as IExpiringProtocolMessage;
 			if (expiringMessage != null) {
 				expiringMessage.UtcCreationDate = DateTime.UtcNow;
-				return true;
+				return MessageProtections.Expiration;
 			}
 
-			return false;
+			return null;
 		}
 
 		/// <summary>
 		/// Reads the timestamp on a message and throws an exception if the message is too old.
 		/// </summary>
 		/// <param name="message">The incoming message.</param>
-		/// <returns>
-		/// True if the <paramref name="message"/> applied to this binding element
-		/// and the operation was successful.  False if the operation did not apply to this message.
-		/// </returns>
 		/// <exception cref="ExpiredMessageException">Thrown if the given message has already expired.</exception>
 		/// <exception cref="ProtocolException">
 		/// Thrown when the binding element rules indicate that this message is invalid and should
 		/// NOT be processed.
 		/// </exception>
-		public bool PrepareMessageForReceiving(IProtocolMessage message) {
+		public MessageProtections? PrepareMessageForReceiving(IProtocolMessage message) {
 			IExpiringProtocolMessage expiringMessage = message as IExpiringProtocolMessage;
 			if (expiringMessage != null) {
 				// Yes the UtcCreationDate is supposed to always be in UTC already,
@@ -92,10 +84,10 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 					throw new ExpiredMessageException(expirationDate, expiringMessage);
 				}
 
-				return true;
+				return MessageProtections.Expiration;
 			}
 
-			return false;
+			return null;
 		}
 
 		#endregion

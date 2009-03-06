@@ -85,15 +85,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Prepares a message for sending based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>
-		/// <returns>
-		/// True if the <paramref name="message"/> applied to this binding element
-		/// and the operation was successful.  False otherwise.
-		/// </returns>
 		/// <remarks>
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public bool PrepareMessageForSending(IProtocolMessage message) {
+		public MessageProtections? PrepareMessageForSending(IProtocolMessage message) {
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
 			var extendableMessage = message as IProtocolMessageWithExtensions;
@@ -131,10 +127,10 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 				// Add the extension parameters to the base message for transmission.
 				extendableMessage.AddExtraParameters(extensionManager.GetArgumentsToSend(includeOpenIdPrefix));
-				return true;
+				return MessageProtections.None;
 			}
 
-			return false;
+			return null;
 		}
 
 		/// <summary>
@@ -142,10 +138,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// validates an incoming message based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The incoming message to process.</param>
-		/// <returns>
-		/// True if the <paramref name="message"/> applied to this binding element
-		/// and the operation was successful.  False if the operation did not apply to this message.
-		/// </returns>
 		/// <exception cref="ProtocolException">
 		/// Thrown when the binding element rules indicate that this message is invalid and should
 		/// NOT be processed.
@@ -154,7 +146,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public bool PrepareMessageForReceiving(IProtocolMessage message) {
+		public MessageProtections? PrepareMessageForReceiving(IProtocolMessage message) {
 			var extendableMessage = message as IProtocolMessageWithExtensions;
 			if (extendableMessage != null) {
 				// We have a helper class that will do all the heavy-lifting of organizing
@@ -183,10 +175,10 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					}
 				}
 
-				return true;
+				return MessageProtections.None;
 			}
 
-			return false;
+			return null;
 		}
 
 		#endregion

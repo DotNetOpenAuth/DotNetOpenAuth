@@ -34,25 +34,25 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// </summary>
 		public Channel Channel { get; set; }
 
-		bool IChannelBindingElement.PrepareMessageForSending(IProtocolMessage message) {
+		MessageProtections? IChannelBindingElement.PrepareMessageForSending(IProtocolMessage message) {
 			var testMessage = message as TestMessage;
 			if (testMessage != null) {
 				testMessage.Name = this.transform + testMessage.Name;
-				return true;
+				return MessageProtections.None;
 			}
 
-			return false;
+			return null;
 		}
 
-		bool IChannelBindingElement.PrepareMessageForReceiving(IProtocolMessage message) {
+		MessageProtections? IChannelBindingElement.PrepareMessageForReceiving(IProtocolMessage message) {
 			var testMessage = message as TestMessage;
 			if (testMessage != null) {
 				StringAssert.StartsWith(testMessage.Name, this.transform);
 				testMessage.Name = testMessage.Name.Substring(this.transform.Length);
-				return true;
+				return MessageProtections.None;
 			}
 
-			return false;
+			return null;
 		}
 
 		#endregion

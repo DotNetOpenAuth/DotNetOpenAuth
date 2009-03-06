@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// True if the <paramref name="message"/> applied to this binding element
 		/// and the operation was successful.  False otherwise.
 		/// </returns>
-		public bool PrepareMessageForSending(IProtocolMessage message) {
+		public MessageProtections? PrepareMessageForSending(IProtocolMessage message) {
 			var oauthMessage = message as ITamperResistantOAuthMessage;
 
 			if (oauthMessage != null) {
@@ -47,12 +47,12 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				} else if ((transmissionMethod & HttpDeliveryMethods.GetRequest) != 0) {
 					oauthMessage.HttpMethod = "GET";
 				} else {
-					return false;
+					return null;
 				}
 
-				return true;
+				return MessageProtections.None;
 			} else {
-				return false;
+				return null;
 			}
 		}
 
@@ -69,8 +69,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Thrown when the binding element rules indicate that this message is invalid and should
 		/// NOT be processed.
 		/// </exception>
-		public bool PrepareMessageForReceiving(IProtocolMessage message) {
-			return false;
+		public MessageProtections? PrepareMessageForReceiving(IProtocolMessage message) {
+			return null;
 		}
 
 		#endregion

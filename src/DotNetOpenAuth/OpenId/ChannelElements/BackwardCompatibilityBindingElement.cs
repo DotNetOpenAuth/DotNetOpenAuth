@@ -51,15 +51,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Prepares a message for sending based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>
-		/// <returns>
-		/// True if the <paramref name="message"/> applied to this binding element
-		/// and the operation was successful.  False otherwise.
-		/// </returns>
 		/// <remarks>
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public bool PrepareMessageForSending(IProtocolMessage message) {
+		public MessageProtections? PrepareMessageForSending(IProtocolMessage message) {
 			SignedResponseRequest request = message as SignedResponseRequest;
 			if (request != null && request.Version.Major < 2) {
 				request.AddReturnToArguments(ProviderEndpointParameterName, request.Recipient.AbsoluteUri);
@@ -69,10 +65,10 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					request.AddReturnToArguments(ClaimedIdentifierParameterName, authRequest.ClaimedIdentifier);
 				}
 
-				return true;
+				return MessageProtections.None;
 			}
 
-			return false;
+			return null;
 		}
 
 		/// <summary>
@@ -80,10 +76,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// validates an incoming message based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The incoming message to process.</param>
-		/// <returns>
-		/// True if the <paramref name="message"/> applied to this binding element
-		/// and the operation was successful.  False if the operation did not apply to this message.
-		/// </returns>
 		/// <exception cref="ProtocolException">
 		/// Thrown when the binding element rules indicate that this message is invalid and should
 		/// NOT be processed.
@@ -92,7 +84,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public bool PrepareMessageForReceiving(IProtocolMessage message) {
+		public MessageProtections? PrepareMessageForReceiving(IProtocolMessage message) {
 			IndirectSignedResponse response = message as IndirectSignedResponse;
 			if (response != null && response.Version.Major < 2) {
 				// Although GetReturnToArgument may return null if the parameters are not signed,
@@ -113,10 +105,10 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					}
 				}
 
-				return true;
+				return MessageProtections.None;
 			}
 
-			return false;
+			return null;
 		}
 
 		#endregion

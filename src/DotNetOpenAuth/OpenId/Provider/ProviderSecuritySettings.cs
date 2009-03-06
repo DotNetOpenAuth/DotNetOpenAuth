@@ -14,6 +14,16 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// </summary>
 	public sealed class ProviderSecuritySettings : SecuritySettings {
 		/// <summary>
+		/// The default value for the <see cref="ProtectDownlevelReplayAttacks"/> property.
+		/// </summary>
+		internal const bool ProtectDownlevelReplayAttacksDefault = true;
+
+		/// <summary>
+		/// The default value for the <see cref="SignOutgoingExtensions"/> property.
+		/// </summary>
+		internal const bool SignOutgoingExtensionsDefault = true;
+
+		/// <summary>
 		/// The subset of association types and their customized lifetimes.
 		/// </summary>
 		private IDictionary<string, TimeSpan> associationLifetimes = new Dictionary<string, TimeSpan>();
@@ -23,7 +33,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		internal ProviderSecuritySettings()
 			: base(true) {
-			this.SignOutgoingExtensions = true;
+			this.SignOutgoingExtensions = SignOutgoingExtensionsDefault;
+			this.ProtectDownlevelReplayAttacks = ProtectDownlevelReplayAttacksDefault;
 		}
 
 		/// <summary>
@@ -38,12 +49,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Gets or sets a value indicating whether OpenID 1.x relying parties that may not be
 		/// protecting their users from replay attacks are protected from
 		/// replay attacks by this provider.
-		/// *** This property is a placeholder for a feature that has not been written yet. ***
 		/// </summary>
+		/// <value>The default value is <c>true</c>.</value>
 		/// <remarks>
 		/// <para>Nonces for protection against replay attacks were not mandated
 		/// by OpenID 1.x, which leaves users open to replay attacks.</para>
-		/// <para>This feature works by preventing associations from being formed
+		/// <para>This feature works by preventing associations from being used
 		/// with OpenID 1.x relying parties, thereby forcing them into
 		/// "dumb" mode and verifying every claim with this provider.
 		/// This gives the provider an opportunity to verify its own nonce

@@ -104,13 +104,12 @@ namespace DotNetOpenAuth.Test.OpenId {
 							// notice the replay, we can get one of two exceptions thrown.
 							// When the OP notices the replay we get a generic InvalidSignatureException.
 							// When the RP notices the replay we get a specific ReplayMessageException.
-							Type expectedExceptionType = sharedAssociation || protocol.Version.Major < 2 ? typeof(ReplayedMessageException) : typeof(InvalidSignatureException);
 							try {
 								CoordinatingChannel channel = (CoordinatingChannel)rp.Channel;
 								channel.Replay(response);
-								Assert.Fail("Expected exception {0} was not thrown.", expectedExceptionType.Name);
+								Assert.Fail("Expected ProtocolException was not thrown.");
 							} catch (ProtocolException ex) {
-								Assert.IsInstanceOfType(ex, expectedExceptionType);
+								Assert.IsTrue(ex is ReplayedMessageException || ex is InvalidSignatureException, "A {0} exception was thrown instead of the expected {1} or {2}.", ex.GetType(), typeof(ReplayedMessageException).Name, typeof(InvalidSignatureException).Name);
 							}
 						}
 					} else {
