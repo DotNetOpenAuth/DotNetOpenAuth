@@ -33,7 +33,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Gets the response to send to the user agent.
 		/// </summary>
-		UserAgentResponse Response { get; }
+		/// <remarks>
+		/// The value of this property should be passed to <see cref="OpenIdProvider.PrepareResponse"/>
+		/// or <see cref="Channel.PrepareResponse"/> to get the <see cref="UserAgentResponse"/> that
+		/// can be transmitted to the remote party.
+		/// </remarks>
+		IProtocolMessage Response { get; }
 
 		/// <summary>
 		/// Adds an extension to the response to send to the relying party.

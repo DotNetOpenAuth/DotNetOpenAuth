@@ -34,16 +34,13 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		Realm Realm { get; }
 
 		/// <summary>
-		/// Gets a value indicating whether verification of the return URL claimed by the Relying Party
-		/// succeeded.
+		/// Attempts to perform relying party discovery of the return URL claimed by the Relying Party.
 		/// </summary>
 		/// <remarks>
-		/// Return URL verification is only attempted if this property is queried.
-		/// The result of the verification is cached per request so calling this
-		/// property getter multiple times in one request is not a performance hit.
-		/// See OpenID Authentication 2.0 spec section 9.2.1.
+		/// <para>Return URL verification is only attempted if this method is called.</para>
+		/// <para>See OpenID Authentication 2.0 spec section 9.2.1.</para>
 		/// </remarks>
-		bool IsReturnUrlDiscoverable { get; }
+		bool IsReturnUrlDiscoverable(IDirectWebRequestHandler requestHandler);
 
 		/// <summary>
 		/// Gets a value indicating whether the Provider should help the user 

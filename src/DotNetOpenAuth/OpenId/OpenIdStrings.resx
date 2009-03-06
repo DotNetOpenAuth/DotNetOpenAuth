@@ -295,4 +295,7 @@ Discovered endpoint info:
   <data name="PrivateRPSecretNotFound" xml:space="preserve">
     <value>Unable to find the signing secret by the handle '{0}'.</value>
   </data>
+  <data name="ResponseNotReady" xml:space="preserve">
+    <value>The response is not ready.  Use IsResponseReady to check whether a response is ready first.</value>
+  </data>
 </root>

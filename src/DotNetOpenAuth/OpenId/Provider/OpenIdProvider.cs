@@ -197,6 +197,16 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
+		/// Encodes a response message for transmission.
+		/// </summary>
+		/// <param name="responseMessage">The response message.</param>
+		/// <returns>The serialized form of the message ready for transmission to the remote party.</returns>
+		/// <remarks>This method merely delegates to <see cref="Channel.PrepareResponse"/>.</remarks>
+		public UserAgentResponse PrepareResponse(IProtocolMessage responseMessage) {
+			return this.Channel.PrepareResponse(responseMessage);
+		}
+
+		/// <summary>
 		/// Send an identity assertion on behalf of one of this Provider's
 		/// members in order to redirect the user agent to a relying party
 		/// web site and log him/her in immediately in one uninterrupted step.

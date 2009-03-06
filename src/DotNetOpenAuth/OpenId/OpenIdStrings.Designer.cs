@@ -470,6 +470,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The response is not ready.  Use IsResponseReady to check whether a response is ready first..
+        /// </summary>
+        internal static string ResponseNotReady {
+            get {
+                return ResourceManager.GetString("ResponseNotReady", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to return_to &apos;{0}&apos; not under realm &apos;{1}&apos;..
         /// </summary>
         internal static string ReturnToNotUnderRealm {

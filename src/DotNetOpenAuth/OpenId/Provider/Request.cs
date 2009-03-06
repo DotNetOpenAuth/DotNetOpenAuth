@@ -18,11 +18,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// </summary>
 	internal abstract class Request : IRequest {
 		/// <summary>
-		/// The OpenIdProvider that received the incoming request.
-		/// </summary>
-		private readonly OpenIdProvider provider;
-
-		/// <summary>
 		/// The incoming request message.
 		/// </summary>
 		private readonly IDirectedProtocolMessage request;
@@ -39,21 +34,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		private List<IOpenIdMessageExtension> responseExtensions = new List<IOpenIdMessageExtension>();
 
 		/// <summary>
-		/// The last created user agent response, if one has been created
-		/// since the last message-altering change has been made to this object.
-		/// </summary>
-		private UserAgentResponse cachedUserAgentResponse;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="Request"/> class.
 		/// </summary>
-		/// <param name="provider">The Provider.</param>
 		/// <param name="request">The incoming request message.</param>
-		protected Request(OpenIdProvider provider, IDirectedProtocolMessage request) {
-			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
+		protected Request(IDirectedProtocolMessage request) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
-			this.provider = provider;
 			this.request = request;
 			this.Protocol = Protocol.Lookup(this.request.Version);
 			this.extensibleMessage = request as IProtocolMessageWithExtensions;
@@ -62,13 +48,10 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Request"/> class.
 		/// </summary>
-		/// <param name="provider">The provider.</param>
 		/// <param name="version">The version.</param>
-		protected Request(OpenIdProvider provider, Version version) {
-			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
+		protected Request(Version version) {
 			ErrorUtilities.VerifyArgumentNotNull(version, "version");
 
-			this.provider = provider;
 			this.Protocol = Protocol.Lookup(version);
 		}
 
@@ -87,39 +70,29 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Gets the response to send to the user agent.
 		/// </summary>
-		public UserAgentResponse Response {
+		public IProtocolMessage Response {
 			get {
-				if (this.cachedUserAgentResponse == null && this.IsResponseReady) {
-					if (this.responseExtensions.Count > 0) {
-						var extensibleResponse = this.ResponseMessage as IProtocolMessageWithExtensions;
-						ErrorUtilities.VerifyOperation(extensibleResponse != null, MessagingStrings.MessageNotExtensible, this.ResponseMessage.GetType().Name);
-						foreach (var extension in this.responseExtensions) {
-							// It's possible that a prior call to this property
-							// has already added some/all of the extensions to the message.
-							// We don't have to worry about deleting old ones because
-							// this class provides no facility for removing extensions
-							// that are previously added.
-							if (!extensibleResponse.Extensions.Contains(extension)) {
-								extensibleResponse.Extensions.Add(extension);
-							}
+				ErrorUtilities.VerifyOperation(this.IsResponseReady, OpenIdStrings.ResponseNotReady);
+				if (this.responseExtensions.Count > 0) {
+					var extensibleResponse = this.ResponseMessage as IProtocolMessageWithExtensions;
+					ErrorUtilities.VerifyOperation(extensibleResponse != null, MessagingStrings.MessageNotExtensible, this.ResponseMessage.GetType().Name);
+					foreach (var extension in this.responseExtensions) {
+						// It's possible that a prior call to this property
+						// has already added some/all of the extensions to the message.
+						// We don't have to worry about deleting old ones because
+						// this class provides no facility for removing extensions
+						// that are previously added.
+						if (!extensibleResponse.Extensions.Contains(extension)) {
+							extensibleResponse.Extensions.Add(extension);
 						}
 					}
-
-					this.cachedUserAgentResponse = this.provider.Channel.PrepareResponse(this.ResponseMessage);
 				}
 
-				return this.cachedUserAgentResponse;
+				return this.ResponseMessage;
 			}
 		}
 
 		#endregion
-
-		/// <summary>
-		/// Gets the instance of the hosting <see cref="OpenIdProvider"/>.
-		/// </summary>
-		protected OpenIdProvider Provider {
-			get { return this.provider; }
-		}
 
 		/// <summary>
 		/// Gets the original request message.
@@ -154,7 +127,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			// we just add the extensions to a collection here and add them 
 			// to the response on the way out.
 			this.responseExtensions.Add(extension);
-			this.ResetUserAgentResponse();
 		}
 
 		/// <summary>
@@ -189,12 +161,5 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		#endregion
-
-		/// <summary>
-		/// Resets any user agent response that may have been created already and cached.
-		/// </summary>
-		protected void ResetUserAgentResponse() {
-			this.cachedUserAgentResponse = null;
-		}
 	}
 }

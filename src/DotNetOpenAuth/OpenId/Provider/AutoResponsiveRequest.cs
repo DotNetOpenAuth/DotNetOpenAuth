@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="request">The request message.</param>
 		/// <param name="response">The response that is ready for transmittal.</param>
 		internal AutoResponsiveRequest(OpenIdProvider provider, IDirectedProtocolMessage request, IProtocolMessage response)
-			: base(provider, request) {
+			: base(request) {
 			ErrorUtilities.VerifyArgumentNotNull(response, "response");
 
 			this.response = response;
