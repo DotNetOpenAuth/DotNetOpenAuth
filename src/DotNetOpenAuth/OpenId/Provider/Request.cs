@@ -70,7 +70,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Gets the response to send to the user agent.
 		/// </summary>
-		public IProtocolMessage Response {
+		/// <exception cref="InvalidOperationException">Thrown if <see cref="IsResponseReady"/> is <c>false</c>.</exception>
+		internal IProtocolMessage Response {
 			get {
 				ErrorUtilities.VerifyOperation(this.IsResponseReady, OpenIdStrings.ResponseNotReady);
 				if (this.responseExtensions.Count > 0) {

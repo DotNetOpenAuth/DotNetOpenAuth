@@ -93,49 +93,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
-		/// Gets a value indicating whether verification of the return URL claimed by the Relying Party
-		/// succeeded.
-		/// </summary>
-		/// <remarks>
-		/// Return URL verification is only attempted if this property is queried.
-		/// The result of the verification is cached per request so calling this
-		/// property getter multiple times in one request is not a performance hit.
-		/// See OpenID Authentication 2.0 spec section 9.2.1.
-		/// </remarks>
-		public bool IsReturnUrlDiscoverable(IDirectWebRequestHandler requestHandler) {
-			ErrorUtilities.VerifyArgumentNotNull(requestHandler, "requestHandler");
-
-			ErrorUtilities.VerifyInternal(this.Realm != null, "Realm should have been read or derived by now.");
-			try {
-				foreach (var returnUrl in Realm.Discover(requestHandler, false)) {
-					Realm discoveredReturnToUrl = returnUrl.ReturnToEndpoint;
-
-					// The spec requires that the return_to URLs given in an RPs XRDS doc
-					// do not contain wildcards.
-					if (discoveredReturnToUrl.DomainWildcard) {
-						Logger.WarnFormat("Realm {0} contained return_to URL {1} which contains a wildcard, which is not allowed.", Realm, discoveredReturnToUrl);
-						continue;
-					}
-
-					// Use the same rules as return_to/realm matching to check whether this
-					// URL fits the return_to URL we were given.
-					if (discoveredReturnToUrl.Contains(this.RequestMessage.ReturnTo)) {
-						// no need to keep looking after we find a match
-						return true;
-					}
-				}
-			} catch (ProtocolException ex) {
-				// Don't do anything else.  We quietly fail at return_to verification and return false.
-				Logger.InfoFormat("Relying party discovery at URL {0} failed.  {1}", Realm, ex);
-			} catch (WebException ex) {
-				// Don't do anything else.  We quietly fail at return_to verification and return false.
-				Logger.InfoFormat("Relying party discovery at URL {0} failed.  {1}", Realm, ex);
-			}
-
-			return false;
-		}
-
-		/// <summary>
 		/// Gets a value indicating whether the Provider should help the user
 		/// select a Claimed Identifier to send back to the relying party.
 		/// </summary>
@@ -271,6 +228,53 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			UriBuilder builder = new UriBuilder(this.ClaimedIdentifier);
 			builder.Fragment = fragment;
 			this.positiveResponse.ClaimedIdentifier = builder.Uri;
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether verification of the return URL claimed by the Relying Party
+		/// succeeded.
+		/// </summary>
+		/// <param name="requestHandler">The request handler to use to perform relying party discovery.</param>
+		/// <returns>
+		/// 	<c>true</c> if the Relying Party passed discovery verification; <c>false</c> otherwise.
+		/// </returns>
+		/// <remarks>
+		/// Return URL verification is only attempted if this property is queried.
+		/// The result of the verification is cached per request so calling this
+		/// property getter multiple times in one request is not a performance hit.
+		/// See OpenID Authentication 2.0 spec section 9.2.1.
+		/// </remarks>
+		public bool IsReturnUrlDiscoverable(IDirectWebRequestHandler requestHandler) {
+			ErrorUtilities.VerifyArgumentNotNull(requestHandler, "requestHandler");
+
+			ErrorUtilities.VerifyInternal(this.Realm != null, "Realm should have been read or derived by now.");
+			try {
+				foreach (var returnUrl in Realm.Discover(requestHandler, false)) {
+					Realm discoveredReturnToUrl = returnUrl.ReturnToEndpoint;
+
+					// The spec requires that the return_to URLs given in an RPs XRDS doc
+					// do not contain wildcards.
+					if (discoveredReturnToUrl.DomainWildcard) {
+						Logger.WarnFormat("Realm {0} contained return_to URL {1} which contains a wildcard, which is not allowed.", Realm, discoveredReturnToUrl);
+						continue;
+					}
+
+					// Use the same rules as return_to/realm matching to check whether this
+					// URL fits the return_to URL we were given.
+					if (discoveredReturnToUrl.Contains(this.RequestMessage.ReturnTo)) {
+						// no need to keep looking after we find a match
+						return true;
+					}
+				}
+			} catch (ProtocolException ex) {
+				// Don't do anything else.  We quietly fail at return_to verification and return false.
+				Logger.InfoFormat("Relying party discovery at URL {0} failed.  {1}", Realm, ex);
+			} catch (WebException ex) {
+				// Don't do anything else.  We quietly fail at return_to verification and return false.
+				Logger.InfoFormat("Relying party discovery at URL {0} failed.  {1}", Realm, ex);
+			}
+
+			return false;
 		}
 
 		#endregion

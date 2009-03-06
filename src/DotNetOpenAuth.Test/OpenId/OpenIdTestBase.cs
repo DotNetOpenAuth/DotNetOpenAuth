@@ -154,7 +154,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					}
 				}
 
-				request.Response.Send();
+				provider.SendResponse(request);
 			}
 		}
 

@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System.Web.UI;
 	using System.Web.UI.WebControls;
 	using DotNetOpenAuth.Configuration;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
@@ -22,7 +23,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// </summary>
 	[DefaultEvent("AuthenticationChallenge")]
 	[ToolboxData("<{0}:ProviderEndpoint runat='server' />")]
-	public class ProviderEndpoint : Control {
+	public class ProviderEndpoint : Control, IDisposable {
 		/// <summary>
 		/// The key used to store the pending authentication request in the ASP.NET session.
 		/// </summary>
@@ -39,11 +40,31 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		private const string EnabledViewStateKey = "Enabled";
 
 		/// <summary>
+		/// Backing field for the <see cref="Provider"/> property.
+		/// </summary>
+		private static OpenIdProvider provider = CreateProvider();
+
+		/// <summary>
 		/// Fired when an incoming OpenID request is an authentication challenge
 		/// that must be responded to by the Provider web site according to its
 		/// own user database and policies.
 		/// </summary>
 		public event EventHandler<AuthenticationChallengeEventArgs> AuthenticationChallenge;
+
+		/// <summary>
+		/// Gets or sets the <see cref="OpenIdProvider"/> instance to use for all instances of this control.
+		/// </summary>
+		/// <value>The default value is an <see cref="OpenIdProvider"/> instance initialized according to the web.config file.</value>
+		public static OpenIdProvider Provider {
+			get {
+				return provider;
+			}
+
+			set {
+				ErrorUtilities.VerifyArgumentNotNull(value, "value");
+				provider = value;
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets an incoming OpenID authentication request that has not yet been responded to.
@@ -76,13 +97,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
-		/// Gets or sets a custom application store to use.  Null to use the default.
+		/// Sends the response for the <see cref="PendingAuthenticationRequest"/> and clears the property.
 		/// </summary>
-		/// <remarks>
-		/// If set, this property must be set in each Page Load event
-		/// as it is not persisted across postbacks.
-		/// </remarks>
-		public IProviderApplicationStore CustomApplicationStore { get; set; }
+		public static void SendResponse() {
+			Provider.SendResponse(PendingAuthenticationRequest);
+			PendingAuthenticationRequest = null;
+		}
 
 		/// <summary>
 		/// Checks for incoming OpenID requests, responds to ones it can
@@ -97,23 +117,21 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				// Use the explicitly given state store on this control if there is one.  
 				// Then try the configuration file specified one.  Finally, use the default
 				// in-memory one that's built into OpenIdProvider.
-				using (OpenIdProvider provider = new OpenIdProvider(this.CustomApplicationStore ?? DotNetOpenAuthSection.Configuration.OpenId.Provider.ApplicationStore.CreateInstance(OpenIdProvider.HttpApplicationStore))) {
-					// determine what incoming message was received
-					IRequest request = provider.GetRequest();
-					if (request != null) {
-						// process the incoming message appropriately and send the response
-						if (!request.IsResponseReady) {
-							var idrequest = (IAuthenticationRequest)request;
-							PendingAuthenticationRequest = idrequest;
-							this.OnAuthenticationChallenge(idrequest);
-						} else {
-							PendingAuthenticationRequest = null;
-						}
-						if (request.IsResponseReady) {
-							request.Response.Send();
-							Page.Response.End();
-							PendingAuthenticationRequest = null;
-						}
+				// determine what incoming message was received
+				IRequest request = provider.GetRequest();
+				if (request != null) {
+					// process the incoming message appropriately and send the response
+					if (!request.IsResponseReady) {
+						var idrequest = (IAuthenticationRequest)request;
+						PendingAuthenticationRequest = idrequest;
+						this.OnAuthenticationChallenge(idrequest);
+					} else {
+						PendingAuthenticationRequest = null;
+					}
+					if (request.IsResponseReady) {
+						provider.SendResponse(request);
+						Page.Response.End();
+						PendingAuthenticationRequest = null;
 					}
 				}
 			}
@@ -128,6 +146,14 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			if (authenticationChallenge != null) {
 				authenticationChallenge(this, new AuthenticationChallengeEventArgs(request));
 			}
+		}
+
+		/// <summary>
+		/// Creates the default OpenIdProvider to use.
+		/// </summary>
+		/// <returns>The new instance of OpenIdProvider.</returns>
+		private static OpenIdProvider CreateProvider() {
+			return new OpenIdProvider(DotNetOpenAuthSection.Configuration.OpenId.Provider.ApplicationStore.CreateInstance(OpenIdProvider.HttpApplicationStore));
 		}
 	}
 }

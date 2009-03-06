@@ -125,10 +125,10 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 				op => {
 					RegisterMockExtension(op.Channel);
 					op.Channel.Send(CreateResponseWithExtensions(protocol));
-					op.GetRequest().Response.Send(); // check_auth
+					op.SendResponse(op.GetRequest()); // check_auth
 					op.SecuritySettings.SignOutgoingExtensions = false;
 					op.Channel.Send(CreateResponseWithExtensions(protocol));
-					op.GetRequest().Response.Send(); // check_auth
+					op.SendResponse(op.GetRequest()); // check_auth
 				});
 			coordinator.Run();
 		}

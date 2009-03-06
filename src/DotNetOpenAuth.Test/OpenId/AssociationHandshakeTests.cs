@@ -87,7 +87,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					// Ensure that the response is a suggestion that the RP try again with HMAC-SHA1
 					AssociateUnsuccessfulResponse renegotiateResponse = (AssociateUnsuccessfulResponse)reqAccessor.ResponseMessage;
 					Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, renegotiateResponse.AssociationType);
-					req.Response.Send();
+					op.SendResponse(req);
 
 					// Receive second attempt request for an HMAC-SHA1 association.
 					req = (AutoResponsiveRequest)op.GetRequest();
@@ -98,7 +98,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					// Ensure that the response is a success response.
 					AssociateSuccessfulResponse successResponse = (AssociateSuccessfulResponse)reqAccessor.ResponseMessage;
 					Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, successResponse.AssociationType);
-					req.Response.Send();
+					op.SendResponse(req);
 				});
 			coordinator.Run();
 		}
@@ -307,8 +307,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					IRequest req = op.GetRequest();
 					Assert.IsNotNull(req, "Expected incoming request but did not receive it.");
 					Assert.IsTrue(req.IsResponseReady);
-					UserAgentResponse resp = req.Response;
-					resp.Send();
+					op.SendResponse(req);
 				});
 			coordinator.IncomingMessageFilter = message => {
 				Assert.AreSame(opDescription.ProtocolVersion, message.Version, "The message was recognized as version {0} but was expected to be {1}.", message.Version, opDescription.ProtocolVersion);

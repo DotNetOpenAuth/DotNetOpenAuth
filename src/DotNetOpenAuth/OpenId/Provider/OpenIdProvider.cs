@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.ComponentModel;
 	using System.Linq;
+	using System.Threading;
 	using System.Web;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
@@ -197,13 +198,30 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
-		/// Encodes a response message for transmission.
+		/// Sends the response to a received request.
 		/// </summary>
-		/// <param name="responseMessage">The response message.</param>
-		/// <returns>The serialized form of the message ready for transmission to the remote party.</returns>
-		/// <remarks>This method merely delegates to <see cref="Channel.PrepareResponse"/>.</remarks>
-		public UserAgentResponse PrepareResponse(IProtocolMessage responseMessage) {
-			return this.Channel.PrepareResponse(responseMessage);
+		/// <param name="request">The incoming OpenID request whose response is to be sent.</param>
+		/// <exception cref="ThreadAbortException">Thrown by ASP.NET in order to prevent additional data from the page being sent to the client and corrupting the response.</exception>
+		/// <remarks>
+		/// <para>Requires an HttpContext.Current context.  If one is not available, the caller should use
+		/// <see cref="GetResponse"/> instead and manually send the <see cref="UserAgentResponse"/> 
+		/// to the client.</para>
+		/// </remarks>
+		/// <exception cref="InvalidOperationException">Thrown if <see cref="IRequest.IsResponseReady"/> is <c>false</c>.</exception>
+		public void SendResponse(IRequest request) {
+			Request requestInternal = (Request)request;
+			this.Channel.Send(requestInternal.Response);
+		}
+
+		/// <summary>
+		/// Gets the response to a received request.
+		/// </summary>
+		/// <param name="request">The request.</param>
+		/// <returns>The response that should be sent to the client.</returns>
+		/// <exception cref="InvalidOperationException">Thrown if <see cref="IRequest.IsResponseReady"/> is <c>false</c>.</exception>
+		public UserAgentResponse GetResponse(IRequest request) {
+			Request requestInternal = (Request)request;
+			return this.Channel.PrepareResponse(requestInternal.Response);
 		}
 
 		/// <summary>
