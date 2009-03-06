@@ -95,6 +95,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Prepares a message for sending based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>
+		/// <returns>
+		/// The protections (if any) that this binding element applied to the message.
+		/// Null if this binding element did not even apply to this binding element.
+		/// </returns>
 		public MessageProtections? PrepareMessageForSending(IProtocolMessage message) {
 			foreach (IChannelBindingElement signer in this.signers) {
 				MessageProtections? result = signer.PrepareMessageForSending(message);
@@ -111,6 +115,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// validates an incoming message based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The incoming message to process.</param>
+		/// <returns>
+		/// The protections (if any) that this binding element applied to the message.
+		/// Null if this binding element did not even apply to this binding element.
+		/// </returns>
 		public MessageProtections? PrepareMessageForReceiving(IProtocolMessage message) {
 			foreach (IChannelBindingElement signer in this.signers) {
 				MessageProtections? result = signer.PrepareMessageForReceiving(message);

@@ -644,7 +644,7 @@ namespace DotNetOpenAuth.Messaging {
 			MessageProtections appliedProtection = MessageProtections.None;
 			foreach (IChannelBindingElement bindingElement in this.outgoingBindingElements) {
 				MessageProtections? elementProtection = bindingElement.PrepareMessageForSending(message);
-				if(elementProtection.HasValue) {
+				if (elementProtection.HasValue) {
 					Logger.DebugFormat("Binding element {0} applied to message.", bindingElement.GetType().FullName);
 
 					// Ensure that only one protection binding element applies to this message

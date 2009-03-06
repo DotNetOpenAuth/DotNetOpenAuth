@@ -55,6 +55,10 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// Sets the timestamp on an outgoing message.
 		/// </summary>
 		/// <param name="message">The outgoing message.</param>
+		/// <returns>
+		/// The protections (if any) that this binding element applied to the message.
+		/// Null if this binding element did not even apply to this binding element.
+		/// </returns>
 		public MessageProtections? PrepareMessageForSending(IProtocolMessage message) {
 			IExpiringProtocolMessage expiringMessage = message as IExpiringProtocolMessage;
 			if (expiringMessage != null) {
@@ -69,6 +73,10 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// Reads the timestamp on a message and throws an exception if the message is too old.
 		/// </summary>
 		/// <param name="message">The incoming message.</param>
+		/// <returns>
+		/// The protections (if any) that this binding element applied to the message.
+		/// Null if this binding element did not even apply to this binding element.
+		/// </returns>
 		/// <exception cref="ExpiredMessageException">Thrown if the given message has already expired.</exception>
 		/// <exception cref="ProtocolException">
 		/// Thrown when the binding element rules indicate that this message is invalid and should

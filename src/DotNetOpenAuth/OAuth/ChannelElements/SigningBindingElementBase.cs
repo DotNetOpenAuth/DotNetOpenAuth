@@ -73,6 +73,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Signs the outgoing message.
 		/// </summary>
 		/// <param name="message">The message to sign.</param>
+		/// <returns>
+		/// The protections (if any) that this binding element applied to the message.
+		/// Null if this binding element did not even apply to this binding element.
+		/// </returns>
 		public MessageProtections? PrepareMessageForSending(IProtocolMessage message) {
 			var signedMessage = message as ITamperResistantOAuthMessage;
 			if (signedMessage != null && this.IsMessageApplicable(signedMessage)) {
@@ -95,6 +99,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Verifies the signature on an incoming message.
 		/// </summary>
 		/// <param name="message">The message whose signature should be verified.</param>
+		/// <returns>
+		/// The protections (if any) that this binding element applied to the message.
+		/// Null if this binding element did not even apply to this binding element.
+		/// </returns>
 		/// <exception cref="InvalidSignatureException">Thrown if the signature is invalid.</exception>
 		public MessageProtections? PrepareMessageForReceiving(IProtocolMessage message) {
 			var signedMessage = message as ITamperResistantOAuthMessage;

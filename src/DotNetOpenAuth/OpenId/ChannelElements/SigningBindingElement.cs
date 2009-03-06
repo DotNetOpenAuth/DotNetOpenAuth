@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System.Globalization;
 	using System.Linq;
 	using System.Net.Security;
+	using System.Web;
 	using DotNetOpenAuth.Loggers;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
@@ -18,7 +19,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using System.Web;
 
 	/// <summary>
 	/// Signs and verifies authentication assertions.
@@ -96,6 +96,10 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Prepares a message for sending based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>
+		/// <returns>
+		/// The protections (if any) that this binding element applied to the message.
+		/// Null if this binding element did not even apply to this binding element.
+		/// </returns>
 		public MessageProtections? PrepareMessageForSending(IProtocolMessage message) {
 			var signedMessage = message as ITamperResistantOpenIdMessage;
 			if (signedMessage != null) {
@@ -115,6 +119,10 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// validates an incoming message based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The incoming message to process.</param>
+		/// <returns>
+		/// The protections (if any) that this binding element applied to the message.
+		/// Null if this binding element did not even apply to this binding element.
+		/// </returns>
 		/// <exception cref="ProtocolException">
 		/// Thrown when the binding element rules indicate that this message is invalid and should
 		/// NOT be processed.
