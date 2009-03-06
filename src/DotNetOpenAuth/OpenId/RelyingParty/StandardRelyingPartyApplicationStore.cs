@@ -104,6 +104,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Stores a given nonce and timestamp.
 		/// </summary>
+		/// <param name="context">The context, or namespace, within which the <paramref name="nonce"/> must be unique.</param>
 		/// <param name="nonce">A series of random characters.</param>
 		/// <param name="timestamp">The timestamp that together with the nonce string make it unique.
 		/// The timestamp may also be used by the data store to clear out old nonces.</param>
@@ -118,8 +119,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// is retrieved or set using the
 		/// <see cref="StandardExpirationBindingElement.MaximumMessageAge"/> property.
 		/// </remarks>
-		public bool StoreNonce(string nonce, DateTime timestamp) {
-			return this.nonceStore.StoreNonce(nonce, timestamp);
+		public bool StoreNonce(string context, string nonce, DateTime timestamp) {
+			return this.nonceStore.StoreNonce(context, nonce, timestamp);
 		}
 
 		#endregion

@@ -128,7 +128,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 			if (nonceMessage != null && nonceMessage.Nonce != null) {
 				ErrorUtilities.VerifyProtocol(nonceMessage.Nonce.Length > 0 || this.AllowZeroLengthNonce, MessagingStrings.InvalidNonceReceived);
 
-				if (!this.nonceStore.StoreNonce(nonceMessage.Nonce, nonceMessage.UtcCreationDate)) {
+				if (!this.nonceStore.StoreNonce(nonceMessage.NonceContext, nonceMessage.Nonce, nonceMessage.UtcCreationDate)) {
 					throw new ReplayedMessageException(message);
 				}
 

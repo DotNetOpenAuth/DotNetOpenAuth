@@ -163,7 +163,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					throw new ExpiredMessageException(expirationDate, message);
 				}
 
-				if (!this.nonceStore.StoreNonce(nonce.RandomPartAsString, nonce.CreationDateUtc)) {
+				IReplayProtectedProtocolMessage replayResponse = response;
+				if (!this.nonceStore.StoreNonce(replayResponse.NonceContext, nonce.RandomPartAsString, nonce.CreationDateUtc)) {
 					throw new ReplayedMessageException(message);
 				}
 

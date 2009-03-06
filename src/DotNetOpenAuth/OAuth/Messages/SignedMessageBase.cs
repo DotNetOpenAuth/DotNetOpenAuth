@@ -115,6 +115,14 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		#region IReplayProtectedProtocolMessage Members
 
 		/// <summary>
+		/// Gets the context within which the nonce must be unique.
+		/// </summary>
+		/// <value>The consumer key.</value>
+		string IReplayProtectedProtocolMessage.NonceContext {
+			get { return this.ConsumerKey; }
+		}
+
+		/// <summary>
 		/// Gets or sets the message nonce used for replay detection.
 		/// </summary>
 		[MessagePart("oauth_nonce", IsRequired = true)]

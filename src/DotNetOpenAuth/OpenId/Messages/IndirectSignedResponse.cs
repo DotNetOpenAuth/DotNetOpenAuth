@@ -171,6 +171,22 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		string IReplayProtectedProtocolMessage.Nonce { get; set; }
 
 		/// <summary>
+		/// Gets the context within which the nonce must be unique.
+		/// </summary>
+		string IReplayProtectedProtocolMessage.NonceContext {
+			get {
+				if (this.ProviderEndpoint != null) {
+					return this.ProviderEndpoint.AbsoluteUri;
+				} else {
+					// This is the Provider, on an OpenID 1.x check_authentication message.
+					// We don't need any special nonce context because the Provider
+					// generated and consumed the nonce.
+					return string.Empty;
+				}
+			}
+		}
+
+		/// <summary>
 		/// Gets or sets the UTC date/time the message was originally sent onto the network.
 		/// </summary>
 		/// <remarks>
