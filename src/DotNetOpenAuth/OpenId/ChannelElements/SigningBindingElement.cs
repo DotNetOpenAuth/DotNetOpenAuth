@@ -144,6 +144,12 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				} else {
 					ErrorUtilities.VerifyInternal(this.Channel != null, "Cannot verify private association signature because we don't have a channel.");
 
+					// If we're on the Provider, then the RP sent us a check_auth with a signature
+					// we don't have an association for.  (It may have expired, or it may be a faulty RP).
+					if (this.IsOnProvider) {
+						throw new InvalidSignatureException(message);
+					}
+
 					// We did not recognize the association the provider used to sign the message.
 					// Ask the provider to check the signature then.
 					var indirectSignedResponse = (IndirectSignedResponse)signedMessage;
