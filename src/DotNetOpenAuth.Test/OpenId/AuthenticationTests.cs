@@ -61,6 +61,11 @@ namespace DotNetOpenAuth.Test.OpenId {
 		private void ParameterizedPositiveAuthenticationTest(bool sharedAssociation, bool positive, bool tamper) {
 			foreach (Protocol protocol in Protocol.AllPracticalVersions) {
 				foreach (bool statelessRP in new[] { false, true }) {
+					if (sharedAssociation && statelessRP) {
+						// Skip the invalid combination scenario.
+						continue;
+					}
+
 					TestLogger.InfoFormat("Beginning authentication test scenario.  OpenID: {3}, Shared: {0}, positive: {1}, tamper: {2}, stateless: {3}", sharedAssociation, positive, tamper, protocol.Version, statelessRP);
 					this.ParameterizedPositiveAuthenticationTest(protocol, statelessRP, sharedAssociation, positive, tamper);
 				}
@@ -68,6 +73,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		}
 
 		private void ParameterizedPositiveAuthenticationTest(Protocol protocol, bool statelessRP, bool sharedAssociation, bool positive, bool tamper) {
+			ErrorUtilities.VerifyArgument(!statelessRP || !sharedAssociation, "The RP cannot be stateless while sharing an association with the OP.");
 			ErrorUtilities.VerifyArgument(positive || !tamper, "Cannot tamper with a negative response.");
 			Uri userSetupUrl = protocol.Version.Major < 2 ? new Uri("http://usersetupurl") : null;
 			ProviderSecuritySettings securitySettings = new ProviderSecuritySettings();
