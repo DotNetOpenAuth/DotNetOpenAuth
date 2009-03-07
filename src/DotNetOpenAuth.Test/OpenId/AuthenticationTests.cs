@@ -66,7 +66,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 						continue;
 					}
 
-					TestLogger.InfoFormat("Beginning authentication test scenario.  OpenID: {3}, Shared: {0}, positive: {1}, tamper: {2}, stateless: {3}", sharedAssociation, positive, tamper, protocol.Version, statelessRP);
+					TestLogger.InfoFormat("Beginning authentication test scenario.  OpenID: {0}, Shared: {1}, positive: {2}, tamper: {3}, stateless: {4}", protocol.Version, sharedAssociation, positive, tamper, statelessRP);
 					this.ParameterizedPositiveAuthenticationTest(protocol, statelessRP, sharedAssociation, positive, tamper);
 				}
 			}
