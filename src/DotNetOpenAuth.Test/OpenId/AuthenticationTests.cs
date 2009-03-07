@@ -60,12 +60,14 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		private void ParameterizedPositiveAuthenticationTest(bool sharedAssociation, bool positive, bool tamper) {
 			foreach (Protocol protocol in Protocol.AllPracticalVersions) {
-				TestLogger.InfoFormat("Beginning authentication test scenario.  OpenID: {3}, Shared: {0}, positive: {1}, tamper: {2}", sharedAssociation, positive, tamper, protocol.Version);
-				this.ParameterizedPositiveAuthenticationTest(protocol, sharedAssociation, positive, tamper);
+				foreach (bool statelessRP in new[] { false, true }) {
+					TestLogger.InfoFormat("Beginning authentication test scenario.  OpenID: {3}, Shared: {0}, positive: {1}, tamper: {2}, stateless: {3}", sharedAssociation, positive, tamper, protocol.Version, statelessRP);
+					this.ParameterizedPositiveAuthenticationTest(protocol, statelessRP, sharedAssociation, positive, tamper);
+				}
 			}
 		}
 
-		private void ParameterizedPositiveAuthenticationTest(Protocol protocol, bool sharedAssociation, bool positive, bool tamper) {
+		private void ParameterizedPositiveAuthenticationTest(Protocol protocol, bool statelessRP, bool sharedAssociation, bool positive, bool tamper) {
 			ErrorUtilities.VerifyArgument(positive || !tamper, "Cannot tamper with a negative response.");
 			Uri userSetupUrl = protocol.Version.Major < 2 ? new Uri("http://usersetupurl") : null;
 			ProviderSecuritySettings securitySettings = new ProviderSecuritySettings();
@@ -159,6 +161,10 @@ namespace DotNetOpenAuth.Test.OpenId {
 					}
 				};
 			}
+			if (statelessRP) {
+				coordinator.RelyingParty = new OpenIdRelyingParty(null);
+			}
+
 			coordinator.Run();
 		}
 	}
