@@ -8,7 +8,7 @@
 		RequestEmail="Request" RequestGender="Require" RequestPostalCode="Require" RequestTimeZone="Require"
 		RememberMeVisible="True" PolicyUrl="~/PrivacyPolicy.aspx" TabIndex="1"
 		OnLoggedIn="OpenIdLogin1_LoggedIn" OnLoggingIn="OpenIdLogin1_LoggingIn"
-		OnSetupRequired="OpenIdLogin1_SetupRequired" />
+		OnSetupRequired="OpenIdLogin1_SetupRequired" Stateless="true" />
 	<fieldset title="Knobs">
 		<asp:CheckBox ID="requireSslCheckBox" runat="server" 
 			Text="RequireSsl (high security) mode" 
