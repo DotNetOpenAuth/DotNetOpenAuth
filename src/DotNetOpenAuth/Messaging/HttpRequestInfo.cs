@@ -109,6 +109,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		internal HttpRequestInfo() {
 			this.HttpMethod = "GET";
+			this.Headers = new WebHeaderCollection();
 		}
 
 		/// <summary>
