@@ -135,7 +135,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					}
 					op.Channel.Send(response);
 
-					if (positive && !sharedAssociation) {
+					if (positive && (statelessRP || !sharedAssociation)) {
 						var checkauthRequest = op.Channel.ReadFromRequest<CheckAuthenticationRequest>();
 						var checkauthResponse = new CheckAuthenticationResponse(checkauthRequest.Version, checkauthRequest);
 						checkauthResponse.IsValid = checkauthRequest.IsValid;
