@@ -16,7 +16,7 @@
 	realm = "http://" + Request.ServerVariables("HTTP_HOST") + "/classicaspdnoi/"
 	thisPageUrl = "http://" + Request.ServerVariables("HTTP_HOST") + Request.ServerVariables("URL")
 	requestUrl = "http://" + Request.ServerVariables("HTTP_HOST") + Request.ServerVariables("HTTP_URL")
-	Set dnoi = server.CreateObject("DotNetOpenAuth.RelyingParty.OpenIdRelyingParty")
+	Set dnoi = server.CreateObject("DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingParty")
 	Set authentication = dnoi.ProcessAuthentication(requestUrl, Request.Form)
 	if Not authentication Is Nothing then
 		If authentication.Successful Then
