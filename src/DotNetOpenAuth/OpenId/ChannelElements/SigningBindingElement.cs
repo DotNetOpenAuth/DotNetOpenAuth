@@ -131,6 +131,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			var signedMessage = message as ITamperResistantOpenIdMessage;
 			if (signedMessage != null) {
 				Logger.DebugFormat("Verifying incoming {0} message signature of: {1}", message.GetType().Name, signedMessage.Signature);
+				MessageProtections protectionsApplied = MessageProtections.TamperProtection;
 
 				EnsureParametersRequiringSignatureAreSigned(signedMessage);
 
@@ -166,9 +167,16 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 							this.rpAssociations.RemoveAssociation(indirectSignedResponse.ProviderEndpoint, checkSignatureResponse.InvalidateHandle);
 						}
 					}
+
+					// When we're in dumb mode we can't provide our own replay protection,
+					// but for OpenID 2.0 Providers we can rely on them providing it as part
+					// of signature verification.
+					if (message.Version.Major >= 2) {
+						protectionsApplied |= MessageProtections.ReplayProtection;
+					}
 				}
 
-				return MessageProtections.TamperProtection;
+				return protectionsApplied;
 			}
 
 			return null;

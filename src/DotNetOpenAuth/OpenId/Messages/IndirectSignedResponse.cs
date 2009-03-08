@@ -42,6 +42,10 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Backing field for the <see cref="IExpiringProtocolMessage.UtcCreationDate"/> property.
 		/// </summary>
+		/// <remarks>
+		/// The field initializer being DateTime.UtcNow allows for OpenID 1.x messages
+		/// to pass through the StandardExpirationBindingElement.
+		/// </remarks>
 		private DateTime creationDateUtc = DateTime.UtcNow;
 
 		/// <summary>
@@ -122,14 +126,11 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Although the required protection is reduced for OpenID 1.x,
 		/// this library will provide Relying Party hosts with all protections
 		/// by adding its own specially-crafted nonce to the authentication request
-		/// messages.
+		/// messages except for stateless RPs in OpenID 1.x messages.
 		/// </remarks>
 		public override MessageProtections RequiredProtection {
-			// TODO: Fix up Provider side to only use private associations (dumb mode), 
-			//       and then to add a special nonce value of its own to provide replay
-			//       protection to the Provider's users even when logging into 1.0 RPs.
-			//       When this is done, remove this conditional getter and always return
-			//       that All protections are required -- (will this work at the RP side?)
+			// We actually manage to provide All protections regardless of OpenID version
+			// on both the Provider and Relying Party side, except for stateless RPs for OpenID 1.x.
 			get { return this.Version.Major < 2 ? MessageProtections.TamperProtection : MessageProtections.All; }
 		}
 
