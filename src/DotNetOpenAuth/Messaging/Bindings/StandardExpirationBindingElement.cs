@@ -56,17 +56,17 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// </summary>
 		/// <param name="message">The outgoing message.</param>
 		/// <returns>
-		/// True if the <paramref name="message"/> applied to this binding element
-		/// and the operation was successful.  False otherwise.
+		/// The protections (if any) that this binding element applied to the message.
+		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
-		public bool PrepareMessageForSending(IProtocolMessage message) {
+		public MessageProtections? PrepareMessageForSending(IProtocolMessage message) {
 			IExpiringProtocolMessage expiringMessage = message as IExpiringProtocolMessage;
 			if (expiringMessage != null) {
 				expiringMessage.UtcCreationDate = DateTime.UtcNow;
-				return true;
+				return MessageProtections.Expiration;
 			}
 
-			return false;
+			return null;
 		}
 
 		/// <summary>
@@ -74,15 +74,15 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// </summary>
 		/// <param name="message">The incoming message.</param>
 		/// <returns>
-		/// True if the <paramref name="message"/> applied to this binding element
-		/// and the operation was successful.  False if the operation did not apply to this message.
+		/// The protections (if any) that this binding element applied to the message.
+		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
 		/// <exception cref="ExpiredMessageException">Thrown if the given message has already expired.</exception>
 		/// <exception cref="ProtocolException">
 		/// Thrown when the binding element rules indicate that this message is invalid and should
 		/// NOT be processed.
 		/// </exception>
-		public bool PrepareMessageForReceiving(IProtocolMessage message) {
+		public MessageProtections? PrepareMessageForReceiving(IProtocolMessage message) {
 			IExpiringProtocolMessage expiringMessage = message as IExpiringProtocolMessage;
 			if (expiringMessage != null) {
 				// Yes the UtcCreationDate is supposed to always be in UTC already,
@@ -92,10 +92,10 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 					throw new ExpiredMessageException(expirationDate, expiringMessage);
 				}
 
-				return true;
+				return MessageProtections.Expiration;
 			}
 
-			return false;
+			return null;
 		}
 
 		#endregion

@@ -100,15 +100,18 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// Applies a nonce to the message.
 		/// </summary>
 		/// <param name="message">The message to apply replay protection to.</param>
-		/// <returns>True if the message protection was applied.  False otherwise.</returns>
-		public bool PrepareMessageForSending(IProtocolMessage message) {
+		/// <returns>
+		/// The protections (if any) that this binding element applied to the message.
+		/// Null if this binding element did not even apply to this binding element.
+		/// </returns>
+		public MessageProtections? PrepareMessageForSending(IProtocolMessage message) {
 			IReplayProtectedProtocolMessage nonceMessage = message as IReplayProtectedProtocolMessage;
 			if (nonceMessage != null) {
 				nonceMessage.Nonce = this.GenerateUniqueFragment();
-				return true;
+				return MessageProtections.ReplayProtection;
 			}
 
-			return false;
+			return null;
 		}
 
 		/// <summary>
@@ -116,23 +119,23 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// </summary>
 		/// <param name="message">The incoming message.</param>
 		/// <returns>
-		/// True if the message nonce passed replay detection checks.
-		/// False if the message did not have a nonce that could be checked at all.
+		/// The protections (if any) that this binding element applied to the message.
+		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
 		/// <exception cref="ReplayedMessageException">Thrown when the nonce check revealed a replayed message.</exception>
-		public bool PrepareMessageForReceiving(IProtocolMessage message) {
+		public MessageProtections? PrepareMessageForReceiving(IProtocolMessage message) {
 			IReplayProtectedProtocolMessage nonceMessage = message as IReplayProtectedProtocolMessage;
 			if (nonceMessage != null && nonceMessage.Nonce != null) {
 				ErrorUtilities.VerifyProtocol(nonceMessage.Nonce.Length > 0 || this.AllowZeroLengthNonce, MessagingStrings.InvalidNonceReceived);
 
-				if (!this.nonceStore.StoreNonce(nonceMessage.Nonce, nonceMessage.UtcCreationDate)) {
+				if (!this.nonceStore.StoreNonce(nonceMessage.NonceContext, nonceMessage.Nonce, nonceMessage.UtcCreationDate)) {
 					throw new ReplayedMessageException(message);
 				}
 
-				return true;
+				return MessageProtections.ReplayProtection;
 			}
 
-			return false;
+			return null;
 		}
 
 		#endregion

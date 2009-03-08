@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 	/// <summary>
 	/// The PAPE request part of an OpenID Authentication request message.
 	/// </summary>
+	[Serializable]
 	public sealed class PolicyRequest : ExtensionBase, IMessageWithEvents {
 		/// <summary>
 		/// The factory method that may be used in deserialization of this message.

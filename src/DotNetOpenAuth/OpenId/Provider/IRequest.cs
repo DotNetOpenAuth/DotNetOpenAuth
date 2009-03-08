@@ -31,11 +31,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		bool IsResponseReady { get; }
 
 		/// <summary>
-		/// Gets the response to send to the user agent.
-		/// </summary>
-		UserAgentResponse Response { get; }
-
-		/// <summary>
 		/// Adds an extension to the response to send to the relying party.
 		/// </summary>
 		/// <param name="extension">The extension to add to the response message.</param>

@@ -34,6 +34,10 @@
 		/// <summary>
 		/// Stores a given nonce and timestamp.
 		/// </summary>
+		/// <param name="context">The context, or namespace, within which the
+		/// <paramref name="nonce"/> must be unique.
+		/// The context SHOULD be treated as case-sensitive.
+		/// The value will never be <c>null</c> but may be the empty string.</param>
 		/// <param name="nonce">A series of random characters.</param>
 		/// <param name="timestamp">The timestamp that together with the nonce string make it unique.
 		/// The timestamp may also be used by the data store to clear out old nonces.</param>
@@ -48,7 +52,7 @@
 		/// is retrieved or set using the
 		/// <see cref="StandardExpirationBindingElement.MaximumMessageAge"/> property.
 		/// </remarks>
-		public bool StoreNonce(string nonce, DateTime timestamp) {
+		public bool StoreNonce(string context, string nonce, DateTime timestamp) {
 			// IMPORTANT: If actually persisting to a database that can be reached from
 			// different servers/instances of this class at once, it is vitally important
 			// to protect against race condition attacks by one or more of these:
@@ -61,12 +65,12 @@
 			// and display some message to have the user try to log in again, and possibly
 			// warn them about a replay attack.
 			lock (this) {
-				if (dataSet.Nonce.FindByCode(nonce) != null) {
+				if (dataSet.Nonce.FindByCodeContext(nonce, context) != null) {
 					return false;
 				}
 
 				TimeSpan maxMessageAge = DotNetOpenAuth.Configuration.DotNetOpenAuthSection.Configuration.Messaging.MaximumMessageLifetime;
-				dataSet.Nonce.AddNonceRow(nonce, timestamp.ToLocalTime(), (timestamp + maxMessageAge).ToLocalTime());
+				dataSet.Nonce.AddNonceRow(context, nonce, timestamp.ToLocalTime(), (timestamp + maxMessageAge).ToLocalTime());
 				return true;
 			}
 		}

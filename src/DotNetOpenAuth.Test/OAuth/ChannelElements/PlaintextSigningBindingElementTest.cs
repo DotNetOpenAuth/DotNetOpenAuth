@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.Test.ChannelElements
 			ITamperResistantOAuthMessage message = new UnauthorizedTokenRequest(endpoint);
 			message.ConsumerSecret = "cs";
 			message.TokenSecret = "ts";
-			Assert.IsTrue(target.PrepareMessageForSending(message));
+			Assert.IsNotNull(target.PrepareMessageForSending(message));
 			Assert.AreEqual("PLAINTEXT", message.SignatureMethod);
 			Assert.AreEqual("cs&ts", message.Signature);
 		}
@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.Test.ChannelElements
 			message.TokenSecret = "ts";
 			message.SignatureMethod = "PLAINTEXT";
 			message.Signature = "cs&ts";
-			Assert.IsTrue(target.PrepareMessageForReceiving(message));
+			Assert.IsNotNull(target.PrepareMessageForReceiving(message));
 		}
 
 		[TestMethod]
@@ -46,7 +46,7 @@ namespace DotNetOpenAuth.Test.ChannelElements
 			message.TokenSecret = "ts";
 			message.SignatureMethod = "ANOTHERALGORITHM";
 			message.Signature = "somethingelse";
-			Assert.IsFalse(target.PrepareMessageForReceiving(message), "PLAINTEXT binding element should opt-out where it doesn't understand.");
+			Assert.AreEqual(MessageProtections.None, target.PrepareMessageForReceiving(message), "PLAINTEXT binding element should opt-out where it doesn't understand.");
 		}
 
 		[TestMethod]
@@ -58,7 +58,7 @@ namespace DotNetOpenAuth.Test.ChannelElements
 			message.TokenSecret = "ts";
 
 			// Since this is (non-encrypted) HTTP, so the plain text signer should not be used
-			Assert.IsFalse(target.PrepareMessageForSending(message));
+			Assert.IsNull(target.PrepareMessageForSending(message));
 			Assert.IsNull(message.SignatureMethod);
 			Assert.IsNull(message.Signature);
 		}
@@ -72,7 +72,7 @@ namespace DotNetOpenAuth.Test.ChannelElements
 			message.TokenSecret = "ts";
 			message.SignatureMethod = "PLAINTEXT";
 			message.Signature = "cs%26ts";
-			Assert.IsFalse(target.PrepareMessageForReceiving(message), "PLAINTEXT signature binding element should refuse to participate in non-encrypted messages.");
+			Assert.IsNull(target.PrepareMessageForReceiving(message), "PLAINTEXT signature binding element should refuse to participate in non-encrypted messages.");
 		}
 	}
 }

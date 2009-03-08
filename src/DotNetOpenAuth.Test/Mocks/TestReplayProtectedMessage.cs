@@ -19,6 +19,10 @@ namespace DotNetOpenAuth.Test.Mocks {
 
 		#region IReplayProtectedProtocolMessage Members
 
+		string IReplayProtectedProtocolMessage.NonceContext {
+			get { return string.Empty; }
+		}
+
 		[MessagePart("Nonce")]
 		string IReplayProtectedProtocolMessage.Nonce {
 			get;

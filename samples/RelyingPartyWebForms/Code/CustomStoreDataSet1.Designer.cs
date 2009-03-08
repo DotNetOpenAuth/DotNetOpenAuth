@@ -570,6 +570,8 @@ namespace RelyingPartyWebForms.Code {
         [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
         public partial class NonceDataTable : global::System.Data.TypedTableBase<NonceRow> {
             
+            private global::System.Data.DataColumn columnContext;
+            
             private global::System.Data.DataColumn columnCode;
             
             private global::System.Data.DataColumn columnIssued;
@@ -604,6 +606,13 @@ namespace RelyingPartyWebForms.Code {
             protected NonceDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
                     base(info, context) {
                 this.InitVars();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            public global::System.Data.DataColumn ContextColumn {
+                get {
+                    return this.columnContext;
+                }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -656,9 +665,10 @@ namespace RelyingPartyWebForms.Code {
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public NonceRow AddNonceRow(string Code, System.DateTime Issued, System.DateTime Expires) {
+            public NonceRow AddNonceRow(string Context, string Code, System.DateTime Issued, System.DateTime Expires) {
                 NonceRow rowNonceRow = ((NonceRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
+                        Context,
                         Code,
                         Issued,
                         Expires};
@@ -668,9 +678,10 @@ namespace RelyingPartyWebForms.Code {
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public NonceRow FindByCode(string Code) {
+            public NonceRow FindByCodeContext(string Code, string Context) {
                 return ((NonceRow)(this.Rows.Find(new object[] {
-                            Code})));
+                            Code,
+                            Context})));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -687,6 +698,7 @@ namespace RelyingPartyWebForms.Code {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             internal void InitVars() {
+                this.columnContext = base.Columns["Context"];
                 this.columnCode = base.Columns["Code"];
                 this.columnIssued = base.Columns["Issued"];
                 this.columnExpires = base.Columns["Expires"];
@@ -694,16 +706,19 @@ namespace RelyingPartyWebForms.Code {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             private void InitClass() {
+                this.columnContext = new global::System.Data.DataColumn("Context", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnContext);
                 this.columnCode = new global::System.Data.DataColumn("Code", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnCode);
                 this.columnIssued = new global::System.Data.DataColumn("Issued", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnIssued);
                 this.columnExpires = new global::System.Data.DataColumn("Expires", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnExpires);
-                this.Constraints.Add(new global::System.Data.UniqueConstraint("PrimaryKey", new global::System.Data.DataColumn[] {
-                                this.columnCode}, true));
+                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
+                                this.columnCode,
+                                this.columnContext}, true));
+                this.columnContext.AllowDBNull = false;
                 this.columnCode.AllowDBNull = false;
-                this.columnCode.Unique = true;
                 this.columnIssued.AllowDBNull = false;
                 this.columnExpires.AllowDBNull = false;
             }
@@ -890,6 +905,16 @@ namespace RelyingPartyWebForms.Code {
             internal NonceRow(global::System.Data.DataRowBuilder rb) : 
                     base(rb) {
                 this.tableNonce = ((NonceDataTable)(this.Table));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            public string Context {
+                get {
+                    return ((string)(this[this.tableNonce.ContextColumn]));
+                }
+                set {
+                    this[this.tableNonce.ContextColumn] = value;
+                }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]

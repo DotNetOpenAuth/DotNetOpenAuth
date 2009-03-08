@@ -19,6 +19,20 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// in order to protect against replay attacks.
 	/// </summary>
 	/// <remarks>
+	/// <para>This nonce goes beyond the OpenID 1.x spec, but adds to security.
+	/// Since this library's Provider implementation also provides special nonce
+	/// protection for 1.0 messages, this security feature overlaps with that one.
+	/// This means that if an RP from this library were talking to an OP from this
+	/// library, but the Identifier being authenticated advertised the OP as a 1.x
+	/// OP, then both RP and OP might try to use a nonce for protecting the assertion.
+	/// There's no problem with that--it will still all work out.  And it would be a 
+	/// very rare combination of elements anyway.
+	/// </para>
+	/// <para>
+	/// This binding element deactivates itself for OpenID 2.0 (or later) messages 
+	/// since they are automatically protected in the protocol by the Provider's
+	/// openid.response_nonce parameter.
+	/// </para>
 	/// <para>In the messaging stack, this binding element looks like an ordinary
 	/// transform-type of binding element rather than a protection element,
 	/// due to its required order in the channel stack and that it exists
@@ -29,7 +43,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// The parameter of the callback parameter we tack onto the return_to URL
 		/// to store the replay-detection nonce.
 		/// </summary>
-		private const string NonceParameter = "dnoi.request_nonce";
+		internal const string NonceParameter = "dnoi.request_nonce";
 
 		/// <summary>
 		/// The length of the generated nonce's random part.
@@ -101,23 +115,23 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>
 		/// <returns>
-		/// True if the <paramref name="message"/> applied to this binding element
-		/// and the operation was successful.  False otherwise.
+		/// The protections (if any) that this binding element applied to the message.
+		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
 		/// <remarks>
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public bool PrepareMessageForSending(IProtocolMessage message) {
+		public MessageProtections? PrepareMessageForSending(IProtocolMessage message) {
 			// We only add a nonce to 1.x auth requests.
 			SignedResponseRequest request = message as SignedResponseRequest;
 			if (request != null && request.Version.Major < 2) {
 				request.AddReturnToArguments(NonceParameter, CustomNonce.NewNonce().Serialize());
 
-				return true;
+				return MessageProtections.ReplayProtection;
 			}
 
-			return false;
+			return null;
 		}
 
 		/// <summary>
@@ -126,8 +140,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// </summary>
 		/// <param name="message">The incoming message to process.</param>
 		/// <returns>
-		/// True if the <paramref name="message"/> applied to this binding element
-		/// and the operation was successful.  False if the operation did not apply to this message.
+		/// The protections (if any) that this binding element applied to the message.
+		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
 		/// <exception cref="ProtocolException">
 		/// Thrown when the binding element rules indicate that this message is invalid and should
@@ -137,7 +151,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public bool PrepareMessageForReceiving(IProtocolMessage message) {
+		public MessageProtections? PrepareMessageForReceiving(IProtocolMessage message) {
 			IndirectSignedResponse response = message as IndirectSignedResponse;
 			if (response != null && response.Version.Major < 2) {
 				string nonceValue = response.GetReturnToArgument(NonceParameter);
@@ -149,14 +163,15 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					throw new ExpiredMessageException(expirationDate, message);
 				}
 
-				if (!this.nonceStore.StoreNonce(nonce.RandomPartAsString, nonce.CreationDateUtc)) {
+				IReplayProtectedProtocolMessage replayResponse = response;
+				if (!this.nonceStore.StoreNonce(replayResponse.NonceContext, nonce.RandomPartAsString, nonce.CreationDateUtc)) {
 					throw new ReplayedMessageException(message);
 				}
 
-				return true;
+				return MessageProtections.ReplayProtection;
 			}
 
-			return false;
+			return null;
 		}
 
 		#endregion

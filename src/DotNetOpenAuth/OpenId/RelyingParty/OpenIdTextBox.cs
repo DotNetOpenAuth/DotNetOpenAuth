@@ -901,7 +901,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 						}
 
 						// Add state that needs to survive across the redirect.
-						this.Request.AddCallbackArguments(UsePersistentCookieCallbackKey, this.UsePersistentCookie.ToString(CultureInfo.InvariantCulture));
+						if (!this.Stateless) {
+							this.Request.AddCallbackArguments(UsePersistentCookieCallbackKey, this.UsePersistentCookie.ToString(CultureInfo.InvariantCulture));
+						}
 					} else {
 						Logger.WarnFormat("An invalid identifier was entered ({0}), but not caught by any validation routine.", this.Text);
 						this.Request = null;

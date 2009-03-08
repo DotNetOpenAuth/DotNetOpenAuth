@@ -60,11 +60,20 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		private void ParameterizedPositiveAuthenticationTest(bool sharedAssociation, bool positive, bool tamper) {
 			foreach (Protocol protocol in Protocol.AllPracticalVersions) {
-				this.ParameterizedPositiveAuthenticationTest(protocol, sharedAssociation, positive, tamper);
+				foreach (bool statelessRP in new[] { false, true }) {
+					if (sharedAssociation && statelessRP) {
+						// Skip the invalid combination scenario.
+						continue;
+					}
+
+					TestLogger.InfoFormat("Beginning authentication test scenario.  OpenID: {0}, Shared: {1}, positive: {2}, tamper: {3}, stateless: {4}", protocol.Version, sharedAssociation, positive, tamper, statelessRP);
+					this.ParameterizedPositiveAuthenticationTest(protocol, statelessRP, sharedAssociation, positive, tamper);
+				}
 			}
 		}
 
-		private void ParameterizedPositiveAuthenticationTest(Protocol protocol, bool sharedAssociation, bool positive, bool tamper) {
+		private void ParameterizedPositiveAuthenticationTest(Protocol protocol, bool statelessRP, bool sharedAssociation, bool positive, bool tamper) {
+			ErrorUtilities.VerifyArgument(!statelessRP || !sharedAssociation, "The RP cannot be stateless while sharing an association with the OP.");
 			ErrorUtilities.VerifyArgument(positive || !tamper, "Cannot tamper with a negative response.");
 			Uri userSetupUrl = protocol.Version.Major < 2 ? new Uri("http://usersetupurl") : null;
 			ProviderSecuritySettings securitySettings = new ProviderSecuritySettings();
@@ -81,6 +90,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					request.ClaimedIdentifier = "http://claimedid";
 					request.LocalIdentifier = "http://localid";
 					request.ReturnTo = RPUri;
+					request.Realm = RPUri;
 					rp.Channel.Send(request);
 					if (positive) {
 						if (tamper) {
@@ -102,13 +112,12 @@ namespace DotNetOpenAuth.Test.OpenId {
 							// notice the replay, we can get one of two exceptions thrown.
 							// When the OP notices the replay we get a generic InvalidSignatureException.
 							// When the RP notices the replay we get a specific ReplayMessageException.
-							Type expectedExceptionType = sharedAssociation || protocol.Version.Major < 2 ? typeof(ReplayedMessageException) : typeof(InvalidSignatureException);
 							try {
 								CoordinatingChannel channel = (CoordinatingChannel)rp.Channel;
 								channel.Replay(response);
-								Assert.Fail("Expected exception {0} was not thrown.", expectedExceptionType.Name);
+								Assert.Fail("Expected ProtocolException was not thrown.");
 							} catch (ProtocolException ex) {
-								Assert.IsInstanceOfType(ex, expectedExceptionType);
+								Assert.IsTrue(ex is ReplayedMessageException || ex is InvalidSignatureException, "A {0} exception was thrown instead of the expected {1} or {2}.", ex.GetType(), typeof(ReplayedMessageException).Name, typeof(InvalidSignatureException).Name);
 							}
 						}
 					} else {
@@ -132,7 +141,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					}
 					op.Channel.Send(response);
 
-					if (positive && !sharedAssociation) {
+					if (positive && (statelessRP || !sharedAssociation)) {
 						var checkauthRequest = op.Channel.ReadFromRequest<CheckAuthenticationRequest>();
 						var checkauthResponse = new CheckAuthenticationResponse(checkauthRequest.Version, checkauthRequest);
 						checkauthResponse.IsValid = checkauthRequest.IsValid;
@@ -158,6 +167,10 @@ namespace DotNetOpenAuth.Test.OpenId {
 					}
 				};
 			}
+			if (statelessRP) {
+				coordinator.RelyingParty = new OpenIdRelyingParty(null);
+			}
+
 			coordinator.Run();
 		}
 	}

@@ -40,13 +40,13 @@ namespace DotNetOpenAuth.Test.Messaging.Bindings {
 		/// </summary>
 		[TestMethod]
 		public void RandomCharactersTest() {
-			Assert.IsTrue(this.nonceElement.PrepareMessageForSending(this.message));
+			Assert.IsNotNull(this.nonceElement.PrepareMessageForSending(this.message));
 			Assert.IsNotNull(this.message.Nonce, "No nonce was set on the message.");
 			Assert.AreNotEqual(0, this.message.Nonce.Length, "The generated nonce was empty.");
 			string firstNonce = this.message.Nonce;
 
 			// Apply another nonce and verify that they are different than the first ones.
-			Assert.IsTrue(this.nonceElement.PrepareMessageForSending(this.message));
+			Assert.IsNotNull(this.nonceElement.PrepareMessageForSending(this.message));
 			Assert.IsNotNull(this.message.Nonce, "No nonce was set on the message.");
 			Assert.AreNotEqual(0, this.message.Nonce.Length, "The generated nonce was empty.");
 			Assert.AreNotEqual(firstNonce, this.message.Nonce, "The two generated nonces are identical.");
@@ -58,7 +58,7 @@ namespace DotNetOpenAuth.Test.Messaging.Bindings {
 		[TestMethod]
 		public void ValidMessageReceivedTest() {
 			this.message.Nonce = "a";
-			Assert.IsTrue(this.nonceElement.PrepareMessageForReceiving(this.message));
+			Assert.IsNotNull(this.nonceElement.PrepareMessageForReceiving(this.message));
 		}
 
 		/// <summary>
@@ -68,7 +68,7 @@ namespace DotNetOpenAuth.Test.Messaging.Bindings {
 		public void ValidMessageNoNonceReceivedTest() {
 			this.message.Nonce = string.Empty;
 			this.nonceElement.AllowZeroLengthNonce = true;
-			Assert.IsTrue(this.nonceElement.PrepareMessageForReceiving(this.message));
+			Assert.IsNotNull(this.nonceElement.PrepareMessageForReceiving(this.message));
 		}
 
 		/// <summary>
@@ -78,7 +78,7 @@ namespace DotNetOpenAuth.Test.Messaging.Bindings {
 		public void InvalidMessageNoNonceReceivedTest() {
 			this.message.Nonce = string.Empty;
 			this.nonceElement.AllowZeroLengthNonce = false;
-			Assert.IsTrue(this.nonceElement.PrepareMessageForReceiving(this.message));
+			Assert.IsNotNull(this.nonceElement.PrepareMessageForReceiving(this.message));
 		}
 
 		/// <summary>
@@ -87,7 +87,7 @@ namespace DotNetOpenAuth.Test.Messaging.Bindings {
 		[TestMethod, ExpectedException(typeof(ReplayedMessageException))]
 		public void ReplayDetectionTest() {
 			this.message.Nonce = "a";
-			Assert.IsTrue(this.nonceElement.PrepareMessageForReceiving(this.message));
+			Assert.IsNotNull(this.nonceElement.PrepareMessageForReceiving(this.message));
 
 			// Now receive the same message again. This should throw because it's a message replay.
 			this.nonceElement.PrepareMessageForReceiving(this.message);

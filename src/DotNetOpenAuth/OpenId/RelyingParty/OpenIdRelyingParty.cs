@@ -229,8 +229,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// responses from the OpenID Provider.
 		/// </param>
 		/// <returns>
-		/// An authentication request object that describes the HTTP response to
-		/// send to the user agent to initiate the authentication.
+		/// An authentication request object to customize the request and generate
+		/// an object to send to the user agent to initiate the authentication.
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown if no OpenID endpoint could be found.</exception>
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl) {

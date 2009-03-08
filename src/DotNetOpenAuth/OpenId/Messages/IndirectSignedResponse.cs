@@ -24,6 +24,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// payload is signed so the Relying Party can verify it has not been tampered with.
 	/// </summary>
 	[DebuggerDisplay("OpenID {Version} {Mode} (no id assertion)")]
+	[Serializable]
 	internal class IndirectSignedResponse : IndirectResponseBase, ITamperResistantOpenIdMessage, IProtocolMessageWithExtensions {
 		/// <summary>
 		/// The allowed date/time formats for the response_nonce parameter.
@@ -41,17 +42,16 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Backing field for the <see cref="IExpiringProtocolMessage.UtcCreationDate"/> property.
 		/// </summary>
+		/// <remarks>
+		/// The field initializer being DateTime.UtcNow allows for OpenID 1.x messages
+		/// to pass through the StandardExpirationBindingElement.
+		/// </remarks>
 		private DateTime creationDateUtc = DateTime.UtcNow;
 
 		/// <summary>
 		/// Backing store for the <see cref="ReturnToParameters"/> property.
 		/// </summary>
 		private IDictionary<string, string> returnToParameters;
-
-		/// <summary>
-		/// Backing store for the <see cref="ReturnToParametersSignatureValidated"/> property.
-		/// </summary>
-		private bool returnToParametersSignatureValidated;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="IndirectSignedResponse"/> class.
@@ -126,14 +126,11 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Although the required protection is reduced for OpenID 1.x,
 		/// this library will provide Relying Party hosts with all protections
 		/// by adding its own specially-crafted nonce to the authentication request
-		/// messages.
+		/// messages except for stateless RPs in OpenID 1.x messages.
 		/// </remarks>
 		public override MessageProtections RequiredProtection {
-			// TODO: Fix up Provider side to only use private associations (dumb mode), 
-			//       and then to add a special nonce value of its own to provide replay
-			//       protection to the Provider's users even when logging into 1.0 RPs.
-			//       When this is done, remove this conditional getter and always return
-			//       that All protections are required -- (will this work at the RP side?)
+			// We actually manage to provide All protections regardless of OpenID version
+			// on both the Provider and Relying Party side, except for stateless RPs for OpenID 1.x.
 			get { return this.Version.Major < 2 ? MessageProtections.TamperProtection : MessageProtections.All; }
 		}
 
@@ -169,6 +166,22 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Gets or sets the nonce that will protect the message from replay attacks.
 		/// </summary>
 		string IReplayProtectedProtocolMessage.Nonce { get; set; }
+
+		/// <summary>
+		/// Gets the context within which the nonce must be unique.
+		/// </summary>
+		string IReplayProtectedProtocolMessage.NonceContext {
+			get {
+				if (this.ProviderEndpoint != null) {
+					return this.ProviderEndpoint.AbsoluteUri;
+				} else {
+					// This is the Provider, on an OpenID 1.x check_authentication message.
+					// We don't need any special nonce context because the Provider
+					// generated and consumed the nonce.
+					return string.Empty;
+				}
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the UTC date/time the message was originally sent onto the network.
@@ -216,20 +229,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// This property is not persisted in the transmitted message, and
 		/// has no effect on the Provider-side of the communication.
 		/// </remarks>
-		internal bool ReturnToParametersSignatureValidated {
-			get {
-				return this.returnToParametersSignatureValidated;
-			}
-
-			set {
-				if (this.returnToParametersSignatureValidated == value) {
-					return;
-				}
-
-				this.returnToParametersSignatureValidated = value;
-				this.returnToParameters = null;
-			}
-		}
+		internal bool ReturnToParametersSignatureValidated { get; set; }
 
 		/// <summary>
 		/// Gets or sets the nonce that will protect the message from replay attacks.
@@ -251,6 +251,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <example>2005-05-15T17:11:51ZUNIQUE</example>
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by messaging framework via reflection.")]
 		[MessagePart("openid.response_nonce", IsRequired = true, AllowEmpty = false, RequiredProtection = ProtectionLevel.Sign, MinVersion = "2.0")]
+		[MessagePart("openid.response_nonce", IsRequired = false, AllowEmpty = false, RequiredProtection = ProtectionLevel.Sign, MaxVersion = "1.1")]
 		private string ResponseNonce {
 			get {
 				string uniqueFragment = ((IReplayProtectedProtocolMessage)this).Nonce;
@@ -275,13 +276,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		private IDictionary<string, string> ReturnToParameters {
 			get {
 				if (this.returnToParameters == null) {
-					// Only return data that can be validated as untampered with.
-					if (this.ReturnToParametersSignatureValidated) {
-						this.returnToParameters = HttpUtility.ParseQueryString(this.ReturnTo.Query).ToDictionary();
-					} else {
-						// Store an empty dictionary since we can't consider any callback data reliable.
-						this.returnToParameters = new Dictionary<string, string>(0);
-					}
+					this.returnToParameters = HttpUtility.ParseQueryString(this.ReturnTo.Query).ToDictionary();
 				}
 
 				return this.returnToParameters;
@@ -307,7 +302,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		}
 
 		/// <summary>
-		/// Gets the value of a named parameter in the return_to URL.
+		/// Gets the value of a named parameter in the return_to URL without signature protection.
 		/// </summary>
 		/// <param name="key">The full name of the parameter whose value is being sought.</param>
 		/// <returns>The value of the parameter if it is present and unaltered from when
@@ -326,13 +321,10 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		}
 
 		/// <summary>
-		/// Gets the names of the callback parameters added to the original authentication request.
+		/// Gets the names of the callback parameters added to the original authentication request
+		/// without signature protection.
 		/// </summary>
 		/// <returns>A sequence of the callback parameter names.</returns>
-		/// <remarks>
-		/// Callback parameters are only available if they are complete and untampered with
-		/// since the original request message (as proven by a signature).
-		/// </remarks>
 		internal IEnumerable<string> GetReturnToParameterNames() {
 			return this.ReturnToParameters.Keys;
 		}

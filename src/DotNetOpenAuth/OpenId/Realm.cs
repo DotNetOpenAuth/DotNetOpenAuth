@@ -24,6 +24,7 @@ namespace DotNetOpenAuth.OpenId {
 	/// This fills the OpenID Authentication 2.0 specification for realms.
 	/// See http://openid.net/specs/openid-authentication-2_0.html#realms
 	/// </remarks>
+	[Serializable]
 	public class Realm {
 		/// <summary>
 		/// A regex used to detect a wildcard that is being used in the realm.

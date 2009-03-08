@@ -20,7 +20,7 @@ namespace OpenIdProviderWebForms {
 				ProviderEndpoint.PendingAuthenticationRequest.LocalIdentifier = Code.Util.BuildIdentityUrl();
 			}
 			this.relyingPartyVerificationResultLabel.Text =
-				ProviderEndpoint.PendingAuthenticationRequest.IsReturnUrlDiscoverable ? "passed" : "failed";
+				ProviderEndpoint.PendingAuthenticationRequest.IsReturnUrlDiscoverable(ProviderEndpoint.Provider.Channel.WebRequestHandler) ? "passed" : "failed";
 
 			this.identityUrlLabel.Text = ProviderEndpoint.PendingAuthenticationRequest.LocalIdentifier.ToString();
 			this.realmLabel.Text = ProviderEndpoint.PendingAuthenticationRequest.Realm.ToString();
@@ -61,15 +61,13 @@ namespace OpenIdProviderWebForms {
 
 			ProviderEndpoint.PendingAuthenticationRequest.IsAuthenticated = true;
 			Debug.Assert(ProviderEndpoint.PendingAuthenticationRequest.IsResponseReady, "Setting authentication should be all that's necessary.");
-			ProviderEndpoint.PendingAuthenticationRequest.Response.Send();
-			ProviderEndpoint.PendingAuthenticationRequest = null;
+			ProviderEndpoint.SendResponse();
 		}
 
 		protected void No_Click(object sender, EventArgs e) {
 			ProviderEndpoint.PendingAuthenticationRequest.IsAuthenticated = false;
 			Debug.Assert(ProviderEndpoint.PendingAuthenticationRequest.IsResponseReady, "Setting authentication should be all that's necessary.");
-			ProviderEndpoint.PendingAuthenticationRequest.Response.Send();
-			ProviderEndpoint.PendingAuthenticationRequest = null;
+			ProviderEndpoint.SendResponse();
 		}
 	}
 }

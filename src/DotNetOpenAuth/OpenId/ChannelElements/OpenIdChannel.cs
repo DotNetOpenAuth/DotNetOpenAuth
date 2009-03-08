@@ -102,12 +102,16 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			// Customize the order of the incoming elements by moving the return_to elements in front.
 			var backwardCompatibility = incomingBindingElements.OfType<BackwardCompatibilityBindingElement>().SingleOrDefault();
 			var returnToSign = incomingBindingElements.OfType<ReturnToSignatureBindingElement>().SingleOrDefault();
-			if (backwardCompatibility != null && returnToSign != null) {
+			if (backwardCompatibility != null) {
+				incomingBindingElements.MoveTo(0, backwardCompatibility);
+			}
+			if (returnToSign != null) {
+				// Yes, this is intentionally, shifting the backward compatibility
+				// binding element to second position.
 				incomingBindingElements.MoveTo(0, returnToSign);
-				incomingBindingElements.MoveTo(1, backwardCompatibility);
 			}
 
-			CustomizeBindingElementOrder(outgoingBindingElements, incomingBindingElements);
+			this.CustomizeBindingElementOrder(outgoingBindingElements, incomingBindingElements);
 
 			// Change out the standard web request handler to reflect the standard
 			// OpenID pattern that outgoing web requests are to unknown and untrusted

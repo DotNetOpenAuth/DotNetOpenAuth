@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 	/// <summary>
 	/// The Attribute Exchange Fetch message, request leg.
 	/// </summary>
+	[Serializable]
 	public sealed class FetchRequest : ExtensionBase, IMessageWithEvents {
 		/// <summary>
 		/// The factory method that may be used in deserialization of this message.

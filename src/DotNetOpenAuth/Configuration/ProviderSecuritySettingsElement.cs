@@ -58,10 +58,10 @@ namespace DotNetOpenAuth.Configuration {
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether the Provider should take special care to protect OpenID 1.x relying parties
-		/// against replay attacks.
+		/// Gets or sets a value indicating whether the Provider should take special care 
+		/// to protect OpenID 1.x relying parties against replay attacks.
 		/// </summary>
-		[ConfigurationProperty(ProtectDownlevelReplayAttacksConfigName, DefaultValue = false)]
+		[ConfigurationProperty(ProtectDownlevelReplayAttacksConfigName, DefaultValue = ProviderSecuritySettings.ProtectDownlevelReplayAttacksDefault)]
 		public bool ProtectDownlevelReplayAttacks {
 			get { return (bool)this[ProtectDownlevelReplayAttacksConfigName]; }
 			set { this[ProtectDownlevelReplayAttacksConfigName] = value; }

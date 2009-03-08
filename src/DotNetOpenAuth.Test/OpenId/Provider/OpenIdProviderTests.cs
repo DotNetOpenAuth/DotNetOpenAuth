@@ -96,7 +96,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 				op => {
 					IRequest request = op.GetRequest();
 					Assert.IsInstanceOfType(request, typeof(AutoResponsiveRequest));
-					request.Response.Send();
+					op.SendResponse(request);
 				});
 			coordinator.Run();
 		}

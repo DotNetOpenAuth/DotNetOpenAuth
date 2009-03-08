@@ -96,17 +96,18 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>
 		/// <returns>
-		/// True if the <paramref name="message"/> applied to this binding element
-		/// and the operation was successful.  False otherwise.
+		/// The protections (if any) that this binding element applied to the message.
+		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
-		public bool PrepareMessageForSending(IProtocolMessage message) {
+		public MessageProtections? PrepareMessageForSending(IProtocolMessage message) {
 			foreach (IChannelBindingElement signer in this.signers) {
-				if (signer.PrepareMessageForSending(message)) {
-					return true;
+				MessageProtections? result = signer.PrepareMessageForSending(message);
+				if (result.HasValue) {
+					return result;
 				}
 			}
 
-			return false;
+			return null;
 		}
 
 		/// <summary>
@@ -115,17 +116,18 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <param name="message">The incoming message to process.</param>
 		/// <returns>
-		/// True if the <paramref name="message"/> applied to this binding element
-		/// and the operation was successful.  False if the operation did not apply to this message.
+		/// The protections (if any) that this binding element applied to the message.
+		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
-		public bool PrepareMessageForReceiving(IProtocolMessage message) {
+		public MessageProtections? PrepareMessageForReceiving(IProtocolMessage message) {
 			foreach (IChannelBindingElement signer in this.signers) {
-				if (signer.PrepareMessageForReceiving(message)) {
-					return true;
+				MessageProtections? result = signer.PrepareMessageForReceiving(message);
+				if (result.HasValue) {
+					return result;
 				}
 			}
 
-			return false;
+			return null;
 		}
 
 		#endregion

@@ -15,19 +15,20 @@
         <xs:element name="Association" msprop:Generator_UserTableName="Association" msprop:Generator_RowDeletedName="AssociationRowDeleted" msprop:Generator_RowChangedName="AssociationRowChanged" msprop:Generator_RowClassName="AssociationRow" msprop:Generator_RowChangingName="AssociationRowChanging" msprop:Generator_RowEvArgName="AssociationRowChangeEvent" msprop:Generator_RowEvHandlerName="AssociationRowChangeEventHandler" msprop:Generator_TableClassName="AssociationDataTable" msprop:Generator_TableVarName="tableAssociation" msprop:Generator_RowDeletingName="AssociationRowDeleting" msprop:Generator_TablePropName="Association">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="DistinguishingFactor" msprop:Generator_UserColumnName="DistinguishingFactor" msprop:Generator_ColumnPropNameInRow="DistinguishingFactor" msprop:Generator_ColumnVarNameInTable="columnDistinguishingFactor" msprop:Generator_ColumnPropNameInTable="DistinguishingFactorColumn" type="xs:string" />
-              <xs:element name="Handle" msprop:Generator_UserColumnName="Handle" msprop:Generator_ColumnPropNameInRow="Handle" msprop:Generator_ColumnVarNameInTable="columnHandle" msprop:Generator_ColumnPropNameInTable="HandleColumn" type="xs:string" />
-              <xs:element name="Expires" msprop:Generator_UserColumnName="Expires" msprop:Generator_ColumnPropNameInRow="Expires" msprop:Generator_ColumnVarNameInTable="columnExpires" msprop:Generator_ColumnPropNameInTable="ExpiresColumn" type="xs:dateTime" />
-              <xs:element name="PrivateData" msprop:Generator_UserColumnName="PrivateData" msprop:Generator_ColumnPropNameInRow="PrivateData" msprop:Generator_ColumnVarNameInTable="columnPrivateData" msprop:Generator_ColumnPropNameInTable="PrivateDataColumn" type="xs:base64Binary" />
+              <xs:element name="DistinguishingFactor" msprop:Generator_UserColumnName="DistinguishingFactor" msprop:Generator_ColumnVarNameInTable="columnDistinguishingFactor" msprop:Generator_ColumnPropNameInRow="DistinguishingFactor" msprop:Generator_ColumnPropNameInTable="DistinguishingFactorColumn" type="xs:string" />
+              <xs:element name="Handle" msprop:Generator_UserColumnName="Handle" msprop:Generator_ColumnVarNameInTable="columnHandle" msprop:Generator_ColumnPropNameInRow="Handle" msprop:Generator_ColumnPropNameInTable="HandleColumn" type="xs:string" />
+              <xs:element name="Expires" msprop:Generator_UserColumnName="Expires" msprop:Generator_ColumnVarNameInTable="columnExpires" msprop:Generator_ColumnPropNameInRow="Expires" msprop:Generator_ColumnPropNameInTable="ExpiresColumn" type="xs:dateTime" />
+              <xs:element name="PrivateData" msprop:Generator_UserColumnName="PrivateData" msprop:Generator_ColumnVarNameInTable="columnPrivateData" msprop:Generator_ColumnPropNameInRow="PrivateData" msprop:Generator_ColumnPropNameInTable="PrivateDataColumn" type="xs:base64Binary" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
         <xs:element name="Nonce" msprop:Generator_UserTableName="Nonce" msprop:Generator_RowDeletedName="NonceRowDeleted" msprop:Generator_RowChangedName="NonceRowChanged" msprop:Generator_RowClassName="NonceRow" msprop:Generator_RowChangingName="NonceRowChanging" msprop:Generator_RowEvArgName="NonceRowChangeEvent" msprop:Generator_RowEvHandlerName="NonceRowChangeEventHandler" msprop:Generator_TableClassName="NonceDataTable" msprop:Generator_TableVarName="tableNonce" msprop:Generator_RowDeletingName="NonceRowDeleting" msprop:Generator_TablePropName="Nonce">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="Code" msprop:Generator_UserColumnName="Code" msprop:Generator_ColumnVarNameInTable="columnCode" msprop:Generator_ColumnPropNameInRow="Code" msprop:Generator_ColumnPropNameInTable="CodeColumn" type="xs:string" />
-              <xs:element name="Issued" msprop:Generator_UserColumnName="Issued" msprop:Generator_ColumnVarNameInTable="columnIssued" msprop:Generator_ColumnPropNameInRow="Issued" msprop:Generator_ColumnPropNameInTable="IssuedColumn" type="xs:dateTime" />
-              <xs:element name="Expires" msprop:Generator_UserColumnName="Expires" msprop:Generator_ColumnPropNameInRow="Expires" msprop:Generator_ColumnVarNameInTable="columnExpires" msprop:Generator_ColumnPropNameInTable="ExpiresColumn" type="xs:dateTime" />
+              <xs:element name="Context" msprop:Generator_UserColumnName="Context" msprop:Generator_ColumnPropNameInRow="Context" msprop:Generator_ColumnVarNameInTable="columnContext" msprop:Generator_ColumnPropNameInTable="ContextColumn" type="xs:string" />
+              <xs:element name="Code" msprop:Generator_UserColumnName="Code" msprop:Generator_ColumnPropNameInRow="Code" msprop:Generator_ColumnVarNameInTable="columnCode" msprop:Generator_ColumnPropNameInTable="CodeColumn" type="xs:string" />
+              <xs:element name="Issued" msprop:Generator_UserColumnName="Issued" msprop:Generator_ColumnPropNameInRow="Issued" msprop:Generator_ColumnVarNameInTable="columnIssued" msprop:Generator_ColumnPropNameInTable="IssuedColumn" type="xs:dateTime" />
+              <xs:element name="Expires" msprop:Generator_UserColumnName="Expires" msprop:Generator_ColumnVarNameInTable="columnExpires" msprop:Generator_ColumnPropNameInRow="Expires" msprop:Generator_ColumnPropNameInTable="ExpiresColumn" type="xs:dateTime" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -38,9 +39,10 @@
       <xs:field xpath="mstns:DistinguishingFactor" />
       <xs:field xpath="mstns:Handle" />
     </xs:unique>
-    <xs:unique name="Nonce_PrimaryKey" msdata:ConstraintName="PrimaryKey" msdata:PrimaryKey="true">
+    <xs:unique name="Constraint1" msdata:PrimaryKey="true">
       <xs:selector xpath=".//mstns:Nonce" />
       <xs:field xpath="mstns:Code" />
+      <xs:field xpath="mstns:Context" />
     </xs:unique>
   </xs:element>
 </xs:schema>

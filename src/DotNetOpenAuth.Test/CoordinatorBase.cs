@@ -58,6 +58,8 @@ namespace DotNetOpenAuth.Test {
 			// If this main thread is aborted (test run aborted), go ahead and abort the other two threads.
 			party1Thread = new Thread(() => { safeWrapper(() => { this.party1Action(party1Object); }); });
 			party2Thread = new Thread(() => { safeWrapper(() => { this.party2Action(party2Object); }); });
+			party1Thread.Name = "P1";
+			party2Thread.Name = "P2";
 			try {
 				party1Thread.Start();
 				party2Thread.Start();

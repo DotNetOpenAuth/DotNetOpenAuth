@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using System;
+	using System.Collections.Generic;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
@@ -56,6 +57,29 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			var rp = CreateRelyingParty();
 			var authResponse = new PositiveAuthenticationResponse(assertion, rp);
 			Assert.AreEqual(AuthenticationStatus.Failed, authResponse.Status);
+		}
+
+		[TestMethod]
+		public void GetCallbackArguments() {
+			PositiveAssertionResponse assertion = this.GetPositiveAssertion();
+			var rp = CreateRelyingParty();
+
+			UriBuilder returnToBuilder = new UriBuilder(assertion.ReturnTo);
+			returnToBuilder.AppendQueryArgs(new Dictionary<string, string> { { "a", "b" } });
+			assertion.ReturnTo = returnToBuilder.Uri;
+			var authResponse = new PositiveAuthenticationResponse(assertion, rp);
+
+			// First pretend that the return_to args were signed.
+			assertion.ReturnToParametersSignatureValidated = true;
+			Assert.AreEqual(1, authResponse.GetCallbackArguments().Count);
+			Assert.IsTrue(authResponse.GetCallbackArguments().ContainsKey("a"));
+			Assert.AreEqual("b", authResponse.GetCallbackArgument("a"));
+
+			// Now simulate them NOT being signed.
+			assertion.ReturnToParametersSignatureValidated = false;
+			Assert.AreEqual(0, authResponse.GetCallbackArguments().Count);
+			Assert.IsFalse(authResponse.GetCallbackArguments().ContainsKey("a"));
+			Assert.IsNull(authResponse.GetCallbackArgument("a"));
 		}
 
 		private PositiveAssertionResponse GetPositiveAssertion() {

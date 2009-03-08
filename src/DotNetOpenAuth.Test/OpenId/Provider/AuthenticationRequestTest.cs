@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 
 			// Now simulate the request being rejected and extract the user_setup_url
 			request.IsAuthenticated = false;
-			Uri userSetupUrl = ((NegativeAssertionResponse)request.Response.OriginalMessage).UserSetupUrl;
+			Uri userSetupUrl = ((NegativeAssertionResponse)request.Response).UserSetupUrl;
 			Assert.IsNotNull(userSetupUrl);
 
 			// Now construct a new request as if it had just come in.
@@ -54,11 +54,11 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			checkIdRequest.Realm = RPRealmUri;
 			checkIdRequest.ReturnTo = RPUri;
 			AuthenticationRequest request = new AuthenticationRequest(provider, checkIdRequest);
-			Assert.IsFalse(request.IsReturnUrlDiscoverable);
+			Assert.IsFalse(request.IsReturnUrlDiscoverable(this.MockResponder.MockWebRequestHandler));
 
 			this.MockResponder.RegisterMockRPDiscovery();
 			request = new AuthenticationRequest(provider, checkIdRequest);
-			Assert.IsTrue(request.IsReturnUrlDiscoverable);
+			Assert.IsTrue(request.IsReturnUrlDiscoverable(this.MockResponder.MockWebRequestHandler));
 		}
 	}
 }

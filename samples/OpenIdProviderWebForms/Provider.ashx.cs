@@ -18,13 +18,12 @@
 		}
 
 		public void ProcessRequest(HttpContext context) {
-			OpenIdProvider provider = new OpenIdProvider();
-			IRequest request = provider.GetRequest();
+			IRequest request = ProviderEndpoint.Provider.GetRequest();
 			if (request != null) {
 				// Some OpenID requests are automatable and can be responded to immediately.
+				// But authentication requests cannot be responded to until something on
+				// this site decides whether to approve or disapprove the authentication.
 				if (!request.IsResponseReady) {
-					// But authentication requests cannot be responded to until something on
-					// this site decides whether to approve or disapprove the authentication.
 					var idrequest = (IAuthenticationRequest)request;
 
 					// We store the authentication request in the user's session so that
@@ -42,17 +41,17 @@
 					// to log this user in.  If any UI needs to be presented to the user, 
 					// the previous call to ProcessAuthenticationChallenge MAY not return
 					// due to a redirect to some ASPX page.
-				} else {
-					// Some other automatable OpenID request is coming down, so clear
-					// any previously session stored authentication request that might be
-					// stored for this user.
-					ProviderEndpoint.PendingAuthenticationRequest = null;
 				}
 
 				// Whether this was an automated message or an authentication message,
 				// if there is a response ready to send back immediately, do so.
 				if (request.IsResponseReady) {
-					request.Response.Send();
+					// We DON'T use ProviderEndpoint.SendResponse because
+					// that only sends responses to requests in PendingAuthenticationRequest,
+					// but we don't set that for associate and other non-checkid requests.
+					ProviderEndpoint.Provider.SendResponse(request);
+
+					// Make sure that any PendingAuthenticationRequest that MAY be set is cleared.
 					ProviderEndpoint.PendingAuthenticationRequest = null;
 				}
 			}

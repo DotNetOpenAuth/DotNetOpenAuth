@@ -644,13 +644,14 @@ namespace DotNetOpenAuth.Messaging {
 
 			MessageProtections appliedProtection = MessageProtections.None;
 			foreach (IChannelBindingElement bindingElement in this.outgoingBindingElements) {
-				if (bindingElement.PrepareMessageForSending(message)) {
+				MessageProtections? elementProtection = bindingElement.PrepareMessageForSending(message);
+				if (elementProtection.HasValue) {
 					Logger.DebugFormat("Binding element {0} applied to message.", bindingElement.GetType().FullName);
 
 					// Ensure that only one protection binding element applies to this message
 					// for each protection type.
-					ErrorUtilities.VerifyProtocol((appliedProtection & bindingElement.Protection) == 0, MessagingStrings.TooManyBindingsOfferingSameProtection, bindingElement.Protection);
-					appliedProtection |= bindingElement.Protection;
+					ErrorUtilities.VerifyProtocol((appliedProtection & elementProtection.Value) == 0, MessagingStrings.TooManyBindingsOfferingSameProtection, elementProtection.Value);
+					appliedProtection |= elementProtection.Value;
 				} else {
 					Logger.DebugFormat("Binding element {0} did not apply to message.", bindingElement.GetType().FullName);
 				}
@@ -757,13 +758,23 @@ namespace DotNetOpenAuth.Messaging {
 
 			MessageProtections appliedProtection = MessageProtections.None;
 			foreach (IChannelBindingElement bindingElement in this.incomingBindingElements) {
-				if (bindingElement.PrepareMessageForReceiving(message)) {
+				MessageProtections? elementProtection = bindingElement.PrepareMessageForReceiving(message);
+				if (elementProtection.HasValue) {
 					Logger.DebugFormat("Binding element {0} applied to message.", bindingElement.GetType().FullName);
 
 					// Ensure that only one protection binding element applies to this message
 					// for each protection type.
-					ErrorUtilities.VerifyInternal((appliedProtection & bindingElement.Protection) == 0, MessagingStrings.TooManyBindingsOfferingSameProtection, bindingElement.Protection);
-					appliedProtection |= bindingElement.Protection;
+					if ((appliedProtection & elementProtection.Value) != 0) {
+						// It turns out that this MAY not be a fatal error condition.  
+						// But it may indicate a problem.
+						// Specifically, when this RP uses OpenID 1.x to talk to an OP, and both invent
+						// their own replay protection for OpenID 1.x, and the OP happens to reuse
+						// openid.response_nonce, then this RP may consider both the RP's own nonce and
+						// the OP's nonce and "apply" replay protection twice.  This actually isn't a problem.
+						Logger.WarnFormat(MessagingStrings.TooManyBindingsOfferingSameProtection, elementProtection.Value);
+					}
+
+					appliedProtection |= elementProtection.Value;
 				} else {
 					Logger.DebugFormat("Binding element {0} did not apply to message.", bindingElement.GetType().FullName);
 				}

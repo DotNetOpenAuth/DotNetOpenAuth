@@ -21,6 +21,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// user operating the user agent is in fact some specific user known to the Provider.
 	/// </summary>
 	[DebuggerDisplay("OpenID {Version} {Mode} {LocalIdentifier}")]
+	[Serializable]
 	internal class PositiveAssertionResponse : IndirectSignedResponse {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PositiveAssertionResponse"/> class.

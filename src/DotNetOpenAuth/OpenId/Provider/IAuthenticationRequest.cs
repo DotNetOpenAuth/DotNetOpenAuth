@@ -34,18 +34,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		Realm Realm { get; }
 
 		/// <summary>
-		/// Gets a value indicating whether verification of the return URL claimed by the Relying Party
-		/// succeeded.
-		/// </summary>
-		/// <remarks>
-		/// Return URL verification is only attempted if this property is queried.
-		/// The result of the verification is cached per request so calling this
-		/// property getter multiple times in one request is not a performance hit.
-		/// See OpenID Authentication 2.0 spec section 9.2.1.
-		/// </remarks>
-		bool IsReturnUrlDiscoverable { get; }
-
-		/// <summary>
 		/// Gets a value indicating whether the Provider should help the user 
 		/// select a Claimed Identifier to send back to the relying party.
 		/// </summary>
@@ -121,5 +109,18 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// request before the <see cref="ClaimedIdentifier"/> property is set.
 		/// </exception>
 		void SetClaimedIdentifierFragment(string fragment);
+
+		/// <summary>
+		/// Attempts to perform relying party discovery of the return URL claimed by the Relying Party.
+		/// </summary>
+		/// <param name="requestHandler">The request handler to use to perform relying party discovery.</param>
+		/// <returns>
+		/// 	<c>true</c> if the Relying Party passed discovery verification; <c>false</c> otherwise.
+		/// </returns>
+		/// <remarks>
+		/// 	<para>Return URL verification is only attempted if this method is called.</para>
+		/// 	<para>See OpenID Authentication 2.0 spec section 9.2.1.</para>
+		/// </remarks>
+		bool IsReturnUrlDiscoverable(IDirectWebRequestHandler requestHandler);
 	}
 }
