@@ -103,13 +103,16 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				// these values.
 				if (response.ProviderEndpoint == null) {
 					string op_endpoint = response.GetReturnToArgument(ProviderEndpointParameterName);
+					ErrorUtilities.VerifyInternal(op_endpoint != null, ProviderEndpointParameterName + " could not be retrieved from the return_to URL.");
 					response.ProviderEndpoint = new Uri(op_endpoint);
 				}
 
 				PositiveAssertionResponse authResponse = response as PositiveAssertionResponse;
 				if (authResponse != null) {
 					if (authResponse.ClaimedIdentifier == null) {
-						authResponse.ClaimedIdentifier = response.GetReturnToArgument(ClaimedIdentifierParameterName);
+						string claimedId = response.GetReturnToArgument(ClaimedIdentifierParameterName);
+						ErrorUtilities.VerifyInternal(claimedId != null, ClaimedIdentifierParameterName + " could not be retrieved from the return_to URL.");
+						authResponse.ClaimedIdentifier = claimedId;
 					}
 				}
 
