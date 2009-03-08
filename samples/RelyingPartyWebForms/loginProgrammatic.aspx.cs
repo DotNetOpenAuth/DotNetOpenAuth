@@ -64,7 +64,7 @@
 					case AuthenticationStatus.Authenticated:
 						// This is where you would look for any OpenID extension responses included
 						// in the authentication assertion.
-						// var extension = openid.Response.GetExtension<SomeExtensionResponseType>();
+						////var extension = openid.GetResponse().GetExtension<SomeExtensionResponseType>();
 
 						// Use FormsAuthentication to tell ASP.NET that the user is now logged in,
 						// with the OpenID Claimed Identifier as their username.
