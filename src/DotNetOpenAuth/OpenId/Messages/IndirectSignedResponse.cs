@@ -50,11 +50,6 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		private IDictionary<string, string> returnToParameters;
 
 		/// <summary>
-		/// Backing store for the <see cref="ReturnToParametersSignatureValidated"/> property.
-		/// </summary>
-		private bool returnToParametersSignatureValidated;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="IndirectSignedResponse"/> class.
 		/// </summary>
 		/// <param name="request">
@@ -233,20 +228,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// This property is not persisted in the transmitted message, and
 		/// has no effect on the Provider-side of the communication.
 		/// </remarks>
-		internal bool ReturnToParametersSignatureValidated {
-			get {
-				return this.returnToParametersSignatureValidated;
-			}
-
-			set {
-				if (this.returnToParametersSignatureValidated == value) {
-					return;
-				}
-
-				this.returnToParametersSignatureValidated = value;
-				this.returnToParameters = null;
-			}
-		}
+		internal bool ReturnToParametersSignatureValidated { get; set; }
 
 		/// <summary>
 		/// Gets or sets the nonce that will protect the message from replay attacks.
@@ -293,13 +275,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		private IDictionary<string, string> ReturnToParameters {
 			get {
 				if (this.returnToParameters == null) {
-					// Only return data that can be validated as untampered with.
-					if (this.ReturnToParametersSignatureValidated) {
-						this.returnToParameters = HttpUtility.ParseQueryString(this.ReturnTo.Query).ToDictionary();
-					} else {
-						// Store an empty dictionary since we can't consider any callback data reliable.
-						this.returnToParameters = new Dictionary<string, string>(0);
-					}
+					this.returnToParameters = HttpUtility.ParseQueryString(this.ReturnTo.Query).ToDictionary();
 				}
 
 				return this.returnToParameters;
@@ -325,7 +301,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		}
 
 		/// <summary>
-		/// Gets the value of a named parameter in the return_to URL.
+		/// Gets the value of a named parameter in the return_to URL without signature protection.
 		/// </summary>
 		/// <param name="key">The full name of the parameter whose value is being sought.</param>
 		/// <returns>The value of the parameter if it is present and unaltered from when
@@ -344,13 +320,10 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		}
 
 		/// <summary>
-		/// Gets the names of the callback parameters added to the original authentication request.
+		/// Gets the names of the callback parameters added to the original authentication request
+		/// without signature protection.
 		/// </summary>
 		/// <returns>A sequence of the callback parameter names.</returns>
-		/// <remarks>
-		/// Callback parameters are only available if they are complete and untampered with
-		/// since the original request message (as proven by a signature).
-		/// </remarks>
 		internal IEnumerable<string> GetReturnToParameterNames() {
 			return this.ReturnToParameters.Keys;
 		}

@@ -95,15 +95,17 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		public MessageProtections? PrepareMessageForReceiving(IProtocolMessage message) {
 			IndirectSignedResponse response = message as IndirectSignedResponse;
 			if (response != null && response.Version.Major < 2) {
-				// Although GetReturnToArgument may return null if the parameters are not signed,
-				// the ReturnToSignatureBindingElement should have thrown an exception already
-				// if this is a 1.0 OP signed response without a valid signature since 1.0 OPs
-				// are not supposed to be able to send unsolicited assertions.
-				// Any safe solicited assertion would include our signature, allowing us to find
-				// these values.
+				// GetReturnToArgument may return parameters that are not signed,
+				// but we must allow for that since in OpenID 1.x, a stateless RP has 
+				// no way to preserve the provider endpoint and claimed identifier otherwise.  
+				// We'll verify the positive assertion later in the 
+				// RelyingParty.PositiveAuthenticationResponse constructor anyway.
+				// If this is a 1.0 OP signed response without these parameters then we didn't initiate
+				// the request ,and since 1.0 OPs are not supposed to be able to send unsolicited 
+				// assertions it's an invalid case that we throw an exception for.
 				if (response.ProviderEndpoint == null) {
 					string op_endpoint = response.GetReturnToArgument(ProviderEndpointParameterName);
-					ErrorUtilities.VerifyInternal(op_endpoint != null, ProviderEndpointParameterName + " could not be retrieved from the return_to URL.");
+					ErrorUtilities.VerifyProtocol(op_endpoint != null, MessagingStrings.RequiredParametersMissing, message.GetType().Name, ProviderEndpointParameterName);
 					response.ProviderEndpoint = new Uri(op_endpoint);
 				}
 
@@ -111,7 +113,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				if (authResponse != null) {
 					if (authResponse.ClaimedIdentifier == null) {
 						string claimedId = response.GetReturnToArgument(ClaimedIdentifierParameterName);
-						ErrorUtilities.VerifyInternal(claimedId != null, ClaimedIdentifierParameterName + " could not be retrieved from the return_to URL.");
+						ErrorUtilities.VerifyProtocol(claimedId != null, MessagingStrings.RequiredParametersMissing, message.GetType().Name, ClaimedIdentifierParameterName);
 						authResponse.ClaimedIdentifier = claimedId;
 					}
 				}

@@ -158,13 +158,18 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The value of the argument, or null if the named parameter could not be found.
 		/// </returns>
 		/// <remarks>
-		/// 	<para>This may return any argument on the querystring that came with the authentication response,
-		/// which may include parameters not explicitly added using
-		/// <see cref="IAuthenticationRequest.AddCallbackArguments(string, string)"/>.</para>
-		/// 	<para>Note that these values are NOT protected against tampering in transit.</para>
+		/// Callback parameters are only available if they are complete and untampered with
+		/// since the original request message (as proven by a signature).
+		/// If the relying party is operating in stateless mode <c>null</c> is always
+		/// returned since the callback arguments could not be signed to protect against
+		/// tampering.
 		/// </remarks>
 		public string GetCallbackArgument(string key) {
-			return this.response.GetReturnToArgument(key);
+			if (this.response.ReturnToParametersSignatureValidated) {
+				return this.response.GetReturnToArgument(key);
+			} else {
+				return null;
+			}
 		}
 
 		/// <summary>
@@ -174,22 +179,27 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <returns>A name-value dictionary.  Never null.</returns>
 		/// <remarks>
-		/// 	<para>This MAY return any argument on the querystring that came with the authentication response,
-		/// which may include parameters not explicitly added using
-		/// <see cref="IAuthenticationRequest.AddCallbackArguments(string, string)"/>.</para>
-		/// 	<para>Note that these values are NOT protected against tampering in transit.</para>
+		/// Callback parameters are only available if they are complete and untampered with
+		/// since the original request message (as proven by a signature).
+		/// If the relying party is operating in stateless mode an empty dictionary is always
+		/// returned since the callback arguments could not be signed to protect against
+		/// tampering.
 		/// </remarks>
 		public IDictionary<string, string> GetCallbackArguments() {
-			var args = new Dictionary<string, string>();
+			if (this.response.ReturnToParametersSignatureValidated) {
+				var args = new Dictionary<string, string>();
 
-			// Return all the return_to arguments, except for the OpenID-supporting ones.
-			// The only arguments that should be returned here are the ones that the host
-			// web site adds explicitly.
-			foreach (string key in this.response.GetReturnToParameterNames().Where(key => !OpenIdRelyingParty.IsOpenIdSupportingParameter(key))) {
-				args[key] = this.response.GetReturnToArgument(key);
+				// Return all the return_to arguments, except for the OpenID-supporting ones.
+				// The only arguments that should be returned here are the ones that the host
+				// web site adds explicitly.
+				foreach (string key in this.response.GetReturnToParameterNames().Where(key => !OpenIdRelyingParty.IsOpenIdSupportingParameter(key))) {
+					args[key] = this.response.GetReturnToArgument(key);
+				}
+
+				return args;
+			} else {
+				return EmptyDictionary<string, string>.Instance;
 			}
-
-			return args;
 		}
 
 		/// <summary>
@@ -234,6 +244,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// Yadis.IdentifierDiscoveryCachePolicy is set to HttpRequestCacheLevel.CacheIfAvailable
 			// which means that the .NET runtime is caching our discoveries for us.  This turns out
 			// to be very fast and keeps our code clean and easily verifiable as correct and secure.
+			// CAUTION: if this discovery is ever made to be skipped based on previous discovery
+			// data that was saved to the return_to URL, be careful to verify that that information
+			// is signed by the RP before it's considered reliable.  In 1.x stateless mode, this RP
+			// doesn't (and can't) sign its own return_to URL, so its cached discovery information
+			// is merely a hint that must be verified by performing discovery again here.
 			var discoveryResults = this.response.ClaimedIdentifier.Discover(this.relyingParty.WebRequestHandler);
 			ErrorUtilities.VerifyProtocol(discoveryResults.Contains(this.endpoint), OpenIdStrings.IssuedAssertionFailsIdentifierDiscovery, this.endpoint, discoveryResults.ToStringDeferred(true));
 		}

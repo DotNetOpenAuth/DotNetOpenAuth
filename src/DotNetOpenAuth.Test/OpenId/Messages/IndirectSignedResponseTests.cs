@@ -157,12 +157,12 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Assert.IsTrue(this.response.GetReturnToParameterNames().Contains("a"));
 			Assert.AreEqual("b", this.response.GetReturnToArgument("a"));
 
-			// Now simulate them NOT being signed.
+			// Now simulate them NOT being signed.  They should still be visible at this level.
 			this.response = new IndirectSignedResponse(this.request);
 			this.response.ReturnToParametersSignatureValidated = false;
-			Assert.AreEqual(0, this.response.GetReturnToParameterNames().Count());
-			Assert.IsFalse(this.response.GetReturnToParameterNames().Contains("a"));
-			Assert.IsNull(this.response.GetReturnToArgument("a"));
+			Assert.AreEqual(1, this.response.GetReturnToParameterNames().Count());
+			Assert.IsTrue(this.response.GetReturnToParameterNames().Contains("a"));
+			Assert.AreEqual("b", this.response.GetReturnToArgument("a"));
 		}
 	}
 }
