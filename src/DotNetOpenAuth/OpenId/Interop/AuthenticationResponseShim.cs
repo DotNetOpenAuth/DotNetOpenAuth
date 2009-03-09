@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.OpenId.Interop {
 	/// <summary>
 	/// The COM type used to provide details of an authentication result to a relying party COM client.
 	/// </summary>
-	[SuppressMessage("Microsoft.Interoperability", "CA1409:ComVisibleTypesShouldBeCreatable")]
+	[SuppressMessage("Microsoft.Interoperability", "CA1409:ComVisibleTypesShouldBeCreatable", Justification = "It's only creatable on the inside.  It must be ComVisible for ASP to see it.")]
 	[ComVisible(true), Obsolete("This class acts as a COM Server and should not be called directly from .NET code.")]
 	public class AuthenticationResponseShim {
 		/// <summary>
