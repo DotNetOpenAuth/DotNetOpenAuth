@@ -168,7 +168,9 @@ namespace DotNetOpenAuth.Messaging {
 				// If in the future, some callers actually want to read this response
 				// we'll need to figure out how to reliably call Close on exception
 				// responses at all callers.
-				response.Close();
+				if (response != null) {
+					response.Close();
+				}
 
 				throw ErrorUtilities.Wrap(ex, MessagingStrings.ErrorInRequestReplyMessage);
 			}
