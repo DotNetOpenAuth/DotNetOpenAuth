@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
@@ -16,6 +17,8 @@ namespace DotNetOpenAuth.OpenId {
 	/// An Identifier is either a "http" or "https" URI, or an XRI.
 	/// </summary>
 	[Serializable]
+	[ContractVerification(true)]
+	[Pure]
 	public abstract class Identifier {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Identifier"/> class.
@@ -62,6 +65,7 @@ namespace DotNetOpenAuth.OpenId {
 			if (identifier == null) {
 				return null;
 			}
+
 			return new UriIdentifier(identifier);
 		}
 

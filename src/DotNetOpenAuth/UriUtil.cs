@@ -13,10 +13,12 @@ namespace DotNetOpenAuth {
 	using System.Web;
 	using System.Web.UI;
 	using DotNetOpenAuth.Messaging;
+	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Utility methods for working with URIs.
 	/// </summary>
+	[ContractVerification(true)]
 	internal static class UriUtil {
 		/// <summary>
 		/// Tests a URI for the presence of an OAuth payload.
@@ -58,6 +60,8 @@ namespace DotNetOpenAuth {
 		/// <param name="builder">The UriBuilder to render as a string.</param>
 		/// <returns>The string version of the Uri.</returns>
 		internal static string ToStringWithImpliedPorts(this UriBuilder builder) {
+			Contract.Requires(builder != null);
+			Contract.Ensures(Contract.Result<string>() != null);
 			ErrorUtilities.VerifyArgumentNotNull(builder, "builder");
 
 			// We only check for implied ports on HTTP and HTTPS schemes since those
@@ -70,7 +74,9 @@ namespace DotNetOpenAuth {
 				// Be really careful to only remove the first :80 or :443 so we are guaranteed
 				// we're removing only the port (and not something in the query string that 
 				// looks like a port.
-				return Regex.Replace(url, @"^(https?://[^:]+):\d+", m => m.Groups[1].Value, RegexOptions.IgnoreCase);
+				string result = Regex.Replace(url, @"^(https?://[^:]+):\d+", m => m.Groups[1].Value, RegexOptions.IgnoreCase);
+				Contract.Assume(result != null); // Regex.Replace never returns null
+				return result;
 			} else {
 				// The port must be explicitly given anyway.
 				return builder.ToString();

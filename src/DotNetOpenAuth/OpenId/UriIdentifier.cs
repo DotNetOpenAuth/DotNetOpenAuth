@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text.RegularExpressions;
 	using System.Web.UI.HtmlControls;
@@ -20,6 +21,8 @@ namespace DotNetOpenAuth.OpenId {
 	/// A URI style of OpenID Identifier.
 	/// </summary>
 	[Serializable]
+	//[ContractVerification(true)]
+	[Pure]
 	public sealed class UriIdentifier : Identifier {
 		/// <summary>
 		/// The allowed protocol schemes in a URI Identifier.
@@ -30,7 +33,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// Initializes a new instance of the <see cref="UriIdentifier"/> class.
 		/// </summary>
 		/// <param name="uri">The value this identifier will represent.</param>
-		internal UriIdentifier(string uri) : this(uri, false) { }
+		internal UriIdentifier(string uri)
+			: this(uri, false) {
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UriIdentifier"/> class.
@@ -56,7 +61,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// Initializes a new instance of the <see cref="UriIdentifier"/> class.
 		/// </summary>
 		/// <param name="uri">The value this identifier will represent.</param>
-		internal UriIdentifier(Uri uri) : this(uri, false) { }
+		internal UriIdentifier(Uri uri) : this(uri, false) {
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UriIdentifier"/> class.
@@ -301,6 +307,15 @@ namespace DotNetOpenAuth.OpenId {
 			// This identifier is explicitly NOT https, so we cannot change it.
 			secureIdentifier = new NoDiscoveryIdentifier(this, true);
 			return false;
+		}
+
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[ContractInvariantMethod]
+		protected void ObjectInvariant() {
+			Contract.Invariant(this.Uri != null);
+			Contract.Invariant(this.Uri.AbsoluteUri != null);
 		}
 
 		/// <summary>
