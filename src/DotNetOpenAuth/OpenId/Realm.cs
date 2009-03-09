@@ -26,7 +26,7 @@ namespace DotNetOpenAuth.OpenId {
 	/// See http://openid.net/specs/openid-authentication-2_0.html#realms
 	/// </remarks>
 	[Serializable]
-//	[ContractVerification(true)]
+	[ContractVerification(true)]
 	[Pure]
 	public sealed class Realm {
 		/// <summary>
@@ -55,7 +55,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// The Uri of the realm, with the wildcard (if any) removed.
 		/// </summary>
-		private Uri uri;
+		private readonly Uri uri;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Realm"/> class.
@@ -63,6 +63,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="realmUrl">The realm URL to use in the new instance.</param>
 		[SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads", Justification = "Not all realms are valid URLs (because of wildcards).")]
 		public Realm(string realmUrl) {
+			Contract.Requires(!string.IsNullOrEmpty(realmUrl));
+			Contract.Ensures(this.uri != null);
 			ErrorUtilities.VerifyNonZeroLength(realmUrl, "realmUrl");
 			this.DomainWildcard = Regex.IsMatch(realmUrl, WildcardDetectionPattern);
 			this.uri = new Uri(Regex.Replace(realmUrl, WildcardDetectionPattern, m => m.Groups[1].Value));
@@ -78,6 +80,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		/// <param name="realmUrl">The realm URL of the Relying Party.</param>
 		public Realm(Uri realmUrl) {
+			Contract.Requires(realmUrl != null);
+			Contract.Requires(realmUrl.AbsoluteUri != null);
+			Contract.Ensures(this.uri != null);
 			ErrorUtilities.VerifyArgumentNotNull(realmUrl, "realmUrl");
 			this.uri = realmUrl;
 			if (!this.uri.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) &&
@@ -386,6 +391,10 @@ namespace DotNetOpenAuth.OpenId {
 		protected void ObjectInvariant() {
 			Contract.Invariant(this.uri != null);
 			Contract.Invariant(this.uri.AbsoluteUri != null);
+			Contract.Invariant(this.Host != null);
+			Contract.Invariant(this.Scheme != null);
+			Contract.Invariant(this.AbsolutePath != null);
+			Contract.Invariant(this.PathAndQuery != null);
 		}
 
 		/// <summary>
