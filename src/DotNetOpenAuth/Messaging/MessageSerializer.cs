@@ -34,15 +34,12 @@ namespace DotNetOpenAuth.Messaging {
 		private MessageSerializer(Type messageType) {
 			Contract.Requires(messageType != null);
 
-			if (!typeof(IMessage).IsAssignableFrom(messageType)) {
-				throw new ArgumentException(
-					string.Format(
-						CultureInfo.CurrentCulture,
-						MessagingStrings.UnexpectedType,
-						typeof(IMessage).FullName,
-						messageType.FullName),
-						"messageType");
-			}
+			ErrorUtilities.VerifyArgumentNamed(
+				typeof(IMessage).IsAssignableFrom(messageType),
+				"messageType",
+				MessagingStrings.UnexpectedType,
+				typeof(IMessage).FullName,
+				messageType.FullName);
 
 			this.messageType = messageType;
 		}
