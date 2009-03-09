@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -225,6 +226,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				ErrorUtilities.VerifyNonZeroLength(value, "value");
 
 				byte[] nonce = Convert.FromBase64String(value);
+				Contract.Assume(nonce != null);
 				DateTime creationDateUtc = new DateTime(BitConverter.ToInt64(nonce, 0), DateTimeKind.Utc);
 				byte[] randomPart = new byte[NonceByteLength];
 				Array.Copy(nonce, sizeof(long), randomPart, 0, NonceByteLength);

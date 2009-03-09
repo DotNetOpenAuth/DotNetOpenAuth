@@ -9,15 +9,16 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Reflection;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuth.ChannelElements;
-	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Serializes/deserializes OAuth messages for/from transit.
 	/// </summary>
+	[ContractVerification(true)]
 	internal class MessageSerializer {
 		/// <summary>
 		/// The specific <see cref="IMessage"/>-derived type

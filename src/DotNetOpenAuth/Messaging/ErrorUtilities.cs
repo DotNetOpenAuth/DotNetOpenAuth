@@ -7,13 +7,14 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Diagnostics;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Web;
-	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// A collection of error checking and reporting methods.
 	/// </summary>
+	[ContractVerification(true)]
 	internal class ErrorUtilities {
 		/// <summary>
 		/// Wraps an exception in a new <see cref="ProtocolException"/>.

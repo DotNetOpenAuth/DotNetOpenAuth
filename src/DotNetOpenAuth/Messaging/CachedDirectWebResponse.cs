@@ -7,10 +7,10 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Diagnostics;
+	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Net;
 	using System.Text;
-	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Cached details on the response from a direct web request to a remote party.
