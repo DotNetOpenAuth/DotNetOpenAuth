@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
 	using System.Text.RegularExpressions;
@@ -25,6 +26,8 @@ namespace DotNetOpenAuth.OpenId {
 	/// See http://openid.net/specs/openid-authentication-2_0.html#realms
 	/// </remarks>
 	[Serializable]
+//	[ContractVerification(true)]
+	[Pure]
 	public class Realm {
 		/// <summary>
 		/// A regex used to detect a wildcard that is being used in the realm.
@@ -374,6 +377,15 @@ namespace DotNetOpenAuth.OpenId {
 				}
 			}
 			return Enumerable.Empty<RelyingPartyEndpointDescription>();
+		}
+
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[ContractInvariantMethod]
+		protected void ObjectInvariant() {
+			Contract.Invariant(this.uri != null);
+			Contract.Invariant(this.uri.AbsoluteUri != null);
 		}
 
 		/// <summary>

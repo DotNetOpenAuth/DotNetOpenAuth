@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Xml;
 	using DotNetOpenAuth.Messaging;
@@ -18,6 +19,8 @@ namespace DotNetOpenAuth.OpenId {
 	/// An XRI style of OpenID Identifier.
 	/// </summary>
 	[Serializable]
+	[ContractVerification(true)]
+	[Pure]
 	public sealed class XriIdentifier : Identifier {
 		/// <summary>
 		/// An XRI always starts with one of these symbols.
@@ -47,6 +50,11 @@ namespace DotNetOpenAuth.OpenId {
 		private readonly string xriResolverProxy;
 
 		/// <summary>
+		/// Backing store for the <see cref="CanonicalXri"/> property.
+		/// </summary>
+		private readonly string canonicalXri;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="XriIdentifier"/> class.
 		/// </summary>
 		/// <param name="xri">The string value of the XRI.</param>
@@ -64,10 +72,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// </param>
 		internal XriIdentifier(string xri, bool requireSsl)
 			: base(requireSsl) {
-			if (!IsValidXri(xri)) {
-				throw new FormatException(
-					string.Format(CultureInfo.CurrentCulture, OpenIdStrings.InvalidXri, xri));
-			}
+			ErrorUtilities.VerifyFormat(IsValidXri(xri), OpenIdStrings.InvalidXri, xri);
+			Contract.Assume(xri != null); // Proven by IsValidXri
 			this.xriResolverProxy = XriResolverProxyTemplate;
 			if (requireSsl) {
 				// Indicate to xri.net that we require SSL to be used for delegated resolution
@@ -75,7 +81,7 @@ namespace DotNetOpenAuth.OpenId {
 				this.xriResolverProxy += ";https=true";
 			}
 			this.OriginalXri = xri;
-			this.CanonicalXri = CanonicalizeXri(xri);
+			this.canonicalXri = CanonicalizeXri(xri);
 		}
 
 		/// <summary>
@@ -86,7 +92,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Gets the canonical form of the XRI string.
 		/// </summary>
-		internal string CanonicalXri { get; private set; }
+		internal string CanonicalXri {
+			get { return this.canonicalXri; }
+		}
 
 		/// <summary>
 		/// Gets the URL from which this XRI's XRDS document may be downloaded.
@@ -131,6 +139,15 @@ namespace DotNetOpenAuth.OpenId {
 		/// </returns>
 		public override string ToString() {
 			return this.CanonicalXri;
+		}
+
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[ContractInvariantMethod]
+		protected void ObjectInvariant() {
+			Contract.Invariant(this.xriResolverProxy != null);
+			Contract.Invariant(this.canonicalXri != null);
 		}
 
 		/// <summary>
@@ -213,8 +230,11 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>The canonicalized form of the XRI.</returns>
 		/// <remarks>The canonical form, per the OpenID spec, is no scheme and no whitespace on either end.</remarks>
 		private static string CanonicalizeXri(string xri) {
+			Contract.Requires(xri != null);
+			Contract.Ensures(Contract.Result<string>() != null);
 			xri = xri.Trim();
 			if (xri.StartsWith(XriScheme, StringComparison.OrdinalIgnoreCase)) {
+				Contract.Assume(XriScheme.Length <= xri.Length); // should be implied by StartsWith
 				xri = xri.Substring(XriScheme.Length);
 			}
 			return xri;
