@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Collections.ObjectModel;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
 	using System.Linq;
@@ -19,7 +20,6 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Threading;
 	using System.Web;
 	using DotNetOpenAuth.Messaging.Reflection;
-	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Manages sending direct messages to a remote party and receiving responses.
