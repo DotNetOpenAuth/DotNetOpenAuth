@@ -5,6 +5,7 @@
 	using System.Web;
 	using System.Web.Mvc;
 	using System.Web.Security;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
@@ -15,6 +16,10 @@
 			}
 
 			return View("Index");
+		}
+
+		public ActionResult LoginPopup() {
+			return View("LoginPopup");
 		}
 
 		public ActionResult Logout() {
@@ -34,7 +39,12 @@
 				// Stage 2: user submitting Identifier
 				Identifier id;
 				if (Identifier.TryParse(Request.Form["openid_identifier"], out id)) {
-					openid.CreateRequest(Request.Form["openid_identifier"]).RedirectToProvider();
+					try {
+						openid.CreateRequest(Request.Form["openid_identifier"]).RedirectToProvider();
+					} catch (ProtocolException ex) {
+						ViewData["Message"] = ex.Message;
+						return View("Login");
+					}
 				} else {
 					ViewData["Message"] = "Invalid identifier";
 					return View("Login");

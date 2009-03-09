@@ -6,6 +6,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 	<title>DotNetOpenId ASP.NET MVC Login sample</title>
 	<link href="../../Content/Site.css" rel="stylesheet" type="text/css" />
+	<asp:ContentPlaceHolder ID="HeadContentPlaceHolder" runat="server" />
 </head>
 <body>
 	<div class="page">
@@ -31,8 +32,7 @@
 				</div>
 				<!--/leftColumn-->
 				<div class="rightColumn">
-					<asp:ContentPlaceHolder ID="MainContentPlaceHolder" runat="server">
-					</asp:ContentPlaceHolder>
+					<asp:ContentPlaceHolder ID="MainContentPlaceHolder" runat="server"/>
 				</div>
 				<!--/rightColumn-->
 				<div class="clear">

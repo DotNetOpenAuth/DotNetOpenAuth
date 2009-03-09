@@ -14,6 +14,15 @@ namespace RelyingPartyMvc.Views.Shared {
     public partial class Site {
         
         /// <summary>
+        /// HeadContentPlaceHolder control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.ContentPlaceHolder HeadContentPlaceHolder;
+        
+        /// <summary>
         /// MainContentPlaceHolder control.
         /// </summary>
         /// <remarks>

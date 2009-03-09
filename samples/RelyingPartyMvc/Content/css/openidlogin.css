@@ -1,0 +1,106 @@
+#openidlogin
+{
+	font-size: 12pt;
+}
+
+#openidlogin p
+{
+	clear: both;
+	font-size: 10pt;
+}
+
+#openidlogin a
+{
+	text-decoration: none;
+	color: blue;
+}
+
+#openidlogin .help
+{
+	display: none;
+}
+
+#openidlogin .inputbox
+{
+	margin-left: 3px;
+	margin-right: 3px;
+	display: none;
+	clear: both;
+}
+
+#openidlogin .inputbox input[type=text]
+{
+	font-family: Verdana;
+	font-size: 10pt;
+	background: #FFF url(../images/openid_small.gif) no-repeat;
+	background-position: 0 50%;
+	padding-left: 18px;
+	border: solid 1px gray;
+	width: 303px;
+}
+
+#openidlogin img.provider
+{
+	border: 1px solid gray;
+}
+
+#openidlogin .buttons
+{
+	clear: both;
+	text-align: center;
+}
+
+#openidlogin .provider
+{
+	cursor: hand;
+}
+
+#openidlogin .buttons .provider
+{
+	border: 1px solid #DDD;
+	margin: 3px;
+	float: left;
+	text-align: center;
+	overflow: hidden;
+	position: static;
+	display: table;
+}
+
+#openidlogin .large .provider
+{
+	height: 60px;
+	width: 90px;
+}
+
+#openidlogin .small .provider
+{
+	width: 24px;
+	height: 24px;
+	margin-right: 1px;
+}
+
+#openidlogin .small .provider img
+{
+	max-width: 22px;
+	max-height: 22px;
+}
+
+#openidlogin .buttons .highlight
+{
+	border: 2px solid yellow;
+}
+
+#openidlogin .buttons .provider div
+{
+	margin: 0;
+	padding: 0;
+	top: 50%;
+	display: table-cell;
+	vertical-align: middle;
+	position: static;
+}
+
+#openidlogin .buttons .provider span
+{
+	vertical-align: center;
+}
