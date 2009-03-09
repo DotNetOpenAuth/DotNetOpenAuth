@@ -716,7 +716,12 @@ namespace DotNetOpenAuth.Messaging {
 			httpRequest.CachePolicy = this.CachePolicy;
 			httpRequest.Method = "POST";
 			httpRequest.ContentType = "application/x-www-form-urlencoded";
-			httpRequest.Headers[HttpRequestHeader.ContentEncoding] = PostEntityEncoding.WebName;
+
+			// Setting the content-encoding to "utf-8" causes Google to reply
+			// with a 415 UnsupportedMediaType. But adding it doesn't buy us
+			// anything specific, so it's disable it until we know how to get it right.
+			////httpRequest.Headers[HttpRequestHeader.ContentEncoding] = PostEntityEncoding.WebName;
+
 			string requestBody = MessagingUtilities.CreateQueryString(fields);
 			byte[] requestBytes = PostEntityEncoding.GetBytes(requestBody);
 			httpRequest.ContentLength = requestBytes.Length;
