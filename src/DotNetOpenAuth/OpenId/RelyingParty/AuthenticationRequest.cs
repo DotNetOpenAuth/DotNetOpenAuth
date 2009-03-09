@@ -280,7 +280,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			ErrorUtilities.VerifyProtocol(realm.Contains(returnToUrl), OpenIdStrings.ReturnToNotUnderRealm, returnToUrl, realm);
 
 			// Perform discovery right now (not deferred).
-			var serviceEndpoints = userSuppliedIdentifier.Discover(relyingParty.WebRequestHandler);
+			IEnumerable<ServiceEndpoint> serviceEndpoints;
+			try {
+				serviceEndpoints = userSuppliedIdentifier.Discover(relyingParty.WebRequestHandler);
+			} catch (ProtocolException ex) {
+				Logger.ErrorFormat("Error while performing discovery on: \"{0}\": {1}", userSuppliedIdentifier, ex);
+				serviceEndpoints = EmptyList<ServiceEndpoint>.Instance;
+			}
 
 			// Call another method that defers request generation.
 			return CreateInternal(userSuppliedIdentifier, relyingParty, realm, returnToUrl, serviceEndpoints, createNewAssociationsAsNeeded);
