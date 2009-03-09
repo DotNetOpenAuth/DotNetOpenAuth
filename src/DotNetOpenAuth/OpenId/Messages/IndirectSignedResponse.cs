@@ -159,7 +159,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Gets or sets the association handle used to sign the message.
 		/// </summary>
 		/// <value>The handle for the association that was used to sign this assertion. </value>
-		[MessagePart("openid.assoc_handle", IsRequired = true, AllowEmpty = false, RequiredProtection = ProtectionLevel.Sign)]
+		[MessagePart("openid.assoc_handle", IsRequired = true, AllowEmpty = false, RequiredProtection = ProtectionLevel.Sign, MinVersion = "2.0")]
+		[MessagePart("openid.assoc_handle", IsRequired = true, AllowEmpty = false, RequiredProtection = ProtectionLevel.None, MaxVersion = "1.1")]
 		string ITamperResistantOpenIdMessage.AssociationHandle { get; set; }
 
 		/// <summary>
@@ -251,7 +252,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <example>2005-05-15T17:11:51ZUNIQUE</example>
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by messaging framework via reflection.")]
 		[MessagePart("openid.response_nonce", IsRequired = true, AllowEmpty = false, RequiredProtection = ProtectionLevel.Sign, MinVersion = "2.0")]
-		[MessagePart("openid.response_nonce", IsRequired = false, AllowEmpty = false, RequiredProtection = ProtectionLevel.Sign, MaxVersion = "1.1")]
+		[MessagePart("openid.response_nonce", IsRequired = false, AllowEmpty = false, RequiredProtection = ProtectionLevel.None, MaxVersion = "1.1")]
 		private string ResponseNonce {
 			get {
 				string uniqueFragment = ((IReplayProtectedProtocolMessage)this).Nonce;

@@ -196,6 +196,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			Protocol protocol = Protocol.Lookup(signedMessage.Version);
 			var partsRequiringProtection = from part in MessageDescription.Get(signedMessage.GetType(), signedMessage.Version).Mapping.Values
 			                               where part.RequiredProtection != ProtectionLevel.None
+			                               where part.IsRequired || part.IsNondefaultValueSet(signedMessage)
 			                               select part.Name;
 			ErrorUtilities.VerifyInternal(partsRequiringProtection.All(name => name.StartsWith(protocol.openid.Prefix, StringComparison.Ordinal)), "Signing only works when the parameters start with the 'openid.' prefix.");
 			string[] signedParts = signedMessage.SignedParameterOrder.Split(',');
