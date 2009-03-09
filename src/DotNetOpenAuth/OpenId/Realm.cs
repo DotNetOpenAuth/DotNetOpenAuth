@@ -28,7 +28,7 @@ namespace DotNetOpenAuth.OpenId {
 	[Serializable]
 //	[ContractVerification(true)]
 	[Pure]
-	public class Realm {
+	public sealed class Realm {
 		/// <summary>
 		/// A regex used to detect a wildcard that is being used in the realm.
 		/// </summary>
@@ -63,7 +63,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="realmUrl">The realm URL to use in the new instance.</param>
 		[SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads", Justification = "Not all realms are valid URLs (because of wildcards).")]
 		public Realm(string realmUrl) {
-			ErrorUtilities.VerifyArgumentNotNull(realmUrl, "realmUrl");
+			ErrorUtilities.VerifyNonZeroLength(realmUrl, "realmUrl");
 			this.DomainWildcard = Regex.IsMatch(realmUrl, WildcardDetectionPattern);
 			this.uri = new Uri(Regex.Replace(realmUrl, WildcardDetectionPattern, m => m.Groups[1].Value));
 			if (!this.uri.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) &&
