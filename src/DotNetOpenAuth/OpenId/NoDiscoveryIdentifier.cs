@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OpenId {
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.RelyingParty;
@@ -13,11 +14,13 @@ namespace DotNetOpenAuth.OpenId {
 	/// <summary>
 	/// Wraps an existing Identifier and prevents it from performing discovery.
 	/// </summary>
+	[ContractVerification(true)]
+	[Pure]
 	internal class NoDiscoveryIdentifier : Identifier {
 		/// <summary>
 		/// The wrapped identifier.
 		/// </summary>
-		private Identifier wrappedIdentifier;
+		private readonly Identifier wrappedIdentifier;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NoDiscoveryIdentifier"/> class.
@@ -26,6 +29,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="claimSsl">Whether this Identifier should claim to be SSL-secure, although no discovery will never generate service endpoints anyway.</param>
 		internal NoDiscoveryIdentifier(Identifier wrappedIdentifier, bool claimSsl)
 			: base(claimSsl) {
+			Contract.Requires(wrappedIdentifier != null);
 			ErrorUtilities.VerifyArgumentNotNull(wrappedIdentifier, "wrappedIdentifier");
 
 			this.wrappedIdentifier = wrappedIdentifier;

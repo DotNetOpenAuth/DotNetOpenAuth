@@ -7,10 +7,12 @@
 namespace DotNetOpenAuth.Configuration {
 	using System;
 	using System.Configuration;
+	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Represents the &lt;openid&gt; element in the host's .config file.
 	/// </summary>
+	[ContractVerification(true)]
 	internal class OpenIdElement : ConfigurationElement {
 		/// <summary>
 		/// Gets the name of the &lt;relyingParty&gt; sub-element.

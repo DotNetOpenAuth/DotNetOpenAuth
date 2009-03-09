@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
 	using System.Reflection;
@@ -68,6 +69,9 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="messageVersion">The protocol version of the message.</param>
 		/// <returns>A <see cref="MessageDescription"/> instance.</returns>
 		internal static MessageDescription Get(Type messageType, Version messageVersion) {
+			Contract.Requires(messageType != null);
+			Contract.Requires(messageVersion != null);
+			Contract.Ensures(Contract.Result<MessageDescription>() != null);
 			ErrorUtilities.VerifyArgumentNotNull(messageType, "messageType");
 			ErrorUtilities.VerifyArgumentNotNull(messageVersion, "messageVersion");
 

@@ -21,7 +21,6 @@ namespace DotNetOpenAuth.OpenId {
 	/// A URI style of OpenID Identifier.
 	/// </summary>
 	[Serializable]
-	//[ContractVerification(true)]
 	[Pure]
 	public sealed class UriIdentifier : Identifier {
 		/// <summary>
@@ -417,6 +416,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// require network access are also done, such as lower-casing the hostname in the URI.
 		/// </remarks>
 		private static bool TryCanonicalize(string uri, out Uri canonicalUri, bool forceHttpsDefaultScheme, out bool schemePrepended) {
+			Contract.Requires(!string.IsNullOrEmpty(uri));
 			ErrorUtilities.VerifyNonZeroLength(uri, "uri");
 
 			uri = uri.Trim();

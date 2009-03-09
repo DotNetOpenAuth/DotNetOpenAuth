@@ -7,10 +7,12 @@
 namespace DotNetOpenAuth.Configuration {
 	using System.Collections.Generic;
 	using System.Configuration;
+	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Describes a collection of association type sub-elements in a .config file.
 	/// </summary>
+	[ContractVerification(true)]
 	internal class AssociationTypeCollection : ConfigurationElementCollection, IEnumerable<AssociationTypeElement> {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssociationTypeCollection"/> class.
@@ -52,6 +54,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// An <see cref="T:System.Object"/> that acts as the key for the specified <see cref="T:System.Configuration.ConfigurationElement"/>.
 		/// </returns>
 		protected override object GetElementKey(ConfigurationElement element) {
+			Contract.Assert(element != null); // this should be Contract.Requires in base class.
 			return ((AssociationTypeElement)element).AssociationType;
 		}
 	}

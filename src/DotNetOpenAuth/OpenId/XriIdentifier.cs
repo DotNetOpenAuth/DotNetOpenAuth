@@ -72,6 +72,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </param>
 		internal XriIdentifier(string xri, bool requireSsl)
 			: base(requireSsl) {
+			Contract.Requires(!string.IsNullOrEmpty(xri));
 			ErrorUtilities.VerifyFormat(IsValidXri(xri), OpenIdStrings.InvalidXri, xri);
 			Contract.Assume(xri != null); // Proven by IsValidXri
 			this.xriResolverProxy = XriResolverProxyTemplate;
@@ -93,7 +94,10 @@ namespace DotNetOpenAuth.OpenId {
 		/// Gets the canonical form of the XRI string.
 		/// </summary>
 		internal string CanonicalXri {
-			get { return this.canonicalXri; }
+			get {
+				Contract.Ensures(Contract.Result<string>() != null);
+				return this.canonicalXri;
+			}
 		}
 
 		/// <summary>
@@ -142,15 +146,6 @@ namespace DotNetOpenAuth.OpenId {
 		}
 
 		/// <summary>
-		/// Verifies conditions that should be true for any valid state of this object.
-		/// </summary>
-		[ContractInvariantMethod]
-		protected void ObjectInvariant() {
-			Contract.Invariant(this.xriResolverProxy != null);
-			Contract.Invariant(this.canonicalXri != null);
-		}
-
-		/// <summary>
 		/// Tests whether a given string represents a valid XRI format.
 		/// </summary>
 		/// <param name="xri">The value to test for XRI validity.</param>
@@ -158,6 +153,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// 	<c>true</c> if the given string constitutes a valid XRI; otherwise, <c>false</c>.
 		/// </returns>
 		internal static bool IsValidXri(string xri) {
+			Contract.Requires(!string.IsNullOrEmpty(xri));
 			ErrorUtilities.VerifyNonZeroLength(xri, "xri");
 			xri = xri.Trim();
 
@@ -221,6 +217,15 @@ namespace DotNetOpenAuth.OpenId {
 		internal override bool TryRequireSsl(out Identifier secureIdentifier) {
 			secureIdentifier = IsDiscoverySecureEndToEnd ? this : new XriIdentifier(this, true);
 			return true;
+		}
+
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[ContractInvariantMethod]
+		protected void ObjectInvariant() {
+			Contract.Invariant(this.xriResolverProxy != null);
+			Contract.Invariant(this.canonicalXri != null);
 		}
 
 		/// <summary>

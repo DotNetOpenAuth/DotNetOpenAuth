@@ -33,6 +33,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// that will be serialized and deserialized using this class.</param>
 		private MessageSerializer(Type messageType) {
 			Contract.Requires(messageType != null);
+			Contract.Requires(typeof(IMessage).IsAssignableFrom(messageType));
 
 			ErrorUtilities.VerifyArgumentNamed(
 				typeof(IMessage).IsAssignableFrom(messageType),
@@ -50,9 +51,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="messageType">The type of message that will be serialized/deserialized.</param>
 		/// <returns>A message serializer for the given message type.</returns>
 		internal static MessageSerializer Get(Type messageType) {
-			if (messageType == null) {
-				throw new ArgumentNullException("messageType");
-			}
+			Contract.Requires(messageType != null);
+			Contract.Requires(typeof(IMessage).IsAssignableFrom(messageType));
+			ErrorUtilities.VerifyArgumentNotNull(messageType, "messageType");
 
 			return new MessageSerializer(messageType);
 		}
@@ -64,6 +65,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The dictionary of values to send for the message.</returns>
 		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Parallel design with Deserialize method.")]
 		internal IDictionary<string, string> Serialize(IMessage message) {
+			Contract.Requires(message != null);
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
 			var messageDescription = MessageDescription.Get(this.messageType, message.Version);
@@ -77,6 +79,7 @@ namespace DotNetOpenAuth.Messaging {
 			foreach (var pair in messageDictionary) {
 				MessagePart partDescription;
 				if (messageDescription.Mapping.TryGetValue(pair.Key, out partDescription)) {
+					Contract.Assert(partDescription != null);
 					if (partDescription.IsRequired || partDescription.IsNondefaultValueSet(message)) {
 						result.Add(pair.Key, pair.Value);
 					}
@@ -96,6 +99,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="message">The message to deserialize into.</param>
 		/// <exception cref="ProtocolException">Thrown when protocol rules are broken by the incoming message.</exception>
 		internal void Deserialize(IDictionary<string, string> fields, IMessage message) {
+			Contract.Requires(fields != null);
+			Contract.Requires(message != null);
 			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 

@@ -6,12 +6,14 @@
 
 namespace DotNetOpenAuth.Configuration {
 	using System.Configuration;
+	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Provider;
 
 	/// <summary>
 	/// Represents the .config file element that allows for setting the security policies of the Provider.
 	/// </summary>
+	[ContractVerification(true)]
 	internal class ProviderSecuritySettingsElement : ConfigurationElement {
 		/// <summary>
 		/// Gets the name of the @protectDownlevelReplayAttacks attribute.
@@ -73,8 +75,14 @@ namespace DotNetOpenAuth.Configuration {
 		[ConfigurationProperty(AssociationsConfigName, IsDefaultCollection = false)]
 		[ConfigurationCollection(typeof(AssociationTypeCollection))]
 		public AssociationTypeCollection AssociationLifetimes {
-			get { return (AssociationTypeCollection)this[AssociationsConfigName] ?? new AssociationTypeCollection(); }
-			set { this[AssociationsConfigName] = value; }
+			get {
+				Contract.Ensures(Contract.Result<AssociationTypeCollection>() != null);
+				return (AssociationTypeCollection)this[AssociationsConfigName] ?? new AssociationTypeCollection();
+			}
+
+			set {
+				this[AssociationsConfigName] = value;
+			}
 		}
 
 		/// <summary>
@@ -87,6 +95,7 @@ namespace DotNetOpenAuth.Configuration {
 			settings.MaximumHashBitLength = this.MaximumHashBitLength;
 			settings.ProtectDownlevelReplayAttacks = this.ProtectDownlevelReplayAttacks;
 			foreach (AssociationTypeElement element in this.AssociationLifetimes) {
+				Contract.Assert(element != null);
 				settings.AssociationLifetimes.Add(element.AssociationType, element.MaximumLifetime);
 			}
 			return settings;

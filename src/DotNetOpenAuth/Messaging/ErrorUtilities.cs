@@ -214,6 +214,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="args">The string formatting arguments, if any.</param>
 		/// <exception cref="ArgumentException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		internal static void VerifyArgument(bool condition, string message, params object[] args) {
+			Contract.Requires(condition);
 			Contract.Requires(args != null);
 			Contract.Assume(message != null);
 			if (!condition) {
@@ -228,6 +229,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="parameterName">Name of the parameter.</param>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		internal static void VerifyArgumentInRange(bool condition, string parameterName) {
+			Contract.Requires(condition);
 			if (!condition) {
 				throw new ArgumentOutOfRangeException(parameterName);
 			}
@@ -242,6 +244,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="args">The string formatting arguments.</param>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		internal static void VerifyArgumentInRange(bool condition, string parameterName, string message, params object[] args) {
+			Contract.Requires(condition);
 			Contract.Requires(args != null);
 			Contract.Assume(message != null);
 			if (!condition) {
@@ -258,6 +261,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="args">The string formatting arguments, if any.</param>
 		/// <exception cref="ArgumentException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		internal static void VerifyArgumentNamed(bool condition, string parameterName, string message, params object[] args) {
+			Contract.Requires(condition);
 			Contract.Requires(args != null);
 			Contract.Assume(message != null);
 			if (!condition) {
@@ -272,7 +276,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="paramName">Name of the parameter, which will be used in the <see cref="ArgumentException"/>, if thrown.</param>
 		/// <exception cref="ArgumentNullException">Thrown if <paramref name="value"/> is null.</exception>
 		internal static void VerifyArgumentNotNull(object value, string paramName) {
-			Contract.EndContractBlock();
+			Contract.Requires(value != null);
 			if (value == null) {
 				throw new ArgumentNullException(paramName);
 			}
@@ -288,7 +292,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <exception cref="ArgumentNullException">Thrown if <paramref name="value"/> is null.</exception>
 		/// <exception cref="ArgumentException">Thrown if <paramref name="value"/> has zero length.</exception>
 		internal static void VerifyNonZeroLength(string value, string paramName) {
-			Contract.EndContractBlock();
+			Contract.Requires(!string.IsNullOrEmpty(value) || (value != null && value.Length > 0));
 			VerifyArgumentNotNull(value, paramName);
 			if (value.Length == 0) {
 				throw new ArgumentException(MessagingStrings.UnexpectedEmptyString, paramName);

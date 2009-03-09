@@ -6,11 +6,13 @@
 
 namespace DotNetOpenAuth.Configuration {
 	using System.Configuration;
+	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Represents the section in the host's .config file that configures
 	/// this library's settings.
 	/// </summary>
+	[ContractVerification(true)]
 	public class DotNetOpenAuthSection : ConfigurationSection {
 		/// <summary>
 		/// The name of the section under which this library's settings must be found.
@@ -31,7 +33,8 @@ namespace DotNetOpenAuth.Configuration {
 		/// Initializes a new instance of the <see cref="DotNetOpenAuthSection"/> class.
 		/// </summary>
 		internal DotNetOpenAuthSection() {
-			SectionInformation.AllowLocation = false;
+			Contract.Assert(this.SectionInformation != null);
+			this.SectionInformation.AllowLocation = false;
 		}
 
 		/// <summary>

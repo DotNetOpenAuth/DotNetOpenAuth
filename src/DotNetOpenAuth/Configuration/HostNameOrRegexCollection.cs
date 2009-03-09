@@ -7,11 +7,13 @@
 namespace DotNetOpenAuth.Configuration {
 	using System.Collections.Generic;
 	using System.Configuration;
+	using System.Diagnostics.Contracts;
 	using System.Text.RegularExpressions;
 
 	/// <summary>
 	/// Represents a collection of child elements that describe host names either as literal host names or regex patterns.
 	/// </summary>
+	[ContractVerification(true)]
 	internal class HostNameOrRegexCollection : ConfigurationElementCollection {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HostNameOrRegexCollection"/> class.
@@ -59,6 +61,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// An <see cref="T:System.Object"/> that acts as the key for the specified <see cref="T:System.Configuration.ConfigurationElement"/>.
 		/// </returns>
 		protected override object GetElementKey(ConfigurationElement element) {
+			Contract.Assert(element != null); // this should be Contract.Requires in base class.
 			return ((HostNameElement)element).Name;
 		}
 	}

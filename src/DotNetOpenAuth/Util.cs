@@ -6,6 +6,7 @@
 namespace DotNetOpenAuth {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Net;
 	using System.Reflection;
@@ -14,6 +15,7 @@ namespace DotNetOpenAuth {
 	/// <summary>
 	/// A grab-bag utility class.
 	/// </summary>
+	[ContractVerification(true)]
 	internal static class Util {
 		/// <summary>
 		/// The base namespace for this library from which all other namespaces derive.
@@ -72,6 +74,7 @@ namespace DotNetOpenAuth {
 			return new DelayedToString<IEnumerable<KeyValuePair<K, V>>>(
 				pairs,
 				p => {
+					Contract.Requires(pairs != null);
 					var dictionary = pairs as IDictionary<K, V>;
 					StringBuilder sb = new StringBuilder(dictionary != null ? dictionary.Count * 40 : 200);
 					foreach (var pair in pairs) {
@@ -103,6 +106,9 @@ namespace DotNetOpenAuth {
 			return new DelayedToString<IEnumerable<T>>(
 				list,
 				l => {
+					Contract.Requires(l != null);
+					string newLine = Environment.NewLine;
+					Contract.Assume(newLine != null && newLine.Length > 0);
 					StringBuilder sb = new StringBuilder();
 					if (multiLineElements) {
 						sb.AppendLine("[{");
@@ -111,7 +117,7 @@ namespace DotNetOpenAuth {
 							string objString = obj != null ? obj.ToString() : "<NULL>";
 
 							// Indent every line printed
-							objString = objString.Replace(Environment.NewLine, Environment.NewLine + "\t");
+							objString = objString.Replace(newLine, Environment.NewLine + "\t");
 							sb.Append("\t");
 							sb.Append(objString);
 
@@ -150,12 +156,12 @@ namespace DotNetOpenAuth {
 			/// <summary>
 			/// The object that will be serialized if called upon.
 			/// </summary>
-			private T obj;
+			private readonly T obj;
 
 			/// <summary>
 			/// The method used to serialize <see cref="obj"/> to string form.
 			/// </summary>
-			private Func<T, string> toString;
+			private readonly Func<T, string> toString;
 
 			/// <summary>
 			/// Initializes a new instance of the DelayedToString class.
@@ -163,6 +169,8 @@ namespace DotNetOpenAuth {
 			/// <param name="obj">The object that may be serialized to string form.</param>
 			/// <param name="toString">The method that will serialize the object if called upon.</param>
 			public DelayedToString(T obj, Func<T, string> toString) {
+				Contract.Requires(toString != null);
+
 				this.obj = obj;
 				this.toString = toString;
 			}
@@ -174,7 +182,7 @@ namespace DotNetOpenAuth {
 			/// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
 			/// </returns>
 			public override string ToString() {
-				return this.toString(this.obj);
+				return this.toString(this.obj) ?? string.Empty;
 			}
 		}
 	}

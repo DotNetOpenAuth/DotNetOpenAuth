@@ -26,7 +26,6 @@ namespace DotNetOpenAuth.OpenId {
 	/// See http://openid.net/specs/openid-authentication-2_0.html#realms
 	/// </remarks>
 	[Serializable]
-//	[ContractVerification(true)]
 	[Pure]
 	public sealed class Realm {
 		/// <summary>

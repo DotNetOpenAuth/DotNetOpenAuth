@@ -8,12 +8,12 @@ namespace DotNetOpenAuth {
 	using System;
 	using System.Collections.Specialized;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text.RegularExpressions;
 	using System.Web;
 	using System.Web.UI;
 	using DotNetOpenAuth.Messaging;
-	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Utility methods for working with URIs.
@@ -29,12 +29,14 @@ namespace DotNetOpenAuth {
 		/// True if the URI contains an OAuth message.
 		/// </returns>
 		internal static bool QueryStringContainPrefixedParameters(this Uri uri, string prefix) {
+			Contract.Requires(!string.IsNullOrEmpty(prefix));
 			ErrorUtilities.VerifyNonZeroLength(prefix, "prefix");
 			if (uri == null) {
 				return false;
 			}
 
 			NameValueCollection nvc = HttpUtility.ParseQueryString(uri.Query);
+			Contract.Assert(nvc != null); // BCL
 			return nvc.Keys.OfType<string>().Any(key => key.StartsWith(prefix, StringComparison.Ordinal));
 		}
 
@@ -97,6 +99,8 @@ namespace DotNetOpenAuth {
 			}
 
 			if (page != null && !designMode) {
+				Contract.Assert(page.Request != null);
+
 				// Validate new value by trying to construct a Realm object based on it.
 				new Uri(page.Request.Url, page.ResolveUrl(value)); // throws an exception on failure.
 			} else {
