@@ -399,6 +399,7 @@ namespace DotNetOpenAuth.OpenId {
 			return realmUriBuilder.ToString();
 		}
 
+#if CONTRACTS_FULL
 		/// <summary>
 		/// Verifies conditions that should be true for any valid state of this object.
 		/// </summary>
@@ -408,5 +409,6 @@ namespace DotNetOpenAuth.OpenId {
 			Contract.Invariant(this.uri != null);
 			Contract.Invariant(this.uri.AbsoluteUri != null);
 		}
+#endif
 	}
 }

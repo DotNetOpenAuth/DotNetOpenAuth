@@ -347,6 +347,7 @@ namespace DotNetOpenAuth.OpenId {
 					string[] typeURIs = { protocol.ClaimedIdentifierServiceTypeURI };
 					yield return ServiceEndpoint.CreateForClaimedIdentifier(
 						claimedIdentifier,
+						userSuppliedIdentifier,
 						providerLocalIdentifier,
 						new ProviderEndpointDescription(providerEndpoint, typeURIs),
 						(int?)null,
@@ -449,6 +450,7 @@ namespace DotNetOpenAuth.OpenId {
 			return true;
 		}
 
+#if CONTRACTS_FULL
 		/// <summary>
 		/// Verifies conditions that should be true for any valid state of this object.
 		/// </summary>
@@ -458,5 +460,6 @@ namespace DotNetOpenAuth.OpenId {
 			Contract.Invariant(this.Uri != null);
 			Contract.Invariant(this.Uri.AbsoluteUri != null);
 		}
+#endif
 	}
 }

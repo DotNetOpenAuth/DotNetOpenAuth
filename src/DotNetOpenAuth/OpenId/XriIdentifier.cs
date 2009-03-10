@@ -257,6 +257,7 @@ namespace DotNetOpenAuth.OpenId {
 			return doc;
 		}
 
+#if CONTRACTS_FULL
 		/// <summary>
 		/// Verifies conditions that should be true for any valid state of this object.
 		/// </summary>
@@ -266,5 +267,6 @@ namespace DotNetOpenAuth.OpenId {
 			Contract.Invariant(this.xriResolverProxy != null);
 			Contract.Invariant(this.canonicalXri != null);
 		}
+#endif
 	}
 }

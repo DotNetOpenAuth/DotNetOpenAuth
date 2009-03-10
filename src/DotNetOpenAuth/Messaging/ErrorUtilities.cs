@@ -280,8 +280,6 @@ namespace DotNetOpenAuth.Messaging {
 			if (value == null) {
 				throw new ArgumentNullException(paramName);
 			}
-
-			Contract.Ensures(value != null);
 		}
 
 		/// <summary>
