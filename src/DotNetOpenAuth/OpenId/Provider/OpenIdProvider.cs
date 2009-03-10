@@ -7,6 +7,8 @@
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.ComponentModel;
+	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Threading;
 	using System.Web;
@@ -19,6 +21,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// <summary>
 	/// Offers services for a web page that is acting as an OpenID identity server.
 	/// </summary>
+	[ContractVerification(true)]
 	public sealed class OpenIdProvider : IDisposable {
 		/// <summary>
 		/// The name of the key to use in the HttpApplication cache to store the
@@ -36,6 +39,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		public OpenIdProvider()
 			: this(DotNetOpenAuthSection.Configuration.OpenId.Provider.ApplicationStore.CreateInstance(HttpApplicationStore)) {
+			Contract.Ensures(this.AssociationStore != null);
+			Contract.Ensures(this.SecuritySettings != null);
+			Contract.Ensures(this.Channel != null);
 		}
 
 		/// <summary>
@@ -44,6 +50,10 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="applicationStore">The application store to use.  Cannot be null.</param>
 		public OpenIdProvider(IProviderApplicationStore applicationStore)
 			: this(applicationStore, applicationStore) {
+			Contract.Requires(applicationStore != null);
+			Contract.Ensures(this.AssociationStore == applicationStore);
+			Contract.Ensures(this.SecuritySettings != null);
+			Contract.Ensures(this.Channel != null);
 		}
 
 		/// <summary>
@@ -52,6 +62,11 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="associationStore">The association store to use.  Cannot be null.</param>
 		/// <param name="nonceStore">The nonce store to use.  Cannot be null.</param>
 		private OpenIdProvider(IAssociationStore<AssociationRelyingPartyType> associationStore, INonceStore nonceStore) {
+			Contract.Requires(associationStore != null);
+			Contract.Requires(nonceStore != null);
+			Contract.Ensures(this.AssociationStore == associationStore);
+			Contract.Ensures(this.SecuritySettings != null);
+			Contract.Ensures(this.Channel != null);
 			ErrorUtilities.VerifyArgumentNotNull(associationStore, "associationStore");
 			ErrorUtilities.VerifyArgumentNotNull(nonceStore, "nonceStore");
 
@@ -67,8 +82,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public static IProviderApplicationStore HttpApplicationStore {
 			get {
+				Contract.Ensures(Contract.Result<IProviderApplicationStore>() != null);
+				ErrorUtilities.VerifyHttpContext();
 				HttpContext context = HttpContext.Current;
-				ErrorUtilities.VerifyOperation(context != null, OpenIdStrings.StoreRequiredWhenNoHttpContextAvailable, typeof(IProviderApplicationStore).Name);
 				var store = (IProviderApplicationStore)context.Application[ApplicationStoreKey];
 				if (store == null) {
 					context.Application.Lock();
@@ -95,10 +111,13 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		public ProviderSecuritySettings SecuritySettings {
 			get {
+				Contract.Ensures(Contract.Result<ProviderSecuritySettings>() != null);
+				Contract.Assume(this.securitySettings != null);
 				return this.securitySettings;
 			}
 
 			internal set {
+				Contract.Requires(value != null);
 				ErrorUtilities.VerifyArgumentNotNull(value, "value");
 				this.securitySettings = value;
 			}
@@ -155,6 +174,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <exception cref="ProtocolException">Thrown if the incoming message is recognized
 		/// but deviates from the protocol specification irrecoverably.</exception>
 		public IRequest GetRequest(HttpRequestInfo httpRequestInfo) {
+			Contract.Requires(httpRequestInfo != null);
 			ErrorUtilities.VerifyArgumentNotNull(httpRequestInfo, "httpRequestInfo");
 			IDirectedProtocolMessage incomingMessage = null;
 
@@ -208,7 +228,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// to the client.</para>
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="IRequest.IsResponseReady"/> is <c>false</c>.</exception>
+		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code Contract requires that we cast early.")]
 		public void SendResponse(IRequest request) {
+			Contract.Requires(request != null);
+			Contract.Requires(((Request)request).IsResponseReady);
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+
 			Request requestInternal = (Request)request;
 			this.Channel.Send(requestInternal.Response);
 		}
@@ -219,7 +244,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="request">The request.</param>
 		/// <returns>The response that should be sent to the client.</returns>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="IRequest.IsResponseReady"/> is <c>false</c>.</exception>
+		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code Contract requires that we cast early.")]
 		public UserAgentResponse GetResponse(IRequest request) {
+			Contract.Requires(request != null);
+			Contract.Requires(((Request)request).IsResponseReady);
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+
 			Request requestInternal = (Request)request;
 			return this.Channel.PrepareResponse(requestInternal.Response);
 		}
@@ -244,6 +274,11 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// the user agent to allow the redirect with assertion to happen.
 		/// </returns>
 		public UserAgentResponse PrepareUnsolicitedAssertion(Uri providerEndpoint, Realm relyingParty, Identifier claimedIdentifier, Identifier localIdentifier, params IExtensionMessage[] extensions) {
+			Contract.Requires(providerEndpoint != null);
+			Contract.Requires(providerEndpoint.IsAbsoluteUri);
+			Contract.Requires(relyingParty != null);
+			Contract.Requires(claimedIdentifier != null);
+			Contract.Requires(localIdentifier != null);
 			ErrorUtilities.VerifyArgumentNotNull(providerEndpoint, "providerEndpoint");
 			ErrorUtilities.VerifyArgumentNotNull(relyingParty, "relyingParty");
 			ErrorUtilities.VerifyArgumentNotNull(claimedIdentifier, "claimedIdentifier");
@@ -321,6 +356,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Either the <see cref="IRequest"/> to return to the host site or null to indicate no response could be reasonably created and that the caller should rethrow the exception.
 		/// </returns>
 		private IRequest GetErrorResponse(ProtocolException ex, HttpRequestInfo httpRequestInfo, IDirectedProtocolMessage incomingMessage) {
+			Contract.Requires(ex != null);
+			Contract.Requires(httpRequestInfo != null);
 			ErrorUtilities.VerifyArgumentNotNull(ex, "ex");
 			ErrorUtilities.VerifyArgumentNotNull(httpRequestInfo, "httpRequestInfo");
 
@@ -329,7 +366,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 			// We must create the appropriate error message type (direct vs. indirect)
 			// based on what we see in the request.
-			if (httpRequestInfo.QueryString[Protocol.Default.openid.return_to] != null) {
+			string returnTo = httpRequestInfo.QueryString[Protocol.Default.openid.return_to];
+			if (returnTo != null) {
 				// An indirect request message from the RP
 				// We need to return an indirect response error message so the RP can consume it.
 				// Consistent with OpenID 2.0 section 5.2.3.
@@ -337,7 +375,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				if (indirectRequest != null) {
 					errorMessage = new IndirectErrorResponse(indirectRequest);
 				} else {
-					errorMessage = new IndirectErrorResponse(Protocol.Default.Version, new Uri(httpRequestInfo.QueryString[Protocol.Default.openid.return_to]));
+					errorMessage = new IndirectErrorResponse(Protocol.Default.Version, new Uri(returnTo));
 				}
 			} else if (httpRequestInfo.HttpMethod == "POST") {
 				// A direct request message from the RP

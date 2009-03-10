@@ -45,6 +45,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="errorMessage">The message to include in the exception, if created.</param>
 		/// <exception cref="InternalErrorException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		internal static void VerifyInternal(bool condition, string errorMessage) {
+			Contract.Ensures(condition);
+			Contract.EnsuresOnThrow<InternalErrorException>(!condition);
 			if (!condition) {
 				// Since internal errors are really bad, take this chance to
 				// help the developer find the cause by breaking into the
@@ -66,6 +68,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <exception cref="InternalErrorException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		internal static void VerifyInternal(bool condition, string errorMessage, params object[] args) {
 			Contract.Requires(args != null);
+			Contract.Ensures(condition);
+			Contract.EnsuresOnThrow<InternalErrorException>(!condition);
 			Contract.Assume(errorMessage != null);
 			if (!condition) {
 				errorMessage = string.Format(CultureInfo.CurrentCulture, errorMessage, args);
@@ -80,6 +84,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="errorMessage">The message to include in the exception, if created.</param>
 		/// <exception cref="InvalidOperationException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		internal static void VerifyOperation(bool condition, string errorMessage) {
+			Contract.Ensures(condition);
+			Contract.EnsuresOnThrow<InvalidOperationException>(!condition);
 			if (!condition) {
 				throw new InvalidOperationException(errorMessage);
 			}
@@ -92,6 +98,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="errorMessage">The message to include in the exception, if created.</param>
 		/// <exception cref="NotSupportedException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		internal static void VerifySupported(bool condition, string errorMessage) {
+			Contract.Ensures(condition);
+			Contract.EnsuresOnThrow<NotSupportedException>(!condition);
 			if (!condition) {
 				throw new NotSupportedException(errorMessage);
 			}
@@ -106,6 +114,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <exception cref="NotSupportedException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		internal static void VerifySupported(bool condition, string errorMessage, params object[] args) {
 			Contract.Requires(args != null);
+			Contract.Ensures(condition);
+			Contract.EnsuresOnThrow<NotSupportedException>(!condition);
 			Contract.Assume(errorMessage != null);
 			if (!condition) {
 				throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, errorMessage, args));
@@ -121,6 +131,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <exception cref="InvalidOperationException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		internal static void VerifyOperation(bool condition, string errorMessage, params object[] args) {
 			Contract.Requires(args != null);
+			Contract.Ensures(condition);
+			Contract.EnsuresOnThrow<InvalidOperationException>(!condition);
 			Contract.Assume(errorMessage != null);
 			if (!condition) {
 				errorMessage = string.Format(CultureInfo.CurrentCulture, errorMessage, args);
@@ -138,6 +150,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <exception cref="ProtocolException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		internal static void VerifyProtocol(bool condition, IProtocolMessage faultedMessage, string errorMessage, params object[] args) {
 			Contract.Requires(args != null);
+			Contract.Ensures(condition);
+			Contract.EnsuresOnThrow<ProtocolException>(!condition);
 			Contract.Assume(errorMessage != null);
 			if (!condition) {
 				throw new ProtocolException(string.Format(CultureInfo.CurrentCulture, errorMessage, args), faultedMessage);
@@ -153,6 +167,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <exception cref="ProtocolException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		internal static void VerifyProtocol(bool condition, string message, params object[] args) {
 			Contract.Requires(args != null);
+			Contract.Ensures(condition);
+			Contract.EnsuresOnThrow<ProtocolException>(!condition);
 			Contract.Assume(message != null);
 			if (!condition) {
 				throw new ProtocolException(string.Format(CultureInfo.CurrentCulture, message, args));
@@ -200,9 +216,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// <exception cref="FormatException">Thrown when <paramref name="condition"/> is <c>false</c>.</exception>
 		internal static void VerifyFormat(bool condition, string message, params object[] args) {
 			Contract.Requires(args != null);
+			Contract.Ensures(condition);
+			Contract.EnsuresOnThrow<FormatException>(!condition);
 			Contract.Assume(message != null);
 			if (!condition) {
-				ThrowFormat(message, args);
+				throw ThrowFormat(message, args);
 			}
 		}
 
@@ -214,8 +232,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="args">The string formatting arguments, if any.</param>
 		/// <exception cref="ArgumentException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		internal static void VerifyArgument(bool condition, string message, params object[] args) {
-			Contract.Requires(condition);
 			Contract.Requires(args != null);
+			Contract.Ensures(condition);
+			Contract.EnsuresOnThrow<ArgumentException>(!condition);
 			Contract.Assume(message != null);
 			if (!condition) {
 				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, message, args));
@@ -255,14 +274,29 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Verifies something about the argument supplied to a method.
 		/// </summary>
+		/// <param name="parameterName">Name of the parameter.</param>
+		/// <param name="message">The message to use in the exception if the condition is false.</param>
+		/// <param name="args">The string formatting arguments, if any.</param>
+		/// <returns>Never returns anything.  It always throws.</returns>
+		/// <exception cref="ArgumentException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
+		internal static Exception ThrowArgumentNamed(string parameterName, string message, params object[] args) {
+			Contract.Requires(args != null);
+			Contract.Assume(message != null);
+			throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, message, args), parameterName);
+		}
+
+		/// <summary>
+		/// Verifies something about the argument supplied to a method.
+		/// </summary>
 		/// <param name="condition">The condition that must evaluate to true to avoid an exception.</param>
 		/// <param name="parameterName">Name of the parameter.</param>
 		/// <param name="message">The message to use in the exception if the condition is false.</param>
 		/// <param name="args">The string formatting arguments, if any.</param>
 		/// <exception cref="ArgumentException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		internal static void VerifyArgumentNamed(bool condition, string parameterName, string message, params object[] args) {
-			Contract.Requires(condition);
 			Contract.Requires(args != null);
+			Contract.Ensures(condition);
+			Contract.EnsuresOnThrow<ArgumentException>(!condition);
 			Contract.Assume(message != null);
 			if (!condition) {
 				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, message, args), parameterName);
@@ -302,6 +336,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current"/> == <c>null</c></exception>
 		internal static void VerifyHttpContext() {
+			Contract.Ensures(HttpContext.Current != null);
 			ErrorUtilities.VerifyOperation(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
 		}
 	}

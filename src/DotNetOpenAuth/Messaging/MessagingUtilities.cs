@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
 	using System.Linq;
@@ -447,6 +448,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="args">The dictionary of key/values to read from.</param>
 		/// <returns>The formulated querystring style string.</returns>
 		internal static string CreateQueryString(IEnumerable<KeyValuePair<string, string>> args) {
+			Contract.Requires(args != null);
+			Contract.Ensures(Contract.Result<string>() != null);
 			ErrorUtilities.VerifyArgumentNotNull(args, "args");
 			if (args.Count() == 0) {
 				return string.Empty;
@@ -552,6 +555,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <c>Dictionary&lt;string, string&gt;</c> does not allow null keys.
 		/// </remarks>
 		internal static Dictionary<string, string> ToDictionary(this NameValueCollection nvc) {
+			Contract.Ensures((nvc != null && Contract.Result<Dictionary<string, string>>() != null) || (nvc == null && Contract.Result<Dictionary<string, string>>() == null));
 			return ToDictionary(nvc, false);
 		}
 
@@ -567,6 +571,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The generated dictionary, or null if <paramref name="nvc"/> is null.</returns>
 		/// <exception cref="ArgumentException">Thrown if <paramref name="throwOnNullKey"/> is <c>true</c> and a null key is encountered.</exception>
 		internal static Dictionary<string, string> ToDictionary(this NameValueCollection nvc, bool throwOnNullKey) {
+			Contract.Ensures((nvc != null && Contract.Result<Dictionary<string, string>>() != null) || (nvc == null && Contract.Result<Dictionary<string, string>>() == null));
 			if (nvc == null) {
 				return null;
 			}

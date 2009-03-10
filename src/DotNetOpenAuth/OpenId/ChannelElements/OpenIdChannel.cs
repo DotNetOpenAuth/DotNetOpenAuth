@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
 	using System.Linq;
@@ -22,6 +23,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// <summary>
 	/// A channel that knows how to send and receive OpenID messages.
 	/// </summary>
+	[ContractVerification(true)]
 	internal class OpenIdChannel : Channel {
 		/// <summary>
 		/// The HTTP Content-Type to use in Key-Value Form responses.
@@ -48,6 +50,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="securitySettings">The security settings to apply.</param>
 		internal OpenIdChannel(IAssociationStore<Uri> associationStore, INonceStore nonceStore, RelyingPartySecuritySettings securitySettings)
 			: this(associationStore, nonceStore, new OpenIdMessageFactory(), securitySettings) {
+			Contract.Requires(securitySettings != null);
 		}
 
 		/// <summary>
@@ -59,6 +62,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="securitySettings">The security settings.</param>
 		internal OpenIdChannel(IAssociationStore<AssociationRelyingPartyType> associationStore, INonceStore nonceStore, ProviderSecuritySettings securitySettings)
 			: this(associationStore, nonceStore, new OpenIdMessageFactory(), securitySettings) {
+			Contract.Requires(securitySettings != null);
 		}
 
 		/// <summary>
@@ -71,6 +75,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="securitySettings">The security settings to apply.</param>
 		private OpenIdChannel(IAssociationStore<Uri> associationStore, INonceStore nonceStore, IMessageFactory messageTypeProvider, RelyingPartySecuritySettings securitySettings) :
 			this(messageTypeProvider, InitializeBindingElements(associationStore, nonceStore, securitySettings)) {
+			Contract.Requires(messageTypeProvider != null);
+			Contract.Requires(securitySettings != null);
 		}
 
 		/// <summary>
@@ -83,6 +89,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="securitySettings">The security settings.</param>
 		private OpenIdChannel(IAssociationStore<AssociationRelyingPartyType> associationStore, INonceStore nonceStore, IMessageFactory messageTypeProvider, ProviderSecuritySettings securitySettings) :
 			this(messageTypeProvider, InitializeBindingElements(associationStore, nonceStore, securitySettings)) {
+			Contract.Requires(messageTypeProvider != null);
+			Contract.Requires(securitySettings != null);
 		}
 
 		/// <summary>
@@ -93,6 +101,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="bindingElements">The binding elements to use in sending and receiving messages.</param>
 		private OpenIdChannel(IMessageFactory messageTypeProvider, IChannelBindingElement[] bindingElements)
 			: base(messageTypeProvider, bindingElements) {
+			Contract.Requires(messageTypeProvider != null);
+
 			// Customize the binding element order, since we play some tricks for higher
 			// security and backward compatibility with older OpenID versions.
 			var outgoingBindingElements = new List<IChannelBindingElement>(bindingElements);
@@ -262,6 +272,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// An array of binding elements which may be used to construct the channel.
 		/// </returns>
 		private static IChannelBindingElement[] InitializeBindingElements<T>(IAssociationStore<T> associationStore, INonceStore nonceStore, SecuritySettings securitySettings) {
+			Contract.Requires(securitySettings != null);
 			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
 
 			var rpSecuritySettings = securitySettings as RelyingPartySecuritySettings;

@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -17,6 +18,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// request messages to an OpenID Provider.
 	/// </summary>
 	[Serializable]
+	[ContractClass(typeof(RequestContract))]
+	[ContractVerification(true)]
 	internal abstract class Request : IRequest {
 		/// <summary>
 		/// The incoming request message.
@@ -50,6 +53,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="request">The incoming request message.</param>
 		protected Request(IDirectedProtocolMessage request) {
+			Contract.Requires(request != null);
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			this.request = request;
@@ -62,6 +66,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="version">The version.</param>
 		protected Request(Version version) {
+			Contract.Requires(version != null);
 			ErrorUtilities.VerifyArgumentNotNull(version, "version");
 
 			this.protocolVersion = version;
@@ -85,6 +90,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="IsResponseReady"/> is <c>false</c>.</exception>
 		internal IProtocolMessage Response {
 			get {
+				Contract.Requires(this.IsResponseReady);
+				Contract.Ensures(Contract.Result<IProtocolMessage>() != null);
+
 				ErrorUtilities.VerifyOperation(this.IsResponseReady, OpenIdStrings.ResponseNotReady);
 				if (this.responseExtensions.Count > 0) {
 					var extensibleResponse = this.ResponseMessage as IProtocolMessageWithExtensions;

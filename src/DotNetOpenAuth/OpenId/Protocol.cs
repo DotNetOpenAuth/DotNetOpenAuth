@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Collections.Generic;
 	using DotNetOpenAuth.Messaging;
 	using System.Globalization;
+	using System.Diagnostics.CodeAnalysis;
 
 	/// <summary>
 	/// An enumeration of the OpenID protocol versions supported by this library.
@@ -254,10 +255,10 @@ namespace DotNetOpenAuth.OpenId {
 			/// <summary>
 			/// The value "openid."
 			/// </summary>
-			public string Prefix = "openid.";
-			[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1805:DoNotInitializeUnnecessarily")]
+			public readonly string Prefix = "openid.";
+			[SuppressMessage("Microsoft.Performance", "CA1805:DoNotInitializeUnnecessarily")]
 			public QueryParameters() { }
-			[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1805:DoNotInitializeUnnecessarily")]
+			[SuppressMessage("Microsoft.Performance", "CA1805:DoNotInitializeUnnecessarily")]
 			public QueryParameters(QueryParameters addPrefixTo) {
 				ns = addPrefix(addPrefixTo.ns);
 				return_to = addPrefix(addPrefixTo.return_to);

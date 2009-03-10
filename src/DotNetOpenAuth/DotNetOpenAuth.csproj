@@ -157,6 +157,7 @@
     <Compile Include="Configuration\HostNameOrRegexCollection.cs" />
     <Compile Include="Configuration\HostNameElement.cs" />
     <Compile Include="Messaging\CachedDirectWebResponse.cs" />
+    <Compile Include="Messaging\ChannelContract.cs" />
     <Compile Include="Messaging\DirectWebRequestOptions.cs" />
     <Compile Include="Messaging\IHttpDirectResponse.cs" />
     <Compile Include="Messaging\IExtensionMessage.cs" />
@@ -316,6 +317,7 @@
     <Compile Include="OpenId\Provider\IRequest.cs" />
     <Compile Include="OpenId\Provider\ProviderEndpoint.cs" />
     <Compile Include="OpenId\Provider\Request.cs" />
+    <Compile Include="OpenId\Provider\RequestContract.cs" />
     <Compile Include="OpenId\Provider\StandardProviderApplicationStore.cs" />
     <Compile Include="OpenId\Realm.cs" />
     <Compile Include="OpenId\RelyingPartyDescription.cs" />

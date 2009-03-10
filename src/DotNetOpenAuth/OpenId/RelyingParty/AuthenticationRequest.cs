@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using System.Web;
@@ -243,6 +244,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="createNewAssociationsAsNeeded">if set to <c>true</c>, associations that do not exist between this Relying Party and the asserting Providers are created before the authentication request is created.</param>
 		/// <returns>A sequence of authentication requests, any of which constitutes a valid identity assertion on the Claimed Identifier.</returns>
 		internal static IEnumerable<AuthenticationRequest> Create(Identifier userSuppliedIdentifier, OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl, bool createNewAssociationsAsNeeded) {
+			Contract.Requires(userSuppliedIdentifier != null);
+			Contract.Requires(relyingParty != null);
+			Contract.Requires(realm != null);
+
 			// We have a long data validation and preparation process
 			ErrorUtilities.VerifyArgumentNotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
 			ErrorUtilities.VerifyArgumentNotNull(relyingParty, "relyingParty");

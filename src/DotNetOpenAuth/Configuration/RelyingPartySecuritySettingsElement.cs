@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Configuration {
 	using System;
 	using System.Configuration;
+	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
@@ -101,6 +102,8 @@ namespace DotNetOpenAuth.Configuration {
 		/// </summary>
 		/// <returns>The newly created security settings object.</returns>
 		public RelyingPartySecuritySettings CreateSecuritySettings() {
+			Contract.Ensures(Contract.Result<RelyingPartySecuritySettings>() != null);
+
 			RelyingPartySecuritySettings settings = new RelyingPartySecuritySettings();
 			settings.RequireSsl = this.RequireSsl;
 			settings.MinimumRequiredOpenIdVersion = this.MinimumRequiredOpenIdVersion;

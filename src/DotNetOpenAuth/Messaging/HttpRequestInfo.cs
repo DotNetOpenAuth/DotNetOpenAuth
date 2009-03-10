@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Specialized;
 	using System.Diagnostics;
+	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Net;
 	using System.ServiceModel.Channels;
@@ -174,6 +175,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		internal NameValueCollection Form {
 			get {
+				Contract.Ensures(Contract.Result<NameValueCollection>() != null);
 				if (this.form == null) {
 					if (this.HttpMethod == "POST" && this.Headers[HttpRequestHeader.ContentType] == "application/x-www-form-urlencoded") {
 						StreamReader reader = new StreamReader(this.InputStream);

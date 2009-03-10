@@ -69,6 +69,8 @@ namespace DotNetOpenAuth.Messaging {
 		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Parallel design with Deserialize method.")]
 		internal IDictionary<string, string> Serialize(IMessage message) {
 			Contract.Requires(message != null);
+			Contract.Ensures(Contract.Result<IDictionary<string, string>>() != null);
+
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
 			var messageDescription = MessageDescription.Get(this.messageType, message.Version);
