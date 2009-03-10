@@ -6,11 +6,11 @@
 
 namespace DotNetOpenAuth.OpenId {
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Xrds;
-	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Adds OpenID-specific extension methods to the XrdsDocument class.

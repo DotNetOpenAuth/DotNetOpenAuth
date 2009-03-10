@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Xml;
@@ -217,18 +218,10 @@ namespace DotNetOpenAuth.OpenId {
 		/// True if the secure conversion was successful.
 		/// False if the Identifier was originally created with an explicit HTTP scheme.
 		/// </returns>
+		[ContractVerification(false)] // bugs/limitations in CC static analysis
 		internal override bool TryRequireSsl(out Identifier secureIdentifier) {
 			secureIdentifier = IsDiscoverySecureEndToEnd ? this : new XriIdentifier(this, true);
 			return true;
-		}
-
-		/// <summary>
-		/// Verifies conditions that should be true for any valid state of this object.
-		/// </summary>
-		[ContractInvariantMethod]
-		private void ObjectInvariant() {
-			Contract.Invariant(this.xriResolverProxy != null);
-			Contract.Invariant(this.canonicalXri != null);
 		}
 
 		/// <summary>
@@ -262,6 +255,16 @@ namespace DotNetOpenAuth.OpenId {
 			}
 			ErrorUtilities.VerifyProtocol(doc.IsXrdResolutionSuccessful, OpenIdStrings.XriResolutionFailed);
 			return doc;
+		}
+
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
+		[ContractInvariantMethod]
+		private void ObjectInvariant() {
+			Contract.Invariant(this.xriResolverProxy != null);
+			Contract.Invariant(this.canonicalXri != null);
 		}
 	}
 }

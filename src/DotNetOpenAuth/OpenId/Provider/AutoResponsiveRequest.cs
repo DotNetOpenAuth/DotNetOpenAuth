@@ -26,10 +26,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AutoResponsiveRequest"/> class.
 		/// </summary>
-		/// <param name="provider">The provider that received the request message.</param>
 		/// <param name="request">The request message.</param>
 		/// <param name="response">The response that is ready for transmittal.</param>
-		internal AutoResponsiveRequest(OpenIdProvider provider, IDirectedProtocolMessage request, IProtocolMessage response)
+		internal AutoResponsiveRequest(IDirectedProtocolMessage request, IProtocolMessage response)
 			: base(request) {
 			ErrorUtilities.VerifyArgumentNotNull(response, "response");
 
@@ -40,9 +39,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Initializes a new instance of the <see cref="AutoResponsiveRequest"/> class
 		/// for a response to an unrecognizable request.
 		/// </summary>
-		/// <param name="provider">The provider that received the request message.</param>
 		/// <param name="response">The response that is ready for transmittal.</param>
-		internal AutoResponsiveRequest(OpenIdProvider provider, IProtocolMessage response)
+		internal AutoResponsiveRequest(IProtocolMessage response)
 			: base(IndirectResponseBase.GetVersion(response)) {
 			ErrorUtilities.VerifyArgumentNotNull(response, "response");
 

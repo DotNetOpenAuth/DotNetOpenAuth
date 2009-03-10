@@ -31,6 +31,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="messageType">The specific <see cref="IMessage"/>-derived type
 		/// that will be serialized and deserialized using this class.</param>
+		[ContractVerification(false)] // bugs/limitations in CC static analysis
 		private MessageSerializer(Type messageType) {
 			Contract.Requires(messageType != null);
 			Contract.Requires(typeof(IMessage).IsAssignableFrom(messageType));
@@ -51,6 +52,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="messageType">The type of message that will be serialized/deserialized.</param>
 		/// <returns>A message serializer for the given message type.</returns>
+		[ContractVerification(false)] // bugs/limitations in CC static analysis
 		internal static MessageSerializer Get(Type messageType) {
 			Contract.Requires(messageType != null);
 			Contract.Requires(typeof(IMessage).IsAssignableFrom(messageType));

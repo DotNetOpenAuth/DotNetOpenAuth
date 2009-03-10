@@ -178,12 +178,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 				var checkAuthMessage = incomingMessage as CheckAuthenticationRequest;
 				if (checkAuthMessage != null) {
-					return new AutoResponsiveRequest(this, incomingMessage, new CheckAuthenticationResponse(checkAuthMessage, this));
+					return new AutoResponsiveRequest(incomingMessage, new CheckAuthenticationResponse(checkAuthMessage, this));
 				}
 
 				var associateMessage = incomingMessage as AssociateRequest;
 				if (associateMessage != null) {
-					return new AutoResponsiveRequest(this, incomingMessage, associateMessage.CreateResponse(this.AssociationStore, this.SecuritySettings));
+					return new AutoResponsiveRequest(incomingMessage, associateMessage.CreateResponse(this.AssociationStore, this.SecuritySettings));
 				}
 
 				throw ErrorUtilities.ThrowProtocol(MessagingStrings.UnexpectedMessageReceivedOfMany);
@@ -363,9 +363,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 
 			if (incomingMessage != null) {
-				return new AutoResponsiveRequest(this, incomingMessage, errorMessage);
+				return new AutoResponsiveRequest(incomingMessage, errorMessage);
 			} else {
-				return new AutoResponsiveRequest(this, errorMessage);
+				return new AutoResponsiveRequest(errorMessage);
 			}
 		}
 	}

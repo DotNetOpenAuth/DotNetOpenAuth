@@ -309,15 +309,6 @@ namespace DotNetOpenAuth.OpenId {
 		}
 
 		/// <summary>
-		/// Verifies conditions that should be true for any valid state of this object.
-		/// </summary>
-		[ContractInvariantMethod]
-		private void ObjectInvariant() {
-			Contract.Invariant(this.Uri != null);
-			Contract.Invariant(this.Uri.AbsoluteUri != null);
-		}
-
-		/// <summary>
 		/// Searches HTML for the HEAD META tags that describe OpenID provider services.
 		/// </summary>
 		/// <param name="claimedIdentifier">The final URL that provided this HTML document.
@@ -456,6 +447,16 @@ namespace DotNetOpenAuth.OpenId {
 			uriBuilder.Host = uriBuilder.Host.ToLowerInvariant();
 			canonicalUri = uriBuilder.Uri;
 			return true;
+		}
+
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
+		[ContractInvariantMethod]
+		private void ObjectInvariant() {
+			Contract.Invariant(this.Uri != null);
+			Contract.Invariant(this.Uri.AbsoluteUri != null);
 		}
 	}
 }

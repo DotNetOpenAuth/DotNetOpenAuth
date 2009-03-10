@@ -47,6 +47,9 @@ namespace DotNetOpenAuth.Messaging {
 		void EnsureValidMessage();
 	}
 
+	/// <summary>
+	/// Code contract for the <see cref="IMessage"/> interface.
+	/// </summary>
 	[ContractClassFor(typeof(IMessage))]
 	internal sealed class IMessageContract : IMessage {
 		/// <summary>

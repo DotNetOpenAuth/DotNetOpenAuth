@@ -23,7 +23,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// </summary>
 	[DefaultEvent("AuthenticationChallenge")]
 	[ToolboxData("<{0}:ProviderEndpoint runat='server' />")]
-	public class ProviderEndpoint : Control, IDisposable {
+	public class ProviderEndpoint : Control {
 		/// <summary>
 		/// The key used to store the pending authentication request in the ASP.NET session.
 		/// </summary>

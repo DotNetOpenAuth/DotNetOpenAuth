@@ -62,7 +62,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="realmUrl">The realm URL to use in the new instance.</param>
 		[SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads", Justification = "Not all realms are valid URLs (because of wildcards).")]
 		public Realm(string realmUrl) {
-			ErrorUtilities.VerifyNonZeroLength(realmUrl, "realmUrl");
+			ErrorUtilities.VerifyArgumentNotNull(realmUrl, "realmUrl"); // not non-zero check so we throw UriFormatException later
 			this.DomainWildcard = Regex.IsMatch(realmUrl, WildcardDetectionPattern);
 			this.uri = new Uri(Regex.Replace(realmUrl, WildcardDetectionPattern, m => m.Groups[1].Value));
 			if (!this.uri.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) &&
@@ -379,15 +379,6 @@ namespace DotNetOpenAuth.OpenId {
 		}
 
 		/// <summary>
-		/// Verifies conditions that should be true for any valid state of this object.
-		/// </summary>
-		[ContractInvariantMethod]
-		private void ObjectInvariant() {
-			Contract.Invariant(this.uri != null);
-			Contract.Invariant(this.uri.AbsoluteUri != null);
-		}
-
-		/// <summary>
 		/// Calls <see cref="UriBuilder.ToString"/> if the argument is non-null.
 		/// Otherwise throws <see cref="ArgumentNullException"/>.
 		/// </summary>
@@ -406,6 +397,16 @@ namespace DotNetOpenAuth.OpenId {
 			// Note that Uri.ToString() should generally be avoided, but UriBuilder.ToString()
 			// is safe: http://blog.nerdbank.net/2008/04/uriabsoluteuri-and-uritostring-are-not.html
 			return realmUriBuilder.ToString();
+		}
+
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
+		[ContractInvariantMethod]
+		private void ObjectInvariant() {
+			Contract.Invariant(this.uri != null);
+			Contract.Invariant(this.uri.AbsoluteUri != null);
 		}
 	}
 }

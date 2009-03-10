@@ -14,8 +14,13 @@ namespace DotNetOpenAuth.Test {
 		public static void AssemblyInitialize(TestContext tc) {
 			// Make contract failures become test failures.
 			Contract.ContractFailed += (sender, e) => {
-				e.Handled = true;
-				Assert.Fail(e.FailureKind.ToString() + ": " + e.DebugMessage);
+				if (e.FailureKind == ContractFailureKind.Precondition) {
+					// Currently we ignore these so that the regular ErrorUtilities can kick in.
+					e.Handled = true;
+				} else {
+					e.Handled = true;
+					Assert.Fail(e.FailureKind.ToString() + ": " + e.DebugMessage);
+				}
 			};
 		}
 	}

@@ -79,7 +79,7 @@ namespace DotNetOpenAuth.Messaging {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 			ErrorUtilities.VerifySupported(this.CanSupport(options), MessagingStrings.DirectWebRequestOptionsNotSupported, options, this.GetType().Name);
 
-			return GetRequestStreamCore(request, options);
+			return GetRequestStreamCore(request);
 		}
 
 		/// <summary>
@@ -182,11 +182,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// Initiates a POST request and prepares for sending data.
 		/// </summary>
 		/// <param name="request">The HTTP request with information about the remote party to contact.</param>
-		/// <param name="options">The options to apply to this specific web request.</param>
 		/// <returns>
 		/// The stream where the POST entity can be written.
 		/// </returns>
-		private static Stream GetRequestStreamCore(HttpWebRequest request, DirectWebRequestOptions options) {
+		private static Stream GetRequestStreamCore(HttpWebRequest request) {
 			PrepareRequest(request, true);
 
 			try {
