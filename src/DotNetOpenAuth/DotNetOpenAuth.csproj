@@ -59,12 +59,10 @@
     <DocumentationFile>..\..\bin\Release\DotNetOpenAuth.xml</DocumentationFile>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRules>-Microsoft.Design#CA1054;-Microsoft.Design#CA1056;-Microsoft.Design#CA1055</CodeAnalysisRules>
-    <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
-    <CodeContractsCustomRewriterAssembly>
-    </CodeContractsCustomRewriterAssembly>
-    <CodeContractsCustomRewriterClass>
-    </CodeContractsCustomRewriterClass>
-    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsCustomRewriterAssembly>DotNetOpenAuth</CodeContractsCustomRewriterAssembly>
+    <CodeContractsCustomRewriterClass>DotNetOpenAuth.ContractRuntimeFailureMethods</CodeContractsCustomRewriterClass>
+    <CodeContractsRuntimeCheckingLevel>RequiresAlways</CodeContractsRuntimeCheckingLevel>
     <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
     <CodeContractsBuildReferenceAssembly>True</CodeContractsBuildReferenceAssembly>
     <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
@@ -80,6 +78,7 @@
     <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
     <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
     <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Sign)' == 'true' ">
     <SignAssembly>true</SignAssembly>
@@ -185,6 +184,7 @@
     <Compile Include="Configuration\UntrustedWebRequestElement.cs" />
     <Compile Include="Configuration\HostNameOrRegexCollection.cs" />
     <Compile Include="Configuration\HostNameElement.cs" />
+    <Compile Include="ContractRuntimeFailureMethods.cs" />
     <Compile Include="InfoCard\ClaimType.cs" />
     <Compile Include="InfoCard\ReceivingTokenEventArgs.cs" />
     <Compile Include="InfoCard\TokenProcessingErrorEventArgs.cs" />
