@@ -144,7 +144,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				Contract.Requires(value != null);
+				Contract.RequiresAlways(value != null);
 				ErrorUtilities.VerifyArgumentNotNull(value, "value");
 				this.channel = value;
 				this.AssociationManager.Channel = value;
