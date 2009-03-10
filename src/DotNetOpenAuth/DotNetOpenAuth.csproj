@@ -55,7 +55,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <DocumentationFile>..\..\bin\debug\DotNetOpenAuth.xml</DocumentationFile>
+    <DocumentationFile>..\..\bin\Release\DotNetOpenAuth.xml</DocumentationFile>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRules>-Microsoft.Design#CA1054;-Microsoft.Design#CA1056;-Microsoft.Design#CA1055</CodeAnalysisRules>
     <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
