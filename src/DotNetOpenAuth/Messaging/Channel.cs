@@ -494,7 +494,7 @@ namespace DotNetOpenAuth.Messaging {
 			// Search Form data first, and if nothing is there search the QueryString
 			Contract.Assume(request.Form != null && request.QueryString != null);
 			var fields = request.Form.ToDictionary();
-			if (fields.Count == 0) {
+			if (fields.Count == 0 && request.HttpMethod != "POST") { // OpenID 2.0 section 4.1.2
 				fields = request.QueryString.ToDictionary();
 			}
 
