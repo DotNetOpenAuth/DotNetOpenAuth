@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// Initializes a new instance of the <see cref="DotNetOpenAuthSection"/> class.
 		/// </summary>
 		internal DotNetOpenAuthSection() {
-			Contract.Assert(this.SectionInformation != null);
+			Contract.Assume(this.SectionInformation != null);
 			this.SectionInformation.AllowLocation = false;
 		}
 

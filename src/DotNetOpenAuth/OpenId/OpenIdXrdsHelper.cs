@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OpenId {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Xrds;
+	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Adds OpenID-specific extension methods to the XrdsDocument class.
@@ -62,6 +63,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="userSuppliedIdentifier">The user-supplied i-name that was used to discover this XRDS document.</param>
 		/// <returns>A sequence of OpenID Providers that can assert ownership of the canonical ID given in this document.</returns>
 		internal static IEnumerable<ServiceEndpoint> CreateServiceEndpoints(this XrdsDocument xrds, XriIdentifier userSuppliedIdentifier) {
+			Contract.Requires(xrds != null);
+			Contract.Requires(userSuppliedIdentifier != null);
+			Contract.Ensures(Contract.Result<IEnumerable<ServiceEndpoint>>() != null);
 			var endpoints = new List<ServiceEndpoint>();
 			endpoints.AddRange(xrds.GenerateOPIdentifierServiceEndpoints(userSuppliedIdentifier));
 
@@ -82,6 +86,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="opIdentifier">The OP Identifier entered (and resolved) by the user.</param>
 		/// <returns>A sequence of the providers that can offer directed identity services.</returns>
 		private static IEnumerable<ServiceEndpoint> GenerateOPIdentifierServiceEndpoints(this XrdsDocument xrds, Identifier opIdentifier) {
+			Contract.Requires(xrds != null);
+			Contract.Requires(opIdentifier != null);
+			Contract.Ensures(Contract.Result<IEnumerable<ServiceEndpoint>>() != null);
 			return from service in xrds.FindOPIdentifierServices()
 				   from uri in service.UriElements
 				   let protocol = Protocol.FindBestVersion(p => p.OPIdentifierServiceTypeURI, service.TypeElementUris)

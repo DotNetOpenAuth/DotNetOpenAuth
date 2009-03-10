@@ -95,7 +95,7 @@ namespace DotNetOpenAuth.Configuration {
 			settings.MaximumHashBitLength = this.MaximumHashBitLength;
 			settings.ProtectDownlevelReplayAttacks = this.ProtectDownlevelReplayAttacks;
 			foreach (AssociationTypeElement element in this.AssociationLifetimes) {
-				Contract.Assert(element != null);
+				Contract.Assume(element != null);
 				settings.AssociationLifetimes.Add(element.AssociationType, element.MaximumLifetime);
 			}
 			return settings;

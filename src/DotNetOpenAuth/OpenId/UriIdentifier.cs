@@ -312,7 +312,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// Verifies conditions that should be true for any valid state of this object.
 		/// </summary>
 		[ContractInvariantMethod]
-		protected void ObjectInvariant() {
+		private void ObjectInvariant() {
 			Contract.Invariant(this.Uri != null);
 			Contract.Invariant(this.Uri.AbsoluteUri != null);
 		}

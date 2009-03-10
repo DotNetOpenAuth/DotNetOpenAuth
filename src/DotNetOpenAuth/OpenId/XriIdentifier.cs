@@ -60,6 +60,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="xri">The string value of the XRI.</param>
 		internal XriIdentifier(string xri)
 			: this(xri, false) {
+			Contract.Requires((xri != null && xri.Length > 0) || !string.IsNullOrEmpty(xri));
 		}
 
 		/// <summary>
@@ -72,7 +73,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </param>
 		internal XriIdentifier(string xri, bool requireSsl)
 			: base(requireSsl) {
-			Contract.Requires(!string.IsNullOrEmpty(xri));
+			Contract.Requires((xri != null && xri.Length > 0) || !string.IsNullOrEmpty(xri));
 			ErrorUtilities.VerifyFormat(IsValidXri(xri), OpenIdStrings.InvalidXri, xri);
 			Contract.Assume(xri != null); // Proven by IsValidXri
 			this.xriResolverProxy = XriResolverProxyTemplate;
@@ -153,7 +154,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// 	<c>true</c> if the given string constitutes a valid XRI; otherwise, <c>false</c>.
 		/// </returns>
 		internal static bool IsValidXri(string xri) {
-			Contract.Requires(!string.IsNullOrEmpty(xri));
+			Contract.Requires((xri != null && xri.Length > 0) || !string.IsNullOrEmpty(xri));
 			ErrorUtilities.VerifyNonZeroLength(xri, "xri");
 			xri = xri.Trim();
 
@@ -182,6 +183,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="userSuppliedIdentifier">The user supplied identifier, which may differ from this XRI instance due to multiple discovery steps.</param>
 		/// <returns>A list of service endpoints offered for this identifier.</returns>
 		internal IEnumerable<ServiceEndpoint> Discover(IDirectWebRequestHandler requestHandler, XriIdentifier userSuppliedIdentifier) {
+			Contract.Requires(requestHandler != null);
+			Contract.Requires(userSuppliedIdentifier != null);
 			return this.DownloadXrds(requestHandler).CreateServiceEndpoints(userSuppliedIdentifier);
 		}
 
@@ -223,7 +226,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// Verifies conditions that should be true for any valid state of this object.
 		/// </summary>
 		[ContractInvariantMethod]
-		protected void ObjectInvariant() {
+		private void ObjectInvariant() {
 			Contract.Invariant(this.xriResolverProxy != null);
 			Contract.Invariant(this.canonicalXri != null);
 		}
@@ -251,6 +254,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="requestHandler">The request handler.</param>
 		/// <returns>The XRDS document.</returns>
 		private XrdsDocument DownloadXrds(IDirectWebRequestHandler requestHandler) {
+			Contract.Requires(requestHandler != null);
+			Contract.Ensures(Contract.Result<XrdsDocument>() != null);
 			XrdsDocument doc;
 			using (var xrdsResponse = Yadis.Request(requestHandler, this.XrdsUrl, this.IsDiscoverySecureEndToEnd)) {
 				doc = new XrdsDocument(XmlReader.Create(xrdsResponse.ResponseStream));

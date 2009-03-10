@@ -28,15 +28,16 @@ namespace DotNetOpenAuth {
 		/// <returns>
 		/// True if the URI contains an OAuth message.
 		/// </returns>
+		[ContractVerification(false)] // bugs/limitations in CC static analysis
 		internal static bool QueryStringContainPrefixedParameters(this Uri uri, string prefix) {
-			Contract.Requires(!string.IsNullOrEmpty(prefix));
+			Contract.Requires(prefix != null && prefix.Length > 0);
 			ErrorUtilities.VerifyNonZeroLength(prefix, "prefix");
 			if (uri == null) {
 				return false;
 			}
 
 			NameValueCollection nvc = HttpUtility.ParseQueryString(uri.Query);
-			Contract.Assert(nvc != null); // BCL
+			Contract.Assume(nvc != null); // BCL
 			return nvc.Keys.OfType<string>().Any(key => key.StartsWith(prefix, StringComparison.Ordinal));
 		}
 
@@ -99,10 +100,13 @@ namespace DotNetOpenAuth {
 			}
 
 			if (page != null && !designMode) {
-				Contract.Assert(page.Request != null);
+				Contract.Assume(page.Request != null);
 
 				// Validate new value by trying to construct a Realm object based on it.
-				new Uri(page.Request.Url, page.ResolveUrl(value)); // throws an exception on failure.
+				string relativeUrl = page.ResolveUrl(value);
+				Contract.Assume(page.Request.Url != null);
+				Contract.Assume(relativeUrl != null);
+				new Uri(page.Request.Url, relativeUrl); // throws an exception on failure.
 			} else {
 				// We can't fully test it, but it should start with either ~/ or a protocol.
 				if (Regex.IsMatch(value, @"^https?://")) {

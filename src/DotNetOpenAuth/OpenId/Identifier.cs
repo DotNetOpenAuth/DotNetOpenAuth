@@ -19,6 +19,7 @@ namespace DotNetOpenAuth.OpenId {
 	[Serializable]
 	[ContractVerification(true)]
 	[Pure]
+	[ContractClass(typeof(IdentifierContract))]
 	public abstract class Identifier {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Identifier"/> class.
@@ -49,6 +50,7 @@ namespace DotNetOpenAuth.OpenId {
 		[SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads", Justification = "Not all identifiers are URIs.")]
 		[SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates", Justification = "Our named alternate is Parse.")]
 		public static implicit operator Identifier(string identifier) {
+			Contract.Requires(identifier == null || identifier.Length > 0);
 			if (identifier == null) {
 				return null;
 			}
@@ -76,6 +78,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>The result of the conversion.</returns>
 		[SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates", Justification = "We have a Parse function.")]
 		public static implicit operator string(Identifier identifier) {
+			Contract.Ensures((identifier == null && Contract.Result<string>() == null) || (identifier != null && Contract.Result<string>() != null));
 			if (identifier == null) {
 				return null;
 			}
@@ -90,7 +93,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>An <see cref="Identifier"/> instance for the given value.</returns>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Some of these identifiers are not properly formatted to be Uris at this stage.")]
 		public static Identifier Parse(string identifier) {
-			Contract.Requires(!string.IsNullOrEmpty(identifier));
+			Contract.Requires((identifier != null && identifier.Length > 0) || !string.IsNullOrEmpty(identifier));
 			ErrorUtilities.VerifyArgumentNotNull(identifier, "identifier");
 			if (XriIdentifier.IsValidXri(identifier)) {
 				return new XriIdentifier(identifier);
@@ -108,6 +111,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// True if the operation was successful.  False if the string was not a valid OpenId Identifier.
 		/// </returns>
 		public static bool TryParse(string value, out Identifier result) {
+			Contract.Requires(!string.IsNullOrEmpty(value));
 			if (IsValid(value)) {
 				result = Parse(value);
 				return true;
@@ -213,5 +217,62 @@ namespace DotNetOpenAuth.OpenId {
 		/// False if the Identifier was originally created with an explicit HTTP scheme.
 		/// </returns>
 		internal abstract bool TryRequireSsl(out Identifier secureIdentifier);
+	}
+
+	/// <summary>
+	/// Code Contract for the <see cref="Identifier"/> class.
+	/// </summary>
+	[ContractClassFor(typeof(Identifier))]
+	internal abstract class IdentifierContract : Identifier {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="IdentifierContract"/> class.
+		/// </summary>
+		private IdentifierContract()
+			: base(false) {
+		}
+
+		/// <summary>
+		/// Performs discovery on the Identifier.
+		/// </summary>
+		/// <param name="requestHandler">The web request handler to use for discovery.</param>
+		/// <returns>
+		/// An initialized structure containing the discovered provider endpoint information.
+		/// </returns>
+		internal override IEnumerable<ServiceEndpoint> Discover(IDirectWebRequestHandler requestHandler) {
+			Contract.Requires(requestHandler != null);
+			Contract.Ensures(Contract.Result<IEnumerable<ServiceEndpoint>>() != null);
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Returns an <see cref="Identifier"/> that has no URI fragment.
+		/// Quietly returns the original <see cref="Identifier"/> if it is not
+		/// a <see cref="UriIdentifier"/> or no fragment exists.
+		/// </summary>
+		/// <returns>
+		/// A new <see cref="Identifier"/> instance if there was a
+		/// fragment to remove, otherwise this same instance..
+		/// </returns>
+		internal override Identifier TrimFragment() {
+			Contract.Ensures(Contract.Result<Identifier>() != null);
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Converts a given identifier to its secure equivalent.
+		/// UriIdentifiers originally created with an implied HTTP scheme change to HTTPS.
+		/// Discovery is made to require SSL for the entire resolution process.
+		/// </summary>
+		/// <param name="secureIdentifier">The newly created secure identifier.
+		/// If the conversion fails, <paramref name="secureIdentifier"/> retains
+		/// <i>this</i> identifiers identity, but will never discover any endpoints.</param>
+		/// <returns>
+		/// True if the secure conversion was successful.
+		/// False if the Identifier was originally created with an explicit HTTP scheme.
+		/// </returns>
+		internal override bool TryRequireSsl(out Identifier secureIdentifier) {
+			Contract.Ensures(Contract.ValueAtReturn(out secureIdentifier) != null);
+			throw new NotImplementedException();
+		}
 	}
 }

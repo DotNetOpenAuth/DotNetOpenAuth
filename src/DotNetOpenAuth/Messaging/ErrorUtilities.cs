@@ -292,7 +292,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <exception cref="ArgumentNullException">Thrown if <paramref name="value"/> is null.</exception>
 		/// <exception cref="ArgumentException">Thrown if <paramref name="value"/> has zero length.</exception>
 		internal static void VerifyNonZeroLength(string value, string paramName) {
-			Contract.Requires(!string.IsNullOrEmpty(value) || (value != null && value.Length > 0));
+			Contract.Requires((value != null && value.Length > 0) || !string.IsNullOrEmpty(value));
 			VerifyArgumentNotNull(value, paramName);
 			if (value.Length == 0) {
 				throw new ArgumentException(MessagingStrings.UnexpectedEmptyString, paramName);

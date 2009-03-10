@@ -38,7 +38,9 @@ namespace DotNetOpenAuth.Configuration {
 		internal IEnumerable<Regex> KeysAsRegexs {
 			get {
 				foreach (HostNameElement element in this) {
-					yield return new Regex(element.Name);
+					if (element.Name != null) {
+						yield return new Regex(element.Name);
+					}
 				}
 			}
 		}
@@ -61,7 +63,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// An <see cref="T:System.Object"/> that acts as the key for the specified <see cref="T:System.Configuration.ConfigurationElement"/>.
 		/// </returns>
 		protected override object GetElementKey(ConfigurationElement element) {
-			Contract.Assert(element != null); // this should be Contract.Requires in base class.
+			Contract.Assume(element != null); // this should be Contract.Requires in base class.
 			return ((HostNameElement)element).Name;
 		}
 	}

@@ -34,6 +34,7 @@ namespace DotNetOpenAuth.Messaging {
 		private MessageSerializer(Type messageType) {
 			Contract.Requires(messageType != null);
 			Contract.Requires(typeof(IMessage).IsAssignableFrom(messageType));
+			Contract.Ensures(this.messageType != null);
 
 			ErrorUtilities.VerifyArgumentNamed(
 				typeof(IMessage).IsAssignableFrom(messageType),
@@ -79,7 +80,7 @@ namespace DotNetOpenAuth.Messaging {
 			foreach (var pair in messageDictionary) {
 				MessagePart partDescription;
 				if (messageDescription.Mapping.TryGetValue(pair.Key, out partDescription)) {
-					Contract.Assert(partDescription != null);
+					Contract.Assume(partDescription != null);
 					if (partDescription.IsRequired || partDescription.IsNondefaultValueSet(message)) {
 						result.Add(pair.Key, pair.Value);
 					}
@@ -116,6 +117,14 @@ namespace DotNetOpenAuth.Messaging {
 				throw ErrorUtilities.Wrap(ex, MessagingStrings.ErrorDeserializingMessage, this.messageType.Name);
 			}
 			message.EnsureValidMessage();
+		}
+
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[ContractInvariantMethod]
+		protected void ObjectInvariant() {
+			Contract.Invariant(this.messageType != null);
 		}
 	}
 }
