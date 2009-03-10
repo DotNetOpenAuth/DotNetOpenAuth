@@ -87,9 +87,9 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CodeAnalysis|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\CodeAnalysis\</OutputPath>
+    <OutputPath>..\..\bin\CodeAnalysis\</OutputPath>
     <DefineConstants>CONTRACTS_FULL;DEBUG;TRACE</DefineConstants>
-    <DocumentationFile>..\..\bin\Debug\DotNetOpenAuth.xml</DocumentationFile>
+    <DocumentationFile>..\..\bin\CodeAnalysis\DotNetOpenAuth.xml</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisRules>-Microsoft.Design#CA1054;-Microsoft.Design#CA1056;-Microsoft.Design#CA1055</CodeAnalysisRules>
