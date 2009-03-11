@@ -78,6 +78,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </value>
 		HttpDeliveryMethods IDirectedProtocolMessage.HttpMethods {
 			get {
+				// OpenID 2.0 section 5.1.1
 				HttpDeliveryMethods methods = HttpDeliveryMethods.PostRequest;
 				if (this.Transport == MessageTransport.Indirect) {
 					methods |= HttpDeliveryMethods.GetRequest;

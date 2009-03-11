@@ -282,4 +282,7 @@
   <data name="ExceptionUndeliverable" xml:space="preserve">
     <value>This exception must be instantiated with a recipient that will receive the error message, or a direct request message instance that this exception will respond to.</value>
   </data>
+  <data name="UnsupportedHttpVerbForMessageType" xml:space="preserve">
+    <value>'{0}' messages cannot be received with HTTP verb '{1}'.</value>
+  </data>
 </root>

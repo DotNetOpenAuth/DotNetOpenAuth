@@ -538,6 +538,15 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; messages cannot be received with HTTP verb &apos;{1}&apos;..
+        /// </summary>
+        internal static string UnsupportedHttpVerbForMessageType {
+            get {
+                return ResourceManager.GetString("UnsupportedHttpVerbForMessageType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Redirects on POST requests that are to untrusted servers is not supported..
         /// </summary>
         internal static string UntrustedRedirectsOnPOSTNotSupported {

@@ -270,6 +270,8 @@ namespace DotNetOpenAuth.Messaging {
 		public bool TryReadFromRequest<TRequest>(HttpRequestInfo httpRequest, out TRequest request)
 			where TRequest : class, IProtocolMessage {
 			Contract.Requires(httpRequest != null);
+			Contract.Ensures(Contract.Result<bool>() == (Contract.ValueAtReturn<TRequest>(out request) != null));
+
 			IProtocolMessage untypedRequest = this.ReadFromRequest(httpRequest);
 			if (untypedRequest == null) {
 				request = null;
@@ -505,7 +507,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Deserializes a dictionary of values into a message.
 		/// </summary>
 		/// <param name="fields">The dictionary of values that were read from an HTTP request or response.</param>
-		/// <param name="recipient">Information about where the message was been directed.  Null for direct response messages.</param>
+		/// <param name="recipient">Information about where the message was directed.  Null for direct response messages.</param>
 		/// <returns>The deserialized message, or null if no message could be recognized in the provided data.</returns>
 		protected virtual IProtocolMessage Receive(Dictionary<string, string> fields, MessageReceivingEndpoint recipient) {
 			Contract.Requires(fields != null);
@@ -517,6 +519,10 @@ namespace DotNetOpenAuth.Messaging {
 			if (message == null) {
 				return null;
 			}
+
+			// Ensure that the message came in using an allowed HTTP verb for this message type.
+			var directedMessage = message as IDirectedProtocolMessage;
+			ErrorUtilities.VerifyProtocol(recipient == null || (directedMessage != null && (recipient.AllowedMethods & directedMessage.HttpMethods) != 0), MessagingStrings.UnsupportedHttpVerbForMessageType, message.GetType().Name, recipient.AllowedMethods);
 
 			// We have a message!  Assemble it.
 			var serializer = MessageSerializer.Get(message.GetType());
@@ -531,8 +537,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="message">The message to send.</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
 		protected virtual UserAgentResponse SendIndirectMessage(IDirectedProtocolMessage message) {
-			Contract.Requires(message != null);
-			Contract.Requires(message.Recipient != null);
+			Contract.Requires(message != null && message.Recipient != null);
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
 			var serializer = MessageSerializer.Get(message.GetType());
@@ -556,8 +561,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="fields">The pre-serialized fields from the message.</param>
 		/// <returns>The encoded HTTP response.</returns>
 		protected virtual UserAgentResponse Create301RedirectResponse(IDirectedProtocolMessage message, IDictionary<string, string> fields) {
-			Contract.Requires(message != null);
-			Contract.Requires(message.Recipient != null);
+			Contract.Requires(message != null && message.Recipient != null);
 			Contract.Requires(fields != null);
 			Contract.Ensures(Contract.Result<UserAgentResponse>() != null);
 
@@ -588,8 +592,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="fields">The pre-serialized fields from the message.</param>
 		/// <returns>The encoded HTTP response.</returns>
 		protected virtual UserAgentResponse CreateFormPostResponse(IDirectedProtocolMessage message, IDictionary<string, string> fields) {
-			Contract.Requires(message != null);
-			Contract.Requires(message.Recipient != null);
+			Contract.Requires(message != null && message.Recipient != null);
 			Contract.Requires(fields != null);
 			Contract.Ensures(Contract.Result<UserAgentResponse>() != null);
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");

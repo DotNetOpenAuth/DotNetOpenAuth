@@ -34,6 +34,17 @@ namespace DotNetOpenAuth.Test.Messaging {
 			this.ParameterizedReceiveTest("POST");
 		}
 
+		/// <summary>
+		/// Verifies compliance to OpenID 2.0 section 5.1.1 by verifying the channel
+		/// will reject messages that come with an unexpected HTTP verb.
+		/// </summary>
+		[TestMethod, ExpectedException(typeof(ProtocolException))]
+		public void ReadFromRequestDisallowedHttpMethod() {
+			var fields = GetStandardTestFields(FieldFill.CompleteBeforeBindings);
+			fields["GetOnly"] = "true";
+			this.Channel.ReadFromRequest(CreateHttpRequestInfo("POST", fields));
+		}
+
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void SendNull() {
 			this.Channel.PrepareResponse(null);

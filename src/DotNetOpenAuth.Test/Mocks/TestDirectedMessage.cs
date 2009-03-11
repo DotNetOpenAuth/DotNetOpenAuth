@@ -11,9 +11,11 @@ namespace DotNetOpenAuth.Test.Mocks {
 
 	internal class TestDirectedMessage : TestMessage, IDirectedProtocolMessage {
 		internal TestDirectedMessage() {
+			this.HttpMethods = HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.PostRequest;
 		}
 
 		internal TestDirectedMessage(MessageTransport transport) : base(transport) {
+			this.HttpMethods = HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.PostRequest;
 		}
 
 		#region IDirectedProtocolMessage Members

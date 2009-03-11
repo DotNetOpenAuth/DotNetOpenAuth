@@ -44,7 +44,11 @@ namespace DotNetOpenAuth.Test.Mocks {
 					}
 					return new TestSignedDirectedMessage();
 				}
-				return new TestDirectedMessage();
+				var result = new TestDirectedMessage();
+				if (fields.ContainsKey("GetOnly")) {
+					result.HttpMethods = HttpDeliveryMethods.GetRequest;
+				}
+				return result;
 			}
 			return null;
 		}
