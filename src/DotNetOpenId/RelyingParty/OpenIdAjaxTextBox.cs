@@ -613,12 +613,16 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 
 			OpenIdRelyingParty rp = new OpenIdRelyingParty();
 
+			// Approximate the returnTo (either based on the customize property or the page URL)
+			// so we can use it to help with Realm resolution.
+			Uri returnToApproximation = ReturnToUrl != null ? new Uri(Util.GetRequestUrlFromContext(), ReturnToUrl) : Page.Request.Url;
+
 			// Resolve the trust root, and swap out the scheme and port if necessary to match the
 			// return_to URL, since this match is required by OpenId, and the consumer app
 			// may be using HTTP at some times and HTTPS at others.
 			UriBuilder realm = Util.GetResolvedRealm(Page, RealmUrl);
-			realm.Scheme = Page.Request.Url.Scheme;
-			realm.Port = Page.Request.Url.Port;
+			realm.Scheme = returnToApproximation.Scheme;
+			realm.Port = returnToApproximation.Port;
 
 			// Initiate openid request
 			// We use TryParse here to avoid throwing an exception which 
@@ -627,8 +631,9 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 			if (string.IsNullOrEmpty(ReturnToUrl)) {
 				request = rp.CreateRequest(userSuppliedIdentifier, typedRealm);
 			} else {
-				Uri returnTo = new Uri(Util.GetRequestUrlFromContext(), ReturnToUrl);
-				request = rp.CreateRequest(userSuppliedIdentifier, typedRealm, returnTo);
+				// Since the user actually gave us a return_to value,
+				// the "approximation" is exactly what we want.
+				request = rp.CreateRequest(userSuppliedIdentifier, typedRealm, returnToApproximation);
 			}
 
 			return request;
