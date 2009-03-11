@@ -39,7 +39,8 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 		}
 
 		/// <summary>
-		/// Verifies that error messages are created as HTTP 400 errors.
+		/// Verifies that error messages are created as HTTP 400 errors,
+		/// per OpenID 2.0 section 5.1.2.2.
 		/// </summary>
 		[TestMethod]
 		public void ErrorMessagesAsHttp400() {

@@ -285,4 +285,7 @@
   <data name="UnsupportedHttpVerbForMessageType" xml:space="preserve">
     <value>'{0}' messages cannot be received with HTTP verb '{1}'.</value>
   </data>
+  <data name="UnexpectedHttpStatusCode" xml:space="preserve">
+    <value>Expected direct response to use HTTP status code {0} but was {1} instead.</value>
+  </data>
 </root>

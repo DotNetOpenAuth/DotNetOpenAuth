@@ -448,6 +448,15 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Expected direct response to use HTTP status code {0} but was {1} instead..
+        /// </summary>
+        internal static string UnexpectedHttpStatusCode {
+            get {
+                return ResourceManager.GetString("UnexpectedHttpStatusCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Message parameter &apos;{0}&apos; had unexpected value &apos;{1}&apos;..
         /// </summary>
         internal static string UnexpectedMessagePartValue {

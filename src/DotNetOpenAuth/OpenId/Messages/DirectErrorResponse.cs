@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OpenId.Messages {
 	using System;
+	using System.Net;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -30,9 +31,9 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Gets the HTTP status code that the direct respones should be sent with.
 		/// </summary>
-		/// <value><see cref="System.Net.HttpStatusCode.BadRequest"/></value>
-		public System.Net.HttpStatusCode HttpStatusCode {
-			get { return System.Net.HttpStatusCode.BadRequest; }
+		/// <value><see cref="HttpStatusCode.BadRequest"/></value>
+		HttpStatusCode IHttpDirectResponse.HttpStatusCode {
+			get { return HttpStatusCode.BadRequest; }
 		}
 
 		#endregion

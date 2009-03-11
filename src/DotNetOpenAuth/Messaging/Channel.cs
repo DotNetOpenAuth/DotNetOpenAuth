@@ -462,6 +462,7 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires(request != null);
 			HttpWebRequest webRequest = this.CreateHttpRequest(request);
 			IDictionary<string, string> responseFields;
+			IDirectResponseProtocolMessage responseMessage;
 
 			using (DirectWebResponse response = this.GetDirectResponse(webRequest)) {
 				if (response.ResponseStream == null) {
@@ -469,11 +470,22 @@ namespace DotNetOpenAuth.Messaging {
 				}
 
 				responseFields = this.ReadFromResponseInternal(response);
-			}
 
-			IDirectResponseProtocolMessage responseMessage = this.MessageFactory.GetNewResponseMessage(request, responseFields);
-			if (responseMessage == null) {
-				return null;
+				responseMessage = this.MessageFactory.GetNewResponseMessage(request, responseFields);
+				if (responseMessage == null) {
+					return null;
+				}
+
+				// Verify that the expected HTTP status code was used for the message,
+				// per OpenID 2.0 section 5.1.2.2.
+				var httpDirectResponse = responseMessage as IHttpDirectResponse;
+				if (httpDirectResponse != null) {
+					ErrorUtilities.VerifyProtocol(
+						httpDirectResponse.HttpStatusCode == response.Status,
+						MessagingStrings.UnexpectedHttpStatusCode,
+						(int)httpDirectResponse.HttpStatusCode,
+						(int)response.Status);
+				}
 			}
 
 			var responseSerializer = MessageSerializer.Get(responseMessage.GetType());
