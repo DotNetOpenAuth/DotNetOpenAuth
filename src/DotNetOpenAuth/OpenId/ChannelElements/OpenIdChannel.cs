@@ -199,6 +199,29 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		}
 
 		/// <summary>
+		/// Called when receiving a direct response message, before deserialization begins.
+		/// </summary>
+		/// <param name="response">The HTTP direct response.</param>
+		/// <param name="message">The newly instantiated message, prior to deserialization.</param>
+		protected override void OnReceivingDirectResponse(DirectWebResponse response, IDirectResponseProtocolMessage message) {
+			base.OnReceivingDirectResponse(response, message);
+
+			// Verify that the expected HTTP status code was used for the message,
+			// per OpenID 2.0 section 5.1.2.2.
+			// Note: The v1.1 spec doesn't require 400 responses for some error messages
+			if (message.Version.Major >= 2) {
+				var httpDirectResponse = message as IHttpDirectResponse;
+				if (httpDirectResponse != null) {
+					ErrorUtilities.VerifyProtocol(
+						httpDirectResponse.HttpStatusCode == response.Status,
+						MessagingStrings.UnexpectedHttpStatusCode,
+						(int)httpDirectResponse.HttpStatusCode,
+						(int)response.Status);
+				}
+			}
+		}
+
+		/// <summary>
 		/// Queues a message for sending in the response stream where the fields
 		/// are sent in the response stream in querystring style.
 		/// </summary>

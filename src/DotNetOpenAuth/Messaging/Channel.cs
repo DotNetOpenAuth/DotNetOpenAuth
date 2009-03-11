@@ -476,22 +476,21 @@ namespace DotNetOpenAuth.Messaging {
 					return null;
 				}
 
-				// Verify that the expected HTTP status code was used for the message,
-				// per OpenID 2.0 section 5.1.2.2.
-				var httpDirectResponse = responseMessage as IHttpDirectResponse;
-				if (httpDirectResponse != null) {
-					ErrorUtilities.VerifyProtocol(
-						httpDirectResponse.HttpStatusCode == response.Status,
-						MessagingStrings.UnexpectedHttpStatusCode,
-						(int)httpDirectResponse.HttpStatusCode,
-						(int)response.Status);
-				}
+				this.OnReceivingDirectResponse(response, responseMessage);
 			}
 
 			var responseSerializer = MessageSerializer.Get(responseMessage.GetType());
 			responseSerializer.Deserialize(responseFields, responseMessage);
 
 			return responseMessage;
+		}
+
+		/// <summary>
+		/// Called when receiving a direct response message, before deserialization begins.
+		/// </summary>
+		/// <param name="response">The HTTP direct response.</param>
+		/// <param name="message">The newly instantiated message, prior to deserialization.</param>
+		protected virtual void OnReceivingDirectResponse(DirectWebResponse response, IDirectResponseProtocolMessage message) {
 		}
 
 		/// <summary>
