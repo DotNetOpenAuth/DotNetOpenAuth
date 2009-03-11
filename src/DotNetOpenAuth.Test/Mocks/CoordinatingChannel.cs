@@ -136,15 +136,10 @@ namespace DotNetOpenAuth.Test.Mocks {
 		protected internal override HttpRequestInfo GetRequestFromContext() {
 			MessageReceivingEndpoint recipient;
 			var messageData = this.AwaitIncomingMessage(out recipient);
-			IDirectedProtocolMessage message = null;
 			if (messageData != null) {
-				message = this.MessageFactory.GetNewRequestMessage(recipient, messageData);
-				if (message != null) {
-					MessageSerializer.Get(message.GetType()).Deserialize(messageData, message);
-				}
-				return new HttpRequestInfo(message, recipient.AllowedMethods);
+				return new CoordinatingHttpRequestInfo(this.MessageFactory, messageData, recipient);
 			} else {
-				return new HttpRequestInfo(null, HttpDeliveryMethods.GetRequest);
+				return new CoordinatingHttpRequestInfo(recipient);
 			}
 		}
 

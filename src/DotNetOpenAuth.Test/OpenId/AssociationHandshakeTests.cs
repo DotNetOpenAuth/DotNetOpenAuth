@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using DotNetOpenAuth.Test.Mocks;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
@@ -104,6 +105,29 @@ namespace DotNetOpenAuth.Test.OpenId {
 		}
 
 		/// <summary>
+		/// Verifies that the OP rejects an associate request that has no encryption (transport or DH).
+		/// </summary>
+		/// <remarks>
+		/// Verifies OP's compliance with OpenID 2.0 section 8.4.1.
+		/// </remarks>
+		[TestMethod]
+		public void OPRejectsHttpNoEncryptionAssociateRequests() {
+			Protocol protocol = Protocol.V20;
+			OpenIdCoordinator coordinator = new OpenIdCoordinator(
+				rp => {
+					// We have to formulate the associate request manually,
+					// since the DNOI RP won't voluntarily suggest no encryption at all.
+					var request = new AssociateUnencryptedRequestNoSslCheck(protocol.Version, OPUri);
+					request.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA256;
+					request.SessionType = protocol.Args.SessionType.NoEncryption;
+					var response = rp.Channel.Request<DirectErrorResponse>(request);
+					Assert.IsNotNull(response);
+				},
+				AutoProvider);
+			coordinator.Run();
+		}
+
+		/// <summary>
 		/// Verifies that the OP rejects an associate request
 		/// when the HMAC and DH bit lengths do not match.
 		/// </summary>
@@ -154,6 +178,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// <summary>
 		/// Verifies that the RP quietly rejects an OP that suggests an no encryption over an HTTP channel.
 		/// </summary>
+		/// <remarks>
+		/// Verifies RP's compliance with OpenID 2.0 section 8.4.1.
+		/// </remarks>
 		[TestMethod]
 		public void RPRejectsUnencryptedSuggestion() {
 			Protocol protocol = Protocol.V20;

@@ -39,10 +39,10 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			base.EnsureValidMessage();
 
 			ErrorUtilities.VerifyProtocol(
-				string.Equals(SessionType, Protocol.Args.SessionType.NoEncryption, StringComparison.Ordinal),
+				string.Equals(this.SessionType, Protocol.Args.SessionType.NoEncryption, StringComparison.Ordinal),
 				MessagingStrings.UnexpectedMessagePartValueForConstant,
 				GetType().Name,
-				"openid.session_type",
+				Protocol.openid.session_type,
 				Protocol.Args.SessionType.NoEncryption,
 				SessionType);
 		}

@@ -141,7 +141,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Gets or sets the message that is being sent over a mock transport (for testing).
 		/// </summary>
-		internal IDirectedProtocolMessage Message { get; set; }
+		internal virtual IDirectedProtocolMessage Message { get; set; }
 
 		/// <summary>
 		/// Gets or sets the verb in the request (i.e. GET, POST, etc.)
