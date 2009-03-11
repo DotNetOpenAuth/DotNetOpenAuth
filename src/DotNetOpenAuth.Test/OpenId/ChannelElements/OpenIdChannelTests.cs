@@ -65,7 +65,8 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		}
 
 		/// <summary>
-		/// Verifies that direct response messages are encoded using Key Value Form.
+		/// Verifies that direct response messages are encoded using Key Value Form
+		/// per OpenID 2.0 section 5.1.2.
 		/// </summary>
 		/// <remarks>
 		/// The validity of the actual KVF encoding is not checked here.  We assume that the KVF encoding
