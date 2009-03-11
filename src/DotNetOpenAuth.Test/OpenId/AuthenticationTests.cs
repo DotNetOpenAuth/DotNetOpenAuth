@@ -24,7 +24,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		[TestMethod]
 		public void SharedAssociationPositive() {
-			this.ParameterizedPositiveAuthenticationTest(true, true, false);
+			this.ParameterizedAuthenticationTest(true, true, false);
 		}
 
 		/// <summary>
@@ -32,17 +32,17 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// </summary>
 		[TestMethod]
 		public void SharedAssociationTampered() {
-			this.ParameterizedPositiveAuthenticationTest(true, true, true);
+			this.ParameterizedAuthenticationTest(true, true, true);
 		}
 
 		[TestMethod]
 		public void SharedAssociationNegative() {
-			this.ParameterizedPositiveAuthenticationTest(true, false, false);
+			this.ParameterizedAuthenticationTest(true, false, false);
 		}
 
 		[TestMethod]
 		public void PrivateAssociationPositive() {
-			this.ParameterizedPositiveAuthenticationTest(false, true, false);
+			this.ParameterizedAuthenticationTest(false, true, false);
 		}
 
 		/// <summary>
@@ -50,15 +50,15 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// </summary>
 		[TestMethod]
 		public void PrivateAssociationTampered() {
-			this.ParameterizedPositiveAuthenticationTest(false, true, true);
+			this.ParameterizedAuthenticationTest(false, true, true);
 		}
 
 		[TestMethod]
 		public void NoAssociationNegative() {
-			this.ParameterizedPositiveAuthenticationTest(false, false, false);
+			this.ParameterizedAuthenticationTest(false, false, false);
 		}
 
-		private void ParameterizedPositiveAuthenticationTest(bool sharedAssociation, bool positive, bool tamper) {
+		private void ParameterizedAuthenticationTest(bool sharedAssociation, bool positive, bool tamper) {
 			foreach (Protocol protocol in Protocol.AllPracticalVersions) {
 				foreach (bool statelessRP in new[] { false, true }) {
 					if (sharedAssociation && statelessRP) {
@@ -66,21 +66,22 @@ namespace DotNetOpenAuth.Test.OpenId {
 						continue;
 					}
 
-					TestLogger.InfoFormat("Beginning authentication test scenario.  OpenID: {0}, Shared: {1}, positive: {2}, tamper: {3}, stateless: {4}", protocol.Version, sharedAssociation, positive, tamper, statelessRP);
-					this.ParameterizedPositiveAuthenticationTest(protocol, statelessRP, sharedAssociation, positive, tamper);
+					foreach (bool immediate in new[] { false, true }) {
+						TestLogger.InfoFormat("Beginning authentication test scenario.  OpenID: {0}, Shared: {1}, positive: {2}, tamper: {3}, stateless: {4}, immediate: {5}", protocol.Version, sharedAssociation, positive, tamper, statelessRP, immediate);
+						this.ParameterizedAuthenticationTest(protocol, statelessRP, sharedAssociation, positive, immediate, tamper);
+					}
 				}
 			}
 		}
 
-		private void ParameterizedPositiveAuthenticationTest(Protocol protocol, bool statelessRP, bool sharedAssociation, bool positive, bool tamper) {
+		private void ParameterizedAuthenticationTest(Protocol protocol, bool statelessRP, bool sharedAssociation, bool positive, bool immediate, bool tamper) {
 			ErrorUtilities.VerifyArgument(!statelessRP || !sharedAssociation, "The RP cannot be stateless while sharing an association with the OP.");
 			ErrorUtilities.VerifyArgument(positive || !tamper, "Cannot tamper with a negative response.");
-			Uri userSetupUrl = protocol.Version.Major < 2 ? new Uri("http://usersetupurl") : null;
 			ProviderSecuritySettings securitySettings = new ProviderSecuritySettings();
 			Association association = sharedAssociation ? HmacShaAssociation.Create(protocol, protocol.Args.SignatureAlgorithm.Best, AssociationRelyingPartyType.Smart, securitySettings) : null;
 			var coordinator = new OpenIdCoordinator(
 				rp => {
-					var request = new CheckIdRequest(protocol.Version, OPUri, AuthenticationRequestMode.Immediate);
+					var request = new CheckIdRequest(protocol.Version, OPUri, immediate ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup);
 
 					if (association != null) {
 						StoreAssociation(rp, OPUri, association);
@@ -123,7 +124,14 @@ namespace DotNetOpenAuth.Test.OpenId {
 					} else {
 						var response = rp.Channel.ReadFromRequest<NegativeAssertionResponse>();
 						Assert.IsNotNull(response);
-						Assert.AreEqual(userSetupUrl, response.UserSetupUrl);
+						if (immediate) {
+							// Only 1.1 was required to include user_setup_url
+							if (protocol.Version.Major < 2) {
+								Assert.IsNotNull(response.UserSetupUrl);
+							}
+						} else {
+							Assert.IsNull(response.UserSetupUrl);
+						}
 					}
 				},
 				op => {
@@ -137,7 +145,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					if (positive) {
 						response = new PositiveAssertionResponse(request);
 					} else {
-						response = new NegativeAssertionResponse(request) { UserSetupUrl = userSetupUrl };
+						response = new NegativeAssertionResponse(request, op.Channel);
 					}
 					op.Channel.Send(response);
 
