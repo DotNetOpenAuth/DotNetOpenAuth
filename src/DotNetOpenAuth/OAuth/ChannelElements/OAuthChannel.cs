@@ -103,7 +103,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <param name="request">The HTTP request to search.</param>
 		/// <returns>A dictionary of data in the request.  Should never be null, but may be empty.</returns>
-		protected override IDirectedProtocolMessage ReadFromRequestInternal(HttpRequestInfo request) {
+		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestInfo request) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			// First search the Authorization header.  Use it exclusively if it's present.
@@ -133,7 +133,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			}
 
 			// We didn't find an OAuth authorization header.  Revert to other payload methods.
-			IDirectedProtocolMessage message = base.ReadFromRequestInternal(request);
+			IDirectedProtocolMessage message = base.ReadFromRequestCore(request);
 
 			// Add receiving HTTP transport information required for signature generation.
 			var signedMessage = message as ITamperResistantOAuthMessage;
@@ -152,7 +152,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <returns>
 		/// The deserialized message parts, if found.  Null otherwise.
 		/// </returns>
-		protected override IDictionary<string, string> ReadFromResponseInternal(DirectWebResponse response) {
+		protected override IDictionary<string, string> ReadFromResponseCore(DirectWebResponse response) {
 			ErrorUtilities.VerifyArgumentNotNull(response, "response");
 
 			string body = response.GetResponseReader().ReadToEnd();

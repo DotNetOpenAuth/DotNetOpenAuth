@@ -99,7 +99,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			var response = new CachedDirectWebResponse {
 				CachedResponseStream = new MemoryStream(KeyValueFormEncoding.GetBytes(fields)),
 			};
-			Assert.IsTrue(MessagingUtilities.AreEquivalent(fields, this.accessor.ReadFromResponseInternal(response)));
+			Assert.IsTrue(MessagingUtilities.AreEquivalent(fields, this.accessor.ReadFromResponseCore(response)));
 		}
 
 		/// <summary>

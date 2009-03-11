@@ -148,7 +148,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			}
 		}
 
-		protected override IProtocolMessage RequestInternal(IDirectedProtocolMessage request) {
+		protected override IProtocolMessage RequestCore(IDirectedProtocolMessage request) {
 			this.ProcessMessageFilter(request, true);
 
 			// Drop the outgoing message in the other channel's in-slot and let them know it's there.
@@ -183,7 +183,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return this.SendDirectMessageResponse(message);
 		}
 
-		protected override IDirectedProtocolMessage ReadFromRequestInternal(HttpRequestInfo request) {
+		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestInfo request) {
 			if (request.Message != null) {
 				this.ProcessMessageFilter(request.Message, false);
 			}
@@ -191,9 +191,9 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return request.Message;
 		}
 
-		protected override IDictionary<string, string> ReadFromResponseInternal(DirectWebResponse response) {
+		protected override IDictionary<string, string> ReadFromResponseCore(DirectWebResponse response) {
 			Channel_Accessor accessor = Channel_Accessor.AttachShadow(this.wrappedChannel);
-			return accessor.ReadFromResponseInternal(response);
+			return accessor.ReadFromResponseCore(response);
 		}
 
 		protected override void VerifyMessageAfterReceiving(IProtocolMessage message) {

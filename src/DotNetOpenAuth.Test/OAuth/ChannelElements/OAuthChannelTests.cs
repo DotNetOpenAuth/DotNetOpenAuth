@@ -113,7 +113,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			writer.Flush();
 			ms.Seek(0, SeekOrigin.Begin);
 			Channel_Accessor channelAccessor = Channel_Accessor.AttachShadow(this.channel);
-			IDictionary<string, string> deserializedFields = channelAccessor.ReadFromResponseInternal(new CachedDirectWebResponse { CachedResponseStream = ms });
+			IDictionary<string, string> deserializedFields = channelAccessor.ReadFromResponseCore(new CachedDirectWebResponse { CachedResponseStream = ms });
 			Assert.AreEqual(fields.Count, deserializedFields.Count);
 			foreach (string key in fields.Keys) {
 				Assert.AreEqual(fields[key], deserializedFields[key]);

@@ -186,7 +186,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// The deserialized message parts, if found.  Null otherwise.
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
-		protected override IDictionary<string, string> ReadFromResponseInternal(DirectWebResponse response) {
+		protected override IDictionary<string, string> ReadFromResponseCore(DirectWebResponse response) {
 			if (response == null) {
 				throw new ArgumentNullException("response");
 			}

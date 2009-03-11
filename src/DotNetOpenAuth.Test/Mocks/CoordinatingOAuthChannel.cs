@@ -62,7 +62,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return new HttpRequestInfo(directedMessage, directedMessage.HttpMethods);
 		}
 
-		protected override IProtocolMessage RequestInternal(IDirectedProtocolMessage request) {
+		protected override IProtocolMessage RequestCore(IDirectedProtocolMessage request) {
 			HttpRequestInfo requestInfo = this.SpoofHttpMethod(request);
 			// Drop the outgoing message in the other channel's in-slot and let them know it's there.
 			this.RemoteChannel.incomingMessage = requestInfo.Message;
@@ -82,7 +82,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return this.SendDirectMessageResponse(message);
 		}
 
-		protected override IDirectedProtocolMessage ReadFromRequestInternal(HttpRequestInfo request) {
+		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestInfo request) {
 			return request.Message;
 		}
 

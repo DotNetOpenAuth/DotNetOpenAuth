@@ -29,7 +29,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// The deserialized message parts, if found.  Null otherwise.
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
-		protected override IDictionary<string, string> ReadFromResponseInternal(DirectWebResponse response) {
+		protected override IDictionary<string, string> ReadFromResponseCore(DirectWebResponse response) {
 			Contract.Requires(response != null);
 			throw new NotImplementedException();
 		}

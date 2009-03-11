@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			: base(messageTypeProvider, bindingElements) {
 		}
 
-		protected override IDictionary<string, string> ReadFromResponseInternal(DirectWebResponse response) {
+		protected override IDictionary<string, string> ReadFromResponseCore(DirectWebResponse response) {
 			throw new NotImplementedException("ReadFromResponseInternal");
 		}
 

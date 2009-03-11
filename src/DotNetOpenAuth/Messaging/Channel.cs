@@ -326,7 +326,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
 		public IDirectedProtocolMessage ReadFromRequest(HttpRequestInfo httpRequest) {
 			Contract.Requires(httpRequest != null);
-			IDirectedProtocolMessage requestMessage = this.ReadFromRequestInternal(httpRequest);
+			IDirectedProtocolMessage requestMessage = this.ReadFromRequestCore(httpRequest);
 			if (requestMessage != null) {
 				Logger.DebugFormat("Incoming request received: {0}", requestMessage);
 				this.VerifyMessageAfterReceiving(requestMessage);
@@ -370,7 +370,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			this.PrepareMessageForSending(requestMessage);
 			Logger.DebugFormat("Sending request: {0}", requestMessage);
-			var responseMessage = this.RequestInternal(requestMessage);
+			var responseMessage = this.RequestCore(requestMessage);
 			ErrorUtilities.VerifyProtocol(responseMessage != null, MessagingStrings.ExpectedMessageNotReceived, typeof(IProtocolMessage).Name);
 
 			Logger.DebugFormat("Received message response: {0}", responseMessage);
@@ -458,7 +458,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// behavior.  However in non-HTTP frameworks, such as unit test mocks, it may be appropriate to override 
 		/// this method to eliminate all use of an HTTP transport.
 		/// </remarks>
-		protected virtual IProtocolMessage RequestInternal(IDirectedProtocolMessage request) {
+		protected virtual IProtocolMessage RequestCore(IDirectedProtocolMessage request) {
 			Contract.Requires(request != null);
 			HttpWebRequest webRequest = this.CreateHttpRequest(request);
 			IDictionary<string, string> responseFields;
@@ -469,7 +469,7 @@ namespace DotNetOpenAuth.Messaging {
 					return null;
 				}
 
-				responseFields = this.ReadFromResponseInternal(response);
+				responseFields = this.ReadFromResponseCore(response);
 
 				responseMessage = this.MessageFactory.GetNewResponseMessage(request, responseFields);
 				if (responseMessage == null) {
@@ -499,7 +499,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="request">The request to search for an embedded message.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
-		protected virtual IDirectedProtocolMessage ReadFromRequestInternal(HttpRequestInfo request) {
+		protected virtual IDirectedProtocolMessage ReadFromRequestCore(HttpRequestInfo request) {
 			Contract.Requires(request != null);
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
@@ -641,7 +641,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="response">The response that is anticipated to contain an protocol message.</param>
 		/// <returns>The deserialized message parts, if found.  Null otherwise.</returns>
 		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
-		protected abstract IDictionary<string, string> ReadFromResponseInternal(DirectWebResponse response);
+		protected abstract IDictionary<string, string> ReadFromResponseCore(DirectWebResponse response);
 
 		/// <summary>
 		/// Prepares an HTTP request that carries a given message.
@@ -649,7 +649,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The message to send.</param>
 		/// <returns>The <see cref="HttpWebRequest"/> prepared to send the request.</returns>
 		/// <remarks>
-		/// This method must be overridden by a derived class, unless the <see cref="RequestInternal"/> method
+		/// This method must be overridden by a derived class, unless the <see cref="RequestCore"/> method
 		/// is overridden and does not require this method.
 		/// </remarks>
 		protected virtual HttpWebRequest CreateHttpRequest(IDirectedProtocolMessage request) {
