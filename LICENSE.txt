@@ -1,6 +1,7 @@
-This software is a composite of source code contributed by several authors.
+This software is a composite of source code contributed by several authors
+and binary dependencies that have their own copyright and license agreements.
 Every file is bound by the following copyright and license unless explicitly
-indicated otherwise in and for any individual file.
+indicated otherwise in and/or for any individual file.
 
 
 Copyright (c) 2008, Andrew Arnott
