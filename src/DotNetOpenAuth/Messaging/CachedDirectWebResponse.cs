@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.Messaging {
 	/// <summary>
 	/// Cached details on the response from a direct web request to a remote party.
 	/// </summary>
-	[DebuggerDisplay("{Status} {ContentType.MediaType}: {Body.Substring(4,50)}")]
+	[DebuggerDisplay("{Status} {ContentType.MediaType}, length: {ResponseStream.Length}")]
 	internal class CachedDirectWebResponse : DirectWebResponse {
 		/// <summary>
 		/// A seekable, repeatable response stream.
@@ -60,14 +60,6 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Gets or sets the body of the response as a string.
-		/// </summary>
-		public string Body {
-			get { return this.ResponseStream != null ? this.GetResponseReader().ReadToEnd() : null; }
-			set { this.SetResponse(value); }
-		}
-
-		/// <summary>
 		/// Gets a value indicating whether the cached response stream was
 		/// truncated to a maximum allowable length.
 		/// </summary>
@@ -99,6 +91,21 @@ namespace DotNetOpenAuth.Messaging {
 				return new StreamReader(this.ResponseStream);
 			} else {
 				return new StreamReader(this.ResponseStream, Encoding.GetEncoding(contentEncoding));
+			}
+		}
+
+		/// <summary>
+		/// Gets the body of the response as a string.
+		/// </summary>
+		/// <returns>The entire body of the response.</returns>
+		internal string GetResponseString() {
+			if (this.ResponseStream != null) {
+				StreamReader reader = this.GetResponseReader();
+				string value = this.GetResponseReader().ReadToEnd();
+				this.ResponseStream.Seek(0, SeekOrigin.Begin);
+				return value;
+			} else {
+				return null;
 			}
 		}
 

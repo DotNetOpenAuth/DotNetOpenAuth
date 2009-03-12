@@ -246,7 +246,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 				HttpMethods = scheme,
 			};
 
-			DirectWebResponse rawResponse = null;
+			CachedDirectWebResponse rawResponse = null;
 			this.webRequestHandler.Callback = (req) => {
 				Assert.IsNotNull(req);
 				HttpRequestInfo reqInfo = ConvertToRequestInfo(req, this.webRequestHandler.RequestEntityStream);
@@ -264,9 +264,8 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 					{ "Location", request.Location.AbsoluteUri },
 					{ "Timestamp", XmlConvert.ToString(request.Timestamp, XmlDateTimeSerializationMode.Utc) },
 				};
-				rawResponse = new CachedDirectWebResponse {
-					Body = MessagingUtilities.CreateQueryString(responseFields),
-				};
+				rawResponse = new CachedDirectWebResponse();
+				rawResponse.SetResponse(MessagingUtilities.CreateQueryString(responseFields));
 				return rawResponse;
 			};
 

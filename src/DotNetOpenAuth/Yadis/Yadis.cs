@@ -77,7 +77,7 @@ namespace DotNetOpenAuth.Yadis {
 					}
 				}
 				if (url == null && response.ContentType.MediaType == ContentTypes.Html) {
-					url = FindYadisDocumentLocationInHtmlMetaTags(response.Body);
+					url = FindYadisDocumentLocationInHtmlMetaTags(response.GetResponseString());
 					if (url != null) {
 						Logger.DebugFormat("{0} found in HTML Http-Equiv tag.  Preparing to pull XRDS from {1}", HeaderName, url);
 					}
@@ -158,7 +158,8 @@ namespace DotNetOpenAuth.Yadis {
 
 			if (response.ContentType.MediaType == ContentTypes.Xml) {
 				// This COULD be an XRDS document with an imprecise content-type.
-				XmlReader reader = XmlReader.Create(new StringReader(response.Body));
+				response.ResponseStream.Seek(0, SeekOrigin.Begin);
+				XmlReader reader = XmlReader.Create(response.ResponseStream);
 				while (reader.Read() && reader.NodeType != XmlNodeType.Element) {
 					// intentionally blank
 				}

@@ -244,8 +244,7 @@ TimeZone = '{8}'";
 		/// the OpenId specification for field names, omitting the 'openid.sreg' prefix.
 		/// </param>
 		/// <param name="requestLevel">The none/request/require state of the listed fields.</param>
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by messaging framework via reflection.")]
-		private void SetProfileRequestFromList(ICollection<string> fieldNames, DemandLevel requestLevel) {
+		internal void SetProfileRequestFromList(IEnumerable<string> fieldNames, DemandLevel requestLevel) {
 			foreach (string field in fieldNames) {
 				switch (field) {
 					case Constants.nickname:
@@ -276,7 +275,7 @@ TimeZone = '{8}'";
 						this.TimeZone = requestLevel;
 						break;
 					default:
-						Logger.WarnFormat("OpenIdProfileRequest.SetProfileRequestFromList: Unrecognized field name '{0}'.", field);
+						Logger.WarnFormat("ClaimsRequest.SetProfileRequestFromList: Unrecognized field name '{0}'.", field);
 						break;
 				}
 			}

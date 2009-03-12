@@ -21,13 +21,17 @@
 	if Not authentication Is Nothing then
 		If authentication.Successful Then
 			Session("ClaimedIdentifier") = authentication.ClaimedIdentifier
+			Session("Email") = authentication.ClaimsResponse.Email
+			Session("Nickname") = authentication.ClaimsResponse.Nickname
+			Session("FullName") = authentication.ClaimsResponse.FullName
 			Response.Redirect "MembersOnly.asp"
 		else
 			Response.Write "Authentication failed: " + authentication.ExceptionMessage
 		end if
 	elseif Request.Form("openid_identifier") <> "" then
 		dim redirectUrl
-		redirectUrl = dnoi.CreateRequest(Request.Form("openid_identifier"), realm, thisPageUrl)
+		' redirectUrl = dnoi.CreateRequest(Request.Form("openid_identifier"), realm, thisPageUrl)
+		redirectUrl = dnoi.CreateRequestWithSimpleRegistration(Request.Form("openid_identifier"), realm, thisPageUrl, "nickname,email", "fullname")
 		Response.Redirect redirectUrl
 	End If 
 	%>

@@ -7,9 +7,11 @@
 namespace DotNetOpenAuth.OpenId.Interop {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Runtime.InteropServices;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
@@ -17,7 +19,7 @@ namespace DotNetOpenAuth.OpenId.Interop {
 	/// </summary>
 	[SuppressMessage("Microsoft.Interoperability", "CA1409:ComVisibleTypesShouldBeCreatable", Justification = "It's only creatable on the inside.  It must be ComVisible for ASP to see it.")]
 	[ComVisible(true), Obsolete("This class acts as a COM Server and should not be called directly from .NET code.")]
-	public class AuthenticationResponseShim {
+	public sealed class AuthenticationResponseShim {
 		/// <summary>
 		/// The response read in by the Relying Party.
 		/// </summary>
@@ -28,9 +30,14 @@ namespace DotNetOpenAuth.OpenId.Interop {
 		/// </summary>
 		/// <param name="response">The response.</param>
 		internal AuthenticationResponseShim(IAuthenticationResponse response) {
+			Contract.Requires(response != null);
 			ErrorUtilities.VerifyArgumentNotNull(response, "response");
 
 			this.response = response;
+			var claimsResponse = this.response.GetExtension<ClaimsResponse>();
+			if (claimsResponse != null) {
+				this.ClaimsResponse = new ClaimsResponseShim(claimsResponse);
+			}
 		}
 
 		/// <summary>
@@ -91,6 +98,11 @@ namespace DotNetOpenAuth.OpenId.Interop {
 		public bool Successful {
 			get { return this.response.Status == AuthenticationStatus.Authenticated; }
 		}
+
+		/// <summary>
+		/// Gets the Simple Registration response.
+		/// </summary>
+		public ClaimsResponseShim ClaimsResponse { get; private set; }
 
 		/// <summary>
 		/// Gets details regarding a failed authentication attempt, if available.

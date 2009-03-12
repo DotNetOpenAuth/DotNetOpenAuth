@@ -27,11 +27,11 @@ namespace DotNetOpenAuth.Yadis {
 			this.NormalizedUri = initialResponse.FinalUri;
 			if (finalResponse == null) {
 				this.ContentType = initialResponse.ContentType;
-				this.ResponseText = initialResponse.Body;
+				this.ResponseText = initialResponse.GetResponseString();
 				this.IsXrds = ContentType.MediaType == ContentTypes.Xrds;
 			} else {
 				this.ContentType = finalResponse.ContentType;
-				this.ResponseText = finalResponse.Body;
+				this.ResponseText = finalResponse.GetResponseString();
 				this.IsXrds = true;
 				if (initialResponse != finalResponse) {
 					this.YadisLocation = finalResponse.RequestUri;

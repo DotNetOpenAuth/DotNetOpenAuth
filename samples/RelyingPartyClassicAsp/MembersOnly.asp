@@ -22,6 +22,12 @@ End If
 		Congratulations, <b><%=Session("ClaimedIdentifier") %></b>. 
 		You have completed the OpenID login process.
 	</p>
+	<p>Additional data we may have about you using the Simple Registration extension:</p>
+	<table>
+		<tr><td>Email </td><td><%=Session("Email") %> </td></tr>
+		<tr><td>Nickname </td><td><%=Session("Nickname") %> </td></tr>
+		<tr><td>Full name </td><td><%=Session("FullName") %> </td></tr>
+	</table>
 	<p><a href="logout.asp">Log out</a>. </p>
 </body>
 </html>
