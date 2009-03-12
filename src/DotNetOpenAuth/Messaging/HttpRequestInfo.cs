@@ -34,6 +34,11 @@ namespace DotNetOpenAuth.Messaging {
 		private NameValueCollection queryString;
 
 		/// <summary>
+		/// Backing field for the <see cref="Message"/> property.
+		/// </summary>
+		private IDirectedProtocolMessage message;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
 		/// </summary>
 		/// <param name="request">The ASP.NET structure to copy from.</param>
@@ -130,7 +135,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="message">The message being passed in through a mock transport.  May be null.</param>
 		/// <param name="httpMethod">The HTTP method that the incoming request came in on, whether or not <paramref name="message"/> is null.</param>
 		internal HttpRequestInfo(IDirectedProtocolMessage message, HttpDeliveryMethods httpMethod) {
-			this.Message = message;
+			this.message = message;
 			if ((httpMethod & HttpDeliveryMethods.GetRequest) != 0) {
 				this.HttpMethod = "GET";
 			} else if ((httpMethod & HttpDeliveryMethods.PostRequest) != 0) {
@@ -141,7 +146,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Gets or sets the message that is being sent over a mock transport (for testing).
 		/// </summary>
-		internal virtual IDirectedProtocolMessage Message { get; set; }
+		internal virtual IDirectedProtocolMessage Message {
+			get { return this.message; }
+			set { this.message = value; }
+		}
 
 		/// <summary>
 		/// Gets or sets the verb in the request (i.e. GET, POST, etc.)
