@@ -1,0 +1,9 @@
+﻿<%@ Master Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true"
+	CodeFile="ProviderTests.master.cs" Inherits="OP_ProviderTests" %>
+
+<asp:Content ContentPlaceHolderID="Body" runat="Server">
+	<p>
+		<asp:Button ID="resetTestButton" runat="server" OnClick="resetTestButton_Click" Text="Reset test" />
+	</p>
+	<asp:ContentPlaceHolder runat="server" ID="TestBody" />
+</asp:Content>
