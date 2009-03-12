@@ -8,8 +8,8 @@
     <ProjectGuid>{AA78D112-D889-414B-A7D4-467B34C7B663}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DotNetOAuth.ApplicationBlock</RootNamespace>
-    <AssemblyName>DotNetOAuth.ApplicationBlock</AssemblyName>
+    <RootNamespace>DotNetOpenAuth.ApplicationBlock</RootNamespace>
+    <AssemblyName>DotNetOpenAuth.ApplicationBlock</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
