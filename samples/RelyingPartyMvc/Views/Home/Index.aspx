@@ -11,5 +11,6 @@
 	<p>Visit the
 		<%=Html.ActionLink("Members Only", "Index", "User") %>
 		area to trigger a login. </p>
+	<p>Optionally, you can try out the <%=Html.ActionLink("JQuery login popup UX", "LoginPopup", "User")%>. </p>
 	<% } %>
 </asp:Content>

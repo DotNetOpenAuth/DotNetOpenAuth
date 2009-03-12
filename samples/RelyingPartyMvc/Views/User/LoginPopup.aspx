@@ -185,7 +185,6 @@
 		<div class="provider" onclick="document.selectProvider(this, 'http://{username}.blogspot.com/')"><div><img src="http://blogspot.com/favicon.ico"/></div></div>
 		<div class="provider" onclick="document.selectProvider(this, 'https://myvidoop.com/')"><div><img src="http://www.myvidoop.com/favicon.ico"/></div></div>
 		<div class="provider" onclick="document.selectProvider(this, 'https://pip.verisignlabs.com/')"><div><img src="http://pip.verisignlabs.com/favicon.ico"/></div></div>
-		<div class="provider" onclick="document.selectProvider(this, 'https://openid.claimid.com/{username}')"><div><img src="http://claimid.com/favicon.ico"/></div></div>
 	</div>
 	<% Html.BeginForm("Authenticate", "User", FormMethod.Post, new { id = "loginForm" }); %>
 	<div class="inputbox">
