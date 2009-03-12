@@ -3,7 +3,17 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <script runat="server">
-
+	protected void Page_Load(object sender, EventArgs e) {
+		if (!this.IsPostBack) {
+			pageSourceLink.NavigateUrl = Util.GetPublicPageSourcePath().AbsoluteUri;
+			Uri codeBehind = Util.GetPublicPageCodeBehindSourcePath();
+			if (codeBehind != null) {
+				testSourceLink.NavigateUrl = codeBehind.AbsoluteUri;
+			} else {
+				testSourceLinkPlaceholder.Visible = false;
+			}
+		}
+	}
 </script>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -13,8 +23,16 @@
 </head>
 <body>
 	<form id="form1" runat="server">
+	<div style="float: right;">
+		Source: [<asp:HyperLink Text="Page" runat="server" ID="pageSourceLink" />]
+		<asp:PlaceHolder runat="server" ID="testSourceLinkPlaceholder">[<asp:HyperLink Text="Test"
+			runat="server" ID="testSourceLink" />] </asp:PlaceHolder>
+		[<asp:HyperLink Text="DotNetOpenAuth" runat="server" ID="librarySourceLink" NavigateUrl="http://github.com/aarnott/dotnetopenid/tree/osis/src/DotNetOpenAuth" />]
+	</div>
 	<h1>OSIS I5 OpenID Interop testing</h1>
-	<h2><%=Page.Title %></h2>
+	<h2>
+		<%=Page.Title %>
+	</h2>
 	<div>
 		<asp:ContentPlaceHolder ID="Body" runat="server" />
 	</div>
