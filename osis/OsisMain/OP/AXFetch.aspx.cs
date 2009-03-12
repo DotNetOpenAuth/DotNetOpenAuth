@@ -128,8 +128,7 @@ public partial class OP_AXFetch : System.Web.UI.Page {
 			if (fetch != null) {
 				AttributeValues attValue = fetch.GetAttribute(att.TypeUri);
 				if (attValue != null) {
-					att.ValueLabel.Text = HttpUtility.HtmlEncode(attValue.Values.FirstOrDefault());
-
+					att.ValueLabel.Text = HttpUtility.HtmlEncode(string.Join(", ", attValue.Values.ToArray()));
 				}
 			}
 		}
