@@ -6,6 +6,7 @@
 	using System.Web.UI.WebControls;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	public partial class loginProgrammatic : System.Web.UI.Page {
@@ -24,7 +25,13 @@
 
 					// This is where you would add any OpenID extensions you wanted
 					// to include in the authentication request.
-					////request.AddExtension(someExtensionRequestInstance);
+					request.AddExtension(new ClaimsRequest {
+						Country = DemandLevel.Request,
+						Email = DemandLevel.Request,
+						Gender = DemandLevel.Require,
+						PostalCode = DemandLevel.Require,
+						TimeZone = DemandLevel.Require,
+					});
 
 					// Send your visitor to their Provider for authentication.
 					request.RedirectToProvider();
@@ -48,7 +55,7 @@
 			// For debugging/testing, we allow remote clearing of all associations...
 			// NOT a good idea on a production site.
 			if (Request.QueryString["clearAssociations"] == "1") {
-				Application.Remove("DotNetOpenId.RelyingParty.RelyingParty.AssociationStore");
+				Application.Remove("DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingParty.ApplicationStore");
 
 				// Force a redirect now to prevent the user from logging in while associations
 				// are constantly being cleared.
@@ -64,7 +71,11 @@
 					case AuthenticationStatus.Authenticated:
 						// This is where you would look for any OpenID extension responses included
 						// in the authentication assertion.
-						////var extension = openid.GetResponse().GetExtension<SomeExtensionResponseType>();
+						var claimsResponse = response.GetExtension<ClaimsResponse>();
+						State.ProfileFields = claimsResponse;
+
+						// Store off the "friendly" username to display -- NOT for username lookup
+						State.FriendlyLoginName = response.FriendlyIdentifierForDisplay;
 
 						// Use FormsAuthentication to tell ASP.NET that the user is now logged in,
 						// with the OpenID Claimed Identifier as their username.
