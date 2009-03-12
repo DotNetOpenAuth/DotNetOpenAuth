@@ -64,7 +64,6 @@ namespace DotNetOpenAuth.OpenId.Interop {
 	[ProgId("DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingParty")]
 	[ComVisible(true), Obsolete("This class acts as a COM Server and should not be called directly from .NET code.", true)]
 	[ClassInterface(ClassInterfaceType.None)]
-	[ComSourceInterfaces(typeof(IOpenIdRelyingParty))]
 	public class OpenIdRelyingPartyShim : IOpenIdRelyingParty {
 		/// <summary>
 		/// Creates an authentication request to verify that a user controls
@@ -104,7 +103,7 @@ namespace DotNetOpenAuth.OpenId.Interop {
 		public AuthenticationResponseShim ProcessAuthentication(string url, string form) {
 			OpenIdRelyingParty rp = new OpenIdRelyingParty(null);
 			HttpRequestInfo requestInfo = new HttpRequestInfo { Url = new Uri(url) };
-			if (form != null) {
+			if (!string.IsNullOrEmpty(form)) {
 				requestInfo.HttpMethod = "POST";
 				requestInfo.InputStream = new MemoryStream(Encoding.Unicode.GetBytes(form));
 			}
