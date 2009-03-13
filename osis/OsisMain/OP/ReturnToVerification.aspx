@@ -5,16 +5,20 @@
 	<asp:Label ID="Label1" runat="server" Text="OpenID Identifier:" /> <asp:TextBox ID="identifierBox"
 		runat="server" />
 	<asp:Button ID="beginValidButton" runat="server" Text="Begin verifiable RP" OnClick="beginVerifiableButton_Click" />
+	<asp:Button ID="beginValid2Button" runat="server" OnClick="beginValid2Button_Click"
+		Text="Begin verifiable RP (realm style)" />
 	<asp:Button ID="beginInvalidButton" runat="server" OnClick="beginUnverifiableButton_Click"
 		Text="Begin UNverifiable RP" />
 	<asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ControlToValidate="identifierBox"
 		ErrorMessage="Enter an identifier first." Display="Dynamic" />
 	<asp:Label ID="errorLabel" runat="server" EnableViewState="False" ForeColor="Red"
 		Visible="False" />
-	<p><b>Instructions:</b> After entering in your OpenID Identifier, press each of the
-		test buttons above. Record whether the OpenID Provider correctly identifies the
-		site requesting authentication as verifiable or not. After recording the Provider's
-		result, use your browser's Back button to navigate back here. Continuing to login
-		will not succeed as that is beyond the scope of the test. </p>
+	<h3>Instructions </h3>
+	<ol>
+		<li>Enter your OpenID Identifier to an OpenID 2.0 provider. </li>
+		<li>Click each of the buttons above in sequence. </li>
+		<li>Record whether the OpenID Provider correctly identifies the site requesting authentication
+			as verifiable or not. </li>
+	</ol>
 	<p>Relevant sections: 9.2.1, 13.</p>
 </asp:Content>

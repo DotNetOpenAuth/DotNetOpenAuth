@@ -20,6 +20,8 @@ public partial class OP_ReturnToVerification : System.Web.UI.Page {
 		}
 
 		OpenIdRelyingParty rp = new OpenIdRelyingParty();
+		// Only OpenID 2.0 and later support RP discovery.
+		rp.SecuritySettings.MinimumRequiredOpenIdVersion = DotNetOpenAuth.OpenId.ProtocolVersion.V20;
 		try {
 			rp.CreateRequest(identifierBox.Text, Realm, new Uri(Request.Url, Page.ResolveUrl(returnTo))).RedirectToProvider();
 		} catch (ProtocolException ex) {
@@ -29,10 +31,11 @@ public partial class OP_ReturnToVerification : System.Web.UI.Page {
 	}
 
 	protected void beginVerifiableButton_Click(object sender, EventArgs e) {
-		// This page doesn't exist, but it is referenced in the XRDS file,
-		// which is all that matters since we won't actually be receiving
-		// the authentication.
 		TestAction("ReturnToVerification.Valid.aspx");
+	}
+
+	protected void beginValid2Button_Click(object sender, EventArgs e) {
+		TestAction("RPDiscoveryRealm/ReturnToVerification.Valid.aspx");
 	}
 
 	protected void beginUnverifiableButton_Click(object sender, EventArgs e) {
