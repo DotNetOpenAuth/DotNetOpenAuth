@@ -2,7 +2,7 @@
 
 <%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth" TagPrefix="openid" %>
 <asp:Content runat="server" ContentPlaceHolderID="head">
-	<openid:XrdsPublisher ID="XrdsPublisher1" runat="server" XrdsUrl="~/OP/ReturnToVerification.Xrds.aspx"
+	<openid:XrdsPublisher ID="XrdsPublisher1" runat="server" XrdsUrl="~/Xrds.aspx"
 		XrdsAdvertisement="Both" />
 </asp:Content>
 <asp:Content runat="server" ContentPlaceHolderID="Body">
