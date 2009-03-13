@@ -128,7 +128,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Gets a value indicating whether the authenticating user has chosen to let the Provider
 		/// determine and send the ClaimedIdentifier after authentication.
 		/// </summary>
-		/// <value></value>
 		public bool IsDirectedIdentity {
 			get { return this.endpoint.ClaimedIdentifier == this.endpoint.Protocol.ClaimedIdentifierForOPIdentifier; }
 		}
@@ -138,17 +137,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// OpenId discovery documents found at the <see cref="ClaimedIdentifier"/>
 		/// location.
 		/// </summary>
-		/// <value></value>
 		IProviderEndpoint IAuthenticationRequest.Provider {
 			get { return this.endpoint; }
-		}
-
-		/// <summary>
-		/// Gets the detected version of OpenID implemented by the Provider.
-		/// </summary>
-		/// <value></value>
-		public Version ProviderVersion {
-			get { return this.endpoint.Protocol.Version; }
 		}
 
 		#endregion
@@ -422,7 +412,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private CheckIdRequest CreateRequestMessage() {
 			Association association = this.GetAssociation();
 
-			CheckIdRequest request = new CheckIdRequest(this.ProviderVersion, this.endpoint.ProviderEndpoint, this.Mode);
+			CheckIdRequest request = new CheckIdRequest(this.endpoint.Protocol.Version, this.endpoint.ProviderEndpoint, this.Mode);
 			request.ClaimedIdentifier = this.endpoint.ClaimedIdentifier;
 			request.LocalIdentifier = this.endpoint.ProviderLocalIdentifier;
 			request.Realm = this.Realm;
