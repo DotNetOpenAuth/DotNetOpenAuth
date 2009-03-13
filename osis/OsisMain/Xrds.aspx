@@ -6,6 +6,9 @@
 	<XRD>
 		<Service priority="1">
 			<Type>http://specs.openid.net/auth/2.0/return_to</Type>
+			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/OP/AXFetch.aspx"))%></URI>
+			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/OP/MultiFactor.aspx"))%></URI>
+			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/OP/ResponseNonce.aspx"))%></URI>
 			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/OP/ReturnToVerification.Valid.aspx"))%></URI>
 		</Service>
 	</XRD>
