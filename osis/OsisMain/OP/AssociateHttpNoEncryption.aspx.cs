@@ -22,15 +22,17 @@ public partial class OP_AssociateHttpNoEncryption : System.Web.UI.Page {
 			return;
 		}
 
-		IXrdsProviderEndpoint endpoint = DiscoverHttpEndpoint(identifierBox.Text);
-		if (endpoint == null) {
+		Uri providerEndpoint;
+		Version providerVersion;
+		DiscoverHttpEndpoint(identifierBox.Text, out providerEndpoint, out providerVersion);
+		if (providerEndpoint == null) {
 			this.errorLabel.Text = "No HTTP provider endpoint found.";
 			this.errorLabel.Visible = true;
 		} else {
-			Protocol protocol = Protocol.Lookup(endpoint.Version);
-			testResultDisplay.ProviderEndpoint = endpoint.Uri;
-			testResultDisplay.ProtocolVersion = endpoint.Version;
-			var associate = new AssociateUnencryptedRequestNoCheck(endpoint.Version, endpoint.Uri) {
+			Protocol protocol = Protocol.Lookup(providerVersion);
+			testResultDisplay.ProviderEndpoint = providerEndpoint;
+			testResultDisplay.ProtocolVersion = providerVersion;
+			var associate = new AssociateUnencryptedRequestNoCheck(providerVersion, providerEndpoint) {
 				AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA1,
 			};
 
@@ -47,18 +49,25 @@ public partial class OP_AssociateHttpNoEncryption : System.Web.UI.Page {
 		}
 	}
 
-	private IXrdsProviderEndpoint DiscoverHttpEndpoint(Identifier identifier) {
+	private void DiscoverHttpEndpoint(Identifier identifier, out Uri providerEndpoint, out Version version) {
+		providerEndpoint = null;
+		version = null;
+
 		List<ServiceEndpoint> endpoints = identifier.Discover(rp.Channel.WebRequestHandler).ToList();
-		foreach (ServiceEndpoint endpoint in identifier.Discover(rp.Channel.WebRequestHandler)) {
+		foreach (ServiceEndpoint endpoint in endpoints) {
 			if (endpoint.ProviderEndpoint.Scheme == "http") {
-				return endpoint;
+				providerEndpoint = endpoint.ProviderEndpoint;
+				version = ((IXrdsProviderEndpoint)endpoint).Version;
+				return;
 			}
 		}
 		if (endpoints.Count > 0) {
 			// No HTTP endpoint.  Make one up by changing an HTTPS one to HTTP.
-			// TODO: 
+			UriBuilder endpoint = new UriBuilder(endpoints[0].ProviderEndpoint);
+			endpoint.Scheme = "http";
+			endpoint.Port = 80;
+			providerEndpoint = endpoint.Uri;
+			version = ((IXrdsProviderEndpoint)endpoints[0]).Version;
 		}
-
-		return null;
 	}
 }
