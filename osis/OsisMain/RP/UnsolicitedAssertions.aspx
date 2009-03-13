@@ -4,8 +4,8 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="TestBody" runat="Server">
 	<table>
 		<tr>
-			<td>RP Realm (home page) </td>
-			<td><asp:TextBox ID="rpRealmBox" runat="server" />
+			<td>RP Realm (usually the home page) </td>
+			<td><asp:TextBox ID="rpRealmBox" Columns="40" runat="server" />
 				<asp:RequiredFieldValidator ControlToValidate="rpRealmBox" ID="RequiredFieldValidator1"
 					runat="server" ErrorMessage="required" />
 			</td>
