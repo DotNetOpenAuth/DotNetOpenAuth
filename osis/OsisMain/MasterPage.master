@@ -32,7 +32,7 @@
 		[<asp:HyperLink Text="DotNetOpenAuth" runat="server" ID="librarySourceLink" NavigateUrl="http://github.com/aarnott/dotnetopenid/tree/osis/src/DotNetOpenAuth" />]
 	</div>
 	<h1>
-		<asp:HyperLink runat="server" NavigateUrl="~/Default.aspx" Text=" I5 OpenID Interop testing" />
+		<asp:HyperLink runat="server" NavigateUrl="~/Default.aspx" Text="OSIS I5 OpenID Interop testing" />
 	</h1>
 	<h5 align="center">
 		Warning: all operations on this page are logged for public viewing. Do not share
