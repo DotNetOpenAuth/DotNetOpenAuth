@@ -14,7 +14,7 @@
 				<asp:Label ID="errorLabel" runat="server" EnableViewState="False" ForeColor="Red"
 					Visible="False" />
 			</asp:Panel>
-			<p><b>Instructions: </b>Complete a successful login.</p>
+			<p><b>Instructions: </b>Complete a successful login using an OpenID 2.0 provider.</p>
 		</asp:View>
 		<asp:View ID="View2" runat="server">
 			<osis:TestResultDisplay runat="server" ID="testResultDisplay" />
