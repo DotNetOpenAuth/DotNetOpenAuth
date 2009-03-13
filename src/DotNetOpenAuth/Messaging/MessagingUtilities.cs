@@ -296,7 +296,7 @@ namespace DotNetOpenAuth.Messaging {
 			foreach (string headerName in request.Headers) {
 				switch (headerName) {
 					case "Accept": newRequest.Accept = request.Accept; break;
-					case "Connection": newRequest.Connection = request.Connection; break;
+					case "Connection": break; // Keep-Alive controls this
 					case "Content-Length": newRequest.ContentLength = request.ContentLength; break;
 					case "Content-Type": newRequest.ContentType = request.ContentType; break;
 					case "Expect": newRequest.Expect = request.Expect; break;

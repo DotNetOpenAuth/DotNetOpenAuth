@@ -70,12 +70,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		IProviderEndpoint Provider { get; }
 
 		/// <summary>
-		/// Gets the detected version of OpenID implemented by the Provider.
-		/// </summary>
-		[Obsolete("Use Provider.Version instead.")]
-		Version ProviderVersion { get; }
-
-		/// <summary>
 		/// Makes a dictionary of key/value pairs available when the authentication is completed.
 		/// </summary>
 		/// <param name="arguments">The arguments to add to the request's return_to URI.</param>
