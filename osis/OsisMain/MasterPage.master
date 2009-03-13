@@ -19,6 +19,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
 	<title>OSIS Testing</title>
+	<link href="main.css" rel="stylesheet" type="text/css" />
 	<asp:ContentPlaceHolder ID="head" runat="server" />
 </head>
 <body>
