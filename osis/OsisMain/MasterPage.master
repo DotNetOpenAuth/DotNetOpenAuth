@@ -24,20 +24,19 @@
 <body>
 	<form id="form1" runat="server">
 	<div style="float: right;">
+		<asp:HyperLink ID="HyperLink1" runat="server" NavigateUrl="~/TracePage.aspx" Text="Recent logs" />
 		Source: [<asp:HyperLink Text="Page" runat="server" ID="pageSourceLink" />]
 		<asp:PlaceHolder runat="server" ID="testSourceLinkPlaceholder">[<asp:HyperLink Text="Test"
 			runat="server" ID="testSourceLink" />] </asp:PlaceHolder>
 		[<asp:HyperLink Text="DotNetOpenAuth" runat="server" ID="librarySourceLink" NavigateUrl="http://github.com/aarnott/dotnetopenid/tree/osis/src/DotNetOpenAuth" />]
 	</div>
 	<h1>OSIS I5 OpenID Interop testing</h1>
+	<h5 align="center">Warning: all operations on this page are logged for public viewing.  Do not share personally identifiable information.</h5>
 	<h2>
 		<%=Page.Title %>
 	</h2>
 	<div>
 		<asp:ContentPlaceHolder ID="Body" runat="server" />
-	</div>
-	<div style="border-top: solid 1px black; margin-top: 16pt">
-		<asp:HyperLink runat="server" NavigateUrl="~/TracePage.aspx" Text="Recent logs" />
 	</div>
 	</form>
 </body>
