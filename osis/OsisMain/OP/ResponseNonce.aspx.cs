@@ -4,13 +4,17 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using DotNetOpenAuth.OpenId.RelyingParty;
 using DotNetOpenAuth.Messaging;
+using DotNetOpenAuth.OpenId;
+using DotNetOpenAuth.OpenId.RelyingParty;
 
 public partial class OP_ResponseNonce : System.Web.UI.Page {
 	OpenIdRelyingParty rp = new OpenIdRelyingParty();
 
 	protected void Page_Load(object sender, EventArgs e) {
+		// Force the response_nonce to be a requirement.
+		rp.SecuritySettings.MinimumRequiredOpenIdVersion = ProtocolVersion.V20;
+
 		if (!IsPostBack) {
 			identifierBox.Focus();
 
