@@ -3,7 +3,7 @@
 <div style="width: 700px; background-color: yellow; margin: auto;">
 	<table class="thnowrap">
 		<tr>
-			<th>Provider endpoint: </th>
+			<th>Endpoint: </th>
 			<td><asp:Label ID="endpointLabel" runat="server" /></td>
 		</tr>
 		<tr>

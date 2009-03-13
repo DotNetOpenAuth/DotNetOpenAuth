@@ -132,7 +132,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Gets the realm URL.  If the realm includes a wildcard, it is not included here.
 		/// </summary>
-		internal Uri NoWildcardUri { get { return this.uri; } }
+		public Uri NoWildcardUri { get { return this.uri; } }
 
 		/// <summary>
 		/// Gets the Realm discovery URL, where the wildcard (if present) is replaced with "www.".

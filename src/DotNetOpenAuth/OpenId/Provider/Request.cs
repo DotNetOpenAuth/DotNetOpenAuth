@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	[Serializable]
 	[ContractClass(typeof(RequestContract))]
 	[ContractVerification(true)]
-	internal abstract class Request : IRequest {
+	public abstract class Request : IRequest {
 		/// <summary>
 		/// The incoming request message.
 		/// </summary>
@@ -119,7 +119,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Gets the original request message.
 		/// </summary>
 		/// <value>This may be null in the case of an unrecognizable message.</value>
-		protected IDirectedProtocolMessage RequestMessage {
+		public IDirectedProtocolMessage RequestMessage {
 			get { return this.request; }
 		}
 

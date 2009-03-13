@@ -8,5 +8,6 @@
 		<siteMapNode url="~/OP/MultiFactor.aspx" title="OP performs multi-factor authentication" />
 		<siteMapNode url="~/OP/RequireSsl.aspx" title="OP offers fully SSL-protected authentication" />
 		<siteMapNode url="~/OP/DelegatedIdentifierSelect.aspx" title="OP Asserts new claimed_id if doing identifier Select and is delegated to from a 3rd party" />
+		<siteMapNode url="~/RP/HMACSHA256.aspx" title="RP supports HMAC-SHA256 associations" />
 	</siteMapNode>
 </siteMap>

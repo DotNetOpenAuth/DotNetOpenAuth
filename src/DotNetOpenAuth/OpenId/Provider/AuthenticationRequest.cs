@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// requests.
 	/// </summary>
 	[Serializable]
-	internal class AuthenticationRequest : Request, IAuthenticationRequest {
+	public class AuthenticationRequest : Request, IAuthenticationRequest {
 		/// <summary>
 		/// The positive assertion to send, if the host site chooses to send it.
 		/// </summary>
