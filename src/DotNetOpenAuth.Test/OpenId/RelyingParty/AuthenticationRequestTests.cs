@@ -62,7 +62,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		[TestMethod]
 		public void ProviderVersion() {
 			var authRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
-			Assert.AreEqual(this.protocol.Version, authRequest.ProviderVersion);
+			Assert.AreEqual(this.protocol.Version, authRequest.endpoint.Protocol.Version);
 		}
 
 		/// <summary>
