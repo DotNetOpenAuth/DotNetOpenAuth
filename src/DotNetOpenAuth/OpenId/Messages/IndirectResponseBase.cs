@@ -15,13 +15,13 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// A common base class from which indirect response messages should derive.
 	/// </summary>
 	[Serializable]
-	internal class IndirectResponseBase : RequestBase {
+	public class IndirectResponseBase : RequestBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="IndirectResponseBase"/> class.
 		/// </summary>
 		/// <param name="request">The request that caused this response message to be constructed.</param>
 		/// <param name="mode">The value of the openid.mode parameter.</param>
-		protected IndirectResponseBase(SignedResponseRequest request, string mode)
+		internal IndirectResponseBase(SignedResponseRequest request, string mode)
 			: base(GetVersion(request), GetReturnTo(request), mode, MessageTransport.Indirect) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Gets the originating request message, if applicable.
 		/// </summary>
-		protected SignedResponseRequest OriginatingRequest { get; private set; }
+		public SignedResponseRequest OriginatingRequest { get; private set; }
 
 		/// <summary>
 		/// Gets the <see cref="IMessage.Version"/> property of a message.

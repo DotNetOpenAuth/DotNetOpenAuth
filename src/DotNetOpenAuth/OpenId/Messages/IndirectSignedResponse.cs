@@ -25,7 +25,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// </summary>
 	[DebuggerDisplay("OpenID {Version} {Mode} (no id assertion)")]
 	[Serializable]
-	internal class IndirectSignedResponse : IndirectResponseBase, ITamperResistantOpenIdMessage, IProtocolMessageWithExtensions {
+	public class IndirectSignedResponse : IndirectResponseBase, ITamperResistantOpenIdMessage, IProtocolMessageWithExtensions {
 		/// <summary>
 		/// The allowed date/time formats for the response_nonce parameter.
 		/// </summary>
@@ -253,7 +253,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by messaging framework via reflection.")]
 		[MessagePart("openid.response_nonce", IsRequired = true, AllowEmpty = false, RequiredProtection = ProtectionLevel.Sign, MinVersion = "2.0")]
 		[MessagePart("openid.response_nonce", IsRequired = false, AllowEmpty = false, RequiredProtection = ProtectionLevel.None, MaxVersion = "1.1")]
-		private string ResponseNonce {
+		public string ResponseNonce {
 			get {
 				string uniqueFragment = ((IReplayProtectedProtocolMessage)this).Nonce;
 				return this.creationDateUtc.ToString(PermissibleDateTimeFormats[0], CultureInfo.InvariantCulture) + uniqueFragment;

@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// </summary>
 	[DebuggerDisplay("OpenID {Version} {Mode} {LocalIdentifier}")]
 	[Serializable]
-	internal class PositiveAssertionResponse : IndirectSignedResponse {
+	public class PositiveAssertionResponse : IndirectSignedResponse {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PositiveAssertionResponse"/> class.
 		/// </summary>

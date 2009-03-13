@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// for public consumption by the host web site.
 	/// </summary>
 	[DebuggerDisplay("Status: {Status}, ClaimedIdentifier: {ClaimedIdentifier}")]
-	internal class PositiveAuthenticationResponse : IAuthenticationResponse {
+	public class PositiveAuthenticationResponse : IAuthenticationResponse {
 		/// <summary>
 		/// The positive assertion message the Relying Party received that this instance wraps.
 		/// </summary>
@@ -143,7 +143,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets the positive assertion response message.
 		/// </summary>
-		internal PositiveAssertionResponse Response {
+		public PositiveAssertionResponse Response {
 			get { return this.response; }
 		}
 

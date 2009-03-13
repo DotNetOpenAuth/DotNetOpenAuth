@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// is expected to be signed.
 	/// </summary>
 	[Serializable]
-	internal class SignedResponseRequest : RequestBase, IProtocolMessageWithExtensions {
+	public class SignedResponseRequest : RequestBase, IProtocolMessageWithExtensions {
 		/// <summary>
 		/// Backing store for the <see cref="Extensions"/> property.
 		/// </summary>
