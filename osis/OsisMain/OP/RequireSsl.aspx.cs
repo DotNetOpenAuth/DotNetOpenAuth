@@ -8,7 +8,9 @@ using DotNetOpenAuth.OpenId.RelyingParty;
 
 public partial class OP_RequireSsl : System.Web.UI.Page {
 	protected void Page_Load(object sender, EventArgs e) {
-
+		if (!IsPostBack) {
+			OpenIdBox.Focus();
+		}
 	}
 
 	protected void OpenIdBox_LoggingIn(object sender, OpenIdEventArgs e) {

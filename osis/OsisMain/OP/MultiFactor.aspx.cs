@@ -8,7 +8,9 @@ using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
 
 public partial class OP_MultiFactor : System.Web.UI.Page {
 	protected void Page_Load(object sender, EventArgs e) {
-
+		if (!IsPostBack) {
+			OpenIdBox.Focus();
+		}
 	}
 	protected void OpenIdBox_LoggingIn(object sender, DotNetOpenAuth.OpenId.RelyingParty.OpenIdEventArgs e) {
 		var policyRequest = new PolicyRequest();
