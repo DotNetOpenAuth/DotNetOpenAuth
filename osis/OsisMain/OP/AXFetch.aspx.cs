@@ -121,7 +121,9 @@ public partial class OP_AXFetch : System.Web.UI.Page {
 		var fetch = new FetchRequest();
 		foreach (var att in this.Attributes) {
 			string typeUri = att.TypeUriBox != null ? att.TypeUriBox.Text : att.TypeUri;
-			fetch.AddAttribute(new AttributeRequest(typeUri, att.RequestRequired, att.RequestCount));
+			if (!string.IsNullOrEmpty(typeUri)) {
+				fetch.AddAttribute(new AttributeRequest(typeUri, att.RequestRequired, att.RequestCount));
+			}
 		}
 		e.Request.AddExtension(fetch);
 		e.Request.AddCallbackArguments("customTypeUri", this.Attributes.Last().TypeUriBox.Text);
