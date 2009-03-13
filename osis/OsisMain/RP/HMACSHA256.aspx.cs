@@ -9,9 +9,11 @@ using DotNetOpenAuth.OpenId.Messages;
 
 public partial class RP_HMACSHA256 : System.Web.UI.Page {
 	protected void Page_Load(object sender, EventArgs e) {
+		// This page acts as both an identity endpoint and an OP endpoint
+		// (crazy, but hey, why not?).  The identity page functionality
+		// is provided by the IdentityEndpoint control this page hosts.
 		if (!IsPostBack) {
-			// This page also acts as a very miniature Provider
-			// that requires HMAC-SHA256 associations.
+			// A very miniature Provider that requires HMAC-SHA256 associations.
 			OpenIdProvider provider = new OpenIdProvider();
 			provider.SecuritySettings.MinimumHashBitLength = 256;
 			provider.SecuritySettings.MaximumHashBitLength = 256;

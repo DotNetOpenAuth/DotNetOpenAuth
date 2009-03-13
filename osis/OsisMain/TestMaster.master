@@ -1,9 +1,13 @@
 ﻿<%@ Master Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true"
 	CodeFile="TestMaster.master.cs" Inherits="TestMaster" %>
 
+<asp:Content runat="server" ContentPlaceHolderID="head">
+	<asp:ContentPlaceHolder runat="server" ID="TestHead" />
+</asp:Content>
 <asp:Content ContentPlaceHolderID="Body" runat="Server">
 	<p>
-		<asp:Button ID="resetTestButton" runat="server" ValidationGroup="ResetGroup" OnClick="resetTestButton_Click" Text="Reset test" />
+		<asp:Button ID="resetTestButton" runat="server" ValidationGroup="ResetGroup" OnClick="resetTestButton_Click"
+			Text="Reset test" />
 	</p>
 	<asp:ContentPlaceHolder runat="server" ID="TestBody" />
 </asp:Content>

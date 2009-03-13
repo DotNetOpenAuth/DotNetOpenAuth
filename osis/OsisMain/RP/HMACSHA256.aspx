@@ -1,7 +1,12 @@
-﻿<%@ Page Title="RP supports HMAC-SHA256 associations" Language="C#" MasterPageFile="~/TestMaster.master" AutoEventWireup="true"
-	CodeFile="HMACSHA256.aspx.cs" Inherits="RP_HMACSHA256" %>
+﻿<%@ Page Title="RP supports HMAC-SHA256 associations" Language="C#" MasterPageFile="~/TestMaster.master"
+	AutoEventWireup="true" CodeFile="HMACSHA256.aspx.cs" Inherits="RP_HMACSHA256" %>
 
+<%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.OpenId.Provider"
+	TagPrefix="op" %>
 <%@ Register Src="~/TestResultDisplay.ascx" TagPrefix="osis" TagName="TestResultDisplay" %>
+<asp:Content runat="server" ContentPlaceHolderID="TestHead">
+	<op:IdentityEndpoint ID="IdentityEndpoint1" runat="server" ProviderVersion="V20" ProviderEndpointUrl="~/RP/HMACSHA256.aspx" />
+</asp:Content>
 <asp:Content ID="Content1" ContentPlaceHolderID="TestBody" runat="Server">
 	<asp:MultiView ID="MultiView1" runat="server" ActiveViewIndex="0">
 		<asp:View ID="View1" runat="server">
