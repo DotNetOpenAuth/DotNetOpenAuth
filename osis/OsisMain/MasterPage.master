@@ -36,6 +36,9 @@
 	<div>
 		<asp:ContentPlaceHolder ID="Body" runat="server" />
 	</div>
+	<div style="border-top: solid 1px black; margin-top: 16pt">
+		<asp:HyperLink runat="server" NavigateUrl="~/TracePage.aspx" Text="Recent logs" />
+	</div>
 	</form>
 </body>
 </html>
