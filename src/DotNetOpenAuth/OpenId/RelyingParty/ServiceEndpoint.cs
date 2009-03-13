@@ -224,7 +224,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets the detected version of OpenID implemented by the Provider.
 		/// </summary>
-		Version IProviderEndpoint.Version { get { return Protocol.Version; } }
+		public Version Version { get { return Protocol.Version; } }
 
 		/// <summary>
 		/// Gets an XRDS sorting routine that uses the XRDS Service/@Priority 

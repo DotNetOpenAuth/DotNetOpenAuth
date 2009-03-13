@@ -57,7 +57,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// as part of authentication.
 		/// </summary>
 		/// <value><c>true</c> if using OpenID immediate mode; otherwise, <c>false</c>.</value>
-		internal bool Immediate {
+		public bool Immediate {
 			get { return String.Equals(this.Mode, Protocol.Args.Mode.checkid_immediate, StringComparison.Ordinal); }
 		}
 
@@ -72,7 +72,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// (Verifying Directly with the OpenID Provider). 
 		/// </remarks>
 		[MessagePart("openid.assoc_handle", IsRequired = false, AllowEmpty = false)]
-		internal string AssociationHandle { get; set; }
+		public string AssociationHandle { get; set; }
 
 		/// <summary>
 		/// Gets or sets the URL the Provider should redirect the user agent to following
@@ -91,7 +91,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </remarks>
 		[MessagePart("openid.return_to", IsRequired = true, AllowEmpty = false)]
 		[MessagePart("openid.return_to", IsRequired = false, AllowEmpty = false, MinVersion = "2.0")]
-		internal Uri ReturnTo { get; set; }
+		public Uri ReturnTo { get; set; }
 
 		/// <summary>
 		/// Gets or sets the Relying Party discovery URL the Provider may use to verify the
@@ -104,7 +104,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </value>
 		[MessagePart("openid.trust_root", IsRequired = false, AllowEmpty = false)]
 		[MessagePart("openid.realm", IsRequired = false, AllowEmpty = false, MinVersion = "2.0")]
-		internal Realm Realm { get; set; }
+		public Realm Realm { get; set; }
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification

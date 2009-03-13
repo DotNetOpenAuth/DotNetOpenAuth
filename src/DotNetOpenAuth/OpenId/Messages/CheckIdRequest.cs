@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// </remarks>
 	[DebuggerDisplay("OpenID {Version} {Mode} {ClaimedIdentifier}")]
 	[Serializable]
-	internal class CheckIdRequest : SignedResponseRequest {
+	public class CheckIdRequest : SignedResponseRequest {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CheckIdRequest"/> class.
 		/// </summary>
@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <see cref="AuthenticationRequestMode.Immediate"/> for asynchronous javascript clients;
 		/// <see cref="AuthenticationRequestMode.Setup"/>  to allow the Provider to interact with the user in order to complete authentication.
 		/// </param>
-		internal CheckIdRequest(Version version, Uri providerEndpoint, AuthenticationRequestMode mode) :
+		public CheckIdRequest(Version version, Uri providerEndpoint, AuthenticationRequestMode mode) :
 			base(version, providerEndpoint, mode) {
 		}
 
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <para>It is RECOMMENDED that OPs accept XRI identifiers with or without the "xri://" prefix, as specified in the Normalization (Normalization) section. </para>
 		/// </remarks>
 		[MessagePart("openid.claimed_id", IsRequired = true, AllowEmpty = false, MinVersion = "2.0")]
-		internal Identifier ClaimedIdentifier { get; set; }
+		public Identifier ClaimedIdentifier { get; set; }
 
 		/// <summary>
 		/// Gets or sets the OP Local Identifier.
@@ -62,7 +62,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// see openid.claimed_id above). </para>
 		/// </remarks>
 		[MessagePart("openid.identity", IsRequired = true, AllowEmpty = false)]
-		internal Identifier LocalIdentifier { get; set; }
+		public Identifier LocalIdentifier { get; set; }
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification

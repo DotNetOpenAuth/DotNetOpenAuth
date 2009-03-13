@@ -210,7 +210,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Gets or sets the Provider Endpoint URI.
 		/// </summary>
 		[MessagePart("openid.op_endpoint", IsRequired = true, AllowEmpty = false, RequiredProtection = ProtectionLevel.Sign, MinVersion = "2.0")]
-		internal Uri ProviderEndpoint { get; set; }
+		public Uri ProviderEndpoint { get; set; }
 
 		/// <summary>
 		/// Gets or sets the return_to parameter as the relying party provided

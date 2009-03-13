@@ -10,6 +10,7 @@
 			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/OP/MultiFactor.aspx"))%></URI>
 			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/OP/ResponseNonce.aspx"))%></URI>
 			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/OP/ReturnToVerification.Valid.aspx"))%></URI>
+			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/OP/DelegatedIdentifierSelect.aspx"))%></URI>
 		</Service>
 	</XRD>
 </xrds:XRDS>

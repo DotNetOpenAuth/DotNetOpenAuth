@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// Facilitates customization and creation and an authentication request
 	/// that a Relying Party is preparing to send.
 	/// </summary>
-	internal class AuthenticationRequest : IAuthenticationRequest {
+	public class AuthenticationRequest : IAuthenticationRequest {
 		/// <summary>
 		/// The name of the internal callback parameter to use to store the user-supplied identifier.
 		/// </summary>
@@ -409,7 +409,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// based on the properties in this instance.
 		/// </summary>
 		/// <returns>The message to send to the Provider.</returns>
-		private CheckIdRequest CreateRequestMessage() {
+		public CheckIdRequest CreateRequestMessage() {
 			Association association = this.GetAssociation();
 
 			CheckIdRequest request = new CheckIdRequest(this.endpoint.Protocol.Version, this.endpoint.ProviderEndpoint, this.Mode);

@@ -65,7 +65,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// and will contain other information in its payload, using extensions (Extensions). </para>
 		/// </remarks>
 		[MessagePart("openid.claimed_id", IsRequired = true, AllowEmpty = false, RequiredProtection = ProtectionLevel.Sign, MinVersion = "2.0")]
-		internal Identifier ClaimedIdentifier { get; set; }
+		public Identifier ClaimedIdentifier { get; set; }
 
 		/// <summary>
 		/// Gets or sets the OP Local Identifier.
@@ -78,6 +78,6 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// makes the response meaningful without it (see openid.claimed_id above). </para>
 		/// </remarks>
 		[MessagePart("openid.identity", IsRequired = true, AllowEmpty = false, RequiredProtection = ProtectionLevel.Sign)]
-		internal Identifier LocalIdentifier { get; set; }
+		public Identifier LocalIdentifier { get; set; }
 	}
 }
