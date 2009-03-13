@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// </summary>
 	[DebuggerDisplay("OpenID {Version} {Mode}")]
 	[Serializable]
-	internal class RequestBase : IDirectedProtocolMessage {
+	public class RequestBase : IDirectedProtocolMessage {
 		/// <summary>
 		/// The openid.ns parameter in the message.
 		/// </summary>
@@ -140,7 +140,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Gets the protocol used by this message.
 		/// </summary>
-		protected Protocol Protocol {
+		internal Protocol Protocol {
 			get { return Protocol.Lookup(this.Version); }
 		}
 
@@ -180,7 +180,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// This method can be used by a constructor to throw an <see cref="ArgumentNullException"/>
 		/// instead of a <see cref="NullReferenceException"/>.
 		/// </remarks>
-		protected static string GetProtocolConstant(Version protocolVersion, Func<Protocol, string> mode) {
+		internal static string GetProtocolConstant(Version protocolVersion, Func<Protocol, string> mode) {
 			ErrorUtilities.VerifyArgumentNotNull(protocolVersion, "protocolVersion");
 			return mode(Protocol.Lookup(protocolVersion));
 		}

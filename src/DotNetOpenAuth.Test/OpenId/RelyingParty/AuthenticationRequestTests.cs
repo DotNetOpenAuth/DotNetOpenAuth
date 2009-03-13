@@ -156,9 +156,8 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		private AuthenticationRequest_Accessor CreateAuthenticationRequest(Identifier claimedIdentifier, Identifier providerLocalIdentifier) {
 			ProviderEndpointDescription providerEndpoint = new ProviderEndpointDescription(OPUri, this.protocol.Version);
 			ServiceEndpoint endpoint = ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, providerLocalIdentifier, providerEndpoint, 10, 5);
-			ServiceEndpoint_Accessor endpointAccessor = ServiceEndpoint_Accessor.AttachShadow(endpoint);
 			OpenIdRelyingParty rp = this.CreateRelyingParty();
-			AuthenticationRequest_Accessor authRequest = new AuthenticationRequest_Accessor(endpointAccessor, this.realm, this.returnTo, rp);
+			AuthenticationRequest_Accessor authRequest = new AuthenticationRequest_Accessor(endpoint, this.realm, this.returnTo, rp);
 			return authRequest;
 		}
 	}

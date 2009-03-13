@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// A common base class for OpenID direct message responses.
 	/// </summary>
 	[DebuggerDisplay("OpenID {Version} response")]
-	internal class DirectResponseBase : IDirectResponseProtocolMessage {
+	public class DirectResponseBase : IDirectResponseProtocolMessage {
 		/// <summary>
 		/// The openid.ns parameter in the message.
 		/// </summary>
@@ -116,7 +116,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Gets the protocol used by this message.
 		/// </summary>
-		protected Protocol Protocol {
+		internal Protocol Protocol {
 			get { return Protocol.Lookup(this.Version); }
 		}
 

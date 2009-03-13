@@ -12,13 +12,13 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// <summary>
 	/// Represents an association request that is sent using HTTPS and otherwise communicates the shared secret in plain text.
 	/// </summary>
-	internal class AssociateUnencryptedRequest : AssociateRequest {
+	public class AssociateUnencryptedRequest : AssociateRequest {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssociateUnencryptedRequest"/> class.
 		/// </summary>
 		/// <param name="version">The OpenID version this message must comply with.</param>
 		/// <param name="providerEndpoint">The OpenID Provider endpoint.</param>
-		internal AssociateUnencryptedRequest(Version version, Uri providerEndpoint)
+		public AssociateUnencryptedRequest(Version version, Uri providerEndpoint)
 			: base(version, providerEndpoint) {
 			SessionType = Protocol.Args.SessionType.NoEncryption;
 		}

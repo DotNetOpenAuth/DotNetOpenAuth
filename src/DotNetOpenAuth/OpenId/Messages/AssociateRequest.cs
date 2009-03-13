@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// An OpenID direct request from Relying Party to Provider to initiate an association.
 	/// </summary>
 	[DebuggerDisplay("OpenID {Version} {Mode} {AssociationType} {SessionType}")]
-	internal abstract class AssociateRequest : RequestBase {
+	public abstract class AssociateRequest : RequestBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssociateRequest"/> class.
 		/// </summary>
@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		/// <value>Value: A valid association type from Section 8.3.</value>
 		[MessagePart("openid.assoc_type", IsRequired = true, AllowEmpty = false)]
-		internal string AssociationType { get; set; }
+		public string AssociationType { get; set; }
 
 		/// <summary>
 		/// Gets or sets the preferred association session type. This defines the method used to encrypt the association's MAC key in transit. 

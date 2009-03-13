@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// Represents a single OP endpoint from discovery on some OpenID Identifier.
 	/// </summary>
 	[DebuggerDisplay("ClaimedIdentifier: {ClaimedIdentifier}, ProviderEndpoint: {ProviderEndpoint}, OpenId: {Protocol.Version}")]
-	internal class ServiceEndpoint : IXrdsProviderEndpoint {
+	public class ServiceEndpoint : IXrdsProviderEndpoint {
 		/// <summary>
 		/// The i-name identifier the user actually typed in
 		/// or the url identifier with the scheme stripped off.
@@ -192,7 +192,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets the OpenID protocol used by the Provider.
 		/// </summary>
-		public Protocol Protocol {
+		internal Protocol Protocol {
 			get {
 				if (this.protocol == null) {
 					this.protocol = Protocol.Lookup(this.ProviderDescription.ProtocolVersion);

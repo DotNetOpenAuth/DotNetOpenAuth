@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.OpenId {
 	/// Tracks the several versions of OpenID this library supports and the unique
 	/// constants to each version used in the protocol.
 	/// </summary>
-	internal class Protocol {
+	public class Protocol {
 		/// <summary>
 		/// The value of the openid.ns parameter in the OpenID 2.0 specification.
 		/// </summary>
@@ -251,7 +251,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		public QueryArguments Args = new QueryArguments();
 
-		internal class QueryParameters {
+		public class QueryParameters {
 			/// <summary>
 			/// The value "openid."
 			/// </summary>
@@ -318,17 +318,17 @@ namespace DotNetOpenAuth.OpenId {
 			public string enc_mac_key = "enc_mac_key";
 			public string mac_key = "mac_key";
 		}
-		internal class QueryArguments {
+		public class QueryArguments {
 			public ErrorCodes ErrorCode = new ErrorCodes();
 			public SessionTypes SessionType = new SessionTypes();
 			public SignatureAlgorithms SignatureAlgorithm = new SignatureAlgorithms();
 			public Modes Mode = new Modes();
 			public IsValidValues IsValid = new IsValidValues();
 
-			internal class ErrorCodes {
+			public class ErrorCodes {
 				public string UnsupportedType = "unsupported-type";
 			}
-			internal class SessionTypes {
+			public class SessionTypes {
 				/// <summary>
 				/// A preference order list of all supported session types.
 				/// </summary>
@@ -350,7 +350,7 @@ namespace DotNetOpenAuth.OpenId {
 					}
 				}
 			}
-			internal class SignatureAlgorithms {
+			public class SignatureAlgorithms {
 				/// <summary>
 				/// A preference order list of signature algorithms we support.
 				/// </summary>
@@ -370,7 +370,7 @@ namespace DotNetOpenAuth.OpenId {
 					}
 				}
 			}
-			internal class Modes {
+			public class Modes {
 				public string cancel = "cancel";
 				public string error = "error";
 				public string id_res = "id_res";
@@ -380,7 +380,7 @@ namespace DotNetOpenAuth.OpenId {
 				public string associate = "associate";
 				public string setup_needed = "id_res"; // V2 overrides this
 			}
-			internal class IsValidValues {
+			public class IsValidValues {
 				public string True = "true";
 				public string False = "false";
 			}

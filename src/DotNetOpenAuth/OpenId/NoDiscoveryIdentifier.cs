@@ -76,7 +76,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>
 		/// An initialized structure containing the discovered provider endpoint information.
 		/// </returns>
-		internal override IEnumerable<ServiceEndpoint> Discover(IDirectWebRequestHandler requestHandler) {
+		public override IEnumerable<ServiceEndpoint> Discover(IDirectWebRequestHandler requestHandler) {
 			return Enumerable.Empty<ServiceEndpoint>();
 		}
 

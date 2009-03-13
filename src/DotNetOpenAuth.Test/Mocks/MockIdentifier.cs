@@ -50,7 +50,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return this.wrappedIdentifier.GetHashCode();
 		}
 
-		internal override IEnumerable<ServiceEndpoint> Discover(IDirectWebRequestHandler requestHandler) {
+		public override IEnumerable<ServiceEndpoint> Discover(IDirectWebRequestHandler requestHandler) {
 			return this.endpoints;
 		}
 

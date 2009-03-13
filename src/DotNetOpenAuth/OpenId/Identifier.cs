@@ -191,7 +191,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>
 		/// An initialized structure containing the discovered provider endpoint information.
 		/// </returns>
-		internal abstract IEnumerable<ServiceEndpoint> Discover(IDirectWebRequestHandler requestHandler);
+		public abstract IEnumerable<ServiceEndpoint> Discover(IDirectWebRequestHandler requestHandler);
 
 		/// <summary>
 		/// Returns an <see cref="Identifier"/> that has no URI fragment.
