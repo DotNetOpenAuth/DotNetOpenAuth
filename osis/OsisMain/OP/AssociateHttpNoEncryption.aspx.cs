@@ -29,18 +29,19 @@ public partial class OP_AssociateHttpNoEncryption : System.Web.UI.Page {
 		}
 
 		Protocol protocol = Protocol.Lookup(endpoint.Version);
-		endpointLabel.Text = string.Format("{0} ({1})", endpoint.Uri.AbsoluteUri, endpoint.Version);
+		testResultDisplay.ProviderEndpoint = endpoint.Uri;
+		testResultDisplay.ProtocolVersion = endpoint.Version;
 		var associate = new AssociateUnencryptedRequestNoCheck(endpoint.Version, endpoint.Uri) {
 			AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA1,
 		};
 
 		try {
 			var response = rp.Channel.Request<DirectErrorResponse>(associate);
-			resultLabel.Text = "PASS";
-			detailsLabel.Text = response.ErrorMessage;
+			testResultDisplay.Pass = true;
+			testResultDisplay.Details = response.ErrorMessage;
 		} catch (ProtocolException ex) {
-			resultLabel.Text = "FAILED";
-			detailsLabel.Text = ex.Message;
+			testResultDisplay.Pass = false;
+			testResultDisplay.Details = ex.Message;
 		}
 
 		MultiView1.ActiveViewIndex = 1;

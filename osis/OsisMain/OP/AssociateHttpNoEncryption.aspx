@@ -2,6 +2,7 @@
 	Language="C#" MasterPageFile="~/OP/ProviderTests.master" AutoEventWireup="true"
 	CodeFile="AssociateHttpNoEncryption.aspx.cs" Inherits="OP_AssociateHttpNoEncryption" %>
 
+<%@ Register Src="~/TestResultDisplay.ascx" TagPrefix="osis" TagName="TestResultDisplay" %>
 <asp:Content ContentPlaceHolderID="TestBody" runat="Server">
 	<asp:MultiView ID="MultiView1" runat="server" ActiveViewIndex="0">
 		<asp:View ID="View1" runat="server">
@@ -16,12 +17,7 @@
 			</asp:Panel>
 		</asp:View>
 		<asp:View ID="View2" runat="server">
-			Provider endpoint: <asp:Label ID="endpointLabel" runat="server" EnableViewState="false" />
-			<br />
-			Result: <asp:Label ID="resultLabel" runat="server" EnableViewState="False" />
-			<br />
-			Details:<br />
-			<asp:Label ID="detailsLabel" runat="server" EnableViewState="false" />
+			<osis:TestResultDisplay runat="server" ID="testResultDisplay" />
 		</asp:View>
 	</asp:MultiView>
 </asp:Content>

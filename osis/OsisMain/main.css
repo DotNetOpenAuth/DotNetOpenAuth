@@ -9,3 +9,13 @@ h1 a
 	text-decoration: none;
 	color: Black;
 }
+
+table th 
+{
+	text-align: left;
+}
+
+table.thnowrap th 
+{
+	white-space: nowrap;
+}
