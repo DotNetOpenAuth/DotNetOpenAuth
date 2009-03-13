@@ -24,8 +24,7 @@ public partial class OP_ResponseNonce : System.Web.UI.Page {
 				MultiView1.ActiveViewIndex = 1;
 				testResultDisplay.Pass = response.Status == AuthenticationStatus.Authenticated;
 				testResultDisplay.Details = "response_nonce: " + resp.Response.ResponseNonce;
-				testResultDisplay.ProviderEndpoint = new Uri(resp.GetCallbackArgument("opEndpoint"));
-				testResultDisplay.ProtocolVersion = new Version(resp.GetCallbackArgument("opVersion"));
+				testResultDisplay.LoadResponse(response);
 			}
 		}
 	}
@@ -37,8 +36,7 @@ public partial class OP_ResponseNonce : System.Web.UI.Page {
 
 		try {
 			IAuthenticationRequest req = rp.CreateRequest(identifierBox.Text);
-			req.AddCallbackArguments("opEndpoint", req.Provider.Uri.AbsoluteUri);
-			req.AddCallbackArguments("opVersion", req.Provider.Version.ToString());
+			testResultDisplay.PrepareRequest(req);
 			req.RedirectToProvider();
 		} catch (ProtocolException ex) {
 			errorLabel.Text = ex.Message;

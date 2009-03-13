@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using DotNetOpenAuth.OpenId.RelyingParty;
 
 public partial class TestResultDisplay : System.Web.UI.UserControl {
 	public bool Pass {
@@ -29,6 +30,17 @@ public partial class TestResultDisplay : System.Web.UI.UserControl {
 		set {
 			this.detailsLabel.Text = HttpUtility.HtmlEncode(value);
 		}
+	}
+
+	public void PrepareRequest(IAuthenticationRequest request) {
+		request.AddCallbackArguments("opEndpoint", request.Provider.Uri.AbsoluteUri);
+		request.AddCallbackArguments("opVersion", request.Provider.Version.ToString());
+	}
+
+	public void LoadResponse(IAuthenticationResponse response) {
+		var resp = (PositiveAuthenticationResponse)response;
+		this.ProviderEndpoint = new Uri(resp.GetCallbackArgument("opEndpoint"));
+		this.ProtocolVersion = new Version(resp.GetCallbackArgument("opVersion"));
 	}
 
 	protected void Page_Load(object sender, EventArgs e) {

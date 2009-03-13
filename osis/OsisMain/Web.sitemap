@@ -5,5 +5,6 @@
 		<siteMapNode url="~/OP/AssociateHttpNoEncryption.aspx" title="OP rejects HTTP no-encryption" />
 		<siteMapNode url="~/OP/ReturnToVerification.aspx" title="OP return_to Verification (RP discovery)" />
 		<siteMapNode url="~/OP/ResponseNonce.aspx" title="OP sends properly formatted response_nonce" />
+		<siteMapNode url="~/OP/MultiFactor.aspx" title="OP performs multi-factor authentication" />
 	</siteMapNode>
 </siteMap>
