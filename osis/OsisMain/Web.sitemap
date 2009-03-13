@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <siteMap xmlns="http://schemas.microsoft.com/AspNet/SiteMap-File-1.0" >
 	<siteMapNode url="~/default.aspx" title="OSIS I5 test site">
-		<siteMapNode url="~/OP/AssociateHttpNoEncryption.aspx" title="OP rejects HTTP no-encryption" />
 		<siteMapNode url="~/OP/AXFetch.aspx" title="OP AX fetch" />
+		<siteMapNode url="~/OP/AssociateHttpNoEncryption.aspx" title="OP rejects HTTP no-encryption" />
+		<siteMapNode url="~/OP/ReturnToVerification.aspx" title="OP return_to Verification (RP discovery)" />
 	</siteMapNode>
 </siteMap>
