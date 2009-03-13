@@ -38,6 +38,22 @@
 	<Target Name="BuildProduct">
 		<MSBuild Projects="$(ProjectRoot)\src\$(ProductName)\$(ProductName).csproj" />
 	</Target>
+	
+	<Target Name="Osis" DependsOnTargets="BuildProduct">
+		<PropertyGroup>
+			<OsisSite>$(ProjectRoot)\Osis\OsisMain</OsisSite>
+		</PropertyGroup>
+		<ItemGroup>
+			<OsisBinFiles Include="$(OutputPath)\$(ProductName).???" />
+			<OsisBinFiles Include="$(OutputPath)\log4net.*" />
+			<OsisTargetBinFiles Include="@(OsisBinFiles->'$(OsisSite)\Bin\%(FileName)%(Extension)')" />
+		</ItemGroup>
+		<MakeDir Directories="$(OsisSite)\Bin" />
+		<Copy 
+			SourceFiles="@(OsisBinFiles)"
+			DestinationFiles="@(OsisTargetBinFiles)"
+			SkipUnchangedFiles="true" />
+	</Target>
 
 	<Target Name="BuildTests">
 		<MSBuild Projects="$(ProjectRoot)\src\$(ProductName).Test\$(ProductName).Test.csproj" />
