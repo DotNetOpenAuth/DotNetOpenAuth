@@ -46,6 +46,7 @@
 		<ItemGroup>
 			<OsisBinFiles Include="$(OutputPath)\$(ProductName).???" />
 			<OsisBinFiles Include="$(OutputPath)\log4net.*" />
+			<OsisBinFiles Include="$(ProjectRoot)\lib\Microsoft.Contracts.dll" />
 			<OsisTargetBinFiles Include="@(OsisBinFiles->'$(OsisSite)\Bin\%(FileName)%(Extension)')" />
 		</ItemGroup>
 		<MakeDir Directories="$(OsisSite)\Bin" />
