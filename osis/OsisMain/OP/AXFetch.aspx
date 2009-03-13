@@ -1,4 +1,4 @@
-<%@ Page Title="OpenID Provider support for Attribute Exchange" Language="C#" MasterPageFile="~/OP/ProviderTests.master"
+<%@ Page Title="OpenID Provider support for Attribute Exchange" Language="C#" MasterPageFile="~/TestMaster.master"
 	AutoEventWireup="true" CodeFile="AXFetch.aspx.cs" Inherits="OP_AXFetch" %>
 
 <%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.OpenId.RelyingParty"

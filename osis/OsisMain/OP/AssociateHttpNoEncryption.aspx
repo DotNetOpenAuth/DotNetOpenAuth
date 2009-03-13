@@ -1,5 +1,5 @@
 ﻿<%@ Page Title="OpenID Provider rejects No-Encryption Association Sessions over http"
-	Language="C#" MasterPageFile="~/OP/ProviderTests.master" AutoEventWireup="true"
+	Language="C#" MasterPageFile="~/TestMaster.master" AutoEventWireup="true"
 	CodeFile="AssociateHttpNoEncryption.aspx.cs" Inherits="OP_AssociateHttpNoEncryption" %>
 
 <%@ Register Src="~/TestResultDisplay.ascx" TagPrefix="osis" TagName="TestResultDisplay" %>

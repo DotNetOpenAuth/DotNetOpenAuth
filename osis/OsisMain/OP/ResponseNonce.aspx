@@ -1,4 +1,4 @@
-﻿<%@ Page Title="OP sends properly formatted response_nonce" Language="C#" MasterPageFile="~/OP/ProviderTests.master"
+﻿<%@ Page Title="OP sends properly formatted response_nonce" Language="C#" MasterPageFile="~/TestMaster.master"
 	AutoEventWireup="true" CodeFile="ResponseNonce.aspx.cs" Inherits="OP_ResponseNonce" %>
 
 <%@ Register Src="~/TestResultDisplay.ascx" TagPrefix="osis" TagName="TestResultDisplay" %>

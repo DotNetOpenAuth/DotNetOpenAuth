@@ -1,5 +1,5 @@
 ﻿<%@ Page Title="OP Asserts new claimed_id if doing identifier Select and is delegated to from a 3rd party"
-	Language="C#" MasterPageFile="~/OP/ProviderTests.master" AutoEventWireup="true"
+	Language="C#" MasterPageFile="~/TestMaster.master" AutoEventWireup="true"
 	CodeFile="DelegatedIdentifierSelect.aspx.cs" Inherits="OP_DelegatedIdentifierSelect" %>
 
 <%@ Register Src="~/TestResultDisplay.ascx" TagPrefix="osis" TagName="TestResultDisplay" %>

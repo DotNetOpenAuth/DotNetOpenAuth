@@ -1,5 +1,5 @@
 ﻿<%@ Master Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true"
-	CodeFile="ProviderTests.master.cs" Inherits="OP_ProviderTests" %>
+	CodeFile="TestMaster.master.cs" Inherits="TestMaster" %>
 
 <asp:Content ContentPlaceHolderID="Body" runat="Server">
 	<p>

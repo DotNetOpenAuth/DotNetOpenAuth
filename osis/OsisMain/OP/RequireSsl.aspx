@@ -1,4 +1,4 @@
-﻿<%@ Page Title="OP offers fully SSL-protected authentication" Language="C#" MasterPageFile="~/OP/ProviderTests.master"
+﻿<%@ Page Title="OP offers fully SSL-protected authentication" Language="C#" MasterPageFile="~/TestMaster.master"
 	AutoEventWireup="true" CodeFile="RequireSsl.aspx.cs" Inherits="OP_RequireSsl" %>
 
 <%@ Register Src="~/TestResultDisplay.ascx" TagPrefix="osis" TagName="TestResultDisplay" %>

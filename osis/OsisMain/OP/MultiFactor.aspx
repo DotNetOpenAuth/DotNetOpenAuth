@@ -1,4 +1,4 @@
-﻿<%@ Page Title="OP performs multi-factor authentication" Language="C#" MasterPageFile="~/OP/ProviderTests.master" AutoEventWireup="true"
+﻿<%@ Page Title="OP performs multi-factor authentication" Language="C#" MasterPageFile="~/TestMaster.master" AutoEventWireup="true"
 	CodeFile="MultiFactor.aspx.cs" Inherits="OP_MultiFactor" %>
 
 <%@ Register Src="~/TestResultDisplay.ascx" TagPrefix="osis" TagName="TestResultDisplay" %>

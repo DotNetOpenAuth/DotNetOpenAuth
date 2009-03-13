@@ -1,4 +1,4 @@
-﻿<%@ Page Title="OP return_to verification" Language="C#" MasterPageFile="~/OP/ProviderTests.master"
+﻿<%@ Page Title="OP return_to verification" Language="C#" MasterPageFile="~/TestMaster.master"
 	AutoEventWireup="true" CodeFile="ReturnToVerification.aspx.cs" Inherits="OP_ReturnToVerification" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="TestBody" runat="Server">

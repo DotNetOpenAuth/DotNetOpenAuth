@@ -6,7 +6,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using DotNetOpenAuth.OpenId.RelyingParty;
 
-public partial class OP_ProviderTests : System.Web.UI.MasterPage {
+public partial class TestMaster : System.Web.UI.MasterPage {
 	protected void resetTestButton_Click(object sender, EventArgs e) {
 		this.Response.Redirect(this.Request.Url.AbsolutePath);
 	}
