@@ -27,4 +27,20 @@
 			</asp:Table>
 		</asp:View>
 	</asp:MultiView>
+	<h3>
+		Instructions
+	</h3>
+	<ol>
+		<li>Customize the AX fetch request if desired, including entering a custom AX attribute
+			if you wish.</li>
+		<li>Enter an OpenID Identifier associated with the Provider to test.</li>
+		<li>Complete authentication at the Provider. Note whether the Provider asks for permission
+			to send personal information with the authentication.</li>
+		<li>Check that the attribute values show up back here.</li>
+	</ol>
+	<h3>
+		Passing criteria
+	</h3>
+	<p>The Provider must recognize the standard attribute Type URIs above and successfully
+		transfer the values to this page. </p>
 </asp:Content>
