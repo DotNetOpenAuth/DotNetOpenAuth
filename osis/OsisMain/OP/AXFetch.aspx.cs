@@ -18,6 +18,7 @@ public partial class OP_AXFetch : System.Web.UI.Page {
 		}
 
 		public string Description;
+		public TextBox TypeUriBox;
 		public string TypeUri;
 		public Label ValueLabel;
 
@@ -58,6 +59,7 @@ public partial class OP_AXFetch : System.Web.UI.Page {
 			new AttributeDescription("Full name", WellKnownAttributes.Name.FullName),
 			new AttributeDescription("Birthdate", WellKnownAttributes.BirthDate.WholeBirthDate),
 			new AttributeDescription("Postal code", WellKnownAttributes.Contact.HomeAddress.PostalCode),
+			new AttributeDescription("Custom", null),
 		};
 	}
 
@@ -69,7 +71,14 @@ public partial class OP_AXFetch : System.Web.UI.Page {
 			TableCell descriptionCell = new TableCell { Text = att.Description };
 			row.Cells.Add(descriptionCell);
 
-			TableCell typeUriCell = new TableCell { Text = att.TypeUri };
+			TableCell typeUriCell = new TableCell();
+			if (att.TypeUri != null) {
+				typeUriCell.Text = att.TypeUri;
+			} else {
+				typeUriCell.Controls.Add(att.TypeUriBox = new TextBox {
+					Columns = 40,
+				});
+			}
 			row.Cells.Add(typeUriCell);
 
 			TableCell countCell = new TableCell();
@@ -111,9 +120,11 @@ public partial class OP_AXFetch : System.Web.UI.Page {
 	private void OpenIdBox_LoggingIn(object sender, OpenIdEventArgs e) {
 		var fetch = new FetchRequest();
 		foreach (var att in this.Attributes) {
-			fetch.AddAttribute(new AttributeRequest(att.TypeUri, att.RequestRequired, att.RequestCount));
+			string typeUri = att.TypeUriBox != null ? att.TypeUriBox.Text : att.TypeUri;
+			fetch.AddAttribute(new AttributeRequest(typeUri, att.RequestRequired, att.RequestCount));
 		}
 		e.Request.AddExtension(fetch);
+		e.Request.AddCallbackArguments("customTypeUri", this.Attributes.Last().TypeUriBox.Text);
 	}
 
 	private void OpenIdBox_LoggedIn(object sender, OpenIdEventArgs e) {
@@ -126,7 +137,8 @@ public partial class OP_AXFetch : System.Web.UI.Page {
 		foreach (var att in this.Attributes) {
 			att.ValueLabel.Text = HttpUtility.HtmlEncode("<absent>");
 			if (fetch != null) {
-				AttributeValues attValue = fetch.GetAttribute(att.TypeUri);
+				string typeUri = att.TypeUri ?? e.Response.GetCallbackArgument("customTypeUri");
+				AttributeValues attValue = fetch.GetAttribute(typeUri);
 				if (attValue != null) {
 					att.ValueLabel.Text = HttpUtility.HtmlEncode(string.Join(", ", attValue.Values.ToArray()));
 				}
