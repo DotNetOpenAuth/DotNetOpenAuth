@@ -11,7 +11,7 @@
 					runat="server" />
 				<asp:Button ID="beginButton" runat="server" Text="Begin" OnClick="beginButton_Click" />
 				<asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ControlToValidate="identifierBox"
-					ErrorMessage="Enter an identifier first." />
+					ErrorMessage="Enter an identifier first." Display="Dynamic" />
 				<asp:Label ID="errorLabel" runat="server" EnableViewState="False" ForeColor="Red"
 					Visible="False" />
 			</asp:Panel>

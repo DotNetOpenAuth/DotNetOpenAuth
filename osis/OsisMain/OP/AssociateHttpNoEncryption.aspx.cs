@@ -26,25 +26,25 @@ public partial class OP_AssociateHttpNoEncryption : System.Web.UI.Page {
 		if (endpoint == null) {
 			this.errorLabel.Text = "No HTTP provider endpoint found.";
 			this.errorLabel.Visible = true;
+		} else {
+			Protocol protocol = Protocol.Lookup(endpoint.Version);
+			testResultDisplay.ProviderEndpoint = endpoint.Uri;
+			testResultDisplay.ProtocolVersion = endpoint.Version;
+			var associate = new AssociateUnencryptedRequestNoCheck(endpoint.Version, endpoint.Uri) {
+				AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA1,
+			};
+
+			try {
+				var response = rp.Channel.Request<DirectErrorResponse>(associate);
+				testResultDisplay.Pass = true;
+				testResultDisplay.Details = response.ErrorMessage;
+			} catch (ProtocolException ex) {
+				testResultDisplay.Pass = false;
+				testResultDisplay.Details = ex.Message;
+			}
+
+			MultiView1.ActiveViewIndex = 1;
 		}
-
-		Protocol protocol = Protocol.Lookup(endpoint.Version);
-		testResultDisplay.ProviderEndpoint = endpoint.Uri;
-		testResultDisplay.ProtocolVersion = endpoint.Version;
-		var associate = new AssociateUnencryptedRequestNoCheck(endpoint.Version, endpoint.Uri) {
-			AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA1,
-		};
-
-		try {
-			var response = rp.Channel.Request<DirectErrorResponse>(associate);
-			testResultDisplay.Pass = true;
-			testResultDisplay.Details = response.ErrorMessage;
-		} catch (ProtocolException ex) {
-			testResultDisplay.Pass = false;
-			testResultDisplay.Details = ex.Message;
-		}
-
-		MultiView1.ActiveViewIndex = 1;
 	}
 
 	private IXrdsProviderEndpoint DiscoverHttpEndpoint(Identifier identifier) {
