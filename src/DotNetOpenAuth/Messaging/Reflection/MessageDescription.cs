@@ -108,7 +108,14 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 							 select a).FirstOrDefault();
 						if (partAttribute != null) {
 							MessagePart part = new MessagePart(member, partAttribute);
-							this.mapping.Add(part.Name, part);
+							if (this.mapping.ContainsKey(part.Name)) {
+								Logger.WarnFormat(
+									"Message type {0} has more than one message part named {1}.  Inherited members will be hidden.",
+									this.messageTypeAndVersion.Type.Name,
+									part.Name);
+							} else {
+								this.mapping.Add(part.Name, part);
+							}
 						}
 					}
 				}
