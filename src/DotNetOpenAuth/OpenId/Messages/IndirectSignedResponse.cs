@@ -219,7 +219,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <value>Verbatim copy of the return_to URL parameter sent in the
 		/// request, before the Provider modified it. </value>
 		[MessagePart("openid.return_to", IsRequired = true, AllowEmpty = false, RequiredProtection = ProtectionLevel.Sign, Encoder = typeof(OriginalStringUriEncoder))]
-		internal Uri ReturnTo { get; set; }
+		public Uri ReturnTo { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the <see cref="ReturnTo"/>

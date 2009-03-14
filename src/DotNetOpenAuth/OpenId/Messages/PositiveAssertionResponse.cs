@@ -29,7 +29,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="request">
 		/// The authentication request that caused this assertion to be generated.
 		/// </param>
-		internal PositiveAssertionResponse(CheckIdRequest request)
+		public PositiveAssertionResponse(CheckIdRequest request)
 			: base(request) {
 			this.ClaimedIdentifier = request.ClaimedIdentifier;
 			this.LocalIdentifier = request.LocalIdentifier;

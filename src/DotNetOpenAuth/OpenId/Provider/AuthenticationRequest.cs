@@ -23,7 +23,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// The positive assertion to send, if the host site chooses to send it.
 		/// </summary>
-		private readonly PositiveAssertionResponse positiveResponse;
+		public PositiveAssertionResponse positiveResponse;
 
 		/// <summary>
 		/// The negative assertion to send, if the host site chooses to send it.

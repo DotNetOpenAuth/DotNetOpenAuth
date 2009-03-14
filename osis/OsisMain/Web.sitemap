@@ -10,5 +10,6 @@
 		<siteMapNode url="~/OP/DelegatedIdentifierSelect.aspx" title="OP Asserts new claimed_id if doing identifier Select and is delegated to from a 3rd party" />
 		<siteMapNode url="~/RP/HMACSHA256.aspx" title="RP supports HMAC-SHA256 associations" />
 		<siteMapNode url="~/RP/UnsolicitedAssertions.aspx" title="RP accepts unsolicited assertions" />
+		<siteMapNode url="~/RP/VerifyReturnTo.aspx" title="RP verifies return_to URL" />
 	</siteMapNode>
 </siteMap>

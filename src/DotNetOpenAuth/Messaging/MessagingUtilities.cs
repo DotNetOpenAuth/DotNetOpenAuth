@@ -483,7 +483,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// If the parameters to add match names of parameters that already are defined
 		/// in the query string, the existing ones are <i>not</i> replaced.
 		/// </remarks>
-		internal static void AppendQueryArgs(this UriBuilder builder, IEnumerable<KeyValuePair<string, string>> args) {
+		public static void AppendQueryArgs(this UriBuilder builder, IEnumerable<KeyValuePair<string, string>> args) {
 			ErrorUtilities.VerifyArgumentNotNull(builder, "builder");
 
 			if (args != null && args.Count() > 0) {
