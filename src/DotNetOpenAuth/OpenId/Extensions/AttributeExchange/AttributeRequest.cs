@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
+	using System;
 	using System.Diagnostics;
 	using DotNetOpenAuth.Messaging;
 
@@ -12,6 +13,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 	/// An individual attribute to be requested of the OpenID Provider using
 	/// the Attribute Exchange extension.
 	/// </summary>
+	[Serializable]
 	public class AttributeRequest {
 		/// <summary>
 		/// Backing field for the <see cref="Count"/> property.
