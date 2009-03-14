@@ -77,9 +77,9 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <param name="message">The message with data to encode.</param>
 		/// <returns>A dictionary of name-value pairs with their strings encoded.</returns>
-		internal static IDictionary<string, string> GetUriEscapedParameters(IProtocolMessage message) {
+		internal static IDictionary<string, string> GetUriEscapedParameters(MessageDictionary message) {
 			var encodedDictionary = new Dictionary<string, string>();
-			UriEscapeParameters(new MessageDictionary(message), encodedDictionary);
+			UriEscapeParameters(message, encodedDictionary);
 			return encodedDictionary;
 		}
 
@@ -200,8 +200,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		protected override UserAgentResponse SendDirectMessageResponse(IProtocolMessage response) {
 			ErrorUtilities.VerifyArgumentNotNull(response, "response");
 
-			MessageSerializer serializer = MessageSerializer.Get(response.GetType());
-			var fields = serializer.Serialize(response);
+			var messageAccessor = this.MessageDescriptions.GetAccessor(response);
+			var fields = messageAccessor.Serialize();
 			string responseBody = MessagingUtilities.CreateQueryString(fields);
 
 			UserAgentResponse encodedResponse = new UserAgentResponse {
@@ -245,7 +245,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </remarks>
 		private HttpWebRequest InitializeRequestAsAuthHeader(IDirectedProtocolMessage requestMessage) {
 			var protocol = Protocol.Lookup(requestMessage.Version);
-			var dictionary = new MessageDictionary(requestMessage);
+			var dictionary = this.MessageDescriptions.GetAccessor(requestMessage);
 
 			// copy so as to not modify original
 			var fields = new Dictionary<string, string>();

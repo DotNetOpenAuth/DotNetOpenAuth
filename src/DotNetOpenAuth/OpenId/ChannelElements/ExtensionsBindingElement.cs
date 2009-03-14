@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -95,11 +96,12 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// </remarks>
 		public MessageProtections? PrepareMessageForSending(IProtocolMessage message) {
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
+			ErrorUtilities.VerifyOperation(this.Channel != null, "Channel property has not been set.");
 
 			var extendableMessage = message as IProtocolMessageWithExtensions;
 			if (extendableMessage != null) {
 				Protocol protocol = Protocol.Lookup(message.Version);
-				MessageDictionary baseMessageDictionary = new MessageDictionary(message);
+				MessageDictionary baseMessageDictionary = this.Channel.MessageDescriptions.GetAccessor(message);
 
 				// We have a helper class that will do all the heavy-lifting of organizing
 				// all the extensions, their aliases, and their parameters.
@@ -116,7 +118,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 						// OpenID 2.0 Section 12 forbids two extensions with the same TypeURI in the same message.
 						ErrorUtilities.VerifyProtocol(!extensionManager.ContainsExtension(extension.TypeUri), OpenIdStrings.ExtensionAlreadyAddedWithSameTypeURI, extension.TypeUri);
 
-						var extensionDictionary = MessageSerializer.Get(extension.GetType()).Serialize(extension);
+						var extensionDictionary = this.Channel.MessageDescriptions.GetAccessor(extension).Serialize();
 						extensionManager.AddExtensionArguments(extension.TypeUri, extensionDictionary);
 					} else {
 						Logger.WarnFormat("Unexpected extension type {0} did not implement {1}.", protocolExtension.GetType(), typeof(IOpenIdMessageExtension).Name);
@@ -130,7 +132,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				bool includeOpenIdPrefix = baseMessageDictionary.Keys.Any(key => key.StartsWith(protocol.openid.Prefix, StringComparison.Ordinal));
 
 				// Add the extension parameters to the base message for transmission.
-				extendableMessage.AddExtraParameters(extensionManager.GetArgumentsToSend(includeOpenIdPrefix));
+				baseMessageDictionary.AddExtraParameters(extensionManager.GetArgumentsToSend(includeOpenIdPrefix));
 				return MessageProtections.None;
 			}
 
@@ -166,7 +168,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					// Initialize this particular extension.
 					IOpenIdMessageExtension extension = this.ExtensionFactory.Create(typeUri, extensionData, extendableMessage);
 					if (extension != null) {
-						MessageDictionary extensionDictionary = new MessageDictionary(extension);
+						MessageDictionary extensionDictionary = this.Channel.MessageDescriptions.GetAccessor(extension);
 						foreach (var pair in extensionData) {
 							extensionDictionary[pair.Key] = pair.Value;
 						}
@@ -197,6 +199,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="message">The message.</param>
 		/// <returns>A dictionary of message parts, including only signed parts when appropriate.</returns>
 		private IDictionary<string, string> GetExtensionsDictionary(IProtocolMessage message) {
+			Contract.Requires(this.Channel != null);
+			ErrorUtilities.VerifyOperation(this.Channel != null, "Channel property has not been set.");
+
 			// An IndirectSignedResponse message (the only one we care to filter parts for)
 			// can be received both by RPs and OPs (during check_auth).  
 			// Whichever party is reading the extensions, apply their security policy regarding
@@ -206,9 +211,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 			IndirectSignedResponse signedResponse = message as IndirectSignedResponse;
 			if (signedResponse != null && extensionsShouldBeSigned) {
-				return signedResponse.GetSignedMessageParts();
+				return signedResponse.GetSignedMessageParts(this.Channel);
 			} else {
-				return new MessageDictionary(message);
+				return this.Channel.MessageDescriptions.GetAccessor(message);
 			}
 		}
 	}

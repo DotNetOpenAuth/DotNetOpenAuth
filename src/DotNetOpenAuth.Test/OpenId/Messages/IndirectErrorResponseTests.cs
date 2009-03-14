@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			this.response.Reference = "http://blog.nerdbank.net/";
 
 			MessageSerializer serializer = MessageSerializer.Get(this.response.GetType());
-			var fields = serializer.Serialize(this.response);
+			var fields = this.MessageDescriptions.GetAccessor(this.response).Serialize();
 			Assert.AreEqual(Protocol.OpenId2Namespace, fields["openid.ns"]);
 			Assert.AreEqual("Some Error", fields["openid.error"]);
 			Assert.AreEqual("Andrew Arnott", fields["openid.contact"]);

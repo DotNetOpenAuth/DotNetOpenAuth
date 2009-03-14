@@ -111,7 +111,7 @@ namespace DotNetOpenAuth.OpenId.Interop {
 		public string CreateRequest(string userSuppliedIdentifier, string realm, string returnToUrl) {
 			OpenIdRelyingParty rp = new OpenIdRelyingParty(null);
 			var request = rp.CreateRequest(userSuppliedIdentifier, realm, new Uri(returnToUrl));
-			return request.RedirectingResponse.DirectUriRequest.AbsoluteUri;
+			return request.RedirectingResponse.GetDirectUriRequest(rp.Channel).AbsoluteUri;
 		}
 
 		/// <summary>
@@ -144,7 +144,7 @@ namespace DotNetOpenAuth.OpenId.Interop {
 				sreg.SetProfileRequestFromList(requiredSreg.Split(','), DemandLevel.Require);
 			}
 			request.AddExtension(sreg);
-			return request.RedirectingResponse.DirectUriRequest.AbsoluteUri;
+			return request.RedirectingResponse.GetDirectUriRequest(rp.Channel).AbsoluteUri;
 		}
 
 		/// <summary>

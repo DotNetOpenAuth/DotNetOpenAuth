@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Wraps an <see cref="IMessage"/> instance in a dictionary that
@@ -30,13 +31,35 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// Initializes a new instance of the <see cref="MessageDictionary"/> class.
 		/// </summary>
 		/// <param name="message">The message instance whose values will be manipulated by this dictionary.</param>
-		internal MessageDictionary(IMessage message) {
-			if (message == null) {
-				throw new ArgumentNullException("message");
-			}
+		/// <param name="description">The message description.</param>
+		internal MessageDictionary(IMessage message, MessageDescription description) {
+			Contract.Requires(message != null);
+			Contract.Requires(description != null);
+			ErrorUtilities.VerifyArgumentNotNull(message, "message");
+			ErrorUtilities.VerifyArgumentNotNull(description, "description");
 
 			this.message = message;
-			this.description = MessageDescription.Get(message.GetType(), message.Version);
+			this.description = description;
+		}
+
+		/// <summary>
+		/// Gets the message this dictionary provides access to.
+		/// </summary>
+		public IMessage Message {
+			get {
+				Contract.Ensures(Contract.Result<IMessage>() != null);
+				return this.message;
+			}
+		}
+
+		/// <summary>
+		/// Gets the description of the type of message this dictionary provides access to.
+		/// </summary>
+		public MessageDescription Description {
+			get {
+				Contract.Ensures(Contract.Result<MessageDescription>() != null);
+				return this.description;
+			}
 		}
 
 		#region ICollection<KeyValuePair<string,string>> Properties
@@ -115,6 +138,17 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 				return values.AsReadOnly();
 			}
 		}
+
+		#endregion
+
+		/// <summary>
+		/// Gets the serializer for the message this dictionary provides access to.
+		/// </summary>
+		private MessageSerializer Serializer {
+			get { return MessageSerializer.Get(this.Message.GetType()); }
+		}
+
+		#region IDictionary<string,string> Indexers
 
 		/// <summary>
 		/// Gets or sets a value for some named value.
@@ -317,5 +351,21 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Saves the data in a message to a standard dictionary.
+		/// </summary>
+		/// <returns>The generated dictionary.</returns>
+		public IDictionary<string, string> Serialize() {
+			return this.Serializer.Serialize(this);
+		}
+
+		/// <summary>
+		/// Loads data from a dictionary into the message.
+		/// </summary>
+		/// <param name="fields">The data to load into the message.</param>
+		public void Deserialize(IDictionary<string, string> fields) {
+			this.Serializer.Deserialize(fields, this);
+		}
 	}
 }

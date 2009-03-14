@@ -169,7 +169,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			PolicyResponse resp = new PolicyResponse();
 			IMessageWithEvents respEvents = resp;
 
-			var fields = new MessageDictionary(resp);
+			var fields = this.MessageDescriptions.GetAccessor(resp);
 			respEvents.OnSending();
 			Assert.AreEqual(1, fields.Count);
 			Assert.IsTrue(fields.ContainsKey("auth_policies"));

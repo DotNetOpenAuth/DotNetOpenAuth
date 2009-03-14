@@ -127,7 +127,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// <param name="message">The message that this channel should receive.  This message will be cloned.</param>
 		internal void PostMessage(IProtocolMessage message) {
 			ErrorUtilities.VerifyInternal(this.incomingMessage == null, "Oops, a message is already waiting for the remote party!");
-			this.incomingMessage = new Dictionary<string, string>(new MessageDictionary(message));
+			this.incomingMessage = this.MessageDescriptions.GetAccessor(message).Serialize();
 			var directedMessage = message as IDirectedProtocolMessage;
 			this.incomingMessageRecipient = directedMessage != null ? new MessageReceivingEndpoint(directedMessage.Recipient, directedMessage.HttpMethods) : null;
 			this.incomingMessageSignal.Set();
@@ -137,7 +137,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			MessageReceivingEndpoint recipient;
 			var messageData = this.AwaitIncomingMessage(out recipient);
 			if (messageData != null) {
-				return new CoordinatingHttpRequestInfo(this.MessageFactory, messageData, recipient);
+				return new CoordinatingHttpRequestInfo(this, this.MessageFactory, messageData, recipient);
 			} else {
 				return new CoordinatingHttpRequestInfo(recipient);
 			}
@@ -160,8 +160,8 @@ namespace DotNetOpenAuth.Test.Mocks {
 				return null;
 			}
 
-			var responseSerializer = MessageSerializer.Get(responseMessage.GetType());
-			responseSerializer.Deserialize(responseData, responseMessage);
+			var responseAccessor = this.MessageDescriptions.GetAccessor(responseMessage);
+			responseAccessor.Deserialize(responseData);
 
 			this.ProcessMessageFilter(responseMessage, false);
 			return responseMessage;
@@ -211,8 +211,8 @@ namespace DotNetOpenAuth.Test.Mocks {
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
 			IProtocolMessage clonedMessage;
-			MessageSerializer serializer = MessageSerializer.Get(message.GetType());
-			var fields = serializer.Serialize(message);
+			var messageAccessor = this.MessageDescriptions.GetAccessor(message);
+			var fields = messageAccessor.Serialize();
 
 			MessageReceivingEndpoint recipient = null;
 			var directedMessage = message as IDirectedProtocolMessage;
@@ -232,7 +232,8 @@ namespace DotNetOpenAuth.Test.Mocks {
 			ErrorUtilities.VerifyInternal(clonedMessage != null, "Message factory did not generate a message instance for " + message.GetType().Name);
 
 			// Fill the cloned message with data.
-			serializer.Deserialize(fields, clonedMessage);
+			var clonedMessageAccessor = this.MessageDescriptions.GetAccessor(clonedMessage);
+			clonedMessageAccessor.Deserialize(fields);
 
 			return (T)clonedMessage;
 		}

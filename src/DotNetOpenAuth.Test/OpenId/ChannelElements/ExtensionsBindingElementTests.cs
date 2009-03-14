@@ -32,6 +32,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			this.factory = new OpenIdExtensionFactory();
 			this.factory.RegisterExtension(MockOpenIdExtension.Factory);
 			this.rpElement = new ExtensionsBindingElement(this.factory, new RelyingPartySecuritySettings());
+			this.rpElement.Channel = new TestChannel(this.MessageDescriptions);
 			this.request = new SignedResponseRequest(Protocol.Default.Version, OpenIdTestBase.OPUri, AuthenticationRequestMode.Immediate);
 		}
 

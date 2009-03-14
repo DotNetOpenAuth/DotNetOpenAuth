@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Collections.Specialized;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
 	using System.Net.Security;
@@ -73,12 +74,16 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// in order to perform signature verification at the Provider.
 		/// </summary>
 		/// <param name="previouslySignedMessage">The previously signed message.</param>
-		internal IndirectSignedResponse(CheckAuthenticationRequest previouslySignedMessage)
+		/// <param name="channel">The channel.  This is used only within the constructor and is not stored in a field.</param>
+		internal IndirectSignedResponse(CheckAuthenticationRequest previouslySignedMessage, Channel channel)
 			: base(GetVersion(previouslySignedMessage), previouslySignedMessage.ReturnTo, Protocol.Lookup(GetVersion(previouslySignedMessage)).Args.Mode.id_res) {
+			Contract.Requires(channel != null);
+			ErrorUtilities.VerifyArgumentNotNull(channel, "channel");
+
 			// Copy all message parts from the check_authentication message into this one,
 			// except for the openid.mode parameter.
-			MessageDictionary checkPayload = new MessageDictionary(previouslySignedMessage);
-			MessageDictionary thisPayload = new MessageDictionary(this);
+			MessageDictionary checkPayload = channel.MessageDescriptions.GetAccessor(previouslySignedMessage);
+			MessageDictionary thisPayload = channel.MessageDescriptions.GetAccessor(this);
 			foreach (var pair in checkPayload) {
 				if (!string.Equals(pair.Key, this.Protocol.openid.mode)) {
 					thisPayload[pair.Key] = pair.Value;
@@ -334,14 +339,20 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Gets a dictionary of all the message part names and values
 		/// that are included in the message signature.
 		/// </summary>
-		/// <returns>A dictionary of the signed message parts.</returns>
-		internal IDictionary<string, string> GetSignedMessageParts() {
+		/// <param name="channel">The channel.</param>
+		/// <returns>
+		/// A dictionary of the signed message parts.
+		/// </returns>
+		internal IDictionary<string, string> GetSignedMessageParts(Channel channel) {
+			Contract.Requires(channel != null);
+			ErrorUtilities.VerifyArgumentNotNull(channel, "channel");
+
 			ITamperResistantOpenIdMessage signedSelf = this;
 			if (signedSelf.SignedParameterOrder == null) {
 				return EmptyDictionary<string, string>.Instance;
 			}
 
-			MessageDictionary messageDictionary = new MessageDictionary(this);
+			MessageDictionary messageDictionary = channel.MessageDescriptions.GetAccessor(this);
 			string[] signedPartNamesWithoutPrefix = signedSelf.SignedParameterOrder.Split(',');
 			Dictionary<string, string> signedParts = new Dictionary<string, string>(signedPartNamesWithoutPrefix.Length);
 

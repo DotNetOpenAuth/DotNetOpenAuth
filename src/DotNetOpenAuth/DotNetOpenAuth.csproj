@@ -46,6 +46,7 @@
     <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
     <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
     <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -176,6 +177,7 @@
     <Compile Include="Messaging\InternalErrorException.cs" />
     <Compile Include="Messaging\NetworkDirectWebResponse.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
+    <Compile Include="Messaging\Reflection\MessageDescriptionCollection.cs" />
     <Compile Include="OAuth\ChannelElements\IConsumerCertificateProvider.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthConsumerMessageFactory.cs" />
     <Compile Include="OAuth\ChannelElements\ITokenGenerator.cs" />
@@ -183,6 +185,7 @@
     <Compile Include="OAuth\ChannelElements\OAuthHttpMethodBindingElement.cs" />
     <Compile Include="OAuth\ChannelElements\PlaintextSigningBindingElement.cs" />
     <Compile Include="OAuth\ChannelElements\HmacSha1SigningBindingElement.cs" />
+    <Compile Include="OAuth\ChannelElements\SigningBindingElementBaseContract.cs" />
     <Compile Include="OAuth\ChannelElements\SigningBindingElementChain.cs" />
     <Compile Include="OAuth\ChannelElements\StandardTokenGenerator.cs" />
     <Compile Include="OAuth\ChannelElements\TokenType.cs" />

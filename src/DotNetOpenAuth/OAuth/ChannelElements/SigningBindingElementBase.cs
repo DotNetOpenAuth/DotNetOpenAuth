@@ -7,14 +7,17 @@
 namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
+	using DotNetOpenAuth.Messaging.Reflection;
 
 	/// <summary>
 	/// A binding element that signs outgoing messages and verifies the signature on incoming messages.
 	/// </summary>
+	[ContractClass(typeof(SigningBindingElementBaseContract))]
 	public abstract class SigningBindingElementBase : ITamperProtectionChannelBindingElement {
 		/// <summary>
 		/// The signature method this binding element uses.
@@ -136,12 +139,17 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <summary>
 		/// Constructs the OAuth Signature Base String and returns the result.
 		/// </summary>
-		/// <param name="message">The message to derive the signature base string from.</param>
+		/// <param name="message">The message.</param>
+		/// <param name="messageDictionary">The message to derive the signature base string from.</param>
 		/// <returns>The signature base string.</returns>
 		/// <remarks>
 		/// This method implements OAuth 1.0 section 9.1.
 		/// </remarks>
-		protected static string ConstructSignatureBaseString(ITamperResistantOAuthMessage message) {
+		internal static string ConstructSignatureBaseString(ITamperResistantOAuthMessage message, MessageDictionary messageDictionary) {
+			Contract.Requires(message != null);
+			Contract.Requires(messageDictionary != null);
+			Contract.Requires(messageDictionary.Message == message);
+
 			if (String.IsNullOrEmpty(message.HttpMethod)) {
 				throw new ArgumentException(
 					string.Format(
@@ -161,7 +169,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			endpoint.Fragment = null;
 			signatureBaseStringElements.Add(endpoint.Uri.AbsoluteUri);
 
-			var encodedDictionary = OAuthChannel.GetUriEscapedParameters(message);
+			var encodedDictionary = OAuthChannel.GetUriEscapedParameters(messageDictionary);
 			encodedDictionary.Remove("oauth_signature");
 			var sortedKeyValueList = new List<KeyValuePair<string, string>>(encodedDictionary);
 			sortedKeyValueList.Sort(SignatureBaseStringParameterComparer);

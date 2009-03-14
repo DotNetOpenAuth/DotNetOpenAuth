@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
 	using System.Net.Security;
@@ -107,7 +108,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				Association association = this.GetAssociation(signedMessage);
 				signedMessage.AssociationHandle = association.Handle;
 				signedMessage.SignedParameterOrder = this.GetSignedParameterOrder(signedMessage);
-				signedMessage.Signature = GetSignature(signedMessage, association);
+				signedMessage.Signature = this.GetSignature(signedMessage, association);
 				return MessageProtections.TamperProtection;
 			}
 
@@ -133,11 +134,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				Logger.DebugFormat("Verifying incoming {0} message signature of: {1}", message.GetType().Name, signedMessage.Signature);
 				MessageProtections protectionsApplied = MessageProtections.TamperProtection;
 
-				EnsureParametersRequiringSignatureAreSigned(signedMessage);
+				this.EnsureParametersRequiringSignatureAreSigned(signedMessage);
 
 				Association association = this.GetSpecificAssociation(signedMessage);
 				if (association != null) {
-					string signature = GetSignature(signedMessage, association);
+					string signature = this.GetSignature(signedMessage, association);
 					if (!string.Equals(signedMessage.Signature, signature, StringComparison.Ordinal)) {
 						Logger.Error("Signature verification failed.");
 						throw new InvalidSignatureException(message);
@@ -154,7 +155,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					// We did not recognize the association the provider used to sign the message.
 					// Ask the provider to check the signature then.
 					var indirectSignedResponse = (IndirectSignedResponse)signedMessage;
-					var checkSignatureRequest = new CheckAuthenticationRequest(indirectSignedResponse);
+					var checkSignatureRequest = new CheckAuthenticationRequest(indirectSignedResponse, this.Channel);
 					var checkSignatureResponse = this.Channel.Request<CheckAuthenticationResponse>(checkSignatureRequest);
 					if (!checkSignatureResponse.IsValid) {
 						Logger.Error("Provider reports signature verification failed.");
@@ -183,62 +184,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		}
 
 		#endregion
-
-		/// <summary>
-		/// Ensures that all message parameters that must be signed are in fact included
-		/// in the signature.
-		/// </summary>
-		/// <param name="signedMessage">The signed message.</param>
-		private static void EnsureParametersRequiringSignatureAreSigned(ITamperResistantOpenIdMessage signedMessage) {
-			// Verify that the signed parameter order includes the mandated fields.
-			// We do this in such a way that derived classes that add mandated fields automatically
-			// get included in the list of checked parameters.
-			Protocol protocol = Protocol.Lookup(signedMessage.Version);
-			var partsRequiringProtection = from part in MessageDescription.Get(signedMessage.GetType(), signedMessage.Version).Mapping.Values
-			                               where part.RequiredProtection != ProtectionLevel.None
-			                               where part.IsRequired || part.IsNondefaultValueSet(signedMessage)
-			                               select part.Name;
-			ErrorUtilities.VerifyInternal(partsRequiringProtection.All(name => name.StartsWith(protocol.openid.Prefix, StringComparison.Ordinal)), "Signing only works when the parameters start with the 'openid.' prefix.");
-			string[] signedParts = signedMessage.SignedParameterOrder.Split(',');
-			var unsignedParts = from partName in partsRequiringProtection
-			                    where !signedParts.Contains(partName.Substring(protocol.openid.Prefix.Length))
-			                    select partName;
-			ErrorUtilities.VerifyProtocol(!unsignedParts.Any(), OpenIdStrings.SignatureDoesNotIncludeMandatoryParts, string.Join(", ", unsignedParts.ToArray()));
-		}
-
-		/// <summary>
-		/// Calculates the signature for a given message.
-		/// </summary>
-		/// <param name="signedMessage">The message to sign or verify.</param>
-		/// <param name="association">The association to use to sign the message.</param>
-		/// <returns>The calculated signature of the method.</returns>
-		private static string GetSignature(ITamperResistantOpenIdMessage signedMessage, Association association) {
-			ErrorUtilities.VerifyArgumentNotNull(signedMessage, "signedMessage");
-			ErrorUtilities.VerifyNonZeroLength(signedMessage.SignedParameterOrder, "signedMessage.SignedParameterOrder");
-			ErrorUtilities.VerifyArgumentNotNull(association, "association");
-
-			// Prepare the parts to sign, taking care to replace an openid.mode value
-			// of check_authentication with its original id_res so the signature matches.
-			MessageDictionary dictionary = new MessageDictionary(signedMessage);
-			var parametersToSign = from name in signedMessage.SignedParameterOrder.Split(',')
-								   let prefixedName = Protocol.V20.openid.Prefix + name
-								   select new KeyValuePair<string, string>(name, dictionary[prefixedName]);
-
-			byte[] dataToSign = KeyValueFormEncoding.GetBytes(parametersToSign);
-			string signature = Convert.ToBase64String(association.Sign(dataToSign));
-
-			if (signingLogger.IsDebugEnabled) {
-				signingLogger.DebugFormat(
-					CultureInfo.InvariantCulture,
-					"Signing these message parts: {0}{1}{0}Base64 representation of signed data: {2}{0}Signature: {3}",
-					Environment.NewLine,
-					parametersToSign.ToStringDeferred(),
-					Convert.ToBase64String(dataToSign),
-					signature);
-			}
-
-			return signature;
-		}
 
 		/// <summary>
 		/// Determines whether the relying party sending an authentication request is
@@ -282,6 +227,62 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		}
 
 		/// <summary>
+		/// Ensures that all message parameters that must be signed are in fact included
+		/// in the signature.
+		/// </summary>
+		/// <param name="signedMessage">The signed message.</param>
+		private void EnsureParametersRequiringSignatureAreSigned(ITamperResistantOpenIdMessage signedMessage) {
+			// Verify that the signed parameter order includes the mandated fields.
+			// We do this in such a way that derived classes that add mandated fields automatically
+			// get included in the list of checked parameters.
+			Protocol protocol = Protocol.Lookup(signedMessage.Version);
+			var partsRequiringProtection = from part in this.Channel.MessageDescriptions.Get(signedMessage).Mapping.Values
+			                               where part.RequiredProtection != ProtectionLevel.None
+			                               where part.IsRequired || part.IsNondefaultValueSet(signedMessage)
+			                               select part.Name;
+			ErrorUtilities.VerifyInternal(partsRequiringProtection.All(name => name.StartsWith(protocol.openid.Prefix, StringComparison.Ordinal)), "Signing only works when the parameters start with the 'openid.' prefix.");
+			string[] signedParts = signedMessage.SignedParameterOrder.Split(',');
+			var unsignedParts = from partName in partsRequiringProtection
+			                    where !signedParts.Contains(partName.Substring(protocol.openid.Prefix.Length))
+			                    select partName;
+			ErrorUtilities.VerifyProtocol(!unsignedParts.Any(), OpenIdStrings.SignatureDoesNotIncludeMandatoryParts, string.Join(", ", unsignedParts.ToArray()));
+		}
+
+		/// <summary>
+		/// Calculates the signature for a given message.
+		/// </summary>
+		/// <param name="signedMessage">The message to sign or verify.</param>
+		/// <param name="association">The association to use to sign the message.</param>
+		/// <returns>The calculated signature of the method.</returns>
+		private string GetSignature(ITamperResistantOpenIdMessage signedMessage, Association association) {
+			ErrorUtilities.VerifyArgumentNotNull(signedMessage, "signedMessage");
+			ErrorUtilities.VerifyNonZeroLength(signedMessage.SignedParameterOrder, "signedMessage.SignedParameterOrder");
+			ErrorUtilities.VerifyArgumentNotNull(association, "association");
+
+			// Prepare the parts to sign, taking care to replace an openid.mode value
+			// of check_authentication with its original id_res so the signature matches.
+			MessageDictionary dictionary = this.Channel.MessageDescriptions.GetAccessor(signedMessage);
+			var parametersToSign = from name in signedMessage.SignedParameterOrder.Split(',')
+								   let prefixedName = Protocol.V20.openid.Prefix + name
+								   select new KeyValuePair<string, string>(name, dictionary[prefixedName]);
+
+			byte[] dataToSign = KeyValueFormEncoding.GetBytes(parametersToSign);
+			string signature = Convert.ToBase64String(association.Sign(dataToSign));
+
+			if (signingLogger.IsDebugEnabled) {
+				signingLogger.DebugFormat(
+					CultureInfo.InvariantCulture,
+					"Signing these message parts: {0}{1}{0}Base64 representation of signed data: {2}{0}Signature: {3}",
+					Environment.NewLine,
+					parametersToSign.ToStringDeferred(),
+					Convert.ToBase64String(dataToSign),
+					signature);
+			}
+
+			return signature;
+		}
+
+		/// <summary>
 		/// Gets the value to use for the openid.signed parameter.
 		/// </summary>
 		/// <param name="signedMessage">The signable message.</param>
@@ -290,11 +291,13 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// the inclusion and order of message parts that will be signed.
 		/// </returns>
 		private string GetSignedParameterOrder(ITamperResistantOpenIdMessage signedMessage) {
+			Contract.Requires(this.Channel != null);
 			ErrorUtilities.VerifyArgumentNotNull(signedMessage, "signedMessage");
+			ErrorUtilities.VerifyOperation(this.Channel != null, "Channel property has not been set.");
 
 			Protocol protocol = Protocol.Lookup(signedMessage.Version);
 
-			MessageDescription description = MessageDescription.Get(signedMessage.GetType(), signedMessage.Version);
+			MessageDescription description = this.Channel.MessageDescriptions.Get(signedMessage);
 			var signedParts = from part in description.Mapping.Values
 			                  where (part.RequiredProtection & System.Net.Security.ProtectionLevel.Sign) != 0
 			                        && part.GetValue(signedMessage) != null

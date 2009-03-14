@@ -125,8 +125,8 @@ namespace DotNetOpenAuth.Test.Mocks {
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
 			IProtocolMessage clonedMessage;
-			MessageSerializer serializer = MessageSerializer.Get(message.GetType());
-			var fields = serializer.Serialize(message);
+			var messageAccessor = this.MessageDescriptions.GetAccessor(message);
+			var fields = messageAccessor.Serialize();
 
 			MessageReceivingEndpoint recipient = null;
 			var directedMessage = message as IDirectedProtocolMessage;
@@ -144,7 +144,8 @@ namespace DotNetOpenAuth.Test.Mocks {
 			}
 
 			// Fill the cloned message with data.
-			serializer.Deserialize(fields, clonedMessage);
+			var clonedMessageAccessor = this.MessageDescriptions.GetAccessor(clonedMessage);
+			clonedMessageAccessor.Deserialize(fields);
 
 			return (T)clonedMessage;
 		}

@@ -122,7 +122,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			setupRequest.ReturnTo = immediateRequest.ReturnTo;
 			setupRequest.Realm = immediateRequest.Realm;
 			setupRequest.AssociationHandle = immediateRequest.AssociationHandle;
-			return channel.PrepareResponse(setupRequest).DirectUriRequest;
+			return channel.PrepareResponse(setupRequest).GetDirectUriRequest(channel);
 		}
 
 		/// <summary>

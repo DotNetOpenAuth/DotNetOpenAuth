@@ -532,13 +532,12 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Copies some extra parameters into a message.
 		/// </summary>
-		/// <param name="message">The message to copy the extra data into.</param>
+		/// <param name="messageDictionary">The message to copy the extra data into.</param>
 		/// <param name="extraParameters">The extra data to copy into the message.  May be null to do nothing.</param>
-		internal static void AddExtraParameters(this IMessage message, IDictionary<string, string> extraParameters) {
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
+		internal static void AddExtraParameters(this MessageDictionary messageDictionary, IDictionary<string, string> extraParameters) {
+			ErrorUtilities.VerifyArgumentNotNull(messageDictionary, "messageAccessor");
 
 			if (extraParameters != null) {
-				MessageDictionary messageDictionary = new MessageDictionary(message);
 				foreach (var pair in extraParameters) {
 					messageDictionary.Add(pair);
 				}

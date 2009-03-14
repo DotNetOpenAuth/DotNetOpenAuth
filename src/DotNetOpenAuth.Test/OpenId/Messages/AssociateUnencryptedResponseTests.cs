@@ -12,11 +12,12 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
-	public class AssociateUnencryptedResponseTests {
+	public class AssociateUnencryptedResponseTests : OpenIdTestBase {
 		private AssociateUnencryptedResponse response;
 
 		[TestInitialize]
-		public void Setup() {
+		public override void SetUp() {
+			base.SetUp();
 			var request = new AssociateUnencryptedRequest(Protocol.V20.Version, new Uri("http://host"));
 			this.response = new AssociateUnencryptedResponse(request.Version, request);
 		}
@@ -29,7 +30,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			this.response.ExpiresIn = 50;
 
 			MessageSerializer serializer = MessageSerializer.Get(this.response.GetType());
-			var fields = serializer.Serialize(this.response);
+			var fields = this.MessageDescriptions.GetAccessor(this.response).Serialize();
 			Assert.AreEqual(Protocol.OpenId2Namespace, fields["ns"]);
 			Assert.AreEqual("HANDLE", fields["assoc_handle"]);
 			Assert.AreEqual("HMAC-SHA1", fields["assoc_type"]);

@@ -140,7 +140,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		protected override void VerifyMessageAfterReceiving(IProtocolMessage message) {
 			var checkAuthRequest = message as CheckAuthenticationRequest;
 			if (checkAuthRequest != null) {
-				IndirectSignedResponse originalResponse = new IndirectSignedResponse(checkAuthRequest);
+				IndirectSignedResponse originalResponse = new IndirectSignedResponse(checkAuthRequest, this);
 				try {
 					base.VerifyMessageAfterReceiving(originalResponse);
 					checkAuthRequest.IsValid = true;
@@ -235,8 +235,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		protected override UserAgentResponse SendDirectMessageResponse(IProtocolMessage response) {
 			ErrorUtilities.VerifyArgumentNotNull(response, "response");
 
-			var serializer = MessageSerializer.Get(response.GetType());
-			var fields = serializer.Serialize(response);
+			var messageAccessor = this.MessageDescriptions.GetAccessor(response);
+			var fields = messageAccessor.Serialize();
 			byte[] keyValueEncoding = KeyValueFormEncoding.GetBytes(fields);
 
 			UserAgentResponse preparedResponse = new UserAgentResponse();

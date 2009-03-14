@@ -71,6 +71,20 @@ namespace DotNetOpenAuth.Messaging {
 ";
 
 		/// <summary>
+		/// The default cache of message descriptions to use unless they are customized.
+		/// </summary>
+		/// <remarks>
+		/// This is a perf optimization, so that we don't reflect over every message type
+		/// every time a channel is constructed.
+		/// </remarks>
+		private static MessageDescriptionCollection DefaultMessageDescriptions = new MessageDescriptionCollection();
+
+		/// <summary>
+		/// A cache of reflected message types that may be sent or received on this channel.
+		/// </summary>
+		private MessageDescriptionCollection messageDescriptions = DefaultMessageDescriptions;
+
+		/// <summary>
 		/// A tool that can figure out what kind of message is being received
 		/// so it can be deserialized.
 		/// </summary>
@@ -118,6 +132,22 @@ namespace DotNetOpenAuth.Messaging {
 		/// to a mock object for testing purposes.
 		/// </remarks>
 		public IDirectWebRequestHandler WebRequestHandler { get; set; }
+
+		/// <summary>
+		/// Gets or sets the message descriptions.
+		/// </summary>
+		internal MessageDescriptionCollection MessageDescriptions {
+			get {
+				Contract.Ensures(Contract.Result<MessageDescriptionCollection>() != null);
+				return this.messageDescriptions;
+			}
+
+			set {
+				Contract.Requires(value != null);
+				ErrorUtilities.VerifyArgumentNotNull(value, "value");
+				this.messageDescriptions = value;
+			}
+		}
 
 		/// <summary>
 		/// Gets the binding elements used by this channel, in no particular guaranteed order.
@@ -479,8 +509,8 @@ namespace DotNetOpenAuth.Messaging {
 				this.OnReceivingDirectResponse(response, responseMessage);
 			}
 
-			var responseSerializer = MessageSerializer.Get(responseMessage.GetType());
-			responseSerializer.Deserialize(responseFields, responseMessage);
+			var messageAccessor = this.MessageDescriptions.GetAccessor(responseMessage);
+			messageAccessor.Deserialize(responseFields);
 
 			return responseMessage;
 		}
@@ -536,8 +566,8 @@ namespace DotNetOpenAuth.Messaging {
 			ErrorUtilities.VerifyProtocol(recipient == null || (directedMessage != null && (recipient.AllowedMethods & directedMessage.HttpMethods) != 0), MessagingStrings.UnsupportedHttpVerbForMessageType, message.GetType().Name, recipient.AllowedMethods);
 
 			// We have a message!  Assemble it.
-			var serializer = MessageSerializer.Get(message.GetType());
-			serializer.Deserialize(fields, message);
+			var messageAccessor = this.MessageDescriptions.GetAccessor(message);
+			messageAccessor.Deserialize(fields);
 
 			return message;
 		}
@@ -551,8 +581,8 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires(message != null && message.Recipient != null);
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
-			var serializer = MessageSerializer.Get(message.GetType());
-			var fields = serializer.Serialize(message);
+			var messageAccessor = this.MessageDescriptions.GetAccessor(message);
+			var fields = messageAccessor.Serialize();
 
 			// First try creating a 301 redirect, and fallback to a form POST
 			// if the message is too big.
@@ -709,16 +739,17 @@ namespace DotNetOpenAuth.Messaging {
 				throw new UnprotectedMessageException(message, appliedProtection);
 			}
 
-			EnsureValidMessageParts(message);
+			this.EnsureValidMessageParts(message);
 			message.EnsureValidMessage();
 
 			if (Logger.IsDebugEnabled) {
+				var messageAccessor = this.MessageDescriptions.GetAccessor(message);
 				Logger.DebugFormat(
 					"Sending {0} ({1}) message: {2}{3}",
 					message.GetType().Name,
 					message.Version,
 					Environment.NewLine,
-					new MessageDictionary(message).ToStringDeferred());
+					messageAccessor.ToStringDeferred());
 			}
 		}
 
@@ -735,8 +766,8 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires(requestMessage != null);
 			ErrorUtilities.VerifyArgumentNotNull(requestMessage, "requestMessage");
 
-			var serializer = MessageSerializer.Get(requestMessage.GetType());
-			var fields = serializer.Serialize(requestMessage);
+			var messageAccessor = this.MessageDescriptions.GetAccessor(requestMessage);
+			var fields = messageAccessor.Serialize();
 
 			UriBuilder builder = new UriBuilder(requestMessage.Recipient);
 			MessagingUtilities.AppendQueryArgs(builder, fields);
@@ -760,8 +791,8 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Ensures(Contract.Result<HttpWebRequest>() != null);
 			ErrorUtilities.VerifyArgumentNotNull(requestMessage, "requestMessage");
 
-			var serializer = MessageSerializer.Get(requestMessage.GetType());
-			var fields = serializer.Serialize(requestMessage);
+			var messageAccessor = this.MessageDescriptions.GetAccessor(requestMessage);
+			var fields = messageAccessor.Serialize();
 
 			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(requestMessage.Recipient);
 			httpRequest.CachePolicy = this.CachePolicy;
@@ -803,12 +834,13 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires(message != null);
 
 			if (Logger.IsDebugEnabled) {
+				var messageAccessor = this.MessageDescriptions.GetAccessor(message);
 				Logger.DebugFormat(
 					"Preparing to receive {0} ({1}) message:{2}{3}",
 					message.GetType().Name,
 					message.Version,
 					Environment.NewLine,
-					new MessageDictionary(message).ToStringDeferred());
+					messageAccessor.ToStringDeferred());
 			}
 
 			MessageProtections appliedProtection = MessageProtections.None;
@@ -877,22 +909,6 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Verifies that all required message parts are initialized to values
-		/// prior to sending the message to a remote party.
-		/// </summary>
-		/// <param name="message">The message to verify.</param>
-		/// <exception cref="ProtocolException">
-		/// Thrown when any required message part does not have a value.
-		/// </exception>
-		private static void EnsureValidMessageParts(IProtocolMessage message) {
-			Contract.Requires(message != null);
-
-			MessageDictionary dictionary = new MessageDictionary(message);
-			MessageDescription description = MessageDescription.Get(message.GetType(), message.Version);
-			description.EnsureMessagePartsPassBasicValidation(dictionary);
-		}
-
-		/// <summary>
 		/// Ensures a consistent and secure set of binding elements and 
 		/// sorts them as necessary for a valid sequence of operations.
 		/// </summary>
@@ -952,6 +968,21 @@ namespace DotNetOpenAuth.Messaging {
 
 			// Now put the protection ones in the right order.
 			return -((int)protection1).CompareTo((int)protection2); // descending flag ordinal order
+		}
+
+		/// <summary>
+		/// Verifies that all required message parts are initialized to values
+		/// prior to sending the message to a remote party.
+		/// </summary>
+		/// <param name="message">The message to verify.</param>
+		/// <exception cref="ProtocolException">
+		/// Thrown when any required message part does not have a value.
+		/// </exception>
+		private void EnsureValidMessageParts(IProtocolMessage message) {
+			Contract.Requires(message != null);
+			MessageDictionary dictionary = this.MessageDescriptions.GetAccessor(message);
+			MessageDescription description = this.MessageDescriptions.Get(message);
+			description.EnsureMessagePartsPassBasicValidation(dictionary);
 		}
 
 		/// <summary>
