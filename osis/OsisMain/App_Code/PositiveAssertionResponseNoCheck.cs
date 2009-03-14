@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using DotNetOpenAuth.Messaging;
+using DotNetOpenAuth.OpenId;
 using DotNetOpenAuth.OpenId.Messages;
 
 /// <summary>
@@ -9,6 +11,12 @@ using DotNetOpenAuth.OpenId.Messages;
 /// </summary>
 public class PositiveAssertionResponseNoCheck : PositiveAssertionResponse {
 	public PositiveAssertionResponseNoCheck(CheckIdRequest request) : base(request) {
+	}
+
+	[MessagePart("openid.ns", AllowEmpty = false, MinVersion = "2.0")]
+	public new string OpenIdNamespace {
+		get { return base.OpenIdNamespace; }
+		set { base.OpenIdNamespace = value; }
 	}
 
 	public override void EnsureValidMessage() {

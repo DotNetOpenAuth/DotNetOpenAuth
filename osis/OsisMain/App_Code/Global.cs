@@ -14,9 +14,6 @@ public class Global : HttpApplication {
 	public static string ToString(NameValueCollection collection) {
 		using (StringWriter sw = new StringWriter()) {
 			foreach (string key in collection.Keys) {
-				if (key.StartsWith("__")) {
-					continue; // skip
-				}
 				sw.WriteLine("{0} = '{1}'", key, collection[key]);
 			}
 			return sw.ToString();

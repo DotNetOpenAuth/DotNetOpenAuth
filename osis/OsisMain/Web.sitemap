@@ -11,5 +11,6 @@
 		<siteMapNode url="~/RP/HMACSHA256.aspx" title="RP supports HMAC-SHA256 associations" />
 		<siteMapNode url="~/RP/UnsolicitedAssertions.aspx" title="RP accepts unsolicited assertions" />
 		<siteMapNode url="~/RP/VerifyReturnTo.aspx" title="RP verifies return_to URL" />
+		<siteMapNode url="~/RP/VerifyAssertionDiscovery.aspx" title="RP verifies assertions against discovery results" />
 	</siteMapNode>
 </siteMap>

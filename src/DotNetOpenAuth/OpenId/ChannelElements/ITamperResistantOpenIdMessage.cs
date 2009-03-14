@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// <summary>
 	/// An interface that OAuth messages implement to support signing.
 	/// </summary>
-	internal interface ITamperResistantOpenIdMessage : ITamperResistantProtocolMessage, IReplayProtectedProtocolMessage {
+	public interface ITamperResistantOpenIdMessage : ITamperResistantProtocolMessage, IReplayProtectedProtocolMessage {
 		/// <summary>
 		/// Gets or sets the association handle used to sign the message.
 		/// </summary>

@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 	/// All replay-protected messages must also be set to expire so the nonces do not have
 	/// to be stored indefinitely.
 	/// </remarks>
-	internal interface IReplayProtectedProtocolMessage : IExpiringProtocolMessage, IDirectedProtocolMessage {
+	public interface IReplayProtectedProtocolMessage : IExpiringProtocolMessage, IDirectedProtocolMessage {
 		/// <summary>
 		/// Gets the context within which the nonce must be unique.
 		/// </summary>

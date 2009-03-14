@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 	/// <remarks>
 	/// All expiring messages must also be signed to prevent tampering with the creation date.
 	/// </remarks>
-	internal interface IExpiringProtocolMessage : IProtocolMessage {
+	public interface IExpiringProtocolMessage : IProtocolMessage {
 		/// <summary>
 		/// Gets or sets the UTC date/time the message was originally sent onto the network.
 		/// </summary>

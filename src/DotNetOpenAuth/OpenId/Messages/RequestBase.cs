@@ -24,11 +24,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <remarks>
 		/// This particular value MUST be present for the request to be a valid OpenID Authentication 2.0 request. Future versions of the specification may define different values in order to allow message recipients to properly interpret the request. 
 		/// </remarks>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Read by reflection.")]
 		[MessagePart("openid.ns", IsRequired = true, AllowEmpty = false, MinVersion = "2.0")]
-#pragma warning disable 0414 // read by reflection
-		private readonly string OpenIdNamespace = Protocol.OpenId2Namespace;
-#pragma warning restore 0414
+		public string OpenIdNamespace = Protocol.OpenId2Namespace;
 
 		/// <summary>
 		/// Backing store for the <see cref="Incoming"/> property.
