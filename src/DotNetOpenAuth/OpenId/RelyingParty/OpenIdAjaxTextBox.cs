@@ -256,6 +256,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#endregion
 
 		/// <summary>
+		/// Backing field for the <see cref="RelyingParty"/> property.
+		/// </summary>
+		private OpenIdRelyingParty relyingParty;
+
+		/// <summary>
+		/// Backing field for the <see cref="RelyingPartyNonVerifying"/> property.
+		/// </summary>
+		private OpenIdRelyingParty relyingPartyNonVerifying;
+
+		/// <summary>
 		/// Tracks whether the text box should receive input focus when the page is rendered.
 		/// </summary>
 		private bool focusCalled;
@@ -353,13 +363,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 						HttpRequestInfo clientResponseInfo = new HttpRequestInfo {
 							Url = authUri,
 						};
-						using (var rp = CreateRelyingParty(true)) {
-							this.authenticationResponse = rp.GetResponse(clientResponseInfo);
 
-							// Save out the authentication response to viewstate so we can find it on
-							// a subsequent postback.
-							this.ViewState[AuthenticationResponseViewStateKey] = new AuthenticationResponseSnapshot(this.authenticationResponse);
-						}
+						this.authenticationResponse = this.RelyingParty.GetResponse(clientResponseInfo);
+
+						// Save out the authentication response to viewstate so we can find it on
+						// a subsequent postback.
+						this.ViewState[AuthenticationResponseViewStateKey] = new AuthenticationResponseSnapshot(this.authenticationResponse);
 					} else {
 						this.authenticationResponse = viewstateResponse;
 					}
@@ -795,6 +804,30 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Gets the relying party to use when verification of incoming messages is needed.
+		/// </summary>
+		private OpenIdRelyingParty RelyingParty {
+			get {
+				if (this.relyingParty == null) {
+					this.relyingParty = CreateRelyingParty(true);
+				}
+				return this.relyingParty;
+			}
+		}
+
+		/// <summary>
+		/// Gets the relying party to use when verification of incoming messages is NOT wanted.
+		/// </summary>
+		private OpenIdRelyingParty RelyingPartyNonVerifying {
+			get {
+				if (this.relyingPartyNonVerifying == null) {
+					this.relyingPartyNonVerifying = CreateRelyingParty(false);
+				}
+				return this.relyingPartyNonVerifying;
+			}
+		}
+
+		/// <summary>
 		/// Gets the name of the open id auth data form key.
 		/// </summary>
 		/// <value>A concatenation of <see cref="Name"/> and <c>"_openidAuthData"</c>.</value>
@@ -880,10 +913,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 						discoveryResultBuilder.AppendFormat("endpoint: {0},", MessagingUtilities.GetSafeJavascriptValue(request.Provider.Uri.AbsoluteUri));
 						request.Mode = AuthenticationRequestMode.Immediate;
 						UserAgentResponse response = request.RedirectingResponse;
-						discoveryResultBuilder.AppendFormat("immediate: {0},", MessagingUtilities.GetSafeJavascriptValue(response.DirectUriRequest.AbsoluteUri));
+						discoveryResultBuilder.AppendFormat("immediate: {0},", MessagingUtilities.GetSafeJavascriptValue(response.GetDirectUriRequest(this.RelyingParty.Channel).AbsoluteUri));
 						request.Mode = AuthenticationRequestMode.Setup;
 						response = request.RedirectingResponse;
-						discoveryResultBuilder.AppendFormat("setup: {0}", MessagingUtilities.GetSafeJavascriptValue(response.DirectUriRequest.AbsoluteUri));
+						discoveryResultBuilder.AppendFormat("setup: {0}", MessagingUtilities.GetSafeJavascriptValue(response.GetDirectUriRequest(this.RelyingParty.Channel).AbsoluteUri));
 						discoveryResultBuilder.Append("},");
 					}
 					discoveryResultBuilder.Length -= 1; // trim off last comma
@@ -901,6 +934,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Enables a server control to perform final clean up before it is released from memory.
+		/// </summary>
+		public sealed override void Dispose() {
+			this.Dispose(true);
+			base.Dispose();
+			GC.SuppressFinalize(this);
+		}
 
 		/// <summary>
 		/// Prepares the control for loading.
@@ -1018,6 +1060,24 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>The newly instantiated relying party.</returns>
 		private static OpenIdRelyingParty CreateRelyingParty(bool verifySignature) {
 			return verifySignature ? new OpenIdRelyingParty() : OpenIdRelyingParty.CreateNonVerifying();
+		}
+
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		private void Dispose(bool disposing) {
+			if (disposing) {
+				if (this.relyingParty != null) {
+					this.relyingParty.Dispose();
+					this.relyingParty = null;
+				}
+
+				if (this.relyingPartyNonVerifying != null) {
+					this.relyingPartyNonVerifying.Dispose();
+					this.relyingPartyNonVerifying = null;
+				}
+			}
 		}
 
 		/// <summary>
@@ -1171,54 +1231,52 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 		private List<IAuthenticationRequest> CreateRequests(string userSuppliedIdentifier, bool immediate) {
 			var requests = new List<IAuthenticationRequest>();
 
-			using (OpenIdRelyingParty rp = CreateRelyingParty(true)) {
-				// Approximate the returnTo (either based on the customize property or the page URL)
-				// so we can use it to help with Realm resolution.
-				Uri returnToApproximation = this.ReturnToUrl != null ? new Uri(MessagingUtilities.GetRequestUrlFromContext(), this.ReturnToUrl) : this.Page.Request.Url;
+			// Approximate the returnTo (either based on the customize property or the page URL)
+			// so we can use it to help with Realm resolution.
+			Uri returnToApproximation = this.ReturnToUrl != null ? new Uri(MessagingUtilities.GetRequestUrlFromContext(), this.ReturnToUrl) : this.Page.Request.Url;
 
-				// Resolve the trust root, and swap out the scheme and port if necessary to match the
-				// return_to URL, since this match is required by OpenId, and the consumer app
-				// may be using HTTP at some times and HTTPS at others.
-				UriBuilder realm = OpenIdUtilities.GetResolvedRealm(this.Page, this.RealmUrl);
-				realm.Scheme = returnToApproximation.Scheme;
-				realm.Port = returnToApproximation.Port;
+			// Resolve the trust root, and swap out the scheme and port if necessary to match the
+			// return_to URL, since this match is required by OpenId, and the consumer app
+			// may be using HTTP at some times and HTTPS at others.
+			UriBuilder realm = OpenIdUtilities.GetResolvedRealm(this.Page, this.RealmUrl);
+			realm.Scheme = returnToApproximation.Scheme;
+			realm.Port = returnToApproximation.Port;
 
-				// Initiate openid request
-				// We use TryParse here to avoid throwing an exception which 
-				// might slip through our validator control if it is disabled.
-				Realm typedRealm = new Realm(realm);
-				if (string.IsNullOrEmpty(this.ReturnToUrl)) {
-					requests.AddRange(rp.CreateRequests(userSuppliedIdentifier, typedRealm));
-				} else {
-					// Since the user actually gave us a return_to value,
-					// the "approximation" is exactly what we want.
-					requests.AddRange(rp.CreateRequests(userSuppliedIdentifier, typedRealm, returnToApproximation));
+			// Initiate openid request
+			// We use TryParse here to avoid throwing an exception which 
+			// might slip through our validator control if it is disabled.
+			Realm typedRealm = new Realm(realm);
+			if (string.IsNullOrEmpty(this.ReturnToUrl)) {
+				requests.AddRange(this.RelyingParty.CreateRequests(userSuppliedIdentifier, typedRealm));
+			} else {
+				// Since the user actually gave us a return_to value,
+				// the "approximation" is exactly what we want.
+				requests.AddRange(this.RelyingParty.CreateRequests(userSuppliedIdentifier, typedRealm, returnToApproximation));
+			}
+
+			// Some OPs may be listed multiple times (one with HTTPS and the other with HTTP, for example).
+			// Since we're gathering OPs to try one after the other, just take the first choice of each OP
+			// and don't try it multiple times.
+			requests = RemoveDuplicateEndpoints(requests);
+
+			// Configure each generated request.
+			int reqIndex = 0;
+			foreach (var req in requests) {
+				req.AddCallbackArguments("index", (reqIndex++).ToString(CultureInfo.InvariantCulture));
+
+				// If the ReturnToUrl was explicitly set, we'll need to reset our first parameter
+				if (string.IsNullOrEmpty(HttpUtility.ParseQueryString(req.ReturnToUrl.Query)["dotnetopenid.userSuppliedIdentifier"])) {
+					req.AddCallbackArguments("dotnetopenid.userSuppliedIdentifier", userSuppliedIdentifier);
 				}
 
-				// Some OPs may be listed multiple times (one with HTTPS and the other with HTTP, for example).
-				// Since we're gathering OPs to try one after the other, just take the first choice of each OP
-				// and don't try it multiple times.
-				requests = RemoveDuplicateEndpoints(requests);
-
-				// Configure each generated request.
-				int reqIndex = 0;
-				foreach (var req in requests) {
-					req.AddCallbackArguments("index", (reqIndex++).ToString(CultureInfo.InvariantCulture));
-
-					// If the ReturnToUrl was explicitly set, we'll need to reset our first parameter
-					if (string.IsNullOrEmpty(HttpUtility.ParseQueryString(req.ReturnToUrl.Query)["dotnetopenid.userSuppliedIdentifier"])) {
-						req.AddCallbackArguments("dotnetopenid.userSuppliedIdentifier", userSuppliedIdentifier);
-					}
-
-					// Our javascript needs to let the user know which endpoint responded.  So we force it here.
-					// This gives us the info even for 1.0 OPs and 2.0 setup_required responses.
-					req.AddCallbackArguments("dotnetopenid.op_endpoint", req.Provider.Uri.AbsoluteUri);
-					req.AddCallbackArguments("dotnetopenid.claimed_id", req.ClaimedIdentifier);
-					req.AddCallbackArguments("dotnetopenid.phase", "2");
-					if (immediate) {
-						req.Mode = AuthenticationRequestMode.Immediate;
-						((AuthenticationRequest)req).AssociationPreference = AssociationPreference.IfAlreadyEstablished;
-					}
+				// Our javascript needs to let the user know which endpoint responded.  So we force it here.
+				// This gives us the info even for 1.0 OPs and 2.0 setup_required responses.
+				req.AddCallbackArguments("dotnetopenid.op_endpoint", req.Provider.Uri.AbsoluteUri);
+				req.AddCallbackArguments("dotnetopenid.claimed_id", req.ClaimedIdentifier);
+				req.AddCallbackArguments("dotnetopenid.phase", "2");
+				if (immediate) {
+					req.Mode = AuthenticationRequestMode.Immediate;
+					((AuthenticationRequest)req).AssociationPreference = AssociationPreference.IfAlreadyEstablished;
 				}
 			}
 
@@ -1232,19 +1290,17 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 			Logger.InfoFormat("AJAX (iframe) callback from OP: {0}", this.Page.Request.Url);
 			List<string> assignments = new List<string>();
 
-			using (OpenIdRelyingParty rp = CreateRelyingParty(false)) {
-				var authResponse = rp.GetResponse();
-				if (authResponse.Status == AuthenticationStatus.Authenticated) {
-					this.OnUnconfirmedPositiveAssertion();
-					foreach (var pair in this.clientScriptExtensions) {
-						IClientScriptExtensionResponse extension = (IClientScriptExtensionResponse)authResponse.GetExtension(pair.Key);
-						var positiveResponse = (PositiveAuthenticationResponse)authResponse;
-						string js = extension.InitializeJavaScriptData(positiveResponse.Response);
-						if (string.IsNullOrEmpty(js)) {
-							js = "null";
-						}
-						assignments.Add(pair.Value + " = " + js);
+			var authResponse = this.RelyingPartyNonVerifying.GetResponse();
+			if (authResponse.Status == AuthenticationStatus.Authenticated) {
+				this.OnUnconfirmedPositiveAssertion();
+				foreach (var pair in this.clientScriptExtensions) {
+					IClientScriptExtensionResponse extension = (IClientScriptExtensionResponse)authResponse.GetExtension(pair.Key);
+					var positiveResponse = (PositiveAuthenticationResponse)authResponse;
+					string js = extension.InitializeJavaScriptData(positiveResponse.Response);
+					if (string.IsNullOrEmpty(js)) {
+						js = "null";
 					}
+					assignments.Add(pair.Value + " = " + js);
 				}
 			}
 

@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Test {
 	using System.IO;
 	using System.Reflection;
+	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuth.Messages;
 	using log4net;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -19,6 +20,8 @@ namespace DotNetOpenAuth.Test {
 		/// The full path to the directory that contains the test ASP.NET site.
 		/// </summary>
 		internal static readonly string TestWebDirectory = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\src\DotNetOpenAuth.TestWeb"));
+
+		private MessageDescriptionCollection messageDescriptions = new MessageDescriptionCollection();
 
 		/// <summary>
 		/// Gets or sets the test context which provides
@@ -33,6 +36,10 @@ namespace DotNetOpenAuth.Test {
 			get { return TestUtilities.TestLogger; }
 		}
 
+		internal MessageDescriptionCollection MessageDescriptions {
+			get { return this.messageDescriptions; }
+		}
+
 		/// <summary>
 		/// The TestInitialize method for the test cases.
 		/// </summary>
@@ -40,6 +47,7 @@ namespace DotNetOpenAuth.Test {
 		public virtual void SetUp() {
 			log4net.Config.XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("DotNetOpenAuth.Test.Logging.config"));
 			MessageBase.LowSecurityMode = true;
+			this.messageDescriptions = new MessageDescriptionCollection();
 		}
 
 		/// <summary>

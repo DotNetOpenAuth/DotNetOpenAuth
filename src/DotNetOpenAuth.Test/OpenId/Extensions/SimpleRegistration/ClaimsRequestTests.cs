@@ -24,7 +24,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		[TestMethod]
 		public void RequiredOptionalLists() {
 			ClaimsRequest req = new ClaimsRequest();
-			MessageDictionary dictionary = new MessageDictionary(req);
+			MessageDictionary dictionary = this.MessageDescriptions.GetAccessor(req);
 			Assert.AreEqual(string.Empty, dictionary["required"]);
 			Assert.AreEqual(string.Empty, dictionary["optional"]);
 

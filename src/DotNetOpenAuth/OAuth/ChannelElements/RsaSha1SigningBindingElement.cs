@@ -64,7 +64,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				throw new InvalidOperationException(OAuthStrings.X509CertificateNotProvidedForSigning);
 			}
 
-			string signatureBaseString = ConstructSignatureBaseString(message);
+			string signatureBaseString = ConstructSignatureBaseString(message, this.Channel.MessageDescriptions.GetAccessor(message));
 			byte[] data = Encoding.ASCII.GetBytes(signatureBaseString);
 			var provider = (RSACryptoServiceProvider)this.SigningCertificate.PublicKey.Key;
 			byte[] binarySignature = provider.SignData(data, "SHA1");
@@ -84,7 +84,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				throw new InvalidOperationException(OAuthStrings.ConsumerCertificateProviderNotAvailable);
 			}
 
-			string signatureBaseString = ConstructSignatureBaseString(message);
+			string signatureBaseString = ConstructSignatureBaseString(message, this.Channel.MessageDescriptions.GetAccessor(message));
 			byte[] data = Encoding.ASCII.GetBytes(signatureBaseString);
 
 			byte[] carriedSignature = Convert.FromBase64String(message.Signature);

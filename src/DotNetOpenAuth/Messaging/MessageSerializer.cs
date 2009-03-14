@@ -64,17 +64,13 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Reads the data from a message instance and returns a series of name=value pairs for the fields that must be included in the message.
 		/// </summary>
-		/// <param name="message">The message to be serialized.</param>
+		/// <param name="messageDictionary">The message to be serialized.</param>
 		/// <returns>The dictionary of values to send for the message.</returns>
 		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Parallel design with Deserialize method.")]
-		internal IDictionary<string, string> Serialize(IMessage message) {
-			Contract.Requires(message != null);
+		internal IDictionary<string, string> Serialize(MessageDictionary messageDictionary) {
+			Contract.Requires(messageDictionary != null);
 			Contract.Ensures(Contract.Result<IDictionary<string, string>>() != null);
-
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
-
-			var messageDescription = MessageDescription.Get(this.messageType, message.Version);
-			var messageDictionary = new MessageDictionary(message);
+			ErrorUtilities.VerifyArgumentNotNull(messageDictionary, "messageDictionary");
 
 			// Rather than hand back the whole message dictionary (which 
 			// includes keys with blank values), create a new dictionary
@@ -83,9 +79,9 @@ namespace DotNetOpenAuth.Messaging {
 			var result = new Dictionary<string, string>();
 			foreach (var pair in messageDictionary) {
 				MessagePart partDescription;
-				if (messageDescription.Mapping.TryGetValue(pair.Key, out partDescription)) {
+				if (messageDictionary.Description.Mapping.TryGetValue(pair.Key, out partDescription)) {
 					Contract.Assume(partDescription != null);
-					if (partDescription.IsRequired || partDescription.IsNondefaultValueSet(message)) {
+					if (partDescription.IsRequired || partDescription.IsNondefaultValueSet(messageDictionary.Message)) {
 						result.Add(pair.Key, pair.Value);
 					}
 				} else {
@@ -98,29 +94,30 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Reads name=value pairs into an OAuth message.
+		/// Reads name=value pairs into a message.
 		/// </summary>
 		/// <param name="fields">The name=value pairs that were read in from the transport.</param>
-		/// <param name="message">The message to deserialize into.</param>
+		/// <param name="messageDictionary">The message to deserialize into.</param>
 		/// <exception cref="ProtocolException">Thrown when protocol rules are broken by the incoming message.</exception>
-		internal void Deserialize(IDictionary<string, string> fields, IMessage message) {
+		internal void Deserialize(IDictionary<string, string> fields, MessageDictionary messageDictionary) {
 			Contract.Requires(fields != null);
-			Contract.Requires(message != null);
+			Contract.Requires(messageDictionary != null);
 			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
+			ErrorUtilities.VerifyArgumentNotNull(messageDictionary, "messageDictionary");
+
+			var messageDescription = messageDictionary.Description;
 
 			// Before we deserialize the message, make sure all the required parts are present.
-			MessageDescription.Get(this.messageType, message.Version).EnsureMessagePartsPassBasicValidation(fields);
+			messageDescription.EnsureMessagePartsPassBasicValidation(fields);
 
 			try {
 				foreach (var pair in fields) {
-					IDictionary<string, string> dictionary = new MessageDictionary(message);
-					dictionary[pair.Key] = pair.Value;
+					messageDictionary[pair.Key] = pair.Value;
 				}
 			} catch (ArgumentException ex) {
 				throw ErrorUtilities.Wrap(ex, MessagingStrings.ErrorDeserializingMessage, this.messageType.Name);
 			}
-			message.EnsureValidMessage();
+			messageDictionary.Message.EnsureValidMessage();
 		}
 
 #if CONTRACTS_FULL

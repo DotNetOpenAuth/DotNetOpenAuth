@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth.Messages {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -233,15 +234,21 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// <summary>
 		/// Returns a human-friendly string describing the message and all serializable properties.
 		/// </summary>
-		/// <returns>The string representation of this object.</returns>
-		public override string ToString() {
+		/// <param name="channel">The channel that will carry this message.</param>
+		/// <returns>
+		/// The string representation of this object.
+		/// </returns>
+		internal virtual string ToString(Channel channel) {
+			Contract.Requires(channel != null);
+			ErrorUtilities.VerifyArgumentNotNull(channel, "channel");
+
 			StringBuilder builder = new StringBuilder();
 			builder.AppendFormat(CultureInfo.InvariantCulture, "{0} message", GetType().Name);
 			if (this.recipient != null) {
 				builder.AppendFormat(CultureInfo.InvariantCulture, " as {0} to {1}", this.recipient.AllowedMethods, this.recipient.Location);
 			}
 			builder.AppendLine();
-			MessageDictionary dictionary = new MessageDictionary(this);
+			MessageDictionary dictionary = channel.MessageDescriptions.GetAccessor(this);
 			foreach (var pair in dictionary) {
 				string value = pair.Value;
 				if (pair.Key == "oauth_signature" && !LowSecurityMode) {

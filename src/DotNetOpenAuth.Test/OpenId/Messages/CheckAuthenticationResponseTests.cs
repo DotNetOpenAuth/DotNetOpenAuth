@@ -26,7 +26,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Protocol protocol = Protocol.Default;
 			var request = new CheckAuthenticationRequest(protocol.Version, OPUri);
 			var response = new CheckAuthenticationResponse(protocol.Version, request);
-			var dictionary = new MessageDictionary(response);
+			var dictionary = this.MessageDescriptions.GetAccessor(response);
 			Assert.AreEqual("false", dictionary["is_valid"]);
 			response.IsValid = true;
 			Assert.AreEqual("true", dictionary["is_valid"]);

@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 
 			// Confirm the RP should invalidate the association handle only if the association
 			// really doesn't exist.  OpenID 2.0 section 11.4.2.2.
-			IndirectSignedResponse signedResponse = new IndirectSignedResponse(request);
+			IndirectSignedResponse signedResponse = new IndirectSignedResponse(request, provider.Channel);
 			string invalidateHandle = ((ITamperResistantOpenIdMessage)signedResponse).InvalidateHandle;
 			if (invalidateHandle != null && provider.AssociationStore.GetAssociation(AssociationRelyingPartyType.Smart, invalidateHandle) == null) {
 				this.InvalidateHandle = invalidateHandle;

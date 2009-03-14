@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Assert.AreEqual(this.protocol.Args.SignatureAlgorithm.HMAC_SHA1, this.request.AssociationType);
 			Assert.AreEqual(this.protocol.Args.SessionType.NoEncryption, this.request.SessionType);
 
-			var dict = new MessageDictionary(this.request);
+			var dict = this.MessageDescriptions.GetAccessor(this.request);
 			Assert.AreEqual(Protocol.OpenId2Namespace, dict[this.protocol.openid.ns]);
 			Assert.AreEqual(this.protocol.Args.Mode.associate, dict[this.protocol.openid.mode]);
 			Assert.AreEqual(this.protocol.Args.SignatureAlgorithm.HMAC_SHA1, dict[this.protocol.openid.assoc_type]);

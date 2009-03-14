@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Net;
 	using System.Text;
@@ -96,29 +97,6 @@ namespace DotNetOpenAuth.Messaging {
 		internal IProtocolMessage OriginalMessage { get; set; }
 
 		/// <summary>
-		/// Gets the URI that, when requested with an HTTP GET request,
-		/// would transmit the message that normally would be transmitted via a user agent redirect.
-		/// </summary>
-		/// <remarks>
-		/// This is useful for desktop applications that will spawn a user agent to transmit the message
-		/// rather than cause a redirect.
-		/// </remarks>
-		internal Uri DirectUriRequest {
-			get {
-				var message = this.OriginalMessage as IDirectedProtocolMessage;
-				if (message == null) {
-					throw new InvalidOperationException(); // this only makes sense for directed messages (indirect responses)
-				}
-
-				var serializer = MessageSerializer.Get(message.GetType());
-				var fields = serializer.Serialize(message);
-				UriBuilder builder = new UriBuilder(message.Recipient);
-				MessagingUtilities.AppendQueryArgs(builder, fields);
-				return builder.Uri;
-			}
-		}
-
-		/// <summary>
 		/// Creates a text reader for the response stream.
 		/// </summary>
 		/// <returns>The text reader, initialized for the proper encoding.</returns>
@@ -161,6 +139,31 @@ namespace DotNetOpenAuth.Messaging {
 				}
 			}
 			HttpContext.Current.Response.End();
+		}
+
+		/// <summary>
+		/// Gets the URI that, when requested with an HTTP GET request,
+		/// would transmit the message that normally would be transmitted via a user agent redirect.
+		/// </summary>
+		/// <param name="channel">The channel to use for encoding.</param>
+		/// <returns>The URL that would transmit the original message.</returns>
+		/// <remarks>
+		/// This is useful for desktop applications that will spawn a user agent to transmit the message
+		/// rather than cause a redirect.
+		/// </remarks>
+		internal Uri GetDirectUriRequest(Channel channel) {
+			Contract.Requires(channel != null);
+			ErrorUtilities.VerifyArgumentNotNull(channel, "channel");
+
+			var message = this.OriginalMessage as IDirectedProtocolMessage;
+			if (message == null) {
+				throw new InvalidOperationException(); // this only makes sense for directed messages (indirect responses)
+			}
+
+			var fields = channel.MessageDescriptions.GetAccessor(message).Serialize();
+			UriBuilder builder = new UriBuilder(message.Recipient);
+			MessagingUtilities.AppendQueryArgs(builder, fields);
+			return builder.Uri;
 		}
 
 		/// <summary>

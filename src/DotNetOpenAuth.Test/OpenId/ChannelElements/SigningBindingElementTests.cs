@@ -6,13 +6,12 @@
 
 namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 	using System;
-	using System.Collections.Generic;
 	using System.Linq;
-	using System.Text;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
+	using DotNetOpenAuth.Test.Mocks;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
@@ -29,6 +28,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			Association association = HmacShaAssociation.Create("mock", associationSecret, TimeSpan.FromDays(1));
 			store.StoreAssociation(AssociationRelyingPartyType.Smart, association);
 			SigningBindingElement signer = new SigningBindingElement(store, settings);
+			signer.Channel = new TestChannel(this.MessageDescriptions);
 
 			IndirectSignedResponse message = new IndirectSignedResponse(protocol.Version, new Uri("http://rp"));
 			ITamperResistantOpenIdMessage signedMessage = message;
@@ -46,6 +46,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		public void SignedResponsesIncludeExtraDataInSignature() {
 			Protocol protocol = Protocol.Default;
 			SigningBindingElement sbe = new SigningBindingElement(new AssociationMemoryStore<AssociationRelyingPartyType>(), new ProviderSecuritySettings());
+			sbe.Channel = new TestChannel(this.MessageDescriptions);
 			IndirectSignedResponse response = new IndirectSignedResponse(protocol.Version, RPUri);
 			response.ReturnTo = RPUri;
 			response.ProviderEndpoint = OPUri;

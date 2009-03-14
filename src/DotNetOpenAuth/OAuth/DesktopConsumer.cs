@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.OAuth {
 		public Uri RequestUserAuthorization(IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, out string requestToken) {
 			var message = this.PrepareRequestUserAuthorization(null, requestParameters, redirectParameters, out requestToken);
 			UserAgentResponse response = this.Channel.PrepareResponse(message);
-			return response.DirectUriRequest;
+			return response.GetDirectUriRequest(this.Channel);
 		}
 
 		/// <summary>

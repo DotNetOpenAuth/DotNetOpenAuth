@@ -12,11 +12,12 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
-	public class AssociateUnsuccessfulResponseTests {
+	public class AssociateUnsuccessfulResponseTests : OpenIdTestBase {
 		private AssociateUnsuccessfulResponse response;
 
 		[TestInitialize]
-		public void Setup() {
+		public override void SetUp() {
+			base.SetUp();
 			var request = new AssociateUnencryptedRequest(Protocol.V20.Version, new Uri("http://host"));
 			this.response = new AssociateUnsuccessfulResponse(request.Version, request);
 		}
@@ -27,8 +28,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			this.response.AssociationType = "HMAC-SHA1";
 			this.response.SessionType = "DH-SHA1";
 
-			MessageSerializer serializer = MessageSerializer.Get(this.response.GetType());
-			var fields = serializer.Serialize(this.response);
+			var fields = this.MessageDescriptions.GetAccessor(this.response).Serialize();
 			Assert.AreEqual(Protocol.OpenId2Namespace, fields["ns"]);
 			Assert.AreEqual("unsupported-type", fields["error_code"]);
 			Assert.AreEqual("Some Error", fields["error"]);

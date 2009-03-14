@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.Messages {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -37,12 +38,16 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// based on the contents of some signed message whose signature must be verified.
 		/// </summary>
 		/// <param name="message">The message whose signature should be verified.</param>
-		internal CheckAuthenticationRequest(IndirectSignedResponse message)
+		/// <param name="channel">The channel.  This is used only within the constructor and is not stored in a field.</param>
+		internal CheckAuthenticationRequest(IndirectSignedResponse message, Channel channel)
 			: base(message.Version, message.ProviderEndpoint, GetProtocolConstant(message.Version, p => p.Args.Mode.check_authentication), MessageTransport.Direct) {
+			Contract.Requires(channel != null);
+			ErrorUtilities.VerifyArgumentNotNull(channel, "channel");
+
 			// Copy all message parts from the id_res message into this one,
 			// except for the openid.mode parameter.
-			MessageDictionary checkPayload = new MessageDictionary(message);
-			MessageDictionary thisPayload = new MessageDictionary(this);
+			MessageDictionary checkPayload = channel.MessageDescriptions.GetAccessor(message);
+			MessageDictionary thisPayload = channel.MessageDescriptions.GetAccessor(this);
 			foreach (var pair in checkPayload) {
 				if (!string.Equals(pair.Key, this.Protocol.openid.mode)) {
 					thisPayload[pair.Key] = pair.Value;

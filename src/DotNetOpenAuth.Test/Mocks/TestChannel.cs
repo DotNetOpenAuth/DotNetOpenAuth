@@ -9,10 +9,16 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using System.Collections.Generic;
 	using System.Net;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Reflection;
 
 	internal class TestChannel : Channel {
 		internal TestChannel()
 			: this(new TestMessageFactory()) {
+		}
+
+		internal TestChannel(MessageDescriptionCollection messageDescriptions)
+			: this() {
+			this.MessageDescriptions = messageDescriptions;
 		}
 
 		internal TestChannel(IMessageFactory messageTypeProvider, params IChannelBindingElement[] bindingElements)

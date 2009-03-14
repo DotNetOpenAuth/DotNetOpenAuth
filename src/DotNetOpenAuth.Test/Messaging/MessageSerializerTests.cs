@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			var message = GetStandardTestMessage(FieldFill.CompleteBeforeBindings);
 			var expected = GetStandardTestFields(FieldFill.CompleteBeforeBindings);
-			IDictionary<string, string> actual = serializer.Serialize(message);
+			IDictionary<string, string> actual = serializer.Serialize(this.MessageDescriptions.GetAccessor(message));
 			Assert.AreEqual(4, actual.Count);
 
 			// Test case sensitivity of generated dictionary
@@ -66,7 +66,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			fields["age"] = "15";
 			fields["Timestamp"] = "1990-01-01T00:00:00";
 			var actual = new Mocks.TestDirectedMessage();
-			serializer.Deserialize(fields, actual);
+			serializer.Deserialize(fields, this.MessageDescriptions.GetAccessor(actual));
 			Assert.AreEqual(15, actual.Age);
 			Assert.AreEqual("Andrew", actual.Name);
 			Assert.AreEqual(DateTime.Parse("1/1/1990"), actual.Timestamp);
@@ -96,7 +96,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			fields["explicit"] = "explicitValue";
 			fields["private"] = "privateValue";
 			var actual = new Mocks.TestDerivedMessage();
-			serializer.Deserialize(fields, actual);
+			serializer.Deserialize(fields, this.MessageDescriptions.GetAccessor(actual));
 			Assert.AreEqual(15, actual.Age);
 			Assert.AreEqual("Andrew", actual.Name);
 			Assert.AreEqual("first", actual.TheFirstDerivedElement);
@@ -116,7 +116,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			// more parameters than are actually interesting to the protocol message.
 			fields["someExtraField"] = "asdf";
 			var actual = new Mocks.TestDirectedMessage();
-			serializer.Deserialize(fields, actual);
+			serializer.Deserialize(fields, this.MessageDescriptions.GetAccessor(actual));
 			Assert.AreEqual(15, actual.Age);
 			Assert.AreEqual("Andrew", actual.Name);
 			Assert.IsNull(actual.EmptyMember);
@@ -128,7 +128,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			var serializer = MessageSerializer.Get(message.GetType());
 			var fields = GetStandardTestFields(FieldFill.AllRequired);
 			fields["age"] = "-1"; // Set an disallowed value.
-			serializer.Deserialize(fields, message);
+			serializer.Deserialize(fields, this.MessageDescriptions.GetAccessor(message));
 		}
 	}
 }
