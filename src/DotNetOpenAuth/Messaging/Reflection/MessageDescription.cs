@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	/// A mapping between serialized key names and <see cref="MessagePart"/> instances describing
 	/// those key/values pairs.
 	/// </summary>
-	internal class MessageDescription {
+	public class MessageDescription {
 		/// <summary>
 		/// The type of message this instance was generated from.
 		/// </summary>
@@ -61,7 +61,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// Gets the mapping between the serialized key names and their describing
 		/// <see cref="MessagePart"/> instances.
 		/// </summary>
-		internal IDictionary<string, MessagePart> Mapping {
+		public IDictionary<string, MessagePart> Mapping {
 			get { return this.mapping; }
 		}
 

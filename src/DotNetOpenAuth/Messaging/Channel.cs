@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// A list of binding elements in the order they must be applied to outgoing messages.
 		/// </summary>
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private readonly List<IChannelBindingElement> outgoingBindingElements = new List<IChannelBindingElement>();
+		public readonly List<IChannelBindingElement> outgoingBindingElements = new List<IChannelBindingElement>();
 
 		/// <summary>
 		/// A list of binding elements in the order they must be applied to incoming messages.
@@ -136,7 +136,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Gets or sets the message descriptions.
 		/// </summary>
-		internal MessageDescriptionCollection MessageDescriptions {
+		public MessageDescriptionCollection MessageDescriptions {
 			get {
 				Contract.Ensures(Contract.Result<MessageDescriptionCollection>() != null);
 				return this.messageDescriptions;

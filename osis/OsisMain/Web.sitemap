@@ -13,5 +13,6 @@
 		<siteMapNode url="~/RP/VerifyReturnTo.aspx" title="RP verifies return_to URL" />
 		<siteMapNode url="~/RP/VerifyAssertionDiscovery.aspx" title="RP verifies assertions against discovery results" />
 		<siteMapNode url="~/RP/ResponseNonceCheck.aspx" title="RP checks response_nonce for replays" />
+		<siteMapNode url="~/RP/SignatureCheck20.aspx" title="RP validates the 2.0 signature" />
 	</siteMapNode>
 </siteMap>

@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	/// A cache of <see cref="MessageDescription"/> instances.
 	/// </summary>
 	[ContractVerification(true)]
-	internal class MessageDescriptionCollection {
+	public class MessageDescriptionCollection {
 		/// <summary>
 		/// A dictionary of reflected message types and the generated reflection information.
 		/// </summary>
@@ -61,7 +61,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <returns>
 		/// A <see cref="MessageDescription"/> instance.
 		/// </returns>
-		internal MessageDescription Get(IMessage message) {
+		public MessageDescription Get(IMessage message) {
 			Contract.Requires(message != null);
 			Contract.Ensures(Contract.Result<MessageDescription>() != null);
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");

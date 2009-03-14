@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	/// <summary>
 	/// Describes an individual member of a message and assists in its serialization.
 	/// </summary>
-	internal class MessagePart {
+	public class MessagePart {
 		/// <summary>
 		/// A map of converters that help serialize custom objects to string values and back again.
 		/// </summary>
@@ -141,7 +141,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <summary>
 		/// Gets or sets whether this message part must be signed.
 		/// </summary>
-		internal ProtectionLevel RequiredProtection { get; set; }
+		public ProtectionLevel RequiredProtection { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this message part is required for the
