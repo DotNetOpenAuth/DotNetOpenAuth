@@ -43,7 +43,7 @@
 		<li>Record whether the RP rejects the authentication. </li>
 		<li>Restart from step 1, until all tampering techniques have been tested. <b>Do not</b>
 			simply click the Back button to select another tampering technique. You must reinitiate
-			the authentication from the RP to guarantee the RP fails for return_to verification
+			the authentication from the RP to guarantee the RP fails for assertion verification
 			reasons rather than request_nonce invalidation. </li>
 	</ol>
 	<h3>Passing criteria </h3>
