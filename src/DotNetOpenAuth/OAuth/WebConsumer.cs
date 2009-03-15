@@ -75,15 +75,6 @@ namespace DotNetOpenAuth.OAuth {
 		/// </summary>
 		/// <param name="request">The incoming HTTP request.</param>
 		/// <returns>The access token, or null if no incoming authorization message was recognized.</returns>
-		public AuthorizedTokenResponse ProcessUserAuthorization(HttpRequest request) {
-			return this.ProcessUserAuthorization(new HttpRequestInfo(request));
-		}
-
-		/// <summary>
-		/// Processes an incoming authorization-granted message from an SP and obtains an access token.
-		/// </summary>
-		/// <param name="request">The incoming HTTP request.</param>
-		/// <returns>The access token, or null if no incoming authorization message was recognized.</returns>
 		internal AuthorizedTokenResponse ProcessUserAuthorization(HttpRequestInfo request) {
 			UserAuthorizationResponse authorizationMessage;
 			if (this.Channel.TryReadFromRequest<UserAuthorizationResponse>(request, out authorizationMessage)) {
