@@ -160,13 +160,13 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 		[TestMethod]
 		public void SendDirectMessageResponseHonorsHttpStatusCodes() {
 			IProtocolMessage message = MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired);
-			OutgoingWebResponse directResponse = this.accessor.SendDirectMessageResponse(message);
+			OutgoingWebResponse directResponse = this.accessor.PrepareDirectResponse(message);
 			Assert.AreEqual(HttpStatusCode.OK, directResponse.Status);
 
 			var httpMessage = new TestDirectResponseMessageWithHttpStatus();
 			MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired, httpMessage);
 			httpMessage.HttpStatusCode = HttpStatusCode.NotAcceptable;
-			directResponse = this.accessor.SendDirectMessageResponse(httpMessage);
+			directResponse = this.accessor.PrepareDirectResponse(httpMessage);
 			Assert.AreEqual(HttpStatusCode.NotAcceptable, directResponse.Status);
 		}
 

@@ -218,6 +218,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Requires an HttpContext.Current context.
 		/// </remarks>
 		public void Send(IProtocolMessage message) {
+			Contract.Requires(HttpContext.Current != null);
 			Contract.Requires(message != null);
 			this.PrepareResponse(message).Send();
 		}
@@ -230,6 +231,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
 		public OutgoingWebResponse PrepareResponse(IProtocolMessage message) {
 			Contract.Requires(message != null);
+			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
 			this.PrepareMessageForSending(message);
@@ -238,7 +240,7 @@ namespace DotNetOpenAuth.Messaging {
 			switch (message.Transport) {
 				case MessageTransport.Direct:
 					// This is a response to a direct message.
-					return this.SendDirectMessageResponse(message);
+					return this.PrepareDirectResponse(message);
 				case MessageTransport.Indirect:
 					var directedMessage = message as IDirectedProtocolMessage;
 					ErrorUtilities.VerifyArgumentNamed(
@@ -250,7 +252,7 @@ namespace DotNetOpenAuth.Messaging {
 						directedMessage.Recipient != null,
 						"message",
 						MessagingStrings.DirectedMessageMissingRecipient);
-					return this.SendIndirectMessage(directedMessage);
+					return this.PrepareIndirectResponse(directedMessage);
 				default:
 					throw ErrorUtilities.ThrowArgumentNamed(
 						"message",
@@ -577,7 +579,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The message to send.</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
-		protected virtual OutgoingWebResponse SendIndirectMessage(IDirectedProtocolMessage message) {
+		protected virtual OutgoingWebResponse PrepareIndirectResponse(IDirectedProtocolMessage message) {
 			Contract.Requires(message != null && message.Recipient != null);
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
@@ -694,9 +696,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="response">The message to send as a response.</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
 		/// <remarks>
-		/// This method implements spec V1.0 section 5.3.
+		/// This method implements spec OAuth V1.0 section 5.3.
 		/// </remarks>
-		protected abstract OutgoingWebResponse SendDirectMessageResponse(IProtocolMessage response);
+		protected abstract OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response);
 
 		/// <summary>
 		/// Prepares a message for transmit by applying signatures, nonces, etc.

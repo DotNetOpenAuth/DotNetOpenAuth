@@ -232,7 +232,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <remarks>
 		/// This method implements spec V1.0 section 5.3.
 		/// </remarks>
-		protected override OutgoingWebResponse SendDirectMessageResponse(IProtocolMessage response) {
+		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
 			ErrorUtilities.VerifyArgumentNotNull(response, "response");
 
 			var messageAccessor = this.MessageDescriptions.GetAccessor(response);

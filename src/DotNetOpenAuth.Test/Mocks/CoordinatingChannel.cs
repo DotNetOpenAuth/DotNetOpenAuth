@@ -167,15 +167,15 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return responseMessage;
 		}
 
-		protected override OutgoingWebResponse SendDirectMessageResponse(IProtocolMessage response) {
+		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
 			this.ProcessMessageFilter(response, true);
 			return new CoordinatingOutgoingWebResponse(response, this.RemoteChannel);
 		}
 
-		protected override OutgoingWebResponse SendIndirectMessage(IDirectedProtocolMessage message) {
+		protected override OutgoingWebResponse PrepareIndirectResponse(IDirectedProtocolMessage message) {
 			this.ProcessMessageFilter(message, true);
 			// In this mock transport, direct and indirect messages are the same.
-			return this.SendDirectMessageResponse(message);
+			return this.PrepareDirectResponse(message);
 		}
 
 		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestInfo request) {

@@ -25,8 +25,8 @@ namespace DotNetOpenAuth.Test.Mocks {
 			base.CreateFormPostResponse(message, fields);
 		}
 
-		internal new void SendIndirectMessage(IDirectedProtocolMessage message) {
-			base.SendIndirectMessage(message);
+		internal new void PrepareIndirectResponse(IDirectedProtocolMessage message) {
+			base.PrepareIndirectResponse(message);
 		}
 
 		internal new IProtocolMessage Receive(Dictionary<string, string> fields, MessageReceivingEndpoint recipient) {
@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			throw new NotImplementedException();
 		}
 
-		protected override OutgoingWebResponse SendDirectMessageResponse(IProtocolMessage response) {
+		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
 			throw new NotImplementedException();
 		}
 	}

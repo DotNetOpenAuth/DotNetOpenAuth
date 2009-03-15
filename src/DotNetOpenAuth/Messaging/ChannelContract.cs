@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <remarks>
 		/// This method implements spec V1.0 section 5.3.
 		/// </remarks>
-		protected override OutgoingWebResponse SendDirectMessageResponse(IProtocolMessage response) {
+		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
 			Contract.Requires(response != null);
 			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 			throw new NotImplementedException();

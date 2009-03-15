@@ -120,7 +120,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// Requires a current HttpContext.
 		/// </remarks>
 		public virtual void Send() {
-			ErrorUtilities.VerifyOperation(HttpContext.Current != null, MessagingStrings.CurrentHttpContextRequired);
+			Contract.Requires(HttpContext.Current != null);
+			ErrorUtilities.VerifyHttpContext();
 
 			HttpContext.Current.Response.Clear();
 			HttpContext.Current.Response.StatusCode = (int)this.Status;

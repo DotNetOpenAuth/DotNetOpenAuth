@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			throw new NotImplementedException("CreateHttpRequest");
 		}
 
-		protected override OutgoingWebResponse SendDirectMessageResponse(IProtocolMessage response) {
+		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
 			throw new NotImplementedException("SendDirectMessageResponse");
 		}
 	}

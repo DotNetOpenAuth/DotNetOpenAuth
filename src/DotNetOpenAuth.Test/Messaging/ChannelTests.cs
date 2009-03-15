@@ -172,7 +172,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void SendIndirectMessageNull() {
 			TestBadChannel badChannel = new TestBadChannel(false);
-			badChannel.SendIndirectMessage(null);
+			badChannel.PrepareIndirectResponse(null);
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
