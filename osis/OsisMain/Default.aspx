@@ -8,5 +8,6 @@
 	<p>This is the OSIS I5 OpenID interop testing site. </p>
 	<asp:TreeView ID="TreeView1" runat="server" DataSourceID="siteMapDataSource" />
 	<p><asp:HyperLink runat="server" NavigateUrl="~/Xrds.aspx" Text="Test site XRDS document" /> </p>
+	<p><asp:HyperLink runat=server NavigateUrl="http://osis.idcommons.net/wiki/I5_User-Centric_Identity_Interop_through_RSA_2009" Text="I5 wiki" /> </p>
 	<asp:SiteMapDataSource runat="server" ID="siteMapDataSource" ShowStartingNode="false" />
 </asp:Content>
