@@ -12,7 +12,7 @@ using DotNetOpenAuth.Messaging.Reflection;
 using System.Net.Security;
 using DotNetOpenAuth.OpenId;
 
-public partial class RP_SignatureCheck20 : System.Web.UI.Page {
+public partial class RP_SignatureCheck11 : System.Web.UI.Page {
 	/// <summary>
 	/// The various ways in which a signature can be changed that should
 	/// trigger a failed authentication at the RP.
@@ -20,11 +20,7 @@ public partial class RP_SignatureCheck20 : System.Web.UI.Page {
 	private enum SignatureVariance {
 		InvalidSignatureShared = 1,
 		InvalidSignaturePrivate,
-		MissingOPEndpoint,
 		MissingReturnTo,
-		MissingResponseNonce,
-		MissingAssocHandle,
-		MissingClaimedId,
 		MissingIdentity,
 	}
 
@@ -83,20 +79,8 @@ public partial class RP_SignatureCheck20 : System.Web.UI.Page {
 				((ITamperResistantOpenIdMessage)assertion).AssociationHandle = null;
 				signatureTamperer.InvalidateSignature = true;
 				break;
-			case SignatureVariance.MissingOPEndpoint:
-				skipSignOnPart = protocol.openid.op_endpoint;
-				break;
 			case SignatureVariance.MissingReturnTo:
 				skipSignOnPart = protocol.openid.return_to;
-				break;
-			case SignatureVariance.MissingResponseNonce:
-				skipSignOnPart = protocol.openid.response_nonce;
-				break;
-			case SignatureVariance.MissingAssocHandle:
-				skipSignOnPart = protocol.openid.assoc_handle;
-				break;
-			case SignatureVariance.MissingClaimedId:
-				skipSignOnPart = protocol.openid.claimed_id;
 				break;
 			case SignatureVariance.MissingIdentity:
 				skipSignOnPart = protocol.openid.identity;
