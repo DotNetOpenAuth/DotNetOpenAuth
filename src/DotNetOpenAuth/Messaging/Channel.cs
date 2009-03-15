@@ -228,7 +228,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The one-way message to send</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
-		public UserAgentResponse PrepareResponse(IProtocolMessage message) {
+		public OutgoingWebResponse PrepareResponse(IProtocolMessage message) {
 			Contract.Requires(message != null);
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
@@ -472,7 +472,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="webRequest">The web request.</param>
 		/// <returns>The response to the web request.</returns>
 		/// <exception cref="ProtocolException">Thrown on network or protocol errors.</exception>
-		protected virtual DirectWebResponse GetDirectResponse(HttpWebRequest webRequest) {
+		protected virtual IncomingWebResponse GetDirectResponse(HttpWebRequest webRequest) {
 			Contract.Requires(webRequest != null);
 			ErrorUtilities.VerifyArgumentNotNull(webRequest, "webRequest");
 			return this.WebRequestHandler.GetResponse(webRequest);
@@ -494,7 +494,7 @@ namespace DotNetOpenAuth.Messaging {
 			IDictionary<string, string> responseFields;
 			IDirectResponseProtocolMessage responseMessage;
 
-			using (DirectWebResponse response = this.GetDirectResponse(webRequest)) {
+			using (IncomingWebResponse response = this.GetDirectResponse(webRequest)) {
 				if (response.ResponseStream == null) {
 					return null;
 				}
@@ -520,7 +520,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="response">The HTTP direct response.</param>
 		/// <param name="message">The newly instantiated message, prior to deserialization.</param>
-		protected virtual void OnReceivingDirectResponse(DirectWebResponse response, IDirectResponseProtocolMessage message) {
+		protected virtual void OnReceivingDirectResponse(IncomingWebResponse response, IDirectResponseProtocolMessage message) {
 		}
 
 		/// <summary>
@@ -577,7 +577,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The message to send.</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
-		protected virtual UserAgentResponse SendIndirectMessage(IDirectedProtocolMessage message) {
+		protected virtual OutgoingWebResponse SendIndirectMessage(IDirectedProtocolMessage message) {
 			Contract.Requires(message != null && message.Recipient != null);
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
@@ -586,7 +586,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			// First try creating a 301 redirect, and fallback to a form POST
 			// if the message is too big.
-			UserAgentResponse response = this.Create301RedirectResponse(message, fields);
+			OutgoingWebResponse response = this.Create301RedirectResponse(message, fields);
 			if (response.Headers[HttpResponseHeader.Location].Length > IndirectMessageGetToPostThreshold) {
 				response = this.CreateFormPostResponse(message, fields);
 			}
@@ -601,10 +601,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="message">The message to forward.</param>
 		/// <param name="fields">The pre-serialized fields from the message.</param>
 		/// <returns>The encoded HTTP response.</returns>
-		protected virtual UserAgentResponse Create301RedirectResponse(IDirectedProtocolMessage message, IDictionary<string, string> fields) {
+		protected virtual OutgoingWebResponse Create301RedirectResponse(IDirectedProtocolMessage message, IDictionary<string, string> fields) {
 			Contract.Requires(message != null && message.Recipient != null);
 			Contract.Requires(fields != null);
-			Contract.Ensures(Contract.Result<UserAgentResponse>() != null);
+			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 			ErrorUtilities.VerifyArgumentNamed(message.Recipient != null, "message", MessagingStrings.DirectedMessageMissingRecipient);
@@ -615,7 +615,7 @@ namespace DotNetOpenAuth.Messaging {
 			MessagingUtilities.AppendQueryArgs(builder, fields);
 			headers.Add(HttpResponseHeader.Location, builder.Uri.AbsoluteUri);
 			Logger.DebugFormat("Redirecting to {0}", builder.Uri.AbsoluteUri);
-			UserAgentResponse response = new UserAgentResponse {
+			OutgoingWebResponse response = new OutgoingWebResponse {
 				Status = HttpStatusCode.Redirect,
 				Headers = headers,
 				Body = null,
@@ -632,10 +632,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="message">The message to forward.</param>
 		/// <param name="fields">The pre-serialized fields from the message.</param>
 		/// <returns>The encoded HTTP response.</returns>
-		protected virtual UserAgentResponse CreateFormPostResponse(IDirectedProtocolMessage message, IDictionary<string, string> fields) {
+		protected virtual OutgoingWebResponse CreateFormPostResponse(IDirectedProtocolMessage message, IDictionary<string, string> fields) {
 			Contract.Requires(message != null && message.Recipient != null);
 			Contract.Requires(fields != null);
-			Contract.Ensures(Contract.Result<UserAgentResponse>() != null);
+			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 			ErrorUtilities.VerifyArgumentNamed(message.Recipient != null, "message", MessagingStrings.DirectedMessageMissingRecipient);
 			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
@@ -654,7 +654,7 @@ namespace DotNetOpenAuth.Messaging {
 				HttpUtility.HtmlEncode(message.Recipient.AbsoluteUri),
 				hiddenFields);
 			bodyWriter.Flush();
-			UserAgentResponse response = new UserAgentResponse {
+			OutgoingWebResponse response = new OutgoingWebResponse {
 				Status = HttpStatusCode.OK,
 				Headers = headers,
 				Body = bodyWriter.ToString(),
@@ -670,7 +670,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="response">The response that is anticipated to contain an protocol message.</param>
 		/// <returns>The deserialized message parts, if found.  Null otherwise.</returns>
 		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
-		protected abstract IDictionary<string, string> ReadFromResponseCore(DirectWebResponse response);
+		protected abstract IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response);
 
 		/// <summary>
 		/// Prepares an HTTP request that carries a given message.
@@ -696,7 +696,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <remarks>
 		/// This method implements spec V1.0 section 5.3.
 		/// </remarks>
-		protected abstract UserAgentResponse SendDirectMessageResponse(IProtocolMessage response);
+		protected abstract OutgoingWebResponse SendDirectMessageResponse(IProtocolMessage response);
 
 		/// <summary>
 		/// Prepares a message for transmit by applying signatures, nonces, etc.

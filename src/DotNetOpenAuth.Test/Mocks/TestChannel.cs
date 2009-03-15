@@ -25,7 +25,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			: base(messageTypeProvider, bindingElements) {
 		}
 
-		protected override IDictionary<string, string> ReadFromResponseCore(DirectWebResponse response) {
+		protected override IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response) {
 			throw new NotImplementedException("ReadFromResponseInternal");
 		}
 
@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			throw new NotImplementedException("CreateHttpRequest");
 		}
 
-		protected override UserAgentResponse SendDirectMessageResponse(IProtocolMessage response) {
+		protected override OutgoingWebResponse SendDirectMessageResponse(IProtocolMessage response) {
 			throw new NotImplementedException("SendDirectMessageResponse");
 		}
 	}

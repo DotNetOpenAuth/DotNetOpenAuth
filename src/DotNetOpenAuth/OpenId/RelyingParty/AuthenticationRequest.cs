@@ -88,7 +88,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// to redirect it to the OpenID Provider to start the OpenID authentication process.
 		/// </summary>
 		/// <value></value>
-		public UserAgentResponse RedirectingResponse {
+		public OutgoingWebResponse RedirectingResponse {
 			get { return this.RelyingParty.Channel.PrepareResponse(this.CreateRequestMessage()); }
 		}
 

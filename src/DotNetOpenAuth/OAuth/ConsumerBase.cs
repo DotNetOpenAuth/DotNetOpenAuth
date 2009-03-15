@@ -87,7 +87,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
 		/// <returns>The initialized WebRequest object.</returns>
 		/// <exception cref="WebException">Thrown if the request fails for any reason after it is sent to the Service Provider.</exception>
-		public DirectWebResponse PrepareAuthorizedRequestAndSend(MessageReceivingEndpoint endpoint, string accessToken) {
+		public IncomingWebResponse PrepareAuthorizedRequestAndSend(MessageReceivingEndpoint endpoint, string accessToken) {
 			IDirectedProtocolMessage message = this.CreateAuthorizingMessage(endpoint, accessToken);
 			HttpWebRequest wr = this.OAuthChannel.InitializeRequest(message);
 			return this.Channel.WebRequestHandler.GetResponse(wr);

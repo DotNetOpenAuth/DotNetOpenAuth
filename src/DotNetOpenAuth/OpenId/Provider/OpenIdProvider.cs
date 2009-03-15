@@ -224,7 +224,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <exception cref="ThreadAbortException">Thrown by ASP.NET in order to prevent additional data from the page being sent to the client and corrupting the response.</exception>
 		/// <remarks>
 		/// <para>Requires an HttpContext.Current context.  If one is not available, the caller should use
-		/// <see cref="GetResponse"/> instead and manually send the <see cref="UserAgentResponse"/> 
+		/// <see cref="GetResponse"/> instead and manually send the <see cref="OutgoingWebResponse"/> 
 		/// to the client.</para>
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="IRequest.IsResponseReady"/> is <c>false</c>.</exception>
@@ -245,7 +245,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <returns>The response that should be sent to the client.</returns>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="IRequest.IsResponseReady"/> is <c>false</c>.</exception>
 		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code Contract requires that we cast early.")]
-		public UserAgentResponse GetResponse(IRequest request) {
+		public OutgoingWebResponse GetResponse(IRequest request) {
 			Contract.Requires(request != null);
 			Contract.Requires(((Request)request).IsResponseReady);
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
@@ -270,10 +270,10 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// be the same as <paramref name="claimedIdentifier"/>.</param>
 		/// <param name="extensions">The extensions.</param>
 		/// <returns>
-		/// A <see cref="UserAgentResponse"/> object describing the HTTP response to send
+		/// A <see cref="OutgoingWebResponse"/> object describing the HTTP response to send
 		/// the user agent to allow the redirect with assertion to happen.
 		/// </returns>
-		public UserAgentResponse PrepareUnsolicitedAssertion(Uri providerEndpoint, Realm relyingParty, Identifier claimedIdentifier, Identifier localIdentifier, params IExtensionMessage[] extensions) {
+		public OutgoingWebResponse PrepareUnsolicitedAssertion(Uri providerEndpoint, Realm relyingParty, Identifier claimedIdentifier, Identifier localIdentifier, params IExtensionMessage[] extensions) {
 			Contract.Requires(providerEndpoint != null);
 			Contract.Requires(providerEndpoint.IsAbsoluteUri);
 			Contract.Requires(relyingParty != null);

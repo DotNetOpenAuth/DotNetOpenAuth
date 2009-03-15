@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="UserAgentResponse.cs" company="Andrew Arnott">
+// <copyright file="OutgoingWebResponse.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -15,9 +15,9 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Web;
 
 	/// <summary>
-	/// A protocol message (request or response) that passes between Consumer and Service Provider
-	/// via the user agent using a redirect or form POST submission,
-	/// OR a direct message response.
+	/// A protocol message (request or response) that passes from this
+	/// to a remote party via the user agent using a redirect or form 
+	/// POST submission, OR a direct message response.
 	/// </summary>
 	/// <remarks>
 	/// <para>An instance of this type describes the HTTP response that must be sent
@@ -28,22 +28,22 @@ namespace DotNetOpenAuth.Messaging {
 	/// can be canceled by calling <see cref="HttpResponse.End"/> after this message
 	/// is sent on the response stream.</para>
 	/// </remarks>
-	public class UserAgentResponse {
+	public class OutgoingWebResponse {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="UserAgentResponse"/> class.
+		/// Initializes a new instance of the <see cref="OutgoingWebResponse"/> class.
 		/// </summary>
-		internal UserAgentResponse() {
+		internal OutgoingWebResponse() {
 			this.Status = HttpStatusCode.OK;
 			this.Headers = new WebHeaderCollection();
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="UserAgentResponse"/> class
+		/// Initializes a new instance of the <see cref="OutgoingWebResponse"/> class
 		/// based on the contents of an <see cref="HttpWebResponse"/>.
 		/// </summary>
 		/// <param name="response">The <see cref="HttpWebResponse"/> to clone.</param>
 		/// <param name="maximumBytesToRead">The maximum bytes to read from the response stream.</param>
-		protected internal UserAgentResponse(HttpWebResponse response, int maximumBytesToRead) {
+		protected internal OutgoingWebResponse(HttpWebResponse response, int maximumBytesToRead) {
 			ErrorUtilities.VerifyArgumentNotNull(response, "response");
 
 			this.Status = response.StatusCode;

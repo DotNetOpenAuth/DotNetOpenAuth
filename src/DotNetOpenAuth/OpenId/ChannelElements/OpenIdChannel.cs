@@ -186,7 +186,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// The deserialized message parts, if found.  Null otherwise.
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
-		protected override IDictionary<string, string> ReadFromResponseCore(DirectWebResponse response) {
+		protected override IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response) {
 			if (response == null) {
 				throw new ArgumentNullException("response");
 			}
@@ -203,7 +203,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// </summary>
 		/// <param name="response">The HTTP direct response.</param>
 		/// <param name="message">The newly instantiated message, prior to deserialization.</param>
-		protected override void OnReceivingDirectResponse(DirectWebResponse response, IDirectResponseProtocolMessage message) {
+		protected override void OnReceivingDirectResponse(IncomingWebResponse response, IDirectResponseProtocolMessage message) {
 			base.OnReceivingDirectResponse(response, message);
 
 			// Verify that the expected HTTP status code was used for the message,
@@ -232,14 +232,14 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <remarks>
 		/// This method implements spec V1.0 section 5.3.
 		/// </remarks>
-		protected override UserAgentResponse SendDirectMessageResponse(IProtocolMessage response) {
+		protected override OutgoingWebResponse SendDirectMessageResponse(IProtocolMessage response) {
 			ErrorUtilities.VerifyArgumentNotNull(response, "response");
 
 			var messageAccessor = this.MessageDescriptions.GetAccessor(response);
 			var fields = messageAccessor.Serialize();
 			byte[] keyValueEncoding = KeyValueFormEncoding.GetBytes(fields);
 
-			UserAgentResponse preparedResponse = new UserAgentResponse();
+			OutgoingWebResponse preparedResponse = new OutgoingWebResponse();
 			preparedResponse.Headers.Add(HttpResponseHeader.ContentType, KeyValueFormContentType);
 			preparedResponse.OriginalMessage = response;
 			preparedResponse.ResponseStream = new MemoryStream(keyValueEncoding);
@@ -258,8 +258,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="webRequest">The web request.</param>
 		/// <returns>The response to the web request.</returns>
 		/// <exception cref="ProtocolException">Thrown on network or protocol errors.</exception>
-		protected override DirectWebResponse GetDirectResponse(HttpWebRequest webRequest) {
-			DirectWebResponse response = this.WebRequestHandler.GetResponse(webRequest, DirectWebRequestOptions.AcceptAllHttpResponses);
+		protected override IncomingWebResponse GetDirectResponse(HttpWebRequest webRequest) {
+			IncomingWebResponse response = this.WebRequestHandler.GetResponse(webRequest, DirectWebRequestOptions.AcceptAllHttpResponses);
 
 			// Filter the responses to the allowable set of HTTP status codes.
 			if (response.Status != HttpStatusCode.OK && response.Status != HttpStatusCode.BadRequest) {

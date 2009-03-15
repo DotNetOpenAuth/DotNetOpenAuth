@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 	internal class CoordinatingOAuthChannel : OAuthChannel {
 		private EventWaitHandle incomingMessageSignal = new AutoResetEvent(false);
 		private IProtocolMessage incomingMessage;
-		private UserAgentResponse incomingRawResponse;
+		private OutgoingWebResponse incomingRawResponse;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CoordinatingOAuthChannel"/> class for Consumers.
@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// </summary>
 		internal CoordinatingOAuthChannel RemoteChannel { get; set; }
 
-		internal UserAgentResponse RequestProtectedResource(AccessProtectedResourceRequest request) {
+		internal OutgoingWebResponse RequestProtectedResource(AccessProtectedResourceRequest request) {
 			((ITamperResistantOAuthMessage)request).HttpMethod = this.GetHttpMethod(((ITamperResistantOAuthMessage)request).HttpMethods);
 			this.PrepareMessageForSending(request);
 			HttpRequestInfo requestInfo = this.SpoofHttpMethod(request);
@@ -52,7 +52,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return this.AwaitIncomingRawResponse();
 		}
 
-		internal void SendDirectRawResponse(UserAgentResponse response) {
+		internal void SendDirectRawResponse(OutgoingWebResponse response) {
 			this.RemoteChannel.incomingRawResponse = response;
 			this.RemoteChannel.incomingMessageSignal.Set();
 		}
@@ -71,13 +71,13 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return this.AwaitIncomingMessage();
 		}
 
-		protected override UserAgentResponse SendDirectMessageResponse(IProtocolMessage response) {
+		protected override OutgoingWebResponse SendDirectMessageResponse(IProtocolMessage response) {
 			this.RemoteChannel.incomingMessage = CloneSerializedParts(response, null);
 			this.RemoteChannel.incomingMessageSignal.Set();
 			return null;
 		}
 
-		protected override UserAgentResponse SendIndirectMessage(IDirectedProtocolMessage message) {
+		protected override OutgoingWebResponse SendIndirectMessage(IDirectedProtocolMessage message) {
 			// In this mock transport, direct and indirect messages are the same.
 			return this.SendDirectMessageResponse(message);
 		}
@@ -114,9 +114,9 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return response;
 		}
 
-		private UserAgentResponse AwaitIncomingRawResponse() {
+		private OutgoingWebResponse AwaitIncomingRawResponse() {
 			this.incomingMessageSignal.WaitOne();
-			UserAgentResponse response = this.incomingRawResponse;
+			OutgoingWebResponse response = this.incomingRawResponse;
 			this.incomingRawResponse = null;
 			return response;
 		}

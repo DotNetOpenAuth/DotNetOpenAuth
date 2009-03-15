@@ -37,11 +37,11 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return base.ReadFromRequest(request);
 		}
 
-		protected override IDictionary<string, string> ReadFromResponseCore(DirectWebResponse response) {
+		protected override IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response) {
 			throw new NotImplementedException();
 		}
 
-		protected override UserAgentResponse SendDirectMessageResponse(IProtocolMessage response) {
+		protected override OutgoingWebResponse SendDirectMessageResponse(IProtocolMessage response) {
 			throw new NotImplementedException();
 		}
 	}

@@ -120,7 +120,7 @@
     <Compile Include="Mocks\AssociateUnencryptedRequestNoSslCheck.cs" />
     <Compile Include="Mocks\CoordinatingChannel.cs" />
     <Compile Include="Mocks\CoordinatingHttpRequestInfo.cs" />
-    <Compile Include="Mocks\CoordinatingUserAgentResponse.cs" />
+    <Compile Include="Mocks\CoordinatingOutgoingWebResponse.cs" />
     <Compile Include="Mocks\InMemoryTokenManager.cs" />
     <Compile Include="Mocks\MockHttpRequest.cs" />
     <Compile Include="Mocks\MockIdentifier.cs" />

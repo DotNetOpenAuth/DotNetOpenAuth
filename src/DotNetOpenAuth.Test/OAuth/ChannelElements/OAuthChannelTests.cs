@@ -87,7 +87,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 				Location = new Uri("http://hostb/pathB"),
 			};
 
-			UserAgentResponse response = this.channel.PrepareResponse(message);
+			OutgoingWebResponse response = this.channel.PrepareResponse(message);
 			Assert.AreSame(message, response.OriginalMessage);
 			Assert.AreEqual(HttpStatusCode.OK, response.Status);
 			Assert.AreEqual(0, response.Headers.Count);
@@ -160,7 +160,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 		[TestMethod]
 		public void SendDirectMessageResponseHonorsHttpStatusCodes() {
 			IProtocolMessage message = MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired);
-			UserAgentResponse directResponse = this.accessor.SendDirectMessageResponse(message);
+			OutgoingWebResponse directResponse = this.accessor.SendDirectMessageResponse(message);
 			Assert.AreEqual(HttpStatusCode.OK, directResponse.Status);
 
 			var httpMessage = new TestDirectResponseMessageWithHttpStatus();

@@ -29,7 +29,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// The deserialized message parts, if found.  Null otherwise.
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
-		protected override IDictionary<string, string> ReadFromResponseCore(DirectWebResponse response) {
+		protected override IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response) {
 			Contract.Requires(response != null);
 			throw new NotImplementedException();
 		}
@@ -45,9 +45,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// <remarks>
 		/// This method implements spec V1.0 section 5.3.
 		/// </remarks>
-		protected override UserAgentResponse SendDirectMessageResponse(IProtocolMessage response) {
+		protected override OutgoingWebResponse SendDirectMessageResponse(IProtocolMessage response) {
 			Contract.Requires(response != null);
-			Contract.Ensures(Contract.Result<UserAgentResponse>() != null);
+			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 			throw new NotImplementedException();
 		}
 	}

@@ -84,11 +84,11 @@ namespace DotNetOpenAuth.Messaging {
 
 		/// <summary>
 		/// Processes an <see cref="HttpWebRequest"/> and converts the
-		/// <see cref="HttpWebResponse"/> to a <see cref="DirectWebResponse"/> instance.
+		/// <see cref="HttpWebResponse"/> to a <see cref="IncomingWebResponse"/> instance.
 		/// </summary>
 		/// <param name="request">The <see cref="HttpWebRequest"/> to handle.</param>
 		/// <returns>
-		/// An instance of <see cref="DirectWebResponse"/> describing the response.
+		/// An instance of <see cref="IncomingWebResponse"/> describing the response.
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown for any network error.</exception>
 		/// <remarks>
@@ -97,18 +97,18 @@ namespace DotNetOpenAuth.Messaging {
 		/// a single exception type for hosts to catch.  The <see cref="WebException.Response"/>
 		/// value, if set, shoud be Closed before throwing.</para>
 		/// </remarks>
-		public DirectWebResponse GetResponse(HttpWebRequest request) {
+		public IncomingWebResponse GetResponse(HttpWebRequest request) {
 			return this.GetResponse(request, DirectWebRequestOptions.None);
 		}
 
 		/// <summary>
 		/// Processes an <see cref="HttpWebRequest"/> and converts the
-		/// <see cref="HttpWebResponse"/> to a <see cref="DirectWebResponse"/> instance.
+		/// <see cref="HttpWebResponse"/> to a <see cref="IncomingWebResponse"/> instance.
 		/// </summary>
 		/// <param name="request">The <see cref="HttpWebRequest"/> to handle.</param>
 		/// <param name="options">The options to apply to this web request.</param>
 		/// <returns>
-		/// An instance of <see cref="DirectWebResponse"/> describing the response.
+		/// An instance of <see cref="IncomingWebResponse"/> describing the response.
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown for any network error.</exception>
 		/// <remarks>
@@ -117,7 +117,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// a single exception type for hosts to catch.  The <see cref="WebException.Response"/>
 		/// value, if set, shoud be Closed before throwing.</para>
 		/// </remarks>
-		public DirectWebResponse GetResponse(HttpWebRequest request, DirectWebRequestOptions options) {
+		public IncomingWebResponse GetResponse(HttpWebRequest request, DirectWebRequestOptions options) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 			ErrorUtilities.VerifySupported(this.CanSupport(options), MessagingStrings.DirectWebRequestOptionsNotSupported, options, this.GetType().Name);
 

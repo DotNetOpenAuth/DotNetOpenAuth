@@ -912,7 +912,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 						discoveryResultBuilder.Append("{");
 						discoveryResultBuilder.AppendFormat("endpoint: {0},", MessagingUtilities.GetSafeJavascriptValue(request.Provider.Uri.AbsoluteUri));
 						request.Mode = AuthenticationRequestMode.Immediate;
-						UserAgentResponse response = request.RedirectingResponse;
+						OutgoingWebResponse response = request.RedirectingResponse;
 						discoveryResultBuilder.AppendFormat("immediate: {0},", MessagingUtilities.GetSafeJavascriptValue(response.GetDirectUriRequest(this.RelyingParty.Channel).AbsoluteUri));
 						request.Mode = AuthenticationRequestMode.Setup;
 						response = request.RedirectingResponse;

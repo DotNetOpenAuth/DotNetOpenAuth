@@ -126,7 +126,7 @@ namespace DotNetOpenAuth.Yadis {
 		/// <param name="requireSsl">Whether only HTTPS URLs should ever be retrieved.</param>
 		/// <param name="acceptTypes">The value of the Accept HTTP header to include in the request.</param>
 		/// <returns>The HTTP response retrieved from the request.</returns>
-		internal static DirectWebResponse Request(IDirectWebRequestHandler requestHandler, Uri uri, bool requireSsl, params string[] acceptTypes) {
+		internal static IncomingWebResponse Request(IDirectWebRequestHandler requestHandler, Uri uri, bool requireSsl, params string[] acceptTypes) {
 			ErrorUtilities.VerifyArgumentNotNull(requestHandler, "requestHandler");
 			ErrorUtilities.VerifyArgumentNotNull(uri, "uri");
 

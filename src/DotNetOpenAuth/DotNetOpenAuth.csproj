@@ -166,7 +166,7 @@
     <Compile Include="Messaging\IHttpDirectResponse.cs" />
     <Compile Include="Messaging\IExtensionMessage.cs" />
     <Compile Include="Messaging\IMessage.cs" />
-    <Compile Include="Messaging\DirectWebResponse.cs" />
+    <Compile Include="Messaging\IncomingWebResponse.cs" />
     <Compile Include="Messaging\IDirectResponseProtocolMessage.cs" />
     <Compile Include="Messaging\EmptyDictionary.cs" />
     <Compile Include="Messaging\EmptyEnumerator.cs" />
@@ -244,7 +244,7 @@
     <Compile Include="Messaging\Reflection\MessagePart.cs" />
     <Compile Include="Messaging\UnprotectedMessageException.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthChannel.cs" />
-    <Compile Include="Messaging\UserAgentResponse.cs" />
+    <Compile Include="Messaging\OutgoingWebResponse.cs" />
     <Compile Include="Messaging\IProtocolMessage.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Loggers\ILog.cs" />
