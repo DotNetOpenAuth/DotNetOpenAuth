@@ -16,5 +16,6 @@
 		<siteMapNode url="~/RP/SignatureCheck11.aspx" title="RP validates the 1.1 signature" />
 		<siteMapNode url="~/RP/SignatureCheck20.aspx" title="RP validates the 2.0 signature" />
 		<siteMapNode url="~/RP/DiscoveryAcceptHeader.aspx" title="RP sends HTTP Accept header for XRDS discovery" />
+		<siteMapNode url="~/RP/IdentifierSelect.aspx" title="RP supports Identifier Select" />
 	</siteMapNode>
 </siteMap>
