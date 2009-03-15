@@ -24,6 +24,18 @@ namespace DotNetOpenAuth {
 	[Flags]
 	public enum XrdsUrlLocations {
 		/// <summary>
+		/// The XRDS document should not be advertised anywhere.
+		/// </summary>
+		/// <remarks>
+		/// When the XRDS document is not referenced from anywhere,
+		/// the XRDS content is only available when 
+		/// <see cref="XrdsPublisher.XrdsAutoAnswer"/> is <c>true</c> 
+		/// and the discovering client includes an 
+		/// "Accept: application/xrds+xml" HTTP header.
+		/// </remarks>
+		None = 0x0,
+
+		/// <summary>
 		/// Indicates XRDS document referencing from an HTTP protocol header (outside the HTML).
 		/// </summary>
 		HttpHeader = 0x1,
