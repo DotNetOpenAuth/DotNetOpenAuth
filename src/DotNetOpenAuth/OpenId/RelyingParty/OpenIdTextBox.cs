@@ -301,6 +301,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private TextBox wrappedTextBox;
 
 		/// <summary>
+		/// Backing field for the <see cref="RelyingParty"/> property.
+		/// </summary>
+		private OpenIdRelyingParty relyingParty;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdTextBox"/> class.
 		/// </summary>
 		public OpenIdTextBox() {
@@ -830,6 +835,30 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#endregion
 
 		/// <summary>
+		/// Gets or sets the <see cref="OpenIdRelyingParty"/> instance to use.
+		/// </summary>
+		/// <value>The default value is an <see cref="OpenIdRelyingParty"/> instance initialized according to the web.config file.</value>
+		/// <remarks>
+		/// A performance optimization would be to store off the 
+		/// instance as a static member in your web site and set it
+		/// to this property in your <see cref="Page.Load"/> event since
+		/// instantiating these instances can be expensive on heavily trafficked
+		/// web pages.
+		/// </remarks>
+		public OpenIdRelyingParty RelyingParty {
+			get {
+				if (this.relyingParty == null) {
+					this.relyingParty = this.CreateRelyingParty();
+				}
+				return this.relyingParty;
+			}
+
+			set {
+				this.relyingParty = value;
+			}
+		}
+
+		/// <summary>
 		/// Gets the <see cref="TextBox"/> control that this control wraps.
 		/// </summary>
 		protected TextBox WrappedTextBox {
@@ -875,44 +904,42 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			ErrorUtilities.VerifyOperation(!string.IsNullOrEmpty(this.Text), OpenIdStrings.OpenIdTextBoxEmpty);
 
 			try {
-				using (var consumer = this.CreateRelyingParty()) {
-					// Approximate the returnTo (either based on the customize property or the page URL)
-					// so we can use it to help with Realm resolution.
-					Uri returnToApproximation = this.ReturnToUrl != null ? new Uri(MessagingUtilities.GetRequestUrlFromContext(), this.ReturnToUrl) : this.Page.Request.Url;
+				// Approximate the returnTo (either based on the customize property or the page URL)
+				// so we can use it to help with Realm resolution.
+				Uri returnToApproximation = this.ReturnToUrl != null ? new Uri(MessagingUtilities.GetRequestUrlFromContext(), this.ReturnToUrl) : this.Page.Request.Url;
 
-					// Resolve the trust root, and swap out the scheme and port if necessary to match the
-					// return_to URL, since this match is required by OpenId, and the consumer app
-					// may be using HTTP at some times and HTTPS at others.
-					UriBuilder realm = OpenIdUtilities.GetResolvedRealm(this.Page, this.RealmUrl);
-					realm.Scheme = returnToApproximation.Scheme;
-					realm.Port = returnToApproximation.Port;
+				// Resolve the trust root, and swap out the scheme and port if necessary to match the
+				// return_to URL, since this match is required by OpenId, and the consumer app
+				// may be using HTTP at some times and HTTPS at others.
+				UriBuilder realm = OpenIdUtilities.GetResolvedRealm(this.Page, this.RealmUrl);
+				realm.Scheme = returnToApproximation.Scheme;
+				realm.Port = returnToApproximation.Port;
 
-					// Initiate openid request
-					// We use TryParse here to avoid throwing an exception which 
-					// might slip through our validator control if it is disabled.
-					Identifier userSuppliedIdentifier;
-					if (Identifier.TryParse(this.Text, out userSuppliedIdentifier)) {
-						Realm typedRealm = new Realm(realm);
-						if (string.IsNullOrEmpty(this.ReturnToUrl)) {
-							this.Request = consumer.CreateRequest(userSuppliedIdentifier, typedRealm);
-						} else {
-							// Since the user actually gave us a return_to value,
-							// the "approximation" is exactly what we want.
-							this.Request = consumer.CreateRequest(userSuppliedIdentifier, typedRealm, returnToApproximation);
-						}
-						this.Request.Mode = this.ImmediateMode ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;
-						if (this.EnableRequestProfile) {
-							this.AddProfileArgs(this.Request);
-						}
-
-						// Add state that needs to survive across the redirect.
-						if (!this.Stateless) {
-							this.Request.AddCallbackArguments(UsePersistentCookieCallbackKey, this.UsePersistentCookie.ToString(CultureInfo.InvariantCulture));
-						}
+				// Initiate openid request
+				// We use TryParse here to avoid throwing an exception which 
+				// might slip through our validator control if it is disabled.
+				Identifier userSuppliedIdentifier;
+				if (Identifier.TryParse(this.Text, out userSuppliedIdentifier)) {
+					Realm typedRealm = new Realm(realm);
+					if (string.IsNullOrEmpty(this.ReturnToUrl)) {
+						this.Request = this.RelyingParty.CreateRequest(userSuppliedIdentifier, typedRealm);
 					} else {
-						Logger.OpenId.WarnFormat("An invalid identifier was entered ({0}), but not caught by any validation routine.", this.Text);
-						this.Request = null;
+						// Since the user actually gave us a return_to value,
+						// the "approximation" is exactly what we want.
+						this.Request = this.RelyingParty.CreateRequest(userSuppliedIdentifier, typedRealm, returnToApproximation);
 					}
+					this.Request.Mode = this.ImmediateMode ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;
+					if (this.EnableRequestProfile) {
+						this.AddProfileArgs(this.Request);
+					}
+
+					// Add state that needs to survive across the redirect.
+					if (!this.Stateless) {
+						this.Request.AddCallbackArguments(UsePersistentCookieCallbackKey, this.UsePersistentCookie.ToString(CultureInfo.InvariantCulture));
+					}
+				} else {
+					Logger.OpenId.WarnFormat("An invalid identifier was entered ({0}), but not caught by any validation routine.", this.Text);
+					this.Request = null;
 				}
 			} catch (ProtocolException ex) {
 				this.OnFailed(new FailedAuthenticationResponse(ex));
@@ -933,6 +960,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			if (this.Request != null) {
 				this.Request.RedirectToProvider();
 			}
+		}
+
+		/// <summary>
+		/// Enables a server control to perform final clean up before it is released from memory.
+		/// </summary>
+		public override void Dispose() {
+			this.Dispose(true);
+			base.Dispose();
+			GC.SuppressFinalize(this);
 		}
 
 		/// <summary>
@@ -970,31 +1006,29 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				return;
 			}
 
-			using (var rp = this.CreateRelyingParty()) {
-				var response = rp.GetResponse();
-				if (response != null) {
-					string persistentString = response.GetCallbackArgument(UsePersistentCookieCallbackKey);
-					bool persistentBool;
-					if (persistentString != null && bool.TryParse(persistentString, out persistentBool)) {
-						this.UsePersistentCookie = persistentBool;
-					}
+			var response = this.RelyingParty.GetResponse();
+			if (response != null) {
+				string persistentString = response.GetCallbackArgument(UsePersistentCookieCallbackKey);
+				bool persistentBool;
+				if (persistentString != null && bool.TryParse(persistentString, out persistentBool)) {
+					this.UsePersistentCookie = persistentBool;
+				}
 
-					switch (response.Status) {
-						case AuthenticationStatus.Canceled:
-							this.OnCanceled(response);
-							break;
-						case AuthenticationStatus.Authenticated:
-							this.OnLoggedIn(response);
-							break;
-						case AuthenticationStatus.SetupRequired:
-							this.OnSetupRequired(response);
-							break;
-						case AuthenticationStatus.Failed:
-							this.OnFailed(response);
-							break;
-						default:
-							throw new InvalidOperationException("Unexpected response status code.");
-					}
+				switch (response.Status) {
+					case AuthenticationStatus.Canceled:
+						this.OnCanceled(response);
+						break;
+					case AuthenticationStatus.Authenticated:
+						this.OnLoggedIn(response);
+						break;
+					case AuthenticationStatus.SetupRequired:
+						this.OnSetupRequired(response);
+						break;
+					case AuthenticationStatus.Failed:
+						this.OnFailed(response);
+						break;
+					default:
+						throw new InvalidOperationException("Unexpected response status code.");
 				}
 			}
 		}
@@ -1020,6 +1054,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				this.WrappedTextBox.Style[HtmlTextWriterStyle.BorderStyle] = "solid";
 				this.WrappedTextBox.Style[HtmlTextWriterStyle.BorderWidth] = "1px";
 				this.WrappedTextBox.Style[HtmlTextWriterStyle.BorderColor] = "lightgray";
+			}
+		}
+
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		protected virtual void Dispose(bool disposing) {
+			if (disposing) {
+				if (this.relyingParty != null) {
+					this.relyingParty.Dispose();
+					this.relyingParty = null;
+				}
 			}
 		}
 
