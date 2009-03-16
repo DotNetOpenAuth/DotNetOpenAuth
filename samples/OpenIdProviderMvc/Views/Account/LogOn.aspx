@@ -7,7 +7,8 @@
 <asp:Content ID="loginContent" ContentPlaceHolderID="MainContent" runat="server">
     <h2>Log On</h2>
     <p>
-        Please enter your username and password. <%= Html.ActionLink("Register", "Register") %> if you don't have an account.
+        Please enter your username and password. 
+        <%--<%= Html.ActionLink("Register", "Register") %> if you don't have an account.--%>
     </p>
     <%= Html.ValidationSummary("Login was unsuccessful. Please correct the errors and try again.") %>
 
@@ -34,4 +35,14 @@
             </fieldset>
         </div>
     <% } %>
+
+	<p>Credentials to try (each with their own OpenID)</p>
+	<table>
+		<tr><td>Username</td><td>Password</td></tr>
+		<tr><td>bob</td><td>test</td></tr>
+		<tr><td>bob1</td><td>test</td></tr>
+		<tr><td>bob2</td><td>test</td></tr>
+		<tr><td>bob3</td><td>test</td></tr>
+		<tr><td>bob4</td><td>test</td></tr>
+	</table>
 </asp:Content>

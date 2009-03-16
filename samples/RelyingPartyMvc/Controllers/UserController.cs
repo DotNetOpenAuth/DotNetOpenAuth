@@ -32,7 +32,7 @@
 			return View("Login");
 		}
 
-		public ActionResult Authenticate() {
+		public ActionResult Authenticate(string returnUrl) {
 			var openid = new OpenIdRelyingParty();
 			var response = openid.GetResponse();
 			if (response == null) {
@@ -40,7 +40,7 @@
 				Identifier id;
 				if (Identifier.TryParse(Request.Form["openid_identifier"], out id)) {
 					try {
-						openid.CreateRequest(Request.Form["openid_identifier"]).RedirectToProvider();
+						return openid.CreateRequest(Request.Form["openid_identifier"]).RedirectingResponse.AsActionResult();
 					} catch (ProtocolException ex) {
 						ViewData["Message"] = ex.Message;
 						return View("Login");
@@ -54,8 +54,12 @@
 				switch (response.Status) {
 					case AuthenticationStatus.Authenticated:
 						Session["FriendlyIdentifier"] = response.FriendlyIdentifierForDisplay;
-						FormsAuthentication.RedirectFromLoginPage(response.ClaimedIdentifier, false);
-						break;
+						FormsAuthentication.SetAuthCookie(response.ClaimedIdentifier, false);
+						if (!string.IsNullOrEmpty(returnUrl)) {
+							return Redirect(returnUrl);
+						} else {
+							return RedirectToAction("Index", "Home");
+						}
 					case AuthenticationStatus.Canceled:
 						ViewData["Message"] = "Canceled at provider";
 						return View("Login");
