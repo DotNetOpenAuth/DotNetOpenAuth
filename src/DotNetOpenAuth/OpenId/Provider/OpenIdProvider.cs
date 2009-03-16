@@ -224,12 +224,13 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <exception cref="ThreadAbortException">Thrown by ASP.NET in order to prevent additional data from the page being sent to the client and corrupting the response.</exception>
 		/// <remarks>
 		/// <para>Requires an HttpContext.Current context.  If one is not available, the caller should use
-		/// <see cref="GetResponse"/> instead and manually send the <see cref="UserAgentResponse"/> 
+		/// <see cref="PrepareResponse"/> instead and manually send the <see cref="OutgoingWebResponse"/> 
 		/// to the client.</para>
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="IRequest.IsResponseReady"/> is <c>false</c>.</exception>
 		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code Contract requires that we cast early.")]
 		public void SendResponse(IRequest request) {
+			Contract.Requires(HttpContext.Current != null);
 			Contract.Requires(request != null);
 			Contract.Requires(((Request)request).IsResponseReady);
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
@@ -245,7 +246,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <returns>The response that should be sent to the client.</returns>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="IRequest.IsResponseReady"/> is <c>false</c>.</exception>
 		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code Contract requires that we cast early.")]
-		public UserAgentResponse GetResponse(IRequest request) {
+		public OutgoingWebResponse PrepareResponse(IRequest request) {
 			Contract.Requires(request != null);
 			Contract.Requires(((Request)request).IsResponseReady);
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
@@ -255,7 +256,33 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
-		/// Send an identity assertion on behalf of one of this Provider's
+		/// Sends an identity assertion on behalf of one of this Provider's
+		/// members in order to redirect the user agent to a relying party
+		/// web site and log him/her in immediately in one uninterrupted step.
+		/// </summary>
+		/// <param name="providerEndpoint">The absolute URL on the Provider site that receives OpenID messages.</param>
+		/// <param name="relyingParty">The URL of the Relying Party web site.
+		/// This will typically be the home page, but may be a longer URL if
+		/// that Relying Party considers the scope of its realm to be more specific.
+		/// The URL provided here must allow discovery of the Relying Party's
+		/// XRDS document that advertises its OpenID RP endpoint.</param>
+		/// <param name="claimedIdentifier">The Identifier you are asserting your member controls.</param>
+		/// <param name="localIdentifier">The Identifier you know your user by internally.  This will typically
+		/// be the same as <paramref name="claimedIdentifier"/>.</param>
+		/// <param name="extensions">The extensions.</param>
+		public void SendUnsolicitedAssertion(Uri providerEndpoint, Realm relyingParty, Identifier claimedIdentifier, Identifier localIdentifier, params IExtensionMessage[] extensions) {
+			Contract.Requires(HttpContext.Current != null);
+			Contract.Requires(providerEndpoint != null);
+			Contract.Requires(providerEndpoint.IsAbsoluteUri);
+			Contract.Requires(relyingParty != null);
+			Contract.Requires(claimedIdentifier != null);
+			Contract.Requires(localIdentifier != null);
+
+			this.PrepareUnsolicitedAssertion(providerEndpoint, relyingParty, claimedIdentifier, localIdentifier, extensions).Send();
+		}
+
+		/// <summary>
+		/// Prepares an identity assertion on behalf of one of this Provider's
 		/// members in order to redirect the user agent to a relying party
 		/// web site and log him/her in immediately in one uninterrupted step.
 		/// </summary>
@@ -270,10 +297,10 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// be the same as <paramref name="claimedIdentifier"/>.</param>
 		/// <param name="extensions">The extensions.</param>
 		/// <returns>
-		/// A <see cref="UserAgentResponse"/> object describing the HTTP response to send
+		/// A <see cref="OutgoingWebResponse"/> object describing the HTTP response to send
 		/// the user agent to allow the redirect with assertion to happen.
 		/// </returns>
-		public UserAgentResponse PrepareUnsolicitedAssertion(Uri providerEndpoint, Realm relyingParty, Identifier claimedIdentifier, Identifier localIdentifier, params IExtensionMessage[] extensions) {
+		public OutgoingWebResponse PrepareUnsolicitedAssertion(Uri providerEndpoint, Realm relyingParty, Identifier claimedIdentifier, Identifier localIdentifier, params IExtensionMessage[] extensions) {
 			Contract.Requires(providerEndpoint != null);
 			Contract.Requires(providerEndpoint.IsAbsoluteUri);
 			Contract.Requires(relyingParty != null);
@@ -292,7 +319,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			var serviceEndpoint = DotNetOpenAuth.OpenId.RelyingParty.ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, localIdentifier, new ProviderEndpointDescription(providerEndpoint, Protocol.Default.Version), null, null);
 			var discoveredEndpoints = claimedIdentifier.Discover(this.WebRequestHandler);
 			if (!discoveredEndpoints.Contains(serviceEndpoint)) {
-				Logger.DebugFormat(
+				Logger.OpenId.DebugFormat(
 					"Failed to send unsolicited assertion for {0} because its discovered services did not include this endpoint.  This endpoint: {1}{2}  Discovered endpoints: {1}{3}",
 					claimedIdentifier,
 					Environment.NewLine,
@@ -301,7 +328,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				ErrorUtilities.ThrowProtocol(OpenIdStrings.UnsolicitedAssertionForUnrelatedClaimedIdentifier, claimedIdentifier);
 			}
 
-			Logger.InfoFormat("Preparing unsolicited assertion for {0}", claimedIdentifier);
+			Logger.OpenId.InfoFormat("Preparing unsolicited assertion for {0}", claimedIdentifier);
 			var returnToEndpoint = relyingParty.Discover(this.WebRequestHandler, true).FirstOrDefault();
 			ErrorUtilities.VerifyProtocol(returnToEndpoint != null, OpenIdStrings.NoRelyingPartyEndpointDiscovered, relyingParty);
 
@@ -361,7 +388,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			ErrorUtilities.VerifyArgumentNotNull(ex, "ex");
 			ErrorUtilities.VerifyArgumentNotNull(httpRequestInfo, "httpRequestInfo");
 
-			Logger.Error("An exception was generated while processing an incoming OpenID request.", ex);
+			Logger.OpenId.Error("An exception was generated while processing an incoming OpenID request.", ex);
 			IErrorMessage errorMessage;
 
 			// We must create the appropriate error message type (direct vs. indirect)

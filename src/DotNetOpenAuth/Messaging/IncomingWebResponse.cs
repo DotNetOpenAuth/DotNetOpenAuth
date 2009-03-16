@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="DirectWebResponse.cs" company="Andrew Arnott">
+// <copyright file="IncomingWebResponse.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -15,28 +15,28 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Text;
 
 	/// <summary>
-	/// Details on the response from a direct web request to a remote party.
+	/// Details on the incoming response from a direct web request to a remote party.
 	/// </summary>
-	public abstract class DirectWebResponse : IDisposable {
+	public abstract class IncomingWebResponse : IDisposable {
 		/// <summary>
 		/// The encoding to use in reading a response that does not declare its own content encoding.
 		/// </summary>
 		private const string DefaultContentEncoding = "ISO-8859-1";
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DirectWebResponse"/> class.
+		/// Initializes a new instance of the <see cref="IncomingWebResponse"/> class.
 		/// </summary>
-		protected internal DirectWebResponse() {
+		protected internal IncomingWebResponse() {
 			this.Status = HttpStatusCode.OK;
 			this.Headers = new WebHeaderCollection();
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DirectWebResponse"/> class.
+		/// Initializes a new instance of the <see cref="IncomingWebResponse"/> class.
 		/// </summary>
 		/// <param name="requestUri">The original request URI.</param>
 		/// <param name="response">The response to initialize from.  The network stream is used by this class directly.</param>
-		protected DirectWebResponse(Uri requestUri, HttpWebResponse response) {
+		protected IncomingWebResponse(Uri requestUri, HttpWebResponse response) {
 			ErrorUtilities.VerifyArgumentNotNull(requestUri, "requestUri");
 			ErrorUtilities.VerifyArgumentNotNull(response, "response");
 
@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DirectWebResponse"/> class.
+		/// Initializes a new instance of the <see cref="IncomingWebResponse"/> class.
 		/// </summary>
 		/// <param name="requestUri">The request URI.</param>
 		/// <param name="responseUri">The final URI to respond to the request.</param>
@@ -59,7 +59,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="statusCode">The status code.</param>
 		/// <param name="contentType">Type of the content.</param>
 		/// <param name="contentEncoding">The content encoding.</param>
-		protected DirectWebResponse(Uri requestUri, Uri responseUri, WebHeaderCollection headers, HttpStatusCode statusCode, string contentType, string contentEncoding) {
+		protected IncomingWebResponse(Uri requestUri, Uri responseUri, WebHeaderCollection headers, HttpStatusCode statusCode, string contentType, string contentEncoding) {
 			ErrorUtilities.VerifyArgumentNotNull(requestUri, "requestUri");
 			this.RequestUri = requestUri;
 			this.Status = statusCode;

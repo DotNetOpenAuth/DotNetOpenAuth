@@ -212,7 +212,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			allAliases.AddRange(requiredAliases);
 			allAliases.AddRange(optionalAliases);
 			if (allAliases.Count == 0) {
-				Logger.Error("Attribute Exchange extension did not provide any aliases in the if_available or required lists.");
+				Logger.OpenId.Error("Attribute Exchange extension did not provide any aliases in the if_available or required lists.");
 				return;
 			}
 
@@ -234,7 +234,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 							if (int.TryParse(countString, out count) && count > 0) {
 								att.Count = count;
 							} else {
-								Logger.Error("count." + alias + " could not be parsed into a positive integer.");
+								Logger.OpenId.Error("count." + alias + " could not be parsed into a positive integer.");
 							}
 						}
 					} else {
@@ -242,7 +242,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 					}
 					this.AddAttribute(att);
 				} else {
-					Logger.Error("Type URI definition of alias " + alias + " is missing.");
+					Logger.OpenId.Error("Type URI definition of alias " + alias + " is missing.");
 				}
 			}
 		}
@@ -266,19 +266,19 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 
 			if (this.UpdateUrl != null && !this.UpdateUrl.IsAbsoluteUri) {
 				this.UpdateUrl = null;
-				Logger.ErrorFormat("The AX fetch request update_url parameter was not absolute ('{0}').  Ignoring value.", this.UpdateUrl);
+				Logger.OpenId.ErrorFormat("The AX fetch request update_url parameter was not absolute ('{0}').  Ignoring value.", this.UpdateUrl);
 			}
 
 			if (this.OptionalAliases != null) {
 				if (this.OptionalAliases.IndexOfAny(IllegalAliasListCharacters) >= 0) {
-					Logger.ErrorFormat("Illegal characters found in Attribute Exchange if_available alias list.  Ignoring value.");
+					Logger.OpenId.ErrorFormat("Illegal characters found in Attribute Exchange if_available alias list.  Ignoring value.");
 					this.OptionalAliases = null;
 				}
 			}
 
 			if (this.RequiredAliases != null) {
 				if (this.RequiredAliases.IndexOfAny(IllegalAliasListCharacters) >= 0) {
-					Logger.ErrorFormat("Illegal characters found in Attribute Exchange required alias list.  Ignoring value.");
+					Logger.OpenId.ErrorFormat("Illegal characters found in Attribute Exchange required alias list.  Ignoring value.");
 					this.RequiredAliases = null;
 				}
 			}

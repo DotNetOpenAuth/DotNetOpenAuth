@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.Messaging {
 	/// A live network HTTP response
 	/// </summary>
 	[DebuggerDisplay("{Status} {ContentType.MediaType}")]
-	internal class NetworkDirectWebResponse : DirectWebResponse, IDisposable {
+	internal class NetworkDirectWebResponse : IncomingWebResponse, IDisposable {
 		/// <summary>
 		/// The network response object, used to initialize this instance, that still needs 
 		/// to be closed if applicable.

@@ -61,7 +61,7 @@ namespace DotNetOpenAuth.Test.Hosting {
 					HttpRuntime.ProcessRequest(new TestingWorkerRequest(context, tw));
 				}
 			} catch (Exception ex) {
-				Logger.Error("Exception in AspNetHost", ex);
+				Logger.Http.Error("Exception in AspNetHost", ex);
 				throw;
 			}
 		}

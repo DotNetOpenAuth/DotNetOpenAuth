@@ -69,10 +69,10 @@ namespace DotNetOpenAuth.Messaging {
 
 		/// <summary>
 		/// Processes an <see cref="HttpWebRequest"/> and converts the 
-		/// <see cref="HttpWebResponse"/> to a <see cref="DirectWebResponse"/> instance.
+		/// <see cref="HttpWebResponse"/> to a <see cref="IncomingWebResponse"/> instance.
 		/// </summary>
 		/// <param name="request">The <see cref="HttpWebRequest"/> to handle.</param>
-		/// <returns>An instance of <see cref="DirectWebResponse"/> describing the response.</returns>
+		/// <returns>An instance of <see cref="IncomingWebResponse"/> describing the response.</returns>
 		/// <exception cref="ProtocolException">Thrown for any network error.</exception>
 		/// <remarks>
 		/// 	<para>Implementations should catch <see cref="WebException"/> and wrap it in a
@@ -80,15 +80,15 @@ namespace DotNetOpenAuth.Messaging {
 		/// a single exception type for hosts to catch.  The <see cref="WebException.Response"/>
 		/// value, if set, shoud be Closed before throwing.</para>
 		/// </remarks>
-		DirectWebResponse GetResponse(HttpWebRequest request);
+		IncomingWebResponse GetResponse(HttpWebRequest request);
 
 		/// <summary>
 		/// Processes an <see cref="HttpWebRequest"/> and converts the 
-		/// <see cref="HttpWebResponse"/> to a <see cref="DirectWebResponse"/> instance.
+		/// <see cref="HttpWebResponse"/> to a <see cref="IncomingWebResponse"/> instance.
 		/// </summary>
 		/// <param name="request">The <see cref="HttpWebRequest"/> to handle.</param>
 		/// <param name="options">The options to apply to this web request.</param>
-		/// <returns>An instance of <see cref="DirectWebResponse"/> describing the response.</returns>
+		/// <returns>An instance of <see cref="IncomingWebResponse"/> describing the response.</returns>
 		/// <exception cref="ProtocolException">Thrown for any network error.</exception>
 		/// <remarks>
 		/// 	<para>Implementations should catch <see cref="WebException"/> and wrap it in a
@@ -96,6 +96,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// a single exception type for hosts to catch.  The <see cref="WebException.Response"/>
 		/// value, if set, shoud be Closed before throwing.</para>
 		/// </remarks>
-		DirectWebResponse GetResponse(HttpWebRequest request, DirectWebRequestOptions options);
+		IncomingWebResponse GetResponse(HttpWebRequest request, DirectWebRequestOptions options);
 	}
 }

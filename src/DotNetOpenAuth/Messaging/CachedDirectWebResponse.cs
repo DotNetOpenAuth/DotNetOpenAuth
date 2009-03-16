@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.Messaging {
 	/// Cached details on the response from a direct web request to a remote party.
 	/// </summary>
 	[DebuggerDisplay("{Status} {ContentType.MediaType}, length: {ResponseStream.Length}")]
-	internal class CachedDirectWebResponse : DirectWebResponse {
+	internal class CachedDirectWebResponse : IncomingWebResponse {
 		/// <summary>
 		/// A seekable, repeatable response stream.
 		/// </summary>

@@ -18,6 +18,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Security.Cryptography;
 	using System.Text;
 	using System.Web;
+	using System.Web.Mvc;
 	using DotNetOpenAuth.Messaging.Reflection;
 
 	/// <summary>
@@ -52,6 +53,17 @@ namespace DotNetOpenAuth.Messaging {
 			{ ">", @"\x3e" },
 			{ "=", @"\x3d" },
 		};
+
+		/// <summary>
+		/// Transforms an OutgoingWebResponse to an MVC-friendly ActionResult.
+		/// </summary>
+		/// <param name="response">The response to send to the uesr agent.</param>
+		/// <returns>The <see cref="ActionResult"/> instance to be returned by the Controller's action method.</returns>
+		public static ActionResult AsActionResult(this OutgoingWebResponse response) {
+			Contract.Requires(response != null);
+			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			return new OutgoingWebResponseActionResult(response);
+		}
 
 		/// <summary>
 		/// Gets the original request URL, as seen from the browser before any URL rewrites on the server if any.
@@ -138,7 +150,7 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Assemblies a message comprised of the message on a given exception and all inner exceptions.
+		/// Assembles a message comprised of the message on a given exception and all inner exceptions.
 		/// </summary>
 		/// <param name="exception">The exception.</param>
 		/// <returns>The assembled message.</returns>
@@ -147,7 +159,7 @@ namespace DotNetOpenAuth.Messaging {
 			// from a catch block, we don't really want to throw a new exception and
 			// hide the details of this one.  
 			if (exception == null) {
-				Logger.Error("MessagingUtilities.GetAllMessages called with null input.");
+				Logger.Messaging.Error("MessagingUtilities.GetAllMessages called with null input.");
 			}
 
 			StringBuilder message = new StringBuilder();
@@ -582,7 +594,7 @@ namespace DotNetOpenAuth.Messaging {
 					if (throwOnNullKey) {
 						throw new ArgumentException(MessagingStrings.UnexpectedNullKey);
 					} else {
-						Logger.WarnFormat("Null key with value {0} encountered while translating NameValueCollection to Dictionary.", nvc[key]);
+						Logger.OpenId.WarnFormat("Null key with value {0} encountered while translating NameValueCollection to Dictionary.", nvc[key]);
 					}
 				} else {
 					dictionary.Add(key, nvc[key]);

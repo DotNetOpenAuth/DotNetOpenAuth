@@ -100,7 +100,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
 
-			Logger.Error("Service Providers are not expected to ever receive responses.");
+			Logger.OAuth.Error("Service Providers are not expected to ever receive responses.");
 			return null;
 		}
 

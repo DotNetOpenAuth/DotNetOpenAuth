@@ -223,7 +223,7 @@ namespace DotNetOpenAuth.Messaging {
 
 		/// <summary>
 		/// Processes an <see cref="HttpWebRequest"/> and converts the
-		/// <see cref="HttpWebResponse"/> to a <see cref="DirectWebResponse"/> instance.
+		/// <see cref="HttpWebResponse"/> to a <see cref="IncomingWebResponse"/> instance.
 		/// </summary>
 		/// <param name="request">The <see cref="HttpWebRequest"/> to handle.</param>
 		/// <param name="options">The options to apply to this web request.</param>
@@ -238,7 +238,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// value, if set, shoud be Closed before throwing.</para>
 		/// </remarks>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Uri(Uri, string) accepts second arguments that Uri(Uri, new Uri(string)) does not that we must support.")]
-		public DirectWebResponse GetResponse(HttpWebRequest request, DirectWebRequestOptions options) {
+		public IncomingWebResponse GetResponse(HttpWebRequest request, DirectWebRequestOptions options) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			// This request MAY have already been prepared by GetRequestStream, but
@@ -284,11 +284,11 @@ namespace DotNetOpenAuth.Messaging {
 
 		/// <summary>
 		/// Processes an <see cref="HttpWebRequest"/> and converts the
-		/// <see cref="HttpWebResponse"/> to a <see cref="DirectWebResponse"/> instance.
+		/// <see cref="HttpWebResponse"/> to a <see cref="IncomingWebResponse"/> instance.
 		/// </summary>
 		/// <param name="request">The <see cref="HttpWebRequest"/> to handle.</param>
 		/// <returns>
-		/// An instance of <see cref="DirectWebResponse"/> describing the response.
+		/// An instance of <see cref="IncomingWebResponse"/> describing the response.
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown for any network error.</exception>
 		/// <remarks>
@@ -297,7 +297,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// a single exception type for hosts to catch.  The <see cref="WebException.Response"/>
 		/// value, if set, shoud be Closed before throwing.</para>
 		/// </remarks>
-		DirectWebResponse IDirectWebRequestHandler.GetResponse(HttpWebRequest request) {
+		IncomingWebResponse IDirectWebRequestHandler.GetResponse(HttpWebRequest request) {
 			return this.GetResponse(request, DirectWebRequestOptions.None);
 		}
 
@@ -394,7 +394,7 @@ namespace DotNetOpenAuth.Messaging {
 		private bool IsUriAllowable(Uri uri) {
 			ErrorUtilities.VerifyArgumentNotNull(uri, "uri");
 			if (!this.allowableSchemes.Contains(uri.Scheme)) {
-				Logger.WarnFormat("Rejecting URL {0} because it uses a disallowed scheme.", uri);
+				Logger.Http.WarnFormat("Rejecting URL {0} because it uses a disallowed scheme.", uri);
 				return false;
 			}
 
@@ -403,7 +403,7 @@ namespace DotNetOpenAuth.Messaging {
 				if (IsHostWhitelisted(uri.DnsSafeHost)) {
 					return true;
 				}
-				Logger.WarnFormat("Rejecting URL {0} because {1}.", uri, reason);
+				Logger.Http.WarnFormat("Rejecting URL {0} because {1}.", uri, reason);
 				return false;
 			};
 
@@ -440,7 +440,7 @@ namespace DotNetOpenAuth.Messaging {
 				}
 			}
 			if (this.IsHostBlacklisted(uri.DnsSafeHost)) {
-				Logger.WarnFormat("Rejected URL {0} because it is blacklisted.", uri);
+				Logger.Http.WarnFormat("Rejected URL {0} because it is blacklisted.", uri);
 				return false;
 			}
 			return true;

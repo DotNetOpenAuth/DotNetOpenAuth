@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="CoordinatingUserAgentResponse.cs" company="Andrew Arnott">
+// <copyright file="CoordinatingOutgoingWebResponse.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -11,15 +11,15 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 
-	internal class CoordinatingUserAgentResponse : UserAgentResponse {
+	internal class CoordinatingOutgoingWebResponse : OutgoingWebResponse {
 		private CoordinatingChannel receivingChannel;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CoordinatingUserAgentResponse"/> class.
+		/// Initializes a new instance of the <see cref="CoordinatingOutgoingWebResponse"/> class.
 		/// </summary>
 		/// <param name="message">The direct response message to send to the remote channel.  This message will be cloned.</param>
 		/// <param name="receivingChannel">The receiving channel.</param>
-		internal CoordinatingUserAgentResponse(IProtocolMessage message, CoordinatingChannel receivingChannel) {
+		internal CoordinatingOutgoingWebResponse(IProtocolMessage message, CoordinatingChannel receivingChannel) {
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 			ErrorUtilities.VerifyArgumentNotNull(receivingChannel, "receivingChannel");
 

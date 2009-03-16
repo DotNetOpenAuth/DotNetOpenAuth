@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using DotNetOpenAuth.Yadis;
 
 	internal class MockHttpRequest {
-		private readonly Dictionary<Uri, DirectWebResponse> registeredMockResponses = new Dictionary<Uri, DirectWebResponse>();
+		private readonly Dictionary<Uri, IncomingWebResponse> registeredMockResponses = new Dictionary<Uri, IncomingWebResponse>();
 
 		private MockHttpRequest(IDirectWebRequestHandler mockHandler) {
 			ErrorUtilities.VerifyArgumentNotNull(mockHandler, "mockHandler");
@@ -40,10 +40,10 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return mock;
 		}
 
-		internal void RegisterMockResponse(DirectWebResponse response) {
+		internal void RegisterMockResponse(IncomingWebResponse response) {
 			ErrorUtilities.VerifyArgumentNotNull(response, "response");
 			if (this.registeredMockResponses.ContainsKey(response.RequestUri)) {
-				Logger.WarnFormat("Mock HTTP response already registered for {0}.", response.RequestUri);
+				Logger.Http.WarnFormat("Mock HTTP response already registered for {0}.", response.RequestUri);
 			} else {
 				this.registeredMockResponses.Add(response.RequestUri, response);
 			}
@@ -172,7 +172,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			var redirectionHeaders = new WebHeaderCollection {
 				{ HttpResponseHeader.Location, redirectLocation.AbsoluteUri },
 			};
-			DirectWebResponse response = new CachedDirectWebResponse(origin, origin, redirectionHeaders, HttpStatusCode.Redirect, null, null, new MemoryStream());
+			IncomingWebResponse response = new CachedDirectWebResponse(origin, origin, redirectionHeaders, HttpStatusCode.Redirect, null, null, new MemoryStream());
 			this.RegisterMockResponse(response);
 		}
 
@@ -188,15 +188,15 @@ namespace DotNetOpenAuth.Test.Mocks {
 			this.RegisterMockResponse(errorResponse);
 		}
 
-		private DirectWebResponse GetMockResponse(HttpWebRequest request) {
-			DirectWebResponse response;
+		private IncomingWebResponse GetMockResponse(HttpWebRequest request) {
+			IncomingWebResponse response;
 			if (this.registeredMockResponses.TryGetValue(request.RequestUri, out response)) {
 				// reset response stream position so this response can be reused on a subsequent request.
 				response.ResponseStream.Seek(0, SeekOrigin.Begin);
 				return response;
 			} else {
 				////Assert.Fail("Unexpected HTTP request: {0}", uri);
-				Logger.WarnFormat("Unexpected HTTP request: {0}", request.RequestUri);
+				Logger.Http.WarnFormat("Unexpected HTTP request: {0}", request.RequestUri);
 				return new CachedDirectWebResponse(request.RequestUri, request.RequestUri, new WebHeaderCollection(), HttpStatusCode.NotFound, "text/html", null, new MemoryStream());
 			}
 		}

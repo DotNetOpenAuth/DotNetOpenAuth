@@ -118,7 +118,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// </summary>
 		/// <param name="message">The message to replay.</param>
 		internal void Replay(IProtocolMessage message) {
-			this.VerifyMessageAfterReceiving(CloneSerializedParts(message));
+			this.ProcessIncomingMessage(CloneSerializedParts(message));
 		}
 
 		/// <summary>
@@ -167,15 +167,15 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return responseMessage;
 		}
 
-		protected override UserAgentResponse SendDirectMessageResponse(IProtocolMessage response) {
+		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
 			this.ProcessMessageFilter(response, true);
-			return new CoordinatingUserAgentResponse(response, this.RemoteChannel);
+			return new CoordinatingOutgoingWebResponse(response, this.RemoteChannel);
 		}
 
-		protected override UserAgentResponse SendIndirectMessage(IDirectedProtocolMessage message) {
+		protected override OutgoingWebResponse PrepareIndirectResponse(IDirectedProtocolMessage message) {
 			this.ProcessMessageFilter(message, true);
 			// In this mock transport, direct and indirect messages are the same.
-			return this.SendDirectMessageResponse(message);
+			return this.PrepareDirectResponse(message);
 		}
 
 		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestInfo request) {
@@ -186,14 +186,14 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return request.Message;
 		}
 
-		protected override IDictionary<string, string> ReadFromResponseCore(DirectWebResponse response) {
+		protected override IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response) {
 			Channel_Accessor accessor = Channel_Accessor.AttachShadow(this.wrappedChannel);
 			return accessor.ReadFromResponseCore(response);
 		}
 
-		protected override void VerifyMessageAfterReceiving(IProtocolMessage message) {
+		protected override void ProcessIncomingMessage(IProtocolMessage message) {
 			Channel_Accessor accessor = Channel_Accessor.AttachShadow(this.wrappedChannel);
-			accessor.VerifyMessageAfterReceiving(message);
+			accessor.ProcessIncomingMessage(message);
 		}
 
 		/// <summary>

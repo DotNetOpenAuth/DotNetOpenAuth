@@ -51,46 +51,46 @@ namespace DotNetOpenAuth.Yadis {
 			CachedDirectWebResponse response;
 			try {
 				if (requireSsl && !string.Equals(uri.Uri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)) {
-					Logger.WarnFormat("Discovery on insecure identifier '{0}' aborted.", uri);
+					Logger.Yadis.WarnFormat("Discovery on insecure identifier '{0}' aborted.", uri);
 					return null;
 				}
 				response = Request(requestHandler, uri, requireSsl, ContentTypes.Html, ContentTypes.XHtml, ContentTypes.Xrds).GetSnapshot(MaximumResultToScan);
 				if (response.Status != System.Net.HttpStatusCode.OK) {
-					Logger.ErrorFormat("HTTP error {0} {1} while performing discovery on {2}.", (int)response.Status, response.Status, uri);
+					Logger.Yadis.ErrorFormat("HTTP error {0} {1} while performing discovery on {2}.", (int)response.Status, response.Status, uri);
 					return null;
 				}
 			} catch (ArgumentException ex) {
 				// Unsafe URLs generate this
-				Logger.WarnFormat("Unsafe OpenId URL detected ({0}).  Request aborted.  {1}", uri, ex);
+				Logger.Yadis.WarnFormat("Unsafe OpenId URL detected ({0}).  Request aborted.  {1}", uri, ex);
 				return null;
 			}
 			CachedDirectWebResponse response2 = null;
 			if (IsXrdsDocument(response)) {
-				Logger.Debug("An XRDS response was received from GET at user-supplied identifier.");
+				Logger.Yadis.Debug("An XRDS response was received from GET at user-supplied identifier.");
 				response2 = response;
 			} else {
 				string uriString = response.Headers.Get(HeaderName);
 				Uri url = null;
 				if (uriString != null) {
 					if (Uri.TryCreate(uriString, UriKind.Absolute, out url)) {
-						Logger.DebugFormat("{0} found in HTTP header.  Preparing to pull XRDS from {1}", HeaderName, url);
+						Logger.Yadis.DebugFormat("{0} found in HTTP header.  Preparing to pull XRDS from {1}", HeaderName, url);
 					}
 				}
 				if (url == null && response.ContentType.MediaType == ContentTypes.Html) {
 					url = FindYadisDocumentLocationInHtmlMetaTags(response.GetResponseString());
 					if (url != null) {
-						Logger.DebugFormat("{0} found in HTML Http-Equiv tag.  Preparing to pull XRDS from {1}", HeaderName, url);
+						Logger.Yadis.DebugFormat("{0} found in HTML Http-Equiv tag.  Preparing to pull XRDS from {1}", HeaderName, url);
 					}
 				}
 				if (url != null) {
 					if (!requireSsl || string.Equals(url.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)) {
 						response2 = Request(requestHandler, url, requireSsl, ContentTypes.Xrds).GetSnapshot(MaximumResultToScan);
 						if (response2.Status != HttpStatusCode.OK) {
-							Logger.ErrorFormat("HTTP error {0} {1} while performing discovery on {2}.", (int)response2.Status, response2.Status, uri);
+							Logger.Yadis.ErrorFormat("HTTP error {0} {1} while performing discovery on {2}.", (int)response2.Status, response2.Status, uri);
 							return null;
 						}
 					} else {
-						Logger.WarnFormat("XRDS document at insecure location '{0}'.  Aborting YADIS discovery.", url);
+						Logger.Yadis.WarnFormat("XRDS document at insecure location '{0}'.  Aborting YADIS discovery.", url);
 					}
 				}
 			}
@@ -126,7 +126,7 @@ namespace DotNetOpenAuth.Yadis {
 		/// <param name="requireSsl">Whether only HTTPS URLs should ever be retrieved.</param>
 		/// <param name="acceptTypes">The value of the Accept HTTP header to include in the request.</param>
 		/// <returns>The HTTP response retrieved from the request.</returns>
-		internal static DirectWebResponse Request(IDirectWebRequestHandler requestHandler, Uri uri, bool requireSsl, params string[] acceptTypes) {
+		internal static IncomingWebResponse Request(IDirectWebRequestHandler requestHandler, Uri uri, bool requireSsl, params string[] acceptTypes) {
 			ErrorUtilities.VerifyArgumentNotNull(requestHandler, "requestHandler");
 			ErrorUtilities.VerifyArgumentNotNull(uri, "uri");
 

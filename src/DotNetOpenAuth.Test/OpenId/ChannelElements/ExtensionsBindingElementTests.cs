@@ -53,7 +53,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void PrepareMessageForSendingNull() {
-			this.rpElement.PrepareMessageForSending(null);
+			this.rpElement.ProcessOutgoingMessage(null);
 		}
 
 		/// <summary>
@@ -62,13 +62,13 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		[TestMethod]
 		public void PrepareMessageForSendingNonExtendableMessage() {
 			IProtocolMessage request = new AssociateDiffieHellmanRequest(Protocol.Default.Version, OpenIdTestBase.OPUri);
-			Assert.IsNull(this.rpElement.PrepareMessageForSending(request));
+			Assert.IsNull(this.rpElement.ProcessOutgoingMessage(request));
 		}
 
 		[TestMethod]
 		public void PrepareMessageForSending() {
 			this.request.Extensions.Add(new MockOpenIdExtension("part", "extra"));
-			Assert.IsNotNull(this.rpElement.PrepareMessageForSending(this.request));
+			Assert.IsNotNull(this.rpElement.ProcessOutgoingMessage(this.request));
 
 			string alias = GetAliases(this.request.ExtraData).Single();
 			Assert.AreEqual(MockOpenIdExtension.MockTypeUri, this.request.ExtraData["openid.ns." + alias]);
@@ -81,7 +81,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			this.request.ExtraData["openid.ns.mock"] = MockOpenIdExtension.MockTypeUri;
 			this.request.ExtraData["openid.mock.Part"] = "part";
 			this.request.ExtraData["openid.mock.data"] = "extra";
-			Assert.IsNotNull(this.rpElement.PrepareMessageForReceiving(this.request));
+			Assert.IsNotNull(this.rpElement.ProcessIncomingMessage(this.request));
 			MockOpenIdExtension ext = this.request.Extensions.OfType<MockOpenIdExtension>().Single();
 			Assert.AreEqual("part", ext.Part);
 			Assert.AreEqual("extra", ext.Data);

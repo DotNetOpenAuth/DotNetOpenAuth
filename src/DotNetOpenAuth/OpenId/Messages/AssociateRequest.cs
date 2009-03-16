@@ -86,7 +86,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			string associationType, sessionType;
 			if (!HmacShaAssociation.TryFindBestAssociation(Protocol.Lookup(provider.ProtocolVersion), true, securityRequirements, useDiffieHellman, out associationType, out sessionType)) {
 				// There are no associations that meet all requirements.
-				Logger.Warn("Security requirements and protocol combination knock out all possible association types.  Dumb mode forced.");
+				Logger.OpenId.Warn("Security requirements and protocol combination knock out all possible association types.  Dumb mode forced.");
 				return null;
 			}
 
@@ -198,14 +198,14 @@ namespace DotNetOpenAuth.OpenId.Messages {
 				ErrorUtilities.VerifyInternal(this.AssociationType != associationType, "The RP asked for an association that should have been allowed, but the OP is trying to suggest the same one as an alternative!");
 				unsuccessfulResponse.AssociationType = associationType;
 				unsuccessfulResponse.SessionType = sessionType;
-				Logger.InfoFormat(
+				Logger.OpenId.InfoFormat(
 					"Association requested of type '{0}' and session '{1}', which the Provider does not support.  Sending back suggested alternative of '{0}' with session '{1}'.",
 					this.AssociationType,
 					this.SessionType,
 					unsuccessfulResponse.AssociationType,
 					unsuccessfulResponse.SessionType);
 			} else {
-				Logger.InfoFormat("Association requested of type '{0}' and session '{1}', which the Provider does not support.  No alternative association type qualified for suggesting back to the Relying Party.", this.AssociationType, this.SessionType);
+				Logger.OpenId.InfoFormat("Association requested of type '{0}' and session '{1}', which the Provider does not support.  No alternative association type qualified for suggesting back to the Relying Party.", this.AssociationType, this.SessionType);
 			}
 
 			return unsuccessfulResponse;

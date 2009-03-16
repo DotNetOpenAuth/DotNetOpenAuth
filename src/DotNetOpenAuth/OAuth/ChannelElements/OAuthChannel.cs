@@ -93,7 +93,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		internal HttpWebRequest InitializeRequest(IDirectedProtocolMessage request) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
-			PrepareMessageForSending(request);
+			ProcessOutgoingMessage(request);
 			return this.CreateHttpRequest(request);
 		}
 
@@ -152,7 +152,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <returns>
 		/// The deserialized message parts, if found.  Null otherwise.
 		/// </returns>
-		protected override IDictionary<string, string> ReadFromResponseCore(DirectWebResponse response) {
+		protected override IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response) {
 			ErrorUtilities.VerifyArgumentNotNull(response, "response");
 
 			string body = response.GetResponseReader().ReadToEnd();
@@ -197,14 +197,14 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <remarks>
 		/// This method implements spec V1.0 section 5.3.
 		/// </remarks>
-		protected override UserAgentResponse SendDirectMessageResponse(IProtocolMessage response) {
+		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
 			ErrorUtilities.VerifyArgumentNotNull(response, "response");
 
 			var messageAccessor = this.MessageDescriptions.GetAccessor(response);
 			var fields = messageAccessor.Serialize();
 			string responseBody = MessagingUtilities.CreateQueryString(fields);
 
-			UserAgentResponse encodedResponse = new UserAgentResponse {
+			OutgoingWebResponse encodedResponse = new OutgoingWebResponse {
 				Body = responseBody,
 				OriginalMessage = response,
 				Status = HttpStatusCode.OK,
@@ -285,7 +285,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		private void SignatureCallback(ITamperResistantProtocolMessage message) {
 			var oauthMessage = message as ITamperResistantOAuthMessage;
 			try {
-				Logger.Debug("Applying secrets to message to prepare for signing or signature verification.");
+				Logger.Channel.Debug("Applying secrets to message to prepare for signing or signature verification.");
 				oauthMessage.ConsumerSecret = this.TokenManager.GetConsumerSecret(oauthMessage.ConsumerKey);
 
 				var tokenMessage = message as ITokenContainingMessage;

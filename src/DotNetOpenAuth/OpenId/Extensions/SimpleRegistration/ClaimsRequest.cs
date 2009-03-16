@@ -275,7 +275,7 @@ TimeZone = '{8}'";
 						this.TimeZone = requestLevel;
 						break;
 					default:
-						Logger.WarnFormat("ClaimsRequest.SetProfileRequestFromList: Unrecognized field name '{0}'.", field);
+						Logger.OpenId.WarnFormat("ClaimsRequest.SetProfileRequestFromList: Unrecognized field name '{0}'.", field);
 						break;
 				}
 			}

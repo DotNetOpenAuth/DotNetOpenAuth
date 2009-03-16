@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// how to authenticate a user.
 	/// </summary>
 	[DefaultProperty("ServerUrl")]
-	[ToolboxData("<{0}:IdentityEndpoint runat=server></{0}:IdentityEndpoint>")]
+	[ToolboxData("<{0}:IdentityEndpoint runat=\"server\" ProviderEndpointUrl=\"\" />")]
 	public class IdentityEndpoint : XrdsPublisher {
 		#region Property viewstate keys
 

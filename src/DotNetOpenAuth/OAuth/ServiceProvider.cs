@@ -118,7 +118,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// Requires HttpContext.Current.
 		/// </remarks>
 		public IDirectedProtocolMessage ReadRequest() {
-			return (IDirectedProtocolMessage)this.Channel.ReadFromRequest();
+			return this.Channel.ReadFromRequest();
 		}
 
 		/// <summary>
@@ -126,8 +126,8 @@ namespace DotNetOpenAuth.OAuth {
 		/// </summary>
 		/// <param name="request">The HTTP request to read the message from.</param>
 		/// <returns>The deserialized message.</returns>
-		public IDirectedProtocolMessage ReadRequest(HttpRequest request) {
-			return this.Channel.ReadFromRequest(new HttpRequestInfo(request));
+		public IDirectedProtocolMessage ReadRequest(HttpRequestInfo request) {
+			return this.Channel.ReadFromRequest(request);
 		}
 
 		/// <summary>
@@ -140,16 +140,6 @@ namespace DotNetOpenAuth.OAuth {
 		/// </remarks>
 		public UnauthorizedTokenRequest ReadTokenRequest() {
 			return this.ReadTokenRequest(this.Channel.GetRequestFromContext());
-		}
-
-		/// <summary>
-		/// Gets the incoming request for an unauthorized token, if any.
-		/// </summary>
-		/// <param name="request">The incoming HTTP request.</param>
-		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
-		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
-		public UnauthorizedTokenRequest ReadTokenRequest(HttpRequest request) {
-			return this.ReadTokenRequest(new HttpRequestInfo(request));
 		}
 
 		/// <summary>
@@ -193,17 +183,6 @@ namespace DotNetOpenAuth.OAuth {
 		/// </remarks>
 		public UserAuthorizationRequest ReadAuthorizationRequest() {
 			return this.ReadAuthorizationRequest(this.Channel.GetRequestFromContext());
-		}
-
-		/// <summary>
-		/// Gets the incoming request for the Service Provider to authorize a Consumer's
-		/// access to some protected resources.
-		/// </summary>
-		/// <param name="request">The incoming HTTP request.</param>
-		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
-		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
-		public UserAuthorizationRequest ReadAuthorizationRequest(HttpRequest request) {
-			return this.ReadAuthorizationRequest(new HttpRequestInfo(request));
 		}
 
 		/// <summary>
@@ -252,16 +231,6 @@ namespace DotNetOpenAuth.OAuth {
 		/// </remarks>
 		public AuthorizedTokenRequest ReadAccessTokenRequest() {
 			return this.ReadAccessTokenRequest(this.Channel.GetRequestFromContext());
-		}
-
-		/// <summary>
-		/// Gets the incoming request to exchange an authorized token for an access token.
-		/// </summary>
-		/// <param name="request">The incoming HTTP request.</param>
-		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
-		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
-		public AuthorizedTokenRequest ReadAccessTokenRequest(HttpRequest request) {
-			return this.ReadAccessTokenRequest(new HttpRequestInfo(request));
 		}
 
 		/// <summary>
@@ -322,21 +291,6 @@ namespace DotNetOpenAuth.OAuth {
 		/// <summary>
 		/// Gets the authorization (access token) for accessing some protected resource.
 		/// </summary>
-		/// <param name="request">The incoming HTTP request.</param>
-		/// <returns>The authorization message sent by the Consumer, or null if no authorization message is attached.</returns>
-		/// <remarks>
-		/// This method verifies that the access token and token secret are valid.
-		/// It falls on the caller to verify that the access token is actually authorized
-		/// to access the resources being requested.
-		/// </remarks>
-		/// <exception cref="ProtocolException">Thrown if an unexpected message is attached to the request.</exception>
-		public AccessProtectedResourceRequest ReadProtectedResourceAuthorization(HttpRequest request) {
-			return this.ReadProtectedResourceAuthorization(new HttpRequestInfo(request));
-		}
-
-		/// <summary>
-		/// Gets the authorization (access token) for accessing some protected resource.
-		/// </summary>
 		/// <param name="request">HTTP details from an incoming WCF message.</param>
 		/// <param name="requestUri">The URI of the WCF service endpoint.</param>
 		/// <returns>The authorization message sent by the Consumer, or null if no authorization message is attached.</returns>
@@ -362,9 +316,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown if an unexpected message is attached to the request.</exception>
 		public AccessProtectedResourceRequest ReadProtectedResourceAuthorization(HttpRequestInfo request) {
-			if (request == null) {
-				throw new ArgumentNullException("request");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			AccessProtectedResourceRequest accessMessage;
 			if (this.Channel.TryReadFromRequest<AccessProtectedResourceRequest>(request, out accessMessage)) {

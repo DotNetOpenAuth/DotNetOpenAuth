@@ -229,17 +229,17 @@ namespace DotNetOpenAuth.OpenId {
 				if (endpoints.Count == 0) {
 					var htmlEndpoints = new List<ServiceEndpoint>(DiscoverFromHtml(yadisResult.NormalizedUri, this, yadisResult.ResponseText));
 					if (htmlEndpoints.Any()) {
-						Logger.DebugFormat("Total services discovered in HTML: {0}", htmlEndpoints.Count);
-						Logger.Debug(htmlEndpoints.ToStringDeferred(true));
+						Logger.Yadis.DebugFormat("Total services discovered in HTML: {0}", htmlEndpoints.Count);
+						Logger.Yadis.Debug(htmlEndpoints.ToStringDeferred(true));
 						endpoints.AddRange(htmlEndpoints.Where(ep => !IsDiscoverySecureEndToEnd || ep.IsSecure));
 						if (endpoints.Count == 0) {
-							Logger.Info("No HTML discovered endpoints met the security requirements.");
+							Logger.Yadis.Info("No HTML discovered endpoints met the security requirements.");
 						}
 					} else {
-						Logger.Debug("HTML discovery failed to find any endpoints.");
+						Logger.Yadis.Debug("HTML discovery failed to find any endpoints.");
 					}
 				} else {
-					Logger.Debug("Skipping HTML discovery because XRDS contained service endpoints.");
+					Logger.Yadis.Debug("Skipping HTML discovery because XRDS contained service endpoints.");
 				}
 			}
 			return endpoints;
@@ -338,7 +338,7 @@ namespace DotNetOpenAuth.OpenId {
 						if (Identifier.IsValid(delegateLinkTag.Href)) {
 							providerLocalIdentifier = delegateLinkTag.Href;
 						} else {
-							Logger.WarnFormat("Skipping endpoint data because local id is badly formed ({0}).", delegateLinkTag.Href);
+							Logger.Yadis.WarnFormat("Skipping endpoint data because local id is badly formed ({0}).", delegateLinkTag.Href);
 							continue; // skip to next version
 						}
 					}

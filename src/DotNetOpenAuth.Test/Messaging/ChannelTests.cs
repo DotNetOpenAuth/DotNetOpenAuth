@@ -75,7 +75,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			message.Recipient = new Uri("http://provider/path");
 			var expected = GetStandardTestFields(FieldFill.CompleteBeforeBindings);
 
-			UserAgentResponse response = this.Channel.PrepareResponse(message);
+			OutgoingWebResponse response = this.Channel.PrepareResponse(message);
 			Assert.AreEqual(HttpStatusCode.Redirect, response.Status);
 			StringAssert.StartsWith(response.Headers[HttpResponseHeader.Location], "http://provider/path");
 			foreach (var pair in expected) {
@@ -118,7 +118,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 				Location = new Uri("http://host/path"),
 				Recipient = new Uri("http://provider/path"),
 			};
-			UserAgentResponse response = this.Channel.PrepareResponse(message);
+			OutgoingWebResponse response = this.Channel.PrepareResponse(message);
 			Assert.AreEqual(HttpStatusCode.OK, response.Status, "A form redirect should be an HTTP successful response.");
 			Assert.IsNull(response.Headers[HttpResponseHeader.Location], "There should not be a redirection header in the response.");
 			string body = response.Body;
@@ -172,7 +172,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void SendIndirectMessageNull() {
 			TestBadChannel badChannel = new TestBadChannel(false);
-			badChannel.SendIndirectMessage(null);
+			badChannel.PrepareIndirectResponse(null);
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
@@ -254,7 +254,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 				new MockSigningBindingElement(),
 				new MockSigningBindingElement());
 			Channel_Accessor accessor = Channel_Accessor.AttachShadow(channel);
-			accessor.PrepareMessageForSending(new TestSignedDirectedMessage());
+			accessor.ProcessOutgoingMessage(new TestSignedDirectedMessage());
 		}
 
 		[TestMethod]

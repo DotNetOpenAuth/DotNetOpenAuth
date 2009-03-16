@@ -134,7 +134,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 					if (DateTime.TryParse(value, out newBirthDate)) {
 						this.birthDate = newBirthDate;
 					} else {
-						Logger.WarnFormat("Simple Registration birthdate '{0}' could not be parsed into a DateTime and may not include month and/or day information.  Setting BirthDate property to null.", value);
+						Logger.OpenId.WarnFormat("Simple Registration birthdate '{0}' could not be parsed into a DateTime and may not include month and/or day information.  Setting BirthDate property to null.", value);
 						this.birthDate = null;
 					}
 				} else {

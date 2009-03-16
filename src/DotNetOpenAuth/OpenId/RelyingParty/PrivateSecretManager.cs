@@ -106,7 +106,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				byte[] secret = MessagingUtilities.GetCryptoRandomData(secretLength);
 				privateAssociation = HmacShaAssociation.Create(CreateNewAssociationHandle(), secret, this.securitySettings.PrivateSecretMaximumAge);
 				if (!privateAssociation.HasUsefulLifeRemaining) {
-					Logger.WarnFormat(
+					Logger.OpenId.WarnFormat(
 						"Brand new private association has a shorter lifespan ({0}) than the maximum allowed authentication time for a user ({1}).  This may lead to login failures.",
 						this.securitySettings.PrivateSecretMaximumAge,
 						DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime);

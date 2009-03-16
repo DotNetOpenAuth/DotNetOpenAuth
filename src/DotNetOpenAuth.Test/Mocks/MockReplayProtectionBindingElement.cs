@@ -23,7 +23,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// </summary>
 		public Channel Channel { get; set; }
 
-		MessageProtections? IChannelBindingElement.PrepareMessageForSending(IProtocolMessage message) {
+		MessageProtections? IChannelBindingElement.ProcessOutgoingMessage(IProtocolMessage message) {
 			var replayMessage = message as IReplayProtectedProtocolMessage;
 			if (replayMessage != null) {
 				replayMessage.Nonce = "someNonce";
@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return null;
 		}
 
-		MessageProtections? IChannelBindingElement.PrepareMessageForReceiving(IProtocolMessage message) {
+		MessageProtections? IChannelBindingElement.ProcessIncomingMessage(IProtocolMessage message) {
 			var replayMessage = message as IReplayProtectedProtocolMessage;
 			if (replayMessage != null) {
 				Assert.AreEqual("someNonce", replayMessage.Nonce, "The nonce didn't serialize correctly, or something");

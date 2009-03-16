@@ -92,7 +92,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public MessageProtections? PrepareMessageForSending(IProtocolMessage message) {
+		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
 			SignedResponseRequest request = message as SignedResponseRequest;
 			if (request != null) {
 				request.AddReturnToArguments(ReturnToSignatureHandleParameterName, this.secretManager.CurrentHandle);
@@ -122,7 +122,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public MessageProtections? PrepareMessageForReceiving(IProtocolMessage message) {
+		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
 			IndirectSignedResponse response = message as IndirectSignedResponse;
 
 			if (response != null) {
@@ -138,7 +138,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					actual = OpenIdUtilities.FixDoublyUriDecodedBase64String(actual);
 					response.ReturnToParametersSignatureValidated = actual == expected;
 					if (!response.ReturnToParametersSignatureValidated) {
-						Logger.WarnFormat("The return_to signature failed verification.");
+						Logger.Bindings.WarnFormat("The return_to signature failed verification.");
 					}
 
 					return MessageProtections.None;
@@ -175,7 +175,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				sortedReturnToParameters.Add(key, returnToParameters[key]);
 			}
 
-			Logger.DebugFormat("ReturnTo signed data: {0}{1}", Environment.NewLine, sortedReturnToParameters.ToStringDeferred());
+			Logger.Bindings.DebugFormat("ReturnTo signed data: {0}{1}", Environment.NewLine, sortedReturnToParameters.ToStringDeferred());
 
 			// Sign the parameters.
 			byte[] bytesToSign = KeyValueFormEncoding.GetBytes(sortedReturnToParameters);

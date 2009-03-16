@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// <summary>
 		/// Gets or sets the callback used to provide the mock response for the mock request.
 		/// </summary>
-		internal Func<HttpWebRequest, DirectWebResponse> Callback { get; set; }
+		internal Func<HttpWebRequest, IncomingWebResponse> Callback { get; set; }
 
 		/// <summary>
 		/// Gets the stream that was written out as if on an HTTP request.
@@ -83,11 +83,11 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// <returns>
 		/// An instance of <see cref="Response"/> describing the response.
 		/// </returns>
-		public DirectWebResponse GetResponse(HttpWebRequest request) {
+		public IncomingWebResponse GetResponse(HttpWebRequest request) {
 			return this.GetResponse(request, DirectWebRequestOptions.None);
 		}
 
-		public DirectWebResponse GetResponse(HttpWebRequest request, DirectWebRequestOptions options) {
+		public IncomingWebResponse GetResponse(HttpWebRequest request, DirectWebRequestOptions options) {
 			if (this.Callback == null) {
 				throw new InvalidOperationException("Set the Callback property first.");
 			}
@@ -104,7 +104,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return this.GetRequestStream(request);
 		}
 
-		public DirectWebResponse GetResponse(HttpWebRequest request, bool requireSsl) {
+		public IncomingWebResponse GetResponse(HttpWebRequest request, bool requireSsl) {
 			ErrorUtilities.VerifyProtocol(!requireSsl || request.RequestUri.Scheme == Uri.UriSchemeHttps, "disallowed request");
 			var result = this.GetResponse(request);
 			ErrorUtilities.VerifyProtocol(!requireSsl || result.FinalUri.Scheme == Uri.UriSchemeHttps, "disallowed request");

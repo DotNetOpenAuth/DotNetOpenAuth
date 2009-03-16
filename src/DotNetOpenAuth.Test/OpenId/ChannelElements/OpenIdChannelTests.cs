@@ -80,7 +80,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			byte[] expectedBytes = KeyValueFormEncoding.GetBytes(messageFields);
 			string expectedContentType = OpenIdChannel_Accessor.KeyValueFormContentType;
 
-			UserAgentResponse directResponse = this.accessor.SendDirectMessageResponse(message);
+			OutgoingWebResponse directResponse = this.accessor.PrepareDirectResponse(message);
 			Assert.AreEqual(expectedContentType, directResponse.Headers[HttpResponseHeader.ContentType]);
 			byte[] actualBytes = new byte[directResponse.ResponseStream.Length];
 			directResponse.ResponseStream.Read(actualBytes, 0, actualBytes.Length);
@@ -108,13 +108,13 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		[TestMethod]
 		public void SendDirectMessageResponseHonorsHttpStatusCodes() {
 			IProtocolMessage message = MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired);
-			UserAgentResponse directResponse = this.accessor.SendDirectMessageResponse(message);
+			OutgoingWebResponse directResponse = this.accessor.PrepareDirectResponse(message);
 			Assert.AreEqual(HttpStatusCode.OK, directResponse.Status);
 
 			var httpMessage = new TestDirectResponseMessageWithHttpStatus();
 			MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired, httpMessage);
 			httpMessage.HttpStatusCode = HttpStatusCode.NotAcceptable;
-			directResponse = this.accessor.SendDirectMessageResponse(httpMessage);
+			directResponse = this.accessor.PrepareDirectResponse(httpMessage);
 			Assert.AreEqual(HttpStatusCode.NotAcceptable, directResponse.Status);
 		}
 	}

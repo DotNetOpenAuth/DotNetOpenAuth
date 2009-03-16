@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Implementations that provide message protection must honor the 
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		MessageProtections? PrepareMessageForSending(IProtocolMessage message);
+		MessageProtections? ProcessOutgoingMessage(IProtocolMessage message);
 
 		/// <summary>
 		/// Performs any transformation on an incoming message that may be necessary and/or
@@ -61,7 +61,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Implementations that provide message protection must honor the 
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		MessageProtections? PrepareMessageForReceiving(IProtocolMessage message);
+		MessageProtections? ProcessIncomingMessage(IProtocolMessage message);
 	}
 
 	/// <summary>
@@ -106,7 +106,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		MessageProtections? IChannelBindingElement.PrepareMessageForSending(IProtocolMessage message) {
+		MessageProtections? IChannelBindingElement.ProcessOutgoingMessage(IProtocolMessage message) {
 			Contract.Requires(((IChannelBindingElement)this).Channel != null);
 			Contract.Requires(message != null);
 			throw new NotImplementedException();
@@ -129,7 +129,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		MessageProtections? IChannelBindingElement.PrepareMessageForReceiving(IProtocolMessage message) {
+		MessageProtections? IChannelBindingElement.ProcessIncomingMessage(IProtocolMessage message) {
 			Contract.Requires(((IChannelBindingElement)this).Channel != null);
 			Contract.Requires(message != null);
 			throw new NotImplementedException();

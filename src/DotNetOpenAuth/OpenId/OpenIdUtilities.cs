@@ -69,7 +69,7 @@ namespace DotNetOpenAuth.OpenId {
 			}
 
 			if (value.Contains(" ")) {
-				Logger.Error("Deserializing a corrupted token.  The OpenID Provider may have inappropriately decoded the return_to URL before sending it back to us.");
+				Logger.OpenId.Error("Deserializing a corrupted token.  The OpenID Provider may have inappropriately decoded the return_to URL before sending it back to us.");
 				value = value.Replace(' ', '+'); // Undo any extra decoding the Provider did
 			}
 
