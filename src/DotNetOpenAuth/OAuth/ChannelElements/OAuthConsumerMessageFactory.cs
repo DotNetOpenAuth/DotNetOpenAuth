@@ -85,7 +85,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 
 			// All direct message responses should have the oauth_token_secret field.
 			if (!fields.ContainsKey("oauth_token_secret")) {
-				Logger.Error("An OAuth message was expected to contain an oauth_token_secret but didn't.");
+				Logger.OAuth.Error("An OAuth message was expected to contain an oauth_token_secret but didn't.");
 				return null;
 			}
 
@@ -96,7 +96,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			} else if (authorizedTokenRequest != null) {
 				message = new AuthorizedTokenResponse(authorizedTokenRequest);
 			} else {
-				Logger.ErrorFormat("Unexpected response message given the request type {0}", request.GetType().Name);
+				Logger.OAuth.ErrorFormat("Unexpected response message given the request type {0}", request.GetType().Name);
 				throw new ProtocolException(OAuthStrings.InvalidIncomingMessage);
 			}
 

@@ -43,7 +43,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		internal void RegisterMockResponse(IncomingWebResponse response) {
 			ErrorUtilities.VerifyArgumentNotNull(response, "response");
 			if (this.registeredMockResponses.ContainsKey(response.RequestUri)) {
-				Logger.WarnFormat("Mock HTTP response already registered for {0}.", response.RequestUri);
+				Logger.Http.WarnFormat("Mock HTTP response already registered for {0}.", response.RequestUri);
 			} else {
 				this.registeredMockResponses.Add(response.RequestUri, response);
 			}
@@ -196,7 +196,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 				return response;
 			} else {
 				////Assert.Fail("Unexpected HTTP request: {0}", uri);
-				Logger.WarnFormat("Unexpected HTTP request: {0}", request.RequestUri);
+				Logger.Http.WarnFormat("Unexpected HTTP request: {0}", request.RequestUri);
 				return new CachedDirectWebResponse(request.RequestUri, request.RequestUri, new WebHeaderCollection(), HttpStatusCode.NotFound, "text/html", null, new MemoryStream());
 			}
 		}

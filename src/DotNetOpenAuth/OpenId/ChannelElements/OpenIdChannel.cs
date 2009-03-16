@@ -263,9 +263,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 			// Filter the responses to the allowable set of HTTP status codes.
 			if (response.Status != HttpStatusCode.OK && response.Status != HttpStatusCode.BadRequest) {
-				if (Logger.IsErrorEnabled) {
+				if (Logger.Channel.IsErrorEnabled) {
 					using (var reader = new StreamReader(response.ResponseStream)) {
-						Logger.ErrorFormat(
+						Logger.Channel.ErrorFormat(
 							"Unexpected HTTP status code {0} {1} received in direct response:{2}{3}",
 							(int)response.Status,
 							response.Status,

@@ -42,11 +42,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		private readonly ProviderSecuritySettings opSecuritySettings;
 
 		/// <summary>
-		/// A logger specifically used for logging verbose text on everything about the signing process.
-		/// </summary>
-		private static ILog signingLogger = Logger.Create(typeof(SigningBindingElement));
-
-		/// <summary>
 		/// Initializes a new instance of the SigningBindingElement class for use by a Relying Party.
 		/// </summary>
 		/// <param name="associationStore">The association store used to look up the secrets needed for signing.  May be null for dumb Relying Parties.</param>
@@ -104,7 +99,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
 			var signedMessage = message as ITamperResistantOpenIdMessage;
 			if (signedMessage != null) {
-				Logger.DebugFormat("Signing {0} message.", message.GetType().Name);
+				Logger.Bindings.DebugFormat("Signing {0} message.", message.GetType().Name);
 				Association association = this.GetAssociation(signedMessage);
 				signedMessage.AssociationHandle = association.Handle;
 				signedMessage.SignedParameterOrder = this.GetSignedParameterOrder(signedMessage);
@@ -131,7 +126,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
 			var signedMessage = message as ITamperResistantOpenIdMessage;
 			if (signedMessage != null) {
-				Logger.DebugFormat("Verifying incoming {0} message signature of: {1}", message.GetType().Name, signedMessage.Signature);
+				Logger.Bindings.DebugFormat("Verifying incoming {0} message signature of: {1}", message.GetType().Name, signedMessage.Signature);
 				MessageProtections protectionsApplied = MessageProtections.TamperProtection;
 
 				this.EnsureParametersRequiringSignatureAreSigned(signedMessage);
@@ -140,7 +135,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				if (association != null) {
 					string signature = this.GetSignature(signedMessage, association);
 					if (!string.Equals(signedMessage.Signature, signature, StringComparison.Ordinal)) {
-						Logger.Error("Signature verification failed.");
+						Logger.Bindings.Error("Signature verification failed.");
 						throw new InvalidSignatureException(message);
 					}
 				} else {
@@ -158,7 +153,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					var checkSignatureRequest = new CheckAuthenticationRequest(indirectSignedResponse, this.Channel);
 					var checkSignatureResponse = this.Channel.Request<CheckAuthenticationResponse>(checkSignatureRequest);
 					if (!checkSignatureResponse.IsValid) {
-						Logger.Error("Provider reports signature verification failed.");
+						Logger.Bindings.Error("Provider reports signature verification failed.");
 						throw new InvalidSignatureException(message);
 					}
 
@@ -269,8 +264,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			byte[] dataToSign = KeyValueFormEncoding.GetBytes(parametersToSign);
 			string signature = Convert.ToBase64String(association.Sign(dataToSign));
 
-			if (signingLogger.IsDebugEnabled) {
-				signingLogger.DebugFormat(
+			if (Logger.Signatures.IsDebugEnabled) {
+				Logger.Signatures.DebugFormat(
 					CultureInfo.InvariantCulture,
 					"Signing these message parts: {0}{1}{0}Base64 representation of signed data: {2}{0}Signature: {3}",
 					Environment.NewLine,
@@ -312,7 +307,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					if (key.StartsWith(protocol.openid.Prefix, StringComparison.Ordinal)) {
 						extraSignedParameters.Add(key);
 					} else {
-						Logger.DebugFormat("The extra parameter '{0}' will not be signed because it does not start with 'openid.'.", key);
+						Logger.Signatures.DebugFormat("The extra parameter '{0}' will not be signed because it does not start with 'openid.'.", key);
 					}
 				}
 				signedParts = signedParts.Concat(extraSignedParameters);
@@ -342,7 +337,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 					if (forcePrivateAssociation) {
 						if (!string.IsNullOrEmpty(signedMessage.AssociationHandle)) {
-							signingLogger.Info("An OpenID 1.x authentication request with a shared association handle will be responded to with a private association in order to provide OP-side replay protection.");
+							Logger.Signatures.Info("An OpenID 1.x authentication request with a shared association handle will be responded to with a private association in order to provide OP-side replay protection.");
 						}
 
 						return this.GetDumbAssociationForSigning();

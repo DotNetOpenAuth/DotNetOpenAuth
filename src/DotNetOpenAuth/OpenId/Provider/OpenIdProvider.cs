@@ -319,7 +319,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			var serviceEndpoint = DotNetOpenAuth.OpenId.RelyingParty.ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, localIdentifier, new ProviderEndpointDescription(providerEndpoint, Protocol.Default.Version), null, null);
 			var discoveredEndpoints = claimedIdentifier.Discover(this.WebRequestHandler);
 			if (!discoveredEndpoints.Contains(serviceEndpoint)) {
-				Logger.DebugFormat(
+				Logger.OpenId.DebugFormat(
 					"Failed to send unsolicited assertion for {0} because its discovered services did not include this endpoint.  This endpoint: {1}{2}  Discovered endpoints: {1}{3}",
 					claimedIdentifier,
 					Environment.NewLine,
@@ -328,7 +328,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				ErrorUtilities.ThrowProtocol(OpenIdStrings.UnsolicitedAssertionForUnrelatedClaimedIdentifier, claimedIdentifier);
 			}
 
-			Logger.InfoFormat("Preparing unsolicited assertion for {0}", claimedIdentifier);
+			Logger.OpenId.InfoFormat("Preparing unsolicited assertion for {0}", claimedIdentifier);
 			var returnToEndpoint = relyingParty.Discover(this.WebRequestHandler, true).FirstOrDefault();
 			ErrorUtilities.VerifyProtocol(returnToEndpoint != null, OpenIdStrings.NoRelyingPartyEndpointDiscovered, relyingParty);
 
@@ -388,7 +388,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			ErrorUtilities.VerifyArgumentNotNull(ex, "ex");
 			ErrorUtilities.VerifyArgumentNotNull(httpRequestInfo, "httpRequestInfo");
 
-			Logger.Error("An exception was generated while processing an incoming OpenID request.", ex);
+			Logger.OpenId.Error("An exception was generated while processing an incoming OpenID request.", ex);
 			IErrorMessage errorMessage;
 
 			// We must create the appropriate error message type (direct vs. indirect)

@@ -238,7 +238,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// an attempt by someone to spoof another user's identity with a rogue Provider.
 		/// </exception>
 		private void VerifyDiscoveryMatchesAssertion() {
-			Logger.Debug("Verifying assertion matches identifier discovery results...");
+			Logger.OpenId.Debug("Verifying assertion matches identifier discovery results...");
 
 			// While it LOOKS like we're performing discovery over HTTP again
 			// Yadis.IdentifierDiscoveryCachePolicy is set to HttpRequestCacheLevel.CacheIfAvailable

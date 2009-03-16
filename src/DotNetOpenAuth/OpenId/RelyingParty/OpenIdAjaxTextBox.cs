@@ -795,7 +795,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private static TimeSpan TimeoutDefault {
 			get {
 				if (Debugger.IsAttached) {
-					Logger.Warn("Debugger is attached.  Inflating default OpenIdAjaxTextbox.Timeout value to infinity.");
+					Logger.OpenId.Warn("Debugger is attached.  Inflating default OpenIdAjaxTextbox.Timeout value to infinity.");
 					return TimeSpan.MaxValue;
 				} else {
 					return TimeSpan.FromSeconds(8);
@@ -886,7 +886,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			string userSuppliedIdentifier = eventArgument;
 
 			ErrorUtilities.VerifyNonZeroLength(userSuppliedIdentifier, "userSuppliedIdentifier");
-			Logger.InfoFormat("AJAX discovery on {0} requested.", userSuppliedIdentifier);
+			Logger.OpenId.InfoFormat("AJAX discovery on {0} requested.", userSuppliedIdentifier);
 
 			// We prepare a JSON object with this interface:
 			// class jsonResponse {
@@ -1130,7 +1130,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// parameters.  (i.e. "callback('arg1', 2)").  No escaping is done by this method.</param>
 		/// <param name="preAssignments">An optional list of assignments to make to the input box object before placing the method call.</param>
 		private void CallbackUserAgentMethod(string methodCall, string[] preAssignments) {
-			Logger.InfoFormat("Sending Javascript callback: {0}", methodCall);
+			Logger.OpenId.InfoFormat("Sending Javascript callback: {0}", methodCall);
 			Page.Response.Write(@"<html><body><script language='javascript'>
 	var inPopup = !window.frameElement;
 	var objSrc = inPopup ? window.opener.waiting_openidBox : window.frameElement.openidBox;
@@ -1287,7 +1287,7 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 		/// Notifies the user agent via an AJAX response of a completed authentication attempt.
 		/// </summary>
 		private void ReportAuthenticationResult() {
-			Logger.InfoFormat("AJAX (iframe) callback from OP: {0}", this.Page.Request.Url);
+			Logger.OpenId.InfoFormat("AJAX (iframe) callback from OP: {0}", this.Page.Request.Url);
 			List<string> assignments = new List<string>();
 
 			var authResponse = this.RelyingPartyNonVerifying.GetResponse();

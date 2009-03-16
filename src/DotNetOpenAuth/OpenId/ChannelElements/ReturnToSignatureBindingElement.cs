@@ -138,7 +138,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					actual = OpenIdUtilities.FixDoublyUriDecodedBase64String(actual);
 					response.ReturnToParametersSignatureValidated = actual == expected;
 					if (!response.ReturnToParametersSignatureValidated) {
-						Logger.WarnFormat("The return_to signature failed verification.");
+						Logger.Bindings.WarnFormat("The return_to signature failed verification.");
 					}
 
 					return MessageProtections.None;
@@ -175,7 +175,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				sortedReturnToParameters.Add(key, returnToParameters[key]);
 			}
 
-			Logger.DebugFormat("ReturnTo signed data: {0}{1}", Environment.NewLine, sortedReturnToParameters.ToStringDeferred());
+			Logger.Bindings.DebugFormat("ReturnTo signed data: {0}{1}", Environment.NewLine, sortedReturnToParameters.ToStringDeferred());
 
 			// Sign the parameters.
 			byte[] bytesToSign = KeyValueFormEncoding.GetBytes(sortedReturnToParameters);

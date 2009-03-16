@@ -188,7 +188,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 
 			if (this.UpdateUrl != null && !this.UpdateUrl.IsAbsoluteUri) {
 				this.UpdateUrl = null;
-				Logger.ErrorFormat("The AX fetch response update_url parameter was not absolute ('{0}').  Ignoring value.", this.UpdateUrl);
+				Logger.OpenId.ErrorFormat("The AX fetch response update_url parameter was not absolute ('{0}').  Ignoring value.", this.UpdateUrl);
 			}
 		}
 

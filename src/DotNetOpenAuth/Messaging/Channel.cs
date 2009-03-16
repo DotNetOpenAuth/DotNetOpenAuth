@@ -235,7 +235,7 @@ namespace DotNetOpenAuth.Messaging {
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
 			this.ProcessOutgoingMessage(message);
-			Logger.DebugFormat("Sending message: {0}", message);
+			Logger.Channel.DebugFormat("Sending message: {0}", message.GetType().Name);
 
 			switch (message.Transport) {
 				case MessageTransport.Direct:
@@ -360,7 +360,7 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires(httpRequest != null);
 			IDirectedProtocolMessage requestMessage = this.ReadFromRequestCore(httpRequest);
 			if (requestMessage != null) {
-				Logger.DebugFormat("Incoming request received: {0}", requestMessage);
+				Logger.Channel.DebugFormat("Incoming request received: {0}", requestMessage.GetType().Name);
 				this.ProcessIncomingMessage(requestMessage);
 			}
 
@@ -401,11 +401,11 @@ namespace DotNetOpenAuth.Messaging {
 			ErrorUtilities.VerifyArgumentNotNull(requestMessage, "requestMessage");
 
 			this.ProcessOutgoingMessage(requestMessage);
-			Logger.DebugFormat("Sending request: {0}", requestMessage);
+			Logger.Channel.DebugFormat("Sending {0} request.", requestMessage.GetType().Name);
 			var responseMessage = this.RequestCore(requestMessage);
 			ErrorUtilities.VerifyProtocol(responseMessage != null, MessagingStrings.ExpectedMessageNotReceived, typeof(IProtocolMessage).Name);
 
-			Logger.DebugFormat("Received message response: {0}", responseMessage);
+			Logger.Channel.DebugFormat("Received {0} response.", responseMessage.GetType().Name);
 			this.ProcessIncomingMessage(responseMessage);
 
 			return responseMessage;
@@ -534,7 +534,7 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires(request != null);
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
-			Logger.DebugFormat("Incoming HTTP request: {0}", request.Url.AbsoluteUri);
+			Logger.Channel.DebugFormat("Incoming HTTP request: {0}", request.Url.AbsoluteUri);
 
 			// Search Form data first, and if nothing is there search the QueryString
 			Contract.Assume(request.Form != null && request.QueryString != null);
@@ -617,7 +617,7 @@ namespace DotNetOpenAuth.Messaging {
 			UriBuilder builder = new UriBuilder(message.Recipient);
 			MessagingUtilities.AppendQueryArgs(builder, fields);
 			headers.Add(HttpResponseHeader.Location, builder.Uri.AbsoluteUri);
-			Logger.DebugFormat("Redirecting to {0}", builder.Uri.AbsoluteUri);
+			Logger.Http.DebugFormat("Redirecting to {0}", builder.Uri.AbsoluteUri);
 			OutgoingWebResponse response = new OutgoingWebResponse {
 				Status = HttpStatusCode.Redirect,
 				Headers = headers,
@@ -713,7 +713,7 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires(message != null);
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
-			Logger.DebugFormat("Preparing to send {0} ({1}) message.", message.GetType().Name, message.Version);
+			Logger.Channel.DebugFormat("Preparing to send {0} ({1}) message.", message.GetType().Name, message.Version);
 			this.OnSending(message);
 
 			// Give the message a chance to do custom serialization.
@@ -726,14 +726,14 @@ namespace DotNetOpenAuth.Messaging {
 			foreach (IChannelBindingElement bindingElement in this.outgoingBindingElements) {
 				MessageProtections? elementProtection = bindingElement.ProcessOutgoingMessage(message);
 				if (elementProtection.HasValue) {
-					Logger.DebugFormat("Binding element {0} applied to message.", bindingElement.GetType().FullName);
+					Logger.Bindings.DebugFormat("Binding element {0} applied to message.", bindingElement.GetType().FullName);
 
 					// Ensure that only one protection binding element applies to this message
 					// for each protection type.
 					ErrorUtilities.VerifyProtocol((appliedProtection & elementProtection.Value) == 0, MessagingStrings.TooManyBindingsOfferingSameProtection, elementProtection.Value);
 					appliedProtection |= elementProtection.Value;
 				} else {
-					Logger.DebugFormat("Binding element {0} did not apply to message.", bindingElement.GetType().FullName);
+					Logger.Bindings.DebugFormat("Binding element {0} did not apply to message.", bindingElement.GetType().FullName);
 				}
 			}
 
@@ -745,10 +745,10 @@ namespace DotNetOpenAuth.Messaging {
 			this.EnsureValidMessageParts(message);
 			message.EnsureValidMessage();
 
-			if (Logger.IsDebugEnabled) {
+			if (Logger.Channel.IsInfoEnabled) {
 				var messageAccessor = this.MessageDescriptions.GetAccessor(message);
-				Logger.DebugFormat(
-					"Sending {0} ({1}) message: {2}{3}",
+				Logger.Channel.InfoFormat(
+					"Prepared outgoing {0} ({1}) message: {2}{3}",
 					message.GetType().Name,
 					message.Version,
 					Environment.NewLine,
@@ -836,10 +836,10 @@ namespace DotNetOpenAuth.Messaging {
 		protected virtual void ProcessIncomingMessage(IProtocolMessage message) {
 			Contract.Requires(message != null);
 
-			if (Logger.IsDebugEnabled) {
+			if (Logger.Channel.IsInfoEnabled) {
 				var messageAccessor = this.MessageDescriptions.GetAccessor(message);
-				Logger.DebugFormat(
-					"Preparing to receive {0} ({1}) message:{2}{3}",
+				Logger.Channel.InfoFormat(
+					"Processing incoming {0} ({1}) message:{2}{3}",
 					message.GetType().Name,
 					message.Version,
 					Environment.NewLine,
@@ -850,7 +850,7 @@ namespace DotNetOpenAuth.Messaging {
 			foreach (IChannelBindingElement bindingElement in this.incomingBindingElements) {
 				MessageProtections? elementProtection = bindingElement.ProcessIncomingMessage(message);
 				if (elementProtection.HasValue) {
-					Logger.DebugFormat("Binding element {0} applied to message.", bindingElement.GetType().FullName);
+					Logger.Bindings.DebugFormat("Binding element {0} applied to message.", bindingElement.GetType().FullName);
 
 					// Ensure that only one protection binding element applies to this message
 					// for each protection type.
@@ -861,12 +861,12 @@ namespace DotNetOpenAuth.Messaging {
 						// their own replay protection for OpenID 1.x, and the OP happens to reuse
 						// openid.response_nonce, then this RP may consider both the RP's own nonce and
 						// the OP's nonce and "apply" replay protection twice.  This actually isn't a problem.
-						Logger.WarnFormat(MessagingStrings.TooManyBindingsOfferingSameProtection, elementProtection.Value);
+						Logger.Bindings.WarnFormat(MessagingStrings.TooManyBindingsOfferingSameProtection, elementProtection.Value);
 					}
 
 					appliedProtection |= elementProtection.Value;
 				} else {
-					Logger.DebugFormat("Binding element {0} did not apply to message.", bindingElement.GetType().FullName);
+					Logger.Bindings.DebugFormat("Binding element {0} did not apply to message.", bindingElement.GetType().FullName);
 				}
 			}
 
@@ -879,6 +879,16 @@ namespace DotNetOpenAuth.Messaging {
 			IMessageWithEvents eventedMessage = message as IMessageWithEvents;
 			if (eventedMessage != null) {
 				eventedMessage.OnReceiving();
+			}
+
+			if (Logger.Channel.IsDebugEnabled) {
+				var messageAccessor = this.MessageDescriptions.GetAccessor(message);
+				Logger.Channel.DebugFormat(
+					"After binding element processing, the received {0} ({1}) message is: {2}{3}",
+					message.GetType().Name,
+					message.Version,
+					Environment.NewLine,
+					messageAccessor.ToStringDeferred());
 			}
 
 			// We do NOT verify that all required message parts are present here... the 

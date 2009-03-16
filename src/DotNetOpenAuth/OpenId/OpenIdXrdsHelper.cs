@@ -50,8 +50,8 @@ namespace DotNetOpenAuth.OpenId {
 			if (endpoints.Count == 0) {
 				endpoints.AddRange(xrds.GenerateClaimedIdentifierServiceEndpoints(claimedIdentifier, userSuppliedIdentifier));
 			}
-			Logger.DebugFormat("Total services discovered in XRDS: {0}", endpoints.Count);
-			Logger.Debug(endpoints.ToStringDeferred(true));
+			Logger.Yadis.DebugFormat("Total services discovered in XRDS: {0}", endpoints.Count);
+			Logger.Yadis.Debug(endpoints.ToStringDeferred(true));
 			return endpoints;
 		}
 
@@ -74,8 +74,8 @@ namespace DotNetOpenAuth.OpenId {
 			if (endpoints.Count == 0) {
 				endpoints.AddRange(xrds.GenerateClaimedIdentifierServiceEndpoints(userSuppliedIdentifier));
 			}
-			Logger.DebugFormat("Total services discovered in XRDS: {0}", endpoints.Count);
-			Logger.Debug(endpoints.ToStringDeferred(true));
+			Logger.Yadis.DebugFormat("Total services discovered in XRDS: {0}", endpoints.Count);
+			Logger.Yadis.Debug(endpoints.ToStringDeferred(true));
 			return endpoints;
 		}
 
@@ -126,7 +126,7 @@ namespace DotNetOpenAuth.OpenId {
 				foreach (var uri in service.UriElements) {
 					// spec section 7.3.2.3 on Claimed Id -> CanonicalID substitution
 					if (service.Xrd.CanonicalID == null) {
-						Logger.WarnFormat(XrdsStrings.MissingCanonicalIDElement, userSuppliedIdentifier);
+						Logger.Yadis.WarnFormat(XrdsStrings.MissingCanonicalIDElement, userSuppliedIdentifier);
 						break; // skip on to next service
 					}
 					ErrorUtilities.VerifyProtocol(service.Xrd.IsCanonicalIdVerified, XrdsStrings.CIDVerificationFailed, userSuppliedIdentifier);

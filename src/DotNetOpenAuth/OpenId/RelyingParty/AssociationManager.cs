@@ -181,17 +181,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					return association;
 				} else if (associateUnsuccessfulResponse != null) {
 					if (string.IsNullOrEmpty(associateUnsuccessfulResponse.AssociationType)) {
-						Logger.Debug("Provider rejected an association request and gave no suggestion as to an alternative association type.  Giving up.");
+						Logger.OpenId.Debug("Provider rejected an association request and gave no suggestion as to an alternative association type.  Giving up.");
 						return null;
 					}
 
 					if (!this.securitySettings.IsAssociationInPermittedRange(Protocol.Lookup(provider.ProtocolVersion), associateUnsuccessfulResponse.AssociationType)) {
-						Logger.DebugFormat("Provider rejected an association request and suggested '{0}' as an association to try, which this Relying Party does not support.  Giving up.", associateUnsuccessfulResponse.AssociationType);
+						Logger.OpenId.DebugFormat("Provider rejected an association request and suggested '{0}' as an association to try, which this Relying Party does not support.  Giving up.", associateUnsuccessfulResponse.AssociationType);
 						return null;
 					}
 
 					if (retriesRemaining <= 0) {
-						Logger.Debug("Unable to agree on an association type with the Provider in the allowed number of retries.  Giving up.");
+						Logger.OpenId.Debug("Unable to agree on an association type with the Provider in the allowed number of retries.  Giving up.");
 						return null;
 					}
 
@@ -211,7 +211,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			} catch (ProtocolException ex) {
 				// Since having associations with OPs is not totally critical, we'll log and eat
 				// the exception so that auth may continue in dumb mode.
-				Logger.ErrorFormat("An error occurred while trying to create an association with {0}.  {1}", provider.Endpoint, ex);
+				Logger.OpenId.ErrorFormat("An error occurred while trying to create an association with {0}.  {1}", provider.Endpoint, ex);
 				return null;
 			}
 		}

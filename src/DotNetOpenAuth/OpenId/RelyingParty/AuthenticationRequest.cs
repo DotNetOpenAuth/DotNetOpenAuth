@@ -260,11 +260,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				userSuppliedIdentifier.TryRequireSsl(out userSuppliedIdentifier);
 			}
 
-			if (Logger.IsWarnEnabled && returnToUrl.Query != null) {
+			if (Logger.OpenId.IsWarnEnabled && returnToUrl.Query != null) {
 				NameValueCollection returnToArgs = HttpUtility.ParseQueryString(returnToUrl.Query);
 				foreach (string key in returnToArgs) {
 					if (OpenIdRelyingParty.IsOpenIdSupportingParameter(key)) {
-						Logger.WarnFormat("OpenID argument \"{0}\" found in return_to URL.  This can corrupt an OpenID response.", key);
+						Logger.OpenId.WarnFormat("OpenID argument \"{0}\" found in return_to URL.  This can corrupt an OpenID response.", key);
 					}
 				}
 			}
@@ -279,7 +279,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			try {
 				serviceEndpoints = userSuppliedIdentifier.Discover(relyingParty.WebRequestHandler);
 			} catch (ProtocolException ex) {
-				Logger.ErrorFormat("Error while performing discovery on: \"{0}\": {1}", userSuppliedIdentifier, ex);
+				Logger.Yadis.ErrorFormat("Error while performing discovery on: \"{0}\": {1}", userSuppliedIdentifier, ex);
 				serviceEndpoints = EmptyList<ServiceEndpoint>.Instance;
 			}
 
@@ -304,7 +304,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// before calling this method.
 		/// </remarks>
 		private static IEnumerable<AuthenticationRequest> CreateInternal(Identifier userSuppliedIdentifier, OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl, IEnumerable<ServiceEndpoint> serviceEndpoints, bool createNewAssociationsAsNeeded) {
-			Logger.InfoFormat("Performing discovery on user-supplied identifier: {0}", userSuppliedIdentifier);
+			Logger.Yadis.InfoFormat("Performing discovery on user-supplied identifier: {0}", userSuppliedIdentifier);
 			IEnumerable<ServiceEndpoint> endpoints = FilterAndSortEndpoints(serviceEndpoints, relyingParty);
 
 			// Maintain a list of endpoints that we could not form an association with.
@@ -313,9 +313,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			var failedAssociationEndpoints = new List<ServiceEndpoint>(0);
 
 			foreach (var endpoint in endpoints) {
-				Logger.InfoFormat("Creating authentication request for user supplied Identifier: {0}", userSuppliedIdentifier);
-				Logger.DebugFormat("Realm: {0}", realm);
-				Logger.DebugFormat("Return To: {0}", returnToUrl);
+				Logger.OpenId.InfoFormat("Creating authentication request for user supplied Identifier: {0}", userSuppliedIdentifier);
 
 				// The strategy here is to prefer endpoints with whom we can create associations.
 				Association association = null;
@@ -325,7 +323,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					// associations where they are already formed from previous authentications.
 					association = createNewAssociationsAsNeeded ? relyingParty.AssociationManager.GetOrCreateAssociation(endpoint.ProviderDescription) : relyingParty.AssociationManager.GetExistingAssociation(endpoint.ProviderDescription);
 					if (association == null && createNewAssociationsAsNeeded) {
-						Logger.WarnFormat("Failed to create association with {0}.  Skipping to next endpoint.", endpoint.ProviderEndpoint);
+						Logger.OpenId.WarnFormat("Failed to create association with {0}.  Skipping to next endpoint.", endpoint.ProviderEndpoint);
 
 						// No association could be created.  Add it to the list of failed association
 						// endpoints and skip to the next available endpoint.
@@ -341,12 +339,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// since we apparently are still running, the caller must want another request.
 			// We'll go ahead and generate the requests to OPs that may be down.
 			if (failedAssociationEndpoints.Count > 0) {
-				Logger.WarnFormat("Now generating requests for Provider endpoints that failed initial association attempts.");
+				Logger.OpenId.WarnFormat("Now generating requests for Provider endpoints that failed initial association attempts.");
 
 				foreach (var endpoint in failedAssociationEndpoints) {
-					Logger.WarnFormat("Creating authentication request for user supplied Identifier: {0}", userSuppliedIdentifier);
-					Logger.DebugFormat("Realm: {0}", realm);
-					Logger.DebugFormat("Return To: {0}", returnToUrl);
+					Logger.OpenId.WarnFormat("Creating authentication request for user supplied Identifier: {0}", userSuppliedIdentifier);
 
 					// Create the auth request, but prevent it from attempting to create an association
 					// because we've already tried.  Let's not have it waste time trying again.
@@ -390,14 +386,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			if (anyFilteredOut) {
-				Logger.DebugFormat("Some endpoints were filtered out.  Total endpoints remaining: {0}", filteredEndpoints.Count);
+				Logger.Yadis.DebugFormat("Some endpoints were filtered out.  Total endpoints remaining: {0}", filteredEndpoints.Count);
 			}
-			if (Logger.IsDebugEnabled) {
+			if (Logger.Yadis.IsDebugEnabled) {
 				if (MessagingUtilities.AreEquivalent(endpoints, endpointList)) {
-					Logger.Debug("Filtering and sorting of endpoints did not affect the list.");
+					Logger.Yadis.Debug("Filtering and sorting of endpoints did not affect the list.");
 				} else {
-					Logger.Debug("After filtering and sorting service endpoints, this is the new prioritized list:");
-					Logger.Debug(Util.ToStringDeferred(filteredEndpoints, true));
+					Logger.Yadis.Debug("After filtering and sorting service endpoints, this is the new prioritized list:");
+					Logger.Yadis.Debug(Util.ToStringDeferred(filteredEndpoints, true));
 				}
 			}
 

@@ -910,7 +910,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 							this.Request.AddCallbackArguments(UsePersistentCookieCallbackKey, this.UsePersistentCookie.ToString(CultureInfo.InvariantCulture));
 						}
 					} else {
-						Logger.WarnFormat("An invalid identifier was entered ({0}), but not caught by any validation routine.", this.Text);
+						Logger.OpenId.WarnFormat("An invalid identifier was entered ({0}), but not caught by any validation routine.", this.Text);
 						this.Request = null;
 					}
 				}

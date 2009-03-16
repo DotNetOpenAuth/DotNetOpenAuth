@@ -126,7 +126,7 @@ namespace DotNetOpenAuth.Messaging {
 			PrepareRequest(request, false);
 
 			try {
-				Logger.DebugFormat("HTTP {0} {1}", request.Method, request.RequestUri);
+				Logger.Http.DebugFormat("HTTP {0} {1}", request.Method, request.RequestUri);
 				HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 				return new NetworkDirectWebResponse(request.RequestUri, response);
 			} catch (WebException ex) {
@@ -149,17 +149,17 @@ namespace DotNetOpenAuth.Messaging {
 
 				if ((options & DirectWebRequestOptions.AcceptAllHttpResponses) != 0 && response != null &&
 					response.StatusCode != HttpStatusCode.ExpectationFailed) {
-					Logger.InfoFormat("The HTTP error code {0} {1} is being accepted because the {2} flag is set.", (int)response.StatusCode, response.StatusCode, DirectWebRequestOptions.AcceptAllHttpResponses);
+					Logger.Http.InfoFormat("The HTTP error code {0} {1} is being accepted because the {2} flag is set.", (int)response.StatusCode, response.StatusCode, DirectWebRequestOptions.AcceptAllHttpResponses);
 					return new NetworkDirectWebResponse(request.RequestUri, response);
 				}
 
-				if (Logger.IsErrorEnabled) {
+				if (Logger.Http.IsErrorEnabled) {
 					if (response != null) {
 						using (var reader = new StreamReader(ex.Response.GetResponseStream())) {
-							Logger.ErrorFormat("WebException from {0}: {1}{2}", ex.Response.ResponseUri, Environment.NewLine, reader.ReadToEnd());
+							Logger.Http.ErrorFormat("WebException from {0}: {1}{2}", ex.Response.ResponseUri, Environment.NewLine, reader.ReadToEnd());
 						}
 					} else {
-						Logger.ErrorFormat("WebException {1} from {0}, no response available.", request.RequestUri, ex.Status);
+						Logger.Http.ErrorFormat("WebException {1} from {0}, no response available.", request.RequestUri, ex.Status);
 					}
 				}
 

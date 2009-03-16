@@ -91,7 +91,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 
 			X509Certificate2 cert = this.ConsumerCertificateProvider.GetCertificate(message);
 			if (cert == null) {
-				Logger.WarnFormat("Incoming message from consumer '{0}' could not be matched with an appropriate X.509 certificate for signature verification.", message.ConsumerKey);
+				Logger.Signatures.WarnFormat("Incoming message from consumer '{0}' could not be matched with an appropriate X.509 certificate for signature verification.", message.ConsumerKey);
 				return false;
 			}
 

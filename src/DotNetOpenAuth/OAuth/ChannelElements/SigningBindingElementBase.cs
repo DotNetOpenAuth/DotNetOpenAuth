@@ -86,11 +86,11 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				if (this.SignatureCallback != null) {
 					this.SignatureCallback(signedMessage);
 				} else {
-					Logger.Warn("Signing required, but callback delegate was not provided to provide additional data for signing.");
+					Logger.Bindings.Warn("Signing required, but callback delegate was not provided to provide additional data for signing.");
 				}
 
 				signedMessage.SignatureMethod = this.signatureMethod;
-				Logger.DebugFormat("Signing {0} message using {1}.", message.GetType().Name, this.signatureMethod);
+				Logger.Bindings.DebugFormat("Signing {0} message using {1}.", message.GetType().Name, this.signatureMethod);
 				signedMessage.Signature = this.GetSignature(signedMessage);
 				return MessageProtections.TamperProtection;
 			}
@@ -110,21 +110,21 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
 			var signedMessage = message as ITamperResistantOAuthMessage;
 			if (signedMessage != null && this.IsMessageApplicable(signedMessage)) {
-				Logger.DebugFormat("Verifying incoming {0} message signature of: {1}", message.GetType().Name, signedMessage.Signature);
+				Logger.Bindings.DebugFormat("Verifying incoming {0} message signature of: {1}", message.GetType().Name, signedMessage.Signature);
 
 				if (!string.Equals(signedMessage.SignatureMethod, this.signatureMethod, StringComparison.Ordinal)) {
-					Logger.WarnFormat("Expected signature method '{0}' but received message with a signature method of '{1}'.", this.signatureMethod, signedMessage.SignatureMethod);
+					Logger.Bindings.WarnFormat("Expected signature method '{0}' but received message with a signature method of '{1}'.", this.signatureMethod, signedMessage.SignatureMethod);
 					return MessageProtections.None;
 				}
 
 				if (this.SignatureCallback != null) {
 					this.SignatureCallback(signedMessage);
 				} else {
-					Logger.Warn("Signature verification required, but callback delegate was not provided to provide additional data for signature verification.");
+					Logger.Bindings.Warn("Signature verification required, but callback delegate was not provided to provide additional data for signature verification.");
 				}
 
 				if (!this.IsSignatureValid(signedMessage)) {
-					Logger.Error("Signature verification failed.");
+					Logger.Bindings.Error("Signature verification failed.");
 					throw new InvalidSignatureException(message);
 				}
 
@@ -195,7 +195,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				signatureBaseString.Append(Uri.EscapeDataString(element));
 			}
 
-			Logger.DebugFormat("Constructed signature base string: {0}", signatureBaseString);
+			Logger.Bindings.DebugFormat("Constructed signature base string: {0}", signatureBaseString);
 			return signatureBaseString.ToString();
 		}
 

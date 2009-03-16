@@ -71,10 +71,10 @@ namespace DotNetOpenAuth.Test.Hosting {
 					}
 				}
 			} catch (WebException ex) {
-				Logger.Error("Exception in HttpHost", ex);
+				Logger.Http.Error("Exception in HttpHost", ex);
 				using (StreamReader sr = new StreamReader(ex.Response.GetResponseStream())) {
 					string streamContent = sr.ReadToEnd();
-					Logger.ErrorFormat("Error content stream follows: {0}", streamContent);
+					Logger.Http.ErrorFormat("Error content stream follows: {0}", streamContent);
 				}
 				throw;
 			}

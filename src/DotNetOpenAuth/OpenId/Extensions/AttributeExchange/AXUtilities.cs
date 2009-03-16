@@ -55,7 +55,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 				string countString;
 				if (fields.TryGetValue("count." + alias, out countString)) {
 					if (!int.TryParse(countString, out count) || count <= 0) {
-						Logger.ErrorFormat("Failed to parse count.{0} value to a positive integer.", alias);
+						Logger.OpenId.ErrorFormat("Failed to parse count.{0} value to a positive integer.", alias);
 						continue;
 					}
 					countSent = true;
@@ -66,7 +66,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 						if (fields.TryGetValue(string.Format(CultureInfo.InvariantCulture, "value.{0}.{1}", alias, i), out value)) {
 							att.Values.Add(value);
 						} else {
-							Logger.ErrorFormat("Missing value for attribute '{0}'.", att.TypeUri);
+							Logger.OpenId.ErrorFormat("Missing value for attribute '{0}'.", att.TypeUri);
 							continue;
 						}
 					}
@@ -75,7 +75,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 					if (fields.TryGetValue("value." + alias, out value)) {
 						att.Values.Add(value);
 					} else {
-						Logger.ErrorFormat("Missing value for attribute '{0}'.", att.TypeUri);
+						Logger.OpenId.ErrorFormat("Missing value for attribute '{0}'.", att.TypeUri);
 						continue;
 					}
 				}
@@ -100,7 +100,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 				}
 				string alias = pair.Key.Substring(TypePrefix.Length);
 				if (alias.IndexOfAny(FetchRequest.IllegalAliasCharacters) >= 0) {
-					Logger.ErrorFormat("Illegal characters in alias name '{0}'.", alias);
+					Logger.OpenId.ErrorFormat("Illegal characters in alias name '{0}'.", alias);
 					continue;
 				}
 				aliasManager.SetAlias(alias, pair.Value);

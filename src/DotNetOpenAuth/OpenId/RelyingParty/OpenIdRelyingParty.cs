@@ -339,7 +339,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				} else if ((negativeAssertion = message as NegativeAssertionResponse) != null) {
 					return new NegativeAuthenticationResponse(negativeAssertion);
 				} else if (message != null) {
-					Logger.WarnFormat("Received unexpected message type {0} when expecting an assertion message.", message.GetType().Name);
+					Logger.OpenId.WarnFormat("Received unexpected message type {0} when expecting an assertion message.", message.GetType().Name);
 				}
 
 				return null;

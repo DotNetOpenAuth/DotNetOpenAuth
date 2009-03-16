@@ -121,7 +121,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 						var extensionDictionary = this.Channel.MessageDescriptions.GetAccessor(extension).Serialize();
 						extensionManager.AddExtensionArguments(extension.TypeUri, extensionDictionary);
 					} else {
-						Logger.WarnFormat("Unexpected extension type {0} did not implement {1}.", protocolExtension.GetType(), typeof(IOpenIdMessageExtension).Name);
+						Logger.OpenId.WarnFormat("Unexpected extension type {0} did not implement {1}.", protocolExtension.GetType(), typeof(IOpenIdMessageExtension).Name);
 					}
 				}
 
@@ -181,7 +181,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 						extendableMessage.Extensions.Add(extension);
 					} else {
-						Logger.WarnFormat("Extension with type URI '{0}' ignored because it is not a recognized extension.", typeUri);
+						Logger.OpenId.WarnFormat("Extension with type URI '{0}' ignored because it is not a recognized extension.", typeUri);
 					}
 				}
 

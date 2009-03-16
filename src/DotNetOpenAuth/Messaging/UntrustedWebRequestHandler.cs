@@ -394,7 +394,7 @@ namespace DotNetOpenAuth.Messaging {
 		private bool IsUriAllowable(Uri uri) {
 			ErrorUtilities.VerifyArgumentNotNull(uri, "uri");
 			if (!this.allowableSchemes.Contains(uri.Scheme)) {
-				Logger.WarnFormat("Rejecting URL {0} because it uses a disallowed scheme.", uri);
+				Logger.Http.WarnFormat("Rejecting URL {0} because it uses a disallowed scheme.", uri);
 				return false;
 			}
 
@@ -403,7 +403,7 @@ namespace DotNetOpenAuth.Messaging {
 				if (IsHostWhitelisted(uri.DnsSafeHost)) {
 					return true;
 				}
-				Logger.WarnFormat("Rejecting URL {0} because {1}.", uri, reason);
+				Logger.Http.WarnFormat("Rejecting URL {0} because {1}.", uri, reason);
 				return false;
 			};
 
@@ -440,7 +440,7 @@ namespace DotNetOpenAuth.Messaging {
 				}
 			}
 			if (this.IsHostBlacklisted(uri.DnsSafeHost)) {
-				Logger.WarnFormat("Rejected URL {0} because it is blacklisted.", uri);
+				Logger.Http.WarnFormat("Rejected URL {0} because it is blacklisted.", uri);
 				return false;
 			}
 			return true;

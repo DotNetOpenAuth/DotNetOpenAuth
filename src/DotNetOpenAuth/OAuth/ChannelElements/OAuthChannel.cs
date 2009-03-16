@@ -285,7 +285,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		private void SignatureCallback(ITamperResistantProtocolMessage message) {
 			var oauthMessage = message as ITamperResistantOAuthMessage;
 			try {
-				Logger.Debug("Applying secrets to message to prepare for signing or signature verification.");
+				Logger.Channel.Debug("Applying secrets to message to prepare for signing or signature verification.");
 				oauthMessage.ConsumerSecret = this.TokenManager.GetConsumerSecret(oauthMessage.ConsumerKey);
 
 				var tokenMessage = message as ITokenContainingMessage;
