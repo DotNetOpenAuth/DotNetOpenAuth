@@ -324,6 +324,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="signedMessage">The message to sign or verify.</param>
 		/// <returns>The association to use to sign or verify the message.</returns>
 		private Association GetAssociation(ITamperResistantOpenIdMessage signedMessage) {
+			Contract.Requires(signedMessage != null);
+
 			if (this.IsOnProvider) {
 				// We're on a Provider to either sign (smart/dumb) or verify a dumb signature.
 				bool signing = string.IsNullOrEmpty(signedMessage.Signature);

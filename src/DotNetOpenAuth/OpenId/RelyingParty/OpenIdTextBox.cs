@@ -841,9 +841,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <remarks>
 		/// A performance optimization would be to store off the 
 		/// instance as a static member in your web site and set it
-		/// to this property in your <see cref="Page.Load"/> event since
-		/// instantiating these instances can be expensive on heavily trafficked
-		/// web pages.
+		/// to this property in your <see cref="Control.Load">Page.Load</see>
+		/// event since instantiating these instances can be expensive on 
+		/// heavily trafficked web pages.
 		/// </remarks>
 		public OpenIdRelyingParty RelyingParty {
 			get {
