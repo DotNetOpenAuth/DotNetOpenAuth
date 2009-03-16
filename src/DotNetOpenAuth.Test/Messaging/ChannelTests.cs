@@ -254,7 +254,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 				new MockSigningBindingElement(),
 				new MockSigningBindingElement());
 			Channel_Accessor accessor = Channel_Accessor.AttachShadow(channel);
-			accessor.PrepareMessageForSending(new TestSignedDirectedMessage());
+			accessor.ProcessOutgoingMessage(new TestSignedDirectedMessage());
 		}
 
 		[TestMethod]

@@ -80,7 +80,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
-		public MessageProtections? PrepareMessageForSending(IProtocolMessage message) {
+		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
 			var signedMessage = message as ITamperResistantOAuthMessage;
 			if (signedMessage != null && this.IsMessageApplicable(signedMessage)) {
 				if (this.SignatureCallback != null) {
@@ -107,7 +107,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
 		/// <exception cref="InvalidSignatureException">Thrown if the signature is invalid.</exception>
-		public MessageProtections? PrepareMessageForReceiving(IProtocolMessage message) {
+		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
 			var signedMessage = message as ITamperResistantOAuthMessage;
 			if (signedMessage != null && this.IsMessageApplicable(signedMessage)) {
 				Logger.DebugFormat("Verifying incoming {0} message signature of: {1}", message.GetType().Name, signedMessage.Signature);

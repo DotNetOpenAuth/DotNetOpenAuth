@@ -101,7 +101,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
-		public MessageProtections? PrepareMessageForSending(IProtocolMessage message) {
+		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
 			var signedMessage = message as ITamperResistantOpenIdMessage;
 			if (signedMessage != null) {
 				Logger.DebugFormat("Signing {0} message.", message.GetType().Name);
@@ -128,7 +128,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Thrown when the binding element rules indicate that this message is invalid and should
 		/// NOT be processed.
 		/// </exception>
-		public MessageProtections? PrepareMessageForReceiving(IProtocolMessage message) {
+		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
 			var signedMessage = message as ITamperResistantOpenIdMessage;
 			if (signedMessage != null) {
 				Logger.DebugFormat("Verifying incoming {0} message signature of: {1}", message.GetType().Name, signedMessage.Signature);

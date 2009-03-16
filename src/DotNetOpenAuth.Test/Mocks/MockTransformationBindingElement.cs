@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// </summary>
 		public Channel Channel { get; set; }
 
-		MessageProtections? IChannelBindingElement.PrepareMessageForSending(IProtocolMessage message) {
+		MessageProtections? IChannelBindingElement.ProcessOutgoingMessage(IProtocolMessage message) {
 			var testMessage = message as TestMessage;
 			if (testMessage != null) {
 				testMessage.Name = this.transform + testMessage.Name;
@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return null;
 		}
 
-		MessageProtections? IChannelBindingElement.PrepareMessageForReceiving(IProtocolMessage message) {
+		MessageProtections? IChannelBindingElement.ProcessIncomingMessage(IProtocolMessage message) {
 			var testMessage = message as TestMessage;
 			if (testMessage != null) {
 				StringAssert.StartsWith(testMessage.Name, this.transform);

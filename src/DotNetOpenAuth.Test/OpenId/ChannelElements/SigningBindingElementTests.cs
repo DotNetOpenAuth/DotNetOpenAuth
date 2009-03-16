@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			message.ProviderEndpoint = new Uri("http://provider");
 			signedMessage.UtcCreationDate = DateTime.Parse("1/1/2009");
 			signedMessage.AssociationHandle = association.Handle;
-			Assert.IsNotNull(signer.PrepareMessageForSending(message));
+			Assert.IsNotNull(signer.ProcessOutgoingMessage(message));
 			Assert.AreEqual("0wOdvNgzCZ5I5AzbU58Nq2Tg8EJZ7QoNz4gpx2r7jII=", signedMessage.Signature);
 		}
 
@@ -54,7 +54,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			response.ExtraData["someunsigned"] = "value";
 			response.ExtraData["openid.somesigned"] = "value";
 
-			Assert.IsNotNull(sbe.PrepareMessageForSending(response));
+			Assert.IsNotNull(sbe.ProcessOutgoingMessage(response));
 			ITamperResistantOpenIdMessage signedResponse = (ITamperResistantOpenIdMessage)response;
 
 			// Make sure that the extra parameters are signed.

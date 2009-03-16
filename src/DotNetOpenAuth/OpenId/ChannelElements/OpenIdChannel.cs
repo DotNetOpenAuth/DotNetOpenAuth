@@ -137,18 +137,18 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Thrown when the message is somehow invalid, except for check_authentication messages.
 		/// This can be due to tampering, replay attack or expiration, among other things.
 		/// </exception>
-		protected override void VerifyMessageAfterReceiving(IProtocolMessage message) {
+		protected override void ProcessIncomingMessage(IProtocolMessage message) {
 			var checkAuthRequest = message as CheckAuthenticationRequest;
 			if (checkAuthRequest != null) {
 				IndirectSignedResponse originalResponse = new IndirectSignedResponse(checkAuthRequest, this);
 				try {
-					base.VerifyMessageAfterReceiving(originalResponse);
+					base.ProcessIncomingMessage(originalResponse);
 					checkAuthRequest.IsValid = true;
 				} catch (ProtocolException) {
 					checkAuthRequest.IsValid = false;
 				}
 			} else {
-				base.VerifyMessageAfterReceiving(message);
+				base.ProcessIncomingMessage(message);
 			}
 
 			// Convert an OpenID indirect error message, which we never expect

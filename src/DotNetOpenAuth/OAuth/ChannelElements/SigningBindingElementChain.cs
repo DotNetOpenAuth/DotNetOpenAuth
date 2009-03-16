@@ -99,9 +99,9 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
-		public MessageProtections? PrepareMessageForSending(IProtocolMessage message) {
+		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
 			foreach (IChannelBindingElement signer in this.signers) {
-				MessageProtections? result = signer.PrepareMessageForSending(message);
+				MessageProtections? result = signer.ProcessOutgoingMessage(message);
 				if (result.HasValue) {
 					return result;
 				}
@@ -119,9 +119,9 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
-		public MessageProtections? PrepareMessageForReceiving(IProtocolMessage message) {
+		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
 			foreach (IChannelBindingElement signer in this.signers) {
-				MessageProtections? result = signer.PrepareMessageForReceiving(message);
+				MessageProtections? result = signer.ProcessIncomingMessage(message);
 				if (result.HasValue) {
 					return result;
 				}

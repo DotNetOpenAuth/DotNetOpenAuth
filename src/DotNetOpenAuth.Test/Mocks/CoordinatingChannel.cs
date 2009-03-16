@@ -118,7 +118,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// </summary>
 		/// <param name="message">The message to replay.</param>
 		internal void Replay(IProtocolMessage message) {
-			this.VerifyMessageAfterReceiving(CloneSerializedParts(message));
+			this.ProcessIncomingMessage(CloneSerializedParts(message));
 		}
 
 		/// <summary>
@@ -191,9 +191,9 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return accessor.ReadFromResponseCore(response);
 		}
 
-		protected override void VerifyMessageAfterReceiving(IProtocolMessage message) {
+		protected override void ProcessIncomingMessage(IProtocolMessage message) {
 			Channel_Accessor accessor = Channel_Accessor.AttachShadow(this.wrappedChannel);
-			accessor.VerifyMessageAfterReceiving(message);
+			accessor.ProcessIncomingMessage(message);
 		}
 
 		/// <summary>

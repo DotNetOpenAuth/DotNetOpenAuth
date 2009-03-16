@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// True if the <paramref name="message"/> applied to this binding element
 		/// and the operation was successful.  False otherwise.
 		/// </returns>
-		public MessageProtections? PrepareMessageForSending(IProtocolMessage message) {
+		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
 			var oauthMessage = message as ITamperResistantOAuthMessage;
 
 			if (oauthMessage != null) {
@@ -69,7 +69,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Thrown when the binding element rules indicate that this message is invalid and should
 		/// NOT be processed.
 		/// </exception>
-		public MessageProtections? PrepareMessageForReceiving(IProtocolMessage message) {
+		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
 			return null;
 		}
 

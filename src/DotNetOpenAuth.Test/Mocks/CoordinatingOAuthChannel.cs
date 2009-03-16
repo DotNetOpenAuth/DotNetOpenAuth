@@ -43,7 +43,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 
 		internal OutgoingWebResponse RequestProtectedResource(AccessProtectedResourceRequest request) {
 			((ITamperResistantOAuthMessage)request).HttpMethod = this.GetHttpMethod(((ITamperResistantOAuthMessage)request).HttpMethods);
-			this.PrepareMessageForSending(request);
+			this.ProcessOutgoingMessage(request);
 			HttpRequestInfo requestInfo = this.SpoofHttpMethod(request);
 			TestBase.TestLogger.InfoFormat("Sending protected resource request: {0}", requestInfo.Message);
 			// Drop the outgoing message in the other channel's in-slot and let them know it's there.
@@ -74,7 +74,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
 			this.RemoteChannel.incomingMessage = CloneSerializedParts(response, null);
 			this.RemoteChannel.incomingMessageSignal.Set();
-			return null;
+			return new OutgoingWebResponse(); // not used, but returning null is not allowed
 		}
 
 		protected override OutgoingWebResponse PrepareIndirectResponse(IDirectedProtocolMessage message) {

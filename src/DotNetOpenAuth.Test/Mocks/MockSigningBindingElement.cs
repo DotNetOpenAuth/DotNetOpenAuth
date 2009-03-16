@@ -26,7 +26,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// </summary>
 		public Channel Channel { get; set; }
 
-		MessageProtections? IChannelBindingElement.PrepareMessageForSending(IProtocolMessage message) {
+		MessageProtections? IChannelBindingElement.ProcessOutgoingMessage(IProtocolMessage message) {
 			ITamperResistantProtocolMessage signedMessage = message as ITamperResistantProtocolMessage;
 			if (signedMessage != null) {
 				signedMessage.Signature = MessageSignature;
@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return null;
 		}
 
-		MessageProtections? IChannelBindingElement.PrepareMessageForReceiving(IProtocolMessage message) {
+		MessageProtections? IChannelBindingElement.ProcessIncomingMessage(IProtocolMessage message) {
 			ITamperResistantProtocolMessage signedMessage = message as ITamperResistantProtocolMessage;
 			if (signedMessage != null) {
 				if (signedMessage.Signature != MessageSignature) {

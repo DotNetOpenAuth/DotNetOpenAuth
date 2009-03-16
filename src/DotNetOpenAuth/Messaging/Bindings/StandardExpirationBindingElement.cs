@@ -59,7 +59,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
-		public MessageProtections? PrepareMessageForSending(IProtocolMessage message) {
+		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
 			IExpiringProtocolMessage expiringMessage = message as IExpiringProtocolMessage;
 			if (expiringMessage != null) {
 				expiringMessage.UtcCreationDate = DateTime.UtcNow;
@@ -82,7 +82,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// Thrown when the binding element rules indicate that this message is invalid and should
 		/// NOT be processed.
 		/// </exception>
-		public MessageProtections? PrepareMessageForReceiving(IProtocolMessage message) {
+		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
 			IExpiringProtocolMessage expiringMessage = message as IExpiringProtocolMessage;
 			if (expiringMessage != null) {
 				// Yes the UtcCreationDate is supposed to always be in UTC already,

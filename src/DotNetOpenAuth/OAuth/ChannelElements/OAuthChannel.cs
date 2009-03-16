@@ -93,7 +93,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		internal HttpWebRequest InitializeRequest(IDirectedProtocolMessage request) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
-			PrepareMessageForSending(request);
+			ProcessOutgoingMessage(request);
 			return this.CreateHttpRequest(request);
 		}
 

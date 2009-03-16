@@ -94,7 +94,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public MessageProtections? PrepareMessageForSending(IProtocolMessage message) {
+		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 			ErrorUtilities.VerifyOperation(this.Channel != null, "Channel property has not been set.");
 
@@ -156,7 +156,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public MessageProtections? PrepareMessageForReceiving(IProtocolMessage message) {
+		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
 			var extendableMessage = message as IProtocolMessageWithExtensions;
 			if (extendableMessage != null) {
 				// We have a helper class that will do all the heavy-lifting of organizing

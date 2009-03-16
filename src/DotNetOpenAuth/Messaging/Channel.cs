@@ -234,7 +234,7 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
-			this.PrepareMessageForSending(message);
+			this.ProcessOutgoingMessage(message);
 			Logger.DebugFormat("Sending message: {0}", message);
 
 			switch (message.Transport) {
@@ -361,7 +361,7 @@ namespace DotNetOpenAuth.Messaging {
 			IDirectedProtocolMessage requestMessage = this.ReadFromRequestCore(httpRequest);
 			if (requestMessage != null) {
 				Logger.DebugFormat("Incoming request received: {0}", requestMessage);
-				this.VerifyMessageAfterReceiving(requestMessage);
+				this.ProcessIncomingMessage(requestMessage);
 			}
 
 			return requestMessage;
@@ -400,13 +400,13 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires(requestMessage != null);
 			ErrorUtilities.VerifyArgumentNotNull(requestMessage, "requestMessage");
 
-			this.PrepareMessageForSending(requestMessage);
+			this.ProcessOutgoingMessage(requestMessage);
 			Logger.DebugFormat("Sending request: {0}", requestMessage);
 			var responseMessage = this.RequestCore(requestMessage);
 			ErrorUtilities.VerifyProtocol(responseMessage != null, MessagingStrings.ExpectedMessageNotReceived, typeof(IProtocolMessage).Name);
 
 			Logger.DebugFormat("Received message response: {0}", responseMessage);
-			this.VerifyMessageAfterReceiving(responseMessage);
+			this.ProcessIncomingMessage(responseMessage);
 
 			return responseMessage;
 		}
@@ -581,6 +581,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
 		protected virtual OutgoingWebResponse PrepareIndirectResponse(IDirectedProtocolMessage message) {
 			Contract.Requires(message != null && message.Recipient != null);
+			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
 			var messageAccessor = this.MessageDescriptions.GetAccessor(message);
@@ -708,7 +709,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// This method should NOT be called by derived types
 		/// except when sending ONE WAY request messages.
 		/// </remarks>
-		protected void PrepareMessageForSending(IProtocolMessage message) {
+		protected void ProcessOutgoingMessage(IProtocolMessage message) {
 			Contract.Requires(message != null);
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
@@ -723,7 +724,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			MessageProtections appliedProtection = MessageProtections.None;
 			foreach (IChannelBindingElement bindingElement in this.outgoingBindingElements) {
-				MessageProtections? elementProtection = bindingElement.PrepareMessageForSending(message);
+				MessageProtections? elementProtection = bindingElement.ProcessOutgoingMessage(message);
 				if (elementProtection.HasValue) {
 					Logger.DebugFormat("Binding element {0} applied to message.", bindingElement.GetType().FullName);
 
@@ -832,7 +833,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Thrown when the message is somehow invalid.
 		/// This can be due to tampering, replay attack or expiration, among other things.
 		/// </exception>
-		protected virtual void VerifyMessageAfterReceiving(IProtocolMessage message) {
+		protected virtual void ProcessIncomingMessage(IProtocolMessage message) {
 			Contract.Requires(message != null);
 
 			if (Logger.IsDebugEnabled) {
@@ -847,7 +848,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			MessageProtections appliedProtection = MessageProtections.None;
 			foreach (IChannelBindingElement bindingElement in this.incomingBindingElements) {
-				MessageProtections? elementProtection = bindingElement.PrepareMessageForReceiving(message);
+				MessageProtections? elementProtection = bindingElement.ProcessIncomingMessage(message);
 				if (elementProtection.HasValue) {
 					Logger.DebugFormat("Binding element {0} applied to message.", bindingElement.GetType().FullName);
 
