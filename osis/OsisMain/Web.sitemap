@@ -18,5 +18,7 @@
 		<siteMapNode url="~/RP/DiscoveryAcceptHeader.aspx" title="RP sends HTTP Accept header for XRDS discovery" />
 		<siteMapNode url="~/RP/IdentifierSelect.aspx" title="RP supports Identifier Select" />
 		<siteMapNode url="~/RP/SregAccountCreation.aspx" title="RP account creation using Simple Registration" />
+		<siteMapNode url="~/RP/CertificateAltName.aspx" title="RP accepts alternate names in certs" />
+		<siteMapNode url="~/RP/CACert.aspx" title="RP accepts CA Cert trust root" />
 	</siteMapNode>
 </siteMap>
