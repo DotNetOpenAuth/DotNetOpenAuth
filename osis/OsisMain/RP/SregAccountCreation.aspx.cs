@@ -73,10 +73,13 @@ public partial class RP_SregAccountCreation : System.Web.UI.Page {
 		claimedId.Query = null;
 		claimedId.Fragment = null;
 
+		// We generate random bytes, then base64 encode them to remove any symbols
+		// that might trigger HttpRequestValidationException when th request comes back
+		// due to security concerns of having < and other symbols in the request URL.
 		byte[] unique = new byte[6];
 		Random r = new Random();
 		r.NextBytes(unique);
-		claimedId.Query = "test=" + HttpUtility.UrlEncode(unique);
+		claimedId.Query = "test=" + HttpUtility.UrlEncode(Convert.ToBase64String(unique));
 		return claimedId.Uri;
 	}
 }
