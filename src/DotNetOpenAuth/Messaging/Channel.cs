@@ -77,12 +77,12 @@ namespace DotNetOpenAuth.Messaging {
 		/// This is a perf optimization, so that we don't reflect over every message type
 		/// every time a channel is constructed.
 		/// </remarks>
-		private static MessageDescriptionCollection DefaultMessageDescriptions = new MessageDescriptionCollection();
+		private static MessageDescriptionCollection defaultMessageDescriptions = new MessageDescriptionCollection();
 
 		/// <summary>
 		/// A cache of reflected message types that may be sent or received on this channel.
 		/// </summary>
-		private MessageDescriptionCollection messageDescriptions = DefaultMessageDescriptions;
+		private MessageDescriptionCollection messageDescriptions = defaultMessageDescriptions;
 
 		/// <summary>
 		/// A tool that can figure out what kind of message is being received

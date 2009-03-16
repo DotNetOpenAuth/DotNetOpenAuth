@@ -270,10 +270,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="localIdentifier">The Identifier you know your user by internally.  This will typically
 		/// be the same as <paramref name="claimedIdentifier"/>.</param>
 		/// <param name="extensions">The extensions.</param>
-		/// <returns>
-		/// A <see cref="OutgoingWebResponse"/> object describing the HTTP response to send
-		/// the user agent to allow the redirect with assertion to happen.
-		/// </returns>
 		public void SendUnsolicitedAssertion(Uri providerEndpoint, Realm relyingParty, Identifier claimedIdentifier, Identifier localIdentifier, params IExtensionMessage[] extensions) {
 			Contract.Requires(HttpContext.Current != null);
 			Contract.Requires(providerEndpoint != null);
