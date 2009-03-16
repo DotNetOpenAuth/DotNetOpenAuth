@@ -22,7 +22,7 @@ public class SignatureTamperingBindingElement : IChannelBindingElement {
 		get { return MessageProtections.None; }
 	}
 
-	public MessageProtections? PrepareMessageForSending(IProtocolMessage message) {
+	public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
 		if (this.InvalidateSignature) {
 			var signedMessage = message as ITamperResistantOpenIdMessage;
 			byte[] signature = Convert.FromBase64String(signedMessage.Signature);
@@ -34,7 +34,7 @@ public class SignatureTamperingBindingElement : IChannelBindingElement {
 		}
 	}
 
-	public MessageProtections? PrepareMessageForReceiving(IProtocolMessage message) {
+	public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
 		throw new NotImplementedException();
 	}
 

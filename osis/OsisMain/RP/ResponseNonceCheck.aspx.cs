@@ -34,7 +34,7 @@ public partial class RP_ResponseNonceCheck : System.Web.UI.Page {
 						// Deliberately prepare the response message and store the user-agent
 						// response off for reuse later so the response_nonce stays the same
 						// on the second attempt.
-						ViewState["PendingAuth"] = op.GetResponse(authReq);
+						ViewState["PendingAuth"] = op.PrepareResponse(authReq);
 						AuthPanel.Visible = true;
 					}
 				} else {
@@ -45,7 +45,7 @@ public partial class RP_ResponseNonceCheck : System.Web.UI.Page {
 	}
 
 	protected void loginButton_Click(object sender, EventArgs e) {
-		var response = (UserAgentResponse)ViewState["PendingAuth"];
+		var response = (OutgoingWebResponse)ViewState["PendingAuth"];
 		response.Send();
 	}
 }
