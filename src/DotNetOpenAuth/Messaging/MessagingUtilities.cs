@@ -18,6 +18,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Security.Cryptography;
 	using System.Text;
 	using System.Web;
+	using System.Web.Mvc;
 	using DotNetOpenAuth.Messaging.Reflection;
 
 	/// <summary>
@@ -52,6 +53,17 @@ namespace DotNetOpenAuth.Messaging {
 			{ ">", @"\x3e" },
 			{ "=", @"\x3d" },
 		};
+
+		/// <summary>
+		/// Transforms an OutgoingWebResponse to an MVC-friendly ActionResult.
+		/// </summary>
+		/// <param name="response">The response to send to the uesr agent.</param>
+		/// <returns>The <see cref="ActionResult"/> instance to be returned by the Controller's action method.</returns>
+		public static ActionResult AsActionResult(this OutgoingWebResponse response) {
+			Contract.Requires(response != null);
+			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			return new OutgoingWebResponseActionResult(response);
+		}
 
 		/// <summary>
 		/// Gets the original request URL, as seen from the browser before any URL rewrites on the server if any.
