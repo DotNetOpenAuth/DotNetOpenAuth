@@ -49,6 +49,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>The particular Identifier instance to represent the value given.</returns>
 		[SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads", Justification = "Not all identifiers are URIs.")]
 		[SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates", Justification = "Our named alternate is Parse.")]
+		[DebuggerStepThrough]
 		public static implicit operator Identifier(string identifier) {
 			Contract.Requires(identifier == null || identifier.Length > 0);
 			if (identifier == null) {
@@ -63,6 +64,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="identifier">The identifier to convert.</param>
 		/// <returns>The result of the conversion.</returns>
 		[SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates", Justification = "We have a Parse function.")]
+		[DebuggerStepThrough]
 		public static implicit operator Identifier(Uri identifier) {
 			if (identifier == null) {
 				return null;
@@ -77,6 +79,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="identifier">The identifier to convert to a string.</param>
 		/// <returns>The result of the conversion.</returns>
 		[SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates", Justification = "We have a Parse function.")]
+		[DebuggerStepThrough]
 		public static implicit operator string(Identifier identifier) {
 			Contract.Ensures((identifier == null && Contract.Result<string>() == null) || (identifier != null && Contract.Result<string>() != null));
 			if (identifier == null) {

@@ -106,33 +106,51 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Gets the host component of this instance.
 		/// </summary>
-		public string Host { get { return this.uri.Host; } }
+		public string Host {
+			[DebuggerStepThrough]
+			get { return this.uri.Host; }
+		}
 
 		/// <summary>
 		/// Gets the scheme name for this URI.
 		/// </summary>
-		public string Scheme { get { return this.uri.Scheme; } }
+		public string Scheme {
+			[DebuggerStepThrough]
+			get { return this.uri.Scheme; }
+		}
 
 		/// <summary>
 		/// Gets the port number of this URI.
 		/// </summary>
-		public int Port { get { return this.uri.Port; } }
+		public int Port {
+			[DebuggerStepThrough]
+			get { return this.uri.Port; }
+		}
 
 		/// <summary>
 		/// Gets the absolute path of the URI.
 		/// </summary>
-		public string AbsolutePath { get { return this.uri.AbsolutePath; } }
+		public string AbsolutePath {
+			[DebuggerStepThrough]
+			get { return this.uri.AbsolutePath; }
+		}
 
 		/// <summary>
 		/// Gets the System.Uri.AbsolutePath and System.Uri.Query properties separated
 		/// by a question mark (?).
 		/// </summary>
-		public string PathAndQuery { get { return this.uri.PathAndQuery; } }
+		public string PathAndQuery {
+			[DebuggerStepThrough]
+			get { return this.uri.PathAndQuery; }
+		}
 
 		/// <summary>
 		/// Gets the realm URL.  If the realm includes a wildcard, it is not included here.
 		/// </summary>
-		public Uri NoWildcardUri { get { return this.uri; } }
+		public Uri NoWildcardUri {
+			[DebuggerStepThrough]
+			get { return this.uri; }
+		}
 
 		/// <summary>
 		/// Gets the Realm discovery URL, where the wildcard (if present) is replaced with "www.".
@@ -199,6 +217,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>The result of the conversion.</returns>
 		[SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads", Justification = "Not all realms are valid URLs (because of wildcards).")]
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Not all Realms are valid URLs.")]
+		[DebuggerStepThrough]
 		public static implicit operator Realm(string uri) {
 			return uri != null ? new Realm(uri) : null;
 		}
@@ -208,6 +227,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		/// <param name="uri">The URI to convert to a realm.</param>
 		/// <returns>The result of the conversion.</returns>
+		[DebuggerStepThrough]
 		public static implicit operator Realm(Uri uri) {
 			return uri != null ? new Realm(uri) : null;
 		}
@@ -217,6 +237,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		/// <param name="realm">The realm to convert to a string value.</param>
 		/// <returns>The result of the conversion.</returns>
+		[DebuggerStepThrough]
 		public static implicit operator string(Realm realm) {
 			return realm != null ? realm.ToString() : null;
 		}
