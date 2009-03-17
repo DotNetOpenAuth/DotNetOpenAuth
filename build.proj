@@ -39,7 +39,7 @@
 		<MSBuild Projects="$(ProjectRoot)\src\$(ProductName)\$(ProductName).csproj" />
 	</Target>
 	
-	<Target Name="Osis" DependsOnTargets="BuildProduct">
+	<Target Name="Osis" DependsOnTargets="BuildProduct;BuildSamples">
 		<PropertyGroup>
 			<OsisSite>$(ProjectRoot)\Osis\OsisMain</OsisSite>
 		</PropertyGroup>
