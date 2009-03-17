@@ -38,9 +38,9 @@ public partial class RP_AssociationPoisoningOP : System.Web.UI.Page {
 		// Customize responses to authentication requests by always asserting the same
 		// identity, regardless of the requested one.  It should be an identity that
 		// can only be asserted by the 'victim' OP.
-		var authReq = requestMessage as AuthenticationRequest;
+		var authReq = requestMessage as CheckIdRequest;
 		if (authReq != null) {
-			string associationHandle = ((ITamperResistantOpenIdMessage)authReq.RequestMessage).AssociationHandle;
+			string associationHandle = ((ITamperResistantOpenIdMessage)authReq).AssociationHandle;
 			if (associationHandle == null) {
 				// Test is INVALID because the RP is using dumb/stateless mode.
 				Response.Redirect("~/RP/AssociationPoisoning.aspx?stateless=1");
@@ -50,12 +50,11 @@ public partial class RP_AssociationPoisoningOP : System.Web.UI.Page {
 				// we always dish out!
 				throw new ArgumentException("RP is requesting authentication with unexpected association handle " + associationHandle);
 			}
-
-			authReq.ClaimedIdentifier = new Uri(Request.Url, Page.ResolveUrl("~/RP/AssociationPoisoning.aspx?test=1"));
-			authReq.LocalIdentifier = authReq.ClaimedIdentifier;
-			authReq.positiveResponse.ProviderEndpoint = VictimEndpoint;
-			authReq.IsAuthenticated = true;
-			op.SendResponse(authReq);
+			var authResp = new PositiveAssertionResponse(authReq);
+			authResp.ClaimedIdentifier = new Uri(Request.Url, Page.ResolveUrl("~/RP/AssociationPoisoning.aspx?test=1"));
+			authResp.LocalIdentifier = authReq.ClaimedIdentifier;
+			authResp.ProviderEndpoint = VictimEndpoint;
+			op.Channel.Send(authResp);
 		}
 	}
 
