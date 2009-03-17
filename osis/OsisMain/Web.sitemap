@@ -20,5 +20,7 @@
 		<siteMapNode url="~/RP/SregAccountCreation.aspx" title="RP account creation using Simple Registration" />
 		<siteMapNode url="~/RP/CertificateAltName.aspx" title="RP accepts alternate names in certs" />
 		<siteMapNode url="~/RP/CACert.aspx" title="RP accepts CA Cert trust root" />
+		<siteMapNode url="~/RP/RevokedCert.aspx" title="RP rejects revoked cert" />
+		<siteMapNode url="~/RP/CertBadCommonName.aspx" title="RP rejects invalid certificates" />
 	</siteMapNode>
 </siteMap>
