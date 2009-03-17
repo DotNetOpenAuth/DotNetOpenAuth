@@ -51,7 +51,7 @@ public partial class RP_AssociationPoisoningOP : System.Web.UI.Page {
 			}
 			var authResp = new PositiveAssertionResponse(authReq);
 			authResp.ClaimedIdentifier = new Uri(Request.Url, Page.ResolveUrl("~/RP/AssociationPoisoning.aspx?test=1"));
-			authResp.LocalIdentifier = authReq.ClaimedIdentifier;
+			authResp.LocalIdentifier = authResp.ClaimedIdentifier;
 			authResp.ProviderEndpoint = VictimEndpoint;
 			op.Channel.Send(authResp);
 		}
