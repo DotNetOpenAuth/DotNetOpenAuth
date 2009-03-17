@@ -40,15 +40,14 @@ public partial class RP_AssociationPoisoningOP : System.Web.UI.Page {
 		// can only be asserted by the 'victim' OP.
 		var authReq = requestMessage as CheckIdRequest;
 		if (authReq != null) {
-			string associationHandle = ((ITamperResistantOpenIdMessage)authReq).AssociationHandle;
-			if (associationHandle == null) {
+			if (authReq.AssociationHandle == null) {
 				// Test is INVALID because the RP is using dumb/stateless mode.
 				Response.Redirect("~/RP/AssociationPoisoning.aspx?stateless=1");
 			}
-			if (associationHandle != AssociationHandle) {
+			if (authReq.AssociationHandle != AssociationHandle) {
 				// Somehow the RP is requesting authentication with something other than the handle
 				// we always dish out!
-				throw new ArgumentException("RP is requesting authentication with unexpected association handle " + associationHandle);
+				throw new ArgumentException("RP is requesting authentication with unexpected association handle " + authReq.AssociationHandle);
 			}
 			var authResp = new PositiveAssertionResponse(authReq);
 			authResp.ClaimedIdentifier = new Uri(Request.Url, Page.ResolveUrl("~/RP/AssociationPoisoning.aspx?test=1"));
