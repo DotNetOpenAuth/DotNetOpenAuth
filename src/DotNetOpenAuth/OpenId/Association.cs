@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Gets a unique handle by which this <see cref="Association"/> may be stored or retrieved.
 		/// </summary>
-		public string Handle { get; private set; }
+		public string Handle { get; set; }
 
 		/// <summary>
 		/// Gets the time when this <see cref="Association"/> will expire.

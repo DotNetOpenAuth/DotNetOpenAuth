@@ -174,7 +174,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <para>Successful association response messages will derive from <see cref="AssociateSuccessfulResponse"/>.
 		/// Failed association response messages will derive from <see cref="AssociateUnsuccessfulResponse"/>.</para>
 		/// </remarks>
-		protected abstract IProtocolMessage CreateResponseCore();
+		public abstract IProtocolMessage CreateResponseCore();
 
 		/// <summary>
 		/// Creates a response that notifies the Relying Party that the requested

@@ -132,7 +132,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Gets the association store.
 		/// </summary>
-		internal IAssociationStore<AssociationRelyingPartyType> AssociationStore { get; private set; }
+		public IAssociationStore<AssociationRelyingPartyType> AssociationStore { get; private set; }
 
 		/// <summary>
 		/// Gets the web request handler to use for discovery and the part of

@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// Association response messages are described in OpenID 2.0 section 8.2.  This type covers section 8.2.1.
 	/// </remarks>
 	[DebuggerDisplay("OpenID {Version} associate response {AssociationHandle} {AssociationType} {SessionType}")]
-	internal abstract class AssociateSuccessfulResponse : DirectResponseBase {
+	public abstract class AssociateSuccessfulResponse : DirectResponseBase {
 		/// <summary>
 		/// A flag indicating whether an association has already been created.
 		/// </summary>
@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		/// <value>A string 255 characters or less in length. It MUST consist only of ASCII characters in the range 33-126 inclusive (printable non-whitespace characters). </value>
 		[MessagePart("assoc_handle", IsRequired = true, AllowEmpty = false)]
-		internal string AssociationHandle { get; set; }
+		public string AssociationHandle { get; set; }
 
 		/// <summary>
 		/// Gets or sets the preferred association type. The association type defines the algorithm to be used to sign subsequent messages. 
@@ -105,7 +105,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// 	<para>This method is called by both the Provider and the Relying Party, but actually performs
 		/// quite different operations in either scenario.</para>
 		/// </remarks>
-		internal Association CreateAssociation(AssociateRequest request, ProviderSecuritySettings securitySettings) {
+		public Association CreateAssociation(AssociateRequest request, ProviderSecuritySettings securitySettings) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 			ErrorUtilities.VerifyInternal(!this.associationCreated, "The association has already been created.");
 

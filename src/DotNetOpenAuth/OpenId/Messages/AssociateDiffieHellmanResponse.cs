@@ -82,8 +82,6 @@ namespace DotNetOpenAuth.OpenId.Messages {
 
 			// Go ahead and create the association first, complete with its secret that we're about to share.
 			Association association = HmacShaAssociation.Create(this.Protocol, this.AssociationType, AssociationRelyingPartyType.Smart, securitySettings);
-			this.AssociationHandle = association.Handle;
-			this.ExpiresIn = association.SecondsTillExpiration;
 
 			// We now need to securely communicate the secret to the relying party using Diffie-Hellman.
 			// We do this by performing a DH algorithm on the secret and setting a couple of properties
