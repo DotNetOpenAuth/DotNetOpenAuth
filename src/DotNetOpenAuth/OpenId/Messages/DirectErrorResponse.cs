@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		/// <param name="responseVersion">The OpenID version of the response message.</param>
 		/// <param name="originatingRequest">The originating request.</param>
-		internal DirectErrorResponse(Version responseVersion, IDirectedProtocolMessage originatingRequest)
+		public DirectErrorResponse(Version responseVersion, IDirectedProtocolMessage originatingRequest)
 			: base(responseVersion, originatingRequest) {
 		}
 

@@ -23,7 +23,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// assertion message, and therefore is all in the 
 	/// <see cref="DotNetOpenAuth.Messaging.IMessage.ExtraData"/> property bag.
 	/// </remarks>
-	internal class CheckAuthenticationRequest : RequestBase {
+	public class CheckAuthenticationRequest : RequestBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CheckAuthenticationRequest"/> class.
 		/// </summary>

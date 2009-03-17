@@ -55,10 +55,20 @@ public partial class RP_AssociationPoisoningOP : System.Web.UI.Page {
 			authResp.ProviderEndpoint = VictimEndpoint;
 			op.Channel.Send(authResp);
 		}
+
+		var checkAuthReq = requestMessage as CheckAuthenticationRequest;
+		if (checkAuthReq != null) {
+			DirectErrorResponse response = new DirectErrorResponse(Protocol.V20.Version, checkAuthReq);
+			response.ErrorMessage = "check_auth message not expected in this test scenario.";
+			op.Channel.Send(response);
+		}
 	}
 
-	private IProviderApplicationStore GetProviderStore(Uri opEndpoint) {
-		string key = "OPAppStore" + opEndpoint.AbsoluteUri;
+	private IProviderApplicationStore GetProviderStore(Uri requestUrl) {
+		UriBuilder opEndpoint = new UriBuilder(requestUrl);
+		opEndpoint.Query = null;
+		opEndpoint.Fragment = null;
+		string key = "OPAppStore" + opEndpoint.Uri.AbsoluteUri;
 		IProviderApplicationStore store;
 		Application.Lock();
 		try {
