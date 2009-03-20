@@ -38,12 +38,14 @@ namespace OpenIdProviderWebForms.Code {
 					continue;
 				}
 
-				Regex reg = new Regex(urlNode.InnerText, RegexOptions.IgnoreCase);
+				string oldValue = HttpContext.Current.Response.ApplyAppPathModifier(urlNode.InnerText);
+
+				Regex reg = new Regex(oldValue, RegexOptions.IgnoreCase);
 
 				// if match, return the substitution
 				Match match = reg.Match(path);
 				if (match.Success) {
-					return reg.Replace(path, rewriteNode.InnerText);
+					return reg.Replace(path, HttpContext.Current.Response.ApplyAppPathModifier(rewriteNode.InnerText));
 				}
 			}
 
