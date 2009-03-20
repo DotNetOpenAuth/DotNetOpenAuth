@@ -4,14 +4,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-	<title>DotNetOpenId ASP.NET MVC Login sample</title>
+	<title>DotNetOpenAuth ASP.NET MVC Login sample</title>
 	<link href="../../Content/Site.css" rel="stylesheet" type="text/css" />
 	<asp:ContentPlaceHolder ID="HeadContentPlaceHolder" runat="server" />
 </head>
 <body>
 	<div class="page">
 		<div id="header">
-			<p id="logo"><a href="">DotNetOpenId ASP.NET MVC Login sample</a></p>
+			<p id="logo"><a href="">DotNetOpenAuth ASP.NET MVC Login sample</a></p>
 			<ul id="mainMenu">
 				<li>
 					<%= Html.ActionLink("Home", "Index", "Home")%>
@@ -26,7 +26,7 @@
 				<div class="leftColumn">
 					<h2>External OpenID Links</h2>
 					<ul>
-						<li><a href="http://dotnetopenid.googlecode.com">DotNetOpenId</a></li>
+						<li><a href="http://dotnetopenid.googlecode.com">DotNetOpenAuth</a></li>
 						<li><a href="http://openid.net">About OpenID</a></li>
 					</ul>
 				</div>
