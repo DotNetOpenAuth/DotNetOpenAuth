@@ -100,7 +100,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The entire body of the response.</returns>
 		internal string GetResponseString() {
 			if (this.ResponseStream != null) {
-				StreamReader reader = this.GetResponseReader();
 				string value = this.GetResponseReader().ReadToEnd();
 				this.ResponseStream.Seek(0, SeekOrigin.Begin);
 				return value;
