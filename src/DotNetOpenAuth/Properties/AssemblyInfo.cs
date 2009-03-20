@@ -30,6 +30,7 @@ using System.Security.Permissions;
 using System.Web.UI;
 
 [assembly: TagPrefix("DotNetOpenAuth", "dnoa")]
+[assembly: TagPrefix("DotNetOpenAuth.InfoCard", "ic")]
 [assembly: TagPrefix("DotNetOpenAuth.OAuth", "oauth")]
 [assembly: TagPrefix("DotNetOpenAuth.OpenId", "openid")]
 [assembly: TagPrefix("DotNetOpenAuth.OpenId.Provider", "op")]

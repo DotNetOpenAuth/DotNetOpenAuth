@@ -1,4 +1,4 @@
-﻿<%@ Page Title="OpenID Relying Party, by DotNetOpenId" Language="C#" MasterPageFile="~/Views/Shared/Site.Master"
+﻿<%@ Page Title="OpenID Relying Party, by DotNetOpenAuth" Language="C#" MasterPageFile="~/Views/Shared/Site.Master"
 	Inherits="System.Web.Mvc.ViewPage" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContentPlaceHolder" runat="server">

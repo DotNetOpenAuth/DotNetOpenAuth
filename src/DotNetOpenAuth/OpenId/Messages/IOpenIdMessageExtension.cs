@@ -12,7 +12,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
-	/// The contract any OpenID extension for DotNetOpenId must implement.
+	/// The contract any OpenID extension for DotNetOpenAuth must implement.
 	/// </summary>
 	public interface IOpenIdMessageExtension : IExtensionMessage {
 		/// <summary>

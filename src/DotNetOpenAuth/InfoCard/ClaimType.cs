@@ -1,0 +1,49 @@
+//-----------------------------------------------------------------------
+// <copyright file="ClaimType.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.InfoCard {
+	using System;
+	using System.ComponentModel;
+	using System.Web.UI;
+
+	/// <summary>
+	/// Description of a claim that is requested or required in a submitted Information Card.
+	/// </summary>
+	[PersistChildren(false)]
+	[Serializable]
+	public class ClaimType {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ClaimType"/> class.
+		/// </summary>
+		public ClaimType() {
+		}
+
+		/// <summary>
+		/// Gets or sets the URI of a requested claim.
+		/// </summary>
+		[TypeConverter(typeof(ComponentModel.ClaimTypeConverter))]
+		public Uri Name { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this claim is optional.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if this instance is optional; otherwise, <c>false</c>.
+		/// </value>
+		[DefaultValue(false)]
+		public bool IsOptional { get; set; }
+
+		/// <summary>
+		/// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+		/// </returns>
+		public override string ToString() {
+			return this.Name != null ? this.Name.AbsoluteUri : null;
+		}
+	}
+}

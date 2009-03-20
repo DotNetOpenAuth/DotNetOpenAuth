@@ -965,7 +965,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Enables a server control to perform final clean up before it is released from memory.
 		/// </summary>
-		public override void Dispose() {
+		public sealed override void Dispose() {
 			this.Dispose(true);
 			base.Dispose();
 			GC.SuppressFinalize(this);

@@ -32,20 +32,20 @@
 	<asp:LoginView runat="server" ID="loginView">
 		<LoggedInTemplate>
 			<asp:Panel runat="server" DefaultButton="sendAssertionButton">
-				Since you're logged in, try sending an unsolicited assertion to an OpenID 2.0 relying
-				party site. Just type in the URL to the site's home page. This could be the sample
-				relying party web site.
-				<br />
-				<asp:TextBox runat="server" ID="relyingPartySite" Columns="40" />
-				<asp:Button runat="server" ID="sendAssertionButton" Text="Send assertion" OnClick="sendAssertionButton_Click" />
-				<asp:RequiredFieldValidator runat="server" ControlToValidate="relyingPartySite" Text="Specify relying party site first" />
-				<br />
-				An unsolicited assertion is a way to log in to a relying party site directly from
-				your OpenID Provider.
-				<p>
-					<asp:Label runat="server" EnableViewState="false" Visible="false" ID="errorLabel"
-						ForeColor="Red" />
-				</p>
+			<p>You're logged in as <b><%= HttpUtility.HtmlEncode(User.Identity.Name) %></b> </p>
+			<p>Your claimed identifier is <b><%= HttpUtility.HtmlEncode(Util.BuildIdentityUrl()) %></b> </p>
+				<p>Since you're logged in, try sending an unsolicited assertion to an OpenID 2.0 relying
+					party site. Just type in the URL to the site's home page. This could be the sample
+					relying party web site. </p>
+				<div>
+					<asp:TextBox runat="server" ID="relyingPartySite" Columns="40" />
+					<asp:Button runat="server" ID="sendAssertionButton" Text="Send assertion" OnClick="sendAssertionButton_Click" />
+					<asp:RequiredFieldValidator runat="server" ControlToValidate="relyingPartySite" Text="Specify relying party site first" />
+				</div>
+				<p>An unsolicited assertion is a way to log in to a relying party site directly from
+					your OpenID Provider. </p>
+				<p><asp:Label runat="server" EnableViewState="false" Visible="false" ID="errorLabel"
+					ForeColor="Red" /> </p>
 			</asp:Panel>
 		</LoggedInTemplate>
 	</asp:LoginView>
