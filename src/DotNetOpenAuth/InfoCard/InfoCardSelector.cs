@@ -13,29 +13,11 @@ namespace DotNetOpenAuth.InfoCard {
 	using System.ComponentModel;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
-	using System.IO;
 	using System.Linq;
 	using System.Web.UI;
 	using System.Web.UI.HtmlControls;
 	using System.Web.UI.WebControls;
-	using System.Xml.XPath;
 	using DotNetOpenAuth.Messaging;
-
-	/// <summary>
-	/// The type of Information Card that is being asked for.
-	/// </summary>
-	public enum IssuerType {
-		/// <summary>
-		/// An InfoCard that the user creates at his/her own machine.
-		/// </summary>
-		SelfIssued,
-
-		/// <summary>
-		/// An InfoCard that is supplied by a third party so assert claims as valid
-		/// according to that third party.
-		/// </summary>
-		Managed,
-	}
 
 	/// <summary>
 	/// The style to use for NOT displaying a hidden region.
@@ -55,10 +37,10 @@ namespace DotNetOpenAuth.InfoCard {
 	/// <summary>
 	/// An Information Card selector ASP.NET control.
 	/// </summary>
-	[ParseChildren(true, "ClaimTypes")]
+	[ParseChildren(true, "ClaimsRequested")]
 	[PersistChildren(false)]
 	[DefaultEvent("ReceivedToken")]
-	[ToolboxData("<{0}:InfoCardSelector runat=\"server\"><ClaimTypes><{0}:ClaimType Name=\"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier\" /></ClaimTypes><UnsupportedTemplate><p>Your browser does not support Information Cards.</p></UnsupportedTemplate></{0}:InfoCardSelector>")]
+	[ToolboxData("<{0}:InfoCardSelector runat=\"server\"><ClaimsRequested><{0}:ClaimType Name=\"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier\" /></ClaimsRequested><UnsupportedTemplate><p>Your browser does not support Information Cards.</p></UnsupportedTemplate></{0}:InfoCardSelector>")]
 	[ContractVerification(true)]
 	public class InfoCardSelector : CompositeControl, IPostBackEventHandler {
 		#region Property constants
@@ -101,12 +83,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <summary>
 		/// Default value for the <see cref="Issuer"/> property.
 		/// </summary>
-		private const string IssuerDefault = "";
-
-		/// <summary>
-		/// The default value for the <see cref="IssuerType"/> property.
-		/// </summary>
-		private const IssuerType IssuerTypeDefault = IssuerType.SelfIssued;
+		private const string IssuerDefault = WellKnownIssuers.SelfIssued;
 
 		/// <summary>
 		/// The default value for the <see cref="TokenType"/> property.
@@ -129,9 +106,9 @@ namespace DotNetOpenAuth.InfoCard {
 		private const string AutoPopupViewStateKey = "AutoPopup";
 
 		/// <summary>
-		/// The viewstate key for storing the <see cref="ClaimTypes" /> property.
+		/// The viewstate key for storing the <see cref="ClaimsRequested" /> property.
 		/// </summary>
-		private const string ClaimTypesViewStateKey = "ClaimTypes";
+		private const string ClaimsRequestedViewStateKey = "ClaimsRequested";
 
 		/// <summary>
 		/// The viewstate key for storing the <see cref="TokenType" /> property.
@@ -152,11 +129,6 @@ namespace DotNetOpenAuth.InfoCard {
 		/// The viewstate key for storing the <see cref="AutoPostBack" /> property.
 		/// </summary>
 		private const string AutoPostBackViewStateKey = "AutoPostBack";
-
-		/// <summary>
-		/// The viewstate key for storing the <see cref="IssuerType" /> property.
-		/// </summary>
-		private const string IssuerTypeViewStateKey = "IssueType";
 
 		/// <summary>
 		/// The viewstate key for storing the <see cref="ImageSize" /> property.
@@ -188,11 +160,6 @@ namespace DotNetOpenAuth.InfoCard {
 		private const string InfoCardCategory = "InfoCard";
 
 		#endregion
-
-		/// <summary>
-		/// The Issuer URI to use for self-issued cards.
-		/// </summary>
-		private const string SelfIssuedUri = "http://schemas.xmlsoap.org/ws/2005/05/identity/issuer/self";
 
 		/// <summary>
 		/// The resource name for getting at the SupportingScript.js embedded manifest stream.
@@ -234,38 +201,28 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </summary>
 		[Description("Specifies the required and optional claims.")]
 		[PersistenceMode(PersistenceMode.InnerProperty), Category(InfoCardCategory)]
-		public Collection<ClaimType> ClaimTypes {
+		public Collection<ClaimType> ClaimsRequested {
 			get {
 				Contract.Ensures(Contract.Result<Collection<ClaimType>>() != null);
-				if (this.ViewState[ClaimTypesViewStateKey] == null) {
+				if (this.ViewState[ClaimsRequestedViewStateKey] == null) {
 					var claims = new Collection<ClaimType>();
-					this.ViewState[ClaimTypesViewStateKey] = claims;
+					this.ViewState[ClaimsRequestedViewStateKey] = claims;
 					return claims;
 				} else {
-					return (Collection<ClaimType>)this.ViewState[ClaimTypesViewStateKey];
+					return (Collection<ClaimType>)this.ViewState[ClaimsRequestedViewStateKey];
 				}
 			}
 		}
 
 		/// <summary>
-		/// Gets or sets the issuer URI, applicable only if the <see cref="IssuerType"/>
-		/// property is set to <see cref="InfoCard.IssuerType.Managed"/>.
+		/// Gets or sets the issuer URI.
 		/// </summary>
 		[Description("When receiving managed cards, this is the only Issuer whose cards will be accepted.")]
 		[Category(InfoCardCategory), DefaultValue(IssuerDefault)]
-		public string Issuer {
-			get { return (string)this.ViewState[IssuerViewStateKey] ?? IssuerDefault; }
+		[TypeConverter(typeof(ComponentModel.UriConverter<WellKnownIssuers>))]
+		public Uri Issuer {
+			get { return (Uri)this.ViewState[IssuerViewStateKey] ?? new Uri(IssuerDefault); }
 			set { this.ViewState[IssuerViewStateKey] = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets a value indicating whether a self-issued or a managed Card should be submitted.
-		/// </summary>
-		[Description("Specifies the issuer type. Select Managed to specify the issuer URI on your own. Select SelfIssued to use the well-known self issued URI.")]
-		[Category(InfoCardCategory), DefaultValue(IssuerTypeDefault)]
-		public IssuerType IssuerType {
-			get { return (IssuerType)(this.ViewState[IssuerTypeViewStateKey] ?? IssuerTypeDefault); }
-			set { this.ViewState[IssuerTypeViewStateKey] = value; }
 		}
 
 		/// <summary>
@@ -568,12 +525,8 @@ namespace DotNetOpenAuth.InfoCard {
 			cardSpaceControl.Attributes.Add(HtmlTextWriterAttribute.Id.ToString(), this.ClientID + "_cs");
 
 			// issuer
-			if (this.IssuerType == IssuerType.SelfIssued) {
-				cardSpaceControl.Controls.Add(CreateParam("issuer", SelfIssuedUri));
-			} else if (IssuerType == IssuerType.Managed) {
-				if (!string.IsNullOrEmpty(this.Issuer)) {
-					cardSpaceControl.Controls.Add(CreateParam("issuer", this.Issuer));
-				}
+			if (this.Issuer != null) {
+				cardSpaceControl.Controls.Add(CreateParam("issuer", this.Issuer.AbsoluteUri));
 			}
 
 			// issuer policy
@@ -618,11 +571,11 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="optional">A space-delimited list of claim type URIs for claims that may optionally be included in a submitted Information Card.</param>
 		[Pure]
 		private void GetRequestedClaims(out string required, out string optional) {
-			Contract.Requires(this.ClaimTypes != null);
+			Contract.Requires(this.ClaimsRequested != null);
 			Contract.Ensures(Contract.ValueAtReturn<string>(out required) != null);
 			Contract.Ensures(Contract.ValueAtReturn<string>(out optional) != null);
 
-			var nonEmptyClaimTypes = this.ClaimTypes.Where(c => c.Name != null);
+			var nonEmptyClaimTypes = this.ClaimsRequested.Where(c => c.Name != null);
 
 			var optionalClaims = from claim in nonEmptyClaimTypes
 								 where claim.IsOptional

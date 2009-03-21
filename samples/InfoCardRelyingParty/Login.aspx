@@ -14,9 +14,9 @@
 	<p>This login page demonstrates logging in using the InfoCard selector. Click the InfoCard
 		image below to login. </p>
 	<ic:InfoCardSelector runat="server" ID="InfoCardSelector1">
-		<ClaimTypes>
-			<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/rsa" />
-		</ClaimTypes>
+		<ClaimsRequested>
+			<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier" />
+		</ClaimsRequested>
 		<UnsupportedTemplate>
 			<p>You're using a browser that doesn't seem to have Information Card Selector support.
 			</p>
