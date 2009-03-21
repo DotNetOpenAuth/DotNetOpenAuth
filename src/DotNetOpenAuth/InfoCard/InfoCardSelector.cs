@@ -474,7 +474,7 @@ namespace DotNetOpenAuth.InfoCard {
 			// generate the onclick script for the image
 			string invokeScript = string.Format(
 				CultureInfo.InvariantCulture,
-				@"document.getElementById('{0}').value = document.getElementById('{1}_cs').value; {2}",
+				@"try {{ document.getElementById('{0}').value = document.getElementById('{1}_cs').value; {2} }} catch (e) {{ /* canceled */ }}",
 				this.HiddenFieldName,
 				this.ClientID,
 				this.AutoPostBack ? postback : "");
@@ -486,7 +486,7 @@ namespace DotNetOpenAuth.InfoCard {
 			if (this.AutoPopup && !this.Page.IsPostBack) {
 				string loadScript = string.Format(
 					CultureInfo.InvariantCulture,
-					@"document.getElementById('{0}').value = document.getElementById('{1}_cs').value; {2}",
+					@"try {{ document.getElementById('{0}').value = document.getElementById('{1}_cs').value; {2} }} catch (e) {{ /* canceled */ }}",
 					this.HiddenFieldName,
 					this.ClientID,
 					postback);
