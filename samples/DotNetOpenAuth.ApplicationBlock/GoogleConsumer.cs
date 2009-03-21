@@ -7,7 +7,13 @@
 namespace DotNetOpenAuth.ApplicationBlock {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
+	using System.IO;
 	using System.Linq;
+	using System.Net;
+	using System.Text;
+	using System.Text.RegularExpressions;
+	using System.Xml;
 	using System.Xml.Linq;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
@@ -33,6 +39,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		private static readonly Dictionary<Applications, string> DataScopeUris = new Dictionary<Applications, string> {
 			{ Applications.Contacts, "http://www.google.com/m8/feeds/" },
 			{ Applications.Calendar, "http://www.google.com/calendar/feeds/" },
+			{ Applications.Blogger, "http://www.blogger.com/feeds" },
 		};
 
 		/// <summary>
@@ -54,6 +61,11 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			/// Appointments in Google Calendar.
 			/// </summary>
 			Calendar = 0x2,
+
+			/// <summary>
+			/// Blog post authoring.
+			/// </summary>
+			Blogger = 0x4,
 		}
 
 		/// <summary>
@@ -132,6 +144,49 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			string body = response.GetResponseReader().ReadToEnd();
 			XDocument result = XDocument.Parse(body);
 			return result;
+		}
+
+		public static void PostBlogEntry(ConsumerBase consumer, string accessToken, string blogUrl, string title, XElement body) {
+			string feedUrl;
+			var getBlogHome = WebRequest.Create(blogUrl);
+			using (var blogHomeResponse = getBlogHome.GetResponse()) {
+				using (StreamReader sr = new StreamReader(blogHomeResponse.GetResponseStream())) {
+					string homePageHtml = sr.ReadToEnd();
+					Match m = Regex.Match(homePageHtml, @"http://www.blogger.com/feeds/\d+/posts/default");
+					Debug.Assert(m.Success, "Posting operation failed.");
+					feedUrl = m.Value;
+				}
+			}
+			const string Atom = "http://www.w3.org/2005/Atom";
+			XElement entry = new XElement(
+				XName.Get("entry", Atom),
+				new XElement(XName.Get("title", Atom), new XAttribute("type", "text"), title),
+				new XElement(XName.Get("content", Atom), new XAttribute("type", "xhtml"), body),
+				new XElement(XName.Get("category", Atom), new XAttribute("scheme", "http://www.blogger.com/atom/ns#"), new XAttribute("term", "oauthdemo")));
+
+			MemoryStream ms = new MemoryStream();
+			XmlWriterSettings xws = new XmlWriterSettings() {
+				Encoding = Encoding.UTF8,
+			};
+			XmlWriter xw = XmlWriter.Create(ms, xws);
+			entry.WriteTo(xw);
+			xw.Flush();
+
+			WebRequest request = consumer.PrepareAuthorizedRequest(new MessageReceivingEndpoint(feedUrl, HttpDeliveryMethods.PostRequest | HttpDeliveryMethods.AuthorizationHeaderRequest), accessToken);
+			request.ContentType = "application/atom+xml";
+			request.Method = "POST";
+			request.ContentLength = ms.Length;
+			ms.Seek(0, SeekOrigin.Begin);
+			using (Stream requestStream = request.GetRequestStream()) {
+				ms.CopyTo(requestStream);
+			}
+			using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+				if (response.StatusCode == HttpStatusCode.Created) {
+					// Success
+				} else {
+					// Error!
+				}
+			}
 		}
 
 		/// <summary>
