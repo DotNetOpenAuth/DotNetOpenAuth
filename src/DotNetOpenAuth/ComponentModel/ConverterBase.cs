@@ -1,34 +1,41 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ClaimTypeConverter.cs" company="Andrew Arnott">
+// <copyright file="ConverterBase.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.ComponentModel {
 	using System;
+	using System.Collections;
 	using System.ComponentModel;
 	using System.ComponentModel.Design.Serialization;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
-	using System.Linq;
-	using System.Reflection;
-	using DotNetOpenAuth.InfoCard;
 
 	/// <summary>
 	/// A design-time helper to allow Intellisense to aid typing
 	/// ClaimType URIs.
 	/// </summary>
-	public class ClaimTypeConverter : TypeConverter {
+	public abstract class ConverterBase<T> : TypeConverter {
 		/// <summary>
 		/// A cache of the standard claim types known to the application.
 		/// </summary>
-		private static Uri[] standardValues = ReflectStandardValues();
+		private StandardValuesCollection standardValues;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ClaimTypeConverter"/> class.
+		/// Initializes a new instance of the ConverterBase&lt;T&gt; class.
 		/// </summary>
-		[Obsolete("This class is meant for design-time use within an IDE, and not meant to be used directly by runtime code.")]
-		public ClaimTypeConverter() {
+		protected ConverterBase() {
+		}
+
+		private StandardValuesCollection StandardValueCache {
+			get {
+				if (this.standardValues == null) {
+					this.standardValues = new StandardValuesCollection(this.GetStandardValuesForCache());
+				}
+
+				return this.standardValues;
+			}
 		}
 
 		/// <summary>
@@ -39,7 +46,7 @@ namespace DotNetOpenAuth.ComponentModel {
 		/// true if <see cref="M:System.ComponentModel.TypeConverter.GetStandardValues"/> should be called to find a common set of values the object supports; otherwise, false.
 		/// </returns>
 		public override bool GetStandardValuesSupported(ITypeDescriptorContext context) {
-			return true;
+			return this.StandardValueCache.Count > 0;
 		}
 
 		/// <summary>
@@ -50,7 +57,7 @@ namespace DotNetOpenAuth.ComponentModel {
 		/// A <see cref="T:System.ComponentModel.TypeConverter.StandardValuesCollection"/> that holds a standard set of valid values, or null if the data type does not support a standard set of values.
 		/// </returns>
 		public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context) {
-			return new StandardValuesCollection(standardValues);
+			return this.StandardValueCache;
 		}
 
 		/// <summary>
@@ -73,7 +80,8 @@ namespace DotNetOpenAuth.ComponentModel {
 		/// true if this converter can perform the conversion; otherwise, false.
 		/// </returns>
 		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) {
-			return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
+			return sourceType == typeof(string)
+				|| base.CanConvertFrom(context, sourceType);
 		}
 
 		/// <summary>
@@ -105,7 +113,7 @@ namespace DotNetOpenAuth.ComponentModel {
 		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value) {
 			string stringValue = value as string;
 			if (stringValue != null) {
-				return new Uri(stringValue);
+				return this.ConvertFrom(stringValue);
 			} else {
 				return base.ConvertFrom(context, culture, value);
 			}
@@ -128,44 +136,48 @@ namespace DotNetOpenAuth.ComponentModel {
 		/// The conversion cannot be performed.
 		/// </exception>
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType) {
-			Uri uriValue = (Uri)value;
+			T typedValue = (T)value;
 			if (destinationType == typeof(string)) {
-				return uriValue.AbsoluteUri;
+				return this.ConvertToString(typedValue);
 			} else if (destinationType == typeof(InstanceDescriptor)) {
-				MemberInfo uriCtor = typeof(Uri).GetConstructor(new Type[] { typeof(string) });
-				return new InstanceDescriptor(uriCtor, new object[] { uriValue.AbsoluteUri });
+				return this.CreateFrom(typedValue);
 			} else {
 				return base.ConvertTo(context, culture, value, destinationType);
 			}
 		}
 
 		/// <summary>
-		/// Returns whether the given value object is valid for this type and for the specified context.
+		/// Gets the standard values to suggest with Intellisense in the designer.
 		/// </summary>
-		/// <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"/> that provides a format context.</param>
-		/// <param name="value">The <see cref="T:System.Object"/> to test for validity.</param>
-		/// <returns>
-		/// true if the specified value is valid for this object; otherwise, false.
-		/// </returns>
-		public override bool IsValid(ITypeDescriptorContext context, object value) {
-			if (value is Uri) {
-				return true;
-			} else if (value is string) {
-				Uri result;
-				return Uri.TryCreate((string)value, UriKind.Absolute, out result);
-			} else {
-				return false;
-			}
+		/// <returns>A collection of the standard values.</returns>
+		[Pure]
+		protected virtual ICollection GetStandardValuesForCache() {
+			Contract.Ensures(Contract.Result<ICollection>() != null);
+			return new T[0];
 		}
 
 		/// <summary>
-		/// Gets the standard claim type URIs known to the library.
+		/// Converts a value from its string representation to its strongly-typed object.
 		/// </summary>
-		/// <returns>An array of the standard claim types.</returns>
+		/// <param name="value">The value.</param>
+		/// <returns>The strongly-typed object.</returns>
 		[Pure]
-		private static Uri[] ReflectStandardValues() {
-			return (from field in typeof(WellKnownClaimTypes).GetFields(BindingFlags.Static | BindingFlags.Public)
-					select new Uri((string)field.GetValue(null))).ToArray();
-		}
+		protected abstract T ConvertFrom(string value);
+
+		/// <summary>
+		/// Creates the reflection instructions for recreating an instance later.
+		/// </summary>
+		/// <param name="value">The value to recreate later.</param>
+		/// <returns>The description of how to recreate an instance.</returns>
+		[Pure]
+		protected abstract InstanceDescriptor CreateFrom(T value);
+
+		/// <summary>
+		/// Converts the strongly-typed value to a string.
+		/// </summary>
+		/// <param name="value">The value to convert.</param>
+		/// <returns>The string representation of the object.</returns>
+		[Pure]
+		protected abstract string ConvertToString(T value);
 	}
 }

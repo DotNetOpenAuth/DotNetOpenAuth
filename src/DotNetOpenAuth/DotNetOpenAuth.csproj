@@ -167,6 +167,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ComponentModel\ConverterBase.cs" />
+    <Compile Include="ComponentModel\UriConverter.cs" />
     <Compile Include="Configuration\AssociationTypeCollection.cs" />
     <Compile Include="Configuration\AssociationTypeElement.cs" />
     <Compile Include="Configuration\DotNetOpenAuthSection.cs" />
@@ -181,7 +183,6 @@
     <Compile Include="Configuration\HostNameOrRegexCollection.cs" />
     <Compile Include="Configuration\HostNameElement.cs" />
     <Compile Include="InfoCard\ClaimType.cs" />
-    <Compile Include="ComponentModel\ClaimTypeConverter.cs" />
     <Compile Include="InfoCard\ReceivingTokenEventArgs.cs" />
     <Compile Include="InfoCard\TokenProcessingErrorEventArgs.cs" />
     <Compile Include="InfoCard\WellKnownClaimTypes.cs" />
@@ -197,6 +198,7 @@
     <Compile Include="InfoCard\Token\Token.cs" />
     <Compile Include="InfoCard\Token\TokenUtility.cs" />
     <Compile Include="InfoCard\Token\TokenDecryptor.cs" />
+    <Compile Include="InfoCard\WellKnownIssuers.cs" />
     <Compile Include="Messaging\CachedDirectWebResponse.cs" />
     <Compile Include="Messaging\ChannelContract.cs" />
     <Compile Include="Messaging\DirectWebRequestOptions.cs" />
