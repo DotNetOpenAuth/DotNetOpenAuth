@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.InfoCard {
 		public const string SelfIssued = "http://schemas.xmlsoap.org/ws/2005/05/identity/issuer/self";
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WellKnownClaimTypes"/> class.
+		/// Prevents a default instance of the <see cref="WellKnownIssuers"/> class from being created.
 		/// </summary>
 		private WellKnownIssuers() {
 		}

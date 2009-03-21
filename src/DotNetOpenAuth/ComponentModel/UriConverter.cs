@@ -6,20 +6,21 @@
 
 namespace DotNetOpenAuth.ComponentModel {
 	using System;
+	using System.Collections;
 	using System.ComponentModel;
 	using System.ComponentModel.Design.Serialization;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Reflection;
-	using System.Collections;
 
 	/// <summary>
 	/// A design-time helper to allow controls to have properties
 	/// of type <see cref="Uri"/>.
 	/// </summary>
+	/// <typeparam name="WellKnownValues">A type to reflect over for suggested values.</typeparam>
 	public class UriConverter<WellKnownValues> : ConverterBase<Uri> {
 		/// <summary>
-		/// Initializes a new instance of the UriConverter&lt;WellKnownValues&gt; class.
+		/// Initializes a new instance of the UriConverter class.
 		/// </summary>
 		[Obsolete("This class is meant for design-time use within an IDE, and not meant to be used directly by runtime code.")]
 		public UriConverter() {
