@@ -19,6 +19,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.ComponentModel;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Drawing.Design;
 	using System.Globalization;
 	using System.Linq;
 	using System.Text;
@@ -584,6 +585,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Category("Behavior")]
 		[DefaultValue(RealmUrlDefault)]
 		[Description("The OpenID Realm of the relying party web site.")]
+		[UrlProperty, Editor("System.Web.UI.Design.UrlEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", typeof(UITypeEditor))]
 		public string RealmUrl {
 			get {
 				return (string)(this.ViewState[RealmUrlViewStateKey] ?? RealmUrlDefault);
@@ -617,6 +619,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Category("Behavior")]
 		[DefaultValue(ReturnToUrlDefault)]
 		[Description("The OpenID ReturnTo of the relying party web site.")]
+		[UrlProperty, Editor("System.Web.UI.Design.UrlEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", typeof(UITypeEditor))]
 		public string ReturnToUrl {
 			get {
 				return (string)(this.ViewState[ReturnToUrlViewStateKey] ?? ReturnToUrlDefault);

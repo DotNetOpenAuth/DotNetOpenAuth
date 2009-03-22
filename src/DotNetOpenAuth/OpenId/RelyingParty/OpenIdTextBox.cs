@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.ComponentModel;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Drawing.Design;
 	using System.Globalization;
 	using System.Net;
 	using System.Text.RegularExpressions;
@@ -379,6 +380,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "Bindable property must be simple type")]
 		[Bindable(true), DefaultValue(RealmUrlDefault), Category(BehaviorCategory)]
 		[Description("The OpenID Realm of the relying party web site.")]
+		[UrlProperty, Editor("System.Web.UI.Design.UrlEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", typeof(UITypeEditor))]
 		public string RealmUrl {
 			get {
 				return (string)(ViewState[RealmUrlViewStateKey] ?? RealmUrlDefault);
@@ -410,6 +412,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "Bindable property must be simple type")]
 		[Bindable(true), DefaultValue(ReturnToUrlDefault), Category(BehaviorCategory)]
 		[Description("The OpenID ReturnTo of the relying party web site.")]
+		[UrlProperty, Editor("System.Web.UI.Design.UrlEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", typeof(UITypeEditor))]
 		public string ReturnToUrl {
 			get {
 				return (string)(this.ViewState[ReturnToUrlViewStateKey] ?? ReturnToUrlDefault);
@@ -644,6 +647,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "Bindable property must be simple type")]
 		[Bindable(true), DefaultValue(PolicyUrlDefault), Category(ProfileCategory)]
 		[Description("The URL to your privacy policy page that describes how claims will be used and/or shared.")]
+		[UrlProperty, Editor("System.Web.UI.Design.UrlEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", typeof(UITypeEditor))]
 		public string PolicyUrl {
 			get {
 				return (string)ViewState[PolicyUrlViewStateKey] ?? PolicyUrlDefault;
