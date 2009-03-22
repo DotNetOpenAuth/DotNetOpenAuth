@@ -521,7 +521,6 @@ namespace DotNetOpenAuth.InfoCard {
 		private Control CreateInfoCardSelectorObject() {
 			HtmlGenericControl cardSpaceControl = new HtmlGenericControl(HtmlTextWriterTag.Object.ToString());
 			cardSpaceControl.Attributes.Add(HtmlTextWriterAttribute.Type.ToString(), "application/x-informationcard");
-			cardSpaceControl.Attributes.Add(HtmlTextWriterAttribute.Name.ToString(), this.ClientID + "_cs");
 			cardSpaceControl.Attributes.Add(HtmlTextWriterAttribute.Id.ToString(), this.ClientID + "_cs");
 
 			// issuer
