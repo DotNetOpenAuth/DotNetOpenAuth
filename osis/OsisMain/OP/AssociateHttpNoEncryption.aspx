@@ -8,7 +8,7 @@
 		<asp:View ID="View1" runat="server">
 			<asp:Panel runat="server" DefaultButton="beginButton">
 				<asp:Label ID="Label1" runat="server" Text="OpenID Identifier:" /> <asp:TextBox ID="identifierBox"
-					runat="server" />
+					Columns="40" runat="server" />
 				<asp:Button ID="beginButton" runat="server" Text="Begin" OnClick="beginButton_Click" />
 				<asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ControlToValidate="identifierBox"
 					ErrorMessage="Enter an identifier first." Display="Dynamic" />

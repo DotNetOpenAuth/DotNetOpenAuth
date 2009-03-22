@@ -1,10 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Web;
 
 public static class Util {
+	public static string BuildErrorMessage(Exception ex) {
+		StringBuilder sb = new StringBuilder();
+		while (ex != null) {
+			sb.Append(ex.Message);
+			ex = ex.InnerException;
+		}
+
+		return sb.ToString();
+	}
+
 	public static Uri GetPublicPageSourcePath() {
 		return GetPublicPathForLocalPath(GetPageLocalPath());
 	}
