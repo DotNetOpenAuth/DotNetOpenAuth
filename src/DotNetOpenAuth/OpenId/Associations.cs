@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Diagnostics;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
@@ -25,13 +26,12 @@ namespace DotNetOpenAuth.OpenId {
 		/// The lookup table where keys are the association handles and values are the associations themselves.
 		/// </summary>
 		[DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-		private readonly Dictionary<string, Association> associations;
+		private readonly KeyedCollection<string, Association> associations = new KeyedCollectionDelegate<string, Association>(assoc => assoc.Handle);
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Associations"/> class.
 		/// </summary>
 		public Associations() {
-			this.associations = new Dictionary<string, Association>();
 		}
 
 		/// <summary>
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.OpenId {
 		public IEnumerable<Association> Best {
 			get {
 				lock (this.associations) {
-					return this.associations.Values.OrderByDescending(assoc => assoc.Issued);
+					return this.associations.OrderByDescending(assoc => assoc.Issued);
 				}
 			}
 		}
@@ -57,7 +57,8 @@ namespace DotNetOpenAuth.OpenId {
 		public void Set(Association association) {
 			ErrorUtilities.VerifyArgumentNotNull(association, "association");
 			lock (this.associations) {
-				this.associations[association.Handle] = association;
+				this.associations.Remove(association.Handle); // just in case one already exists.
+				this.associations.Add(association);
 			}
 		}
 
@@ -68,9 +69,11 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>The desired association, or null if none with the given handle could be found.</returns>
 		public Association Get(string handle) {
 			lock (this.associations) {
-				Association assoc;
-				this.associations.TryGetValue(handle, out assoc);
-				return assoc;
+				if (this.associations.Contains(handle)) {
+					return this.associations[handle];
+				} else {
+					return null;
+				}
 			}
 		}
 
@@ -90,7 +93,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		public void ClearExpired() {
 			lock (this.associations) {
-				var expireds = this.associations.Values.Where(assoc => assoc.IsExpired).ToList();
+				var expireds = this.associations.Where(assoc => assoc.IsExpired).ToList();
 				foreach (Association assoc in expireds) {
 					this.associations.Remove(assoc.Handle);
 				}

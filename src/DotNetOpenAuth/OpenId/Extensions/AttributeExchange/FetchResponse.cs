@@ -6,9 +6,7 @@
 
 namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 	using System;
-	using System.Collections.Generic;
-	using System.Diagnostics;
-	using System.Globalization;
+	using System.Collections.ObjectModel;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -39,9 +37,9 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		private const string Mode = "fetch_response";
 
 		/// <summary>
-		/// The list of provided attributes.  This field will never be null.
+		/// The collection of provided attributes.  This field will never be null.
 		/// </summary>
-		private readonly List<AttributeValues> attributesProvided = new List<AttributeValues>();
+		private readonly KeyedCollection<string, AttributeValues> attributesProvided = new KeyedCollectionDelegate<string, AttributeValues>(av => av.TypeUri);
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FetchResponse"/> class.
@@ -53,7 +51,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// Gets a sequence of the attributes whose values are provided by the OpenID Provider.
 		/// </summary>
-		public IEnumerable<AttributeValues> Attributes {
+		public KeyedCollection<string, AttributeValues> Attributes {
 			get { return this.attributesProvided; }
 		}
 
@@ -71,28 +69,6 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// </summary>
 		[MessagePart("update_url", IsRequired = false)]
 		public Uri UpdateUrl { get; set; }
-
-		/// <summary>
-		/// Adds attributes to the response for the relying party.
-		/// Applicable to Providers.
-		/// </summary>
-		/// <param name="attribute">The attribute and values to add to the response.</param>
-		public void AddAttribute(AttributeValues attribute) {
-			ErrorUtilities.VerifyArgumentNotNull(attribute, "attribute");
-			ErrorUtilities.VerifyArgumentNamed(!this.ContainsAttribute(attribute.TypeUri), "attribute", OpenIdStrings.AttributeAlreadyAdded, attribute.TypeUri);
-			this.attributesProvided.Add(attribute);
-		}
-
-		/// <summary>
-		/// Gets the value(s) returned by the OpenID Provider
-		/// for a given attribute, or null if that attribute was not provided.
-		/// Applicable to Relying Parties.
-		/// </summary>
-		/// <param name="attributeTypeUri">The type URI of the attribute.</param>
-		/// <returns>The values given by the Provider for the given attribute; or <c>null</c> if the attribute was not included in the message.</returns>
-		public AttributeValues GetAttribute(string attributeTypeUri) {
-			return this.attributesProvided.SingleOrDefault(attribute => string.Equals(attribute.TypeUri, attributeTypeUri, StringComparison.Ordinal));
-		}
 
 		/// <summary>
 		/// Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>.
@@ -165,7 +141,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		void IMessageWithEvents.OnReceiving() {
 			var extraData = ((IMessage)this).ExtraData;
 			foreach (var att in AXUtilities.DeserializeAttributes(extraData)) {
-				this.AddAttribute(att);
+				this.Attributes.Add(att);
 			}
 		}
 
@@ -190,17 +166,6 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 				this.UpdateUrl = null;
 				Logger.OpenId.ErrorFormat("The AX fetch response update_url parameter was not absolute ('{0}').  Ignoring value.", this.UpdateUrl);
 			}
-		}
-
-		/// <summary>
-		/// Determines whether some attribute has values in this fetch response.
-		/// </summary>
-		/// <param name="typeUri">The type URI of the attribute in question.</param>
-		/// <returns>
-		/// 	<c>true</c> if the specified attribute appears in the fetch response; otherwise, <c>false</c>.
-		/// </returns>
-		private bool ContainsAttribute(string typeUri) {
-			return this.GetAttribute(typeUri) != null;
 		}
 	}
 }

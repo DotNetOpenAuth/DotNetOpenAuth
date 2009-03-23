@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.AttributeExchange {
 		public void AddAttributeByValue() {
 			var req = new StoreRequest();
 			AttributeValues value = new AttributeValues();
-			req.AddAttribute(value);
+			req.Attributes.Add(value);
 			Assert.AreSame(value, req.Attributes.Single());
 		}
 
@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.AttributeExchange {
 		[TestMethod]
 		public void AddAttributeByPrimitives() {
 			var req = new StoreRequest();
-			req.AddAttribute("http://att1", "value1", "value2");
+			req.Attributes.Add("http://att1", "value1", "value2");
 			AttributeValues value = req.Attributes.Single();
 			Assert.AreEqual("http://att1", value.TypeUri);
 			Assert.IsTrue(MessagingUtilities.AreEquivalent(new[] { "value1", "value2" }, value.Values));
@@ -57,13 +57,13 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.AttributeExchange {
 			Assert.AreEqual(req1, req2);
 
 			// Add attributes in different orders deliberately.
-			req1.AddAttribute("http://att1");
+			req1.Attributes.Add("http://att1");
 			Assert.AreNotEqual(req1, req2);
-			req2.AddAttribute("http://att2");
+			req2.Attributes.Add("http://att2");
 			Assert.AreNotEqual(req1, req2);
-			req1.AddAttribute("http://att2");
+			req1.Attributes.Add("http://att2");
 			Assert.AreNotEqual(req1, req2);
-			req2.AddAttribute("http://att1");
+			req2.Attributes.Add("http://att1");
 			Assert.AreEqual(req1, req2);
 		}
 	}
