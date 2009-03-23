@@ -17,14 +17,17 @@ namespace DotNetOpenAuth.ComponentModel {
 	/// A design-time helper to allow controls to have properties
 	/// of type <see cref="Uri"/>.
 	/// </summary>
-	/// <typeparam name="WellKnownValues">A type to reflect over for suggested values.</typeparam>
-	public class UriConverter<WellKnownValues> : ConverterBase<Uri> {
+	public abstract class UriConverter : ConverterBase<Uri> {
 		/// <summary>
 		/// Initializes a new instance of the UriConverter class.
 		/// </summary>
-		[Obsolete("This class is meant for design-time use within an IDE, and not meant to be used directly by runtime code.")]
-		public UriConverter() {
+		protected UriConverter() {
 		}
+
+		/// <summary>
+		/// Gets the type to reflect over to extract the well known values.
+		/// </summary>
+		protected abstract Type WellKnownValuesType { get; }
 
 		/// <summary>
 		/// Returns whether the given value object is valid for this type and for the specified context.
@@ -84,8 +87,11 @@ namespace DotNetOpenAuth.ComponentModel {
 		/// <returns>An array of the standard claim types.</returns>
 		[Pure]
 		protected override ICollection GetStandardValuesForCache() {
-			return (from field in typeof(WellKnownValues).GetFields(BindingFlags.Static | BindingFlags.Public)
-					select new Uri((string)field.GetValue(null))).ToArray();
+			var fields = from field in this.WellKnownValuesType.GetFields(BindingFlags.Static | BindingFlags.Public)
+						 select new Uri((string)field.GetValue(null));
+			var properties = from prop in this.WellKnownValuesType.GetProperties(BindingFlags.Static | BindingFlags.Public)
+							 select new Uri((string)prop.GetValue(null, null));
+			return (fields.Concat(properties)).ToArray();
 		}
 	}
 }

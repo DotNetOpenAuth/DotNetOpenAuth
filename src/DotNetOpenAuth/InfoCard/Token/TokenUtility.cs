@@ -161,7 +161,7 @@ namespace DotNetOpenAuth.InfoCard {
 			foreach (ClaimSet cs in authzContext.ClaimSets) {
 				Claim currentIssuerClaim = GetUniqueRsaClaim(cs.Issuer);
 
-				foreach (Claim c in cs.FindClaims(WellKnownClaimTypes.Ppid, Rights.PossessProperty)) {
+				foreach (Claim c in cs.FindClaims(ClaimTypes.PPID, Rights.PossessProperty)) {
 					if (null == currentIssuerClaim) {
 						// Found a claim in a ClaimSet with no RSA issuer.
 						return null;
@@ -243,7 +243,7 @@ namespace DotNetOpenAuth.InfoCard {
 
 			Claim rsa = null;
 
-			foreach (Claim c in cs.FindClaims(WellKnownClaimTypes.Rsa, Rights.PossessProperty)) {
+			foreach (Claim c in cs.FindClaims(ClaimTypes.Rsa, Rights.PossessProperty)) {
 				if (null == rsa) {
 					rsa = c;
 				} else if (!rsa.Equals(c)) {

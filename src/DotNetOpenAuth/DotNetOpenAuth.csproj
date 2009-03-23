@@ -167,7 +167,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ComponentModel\ClaimTypeUriConverter.cs" />
     <Compile Include="ComponentModel\ConverterBase.cs" />
+    <Compile Include="ComponentModel\IssuersUriConverter.cs" />
     <Compile Include="ComponentModel\UriConverter.cs" />
     <Compile Include="Configuration\AssociationTypeCollection.cs" />
     <Compile Include="Configuration\AssociationTypeElement.cs" />
@@ -185,7 +187,6 @@
     <Compile Include="InfoCard\ClaimType.cs" />
     <Compile Include="InfoCard\ReceivingTokenEventArgs.cs" />
     <Compile Include="InfoCard\TokenProcessingErrorEventArgs.cs" />
-    <Compile Include="InfoCard\WellKnownClaimTypes.cs" />
     <Compile Include="InfoCard\InfoCardImage.cs" />
     <Compile Include="InfoCard\InfoCardSelector.cs" />
     <Compile Include="InfoCard\InfoCardStrings.Designer.cs">

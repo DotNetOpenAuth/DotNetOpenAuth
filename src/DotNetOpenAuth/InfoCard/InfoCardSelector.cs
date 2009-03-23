@@ -219,7 +219,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </summary>
 		[Description("When receiving managed cards, this is the only Issuer whose cards will be accepted.")]
 		[Category(InfoCardCategory), DefaultValue(IssuerDefault)]
-		[TypeConverter(typeof(ComponentModel.UriConverter<WellKnownIssuers>))]
+		[TypeConverter(typeof(ComponentModel.IssuersUriConverter))]
 		public Uri Issuer {
 			get { return (Uri)this.ViewState[IssuerViewStateKey] ?? new Uri(IssuerDefault); }
 			set { this.ViewState[IssuerViewStateKey] = value; }

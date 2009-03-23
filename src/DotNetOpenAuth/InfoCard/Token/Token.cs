@@ -105,9 +105,9 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </summary>
 		public string SiteSpecificId {
 			get {
-				Contract.Requires(this.Claims.ContainsKey(WellKnownClaimTypes.Ppid));
-				ErrorUtilities.VerifyOperation(this.Claims.ContainsKey(WellKnownClaimTypes.Ppid), InfoCardStrings.PpidClaimRequired);
-				return TokenUtility.CalculateSiteSpecificID(this.Claims[WellKnownClaimTypes.Ppid]);
+				Contract.Requires(this.Claims.ContainsKey(ClaimTypes.PPID));
+				ErrorUtilities.VerifyOperation(this.Claims.ContainsKey(ClaimTypes.PPID), InfoCardStrings.PpidClaimRequired);
+				return TokenUtility.CalculateSiteSpecificID(this.Claims[ClaimTypes.PPID]);
 			}
 		}
 
