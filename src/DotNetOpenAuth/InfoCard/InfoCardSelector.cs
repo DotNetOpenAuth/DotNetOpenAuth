@@ -219,9 +219,9 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </summary>
 		[Description("When receiving managed cards, this is the only Issuer whose cards will be accepted.")]
 		[Category(InfoCardCategory), DefaultValue(IssuerDefault)]
-		[TypeConverter(typeof(ComponentModel.IssuersUriConverter))]
-		public Uri Issuer {
-			get { return (Uri)this.ViewState[IssuerViewStateKey] ?? new Uri(IssuerDefault); }
+		[TypeConverter(typeof(ComponentModel.IssuersSuggestions))]
+		public string Issuer {
+			get { return (string)this.ViewState[IssuerViewStateKey] ?? IssuerDefault; }
 			set { this.ViewState[IssuerViewStateKey] = value; }
 		}
 
@@ -525,7 +525,7 @@ namespace DotNetOpenAuth.InfoCard {
 
 			// issuer
 			if (this.Issuer != null) {
-				cardSpaceControl.Controls.Add(CreateParam("issuer", this.Issuer.AbsoluteUri));
+				cardSpaceControl.Controls.Add(CreateParam("issuer", this.Issuer));
 			}
 
 			// issuer policy
@@ -578,10 +578,10 @@ namespace DotNetOpenAuth.InfoCard {
 
 			var optionalClaims = from claim in nonEmptyClaimTypes
 								 where claim.IsOptional
-								 select claim.Name.AbsoluteUri;
+								 select claim.Name;
 			var requiredClaims = from claim in nonEmptyClaimTypes
 								 where !claim.IsOptional
-								 select claim.Name.AbsoluteUri;
+								 select claim.Name;
 
 			string[] requiredClaimsArray = requiredClaims.ToArray();
 			string[] optionalClaimsArray = optionalClaims.ToArray();
