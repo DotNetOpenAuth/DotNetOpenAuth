@@ -61,19 +61,27 @@ namespace DotNetOpenAuth.InfoCard {
 			////if (null != token.SecurityKeys && token.SecurityKeys.Count > 0)
 			////    throw new InformationCardException("Token Security Keys Exist");
 
-			if (audience != null &&
-				token.Assertion.Conditions != null &&
-				token.Assertion.Conditions.Conditions != null) {
-				foreach (SamlCondition condition in token.Assertion.Conditions.Conditions) {
-					SamlAudienceRestrictionCondition audienceCondition = condition as SamlAudienceRestrictionCondition;
+			if (audience == null) {
+				Logger.InfoCard.WarnFormat("SAML token Audience checking will be skipped.");
+			} else {
+				if (token.Assertion.Conditions != null &&
+					token.Assertion.Conditions.Conditions != null) {
+					foreach (SamlCondition condition in token.Assertion.Conditions.Conditions) {
+						SamlAudienceRestrictionCondition audienceCondition = condition as SamlAudienceRestrictionCondition;
 
-					if (audienceCondition != null) {
-						bool match = audienceCondition.Audiences.Contains(audience);
+						if (audienceCondition != null) {
+							Logger.InfoCard.DebugFormat("SAML token audience(s): {0}", audienceCondition.Audiences.ToStringDeferred());
+							bool match = audienceCondition.Audiences.Contains(audience);
 
-						// The token is invalid if any condition is not valid. 
-						// An audience restriction condition is valid if any audience 
-						// matches the Relying Party.
-						ErrorUtilities.VerifyInfoCard(match, InfoCardStrings.AudienceMismatch);
+							if (!match && Logger.InfoCard.IsErrorEnabled) {
+								Logger.InfoCard.ErrorFormat("Expected SAML token audience of {0} but found {1}.", audience, audienceCondition.Audiences.ToStringDeferred());
+							}
+
+							// The token is invalid if any condition is not valid. 
+							// An audience restriction condition is valid if any audience 
+							// matches the Relying Party.
+							ErrorUtilities.VerifyInfoCard(match, InfoCardStrings.AudienceMismatch);
+						}
 					}
 				}
 			}
