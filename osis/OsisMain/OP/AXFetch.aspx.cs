@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IdentityModel.Claims;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using DotNetOpenAuth.OpenId.RelyingParty;
 using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
-using System.Data;
+using DotNetOpenAuth.OpenId.RelyingParty;
 
 public partial class OP_AXFetch : System.Web.UI.Page {
 	private List<AttributeDescription> Attributes;
@@ -59,6 +60,21 @@ public partial class OP_AXFetch : System.Web.UI.Page {
 			new AttributeDescription("Full name", WellKnownAttributes.Name.FullName),
 			new AttributeDescription("Birthdate", WellKnownAttributes.BirthDate.WholeBirthDate),
 			new AttributeDescription("Postal code", WellKnownAttributes.Contact.HomeAddress.PostalCode),
+			new AttributeDescription("IC Given name", ClaimTypes.GivenName),
+			new AttributeDescription("IC Surname", ClaimTypes.Surname),
+			new AttributeDescription("IC Email address", ClaimTypes.Email),
+			new AttributeDescription("IC Street address", ClaimTypes.StreetAddress),
+			new AttributeDescription("IC Locality", ClaimTypes.Locality),
+			new AttributeDescription("IC State", ClaimTypes.StateOrProvince),
+			new AttributeDescription("IC Postal code", ClaimTypes.PostalCode),
+			new AttributeDescription("IC Country", ClaimTypes.Country),
+			new AttributeDescription("IC Home phone", ClaimTypes.HomePhone),
+			new AttributeDescription("IC Other phone", ClaimTypes.OtherPhone),
+			new AttributeDescription("IC Mobile phone", ClaimTypes.MobilePhone),
+			new AttributeDescription("IC Date of birth", ClaimTypes.DateOfBirth),
+			new AttributeDescription("IC Gender", ClaimTypes.Gender),
+			new AttributeDescription("IC PPID", ClaimTypes.PPID),
+			new AttributeDescription("IC Web page", ClaimTypes.Webpage),
 			new AttributeDescription("Custom", null),
 		};
 	}
