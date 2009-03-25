@@ -37,15 +37,13 @@ namespace DotNetOpenAuth.InfoCard {
 		/// Initializes a new instance of the <see cref="Token"/> class.
 		/// </summary>
 		/// <param name="tokenXml">Xml token, which may be encrypted.</param>
-		/// <param name="audience">The audience.</param>
+		/// <param name="audience">The audience.  May be <c>null</c> to avoid audience checking.</param>
 		/// <param name="decryptor">The decryptor to use to decrypt the token, if necessary..</param>
 		/// <exception cref="InformationCardException">Thrown for any problem decoding or decrypting the token.</exception>
 		internal Token(string tokenXml, Uri audience, TokenDecryptor decryptor) {
 			Contract.Requires(tokenXml != null && tokenXml.Length > 0);
-			Contract.Requires(audience != null);
 			Contract.Requires(decryptor != null || !IsEncrypted(tokenXml));
 			ErrorUtilities.VerifyNonZeroLength(tokenXml, "tokenXml");
-			ErrorUtilities.VerifyArgumentNotNull(audience, "audience");
 
 			byte[] decryptedBytes;
 			string decryptedString;

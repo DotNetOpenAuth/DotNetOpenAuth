@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.ComponentModel {
 	/// A design-time helper to allow controls to have properties
 	/// of type <see cref="Uri"/>.
 	/// </summary>
-	public abstract class UriConverter : ConverterBase<Uri> {
+	public class UriConverter : ConverterBase<Uri> {
 		/// <summary>
 		/// Initializes a new instance of the UriConverter class.
 		/// </summary>
@@ -27,7 +27,9 @@ namespace DotNetOpenAuth.ComponentModel {
 		/// <summary>
 		/// Gets the type to reflect over to extract the well known values.
 		/// </summary>
-		protected abstract Type WellKnownValuesType { get; }
+		protected virtual Type WellKnownValuesType {
+			get { return null; }
+		}
 
 		/// <summary>
 		/// Returns whether the given value object is valid for this type and for the specified context.
@@ -38,11 +40,12 @@ namespace DotNetOpenAuth.ComponentModel {
 		/// true if the specified value is valid for this object; otherwise, false.
 		/// </returns>
 		public override bool IsValid(ITypeDescriptorContext context, object value) {
+			string stringValue;
 			if (value is Uri) {
 				return ((Uri)value).IsAbsoluteUri;
-			} else if (value is string) {
+			} else if ((stringValue = value as string) != null) {
 				Uri result;
-				return Uri.TryCreate((string)value, UriKind.Absolute, out result);
+				return stringValue.Length == 0 || Uri.TryCreate(stringValue, UriKind.Absolute, out result);
 			} else {
 				return false;
 			}
@@ -55,7 +58,7 @@ namespace DotNetOpenAuth.ComponentModel {
 		/// <returns>The strongly-typed object.</returns>
 		[Pure]
 		protected override Uri ConvertFrom(string value) {
-			return new Uri(value);
+			return string.IsNullOrEmpty(value) ? null : new Uri(value);
 		}
 
 		/// <summary>
@@ -67,6 +70,10 @@ namespace DotNetOpenAuth.ComponentModel {
 		/// </returns>
 		[Pure]
 		protected override InstanceDescriptor CreateFrom(Uri value) {
+			if (value == null) {
+				return null;
+			}
+
 			MemberInfo uriCtor = typeof(Uri).GetConstructor(new Type[] { typeof(string) });
 			return new InstanceDescriptor(uriCtor, new object[] { value.AbsoluteUri });
 		}
@@ -78,6 +85,10 @@ namespace DotNetOpenAuth.ComponentModel {
 		/// <returns>The string representation of the object.</returns>
 		[Pure]
 		protected override string ConvertToString(Uri value) {
+			if (value == null) {
+				return null;
+			}
+
 			return value.AbsoluteUri;
 		}
 
@@ -87,11 +98,15 @@ namespace DotNetOpenAuth.ComponentModel {
 		/// <returns>An array of the standard claim types.</returns>
 		[Pure]
 		protected override ICollection GetStandardValuesForCache() {
-			var fields = from field in this.WellKnownValuesType.GetFields(BindingFlags.Static | BindingFlags.Public)
-						 select new Uri((string)field.GetValue(null));
-			var properties = from prop in this.WellKnownValuesType.GetProperties(BindingFlags.Static | BindingFlags.Public)
-							 select new Uri((string)prop.GetValue(null, null));
-			return (fields.Concat(properties)).ToArray();
+			if (this.WellKnownValuesType != null) {
+				var fields = from field in this.WellKnownValuesType.GetFields(BindingFlags.Static | BindingFlags.Public)
+							 select new Uri((string)field.GetValue(null));
+				var properties = from prop in this.WellKnownValuesType.GetProperties(BindingFlags.Static | BindingFlags.Public)
+								 select new Uri((string)prop.GetValue(null, null));
+				return (fields.Concat(properties)).ToArray();
+			} else {
+				return new Uri[0];
+			}
 		}
 	}
 }
