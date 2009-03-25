@@ -138,7 +138,7 @@ public partial class OP_AXFetch : System.Web.UI.Page {
 		foreach (var att in this.Attributes) {
 			string typeUri = att.TypeUriBox != null ? att.TypeUriBox.Text : att.TypeUri;
 			if (!string.IsNullOrEmpty(typeUri)) {
-				fetch.AddAttribute(new AttributeRequest(typeUri, att.RequestRequired, att.RequestCount));
+				fetch.Attributes.Add(new AttributeRequest(typeUri, att.RequestRequired, att.RequestCount));
 			}
 		}
 		e.Request.AddExtension(fetch);
@@ -156,9 +156,8 @@ public partial class OP_AXFetch : System.Web.UI.Page {
 			att.ValueLabel.Text = HttpUtility.HtmlEncode("<absent>");
 			if (fetch != null) {
 				string typeUri = att.TypeUri ?? e.Response.GetCallbackArgument("customTypeUri");
-				AttributeValues attValue = fetch.GetAttribute(typeUri);
-				if (attValue != null) {
-					att.ValueLabel.Text = HttpUtility.HtmlEncode(string.Join(", ", attValue.Values.ToArray()));
+				if (fetch.Attributes.Contains(typeUri)) {
+					att.ValueLabel.Text = HttpUtility.HtmlEncode(string.Join(", ", fetch.Attributes[typeUri].Values.ToArray()));
 				}
 			}
 		}
