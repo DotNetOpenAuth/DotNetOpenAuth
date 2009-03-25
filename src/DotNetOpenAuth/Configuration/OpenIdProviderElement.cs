@@ -34,8 +34,8 @@ namespace DotNetOpenAuth.Configuration {
 		/// Gets or sets the security settings.
 		/// </summary>
 		[ConfigurationProperty(SecuritySettingsConfigName)]
-		public ProviderSecuritySettingsElement SecuritySettings {
-			get { return (ProviderSecuritySettingsElement)this[SecuritySettingsConfigName] ?? new ProviderSecuritySettingsElement(); }
+		public OpenIdProviderSecuritySettingsElement SecuritySettings {
+			get { return (OpenIdProviderSecuritySettingsElement)this[SecuritySettingsConfigName] ?? new OpenIdProviderSecuritySettingsElement(); }
 			set { this[SecuritySettingsConfigName] = value; }
 		}
 
