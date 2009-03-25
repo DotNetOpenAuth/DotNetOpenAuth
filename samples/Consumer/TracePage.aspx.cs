@@ -9,7 +9,7 @@ using System.Web.UI.WebControls;
 /// </summary>
 public partial class TracePage : System.Web.UI.Page {
 	protected void Page_Load(object sender, EventArgs e) {
-		placeHolder1.Controls.Add(new Label { Text = Logging.LogMessages.ToString() });
+		this.placeHolder1.Controls.Add(new Label { Text = HttpUtility.HtmlEncode(Global.LogMessages.ToString()) });
 	}
 
 	protected void clearLogButton_Click(object sender, EventArgs e) {
