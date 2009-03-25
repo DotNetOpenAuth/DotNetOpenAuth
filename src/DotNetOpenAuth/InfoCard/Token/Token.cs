@@ -50,6 +50,7 @@ namespace DotNetOpenAuth.InfoCard {
 
 			using (XmlReader tokenReader = XmlReader.Create(new StringReader(tokenXml))) {
 				if (IsEncrypted(tokenReader)) {
+					Logger.InfoCard.DebugFormat("Incoming SAML token, before decryption: {0}", tokenXml);
 					ErrorUtilities.VerifyArgumentNotNull(decryptor, "decryptor");
 					decryptedBytes = decryptor.DecryptToken(tokenReader);
 					decryptedString = Encoding.UTF8.GetString(decryptedBytes);
@@ -60,6 +61,7 @@ namespace DotNetOpenAuth.InfoCard {
 			}
 
 			this.Xml = new XPathDocument(new StringReader(decryptedString)).CreateNavigator();
+			Logger.InfoCard.DebugFormat("Incoming SAML token, after any decryption: {0}", this.Xml.InnerXml);
 			this.AuthorizationContext = TokenUtility.AuthenticateToken(this.Xml.ReadSubtree(), audience);
 		}
 
