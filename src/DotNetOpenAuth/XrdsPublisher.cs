@@ -9,6 +9,7 @@ namespace DotNetOpenAuth {
 	using System.Collections.Generic;
 	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Drawing.Design;
 	using System.Text;
 	using System.Web;
 	using System.Web.UI;
@@ -102,6 +103,7 @@ namespace DotNetOpenAuth {
 		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "Property grid")]
 		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Xrds", Justification = "Correct spelling")]
 		[Category("Behavior"), Bindable(true)]
+		[UrlProperty, Editor("System.Web.UI.Design.UrlEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", typeof(UITypeEditor))]
 		public string XrdsUrl {
 			get {
 				return (string)ViewState[XrdsUrlViewStateKey];

@@ -14,26 +14,26 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	public class FetchRequestTests : OpenIdTestBase {
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void AddAttributeRequestNull() {
-			new FetchRequest().AddAttribute(null);
+			new FetchRequest().Attributes.Add(null);
 		}
 
 		[TestMethod]
 		public void AddAttributeRequest() {
 			var req = new FetchRequest();
-			req.AddAttribute(new AttributeRequest() { TypeUri = "http://someUri" });
+			req.Attributes.Add(new AttributeRequest() { TypeUri = "http://someUri" });
 		}
 
 		[TestMethod]
 		public void AddAttributeRequestStrangeUri() {
 			var req = new FetchRequest();
-			req.AddAttribute(new AttributeRequest() { TypeUri = "=someUri*who*knows*but*this*is*legal" });
+			req.Attributes.Add(new AttributeRequest() { TypeUri = "=someUri*who*knows*but*this*is*legal" });
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void AddAttributeRequestAgain() {
 			var req = new FetchRequest();
-			req.AddAttribute(new AttributeRequest() { TypeUri = "http://UriTwice" });
-			req.AddAttribute(new AttributeRequest() { TypeUri = "http://UriTwice" });
+			req.Attributes.Add(new AttributeRequest() { TypeUri = "http://UriTwice" });
+			req.Attributes.Add(new AttributeRequest() { TypeUri = "http://UriTwice" });
 		}
 
 		[TestMethod]
@@ -86,13 +86,13 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.AreEqual(req1, req2);
 
 			// Add attributes in different orders deliberately.
-			req1.AddAttribute(new AttributeRequest("http://att1"));
+			req1.Attributes.Add(new AttributeRequest("http://att1"));
 			Assert.AreNotEqual(req1, req2);
-			req2.AddAttribute(new AttributeRequest("http://att2"));
+			req2.Attributes.Add(new AttributeRequest("http://att2"));
 			Assert.AreNotEqual(req1, req2);
-			req1.AddAttribute(new AttributeRequest("http://att2"));
+			req1.Attributes.Add(new AttributeRequest("http://att2"));
 			Assert.AreNotEqual(req1, req2);
-			req2.AddAttribute(new AttributeRequest("http://att1"));
+			req2.Attributes.Add(new AttributeRequest("http://att1"));
 			Assert.AreEqual(req1, req2);
 		}
 	}

@@ -19,12 +19,12 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		[TestMethod]
 		public void Fetch() {
 			var request = new FetchRequest();
-			request.AddAttribute(new AttributeRequest(NicknameTypeUri));
-			request.AddAttribute(new AttributeRequest(EmailTypeUri, false, int.MaxValue));
+			request.Attributes.Add(new AttributeRequest(NicknameTypeUri));
+			request.Attributes.Add(new AttributeRequest(EmailTypeUri, false, int.MaxValue));
 
 			var response = new FetchResponse();
-			response.AddAttribute(new AttributeValues(NicknameTypeUri, "Andrew"));
-			response.AddAttribute(new AttributeValues(EmailTypeUri, "a@a.com", "b@b.com"));
+			response.Attributes.Add(new AttributeValues(NicknameTypeUri, "Andrew"));
+			response.Attributes.Add(new AttributeValues(EmailTypeUri, "a@a.com", "b@b.com"));
 
 			ExtensionTestUtilities.Roundtrip(Protocol.Default, new[] { request }, new[] { response });
 		}
@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 				IncrementingAttribute,
 				"val" + (incrementingAttributeValue++).ToString(),
 				"val" + (incrementingAttributeValue++).ToString());
-			request.AddAttribute(newAttribute);
+			request.Attributes.Add(newAttribute);
 
 			var successResponse = new StoreResponse();
 			successResponse.Succeeded = true;

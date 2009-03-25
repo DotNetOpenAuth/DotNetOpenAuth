@@ -6,7 +6,7 @@
 
 namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 	using System;
-	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -37,9 +37,9 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		private const string Mode = "store_request";
 
 		/// <summary>
-		/// The list of provided attribute values.  This field will never be null.
+		/// The collection of provided attribute values.  This field will never be null.
 		/// </summary>
-		private readonly List<AttributeValues> attributesProvided = new List<AttributeValues>();
+		private readonly KeyedCollection<string, AttributeValues> attributesProvided = new KeyedCollectionDelegate<string, AttributeValues>(av => av.TypeUri);
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreRequest"/> class.
@@ -49,41 +49,10 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		}
 
 		/// <summary>
-		/// Gets a list of all the attributes that are included in the store request.
+		/// Gets the collection of all the attributes that are included in the store request.
 		/// </summary>
-		public IEnumerable<AttributeValues> Attributes {
+		public KeyedCollection<string, AttributeValues> Attributes {
 			get { return this.attributesProvided; }
-		}
-
-		/// <summary>
-		/// Adds a given attribute with one or more values to the request for storage.
-		/// Applicable to Relying Parties only.
-		/// </summary>
-		/// <param name="attribute">The attribute values.</param>
-		public void AddAttribute(AttributeValues attribute) {
-			ErrorUtilities.VerifyArgumentNotNull(attribute, "attribute");
-			ErrorUtilities.VerifyArgumentNamed(!this.ContainsAttribute(attribute.TypeUri), "attribute", OpenIdStrings.AttributeAlreadyAdded, attribute.TypeUri);
-			this.attributesProvided.Add(attribute);
-		}
-
-		/// <summary>
-		/// Adds a given attribute with one or more values to the request for storage.
-		/// Applicable to Relying Parties only.
-		/// </summary>
-		/// <param name="typeUri">The type URI of the attribute.</param>
-		/// <param name="values">The attribute values.</param>
-		public void AddAttribute(string typeUri, params string[] values) {
-			this.AddAttribute(new AttributeValues(typeUri, values));
-		}
-
-		/// <summary>
-		/// Gets the value(s) associated with a given attribute that should be stored.
-		/// Applicable to Providers only.
-		/// </summary>
-		/// <param name="attributeTypeUri">The type URI of the attribute whose values are being sought.</param>
-		/// <returns>The attribute values.</returns>
-		public AttributeValues GetAttribute(string attributeTypeUri) {
-			return this.attributesProvided.SingleOrDefault(attribute => string.Equals(attribute.TypeUri, attributeTypeUri, StringComparison.Ordinal));
 		}
 
 		#region IMessageWithEvents Members
@@ -106,7 +75,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		void IMessageWithEvents.OnReceiving() {
 			var fields = ((IMessage)this).ExtraData;
 			foreach (var att in AXUtilities.DeserializeAttributes(fields)) {
-				this.AddAttribute(att);
+				this.Attributes.Add(att);
 			}
 		}
 
@@ -153,17 +122,6 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 				}
 				return hashCode;
 			}
-		}
-
-		/// <summary>
-		/// Determines whether some attribute has values in this store request.
-		/// </summary>
-		/// <param name="typeUri">The type URI of the attribute in question.</param>
-		/// <returns>
-		/// 	<c>true</c> if the specified attribute appears in the store request; otherwise, <c>false</c>.
-		/// </returns>
-		private bool ContainsAttribute(string typeUri) {
-			return this.GetAttribute(typeUri) != null;
 		}
 	}
 }

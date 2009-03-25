@@ -69,6 +69,11 @@ namespace DotNetOpenAuth {
 		private static readonly ILog oauth = Create("DotNetOpenAuth.OAuth");
 
 		/// <summary>
+		/// Backing field for the <see cref="InfoCard"/> property.
+		/// </summary>
+		private static readonly ILog infocard = Create("DotNetOpenAuth.InfoCard");
+
+		/// <summary>
 		/// Gets the logger for service discovery and selection events.
 		/// </summary>
 		internal static ILog Yadis { get { return yadis; } }
@@ -107,6 +112,11 @@ namespace DotNetOpenAuth {
 		/// Gets the logger for high-level OAuth events.
 		/// </summary>
 		internal static ILog OAuth { get { return oauth; } }
+
+		/// <summary>
+		/// Gets the logger for high-level InfoCard events.
+		/// </summary>
+		internal static ILog InfoCard { get { return infocard; } }
 
 		#endregion
 

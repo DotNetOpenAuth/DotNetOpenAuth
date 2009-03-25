@@ -16,6 +16,7 @@ namespace DotNetOpenAuth.ComponentModel {
 	/// A design-time helper to allow Intellisense to aid typing
 	/// ClaimType URIs.
 	/// </summary>
+	/// <typeparam name="T">The strong-type of the property this class is affixed to.</typeparam>
 	public abstract class ConverterBase<T> : TypeConverter {
 		/// <summary>
 		/// A cache of the standard claim types known to the application.
@@ -23,11 +24,14 @@ namespace DotNetOpenAuth.ComponentModel {
 		private StandardValuesCollection standardValues;
 
 		/// <summary>
-		/// Initializes a new instance of the ConverterBase&lt;T&gt; class.
+		/// Initializes a new instance of the ConverterBase class.
 		/// </summary>
 		protected ConverterBase() {
 		}
 
+		/// <summary>
+		/// Gets a cache of the standard values to suggest.
+		/// </summary>
 		private StandardValuesCollection StandardValueCache {
 			get {
 				if (this.standardValues == null) {

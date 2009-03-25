@@ -15,27 +15,27 @@ namespace DotNetOpenId.Test.OpenId.Extensions {
 		[TestMethod]
 		public void AddAttribute() {
 			var response = new FetchResponse();
-			response.AddAttribute(new AttributeValues("http://someattribute", "Value1"));
+			response.Attributes.Add(new AttributeValues("http://someattribute", "Value1"));
 		}
 
 		[TestMethod]
 		public void AddTwoAttributes() {
 			var response = new FetchResponse();
-			response.AddAttribute(new AttributeValues("http://someattribute", "Value1"));
-			response.AddAttribute(new AttributeValues("http://someOtherAttribute", "Value2"));
+			response.Attributes.Add(new AttributeValues("http://someattribute", "Value1"));
+			response.Attributes.Add(new AttributeValues("http://someOtherAttribute", "Value2"));
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void AddAttributeTwice() {
 			var response = new FetchResponse();
-			response.AddAttribute(new AttributeValues("http://someattribute", "Value1"));
-			response.AddAttribute(new AttributeValues("http://someattribute", "Value1"));
+			response.Attributes.Add(new AttributeValues("http://someattribute", "Value1"));
+			response.Attributes.Add(new AttributeValues("http://someattribute", "Value1"));
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void AddAttributeNull() {
 			var response = new FetchResponse();
-			response.AddAttribute(null);
+			response.Attributes.Add(null);
 		}
 
 		[TestMethod]
@@ -50,13 +50,13 @@ namespace DotNetOpenId.Test.OpenId.Extensions {
 			Assert.AreEqual(response1, response2);
 
 			// Add attributes in different orders deliberately.
-			response1.AddAttribute(new AttributeValues("http://att1"));
+			response1.Attributes.Add(new AttributeValues("http://att1"));
 			Assert.AreNotEqual(response1, response2);
-			response2.AddAttribute(new AttributeValues("http://att2"));
+			response2.Attributes.Add(new AttributeValues("http://att2"));
 			Assert.AreNotEqual(response1, response2);
-			response1.AddAttribute(new AttributeValues("http://att2"));
+			response1.Attributes.Add(new AttributeValues("http://att2"));
 			Assert.AreNotEqual(response1, response2);
-			response2.AddAttribute(new AttributeValues("http://att1"));
+			response2.Attributes.Add(new AttributeValues("http://att1"));
 			Assert.AreEqual(response1, response2);
 		}
 	}

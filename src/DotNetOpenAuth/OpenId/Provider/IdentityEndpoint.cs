@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Drawing.Design;
 	using System.Web.UI;
 	using DotNetOpenAuth.Messaging;
 
@@ -87,6 +88,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "Forms designer property grid only supports primitive types.")]
 		[Bindable(true), Category("Behavior")]
 		[Description("The Provider URL that processes OpenID requests.")]
+		[UrlProperty, Editor("System.Web.UI.Design.UrlEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", typeof(UITypeEditor))]
 		public string ProviderEndpointUrl {
 			get {
 				return (string)ViewState[ProviderEndpointUrlViewStateKey];

@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.InfoCard {
 	using System.Collections.ObjectModel;
 	using System.ComponentModel;
 	using System.Diagnostics.Contracts;
+	using System.Drawing.Design;
 	using System.Globalization;
 	using System.Linq;
 	using System.Web.UI;
@@ -126,6 +127,11 @@ namespace DotNetOpenAuth.InfoCard {
 		private const string PrivacyVersionViewStateKey = "PrivacyVersion";
 
 		/// <summary>
+		/// The viewstate key for storing the <see cref="Audience" /> property.
+		/// </summary>
+		private const string AudienceViewStateKey = "Audience";
+
+		/// <summary>
 		/// The viewstate key for storing the <see cref="AutoPostBack" /> property.
 		/// </summary>
 		private const string AutoPostBackViewStateKey = "AutoPostBack";
@@ -177,6 +183,13 @@ namespace DotNetOpenAuth.InfoCard {
 		private Panel infoCardNotSupportedPanel;
 
 		/// <summary>
+		/// Recalls whether the <see cref="Audience"/> property has been set yet,
+		/// so its default can be set as soon as possible without overwriting
+		/// an intentional value.
+		/// </summary>
+		private bool audienceSet;
+
+		/// <summary>
 		/// Occurs when an InfoCard has been submitted but not decoded yet.
 		/// </summary>
 		[Category(InfoCardCategory)]
@@ -219,9 +232,9 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </summary>
 		[Description("When receiving managed cards, this is the only Issuer whose cards will be accepted.")]
 		[Category(InfoCardCategory), DefaultValue(IssuerDefault)]
-		[TypeConverter(typeof(ComponentModel.UriConverter<WellKnownIssuers>))]
-		public Uri Issuer {
-			get { return (Uri)this.ViewState[IssuerViewStateKey] ?? new Uri(IssuerDefault); }
+		[TypeConverter(typeof(ComponentModel.IssuersSuggestions))]
+		public string Issuer {
+			get { return (string)this.ViewState[IssuerViewStateKey] ?? IssuerDefault; }
 			set { this.ViewState[IssuerViewStateKey] = value; }
 		}
 
@@ -253,6 +266,30 @@ namespace DotNetOpenAuth.InfoCard {
 		public string PrivacyVersion {
 			get { return (string)this.ViewState[PrivacyVersionViewStateKey] ?? PrivacyVersionDefault; }
 			set { this.ViewState[PrivacyVersionViewStateKey] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the URI that must be found for the SAML token's intended audience
+		/// in order for the token to be processed.
+		/// </summary>
+		/// <value>Typically the URI of the page hosting the control, or <c>null</c> to disable audience verification.</value>
+		/// <remarks>
+		/// Disabling audience verification introduces a security risk 
+		/// because tokens can be redirected to allow access to unintended resources.
+		/// </remarks>
+		[Description("Specifies the URI that must be found for the SAML token's intended audience.")]
+		[Bindable(true), Category(InfoCardCategory)]
+		[TypeConverter(typeof(ComponentModel.UriConverter))]
+		[UrlProperty, Editor("System.Web.UI.Design.UrlEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", typeof(UITypeEditor))]
+		public Uri Audience {
+			get {
+				return (Uri)this.ViewState[AudienceViewStateKey];
+			}
+
+			set {
+				this.ViewState[AudienceViewStateKey] = value;
+				this.audienceSet = true;
+			}
 		}
 
 		/// <summary>
@@ -345,7 +382,7 @@ namespace DotNetOpenAuth.InfoCard {
 
 				if (!receivingArgs.Cancel) {
 					try {
-						Token token = new Token(this.TokenXml, this.Page.Request.Url, decryptor);
+						Token token = new Token(this.TokenXml, this.Audience, decryptor);
 						this.OnReceivedToken(token);
 					} catch (InformationCardException ex) {
 						this.OnTokenProcessingError(this.TokenXml, ex);
@@ -409,6 +446,13 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </summary>
 		/// <param name="e">An <see cref="T:System.EventArgs"/> object that contains the event data.</param>
 		protected override void OnInit(EventArgs e) {
+			// Give a default for the Audience property that allows for 
+			// the aspx page to have preset it, and ViewState
+			// to initialize it (even to null) after this.
+			if (!this.audienceSet) {
+				this.Audience = this.Page.Request.Url;
+			}
+
 			base.OnInit(e);
 			this.Page.LoadComplete += delegate { this.EnsureChildControls(); };
 		}
@@ -474,7 +518,7 @@ namespace DotNetOpenAuth.InfoCard {
 			// generate the onclick script for the image
 			string invokeScript = string.Format(
 				CultureInfo.InvariantCulture,
-				@"document.getElementById('{0}').value = document.getElementById('{1}_cs').value; {2}",
+				@"try {{ document.getElementById('{0}').value = document.getElementById('{1}_cs').value; {2} }} catch (e) {{ /* canceled */ }}",
 				this.HiddenFieldName,
 				this.ClientID,
 				this.AutoPostBack ? postback : "");
@@ -486,7 +530,7 @@ namespace DotNetOpenAuth.InfoCard {
 			if (this.AutoPopup && !this.Page.IsPostBack) {
 				string loadScript = string.Format(
 					CultureInfo.InvariantCulture,
-					@"document.getElementById('{0}').value = document.getElementById('{1}_cs').value; {2}",
+					@"try {{ document.getElementById('{0}').value = document.getElementById('{1}_cs').value; {2} }} catch (e) {{ /* canceled */ }}",
 					this.HiddenFieldName,
 					this.ClientID,
 					postback);
@@ -521,12 +565,11 @@ namespace DotNetOpenAuth.InfoCard {
 		private Control CreateInfoCardSelectorObject() {
 			HtmlGenericControl cardSpaceControl = new HtmlGenericControl(HtmlTextWriterTag.Object.ToString());
 			cardSpaceControl.Attributes.Add(HtmlTextWriterAttribute.Type.ToString(), "application/x-informationcard");
-			cardSpaceControl.Attributes.Add(HtmlTextWriterAttribute.Name.ToString(), this.ClientID + "_cs");
 			cardSpaceControl.Attributes.Add(HtmlTextWriterAttribute.Id.ToString(), this.ClientID + "_cs");
 
 			// issuer
 			if (this.Issuer != null) {
-				cardSpaceControl.Controls.Add(CreateParam("issuer", this.Issuer.AbsoluteUri));
+				cardSpaceControl.Controls.Add(CreateParam("issuer", this.Issuer));
 			}
 
 			// issuer policy
@@ -579,10 +622,10 @@ namespace DotNetOpenAuth.InfoCard {
 
 			var optionalClaims = from claim in nonEmptyClaimTypes
 								 where claim.IsOptional
-								 select claim.Name.AbsoluteUri;
+								 select claim.Name;
 			var requiredClaims = from claim in nonEmptyClaimTypes
 								 where !claim.IsOptional
-								 select claim.Name.AbsoluteUri;
+								 select claim.Name;
 
 			string[] requiredClaimsArray = requiredClaims.ToArray();
 			string[] optionalClaimsArray = optionalClaims.ToArray();

@@ -167,7 +167,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ComponentModel\ClaimTypeSuggestions.cs" />
     <Compile Include="ComponentModel\ConverterBase.cs" />
+    <Compile Include="ComponentModel\IssuersSuggestions.cs" />
+    <Compile Include="ComponentModel\SuggestedStringsConverter.cs" />
     <Compile Include="ComponentModel\UriConverter.cs" />
     <Compile Include="Configuration\AssociationTypeCollection.cs" />
     <Compile Include="Configuration\AssociationTypeElement.cs" />
@@ -185,7 +188,6 @@
     <Compile Include="InfoCard\ClaimType.cs" />
     <Compile Include="InfoCard\ReceivingTokenEventArgs.cs" />
     <Compile Include="InfoCard\TokenProcessingErrorEventArgs.cs" />
-    <Compile Include="InfoCard\WellKnownClaimTypes.cs" />
     <Compile Include="InfoCard\InfoCardImage.cs" />
     <Compile Include="InfoCard\InfoCardSelector.cs" />
     <Compile Include="InfoCard\InfoCardStrings.Designer.cs">
@@ -214,6 +216,7 @@
     <Compile Include="Messaging\IMessageWithEvents.cs" />
     <Compile Include="Messaging\IProtocolMessageWithExtensions.cs" />
     <Compile Include="Messaging\InternalErrorException.cs" />
+    <Compile Include="Messaging\KeyedCollectionDelegate.cs" />
     <Compile Include="Messaging\NetworkDirectWebResponse.cs" />
     <Compile Include="Messaging\OutgoingWebResponseActionResult.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />

@@ -13,7 +13,9 @@
 	using System.Windows.Media.Imaging;
 	using System.Windows.Navigation;
 	using System.Windows.Shapes;
+	using System.Xml;
 	using System.Xml.Linq;
+	using System.Xml.XPath;
 	using DotNetOpenAuth;
 	using DotNetOpenAuth.ApplicationBlock;
 	using DotNetOpenAuth.Messaging;
@@ -27,6 +29,7 @@
 		private InMemoryTokenManager tokenManager = new InMemoryTokenManager();
 		private DesktopConsumer google;
 		private string requestToken;
+		private string accessToken;
 
 		public MainWindow() {
 			InitializeComponent();
@@ -43,18 +46,23 @@
 			this.Cursor = Cursors.Wait;
 			beginAuthorizationButton.IsEnabled = false;
 			ThreadPool.QueueUserWorkItem(delegate(object state) {
-				Uri browserAuthorizationLocation = GoogleConsumer.RequestAuthorization(this.google, GoogleConsumer.Applications.Contacts, out this.requestToken);
+				Uri browserAuthorizationLocation = GoogleConsumer.RequestAuthorization(
+					this.google,
+					GoogleConsumer.Applications.Contacts | GoogleConsumer.Applications.Blogger,
+					out this.requestToken);
 				System.Diagnostics.Process.Start(browserAuthorizationLocation.AbsoluteUri);
 				this.Dispatcher.BeginInvoke(new Action(() => {
 					this.Cursor = original;
 					beginAuthorizationButton.IsEnabled = true;
 					completeAuthorizationButton.IsEnabled = true;
+					postButton.IsEnabled = true;
 				}));
 			});
 		}
 
 		private void completeAuthorizationButton_Click(object sender, RoutedEventArgs e) {
 			var grantedAccess = this.google.ProcessUserAuthorization(this.requestToken);
+			this.accessToken = grantedAccess.AccessToken;
 			XDocument contactsDocument = GoogleConsumer.GetContacts(this.google, grantedAccess.AccessToken);
 			var contacts = from entry in contactsDocument.Root.Elements(XName.Get("entry", "http://www.w3.org/2005/Atom"))
 				select new {
@@ -72,6 +80,11 @@
 				contactsGrid.Children.Add(name);
 				contactsGrid.Children.Add(email);
 			}
+		}
+
+		private void postButton_Click(object sender, RoutedEventArgs e) {
+			XElement postBodyXml = XElement.Parse(postBodyBox.Text);
+			GoogleConsumer.PostBlogEntry(this.google, this.accessToken, blogUrlBox.Text, postTitleBox.Text, postBodyXml);
 		}
 	}
 }

@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.InfoCard {
 	using System;
 	using System.ComponentModel;
+	using System.IdentityModel.Claims;
 	using System.Web.UI;
 
 	/// <summary>
@@ -24,8 +25,11 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <summary>
 		/// Gets or sets the URI of a requested claim.
 		/// </summary>
-		[TypeConverter(typeof(ComponentModel.UriConverter<WellKnownClaimTypes>))]
-		public Uri Name { get; set; }
+		/// <remarks>
+		/// For a list of well-known claim type URIs, see the <see cref="ClaimTypes"/> class.
+		/// </remarks>
+		[TypeConverter(typeof(ComponentModel.ClaimTypeSuggestions))]
+		public string Name { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this claim is optional.
@@ -43,7 +47,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
 		/// </returns>
 		public override string ToString() {
-			return this.Name != null ? this.Name.AbsoluteUri : null;
+			return this.Name != null ? this.Name : null;
 		}
 	}
 }

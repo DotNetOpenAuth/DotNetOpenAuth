@@ -7,13 +7,27 @@
 namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
 	/// Helper methods shared by multiple messages in the Attribute Exchange extension.
 	/// </summary>
-	internal static class AXUtilities {
+	public static class AXUtilities {
+		/// <summary>
+		/// Adds a given attribute with one or more values to the request for storage.
+		/// Applicable to Relying Parties only.
+		/// </summary>
+		/// <param name="collection">The collection of <see cref="AttributeValues"/> to add to.</param>
+		/// <param name="typeUri">The type URI of the attribute.</param>
+		/// <param name="values">The attribute values.</param>
+		public static void Add(this ICollection<AttributeValues> collection, string typeUri, params string[] values) {
+			Contract.Requires(collection != null);
+			ErrorUtilities.VerifyArgumentNotNull(collection, "collection");
+			collection.Add(new AttributeValues(typeUri, values));
+		}
+
 		/// <summary>
 		/// Serializes a set of attribute values to a dictionary of fields to send in the message.
 		/// </summary>

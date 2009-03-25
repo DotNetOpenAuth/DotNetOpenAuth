@@ -46,19 +46,31 @@ function AreCardsSupported() {
 }
 
 function HideStatic(divName) {
-	document.getElementById(divName).style.visibility = 'hidden';
+	var div = document.getElementById(divName);
+	if (div) {
+		div.style.visibility = 'hidden';
+	}
 }
 
 function ShowStatic(divName) {
-	document.getElementById(divName).style.visibility = 'visible';
+	var div = document.getElementById(divName);
+	if (div) {
+		div.style.visibility = 'visible';
+	}
 }
 
 function HideDynamic(divName) {
-	document.getElementById(divName).style.display = 'none'
+	var div = document.getElementById(divName);
+	if (div) {
+		div.style.display = 'none';
+	}
 }
 
 function ShowDynamic(divName) {
-	document.getElementById(divName).style.display = '';
+	var div = document.getElementById(divName);
+	if (div) {
+		div.style.display = '';
+	}
 }
 
 function CheckDynamic(controlDiv, unsupportedDiv) {
