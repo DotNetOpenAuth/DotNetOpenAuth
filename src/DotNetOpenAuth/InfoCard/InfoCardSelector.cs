@@ -18,6 +18,7 @@ namespace DotNetOpenAuth.InfoCard {
 	using System.Web.UI;
 	using System.Web.UI.HtmlControls;
 	using System.Web.UI.WebControls;
+	using System.Xml;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -376,18 +377,21 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="eventArgument">A <see cref="T:System.String"/> that represents an optional event argument to be passed to the event handler.</param>
 		public void RaisePostBackEvent(string eventArgument) {
 			if (!string.IsNullOrEmpty(this.TokenXml)) {
-				bool encrypted = Token.IsEncrypted(this.TokenXml);
-				TokenDecryptor decryptor = encrypted ? new TokenDecryptor() : null;
-				ReceivingTokenEventArgs receivingArgs = this.OnReceivingToken(this.TokenXml, decryptor);
+				try {
+					bool encrypted = Token.IsEncrypted(this.TokenXml);
+					TokenDecryptor decryptor = encrypted ? new TokenDecryptor() : null;
+					ReceivingTokenEventArgs receivingArgs = this.OnReceivingToken(this.TokenXml, decryptor);
 
-				if (!receivingArgs.Cancel) {
-					try {
-						Token token = new Token(this.TokenXml, this.Audience, decryptor);
-						this.OnReceivedToken(token);
-					} catch (InformationCardException ex) {
-						this.OnTokenProcessingError(this.TokenXml, ex);
-						return;
+					if (!receivingArgs.Cancel) {
+						try {
+							Token token = new Token(this.TokenXml, this.Audience, decryptor);
+							this.OnReceivedToken(token);
+						} catch (InformationCardException ex) {
+							this.OnTokenProcessingError(this.TokenXml, ex);
+						}
 					}
+				} catch (XmlException ex) {
+					this.OnTokenProcessingError(this.TokenXml, ex);
 				}
 			}
 		}

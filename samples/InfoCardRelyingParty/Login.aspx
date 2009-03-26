@@ -1,11 +1,17 @@
 <%@ Page Title="" Language="VB" MasterPageFile="~/Site.Master" AutoEventWireup="false"
 	ValidateRequest="false" %>
+
 <%@ Import Namespace="DotNetOpenAuth.InfoCard" %>
 
 <script runat="server">
 	Protected Sub InfoCardSelector1_ReceivedToken(ByVal sender As Object, ByVal e As ReceivedTokenEventArgs) Handles InfoCardSelector1.ReceivedToken
 		Session("SiteSpecificID") = e.Token.SiteSpecificId
 		FormsAuthentication.RedirectFromLoginPage(e.Token.UniqueId, False)
+	End Sub
+	
+	Protected Sub InfoCardSelector1_TokenProcessingError(ByVal sender As Object, ByVal e As TokenProcessingErrorEventArgs) Handles InfoCardSelector1.TokenProcessingError
+		errorLabel.Text = HttpUtility.HtmlEncode(e.Exception.Message)
+		errorLabel.Visible = True
 	End Sub
 </script>
 
@@ -24,4 +30,5 @@
 				a link to find out how to enable the user's browser to use InfoCards. </p>
 		</UnsupportedTemplate>
 	</ic:InfoCardSelector>
+	<asp:Label runat="server" EnableViewState="false" Visible="false" ForeColor="Red" ID="errorLabel" />
 </asp:Content>
