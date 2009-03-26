@@ -449,7 +449,7 @@ namespace DotNetOpenAuth.InfoCard {
 			// Give a default for the Audience property that allows for 
 			// the aspx page to have preset it, and ViewState
 			// to initialize it (even to null) after this.
-			if (!this.audienceSet) {
+			if (!this.audienceSet && !this.DesignMode) {
 				this.Audience = this.Page.Request.Url;
 			}
 
