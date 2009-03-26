@@ -33,7 +33,7 @@
 
 		protected void Application_BeginRequest(object sender, EventArgs e) {
 			// System.Diagnostics.Debugger.Launch();
-			Logger.DebugFormat("Processing {0} on {1} ", Request.HttpMethod, this.stripQueryString(Request.Url));
+			Logger.DebugFormat("Processing {0} on {1} ", Request.HttpMethod, stripQueryString(Request.Url));
 			if (Request.QueryString.Count > 0) {
 				Logger.DebugFormat("Querystring follows: \n{0}", ToString(Request.QueryString));
 			}
@@ -53,7 +53,7 @@
 			Logger.ErrorFormat("An unhandled exception was raised. Details follow: {0}", HttpContext.Current.Server.GetLastError());
 		}
 
-		private string stripQueryString(Uri uri) {
+		private static string stripQueryString(Uri uri) {
 			UriBuilder builder = new UriBuilder(uri);
 			builder.Query = null;
 			return builder.ToString();

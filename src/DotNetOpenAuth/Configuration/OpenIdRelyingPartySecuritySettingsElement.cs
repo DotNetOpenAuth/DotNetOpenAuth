@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="RelyingPartySecuritySettingsElement.cs" company="Andrew Arnott">
+// <copyright file="OpenIdRelyingPartySecuritySettingsElement.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.Configuration {
 	/// <summary>
 	/// Represents the .config file element that allows for setting the security policies of the Relying Party.
 	/// </summary>
-	internal class RelyingPartySecuritySettingsElement : ConfigurationElement {
+	internal class OpenIdRelyingPartySecuritySettingsElement : ConfigurationElement {
 		/// <summary>
 		/// Gets the name of the @minimumRequiredOpenIdVersion attribute.
 		/// </summary>
@@ -41,9 +41,9 @@ namespace DotNetOpenAuth.Configuration {
 		private const string PrivateSecretMaximumAgeConfigName = "privateSecretMaximumAge";
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RelyingPartySecuritySettingsElement"/> class.
+		/// Initializes a new instance of the <see cref="OpenIdRelyingPartySecuritySettingsElement"/> class.
 		/// </summary>
-		public RelyingPartySecuritySettingsElement() {
+		public OpenIdRelyingPartySecuritySettingsElement() {
 		}
 
 		/// <summary>

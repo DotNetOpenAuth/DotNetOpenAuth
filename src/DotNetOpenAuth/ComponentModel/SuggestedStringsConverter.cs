@@ -1,4 +1,10 @@
-﻿namespace DotNetOpenAuth.ComponentModel {
+﻿//-----------------------------------------------------------------------
+// <copyright file="SuggestedStringsConverter.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.ComponentModel {
 	using System;
 	using System.Collections;
 	using System.ComponentModel.Design.Serialization;
@@ -16,6 +22,12 @@
 		/// </summary>
 		protected SuggestedStringsConverter() {
 		}
+
+		/// <summary>
+		/// Gets the type to reflect over for the well known values.
+		/// </summary>
+		[Pure]
+		protected abstract Type WellKnownValuesType { get; }
 
 		/// <summary>
 		/// Converts a value from its string representation to its strongly-typed object.
@@ -49,12 +61,6 @@
 		protected override string ConvertToString(string value) {
 			return value;
 		}
-
-		/// <summary>
-		/// Gets the type to reflect over for the well known values.
-		/// </summary>
-		[Pure]
-		protected abstract Type WellKnownValuesType { get; }
 
 		/// <summary>
 		/// Gets the standard values to suggest with Intellisense in the designer.

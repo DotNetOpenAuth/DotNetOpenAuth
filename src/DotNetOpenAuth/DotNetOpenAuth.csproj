@@ -178,9 +178,9 @@
     <Compile Include="Configuration\MessagingElement.cs" />
     <Compile Include="Configuration\OpenIdElement.cs" />
     <Compile Include="Configuration\OpenIdProviderElement.cs" />
-    <Compile Include="Configuration\ProviderSecuritySettingsElement.cs" />
+    <Compile Include="Configuration\OpenIdProviderSecuritySettingsElement.cs" />
     <Compile Include="Configuration\OpenIdRelyingPartyElement.cs" />
-    <Compile Include="Configuration\RelyingPartySecuritySettingsElement.cs" />
+    <Compile Include="Configuration\OpenIdRelyingPartySecuritySettingsElement.cs" />
     <Compile Include="Configuration\TypeConfigurationElement.cs" />
     <Compile Include="Configuration\UntrustedWebRequestElement.cs" />
     <Compile Include="Configuration\HostNameOrRegexCollection.cs" />

@@ -74,7 +74,7 @@ namespace DotNetOpenAuth.InfoCard {
 							bool match = audienceCondition.Audiences.Contains(audience);
 
 							if (!match && Logger.InfoCard.IsErrorEnabled) {
-								Logger.InfoCard.ErrorFormat("Expected SAML token audience of {0} but found {1}.", audience, audienceCondition.Audiences.ToStringDeferred());
+								Logger.InfoCard.ErrorFormat("Expected SAML token audience of {0} but found {1}.", audience.AbsoluteUri, audienceCondition.Audiences.Select(aud => aud.AbsoluteUri).ToStringDeferred());
 							}
 
 							// The token is invalid if any condition is not valid. 

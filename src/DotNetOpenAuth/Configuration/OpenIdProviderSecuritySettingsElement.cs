@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ProviderSecuritySettingsElement.cs" company="Andrew Arnott">
+// <copyright file="OpenIdProviderSecuritySettingsElement.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.Configuration {
 	/// Represents the .config file element that allows for setting the security policies of the Provider.
 	/// </summary>
 	[ContractVerification(true)]
-	internal class ProviderSecuritySettingsElement : ConfigurationElement {
+	internal class OpenIdProviderSecuritySettingsElement : ConfigurationElement {
 		/// <summary>
 		/// Gets the name of the @protectDownlevelReplayAttacks attribute.
 		/// </summary>
@@ -36,9 +36,9 @@ namespace DotNetOpenAuth.Configuration {
 		private const string AssociationsConfigName = "associations";
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ProviderSecuritySettingsElement"/> class.
+		/// Initializes a new instance of the <see cref="OpenIdProviderSecuritySettingsElement"/> class.
 		/// </summary>
-		public ProviderSecuritySettingsElement() {
+		public OpenIdProviderSecuritySettingsElement() {
 		}
 
 		/// <summary>
