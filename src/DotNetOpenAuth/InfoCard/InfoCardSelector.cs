@@ -355,6 +355,13 @@ namespace DotNetOpenAuth.InfoCard {
 		}
 
 		/// <summary>
+		/// Gets the id of the OBJECT tag that creates the InfoCard Selector.
+		/// </summary>
+		private string SelectorObjectId {
+			get { return this.ClientID + "_cs"; }
+		}
+
+		/// <summary>
 		/// Gets the XML token, which will be encrypted if it was received over SSL.
 		/// </summary>
 		private string TokenXml {
@@ -515,34 +522,43 @@ namespace DotNetOpenAuth.InfoCard {
 			image.ToolTip = InfoCardStrings.SelectorClickPrompt;
 			image.Style[HtmlTextWriterStyle.Cursor] = "hand";
 
-			// generate call do __doPostback
-			PostBackOptions options = new PostBackOptions(this);
-			string postback = this.Page.ClientScript.GetPostBackEventReference(options);
-
-			// generate the onclick script for the image
-			string invokeScript = string.Format(
-				CultureInfo.InvariantCulture,
-				@"try {{ document.getElementById('{0}').value = document.getElementById('{1}_cs').value; {2} }} catch (e) {{ /* canceled */ }}",
-				this.HiddenFieldName,
-				this.ClientID,
-				this.AutoPostBack ? postback : "");
-
-			image.Attributes["onclick"] = invokeScript;
+			image.Attributes["onclick"] = this.GetInfoCardSelectorActivationScript(false);
 			supportedPanel.Controls.Add(image);
 
 			// trigger the selector at page load?
 			if (this.AutoPopup && !this.Page.IsPostBack) {
-				string loadScript = string.Format(
-					CultureInfo.InvariantCulture,
-					@"try {{ document.getElementById('{0}').value = document.getElementById('{1}_cs').value; {2} }} catch (e) {{ /* canceled */ }}",
-					this.HiddenFieldName,
-					this.ClientID,
-					postback);
-
-				this.Page.ClientScript.RegisterStartupScript(typeof(InfoCardSelector), "selector_load_trigger", loadScript, true);
+				this.Page.ClientScript.RegisterStartupScript(
+					typeof(InfoCardSelector),
+					"selector_load_trigger",
+					this.GetInfoCardSelectorActivationScript(true),
+					true);
 			}
 
 			return supportedPanel;
+		}
+
+		/// <summary>
+		/// Gets the InfoCard selector activation script.
+		/// </summary>
+		/// <param name="alwaysPostback">Whether a postback should always immediately follow the selector, even if <see cref="AutoPostBack"/> is <c>false</c>.</param>
+		/// <returns>The javascript to inject into the surrounding context.</returns>
+		private string GetInfoCardSelectorActivationScript(bool alwaysPostback) {
+			// generate call do __doPostback
+			PostBackOptions options = new PostBackOptions(this);
+			string postback = string.Empty;
+			if (alwaysPostback || this.AutoPostBack) {
+				postback = this.Page.ClientScript.GetPostBackEventReference(options) + ";";
+			}
+
+			// generate the onclick script for the image
+			string invokeScript = string.Format(
+				CultureInfo.InvariantCulture,
+				@"if (ActivateSelector('{0}', '{1}')) {{ {2} }}",
+				this.SelectorObjectId,
+				this.HiddenFieldName,
+				postback);
+
+			return invokeScript;
 		}
 
 		/// <summary>

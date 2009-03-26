@@ -44,6 +44,25 @@ function AreCardsSupported() {
 	return false;
 }
 
+function ActivateSelector(selectorId, hiddenFieldName) {
+	var selector = document.getElementById(selectorId);
+	var hiddenField = document.getElementsByName(hiddenFieldName)[0];
+	try {
+		hiddenField.value = selector.value;
+	} catch (e) {
+		// Selector was canceled
+		return false;
+	}
+	if (hiddenField.value == 'undefined') {
+		// We're dealing with a bad FireFox selector plugin.
+		// Just add the control to the form by setting its name property and submit to activate.
+		selector.name = hiddenFieldName;
+		hiddenField.parentNode.removeChild(hiddenField);
+		return true;
+	}
+	return true;
+};
+
 function HideStatic(divName) {
 	var div = document.getElementById(divName);
 	if (div) {
