@@ -10,7 +10,7 @@
 			<img runat="server" src="images/DotNetOpenId_tiny.gif" title="Jump to the project web site."
 				alt="DotNetOpenAuth" border='0' /></a>
 	</div>
-	<h2>Classic ASP Relying Party</h2>
+	<h2>Classic ASP OpenID Relying Party</h2>
 	<p>Visit the <a href="MembersOnly.asp">Members Only</a> area. (This will trigger
 		a login demo). </p>
 	<h3>Required steps for this sample to work on your own machine:</h3>
