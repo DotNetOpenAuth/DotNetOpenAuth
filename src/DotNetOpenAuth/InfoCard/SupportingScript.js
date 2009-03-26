@@ -17,8 +17,7 @@ function AreCardsSupported() {
 	// Look for IE 7+. 
 	if (IEVer >= 7) {
 		var embed = document.createElement("object");
-		embed.setAttribute("type", "application/x-informationcard");
-
+		embed.type = "application/x-informationcard";
 		return "" + embed.issuerPolicy != "undefined" && embed.isInstalled;
 	}
 
