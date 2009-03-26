@@ -87,45 +87,6 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Gets the query data from the original request (before any URL rewriting has occurred.)
-		/// </summary>
-		/// <returns>A <see cref="NameValueCollection"/> containing all the parameters in the query string.</returns>
-		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Expensive call")]
-		public static NameValueCollection GetQueryFromContext() {
-			ErrorUtilities.VerifyHttpContext();
-
-			HttpRequest request = HttpContext.Current.Request;
-
-			// This request URL may have been rewritten by the host site.
-			// For openid protocol purposes, we really need to look at 
-			// the original query parameters before any rewriting took place.
-			if (request.Url.PathAndQuery == request.RawUrl) {
-				// No rewriting has taken place.
-				return request.QueryString;
-			} else {
-				// Rewriting detected!  Recover the original request URI.
-				return HttpUtility.ParseQueryString(GetRequestUrlFromContext().Query);
-			}
-		}
-
-		/// <summary>
-		/// Gets the query or form data from the original request (before any URL rewriting has occurred.)
-		/// </summary>
-		/// <returns>A set of name=value pairs.</returns>
-		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Expensive call")]
-		public static NameValueCollection GetQueryOrFormFromContext() {
-			ErrorUtilities.VerifyHttpContext();
-			HttpRequest request = HttpContext.Current.Request;
-			NameValueCollection query;
-			if (request.RequestType == "GET") {
-				query = GetQueryFromContext();
-			} else {
-				query = request.Form;
-			}
-			return query;
-		}
-
-		/// <summary>
 		/// Strips any and all URI query parameters that start with some prefix.
 		/// </summary>
 		/// <param name="uri">The URI that may have a query with parameters to remove.</param>

@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// Requires HttpContext.Current.
 		/// </remarks>
 		public UserAuthorizationRequest PrepareRequestUserAuthorization() {
-			Uri callback = MessagingUtilities.GetRequestUrlFromContext().StripQueryArgumentsWithPrefix(Protocol.Default.ParameterPrefix);
+			Uri callback = this.Channel.GetRequestFromContext().UrlBeforeRewriting.StripQueryArgumentsWithPrefix(Protocol.Default.ParameterPrefix);
 			return this.PrepareRequestUserAuthorization(callback, null, null);
 		}
 

@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Specialized;
 	using System.Diagnostics;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Net;
@@ -34,6 +35,11 @@ namespace DotNetOpenAuth.Messaging {
 		private NameValueCollection queryString;
 
 		/// <summary>
+		/// Backing field for the <see cref="QueryStringBeforeRewriting"/> property.
+		/// </summary>
+		private NameValueCollection queryStringBeforeRewriting;
+
+		/// <summary>
 		/// Backing field for the <see cref="Message"/> property.
 		/// </summary>
 		private IDirectedProtocolMessage message;
@@ -43,12 +49,12 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="request">The ASP.NET structure to copy from.</param>
 		public HttpRequestInfo(HttpRequest request) {
-			if (request == null) {
-				throw new ArgumentNullException("request");
-			}
+			Contract.Requires(request != null);
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			this.HttpMethod = request.HttpMethod;
 			this.Url = request.Url;
+			this.RawUrl = request.RawUrl;
 			this.Headers = GetHeaderCollection(request.Headers);
 			this.InputStream = request.InputStream;
 
@@ -65,15 +71,23 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="httpMethod">The HTTP method (i.e. GET or POST) of the incoming request.</param>
 		/// <param name="requestUrl">The URL being requested.</param>
+		/// <param name="rawUrl">The raw URL that appears immediately following the HTTP verb in the request,
+		/// before any URL rewriting takes place.</param>
 		/// <param name="headers">Headers in the HTTP request.</param>
 		/// <param name="inputStream">The entity stream, if any.  (POST requests typically have these).  Use <c>null</c> for GET requests.</param>
-		public HttpRequestInfo(string httpMethod, Uri requestUrl, WebHeaderCollection headers, Stream inputStream) {
+		public HttpRequestInfo(string httpMethod, Uri requestUrl, string rawUrl, WebHeaderCollection headers, Stream inputStream) {
+			Contract.Requires(!string.IsNullOrEmpty(httpMethod));
+			Contract.Requires(requestUrl != null);
+			Contract.Requires(rawUrl != null);
+			Contract.Requires(headers != null);
 			ErrorUtilities.VerifyNonZeroLength(httpMethod, "httpMethod");
 			ErrorUtilities.VerifyArgumentNotNull(requestUrl, "requestUrl");
+			ErrorUtilities.VerifyArgumentNotNull(rawUrl, "rawUrl");
 			ErrorUtilities.VerifyArgumentNotNull(headers, "headers");
 
 			this.HttpMethod = httpMethod;
 			this.Url = requestUrl;
+			this.RawUrl = rawUrl;
 			this.Headers = headers;
 			this.InputStream = inputStream;
 		}
@@ -83,10 +97,12 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="listenerRequest">Details on the incoming HTTP request.</param>
 		public HttpRequestInfo(HttpListenerRequest listenerRequest) {
+			Contract.Requires(listenerRequest != null);
 			ErrorUtilities.VerifyArgumentNotNull(listenerRequest, "listenerRequest");
 
 			this.HttpMethod = listenerRequest.HttpMethod;
 			this.Url = listenerRequest.Url;
+			this.RawUrl = listenerRequest.RawUrl;
 			this.Headers = new WebHeaderCollection();
 			foreach (string key in listenerRequest.Headers) {
 				this.Headers[key] = listenerRequest.Headers[key];
@@ -101,13 +117,15 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The WCF incoming request structure to get the HTTP information from.</param>
 		/// <param name="requestUri">The URI of the service endpoint.</param>
 		public HttpRequestInfo(HttpRequestMessageProperty request, Uri requestUri) {
-			if (request == null) {
-				throw new ArgumentNullException("request");
-			}
+			Contract.Requires(request != null);
+			Contract.Requires(requestUri != null);
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			ErrorUtilities.VerifyArgumentNotNull(requestUri, "requestUri");
 
 			this.HttpMethod = request.Method;
 			this.Headers = request.Headers;
 			this.Url = requestUri;
+			this.RawUrl = MakeUpRawUrlFromUrl(requestUri);
 		}
 
 		/// <summary>
@@ -123,8 +141,12 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="request">The HttpWebRequest (that was never used) to copy from.</param>
 		internal HttpRequestInfo(WebRequest request) {
+			Contract.Requires(request != null);
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+
 			this.HttpMethod = request.Method;
 			this.Url = request.RequestUri;
+			this.RawUrl = MakeUpRawUrlFromUrl(request.RequestUri);
 			this.Headers = GetHeaderCollection(request.Headers);
 			this.InputStream = null;
 		}
@@ -157,9 +179,34 @@ namespace DotNetOpenAuth.Messaging {
 		internal string HttpMethod { get; set; }
 
 		/// <summary>
-		/// Gets or sets the entire URL of the request.
+		/// Gets or sets the entire URL of the request, after any URL rewriting.
 		/// </summary>
 		internal Uri Url { get; set; }
+
+		/// <summary>
+		/// Gets or sets the raw URL that appears immediately following the HTTP verb in the request,
+		/// before any URL rewriting takes place.
+		/// </summary>
+		internal string RawUrl { get; set; }
+
+		/// <summary>
+		/// Gets the full URL of a request before rewriting.
+		/// </summary>
+		internal Uri UrlBeforeRewriting {
+			get {
+				Contract.Requires(this.Url != null);
+				Contract.Requires(this.RawUrl != null);
+
+				// We use Request.Url for the full path to the server, and modify it
+				// with Request.RawUrl to capture both the cookieless session "directory" if it exists
+				// and the original path in case URL rewriting is going on.  We don't want to be
+				// fooled by URL rewriting because we're comparing the actual URL with what's in
+				// the return_to parameter in some cases.
+				// Response.ApplyAppPathModifier(builder.Path) would have worked for the cookieless
+				// session, but not the URL rewriting problem.
+				return new Uri(this.Url, this.RawUrl);
+			}
+		}
 
 		/// <summary>
 		/// Gets the query part of the URL (The ? and everything after it).
@@ -212,6 +259,65 @@ namespace DotNetOpenAuth.Messaging {
 
 				return this.queryString;
 			}
+		}
+
+		/// <summary>
+		/// Gets the query data from the original request (before any URL rewriting has occurred.)
+		/// </summary>
+		/// <returns>A <see cref="NameValueCollection"/> containing all the parameters in the query string.</returns>
+		internal NameValueCollection QueryStringBeforeRewriting {
+			get {
+				if (this.queryStringBeforeRewriting == null) {
+					// This request URL may have been rewritten by the host site.
+					// For openid protocol purposes, we really need to look at 
+					// the original query parameters before any rewriting took place.
+					if (!this.IsUrlRewritten) {
+						// No rewriting has taken place.
+						this.queryStringBeforeRewriting = this.QueryString;
+					} else {
+						// Rewriting detected!  Recover the original request URI.
+						this.queryStringBeforeRewriting = HttpUtility.ParseQueryString(this.UrlBeforeRewriting.Query);
+					}
+				}
+
+				return this.queryStringBeforeRewriting;
+			}
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether the request's URL was rewritten by ASP.NET
+		/// or some other module.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if this request's URL was rewritten; otherwise, <c>false</c>.
+		/// </value>
+		internal bool IsUrlRewritten {
+			get { return this.Url.PathAndQuery != this.RawUrl; }
+		}
+
+		/// <summary>
+		/// Gets the query or form data from the original request (before any URL rewriting has occurred.)
+		/// </summary>
+		/// <returns>A set of name=value pairs.</returns>
+		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Expensive call")]
+		internal NameValueCollection GetQueryOrFormFromContext() {
+			NameValueCollection query;
+			if (this.HttpMethod == "GET") {
+				query = this.QueryStringBeforeRewriting;
+			} else {
+				query = this.Form;
+			}
+			return query;
+		}
+
+		/// <summary>
+		/// Makes up a reasonable guess at the raw URL from the possibly rewritten URL.
+		/// </summary>
+		/// <param name="url">A full URL.</param>
+		/// <returns>A raw URL that might have come in on the HTTP verb.</returns>
+		private static string MakeUpRawUrlFromUrl(Uri url) {
+			Contract.Requires(url != null);
+			return url.AbsolutePath + url.Query + url.Fragment;
 		}
 
 		/// <summary>

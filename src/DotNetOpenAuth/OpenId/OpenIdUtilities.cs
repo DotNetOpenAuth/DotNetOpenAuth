@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using System.Text.RegularExpressions;
@@ -90,10 +91,14 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		/// <param name="page">The hosting page that has the realm value to resolve.</param>
 		/// <param name="realm">The realm, which may begin with "*." or "~/".</param>
+		/// <param name="requestContext">The request context.</param>
 		/// <returns>The fully-qualified realm.</returns>
 		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenAuth.OpenId.Realm", Justification = "Using ctor for validation.")]
-		internal static UriBuilder GetResolvedRealm(Page page, string realm) {
+		internal static UriBuilder GetResolvedRealm(Page page, string realm, HttpRequestInfo requestContext) {
+			Contract.Requires(page != null);
+			Contract.Requires(requestContext != null);
 			ErrorUtilities.VerifyArgumentNotNull(page, "page");
+			ErrorUtilities.VerifyArgumentNotNull(requestContext, "requestContext");
 
 			// Allow for *. realm notation, as well as ASP.NET ~/ shortcuts.
 
@@ -110,7 +115,7 @@ namespace DotNetOpenAuth.OpenId {
 			string realmNoWildcard = Regex.Replace(realm, @"^(\w+://)\*\.", matchDelegate);
 
 			UriBuilder fullyQualifiedRealm = new UriBuilder(
-				new Uri(MessagingUtilities.GetRequestUrlFromContext(), page.ResolveUrl(realmNoWildcard)));
+				new Uri(requestContext.UrlBeforeRewriting, page.ResolveUrl(realmNoWildcard)));
 
 			if (foundWildcard) {
 				fullyQualifiedRealm.Host = "*." + fullyQualifiedRealm.Host;
