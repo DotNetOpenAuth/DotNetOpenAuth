@@ -1,4 +1,4 @@
-﻿namespace DotNetOpenAuth.Samples.ConsumerWpf {
+﻿namespace DotNetOpenAuth.Samples.OAuthConsumerWpf {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;

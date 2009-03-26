@@ -1,4 +1,4 @@
-﻿namespace ConsumerWpf {
+﻿namespace OAuthConsumerWpf {
 	using System;
 	using System.Collections.Generic;
 	using System.Configuration;
