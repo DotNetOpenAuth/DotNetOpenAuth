@@ -1,0 +1,65 @@
+﻿<Window x:Class="DotNetOpenAuth.Samples.OAuthConsumerWpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="DotNetOpenAuth Consumer (sample)" Height="400" Width="442">
+	<Grid Margin="5">
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="Auto" />
+			<ColumnDefinition />
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition />
+		</Grid.RowDefinitions>
+		<StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="3">
+			<Button Name="beginAuthorizationButton" Click="beginAuthorizationButton_Click">Start authorize</Button>
+			<Button Name="completeAuthorizationButton" Margin="5,0,0,0" Click="completeAuthorizationButton_Click" IsEnabled="false">Complete authorization</Button>
+		</StackPanel>
+		<Label>Consumer Key</Label>
+		<TextBox Grid.Column="1" Name="consumerKeyBox"/>
+		<Label Grid.Row="1">Consumer Secret</Label>
+		<TextBox Grid.Row="1" Grid.Column="1" Name="consumerSecretBox"/>
+		<Label Grid.Row="2" Grid.Column="1">
+			<TextBlock>
+				Don't have a Google Consumer Key?  
+				<Hyperlink NavigateUri="https://www.google.com/accounts/ManageDomains">
+						<TextBlock>Get one!</TextBlock>
+				</Hyperlink>
+			</TextBlock>
+		</Label>
+		<TabControl Grid.ColumnSpan="2" Grid.Row="4" Name="tabControl1" Margin="0,10,0,0">
+			<TabItem Header="Gmail Contacts" Name="gmailContactsTab">
+				<Grid Name="contactsGrid">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="Auto" />
+					</Grid.ColumnDefinitions>
+				</Grid>
+			</TabItem>
+			<TabItem Header="Blogger" Name="bloggerTab">
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="*" />
+					</Grid.ColumnDefinitions>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+					</Grid.RowDefinitions>
+					<Label>Blog URL</Label>
+					<TextBox Grid.Column="1" x:Name="blogUrlBox"/>
+					<Label Grid.Row="1">Title</Label>
+					<TextBox Grid.Row="1" Grid.Column="1" x:Name="postTitleBox">OAuth Rocks!</TextBox>
+					<Label Grid.Row="2">Body</Label>
+					<TextBox Grid.Row="2" Grid.Column="1" x:Name="postBodyBox" AcceptsReturn="True" AcceptsTab="True" AutoWordSelection="True" TextWrapping="WrapWithOverflow">&lt;p xmlns="http://www.w3.org/1999/xhtml"&gt;Oauth is cool&lt;/p&gt;</TextBox>
+					<Button x:Name="postButton" Grid.Row="3" Grid.Column="1" Click="postButton_Click" IsEnabled="False">Post</Button>
+				</Grid>
+			</TabItem>
+		</TabControl>
+	</Grid>
+</Window>
