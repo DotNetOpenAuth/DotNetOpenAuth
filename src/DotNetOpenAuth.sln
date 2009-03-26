@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		DotNetOpenAuth.vsmdi = DotNetOpenAuth.vsmdi
 		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
+		..\doc\README.html = ..\doc\README.html
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Specs", "Specs", "{CD57219F-24F4-4136-8741-6063D0D7A031}"
