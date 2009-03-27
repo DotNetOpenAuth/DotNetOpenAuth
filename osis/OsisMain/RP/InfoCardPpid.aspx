@@ -1,25 +1,32 @@
 <%@ Page Title="RP Infocard PPID display" Language="C#" MasterPageFile="~/TestMaster.master"
 	AutoEventWireup="true" CodeFile="InfoCardPpid.aspx.cs" Inherits="RP_InfoCardPpid"
-	ValidateRequest="false" EnableViewState="false" %>
+	ValidateRequest="false" EnableViewStateMac="false" %>
 
 <%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.InfoCard" TagPrefix="ic" %>
 <asp:Content ID="Content2" ContentPlaceHolderID="TestBody" runat="Server">
 	<asp:MultiView ID="MultiView1" runat="server" ActiveViewIndex="0">
 		<asp:View ID="View1" runat="server">
-			<p>Form action:
-				<asp:DropDownList ID="actionDropDown" runat="server" onchange="document.getElementById('formActionSpan').innerHTML = document.forms[0].action = this.value;">
-					<asp:ListItem Value="https://test-id.org/RP/InfoCardPpid.aspx" Text="Valid Test endpoint GoDaddy.com Class2" />
-					<asp:ListItem Value="https://test-id.net/RP/InfoCardPpid.aspx" Text="Revoked Test endpoint GoDaddy.com Class2" />
-					<asp:ListItem Value="http://test-id.net/RP/InfoCardPpid.aspx" Text="No SSL Test endpoint" />
-					<asp:ListItem Value="https://expired.test-id.net:444/RP/InfoCardPpid.aspx" Text="Expired Test Endpoint VeriSign" />
-					<asp:ListItem Value="https://start-class1.test-id.net:8443/RP/InfoCardPpid.aspx"
-						Text="Valid Test endpoint StartSSL Class1" />
-					<asp:ListItem Value="https://start-class2.test-id.net:8444/RP/InfoCardPpid.aspx"
-						Text="Valid Test endpoint StartSSL Class2" />
-					<asp:ListItem Value="https://test-id.info/RP/InfoCardPpid.aspx" Text="Valid Test endpoint CAcert Class1" />
-					<asp:ListItem Value="https://wild-card.test-id.net:8445/RP/InfoCardPpid.aspx" Text="Valid Wild Card endpoint StartSSL Class2" />
-				</asp:DropDownList>
-				<span id="formActionSpan"></span></p>
+			<table>
+				<tr>
+					<td nowrap="nowrap">Source URL:
+						<asp:DropDownList ID="sourceDropDown" runat="server" AutoPostBack="True" OnSelectedIndexChanged="sourceDropDown_SelectedIndexChanged" />
+					</td>
+					<td nowrap="nowrap">Form action:
+						<asp:DropDownList ID="actionDropDown" runat="server" onchange="document.getElementById('formActionSpan').innerHTML = document.forms[0].action = this.value;">
+							<asp:ListItem Value="https://test-id.org/RP/InfoCardPpid.aspx" Text="Valid Test endpoint GoDaddy.com Class2" />
+							<asp:ListItem Value="https://test-id.net/RP/InfoCardPpid.aspx" Text="Revoked Test endpoint GoDaddy.com Class2" />
+							<asp:ListItem Value="http://test-id.net/RP/InfoCardPpid.aspx" Text="No SSL Test endpoint" />
+							<asp:ListItem Value="https://expired.test-id.net:444/RP/InfoCardPpid.aspx" Text="Expired Test Endpoint VeriSign" />
+							<asp:ListItem Value="https://start-class1.test-id.net:8443/RP/InfoCardPpid.aspx"
+								Text="Valid Test endpoint StartSSL Class1" />
+							<asp:ListItem Value="https://start-class2.test-id.net:8444/RP/InfoCardPpid.aspx"
+								Text="Valid Test endpoint StartSSL Class2" />
+							<asp:ListItem Value="https://test-id.info/RP/InfoCardPpid.aspx" Text="Valid Test endpoint CAcert Class1" />
+							<asp:ListItem Value="https://wild-card.test-id.net:8445/RP/InfoCardPpid.aspx" Text="Valid Wild Card endpoint StartSSL Class2" />
+						</asp:DropDownList>
+						<span id="formActionSpan"></span></td>
+				</tr>
+			</table>
 			<ic:InfoCardSelector ID="InfoCardSelector1" runat="server" OnReceivedToken="InfoCardSelector1_ReceivedToken"
 				OnTokenProcessingError="InfoCardSelector1_TokenProcessingError">
 				<ClaimsRequested>

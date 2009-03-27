@@ -18,6 +18,9 @@ public partial class RP_InfoCardPpid : System.Web.UI.Page {
 				matchingActionItem = actionDropDown.Items.FindByValue(action);
 			}
 			actionDropDown.SelectedIndex = actionDropDown.Items.IndexOf(actionDropDown.Items.FindByValue(action));
+
+			// Copy the action dropdown into the source dropdown.
+			sourceDropDown.Items.AddRange(actionDropDown.Items.Cast<ListItem>().ToArray());
 		}
 	}
 
@@ -33,5 +36,9 @@ public partial class RP_InfoCardPpid : System.Web.UI.Page {
 		MultiView1.ActiveViewIndex = 2;
 		processingErrorLabel.Text = e.Exception.Message;
 		unprocessedTokenLabel.Text = HttpUtility.HtmlEncode(e.TokenXml);
+	}
+
+	protected void sourceDropDown_SelectedIndexChanged(object sender, EventArgs e) {
+		this.Response.Redirect(sourceDropDown.SelectedValue);
 	}
 }
