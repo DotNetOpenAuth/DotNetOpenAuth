@@ -234,7 +234,10 @@ namespace DotNetOpenAuth.Messaging {
 				if (this.form == null) {
 					if (this.HttpMethod == "POST" && this.Headers[HttpRequestHeader.ContentType] == "application/x-www-form-urlencoded") {
 						StreamReader reader = new StreamReader(this.InputStream);
-						long originalPosition = this.InputStream.Position;
+						long originalPosition = 0;
+						if (this.InputStream.CanSeek) {
+							originalPosition = this.InputStream.Position;
+						}
 						this.form = HttpUtility.ParseQueryString(reader.ReadToEnd());
 						if (this.InputStream.CanSeek) {
 							this.InputStream.Seek(originalPosition, SeekOrigin.Begin);
