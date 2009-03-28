@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// <summary>
 		/// Gets or sets the read/write timeout after which an HTTP request will fail.
 		/// </summary>
-		[ConfigurationProperty(ReadWriteTimeoutConfigName, DefaultValue = "00:00:00.800")]
+		[ConfigurationProperty(ReadWriteTimeoutConfigName, DefaultValue = "00:00:01.500")]
 		[PositiveTimeSpanValidator]
 		public TimeSpan ReadWriteTimeout {
 			get { return (TimeSpan)this[ReadWriteTimeoutConfigName]; }
