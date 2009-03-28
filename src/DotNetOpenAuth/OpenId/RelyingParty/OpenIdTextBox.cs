@@ -389,7 +389,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			set {
 				if (Page != null && !DesignMode) {
 					// Validate new value by trying to construct a Realm object based on it.
-					new Realm(OpenIdUtilities.GetResolvedRealm(Page, value)); // throws an exception on failure.
+					new Realm(OpenIdUtilities.GetResolvedRealm(this.Page, value, this.RelyingParty.Channel.GetRequestFromContext())); // throws an exception on failure.
 				} else {
 					// We can't fully test it, but it should start with either ~/ or a protocol.
 					if (Regex.IsMatch(value, @"^https?://")) {
@@ -421,7 +421,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			set {
 				if (this.Page != null && !this.DesignMode) {
 					// Validate new value by trying to construct a Uri based on it.
-					new Uri(MessagingUtilities.GetRequestUrlFromContext(), this.Page.ResolveUrl(value)); // throws an exception on failure.
+					new Uri(this.RelyingParty.Channel.GetRequestFromContext().UrlBeforeRewriting, this.Page.ResolveUrl(value)); // throws an exception on failure.
 				} else {
 					// We can't fully test it, but it should start with either ~/ or a protocol.
 					if (Regex.IsMatch(value, @"^https?://")) {
@@ -910,12 +910,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			try {
 				// Approximate the returnTo (either based on the customize property or the page URL)
 				// so we can use it to help with Realm resolution.
-				Uri returnToApproximation = this.ReturnToUrl != null ? new Uri(MessagingUtilities.GetRequestUrlFromContext(), this.ReturnToUrl) : this.Page.Request.Url;
+				var requestContext = this.RelyingParty.Channel.GetRequestFromContext();
+				Uri returnToApproximation = this.ReturnToUrl != null ? new Uri(requestContext.UrlBeforeRewriting, this.ReturnToUrl) : this.Page.Request.Url;
 
 				// Resolve the trust root, and swap out the scheme and port if necessary to match the
 				// return_to URL, since this match is required by OpenId, and the consumer app
 				// may be using HTTP at some times and HTTPS at others.
-				UriBuilder realm = OpenIdUtilities.GetResolvedRealm(this.Page, this.RealmUrl);
+				UriBuilder realm = OpenIdUtilities.GetResolvedRealm(this.Page, this.RealmUrl, this.RelyingParty.Channel.GetRequestFromContext());
 				realm.Scheme = returnToApproximation.Scheme;
 				realm.Port = returnToApproximation.Port;
 
@@ -1159,7 +1160,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				Language = this.RequestLanguage,
 				TimeZone = this.RequestTimeZone,
 				PolicyUrl = string.IsNullOrEmpty(this.PolicyUrl) ?
-					null : new Uri(MessagingUtilities.GetRequestUrlFromContext(), this.Page.ResolveUrl(this.PolicyUrl)),
+					null : new Uri(this.RelyingParty.Channel.GetRequestFromContext().UrlBeforeRewriting, this.Page.ResolveUrl(this.PolicyUrl)),
 			});
 		}
 

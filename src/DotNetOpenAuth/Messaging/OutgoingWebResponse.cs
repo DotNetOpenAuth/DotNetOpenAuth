@@ -124,23 +124,56 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires(HttpContext.Current != null);
 			ErrorUtilities.VerifyHttpContext();
 
-			HttpContext.Current.Response.Clear();
-			HttpContext.Current.Response.StatusCode = (int)this.Status;
-			MessagingUtilities.ApplyHeadersToResponse(this.Headers, HttpContext.Current.Response);
+			this.Send(HttpContext.Current);
+		}
+
+		/// <summary>
+		/// Automatically sends the appropriate response to the user agent
+		/// and ends execution on the current page or handler.
+		/// </summary>
+		/// <param name="context">The context of the HTTP request whose response should be set.
+		/// Typically this is <see cref="HttpContext.Current"/>.</param>
+		/// <exception cref="ThreadAbortException">Thrown by ASP.NET in order to prevent additional data from the page being sent to the client and corrupting the response.</exception>
+		public virtual void Send(HttpContext context) {
+			Contract.Requires(context != null);
+			ErrorUtilities.VerifyArgumentNotNull(context, "context");
+
+			context.Response.Clear();
+			context.Response.StatusCode = (int)this.Status;
+			MessagingUtilities.ApplyHeadersToResponse(this.Headers, context.Response);
 			if (this.ResponseStream != null) {
 				try {
-					this.ResponseStream.CopyTo(HttpContext.Current.Response.OutputStream);
+					this.ResponseStream.CopyTo(context.Response.OutputStream);
 				} catch (HttpException ex) {
-					if (ex.ErrorCode == -2147467259 && HttpContext.Current.Response.Output != null) {
+					if (ex.ErrorCode == -2147467259 && context.Response.Output != null) {
 						// Test scenarios can generate this, since the stream is being spoofed:
 						// System.Web.HttpException: OutputStream is not available when a custom TextWriter is used.
-						HttpContext.Current.Response.Output.Write(this.Body);
+						context.Response.Output.Write(this.Body);
 					} else {
 						throw;
 					}
 				}
 			}
-			HttpContext.Current.Response.End();
+
+			context.Response.End();
+		}
+
+		/// <summary>
+		/// Automatically sends the appropriate response to the user agent.
+		/// </summary>
+		/// <param name="response">The response to set to this message.</param>
+		public virtual void Send(HttpListenerResponse response) {
+			Contract.Requires(response != null);
+			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+
+			response.StatusCode = (int)this.Status;
+			MessagingUtilities.ApplyHeadersToResponse(this.Headers, response);
+			if (this.ResponseStream != null) {
+				response.ContentLength64 = this.ResponseStream.Length;
+				this.ResponseStream.CopyTo(response.OutputStream);
+			}
+
+			response.OutputStream.Close();
 		}
 
 		/// <summary>

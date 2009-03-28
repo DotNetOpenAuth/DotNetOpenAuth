@@ -28,7 +28,7 @@ namespace DotNetOpenAuth.Yadis {
 			if (finalResponse == null) {
 				this.ContentType = initialResponse.ContentType;
 				this.ResponseText = initialResponse.GetResponseString();
-				this.IsXrds = ContentType.MediaType == ContentTypes.Xrds;
+				this.IsXrds = this.ContentType != null && this.ContentType.MediaType == ContentTypes.Xrds;
 			} else {
 				this.ContentType = finalResponse.ContentType;
 				this.ResponseText = finalResponse.GetResponseString();

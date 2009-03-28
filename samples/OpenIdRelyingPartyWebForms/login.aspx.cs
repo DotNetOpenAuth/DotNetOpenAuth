@@ -1,0 +1,75 @@
+namespace OpenIdRelyingPartyWebForms {
+	using System;
+	using System.Collections.Generic;
+	using System.Web.UI;
+	using System.Web.UI.WebControls;
+	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
+	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
+	using DotNetOpenAuth.OpenId.RelyingParty;
+
+	public partial class login : System.Web.UI.Page {
+		protected void Page_Load(object sender, EventArgs e) {
+			this.OpenIdLogin1.Focus();
+		}
+
+		protected void requireSslCheckBox_CheckedChanged(object sender, EventArgs e) {
+			this.OpenIdLogin1.RequireSsl = this.requireSslCheckBox.Checked;
+		}
+
+		protected void OpenIdLogin1_LoggingIn(object sender, OpenIdEventArgs e) {
+			this.prepareRequest(e.Request);
+		}
+
+		/// <summary>
+		/// Fired upon login.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="DotNetOpenAuth.OpenId.RelyingParty.OpenIdEventArgs"/> instance containing the event data.</param>
+		/// <remarks>
+		/// Note, that straight after login, forms auth will redirect the user
+		/// to their original page. So this page may never be rendererd.
+		/// </remarks>
+		protected void OpenIdLogin1_LoggedIn(object sender, OpenIdEventArgs e) {
+			State.FriendlyLoginName = e.Response.FriendlyIdentifierForDisplay;
+			State.ProfileFields = e.Response.GetExtension<ClaimsResponse>();
+			State.PapePolicies = e.Response.GetExtension<PolicyResponse>();
+		}
+
+		protected void OpenIdLogin1_SetupRequired(object sender, OpenIdEventArgs e) {
+			this.setupRequiredLabel.Visible = true;
+		}
+
+		protected void yahooLoginButton_Click(object sender, ImageClickEventArgs e) {
+			OpenIdRelyingParty openid = new OpenIdRelyingParty();
+			var req = openid.CreateRequest("yahoo.com");
+			this.prepareRequest(req);
+			req.RedirectToProvider();
+
+			// We don't listen for the response from the provider explicitly
+			// because the OpenIdLogin control is already doing that for us.
+		}
+
+		private void prepareRequest(IAuthenticationRequest request) {
+			// Setup is the default for the login control.  But the user may have checked the box to override that.
+			request.Mode = this.immediateCheckBox.Checked ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;
+
+			// Collect the PAPE policies requested by the user.
+			List<string> policies = new List<string>();
+			foreach (ListItem item in this.papePolicies.Items) {
+				if (item.Selected) {
+					policies.Add(item.Value);
+				}
+			}
+
+			// Add the PAPE extension if any policy was requested.
+			if (policies.Count > 0) {
+				var pape = new PolicyRequest();
+				foreach (string policy in policies) {
+					pape.PreferredPolicies.Add(policy);
+				}
+
+				request.AddExtension(pape);
+			}
+		}
+	}
+}

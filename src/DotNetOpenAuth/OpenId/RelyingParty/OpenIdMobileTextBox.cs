@@ -235,6 +235,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string UsePersistentCookieCallbackKey = "OpenIdTextBox_UsePersistentCookie";
 
 		/// <summary>
+		/// Backing field for the <see cref="RelyingParty"/> property.
+		/// </summary>
+		private OpenIdRelyingParty relyingParty;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdMobileTextBox"/> class.
 		/// </summary>
 		public OpenIdMobileTextBox() {
@@ -287,7 +292,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			set {
 				if (Page != null && !DesignMode) {
 					// Validate new value by trying to construct a Realm object based on it.
-					new Realm(OpenIdUtilities.GetResolvedRealm(Page, value)); // throws an exception on failure.
+					new Realm(OpenIdUtilities.GetResolvedRealm(this.Page, value, this.RelyingParty.Channel.GetRequestFromContext())); // throws an exception on failure.
 				} else {
 					// We can't fully test it, but it should start with either ~/ or a protocol.
 					if (Regex.IsMatch(value, @"^https?://")) {
@@ -318,7 +323,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			set {
 				if (Page != null && !DesignMode) {
 					// Validate new value by trying to construct a Uri based on it.
-					new Uri(MessagingUtilities.GetRequestUrlFromContext(), Page.ResolveUrl(value)); // throws an exception on failure.
+					new Uri(this.RelyingParty.Channel.GetRequestFromContext().UrlBeforeRewriting, this.Page.ResolveUrl(value)); // throws an exception on failure.
 				} else {
 					// We can't fully test it, but it should start with either ~/ or a protocol.
 					if (Regex.IsMatch(value, @"^https?://")) {
@@ -522,6 +527,30 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#endregion
 
 		/// <summary>
+		/// Gets or sets the <see cref="OpenIdRelyingParty"/> instance to use.
+		/// </summary>
+		/// <value>The default value is an <see cref="OpenIdRelyingParty"/> instance initialized according to the web.config file.</value>
+		/// <remarks>
+		/// A performance optimization would be to store off the 
+		/// instance as a static member in your web site and set it
+		/// to this property in your <see cref="Control.Load">Page.Load</see>
+		/// event since instantiating these instances can be expensive on 
+		/// heavily trafficked web pages.
+		/// </remarks>
+		public OpenIdRelyingParty RelyingParty {
+			get {
+				if (this.relyingParty == null) {
+					this.relyingParty = this.CreateRelyingParty();
+				}
+				return this.relyingParty;
+			}
+
+			set {
+				this.relyingParty = value;
+			}
+		}
+
+		/// <summary>
 		/// Gets or sets the OpenID authentication request that is about to be sent.
 		/// </summary>
 		protected IAuthenticationRequest Request { get; set; }
@@ -556,12 +585,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			ErrorUtilities.VerifyOperation(!string.IsNullOrEmpty(this.Text), OpenIdStrings.OpenIdTextBoxEmpty);
 
 			try {
-				var consumer = this.CreateRelyingParty();
-
 				// Resolve the trust root, and swap out the scheme and port if necessary to match the
 				// return_to URL, since this match is required by OpenId, and the consumer app
 				// may be using HTTP at some times and HTTPS at others.
-				UriBuilder realm = OpenIdUtilities.GetResolvedRealm(this.Page, this.RealmUrl);
+				UriBuilder realm = OpenIdUtilities.GetResolvedRealm(this.Page, this.RealmUrl, this.RelyingParty.Channel.GetRequestFromContext());
 				realm.Scheme = Page.Request.Url.Scheme;
 				realm.Port = Page.Request.Url.Port;
 
@@ -572,10 +599,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				if (Identifier.TryParse(this.Text, out userSuppliedIdentifier)) {
 					Realm typedRealm = new Realm(realm);
 					if (string.IsNullOrEmpty(this.ReturnToUrl)) {
-						this.Request = consumer.CreateRequest(userSuppliedIdentifier, typedRealm);
+						this.Request = this.RelyingParty.CreateRequest(userSuppliedIdentifier, typedRealm);
 					} else {
-						Uri returnTo = new Uri(MessagingUtilities.GetRequestUrlFromContext(), this.ReturnToUrl);
-						this.Request = consumer.CreateRequest(userSuppliedIdentifier, typedRealm, returnTo);
+						Uri returnTo = new Uri(this.RelyingParty.Channel.GetRequestFromContext().UrlBeforeRewriting, this.ReturnToUrl);
+						this.Request = this.RelyingParty.CreateRequest(userSuppliedIdentifier, typedRealm, returnTo);
 					}
 					this.Request.Mode = this.ImmediateMode ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;
 					if (this.EnableRequestProfile) {
@@ -606,8 +633,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				return;
 			}
 
-			var rp = this.CreateRelyingParty();
-			var response = rp.GetResponse();
+			var response = this.RelyingParty.GetResponse();
 			if (response != null) {
 				string persistentString = response.GetCallbackArgument(UsePersistentCookieCallbackKey);
 				bool persistentBool;
@@ -719,7 +745,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				Language = this.RequestLanguage,
 				TimeZone = this.RequestTimeZone,
 				PolicyUrl = string.IsNullOrEmpty(this.PolicyUrl) ?
-					null : new Uri(MessagingUtilities.GetRequestUrlFromContext(), this.Page.ResolveUrl(this.PolicyUrl)),
+					null : new Uri(this.RelyingParty.Channel.GetRequestFromContext().UrlBeforeRewriting, this.Page.ResolveUrl(this.PolicyUrl)),
 			});
 		}
 

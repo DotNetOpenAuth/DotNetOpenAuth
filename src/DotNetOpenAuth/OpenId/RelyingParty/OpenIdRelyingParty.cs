@@ -459,12 +459,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			ErrorUtilities.VerifyHttpContext();
 
 			// Build the return_to URL
-			UriBuilder returnTo = new UriBuilder(MessagingUtilities.GetRequestUrlFromContext());
+			UriBuilder returnTo = new UriBuilder(this.Channel.GetRequestFromContext().UrlBeforeRewriting);
 
 			// Trim off any parameters with an "openid." prefix, and a few known others
 			// to avoid carrying state from a prior login attempt.
 			returnTo.Query = string.Empty;
-			NameValueCollection queryParams = MessagingUtilities.GetQueryFromContext();
+			NameValueCollection queryParams = this.Channel.GetRequestFromContext().QueryStringBeforeRewriting;
 			var returnToParams = new Dictionary<string, string>(queryParams.Count);
 			foreach (string key in queryParams) {
 				if (!IsOpenIdSupportingParameter(key)) {
@@ -502,7 +502,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			ErrorUtilities.VerifyHttpContext();
 
 			// Build the realm URL
-			UriBuilder realmUrl = new UriBuilder(MessagingUtilities.GetRequestUrlFromContext());
+			UriBuilder realmUrl = new UriBuilder(this.Channel.GetRequestFromContext().UrlBeforeRewriting);
 			realmUrl.Path = HttpContext.Current.Request.ApplicationPath;
 			realmUrl.Query = null;
 			realmUrl.Fragment = null;
