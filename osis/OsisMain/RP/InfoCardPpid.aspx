@@ -9,7 +9,7 @@
 			<table>
 				<tr>
 					<td nowrap="nowrap">Source URL:
-						<asp:DropDownList ID="sourceDropDown" runat="server" AutoPostBack="True" OnSelectedIndexChanged="sourceDropDown_SelectedIndexChanged" />
+						<asp:DropDownList ID="sourceDropDown" runat="server" onchange="window.location = this.value" />
 					</td>
 					<td nowrap="nowrap">Form action:
 						<asp:DropDownList ID="actionDropDown" runat="server" onchange="document.getElementById('formActionSpan').innerHTML = document.forms[0].action = this.value;">

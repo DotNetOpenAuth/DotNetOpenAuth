@@ -37,8 +37,4 @@ public partial class RP_InfoCardPpid : System.Web.UI.Page {
 		processingErrorLabel.Text = e.Exception.Message;
 		unprocessedTokenLabel.Text = HttpUtility.HtmlEncode(e.TokenXml);
 	}
-
-	protected void sourceDropDown_SelectedIndexChanged(object sender, EventArgs e) {
-		this.Response.Redirect(sourceDropDown.SelectedValue);
-	}
 }
