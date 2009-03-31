@@ -238,6 +238,20 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		internal bool ReturnToParametersSignatureValidated { get; set; }
 
 		/// <summary>
+		/// Gets the signed extensions on this message.
+		/// </summary>
+		internal IEnumerable<IOpenIdMessageExtension> SignedExtensions {
+			get { return this.extensions.OfType<IOpenIdMessageExtension>().Where(ext => ext.IsSignedByProvider); }
+		}
+
+		/// <summary>
+		/// Gets the unsigned extensions on this message.
+		/// </summary>
+		internal IEnumerable<IOpenIdMessageExtension> UnsignedExtensions {
+			get { return this.extensions.OfType<IOpenIdMessageExtension>().Where(ext => !ext.IsSignedByProvider); }
+		}
+
+		/// <summary>
 		/// Gets or sets the nonce that will protect the message from replay attacks.
 		/// </summary>
 		/// <value>

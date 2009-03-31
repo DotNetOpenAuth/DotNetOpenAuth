@@ -36,5 +36,14 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// The <see cref="Extensions.SimpleRegistration.ClaimsRequest.CreateResponse"/> for an example.
 		/// </remarks>
 		IEnumerable<string> AdditionalSupportedTypeUris { get; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this extension was 
+		/// signed by the OpenID Provider.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if this instance is signed by the provider; otherwise, <c>false</c>.
+		/// </value>
+		bool IsSignedByProvider { get; set; }
 	}
 }

@@ -113,15 +113,17 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// Verifies that unsigned extension responses (where any or all fields are unsigned) are ignored.
 		/// </summary>
 		[TestMethod]
-		public void UnsignedExtensionsAreIgnored() {
+		public void ExtensionsAreIdentifiedAsSignedOrUnsigned() {
 			Protocol protocol = Protocol.Default;
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
 				rp => {
 					RegisterMockExtension(rp.Channel);
 					var response = rp.Channel.ReadFromRequest<IndirectSignedResponse>();
-					Assert.AreEqual(1, response.Extensions.Count, "Signed extension should have been received.");
+					Assert.AreEqual(1, response.SignedExtensions.Count(), "Signed extension should have been received.");
+					Assert.AreEqual(0, response.UnsignedExtensions.Count(), "No unsigned extension should be present.");
 					response = rp.Channel.ReadFromRequest<IndirectSignedResponse>();
-					Assert.AreEqual(0, response.Extensions.Count, "Unsigned extension should have been ignored.");
+					Assert.AreEqual(0, response.SignedExtensions.Count(), "No signed extension should have been received.");
+					Assert.AreEqual(1, response.UnsignedExtensions.Count(), "Unsigned extension should have been received.");
 				},
 				op => {
 					RegisterMockExtension(op.Channel);

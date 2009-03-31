@@ -48,6 +48,15 @@ namespace DotNetOpenAuth.Test.Mocks {
 			get { return Enumerable.Empty<string>(); }
 		}
 
+		/// <summary>
+		/// Gets or sets a value indicating whether this extension was
+		/// signed by the OpenID Provider.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if this instance is signed by the provider; otherwise, <c>false</c>.
+		/// </value>
+		public bool IsSignedByProvider { get; set; }
+
 		#endregion
 
 		#region IMessage Properties

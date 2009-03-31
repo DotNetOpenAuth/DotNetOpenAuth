@@ -122,6 +122,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>
 		/// The extension, if it is found.  Null otherwise.
 		/// </returns>
+		/// <remarks>
+		/// <para>Extensions are returned only if the Provider signed them. 
+		/// Relying parties that do not care if the values were modified in
+		/// transit should use the <see cref="GetUntrustedExtension&lt;T&gt;"/> method
+		/// in order to allow the Provider to not sign the extension. </para>
+		/// <para>Unsigned extensions are completely unreliable and should be
+		/// used only to prefill user forms since the user or any other third
+		/// party may have tampered with the data carried by the extension.</para>
+		/// <para>Signed extensions are only reliable if the relying party
+		/// trusts the OpenID Provider that signed them.  Signing does not mean
+		/// the relying party can trust the values -- it only means that the values
+		/// have not been tampered with since the Provider sent the message.</para>
+		/// </remarks>
 		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "No parameter at all is required.  T is used for return type.")]
 		T GetExtension<T>() where T : IOpenIdMessageExtension;
 
@@ -132,6 +145,65 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>
 		/// The extension, if it is found.  Null otherwise.
 		/// </returns>
+		/// <remarks>
+		/// <para>Extensions are returned only if the Provider signed them. 
+		/// Relying parties that do not care if the values were modified in
+		/// transit should use the <see cref="GetUntrustedExtension"/> method
+		/// in order to allow the Provider to not sign the extension. </para>
+		/// <para>Unsigned extensions are completely unreliable and should be
+		/// used only to prefill user forms since the user or any other third
+		/// party may have tampered with the data carried by the extension.</para>
+		/// <para>Signed extensions are only reliable if the relying party
+		/// trusts the OpenID Provider that signed them.  Signing does not mean
+		/// the relying party can trust the values -- it only means that the values
+		/// have not been tampered with since the Provider sent the message.</para>
+		/// </remarks>
 		IOpenIdMessageExtension GetExtension(Type extensionType);
+
+		/// <summary>
+		/// Tries to get an OpenID extension that may be present in the response, without
+		/// requiring it to be signed by the Provider.
+		/// </summary>
+		/// <typeparam name="T">The type of extension to look for in the response message.</typeparam>
+		/// <returns>
+		/// The extension, if it is found.  Null otherwise.
+		/// </returns>
+		/// <remarks>
+		/// <para>Extensions are returned whether they are signed or not.  
+		/// Use the <see cref="GetExtension&lt;T&gt;"/> method to retrieve
+		/// extension responses only if they are signed by the Provider to
+		/// protect against tampering. </para>
+		/// <para>Unsigned extensions are completely unreliable and should be
+		/// used only to prefill user forms since the user or any other third
+		/// party may have tampered with the data carried by the extension.</para>
+		/// <para>Signed extensions are only reliable if the relying party
+		/// trusts the OpenID Provider that signed them.  Signing does not mean
+		/// the relying party can trust the values -- it only means that the values
+		/// have not been tampered with since the Provider sent the message.</para>
+		/// </remarks>
+		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "No parameter at all is required.  T is used for return type.")]
+		T GetUntrustedExtension<T>() where T : IOpenIdMessageExtension;
+
+		/// <summary>
+		/// Tries to get an OpenID extension that may be present in the response.
+		/// </summary>
+		/// <param name="extensionType">Type of the extension to look for in the response.</param>
+		/// <returns>
+		/// The extension, if it is found.  Null otherwise.
+		/// </returns>
+		/// <remarks>
+		/// <para>Extensions are returned whether they are signed or not.  
+		/// Use the <see cref="GetExtension"/> method to retrieve
+		/// extension responses only if they are signed by the Provider to
+		/// protect against tampering. </para>
+		/// <para>Unsigned extensions are completely unreliable and should be
+		/// used only to prefill user forms since the user or any other third
+		/// party may have tampered with the data carried by the extension.</para>
+		/// <para>Signed extensions are only reliable if the relying party
+		/// trusts the OpenID Provider that signed them.  Signing does not mean
+		/// the relying party can trust the values -- it only means that the values
+		/// have not been tampered with since the Provider sent the message.</para>
+		/// </remarks>
+		IOpenIdMessageExtension GetUntrustedExtension(Type extensionType);
 	}
 }
