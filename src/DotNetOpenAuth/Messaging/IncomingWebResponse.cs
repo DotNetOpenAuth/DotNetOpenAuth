@@ -191,7 +191,7 @@ namespace DotNetOpenAuth.Messaging {
 	}
 
 	[ContractClassFor(typeof(IncomingWebResponse))]
-	internal class IncomingWebResponseContract : IncomingWebResponse {
+	internal abstract class IncomingWebResponseContract : IncomingWebResponse {
 		public override Stream ResponseStream {
 			get { throw new NotImplementedException(); }
 		}
