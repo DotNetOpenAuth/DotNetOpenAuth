@@ -64,7 +64,6 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		internal MessageDescription Get(IMessage message) {
 			Contract.Requires(message != null);
 			Contract.Ensures(Contract.Result<MessageDescription>() != null);
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 			return this.Get(message.GetType(), message.Version);
 		}
 

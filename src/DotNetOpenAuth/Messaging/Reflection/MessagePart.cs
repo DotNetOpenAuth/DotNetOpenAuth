@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Net.Security;
 	using System.Reflection;
@@ -17,6 +18,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	/// <summary>
 	/// Describes an individual member of a message and assists in its serialization.
 	/// </summary>
+	[ContractVerification(true)]
 	internal class MessagePart {
 		/// <summary>
 		/// A map of converters that help serialize custom objects to string values and back again.
@@ -79,26 +81,12 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// serialization requirements of the message part.
 		/// </param>
 		internal MessagePart(MemberInfo member, MessagePartAttribute attribute) {
-			if (member == null) {
-				throw new ArgumentNullException("member");
-			}
+			Contract.Requires(member != null);
+			Contract.Requires(member is FieldInfo || member is PropertyInfo);
+			Contract.Requires(attribute != null);
 
 			this.field = member as FieldInfo;
 			this.property = member as PropertyInfo;
-			if (this.field == null && this.property == null) {
-				throw new ArgumentException(
-					string.Format(
-						CultureInfo.CurrentCulture,
-						MessagingStrings.UnexpectedType,
-						typeof(FieldInfo).Name + ", " + typeof(PropertyInfo).Name,
-						member.GetType().Name),
-					"member");
-			}
-
-			if (attribute == null) {
-				throw new ArgumentNullException("attribute");
-			}
-
 			this.Name = attribute.Name ?? member.Name;
 			this.RequiredProtection = attribute.RequiredProtection;
 			this.IsRequired = attribute.IsRequired;
@@ -166,9 +154,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="message">The message instance containing the member whose value should be set.</param>
 		/// <param name="value">The string representation of the value to set.</param>
 		internal void SetValue(IMessage message, string value) {
-			if (message == null) {
-				throw new ArgumentNullException("message");
-			}
+			Contract.Requires(message != null);
 
 			try {
 				if (this.IsConstantValue) {

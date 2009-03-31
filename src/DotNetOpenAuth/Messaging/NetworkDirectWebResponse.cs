@@ -10,11 +10,13 @@ namespace DotNetOpenAuth.Messaging {
 	using System.IO;
 	using System.Net;
 	using System.Text;
+using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// A live network HTTP response
 	/// </summary>
 	[DebuggerDisplay("{Status} {ContentType.MediaType}")]
+	[ContractVerification(true)]
 	internal class NetworkDirectWebResponse : IncomingWebResponse, IDisposable {
 		/// <summary>
 		/// The network response object, used to initialize this instance, that still needs 

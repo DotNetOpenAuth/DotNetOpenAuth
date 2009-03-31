@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
 	using System.Net;
@@ -17,6 +18,8 @@ namespace DotNetOpenAuth.Messaging {
 	/// <summary>
 	/// Details on the incoming response from a direct web request to a remote party.
 	/// </summary>
+	[ContractVerification(true)]
+	[ContractClass(typeof(IncomingWebResponseContract))]
 	public abstract class IncomingWebResponse : IDisposable {
 		/// <summary>
 		/// The encoding to use in reading a response that does not declare its own content encoding.
@@ -37,8 +40,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="requestUri">The original request URI.</param>
 		/// <param name="response">The response to initialize from.  The network stream is used by this class directly.</param>
 		protected IncomingWebResponse(Uri requestUri, HttpWebResponse response) {
-			ErrorUtilities.VerifyArgumentNotNull(requestUri, "requestUri");
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.RequiresAlways(requestUri != null);
+			Contract.RequiresAlways(response != null);
 
 			this.RequestUri = requestUri;
 			if (!string.IsNullOrEmpty(response.ContentType)) {
@@ -64,7 +67,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="contentType">Type of the content.</param>
 		/// <param name="contentEncoding">The content encoding.</param>
 		protected IncomingWebResponse(Uri requestUri, Uri responseUri, WebHeaderCollection headers, HttpStatusCode statusCode, string contentType, string contentEncoding) {
-			ErrorUtilities.VerifyArgumentNotNull(requestUri, "requestUri");
+			Contract.RequiresAlways(requestUri != null);
+
 			this.RequestUri = requestUri;
 			this.Status = statusCode;
 			if (!string.IsNullOrEmpty(contentType)) {
@@ -185,4 +189,40 @@ namespace DotNetOpenAuth.Messaging {
 			}
 		}
 	}
+
+	[ContractClassFor(typeof(IncomingWebResponse))]
+	internal class IncomingWebResponseContract : IncomingWebResponse {
+		public override Stream ResponseStream {
+			get { throw new NotImplementedException(); }
+		}
+
+		/// <summary>
+		/// Creates a text reader for the response stream.
+		/// </summary>
+		/// <returns>
+		/// The text reader, initialized for the proper encoding.
+		/// </returns>
+		public override StreamReader GetResponseReader() {
+			Contract.Ensures(Contract.Result<StreamReader>() != null);
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Gets an offline snapshot version of this instance.
+		/// </summary>
+		/// <param name="maximumBytesToCache">The maximum bytes from the response stream to cache.</param>
+		/// <returns>A snapshot version of this instance.</returns>
+		/// <remarks>
+		/// If this instance is a <see cref="NetworkDirectWebResponse"/> creating a snapshot
+		/// will automatically close and dispose of the underlying response stream.
+		/// If this instance is a <see cref="CachedDirectWebResponse"/>, the result will
+		/// be the self same instance.
+		/// </remarks>
+		internal override CachedDirectWebResponse GetSnapshot(int maximumBytesToCache) {
+			Contract.Requires(maximumBytesToCache >= 0);
+			Contract.Ensures(Contract.Result<CachedDirectWebResponse>() != null);
+			throw new NotImplementedException();
+		}
+	}
+
 }

@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.Messaging {
 	/// <summary>
 	/// Cached details on the response from a direct web request to a remote party.
 	/// </summary>
+	[ContractVerification(true)]
 	[DebuggerDisplay("{Status} {ContentType.MediaType}, length: {ResponseStream.Length}")]
 	internal class CachedDirectWebResponse : IncomingWebResponse {
 		/// <summary>
@@ -54,8 +55,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="responseStream">The response stream.</param>
 		internal CachedDirectWebResponse(Uri requestUri, Uri responseUri, WebHeaderCollection headers, HttpStatusCode statusCode, string contentType, string contentEncoding, MemoryStream responseStream)
 			: base(requestUri, responseUri, headers, statusCode, contentType, contentEncoding) {
-			ErrorUtilities.VerifyArgumentNotNull(responseStream, "responseStream");
-
+			Contract.Requires(responseStream != null);
 			this.responseStream = responseStream;
 		}
 
@@ -149,7 +149,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="maximumBytesToRead">The maximum bytes to cache.</param>
 		/// <returns>The seekable Stream instance that contains a copy of what was returned in the HTTP response.</returns>
 		private static MemoryStream CacheNetworkStreamAndClose(HttpWebResponse response, int maximumBytesToRead) {
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.Requires(response != null);
 
 			// Now read and cache the network stream
 			Stream networkStream = response.GetResponseStream();

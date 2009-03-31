@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using System.Diagnostics.Contracts;
+using System;
 namespace DotNetOpenAuth.OpenId {
 	/// <summary>
 	/// An enumeration that can specify how a given <see cref="Association"/> is used.
@@ -33,6 +35,7 @@ namespace DotNetOpenAuth.OpenId {
 	/// <see cref="System.Uri"/> for consumers (to distinguish associations across servers) or
 	/// <see cref="AssociationRelyingPartyType"/> for providers (to distinguish dumb and smart client associations).
 	/// </typeparam>
+	[ContractClass(typeof(IAssociationStoreContract<>))]
 	public interface IAssociationStore<TKey> {
 		/// <summary>
 		/// Saves an <see cref="Association"/> for later recall.
@@ -92,4 +95,40 @@ namespace DotNetOpenAuth.OpenId {
 		/// </remarks>
 		void ClearExpiredAssociations();
 	}
+
+	[ContractClassFor(typeof(IAssociationStore<>))]
+	internal class IAssociationStoreContract<TKey> : IAssociationStore<TKey> {
+		#region IAssociationStore<TKey> Members
+
+		void IAssociationStore<TKey>.StoreAssociation(TKey distinguishingFactor, Association association) {
+			Contract.Requires(distinguishingFactor != null);
+			Contract.Requires(association != null);
+			throw new NotImplementedException();
+		}
+
+		Association IAssociationStore<TKey>.GetAssociation(TKey distinguishingFactor, SecuritySettings securityRequirements) {
+			Contract.Requires(distinguishingFactor != null);
+			Contract.Requires(securityRequirements != null);
+			throw new NotImplementedException();
+		}
+
+		Association IAssociationStore<TKey>.GetAssociation(TKey distinguishingFactor, string handle) {
+			Contract.Requires(distinguishingFactor != null);
+			Contract.Requires(!String.IsNullOrEmpty(handle));
+			throw new NotImplementedException();
+		}
+
+		bool IAssociationStore<TKey>.RemoveAssociation(TKey distinguishingFactor, string handle) {
+			Contract.Requires(distinguishingFactor != null);
+			Contract.Requires(!String.IsNullOrEmpty(handle));
+			throw new NotImplementedException();
+		}
+
+		void IAssociationStore<TKey>.ClearExpiredAssociations() {
+			throw new NotImplementedException();
+		}
+
+		#endregion
+	}
+
 }

@@ -53,8 +53,15 @@ namespace DotNetOpenAuth.Configuration {
 		[ConfigurationProperty(MaxAuthenticationTimePropertyName, DefaultValue = "0:05")] // 5 minutes
 		[PositiveTimeSpanValidator]
 		internal TimeSpan MaxAuthenticationTime {
-			get { return (TimeSpan)this[MaxAuthenticationTimePropertyName]; }
-			set { this[MaxAuthenticationTimePropertyName] = value; }
+			get {
+				Contract.Ensures(Contract.Result<TimeSpan>() > TimeSpan.Zero);
+				return (TimeSpan)this[MaxAuthenticationTimePropertyName];
+			}
+
+			set {
+				Contract.Requires(value > TimeSpan.Zero);
+				this[MaxAuthenticationTimePropertyName] = value;
+			}
 		}
 
 		/// <summary>

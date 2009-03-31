@@ -6,10 +6,12 @@
 
 namespace DotNetOpenAuth.Messaging.Reflection {
 	using System;
+	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// A pair of conversion functions to map some type to a string and back again.
 	/// </summary>
+	[ContractVerification(true)]
 	internal struct ValueMapping {
 		/// <summary>
 		/// The mapping function that converts some custom type to a string.
@@ -27,13 +29,8 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="toString">The mapping function that converts some custom type to a string.</param>
 		/// <param name="toValue">The mapping function that converts a string to some custom type.</param>
 		internal ValueMapping(Func<object, string> toString, Func<string, object> toValue) {
-			if (toString == null) {
-				throw new ArgumentNullException("toString");
-			}
-
-			if (toValue == null) {
-				throw new ArgumentNullException("toValue");
-			}
+			Contract.Requires(toString != null);
+			Contract.Requires(toValue != null);
 
 			this.ValueToString = toString;
 			this.StringToValue = toValue;
