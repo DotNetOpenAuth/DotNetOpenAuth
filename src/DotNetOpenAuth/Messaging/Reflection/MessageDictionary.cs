@@ -16,6 +16,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	/// provides access to both well-defined message properties and "extra" 
 	/// name/value pairs that have no properties associated with them.
 	/// </summary>
+	[ContractVerification(true)]
 	internal class MessageDictionary : IDictionary<string, string> {
 		/// <summary>
 		/// The <see cref="IMessage"/> instance manipulated by this dictionary.
@@ -35,8 +36,6 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		internal MessageDictionary(IMessage message, MessageDescription description) {
 			Contract.Requires(message != null);
 			Contract.Requires(description != null);
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
-			ErrorUtilities.VerifyArgumentNotNull(description, "description");
 
 			this.message = message;
 			this.description = description;

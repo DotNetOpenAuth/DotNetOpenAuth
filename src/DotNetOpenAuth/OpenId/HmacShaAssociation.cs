@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Security.Cryptography;
 	using DotNetOpenAuth.Messaging;
@@ -18,6 +19,7 @@ namespace DotNetOpenAuth.OpenId {
 	/// <summary>
 	/// An association that uses the HMAC-SHA family of algorithms for message signing.
 	/// </summary>
+	[ContractVerification(true)]
 	internal class HmacShaAssociation : Association {
 		/// <summary>
 		/// The default lifetime of a shared association when no lifetime is given
@@ -93,9 +95,10 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="totalLifeLength">How long the association will be good for.</param>
 		/// <returns>The newly created association.</returns>
 		public static HmacShaAssociation Create(Protocol protocol, string associationType, string handle, byte[] secret, TimeSpan totalLifeLength) {
-			ErrorUtilities.VerifyArgumentNotNull(protocol, "protocol");
-			ErrorUtilities.VerifyNonZeroLength(associationType, "associationType");
-			ErrorUtilities.VerifyArgumentNotNull(secret, "secret");
+			Contract.Requires(protocol != null);
+			Contract.Requires(!String.IsNullOrEmpty(associationType));
+			Contract.Requires(secret != null);
+			Contract.Ensures(Contract.Result<HmacShaAssociation>() != null);
 
 			HmacSha match = hmacShaAssociationTypes.FirstOrDefault(sha => String.Equals(sha.GetAssociationType(protocol), associationType, StringComparison.Ordinal));
 			ErrorUtilities.VerifyProtocol(match != null, OpenIdStrings.NoAssociationTypeFoundByName, associationType);
@@ -110,8 +113,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="totalLifeLength">Total lifetime.</param>
 		/// <returns>The newly created association.</returns>
 		public static HmacShaAssociation Create(string handle, byte[] secret, TimeSpan totalLifeLength) {
-			ErrorUtilities.VerifyNonZeroLength(handle, "handle");
-			ErrorUtilities.VerifyArgumentNotNull(secret, "secret");
+			Contract.Requires(!String.IsNullOrEmpty(handle));
+			Contract.Requires(secret != null);
+			Contract.Ensures(Contract.Result<HmacShaAssociation>() != null);
 
 			HmacSha shaType = hmacShaAssociationTypes.FirstOrDefault(sha => sha.SecretLength == secret.Length);
 			ErrorUtilities.VerifyProtocol(shaType != null, OpenIdStrings.NoAssociationTypeFoundByLength, secret.Length);
@@ -144,9 +148,10 @@ namespace DotNetOpenAuth.OpenId {
 		/// The new association is NOT automatically put into an association store.  This must be done by the caller.
 		/// </remarks>
 		internal static HmacShaAssociation Create(Protocol protocol, string associationType, AssociationRelyingPartyType associationUse, ProviderSecuritySettings securitySettings) {
-			ErrorUtilities.VerifyArgumentNotNull(protocol, "protocol");
-			ErrorUtilities.VerifyNonZeroLength(associationType, "associationType");
-			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
+			Contract.Requires(protocol != null);
+			Contract.Requires(!String.IsNullOrEmpty(associationType));
+			Contract.Requires(securitySettings != null);
+			Contract.Ensures(Contract.Result<HmacShaAssociation>() != null);
 
 			// Generate the handle.  It must be unique, and preferably unpredictable,
 			// so we use a time element and a random data element to generate it.
@@ -184,8 +189,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// True if a qualifying association could be found; false otherwise.
 		/// </returns>
 		internal static bool TryFindBestAssociation(Protocol protocol, bool highSecurityIsBetter, SecuritySettings securityRequirements, bool requireMatchingDHSessionType, out string associationType, out string sessionType) {
-			ErrorUtilities.VerifyArgumentNotNull(protocol, "protocol");
-			ErrorUtilities.VerifyArgumentNotNull(securityRequirements, "securityRequirements");
+			Contract.Requires(protocol != null);
+			Contract.Requires(securityRequirements != null);
 
 			associationType = null;
 			sessionType = null;
@@ -225,9 +230,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// 	<c>true</c> if the named association and session types are compatible; otherwise, <c>false</c>.
 		/// </returns>
 		internal static bool IsDHSessionCompatible(Protocol protocol, string associationType, string sessionType) {
-			ErrorUtilities.VerifyArgumentNotNull(protocol, "protocol");
-			ErrorUtilities.VerifyNonZeroLength(associationType, "associationType");
-			ErrorUtilities.VerifyArgumentNotNull(sessionType, "sessionType");
+			Contract.Requires(protocol != null);
+			Contract.Requires(!String.IsNullOrEmpty(associationType));
+			Contract.Requires(sessionType != null);
 
 			// All association types can work when no DH session is used at all.
 			if (string.Equals(sessionType, protocol.Args.SessionType.NoEncryption, StringComparison.Ordinal)) {
@@ -247,6 +252,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>
 		/// The value that should be used for  the openid.assoc_type parameter.
 		/// </returns>
+		[Pure]
 		internal override string GetAssociationType(Protocol protocol) {
 			return this.typeIdentity.GetAssociationType(protocol);
 		}
@@ -257,6 +263,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>
 		/// The hash algorithm used for message signing.
 		/// </returns>
+		[Pure]
 		protected override HashAlgorithm CreateHasher() {
 			return this.typeIdentity.CreateHasher(SecretKey);
 		}

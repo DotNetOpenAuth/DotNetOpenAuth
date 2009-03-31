@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Security.Cryptography;
 	using System.Text;
@@ -23,6 +24,8 @@ namespace DotNetOpenAuth.OpenId {
 	/// (dumb associations).
 	/// </remarks>
 	[DebuggerDisplay("Handle = {Handle}, Expires = {Expires}")]
+	[ContractVerification(true)]
+	[ContractClass(typeof(AssociationContract))]
 	public abstract class Association {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Association"/> class.
@@ -32,9 +35,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="totalLifeLength">How long the association will be useful.</param>
 		/// <param name="issued">When this association was originally issued by the Provider.</param>
 		protected Association(string handle, byte[] secret, TimeSpan totalLifeLength, DateTime issued) {
-			ErrorUtilities.VerifyNonZeroLength(handle, "handle");
-			ErrorUtilities.VerifyArgumentNotNull(secret, "secret");
-
+			Contract.RequiresAlways(!string.IsNullOrEmpty(handle));
+			Contract.RequiresAlways(secret != null);
 			this.Handle = handle;
 			this.SecretKey = secret;
 			this.TotalLifeLength = totalLifeLength;
@@ -85,7 +87,10 @@ namespace DotNetOpenAuth.OpenId {
 		/// Never negative (counter runs to zero).
 		/// </summary>
 		protected internal long SecondsTillExpiration {
-			get { return Math.Max(0, (long)this.TimeTillExpiration.TotalSeconds); }
+			get {
+				Contract.Ensures(Contract.Result<long>() >= 0);
+				return Math.Max(0, (long)this.TimeTillExpiration.TotalSeconds);
+			}
 		}
 
 		/// <summary>
@@ -98,7 +103,10 @@ namespace DotNetOpenAuth.OpenId {
 		/// Gets the duration a secret key used for signing dumb client requests will be good for.
 		/// </summary>
 		protected static TimeSpan DumbSecretLifetime {
-			get { return DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime; }
+			get {
+				Contract.Ensures(Contract.Result<TimeSpan>() > TimeSpan.Zero);
+				return DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime;
+			}
 		}
 
 		/// <summary>
@@ -113,7 +121,10 @@ namespace DotNetOpenAuth.OpenId {
 		/// Associations that are not likely to last the duration of a user login are not worth using at all.
 		/// </remarks>
 		private static TimeSpan MinimumUsefulAssociationLifetime {
-			get { return DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime; }
+			get {
+				Contract.Ensures(Contract.Result<TimeSpan>() > TimeSpan.Zero);
+				return DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime;
+			}
 		}
 
 		/// <summary>
@@ -143,12 +154,10 @@ namespace DotNetOpenAuth.OpenId {
 		/// <see cref="IAssociationStore&lt;TKey&gt;.GetAssociation(TKey, SecuritySettings)"/> method.
 		/// </returns>
 		public static Association Deserialize(string handle, DateTime expires, byte[] privateData) {
-			if (string.IsNullOrEmpty(handle)) {
-				throw new ArgumentNullException("handle");
-			}
-			if (privateData == null) {
-				throw new ArgumentNullException("privateData");
-			}
+			Contract.RequiresAlways(!String.IsNullOrEmpty(handle));
+			Contract.RequiresAlways(privateData != null);
+			Contract.Ensures(Contract.Result<Association>() != null);
+
 			expires = expires.ToUniversalTime();
 			TimeSpan remainingLifeLength = expires - DateTime.UtcNow;
 			byte[] secret = privateData; // the whole of privateData is the secret key for now.
@@ -174,6 +183,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// in this byte array, as they are useful for fast database lookup and are persisted separately.
 		/// </remarks>
 		public byte[] SerializePrivateData() {
+			Contract.Ensures(Contract.Result<byte[]>() != null);
+
 			// We may want to encrypt this secret using the machine.config private key,
 			// and add data regarding which Association derivative will need to be
 			// re-instantiated on deserialization.
@@ -253,6 +264,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="data">The data to sign.  This data will not be changed (the signature is the return value).</param>
 		/// <returns>The calculated signature of the data.</returns>
 		protected internal byte[] Sign(byte[] data) {
+			Contract.Requires(data != null);
 			using (HashAlgorithm hasher = this.CreateHasher()) {
 				return hasher.ComputeHash(data);
 			}
@@ -264,4 +276,53 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>The hash algorithm used for message signing.</returns>
 		protected abstract HashAlgorithm CreateHasher();
 	}
+
+	/// <summary>
+	/// Code contract for the <see cref="Association"/> class.
+	/// </summary>
+	[ContractClassFor(typeof(Association))]
+	internal abstract class AssociationContract : Association {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AssociationContract"/> class.
+		/// </summary>
+		private AssociationContract()
+			: base(null, null, TimeSpan.Zero, DateTime.Now) {
+		}
+
+		/// <summary>
+		/// Gets the length (in bits) of the hash this association creates when signing.
+		/// </summary>
+		public override int HashBitLength {
+			get {
+				Contract.Ensures(Contract.Result<int>() > 0);
+				throw new NotImplementedException();
+			}
+		}
+
+		/// <summary>
+		/// The string to pass as the assoc_type value in the OpenID protocol.
+		/// </summary>
+		/// <param name="protocol">The protocol version of the message that the assoc_type value will be included in.</param>
+		/// <returns>
+		/// The value that should be used for  the openid.assoc_type parameter.
+		/// </returns>
+		[Pure]
+		internal override string GetAssociationType(Protocol protocol) {
+			Contract.Requires(protocol != null);
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Returns the specific hash algorithm used for message signing.
+		/// </summary>
+		/// <returns>
+		/// The hash algorithm used for message signing.
+		/// </returns>
+		[Pure]
+		protected override HashAlgorithm CreateHasher() {
+			Contract.Ensures(Contract.Result<HashAlgorithm>() != null);
+			throw new NotImplementedException();
+		}
+	}
+
 }

@@ -9,12 +9,14 @@ namespace DotNetOpenAuth.InfoCard {
 	using System.ComponentModel;
 	using System.IdentityModel.Claims;
 	using System.Web.UI;
+using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Description of a claim that is requested or required in a submitted Information Card.
 	/// </summary>
 	[PersistChildren(false)]
 	[Serializable]
+	[ContractVerification(true)]
 	public class ClaimType {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ClaimType"/> class.
