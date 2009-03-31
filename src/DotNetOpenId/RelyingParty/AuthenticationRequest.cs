@@ -314,7 +314,7 @@ namespace DotNetOpenId.RelyingParty {
 		public IResponse RedirectingResponse {
 			get {
 				UriBuilder returnToBuilder = new UriBuilder(ReturnToUrl);
-				UriUtil.AppendQueryArgs(returnToBuilder, this.ReturnToArgs);
+				UriUtil.AppendAndReplaceQueryArgs(returnToBuilder, this.ReturnToArgs);
 
 				string token = new Token(endpoint).Serialize(this.RelyingParty.Store);
 				if (token != null) {

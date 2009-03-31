@@ -77,6 +77,10 @@ namespace DotNetOpenId.Yadis {
 		IEnumerable<ServiceEndpoint> generateClaimedIdentifierServiceEndpoints(UriIdentifier claimedIdentifier) {
 			foreach (var service in findClaimedIdentifierServices()) {
 				foreach (var uri in service.UriElements) {
+					if (uri.Uri == null) {
+						continue;
+					}
+
 					yield return ServiceEndpoint.CreateForClaimedIdentifier(
 						claimedIdentifier, service.ProviderLocalIdentifier,
 						uri.Uri, service.TypeElementUris, service.Priority, uri.Priority);
