@@ -637,7 +637,7 @@ namespace DotNetOpenId.RelyingParty
 			if (!Enabled || Page.IsPostBack) return;
 			var consumer = createRelyingParty();
 			if (consumer.Response != null) {
-				string persistentString = consumer.Response.GetCallbackArgument(usePersistentCookieCallbackKey);
+				string persistentString = Page.Request.QueryString[usePersistentCookieCallbackKey];
 				bool persistentBool;
 				if (persistentString != null && bool.TryParse(persistentString, out persistentBool)) {
 					UsePersistentCookie = persistentBool;
