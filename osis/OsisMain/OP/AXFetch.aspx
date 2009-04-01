@@ -18,7 +18,8 @@
 			</asp:Table>
 		</asp:View>
 		<asp:View ID="View2" runat="server">
-			AX fetch response:
+			<asp:Label ID="unsignedAXLabel" runat="server" Font-Bold="true" ForeColor="Red" Visible="false"
+				Text="Warning: Provider failed to sign the AX extension." /> AX fetch response:
 			<asp:Table runat="server" ID="FetchResponseTable">
 				<asp:TableRow>
 					<asp:TableCell>Description</asp:TableCell>
@@ -27,9 +28,7 @@
 			</asp:Table>
 		</asp:View>
 	</asp:MultiView>
-	<h3>
-		Instructions
-	</h3>
+	<h3>Instructions </h3>
 	<ol>
 		<li>Customize the AX fetch request if desired, including entering a custom AX attribute
 			if you wish.</li>
@@ -38,9 +37,7 @@
 			to send personal information with the authentication.</li>
 		<li>Check that the attribute values show up back here.</li>
 	</ol>
-	<h3>
-		Passing criteria
-	</h3>
+	<h3>Passing criteria </h3>
 	<p>The Provider must recognize the standard attribute Type URIs above and successfully
 		transfer the values to this page. </p>
 </asp:Content>
