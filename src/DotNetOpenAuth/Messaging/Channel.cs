@@ -746,11 +746,14 @@ namespace DotNetOpenAuth.Messaging {
 			message.EnsureValidMessage();
 
 			if (Logger.Channel.IsInfoEnabled) {
+				var directedMessage = message as IDirectedProtocolMessage;
+				string recipient = (directedMessage != null && directedMessage.Recipient != null) ? directedMessage.Recipient.AbsoluteUri : "<response>";
 				var messageAccessor = this.MessageDescriptions.GetAccessor(message);
 				Logger.Channel.InfoFormat(
-					"Prepared outgoing {0} ({1}) message: {2}{3}",
+					"Prepared outgoing {0} ({1}) message for {2}: {3}{4}",
 					message.GetType().Name,
 					message.Version,
+					recipient,
 					Environment.NewLine,
 					messageAccessor.ToStringDeferred());
 			}
