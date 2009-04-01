@@ -150,7 +150,7 @@ public partial class OP_AXFetch : System.Web.UI.Page {
 		MultiView1.ActiveViewIndex = 1;
 
 		FetchResponse fetch = e.Response.GetUntrustedExtension<FetchResponse>();
-		unsignedAXLabel.Visible = !fetch.IsSignedByProvider;
+		unsignedAXLabel.Visible = fetch != null ? !fetch.IsSignedByProvider : false;
 		this.BuildAttributes();
 		this.BuildResponseTable();
 		foreach (var att in this.Attributes) {
