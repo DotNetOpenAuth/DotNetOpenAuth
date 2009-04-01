@@ -1,0 +1,32 @@
+﻿<Window x:Class="DotNetOpenAuth.OpenIdOfflineProvider.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="DotNetOpenAuth Offline OpenID Provider" Height="166" Width="329">
+	<StackPanel>
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition />
+				<RowDefinition />
+				<RowDefinition />
+				<RowDefinition />
+				<RowDefinition />
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="auto" />
+				<ColumnDefinition />
+			</Grid.ColumnDefinitions>
+			<Label >Port</Label>
+			<Label Name="portLabel" Grid.Column="1" />
+			<Label Grid.Row="1">OP Identifier</Label>
+			<Label Grid.Column="1" Grid.Row="1" Name="opIdentifierLabel"></Label>
+			<Label Grid.Row="2">Yes Identifier</Label>
+			<Label Grid.Column="1" Grid.Row="2" Name="yesIdentity" ></Label>
+			<Label Grid.Row="3">No Identifier</Label>
+			<Label Grid.Column="1" Grid.Row="3" Name="noIdentity" ></Label>
+		</Grid>
+		<StackPanel Orientation="Horizontal">
+			<Button Name="startButton" Click="startButton_Click" Padding="10,0,10,0">Start</Button>
+			<Button Name="stopButton" Click="stopButton_Click" Padding="10,0,10,0">Stop</Button>
+		</StackPanel>
+	</StackPanel>
+</Window>

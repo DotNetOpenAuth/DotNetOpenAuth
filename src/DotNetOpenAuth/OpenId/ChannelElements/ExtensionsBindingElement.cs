@@ -159,30 +159,18 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
 			var extendableMessage = message as IProtocolMessageWithExtensions;
 			if (extendableMessage != null) {
-				// We have a helper class that will do all the heavy-lifting of organizing
-				// all the extensions, their aliases, and their parameters.
-				var extensionManager = ExtensionArgumentsManager.CreateIncomingExtensions(this.GetExtensionsDictionary(message));
-				foreach (string typeUri in extensionManager.GetExtensionTypeUris()) {
-					var extensionData = extensionManager.GetExtensionArguments(typeUri);
+				// First add the extensions that are signed by the Provider.
+				foreach (IOpenIdMessageExtension signedExtension in this.GetExtensions(extendableMessage, true, null)) {
+					signedExtension.IsSignedByProvider = true;
+					extendableMessage.Extensions.Add(signedExtension);
+				}
 
-					// Initialize this particular extension.
-					IOpenIdMessageExtension extension = this.ExtensionFactory.Create(typeUri, extensionData, extendableMessage);
-					if (extension != null) {
-						MessageDictionary extensionDictionary = this.Channel.MessageDescriptions.GetAccessor(extension);
-						foreach (var pair in extensionData) {
-							extensionDictionary[pair.Key] = pair.Value;
-						}
-
-						// Give extensions that require custom serialization a chance to do their work.
-						var customSerializingExtension = extension as IMessageWithEvents;
-						if (customSerializingExtension != null) {
-							customSerializingExtension.OnReceiving();
-						}
-
-						extendableMessage.Extensions.Add(extension);
-					} else {
-						Logger.OpenId.WarnFormat("Extension with type URI '{0}' ignored because it is not a recognized extension.", typeUri);
-					}
+				// Now search again, considering ALL extensions whether they are signed or not,
+				// skipping the signed ones and adding the new ones as unsigned extensions.
+				Func<string, bool> isNotSigned = typeUri => !extendableMessage.Extensions.Cast<IOpenIdMessageExtension>().Any(ext => ext.TypeUri == typeUri);
+				foreach (IOpenIdMessageExtension unsignedExtension in this.GetExtensions(extendableMessage, false, isNotSigned)) {
+					unsignedExtension.IsSignedByProvider = false;
+					extendableMessage.Extensions.Add(unsignedExtension);
 				}
 
 				return MessageProtections.None;
@@ -194,23 +182,62 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		#endregion
 
 		/// <summary>
+		/// Gets the extensions on a message.
+		/// </summary>
+		/// <param name="message">The carrier of the extensions.</param>
+		/// <param name="ignoreUnsigned">If set to <c>true</c> only signed extensions will be available.</param>
+		/// <param name="extensionFilter">A optional filter that takes an extension type URI and 
+		/// returns a value indicating whether that extension should be deserialized and 
+		/// returned in the sequence.  May be null.</param>
+		/// <returns>A sequence of extensions in the message.</returns>
+		private IEnumerable<IOpenIdMessageExtension> GetExtensions(IProtocolMessageWithExtensions message, bool ignoreUnsigned, Func<string, bool> extensionFilter) {
+			// We have a helper class that will do all the heavy-lifting of organizing
+			// all the extensions, their aliases, and their parameters.
+			var extensionManager = ExtensionArgumentsManager.CreateIncomingExtensions(this.GetExtensionsDictionary(message, ignoreUnsigned));
+			foreach (string typeUri in extensionManager.GetExtensionTypeUris()) {
+				// Our caller may have already obtained a signed version of this extension,
+				// so skip it if they don't want this one.
+				if (extensionFilter != null && !extensionFilter(typeUri)) {
+					continue;
+				}
+
+				var extensionData = extensionManager.GetExtensionArguments(typeUri);
+
+				// Initialize this particular extension.
+				IOpenIdMessageExtension extension = this.ExtensionFactory.Create(typeUri, extensionData, message);
+				if (extension != null) {
+					MessageDictionary extensionDictionary = this.Channel.MessageDescriptions.GetAccessor(extension);
+					foreach (var pair in extensionData) {
+						extensionDictionary[pair.Key] = pair.Value;
+					}
+
+					// Give extensions that require custom serialization a chance to do their work.
+					var customSerializingExtension = extension as IMessageWithEvents;
+					if (customSerializingExtension != null) {
+						customSerializingExtension.OnReceiving();
+					}
+
+					yield return extension;
+				} else {
+					Logger.OpenId.WarnFormat("Extension with type URI '{0}' ignored because it is not a recognized extension.", typeUri);
+				}
+			}
+		}
+
+		/// <summary>
 		/// Gets the dictionary of message parts that should be deserialized into extensions.
 		/// </summary>
 		/// <param name="message">The message.</param>
-		/// <returns>A dictionary of message parts, including only signed parts when appropriate.</returns>
-		private IDictionary<string, string> GetExtensionsDictionary(IProtocolMessage message) {
+		/// <param name="ignoreUnsigned">If set to <c>true</c> only signed extensions will be available.</param>
+		/// <returns>
+		/// A dictionary of message parts, including only signed parts when appropriate.
+		/// </returns>
+		private IDictionary<string, string> GetExtensionsDictionary(IProtocolMessage message, bool ignoreUnsigned) {
 			Contract.Requires(this.Channel != null);
 			ErrorUtilities.VerifyOperation(this.Channel != null, "Channel property has not been set.");
 
-			// An IndirectSignedResponse message (the only one we care to filter parts for)
-			// can be received both by RPs and OPs (during check_auth).  
-			// Whichever party is reading the extensions, apply their security policy regarding
-			// signing.  (Although OPs have no reason to deserialize extensions during check_auth)
-			// so that scenario might be optimized away eventually.
-			bool extensionsShouldBeSigned = this.rpSecuritySettings != null ? !this.rpSecuritySettings.AllowUnsignedIncomingExtensions : this.opSecuritySettings.SignOutgoingExtensions;
-
 			IndirectSignedResponse signedResponse = message as IndirectSignedResponse;
-			if (signedResponse != null && extensionsShouldBeSigned) {
+			if (signedResponse != null && ignoreUnsigned) {
 				return signedResponse.GetSignedMessageParts(this.Channel);
 			} else {
 				return this.Channel.MessageDescriptions.GetAccessor(message);

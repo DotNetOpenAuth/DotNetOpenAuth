@@ -98,7 +98,7 @@ public partial class SampleWcf : System.Web.UI.Page {
 			Session["WcfTokenManager"] = tokenManager;
 		}
 		MessageReceivingEndpoint oauthEndpoint = new MessageReceivingEndpoint(
-			new Uri("http://localhost:65169/ServiceProvider/OAuth.ashx"),
+			new Uri("http://localhost:65169/OAuthServiceProvider/OAuth.ashx"),
 			HttpDeliveryMethods.PostRequest);
 		WebConsumer consumer = new WebConsumer(
 			new ServiceProviderDescription {
