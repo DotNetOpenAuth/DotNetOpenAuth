@@ -67,9 +67,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="totalLifeLength">The time duration the association will be good for.</param>
 		private HmacShaAssociation(HmacSha typeIdentity, string handle, byte[] secret, TimeSpan totalLifeLength)
 			: base(handle, secret, totalLifeLength, DateTime.UtcNow) {
-			ErrorUtilities.VerifyArgumentNotNull(typeIdentity, "typeIdentity");
-			ErrorUtilities.VerifyNonZeroLength(handle, "handle");
-			ErrorUtilities.VerifyArgumentNotNull(secret, "secret");
+			Contract.Requires(typeIdentity != null);
+			Contract.Requires(!String.IsNullOrEmpty(handle));
+			Contract.Requires(secret != null);
 			ErrorUtilities.VerifyProtocol(secret.Length == typeIdentity.SecretLength, OpenIdStrings.AssociationSecretAndTypeLengthMismatch, secret.Length, typeIdentity.GetAssociationType(Protocol.Default));
 
 			this.typeIdentity = typeIdentity;
@@ -171,6 +171,9 @@ namespace DotNetOpenAuth.OpenId {
 				lifetime = DumbSecretLifetime;
 			}
 
+			Contract.Assert(protocol != null); // All the way up to the method call, the condition holds, yet we get a Requires failure next
+			Contract.Assert(secret != null);
+			Contract.Assert(!String.IsNullOrEmpty(associationType));
 			return Create(protocol, associationType, handle, secret, lifetime);
 		}
 
@@ -265,7 +268,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// </returns>
 		[Pure]
 		protected override HashAlgorithm CreateHasher() {
-			return this.typeIdentity.CreateHasher(SecretKey);
+			var result = this.typeIdentity.CreateHasher(SecretKey);
+			Contract.Assume(result != null);
+			return result;
 		}
 
 		/// <summary>

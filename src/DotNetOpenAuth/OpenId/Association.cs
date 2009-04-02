@@ -33,10 +33,14 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="handle">The handle.</param>
 		/// <param name="secret">The secret.</param>
 		/// <param name="totalLifeLength">How long the association will be useful.</param>
-		/// <param name="issued">When this association was originally issued by the Provider.</param>
+		/// <param name="issued">The UTC time of when this association was originally issued by the Provider.</param>
 		protected Association(string handle, byte[] secret, TimeSpan totalLifeLength, DateTime issued) {
 			Contract.RequiresAlways(!string.IsNullOrEmpty(handle));
 			Contract.RequiresAlways(secret != null);
+			Contract.RequiresAlways(totalLifeLength > TimeSpan.Zero);
+			Contract.RequiresAlways(issued.Kind == DateTimeKind.Utc);
+			Contract.RequiresAlways(issued <= DateTime.UtcNow);
+
 			this.Handle = handle;
 			this.SecretKey = secret;
 			this.TotalLifeLength = totalLifeLength;
@@ -190,7 +194,9 @@ namespace DotNetOpenAuth.OpenId {
 			// re-instantiated on deserialization.
 			// For now, we just send out the secret key.  We can derive the type from the length later.
 			byte[] secretKeyCopy = new byte[this.SecretKey.Length];
-			this.SecretKey.CopyTo(secretKeyCopy, 0);
+			if (this.SecretKey.Length > 0) {
+				this.SecretKey.CopyTo(secretKeyCopy, 0);
+			}
 			return secretKeyCopy;
 		}
 
@@ -275,54 +281,17 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		/// <returns>The hash algorithm used for message signing.</returns>
 		protected abstract HashAlgorithm CreateHasher();
+
+#if CONTRACTS_FULL
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
+		[ContractInvariantMethod]
+		protected void ObjectInvariant() {
+			Contract.Invariant(!string.IsNullOrEmpty(this.Handle));
+			Contract.Invariant(this.TotalLifeLength > TimeSpan.Zero);
+		}
+#endif
 	}
-
-	/// <summary>
-	/// Code contract for the <see cref="Association"/> class.
-	/// </summary>
-	[ContractClassFor(typeof(Association))]
-	internal abstract class AssociationContract : Association {
-		/// <summary>
-		/// Initializes a new instance of the <see cref="AssociationContract"/> class.
-		/// </summary>
-		private AssociationContract()
-			: base(null, null, TimeSpan.Zero, DateTime.Now) {
-		}
-
-		/// <summary>
-		/// Gets the length (in bits) of the hash this association creates when signing.
-		/// </summary>
-		public override int HashBitLength {
-			get {
-				Contract.Ensures(Contract.Result<int>() > 0);
-				throw new NotImplementedException();
-			}
-		}
-
-		/// <summary>
-		/// The string to pass as the assoc_type value in the OpenID protocol.
-		/// </summary>
-		/// <param name="protocol">The protocol version of the message that the assoc_type value will be included in.</param>
-		/// <returns>
-		/// The value that should be used for  the openid.assoc_type parameter.
-		/// </returns>
-		[Pure]
-		internal override string GetAssociationType(Protocol protocol) {
-			Contract.Requires(protocol != null);
-			throw new NotImplementedException();
-		}
-
-		/// <summary>
-		/// Returns the specific hash algorithm used for message signing.
-		/// </summary>
-		/// <returns>
-		/// The hash algorithm used for message signing.
-		/// </returns>
-		[Pure]
-		protected override HashAlgorithm CreateHasher() {
-			Contract.Ensures(Contract.Result<HashAlgorithm>() != null);
-			throw new NotImplementedException();
-		}
-	}
-
 }

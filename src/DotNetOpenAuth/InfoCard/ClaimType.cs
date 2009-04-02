@@ -7,9 +7,9 @@
 namespace DotNetOpenAuth.InfoCard {
 	using System;
 	using System.ComponentModel;
+	using System.Diagnostics.Contracts;
 	using System.IdentityModel.Claims;
 	using System.Web.UI;
-using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Description of a claim that is requested or required in a submitted Information Card.

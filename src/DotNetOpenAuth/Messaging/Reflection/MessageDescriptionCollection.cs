@@ -32,6 +32,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="messageType">A type that implements <see cref="IMessage"/>.</param>
 		/// <param name="messageVersion">The protocol version of the message.</param>
 		/// <returns>A <see cref="MessageDescription"/> instance.</returns>
+		[Pure]
 		internal MessageDescription Get(Type messageType, Version messageVersion) {
 			Contract.Requires(messageType != null && typeof(IMessage).IsAssignableFrom(messageType));
 			Contract.Requires(messageVersion != null);
@@ -50,6 +51,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 				}
 			}
 
+			Contract.Assume(result != null); // The reflectedMessageTypes dictionary should never have null values.
 			return result;
 		}
 
@@ -61,6 +63,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <returns>
 		/// A <see cref="MessageDescription"/> instance.
 		/// </returns>
+		[Pure]
 		internal MessageDescription Get(IMessage message) {
 			Contract.Requires(message != null);
 			Contract.Ensures(Contract.Result<MessageDescription>() != null);
@@ -72,6 +75,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		/// <param name="message">The message.</param>
 		/// <returns>The dictionary.</returns>
+		[Pure]
 		internal MessageDictionary GetAccessor(IMessage message) {
 			Contract.Requires(message != null);
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");

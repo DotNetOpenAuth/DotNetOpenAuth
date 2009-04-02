@@ -441,6 +441,10 @@ namespace DotNetOpenAuth.Messaging {
 		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Costly call should not be a property.")]
 		protected internal virtual HttpRequestInfo GetRequestFromContext() {
 			Contract.Ensures(Contract.Result<HttpRequestInfo>() != null);
+			Contract.Ensures(Contract.Result<HttpRequestInfo>().Url != null);
+			Contract.Ensures(Contract.Result<HttpRequestInfo>().RawUrl != null);
+			Contract.Ensures(Contract.Result<HttpRequestInfo>().UrlBeforeRewriting != null);
+
 			ErrorUtilities.VerifyHttpContext();
 
 			return new HttpRequestInfo(HttpContext.Current.Request);
@@ -591,7 +595,9 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
+			Contract.Assert(message != null && message.Recipient != null);
 			var messageAccessor = this.MessageDescriptions.GetAccessor(message);
+			Contract.Assert(message != null && message.Recipient != null);
 			var fields = messageAccessor.Serialize();
 
 			// First try creating a 301 redirect, and fallback to a form POST
@@ -777,7 +783,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		protected virtual HttpWebRequest InitializeRequestAsGet(IDirectedProtocolMessage requestMessage) {
 			Contract.Requires(requestMessage != null);
-			ErrorUtilities.VerifyArgumentNotNull(requestMessage, "requestMessage");
+			Contract.Requires(requestMessage.Recipient != null);
 
 			var messageAccessor = this.MessageDescriptions.GetAccessor(requestMessage);
 			var fields = messageAccessor.Serialize();

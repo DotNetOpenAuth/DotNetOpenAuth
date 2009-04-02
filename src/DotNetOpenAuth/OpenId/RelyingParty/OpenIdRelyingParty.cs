@@ -18,6 +18,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Messages;
+	using System.Diagnostics.CodeAnalysis;
 
 	/// <summary>
 	/// A delegate that decides whether a given OpenID Provider endpoint may be
@@ -162,7 +163,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			internal set {
 				Contract.Requires(value != null);
-				ErrorUtilities.VerifyArgumentNotNull(value, "value");
 				this.securitySettings = value;
 				this.AssociationManager.SecuritySettings = value;
 			}
@@ -195,8 +195,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				Contract.Requires(value != null);
-				ErrorUtilities.VerifyArgumentNotNull(value, "value");
+				Contract.RequiresAlways(value != null);
 				this.endpointOrder = value;
 			}
 		}
@@ -464,6 +463,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Contract.Requires(userSuppliedIdentifier != null);
 			Contract.Requires(realm != null);
 			Contract.Ensures(Contract.Result<IEnumerable<IAuthenticationRequest>>() != null);
+			Contract.Ensures(Contract.ForAll(Contract.Result<IEnumerable<IAuthenticationRequest>>(), el => el != null));
+
 			ErrorUtilities.VerifyHttpContext();
 
 			// Build the return_to URL
@@ -526,6 +527,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			return this.CreateRequests(userSuppliedIdentifier, new Realm(realmUrl.Uri));
 		}
 
+#if CONTRACTS_FULL
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
+		[ContractInvariantMethod]
+		private void ObjectInvariant() {
+			Contract.Invariant(this.securitySettings != null);
+			Contract.Invariant(this.channel != null);
+			Contract.Invariant(this.endpointOrder != null);
+		}
+#endif
+	
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>

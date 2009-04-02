@@ -64,7 +64,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// </returns>
 		protected override object GetElementKey(ConfigurationElement element) {
 			Contract.Assume(element != null); // this should be Contract.Requires in base class.
-			return ((HostNameElement)element).Name;
+			return ((HostNameElement)element).Name ?? string.Empty;
 		}
 	}
 }

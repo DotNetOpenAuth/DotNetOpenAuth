@@ -70,6 +70,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		/// <param name="message">The message the dictionary should provide access to.</param>
 		/// <returns>The dictionary accessor to the message</returns>
+		[Pure]
 		internal MessageDictionary GetDictionary(IMessage message) {
 			Contract.Requires(message != null);
 			Contract.Ensures(Contract.Result<MessageDictionary>() != null);

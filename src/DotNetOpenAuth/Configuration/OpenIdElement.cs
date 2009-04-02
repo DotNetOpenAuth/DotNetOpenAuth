@@ -55,7 +55,9 @@ namespace DotNetOpenAuth.Configuration {
 		internal TimeSpan MaxAuthenticationTime {
 			get {
 				Contract.Ensures(Contract.Result<TimeSpan>() > TimeSpan.Zero);
-				return (TimeSpan)this[MaxAuthenticationTimePropertyName];
+				TimeSpan result = (TimeSpan)this[MaxAuthenticationTimePropertyName];
+				Contract.Assume(result > TimeSpan.Zero); // our PositiveTimeSpanValidator should take care of this
+				return result;
 			}
 
 			set {

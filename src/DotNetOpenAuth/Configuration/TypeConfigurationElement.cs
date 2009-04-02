@@ -9,13 +9,15 @@ namespace DotNetOpenAuth.Configuration {
 	using System.Configuration;
 	using System.Reflection;
 	using DotNetOpenAuth.Messaging;
+	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Represents an element in a .config file that allows the user to provide a @type attribute specifying
 	/// the full type that provides some service used by this library.
 	/// </summary>
 	/// <typeparam name="T">A constraint on the type the user may provide.</typeparam>
-	internal class TypeConfigurationElement<T> : ConfigurationElement {
+	internal class TypeConfigurationElement<T> : ConfigurationElement
+		where T : class {
 		/// <summary>
 		/// The name of the attribute whose value is the full name of the type the user is specifying.
 		/// </summary>
@@ -51,6 +53,8 @@ namespace DotNetOpenAuth.Configuration {
 		/// <param name="defaultValue">The value to return if no type is given in the .config file.</param>
 		/// <returns>The newly instantiated type.</returns>
 		public T CreateInstance(T defaultValue) {
+			Contract.Ensures(Contract.Result<T>() != null || Contract.Result<T>() == defaultValue);
+
 			return this.CreateInstance(defaultValue, false);
 		}
 
@@ -61,6 +65,8 @@ namespace DotNetOpenAuth.Configuration {
 		/// <param name="allowInternals">if set to <c>true</c> then internal types may be instantiated.</param>
 		/// <returns>The newly instantiated type.</returns>
 		public T CreateInstance(T defaultValue, bool allowInternals) {
+			Contract.Ensures(Contract.Result<T>() != null || Contract.Result<T>() == defaultValue);
+
 			if (this.CustomType != null) {
 				if (!allowInternals) {
 					// Although .NET will usually prevent our instantiating non-public types,

@@ -37,6 +37,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="maximumBytesToRead">The maximum bytes to read.</param>
 		internal CachedDirectWebResponse(Uri requestUri, HttpWebResponse response, int maximumBytesToRead)
 			: base(requestUri, response) {
+			Contract.RequiresAlways(requestUri != null);
+			Contract.RequiresAlways(response != null);
 			this.responseStream = CacheNetworkStreamAndClose(response, maximumBytesToRead);
 
 			// BUGBUG: if the response was exactly maximumBytesToRead, we'll incorrectly believe it was truncated.
@@ -55,6 +57,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="responseStream">The response stream.</param>
 		internal CachedDirectWebResponse(Uri requestUri, Uri responseUri, WebHeaderCollection headers, HttpStatusCode statusCode, string contentType, string contentEncoding, MemoryStream responseStream)
 			: base(requestUri, responseUri, headers, statusCode, contentType, contentEncoding) {
+			Contract.RequiresAlways(requestUri != null);
 			Contract.Requires(responseStream != null);
 			this.responseStream = responseStream;
 		}

@@ -5,13 +5,13 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId {
-	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Diagnostics;
+	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
-using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// A dictionary of handle/Association pairs.
@@ -109,5 +109,16 @@ using System.Diagnostics.Contracts;
 				}
 			}
 		}
+
+#if CONTRACTS_FULL
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
+		[ContractInvariantMethod]
+		protected void ObjectInvariant() {
+			Contract.Invariant(this.associations != null);
+		}
+#endif
 	}
 }

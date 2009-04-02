@@ -61,12 +61,25 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		[SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "By design.")]
 		[SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "Much more efficient initialization when we can call methods.")]
 		static MessagePart() {
-			Map<Uri>(uri => uri.AbsoluteUri, str => new Uri(str));
+			Func<string, Uri> safeUri = str => {
+				Contract.Assume(str != null);
+				return new Uri(str);
+			};
+			Func<string, bool> safeBool = str => {
+				Contract.Assume(str != null);
+				return bool.Parse(str);
+			};
+			Func<string, Identifier> safeIdentfier = str => {
+				Contract.Assume(str != null);
+				ErrorUtilities.VerifyFormat(str.Length > 0, MessagingStrings.NonEmptyStringExpected);
+				return Identifier.Parse(str);
+			};
+			Map<Uri>(uri => uri.AbsoluteUri, safeUri);
 			Map<DateTime>(dt => XmlConvert.ToString(dt, XmlDateTimeSerializationMode.Utc), str => XmlConvert.ToDateTime(str, XmlDateTimeSerializationMode.Utc));
 			Map<byte[]>(bytes => Convert.ToBase64String(bytes), str => Convert.FromBase64String(str));
 			Map<Realm>(realm => realm.ToString(), str => new Realm(str));
-			Map<Identifier>(id => id.ToString(), str => Identifier.Parse(str));
-			Map<bool>(value => value.ToString().ToLowerInvariant(), str => bool.Parse(str));
+			Map<Identifier>(id => id.ToString(), safeIdentfier);
+			Map<bool>(value => value.ToString().ToLowerInvariant(), safeBool);
 		}
 
 		/// <summary>

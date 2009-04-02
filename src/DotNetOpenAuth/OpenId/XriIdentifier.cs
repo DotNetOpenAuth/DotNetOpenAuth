@@ -156,7 +156,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// </returns>
 		internal static bool IsValidXri(string xri) {
 			Contract.Requires((xri != null && xri.Length > 0) || !string.IsNullOrEmpty(xri));
-			ErrorUtilities.VerifyNonZeroLength(xri, "xri");
 			xri = xri.Trim();
 
 			// TODO: better validation code here

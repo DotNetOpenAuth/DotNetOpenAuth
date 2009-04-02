@@ -42,19 +42,21 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="decryptor">The decryptor to use to decrypt the token, if necessary..</param>
 		/// <exception cref="InformationCardException">Thrown for any problem decoding or decrypting the token.</exception>
 		private Token(string tokenXml, Uri audience, TokenDecryptor decryptor) {
-			Contract.Requires(tokenXml != null && tokenXml.Length > 0);
+			Contract.Requires(!String.IsNullOrEmpty(tokenXml));
 			Contract.Requires(decryptor != null || !IsEncrypted(tokenXml));
-			ErrorUtilities.VerifyNonZeroLength(tokenXml, "tokenXml");
+			Contract.Ensures(this.AuthorizationContext != null);
 
 			byte[] decryptedBytes;
 			string decryptedString;
 
 			using (XmlReader tokenReader = XmlReader.Create(new StringReader(tokenXml))) {
+				Contract.Assume(tokenReader != null); // BCL contract should say XmlReader.Create result != null
 				if (IsEncrypted(tokenReader)) {
 					Logger.InfoCard.DebugFormat("Incoming SAML token, before decryption: {0}", tokenXml);
 					ErrorUtilities.VerifyArgumentNotNull(decryptor, "decryptor");
 					decryptedBytes = decryptor.DecryptToken(tokenReader);
 					decryptedString = Encoding.UTF8.GetString(decryptedBytes);
+					Contract.Assume(decryptedString != null); // BCL contracts should be enhanced here
 				} else {
 					decryptedBytes = Encoding.UTF8.GetBytes(tokenXml);
 					decryptedString = tokenXml;
@@ -106,7 +108,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </summary>
 		public string SiteSpecificId {
 			get {
-				Contract.Requires(this.Claims.ContainsKey(ClaimTypes.PPID));
+				Contract.Requires(this.Claims.ContainsKey(ClaimTypes.PPID) && !string.IsNullOrEmpty(this.Claims[ClaimTypes.PPID]));
 				ErrorUtilities.VerifyOperation(this.Claims.ContainsKey(ClaimTypes.PPID), InfoCardStrings.PpidClaimRequired);
 				return TokenUtility.CalculateSiteSpecificID(this.Claims[ClaimTypes.PPID]);
 			}
@@ -196,6 +198,18 @@ namespace DotNetOpenAuth.InfoCard {
 				return IsEncrypted(tokenReader);
 			}
 		}
+
+#if CONTRACTS_FULL
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
+		[ContractInvariantMethod]
+		protected void ObjectInvariant()
+		{
+			Contract.Invariant(this.AuthorizationContext != null);
+		}
+#endif
 
 		/// <summary>
 		/// Determines whether the specified token XML is encrypted.

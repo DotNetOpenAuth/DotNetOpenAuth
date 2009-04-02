@@ -7,10 +7,10 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Diagnostics;
+	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Net;
 	using System.Text;
-using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// A live network HTTP response
@@ -42,6 +42,8 @@ using System.Diagnostics.Contracts;
 		/// <param name="response">The response.</param>
 		internal NetworkDirectWebResponse(Uri requestUri, HttpWebResponse response)
 			: base(requestUri, response) {
+			Contract.RequiresAlways(requestUri != null);
+			Contract.RequiresAlways(response != null);
 			this.httpWebResponse = response;
 			this.responseStream = response.GetResponseStream();
 		}
@@ -84,6 +86,7 @@ using System.Diagnostics.Contracts;
 		/// </remarks>
 		internal override CachedDirectWebResponse GetSnapshot(int maximumBytesToCache) {
 			ErrorUtilities.VerifyOperation(!this.streamReadBegun, "Network stream reading has already begun.");
+
 			this.streamReadBegun = true;
 			var result = new CachedDirectWebResponse(this.RequestUri, this.httpWebResponse, maximumBytesToCache);
 			this.Dispose();

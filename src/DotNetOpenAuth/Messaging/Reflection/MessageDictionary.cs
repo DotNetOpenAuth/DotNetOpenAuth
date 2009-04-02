@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 
 	/// <summary>
@@ -16,23 +17,24 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	/// provides access to both well-defined message properties and "extra" 
 	/// name/value pairs that have no properties associated with them.
 	/// </summary>
-	[ContractVerification(true)]
+	[ContractVerification(false)]
 	internal class MessageDictionary : IDictionary<string, string> {
 		/// <summary>
 		/// The <see cref="IMessage"/> instance manipulated by this dictionary.
 		/// </summary>
-		private IMessage message;
+		private readonly IMessage message;
 
 		/// <summary>
 		/// The <see cref="MessageDescription"/> instance that describes the message type.
 		/// </summary>
-		private MessageDescription description;
+		private readonly MessageDescription description;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MessageDictionary"/> class.
 		/// </summary>
 		/// <param name="message">The message instance whose values will be manipulated by this dictionary.</param>
 		/// <param name="description">The message description.</param>
+		[Pure]
 		internal MessageDictionary(IMessage message, MessageDescription description) {
 			Contract.Requires(message != null);
 			Contract.Requires(description != null);
@@ -201,9 +203,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// Thrown if <paramref name="value"/> is null.
 		/// </exception>
 		public void Add(string key, string value) {
-			if (value == null) {
-				throw new ArgumentNullException("value");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(value, "value");
 
 			MessagePart part;
 			if (this.description.Mapping.TryGetValue(key, out part)) {
@@ -371,6 +371,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		/// <returns>The generated dictionary.</returns>
 		public IDictionary<string, string> Serialize() {
+			Contract.Ensures(Contract.Result<IDictionary<string, string>>() != null);
 			return this.Serializer.Serialize(this);
 		}
 
@@ -379,7 +380,20 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		/// <param name="fields">The data to load into the message.</param>
 		public void Deserialize(IDictionary<string, string> fields) {
+			Contract.Requires(fields != null);
 			this.Serializer.Deserialize(fields, this);
 		}
+
+#if CONTRACTS_FULL
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
+		[ContractInvariantMethod]
+		protected void ObjectInvariant() {
+			Contract.Ensures(this.message != null);
+			Contract.Ensures(this.description != null);
+		}
+#endif
 	}
 }

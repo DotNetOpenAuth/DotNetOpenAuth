@@ -583,6 +583,8 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <returns>A control that renders to the &lt;object&gt; tag.</returns>
 		[Pure]
 		private Control CreateInfoCardSelectorObject() {
+			Contract.Ensures(Contract.Result<Control>() != null);
+
 			HtmlGenericControl cardSpaceControl = new HtmlGenericControl(HtmlTextWriterTag.Object.ToString());
 			cardSpaceControl.Attributes.Add(HtmlTextWriterAttribute.Type.ToString(), "application/x-informationcard");
 			cardSpaceControl.Attributes.Add(HtmlTextWriterAttribute.Id.ToString(), this.ClientID + "_cs");
@@ -649,10 +651,10 @@ namespace DotNetOpenAuth.InfoCard {
 
 			string[] requiredClaimsArray = requiredClaims.ToArray();
 			string[] optionalClaimsArray = optionalClaims.ToArray();
-			Contract.Assume(requiredClaimsArray != null);
-			Contract.Assume(optionalClaimsArray != null);
 			required = string.Join(" ", requiredClaimsArray);
 			optional = string.Join(" ", optionalClaimsArray);
+			Contract.Assume(required != null);
+			Contract.Assume(optional != null);
 		}
 
 		/// <summary>

@@ -288,4 +288,7 @@
   <data name="UnexpectedHttpStatusCode" xml:space="preserve">
     <value>Expected direct response to use HTTP status code {0} but was {1} instead.</value>
   </data>
+  <data name="NonEmptyStringExpected" xml:space="preserve">
+    <value>A non-empty string was expected.</value>
+  </data>
 </root>
