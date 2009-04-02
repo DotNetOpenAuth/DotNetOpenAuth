@@ -20,13 +20,13 @@ namespace DotNetOpenAuth {
 	/// <see cref="CultureInfo.InvariantCulture"/> is used implicitly.
 	/// </remarks>
 	internal static partial class Logger {
+		#region Category-specific loggers
+
 		/// <summary>
 		/// The <see cref="ILog"/> instance that is to be used 
 		/// by this static Logger for the duration of the appdomain.
 		/// </summary>
-		private static readonly ILog facade = CreateWithBanner("DotNetOpenAuth");
-
-		#region Category-specific loggers
+		private static readonly ILog library = CreateWithBanner("DotNetOpenAuth");
 
 		/// <summary>
 		/// Backing field for the <see cref="Yadis"/> property.
@@ -72,6 +72,11 @@ namespace DotNetOpenAuth {
 		/// Backing field for the <see cref="InfoCard"/> property.
 		/// </summary>
 		private static readonly ILog infocard = Create("DotNetOpenAuth.InfoCard");
+
+		/// <summary>
+		/// Gets the logger for general library logging.
+		/// </summary>
+		internal static ILog Library { get { return library; } }
 
 		/// <summary>
 		/// Gets the logger for service discovery and selection events.

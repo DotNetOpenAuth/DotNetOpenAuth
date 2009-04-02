@@ -8,7 +8,7 @@ namespace DotNetOpenAuth.InfoCard {
 	/// <summary>
 	/// Common InfoCard issuers.
 	/// </summary>
-	public class WellKnownIssuers {
+	public sealed class WellKnownIssuers {
 		/// <summary>
 		/// The Issuer URI to use for self-issued cards.
 		/// </summary>

@@ -62,7 +62,7 @@ namespace DotNetOpenAuth.InfoCard {
 			////    throw new InformationCardException("Token Security Keys Exist");
 
 			if (audience == null) {
-				Logger.InfoCard.WarnFormat("SAML token Audience checking will be skipped.");
+				Logger.InfoCard.Warn("SAML token Audience checking will be skipped.");
 			} else {
 				if (token.Assertion.Conditions != null &&
 					token.Assertion.Conditions.Conditions != null) {

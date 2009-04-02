@@ -43,6 +43,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// Gets the object that will perform token decryption, if necessary.
 		/// </summary>
 		/// <value>The decryptor to use; or <c>null</c> if the token is not encrypted.</value>
+		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Decryptor", Justification = "By design")]
 		public TokenDecryptor Decryptor { get; private set; }
 
 		/// <summary>

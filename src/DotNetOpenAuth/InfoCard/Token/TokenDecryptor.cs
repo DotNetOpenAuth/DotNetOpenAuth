@@ -26,6 +26,7 @@ namespace DotNetOpenAuth.InfoCard {
 	/// <summary>
 	/// A utility class for decrypting InfoCard tokens.
 	/// </summary>
+	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Decryptor", Justification = "By design")]
 	public class TokenDecryptor {
 		/// <summary>
 		/// Backing field for the <see cref="Tokens"/> property.
