@@ -287,7 +287,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Contract.Requires(realm != null);
 			Contract.Ensures(Contract.Result<IAuthenticationRequest>() != null);
 			try {
-				return this.CreateRequests(userSuppliedIdentifier, realm).First();
+				var result = this.CreateRequests(userSuppliedIdentifier, realm).First();
+				Contract.Assume(result != null);
+				return result;
 			} catch (InvalidOperationException ex) {
 				throw ErrorUtilities.Wrap(ex, OpenIdStrings.OpenIdEndpointNotFound);
 			}

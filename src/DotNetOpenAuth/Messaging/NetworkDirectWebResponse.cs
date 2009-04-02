@@ -86,6 +86,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		internal override CachedDirectWebResponse GetSnapshot(int maximumBytesToCache) {
 			ErrorUtilities.VerifyOperation(!this.streamReadBegun, "Network stream reading has already begun.");
+			ErrorUtilities.VerifyOperation(this.RequestUri != null, "RequestUri != null");
+			ErrorUtilities.VerifyOperation(this.httpWebResponse != null, "httpWebResponse != null");
 
 			this.streamReadBegun = true;
 			var result = new CachedDirectWebResponse(this.RequestUri, this.httpWebResponse, maximumBytesToCache);
