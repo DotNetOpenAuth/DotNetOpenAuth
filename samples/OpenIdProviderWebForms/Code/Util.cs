@@ -28,7 +28,7 @@ namespace OpenIdProviderWebForms.Code {
 
 			// be sure to normalize case the way the user's identity page does.
 			username = username.Substring(0, 1).ToUpperInvariant() + username.Substring(1).ToLowerInvariant();
-			return new Uri(HttpContext.Current.Request.Url, "/user.aspx/" + username);
+			return new Uri(HttpContext.Current.Request.Url, HttpContext.Current.Response.ApplyAppPathModifier("~/user.aspx/" + username));
 		}
 
 		internal static void ProcessAuthenticationChallenge(IAuthenticationRequest idrequest) {
