@@ -12,7 +12,9 @@
 		Uri providerEndpoint = new Uri(Request.Url, Page.ResolveUrl("~/server.aspx"));
 		OpenIdProvider op = new OpenIdProvider();
 		try {
-			op.PrepareUnsolicitedAssertion(providerEndpoint, relyingPartySite.Text, Util.BuildIdentityUrl(), Util.BuildIdentityUrl()).Send();
+			// Send user input through identifier parser so we accept more free-form input.
+			string rpSite = Identifier.Parse(relyingPartySite.Text);
+			op.PrepareUnsolicitedAssertion(providerEndpoint, rpSite, Util.BuildIdentityUrl(), Util.BuildIdentityUrl()).Send();
 		} catch (ProtocolException ex) {
 			Label errorLabel = (Label)loginView.FindControl("errorLabel");
 			errorLabel.Visible = true;
