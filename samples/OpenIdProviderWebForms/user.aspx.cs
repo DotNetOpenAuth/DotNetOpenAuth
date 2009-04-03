@@ -25,7 +25,7 @@ namespace OpenIdProviderWebForms {
 			UriBuilder normalized = new UriBuilder(e.UserSuppliedIdentifier);
 			string username = Request.QueryString["username"].TrimEnd('/').ToLowerInvariant();
 			username = username.Substring(0, 1).ToUpperInvariant() + username.Substring(1);
-			normalized.Path = "/user/" + username;
+			normalized.Path = "/user.aspx/" + username;
 			normalized.Scheme = "http"; // for a real Provider, this should be HTTPS if supported.
 			e.NormalizedIdentifier = normalized.Uri;
 		}
