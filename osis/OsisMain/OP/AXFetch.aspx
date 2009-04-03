@@ -1,5 +1,5 @@
 <%@ Page Title="OpenID Provider support for Attribute Exchange" Language="C#" MasterPageFile="~/TestMaster.master"
-	AutoEventWireup="true" CodeFile="AXFetch.aspx.cs" Inherits="OP_AXFetch" %>
+	AutoEventWireup="true" CodeFile="AXFetch.aspx.cs" Inherits="OP_AXFetch" EnableEventValidation="false" %>
 
 <%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.OpenId.RelyingParty"
 	TagPrefix="rp" %>
