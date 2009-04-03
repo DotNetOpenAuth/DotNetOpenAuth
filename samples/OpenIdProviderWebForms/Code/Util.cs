@@ -24,11 +24,14 @@ namespace OpenIdProviderWebForms.Code {
 		}
 
 		public static Identifier BuildIdentityUrl() {
-			string username = HttpContext.Current.User.Identity.Name;
+			return BuildIdentityUrl(HttpContext.Current.User.Identity.Name);
+		}
 
-			// be sure to normalize case the way the user's identity page does.
+		public static Identifier BuildIdentityUrl(string username) {
+			// This sample Provider has a custom policy for normalizing URIs, which is that the whole
+			// path of the URI be lowercase except for the first letter of the username.
 			username = username.Substring(0, 1).ToUpperInvariant() + username.Substring(1).ToLowerInvariant();
-			return new Uri(HttpContext.Current.Request.Url, HttpContext.Current.Response.ApplyAppPathModifier("~/user/" + username));
+			return new Uri(HttpContext.Current.Request.Url, HttpContext.Current.Response.ApplyAppPathModifier("~/user.aspx/" + username));
 		}
 
 		internal static void ProcessAuthenticationChallenge(IAuthenticationRequest idrequest) {

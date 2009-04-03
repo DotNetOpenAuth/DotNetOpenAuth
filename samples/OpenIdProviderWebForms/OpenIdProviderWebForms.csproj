@@ -91,7 +91,6 @@
     </Compile>
     <Compile Include="Code\ReadOnlyXmlMembershipProvider.cs" />
     <Compile Include="Code\TracePageAppender.cs" />
-    <Compile Include="Code\URLRewriter.cs" />
     <Compile Include="Code\Util.cs" />
     <Compile Include="decide.aspx.cs">
       <DependentUpon>decide.aspx</DependentUpon>
