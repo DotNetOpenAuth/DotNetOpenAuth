@@ -38,11 +38,21 @@ public partial class OP_AssociateHttpNoEncryption : System.Web.UI.Page {
 				};
 
 				try {
-					var response = rp.Channel.Request<DirectErrorResponse>(associate);
-					testResultDisplay.Pass = true;
-					testResultDisplay.Details = response.ErrorMessage;
+					IProtocolMessage response = rp.Channel.Request(associate);
+					if (response is AssociateSuccessfulResponse) {
+						testResultDisplay.Pass = false;
+						testResultDisplay.Details = "Plain-text association established.";
+					} else {
+						testResultDisplay.Pass = true;
+						var errorResponse = response as DirectErrorResponse;
+						if (errorResponse != null) {
+							testResultDisplay.Details = errorResponse.ErrorMessage;
+						} else {
+							testResultDisplay.Details = "OP refused plain-text association.";
+						}
+					}
 				} catch (ProtocolException ex) {
-					testResultDisplay.Pass = false;
+					testResultDisplay.Pass = true;
 					testResultDisplay.Details = ex.Message;
 				}
 
