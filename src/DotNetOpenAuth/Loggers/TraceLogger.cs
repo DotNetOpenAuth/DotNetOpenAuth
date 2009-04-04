@@ -118,13 +118,6 @@ namespace DotNetOpenAuth.Loggers {
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
-		public void DebugFormat(IFormatProvider provider, string format, params object[] args) {
-			Trace.TraceInformation(format, args);
-		}
-
-		/// <summary>
-		/// See <see cref="ILog"/>.
-		/// </summary>
 		public void Info(object message) {
 			Trace.TraceInformation(message.ToString());
 		}
@@ -162,13 +155,6 @@ namespace DotNetOpenAuth.Loggers {
 		/// </summary>
 		public void InfoFormat(string format, object arg0, object arg1, object arg2) {
 			Trace.TraceInformation(format, arg0, arg1, arg2);
-		}
-
-		/// <summary>
-		/// See <see cref="ILog"/>.
-		/// </summary>
-		public void InfoFormat(IFormatProvider provider, string format, params object[] args) {
-			Trace.TraceInformation(format, args);
 		}
 
 		/// <summary>
@@ -216,13 +202,6 @@ namespace DotNetOpenAuth.Loggers {
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
-		public void WarnFormat(IFormatProvider provider, string format, params object[] args) {
-			Trace.TraceWarning(format, args);
-		}
-
-		/// <summary>
-		/// See <see cref="ILog"/>.
-		/// </summary>
 		public void Error(object message) {
 			Trace.TraceError(message.ToString());
 		}
@@ -265,13 +244,6 @@ namespace DotNetOpenAuth.Loggers {
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
-		public void ErrorFormat(IFormatProvider provider, string format, params object[] args) {
-			Trace.TraceError(format, args);
-		}
-
-		/// <summary>
-		/// See <see cref="ILog"/>.
-		/// </summary>
 		public void Fatal(object message) {
 			Trace.TraceError(message.ToString());
 		}
@@ -309,13 +281,6 @@ namespace DotNetOpenAuth.Loggers {
 		/// </summary>
 		public void FatalFormat(string format, object arg0, object arg1, object arg2) {
 			Trace.TraceError(format, arg0, arg1, arg2);
-		}
-
-		/// <summary>
-		/// See <see cref="ILog"/>.
-		/// </summary>
-		public void FatalFormat(IFormatProvider provider, string format, params object[] args) {
-			Trace.TraceError(format, args);
 		}
 
 		#endregion

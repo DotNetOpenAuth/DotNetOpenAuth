@@ -252,14 +252,14 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 
 			if (this.OptionalAliases != null) {
 				if (this.OptionalAliases.IndexOfAny(IllegalAliasListCharacters) >= 0) {
-					Logger.OpenId.ErrorFormat("Illegal characters found in Attribute Exchange if_available alias list.  Ignoring value.");
+					Logger.OpenId.Error("Illegal characters found in Attribute Exchange if_available alias list.  Ignoring value.");
 					this.OptionalAliases = null;
 				}
 			}
 
 			if (this.RequiredAliases != null) {
 				if (this.RequiredAliases.IndexOfAny(IllegalAliasListCharacters) >= 0) {
-					Logger.OpenId.ErrorFormat("Illegal characters found in Attribute Exchange required alias list.  Ignoring value.");
+					Logger.OpenId.Error("Illegal characters found in Attribute Exchange required alias list.  Ignoring value.");
 					this.RequiredAliases = null;
 				}
 			}

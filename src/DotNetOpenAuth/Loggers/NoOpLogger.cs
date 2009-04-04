@@ -50,10 +50,6 @@ namespace DotNetOpenAuth.Loggers {
 			return;
 		}
 
-		public void DebugFormat(IFormatProvider provider, string format, params object[] args) {
-			return;
-		}
-
 		public void Info(object message) {
 			return;
 		}
@@ -75,10 +71,6 @@ namespace DotNetOpenAuth.Loggers {
 		}
 
 		public void InfoFormat(string format, object arg0, object arg1, object arg2) {
-			return;
-		}
-
-		public void InfoFormat(IFormatProvider provider, string format, params object[] args) {
 			return;
 		}
 
@@ -106,10 +98,6 @@ namespace DotNetOpenAuth.Loggers {
 			return;
 		}
 
-		public void WarnFormat(IFormatProvider provider, string format, params object[] args) {
-			return;
-		}
-
 		public void Error(object message) {
 			return;
 		}
@@ -134,10 +122,6 @@ namespace DotNetOpenAuth.Loggers {
 			return;
 		}
 
-		public void ErrorFormat(IFormatProvider provider, string format, params object[] args) {
-			return;
-		}
-
 		public void Fatal(object message) {
 			return;
 		}
@@ -159,10 +143,6 @@ namespace DotNetOpenAuth.Loggers {
 		}
 
 		public void FatalFormat(string format, object arg0, object arg1, object arg2) {
-			return;
-		}
-
-		public void FatalFormat(IFormatProvider provider, string format, params object[] args) {
 			return;
 		}
 

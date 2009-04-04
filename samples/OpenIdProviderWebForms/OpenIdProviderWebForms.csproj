@@ -91,7 +91,6 @@
     </Compile>
     <Compile Include="Code\ReadOnlyXmlMembershipProvider.cs" />
     <Compile Include="Code\TracePageAppender.cs" />
-    <Compile Include="Code\URLRewriter.cs" />
     <Compile Include="Code\Util.cs" />
     <Compile Include="decide.aspx.cs">
       <DependentUpon>decide.aspx</DependentUpon>
@@ -99,6 +98,13 @@
     </Compile>
     <Compile Include="decide.aspx.designer.cs">
       <DependentUpon>decide.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

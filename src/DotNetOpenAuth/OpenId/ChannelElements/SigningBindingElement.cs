@@ -266,7 +266,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 			if (Logger.Signatures.IsDebugEnabled) {
 				Logger.Signatures.DebugFormat(
-					CultureInfo.InvariantCulture,
 					"Signing these message parts: {0}{1}{0}Base64 representation of signed data: {2}{0}Signature: {3}",
 					Environment.NewLine,
 					parametersToSign.ToStringDeferred(),

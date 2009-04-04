@@ -185,7 +185,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		T GetUntrustedExtension<T>() where T : IOpenIdMessageExtension;
 
 		/// <summary>
-		/// Tries to get an OpenID extension that may be present in the response.
+		/// Tries to get an OpenID extension that may be present in the response, without
+		/// requiring it to be signed by the Provider.
 		/// </summary>
 		/// <param name="extensionType">Type of the extension to look for in the response.</param>
 		/// <returns>

@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.InfoCard {
 	using System;
 	using System.Collections.ObjectModel;
 	using System.ComponentModel;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Drawing.Design;
 	using System.Globalization;
@@ -409,6 +410,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="tokenXml">The token XML, prior to any processing.</param>
 		/// <param name="decryptor">The decryptor to use, if the token is encrypted.</param>
 		/// <returns>The event arguments sent to the event handlers.</returns>
+		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "decryptor", Justification = "By design")]
 		protected virtual ReceivingTokenEventArgs OnReceivingToken(string tokenXml, TokenDecryptor decryptor) {
 			Contract.Requires(tokenXml != null);
 			ErrorUtilities.VerifyArgumentNotNull(tokenXml, "tokenXml");

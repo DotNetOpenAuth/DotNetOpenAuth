@@ -202,28 +202,6 @@ namespace DotNetOpenAuth.Loggers
 		/// <seealso cref="IsDebugEnabled"/>
 		void DebugFormat(string format, object arg0, object arg1, object arg2); 
 
-		/// <summary>
-		/// Logs a formatted message string with the <see cref="Level.Debug"/> level.
-		/// </summary>
-		/// <param name="provider">An <see cref="IFormatProvider"/> that supplies culture-specific formatting information</param>
-		/// <param name="format">A String containing zero or more format items</param>
-		/// <param name="args">An Object array containing zero or more objects to format</param>
-		/// <remarks>
-		/// <para>
-		/// The message is formatted using the <c>String.Format</c> method. See
-		/// <see cref="String.Format(string, object[])"/> for details of the syntax of the format string and the behavior
-		/// of the formatting.
-		/// </para>
-		/// <para>
-		/// This method does not take an <see cref="Exception"/> object to include in the
-		/// log event. To pass an <see cref="Exception"/> use one of the <see cref="Debug(object,Exception)"/>
-		/// methods instead.
-		/// </para>
-		/// </remarks>
-		/// <seealso cref="Debug(object)"/>
-		/// <seealso cref="IsDebugEnabled"/>
-		void DebugFormat(IFormatProvider provider, string format, params object[] args);
-
 		/// <overloads>Log a message object with the <see cref="Level.Info"/> level.</overloads>
 		/// <summary>
 		/// Logs a message object with the <see cref="Level.Info"/> level.
@@ -354,28 +332,6 @@ namespace DotNetOpenAuth.Loggers
 		/// <seealso cref="Info(object)"/>
 		/// <seealso cref="IsInfoEnabled"/>
 		void InfoFormat(string format, object arg0, object arg1, object arg2); 
-
-		/// <summary>
-		/// Logs a formatted message string with the <see cref="Level.Info"/> level.
-		/// </summary>
-		/// <param name="provider">An <see cref="IFormatProvider"/> that supplies culture-specific formatting information</param>
-		/// <param name="format">A String containing zero or more format items</param>
-		/// <param name="args">An Object array containing zero or more objects to format</param>
-		/// <remarks>
-		/// <para>
-		/// The message is formatted using the <c>String.Format</c> method. See
-		/// <see cref="String.Format(string, object[])"/> for details of the syntax of the format string and the behavior
-		/// of the formatting.
-		/// </para>
-		/// <para>
-		/// This method does not take an <see cref="Exception"/> object to include in the
-		/// log event. To pass an <see cref="Exception"/> use one of the <see cref="Info(object)"/>
-		/// methods instead.
-		/// </para>
-		/// </remarks>
-		/// <seealso cref="Info(object,Exception)"/>
-		/// <seealso cref="IsInfoEnabled"/>
-		void InfoFormat(IFormatProvider provider, string format, params object[] args);
 
 		/// <overloads>Log a message object with the <see cref="Level.Warn"/> level.</overloads>
 		/// <summary>
@@ -508,28 +464,6 @@ namespace DotNetOpenAuth.Loggers
 		/// <seealso cref="IsWarnEnabled"/>
 		void WarnFormat(string format, object arg0, object arg1, object arg2); 
 
-		/// <summary>
-		/// Logs a formatted message string with the <see cref="Level.Warn"/> level.
-		/// </summary>
-		/// <param name="provider">An <see cref="IFormatProvider"/> that supplies culture-specific formatting information</param>
-		/// <param name="format">A String containing zero or more format items</param>
-		/// <param name="args">An Object array containing zero or more objects to format</param>
-		/// <remarks>
-		/// <para>
-		/// The message is formatted using the <c>String.Format</c> method. See
-		/// <see cref="String.Format(string, object[])"/> for details of the syntax of the format string and the behavior
-		/// of the formatting.
-		/// </para>
-		/// <para>
-		/// This method does not take an <see cref="Exception"/> object to include in the
-		/// log event. To pass an <see cref="Exception"/> use one of the <see cref="Warn(object)"/>
-		/// methods instead.
-		/// </para>
-		/// </remarks>
-		/// <seealso cref="Warn(object,Exception)"/>
-		/// <seealso cref="IsWarnEnabled"/>
-		void WarnFormat(IFormatProvider provider, string format, params object[] args);
-
 		/// <overloads>Log a message object with the <see cref="Level.Error"/> level.</overloads>
 		/// <summary>
 		/// Logs a message object with the <see cref="Level.Error"/> level.
@@ -660,28 +594,6 @@ namespace DotNetOpenAuth.Loggers
 		/// <seealso cref="Error(object)"/>
 		/// <seealso cref="IsErrorEnabled"/>
 		void ErrorFormat(string format, object arg0, object arg1, object arg2); 
-
-		/// <summary>
-		/// Logs a formatted message string with the <see cref="Level.Error"/> level.
-		/// </summary>
-		/// <param name="provider">An <see cref="IFormatProvider"/> that supplies culture-specific formatting information</param>
-		/// <param name="format">A String containing zero or more format items</param>
-		/// <param name="args">An Object array containing zero or more objects to format</param>
-		/// <remarks>
-		/// <para>
-		/// The message is formatted using the <c>String.Format</c> method. See
-		/// <see cref="String.Format(string, object[])"/> for details of the syntax of the format string and the behavior
-		/// of the formatting.
-		/// </para>
-		/// <para>
-		/// This method does not take an <see cref="Exception"/> object to include in the
-		/// log event. To pass an <see cref="Exception"/> use one of the <see cref="Error(object)"/>
-		/// methods instead.
-		/// </para>
-		/// </remarks>
-		/// <seealso cref="Error(object,Exception)"/>
-		/// <seealso cref="IsErrorEnabled"/>
-		void ErrorFormat(IFormatProvider provider, string format, params object[] args);
 
 		/// <overloads>Log a message object with the <see cref="Level.Fatal"/> level.</overloads>
 		/// <summary>
@@ -815,28 +727,6 @@ namespace DotNetOpenAuth.Loggers
 		void FatalFormat(string format, object arg0, object arg1, object arg2); 
 
 		/// <summary>
-		/// Logs a formatted message string with the <see cref="Level.Fatal"/> level.
-		/// </summary>
-		/// <param name="provider">An <see cref="IFormatProvider"/> that supplies culture-specific formatting information</param>
-		/// <param name="format">A String containing zero or more format items</param>
-		/// <param name="args">An Object array containing zero or more objects to format</param>
-		/// <remarks>
-		/// <para>
-		/// The message is formatted using the <c>String.Format</c> method. See
-		/// <see cref="String.Format(string, object[])"/> for details of the syntax of the format string and the behavior
-		/// of the formatting.
-		/// </para>
-		/// <para>
-		/// This method does not take an <see cref="Exception"/> object to include in the
-		/// log event. To pass an <see cref="Exception"/> use one of the <see cref="Fatal(object)"/>
-		/// methods instead.
-		/// </para>
-		/// </remarks>
-		/// <seealso cref="Fatal(object,Exception)"/>
-		/// <seealso cref="IsFatalEnabled"/>
-		void FatalFormat(IFormatProvider provider, string format, params object[] args);
-
-		/// <summary>
 		/// Checks if this logger is enabled for the <see cref="Level.Debug"/> level.
 		/// </summary>
 		/// <value>
@@ -904,7 +794,6 @@ namespace DotNetOpenAuth.Loggers
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="Debug(object)"/>
-		/// <seealso cref="DebugFormat(IFormatProvider, string, object[])"/>
 		bool IsDebugEnabled { get; }
   
 		/// <summary>
@@ -917,7 +806,6 @@ namespace DotNetOpenAuth.Loggers
 		/// For more information see <see cref="ILog.IsDebugEnabled"/>.
 		/// </remarks>
 		/// <seealso cref="Info(object)"/>
-		/// <seealso cref="InfoFormat(IFormatProvider, string, object[])"/>
 		/// <seealso cref="ILog.IsDebugEnabled"/>
 		bool IsInfoEnabled { get; }
 
@@ -931,7 +819,6 @@ namespace DotNetOpenAuth.Loggers
 		/// For more information see <see cref="ILog.IsDebugEnabled"/>.
 		/// </remarks>
 		/// <seealso cref="Warn(object)"/>
-		/// <seealso cref="WarnFormat(IFormatProvider, string, object[])"/>
 		/// <seealso cref="ILog.IsDebugEnabled"/>
 		bool IsWarnEnabled { get; }
 
@@ -945,7 +832,6 @@ namespace DotNetOpenAuth.Loggers
 		/// For more information see <see cref="ILog.IsDebugEnabled"/>.
 		/// </remarks>
 		/// <seealso cref="Error(object)"/>
-		/// <seealso cref="ErrorFormat(IFormatProvider, string, object[])"/>
 		/// <seealso cref="ILog.IsDebugEnabled"/>
 		bool IsErrorEnabled { get; }
 
@@ -959,7 +845,6 @@ namespace DotNetOpenAuth.Loggers
 		/// For more information see <see cref="ILog.IsDebugEnabled"/>.
 		/// </remarks>
 		/// <seealso cref="Fatal(object)"/>
-		/// <seealso cref="FatalFormat(IFormatProvider, string, object[])"/>
 		/// <seealso cref="ILog.IsDebugEnabled"/>
 		bool IsFatalEnabled { get; }
 	}
