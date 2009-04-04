@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.ComponentModel {
 	using System.Collections;
 	using System.ComponentModel;
 	using System.ComponentModel.Design.Serialization;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 
@@ -155,6 +156,7 @@ namespace DotNetOpenAuth.ComponentModel {
 		/// </summary>
 		/// <returns>A collection of the standard values.</returns>
 		[Pure]
+		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Potentially expensive call.")]
 		protected virtual ICollection GetStandardValuesForCache() {
 			Contract.Ensures(Contract.Result<ICollection>() != null);
 			return new T[0];

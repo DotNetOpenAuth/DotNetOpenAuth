@@ -39,13 +39,6 @@ namespace OpenIdProviderWebForms {
 		}
 
 		protected void Application_BeginRequest(object sender, EventArgs e) {
-			/*
-			 * The URLRewriter was taken from http://www.codeproject.com/aspnet/URLRewriter.asp and modified slightly.
-			 * It will read the config section called 'urlrewrites' from web.config and process each rule 
-			 * The rules are set of url transformations defined using regular expressions with support for substitutions (the ability to extract regex-matched portions of a string).
-			 * There is only one rule currenty defined. It rewrites urls like: user/john ->user.aspx?username=john
-			 */
-			//// System.Diagnostics.Debugger.Launch();
 			Logger.DebugFormat("Processing {0} on {1} ", this.Request.HttpMethod, this.stripQueryString(this.Request.Url));
 			if (Request.QueryString.Count > 0) {
 				Logger.DebugFormat("Querystring follows: \n{0}", ToString(Request.QueryString));
@@ -53,8 +46,6 @@ namespace OpenIdProviderWebForms {
 			if (Request.Form.Count > 0) {
 				Logger.DebugFormat("Posted form follows: \n{0}", ToString(Request.Form));
 			}
-
-			URLRewriter.Process();
 		}
 
 		protected void Application_AuthenticateRequest(object sender, EventArgs e) {
