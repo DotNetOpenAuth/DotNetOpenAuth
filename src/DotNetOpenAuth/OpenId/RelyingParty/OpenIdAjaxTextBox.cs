@@ -1275,7 +1275,7 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 				// Our javascript needs to let the user know which endpoint responded.  So we force it here.
 				// This gives us the info even for 1.0 OPs and 2.0 setup_required responses.
 				req.AddCallbackArguments("dotnetopenid.op_endpoint", req.Provider.Uri.AbsoluteUri);
-				req.AddCallbackArguments("dotnetopenid.claimed_id", req.ClaimedIdentifier);
+				req.AddCallbackArguments("dotnetopenid.claimed_id", req.ClaimedIdentifier ?? string.Empty);
 				req.AddCallbackArguments("dotnetopenid.phase", "2");
 				if (immediate) {
 					req.Mode = AuthenticationRequestMode.Immediate;
