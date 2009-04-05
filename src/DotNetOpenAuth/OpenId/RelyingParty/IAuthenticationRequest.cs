@@ -72,7 +72,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Makes a dictionary of key/value pairs available when the authentication is completed.
 		/// </summary>
-		/// <param name="arguments">The arguments to add to the request's return_to URI.</param>
+		/// <param name="arguments">The arguments to add to the request's return_to URI.  Values must not be null.</param>
 		/// <remarks>
 		/// 	<para>Note that these values are NOT protected against tampering in transit.  No
 		/// security-sensitive data should be stored using this method.</para>
@@ -88,7 +88,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Makes a key/value pair available when the authentication is completed.
 		/// </summary>
 		/// <param name="key">The parameter name.</param>
-		/// <param name="value">The value of the argument.</param>
+		/// <param name="value">The value of the argument.  Must not be null.</param>
 		/// <remarks>
 		/// 	<para>Note that these values are NOT protected against tampering in transit.  No
 		/// security-sensitive data should be stored using this method.</para>
