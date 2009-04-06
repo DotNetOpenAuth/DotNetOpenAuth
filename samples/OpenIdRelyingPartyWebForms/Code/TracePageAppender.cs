@@ -1,4 +1,4 @@
-﻿namespace OpenIdRelyingPartyWebForms {
+﻿namespace OpenIdRelyingPartyWebForms.Code {
 	using System;
 	using System.Collections.Generic;
 	using System.IO;
