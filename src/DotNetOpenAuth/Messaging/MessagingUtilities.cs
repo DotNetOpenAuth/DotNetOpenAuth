@@ -10,11 +10,10 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Collections.Specialized;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
-	using System.Globalization;
 	using System.IO;
 	using System.Linq;
 	using System.Net;
-	using System.Reflection;
+	using System.Security;
 	using System.Security.Cryptography;
 	using System.Text;
 	using System.Web;
@@ -327,13 +326,18 @@ namespace DotNetOpenAuth.Messaging {
 			newRequest.Pipelined = request.Pipelined;
 			newRequest.PreAuthenticate = request.PreAuthenticate;
 			newRequest.ProtocolVersion = request.ProtocolVersion;
-			newRequest.Proxy = request.Proxy;
 			newRequest.ReadWriteTimeout = request.ReadWriteTimeout;
 			newRequest.SendChunked = request.SendChunked;
 			newRequest.Timeout = request.Timeout;
-			newRequest.UnsafeAuthenticatedConnectionSharing = request.UnsafeAuthenticatedConnectionSharing;
 			newRequest.UseDefaultCredentials = request.UseDefaultCredentials;
 
+			try {
+				newRequest.Proxy = request.Proxy;
+				newRequest.UnsafeAuthenticatedConnectionSharing = request.UnsafeAuthenticatedConnectionSharing;
+			} catch (SecurityException) {
+				Logger.Messaging.Warn("Unable to clone some HttpWebRequest properties due to partial trust.");
+			}
+			
 			return newRequest;
 		}
 
