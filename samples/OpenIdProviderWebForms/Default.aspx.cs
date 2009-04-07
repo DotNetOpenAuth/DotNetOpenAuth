@@ -14,12 +14,12 @@
 		protected void Page_Load(object sender, EventArgs e) {
 			if (Request.QueryString["rp"] != null) {
 				if (Page.User.Identity.IsAuthenticated) {
-					SendAssertion(Request.QueryString["rp"]);
+					this.SendAssertion(Request.QueryString["rp"]);
 				} else {
 					FormsAuthentication.RedirectToLoginPage();
 				}
 			} else {
-				TextBox relyingPartySite = (TextBox)loginView.FindControl("relyingPartySite");
+				TextBox relyingPartySite = (TextBox)this.loginView.FindControl("relyingPartySite");
 				if (relyingPartySite != null) {
 					relyingPartySite.Focus();
 				}
@@ -27,8 +27,8 @@
 		}
 
 		protected void sendAssertionButton_Click(object sender, EventArgs e) {
-			TextBox relyingPartySite = (TextBox)loginView.FindControl("relyingPartySite");
-			SendAssertion(relyingPartySite.Text);
+			TextBox relyingPartySite = (TextBox)this.loginView.FindControl("relyingPartySite");
+			this.SendAssertion(relyingPartySite.Text);
 		}
 
 		private void SendAssertion(string relyingPartyRealm) {
@@ -39,7 +39,7 @@
 				string rpSite = Identifier.Parse(relyingPartyRealm);
 				op.PrepareUnsolicitedAssertion(providerEndpoint, rpSite, Util.BuildIdentityUrl(), Util.BuildIdentityUrl()).Send();
 			} catch (ProtocolException ex) {
-				Label errorLabel = (Label)loginView.FindControl("errorLabel");
+				Label errorLabel = (Label)this.loginView.FindControl("errorLabel");
 				errorLabel.Visible = true;
 				errorLabel.Text = ex.Message;
 			}

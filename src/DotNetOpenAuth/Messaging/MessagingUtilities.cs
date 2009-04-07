@@ -337,7 +337,7 @@ namespace DotNetOpenAuth.Messaging {
 			} catch (SecurityException) {
 				Logger.Messaging.Warn("Unable to clone some HttpWebRequest properties due to partial trust.");
 			}
-			
+
 			return newRequest;
 		}
 
