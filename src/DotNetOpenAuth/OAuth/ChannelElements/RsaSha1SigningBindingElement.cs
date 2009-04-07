@@ -66,7 +66,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 
 			string signatureBaseString = ConstructSignatureBaseString(message, this.Channel.MessageDescriptions.GetAccessor(message));
 			byte[] data = Encoding.ASCII.GetBytes(signatureBaseString);
-			var provider = (RSACryptoServiceProvider)this.SigningCertificate.PublicKey.Key;
+			var provider = (RSACryptoServiceProvider)this.SigningCertificate.PrivateKey;
 			byte[] binarySignature = provider.SignData(data, "SHA1");
 			string base64Signature = Convert.ToBase64String(binarySignature);
 			return base64Signature;
