@@ -6,6 +6,7 @@
 
 namespace DotNetOpenId.Test.OpenId.Extensions {
 	using System;
+	using System.IO;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using DotNetOpenAuth.Test.OpenId;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -58,6 +59,21 @@ namespace DotNetOpenId.Test.OpenId.Extensions {
 			Assert.AreNotEqual(response1, response2);
 			response2.Attributes.Add(new AttributeValues("http://att1"));
 			Assert.AreEqual(response1, response2);
+		}
+
+		/// <summary>
+		/// Verifies that the class is serializable.
+		/// </summary>
+		[TestMethod]
+		public void Serializable() {
+			var fetch = new FetchResponse();
+			fetch.Attributes.Add("http://someAttribute", "val1", "val2");
+			var formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+			var ms = new MemoryStream();
+			formatter.Serialize(ms, fetch);
+			ms.Position = 0;
+			var fetch2 = formatter.Deserialize(ms);
+			Assert.AreEqual(fetch, fetch2);
 		}
 	}
 }
