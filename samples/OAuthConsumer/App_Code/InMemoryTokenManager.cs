@@ -14,6 +14,10 @@ public class InMemoryTokenManager : IConsumerTokenManager {
 	private Dictionary<string, string> tokensAndSecrets = new Dictionary<string, string>();
 
 	public InMemoryTokenManager(string consumerKey, string consumerSecret) {
+		if (String.IsNullOrEmpty(consumerKey)) {
+			throw new ArgumentNullException("consumerKey");
+		}
+
 		this.ConsumerKey = consumerKey;
 		this.ConsumerSecret = consumerSecret;
 	}

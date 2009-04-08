@@ -13,19 +13,19 @@ using DotNetOpenAuth.OAuth;
 
 public partial class Twitter : System.Web.UI.Page {
 	private string AccessToken {
-		get { return (string)ViewState["AccessToken"]; }
-		set { ViewState["AccessToken"] = value; }
+		get { return (string)Session["TwitterAccessToken"]; }
+		set { Session["TwitterAccessToken"] = value; }
 	}
 
 	private InMemoryTokenManager TokenManager {
 		get {
-			var tokenManager = (InMemoryTokenManager)Session["TokenManager"];
+			var tokenManager = (InMemoryTokenManager)Application["TwitterTokenManager"];
 			if (tokenManager == null) {
 				string consumerKey = ConfigurationManager.AppSettings["twitterConsumerKey"];
 				string consumerSecret = ConfigurationManager.AppSettings["twitterConsumerSecret"];
 				if (!string.IsNullOrEmpty(consumerKey)) {
 					tokenManager = new InMemoryTokenManager(consumerKey, consumerSecret);
-					Session["TokenManager"] = tokenManager;
+					Application["TwitterTokenManager"] = tokenManager;
 				}
 			}
 
@@ -34,31 +34,22 @@ public partial class Twitter : System.Web.UI.Page {
 	}
 
 	protected void Page_Load(object sender, EventArgs e) {
-		if (!IsPostBack) {
-			if (this.TokenManager != null) {
-				InMemoryTokenManager tokenManager = (InMemoryTokenManager)Session["TokenManager"];
-				var twitter = new WebConsumer(TwitterConsumer.ServiceDescription, tokenManager);
+		if (this.TokenManager != null) {
+			MultiView1.ActiveViewIndex = 1;
 
+			if (!IsPostBack) {
+				var twitter = new WebConsumer(TwitterConsumer.ServiceDescription, this.TokenManager);
+
+				// Is Twitter calling back with authorization?
 				var accessTokenResponse = twitter.ProcessUserAuthorization();
 				if (accessTokenResponse != null) {
-					// User has approved access
-					MultiView1.ActiveViewIndex = 1;
-
 					this.AccessToken = accessTokenResponse.AccessToken;
+				} else if (this.AccessToken == null) {
+					// If we don't yet have access, immediately request it.
+					twitter.Channel.Send(twitter.PrepareRequestUserAuthorization());
 				}
-			} else {
-				MultiView1.ActiveViewIndex = 2;
 			}
 		}
-	}
-
-	protected void authorizeButton_Click(object sender, EventArgs e) {
-		if (!Page.IsValid) {
-			return;
-		}
-
-		var twitter = new WebConsumer(TwitterConsumer.ServiceDescription, this.TokenManager);
-		twitter.Channel.Send(twitter.PrepareRequestUserAuthorization());
 	}
 
 	protected void downloadUpdates_Click(object sender, EventArgs e) {
