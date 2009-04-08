@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="GoogleConsumer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TwitterConsumer.cs" />
     <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
