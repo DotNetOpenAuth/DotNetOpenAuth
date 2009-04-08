@@ -6,6 +6,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Xml.Linq;
 using DotNetOpenAuth.ApplicationBlock;
+using DotNetOpenAuth.OAuth;
 
 /// <summary>
 /// A page to demonstrate downloading a Gmail address book using OAuth.
@@ -15,7 +16,7 @@ public partial class GoogleAddressBook : System.Web.UI.Page {
 		if (!IsPostBack) {
 			if (Session["TokenManager"] != null) {
 				InMemoryTokenManager tokenManager = (InMemoryTokenManager)Session["TokenManager"];
-				var google = GoogleConsumer.CreateWebConsumer(tokenManager, tokenManager.ConsumerKey);
+				var google = new WebConsumer(GoogleConsumer.ServiceDescription, tokenManager);
 
 				var accessTokenResponse = google.ProcessUserAuthorization();
 				if (accessTokenResponse != null) {
@@ -51,7 +52,7 @@ public partial class GoogleAddressBook : System.Web.UI.Page {
 
 		InMemoryTokenManager tokenManager = new InMemoryTokenManager(consumerKeyBox.Text, consumerSecretBox.Text);
 		Session["TokenManager"] = tokenManager;
-		var google = GoogleConsumer.CreateWebConsumer(tokenManager, consumerKeyBox.Text);
+		var google = new WebConsumer(GoogleConsumer.ServiceDescription, tokenManager);
 		GoogleConsumer.RequestAuthorization(google, GoogleConsumer.Applications.Contacts);
 	}
 }

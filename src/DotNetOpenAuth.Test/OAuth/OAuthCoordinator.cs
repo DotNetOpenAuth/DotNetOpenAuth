@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Test {
 	using System;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
+	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.Test.Mocks;
 
 	/// <summary>
@@ -47,15 +48,14 @@ namespace DotNetOpenAuth.Test {
 			serviceTokenManager.AddConsumer(this.consumerDescription);
 
 			// Prepare channels that will pass messages directly back and forth.
-			CoordinatingOAuthChannel consumerChannel = new CoordinatingOAuthChannel(consumerSigningElement, true, consumerTokenManager);
-			CoordinatingOAuthChannel serviceProviderChannel = new CoordinatingOAuthChannel(spSigningElement, false, serviceTokenManager);
+			CoordinatingOAuthChannel consumerChannel = new CoordinatingOAuthChannel(consumerSigningElement, (IConsumerTokenManager)consumerTokenManager);
+			CoordinatingOAuthChannel serviceProviderChannel = new CoordinatingOAuthChannel(spSigningElement, (IServiceProviderTokenManager)serviceTokenManager);
 			consumerChannel.RemoteChannel = serviceProviderChannel;
 			serviceProviderChannel.RemoteChannel = consumerChannel;
 
 			// Prepare the Consumer and Service Provider objects
 			WebConsumer consumer = new WebConsumer(this.serviceDescription, consumerTokenManager) {
 				OAuthChannel = consumerChannel,
-				ConsumerKey = this.consumerDescription.ConsumerKey,
 			};
 			ServiceProvider serviceProvider = new ServiceProvider(this.serviceDescription, serviceTokenManager) {
 				OAuthChannel = serviceProviderChannel,

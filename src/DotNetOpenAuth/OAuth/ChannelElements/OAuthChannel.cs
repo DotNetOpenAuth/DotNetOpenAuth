@@ -7,6 +7,8 @@
 namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
 	using System.Net;
@@ -27,13 +29,26 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="signingBindingElement">The binding element to use for signing.</param>
 		/// <param name="store">The web application store to use for nonces.</param>
 		/// <param name="tokenManager">The token manager instance to use.</param>
-		/// <param name="isConsumer">A value indicating whether this channel is being constructed for a Consumer (as opposed to a Service Provider).</param>
-		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, bool isConsumer)
+		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IConsumerTokenManager tokenManager)
 			: this(
 			signingBindingElement,
 			store,
 			tokenManager,
-			isConsumer ? (IMessageFactory)new OAuthConsumerMessageFactory() : new OAuthServiceProviderMessageFactory(tokenManager)) {
+			new OAuthConsumerMessageFactory()) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="OAuthChannel"/> class.
+		/// </summary>
+		/// <param name="signingBindingElement">The binding element to use for signing.</param>
+		/// <param name="store">The web application store to use for nonces.</param>
+		/// <param name="tokenManager">The token manager instance to use.</param>
+		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IServiceProviderTokenManager tokenManager)
+			: this(
+			signingBindingElement,
+			store,
+			tokenManager,
+			new OAuthServiceProviderMessageFactory(tokenManager)) {
 		}
 
 		/// <summary>
@@ -47,14 +62,9 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Except for mock testing, this should always be one of
 		/// <see cref="OAuthConsumerMessageFactory"/> or <see cref="OAuthServiceProviderMessageFactory"/>.
 		/// </param>
-		/// <remarks>
-		/// This overload for testing purposes only.
-		/// </remarks>
 		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, IMessageFactory messageTypeProvider)
 			: base(messageTypeProvider, new OAuthHttpMethodBindingElement(), signingBindingElement, new StandardExpirationBindingElement(), new StandardReplayProtectionBindingElement(store)) {
-			if (tokenManager == null) {
-				throw new ArgumentNullException("tokenManager");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(tokenManager, "tokenManager");
 
 			this.TokenManager = tokenManager;
 			ErrorUtilities.VerifyArgumentNamed(signingBindingElement.SignatureCallback == null, "signingBindingElement", OAuthStrings.SigningElementAlreadyAssociatedWithChannel);
@@ -286,7 +296,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			var oauthMessage = message as ITamperResistantOAuthMessage;
 			try {
 				Logger.Channel.Debug("Applying secrets to message to prepare for signing or signature verification.");
-				oauthMessage.ConsumerSecret = this.TokenManager.GetConsumerSecret(oauthMessage.ConsumerKey);
+				oauthMessage.ConsumerSecret = this.GetConsumerSecret(oauthMessage.ConsumerKey);
 
 				var tokenMessage = message as ITokenContainingMessage;
 				if (tokenMessage != null) {
@@ -294,6 +304,21 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				}
 			} catch (KeyNotFoundException ex) {
 				throw new ProtocolException(OAuthStrings.ConsumerOrTokenSecretNotFound, ex);
+			}
+		}
+
+		/// <summary>
+		/// Gets the consumer secret for a given consumer key.
+		/// </summary>
+		/// <param name="consumerKey">The consumer key.</param>
+		/// <returns>The consumer secret.</returns>
+		private string GetConsumerSecret(string consumerKey) {
+			var consumerTokenManager = this.TokenManager as IConsumerTokenManager;
+			if (consumerTokenManager != null) {
+				ErrorUtilities.VerifyInternal(consumerKey == consumerTokenManager.ConsumerKey, "The token manager consumer key and the consumer key set earlier do not match!");
+				return consumerTokenManager.ConsumerSecret;
+			} else {
+				return ((IServiceProviderTokenManager)this.TokenManager).GetConsumerSecret(consumerKey);
 			}
 		}
 	}

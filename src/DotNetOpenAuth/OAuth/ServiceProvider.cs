@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// </summary>
 		/// <param name="serviceDescription">The endpoints and behavior on the Service Provider.</param>
 		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
-		public ServiceProvider(ServiceProviderDescription serviceDescription, ITokenManager tokenManager)
+		public ServiceProvider(ServiceProviderDescription serviceDescription, IServiceProviderTokenManager tokenManager)
 			: this(serviceDescription, tokenManager, new OAuthServiceProviderMessageFactory(tokenManager)) {
 		}
 
@@ -48,15 +48,9 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
 		/// <param name="messageTypeProvider">An object that can figure out what type of message is being received for deserialization.</param>
 		public ServiceProvider(ServiceProviderDescription serviceDescription, ITokenManager tokenManager, OAuthServiceProviderMessageFactory messageTypeProvider) {
-			if (serviceDescription == null) {
-				throw new ArgumentNullException("serviceDescription");
-			}
-			if (tokenManager == null) {
-				throw new ArgumentNullException("tokenManager");
-			}
-			if (messageTypeProvider == null) {
-				throw new ArgumentNullException("messageTypeProvider");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(serviceDescription, "serviceDescription");
+			ErrorUtilities.VerifyArgumentNotNull(tokenManager, "tokenManager");
+			ErrorUtilities.VerifyArgumentNotNull(messageTypeProvider, "messageTypeProvider");
 
 			var signingElement = serviceDescription.CreateTamperProtectionElement();
 			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);

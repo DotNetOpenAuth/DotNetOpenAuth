@@ -18,13 +18,13 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <summary>
 		/// The token manager to use for discerning between request and access tokens.
 		/// </summary>
-		private ITokenManager tokenManager;
+		private IServiceProviderTokenManager tokenManager;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuthServiceProviderMessageFactory"/> class.
 		/// </summary>
 		/// <param name="tokenManager">The token manager instance to use.</param>
-		protected internal OAuthServiceProviderMessageFactory(ITokenManager tokenManager) {
+		protected internal OAuthServiceProviderMessageFactory(IServiceProviderTokenManager tokenManager) {
 			ErrorUtilities.VerifyArgumentNotNull(tokenManager, "tokenManager");
 
 			this.tokenManager = tokenManager;

@@ -15,7 +15,7 @@ public class CustomOAuthMessageFactory : OAuthServiceProviderMessageFactory {
 	/// Initializes a new instance of the <see cref="CustomOAuthMessageFactory"/> class.
 	/// </summary>
 	/// <param name="tokenManager">The token manager instance to use.</param>
-	public CustomOAuthMessageFactory(ITokenManager tokenManager) : base(tokenManager) {
+	public CustomOAuthMessageFactory(IServiceProviderTokenManager tokenManager) : base(tokenManager) {
 	}
 
 	public override IDirectedProtocolMessage GetNewRequestMessage(MessageReceivingEndpoint recipient, IDictionary<string, string> fields) {

@@ -109,9 +109,7 @@ public partial class SampleWcf : System.Web.UI.Page {
 					new HmacSha1SigningBindingElement(),
 				},
 			},
-			tokenManager) {
-				ConsumerKey = consumerKey,
-			};
+			tokenManager);
 
 		return consumer;
 	}

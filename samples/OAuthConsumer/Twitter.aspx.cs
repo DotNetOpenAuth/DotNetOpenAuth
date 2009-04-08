@@ -9,6 +9,7 @@ using System.Web.UI.WebControls;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using DotNetOpenAuth.ApplicationBlock;
+using DotNetOpenAuth.OAuth;
 
 public partial class Twitter : System.Web.UI.Page {
 	private string AccessToken {
@@ -34,9 +35,9 @@ public partial class Twitter : System.Web.UI.Page {
 
 	protected void Page_Load(object sender, EventArgs e) {
 		if (!IsPostBack) {
-			if (TokenManager != null) {
+			if (this.TokenManager != null) {
 				InMemoryTokenManager tokenManager = (InMemoryTokenManager)Session["TokenManager"];
-				var twitter = TwitterConsumer.CreateWebConsumer(tokenManager, tokenManager.ConsumerKey);
+				var twitter = new WebConsumer(TwitterConsumer.ServiceDescription, tokenManager);
 
 				var accessTokenResponse = twitter.ProcessUserAuthorization();
 				if (accessTokenResponse != null) {
@@ -56,12 +57,12 @@ public partial class Twitter : System.Web.UI.Page {
 			return;
 		}
 
-		var twitter = TwitterConsumer.CreateWebConsumer(this.TokenManager, this.TokenManager.ConsumerKey);
+		var twitter = new WebConsumer(TwitterConsumer.ServiceDescription, this.TokenManager);
 		twitter.Channel.Send(twitter.PrepareRequestUserAuthorization());
 	}
 
 	protected void downloadUpdates_Click(object sender, EventArgs e) {
-		var twitter = TwitterConsumer.CreateWebConsumer(this.TokenManager, this.TokenManager.ConsumerKey);
+		var twitter = new WebConsumer(TwitterConsumer.ServiceDescription, this.TokenManager);
 		XPathDocument updates = new XPathDocument(TwitterConsumer.GetUpdates(twitter, AccessToken).CreateReader());
 		XPathNavigator nav = updates.CreateNavigator();
 		var parsedUpdates = from status in nav.Select("/statuses/status").OfType<XPathNavigator>()

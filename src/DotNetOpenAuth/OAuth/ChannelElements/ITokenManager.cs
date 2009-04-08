@@ -12,21 +12,11 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using DotNetOpenAuth.OAuth.Messages;
 
 	/// <summary>
-	/// An interface OAuth hosts must implement for persistent storage and recall of tokens and secrets.
+	/// An interface OAuth hosts must implement for persistent storage
+	/// and recall of tokens and secrets for an individual OAuth consumer
+	/// or service provider.
 	/// </summary>
 	public interface ITokenManager {
-		/// <summary>
-		/// Gets the Consumer Secret given a Consumer Key.
-		/// </summary>
-		/// <param name="consumerKey">The Consumer Key.</param>
-		/// <returns>The Consumer Secret.</returns>
-		/// <exception cref="ArgumentException">Thrown if the consumer key cannot be found.</exception>
-		/// <remarks>
-		/// TODO: In the case of RSA hashing, the consumer may not have a secret
-		/// like this.  What to do in that case?
-		/// </remarks>
-		string GetConsumerSecret(string consumerKey);
-
 		/// <summary>
 		/// Gets the Token Secret given a request or access token.
 		/// </summary>

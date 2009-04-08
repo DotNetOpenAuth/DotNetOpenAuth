@@ -10,7 +10,7 @@ using System.Diagnostics;
 using DotNetOpenAuth.OAuth.ChannelElements;
 using DotNetOpenAuth.OAuth.Messages;
 
-public class InMemoryTokenManager : ITokenManager {
+public class InMemoryTokenManager : IConsumerTokenManager {
 	private Dictionary<string, string> tokensAndSecrets = new Dictionary<string, string>();
 
 	public InMemoryTokenManager(string consumerKey, string consumerSecret) {

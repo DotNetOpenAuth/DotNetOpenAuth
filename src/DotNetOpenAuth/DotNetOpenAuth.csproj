@@ -222,6 +222,8 @@
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
     <Compile Include="Messaging\Reflection\MessageDescriptionCollection.cs" />
     <Compile Include="OAuth\ChannelElements\IConsumerCertificateProvider.cs" />
+    <Compile Include="OAuth\ChannelElements\IConsumerTokenManager.cs" />
+    <Compile Include="OAuth\ChannelElements\IServiceProviderTokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthConsumerMessageFactory.cs" />
     <Compile Include="OAuth\ChannelElements\ITokenGenerator.cs" />
     <Compile Include="OAuth\ChannelElements\ITokenManager.cs" />

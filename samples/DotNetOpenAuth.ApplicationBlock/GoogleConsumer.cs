@@ -26,7 +26,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// <summary>
 		/// The Consumer to use for accessing Google data APIs.
 		/// </summary>
-		private static readonly ServiceProviderDescription GoogleDescription = new ServiceProviderDescription {
+		public static readonly ServiceProviderDescription ServiceDescription = new ServiceProviderDescription {
 			RequestTokenEndpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthGetRequestToken", HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.GetRequest),
 			UserAuthorizationEndpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthAuthorizeToken", HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.GetRequest),
 			AccessTokenEndpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthGetAccessToken", HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.GetRequest),
@@ -66,30 +66,6 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			/// Blog post authoring.
 			/// </summary>
 			Blogger = 0x4,
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="WebConsumer"/> class that is prepared to communicate with Google.
-		/// </summary>
-		/// <param name="tokenManager">The token manager.</param>
-		/// <param name="consumerKey">The consumer key.</param>
-		/// <returns>The newly instantiated <see cref="WebConsumer"/>.</returns>
-		public static WebConsumer CreateWebConsumer(ITokenManager tokenManager, string consumerKey) {
-			return new WebConsumer(GoogleDescription, tokenManager) {
-				ConsumerKey = consumerKey,
-			};
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="DesktopConsumer"/> class that is prepared to communicate with Google.
-		/// </summary>
-		/// <param name="tokenManager">The token manager.</param>
-		/// <param name="consumerKey">The consumer key.</param>
-		/// <returns>The newly instantiated <see cref="DesktopConsumer"/>.</returns>
-		public static DesktopConsumer CreateDesktopConsumer(ITokenManager tokenManager, string consumerKey) {
-			return new DesktopConsumer(GoogleDescription, tokenManager) {
-				ConsumerKey = consumerKey,
-			};
 		}
 
 		/// <summary>

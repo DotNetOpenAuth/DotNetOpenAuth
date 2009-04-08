@@ -34,13 +34,12 @@
 		public MainWindow() {
 			InitializeComponent();
 
-			this.google = GoogleConsumer.CreateDesktopConsumer(this.tokenManager, string.Empty);
+			this.google = new DesktopConsumer(GoogleConsumer.ServiceDescription, this.tokenManager);
 		}
 
 		private void beginAuthorizationButton_Click(object sender, RoutedEventArgs e) {
 			this.tokenManager.ConsumerKey = consumerKeyBox.Text;
 			this.tokenManager.ConsumerSecret = consumerSecretBox.Text;
-			this.google.ConsumerKey = consumerKeyBox.Text;
 
 			Cursor original = this.Cursor;
 			this.Cursor = Cursors.Wait;
