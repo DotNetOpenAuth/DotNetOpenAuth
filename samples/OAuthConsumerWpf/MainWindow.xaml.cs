@@ -1,6 +1,7 @@
 ﻿namespace DotNetOpenAuth.Samples.OAuthConsumerWpf {
 	using System;
 	using System.Collections.Generic;
+	using System.Configuration;
 	using System.Linq;
 	using System.Text;
 	using System.Threading;
@@ -35,11 +36,15 @@
 			InitializeComponent();
 
 			this.google = new DesktopConsumer(GoogleConsumer.ServiceDescription, this.tokenManager);
+			this.tokenManager.ConsumerKey = ConfigurationManager.AppSettings["googleConsumerKey"];
+			this.tokenManager.ConsumerSecret = ConfigurationManager.AppSettings["googleConsumerSecret"];
 		}
 
 		private void beginAuthorizationButton_Click(object sender, RoutedEventArgs e) {
-			this.tokenManager.ConsumerKey = consumerKeyBox.Text;
-			this.tokenManager.ConsumerSecret = consumerSecretBox.Text;
+			if (string.IsNullOrEmpty(this.tokenManager.ConsumerKey)) {
+				MessageBox.Show(this, "You must modify the App.config or OAuthConsumerWpf.exe.config file for this application to include your Google OAuth consumer key first.", "Configuration required", MessageBoxButton.OK, MessageBoxImage.Stop);
+				return;
+			}
 
 			Cursor original = this.Cursor;
 			this.Cursor = Cursors.Wait;
