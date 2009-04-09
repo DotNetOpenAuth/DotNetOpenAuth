@@ -44,7 +44,7 @@ public partial class GoogleAddressBook : System.Web.UI.Page {
 				// Is Google calling back with authorization?
 				var accessTokenResponse = google.ProcessUserAuthorization();
 				if (accessTokenResponse != null) {
-					AccessToken = accessTokenResponse.AccessToken;
+					this.AccessToken = accessTokenResponse.AccessToken;
 				} else if (this.AccessToken == null) {
 					// If we don't yet have access, immediately request it.
 					GoogleConsumer.RequestAuthorization(google, GoogleConsumer.Applications.Contacts);
@@ -56,12 +56,9 @@ public partial class GoogleAddressBook : System.Web.UI.Page {
 	protected void getAddressBookButton_Click(object sender, EventArgs e) {
 		var google = new WebConsumer(GoogleConsumer.ServiceDescription, this.TokenManager);
 
-		XDocument contactsDocument = GoogleConsumer.GetContacts(google, AccessToken);
+		XDocument contactsDocument = GoogleConsumer.GetContacts(google, this.AccessToken);
 		var contacts = from entry in contactsDocument.Root.Elements(XName.Get("entry", "http://www.w3.org/2005/Atom"))
-					   select new {
-						   Name = entry.Element(XName.Get("title", "http://www.w3.org/2005/Atom")).Value,
-						   Email = entry.Element(XName.Get("email", "http://schemas.google.com/g/2005")).Attribute("address").Value,
-					   };
+		               select new { Name = entry.Element(XName.Get("title", "http://www.w3.org/2005/Atom")).Value, Email = entry.Element(XName.Get("email", "http://schemas.google.com/g/2005")).Attribute("address").Value };
 		StringBuilder tableBuilder = new StringBuilder();
 		tableBuilder.Append("<table><tr><td>Name</td><td>Email</td></tr>");
 		foreach (var contact in contacts) {

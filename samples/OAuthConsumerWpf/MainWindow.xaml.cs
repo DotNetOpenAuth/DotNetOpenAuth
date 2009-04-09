@@ -69,10 +69,7 @@
 			this.accessToken = grantedAccess.AccessToken;
 			XDocument contactsDocument = GoogleConsumer.GetContacts(this.google, grantedAccess.AccessToken);
 			var contacts = from entry in contactsDocument.Root.Elements(XName.Get("entry", "http://www.w3.org/2005/Atom"))
-				select new {
-					Name = entry.Element(XName.Get("title", "http://www.w3.org/2005/Atom")).Value,
-					Email = entry.Element(XName.Get("email", "http://schemas.google.com/g/2005")).Attribute("address").Value,
-				};
+			               select new { Name = entry.Element(XName.Get("title", "http://www.w3.org/2005/Atom")).Value, Email = entry.Element(XName.Get("email", "http://schemas.google.com/g/2005")).Attribute("address").Value };
 			contactsGrid.Children.Clear();
 			foreach (var contact in contacts) {
 				contactsGrid.RowDefinitions.Add(new RowDefinition());
