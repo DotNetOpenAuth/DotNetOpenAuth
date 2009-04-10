@@ -3,6 +3,7 @@
 	using System.Collections.Generic;
 	using System.Configuration;
 	using System.Linq;
+	using System.Security.Cryptography.X509Certificates;
 	using System.Text;
 	using System.Threading;
 	using System.Windows;
@@ -35,9 +36,18 @@
 		public MainWindow() {
 			InitializeComponent();
 
-			this.google = new DesktopConsumer(GoogleConsumer.ServiceDescription, this.tokenManager);
 			this.tokenManager.ConsumerKey = ConfigurationManager.AppSettings["googleConsumerKey"];
 			this.tokenManager.ConsumerSecret = ConfigurationManager.AppSettings["googleConsumerSecret"];
+
+			string pfxFile = ConfigurationManager.AppSettings["googleConsumerCertificateFile"];
+			if (string.IsNullOrEmpty(pfxFile)) {
+				this.google = new DesktopConsumer(GoogleConsumer.ServiceDescription, this.tokenManager);
+			} else {
+				string pfxPassword = ConfigurationManager.AppSettings["googleConsumerCertificatePassword"];
+				var signingCertificate = new X509Certificate2(pfxFile, pfxPassword);
+				var service = GoogleConsumer.CreateRsaSha1ServiceDescription(signingCertificate);
+				this.google = new DesktopConsumer(service, this.tokenManager);
+			}
 		}
 
 		private void beginAuthorizationButton_Click(object sender, RoutedEventArgs e) {

@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Security.Cryptography.X509Certificates;
 	using System.Text;
 	using System.Text.RegularExpressions;
 	using System.Xml;
@@ -66,6 +67,25 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			/// Blog post authoring.
 			/// </summary>
 			Blogger = 0x4,
+		}
+
+		/// <summary>
+		/// The service description to use for accessing Google data APIs using an X509 certificate.
+		/// </summary>
+		/// <param name="signingCertificate">The signing certificate.</param>
+		/// <returns>A service description that can be used to create an instance of
+		/// <see cref="DesktopConsumer"/> or <see cref="WebConsumer"/>. </returns>
+		public static ServiceProviderDescription CreateRsaSha1ServiceDescription(X509Certificate2 signingCertificate) {
+			if (signingCertificate == null) {
+				throw new ArgumentNullException("signingCertificate");
+			}
+
+			return new ServiceProviderDescription {
+				RequestTokenEndpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthGetRequestToken", HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.GetRequest),
+				UserAuthorizationEndpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthAuthorizeToken", HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.GetRequest),
+				AccessTokenEndpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthGetAccessToken", HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.GetRequest),
+				TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new RsaSha1SigningBindingElement(signingCertificate) },
+			};
 		}
 
 		/// <summary>
