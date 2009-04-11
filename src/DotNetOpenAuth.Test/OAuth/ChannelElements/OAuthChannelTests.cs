@@ -56,12 +56,12 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 
 		[TestMethod]
 		public void CtorSimpleConsumer() {
-			new OAuthChannel(new RsaSha1SigningBindingElement(), this.nonceStore, new InMemoryTokenManager(), true);
+			new OAuthChannel(new RsaSha1SigningBindingElement(), this.nonceStore, (IConsumerTokenManager)new InMemoryTokenManager());
 		}
 
 		[TestMethod]
 		public void CtorSimpleServiceProvider() {
-			new OAuthChannel(new RsaSha1SigningBindingElement(), this.nonceStore, new InMemoryTokenManager(), false);
+			new OAuthChannel(new RsaSha1SigningBindingElement(), this.nonceStore, (IServiceProviderTokenManager)new InMemoryTokenManager());
 		}
 
 		[TestMethod]

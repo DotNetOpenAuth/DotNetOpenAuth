@@ -49,8 +49,8 @@
 					<asp:Button runat="server" ID="sendAssertionButton" Text="Login" OnClick="sendAssertionButton_Click" />
 					<asp:RequiredFieldValidator runat="server" ControlToValidate="relyingPartySite" Text="Specify relying party site first" />
 				</div>
-				<p id="bookmarkParagraph" style="display: none">Bookmark <a id="bookmark"></a>so you
-					can log into the RP automatically in the future.</p>
+				<p id="bookmarkParagraph" style="display: none">Bookmark <a id="bookmark"></a>&nbsp;so
+					you can log into the RP automatically in the future.</p>
 				<p>An unsolicited assertion is a way to log in to a relying party site directly from
 					your OpenID Provider. </p>
 				<p><asp:Label runat="server" EnableViewState="false" Visible="false" ID="errorLabel"

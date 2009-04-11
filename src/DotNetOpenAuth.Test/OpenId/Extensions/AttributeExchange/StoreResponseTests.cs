@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Test.OpenId.Extensions.AttributeExchange {
+	using System.IO;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -45,6 +46,22 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.AttributeExchange {
 
 			response2.FailureReason = "bad code";
 			Assert.AreEqual(response1, response2);
+		}
+
+		/// <summary>
+		/// Verifies that the class is serializable.
+		/// </summary>
+		[TestMethod]
+		public void Serializable() {
+			var store = new StoreResponse();
+			store.Succeeded = false;
+			store.FailureReason = "some reason";
+			var formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+			var ms = new MemoryStream();
+			formatter.Serialize(ms, store);
+			ms.Position = 0;
+			var store2 = formatter.Deserialize(ms);
+			Assert.AreEqual(store, store2);
 		}
 	}
 }

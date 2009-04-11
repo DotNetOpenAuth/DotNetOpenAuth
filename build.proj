@@ -2,6 +2,7 @@
 	<Import Project="$(MSBuildProjectDirectory)\tools\DotNetOpenAuth.Common.Settings.targets"/>
 	<PropertyGroup>
 		<AutomatedBuild>true</AutomatedBuild>
+		<SolutionPath>$(ProjectRoot)\src\$(ProductName).sln</SolutionPath>
 	</PropertyGroup>
 
 	<Import Project="$(ProjectRoot)\tools\$(ProductName).Versioning.targets"/>
@@ -9,12 +10,12 @@
 	<UsingTask AssemblyFile="$(ProjectRoot)\lib\MSBuild.Community.Tasks.dll" TaskName="Zip"/>
 
 	<ItemGroup>
-		<!--<SampleDirectories Include="" />-->
-		<Samples Include="$(ProjectRoot)\samples\**\*.csproj" />
+		<SampleProjects Include="$(ProjectRoot)\samples\**\*.csproj" />
+		<SampleSites Include="OAuthConsumer;OAuthServiceProvider;InfoCardRelyingParty" />
 	</ItemGroup>
-	
+
 	<Target Name="Clean" DependsOnTargets="CleanDocumentation">
-		<MSBuild Projects="$(ProjectRoot)\src\$(ProductName).sln" Targets="Clean" />
+		<MSBuild Projects="$(SolutionPath)" Targets="Clean" />
 		<ItemGroup>
 			<DirtyDirectories Include="
 			                           $(ProjectRoot)\bin;
@@ -44,22 +45,22 @@
 	</Target>
 
 	<Target Name="BuildSamples">
-		<!-- poor man's list of samples until we decide to maintain the real list here. -->
-		<MSBuild Projects="@(Samples)" />
+		<MSBuild Projects="@(SampleProjects)" />
+		<MSBuild Projects="$(SolutionPath)" Targets="@(SampleSites)" Properties="Sign=$(Sign)" />
 	</Target>
 
 	<Target Name="Build">
 		<!-- We explicitly pass the Sign property in because if properties are set
 		     inside this very .proj file instead of being passed on the command-line, their
 		     values won't propagate automatically. -->
-		<MSBuild Projects="$(ProjectRoot)\src\$(ProductName).sln" Properties="Sign=$(Sign)" />
+		<MSBuild Projects="$(SolutionPath)" Properties="Sign=$(Sign)" />
 	</Target>
 
 	<Target Name="Rebuild">
 		<!-- We explicitly pass the Sign property in because if properties are set
 		     inside this very .proj file instead of being passed on the command-line, their
 		     values won't propagate automatically. -->
-		<MSBuild Projects="$(ProjectRoot)\src\$(ProductName).sln" Targets="Rebuild" Properties="Sign=$(Sign)" />
+		<MSBuild Projects="$(SolutionPath)" Targets="Rebuild" Properties="Sign=$(Sign)" />
 	</Target>
 
 	<Target Name="Documentation" DependsOnTargets="BuildProduct;Chm">
@@ -84,7 +85,7 @@
 	<Target Name="_EnsureCleanDrop" Condition="'$(NoClean)' != 'true'">
 		<!-- This target only does a clean sufficient to guarantee that our DotNetOpenAuth.dll is rebuilt, but
 		     we don't usually want to clean our documentation because that takes forever to build froms scratch. -->
-		<MSBuild Projects="$(ProjectRoot)\src\$(ProductName).sln" Targets="Clean" />
+		<MSBuild Projects="$(SolutionPath)" Targets="Clean" />
 	</Target>
 
 	<Target Name="Drop" DependsOnTargets="_SetDropProperties;GetBuildVersion;_EnsureCleanDrop;BuildProduct;BuildSamples;Documentation">

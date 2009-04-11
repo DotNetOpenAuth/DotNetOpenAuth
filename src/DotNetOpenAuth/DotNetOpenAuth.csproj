@@ -222,6 +222,8 @@
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
     <Compile Include="Messaging\Reflection\MessageDescriptionCollection.cs" />
     <Compile Include="OAuth\ChannelElements\IConsumerCertificateProvider.cs" />
+    <Compile Include="OAuth\ChannelElements\IConsumerTokenManager.cs" />
+    <Compile Include="OAuth\ChannelElements\IServiceProviderTokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthConsumerMessageFactory.cs" />
     <Compile Include="OAuth\ChannelElements\ITokenGenerator.cs" />
     <Compile Include="OAuth\ChannelElements\ITokenManager.cs" />
@@ -312,6 +314,7 @@
     <Compile Include="OpenId\ChannelElements\OpenIdChannel.cs" />
     <Compile Include="OpenId\ChannelElements\OpenIdMessageFactory.cs" />
     <Compile Include="OpenId\ChannelElements\ReturnToSignatureBindingElement.cs" />
+    <Compile Include="OpenId\ChannelElements\SkipSecurityBindingElement.cs" />
     <Compile Include="OpenId\Extensions\AliasManager.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\AttributeRequest.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\AttributeValues.cs" />

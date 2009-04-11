@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.InfoCard {
 	/// A utility class for decrypting InfoCard tokens.
 	/// </summary>
 	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Decryptor", Justification = "By design")]
-	public class TokenDecryptor {
+	internal class TokenDecryptor {
 		/// <summary>
 		/// Backing field for the <see cref="Tokens"/> property.
 		/// </summary>
@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <remarks>
 		/// Defaults to localmachine:my (same place SSL certs are)
 		/// </remarks>
-		public IList<SecurityToken> Tokens {
+		internal List<SecurityToken> Tokens {
 			get { return this.tokens; }
 		}
 
@@ -57,7 +57,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// Adds a certificate to the list of certificates to decrypt with.
 		/// </summary>
 		/// <param name="certificate">The x509 cert to use for decryption</param>
-		public void AddDecryptionCertificate(X509Certificate2 certificate) {
+		internal void AddDecryptionCertificate(X509Certificate2 certificate) {
 			this.Tokens.Add(new X509SecurityToken(certificate));
 		}
 
@@ -67,7 +67,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="storeName">store name of the certificate</param>
 		/// <param name="storeLocation">store location</param>
 		/// <param name="thumbprint">thumbprint of the cert to use</param>
-		public void AddDecryptionCertificate(StoreName storeName, StoreLocation storeLocation, string thumbprint) {
+		internal void AddDecryptionCertificate(StoreName storeName, StoreLocation storeLocation, string thumbprint) {
 			this.AddDecryptionCertificates(
 				storeName,
 				storeLocation,
@@ -79,7 +79,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </summary>
 		/// <param name="storeName">store name of the certificates</param>
 		/// <param name="storeLocation">store location</param>
-		public void AddDecryptionCertificates(StoreName storeName, StoreLocation storeLocation) {
+		internal void AddDecryptionCertificates(StoreName storeName, StoreLocation storeLocation) {
 			this.AddDecryptionCertificates(storeName, storeLocation, store => store);
 		}
 

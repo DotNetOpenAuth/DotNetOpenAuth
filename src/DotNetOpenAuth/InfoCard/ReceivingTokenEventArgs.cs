@@ -6,8 +6,11 @@
 
 namespace DotNetOpenAuth.InfoCard {
 	using System;
+	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
+	using System.IdentityModel.Tokens;
+	using System.Security.Cryptography.X509Certificates;
 
 	/// <summary>
 	/// Arguments for the <see cref="InfoCardSelector.ReceivingToken"/> event.
@@ -17,13 +20,12 @@ namespace DotNetOpenAuth.InfoCard {
 		/// Initializes a new instance of the <see cref="ReceivingTokenEventArgs"/> class.
 		/// </summary>
 		/// <param name="tokenXml">The raw token XML, prior to any decryption.</param>
-		/// <param name="decryptor">The decryptor to use if the token is encrypted.</param>
-		internal ReceivingTokenEventArgs(string tokenXml, TokenDecryptor decryptor) {
+		internal ReceivingTokenEventArgs(string tokenXml) {
 			Contract.Requires(tokenXml != null);
 
 			this.TokenXml = tokenXml;
 			this.IsEncrypted = Token.IsEncrypted(this.TokenXml);
-			this.Decryptor = decryptor;
+			this.DecryptingTokens = new List<SecurityToken>();
 		}
 
 		/// <summary>
@@ -40,13 +42,6 @@ namespace DotNetOpenAuth.InfoCard {
 		public string TokenXml { get; private set; }
 
 		/// <summary>
-		/// Gets the object that will perform token decryption, if necessary.
-		/// </summary>
-		/// <value>The decryptor to use; or <c>null</c> if the token is not encrypted.</value>
-		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Decryptor", Justification = "By design")]
-		public TokenDecryptor Decryptor { get; private set; }
-
-		/// <summary>
 		/// Gets or sets a value indicating whether processing
 		/// this token should be canceled.
 		/// </summary>
@@ -57,6 +52,31 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </remarks>
 		public bool Cancel { get; set; }
 
+		/// <summary>
+		/// Gets a list where security tokens such as X.509 certificates may be
+		/// added to be used for token decryption.
+		/// </summary>
+		internal IList<SecurityToken> DecryptingTokens { get; private set; }
+
+		/// <summary>
+		/// Adds a security token that may be used to decrypt the incoming token.
+		/// </summary>
+		/// <param name="securityToken">The security token.</param>
+		public void AddDecryptingToken(SecurityToken securityToken) {
+			Contract.Requires(securityToken != null);
+			this.DecryptingTokens.Add(securityToken);
+		}
+
+		/// <summary>
+		/// Adds an X.509 certificate with a private key that may be used to decrypt the incoming token.
+		/// </summary>
+		/// <param name="certificate">The certificate.</param>
+		public void AddDecryptingToken(X509Certificate2 certificate) {
+			Contract.Requires(certificate != null);
+			Contract.Requires(certificate.HasPrivateKey);
+			this.AddDecryptingToken(new X509SecurityToken(certificate));
+		}
+
 #if CONTRACTS_FULL
 		/// <summary>
 		/// Verifies conditions that should be true for any valid state of this object.
@@ -65,7 +85,7 @@ namespace DotNetOpenAuth.InfoCard {
 		[ContractInvariantMethod]
 		protected void ObjectInvariant() {
 			Contract.Invariant(this.TokenXml != null);
-			Contract.Invariant((this.Decryptor != null) == this.IsEncrypted);
+			Contract.Invariant(this.DecryptingTokens != null);
 		}
 #endif
 	}

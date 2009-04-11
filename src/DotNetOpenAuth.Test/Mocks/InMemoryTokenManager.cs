@@ -8,10 +8,11 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Linq;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
 
-	internal class InMemoryTokenManager : ITokenManager {
+	internal class InMemoryTokenManager : IConsumerTokenManager, IServiceProviderTokenManager {
 		private Dictionary<string, string> consumersAndSecrets = new Dictionary<string, string>();
 		private Dictionary<string, string> tokensAndSecrets = new Dictionary<string, string>();
 
@@ -25,11 +26,19 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// </summary>
 		private List<string> accessTokens = new List<string>();
 
-		#region ITokenManager Members
+		#region IConsumerTokenManager Members
 
-		public string GetConsumerSecret(string consumerKey) {
-			return this.consumersAndSecrets[consumerKey];
+		public string ConsumerKey {
+			get { return this.consumersAndSecrets.Keys.Single(); }
 		}
+
+		public string ConsumerSecret {
+			get { return this.consumersAndSecrets.Values.Single(); }
+		}
+
+		#endregion
+
+		#region ITokenManager Members
 
 		public string GetTokenSecret(string token) {
 			return this.tokensAndSecrets[token];
@@ -78,6 +87,14 @@ namespace DotNetOpenAuth.Test.Mocks {
 			} else {
 				return TokenType.InvalidToken;
 			}
+		}
+
+		#endregion
+
+		#region IServiceProviderTokenManager Members
+
+		public string GetConsumerSecret(string consumerKey) {
+			return this.consumersAndSecrets[consumerKey];
 		}
 
 		#endregion

@@ -25,7 +25,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// </summary>
 		/// <param name="serviceDescription">The endpoints and behavior of the Service Provider.</param>
 		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
-		public WebConsumer(ServiceProviderDescription serviceDescription, ITokenManager tokenManager)
+		public WebConsumer(ServiceProviderDescription serviceDescription, IConsumerTokenManager tokenManager)
 			: base(serviceDescription, tokenManager) {
 		}
 

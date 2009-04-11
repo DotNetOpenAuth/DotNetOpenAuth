@@ -23,24 +23,22 @@ namespace DotNetOpenAuth.OAuth {
 		/// </summary>
 		/// <param name="serviceDescription">The endpoints and behavior of the Service Provider.</param>
 		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
-		protected ConsumerBase(ServiceProviderDescription serviceDescription, ITokenManager tokenManager) {
-			if (serviceDescription == null) {
-				throw new ArgumentNullException("serviceDescription");
-			}
-			if (tokenManager == null) {
-				throw new ArgumentNullException("tokenManager");
-			}
+		protected ConsumerBase(ServiceProviderDescription serviceDescription, IConsumerTokenManager tokenManager) {
+			ErrorUtilities.VerifyArgumentNotNull(serviceDescription, "serviceDescription");
+			ErrorUtilities.VerifyArgumentNotNull(tokenManager, "tokenManager");
 
 			ITamperProtectionChannelBindingElement signingElement = serviceDescription.CreateTamperProtectionElement();
 			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
-			this.OAuthChannel = new OAuthChannel(signingElement, store, tokenManager, new OAuthConsumerMessageFactory());
+			this.OAuthChannel = new OAuthChannel(signingElement, store, tokenManager);
 			this.ServiceProvider = serviceDescription;
 		}
 
 		/// <summary>
-		/// Gets or sets the Consumer Key used to communicate with the Service Provider.
+		/// Gets the Consumer Key used to communicate with the Service Provider.
 		/// </summary>
-		public string ConsumerKey { get; set; }
+		public string ConsumerKey {
+			get { return this.TokenManager.ConsumerKey; }
+		}
 
 		/// <summary>
 		/// Gets the Service Provider that will be accessed.
@@ -50,8 +48,8 @@ namespace DotNetOpenAuth.OAuth {
 		/// <summary>
 		/// Gets the persistence store for tokens and secrets.
 		/// </summary>
-		public ITokenManager TokenManager {
-			get { return this.OAuthChannel.TokenManager; }
+		public IConsumerTokenManager TokenManager {
+			get { return (IConsumerTokenManager)this.OAuthChannel.TokenManager; }
 		}
 
 		/// <summary>
