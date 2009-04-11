@@ -200,7 +200,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		}
 
 		/// <summary>
-		/// Gets the ConsumerSecret&amp;TokenSecret" string, allowing either property to be empty or null.
+		/// Gets the "ConsumerSecret&amp;TokenSecret" string, allowing either property to be empty or null.
 		/// </summary>
 		/// <param name="message">The message to extract the secrets from.</param>
 		/// <returns>The concatenated string.</returns>

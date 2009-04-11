@@ -16,6 +16,26 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 	/// </summary>
 	public static class AXUtilities {
 		/// <summary>
+		/// Adds a request for an attribute considering it 'required'.
+		/// </summary>
+		/// <param name="collection">The attribute request collection.</param>
+		/// <param name="typeUri">The type URI of the required attribute.</param>
+		public static void AddRequired(this ICollection<AttributeRequest> collection, string typeUri) {
+			ErrorUtilities.VerifyArgumentNotNull(collection, "collection");
+			collection.Add(new AttributeRequest(typeUri, true));
+		}
+
+		/// <summary>
+		/// Adds a request for an attribute without considering it 'required'.
+		/// </summary>
+		/// <param name="collection">The attribute request collection.</param>
+		/// <param name="typeUri">The type URI of the requested attribute.</param>
+		public static void AddOptional(this ICollection<AttributeRequest> collection, string typeUri) {
+			ErrorUtilities.VerifyArgumentNotNull(collection, "collection");
+			collection.Add(new AttributeRequest(typeUri, false));
+		}
+
+		/// <summary>
 		/// Adds a given attribute with one or more values to the request for storage.
 		/// Applicable to Relying Parties only.
 		/// </summary>

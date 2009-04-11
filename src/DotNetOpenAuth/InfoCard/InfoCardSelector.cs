@@ -387,12 +387,11 @@ namespace DotNetOpenAuth.InfoCard {
 			if (!string.IsNullOrEmpty(this.TokenXml)) {
 				try {
 					bool encrypted = Token.IsEncrypted(this.TokenXml);
-					TokenDecryptor decryptor = encrypted ? new TokenDecryptor() : null;
-					ReceivingTokenEventArgs receivingArgs = this.OnReceivingToken(this.TokenXml, decryptor);
+					ReceivingTokenEventArgs receivingArgs = this.OnReceivingToken(this.TokenXml);
 
 					if (!receivingArgs.Cancel) {
 						try {
-							Token token = new Token(this.TokenXml, this.Audience, decryptor);
+							Token token = Token.Read(this.TokenXml, this.Audience, receivingArgs.DecryptingTokens);
 							this.OnReceivedToken(token);
 						} catch (InformationCardException ex) {
 							this.OnTokenProcessingError(this.TokenXml, ex);
@@ -408,14 +407,13 @@ namespace DotNetOpenAuth.InfoCard {
 		/// Fires the <see cref="ReceivingToken"/> event.
 		/// </summary>
 		/// <param name="tokenXml">The token XML, prior to any processing.</param>
-		/// <param name="decryptor">The decryptor to use, if the token is encrypted.</param>
 		/// <returns>The event arguments sent to the event handlers.</returns>
 		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "decryptor", Justification = "By design")]
-		protected virtual ReceivingTokenEventArgs OnReceivingToken(string tokenXml, TokenDecryptor decryptor) {
+		protected virtual ReceivingTokenEventArgs OnReceivingToken(string tokenXml) {
 			Contract.Requires(tokenXml != null);
 			ErrorUtilities.VerifyArgumentNotNull(tokenXml, "tokenXml");
 
-			var args = new ReceivingTokenEventArgs(tokenXml, decryptor);
+			var args = new ReceivingTokenEventArgs(tokenXml);
 			var receivingToken = this.ReceivingToken;
 			if (receivingToken != null) {
 				receivingToken(this, args);

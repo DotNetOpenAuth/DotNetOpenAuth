@@ -11,8 +11,9 @@ namespace DotNetOpenAuth.InfoCard {
 	using System.Diagnostics.Contracts;
 	using System.IdentityModel.Claims;
 	using System.IdentityModel.Policy;
+	using System.IdentityModel.Tokens;
 	using System.IO;
-	using System.Security.Cryptography.X509Certificates;
+	using System.Linq;
 	using System.Text;
 	using System.Xml;
 	using System.Xml.XPath;
@@ -40,7 +41,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="audience">The audience.  May be <c>null</c> to avoid audience checking.</param>
 		/// <param name="decryptor">The decryptor to use to decrypt the token, if necessary..</param>
 		/// <exception cref="InformationCardException">Thrown for any problem decoding or decrypting the token.</exception>
-		internal Token(string tokenXml, Uri audience, TokenDecryptor decryptor) {
+		private Token(string tokenXml, Uri audience, TokenDecryptor decryptor) {
 			Contract.Requires(tokenXml != null && tokenXml.Length > 0);
 			Contract.Requires(decryptor != null || !IsEncrypted(tokenXml));
 			ErrorUtilities.VerifyNonZeroLength(tokenXml, "tokenXml");
@@ -122,6 +123,61 @@ namespace DotNetOpenAuth.InfoCard {
 
 				return this.claims;
 			}
+		}
+
+		/// <summary>
+		/// Deserializes an XML document into a token.
+		/// </summary>
+		/// <param name="tokenXml">The token XML.</param>
+		/// <returns>The deserialized token.</returns>
+		public static Token Read(string tokenXml) {
+			Contract.Requires(!String.IsNullOrEmpty(tokenXml));
+			return Read(tokenXml, (Uri)null);
+		}
+
+		/// <summary>
+		/// Deserializes an XML document into a token.
+		/// </summary>
+		/// <param name="tokenXml">The token XML.</param>
+		/// <param name="audience">The URI that this token must have been crafted to be sent to.  Use <c>null</c> to accept any intended audience.</param>
+		/// <returns>The deserialized token.</returns>
+		public static Token Read(string tokenXml, Uri audience) {
+			Contract.Requires(!String.IsNullOrEmpty(tokenXml));
+			return Read(tokenXml, audience, Enumerable.Empty<SecurityToken>());
+		}
+
+		/// <summary>
+		/// Deserializes an XML document into a token.
+		/// </summary>
+		/// <param name="tokenXml">The token XML.</param>
+		/// <param name="decryptionTokens">Any X.509 certificates that may be used to decrypt the token, if necessary.</param>
+		/// <returns>The deserialized token.</returns>
+		public static Token Read(string tokenXml, IEnumerable<SecurityToken> decryptionTokens) {
+			Contract.Requires(!String.IsNullOrEmpty(tokenXml));
+			Contract.Requires(decryptionTokens != null);
+			return Read(tokenXml, null, decryptionTokens);
+		}
+
+		/// <summary>
+		/// Deserializes an XML document into a token.
+		/// </summary>
+		/// <param name="tokenXml">The token XML.</param>
+		/// <param name="audience">The URI that this token must have been crafted to be sent to.  Use <c>null</c> to accept any intended audience.</param>
+		/// <param name="decryptionTokens">Any X.509 certificates that may be used to decrypt the token, if necessary.</param>
+		/// <returns>The deserialized token.</returns>
+		public static Token Read(string tokenXml, Uri audience, IEnumerable<SecurityToken> decryptionTokens) {
+			Contract.Requires(!String.IsNullOrEmpty(tokenXml));
+			Contract.Requires(decryptionTokens != null);
+			Contract.Ensures(Contract.Result<Token>() != null);
+
+			TokenDecryptor decryptor = null;
+
+			if (IsEncrypted(tokenXml)) {
+				decryptor = new TokenDecryptor();
+				decryptor.Tokens.AddRange(decryptionTokens);
+			}
+
+			return new Token(tokenXml, audience, decryptor);
 		}
 
 		/// <summary>

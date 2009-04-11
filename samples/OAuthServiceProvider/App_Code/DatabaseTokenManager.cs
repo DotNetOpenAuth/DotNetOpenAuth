@@ -11,8 +11,8 @@ using System.Linq;
 using DotNetOpenAuth.OAuth.ChannelElements;
 using DotNetOpenAuth.OAuth.Messages;
 
-public class DatabaseTokenManager : ITokenManager {
-	#region ITokenManager Members
+public class DatabaseTokenManager : IServiceProviderTokenManager {
+	#region IServiceProviderTokenManager
 
 	public string GetConsumerSecret(string consumerKey) {
 		var consumerRow = Global.DataContext.OAuthConsumers.SingleOrDefault(
@@ -23,6 +23,10 @@ public class DatabaseTokenManager : ITokenManager {
 
 		return consumerRow.ConsumerSecret;
 	}
+
+	#endregion
+
+	#region ITokenManager Members
 
 	public string GetTokenSecret(string token) {
 		var tokenRow = Global.DataContext.OAuthTokens.SingleOrDefault(

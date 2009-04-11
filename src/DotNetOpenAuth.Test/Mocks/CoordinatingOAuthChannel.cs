@@ -26,14 +26,26 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// <param name="signingBindingElement">
 		/// The signing element for the Consumer to use.  Null for the Service Provider.
 		/// </param>
-		/// <param name="isConsumer">True if this channel is constructed for a Consumer.</param>
 		/// <param name="tokenManager">The token manager to use.</param>
-		internal CoordinatingOAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, bool isConsumer, ITokenManager tokenManager)
+		internal CoordinatingOAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, IConsumerTokenManager tokenManager)
 			: base(
 			signingBindingElement,
 			new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge),
-			tokenManager,
-			isConsumer ? (IMessageFactory)new OAuthConsumerMessageFactory() : new OAuthServiceProviderMessageFactory(tokenManager)) {
+			tokenManager) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CoordinatingOAuthChannel"/> class for Consumers.
+		/// </summary>
+		/// <param name="signingBindingElement">
+		/// The signing element for the Consumer to use.  Null for the Service Provider.
+		/// </param>
+		/// <param name="tokenManager">The token manager to use.</param>
+		internal CoordinatingOAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, IServiceProviderTokenManager tokenManager)
+			: base(
+			signingBindingElement,
+			new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge),
+			tokenManager) {
 		}
 
 		/// <summary>

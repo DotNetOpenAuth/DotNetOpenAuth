@@ -11,15 +11,15 @@ namespace DotNetOpenAuth.Samples.OAuthConsumerWpf {
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
 
-	internal class InMemoryTokenManager : ITokenManager {
+	internal class InMemoryTokenManager : IConsumerTokenManager {
 		private Dictionary<string, string> tokensAndSecrets = new Dictionary<string, string>();
 
 		internal InMemoryTokenManager() {
 		}
 
-		internal string ConsumerKey { get; set; }
+		public string ConsumerKey { get; internal set; }
 
-		internal string ConsumerSecret { get; set; }
+		public string ConsumerSecret { get; internal set; }
 
 		#region ITokenManager Members
 

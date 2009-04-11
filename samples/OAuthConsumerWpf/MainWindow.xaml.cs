@@ -1,7 +1,9 @@
 ﻿namespace DotNetOpenAuth.Samples.OAuthConsumerWpf {
 	using System;
 	using System.Collections.Generic;
+	using System.Configuration;
 	using System.Linq;
+	using System.Security.Cryptography.X509Certificates;
 	using System.Text;
 	using System.Threading;
 	using System.Windows;
@@ -34,13 +36,25 @@
 		public MainWindow() {
 			InitializeComponent();
 
-			this.google = GoogleConsumer.CreateDesktopConsumer(this.tokenManager, string.Empty);
+			this.tokenManager.ConsumerKey = ConfigurationManager.AppSettings["googleConsumerKey"];
+			this.tokenManager.ConsumerSecret = ConfigurationManager.AppSettings["googleConsumerSecret"];
+
+			string pfxFile = ConfigurationManager.AppSettings["googleConsumerCertificateFile"];
+			if (string.IsNullOrEmpty(pfxFile)) {
+				this.google = new DesktopConsumer(GoogleConsumer.ServiceDescription, this.tokenManager);
+			} else {
+				string pfxPassword = ConfigurationManager.AppSettings["googleConsumerCertificatePassword"];
+				var signingCertificate = new X509Certificate2(pfxFile, pfxPassword);
+				var service = GoogleConsumer.CreateRsaSha1ServiceDescription(signingCertificate);
+				this.google = new DesktopConsumer(service, this.tokenManager);
+			}
 		}
 
 		private void beginAuthorizationButton_Click(object sender, RoutedEventArgs e) {
-			this.tokenManager.ConsumerKey = consumerKeyBox.Text;
-			this.tokenManager.ConsumerSecret = consumerSecretBox.Text;
-			this.google.ConsumerKey = consumerKeyBox.Text;
+			if (string.IsNullOrEmpty(this.tokenManager.ConsumerKey)) {
+				MessageBox.Show(this, "You must modify the App.config or OAuthConsumerWpf.exe.config file for this application to include your Google OAuth consumer key first.", "Configuration required", MessageBoxButton.OK, MessageBoxImage.Stop);
+				return;
+			}
 
 			Cursor original = this.Cursor;
 			this.Cursor = Cursors.Wait;
@@ -65,10 +79,7 @@
 			this.accessToken = grantedAccess.AccessToken;
 			XDocument contactsDocument = GoogleConsumer.GetContacts(this.google, grantedAccess.AccessToken);
 			var contacts = from entry in contactsDocument.Root.Elements(XName.Get("entry", "http://www.w3.org/2005/Atom"))
-				select new {
-					Name = entry.Element(XName.Get("title", "http://www.w3.org/2005/Atom")).Value,
-					Email = entry.Element(XName.Get("email", "http://schemas.google.com/g/2005")).Attribute("address").Value,
-				};
+			               select new { Name = entry.Element(XName.Get("title", "http://www.w3.org/2005/Atom")).Value, Email = entry.Element(XName.Get("email", "http://schemas.google.com/g/2005")).Attribute("address").Value };
 			contactsGrid.Children.Clear();
 			foreach (var contact in contacts) {
 				contactsGrid.RowDefinitions.Add(new RowDefinition());

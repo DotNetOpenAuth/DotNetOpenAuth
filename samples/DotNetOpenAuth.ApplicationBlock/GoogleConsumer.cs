@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Security.Cryptography.X509Certificates;
 	using System.Text;
 	using System.Text.RegularExpressions;
 	using System.Xml;
@@ -26,7 +27,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// <summary>
 		/// The Consumer to use for accessing Google data APIs.
 		/// </summary>
-		private static readonly ServiceProviderDescription GoogleDescription = new ServiceProviderDescription {
+		public static readonly ServiceProviderDescription ServiceDescription = new ServiceProviderDescription {
 			RequestTokenEndpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthGetRequestToken", HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.GetRequest),
 			UserAuthorizationEndpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthAuthorizeToken", HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.GetRequest),
 			AccessTokenEndpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthGetAccessToken", HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.GetRequest),
@@ -69,26 +70,21 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WebConsumer"/> class that is prepared to communicate with Google.
+		/// The service description to use for accessing Google data APIs using an X509 certificate.
 		/// </summary>
-		/// <param name="tokenManager">The token manager.</param>
-		/// <param name="consumerKey">The consumer key.</param>
-		/// <returns>The newly instantiated <see cref="WebConsumer"/>.</returns>
-		public static WebConsumer CreateWebConsumer(ITokenManager tokenManager, string consumerKey) {
-			return new WebConsumer(GoogleDescription, tokenManager) {
-				ConsumerKey = consumerKey,
-			};
-		}
+		/// <param name="signingCertificate">The signing certificate.</param>
+		/// <returns>A service description that can be used to create an instance of
+		/// <see cref="DesktopConsumer"/> or <see cref="WebConsumer"/>. </returns>
+		public static ServiceProviderDescription CreateRsaSha1ServiceDescription(X509Certificate2 signingCertificate) {
+			if (signingCertificate == null) {
+				throw new ArgumentNullException("signingCertificate");
+			}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="DesktopConsumer"/> class that is prepared to communicate with Google.
-		/// </summary>
-		/// <param name="tokenManager">The token manager.</param>
-		/// <param name="consumerKey">The consumer key.</param>
-		/// <returns>The newly instantiated <see cref="DesktopConsumer"/>.</returns>
-		public static DesktopConsumer CreateDesktopConsumer(ITokenManager tokenManager, string consumerKey) {
-			return new DesktopConsumer(GoogleDescription, tokenManager) {
-				ConsumerKey = consumerKey,
+			return new ServiceProviderDescription {
+				RequestTokenEndpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthGetRequestToken", HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.GetRequest),
+				UserAuthorizationEndpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthAuthorizeToken", HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.GetRequest),
+				AccessTokenEndpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthGetAccessToken", HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.GetRequest),
+				TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new RsaSha1SigningBindingElement(signingCertificate) },
 			};
 		}
 
