@@ -385,7 +385,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		internal static OpenIdRelyingParty CreateNonVerifying() {
 			OpenIdRelyingParty rp = new OpenIdRelyingParty();
-			rp.Channel = new OpenIdChannel(null, null, rp.SecuritySettings);
+			rp.Channel = OpenIdChannel.CreateNonVerifyingChannel();
 			return rp;
 		}
 

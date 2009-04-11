@@ -314,6 +314,7 @@
     <Compile Include="OpenId\ChannelElements\OpenIdChannel.cs" />
     <Compile Include="OpenId\ChannelElements\OpenIdMessageFactory.cs" />
     <Compile Include="OpenId\ChannelElements\ReturnToSignatureBindingElement.cs" />
+    <Compile Include="OpenId\ChannelElements\SkipSecurityBindingElement.cs" />
     <Compile Include="OpenId\Extensions\AliasManager.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\AttributeRequest.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\AttributeValues.cs" />
