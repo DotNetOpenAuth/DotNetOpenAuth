@@ -11,7 +11,7 @@ public partial class OP_Sreg : System.Web.UI.Page {
 	protected ClaimsResponse SregResponse;
 
 	protected void Page_Load(object sender, EventArgs e) {
-
+		OpenIdBox.Focus();
 	}
 
 	protected void OpenIdBox_LoggingIn(object sender, OpenIdEventArgs e) {
