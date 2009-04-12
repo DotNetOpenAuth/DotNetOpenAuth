@@ -12,6 +12,7 @@
 			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/OP/ReturnToVerification.Valid.aspx"))%></URI>
 			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/OP/RPDiscoveryRealm/"))%></URI>
 			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/OP/DelegatedIdentifierSelect.aspx"))%></URI>
+			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/OP/Sreg.aspx"))%></URI>
 		</Service>
 	</XRD>
 </xrds:XRDS>
