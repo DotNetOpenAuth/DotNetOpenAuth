@@ -55,7 +55,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// <value>
 		/// 	<c>true</c> if this instance is signed by the provider; otherwise, <c>false</c>.
 		/// </value>
-		public bool IsSignedByProvider { get; set; }
+		public bool IsSignedByRemoteParty { get; set; }
 
 		#endregion
 

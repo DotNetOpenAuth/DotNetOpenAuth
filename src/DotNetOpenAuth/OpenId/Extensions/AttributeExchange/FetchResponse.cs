@@ -71,6 +71,16 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		public Uri UpdateUrl { get; set; }
 
 		/// <summary>
+		/// Gets a value indicating whether this extension is signed by the Provider.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if this instance is signed by the Provider; otherwise, <c>false</c>.
+		/// </value>
+		public bool IsSignedByProvider {
+			get { return this.IsSignedByRemoteParty; }
+		}
+
+		/// <summary>
 		/// Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>.
 		/// </summary>
 		/// <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:System.Object"/>.</param>

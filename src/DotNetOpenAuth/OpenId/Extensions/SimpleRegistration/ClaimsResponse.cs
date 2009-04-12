@@ -217,6 +217,16 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		}
 
 		/// <summary>
+		/// Gets a value indicating whether this extension is signed by the Provider.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if this instance is signed by the Provider; otherwise, <c>false</c>.
+		/// </value>
+		public bool IsSignedByProvider {
+			get { return this.IsSignedByRemoteParty; }
+		}
+
+		/// <summary>
 		/// Tests equality of two <see cref="ClaimsResponse"/> objects.
 		/// </summary>
 		/// <param name="one">One instance to compare.</param>

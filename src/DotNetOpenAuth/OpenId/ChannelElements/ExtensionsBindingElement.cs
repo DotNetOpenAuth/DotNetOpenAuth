@@ -161,7 +161,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			if (extendableMessage != null) {
 				// First add the extensions that are signed by the Provider.
 				foreach (IOpenIdMessageExtension signedExtension in this.GetExtensions(extendableMessage, true, null)) {
-					signedExtension.IsSignedByProvider = true;
+					signedExtension.IsSignedByRemoteParty = true;
 					extendableMessage.Extensions.Add(signedExtension);
 				}
 
@@ -169,7 +169,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				// skipping the signed ones and adding the new ones as unsigned extensions.
 				Func<string, bool> isNotSigned = typeUri => !extendableMessage.Extensions.Cast<IOpenIdMessageExtension>().Any(ext => ext.TypeUri == typeUri);
 				foreach (IOpenIdMessageExtension unsignedExtension in this.GetExtensions(extendableMessage, false, isNotSigned)) {
-					unsignedExtension.IsSignedByProvider = false;
+					unsignedExtension.IsSignedByRemoteParty = false;
 					extendableMessage.Extensions.Add(unsignedExtension);
 				}
 

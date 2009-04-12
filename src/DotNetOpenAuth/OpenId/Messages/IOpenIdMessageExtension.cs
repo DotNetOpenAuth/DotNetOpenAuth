@@ -39,11 +39,11 @@ namespace DotNetOpenAuth.OpenId.Messages {
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this extension was 
-		/// signed by the OpenID Provider.
+		/// signed by the sender.
 		/// </summary>
 		/// <value>
-		/// 	<c>true</c> if this instance is signed by the provider; otherwise, <c>false</c>.
+		/// 	<c>true</c> if this instance is signed by the sender; otherwise, <c>false</c>.
 		/// </value>
-		bool IsSignedByProvider { get; set; }
+		bool IsSignedByRemoteParty { get; set; }
 	}
 }

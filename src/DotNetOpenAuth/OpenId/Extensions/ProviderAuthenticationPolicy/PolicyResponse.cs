@@ -140,6 +140,16 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 		/// </remarks>
 		public IDictionary<string, string> AssuranceLevels { get; private set; }
 
+		/// <summary>
+		/// Gets a value indicating whether this extension is signed by the Provider.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if this instance is signed by the Provider; otherwise, <c>false</c>.
+		/// </value>
+		public bool IsSignedByProvider {
+			get { return this.IsSignedByRemoteParty; }
+		}
+
 		#region IMessageWithEvents Members
 
 		/// <summary>
