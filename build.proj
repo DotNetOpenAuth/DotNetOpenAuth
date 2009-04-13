@@ -110,8 +110,13 @@
 																$(ProjectRoot)\Doc\*.htm*;
 																$(ProjectRoot)\LICENSE.txt;
 																$(ProjectRoot)\CONTRIB.txt;
-																" />
-			<DropBinSourceFiles Include="$(OutputPath)\$(ProductName).???" />
+																"
+											 Exclude="$(ProjectRoot)\Doc\README.*.html;" />
+			<DropBinSourceFiles Include="
+																$(OutputPath)\$(ProductName).???;
+																$(OutputPath)\$(ProductName).Contracts.???;
+																$(ProjectRoot)\Doc\README.Bin.html;
+													" />
 			<DropSamplesSourceFiles Include="$(ProjectRoot)\Samples\**" Exclude="
 															$(ProjectRoot)\**\obj\**;
 															$(ProjectRoot)\**\*.user;
