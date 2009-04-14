@@ -42,7 +42,11 @@ namespace DotNetOpenAuth.Messaging {
 
 			this.RequestUri = requestUri;
 			if (!string.IsNullOrEmpty(response.ContentType)) {
-				this.ContentType = new ContentType(response.ContentType);
+				try {
+					this.ContentType = new ContentType(response.ContentType);
+				} catch (FormatException) {
+					Logger.Messaging.ErrorFormat("HTTP response to {0} included an invalid Content-Type header value: {1}", response.ResponseUri.AbsoluteUri, response.ContentType);
+				}
 			}
 			this.ContentEncoding = string.IsNullOrEmpty(response.ContentEncoding) ? DefaultContentEncoding : response.ContentEncoding;
 			this.FinalUri = response.ResponseUri;
@@ -64,7 +68,11 @@ namespace DotNetOpenAuth.Messaging {
 			this.RequestUri = requestUri;
 			this.Status = statusCode;
 			if (!string.IsNullOrEmpty(contentType)) {
-				this.ContentType = new ContentType(contentType);
+				try {
+					this.ContentType = new ContentType(contentType);
+				} catch (FormatException) {
+					Logger.Messaging.ErrorFormat("HTTP response to {0} included an invalid Content-Type header value: {1}", responseUri.AbsoluteUri, contentType);
+				}
 			}
 			this.ContentEncoding = string.IsNullOrEmpty(contentEncoding) ? DefaultContentEncoding : contentEncoding;
 			this.Headers = headers;
