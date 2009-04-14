@@ -28,8 +28,13 @@ namespace DotNetOpenId {
 			this.RequestUri = requestUri;
 			this.ResponseStream = responseStream;
 			StatusCode = response.StatusCode;
-			if (!string.IsNullOrEmpty(response.ContentType))
-				ContentType = new ContentType(response.ContentType);
+			if (!string.IsNullOrEmpty(response.ContentType)) {
+				try {
+					ContentType = new ContentType(response.ContentType);
+				} catch (FormatException) {
+					Logger.ErrorFormat("HTTP response to {0} included an invalid Content-Type header value: {1}", response.ResponseUri.AbsoluteUri, response.ContentType);
+				}
+			}
 			ContentEncoding = string.IsNullOrEmpty(response.ContentEncoding) ? DefaultContentEncoding : response.ContentEncoding;
 			Headers = response.Headers;
 			FinalUri = response.ResponseUri;
@@ -45,8 +50,13 @@ namespace DotNetOpenId {
 			RequestUri = requestUri;
 			ResponseStream = responseStream;
 			StatusCode = statusCode;
-			if (!string.IsNullOrEmpty(contentType))
-				ContentType = new ContentType(contentType);
+			if (!string.IsNullOrEmpty(contentType)) {
+				try {
+					ContentType = new ContentType(contentType);
+				} catch (FormatException) {
+					Logger.ErrorFormat("HTTP response to {0} included an invalid Content-Type header value: {1}", responseUri.AbsoluteUri, contentType);
+				}
+			}
 			ContentEncoding = string.IsNullOrEmpty(contentEncoding) ? DefaultContentEncoding : contentEncoding;
 			Headers = headers;
 			FinalUri = responseUri;
