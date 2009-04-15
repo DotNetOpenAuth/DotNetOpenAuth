@@ -194,8 +194,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		internal Uri UrlBeforeRewriting {
 			get {
-				Contract.Requires(this.Url != null);
-				Contract.Requires(this.RawUrl != null);
+				if (this.Url == null || this.RawUrl == null) {
+					return null;
+				}
 
 				// We use Request.Url for the full path to the server, and modify it
 				// with Request.RawUrl to capture both the cookieless session "directory" if it exists

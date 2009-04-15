@@ -40,6 +40,9 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// <param name="recipient">The recipient.</param>
 		internal CoordinatingHttpRequestInfo(MessageReceivingEndpoint recipient) {
 			this.recipient = recipient;
+			if (recipient != null) {
+				this.Url = recipient.Location;
+			}
 
 			if (recipient == null || (recipient.AllowedMethods & HttpDeliveryMethods.GetRequest) != 0) {
 				this.HttpMethod = "GET";
