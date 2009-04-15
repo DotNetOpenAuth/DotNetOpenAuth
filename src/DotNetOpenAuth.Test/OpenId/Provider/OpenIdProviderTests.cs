@@ -6,11 +6,9 @@
 
 namespace DotNetOpenAuth.Test.OpenId.Provider {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
@@ -52,6 +50,14 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			var newSettings = new ProviderSecuritySettings();
 			this.provider.SecuritySettings = newSettings;
 			Assert.AreSame(newSettings, this.provider.SecuritySettings);
+		}
+
+		[TestMethod]
+		public void ExtensionFactories() {
+			var factories = this.provider.ExtensionFactories;
+			Assert.IsNotNull(factories);
+			Assert.AreEqual(1, factories.Count);
+			Assert.IsInstanceOfType(factories[0], typeof(StandardOpenIdExtensionFactory));
 		}
 
 		/// <summary>

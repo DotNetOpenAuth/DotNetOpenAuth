@@ -8,6 +8,8 @@ namespace DotNetOpenAuth.Configuration {
 	using System;
 	using System.Configuration;
 	using System.Diagnostics.Contracts;
+	using DotNetOpenAuth.OpenId.ChannelElements;
+	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
 	/// Represents the &lt;openid&gt; element in the host's .config file.
@@ -15,19 +17,30 @@ namespace DotNetOpenAuth.Configuration {
 	[ContractVerification(true)]
 	internal class OpenIdElement : ConfigurationElement {
 		/// <summary>
-		/// Gets the name of the &lt;relyingParty&gt; sub-element.
+		/// The name of the &lt;relyingParty&gt; sub-element.
 		/// </summary>
 		private const string RelyingPartyElementName = "relyingParty";
 
 		/// <summary>
-		/// Gets the name of the &lt;provider&gt; sub-element.
+		/// The name of the &lt;provider&gt; sub-element.
 		/// </summary>
 		private const string ProviderElementName = "provider";
+
+		/// <summary>
+		/// The name of the &lt;extensions&gt; sub-element.
+		/// </summary>
+		private const string ExtensionFactoriesElementName = "extensionFactories";
 
 		/// <summary>
 		/// Gets the name of the @maxAuthenticationTime attribute.
 		/// </summary>
 		private const string MaxAuthenticationTimePropertyName = "maxAuthenticationTime";
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="OpenIdElement"/> class.
+		/// </summary>
+		internal OpenIdElement() {
+		}
 
 		/// <summary>
 		/// Gets or sets the maximum time a user can take to complete authentication.
@@ -60,6 +73,16 @@ namespace DotNetOpenAuth.Configuration {
 		internal OpenIdProviderElement Provider {
 			get { return (OpenIdProviderElement)this[ProviderElementName] ?? new OpenIdProviderElement(); }
 			set { this[ProviderElementName] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the registered OpenID extensions.
+		/// </summary>
+		[ConfigurationProperty(ExtensionFactoriesElementName, IsDefaultCollection = false)]
+		[ConfigurationCollection(typeof(TypeConfigurationCollection<IOpenIdMessageExtension>))]
+		internal TypeConfigurationCollection<IOpenIdExtensionFactory> ExtensionFactories {
+			get { return (TypeConfigurationCollection<IOpenIdExtensionFactory>)this[ExtensionFactoriesElementName] ?? new TypeConfigurationCollection<IOpenIdExtensionFactory>(); }
+			set { this[ExtensionFactoriesElementName] = value; }
 		}
 	}
 }

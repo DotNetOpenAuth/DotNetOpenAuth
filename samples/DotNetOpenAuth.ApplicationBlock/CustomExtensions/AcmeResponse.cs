@@ -1,29 +1,28 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="IOpenIdMessageExtension.cs" company="Andrew Arnott">
+// <copyright file="AcmeResponse.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OpenId.Messages {
+namespace DotNetOpenAuth.ApplicationBlock.CustomExtensions {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
-	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.Messages;
 
-	/// <summary>
-	/// The contract any OpenID extension for DotNetOpenAuth must implement.
-	/// </summary>
-	/// <remarks>
-	/// Classes that implement this interface should be marked as
-	/// [<see cref="Serializable"/>] to allow serializing state servers
-	/// to cache messages, particularly responses.
-	/// </remarks>
-	public interface IOpenIdMessageExtension : IExtensionMessage {
+	[Serializable]
+	public class AcmeResponse : IOpenIdMessageExtension {
+		private IDictionary<string, string> extraData = new Dictionary<string, string>();
+
+		#region IOpenIdMessageExtension Members
+
 		/// <summary>
 		/// Gets the TypeURI the extension uses in the OpenID protocol and in XRDS advertisements.
 		/// </summary>
-		string TypeUri { get; }
+		public string TypeUri {
+			get { return Acme.CustomExtensionTypeUri; }
+		}
 
 		/// <summary>
 		/// Gets the additional TypeURIs that are supported by this extension, in preferred order.
@@ -40,6 +39,25 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// given the version of the extension in the request message.
 		/// The <see cref="Extensions.SimpleRegistration.ClaimsRequest.CreateResponse"/> for an example.
 		/// </remarks>
-		IEnumerable<string> AdditionalSupportedTypeUris { get; }
+		public IEnumerable<string> AdditionalSupportedTypeUris {
+			get { return Enumerable.Empty<string>(); }
+		}
+
+		#endregion
+
+		#region IMessage Members
+
+		public Version Version {
+			get { return Acme.Version; }
+		}
+
+		public IDictionary<string, string> ExtraData {
+			get { return this.extraData; }
+		}
+
+		public void EnsureValidMessage() {
+		}
+
+		#endregion
 	}
 }

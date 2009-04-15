@@ -134,14 +134,17 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// A value indicating whether the channel is set up
 		/// with no functional security binding elements.
 		/// </summary>
+		/// <returns>A new <see cref="OpenIdChannel"/> instance that will not perform verification on incoming messages or apply any security to outgoing messages.</returns>
 		/// <remarks>
-		/// <para>A value of <c>true</c> allows the relying party to preview incoming
+		/// 	<para>A value of <c>true</c> allows the relying party to preview incoming
 		/// messages without invalidating nonces or checking signatures.</para>
-		/// <para>Setting this to <c>true</c> poses a great security risk and is only
+		/// 	<para>Setting this to <c>true</c> poses a great security risk and is only
 		/// present to support the <see cref="OpenIdAjaxTextBox"/> which needs to preview
 		/// messages, and will validate them later.</para>
 		/// </remarks>
 		internal static OpenIdChannel CreateNonVerifyingChannel() {
+			Contract.Ensures(Contract.Result<OpenIdChannel>() != null);
+
 			return new OpenIdChannel(null, null, new OpenIdMessageFactory(), new RelyingPartySecuritySettings(), true);
 		}
 
@@ -333,9 +336,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				signingElement = new SigningBindingElement(opAssociationStore, opSecuritySettings);
 			}
 
+			var extensionFactory = OpenIdExtensionFactoryAggregator.LoadFromConfiguration();
+
 			List<IChannelBindingElement> elements = new List<IChannelBindingElement>(7);
 			if (isRelyingPartyRole) {
-				elements.Add(new ExtensionsBindingElement(new OpenIdExtensionFactory(), rpSecuritySettings));
+				elements.Add(new ExtensionsBindingElement(extensionFactory, rpSecuritySettings));
 				elements.Add(new BackwardCompatibilityBindingElement());
 
 				if (associationStore != null) {
@@ -351,7 +356,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					elements.Add(new ReturnToSignatureBindingElement(rpAssociationStore, rpSecuritySettings));
 				}
 			} else {
-				elements.Add(new ExtensionsBindingElement(new OpenIdExtensionFactory(), opSecuritySettings));
+				elements.Add(new ExtensionsBindingElement(extensionFactory, opSecuritySettings));
 
 				// Providers must always have a nonce store.
 				ErrorUtilities.VerifyArgumentNotNull(nonceStore, "nonceStore");

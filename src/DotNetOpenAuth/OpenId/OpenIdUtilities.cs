@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Web.UI;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;
+	using DotNetOpenAuth.OpenId.Extensions;
 
 	/// <summary>
 	/// A set of utilities especially useful to OpenID.
@@ -125,6 +126,30 @@ namespace DotNetOpenAuth.OpenId {
 			new Realm(fullyQualifiedRealm); // throws if not valid
 
 			return fullyQualifiedRealm;
+		}
+
+		/// <summary>
+		/// Gets the extension factories from the extension aggregator on an OpenID channel.
+		/// </summary>
+		/// <param name="channel">The channel.</param>
+		/// <returns>The list of factories that will be used to generate extension instances.</returns>
+		/// <remarks>
+		/// This is an extension method on <see cref="Channel"/> rather than an instance
+		/// method on <see cref="OpenIdChannel"/> because the <see cref="OpenIdRelyingParty"/>
+		/// and <see cref="OpenIdProvider"/> classes don't strong-type to <see cref="OpenIdChannel"/>
+		/// to allow flexibility in the specific type of channel the user (or tests)
+		/// can plug in.
+		/// </remarks>
+		internal static IList<IOpenIdExtensionFactory> GetExtensionFactories(this Channel channel) {
+			Contract.Requires(channel != null);
+			ErrorUtilities.VerifyArgumentNotNull(channel, "channel");
+
+			var extensionsBindingElement = channel.BindingElements.OfType<ExtensionsBindingElement>().SingleOrDefault();
+			ErrorUtilities.VerifyOperation(extensionsBindingElement != null, OpenIdStrings.UnsupportedChannelConfiguration);
+			IOpenIdExtensionFactory factory = extensionsBindingElement.ExtensionFactory;
+			var aggregator = factory as OpenIdExtensionFactoryAggregator;
+			ErrorUtilities.VerifyOperation(aggregator != null, OpenIdStrings.UnsupportedChannelConfiguration);
+			return aggregator.Factories;
 		}
 	}
 }

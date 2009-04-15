@@ -161,12 +161,13 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			if (extendableMessage != null) {
 				// We have a helper class that will do all the heavy-lifting of organizing
 				// all the extensions, their aliases, and their parameters.
+				bool isAtProvider = extendableMessage is SignedResponseRequest;
 				var extensionManager = ExtensionArgumentsManager.CreateIncomingExtensions(this.GetExtensionsDictionary(message));
 				foreach (string typeUri in extensionManager.GetExtensionTypeUris()) {
 					var extensionData = extensionManager.GetExtensionArguments(typeUri);
 
 					// Initialize this particular extension.
-					IOpenIdMessageExtension extension = this.ExtensionFactory.Create(typeUri, extensionData, extendableMessage);
+					IOpenIdMessageExtension extension = this.ExtensionFactory.Create(typeUri, extensionData, extendableMessage, isAtProvider);
 					if (extension != null) {
 						MessageDictionary extensionDictionary = this.Channel.MessageDescriptions.GetAccessor(extension);
 						foreach (var pair in extensionData) {
