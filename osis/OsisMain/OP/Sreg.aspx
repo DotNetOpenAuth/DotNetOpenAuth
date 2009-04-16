@@ -21,7 +21,7 @@
 					<td>
 						<asp:DropDownList ID="nickNameList" runat="server">
 							<asp:ListItem>Not requested</asp:ListItem>
-							<asp:ListItem>Optional</asp:ListItem>
+							<asp:ListItem Selected="true">Optional</asp:ListItem>
 							<asp:ListItem>Required</asp:ListItem>
 						</asp:DropDownList>
 					</td>
@@ -31,7 +31,7 @@
 					<td>
 						<asp:DropDownList ID="emailList" runat="server">
 							<asp:ListItem>Not requested</asp:ListItem>
-							<asp:ListItem>Optional</asp:ListItem>
+							<asp:ListItem Selected="true">Optional</asp:ListItem>
 							<asp:ListItem>Required</asp:ListItem>
 						</asp:DropDownList>
 					</td>
@@ -41,7 +41,7 @@
 					<td>
 						<asp:DropDownList ID="fullNameList" runat="server">
 							<asp:ListItem>Not requested</asp:ListItem>
-							<asp:ListItem>Optional</asp:ListItem>
+							<asp:ListItem Selected="true">Optional</asp:ListItem>
 							<asp:ListItem>Required</asp:ListItem>
 						</asp:DropDownList>
 					</td>
@@ -51,7 +51,7 @@
 					<td>
 						<asp:DropDownList ID="dateOfBirthList" runat="server">
 							<asp:ListItem>Not requested</asp:ListItem>
-							<asp:ListItem>Optional</asp:ListItem>
+							<asp:ListItem Selected="true">Optional</asp:ListItem>
 							<asp:ListItem>Required</asp:ListItem>
 						</asp:DropDownList>
 					</td>
@@ -61,7 +61,7 @@
 					<td>
 						<asp:DropDownList ID="genderList" runat="server">
 							<asp:ListItem>Not requested</asp:ListItem>
-							<asp:ListItem>Optional</asp:ListItem>
+							<asp:ListItem Selected="true">Optional</asp:ListItem>
 							<asp:ListItem>Required</asp:ListItem>
 						</asp:DropDownList>
 					</td>
@@ -71,7 +71,7 @@
 					<td>
 						<asp:DropDownList ID="postalCodeList" runat="server">
 							<asp:ListItem>Not requested</asp:ListItem>
-							<asp:ListItem>Optional</asp:ListItem>
+							<asp:ListItem Selected="true">Optional</asp:ListItem>
 							<asp:ListItem>Required</asp:ListItem>
 						</asp:DropDownList>
 					</td>
@@ -81,7 +81,7 @@
 					<td>
 						<asp:DropDownList ID="countryList" runat="server">
 							<asp:ListItem>Not requested</asp:ListItem>
-							<asp:ListItem>Optional</asp:ListItem>
+							<asp:ListItem Selected="true">Optional</asp:ListItem>
 							<asp:ListItem>Required</asp:ListItem>
 						</asp:DropDownList>
 					</td>
@@ -91,7 +91,7 @@
 					<td>
 						<asp:DropDownList ID="languageList" runat="server">
 							<asp:ListItem>Not requested</asp:ListItem>
-							<asp:ListItem>Optional</asp:ListItem>
+							<asp:ListItem Selected="true">Optional</asp:ListItem>
 							<asp:ListItem>Required</asp:ListItem>
 						</asp:DropDownList>
 					</td>
@@ -101,7 +101,7 @@
 					<td>
 						<asp:DropDownList ID="timeZoneList" runat="server">
 							<asp:ListItem>Not requested</asp:ListItem>
-							<asp:ListItem>Optional</asp:ListItem>
+							<asp:ListItem Selected="true">Optional</asp:ListItem>
 							<asp:ListItem>Required</asp:ListItem>
 						</asp:DropDownList>
 					</td>
