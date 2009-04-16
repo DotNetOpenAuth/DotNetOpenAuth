@@ -8,13 +8,15 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="TestBody" runat="Server">
 	<asp:MultiView ID="MultiView1" runat="server" ActiveViewIndex="0">
 		<asp:View ID="View1" runat="server">
+			<asp:Panel ID="Panel1" runat="server" DefaultButton="beginButton">
 				<asp:Label ID="Label1" runat="server" Text="OpenID Identifier:" /> <asp:TextBox ID="identifierBox"
 					runat="server" />
 				<asp:Button ID="beginButton" runat="server" Text="Begin" OnClick="beginButton_Click" />
 				<asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ControlToValidate="identifierBox"
 					ErrorMessage="Enter an identifier first." />
-			<asp:Label ID="opIdentifierRequired" runat="server" Text="You must enter an OP Identifier."
-				ForeColor="Red" EnableViewState="false" Visible="false" />
+				<asp:Label ID="opIdentifierRequired" runat="server" Text="You must enter an OP Identifier."
+					ForeColor="Red" EnableViewState="false" Visible="false" />
+			</asp:Panel>
 		</asp:View>
 		<asp:View ID="View2" runat="server">
 			<osis:TestResultDisplay runat="server" ID="testResultDisplay" />

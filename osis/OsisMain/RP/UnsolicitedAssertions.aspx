@@ -2,21 +2,23 @@
 	AutoEventWireup="true" CodeFile="UnsolicitedAssertions.aspx.cs" Inherits="RP_UnsolicitedAssertions" %>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="TestBody" runat="Server">
-	<table>
-		<tr>
-			<td>RP Realm (usually the home page) </td>
-			<td><asp:TextBox ID="rpRealmBox" Columns="40" runat="server" />
-				<asp:RequiredFieldValidator ControlToValidate="rpRealmBox" ID="RequiredFieldValidator1"
-					runat="server" ErrorMessage="required" />
-			</td>
-		</tr>
-		<%--		<tr>
-			<td>RP return_to </td>
-			<td><asp:TextBox ID="rpReturnToBox" runat="server" /> </td>
-		</tr>
---%>
-	</table>
-	<asp:Button ID="beginButton" runat="server" Text="Send unsolicited assertion" OnClick="beginButton_Click" />
+	<asp:Panel ID="Panel1" runat="server" DefaultButton="beginButton">
+		<table>
+			<tr>
+				<td>RP Realm (usually the home page) </td>
+				<td><asp:TextBox ID="rpRealmBox" Columns="40" runat="server" />
+					<asp:RequiredFieldValidator ControlToValidate="rpRealmBox" ID="RequiredFieldValidator1"
+						runat="server" ErrorMessage="required" />
+				</td>
+			</tr>
+			<%--		<tr>
+				<td>RP return_to </td>
+				<td><asp:TextBox ID="rpReturnToBox" runat="server" /> </td>
+			</tr>
+	--%>
+		</table>
+		<asp:Button ID="beginButton" runat="server" Text="Send unsolicited assertion" OnClick="beginButton_Click" />
+	</asp:Panel>
 	<h3>Instructions </h3>
 	<ol>
 		<li>Ensure that you are logged out of the RP to be tested.</li>
