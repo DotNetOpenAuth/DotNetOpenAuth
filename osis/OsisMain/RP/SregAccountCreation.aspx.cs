@@ -24,11 +24,22 @@ public partial class RP_SregAccountCreation : System.Web.UI.Page {
 		ClaimsRequest sregRequest = e.Request.GetExtension<ClaimsRequest>();
 		if (sregRequest == null) {
 			// The RP isn't even sending an sreg extension, so it already failed.
-			NoSregRequest.Visible = true;
+			MultiView1.SetActiveView(NoSregRequest);
 		} else {
-			e.Request.AddResponseExtension(CreateSregResponse(sregRequest));
-			e.Request.IsAuthenticated = true;
+			MultiView1.SetActiveView(SregRequestDetails);
+			var sregResponse = CreateSregResponse(sregRequest);
+			profileFields.SetRequiredFieldsFromRequest(sregRequest);
+			profileFields.SetOpenIdProfileFields(sregResponse);
+			e.Request.AddResponseExtension(sregResponse);
+			// Remove the openid parameters from the query string.
+			//Response.Redirect(new Uri(Request.Url, Request.Url.AbsolutePath));
 		}
+	}
+
+	protected void continueButton_Click(object sender, EventArgs e) {
+		var request = ProviderEndpoint.PendingAuthenticationRequest;
+		request.IsAuthenticated = true;
+		ProviderEndpoint.SendResponse();
 	}
 
 	private ClaimsResponse CreateSregResponse(ClaimsRequest request) {
@@ -37,19 +48,19 @@ public partial class RP_SregAccountCreation : System.Web.UI.Page {
 			response.BirthDate = DateTime.Now - TimeSpan.FromDays(18 * 365);
 		}
 		if (request.Country != DemandLevel.NoRequest) {
-			response.Country = "United States";
+			response.Country = "US";
 		}
 		if (request.Email != DemandLevel.NoRequest) {
 			response.Email = DeriveUniqueEmailAddress();
 		}
 		if (request.FullName != DemandLevel.NoRequest) {
-			response.Country = "OSIS Tester";
+			response.FullName = "OSIS Tester";
 		}
 		if (request.Gender != DemandLevel.NoRequest) {
 			response.Gender = Gender.Male;
 		}
 		if (request.Language != DemandLevel.NoRequest) {
-			response.Language = Thread.CurrentThread.CurrentCulture.Name;
+			response.Language = "EN";
 		}
 		if (request.Nickname != DemandLevel.NoRequest) {
 			response.Nickname = "osistester";
@@ -58,7 +69,7 @@ public partial class RP_SregAccountCreation : System.Web.UI.Page {
 			response.PostalCode = "12345";
 		}
 		if (request.TimeZone != DemandLevel.NoRequest) {
-			response.TimeZone = "Pacific time";
+			response.TimeZone = "America/Los_Angeles";
 		}
 
 		return response;
