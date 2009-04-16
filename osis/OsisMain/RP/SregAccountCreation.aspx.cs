@@ -25,9 +25,10 @@ public partial class RP_SregAccountCreation : System.Web.UI.Page {
 		if (sregRequest == null) {
 			// The RP isn't even sending an sreg extension, so it already failed.
 			NoSregRequest.Visible = true;
+		} else {
+			e.Request.AddResponseExtension(CreateSregResponse(sregRequest));
+			e.Request.IsAuthenticated = true;
 		}
-		e.Request.AddResponseExtension(CreateSregResponse(sregRequest));
-		e.Request.IsAuthenticated = true;
 	}
 
 	private ClaimsResponse CreateSregResponse(ClaimsRequest request) {
@@ -39,7 +40,7 @@ public partial class RP_SregAccountCreation : System.Web.UI.Page {
 			response.Country = "United States";
 		}
 		if (request.Email != DemandLevel.NoRequest) {
-			response.Email = "osistest@test-id.net";
+			response.Email = DeriveUniqueEmailAddress();
 		}
 		if (request.FullName != DemandLevel.NoRequest) {
 			response.Country = "OSIS Tester";
@@ -74,12 +75,24 @@ public partial class RP_SregAccountCreation : System.Web.UI.Page {
 		claimedId.Fragment = null;
 
 		// We generate random bytes, then base64 encode them to remove any symbols
-		// that might trigger HttpRequestValidationException when th request comes back
+		// that might trigger HttpRequestValidationException when the request comes back
 		// due to security concerns of having < and other symbols in the request URL.
 		byte[] unique = new byte[6];
 		Random r = new Random();
 		r.NextBytes(unique);
 		claimedId.Query = "test=" + HttpUtility.UrlEncode(Convert.ToBase64String(unique));
 		return claimedId.Uri;
+	}
+
+	private string DeriveUniqueEmailAddress() {
+		// We generate random bytes, then base64 encode them to remove any symbols
+		// that might trigger HttpRequestValidationException when the request comes back
+		// due to security concerns of having < and other symbols in the request URL.
+		// We also filter out characters that might be perceived as invalid email addresses.
+		byte[] unique = new byte[6];
+		Random r = new Random();
+		r.NextBytes(unique);
+		string uniqueSubstring = Convert.ToBase64String(unique).Replace("+", "").Replace("/", "").Replace("=", "");
+		return "osistest" + uniqueSubstring + "@test-id.net";
 	}
 }
