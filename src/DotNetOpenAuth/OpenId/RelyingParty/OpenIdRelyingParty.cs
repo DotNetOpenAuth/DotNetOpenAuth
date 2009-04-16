@@ -227,7 +227,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets the association manager.
 		/// </summary>
-		internal AssociationManager AssociationManager { get; private set; }
+		public AssociationManager AssociationManager { get; private set; }
 
 		/// <summary>
 		/// Creates an authentication request to verify that a user controls

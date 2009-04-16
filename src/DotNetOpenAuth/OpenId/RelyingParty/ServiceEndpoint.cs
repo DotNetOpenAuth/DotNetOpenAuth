@@ -288,7 +288,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets the provider description.
 		/// </summary>
-		internal ProviderEndpointDescription ProviderDescription { get; private set; }
+		public ProviderEndpointDescription ProviderDescription { get; private set; }
 
 		/// <summary>
 		/// Implements the operator ==.

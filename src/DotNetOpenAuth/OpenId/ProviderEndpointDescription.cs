@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.OpenId {
 	/// <remarks>
 	/// This is an immutable type.
 	/// </remarks>
-	internal class ProviderEndpointDescription {
+	public class ProviderEndpointDescription {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ProviderEndpointDescription"/> class.
 		/// </summary>

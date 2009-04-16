@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// <summary>
 	/// Manages the establishment, storage and retrieval of associations at the relying party.
 	/// </summary>
-	internal class AssociationManager {
+	public class AssociationManager {
 		/// <summary>
 		/// The storage to use for saving and retrieving associations.  May be null.
 		/// </summary>
@@ -138,7 +138,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// association store.
 		/// Any new association is automatically added to the <see cref="associationStore"/>.
 		/// </remarks>
-		private Association CreateNewAssociation(ProviderEndpointDescription provider) {
+		public Association CreateNewAssociation(ProviderEndpointDescription provider) {
 			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
 
 			// If there is no association store, there is no point in creating an association.
