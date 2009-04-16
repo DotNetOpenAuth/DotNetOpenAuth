@@ -181,6 +181,7 @@
     <Compile Include="Configuration\OpenIdProviderSecuritySettingsElement.cs" />
     <Compile Include="Configuration\OpenIdRelyingPartyElement.cs" />
     <Compile Include="Configuration\OpenIdRelyingPartySecuritySettingsElement.cs" />
+    <Compile Include="Configuration\TypeConfigurationCollection.cs" />
     <Compile Include="Configuration\TypeConfigurationElement.cs" />
     <Compile Include="Configuration\UntrustedWebRequestElement.cs" />
     <Compile Include="Configuration\HostNameOrRegexCollection.cs" />
@@ -328,7 +329,8 @@
     <Compile Include="OpenId\Extensions\ExtensionBase.cs" />
     <Compile Include="OpenId\Extensions\ExtensionArgumentsManager.cs" />
     <Compile Include="OpenId\Extensions\IClientScriptExtensionResponse.cs" />
-    <Compile Include="OpenId\Extensions\OpenIdExtensionFactory.cs" />
+    <Compile Include="OpenId\Extensions\OpenIdExtensionFactoryAggregator.cs" />
+    <Compile Include="OpenId\Extensions\StandardOpenIdExtensionFactory.cs" />
     <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\AuthenticationPolicies.cs" />
     <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\Constants.cs" />
     <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\DateTimeEncoder.cs" />

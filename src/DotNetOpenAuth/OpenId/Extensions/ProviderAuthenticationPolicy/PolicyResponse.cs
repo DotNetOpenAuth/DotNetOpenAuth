@@ -20,8 +20,8 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 		/// <summary>
 		/// The factory method that may be used in deserialization of this message.
 		/// </summary>
-		internal static readonly OpenIdExtensionFactory.CreateDelegate Factory = (typeUri, data, baseMessage) => {
-			if (typeUri == Constants.TypeUri && baseMessage is IndirectSignedResponse) {
+		internal static readonly StandardOpenIdExtensionFactory.CreateDelegate Factory = (typeUri, data, baseMessage, isProviderRole) => {
+			if (typeUri == Constants.TypeUri && !isProviderRole) {
 				return new PolicyResponse();
 			}
 

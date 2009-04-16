@@ -8,9 +8,8 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using System;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
-	using DotNetOpenAuth.OpenId.ChannelElements;
+	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -35,6 +34,15 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		public void SecuritySettingsSetNull() {
 			var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore());
 			rp.SecuritySettings = null;
+		}
+
+		[TestMethod]
+		public void ExtensionFactories() {
+			var rp = new OpenIdRelyingParty(null);
+			var factories = rp.ExtensionFactories;
+			Assert.IsNotNull(factories);
+			Assert.AreEqual(1, factories.Count);
+			Assert.IsInstanceOfType(factories[0], typeof(StandardOpenIdExtensionFactory));
 		}
 
 		[TestMethod]

@@ -191,6 +191,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// returned in the sequence.  May be null.</param>
 		/// <returns>A sequence of extensions in the message.</returns>
 		private IEnumerable<IOpenIdMessageExtension> GetExtensions(IProtocolMessageWithExtensions message, bool ignoreUnsigned, Func<string, bool> extensionFilter) {
+			bool isAtProvider = message is SignedResponseRequest;
+
 			// We have a helper class that will do all the heavy-lifting of organizing
 			// all the extensions, their aliases, and their parameters.
 			var extensionManager = ExtensionArgumentsManager.CreateIncomingExtensions(this.GetExtensionsDictionary(message, ignoreUnsigned));
@@ -204,7 +206,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				var extensionData = extensionManager.GetExtensionArguments(typeUri);
 
 				// Initialize this particular extension.
-				IOpenIdMessageExtension extension = this.ExtensionFactory.Create(typeUri, extensionData, message);
+				IOpenIdMessageExtension extension = this.ExtensionFactory.Create(typeUri, extensionData, message, isAtProvider);
 				if (extension != null) {
 					MessageDictionary extensionDictionary = this.Channel.MessageDescriptions.GetAccessor(extension);
 					foreach (var pair in extensionData) {

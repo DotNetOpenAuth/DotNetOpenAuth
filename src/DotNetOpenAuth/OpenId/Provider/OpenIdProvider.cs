@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
+	using System.Collections.Generic;
 	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
@@ -121,6 +122,13 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				ErrorUtilities.VerifyArgumentNotNull(value, "value");
 				this.securitySettings = value;
 			}
+		}
+
+		/// <summary>
+		/// Gets the extension factories.
+		/// </summary>
+		public IList<IOpenIdExtensionFactory> ExtensionFactories {
+			get { return this.Channel.GetExtensionFactories(); }
 		}
 
 		/// <summary>

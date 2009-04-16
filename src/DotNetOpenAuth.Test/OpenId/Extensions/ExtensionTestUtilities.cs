@@ -70,11 +70,11 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			coordinator.Run();
 		}
 
-		internal static void RegisterExtension(Channel channel, OpenIdExtensionFactory.CreateDelegate extensionFactory) {
+		internal static void RegisterExtension(Channel channel, StandardOpenIdExtensionFactory.CreateDelegate extensionFactory) {
 			ErrorUtilities.VerifyArgumentNotNull(channel, "channel");
 
-			OpenIdExtensionFactory factory = (OpenIdExtensionFactory)channel.BindingElements.OfType<ExtensionsBindingElement>().Single().ExtensionFactory;
-			factory.RegisterExtension(extensionFactory);
+			var factory = (OpenIdExtensionFactoryAggregator)channel.BindingElements.OfType<ExtensionsBindingElement>().Single().ExtensionFactory;
+			factory.Factories.OfType<StandardOpenIdExtensionFactory>().Single().RegisterExtension(extensionFactory);
 		}
 	}
 }

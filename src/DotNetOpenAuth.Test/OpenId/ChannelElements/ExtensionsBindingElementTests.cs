@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 
 	[TestClass]
 	public class ExtensionsBindingElementTests : OpenIdTestBase {
-		private OpenIdExtensionFactory factory;
+		private StandardOpenIdExtensionFactory factory;
 		private ExtensionsBindingElement rpElement;
 		private IProtocolMessageWithExtensions request;
 
@@ -29,7 +29,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		public override void SetUp() {
 			base.SetUp();
 
-			this.factory = new OpenIdExtensionFactory();
+			this.factory = new StandardOpenIdExtensionFactory();
 			this.factory.RegisterExtension(MockOpenIdExtension.Factory);
 			this.rpElement = new ExtensionsBindingElement(this.factory, new RelyingPartySecuritySettings());
 			this.rpElement.Channel = new TestChannel(this.MessageDescriptions);
@@ -169,7 +169,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		private static void RegisterMockExtension(Channel channel) {
 			ErrorUtilities.VerifyArgumentNotNull(channel, "channel");
 
-			((OpenIdExtensionFactory)channel.BindingElements.OfType<ExtensionsBindingElement>().Single().ExtensionFactory).RegisterExtension(MockOpenIdExtension.Factory);
+			ExtensionTestUtilities.RegisterExtension(channel, MockOpenIdExtension.Factory);
 		}
 
 		/// <summary>
