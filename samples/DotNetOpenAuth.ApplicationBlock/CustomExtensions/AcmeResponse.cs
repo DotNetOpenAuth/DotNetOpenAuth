@@ -43,6 +43,8 @@ namespace DotNetOpenAuth.ApplicationBlock.CustomExtensions {
 			get { return Enumerable.Empty<string>(); }
 		}
 
+		public bool IsSignedByRemoteParty { get; set; }
+
 		#endregion
 
 		#region IMessage Members
