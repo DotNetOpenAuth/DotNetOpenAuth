@@ -113,7 +113,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		protected override void OnLoad(EventArgs e) {
 			base.OnLoad(e);
 
-			if (this.Enabled) {
+			// There is the unusual scenario that this control is hosted by
+			// an ASP.NET web page that has other UI on it to that the user
+			// might see, including controls that cause a postback to occur.
+			// We definitely want to ignore postbacks, since any openid messages
+			// they contain will be old.
+			if (this.Enabled && !this.Page.IsPostBack) {
 				// Use the explicitly given state store on this control if there is one.  
 				// Then try the configuration file specified one.  Finally, use the default
 				// in-memory one that's built into OpenIdProvider.
