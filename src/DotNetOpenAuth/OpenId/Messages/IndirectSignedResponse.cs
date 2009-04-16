@@ -241,14 +241,14 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Gets the signed extensions on this message.
 		/// </summary>
 		internal IEnumerable<IOpenIdMessageExtension> SignedExtensions {
-			get { return this.extensions.OfType<IOpenIdMessageExtension>().Where(ext => ext.IsSignedByProvider); }
+			get { return this.extensions.OfType<IOpenIdMessageExtension>().Where(ext => ext.IsSignedByRemoteParty); }
 		}
 
 		/// <summary>
 		/// Gets the unsigned extensions on this message.
 		/// </summary>
 		internal IEnumerable<IOpenIdMessageExtension> UnsignedExtensions {
-			get { return this.extensions.OfType<IOpenIdMessageExtension>().Where(ext => !ext.IsSignedByProvider); }
+			get { return this.extensions.OfType<IOpenIdMessageExtension>().Where(ext => !ext.IsSignedByRemoteParty); }
 		}
 
 		/// <summary>

@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 	internal class MockOpenIdExtension : IOpenIdMessageExtension {
 		internal const string MockTypeUri = "http://mockextension";
 
-		internal static readonly OpenIdExtensionFactory.CreateDelegate Factory = (typeUri, data, baseMessage) => {
+		internal static readonly StandardOpenIdExtensionFactory.CreateDelegate Factory = (typeUri, data, baseMessage, isProviderRole) => {
 			if (typeUri == MockTypeUri) {
 				return new MockOpenIdExtension();
 			}
@@ -55,7 +55,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// <value>
 		/// 	<c>true</c> if this instance is signed by the provider; otherwise, <c>false</c>.
 		/// </value>
-		public bool IsSignedByProvider { get; set; }
+		public bool IsSignedByRemoteParty { get; set; }
 
 		#endregion
 

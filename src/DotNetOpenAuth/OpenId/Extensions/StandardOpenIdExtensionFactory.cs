@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="OpenIdExtensionFactory.cs" company="Andrew Arnott">
+// <copyright file="StandardOpenIdExtensionFactory.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -17,16 +17,16 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 	/// An OpenID extension factory that supports registration so that third-party
 	/// extensions can add themselves to this library's supported extension list.
 	/// </summary>
-	internal class OpenIdExtensionFactory : IOpenIdExtensionFactory {
+	internal class StandardOpenIdExtensionFactory : IOpenIdExtensionFactory {
 		/// <summary>
 		/// A collection of the registered OpenID extensions.
 		/// </summary>
 		private List<CreateDelegate> registeredExtensions = new List<CreateDelegate>();
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OpenIdExtensionFactory"/> class.
+		/// Initializes a new instance of the <see cref="StandardOpenIdExtensionFactory"/> class.
 		/// </summary>
-		internal OpenIdExtensionFactory() {
+		internal StandardOpenIdExtensionFactory() {
 			this.RegisterExtension(ClaimsRequest.Factory);
 			this.RegisterExtension(ClaimsResponse.Factory);
 			this.RegisterExtension(FetchRequest.Factory);
@@ -43,11 +43,12 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <param name="typeUri">The type URI of the extension.</param>
 		/// <param name="data">The parameters associated specifically with this extension.</param>
 		/// <param name="baseMessage">The OpenID message carrying this extension.</param>
+		/// <param name="isProviderRole">A value indicating whether this extension is being received at the OpenID Provider.</param>
 		/// <returns>
 		/// An instance of <see cref="IOpenIdMessageExtension"/> if the factory recognizes
 		/// the extension described in the input parameters; <c>null</c> otherwise.
 		/// </returns>
-		internal delegate IOpenIdMessageExtension CreateDelegate(string typeUri, IDictionary<string, string> data, IProtocolMessageWithExtensions baseMessage);
+		internal delegate IOpenIdMessageExtension CreateDelegate(string typeUri, IDictionary<string, string> data, IProtocolMessageWithExtensions baseMessage, bool isProviderRole);
 
 		#region IOpenIdExtensionFactory Members
 
@@ -57,6 +58,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <param name="typeUri">The type URI of the extension.</param>
 		/// <param name="data">The parameters associated specifically with this extension.</param>
 		/// <param name="baseMessage">The OpenID message carrying this extension.</param>
+		/// <param name="isProviderRole">A value indicating whether this extension is being received at the OpenID Provider.</param>
 		/// <returns>
 		/// An instance of <see cref="IOpenIdMessageExtension"/> if the factory recognizes
 		/// the extension described in the input parameters; <c>null</c> otherwise.
@@ -65,9 +67,9 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// This factory method need only initialize properties in the instantiated extension object
 		/// that are not bound using <see cref="MessagePartAttribute"/>.
 		/// </remarks>
-		public IOpenIdMessageExtension Create(string typeUri, IDictionary<string, string> data, IProtocolMessageWithExtensions baseMessage) {
+		public IOpenIdMessageExtension Create(string typeUri, IDictionary<string, string> data, IProtocolMessageWithExtensions baseMessage, bool isProviderRole) {
 			foreach (var factoryMethod in this.registeredExtensions) {
-				IOpenIdMessageExtension result = factoryMethod(typeUri, data, baseMessage);
+				IOpenIdMessageExtension result = factoryMethod(typeUri, data, baseMessage, isProviderRole);
 				if (result != null) {
 					return result;
 				}

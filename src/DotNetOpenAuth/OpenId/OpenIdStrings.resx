@@ -298,4 +298,7 @@ Discovered endpoint info:
   <data name="ResponseNotReady" xml:space="preserve">
     <value>The response is not ready.  Use IsResponseReady to check whether a response is ready first.</value>
   </data>
+  <data name="UnsupportedChannelConfiguration" xml:space="preserve">
+    <value>This feature is unavailable due to an unrecognized channel configuration.</value>
+  </data>
 </root>

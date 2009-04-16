@@ -110,6 +110,7 @@
 			<DropDirectory>$(ProjectRoot)\drops\$(ProductName)-$(BuildVersion)</DropDirectory>
 			<DropZip>$(DropDirectory).zip</DropZip>
 			<DropBinDirectory>$(DropDirectory)\Bin</DropBinDirectory>
+			<DropLibDirectory>$(DropDirectory)\Lib</DropLibDirectory>
 			<DropSamplesDirectory>$(DropDirectory)\Samples</DropSamplesDirectory>
 			<DropSpecsDirectory>$(DropDirectory)\Specs</DropSpecsDirectory>
 		</PropertyGroup>
@@ -117,6 +118,7 @@
 			<DropDirectories Include="
 						 $(DropDirectory);
 						 $(DropBinDirectory);
+						 $(DropLibDirectory);
 						 $(DropSamplesDirectory);
 						 $(DropSpecsDirectory);
 										 " />
@@ -126,8 +128,16 @@
 																$(ProjectRoot)\Doc\*.htm*;
 																$(ProjectRoot)\LICENSE.txt;
 																$(ProjectRoot)\CONTRIB.txt;
+																"
+											 Exclude="$(ProjectRoot)\Doc\README.*.html;" />
+			<DropBinSourceFiles Include="
+																$(OutputPath)\$(ProductName).???;
+																$(OutputPath)\$(ProductName).Contracts.???;
+																$(ProjectRoot)\Doc\README.Bin.html;
+													" />
+			<DropLibSourceFiles Include="
+																$(ProjectRoot)\Lib\log4net.*;
 																" />
-			<DropBinSourceFiles Include="$(OutputPath)\$(ProductName).???" />
 			<DropSamplesSourceFiles Include="$(ProjectRoot)\Samples\**" Exclude="
 															$(ProjectRoot)\**\obj\**;
 															$(ProjectRoot)\**\*.user;
@@ -140,17 +150,21 @@
 															$(ProjectRoot)\**\*~;
 															$(ProjectRoot)\**\Debug\**;
 															$(ProjectRoot)\**\Settings.StyleCop;
+															$(ProjectRoot)\Samples\**\DotNetOpenAuth.???;
+															$(ProjectRoot)\Samples\**\log4net.???;
 															" />
 			<DropSpecsSourceFiles Include="$(ProjectRoot)\Doc\specs\*.htm*" />
 
 			<DropFiles Include="@(DropSourceFiles->'$(DropDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropBinFiles Include="@(DropBinSourceFiles->'$(DropBinDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
+			<DropLibFiles Include="@(DropLibSourceFiles->'$(DropLibDirectory)\%(RecurisveDir)%(FileName)%(Extension)')"/>
 			<DropSamplesFiles Include="@(DropSamplesSourceFiles->'$(DropSamplesDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropSpecsFiles Include="@(DropSpecsSourceFiles->'$(DropSpecsDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
 
 			<AllDropSources Include="
 										@(DropSourceFiles);
 										@(DropBinSourceFiles);
+										@(DropLibSourceFiles);
 										@(DropSamplesSourceFiles);
 										@(DropDocSourceFiles);
 										@(DropSpecsSourceFiles);
@@ -159,6 +173,7 @@
 			<AllDropTargets Include="
 										@(DropFiles);
 										@(DropBinFiles);
+										@(DropLibFiles);
 										@(DropSamplesFiles);
 										@(DropDocFiles);
 										@(DropSpecsFiles)

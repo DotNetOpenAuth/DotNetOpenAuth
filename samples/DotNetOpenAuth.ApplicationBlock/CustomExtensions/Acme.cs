@@ -1,21 +1,24 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="IOpenIdExtensionFactory.cs" company="Andrew Arnott">
+// <copyright file="Acme.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OpenId.ChannelElements {
+namespace DotNetOpenAuth.ApplicationBlock.CustomExtensions {
+	using System;
 	using System.Collections.Generic;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.Provider;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
-	/// OpenID extension factory class for creating extensions based on received Type URIs.
+	/// A sample custom OpenID extension factory.
 	/// </summary>
 	/// <remarks>
 	/// OpenID extension factories must be registered with the library.  This can be
-	/// done by adding a factory to <see cref="OpenIdRelyingParty.ExtensionFactories"/>
-	/// or <see cref="OpenIdProvider.ExtensionFactories"/>, or by adding a snippet
+	/// done by calling <see cref="Acme.Register"/>, or by adding a snippet
 	/// such as the following to your web.config file:
 	/// <example>
 	///   &lt;dotNetOpenAuth&gt;
@@ -27,7 +30,28 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	///   &lt;/dotNetOpenAuth&gt;
 	/// </example>
 	/// </remarks>
-	public interface IOpenIdExtensionFactory {
+	public class Acme : IOpenIdExtensionFactory {
+		internal const string CustomExtensionTypeUri = "testextension";
+		internal static readonly Version Version = new Version(1, 0);
+
+		public static void Register(OpenIdRelyingParty relyingParty) {
+			if (relyingParty == null) {
+				throw new ArgumentNullException("relyingParty");
+			}
+
+			relyingParty.ExtensionFactories.Add(new Acme());
+		}
+
+		public static void Register(OpenIdProvider provider) {
+			if (provider == null) {
+				throw new ArgumentNullException("provider");
+			}
+
+			provider.ExtensionFactories.Add(new Acme());
+		}
+
+		#region IOpenIdExtensionFactory Members
+
 		/// <summary>
 		/// Creates a new instance of some extension based on the received extension parameters.
 		/// </summary>
@@ -43,6 +67,14 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// This factory method need only initialize properties in the instantiated extension object
 		/// that are not bound using <see cref="MessagePartAttribute"/>.
 		/// </remarks>
-		IOpenIdMessageExtension Create(string typeUri, IDictionary<string, string> data, IProtocolMessageWithExtensions baseMessage, bool isProviderRole);
+		public IOpenIdMessageExtension Create(string typeUri, IDictionary<string, string> data, IProtocolMessageWithExtensions baseMessage, bool isProviderRole) {
+			if (typeUri == CustomExtensionTypeUri) {
+				return isProviderRole ? (IOpenIdMessageExtension)new AcmeRequest() : new AcmeResponse();
+			}
+
+			return null;
+		}
+
+		#endregion
 	}
 }

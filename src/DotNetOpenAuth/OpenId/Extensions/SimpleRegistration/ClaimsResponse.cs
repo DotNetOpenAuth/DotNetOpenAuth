@@ -25,8 +25,8 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		/// <summary>
 		/// The factory method that may be used in deserialization of this message.
 		/// </summary>
-		internal static readonly OpenIdExtensionFactory.CreateDelegate Factory = (typeUri, data, baseMessage) => {
-			if (typeUri == Constants.sreg_ns && baseMessage is IndirectSignedResponse) {
+		internal static readonly StandardOpenIdExtensionFactory.CreateDelegate Factory = (typeUri, data, baseMessage, isProviderRole) => {
+			if (typeUri == Constants.sreg_ns && !isProviderRole) {
 				return new ClaimsResponse(typeUri);
 			}
 
@@ -214,6 +214,16 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 				int indexOfHyphen = (value != null) ? value.Name.IndexOf('-') : -1;
 				this.Country = indexOfHyphen > 0 ? value.Name.Substring(indexOfHyphen + 1) : null;
 			}
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether this extension is signed by the Provider.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if this instance is signed by the Provider; otherwise, <c>false</c>.
+		/// </value>
+		public bool IsSignedByProvider {
+			get { return this.IsSignedByRemoteParty; }
 		}
 
 		/// <summary>

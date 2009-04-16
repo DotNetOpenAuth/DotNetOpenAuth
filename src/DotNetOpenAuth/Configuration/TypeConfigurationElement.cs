@@ -51,11 +51,23 @@ namespace DotNetOpenAuth.Configuration {
 		/// <param name="defaultValue">The value to return if no type is given in the .config file.</param>
 		/// <returns>The newly instantiated type.</returns>
 		public T CreateInstance(T defaultValue) {
+			return this.CreateInstance(defaultValue, false);
+		}
+
+		/// <summary>
+		/// Creates an instance of the type described in the .config file.
+		/// </summary>
+		/// <param name="defaultValue">The value to return if no type is given in the .config file.</param>
+		/// <param name="allowInternals">if set to <c>true</c> then internal types may be instantiated.</param>
+		/// <returns>The newly instantiated type.</returns>
+		public T CreateInstance(T defaultValue, bool allowInternals) {
 			if (this.CustomType != null) {
-				// Although .NET will usually prevent our instantiating non-public types,
-				// it will allow our instantiation of internal types within this same assembly.
-				// But we don't want the host site to be able to do this, so we check ourselves.
-				ErrorUtilities.VerifyArgument((this.CustomType.Attributes & TypeAttributes.Public) != 0, Strings.ConfigurationTypeMustBePublic, this.CustomType.FullName);
+				if (!allowInternals) {
+					// Although .NET will usually prevent our instantiating non-public types,
+					// it will allow our instantiation of internal types within this same assembly.
+					// But we don't want the host site to be able to do this, so we check ourselves.
+					ErrorUtilities.VerifyArgument((this.CustomType.Attributes & TypeAttributes.Public) != 0, Strings.ConfigurationTypeMustBePublic, this.CustomType.FullName);
+				}
 				return (T)Activator.CreateInstance(this.CustomType);
 			} else {
 				return defaultValue;

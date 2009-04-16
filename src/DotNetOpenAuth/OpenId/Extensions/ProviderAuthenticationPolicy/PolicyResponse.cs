@@ -20,8 +20,8 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 		/// <summary>
 		/// The factory method that may be used in deserialization of this message.
 		/// </summary>
-		internal static readonly OpenIdExtensionFactory.CreateDelegate Factory = (typeUri, data, baseMessage) => {
-			if (typeUri == Constants.TypeUri && baseMessage is IndirectSignedResponse) {
+		internal static readonly StandardOpenIdExtensionFactory.CreateDelegate Factory = (typeUri, data, baseMessage, isProviderRole) => {
+			if (typeUri == Constants.TypeUri && !isProviderRole) {
 				return new PolicyResponse();
 			}
 
@@ -139,6 +139,16 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 		/// and values for this key are available in <see cref="NistAssuranceLevel"/>.
 		/// </remarks>
 		public IDictionary<string, string> AssuranceLevels { get; private set; }
+
+		/// <summary>
+		/// Gets a value indicating whether this extension is signed by the Provider.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if this instance is signed by the Provider; otherwise, <c>false</c>.
+		/// </value>
+		public bool IsSignedByProvider {
+			get { return this.IsSignedByRemoteParty; }
+		}
 
 		#region IMessageWithEvents Members
 

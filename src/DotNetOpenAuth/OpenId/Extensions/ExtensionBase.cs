@@ -79,7 +79,10 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <value>
 		/// 	<c>true</c> if this instance is signed by the provider; otherwise, <c>false</c>.
 		/// </value>
-		public bool IsSignedByProvider { get; set; }
+		bool IOpenIdMessageExtension.IsSignedByRemoteParty {
+			get { return this.IsSignedByRemoteParty; }
+			set { this.IsSignedByRemoteParty = value; }
+		}
 
 		#endregion
 
@@ -108,6 +111,15 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		protected string TypeUri {
 			get { return this.typeUri; }
 		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this extension was
+		/// signed by the OpenID Provider.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if this instance is signed by the provider; otherwise, <c>false</c>.
+		/// </value>
+		protected bool IsSignedByRemoteParty { get; set; }
 
 		/// <summary>
 		/// Gets the additional TypeURIs that are supported by this extension, in preferred order.

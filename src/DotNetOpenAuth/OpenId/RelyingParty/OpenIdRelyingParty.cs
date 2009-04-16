@@ -16,6 +16,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.ChannelElements;
+	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
@@ -198,6 +199,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				ErrorUtilities.VerifyArgumentNotNull(value, "value");
 				this.endpointOrder = value;
 			}
+		}
+
+		/// <summary>
+		/// Gets the extension factories.
+		/// </summary>
+		public IList<IOpenIdExtensionFactory> ExtensionFactories {
+			get { return this.Channel.GetExtensionFactories(); }
 		}
 
 		/// <summary>

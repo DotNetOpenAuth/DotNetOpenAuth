@@ -19,8 +19,8 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// The factory method that may be used in deserialization of this message.
 		/// </summary>
-		internal static readonly OpenIdExtensionFactory.CreateDelegate Factory = (typeUri, data, baseMessage) => {
-			if (typeUri == Constants.TypeUri && baseMessage is IndirectSignedResponse) {
+		internal static readonly StandardOpenIdExtensionFactory.CreateDelegate Factory = (typeUri, data, baseMessage, isProviderRole) => {
+			if (typeUri == Constants.TypeUri && !isProviderRole) {
 				string mode;
 				if (data.TryGetValue("mode", out mode) && mode == Mode) {
 					return new FetchResponse();
@@ -69,6 +69,16 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// </summary>
 		[MessagePart("update_url", IsRequired = false)]
 		public Uri UpdateUrl { get; set; }
+
+		/// <summary>
+		/// Gets a value indicating whether this extension is signed by the Provider.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if this instance is signed by the Provider; otherwise, <c>false</c>.
+		/// </value>
+		public bool IsSignedByProvider {
+			get { return this.IsSignedByRemoteParty; }
+		}
 
 		/// <summary>
 		/// Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>.
