@@ -16,8 +16,10 @@ public partial class RP_VerifyAssertionDiscovery : System.Web.UI.Page {
 	/// trigger a failed authentication at the RP.
 	/// </summary>
 	private enum AssertionVariance {
-		ClaimedIdentifierSignificant = 1,
-		ClaimedIdentifierCapitalization,
+		ClaimedIdentifierPathSignificant = 1,
+		ClaimedIdentifierPathCapitalization,
+		ClaimedIdentifierHost,
+		ClaimedIdentifierPort,
 		OPLocalIdentifierSignificant,
 		OPLocalIdentifierCapitalization,
 		ProviderEndpointSignificant,
@@ -75,13 +77,23 @@ public partial class RP_VerifyAssertionDiscovery : System.Web.UI.Page {
 	private void AlterAssertion(AuthenticationRequest authRequest, AssertionVariance method) {
 		var assertion = authRequest.positiveResponse;
 		switch (method) {
-			case AssertionVariance.ClaimedIdentifierSignificant:
+			case AssertionVariance.ClaimedIdentifierPathSignificant:
 				UriBuilder claimedId = new UriBuilder(assertion.ClaimedIdentifier);
 				claimedId.Path += "a";
 				assertion.ClaimedIdentifier = claimedId.Uri;
 				break;
-			case AssertionVariance.ClaimedIdentifierCapitalization:
+			case AssertionVariance.ClaimedIdentifierPathCapitalization:
 				assertion.ClaimedIdentifier = assertion.ClaimedIdentifier.ToString().ToUpperInvariant();
+				break;
+			case AssertionVariance.ClaimedIdentifierHost:
+				claimedId = new UriBuilder(assertion.ClaimedIdentifier);
+				claimedId.Host = "some.randomhost.net";
+				assertion.ClaimedIdentifier = claimedId.Uri;
+				break;
+			case AssertionVariance.ClaimedIdentifierPort:
+				claimedId = new UriBuilder(assertion.ClaimedIdentifier);
+				claimedId.Port = 777;
+				assertion.ClaimedIdentifier = claimedId.Uri;
 				break;
 			case AssertionVariance.OPLocalIdentifierSignificant:
 				assertion.LocalIdentifier = assertion.LocalIdentifier + "a";

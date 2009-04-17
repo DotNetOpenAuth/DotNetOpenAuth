@@ -13,24 +13,28 @@
 		<p>The RP has requested authentication. Please choose a way to meddle with the asserted
 			info.</p>
 		<h4>Tests that should fail authentication </h4>
-		<asp:Button Text="Claimed Identifier (significant)" CommandArgument="1" OnClick="CompleteAuthentication_Click"
+		<asp:Button Text="Claimed Identifier path (significant)" CommandArgument="1" OnClick="CompleteAuthentication_Click"
 			runat="server" />
-		<asp:Button Text="Claimed Identifier (capitalization only)" CommandArgument="2" OnClick="CompleteAuthentication_Click"
+		<asp:Button Text="Claimed Identifier path (capitalization only)" CommandArgument="2" OnClick="CompleteAuthentication_Click"
 			runat="server" />
-		<asp:Button Text="OP Local Identifier (significant)" CommandArgument="3" OnClick="CompleteAuthentication_Click"
+		<asp:Button Text="Claimed Identifier host" CommandArgument="3" OnClick="CompleteAuthentication_Click"
 			runat="server" />
-		<asp:Button Text="OP Local Identifier (capitalization)" CommandArgument="4" OnClick="CompleteAuthentication_Click"
+		<asp:Button Text="Claimed Identifier port" CommandArgument="4" OnClick="CompleteAuthentication_Click"
 			runat="server" />
-		<asp:Button Text="Provider Endpoint (significant)" CommandArgument="5" OnClick="CompleteAuthentication_Click"
+		<asp:Button Text="OP Local Identifier (significant)" CommandArgument="5" OnClick="CompleteAuthentication_Click"
 			runat="server" />
-		<asp:Button Text="Provider Endpoint (capitalization)" CommandArgument="6" OnClick="CompleteAuthentication_Click"
+		<asp:Button Text="OP Local Identifier (capitalization)" CommandArgument="6" OnClick="CompleteAuthentication_Click"
 			runat="server" />
-		<asp:Button Text="OpenID Version" CommandArgument="7" OnClick="CompleteAuthentication_Click"
+		<asp:Button Text="Provider Endpoint (significant)" CommandArgument="7" OnClick="CompleteAuthentication_Click"
+			runat="server" />
+		<asp:Button Text="Provider Endpoint (capitalization)" CommandArgument="8" OnClick="CompleteAuthentication_Click"
+			runat="server" />
+		<asp:Button Text="OpenID Version" CommandArgument="9" OnClick="CompleteAuthentication_Click"
 			runat="server" />
 		<h4>Tests that should succeed authentication </h4>
-		<asp:Button ID="Button1" Text="Claimed Identifier (fragment)" CommandArgument="8"
+		<asp:Button Text="Claimed Identifier (fragment)" CommandArgument="10"
 			OnClick="CompleteAuthentication_Click" runat="server" />
-		<asp:Button Text="Claimed Identifier (insignificant query)" CommandArgument="9" OnClick="CompleteAuthentication_Click"
+		<asp:Button Text="Claimed Identifier (insignificant query)" CommandArgument="11" OnClick="CompleteAuthentication_Click"
 			runat="server" />
 	</asp:Panel>
 	<h3>Instructions </h3>
