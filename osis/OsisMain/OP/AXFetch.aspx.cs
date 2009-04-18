@@ -136,6 +136,10 @@ public partial class OP_AXFetch : System.Web.UI.Page {
 	private void OpenIdBox_LoggingIn(object sender, OpenIdEventArgs e) {
 		var fetch = new FetchRequest();
 		foreach (var att in this.Attributes) {
+			if (att.RequestCount < 1) {
+				continue;
+			}
+
 			string typeUri = att.TypeUriBox != null ? att.TypeUriBox.Text : att.TypeUri;
 			if (!string.IsNullOrEmpty(typeUri)) {
 				fetch.Attributes.Add(new AttributeRequest(typeUri, att.RequestRequired, att.RequestCount));
