@@ -190,7 +190,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// </summary>
 		/// <param name="scope">The scope, which may include one or several Google applications.</param>
 		/// <returns>A space-delimited list of URIs for the requested Google applications.</returns>
-		private static string GetScopeUri(Applications scope) {
+		public static string GetScopeUri(Applications scope) {
 			return string.Join(" ", Util.GetIndividualFlags(scope).Select(app => DataScopeUris[(Applications)app]).ToArray());
 		}
 	}
