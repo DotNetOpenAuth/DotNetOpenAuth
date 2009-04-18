@@ -23,6 +23,9 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using System.Windows.Media.Imaging;
 	using System.Windows.Navigation;
 	using System.Windows.Shapes;
+	using log4net;
+	using log4net.Appender;
+	using log4net.Core;
 
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
@@ -34,10 +37,19 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		private HostedProvider hostedProvider = new HostedProvider();
 
 		/// <summary>
+		/// The logger the application may use.
+		/// </summary>
+		private ILog logger = log4net.LogManager.GetLogger(typeof(MainWindow));
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="MainWindow"/> class.
 		/// </summary>
 		public MainWindow() {
 			this.InitializeComponent();
+			TextWriterAppender boxLogger = log4net.LogManager.GetRepository().GetAppenders().OfType<TextWriterAppender>().FirstOrDefault(a => a.Name == "TextBoxAppender");
+			if (boxLogger != null) {
+				boxLogger.Writer = new TextBoxTextWriter(logBox);
+			}
 		}
 
 		#region IDisposable Members
