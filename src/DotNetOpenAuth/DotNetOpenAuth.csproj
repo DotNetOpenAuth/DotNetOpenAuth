@@ -329,6 +329,10 @@
     <Compile Include="OpenId\Extensions\ExtensionBase.cs" />
     <Compile Include="OpenId\Extensions\ExtensionArgumentsManager.cs" />
     <Compile Include="OpenId\Extensions\IClientScriptExtensionResponse.cs" />
+    <Compile Include="OpenId\Extensions\OAuth\AuthorizationRequest.cs" />
+    <Compile Include="OpenId\Extensions\OAuth\AuthorizationApprovedResponse.cs" />
+    <Compile Include="OpenId\Extensions\OAuth\Constants.cs" />
+    <Compile Include="OpenId\Extensions\OAuth\AuthorizationDeclinedResponse.cs" />
     <Compile Include="OpenId\Extensions\OpenIdExtensionFactoryAggregator.cs" />
     <Compile Include="OpenId\Extensions\StandardOpenIdExtensionFactory.cs" />
     <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\AuthenticationPolicies.cs" />
