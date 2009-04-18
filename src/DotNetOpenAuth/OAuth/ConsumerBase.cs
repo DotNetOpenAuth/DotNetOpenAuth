@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OAuth {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Net;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
@@ -145,12 +146,10 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
 		/// <returns>The initialized WebRequest object.</returns>
 		protected internal AccessProtectedResourceRequest CreateAuthorizingMessage(MessageReceivingEndpoint endpoint, string accessToken) {
-			if (endpoint == null) {
-				throw new ArgumentNullException("endpoint");
-			}
-			if (String.IsNullOrEmpty(accessToken)) {
-				throw new ArgumentNullException("accessToken");
-			}
+			Contract.Requires(endpoint != null);
+			Contract.Requires(!String.IsNullOrEmpty(accessToken));
+			ErrorUtilities.VerifyArgumentNotNull(endpoint, "endpoint");
+			ErrorUtilities.VerifyNonZeroLength(accessToken, "accessToken");
 
 			AccessProtectedResourceRequest message = new AccessProtectedResourceRequest(endpoint) {
 				AccessToken = accessToken,
@@ -166,6 +165,10 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="requestToken">The request token that the user has authorized.</param>
 		/// <returns>The access token assigned by the Service Provider.</returns>
 		protected AuthorizedTokenResponse ProcessUserAuthorization(string requestToken) {
+			Contract.Requires(!String.IsNullOrEmpty(requestToken));
+			Contract.Ensures(Contract.Result<AuthorizedTokenResponse>() != null);
+			ErrorUtilities.VerifyNonZeroLength(requestToken, "requestToken");
+
 			var requestAccess = new AuthorizedTokenRequest(this.ServiceProvider.AccessTokenEndpoint) {
 				RequestToken = requestToken,
 				ConsumerKey = this.ConsumerKey,

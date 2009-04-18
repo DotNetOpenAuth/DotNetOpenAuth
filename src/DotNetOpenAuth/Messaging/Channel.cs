@@ -386,6 +386,8 @@ namespace DotNetOpenAuth.Messaging {
 		public TResponse Request<TResponse>(IDirectedProtocolMessage requestMessage)
 			where TResponse : class, IProtocolMessage {
 			Contract.Requires(requestMessage != null);
+			Contract.Ensures(Contract.Result<TResponse>() != null);
+
 			IProtocolMessage response = this.Request(requestMessage);
 			ErrorUtilities.VerifyProtocol(response != null, MessagingStrings.ExpectedMessageNotReceived, typeof(TResponse));
 

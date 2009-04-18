@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth.ChannelElements;
@@ -75,7 +76,10 @@ namespace DotNetOpenAuth.OAuth {
 		/// </summary>
 		/// <param name="request">The incoming HTTP request.</param>
 		/// <returns>The access token, or null if no incoming authorization message was recognized.</returns>
-		internal AuthorizedTokenResponse ProcessUserAuthorization(HttpRequestInfo request) {
+		public AuthorizedTokenResponse ProcessUserAuthorization(HttpRequestInfo request) {
+			Contract.Requires(request != null);
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+
 			UserAuthorizationResponse authorizationMessage;
 			if (this.Channel.TryReadFromRequest<UserAuthorizationResponse>(request, out authorizationMessage)) {
 				string requestToken = authorizationMessage.RequestToken;
