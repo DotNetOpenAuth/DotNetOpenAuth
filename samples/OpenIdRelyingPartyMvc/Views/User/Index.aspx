@@ -6,6 +6,7 @@
 	<p>Congratulations, <b>
 		<%=Session["FriendlyIdentifier"] %></b>. You have completed the OpenID login process.
 	</p>
+	<p>Claimed Identifier: <%=HttpUtility.HtmlEncode(User.Identity.Name) %></p>
 	<p>
 		<%=Html.ActionLink("Logout", "logout") %>
 	</p>

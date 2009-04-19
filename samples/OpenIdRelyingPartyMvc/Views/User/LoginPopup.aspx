@@ -23,14 +23,14 @@
 			width: '420px',
 			buttons: { },
 			closeOnEscape: true,
-			focus: function(event, ui) { 
+			focus: function(event, ui) {
 				var box = $('#openid_identifier')[0];
 				if (box.style.display != 'none') {
-					box.focus();
+					//box.focus();
 				}
 			}
 		});
-		
+
 		$('#loggedOut').dialog({
 			bgiframe: true,
 			autoOpen: false,
@@ -56,16 +56,16 @@
 
 		//hover states on the static widgets
 		$('.ui-button, ul#icons li').hover(
-			function() { $(this).addClass('ui-state-hover'); }, 
+			function() { $(this).addClass('ui-state-hover'); },
 			function() { $(this).removeClass('ui-state-hover'); }
 		);
-		
+
 		document.usernamePlaceholder = "{username}";
-		
+
 		function isCompleteIdentifier(identifier) {
 			return identifier && identifier != '' && identifier != 'http://' && identifier.indexOf(document.usernamePlaceholder) < 0;
 		};
-		
+
 		function setSelection() {
 			var box = $('#openid_identifier')[0];
 			var usernamePlaceholderIndex = box.value.indexOf(document.usernamePlaceholder);
@@ -74,7 +74,7 @@
 				box.setSelectionRange(usernamePlaceholderIndex, usernamePlaceholderIndex + document.usernamePlaceholder.length);
 			}
 		};
-		
+
 		function completeLogin() {
 			var box = $('#openid_identifier')[0];
 			if (box.value.indexOf(document.usernamePlaceholder) >= 0) {
@@ -83,19 +83,26 @@
 				setSelection();
 				return;
 			}
-			
+
 			if (!isCompleteIdentifier(box.value)) {
 				alert(box.value + ' is not a valid identifier.');
 				return;
 			}
-			
+
 			var box = $('#openid_identifier')[0];
 			$('#openidlogin').dialog('close');
 			document.setClaimedIdentifier(box.value);
 			$('#loginForm').submit();
 			return box.value;
 		};
-		
+
+		document.invokeInfoCard = function(button) {
+			var selector = $('#infocardSelector')[0];
+			var token = selector.value;
+			$('#tokenxml')[0].value = token;
+			$('#loginForm')[0].submit();
+		};
+
 		document.selectProvider = function(button, identifierTemplate) {
 			var box = $('#openid_identifier')[0];
 			$('#openidlogin .provider').removeClass('highlight');
@@ -103,7 +110,7 @@
 				box.value = identifierTemplate;
 				$('#openidlogin .inputbox').slideUp();
 				completeLogin();
-			} else {			
+			} else {
 				if (this.lastIdentifierTemplate == identifierTemplate) {
 					$('#openidlogin .inputbox').slideToggle();
 				} else {
@@ -113,10 +120,10 @@
 					if (box.value == null || box.value == '') {
 						box.value = 'http://';
 					}
-					
+
 					setSelection();
 				}
-				
+
 				box.focus();
 			}
 			this.lastIdentifierTemplate = identifierTemplate;
@@ -126,14 +133,14 @@
 			completeLogin();
 			return true;
 		});
-		
+
 		document.openid_identifier_keydown = function(e) {
 			if (window.event && window.event.keyCode == 13) {
 				$('#loginButton').effect('highlight');
 				completeLogin();
 			}
 		};
-		
+
 		document.setClaimedIdentifier = function(identifier) {
 			if (identifier) {
 				// Apply login
@@ -146,7 +153,7 @@
 			}
 			$('#claimedIdentifierLabel')[0].innerText = identifier ? identifier : '';
 		};
-		
+
 		$('#logoutAction').hide();
 	});
 	</script>
@@ -173,7 +180,7 @@
 	<div class="large buttons">
 		<div class="provider" onclick="document.selectProvider(this, 'https://www.google.com/accounts/o8/id')"><div><img src="../../Content/images/google.gif"/></div></div>
 		<div class="provider" onclick="document.selectProvider(this, 'https://me.yahoo.com/')"><div><img src="../../Content/images/yahoo.gif"/></div></div>
-		<div class="provider" onclick="document.selectProvider(this, 'http://openid.aol.com/{username}')"><div><img src="../../Content/images/aol.gif"/></div></div>
+		<div class="provider" onclick="document.invokeInfoCard(this)"><div><img src="../../Content/images/infocard_81x57.png"/></div></div>
 		<div class="provider" onclick="document.selectProvider(this, '')"><div><img src="../../Content/images/openid.gif"/></div></div>
 	</div>
 	<div class="small buttons">
@@ -187,6 +194,12 @@
 		<div class="provider" onclick="document.selectProvider(this, 'https://pip.verisignlabs.com/')"><div><img src="http://pip.verisignlabs.com/favicon.ico"/></div></div>
 	</div>
 	<% Html.BeginForm("Authenticate", "User", FormMethod.Post, new { id = "loginForm" }); %>
+	<object type="application/x-informationcard" id="infocardSelector">
+		<param Name="issuer" Value="http://schemas.xmlsoap.org/ws/2005/05/identity/issuer/self"></param>
+		<param Name="tokenType" Value="urn:oasis:names:tc:SAML:1.0:assertion"></param>
+		<param Name="requiredClaims" Value="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier"></param>
+	</object>
+	<input type="hidden" name="tokenxml" id="tokenxml" />
 	<div class="inputbox">
 		<input type="text" id="openid_identifier" name="openid_identifier" onKeyDown="document.openid_identifier_keydown(this)" onFocus="$('#loginButton').addClass('ui-state-hover')" onBlur="$('#loginButton').removeClass('ui-state-hover')" />
 		<a href="#" id="loginButton" class="ui-button ui-state-default ui-corner-all" style="color: white; font-size: 10pt"><span class="ui-icon ui-icon-key"></span>Login</a>

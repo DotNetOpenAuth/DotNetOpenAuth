@@ -8,6 +8,7 @@
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using DotNetOpenAuth.InfoCard;
 
 	public class UserController : Controller {
 		public ActionResult Index() {
@@ -39,7 +40,18 @@
 			if (response == null) {
 				// Stage 2: user submitting Identifier
 				Identifier id;
-				if (Identifier.TryParse(Request.Form["openid_identifier"], out id)) {
+				if (!string.IsNullOrEmpty(Request.Form["tokenxml"])) {
+					Token token = Token.Read(Request.Form["tokenxml"]);
+					Session["FriendlyIdentifier"] = token.SiteSpecificId;
+					string appPath = Request.ApplicationPath;
+					if (!appPath.EndsWith("/")) {
+						appPath += "/";
+					}
+
+					string claimedId = new Uri(Request.Url, appPath + "infocard/" + HttpUtility.UrlPathEncode(token.UniqueId)).AbsoluteUri;
+					FormsAuthentication.SetAuthCookie(claimedId, false);
+					return RedirectToAction("Index", "User");
+				} else if (Identifier.TryParse(Request.Form["openid_identifier"], out id)) {
 					try {
 						return openid.CreateRequest(Request.Form["openid_identifier"]).RedirectingResponse.AsActionResult();
 					} catch (ProtocolException ex) {

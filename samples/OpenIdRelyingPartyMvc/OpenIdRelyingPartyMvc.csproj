@@ -82,6 +82,7 @@
     <Content Include="Content\images\aol.gif" />
     <Content Include="Content\images\facebook.gif" />
     <Content Include="Content\images\google.gif" />
+    <Content Include="Content\images\infocard_81x57.png" />
     <Content Include="Content\images\openid.gif" />
     <Content Include="Content\images\openid_small.gif" />
     <Content Include="Content\images\yahoo.gif" />
