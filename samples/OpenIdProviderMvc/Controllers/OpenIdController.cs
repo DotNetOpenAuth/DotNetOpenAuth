@@ -16,6 +16,7 @@ namespace OpenIdProviderMvc.Controllers {
 			set { ProviderEndpoint.PendingAuthenticationRequest = value; }
 		}
 
+		[ValidateInput(false)]
 		public ActionResult Provider() {
 			IRequest request = OpenIdProvider.GetRequest();
 			if (request != null) {

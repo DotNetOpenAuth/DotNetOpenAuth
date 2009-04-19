@@ -32,6 +32,7 @@
 			return View("Login");
 		}
 
+		[ValidateInput(false)]
 		public ActionResult Authenticate(string returnUrl) {
 			var openid = new OpenIdRelyingParty();
 			var response = openid.GetResponse();
