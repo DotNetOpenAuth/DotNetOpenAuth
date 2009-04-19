@@ -28,7 +28,7 @@
 				if (box.style.display != 'none') {
 					box.focus();
 				}
-			},
+			}
 		});
 		
 		$('#loggedOut').dialog({
@@ -38,15 +38,15 @@
 			resizable: false,
 			closeOnEscape: true,
 			buttons: {
-				"Ok": function() { $(this).dialog('close'); },
-			},
+				"Ok": function() { $(this).dialog('close'); }
+			}
 		});
 
 		$('#loginAction').click(function() {
 			$('#openidlogin').dialog('open');
 			return false;
 		});
-		
+
 		$('#logoutAction').click(function() {
 			// TODO: asynchronously log out.
 			document.setClaimedIdentifier();
@@ -120,7 +120,7 @@
 				box.focus();
 			}
 			this.lastIdentifierTemplate = identifierTemplate;
-		}
+		};
 
 		$('#loginButton').click(function() {
 			completeLogin();
