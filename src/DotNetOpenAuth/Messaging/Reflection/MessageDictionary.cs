@@ -257,7 +257,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			MessagePart part;
 			if (this.description.Mapping.TryGetValue(key, out part)) {
 				value = part.GetValue(this.message);
-				return true;
+				return value != null;
 			}
 			return this.message.ExtraData.TryGetValue(key, out value);
 		}
@@ -277,10 +277,25 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <summary>
 		/// Removes all values in the message.
 		/// </summary>
-		public void Clear() {
+		public void ClearValues() {
 			foreach (string key in this.Keys) {
 				this.Remove(key);
 			}
+		}
+
+		/// <summary>
+		/// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+		/// </summary>
+		/// <exception cref="T:System.NotSupportedException">
+		/// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
+		/// </exception>
+		/// <remarks>
+		/// This method cannot be implemented because keys are not guaranteed to be removed
+		/// since some are inherent to the type of message that this dictionary provides
+		/// access to.
+		/// </remarks>
+		public void Clear() {
+			throw new NotSupportedException();
 		}
 
 		/// <summary>
