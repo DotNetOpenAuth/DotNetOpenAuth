@@ -8,9 +8,10 @@
 	<h2>Login Page </h2>
 	<asp:MultiView ID="MultiView1" runat="server" ActiveViewIndex='0'>
 		<asp:View ID="View1" runat="server">
-			<p><b>Important note:</b> Do <b>not</b> check the "Allow [this site] to remember me"
-				check box. Doing so will make this sample only work once for your account. If you
-				do check it, you can restore this sample's functionality by <a href="https://www.google.com/accounts/IssuedAuthSubTokens">
+			<p><b>Important note:</b> Do <b>not</b> check the &quot;Allow [this site] to remember me&quot; 
+				check box while Google is asking for verification. Doing so will make this 
+				sample only work once for your account. If you do check it, you can restore this 
+				sample&#39;s functionality by <a href="https://www.google.com/accounts/IssuedAuthSubTokens">
 					revoking access</a> to this site from your Google Account. </p>
 			<asp:Button ID="beginButton" runat="server" Text="Login and get Gmail Contacts" OnClick="beginButton_Click" />
 			<p>Due to the way Google matches realms and consumer keys, this demo will only work
