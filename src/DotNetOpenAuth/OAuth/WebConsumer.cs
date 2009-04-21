@@ -76,18 +76,18 @@ namespace DotNetOpenAuth.OAuth {
 		/// <summary>
 		/// Attaches an OAuth authorization request to an outgoing OpenID authentication request.
 		/// </summary>
-		/// <param name="openidAuthenticationRequest">The OpenID authentication request.</param>
+		/// <param name="openIdAuthenticationRequest">The OpenID authentication request.</param>
 		/// <param name="scope">The scope of access that is requested of the service provider.</param>
-		public void AttachAuthorizationRequest(IAuthenticationRequest openidAuthenticationRequest, string scope) {
-			Contract.Requires(openidAuthenticationRequest != null);
-			ErrorUtilities.VerifyArgumentNotNull(openidAuthenticationRequest, "openidAuthenticationRequest");
+		public void AttachAuthorizationRequest(IAuthenticationRequest openIdAuthenticationRequest, string scope) {
+			Contract.Requires(openIdAuthenticationRequest != null);
+			ErrorUtilities.VerifyArgumentNotNull(openIdAuthenticationRequest, "openIdAuthenticationRequest");
 
 			var authorizationRequest = new AuthorizationRequest {
 				Consumer = this.ConsumerKey,
 				Scope = scope,
 			};
 
-			openidAuthenticationRequest.AddExtension(authorizationRequest);
+			openIdAuthenticationRequest.AddExtension(authorizationRequest);
 		}
 
 		/// <summary>
@@ -98,7 +98,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// The access token, or null if OAuth authorization was denied by the user or service provider.
 		/// </returns>
 		/// <remarks>
-		/// The access token, if granted, is automatically stored in the <see cref="TokenManager"/>.
+		/// The access token, if granted, is automatically stored in the <see cref="ConsumerBase.TokenManager"/>.
 		/// The token manager instance must implement <see cref="IOpenIdOAuthTokenManager"/>.
 		/// </remarks>
 		public AuthorizedTokenResponse ProcessUserAuthorization(IAuthenticationResponse openIdAuthenticationResponse) {

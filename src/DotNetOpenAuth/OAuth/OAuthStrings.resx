@@ -138,6 +138,9 @@
   <data name="OpenIdOAuthExtensionRequiresSpecialTokenManagerInterface" xml:space="preserve">
     <value>Use of the OpenID+OAuth extension requires that the token manager in use implement the {0} interface.</value>
   </data>
+  <data name="OpenIdOAuthRealmConsumerKeyDoNotMatch" xml:space="preserve">
+    <value>The OpenID Relying Party's realm is not recognized as belonging to the OAuth Consumer identified by the consumer key given.</value>
+  </data>
   <data name="RequestUrlMustNotHaveOAuthParameters" xml:space="preserve">
     <value>The request URL query MUST NOT contain any OAuth Protocol Parameters.</value>
   </data>

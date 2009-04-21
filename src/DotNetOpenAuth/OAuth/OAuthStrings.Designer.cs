@@ -124,6 +124,15 @@ namespace DotNetOpenAuth.OAuth {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The OpenID Relying Party&apos;s realm is not recognized as belonging to the OAuth Consumer identified by the consumer key given..
+        /// </summary>
+        internal static string OpenIdOAuthRealmConsumerKeyDoNotMatch {
+            get {
+                return ResourceManager.GetString("OpenIdOAuthRealmConsumerKeyDoNotMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The request URL query MUST NOT contain any OAuth Protocol Parameters..
         /// </summary>
         internal static string RequestUrlMustNotHaveOAuthParameters {
