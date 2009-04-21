@@ -11,11 +11,11 @@
 	public partial class DisplayGoogleContacts : System.Web.UI.Page {
 		protected void Page_Load(object sender, EventArgs e) {
 			if (!string.IsNullOrEmpty(State.GoogleAccessToken)) {
-				MultiView1.ActiveViewIndex = 1;
+				this.MultiView1.ActiveViewIndex = 1;
 				if (State.FetchResponse != null && State.FetchResponse.Attributes.Contains(WellKnownAttributes.Contact.Email)) {
-					emailLabel.Text = State.FetchResponse.Attributes[WellKnownAttributes.Contact.Email].Values[0];
+					this.emailLabel.Text = State.FetchResponse.Attributes[WellKnownAttributes.Contact.Email].Values[0];
 				} else {
-					emailLabel.Text = "unavailable";
+					this.emailLabel.Text = "unavailable";
 				}
 				claimedIdLabel.Text = User.Identity.Name;
 				var contactsDocument = GoogleConsumer.GetContacts(Global.GoogleWebConsumer, State.GoogleAccessToken);

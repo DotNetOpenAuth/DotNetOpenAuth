@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// </summary>
 	/// <remarks>
 	/// Classes that implement this interface should be marked as
-	/// [<see cref="Serializable"/>] to allow serializing state servers
+	/// [<see cref="SerializableAttribute"/>] to allow serializing state servers
 	/// to cache messages, particularly responses.
 	/// </remarks>
 	public interface IOpenIdMessageExtension : IExtensionMessage {
