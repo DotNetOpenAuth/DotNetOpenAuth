@@ -53,7 +53,7 @@ namespace DotNetOpenAuth.Messaging {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			this.HttpMethod = request.HttpMethod;
-			this.Url = request.Url;
+			this.Url = GetPublicFacingUrl(request);
 			this.RawUrl = request.RawUrl;
 			this.Headers = GetHeaderCollection(request.Headers);
 			this.InputStream = request.InputStream;
@@ -312,6 +312,39 @@ namespace DotNetOpenAuth.Messaging {
 				query = this.Form;
 			}
 			return query;
+		}
+
+		/// <summary>
+		/// Gets the public facing URL for the given incoming HTTP request.
+		/// </summary>
+		/// <param name="request">The request.</param>
+		/// <returns>The URI that the outside world used to create this request.</returns>
+		private static Uri GetPublicFacingUrl(HttpRequest request) {
+			Contract.Requires(request != null);
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+
+			// Due to URL rewriting, cloud computing (i.e. Azure)
+			// and web farms, etc., we have to be VERY careful about what
+			// we consider the incoming URL.  We want to see the URL as it would
+			// appear on the public-facing side of the hosting web site.
+			// HttpRequest.Url gives us the internal URL in a cloud environment,
+			// So we use a variable that (at least from what I can tell) gives us
+			// the public URL:
+			if (request.ServerVariables["HTTP_HOST"] != null) {
+				ErrorUtilities.VerifySupported(request.Url.Scheme == Uri.UriSchemeHttps || request.Url.Scheme == Uri.UriSchemeHttp, "Only HTTP and HTTPS are supported protocols.");
+				UriBuilder publicRequestUri = new UriBuilder(request.Url);
+				string[] hostAndPort = request.ServerVariables["HTTP_HOST"].Split(new[] { ':' }, 2);
+				publicRequestUri.Host = hostAndPort[0];
+				if (hostAndPort.Length > 1) {
+					publicRequestUri.Port = Convert.ToInt32(hostAndPort[1]);
+				} else {
+					publicRequestUri.Port = publicRequestUri.Scheme == Uri.UriSchemeHttps ? 443 : 80;
+				}
+				return publicRequestUri.Uri;
+			} else {
+				// Failover to the method that works for non-web farm enviroments.
+				return request.Url;
+			}
 		}
 
 		/// <summary>
