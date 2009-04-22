@@ -136,13 +136,17 @@
 															$(ProjectRoot)\**\Settings.StyleCop;
 															$(ProjectRoot)\Samples\**\DotNetOpenAuth.???;
 															$(ProjectRoot)\Samples\**\log4net.???;
+															$(ProjectRoot)\Samples\**\*.refresh_;
 															" />
+			<!-- Some .refresh files are only applicable to drop builds, so we rename them from *.refresh_ -->
+			<DropSamplesRefreshSourceFiles Include="$(ProjectRoot)\Samples\**\*.refresh_" />
 			<DropSpecsSourceFiles Include="$(ProjectRoot)\Doc\specs\*.htm*" />
 
 			<DropFiles Include="@(DropSourceFiles->'$(DropDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropBinFiles Include="@(DropBinSourceFiles->'$(DropBinDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropLibFiles Include="@(DropLibSourceFiles->'$(DropLibDirectory)\%(RecurisveDir)%(FileName)%(Extension)')"/>
 			<DropSamplesFiles Include="@(DropSamplesSourceFiles->'$(DropSamplesDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
+			<DropSamplesRefreshFiles Include="@(DropSamplesRefreshSourceFiles->'$(DropSamplesDirectory)\%(RecursiveDir)%(FileName).refresh')"/>
 			<DropSpecsFiles Include="@(DropSpecsSourceFiles->'$(DropSpecsDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
 
 			<AllDropSources Include="
@@ -150,6 +154,7 @@
 										@(DropBinSourceFiles);
 										@(DropLibSourceFiles);
 										@(DropSamplesSourceFiles);
+										@(DropSamplesRefreshSourceFiles);
 										@(DropDocSourceFiles);
 										@(DropSpecsSourceFiles);
 										" />
@@ -159,6 +164,7 @@
 										@(DropBinFiles);
 										@(DropLibFiles);
 										@(DropSamplesFiles);
+										@(DropSamplesRefreshFiles);
 										@(DropDocFiles);
 										@(DropSpecsFiles)
 										" />
