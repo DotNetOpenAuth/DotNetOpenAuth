@@ -63,7 +63,7 @@
 		<MSBuild Projects="$(SolutionPath)" Targets="Rebuild" Properties="Sign=$(Sign)" />
 	</Target>
 
-	<Target Name="Documentation" DependsOnTargets="BuildProduct;Chm">
+	<Target Name="Documentation" DependsOnTargets="BuildProduct;Chm" Condition="'$(NoDocumentation)' != 'true'">
 	</Target>
 
 	<!-- Test depends on "Build" rather than "BuildTests" until we can figure out how to build the 
@@ -78,7 +78,12 @@
 		<!-- This target is necessary because PropertyGroups within the same Target as 
 		     where CallTarget is fired do NOT affect those called targets. -->
 		<PropertyGroup>
-			<Sign>true</Sign>
+			<Sign Condition="'$(Sign)' == ''">true</Sign>
+		</PropertyGroup>
+
+		<!-- The rest of these are here so that other DependsOn targets have access to these properties. -->
+		<PropertyGroup>
+			<DropDirectory>$(ProjectRoot)\drops\$(ProductName)-$(BuildVersion)</DropDirectory>
 		</PropertyGroup>
 	</Target>
 
@@ -86,13 +91,15 @@
 		<!-- This target only does a clean sufficient to guarantee that our DotNetOpenAuth.dll is rebuilt, but
 		     we don't usually want to clean our documentation because that takes forever to build froms scratch. -->
 		<MSBuild Projects="$(SolutionPath)" Targets="Clean" />
+
+		<!-- clean up any previous drop with the same name so we don't aggregate files. -->
+		<RemoveDir Directories="$(DropDirectory)" />
 	</Target>
 
-	<Target Name="Drop" DependsOnTargets="_SetDropProperties;GetBuildVersion;_EnsureCleanDrop;BuildProduct;BuildSamples;Documentation">
+	<Target Name="DropLayout" DependsOnTargets="GetBuildVersion;_SetDropProperties;_EnsureCleanDrop;BuildProduct;BuildSamples;Documentation">
 		<Warning Condition=" '$(Configuration)' != 'release' " Text="Building $(Configuration) instead of Release!" />
+		<Warning Condition=" '$(Sign)' != 'true' " Text="Building unsigned!" />
 		<PropertyGroup>
-			<DropDirectory>$(ProjectRoot)\drops\$(ProductName)-$(BuildVersion)</DropDirectory>
-			<DropZip>$(DropDirectory).zip</DropZip>
 			<DropBinDirectory>$(DropDirectory)\Bin</DropBinDirectory>
 			<DropLibDirectory>$(DropDirectory)\Lib</DropLibDirectory>
 			<DropSamplesDirectory>$(DropDirectory)\Samples</DropSamplesDirectory>
@@ -170,10 +177,6 @@
 										" />
 		</ItemGroup>
 
-		<!-- clean up any previous drop with the same name so we don't aggregate files. -->
-		<Delete Files="$(DropZip)" />
-		<RemoveDir Directories="$(DropDirectory)" />
-
 		<MakeDir Directories="@(DropDirectories)" />
 		<Copy SourceFiles="@(AllDropSources)" DestinationFiles="@(AllDropTargets)" SkipUnchangedFiles="true" />
 		<!-- fix up the samples so that they will compile right out of the drop -->
@@ -182,6 +185,13 @@
 		</ItemGroup>
 		<ChangeProjectReferenceToAssemblyReference Projects="@(SampleProjectTargets)"
 		  ProjectReference="..\..\src\$(ProductName)\$(ProductName).csproj" Reference="..\..\Bin\$(ProductName).dll" />
+	</Target>
+
+	<Target Name="Drop" DependsOnTargets="DropLayout">
+		<PropertyGroup>
+			<DropZip>$(DropDirectory).zip</DropZip>
+		</PropertyGroup>
+		<Delete Files="$(DropZip)" />
 		<Zip Files="@(AllDropTargets)" ZipFileName="$(DropZip)" WorkingDirectory="$(ProjectRoot)\drops" />
 	</Target>
 
