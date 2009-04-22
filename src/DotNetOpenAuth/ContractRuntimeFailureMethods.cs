@@ -8,6 +8,7 @@
 namespace DotNetOpenAuth {
 	using System;
 	using System.Diagnostics;
+	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -18,7 +19,7 @@ namespace DotNetOpenAuth {
 	/// The Code Contracts assembly rewriter (ccrewrite) tool causes all calls to Contract.*()
 	/// to redirect to this class.
 	/// </remarks>
-	internal static class ContractRuntimeFailureMethods {
+	public static class ContractRuntimeFailureMethods {
 		[DebuggerStepThrough]
 		public static void Requires(bool condition, string userMessage, string conditionText) {
 			if (!condition) {
@@ -28,6 +29,13 @@ namespace DotNetOpenAuth {
 
 		[DebuggerStepThrough]
 		public static void Ensures(bool condition, string userMessage, string conditionText) {
+			if (!condition) {
+				throw new InternalErrorException(userMessage ?? conditionText);
+			}
+		}
+
+		[DebuggerStepThrough]
+		public static void EnsuresOnThrow(bool condition, string userMessage, string conditionText) {
 			if (!condition) {
 				throw new InternalErrorException(userMessage ?? conditionText);
 			}
@@ -51,6 +59,30 @@ namespace DotNetOpenAuth {
 		public static void Invariant(bool condition, string userMessage, string conditionText) {
 			if (!condition) {
 				throw new InternalErrorException(userMessage ?? conditionText);
+			}
+		}
+
+		[DebuggerStepThrough]
+		public static void Failure(ContractFailureKind failureKind, string userProvidedMessage, string condition, Exception originalException) {
+			switch (failureKind) {
+				case ContractFailureKind.Assert:
+					Assert(false, userProvidedMessage, condition);
+					break;
+				case ContractFailureKind.Assume:
+					Assume(false, userProvidedMessage, condition);
+					break;
+				case ContractFailureKind.Invariant:
+					Invariant(false, userProvidedMessage, condition);
+					break;
+				case ContractFailureKind.Postcondition:
+					Ensures(false, userProvidedMessage, condition);
+					break;
+				case ContractFailureKind.Precondition:
+					Requires(false, userProvidedMessage, condition);
+					break;
+				default:
+					ErrorUtilities.ThrowInternal(userProvidedMessage ?? condition);
+					break;
 			}
 		}
 	}
