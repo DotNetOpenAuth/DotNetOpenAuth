@@ -18,7 +18,8 @@ namespace DotNetOpenAuth.Configuration {
 	/// </summary>
 	/// <typeparam name="T">The type that all types specified in the elements must derive from.</typeparam>
 	[ContractVerification(true)]
-	internal class TypeConfigurationCollection<T> : ConfigurationElementCollection {
+	internal class TypeConfigurationCollection<T> : ConfigurationElementCollection
+		where T : class {
 		/// <summary>
 		/// Initializes a new instance of the TypeConfigurationCollection class.
 		/// </summary>
@@ -46,8 +47,8 @@ namespace DotNetOpenAuth.Configuration {
 		internal IEnumerable<T> CreateInstances(bool allowInternals) {
 			Contract.Ensures(Contract.Result<IEnumerable<T>>() != null);
 			return from element in this.Cast<TypeConfigurationElement<T>>()
-			       where element.CustomType != null
-			       select element.CreateInstance(default(T), allowInternals);
+				   where element.CustomType != null
+				   select element.CreateInstance(default(T), allowInternals);
 		}
 
 		/// <summary>
