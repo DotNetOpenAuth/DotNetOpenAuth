@@ -301,4 +301,10 @@ Discovered endpoint info:
   <data name="UnsupportedChannelConfiguration" xml:space="preserve">
     <value>This feature is unavailable due to an unrecognized channel configuration.</value>
   </data>
+  <data name="DirectedIdentityRequired" xml:space="preserve">
+    <value>This operation is supported only under identifier select (directed identity) scenarios.</value>
+  </data>
+  <data name="ExtensionsWithPiiFound" xml:space="preserve">
+    <value>Response extensions with personally identifiable information was found and is not allowed in this scenario.</value>
+  </data>
 </root>

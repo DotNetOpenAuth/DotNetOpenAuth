@@ -12,6 +12,10 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
+	using System.Diagnostics.Contracts;
+	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
+	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
+	using System.Security.Cryptography;
 
 	/// <summary>
 	/// Implements the <see cref="IAuthenticationRequest"/> interface
@@ -229,6 +233,28 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			UriBuilder builder = new UriBuilder(this.ClaimedIdentifier);
 			builder.Fragment = fragment;
 			this.positiveResponse.ClaimedIdentifier = builder.Uri;
+		}
+
+		/// <summary>
+		/// Removes all personally identifiable information from the positive assertion.
+		/// </summary>
+		/// <remarks>
+		/// The openid.claimed_id and openid.identity values are hashed.
+		/// </remarks>
+		public void ScrubPersonallyIdentifiableInformation(IAnonymousIdentifierProvider anonymousIdentifierProvider, bool pairwiseUnique) {
+			ErrorUtilities.VerifyOperation(this.IsDirectedIdentity, OpenIdStrings.DirectedIdentityRequired);
+			ErrorUtilities.VerifyArgumentNotNull(anonymousIdentifierProvider, "anonymousIdentifierProvider");
+
+			ErrorUtilities.VerifyOperation(
+				!(this.GetResponseExtension<ClaimsResponse>().Any() || this.GetResponseExtension<FetchResponse>().Any()),
+				OpenIdStrings.ExtensionsWithPiiFound);
+
+			// When generating the anonymous identifiers, the openid.identity and openid.claimed_id
+			// will always end up with matching values.
+			var anonymousIdentifier = anonymousIdentifierProvider.GetAnonymousIdentifier(this.LocalIdentifier, pairwiseUnique ? this.Realm : null);
+			Logger.OpenId.InfoFormat("Sending anonymous identifier assertion {0} for local identifier {1}.", anonymousIdentifier, this.LocalIdentifier);
+			this.positiveResponse.ClaimedIdentifier = anonymousIdentifier;
+			this.positiveResponse.LocalIdentifier = anonymousIdentifier;
 		}
 
 		/// <summary>

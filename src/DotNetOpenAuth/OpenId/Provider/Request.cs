@@ -190,5 +190,16 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Gets a response extension that may be pending for transmission in the response message.
+		/// </summary>
+		/// <typeparam name="T">The type of extension being sought.</typeparam>
+		/// <returns>The extension(s) that match the given type; or <c>null</c> if none of the given type was added.</returns>
+		protected IEnumerable<T> GetResponseExtension<T>() where T : IOpenIdMessageExtension {
+			// Technically an extension should never show up twice.... but T might be
+			// a base class or interface that matches more than one extension.
+			return this.responseExtensions.OfType<T>();
+		}
 	}
 }

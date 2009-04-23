@@ -7,6 +7,7 @@ namespace OpenIdProviderMvc.Controllers {
 	using System.Web.Mvc.Ajax;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Provider;
+	using OpenIdProviderMvc.Code;
 
 	public class OpenIdController : Controller {
 		internal static OpenIdProvider OpenIdProvider = new OpenIdProvider();
@@ -24,7 +25,7 @@ namespace OpenIdProviderMvc.Controllers {
 				if (authRequest != null) {
 					PendingAuthenticationRequest = authRequest;
 					if (User.Identity.IsAuthenticated && (authRequest.IsDirectedIdentity || Models.User.GetClaimedIdentifierForUser(User.Identity.Name) == authRequest.LocalIdentifier)) {
-						return this.SendAssertion();
+						return this.SendAssertion(true);
 					} else {
 						return RedirectToAction("LogOn", "Account", new { returnUrl = Url.Action("SendAssertion") });
 					}
@@ -41,7 +42,7 @@ namespace OpenIdProviderMvc.Controllers {
 		}
 
 		[Authorize]
-		public ActionResult SendAssertion() {
+		public ActionResult SendAssertion(bool pseudonymous) {
 			IAuthenticationRequest authReq = PendingAuthenticationRequest;
 			PendingAuthenticationRequest = null;
 			if (authReq == null) {
@@ -53,6 +54,10 @@ namespace OpenIdProviderMvc.Controllers {
 				authReq.ClaimedIdentifier = authReq.LocalIdentifier;
 				authReq.IsAuthenticated = true;
 			} else {
+				if (pseudonymous) {
+					throw new InvalidOperationException("Pseudonymous identifiers are only available when used with directed identity.");
+				}
+
 				if (authReq.LocalIdentifier == Models.User.GetClaimedIdentifierForUser(User.Identity.Name)) {
 					authReq.IsAuthenticated = true;
 					if (!authReq.IsDelegatedIdentifier) {
@@ -62,6 +67,12 @@ namespace OpenIdProviderMvc.Controllers {
 					authReq.IsAuthenticated = false;
 				}
 			}
+
+			if (pseudonymous) {
+				var anonProvider = new AnonymousIdentifierProvider();
+				authReq.ScrubPersonallyIdentifiableInformation(anonProvider, true);
+			}
+
 			return OpenIdProvider.PrepareResponse(authReq).AsActionResult();
 		}
 	}

@@ -3,21 +3,26 @@
 	<User>
 		<UserName>bob</UserName>
 		<Password>test</Password>
+		<Salt>CDI=</Salt>
 	</User>
 	<User>
 		<UserName>bob1</UserName>
 		<Password>test</Password>
+		<Salt>CAI=</Salt>
 	</User>
 	<User>
 		<UserName>bob2</UserName>
 		<Password>test</Password>
+		<Salt>hYMC=</Salt>
 	</User>
 	<User>
 		<UserName>bob3</UserName>
 		<Password>test</Password>
+		<Salt>hTKDAg==</Salt>
 	</User>
 	<User>
 		<UserName>bob4</UserName>
 		<Password>test</Password>
+		<Salt>hTkDAg==</Salt>
 	</User>
 </Users>

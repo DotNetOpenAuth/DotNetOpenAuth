@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Code\AccountMembershipService.cs" />
+    <Compile Include="Code\AnonymousIdentifierProvider.cs" />
     <Compile Include="Code\FormsAuthenticationService.cs" />
     <Compile Include="Code\IFormsAuthentication.cs" />
     <Compile Include="Code\IMembershipService.cs" />

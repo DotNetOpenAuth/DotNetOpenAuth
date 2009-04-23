@@ -8,16 +8,18 @@ namespace OpenIdProviderMvc.Controllers {
 
 	public class UserController : Controller {
 		public ActionResult Identity(string id) {
-			var redirect = this.RedirectIfNotNormalizedRequestUri();
-			if (redirect != null) {
-				return redirect;
+			if (!string.IsNullOrEmpty(id)) {
+				var redirect = this.RedirectIfNotNormalizedRequestUri();
+				if (redirect != null) {
+					return redirect;
+				}
 			}
 
 			if (Request.AcceptTypes.Contains("application/xrds+xml")) {
 				return View("Xrds");
 			}
 
-			this.ViewData["username"] = id;
+			this.ViewData["username"] = string.IsNullOrEmpty(id) ? "anonymous" : id;
 			return View();
 		}
 

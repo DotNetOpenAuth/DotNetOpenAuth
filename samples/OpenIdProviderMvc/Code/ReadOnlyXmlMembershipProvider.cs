@@ -236,6 +236,11 @@
 			throw new NotSupportedException();
 		}
 
+		internal string GetSalt(string userName) {
+			this.ReadMembershipDataStore();
+			return this.users[userName].Email;
+		}
+
 		// Helper method
 		private void ReadMembershipDataStore() {
 			lock (this) {
@@ -246,11 +251,13 @@
 					XmlNodeList nodes = doc.GetElementsByTagName("User");
 
 					foreach (XmlNode node in nodes) {
+						// Yes, we're misusing some of these fields.  A real app would
+						// have the right fields from a database to use.
 						MembershipUser user = new MembershipUser(
 							Name,                       // Provider name
 							node["UserName"].InnerText, // Username
 							null,                       // providerUserKey
-							null,                       // Email
+							node["Salt"].InnerText,     // Email
 							string.Empty,               // passwordQuestion
 							node["Password"].InnerText, // Comment
 							true,                       // isApproved

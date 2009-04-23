@@ -13,7 +13,7 @@
 	<div class="page">
 		<div id="header">
 			<div id="title">
-				<h1>My MVC Application</h1>
+				<h1>OpenID Provider MVC Application</h1>
 			</div>
 			<div id="logindisplay">
 				<% Html.RenderPartial("LogOnUserControl"); %>

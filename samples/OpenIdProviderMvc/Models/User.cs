@@ -7,15 +7,23 @@
 	using System.Web.Routing;
 
 	internal class User {
-		internal static Uri GetClaimedIdentifierForUser(string username) {
-			string appPath = HttpContext.Current.Request.ApplicationPath;
-			if (!appPath.EndsWith("/")) {
-				appPath += "/";
+		internal static Uri ClaimedIdentifierBaseUri {
+			get {
+				string appPath = HttpContext.Current.Request.ApplicationPath.ToLowerInvariant();
+				if (!appPath.EndsWith("/")) {
+					appPath += "/";
+				}
+
+				return new Uri(HttpContext.Current.Request.Url, appPath + "user/");
 			}
-			Uri claimedIdentifier = new Uri(
-				HttpContext.Current.Request.Url,
-				appPath + "user/" + username);
-			return new Uri(claimedIdentifier.AbsoluteUri.ToLowerInvariant());
+		}
+
+		internal static Uri GetClaimedIdentifierForUser(string username) {
+			if (String.IsNullOrEmpty(username)) {
+				throw new ArgumentNullException("username");
+			}
+
+			return new Uri(ClaimedIdentifierBaseUri, username.ToLowerInvariant());
 		}
 
 		internal static string GetUserFromClaimedIdentifier(Uri claimedIdentifier) {
