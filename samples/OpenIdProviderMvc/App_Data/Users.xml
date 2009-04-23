@@ -13,7 +13,7 @@
 	<User>
 		<UserName>bob2</UserName>
 		<Password>test</Password>
-		<Salt>hYMC=</Salt>
+		<Salt>hYMC</Salt>
 	</User>
 	<User>
 		<UserName>bob3</UserName>
