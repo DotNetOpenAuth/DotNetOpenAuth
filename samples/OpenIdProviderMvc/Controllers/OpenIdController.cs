@@ -18,27 +18,13 @@ namespace OpenIdProviderMvc.Controllers {
 		}
 
 		[ValidateInput(false)]
-		public ActionResult Provider() {
-			IRequest request = OpenIdProvider.GetRequest();
-			if (request != null) {
-				var authRequest = request as IAuthenticationRequest;
-				if (authRequest != null) {
-					PendingAuthenticationRequest = authRequest;
-					if (User.Identity.IsAuthenticated && (authRequest.IsDirectedIdentity || Models.User.GetClaimedIdentifierForUser(User.Identity.Name) == authRequest.LocalIdentifier)) {
-						return this.SendAssertion(true);
-					} else {
-						return RedirectToAction("LogOn", "Account", new { returnUrl = Url.Action("SendAssertion") });
-					}
-				}
+		public ActionResult PpidProvider() {
+			return DoProvider(true);
+		}
 
-				if (request.IsResponseReady) {
-					return OpenIdProvider.PrepareResponse(request).AsActionResult();
-				} else {
-					return RedirectToAction("LogOn", "Account");
-				}
-			} else {
-				return View();
-			}
+		[ValidateInput(false)]
+		public ActionResult Provider() {
+			return DoProvider(false);
 		}
 
 		[Authorize]
@@ -54,10 +40,6 @@ namespace OpenIdProviderMvc.Controllers {
 				authReq.ClaimedIdentifier = authReq.LocalIdentifier;
 				authReq.IsAuthenticated = true;
 			} else {
-				if (pseudonymous) {
-					throw new InvalidOperationException("Pseudonymous identifiers are only available when used with directed identity.");
-				}
-
 				if (authReq.LocalIdentifier == Models.User.GetClaimedIdentifierForUser(User.Identity.Name)) {
 					authReq.IsAuthenticated = true;
 					if (!authReq.IsDelegatedIdentifier) {
@@ -71,9 +53,34 @@ namespace OpenIdProviderMvc.Controllers {
 			if (pseudonymous) {
 				var anonProvider = new AnonymousIdentifierProvider();
 				authReq.ScrubPersonallyIdentifiableInformation(anonProvider, true);
+			} else {
+				// TODO: Respond to AX/sreg extension requests here
 			}
 
 			return OpenIdProvider.PrepareResponse(authReq).AsActionResult();
+		}
+
+		private ActionResult DoProvider(bool pseudonymous) {
+			IRequest request = OpenIdProvider.GetRequest();
+			if (request != null) {
+				var authRequest = request as IAuthenticationRequest;
+				if (authRequest != null) {
+					PendingAuthenticationRequest = authRequest;
+					if (User.Identity.IsAuthenticated && (authRequest.IsDirectedIdentity || Models.User.GetClaimedIdentifierForUser(User.Identity.Name) == authRequest.LocalIdentifier)) {
+						return this.SendAssertion(pseudonymous);
+					} else {
+						return RedirectToAction("LogOn", "Account", new { returnUrl = Url.Action("SendAssertion") });
+					}
+				}
+
+				if (request.IsResponseReady) {
+					return OpenIdProvider.PrepareResponse(request).AsActionResult();
+				} else {
+					return RedirectToAction("LogOn", "Account");
+				}
+			} else {
+				return View();
+			}
 		}
 	}
 }

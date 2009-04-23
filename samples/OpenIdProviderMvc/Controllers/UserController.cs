@@ -7,23 +7,33 @@ namespace OpenIdProviderMvc.Controllers {
 	using System.Web.Mvc.Ajax;
 
 	public class UserController : Controller {
+		public ActionResult PpidIdentity() {
+			if (Request.AcceptTypes.Contains("application/xrds+xml")) {
+				return View("PpidXrds");
+			}
+
+			return View();
+		}
+
 		public ActionResult Identity(string id) {
-			if (!string.IsNullOrEmpty(id)) {
-				var redirect = this.RedirectIfNotNormalizedRequestUri();
-				if (redirect != null) {
-					return redirect;
-				}
+			var redirect = this.RedirectIfNotNormalizedRequestUri();
+			if (redirect != null) {
+				return redirect;
 			}
 
 			if (Request.AcceptTypes.Contains("application/xrds+xml")) {
 				return View("Xrds");
 			}
 
-			this.ViewData["username"] = string.IsNullOrEmpty(id) ? "anonymous" : id;
+			this.ViewData["username"] = id;
 			return View();
 		}
 
 		public ActionResult Xrds(string id) {
+			return View();
+		}
+
+		public ActionResult PpidXrds() {
 			return View();
 		}
 

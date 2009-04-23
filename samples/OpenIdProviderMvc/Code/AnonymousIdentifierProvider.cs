@@ -10,7 +10,7 @@ using OpenIdProviderMvc.Models;
 namespace OpenIdProviderMvc.Code {
 	internal class AnonymousIdentifierProvider : AnonymousIdentifierProviderBase {
 		internal AnonymousIdentifierProvider()
-			: base(GetIdentifierBase("anon")) {
+			: base(Util.GetAppPathRootedUri("anon?id=")) {
 		}
 
 		protected override byte[] GetHashSaltForLocalIdentifier(Identifier localIdentifier) {
@@ -21,23 +21,6 @@ namespace OpenIdProviderMvc.Code {
 			string salt = membership.GetSalt(username);
 			return Convert.FromBase64String(salt);
 			////return AnonymousIdentifierProviderBase.GetNewSalt(5);
-		}
-
-		private static Uri GetIdentifierBase(string subPath) {
-			if (HttpContext.Current == null) {
-				throw new InvalidOperationException();
-			}
-
-			if (String.IsNullOrEmpty(subPath)) {
-				throw new ArgumentNullException("subPath");
-			}
-
-			string appPath = HttpContext.Current.Request.ApplicationPath;
-			if (!appPath.EndsWith("/")) {
-				appPath += "/";
-			}
-
-			return new Uri(HttpContext.Current.Request.Url, appPath + subPath + "/");
 		}
 	}
 }
