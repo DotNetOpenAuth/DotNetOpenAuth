@@ -69,7 +69,7 @@ namespace OpenIdProviderMvc.Controllers {
 					if (User.Identity.IsAuthenticated && (authRequest.IsDirectedIdentity || Models.User.GetClaimedIdentifierForUser(User.Identity.Name) == authRequest.LocalIdentifier)) {
 						return this.SendAssertion(pseudonymous);
 					} else {
-						return RedirectToAction("LogOn", "Account", new { returnUrl = Url.Action("SendAssertion") });
+						return RedirectToAction("LogOn", "Account", new { returnUrl = Url.Action("SendAssertion", new { pseudonymous = pseudonymous }) });
 					}
 				}
 
