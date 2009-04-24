@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 	[ContractClass(typeof(AnonymousIdentifierProviderBaseContract))]
 	public abstract class AnonymousIdentifierProviderBase : IAnonymousIdentifierProvider {
-		private int newHashLength = 20;
+		private int newSaltLength = 20;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StandardAnonymousIdentifierProvider"/> class.
@@ -35,15 +35,15 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 		protected Encoding Encoder { get; private set; }
 
-		protected int NewHashLength {
+		protected int NewSaltLength {
 			get {
-				return newHashLength;
+				return newSaltLength;
 			}
 
 			set {
 				Contract.Requires(value > 0);
 				ErrorUtilities.VerifyArgumentInRange(value > 0, "value");
-				newHashLength = value;
+				newSaltLength = value;
 			}
 		}
 
@@ -64,8 +64,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 		#endregion
 
-		protected byte[] GetNewSalt() {
-			return MessagingUtilities.GetNonCryptoRandomData(this.NewHashLength);
+		protected virtual byte[] GetNewSalt() {
+			// We COULD use a crypto random function, but for a salt it seems overkill.
+			return MessagingUtilities.GetNonCryptoRandomData(this.NewSaltLength);
 		}
 
 		protected Uri AppendIdentifiers(Uri baseIdentifier, string uriHash) {
