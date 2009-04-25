@@ -1298,6 +1298,9 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 				this.OnUnconfirmedPositiveAssertion();
 				foreach (var pair in this.clientScriptExtensions) {
 					IClientScriptExtensionResponse extension = (IClientScriptExtensionResponse)authResponse.GetExtension(pair.Key);
+					if (extension == null) {
+						continue;
+					}
 					var positiveResponse = (PositiveAuthenticationResponse)authResponse;
 					string js = extension.InitializeJavaScriptData(positiveResponse.Response);
 					if (string.IsNullOrEmpty(js)) {

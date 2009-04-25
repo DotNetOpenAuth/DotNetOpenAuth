@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.Test {
 					e.Handled = true;
 				} else {
 					e.Handled = true;
-					Assert.Fail(e.FailureKind.ToString() + ": " + e.DebugMessage);
+					Assert.Fail(e.FailureKind.ToString() + ": " + e.Message);
 				}
 			};
 		}
