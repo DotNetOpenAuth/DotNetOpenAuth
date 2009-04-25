@@ -20,6 +20,7 @@ public partial class Authorize : System.Web.UI.Page {
 				ITokenContainingMessage pendingToken = Global.PendingOAuthAuthorization;
 				var token = Global.DataContext.OAuthTokens.Single(t => t.Token == pendingToken.Token);
 				desiredAccessLabel.Text = token.Scope;
+				consumerLabel.Text = Global.TokenManager.GetConsumerForToken(token.Token).ConsumerKey;
 			}
 		}
 	}
