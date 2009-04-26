@@ -237,7 +237,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 				}
 				context.Response.OutputStream.Close();
 			} else if (context.Request.Url == this.OPIdentifier) {
-				context.Response.ContentType = DotNetOpenAuth.Yadis.ContentTypes.Xrds;
+				context.Response.ContentType = "application/xrds+xml";
 				context.Response.StatusCode = (int)HttpStatusCode.OK;
 				App.Logger.Info("Discovery on OP Identifier detected.");
 				using (StreamWriter sw = new StreamWriter(outputStream)) {
