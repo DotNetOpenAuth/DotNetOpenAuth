@@ -40,11 +40,6 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		private OpenIdProvider provider = new OpenIdProvider(new StandardProviderApplicationStore());
 
 		/// <summary>
-		/// The logger the class may use.
-		/// </summary>
-		private ILog logger = log4net.LogManager.GetLogger(typeof(HostedProvider));
-
-		/// <summary>
 		/// The HTTP listener that acts as the OpenID Provider socket.
 		/// </summary>
 		private HttpHost httpHost;
@@ -85,7 +80,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <summary>
 		/// Gets or sets the delegate that handles authentication requests.
 		/// </summary>
-		internal Action<IAuthenticationRequest> ProcessAuthenticationRequest { get; set; }
+		internal Action<HttpRequestInfo, HttpListenerResponse> ProcessRequest { get; set; }
 
 		/// <summary>
 		/// Gets the OP identifier.
@@ -212,7 +207,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		private void RequestHandler(HttpListenerContext context) {
 			Contract.Requires(context != null);
 			Contract.Requires(context.Response.OutputStream != null);
-			Contract.Requires(this.ProcessAuthenticationRequest != null);
+			Contract.Requires(this.ProcessRequest != null);
 			Stream outputStream = context.Response.OutputStream;
 			Contract.Assume(outputStream != null); // CC static verification shortcoming.
 
@@ -225,22 +220,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 
 			if (context.Request.Url.AbsolutePath == ProviderPath) {
 				HttpRequestInfo requestInfo = new HttpRequestInfo(context.Request);
-				IRequest providerRequest = this.Provider.GetRequest(requestInfo);
-				if (providerRequest == null) {
-					App.Logger.Error("A request came in that did not carry an OpenID message.");
-					context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-					using (StreamWriter sw = new StreamWriter(outputStream)) {
-						sw.WriteLine("<html><body>This is an OpenID Provider endpoint.</body></html>");
-					}
-					return;
-				}
-
-				if (!providerRequest.IsResponseReady) {
-					var authRequest = (IAuthenticationRequest)providerRequest;
-					this.ProcessAuthenticationRequest(authRequest);
-				}
-
-				this.Provider.PrepareResponse(providerRequest).Send(context.Response);
+				this.ProcessRequest(requestInfo, context.Response);
 			} else if (context.Request.Url.AbsolutePath.StartsWith(UserIdentifierPath, StringComparison.Ordinal)) {
 				using (StreamWriter sw = new StreamWriter(outputStream)) {
 					context.Response.StatusCode = (int)HttpStatusCode.OK;
@@ -253,7 +233,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 			} else if (context.Request.Url == this.OPIdentifier) {
 				context.Response.ContentType = DotNetOpenAuth.Yadis.ContentTypes.Xrds;
 				context.Response.StatusCode = (int)HttpStatusCode.OK;
-				this.logger.Info("Discovery on OP Identifier detected.");
+				App.Logger.Info("Discovery on OP Identifier detected.");
 				using (StreamWriter sw = new StreamWriter(outputStream)) {
 					sw.Write(GenerateXrdsOPIdentifierDocument(providerEndpoint, Enumerable.Empty<string>()));
 				}

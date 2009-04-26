@@ -55,11 +55,17 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// </summary>
 		/// <param name="provider">The OpenID Provider host.</param>
 		/// <param name="request">The incoming authentication request.</param>
-		internal static void ProcessAuthentication(HostedProvider provider, IAuthenticationRequest request) {
+		/// <param name="skipUI">if set to <c>true</c> no dialog should be displayed to the user.</param>
+		internal static void ProcessAuthentication(HostedProvider provider, IAuthenticationRequest request, bool skipUI) {
 			Contract.Requires(provider != null);
 			Contract.Requires(request != null);
 
-			App.Current.Dispatcher.Invoke((Action)delegate {
+			if (skipUI) {
+				if (request.IsDirectedIdentity) {
+					throw new NotImplementedException();
+				}
+				request.IsAuthenticated = true;
+			} else {
 				var window = new CheckIdWindow(provider, request);
 				bool? result = window.ShowDialog();
 
@@ -74,7 +80,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 					request.ClaimedIdentifier = window.claimedIdentifierBox.Text;
 					request.LocalIdentifier = window.localIdentifierBox.Text;
 				}
-			});
+			}
 		}
 
 		/// <summary>

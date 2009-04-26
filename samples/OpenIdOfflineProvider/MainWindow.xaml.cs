@@ -23,6 +23,8 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using System.Windows.Media.Imaging;
 	using System.Windows.Navigation;
 	using System.Windows.Shapes;
+	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.Provider;
 	using log4net;
 	using log4net.Appender;
 	using log4net.Core;
@@ -46,7 +48,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// </summary>
 		public MainWindow() {
 			this.InitializeComponent();
-			this.hostedProvider.ProcessAuthenticationRequest = request => CheckIdWindow.ProcessAuthentication(this.hostedProvider, request);
+			this.hostedProvider.ProcessRequest = this.ProcessRequest;
 			TextWriterAppender boxLogger = log4net.LogManager.GetRepository().GetAppenders().OfType<TextWriterAppender>().FirstOrDefault(a => a.Name == "TextBoxAppender");
 			if (boxLogger != null) {
 				boxLogger.Writer = new TextBoxTextWriter(logBox);
@@ -88,6 +90,34 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		protected override void OnClosing(System.ComponentModel.CancelEventArgs e) {
 			this.stopProvider();
 			base.OnClosing(e);
+		}
+
+		/// <summary>
+		/// Processes an incoming request at the OpenID Provider endpoint.
+		/// </summary>
+		/// <param name="requestInfo">The request info.</param>
+		/// <param name="response">The response.</param>
+		private void ProcessRequest(HttpRequestInfo requestInfo, HttpListenerResponse response) {
+			IRequest request = this.hostedProvider.Provider.GetRequest(requestInfo);
+			if (request == null) {
+				App.Logger.Error("A request came in that did not carry an OpenID message.");
+				response.StatusCode = (int)HttpStatusCode.BadRequest;
+				using (StreamWriter sw = new StreamWriter(response.OutputStream)) {
+					sw.WriteLine("<html><body>This is an OpenID Provider endpoint.</body></html>");
+				}
+				return;
+			}
+
+			this.Dispatcher.Invoke((Action)delegate {
+				if (!request.IsResponseReady) {
+					var authRequest = request as IAuthenticationRequest;
+					if (authRequest != null) {
+						CheckIdWindow.ProcessAuthentication(this.hostedProvider, authRequest, checkidRequestList.SelectedIndex == 0);
+					}
+				}
+			});
+
+			this.hostedProvider.Provider.PrepareResponse(request).Send(response);
 		}
 
 		/// <summary>
