@@ -44,7 +44,10 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 			this.discoverableYesLabel.Visibility = isRPDiscoverable ? Visibility.Visible : Visibility.Collapsed;
 			this.discoverableNoLabel.Visibility = isRPDiscoverable ? Visibility.Collapsed : Visibility.Visible;
 
-			if (!request.IsDirectedIdentity) {
+			if (request.IsDirectedIdentity) {
+				this.claimedIdentifierBox.Text = provider.UserIdentityPageBase.AbsoluteUri;
+				this.localIdentifierBox.Text = provider.UserIdentityPageBase.AbsoluteUri;
+			} else {
 				this.claimedIdentifierBox.Text = request.ClaimedIdentifier;
 				this.localIdentifierBox.Text = request.LocalIdentifier;
 			}
@@ -55,31 +58,23 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// </summary>
 		/// <param name="provider">The OpenID Provider host.</param>
 		/// <param name="request">The incoming authentication request.</param>
-		/// <param name="skipUI">if set to <c>true</c> no dialog should be displayed to the user.</param>
-		internal static void ProcessAuthentication(HostedProvider provider, IAuthenticationRequest request, bool skipUI) {
+		internal static void ProcessAuthentication(HostedProvider provider, IAuthenticationRequest request) {
 			Contract.Requires(provider != null);
 			Contract.Requires(request != null);
 
-			if (skipUI) {
-				if (request.IsDirectedIdentity) {
-					throw new NotImplementedException();
-				}
-				request.IsAuthenticated = true;
-			} else {
-				var window = new CheckIdWindow(provider, request);
-				bool? result = window.ShowDialog();
+			var window = new CheckIdWindow(provider, request);
+			bool? result = window.ShowDialog();
 
-				// If the user pressed Esc or cancel, just send a negative assertion.
-				if (!result.HasValue || !result.Value) {
-					request.IsAuthenticated = false;
-					return;
-				}
+			// If the user pressed Esc or cancel, just send a negative assertion.
+			if (!result.HasValue || !result.Value) {
+				request.IsAuthenticated = false;
+				return;
+			}
 
-				request.IsAuthenticated = window.tabControl1.SelectedItem == window.positiveTab;
-				if (request.IsAuthenticated.Value) {
-					request.ClaimedIdentifier = window.claimedIdentifierBox.Text;
-					request.LocalIdentifier = window.localIdentifierBox.Text;
-				}
+			request.IsAuthenticated = window.tabControl1.SelectedItem == window.positiveTab;
+			if (request.IsAuthenticated.Value) {
+				request.ClaimedIdentifier = window.claimedIdentifierBox.Text;
+				request.LocalIdentifier = window.localIdentifierBox.Text;
 			}
 		}
 

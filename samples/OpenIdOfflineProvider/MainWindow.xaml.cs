@@ -112,7 +112,21 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 				if (!request.IsResponseReady) {
 					var authRequest = request as IAuthenticationRequest;
 					if (authRequest != null) {
-						CheckIdWindow.ProcessAuthentication(this.hostedProvider, authRequest, checkidRequestList.SelectedIndex == 0);
+						switch (checkidRequestList.SelectedIndex) {
+							case 0:
+								if (authRequest.IsDirectedIdentity) {
+									authRequest.ClaimedIdentifier = new Uri(this.hostedProvider.UserIdentityPageBase, "directedidentity");
+									authRequest.LocalIdentifier = authRequest.ClaimedIdentifier;
+								}
+								authRequest.IsAuthenticated = true;
+								break;
+							case 1:
+								authRequest.IsAuthenticated = false;
+								break;
+							case 2:
+								CheckIdWindow.ProcessAuthentication(this.hostedProvider, authRequest);
+								break;
+						}
 					}
 				}
 			});

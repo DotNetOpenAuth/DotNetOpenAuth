@@ -68,6 +68,11 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		}
 
 		/// <summary>
+		/// Gets or sets the delegate that handles authentication requests.
+		/// </summary>
+		internal Action<HttpRequestInfo, HttpListenerResponse> ProcessRequest { get; set; }
+
+		/// <summary>
 		/// Gets the provider endpoint.
 		/// </summary>
 		internal Uri ProviderEndpoint {
@@ -78,21 +83,22 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		}
 
 		/// <summary>
-		/// Gets or sets the delegate that handles authentication requests.
+		/// Gets the base URI that all user identities must start with.
 		/// </summary>
-		internal Action<HttpRequestInfo, HttpListenerResponse> ProcessRequest { get; set; }
+		internal Uri UserIdentityPageBase {
+			get {
+				Contract.Requires(this.IsRunning);
+				return new Uri(this.httpHost.BaseUri, UserIdentifierPath);
+			}
+		}
 
 		/// <summary>
 		/// Gets the OP identifier.
 		/// </summary>
 		internal Uri OPIdentifier {
 			get {
-				UriBuilder providerEndpointBuilder = new UriBuilder();
-				providerEndpointBuilder.Scheme = Uri.UriSchemeHttp;
-				providerEndpointBuilder.Host = "localhost";
-				providerEndpointBuilder.Port = this.httpHost.Port;
-				providerEndpointBuilder.Path = OPIdentifierPath;
-				return providerEndpointBuilder.Uri;
+				Contract.Requires(this.IsRunning);
+				return new Uri(this.httpHost.BaseUri, OPIdentifierPath);
 			}
 		}
 
