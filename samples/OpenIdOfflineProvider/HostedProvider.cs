@@ -52,7 +52,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// </summary>
 		internal HostedProvider() {
 			this.AffirmativeIdentities = new HashSet<Uri>();
-			this.NegativeIdentitities = new HashSet<Uri>();
+			this.NegativeIdentities = new HashSet<Uri>();
 		}
 
 		/// <summary>
@@ -73,7 +73,14 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <summary>
 		/// Gets a collection of identity URLs that always produce cancellation responses.
 		/// </summary>
-		internal ICollection<Uri> NegativeIdentitities { get; private set; }
+		internal ICollection<Uri> NegativeIdentities { get; private set; }
+
+		/// <summary>
+		/// Gets the <see cref="OpenIdProvider"/> instance that processes incoming requests.
+		/// </summary>
+		internal OpenIdProvider Provider {
+			get { return this.provider; }
+		}
 
 		/// <summary>
 		/// Gets the provider endpoint.
@@ -84,6 +91,11 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 				return new Uri(this.httpHost.BaseUri, ProviderPath);
 			}
 		}
+
+		/// <summary>
+		/// Gets or sets the delegate that handles authentication requests.
+		/// </summary>
+		internal Action<IAuthenticationRequest> ProcessAuthenticationRequest { get; set; }
 
 		/// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -99,7 +111,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 			Contract.Ensures(this.IsRunning);
 			this.httpHost = HttpHost.CreateHost(this.RequestHandler);
 			this.AffirmativeIdentities.Add(new Uri(this.httpHost.BaseUri, YesIdentity));
-			this.NegativeIdentitities.Add(new Uri(this.httpHost.BaseUri, NoIdentity));
+			this.NegativeIdentities.Add(new Uri(this.httpHost.BaseUri, NoIdentity));
 		}
 
 		/// <summary>
@@ -166,12 +178,13 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		private void RequestHandler(HttpListenerContext context) {
 			Contract.Requires(context != null);
 			Contract.Requires(context.Response.OutputStream != null);
+			Contract.Requires(this.ProcessAuthenticationRequest != null);
 			Stream outputStream = context.Response.OutputStream;
 			Contract.Assume(outputStream != null); // CC static verification shortcoming.
 
 			if (context.Request.Url.AbsolutePath == ProviderPath) {
 				HttpRequestInfo requestInfo = new HttpRequestInfo(context.Request);
-				IRequest providerRequest = this.provider.GetRequest(requestInfo);
+				IRequest providerRequest = this.Provider.GetRequest(requestInfo);
 				if (providerRequest == null) {
 					App.Logger.Error("A request came in that did not carry an OpenID message.");
 					context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
@@ -182,15 +195,11 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 				}
 
 				if (!providerRequest.IsResponseReady) {
-					var authRequest = providerRequest as IAuthenticationRequest;
-					if (authRequest.IsDirectedIdentity) {
-						throw new NotImplementedException();
-					}
-
-					authRequest.IsAuthenticated = new Uri(authRequest.ClaimedIdentifier).AbsolutePath == YesIdentity;
+					var authRequest = (IAuthenticationRequest)providerRequest;
+					this.ProcessAuthenticationRequest(authRequest);
 				}
 
-				this.provider.PrepareResponse(providerRequest).Send(context.Response);
+				this.Provider.PrepareResponse(providerRequest).Send(context.Response);
 			} else if (context.Request.Url.AbsolutePath == YesIdentity || context.Request.Url.AbsolutePath == NoIdentity) {
 				using (StreamWriter sw = new StreamWriter(outputStream)) {
 					string providerEndpoint = string.Format("http://localhost:{0}{1}", context.Request.Url.Port, ProviderPath);

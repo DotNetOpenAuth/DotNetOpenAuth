@@ -46,6 +46,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// </summary>
 		public MainWindow() {
 			this.InitializeComponent();
+			this.hostedProvider.ProcessAuthenticationRequest = request => CheckIdWindow.ProcessAuthentication(this.hostedProvider, request);
 			TextWriterAppender boxLogger = log4net.LogManager.GetRepository().GetAppenders().OfType<TextWriterAppender>().FirstOrDefault(a => a.Name == "TextBoxAppender");
 			if (boxLogger != null) {
 				boxLogger.Writer = new TextBoxTextWriter(logBox);
@@ -96,7 +97,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 			this.hostedProvider.StartProvider();
 			this.portLabel.Content = this.hostedProvider.ProviderEndpoint.Port;
 			this.opIdentifierLabel.Content = "not yet supported"; // string.Format(url, this.httpHost.Port, OPIdentifier);
-			this.noIdentity.Content = this.hostedProvider.NegativeIdentitities.First().AbsoluteUri;
+			this.noIdentity.Content = this.hostedProvider.NegativeIdentities.First().AbsoluteUri;
 			this.yesIdentity.Content = this.hostedProvider.AffirmativeIdentities.First().AbsoluteUri;
 		}
 
