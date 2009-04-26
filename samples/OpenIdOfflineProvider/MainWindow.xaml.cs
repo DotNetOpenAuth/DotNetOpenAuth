@@ -51,6 +51,8 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 			if (boxLogger != null) {
 				boxLogger.Writer = new TextBoxTextWriter(logBox);
 			}
+
+			this.startProvider();
 		}
 
 		#region IDisposable Members
@@ -84,34 +86,33 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// </summary>
 		/// <param name="e">The <see cref="System.ComponentModel.CancelEventArgs"/> instance containing the event data.</param>
 		protected override void OnClosing(System.ComponentModel.CancelEventArgs e) {
-			this.hostedProvider.StopProvider();
+			this.stopProvider();
 			base.OnClosing(e);
 		}
 
 		/// <summary>
-		/// Handles the Click event of the startButton control.
+		/// Starts the provider.
 		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.Windows.RoutedEventArgs"/> instance containing the event data.</param>
-		private void startButton_Click(object sender, RoutedEventArgs e) {
+		private void startProvider() {
 			this.hostedProvider.StartProvider();
-			this.portLabel.Content = this.hostedProvider.ProviderEndpoint.Port;
-			this.opIdentifierLabel.Content = "not yet supported"; // string.Format(url, this.httpHost.Port, OPIdentifier);
-			this.noIdentity.Content = this.hostedProvider.NegativeIdentities.First().AbsoluteUri;
-			this.yesIdentity.Content = this.hostedProvider.AffirmativeIdentities.First().AbsoluteUri;
+			this.opIdentifierLabel.Content = this.hostedProvider.OPIdentifier;
 		}
 
 		/// <summary>
-		/// Handles the Click event of the stopButton control.
+		/// Stops the provider.
+		/// </summary>
+		private void stopProvider() {
+			this.hostedProvider.StopProvider();
+			this.opIdentifierLabel.Content = string.Empty;
+		}
+
+		/// <summary>
+		/// Handles the MouseDown event of the opIdentifierLabel control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.Windows.RoutedEventArgs"/> instance containing the event data.</param>
-		private void stopButton_Click(object sender, RoutedEventArgs e) {
-			this.hostedProvider.StopProvider();
-			this.portLabel.Content = string.Empty;
-			this.noIdentity.Content = string.Empty;
-			this.yesIdentity.Content = string.Empty;
-			this.opIdentifierLabel.Content = string.Empty;
+		/// <param name="e">The <see cref="System.Windows.Input.MouseButtonEventArgs"/> instance containing the event data.</param>
+		private void opIdentifierLabel_MouseDown(object sender, MouseButtonEventArgs e) {
+			Clipboard.SetText(opIdentifierLabel.Content.ToString());
 		}
 	}
 }

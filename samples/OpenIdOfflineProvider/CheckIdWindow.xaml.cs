@@ -44,8 +44,10 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 			this.discoverableYesLabel.Visibility = isRPDiscoverable ? Visibility.Visible : Visibility.Collapsed;
 			this.discoverableNoLabel.Visibility = isRPDiscoverable ? Visibility.Collapsed : Visibility.Visible;
 
-			this.claimedIdentifierBox.Text = request.ClaimedIdentifier;
-			this.localIdentifierBox.Text = request.LocalIdentifier;
+			if (!request.IsDirectedIdentity) {
+				this.claimedIdentifierBox.Text = request.ClaimedIdentifier;
+				this.localIdentifierBox.Text = request.LocalIdentifier;
+			}
 		}
 
 		/// <summary>
