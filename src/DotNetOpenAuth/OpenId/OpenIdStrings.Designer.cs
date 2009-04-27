@@ -214,15 +214,6 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This operation is supported only under identifier select (directed identity) scenarios..
-        /// </summary>
-        internal static string DirectedIdentityRequired {
-            get {
-                return ResourceManager.GetString("DirectedIdentityRequired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to URI is not SSL yet requireSslDiscovery is set to true..
         /// </summary>
         internal static string ExplicitHttpUriSuppliedWithSslRequirement {
@@ -246,15 +237,6 @@ namespace DotNetOpenAuth.OpenId {
         internal static string ExtensionLookupSupportUnavailable {
             get {
                 return ResourceManager.GetString("ExtensionLookupSupportUnavailable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Response extensions with personally identifiable information was found and is not allowed in this scenario..
-        /// </summary>
-        internal static string ExtensionsWithPiiFound {
-            get {
-                return ResourceManager.GetString("ExtensionsWithPiiFound", resourceCulture);
             }
         }
         
