@@ -125,6 +125,7 @@
     </Compile>
     <Compile Include="HostedProvider.cs" />
     <Compile Include="HttpHost.cs" />
+    <Compile Include="NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -124,7 +124,12 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 								authRequest.IsAuthenticated = false;
 								break;
 							case 2:
+								IntPtr oldForegroundWindow = NativeMethods.GetForegroundWindow();
+								bool stoleFocus = NativeMethods.SetForegroundWindow(this);
 								CheckIdWindow.ProcessAuthentication(this.hostedProvider, authRequest);
+								if (stoleFocus) {
+									NativeMethods.SetForegroundWindow(oldForegroundWindow);
+								}
 								break;
 						}
 					}

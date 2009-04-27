@@ -1,7 +1,7 @@
 ﻿<Window x:Class="DotNetOpenAuth.OpenIdOfflineProvider.CheckIdWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="Authentication request" Height="345" Width="379">
+    Title="Authentication request" Height="345" Width="379" ShowInTaskbar="False">
 	<DockPanel Margin="12">
 		<TextBlock DockPanel.Dock="Top" TextWrapping="Wrap">An authentication request has been received.  How do you want to proceed?</TextBlock>
 		<Expander DockPanel.Dock="Top" Header="View request details" IsExpanded="True">
