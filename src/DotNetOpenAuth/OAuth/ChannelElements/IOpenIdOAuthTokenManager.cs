@@ -5,8 +5,8 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuth.ChannelElements {
-	using DotNetOpenAuth.OpenId.Extensions.OAuth;
 	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.Extensions.OAuth;
 
 	/// <summary>
 	/// Additional methods an <see cref="ITokenManager"/> implementing class

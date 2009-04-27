@@ -7,6 +7,14 @@
 namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using DotNetOpenAuth.OpenId;
 
+	/// <summary>
+	/// An interface that providers that play a dual role as OpenID Provider
+	/// and OAuth Service Provider should implement on their token manager classes.
+	/// </summary>
+	/// <remarks>
+	/// This interface should be implemented by the same class that implements
+	/// <see cref="ITokenManager"/> in order to enable the OpenID+OAuth extension.
+	/// </remarks>
 	public interface ICombinedOpenIdProviderTokenManager {
 		/// <summary>
 		/// Gets the OAuth consumer key for a given OpenID relying party realm.
