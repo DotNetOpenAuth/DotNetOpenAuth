@@ -1,0 +1,84 @@
+﻿<Window x:Class="DotNetOpenAuth.OpenIdOfflineProvider.CheckIdWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Authentication request" Height="345" Width="379" ShowInTaskbar="False">
+	<DockPanel Margin="12">
+		<TextBlock DockPanel.Dock="Top" TextWrapping="Wrap">An authentication request has been received.  How do you want to proceed?</TextBlock>
+		<Expander DockPanel.Dock="Top" Header="View request details" IsExpanded="True">
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="auto" />
+					<RowDefinition Height="auto" />
+					<RowDefinition Height="auto" />
+					<RowDefinition Height="auto" />
+					<RowDefinition Height="auto" />
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="auto" />
+					<ColumnDefinition />
+				</Grid.ColumnDefinitions>
+				<Label>Immediate?</Label>
+				<Label Grid.Column="1" Name="immediateModeLabel" Content="Yes" />
+				<Label Grid.Column="1" Name="setupModeLabel" Content="No" />
+				<Label Grid.Row="1">Realm</Label>
+				<Label Grid.Row="1" Grid.Column="1" Name="realmLabel" />
+				<!--<Label Grid.Row="2">Callback</Label>
+				<Label Grid.Row="2" Grid.Column="1" Name="callbackLabel" />-->
+				<Label Grid.Row="3">Discoverable</Label>
+				<Label Grid.Row="3" Grid.Column="1" Name="discoverableYesLabel" Content="Yes" />
+				<Label Grid.Row="3" Grid.Column="1" Name="discoverableNoLabel" Content="No" />
+				<!--<Label Grid.Row="4">Shared association?</Label>
+				<Label Grid.Row="4" Grid.Column="1" Name="sharedAssociationLabel" Content="Yes" />
+				<Label Grid.Row="4" Grid.Column="1" Name="privateAssociationLabel" Content="No" />-->
+			</Grid>
+		</Expander>
+		<StackPanel DockPanel.Dock="Bottom" HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,12,0,0">
+			<Button Name="sendResponseButton" IsDefault="True" Margin="0,0,4,0" Click="sendResponseButton_Click">Send response</Button>
+			<Button Name="cancelButton" IsCancel="True">Cancel</Button>
+		</StackPanel>
+
+		<TabControl Name="tabControl1">
+			<TabItem Header="Positive assertion" Name="positiveTab">
+				<StackPanel>
+					<TextBlock TextWrapping="Wrap">You may customize the positive assertion if you wish.</TextBlock>
+					<Grid>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="auto" />
+							<RowDefinition Height="auto" />
+							<RowDefinition Height="auto" />
+							<RowDefinition Height="auto" />
+						</Grid.RowDefinitions>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="auto" />
+							<ColumnDefinition Width="*" />
+						</Grid.ColumnDefinitions>
+						<Label>Claimed identifier</Label>
+						<TextBox Grid.Column="1" Name="claimedIdentifierBox" />
+						<Label Grid.Row="1">OP Local identifier</Label>
+						<TextBox Grid.Column="1" Grid.Row="1" Name="localIdentifierBox" />
+						<!--<Label Grid.Row="2">Association</Label>
+						<WrapPanel Grid.Row="2" Grid.Column="1" VerticalAlignment="Center">
+							<RadioButton Margin="0,0,12,0" GroupName="AssociationType">Shared</RadioButton>
+							<RadioButton GroupName="AssociationType">Private</RadioButton>
+						</WrapPanel>-->
+					</Grid>
+				</StackPanel>
+			</TabItem>
+			<TabItem Header="Negative assertion" Name="negativeTab">
+				<TextBlock TextWrapping="Wrap">There is nothing to customize in a negative assertion.</TextBlock>
+			</TabItem>
+			<!--<TabItem Header="Error" Name="errorTab" >
+				<StackPanel>
+					<TextBlock TextWrapping="Wrap">What message do you want to send describing the simulated error?</TextBlock>
+					<TextBox TextWrapping="Wrap" />
+				</StackPanel>
+			</TabItem>
+			<TabItem Header="Invalid" Name="invalidTab">
+				<StackPanel>
+					<TextBlock TextWrapping="Wrap">This tab is useful for testing a relying party's resiliance to invalid responses.</TextBlock>
+					<TextBlock TextWrapping="Wrap">But it's not implemented yet. :)</TextBlock>
+				</StackPanel>
+			</TabItem>-->
+		</TabControl>
+	</DockPanel>
+</Window>
