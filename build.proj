@@ -63,6 +63,47 @@
 		<MSBuild Projects="$(SolutionPath)" Targets="Rebuild" Properties="Sign=$(Sign)" />
 	</Target>
 
+	<Target Name="_EnsureCleanTools" DependsOnTargets="_SetToolsProperties" Condition="'$(NoClean)' != 'true'">
+		<!-- clean up any previous drop with the same name so we don't aggregate files. -->
+		<RemoveDir Directories="$(ToolsDirectory)" />
+	</Target>
+
+	<Target Name="_SetToolsProperties">
+		<PropertyGroup>
+			<ToolsDirectory>$(ProjectRoot)\drops\$(ProductName)-Tools-$(BuildVersion)</ToolsDirectory>
+		</PropertyGroup>
+	</Target>
+
+	<Target Name="ToolsLayout" DependsOnTargets="GetBuildVersion;_SetDropProperties;_SetToolsProperties;_EnsureCleanTools">
+		<ItemGroup>
+			<ToolProjects Include="$(ProjectRoot)\Samples\OpenIdOfflineProvider\OpenIdOfflineProvider.csproj" />
+			<OfflineProvider Include="
+											 $(ProjectRoot)\Samples\OpenIdOfflineProvider\bin\$(Configuration)\**\*.dll;
+											 $(ProjectRoot)\Samples\OpenIdOfflineProvider\bin\$(Configuration)\OpenIdOfflineProvider.exe" />
+			<OfflineProviderTargets Include="
+											 @(OfflineProvider->'$(ToolsDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
+
+			<AllToolSources Include="@(OfflineProvider)" />
+			<AllToolTargets Include="@(OfflineProviderTargets)" />
+		</ItemGroup>
+
+		<MSBuild Projects="@(ToolProjects)" Properties="Sign=$(Sign)" />
+
+		<MakeDir Directories="@(ToolsDirectory)" />
+		<Copy SourceFiles="@(AllToolSources)" DestinationFiles="@(AllToolTargets)" SkipUnchangedFiles="true" />
+	</Target>
+	
+	<Target Name="Tools" DependsOnTargets="ToolsLayout">
+		<PropertyGroup>
+			<ToolsZip>$(ToolsDirectory).zip</ToolsZip>
+		</PropertyGroup>
+
+		<Delete Files="$(ToolsZip)" />
+		<Zip ZipFileName="$(ToolsZip)" 
+				 Files="@(AllToolTargets)"
+				 WorkingDirectory="$(ToolsDirectory)" />
+	</Target>
+
 	<Target Name="Documentation" DependsOnTargets="BuildProduct;Chm" Condition="'$(NoDocumentation)' != 'true'">
 	</Target>
 
@@ -195,7 +236,7 @@
 		<Zip Files="@(AllDropTargets)" ZipFileName="$(DropZip)" WorkingDirectory="$(ProjectRoot)\drops" />
 	</Target>
 
-	<Target Name="Nightly" DependsOnTargets="Drop;Test">
+	<Target Name="Nightly" DependsOnTargets="Drop;Tools">
 
 	</Target>
 
