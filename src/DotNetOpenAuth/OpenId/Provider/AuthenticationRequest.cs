@@ -236,28 +236,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
-		/// Removes all personally identifiable information from the positive assertion.
-		/// </summary>
-		/// <remarks>
-		/// The openid.claimed_id and openid.identity values are hashed.
-		/// </remarks>
-		public void ScrubPersonallyIdentifiableInformation(IAnonymousIdentifierProvider anonymousIdentifierProvider, bool pairwiseUnique) {
-			ErrorUtilities.VerifyOperation(this.IsDirectedIdentity, OpenIdStrings.DirectedIdentityRequired);
-			ErrorUtilities.VerifyArgumentNotNull(anonymousIdentifierProvider, "anonymousIdentifierProvider");
-
-			ErrorUtilities.VerifyOperation(
-				!(this.GetResponseExtension<ClaimsResponse>().Any() || this.GetResponseExtension<FetchResponse>().Any()),
-				OpenIdStrings.ExtensionsWithPiiFound);
-
-			// When generating the anonymous identifiers, the openid.identity and openid.claimed_id
-			// will always end up with matching values.
-			var anonymousIdentifier = anonymousIdentifierProvider.GetAnonymousIdentifier(this.LocalIdentifier, pairwiseUnique ? this.Realm : null);
-			Logger.OpenId.InfoFormat("Sending anonymous identifier assertion {0} for local identifier {1}.", anonymousIdentifier, this.LocalIdentifier);
-			this.positiveResponse.ClaimedIdentifier = anonymousIdentifier;
-			this.positiveResponse.LocalIdentifier = anonymousIdentifier;
-		}
-
-		/// <summary>
 		/// Gets a value indicating whether verification of the return URL claimed by the Relying Party
 		/// succeeded.
 		/// </summary>

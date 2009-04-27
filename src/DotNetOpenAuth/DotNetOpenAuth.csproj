@@ -368,7 +368,6 @@
     <Compile Include="OpenId\Messages\SignedResponseRequest.cs" />
     <Compile Include="OpenId\NoDiscoveryIdentifier.cs" />
     <Compile Include="OpenId\OpenIdUtilities.cs" />
-    <Compile Include="OpenId\Provider\IAnonymousIdentifierProvider.cs" />
     <Compile Include="OpenId\Provider\AuthenticationChallengeEventArgs.cs" />
     <Compile Include="OpenId\Provider\AuthenticationRequest.cs" />
     <Compile Include="OpenId\Provider\AutoResponsiveRequest.cs" />
@@ -381,8 +380,6 @@
     <Compile Include="OpenId\Provider\ProviderEndpoint.cs" />
     <Compile Include="OpenId\Provider\Request.cs" />
     <Compile Include="OpenId\Provider\RequestContract.cs" />
-    <Compile Include="OpenId\Provider\AnonymousIdentifierProviderBase.cs" />
-    <Compile Include="OpenId\Provider\AnonymousIdentifierProviderBaseContract.cs" />
     <Compile Include="OpenId\Provider\StandardProviderApplicationStore.cs" />
     <Compile Include="OpenId\Realm.cs" />
     <Compile Include="OpenId\RelyingPartyDescription.cs" />

@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using DotNetOpenAuth.OpenId.Provider;
-using DotNetOpenAuth.OpenId;
-using System.Web.Security;
-using OpenIdProviderMvc.Models;
+﻿namespace OpenIdProviderMvc.Code {
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Web;
+	using DotNetOpenAuth.OpenId.Provider;
+	using DotNetOpenAuth.OpenId;
+	using System.Web.Security;
+	using OpenIdProviderMvc.Models;
+	using DotNetOpenAuth.ApplicationBlock.Provider;
 
-namespace OpenIdProviderMvc.Code {
 	internal class AnonymousIdentifierProvider : AnonymousIdentifierProviderBase {
 		internal AnonymousIdentifierProvider()
 			: base(Util.GetAppPathRootedUri("anon?id=")) {

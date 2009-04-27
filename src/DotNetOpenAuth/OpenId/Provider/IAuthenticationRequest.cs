@@ -114,14 +114,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		void SetClaimedIdentifierFragment(string fragment);
 
 		/// <summary>
-		/// Removes all personally identifiable information from the positive assertion.
-		/// </summary>
-		/// <remarks>
-		/// The openid.claimed_id and openid.identity values are hashed.
-		/// </remarks>
-		void ScrubPersonallyIdentifiableInformation(IAnonymousIdentifierProvider anonymousIdentifierProvider, bool pairwiseUnique);
-
-		/// <summary>
 		/// Attempts to perform relying party discovery of the return URL claimed by the Relying Party.
 		/// </summary>
 		/// <param name="requestHandler">The request handler to use to perform relying party discovery.</param>
@@ -187,12 +179,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		void IAuthenticationRequest.SetClaimedIdentifierFragment(string fragment) {
-			throw new NotImplementedException();
-		}
-
-		void IAuthenticationRequest.ScrubPersonallyIdentifiableInformation(IAnonymousIdentifierProvider anonymousIdentifierProvider, bool pairwiseUnique) {
-			Contract.Requires(((IAuthenticationRequest)this).IsDirectedIdentity);
-			Contract.Requires(anonymousIdentifierProvider != null);
 			throw new NotImplementedException();
 		}
 

@@ -4,26 +4,27 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OpenId.Provider {
+namespace DotNetOpenAuth.ApplicationBlock.Provider {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Security.Cryptography;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId;
 
-	[ContractClass(typeof(AnonymousIdentifierProviderBaseContract))]
-	public abstract class AnonymousIdentifierProviderBase : IAnonymousIdentifierProvider {
+	public abstract class AnonymousIdentifierProviderBase {
 		private int newSaltLength = 20;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StandardAnonymousIdentifierProvider"/> class.
 		/// </summary>
 		public AnonymousIdentifierProviderBase(Uri baseIdentifier) {
-			Contract.Requires(baseIdentifier != null);
-			Contract.Ensures(this.BaseIdentifier == baseIdentifier);
+			if (baseIdentifier == null) {
+				throw new ArgumentNullException("baseIdentifier");
+			}
+
 			this.Hasher = HashAlgorithm.Create("SHA256");
 			this.Encoder = Encoding.UTF8;
 			this.BaseIdentifier = baseIdentifier;
@@ -41,8 +42,10 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 
 			set {
-				Contract.Requires(value > 0);
-				ErrorUtilities.VerifyArgumentInRange(value > 0, "value");
+				if (value <= 0) {
+					throw new ArgumentOutOfRangeException("value");
+				}
+
 				newSaltLength = value;
 			}
 		}
@@ -66,12 +69,16 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 		protected virtual byte[] GetNewSalt() {
 			// We COULD use a crypto random function, but for a salt it seems overkill.
-			return MessagingUtilities.GetNonCryptoRandomData(this.NewSaltLength);
+			return Util.GetNonCryptoRandomData(this.NewSaltLength);
 		}
 
 		protected Uri AppendIdentifiers(Uri baseIdentifier, string uriHash) {
-			Contract.Requires(baseIdentifier != null);
-			Contract.Requires(!String.IsNullOrEmpty(uriHash));
+			if (baseIdentifier == null) {
+				throw new ArgumentNullException("baseIdentifier");
+			}
+			if (String.IsNullOrEmpty(uriHash)) {
+				throw new ArgumentNullException("uriHash");
+			}
 
 			if (string.IsNullOrEmpty(baseIdentifier.Query)) {
 				// The uriHash will appear on the path itself.

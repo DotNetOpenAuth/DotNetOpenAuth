@@ -30,8 +30,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// <remarks>The random number generator is thread-safe.</remarks>
 		internal static readonly RandomNumberGenerator CryptoRandomDataGenerator = new RNGCryptoServiceProvider();
 
-		internal static readonly Random NonCryptoRandomDataGenerator = new Random();
-
 		/// <summary>
 		/// A set of escaping mappings that help secure a string from javscript execution.
 		/// </summary>
@@ -157,17 +155,6 @@ namespace DotNetOpenAuth.Messaging {
 			byte[] uniq_bytes = GetCryptoRandomData(binaryLength);
 			string uniq = Convert.ToBase64String(uniq_bytes);
 			return uniq;
-		}
-
-		/// <summary>
-		/// Gets a buffer of random data (not cryptographically strong).
-		/// </summary>
-		/// <param name="length">The length of the sequence to generate.</param>
-		/// <returns>The generated values, which may contain zeros.</returns>
-		internal static byte[] GetNonCryptoRandomData(int length) {
-			byte[] buffer = new byte[length];
-			NonCryptoRandomDataGenerator.NextBytes(buffer);
-			return buffer;
 		}
 
 		/// <summary>
