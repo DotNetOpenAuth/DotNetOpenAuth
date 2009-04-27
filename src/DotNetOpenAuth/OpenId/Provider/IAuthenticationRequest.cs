@@ -6,18 +6,13 @@
 
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
-	using System.Collections.Generic;
-	using System.Text;
 	using DotNetOpenAuth.Messaging;
-	using System.Diagnostics.Contracts;
-	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
 	/// Instances of this interface represent incoming authentication requests.
 	/// This interface provides the details of the request and allows setting
 	/// the response.
 	/// </summary>
-	[ContractClass(typeof(IAuthenticationRequestContract))]
 	public interface IAuthenticationRequest : IRequest {
 		/// <summary>
 		/// Gets the version of OpenID being used by the relying party that sent the request.
@@ -125,87 +120,5 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// 	<para>See OpenID Authentication 2.0 spec section 9.2.1.</para>
 		/// </remarks>
 		bool IsReturnUrlDiscoverable(IDirectWebRequestHandler requestHandler);
-	}
-
-	[ContractClassFor(typeof(IAuthenticationRequest))]
-	internal abstract class IAuthenticationRequestContract : IAuthenticationRequest {
-		#region IAuthenticationRequest Members
-
-		ProtocolVersion IAuthenticationRequest.RelyingPartyVersion {
-			get { throw new NotImplementedException(); }
-		}
-
-		bool IAuthenticationRequest.Immediate {
-			get { throw new NotImplementedException(); }
-		}
-
-		Realm IAuthenticationRequest.Realm {
-			get { throw new NotImplementedException(); }
-		}
-
-		bool IAuthenticationRequest.IsDirectedIdentity {
-			get { throw new NotImplementedException(); }
-		}
-
-		bool IAuthenticationRequest.IsDelegatedIdentifier {
-			get { throw new NotImplementedException(); }
-		}
-
-		Identifier IAuthenticationRequest.LocalIdentifier {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
-		}
-
-		Identifier IAuthenticationRequest.ClaimedIdentifier {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
-		}
-
-		bool? IAuthenticationRequest.IsAuthenticated {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
-		}
-
-		void IAuthenticationRequest.SetClaimedIdentifierFragment(string fragment) {
-			throw new NotImplementedException();
-		}
-
-		bool IAuthenticationRequest.IsReturnUrlDiscoverable(IDirectWebRequestHandler requestHandler) {
-			throw new NotImplementedException();
-		}
-
-		#endregion
-
-		#region IRequest Members
-
-		bool IRequest.IsResponseReady {
-			get { throw new NotImplementedException(); }
-		}
-
-		void IRequest.AddResponseExtension(IOpenIdMessageExtension extension) {
-			throw new NotImplementedException();
-		}
-
-		T IRequest.GetExtension<T>() {
-			throw new NotImplementedException();
-		}
-
-		IOpenIdMessageExtension IRequest.GetExtension(Type extensionType) {
-			throw new NotImplementedException();
-		}
-
-		#endregion
 	}
 }

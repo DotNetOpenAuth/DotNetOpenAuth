@@ -5,11 +5,11 @@ namespace OpenIdProviderMvc.Controllers {
 	using System.Web;
 	using System.Web.Mvc;
 	using System.Web.Mvc.Ajax;
+	using DotNetOpenAuth.ApplicationBlock.Provider;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Provider;
 	using OpenIdProviderMvc.Code;
-	using DotNetOpenAuth.ApplicationBlock.Provider;
-	using DotNetOpenAuth.OpenId;
 
 	public class OpenIdController : Controller {
 		internal static OpenIdProvider OpenIdProvider = new OpenIdProvider();
@@ -21,12 +21,12 @@ namespace OpenIdProviderMvc.Controllers {
 
 		[ValidateInput(false)]
 		public ActionResult PpidProvider() {
-			return DoProvider(true);
+			return this.DoProvider(true);
 		}
 
 		[ValidateInput(false)]
 		public ActionResult Provider() {
-			return DoProvider(false);
+			return this.DoProvider(false);
 		}
 
 		[Authorize]
@@ -62,7 +62,7 @@ namespace OpenIdProviderMvc.Controllers {
 						authReq.IsAuthenticated = false;
 					}
 				}
-	
+
 				// TODO: Respond to AX/sreg extension requests here.
 				// We don't want to add these extension responses for anonymous identifiers
 				// because they could leak information about the user's identity.

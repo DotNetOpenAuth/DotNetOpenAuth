@@ -13,6 +13,5 @@
 
 			return new Uri(HttpContext.Current.Request.Url, appPath + value);
 		}
-
 	}
 }

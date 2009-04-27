@@ -18,8 +18,9 @@ namespace DotNetOpenAuth.ApplicationBlock.Provider {
 		private int newSaltLength = 20;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StandardAnonymousIdentifierProvider"/> class.
+		/// Initializes a new instance of the <see cref="AnonymousIdentifierProviderBase"/> class.
 		/// </summary>
+		/// <param name="baseIdentifier">The base URI on which to append the anonymous part.</param>
 		public AnonymousIdentifierProviderBase(Uri baseIdentifier) {
 			if (baseIdentifier == null) {
 				throw new ArgumentNullException("baseIdentifier");
@@ -38,7 +39,7 @@ namespace DotNetOpenAuth.ApplicationBlock.Provider {
 
 		protected int NewSaltLength {
 			get {
-				return newSaltLength;
+				return this.newSaltLength;
 			}
 
 			set {
@@ -46,14 +47,14 @@ namespace DotNetOpenAuth.ApplicationBlock.Provider {
 					throw new ArgumentOutOfRangeException("value");
 				}
 
-				newSaltLength = value;
+				this.newSaltLength = value;
 			}
 		}
 
 		#region IAnonymousIdentifierProvider Members
 
 		public Uri GetAnonymousIdentifier(Identifier localIdentifier, Realm relyingPartyRealm) {
-			byte[] salt = GetHashSaltForLocalIdentifier(localIdentifier);
+			byte[] salt = this.GetHashSaltForLocalIdentifier(localIdentifier);
 			string valueToHash = localIdentifier + "#" + (relyingPartyRealm ?? string.Empty);
 			byte[] valueAsBytes = this.Encoder.GetBytes(valueToHash);
 			byte[] bytesToHash = new byte[valueAsBytes.Length + salt.Length];
@@ -61,7 +62,7 @@ namespace DotNetOpenAuth.ApplicationBlock.Provider {
 			salt.CopyTo(bytesToHash, valueAsBytes.Length);
 			byte[] hash = this.Hasher.ComputeHash(bytesToHash);
 			string base64Hash = Convert.ToBase64String(hash);
-			Uri anonymousIdentifier = AppendIdentifiers(this.BaseIdentifier, base64Hash);
+			Uri anonymousIdentifier = this.AppendIdentifiers(this.BaseIdentifier, base64Hash);
 			return anonymousIdentifier;
 		}
 

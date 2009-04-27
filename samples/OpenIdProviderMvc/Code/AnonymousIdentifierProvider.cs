@@ -1,13 +1,9 @@
 ﻿namespace OpenIdProviderMvc.Code {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Web;
-	using DotNetOpenAuth.OpenId.Provider;
-	using DotNetOpenAuth.OpenId;
 	using System.Web.Security;
-	using OpenIdProviderMvc.Models;
 	using DotNetOpenAuth.ApplicationBlock.Provider;
+	using DotNetOpenAuth.OpenId;
+	using OpenIdProviderMvc.Models;
 
 	internal class AnonymousIdentifierProvider : AnonymousIdentifierProviderBase {
 		internal AnonymousIdentifierProvider()

@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DotNetOpenAuth.OpenId.Provider;
-using DotNetOpenAuth.OpenId;
+﻿namespace DotNetOpenAuth.ApplicationBlock.Provider {
+	using System;
+	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.Provider;
 
-namespace DotNetOpenAuth.ApplicationBlock.Provider {
 	public static class AuthenticationRequestExtensions {
 		/// <summary>
 		/// Removes all personally identifiable information from the positive assertion.
 		/// </summary>
+		/// <param name="request">The incoming authentication request.</param>
+		/// <param name="localIdentifier">The OP local identifier, before the anonymous hash is applied to it.</param>
+		/// <param name="anonymousIdentifierProvider">The anonymous identifier provider.</param>
+		/// <param name="pairwiseUnique">if set to <c>true</c> the anonymous identifier will be unique to the requesting relying party's realm.</param>
 		/// <remarks>
 		/// The openid.claimed_id and openid.identity values are hashed.
 		/// </remarks>

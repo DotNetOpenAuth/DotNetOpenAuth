@@ -6,16 +6,9 @@
 
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
 	using System.Net;
-	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
-	using System.Diagnostics.Contracts;
-	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
-	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
-	using System.Security.Cryptography;
 
 	/// <summary>
 	/// Implements the <see cref="IAuthenticationRequest"/> interface
