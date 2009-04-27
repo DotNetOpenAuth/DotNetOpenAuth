@@ -340,7 +340,7 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The OpenId Provider issued an assertion for an Identifier whose discovery information did not match.  
+        ///   Looks up a localized string similar to The OpenID Provider issued an assertion for an Identifier whose discovery information did not match.  
         ///Assertion endpoint info: 
         ///{0}
         ///Discovered endpoint info:
@@ -407,7 +407,7 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No XRDS document containing OpenId relying party endpoint information could be found at {0}..
+        ///   Looks up a localized string similar to No XRDS document containing OpenID relying party endpoint information could be found at {0}..
         /// </summary>
         internal static string NoRelyingPartyEndpointDiscovered {
             get {
@@ -434,7 +434,7 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No OpenId endpoint found..
+        ///   Looks up a localized string similar to No OpenID endpoint found..
         /// </summary>
         internal static string OpenIdEndpointNotFound {
             get {
@@ -443,7 +443,7 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No OpenId url is provided..
+        ///   Looks up a localized string similar to No OpenID url is provided..
         /// </summary>
         internal static string OpenIdTextBoxEmpty {
             get {
