@@ -5,17 +5,23 @@
 	using System.Text.RegularExpressions;
 	using System.Web;
 	using System.Web.Routing;
+	using OpenIdProviderMvc.Code;
 
 	internal class User {
+		internal static Uri PpidClaimedIdentifierBaseUri {
+			get { return Util.GetAppPathRootedUri("anon?id="); }
+		}
+
+		internal static Uri ClaimedIdentifierBaseUri {
+			get { return Util.GetAppPathRootedUri("user/"); }
+		}
+
 		internal static Uri GetClaimedIdentifierForUser(string username) {
-			string appPath = HttpContext.Current.Request.ApplicationPath;
-			if (!appPath.EndsWith("/")) {
-				appPath += "/";
+			if (String.IsNullOrEmpty(username)) {
+				throw new ArgumentNullException("username");
 			}
-			Uri claimedIdentifier = new Uri(
-				HttpContext.Current.Request.Url,
-				appPath + "user/" + username);
-			return new Uri(claimedIdentifier.AbsoluteUri.ToLowerInvariant());
+
+			return new Uri(ClaimedIdentifierBaseUri, username.ToLowerInvariant());
 		}
 
 		internal static string GetUserFromClaimedIdentifier(Uri claimedIdentifier) {

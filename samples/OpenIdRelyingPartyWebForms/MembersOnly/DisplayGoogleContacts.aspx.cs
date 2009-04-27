@@ -17,7 +17,7 @@
 				} else {
 					this.emailLabel.Text = "unavailable";
 				}
-				claimedIdLabel.Text = User.Identity.Name;
+				this.claimedIdLabel.Text = this.User.Identity.Name;
 				var contactsDocument = GoogleConsumer.GetContacts(Global.GoogleWebConsumer, State.GoogleAccessToken);
 				this.RenderContacts(contactsDocument);
 			}

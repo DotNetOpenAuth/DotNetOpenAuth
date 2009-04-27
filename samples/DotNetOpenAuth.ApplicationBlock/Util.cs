@@ -5,6 +5,8 @@
 	using DotNetOpenAuth.Messaging;
 
 	internal static class Util {
+		internal static readonly Random NonCryptoRandomDataGenerator = new Random();
+
 		/// <summary>
 		/// Enumerates through the individual set bits in a flag enum.
 		/// </summary>
@@ -25,6 +27,17 @@
 		internal static Uri GetCallbackUrlFromContext() {
 			Uri callback = MessagingUtilities.GetRequestUrlFromContext().StripQueryArgumentsWithPrefix("oauth_");
 			return callback;
+		}
+
+		/// <summary>
+		/// Gets a buffer of random data (not cryptographically strong).
+		/// </summary>
+		/// <param name="length">The length of the sequence to generate.</param>
+		/// <returns>The generated values, which may contain zeros.</returns>
+		internal static byte[] GetNonCryptoRandomData(int length) {
+			byte[] buffer = new byte[length];
+			NonCryptoRandomDataGenerator.NextBytes(buffer);
+			return buffer;
 		}
 
 		/// <summary>
