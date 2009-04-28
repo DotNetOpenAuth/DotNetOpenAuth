@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 
 namespace DotNetOpenId.RelyingParty {
@@ -19,14 +20,24 @@ namespace DotNetOpenId.RelyingParty {
 
 			try {
 				FetchResponse resp = Fetcher.Request(Provider, body);
-				if ((int)resp.Code >= 200 && (int)resp.Code < 300) {
-					return ProtocolMessages.KeyValueForm.GetDictionary(new MemoryStream(resp.Data, 0, resp.Length));
-				} else {
+				IDictionary<string, string> data = ProtocolMessages.KeyValueForm.GetDictionary(new MemoryStream(resp.Data, 0, resp.Length));
+				if (resp.Code == HttpStatusCode.BadRequest) {
 					if (TraceUtil.Switch.TraceError) {
 						Trace.TraceError("Bad request code returned from remote server: {0}.", resp.Code);
 					}
-					return null;
+					string errorMessage;
+					if (data.TryGetValue(QueryStringArgs.openidnp.error, out errorMessage)) {
+						throw new OpenIdException(string.Format(CultureInfo.CurrentCulture, "OpenID Provider returned an error: '{0}'.", errorMessage));
+					} else {
+						throw new OpenIdException("OpenID Provider returned an error but is missing the error message.");
+					}
+				} else if ((int)resp.Code < 200 || (int)resp.Code > 300) {
+					if (TraceUtil.Switch.TraceError) {
+						Trace.TraceError("Unexpcted HTTP code in direct response: {0}.", resp.Code);
+					}
 				}
+
+				return data;
 			} catch (ArgumentException e) {
 				if (TraceUtil.Switch.TraceWarning)
 					Trace.TraceWarning("Failure decoding Key-Value Form response from provider.");
