@@ -7,11 +7,19 @@ using System.Web.UI.WebControls;
 using DotNetOpenAuth;
 using DotNetOpenAuth.OAuth;
 using DotNetOpenAuth.OAuth.Messages;
+using System.Security.Cryptography;
 
 /// <summary>
 /// Conducts the user through a Consumer authorization process.
 /// </summary>
 public partial class Authorize : System.Web.UI.Page {
+	private static readonly RandomNumberGenerator CryptoRandomDataGenerator = new RNGCryptoServiceProvider();
+
+	private string AuthorizationSecret {
+		get { return Session["OAuthAuthorizationSecret"] as string; }
+		set { Session["OAuthAuthorizationSecret"] = value; }
+	}
+
 	protected void Page_Load(object sender, EventArgs e) {
 		if (!IsPostBack) {
 			if (Global.PendingOAuthAuthorization == null) {
@@ -21,11 +29,23 @@ public partial class Authorize : System.Web.UI.Page {
 				var token = Global.DataContext.OAuthTokens.Single(t => t.Token == pendingToken.Token);
 				desiredAccessLabel.Text = token.Scope;
 				consumerLabel.Text = Global.TokenManager.GetConsumerForToken(token.Token).ConsumerKey;
+
+				// Generate an unpredictable secret that goes to the user agent and must come back
+				// with authorization to guarantee the user interacted with this page rather than
+				// being scripted by an evil Consumer.
+				byte[] randomData = new byte[8];
+				CryptoRandomDataGenerator.GetBytes(randomData);
+				this.AuthorizationSecret = Convert.ToBase64String(randomData);
+				OAuthAuthorizationSecToken.Value = this.AuthorizationSecret;
 			}
 		}
 	}
 
 	protected void allowAccessButton_Click(object sender, EventArgs e) {
+		if (this.AuthorizationSecret != OAuthAuthorizationSecToken.Value) {
+			throw new ArgumentException(); // probably someone trying to hack in.
+		}
+		this.AuthorizationSecret = null; // clear one time use secret
 		var pending = Global.PendingOAuthAuthorization;
 		Global.AuthorizePendingRequestToken();
 		multiView.ActiveViewIndex = 1;
