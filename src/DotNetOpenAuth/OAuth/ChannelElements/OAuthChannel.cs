@@ -285,10 +285,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 
 			httpRequest.Headers.Add(HttpRequestHeader.Authorization, authorization.ToString());
 
-			if ((requestMessage.HttpMethods & HttpDeliveryMethods.PostRequest) != 0) {
-				httpRequest.Method = "POST";
-			}
-
 			return httpRequest;
 		}
 
