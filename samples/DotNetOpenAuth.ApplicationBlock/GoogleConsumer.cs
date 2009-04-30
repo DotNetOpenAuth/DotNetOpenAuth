@@ -38,9 +38,21 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// A mapping between Google's applications and their URI scope values.
 		/// </summary>
 		private static readonly Dictionary<Applications, string> DataScopeUris = new Dictionary<Applications, string> {
-			{ Applications.Contacts, "http://www.google.com/m8/feeds/" },
-			{ Applications.Calendar, "http://www.google.com/calendar/feeds/" },
+			{ Applications.Analytics, "https://www.google.com/analytics/feeds/" },
+			{ Applications.GoogleBase, "http://www.google.com/base/feeds/" },
 			{ Applications.Blogger, "http://www.blogger.com/feeds" },
+			{ Applications.BookSearch, "http://www.google.com/books/feeds/" },
+			{ Applications.Calendar, "http://www.google.com/calendar/feeds/" },
+			{ Applications.Contacts, "http://www.google.com/m8/feeds/" },
+			{ Applications.DocumentsList, "http://docs.google.com/feeds/" },
+			{ Applications.Finance, "http://finance.google.com/finance/feeds/" },
+			{ Applications.Gmail, "https://mail.google.com/mail/feed/atom" },
+			{ Applications.Health, "https://www.google.com/h9/feeds/" },
+			{ Applications.OpenSocial, "http://sandbox.gmodules.com/api/" },
+			{ Applications.PicasaWeb, "http://picasaweb.google.com/data/" },
+			{ Applications.Spreadsheets, "http://spreadsheets.google.com/feeds/" },
+			{ Applications.WebmasterTools, "http://www.google.com/webmasters/tools/feeds/" },
+			{ Applications.YouTube, "http://gdata.youtube.com" },
 		};
 
 		/// <summary>
@@ -67,6 +79,66 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			/// Blog post authoring.
 			/// </summary>
 			Blogger = 0x4,
+
+			/// <summary>
+			/// Google Finance
+			/// </summary>
+			Finance = 0x8,
+
+			/// <summary>
+			/// Gmail
+			/// </summary>
+			Gmail = 0x10,
+
+			/// <summary>
+			/// Google Health
+			/// </summary>
+			Health = 0x20,
+
+			/// <summary>
+			/// OpenSocial
+			/// </summary>
+			OpenSocial = 0x40,
+
+			/// <summary>
+			/// Picasa Web
+			/// </summary>
+			PicasaWeb = 0x80,
+
+			/// <summary>
+			/// Google Spreadsheets
+			/// </summary>
+			Spreadsheets = 0x100,
+
+			/// <summary>
+			/// Webmaster Tools
+			/// </summary>
+			WebmasterTools = 0x200,
+
+			/// <summary>
+			/// YouTube
+			/// </summary>
+			YouTube = 0x400,
+
+			/// <summary>
+			/// Google Docs
+			/// </summary>
+			DocumentsList = 0x800,
+
+			/// <summary>
+			/// Google Book Search
+			/// </summary>
+			BookSearch = 0x1000,
+
+			/// <summary>
+			/// Google Base
+			/// </summary>
+			GoogleBase = 0x2000,
+
+			/// <summary>
+			/// Analytics
+			/// </summary>
+			Analytics = 0x4000,
 		}
 
 		/// <summary>

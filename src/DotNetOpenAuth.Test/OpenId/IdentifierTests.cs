@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		public void TryParseNoThrow() {
 			Identifier id;
 			Assert.IsFalse(Identifier.TryParse(null, out id));
-			Assert.IsFalse(Identifier.TryParse("", out id));
+			Assert.IsFalse(Identifier.TryParse(string.Empty, out id));
 		}
 
 		[TestMethod]

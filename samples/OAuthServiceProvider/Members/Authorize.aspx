@@ -7,6 +7,7 @@
 			<div style="background-color: Yellow">
 				<b>Warning</b>: Never give your login credentials to another web site or application.
 			</div>
+			<asp:HiddenField runat="server" ID="OAuthAuthorizationSecToken" EnableViewState="false" />
 			<p>The client web site or application
 				<asp:Label ID="consumerLabel" Font-Bold="true" runat="server" Text="[consumer]" />
 				wants access to your

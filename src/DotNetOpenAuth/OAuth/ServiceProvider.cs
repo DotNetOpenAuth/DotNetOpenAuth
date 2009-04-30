@@ -271,20 +271,41 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="request">The Consumer's original authorization request.</param>
 		/// <returns>
 		/// The message to send to the Consumer using <see cref="Channel"/> if one is necessary.
-		/// Null if the Consumer did not request a callback.
+		/// Null if the Consumer did not request a callback as part of the authorization request.
 		/// </returns>
 		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Consistent user experience with instance.")]
 		public UserAuthorizationResponse PrepareAuthorizationResponse(UserAuthorizationRequest request) {
+			Contract.Requires(request != null);
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			if (request.Callback != null) {
-				var authorization = new UserAuthorizationResponse(request.Callback) {
-					RequestToken = request.RequestToken,
-				};
-				return authorization;
+				return this.PrepareAuthorizationResponse(request, request.Callback);
 			} else {
 				return null;
 			}
+		}
+
+		/// <summary>
+		/// Prepares the message to send back to the consumer following proper authorization of
+		/// a token by an interactive user at the Service Provider's web site.
+		/// </summary>
+		/// <param name="request">The Consumer's original authorization request.</param>
+		/// <param name="callback">The callback URI the consumer has previously registered
+		/// with this service provider.</param>
+		/// <returns>
+		/// The message to send to the Consumer using <see cref="Channel"/>.
+		/// </returns>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Consistent user experience with instance.")]
+		public UserAuthorizationResponse PrepareAuthorizationResponse(UserAuthorizationRequest request, Uri callback) {
+			Contract.Requires(request != null);
+			Contract.Requires(callback != null);
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			ErrorUtilities.VerifyArgumentNotNull(callback, "callback");
+
+			var authorization = new UserAuthorizationResponse(request.Callback) {
+				RequestToken = request.RequestToken,
+			};
+			return authorization;
 		}
 
 		/// <summary>

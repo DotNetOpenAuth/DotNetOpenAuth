@@ -119,4 +119,18 @@ public class DatabaseTokenManager : IServiceProviderTokenManager {
 		tokenRow.State = TokenAuthorizationState.AuthorizedRequestToken;
 		tokenRow.User = user;
 	}
+
+	public OAuthConsumer GetConsumerForToken(string token) {
+		if (String.IsNullOrEmpty(token)) {
+			throw new ArgumentNullException("requestToken");
+		}
+
+		var tokenRow = Global.DataContext.OAuthTokens.SingleOrDefault(
+			tokenCandidate => tokenCandidate.Token == token);
+		if (tokenRow == null) {
+			throw new ArgumentException();
+		}
+
+		return tokenRow.OAuthConsumer;
+	}
 }
