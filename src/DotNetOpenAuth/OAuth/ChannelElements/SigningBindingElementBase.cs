@@ -174,7 +174,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				// as well.  Besides, it seems more secure to sign everything if it's there.
 				NameValueCollection nvc = HttpUtility.ParseQueryString(message.Recipient.Query);
 				foreach (string key in nvc) {
-					encodedDictionary.Add(key, nvc[key]);
+					encodedDictionary.Add(Uri.EscapeDataString(key), Uri.EscapeDataString(nvc[key]));
 				}
 			} else if (message.HttpMethod == "POST") {
 				// If the HttpWebRequest that we're sending out has a content-type header
