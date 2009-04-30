@@ -7,9 +7,11 @@
 namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.Specialized;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Text;
+	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
@@ -164,13 +166,29 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 
 			signatureBaseStringElements.Add(message.HttpMethod.ToUpperInvariant());
 
+			var encodedDictionary = OAuthChannel.GetUriEscapedParameters(messageDictionary);
+			encodedDictionary.Remove("oauth_signature");
+			if (message.Recipient.Query != null) {
+				// It seeems to me a deviation from the OAuth 1.0 spec to be willing to scrape the query
+				// for parameters on anything but GET requests, but Google does it so to interop we must
+				// as well.  Besides, it seems more secure to sign everything if it's there.
+				NameValueCollection nvc = HttpUtility.ParseQueryString(message.Recipient.Query);
+				foreach (string key in nvc) {
+					encodedDictionary.Add(key, nvc[key]);
+				}
+			} else if (message.HttpMethod == "POST") {
+				// If the HttpWebRequest that we're sending out has a content-type header
+				// of application/x-www-form-urlencoded, we should be parsing out those parameters
+				// and adding them to this dictionary as well.
+				// But at this point we don't have access to the HttpWebRequest (design flaw?)
+				// TODO: figure this out.
+			}
+
 			UriBuilder endpoint = new UriBuilder(message.Recipient);
 			endpoint.Query = null;
 			endpoint.Fragment = null;
 			signatureBaseStringElements.Add(endpoint.Uri.AbsoluteUri);
 
-			var encodedDictionary = OAuthChannel.GetUriEscapedParameters(messageDictionary);
-			encodedDictionary.Remove("oauth_signature");
 			var sortedKeyValueList = new List<KeyValuePair<string, string>>(encodedDictionary);
 			sortedKeyValueList.Sort(SignatureBaseStringParameterComparer);
 			StringBuilder paramBuilder = new StringBuilder();

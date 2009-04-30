@@ -38,6 +38,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// A mapping between Google's applications and their URI scope values.
 		/// </summary>
 		private static readonly Dictionary<Applications, string> DataScopeUris = new Dictionary<Applications, string> {
+			{ Applications.Analytics, "https://www.google.com/analytics/feeds/" },
 			{ Applications.GoogleBase, "http://www.google.com/base/feeds/" },
 			{ Applications.Blogger, "http://www.blogger.com/feeds" },
 			{ Applications.BookSearch, "http://www.google.com/books/feeds/" },
@@ -133,6 +134,11 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			/// Google Base
 			/// </summary>
 			GoogleBase = 0x2000,
+
+			/// <summary>
+			/// Analytics
+			/// </summary>
+			Analytics = 0x4000,
 		}
 
 		/// <summary>
