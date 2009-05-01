@@ -219,6 +219,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			HttpRequestInfo request = new HttpRequestInfo {
 				HttpMethod = method,
 				Url = requestUri.Uri,
+				RawUrl = requestUri.Path + requestUri.Query + requestUri.Fragment,
 				Headers = headers,
 				InputStream = ms,
 			};
@@ -230,6 +231,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			HttpRequestInfo info = new HttpRequestInfo {
 				HttpMethod = request.Method,
 				Url = request.RequestUri,
+				RawUrl = request.RequestUri.AbsolutePath + request.RequestUri.Query + request.RequestUri.Fragment,
 				Headers = request.Headers,
 				InputStream = postEntity,
 			};
