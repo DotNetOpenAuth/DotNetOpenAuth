@@ -73,7 +73,35 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
 		/// <returns>The initialized WebRequest object.</returns>
 		public HttpWebRequest PrepareAuthorizedRequest(MessageReceivingEndpoint endpoint, string accessToken) {
+			Contract.Requires(endpoint != null);
+			Contract.Requires(!String.IsNullOrEmpty(accessToken));
+			ErrorUtilities.VerifyArgumentNotNull(endpoint, "endpoint");
+			ErrorUtilities.VerifyNonZeroLength(accessToken, "accessToken");
+
+			return PrepareAuthorizedRequest(endpoint, accessToken, EmptyDictionary<string, string>.Instance);
+		}
+
+		/// <summary>
+		/// Creates a web request prepared with OAuth authorization
+		/// that may be further tailored by adding parameters by the caller.
+		/// </summary>
+		/// <param name="endpoint">The URL and method on the Service Provider to send the request to.</param>
+		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
+		/// <param name="extraData">Extra parameters to include in the message.  Must not be null, but may be empty.</param>
+		/// <returns>The initialized WebRequest object.</returns>
+		public HttpWebRequest PrepareAuthorizedRequest(MessageReceivingEndpoint endpoint, string accessToken, IDictionary<string, string> extraData) {
+			Contract.Requires(endpoint != null);
+			Contract.Requires(!String.IsNullOrEmpty(accessToken));
+			Contract.Requires(extraData != null);
+			ErrorUtilities.VerifyArgumentNotNull(endpoint, "endpoint");
+			ErrorUtilities.VerifyNonZeroLength(accessToken, "accessToken");
+			ErrorUtilities.VerifyArgumentNotNull(extraData, "extraData");
+
 			IDirectedProtocolMessage message = this.CreateAuthorizingMessage(endpoint, accessToken);
+			foreach (var pair in extraData) {
+				message.ExtraData.Add(pair);
+			}
+
 			HttpWebRequest wr = this.OAuthChannel.InitializeRequest(message);
 			return wr;
 		}
@@ -106,27 +134,6 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="endpoint">The URL and method on the Service Provider to send the request to.</param>
 		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
 		/// <returns>The initialized WebRequest object.</returns>
-		public AccessProtectedResourceRequest CreateAuthorizingMessage(MessageReceivingEndpoint endpoint, string accessToken) {
-			Contract.Requires(endpoint != null);
-			Contract.Requires(!String.IsNullOrEmpty(accessToken));
-			ErrorUtilities.VerifyArgumentNotNull(endpoint, "endpoint");
-			ErrorUtilities.VerifyNonZeroLength(accessToken, "accessToken");
-
-			AccessProtectedResourceRequest message = new AccessProtectedResourceRequest(endpoint) {
-				AccessToken = accessToken,
-				ConsumerKey = this.ConsumerKey,
-			};
-
-			return message;
-		}
-
-		/// <summary>
-		/// Creates a web request prepared with OAuth authorization 
-		/// that may be further tailored by adding parameters by the caller.
-		/// </summary>
-		/// <param name="endpoint">The URL and method on the Service Provider to send the request to.</param>
-		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
-		/// <returns>The initialized WebRequest object.</returns>
 		/// <exception cref="WebException">Thrown if the request fails for any reason after it is sent to the Service Provider.</exception>
 		public IncomingWebResponse PrepareAuthorizedRequestAndSend(MessageReceivingEndpoint endpoint, string accessToken) {
 			IDirectedProtocolMessage message = this.CreateAuthorizingMessage(endpoint, accessToken);
@@ -145,6 +152,27 @@ namespace DotNetOpenAuth.OAuth {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Creates a web request prepared with OAuth authorization 
+		/// that may be further tailored by adding parameters by the caller.
+		/// </summary>
+		/// <param name="endpoint">The URL and method on the Service Provider to send the request to.</param>
+		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
+		/// <returns>The initialized WebRequest object.</returns>
+		protected internal AccessProtectedResourceRequest CreateAuthorizingMessage(MessageReceivingEndpoint endpoint, string accessToken) {
+			Contract.Requires(endpoint != null);
+			Contract.Requires(!String.IsNullOrEmpty(accessToken));
+			ErrorUtilities.VerifyArgumentNotNull(endpoint, "endpoint");
+			ErrorUtilities.VerifyNonZeroLength(accessToken, "accessToken");
+
+			AccessProtectedResourceRequest message = new AccessProtectedResourceRequest(endpoint) {
+				AccessToken = accessToken,
+				ConsumerKey = this.ConsumerKey,
+			};
+
+			return message;
+		}
 
 		/// <summary>
 		/// Prepares an OAuth message that begins an authorization request that will 
