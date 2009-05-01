@@ -431,24 +431,6 @@ namespace DotNetOpenAuth.Messaging {
 		#endregion
 
 		/// <summary>
-		/// Checks whether a given HTTP method is expected to include an entity body in its request.
-		/// </summary>
-		/// <param name="httpMethod">The HTTP method.</param>
-		/// <returns><c>true</c> if the HTTP method is supposed to have an entity; <c>false</c> otherwise.</returns>
-		protected static bool HttpMethodHasEntity(string httpMethod) {
-			if (string.Equals(httpMethod, "GET", StringComparison.Ordinal) ||
-				string.Equals(httpMethod, "HEAD", StringComparison.Ordinal) ||
-				string.Equals(httpMethod, "DELETE", StringComparison.Ordinal)) {
-				return false;
-			} else if (string.Equals(httpMethod, "POST", StringComparison.Ordinal) ||
-				string.Equals(httpMethod, "PUT", StringComparison.Ordinal)) {
-				return true;
-			} else {
-				throw ErrorUtilities.ThrowArgumentNamed("httpMethod", MessagingStrings.UnsupportedHttpVerb, httpMethod);
-			}
-		}
-
-		/// <summary>
 		/// Gets the current HTTP request being processed.
 		/// </summary>
 		/// <returns>The HttpRequestInfo for the current request.</returns>
