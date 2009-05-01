@@ -32,7 +32,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// <summary>
 		/// Gets the type of authentication used.
 		/// </summary>
-		/// <value>"OAuth"</value>
+		/// <value>The constant "OAuth"</value>
 		/// <returns>
 		/// The type of authentication used to identify the user.
 		/// </returns>
@@ -41,9 +41,9 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		}
 
 		/// <summary>
-		/// Gets a value that indicates whether the user has been authenticated.
+		/// Gets a value indicating whether the user has been authenticated.
 		/// </summary>
-		/// <value><c>true</c></value>
+		/// <value>The value <c>true</c></value>
 		/// <returns>true if the user was authenticated; otherwise, false.
 		/// </returns>
 		public bool IsAuthenticated {
