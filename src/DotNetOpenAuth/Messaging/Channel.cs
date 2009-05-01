@@ -429,6 +429,22 @@ namespace DotNetOpenAuth.Messaging {
 		#endregion
 
 		/// <summary>
+		/// Gets the current HTTP request being processed.
+		/// </summary>
+		/// <returns>The HttpRequestInfo for the current request.</returns>
+		/// <remarks>
+		/// Requires an <see cref="HttpContext.Current"/> context.
+		/// </remarks>
+		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
+		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Costly call should not be a property.")]
+		protected internal virtual HttpRequestInfo GetRequestFromContext() {
+			Contract.Ensures(Contract.Result<HttpRequestInfo>() != null);
+			ErrorUtilities.VerifyHttpContext();
+
+			return new HttpRequestInfo(HttpContext.Current.Request);
+		}
+
+		/// <summary>
 		/// Checks whether a given HTTP method is expected to include an entity body in its request.
 		/// </summary>
 		/// <param name="httpMethod">The HTTP method.</param>
@@ -444,22 +460,6 @@ namespace DotNetOpenAuth.Messaging {
 			} else {
 				throw ErrorUtilities.ThrowArgumentNamed("httpMethod", MessagingStrings.UnsupportedHttpVerb, httpMethod);
 			}
-		}
-
-		/// <summary>
-		/// Gets the current HTTP request being processed.
-		/// </summary>
-		/// <returns>The HttpRequestInfo for the current request.</returns>
-		/// <remarks>
-		/// Requires an <see cref="HttpContext.Current"/> context.
-		/// </remarks>
-		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
-		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Costly call should not be a property.")]
-		protected internal virtual HttpRequestInfo GetRequestFromContext() {
-			Contract.Ensures(Contract.Result<HttpRequestInfo>() != null);
-			ErrorUtilities.VerifyHttpContext();
-
-			return new HttpRequestInfo(HttpContext.Current.Request);
 		}
 
 		/// <summary>
@@ -826,7 +826,7 @@ namespace DotNetOpenAuth.Messaging {
 			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(requestMessage.Recipient);
 			httpRequest.CachePolicy = this.CachePolicy;
 			httpRequest.Method = "POST";
-			SendParametersInEntity(httpRequest, fields);
+			this.SendParametersInEntity(httpRequest, fields);
 
 			return httpRequest;
 		}

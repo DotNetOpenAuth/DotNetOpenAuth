@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.Configuration {
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
-	/// A collection of <see cref="TypeConfigurationElement"/>.
+	/// A collection of <see cref="TypeConfigurationElement&lt;T&gt;"/>.
 	/// </summary>
 	/// <typeparam name="T">The type that all types specified in the elements must derive from.</typeparam>
 	[ContractVerification(true)]

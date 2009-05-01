@@ -193,7 +193,6 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 				Timestamp = DateTime.UtcNow,
 				HttpMethods = HttpDeliveryMethods.AuthorizationHeaderRequest,
 			};
-			
 
 			// ExtraData should appear in the form since this is a POST request,
 			// and only official message parts get a place in the Authorization header.

@@ -259,7 +259,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <param name="message">The message.</param>
 		/// <returns>"POST", "GET" or some other similar http verb.</returns>
-		private string GetHttpMethod(IDirectedProtocolMessage message) {
+		private static string GetHttpMethod(IDirectedProtocolMessage message) {
 			Contract.Requires(message != null);
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
