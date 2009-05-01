@@ -429,6 +429,24 @@ namespace DotNetOpenAuth.Messaging {
 		#endregion
 
 		/// <summary>
+		/// Checks whether a given HTTP method is expected to include an entity body in its request.
+		/// </summary>
+		/// <param name="httpMethod">The HTTP method.</param>
+		/// <returns><c>true</c> if the HTTP method is supposed to have an entity; <c>false</c> otherwise.</returns>
+		protected static bool HttpMethodHasEntity(string httpMethod) {
+			if (string.Equals(httpMethod, "GET", StringComparison.Ordinal) ||
+				string.Equals(httpMethod, "HEAD", StringComparison.Ordinal) ||
+				string.Equals(httpMethod, "DELETE", StringComparison.Ordinal)) {
+				return false;
+			} else if (string.Equals(httpMethod, "POST", StringComparison.Ordinal) ||
+				string.Equals(httpMethod, "PUT", StringComparison.Ordinal)) {
+				return true;
+			} else {
+				throw ErrorUtilities.ThrowArgumentNamed("httpMethod", MessagingStrings.UnsupportedHttpVerb, httpMethod);
+			}
+		}
+
+		/// <summary>
 		/// Gets the current HTTP request being processed.
 		/// </summary>
 		/// <returns>The HttpRequestInfo for the current request.</returns>
@@ -808,11 +826,31 @@ namespace DotNetOpenAuth.Messaging {
 			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(requestMessage.Recipient);
 			httpRequest.CachePolicy = this.CachePolicy;
 			httpRequest.Method = "POST";
+			SendParametersInEntity(httpRequest, fields);
+
+			return httpRequest;
+		}
+
+		/// <summary>
+		/// Sends the given parameters in the entity stream of an HTTP request.
+		/// </summary>
+		/// <param name="httpRequest">The HTTP request.</param>
+		/// <param name="fields">The parameters to send.</param>
+		/// <remarks>
+		/// This method calls <see cref="HttpWebRequest.GetRequestStream()"/> and closes
+		/// the request stream, but does not call <see cref="HttpWebRequest.GetResponse"/>.
+		/// </remarks>
+		protected void SendParametersInEntity(HttpWebRequest httpRequest, IDictionary<string, string> fields) {
+			Contract.Requires(httpRequest != null);
+			Contract.Requires(fields != null);
+			ErrorUtilities.VerifyArgumentNotNull(httpRequest, "httpRequest");
+			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
+
 			httpRequest.ContentType = "application/x-www-form-urlencoded";
 
 			// Setting the content-encoding to "utf-8" causes Google to reply
 			// with a 415 UnsupportedMediaType. But adding it doesn't buy us
-			// anything specific, so it's disable it until we know how to get it right.
+			// anything specific, so we disable it until we know how to get it right.
 			////httpRequest.Headers[HttpRequestHeader.ContentEncoding] = PostEntityEncoding.WebName;
 
 			string requestBody = MessagingUtilities.CreateQueryString(fields);
@@ -829,8 +867,6 @@ namespace DotNetOpenAuth.Messaging {
 					requestStream.Dispose();
 				}
 			}
-
-			return httpRequest;
 		}
 
 		/// <summary>

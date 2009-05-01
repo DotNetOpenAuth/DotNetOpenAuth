@@ -280,6 +280,7 @@ namespace DotNetOpenAuth.Messaging {
 						this.queryStringBeforeRewriting = this.QueryString;
 					} else {
 						// Rewriting detected!  Recover the original request URI.
+						ErrorUtilities.VerifyInternal(this.UrlBeforeRewriting != null, "UrlBeforeRewriting is null, so the query string cannot be determined.");
 						this.queryStringBeforeRewriting = HttpUtility.ParseQueryString(this.UrlBeforeRewriting.Query);
 					}
 				}

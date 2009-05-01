@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OAuth {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Net;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
@@ -71,10 +72,31 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="endpoint">The URL and method on the Service Provider to send the request to.</param>
 		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
 		/// <returns>The initialized WebRequest object.</returns>
-		public WebRequest PrepareAuthorizedRequest(MessageReceivingEndpoint endpoint, string accessToken) {
+		public HttpWebRequest PrepareAuthorizedRequest(MessageReceivingEndpoint endpoint, string accessToken) {
 			IDirectedProtocolMessage message = this.CreateAuthorizingMessage(endpoint, accessToken);
 			HttpWebRequest wr = this.OAuthChannel.InitializeRequest(message);
 			return wr;
+		}
+
+		/// <summary>
+		/// Prepares an HTTP request that has OAuth authorization already attached to it.
+		/// </summary>
+		/// <param name="message">The OAuth authorization message to attach to the HTTP request.</param>
+		/// <returns>
+		/// The HttpWebRequest that can be used to send the HTTP request to the remote service provider.
+		/// </returns>
+		/// <remarks>
+		/// If <see cref="IDirectedProtocolMessage.HttpMethods"/> property on the
+		/// <paramref name="message"/> has the
+		/// <see cref="HttpDeliveryMethods.AuthorizationHeaderRequest"/> flag set and
+		/// <see cref="ITamperResistantOAuthMessage.HttpMethod"/> is set to an HTTP method
+		/// that includes an entity body, the request stream is automatically sent
+		/// if and only if the <see cref="IMessage.ExtraData"/> dictionary is non-empty.
+		/// </remarks>
+		public HttpWebRequest PrepareAuthorizedRequest(AccessProtectedResourceRequest message) {
+			Contract.Requires(message != null);
+			ErrorUtilities.VerifyArgumentNotNull(message, "message");
+			return this.OAuthChannel.InitializeRequest(message);
 		}
 
 		/// <summary>
@@ -144,13 +166,11 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="endpoint">The URL and method on the Service Provider to send the request to.</param>
 		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
 		/// <returns>The initialized WebRequest object.</returns>
-		protected internal AccessProtectedResourceRequest CreateAuthorizingMessage(MessageReceivingEndpoint endpoint, string accessToken) {
-			if (endpoint == null) {
-				throw new ArgumentNullException("endpoint");
-			}
-			if (String.IsNullOrEmpty(accessToken)) {
-				throw new ArgumentNullException("accessToken");
-			}
+		public AccessProtectedResourceRequest CreateAuthorizingMessage(MessageReceivingEndpoint endpoint, string accessToken) {
+			Contract.Requires(endpoint != null);
+			Contract.Requires(!String.IsNullOrEmpty(accessToken));
+			ErrorUtilities.VerifyArgumentNotNull(endpoint, "endpoint");
+			ErrorUtilities.VerifyNonZeroLength(accessToken, "accessToken");
 
 			AccessProtectedResourceRequest message = new AccessProtectedResourceRequest(endpoint) {
 				AccessToken = accessToken,
