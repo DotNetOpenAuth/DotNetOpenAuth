@@ -86,7 +86,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			Finance = 0x8,
 
 			/// <summary>
-			/// Gmail
+			/// Google Gmail
 			/// </summary>
 			Gmail = 0x10,
 
@@ -96,7 +96,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			Health = 0x20,
 
 			/// <summary>
-			/// OpenSocial
+			/// Google OpenSocial
 			/// </summary>
 			OpenSocial = 0x40,
 
@@ -116,7 +116,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			WebmasterTools = 0x200,
 
 			/// <summary>
-			/// YouTube
+			/// YouTube service
 			/// </summary>
 			YouTube = 0x400,
 
@@ -136,7 +136,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			GoogleBase = 0x2000,
 
 			/// <summary>
-			/// Analytics
+			/// Google Analytics
 			/// </summary>
 			Analytics = 0x4000,
 		}

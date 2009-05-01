@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using DotNetOpenAuth;
 using DotNetOpenAuth.OAuth;
 using DotNetOpenAuth.OAuth.Messages;
-using System.Security.Cryptography;
 
 /// <summary>
 /// Conducts the user through a Consumer authorization process.

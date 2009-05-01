@@ -50,6 +50,15 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			Assert.AreEqual(
 				"GET&https%3A%2F%2Fwww.google.com%2Faccounts%2FOAuthGetRequestToken&oauth_consumer_key%3Dnerdbank.org%26oauth_nonce%3Dfe4045a3f0efdd1e019fa8f8ae3f5c38%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D1222665749%26oauth_version%3D1.0%26scope%3Dhttp%253A%252F%252Fwww.google.com%252Fm8%252Ffeeds%252F",
 				SigningBindingElementBase_Accessor.ConstructSignatureBaseString(message, MessageDictionary_Accessor.AttachShadow(this.MessageDescriptions.GetAccessor(message))));
+
+			// This is a simulation of receiving the message, where the query string is still in the URL,
+			// but has been read into ExtraData, so parameters in the query string appear twice.
+			message = CreateTestRequestTokenMessage(
+				this.MessageDescriptions,
+				new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthGetRequestToken?scope=http://www.google.com/m8/feeds/", HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.PostRequest));
+			Assert.AreEqual(
+				"GET&https%3A%2F%2Fwww.google.com%2Faccounts%2FOAuthGetRequestToken&oauth_consumer_key%3Dnerdbank.org%26oauth_nonce%3Dfe4045a3f0efdd1e019fa8f8ae3f5c38%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D1222665749%26oauth_version%3D1.0%26scope%3Dhttp%253A%252F%252Fwww.google.com%252Fm8%252Ffeeds%252F",
+				SigningBindingElementBase_Accessor.ConstructSignatureBaseString(message, MessageDictionary_Accessor.AttachShadow(this.MessageDescriptions.GetAccessor(message))));
 		}
 
 		internal static UnauthorizedTokenRequest CreateTestRequestTokenMessage(MessageDescriptionCollection messageDescriptions, MessageReceivingEndpoint endpoint) {
