@@ -167,22 +167,27 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			signatureBaseStringElements.Add(message.HttpMethod.ToUpperInvariant());
 
 			var encodedDictionary = OAuthChannel.GetUriEscapedParameters(messageDictionary);
-			encodedDictionary.Remove("oauth_signature");
+
+			// An incoming message will already have included the query and form parameters
+			// in the message dictionary, but an outgoing message COULD have SOME parameters
+			// in the query that are not in the message dictionary because they were included
+			// in the receiving endpoint (the original URL).
+			// In an outgoing message, the POST entity can only contain parameters if they were
+			// in the message dictionary, so no need to pull out any parameters from there.
 			if (message.Recipient.Query != null) {
-				// It seeems to me a deviation from the OAuth 1.0 spec to be willing to scrape the query
-				// for parameters on anything but GET requests, but Google does it so to interop we must
-				// as well.  Besides, it seems more secure to sign everything if it's there.
 				NameValueCollection nvc = HttpUtility.ParseQueryString(message.Recipient.Query);
 				foreach (string key in nvc) {
-					encodedDictionary.Add(Uri.EscapeDataString(key), Uri.EscapeDataString(nvc[key]));
+					string escapedKey = Uri.EscapeDataString(key);
+					string escapedValue = Uri.EscapeDataString(nvc[key]);
+					string existingValue;
+					if (!encodedDictionary.TryGetValue(escapedKey, out existingValue)) {
+						encodedDictionary.Add(escapedKey, escapedValue);
+					} else {
+						ErrorUtilities.VerifyInternal(escapedValue == existingValue, "Somehow we have conflicting values for the '{0}' parameter.", escapedKey);
+					}
 				}
-			} else if (message.HttpMethod == "POST") {
-				// If the HttpWebRequest that we're sending out has a content-type header
-				// of application/x-www-form-urlencoded, we should be parsing out those parameters
-				// and adding them to this dictionary as well.
-				// But at this point we don't have access to the HttpWebRequest (design flaw?)
-				// TODO: figure this out.
 			}
+			encodedDictionary.Remove("oauth_signature");
 
 			UriBuilder endpoint = new UriBuilder(message.Recipient);
 			endpoint.Query = null;
