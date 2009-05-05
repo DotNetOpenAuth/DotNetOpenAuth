@@ -587,22 +587,18 @@ namespace DotNetOpenAuth.InfoCard {
 			cardSpaceControl.Attributes.Add(HtmlTextWriterAttribute.Type.ToString(), "application/x-informationcard");
 			cardSpaceControl.Attributes.Add(HtmlTextWriterAttribute.Id.ToString(), this.ClientID + "_cs");
 
-			// issuer
-			if (this.Issuer != null) {
+			if (!string.IsNullOrEmpty(this.Issuer)) {
 				cardSpaceControl.Controls.Add(CreateParam("issuer", this.Issuer));
 			}
 
-			// issuer policy
 			if (!string.IsNullOrEmpty(this.IssuerPolicy)) {
 				cardSpaceControl.Controls.Add(CreateParam("issuerPolicy", this.IssuerPolicy));
 			}
 
-			// token type
 			if (!string.IsNullOrEmpty(this.TokenType)) {
 				cardSpaceControl.Controls.Add(CreateParam("tokenType", this.TokenType));
 			}
 
-			// claims
 			string requiredClaims, optionalClaims;
 			this.GetRequestedClaims(out requiredClaims, out optionalClaims);
 			ErrorUtilities.VerifyArgument(!string.IsNullOrEmpty(requiredClaims) || !string.IsNullOrEmpty(optionalClaims), InfoCardStrings.EmptyClaimListNotAllowed);
@@ -613,12 +609,10 @@ namespace DotNetOpenAuth.InfoCard {
 				cardSpaceControl.Controls.Add(CreateParam("optionalClaims", optionalClaims));
 			}
 
-			// privacy URL
 			if (!string.IsNullOrEmpty(this.PrivacyUrl)) {
 				cardSpaceControl.Controls.Add(CreateParam("privacyUrl", this.PrivacyUrl));
 			}
 
-			// privacy version
 			if (!string.IsNullOrEmpty(this.PrivacyVersion)) {
 				cardSpaceControl.Controls.Add(CreateParam("privacyVersion", this.PrivacyVersion));
 			}
