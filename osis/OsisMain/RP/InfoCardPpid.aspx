@@ -27,7 +27,7 @@
 						<span id="formActionSpan"></span></td>
 				</tr>
 			</table>
-			<ic:InfoCardSelector ID="InfoCardSelector1" runat="server" OnReceivedToken="InfoCardSelector1_ReceivedToken"
+			<ic:InfoCardSelector ID="InfoCardSelector1" runat="server" Issuer="" OnReceivedToken="InfoCardSelector1_ReceivedToken"
 				OnTokenProcessingError="InfoCardSelector1_TokenProcessingError">
 				<ClaimsRequested>
 					<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier" />
