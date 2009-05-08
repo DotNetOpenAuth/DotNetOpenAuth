@@ -301,4 +301,7 @@ Discovered endpoint info:
   <data name="UnsupportedChannelConfiguration" xml:space="preserve">
     <value>This feature is unavailable due to an unrecognized channel configuration.</value>
   </data>
+  <data name="IdentityAndClaimedIdentifierMustBeBothPresentOrAbsent" xml:space="preserve">
+    <value>The openid.identity and openid.claimed_id parameters must either be both present or both absent from the message.</value>
+  </data>
 </root>

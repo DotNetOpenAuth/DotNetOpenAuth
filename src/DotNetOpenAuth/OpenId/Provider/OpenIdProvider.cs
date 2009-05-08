@@ -204,6 +204,11 @@ namespace DotNetOpenAuth.OpenId.Provider {
 					return new AuthenticationRequest(this, checkIdMessage);
 				}
 
+				var extensionOnlyRequest = incomingMessage as SignedResponseRequest;
+				if (extensionOnlyRequest != null) {
+					return new AnonymousRequest(this, extensionOnlyRequest);
+				}
+
 				var checkAuthMessage = incomingMessage as CheckAuthenticationRequest;
 				if (checkAuthMessage != null) {
 					return new AutoResponsiveRequest(incomingMessage, new CheckAuthenticationResponse(checkAuthMessage, this));

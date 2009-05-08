@@ -259,6 +259,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The openid.identity and openid.claimed_id parameters must either be both present or both absent from the message..
+        /// </summary>
+        internal static string IdentityAndClaimedIdentifierMustBeBothPresentOrAbsent {
+            get {
+                return ResourceManager.GetString("IdentityAndClaimedIdentifierMustBeBothPresentOrAbsent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The Provider requested association type &apos;{0}&apos; and session type &apos;{1}&apos;, which are not compatible with each other..
         /// </summary>
         internal static string IncompatibleAssociationAndSessionTypes {

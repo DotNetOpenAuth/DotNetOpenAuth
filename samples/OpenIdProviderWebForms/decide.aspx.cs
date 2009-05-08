@@ -12,61 +12,75 @@ namespace OpenIdProviderWebForms {
 	/// </summary>
 	public partial class decide : Page {
 		protected void Page_Load(object src, EventArgs e) {
-			if (ProviderEndpoint.PendingAuthenticationRequest == null) {
+			if (ProviderEndpoint.PendingRequest == null) {
 				Response.Redirect("~/");
 			}
 
-			if (ProviderEndpoint.PendingAuthenticationRequest.IsDirectedIdentity) {
-				ProviderEndpoint.PendingAuthenticationRequest.LocalIdentifier = Code.Util.BuildIdentityUrl();
-			}
 			this.relyingPartyVerificationResultLabel.Text =
-				ProviderEndpoint.PendingAuthenticationRequest.IsReturnUrlDiscoverable(ProviderEndpoint.Provider.Channel.WebRequestHandler) ? "passed" : "failed";
+				ProviderEndpoint.PendingRequest.IsReturnUrlDiscoverable(ProviderEndpoint.Provider.Channel.WebRequestHandler) ? "passed" : "failed";
 
-			this.identityUrlLabel.Text = ProviderEndpoint.PendingAuthenticationRequest.LocalIdentifier.ToString();
-			this.realmLabel.Text = ProviderEndpoint.PendingAuthenticationRequest.Realm.ToString();
+			this.realmLabel.Text = ProviderEndpoint.PendingRequest.Realm.ToString();
 
-			// check that the logged in user is the same as the user requesting authentication to the consumer. If not, then log them out.
-			if (string.Equals(User.Identity.Name, Code.Util.ExtractUserName(ProviderEndpoint.PendingAuthenticationRequest.LocalIdentifier), StringComparison.OrdinalIgnoreCase)) {
-				// if simple registration fields were used, then prompt the user for them
-				var requestedFields = ProviderEndpoint.PendingAuthenticationRequest.GetExtension<ClaimsRequest>();
-				if (requestedFields != null) {
-					this.profileFields.Visible = true;
-					this.profileFields.SetRequiredFieldsFromRequest(requestedFields);
-					if (!IsPostBack) {
-						var sregResponse = requestedFields.CreateResponse();
-						sregResponse.Email = Membership.GetUser().Email;
-						this.profileFields.SetOpenIdProfileFields(sregResponse);
-					}
+			if (ProviderEndpoint.PendingAuthenticationRequest != null) {
+				if (ProviderEndpoint.PendingAuthenticationRequest.IsDirectedIdentity) {
+					ProviderEndpoint.PendingAuthenticationRequest.LocalIdentifier = Code.Util.BuildIdentityUrl();
+				}
+				this.identityUrlLabel.Text = ProviderEndpoint.PendingAuthenticationRequest.LocalIdentifier.ToString();
+
+				// check that the logged in user is the same as the user requesting authentication to the consumer. If not, then log them out.
+				if (!string.Equals(User.Identity.Name, Code.Util.ExtractUserName(ProviderEndpoint.PendingAuthenticationRequest.LocalIdentifier), StringComparison.OrdinalIgnoreCase)) {
+					FormsAuthentication.SignOut();
+					Response.Redirect(Request.Url.AbsoluteUri);
 				}
 			} else {
-				FormsAuthentication.SignOut();
-				Response.Redirect(Request.Url.AbsoluteUri);
+				this.identityUrlLabel.Text = "(not applicable)";
+				this.siteRequestLabel.Text = "A site has asked for information about you.";
+			}
+
+			// if simple registration fields were used, then prompt the user for them
+			var requestedFields = ProviderEndpoint.PendingRequest.GetExtension<ClaimsRequest>();
+			if (requestedFields != null) {
+				this.profileFields.Visible = true;
+				this.profileFields.SetRequiredFieldsFromRequest(requestedFields);
+				if (!IsPostBack) {
+					var sregResponse = requestedFields.CreateResponse();
+					sregResponse.Email = Membership.GetUser().Email;
+					this.profileFields.SetOpenIdProfileFields(sregResponse);
+				}
 			}
 		}
 
 		protected void Yes_Click(object sender, EventArgs e) {
-			var sregRequest = ProviderEndpoint.PendingAuthenticationRequest.GetExtension<ClaimsRequest>();
+			var sregRequest = ProviderEndpoint.PendingRequest.GetExtension<ClaimsRequest>();
 			ClaimsResponse sregResponse = null;
 			if (sregRequest != null) {
 				sregResponse = this.profileFields.GetOpenIdProfileFields(sregRequest);
-				ProviderEndpoint.PendingAuthenticationRequest.AddResponseExtension(sregResponse);
+				ProviderEndpoint.PendingRequest.AddResponseExtension(sregResponse);
 			}
-			var papeRequest = ProviderEndpoint.PendingAuthenticationRequest.GetExtension<PolicyRequest>();
+			var papeRequest = ProviderEndpoint.PendingRequest.GetExtension<PolicyRequest>();
 			PolicyResponse papeResponse = null;
 			if (papeRequest != null) {
 				papeResponse = new PolicyResponse();
 				papeResponse.NistAssuranceLevel = NistAssuranceLevel.InsufficientForLevel1;
-				ProviderEndpoint.PendingAuthenticationRequest.AddResponseExtension(papeResponse);
+				ProviderEndpoint.PendingRequest.AddResponseExtension(papeResponse);
 			}
 
-			ProviderEndpoint.PendingAuthenticationRequest.IsAuthenticated = true;
-			Debug.Assert(ProviderEndpoint.PendingAuthenticationRequest.IsResponseReady, "Setting authentication should be all that's necessary.");
+			if (ProviderEndpoint.PendingAuthenticationRequest != null) {
+				ProviderEndpoint.PendingAuthenticationRequest.IsAuthenticated = true;
+			} else {
+				ProviderEndpoint.PendingAnonymousRequest.IsApproved = true;
+			}
+			Debug.Assert(ProviderEndpoint.PendingRequest.IsResponseReady, "Setting authentication should be all that's necessary.");
 			ProviderEndpoint.SendResponse();
 		}
 
 		protected void No_Click(object sender, EventArgs e) {
-			ProviderEndpoint.PendingAuthenticationRequest.IsAuthenticated = false;
-			Debug.Assert(ProviderEndpoint.PendingAuthenticationRequest.IsResponseReady, "Setting authentication should be all that's necessary.");
+			if (ProviderEndpoint.PendingAuthenticationRequest != null) {
+				ProviderEndpoint.PendingAuthenticationRequest.IsAuthenticated = false;
+			} else {
+				ProviderEndpoint.PendingAnonymousRequest.IsApproved = false;
+			}
+			Debug.Assert(ProviderEndpoint.PendingRequest.IsResponseReady, "Setting authentication should be all that's necessary.");
 			ProviderEndpoint.SendResponse();
 		}
 	}

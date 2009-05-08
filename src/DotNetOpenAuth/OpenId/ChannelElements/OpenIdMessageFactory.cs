@@ -57,6 +57,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					if (fields.ContainsKey(protocol.openid.identity)) {
 						message = new CheckIdRequest(protocol.Version, recipient.Location, authMode);
 					} else {
+						ErrorUtilities.VerifyProtocol(!fields.ContainsKey(protocol.openid.claimed_id), OpenIdStrings.IdentityAndClaimedIdentifierMustBeBothPresentOrAbsent);
 						message = new SignedResponseRequest(protocol.Version, recipient.Location, authMode);
 					}
 				} else if (string.Equals(mode, protocol.Args.Mode.cancel) ||
@@ -66,6 +67,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					if (fields.ContainsKey(protocol.openid.identity)) {
 						message = new PositiveAssertionResponse(protocol.Version, recipient.Location);
 					} else {
+						ErrorUtilities.VerifyProtocol(!fields.ContainsKey(protocol.openid.claimed_id), OpenIdStrings.IdentityAndClaimedIdentifierMustBeBothPresentOrAbsent);
 						message = new IndirectSignedResponse(protocol.Version, recipient.Location);
 					}
 				} else if (string.Equals(mode, protocol.Args.Mode.check_authentication)) {

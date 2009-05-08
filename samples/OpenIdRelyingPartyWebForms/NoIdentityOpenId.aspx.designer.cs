@@ -11,7 +11,7 @@
 namespace OpenIdRelyingPartyWebForms {
     
     
-    public partial class loginProgrammatic {
+    public partial class NoIdentityOpenId {
         
         /// <summary>
         /// Label1 control.
@@ -32,13 +32,13 @@ namespace OpenIdRelyingPartyWebForms {
         protected global::System.Web.UI.WebControls.TextBox openIdBox;
         
         /// <summary>
-        /// loginButton control.
+        /// beginButton control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button loginButton;
+        protected global::System.Web.UI.WebControls.Button beginButton;
         
         /// <summary>
         /// openidValidator control.
@@ -50,30 +50,66 @@ namespace OpenIdRelyingPartyWebForms {
         protected global::System.Web.UI.WebControls.CustomValidator openidValidator;
         
         /// <summary>
-        /// loginFailedLabel control.
+        /// resultMessage control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label loginFailedLabel;
+        protected global::System.Web.UI.WebControls.Label resultMessage;
         
         /// <summary>
-        /// loginCanceledLabel control.
+        /// ExtensionResponsesPanel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label loginCanceledLabel;
+        protected global::System.Web.UI.WebControls.Panel ExtensionResponsesPanel;
         
         /// <summary>
-        /// noLoginCheckBox control.
+        /// profileFieldsTable control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox noLoginCheckBox;
+        protected global::System.Web.UI.HtmlControls.HtmlTable profileFieldsTable;
+        
+        /// <summary>
+        /// genderLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label genderLabel;
+        
+        /// <summary>
+        /// postalCodeLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label postalCodeLabel;
+        
+        /// <summary>
+        /// countryLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label countryLabel;
+        
+        /// <summary>
+        /// timeZoneLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label timeZoneLabel;
     }
 }

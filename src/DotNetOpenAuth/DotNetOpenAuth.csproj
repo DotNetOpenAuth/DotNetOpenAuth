@@ -368,10 +368,15 @@
     <Compile Include="OpenId\Messages\SignedResponseRequest.cs" />
     <Compile Include="OpenId\NoDiscoveryIdentifier.cs" />
     <Compile Include="OpenId\OpenIdUtilities.cs" />
+    <Compile Include="OpenId\Provider\AnonymousRequest.cs" />
+    <Compile Include="OpenId\Provider\AnonymousRequestEventArgs.cs" />
     <Compile Include="OpenId\Provider\AuthenticationChallengeEventArgs.cs" />
     <Compile Include="OpenId\Provider\AuthenticationRequest.cs" />
     <Compile Include="OpenId\Provider\AutoResponsiveRequest.cs" />
+    <Compile Include="OpenId\Provider\HostProcessedRequest.cs" />
+    <Compile Include="OpenId\Provider\IAnonymousRequest.cs" />
     <Compile Include="OpenId\Provider\IAuthenticationRequest.cs" />
+    <Compile Include="OpenId\Provider\IHostProcessedRequest.cs" />
     <Compile Include="OpenId\Provider\IdentityEndpoint.cs" />
     <Compile Include="OpenId\Provider\IdentityEndpointNormalizationEventArgs.cs" />
     <Compile Include="OpenId\Provider\IErrorReporting.cs" />
@@ -418,6 +423,7 @@
     <Compile Include="OpenId\RelyingParty\OpenIdLogin.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdMobileTextBox.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdTextBox.cs" />
+    <Compile Include="OpenId\RelyingParty\PositiveAnonymousResponse.cs" />
     <Compile Include="OpenId\RelyingParty\PositiveAuthenticationResponse.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationStatus.cs" />
     <Compile Include="OpenId\RelyingParty\FailedAuthenticationResponse.cs" />

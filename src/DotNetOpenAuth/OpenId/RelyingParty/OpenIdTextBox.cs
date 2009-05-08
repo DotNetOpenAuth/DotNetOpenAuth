@@ -1033,8 +1033,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					case AuthenticationStatus.Failed:
 						this.OnFailed(response);
 						break;
+					case AuthenticationStatus.ExtensionsOnly:
 					default:
-						throw new InvalidOperationException("Unexpected response status code.");
+						// The NotApplicable (extension-only assertion) is NOT one that we support
+						// in this control because that scenario is primarily interesting to RPs
+						// that are asking a specific OP, and it is not user-initiated as this textbox
+						// is designed for.
+						throw new InvalidOperationException(MessagingStrings.UnexpectedMessageReceivedOfMany);
 				}
 			}
 		}

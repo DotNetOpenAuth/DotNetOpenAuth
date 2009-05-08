@@ -342,8 +342,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				var message = this.Channel.ReadFromRequest(httpRequestInfo);
 				PositiveAssertionResponse positiveAssertion;
 				NegativeAssertionResponse negativeAssertion;
+				IndirectSignedResponse positiveExtensionOnly;
 				if ((positiveAssertion = message as PositiveAssertionResponse) != null) {
 					return new PositiveAuthenticationResponse(positiveAssertion, this);
+				} else if ((positiveExtensionOnly = message as IndirectSignedResponse) != null) {
+					return new PositiveAnonymousResponse(positiveExtensionOnly);
 				} else if ((negativeAssertion = message as NegativeAssertionResponse) != null) {
 					return new NegativeAuthenticationResponse(negativeAssertion);
 				} else if (message != null) {

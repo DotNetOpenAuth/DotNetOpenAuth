@@ -31,12 +31,13 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		/// <param name="request">The request that the relying party sent.</param>
 		/// <param name="channel">The channel to use to simulate construction of the user_setup_url, if applicable.  May be null, but the user_setup_url will not be constructed.</param>
-		internal NegativeAssertionResponse(CheckIdRequest request, Channel channel)
+		internal NegativeAssertionResponse(SignedResponseRequest request, Channel channel)
 			: base(request, GetMode(request)) {
 			// If appropriate, and when we're provided with a channel to do it,
 			// go ahead and construct the user_setup_url
 			if (this.Version.Major < 2 && request.Immediate && channel != null) {
-				this.UserSetupUrl = ConstructUserSetupUrl(request, channel);
+				// All requests are CheckIdRequests in OpenID 1.x, so this cast should be safe.
+				this.UserSetupUrl = ConstructUserSetupUrl((CheckIdRequest)request, channel);
 			}
 		}
 
@@ -130,7 +131,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		/// <param name="request">The request that we're responding to.</param>
 		/// <returns>The value of the openid.mode parameter to use.</returns>
-		private static string GetMode(CheckIdRequest request) {
+		private static string GetMode(SignedResponseRequest request) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			Protocol protocol = Protocol.Lookup(request.Version);

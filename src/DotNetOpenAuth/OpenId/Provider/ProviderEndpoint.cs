@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// The key used to store the pending authentication request in the ASP.NET session.
 		/// </summary>
-		private const string PendingAuthenticationRequestKey = "pendingAuthenticationRequestKey";
+		private const string PendingRequestKey = "pendingRequest";
 
 		/// <summary>
 		/// The default value for the <see cref="Enabled"/> property.
@@ -50,6 +50,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// own user database and policies.
 		/// </summary>
 		public event EventHandler<AuthenticationChallengeEventArgs> AuthenticationChallenge;
+
+		/// <summary>
+		/// Fired when an incoming OpenID message carries extension requests
+		/// but is not regarding any OpenID identifier.
+		/// </summary>
+		public event EventHandler<AnonymousRequestEventArgs> AnonymousRequest;
 
 		/// <summary>
 		/// Gets or sets the <see cref="OpenIdProvider"/> instance to use for all instances of this control.
@@ -76,8 +82,36 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// before responding to the relying party's authentication request.
 		/// </remarks>
 		public static IAuthenticationRequest PendingAuthenticationRequest {
-			get { return HttpContext.Current.Session[PendingAuthenticationRequestKey] as IAuthenticationRequest; }
-			set { HttpContext.Current.Session[PendingAuthenticationRequestKey] = value; }
+			get { return HttpContext.Current.Session[PendingRequestKey] as IAuthenticationRequest; }
+			set { HttpContext.Current.Session[PendingRequestKey] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets an incoming OpenID anonymous request that has not yet been responded to.
+		/// </summary>
+		/// <remarks>
+		/// This request is stored in the ASP.NET Session state, so it will survive across
+		/// redirects, postbacks, and transfers.  This allows you to authenticate the user
+		/// yourself, and confirm his/her desire to provide data to the relying party site
+		/// before responding to the relying party's request.
+		/// </remarks>
+		public static IAnonymousRequest PendingAnonymousRequest {
+			get { return HttpContext.Current.Session[PendingRequestKey] as IAnonymousRequest; }
+			set { HttpContext.Current.Session[PendingRequestKey] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets an incoming OpenID request that has not yet been responded to.
+		/// </summary>
+		/// <remarks>
+		/// This request is stored in the ASP.NET Session state, so it will survive across
+		/// redirects, postbacks, and transfers.  This allows you to authenticate the user
+		/// yourself, and confirm his/her desire to provide data to the relying party site
+		/// before responding to the relying party's request.
+		/// </remarks>
+		public static IHostProcessedRequest PendingRequest {
+			get { return HttpContext.Current.Session[PendingRequestKey] as IHostProcessedRequest; }
+			set { HttpContext.Current.Session[PendingRequestKey] = value; }
 		}
 
 		/// <summary>
@@ -100,8 +134,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Sends the response for the <see cref="PendingAuthenticationRequest"/> and clears the property.
 		/// </summary>
 		public static void SendResponse() {
-			Provider.SendResponse(PendingAuthenticationRequest);
-			PendingAuthenticationRequest = null;
+			Provider.SendResponse(PendingRequest);
+			PendingRequest = null;
 		}
 
 		/// <summary>
@@ -125,13 +159,22 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				// determine what incoming message was received
 				IRequest request = provider.GetRequest();
 				if (request != null) {
+					PendingRequest = null;
+
 					// process the incoming message appropriately and send the response
-					if (!request.IsResponseReady) {
-						var idrequest = (IAuthenticationRequest)request;
+					IAuthenticationRequest idrequest;
+					IAnonymousRequest anonRequest;
+					if ((idrequest = request as IAuthenticationRequest) != null) {
 						PendingAuthenticationRequest = idrequest;
 						this.OnAuthenticationChallenge(idrequest);
-					} else {
-						PendingAuthenticationRequest = null;
+					} else if ((anonRequest = request as IAnonymousRequest) != null) {
+						PendingAnonymousRequest = anonRequest;
+						if (!this.OnAnonymousRequest(anonRequest)) {
+							// This is a feature not supported by the OP, so
+							// go ahead and set disapproved so we can send a response.
+							Logger.OpenId.Warn("An incoming anonymous OpenID request message was detected, but the ProviderEndpoint.AnonymousRequest event is not handled, so returning cancellation message to relying party.");
+							anonRequest.IsApproved = false;
+						}
 					}
 					if (request.IsResponseReady) {
 						provider.SendResponse(request);
@@ -150,6 +193,21 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			var authenticationChallenge = this.AuthenticationChallenge;
 			if (authenticationChallenge != null) {
 				authenticationChallenge(this, new AuthenticationChallengeEventArgs(request));
+			}
+		}
+
+		/// <summary>
+		/// Fires the <see cref="AnonymousRequest"/> event.
+		/// </summary>
+		/// <param name="request">The request to include in the event args.</param>
+		/// <returns><c>true</c> if there were any anonymous request handlers.</returns>
+		protected virtual bool OnAnonymousRequest(IAnonymousRequest request) {
+			var anonymousRequest = this.AnonymousRequest;
+			if (anonymousRequest != null) {
+				anonymousRequest(this, new AnonymousRequestEventArgs(request));
+				return true;
+			} else {
+				return false;
 			}
 		}
 

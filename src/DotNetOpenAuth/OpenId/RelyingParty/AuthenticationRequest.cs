@@ -133,6 +133,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether this request only carries extensions
+		/// and is not a request to verify that the user controls some identifier.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if this request is merely a carrier of extensions and is not
+		/// about an OpenID identifier; otherwise, <c>false</c>.
+		/// </value>
+		public bool IsExtensionOnly { get; set; }
+
+		/// <summary>
 		/// Gets information about the OpenId Provider, as advertised by the
 		/// OpenId discovery documents found at the <see cref="ClaimedIdentifier"/>
 		/// location.
@@ -401,16 +411,22 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Creates the authentication request message to send to the Provider,
+		/// Creates the request message to send to the Provider,
 		/// based on the properties in this instance.
 		/// </summary>
 		/// <returns>The message to send to the Provider.</returns>
-		private CheckIdRequest CreateRequestMessage() {
+		private SignedResponseRequest CreateRequestMessage() {
 			Association association = this.GetAssociation();
 
-			CheckIdRequest request = new CheckIdRequest(this.endpoint.Protocol.Version, this.endpoint.ProviderEndpoint, this.Mode);
-			request.ClaimedIdentifier = this.endpoint.ClaimedIdentifier;
-			request.LocalIdentifier = this.endpoint.ProviderLocalIdentifier;
+			SignedResponseRequest request;
+			if (!this.IsExtensionOnly) {
+				CheckIdRequest authRequest = new CheckIdRequest(this.endpoint.Protocol.Version, this.endpoint.ProviderEndpoint, this.Mode);
+				authRequest.ClaimedIdentifier = this.endpoint.ClaimedIdentifier;
+				authRequest.LocalIdentifier = this.endpoint.ProviderLocalIdentifier;
+				request = authRequest;
+			} else {
+				request = new SignedResponseRequest(this.endpoint.Protocol.Version, this.endpoint.ProviderEndpoint, this.Mode);
+			}
 			request.Realm = this.Realm;
 			request.ReturnTo = this.ReturnToUrl;
 			request.AssociationHandle = association != null ? association.Handle : null;
