@@ -1,0 +1,42 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="PositiveAnonymousResponseTests.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
+	using System;
+	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
+	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.RelyingParty;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+	[TestClass]
+	public class PositiveAnonymousResponseTests : OpenIdTestBase {
+		private readonly Realm realm = new Realm("http://localhost/rp.aspx");
+		private readonly Uri returnTo = new Uri("http://localhost/rp.aspx");
+
+		[TestInitialize]
+		public override void SetUp() {
+			base.SetUp();
+		}
+
+		/// <summary>
+		/// Verifies that the Status property returns the correct value.
+		/// </summary>
+		[TestMethod]
+		public void CtorAndProperties() {
+			var responseMessage = new IndirectSignedResponse(Protocol.V20.Version, this.returnTo);
+			var ext = new ClaimsResponse();
+			responseMessage.Extensions.Add(ext);
+			var response = new PositiveAnonymousResponse(responseMessage);
+			Assert.AreEqual(AuthenticationStatus.ExtensionsOnly, response.Status);
+			Assert.AreSame(responseMessage, response.Response);
+			Assert.IsNull(response.ClaimedIdentifier);
+			Assert.IsNull(response.FriendlyIdentifierForDisplay);
+			Assert.IsNull(response.Exception);
+			Assert.AreSame(ext, response.GetUntrustedExtension<ClaimsResponse>());
+		}
+	}
+}

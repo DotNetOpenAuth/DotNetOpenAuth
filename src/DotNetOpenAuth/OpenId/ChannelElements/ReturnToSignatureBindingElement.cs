@@ -94,7 +94,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// </remarks>
 		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
 			SignedResponseRequest request = message as SignedResponseRequest;
-			if (request != null) {
+			if (request != null && request.ReturnTo != null) {
 				request.AddReturnToArguments(ReturnToSignatureHandleParameterName, this.secretManager.CurrentHandle);
 				request.AddReturnToArguments(ReturnToSignatureParameterName, this.GetReturnToSignature(request.ReturnTo));
 

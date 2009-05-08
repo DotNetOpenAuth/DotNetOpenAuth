@@ -144,6 +144,18 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Verifies identity-less checkid_* request behavior.
+		/// </summary>
+		[TestMethod]
+		public void NonIdentityRequest() {
+			IAuthenticationRequest_Accessor authRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
+			authRequest.IsExtensionOnly = true;
+			Assert.IsTrue(authRequest.IsExtensionOnly);
+			var req = (SignedResponseRequest)authRequest.RedirectingResponse.OriginalMessage;
+			Assert.IsNotInstanceOfType(req, typeof(CheckIdRequest), "An unexpected SignedResponseRequest derived type was generated.");
+		}
+
+		/// <summary>
 		/// Verifies that authentication requests are generated first for OPs that respond
 		/// to authentication requests.
 		/// </summary>

@@ -506,6 +506,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The ReturnTo property must not be null to support this operation..
+        /// </summary>
+        internal static string ReturnToRequiredForOperation {
+            get {
+                return ResourceManager.GetString("ReturnToRequiredForOperation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The openid.return_to parameter is required in the request message in order to construct a response, but that parameter was missing..
         /// </summary>
         internal static string ReturnToRequiredForResponse {

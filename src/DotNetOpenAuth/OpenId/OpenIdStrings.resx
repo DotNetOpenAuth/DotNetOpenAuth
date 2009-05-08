@@ -304,4 +304,7 @@ Discovered endpoint info:
   <data name="IdentityAndClaimedIdentifierMustBeBothPresentOrAbsent" xml:space="preserve">
     <value>The openid.identity and openid.claimed_id parameters must either be both present or both absent from the message.</value>
   </data>
+  <data name="ReturnToRequiredForOperation" xml:space="preserve">
+    <value>The ReturnTo property must not be null to support this operation.</value>
+  </data>
 </root>
