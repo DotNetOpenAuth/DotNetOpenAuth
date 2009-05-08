@@ -33,13 +33,13 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// The name of the callback parameter we'll tack onto the return_to value
 		/// to store our signature on the return_to parameter.
 		/// </summary>
-		private const string ReturnToSignatureParameterName = "dnoa.return_to_sig";
+		private const string ReturnToSignatureParameterName = OpenIdUtilities.CustomParameterPrefix + "return_to_sig";
 
 		/// <summary>
 		/// The name of the callback parameter we'll tack onto the return_to value
 		/// to store the handle of the association we use to sign the return_to parameter.
 		/// </summary>
-		private const string ReturnToSignatureHandleParameterName = "dnoa.return_to_sig_handle";
+		private const string ReturnToSignatureHandleParameterName = OpenIdUtilities.CustomParameterPrefix + "return_to_sig_handle";
 
 		/// <summary>
 		/// The hashing algorithm used to generate the private signature on the return_to parameter.

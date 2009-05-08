@@ -379,7 +379,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		internal static bool IsOpenIdSupportingParameter(string parameterName) {
 			Protocol protocol = Protocol.Default;
 			return parameterName.StartsWith(protocol.openid.Prefix, StringComparison.OrdinalIgnoreCase)
-				|| parameterName.StartsWith("dnoa.", StringComparison.Ordinal);
+				|| parameterName.StartsWith(OpenIdUtilities.CustomParameterPrefix, StringComparison.Ordinal);
 		}
 
 		/// <summary>

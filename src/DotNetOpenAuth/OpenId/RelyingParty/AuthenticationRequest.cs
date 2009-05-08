@@ -24,7 +24,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// The name of the internal callback parameter to use to store the user-supplied identifier.
 		/// </summary>
-		internal const string UserSuppliedIdentifierParameterName = "dnoa.userSuppliedIdentifier";
+		internal const string UserSuppliedIdentifierParameterName = OpenIdUtilities.CustomParameterPrefix + "userSuppliedIdentifier";
 
 		/// <summary>
 		/// The relying party that created this request object.
