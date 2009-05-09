@@ -8,22 +8,22 @@
 
 	public partial class NoIdentityOpenId : System.Web.UI.Page {
 		protected void Page_Load(object sender, EventArgs e) {
-			openIdBox.Focus();
+			this.openIdBox.Focus();
 			using (OpenIdRelyingParty rp = new OpenIdRelyingParty()) {
 				IAuthenticationResponse response = rp.GetResponse();
 				if (response != null) {
 					switch (response.Status) {
 						case AuthenticationStatus.ExtensionsOnly:
-							ExtensionResponsesPanel.Visible = true;
+							this.ExtensionResponsesPanel.Visible = true;
 
 							// This is the "success" status we get when no authentication was requested.
 							var sreg = response.GetExtension<ClaimsResponse>();
 							if (sreg != null) {
-								timeZoneLabel.Text = sreg.TimeZone;
-								postalCodeLabel.Text = sreg.PostalCode;
-								countryLabel.Text = sreg.Country;
+								this.timeZoneLabel.Text = sreg.TimeZone;
+								this.postalCodeLabel.Text = sreg.PostalCode;
+								this.countryLabel.Text = sreg.Country;
 								if (sreg.Gender.HasValue) {
-									genderLabel.Text = sreg.Gender.Value.ToString();
+									this.genderLabel.Text = sreg.Gender.Value.ToString();
 								}
 							}
 							break;
