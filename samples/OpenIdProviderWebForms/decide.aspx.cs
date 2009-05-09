@@ -17,7 +17,7 @@ namespace OpenIdProviderWebForms {
 			}
 
 			this.relyingPartyVerificationResultLabel.Text =
-				ProviderEndpoint.PendingRequest.IsReturnUrlDiscoverable(ProviderEndpoint.Provider.Channel.WebRequestHandler) ? "passed" : "failed";
+				ProviderEndpoint.PendingRequest.IsReturnUrlDiscoverable(ProviderEndpoint.Provider.Channel.WebRequestHandler) == RelyingPartyDiscoveryResult.Success ? "passed" : "failed";
 
 			this.realmLabel.Text = ProviderEndpoint.PendingRequest.Realm.ToString();
 

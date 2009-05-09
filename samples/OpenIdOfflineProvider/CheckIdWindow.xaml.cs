@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 			this.immediateModeLabel.Visibility = request.Immediate ? Visibility.Visible : Visibility.Collapsed;
 			this.setupModeLabel.Visibility = request.Immediate ? Visibility.Collapsed : Visibility.Visible;
 
-			bool isRPDiscoverable = request.IsReturnUrlDiscoverable(provider.Provider.Channel.WebRequestHandler);
+			bool isRPDiscoverable = request.IsReturnUrlDiscoverable(provider.Provider.Channel.WebRequestHandler) == RelyingPartyDiscoveryResult.Success;
 			this.discoverableYesLabel.Visibility = isRPDiscoverable ? Visibility.Visible : Visibility.Collapsed;
 			this.discoverableNoLabel.Visibility = isRPDiscoverable ? Visibility.Collapsed : Visibility.Visible;
 
