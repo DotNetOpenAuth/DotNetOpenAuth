@@ -93,12 +93,17 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// property getter multiple times in one request is not a performance hit.
 		/// See OpenID Authentication 2.0 spec section 9.2.1.
 		/// </remarks>
-		public bool IsReturnUrlDiscoverable(IDirectWebRequestHandler requestHandler) {
+		public RelyingPartyDiscoveryResult IsReturnUrlDiscoverable(IDirectWebRequestHandler requestHandler) {
 			ErrorUtilities.VerifyArgumentNotNull(requestHandler, "requestHandler");
 
 			ErrorUtilities.VerifyInternal(this.Realm != null, "Realm should have been read or derived by now.");
 			try {
-				foreach (var returnUrl in Realm.Discover(requestHandler, false)) {
+				var returnToEndpoints = Realm.Discover(requestHandler, false);
+				if (returnToEndpoints == null) {
+					return RelyingPartyDiscoveryResult.NoServiceDocument;
+				}
+
+				foreach (var returnUrl in returnToEndpoints) {
 					Realm discoveredReturnToUrl = returnUrl.ReturnToEndpoint;
 
 					// The spec requires that the return_to URLs given in an RPs XRDS doc
@@ -112,18 +117,20 @@ namespace DotNetOpenAuth.OpenId.Provider {
 					// URL fits the return_to URL we were given.
 					if (discoveredReturnToUrl.Contains(this.RequestMessage.ReturnTo)) {
 						// no need to keep looking after we find a match
-						return true;
+						return RelyingPartyDiscoveryResult.Success;
 					}
 				}
 			} catch (ProtocolException ex) {
 				// Don't do anything else.  We quietly fail at return_to verification and return false.
 				Logger.Yadis.InfoFormat("Relying party discovery at URL {0} failed.  {1}", Realm, ex);
+				return RelyingPartyDiscoveryResult.NoServiceDocument;
 			} catch (WebException ex) {
 				// Don't do anything else.  We quietly fail at return_to verification and return false.
 				Logger.Yadis.InfoFormat("Relying party discovery at URL {0} failed.  {1}", Realm, ex);
+				return RelyingPartyDiscoveryResult.NoServiceDocument;
 			}
 
-			return false;
+			return RelyingPartyDiscoveryResult.NoMatchingReturnTo;
 		}
 
 		#endregion

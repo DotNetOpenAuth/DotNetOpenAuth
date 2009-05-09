@@ -379,7 +379,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// This may be true when creating an unsolicited assertion, but must be
 		/// false when performing return URL verification per 2.0 spec section 9.2.1.</param>
 		/// <returns>
-		/// The details of the endpoints if found, otherwise null.
+		/// The details of the endpoints if found; or <c>null</c> if no service document was discovered.
 		/// </returns>
 		internal IEnumerable<RelyingPartyEndpointDescription> Discover(IDirectWebRequestHandler requestHandler, bool allowRedirects) {
 			// Attempt YADIS discovery
@@ -396,7 +396,8 @@ namespace DotNetOpenAuth.OpenId {
 					}
 				}
 			}
-			return Enumerable.Empty<RelyingPartyEndpointDescription>();
+
+			return null;
 		}
 
 		/// <summary>

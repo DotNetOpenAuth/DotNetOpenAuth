@@ -34,12 +34,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="requestHandler">The request handler to use to perform relying party discovery.</param>
 		/// <returns>
-		/// 	<c>true</c> if the Relying Party passed discovery verification; <c>false</c> otherwise.
+		/// 	The details of how successful the relying party discovery was.
 		/// </returns>
 		/// <remarks>
 		/// 	<para>Return URL verification is only attempted if this method is called.</para>
 		/// 	<para>See OpenID Authentication 2.0 spec section 9.2.1.</para>
 		/// </remarks>
-		bool IsReturnUrlDiscoverable(IDirectWebRequestHandler requestHandler);
+		RelyingPartyDiscoveryResult IsReturnUrlDiscoverable(IDirectWebRequestHandler requestHandler);
 	}
 }

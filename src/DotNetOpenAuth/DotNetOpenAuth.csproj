@@ -383,6 +383,7 @@
     <Compile Include="OpenId\Provider\IProviderApplicationStore.cs" />
     <Compile Include="OpenId\Provider\IRequest.cs" />
     <Compile Include="OpenId\Provider\ProviderEndpoint.cs" />
+    <Compile Include="OpenId\Provider\RelyingPartyDiscoveryResult.cs" />
     <Compile Include="OpenId\Provider\Request.cs" />
     <Compile Include="OpenId\Provider\RequestContract.cs" />
     <Compile Include="OpenId\Provider\StandardProviderApplicationStore.cs" />
