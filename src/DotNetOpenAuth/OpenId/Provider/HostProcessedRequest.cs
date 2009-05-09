@@ -83,7 +83,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Gets a value indicating whether verification of the return URL claimed by the Relying Party
 		/// succeeded.
 		/// </summary>
-		/// <param name="requestHandler">The request handler to use to perform relying party discovery.</param>
+		/// <param name="provider">The OpenIdProvider that is performing the RP discovery.</param>
 		/// <returns>
 		/// 	<c>true</c> if the Relying Party passed discovery verification; <c>false</c> otherwise.
 		/// </returns>
@@ -93,12 +93,18 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// property getter multiple times in one request is not a performance hit.
 		/// See OpenID Authentication 2.0 spec section 9.2.1.
 		/// </remarks>
-		public RelyingPartyDiscoveryResult IsReturnUrlDiscoverable(IDirectWebRequestHandler requestHandler) {
-			ErrorUtilities.VerifyArgumentNotNull(requestHandler, "requestHandler");
+		public RelyingPartyDiscoveryResult IsReturnUrlDiscoverable(OpenIdProvider provider) {
+			Contract.Requires(provider != null);
+			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
 
 			ErrorUtilities.VerifyInternal(this.Realm != null, "Realm should have been read or derived by now.");
 			try {
-				var returnToEndpoints = Realm.Discover(requestHandler, false);
+				if (provider.SecuritySettings.RequireSsl && this.Realm.Scheme != Uri.UriSchemeHttps) {
+					Logger.OpenId.WarnFormat("RP discovery failed because RequireSsl is true and RP discovery would begin at insecure URL {0}.", this.Realm);
+					return RelyingPartyDiscoveryResult.NoServiceDocument;
+				}
+
+				var returnToEndpoints = this.Realm.Discover(provider.Channel.WebRequestHandler, false);
 				if (returnToEndpoints == null) {
 					return RelyingPartyDiscoveryResult.NoServiceDocument;
 				}
