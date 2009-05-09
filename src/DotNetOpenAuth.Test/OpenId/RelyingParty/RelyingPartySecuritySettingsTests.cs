@@ -35,23 +35,5 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			this.settings.RequireSsl = false;
 			Assert.IsFalse(this.settings.RequireSsl);
 		}
-
-		/// <summary>
-		/// Verifies that changing the <see cref="RelyingPartySecuritySettings.RequireSsl"/> property
-		/// fires the <see cref="RelyingPartySecuritySettings.RequireSslChanged"/> event.
-		/// </summary>
-		[TestMethod]
-		public void RequireSslFiresEvent() {
-			bool requireSslChanged = false;
-			this.settings.RequireSslChanged += (sender, e) => { requireSslChanged = true; };
-
-			// Setting the property to its current value should not fire event.
-			this.settings.RequireSsl = this.settings.RequireSsl;
-			Assert.IsFalse(requireSslChanged);
-
-			// Changing the property's value should fire the event.
-			this.settings.RequireSsl = !this.settings.RequireSsl;
-			Assert.IsTrue(requireSslChanged);
-		}
 	}
 }

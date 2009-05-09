@@ -13,22 +13,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// </summary>
 	public sealed class RelyingPartySecuritySettings : SecuritySettings {
 		/// <summary>
-		/// Backing field for the <see cref="RequireSsl"/> property.
-		/// </summary>
-		private bool requireSsl;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="RelyingPartySecuritySettings"/> class.
 		/// </summary>
 		internal RelyingPartySecuritySettings()
 			: base(false) {
 			this.PrivateSecretMaximumAge = TimeSpan.FromDays(7);
 		}
-
-		/// <summary>
-		/// Fired when the <see cref="RequireSsl"/> property is changed.
-		/// </summary>
-		internal event EventHandler RequireSslChanged;
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the entire pipeline from Identifier discovery to 
@@ -58,19 +48,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// A <see cref="ProtocolException"/> is thrown during discovery or authentication when a secure pipeline cannot be established.
 		/// </para>
 		/// </remarks>
-		public bool RequireSsl {
-			get {
-				return this.requireSsl;
-			}
-
-			set {
-				if (this.requireSsl == value) {
-					return;
-				}
-				this.requireSsl = value;
-				this.OnRequireSslChanged();
-			}
-		}
+		public bool RequireSsl { get; set; }
 
 		/// <summary>
 		/// Gets or sets the oldest version of OpenID the remote party is allowed to implement.
@@ -84,15 +62,5 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <value>The default value is 7 days.</value>
 		public TimeSpan PrivateSecretMaximumAge { get; set; }
-
-		/// <summary>
-		/// Fires the <see cref="RequireSslChanged"/> event.
-		/// </summary>
-		private void OnRequireSslChanged() {
-			EventHandler requireSslChanged = this.RequireSslChanged;
-			if (requireSslChanged != null) {
-				requireSslChanged(this, new EventArgs());
-			}
-		}
 	}
 }
