@@ -248,8 +248,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			ErrorUtilities.VerifyArgumentNotNull(destination, "destination");
 
 			foreach (var pair in source) {
-				var key = Uri.EscapeDataString(pair.Key);
-				var value = Uri.EscapeDataString(pair.Value);
+				var key = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Key);
+				var value = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Value);
 				destination.Add(key, value);
 			}
 		}
@@ -308,8 +308,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			authorization.Append(protocol.AuthorizationHeaderScheme);
 			authorization.Append(" ");
 			foreach (var pair in fields) {
-				string key = Uri.EscapeDataString(pair.Key);
-				string value = Uri.EscapeDataString(pair.Value);
+				string key = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Key);
+				string value = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Value);
 				authorization.Append(key);
 				authorization.Append("=\"");
 				authorization.Append(value);

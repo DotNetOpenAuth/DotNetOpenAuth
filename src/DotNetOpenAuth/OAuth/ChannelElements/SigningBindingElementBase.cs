@@ -177,8 +177,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			if (message.Recipient.Query != null) {
 				NameValueCollection nvc = HttpUtility.ParseQueryString(message.Recipient.Query);
 				foreach (string key in nvc) {
-					string escapedKey = Uri.EscapeDataString(key);
-					string escapedValue = Uri.EscapeDataString(nvc[key]);
+					string escapedKey = MessagingUtilities.EscapeUriDataStringRfc3986(key);
+					string escapedValue = MessagingUtilities.EscapeUriDataStringRfc3986(nvc[key]);
 					string existingValue;
 					if (!encodedDictionary.TryGetValue(escapedKey, out existingValue)) {
 						encodedDictionary.Add(escapedKey, escapedValue);
@@ -215,7 +215,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 					signatureBaseString.Append("&");
 				}
 
-				signatureBaseString.Append(Uri.EscapeDataString(element));
+				signatureBaseString.Append(MessagingUtilities.EscapeUriDataStringRfc3986(element));
 			}
 
 			Logger.Bindings.DebugFormat("Constructed signature base string: {0}", signatureBaseString);
@@ -230,11 +230,11 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		protected static string GetConsumerAndTokenSecretString(ITamperResistantOAuthMessage message) {
 			StringBuilder builder = new StringBuilder();
 			if (!string.IsNullOrEmpty(message.ConsumerSecret)) {
-				builder.Append(Uri.EscapeDataString(message.ConsumerSecret));
+				builder.Append(MessagingUtilities.EscapeUriDataStringRfc3986(message.ConsumerSecret));
 			}
 			builder.Append("&");
 			if (!string.IsNullOrEmpty(message.TokenSecret)) {
-				builder.Append(Uri.EscapeDataString(message.TokenSecret));
+				builder.Append(MessagingUtilities.EscapeUriDataStringRfc3986(message.TokenSecret));
 			}
 			return builder.ToString();
 		}
