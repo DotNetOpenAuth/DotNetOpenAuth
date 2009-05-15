@@ -191,6 +191,7 @@
     <Compile Include="OpenId\Extensions\SimpleRegistration\ClaimsResponseTests.cs" />
     <Compile Include="OpenId\Extensions\ExtensionTestUtilities.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\ClaimsRequestTests.cs" />
+    <Compile Include="OpenId\Extensions\UI\UIRequestTests.cs" />
     <Compile Include="OpenId\IdentifierTests.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanRequestTests.cs" />
     <Compile Include="OpenId\Messages\AssociateRequestTests.cs" />

@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 		/// Initializes a new instance of the <see cref="UIRequest"/> class.
 		/// </summary>
 		public UIRequest() {
-			this.PreferredLanguage = CultureInfo.CurrentUICulture;
+			this.LanguagePreference = CultureInfo.CurrentUICulture;
 		}
 
 		/// <summary>
@@ -47,7 +47,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 		/// The user's preferred language, reusing the Language Tag format used by the [Language Preference Attribute] (axschema.org, “Language Preference Attribute,” .)  for [OpenID Attribute Exchange] (Hardt, D., Bufu, J., and J. Hoyt, “OpenID Attribute Exchange 1.0,” .)  and defined in [RFC4646] (Phillips, A. and M. Davis, “Tags for Identifying Languages,” .). For example "en-US" represents the English language as spoken in the United States, and "fr-CA" represents the French language spoken in Canada. 
 		/// </remarks>
 		[MessagePart("lang", AllowEmpty = false)]
-		public CultureInfo PreferredLanguage { get; set; }
+		public CultureInfo LanguagePreference { get; set; }
 
 		/// <summary>
 		/// Gets the style of UI that the RP is hosting the OP's authentication page in.
@@ -146,7 +146,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 		/// after it passes through the channel binding elements.
 		/// </summary>
 		public void OnReceiving() {
-			if (this.PreferredLanguage != null) {
+			if (this.LanguagePreference != null) {
 				// TODO: see if we can change the CultureInfo.CurrentUICulture somehow
 			}
 		}
