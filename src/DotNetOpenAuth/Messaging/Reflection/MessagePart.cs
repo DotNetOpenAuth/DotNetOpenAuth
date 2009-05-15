@@ -65,6 +65,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			Map<Realm>(realm => realm.ToString(), str => new Realm(str));
 			Map<Identifier>(id => id.ToString(), str => Identifier.Parse(str));
 			Map<bool>(value => value.ToString().ToLowerInvariant(), str => bool.Parse(str));
+			Map<CultureInfo>(c => c.Name, str => new CultureInfo(str));
 		}
 
 		/// <summary>
