@@ -578,6 +578,24 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Rejecting unsolicited assertions requires a nonce store and an association store..
+        /// </summary>
+        internal static string UnsolicitedAssertionRejectionRequiresNonceStore {
+            get {
+                return ResourceManager.GetString("UnsolicitedAssertionRejectionRequiresNonceStore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unsolicited assertions are not allowed at this relying party..
+        /// </summary>
+        internal static string UnsolicitedAssertionsNotAllowed {
+            get {
+                return ResourceManager.GetString("UnsolicitedAssertionsNotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unsolicited assertions are not allowed from 1.0 OpenID Providers..
         /// </summary>
         internal static string UnsolicitedAssertionsNotAllowedFrom1xOPs {

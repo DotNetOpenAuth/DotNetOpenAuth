@@ -342,19 +342,23 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			if (isRelyingPartyRole) {
 				elements.Add(new ExtensionsBindingElement(extensionFactory, rpSecuritySettings));
 				elements.Add(new BackwardCompatibilityBindingElement());
+				ReturnToNonceBindingElement requestNonceElement = null;
 
 				if (associationStore != null) {
 					if (nonceStore != null) {
 						// There is no point in having a ReturnToNonceBindingElement without
 						// a ReturnToSignatureBindingElement because the nonce could be
 						// artificially changed without it.
-						elements.Add(new ReturnToNonceBindingElement(nonceStore));
+						requestNonceElement = new ReturnToNonceBindingElement(nonceStore, rpSecuritySettings);
+						elements.Add(requestNonceElement);
 					}
 
 					// It is important that the return_to signing element comes last
 					// so that the nonce is included in the signature.
 					elements.Add(new ReturnToSignatureBindingElement(rpAssociationStore, rpSecuritySettings));
 				}
+
+				ErrorUtilities.VerifyOperation(!rpSecuritySettings.RejectUnsolicitedAssertions || requestNonceElement != null, OpenIdStrings.UnsolicitedAssertionRejectionRequiresNonceStore);
 			} else {
 				elements.Add(new ExtensionsBindingElement(extensionFactory, opSecuritySettings));
 

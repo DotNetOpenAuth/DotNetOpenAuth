@@ -23,13 +23,18 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			this.settings = new RelyingPartySecuritySettings();
 		}
 
+		[TestMethod]
+		public void Defaults() {
+			Assert.IsFalse(this.settings.RejectUnsolicitedAssertions);
+			Assert.IsFalse(this.settings.RequireSsl, "Default should be to not require SSL.");
+		}
+
 		/// <summary>
 		/// Verifies that the <see cref="RelyingPartySecuritySettings.RequireSsl"/> property
 		/// getter/setter are implemented correctly.
 		/// </summary>
 		[TestMethod]
 		public void RequireSsl() {
-			Assert.IsFalse(this.settings.RequireSsl, "Default should be to not require SSL.");
 			this.settings.RequireSsl = true;
 			Assert.IsTrue(this.settings.RequireSsl);
 			this.settings.RequireSsl = false;

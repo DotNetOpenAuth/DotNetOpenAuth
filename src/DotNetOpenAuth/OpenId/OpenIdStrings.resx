@@ -307,4 +307,10 @@ Discovered endpoint info:
   <data name="ReturnToRequiredForOperation" xml:space="preserve">
     <value>The ReturnTo property must not be null to support this operation.</value>
   </data>
+  <data name="UnsolicitedAssertionRejectionRequiresNonceStore" xml:space="preserve">
+    <value>Rejecting unsolicited assertions requires a nonce store and an association store.</value>
+  </data>
+  <data name="UnsolicitedAssertionsNotAllowed" xml:space="preserve">
+    <value>Unsolicited assertions are not allowed at this relying party.</value>
+  </data>
 </root>

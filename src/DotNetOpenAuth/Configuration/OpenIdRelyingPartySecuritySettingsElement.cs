@@ -36,6 +36,11 @@ namespace DotNetOpenAuth.Configuration {
 		private const string RequireSslConfigName = "requireSsl";
 
 		/// <summary>
+		/// Gets the name of the @rejectUnsolicitedAssertions attribute.
+		/// </summary>
+		private const string RejectUnsolicitedAssertionsConfigName = "rejectUnsolicitedAssertions";
+
+		/// <summary>
 		/// Gets the name of the @privateSecretMaximumAge attribute.
 		/// </summary>
 		private const string PrivateSecretMaximumAgeConfigName = "privateSecretMaximumAge";
@@ -98,6 +103,16 @@ namespace DotNetOpenAuth.Configuration {
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether all unsolicited assertions should be ignored.
+		/// </summary>
+		/// <value>The default value is <c>false</c>.</value>
+		[ConfigurationProperty(RejectUnsolicitedAssertionsConfigName, DefaultValue = false)]
+		public bool RejectUnsolicitedAssertions {
+			get { return (bool)this[RejectUnsolicitedAssertionsConfigName]; }
+			set { this[RejectUnsolicitedAssertionsConfigName] = value; }
+		}
+
+		/// <summary>
 		/// Initializes a programmatically manipulatable bag of these security settings with the settings from the config file.
 		/// </summary>
 		/// <returns>The newly created security settings object.</returns>
@@ -110,6 +125,7 @@ namespace DotNetOpenAuth.Configuration {
 			settings.MinimumHashBitLength = this.MinimumHashBitLength;
 			settings.MaximumHashBitLength = this.MaximumHashBitLength;
 			settings.PrivateSecretMaximumAge = this.PrivateSecretMaximumAge;
+			settings.RejectUnsolicitedAssertions = this.RejectUnsolicitedAssertions;
 			return settings;
 		}
 	}

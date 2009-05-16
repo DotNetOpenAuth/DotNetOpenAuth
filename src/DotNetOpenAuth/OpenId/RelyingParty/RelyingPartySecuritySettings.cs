@@ -62,5 +62,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <value>The default value is 7 days.</value>
 		public TimeSpan PrivateSecretMaximumAge { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether all unsolicited assertions should be ignored.
+		/// </summary>
+		/// <value>The default value is <c>false</c>.</value>
+		public bool RejectUnsolicitedAssertions { get; set; }
 	}
 }
