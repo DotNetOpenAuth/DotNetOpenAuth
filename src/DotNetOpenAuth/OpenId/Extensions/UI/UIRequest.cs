@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// OpenID User Interface extension 1.0 request message.
