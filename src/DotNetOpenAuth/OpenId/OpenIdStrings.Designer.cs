@@ -205,6 +205,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Only OpenIDs issued directly by their OpenID Provider are allowed here..
+        /// </summary>
+        internal static string DelegatingIdentifiersNotAllowed {
+            get {
+                return ResourceManager.GetString("DelegatingIdentifiersNotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The following properties must be set before the Diffie-Hellman algorithm can generate a public key: {0}.
         /// </summary>
         internal static string DiffieHellmanRequiredPropertiesNotSet {

@@ -313,4 +313,7 @@ Discovered endpoint info:
   <data name="UnsolicitedAssertionsNotAllowed" xml:space="preserve">
     <value>Unsolicited assertions are not allowed at this relying party.</value>
   </data>
+  <data name="DelegatingIdentifiersNotAllowed" xml:space="preserve">
+    <value>Only OpenIDs issued directly by their OpenID Provider are allowed here.</value>
+  </data>
 </root>

@@ -41,6 +41,11 @@ namespace DotNetOpenAuth.Configuration {
 		private const string RejectUnsolicitedAssertionsConfigName = "rejectUnsolicitedAssertions";
 
 		/// <summary>
+		/// Gets the name of the @rejectDelegatedIdentifiers attribute.
+		/// </summary>
+		private const string RejectDelegatingIdentifiersConfigName = "rejectDelegatingIdentifiers";
+
+		/// <summary>
 		/// Gets the name of the @privateSecretMaximumAge attribute.
 		/// </summary>
 		private const string PrivateSecretMaximumAgeConfigName = "privateSecretMaximumAge";
@@ -113,6 +118,22 @@ namespace DotNetOpenAuth.Configuration {
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether delegating identifiers are refused for authentication.
+		/// </summary>
+		/// <value>The default value is <c>false</c>.</value>
+		/// <remarks>
+		/// When set to <c>true</c>, login attempts that start at the RP or arrive via unsolicited
+		/// assertions will be rejected if discovery on the identifier shows that OpenID delegation
+		/// is used for the identifier.  This is useful for an RP that should only accept identifiers
+		/// directly issued by the Provider that is sending the assertion.
+		/// </remarks>
+		[ConfigurationProperty(RejectDelegatingIdentifiersConfigName, DefaultValue = false)]
+		public bool RejectDelegatingIdentifiers {
+			get { return (bool)this[RejectDelegatingIdentifiersConfigName]; }
+			set { this[RejectDelegatingIdentifiersConfigName] = value; }
+		}
+
+		/// <summary>
 		/// Initializes a programmatically manipulatable bag of these security settings with the settings from the config file.
 		/// </summary>
 		/// <returns>The newly created security settings object.</returns>
@@ -126,6 +147,7 @@ namespace DotNetOpenAuth.Configuration {
 			settings.MaximumHashBitLength = this.MaximumHashBitLength;
 			settings.PrivateSecretMaximumAge = this.PrivateSecretMaximumAge;
 			settings.RejectUnsolicitedAssertions = this.RejectUnsolicitedAssertions;
+			settings.RejectDelegatingIdentifiers = this.RejectDelegatingIdentifiers;
 			return settings;
 		}
 	}

@@ -68,5 +68,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <value>The default value is <c>false</c>.</value>
 		public bool RejectUnsolicitedAssertions { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether delegating identifiers are refused for authentication.
+		/// </summary>
+		/// <value>The default value is <c>false</c>.</value>
+		/// <remarks>
+		/// When set to <c>true</c>, login attempts that start at the RP or arrive via unsolicited
+		/// assertions will be rejected if discovery on the identifier shows that OpenID delegation
+		/// is used for the identifier.  This is useful for an RP that should only accept identifiers
+		/// directly issued by the Provider that is sending the assertion.
+		/// </remarks>
+		public bool RejectDelegatingIdentifiers { get; set; }
 	}
 }
