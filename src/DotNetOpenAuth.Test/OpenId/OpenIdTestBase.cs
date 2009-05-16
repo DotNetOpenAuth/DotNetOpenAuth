@@ -173,7 +173,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		}
 
 		protected Identifier GetMockIdentifier(ProtocolVersion providerVersion, bool useSsl) {
-			return GetMockIdentifier(providerVersion, useSsl, false);
+			return this.GetMockIdentifier(providerVersion, useSsl, false);
 		}
 
 		protected Identifier GetMockIdentifier(ProtocolVersion providerVersion, bool useSsl, bool delegating) {
