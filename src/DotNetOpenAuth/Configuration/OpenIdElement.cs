@@ -32,6 +32,11 @@ namespace DotNetOpenAuth.Configuration {
 		private const string ExtensionFactoriesElementName = "extensionFactories";
 
 		/// <summary>
+		/// The name of the &lt;xriResolver&gt; sub-element.
+		/// </summary>
+		private const string XriResolverElementName = "xriResolver";
+
+		/// <summary>
 		/// Gets the name of the @maxAuthenticationTime attribute.
 		/// </summary>
 		private const string MaxAuthenticationTimePropertyName = "maxAuthenticationTime";
@@ -83,6 +88,15 @@ namespace DotNetOpenAuth.Configuration {
 		internal TypeConfigurationCollection<IOpenIdExtensionFactory> ExtensionFactories {
 			get { return (TypeConfigurationCollection<IOpenIdExtensionFactory>)this[ExtensionFactoriesElementName] ?? new TypeConfigurationCollection<IOpenIdExtensionFactory>(); }
 			set { this[ExtensionFactoriesElementName] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the configuration for the XRI resolver.
+		/// </summary>
+		[ConfigurationProperty(XriResolverElementName)]
+		internal XriResolverElement XriResolver {
+			get { return (XriResolverElement)this[XriResolverElementName] ?? new XriResolverElement(); }
+			set { this[XriResolverElementName] = value; }
 		}
 	}
 }

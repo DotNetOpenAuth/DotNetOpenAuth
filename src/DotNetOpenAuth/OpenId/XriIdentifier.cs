@@ -7,10 +7,10 @@
 namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Xml;
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Xrds;
@@ -43,7 +43,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// The ssl=true parameter tells the proxy resolver to accept only SSL connections
 		/// when resolving community i-names.
 		/// </remarks>
-		private const string XriResolverProxyTemplate = "https://xri.net/{0}?_xrd_r=application/xrd%2Bxml;sep=false";
+		private const string XriResolverProxyTemplate = "https://{1}/{0}?_xrd_r=application/xrd%2Bxml;sep=false";
 
 		/// <summary>
 		/// The XRI proxy resolver to use for finding XRDS documents from an XRI.
@@ -106,7 +106,15 @@ namespace DotNetOpenAuth.OpenId {
 		/// Gets the URL from which this XRI's XRDS document may be downloaded.
 		/// </summary>
 		private Uri XrdsUrl {
-			get { return new Uri(string.Format(CultureInfo.InvariantCulture, this.xriResolverProxy, this)); }
+			get {
+				ErrorUtilities.VerifyProtocol(DotNetOpenAuthSection.Configuration.OpenId.XriResolver.Enabled, OpenIdStrings.XriResolutionDisabled);
+				return new Uri(
+					string.Format(
+						CultureInfo.InvariantCulture,
+						this.xriResolverProxy,
+						this,
+						DotNetOpenAuthSection.Configuration.OpenId.XriResolver.Proxy.Name));
+			}
 		}
 
 		/// <summary>

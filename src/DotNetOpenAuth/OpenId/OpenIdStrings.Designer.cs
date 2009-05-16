@@ -641,6 +641,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to XRI support has been disabled at this site..
+        /// </summary>
+        internal static string XriResolutionDisabled {
+            get {
+                return ResourceManager.GetString("XriResolutionDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to XRI resolution failed..
         /// </summary>
         internal static string XriResolutionFailed {

@@ -187,6 +187,7 @@
     <Compile Include="Configuration\UntrustedWebRequestElement.cs" />
     <Compile Include="Configuration\HostNameOrRegexCollection.cs" />
     <Compile Include="Configuration\HostNameElement.cs" />
+    <Compile Include="Configuration\XriResolverElement.cs" />
     <Compile Include="InfoCard\ClaimType.cs" />
     <Compile Include="InfoCard\ReceivingTokenEventArgs.cs" />
     <Compile Include="InfoCard\TokenProcessingErrorEventArgs.cs" />

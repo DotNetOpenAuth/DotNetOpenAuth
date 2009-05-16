@@ -316,4 +316,7 @@ Discovered endpoint info:
   <data name="DelegatingIdentifiersNotAllowed" xml:space="preserve">
     <value>Only OpenIDs issued directly by their OpenID Provider are allowed here.</value>
   </data>
+  <data name="XriResolutionDisabled" xml:space="preserve">
+    <value>XRI support has been disabled at this site.</value>
+  </data>
 </root>
