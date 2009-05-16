@@ -45,6 +45,12 @@ namespace DotNetOpenAuth.Test.Mocks {
 		private EventWaitHandle incomingMessageSignal = new AutoResetEvent(false);
 
 		/// <summary>
+		/// A thread-coordinating signal that is set briefly by this thread whenever
+		/// a message is picked up.
+		/// </summary>
+		private EventWaitHandle messageReceivedSignal = new AutoResetEvent(false);
+
+		/// <summary>
 		/// A flag used to indicate when this channel is waiting for a message
 		/// to arrive.
 		/// </summary>
@@ -126,6 +132,12 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// </summary>
 		/// <param name="message">The message that this channel should receive.  This message will be cloned.</param>
 		internal void PostMessage(IProtocolMessage message) {
+			if (this.incomingMessage != null) {
+				// The remote party hasn't picked up the last message we sent them.
+				// Wait for a short period for them to pick it up before failing.
+				TestBase.TestLogger.Warn("We're blocked waiting to send a message to the remote party and they haven't processed the last message we sent them.");
+				this.RemoteChannel.messageReceivedSignal.WaitOne(500);
+			}
 			ErrorUtilities.VerifyInternal(this.incomingMessage == null, "Oops, a message is already waiting for the remote party!");
 			this.incomingMessage = this.MessageDescriptions.GetAccessor(message).Serialize();
 			var directedMessage = message as IDirectedProtocolMessage;
@@ -273,6 +285,11 @@ namespace DotNetOpenAuth.Test.Mocks {
 				recipient = this.incomingMessageRecipient;
 				this.incomingMessage = null;
 				this.incomingMessageRecipient = null;
+
+				// Briefly signal to another thread that might be waiting for our inbox to be empty
+				messageReceivedSignal.Set();
+				messageReceivedSignal.Reset();
+
 				return response;
 			}
 		}
