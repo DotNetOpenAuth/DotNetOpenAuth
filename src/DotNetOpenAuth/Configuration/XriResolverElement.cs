@@ -50,6 +50,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// <summary>
 		/// Gets or sets the proxy to use for resolving XRIs.
 		/// </summary>
+		/// <value>The default value is "xri.net".</value>
 		[ConfigurationProperty(ProxyElementName)]
 		internal HostNameElement Proxy {
 			get {
