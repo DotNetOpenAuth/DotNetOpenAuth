@@ -45,11 +45,12 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			if (!this.reflectedMessageTypes.TryGetValue(key, out result)) {
 				lock (this.reflectedMessageTypes) {
 					if (!this.reflectedMessageTypes.TryGetValue(key, out result)) {
-						this.reflectedMessageTypes[key] = result = new MessageDescription(key.Type, key.Version);
+						this.reflectedMessageTypes[key] = result = new MessageDescription(messageType, messageVersion);
 					}
 				}
 			}
 
+			Contract.Assume(result != null, "We should never assign null values to this dictionary.");
 			return result;
 		}
 
