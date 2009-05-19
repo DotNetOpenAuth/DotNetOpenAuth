@@ -973,7 +973,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The properly ordered list of elements.</returns>
 		/// <exception cref="ProtocolException">Thrown when the binding elements are incomplete or inconsistent with each other.</exception>
 		private static IEnumerable<IChannelBindingElement> ValidateAndPrepareBindingElements(IEnumerable<IChannelBindingElement> elements) {
-			Contract.Requires(elements == null || Contract.ForAll(elements, e => e != null));
+			Contract.Requires(elements == null || elements.All(e => e != null));
 			Contract.Ensures(Contract.Result<IEnumerable<IChannelBindingElement>>() != null);
 			if (elements == null) {
 				return new IChannelBindingElement[0];
