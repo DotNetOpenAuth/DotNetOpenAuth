@@ -30,6 +30,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Extensions;
+	using DotNetOpenAuth.OpenId.Extensions.UI;
 
 	/// <summary>
 	/// An ASP.NET control that provides a minimal text box that is OpenID-aware and uses AJAX for
@@ -1265,6 +1266,9 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 			// Configure each generated request.
 			int reqIndex = 0;
 			foreach (var req in requests) {
+				// Inform the OP that we'll be using a popup window.
+				req.AddExtension(new UIRequest());
+
 				req.AddCallbackArguments("index", (reqIndex++).ToString(CultureInfo.InvariantCulture));
 
 				// If the ReturnToUrl was explicitly set, we'll need to reset our first parameter
