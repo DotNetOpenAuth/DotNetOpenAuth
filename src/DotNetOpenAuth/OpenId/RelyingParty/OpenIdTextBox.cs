@@ -15,9 +15,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.ComponentModel;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Drawing.Design;
 	using System.Globalization;
 	using System.Net;
+	using System.Text;
 	using System.Text.RegularExpressions;
 	using System.Web;
 	using System.Web.Security;
@@ -26,6 +28,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
+	using DotNetOpenAuth.OpenId.Extensions.UI;
 
 	/// <summary>
 	/// An ASP.NET control that provides a minimal text box that is OpenID-aware.
@@ -74,6 +77,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#endregion
 
 		#region Property viewstate keys
+
+		/// <summary>
+		/// The viewstate key to use for the <see cref="Popup"/> property.
+		/// </summary>
+		private const string PopupViewStateKey = "Popup";
 
 		/// <summary>
 		/// The viewstate key to use for the <see cref="RequestEmail"/> property.
@@ -168,6 +176,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#endregion
 
 		#region Property defaults
+
+		/// <summary>
+		/// The default value for the <see cref="Popup"/> property.
+		/// </summary>
+		private const PopupBehavior PopupDefault = PopupBehavior.Never;
 
 		/// <summary>
 		/// The default value for the <see cref="Columns"/> property.
@@ -277,6 +290,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#endregion
 
 		/// <summary>
+		/// The callback parameter to use for recognizing when the callback is in a popup window.
+		/// </summary>
+		private const string UIPopupCallbackKey = "dnoa.uipopup";
+
+		/// <summary>
 		/// The callback parameter for use with persisting the <see cref="UsePersistentCookie"/> property.
 		/// </summary>
 		private const string UsePersistentCookieCallbackKey = "OpenIdTextBox_UsePersistentCookie";
@@ -330,6 +348,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public event EventHandler<OpenIdEventArgs> SetupRequired;
 
 		#endregion
+
 		#region IEditableTextControl Members
 
 		/// <summary>
@@ -425,6 +444,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 				this.ViewState[ReturnToUrlViewStateKey] = value;
 			}
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating when to use a popup window to complete the login experience.
+		/// </summary>
+		/// <value>The default value is <see cref="PopupBehavior.Never"/>.</value>
+		[Bindable(true), DefaultValue(PopupDefault), Category(BehaviorCategory)]
+		[Description("When to use a popup window to complete the login experience.")]
+		public PopupBehavior Popup {
+			get { return (PopupBehavior)(ViewState[PopupViewStateKey] ?? PopupDefault); }
+			set { ViewState[PopupViewStateKey] = value; }
 		}
 
 		/// <summary>
@@ -906,6 +936,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 						this.AddProfileArgs(this.Request);
 					}
 
+					if (this.IsPopupAppropriate()) {
+						// Inform the OP that it will appear in a popup window.
+						this.Request.AddExtension(new UIRequest());
+					}
+
 					// Add state that needs to survive across the redirect.
 					if (!this.Stateless) {
 						this.Request.AddCallbackArguments(UsePersistentCookieCallbackKey, this.UsePersistentCookie.ToString(CultureInfo.InvariantCulture));
@@ -931,7 +966,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			if (this.Request != null) {
-				this.Request.RedirectToProvider();
+				if (this.IsPopupAppropriate()) {
+					this.ScriptPopupWindow();
+				} else {
+					this.Request.RedirectToProvider();
+				}
 			}
 		}
 
@@ -982,6 +1021,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			var response = this.RelyingParty.GetResponse();
 			if (response != null) {
+				if (response.GetCallbackArgument(UIPopupCallbackKey) == "1") {
+					// We're in a popup window.  We need to close it and pass the
+					// message back to the parent window for processing.
+					this.Page.ClientScript.RegisterStartupScript(this.GetType(), "loginPopupClose", "window.close()", true);
+
+					// TODO: we still need to script sending the message back to the parent window!
+					return;
+				}
+
 				string persistentString = response.GetCallbackArgument(UsePersistentCookieCallbackKey);
 				bool persistentBool;
 				if (persistentString != null && bool.TryParse(persistentString, out persistentBool)) {
@@ -1156,6 +1204,34 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				rp.SecuritySettings.RequireSsl = true;
 			}
 			return rp;
+		}
+
+		/// <summary>
+		/// Detects whether a popup window should be used to show the Provider's UI
+		/// and applies the UI extension to the request when appropriate.
+		/// </summary>
+		/// <returns><c>true</c> if a popup should be used; <c>false</c> otherwise.</returns>
+		private bool IsPopupAppropriate() {
+			Contract.Requires(this.Request != null);
+
+			return this.Popup == PopupBehavior.Always || this.Request.Provider.IsExtensionSupported<UIRequest>();
+		}
+
+		/// <summary>
+		/// Wires the return page to immediately display a popup window with the Provider in it.
+		/// </summary>
+		private void ScriptPopupWindow() {
+			Contract.Requires(this.Request != null);
+			Contract.Requires(this.RelyingParty != null);
+
+			this.Request.AddCallbackArguments(UIPopupCallbackKey, "1");
+
+			StringBuilder startupScript = new StringBuilder();
+			startupScript.AppendFormat(
+				@"var openidPopup = {0}",
+				UIUtilities.GetWindowPopupScript(this.RelyingParty, this.Request, "openidPopup"));
+
+			this.Page.ClientScript.RegisterStartupScript(this.GetType(), "loginPopup", startupScript.ToString(), true);
 		}
 	}
 }
