@@ -1,0 +1,472 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en"><head>
+<title>Implementers' Draft: OpenID User Interface Extension 1.0 - DRAFT 0.4</title>
+<meta http-equiv="Expires" content="Tue, 19 May 2009 02:37:11 +0000">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="description" content="OpenID User Interface Extension 1.0 - DRAFT 0.4">
+<meta name="generator" content="xml2rfc v1.33 (http://xml.resource.org/)">
+<style type="text/css"><!--
+        body {
+                font-family: verdana, charcoal, helvetica, arial, sans-serif;
+                font-size: small; color: #000; background-color: #FFF;
+                margin: 2em;
+        }
+        h1, h2, h3, h4, h5, h6 {
+                font-family: helvetica, monaco, "MS Sans Serif", arial, sans-serif;
+                font-weight: bold; font-style: normal;
+        }
+        h1 { color: #900; background-color: transparent; text-align: right; }
+        h3 { color: #333; background-color: transparent; }
+
+        td.RFCbug {
+                font-size: x-small; text-decoration: none;
+                width: 30px; height: 30px; padding-top: 2px;
+                text-align: justify; vertical-align: middle;
+                background-color: #000;
+        }
+        td.RFCbug span.RFC {
+                font-family: monaco, charcoal, geneva, "MS Sans Serif", helvetica, verdana, sans-serif;
+                font-weight: bold; color: #666;
+        }
+        td.RFCbug span.hotText {
+                font-family: charcoal, monaco, geneva, "MS Sans Serif", helvetica, verdana, sans-serif;
+                font-weight: normal; text-align: center; color: #FFF;
+        }
+
+        table.TOCbug { width: 30px; height: 15px; }
+        td.TOCbug {
+                text-align: center; width: 30px; height: 15px;
+                color: #FFF; background-color: #900;
+        }
+        td.TOCbug a {
+                font-family: monaco, charcoal, geneva, "MS Sans Serif", helvetica, sans-serif;
+                font-weight: bold; font-size: x-small; text-decoration: none;
+                color: #FFF; background-color: transparent;
+        }
+
+        td.header {
+                font-family: arial, helvetica, sans-serif; font-size: x-small;
+                vertical-align: top; width: 33%;
+                color: #FFF; background-color: #666;
+        }
+        td.author { font-weight: bold; font-size: x-small; margin-left: 4em; }
+        td.author-text { font-size: x-small; }
+
+        /* info code from SantaKlauss at http://www.madaboutstyle.com/tooltip2.html */
+        a.info {
+                /* This is the key. */
+                position: relative;
+                z-index: 24;
+                text-decoration: none;
+        }
+        a.info:hover {
+                z-index: 25;
+                color: #FFF; background-color: #900;
+        }
+        a.info span { display: none; }
+        a.info:hover span.info {
+                /* The span will display just on :hover state. */
+                display: block;
+                position: absolute;
+                font-size: smaller;
+                top: 2em; left: -5em; width: 15em;
+                padding: 2px; border: 1px solid #333;
+                color: #900; background-color: #EEE;
+                text-align: left;
+        }
+
+        a { font-weight: bold; }
+        a:link    { color: #900; background-color: transparent; }
+        a:visited { color: #633; background-color: transparent; }
+        a:active  { color: #633; background-color: transparent; }
+
+        p { margin-left: 2em; margin-right: 2em; }
+        p.copyright { font-size: x-small; }
+        p.toc { font-size: small; font-weight: bold; margin-left: 3em; }
+        table.toc { margin: 0 0 0 3em; padding: 0; border: 0; vertical-align: text-top; }
+        td.toc { font-size: small; font-weight: bold; vertical-align: text-top; }
+
+        ol.text { margin-left: 2em; margin-right: 2em; }
+        ul.text { margin-left: 2em; margin-right: 2em; }
+        li      { margin-left: 3em; }
+
+        /* RFC-2629 <spanx>s and <artwork>s. */
+        em     { font-style: italic; }
+        strong { font-weight: bold; }
+        dfn    { font-weight: bold; font-style: normal; }
+        cite   { font-weight: normal; font-style: normal; }
+        tt     { color: #036; }
+        tt, pre, pre dfn, pre em, pre cite, pre span {
+                font-family: "Courier New", Courier, monospace; font-size: small;
+        }
+        pre {
+                text-align: left; padding: 4px;
+                color: #000; background-color: #CCC;
+        }
+        pre dfn  { color: #900; }
+        pre em   { color: #66F; background-color: #FFC; font-weight: normal; }
+        pre .key { color: #33C; font-weight: bold; }
+        pre .id  { color: #900; }
+        pre .str { color: #000; background-color: #CFF; }
+        pre .val { color: #066; }
+        pre .rep { color: #909; }
+        pre .oth { color: #000; background-color: #FCF; }
+        pre .err { background-color: #FCC; }
+
+        /* RFC-2629 <texttable>s. */
+        table.all, table.full, table.headers, table.none {
+                font-size: small; text-align: center; border-width: 2px;
+                vertical-align: top; border-collapse: collapse;
+        }
+        table.all, table.full { border-style: solid; border-color: black; }
+        table.headers, table.none { border-style: none; }
+        th {
+                font-weight: bold; border-color: black;
+                border-width: 2px 2px 3px 2px;
+        }
+        table.all th, table.full th { border-style: solid; }
+        table.headers th { border-style: none none solid none; }
+        table.none th { border-style: none; }
+        table.all td {
+                border-style: solid; border-color: #333;
+                border-width: 1px 2px;
+        }
+        table.full td, table.headers td, table.none td { border-style: none; }
+
+        hr { height: 1px; }
+        hr.insert {
+                width: 80%; border-style: none; border-width: 0;
+                color: #CCC; background-color: #CCC;
+        }
+--></style>
+</head><body>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<table summary="layout" border="0" cellpadding="0" cellspacing="0" width="66%"><tbody><tr><td><table summary="layout" border="0" cellpadding="2" cellspacing="1" width="100%">
+<tbody><tr><td class="header">Implementers' Draft</td><td class="header">A. Tom</td></tr>
+<tr><td class="header">&nbsp;</td><td class="header">Yahoo!</td></tr>
+<tr><td class="header">&nbsp;</td><td class="header">B. de Medeiros</td></tr>
+<tr><td class="header">&nbsp;</td><td class="header">Google</td></tr>
+<tr><td class="header">&nbsp;</td><td class="header">May 18, 2009</td></tr>
+</tbody></table></td></tr></tbody></table>
+<h1><br>OpenID User Interface Extension 1.0 - DRAFT 0.4</h1>
+
+<h3>Abstract</h3>
+
+<p>
+	This specification defines a mechanism to support OpenID user interfaces 
+	optimized for different environments and languages.
+      
+</p><a name="toc"></a><br><hr>
+<h3>Table of Contents</h3>
+<p class="toc">
+<a href="#conv">1.</a>&nbsp;
+Notation and Conventions<br>
+<a href="#anchor1">2.</a>&nbsp;
+Overview<br>
+<a href="#anchor2">3.</a>&nbsp;
+Extension Namespace<br>
+<a href="#anchor3">4.</a>&nbsp;
+Language Preference<br>
+<a href="#anchor4">5.</a>&nbsp;
+Requesting Authentication in a Popup<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor5">5.1.</a>&nbsp;
+Authentication Response in a Fragment<br>
+<a href="#anchor6">6.</a>&nbsp;
+Discovery<br>
+<a href="#anchor7">7.</a>&nbsp;
+Considerations<br>
+<a href="#anchor8">8.</a>&nbsp;
+Acknowledgements<br>
+<a href="#rfc.references1">9.</a>&nbsp;
+References<br>
+<a href="#rfc.authors">§</a>&nbsp;
+Authors' Addresses<br>
+</p>
+<br clear="all">
+
+<a name="conv"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.1"></a><h3>1.&nbsp;
+Notation and Conventions</h3>
+
+<p>The keywords MUST, MUST NOT, REQUIRED, SHALL, 
+	    SHALL NOT, SHOULD, SHOULD NOT, RECOMMENDED, MAY, 
+	    and OPTIONAL in this document are to be interpreted as 
+	    described in <a class="info" href="#RFC2119">[RFC2119]<span> (</span><span class="info">Bradner, B., “Key words for use in RFCs to Indicate Requirement Levels,” .</span><span>)</span></a>. 
+           
+</p>
+<p>
+            Unless otherwise noted, this specification is written as a direct
+            continuation of <a class="info" href="#OpenID%202.0">[OpenID 2.0]<span> (</span><span class="info">OpenID 2.0 Workgroup, “OpenID 2.0,” .</span><span>)</span></a>, inheriting the definitions and
+            guidelines set by it.
+	  
+</p>
+<a name="anchor1"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.2"></a><h3>2.&nbsp;
+Overview</h3>
+
+<p>
+	OpenID traditionally required the Relying Party to redirect the entire browser 
+	window to the OpenID Provider for the user to authenticate before redirecting 
+	the browser back to the Relying Party. It is believed that the User Experience (UX) 
+	could be significantly improved if the authentication flow occurred within a separate
+	popup window, making the experience less disruptive to the user. 
+      
+</p>
+<p>
+	Although it is possible for Relying Parties to open a popup window for the user to
+	authenticate at	the OpenID Provider using the Provider's default user interface, 
+	the overall user experience can be optimized if the OP was aware that its UI was running 
+	within a popup. For instance, an OP may want to resize the popup browser window when using
+	the popup interface, but would probably not want to resize the full browser 
+	window when using the default redirect interface.
+	Another optimization is that the OP can close the popup, rather than 
+	return a negative assertion if the user chooses to cancel the authentication request.
+      
+</p>
+<p>
+	This extension also adds support for Relying Parties to indicate the user's language
+	preference to the OP, potentially making the transition from the RP to the OP less disruptive
+	to the user.
+	
+</p>
+<a name="anchor2"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.3"></a><h3>3.&nbsp;
+Extension Namespace</h3>
+
+<p>
+	    All OpenID 2.0 messages that contain a UI Extension element MUST 
+	    contain the following extension namespace declaration, as specified in the 
+	    Extensions section of <a class="info" href="#OpenID%202.0">[OpenID 2.0]<span> (</span><span class="info">OpenID 2.0 Workgroup, “OpenID 2.0,” .</span><span>)</span></a>.
+	    
+</p><div style="display: table; width: 0pt; margin-left: 3em; margin-right: auto;"><pre> openid.ns.&lt;alias&gt;=http://specs.openid.net/extensions/ui/1.0
+</pre></div>
+<p>
+	  The actual extension namespace alias should be determined on a per-message basis
+	  by the party composing the messages, in such a manner as to avoid conflicts between 
+	  multiple extensions. For the purposes of this document, the extension namespace used
+	  for all examples is "ui". 
+	
+</p>
+<a name="anchor3"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.4"></a><h3>4.&nbsp;
+Language Preference</h3>
+
+<p>
+	When requesting OpenID authentication using the checkid_setup mode, the Relying Party MAY send the 
+	OP a hint regarding the user's preferred language by sending the following parameters:
+      
+</p>
+<p>
+	</p>
+<blockquote class="text"><dl>
+<dt>openid.ns.ui</dt>
+<dd>
+	    REQUIRED. Value: "http://specs.openid.net/extensions/ui/1.0"
+	  
+</dd>
+<dt>openid.ui.lang</dt>
+<dd>
+	    REQUIRED. The user's preferred languages as a <a class="info" href="#BCP%2047">[BCP 47]<span> (</span><span class="info">Phillips, A. and M. Davis, “Tags for Identifying Languages,” .</span><span>)</span></a> language priority list, 
+	    represented as a comma-separated list of BCP 47 basic language ranges in descending priority order. 
+	    For instance, the value "fr-CA,fr-FR,en-CA" represents the preference for French spoken in Canada, 
+	    French spoken in France, followed by English spoken in Canada. 
+	  
+</dd>
+</dl></blockquote><p>
+      
+</p>
+<p>
+	The language preference hint SHOULD take precedence over the Accept-Language
+	HTTP header sent by the user's browser, and SHOULD take precedence over the language 
+	preference inferred by the user's IP address. 
+      
+</p>
+<a name="anchor4"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.5"></a><h3>5.&nbsp;
+Requesting Authentication in a Popup</h3>
+
+<p>
+	The Relying Party SHOULD first request authentication using the checkid_immedidate mode if the Relying Party 
+	has reason to believe that user had previously authenticated at the Relying Party and can determine
+	the user's OpenID Provider.
+      
+</p>
+<p>
+	When requesting OpenID authentication using the checkid_setup mode, the Relying Party MUST send
+	the following parameters:
+      
+</p>
+<p>
+	  </p>
+<blockquote class="text"><dl>
+<dt>openid.ns.ui</dt>
+<dd>
+	      REQUIRED. Value: "http://specs.openid.net/extensions/ui/1.0"
+	    
+</dd>
+<dt>openid.ui.mode</dt>
+<dd>
+	      REQUIRED. Value: "popup".
+	      New modes may be defined in future versions of this extension.
+	    
+</dd>
+</dl></blockquote><p>
+      
+</p>
+<p>
+	The RP SHOULD create the popup to be 450 pixels wide and 500 pixels tall. 
+	The popup MUST have the address bar displayed, and MUST be in a standalone browser
+	window. The contents of the popup MUST NOT be framed by the RP. 
+      
+</p>
+<p>
+	The RP SHOULD open the popup centered above the main browser window, and SHOULD dim
+	the contents of the parent window while the popup is active. The RP SHOULD ensure 
+	that the user is not surprised by the appearance of the popup, and understands
+	how to interact with it.
+	
+      
+</p>
+<p>
+	To keep the user popup user experience consistent, it is RECOMMENDED that
+	the OP does not resize the popup window unless the OP requires additional 
+	space to show special features that are not usually displayed as part of the 
+	default popup user experience.
+      
+</p>
+<p>
+	The OP MAY close the popup without returning a response to the RP. 
+	Closing the popup without sending a response should be interpreted as a 
+	negative assertion.
+      
+</p>
+<p>
+      The response to an authentication request in a popup is unchanged from 
+      <a class="info" href="#OpenID%202.0">[OpenID 2.0]<span> (</span><span class="info">OpenID 2.0 Workgroup, “OpenID 2.0,” .</span><span>)</span></a>.
+      Relying Parties detecting that the popup was closed without receiving an authentication response
+      SHOULD interpret the close event to be a negative assertion.
+      
+</p>
+<a name="anchor5"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.5.1"></a><h3>5.1.&nbsp;
+Authentication Response in a Fragment</h3>
+
+<p>
+	  The user experience can be optimized by returning the authentication response parameters in 
+	  the fragment portion of the Relying Party's return_to URL, allowing the content of the return_to 
+	  URL to be returned from the browser's cache, if already present.  To use this 
+	  technique, the Relying Party MUST include the fragment delimiter (the "#" character) in the return_to 
+	  URL in the authentication request. If the fragment delimiter character is present in the return_to URL, 
+	  the OpenID Provider SHOULD return the response parameters in the fragment portion of the URL. If the
+	  return_to URL already contains a question mark "?", the first response parameter MUST be prefixed 
+	  with an ampersand "&amp;", otherwise the first response parameter MUST be prefixed with a question mark "?".
+	
+</p>
+<a name="anchor6"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.6"></a><h3>6.&nbsp;
+Discovery</h3>
+
+<p>
+	  OpenID Providers supporting the User Interface Extension SHOULD advertise their support of the
+	  Extension using OpenID Discovery as defined in Section 7.3 of <a class="info" href="#OpenID%202.0">[OpenID 2.0]<span> (</span><span class="info">OpenID 2.0 Workgroup, “OpenID 2.0,” .</span><span>)</span></a>.
+	
+</p>
+<p>
+	  OpenID Providers supporting the language preference functionality SHOULD define
+	  http://specs.openid.net/extensions/ui/1.0/lang-pref as a &lt;xrd:Type&gt; child element of the &lt;xrd:Service&gt; element 
+	  in the XRDS discovery document.
+	
+</p><div style="display: table; width: 0pt; margin-left: 3em; margin-right: auto;"><pre>&lt;Type&gt;http://specs.openid.net/extensions/ui/1.0/lang-pref&lt;/Type&gt;
+</pre></div>
+<p>
+	  OpenID Providers supporting the popup functionality SHOULD define
+	  http://specs.openid.net/extensions/ui/1.0/mode/popup as a  &lt;xrd:Type&gt; child element 
+	  of the &lt;xrd:Service&gt; element in the 
+	  XRDS discovery document.
+	
+</p><div style="display: table; width: 0pt; margin-left: 3em; margin-right: auto;"><pre>&lt;Type&gt;http://specs.openid.net/extensions/ui/1.0/mode/popup&lt;/Type&gt;
+</pre></div>
+<a name="anchor7"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.7"></a><h3>7.&nbsp;
+Considerations</h3>
+
+<p>
+	OpenID Providers SHOULD use HTTPS for all their authentication screens, and educate
+	their users to always check their browser's address bar before entering their 
+	credentials. OPs SHOULD implement Javascript framebusting code to prevent their UI from
+	being framed.
+      
+</p>
+<p>
+	Credential verification and approval screens SHOULD always be in an independent browser
+	window to protect the user's credentials and approval from clickjacking exploits.
+      
+</p>
+<a name="anchor8"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="rfc.section.8"></a><h3>8.&nbsp;
+Acknowledgements</h3>
+
+<p>
+	Allen Tom (atom@yahoo-inc.com)
+      
+</p>
+<p>
+	Breno de Medeiros (breno@google.com)
+      
+</p>
+<p>
+	Brian Ellin (brian@janrain.com)
+      
+</p>
+<p>
+	Chris Messina (chris@citizenagency.com)
+      
+</p>
+<p>
+	David Recordon (david@sixapart.com)
+      
+</p>
+<a name="rfc.references1"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<h3>9.&nbsp;References</h3>
+<table border="0" width="99%">
+<tbody><tr><td class="author-text" valign="top"><a name="BCP 47">[BCP 47]</a></td>
+<td class="author-text">Phillips, A. and M. Davis, “Tags for Identifying Languages,” BCP&nbsp;47.</td></tr>
+<tr><td class="author-text" valign="top"><a name="Language Preference Attribute">[Language Preference Attribute]</a></td>
+<td class="author-text">axschema.org, “<a href="http://axschema.org/pref/language">Language Preference Attribute</a>.”</td></tr>
+<tr><td class="author-text" valign="top"><a name="OpenID 2.0">[OpenID 2.0]</a></td>
+<td class="author-text">OpenID 2.0 Workgroup, “<a href="http://openid.net/">OpenID 2.0</a>.”</td></tr>
+<tr><td class="author-text" valign="top"><a name="OpenID Attribute Exchange">[OpenID Attribute Exchange]</a></td>
+<td class="author-text">Hardt, D., Bufu, J., and J. Hoyt, “<a href="http://openid.net/specs/openid-attribute-exchange-1_0.html">OpenID Attribute Exchange 1.0</a>.”</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC2119">[RFC2119]</a></td>
+<td class="author-text">Bradner, B., “<a href="http://tools.ietf.org/html/rfc2119">Key words for use in RFCs to Indicate Requirement Levels</a>,” RFC&nbsp;2119.</td></tr>
+</tbody></table>
+
+<a name="rfc.authors"></a><br><hr>
+<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<h3>Authors' Addresses</h3>
+<table border="0" cellpadding="0" cellspacing="0" width="99%">
+<tbody><tr><td class="author-text">&nbsp;</td>
+<td class="author-text">Allen Tom</td></tr>
+<tr><td class="author-text">&nbsp;</td>
+<td class="author-text">Yahoo!</td></tr>
+<tr><td class="author" align="right">Email:&nbsp;</td>
+<td class="author-text"><a href="mailto:atom@yahoo-inc.com">atom@yahoo-inc.com</a></td></tr>
+<tr cellpadding="3"><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td class="author-text">&nbsp;</td>
+<td class="author-text">Breno de Medeiros</td></tr>
+<tr><td class="author-text">&nbsp;</td>
+<td class="author-text">Google</td></tr>
+<tr><td class="author" align="right">Email:&nbsp;</td>
+<td class="author-text"><a href="mailto:breno@google.com">breno@google.com</a></td></tr>
+</tbody></table>
+</body></html>
