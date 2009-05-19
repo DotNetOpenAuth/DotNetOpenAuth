@@ -273,7 +273,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			box.dnoi_internal.claimedIdentifier = null;
 			window.status = authenticationFailedToolTip;
 			box.title = authenticationFailedToolTip;
-		} else if (state = '' || state == null) {
+		} else if (state == '' || state == null) {
 			box.dnoi_internal.openid_logo.style.visibility = 'visible';
 			box.title = '';
 			box.dnoi_internal.claimedIdentifier = null;
