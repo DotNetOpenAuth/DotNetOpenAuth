@@ -78,7 +78,7 @@ namespace DotNetOpenAuth.OAuth {
 			ErrorUtilities.VerifyArgumentNotNull(endpoint, "endpoint");
 			ErrorUtilities.VerifyNonZeroLength(accessToken, "accessToken");
 
-			return PrepareAuthorizedRequest(endpoint, accessToken, EmptyDictionary<string, string>.Instance);
+			return this.PrepareAuthorizedRequest(endpoint, accessToken, EmptyDictionary<string, string>.Instance);
 		}
 
 		/// <summary>

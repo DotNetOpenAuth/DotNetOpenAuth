@@ -23,39 +23,13 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// </summary>
 	internal class ExtensionsBindingElement : IChannelBindingElement {
 		/// <summary>
-		/// The security settings on the Relying Party that is hosting this binding element.
-		/// </summary>
-		private RelyingPartySecuritySettings rpSecuritySettings;
-
-		/// <summary>
-		/// The security settings on the Provider that is hosting this binding element.
-		/// </summary>
-		private ProviderSecuritySettings opSecuritySettings;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="ExtensionsBindingElement"/> class.
 		/// </summary>
 		/// <param name="extensionFactory">The extension factory.</param>
-		/// <param name="securitySettings">The security settings to apply.</param>
-		internal ExtensionsBindingElement(IOpenIdExtensionFactory extensionFactory, RelyingPartySecuritySettings securitySettings) {
+		internal ExtensionsBindingElement(IOpenIdExtensionFactory extensionFactory) {
 			ErrorUtilities.VerifyArgumentNotNull(extensionFactory, "extensionFactory");
-			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
 
 			this.ExtensionFactory = extensionFactory;
-			this.rpSecuritySettings = securitySettings;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ExtensionsBindingElement"/> class.
-		/// </summary>
-		/// <param name="extensionFactory">The extension factory.</param>
-		/// <param name="securitySettings">The security settings to apply.</param>
-		internal ExtensionsBindingElement(IOpenIdExtensionFactory extensionFactory, ProviderSecuritySettings securitySettings) {
-			ErrorUtilities.VerifyArgumentNotNull(extensionFactory, "extensionFactory");
-			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
-
-			this.ExtensionFactory = extensionFactory;
-			this.opSecuritySettings = securitySettings;
 		}
 
 		#region IChannelBindingElement Members
