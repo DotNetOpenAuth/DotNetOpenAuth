@@ -13,7 +13,6 @@
 		<asp:CheckBox ID="requireSslCheckBox" runat="server" 
 			Text="RequireSsl (high security) mode" 
 			oncheckedchanged="requireSslCheckBox_CheckedChanged" /><br />
-		<asp:CheckBox ID="immediateCheckBox" runat="server" Text="Immediate mode" /><br />
 		<asp:CheckBoxList runat="server" ID="papePolicies">
 			<asp:ListItem Text="Request phishing resistant authentication" Value="http://schemas.openid.net/pape/policies/2007/06/phishing-resistant" />
 			<asp:ListItem Text="Request multi-factor authentication" Value="http://schemas.openid.net/pape/policies/2007/06/multi-factor" />

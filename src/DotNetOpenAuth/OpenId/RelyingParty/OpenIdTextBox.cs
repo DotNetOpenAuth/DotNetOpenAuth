@@ -156,11 +156,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string StatelessViewStateKey = "Stateless";
 
 		/// <summary>
-		/// The viewstate key to use for the <see cref="ImmediateMode"/> property.
-		/// </summary>
-		private const string ImmediateModeViewStateKey = "ImmediateMode";
-
-		/// <summary>
 		/// The viewstate key to use for the <see cref="RequestBirthDate"/> property.
 		/// </summary>
 		private const string RequestBirthDateViewStateKey = "RequestBirthDate";
@@ -193,11 +188,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The default value for the <see cref="RequireSsl"/> property.
 		/// </summary>
 		private const bool RequireSslDefault = false;
-
-		/// <summary>
-		/// The default value for the <see cref="ImmediateMode"/> property.
-		/// </summary>
-		private const bool ImmediateModeDefault = false;
 
 		/// <summary>
 		/// The default value for the <see cref="Stateless"/> property.
@@ -435,28 +425,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 				this.ViewState[ReturnToUrlViewStateKey] = value;
 			}
-		}
-
-		/// <summary>
-		/// Gets or sets a value indicating whether to use immediate mode in the 
-		/// OpenID protocol.
-		/// </summary>
-		/// <value>
-		/// True if a Provider should reply immediately to the authentication request
-		/// without interacting with the user.  False if the Provider can take time
-		/// to authenticate the user in order to complete an authentication attempt.
-		/// </value>
-		/// <remarks>
-		/// Setting this to true is sometimes useful in AJAX scenarios.  Setting this to
-		/// true can cause failed authentications when the user truly controls an
-		/// Identifier, but must complete an authentication step with the Provider before
-		/// the Provider will approve the login from this relying party.
-		/// </remarks>
-		[Bindable(true), DefaultValue(ImmediateModeDefault), Category(BehaviorCategory)]
-		[Description("Whether the Provider should respond immediately to an authentication attempt without interacting with the user.")]
-		public bool ImmediateMode {
-			get { return (bool)(ViewState[ImmediateModeViewStateKey] ?? ImmediateModeDefault); }
-			set { ViewState[ImmediateModeViewStateKey] = value; }
 		}
 
 		/// <summary>
@@ -933,7 +901,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 						// the "approximation" is exactly what we want.
 						this.Request = this.RelyingParty.CreateRequest(userSuppliedIdentifier, typedRealm, returnToApproximation);
 					}
-					this.Request.Mode = this.ImmediateMode ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;
+
 					if (this.EnableRequestProfile) {
 						this.AddProfileArgs(this.Request);
 					}
