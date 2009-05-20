@@ -1266,13 +1266,16 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 			// Configure each generated request.
 			int reqIndex = 0;
 			foreach (var req in requests) {
-				// Inform the OP that we'll be using a popup window.
-				req.AddExtension(new UIRequest());
-
 				req.AddCallbackArguments("index", (reqIndex++).ToString(CultureInfo.InvariantCulture));
 
 				if (req.Provider.IsExtensionSupported<UIRequest>()) {
+					// Inform the OP that we'll be using a popup window.
+					req.AddExtension(new UIRequest());
+
 					// Provide a hint for the client javascript about whether the OP supports the UI extension.
+					// This is so the window can be made the correct size for the extension.
+					// If the OP doesn't advertise support for the extension, the javascript will use
+					// a bigger popup window.
 					req.AddCallbackArguments("dotnetopenid.popupUISupported", "1");
 				}
 
