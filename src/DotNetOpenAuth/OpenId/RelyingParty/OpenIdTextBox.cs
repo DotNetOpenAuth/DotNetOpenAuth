@@ -295,6 +295,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string UIPopupCallbackKey = "dnoa.uipopup";
 
 		/// <summary>
+		/// The callback parameter to use for recognizing when the callback is in the parent window.
+		/// </summary>
+		private const string UIPopupCallbackParentKey = "dnoa.uipopupParent";
+
+		/// <summary>
 		/// The callback parameter for use with persisting the <see cref="UsePersistentCookie"/> property.
 		/// </summary>
 		private const string UsePersistentCookieCallbackKey = "OpenIdTextBox_UsePersistentCookie";
@@ -1019,17 +1024,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				return;
 			}
 
+			// Take an unreliable sneek peek to see if we're in a popup and an OpenID
+			// assertion is coming in.  We shouldn't process assertions in a popup window.
+			if (this.Page.Request.QueryString[UIPopupCallbackKey] == "1" && this.Page.Request.QueryString[UIPopupCallbackParentKey] == null) {
+				// We're in a popup window.  We need to close it and pass the
+				// message back to the parent window for processing.
+				this.ScriptClosingPopup();
+				return; // don't do any more processing on it now
+			}
+
 			var response = this.RelyingParty.GetResponse();
 			if (response != null) {
-				if (response.GetCallbackArgument(UIPopupCallbackKey) == "1") {
-					// We're in a popup window.  We need to close it and pass the
-					// message back to the parent window for processing.
-					this.Page.ClientScript.RegisterStartupScript(this.GetType(), "loginPopupClose", "window.close()", true);
-
-					// TODO: we still need to script sending the message back to the parent window!
-					return;
-				}
-
 				string persistentString = response.GetCallbackArgument(UsePersistentCookieCallbackKey);
 				bool persistentBool;
 				if (persistentString != null && bool.TryParse(persistentString, out persistentBool)) {
@@ -1227,11 +1232,29 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.Request.AddCallbackArguments(UIPopupCallbackKey, "1");
 
 			StringBuilder startupScript = new StringBuilder();
+
+			// Add a callback function that the popup window can call on this, the
+			// parent window, to pass back the authentication result.
+			startupScript.AppendLine("window.dnoi_internal = new Object();");
+			startupScript.AppendLine("window.dnoi_internal.processAuthorizationResult = function(uri) { window.location = uri; };");
+
+			// Open the popup window.
 			startupScript.AppendFormat(
 				@"var openidPopup = {0}",
 				UIUtilities.GetWindowPopupScript(this.RelyingParty, this.Request, "openidPopup"));
 
 			this.Page.ClientScript.RegisterStartupScript(this.GetType(), "loginPopup", startupScript.ToString(), true);
+		}
+
+		/// <summary>
+		/// Wires the popup window to close itself and pass the authentication result to the parent window.
+		/// </summary>
+		private void ScriptClosingPopup() {
+			StringBuilder startupScript = new StringBuilder();
+			startupScript.AppendLine("window.opener.dnoi_internal.processAuthorizationResult(document.URL + '&" + UIPopupCallbackParentKey + "=1');");
+			startupScript.AppendLine("window.close();");
+
+			this.Page.ClientScript.RegisterStartupScript(this.GetType(), "loginPopupClose", startupScript.ToString(), true);
 		}
 	}
 }
