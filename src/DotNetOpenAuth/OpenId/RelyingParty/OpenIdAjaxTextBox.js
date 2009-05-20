@@ -521,7 +521,14 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		this.trySetup = function() {
 			self.abort(); // ensure no concurrent attempts
 			window.waiting_openidBox = box;
-			self.popup = window.open(self.setup, 'opLogin', 'status=0,toolbar=0,location=1,resizable=1,scrollbars=1,width=800,height=600');
+			var width = 800;
+			var height = 600;
+			if (self.setup.getQueryArgValue("openid.return_to").indexOf("dotnetopenid.popupUISupported") >= 0) {
+				width = 450;
+				height = 500;
+			}
+
+			self.popup = window.open(self.setup, 'opLogin', 'status=0,toolbar=0,location=1,resizable=1,scrollbars=1,width=' + width + ',height=' + height);
 		};
 	};
 

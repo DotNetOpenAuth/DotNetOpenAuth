@@ -1271,6 +1271,11 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 
 				req.AddCallbackArguments("index", (reqIndex++).ToString(CultureInfo.InvariantCulture));
 
+				if (req.Provider.IsExtensionSupported<UIRequest>()) {
+					// Provide a hint for the client javascript about whether the OP supports the UI extension.
+					req.AddCallbackArguments("dotnetopenid.popupUISupported", "1");
+				}
+
 				// If the ReturnToUrl was explicitly set, we'll need to reset our first parameter
 				if (string.IsNullOrEmpty(HttpUtility.ParseQueryString(req.ReturnToUrl.Query)["dotnetopenid.userSuppliedIdentifier"])) {
 					req.AddCallbackArguments("dotnetopenid.userSuppliedIdentifier", userSuppliedIdentifier);
