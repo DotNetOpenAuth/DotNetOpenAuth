@@ -27,7 +27,23 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 	/// <see cref="IProviderEndpoint.IsExtensionSupported"/> method on the <see cref="IAuthenticationRequest.Provider"/>
 	/// object.</para>
 	/// </remarks>
-	public class UIRequest : IOpenIdMessageExtension, IMessageWithEvents {
+	public sealed class UIRequest : IOpenIdMessageExtension, IMessageWithEvents {
+		/// <summary>
+		/// The factory method that may be used in deserialization of this message.
+		/// </summary>
+		internal static readonly StandardOpenIdExtensionFactory.CreateDelegate Factory = (typeUri, data, baseMessage, isProviderRole) => {
+			if (typeUri == UITypeUri && isProviderRole) {
+				return new UIRequest();
+			}
+
+			return null;
+		};
+
+		/// <summary>
+		/// The type URI associated with this extension.
+		/// </summary>
+		private const string UITypeUri = "http://specs.openid.net/extensions/ui/1.0";
+
 		/// <summary>
 		/// Backing store for <see cref="ExtraData"/>.
 		/// </summary>
@@ -63,7 +79,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 		/// Gets the TypeURI the extension uses in the OpenID protocol and in XRDS advertisements.
 		/// </summary>
 		/// <value></value>
-		public string TypeUri { get { return "http://specs.openid.net/extensions/ui/1.0"; } }
+		public string TypeUri { get { return UITypeUri; } }
 
 		/// <summary>
 		/// Gets the additional TypeURIs that are supported by this extension, in preferred order.
