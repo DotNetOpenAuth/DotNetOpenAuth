@@ -56,6 +56,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <summary>
 		/// Initializes static members of the <see cref="MessagePart"/> class.
 		/// </summary>
+		[SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification = "This simplifies the rest of the code.")]
 		[SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "By design.")]
 		[SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "Much more efficient initialization when we can call methods.")]
 		static MessagePart() {
