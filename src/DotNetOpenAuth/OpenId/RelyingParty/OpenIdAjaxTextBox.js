@@ -528,7 +528,28 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 				height = 500;
 			}
 
-			self.popup = window.open(self.setup, 'opLogin', 'status=0,toolbar=0,location=1,resizable=1,scrollbars=1,width=' + width + ',height=' + height);
+			if (window.showModalDialog) {
+				self.popup = window.showModalDialog(self.setup, 'opLogin', 'status:0;resizable:1;scroll:1;center:1;dialogWidth:' + width + 'px; dialogHeight:' + height + 'px');
+			} else {
+				var left = (screen.width - width) / 2;
+				var top = (screen.height - height) / 2;
+				self.popup = window.open(self.setup, 'opLogin', 'status=0,toolbar=0,location=1,resizable=1,scrollbars=1,left=' + left + ',top=' + top + ',width=' + width + ',height=' + height);
+			}
+
+			// If the OP supports the UI extension it MAY close its own window
+			// for a negative assertion.  We must be able to recover from that scenario.
+			var localSelf = self;
+			self.popupCloseChecker = window.setInterval(function() {
+				if (localSelf.popup && localSelf.popup.closed) {
+					// So the user canceled and the window closed.
+					// It turns out we hae nothing special to do.
+					// If we were graying out the entire page while the child window was up,
+					// we would probably revert that here.
+					trace('User or OP canceled by closing the window.');
+					window.clearInterval(localSelf.popupCloseChecker);
+					localSelf.popup = null;
+				}
+			}, 250);
 		};
 	};
 
