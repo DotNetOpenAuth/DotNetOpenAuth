@@ -287,8 +287,8 @@ namespace DotNetOpenAuth.Test.Mocks {
 				this.incomingMessageRecipient = null;
 
 				// Briefly signal to another thread that might be waiting for our inbox to be empty
-				messageReceivedSignal.Set();
-				messageReceivedSignal.Reset();
+				this.messageReceivedSignal.Set();
+				this.messageReceivedSignal.Reset();
 
 				return response;
 			}
