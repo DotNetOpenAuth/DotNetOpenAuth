@@ -553,7 +553,7 @@ namespace DotNetOpenAuth.InfoCard {
 			// generate the onclick script for the image
 			string invokeScript = string.Format(
 				CultureInfo.InvariantCulture,
-				@"if (ActivateSelector('{0}', '{1}')) {{ {2} }}",
+				@"if (document.infoCard.activate('{0}', '{1}')) {{ {2} }}",
 				this.SelectorObjectId,
 				this.HiddenFieldName,
 				postback);
@@ -662,13 +662,13 @@ namespace DotNetOpenAuth.InfoCard {
 				this.Page.ClientScript.RegisterStartupScript(
 					typeof(InfoCardSelector),
 					"SelectorSupportingScript_" + this.ClientID,
-					string.Format(CultureInfo.InvariantCulture, "CheckStatic('{0}', '{1}');", this.infoCardSupportedPanel.ClientID, this.infoCardNotSupportedPanel.ClientID),
+					string.Format(CultureInfo.InvariantCulture, "document.infoCard.checkStatic('{0}', '{1}');", this.infoCardSupportedPanel.ClientID, this.infoCardNotSupportedPanel.ClientID),
 					true);
 			} else if (RenderMode == RenderMode.Dynamic) {
 				this.Page.ClientScript.RegisterStartupScript(
 					typeof(InfoCardSelector),
 					"SelectorSupportingScript_" + this.ClientID,
-					string.Format(CultureInfo.InvariantCulture, "CheckDynamic('{0}', '{1}');", this.infoCardSupportedPanel.ClientID, this.infoCardNotSupportedPanel.ClientID),
+					string.Format(CultureInfo.InvariantCulture, "document.infoCard.checkDynamic('{0}', '{1}');", this.infoCardSupportedPanel.ClientID, this.infoCardNotSupportedPanel.ClientID),
 					true);
 			}
 		}
