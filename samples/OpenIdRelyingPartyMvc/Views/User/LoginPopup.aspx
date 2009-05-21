@@ -195,7 +195,6 @@
 	</div>
 	<% Html.BeginForm("Authenticate", "User", FormMethod.Post, new { id = "loginForm" }); %>
 	<object type="application/x-informationcard" id="infocardSelector">
-		<param Name="issuer" Value="http://schemas.xmlsoap.org/ws/2005/05/identity/issuer/self"></param>
 		<param Name="tokenType" Value="urn:oasis:names:tc:SAML:1.0:assertion"></param>
 		<param Name="requiredClaims" Value="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier"></param>
 	</object>
