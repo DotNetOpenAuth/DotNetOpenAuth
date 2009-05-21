@@ -18,7 +18,7 @@ function AreCardsSupported() {
 	if (IEVer >= 7) {
 		var embed = document.createElement("object");
 		embed.type = "application/x-informationcard";
-		return "" + embed.issuerPolicy != "undefined" && embed.isInstalled;
+		return !(embed.issuerPolicy === undefined) && embed.isInstalled;
 	}
 
 	// not IE (any version)
@@ -53,7 +53,7 @@ function ActivateSelector(selectorId, hiddenFieldName) {
 		// Selector was canceled
 		return false;
 	}
-	if (hiddenField.value == 'undefined') {
+	if (hiddenField.value == 'undefined') { // really the string, not === undefined
 		// We're dealing with a bad FireFox selector plugin.
 		// Just add the control to the form by setting its name property and submit to activate.
 		selector.name = hiddenFieldName;
