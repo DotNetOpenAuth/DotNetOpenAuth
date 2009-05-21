@@ -242,7 +242,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="realm">The realm.</param>
 		/// <param name="returnToUrl">The return_to base URL.</param>
 		/// <param name="createNewAssociationsAsNeeded">if set to <c>true</c>, associations that do not exist between this Relying Party and the asserting Providers are created before the authentication request is created.</param>
-		/// <returns>A sequence of authentication requests, any of which constitutes a valid identity assertion on the Claimed Identifier.</returns>
+		/// <returns>
+		/// A sequence of authentication requests, any of which constitutes a valid identity assertion on the Claimed Identifier.
+		/// Never null, but may be empty.
+		/// </returns>
 		internal static IEnumerable<AuthenticationRequest> Create(Identifier userSuppliedIdentifier, OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl, bool createNewAssociationsAsNeeded) {
 			Contract.Requires(userSuppliedIdentifier != null);
 			Contract.Requires(relyingParty != null);
@@ -313,6 +316,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="createNewAssociationsAsNeeded">if set to <c>true</c>, associations that do not exist between this Relying Party and the asserting Providers are created before the authentication request is created.</param>
 		/// <returns>
 		/// A sequence of authentication requests, any of which constitutes a valid identity assertion on the Claimed Identifier.
+		/// Never null, but may be empty.
 		/// </returns>
 		/// <remarks>
 		/// All data validation and cleansing steps must have ALREADY taken place
