@@ -99,7 +99,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 				return this.Attributes[typeUri].Values.FirstOrDefault();
 			} else {
 				return null;
-			};
+			}
 		}
 
 		/// <summary>
