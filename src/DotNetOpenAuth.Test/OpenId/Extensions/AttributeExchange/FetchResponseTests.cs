@@ -40,6 +40,22 @@ namespace DotNetOpenId.Test.OpenId.Extensions {
 		}
 
 		[TestMethod]
+		public void GetAttributeValue() {
+			var response = new FetchResponse();
+
+			// Verify that null is returned if the attribute is absent.
+			Assert.IsNull(response.GetAttributeValue("http://someattribute"));
+
+			// Now add an attribute with no values.
+			response.Attributes.Add(new AttributeValues("http://someattribute2"));
+			Assert.IsNull(response.GetAttributeValue("http://someattribute2"));
+
+			// Now add an attribute with many values.
+			response.Attributes.Add(new AttributeValues("http://someattribute3", "a", "b", "c"));
+			Assert.AreEqual("a", response.GetAttributeValue("http://someattribute3"));
+		}
+
+		[TestMethod]
 		public void EqualityTests() {
 			var response1 = new FetchResponse();
 			var response2 = new FetchResponse();

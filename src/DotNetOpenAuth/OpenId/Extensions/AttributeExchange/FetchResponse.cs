@@ -81,6 +81,28 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		}
 
 		/// <summary>
+		/// Gets the first attribute value provided for a given attribute Type URI.
+		/// </summary>
+		/// <param name="typeUri">
+		/// The type URI of the attribute.  
+		/// Usually a constant from <see cref="WellKnownAttributes"/>.</param>
+		/// <returns>
+		/// The first value provided for the attribute, or <c>null</c> if the attribute is missing or no values were provided.
+		/// </returns>
+		/// <remarks>
+		/// This is meant as a helper method for the common case of just wanting one attribute value.
+		/// For greater flexibility or to retrieve more than just the first value for an attribute,
+		/// use the <see cref="Attributes"/> collection directly.
+		/// </remarks>
+		public string GetAttributeValue(string typeUri) {
+			if (this.Attributes.Contains(typeUri)) {
+				return this.Attributes[typeUri].Values.FirstOrDefault();
+			} else {
+				return null;
+			};
+		}
+
+		/// <summary>
 		/// Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>.
 		/// </summary>
 		/// <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:System.Object"/>.</param>
