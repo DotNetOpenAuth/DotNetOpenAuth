@@ -19,71 +19,10 @@ namespace DotNetOpenAuth {
 	/// The Code Contracts assembly rewriter (ccrewrite) tool causes all calls to Contract.*()
 	/// to redirect to this class.
 	/// </remarks>
-	public static class ContractRuntimeFailureMethods {
+	internal static class ContractRuntimeFailureMethods {
 		[DebuggerStepThrough]
-		public static void Requires(bool condition, string userMessage, string conditionText) {
-			if (!condition) {
-				throw new ArgumentException(userMessage ?? conditionText);
-			}
-		}
-
-		[DebuggerStepThrough]
-		public static void Ensures(bool condition, string userMessage, string conditionText) {
-			if (!condition) {
-				throw new InternalErrorException(userMessage ?? conditionText);
-			}
-		}
-
-		[DebuggerStepThrough]
-		public static void EnsuresOnThrow(bool condition, string userMessage, string conditionText) {
-			if (!condition) {
-				throw new InternalErrorException(userMessage ?? conditionText);
-			}
-		}
-
-		[DebuggerStepThrough]
-		public static void Assert(bool condition, string userMessage, string conditionText) {
-			if (!condition) {
-				throw new InternalErrorException(userMessage ?? conditionText);
-			}
-		}
-
-		[DebuggerStepThrough]
-		public static void Assume(bool condition, string userMessage, string conditionText) {
-			if (!condition) {
-				throw new InternalErrorException(userMessage ?? conditionText);
-			}
-		}
-
-		[DebuggerStepThrough]
-		public static void Invariant(bool condition, string userMessage, string conditionText) {
-			if (!condition) {
-				throw new InternalErrorException(userMessage ?? conditionText);
-			}
-		}
-
-		[DebuggerStepThrough]
-		public static void Failure(ContractFailureKind failureKind, string userProvidedMessage, string condition, Exception originalException) {
-			switch (failureKind) {
-				case ContractFailureKind.Assert:
-					Assert(false, userProvidedMessage, condition);
-					break;
-				case ContractFailureKind.Assume:
-					Assume(false, userProvidedMessage, condition);
-					break;
-				case ContractFailureKind.Invariant:
-					Invariant(false, userProvidedMessage, condition);
-					break;
-				case ContractFailureKind.Postcondition:
-					Ensures(false, userProvidedMessage, condition);
-					break;
-				case ContractFailureKind.Precondition:
-					Requires(false, userProvidedMessage, condition);
-					break;
-				default:
-					ErrorUtilities.ThrowInternal(userProvidedMessage ?? condition);
-					break;
-			}
+		internal static void ReportFailure(ContractFailureKind failureKind, string userProvidedMessage, string condition, Exception originalException) {
+			ErrorUtilities.ThrowInternal(userProvidedMessage ?? condition);
 		}
 	}
 }

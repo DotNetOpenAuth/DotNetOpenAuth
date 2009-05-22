@@ -11,6 +11,7 @@ namespace DotNetOpenAuth {
 	using System.Net;
 	using System.Reflection;
 	using System.Text;
+	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
 	/// A grab-bag utility class.
@@ -74,7 +75,7 @@ namespace DotNetOpenAuth {
 			return new DelayedToString<IEnumerable<KeyValuePair<K, V>>>(
 				pairs,
 				p => {
-					Contract.Requires(pairs != null);
+					ErrorUtilities.VerifyArgumentNotNull(pairs, "pairs");
 					var dictionary = pairs as IDictionary<K, V>;
 					StringBuilder sb = new StringBuilder(dictionary != null ? dictionary.Count * 40 : 200);
 					foreach (var pair in pairs) {
@@ -106,9 +107,11 @@ namespace DotNetOpenAuth {
 			return new DelayedToString<IEnumerable<T>>(
 				list,
 				l => {
-					Contract.Requires(l != null);
+					// Code contracts not allowed in generator methods.
+					ErrorUtilities.VerifyArgumentNotNull(l, "l");
+
 					string newLine = Environment.NewLine;
-					Contract.Assume(newLine != null && newLine.Length > 0);
+					////Contract.Assume(newLine != null && newLine.Length > 0);
 					StringBuilder sb = new StringBuilder();
 					if (multiLineElements) {
 						sb.AppendLine("[{");

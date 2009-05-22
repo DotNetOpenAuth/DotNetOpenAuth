@@ -319,11 +319,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// before calling this method.
 		/// </remarks>
 		private static IEnumerable<AuthenticationRequest> CreateInternal(Identifier userSuppliedIdentifier, OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl, IEnumerable<ServiceEndpoint> serviceEndpoints, bool createNewAssociationsAsNeeded) {
-			Contract.Requires(userSuppliedIdentifier != null);
-			Contract.Requires(relyingParty != null);
-			Contract.Requires(realm != null);
-			Contract.Requires(serviceEndpoints != null);
-			Contract.Ensures(Contract.Result<IEnumerable<AuthenticationRequest>>() != null);
+			// Can't use code contracts here because this is a yield return method.
+			ErrorUtilities.VerifyArgumentNotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
+			ErrorUtilities.VerifyArgumentNotNull(relyingParty, "relyingParty");
+			ErrorUtilities.VerifyArgumentNotNull(realm, "realm");
+			ErrorUtilities.VerifyArgumentNotNull(serviceEndpoints, "serviceEndpoints");
 
 			Logger.Yadis.InfoFormat("Performing discovery on user-supplied identifier: {0}", userSuppliedIdentifier);
 			IEnumerable<ServiceEndpoint> endpoints = FilterAndSortEndpoints(serviceEndpoints, relyingParty);
