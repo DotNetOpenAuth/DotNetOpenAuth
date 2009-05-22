@@ -7,9 +7,11 @@
 namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.Specialized;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Text;
+	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
@@ -164,13 +166,34 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 
 			signatureBaseStringElements.Add(message.HttpMethod.ToUpperInvariant());
 
+			var encodedDictionary = OAuthChannel.GetUriEscapedParameters(messageDictionary);
+
+			// An incoming message will already have included the query and form parameters
+			// in the message dictionary, but an outgoing message COULD have SOME parameters
+			// in the query that are not in the message dictionary because they were included
+			// in the receiving endpoint (the original URL).
+			// In an outgoing message, the POST entity can only contain parameters if they were
+			// in the message dictionary, so no need to pull out any parameters from there.
+			if (message.Recipient.Query != null) {
+				NameValueCollection nvc = HttpUtility.ParseQueryString(message.Recipient.Query);
+				foreach (string key in nvc) {
+					string escapedKey = MessagingUtilities.EscapeUriDataStringRfc3986(key);
+					string escapedValue = MessagingUtilities.EscapeUriDataStringRfc3986(nvc[key]);
+					string existingValue;
+					if (!encodedDictionary.TryGetValue(escapedKey, out existingValue)) {
+						encodedDictionary.Add(escapedKey, escapedValue);
+					} else {
+						ErrorUtilities.VerifyInternal(escapedValue == existingValue, "Somehow we have conflicting values for the '{0}' parameter.", escapedKey);
+					}
+				}
+			}
+			encodedDictionary.Remove("oauth_signature");
+
 			UriBuilder endpoint = new UriBuilder(message.Recipient);
 			endpoint.Query = null;
 			endpoint.Fragment = null;
 			signatureBaseStringElements.Add(endpoint.Uri.AbsoluteUri);
 
-			var encodedDictionary = OAuthChannel.GetUriEscapedParameters(messageDictionary);
-			encodedDictionary.Remove("oauth_signature");
 			var sortedKeyValueList = new List<KeyValuePair<string, string>>(encodedDictionary);
 			sortedKeyValueList.Sort(SignatureBaseStringParameterComparer);
 			StringBuilder paramBuilder = new StringBuilder();
@@ -192,7 +215,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 					signatureBaseString.Append("&");
 				}
 
-				signatureBaseString.Append(Uri.EscapeDataString(element));
+				signatureBaseString.Append(MessagingUtilities.EscapeUriDataStringRfc3986(element));
 			}
 
 			Logger.Bindings.DebugFormat("Constructed signature base string: {0}", signatureBaseString);
@@ -207,11 +230,11 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		protected static string GetConsumerAndTokenSecretString(ITamperResistantOAuthMessage message) {
 			StringBuilder builder = new StringBuilder();
 			if (!string.IsNullOrEmpty(message.ConsumerSecret)) {
-				builder.Append(Uri.EscapeDataString(message.ConsumerSecret));
+				builder.Append(MessagingUtilities.EscapeUriDataStringRfc3986(message.ConsumerSecret));
 			}
 			builder.Append("&");
 			if (!string.IsNullOrEmpty(message.TokenSecret)) {
-				builder.Append(Uri.EscapeDataString(message.TokenSecret));
+				builder.Append(MessagingUtilities.EscapeUriDataStringRfc3986(message.TokenSecret));
 			}
 			return builder.ToString();
 		}

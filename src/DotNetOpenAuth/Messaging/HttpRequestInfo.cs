@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
+	using System.Globalization;
 	using System.IO;
 	using System.Net;
 	using System.ServiceModel.Channels;
@@ -280,6 +281,7 @@ namespace DotNetOpenAuth.Messaging {
 						this.queryStringBeforeRewriting = this.QueryString;
 					} else {
 						// Rewriting detected!  Recover the original request URI.
+						ErrorUtilities.VerifyInternal(this.UrlBeforeRewriting != null, "UrlBeforeRewriting is null, so the query string cannot be determined.");
 						this.queryStringBeforeRewriting = HttpUtility.ParseQueryString(this.UrlBeforeRewriting.Query);
 					}
 				}
@@ -336,7 +338,7 @@ namespace DotNetOpenAuth.Messaging {
 				string[] hostAndPort = request.ServerVariables["HTTP_HOST"].Split(new[] { ':' }, 2);
 				publicRequestUri.Host = hostAndPort[0];
 				if (hostAndPort.Length > 1) {
-					publicRequestUri.Port = Convert.ToInt32(hostAndPort[1]);
+					publicRequestUri.Port = Convert.ToInt32(hostAndPort[1], CultureInfo.InvariantCulture);
 				} else {
 					publicRequestUri.Port = publicRequestUri.Scheme == Uri.UriSchemeHttps ? 443 : 80;
 				}

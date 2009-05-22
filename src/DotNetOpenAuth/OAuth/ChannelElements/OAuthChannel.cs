@@ -112,11 +112,13 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// a protocol request message.
 		/// </summary>
 		/// <param name="request">The HTTP request to search.</param>
-		/// <returns>A dictionary of data in the request.  Should never be null, but may be empty.</returns>
+		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
 		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestInfo request) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
-			// First search the Authorization header.  Use it exclusively if it's present.
+			var fields = new Dictionary<string, string>();
+
+			// First search the Authorization header.
 			string authorization = request.Headers[HttpRequestHeader.Authorization];
 			if (authorization != null) {
 				string[] authorizationSections = authorization.Split(';'); // TODO: is this the right delimiter?
@@ -129,21 +131,28 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 					if (trimmedAuth.StartsWith(oauthPrefix, StringComparison.Ordinal)) {
 						// We found an Authorization: OAuth header.  
 						// Parse it according to the rules in section 5.4.1 of the V1.0 spec.
-						var fields = new Dictionary<string, string>();
 						foreach (string stringPair in trimmedAuth.Substring(oauthPrefix.Length).Split(',')) {
 							string[] keyValueStringPair = stringPair.Trim().Split('=');
 							string key = Uri.UnescapeDataString(keyValueStringPair[0]);
 							string value = Uri.UnescapeDataString(keyValueStringPair[1].Trim('"'));
 							fields.Add(key, value);
 						}
-
-						return (IDirectedProtocolMessage)this.Receive(fields, request.GetRecipient());
 					}
 				}
 			}
 
-			// We didn't find an OAuth authorization header.  Revert to other payload methods.
-			IDirectedProtocolMessage message = base.ReadFromRequestCore(request);
+			// Scrape the entity
+			foreach (string key in request.Form) {
+				fields.Add(key, request.Form[key]);
+			}
+
+			// Scrape the query string
+			foreach (string key in request.QueryStringBeforeRewriting) {
+				fields.Add(key, request.QueryStringBeforeRewriting[key]);
+			}
+
+			// Deserialize the message using all the data we've collected.
+			var message = (IDirectedProtocolMessage)this.Receive(fields, request.GetRecipient());
 
 			// Add receiving HTTP transport information required for signature generation.
 			var signedMessage = message as ITamperResistantOAuthMessage;
@@ -239,9 +248,26 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			ErrorUtilities.VerifyArgumentNotNull(destination, "destination");
 
 			foreach (var pair in source) {
-				var key = Uri.EscapeDataString(pair.Key);
-				var value = Uri.EscapeDataString(pair.Value);
+				var key = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Key);
+				var value = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Value);
 				destination.Add(key, value);
+			}
+		}
+
+		/// <summary>
+		/// Gets the HTTP method to use for a message.
+		/// </summary>
+		/// <param name="message">The message.</param>
+		/// <returns>"POST", "GET" or some other similar http verb.</returns>
+		private static string GetHttpMethod(IDirectedProtocolMessage message) {
+			Contract.Requires(message != null);
+			ErrorUtilities.VerifyArgumentNotNull(message, "message");
+
+			var signedMessage = message as ITamperResistantOAuthMessage;
+			if (signedMessage != null) {
+				return signedMessage.HttpMethod;
+			} else {
+				return (message.HttpMethods & HttpDeliveryMethods.PostRequest) != 0 ? "POST" : "GET";
 			}
 		}
 
@@ -251,7 +277,9 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="requestMessage">The message to be transmitted to the ServiceProvider.</param>
 		/// <returns>The web request ready to send.</returns>
 		/// <remarks>
-		/// This method implements OAuth 1.0 section 5.2, item #1 (described in section 5.4).
+		/// 	<para>If the message has non-empty ExtraData in it, the request stream is sent to
+		/// the server automatically.  If it is empty, the request stream must be sent by the caller.</para>
+		/// 	<para>This method implements OAuth 1.0 section 5.2, item #1 (described in section 5.4).</para>
 		/// </remarks>
 		private HttpWebRequest InitializeRequestAsAuthHeader(IDirectedProtocolMessage requestMessage) {
 			var protocol = Protocol.Lookup(requestMessage.Version);
@@ -266,16 +294,22 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				fields.Add("realm", this.Realm.AbsoluteUri);
 			}
 
-			UriBuilder builder = new UriBuilder(requestMessage.Recipient);
-			MessagingUtilities.AppendQueryArgs(builder, requestMessage.ExtraData);
-			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(builder.Uri);
+			HttpWebRequest httpRequest;
+			UriBuilder recipientBuilder = new UriBuilder(requestMessage.Recipient);
+			bool hasEntity = HttpMethodHasEntity(GetHttpMethod(requestMessage));
+
+			if (!hasEntity) {
+				MessagingUtilities.AppendQueryArgs(recipientBuilder, requestMessage.ExtraData);
+			}
+			httpRequest = (HttpWebRequest)WebRequest.Create(recipientBuilder.Uri);
+			httpRequest.Method = GetHttpMethod(requestMessage);
 
 			StringBuilder authorization = new StringBuilder();
 			authorization.Append(protocol.AuthorizationHeaderScheme);
 			authorization.Append(" ");
 			foreach (var pair in fields) {
-				string key = Uri.EscapeDataString(pair.Key);
-				string value = Uri.EscapeDataString(pair.Value);
+				string key = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Key);
+				string value = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Value);
 				authorization.Append(key);
 				authorization.Append("=\"");
 				authorization.Append(value);
@@ -284,6 +318,18 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			authorization.Length--; // remove trailing comma
 
 			httpRequest.Headers.Add(HttpRequestHeader.Authorization, authorization.ToString());
+
+			if (hasEntity) {
+				// WARNING: We only set up the request stream for the caller if there is
+				// extra data.  If there isn't any extra data, the caller must do this themselves.
+				if (requestMessage.ExtraData.Count > 0) {
+					SendParametersInEntity(httpRequest, requestMessage.ExtraData);
+				} else {
+					// We'll assume the content length is zero since the caller may not have
+					// anything.  They're responsible to change it when the add the payload if they have one.
+					httpRequest.ContentLength = 0;
+				}
+			}
 
 			return httpRequest;
 		}

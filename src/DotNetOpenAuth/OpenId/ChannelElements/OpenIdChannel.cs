@@ -339,9 +339,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			var extensionFactory = OpenIdExtensionFactoryAggregator.LoadFromConfiguration();
 
 			List<IChannelBindingElement> elements = new List<IChannelBindingElement>(8);
+			elements.Add(new ExtensionsBindingElement(extensionFactory));
 			if (isRelyingPartyRole) {
 				elements.Add(new RelyingPartySecurityOptions(rpSecuritySettings));
-				elements.Add(new ExtensionsBindingElement(extensionFactory, rpSecuritySettings));
 				elements.Add(new BackwardCompatibilityBindingElement());
 				ReturnToNonceBindingElement requestNonceElement = null;
 
@@ -361,8 +361,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 				ErrorUtilities.VerifyOperation(!rpSecuritySettings.RejectUnsolicitedAssertions || requestNonceElement != null, OpenIdStrings.UnsolicitedAssertionRejectionRequiresNonceStore);
 			} else {
-				elements.Add(new ExtensionsBindingElement(extensionFactory, opSecuritySettings));
-
 				// Providers must always have a nonce store.
 				ErrorUtilities.VerifyArgumentNotNull(nonceStore, "nonceStore");
 			}

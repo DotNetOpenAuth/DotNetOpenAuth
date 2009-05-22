@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenId.Test.OpenId.Extensions {
+namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using System;
 	using System.IO;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;

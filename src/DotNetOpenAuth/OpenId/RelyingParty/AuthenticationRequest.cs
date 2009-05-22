@@ -24,7 +24,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// The name of the internal callback parameter to use to store the user-supplied identifier.
 		/// </summary>
-		internal const string UserSuppliedIdentifierParameterName = "dnoi.userSuppliedIdentifier";
+		internal const string UserSuppliedIdentifierParameterName = OpenIdUtilities.CustomParameterPrefix + "userSuppliedIdentifier";
 
 		/// <summary>
 		/// The relying party that created this request object.
@@ -250,6 +250,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Contract.Requires(userSuppliedIdentifier != null);
 			Contract.Requires(relyingParty != null);
 			Contract.Requires(realm != null);
+			Contract.Ensures(Contract.Result<IEnumerable<AuthenticationRequest>>() != null);
 
 			// We have a long data validation and preparation process
 			ErrorUtilities.VerifyArgumentNotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
@@ -323,6 +324,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// before calling this method.
 		/// </remarks>
 		private static IEnumerable<AuthenticationRequest> CreateInternal(Identifier userSuppliedIdentifier, OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl, IEnumerable<ServiceEndpoint> serviceEndpoints, bool createNewAssociationsAsNeeded) {
+			Contract.Requires(userSuppliedIdentifier != null);
+			Contract.Requires(relyingParty != null);
+			Contract.Requires(realm != null);
+			Contract.Requires(serviceEndpoints != null);
+			Contract.Ensures(Contract.Result<IEnumerable<AuthenticationRequest>>() != null);
+
 			Logger.Yadis.InfoFormat("Performing discovery on user-supplied identifier: {0}", userSuppliedIdentifier);
 			IEnumerable<ServiceEndpoint> endpoints = FilterAndSortEndpoints(serviceEndpoints, relyingParty);
 
