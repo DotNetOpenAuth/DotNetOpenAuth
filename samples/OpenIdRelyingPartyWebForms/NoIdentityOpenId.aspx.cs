@@ -28,15 +28,15 @@
 							}
 							break;
 						case AuthenticationStatus.Canceled:
-							resultMessage.Text = "Canceled at OP.  This may be a sign that the OP doesn't support this message.";
+							this.resultMessage.Text = "Canceled at OP.  This may be a sign that the OP doesn't support this message.";
 							break;
 						case AuthenticationStatus.Failed:
-							resultMessage.Text = "OP returned a failure: " + response.Exception;
+							this.resultMessage.Text = "OP returned a failure: " + response.Exception;
 							break;
 						case AuthenticationStatus.SetupRequired:
 						case AuthenticationStatus.Authenticated:
 						default:
-							resultMessage.Text = "OP returned an unexpected response.";
+							this.resultMessage.Text = "OP returned an unexpected response.";
 							break;
 					}
 				}

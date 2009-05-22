@@ -20,7 +20,7 @@
 
 			routes.MapRoute(
 				"Root",
-				"",
+				string.Empty,
 				new { controller = "Home", action = "Index", id = string.Empty });
 		}
 
