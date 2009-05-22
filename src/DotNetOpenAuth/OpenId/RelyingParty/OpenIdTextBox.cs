@@ -292,12 +292,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// The callback parameter to use for recognizing when the callback is in a popup window.
 		/// </summary>
-		private const string UIPopupCallbackKey = "dnoa.uipopup";
+		private const string UIPopupCallbackKey = OpenIdUtilities.CustomParameterPrefix + "uipopup";
 
 		/// <summary>
 		/// The callback parameter to use for recognizing when the callback is in the parent window.
 		/// </summary>
-		private const string UIPopupCallbackParentKey = "dnoa.uipopupParent";
+		private const string UIPopupCallbackParentKey = OpenIdUtilities.CustomParameterPrefix + "uipopupParent";
 
 		/// <summary>
 		/// The callback parameter for use with persisting the <see cref="UsePersistentCookie"/> property.
@@ -1235,8 +1235,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			// Add a callback function that the popup window can call on this, the
 			// parent window, to pass back the authentication result.
-			startupScript.AppendLine("window.dnoi_internal = new Object();");
-			startupScript.AppendLine("window.dnoi_internal.processAuthorizationResult = function(uri) { window.location = uri; };");
+			startupScript.AppendLine("window.dnoa_internal = new Object();");
+			startupScript.AppendLine("window.dnoa_internal.processAuthorizationResult = function(uri) { window.location = uri; };");
 
 			// Open the popup window.
 			startupScript.AppendFormat(
@@ -1251,7 +1251,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		private void ScriptClosingPopup() {
 			StringBuilder startupScript = new StringBuilder();
-			startupScript.AppendLine("window.opener.dnoi_internal.processAuthorizationResult(document.URL + '&" + UIPopupCallbackParentKey + "=1');");
+			startupScript.AppendLine("window.opener.dnoa_internal.processAuthorizationResult(document.URL + '&" + UIPopupCallbackParentKey + "=1');");
 			startupScript.AppendLine("window.close();");
 
 			this.Page.ClientScript.RegisterStartupScript(this.GetType(), "loginPopupClose", startupScript.ToString(), true);
