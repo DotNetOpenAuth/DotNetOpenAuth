@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
 	using System.ComponentModel;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Web;
@@ -379,7 +380,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		internal static bool IsOpenIdSupportingParameter(string parameterName) {
 			Protocol protocol = Protocol.Default;
 			return parameterName.StartsWith(protocol.openid.Prefix, StringComparison.OrdinalIgnoreCase)
-				|| parameterName.StartsWith("dnoi.", StringComparison.Ordinal);
+				|| parameterName.StartsWith(OpenIdUtilities.CustomParameterPrefix, StringComparison.Ordinal);
 		}
 
 		/// <summary>
@@ -525,6 +526,18 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			return this.CreateRequests(userSuppliedIdentifier, new Realm(realmUrl.Uri));
 		}
+
+#if CONTRACTS_FULL
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
+		[ContractInvariantMethod]
+		private void ObjectInvariant() {
+			Contract.Invariant(this.SecuritySettings != null);
+			Contract.Invariant(this.Channel != null);
+		}
+#endif
 
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources

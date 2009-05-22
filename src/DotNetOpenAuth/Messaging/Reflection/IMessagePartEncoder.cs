@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	/// <remarks>
 	/// Implementations of this interface must include a default constructor and must be thread-safe.
 	/// </remarks>
-	internal interface IMessagePartEncoder {
+	public interface IMessagePartEncoder {
 		/// <summary>
 		/// Encodes the specified value.
 		/// </summary>

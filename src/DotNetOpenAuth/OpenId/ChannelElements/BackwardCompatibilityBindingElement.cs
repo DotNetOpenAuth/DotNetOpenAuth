@@ -20,13 +20,13 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// The name of the callback parameter that stores the Provider Endpoint URL
 		/// to tack onto the return_to URI.
 		/// </summary>
-		private const string ProviderEndpointParameterName = "dnoi.op_endpoint";
+		private const string ProviderEndpointParameterName = OpenIdUtilities.CustomParameterPrefix + "op_endpoint";
 
 		/// <summary>
 		/// The name of the callback parameter that stores the Claimed Identifier
 		/// to tack onto the return_to URI.
 		/// </summary>
-		private const string ClaimedIdentifierParameterName = "dnoi.claimed_id";
+		private const string ClaimedIdentifierParameterName = OpenIdUtilities.CustomParameterPrefix + "claimed_id";
 
 		#region IChannelBindingElement Members
 

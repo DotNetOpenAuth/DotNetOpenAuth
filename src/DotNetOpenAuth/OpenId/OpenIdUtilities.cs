@@ -24,6 +24,11 @@ namespace DotNetOpenAuth.OpenId {
 	/// </summary>
 	internal static class OpenIdUtilities {
 		/// <summary>
+		/// The prefix to designate this library's proprietary parameters added to the protocol.
+		/// </summary>
+		internal const string CustomParameterPrefix = "dnoa.";
+
+		/// <summary>
 		/// Gets the OpenID protocol instance for the version in a message.
 		/// </summary>
 		/// <param name="message">The message.</param>

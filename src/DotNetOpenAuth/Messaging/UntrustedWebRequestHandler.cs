@@ -33,11 +33,6 @@ namespace DotNetOpenAuth.Messaging {
 	/// </remarks>
 	public class UntrustedWebRequestHandler : IDirectWebRequestHandler {
 		/// <summary>
-		/// Gets or sets the default cache policy to use for HTTP requests.
-		/// </summary>
-		internal static readonly RequestCachePolicy DefaultCachePolicy = HttpWebRequest.DefaultCachePolicy;
-
-		/// <summary>
 		/// The set of URI schemes allowed in untrusted web requests.
 		/// </summary>
 		private ICollection<string> allowableSchemes = new List<string> { "http", "https" };

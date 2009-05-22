@@ -121,6 +121,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// that includes an entity body, the request stream is automatically sent
 		/// if and only if the <see cref="IMessage.ExtraData"/> dictionary is non-empty.
 		/// </remarks>
+		[SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "Type of parameter forces the method to apply only to specific scenario.")]
 		public HttpWebRequest PrepareAuthorizedRequest(AccessProtectedResourceRequest message) {
 			Contract.Requires(message != null);
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");

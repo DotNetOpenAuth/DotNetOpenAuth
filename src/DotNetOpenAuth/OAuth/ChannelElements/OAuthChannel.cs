@@ -248,8 +248,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			ErrorUtilities.VerifyArgumentNotNull(destination, "destination");
 
 			foreach (var pair in source) {
-				var key = Uri.EscapeDataString(pair.Key);
-				var value = Uri.EscapeDataString(pair.Value);
+				var key = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Key);
+				var value = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Value);
 				destination.Add(key, value);
 			}
 		}
@@ -308,8 +308,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			authorization.Append(protocol.AuthorizationHeaderScheme);
 			authorization.Append(" ");
 			foreach (var pair in fields) {
-				string key = Uri.EscapeDataString(pair.Key);
-				string value = Uri.EscapeDataString(pair.Value);
+				string key = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Key);
+				string value = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Value);
 				authorization.Append(key);
 				authorization.Append("=\"");
 				authorization.Append(value);
@@ -319,10 +319,16 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 
 			httpRequest.Headers.Add(HttpRequestHeader.Authorization, authorization.ToString());
 
-			// WARNING: We only set up the request stream for the caller if there is
-			// extra data.  If there isn't any extra data, the caller must do this themselves.
-			if (hasEntity && requestMessage.ExtraData.Count > 0) {
-				SendParametersInEntity(httpRequest, requestMessage.ExtraData);
+			if (hasEntity) {
+				// WARNING: We only set up the request stream for the caller if there is
+				// extra data.  If there isn't any extra data, the caller must do this themselves.
+				if (requestMessage.ExtraData.Count > 0) {
+					SendParametersInEntity(httpRequest, requestMessage.ExtraData);
+				} else {
+					// We'll assume the content length is zero since the caller may not have
+					// anything.  They're responsible to change it when the add the payload if they have one.
+					httpRequest.ContentLength = 0;
+				}
 			}
 
 			return httpRequest;

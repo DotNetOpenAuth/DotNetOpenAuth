@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// The parameter of the callback parameter we tack onto the return_to URL
 		/// to store the replay-detection nonce.
 		/// </summary>
-		internal const string NonceParameter = "dnoi.request_nonce";
+		internal const string NonceParameter = OpenIdUtilities.CustomParameterPrefix + "request_nonce";
 
 		/// <summary>
 		/// The length of the generated nonce's random part.
