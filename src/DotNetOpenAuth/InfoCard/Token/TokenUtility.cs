@@ -48,6 +48,8 @@ namespace DotNetOpenAuth.InfoCard {
 		/// The authorization context carried by the token.
 		/// </returns>
 		internal static AuthorizationContext AuthenticateToken(XmlReader reader, Uri audience) {
+			Contract.Ensures(Contract.Result<AuthorizationContext>() != null);
+
 			// Extensibility Point:
 			// in order to accept different token types, you would need to add additional 
 			// code to create an authenticationcontext from the security token. 
@@ -218,7 +220,6 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <returns>A string containing the XXX-XXXX-XXX cosmetic value.</returns>
 		internal static string CalculateSiteSpecificID(string ppid) {
 			Contract.Requires(ppid != null);
-			ErrorUtilities.VerifyArgumentNotNull(ppid, "ppid");
 			Contract.Ensures(Contract.Result<string>() != null && Contract.Result<string>().Length > 0);
 
 			int callSignChars = 10;

@@ -252,11 +252,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Contract.Requires(realm != null);
 			Contract.Ensures(Contract.Result<IEnumerable<AuthenticationRequest>>() != null);
 
-			// We have a long data validation and preparation process
-			ErrorUtilities.VerifyArgumentNotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
-			ErrorUtilities.VerifyArgumentNotNull(relyingParty, "relyingParty");
-			ErrorUtilities.VerifyArgumentNotNull(realm, "realm");
-
 			// Normalize the portion of the return_to path that correlates to the realm for capitalization.
 			// (so that if a web app base path is /MyApp/, but the URL of this request happens to be
 			// /myapp/login.aspx, we bump up the return_to Url to use /MyApp/ so it matches the realm.

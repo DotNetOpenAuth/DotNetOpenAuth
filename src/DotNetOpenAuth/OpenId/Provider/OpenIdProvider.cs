@@ -314,16 +314,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// the user agent to allow the redirect with assertion to happen.
 		/// </returns>
 		public OutgoingWebResponse PrepareUnsolicitedAssertion(Uri providerEndpoint, Realm relyingParty, Identifier claimedIdentifier, Identifier localIdentifier, params IExtensionMessage[] extensions) {
-			Contract.Requires(providerEndpoint != null);
-			Contract.Requires(providerEndpoint.IsAbsoluteUri);
-			Contract.Requires(relyingParty != null);
-			Contract.Requires(claimedIdentifier != null);
-			Contract.Requires(localIdentifier != null);
-			ErrorUtilities.VerifyArgumentNotNull(providerEndpoint, "providerEndpoint");
-			ErrorUtilities.VerifyArgumentNotNull(relyingParty, "relyingParty");
-			ErrorUtilities.VerifyArgumentNotNull(claimedIdentifier, "claimedIdentifier");
-			ErrorUtilities.VerifyArgumentNotNull(localIdentifier, "localIdentifier");
-			ErrorUtilities.VerifyArgumentNamed(providerEndpoint.IsAbsoluteUri, "providerEndpoint", OpenIdStrings.AbsoluteUriRequired);
+			Contract.RequiresAlways(providerEndpoint != null);
+			Contract.RequiresAlways(providerEndpoint.IsAbsoluteUri);
+			Contract.RequiresAlways(relyingParty != null);
+			Contract.RequiresAlways(claimedIdentifier != null);
+			Contract.RequiresAlways(localIdentifier != null);
+			Contract.RequiresAlways(this.WebRequestHandler != null);
 
 			// Although the RP should do their due diligence to make sure that this OP
 			// is authorized to send an assertion for the given claimed identifier,

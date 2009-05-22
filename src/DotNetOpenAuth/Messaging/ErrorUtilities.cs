@@ -350,7 +350,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <exception cref="ArgumentNullException">Thrown if <paramref name="value"/> is null.</exception>
 		[Pure]
 		internal static void VerifyArgumentNotNull(object value, string paramName) {
-			Contract.Requires(value != null);
+			Contract.Ensures(value != null);
+			Contract.EnsuresOnThrow<ArgumentNullException>(value == null);
 			if (value == null) {
 				throw new ArgumentNullException(paramName);
 			}
@@ -380,9 +381,7 @@ namespace DotNetOpenAuth.Messaging {
 		internal static void VerifyHttpContext() {
 			Contract.Ensures(HttpContext.Current != null);
 			Contract.Ensures(HttpContext.Current.Request != null);
-
-			ErrorUtilities.VerifyOperation(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
-			ErrorUtilities.VerifyOperation(HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
+			ErrorUtilities.VerifyOperation(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 		}
 	}
 }

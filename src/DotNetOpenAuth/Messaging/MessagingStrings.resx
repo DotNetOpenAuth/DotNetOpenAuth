@@ -291,4 +291,7 @@
   <data name="UnsupportedHttpVerb" xml:space="preserve">
     <value>The HTTP verb '{0}' is unrecognized and unsupported.</value>
   </data>
+  <data name="NonEmptyStringExpected" xml:space="preserve">
+    <value>A non-empty string was expected.</value>
+  </data>
 </root>

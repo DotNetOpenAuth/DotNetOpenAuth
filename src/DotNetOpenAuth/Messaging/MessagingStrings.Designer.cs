@@ -304,6 +304,15 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A non-empty string was expected..
+        /// </summary>
+        internal static string NonEmptyStringExpected {
+            get {
+                return ResourceManager.GetString("NonEmptyStringExpected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A message response is already queued for sending in the response stream..
         /// </summary>
         internal static string QueuedMessageResponseAlreadyExists {

@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Diagnostics;
+	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Net;
 	using System.Text;
@@ -15,6 +16,7 @@ namespace DotNetOpenAuth.Messaging {
 	/// A live network HTTP response
 	/// </summary>
 	[DebuggerDisplay("{Status} {ContentType.MediaType}")]
+	[ContractVerification(true)]
 	internal class NetworkDirectWebResponse : IncomingWebResponse, IDisposable {
 		/// <summary>
 		/// The network response object, used to initialize this instance, that still needs 
@@ -40,6 +42,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="response">The response.</param>
 		internal NetworkDirectWebResponse(Uri requestUri, HttpWebResponse response)
 			: base(requestUri, response) {
+			Contract.RequiresAlways(requestUri != null);
+			Contract.RequiresAlways(response != null);
 			this.httpWebResponse = response;
 			this.responseStream = response.GetResponseStream();
 		}
@@ -82,6 +86,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		internal override CachedDirectWebResponse GetSnapshot(int maximumBytesToCache) {
 			ErrorUtilities.VerifyOperation(!this.streamReadBegun, "Network stream reading has already begun.");
+			ErrorUtilities.VerifyOperation(this.RequestUri != null, "RequestUri != null");
+			ErrorUtilities.VerifyOperation(this.httpWebResponse != null, "httpWebResponse != null");
+
 			this.streamReadBegun = true;
 			var result = new CachedDirectWebResponse(this.RequestUri, this.httpWebResponse, maximumBytesToCache);
 			this.Dispose();

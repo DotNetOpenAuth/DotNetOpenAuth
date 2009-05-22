@@ -30,8 +30,7 @@ namespace DotNetOpenAuth {
 		/// </returns>
 		[ContractVerification(false)] // bugs/limitations in CC static analysis
 		internal static bool QueryStringContainPrefixedParameters(this Uri uri, string prefix) {
-			Contract.Requires(prefix != null && prefix.Length > 0);
-			ErrorUtilities.VerifyNonZeroLength(prefix, "prefix");
+			Contract.Requires(!string.IsNullOrEmpty(prefix));
 			if (uri == null) {
 				return false;
 			}
@@ -49,10 +48,7 @@ namespace DotNetOpenAuth {
 		/// 	<c>true</c> if the URI represents an encrypted request; otherwise, <c>false</c>.
 		/// </returns>
 		internal static bool IsTransportSecure(this Uri uri) {
-			if (uri == null) {
-				throw new ArgumentNullException("uri");
-			}
-
+			Contract.Requires(uri != null);
 			return string.Equals(uri.Scheme, "https", StringComparison.OrdinalIgnoreCase);
 		}
 
@@ -65,7 +61,6 @@ namespace DotNetOpenAuth {
 		internal static string ToStringWithImpliedPorts(this UriBuilder builder) {
 			Contract.Requires(builder != null);
 			Contract.Ensures(Contract.Result<string>() != null);
-			ErrorUtilities.VerifyArgumentNotNull(builder, "builder");
 
 			// We only check for implied ports on HTTP and HTTPS schemes since those
 			// are the only ones supported by OpenID anyway.

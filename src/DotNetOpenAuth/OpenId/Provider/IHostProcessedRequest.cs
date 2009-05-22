@@ -5,12 +5,14 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId.Provider {
+	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
 	/// Interface exposing incoming messages to the OpenID Provider that
 	/// require interaction with the host site.
 	/// </summary>
+	[ContractClass(typeof(IHostProcessedRequestContract))]
 	public interface IHostProcessedRequest : IRequest {
 		/// <summary>
 		/// Gets the version of OpenID being used by the relying party that sent the request.
@@ -42,4 +44,55 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </remarks>
 		RelyingPartyDiscoveryResult IsReturnUrlDiscoverable(OpenIdProvider provider);
 	}
+
+	[ContractClassFor(typeof(IHostProcessedRequest))]
+	internal abstract class IHostProcessedRequestContract : IHostProcessedRequest {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="IHostProcessedRequestContract"/> class.
+		/// </summary>
+		protected IHostProcessedRequestContract() {
+		}
+
+		#region IHostProcessedRequest Members
+
+		ProtocolVersion IHostProcessedRequest.RelyingPartyVersion {
+			get { throw new System.NotImplementedException(); }
+		}
+
+		Realm IHostProcessedRequest.Realm {
+			get { throw new System.NotImplementedException(); }
+		}
+
+		bool IHostProcessedRequest.Immediate {
+			get { throw new System.NotImplementedException(); }
+		}
+
+		RelyingPartyDiscoveryResult IHostProcessedRequest.IsReturnUrlDiscoverable(OpenIdProvider provider) {
+			Contract.Requires(provider != null);
+			throw new System.NotImplementedException();
+		}
+
+		#endregion
+
+		#region IRequest Members
+
+		bool IRequest.IsResponseReady {
+			get { throw new System.NotImplementedException(); }
+		}
+
+		void IRequest.AddResponseExtension(DotNetOpenAuth.OpenId.Messages.IOpenIdMessageExtension extension) {
+			throw new System.NotImplementedException();
+		}
+
+		T IRequest.GetExtension<T>() {
+			throw new System.NotImplementedException();
+		}
+
+		DotNetOpenAuth.OpenId.Messages.IOpenIdMessageExtension IRequest.GetExtension(System.Type extensionType) {
+			throw new System.NotImplementedException();
+		}
+
+		#endregion
+	}
+
 }

@@ -19,6 +19,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Messages;
+	using System.Diagnostics.CodeAnalysis;
 
 	/// <summary>
 	/// A delegate that decides whether a given OpenID Provider endpoint may be
@@ -145,7 +146,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				Contract.Requires(value != null);
+				Contract.RequiresAlways(value != null);
 				ErrorUtilities.VerifyArgumentNotNull(value, "value");
 				this.channel = value;
 				this.AssociationManager.Channel = value;
@@ -163,7 +164,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			internal set {
 				Contract.Requires(value != null);
-				ErrorUtilities.VerifyArgumentNotNull(value, "value");
 				this.securitySettings = value;
 				this.AssociationManager.SecuritySettings = value;
 			}
@@ -196,8 +196,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				Contract.Requires(value != null);
-				ErrorUtilities.VerifyArgumentNotNull(value, "value");
+				Contract.RequiresAlways(value != null);
 				this.endpointOrder = value;
 			}
 		}
@@ -289,7 +288,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Contract.Requires(realm != null);
 			Contract.Ensures(Contract.Result<IAuthenticationRequest>() != null);
 			try {
-				return this.CreateRequests(userSuppliedIdentifier, realm).First();
+				var result = this.CreateRequests(userSuppliedIdentifier, realm).First();
+				Contract.Assume(result != null);
+				return result;
 			} catch (InvalidOperationException ex) {
 				throw ErrorUtilities.Wrap(ex, OpenIdStrings.OpenIdEndpointNotFound);
 			}
@@ -388,6 +389,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Contract.Requires(userSuppliedIdentifier != null);
 			Contract.Requires(realm != null);
 			Contract.Ensures(Contract.Result<IEnumerable<IAuthenticationRequest>>() != null);
+			Contract.Ensures(Contract.ForAll(Contract.Result<IEnumerable<IAuthenticationRequest>>(), el => el != null));
+
 			ErrorUtilities.VerifyHttpContext();
 
 			// Build the return_to URL
@@ -450,6 +453,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			return this.CreateRequests(userSuppliedIdentifier, new Realm(realmUrl.Uri));
 		}
 
+#if CONTRACTS_FULL
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
+		[ContractInvariantMethod]
+		private void ObjectInvariant() {
+			Contract.Invariant(this.SecuritySettings != null);
+			Contract.Invariant(this.Channel != null);
+			Contract.Invariant(this.EndpointOrder != null);
+		}
+#endif
+	
 		/// <summary>
 		/// Gets an authentication response from a Provider.
 		/// </summary>
@@ -529,18 +545,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			rp.Channel = OpenIdChannel.CreateNonVerifyingChannel();
 			return rp;
 		}
-
-#if CONTRACTS_FULL
-		/// <summary>
-		/// Verifies conditions that should be true for any valid state of this object.
-		/// </summary>
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
-		[ContractInvariantMethod]
-		private void ObjectInvariant() {
-			Contract.Invariant(this.SecuritySettings != null);
-			Contract.Invariant(this.Channel != null);
-		}
-#endif
 
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources

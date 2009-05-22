@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.InfoCard {
 	using System;
 	using System.ComponentModel;
+	using System.Diagnostics.Contracts;
 	using System.IdentityModel.Claims;
 	using System.Web.UI;
 
@@ -15,6 +16,7 @@ namespace DotNetOpenAuth.InfoCard {
 	/// </summary>
 	[PersistChildren(false)]
 	[Serializable]
+	[ContractVerification(true)]
 	public class ClaimType {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ClaimType"/> class.

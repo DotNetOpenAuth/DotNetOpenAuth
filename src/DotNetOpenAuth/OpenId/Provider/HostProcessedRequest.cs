@@ -94,10 +94,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// See OpenID Authentication 2.0 spec section 9.2.1.
 		/// </remarks>
 		public RelyingPartyDiscoveryResult IsReturnUrlDiscoverable(OpenIdProvider provider) {
-			Contract.Requires(provider != null);
 			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
-
 			ErrorUtilities.VerifyInternal(this.Realm != null, "Realm should have been read or derived by now.");
+
 			try {
 				if (provider.SecuritySettings.RequireSsl && this.Realm.Scheme != Uri.UriSchemeHttps) {
 					Logger.OpenId.WarnFormat("RP discovery failed because RequireSsl is true and RP discovery would begin at insecure URL {0}.", this.Realm);

@@ -198,6 +198,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>
 		/// An initialized structure containing the discovered provider endpoint information.
 		/// </returns>
+		[Pure]
 		internal abstract IEnumerable<ServiceEndpoint> Discover(IDirectWebRequestHandler requestHandler);
 
 		/// <summary>
@@ -207,6 +208,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		/// <returns>A new <see cref="Identifier"/> instance if there was a 
 		/// fragment to remove, otherwise this same instance..</returns>
+		[Pure]
 		internal abstract Identifier TrimFragment();
 
 		/// <summary>
