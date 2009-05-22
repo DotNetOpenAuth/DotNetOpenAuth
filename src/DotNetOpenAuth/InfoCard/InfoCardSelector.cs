@@ -386,7 +386,6 @@ namespace DotNetOpenAuth.InfoCard {
 		public void RaisePostBackEvent(string eventArgument) {
 			if (!string.IsNullOrEmpty(this.TokenXml)) {
 				try {
-					bool encrypted = Token.IsEncrypted(this.TokenXml);
 					ReceivingTokenEventArgs receivingArgs = this.OnReceivingToken(this.TokenXml);
 
 					if (!receivingArgs.Cancel) {

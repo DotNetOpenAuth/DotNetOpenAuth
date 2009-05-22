@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
@@ -314,6 +315,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <returns>
 		/// An array of binding elements which may be used to construct the channel.
 		/// </returns>
+		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Needed for code contracts.")]
 		private static IChannelBindingElement[] InitializeBindingElements<T>(IAssociationStore<T> associationStore, INonceStore nonceStore, SecuritySettings securitySettings, bool nonVerifying) {
 			Contract.Requires(securitySettings != null);
 			Contract.Requires(!nonVerifying || securitySettings is RelyingPartySecuritySettings);
