@@ -22,7 +22,13 @@ public partial class OP_MultiFactor : System.Web.UI.Page {
 		e.Cancel = true;
 		MultiView1.ActiveViewIndex = 1;
 		var policyResponse = e.Response.GetExtension<PolicyResponse>();
-		testResultDisplay.Pass = policyResponse.ActualPolicies.Contains(AuthenticationPolicies.MultiFactor);
-		testResultDisplay.LoadResponse(e.Response);
+		if (policyResponse != null) {
+			testResultDisplay.Pass = policyResponse.ActualPolicies.Contains(AuthenticationPolicies.MultiFactor);
+			testResultDisplay.LoadResponse(e.Response);
+		} else {
+			testResultDisplay.Pass = false;
+			testResultDisplay.LoadResponse(e.Response);
+			testResultDisplay.Details = "No PAPE response.";
+		}
 	}
 }
