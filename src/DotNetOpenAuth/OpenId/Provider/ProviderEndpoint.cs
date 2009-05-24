@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Collections.Generic;
 	using System.ComponentModel;
+	using System.Diagnostics.Contracts;
 	using System.Text;
 	using System.Web;
 	using System.Web.UI;
@@ -67,7 +68,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 
 			set {
-				ErrorUtilities.VerifyArgumentNotNull(value, "value");
+				Contract.Requires<ArgumentNullException>(value != null);
 				provider = value;
 			}
 		}

@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
+	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Net;
 	using System.Text;
@@ -243,7 +244,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 		}
 
 		private static string CreateAuthorizationHeader(IDictionary<string, string> fields) {
-			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
+			Contract.Requires<ArgumentNullException>(fields != null);
 
 			StringBuilder authorization = new StringBuilder();
 			authorization.Append("OAuth ");

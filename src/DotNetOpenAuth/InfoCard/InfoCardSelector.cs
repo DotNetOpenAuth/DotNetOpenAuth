@@ -409,8 +409,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <returns>The event arguments sent to the event handlers.</returns>
 		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "decryptor", Justification = "By design")]
 		protected virtual ReceivingTokenEventArgs OnReceivingToken(string tokenXml) {
-			Contract.Requires(tokenXml != null);
-			ErrorUtilities.VerifyArgumentNotNull(tokenXml, "tokenXml");
+			Contract.Requires<ArgumentNullException>(tokenXml != null);
 
 			var args = new ReceivingTokenEventArgs(tokenXml);
 			var receivingToken = this.ReceivingToken;
@@ -426,8 +425,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </summary>
 		/// <param name="token">The token, if it was decrypted.</param>
 		protected virtual void OnReceivedToken(Token token) {
-			Contract.Requires(token != null);
-			ErrorUtilities.VerifyArgumentNotNull(token, "token");
+			Contract.Requires<ArgumentNullException>(token != null);
 
 			var receivedInfoCard = this.ReceivedToken;
 			if (receivedInfoCard != null) {
@@ -441,8 +439,8 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="unprocessedToken">The unprocessed token.</param>
 		/// <param name="ex">The exception generated while processing the token.</param>
 		protected virtual void OnTokenProcessingError(string unprocessedToken, Exception ex) {
-			Contract.Requires(unprocessedToken != null);
-			Contract.Requires(ex != null);
+			Contract.Requires<ArgumentNullException>(unprocessedToken != null);
+			Contract.Requires<ArgumentNullException>(ex != null);
 
 			var tokenProcessingError = this.TokenProcessingError;
 			if (tokenProcessingError != null) {

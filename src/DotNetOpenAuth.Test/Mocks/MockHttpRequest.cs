@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Test.Mocks {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
 	using System.Net;
@@ -22,7 +23,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		private readonly Dictionary<Uri, IncomingWebResponse> registeredMockResponses = new Dictionary<Uri, IncomingWebResponse>();
 
 		private MockHttpRequest(IDirectWebRequestHandler mockHandler) {
-			ErrorUtilities.VerifyArgumentNotNull(mockHandler, "mockHandler");
+			Contract.Requires<ArgumentNullException>(mockHandler != null);
 			this.MockWebRequestHandler = mockHandler;
 		}
 
@@ -41,7 +42,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		internal void RegisterMockResponse(IncomingWebResponse response) {
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.Requires<ArgumentNullException>(response != null);
 			if (this.registeredMockResponses.ContainsKey(response.RequestUri)) {
 				Logger.Http.WarnFormat("Mock HTTP response already registered for {0}.", response.RequestUri);
 			} else {
@@ -58,9 +59,9 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		internal void RegisterMockResponse(Uri requestUri, Uri responseUri, string contentType, WebHeaderCollection headers, string responseBody) {
-			ErrorUtilities.VerifyArgumentNotNull(requestUri, "requestUri");
-			ErrorUtilities.VerifyArgumentNotNull(responseUri, "responseUri");
-			ErrorUtilities.VerifyNonZeroLength(contentType, "contentType");
+			Contract.Requires<ArgumentNullException>(requestUri != null);
+			Contract.Requires<ArgumentNullException>(responseUri != null);
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(contentType));
 
 			// Set up the redirect if appropriate
 			if (requestUri != responseUri) {
@@ -83,7 +84,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		internal void RegisterMockXrdsResponse(ServiceEndpoint endpoint) {
-			ErrorUtilities.VerifyArgumentNotNull(endpoint, "endpoint");
+			Contract.Requires<ArgumentNullException>(endpoint != null);
 
 			string identityUri;
 			if (endpoint.ClaimedIdentifier == endpoint.Protocol.ClaimedIdentifierForOPIdentifier) {
@@ -95,7 +96,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		internal void RegisterMockXrdsResponse(Uri respondingUri, IEnumerable<ServiceEndpoint> endpoints) {
-			ErrorUtilities.VerifyArgumentNotNull(endpoints, "endpoints");
+			Contract.Requires<ArgumentNullException>(endpoints != null);
 
 			StringBuilder xrds = new StringBuilder();
 			xrds.AppendLine(@"<xrds:XRDS xmlns:xrds='xri://$xrds' xmlns:openid='http://openid.net/xmlns/1.0' xmlns='xri://$xrd*($v*2.0)'>

@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -58,7 +59,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		/// <param name="typeUri">The type URI this extension was recognized by in the OpenID message.</param>
 		internal ClaimsRequest(string typeUri)
 			: this() {
-			ErrorUtilities.VerifyNonZeroLength(typeUri, "typeUri");
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(typeUri));
 
 			this.typeUriDeserializedFrom = typeUri;
 		}

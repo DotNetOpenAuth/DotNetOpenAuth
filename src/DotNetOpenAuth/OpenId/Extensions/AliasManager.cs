@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -44,7 +45,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <param name="typeUri">The type URI.</param>
 		/// <returns>The alias assigned to this type URI.  Never null.</returns>
 		public string GetAlias(string typeUri) {
-			ErrorUtilities.VerifyNonZeroLength(typeUri, "typeUri");
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(typeUri));
 			string alias;
 			return this.typeUriToAliasMap.TryGetValue(typeUri, out alias) ? alias : this.AssignNewAlias(typeUri);
 		}
@@ -55,8 +56,8 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <param name="alias">The alias.</param>
 		/// <param name="typeUri">The type URI.</param>
 		public void SetAlias(string alias, string typeUri) {
-			ErrorUtilities.VerifyNonZeroLength(alias, "alias");
-			ErrorUtilities.VerifyNonZeroLength(typeUri, "typeUri");
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(alias));
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(typeUri));
 			this.aliasToTypeUriMap.Add(alias, typeUri);
 			this.typeUriToAliasMap.Add(typeUri, alias);
 		}
@@ -100,7 +101,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// </summary>
 		/// <param name="preferredTypeUriToAliases">A dictionary of type URI keys and alias values.</param>
 		public void SetPreferredAliasesWhereNotSet(IDictionary<string, string> preferredTypeUriToAliases) {
-			ErrorUtilities.VerifyArgumentNotNull(preferredTypeUriToAliases, "preferredTypeUriToAliases");
+			Contract.Requires<ArgumentNullException>(preferredTypeUriToAliases != null);
 
 			foreach (var pair in preferredTypeUriToAliases) {
 				if (this.typeUriToAliasMap.ContainsKey(pair.Key)) {
@@ -138,7 +139,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <param name="alias">The alias.</param>
 		/// <returns>The Type URI for the given alias, or null if none for that alias exist.</returns>
 		public string TryResolveAlias(string alias) {
-			ErrorUtilities.VerifyNonZeroLength(alias, "alias");
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(alias));
 			string typeUri = null;
 			this.aliasToTypeUriMap.TryGetValue(alias, out typeUri);
 			return typeUri;
@@ -150,7 +151,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <param name="alias">The alias in question.</param>
 		/// <returns>True if the alias has already been assigned.  False otherwise.</returns>
 		public bool IsAliasUsed(string alias) {
-			ErrorUtilities.VerifyNonZeroLength(alias, "alias");
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(alias));
 			return this.aliasToTypeUriMap.ContainsKey(alias);
 		}
 
@@ -162,7 +163,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// 	<c>true</c> if the given type URI already has an alias assigned; <c>false</c> otherwise.
 		/// </returns>
 		public bool IsAliasAssignedTo(string typeUri) {
-			ErrorUtilities.VerifyArgumentNotNull(typeUri, "typeUri");
+			Contract.Requires<ArgumentNullException>(typeUri != null);
 			return this.typeUriToAliasMap.ContainsKey(typeUri);
 		}
 
@@ -172,7 +173,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <param name="typeUri">The type URI to assign a new alias to.</param>
 		/// <returns>The newly generated alias.</returns>
 		private string AssignNewAlias(string typeUri) {
-			ErrorUtilities.VerifyNonZeroLength(typeUri, "typeUri");
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(typeUri));
 			ErrorUtilities.VerifyInternal(!this.typeUriToAliasMap.ContainsKey(typeUri), "Oops!  This type URI already has an alias!");
 			string alias = string.Format(CultureInfo.InvariantCulture, this.aliasFormat, this.typeUriToAliasMap.Count + 1);
 			this.typeUriToAliasMap.Add(typeUri, alias);

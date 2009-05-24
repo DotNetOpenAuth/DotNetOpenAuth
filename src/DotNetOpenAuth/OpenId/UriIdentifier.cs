@@ -43,7 +43,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="requireSslDiscovery">if set to <c>true</c> [require SSL discovery].</param>
 		internal UriIdentifier(string uri, bool requireSslDiscovery)
 			: base(requireSslDiscovery) {
-			ErrorUtilities.VerifyNonZeroLength(uri, "uri");
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(uri));
 			Uri canonicalUri;
 			bool schemePrepended;
 			if (!TryCanonicalize(uri, out canonicalUri, requireSslDiscovery, out schemePrepended)) {
@@ -70,7 +70,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="requireSslDiscovery">if set to <c>true</c> [require SSL discovery].</param>
 		internal UriIdentifier(Uri uri, bool requireSslDiscovery)
 			: base(requireSslDiscovery) {
-			ErrorUtilities.VerifyArgumentNotNull(uri, "uri");
+			Contract.Requires<ArgumentNullException>(uri != null);
 			if (!TryCanonicalize(new UriBuilder(uri), out uri)) {
 				throw new UriFormatException();
 			}
@@ -409,7 +409,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </remarks>
 		private static bool TryCanonicalize(string uri, out Uri canonicalUri, bool forceHttpsDefaultScheme, out bool schemePrepended) {
 			Contract.Requires(!string.IsNullOrEmpty(uri));
-			ErrorUtilities.VerifyNonZeroLength(uri, "uri");
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(uri));
 
 			uri = uri.Trim();
 			canonicalUri = null;
@@ -454,6 +454,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Verifies conditions that should be true for any valid state of this object.
 		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
 		[ContractInvariantMethod]
 		private void ObjectInvariant() {

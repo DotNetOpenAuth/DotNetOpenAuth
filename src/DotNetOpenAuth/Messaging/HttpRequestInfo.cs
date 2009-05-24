@@ -50,7 +50,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="request">The ASP.NET structure to copy from.</param>
 		public HttpRequestInfo(HttpRequest request) {
-			Contract.RequiresAlways(request != null);
+			Contract.Requires<ArgumentNullException>(request != null);
 			Contract.Ensures(this.HttpMethod == request.HttpMethod);
 			Contract.Ensures(this.Url == request.Url);
 			Contract.Ensures(this.RawUrl == request.RawUrl);
@@ -59,8 +59,6 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Ensures(this.InputStream == request.InputStream);
 			Contract.Ensures(this.form == request.Form);
 			Contract.Ensures(this.queryString == request.QueryString);
-
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			this.HttpMethod = request.HttpMethod;
 			this.Url = GetPublicFacingUrl(request);
@@ -86,10 +84,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="headers">Headers in the HTTP request.</param>
 		/// <param name="inputStream">The entity stream, if any.  (POST requests typically have these).  Use <c>null</c> for GET requests.</param>
 		public HttpRequestInfo(string httpMethod, Uri requestUrl, string rawUrl, WebHeaderCollection headers, Stream inputStream) {
-			Contract.RequiresAlways(!string.IsNullOrEmpty(httpMethod));
-			Contract.RequiresAlways(requestUrl != null);
-			Contract.RequiresAlways(rawUrl != null);
-			Contract.RequiresAlways(headers != null);
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(httpMethod));
+			Contract.Requires<ArgumentNullException>(requestUrl != null);
+			Contract.Requires<ArgumentNullException>(rawUrl != null);
+			Contract.Requires<ArgumentNullException>(headers != null);
 
 			this.HttpMethod = httpMethod;
 			this.Url = requestUrl;
@@ -103,7 +101,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="listenerRequest">Details on the incoming HTTP request.</param>
 		public HttpRequestInfo(HttpListenerRequest listenerRequest) {
-			Contract.RequiresAlways(listenerRequest != null);
+			Contract.Requires<ArgumentNullException>(listenerRequest != null);
 
 			this.HttpMethod = listenerRequest.HttpMethod;
 			this.Url = listenerRequest.Url;
@@ -122,8 +120,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The WCF incoming request structure to get the HTTP information from.</param>
 		/// <param name="requestUri">The URI of the service endpoint.</param>
 		public HttpRequestInfo(HttpRequestMessageProperty request, Uri requestUri) {
-			Contract.RequiresAlways(request != null);
-			Contract.RequiresAlways(requestUri != null);
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires<ArgumentNullException>(requestUri != null);
 
 			this.HttpMethod = request.Method;
 			this.Headers = request.Headers;
@@ -147,7 +145,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="request">The HttpWebRequest (that was never used) to copy from.</param>
 		internal HttpRequestInfo(WebRequest request) {
-			Contract.RequiresAlways(request != null);
+			Contract.Requires<ArgumentNullException>(request != null);
 
 			this.HttpMethod = request.Method;
 			this.Url = request.RequestUri;
@@ -326,6 +324,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Verifies conditions that should be true for any valid state of this object.
 		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
 		[ContractInvariantMethod]
 		protected void ObjectInvariant() {
@@ -338,8 +337,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The request.</param>
 		/// <returns>The URI that the outside world used to create this request.</returns>
 		private static Uri GetPublicFacingUrl(HttpRequest request) {
-			Contract.Requires(request != null);
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 
 			// Due to URL rewriting, cloud computing (i.e. Azure)
 			// and web farms, etc., we have to be VERY careful about what
@@ -371,7 +369,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="url">A full URL.</param>
 		/// <returns>A raw URL that might have come in on the HTTP verb.</returns>
 		private static string MakeUpRawUrlFromUrl(Uri url) {
-			Contract.Requires(url != null);
+			Contract.Requires<ArgumentNullException>(url != null);
 			return url.AbsolutePath + url.Query + url.Fragment;
 		}
 

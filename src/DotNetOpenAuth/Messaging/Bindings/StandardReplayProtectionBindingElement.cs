@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Messaging.Bindings {
 	using System;
 	using System.Diagnostics;
+	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// A binding element that checks/verifies a nonce message part.
@@ -46,7 +47,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <param name="nonceStore">The store where nonces will be persisted and checked.</param>
 		/// <param name="allowEmptyNonces">A value indicating whether zero-length nonces will be allowed.</param>
 		internal StandardReplayProtectionBindingElement(INonceStore nonceStore, bool allowEmptyNonces) {
-			ErrorUtilities.VerifyArgumentNotNull(nonceStore, "nonceStore");
+			Contract.Requires<ArgumentNullException>(nonceStore != null);
 
 			this.nonceStore = nonceStore;
 			this.AllowZeroLengthNonce = allowEmptyNonces;

@@ -172,7 +172,7 @@ namespace DotNetOpenAuth {
 			/// <param name="obj">The object that may be serialized to string form.</param>
 			/// <param name="toString">The method that will serialize the object if called upon.</param>
 			public DelayedToString(T obj, Func<T, string> toString) {
-				Contract.Requires(toString != null);
+				Contract.Requires<ArgumentNullException>(toString != null);
 
 				this.obj = obj;
 				this.toString = toString;

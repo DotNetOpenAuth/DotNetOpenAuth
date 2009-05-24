@@ -19,7 +19,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Messages;
-	using System.Diagnostics.CodeAnalysis;
 
 	/// <summary>
 	/// A delegate that decides whether a given OpenID Provider endpoint may be
@@ -146,8 +145,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				Contract.RequiresAlways(value != null);
-				ErrorUtilities.VerifyArgumentNotNull(value, "value");
+				Contract.Requires<ArgumentNullException>(value != null);
 				this.channel = value;
 				this.AssociationManager.Channel = value;
 			}
@@ -163,7 +161,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			internal set {
-				Contract.Requires(value != null);
+				Contract.Requires<ArgumentNullException>(value != null);
 				this.securitySettings = value;
 				this.AssociationManager.SecuritySettings = value;
 			}
@@ -196,7 +194,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				Contract.RequiresAlways(value != null);
+				Contract.Requires<ArgumentNullException>(value != null);
 				this.endpointOrder = value;
 			}
 		}
@@ -251,9 +249,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown if no OpenID endpoint could be found.</exception>
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl) {
-			Contract.Requires(userSuppliedIdentifier != null);
-			Contract.Requires(realm != null);
-			Contract.Requires(returnToUrl != null);
+			Contract.Requires<ArgumentNullException>(userSuppliedIdentifier != null);
+			Contract.Requires<ArgumentNullException>(realm != null);
+			Contract.Requires<ArgumentNullException>(returnToUrl != null);
 			Contract.Ensures(Contract.Result<IAuthenticationRequest>() != null);
 			try {
 				return this.CreateRequests(userSuppliedIdentifier, realm, returnToUrl).First();
@@ -284,8 +282,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <exception cref="ProtocolException">Thrown if no OpenID endpoint could be found.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm) {
-			Contract.Requires(userSuppliedIdentifier != null);
-			Contract.Requires(realm != null);
+			Contract.Requires<ArgumentNullException>(userSuppliedIdentifier != null);
+			Contract.Requires<ArgumentNullException>(realm != null);
 			Contract.Ensures(Contract.Result<IAuthenticationRequest>() != null);
 			try {
 				var result = this.CreateRequests(userSuppliedIdentifier, realm).First();
@@ -313,7 +311,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <exception cref="ProtocolException">Thrown if no OpenID endpoint could be found.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier) {
-			Contract.Requires(userSuppliedIdentifier != null);
+			Contract.Requires<ArgumentNullException>(userSuppliedIdentifier != null);
 			Contract.Ensures(Contract.Result<IAuthenticationRequest>() != null);
 			try {
 				return this.CreateRequests(userSuppliedIdentifier).First();
@@ -350,9 +348,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// An empty enumerable is returned instead.</para>
 		/// </remarks>
 		public IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl) {
-			Contract.Requires(userSuppliedIdentifier != null);
-			Contract.Requires(realm != null);
-			Contract.Requires(returnToUrl != null);
+			Contract.Requires<ArgumentNullException>(userSuppliedIdentifier != null);
+			Contract.Requires<ArgumentNullException>(realm != null);
+			Contract.Requires<ArgumentNullException>(returnToUrl != null);
 			Contract.Ensures(Contract.Result<IEnumerable<IAuthenticationRequest>>() != null);
 			ErrorUtilities.VerifyArgumentNotNull(realm, "realm");
 			ErrorUtilities.VerifyArgumentNotNull(returnToUrl, "returnToUrl");
@@ -386,8 +384,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
 		public IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm) {
-			Contract.Requires(userSuppliedIdentifier != null);
-			Contract.Requires(realm != null);
+			Contract.Requires<ArgumentNullException>(userSuppliedIdentifier != null);
+			Contract.Requires<ArgumentNullException>(realm != null);
 			Contract.Ensures(Contract.Result<IEnumerable<IAuthenticationRequest>>() != null);
 			Contract.Ensures(Contract.ForAll(Contract.Result<IEnumerable<IAuthenticationRequest>>(), el => el != null));
 
@@ -432,7 +430,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
 		public IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier) {
-			Contract.Requires(userSuppliedIdentifier != null);
+			Contract.Requires<ArgumentNullException>(userSuppliedIdentifier != null);
 			Contract.Ensures(Contract.Result<IEnumerable<IAuthenticationRequest>>() != null);
 			ErrorUtilities.VerifyHttpContext();
 
@@ -453,19 +451,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			return this.CreateRequests(userSuppliedIdentifier, new Realm(realmUrl.Uri));
 		}
 
-#if CONTRACTS_FULL
-		/// <summary>
-		/// Verifies conditions that should be true for any valid state of this object.
-		/// </summary>
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
-		[ContractInvariantMethod]
-		private void ObjectInvariant() {
-			Contract.Invariant(this.SecuritySettings != null);
-			Contract.Invariant(this.Channel != null);
-			Contract.Invariant(this.EndpointOrder != null);
-		}
-#endif
-	
 		/// <summary>
 		/// Gets an authentication response from a Provider.
 		/// </summary>
@@ -483,7 +468,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="httpRequestInfo">The HTTP request that may be carrying an authentication response from the Provider.</param>
 		/// <returns>The processed authentication response if there is any; <c>null</c> otherwise.</returns>
 		public IAuthenticationResponse GetResponse(HttpRequestInfo httpRequestInfo) {
-			Contract.Requires(httpRequestInfo != null);
+			Contract.Requires<ArgumentNullException>(httpRequestInfo != null);
 			try {
 				var message = this.Channel.ReadFromRequest(httpRequestInfo);
 				PositiveAssertionResponse positiveAssertion;
@@ -559,5 +544,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				}
 			}
 		}
+
+#if CONTRACTS_FULL
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
+		[ContractInvariantMethod]
+		private void ObjectInvariant() {
+			Contract.Invariant(this.SecuritySettings != null);
+			Contract.Invariant(this.Channel != null);
+			Contract.Invariant(this.EndpointOrder != null);
+		}
+#endif
 	}
 }

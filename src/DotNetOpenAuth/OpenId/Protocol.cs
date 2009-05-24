@@ -323,6 +323,7 @@ namespace DotNetOpenAuth.OpenId {
 			/// <summary>
 			/// Verifies conditions that should be true for any valid state of this object.
 			/// </summary>
+			[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
 			[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
 			[ContractInvariantMethod]
 			private void ObjectInvariant() {
@@ -330,6 +331,7 @@ namespace DotNetOpenAuth.OpenId {
 			}
 #endif
 		}
+
 		internal sealed class QueryArguments {
 			public ErrorCodes ErrorCode = new ErrorCodes();
 			public SessionTypes SessionType = new SessionTypes();

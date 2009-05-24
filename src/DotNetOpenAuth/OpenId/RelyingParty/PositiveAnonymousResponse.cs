@@ -28,7 +28,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="response">The response message.</param>
 		protected internal PositiveAnonymousResponse(IndirectSignedResponse response) {
-			Contract.Requires(response != null);
+			Contract.Requires<ArgumentNullException>(response != null);
 			ErrorUtilities.VerifyArgumentNotNull(response, "response");
 
 			this.response = response;

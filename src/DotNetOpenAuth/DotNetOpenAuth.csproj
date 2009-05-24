@@ -25,11 +25,9 @@
     <DocumentationFile>..\..\bin\Debug\DotNetOpenAuth.xml</DocumentationFile>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRules>-Microsoft.Design#CA1054;-Microsoft.Design#CA1056;-Microsoft.Design#CA1055</CodeAnalysisRules>
-    <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
-    <CodeContractsCustomRewriterAssembly>
-    </CodeContractsCustomRewriterAssembly>
-    <CodeContractsCustomRewriterClass>
-    </CodeContractsCustomRewriterClass>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsCustomRewriterAssembly>DotNetOpenAuth</CodeContractsCustomRewriterAssembly>
+    <CodeContractsCustomRewriterClass>DotNetOpenAuth.ContractRuntimeFailureMethods</CodeContractsCustomRewriterClass>
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
     <CodeContractsBuildReferenceAssembly>True</CodeContractsBuildReferenceAssembly>
@@ -48,6 +46,8 @@
     <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
     <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -63,7 +63,7 @@
     <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
     <CodeContractsCustomRewriterAssembly>DotNetOpenAuth</CodeContractsCustomRewriterAssembly>
     <CodeContractsCustomRewriterClass>DotNetOpenAuth.ContractRuntimeFailureMethods</CodeContractsCustomRewriterClass>
-    <CodeContractsRuntimeCheckingLevel>RequiresAlways</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
     <CodeContractsBuildReferenceAssembly>True</CodeContractsBuildReferenceAssembly>
     <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
@@ -80,6 +80,9 @@
     <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
     <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
     <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Sign)' == 'true' ">
     <SignAssembly>true</SignAssembly>
@@ -98,10 +101,8 @@
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
     <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
-    <CodeContractsCustomRewriterAssembly>
-    </CodeContractsCustomRewriterAssembly>
-    <CodeContractsCustomRewriterClass>
-    </CodeContractsCustomRewriterClass>
+    <CodeContractsCustomRewriterAssembly>DotNetOpenAuth</CodeContractsCustomRewriterAssembly>
+    <CodeContractsCustomRewriterClass>DotNetOpenAuth.ContractRuntimeFailureMethods</CodeContractsCustomRewriterClass>
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsRunCodeAnalysis>True</CodeContractsRunCodeAnalysis>
     <CodeContractsBuildReferenceAssembly>False</CodeContractsBuildReferenceAssembly>
@@ -111,7 +112,8 @@
     </CodeContractsLibPaths>
     <CodeContractsPlatformPath>
     </CodeContractsPlatformPath>
-    <CodeContractsExtraAnalysisOptions>-maxpathsize 15</CodeContractsExtraAnalysisOptions>
+    <CodeContractsExtraAnalysisOptions>
+    </CodeContractsExtraAnalysisOptions>
     <CodeContractsBaseLineFile>
     </CodeContractsBaseLineFile>
     <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
@@ -119,6 +121,9 @@
     <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
@@ -366,6 +371,7 @@
     <Compile Include="OpenId\Messages\CheckAuthenticationRequest.cs" />
     <Compile Include="OpenId\Messages\CheckAuthenticationResponse.cs" />
     <Compile Include="OpenId\Messages\CheckIdRequest.cs" />
+    <Compile Include="OpenId\Messages\AssociateSuccessfulResponseContract.cs" />
     <Compile Include="OpenId\Messages\IErrorMessage.cs" />
     <Compile Include="OpenId\Messages\IndirectResponseBase.cs" />
     <Compile Include="OpenId\Messages\IndirectSignedResponse.cs" />
@@ -425,6 +431,8 @@
     <Compile Include="OpenId\RelyingParty\AssociationPreference.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationRequest.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationRequestMode.cs" />
+    <Compile Include="OpenId\RelyingParty\IXrdsProviderEndpointContract.cs" />
+    <Compile Include="OpenId\RelyingParty\IAuthenticationRequestContract.cs" />
     <Compile Include="OpenId\RelyingParty\NegativeAuthenticationResponse.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdAjaxTextBox.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdEventArgs.cs" />

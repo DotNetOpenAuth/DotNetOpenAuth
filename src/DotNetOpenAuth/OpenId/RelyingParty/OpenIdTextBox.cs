@@ -1109,7 +1109,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="response">The response.</param>
 		protected virtual void OnLoggedIn(IAuthenticationResponse response) {
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.Requires<ArgumentNullException>(response != null);
 			ErrorUtilities.VerifyInternal(response.Status == AuthenticationStatus.Authenticated, "Firing OnLoggedIn event without an authenticated response.");
 
 			var loggedIn = this.LoggedIn;
@@ -1128,7 +1128,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="response">The response.</param>
 		protected virtual void OnFailed(IAuthenticationResponse response) {
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.Requires<ArgumentNullException>(response != null);
 			ErrorUtilities.VerifyInternal(response.Status == AuthenticationStatus.Failed, "Firing Failed event for the wrong response type.");
 
 			var failed = this.Failed;
@@ -1142,7 +1142,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="response">The response.</param>
 		protected virtual void OnCanceled(IAuthenticationResponse response) {
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.Requires<ArgumentNullException>(response != null);
 			ErrorUtilities.VerifyInternal(response.Status == AuthenticationStatus.Canceled, "Firing Canceled event for the wrong response type.");
 
 			var canceled = this.Canceled;
@@ -1156,7 +1156,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="response">The response.</param>
 		protected virtual void OnSetupRequired(IAuthenticationResponse response) {
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.Requires<ArgumentNullException>(response != null);
 			ErrorUtilities.VerifyInternal(response.Status == AuthenticationStatus.SetupRequired, "Firing SetupRequired event for the wrong response type.");
 
 			// Why are we firing Failed when we're OnSetupRequired?  Backward compatibility.
@@ -1174,7 +1174,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="request">The authentication request to add the extensions to.</param>
 		private void AddProfileArgs(IAuthenticationRequest request) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 
 			request.AddExtension(new ClaimsRequest() {
 				Nickname = this.RequestNickname,

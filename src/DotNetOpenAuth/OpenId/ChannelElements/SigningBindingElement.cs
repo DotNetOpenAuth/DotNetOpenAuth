@@ -55,8 +55,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="associationStore">The association store used to look up the secrets needed for signing.</param>
 		/// <param name="securitySettings">The security settings.</param>
 		internal SigningBindingElement(IAssociationStore<AssociationRelyingPartyType> associationStore, ProviderSecuritySettings securitySettings) {
-			ErrorUtilities.VerifyArgumentNotNull(associationStore, "associationStore");
-			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
+			Contract.Requires<ArgumentNullException>(associationStore != null);
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
 
 			this.opAssociations = associationStore;
 			this.opSecuritySettings = securitySettings;
@@ -190,7 +190,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// 	<c>true</c> if the relying party is vulnerable; otherwise, <c>false</c>.
 		/// </returns>
 		private static bool IsRelyingPartyVulnerableToReplays(SignedResponseRequest request, IndirectSignedResponse response) {
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.Requires<ArgumentNullException>(response != null);
 
 			// OpenID 2.0 includes replay protection as part of the protocol.
 			if (response.Version.Major >= 2) {
@@ -250,9 +250,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="association">The association to use to sign the message.</param>
 		/// <returns>The calculated signature of the method.</returns>
 		private string GetSignature(ITamperResistantOpenIdMessage signedMessage, Association association) {
-			ErrorUtilities.VerifyArgumentNotNull(signedMessage, "signedMessage");
-			ErrorUtilities.VerifyNonZeroLength(signedMessage.SignedParameterOrder, "signedMessage.SignedParameterOrder");
-			ErrorUtilities.VerifyArgumentNotNull(association, "association");
+			Contract.Requires<ArgumentNullException>(signedMessage != null);
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(signedMessage.SignedParameterOrder));
+			Contract.Requires<ArgumentNullException>(association != null);
 
 			// Prepare the parts to sign, taking care to replace an openid.mode value
 			// of check_authentication with its original id_res so the signature matches.
@@ -286,7 +286,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// </returns>
 		private string GetSignedParameterOrder(ITamperResistantOpenIdMessage signedMessage) {
 			Contract.Requires(this.Channel != null);
-			ErrorUtilities.VerifyArgumentNotNull(signedMessage, "signedMessage");
+			Contract.Requires<ArgumentNullException>(signedMessage != null);
 			ErrorUtilities.VerifyOperation(this.Channel != null, "Channel property has not been set.");
 
 			Protocol protocol = Protocol.Lookup(signedMessage.Version);
@@ -323,7 +323,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="signedMessage">The message to sign or verify.</param>
 		/// <returns>The association to use to sign or verify the message.</returns>
 		private Association GetAssociation(ITamperResistantOpenIdMessage signedMessage) {
-			Contract.Requires(signedMessage != null);
+			Contract.Requires<ArgumentNullException>(signedMessage != null);
 
 			if (this.IsOnProvider) {
 				// We're on a Provider to either sign (smart/dumb) or verify a dumb signature.

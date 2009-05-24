@@ -78,8 +78,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="nonceStore">The nonce store to use.</param>
 		/// <param name="securitySettings">The security settings of the RP.</param>
 		internal ReturnToNonceBindingElement(INonceStore nonceStore, RelyingPartySecuritySettings securitySettings) {
-			Contract.Requires(nonceStore != null);
-			Contract.Requires(securitySettings != null);
+			Contract.Requires<ArgumentNullException>(nonceStore != null);
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
 			ErrorUtilities.VerifyArgumentNotNull(nonceStore, "nonceStore");
 			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
 
@@ -254,7 +254,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			/// <param name="value">The base64-encoded value of the nonce.</param>
 			/// <returns>The instantiated and initialized nonce.</returns>
 			internal static CustomNonce Deserialize(string value) {
-				ErrorUtilities.VerifyNonZeroLength(value, "value");
+				Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(value));
 
 				byte[] nonce = Convert.FromBase64String(value);
 				Contract.Assume(nonce != null);

@@ -96,8 +96,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>An <see cref="Identifier"/> instance for the given value.</returns>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Some of these identifiers are not properly formatted to be Uris at this stage.")]
 		public static Identifier Parse(string identifier) {
-			Contract.Requires((identifier != null && identifier.Length > 0) || !string.IsNullOrEmpty(identifier));
-			ErrorUtilities.VerifyArgumentNotNull(identifier, "identifier");
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(identifier));
 			if (XriIdentifier.IsValidXri(identifier)) {
 				return new XriIdentifier(identifier);
 			} else {

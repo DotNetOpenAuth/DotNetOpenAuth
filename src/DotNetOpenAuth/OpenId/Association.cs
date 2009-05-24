@@ -35,11 +35,12 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="totalLifeLength">How long the association will be useful.</param>
 		/// <param name="issued">The UTC time of when this association was originally issued by the Provider.</param>
 		protected Association(string handle, byte[] secret, TimeSpan totalLifeLength, DateTime issued) {
-			Contract.RequiresAlways(!string.IsNullOrEmpty(handle));
-			Contract.RequiresAlways(secret != null);
-			Contract.RequiresAlways(totalLifeLength > TimeSpan.Zero);
-			Contract.RequiresAlways(issued.Kind == DateTimeKind.Utc);
-			Contract.RequiresAlways(issued <= DateTime.UtcNow);
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(handle));
+			Contract.Requires<ArgumentNullException>(secret != null);
+			Contract.Requires<ArgumentOutOfRangeException>(totalLifeLength > TimeSpan.Zero);
+			Contract.Requires<ArgumentException>(issued.Kind == DateTimeKind.Utc);
+			Contract.Requires<ArgumentOutOfRangeException>(issued <= DateTime.UtcNow);
+			Contract.Ensures(this.TotalLifeLength == totalLifeLength);
 
 			this.Handle = handle;
 			this.SecretKey = secret;
@@ -158,8 +159,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <see cref="IAssociationStore&lt;TKey&gt;.GetAssociation(TKey, SecuritySettings)"/> method.
 		/// </returns>
 		public static Association Deserialize(string handle, DateTime expires, byte[] privateData) {
-			Contract.RequiresAlways(!String.IsNullOrEmpty(handle));
-			Contract.RequiresAlways(privateData != null);
+			Contract.Requires<ArgumentNullException>(!String.IsNullOrEmpty(handle));
+			Contract.Requires<ArgumentNullException>(privateData != null);
 			Contract.Ensures(Contract.Result<Association>() != null);
 
 			expires = expires.ToUniversalTime();
@@ -270,7 +271,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="data">The data to sign.  This data will not be changed (the signature is the return value).</param>
 		/// <returns>The calculated signature of the data.</returns>
 		protected internal byte[] Sign(byte[] data) {
-			Contract.Requires(data != null);
+			Contract.Requires<ArgumentNullException>(data != null);
 			using (HashAlgorithm hasher = this.CreateHasher()) {
 				return hasher.ComputeHash(data);
 			}
@@ -286,11 +287,13 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Verifies conditions that should be true for any valid state of this object.
 		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
 		[ContractInvariantMethod]
 		protected void ObjectInvariant() {
 			Contract.Invariant(!string.IsNullOrEmpty(this.Handle));
 			Contract.Invariant(this.TotalLifeLength > TimeSpan.Zero);
+			Contract.Invariant(this.SecretKey != null);
 		}
 #endif
 	}

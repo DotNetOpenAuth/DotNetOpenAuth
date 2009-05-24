@@ -58,7 +58,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// Code contract for the <see cref="IRequest"/> interface.
 	/// </summary>
 	[ContractClassFor(typeof(IRequest))]
-	internal class IRequestContract : IRequest {
+	internal abstract class IRequestContract : IRequest {
 		/// <summary>
 		/// Prevents a default instance of the <see cref="IRequestContract"/> class from being created.
 		/// </summary>
@@ -70,7 +70,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Gets a value indicating whether the response is ready to be sent to the user agent.
 		/// </summary>
-		/// <value></value>
 		/// <remarks>
 		/// This property returns false if there are properties that must be set on this
 		/// request instance before the response can be sent.
@@ -84,7 +83,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="extension">The extension to add to the response message.</param>
 		void IRequest.AddResponseExtension(IOpenIdMessageExtension extension) {
-			Contract.Requires(extension != null);
+			Contract.Requires<ArgumentNullException>(extension != null);
 			throw new NotImplementedException();
 		}
 
@@ -107,7 +106,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// An instance of the extension initialized with values passed in with the request.
 		/// </returns>
 		IOpenIdMessageExtension IRequest.GetExtension(Type extensionType) {
-			Contract.Requires(extensionType != null);
+			Contract.Requires<ArgumentNullException>(extensionType != null);
 			throw new NotImplementedException();
 		}
 

@@ -5,13 +5,16 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId.RelyingParty {
+	using System;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// An <see cref="IProviderEndpoint"/> interface with additional members for use
 	/// in sorting for most preferred endpoint.
 	/// </summary>
 	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Xrds", Justification = "Xrds is an acronym.")]
+	[ContractClass(typeof(IXrdsProviderEndpointContract))]
 	public interface IXrdsProviderEndpoint : IProviderEndpoint {
 		/// <summary>
 		/// Gets the priority associated with this service that may have been given

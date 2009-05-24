@@ -116,8 +116,8 @@ namespace DotNetOpenAuth.OpenId {
 	////    /// TODO: what should implementations do on association handle conflict?
 	////    /// </remarks>
 	////    void IAssociationStore<TKey>.StoreAssociation(TKey distinguishingFactor, Association association) {
-	////        Contract.Requires(distinguishingFactor != null);
-	////        Contract.Requires(association != null);
+	////        Contract.Requires<ArgumentNullException>(distinguishingFactor != null);
+	////        Contract.Requires<ArgumentNullException>(association != null);
 	////        throw new NotImplementedException();
 	////    }
 
@@ -139,8 +139,8 @@ namespace DotNetOpenAuth.OpenId {
 	////    /// ignored and a new association created.
 	////    /// </remarks>
 	////    Association IAssociationStore<TKey>.GetAssociation(TKey distinguishingFactor, SecuritySettings securityRequirements) {
-	////        Contract.Requires(distinguishingFactor != null);
-	////        Contract.Requires(securityRequirements != null);
+	////        Contract.Requires<ArgumentNullException>(distinguishingFactor != null);
+	////        Contract.Requires<ArgumentNullException>(securityRequirements != null);
 	////        throw new NotImplementedException();
 	////    }
 
@@ -153,7 +153,7 @@ namespace DotNetOpenAuth.OpenId {
 	////    /// The requested association, or null if no unexpired <see cref="Association"/>s exist for the given key and handle.
 	////    /// </returns>
 	////    Association IAssociationStore<TKey>.GetAssociation(TKey distinguishingFactor, string handle) {
-	////        Contract.Requires(distinguishingFactor != null);
+	////        Contract.Requires<ArgumentNullException>(distinguishingFactor != null);
 	////        Contract.Requires(!String.IsNullOrEmpty(handle));
 	////        throw new NotImplementedException();
 	////    }
@@ -171,7 +171,7 @@ namespace DotNetOpenAuth.OpenId {
 	////    /// before this call.
 	////    /// </remarks>
 	////    bool IAssociationStore<TKey>.RemoveAssociation(TKey distinguishingFactor, string handle) {
-	////        Contract.Requires(distinguishingFactor != null);
+	////        Contract.Requires<ArgumentNullException>(distinguishingFactor != null);
 	////        Contract.Requires(!String.IsNullOrEmpty(handle));
 	////        throw new NotImplementedException();
 	////    }

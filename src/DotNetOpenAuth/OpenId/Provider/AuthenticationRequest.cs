@@ -29,8 +29,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="request">The incoming authentication request message.</param>
 		internal AuthenticationRequest(OpenIdProvider provider, CheckIdRequest request)
 			: base(provider, request) {
-			Contract.Requires(provider != null);
-			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
+			Contract.Requires<ArgumentNullException>(provider != null);
 
 			this.positiveResponse = new PositiveAssertionResponse(request);
 

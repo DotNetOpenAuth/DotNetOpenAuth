@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// An initialized structure containing the discovered provider endpoint information.
 		/// </returns>
 		internal override IEnumerable<ServiceEndpoint> Discover(IDirectWebRequestHandler requestHandler) {
-			Contract.Requires(requestHandler != null);
+			Contract.Requires<ArgumentNullException>(requestHandler != null);
 			Contract.Ensures(Contract.Result<IEnumerable<ServiceEndpoint>>() != null);
 			throw new NotImplementedException();
 		}

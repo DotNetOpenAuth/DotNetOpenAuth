@@ -62,7 +62,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="realmUrl">The realm URL to use in the new instance.</param>
 		[SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads", Justification = "Not all realms are valid URLs (because of wildcards).")]
 		public Realm(string realmUrl) {
-			ErrorUtilities.VerifyArgumentNotNull(realmUrl, "realmUrl"); // not non-zero check so we throw UriFormatException later
+			Contract.Requires<ArgumentNullException>(realmUrl != null); // not non-zero check so we throw UriFormatException later
 			this.DomainWildcard = Regex.IsMatch(realmUrl, WildcardDetectionPattern);
 			this.uri = new Uri(Regex.Replace(realmUrl, WildcardDetectionPattern, m => m.Groups[1].Value));
 			if (!this.uri.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) &&
@@ -77,7 +77,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		/// <param name="realmUrl">The realm URL of the Relying Party.</param>
 		public Realm(Uri realmUrl) {
-			ErrorUtilities.VerifyArgumentNotNull(realmUrl, "realmUrl");
+			Contract.Requires<ArgumentNullException>(realmUrl != null);
 			this.uri = realmUrl;
 			if (!this.uri.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) &&
 				!this.uri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase)) {
@@ -413,7 +413,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// when we should be throwing an <see cref="ArgumentNullException"/>.
 		/// </remarks>
 		private static string SafeUriBuilderToString(UriBuilder realmUriBuilder) {
-			ErrorUtilities.VerifyArgumentNotNull(realmUriBuilder, "realmUriBuilder");
+			Contract.Requires<ArgumentNullException>(realmUriBuilder != null);
 
 			// Note: we MUST use ToString.  Uri property throws if wildcard is present.
 			// Note that Uri.ToString() should generally be avoided, but UriBuilder.ToString()
@@ -425,6 +425,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Verifies conditions that should be true for any valid state of this object.
 		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
 		[ContractInvariantMethod]
 		private void ObjectInvariant() {

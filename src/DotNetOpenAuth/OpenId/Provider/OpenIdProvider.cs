@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="applicationStore">The application store to use.  Cannot be null.</param>
 		public OpenIdProvider(IProviderApplicationStore applicationStore)
 			: this(applicationStore, applicationStore) {
-			Contract.Requires(applicationStore != null);
+			Contract.Requires<ArgumentNullException>(applicationStore != null);
 			Contract.Ensures(this.AssociationStore == applicationStore);
 			Contract.Ensures(this.SecuritySettings != null);
 			Contract.Ensures(this.Channel != null);
@@ -63,8 +63,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="associationStore">The association store to use.  Cannot be null.</param>
 		/// <param name="nonceStore">The nonce store to use.  Cannot be null.</param>
 		private OpenIdProvider(IAssociationStore<AssociationRelyingPartyType> associationStore, INonceStore nonceStore) {
-			Contract.Requires(associationStore != null);
-			Contract.Requires(nonceStore != null);
+			Contract.Requires<ArgumentNullException>(associationStore != null);
+			Contract.Requires<ArgumentNullException>(nonceStore != null);
 			Contract.Ensures(this.AssociationStore == associationStore);
 			Contract.Ensures(this.SecuritySettings != null);
 			Contract.Ensures(this.Channel != null);
@@ -118,8 +118,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 
 			internal set {
-				Contract.Requires(value != null);
-				ErrorUtilities.VerifyArgumentNotNull(value, "value");
+				Contract.Requires<ArgumentNullException>(value != null);
 				this.securitySettings = value;
 			}
 		}
@@ -182,7 +181,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <exception cref="ProtocolException">Thrown if the incoming message is recognized
 		/// but deviates from the protocol specification irrecoverably.</exception>
 		public IRequest GetRequest(HttpRequestInfo httpRequestInfo) {
-			Contract.Requires(httpRequestInfo != null);
+			Contract.Requires<ArgumentNullException>(httpRequestInfo != null);
 			ErrorUtilities.VerifyArgumentNotNull(httpRequestInfo, "httpRequestInfo");
 			IDirectedProtocolMessage incomingMessage = null;
 
@@ -244,9 +243,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code Contract requires that we cast early.")]
 		public void SendResponse(IRequest request) {
 			Contract.Requires(HttpContext.Current != null);
-			Contract.Requires(request != null);
+			Contract.Requires<ArgumentNullException>(request != null);
 			Contract.Requires(((Request)request).IsResponseReady);
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			Request requestInternal = (Request)request;
 			this.Channel.Send(requestInternal.Response);
@@ -260,9 +258,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="IRequest.IsResponseReady"/> is <c>false</c>.</exception>
 		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code Contract requires that we cast early.")]
 		public OutgoingWebResponse PrepareResponse(IRequest request) {
-			Contract.Requires(request != null);
+			Contract.Requires<ArgumentNullException>(request != null);
 			Contract.Requires(((Request)request).IsResponseReady);
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			Request requestInternal = (Request)request;
 			return this.Channel.PrepareResponse(requestInternal.Response);
@@ -285,11 +282,11 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="extensions">The extensions.</param>
 		public void SendUnsolicitedAssertion(Uri providerEndpoint, Realm relyingParty, Identifier claimedIdentifier, Identifier localIdentifier, params IExtensionMessage[] extensions) {
 			Contract.Requires(HttpContext.Current != null);
-			Contract.Requires(providerEndpoint != null);
+			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
 			Contract.Requires(providerEndpoint.IsAbsoluteUri);
-			Contract.Requires(relyingParty != null);
-			Contract.Requires(claimedIdentifier != null);
-			Contract.Requires(localIdentifier != null);
+			Contract.Requires<ArgumentNullException>(relyingParty != null);
+			Contract.Requires<ArgumentNullException>(claimedIdentifier != null);
+			Contract.Requires<ArgumentNullException>(localIdentifier != null);
 
 			this.PrepareUnsolicitedAssertion(providerEndpoint, relyingParty, claimedIdentifier, localIdentifier, extensions).Send();
 		}
@@ -314,12 +311,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// the user agent to allow the redirect with assertion to happen.
 		/// </returns>
 		public OutgoingWebResponse PrepareUnsolicitedAssertion(Uri providerEndpoint, Realm relyingParty, Identifier claimedIdentifier, Identifier localIdentifier, params IExtensionMessage[] extensions) {
-			Contract.RequiresAlways(providerEndpoint != null);
-			Contract.RequiresAlways(providerEndpoint.IsAbsoluteUri);
-			Contract.RequiresAlways(relyingParty != null);
-			Contract.RequiresAlways(claimedIdentifier != null);
-			Contract.RequiresAlways(localIdentifier != null);
-			Contract.RequiresAlways(this.WebRequestHandler != null);
+			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
+			Contract.Requires<ArgumentException>(providerEndpoint.IsAbsoluteUri);
+			Contract.Requires<ArgumentNullException>(relyingParty != null);
+			Contract.Requires<ArgumentNullException>(claimedIdentifier != null);
+			Contract.Requires<ArgumentNullException>(localIdentifier != null);
+			Contract.Requires<InvalidOperationException>(this.Channel.WebRequestHandler != null);
 
 			// Although the RP should do their due diligence to make sure that this OP
 			// is authorized to send an assertion for the given claimed identifier,
@@ -396,8 +393,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Either the <see cref="IRequest"/> to return to the host site or null to indicate no response could be reasonably created and that the caller should rethrow the exception.
 		/// </returns>
 		private IRequest GetErrorResponse(ProtocolException ex, HttpRequestInfo httpRequestInfo, IDirectedProtocolMessage incomingMessage) {
-			Contract.Requires(ex != null);
-			Contract.Requires(httpRequestInfo != null);
+			Contract.Requires<ArgumentNullException>(ex != null);
+			Contract.Requires<ArgumentNullException>(httpRequestInfo != null);
 			ErrorUtilities.VerifyArgumentNotNull(ex, "ex");
 			ErrorUtilities.VerifyArgumentNotNull(httpRequestInfo, "httpRequestInfo");
 

@@ -36,8 +36,8 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="description">The message description.</param>
 		[Pure]
 		internal MessageDictionary(IMessage message, MessageDescription description) {
-			Contract.Requires(message != null);
-			Contract.Requires(description != null);
+			Contract.Requires<ArgumentNullException>(message != null);
+			Contract.Requires<ArgumentNullException>(description != null);
 
 			this.message = message;
 			this.description = description;
@@ -370,6 +370,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// Saves the data in a message to a standard dictionary.
 		/// </summary>
 		/// <returns>The generated dictionary.</returns>
+		[Pure]
 		public IDictionary<string, string> Serialize() {
 			Contract.Ensures(Contract.Result<IDictionary<string, string>>() != null);
 			return this.Serializer.Serialize(this);
@@ -380,7 +381,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		/// <param name="fields">The data to load into the message.</param>
 		public void Deserialize(IDictionary<string, string> fields) {
-			Contract.Requires(fields != null);
+			Contract.Requires<ArgumentNullException>(fields != null);
 			this.Serializer.Deserialize(fields, this);
 		}
 
@@ -388,6 +389,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <summary>
 		/// Verifies conditions that should be true for any valid state of this object.
 		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
 		[ContractInvariantMethod]
 		protected void ObjectInvariant() {

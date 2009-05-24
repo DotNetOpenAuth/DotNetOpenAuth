@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -30,9 +31,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// deserialize to.  Null if the request isn't recognized as a valid protocol message.
 		/// </returns>
 		public IDirectedProtocolMessage GetNewRequestMessage(MessageReceivingEndpoint recipient, IDictionary<string, string> fields) {
-			ErrorUtilities.VerifyArgumentNotNull(recipient, "recipient");
-			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
-
 			RequestBase message = null;
 
 			// Discern the OpenID version of the message.
@@ -97,9 +95,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// deserialize to.  Null if the request isn't recognized as a valid protocol message.
 		/// </returns>
 		public IDirectResponseProtocolMessage GetNewResponseMessage(IDirectedProtocolMessage request, IDictionary<string, string> fields) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
-			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
-
 			DirectResponseBase message = null;
 
 			// Discern the OpenID version of the message.

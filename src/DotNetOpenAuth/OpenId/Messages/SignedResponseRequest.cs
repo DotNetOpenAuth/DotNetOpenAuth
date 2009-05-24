@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -139,7 +140,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// when and if a positive assertion comes back from the Provider.
 		/// </remarks>
 		internal void AddReturnToArguments(IEnumerable<KeyValuePair<string, string>> keysValues) {
-			ErrorUtilities.VerifyArgumentNotNull(keysValues, "keysValues");
+			Contract.Requires<ArgumentNullException>(keysValues != null);
 			ErrorUtilities.VerifyOperation(this.ReturnTo != null, OpenIdStrings.ReturnToRequiredForOperation);
 			UriBuilder returnToBuilder = new UriBuilder(this.ReturnTo);
 			returnToBuilder.AppendAndReplaceQueryArgs(keysValues);
@@ -170,7 +171,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </param>
 		/// <returns>checkid_immediate or checkid_setup</returns>
 		private static string GetMode(Version version, AuthenticationRequestMode mode) {
-			ErrorUtilities.VerifyArgumentNotNull(version, "version");
+			Contract.Requires<ArgumentNullException>(version != null);
 
 			Protocol protocol = Protocol.Lookup(version);
 			return mode == AuthenticationRequestMode.Immediate ? protocol.Args.Mode.checkid_immediate : protocol.Args.Mode.checkid_setup;

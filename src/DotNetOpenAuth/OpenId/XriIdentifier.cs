@@ -192,8 +192,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="userSuppliedIdentifier">The user supplied identifier, which may differ from this XRI instance due to multiple discovery steps.</param>
 		/// <returns>A list of service endpoints offered for this identifier.</returns>
 		internal IEnumerable<ServiceEndpoint> Discover(IDirectWebRequestHandler requestHandler, XriIdentifier userSuppliedIdentifier) {
-			Contract.Requires(requestHandler != null);
-			Contract.Requires(userSuppliedIdentifier != null);
+			Contract.Requires<ArgumentNullException>(requestHandler != null);
+			Contract.Requires<ArgumentNullException>(userSuppliedIdentifier != null);
 			return this.DownloadXrds(requestHandler).CreateServiceEndpoints(userSuppliedIdentifier);
 		}
 
@@ -239,7 +239,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>The canonicalized form of the XRI.</returns>
 		/// <remarks>The canonical form, per the OpenID spec, is no scheme and no whitespace on either end.</remarks>
 		private static string CanonicalizeXri(string xri) {
-			Contract.Requires(xri != null);
+			Contract.Requires<ArgumentNullException>(xri != null);
 			Contract.Ensures(Contract.Result<string>() != null);
 			xri = xri.Trim();
 			if (xri.StartsWith(XriScheme, StringComparison.OrdinalIgnoreCase)) {
@@ -255,7 +255,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="requestHandler">The request handler.</param>
 		/// <returns>The XRDS document.</returns>
 		private XrdsDocument DownloadXrds(IDirectWebRequestHandler requestHandler) {
-			Contract.Requires(requestHandler != null);
+			Contract.Requires<ArgumentNullException>(requestHandler != null);
 			Contract.Ensures(Contract.Result<XrdsDocument>() != null);
 			XrdsDocument doc;
 			using (var xrdsResponse = Yadis.Request(requestHandler, this.XrdsUrl, this.IsDiscoverySecureEndToEnd)) {
@@ -269,6 +269,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Verifies conditions that should be true for any valid state of this object.
 		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
 		[ContractInvariantMethod]
 		private void ObjectInvariant() {

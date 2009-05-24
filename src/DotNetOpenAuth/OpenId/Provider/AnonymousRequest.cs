@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId.Provider {
+	using System;
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -26,9 +27,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="request">The incoming authentication request message.</param>
 		internal AnonymousRequest(OpenIdProvider provider, SignedResponseRequest request)
 			: base(provider, request) {
-			Contract.Requires(provider != null);
+			Contract.Requires<ArgumentNullException>(provider != null);
 			Contract.Requires(!(request is CheckIdRequest), "Instantiate " + typeof(AuthenticationRequest).Name + " to handle this kind of message.");
-			ErrorUtilities.VerifyInternal(!(request is CheckIdRequest), "Instantiate {0} to handle this kind of message.", typeof(AuthenticationRequest).Name);
 
 			this.positiveResponse = new IndirectSignedResponse(request);
 		}

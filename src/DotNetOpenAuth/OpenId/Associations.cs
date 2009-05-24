@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId {
+	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Diagnostics;
@@ -59,13 +60,14 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		/// <param name="association">The association to add to the collection.</param>
 		public void Set(Association association) {
-			Contract.Requires(association != null);
+			Contract.Requires<ArgumentNullException>(association != null);
 			Contract.Ensures(this.Get(association.Handle) == association);
-			ErrorUtilities.VerifyArgumentNotNull(association, "association");
 			lock (this.associations) {
 				this.associations.Remove(association.Handle); // just in case one already exists.
 				this.associations.Add(association);
 			}
+
+			Contract.Assume(this.Get(association.Handle) == association);
 		}
 
 		/// <summary>
@@ -114,6 +116,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Verifies conditions that should be true for any valid state of this object.
 		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
 		[ContractInvariantMethod]
 		protected void ObjectInvariant() {

@@ -48,7 +48,7 @@ namespace DotNetOpenAuth {
 		/// 	<c>true</c> if the URI represents an encrypted request; otherwise, <c>false</c>.
 		/// </returns>
 		internal static bool IsTransportSecure(this Uri uri) {
-			Contract.Requires(uri != null);
+			Contract.Requires<ArgumentNullException>(uri != null);
 			return string.Equals(uri.Scheme, "https", StringComparison.OrdinalIgnoreCase);
 		}
 
@@ -59,7 +59,7 @@ namespace DotNetOpenAuth {
 		/// <param name="builder">The UriBuilder to render as a string.</param>
 		/// <returns>The string version of the Uri.</returns>
 		internal static string ToStringWithImpliedPorts(this UriBuilder builder) {
-			Contract.Requires(builder != null);
+			Contract.Requires<ArgumentNullException>(builder != null);
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			// We only check for implied ports on HTTP and HTTPS schemes since those

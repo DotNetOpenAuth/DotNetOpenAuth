@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.Yadis {
 	using System;
+	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Net;
 	using System.Net.Cache;
@@ -131,8 +132,8 @@ namespace DotNetOpenAuth.Yadis {
 		/// <param name="acceptTypes">The value of the Accept HTTP header to include in the request.</param>
 		/// <returns>The HTTP response retrieved from the request.</returns>
 		internal static IncomingWebResponse Request(IDirectWebRequestHandler requestHandler, Uri uri, bool requireSsl, params string[] acceptTypes) {
-			ErrorUtilities.VerifyArgumentNotNull(requestHandler, "requestHandler");
-			ErrorUtilities.VerifyArgumentNotNull(uri, "uri");
+			Contract.Requires<ArgumentNullException>(requestHandler != null);
+			Contract.Requires<ArgumentNullException>(uri != null);
 
 			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
 			request.CachePolicy = IdentifierDiscoveryCachePolicy;

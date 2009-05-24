@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 	using System;
 	using System.Diagnostics;
+	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -34,7 +35,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// </summary>
 		/// <param name="typeUri">The unique TypeURI for that describes the attribute being sought.</param>
 		public AttributeRequest(string typeUri) {
-			ErrorUtilities.VerifyNonZeroLength(typeUri, "typeUri");
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(typeUri));
 			this.TypeUri = typeUri;
 		}
 
@@ -82,7 +83,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			}
 
 			set {
-				ErrorUtilities.VerifyArgumentInRange(value > 0, "value");
+				Contract.Requires<ArgumentOutOfRangeException>(value > 0);
 				this.count = value;
 			}
 		}

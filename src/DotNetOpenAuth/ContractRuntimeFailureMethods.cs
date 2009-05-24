@@ -8,6 +8,7 @@
 namespace DotNetOpenAuth {
 	using System;
 	using System.Diagnostics;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 
@@ -20,9 +21,14 @@ namespace DotNetOpenAuth {
 	/// to redirect to this class.
 	/// </remarks>
 	internal static class ContractRuntimeFailureMethods {
+		[SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "failureKind", Justification = "Code Contracts signature.")]
 		[DebuggerStepThrough]
 		internal static void ReportFailure(ContractFailureKind failureKind, string userProvidedMessage, string condition, Exception originalException) {
-			ErrorUtilities.ThrowInternal(userProvidedMessage ?? condition);
+			if (failureKind == ContractFailureKind.Precondition) {
+				throw new ArgumentException(userProvidedMessage ?? condition, originalException);
+			} else {
+				throw new InternalErrorException(userProvidedMessage ?? condition, originalException);
+			}
 		}
 	}
 }

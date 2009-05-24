@@ -42,8 +42,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="response">The response.</param>
 		internal NetworkDirectWebResponse(Uri requestUri, HttpWebResponse response)
 			: base(requestUri, response) {
-			Contract.RequiresAlways(requestUri != null);
-			Contract.RequiresAlways(response != null);
+			Contract.Requires<ArgumentNullException>(requestUri != null);
+			Contract.Requires<ArgumentNullException>(response != null);
 			this.httpWebResponse = response;
 			this.responseStream = response.GetResponseStream();
 		}
@@ -86,7 +86,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		internal override CachedDirectWebResponse GetSnapshot(int maximumBytesToCache) {
 			ErrorUtilities.VerifyOperation(!this.streamReadBegun, "Network stream reading has already begun.");
-			ErrorUtilities.VerifyOperation(this.RequestUri != null, "RequestUri != null");
 			ErrorUtilities.VerifyOperation(this.httpWebResponse != null, "httpWebResponse != null");
 
 			this.streamReadBegun = true;

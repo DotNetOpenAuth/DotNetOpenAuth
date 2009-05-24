@@ -75,7 +75,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.AreEqual(this.uri, ((UriIdentifier)id).Uri.AbsoluteUri);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void ParseNull() {
 			Identifier.Parse(null);
 		}

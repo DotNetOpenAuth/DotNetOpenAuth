@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="securitySettings">The security settings to apply.</param>
 		internal OpenIdChannel(IAssociationStore<Uri> associationStore, INonceStore nonceStore, RelyingPartySecuritySettings securitySettings)
 			: this(associationStore, nonceStore, new OpenIdMessageFactory(), securitySettings, false) {
-			Contract.Requires(securitySettings != null);
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
 		}
 
 		/// <summary>
@@ -63,7 +63,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="securitySettings">The security settings.</param>
 		internal OpenIdChannel(IAssociationStore<AssociationRelyingPartyType> associationStore, INonceStore nonceStore, ProviderSecuritySettings securitySettings)
 			: this(associationStore, nonceStore, new OpenIdMessageFactory(), securitySettings) {
-			Contract.Requires(securitySettings != null);
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
 		}
 
 		/// <summary>
@@ -77,8 +77,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="nonVerifying">A value indicating whether the channel is set up with no functional security binding elements.</param>
 		private OpenIdChannel(IAssociationStore<Uri> associationStore, INonceStore nonceStore, IMessageFactory messageTypeProvider, RelyingPartySecuritySettings securitySettings, bool nonVerifying) :
 			this(messageTypeProvider, InitializeBindingElements(associationStore, nonceStore, securitySettings, nonVerifying)) {
-			Contract.Requires(messageTypeProvider != null);
-			Contract.Requires(securitySettings != null);
+			Contract.Requires<ArgumentNullException>(messageTypeProvider != null);
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
+			Contract.Requires<ArgumentException>(!nonVerifying || securitySettings is RelyingPartySecuritySettings);
 		}
 
 		/// <summary>
@@ -91,8 +92,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="securitySettings">The security settings.</param>
 		private OpenIdChannel(IAssociationStore<AssociationRelyingPartyType> associationStore, INonceStore nonceStore, IMessageFactory messageTypeProvider, ProviderSecuritySettings securitySettings) :
 			this(messageTypeProvider, InitializeBindingElements(associationStore, nonceStore, securitySettings, false)) {
-			Contract.Requires(messageTypeProvider != null);
-			Contract.Requires(securitySettings != null);
+			Contract.Requires<ArgumentNullException>(messageTypeProvider != null);
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
 		}
 
 		/// <summary>
@@ -103,7 +104,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="bindingElements">The binding elements to use in sending and receiving messages.</param>
 		private OpenIdChannel(IMessageFactory messageTypeProvider, IChannelBindingElement[] bindingElements)
 			: base(messageTypeProvider, bindingElements) {
-			Contract.Requires(messageTypeProvider != null);
+			Contract.Requires<ArgumentNullException>(messageTypeProvider != null);
 
 			// Customize the binding element order, since we play some tricks for higher
 			// security and backward compatibility with older OpenID versions.
@@ -317,9 +318,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// </returns>
 		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Needed for code contracts.")]
 		private static IChannelBindingElement[] InitializeBindingElements<T>(IAssociationStore<T> associationStore, INonceStore nonceStore, SecuritySettings securitySettings, bool nonVerifying) {
-			Contract.Requires(securitySettings != null);
-			Contract.Requires(!nonVerifying || securitySettings is RelyingPartySecuritySettings);
-			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
+			Contract.Requires<ArgumentException>(!nonVerifying || securitySettings is RelyingPartySecuritySettings);
 
 			var rpSecuritySettings = securitySettings as RelyingPartySecuritySettings;
 			var opSecuritySettings = securitySettings as ProviderSecuritySettings;

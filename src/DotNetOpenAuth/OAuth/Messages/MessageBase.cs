@@ -63,7 +63,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// <param name="protectionRequired">The level of protection the message requires.</param>
 		/// <param name="originatingRequest">The request that asked for this direct response.</param>
 		protected MessageBase(MessageProtections protectionRequired, IDirectedProtocolMessage originatingRequest) {
-			ErrorUtilities.VerifyArgumentNotNull(originatingRequest, "originatingRequest");
+			Contract.Requires<ArgumentNullException>(originatingRequest != null);
 
 			this.protectionRequired = protectionRequired;
 			this.transport = MessageTransport.Direct;
@@ -239,8 +239,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// The string representation of this object.
 		/// </returns>
 		internal virtual string ToString(Channel channel) {
-			Contract.Requires(channel != null);
-			ErrorUtilities.VerifyArgumentNotNull(channel, "channel");
+			Contract.Requires<ArgumentNullException>(channel != null);
 
 			StringBuilder builder = new StringBuilder();
 			builder.AppendFormat(CultureInfo.InvariantCulture, "{0} message", GetType().Name);

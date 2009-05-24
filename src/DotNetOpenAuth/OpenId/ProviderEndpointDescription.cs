@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
 
@@ -24,8 +25,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="providerEndpoint">The OpenID Provider endpoint URL.</param>
 		/// <param name="openIdVersion">The OpenID version supported by this particular endpoint.</param>
 		internal ProviderEndpointDescription(Uri providerEndpoint, Version openIdVersion) {
-			ErrorUtilities.VerifyArgumentNotNull(providerEndpoint, "providerEndpoint");
-			ErrorUtilities.VerifyArgumentNotNull(openIdVersion, "version");
+			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
+			Contract.Requires<ArgumentNullException>(openIdVersion != null);
 
 			this.Endpoint = providerEndpoint;
 			this.ProtocolVersion = openIdVersion;
@@ -37,8 +38,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="providerEndpoint">The URI the provider listens on for OpenID requests.</param>
 		/// <param name="serviceTypeURIs">The set of services offered by this endpoint.</param>
 		internal ProviderEndpointDescription(Uri providerEndpoint, IEnumerable<string> serviceTypeURIs) {
-			ErrorUtilities.VerifyArgumentNotNull(providerEndpoint, "providerEndpoint");
-			ErrorUtilities.VerifyArgumentNotNull(serviceTypeURIs, "serviceTypeURIs");
+			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
+			Contract.Requires<ArgumentNullException>(serviceTypeURIs != null);
 
 			this.Endpoint = providerEndpoint;
 			this.Capabilities = new ReadOnlyCollection<string>(serviceTypeURIs.ToList());

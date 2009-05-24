@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </summary>
 		/// <param name="tokenXml">The raw token XML, prior to any decryption.</param>
 		internal ReceivingTokenEventArgs(string tokenXml) {
-			Contract.Requires(tokenXml != null);
+			Contract.Requires<ArgumentNullException>(tokenXml != null);
 
 			this.TokenXml = tokenXml;
 			this.IsEncrypted = Token.IsEncrypted(this.TokenXml);
@@ -63,7 +63,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </summary>
 		/// <param name="securityToken">The security token.</param>
 		public void AddDecryptingToken(SecurityToken securityToken) {
-			Contract.Requires(securityToken != null);
+			Contract.Requires<ArgumentNullException>(securityToken != null);
 			this.DecryptingTokens.Add(securityToken);
 		}
 
@@ -72,7 +72,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </summary>
 		/// <param name="certificate">The certificate.</param>
 		public void AddDecryptingToken(X509Certificate2 certificate) {
-			Contract.Requires(certificate != null);
+			Contract.Requires<ArgumentNullException>(certificate != null);
 			Contract.Requires(certificate.HasPrivateKey);
 			this.AddDecryptingToken(new X509SecurityToken(certificate));
 		}
@@ -81,6 +81,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <summary>
 		/// Verifies conditions that should be true for any valid state of this object.
 		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
 		[ContractInvariantMethod]
 		protected void ObjectInvariant() {

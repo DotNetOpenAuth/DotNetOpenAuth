@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -30,7 +31,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="response">The response that is ready for transmittal.</param>
 		internal AutoResponsiveRequest(IDirectedProtocolMessage request, IProtocolMessage response)
 			: base(request) {
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.Requires<ArgumentNullException>(response != null);
 
 			this.response = response;
 		}
@@ -42,7 +43,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="response">The response that is ready for transmittal.</param>
 		internal AutoResponsiveRequest(IProtocolMessage response)
 			: base(IndirectResponseBase.GetVersion(response)) {
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.Requires<ArgumentNullException>(response != null);
 
 			this.response = response;
 		}

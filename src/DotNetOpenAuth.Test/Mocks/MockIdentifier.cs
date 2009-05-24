@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Test.Mocks {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
@@ -25,9 +26,9 @@ namespace DotNetOpenAuth.Test.Mocks {
 
 		public MockIdentifier(Identifier wrappedIdentifier, MockHttpRequest mockHttpRequest, IEnumerable<ServiceEndpoint> endpoints)
 			: base(false) {
-			ErrorUtilities.VerifyArgumentNotNull(wrappedIdentifier, "wrappedIdentifier");
-			ErrorUtilities.VerifyArgumentNotNull(mockHttpRequest, "mockHttpRequest");
-			ErrorUtilities.VerifyArgumentNotNull(endpoints, "endpoints");
+			Contract.Requires<ArgumentNullException>(wrappedIdentifier != null);
+			Contract.Requires<ArgumentNullException>(mockHttpRequest != null);
+			Contract.Requires<ArgumentNullException>(endpoints != null);
 
 			this.wrappedIdentifier = wrappedIdentifier;
 			this.endpoints = endpoints;

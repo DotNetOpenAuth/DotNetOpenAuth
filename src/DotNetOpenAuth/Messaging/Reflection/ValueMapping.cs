@@ -29,8 +29,8 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="toString">The mapping function that converts some custom type to a string.</param>
 		/// <param name="toValue">The mapping function that converts a string to some custom type.</param>
 		internal ValueMapping(Func<object, string> toString, Func<string, object> toValue) {
-			Contract.Requires(toString != null);
-			Contract.Requires(toValue != null);
+			Contract.Requires<ArgumentNullException>(toString != null);
+			Contract.Requires<ArgumentNullException>(toValue != null);
 
 			this.ValueToString = toString;
 			this.StringToValue = toValue;

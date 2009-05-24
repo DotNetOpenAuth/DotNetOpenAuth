@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Diagnostics;
+	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// An immutable description of a URL that receives messages.
@@ -27,9 +28,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="location">The URL of this endpoint.</param>
 		/// <param name="method">The HTTP method(s) allowed.</param>
 		public MessageReceivingEndpoint(Uri location, HttpDeliveryMethods method) {
-			ErrorUtilities.VerifyArgumentNotNull(location, "location");
-			ErrorUtilities.VerifyArgumentInRange(method != HttpDeliveryMethods.None, "method");
-			ErrorUtilities.VerifyArgumentInRange((method & (HttpDeliveryMethods.PostRequest | HttpDeliveryMethods.GetRequest)) != 0, "method", MessagingStrings.GetOrPostFlagsRequired);
+			Contract.Requires<ArgumentNullException>(location != null);
+			Contract.Requires<ArgumentOutOfRangeException>(method != HttpDeliveryMethods.None, "method");
+			Contract.Requires<ArgumentOutOfRangeException>((method & (HttpDeliveryMethods.PostRequest | HttpDeliveryMethods.GetRequest)) != 0, MessagingStrings.GetOrPostFlagsRequired);
 
 			this.Location = location;
 			this.AllowedMethods = method;

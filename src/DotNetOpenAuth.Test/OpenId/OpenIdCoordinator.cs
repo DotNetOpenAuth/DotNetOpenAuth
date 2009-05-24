@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.Test.OpenId {
 	using System;
+	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
@@ -36,7 +37,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		}
 
 		private static Action<OpenIdRelyingParty> WrapAction(Action<OpenIdRelyingParty> action) {
-			ErrorUtilities.VerifyArgumentNotNull(action, "action");
+			Contract.Requires<ArgumentNullException>(action != null);
 
 			return rp => {
 				action(rp);
@@ -45,7 +46,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		}
 
 		private static Action<OpenIdProvider> WrapAction(Action<OpenIdProvider> action) {
-			ErrorUtilities.VerifyArgumentNotNull(action, "action");
+			Contract.Requires<ArgumentNullException>(action != null);
 
 			return op => {
 				action(op);

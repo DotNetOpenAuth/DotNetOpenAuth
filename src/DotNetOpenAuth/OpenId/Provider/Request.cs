@@ -53,8 +53,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="request">The incoming request message.</param>
 		protected Request(IDirectedProtocolMessage request) {
-			Contract.Requires(request != null);
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 
 			this.request = request;
 			this.protocolVersion = this.request.Version;
@@ -66,8 +65,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="version">The version.</param>
 		protected Request(Version version) {
-			Contract.Requires(version != null);
-			ErrorUtilities.VerifyArgumentNotNull(version, "version");
+			Contract.Requires<ArgumentNullException>(version != null);
 
 			this.protocolVersion = version;
 		}
@@ -148,8 +146,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="extension">The extension to add to the response message.</param>
 		public void AddResponseExtension(IOpenIdMessageExtension extension) {
-			ErrorUtilities.VerifyArgumentNotNull(extension, "extension");
-
 			// Because the derived AuthenticationRequest class can swap out
 			// one response message for another (auth vs. no-auth), and because
 			// some response messages support extensions while others don't,
@@ -181,7 +177,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// An instance of the extension initialized with values passed in with the request.
 		/// </returns>
 		public IOpenIdMessageExtension GetExtension(Type extensionType) {
-			ErrorUtilities.VerifyArgumentNotNull(extensionType, "extensionType");
 			if (this.extensibleMessage != null) {
 				return this.extensibleMessage.Extensions.OfType<IOpenIdMessageExtension>().Where(ext => extensionType.IsInstanceOfType(ext)).SingleOrDefault();
 			} else {

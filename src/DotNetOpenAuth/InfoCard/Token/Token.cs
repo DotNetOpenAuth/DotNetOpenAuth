@@ -53,7 +53,6 @@ namespace DotNetOpenAuth.InfoCard {
 				Contract.Assume(tokenReader != null); // BCL contract should say XmlReader.Create result != null
 				if (IsEncrypted(tokenReader)) {
 					Logger.InfoCard.DebugFormat("Incoming SAML token, before decryption: {0}", tokenXml);
-					ErrorUtilities.VerifyArgumentNotNull(decryptor, "decryptor");
 					decryptedBytes = decryptor.DecryptToken(tokenReader);
 					decryptedString = Encoding.UTF8.GetString(decryptedBytes);
 					Contract.Assume(decryptedString != null); // BCL contracts should be enhanced here
@@ -157,7 +156,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <returns>The deserialized token.</returns>
 		public static Token Read(string tokenXml, IEnumerable<SecurityToken> decryptionTokens) {
 			Contract.Requires(!String.IsNullOrEmpty(tokenXml));
-			Contract.Requires(decryptionTokens != null);
+			Contract.Requires<ArgumentNullException>(decryptionTokens != null);
 			return Read(tokenXml, null, decryptionTokens);
 		}
 
@@ -170,7 +169,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <returns>The deserialized token.</returns>
 		public static Token Read(string tokenXml, Uri audience, IEnumerable<SecurityToken> decryptionTokens) {
 			Contract.Requires(!String.IsNullOrEmpty(tokenXml));
-			Contract.Requires(decryptionTokens != null);
+			Contract.Requires<ArgumentNullException>(decryptionTokens != null);
 			Contract.Ensures(Contract.Result<Token>() != null);
 
 			TokenDecryptor decryptor = null;
@@ -192,8 +191,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </returns>
 		[Pure]
 		internal static bool IsEncrypted(string tokenXml) {
-			Contract.Requires(tokenXml != null);
-			ErrorUtilities.VerifyArgumentNotNull(tokenXml, "tokenXml");
+			Contract.Requires<ArgumentNullException>(tokenXml != null);
 
 			using (XmlReader tokenReader = XmlReader.Create(new StringReader(tokenXml))) {
 				return IsEncrypted(tokenReader);
@@ -204,6 +202,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <summary>
 		/// Verifies conditions that should be true for any valid state of this object.
 		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
 		[ContractInvariantMethod]
 		protected void ObjectInvariant()
@@ -220,8 +219,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// 	<c>true</c> if the specified token XML is encrypted; otherwise, <c>false</c>.
 		/// </returns>
 		private static bool IsEncrypted(XmlReader tokenXmlReader) {
-			Contract.Requires(tokenXmlReader != null);
-			ErrorUtilities.VerifyArgumentNotNull(tokenXmlReader, "tokenXmlReader");
+			Contract.Requires<ArgumentNullException>(tokenXmlReader != null);
 			return tokenXmlReader.IsStartElement(TokenDecryptor.XmlEncryptionStrings.EncryptedData, TokenDecryptor.XmlEncryptionStrings.Namespace);
 		}
 

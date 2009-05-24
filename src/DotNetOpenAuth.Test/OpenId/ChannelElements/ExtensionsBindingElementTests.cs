@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text.RegularExpressions;
 	using DotNetOpenAuth.Messaging;
@@ -167,7 +168,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		}
 
 		private static void RegisterMockExtension(Channel channel) {
-			ErrorUtilities.VerifyArgumentNotNull(channel, "channel");
+			Contract.Requires<ArgumentNullException>(channel != null);
 
 			ExtensionTestUtilities.RegisterExtension(channel, MockOpenIdExtension.Factory);
 		}
@@ -178,7 +179,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// <param name="protocol">The protocol to construct the message with.</param>
 		/// <returns>The message ready to send from OP to RP.</returns>
 		private IndirectSignedResponse CreateResponseWithExtensions(Protocol protocol) {
-			ErrorUtilities.VerifyArgumentNotNull(protocol, "protocol");
+			Contract.Requires<ArgumentNullException>(protocol != null);
 
 			IndirectSignedResponse response = new IndirectSignedResponse(protocol.Version, RPUri);
 			response.ProviderEndpoint = OPUri;

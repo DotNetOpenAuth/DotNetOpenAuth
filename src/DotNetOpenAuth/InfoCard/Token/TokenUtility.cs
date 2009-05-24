@@ -162,8 +162,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="authzContext">The Authorization Context</param>
 		/// <returns>A unique ID for this user at this web site.</returns>
 		internal static string GetUniqueName(AuthorizationContext authzContext) {
-			Contract.Requires(authzContext != null);
-			ErrorUtilities.VerifyArgumentNotNull(authzContext, "authzContext");
+			Contract.Requires<ArgumentNullException>(authzContext != null);
 
 			Claim uniqueIssuerClaim = null;
 			Claim uniqueUserClaim = null;
@@ -219,7 +218,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="ppid">The personal private identifier.</param>
 		/// <returns>A string containing the XXX-XXXX-XXX cosmetic value.</returns>
 		internal static string CalculateSiteSpecificID(string ppid) {
-			Contract.Requires(ppid != null);
+			Contract.Requires<ArgumentNullException>(ppid != null);
 			Contract.Ensures(Contract.Result<string>() != null && Contract.Result<string>().Length > 0);
 
 			int callSignChars = 10;
@@ -247,8 +246,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="cs">the claimset which contains the claim</param>
 		/// <returns>a RSA claim</returns>
 		private static Claim GetUniqueRsaClaim(ClaimSet cs) {
-			Contract.Requires(cs != null);
-			ErrorUtilities.VerifyArgumentNotNull(cs, "cs");
+			Contract.Requires<ArgumentNullException>(cs != null);
 
 			Claim rsa = null;
 
@@ -270,11 +268,9 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="claimValue">the claim value to hash with.</param>
 		/// <returns>A base64 representation of the combined ID.</returns>
 		private static string ComputeCombinedId(RSA issuerKey, string claimValue) {
-			Contract.Requires(issuerKey != null);
-			Contract.Requires(claimValue != null);
+			Contract.Requires<ArgumentNullException>(issuerKey != null);
+			Contract.Requires<ArgumentNullException>(claimValue != null);
 			Contract.Ensures(Contract.Result<string>() != null);
-			ErrorUtilities.VerifyArgumentNotNull(issuerKey, "issuerKey");
-			ErrorUtilities.VerifyArgumentNotNull(claimValue, "claimValue");
 
 			int nameLength = Encoding.UTF8.GetByteCount(claimValue);
 			RSAParameters rsaParams = issuerKey.ExportParameters(false);

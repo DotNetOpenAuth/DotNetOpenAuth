@@ -7,9 +7,9 @@
 namespace DotNetOpenAuth.Configuration {
 	using System;
 	using System.Configuration;
+	using System.Diagnostics.Contracts;
 	using System.Reflection;
 	using DotNetOpenAuth.Messaging;
-	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Represents an element in a .config file that allows the user to provide a @type attribute specifying

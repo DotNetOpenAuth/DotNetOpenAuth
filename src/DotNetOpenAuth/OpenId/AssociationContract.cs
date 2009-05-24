@@ -46,7 +46,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </returns>
 		[Pure]
 		internal override string GetAssociationType(Protocol protocol) {
-			Contract.Requires(protocol != null);
+			Contract.Requires<ArgumentNullException>(protocol != null);
 			throw new NotImplementedException();
 		}
 

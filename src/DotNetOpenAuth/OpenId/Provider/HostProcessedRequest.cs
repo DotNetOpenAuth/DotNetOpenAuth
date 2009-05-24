@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="request">The incoming request message.</param>
 		protected HostProcessedRequest(OpenIdProvider provider, SignedResponseRequest request)
 			: base(request) {
-			Contract.Requires(provider != null);
+			Contract.Requires<ArgumentNullException>(provider != null);
 
 			this.negativeResponse = new NegativeAssertionResponse(request, provider.Channel);
 		}

@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// </summary>
 		/// <param name="elements">The elements that should be added to the collection initially.</param>
 		internal TypeConfigurationCollection(IEnumerable<Type> elements) {
-			Contract.Requires(elements != null);
+			Contract.Requires<ArgumentNullException>(elements != null);
 			ErrorUtilities.VerifyArgumentNotNull(elements, "elements");
 
 			foreach (Type element in elements) {
@@ -70,7 +70,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// </returns>
 		protected override object GetElementKey(ConfigurationElement element) {
 			Contract.Assume(element != null); // this should be Contract.Requires in base class.
-			return ((TypeConfigurationElement<T>)element).TypeName;
+			return ((TypeConfigurationElement<T>)element).TypeName ?? string.Empty;
 		}
 	}
 }

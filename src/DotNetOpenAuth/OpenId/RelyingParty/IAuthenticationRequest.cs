@@ -7,6 +7,8 @@
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
+	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -16,6 +18,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// requests that may be queried/modified in specific ways before being
 	/// routed to the OpenID Provider.
 	/// </summary>
+	[ContractClass(typeof(IAuthenticationRequestContract))]
 	public interface IAuthenticationRequest {
 		/// <summary>
 		/// Gets or sets the mode the Provider should use during authentication.

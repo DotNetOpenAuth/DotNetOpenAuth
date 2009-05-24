@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// that will be serialized and deserialized using this class.</param>
 		[ContractVerification(false)] // bugs/limitations in CC static analysis
 		private MessageSerializer(Type messageType) {
-			Contract.Requires(messageType != null);
+			Contract.Requires<ArgumentNullException>(messageType != null);
 			Contract.Requires(typeof(IMessage).IsAssignableFrom(messageType));
 			Contract.Ensures(this.messageType != null);
 
@@ -54,9 +54,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>A message serializer for the given message type.</returns>
 		[ContractVerification(false)] // bugs/limitations in CC static analysis
 		internal static MessageSerializer Get(Type messageType) {
-			Contract.Requires(messageType != null);
-			Contract.Requires(typeof(IMessage).IsAssignableFrom(messageType));
-			ErrorUtilities.VerifyArgumentNotNull(messageType, "messageType");
+			Contract.Requires<ArgumentNullException>(messageType != null);
+			Contract.Requires<ArgumentException>(typeof(IMessage).IsAssignableFrom(messageType));
 
 			return new MessageSerializer(messageType);
 		}
@@ -66,11 +65,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="messageDictionary">The message to be serialized.</param>
 		/// <returns>The dictionary of values to send for the message.</returns>
+		[Pure]
 		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Parallel design with Deserialize method.")]
 		internal IDictionary<string, string> Serialize(MessageDictionary messageDictionary) {
-			Contract.Requires(messageDictionary != null);
+			Contract.Requires<ArgumentNullException>(messageDictionary != null);
 			Contract.Ensures(Contract.Result<IDictionary<string, string>>() != null);
-			ErrorUtilities.VerifyArgumentNotNull(messageDictionary, "messageDictionary");
 
 			// Rather than hand back the whole message dictionary (which 
 			// includes keys with blank values), create a new dictionary
@@ -100,10 +99,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="messageDictionary">The message to deserialize into.</param>
 		/// <exception cref="ProtocolException">Thrown when protocol rules are broken by the incoming message.</exception>
 		internal void Deserialize(IDictionary<string, string> fields, MessageDictionary messageDictionary) {
-			Contract.Requires(fields != null);
-			Contract.Requires(messageDictionary != null);
-			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
-			ErrorUtilities.VerifyArgumentNotNull(messageDictionary, "messageDictionary");
+			Contract.Requires<ArgumentNullException>(fields != null);
+			Contract.Requires<ArgumentNullException>(messageDictionary != null);
 
 			var messageDescription = messageDictionary.Description;
 
@@ -124,6 +121,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Verifies conditions that should be true for any valid state of this object.
 		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
 		[ContractInvariantMethod]
 		protected void ObjectInvariant() {

@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="message">The message.</param>
 		/// <returns>The OpenID protocol instance.</returns>
 		internal static Protocol GetProtocol(this IProtocolMessage message) {
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
+			Contract.Requires<ArgumentNullException>(message != null);
 			return Protocol.Lookup(message.Version);
 		}
 
@@ -103,10 +103,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>The fully-qualified realm.</returns>
 		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenAuth.OpenId.Realm", Justification = "Using ctor for validation.")]
 		internal static UriBuilder GetResolvedRealm(Page page, string realm, HttpRequestInfo requestContext) {
-			Contract.Requires(page != null);
-			Contract.Requires(requestContext != null);
-			ErrorUtilities.VerifyArgumentNotNull(page, "page");
-			ErrorUtilities.VerifyArgumentNotNull(requestContext, "requestContext");
+			Contract.Requires<ArgumentNullException>(page != null);
+			Contract.Requires<ArgumentNullException>(requestContext != null);
 
 			// Allow for *. realm notation, as well as ASP.NET ~/ shortcuts.
 
@@ -148,8 +146,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// can plug in.
 		/// </remarks>
 		internal static IList<IOpenIdExtensionFactory> GetExtensionFactories(this Channel channel) {
-			Contract.Requires(channel != null);
-			ErrorUtilities.VerifyArgumentNotNull(channel, "channel");
+			Contract.Requires<ArgumentNullException>(channel != null);
 
 			var extensionsBindingElement = channel.BindingElements.OfType<ExtensionsBindingElement>().SingleOrDefault();
 			ErrorUtilities.VerifyOperation(extensionsBindingElement != null, OpenIdStrings.UnsupportedChannelConfiguration);

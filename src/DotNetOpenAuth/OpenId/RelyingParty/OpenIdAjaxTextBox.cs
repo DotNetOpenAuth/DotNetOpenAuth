@@ -19,6 +19,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.ComponentModel;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Drawing.Design;
 	using System.Globalization;
 	using System.Linq;
@@ -400,7 +401,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				ErrorUtilities.VerifyArgumentInRange(value >= 0, "value");
+				Contract.Requires<ArgumentOutOfRangeException>(value >= 0);
 				this.ViewState[ColumnsViewStateKey] = value;
 			}
 		}
@@ -426,7 +427,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				ErrorUtilities.VerifyNonZeroLength(value, "value");
+				Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(value));
 				this.ViewState[NameViewStateKey] = value ?? string.Empty;
 			}
 		}
@@ -442,7 +443,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				ErrorUtilities.VerifyArgumentInRange(value.TotalMilliseconds > 0, "value");
+				Contract.Requires<ArgumentOutOfRangeException>(value.TotalMilliseconds > 0);
 				this.ViewState[TimeoutViewStateKey] = value;
 			}
 		}
@@ -458,7 +459,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				ErrorUtilities.VerifyArgumentInRange(value > 0, "value");
+				Contract.Requires<ArgumentOutOfRangeException>(value > 0);
 				this.ViewState[ThrottleViewStateKey] = value;
 			}
 		}
@@ -474,7 +475,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				ErrorUtilities.VerifyNonZeroLength(value, "value");
+				Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(value));
 				this.ViewState[LogOnTextViewStateKey] = value ?? string.Empty;
 			}
 		}
@@ -500,7 +501,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				ErrorUtilities.VerifyNonZeroLength(value, "value");
+				Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(value));
 				this.ViewState[RetryTextViewStateKey] = value ?? string.Empty;
 			}
 		}
@@ -861,7 +862,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "By design")]
 		public void RegisterClientScriptExtension<T>(string propertyName) where T : IClientScriptExtensionResponse {
-			ErrorUtilities.VerifyNonZeroLength(propertyName, "propertyName");
+			Contract.Requires(!String.IsNullOrEmpty(propertyName));
 			ErrorUtilities.VerifyArgumentNamed(!this.clientScriptExtensions.ContainsValue(propertyName), "propertyName", OpenIdStrings.ClientScriptExtensionPropertyNameCollision, propertyName);
 			foreach (var ext in this.clientScriptExtensions.Keys) {
 				ErrorUtilities.VerifyArgument(ext != typeof(T), OpenIdStrings.ClientScriptExtensionTypeCollision, typeof(T).FullName);
@@ -887,9 +888,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="eventArgument">The identifier to perform discovery on.</param>
 		void ICallbackEventHandler.RaiseCallbackEvent(string eventArgument) {
+			ErrorUtilities.VerifyNonZeroLength(eventArgument, "eventArgument");
 			string userSuppliedIdentifier = eventArgument;
 
-			ErrorUtilities.VerifyNonZeroLength(userSuppliedIdentifier, "userSuppliedIdentifier");
 			Logger.OpenId.InfoFormat("AJAX discovery on {0} requested.", userSuppliedIdentifier);
 
 			// We prepare a JSON object with this interface:
