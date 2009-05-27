@@ -14,7 +14,7 @@
 	     This server.aspx page is the default provider endpoint to use.  To switch to the .ashx handler,
 	     change the user_xrds.aspx and op_xrds.aspx files to point to provider.ashx instead of server.aspx.
 	     --%>
-	<openid:ProviderEndpoint runat="server" OnAuthenticationChallenge="provider_AuthenticationChallenge" />
+	<openid:ProviderEndpoint runat="server" OnAuthenticationChallenge="provider_AuthenticationChallenge" OnAnonymousRequest="provider_AnonymousRequest" />
 	<p>
 		<asp:Label ID="serverEndpointUrl" runat="server" EnableViewState="false" />
 		is an OpenID server endpoint.

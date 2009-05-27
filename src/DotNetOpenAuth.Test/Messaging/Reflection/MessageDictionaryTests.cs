@@ -331,17 +331,26 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 		/// A test for System.Collections.Generic.ICollection&lt;System.Collections.Generic.KeyValuePair&lt;System.String,System.String&lt;&lt;.Clear
 		/// </summary>
 		[TestMethod]
-		public void Clear() {
-			ICollection<KeyValuePair<string, string>> target = this.MessageDescriptions.GetAccessor(this.message);
+		public void ClearValues() {
+			MessageDictionary target = this.MessageDescriptions.GetAccessor(this.message);
 			IDictionary<string, string> targetAsDictionary = ((IDictionary<string, string>)target);
 			this.message.Name = "Andrew";
 			this.message.Age = 15;
 			targetAsDictionary["extra"] = "value";
-			target.Clear();
+			target.ClearValues();
 			Assert.AreEqual(2, target.Count, "Clearing should remove all keys except for declared non-nullable structs.");
 			Assert.IsFalse(targetAsDictionary.ContainsKey("extra"));
 			Assert.IsNull(this.message.Name);
 			Assert.AreEqual(0, this.message.Age);
+		}
+
+		/// <summary>
+		/// Verifies that the Clear method throws the expected exception.
+		/// </summary>
+		[TestMethod, ExpectedException(typeof(NotSupportedException))]
+		public void Clear() {
+			MessageDictionary target = this.MessageDescriptions.GetAccessor(this.message);
+			target.Clear();
 		}
 	}
 }

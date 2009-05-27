@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.ServiceModel.Channels;
 	using System.Web;
@@ -14,6 +15,10 @@ namespace DotNetOpenAuth.OAuth {
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
+	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.Extensions.OAuth;
+	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.Provider;
 
 	/// <summary>
 	/// A web application that allows access via OAuth.
@@ -193,26 +198,114 @@ namespace DotNetOpenAuth.OAuth {
 		}
 
 		/// <summary>
+		/// Gets the OAuth authorization request included with an OpenID authentication
+		/// request.
+		/// </summary>
+		/// <param name="openIdRequest">The OpenID authentication request.</param>
+		/// <returns>
+		/// The scope of access the relying party is requesting.
+		/// </returns>
+		/// <remarks>
+		/// <para>Call this method rather than simply extracting the OAuth extension
+		/// out from the authentication request directly to ensure that the additional
+		/// security measures that are required are taken.</para>
+		/// </remarks>
+		public AuthorizationRequest ReadAuthorizationRequest(IHostProcessedRequest openIdRequest) {
+			Contract.Requires(openIdRequest != null);
+			Contract.Requires(this.TokenManager is ICombinedOpenIdProviderTokenManager);
+			ErrorUtilities.VerifyArgumentNotNull(openIdRequest, "openIdAuthenticationRequest");
+			var openidTokenManager = this.TokenManager as ICombinedOpenIdProviderTokenManager;
+			ErrorUtilities.VerifyOperation(openidTokenManager != null, OAuthStrings.OpenIdOAuthExtensionRequiresSpecialTokenManagerInterface, typeof(IOpenIdOAuthTokenManager).FullName);
+
+			var authzRequest = openIdRequest.GetExtension<AuthorizationRequest>();
+			if (authzRequest == null) {
+				return null;
+			}
+
+			// OpenID+OAuth spec section 9:
+			// The Combined Provider SHOULD verify that the consumer key passed in the
+			// request is authorized to be used for the realm passed in the request.
+			string expectedConsumerKey = openidTokenManager.GetConsumerKey(openIdRequest.Realm);
+			ErrorUtilities.VerifyProtocol(
+				string.Equals(expectedConsumerKey, authzRequest.Consumer, StringComparison.Ordinal),
+				OAuthStrings.OpenIdOAuthRealmConsumerKeyDoNotMatch);
+
+			return authzRequest;
+		}
+
+		/// <summary>
+		/// Attaches the authorization response to an OpenID authentication response.
+		/// </summary>
+		/// <param name="openIdAuthenticationRequest">The OpenID authentication request.</param>
+		/// <param name="consumerKey">The consumer key.  May and should be <c>null</c> if and only if <paramref name="scope"/> is null.</param>
+		/// <param name="scope">The approved access scope.  Use <c>null</c> to indicate no access was granted.  The empty string will be interpreted as some default level of access is granted.</param>
+		[SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "We want to take IAuthenticationRequest because that's the only supported use case.")]
+		public void AttachAuthorizationResponse(IAuthenticationRequest openIdAuthenticationRequest, string consumerKey, string scope) {
+			Contract.Requires(openIdAuthenticationRequest != null);
+			Contract.Requires((consumerKey == null) == (scope == null));
+			Contract.Requires(this.TokenManager is IOpenIdOAuthTokenManager);
+			ErrorUtilities.VerifyArgumentNotNull(openIdAuthenticationRequest, "openIdAuthenticationRequest");
+			var openidTokenManager = this.TokenManager as IOpenIdOAuthTokenManager;
+			ErrorUtilities.VerifyOperation(openidTokenManager != null, OAuthStrings.OpenIdOAuthExtensionRequiresSpecialTokenManagerInterface, typeof(IOpenIdOAuthTokenManager).FullName);
+
+			IOpenIdMessageExtension response;
+			if (scope != null) {
+				// Generate an authorized request token to return to the relying party.
+				var approvedResponse = new AuthorizationApprovedResponse {
+					RequestToken = this.TokenGenerator.GenerateRequestToken(consumerKey),
+					Scope = scope,
+				};
+				openidTokenManager.StoreOpenIdAuthorizedRequestToken(consumerKey, approvedResponse);
+				response = approvedResponse;
+			} else {
+				response = new AuthorizationDeclinedResponse();
+			}
+
+			openIdAuthenticationRequest.AddResponseExtension(response);
+		}
+
+		/// <summary>
 		/// Prepares the message to send back to the consumer following proper authorization of
 		/// a token by an interactive user at the Service Provider's web site.
 		/// </summary>
 		/// <param name="request">The Consumer's original authorization request.</param>
 		/// <returns>
 		/// The message to send to the Consumer using <see cref="Channel"/> if one is necessary.
-		/// Null if the Consumer did not request a callback.
+		/// Null if the Consumer did not request a callback as part of the authorization request.
 		/// </returns>
 		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Consistent user experience with instance.")]
 		public UserAuthorizationResponse PrepareAuthorizationResponse(UserAuthorizationRequest request) {
+			Contract.Requires(request != null);
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			if (request.Callback != null) {
-				var authorization = new UserAuthorizationResponse(request.Callback) {
-					RequestToken = request.RequestToken,
-				};
-				return authorization;
+				return this.PrepareAuthorizationResponse(request, request.Callback);
 			} else {
 				return null;
 			}
+		}
+
+		/// <summary>
+		/// Prepares the message to send back to the consumer following proper authorization of
+		/// a token by an interactive user at the Service Provider's web site.
+		/// </summary>
+		/// <param name="request">The Consumer's original authorization request.</param>
+		/// <param name="callback">The callback URI the consumer has previously registered
+		/// with this service provider.</param>
+		/// <returns>
+		/// The message to send to the Consumer using <see cref="Channel"/>.
+		/// </returns>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Consistent user experience with instance.")]
+		public UserAuthorizationResponse PrepareAuthorizationResponse(UserAuthorizationRequest request, Uri callback) {
+			Contract.Requires(request != null);
+			Contract.Requires(callback != null);
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			ErrorUtilities.VerifyArgumentNotNull(callback, "callback");
+
+			var authorization = new UserAuthorizationResponse(request.Callback) {
+				RequestToken = request.RequestToken,
+			};
+			return authorization;
 		}
 
 		/// <summary>

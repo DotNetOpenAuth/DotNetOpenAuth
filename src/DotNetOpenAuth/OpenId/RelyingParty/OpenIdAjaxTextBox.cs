@@ -30,6 +30,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Extensions;
+	using DotNetOpenAuth.OpenId.Extensions.UI;
 
 	/// <summary>
 	/// An ASP.NET control that provides a minimal text box that is OpenID-aware and uses AJAX for
@@ -1267,6 +1268,17 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 			foreach (var req in requests) {
 				req.AddCallbackArguments("index", (reqIndex++).ToString(CultureInfo.InvariantCulture));
 
+				if (req.Provider.IsExtensionSupported<UIRequest>()) {
+					// Inform the OP that we'll be using a popup window.
+					req.AddExtension(new UIRequest());
+
+					// Provide a hint for the client javascript about whether the OP supports the UI extension.
+					// This is so the window can be made the correct size for the extension.
+					// If the OP doesn't advertise support for the extension, the javascript will use
+					// a bigger popup window.
+					req.AddCallbackArguments("dotnetopenid.popupUISupported", "1");
+				}
+
 				// If the ReturnToUrl was explicitly set, we'll need to reset our first parameter
 				if (string.IsNullOrEmpty(HttpUtility.ParseQueryString(req.ReturnToUrl.Query)["dotnetopenid.userSuppliedIdentifier"])) {
 					req.AddCallbackArguments("dotnetopenid.userSuppliedIdentifier", userSuppliedIdentifier);
@@ -1298,6 +1310,9 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 				this.OnUnconfirmedPositiveAssertion();
 				foreach (var pair in this.clientScriptExtensions) {
 					IClientScriptExtensionResponse extension = (IClientScriptExtensionResponse)authResponse.GetExtension(pair.Key);
+					if (extension == null) {
+						continue;
+					}
 					var positiveResponse = (PositiveAuthenticationResponse)authResponse;
 					string js = extension.InitializeJavaScriptData(positiveResponse.Response);
 					if (string.IsNullOrEmpty(js)) {

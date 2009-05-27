@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Messaging.Reflection {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 
 	/// <summary>
@@ -45,11 +46,12 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			if (!this.reflectedMessageTypes.TryGetValue(key, out result)) {
 				lock (this.reflectedMessageTypes) {
 					if (!this.reflectedMessageTypes.TryGetValue(key, out result)) {
-						this.reflectedMessageTypes[key] = result = new MessageDescription(key.Type, key.Version);
+						this.reflectedMessageTypes[key] = result = new MessageDescription(messageType, messageVersion);
 					}
 				}
 			}
 
+			Contract.Assume(result != null, "We should never assign null values to this dictionary.");
 			return result;
 		}
 
@@ -112,6 +114,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			/// <summary>
 			/// Gets the message type.
 			/// </summary>
+			[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Exposes basic identity on the type.")]
 			internal Type Type {
 				get { return this.type; }
 			}
@@ -119,6 +122,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			/// <summary>
 			/// Gets the message version.
 			/// </summary>
+			[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Exposes basic identity on the type.")]
 			internal Version Version {
 				get { return this.version; }
 			}

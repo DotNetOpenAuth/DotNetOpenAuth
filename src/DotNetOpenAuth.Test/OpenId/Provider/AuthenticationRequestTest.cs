@@ -45,20 +45,5 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			Assert.AreEqual(immediateRequest.LocalIdentifier, setupRequestMessage.LocalIdentifier);
 			Assert.AreEqual(immediateRequest.Version, setupRequestMessage.Version);
 		}
-
-		[TestMethod]
-		public void IsReturnUrlDiscoverable() {
-			Protocol protocol = Protocol.Default;
-			OpenIdProvider provider = this.CreateProvider();
-			CheckIdRequest checkIdRequest = new CheckIdRequest(protocol.Version, OPUri, DotNetOpenAuth.OpenId.RelyingParty.AuthenticationRequestMode.Setup);
-			checkIdRequest.Realm = RPRealmUri;
-			checkIdRequest.ReturnTo = RPUri;
-			AuthenticationRequest request = new AuthenticationRequest(provider, checkIdRequest);
-			Assert.IsFalse(request.IsReturnUrlDiscoverable(this.MockResponder.MockWebRequestHandler));
-
-			this.MockResponder.RegisterMockRPDiscovery();
-			request = new AuthenticationRequest(provider, checkIdRequest);
-			Assert.IsTrue(request.IsReturnUrlDiscoverable(this.MockResponder.MockWebRequestHandler));
-		}
 	}
 }

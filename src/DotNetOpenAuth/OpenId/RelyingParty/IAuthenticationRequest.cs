@@ -63,6 +63,30 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		bool IsDirectedIdentity { get; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether this request only carries extensions
+		/// and is not a request to verify that the user controls some identifier.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if this request is merely a carrier of extensions and is not
+		/// about an OpenID identifier; otherwise, <c>false</c>.
+		/// </value>
+		/// <remarks>
+		/// 	<para>Although OpenID is first and primarily an authentication protocol, its extensions
+		/// can be interesting all by themselves.  For instance, a relying party might want
+		/// to know that its user is over 21 years old, or perhaps a member of some organization.
+		/// OpenID extensions can provide this, without any need for asserting the identity of the user.</para>
+		/// 	<para>Constructing an OpenID request for only extensions can be done by calling
+		/// <see cref="OpenIdRelyingParty.CreateRequest(Identifier)"/> with any valid OpenID identifier
+		/// (claimed identifier or OP identifier).  But once this property is set to <c>true</c>,
+		/// the claimed identifier value in the request is not included in the transmitted message.</para>
+		/// 	<para>It is anticipated that an RP would only issue these types of requests to OPs that
+		/// trusts to make assertions regarding the individual holding an account at that OP, so it
+		/// is not likely that the RP would allow the user to type in an arbitrary claimed identifier
+		/// without checking that it resolved to an OP endpoint the RP has on a trust whitelist.</para>
+		/// </remarks>
+		bool IsExtensionOnly { get; set; }
+
+		/// <summary>
 		/// Gets information about the OpenId Provider, as advertised by the
 		/// OpenId discovery documents found at the <see cref="ClaimedIdentifier"/>
 		/// location.

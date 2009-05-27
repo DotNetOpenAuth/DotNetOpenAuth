@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
@@ -314,6 +315,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <returns>
 		/// An array of binding elements which may be used to construct the channel.
 		/// </returns>
+		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Needed for code contracts.")]
 		private static IChannelBindingElement[] InitializeBindingElements<T>(IAssociationStore<T> associationStore, INonceStore nonceStore, SecuritySettings securitySettings, bool nonVerifying) {
 			Contract.Requires(securitySettings != null);
 			Contract.Requires(!nonVerifying || securitySettings is RelyingPartySecuritySettings);
@@ -338,26 +340,29 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 			var extensionFactory = OpenIdExtensionFactoryAggregator.LoadFromConfiguration();
 
-			List<IChannelBindingElement> elements = new List<IChannelBindingElement>(7);
+			List<IChannelBindingElement> elements = new List<IChannelBindingElement>(8);
+			elements.Add(new ExtensionsBindingElement(extensionFactory));
 			if (isRelyingPartyRole) {
-				elements.Add(new ExtensionsBindingElement(extensionFactory, rpSecuritySettings));
+				elements.Add(new RelyingPartySecurityOptions(rpSecuritySettings));
 				elements.Add(new BackwardCompatibilityBindingElement());
+				ReturnToNonceBindingElement requestNonceElement = null;
 
 				if (associationStore != null) {
 					if (nonceStore != null) {
 						// There is no point in having a ReturnToNonceBindingElement without
 						// a ReturnToSignatureBindingElement because the nonce could be
 						// artificially changed without it.
-						elements.Add(new ReturnToNonceBindingElement(nonceStore));
+						requestNonceElement = new ReturnToNonceBindingElement(nonceStore, rpSecuritySettings);
+						elements.Add(requestNonceElement);
 					}
 
 					// It is important that the return_to signing element comes last
 					// so that the nonce is included in the signature.
 					elements.Add(new ReturnToSignatureBindingElement(rpAssociationStore, rpSecuritySettings));
 				}
-			} else {
-				elements.Add(new ExtensionsBindingElement(extensionFactory, opSecuritySettings));
 
+				ErrorUtilities.VerifyOperation(!rpSecuritySettings.RejectUnsolicitedAssertions || requestNonceElement != null, OpenIdStrings.UnsolicitedAssertionRejectionRequiresNonceStore);
+			} else {
 				// Providers must always have a nonce store.
 				ErrorUtilities.VerifyArgumentNotNull(nonceStore, "nonceStore");
 			}

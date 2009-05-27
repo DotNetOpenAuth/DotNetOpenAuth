@@ -58,6 +58,66 @@ namespace DotNetOpenAuth.Test.OpenId {
 			this.ParameterizedAuthenticationTest(false, false, false);
 		}
 
+		[TestMethod]
+		public void UnsolicitedAssertion() {
+			this.MockResponder.RegisterMockRPDiscovery();
+			OpenIdCoordinator coordinator = new OpenIdCoordinator(
+				rp => {
+					rp.Channel.WebRequestHandler = this.MockResponder.MockWebRequestHandler;
+					IAuthenticationResponse response = rp.GetResponse();
+					Assert.AreEqual(AuthenticationStatus.Authenticated, response.Status);
+				},
+				op => {
+					op.Channel.WebRequestHandler = this.MockResponder.MockWebRequestHandler;
+					Identifier id = GetMockIdentifier(ProtocolVersion.V20);
+					op.SendUnsolicitedAssertion(OPUri, RPRealmUri, id, OPLocalIdentifiers[0]);
+					AutoProvider(op); // handle check_auth
+				});
+			coordinator.Run();
+		}
+
+		[TestMethod]
+		public void UnsolicitedAssertionRejected() {
+			this.MockResponder.RegisterMockRPDiscovery();
+			OpenIdCoordinator coordinator = new OpenIdCoordinator(
+				rp => {
+					rp.Channel.WebRequestHandler = this.MockResponder.MockWebRequestHandler;
+					rp.SecuritySettings.RejectUnsolicitedAssertions = true;
+					IAuthenticationResponse response = rp.GetResponse();
+					Assert.AreEqual(AuthenticationStatus.Failed, response.Status);
+				},
+				op => {
+					op.Channel.WebRequestHandler = this.MockResponder.MockWebRequestHandler;
+					Identifier id = GetMockIdentifier(ProtocolVersion.V20);
+					op.SendUnsolicitedAssertion(OPUri, RPRealmUri, id, OPLocalIdentifiers[0]);
+					AutoProvider(op); // handle check_auth
+				});
+			coordinator.Run();
+		}
+
+		/// <summary>
+		/// Verifies that delegating identifiers are rejected in unsolicited assertions
+		/// when the appropriate security setting is set.
+		/// </summary>
+		[TestMethod]
+		public void UnsolicitedDelegatingIdentifierRejection() {
+			this.MockResponder.RegisterMockRPDiscovery();
+			OpenIdCoordinator coordinator = new OpenIdCoordinator(
+				rp => {
+					rp.Channel.WebRequestHandler = this.MockResponder.MockWebRequestHandler;
+					rp.SecuritySettings.RejectDelegatingIdentifiers = true;
+					IAuthenticationResponse response = rp.GetResponse();
+					Assert.AreEqual(AuthenticationStatus.Failed, response.Status);
+				},
+				op => {
+					op.Channel.WebRequestHandler = this.MockResponder.MockWebRequestHandler;
+					Identifier id = GetMockIdentifier(ProtocolVersion.V20, false, true);
+					op.SendUnsolicitedAssertion(OPUri, RPRealmUri, id, OPLocalIdentifiers[0]);
+					AutoProvider(op); // handle check_auth
+				});
+			coordinator.Run();
+		}
+
 		private void ParameterizedAuthenticationTest(bool sharedAssociation, bool positive, bool tamper) {
 			foreach (Protocol protocol in Protocol.AllPracticalVersions) {
 				foreach (bool statelessRP in new[] { false, true }) {

@@ -181,7 +181,7 @@
     <value>Not a recognized XRI format: '{0}'.</value>
   </data>
   <data name="IssuedAssertionFailsIdentifierDiscovery" xml:space="preserve">
-    <value>The OpenId Provider issued an assertion for an Identifier whose discovery information did not match.  
+    <value>The OpenID Provider issued an assertion for an Identifier whose discovery information did not match.  
 Assertion endpoint info: 
 {0}
 Discovered endpoint info:
@@ -206,7 +206,7 @@ Discovered endpoint info:
     <value>Diffie-Hellman session type '{0}' not found for OpenID {1}.</value>
   </data>
   <data name="OpenIdEndpointNotFound" xml:space="preserve">
-    <value>No OpenId endpoint found.</value>
+    <value>No OpenID endpoint found.</value>
   </data>
   <data name="OperationOnlyValidForSetupRequiredState" xml:space="preserve">
     <value>This operation is only allowed when IAuthenticationResponse.State == AuthenticationStatus.SetupRequired.</value>
@@ -266,7 +266,7 @@ Discovered endpoint info:
     <value>An authentication request has already been created using CreateRequest().</value>
   </data>
   <data name="OpenIdTextBoxEmpty" xml:space="preserve">
-    <value>No OpenId url is provided.</value>
+    <value>No OpenID url is provided.</value>
   </data>
   <data name="ClientScriptExtensionPropertyNameCollision" xml:space="preserve">
     <value>An extension with this property name ('{0}') has already been registered.</value>
@@ -281,7 +281,7 @@ Discovered endpoint info:
     <value>This operation is not supported by serialized authentication responses.  Try this operation from the LoggedIn event handler.</value>
   </data>
   <data name="NoRelyingPartyEndpointDiscovered" xml:space="preserve">
-    <value>No XRDS document containing OpenId relying party endpoint information could be found at {0}.</value>
+    <value>No XRDS document containing OpenID relying party endpoint information could be found at {0}.</value>
   </data>
   <data name="AbsoluteUriRequired" xml:space="preserve">
     <value>An absolute URI is required for this value.</value>
@@ -300,5 +300,23 @@ Discovered endpoint info:
   </data>
   <data name="UnsupportedChannelConfiguration" xml:space="preserve">
     <value>This feature is unavailable due to an unrecognized channel configuration.</value>
+  </data>
+  <data name="IdentityAndClaimedIdentifierMustBeBothPresentOrAbsent" xml:space="preserve">
+    <value>The openid.identity and openid.claimed_id parameters must either be both present or both absent from the message.</value>
+  </data>
+  <data name="ReturnToRequiredForOperation" xml:space="preserve">
+    <value>The ReturnTo property must not be null to support this operation.</value>
+  </data>
+  <data name="UnsolicitedAssertionRejectionRequiresNonceStore" xml:space="preserve">
+    <value>Rejecting unsolicited assertions requires a nonce store and an association store.</value>
+  </data>
+  <data name="UnsolicitedAssertionsNotAllowed" xml:space="preserve">
+    <value>Unsolicited assertions are not allowed at this relying party.</value>
+  </data>
+  <data name="DelegatingIdentifiersNotAllowed" xml:space="preserve">
+    <value>Only OpenIDs issued directly by their OpenID Provider are allowed here.</value>
+  </data>
+  <data name="XriResolutionDisabled" xml:space="preserve">
+    <value>XRI support has been disabled at this site.</value>
   </data>
 </root>

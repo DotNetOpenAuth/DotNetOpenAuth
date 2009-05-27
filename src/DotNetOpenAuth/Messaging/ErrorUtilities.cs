@@ -379,7 +379,10 @@ namespace DotNetOpenAuth.Messaging {
 		[Pure]
 		internal static void VerifyHttpContext() {
 			Contract.Ensures(HttpContext.Current != null);
+			Contract.Ensures(HttpContext.Current.Request != null);
+
 			ErrorUtilities.VerifyOperation(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
+			ErrorUtilities.VerifyOperation(HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 		}
 	}
 }

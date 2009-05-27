@@ -21,7 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
     <CodeContractsCustomRewriterAssembly>
     </CodeContractsCustomRewriterAssembly>
     <CodeContractsCustomRewriterClass>
@@ -43,6 +43,7 @@
     <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
     <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
     <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -190,6 +191,7 @@
     <Compile Include="OpenId\Extensions\SimpleRegistration\ClaimsResponseTests.cs" />
     <Compile Include="OpenId\Extensions\ExtensionTestUtilities.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\ClaimsRequestTests.cs" />
+    <Compile Include="OpenId\Extensions\UI\UIRequestTests.cs" />
     <Compile Include="OpenId\IdentifierTests.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanRequestTests.cs" />
     <Compile Include="OpenId\Messages\AssociateRequestTests.cs" />
@@ -205,15 +207,19 @@
     <Compile Include="OpenId\Messages\IndirectErrorResponseTests.cs" />
     <Compile Include="OpenId\Messages\PositiveAssertionResponseTests.cs" />
     <Compile Include="OpenId\Messages\SignedResponseRequestTests.cs" />
+    <Compile Include="OpenId\NonIdentityTests.cs" />
     <Compile Include="OpenId\OpenIdCoordinator.cs" />
     <Compile Include="OpenId\AssociationHandshakeTests.cs" />
     <Compile Include="OpenId\OpenIdTestBase.cs" />
+    <Compile Include="OpenId\Provider\AnonymousRequestTests.cs" />
     <Compile Include="OpenId\Provider\AuthenticationRequestTest.cs" />
+    <Compile Include="OpenId\Provider\HostProcessedRequestTests.cs" />
     <Compile Include="OpenId\Provider\OpenIdProviderTests.cs" />
     <Compile Include="OpenId\RealmTests.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationRequestTests.cs" />
     <Compile Include="OpenId\RelyingParty\FailedAuthenticationResponseTests.cs" />
     <Compile Include="OpenId\RelyingParty\NegativeAuthenticationResponseTests.cs" />
+    <Compile Include="OpenId\RelyingParty\PositiveAnonymousResponseTests.cs" />
     <Compile Include="OpenId\RelyingParty\PositiveAuthenticationResponseTests.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyTests.cs" />
     <Compile Include="OpenId\RelyingParty\RelyingPartySecuritySettingsTests.cs" />

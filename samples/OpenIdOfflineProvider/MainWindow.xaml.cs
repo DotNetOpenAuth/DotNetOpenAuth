@@ -23,6 +23,11 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using System.Windows.Media.Imaging;
 	using System.Windows.Navigation;
 	using System.Windows.Shapes;
+	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.Provider;
+	using log4net;
+	using log4net.Appender;
+	using log4net.Core;
 
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
@@ -34,10 +39,22 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		private HostedProvider hostedProvider = new HostedProvider();
 
 		/// <summary>
+		/// The logger the application may use.
+		/// </summary>
+		private ILog logger = log4net.LogManager.GetLogger(typeof(MainWindow));
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="MainWindow"/> class.
 		/// </summary>
 		public MainWindow() {
 			this.InitializeComponent();
+			this.hostedProvider.ProcessRequest = this.ProcessRequest;
+			TextWriterAppender boxLogger = log4net.LogManager.GetRepository().GetAppenders().OfType<TextWriterAppender>().FirstOrDefault(a => a.Name == "TextBoxAppender");
+			if (boxLogger != null) {
+				boxLogger.Writer = new TextBoxTextWriter(logBox);
+			}
+
+			this.startProvider();
 		}
 
 		#region IDisposable Members
@@ -71,34 +88,80 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// </summary>
 		/// <param name="e">The <see cref="System.ComponentModel.CancelEventArgs"/> instance containing the event data.</param>
 		protected override void OnClosing(System.ComponentModel.CancelEventArgs e) {
-			this.hostedProvider.StopProvider();
+			this.stopProvider();
 			base.OnClosing(e);
 		}
 
 		/// <summary>
-		/// Handles the Click event of the startButton control.
+		/// Processes an incoming request at the OpenID Provider endpoint.
 		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.Windows.RoutedEventArgs"/> instance containing the event data.</param>
-		private void startButton_Click(object sender, RoutedEventArgs e) {
-			this.hostedProvider.StartProvider();
-			this.portLabel.Content = this.hostedProvider.ProviderEndpoint.Port;
-			this.opIdentifierLabel.Content = "not yet supported"; // string.Format(url, this.httpHost.Port, OPIdentifier);
-			this.noIdentity.Content = this.hostedProvider.NegativeIdentitities.First().AbsoluteUri;
-			this.yesIdentity.Content = this.hostedProvider.AffirmativeIdentities.First().AbsoluteUri;
+		/// <param name="requestInfo">The request info.</param>
+		/// <param name="response">The response.</param>
+		private void ProcessRequest(HttpRequestInfo requestInfo, HttpListenerResponse response) {
+			IRequest request = this.hostedProvider.Provider.GetRequest(requestInfo);
+			if (request == null) {
+				App.Logger.Error("A request came in that did not carry an OpenID message.");
+				response.StatusCode = (int)HttpStatusCode.BadRequest;
+				using (StreamWriter sw = new StreamWriter(response.OutputStream)) {
+					sw.WriteLine("<html><body>This is an OpenID Provider endpoint.</body></html>");
+				}
+				return;
+			}
+
+			this.Dispatcher.Invoke((Action)delegate {
+				if (!request.IsResponseReady) {
+					var authRequest = request as IAuthenticationRequest;
+					if (authRequest != null) {
+						switch (checkidRequestList.SelectedIndex) {
+							case 0:
+								if (authRequest.IsDirectedIdentity) {
+									authRequest.ClaimedIdentifier = new Uri(this.hostedProvider.UserIdentityPageBase, "directedidentity");
+									authRequest.LocalIdentifier = authRequest.ClaimedIdentifier;
+								}
+								authRequest.IsAuthenticated = true;
+								break;
+							case 1:
+								authRequest.IsAuthenticated = false;
+								break;
+							case 2:
+								IntPtr oldForegroundWindow = NativeMethods.GetForegroundWindow();
+								bool stoleFocus = NativeMethods.SetForegroundWindow(this);
+								CheckIdWindow.ProcessAuthentication(this.hostedProvider, authRequest);
+								if (stoleFocus) {
+									NativeMethods.SetForegroundWindow(oldForegroundWindow);
+								}
+								break;
+						}
+					}
+				}
+			});
+
+			this.hostedProvider.Provider.PrepareResponse(request).Send(response);
 		}
 
 		/// <summary>
-		/// Handles the Click event of the stopButton control.
+		/// Starts the provider.
+		/// </summary>
+		private void startProvider() {
+			this.hostedProvider.StartProvider();
+			this.opIdentifierLabel.Content = this.hostedProvider.OPIdentifier;
+		}
+
+		/// <summary>
+		/// Stops the provider.
+		/// </summary>
+		private void stopProvider() {
+			this.hostedProvider.StopProvider();
+			this.opIdentifierLabel.Content = string.Empty;
+		}
+
+		/// <summary>
+		/// Handles the MouseDown event of the opIdentifierLabel control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.Windows.RoutedEventArgs"/> instance containing the event data.</param>
-		private void stopButton_Click(object sender, RoutedEventArgs e) {
-			this.hostedProvider.StopProvider();
-			this.portLabel.Content = string.Empty;
-			this.noIdentity.Content = string.Empty;
-			this.yesIdentity.Content = string.Empty;
-			this.opIdentifierLabel.Content = string.Empty;
+		/// <param name="e">The <see cref="System.Windows.Input.MouseButtonEventArgs"/> instance containing the event data.</param>
+		private void opIdentifierLabel_MouseDown(object sender, MouseButtonEventArgs e) {
+			Clipboard.SetText(opIdentifierLabel.Content.ToString());
 		}
 	}
 }

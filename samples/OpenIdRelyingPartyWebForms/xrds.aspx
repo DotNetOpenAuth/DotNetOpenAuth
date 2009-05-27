@@ -17,6 +17,7 @@ is default.aspx.
 			<URI priority="1"><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/login.aspx"))%></URI>
 			<URI priority="2"><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/loginProgrammatic.aspx"))%></URI>
 			<URI priority="3"><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/ajaxlogin.aspx"))%></URI>
+			<URI priority="3"><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/NoIdentityOpenId.aspx"))%></URI>
 		</Service>
 	</XRD>
 </xrds:XRDS>

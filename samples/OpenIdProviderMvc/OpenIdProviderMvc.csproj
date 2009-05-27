@@ -65,10 +65,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Code\AccountMembershipService.cs" />
+    <Compile Include="Code\AnonymousIdentifierProvider.cs" />
     <Compile Include="Code\FormsAuthenticationService.cs" />
     <Compile Include="Code\IFormsAuthentication.cs" />
     <Compile Include="Code\IMembershipService.cs" />
     <Compile Include="Code\ReadOnlyXmlMembershipProvider.cs" />
+    <Compile Include="Code\Util.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\OpenIdController.cs" />
@@ -90,8 +92,11 @@
     <Content Include="Views\Account\ChangePassword.aspx" />
     <Content Include="Views\Account\ChangePasswordSuccess.aspx" />
     <Content Include="Views\Account\Register.aspx" />
+    <Content Include="Views\Home\PpidXrds.aspx" />
     <Content Include="Views\Home\Xrds.aspx" />
     <Content Include="Views\OpenId\Provider.aspx" />
+    <Content Include="Views\User\PpidXrds.aspx" />
+    <Content Include="Views\User\PpidIdentity.aspx" />
     <Content Include="Views\User\Identity.aspx" />
     <Content Include="Views\User\Xrds.aspx" />
     <Content Include="Web.config" />
@@ -116,6 +121,10 @@
     <ProjectReference Include="..\..\src\DotNetOpenAuth\DotNetOpenAuth.csproj">
       <Project>{3191B653-F76D-4C1A-9A5A-347BC3AAAAB7}</Project>
       <Name>DotNetOpenAuth</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.ApplicationBlock\DotNetOpenAuth.ApplicationBlock.csproj">
+      <Project>{AA78D112-D889-414B-A7D4-467B34C7B663}</Project>
+      <Name>DotNetOpenAuth.ApplicationBlock</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

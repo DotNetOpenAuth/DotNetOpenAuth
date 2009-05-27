@@ -204,6 +204,11 @@ namespace DotNetOpenAuth.OpenId.Provider {
 					return new AuthenticationRequest(this, checkIdMessage);
 				}
 
+				var extensionOnlyRequest = incomingMessage as SignedResponseRequest;
+				if (extensionOnlyRequest != null) {
+					return new AnonymousRequest(this, extensionOnlyRequest);
+				}
+
 				var checkAuthMessage = incomingMessage as CheckAuthenticationRequest;
 				if (checkAuthMessage != null) {
 					return new AutoResponsiveRequest(incomingMessage, new CheckAuthenticationResponse(checkAuthMessage, this));
@@ -337,7 +342,11 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 
 			Logger.OpenId.InfoFormat("Preparing unsolicited assertion for {0}", claimedIdentifier);
-			var returnToEndpoint = relyingParty.Discover(this.WebRequestHandler, true).FirstOrDefault();
+			RelyingPartyEndpointDescription returnToEndpoint = null;
+			var returnToEndpoints = relyingParty.Discover(this.WebRequestHandler, true);
+			if (returnToEndpoints != null) {
+				returnToEndpoint = returnToEndpoints.FirstOrDefault();
+			}
 			ErrorUtilities.VerifyProtocol(returnToEndpoint != null, OpenIdStrings.NoRelyingPartyEndpointDiscovered, relyingParty);
 
 			var positiveAssertion = new PositiveAssertionResponse(returnToEndpoint) {

@@ -50,9 +50,6 @@ namespace OpenIdRelyingPartyWebForms {
 		}
 
 		private void prepareRequest(IAuthenticationRequest request) {
-			// Setup is the default for the login control.  But the user may have checked the box to override that.
-			request.Mode = this.immediateCheckBox.Checked ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;
-
 			// Collect the PAPE policies requested by the user.
 			List<string> policies = new List<string>();
 			foreach (ListItem item in this.papePolicies.Items) {

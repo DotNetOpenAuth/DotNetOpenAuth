@@ -6,10 +6,6 @@
 
 namespace OpenIdProviderWebForms.Code {
 	using System;
-	using System.Collections.Generic;
-	using System.Diagnostics;
-	using System.Net;
-	using System.Text;
 	using System.Web;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Provider;
@@ -50,6 +46,26 @@ namespace OpenIdProviderWebForms.Code {
 					// respond affirmatively if the user has already authorized this consumer
 					// to know the answer.
 					idrequest.IsAuthenticated = userOwningOpenIdUrl == HttpContext.Current.User.Identity.Name;
+				}
+
+				if (idrequest.IsAuthenticated.Value) {
+					// add extension responses here.
+				}
+			} else {
+				HttpContext.Current.Response.Redirect("~/decide.aspx", true);
+			}
+		}
+
+		internal static void ProcessAnonymousRequest(IAnonymousRequest request) {
+			if (request.Immediate) {
+				// NOTE: in a production provider site, you may want to only
+				// respond affirmatively if the user has already authorized this consumer
+				// to know the answer.
+				request.IsApproved = HttpContext.Current.User.Identity.IsAuthenticated;
+
+				if (request.IsApproved.Value) {
+					// Add extension responses here.
+					// These would typically be filled in from a user database
 				}
 			} else {
 				HttpContext.Current.Response.Redirect("~/decide.aspx", true);

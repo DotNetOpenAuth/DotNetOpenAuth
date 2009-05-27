@@ -19,6 +19,22 @@ namespace DotNetOpenAuth.Test.OpenId {
 		private string xri = "=arnott*andrew";
 
 		[TestMethod]
+		public void TryParseNoThrow() {
+			Identifier id;
+			Assert.IsFalse(Identifier.TryParse(null, out id));
+			Assert.IsFalse(Identifier.TryParse(string.Empty, out id));
+		}
+
+		[TestMethod]
+		public void TryParse() {
+			Identifier id;
+			Assert.IsTrue(Identifier.TryParse("http://host/path", out id));
+			Assert.AreEqual("http://host/path", id.ToString());
+			Assert.IsTrue(Identifier.TryParse("=arnott", out id));
+			Assert.AreEqual("=arnott", id.ToString());
+		}
+
+		[TestMethod]
 		public void Parse() {
 			Assert.IsInstanceOfType(Identifier.Parse(this.uri), typeof(UriIdentifier));
 			Assert.IsInstanceOfType(Identifier.Parse(this.xri), typeof(XriIdentifier));

@@ -98,6 +98,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CustomStoreDataSet.xsd</DependentUpon>
     </Compile>
+    <Compile Include="Code\InMemoryTokenManager.cs" />
     <Compile Include="Code\State.cs" />
     <Compile Include="Code\TracePageAppender.cs" />
     <Compile Include="Global.asax.cs">
@@ -110,6 +111,13 @@
     <Compile Include="login.aspx.designer.cs">
       <DependentUpon>login.aspx</DependentUpon>
     </Compile>
+    <Compile Include="loginPlusOAuth.aspx.cs">
+      <DependentUpon>loginPlusOAuth.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="loginPlusOAuth.aspx.designer.cs">
+      <DependentUpon>loginPlusOAuth.aspx</DependentUpon>
+    </Compile>
     <Compile Include="loginProgrammatic.aspx.cs">
       <DependentUpon>loginProgrammatic.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -117,12 +125,26 @@
     <Compile Include="loginProgrammatic.aspx.designer.cs">
       <DependentUpon>loginProgrammatic.aspx</DependentUpon>
     </Compile>
+    <Compile Include="MembersOnly\DisplayGoogleContacts.aspx.cs">
+      <DependentUpon>DisplayGoogleContacts.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="MembersOnly\DisplayGoogleContacts.aspx.designer.cs">
+      <DependentUpon>DisplayGoogleContacts.aspx</DependentUpon>
+    </Compile>
     <Compile Include="m\Login.aspx.cs">
       <DependentUpon>Login.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="m\Login.aspx.designer.cs">
       <DependentUpon>Login.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="NoIdentityOpenId.aspx.cs">
+      <DependentUpon>NoIdentityOpenId.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="NoIdentityOpenId.aspx.designer.cs">
+      <DependentUpon>NoIdentityOpenId.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TracePage.aspx.cs">
@@ -144,8 +166,11 @@
     <Content Include="images\dotnetopenid_tiny.gif" />
     <Content Include="images\openid_login.gif" />
     <Content Include="images\yahoo.png" />
+    <Content Include="loginPlusOAuth.aspx" />
+    <Content Include="MembersOnly\DisplayGoogleContacts.aspx" />
     <Content Include="MembersOnly\Web.config" />
     <Content Include="m\Login.aspx" />
+    <Content Include="NoIdentityOpenId.aspx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Code\CustomStoreDataSet.xsc">
@@ -164,6 +189,10 @@
     <ProjectReference Include="..\..\src\DotNetOpenAuth\DotNetOpenAuth.csproj">
       <Project>{3191B653-F76D-4C1A-9A5A-347BC3AAAAB7}</Project>
       <Name>DotNetOpenAuth</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.ApplicationBlock\DotNetOpenAuth.ApplicationBlock.csproj">
+      <Project>{AA78D112-D889-414B-A7D4-467B34C7B663}</Project>
+      <Name>DotNetOpenAuth.ApplicationBlock</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

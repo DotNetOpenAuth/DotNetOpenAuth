@@ -41,11 +41,6 @@
 				// was not a valid OpenID endpoint.
 				this.openidValidator.Text = ex.Message;
 				this.openidValidator.IsValid = false;
-			} catch (WebException ex) {
-				// The user probably entered an Identifier that 
-				// was not a valid OpenID endpoint.
-				this.openidValidator.Text = ex.Message;
-				this.openidValidator.IsValid = false;
 			}
 		}
 

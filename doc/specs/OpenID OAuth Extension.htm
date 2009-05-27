@@ -1,0 +1,755 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+<!-- saved from url=(0094)http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html -->
+<HTML lang=en><HEAD><TITLE>draft: OpenID OAuth Extension</TITLE>
+<META content="Wed, 07 Jan 2009 19:57:09 +0000" http-equiv=Expires>
+<META content="text/html; charset=utf-8" http-equiv=Content-Type>
+<META name=description content="OpenID OAuth Extension">
+<META name=GENERATOR content="MSHTML 8.00.7077.0">
+<STYLE type=text/css>BODY {
+	BACKGROUND-COLOR: #fff; MARGIN: 2em; FONT-FAMILY: verdana, charcoal, helvetica, arial, sans-serif; COLOR: #000; FONT-SIZE: small
+}
+H1 {
+	FONT-STYLE: normal; FONT-FAMILY: helvetica, monaco, "MS Sans Serif", arial, sans-serif; FONT-WEIGHT: bold
+}
+H2 {
+	FONT-STYLE: normal; FONT-FAMILY: helvetica, monaco, "MS Sans Serif", arial, sans-serif; FONT-WEIGHT: bold
+}
+H3 {
+	FONT-STYLE: normal; FONT-FAMILY: helvetica, monaco, "MS Sans Serif", arial, sans-serif; FONT-WEIGHT: bold
+}
+H4 {
+	FONT-STYLE: normal; FONT-FAMILY: helvetica, monaco, "MS Sans Serif", arial, sans-serif; FONT-WEIGHT: bold
+}
+H5 {
+	FONT-STYLE: normal; FONT-FAMILY: helvetica, monaco, "MS Sans Serif", arial, sans-serif; FONT-WEIGHT: bold
+}
+H6 {
+	FONT-STYLE: normal; FONT-FAMILY: helvetica, monaco, "MS Sans Serif", arial, sans-serif; FONT-WEIGHT: bold
+}
+H1 {
+	TEXT-ALIGN: right; BACKGROUND-COLOR: transparent; COLOR: #900
+}
+H3 {
+	BACKGROUND-COLOR: transparent; COLOR: #333
+}
+TD.RFCbug {
+	TEXT-ALIGN: justify; BACKGROUND-COLOR: #000; WIDTH: 30px; HEIGHT: 30px; FONT-SIZE: x-small; VERTICAL-ALIGN: middle; TEXT-DECORATION: none; PADDING-TOP: 2px
+}
+TD.RFCbug SPAN.RFC {
+	FONT-FAMILY: monaco, charcoal, geneva, "MS Sans Serif", helvetica, verdana, sans-serif; COLOR: #666; FONT-WEIGHT: bold
+}
+TD.RFCbug SPAN.hotText {
+	TEXT-ALIGN: center; FONT-FAMILY: charcoal, monaco, geneva, "MS Sans Serif", helvetica, verdana, sans-serif; COLOR: #fff; FONT-WEIGHT: normal
+}
+TABLE.TOCbug {
+	WIDTH: 30px; HEIGHT: 15px
+}
+TD.TOCbug {
+	TEXT-ALIGN: center; BACKGROUND-COLOR: #900; WIDTH: 30px; HEIGHT: 15px; COLOR: #fff
+}
+TD.TOCbug A {
+	BACKGROUND-COLOR: transparent; FONT-FAMILY: monaco, charcoal, geneva, "MS Sans Serif", helvetica, sans-serif; COLOR: #fff; FONT-SIZE: x-small; FONT-WEIGHT: bold; TEXT-DECORATION: none
+}
+TD.header {
+	BACKGROUND-COLOR: #666; WIDTH: 33%; FONT-FAMILY: arial, helvetica, sans-serif; COLOR: #fff; FONT-SIZE: x-small; VERTICAL-ALIGN: top
+}
+TD.author {
+	MARGIN-LEFT: 4em; FONT-SIZE: x-small; FONT-WEIGHT: bold
+}
+TD.author-text {
+	FONT-SIZE: x-small
+}
+A.info {
+	Z-INDEX: 24; POSITION: relative; TEXT-DECORATION: none
+}
+A.info:hover {
+	Z-INDEX: 25; BACKGROUND-COLOR: #900; COLOR: #fff
+}
+A.info SPAN {
+	DISPLAY: none
+}
+A.info:hover SPAN.info {
+	BORDER-BOTTOM: #333 1px solid; POSITION: absolute; TEXT-ALIGN: left; BORDER-LEFT: #333 1px solid; PADDING-BOTTOM: 2px; BACKGROUND-COLOR: #eee; PADDING-LEFT: 2px; WIDTH: 15em; PADDING-RIGHT: 2px; DISPLAY: block; COLOR: #900; FONT-SIZE: smaller; BORDER-TOP: #333 1px solid; TOP: 2em; BORDER-RIGHT: #333 1px solid; PADDING-TOP: 2px; LEFT: -5em
+}
+A {
+	FONT-WEIGHT: bold
+}
+A:link {
+	BACKGROUND-COLOR: transparent; COLOR: #900
+}
+A:visited {
+	BACKGROUND-COLOR: transparent; COLOR: #633
+}
+A:active {
+	BACKGROUND-COLOR: transparent; COLOR: #633
+}
+P {
+	MARGIN-LEFT: 2em; MARGIN-RIGHT: 2em
+}
+P.copyright {
+	FONT-SIZE: x-small
+}
+P.toc {
+	MARGIN-LEFT: 3em; FONT-SIZE: small; FONT-WEIGHT: bold
+}
+TABLE.toc {
+	BORDER-BOTTOM: 0px; BORDER-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px 0px 0px 3em; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; VERTICAL-ALIGN: text-top; BORDER-TOP: 0px; BORDER-RIGHT: 0px; PADDING-TOP: 0px
+}
+TD.toc {
+	FONT-SIZE: small; VERTICAL-ALIGN: text-top; FONT-WEIGHT: bold
+}
+OL.text {
+	MARGIN-LEFT: 2em; MARGIN-RIGHT: 2em
+}
+UL.text {
+	MARGIN-LEFT: 2em; MARGIN-RIGHT: 2em
+}
+LI {
+	MARGIN-LEFT: 3em
+}
+EM {
+	FONT-STYLE: italic
+}
+STRONG {
+	FONT-WEIGHT: bold
+}
+DFN {
+	FONT-STYLE: normal; FONT-WEIGHT: bold
+}
+CITE {
+	FONT-STYLE: normal; FONT-WEIGHT: normal
+}
+TT {
+	COLOR: #036
+}
+TT {
+	FONT-FAMILY: "Courier New", Courier, monospace; FONT-SIZE: small
+}
+PRE {
+	FONT-FAMILY: "Courier New", Courier, monospace; FONT-SIZE: small
+}
+PRE DFN {
+	FONT-FAMILY: "Courier New", Courier, monospace; FONT-SIZE: small
+}
+PRE EM {
+	FONT-FAMILY: "Courier New", Courier, monospace; FONT-SIZE: small
+}
+PRE CITE {
+	FONT-FAMILY: "Courier New", Courier, monospace; FONT-SIZE: small
+}
+PRE SPAN {
+	FONT-FAMILY: "Courier New", Courier, monospace; FONT-SIZE: small
+}
+PRE {
+	TEXT-ALIGN: left; PADDING-BOTTOM: 4px; BACKGROUND-COLOR: #ccc; PADDING-LEFT: 4px; PADDING-RIGHT: 4px; COLOR: #000; PADDING-TOP: 4px
+}
+PRE DFN {
+	COLOR: #900
+}
+PRE EM {
+	BACKGROUND-COLOR: #ffc; COLOR: #66f; FONT-WEIGHT: normal
+}
+PRE .key {
+	COLOR: #33c; FONT-WEIGHT: bold
+}
+PRE .id {
+	COLOR: #900
+}
+PRE .str {
+	BACKGROUND-COLOR: #cff; COLOR: #000
+}
+PRE .val {
+	COLOR: #066
+}
+PRE .rep {
+	COLOR: #909
+}
+PRE .oth {
+	BACKGROUND-COLOR: #fcf; COLOR: #000
+}
+PRE .err {
+	BACKGROUND-COLOR: #fcc
+}
+TABLE.all {
+	TEXT-ALIGN: center; BORDER-RIGHT-WIDTH: 2px; BORDER-COLLAPSE: collapse; BORDER-TOP-WIDTH: 2px; BORDER-BOTTOM-WIDTH: 2px; FONT-SIZE: small; VERTICAL-ALIGN: top; BORDER-LEFT-WIDTH: 2px
+}
+TABLE.full {
+	TEXT-ALIGN: center; BORDER-RIGHT-WIDTH: 2px; BORDER-COLLAPSE: collapse; BORDER-TOP-WIDTH: 2px; BORDER-BOTTOM-WIDTH: 2px; FONT-SIZE: small; VERTICAL-ALIGN: top; BORDER-LEFT-WIDTH: 2px
+}
+TABLE.headers {
+	TEXT-ALIGN: center; BORDER-RIGHT-WIDTH: 2px; BORDER-COLLAPSE: collapse; BORDER-TOP-WIDTH: 2px; BORDER-BOTTOM-WIDTH: 2px; FONT-SIZE: small; VERTICAL-ALIGN: top; BORDER-LEFT-WIDTH: 2px
+}
+TABLE.none {
+	TEXT-ALIGN: center; BORDER-RIGHT-WIDTH: 2px; BORDER-COLLAPSE: collapse; BORDER-TOP-WIDTH: 2px; BORDER-BOTTOM-WIDTH: 2px; FONT-SIZE: small; VERTICAL-ALIGN: top; BORDER-LEFT-WIDTH: 2px
+}
+TABLE.all {
+	BORDER-BOTTOM-STYLE: solid; BORDER-BOTTOM-COLOR: black; BORDER-RIGHT-STYLE: solid; BORDER-TOP-COLOR: black; BORDER-TOP-STYLE: solid; BORDER-RIGHT-COLOR: black; BORDER-LEFT-STYLE: solid; BORDER-LEFT-COLOR: black
+}
+TABLE.full {
+	BORDER-BOTTOM-STYLE: solid; BORDER-BOTTOM-COLOR: black; BORDER-RIGHT-STYLE: solid; BORDER-TOP-COLOR: black; BORDER-TOP-STYLE: solid; BORDER-RIGHT-COLOR: black; BORDER-LEFT-STYLE: solid; BORDER-LEFT-COLOR: black
+}
+TABLE.headers {
+	BORDER-BOTTOM-STYLE: none; BORDER-RIGHT-STYLE: none; BORDER-TOP-STYLE: none; BORDER-LEFT-STYLE: none
+}
+TABLE.none {
+	BORDER-BOTTOM-STYLE: none; BORDER-RIGHT-STYLE: none; BORDER-TOP-STYLE: none; BORDER-LEFT-STYLE: none
+}
+TH {
+	BORDER-BOTTOM-COLOR: black; BORDER-RIGHT-WIDTH: 2px; BORDER-TOP-COLOR: black; BORDER-TOP-WIDTH: 2px; BORDER-BOTTOM-WIDTH: 3px; BORDER-RIGHT-COLOR: black; BORDER-LEFT-COLOR: black; BORDER-LEFT-WIDTH: 2px; FONT-WEIGHT: bold
+}
+TABLE.all TH {
+	BORDER-BOTTOM-STYLE: solid; BORDER-RIGHT-STYLE: solid; BORDER-TOP-STYLE: solid; BORDER-LEFT-STYLE: solid
+}
+TABLE.full TH {
+	BORDER-BOTTOM-STYLE: solid; BORDER-RIGHT-STYLE: solid; BORDER-TOP-STYLE: solid; BORDER-LEFT-STYLE: solid
+}
+TABLE.headers TH {
+	BORDER-BOTTOM-STYLE: solid; BORDER-RIGHT-STYLE: none; BORDER-TOP-STYLE: none; BORDER-LEFT-STYLE: none
+}
+TABLE.none TH {
+	BORDER-BOTTOM-STYLE: none; BORDER-RIGHT-STYLE: none; BORDER-TOP-STYLE: none; BORDER-LEFT-STYLE: none
+}
+TABLE.all TD {
+	BORDER-BOTTOM: #333 1px solid; BORDER-LEFT: #333 2px solid; BORDER-TOP: #333 1px solid; BORDER-RIGHT: #333 2px solid
+}
+TABLE.full TD {
+	BORDER-BOTTOM-STYLE: none; BORDER-RIGHT-STYLE: none; BORDER-TOP-STYLE: none; BORDER-LEFT-STYLE: none
+}
+TABLE.headers TD {
+	BORDER-BOTTOM-STYLE: none; BORDER-RIGHT-STYLE: none; BORDER-TOP-STYLE: none; BORDER-LEFT-STYLE: none
+}
+TABLE.none TD {
+	BORDER-BOTTOM-STYLE: none; BORDER-RIGHT-STYLE: none; BORDER-TOP-STYLE: none; BORDER-LEFT-STYLE: none
+}
+HR {
+	HEIGHT: 1px
+}
+HR.insert {
+	BORDER-BOTTOM: 0px; BORDER-LEFT: 0px; BACKGROUND-COLOR: #ccc; WIDTH: 80%; COLOR: #ccc; BORDER-TOP: 0px; BORDER-RIGHT: 0px
+}
+</STYLE>
+</HEAD>
+<BODY>
+<TABLE class=TOCbug cellSpacing=2 summary=layout cellPadding=0 align=right>
+  <TBODY>
+  <TR>
+    <TD class=TOCbug><A 
+      href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<TABLE border=0 cellSpacing=0 summary=layout cellPadding=0 width="66%">
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE border=0 cellSpacing=1 summary=layout cellPadding=2 width="100%">
+        <TBODY>
+        <TR>
+          <TD class=header>draft</TD>
+          <TD class=header>D. Balfanz</TD></TR>
+        <TR>
+          <TD class=header>&nbsp;</TD>
+          <TD class=header>B. de Medeiros</TD></TR>
+        <TR>
+          <TD class=header>&nbsp;</TD>
+          <TD class=header>Google</TD></TR>
+        <TR>
+          <TD class=header>&nbsp;</TD>
+          <TD class=header>D. Recordon</TD></TR>
+        <TR>
+          <TD class=header>&nbsp;</TD>
+          <TD class=header>Six Apart</TD></TR>
+        <TR>
+          <TD class=header>&nbsp;</TD>
+          <TD class=header>J. Smarr</TD></TR>
+        <TR>
+          <TD class=header>&nbsp;</TD>
+          <TD class=header>Plaxo</TD></TR>
+        <TR>
+          <TD class=header>&nbsp;</TD>
+          <TD class=header>A. Tom</TD></TR>
+        <TR>
+          <TD class=header>&nbsp;</TD>
+          <TD class=header>Yahoo</TD></TR>
+        <TR>
+          <TD class=header>&nbsp;</TD>
+          <TD class=header>January 7, 
+2009</TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<H1><BR>OpenID OAuth Extension</H1>
+<H3>Abstract</H3>
+<P>This draft describes a mechanism to combine an OpenID authentication request 
+with the approval of an OAuth request token. </P><A name=toc></A><BR>
+<HR>
+
+<H3>Table of Contents</H3>
+<P class=toc><A 
+href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#anchor1">1.</A>&nbsp; 
+Requirements notation<BR><A 
+href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#anchor2">2.</A>&nbsp; 
+Terminology<BR><A 
+href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#anchor3">3.</A>&nbsp; 
+Purpose of this Specification<BR><A 
+href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#anchor4">4.</A>&nbsp; 
+Overview<BR><A 
+href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#namespace">5.</A>&nbsp; 
+Extension Namespace<BR><A 
+href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#anchor5">6.</A>&nbsp; 
+Discovery<BR><A 
+href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#Registered">7.</A>&nbsp; 
+Before Requesting Authentication - Registration<BR><A 
+href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#AuthReq">8.</A>&nbsp; 
+Requesting Authentication<BR><A 
+href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#anchor6">9.</A>&nbsp; 
+Authorizing the OAuth Request<BR><A 
+href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#AuthResp">10.</A>&nbsp; 
+Responding to Authentication Requests<BR><A 
+href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#AuthTokenReq">11.</A>&nbsp; 
+Obtaining the Access Token<BR><A 
+href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#anchor7">12.</A>&nbsp; 
+General Considerations<BR><A 
+href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#anchor8">13.</A>&nbsp; 
+Security Considerations<BR><A 
+href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#rfc.references1">14.</A>&nbsp; 
+Normative References<BR><A 
+href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#rfc.authors">§</A>&nbsp; 
+Authors' Addresses<BR></P><BR clear=all><A name=anchor1></A><BR>
+<HR>
+
+<TABLE class=TOCbug cellSpacing=2 summary=layout cellPadding=0 align=right>
+  <TBODY>
+  <TR>
+    <TD class=TOCbug><A 
+      href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE><A 
+name=rfc.section.1></A>
+<H3>1.&nbsp; Requirements notation</H3>
+<P>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", 
+"SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be 
+interpreted as described in <A class=info 
+href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#RFC2119">[RFC2119]<SPAN> 
+(</SPAN><SPAN class=info>Bradner, S., “Key words for use in RFCs to Indicate 
+Requirement Levels,” March&nbsp;1997.</SPAN><SPAN>)</SPAN></A>. </P><A 
+name=anchor2></A><BR>
+<HR>
+
+<TABLE class=TOCbug cellSpacing=2 summary=layout cellPadding=0 align=right>
+  <TBODY>
+  <TR>
+    <TD class=TOCbug><A 
+      href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE><A 
+name=rfc.section.2></A>
+<H3>2.&nbsp; Terminology</H3>
+<P>Terms <EM>emphasized</EM> are pre-defined in either the <A class=info 
+href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#OpenID">[OpenID]<SPAN> 
+(</SPAN><SPAN class=info>Openid.net, “OpenID Authentication 2.0 - Final,” 
+December&nbsp;2007.</SPAN><SPAN>)</SPAN></A> or the <A class=info 
+href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#OAuth">[OAuth]<SPAN> 
+(</SPAN><SPAN class=info>OAuth Core Workgroup, “OAuth Core 1.0,” 
+December&nbsp;2007.</SPAN><SPAN>)</SPAN></A> specifications. </P>
+<BLOCKQUOTE class=text>
+  <DL>
+    <DT>Combined Consumer:</DT>
+    <DD>A web service that is simultaneously an OpenID <EM>Relying Party 
+    (RP)</EM> and an OAuth <EM>Consumer.</EM> </DD>
+    <DT>Combined Provider:</DT>
+    <DD>A web service that is simultaneously an OpenID <EM>Identity Provider 
+    (OP)</EM> and an OAuth <EM>Service Provider (SP).</EM> </DD></DL></BLOCKQUOTE>
+<P></P><A name=anchor3></A><BR>
+<HR>
+
+<TABLE class=TOCbug cellSpacing=2 summary=layout cellPadding=0 align=right>
+  <TBODY>
+  <TR>
+    <TD class=TOCbug><A 
+      href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE><A 
+name=rfc.section.3></A>
+<H3>3.&nbsp; Purpose of this Specification</H3>
+<P>The OpenID OAuth Extension describes how to make the OpenID Authentication 
+and OAuth Core specifications work well together. In its current form, it 
+addresses the use case where the OpenID Provider and OAuth Service Provider are 
+the same service. To provide good user experience, it is important to present, 
+to the user, a combined authentication and authorization screen for the two 
+protocols. </P>
+<P>This extension describes how to embed an OAuth approval request into an 
+OpenID authentication request to permit combined user approval. For security 
+reasons, the OAuth access token is not returned in the OpenID authentication 
+response. Instead a mechanism to obtain the access token is provided. </P><A 
+name=anchor4></A><BR>
+<HR>
+
+<TABLE class=TOCbug cellSpacing=2 summary=layout cellPadding=0 align=right>
+  <TBODY>
+  <TR>
+    <TD class=TOCbug><A 
+      href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE><A 
+name=rfc.section.4></A>
+<H3>4.&nbsp; Overview</H3>
+<P>Unlike standard OAuth (<A class=info 
+href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#OAuth">[OAuth]<SPAN> 
+(</SPAN><SPAN class=info>OAuth Core Workgroup, “OAuth Core 1.0,” 
+December&nbsp;2007.</SPAN><SPAN>)</SPAN></A>), the OpenID OAuth Extension does 
+not provision request tokens in a server-to-server request from the Combined 
+Consumer to the request token endpoint at the Combined Provider. Instead, the 
+Combined Provider returns an already-approved request token to the Combined 
+Consumer as part of the OpenID authentication response. </P>
+<P>The Combined Consumer then exchanges the request token for an access token at 
+the access token endpoint of the Combined Provider, following standard OAuth 
+practice. </P><A name=namespace></A><BR>
+<HR>
+
+<TABLE class=TOCbug cellSpacing=2 summary=layout cellPadding=0 align=right>
+  <TBODY>
+  <TR>
+    <TD class=TOCbug><A 
+      href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE><A 
+name=rfc.section.5></A>
+<H3>5.&nbsp; Extension Namespace</H3>
+<P>This protocol is an extension as defined by Section 12 of <A class=info 
+href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#OpenID">[OpenID]<SPAN> 
+(</SPAN><SPAN class=info>Openid.net, “OpenID Authentication 2.0 - Final,” 
+December&nbsp;2007.</SPAN><SPAN>)</SPAN></A>. The namespace URI for this 
+extension is "http://specs.openid.net/extensions/oauth/1.0". </P>
+<P>All OpenID messages that contain an OpenID OAuth Extension element MUST 
+contain the following extension namespace declaration: </P>
+<DIV style="WIDTH: 0px; DISPLAY: table; MARGIN-LEFT: 3em; MARGIN-RIGHT: auto"><PRE>openid.ns.&lt;alias&gt;=http://specs.openid.net/extensions/oauth/1.0</PRE></DIV>
+<P>The actual extension namespace alias is determined by the party composing the 
+message in such a manner as to avoid conflicts among multiple extensions. 
+Throughout this document "oauth" is used as an example for the extension 
+namespace alias. </P><A name=anchor5></A><BR>
+<HR>
+
+<TABLE class=TOCbug cellSpacing=2 summary=layout cellPadding=0 align=right>
+  <TBODY>
+  <TR>
+    <TD class=TOCbug><A 
+      href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE><A 
+name=rfc.section.6></A>
+<H3>6.&nbsp; Discovery</H3>
+<P>Discovery of the OpenID OAuth Extension is achieved via the mechanism 
+described in <A class=info 
+href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#OpenID">[OpenID]<SPAN> 
+(</SPAN><SPAN class=info>Openid.net, “OpenID Authentication 2.0 - Final,” 
+December&nbsp;2007.</SPAN><SPAN>)</SPAN></A>. The OpenID OAuth Extension 
+namespace "http://specs.openid.net/extensions/oauth/1.0" SHOULD be listed as an 
+&lt;xrd:Type&gt; child element of the &lt;xrd:Service&gt; element in the XRDS 
+discovery document. </P><A name=Registered></A><BR>
+<HR>
+
+<TABLE class=TOCbug cellSpacing=2 summary=layout cellPadding=0 align=right>
+  <TBODY>
+  <TR>
+    <TD class=TOCbug><A 
+      href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE><A 
+name=rfc.section.7></A>
+<H3>7.&nbsp; Before Requesting Authentication - Registration</H3>
+<P>The Combined Consumer and the Combined Provider agree on a consumer key and 
+consumer secret (see <A class=info 
+href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#OAuth">[OAuth]<SPAN> 
+(</SPAN><SPAN class=info>OAuth Core Workgroup, “OAuth Core 1.0,” 
+December&nbsp;2007.</SPAN><SPAN>)</SPAN></A>). </P>
+<P>The Combined Provider SHOULD in addition obtain, from the Combined Consumer, 
+a list of valid OpenID realms that the Combined Consumer may use in subsequent 
+authentication requests. The Combined Provider SHOULD verify that the Combined 
+Consumer is authorized to use those realms. </P><A name=AuthReq></A><BR>
+<HR>
+
+<TABLE class=TOCbug cellSpacing=2 summary=layout cellPadding=0 align=right>
+  <TBODY>
+  <TR>
+    <TD class=TOCbug><A 
+      href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE><A 
+name=rfc.section.8></A>
+<H3>8.&nbsp; Requesting Authentication</H3>
+<P>When requesting OpenID Authentication via the protocol mode "checkid_setup" 
+or "checkid_immediate", this extension can be used to request that the end user 
+authorize an OAuth access token at the same time as an OpenID authentication. 
+This is done by sending the following parameters as part of the OpenID request. 
+(Note that the use of "oauth" as part of the parameter names here and in 
+subsequent sections is just an example. See <A class=info 
+href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#namespace">Section&nbsp;5<SPAN> 
+(</SPAN><SPAN class=info>Extension Namespace</SPAN><SPAN>)</SPAN></A> for 
+details.) </P>
+<BLOCKQUOTE class=text>
+  <DL>
+    <DT>openid.ns.oauth</DT>
+    <DD>REQUIRED. Value: "http://specs.openid.net/extensions/oauth/1.0". </DD>
+    <DT>openid.oauth.consumer</DT>
+    <DD>REQUIRED. Value: The consumer key agreed upon in <A class=info 
+    href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#Registered">Section&nbsp;7<SPAN> 
+    (</SPAN><SPAN class=info>Before Requesting Authentication - 
+    Registration</SPAN><SPAN>)</SPAN></A>. </DD>
+    <DT>openid.oauth.scope</DT>
+    <DD>OPTIONAL. Value: A string that encodes, in a way possibly specific to 
+    the Combined Provider, one or more scopes for the OAuth token expected in 
+    the authentication response. </DD></DL></BLOCKQUOTE>
+<P></P><A name=anchor6></A><BR>
+<HR>
+
+<TABLE class=TOCbug cellSpacing=2 summary=layout cellPadding=0 align=right>
+  <TBODY>
+  <TR>
+    <TD class=TOCbug><A 
+      href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE><A 
+name=rfc.section.9></A>
+<H3>9.&nbsp; Authorizing the OAuth Request</H3>
+<P>If the OpenID OAuth Extension is present in the authentication request, the 
+Combined Provider SHOULD verify that the consumer key passed in the request is 
+authorized to be used for the realm passed in the request. If this verification 
+succeeds, the Combined Provider SHOULD determine that delegation of access from 
+a user to the Combined Consumer has been requested. </P>
+<P>The Combined Provider SHOULD NOT issue an approved request token unless it 
+has user consent to perform such delegation. </P><A name=AuthResp></A><BR>
+<HR>
+
+<TABLE class=TOCbug cellSpacing=2 summary=layout cellPadding=0 align=right>
+  <TBODY>
+  <TR>
+    <TD class=TOCbug><A 
+      href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE><A 
+name=rfc.section.10></A>
+<H3>10.&nbsp; Responding to Authentication Requests</H3>
+<P>If the OpenID authentication request cannot be fulfilled (either in failure 
+mode "setup_needed" or "cancel" as in Sections 10.2.1 and 10.2.2 of <A 
+class=info 
+href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#OpenID">[OpenID]<SPAN> 
+(</SPAN><SPAN class=info>Openid.net, “OpenID Authentication 2.0 - Final,” 
+December&nbsp;2007.</SPAN><SPAN>)</SPAN></A>) then the OAuth request SHOULD be 
+considered to fail and the Provider MUST NOT send any OpenID OAuth Extension 
+values in the response. </P>
+<P>The remainder of this section specifies how to handle the OAuth request in 
+cases when the OpenID authentication response is a positive assertion (Section 
+10.1 of <A class=info 
+href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#OpenID">[OpenID]<SPAN> 
+(</SPAN><SPAN class=info>Openid.net, “OpenID Authentication 2.0 - Final,” 
+December&nbsp;2007.</SPAN><SPAN>)</SPAN></A>). </P>
+<P>If the end user does wish to delegate access to the Combined Consumer, the 
+Combined Provider MUST include and MUST sign the following parameters. </P>
+<BLOCKQUOTE class=text>
+  <DL>
+    <DT>openid.ns.oauth</DT>
+    <DD>REQUIRED. Identical value as defined in <A class=info 
+    href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#AuthReq">Section&nbsp;8<SPAN> 
+    (</SPAN><SPAN class=info>Requesting Authentication</SPAN><SPAN>)</SPAN></A>. 
+    </DD>
+    <DT>openid.oauth.request_token</DT>
+    <DD>REQUIRED. A user-approved request token. </DD>
+    <DT>openid.oauth.scope</DT>
+    <DD>OPTIONAL. A string that encodes, in a way possibly specific to the 
+    Combined Provider, one or more scopes that the returned request token is 
+    valid for. This will typically indicate a subset of the scopes requested in 
+    <A class=info 
+    href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#AuthReq">Section&nbsp;8<SPAN> 
+    (</SPAN><SPAN class=info>Requesting Authentication</SPAN><SPAN>)</SPAN></A>. 
+    </DD></DL></BLOCKQUOTE>
+<P>To note that the OAuth Authorization was declined or not valid, the Combined 
+Provider SHALL only respond with the parameter "openid.ns.oauth". </P><A 
+name=AuthTokenReq></A><BR>
+<HR>
+
+<TABLE class=TOCbug cellSpacing=2 summary=layout cellPadding=0 align=right>
+  <TBODY>
+  <TR>
+    <TD class=TOCbug><A 
+      href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE><A 
+name=rfc.section.11></A>
+<H3>11.&nbsp; Obtaining the Access Token</H3>
+<P>To exchange the request token for an access token, the Combined Consumer 
+follows Section 6.3.1 of <A class=info 
+href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#OAuth">[OAuth]<SPAN> 
+(</SPAN><SPAN class=info>OAuth Core Workgroup, “OAuth Core 1.0,” 
+December&nbsp;2007.</SPAN><SPAN>)</SPAN></A>, i.e., it sends an access token 
+request to the access token endpoint of the Combined Provider. It SHALL use the 
+following values to create the OAuth access token request: </P>
+<BLOCKQUOTE class=text>
+  <DL>
+    <DT>consumer key</DT>
+    <DD>Combined Consumers use the consumer key they established with the 
+    Combined Provider in <A class=info 
+    href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#Registered">Section&nbsp;7<SPAN> 
+    (</SPAN><SPAN class=info>Before Requesting Authentication - 
+    Registration</SPAN><SPAN>)</SPAN></A>. </DD>
+    <DT>consumer secret</DT>
+    <DD>Combined Consumers use the consumer secret they established with the 
+    Combined Provider in <A class=info 
+    href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#Registered">Section&nbsp;7<SPAN> 
+    (</SPAN><SPAN class=info>Before Requesting Authentication - 
+    Registration</SPAN><SPAN>)</SPAN></A>. </DD>
+    <DT>OAuth token</DT>
+    <DD>Combined Consumers use the request token obtained in <A class=info 
+    href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#AuthResp">Section&nbsp;10<SPAN> 
+    (</SPAN><SPAN class=info>Responding to Authentication 
+    Requests</SPAN><SPAN>)</SPAN></A>. </DD>
+    <DT>OAuth token secret</DT>
+    <DD>Combined Consumers use the empty string. </DD></DL></BLOCKQUOTE>
+<P></P>
+<P>The Combined Provider follows Section 6.3.2 to verify the request and either 
+issue the access token or send an error response. </P><A name=anchor7></A><BR>
+<HR>
+
+<TABLE class=TOCbug cellSpacing=2 summary=layout cellPadding=0 align=right>
+  <TBODY>
+  <TR>
+    <TD class=TOCbug><A 
+      href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE><A 
+name=rfc.section.12></A>
+<H3>12.&nbsp; General Considerations</H3>
+<P>The proposal takes the approach to insulate each protocol from the other, 
+both for backwards compatibility as well as to enable OpenID and OAuth to evolve 
+and incorporate additional features without requiring reviews of the combined 
+usage described here. In particular: </P>
+<BLOCKQUOTE class=text>
+  <DL>
+    <DT>OpenID full compatibility</DT>
+    <DD>The OpenID identity provider (OP) MAY safely announce the endpoint 
+    supporting the OpenID OAuth Extension to all relying parties, whether or not 
+    they support the extension as well. The use of a separate service-type 
+    announcement for Combined Providers endpoints provides a mechanism for 
+    auto-discovery of OAuth capabilities by RPs. </DD>
+    <DT>OAuth token compatibility</DT>
+    <DD>The OAuth tokens approved via this mechanism MAY be used identically as 
+    tokens acquired through alternative mechanisms (e.g., via standard OAuth) 
+    without requiring special considerations either because of functionality or 
+    security reasons. </DD></DL></BLOCKQUOTE>
+<P></P><A name=anchor8></A><BR>
+<HR>
+
+<TABLE class=TOCbug cellSpacing=2 summary=layout cellPadding=0 align=right>
+  <TBODY>
+  <TR>
+    <TD class=TOCbug><A 
+      href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE><A 
+name=rfc.section.13></A>
+<H3>13.&nbsp; Security Considerations</H3>
+<P>This proposal composes protocols that provide security services 
+(authentication in the case of OpenID, authorization in the case of OAuth) with 
+the intention that the combined protocol provides both services simultaneously. 
+Since security is not a property generally preserved by composition, the design 
+takes the approach of encapsulating the OAuth flow within OpenID in a modular 
+way, and applies the general rule-of-thumb of NOT introducing reliance on the 
+security properties of one protocol for the correctness of the other. 
+Ultimately, only public scrutiny and review can incrementally provide confidence 
+that the approach described here is sound from a security perspective. </P>
+<P>The following security principles are reflected in this design: </P>
+<BLOCKQUOTE class=text>
+  <DL>
+    <DT>No long-term OAuth secrets hit the browser</DT>
+    <DD>The OAuth protocol was designed so that browser-mediated communication 
+    is not used to transfer long-term secrets or capabilities to access 
+    data.(Instead, server-to-server calls are used to exchange such secrets). 
+    Combined Providers can preserve this property by making the request_token 
+    short-lived, since the request token will be exchanged for an access token 
+    and secret over a server-to-server call. </DD>
+    <DT>Imposters cannot retrieve the OAuth access token</DT>
+    <DD>While it is possible for a malicious party to fake an OpenID request, 
+    including an OpenID request that includes the OpenID OAuth Extension (the 
+    request is not signed, and knowledge of the consumer key and realm is 
+    sufficient to cause the Combined Provider to display an authorization page 
+    for that realm/consumer), that malicious party would have to have knowledge 
+    of the consumer secret to exchange the request token for an access token. 
+    Note that while secure under reasonable threat models, this is different 
+    from standard OAuth: In standard OAuth, one needs knowledge of both the 
+    consumer key and consumer secret (or, alternatively, of a request token 
+    obtained through knowledge of the consumer key and secret) to cause the 
+    Service Provider to display an authorization page for that consumer. 
+</DD></DL></BLOCKQUOTE>
+<P></P><A name=rfc.references1></A><BR>
+<HR>
+
+<TABLE class=TOCbug cellSpacing=2 summary=layout cellPadding=0 align=right>
+  <TBODY>
+  <TR>
+    <TD class=TOCbug><A 
+      href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<H3>14.&nbsp;Normative References</H3>
+<TABLE border=0 width="99%">
+  <TBODY>
+  <TR>
+    <TD class=author-text vAlign=top><A name=OAuth>[OAuth]</A></TD>
+    <TD class=author-text><A href="mailto:spec@oauth.net">OAuth Core 
+      Workgroup</A>, “<A href="http://oauth.net/core/1.0/">OAuth Core 1.0</A>,” 
+      December&nbsp;2007 (<A href="http://oauth.net/core/1.0/">HTML</A>).</TD></TR>
+  <TR>
+    <TD class=author-text vAlign=top><A name=OpenID>[OpenID]</A></TD>
+    <TD class=author-text><A href="mailto:specs@openid.net">Openid.net</A>, 
+      “<A href="http://openid.net/specs/openid-authentication-2_0.html">OpenID 
+      Authentication 2.0 - Final</A>,” December&nbsp;2007 (<A 
+      href="http://openid.net/specs/openid-authentication-2_0.html">HTML</A>, <A 
+      href="http://openid.net/specs/openid-authentication-2_0.txt">TXT</A>).</TD></TR>
+  <TR>
+    <TD class=author-text vAlign=top><A name=RFC2119>[RFC2119]</A></TD>
+    <TD class=author-text><A href="mailto:sob@harvard.edu">Bradner, S.</A>, 
+      “<A href="http://tools.ietf.org/html/rfc2119">Key words for use in RFCs to 
+      Indicate Requirement Levels</A>,” BCP&nbsp;14, RFC&nbsp;2119, 
+      March&nbsp;1997 (<A href="ftp://ftp.isi.edu/in-notes/rfc2119.txt">TXT</A>, 
+      <A href="http://xml.resource.org/public/rfc/html/rfc2119.html">HTML</A>, 
+      <A 
+  href="http://xml.resource.org/public/rfc/xml/rfc2119.xml">XML</A>).</TD></TR></TBODY></TABLE><A 
+name=rfc.authors></A><BR>
+<HR>
+
+<TABLE class=TOCbug cellSpacing=2 summary=layout cellPadding=0 align=right>
+  <TBODY>
+  <TR>
+    <TD class=TOCbug><A 
+      href="http://step2.googlecode.com/svn/spec/openid_oauth_extension/latest/openid_oauth_extension.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<H3>Authors' Addresses</H3>
+<TABLE border=0 cellSpacing=0 cellPadding=0 width="99%">
+  <TBODY>
+  <TR>
+    <TD class=author-text>&nbsp;</TD>
+    <TD class=author-text>Dirk Balfanz (editor)</TD></TR>
+  <TR>
+    <TD class=author-text>&nbsp;</TD>
+    <TD class=author-text>Google, Inc.</TD></TR>
+  <TR>
+    <TD class=author align=right>Email:&nbsp;</TD>
+    <TD class=author-text><A 
+      href="mailto:balfanz@google.com">balfanz@google.com</A></TD></TR>
+  <TR cellpadding="3">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR>
+    <TD class=author-text>&nbsp;</TD>
+    <TD class=author-text>Breno de Medeiros (editor)</TD></TR>
+  <TR>
+    <TD class=author-text>&nbsp;</TD>
+    <TD class=author-text>Google, Inc.</TD></TR>
+  <TR>
+    <TD class=author align=right>Email:&nbsp;</TD>
+    <TD class=author-text><A 
+      href="mailto:breno@google.com">breno@google.com</A></TD></TR>
+  <TR cellpadding="3">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR>
+    <TD class=author-text>&nbsp;</TD>
+    <TD class=author-text>David Recordon (editor)</TD></TR>
+  <TR>
+    <TD class=author-text>&nbsp;</TD>
+    <TD class=author-text>Six Apart, Ltd.</TD></TR>
+  <TR>
+    <TD class=author align=right>Email:&nbsp;</TD>
+    <TD class=author-text><A 
+      href="mailto:david@sixapart.com">david@sixapart.com</A></TD></TR>
+  <TR cellpadding="3">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR>
+    <TD class=author-text>&nbsp;</TD>
+    <TD class=author-text>Joseph Smarr (editor)</TD></TR>
+  <TR>
+    <TD class=author-text>&nbsp;</TD>
+    <TD class=author-text>Plaxo, Inc.</TD></TR>
+  <TR>
+    <TD class=author align=right>Email:&nbsp;</TD>
+    <TD class=author-text><A 
+      href="mailto:joseph@plaxo.com">joseph@plaxo.com</A></TD></TR>
+  <TR cellpadding="3">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR>
+    <TD class=author-text>&nbsp;</TD>
+    <TD class=author-text>Allen Tom (editor)</TD></TR>
+  <TR>
+    <TD class=author-text>&nbsp;</TD>
+    <TD class=author-text>Yahoo!, Inc.</TD></TR>
+  <TR>
+    <TD class=author align=right>Email:&nbsp;</TD>
+    <TD class=author-text><A 
+      href="mailto:atom@yahoo-inc.com">atom@yahoo-inc.com</A></TD></TR></TBODY></TABLE></BODY></HTML>

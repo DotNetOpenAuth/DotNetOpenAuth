@@ -104,6 +104,22 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Verifies that delegating authentication requests are filtered out when configured to do so.
+		/// </summary>
+		[TestMethod]
+		public void CreateFiltersDelegatingIdentifiers() {
+			Identifier id = GetMockIdentifier(ProtocolVersion.V20, false, true);
+			var rp = CreateRelyingParty();
+
+			// First verify that delegating identifiers work
+			Assert.IsTrue(AuthenticationRequest.Create(id, rp, realm, returnTo, false).Any(), "The delegating identifier should have not generated any results.");
+
+			// Now disable them and try again.
+			rp.SecuritySettings.RejectDelegatingIdentifiers = true;
+			Assert.IsFalse(AuthenticationRequest.Create(id, rp, realm, returnTo, false).Any(), "The delegating identifier should have not generated any results.");
+		}
+
+		/// <summary>
 		/// Verifies the Provider property returns non-null.
 		/// </summary>
 		[TestMethod]
@@ -141,6 +157,18 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			var req = (SignedResponseRequest)authRequest.RedirectingResponse.OriginalMessage;
 			NameValueCollection query = HttpUtility.ParseQueryString(req.ReturnTo.Query);
 			Assert.AreEqual("v2", query["p1"]);
+		}
+
+		/// <summary>
+		/// Verifies identity-less checkid_* request behavior.
+		/// </summary>
+		[TestMethod]
+		public void NonIdentityRequest() {
+			IAuthenticationRequest_Accessor authRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
+			authRequest.IsExtensionOnly = true;
+			Assert.IsTrue(authRequest.IsExtensionOnly);
+			var req = (SignedResponseRequest)authRequest.RedirectingResponse.OriginalMessage;
+			Assert.IsNotInstanceOfType(req, typeof(CheckIdRequest), "An unexpected SignedResponseRequest derived type was generated.");
 		}
 
 		/// <summary>

@@ -36,9 +36,23 @@ namespace DotNetOpenAuth.Configuration {
 		private const string AssociationsConfigName = "associations";
 
 		/// <summary>
+		/// Gets the name of the @requireSsl attribute.
+		/// </summary>
+		private const string RequireSslConfigName = "requireSsl";
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdProviderSecuritySettingsElement"/> class.
 		/// </summary>
 		public OpenIdProviderSecuritySettingsElement() {
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether all discovery and authentication should require SSL security.
+		/// </summary>
+		[ConfigurationProperty(RequireSslConfigName, DefaultValue = false)]
+		public bool RequireSsl {
+			get { return (bool)this[RequireSslConfigName]; }
+			set { this[RequireSslConfigName] = value; }
 		}
 
 		/// <summary>
@@ -91,6 +105,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// <returns>The newly created security settings object.</returns>
 		public ProviderSecuritySettings CreateSecuritySettings() {
 			ProviderSecuritySettings settings = new ProviderSecuritySettings();
+			settings.RequireSsl = this.RequireSsl;
 			settings.MinimumHashBitLength = this.MinimumHashBitLength;
 			settings.MaximumHashBitLength = this.MaximumHashBitLength;
 			settings.ProtectDownlevelReplayAttacks = this.ProtectDownlevelReplayAttacks;

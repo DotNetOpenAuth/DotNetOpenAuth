@@ -7,6 +7,14 @@ namespace OpenIdProviderMvc.Controllers {
 	using System.Web.Mvc.Ajax;
 
 	public class UserController : Controller {
+		public ActionResult PpidIdentity() {
+			if (Request.AcceptTypes.Contains("application/xrds+xml")) {
+				return View("PpidXrds");
+			}
+
+			return View();
+		}
+
 		public ActionResult Identity(string id) {
 			var redirect = this.RedirectIfNotNormalizedRequestUri();
 			if (redirect != null) {
@@ -22,6 +30,10 @@ namespace OpenIdProviderMvc.Controllers {
 		}
 
 		public ActionResult Xrds(string id) {
+			return View();
+		}
+
+		public ActionResult PpidXrds() {
 			return View();
 		}
 

@@ -33,5 +33,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Authentication is completed successfully.
 		/// </summary>
 		Authenticated,
+
+		/// <summary>
+		/// The Provider sent a message that did not contain an identity assertion,
+		/// but may carry OpenID extensions.
+		/// </summary>
+		ExtensionsOnly,
 	}
 }

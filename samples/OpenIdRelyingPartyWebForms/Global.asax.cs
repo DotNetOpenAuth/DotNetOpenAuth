@@ -1,14 +1,46 @@
 ﻿namespace OpenIdRelyingPartyWebForms {
 	using System;
 	using System.Collections.Specialized;
+	using System.Configuration;
 	using System.IO;
 	using System.Text;
 	using System.Web;
+	using DotNetOpenAuth.ApplicationBlock;
+	using DotNetOpenAuth.OAuth;
+	using OpenIdRelyingPartyWebForms.Code;
 
 	public class Global : HttpApplication {
 		public static log4net.ILog Logger = log4net.LogManager.GetLogger(typeof(Global));
 
 		internal static StringBuilder LogMessages = new StringBuilder();
+
+		internal static WebConsumer GoogleWebConsumer {
+			get {
+				var googleWebConsumer = (WebConsumer)HttpContext.Current.Application["GoogleWebConsumer"];
+				if (googleWebConsumer == null) {
+					googleWebConsumer = new WebConsumer(GoogleConsumer.ServiceDescription, GoogleTokenManager);
+					HttpContext.Current.Application["GoogleWebConsumer"] = googleWebConsumer;
+				}
+
+				return googleWebConsumer;
+			}
+		}
+
+		internal static InMemoryTokenManager GoogleTokenManager {
+			get {
+				var tokenManager = (InMemoryTokenManager)HttpContext.Current.Application["GoogleTokenManager"];
+				if (tokenManager == null) {
+					string consumerKey = ConfigurationManager.AppSettings["googleConsumerKey"];
+					string consumerSecret = ConfigurationManager.AppSettings["googleConsumerSecret"];
+					if (!string.IsNullOrEmpty(consumerKey)) {
+						tokenManager = new InMemoryTokenManager(consumerKey, consumerSecret);
+						HttpContext.Current.Application["GoogleTokenManager"] = tokenManager;
+					}
+				}
+
+				return tokenManager;
+			}
+		}
 
 		public static string ToString(NameValueCollection collection) {
 			using (StringWriter sw = new StringWriter()) {

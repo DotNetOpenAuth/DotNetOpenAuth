@@ -14,5 +14,9 @@ namespace OpenIdProviderWebForms {
 		protected void provider_AuthenticationChallenge(object sender, AuthenticationChallengeEventArgs e) {
 			Code.Util.ProcessAuthenticationChallenge(e.Request);
 		}
+
+		protected void provider_AnonymousRequest(object sender, AnonymousRequestEventArgs e) {
+			Code.Util.ProcessAnonymousRequest(e.Request);
+		}
 	}
 }

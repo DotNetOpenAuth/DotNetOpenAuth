@@ -13,22 +13,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// </summary>
 	public sealed class RelyingPartySecuritySettings : SecuritySettings {
 		/// <summary>
-		/// Backing field for the <see cref="RequireSsl"/> property.
-		/// </summary>
-		private bool requireSsl;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="RelyingPartySecuritySettings"/> class.
 		/// </summary>
 		internal RelyingPartySecuritySettings()
 			: base(false) {
 			this.PrivateSecretMaximumAge = TimeSpan.FromDays(7);
 		}
-
-		/// <summary>
-		/// Fired when the <see cref="RequireSsl"/> property is changed.
-		/// </summary>
-		internal event EventHandler RequireSslChanged;
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the entire pipeline from Identifier discovery to 
@@ -58,19 +48,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// A <see cref="ProtocolException"/> is thrown during discovery or authentication when a secure pipeline cannot be established.
 		/// </para>
 		/// </remarks>
-		public bool RequireSsl {
-			get {
-				return this.requireSsl;
-			}
-
-			set {
-				if (this.requireSsl == value) {
-					return;
-				}
-				this.requireSsl = value;
-				this.OnRequireSslChanged();
-			}
-		}
+		public bool RequireSsl { get; set; }
 
 		/// <summary>
 		/// Gets or sets the oldest version of OpenID the remote party is allowed to implement.
@@ -86,13 +64,21 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public TimeSpan PrivateSecretMaximumAge { get; set; }
 
 		/// <summary>
-		/// Fires the <see cref="RequireSslChanged"/> event.
+		/// Gets or sets a value indicating whether all unsolicited assertions should be ignored.
 		/// </summary>
-		private void OnRequireSslChanged() {
-			EventHandler requireSslChanged = this.RequireSslChanged;
-			if (requireSslChanged != null) {
-				requireSslChanged(this, new EventArgs());
-			}
-		}
+		/// <value>The default value is <c>false</c>.</value>
+		public bool RejectUnsolicitedAssertions { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether delegating identifiers are refused for authentication.
+		/// </summary>
+		/// <value>The default value is <c>false</c>.</value>
+		/// <remarks>
+		/// When set to <c>true</c>, login attempts that start at the RP or arrive via unsolicited
+		/// assertions will be rejected if discovery on the identifier shows that OpenID delegation
+		/// is used for the identifier.  This is useful for an RP that should only accept identifiers
+		/// directly issued by the Provider that is sending the assertion.
+		/// </remarks>
+		public bool RejectDelegatingIdentifiers { get; set; }
 	}
 }

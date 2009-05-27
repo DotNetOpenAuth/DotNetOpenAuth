@@ -47,6 +47,7 @@
     <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
     <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
     <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -186,6 +187,7 @@
     <Compile Include="Configuration\UntrustedWebRequestElement.cs" />
     <Compile Include="Configuration\HostNameOrRegexCollection.cs" />
     <Compile Include="Configuration\HostNameElement.cs" />
+    <Compile Include="Configuration\XriResolverElement.cs" />
     <Compile Include="InfoCard\ClaimType.cs" />
     <Compile Include="InfoCard\ReceivingTokenEventArgs.cs" />
     <Compile Include="InfoCard\TokenProcessingErrorEventArgs.cs" />
@@ -222,8 +224,10 @@
     <Compile Include="Messaging\OutgoingWebResponseActionResult.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
     <Compile Include="Messaging\Reflection\MessageDescriptionCollection.cs" />
+    <Compile Include="OAuth\ChannelElements\ICombinedOpenIdProviderTokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\IConsumerCertificateProvider.cs" />
     <Compile Include="OAuth\ChannelElements\IConsumerTokenManager.cs" />
+    <Compile Include="OAuth\ChannelElements\IOpenIdOAuthTokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\IServiceProviderTokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthConsumerMessageFactory.cs" />
     <Compile Include="OAuth\ChannelElements\ITokenGenerator.cs" />
@@ -309,6 +313,7 @@
     <Compile Include="OpenId\ChannelElements\IOpenIdExtensionFactory.cs" />
     <Compile Include="OpenId\ChannelElements\ITamperResistantOpenIdMessage.cs" />
     <Compile Include="OpenId\ChannelElements\OriginalStringUriEncoder.cs" />
+    <Compile Include="OpenId\ChannelElements\RelyingPartySecurityOptions.cs" />
     <Compile Include="OpenId\ChannelElements\ReturnToNonceBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\SigningBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\KeyValueFormEncoding.cs" />
@@ -329,6 +334,10 @@
     <Compile Include="OpenId\Extensions\ExtensionBase.cs" />
     <Compile Include="OpenId\Extensions\ExtensionArgumentsManager.cs" />
     <Compile Include="OpenId\Extensions\IClientScriptExtensionResponse.cs" />
+    <Compile Include="OpenId\Extensions\OAuth\AuthorizationRequest.cs" />
+    <Compile Include="OpenId\Extensions\OAuth\AuthorizationApprovedResponse.cs" />
+    <Compile Include="OpenId\Extensions\OAuth\Constants.cs" />
+    <Compile Include="OpenId\Extensions\OAuth\AuthorizationDeclinedResponse.cs" />
     <Compile Include="OpenId\Extensions\OpenIdExtensionFactoryAggregator.cs" />
     <Compile Include="OpenId\Extensions\StandardOpenIdExtensionFactory.cs" />
     <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\AuthenticationPolicies.cs" />
@@ -344,6 +353,9 @@
     <Compile Include="OpenId\Extensions\SimpleRegistration\Constants.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\DemandLevel.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\Gender.cs" />
+    <Compile Include="OpenId\Extensions\UI\UIUtilities.cs" />
+    <Compile Include="OpenId\Extensions\UI\UIModes.cs" />
+    <Compile Include="OpenId\Extensions\UI\UIRequest.cs" />
     <Compile Include="OpenId\Identifier.cs" />
     <Compile Include="OpenId\IdentifierContract.cs" />
     <Compile Include="OpenId\Interop\AuthenticationResponseShim.cs" />
@@ -361,16 +373,22 @@
     <Compile Include="OpenId\Messages\SignedResponseRequest.cs" />
     <Compile Include="OpenId\NoDiscoveryIdentifier.cs" />
     <Compile Include="OpenId\OpenIdUtilities.cs" />
+    <Compile Include="OpenId\Provider\AnonymousRequest.cs" />
+    <Compile Include="OpenId\Provider\AnonymousRequestEventArgs.cs" />
     <Compile Include="OpenId\Provider\AuthenticationChallengeEventArgs.cs" />
     <Compile Include="OpenId\Provider\AuthenticationRequest.cs" />
     <Compile Include="OpenId\Provider\AutoResponsiveRequest.cs" />
+    <Compile Include="OpenId\Provider\HostProcessedRequest.cs" />
+    <Compile Include="OpenId\Provider\IAnonymousRequest.cs" />
     <Compile Include="OpenId\Provider\IAuthenticationRequest.cs" />
+    <Compile Include="OpenId\Provider\IHostProcessedRequest.cs" />
     <Compile Include="OpenId\Provider\IdentityEndpoint.cs" />
     <Compile Include="OpenId\Provider\IdentityEndpointNormalizationEventArgs.cs" />
     <Compile Include="OpenId\Provider\IErrorReporting.cs" />
     <Compile Include="OpenId\Provider\IProviderApplicationStore.cs" />
     <Compile Include="OpenId\Provider\IRequest.cs" />
     <Compile Include="OpenId\Provider\ProviderEndpoint.cs" />
+    <Compile Include="OpenId\Provider\RelyingPartyDiscoveryResult.cs" />
     <Compile Include="OpenId\Provider\Request.cs" />
     <Compile Include="OpenId\Provider\RequestContract.cs" />
     <Compile Include="OpenId\Provider\StandardProviderApplicationStore.cs" />
@@ -411,6 +429,8 @@
     <Compile Include="OpenId\RelyingParty\OpenIdLogin.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdMobileTextBox.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdTextBox.cs" />
+    <Compile Include="OpenId\RelyingParty\PopupBehavior.cs" />
+    <Compile Include="OpenId\RelyingParty\PositiveAnonymousResponse.cs" />
     <Compile Include="OpenId\RelyingParty\PositiveAuthenticationResponse.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationStatus.cs" />
     <Compile Include="OpenId\RelyingParty\FailedAuthenticationResponse.cs" />

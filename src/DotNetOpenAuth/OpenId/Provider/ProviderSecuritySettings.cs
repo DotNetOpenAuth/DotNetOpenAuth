@@ -46,6 +46,13 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether Relying Party discovery will only
+		/// succeed if done over a secure HTTPS channel.
+		/// </summary>
+		/// <value>Default is <c>false</c>.</value>
+		public bool RequireSsl { get; set; }
+
+		/// <summary>
 		/// Gets or sets a value indicating whether OpenID 1.x relying parties that may not be
 		/// protecting their users from replay attacks are protected from
 		/// replay attacks by this provider.

@@ -24,7 +24,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// The name of the internal callback parameter to use to store the user-supplied identifier.
 		/// </summary>
-		internal const string UserSuppliedIdentifierParameterName = "dnoi.userSuppliedIdentifier";
+		internal const string UserSuppliedIdentifierParameterName = OpenIdUtilities.CustomParameterPrefix + "userSuppliedIdentifier";
 
 		/// <summary>
 		/// The relying party that created this request object.
@@ -133,6 +133,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether this request only carries extensions
+		/// and is not a request to verify that the user controls some identifier.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if this request is merely a carrier of extensions and is not
+		/// about an OpenID identifier; otherwise, <c>false</c>.
+		/// </value>
+		public bool IsExtensionOnly { get; set; }
+
+		/// <summary>
 		/// Gets information about the OpenId Provider, as advertised by the
 		/// OpenId discovery documents found at the <see cref="ClaimedIdentifier"/>
 		/// location.
@@ -232,11 +242,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="realm">The realm.</param>
 		/// <param name="returnToUrl">The return_to base URL.</param>
 		/// <param name="createNewAssociationsAsNeeded">if set to <c>true</c>, associations that do not exist between this Relying Party and the asserting Providers are created before the authentication request is created.</param>
-		/// <returns>A sequence of authentication requests, any of which constitutes a valid identity assertion on the Claimed Identifier.</returns>
+		/// <returns>
+		/// A sequence of authentication requests, any of which constitutes a valid identity assertion on the Claimed Identifier.
+		/// Never null, but may be empty.
+		/// </returns>
 		internal static IEnumerable<AuthenticationRequest> Create(Identifier userSuppliedIdentifier, OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl, bool createNewAssociationsAsNeeded) {
 			Contract.Requires(userSuppliedIdentifier != null);
 			Contract.Requires(relyingParty != null);
 			Contract.Requires(realm != null);
+			Contract.Ensures(Contract.Result<IEnumerable<AuthenticationRequest>>() != null);
 
 			// We have a long data validation and preparation process
 			ErrorUtilities.VerifyArgumentNotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
@@ -283,6 +297,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				serviceEndpoints = EmptyList<ServiceEndpoint>.Instance;
 			}
 
+			// Filter disallowed endpoints.
+			if (relyingParty.SecuritySettings.RejectDelegatingIdentifiers) {
+				serviceEndpoints = serviceEndpoints.Where(se => se.ClaimedIdentifier == se.ProviderLocalIdentifier);
+			}
+
 			// Call another method that defers request generation.
 			return CreateInternal(userSuppliedIdentifier, relyingParty, realm, returnToUrl, serviceEndpoints, createNewAssociationsAsNeeded);
 		}
@@ -298,12 +317,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="createNewAssociationsAsNeeded">if set to <c>true</c>, associations that do not exist between this Relying Party and the asserting Providers are created before the authentication request is created.</param>
 		/// <returns>
 		/// A sequence of authentication requests, any of which constitutes a valid identity assertion on the Claimed Identifier.
+		/// Never null, but may be empty.
 		/// </returns>
 		/// <remarks>
 		/// All data validation and cleansing steps must have ALREADY taken place
 		/// before calling this method.
 		/// </remarks>
 		private static IEnumerable<AuthenticationRequest> CreateInternal(Identifier userSuppliedIdentifier, OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl, IEnumerable<ServiceEndpoint> serviceEndpoints, bool createNewAssociationsAsNeeded) {
+			Contract.Requires(userSuppliedIdentifier != null);
+			Contract.Requires(relyingParty != null);
+			Contract.Requires(realm != null);
+			Contract.Requires(serviceEndpoints != null);
+			Contract.Ensures(Contract.Result<IEnumerable<AuthenticationRequest>>() != null);
+
 			Logger.Yadis.InfoFormat("Performing discovery on user-supplied identifier: {0}", userSuppliedIdentifier);
 			IEnumerable<ServiceEndpoint> endpoints = FilterAndSortEndpoints(serviceEndpoints, relyingParty);
 
@@ -401,16 +427,22 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Creates the authentication request message to send to the Provider,
+		/// Creates the request message to send to the Provider,
 		/// based on the properties in this instance.
 		/// </summary>
 		/// <returns>The message to send to the Provider.</returns>
-		public CheckIdRequest CreateRequestMessage() {
+		public SignedResponseRequest CreateRequestMessage() {
 			Association association = this.GetAssociation();
 
-			CheckIdRequest request = new CheckIdRequest(this.endpoint.Protocol.Version, this.endpoint.ProviderEndpoint, this.Mode);
-			request.ClaimedIdentifier = this.endpoint.ClaimedIdentifier;
-			request.LocalIdentifier = this.endpoint.ProviderLocalIdentifier;
+			SignedResponseRequest request;
+			if (!this.IsExtensionOnly) {
+				CheckIdRequest authRequest = new CheckIdRequest(this.endpoint.Protocol.Version, this.endpoint.ProviderEndpoint, this.Mode);
+				authRequest.ClaimedIdentifier = this.endpoint.ClaimedIdentifier;
+				authRequest.LocalIdentifier = this.endpoint.ProviderLocalIdentifier;
+				request = authRequest;
+			} else {
+				request = new SignedResponseRequest(this.endpoint.Protocol.Version, this.endpoint.ProviderEndpoint, this.Mode);
+			}
 			request.Realm = this.Realm;
 			request.ReturnTo = this.ReturnToUrl;
 			request.AssociationHandle = association != null ? association.Handle : null;

@@ -24,17 +24,20 @@
 				// But authentication requests cannot be responded to until something on
 				// this site decides whether to approve or disapprove the authentication.
 				if (!request.IsResponseReady) {
-					var idrequest = (IAuthenticationRequest)request;
-
-					// We store the authentication request in the user's session so that
+					// We store the request in the user's session so that
 					// redirects and user prompts can appear and eventually some page can decide
 					// to respond to the OpenID authentication request either affirmatively or
 					// negatively.
-					ProviderEndpoint.PendingAuthenticationRequest = idrequest;
+					ProviderEndpoint.PendingAnonymousRequest = request as IAnonymousRequest;
+					ProviderEndpoint.PendingAuthenticationRequest = request as IAuthenticationRequest;
 
 					// We delegate that approval process to our utility method that we share
 					// with our other Provider sample page server.aspx.
-					Code.Util.ProcessAuthenticationChallenge(idrequest);
+					if (ProviderEndpoint.PendingAuthenticationRequest != null) {
+						Code.Util.ProcessAuthenticationChallenge(ProviderEndpoint.PendingAuthenticationRequest);
+					} else if (ProviderEndpoint.PendingAnonymousRequest != null) {
+						Code.Util.ProcessAnonymousRequest(ProviderEndpoint.PendingAnonymousRequest);
+					}
 
 					// As part of authentication approval, the user may need to authenticate
 					// to this Provider and/or decide whether to allow the requesting RP site
@@ -52,7 +55,7 @@
 					ProviderEndpoint.Provider.SendResponse(request);
 
 					// Make sure that any PendingAuthenticationRequest that MAY be set is cleared.
-					ProviderEndpoint.PendingAuthenticationRequest = null;
+					ProviderEndpoint.PendingRequest = null;
 				}
 			}
 		}

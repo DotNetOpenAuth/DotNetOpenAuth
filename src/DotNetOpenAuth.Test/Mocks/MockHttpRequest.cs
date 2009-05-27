@@ -152,6 +152,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		<Service priority='10'>
 			<Type>{0}</Type>
 			<URI>{1}</URI>
+			<URI>{2}</URI>
 		</Service>
 	</XRD>
 </xrds:XRDS>";
@@ -159,9 +160,11 @@ namespace DotNetOpenAuth.Test.Mocks {
 				CultureInfo.InvariantCulture,
 				template,
 				HttpUtility.HtmlEncode(Protocol.V20.RPReturnToTypeURI),
-				HttpUtility.HtmlEncode(OpenIdTestBase.RPRealmUri.AbsoluteUri));
+				HttpUtility.HtmlEncode(OpenIdTestBase.RPRealmUri.AbsoluteUri),
+				HttpUtility.HtmlEncode(OpenIdTestBase.RPRealmUriSsl.AbsoluteUri));
 
 			this.RegisterMockResponse(OpenIdTestBase.RPRealmUri, ContentTypes.Xrds, xrds);
+			this.RegisterMockResponse(OpenIdTestBase.RPRealmUriSsl, ContentTypes.Xrds, xrds);
 		}
 
 		internal void DeleteResponse(Uri requestUri) {

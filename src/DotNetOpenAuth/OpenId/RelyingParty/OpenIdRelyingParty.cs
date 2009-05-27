@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
 	using System.ComponentModel;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Web;
@@ -321,6 +322,135 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Generates the authentication requests that can satisfy the requirements of some OpenID Identifier.
+		/// </summary>
+		/// <param name="userSuppliedIdentifier">
+		/// The Identifier supplied by the user.  This may be a URL, an XRI or i-name.
+		/// </param>
+		/// <param name="realm">
+		/// The shorest URL that describes this relying party web site's address.
+		/// For example, if your login page is found at https://www.example.com/login.aspx,
+		/// your realm would typically be https://www.example.com/.
+		/// </param>
+		/// <param name="returnToUrl">
+		/// The URL of the login page, or the page prepared to receive authentication 
+		/// responses from the OpenID Provider.
+		/// </param>
+		/// <returns>
+		/// A sequence of authentication requests, any of which constitutes a valid identity assertion on the Claimed Identifier.
+		/// Never null, but may be empty.
+		/// </returns>
+		/// <remarks>
+		/// <para>Any individual generated request can satisfy the authentication.  
+		/// The generated requests are sorted in preferred order.
+		/// Each request is generated as it is enumerated to.  Associations are created only as
+		/// <see cref="IAuthenticationRequest.RedirectingResponse"/> is called.</para>
+		/// <para>No exception is thrown if no OpenID endpoints were discovered.  
+		/// An empty enumerable is returned instead.</para>
+		/// </remarks>
+		public IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl) {
+			Contract.Requires(userSuppliedIdentifier != null);
+			Contract.Requires(realm != null);
+			Contract.Requires(returnToUrl != null);
+			Contract.Ensures(Contract.Result<IEnumerable<IAuthenticationRequest>>() != null);
+			ErrorUtilities.VerifyArgumentNotNull(realm, "realm");
+			ErrorUtilities.VerifyArgumentNotNull(returnToUrl, "returnToUrl");
+
+			return AuthenticationRequest.Create(userSuppliedIdentifier, this, realm, returnToUrl, true).Cast<IAuthenticationRequest>();
+		}
+
+		/// <summary>
+		/// Generates the authentication requests that can satisfy the requirements of some OpenID Identifier.
+		/// </summary>
+		/// <param name="userSuppliedIdentifier">
+		/// The Identifier supplied by the user.  This may be a URL, an XRI or i-name.
+		/// </param>
+		/// <param name="realm">
+		/// The shorest URL that describes this relying party web site's address.
+		/// For example, if your login page is found at https://www.example.com/login.aspx,
+		/// your realm would typically be https://www.example.com/.
+		/// </param>
+		/// <returns>
+		/// A sequence of authentication requests, any of which constitutes a valid identity assertion on the Claimed Identifier.
+		/// Never null, but may be empty.
+		/// </returns>
+		/// <remarks>
+		/// <para>Any individual generated request can satisfy the authentication.  
+		/// The generated requests are sorted in preferred order.
+		/// Each request is generated as it is enumerated to.  Associations are created only as
+		/// <see cref="IAuthenticationRequest.RedirectingResponse"/> is called.</para>
+		/// <para>No exception is thrown if no OpenID endpoints were discovered.  
+		/// An empty enumerable is returned instead.</para>
+		/// <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
+		/// </remarks>
+		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
+		public IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm) {
+			Contract.Requires(userSuppliedIdentifier != null);
+			Contract.Requires(realm != null);
+			Contract.Ensures(Contract.Result<IEnumerable<IAuthenticationRequest>>() != null);
+			ErrorUtilities.VerifyHttpContext();
+
+			// Build the return_to URL
+			UriBuilder returnTo = new UriBuilder(this.Channel.GetRequestFromContext().UrlBeforeRewriting);
+
+			// Trim off any parameters with an "openid." prefix, and a few known others
+			// to avoid carrying state from a prior login attempt.
+			returnTo.Query = string.Empty;
+			NameValueCollection queryParams = this.Channel.GetRequestFromContext().QueryStringBeforeRewriting;
+			var returnToParams = new Dictionary<string, string>(queryParams.Count);
+			foreach (string key in queryParams) {
+				if (!IsOpenIdSupportingParameter(key)) {
+					returnToParams.Add(key, queryParams[key]);
+				}
+			}
+			returnTo.AppendQueryArgs(returnToParams);
+
+			return this.CreateRequests(userSuppliedIdentifier, realm, returnTo.Uri);
+		}
+
+		/// <summary>
+		/// Generates the authentication requests that can satisfy the requirements of some OpenID Identifier.
+		/// </summary>
+		/// <param name="userSuppliedIdentifier">
+		/// The Identifier supplied by the user.  This may be a URL, an XRI or i-name.
+		/// </param>
+		/// <returns>
+		/// A sequence of authentication requests, any of which constitutes a valid identity assertion on the Claimed Identifier.
+		/// Never null, but may be empty.
+		/// </returns>
+		/// <remarks>
+		/// <para>Any individual generated request can satisfy the authentication.  
+		/// The generated requests are sorted in preferred order.
+		/// Each request is generated as it is enumerated to.  Associations are created only as
+		/// <see cref="IAuthenticationRequest.RedirectingResponse"/> is called.</para>
+		/// <para>No exception is thrown if no OpenID endpoints were discovered.  
+		/// An empty enumerable is returned instead.</para>
+		/// <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
+		/// </remarks>
+		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
+		public IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier) {
+			Contract.Requires(userSuppliedIdentifier != null);
+			Contract.Ensures(Contract.Result<IEnumerable<IAuthenticationRequest>>() != null);
+			ErrorUtilities.VerifyHttpContext();
+
+			// Build the realm URL
+			UriBuilder realmUrl = new UriBuilder(this.Channel.GetRequestFromContext().UrlBeforeRewriting);
+			realmUrl.Path = HttpContext.Current.Request.ApplicationPath;
+			realmUrl.Query = null;
+			realmUrl.Fragment = null;
+
+			// For RP discovery, the realm url MUST NOT redirect.  To prevent this for 
+			// virtual directory hosted apps, we need to make sure that the realm path ends
+			// in a slash (since our calculation above guarantees it doesn't end in a specific
+			// page like default.aspx).
+			if (!realmUrl.Path.EndsWith("/", StringComparison.Ordinal)) {
+				realmUrl.Path += "/";
+			}
+
+			return this.CreateRequests(userSuppliedIdentifier, new Realm(realmUrl.Uri));
+		}
+
+		/// <summary>
 		/// Gets an authentication response from a Provider.
 		/// </summary>
 		/// <returns>The processed authentication response if there is any; <c>null</c> otherwise.</returns>
@@ -342,8 +472,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				var message = this.Channel.ReadFromRequest(httpRequestInfo);
 				PositiveAssertionResponse positiveAssertion;
 				NegativeAssertionResponse negativeAssertion;
+				IndirectSignedResponse positiveExtensionOnly;
 				if ((positiveAssertion = message as PositiveAssertionResponse) != null) {
 					return new PositiveAuthenticationResponse(positiveAssertion, this);
+				} else if ((positiveExtensionOnly = message as IndirectSignedResponse) != null) {
+					return new PositiveAnonymousResponse(positiveExtensionOnly);
 				} else if ((negativeAssertion = message as NegativeAssertionResponse) != null) {
 					return new NegativeAuthenticationResponse(negativeAssertion);
 				} else if (message != null) {
@@ -379,7 +512,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		internal static bool IsOpenIdSupportingParameter(string parameterName) {
 			Protocol protocol = Protocol.Default;
 			return parameterName.StartsWith(protocol.openid.Prefix, StringComparison.OrdinalIgnoreCase)
-				|| parameterName.StartsWith("dnoi.", StringComparison.Ordinal);
+				|| parameterName.StartsWith(OpenIdUtilities.CustomParameterPrefix, StringComparison.Ordinal);
 		}
 
 		/// <summary>
@@ -397,134 +530,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			return rp;
 		}
 
+#if CONTRACTS_FULL
 		/// <summary>
-		/// Generates the authentication requests that can satisfy the requirements of some OpenID Identifier.
+		/// Verifies conditions that should be true for any valid state of this object.
 		/// </summary>
-		/// <param name="userSuppliedIdentifier">
-		/// The Identifier supplied by the user.  This may be a URL, an XRI or i-name.
-		/// </param>
-		/// <param name="realm">
-		/// The shorest URL that describes this relying party web site's address.
-		/// For example, if your login page is found at https://www.example.com/login.aspx,
-		/// your realm would typically be https://www.example.com/.
-		/// </param>
-		/// <param name="returnToUrl">
-		/// The URL of the login page, or the page prepared to receive authentication 
-		/// responses from the OpenID Provider.
-		/// </param>
-		/// <returns>
-		/// An authentication request object that describes the HTTP response to
-		/// send to the user agent to initiate the authentication.
-		/// </returns>
-		/// <remarks>
-		/// <para>Any individual generated request can satisfy the authentication.  
-		/// The generated requests are sorted in preferred order.
-		/// Each request is generated as it is enumerated to.  Associations are created only as
-		/// <see cref="IAuthenticationRequest.RedirectingResponse"/> is called.</para>
-		/// <para>No exception is thrown if no OpenID endpoints were discovered.  
-		/// An empty enumerable is returned instead.</para>
-		/// </remarks>
-		internal IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl) {
-			Contract.Requires(userSuppliedIdentifier != null);
-			Contract.Requires(realm != null);
-			Contract.Requires(returnToUrl != null);
-			Contract.Ensures(Contract.Result<IEnumerable<IAuthenticationRequest>>() != null);
-			ErrorUtilities.VerifyArgumentNotNull(realm, "realm");
-			ErrorUtilities.VerifyArgumentNotNull(returnToUrl, "returnToUrl");
-
-			return AuthenticationRequest.Create(userSuppliedIdentifier, this, realm, returnToUrl, true).Cast<IAuthenticationRequest>();
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
+		[ContractInvariantMethod]
+		private void ObjectInvariant() {
+			Contract.Invariant(this.SecuritySettings != null);
+			Contract.Invariant(this.Channel != null);
 		}
-
-		/// <summary>
-		/// Generates the authentication requests that can satisfy the requirements of some OpenID Identifier.
-		/// </summary>
-		/// <param name="userSuppliedIdentifier">
-		/// The Identifier supplied by the user.  This may be a URL, an XRI or i-name.
-		/// </param>
-		/// <param name="realm">
-		/// The shorest URL that describes this relying party web site's address.
-		/// For example, if your login page is found at https://www.example.com/login.aspx,
-		/// your realm would typically be https://www.example.com/.
-		/// </param>
-		/// <returns>
-		/// An authentication request object that describes the HTTP response to
-		/// send to the user agent to initiate the authentication.
-		/// </returns>
-		/// <remarks>
-		/// <para>Any individual generated request can satisfy the authentication.  
-		/// The generated requests are sorted in preferred order.
-		/// Each request is generated as it is enumerated to.  Associations are created only as
-		/// <see cref="IAuthenticationRequest.RedirectingResponse"/> is called.</para>
-		/// <para>No exception is thrown if no OpenID endpoints were discovered.  
-		/// An empty enumerable is returned instead.</para>
-		/// <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
-		/// </remarks>
-		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
-		internal IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm) {
-			Contract.Requires(userSuppliedIdentifier != null);
-			Contract.Requires(realm != null);
-			Contract.Ensures(Contract.Result<IEnumerable<IAuthenticationRequest>>() != null);
-			ErrorUtilities.VerifyHttpContext();
-
-			// Build the return_to URL
-			UriBuilder returnTo = new UriBuilder(this.Channel.GetRequestFromContext().UrlBeforeRewriting);
-
-			// Trim off any parameters with an "openid." prefix, and a few known others
-			// to avoid carrying state from a prior login attempt.
-			returnTo.Query = string.Empty;
-			NameValueCollection queryParams = this.Channel.GetRequestFromContext().QueryStringBeforeRewriting;
-			var returnToParams = new Dictionary<string, string>(queryParams.Count);
-			foreach (string key in queryParams) {
-				if (!IsOpenIdSupportingParameter(key)) {
-					returnToParams.Add(key, queryParams[key]);
-				}
-			}
-			returnTo.AppendQueryArgs(returnToParams);
-
-			return this.CreateRequests(userSuppliedIdentifier, realm, returnTo.Uri);
-		}
-
-		/// <summary>
-		/// Generates the authentication requests that can satisfy the requirements of some OpenID Identifier.
-		/// </summary>
-		/// <param name="userSuppliedIdentifier">
-		/// The Identifier supplied by the user.  This may be a URL, an XRI or i-name.
-		/// </param>
-		/// <returns>
-		/// An authentication request object that describes the HTTP response to
-		/// send to the user agent to initiate the authentication.
-		/// </returns>
-		/// <remarks>
-		/// <para>Any individual generated request can satisfy the authentication.  
-		/// The generated requests are sorted in preferred order.
-		/// Each request is generated as it is enumerated to.  Associations are created only as
-		/// <see cref="IAuthenticationRequest.RedirectingResponse"/> is called.</para>
-		/// <para>No exception is thrown if no OpenID endpoints were discovered.  
-		/// An empty enumerable is returned instead.</para>
-		/// <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
-		/// </remarks>
-		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
-		internal IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier) {
-			Contract.Requires(userSuppliedIdentifier != null);
-			Contract.Ensures(Contract.Result<IEnumerable<IAuthenticationRequest>>() != null);
-			ErrorUtilities.VerifyHttpContext();
-
-			// Build the realm URL
-			UriBuilder realmUrl = new UriBuilder(this.Channel.GetRequestFromContext().UrlBeforeRewriting);
-			realmUrl.Path = HttpContext.Current.Request.ApplicationPath;
-			realmUrl.Query = null;
-			realmUrl.Fragment = null;
-
-			// For RP discovery, the realm url MUST NOT redirect.  To prevent this for 
-			// virtual directory hosted apps, we need to make sure that the realm path ends
-			// in a slash (since our calculation above guarantees it doesn't end in a specific
-			// page like default.aspx).
-			if (!realmUrl.Path.EndsWith("/", StringComparison.Ordinal)) {
-				realmUrl.Path += "/";
-			}
-
-			return this.CreateRequests(userSuppliedIdentifier, new Realm(realmUrl.Uri));
-		}
+#endif
 
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources

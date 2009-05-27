@@ -114,7 +114,11 @@ namespace DotNetOpenAuth.OpenId {
 		/// True if the operation was successful.  False if the string was not a valid OpenId Identifier.
 		/// </returns>
 		public static bool TryParse(string value, out Identifier result) {
-			Contract.Requires(!string.IsNullOrEmpty(value));
+			if (string.IsNullOrEmpty(value)) {
+				result = null;
+				return false;
+			}
+
 			if (IsValid(value)) {
 				result = Parse(value);
 				return true;
