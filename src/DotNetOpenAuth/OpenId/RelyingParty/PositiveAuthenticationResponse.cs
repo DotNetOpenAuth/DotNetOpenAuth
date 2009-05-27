@@ -117,7 +117,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets the positive assertion response message.
 		/// </summary>
-		public internal new PositiveAssertionResponse Response {
+		public new PositiveAssertionResponse Response {
 			get { return (PositiveAssertionResponse)base.Response; }
 		}
 

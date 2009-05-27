@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// Wraps an extension-only response from the OP in an <see cref="IAuthenticationResponse"/> instance
 	/// for public consumption by the host web site.
 	/// </summary>
-	internal class PositiveAnonymousResponse : IAuthenticationResponse {
+	public class PositiveAnonymousResponse : IAuthenticationResponse {
 		/// <summary>
 		/// Backin field for the <see cref="Response"/> property.
 		/// </summary>

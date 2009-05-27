@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// to assert the identity of a user.
 	/// </summary>
 	[Serializable]
-	internal class NegativeAssertionResponse : IndirectResponseBase {
+	public class NegativeAssertionResponse : IndirectResponseBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NegativeAssertionResponse"/> class.
 		/// </summary>

@@ -17,15 +17,13 @@ public partial class RP_DiscoverableReturnTo : System.Web.UI.Page {
 		resultsPanel.Visible = true;
 		realmLabel.Text = e.Request.Realm;
 
-		if (e.Request.IsReturnUrlDiscoverable(ProviderEndpoint.Provider.Channel.WebRequestHandler)) {
+		RelyingPartyDiscoveryResult discoveryResult = e.Request.IsReturnUrlDiscoverable(ProviderEndpoint.Provider);
+		if (discoveryResult == RelyingPartyDiscoveryResult.Success) {
 			MultiView1.SetActiveView(PassView);
 		} else {
 			// Let's collect some details of the failure.
-			bool rpDiscoveryXrdsFound =false;
-			try {
-				rpDiscoveryXrdsFound = e.Request.Realm.Discover(ProviderEndpoint.Provider.Channel.WebRequestHandler, false) != null;
-			} catch (ProtocolException) { }
-			MultiView1.SetActiveView(rpDiscoveryXrdsFound ? FailNoMatchingReturnTo : FailNoXrds);
+			MultiView1.SetActiveView(
+				discoveryResult == RelyingPartyDiscoveryResult.NoMatchingReturnTo ? FailNoMatchingReturnTo : FailNoXrds);
 		}
 	}
 }

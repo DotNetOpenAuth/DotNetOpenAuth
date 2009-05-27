@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// <summary>
 	/// A base class from which identity and non-identity RP requests can derive.
 	/// </summary>
-	internal abstract class HostProcessedRequest : Request, IHostProcessedRequest {
+	public abstract class HostProcessedRequest : Request, IHostProcessedRequest {
 		/// <summary>
 		/// The negative assertion to send, if the host site chooses to send it.
 		/// </summary>
