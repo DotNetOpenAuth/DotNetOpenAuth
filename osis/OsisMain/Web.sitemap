@@ -26,6 +26,7 @@
 		<siteMapNode url="~/RP/CertBadCommonName.aspx" title="RP rejects invalid certificates" />
 		<siteMapNode url="~/RP/AssociationPoisoning.aspx" title="RP protects against association poisoning" />
 		<siteMapNode url="~/RP/DiscoverableReturnTo.aspx" title="RP has discoverable return_to" />
+		<siteMapNode url="~/RP/POSTAssertion.aspx" title="RP accepts POST assertion" />
 		<siteMapNode url="~/RP/InfoCardPpid.aspx" title="InfoCard RP receives Ppid" />
 	</siteMapNode>
 </siteMap>

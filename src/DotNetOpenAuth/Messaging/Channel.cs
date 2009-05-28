@@ -38,7 +38,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// in order to ensure successfully sending a large payload to another server
 		/// that might have a maximum allowable size restriction on its GET request.
 		/// </summary>
-		private const int IndirectMessageGetToPostThreshold = 2 * 1024; // 2KB, recommended by OpenID group
+		public int IndirectMessageGetToPostThreshold = 2 * 1024; // 2KB, recommended by OpenID group
 
 		/// <summary>
 		/// A list of binding elements in the order they must be applied to outgoing messages.
@@ -615,7 +615,7 @@ namespace DotNetOpenAuth.Messaging {
 			// First try creating a 301 redirect, and fallback to a form POST
 			// if the message is too big.
 			OutgoingWebResponse response = this.Create301RedirectResponse(message, fields);
-			if (response.Headers[HttpResponseHeader.Location].Length > IndirectMessageGetToPostThreshold) {
+			if (response.Headers[HttpResponseHeader.Location].Length > this.IndirectMessageGetToPostThreshold) {
 				response = this.CreateFormPostResponse(message, fields);
 			}
 
