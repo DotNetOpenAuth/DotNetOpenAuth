@@ -7,10 +7,6 @@ using System.Web.UI.WebControls;
 using DotNetOpenAuth.OpenId.Provider;
 
 public partial class RP_POSTAssertion : System.Web.UI.Page {
-	protected void Page_Load(object sender, EventArgs e) {
-
-	}
-
 	protected void ProviderEndpoint1_AuthenticationChallenge(object sender, AuthenticationChallengeEventArgs e) {
 		e.Request.IsAuthenticated = true;
 

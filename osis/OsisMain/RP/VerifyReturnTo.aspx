@@ -23,6 +23,8 @@
 			runat="server" Text="Path (capitalization only)" />
 		<asp:Button ID="Button6" OnClick="CompleteAuthentication_Click" CommandArgument="6"
 			runat="server" Text="Extra query parameter" />
+		<asp:Button ID="postArgsButton" OnClick="CompleteAuthentication_Click" CommandArgument="7"
+			runat="server" Text="POST with return_to args in entity" />
 	</asp:Panel>
 	<h3>Instructions </h3>
 	<ol>

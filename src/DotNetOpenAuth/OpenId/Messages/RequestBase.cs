@@ -90,7 +90,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <value>The OP endpoint, or the RP return_to.</value>
 		public Uri Recipient {
 			get;
-			private set;
+			set;
 		}
 
 		#endregion

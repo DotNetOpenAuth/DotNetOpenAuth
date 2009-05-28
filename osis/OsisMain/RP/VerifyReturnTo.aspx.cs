@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using DotNetOpenAuth.Messaging;
-using DotNetOpenAuth.OpenId.Provider;
 using DotNetOpenAuth.OpenId.Messages;
+using DotNetOpenAuth.OpenId.Provider;
 
 /// <remarks>
 /// The attack vector that requires return_to verification to thwart
@@ -38,6 +39,7 @@ public partial class RP_VerifyReturnTo : System.Web.UI.Page {
 		PathSignificant,
 		PathCapitalization,
 		ExtraQueryParameter,
+		PostReturnToArgsInEntity,
 	}
 
 	protected void Page_Load(object sender, EventArgs e) {
@@ -49,6 +51,13 @@ public partial class RP_VerifyReturnTo : System.Web.UI.Page {
 				if (authReq != null) {
 					ViewState["PendingAuth"] = authReq;
 					AuthPanel.Visible = true;
+
+					// The POST return_to args in entity test is meaningless without callback args from the RP.
+					var opAuthReq = (AuthenticationRequest)ViewState["PendingAuth"];
+					if (opAuthReq.positiveResponse.Recipient.Query == null || opAuthReq.positiveResponse.Recipient.Query.Length <= 1) {
+						postArgsButton.Enabled = false;
+						postArgsButton.ToolTip = "This test is not available because the RP did not send any return_to callback arguments.";
+					}
 				} else {
 					op.SendResponse(req);
 				}
@@ -66,11 +75,31 @@ public partial class RP_VerifyReturnTo : System.Web.UI.Page {
 		var opAuthReq = (AuthenticationRequest)ViewState["PendingAuth"];
 		opAuthReq.positiveResponse = new PositiveAssertionResponseNoCheck((CheckIdRequest)opAuthReq.RequestMessage);
 		opAuthReq.IsAuthenticated = true;
-		opAuthReq.positiveResponse.ReturnTo = GetAlteredReturnTo(opAuthReq.positiveResponse.ReturnTo, method);
+
+		// One special test forces use of POST, and moves all callback arguments from
+		// the GET query string to the POST entity.
+		if (method == ReturnToChangeMethod.PostReturnToArgsInEntity) {
+			// force POST
+			op.Channel.IndirectMessageGetToPostThreshold = 1;
+
+			// Copy the callback args to the payload of the message
+			NameValueCollection callbackArgs = HttpUtility.ParseQueryString(opAuthReq.positiveResponse.Recipient.Query);
+			foreach (string key in callbackArgs) {
+				opAuthReq.positiveResponse.ExtraData[key] = callbackArgs[key];
+			}
+
+			// Clear the args from the query string.
+			UriBuilder newRecipient = new UriBuilder(opAuthReq.positiveResponse.Recipient);
+			newRecipient.Query = null;
+			opAuthReq.positiveResponse.Recipient = newRecipient.Uri;
+		} else {
+			opAuthReq.positiveResponse.ReturnTo = GetAlteredReturnTo(opAuthReq.positiveResponse.ReturnTo, method);
+		}
+
 		op.SendResponse(opAuthReq);
 	}
 
-	private Uri GetAlteredReturnTo(Uri originalReturnTo, ReturnToChangeMethod method) {
+	private static Uri GetAlteredReturnTo(Uri originalReturnTo, ReturnToChangeMethod method) {
 		UriBuilder hackedReturnTo = new UriBuilder(originalReturnTo);
 		switch (method) {
 			case ReturnToChangeMethod.Scheme:
