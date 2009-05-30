@@ -298,9 +298,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			// Filter disallowed endpoints.
-			if (relyingParty.SecuritySettings.RejectDelegatingIdentifiers) {
-				serviceEndpoints = serviceEndpoints.Where(se => se.ClaimedIdentifier == se.ProviderLocalIdentifier);
-			}
+			serviceEndpoints = relyingParty.SecuritySettings.FilterEndpoints(serviceEndpoints);
 
 			// Call another method that defers request generation.
 			return CreateInternal(userSuppliedIdentifier, relyingParty, realm, returnToUrl, serviceEndpoints, createNewAssociationsAsNeeded);

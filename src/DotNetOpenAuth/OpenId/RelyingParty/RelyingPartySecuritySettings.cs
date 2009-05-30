@@ -6,6 +6,8 @@
 
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
+	using System.Collections.Generic;
+	using System.Linq;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -51,6 +53,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public bool RequireSsl { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether only OP Identifiers will be discoverable 
+		/// when creating authentication requests.
+		/// </summary>
+		public bool RequireDirectedIdentity { get; set; }
+
+		/// <summary>
 		/// Gets or sets the oldest version of OpenID the remote party is allowed to implement.
 		/// </summary>
 		/// <value>Defaults to <see cref="ProtocolVersion.V10"/></value>
@@ -80,5 +88,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// directly issued by the Provider that is sending the assertion.
 		/// </remarks>
 		public bool RejectDelegatingIdentifiers { get; set; }
+
+		/// <summary>
+		/// Filters out any disallowed endpoints.
+		/// </summary>
+		/// <param name="endpoints">The endpoints discovered on an Identifier.</param>
+		/// <returns>A sequence of endpoints that satisfy all security requirements.</returns>
+		internal IEnumerable<ServiceEndpoint> FilterEndpoints(IEnumerable<ServiceEndpoint> endpoints) {
+			return endpoints
+				.Where(se => !this.RejectDelegatingIdentifiers || se.ClaimedIdentifier == se.ProviderLocalIdentifier)
+				.Where(se => !this.RequireDirectedIdentity || se.ClaimedIdentifier == se.Protocol.ClaimedIdentifierForOPIdentifier);
+		}
 	}
 }

@@ -36,6 +36,11 @@ namespace DotNetOpenAuth.Configuration {
 		private const string RequireSslConfigName = "requireSsl";
 
 		/// <summary>
+		/// Gets the name of the @requireDirectedIdentity attribute.
+		/// </summary>
+		private const string RequireDirectedIdentityConfigName = "requireDirectedIdentity";
+
+		/// <summary>
 		/// Gets the name of the @rejectUnsolicitedAssertions attribute.
 		/// </summary>
 		private const string RejectUnsolicitedAssertionsConfigName = "rejectUnsolicitedAssertions";
@@ -63,6 +68,16 @@ namespace DotNetOpenAuth.Configuration {
 		public bool RequireSsl {
 			get { return (bool)this[RequireSslConfigName]; }
 			set { this[RequireSslConfigName] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether only OP Identifiers will be discoverable 
+		/// when creating authentication requests.
+		/// </summary>
+		[ConfigurationProperty(RequireDirectedIdentityConfigName, DefaultValue = false)]
+		public bool RequireDirectedIdentity {
+			get { return (bool)this[RequireDirectedIdentityConfigName]; }
+			set { this[RequireDirectedIdentityConfigName] = value; }
 		}
 
 		/// <summary>
@@ -142,6 +157,7 @@ namespace DotNetOpenAuth.Configuration {
 
 			RelyingPartySecuritySettings settings = new RelyingPartySecuritySettings();
 			settings.RequireSsl = this.RequireSsl;
+			settings.RequireDirectedIdentity = this.RequireDirectedIdentity;
 			settings.MinimumRequiredOpenIdVersion = this.MinimumRequiredOpenIdVersion;
 			settings.MinimumHashBitLength = this.MinimumHashBitLength;
 			settings.MaximumHashBitLength = this.MaximumHashBitLength;
