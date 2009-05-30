@@ -142,8 +142,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			}
 
 			// Scrape the entity
-			foreach (string key in request.Form) {
-				fields.Add(key, request.Form[key]);
+			if (string.Equals(request.Headers[HttpRequestHeader.ContentType], HttpFormUrlEncoded, StringComparison.Ordinal)) {
+				foreach (string key in request.Form) {
+					fields.Add(key, request.Form[key]);
+				}
 			}
 
 			// Scrape the query string
