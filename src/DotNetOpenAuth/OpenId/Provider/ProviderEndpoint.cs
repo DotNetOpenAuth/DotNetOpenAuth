@@ -100,8 +100,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Sends the response for the <see cref="PendingAuthenticationRequest"/> and clears the property.
 		/// </summary>
 		public static void SendResponse() {
-			Provider.SendResponse(PendingAuthenticationRequest);
+			var pendingRequest = PendingAuthenticationRequest;
 			PendingAuthenticationRequest = null;
+			Provider.SendResponse(pendingRequest); 
 		}
 
 		/// <summary>
