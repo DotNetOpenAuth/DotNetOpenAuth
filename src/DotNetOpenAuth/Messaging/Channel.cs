@@ -323,10 +323,10 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Gets the protocol message embedded in the given HTTP request, if present.
+		/// Gets the protocol message embedded in the current HTTP request.
 		/// </summary>
 		/// <typeparam name="TRequest">The expected type of the message to be received.</typeparam>
-		/// <returns>The deserialized message.</returns>
+		/// <returns>The deserialized message.  Never null.</returns>
 		/// <remarks>
 		/// Requires an HttpContext.Current context.
 		/// </remarks>
@@ -339,11 +339,11 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Gets the protocol message that may be embedded in the given HTTP request.
+		/// Gets the protocol message embedded in the given HTTP request.
 		/// </summary>
 		/// <typeparam name="TRequest">The expected type of the message to be received.</typeparam>
 		/// <param name="httpRequest">The request to search for an embedded message.</param>
-		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
+		/// <returns>The deserialized message.  Never null.</returns>
 		/// <exception cref="ProtocolException">Thrown if the expected message was not recognized in the response.</exception>
 		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "This returns and verifies the appropriate message type.")]
 		public TRequest ReadFromRequest<TRequest>(HttpRequestInfo httpRequest)
