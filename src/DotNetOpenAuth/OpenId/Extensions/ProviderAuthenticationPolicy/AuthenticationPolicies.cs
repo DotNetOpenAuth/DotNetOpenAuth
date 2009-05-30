@@ -37,6 +37,29 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 		public const string PhysicalMultiFactor = "http://schemas.openid.net/pape/policies/2007/06/multi-factor-physical";
 
 		/// <summary>
+		/// Indicates that the Provider MUST use a pair-wise pseudonym for the user that is persistent 
+		/// and unique across the requesting realm as the openid.claimed_id and openid.identity (see Section 4.2).
+		/// </summary>
+		public const string PrivatePersonalIdentifier = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier";
+
+		/// <summary>
+		/// Indicates that the OP MUST only respond with a positive assertion if the requirements demonstrated 
+		/// by the OP to obtain certification by a Federally adopted Trust Framework Provider have been met.
+		/// </summary>
+		/// <remarks>
+		/// Notwithstanding the RP may request this authentication policy, the RP MUST still
+		/// verify that this policy appears in the positive assertion response rather than assume the OP
+		/// recognized and complied with the request.
+		/// </remarks>
+		public const string USGovernmentTrustLevel1 = "http://www.idmanagement.gov/schema/2009/05/icam/openid-trust-level1.pdf";
+
+		/// <summary>
+		/// Indicates that the OP MUST not include any OpenID Attribute Exchange or Simple Registration 
+		/// information regarding the user in the assertion.
+		/// </summary>
+		public const string NoPersonallyIdentifiableInformation = "http://www.idmanagement.gov/schema/2009/05/icam/no-pii.pdf";
+
+		/// <summary>
 		/// Used in a PAPE response to indicate that no PAPE authentication policies could be satisfied.
 		/// </summary>
 		/// <remarks>
