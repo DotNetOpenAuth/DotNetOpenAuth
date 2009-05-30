@@ -28,6 +28,12 @@ namespace DotNetOpenAuth.Messaging {
 	[ContractClass(typeof(ChannelContract))]
 	public abstract class Channel : IDisposable {
 		/// <summary>
+		/// The content-type used on HTTP POST requests where the POST entity is a
+		/// URL-encoded series of key=value pairs.
+		/// </summary>
+		protected internal const string HttpFormUrlEncoded = "application/x-www-form-urlencoded";
+
+		/// <summary>
 		/// The encoding to use when writing out POST entity strings.
 		/// </summary>
 		private static readonly Encoding PostEntityEncoding = new UTF8Encoding(false);
@@ -846,7 +852,7 @@ namespace DotNetOpenAuth.Messaging {
 			ErrorUtilities.VerifyArgumentNotNull(httpRequest, "httpRequest");
 			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
 
-			httpRequest.ContentType = "application/x-www-form-urlencoded";
+			httpRequest.ContentType = HttpFormUrlEncoded;
 
 			// Setting the content-encoding to "utf-8" causes Google to reply
 			// with a 415 UnsupportedMediaType. But adding it doesn't buy us
