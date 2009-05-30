@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// <remarks>
 	/// This class satisfies OpenID 2.0 section 5.2.3.
 	/// </remarks>
-	internal class IndirectErrorResponse : IndirectResponseBase, IErrorMessage {
+	public class IndirectErrorResponse : IndirectResponseBase, IErrorMessage {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="IndirectErrorResponse"/> class.
 		/// </summary>

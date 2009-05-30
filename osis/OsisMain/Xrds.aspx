@@ -15,6 +15,7 @@
 			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/OP/Sreg.aspx"))%></URI>
 			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/OP/POSTAssertion.aspx"))%></URI>
 			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/OP/POSTRequests.aspx"))%></URI>
+			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/OP/IndirectMessageErrors.aspx"))%></URI>
 			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/OP/IdentitylessCheckId.aspx"))%></URI>
 		</Service>
 	</XRD>

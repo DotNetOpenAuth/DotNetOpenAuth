@@ -12,6 +12,8 @@
 		<siteMapNode url="~/OP/HmacSha256.aspx" title="OP supports HMAC-SHA256 associations" />
 		<siteMapNode url="~/OP/POSTAssertion.aspx" title="OP sends large assertions as POST" />
 		<siteMapNode url="~/OP/POSTRequests.aspx" title="OP accepts POSTed authentication requests" />
+		<siteMapNode url="~/OP/DirectMessageErrors.aspx" title="OP sends properly formatted error responses to invalid direct request messages" />
+		<siteMapNode url="~/OP/IndirectMessageErrors.aspx" title="OP sends properly formatted error responses via redirect to the RP to invalid indirect request messages" />
 		<siteMapNode url="~/OP/IdentitylessCheckId.aspx" title="OP properly responds to identity-less checkid messages" />
 		<siteMapNode url="~/RP/HMACSHA256.aspx" title="RP supports HMAC-SHA256 associations" />
 		<siteMapNode url="~/RP/UnsolicitedAssertions.aspx" title="RP accepts unsolicited assertions" />

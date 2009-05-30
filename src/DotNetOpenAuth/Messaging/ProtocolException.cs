@@ -64,7 +64,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Gets the message that caused the exception.
 		/// </summary>
-		internal IProtocolMessage FaultedMessage { get; private set; }
+		public IProtocolMessage FaultedMessage { get; private set; }
 
 		/// <summary>
 		/// When overridden in a derived class, sets the <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with information about the exception.
