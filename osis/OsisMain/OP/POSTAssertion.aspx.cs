@@ -6,19 +6,23 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using DotNetOpenAuth.OpenId.RelyingParty;
 
-public partial class OP_POSTRequests : System.Web.UI.Page {
+public partial class OP_POSTAssertion : System.Web.UI.Page {
 	protected void beginButton_Click(object sender, EventArgs e) {
 		if (!Page.IsValid) {
 			return;
 		}
 
-		// Force all requests to be POSTS
-		openIdTextBox.RelyingParty.Channel.IndirectMessageGetToPostThreshold = 1;
+		// Force callback URL to be just under the limit, which will cause the
+		// OP to be over the limit, causing the OP to send a POST with the assertion.
 		var request = openIdTextBox.CreateRequest();
 		if (request != null) {
 			request.AddCallbackArguments("op_endpoint", request.Provider.Uri.AbsoluteUri);
 			request.AddCallbackArguments("version", request.Provider.Version.ToString());
+
+			int argsize = Convert.ToInt32(callbackArgumentSize.Text);
+			request.AddCallbackArguments("inflate", new string('a', argsize));
 		}
+
 		openIdTextBox.LogOn();
 	}
 
@@ -26,6 +30,19 @@ public partial class OP_POSTRequests : System.Web.UI.Page {
 		e.Cancel = true; // avoid actually logging the user in with FormsAuthentication.
 
 		MultiView1.SetActiveView(View2);
+
+		// Check that this was a POST, and that expected callback arguments are present
+		if (string.IsNullOrEmpty(e.Response.GetCallbackArgument("op_endpoint"))) {
+			testResultDisplay.Pass = false;
+			testResultDisplay.Details = "OP dropped the callback arguments or moved them to the POST entity.";
+			return;
+		}
+		if (Request.HttpMethod != "POST") {
+			testResultDisplay.Pass = false;
+			testResultDisplay.Details = "OP sent GET request.  Try increasing the request inflation size to force a POST.";
+			return;
+		}
+
 		testResultDisplay.Pass = e.Response.Status == AuthenticationStatus.Authenticated;
 		testResultDisplay.ProviderEndpoint = new Uri(e.Response.GetCallbackArgument("op_endpoint"));
 		testResultDisplay.ProtocolVersion = new Version(e.Response.GetCallbackArgument("version"));

@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/TestMaster.master" AutoEventWireup="true"
+﻿<%@ Page Title="OP accepts POSTed authentication requests" Language="C#" MasterPageFile="~/TestMaster.master" AutoEventWireup="true"
 	CodeFile="POSTRequests.aspx.cs" Inherits="OP_POSTRequests" %>
 
 <%@ Register Src="~/TestResultDisplay.ascx" TagPrefix="osis" TagName="TestResultDisplay" %>

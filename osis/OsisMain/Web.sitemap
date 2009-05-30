@@ -10,6 +10,7 @@
 		<siteMapNode url="~/OP/DelegatedIdentifierSelect.aspx" title="OP Asserts new claimed_id if doing identifier Select and is delegated to from a 3rd party" />
 		<siteMapNode url="~/OP/Sreg.aspx" title="OP Simple Registration" />
 		<siteMapNode url="~/OP/HmacSha256.aspx" title="OP supports HMAC-SHA256 associations" />
+		<siteMapNode url="~/OP/POSTAssertion.aspx" title="OP sends large assertions as POST" />
 		<siteMapNode url="~/OP/POSTRequests.aspx" title="OP accepts POSTed authentication requests" />
 		<siteMapNode url="~/RP/HMACSHA256.aspx" title="RP supports HMAC-SHA256 associations" />
 		<siteMapNode url="~/RP/UnsolicitedAssertions.aspx" title="RP accepts unsolicited assertions" />
