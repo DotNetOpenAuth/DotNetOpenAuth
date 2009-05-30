@@ -41,6 +41,11 @@ namespace DotNetOpenAuth.Configuration {
 		private const string RequireDirectedIdentityConfigName = "requireDirectedIdentity";
 
 		/// <summary>
+		/// Gets the name of the @requireAssociation attribute.
+		/// </summary>
+		private const string RequireAssociationConfigName = "requireAssociation";
+
+		/// <summary>
 		/// Gets the name of the @rejectUnsolicitedAssertions attribute.
 		/// </summary>
 		private const string RejectUnsolicitedAssertionsConfigName = "rejectUnsolicitedAssertions";
@@ -78,6 +83,16 @@ namespace DotNetOpenAuth.Configuration {
 		public bool RequireDirectedIdentity {
 			get { return (bool)this[RequireDirectedIdentityConfigName]; }
 			set { this[RequireDirectedIdentityConfigName] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether authentication requests
+		/// will only be created where an association with the Provider can be established.
+		/// </summary>
+		[ConfigurationProperty(RequireAssociationConfigName, DefaultValue = false)]
+		public bool RequireAssociation {
+			get { return (bool)this[RequireAssociationConfigName]; }
+			set { this[RequireAssociationConfigName] = value; }
 		}
 
 		/// <summary>
@@ -158,6 +173,7 @@ namespace DotNetOpenAuth.Configuration {
 			RelyingPartySecuritySettings settings = new RelyingPartySecuritySettings();
 			settings.RequireSsl = this.RequireSsl;
 			settings.RequireDirectedIdentity = this.RequireDirectedIdentity;
+			settings.RequireAssociation = this.RequireAssociation;
 			settings.MinimumRequiredOpenIdVersion = this.MinimumRequiredOpenIdVersion;
 			settings.MinimumHashBitLength = this.MinimumHashBitLength;
 			settings.MaximumHashBitLength = this.MaximumHashBitLength;

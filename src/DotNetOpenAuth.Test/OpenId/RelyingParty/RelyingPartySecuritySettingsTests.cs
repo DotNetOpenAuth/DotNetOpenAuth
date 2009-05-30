@@ -52,5 +52,17 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			this.settings.RequireDirectedIdentity = false;
 			Assert.IsFalse(this.settings.RequireDirectedIdentity);
 		}
+
+		/// <summary>
+		/// Verifies that the <see cref="RelyingPartySecuritySettings.RequireAssociation"/>
+		/// property getter/setter are implemented correctly.
+		/// </summary>
+		[TestMethod]
+		public void RequireAssociation() {
+			this.settings.RequireAssociation = true;
+			Assert.IsTrue(this.settings.RequireAssociation);
+			this.settings.RequireAssociation = false;
+			Assert.IsFalse(this.settings.RequireAssociation);
+		}
 	}
 }

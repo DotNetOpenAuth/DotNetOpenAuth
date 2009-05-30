@@ -90,6 +90,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public bool RejectDelegatingIdentifiers { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether authentication requests will only be
+		/// sent to Providers with whom we can create a shared association.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> to immediately fail authentication if an association with the Provider cannot be established; otherwise, <c>false</c>.
+		/// The default value is <c>false</c>.
+		/// </value>
+		public bool RequireAssociation { get; set; }
+
+		/// <summary>
 		/// Filters out any disallowed endpoints.
 		/// </summary>
 		/// <param name="endpoints">The endpoints discovered on an Identifier.</param>

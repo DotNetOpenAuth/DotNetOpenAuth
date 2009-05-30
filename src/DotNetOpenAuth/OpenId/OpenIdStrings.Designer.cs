@@ -97,6 +97,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No association store has been given but is required for the current configuration..
+        /// </summary>
+        internal static string AssociationStoreRequired {
+            get {
+                return ResourceManager.GetString("AssociationStoreRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to If an association store is given, a nonce store must also be provided..
         /// </summary>
         internal static string AssociationStoreRequiresNonceStore {

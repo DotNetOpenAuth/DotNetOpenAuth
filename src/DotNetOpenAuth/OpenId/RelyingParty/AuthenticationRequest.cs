@@ -328,6 +328,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Contract.Requires(serviceEndpoints != null);
 			Contract.Ensures(Contract.Result<IEnumerable<AuthenticationRequest>>() != null);
 
+			// If shared associations are required, then we had better have an association store.
+			ErrorUtilities.VerifyOperation(!relyingParty.SecuritySettings.RequireAssociation || relyingParty.AssociationManager.HasAssociationStore, OpenIdStrings.AssociationStoreRequired);
+
 			Logger.Yadis.InfoFormat("Performing discovery on user-supplied identifier: {0}", userSuppliedIdentifier);
 			IEnumerable<ServiceEndpoint> endpoints = FilterAndSortEndpoints(serviceEndpoints, relyingParty);
 
@@ -361,18 +364,23 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			// Now that we've run out of endpoints that respond to association requests,
 			// since we apparently are still running, the caller must want another request.
-			// We'll go ahead and generate the requests to OPs that may be down.
+			// We'll go ahead and generate the requests to OPs that may be down -- 
+			// unless associations are set as required in our security settings.
 			if (failedAssociationEndpoints.Count > 0) {
-				Logger.OpenId.WarnFormat("Now generating requests for Provider endpoints that failed initial association attempts.");
+				if (relyingParty.SecuritySettings.RequireAssociation) {
+					Logger.OpenId.Warn("Associations could not be formed with some Providers.  Security settings require shared associations for authentication requests so these will be skipped.");
+				} else {
+					Logger.OpenId.WarnFormat("Now generating requests for Provider endpoints that failed initial association attempts.");
 
-				foreach (var endpoint in failedAssociationEndpoints) {
-					Logger.OpenId.WarnFormat("Creating authentication request for user supplied Identifier: {0}", userSuppliedIdentifier);
+					foreach (var endpoint in failedAssociationEndpoints) {
+						Logger.OpenId.WarnFormat("Creating authentication request for user supplied Identifier: {0}", userSuppliedIdentifier);
 
-					// Create the auth request, but prevent it from attempting to create an association
-					// because we've already tried.  Let's not have it waste time trying again.
-					var authRequest = new AuthenticationRequest(endpoint, realm, returnToUrl, relyingParty);
-					authRequest.associationPreference = AssociationPreference.IfAlreadyEstablished;
-					yield return authRequest;
+						// Create the auth request, but prevent it from attempting to create an association
+						// because we've already tried.  Let's not have it waste time trying again.
+						var authRequest = new AuthenticationRequest(endpoint, realm, returnToUrl, relyingParty);
+						authRequest.associationPreference = AssociationPreference.IfAlreadyEstablished;
+						yield return authRequest;
+					}
 				}
 			}
 		}

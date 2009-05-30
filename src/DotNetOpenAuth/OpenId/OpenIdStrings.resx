@@ -319,4 +319,7 @@ Discovered endpoint info:
   <data name="XriResolutionDisabled" xml:space="preserve">
     <value>XRI support has been disabled at this site.</value>
   </data>
+  <data name="AssociationStoreRequired" xml:space="preserve">
+    <value>No association store has been given but is required for the current configuration.</value>
+  </data>
 </root>
