@@ -85,9 +85,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// succeeded.
 		/// </summary>
 		/// <param name="provider">The OpenIdProvider that is performing the RP discovery.</param>
-		/// <returns>
-		/// 	<c>true</c> if the Relying Party passed discovery verification; <c>false</c> otherwise.
-		/// </returns>
+		/// <returns>Result of realm discovery.</returns>
 		/// <remarks>
 		/// Return URL verification is only attempted if this property is queried.
 		/// The result of the verification is cached per request so calling this
