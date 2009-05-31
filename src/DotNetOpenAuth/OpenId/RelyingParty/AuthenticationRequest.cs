@@ -89,7 +89,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <value></value>
 		public OutgoingWebResponse RedirectingResponse {
-			get { return this.RelyingParty.Channel.PrepareResponse(this.CreateRequestMessage()); }
+			get {
+				foreach (var profile in this.RelyingParty.SecuritySettings.SecurityProfiles) {
+					profile.OnOutgoingAuthenticationRequest(this.RelyingParty, this);
+				}
+
+				return this.RelyingParty.Channel.PrepareResponse(this.CreateRequestMessage());
+			}
 		}
 
 		/// <summary>
@@ -160,6 +166,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		internal AssociationPreference AssociationPreference {
 			get { return this.associationPreference; }
 			set { this.associationPreference = value; }
+		}
+
+		/// <summary>
+		/// Gets the extensions that have been added to th request.
+		/// </summary>
+		internal IEnumerable<IOpenIdMessageExtension> AppliedExtensions {
+			get { return this.extensions; }
 		}
 
 		#region IAuthenticationRequest methods

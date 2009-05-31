@@ -474,7 +474,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				NegativeAssertionResponse negativeAssertion;
 				IndirectSignedResponse positiveExtensionOnly;
 				if ((positiveAssertion = message as PositiveAssertionResponse) != null) {
-					return new PositiveAuthenticationResponse(positiveAssertion, this);
+					var response = new PositiveAuthenticationResponse(positiveAssertion, this);
+					foreach (var profile in this.SecuritySettings.SecurityProfiles) {
+						profile.OnIncomingPositiveAssertion(this, response);
+					}
+
+					return response;
 				} else if ((positiveExtensionOnly = message as IndirectSignedResponse) != null) {
 					return new PositiveAnonymousResponse(positiveExtensionOnly);
 				} else if ((negativeAssertion = message as NegativeAssertionResponse) != null) {

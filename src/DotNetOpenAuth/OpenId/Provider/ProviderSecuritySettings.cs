@@ -7,6 +7,9 @@
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Collections.Specialized;
+	using System.Linq;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -24,6 +27,11 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		internal const bool SignOutgoingExtensionsDefault = true;
 
 		/// <summary>
+		/// Backing store for the <see cref="SecurityProfiles"/> property.
+		/// </summary>
+		private readonly ObservableCollection<IProviderSecurityProfile> securityProfiles = new ObservableCollection<IProviderSecurityProfile>();
+
+		/// <summary>
 		/// The subset of association types and their customized lifetimes.
 		/// </summary>
 		private IDictionary<string, TimeSpan> associationLifetimes = new Dictionary<string, TimeSpan>();
@@ -35,6 +43,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			: base(true) {
 			this.SignOutgoingExtensions = SignOutgoingExtensionsDefault;
 			this.ProtectDownlevelReplayAttacks = ProtectDownlevelReplayAttacksDefault;
+			this.securityProfiles.CollectionChanged += this.OnSecurityProfilesChanged;
 		}
 
 		/// <summary>
@@ -51,6 +60,13 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <value>Default is <c>false</c>.</value>
 		public bool RequireSsl { get; set; }
+
+		/// <summary>
+		/// Gets a list of custom security profiles to apply to OpenID actions.
+		/// </summary>
+		internal ICollection<IProviderSecurityProfile> SecurityProfiles {
+			get { return this.securityProfiles; }
+		}
 
 		/// <summary>
 		/// Gets or sets a value indicating whether OpenID 1.x relying parties that may not be
@@ -81,5 +97,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// needed for testing the RP's rejection of unsigned extensions.
 		/// </remarks>
 		internal bool SignOutgoingExtensions { get; set; }
+
+		/// <summary>
+		/// Gets the custom security profiles.
+		/// </summary>
+		internal override IEnumerable<ISecurityProfile> CustomSecurityProfiles {
+			get { return this.securityProfiles.Cast<ISecurityProfile>(); }
+		}
 	}
 }

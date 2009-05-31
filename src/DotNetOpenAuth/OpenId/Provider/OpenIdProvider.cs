@@ -199,24 +199,40 @@ namespace DotNetOpenAuth.OpenId.Provider {
 					ErrorUtilities.ThrowProtocol(MessagingStrings.UnexpectedMessageReceivedOfMany);
 				}
 
+				IRequest result = null;
+
 				var checkIdMessage = incomingMessage as CheckIdRequest;
 				if (checkIdMessage != null) {
-					return new AuthenticationRequest(this, checkIdMessage);
+					result = new AuthenticationRequest(this, checkIdMessage);
 				}
 
-				var extensionOnlyRequest = incomingMessage as SignedResponseRequest;
-				if (extensionOnlyRequest != null) {
-					return new AnonymousRequest(this, extensionOnlyRequest);
+				if (result == null) {
+					var extensionOnlyRequest = incomingMessage as SignedResponseRequest;
+					if (extensionOnlyRequest != null) {
+						result = new AnonymousRequest(this, extensionOnlyRequest);
+					}
 				}
 
-				var checkAuthMessage = incomingMessage as CheckAuthenticationRequest;
-				if (checkAuthMessage != null) {
-					return new AutoResponsiveRequest(incomingMessage, new CheckAuthenticationResponse(checkAuthMessage, this));
+				if (result == null) {
+					var checkAuthMessage = incomingMessage as CheckAuthenticationRequest;
+					if (checkAuthMessage != null) {
+						result = new AutoResponsiveRequest(incomingMessage, new CheckAuthenticationResponse(checkAuthMessage, this));
+					}
 				}
 
-				var associateMessage = incomingMessage as AssociateRequest;
-				if (associateMessage != null) {
-					return new AutoResponsiveRequest(incomingMessage, associateMessage.CreateResponse(this.AssociationStore, this.SecuritySettings));
+				if (result == null) {
+					var associateMessage = incomingMessage as AssociateRequest;
+					if (associateMessage != null) {
+						result = new AutoResponsiveRequest(incomingMessage, associateMessage.CreateResponse(this.AssociationStore, this.SecuritySettings));
+					}
+				}
+
+				if (result != null) {
+					foreach (var profile in this.SecuritySettings.SecurityProfiles) {
+						profile.OnIncomingRequest(this, result);
+					}
+
+					return result;
 				}
 
 				throw ErrorUtilities.ThrowProtocol(MessagingStrings.UnexpectedMessageReceivedOfMany);
@@ -248,6 +264,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			Contract.Requires(((Request)request).IsResponseReady);
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
+			this.ApplySecurityProfilesToResponse(request);
 			Request requestInternal = (Request)request;
 			this.Channel.Send(requestInternal.Response);
 		}
@@ -264,6 +281,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			Contract.Requires(((Request)request).IsResponseReady);
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
+			this.ApplySecurityProfilesToResponse(request);
 			Request requestInternal = (Request)request;
 			return this.Channel.PrepareResponse(requestInternal.Response);
 		}
@@ -389,6 +407,19 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Applies all security profiles to the response message.
+		/// </summary>
+		/// <param name="request">The request.</param>
+		private void ApplySecurityProfilesToResponse(IRequest request) {
+			var authRequest = request as IAuthenticationRequest;
+			if (authRequest != null) {
+				foreach (var profile in this.SecuritySettings.SecurityProfiles) {
+					profile.OnOutgoingResponse(this, authRequest);
+				}
+			}
+		}
 
 		/// <summary>
 		/// Prepares the return value for the GetRequest method in the event of an exception.

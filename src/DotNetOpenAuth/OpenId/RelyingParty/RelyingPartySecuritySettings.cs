@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
 
@@ -15,11 +16,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// </summary>
 	public sealed class RelyingPartySecuritySettings : SecuritySettings {
 		/// <summary>
+		/// Backing store for the <see cref="SecurityProfiles"/> property.
+		/// </summary>
+		private readonly ObservableCollection<IRelyingPartySecurityProfile> securityProfiles = new ObservableCollection<IRelyingPartySecurityProfile>();
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="RelyingPartySecuritySettings"/> class.
 		/// </summary>
 		internal RelyingPartySecuritySettings()
 			: base(false) {
 			this.PrivateSecretMaximumAge = TimeSpan.FromDays(7);
+			this.securityProfiles.CollectionChanged += this.OnSecurityProfilesChanged;
 		}
 
 		/// <summary>
@@ -108,6 +115,20 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The default value is <c>false</c>.
 		/// </value>
 		public bool RequireAssociation { get; set; }
+
+		/// <summary>
+		/// Gets a list of custom security profiles to apply to OpenID actions.
+		/// </summary>
+		internal ICollection<IRelyingPartySecurityProfile> SecurityProfiles {
+			get { return this.securityProfiles; }
+		}
+
+		/// <summary>
+		/// Gets the custom security profiles.
+		/// </summary>
+		internal override IEnumerable<ISecurityProfile> CustomSecurityProfiles {
+			get { return this.securityProfiles.Cast<ISecurityProfile>(); }
+		}
 
 		/// <summary>
 		/// Filters out any disallowed endpoints.

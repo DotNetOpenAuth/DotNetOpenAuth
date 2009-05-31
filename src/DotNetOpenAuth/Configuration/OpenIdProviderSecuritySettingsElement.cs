@@ -41,6 +41,11 @@ namespace DotNetOpenAuth.Configuration {
 		private const string RequireSslConfigName = "requireSsl";
 
 		/// <summary>
+		/// Gets the name of the &lt;profiles&gt; sub-element.
+		/// </summary>
+		private const string ProfilesElementName = "profiles";
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdProviderSecuritySettingsElement"/> class.
 		/// </summary>
 		public OpenIdProviderSecuritySettingsElement() {
@@ -84,6 +89,16 @@ namespace DotNetOpenAuth.Configuration {
 		}
 
 		/// <summary>
+		/// Gets or sets the predefined security profiles to apply.
+		/// </summary>
+		[ConfigurationProperty(ProfilesElementName, IsDefaultCollection = false)]
+		[ConfigurationCollection(typeof(TypeConfigurationCollection<IProviderSecurityProfile>))]
+		public TypeConfigurationCollection<IProviderSecurityProfile> Profiles {
+			get { return (TypeConfigurationCollection<IProviderSecurityProfile>)this[ProfilesElementName] ?? new TypeConfigurationCollection<IProviderSecurityProfile>(); }
+			set { this[ProfilesElementName] = value; }
+		}
+
+		/// <summary>
 		/// Gets or sets the configured lifetimes of the various association types.
 		/// </summary>
 		[ConfigurationProperty(AssociationsConfigName, IsDefaultCollection = false)]
@@ -113,6 +128,11 @@ namespace DotNetOpenAuth.Configuration {
 				Contract.Assume(element != null);
 				settings.AssociationLifetimes.Add(element.AssociationType, element.MaximumLifetime);
 			}
+
+			foreach (var profile in this.Profiles.CreateInstances(false)) {
+				settings.SecurityProfiles.Add(profile);
+			}
+
 			return settings;
 		}
 	}
