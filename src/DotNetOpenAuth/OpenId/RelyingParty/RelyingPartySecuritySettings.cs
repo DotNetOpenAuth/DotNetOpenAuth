@@ -90,6 +90,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public bool RejectDelegatingIdentifiers { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether unsigned extensions in authentication responses should be ignored.
+		/// </summary>
+		/// <value>The default value is <c>false</c>.</value>
+		/// <remarks>
+		/// When set to true, the <see cref="IAuthenticationResponse.GetUntrustedExtension"/> methods
+		/// will not return any extension that was not signed by the Provider.
+		/// </remarks>
+		public bool IgnoreUnsignedExtensions { get; set; }
+
+		/// <summary>
 		/// Gets or sets a value indicating whether authentication requests will only be
 		/// sent to Providers with whom we can create a shared association.
 		/// </summary>

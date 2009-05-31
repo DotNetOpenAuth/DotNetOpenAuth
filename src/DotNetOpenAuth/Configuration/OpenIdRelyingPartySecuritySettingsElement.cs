@@ -56,6 +56,11 @@ namespace DotNetOpenAuth.Configuration {
 		private const string RejectDelegatingIdentifiersConfigName = "rejectDelegatingIdentifiers";
 
 		/// <summary>
+		/// Gets the name of the @ignoreUnsignedExtensions attribute.
+		/// </summary>
+		private const string IgnoreUnsignedExtensionsConfigName = "ignoreUnsignedExtensions";
+
+		/// <summary>
 		/// Gets the name of the @privateSecretMaximumAge attribute.
 		/// </summary>
 		private const string PrivateSecretMaximumAgeConfigName = "privateSecretMaximumAge";
@@ -164,6 +169,20 @@ namespace DotNetOpenAuth.Configuration {
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether unsigned extensions in authentication responses should be ignored.
+		/// </summary>
+		/// <value>The default value is <c>false</c>.</value>
+		/// <remarks>
+		/// When set to true, the <see cref="IAuthenticationResponse.GetUntrustedExtension"/> methods
+		/// will not return any extension that was not signed by the Provider.
+		/// </remarks>
+		[ConfigurationProperty(IgnoreUnsignedExtensionsConfigName, DefaultValue = false)]
+		public bool IgnoreUnsignedExtensions {
+			get { return (bool)this[IgnoreUnsignedExtensionsConfigName]; }
+			set { this[IgnoreUnsignedExtensionsConfigName] = value; }
+		}
+
+		/// <summary>
 		/// Initializes a programmatically manipulatable bag of these security settings with the settings from the config file.
 		/// </summary>
 		/// <returns>The newly created security settings object.</returns>
@@ -180,6 +199,7 @@ namespace DotNetOpenAuth.Configuration {
 			settings.PrivateSecretMaximumAge = this.PrivateSecretMaximumAge;
 			settings.RejectUnsolicitedAssertions = this.RejectUnsolicitedAssertions;
 			settings.RejectDelegatingIdentifiers = this.RejectDelegatingIdentifiers;
+			settings.IgnoreUnsignedExtensions = this.IgnoreUnsignedExtensions;
 			return settings;
 		}
 	}

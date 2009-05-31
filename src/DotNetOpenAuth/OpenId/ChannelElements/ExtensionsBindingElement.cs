@@ -23,13 +23,26 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// </summary>
 	internal class ExtensionsBindingElement : IChannelBindingElement {
 		/// <summary>
+		/// The security settings that apply to this binding element.
+		/// </summary>
+		private readonly SecuritySettings securitySettings;
+
+		/// <summary>
+		/// The security settings that apply to this relying party, if it is a relying party.
+		/// </summary>
+		private readonly RelyingPartySecuritySettings relyingPartySecuritySettings;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="ExtensionsBindingElement"/> class.
 		/// </summary>
 		/// <param name="extensionFactory">The extension factory.</param>
-		internal ExtensionsBindingElement(IOpenIdExtensionFactory extensionFactory) {
+		internal ExtensionsBindingElement(IOpenIdExtensionFactory extensionFactory, SecuritySettings securitySettings) {
 			ErrorUtilities.VerifyArgumentNotNull(extensionFactory, "extensionFactory");
+			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
 
 			this.ExtensionFactory = extensionFactory;
+			this.securitySettings = securitySettings;
+			this.relyingPartySecuritySettings = securitySettings as RelyingPartySecuritySettings;
 		}
 
 		#region IChannelBindingElement Members
@@ -141,10 +154,12 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 				// Now search again, considering ALL extensions whether they are signed or not,
 				// skipping the signed ones and adding the new ones as unsigned extensions.
-				Func<string, bool> isNotSigned = typeUri => !extendableMessage.Extensions.Cast<IOpenIdMessageExtension>().Any(ext => ext.TypeUri == typeUri);
-				foreach (IOpenIdMessageExtension unsignedExtension in this.GetExtensions(extendableMessage, false, isNotSigned)) {
-					unsignedExtension.IsSignedByRemoteParty = false;
-					extendableMessage.Extensions.Add(unsignedExtension);
+				if (this.relyingPartySecuritySettings == null || !this.relyingPartySecuritySettings.IgnoreUnsignedExtensions) {
+					Func<string, bool> isNotSigned = typeUri => !extendableMessage.Extensions.Cast<IOpenIdMessageExtension>().Any(ext => ext.TypeUri == typeUri);
+					foreach (IOpenIdMessageExtension unsignedExtension in this.GetExtensions(extendableMessage, false, isNotSigned)) {
+						unsignedExtension.IsSignedByRemoteParty = false;
+						extendableMessage.Extensions.Add(unsignedExtension);
+					}
 				}
 
 				return MessageProtections.None;
