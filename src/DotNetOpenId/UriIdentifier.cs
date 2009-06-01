@@ -155,7 +155,7 @@ namespace DotNetOpenId {
 
 				// rel attributes are supposed to be interpreted with case INsensitivity, 
 				// and is a space-delimited list of values. (http://www.htmlhelp.com/reference/html40/values.html#linktypes)
-				var serverLinkTag = Util.FirstOrDefault(linkTags, tag => Regex.IsMatch(tag.Attributes["rel"], @"\b" + Regex.Escape(protocol.HtmlDiscoveryProviderKey) + @"\b", RegexOptions.IgnoreCase));
+				var serverLinkTag = Util.FirstOrDefault(linkTags, tag => tag.Attributes["rel"] != null && Regex.IsMatch(tag.Attributes["rel"], @"\b" + Regex.Escape(protocol.HtmlDiscoveryProviderKey) + @"\b", RegexOptions.IgnoreCase));
 				if (serverLinkTag == null) {
 					continue;
 				}
@@ -164,7 +164,7 @@ namespace DotNetOpenId {
 				if (Uri.TryCreate(serverLinkTag.Href, UriKind.Absolute, out providerEndpoint)) {
 					// See if a LocalId tag of the discovered version exists
 					Identifier providerLocalIdentifier = null;
-					var delegateLinkTag = Util.FirstOrDefault(linkTags, tag => Regex.IsMatch(tag.Attributes["rel"], @"\b" + Regex.Escape(protocol.HtmlDiscoveryLocalIdKey) + @"\b", RegexOptions.IgnoreCase));
+					var delegateLinkTag = Util.FirstOrDefault(linkTags, tag => tag.Attributes["rel"] != null && Regex.IsMatch(tag.Attributes["rel"], @"\b" + Regex.Escape(protocol.HtmlDiscoveryLocalIdKey) + @"\b", RegexOptions.IgnoreCase));
 					if (delegateLinkTag != null) {
 						if (Identifier.IsValid(delegateLinkTag.Href)) {
 							providerLocalIdentifier = delegateLinkTag.Href;
