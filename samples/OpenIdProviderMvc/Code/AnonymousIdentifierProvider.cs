@@ -3,9 +3,10 @@
 	using System.Web.Security;
 	using DotNetOpenAuth.ApplicationBlock.Provider;
 	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.Provider;
 	using OpenIdProviderMvc.Models;
 
-	internal class AnonymousIdentifierProvider : AnonymousIdentifierProviderBase {
+	internal class AnonymousIdentifierProvider : PrivatePersonalIdentifierProviderBase {
 		internal AnonymousIdentifierProvider()
 			: base(Util.GetAppPathRootedUri("anon?id=")) {
 		}

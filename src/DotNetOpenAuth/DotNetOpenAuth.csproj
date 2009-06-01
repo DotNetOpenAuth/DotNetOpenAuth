@@ -373,6 +373,7 @@
     <Compile Include="OpenId\Messages\SignedResponseRequest.cs" />
     <Compile Include="OpenId\NoDiscoveryIdentifier.cs" />
     <Compile Include="OpenId\OpenIdUtilities.cs" />
+    <Compile Include="OpenId\Provider\PrivatePersonalIdentifierProviderBase.cs" />
     <Compile Include="OpenId\Provider\AnonymousRequest.cs" />
     <Compile Include="OpenId\Provider\AnonymousRequestEventArgs.cs" />
     <Compile Include="OpenId\Provider\AuthenticationChallengeEventArgs.cs" />
@@ -381,6 +382,7 @@
     <Compile Include="OpenId\Provider\HostProcessedRequest.cs" />
     <Compile Include="OpenId\Provider\IAnonymousRequest.cs" />
     <Compile Include="OpenId\Provider\IAuthenticationRequest.cs" />
+    <Compile Include="OpenId\Provider\IDirectedIdentityCustomIdentifier.cs" />
     <Compile Include="OpenId\Provider\IHostProcessedRequest.cs" />
     <Compile Include="OpenId\Provider\IdentityEndpoint.cs" />
     <Compile Include="OpenId\Provider\IdentityEndpointNormalizationEventArgs.cs" />

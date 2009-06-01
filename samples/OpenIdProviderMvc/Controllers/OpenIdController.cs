@@ -45,7 +45,7 @@ namespace OpenIdProviderMvc.Controllers {
 				}
 
 				var anonProvider = new AnonymousIdentifierProvider();
-				authReq.ScrubPersonallyIdentifiableInformation(localIdentifier, anonProvider, true);
+				authReq.ScrubPersonallyIdentifiableInformation(localIdentifier, anonProvider);
 				authReq.IsAuthenticated = true;
 			} else {
 				if (authReq.IsDirectedIdentity) {
