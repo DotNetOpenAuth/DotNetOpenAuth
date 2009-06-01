@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
+	using System.Globalization;
 	using System.Linq;
 	using System.Security.Cryptography;
 	using System.Text;
@@ -40,7 +41,31 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			this.Hasher = HashAlgorithm.Create(HashAlgorithmName);
 			this.Encoder = Encoding.UTF8;
 			this.BaseIdentifier = baseIdentifier;
-			this.PairwiseUnique = true;
+			this.PairwiseUnique = AudienceScope.Realm;
+		}
+
+		/// <summary>
+		/// A granularity description for who wide of an audience sees the same generated PPID.
+		/// </summary>
+		public enum AudienceScope {
+			/// <summary>
+			/// A unique Identifier is generated for every realm.  This is the highest security setting.
+			/// </summary>
+			Realm,
+
+			/// <summary>
+			/// Only the host name in the realm is used in calculating the PPID,
+			/// allowing for some level of sharing of the PPID Identifiers between RPs
+			/// that are able to share the same realm host value.
+			/// </summary>
+			RealmHost,
+
+			/// <summary>
+			/// Although the user's Identifier is still opaque to the RP so they cannot determine
+			/// who the user is at the OP, the same Identifier is used at all RPs so collusion
+			/// between the RPs is possible.
+			/// </summary>
+			Global,
 		}
 
 		/// <summary>
@@ -52,8 +77,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Gets or sets a value indicating whether each Realm will get its own private identifier
 		/// for the authenticating uesr.
 		/// </summary>
-		/// <value>The default value is <c>true</c>.</value>
-		public bool PairwiseUnique { get; set; }
+		/// <value>The default value is <see cref="AudienceScope.Realm"/>.</value>
+		public AudienceScope PairwiseUnique { get; set; }
 
 		/// <summary>
 		/// Gets the hash function to use to perform the one-way transform of a personal identifier
@@ -100,8 +125,22 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 			byte[] salt = this.GetHashSaltForLocalIdentifier(localIdentifier);
 			string valueToHash = localIdentifier + "#";
-			if (this.PairwiseUnique) {
-				valueToHash += relyingPartyRealm;
+			switch (this.PairwiseUnique) {
+				case AudienceScope.Realm:
+					valueToHash += relyingPartyRealm;
+					break;
+				case AudienceScope.RealmHost:
+					valueToHash += relyingPartyRealm.Host;
+					break;
+				case AudienceScope.Global:
+					break;
+				default:
+					throw new InvalidOperationException(
+						string.Format(
+							CultureInfo.CurrentCulture,
+							OpenIdStrings.UnexpectedEnumPropertyValue,
+							"PairwiseUnique",
+							this.PairwiseUnique));
 			}
 
 			byte[] valueAsBytes = this.Encoder.GetBytes(valueToHash);

@@ -322,4 +322,7 @@ Discovered endpoint info:
   <data name="AssociationStoreRequired" xml:space="preserve">
     <value>No association store has been given but is required for the current configuration.</value>
   </data>
+  <data name="UnexpectedEnumPropertyValue" xml:space="preserve">
+    <value>The property {0} had unexpected value {1}.</value>
+  </data>
 </root>

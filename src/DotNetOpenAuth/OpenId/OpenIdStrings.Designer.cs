@@ -578,6 +578,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The property {0} had unexpected value {1}..
+        /// </summary>
+        internal static string UnexpectedEnumPropertyValue {
+            get {
+                return ResourceManager.GetString("UnexpectedEnumPropertyValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unexpected HTTP status code {0} {1} received in direct response..
         /// </summary>
         internal static string UnexpectedHttpStatusCode {
