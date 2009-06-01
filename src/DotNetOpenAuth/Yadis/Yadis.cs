@@ -76,7 +76,7 @@ namespace DotNetOpenAuth.Yadis {
 						Logger.Yadis.DebugFormat("{0} found in HTTP header.  Preparing to pull XRDS from {1}", HeaderName, url);
 					}
 				}
-				if (url == null && response.ContentType != null && response.ContentType.MediaType == ContentTypes.Html) {
+				if (url == null && response.ContentType != null && (response.ContentType.MediaType == ContentTypes.Html || response.ContentType.MediaType == ContentTypes.XHtml)) {
 					url = FindYadisDocumentLocationInHtmlMetaTags(response.GetResponseString());
 					if (url != null) {
 						Logger.Yadis.DebugFormat("{0} found in HTML Http-Equiv tag.  Preparing to pull XRDS from {1}", HeaderName, url);
