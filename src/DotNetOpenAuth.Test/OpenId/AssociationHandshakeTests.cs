@@ -375,8 +375,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 					var unencryptedResponse = (AssociateUnencryptedResponse)associateSuccessfulResponse;
 				}
 			} else {
-				Assert.IsNull(associationManagerAccessor.associationStore.GetAssociation(opDescription.Endpoint, new SecuritySettings(false)));
-				Assert.IsNull(coordinator.Provider.AssociationStore.GetAssociation(AssociationRelyingPartyType.Smart, new SecuritySettings(true)));
+				Assert.IsNull(associationManagerAccessor.associationStore.GetAssociation(opDescription.Endpoint, new RelyingPartySecuritySettings()));
+				Assert.IsNull(coordinator.Provider.AssociationStore.GetAssociation(AssociationRelyingPartyType.Smart, new ProviderSecuritySettings()));
 			}
 		}
 	}

@@ -36,6 +36,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Initializes a new instance of the <see cref="ExtensionsBindingElement"/> class.
 		/// </summary>
 		/// <param name="extensionFactory">The extension factory.</param>
+		/// <param name="securitySettings">The security settings.</param>
 		internal ExtensionsBindingElement(IOpenIdExtensionFactory extensionFactory, SecuritySettings securitySettings) {
 			ErrorUtilities.VerifyArgumentNotNull(extensionFactory, "extensionFactory");
 			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
