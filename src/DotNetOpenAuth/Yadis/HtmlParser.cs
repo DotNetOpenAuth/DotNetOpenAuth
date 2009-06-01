@@ -5,8 +5,11 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Yadis {
+	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
+	using System.Linq;
 	using System.Text;
 	using System.Text.RegularExpressions;
 	using System.Web;
@@ -85,6 +88,19 @@ namespace DotNetOpenAuth.Yadis {
 					}
 				}
 			}
+		}
+
+		/// <summary>
+		/// Filters a list of controls based on presence of an attribute.
+		/// </summary>
+		/// <typeparam name="T">The type of HTML controls being filtered.</typeparam>
+		/// <param name="sequence">The sequence.</param>
+		/// <param name="attribute">The attribute.</param>
+		/// <returns>A filtered sequence of attributes.</returns>
+		internal static IEnumerable<T> WithAttribute<T>(this IEnumerable<T> sequence, string attribute) where T : HtmlControl {
+			Contract.Requires<ArgumentNullException>(sequence != null);
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(attribute));
+			return sequence.Where(tag => tag.Attributes[attribute] != null);
 		}
 
 		/// <summary>
