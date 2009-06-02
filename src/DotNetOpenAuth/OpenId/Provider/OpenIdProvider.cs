@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
@@ -29,6 +30,11 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// instance of <see cref="StandardProviderApplicationStore"/> to use.
 		/// </summary>
 		private const string ApplicationStoreKey = "DotNetOpenAuth.OpenId.Provider.OpenIdProvider.ApplicationStore";
+
+		/// <summary>
+		/// Backing store for the <see cref="SecurityProfiles"/> property.
+		/// </summary>
+		private readonly Collection<IProviderSecurityProfile> securityProfiles = new Collection<IProviderSecurityProfile>();
 
 		/// <summary>
 		/// Backing field for the <see cref="SecuritySettings"/> property.
@@ -73,6 +79,10 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 			this.AssociationStore = associationStore;
 			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OpenId.Provider.SecuritySettings.CreateSecuritySettings();
+			foreach (var securityProfile in DotNetOpenAuthSection.Configuration.OpenId.Provider.SecurityProfiles.CreateInstances(false)) {
+				this.securityProfiles.Add(securityProfile);
+			}
+
 			this.Channel = new OpenIdChannel(this.AssociationStore, nonceStore, this.SecuritySettings);
 		}
 
@@ -136,6 +146,13 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// notifications of errors when communicating with remote parties.
 		/// </summary>
 		public IErrorReporting ErrorReporting { get; set; }
+
+		/// <summary>
+		/// Gets a list of custom security profiles to apply to OpenID actions.
+		/// </summary>
+		internal ICollection<IProviderSecurityProfile> SecurityProfiles {
+			get { return this.securityProfiles; }
+		}
 
 		/// <summary>
 		/// Gets the association store.
@@ -216,20 +233,23 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				if (result == null) {
 					var checkAuthMessage = incomingMessage as CheckAuthenticationRequest;
 					if (checkAuthMessage != null) {
-						result = new AutoResponsiveRequest(incomingMessage, new CheckAuthenticationResponse(checkAuthMessage, this));
+						result = new AutoResponsiveRequest(incomingMessage, new CheckAuthenticationResponse(checkAuthMessage, this), this.SecuritySettings);
 					}
 				}
 
 				if (result == null) {
 					var associateMessage = incomingMessage as AssociateRequest;
 					if (associateMessage != null) {
-						result = new AutoResponsiveRequest(incomingMessage, associateMessage.CreateResponse(this.AssociationStore, this.SecuritySettings));
+						result = new AutoResponsiveRequest(incomingMessage, associateMessage.CreateResponse(this.AssociationStore, this.SecuritySettings), this.SecuritySettings);
 					}
 				}
 
 				if (result != null) {
-					foreach (var profile in this.SecuritySettings.SecurityProfiles) {
-						profile.OnIncomingRequest(this, result);
+					foreach (var profile in this.SecurityProfiles) {
+						if (profile.OnIncomingRequest(result)) {
+							// This security profile matched this request.
+							break;
+						}
 					}
 
 					return result;
@@ -415,8 +435,11 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		private void ApplySecurityProfilesToResponse(IRequest request) {
 			var authRequest = request as IAuthenticationRequest;
 			if (authRequest != null) {
-				foreach (var profile in this.SecuritySettings.SecurityProfiles) {
-					profile.OnOutgoingResponse(this, authRequest);
+				foreach (var profile in this.SecurityProfiles) {
+					if (profile.OnOutgoingResponse(authRequest)) {
+						// This security profile matched this request.
+						break;
+					}
 				}
 			}
 		}
@@ -476,9 +499,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 
 			if (incomingMessage != null) {
-				return new AutoResponsiveRequest(incomingMessage, errorMessage);
+				return new AutoResponsiveRequest(incomingMessage, errorMessage, this.SecuritySettings);
 			} else {
-				return new AutoResponsiveRequest(errorMessage);
+				return new AutoResponsiveRequest(errorMessage, this.SecuritySettings);
 			}
 		}
 	}

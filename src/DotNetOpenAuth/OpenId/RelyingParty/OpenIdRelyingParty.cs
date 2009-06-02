@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Collections.Specialized;
 	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
@@ -41,6 +42,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// instance of <see cref="StandardRelyingPartyApplicationStore"/> to use.
 		/// </summary>
 		private const string ApplicationStoreKey = "DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingParty.ApplicationStore";
+
+		/// <summary>
+		/// Backing store for the <see cref="SecurityProfiles"/> property.
+		/// </summary>
+		private readonly ObservableCollection<IRelyingPartySecurityProfile> securityProfiles = new ObservableCollection<IRelyingPartySecurityProfile>();
 
 		/// <summary>
 		/// Backing field for the <see cref="SecuritySettings"/> property.
@@ -85,6 +91,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			ErrorUtilities.VerifyArgument(associationStore == null || nonceStore != null, OpenIdStrings.AssociationStoreRequiresNonceStore);
 
 			this.securitySettings = DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.SecuritySettings.CreateSecuritySettings();
+			this.securityProfiles.CollectionChanged += this.OnSecurityProfilesChanged;
+			foreach (var securityProfile in DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.SecurityProfiles.CreateInstances(false)) {
+				this.securityProfiles.Add(securityProfile);
+			}
 
 			// Without a nonce store, we must rely on the Provider to protect against
 			// replay attacks.  But only 2.0+ Providers can be expected to provide 
@@ -207,6 +217,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		public IList<IOpenIdExtensionFactory> ExtensionFactories {
 			get { return this.Channel.GetExtensionFactories(); }
+		}
+
+		/// <summary>
+		/// Gets a list of custom security profiles to apply to OpenID actions.
+		/// </summary>
+		internal ICollection<IRelyingPartySecurityProfile> SecurityProfiles {
+			get { return this.securityProfiles; }
 		}
 
 		/// <summary>
@@ -475,8 +492,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				IndirectSignedResponse positiveExtensionOnly;
 				if ((positiveAssertion = message as PositiveAssertionResponse) != null) {
 					var response = new PositiveAuthenticationResponse(positiveAssertion, this);
-					foreach (var profile in this.SecuritySettings.SecurityProfiles) {
-						profile.OnIncomingPositiveAssertion(this, response);
+					foreach (var profile in this.SecurityProfiles) {
+						profile.OnIncomingPositiveAssertion(response);
 					}
 
 					return response;
@@ -558,6 +575,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				if (disposableChannel != null) {
 					disposableChannel.Dispose();
 				}
+			}
+		}
+
+		/// <summary>
+		/// Called by derived classes when security profiles are added or removed.
+		/// </summary>
+		/// <param name="sender">The collection being modified.</param>
+		/// <param name="e">The <see cref="System.Collections.Specialized.NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
+		private void OnSecurityProfilesChanged(object sender, NotifyCollectionChangedEventArgs e) {
+			foreach (IRelyingPartySecurityProfile profile in e.NewItems) {
+				profile.ApplySecuritySettings(this.SecuritySettings);
 			}
 		}
 	}

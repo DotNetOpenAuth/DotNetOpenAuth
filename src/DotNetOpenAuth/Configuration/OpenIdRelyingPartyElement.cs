@@ -25,6 +25,11 @@ namespace DotNetOpenAuth.Configuration {
 		private const string SecuritySettingsConfigName = "security";
 
 		/// <summary>
+		/// Gets the name of the &lt;securityProfiles&gt; sub-element.
+		/// </summary>
+		private const string SecurityProfilesElementName = "securityProfiles";
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingPartyElement"/> class.
 		/// </summary>
 		public OpenIdRelyingPartyElement() {
@@ -37,6 +42,16 @@ namespace DotNetOpenAuth.Configuration {
 		public OpenIdRelyingPartySecuritySettingsElement SecuritySettings {
 			get { return (OpenIdRelyingPartySecuritySettingsElement)this[SecuritySettingsConfigName] ?? new OpenIdRelyingPartySecuritySettingsElement(); }
 			set { this[SecuritySettingsConfigName] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the predefined security profiles to apply.
+		/// </summary>
+		[ConfigurationProperty(SecurityProfilesElementName, IsDefaultCollection = false)]
+		[ConfigurationCollection(typeof(TypeConfigurationCollection<IRelyingPartySecurityProfile>))]
+		public TypeConfigurationCollection<IRelyingPartySecurityProfile> SecurityProfiles {
+			get { return (TypeConfigurationCollection<IRelyingPartySecurityProfile>)this[SecurityProfilesElementName] ?? new TypeConfigurationCollection<IRelyingPartySecurityProfile>(); }
+			set { this[SecurityProfilesElementName] = value; }
 		}
 
 		/// <summary>

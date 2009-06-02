@@ -66,11 +66,6 @@ namespace DotNetOpenAuth.Configuration {
 		private const string PrivateSecretMaximumAgeConfigName = "privateSecretMaximumAge";
 
 		/// <summary>
-		/// Gets the name of the &lt;profiles&gt; sub-element.
-		/// </summary>
-		private const string ProfilesElementName = "profiles";
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingPartySecuritySettingsElement"/> class.
 		/// </summary>
 		public OpenIdRelyingPartySecuritySettingsElement() {
@@ -188,16 +183,6 @@ namespace DotNetOpenAuth.Configuration {
 		}
 
 		/// <summary>
-		/// Gets or sets the predefined security profiles to apply.
-		/// </summary>
-		[ConfigurationProperty(ProfilesElementName, IsDefaultCollection = false)]
-		[ConfigurationCollection(typeof(TypeConfigurationCollection<IRelyingPartySecurityProfile>))]
-		public TypeConfigurationCollection<IRelyingPartySecurityProfile> Profiles {
-			get { return (TypeConfigurationCollection<IRelyingPartySecurityProfile>)this[ProfilesElementName] ?? new TypeConfigurationCollection<IRelyingPartySecurityProfile>(); }
-			set { this[ProfilesElementName] = value; }
-		}
-
-		/// <summary>
 		/// Initializes a programmatically manipulatable bag of these security settings with the settings from the config file.
 		/// </summary>
 		/// <returns>The newly created security settings object.</returns>
@@ -215,10 +200,6 @@ namespace DotNetOpenAuth.Configuration {
 			settings.RejectUnsolicitedAssertions = this.RejectUnsolicitedAssertions;
 			settings.RejectDelegatingIdentifiers = this.RejectDelegatingIdentifiers;
 			settings.IgnoreUnsignedExtensions = this.IgnoreUnsignedExtensions;
-
-			foreach (var profile in this.Profiles.CreateInstances(false)) {
-				settings.SecurityProfiles.Add(profile);
-			}
 
 			return settings;
 		}

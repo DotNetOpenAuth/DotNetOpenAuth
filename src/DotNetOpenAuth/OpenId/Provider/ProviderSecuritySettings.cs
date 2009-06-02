@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// <summary>
 	/// Security settings that are applicable to providers.
 	/// </summary>
+	[Serializable]
 	public sealed class ProviderSecuritySettings : SecuritySettings {
 		/// <summary>
 		/// The default value for the <see cref="ProtectDownlevelReplayAttacks"/> property.
@@ -25,11 +26,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// The default value for the <see cref="SignOutgoingExtensions"/> property.
 		/// </summary>
 		internal const bool SignOutgoingExtensionsDefault = true;
-
-		/// <summary>
-		/// Backing store for the <see cref="SecurityProfiles"/> property.
-		/// </summary>
-		private readonly ObservableCollection<IProviderSecurityProfile> securityProfiles = new ObservableCollection<IProviderSecurityProfile>();
 
 		/// <summary>
 		/// The subset of association types and their customized lifetimes.
@@ -43,7 +39,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			: base(true) {
 			this.SignOutgoingExtensions = SignOutgoingExtensionsDefault;
 			this.ProtectDownlevelReplayAttacks = ProtectDownlevelReplayAttacksDefault;
-			this.securityProfiles.CollectionChanged += this.OnSecurityProfilesChanged;
 		}
 
 		/// <summary>
@@ -60,13 +55,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <value>Default is <c>false</c>.</value>
 		public bool RequireSsl { get; set; }
-
-		/// <summary>
-		/// Gets a list of custom security profiles to apply to OpenID actions.
-		/// </summary>
-		internal ICollection<IProviderSecurityProfile> SecurityProfiles {
-			get { return this.securityProfiles; }
-		}
 
 		/// <summary>
 		/// Gets or sets a value indicating whether OpenID 1.x relying parties that may not be
@@ -99,10 +87,22 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		internal bool SignOutgoingExtensions { get; set; }
 
 		/// <summary>
-		/// Gets the custom security profiles.
+		/// Creates a deep clone of this instance.
 		/// </summary>
-		internal override IEnumerable<ISecurityProfile> CustomSecurityProfiles {
-			get { return this.securityProfiles.Cast<ISecurityProfile>(); }
+		/// <returns>A new instance that is a deep clone of this instance.</returns>
+		internal ProviderSecuritySettings Clone() {
+			var securitySettings = new ProviderSecuritySettings();
+			foreach (var pair in this.AssociationLifetimes) {
+				securitySettings.AssociationLifetimes.Add(pair);
+			}
+
+			securitySettings.MaximumHashBitLength = this.MaximumHashBitLength;
+			securitySettings.MinimumHashBitLength = this.MinimumHashBitLength;
+			securitySettings.ProtectDownlevelReplayAttacks = this.ProtectDownlevelReplayAttacks;
+			securitySettings.RequireSsl = this.RequireSsl;
+			securitySettings.SignOutgoingExtensions = this.SignOutgoingExtensions;
+
+			return securitySettings;
 		}
 	}
 }

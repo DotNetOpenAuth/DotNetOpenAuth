@@ -6,12 +6,9 @@
 
 namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 	using System;
-	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
-	using System.Text;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
@@ -36,8 +33,6 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 		/// Initializes a new instance of the <see cref="USGovernmentLevel1"/> class.
 		/// </summary>
 		public USGovernmentLevel1() {
-			AllowPersonallyIdentifiableInformation = true;
-			DisableSslRequirement = true;
 		}
 
 		/// <summary>
@@ -51,9 +46,12 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 		/// <value>The default value is <c>false</c>.</value>
 		public static bool AllowPersonallyIdentifiableInformation { get; set; }
 
+		/// <summary>
+		/// Gets or sets a value indicating whether to ignore the SSL requirement (for testing purposes only).
+		/// </summary>
 		public static bool DisableSslRequirement { get; set; }
 
-		#region ISecurityProfile Members
+		#region IRelyingPartySecurityProfile Members
 
 		/// <summary>
 		/// Applies a well known set of security requirements.
@@ -64,71 +62,26 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 		/// Profiles should only enhance security requirements to avoid being
 		/// incompatible with each other.
 		/// </remarks>
-		void ISecurityProfile.ApplySecuritySettings(SecuritySettings securitySettings) {
+		void IRelyingPartySecurityProfile.ApplySecuritySettings(RelyingPartySecuritySettings securitySettings) {
 			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
 
 			if (securitySettings.MaximumHashBitLength < 256) {
 				securitySettings.MaximumHashBitLength = 256;
 			}
 
-			var rpSecuritySettings = securitySettings as RelyingPartySecuritySettings;
-			if (rpSecuritySettings != null) {
-				rpSecuritySettings.RequireSsl = !DisableSslRequirement;
-				rpSecuritySettings.RequireDirectedIdentity = true;
-				rpSecuritySettings.RequireAssociation = true;
-				rpSecuritySettings.RejectDelegatingIdentifiers = true;
-				rpSecuritySettings.IgnoreUnsignedExtensions = true;
-				rpSecuritySettings.MinimumRequiredOpenIdVersion = ProtocolVersion.V20;
-			}
-
-			var opSecuritySettings = securitySettings as ProviderSecuritySettings;
-			if (opSecuritySettings != null) {
-				opSecuritySettings.RequireSsl = !DisableSslRequirement;
-				SetMaximumAssociationLifetimeToNotExceed(Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA256, MaximumAssociationLifetime, opSecuritySettings);
-				SetMaximumAssociationLifetimeToNotExceed(Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA1, MaximumAssociationLifetime, opSecuritySettings);
-			}
+			securitySettings.RequireSsl = !DisableSslRequirement;
+			securitySettings.RequireDirectedIdentity = true;
+			securitySettings.RequireAssociation = true;
+			securitySettings.RejectDelegatingIdentifiers = true;
+			securitySettings.IgnoreUnsignedExtensions = true;
+			securitySettings.MinimumRequiredOpenIdVersion = ProtocolVersion.V20;
 		}
-
-		/// <summary>
-		/// Checks whether the given security settings comply with security requirements and throws otherwise.
-		/// </summary>
-		/// <param name="securitySettings">The security settings to check for compliance.</param>
-		/// <remarks>
-		/// Security settings should <em>not</em> be changed by this method.  Any settings
-		/// that do not comply should cause an exception to be thrown.
-		/// </remarks>
-		/// <exception cref="ProtocolException">Thrown if the given security settings are not compliant with the requirements of this security profile.</exception>
-		void ISecurityProfile.EnsureCompliance(SecuritySettings securitySettings) {
-			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
-			ErrorUtilities.VerifyProtocol(securitySettings.MaximumHashBitLength >= 256, SecurityProfileStrings.SecuritySettingsNotCompliantWithProfile, this.GetType().Name);
-
-			var rpSecuritySettings = securitySettings as RelyingPartySecuritySettings;
-			if (rpSecuritySettings != null) {
-				ErrorUtilities.VerifyProtocol(rpSecuritySettings.RequireSsl || DisableSslRequirement, SecurityProfileStrings.SecuritySettingsNotCompliantWithProfile, this.GetType().Name);
-				ErrorUtilities.VerifyProtocol(rpSecuritySettings.RequireDirectedIdentity, SecurityProfileStrings.SecuritySettingsNotCompliantWithProfile, this.GetType().Name);
-				ErrorUtilities.VerifyProtocol(rpSecuritySettings.RequireAssociation, SecurityProfileStrings.SecuritySettingsNotCompliantWithProfile, this.GetType().Name);
-				ErrorUtilities.VerifyProtocol(rpSecuritySettings.IgnoreUnsignedExtensions, SecurityProfileStrings.SecuritySettingsNotCompliantWithProfile, this.GetType().Name);
-			}
-
-			var opSecuritySettings = securitySettings as ProviderSecuritySettings;
-			if (opSecuritySettings != null) {
-				ErrorUtilities.VerifyProtocol(opSecuritySettings.RequireSsl || DisableSslRequirement, SecurityProfileStrings.SecuritySettingsNotCompliantWithProfile, this.GetType().Name);
-				ErrorUtilities.VerifyProtocol(opSecuritySettings.AssociationLifetimes.ContainsKey(Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA256) && opSecuritySettings.AssociationLifetimes[Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA256] <= MaximumAssociationLifetime, SecurityProfileStrings.SecuritySettingsNotCompliantWithProfile, this.GetType().Name);
-				ErrorUtilities.VerifyProtocol(opSecuritySettings.AssociationLifetimes.ContainsKey(Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA1) && opSecuritySettings.AssociationLifetimes[Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA1] <= MaximumAssociationLifetime, SecurityProfileStrings.SecuritySettingsNotCompliantWithProfile, this.GetType().Name);
-			}
-		}
-
-		#endregion
-
-		#region IRelyingPartySecurityProfile Members
 
 		/// <summary>
 		/// Called when an authentication request is about to be sent.
 		/// </summary>
-		/// <param name="relyingParty">The relying party.</param>
 		/// <param name="request">The request.</param>
-		void IRelyingPartySecurityProfile.OnOutgoingAuthenticationRequest(OpenIdRelyingParty relyingParty, RelyingParty.IAuthenticationRequest request) {
-			ErrorUtilities.VerifyArgumentNotNull(relyingParty, "relyingParty");
+		void IRelyingPartySecurityProfile.OnOutgoingAuthenticationRequest(RelyingParty.IAuthenticationRequest request) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			RelyingParty.AuthenticationRequest requestInternal = (RelyingParty.AuthenticationRequest)request;
@@ -162,10 +115,8 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 		/// <summary>
 		/// Called when an incoming positive assertion is received.
 		/// </summary>
-		/// <param name="relyingParty">The relying party.</param>
 		/// <param name="assertion">The positive assertion.</param>
-		void IRelyingPartySecurityProfile.OnIncomingPositiveAssertion(OpenIdRelyingParty relyingParty, IAuthenticationResponse assertion) {
-			ErrorUtilities.VerifyArgumentNotNull(relyingParty, "relyingParty");
+		void IRelyingPartySecurityProfile.OnIncomingPositiveAssertion(IAuthenticationResponse assertion) {
 			ErrorUtilities.VerifyArgumentNotNull(assertion, "assertion");
 
 			PolicyResponse pape = assertion.GetExtension<PolicyResponse>();
@@ -192,10 +143,17 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 		/// <summary>
 		/// Called when a request is received by the Provider.
 		/// </summary>
-		/// <param name="provider">The provider.</param>
 		/// <param name="request">The incoming request.</param>
-		void IProviderSecurityProfile.OnIncomingRequest(OpenIdProvider provider, IRequest request) {
-			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
+		/// <returns>
+		/// 	<c>true</c> if this security profile owns this request and wants to stop other security profiles
+		/// from handling it; <c>false</c> to allow other security profiles to process this request.
+		/// </returns>
+		/// <remarks>
+		/// Implementations may set a new value to <see cref="IRequest.SecuritySettings"/> but
+		/// should not change the properties on the instance of <see cref="ProviderSecuritySettings"/>
+		/// itself as that instance may be shared across many requests.
+		/// </remarks>
+		bool IProviderSecurityProfile.OnIncomingRequest(IRequest request) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			var hostProcessedRequest = request as IHostProcessedRequest;
@@ -207,23 +165,32 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 						// Whenever we see this GSA policy requested, we MUST also see the PPID policy requested.
 						ErrorUtilities.VerifyProtocol(papeRequest.PreferredPolicies.Contains(AuthenticationPolicies.PrivatePersonalIdentifier), SecurityProfileStrings.PapeRequestMissingRequiredPolicies);
 						ErrorUtilities.VerifyProtocol(string.Equals(hostProcessedRequest.Realm.Scheme, Uri.UriSchemeHttps, StringComparison.Ordinal) || DisableSslRequirement, SecurityProfileStrings.RealmMustBeHttps);
+
+						request.SecuritySettings = GetProviderSecuritySettings(request.SecuritySettings);
+						return true;
 					}
 				}
 			}
+
+			return false;
 		}
 
 		/// <summary>
 		/// Called when the Provider is preparing to send a response to an authentication request.
 		/// </summary>
-		/// <param name="provider">The provider.</param>
 		/// <param name="request">The request that is configured to generate the outgoing response.</param>
-		void IProviderSecurityProfile.OnOutgoingResponse(OpenIdProvider provider, Provider.IAuthenticationRequest request) {
-			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
+		/// <returns>
+		/// 	<c>true</c> if this security profile owns this request and wants to stop other security profiles
+		/// from handling it; <c>false</c> to allow other security profiles to process this request.
+		/// </returns>
+		bool IProviderSecurityProfile.OnOutgoingResponse(Provider.IAuthenticationRequest request) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+
+			bool result = false;
 
 			// Nothing to do for negative assertions.
 			if (!request.IsAuthenticated.Value) {
-				return;
+				return result;
 			}
 
 			var requestInternal = (Provider.AuthenticationRequest)request;
@@ -238,6 +205,7 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 				}
 
 				if (papeRequest.PreferredPolicies.Contains(AuthenticationPolicies.USGovernmentTrustLevel1)) {
+					result = true;
 					if (!papeResponse.ActualPolicies.Contains(AuthenticationPolicies.USGovernmentTrustLevel1)) {
 						papeResponse.ActualPolicies.Add(AuthenticationPolicies.USGovernmentTrustLevel1);
 					}
@@ -277,9 +245,30 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 					}
 				}
 			}
+
+			return result;
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Adapts the default security settings to the requirements of this security profile.
+		/// </summary>
+		/// <param name="originalSecuritySettings">The original security settings.</param>
+		/// <returns>A new security settings instance that should be used for all qualifying incoming requests.</returns>
+		private static ProviderSecuritySettings GetProviderSecuritySettings(ProviderSecuritySettings originalSecuritySettings) {
+			var securitySettings = originalSecuritySettings.Clone();
+
+			if (securitySettings.MaximumHashBitLength < 256) {
+				securitySettings.MaximumHashBitLength = 256;
+			}
+
+			securitySettings.RequireSsl = !DisableSslRequirement;
+			SetMaximumAssociationLifetimeToNotExceed(Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA256, MaximumAssociationLifetime, securitySettings);
+			SetMaximumAssociationLifetimeToNotExceed(Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA1, MaximumAssociationLifetime, securitySettings);
+
+			return securitySettings;
+		}
 
 		/// <summary>
 		/// Ensures the maximum association lifetime does not exceed a given limit.

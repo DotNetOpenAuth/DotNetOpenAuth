@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId {
+	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
 	using DotNetOpenAuth.Messaging;
@@ -12,6 +13,7 @@ namespace DotNetOpenAuth.OpenId {
 	/// <summary>
 	/// Security settings that may be applicable to both relying parties and providers.
 	/// </summary>
+	[Serializable]
 	public abstract class SecuritySettings {
 		/// <summary>
 		/// Gets the default minimum hash bit length.
@@ -65,11 +67,6 @@ namespace DotNetOpenAuth.OpenId {
 		public int MaximumHashBitLength { get; set; }
 
 		/// <summary>
-		/// Gets the custom security profiles that apply to these security settings.
-		/// </summary>
-		internal abstract IEnumerable<ISecurityProfile> CustomSecurityProfiles { get; }
-
-		/// <summary>
 		/// Determines whether a named association fits the security requirements.
 		/// </summary>
 		/// <param name="protocol">The protocol carrying the association.</param>
@@ -92,26 +89,6 @@ namespace DotNetOpenAuth.OpenId {
 		internal bool IsAssociationInPermittedRange(Association association) {
 			ErrorUtilities.VerifyArgumentNotNull(association, "association");
 			return association.HashBitLength >= this.MinimumHashBitLength && association.HashBitLength <= this.MaximumHashBitLength;
-		}
-
-		/// <summary>
-		/// Ensures that all security profiles are satisfied.
-		/// </summary>
-		internal void EnsureSecurityProfilesSatisfied() {
-			foreach (ISecurityProfile profile in this.CustomSecurityProfiles) {
-				profile.EnsureCompliance(this);
-			}
-		}
-
-		/// <summary>
-		/// Called by derived classes when security profiles are added or removed.
-		/// </summary>
-		/// <param name="sender">The collection being modified.</param>
-		/// <param name="e">The <see cref="System.Collections.Specialized.NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
-		protected void OnSecurityProfilesChanged(object sender, NotifyCollectionChangedEventArgs e) {
-			foreach (ISecurityProfile profile in e.NewItems) {
-				profile.ApplySecuritySettings(this);
-			}
 		}
 	}
 }

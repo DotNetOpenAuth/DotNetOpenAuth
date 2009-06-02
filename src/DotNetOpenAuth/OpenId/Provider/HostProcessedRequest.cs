@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="provider">The provider that received the request.</param>
 		/// <param name="request">The incoming request message.</param>
 		protected HostProcessedRequest(OpenIdProvider provider, SignedResponseRequest request)
-			: base(request) {
+			: base(request, provider.SecuritySettings) {
 			Contract.Requires(provider != null);
 
 			this.negativeResponse = new NegativeAssertionResponse(request, provider.Channel);
@@ -126,7 +126,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 			ErrorUtilities.VerifyInternal(this.Realm != null, "Realm should have been read or derived by now.");
 			try {
-				if (provider.SecuritySettings.RequireSsl && this.Realm.Scheme != Uri.UriSchemeHttps) {
+				if (this.SecuritySettings.RequireSsl && this.Realm.Scheme != Uri.UriSchemeHttps) {
 					Logger.OpenId.WarnFormat("RP discovery failed because RequireSsl is true and RP discovery would begin at insecure URL {0}.", this.Realm);
 					return RelyingPartyDiscoveryResult.NoServiceDocument;
 				}

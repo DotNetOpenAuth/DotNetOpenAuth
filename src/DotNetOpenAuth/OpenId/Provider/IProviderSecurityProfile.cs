@@ -14,19 +14,30 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// BEFORE MARKING THIS INTERFACE PUBLIC: it's very important that we shift the methods to be channel-level
 	/// rather than facade class level and for the OpenIdChannel to be the one to invoke these methods.
 	/// </remarks>
-	internal interface IProviderSecurityProfile : ISecurityProfile {
+	internal interface IProviderSecurityProfile {
 		/// <summary>
 		/// Called when a request is received by the Provider.
 		/// </summary>
-		/// <param name="provider">The provider.</param>
 		/// <param name="request">The incoming request.</param>
-		void OnIncomingRequest(OpenIdProvider provider, IRequest request);
+		/// <returns>
+		/// <c>true</c> if this security profile owns this request and wants to stop other security profiles
+		/// from handling it; <c>false</c> to allow other security profiles to process this request.
+		/// </returns>
+		/// <remarks>
+		/// Implementations may set a new value to <see cref="IRequest.SecuritySettings"/> but
+		/// should not change the properties on the instance of <see cref="ProviderSecuritySettings"/>
+		/// itself as that instance may be shared across many requests.
+		/// </remarks>
+		bool OnIncomingRequest(IRequest request);
 
 		/// <summary>
 		/// Called when the Provider is preparing to send a response to an authentication request.
 		/// </summary>
-		/// <param name="provider">The provider.</param>
 		/// <param name="request">The request that is configured to generate the outgoing response.</param>
-		void OnOutgoingResponse(OpenIdProvider provider, IAuthenticationRequest request);
+		/// <returns>
+		/// <c>true</c> if this security profile owns this request and wants to stop other security profiles
+		/// from handling it; <c>false</c> to allow other security profiles to process this request.
+		/// </returns>
+		bool OnOutgoingResponse(IAuthenticationRequest request);
 	}
 }
