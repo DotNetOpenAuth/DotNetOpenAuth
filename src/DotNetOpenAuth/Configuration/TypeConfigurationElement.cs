@@ -7,7 +7,10 @@
 namespace DotNetOpenAuth.Configuration {
 	using System;
 	using System.Configuration;
+	using System.IO;
 	using System.Reflection;
+	using System.Web;
+	using System.Windows.Markup;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -20,6 +23,11 @@ namespace DotNetOpenAuth.Configuration {
 		/// The name of the attribute whose value is the full name of the type the user is specifying.
 		/// </summary>
 		private const string CustomTypeConfigName = "type";
+
+		/// <summary>
+		/// The name of the attribute whose value is the path to the XAML file to deserialize to obtain the type.
+		/// </summary>
+		private const string XamlReaderSourceConfigName = "xaml";
 
 		/// <summary>
 		/// Initializes a new instance of the TypeConfigurationElement class.
@@ -39,10 +47,26 @@ namespace DotNetOpenAuth.Configuration {
 		}
 
 		/// <summary>
+		/// Gets or sets the path to the XAML file to deserialize to obtain the instance.
+		/// </summary>
+		[ConfigurationProperty(XamlReaderSourceConfigName)]
+		public string XamlSource {
+			get { return (string)this[XamlReaderSourceConfigName]; }
+			set { this[XamlReaderSourceConfigName] = value; }
+		}
+
+		/// <summary>
 		/// Gets the type described in the .config file.
 		/// </summary>
 		public Type CustomType {
 			get { return string.IsNullOrEmpty(this.TypeName) ? null : Type.GetType(this.TypeName); }
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether this type has no meaningful type to instantiate.
+		/// </summary>
+		public bool IsEmpty {
+			get { return this.CustomType == null && string.IsNullOrEmpty(this.XamlSource); }
 		}
 
 		/// <summary>
@@ -69,6 +93,15 @@ namespace DotNetOpenAuth.Configuration {
 					ErrorUtilities.VerifyArgument((this.CustomType.Attributes & TypeAttributes.Public) != 0, Strings.ConfigurationTypeMustBePublic, this.CustomType.FullName);
 				}
 				return (T)Activator.CreateInstance(this.CustomType);
+			} else if (!string.IsNullOrEmpty(this.XamlSource)) {
+				string source = this.XamlSource;
+				if (source.StartsWith("~/", StringComparison.Ordinal)) {
+					ErrorUtilities.VerifyHost(HttpContext.Current != null, Strings.ConfigurationXamlReferenceRequiresHttpContext, this.XamlSource);
+					source = HttpContext.Current.Server.MapPath(source);
+				}
+				using (Stream xamlFile = File.OpenRead(source)) {
+					return (T)XamlReader.Load(xamlFile);
+				}
 			} else {
 				return defaultValue;
 			}
