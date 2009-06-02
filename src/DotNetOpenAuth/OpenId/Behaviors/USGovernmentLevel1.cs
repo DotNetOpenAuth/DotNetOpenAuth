@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OpenId.SecurityProfiles {
+namespace DotNetOpenAuth.OpenId.Behaviors {
 	using System;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
@@ -23,7 +23,8 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 	/// but Providers are only affected by the special behaviors of the profile when the RP specifically
 	/// indicates that they want to use this profile. </para>
 	/// </remarks>
-	public sealed class USGovernmentLevel1 : IRelyingPartySecurityProfile, IProviderSecurityProfile {
+	[Serializable]
+	public sealed class USGovernmentLevel1 : IRelyingPartyBehavior, IProviderBehavior {
 		/// <summary>
 		/// The maximum time a shared association can live.
 		/// </summary>
@@ -33,6 +34,9 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 		/// Initializes a new instance of the <see cref="USGovernmentLevel1"/> class.
 		/// </summary>
 		public USGovernmentLevel1() {
+			if (DisableSslRequirement) {
+				Logger.OpenId.Warn("GSA level 1 behavior has its RequireSsl requirement disabled.");
+			}
 		}
 
 		/// <summary>
@@ -51,7 +55,7 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 		/// </summary>
 		public static bool DisableSslRequirement { get; set; }
 
-		#region IRelyingPartySecurityProfile Members
+		#region IRelyingPartyBehavior Members
 
 		/// <summary>
 		/// Applies a well known set of security requirements.
@@ -62,7 +66,7 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 		/// Profiles should only enhance security requirements to avoid being
 		/// incompatible with each other.
 		/// </remarks>
-		void IRelyingPartySecurityProfile.ApplySecuritySettings(RelyingPartySecuritySettings securitySettings) {
+		void IRelyingPartyBehavior.ApplySecuritySettings(RelyingPartySecuritySettings securitySettings) {
 			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
 
 			if (securitySettings.MaximumHashBitLength < 256) {
@@ -81,11 +85,11 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 		/// Called when an authentication request is about to be sent.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		void IRelyingPartySecurityProfile.OnOutgoingAuthenticationRequest(RelyingParty.IAuthenticationRequest request) {
+		void IRelyingPartyBehavior.OnOutgoingAuthenticationRequest(RelyingParty.IAuthenticationRequest request) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			RelyingParty.AuthenticationRequest requestInternal = (RelyingParty.AuthenticationRequest)request;
-			ErrorUtilities.VerifyProtocol(string.Equals(request.Realm.Scheme, Uri.UriSchemeHttps, StringComparison.Ordinal) || DisableSslRequirement, SecurityProfileStrings.RealmMustBeHttps);
+			ErrorUtilities.VerifyProtocol(string.Equals(request.Realm.Scheme, Uri.UriSchemeHttps, StringComparison.Ordinal) || DisableSslRequirement, BehaviorStrings.RealmMustBeHttps);
 
 			var pape = requestInternal.AppliedExtensions.OfType<PolicyRequest>().SingleOrDefault();
 			if (pape == null) {
@@ -108,7 +112,7 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 				ErrorUtilities.VerifyProtocol(
 					(!requestInternal.AppliedExtensions.OfType<ClaimsRequest>().Any() &&
 					!requestInternal.AppliedExtensions.OfType<FetchRequest>().Any()),
-					SecurityProfileStrings.PiiIncludedWithNoPiiPolicy);
+					BehaviorStrings.PiiIncludedWithNoPiiPolicy);
 			}
 		}
 
@@ -116,7 +120,7 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 		/// Called when an incoming positive assertion is received.
 		/// </summary>
 		/// <param name="assertion">The positive assertion.</param>
-		void IRelyingPartySecurityProfile.OnIncomingPositiveAssertion(IAuthenticationResponse assertion) {
+		void IRelyingPartyBehavior.OnIncomingPositiveAssertion(IAuthenticationResponse assertion) {
 			ErrorUtilities.VerifyArgumentNotNull(assertion, "assertion");
 
 			PolicyResponse pape = assertion.GetExtension<PolicyResponse>();
@@ -124,36 +128,36 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 				pape != null &&
 				pape.ActualPolicies.Contains(AuthenticationPolicies.USGovernmentTrustLevel1) &&
 				pape.ActualPolicies.Contains(AuthenticationPolicies.PrivatePersonalIdentifier),
-				SecurityProfileStrings.PapeResponseOrRequiredPoliciesMissing);
+				BehaviorStrings.PapeResponseOrRequiredPoliciesMissing);
 
-			ErrorUtilities.VerifyProtocol(AllowPersonallyIdentifiableInformation || pape.ActualPolicies.Contains(AuthenticationPolicies.NoPersonallyIdentifiableInformation), SecurityProfileStrings.PapeResponseOrRequiredPoliciesMissing);
+			ErrorUtilities.VerifyProtocol(AllowPersonallyIdentifiableInformation || pape.ActualPolicies.Contains(AuthenticationPolicies.NoPersonallyIdentifiableInformation), BehaviorStrings.PapeResponseOrRequiredPoliciesMissing);
 
 			if (pape.ActualPolicies.Contains(AuthenticationPolicies.NoPersonallyIdentifiableInformation)) {
 				ErrorUtilities.VerifyProtocol(
 					assertion.GetExtension<ClaimsResponse>() == null &&
 					assertion.GetExtension<FetchResponse>() == null,
-					SecurityProfileStrings.PiiIncludedWithNoPiiPolicy);
+					BehaviorStrings.PiiIncludedWithNoPiiPolicy);
 			}
 		}
 
 		#endregion
 
-		#region IProviderSecurityProfile Members
+		#region IProviderBehavior Members
 
 		/// <summary>
 		/// Called when a request is received by the Provider.
 		/// </summary>
 		/// <param name="request">The incoming request.</param>
 		/// <returns>
-		/// 	<c>true</c> if this security profile owns this request and wants to stop other security profiles
-		/// from handling it; <c>false</c> to allow other security profiles to process this request.
+		/// 	<c>true</c> if this behavior owns this request and wants to stop other behaviors
+		/// from handling it; <c>false</c> to allow other behaviors to process this request.
 		/// </returns>
 		/// <remarks>
 		/// Implementations may set a new value to <see cref="IRequest.SecuritySettings"/> but
 		/// should not change the properties on the instance of <see cref="ProviderSecuritySettings"/>
 		/// itself as that instance may be shared across many requests.
 		/// </remarks>
-		bool IProviderSecurityProfile.OnIncomingRequest(IRequest request) {
+		bool IProviderBehavior.OnIncomingRequest(IRequest request) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			var hostProcessedRequest = request as IHostProcessedRequest;
@@ -163,8 +167,8 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 				if (papeRequest != null) {
 					if (papeRequest.PreferredPolicies.Contains(AuthenticationPolicies.USGovernmentTrustLevel1)) {
 						// Whenever we see this GSA policy requested, we MUST also see the PPID policy requested.
-						ErrorUtilities.VerifyProtocol(papeRequest.PreferredPolicies.Contains(AuthenticationPolicies.PrivatePersonalIdentifier), SecurityProfileStrings.PapeRequestMissingRequiredPolicies);
-						ErrorUtilities.VerifyProtocol(string.Equals(hostProcessedRequest.Realm.Scheme, Uri.UriSchemeHttps, StringComparison.Ordinal) || DisableSslRequirement, SecurityProfileStrings.RealmMustBeHttps);
+						ErrorUtilities.VerifyProtocol(papeRequest.PreferredPolicies.Contains(AuthenticationPolicies.PrivatePersonalIdentifier), BehaviorStrings.PapeRequestMissingRequiredPolicies);
+						ErrorUtilities.VerifyProtocol(string.Equals(hostProcessedRequest.Realm.Scheme, Uri.UriSchemeHttps, StringComparison.Ordinal) || DisableSslRequirement, BehaviorStrings.RealmMustBeHttps);
 
 						request.SecuritySettings = GetProviderSecuritySettings(request.SecuritySettings);
 						return true;
@@ -180,10 +184,10 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 		/// </summary>
 		/// <param name="request">The request that is configured to generate the outgoing response.</param>
 		/// <returns>
-		/// 	<c>true</c> if this security profile owns this request and wants to stop other security profiles
-		/// from handling it; <c>false</c> to allow other security profiles to process this request.
+		/// 	<c>true</c> if this behavior owns this request and wants to stop other behaviors
+		/// from handling it; <c>false</c> to allow other behaviors to process this request.
 		/// </returns>
-		bool IProviderSecurityProfile.OnOutgoingResponse(Provider.IAuthenticationRequest request) {
+		bool IProviderBehavior.OnOutgoingResponse(Provider.IAuthenticationRequest request) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			bool result = false;
@@ -214,14 +218,14 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 					// warn the user of a potential threat or just abort the authentication.
 					// We can't verify that the OP displayed anything to the user at this level, but we can
 					// at least verify that the OP performed the discovery on the realm and halt things if it didn't.
-					ErrorUtilities.VerifyHost(requestInternal.HasRealmDiscoveryBeenPerformed, SecurityProfileStrings.RealmDiscoveryNotPerformed);
+					ErrorUtilities.VerifyHost(requestInternal.HasRealmDiscoveryBeenPerformed, BehaviorStrings.RealmDiscoveryNotPerformed);
 				}
 
 				if (papeRequest.PreferredPolicies.Contains(AuthenticationPolicies.PrivatePersonalIdentifier)) {
 					ErrorUtilities.VerifyProtocol(request.ClaimedIdentifier == request.LocalIdentifier, OpenIdStrings.DelegatingIdentifiersNotAllowed);
 
 					// Mask the user's identity with a PPID.
-					ErrorUtilities.VerifyHost(PpidIdentifierProvider != null, SecurityProfileStrings.PpidProviderNotGiven);
+					ErrorUtilities.VerifyHost(PpidIdentifierProvider != null, BehaviorStrings.PpidProviderNotGiven);
 					Identifier ppidIdentifier = PpidIdentifierProvider.GetIdentifier(request.LocalIdentifier, request.Realm);
 					requestInternal.ResetClaimedAndLocalIdentifiers(ppidIdentifier);
 
@@ -235,7 +239,7 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 					ErrorUtilities.VerifyProtocol(
 						!responseMessage.Extensions.OfType<ClaimsResponse>().Any() &&
 						!responseMessage.Extensions.OfType<FetchResponse>().Any(),
-						SecurityProfileStrings.PiiIncludedWithNoPiiPolicy);
+						BehaviorStrings.PiiIncludedWithNoPiiPolicy);
 
 					// If no PII is given in extensions, and the claimed_id is a PPID, then we can state we issue no PII.
 					if (papeResponse.ActualPolicies.Contains(AuthenticationPolicies.PrivatePersonalIdentifier)) {
@@ -252,7 +256,7 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 		#endregion
 
 		/// <summary>
-		/// Adapts the default security settings to the requirements of this security profile.
+		/// Adapts the default security settings to the requirements of this behavior.
 		/// </summary>
 		/// <param name="originalSecuritySettings">The original security settings.</param>
 		/// <returns>A new security settings instance that should be used for all qualifying incoming requests.</returns>
@@ -277,8 +281,8 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 		/// <param name="maximumLifetime">The maximum lifetime.</param>
 		/// <param name="securitySettings">The security settings to adjust.</param>
 		private static void SetMaximumAssociationLifetimeToNotExceed(string associationType, TimeSpan maximumLifetime, ProviderSecuritySettings securitySettings) {
-			Contract.RequiresAlways(!String.IsNullOrEmpty(associationType));
-			Contract.RequiresAlways(maximumLifetime.TotalSeconds > 0);
+			Contract.Requires(!String.IsNullOrEmpty(associationType));
+			Contract.Requires(maximumLifetime.TotalSeconds > 0);
 			if (!securitySettings.AssociationLifetimes.ContainsKey(associationType) ||
 				securitySettings.AssociationLifetimes[associationType] > maximumLifetime) {
 				securitySettings.AssociationLifetimes[associationType] = maximumLifetime;

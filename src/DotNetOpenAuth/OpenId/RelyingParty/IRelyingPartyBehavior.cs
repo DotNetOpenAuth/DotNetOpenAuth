@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="IRelyingPartySecurityProfile.cs" company="Andrew Arnott">
+// <copyright file="IRelyingPartyBehavior.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -12,7 +12,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// BEFORE MARKING THIS INTERFACE PUBLIC: it's very important that we shift the methods to be channel-level
 	/// rather than facade class level and for the OpenIdChannel to be the one to invoke these methods.
 	/// </remarks>
-	internal interface IRelyingPartySecurityProfile {
+	internal interface IRelyingPartyBehavior {
 		/// <summary>
 		/// Applies a well known set of security requirements to a default set of security settings.
 		/// </summary>

@@ -90,8 +90,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <value></value>
 		public OutgoingWebResponse RedirectingResponse {
 			get {
-				foreach (var profile in this.RelyingParty.SecurityProfiles) {
-					profile.OnOutgoingAuthenticationRequest(this);
+				foreach (var behavior in this.RelyingParty.Behaviors) {
+					behavior.OnOutgoingAuthenticationRequest(this);
 				}
 
 				return this.RelyingParty.Channel.PrepareResponse(this.CreateRequestMessage());

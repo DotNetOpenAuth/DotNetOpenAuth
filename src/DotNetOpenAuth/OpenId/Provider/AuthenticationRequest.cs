@@ -205,7 +205,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="identifier">The value to set to the <see cref="ClaimedIdentifier"/> and <see cref="LocalIdentifier"/> properties.</param>
 		internal void ResetClaimedAndLocalIdentifiers(Identifier identifier) {
-			Contract.RequiresAlways(identifier != null);
+			Contract.Requires(identifier != null);
 			ErrorUtilities.VerifyArgumentNotNull(identifier, "identifier");
 
 			this.positiveResponse.ClaimedIdentifier = identifier;

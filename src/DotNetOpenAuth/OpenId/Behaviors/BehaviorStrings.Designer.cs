@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OpenId.SecurityProfiles {
+namespace DotNetOpenAuth.OpenId.Behaviors {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "2.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class SecurityProfileStrings {
+    internal class BehaviorStrings {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal SecurityProfileStrings() {
+        internal BehaviorStrings() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DotNetOpenAuth.OpenId.SecurityProfiles.SecurityProfileStrings", typeof(SecurityProfileStrings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DotNetOpenAuth.OpenId.Behaviors.BehaviorStrings", typeof(BehaviorStrings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -120,15 +120,6 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
         internal static string RealmMustBeHttps {
             get {
                 return ResourceManager.GetString("RealmMustBeHttps", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The security profile {0} mandates security settings that have been changed to disallowed values..
-        /// </summary>
-        internal static string SecuritySettingsNotCompliantWithProfile {
-            get {
-                return ResourceManager.GetString("SecuritySettingsNotCompliantWithProfile", resourceCulture);
             }
         }
     }

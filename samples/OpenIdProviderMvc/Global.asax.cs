@@ -33,7 +33,7 @@
 
 		protected void Application_Start() {
 			RegisterRoutes(RouteTable.Routes);
-			DotNetOpenAuth.OpenId.SecurityProfiles.USGovernmentLevel1.PpidIdentifierProvider = new Code.AnonymousIdentifierProvider();
+			DotNetOpenAuth.OpenId.Behaviors.USGovernmentLevel1.PpidIdentifierProvider = new Code.AnonymousIdentifierProvider();
 		}
 	}
 }

@@ -20,9 +20,9 @@ namespace DotNetOpenAuth.Configuration {
 		private const string SecuritySettingsConfigName = "security";
 
 		/// <summary>
-		/// Gets the name of the &lt;securityProfiles&gt; sub-element.
+		/// Gets the name of the &lt;behaviors&gt; sub-element.
 		/// </summary>
-		private const string SecurityProfilesElementName = "securityProfiles";
+		private const string BehaviorsElementName = "behaviors";
 
 		/// <summary>
 		/// The name of the custom store sub-element.
@@ -45,13 +45,13 @@ namespace DotNetOpenAuth.Configuration {
 		}
 
 		/// <summary>
-		/// Gets or sets the predefined security profiles to apply.
+		/// Gets or sets the special behaviors to apply.
 		/// </summary>
-		[ConfigurationProperty(SecurityProfilesElementName, IsDefaultCollection = false)]
-		[ConfigurationCollection(typeof(TypeConfigurationCollection<IProviderSecurityProfile>))]
-		public TypeConfigurationCollection<IProviderSecurityProfile> SecurityProfiles {
-			get { return (TypeConfigurationCollection<IProviderSecurityProfile>)this[SecurityProfilesElementName] ?? new TypeConfigurationCollection<IProviderSecurityProfile>(); }
-			set { this[SecurityProfilesElementName] = value; }
+		[ConfigurationProperty(BehaviorsElementName, IsDefaultCollection = false)]
+		[ConfigurationCollection(typeof(TypeConfigurationCollection<IProviderBehavior>))]
+		public TypeConfigurationCollection<IProviderBehavior> Behaviors {
+			get { return (TypeConfigurationCollection<IProviderBehavior>)this[BehaviorsElementName] ?? new TypeConfigurationCollection<IProviderBehavior>(); }
+			set { this[BehaviorsElementName] = value; }
 		}
 
 		/// <summary>

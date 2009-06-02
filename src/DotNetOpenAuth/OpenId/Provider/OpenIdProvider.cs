@@ -32,9 +32,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		private const string ApplicationStoreKey = "DotNetOpenAuth.OpenId.Provider.OpenIdProvider.ApplicationStore";
 
 		/// <summary>
-		/// Backing store for the <see cref="SecurityProfiles"/> property.
+		/// Backing store for the <see cref="Behaviors"/> property.
 		/// </summary>
-		private readonly Collection<IProviderSecurityProfile> securityProfiles = new Collection<IProviderSecurityProfile>();
+		private readonly Collection<IProviderBehavior> behaviors = new Collection<IProviderBehavior>();
 
 		/// <summary>
 		/// Backing field for the <see cref="SecuritySettings"/> property.
@@ -79,8 +79,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 			this.AssociationStore = associationStore;
 			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OpenId.Provider.SecuritySettings.CreateSecuritySettings();
-			foreach (var securityProfile in DotNetOpenAuthSection.Configuration.OpenId.Provider.SecurityProfiles.CreateInstances(false)) {
-				this.securityProfiles.Add(securityProfile);
+			foreach (var behavior in DotNetOpenAuthSection.Configuration.OpenId.Provider.Behaviors.CreateInstances(false)) {
+				this.behaviors.Add(behavior);
 			}
 
 			this.Channel = new OpenIdChannel(this.AssociationStore, nonceStore, this.SecuritySettings);
@@ -148,10 +148,10 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		public IErrorReporting ErrorReporting { get; set; }
 
 		/// <summary>
-		/// Gets a list of custom security profiles to apply to OpenID actions.
+		/// Gets a list of custom behaviors to apply to OpenID actions.
 		/// </summary>
-		internal ICollection<IProviderSecurityProfile> SecurityProfiles {
-			get { return this.securityProfiles; }
+		internal ICollection<IProviderBehavior> Behaviors {
+			get { return this.behaviors; }
 		}
 
 		/// <summary>
@@ -245,9 +245,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				}
 
 				if (result != null) {
-					foreach (var profile in this.SecurityProfiles) {
-						if (profile.OnIncomingRequest(result)) {
-							// This security profile matched this request.
+					foreach (var behavior in this.Behaviors) {
+						if (behavior.OnIncomingRequest(result)) {
+							// This behavior matched this request.
 							break;
 						}
 					}
@@ -284,7 +284,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			Contract.Requires(((Request)request).IsResponseReady);
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
-			this.ApplySecurityProfilesToResponse(request);
+			this.ApplyBehaviorsToResponse(request);
 			Request requestInternal = (Request)request;
 			this.Channel.Send(requestInternal.Response);
 		}
@@ -301,7 +301,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			Contract.Requires(((Request)request).IsResponseReady);
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
-			this.ApplySecurityProfilesToResponse(request);
+			this.ApplyBehaviorsToResponse(request);
 			Request requestInternal = (Request)request;
 			return this.Channel.PrepareResponse(requestInternal.Response);
 		}
@@ -429,15 +429,15 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		#endregion
 
 		/// <summary>
-		/// Applies all security profiles to the response message.
+		/// Applies all behaviors to the response message.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		private void ApplySecurityProfilesToResponse(IRequest request) {
+		private void ApplyBehaviorsToResponse(IRequest request) {
 			var authRequest = request as IAuthenticationRequest;
 			if (authRequest != null) {
-				foreach (var profile in this.SecurityProfiles) {
-					if (profile.OnOutgoingResponse(authRequest)) {
-						// This security profile matched this request.
+				foreach (var behavior in this.Behaviors) {
+					if (behavior.OnOutgoingResponse(authRequest)) {
+						// This behavior matched this request.
 						break;
 					}
 				}

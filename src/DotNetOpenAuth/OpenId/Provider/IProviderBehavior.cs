@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="IProviderSecurityProfile.cs" company="Andrew Arnott">
+// <copyright file="IProviderBehavior.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -14,14 +14,14 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// BEFORE MARKING THIS INTERFACE PUBLIC: it's very important that we shift the methods to be channel-level
 	/// rather than facade class level and for the OpenIdChannel to be the one to invoke these methods.
 	/// </remarks>
-	internal interface IProviderSecurityProfile {
+	internal interface IProviderBehavior {
 		/// <summary>
 		/// Called when a request is received by the Provider.
 		/// </summary>
 		/// <param name="request">The incoming request.</param>
 		/// <returns>
-		/// <c>true</c> if this security profile owns this request and wants to stop other security profiles
-		/// from handling it; <c>false</c> to allow other security profiles to process this request.
+		/// <c>true</c> if this behavior owns this request and wants to stop other behaviors
+		/// from handling it; <c>false</c> to allow other behaviors to process this request.
 		/// </returns>
 		/// <remarks>
 		/// Implementations may set a new value to <see cref="IRequest.SecuritySettings"/> but
@@ -35,8 +35,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="request">The request that is configured to generate the outgoing response.</param>
 		/// <returns>
-		/// <c>true</c> if this security profile owns this request and wants to stop other security profiles
-		/// from handling it; <c>false</c> to allow other security profiles to process this request.
+		/// <c>true</c> if this behavior owns this request and wants to stop other behaviors
+		/// from handling it; <c>false</c> to allow other behaviors to process this request.
 		/// </returns>
 		bool OnOutgoingResponse(IAuthenticationRequest request);
 	}

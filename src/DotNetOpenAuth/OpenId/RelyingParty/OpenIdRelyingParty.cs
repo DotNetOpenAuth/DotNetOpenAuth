@@ -44,9 +44,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string ApplicationStoreKey = "DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingParty.ApplicationStore";
 
 		/// <summary>
-		/// Backing store for the <see cref="SecurityProfiles"/> property.
+		/// Backing store for the <see cref="Behaviors"/> property.
 		/// </summary>
-		private readonly ObservableCollection<IRelyingPartySecurityProfile> securityProfiles = new ObservableCollection<IRelyingPartySecurityProfile>();
+		private readonly ObservableCollection<IRelyingPartyBehavior> behaviors = new ObservableCollection<IRelyingPartyBehavior>();
 
 		/// <summary>
 		/// Backing field for the <see cref="SecuritySettings"/> property.
@@ -91,9 +91,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			ErrorUtilities.VerifyArgument(associationStore == null || nonceStore != null, OpenIdStrings.AssociationStoreRequiresNonceStore);
 
 			this.securitySettings = DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.SecuritySettings.CreateSecuritySettings();
-			this.securityProfiles.CollectionChanged += this.OnSecurityProfilesChanged;
-			foreach (var securityProfile in DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.SecurityProfiles.CreateInstances(false)) {
-				this.securityProfiles.Add(securityProfile);
+			this.behaviors.CollectionChanged += this.OnBehaviorsChanged;
+			foreach (var behavior in DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.Behaviors.CreateInstances(false)) {
+				this.behaviors.Add(behavior);
 			}
 
 			// Without a nonce store, we must rely on the Provider to protect against
@@ -220,10 +220,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Gets a list of custom security profiles to apply to OpenID actions.
+		/// Gets a list of custom behaviors to apply to OpenID actions.
 		/// </summary>
-		internal ICollection<IRelyingPartySecurityProfile> SecurityProfiles {
-			get { return this.securityProfiles; }
+		internal ICollection<IRelyingPartyBehavior> Behaviors {
+			get { return this.behaviors; }
 		}
 
 		/// <summary>
@@ -492,8 +492,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				IndirectSignedResponse positiveExtensionOnly;
 				if ((positiveAssertion = message as PositiveAssertionResponse) != null) {
 					var response = new PositiveAuthenticationResponse(positiveAssertion, this);
-					foreach (var profile in this.SecurityProfiles) {
-						profile.OnIncomingPositiveAssertion(response);
+					foreach (var behavior in this.Behaviors) {
+						behavior.OnIncomingPositiveAssertion(response);
 					}
 
 					return response;
@@ -579,12 +579,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Called by derived classes when security profiles are added or removed.
+		/// Called by derived classes when behaviors are added or removed.
 		/// </summary>
 		/// <param name="sender">The collection being modified.</param>
 		/// <param name="e">The <see cref="System.Collections.Specialized.NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
-		private void OnSecurityProfilesChanged(object sender, NotifyCollectionChangedEventArgs e) {
-			foreach (IRelyingPartySecurityProfile profile in e.NewItems) {
+		private void OnBehaviorsChanged(object sender, NotifyCollectionChangedEventArgs e) {
+			foreach (IRelyingPartyBehavior profile in e.NewItems) {
 				profile.ApplySecuritySettings(this.SecuritySettings);
 			}
 		}
