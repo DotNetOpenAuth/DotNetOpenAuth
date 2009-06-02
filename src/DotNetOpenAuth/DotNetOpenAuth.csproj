@@ -207,6 +207,7 @@
     <Compile Include="Messaging\CachedDirectWebResponse.cs" />
     <Compile Include="Messaging\ChannelContract.cs" />
     <Compile Include="Messaging\DirectWebRequestOptions.cs" />
+    <Compile Include="Messaging\HostErrorException.cs" />
     <Compile Include="Messaging\IHttpDirectResponse.cs" />
     <Compile Include="Messaging\IExtensionMessage.cs" />
     <Compile Include="Messaging\IMessage.cs" />

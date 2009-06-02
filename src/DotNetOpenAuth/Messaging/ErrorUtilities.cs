@@ -170,6 +170,24 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Throws a <see cref="HostErrorException"/> if some <paramref name="condition"/> evaluates to false.
+		/// </summary>
+		/// <param name="condition">True to do nothing; false to throw the exception.</param>
+		/// <param name="errorMessage">The error message for the exception.</param>
+		/// <param name="args">The string formatting arguments, if any.</param>
+		/// <exception cref="HostErrorException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
+		[Pure]
+		internal static void VerifyHost(bool condition, string errorMessage, params object[] args) {
+			Contract.Requires(args != null);
+			Contract.Ensures(condition);
+			Contract.EnsuresOnThrow<ProtocolException>(!condition);
+			Contract.Assume(errorMessage != null);
+			if (!condition) {
+				throw new HostErrorException(string.Format(CultureInfo.CurrentCulture, errorMessage, args));
+			}
+		}
+
+		/// <summary>
 		/// Throws a <see cref="ProtocolException"/> if some <paramref name="condition"/> evaluates to false.
 		/// </summary>
 		/// <param name="condition">True to do nothing; false to throw the exception.</param>
