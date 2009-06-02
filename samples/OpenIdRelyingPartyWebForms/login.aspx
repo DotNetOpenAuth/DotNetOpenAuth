@@ -13,10 +13,12 @@
 		<asp:CheckBox ID="requireSslCheckBox" runat="server" 
 			Text="RequireSsl (high security) mode" 
 			oncheckedchanged="requireSslCheckBox_CheckedChanged" /><br />
+		<h4 style="margin-top: 0; margin-bottom: 0">PAPE policies</h4>
 		<asp:CheckBoxList runat="server" ID="papePolicies">
 			<asp:ListItem Text="Request phishing resistant authentication" Value="http://schemas.openid.net/pape/policies/2007/06/phishing-resistant" />
 			<asp:ListItem Text="Request multi-factor authentication" Value="http://schemas.openid.net/pape/policies/2007/06/multi-factor" />
 			<asp:ListItem Text="Request physical multi-factor authentication" Value="http://schemas.openid.net/pape/policies/2007/06/multi-factor-physical" />
+			<asp:ListItem Text="Request PPID identifier" Value="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier" />
 		</asp:CheckBoxList>
 	</fieldset>
 	<br />
