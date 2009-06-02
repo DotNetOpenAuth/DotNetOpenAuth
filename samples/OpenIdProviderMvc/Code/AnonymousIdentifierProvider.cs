@@ -1,7 +1,6 @@
 ﻿namespace OpenIdProviderMvc.Code {
 	using System;
 	using System.Web.Security;
-	using DotNetOpenAuth.ApplicationBlock.Provider;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Provider;
 	using OpenIdProviderMvc.Models;

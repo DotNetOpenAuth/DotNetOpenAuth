@@ -5,7 +5,6 @@ namespace OpenIdProviderMvc.Controllers {
 	using System.Web;
 	using System.Web.Mvc;
 	using System.Web.Mvc.Ajax;
-	using DotNetOpenAuth.ApplicationBlock.Provider;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
@@ -14,6 +13,8 @@ namespace OpenIdProviderMvc.Controllers {
 
 	public class OpenIdController : Controller {
 		internal static OpenIdProvider OpenIdProvider = new OpenIdProvider();
+
+		private static AnonymousIdentifierProvider anonProvider = new AnonymousIdentifierProvider();
 
 		internal static IAuthenticationRequest PendingAuthenticationRequest {
 			get { return ProviderEndpoint.PendingAuthenticationRequest; }
@@ -60,8 +61,9 @@ namespace OpenIdProviderMvc.Controllers {
 					throw new InvalidOperationException("Directed identity is the only supported scenario for anonymous identifiers.");
 				}
 
-				var anonProvider = new AnonymousIdentifierProvider();
-				authReq.ScrubPersonallyIdentifiableInformation(localIdentifier, anonProvider);
+				var anonymousIdentifier = anonProvider.GetIdentifier(localIdentifier, authReq.Realm);
+				authReq.ClaimedIdentifier = anonymousIdentifier;
+				authReq.LocalIdentifier = anonymousIdentifier;
 				authReq.IsAuthenticated = true;
 			} else {
 				if (authReq.IsDirectedIdentity) {
