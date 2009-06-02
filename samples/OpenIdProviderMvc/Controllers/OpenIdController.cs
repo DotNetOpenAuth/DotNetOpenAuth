@@ -8,6 +8,7 @@ namespace OpenIdProviderMvc.Controllers {
 	using DotNetOpenAuth.ApplicationBlock.Provider;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
 	using DotNetOpenAuth.OpenId.Provider;
 	using OpenIdProviderMvc.Code;
 
@@ -20,17 +21,33 @@ namespace OpenIdProviderMvc.Controllers {
 		}
 
 		[ValidateInput(false)]
-		public ActionResult PpidProvider() {
-			return this.DoProvider(true);
-		}
-
-		[ValidateInput(false)]
 		public ActionResult Provider() {
-			return this.DoProvider(false);
+			IRequest request = OpenIdProvider.GetRequest();
+			if (request != null) {
+				var authRequest = request as IAuthenticationRequest;
+				if (authRequest != null) {
+					PendingAuthenticationRequest = authRequest;
+					if (authRequest.IsReturnUrlDiscoverable(OpenIdProvider) == RelyingPartyDiscoveryResult.Success &&
+						User.Identity.IsAuthenticated &&
+						(authRequest.IsDirectedIdentity || Models.User.GetClaimedIdentifierForUser(User.Identity.Name) == authRequest.LocalIdentifier)) {
+						return this.SendAssertion();
+					} else {
+						return RedirectToAction("LogOn", "Account", new { returnUrl = Url.Action("SendAssertion") });
+					}
+				}
+
+				if (request.IsResponseReady) {
+					return OpenIdProvider.PrepareResponse(request).AsActionResult();
+				} else {
+					return RedirectToAction("LogOn", "Account");
+				}
+			} else {
+				return View();
+			}
 		}
 
 		[Authorize]
-		public ActionResult SendAssertion(bool pseudonymous) {
+		public ActionResult SendAssertion() {
 			IAuthenticationRequest authReq = PendingAuthenticationRequest;
 			PendingAuthenticationRequest = null;
 			if (authReq == null) {
@@ -38,8 +55,7 @@ namespace OpenIdProviderMvc.Controllers {
 			}
 
 			Identifier localIdentifier = Models.User.GetClaimedIdentifierForUser(User.Identity.Name);
-
-			if (pseudonymous) {
+			if (this.IsPpidRequested(authReq)) {
 				if (!authReq.IsDirectedIdentity) {
 					throw new InvalidOperationException("Directed identity is the only supported scenario for anonymous identifiers.");
 				}
@@ -71,27 +87,19 @@ namespace OpenIdProviderMvc.Controllers {
 			return OpenIdProvider.PrepareResponse(authReq).AsActionResult();
 		}
 
-		private ActionResult DoProvider(bool pseudonymous) {
-			IRequest request = OpenIdProvider.GetRequest();
-			if (request != null) {
-				var authRequest = request as IAuthenticationRequest;
-				if (authRequest != null) {
-					PendingAuthenticationRequest = authRequest;
-					if (User.Identity.IsAuthenticated && (authRequest.IsDirectedIdentity || Models.User.GetClaimedIdentifierForUser(User.Identity.Name) == authRequest.LocalIdentifier)) {
-						return this.SendAssertion(pseudonymous);
-					} else {
-						return RedirectToAction("LogOn", "Account", new { returnUrl = Url.Action("SendAssertion", new { pseudonymous = pseudonymous }) });
-					}
-				}
-
-				if (request.IsResponseReady) {
-					return OpenIdProvider.PrepareResponse(request).AsActionResult();
-				} else {
-					return RedirectToAction("LogOn", "Account");
-				}
-			} else {
-				return View();
+		private bool IsPpidRequested(IAuthenticationRequest authRequest) {
+			if (authRequest == null) {
+				throw new ArgumentNullException("authRequest");
 			}
+
+			var pape = authRequest.GetExtension<PolicyRequest>();
+			if (pape != null) {
+				if (pape.PreferredPolicies.Contains(AuthenticationPolicies.PrivatePersonalIdentifier)) {
+					return true;
+				}
+			}
+
+			return false;
 		}
 	}
 }

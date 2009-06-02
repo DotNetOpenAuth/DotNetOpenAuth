@@ -23,9 +23,5 @@
 		public ActionResult Xrds() {
 			return View();
 		}
-
-		public ActionResult PpidXrds() {
-			return View();
-		}
 	}
 }

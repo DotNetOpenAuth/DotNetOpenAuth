@@ -9,7 +9,7 @@ namespace OpenIdProviderMvc.Controllers {
 	public class UserController : Controller {
 		public ActionResult PpidIdentity() {
 			if (Request.AcceptTypes.Contains("application/xrds+xml")) {
-				return View("PpidXrds");
+				return View("Xrds");
 			}
 
 			return View();
@@ -30,10 +30,6 @@ namespace OpenIdProviderMvc.Controllers {
 		}
 
 		public ActionResult Xrds(string id) {
-			return View();
-		}
-
-		public ActionResult PpidXrds() {
 			return View();
 		}
 

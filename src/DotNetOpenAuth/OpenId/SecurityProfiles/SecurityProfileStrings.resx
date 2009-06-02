@@ -129,6 +129,9 @@
   <data name="PiiRequestedWithNoPiiPolicy" xml:space="preserve">
     <value>No personally identifiable information should be requested when the http://www.idmanagement.gov/schema/2009/05/icam/no-pii.pdf PAPE policy is present.</value>
   </data>
+  <data name="PpidProviderNotGiven" xml:space="preserve">
+    <value>No PPID provider has been configured.</value>
+  </data>
   <data name="RealmDiscoveryNotPerformed" xml:space="preserve">
     <value>Discovery on the Realm URL MUST be performed before sending a positive assertion.</value>
   </data>

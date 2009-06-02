@@ -123,6 +123,11 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			ErrorUtilities.VerifyArgumentNotNull(localIdentifier, "localIdentifier");
 			ErrorUtilities.VerifyArgumentNotNull(relyingPartyRealm, "relyingPartyRealm");
 
+			if (localIdentifier.ToString().StartsWith(this.BaseIdentifier.AbsoluteUri, StringComparison.Ordinal)) {
+				Logger.OpenId.Warn("Trying to generate a PPID from a PPID.  Returning original PPID.");
+				return new Uri(localIdentifier);
+			}
+
 			byte[] salt = this.GetHashSaltForLocalIdentifier(localIdentifier);
 			string valueToHash = localIdentifier + "#";
 			switch (this.PairwiseUnique) {

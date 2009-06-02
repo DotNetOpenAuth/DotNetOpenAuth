@@ -105,7 +105,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// See OpenID Authentication 2.0 spec section 9.2.1.
 		/// </remarks>
 		public RelyingPartyDiscoveryResult IsReturnUrlDiscoverable(OpenIdProvider provider) {
-			Contract.Requires<ArgumentNullException>(provider != null);
+			Contract.RequiresAlways(provider != null);
 			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
 
 			if (!this.realmDiscoveryResult.HasValue) {

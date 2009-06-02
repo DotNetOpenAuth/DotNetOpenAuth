@@ -97,6 +97,15 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No PPID provider has been configured..
+        /// </summary>
+        internal static string PpidProviderNotGiven {
+            get {
+                return ResourceManager.GetString("PpidProviderNotGiven", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Discovery on the Realm URL MUST be performed before sending a positive assertion..
         /// </summary>
         internal static string RealmDiscoveryNotPerformed {

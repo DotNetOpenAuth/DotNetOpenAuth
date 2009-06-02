@@ -33,10 +33,25 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 		private static readonly TimeSpan MaximumAssociationLifetime = TimeSpan.FromSeconds(86400);
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="USGovernmentLevel1"/> class.
+		/// </summary>
+		public USGovernmentLevel1() {
+			AllowPersonallyIdentifiableInformation = true;
+			DisableSslRequirement = true;
+		}
+
+		/// <summary>
+		/// Gets or sets the provider for generating PPID identifiers.
+		/// </summary>
+		public static IDirectedIdentityIdentifierProvider PpidIdentifierProvider { get; set; }
+
+		/// <summary>
 		/// Gets or sets a value indicating whether PII is allowed to be requested or received via OpenID.
 		/// </summary>
 		/// <value>The default value is <c>false</c>.</value>
-		public bool AllowPersonallyIdentifiableInformation { get; set; }
+		public static bool AllowPersonallyIdentifiableInformation { get; set; }
+
+		public static bool DisableSslRequirement { get; set; }
 
 		#region ISecurityProfile Members
 
@@ -58,7 +73,7 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 
 			var rpSecuritySettings = securitySettings as RelyingPartySecuritySettings;
 			if (rpSecuritySettings != null) {
-				rpSecuritySettings.RequireSsl = true;
+				rpSecuritySettings.RequireSsl = !DisableSslRequirement;
 				rpSecuritySettings.RequireDirectedIdentity = true;
 				rpSecuritySettings.RequireAssociation = true;
 				rpSecuritySettings.RejectDelegatingIdentifiers = true;
@@ -68,7 +83,7 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 
 			var opSecuritySettings = securitySettings as ProviderSecuritySettings;
 			if (opSecuritySettings != null) {
-				opSecuritySettings.RequireSsl = true;
+				opSecuritySettings.RequireSsl = !DisableSslRequirement;
 				SetMaximumAssociationLifetimeToNotExceed(Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA256, MaximumAssociationLifetime, opSecuritySettings);
 				SetMaximumAssociationLifetimeToNotExceed(Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA1, MaximumAssociationLifetime, opSecuritySettings);
 			}
@@ -89,7 +104,7 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 
 			var rpSecuritySettings = securitySettings as RelyingPartySecuritySettings;
 			if (rpSecuritySettings != null) {
-				ErrorUtilities.VerifyProtocol(rpSecuritySettings.RequireSsl, SecurityProfileStrings.SecuritySettingsNotCompliantWithProfile, this.GetType().Name);
+				ErrorUtilities.VerifyProtocol(rpSecuritySettings.RequireSsl || DisableSslRequirement, SecurityProfileStrings.SecuritySettingsNotCompliantWithProfile, this.GetType().Name);
 				ErrorUtilities.VerifyProtocol(rpSecuritySettings.RequireDirectedIdentity, SecurityProfileStrings.SecuritySettingsNotCompliantWithProfile, this.GetType().Name);
 				ErrorUtilities.VerifyProtocol(rpSecuritySettings.RequireAssociation, SecurityProfileStrings.SecuritySettingsNotCompliantWithProfile, this.GetType().Name);
 				ErrorUtilities.VerifyProtocol(rpSecuritySettings.IgnoreUnsignedExtensions, SecurityProfileStrings.SecuritySettingsNotCompliantWithProfile, this.GetType().Name);
@@ -97,7 +112,7 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 
 			var opSecuritySettings = securitySettings as ProviderSecuritySettings;
 			if (opSecuritySettings != null) {
-				ErrorUtilities.VerifyProtocol(opSecuritySettings.RequireSsl, SecurityProfileStrings.SecuritySettingsNotCompliantWithProfile, this.GetType().Name);
+				ErrorUtilities.VerifyProtocol(opSecuritySettings.RequireSsl || DisableSslRequirement, SecurityProfileStrings.SecuritySettingsNotCompliantWithProfile, this.GetType().Name);
 				ErrorUtilities.VerifyProtocol(opSecuritySettings.AssociationLifetimes.ContainsKey(Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA256) && opSecuritySettings.AssociationLifetimes[Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA256] <= MaximumAssociationLifetime, SecurityProfileStrings.SecuritySettingsNotCompliantWithProfile, this.GetType().Name);
 				ErrorUtilities.VerifyProtocol(opSecuritySettings.AssociationLifetimes.ContainsKey(Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA1) && opSecuritySettings.AssociationLifetimes[Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA1] <= MaximumAssociationLifetime, SecurityProfileStrings.SecuritySettingsNotCompliantWithProfile, this.GetType().Name);
 			}
@@ -117,7 +132,7 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			RelyingParty.AuthenticationRequest requestInternal = (RelyingParty.AuthenticationRequest)request;
-			ErrorUtilities.VerifyProtocol(string.Equals(request.Realm.Scheme, Uri.UriSchemeHttps, StringComparison.Ordinal), SecurityProfileStrings.RealmMustBeHttps);
+			ErrorUtilities.VerifyProtocol(string.Equals(request.Realm.Scheme, Uri.UriSchemeHttps, StringComparison.Ordinal) || DisableSslRequirement, SecurityProfileStrings.RealmMustBeHttps);
 
 			var pape = requestInternal.AppliedExtensions.OfType<PolicyRequest>().SingleOrDefault();
 			if (pape == null) {
@@ -132,7 +147,7 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 				pape.PreferredPolicies.Add(AuthenticationPolicies.USGovernmentTrustLevel1);
 			}
 
-			if (!this.AllowPersonallyIdentifiableInformation && !pape.PreferredPolicies.Contains(AuthenticationPolicies.NoPersonallyIdentifiableInformation)) {
+			if (!AllowPersonallyIdentifiableInformation && !pape.PreferredPolicies.Contains(AuthenticationPolicies.NoPersonallyIdentifiableInformation)) {
 				pape.PreferredPolicies.Add(AuthenticationPolicies.NoPersonallyIdentifiableInformation);
 			}
 
@@ -160,7 +175,7 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 				pape.ActualPolicies.Contains(AuthenticationPolicies.PrivatePersonalIdentifier),
 				SecurityProfileStrings.PapeResponseOrRequiredPoliciesMissing);
 
-			ErrorUtilities.VerifyProtocol(this.AllowPersonallyIdentifiableInformation || pape.ActualPolicies.Contains(AuthenticationPolicies.NoPersonallyIdentifiableInformation), SecurityProfileStrings.PapeResponseOrRequiredPoliciesMissing);
+			ErrorUtilities.VerifyProtocol(AllowPersonallyIdentifiableInformation || pape.ActualPolicies.Contains(AuthenticationPolicies.NoPersonallyIdentifiableInformation), SecurityProfileStrings.PapeResponseOrRequiredPoliciesMissing);
 
 			if (pape.ActualPolicies.Contains(AuthenticationPolicies.NoPersonallyIdentifiableInformation)) {
 				ErrorUtilities.VerifyProtocol(
@@ -191,7 +206,7 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 					if (papeRequest.PreferredPolicies.Contains(AuthenticationPolicies.USGovernmentTrustLevel1)) {
 						// Whenever we see this GSA policy requested, we MUST also see the PPID policy requested.
 						ErrorUtilities.VerifyProtocol(papeRequest.PreferredPolicies.Contains(AuthenticationPolicies.PrivatePersonalIdentifier), SecurityProfileStrings.PapeRequestMissingRequiredPolicies);
-						ErrorUtilities.VerifyProtocol(string.Equals(hostProcessedRequest.Realm.Scheme, Uri.UriSchemeHttps, StringComparison.Ordinal), SecurityProfileStrings.RealmMustBeHttps);
+						ErrorUtilities.VerifyProtocol(string.Equals(hostProcessedRequest.Realm.Scheme, Uri.UriSchemeHttps, StringComparison.Ordinal) || DisableSslRequirement, SecurityProfileStrings.RealmMustBeHttps);
 					}
 				}
 			}
@@ -237,8 +252,10 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 				if (papeRequest.PreferredPolicies.Contains(AuthenticationPolicies.PrivatePersonalIdentifier)) {
 					ErrorUtilities.VerifyProtocol(request.ClaimedIdentifier == request.LocalIdentifier, OpenIdStrings.DelegatingIdentifiersNotAllowed);
 
-					// Generate a PPID from the ClaimedIdentifier.
-					throw new NotImplementedException();
+					// Mask the user's identity with a PPID.
+					ErrorUtilities.VerifyHost(PpidIdentifierProvider != null, SecurityProfileStrings.PpidProviderNotGiven);
+					Identifier ppidIdentifier = PpidIdentifierProvider.GetIdentifier(request.LocalIdentifier, request.Realm);
+					requestInternal.ResetClaimedAndLocalIdentifiers(ppidIdentifier);
 
 					// Indicate that the RP is receiving a PPID claimed_id
 					if (!papeResponse.ActualPolicies.Contains(AuthenticationPolicies.PrivatePersonalIdentifier)) {
@@ -271,8 +288,8 @@ namespace DotNetOpenAuth.OpenId.SecurityProfiles {
 		/// <param name="maximumLifetime">The maximum lifetime.</param>
 		/// <param name="securitySettings">The security settings to adjust.</param>
 		private static void SetMaximumAssociationLifetimeToNotExceed(string associationType, TimeSpan maximumLifetime, ProviderSecuritySettings securitySettings) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(associationType));
-			Contract.Requires<ArgumentOutOfRangeException>(maximumLifetime.TotalSeconds > 0);
+			Contract.RequiresAlways(!String.IsNullOrEmpty(associationType));
+			Contract.RequiresAlways(maximumLifetime.TotalSeconds > 0);
 			if (!securitySettings.AssociationLifetimes.ContainsKey(associationType) ||
 				securitySettings.AssociationLifetimes[associationType] > maximumLifetime) {
 				securitySettings.AssociationLifetimes[associationType] = maximumLifetime;

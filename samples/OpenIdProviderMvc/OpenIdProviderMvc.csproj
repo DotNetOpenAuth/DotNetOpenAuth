@@ -92,10 +92,8 @@
     <Content Include="Views\Account\ChangePassword.aspx" />
     <Content Include="Views\Account\ChangePasswordSuccess.aspx" />
     <Content Include="Views\Account\Register.aspx" />
-    <Content Include="Views\Home\PpidXrds.aspx" />
     <Content Include="Views\Home\Xrds.aspx" />
     <Content Include="Views\OpenId\Provider.aspx" />
-    <Content Include="Views\User\PpidXrds.aspx" />
     <Content Include="Views\User\PpidIdentity.aspx" />
     <Content Include="Views\User\Identity.aspx" />
     <Content Include="Views\User\Xrds.aspx" />
