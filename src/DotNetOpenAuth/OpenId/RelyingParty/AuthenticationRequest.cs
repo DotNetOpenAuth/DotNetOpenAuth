@@ -271,7 +271,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			if (relyingParty.SecuritySettings.RequireSsl) {
 				// Rather than check for successful SSL conversion at this stage,
 				// We'll wait for secure discovery to fail on the new identifier.
-				userSuppliedIdentifier.TryRequireSsl(out userSuppliedIdentifier);
+				if (!userSuppliedIdentifier.TryRequireSsl(out userSuppliedIdentifier)) {
+					// But at least log the failure.
+					Logger.OpenId.WarnFormat("RequireSsl mode is on, so discovery on insecure identifier {0} will yield no results.", userSuppliedIdentifier);
+				}
 			}
 
 			if (Logger.OpenId.IsWarnEnabled && returnToUrl.Query != null) {
