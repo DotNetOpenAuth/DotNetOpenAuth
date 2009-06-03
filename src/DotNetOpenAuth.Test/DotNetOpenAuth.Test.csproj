@@ -211,6 +211,7 @@
     <Compile Include="OpenId\OpenIdCoordinator.cs" />
     <Compile Include="OpenId\AssociationHandshakeTests.cs" />
     <Compile Include="OpenId\OpenIdTestBase.cs" />
+    <Compile Include="OpenId\ProviderEndpointDescriptionTests.cs" />
     <Compile Include="OpenId\Provider\AnonymousRequestTests.cs" />
     <Compile Include="OpenId\Provider\AuthenticationRequestTest.cs" />
     <Compile Include="OpenId\Provider\HostProcessedRequestTests.cs" />

@@ -32,6 +32,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.ClaimedIdentifier = copyFrom.ClaimedIdentifier;
 			this.FriendlyIdentifierForDisplay = copyFrom.FriendlyIdentifierForDisplay;
 			this.Status = copyFrom.Status;
+			this.Provider = copyFrom.Provider;
 			this.callbackArguments = copyFrom.GetCallbackArguments();
 		}
 
@@ -92,6 +93,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <value></value>
 		public AuthenticationStatus Status { get; private set; }
+
+		/// <summary>
+		/// Gets information about the OpenId Provider, as advertised by the
+		/// OpenID discovery documents found at the <see cref="ClaimedIdentifier"/>
+		/// location.
+		/// </summary>
+		public IProviderEndpoint Provider { get; private set; }
 
 		/// <summary>
 		/// Gets the details regarding a failed authentication attempt, if available.

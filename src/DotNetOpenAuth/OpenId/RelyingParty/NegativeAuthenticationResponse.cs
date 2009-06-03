@@ -96,6 +96,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Gets information about the OpenId Provider, as advertised by the
+		/// OpenID discovery documents found at the <see cref="ClaimedIdentifier"/>
+		/// location.
+		/// </summary>
+		public IProviderEndpoint Provider {
+			get { throw new NotSupportedException(); }
+		}
+
+		/// <summary>
 		/// Gets the details regarding a failed authentication attempt, if available.
 		/// This will be set if and only if <see cref="Status"/> is <see cref="AuthenticationStatus.Failed"/>.
 		/// </summary>

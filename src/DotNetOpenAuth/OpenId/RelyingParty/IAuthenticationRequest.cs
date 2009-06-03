@@ -88,7 +88,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 		/// <summary>
 		/// Gets information about the OpenId Provider, as advertised by the
-		/// OpenId discovery documents found at the <see cref="ClaimedIdentifier"/>
+		/// OpenID discovery documents found at the <see cref="ClaimedIdentifier"/>
 		/// location.
 		/// </summary>
 		IProviderEndpoint Provider { get; }
