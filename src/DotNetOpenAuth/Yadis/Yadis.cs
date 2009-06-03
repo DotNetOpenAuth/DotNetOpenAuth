@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.Yadis {
 	using System.Net.Cache;
 	using System.Web.UI.HtmlControls;
 	using System.Xml;
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.Xrds;
@@ -27,7 +28,7 @@ namespace DotNetOpenAuth.Yadis {
 		/// <summary>
 		/// Gets or sets the cache that can be used for HTTP requests made during identifier discovery.
 		/// </summary>
-		internal static readonly RequestCachePolicy IdentifierDiscoveryCachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.CacheIfAvailable);
+		internal static readonly RequestCachePolicy IdentifierDiscoveryCachePolicy = new HttpRequestCachePolicy(DotNetOpenAuthSection.Configuration.OpenId.CacheDiscovery ? HttpRequestCacheLevel.CacheIfAvailable : HttpRequestCacheLevel.BypassCache);
 
 		/// <summary>
 		/// The maximum number of bytes to read from an HTTP response
