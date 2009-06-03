@@ -285,8 +285,9 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	}
 
 	box.dnoi_internal.isBusy = function() {
-		return box.dnoi_internal.state == 'discovering' || 
-			box.dnoi_internal.authenticationRequests[box.lastDiscoveredIdentifier].busy();
+		var lastDiscovery = box.dnoi_internal.authenticationRequests[box.lastDiscoveredIdentifier];
+		return box.dnoi_internal.state == 'discovering' ||
+			(lastDiscovery && lastDiscovery.busy());
 	};
 
 	box.dnoi_internal.canAttemptLogin = function() {
