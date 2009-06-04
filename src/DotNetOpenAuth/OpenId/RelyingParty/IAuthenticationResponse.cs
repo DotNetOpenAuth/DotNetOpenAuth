@@ -81,8 +81,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets information about the OpenId Provider, as advertised by the
 		/// OpenID discovery documents found at the <see cref="ClaimedIdentifier"/>
-		/// location.
+		/// location, if available.
 		/// </summary>
+		/// <value>
+		/// The Provider endpoint that issued the positive assertion;
+		/// or <c>null</c> if information about the Provider is unavailable.
+		/// </value>
 		IProviderEndpoint Provider { get; }
 
 		/// <summary>
