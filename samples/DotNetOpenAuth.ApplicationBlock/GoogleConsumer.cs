@@ -48,6 +48,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			{ Applications.Finance, "http://finance.google.com/finance/feeds/" },
 			{ Applications.Gmail, "https://mail.google.com/mail/feed/atom" },
 			{ Applications.Health, "https://www.google.com/h9/feeds/" },
+			{ Applications.Maps, "http://maps.google.com/maps/feeds/" },
 			{ Applications.OpenSocial, "http://sandbox.gmodules.com/api/" },
 			{ Applications.PicasaWeb, "http://picasaweb.google.com/data/" },
 			{ Applications.Spreadsheets, "http://spreadsheets.google.com/feeds/" },
@@ -139,6 +140,11 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			/// Google Analytics
 			/// </summary>
 			Analytics = 0x4000,
+
+			/// <summary>
+			/// Google Maps
+			/// </summary>
+			Maps = 0x8000,
 		}
 
 		/// <summary>
