@@ -522,7 +522,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			trace('iframe hosting ' + self.endpoint + ' now OPENING.');
 			self.iframe = iframe;
 			//trace('initiating auth attempt with: ' + self.immediate);
-			return self.immediate;
+			return self.immediate.toString();
 		};
 		this.trySetup = function() {
 			self.abort(); // ensure no concurrent attempts
