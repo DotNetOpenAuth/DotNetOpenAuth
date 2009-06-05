@@ -126,9 +126,10 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	box.dnoi_internal.authenticationIFrames = new FrameManager(throttle);
 
 	box.dnoi_internal.constructButton = function(text, tooltip, onclick) {
-		var button = document.createElement('button');
+		var button = document.createElement('input');
 		button.textContent = text; // Mozilla
 		button.value = text; // IE
+		button.type = 'button';
 		button.title = tooltip != null ? tooltip : '';
 		button.onclick = onclick;
 		button.style.visibility = 'hidden';

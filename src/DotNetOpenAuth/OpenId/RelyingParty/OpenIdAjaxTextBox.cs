@@ -993,6 +993,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			writer.WriteBeginTag("span");
 			writer.WriteAttribute("class", this.CssClass);
 			writer.Write(" style='");
+			writer.WriteStyleAttribute("display", "inline-block");
 			writer.WriteStyleAttribute("position", "relative");
 			writer.WriteStyleAttribute("font-size", "16px");
 			writer.Write("'>");
