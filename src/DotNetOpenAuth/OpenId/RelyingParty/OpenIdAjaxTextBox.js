@@ -248,7 +248,11 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 				box.dnoi_internal.op_logo.src = opLogo;
 				box.dnoi_internal.op_logo.style.visibility = 'visible';
 				box.dnoi_internal.op_logo.title = box.dnoi_internal.op_logo.originalTitle.replace('{0}', authenticatedBy.getHost());
-			} else {
+			}
+			trace("OP icon size: " + box.dnoi_internal.op_logo.fileSize);
+			if (opLogo == null || box.dnoi_internal.op_logo.fileSize == -1 /*IE*/ || box.dnoi_internal.op_logo.fileSize === undefined /* FF */) {
+				trace('recovering from missing OP icon');
+				box.dnoi_internal.op_logo.style.visibility = 'hidden';
 				box.dnoi_internal.openid_logo.style.visibility = 'visible';
 				box.dnoi_internal.openid_logo.title = box.dnoi_internal.op_logo.originalTitle.replace('{0}', authenticatedBy.getHost());
 			}
