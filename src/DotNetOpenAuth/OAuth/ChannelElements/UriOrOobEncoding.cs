@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="UriOrOobEncoder.cs" company="Andrew Arnott">
+// <copyright file="UriOrOobEncoding.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -15,16 +15,16 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	/// An URI encoder that translates null <see cref="Uri"/> references as "oob" 
 	/// instead of an empty/missing argument.
 	/// </summary>
-	internal class UriOrOobEncoder : IMessagePartEncoder {
+	internal class UriOrOobEncoding : IMessagePartEncoder {
 		/// <summary>
 		/// The string constant "oob", used to indicate an out-of-band configuration.
 		/// </summary>
 		private const string OutOfBandConfiguration = "oob";
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="UriOrOobEncoder"/> class.
+		/// Initializes a new instance of the <see cref="UriOrOobEncoding"/> class.
 		/// </summary>
-		internal UriOrOobEncoder() {
+		internal UriOrOobEncoding() {
 		}
 
 		#region IMessagePartEncoder Members

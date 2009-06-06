@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// The callback URL; or <c>null</c> if the Consumer is unable to receive
 		/// callbacks or a callback URL has been established via other means.
 		/// </value>
-		[MessagePart("oauth_callback", IsRequired = true, AllowEmpty = false, MinVersion = Protocol.V10aVersion, Encoder = typeof(UriOrOobEncoder))]
+		[MessagePart("oauth_callback", IsRequired = true, AllowEmpty = false, MinVersion = Protocol.V10aVersion, Encoder = typeof(UriOrOobEncoding))]
 		public Uri Callback { get; set; }
 
 		/// <summary>
