@@ -165,7 +165,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		[MessagePart("oauth_version", IsRequired = false)]
 		private string OAuthVersion {
 			get {
-				return Version.ToString();
+				return Protocol.Lookup(Version).PublishedVersion;
 			}
 
 			set {

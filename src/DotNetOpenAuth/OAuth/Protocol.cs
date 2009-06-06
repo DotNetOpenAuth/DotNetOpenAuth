@@ -89,12 +89,18 @@ namespace DotNetOpenAuth.OAuth {
 		/// Initializes a new instance of the <see cref="Protocol"/> class.
 		/// </summary>
 		internal Protocol() {
+			this.PublishedVersion = "1.0";
 		}
 
 		/// <summary>
 		/// Gets the version used to represent OAuth 1.0a.
 		/// </summary>
 		internal Version Version { get; private set; }
+
+		/// <summary>
+		/// Gets the version to declare on the wire.
+		/// </summary>
+		internal string PublishedVersion { get; private set; }
 
 		/// <summary>
 		/// Gets the namespace to use for this version of the protocol.

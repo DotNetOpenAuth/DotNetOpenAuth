@@ -9,13 +9,14 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
 
 	/// <summary>
 	/// An URI encoder that translates null <see cref="Uri"/> references as "oob" 
 	/// instead of an empty/missing argument.
 	/// </summary>
-	internal class UriOrOobEncoding : IMessagePartEncoder {
+	internal class UriOrOobEncoding : IMessagePartNullEncoder {
 		/// <summary>
 		/// The string constant "oob", used to indicate an out-of-band configuration.
 		/// </summary>
@@ -24,8 +25,21 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UriOrOobEncoding"/> class.
 		/// </summary>
-		internal UriOrOobEncoding() {
+		public UriOrOobEncoding() {
 		}
+
+		#region IMessagePartNullEncoder Members
+
+		/// <summary>
+		/// Gets the string representation to include in a serialized message
+		/// when the message part has a <c>null</c> value.
+		/// </summary>
+		/// <value></value>
+		public string EncodedNullValue {
+			get { return OutOfBandConfiguration; }
+		}
+
+		#endregion
 
 		#region IMessagePartEncoder Members
 
@@ -37,8 +51,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// The <paramref name="value"/> in string form, ready for message transport.
 		/// </returns>
 		public string Encode(object value) {
+			ErrorUtilities.VerifyArgumentNotNull(value, "value");
+
 			Uri uriValue = (Uri)value;
-			return uriValue != null ? uriValue.AbsoluteUri : OutOfBandConfiguration;
+			return uriValue.AbsoluteUri;
 		}
 
 		/// <summary>

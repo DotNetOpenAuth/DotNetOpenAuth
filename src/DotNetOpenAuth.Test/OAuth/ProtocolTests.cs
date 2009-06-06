@@ -12,7 +12,7 @@ namespace DotNetOpenAuth.Test {
 	public class ProtocolTests {
 		[TestMethod]
 		public void Default() {
-			Assert.AreSame(Protocol.V10, Protocol.Default);
+			Assert.AreSame(Protocol.V10a, Protocol.Default);
 		}
 
 		[TestMethod]

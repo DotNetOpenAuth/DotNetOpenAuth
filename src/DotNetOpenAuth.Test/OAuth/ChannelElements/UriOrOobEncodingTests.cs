@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="UriOrOobEncoderTests.cs" company="Andrew Arnott">
+// <copyright file="UriOrOobEncodingTests.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -9,8 +9,8 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
 	using DotNetOpenAuth.OAuth.ChannelElements;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
 	public class UriOrOobEncodingTests : TestBase {
@@ -22,11 +22,11 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 		}
 
 		/// <summary>
-		/// Verifies encoding null URIs results in the value "oob".
+		/// Verifies null value encoding
 		/// </summary>
 		[TestMethod]
-		public void EncodeNullValueToOob() {
-			Assert.AreEqual("oob", this.encoding.Encode(null));
+		public void NullValueEncoding() {
+			Assert.AreEqual("oob", this.encoding.EncodedNullValue);
 		}
 
 		/// <summary>

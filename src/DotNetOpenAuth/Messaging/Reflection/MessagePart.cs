@@ -113,10 +113,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 						str => str != null ? Convert.ChangeType(str, this.memberDeclaredType, CultureInfo.InvariantCulture) : null);
 				}
 			} else {
-				var encoder = GetEncoder(attribute.Encoder);
-				this.converter = new ValueMapping(
-					obj => encoder.Encode(obj),
-					str => encoder.Decode(str));
+				this.converter = new ValueMapping(GetEncoder(attribute.Encoder));
 			}
 
 			// readonly and const fields are considered legal, and "constants" for message transport.
@@ -286,7 +283,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// An instance of the appropriate type for setting the member.
 		/// </returns>
 		private object ToValue(string value) {
-			return value == null ? null : this.converter.StringToValue(value);
+			return this.converter.StringToValue(value);
 		}
 
 		/// <summary>
@@ -297,7 +294,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// The string representation of the member's value.
 		/// </returns>
 		private string ToString(object value) {
-			return value == null ? null : this.converter.ValueToString(value);
+			return this.converter.ValueToString(value);
 		}
 
 		/// <summary>

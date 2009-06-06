@@ -222,6 +222,7 @@
     <Compile Include="Messaging\NetworkDirectWebResponse.cs" />
     <Compile Include="Messaging\OutgoingWebResponseActionResult.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
+    <Compile Include="Messaging\Reflection\IMessagePartNullEncoder.cs" />
     <Compile Include="Messaging\Reflection\MessageDescriptionCollection.cs" />
     <Compile Include="OAuth\ChannelElements\IConsumerCertificateProvider.cs" />
     <Compile Include="OAuth\ChannelElements\IConsumerTokenManager.cs" />
