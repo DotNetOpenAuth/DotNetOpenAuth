@@ -24,6 +24,25 @@ public class DatabaseTokenManager : IServiceProviderTokenManager {
 		return consumerRow.ConsumerSecret;
 	}
 
+	public void SetRequestTokenVerifier(string requestToken, string verifier) {
+		if (String.IsNullOrEmpty(requestToken)) {
+			throw new ArgumentNullException("requestToken");
+		}
+		if (String.IsNullOrEmpty(verifier)) {
+			throw new ArgumentNullException("verifier");
+		}
+
+		Global.DataContext.OAuthTokens.First(token => token.Token == requestToken).RequestTokenVerifier = verifier;
+	}
+
+	public string GetRequestTokenVerifier(string requestToken) {
+		if (String.IsNullOrEmpty(requestToken)) {
+			throw new ArgumentNullException("requestToken");
+		}
+
+		return Global.DataContext.OAuthTokens.First(token => token.Token == requestToken).RequestTokenVerifier;
+	}
+
 	#endregion
 
 	#region ITokenManager Members

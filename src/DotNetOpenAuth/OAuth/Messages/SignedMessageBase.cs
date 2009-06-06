@@ -31,8 +31,9 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// </summary>
 		/// <param name="transport">A value indicating whether this message requires a direct or indirect transport.</param>
 		/// <param name="recipient">The URI that a directed message will be delivered to.</param>
-		internal SignedMessageBase(MessageTransport transport, MessageReceivingEndpoint recipient)
-			: base(MessageProtections.All, transport, recipient) {
+		/// <param name="version">The OAuth version.</param>
+		internal SignedMessageBase(MessageTransport transport, MessageReceivingEndpoint recipient, Version version)
+			: base(MessageProtections.All, transport, recipient, version) {
 			ITamperResistantOAuthMessage self = (ITamperResistantOAuthMessage)this;
 			HttpDeliveryMethods methods = ((IDirectedProtocolMessage)this).HttpMethods;
 			self.HttpMethod = (methods & HttpDeliveryMethods.PostRequest) != 0 ? "POST" : "GET";

@@ -102,7 +102,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		public static void SendResponse() {
 			var pendingRequest = PendingAuthenticationRequest;
 			PendingAuthenticationRequest = null;
-			Provider.SendResponse(pendingRequest); 
+			Provider.SendResponse(pendingRequest);
 		}
 
 		/// <summary>

@@ -38,6 +38,7 @@
       <Column Name="ConsumerId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="UserId" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="Scope" Type="System.String" DbType="nvarchar(MAX)" CanBeNull="false" />
+      <Column Member="RequestTokenVerifier" Type="System.String" CanBeNull="true" />
       <Association Name="OAuthConsumer_OAuthToken" Member="OAuthConsumer" ThisKey="ConsumerId" OtherKey="ConsumerId" Type="OAuthConsumer" IsForeignKey="true" DeleteRule="CASCADE" DeleteOnNull="true" />
       <Association Name="User_OAuthToken" Member="User" ThisKey="UserId" OtherKey="UserId" Type="User" IsForeignKey="true" DeleteRule="CASCADE" />
     </Type>

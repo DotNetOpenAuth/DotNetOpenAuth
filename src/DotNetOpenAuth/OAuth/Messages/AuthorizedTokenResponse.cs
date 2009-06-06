@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuth.Messages {
+	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using DotNetOpenAuth.Messaging;
@@ -18,8 +19,9 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// Initializes a new instance of the <see cref="AuthorizedTokenResponse"/> class.
 		/// </summary>
 		/// <param name="originatingRequest">The originating request.</param>
-		protected internal AuthorizedTokenResponse(AuthorizedTokenRequest originatingRequest)
-			: base(MessageProtections.None, originatingRequest) {
+		/// <param name="version">The OAuth version.</param>
+		protected internal AuthorizedTokenResponse(AuthorizedTokenRequest originatingRequest, Version version)
+			: base(MessageProtections.None, originatingRequest, version) {
 		}
 
 		/// <summary>

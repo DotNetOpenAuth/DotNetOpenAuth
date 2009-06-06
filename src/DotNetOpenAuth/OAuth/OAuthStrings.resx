@@ -129,6 +129,9 @@
   <data name="ConsumerOrTokenSecretNotFound" xml:space="preserve">
     <value>Failure looking up secret for consumer or token.</value>
   </data>
+  <data name="IncorrectVerifier" xml:space="preserve">
+    <value>oauth_verifier argument was incorrect.</value>
+  </data>
   <data name="InvalidIncomingMessage" xml:space="preserve">
     <value>An invalid OAuth message received and discarded.</value>
   </data>

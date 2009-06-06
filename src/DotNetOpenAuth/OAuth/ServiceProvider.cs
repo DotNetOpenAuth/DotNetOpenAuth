@@ -48,7 +48,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="serviceDescription">The endpoints and behavior on the Service Provider.</param>
 		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
 		/// <param name="messageTypeProvider">An object that can figure out what type of message is being received for deserialization.</param>
-		public ServiceProvider(ServiceProviderDescription serviceDescription, ITokenManager tokenManager, OAuthServiceProviderMessageFactory messageTypeProvider) {
+		public ServiceProvider(ServiceProviderDescription serviceDescription, IServiceProviderTokenManager tokenManager, OAuthServiceProviderMessageFactory messageTypeProvider) {
 			ErrorUtilities.VerifyArgumentNotNull(serviceDescription, "serviceDescription");
 			ErrorUtilities.VerifyArgumentNotNull(tokenManager, "tokenManager");
 			ErrorUtilities.VerifyArgumentNotNull(messageTypeProvider, "messageTypeProvider");
@@ -156,13 +156,11 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="request">The token request message the Consumer sent that the Service Provider is now responding to.</param>
 		/// <returns>The response message to send using the <see cref="Channel"/>, after optionally adding extra data to it.</returns>
 		public UnauthorizedTokenResponse PrepareUnauthorizedTokenMessage(UnauthorizedTokenRequest request) {
-			if (request == null) {
-				throw new ArgumentNullException("request");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			string token = this.TokenGenerator.GenerateRequestToken(request.ConsumerKey);
 			string secret = this.TokenGenerator.GenerateSecret();
-			UnauthorizedTokenResponse response = new UnauthorizedTokenResponse(request, token, secret);
+			UnauthorizedTokenResponse response = new UnauthorizedTokenResponse(request, token, secret, Protocol.Default.Version);
 
 			return response;
 		}
@@ -231,7 +229,7 @@ namespace DotNetOpenAuth.OAuth {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 			ErrorUtilities.VerifyArgumentNotNull(callback, "callback");
 
-			var authorization = new UserAuthorizationResponse(request.Callback) {
+			var authorization = new UserAuthorizationResponse(request.Callback, Protocol.Default.Version) {
 				RequestToken = request.RequestToken,
 			};
 			return authorization;
@@ -282,7 +280,7 @@ namespace DotNetOpenAuth.OAuth {
 			string accessToken = this.TokenGenerator.GenerateAccessToken(request.ConsumerKey);
 			string tokenSecret = this.TokenGenerator.GenerateSecret();
 			this.TokenManager.ExpireRequestTokenAndStoreNewAccessToken(request.ConsumerKey, request.RequestToken, accessToken, tokenSecret);
-			var grantAccess = new AuthorizedTokenResponse(request) {
+			var grantAccess = new AuthorizedTokenResponse(request, Protocol.Default.Version) {
 				AccessToken = accessToken,
 				TokenSecret = tokenSecret,
 			};

@@ -26,7 +26,13 @@ namespace DotNetOpenAuth.OAuth {
 		/// Initializes a new instance of the <see cref="ServiceProviderDescription"/> class.
 		/// </summary>
 		public ServiceProviderDescription() {
+			this.Version = Protocol.Default.Version;
 		}
+
+		/// <summary>
+		/// Gets or sets the OAuth version supported by the Service Provider.
+		/// </summary>
+		public Version Version { get; set; }
 
 		/// <summary>
 		/// Gets or sets the URL used to obtain an unauthorized Request Token,
@@ -43,7 +49,7 @@ namespace DotNetOpenAuth.OAuth {
 			}
 
 			set {
-				if (value != null && UriUtil.QueryStringContainPrefixedParameters(value.Location, OAuth.Protocol.V10.ParameterPrefix)) {
+				if (value != null && UriUtil.QueryStringContainPrefixedParameters(value.Location, OAuth.Protocol.ParameterPrefix)) {
 					throw new ArgumentException(OAuthStrings.RequestUrlMustNotHaveOAuthParameters);
 				}
 

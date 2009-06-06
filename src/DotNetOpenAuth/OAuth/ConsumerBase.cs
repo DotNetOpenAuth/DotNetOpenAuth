@@ -167,7 +167,7 @@ namespace DotNetOpenAuth.OAuth {
 			ErrorUtilities.VerifyArgumentNotNull(endpoint, "endpoint");
 			ErrorUtilities.VerifyNonZeroLength(accessToken, "accessToken");
 
-			AccessProtectedResourceRequest message = new AccessProtectedResourceRequest(endpoint) {
+			AccessProtectedResourceRequest message = new AccessProtectedResourceRequest(endpoint, Protocol.Default.Version) {
 				AccessToken = accessToken,
 				ConsumerKey = this.ConsumerKey,
 			};
@@ -190,7 +190,7 @@ namespace DotNetOpenAuth.OAuth {
 		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "3#", Justification = "Two results")]
 		protected internal UserAuthorizationRequest PrepareRequestUserAuthorization(Uri callback, IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, out string requestToken) {
 			// Obtain an unauthorized request token.
-			var token = new UnauthorizedTokenRequest(this.ServiceProvider.RequestTokenEndpoint) {
+			var token = new UnauthorizedTokenRequest(this.ServiceProvider.RequestTokenEndpoint, Protocol.Default.Version) {
 				ConsumerKey = this.ConsumerKey,
 			};
 			var tokenAccessor = this.Channel.MessageDescriptions.GetAccessor(token);
@@ -200,7 +200,7 @@ namespace DotNetOpenAuth.OAuth {
 
 			// Request user authorization.
 			ITokenContainingMessage assignedRequestToken = requestTokenResponse;
-			var requestAuthorization = new UserAuthorizationRequest(this.ServiceProvider.UserAuthorizationEndpoint, assignedRequestToken.Token) {
+			var requestAuthorization = new UserAuthorizationRequest(this.ServiceProvider.UserAuthorizationEndpoint, assignedRequestToken.Token, Protocol.Default.Version) {
 				Callback = callback,
 			};
 			var requestAuthorizationAccessor = this.Channel.MessageDescriptions.GetAccessor(requestAuthorization);
@@ -215,7 +215,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="requestToken">The request token that the user has authorized.</param>
 		/// <returns>The access token assigned by the Service Provider.</returns>
 		protected AuthorizedTokenResponse ProcessUserAuthorization(string requestToken) {
-			var requestAccess = new AuthorizedTokenRequest(this.ServiceProvider.AccessTokenEndpoint) {
+			var requestAccess = new AuthorizedTokenRequest(this.ServiceProvider.AccessTokenEndpoint, Protocol.Default.Version) {
 				RequestToken = requestToken,
 				ConsumerKey = this.ConsumerKey,
 			};

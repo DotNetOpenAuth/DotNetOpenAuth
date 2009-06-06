@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Test.ChannelElements {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
+	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -63,7 +64,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 
 		internal static UnauthorizedTokenRequest CreateTestRequestTokenMessage(MessageDescriptionCollection messageDescriptions, MessageReceivingEndpoint endpoint) {
 			endpoint = endpoint ?? new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthGetRequestToken", HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.GetRequest);
-			UnauthorizedTokenRequest message = new UnauthorizedTokenRequest(endpoint);
+			UnauthorizedTokenRequest message = new UnauthorizedTokenRequest(endpoint, Protocol.Default.Version);
 			message.ConsumerKey = "nerdbank.org";
 			((ITamperResistantOAuthMessage)message).ConsumerSecret = "nerdbanksecret";
 			var signedMessage = (ITamperResistantOAuthMessage)message;

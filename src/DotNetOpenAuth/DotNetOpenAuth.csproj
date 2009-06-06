@@ -236,6 +236,8 @@
     <Compile Include="OAuth\ChannelElements\SigningBindingElementChain.cs" />
     <Compile Include="OAuth\ChannelElements\StandardTokenGenerator.cs" />
     <Compile Include="OAuth\ChannelElements\TokenType.cs" />
+    <Compile Include="OAuth\ChannelElements\UriOrOobEncoder.cs" />
+    <Compile Include="OAuth\ChannelElements\VerificationCodeBindingElement.cs" />
     <Compile Include="OAuth\ConsumerBase.cs" />
     <Compile Include="OAuth\DesktopConsumer.cs" />
     <Compile Include="GlobalSuppressions.cs" />

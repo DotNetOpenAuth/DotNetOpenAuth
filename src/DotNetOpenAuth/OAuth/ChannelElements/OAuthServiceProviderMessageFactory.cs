@@ -55,9 +55,9 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 
 			MessageBase message = null;
 
-			if (fields.ContainsKey("oauth_consumer_key") &&
-				!fields.ContainsKey("oauth_token")) {
-				message = new UnauthorizedTokenRequest(recipient);
+			if (fields.ContainsKey("oauth_consumer_key") && !fields.ContainsKey("oauth_token")) {
+				Protocol protocol = fields.ContainsKey("oauth_callback") ? Protocol.V10a : Protocol.V10;
+				message = new UnauthorizedTokenRequest(recipient, protocol.Version);
 			} else if (fields.ContainsKey("oauth_consumer_key") &&
 				fields.ContainsKey("oauth_token")) {
 				// Discern between RequestAccessToken and AccessProtectedResources,
@@ -65,11 +65,11 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				// is in the token parameter.
 				bool tokenTypeIsAccessToken = this.tokenManager.GetTokenType(fields["oauth_token"]) == TokenType.AccessToken;
 
-				message = tokenTypeIsAccessToken ? (MessageBase)new AccessProtectedResourceRequest(recipient) :
-					new AuthorizedTokenRequest(recipient);
+				message = tokenTypeIsAccessToken ? (MessageBase)new AccessProtectedResourceRequest(recipient, Protocol.Default.Version) :
+					new AuthorizedTokenRequest(recipient, Protocol.Default.Version);
 			} else {
 				// fail over to the message with no required fields at all.
-				message = new UserAuthorizationRequest(recipient);
+				message = new UserAuthorizationRequest(recipient, Protocol.Default.Version);
 			}
 
 			if (message != null) {

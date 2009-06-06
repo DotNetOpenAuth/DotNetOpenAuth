@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuth.Messages {
+	using System;
 	using System.Globalization;
 	using DotNetOpenAuth.Messaging;
 
@@ -20,8 +21,9 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// Initializes a new instance of the <see cref="AuthorizedTokenRequest"/> class.
 		/// </summary>
 		/// <param name="serviceProvider">The URI of the Service Provider endpoint to send this message to.</param>
-		internal AuthorizedTokenRequest(MessageReceivingEndpoint serviceProvider)
-			: base(MessageTransport.Direct, serviceProvider) {
+		/// <param name="version">The OAuth version.</param>
+		internal AuthorizedTokenRequest(MessageReceivingEndpoint serviceProvider, Version version)
+			: base(MessageTransport.Direct, serviceProvider, version) {
 		}
 
 		/// <summary>
@@ -37,6 +39,13 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// </summary>
 		[MessagePart("oauth_token", IsRequired = true)]
 		internal string RequestToken { get; set; }
+
+		/// <summary>
+		/// Gets or sets the verification code received by the Consumer from the Service Provider 
+		/// in the <see cref="UserAuthorizationResponse.VerificationCode"/> property.
+		/// </summary>
+		[MessagePart("oauth_verifier", IsRequired = true, AllowEmpty = false, MinVersion = Protocol.V10aVersion)]
+		internal string VerificationCode { get; set; }
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification

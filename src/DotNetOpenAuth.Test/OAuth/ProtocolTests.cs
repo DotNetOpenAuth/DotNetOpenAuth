@@ -23,12 +23,12 @@ namespace DotNetOpenAuth.Test {
 
 		[TestMethod]
 		public void AuthorizationHeaderScheme() {
-			Assert.AreEqual("OAuth", Protocol.V10.AuthorizationHeaderScheme);
+			Assert.AreEqual("OAuth", Protocol.AuthorizationHeaderScheme);
 		}
 
 		[TestMethod]
 		public void ParameterPrefix() {
-			Assert.AreEqual("oauth_", Protocol.V10.ParameterPrefix);
+			Assert.AreEqual("oauth_", Protocol.ParameterPrefix);
 		}
 	}
 }

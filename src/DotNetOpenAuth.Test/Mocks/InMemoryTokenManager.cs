@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 	internal class InMemoryTokenManager : IConsumerTokenManager, IServiceProviderTokenManager {
 		private Dictionary<string, string> consumersAndSecrets = new Dictionary<string, string>();
 		private Dictionary<string, string> tokensAndSecrets = new Dictionary<string, string>();
+		private Dictionary<string, string> tokensAndVerifiers = new Dictionary<string, string>();
 
 		/// <summary>
 		/// Request tokens that have been issued, and whether they have been authorized yet.
@@ -95,6 +96,14 @@ namespace DotNetOpenAuth.Test.Mocks {
 
 		public string GetConsumerSecret(string consumerKey) {
 			return this.consumersAndSecrets[consumerKey];
+		}
+
+		public void SetRequestTokenVerifier(string requestToken, string verifier) {
+			this.tokensAndVerifiers[requestToken] = verifier;
+		}
+
+		public string GetRequestTokenVerifier(string requestToken) {
+			return this.tokensAndVerifiers[requestToken];
 		}
 
 		#endregion

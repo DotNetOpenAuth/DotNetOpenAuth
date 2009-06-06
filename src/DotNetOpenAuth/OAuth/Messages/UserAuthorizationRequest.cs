@@ -21,8 +21,9 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// </summary>
 		/// <param name="serviceProvider">The URI of the Service Provider endpoint to send this message to.</param>
 		/// <param name="requestToken">The request token.</param>
-		internal UserAuthorizationRequest(MessageReceivingEndpoint serviceProvider, string requestToken)
-			: this(serviceProvider) {
+		/// <param name="version">The OAuth version.</param>
+		internal UserAuthorizationRequest(MessageReceivingEndpoint serviceProvider, string requestToken, Version version)
+			: this(serviceProvider, version) {
 			this.RequestToken = requestToken;
 		}
 
@@ -30,8 +31,9 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// Initializes a new instance of the <see cref="UserAuthorizationRequest"/> class.
 		/// </summary>
 		/// <param name="serviceProvider">The URI of the Service Provider endpoint to send this message to.</param>
-		internal UserAuthorizationRequest(MessageReceivingEndpoint serviceProvider)
-			: base(MessageProtections.None, MessageTransport.Indirect, serviceProvider) {
+		/// <param name="version">The OAuth version.</param>
+		internal UserAuthorizationRequest(MessageReceivingEndpoint serviceProvider, Version version)
+			: base(MessageProtections.None, MessageTransport.Indirect, serviceProvider, version) {
 		}
 
 		/// <summary>
@@ -65,7 +67,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// Gets or sets a URL the Service Provider will use to redirect the User back 
 		/// to the Consumer when Obtaining User Authorization is complete. Optional.
 		/// </summary>
-		[MessagePart("oauth_callback", IsRequired = false)]
+		[MessagePart("oauth_callback", IsRequired = false, MaxVersion = "1.0")]
 		internal Uri Callback { get; set; }
 	}
 }
