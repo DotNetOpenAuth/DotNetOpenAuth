@@ -633,6 +633,8 @@ public partial class OAuthToken : INotifyPropertyChanging, INotifyPropertyChange
 	
 	private string _RequestTokenVerifier;
 	
+	private string _RequestTokenCallback;
+	
 	private EntityRef<OAuthConsumer> _OAuthConsumer;
 	
 	private EntityRef<User> _User;
@@ -659,6 +661,8 @@ public partial class OAuthToken : INotifyPropertyChanging, INotifyPropertyChange
     partial void OnScopeChanged();
     partial void OnRequestTokenVerifierChanging(string value);
     partial void OnRequestTokenVerifierChanged();
+    partial void OnRequestTokenCallbackChanging(string value);
+    partial void OnRequestTokenCallbackChanged();
     #endregion
 	
 	public OAuthToken()
@@ -852,6 +856,26 @@ public partial class OAuthToken : INotifyPropertyChanging, INotifyPropertyChange
 				this._RequestTokenVerifier = value;
 				this.SendPropertyChanged("RequestTokenVerifier");
 				this.OnRequestTokenVerifierChanged();
+			}
+		}
+	}
+	
+	[Column(Storage="_RequestTokenCallback")]
+	public string RequestTokenCallback
+	{
+		get
+		{
+			return this._RequestTokenCallback;
+		}
+		set
+		{
+			if ((this._RequestTokenCallback != value))
+			{
+				this.OnRequestTokenCallbackChanging(value);
+				this.SendPropertyChanging();
+				this._RequestTokenCallback = value;
+				this.SendPropertyChanged("RequestTokenCallback");
+				this.OnRequestTokenCallbackChanged();
 			}
 		}
 	}

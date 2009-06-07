@@ -43,6 +43,18 @@ public class DatabaseTokenManager : IServiceProviderTokenManager {
 		return Global.DataContext.OAuthTokens.First(token => token.Token == requestToken).RequestTokenVerifier;
 	}
 
+	public void SetRequestTokenCallback(string requestToken, Uri callback) {
+		if (String.IsNullOrEmpty(requestToken)) {
+			throw new ArgumentNullException("requestToken");
+		}
+
+		Global.DataContext.OAuthTokens.First(token => token.Token == requestToken).RequestTokenCallback = callback.AbsoluteUri;
+	}
+
+	public Uri GetRequestTokenCallback(string requestToken) {
+		return new Uri(Global.DataContext.OAuthTokens.First(token => token.Token == requestToken).RequestTokenCallback);
+	}
+
 	#endregion
 
 	#region ITokenManager Members
@@ -70,6 +82,7 @@ public class DatabaseTokenManager : IServiceProviderTokenManager {
 		};
 
 		Global.DataContext.OAuthTokens.InsertOnSubmit(newToken);
+		Global.DataContext.SubmitChanges();
 	}
 
 	/// <summary>
