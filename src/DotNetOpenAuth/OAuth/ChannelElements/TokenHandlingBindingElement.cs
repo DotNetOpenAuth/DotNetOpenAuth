@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="VerificationCodeBindingElement.cs" company="Andrew Arnott">
+// <copyright file="TokenHandlingBindingElement.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -14,24 +14,20 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using DotNetOpenAuth.OAuth.Messages;
 
 	/// <summary>
-	/// A binding element for Service Providers to manage the verification code on applicable messages.
+	/// A binding element for Service Providers to manage the 
+	/// callbacks and verification codes on applicable messages.
 	/// </summary>
-	internal class VerificationCodeBindingElement : IChannelBindingElement {
-		/// <summary>
-		/// The length of the verifier code (in raw bytes before base64 encoding) to generate.
-		/// </summary>
-		private const int VerifierCodeLength = 5;
-
+	internal class TokenHandlingBindingElement : IChannelBindingElement {
 		/// <summary>
 		/// The token manager offered by the service provider.
 		/// </summary>
 		private IServiceProviderTokenManager tokenManager;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="VerificationCodeBindingElement"/> class.
+		/// Initializes a new instance of the <see cref="TokenHandlingBindingElement"/> class.
 		/// </summary>
 		/// <param name="tokenManager">The token manager.</param>
-		internal VerificationCodeBindingElement(IServiceProviderTokenManager tokenManager) {
+		internal TokenHandlingBindingElement(IServiceProviderTokenManager tokenManager) {
 			Contract.Requires(tokenManager != null);
 			ErrorUtilities.VerifyArgumentNotNull(tokenManager, "tokenManager");
 
@@ -73,11 +69,20 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
-			var response = message as UserAuthorizationResponse;
-			if (response != null && response.Version >= Protocol.V10a.Version) {
-				ErrorUtilities.VerifyInternal(response.VerificationCode == null, "VerificationCode was unexpectedly already set.");
-				response.VerificationCode = MessagingUtilities.GetCryptoRandomDataAsBase64(VerifierCodeLength);
-				this.tokenManager.SetRequestTokenVerifier(response.RequestToken, response.VerificationCode);
+			var userAuthResponse = message as UserAuthorizationResponse;
+			if (userAuthResponse != null && userAuthResponse.Version >= Protocol.V10a.Version) {
+				this.tokenManager.SetRequestTokenVerifier(userAuthResponse.RequestToken, userAuthResponse.VerificationCode);
+				return MessageProtections.None;
+			}
+
+			// Hook to store the token and secret on its way down to the Consumer.
+			var grantRequestTokenResponse = message as UnauthorizedTokenResponse;
+			if (grantRequestTokenResponse != null) {
+				this.tokenManager.StoreNewRequestToken(grantRequestTokenResponse.RequestMessage, grantRequestTokenResponse);
+				if (grantRequestTokenResponse.RequestMessage.Callback != null) {
+					this.tokenManager.SetRequestTokenCallback(grantRequestTokenResponse.RequestToken, grantRequestTokenResponse.RequestMessage.Callback);
+				}
+
 				return MessageProtections.None;
 			}
 

@@ -29,6 +29,11 @@ namespace DotNetOpenAuth.OAuth {
 	/// </remarks>
 	public class ServiceProvider : IDisposable {
 		/// <summary>
+		/// The length of the verifier code (in raw bytes before base64 encoding) to generate.
+		/// </summary>
+		private const int VerifierCodeLength = 5;
+
+		/// <summary>
 		/// The field behind the <see cref="OAuthChannel"/> property.
 		/// </summary>
 		private OAuthChannel channel;
@@ -93,15 +98,9 @@ namespace DotNetOpenAuth.OAuth {
 			}
 
 			set {
-				if (this.channel != null) {
-					this.channel.Sending -= this.OAuthChannel_Sending;
-				}
-
+				Contract.Requires(value != null);
+				ErrorUtilities.VerifyArgumentNotNull(value, "value");
 				this.channel = value;
-
-				if (this.channel != null) {
-					this.channel.Sending += this.OAuthChannel_Sending;
-				}
 			}
 		}
 
@@ -237,6 +236,7 @@ namespace DotNetOpenAuth.OAuth {
 
 			var authorization = new UserAuthorizationResponse(callback, this.ServiceDescription.Version) {
 				RequestToken = request.RequestToken,
+				VerificationCode = MessagingUtilities.GetCryptoRandomDataAsBase64(VerifierCodeLength),
 			};
 			return authorization;
 		}
@@ -373,21 +373,5 @@ namespace DotNetOpenAuth.OAuth {
 		}
 
 		#endregion
-
-		/// <summary>
-		/// Hooks the channel in order to perform some operations on some outgoing messages.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="DotNetOpenAuth.Messaging.ChannelEventArgs"/> instance containing the event data.</param>
-		private void OAuthChannel_Sending(object sender, ChannelEventArgs e) {
-			// Hook to store the token and secret on its way down to the Consumer.
-			var grantRequestTokenResponse = e.Message as UnauthorizedTokenResponse;
-			if (grantRequestTokenResponse != null) {
-				this.TokenManager.StoreNewRequestToken(grantRequestTokenResponse.RequestMessage, grantRequestTokenResponse);
-				if (grantRequestTokenResponse.RequestMessage.Callback != null) {
-					this.TokenManager.SetRequestTokenCallback(grantRequestTokenResponse.RequestToken, grantRequestTokenResponse.RequestMessage.Callback);
-				}
-			}
-		}
 	}
 }

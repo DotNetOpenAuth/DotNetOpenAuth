@@ -257,7 +257,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 
 			var spTokenManager = tokenManager as IServiceProviderTokenManager;
 			if (spTokenManager != null) {
-				bindingElements.Insert(0, new VerificationCodeBindingElement(spTokenManager));
+				bindingElements.Insert(0, new TokenHandlingBindingElement(spTokenManager));
 			}
 
 			return bindingElements.ToArray();
