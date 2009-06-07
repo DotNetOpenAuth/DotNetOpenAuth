@@ -33,12 +33,6 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		}
 
 		/// <summary>
-		/// Gets or sets the Request Token.
-		/// </summary>
-		[MessagePart("oauth_token", IsRequired = true)]
-		internal string RequestToken { get; set; }
-
-		/// <summary>
 		/// Gets or sets the verification code that must accompany the request to exchange the
 		/// authorized request token for an access token.
 		/// </summary>
@@ -50,6 +44,12 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// the Service Provider SHOULD ensure that the verifier value is suitable for manual entry.
 		/// </remarks>
 		[MessagePart("oauth_verifier", IsRequired = true, AllowEmpty = false, MinVersion = Protocol.V10aVersion)]
-		internal string VerificationCode { get; set; }
+		public string VerificationCode { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Request Token.
+		/// </summary>
+		[MessagePart("oauth_token", IsRequired = true)]
+		internal string RequestToken { get; set; }
 	}
 }

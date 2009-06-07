@@ -171,6 +171,7 @@
     <Compile Include="OAuth\ConsumerDescription.cs" />
     <Compile Include="OAuth\ProtocolTests.cs" />
     <Compile Include="OAuth\ServiceProviderDescriptionTests.cs" />
+    <Compile Include="OAuth\ServiceProviderTests.cs" />
     <Compile Include="OpenId\AssociationsTests.cs" />
     <Compile Include="OpenId\AssociationTests.cs" />
     <Compile Include="OpenId\AuthenticationTests.cs" />

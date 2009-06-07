@@ -105,6 +105,35 @@ namespace DotNetOpenAuth.OAuth {
 		}
 
 		/// <summary>
+		/// Creates a cryptographically strong random verification code.
+		/// </summary>
+		/// <param name="format">The desired format of the verification code.</param>
+		/// <param name="length">The length of the code.
+		/// When <paramref name="format"/> is <see cref="VerificationCodeFormat.IncludedInCallback"/>,
+		/// this is the length of the original byte array before base64 encoding rather than the actual
+		/// length of the final string.</param>
+		/// <returns>The verification code.</returns>
+		public static string CreateVerificationCode(VerificationCodeFormat format, int length) {
+			Contract.Requires(length >= 0);
+			ErrorUtilities.VerifyArgumentInRange(length >= 0, "length");
+
+			switch (format) {
+				case VerificationCodeFormat.IncludedInCallback:
+					return MessagingUtilities.GetCryptoRandomDataAsBase64(length);
+				case VerificationCodeFormat.AlphaNumericNoLookAlikes:
+					return MessagingUtilities.GetRandomString(length, MessagingUtilities.AlphaNumericNoLookAlikes);
+				case VerificationCodeFormat.AlphaUpper:
+					return MessagingUtilities.GetRandomString(length, MessagingUtilities.UppercaseLetters);
+				case VerificationCodeFormat.AlphaLower:
+					return MessagingUtilities.GetRandomString(length, MessagingUtilities.LowercaseLetters);
+				case VerificationCodeFormat.Numeric:
+					return MessagingUtilities.GetRandomString(length, MessagingUtilities.Digits);
+				default:
+					throw new ArgumentOutOfRangeException("format");
+			}
+		}
+
+		/// <summary>
 		/// Reads any incoming OAuth message.
 		/// </summary>
 		/// <returns>The deserialized message.</returns>
@@ -236,7 +265,7 @@ namespace DotNetOpenAuth.OAuth {
 
 			var authorization = new UserAuthorizationResponse(callback, this.ServiceDescription.Version) {
 				RequestToken = request.RequestToken,
-				VerificationCode = MessagingUtilities.GetCryptoRandomDataAsBase64(VerifierCodeLength),
+				VerificationCode = CreateVerificationCode(VerificationCodeFormat.IncludedInCallback, VerifierCodeLength),
 			};
 			return authorization;
 		}

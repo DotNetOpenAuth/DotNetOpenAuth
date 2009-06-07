@@ -238,7 +238,7 @@
     <Compile Include="OAuth\ChannelElements\StandardTokenGenerator.cs" />
     <Compile Include="OAuth\ChannelElements\TokenType.cs" />
     <Compile Include="OAuth\ChannelElements\UriOrOobEncoding.cs" />
-    <Compile Include="OAuth\ChannelElements\VerificationCodeBindingElement.cs" />
+    <Compile Include="OAuth\ChannelElements\TokenHandlingBindingElement.cs" />
     <Compile Include="OAuth\ConsumerBase.cs" />
     <Compile Include="OAuth\DesktopConsumer.cs" />
     <Compile Include="GlobalSuppressions.cs" />
@@ -255,6 +255,7 @@
     <Compile Include="OAuth\Messages\SignedMessageBase.cs" />
     <Compile Include="Messaging\Bindings\NonceMemoryStore.cs" />
     <Compile Include="OAuth\ChannelElements\SigningBindingElementBase.cs" />
+    <Compile Include="OAuth\VerificationCodeFormat.cs" />
     <Compile Include="OAuth\WebConsumer.cs" />
     <Compile Include="Messaging\IDirectWebRequestHandler.cs" />
     <Compile Include="OAuth\ChannelElements\ITamperResistantOAuthMessage.cs" />

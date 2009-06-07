@@ -35,17 +35,17 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		}
 
 		/// <summary>
-		/// Gets or sets the unauthorized Request Token used to obtain authorization.
-		/// </summary>
-		[MessagePart("oauth_token", IsRequired = true)]
-		internal string RequestToken { get; set; }
-
-		/// <summary>
 		/// Gets or sets the verification code received by the Consumer from the Service Provider 
 		/// in the <see cref="UserAuthorizationResponse.VerificationCode"/> property.
 		/// </summary>
 		[MessagePart("oauth_verifier", IsRequired = true, AllowEmpty = false, MinVersion = Protocol.V10aVersion)]
-		internal string VerificationCode { get; set; }
+		public string VerificationCode { get; set; }
+
+		/// <summary>
+		/// Gets or sets the unauthorized Request Token used to obtain authorization.
+		/// </summary>
+		[MessagePart("oauth_token", IsRequired = true)]
+		internal string RequestToken { get; set; }
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification
