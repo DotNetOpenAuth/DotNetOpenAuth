@@ -9,13 +9,13 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Linq;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
 
 	internal class InMemoryTokenManager : IConsumerTokenManager, IServiceProviderTokenManager {
 		private Dictionary<string, string> consumersAndSecrets = new Dictionary<string, string>();
-		private Dictionary<string, string> tokensAndSecrets = new Dictionary<string, string>();
-		private Dictionary<string, string> tokensAndVerifiers = new Dictionary<string, string>();
+		private KeyedCollectionDelegate<string, TokenInfo> tokens = new KeyedCollectionDelegate<string, TokenInfo>(t => t.Token);
 
 		/// <summary>
 		/// Request tokens that have been issued, and whether they have been authorized yet.
@@ -42,11 +42,11 @@ namespace DotNetOpenAuth.Test.Mocks {
 		#region ITokenManager Members
 
 		public string GetTokenSecret(string token) {
-			return this.tokensAndSecrets[token];
+			return this.tokens[token].Secret;
 		}
 
 		public void StoreNewRequestToken(UnauthorizedTokenRequest request, ITokenSecretContainingMessage response) {
-			this.tokensAndSecrets[response.Token] = response.TokenSecret;
+			this.tokens.Add(new TokenInfo { Token = response.Token, Secret = response.TokenSecret });
 			this.requestTokens.Add(response.Token, false);
 		}
 
@@ -71,8 +71,8 @@ namespace DotNetOpenAuth.Test.Mocks {
 			////Debug.Assert(this.requestTokens[requestToken], "Unauthorized token should not be exchanged for access token.");
 			this.requestTokens.Remove(requestToken);
 			this.accessTokens.Add(accessToken);
-			this.tokensAndSecrets.Remove(requestToken);
-			this.tokensAndSecrets[accessToken] = accessTokenSecret;
+			this.tokens.Remove(requestToken);
+			this.tokens.Add(new TokenInfo { Token = accessToken, Secret = accessTokenSecret });
 		}
 
 		/// <summary>
@@ -99,11 +99,19 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		public void SetRequestTokenVerifier(string requestToken, string verifier) {
-			this.tokensAndVerifiers[requestToken] = verifier;
+			this.tokens[requestToken].Verifier = verifier;
 		}
 
 		public string GetRequestTokenVerifier(string requestToken) {
-			return this.tokensAndVerifiers[requestToken];
+			return this.tokens[requestToken].Verifier;
+		}
+
+		public void SetRequestTokenCallback(string requestToken, Uri callback) {
+			this.tokens[requestToken].Callback = callback;
+		}
+
+		public Uri GetRequestTokenCallback(string requestToken) {
+			return this.tokens[requestToken].Callback;
 		}
 
 		#endregion
@@ -127,6 +135,13 @@ namespace DotNetOpenAuth.Test.Mocks {
 			}
 
 			this.requestTokens[requestToken] = true;
+		}
+
+		private class TokenInfo {
+			internal string Token;
+			internal string Verifier;
+			internal string Secret;
+			internal Uri Callback;
 		}
 	}
 }

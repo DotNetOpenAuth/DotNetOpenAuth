@@ -79,7 +79,8 @@ namespace DotNetOpenAuth.OAuth {
 			UserAuthorizationResponse authorizationMessage;
 			if (this.Channel.TryReadFromRequest<UserAuthorizationResponse>(request, out authorizationMessage)) {
 				string requestToken = authorizationMessage.RequestToken;
-				return this.ProcessUserAuthorization(requestToken);
+				string verifier = authorizationMessage.VerificationCode;
+				return this.ProcessUserAuthorization(requestToken, verifier);
 			} else {
 				return null;
 			}

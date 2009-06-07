@@ -49,8 +49,24 @@ namespace DotNetOpenAuth.OAuth {
 		/// </summary>
 		/// <param name="requestToken">The request token that the user has authorized.</param>
 		/// <returns>The access token assigned by the Service Provider.</returns>
-		public new AuthorizedTokenResponse ProcessUserAuthorization(string requestToken) {
-			return base.ProcessUserAuthorization(requestToken);
+		public AuthorizedTokenResponse ProcessUserAuthorization(string requestToken) {
+			return this.ProcessUserAuthorization(requestToken, null);
+		}
+
+		/// <summary>
+		/// Exchanges a given request token for access token.
+		/// </summary>
+		/// <param name="requestToken">The request token that the user has authorized.</param>
+		/// <param name="verifier">The verifier code typed in by the user.  Must not be <c>Null</c> for OAuth 1.0a service providers and later.</param>
+		/// <returns>
+		/// The access token assigned by the Service Provider.
+		/// </returns>
+		public new AuthorizedTokenResponse ProcessUserAuthorization(string requestToken, string verifier) {
+			if (this.ServiceProvider.Version >= Protocol.V10a.Version) {
+				ErrorUtilities.VerifyNonZeroLength(verifier, "verifier");
+			}
+
+			return base.ProcessUserAuthorization(requestToken, verifier);
 		}
 	}
 }

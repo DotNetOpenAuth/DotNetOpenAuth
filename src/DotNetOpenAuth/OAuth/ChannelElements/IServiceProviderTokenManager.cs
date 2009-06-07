@@ -37,5 +37,19 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="requestToken">The request token that the Consumer is exchanging for an access token.</param>
 		/// <returns>The verifier code that was generated when previously authorizing the request token.</returns>
 		string GetRequestTokenVerifier(string requestToken);
+
+		/// <summary>
+		/// Sets the request token consumer callback.
+		/// </summary>
+		/// <param name="requestToken">The request token.</param>
+		/// <param name="callback">The callback.</param>
+		void SetRequestTokenCallback(string requestToken, Uri callback);
+
+		/// <summary>
+		/// Gets the request token consumer callback.
+		/// </summary>
+		/// <param name="requestToken">The request token.</param>
+		/// <returns>The callback Uri.  May be <c>null</c>.</returns>
+		Uri GetRequestTokenCallback(string requestToken);
 	}
 }
