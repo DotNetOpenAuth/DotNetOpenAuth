@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.Messaging {
 		internal static readonly RandomNumberGenerator CryptoRandomDataGenerator = new RNGCryptoServiceProvider();
 
 		/// <summary>
-		/// A random number generator for NON-cryptographically strong random data.
+		/// A pseudo-random data generator (NOT cryptographically strong random data)
 		/// </summary>
 		internal static readonly Random NonCryptoRandomDataGenerator = new Random();
 
