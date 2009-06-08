@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -33,6 +34,7 @@ namespace DotNetOpenAuth.OAuth {
 	/// OAuth Protocol Parameter names and values are case sensitive. Each OAuth Protocol Parameters MUST NOT appear more than once per request, and are REQUIRED unless otherwise noted,
 	/// per OAuth 1.0 section 5.
 	/// </remarks>
+	[DebuggerDisplay("OAuth {Version}")]
 	internal class Protocol {
 		/// <summary>
 		/// The namespace to use for V1.0 of the protocol.

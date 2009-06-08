@@ -24,7 +24,7 @@ public class CustomOAuthMessageFactory : OAuthServiceProviderMessageFactory {
 
 		// inject our own type here to replace the standard one
 		if (message is UnauthorizedTokenRequest) {
-			message = new RequestScopedTokenMessage(recipient, new Version(1, 0, 1)); // we're doing 1.0a here
+			message = new RequestScopedTokenMessage(recipient, message.Version);
 		}
 
 		return message;

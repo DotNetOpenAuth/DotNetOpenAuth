@@ -199,7 +199,7 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires(allowableCharacters != null && allowableCharacters.Length >= 2);
 
 			char[] randomString = new char[length];
-			for(int i = 0; i < length;i++) {
+			for (int i = 0; i < length; i++) {
 				randomString[i] = allowableCharacters[NonCryptoRandomDataGenerator.Next(allowableCharacters.Length)];
 			}
 

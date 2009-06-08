@@ -79,6 +79,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			var grantRequestTokenResponse = message as UnauthorizedTokenResponse;
 			if (grantRequestTokenResponse != null) {
 				this.tokenManager.StoreNewRequestToken(grantRequestTokenResponse.RequestMessage, grantRequestTokenResponse);
+				this.tokenManager.SetTokenConsumerVersion(grantRequestTokenResponse.RequestToken, grantRequestTokenResponse.Version);
 				if (grantRequestTokenResponse.RequestMessage.Callback != null) {
 					this.tokenManager.SetRequestTokenCallback(grantRequestTokenResponse.RequestToken, grantRequestTokenResponse.RequestMessage.Callback);
 				}
@@ -109,10 +110,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
-			var request = message as AuthorizedTokenRequest;
-			if (request != null && request.Version >= Protocol.V10a.Version) {
-				string expectedVerifier = this.tokenManager.GetRequestTokenVerifier(request.RequestToken);
-				ErrorUtilities.VerifyProtocol(string.Equals(request.VerificationCode, expectedVerifier, StringComparison.Ordinal), OAuthStrings.IncorrectVerifier);
+			var authorizedTokenRequest = message as AuthorizedTokenRequest;
+			if (authorizedTokenRequest != null && authorizedTokenRequest.Version >= Protocol.V10a.Version) {
+				string expectedVerifier = this.tokenManager.GetRequestTokenVerifier(authorizedTokenRequest.RequestToken);
+				ErrorUtilities.VerifyProtocol(string.Equals(authorizedTokenRequest.VerificationCode, expectedVerifier, StringComparison.Ordinal), OAuthStrings.IncorrectVerifier);
 				return MessageProtections.None;
 			}
 

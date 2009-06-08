@@ -37,6 +37,8 @@ public partial class Authorize : System.Web.UI.Page {
 				CryptoRandomDataGenerator.GetBytes(randomData);
 				this.AuthorizationSecret = Convert.ToBase64String(randomData);
 				OAuthAuthorizationSecToken.Value = this.AuthorizationSecret;
+
+				OAuth10ConsumerWarning.Visible = Global.PendingOAuthAuthorization.IsUnsafeRequest;
 			}
 		}
 	}
@@ -54,6 +56,15 @@ public partial class Authorize : System.Web.UI.Page {
 		var response = sp.PrepareAuthorizationResponse(pending);
 		if (response != null) {
 			sp.Channel.Send(response);
+		} else {
+			if (pending.IsUnsafeRequest) {
+				verifierMultiView.ActiveViewIndex = 1;
+			} else {
+				string verifier = ServiceProvider.CreateVerificationCode(VerificationCodeFormat.AlphaNumericNoLookAlikes, 10);
+				verificationCodeLabel.Text = verifier;
+				ITokenContainingMessage requestTokenMessage = pending;
+				Global.TokenManager.SetRequestTokenVerifier(requestTokenMessage.Token, verifier);
+			}
 		}
 	}
 

@@ -114,6 +114,14 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return this.tokens[requestToken].Callback;
 		}
 
+		public void SetTokenConsumerVersion(string token, Version version) {
+			this.tokens[token].ConsumerVersion = version;
+		}
+
+		public Version GetTokenConsumerVersion(string token) {
+			return this.tokens[token].ConsumerVersion;
+		}
+
 		#endregion
 
 		/// <summary>
@@ -142,6 +150,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			internal string Verifier;
 			internal string Secret;
 			internal Uri Callback;
+			internal Version ConsumerVersion;
 		}
 	}
 }

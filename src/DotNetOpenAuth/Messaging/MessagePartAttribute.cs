@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.Messaging {
 	using System;
+	using System.Diagnostics;
 	using System.Net.Security;
 	using System.Reflection;
 
@@ -13,6 +14,7 @@ namespace DotNetOpenAuth.Messaging {
 	/// Applied to fields and properties that form a key/value in a protocol message.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = true, AllowMultiple = true)]
+	[DebuggerDisplay("MessagePartAttribute {Name}")]
 	public sealed class MessagePartAttribute : Attribute {
 		/// <summary>
 		/// The overridden name to use as the serialized name for the property.

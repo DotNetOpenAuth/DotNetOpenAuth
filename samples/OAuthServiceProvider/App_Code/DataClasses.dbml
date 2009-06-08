@@ -33,13 +33,14 @@
       <Column Name="TokenId" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
       <Column Name="Token" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
       <Column Name="TokenSecret" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
-      <Column Name="State" Type="TokenAuthorizationState" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="State" Type="TokenAuthorizationState" DbType="INT NOT NULL" CanBeNull="false" />
       <Column Name="IssueDate" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
       <Column Name="ConsumerId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="UserId" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="Scope" Type="System.String" DbType="nvarchar(MAX)" CanBeNull="false" />
       <Column Name="RequestTokenVerifier" Type="System.String" CanBeNull="true" />
       <Column Name="RequestTokenCallback" Type="System.String" CanBeNull="true" />
+      <Column Name="ConsumerVersion" Type="System.String" CanBeNull="true" />
       <Association Name="OAuthConsumer_OAuthToken" Member="OAuthConsumer" ThisKey="ConsumerId" OtherKey="ConsumerId" Type="OAuthConsumer" IsForeignKey="true" DeleteRule="CASCADE" DeleteOnNull="true" />
       <Association Name="User_OAuthToken" Member="User" ThisKey="UserId" OtherKey="UserId" Type="User" IsForeignKey="true" DeleteRule="CASCADE" />
     </Type>

@@ -54,22 +54,36 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
 
 			MessageBase message = null;
+			Protocol protocol = Protocol.V10; // default to assuming the less-secure 1.0 instead of 1.0a until we prove otherwise.
+			string token;
+			if (fields.TryGetValue("oauth_token", out token)) {
+				// Discern between 1.0 and 1.0a requests by checking on the consumer version we stored
+				// when the consumer first requested an unauthorized token.
+				protocol = Protocol.Lookup(this.tokenManager.GetTokenConsumerVersion(token));
+			}
 
 			if (fields.ContainsKey("oauth_consumer_key") && !fields.ContainsKey("oauth_token")) {
-				Protocol protocol = fields.ContainsKey("oauth_callback") ? Protocol.V10a : Protocol.V10;
+				protocol = fields.ContainsKey("oauth_callback") ? Protocol.V10a : Protocol.V10;
 				message = new UnauthorizedTokenRequest(recipient, protocol.Version);
-			} else if (fields.ContainsKey("oauth_consumer_key") &&
-				fields.ContainsKey("oauth_token")) {
+			} else if (fields.ContainsKey("oauth_consumer_key") && fields.ContainsKey("oauth_token")) {
 				// Discern between RequestAccessToken and AccessProtectedResources,
 				// which have all the same parameters, by figuring out what type of token
 				// is in the token parameter.
-				bool tokenTypeIsAccessToken = this.tokenManager.GetTokenType(fields["oauth_token"]) == TokenType.AccessToken;
+				bool tokenTypeIsAccessToken = this.tokenManager.GetTokenType(token) == TokenType.AccessToken;
 
-				message = tokenTypeIsAccessToken ? (MessageBase)new AccessProtectedResourceRequest(recipient, Protocol.Default.Version) :
-					new AuthorizedTokenRequest(recipient, Protocol.Default.Version);
+				message = tokenTypeIsAccessToken ?
+					(MessageBase)new AccessProtectedResourceRequest(recipient, protocol.Version) :
+					new AuthorizedTokenRequest(recipient, protocol.Version);
 			} else {
 				// fail over to the message with no required fields at all.
-				message = new UserAuthorizationRequest(recipient, Protocol.Default.Version);
+
+				// If a callback parameter is included, that suggests either the consumer
+				// is following OAuth 1.0 instead of 1.0a, or that a hijacker is trying
+				// to attack.  Either way, if the consumer started out as a 1.0a, keep it
+				// that way, and we'll just ignore the oauth_callback included in this message
+				// by virtue of the UserAuthorizationRequest message not including it in its
+				// 1.0a payload.
+				message = new UserAuthorizationRequest(recipient, protocol.Version);
 			}
 
 			if (message != null) {

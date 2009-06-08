@@ -52,7 +52,23 @@ public class DatabaseTokenManager : IServiceProviderTokenManager {
 	}
 
 	public Uri GetRequestTokenCallback(string requestToken) {
-		return new Uri(Global.DataContext.OAuthTokens.First(token => token.Token == requestToken).RequestTokenCallback);
+		string callback = Global.DataContext.OAuthTokens.First(token => token.Token == requestToken).RequestTokenCallback;
+		return callback != null ? new Uri(callback) : null;
+	}
+
+	public void SetTokenConsumerVersion(string token, Version version) {
+		if (String.IsNullOrEmpty(token)) {
+			throw new ArgumentNullException("token");
+		}
+		if (version == null) {
+			throw new ArgumentNullException("version");
+		}
+
+		Global.DataContext.OAuthTokens.First(t => t.Token == token).ConsumerVersion = version.ToString();
+	}
+
+	public Version GetTokenConsumerVersion(string token) {
+		return new Version(Global.DataContext.OAuthTokens.First(t => t.Token == token).ConsumerVersion);
 	}
 
 	#endregion

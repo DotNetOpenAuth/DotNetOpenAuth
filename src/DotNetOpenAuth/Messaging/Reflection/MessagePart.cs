@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Messaging.Reflection {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Globalization;
 	using System.Net.Security;
@@ -17,6 +18,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	/// <summary>
 	/// Describes an individual member of a message and assists in its serialization.
 	/// </summary>
+	[DebuggerDisplay("MessagePart {Name}")]
 	internal class MessagePart {
 		/// <summary>
 		/// A map of converters that help serialize custom objects to string values and back again.

@@ -9,9 +9,9 @@ namespace DotNetOpenAuth.Test.OAuth {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuth;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
 	public class ServiceProviderTests : TestBase {
@@ -20,10 +20,10 @@ namespace DotNetOpenAuth.Test.OAuth {
 		/// </summary>
 		[TestMethod]
 		public void CreateVerificationCode() {
-			TestCode(VerificationCodeFormat.Numeric, 3, MessagingUtilities.Digits);
-			TestCode(VerificationCodeFormat.AlphaLower, 5, MessagingUtilities.LowercaseLetters);
-			TestCode(VerificationCodeFormat.AlphaUpper, 5, MessagingUtilities.UppercaseLetters);
-			TestCode(VerificationCodeFormat.AlphaNumericNoLookAlikes, 8, MessagingUtilities.AlphaNumericNoLookAlikes);
+			this.TestCode(VerificationCodeFormat.Numeric, 3, MessagingUtilities.Digits);
+			this.TestCode(VerificationCodeFormat.AlphaLower, 5, MessagingUtilities.LowercaseLetters);
+			this.TestCode(VerificationCodeFormat.AlphaUpper, 5, MessagingUtilities.UppercaseLetters);
+			this.TestCode(VerificationCodeFormat.AlphaNumericNoLookAlikes, 8, MessagingUtilities.AlphaNumericNoLookAlikes);
 		}
 
 		private void TestCode(VerificationCodeFormat format, int length, string allowableCharacters) {

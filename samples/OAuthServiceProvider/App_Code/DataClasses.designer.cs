@@ -635,6 +635,8 @@ public partial class OAuthToken : INotifyPropertyChanging, INotifyPropertyChange
 	
 	private string _RequestTokenCallback;
 	
+	private string _ConsumerVersion;
+	
 	private EntityRef<OAuthConsumer> _OAuthConsumer;
 	
 	private EntityRef<User> _User;
@@ -663,6 +665,8 @@ public partial class OAuthToken : INotifyPropertyChanging, INotifyPropertyChange
     partial void OnRequestTokenVerifierChanged();
     partial void OnRequestTokenCallbackChanging(string value);
     partial void OnRequestTokenCallbackChanged();
+    partial void OnConsumerVersionChanging(string value);
+    partial void OnConsumerVersionChanged();
     #endregion
 	
 	public OAuthToken()
@@ -732,7 +736,7 @@ public partial class OAuthToken : INotifyPropertyChanging, INotifyPropertyChange
 		}
 	}
 	
-	[Column(Storage="_State", DbType="Int NOT NULL", CanBeNull=false)]
+	[Column(Storage="_State", DbType="INT NOT NULL", CanBeNull=false)]
 	public TokenAuthorizationState State
 	{
 		get
@@ -876,6 +880,26 @@ public partial class OAuthToken : INotifyPropertyChanging, INotifyPropertyChange
 				this._RequestTokenCallback = value;
 				this.SendPropertyChanged("RequestTokenCallback");
 				this.OnRequestTokenCallbackChanged();
+			}
+		}
+	}
+	
+	[Column(Storage="_ConsumerVersion")]
+	public string ConsumerVersion
+	{
+		get
+		{
+			return this._ConsumerVersion;
+		}
+		set
+		{
+			if ((this._ConsumerVersion != value))
+			{
+				this.OnConsumerVersionChanging(value);
+				this.SendPropertyChanging();
+				this._ConsumerVersion = value;
+				this.SendPropertyChanged("ConsumerVersion");
+				this.OnConsumerVersionChanged();
 			}
 		}
 	}

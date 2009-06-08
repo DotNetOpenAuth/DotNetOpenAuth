@@ -55,5 +55,4 @@ namespace DotNetOpenAuth.OAuth {
 		/// </summary>
 		Numeric,
 	}
-
 }

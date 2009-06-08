@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OpenId {
 	using DotNetOpenAuth.Messaging;
 	using System.Globalization;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics;
 
 	/// <summary>
 	/// An enumeration of the OpenID protocol versions supported by this library.
@@ -34,6 +35,7 @@ namespace DotNetOpenAuth.OpenId {
 	/// Tracks the several versions of OpenID this library supports and the unique
 	/// constants to each version used in the protocol.
 	/// </summary>
+	[DebuggerDisplay("OpenID {Version}")]
 	internal class Protocol {
 		/// <summary>
 		/// The value of the openid.ns parameter in the OpenID 2.0 specification.

@@ -1,29 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.Threading;
-using DotNetOpenAuth.OAuth;
-using DotNetOpenAuth.ApplicationBlock;
-using System.Xml.Linq;
+﻿namespace DotNetOpenAuth.Samples.OAuthConsumerWpf {
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Text;
+	using System.Threading;
+	using System.Windows;
+	using System.Windows.Controls;
+	using System.Windows.Data;
+	using System.Windows.Documents;
+	using System.Windows.Input;
+	using System.Windows.Media;
+	using System.Windows.Media.Imaging;
+	using System.Windows.Shapes;
+	using System.Xml.Linq;
+	using DotNetOpenAuth.ApplicationBlock;
+	using DotNetOpenAuth.OAuth;
 
-namespace DotNetOpenAuth.Samples.OAuthConsumerWpf {
 	/// <summary>
 	/// Interaction logic for Authorize.xaml
 	/// </summary>
-	partial class Authorize : Window {
+	public partial class Authorize : Window {
 		private DesktopConsumer google;
 		private string requestToken;
-
-		internal string AccessToken { get; set; }
 
 		internal Authorize(DesktopConsumer consumer) {
 			InitializeComponent();
@@ -42,8 +40,9 @@ namespace DotNetOpenAuth.Samples.OAuthConsumerWpf {
 					finishButton.IsEnabled = true;
 				}));
 			});
-
 		}
+
+		internal string AccessToken { get; set; }
 
 		private void finishButton_Click(object sender, RoutedEventArgs e) {
 			var grantedAccess = this.google.ProcessUserAuthorization(this.requestToken, verifierBox.Text);

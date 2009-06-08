@@ -188,7 +188,7 @@ namespace DotNetOpenAuth.OAuth {
 
 			string token = this.TokenGenerator.GenerateRequestToken(request.ConsumerKey);
 			string secret = this.TokenGenerator.GenerateSecret();
-			UnauthorizedTokenResponse response = new UnauthorizedTokenResponse(request, token, secret, this.ServiceDescription.Version);
+			UnauthorizedTokenResponse response = new UnauthorizedTokenResponse(request, token, secret);
 
 			return response;
 		}
@@ -233,17 +233,11 @@ namespace DotNetOpenAuth.OAuth {
 			Contract.Requires(request != null);
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
-			Uri callback;
-			if (this.ServiceDescription.Version >= Protocol.V10a.Version) {
-				callback = this.TokenManager.GetRequestTokenCallback(request.RequestToken);
-			} else {
-				callback = request.Callback;
-			}
-			if (callback != null) {
-				return this.PrepareAuthorizationResponse(request, callback);
-			} else {
-				return null;
-			}
+			// It is very important for us to ignore the oauth_callback argument in the
+			// UserAuthorizationRequest if the Consumer is a 1.0a consumer or else we
+			// open up a security exploit.
+			Uri callback = request.Version >= Protocol.V10a.Version ? this.TokenManager.GetRequestTokenCallback(request.RequestToken) : request.Callback;
+			return callback != null ? this.PrepareAuthorizationResponse(request, callback) : null;
 		}
 
 		/// <summary>
@@ -265,8 +259,12 @@ namespace DotNetOpenAuth.OAuth {
 
 			var authorization = new UserAuthorizationResponse(callback, this.ServiceDescription.Version) {
 				RequestToken = request.RequestToken,
-				VerificationCode = CreateVerificationCode(VerificationCodeFormat.IncludedInCallback, VerifierCodeLength),
 			};
+
+			if (authorization.Version >= Protocol.V10a.Version) {
+				authorization.VerificationCode = CreateVerificationCode(VerificationCodeFormat.IncludedInCallback, VerifierCodeLength);
+			}
+
 			return authorization;
 		}
 
@@ -300,22 +298,15 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="request">The Consumer's message requesting an access token.</param>
 		/// <returns>The HTTP response to actually send to the Consumer.</returns>
 		public AuthorizedTokenResponse PrepareAccessTokenMessage(AuthorizedTokenRequest request) {
-			if (request == null) {
-				throw new ArgumentNullException("request");
-			}
+			Contract.Requires(request != null);
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
-			if (!this.TokenManager.IsRequestTokenAuthorized(request.RequestToken)) {
-				throw new ProtocolException(
-					string.Format(
-						CultureInfo.CurrentCulture,
-						OAuthStrings.AccessTokenNotAuthorized,
-						request.RequestToken));
-			}
+			ErrorUtilities.VerifyProtocol(this.TokenManager.IsRequestTokenAuthorized(request.RequestToken), OAuthStrings.AccessTokenNotAuthorized, request.RequestToken);
 
 			string accessToken = this.TokenGenerator.GenerateAccessToken(request.ConsumerKey);
 			string tokenSecret = this.TokenGenerator.GenerateSecret();
 			this.TokenManager.ExpireRequestTokenAndStoreNewAccessToken(request.ConsumerKey, request.RequestToken, accessToken, tokenSecret);
-			var grantAccess = new AuthorizedTokenResponse(request, this.ServiceDescription.Version) {
+			var grantAccess = new AuthorizedTokenResponse(request) {
 				AccessToken = accessToken,
 				TokenSecret = tokenSecret,
 			};

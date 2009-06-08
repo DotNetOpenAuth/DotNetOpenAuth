@@ -53,6 +53,14 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		}
 
 		/// <summary>
+		/// Gets a value indicating whether this is a safe OAuth authorization request.
+		/// </summary>
+		/// <value><c>true</c> if the Consumer is using OAuth 1.0a or later; otherwise, <c>false</c>.</value>
+		public bool IsUnsafeRequest {
+			get { return this.Version < Protocol.V10a.Version; }
+		}
+
+		/// <summary>
 		/// Gets or sets the Request Token obtained in the previous step.
 		/// </summary>
 		/// <remarks>

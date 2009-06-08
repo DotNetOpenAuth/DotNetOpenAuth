@@ -44,7 +44,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			MessageBase message = null;
 
 			if (fields.ContainsKey("oauth_token")) {
-				message = new UserAuthorizationResponse(recipient.Location, Protocol.Default.Version);
+				Protocol protocol = fields.ContainsKey("oauth_verifier") ? Protocol.V10a : Protocol.V10;
+				message = new UserAuthorizationResponse(recipient.Location, protocol.Version);
 			}
 
 			if (message != null) {
@@ -95,7 +96,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				Protocol protocol = fields.ContainsKey("oauth_callback_confirmed") ? Protocol.V10a : Protocol.V10;
 				message = new UnauthorizedTokenResponse(unauthorizedTokenRequest, protocol.Version);
 			} else if (authorizedTokenRequest != null) {
-				message = new AuthorizedTokenResponse(authorizedTokenRequest, Protocol.Default.Version);
+				message = new AuthorizedTokenResponse(authorizedTokenRequest);
 			} else {
 				Logger.OAuth.ErrorFormat("Unexpected response message given the request type {0}", request.GetType().Name);
 				throw new ProtocolException(OAuthStrings.InvalidIncomingMessage);

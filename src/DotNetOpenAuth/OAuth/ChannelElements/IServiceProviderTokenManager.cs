@@ -51,5 +51,19 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="requestToken">The request token.</param>
 		/// <returns>The callback Uri.  May be <c>null</c>.</returns>
 		Uri GetRequestTokenCallback(string requestToken);
+
+		/// <summary>
+		/// Sets the OAuth version used by the Consumer to request a token.
+		/// </summary>
+		/// <param name="token">The token.</param>
+		/// <param name="version">The OAuth version.</param>
+		void SetTokenConsumerVersion(string token, Version version);
+
+		/// <summary>
+		/// Gets the OAuth version used by the Consumer to request a token.
+		/// </summary>
+		/// <param name="token">The token.</param>
+		/// <returns>The OAuth version</returns>
+		Version GetTokenConsumerVersion(string token);
 	}
 }

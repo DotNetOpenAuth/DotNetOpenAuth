@@ -21,12 +21,11 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// <param name="requestMessage">The unauthorized request token message that this message is being generated in response to.</param>
 		/// <param name="requestToken">The request token.</param>
 		/// <param name="tokenSecret">The token secret.</param>
-		/// <param name="version">The OAuth version.</param>
 		/// <remarks>
 		/// This constructor is used by the Service Provider to send the message.
 		/// </remarks>
-		protected internal UnauthorizedTokenResponse(UnauthorizedTokenRequest requestMessage, string requestToken, string tokenSecret, Version version)
-			: this(requestMessage, version) {
+		protected internal UnauthorizedTokenResponse(UnauthorizedTokenRequest requestMessage, string requestToken, string tokenSecret)
+			: this(requestMessage, requestMessage.Version) {
 			ErrorUtilities.VerifyArgumentNotNull(requestToken, "requestToken");
 			ErrorUtilities.VerifyArgumentNotNull(tokenSecret, "tokenSecret");
 
