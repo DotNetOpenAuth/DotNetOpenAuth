@@ -273,7 +273,7 @@ namespace DotNetOpenAuth.OAuth {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 			ErrorUtilities.VerifyArgumentNotNull(callback, "callback");
 
-			var authorization = new UserAuthorizationResponse(callback, this.ServiceDescription.Version) {
+			var authorization = new UserAuthorizationResponse(callback, request.Version) {
 				RequestToken = request.RequestToken,
 			};
 
