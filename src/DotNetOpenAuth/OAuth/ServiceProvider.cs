@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OAuth {
 	using System.Globalization;
 	using System.ServiceModel.Channels;
 	using System.Web;
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth.ChannelElements;
@@ -63,6 +64,7 @@ namespace DotNetOpenAuth.OAuth {
 			this.ServiceDescription = serviceDescription;
 			this.OAuthChannel = new OAuthChannel(signingElement, store, tokenManager, messageTypeProvider);
 			this.TokenGenerator = new StandardTokenGenerator();
+			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OAuth.ServiceProvider.SecuritySettings.CreateSecuritySettings();
 		}
 
 		/// <summary>
@@ -88,6 +90,11 @@ namespace DotNetOpenAuth.OAuth {
 		public Channel Channel {
 			get { return this.OAuthChannel; }
 		}
+
+		/// <summary>
+		/// Gets the security settings for this service provider.
+		/// </summary>
+		public ServiceProviderSecuritySettings SecuritySettings { get; private set; }
 
 		/// <summary>
 		/// Gets or sets the channel to use for sending/receiving messages.

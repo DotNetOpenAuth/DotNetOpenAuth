@@ -30,6 +30,11 @@ namespace DotNetOpenAuth.Configuration {
 		private const string OpenIdElementName = "openid";
 
 		/// <summary>
+		/// The name of the &lt;oauth&gt; sub-element.
+		/// </summary>
+		private const string OAuthElementName = "oauth";
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="DotNetOpenAuthSection"/> class.
 		/// </summary>
 		internal DotNetOpenAuthSection() {
@@ -60,6 +65,15 @@ namespace DotNetOpenAuth.Configuration {
 		internal OpenIdElement OpenId {
 			get { return (OpenIdElement)this[OpenIdElementName] ?? new OpenIdElement(); }
 			set { this[OpenIdElementName] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the configuration for OAuth.
+		/// </summary>
+		[ConfigurationProperty(OAuthElementName)]
+		internal OAuthElement OAuth {
+			get { return (OAuthElement)this[OAuthElementName] ?? new OAuthElement(); }
+			set { this[OAuthElementName] = value; }
 		}
 	}
 }

@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OAuth {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Net;
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth.ChannelElements;
@@ -32,6 +33,7 @@ namespace DotNetOpenAuth.OAuth {
 			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
 			this.OAuthChannel = new OAuthChannel(signingElement, store, tokenManager);
 			this.ServiceProvider = serviceDescription;
+			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OAuth.Consumer.SecuritySettings.CreateSecuritySettings();
 		}
 
 		/// <summary>
@@ -59,6 +61,11 @@ namespace DotNetOpenAuth.OAuth {
 		public Channel Channel {
 			get { return this.OAuthChannel; }
 		}
+
+		/// <summary>
+		/// Gets the security settings for this consumer.
+		/// </summary>
+		internal ConsumerSecuritySettings SecuritySettings { get; private set; }
 
 		/// <summary>
 		/// Gets or sets the channel to use for sending/receiving messages.
