@@ -115,6 +115,15 @@ namespace DotNetOpenAuth.OAuth {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This OAuth service provider requires OAuth consumers to implement OAuth {0}, but this consumer appears to only support {1}..
+        /// </summary>
+        internal static string MinimumConsumerVersionRequirementNotMet {
+            get {
+                return ResourceManager.GetString("MinimumConsumerVersionRequirementNotMet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The request URL query MUST NOT contain any OAuth Protocol Parameters..
         /// </summary>
         internal static string RequestUrlMustNotHaveOAuthParameters {

@@ -180,7 +180,9 @@ namespace DotNetOpenAuth.OAuth {
 		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
 		public UnauthorizedTokenRequest ReadTokenRequest(HttpRequestInfo request) {
 			UnauthorizedTokenRequest message;
-			this.Channel.TryReadFromRequest(request, out message);
+			if (this.Channel.TryReadFromRequest(request, out message)) {
+				ErrorUtilities.VerifyProtocol(message.Version >= Protocol.Lookup(this.SecuritySettings.MinimumRequiredOAuthVersion).Version, OAuthStrings.MinimumConsumerVersionRequirementNotMet, this.SecuritySettings.MinimumRequiredOAuthVersion, message.Version);
+			}
 			return message;
 		}
 

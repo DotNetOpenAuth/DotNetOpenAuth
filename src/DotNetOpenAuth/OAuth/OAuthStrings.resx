@@ -135,6 +135,9 @@
   <data name="MessageNotAllowedExtraParameters" xml:space="preserve">
     <value>The {0} message included extra data which is not allowed.</value>
   </data>
+  <data name="MinimumConsumerVersionRequirementNotMet" xml:space="preserve">
+    <value>This OAuth service provider requires OAuth consumers to implement OAuth {0}, but this consumer appears to only support {1}.</value>
+  </data>
   <data name="RequestUrlMustNotHaveOAuthParameters" xml:space="preserve">
     <value>The request URL query MUST NOT contain any OAuth Protocol Parameters.</value>
   </data>

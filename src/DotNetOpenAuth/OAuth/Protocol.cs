@@ -62,6 +62,7 @@ namespace DotNetOpenAuth.OAuth {
 		internal static readonly Protocol V10 = new Protocol {
 			dataContractNamespace = DataContractNamespaceV10,
 			Version = new Version(1, 0),
+			ProtocolVersion = ProtocolVersion.V10,
 		};
 
 		/// <summary>
@@ -70,6 +71,7 @@ namespace DotNetOpenAuth.OAuth {
 		internal static readonly Protocol V10a = new Protocol {
 			dataContractNamespace = DataContractNamespaceV10,
 			Version = new Version(V10aVersion),
+			ProtocolVersion = ProtocolVersion.V10a,
 		};
 
 		/// <summary>
@@ -103,6 +105,11 @@ namespace DotNetOpenAuth.OAuth {
 		/// Gets the version to declare on the wire.
 		/// </summary>
 		internal string PublishedVersion { get; private set; }
+
+		/// <summary>
+		/// Gets the <see cref="ProtocolVersion"/> enum value for the <see cref="Protocol"/> instance.
+		/// </summary>
+		internal ProtocolVersion ProtocolVersion { get; private set; }
 
 		/// <summary>
 		/// Gets the namespace to use for this version of the protocol.
