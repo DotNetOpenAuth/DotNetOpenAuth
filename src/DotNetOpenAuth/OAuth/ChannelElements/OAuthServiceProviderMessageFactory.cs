@@ -59,7 +59,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			if (fields.TryGetValue("oauth_token", out token)) {
 				// Discern between 1.0 and 1.0a requests by checking on the consumer version we stored
 				// when the consumer first requested an unauthorized token.
-				protocol = Protocol.Lookup(this.tokenManager.GetTokenConsumerVersion(token));
+				protocol = Protocol.Lookup(this.tokenManager.GetRequestToken(token).ConsumerVersion);
 			}
 
 			if (fields.ContainsKey("oauth_consumer_key") && !fields.ContainsKey("oauth_token")) {

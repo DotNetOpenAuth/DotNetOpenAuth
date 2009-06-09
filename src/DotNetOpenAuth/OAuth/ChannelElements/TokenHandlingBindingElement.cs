@@ -71,7 +71,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 
 			var userAuthResponse = message as UserAuthorizationResponse;
 			if (userAuthResponse != null && userAuthResponse.Version >= Protocol.V10a.Version) {
-				this.tokenManager.SetRequestTokenVerifier(userAuthResponse.RequestToken, userAuthResponse.VerificationCode);
+				this.tokenManager.GetRequestToken(userAuthResponse.RequestToken).VerificationCode = userAuthResponse.VerificationCode;
 				return MessageProtections.None;
 			}
 
@@ -79,9 +79,9 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			var grantRequestTokenResponse = message as UnauthorizedTokenResponse;
 			if (grantRequestTokenResponse != null) {
 				this.tokenManager.StoreNewRequestToken(grantRequestTokenResponse.RequestMessage, grantRequestTokenResponse);
-				this.tokenManager.SetTokenConsumerVersion(grantRequestTokenResponse.RequestToken, grantRequestTokenResponse.Version);
+				this.tokenManager.GetRequestToken(grantRequestTokenResponse.RequestToken).ConsumerVersion = grantRequestTokenResponse.Version;
 				if (grantRequestTokenResponse.RequestMessage.Callback != null) {
-					this.tokenManager.SetRequestTokenCallback(grantRequestTokenResponse.RequestToken, grantRequestTokenResponse.RequestMessage.Callback);
+					this.tokenManager.GetRequestToken(grantRequestTokenResponse.RequestToken).Callback = grantRequestTokenResponse.RequestMessage.Callback;
 				}
 
 				return MessageProtections.None;
@@ -112,7 +112,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 
 			var authorizedTokenRequest = message as AuthorizedTokenRequest;
 			if (authorizedTokenRequest != null && authorizedTokenRequest.Version >= Protocol.V10a.Version) {
-				string expectedVerifier = this.tokenManager.GetRequestTokenVerifier(authorizedTokenRequest.RequestToken);
+				string expectedVerifier = this.tokenManager.GetRequestToken(authorizedTokenRequest.RequestToken).VerificationCode;
 				ErrorUtilities.VerifyProtocol(string.Equals(authorizedTokenRequest.VerificationCode, expectedVerifier, StringComparison.Ordinal), OAuthStrings.IncorrectVerifier);
 				return MessageProtections.None;
 			}

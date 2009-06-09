@@ -389,7 +389,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				ErrorUtilities.VerifyInternal(consumerKey == consumerTokenManager.ConsumerKey, "The token manager consumer key and the consumer key set earlier do not match!");
 				return consumerTokenManager.ConsumerSecret;
 			} else {
-				return ((IServiceProviderTokenManager)this.TokenManager).GetConsumerSecret(consumerKey);
+				return ((IServiceProviderTokenManager)this.TokenManager).GetConsumer(consumerKey).Secret;
 			}
 		}
 	}

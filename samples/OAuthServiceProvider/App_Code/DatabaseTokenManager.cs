@@ -14,61 +14,18 @@ using DotNetOpenAuth.OAuth.Messages;
 public class DatabaseTokenManager : IServiceProviderTokenManager {
 	#region IServiceProviderTokenManager
 
-	public string GetConsumerSecret(string consumerKey) {
+	public IConsumerDescription GetConsumer(string consumerKey) {
 		var consumerRow = Global.DataContext.OAuthConsumers.SingleOrDefault(
 			consumerCandidate => consumerCandidate.ConsumerKey == consumerKey);
 		if (consumerRow == null) {
 			throw new ArgumentException();
 		}
 
-		return consumerRow.ConsumerSecret;
+		return consumerRow;
 	}
 
-	public void SetRequestTokenVerifier(string requestToken, string verifier) {
-		if (String.IsNullOrEmpty(requestToken)) {
-			throw new ArgumentNullException("requestToken");
-		}
-		if (String.IsNullOrEmpty(verifier)) {
-			throw new ArgumentNullException("verifier");
-		}
-
-		Global.DataContext.OAuthTokens.First(token => token.Token == requestToken).RequestTokenVerifier = verifier;
-	}
-
-	public string GetRequestTokenVerifier(string requestToken) {
-		if (String.IsNullOrEmpty(requestToken)) {
-			throw new ArgumentNullException("requestToken");
-		}
-
-		return Global.DataContext.OAuthTokens.First(token => token.Token == requestToken).RequestTokenVerifier;
-	}
-
-	public void SetRequestTokenCallback(string requestToken, Uri callback) {
-		if (String.IsNullOrEmpty(requestToken)) {
-			throw new ArgumentNullException("requestToken");
-		}
-
-		Global.DataContext.OAuthTokens.First(token => token.Token == requestToken).RequestTokenCallback = callback.AbsoluteUri;
-	}
-
-	public Uri GetRequestTokenCallback(string requestToken) {
-		string callback = Global.DataContext.OAuthTokens.First(token => token.Token == requestToken).RequestTokenCallback;
-		return callback != null ? new Uri(callback) : null;
-	}
-
-	public void SetTokenConsumerVersion(string token, Version version) {
-		if (String.IsNullOrEmpty(token)) {
-			throw new ArgumentNullException("token");
-		}
-		if (version == null) {
-			throw new ArgumentNullException("version");
-		}
-
-		Global.DataContext.OAuthTokens.First(t => t.Token == token).ConsumerVersion = version.ToString();
-	}
-
-	public Version GetTokenConsumerVersion(string token) {
-		return new Version(Global.DataContext.OAuthTokens.First(t => t.Token == token).ConsumerVersion);
+	public IServiceProviderRequestToken GetRequestToken(string token) {
+		return Global.DataContext.OAuthTokens.First(t => t.Token == token);
 	}
 
 	#endregion

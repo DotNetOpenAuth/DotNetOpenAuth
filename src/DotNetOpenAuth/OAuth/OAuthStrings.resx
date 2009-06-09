@@ -123,9 +123,6 @@
   <data name="BadAccessTokenInProtectedResourceRequest" xml:space="preserve">
     <value>The access token '{0}' is invalid or expired.</value>
   </data>
-  <data name="ConsumerCertificateProviderNotAvailable" xml:space="preserve">
-    <value>The RSA-SHA1 signing binding element's consumer certificate provider has not been set, so no incoming messages from consumers using this signature method can be verified.</value>
-  </data>
   <data name="ConsumerOrTokenSecretNotFound" xml:space="preserve">
     <value>Failure looking up secret for consumer or token.</value>
   </data>

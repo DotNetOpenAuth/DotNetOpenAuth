@@ -483,6 +483,12 @@ public partial class OAuthConsumer : INotifyPropertyChanging, INotifyPropertyCha
 	
 	private string _ConsumerSecret;
 	
+	private string _Callback;
+	
+	private DotNetOpenAuth.OAuth.VerificationCodeFormat _VerificationCodeFormat;
+	
+	private int _VerificationCodeLength;
+	
 	private EntitySet<OAuthToken> _OAuthTokens;
 	
     #region Extensibility Method Definitions
@@ -495,6 +501,12 @@ public partial class OAuthConsumer : INotifyPropertyChanging, INotifyPropertyCha
     partial void OnConsumerKeyChanged();
     partial void OnConsumerSecretChanging(string value);
     partial void OnConsumerSecretChanged();
+    partial void OnCallbackChanging(string value);
+    partial void OnCallbackChanged();
+    partial void OnVerificationCodeFormatChanging(DotNetOpenAuth.OAuth.VerificationCodeFormat value);
+    partial void OnVerificationCodeFormatChanged();
+    partial void OnVerificationCodeLengthChanging(int value);
+    partial void OnVerificationCodeLengthChanged();
     #endregion
 	
 	public OAuthConsumer()
@@ -559,6 +571,66 @@ public partial class OAuthConsumer : INotifyPropertyChanging, INotifyPropertyCha
 				this._ConsumerSecret = value;
 				this.SendPropertyChanged("ConsumerSecret");
 				this.OnConsumerSecretChanged();
+			}
+		}
+	}
+	
+	[Column(Storage="_Callback")]
+	public string Callback
+	{
+		get
+		{
+			return this._Callback;
+		}
+		set
+		{
+			if ((this._Callback != value))
+			{
+				this.OnCallbackChanging(value);
+				this.SendPropertyChanging();
+				this._Callback = value;
+				this.SendPropertyChanged("Callback");
+				this.OnCallbackChanged();
+			}
+		}
+	}
+	
+	[Column(Storage="_VerificationCodeFormat")]
+	public DotNetOpenAuth.OAuth.VerificationCodeFormat VerificationCodeFormat
+	{
+		get
+		{
+			return this._VerificationCodeFormat;
+		}
+		set
+		{
+			if ((this._VerificationCodeFormat != value))
+			{
+				this.OnVerificationCodeFormatChanging(value);
+				this.SendPropertyChanging();
+				this._VerificationCodeFormat = value;
+				this.SendPropertyChanged("VerificationCodeFormat");
+				this.OnVerificationCodeFormatChanged();
+			}
+		}
+	}
+	
+	[Column(Storage="_VerificationCodeLength")]
+	public int VerificationCodeLength
+	{
+		get
+		{
+			return this._VerificationCodeLength;
+		}
+		set
+		{
+			if ((this._VerificationCodeLength != value))
+			{
+				this.OnVerificationCodeLengthChanging(value);
+				this.SendPropertyChanging();
+				this._VerificationCodeLength = value;
+				this.SendPropertyChanged("VerificationCodeLength");
+				this.OnVerificationCodeLengthChanged();
 			}
 		}
 	}

@@ -63,7 +63,7 @@ public partial class Authorize : System.Web.UI.Page {
 				string verifier = ServiceProvider.CreateVerificationCode(VerificationCodeFormat.AlphaNumericNoLookAlikes, 10);
 				verificationCodeLabel.Text = verifier;
 				ITokenContainingMessage requestTokenMessage = pending;
-				Global.TokenManager.SetRequestTokenVerifier(requestTokenMessage.Token, verifier);
+				Global.TokenManager.GetRequestToken(requestTokenMessage.Token).VerificationCode = verifier;
 			}
 		}
 	}

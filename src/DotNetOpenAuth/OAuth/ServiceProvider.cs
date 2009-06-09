@@ -236,7 +236,23 @@ namespace DotNetOpenAuth.OAuth {
 			// It is very important for us to ignore the oauth_callback argument in the
 			// UserAuthorizationRequest if the Consumer is a 1.0a consumer or else we
 			// open up a security exploit.
-			Uri callback = request.Version >= Protocol.V10a.Version ? this.TokenManager.GetRequestTokenCallback(request.RequestToken) : request.Callback;
+			IServiceProviderRequestToken token = this.TokenManager.GetRequestToken(request.RequestToken);
+			Uri callback;
+			if (request.Version >= Protocol.V10a.Version) {
+				// In OAuth 1.0a, we'll prefer the token-specific callback to the pre-registered one.
+				if (token.Callback != null) {
+					callback = token.Callback;
+				} else {
+					IConsumerDescription consumer = this.TokenManager.GetConsumer(token.ConsumerKey);
+					callback = consumer.Callback;
+				}
+			} else {
+				// In OAuth 1.0, we'll prefer the pre-registered callback over the token-specific one
+				// since 1.0 has a security weakness for user-modified callback URIs.
+				IConsumerDescription consumer = this.TokenManager.GetConsumer(token.ConsumerKey);
+				callback = consumer.Callback ?? request.Callback;
+			}
+
 			return callback != null ? this.PrepareAuthorizationResponse(request, callback) : null;
 		}
 

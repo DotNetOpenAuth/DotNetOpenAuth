@@ -79,15 +79,6 @@ namespace DotNetOpenAuth.OAuth {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The RSA-SHA1 signing binding element&apos;s consumer certificate provider has not been set, so no incoming messages from consumers using this signature method can be verified..
-        /// </summary>
-        internal static string ConsumerCertificateProviderNotAvailable {
-            get {
-                return ResourceManager.GetString("ConsumerCertificateProviderNotAvailable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Failure looking up secret for consumer or token..
         /// </summary>
         internal static string ConsumerOrTokenSecretNotFound {

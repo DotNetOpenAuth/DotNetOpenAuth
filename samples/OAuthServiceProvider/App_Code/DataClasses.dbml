@@ -25,6 +25,9 @@
       <Column Name="ConsumerId" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
       <Column Name="ConsumerKey" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
       <Column Name="ConsumerSecret" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Member="Callback" Type="System.String" CanBeNull="true" />
+      <Column Member="VerificationCodeFormat" Type="DotNetOpenAuth.OAuth.VerificationCodeFormat" CanBeNull="false" />
+      <Column Member="VerificationCodeLength" Type="System.Int32" CanBeNull="false" />
       <Association Name="OAuthConsumer_OAuthToken" Member="OAuthTokens" ThisKey="ConsumerId" OtherKey="ConsumerId" Type="OAuthToken" />
     </Type>
   </Table>
