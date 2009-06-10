@@ -47,22 +47,22 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullStore() {
-			new OAuthChannel(this.signingElement, null, new InMemoryTokenManager(), new TestMessageFactory());
+			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), null, new InMemoryTokenManager(), new TestMessageFactory());
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullTokenManager() {
-			new OAuthChannel(this.signingElement, this.nonceStore, null, new TestMessageFactory());
+			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), this.nonceStore, null, new TestMessageFactory());
 		}
 
 		[TestMethod]
 		public void CtorSimpleConsumer() {
-			new OAuthChannel(this.signingElement, this.nonceStore, (IConsumerTokenManager)new InMemoryTokenManager());
+			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), this.nonceStore, (IConsumerTokenManager)new InMemoryTokenManager());
 		}
 
 		[TestMethod]
 		public void CtorSimpleServiceProvider() {
-			new OAuthChannel(this.signingElement, this.nonceStore, (IServiceProviderTokenManager)new InMemoryTokenManager());
+			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), this.nonceStore, (IServiceProviderTokenManager)new InMemoryTokenManager());
 		}
 
 		[TestMethod]
