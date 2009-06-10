@@ -18,14 +18,18 @@ public class DatabaseTokenManager : IServiceProviderTokenManager {
 		var consumerRow = Global.DataContext.OAuthConsumers.SingleOrDefault(
 			consumerCandidate => consumerCandidate.ConsumerKey == consumerKey);
 		if (consumerRow == null) {
-			throw new ArgumentException();
+			throw new KeyNotFoundException();
 		}
 
 		return consumerRow;
 	}
 
 	public IServiceProviderRequestToken GetRequestToken(string token) {
-		return Global.DataContext.OAuthTokens.First(t => t.Token == token);
+		try {
+			return Global.DataContext.OAuthTokens.First(t => t.Token == token);
+		} catch (InvalidOperationException ex) {
+			throw new KeyNotFoundException("Unrecognized token", ex);
+		}
 	}
 
 	#endregion

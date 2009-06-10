@@ -58,43 +58,47 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			string token;
 			fields.TryGetValue("oauth_token", out token);
 
-			if (fields.ContainsKey("oauth_consumer_key") && !fields.ContainsKey("oauth_token")) {
-				protocol = fields.ContainsKey("oauth_callback") ? Protocol.V10a : Protocol.V10;
-				message = new UnauthorizedTokenRequest(recipient, protocol.Version);
-			} else if (fields.ContainsKey("oauth_consumer_key") && fields.ContainsKey("oauth_token")) {
-				// Discern between RequestAccessToken and AccessProtectedResources,
-				// which have all the same parameters, by figuring out what type of token
-				// is in the token parameter.
-				bool tokenTypeIsAccessToken = this.tokenManager.GetTokenType(token) == TokenType.AccessToken;
+			try {
+				if (fields.ContainsKey("oauth_consumer_key") && !fields.ContainsKey("oauth_token")) {
+					protocol = fields.ContainsKey("oauth_callback") ? Protocol.V10a : Protocol.V10;
+					message = new UnauthorizedTokenRequest(recipient, protocol.Version);
+				} else if (fields.ContainsKey("oauth_consumer_key") && fields.ContainsKey("oauth_token")) {
+					// Discern between RequestAccessToken and AccessProtectedResources,
+					// which have all the same parameters, by figuring out what type of token
+					// is in the token parameter.
+					bool tokenTypeIsAccessToken = this.tokenManager.GetTokenType(token) == TokenType.AccessToken;
 
-				if (tokenTypeIsAccessToken) {
-					message = (MessageBase)new AccessProtectedResourceRequest(recipient, protocol.Version);
+					if (tokenTypeIsAccessToken) {
+						message = (MessageBase)new AccessProtectedResourceRequest(recipient, protocol.Version);
+					} else {
+						// Discern between 1.0 and 1.0a requests by checking on the consumer version we stored
+						// when the consumer first requested an unauthorized token.
+						protocol = Protocol.Lookup(this.tokenManager.GetRequestToken(token).ConsumerVersion);
+						message = new AuthorizedTokenRequest(recipient, protocol.Version);
+					}
 				} else {
-					// Discern between 1.0 and 1.0a requests by checking on the consumer version we stored
-					// when the consumer first requested an unauthorized token.
-					protocol = Protocol.Lookup(this.tokenManager.GetRequestToken(token).ConsumerVersion);
-					message = new AuthorizedTokenRequest(recipient, protocol.Version);
+					// fail over to the message with no required fields at all.
+					if (token != null) {
+						protocol = Protocol.Lookup(this.tokenManager.GetRequestToken(token).ConsumerVersion);
+					}
+
+					// If a callback parameter is included, that suggests either the consumer
+					// is following OAuth 1.0 instead of 1.0a, or that a hijacker is trying
+					// to attack.  Either way, if the consumer started out as a 1.0a, keep it
+					// that way, and we'll just ignore the oauth_callback included in this message
+					// by virtue of the UserAuthorizationRequest message not including it in its
+					// 1.0a payload.
+					message = new UserAuthorizationRequest(recipient, protocol.Version);
 				}
-			} else {
-				// fail over to the message with no required fields at all.
-				if (token != null) {
-					protocol = Protocol.Lookup(this.tokenManager.GetRequestToken(token).ConsumerVersion);
+
+				if (message != null) {
+					message.SetAsIncoming();
 				}
 
-				// If a callback parameter is included, that suggests either the consumer
-				// is following OAuth 1.0 instead of 1.0a, or that a hijacker is trying
-				// to attack.  Either way, if the consumer started out as a 1.0a, keep it
-				// that way, and we'll just ignore the oauth_callback included in this message
-				// by virtue of the UserAuthorizationRequest message not including it in its
-				// 1.0a payload.
-				message = new UserAuthorizationRequest(recipient, protocol.Version);
+				return message;
+			} catch (KeyNotFoundException ex) {
+				throw ErrorUtilities.Wrap(ex, OAuthStrings.TokenNotFound);
 			}
-
-			if (message != null) {
-				message.SetAsIncoming();
-			}
-
-			return message;
 		}
 
 		/// <summary>

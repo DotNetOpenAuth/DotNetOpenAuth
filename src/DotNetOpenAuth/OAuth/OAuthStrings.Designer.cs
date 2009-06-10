@@ -151,6 +151,15 @@ namespace DotNetOpenAuth.OAuth {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A token in the message was not recognized by the service provider..
+        /// </summary>
+        internal static string TokenNotFound {
+            get {
+                return ResourceManager.GetString("TokenNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The RSA-SHA1 signing binding element has not been set with a certificate for signing..
         /// </summary>
         internal static string X509CertificateNotProvidedForSigning {

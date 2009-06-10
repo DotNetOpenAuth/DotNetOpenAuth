@@ -19,15 +19,16 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Gets the Consumer description for a given a Consumer Key.
 		/// </summary>
 		/// <param name="consumerKey">The Consumer Key.</param>
-		/// <returns>A description of the consumer.</returns>
-		/// <exception cref="ArgumentException">Thrown if the consumer key cannot be found.</exception>
+		/// <returns>A description of the consumer.  Never null.</returns>
+		/// <exception cref="KeyNotFoundException">Thrown if the consumer key cannot be found.</exception>
 		IConsumerDescription GetConsumer(string consumerKey);
 
 		/// <summary>
 		/// Gets details on the named request token.
 		/// </summary>
 		/// <param name="token">The request token.</param>
-		/// <returns>A description of the token</returns>
+		/// <returns>A description of the token.  Never null.</returns>
+		/// <exception cref="KeyNotFoundException">Thrown if the token cannot be found.</exception>
 		IServiceProviderRequestToken GetRequestToken(string token);
 	}
 }

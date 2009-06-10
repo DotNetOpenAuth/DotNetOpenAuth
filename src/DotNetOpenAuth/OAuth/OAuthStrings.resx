@@ -147,6 +147,9 @@
   <data name="SigningElementsMustShareSameProtection" xml:space="preserve">
     <value>All signing elements must offer the same message protection.</value>
   </data>
+  <data name="TokenNotFound" xml:space="preserve">
+    <value>A token in the message was not recognized by the service provider.</value>
+  </data>
   <data name="X509CertificateNotProvidedForSigning" xml:space="preserve">
     <value>The RSA-SHA1 signing binding element has not been set with a certificate for signing.</value>
   </data>
