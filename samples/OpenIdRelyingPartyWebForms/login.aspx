@@ -23,7 +23,8 @@
 	<asp:Label ID="setupRequiredLabel" runat="server" EnableViewState="False" Text="You must log into your Provider first to use Immediate mode."
 		Visible="False" />
 	<p>
-		<asp:ImageButton runat="server" ImageUrl="~/images/yahoo.png" ID="yahooLoginButton"
-			OnClick="yahooLoginButton_Click" />
+		<rp:OpenIdButton runat="server" ImageUrl="~/images/yahoo.png" 
+			ID="yahooLoginButton" Identifier="https://me.yahoo.com/"
+		/>
 	</p>
 </asp:Content>

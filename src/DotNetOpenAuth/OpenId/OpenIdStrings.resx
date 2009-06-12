@@ -325,4 +325,7 @@ Discovered endpoint info:
   <data name="UnexpectedEnumPropertyValue" xml:space="preserve">
     <value>The property {0} had unexpected value {1}.</value>
   </data>
+  <data name="NoIdentifierSet" xml:space="preserve">
+    <value>No identifier has been set.</value>
+  </data>
 </root>
