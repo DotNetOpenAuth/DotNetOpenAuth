@@ -286,17 +286,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating when to use a popup window to complete the login experience.
-		/// </summary>
-		/// <value>The default value is <see cref="PopupBehavior.Never"/>.</value>
-		[Bindable(true), DefaultValue(PopupDefault), Category(BehaviorCategory)]
-		[Description("When to use a popup window to complete the login experience.")]
-		public PopupBehavior Popup {
-			get { return (PopupBehavior)(ViewState[PopupViewStateKey] ?? PopupDefault); }
-			set { ViewState[PopupViewStateKey] = value; }
-		}
-
-		/// <summary>
 		/// Gets or sets a value indicating whether to enforce on high security mode,
 		/// which requires the full authentication pipeline to be protected by SSL.
 		/// </summary>
@@ -317,6 +306,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public Identifier Identifier {
 			get { return (Identifier)ViewState[IdentifierViewStateKey]; }
 			set { ViewState[IdentifierViewStateKey] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating when to use a popup window to complete the login experience.
+		/// </summary>
+		/// <value>The default value is <see cref="PopupBehavior.Never"/>.</value>
+		[Bindable(true), DefaultValue(PopupDefault), Category(BehaviorCategory)]
+		[Description("When to use a popup window to complete the login experience.")]
+		private PopupBehavior Popup {
+			get { return (PopupBehavior)(ViewState[PopupViewStateKey] ?? PopupDefault); }
+			set { ViewState[PopupViewStateKey] = value; }
 		}
 
 		/// <summary>
