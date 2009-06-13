@@ -103,41 +103,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			if (string.IsNullOrEmpty(this.Identifier)) {
 				writer.WriteEncodedText(string.Format(CultureInfo.CurrentCulture, "[{0}]", OpenIdStrings.NoIdentifierSet));
 			} else {
-				IAuthenticationRequest request = null;
-				Uri beginUrl = null;
-				string errorMessage = null;
-				try {
-					if (!this.DesignMode) {
-						request = this.CreateRequest();
-						beginUrl = request.RedirectingResponse.GetDirectUriRequest(this.RelyingParty.Channel);
-					}
-				} catch (ProtocolException ex) {
-					Logger.OpenId.Error("OpenIdButton failed to create OpenID request for identifier.", ex);
-					errorMessage = ex.Message;
-				}
-
-				if (request == null && !this.DesignMode) {
-					writer.AddStyleAttribute("text-decoration", "line-through");
-					if (!string.IsNullOrEmpty(errorMessage)) {
-						writer.AddAttribute(HtmlTextWriterAttribute.Title, errorMessage);
-					}
-					writer.RenderBeginTag(HtmlTextWriterTag.Span);
-				} else {
-					if (beginUrl != null) {
-						writer.AddAttribute(HtmlTextWriterAttribute.Href, beginUrl.AbsoluteUri);
-					}
-
-					writer.RenderBeginTag(HtmlTextWriterTag.A);
-				}
+				writer.AddAttribute(HtmlTextWriterAttribute.Href, "javascript:window.dnoa_internal.trySetup(" + MessagingUtilities.GetSafeJavascriptValue(this.Identifier) +")");
+				writer.RenderBeginTag(HtmlTextWriterTag.A);
 
 				if (!string.IsNullOrEmpty(this.ImageUrl)) {
 					writer.AddAttribute(HtmlTextWriterAttribute.Src, this.ResolveClientUrl(this.ImageUrl));
 					writer.AddAttribute(HtmlTextWriterAttribute.Border, "0");
-					string tooltip = errorMessage ?? this.Text;
-					if (!string.IsNullOrEmpty(tooltip)) {
-						writer.AddAttribute(HtmlTextWriterAttribute.Alt, tooltip);
-						writer.AddAttribute(HtmlTextWriterAttribute.Title, tooltip);
-					}
+					writer.AddAttribute(HtmlTextWriterAttribute.Alt, this.Text);
+					writer.AddAttribute(HtmlTextWriterAttribute.Title, this.Text);
 					writer.RenderBeginTag(HtmlTextWriterTag.Img);
 					writer.RenderEndTag();
 				} else if (!string.IsNullOrEmpty(this.Text)) {

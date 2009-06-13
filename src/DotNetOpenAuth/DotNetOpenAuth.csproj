@@ -560,6 +560,9 @@
     <EmbeddedResource Include="InfoCard\infocard_92x64.png" />
     <EmbeddedResource Include="InfoCard\SupportingScript.js" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdRelyingPartyControlBase.js" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\tools\DotNetOpenAuth.Versioning.targets" />
 </Project>

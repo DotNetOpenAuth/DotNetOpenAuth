@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+[assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingPartyControlBase.EmbeddedJavascriptResource, "text/javascript")]
+
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
@@ -25,7 +27,22 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// <summary>
 	/// A common base class for OpenID Relying Party controls.
 	/// </summary>
-	public abstract class OpenIdRelyingPartyControlBase : Control {
+	public abstract class OpenIdRelyingPartyControlBase : Control, ICallbackEventHandler {
+		/// <summary>
+		/// The manifest resource name of the javascript file to include on the hosting page.
+		/// </summary>
+		internal const string EmbeddedJavascriptResource = Util.DefaultNamespace + ".OpenId.RelyingParty.OpenIdRelyingPartyControlBase.js";
+
+		/// <summary>
+		/// The name of the javascript function that will initiate a synchronous callback.
+		/// </summary>
+		protected const string CallbackJsFunction = "window.dnoa_internal.callback";
+
+		/// <summary>
+		/// The name of the javascript function that will initiate an asynchronous callback.
+		/// </summary>
+		protected const string CallbackJsFunctionAsync = "window.dnoa_internal.callbackAsync";
+
 		#region Property category constants
 
 		/// <summary>
@@ -131,6 +148,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string UIPopupCallbackParentKey = OpenIdUtilities.CustomParameterPrefix + "uipopupParent";
 
 		#endregion
+
+		/// <summary>
+		/// Stores the result of a AJAX callback discovery.
+		/// </summary>
+		private string discoveryResult;
 
 		/// <summary>
 		/// Backing field for the <see cref="RelyingParty"/> property.
@@ -286,6 +308,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating when to use a popup window to complete the login experience.
+		/// </summary>
+		/// <value>The default value is <see cref="PopupBehavior.Never"/>.</value>
+		[Bindable(true), DefaultValue(PopupDefault), Category(BehaviorCategory)]
+		[Description("When to use a popup window to complete the login experience.")]
+		public PopupBehavior Popup {
+			get { return (PopupBehavior)(ViewState[PopupViewStateKey] ?? PopupDefault); }
+			set { ViewState[PopupViewStateKey] = value; }
+		}
+
+		/// <summary>
 		/// Gets or sets a value indicating whether to enforce on high security mode,
 		/// which requires the full authentication pipeline to be protected by SSL.
 		/// </summary>
@@ -309,17 +342,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating when to use a popup window to complete the login experience.
-		/// </summary>
-		/// <value>The default value is <see cref="PopupBehavior.Never"/>.</value>
-		[Bindable(true), DefaultValue(PopupDefault), Category(BehaviorCategory)]
-		[Description("When to use a popup window to complete the login experience.")]
-		private PopupBehavior Popup {
-			get { return (PopupBehavior)(ViewState[PopupViewStateKey] ?? PopupDefault); }
-			set { ViewState[PopupViewStateKey] = value; }
-		}
-
-		/// <summary>
 		/// Immediately redirects to the OpenID Provider to verify the Identifier
 		/// provided in the text box.
 		/// </summary>
@@ -331,6 +353,77 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				request.RedirectToProvider();
 			}
 		}
+
+		#region ICallbackEventHandler Members
+
+		/// <summary>
+		/// Returns the result of discovery on some Identifier passed to <see cref="ICallbackEventHandler.RaiseCallbackEvent"/>.
+		/// </summary>
+		/// <returns>The result of the callback.</returns>
+		/// <value>A whitespace delimited list of URLs that can be used to initiate authentication.</value>
+		string ICallbackEventHandler.GetCallbackResult() {
+			this.Page.Response.ContentType = "text/javascript";
+			return this.discoveryResult;
+		}
+
+		/// <summary>
+		/// Performs discovery on some OpenID Identifier.  Called directly from the user agent via
+		/// AJAX callback mechanisms.
+		/// </summary>
+		/// <param name="eventArgument">The identifier to perform discovery on.</param>
+		void ICallbackEventHandler.RaiseCallbackEvent(string eventArgument) {
+			string userSuppliedIdentifier = eventArgument;
+
+			ErrorUtilities.VerifyNonZeroLength(userSuppliedIdentifier, "userSuppliedIdentifier");
+			Logger.OpenId.InfoFormat("AJAX discovery on {0} requested.", userSuppliedIdentifier);
+
+			// We prepare a JSON object with this interface:
+			// class jsonResponse {
+			//    string claimedIdentifier;
+			//    Array requests; // never null
+			//    string error; // null if no error
+			// }
+			// Each element in the requests array looks like this:
+			// class jsonAuthRequest {
+			//    string endpoint;  // URL to the OP endpoint
+			//    string immediate; // URL to initiate an immediate request
+			//    string setup;     // URL to initiate a setup request.
+			// }
+			StringBuilder discoveryResultBuilder = new StringBuilder();
+			discoveryResultBuilder.Append("{");
+			try {
+				this.Identifier = userSuppliedIdentifier;
+				List<IAuthenticationRequest> requests = new List<IAuthenticationRequest>(new [] { this.CreateRequest() });
+				if (requests.Count > 0) {
+					discoveryResultBuilder.AppendFormat("claimedIdentifier: {0},", MessagingUtilities.GetSafeJavascriptValue(requests[0].ClaimedIdentifier));
+					discoveryResultBuilder.Append("requests: [");
+					foreach (IAuthenticationRequest request in requests) {
+						this.OnLoggingIn(request);
+						discoveryResultBuilder.Append("{");
+						discoveryResultBuilder.AppendFormat("endpoint: {0},", MessagingUtilities.GetSafeJavascriptValue(request.Provider.Uri.AbsoluteUri));
+						request.Mode = AuthenticationRequestMode.Immediate;
+						OutgoingWebResponse response = request.RedirectingResponse;
+						discoveryResultBuilder.AppendFormat("immediate: {0},", MessagingUtilities.GetSafeJavascriptValue(response.GetDirectUriRequest(this.RelyingParty.Channel).AbsoluteUri));
+						request.Mode = AuthenticationRequestMode.Setup;
+						response = request.RedirectingResponse;
+						discoveryResultBuilder.AppendFormat("setup: {0}", MessagingUtilities.GetSafeJavascriptValue(response.GetDirectUriRequest(this.RelyingParty.Channel).AbsoluteUri));
+						discoveryResultBuilder.Append("},");
+					}
+					discoveryResultBuilder.Length -= 1; // trim off last comma
+					discoveryResultBuilder.Append("]");
+				} else {
+					discoveryResultBuilder.Append("requests: new Array(),");
+					discoveryResultBuilder.AppendFormat("error: {0}", MessagingUtilities.GetSafeJavascriptValue(OpenIdStrings.OpenIdEndpointNotFound));
+				}
+			} catch (ProtocolException ex) {
+				discoveryResultBuilder.Append("requests: new Array(),");
+				discoveryResultBuilder.AppendFormat("error: {0}", MessagingUtilities.GetSafeJavascriptValue(ex.Message));
+			}
+			discoveryResultBuilder.Append("}");
+			this.discoveryResult = discoveryResultBuilder.ToString();
+		}
+
+		#endregion
 
 		/// <summary>
 		/// Constructs the authentication request and returns it.
@@ -426,6 +519,44 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 						throw new InvalidOperationException(MessagingStrings.UnexpectedMessageReceivedOfMany);
 				}
 			}
+		}
+
+		private string GetJsCallbackConvenienceFunction(bool async) {
+			string argumentParameterName = "argument";
+			string callbackResultParameterName = "resultFunction";
+			string callbackErrorCallbackParameterName = "errorCallback";
+			string callback = Page.ClientScript.GetCallbackEventReference(
+				this,
+				argumentParameterName,
+				callbackResultParameterName,
+				argumentParameterName,
+				callbackErrorCallbackParameterName,
+				async);
+			return string.Format(
+				CultureInfo.InvariantCulture,
+				"function({1}, {2}, {3}) {{{0}\treturn {4};{0}}};",
+				Environment.NewLine,
+				argumentParameterName,
+				callbackResultParameterName,
+				callbackErrorCallbackParameterName,
+				callback);
+		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Web.UI.Control.PreRender"/> event.
+		/// </summary>
+		/// <param name="e">An <see cref="T:System.EventArgs"/> object that contains the event data.</param>
+		protected override void OnPreRender(EventArgs e) {
+			base.OnPreRender(e);
+
+			this.Page.ClientScript.RegisterClientScriptResource(typeof(OpenIdRelyingPartyControlBase), EmbeddedJavascriptResource);
+
+			StringBuilder initScript = new StringBuilder();
+
+			initScript.AppendLine(CallbackJsFunctionAsync + " = " + GetJsCallbackConvenienceFunction(true));
+			initScript.AppendLine(CallbackJsFunction + " = " + GetJsCallbackConvenienceFunction(false));
+
+			this.Page.ClientScript.RegisterClientScriptBlock(typeof(OpenIdRelyingPartyControlBase), "initializer", initScript.ToString(), true);
 		}
 
 		/// <summary>
@@ -550,13 +681,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// parent window, to pass back the authentication result.
 			startupScript.AppendLine("window.dnoa_internal = new Object();");
 			startupScript.AppendLine("window.dnoa_internal.processAuthorizationResult = function(uri) { window.location = uri; };");
+			startupScript.AppendLine("window.dnoa_internal.popupWindow = function() {");
+				startupScript.AppendFormat(
+					@"\tvar openidPopup = {0}",
+					UIUtilities.GetWindowPopupScript(this.RelyingParty, request, "openidPopup"));
+			startupScript.AppendLine("};");
 
-			// Open the popup window.
-			startupScript.AppendFormat(
-				@"var openidPopup = {0}",
-				UIUtilities.GetWindowPopupScript(this.RelyingParty, request, "openidPopup"));
-
-			this.Page.ClientScript.RegisterStartupScript(this.GetType(), "loginPopup", startupScript.ToString(), true);
+			this.Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "loginPopup", startupScript.ToString(), true);
 		}
 
 		/// <summary>
