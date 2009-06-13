@@ -2,6 +2,14 @@
 	ValidateRequest="false" MasterPageFile="~/Site.Master" %>
 
 <%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.OpenId.RelyingParty" TagPrefix="rp" %>
+
+<asp:Content runat=server ContentPlaceHolderID=head>
+<script>
+
+window.openid_visible_iframe = true; // causes the hidden iframe to show up
+window.openid_trace = true; // causes lots of messages
+</script>
+</asp:Content>
 <asp:Content runat="server" ContentPlaceHolderID="Main">
 	<h2>Login Page </h2>
 	<rp:OpenIdLogin ID="OpenIdLogin1" runat="server" CssClass="openid_login" RequestCountry="Request"
@@ -23,8 +31,7 @@
 	<asp:Label ID="setupRequiredLabel" runat="server" EnableViewState="False" Text="You must log into your Provider first to use Immediate mode."
 		Visible="False" />
 	<p>
-		<rp:OpenIdButton runat="server" ImageUrl="~/images/yahoo.png" 
-			ID="yahooLoginButton" Identifier="https://me.yahoo.com/"
-		/>
+		<rp:OpenIdButton runat="server" ImageUrl="~/images/yahoo.png"
+			ID="yahooLoginButton" Identifier="https://me.yahoo.com/" />
 	</p>
 </asp:Content>

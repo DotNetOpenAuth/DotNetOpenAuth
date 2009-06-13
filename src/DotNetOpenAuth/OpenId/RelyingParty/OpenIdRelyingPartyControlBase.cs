@@ -5,7 +5,6 @@
 //-----------------------------------------------------------------------
 
 [assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingPartyControlBase.EmbeddedJavascriptResource, "text/javascript")]
-[assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingPartyControlBase.ReturnToStaticPageResource, "text/html")]
 
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
@@ -25,30 +24,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions.UI;
 	using System.Web;
+	using DotNetOpenAuth.OpenId.Extensions;
 
 	/// <summary>
 	/// A common base class for OpenID Relying Party controls.
 	/// </summary>
-	public abstract class OpenIdRelyingPartyControlBase : Control, ICallbackEventHandler {
+	[DefaultProperty("Identifier"), ValidationProperty("Identifier")]
+	public abstract class OpenIdRelyingPartyControlBase : Control {
 		/// <summary>
 		/// The manifest resource name of the javascript file to include on the hosting page.
 		/// </summary>
 		internal const string EmbeddedJavascriptResource = Util.DefaultNamespace + ".OpenId.RelyingParty.OpenIdRelyingPartyControlBase.js";
-
-		/// <summary>
-		/// The manifest resource name of the static HTML file that serves as the return_to URL for popup windows and iframes.
-		/// </summary>
-		internal const string ReturnToStaticPageResource = Util.DefaultNamespace + ".OpenId.RelyingParty.OpenIdRelyingPartyControlBase.ReturnTo.html";
-
-		/// <summary>
-		/// The name of the javascript function that will initiate a synchronous callback.
-		/// </summary>
-		protected const string CallbackJsFunction = "window.dnoa_internal.callback";
-
-		/// <summary>
-		/// The name of the javascript function that will initiate an asynchronous callback.
-		/// </summary>
-		protected const string CallbackJsFunctionAsync = "window.dnoa_internal.callbackAsync";
 
 		#region Property category constants
 
@@ -70,6 +56,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The default value for the <see cref="Stateless"/> property.
 		/// </summary>
 		private const bool StatelessDefault = false;
+
+		/// <summary>
+		/// The default value for the <see cref="ReturnToUrl"/> property.
+		/// </summary>
+		private const string ReturnToUrlDefault = "";
 
 		/// <summary>
 		/// Default value of <see cref="UsePersistentCookie"/>.
@@ -111,6 +102,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string RealmUrlViewStateKey = "RealmUrl";
 
 		/// <summary>
+		/// The viewstate key to use for the <see cref="ReturnToUrl"/> property.
+		/// </summary>
+		private const string ReturnToUrlViewStateKey = "ReturnToUrl";
+
+		/// <summary>
 		/// The key under which the value for the <see cref="Identifier"/> property will be stored.
 		/// </summary>
 		private const string IdentifierViewStateKey = "Identifier";
@@ -132,7 +128,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// The callback parameter for use with persisting the <see cref="UsePersistentCookie"/> property.
 		/// </summary>
-		private const string UsePersistentCookieCallbackKey = "OpenIdTextBox_UsePersistentCookie";
+		private const string UsePersistentCookieCallbackKey = OpenIdUtilities.CustomParameterPrefix + "UsePersistentCookie";
 
 		/// <summary>
 		/// The callback parameter to use for recognizing when the callback is in a popup window.
@@ -144,12 +140,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		private const string UIPopupCallbackParentKey = OpenIdUtilities.CustomParameterPrefix + "uipopupParent";
 
-		#endregion
+		private const string ReturnToReceivingControlId = OpenIdUtilities.CustomParameterPrefix + "receiver";
 
-		/// <summary>
-		/// Stores the result of a AJAX callback discovery.
-		/// </summary>
-		private string discoveryResult;
+		#endregion
 
 		/// <summary>
 		/// Backing field for the <see cref="RelyingParty"/> property.
@@ -260,6 +253,39 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Gets or sets the OpenID ReturnTo of the relying party web site.
+		/// </summary>
+		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Bindable property must be simple type")]
+		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri", Justification = "Using Uri.ctor for validation.")]
+		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "Bindable property must be simple type")]
+		[Bindable(true), DefaultValue(ReturnToUrlDefault), Category(BehaviorCategory)]
+		[Description("The OpenID ReturnTo of the relying party web site.")]
+		[UrlProperty, Editor("System.Web.UI.Design.UrlEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", typeof(UITypeEditor))]
+		public string ReturnToUrl {
+			get {
+				return (string)(this.ViewState[ReturnToUrlViewStateKey] ?? ReturnToUrlDefault);
+			}
+
+			set {
+				if (this.Page != null && !this.DesignMode) {
+					// Validate new value by trying to construct a Uri based on it.
+					new Uri(this.RelyingParty.Channel.GetRequestFromContext().UrlBeforeRewriting, this.Page.ResolveUrl(value)); // throws an exception on failure.
+				} else {
+					// We can't fully test it, but it should start with either ~/ or a protocol.
+					if (Regex.IsMatch(value, @"^https?://")) {
+						new Uri(value); // make sure it's fully-qualified, but ignore wildcards
+					} else if (value.StartsWith("~/", StringComparison.Ordinal)) {
+						// this is valid too
+					} else {
+						throw new UriFormatException();
+					}
+				}
+
+				this.ViewState[ReturnToUrlViewStateKey] = value;
+			}
+		}
+
+		/// <summary>
 		/// Gets or sets a value indicating whether to send a persistent cookie upon successful 
 		/// login so the user does not have to log in upon returning to this site.
 		/// </summary>
@@ -318,104 +344,38 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 		}
 
-		#region ICallbackEventHandler Members
-
-		/// <summary>
-		/// Returns the result of discovery on some Identifier passed to <see cref="ICallbackEventHandler.RaiseCallbackEvent"/>.
-		/// </summary>
-		/// <returns>The result of the callback.</returns>
-		/// <value>A whitespace delimited list of URLs that can be used to initiate authentication.</value>
-		string ICallbackEventHandler.GetCallbackResult() {
-			this.Page.Response.ContentType = "text/javascript";
-			return this.discoveryResult;
-		}
-
-		/// <summary>
-		/// Performs discovery on some OpenID Identifier.  Called directly from the user agent via
-		/// AJAX callback mechanisms.
-		/// </summary>
-		/// <param name="eventArgument">The identifier to perform discovery on.</param>
-		void ICallbackEventHandler.RaiseCallbackEvent(string eventArgument) {
-			string userSuppliedIdentifier = eventArgument;
-
-			ErrorUtilities.VerifyNonZeroLength(userSuppliedIdentifier, "userSuppliedIdentifier");
-			Logger.OpenId.InfoFormat("AJAX discovery on {0} requested.", userSuppliedIdentifier);
-
-			// We prepare a JSON object with this interface:
-			// class jsonResponse {
-			//    string claimedIdentifier;
-			//    Array requests; // never null
-			//    string error; // null if no error
-			// }
-			// Each element in the requests array looks like this:
-			// class jsonAuthRequest {
-			//    string endpoint;  // URL to the OP endpoint
-			//    string immediate; // URL to initiate an immediate request
-			//    string setup;     // URL to initiate a setup request.
-			// }
-			StringBuilder discoveryResultBuilder = new StringBuilder();
-			discoveryResultBuilder.Append("{");
-			try {
-				this.Identifier = userSuppliedIdentifier;
-				IEnumerable<IAuthenticationRequest> requests = this.CreateRequests().CacheGeneratedResults();
-				if (requests.Any()) {
-					discoveryResultBuilder.AppendFormat("claimedIdentifier: {0},", MessagingUtilities.GetSafeJavascriptValue(requests.First().ClaimedIdentifier));
-					discoveryResultBuilder.Append("requests: [");
-					foreach (IAuthenticationRequest request in requests) {
-						this.OnLoggingIn(request);
-						discoveryResultBuilder.Append("{");
-						discoveryResultBuilder.AppendFormat("endpoint: {0},", MessagingUtilities.GetSafeJavascriptValue(request.Provider.Uri.AbsoluteUri));
-						request.Mode = AuthenticationRequestMode.Immediate;
-						OutgoingWebResponse response = request.RedirectingResponse;
-						discoveryResultBuilder.AppendFormat("immediate: {0},", MessagingUtilities.GetSafeJavascriptValue(response.GetDirectUriRequest(this.RelyingParty.Channel).AbsoluteUri));
-						request.Mode = AuthenticationRequestMode.Setup;
-						response = request.RedirectingResponse;
-						discoveryResultBuilder.AppendFormat("setup: {0}", MessagingUtilities.GetSafeJavascriptValue(response.GetDirectUriRequest(this.RelyingParty.Channel).AbsoluteUri));
-						discoveryResultBuilder.Append("},");
-					}
-					discoveryResultBuilder.Length -= 1; // trim off last comma
-					discoveryResultBuilder.Append("]");
-				} else {
-					discoveryResultBuilder.Append("requests: new Array(),");
-					discoveryResultBuilder.AppendFormat("error: {0}", MessagingUtilities.GetSafeJavascriptValue(OpenIdStrings.OpenIdEndpointNotFound));
-				}
-			} catch (ProtocolException ex) {
-				discoveryResultBuilder.Append("requests: new Array(),");
-				discoveryResultBuilder.AppendFormat("error: {0}", MessagingUtilities.GetSafeJavascriptValue(ex.Message));
-			}
-			discoveryResultBuilder.Append("}");
-			this.discoveryResult = discoveryResultBuilder.ToString();
-		}
-
-		#endregion
-
 		/// <summary>
 		/// Creates the authentication requests for a given user-supplied Identifier.
 		/// </summary>
 		/// <returns>A sequence of authentication requests, any one of which may be 
 		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.</returns>
-		private IEnumerable<IAuthenticationRequest> CreateRequests() {
+		protected virtual IEnumerable<IAuthenticationRequest> CreateRequests() {
 			Contract.Requires(this.Identifier != null, OpenIdStrings.NoIdentifierSet);
 			ErrorUtilities.VerifyOperation(this.Identifier != null, OpenIdStrings.NoIdentifierSet);
+			IEnumerable<IAuthenticationRequest> requests;
 
-			// The return_to page will be a static resource that has simple javascript to pass the openid response
-			// to the parent frame or window.  
-			Uri returnTo = new Uri(
-				this.RelyingParty.Channel.GetRequestFromContext().UrlBeforeRewriting,
-				this.Page.ClientScript.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), ReturnToStaticPageResource));
+			// Approximate the returnTo (either based on the customize property or the page URL)
+			// so we can use it to help with Realm resolution.
+			Uri returnToApproximation = this.ReturnToUrl != null ? new Uri(this.RelyingParty.Channel.GetRequestFromContext().UrlBeforeRewriting, this.ReturnToUrl) : this.Page.Request.Url;
 
 			// Resolve the trust root, and swap out the scheme and port if necessary to match the
 			// return_to URL, since this match is required by OpenId, and the consumer app
 			// may be using HTTP at some times and HTTPS at others.
 			UriBuilder realm = OpenIdUtilities.GetResolvedRealm(this.Page, this.RealmUrl, this.RelyingParty.Channel.GetRequestFromContext());
-			realm.Scheme = returnTo.Scheme;
-			realm.Port = returnTo.Port;
+			realm.Scheme = returnToApproximation.Scheme;
+			realm.Port = returnToApproximation.Port;
 
 			// Initiate openid request
 			// We use TryParse here to avoid throwing an exception which 
 			// might slip through our validator control if it is disabled.
 			Realm typedRealm = new Realm(realm);
-			var requests = this.RelyingParty.CreateRequests(this.Identifier, typedRealm, returnTo);
+			if (string.IsNullOrEmpty(this.ReturnToUrl)) {
+				requests = this.RelyingParty.CreateRequests(this.Identifier, typedRealm);
+			} else {
+				// Since the user actually gave us a return_to value,
+				// the "approximation" is exactly what we want.
+				requests = this.RelyingParty.CreateRequests(this.Identifier, typedRealm, returnToApproximation);
+			}
 
 			// Some OPs may be listed multiple times (one with HTTPS and the other with HTTP, for example).
 			// Since we're gathering OPs to try one after the other, just take the first choice of each OP
@@ -423,46 +383,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			requests = requests.Distinct(DuplicateRequestedHostsComparer.Instance);
 
 			// Configure each generated request.
-			int reqIndex = 0;
 			foreach (var req in requests) {
-				req.AddCallbackArguments("index", (reqIndex++).ToString(CultureInfo.InvariantCulture));
-
 				if (this.IsPopupAppropriate(req)) {
 					// Inform the OP that we'll be using a popup window.
 					req.AddExtension(new UIRequest());
-
-					// Provide a hint for the client javascript about whether the OP supports the UI extension.
-					// This is so the window can be made the correct size for the extension.
-					// If the OP doesn't advertise support for the extension, the javascript will use
-					// a bigger popup window.
-					req.AddCallbackArguments("dotnetopenid.popupUISupported", "1");
 				}
 
 				// Add state that needs to survive across the redirect.
 				if (!this.Stateless) {
 					req.AddCallbackArguments(UsePersistentCookieCallbackKey, this.UsePersistentCookie.ToString(CultureInfo.InvariantCulture));
+					req.AddCallbackArguments(ReturnToReceivingControlId, this.ClientID);
 				}
-
-				// If the ReturnToUrl was explicitly set, we'll need to reset our first parameter
-				if (string.IsNullOrEmpty(HttpUtility.ParseQueryString(req.ReturnToUrl.Query)["dotnetopenid.userSuppliedIdentifier"])) {
-					req.AddCallbackArguments("dotnetopenid.userSuppliedIdentifier", this.Identifier);
-				}
-
-				// Our javascript needs to let the user know which endpoint responded.  So we force it here.
-				// This gives us the info even for 1.0 OPs and 2.0 setup_required responses.
-				req.AddCallbackArguments("dotnetopenid.op_endpoint", req.Provider.Uri.AbsoluteUri);
-				req.AddCallbackArguments("dotnetopenid.claimed_id", (string)req.ClaimedIdentifier ?? string.Empty);
-				req.AddCallbackArguments("dotnetopenid.phase", "2");
-				((AuthenticationRequest)req).AssociationPreference = AssociationPreference.IfAlreadyEstablished;
 
 				this.OnLoggingIn(req);
-
-				// We append a # at the end so that if the OP happens to support it,
-				// the OpenID response "query string" is appended after the hash rather than before, resulting in the
-				// browser being super-speedy in closing the popup window since it doesn't try to pull a newer version
-				// of the static resource down from the server merely because of a changed URL.
-				// http://www.nabble.com/Re:-Defining-how-OpenID-should-behave-with-fragments-in-the-return_to-url-p22694227.html
-				// TODO:
 
 				yield return req;
 			}
@@ -480,72 +413,39 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				return;
 			}
 
-			var response = this.RelyingParty.GetResponse();
-			if (response != null) {
-				string persistentString = response.GetCallbackArgument(UsePersistentCookieCallbackKey);
-				bool persistentBool;
-				if (persistentString != null && bool.TryParse(persistentString, out persistentBool)) {
-					this.UsePersistentCookie = persistentBool;
-				}
+			// Only sniff for an OpenID response if it is targeted at this control.  Note that
+			// Stateless mode causes no receiver to be indicated.
+			string receiver = this.Page.Request.QueryString[ReturnToReceivingControlId] ?? this.Page.Request.Form[ReturnToReceivingControlId];
+			if (receiver == null || receiver == this.ClientID) {
+				var response = this.RelyingParty.GetResponse();
+				if (response != null) {
+					string persistentString = response.GetCallbackArgument(UsePersistentCookieCallbackKey);
+					bool persistentBool;
+					if (persistentString != null && bool.TryParse(persistentString, out persistentBool)) {
+						this.UsePersistentCookie = persistentBool;
+					}
 
-				switch (response.Status) {
-					case AuthenticationStatus.Authenticated:
-						this.OnLoggedIn(response);
-						break;
-					case AuthenticationStatus.Canceled:
-						this.OnCanceled(response);
-						break;
-					case AuthenticationStatus.Failed:
-						this.OnFailed(response);
-						break;
-					case AuthenticationStatus.SetupRequired:
-					case AuthenticationStatus.ExtensionsOnly:
-					default:
-						// The NotApplicable (extension-only assertion) is NOT one that we support
-						// in this control because that scenario is primarily interesting to RPs
-						// that are asking a specific OP, and it is not user-initiated as this textbox
-						// is designed for.
-						throw new InvalidOperationException(MessagingStrings.UnexpectedMessageReceivedOfMany);
+					switch (response.Status) {
+						case AuthenticationStatus.Authenticated:
+							this.OnLoggedIn(response);
+							break;
+						case AuthenticationStatus.Canceled:
+							this.OnCanceled(response);
+							break;
+						case AuthenticationStatus.Failed:
+							this.OnFailed(response);
+							break;
+						case AuthenticationStatus.SetupRequired:
+						case AuthenticationStatus.ExtensionsOnly:
+						default:
+							// The NotApplicable (extension-only assertion) is NOT one that we support
+							// in this control because that scenario is primarily interesting to RPs
+							// that are asking a specific OP, and it is not user-initiated as this textbox
+							// is designed for.
+							throw new InvalidOperationException(MessagingStrings.UnexpectedMessageReceivedOfMany);
+					}
 				}
 			}
-		}
-
-		private string GetJsCallbackConvenienceFunction(bool async) {
-			string argumentParameterName = "argument";
-			string callbackResultParameterName = "resultFunction";
-			string callbackErrorCallbackParameterName = "errorCallback";
-			string callback = Page.ClientScript.GetCallbackEventReference(
-				this,
-				argumentParameterName,
-				callbackResultParameterName,
-				argumentParameterName,
-				callbackErrorCallbackParameterName,
-				async);
-			return string.Format(
-				CultureInfo.InvariantCulture,
-				"function({1}, {2}, {3}) {{{0}\treturn {4};{0}}};",
-				Environment.NewLine,
-				argumentParameterName,
-				callbackResultParameterName,
-				callbackErrorCallbackParameterName,
-				callback);
-		}
-
-		/// <summary>
-		/// Raises the <see cref="E:System.Web.UI.Control.PreRender"/> event.
-		/// </summary>
-		/// <param name="e">An <see cref="T:System.EventArgs"/> object that contains the event data.</param>
-		protected override void OnPreRender(EventArgs e) {
-			base.OnPreRender(e);
-
-			this.Page.ClientScript.RegisterClientScriptResource(typeof(OpenIdRelyingPartyControlBase), EmbeddedJavascriptResource);
-
-			StringBuilder initScript = new StringBuilder();
-
-			initScript.AppendLine(CallbackJsFunctionAsync + " = " + GetJsCallbackConvenienceFunction(true));
-			initScript.AppendLine(CallbackJsFunction + " = " + GetJsCallbackConvenienceFunction(false));
-
-			this.Page.ClientScript.RegisterClientScriptBlock(typeof(OpenIdRelyingPartyControlBase), "initializer", initScript.ToString(), true);
 		}
 
 		/// <summary>
@@ -647,7 +547,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>
 		/// 	<c>true</c> if a popup should be used; <c>false</c> otherwise.
 		/// </returns>
-		private bool IsPopupAppropriate(IAuthenticationRequest request) {
+		protected virtual bool IsPopupAppropriate(IAuthenticationRequest request) {
 			Contract.Requires(request != null);
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
@@ -744,6 +644,5 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			#endregion
 		}
-
 	}
 }
