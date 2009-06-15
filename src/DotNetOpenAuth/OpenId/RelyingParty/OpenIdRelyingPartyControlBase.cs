@@ -597,6 +597,45 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Adds attributes to an HTML &lt;A&gt; tag that will be written by the caller using 
+		/// <see cref="HtmlTextWriter.RenderBeginTag"/> after this method.
+		/// </summary>
+		/// <param name="writer">The HTML writer.</param>
+		/// <param name="request">The outgoing authentication request.</param>
+		/// <param name="windowStatus">The text to try to display in the status bar on mouse hover.</param>
+		protected void RenderOpenIdMessageTransmissionAsAnchorAttributes(HtmlTextWriter writer, IAuthenticationRequest request, string windowStatus) {
+			Contract.Requires(writer != null);
+			Contract.Requires(request != null);
+			ErrorUtilities.VerifyArgumentNotNull(writer, "writer");
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+
+			// We render a standard HREF attribute for non-javascript browsers.
+			writer.AddAttribute(HtmlTextWriterAttribute.Href, request.RedirectingResponse.GetDirectUriRequest(this.RelyingParty.Channel).AbsoluteUri);
+
+			// And for the Javascript ones we do the extra work to use form POST where necessary.
+			writer.AddAttribute(HtmlTextWriterAttribute.Onclick, this.CreateGetOrPostAHrefValue(request) + " return false;");
+
+			writer.AddStyleAttribute(HtmlTextWriterStyle.Cursor, "pointer");
+			if (!string.IsNullOrEmpty(windowStatus)) {
+				writer.AddAttribute("onMouseOver", "window.status = " + MessagingUtilities.GetSafeJavascriptValue(windowStatus));
+				writer.AddAttribute("onMouseOut", "window.status = null");
+			}
+		}
+
+		/// <summary>
+		/// Gets the javascript to executee to redirect or POST an OpenID message to a remote party.
+		/// </summary>
+		/// <param name="request">The authentication request to send.</param>
+		/// <returns>The javascript that should execute.</returns>
+		private string CreateGetOrPostAHrefValue(IAuthenticationRequest request) {
+			Contract.Requires(request != null);
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+
+			Uri directUri = request.RedirectingResponse.GetDirectUriRequest(this.RelyingParty.Channel);
+			return "window.dnoa_internal.GetOrPost(" + MessagingUtilities.GetSafeJavascriptValue(directUri.AbsoluteUri) + ");";
+		}
+
+		/// <summary>
 		/// Wires the return page to immediately display a popup window with the Provider in it.
 		/// </summary>
 		/// <param name="request">The request.</param>

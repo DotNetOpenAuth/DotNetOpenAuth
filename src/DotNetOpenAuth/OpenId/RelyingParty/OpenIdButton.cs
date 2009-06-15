@@ -101,11 +101,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				string tooltip = this.Text;
 				IAuthenticationRequest request = this.CreateRequests().FirstOrDefault();
 				if (request != null) {
-					writer.AddAttribute(HtmlTextWriterAttribute.Href, request.RedirectingResponse.GetDirectUriRequest(this.RelyingParty.Channel).AbsoluteUri);
+					RenderOpenIdMessageTransmissionAsAnchorAttributes(writer, request, tooltip);
 				} else {
 					tooltip = OpenIdStrings.OpenIdEndpointNotFound;
-					writer.AddAttribute(HtmlTextWriterAttribute.Title, tooltip);
 				}
+
+				writer.AddAttribute(HtmlTextWriterAttribute.Title, tooltip);
 				writer.RenderBeginTag(HtmlTextWriterTag.A);
 
 				if (!string.IsNullOrEmpty(this.ImageUrl)) {

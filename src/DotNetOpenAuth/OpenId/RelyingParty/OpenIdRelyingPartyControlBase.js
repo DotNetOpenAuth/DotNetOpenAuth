@@ -32,7 +32,7 @@ window.dnoa_internal.timedOut = new Object();
 
 /// <summary>Instantiates an object that provides string manipulation services for URIs.</summary>
 window.dnoa_internal.Uri = function(url) {
-	this.originalUri = url;
+	this.originalUri = url.toString();
 
 	this.toString = function() {
 		return this.originalUri;
@@ -78,7 +78,7 @@ window.dnoa_internal.Uri = function(url) {
 		this.value = value;
 	};
 
-	this.Pairs = new Array();
+	this.pairs = new Array();
 
 	var queryBeginsAt = this.originalUri.indexOf('?');
 	if (queryBeginsAt >= 0) {
@@ -86,21 +86,41 @@ window.dnoa_internal.Uri = function(url) {
 		var queryStringPairs = this.queryString.split('&');
 
 		for (var i = 0; i < queryStringPairs.length; i++) {
-			var pair = queryStringPairs[i].split('=');
-			this.Pairs.push(new KeyValuePair(unescape(pair[0]), unescape(pair[1])))
+			var equalsAt = queryStringPairs[i].indexOf('=');
+			left = (equalsAt >= 0) ? queryStringPairs[i].substring(0, equalsAt) : null;
+			right = (equalsAt >= 0) ? queryStringPairs[i].substring(equalsAt + 1) : queryStringPairs[i];
+			this.pairs.push(new KeyValuePair(unescape(left), unescape(right)));
 		}
 	};
 
 	this.getQueryArgValue = function(key) {
-		for (var i = 0; i < this.Pairs.length; i++) {
-			if (this.Pairs[i].key == key) {
-				return this.Pairs[i].value;
+		for (var i = 0; i < this.pairs.length; i++) {
+			if (this.pairs[i].key == key) {
+				return this.pairs[i].value;
 			}
 		}
 	};
 
+	this.getPairs = function() {
+		return this.pairs;
+	}
+
 	this.containsQueryArg = function(key) {
 		return this.getQueryArgValue(key);
+	};
+
+	this.getUriWithoutQueryOrFragement = function() {
+		var queryBeginsAt = this.originalUri.indexOf('?');
+		if (queryBeginsAt >= 0) {
+			return this.originalUri.substring(0, queryBeginsAt);
+		} else {
+			var fragmentBeginsAt = this.originalUri.indexOf('#');
+			if (fragmentBeginsAt >= 0) {
+				return this.originalUri.substring(0, fragmentBeginsAt);
+			} else {
+				return this.originalUri;
+			}
+		}
 	};
 
 	this.indexOf = function(args) {
@@ -108,4 +128,47 @@ window.dnoa_internal.Uri = function(url) {
 	};
 
 	return this;
+};
+
+/// <summary>Creates a hidden iframe.</summary>
+window.dnoa_internal.createHiddenIFrame = function() {
+	var iframe = document.createElement("iframe");
+	if (!window.openid_visible_iframe) {
+		iframe.setAttribute("width", 0);
+		iframe.setAttribute("height", 0);
+		iframe.setAttribute("style", "display: none");
+		iframe.setAttribute("border", 0);
+	}
+
+	return iframe;
+}
+
+/// <summary>Redirects the current window/frame to the given URI, 
+/// either using a GET or a POST as required by the length of the URL.</summary>
+window.dnoa_internal.GetOrPost = function(uri) {
+	var maxGetLength = 2 * 1024; // keep in sync with DotNetOpenAuth.Messaging.Channel.IndirectMessageGetToPostThreshold
+	uri = new window.dnoa_internal.Uri(uri);
+
+	if (uri.toString().length <= maxGetLength) {
+		window.location = uri.toString();
+	} else {
+		trace("Preparing to POST: " + uri.toString());
+		var iframe = window.dnoa_internal.createHiddenIFrame();
+		document.body.appendChild(iframe);
+		var doc = iframe.ownerDocument;
+		var form = doc.createElement('form');
+		form.action = uri.getUriWithoutQueryOrFragement();
+		form.method = "POST";
+		form.target = "_top";
+		for (var i = 0; i < uri.getPairs().length; i++) {
+			var input = doc.createElement('input');
+			input.type = 'hidden';
+			input.name = uri.getPairs()[i].key;
+			input.value = uri.getPairs()[i].value;
+			trace(input.name + " = " + input.value);
+			form.appendChild(input);
+		}
+		doc.body.appendChild(form);
+		form.submit();
+	}
 };
