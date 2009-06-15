@@ -743,8 +743,10 @@ function Uri(url) {
 		var queryStringPairs = this.queryString.split('&');
 
 		for (var i = 0; i < queryStringPairs.length; i++) {
-			var pair = queryStringPairs[i].split('=');
-			this.Pairs.push(new KeyValuePair(unescape(pair[0]), unescape(pair[1])))
+			var equalsAt = queryStringPairs[i].indexOf('=');
+			left = (equalsAt >= 0) ? queryStringPairs[i].substring(0, equalsAt) : null;
+			right = (equalsAt >= 0) ? queryStringPairs[i].substring(equalsAt + 1) : queryStringPairs[i];
+			this.Pairs.push(new KeyValuePair(unescape(left), unescape(right)));
 		}
 	};
 
