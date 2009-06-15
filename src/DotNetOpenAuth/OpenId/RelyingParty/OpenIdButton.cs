@@ -20,18 +20,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// An ASP.NET control that renders a button that initiates an
 	/// authentication when clicked.
 	/// </summary>
-	public class OpenIdButton : OpenIdRelyingPartyControlBase {
+	public class OpenIdButton : OpenIdRelyingPartyAjaxControlBase {
 		#region Property defaults
-
-		/// <summary>
-		/// The default value for the <see cref="Identifier"/> property.
-		/// </summary>
-		private const string IdentifierDefault = "https://me.yahoo.com/";
 
 		/// <summary>
 		/// The default value for the <see cref="Text"/> property.
 		/// </summary>
-		private const string TextDefault = "Log in with Yahoo!";
+		private const string TextDefault = "Log in with [Provider]!";
 
 		#endregion
 
@@ -103,7 +98,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			if (string.IsNullOrEmpty(this.Identifier)) {
 				writer.WriteEncodedText(string.Format(CultureInfo.CurrentCulture, "[{0}]", OpenIdStrings.NoIdentifierSet));
 			} else {
-				writer.AddAttribute(HtmlTextWriterAttribute.Href, "javascript:window.dnoa_internal.trySetup(" + MessagingUtilities.GetSafeJavascriptValue(this.Identifier) +")");
+				writer.AddAttribute(HtmlTextWriterAttribute.Href, "javascript:new window.OpenId(" + MessagingUtilities.GetSafeJavascriptValue(this.Identifier) +").login()");
 				writer.RenderBeginTag(HtmlTextWriterTag.A);
 
 				if (!string.IsNullOrEmpty(this.ImageUrl)) {

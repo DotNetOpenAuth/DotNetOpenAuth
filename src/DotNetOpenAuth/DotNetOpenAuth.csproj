@@ -565,6 +565,9 @@
   <ItemGroup>
     <EmbeddedResource Include="OpenId\RelyingParty\OpenIdRelyingPartyControlBase.js" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.js" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\tools\DotNetOpenAuth.Versioning.targets" />
 </Project>

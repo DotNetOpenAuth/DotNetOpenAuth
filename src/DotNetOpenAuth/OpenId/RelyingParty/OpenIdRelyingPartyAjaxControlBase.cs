@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-[assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingPartyControlBase.EmbeddedJavascriptResource, "text/javascript")]
+[assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingPartyAjaxControlBase.EmbeddedJavascriptResource, "text/javascript")]
 
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
@@ -60,6 +60,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Initializes a new instance of the <see cref="OpenIdRelyingPartyAjaxControlBase"/> class.
 		/// </summary>
 		protected OpenIdRelyingPartyAjaxControlBase() {
+			// The AJAX login style always uses popups (or invisible iframes).
+			this.Popup = PopupBehavior.Always;
 		}
 
 		#region ICallbackEventHandler Members
@@ -138,18 +140,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <returns>A sequence of authentication requests, any one of which may be 
 		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.</returns>
-		protected override IEnumerable<IAuthenticationRequest>  CreateRequests()
-{
+		protected override IEnumerable<IAuthenticationRequest> CreateRequests() {
 			Contract.Requires(this.Identifier != null, OpenIdStrings.NoIdentifierSet);
 			ErrorUtilities.VerifyOperation(this.Identifier != null, OpenIdStrings.NoIdentifierSet);
 			IEnumerable<IAuthenticationRequest> requests = base.CreateRequests();
-			
+
 			// Configure each generated request.
 			int reqIndex = 0;
 			foreach (var req in requests) {
 				req.AddCallbackArguments("index", (reqIndex++).ToString(CultureInfo.InvariantCulture));
 
-				if (IsPopupAppropriate(req)) {
+				if (req.Provider.IsExtensionSupported<UIRequest>()) {
 					// Provide a hint for the client javascript about whether the OP supports the UI extension.
 					// This is so the window can be made the correct size for the extension.
 					// If the OP doesn't advertise support for the extension, the javascript will use
@@ -166,7 +167,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				// This gives us the info even for 1.0 OPs and 2.0 setup_required responses.
 				req.AddCallbackArguments("dotnetopenid.op_endpoint", req.Provider.Uri.AbsoluteUri);
 				req.AddCallbackArguments("dotnetopenid.claimed_id", (string)req.ClaimedIdentifier ?? string.Empty);
-				((AuthenticationRequest)req).AssociationPreference = AssociationPreference.IfAlreadyEstablished;
 
 				// We append a # at the end so that if the OP happens to support it,
 				// the OpenID response "query string" is appended after the hash rather than before, resulting in the
@@ -207,7 +207,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		protected override void OnPreRender(EventArgs e) {
 			base.OnPreRender(e);
 
-			this.Page.ClientScript.RegisterClientScriptResource(typeof(OpenIdRelyingPartyControlBase), EmbeddedJavascriptResource);
+			this.Page.ClientScript.RegisterClientScriptResource(typeof(OpenIdRelyingPartyAjaxControlBase), EmbeddedJavascriptResource);
 
 			StringBuilder initScript = new StringBuilder();
 

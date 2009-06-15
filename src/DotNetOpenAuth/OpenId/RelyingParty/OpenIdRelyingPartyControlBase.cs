@@ -142,6 +142,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 		private const string ReturnToReceivingControlId = OpenIdUtilities.CustomParameterPrefix + "receiver";
 
+		private const string PopupUISupportedJsHint = "dotnetopenid.popupUISupported";
+
 		#endregion
 
 		/// <summary>
@@ -303,7 +305,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <value>The default value is <see cref="PopupBehavior.Never"/>.</value>
 		[Bindable(true), DefaultValue(PopupDefault), Category(BehaviorCategory)]
 		[Description("When to use a popup window to complete the login experience.")]
-		public PopupBehavior Popup {
+		protected PopupBehavior Popup {
 			get { return (PopupBehavior)(ViewState[PopupViewStateKey] ?? PopupDefault); }
 			set { ViewState[PopupViewStateKey] = value; }
 		}
@@ -330,6 +332,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			get { return (Identifier)ViewState[IdentifierViewStateKey]; }
 			set { ViewState[IdentifierViewStateKey] = value; }
 		}
+
+		/// <summary>
+		/// Gets or sets the default association preference to set on authentication requests.
+		/// </summary>
+		internal AssociationPreference AssociationPreference { get; set; }
 
 		/// <summary>
 		/// Immediately redirects to the OpenID Provider to verify the Identifier
@@ -387,6 +394,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				if (this.IsPopupAppropriate(req)) {
 					// Inform the OP that we'll be using a popup window.
 					req.AddExtension(new UIRequest());
+
+					// Inform ourselves in return_to that we're in a popup.
+					req.AddCallbackArguments(UIPopupCallbackKey, "1");
+
+					if (req.Provider.IsExtensionSupported<UIRequest>()) {
+						// Provide a hint for the client javascript about whether the OP supports the UI extension.
+						// This is so the window can be made the correct size for the extension.
+						// If the OP doesn't advertise support for the extension, the javascript will use
+						// a bigger popup window.
+						req.AddCallbackArguments(PopupUISupportedJsHint, "1");
+					}
 				}
 
 				// Add state that needs to survive across the redirect.
@@ -395,6 +413,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					req.AddCallbackArguments(ReturnToReceivingControlId, this.ClientID);
 				}
 
+				((AuthenticationRequest)req).AssociationPreference = this.AssociationPreference;
 				this.OnLoggingIn(req);
 
 				yield return req;
@@ -411,6 +430,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			if (Page.IsPostBack) {
 				// OpenID responses NEVER come in the form of a postback.
 				return;
+			}
+
+			// Take an unreliable sneek peek to see if we're in a popup and an OpenID
+			// assertion is coming in.  We shouldn't process assertions in a popup window.
+			if (this.Page.Request.QueryString[UIPopupCallbackKey] == "1" && this.Page.Request.QueryString[UIPopupCallbackParentKey] == null) {
+				// We're in a popup window.  We need to close it and pass the
+				// message back to the parent window for processing.
+				this.ScriptClosingPopup();
+				return; // don't do any more processing on it now
 			}
 
 			// Only sniff for an OpenID response if it is targeted at this control.  Note that
@@ -446,6 +474,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					}
 				}
 			}
+		}
+
+		protected override void OnPreRender(EventArgs e) {
+			base.OnPreRender(e);
+
+			this.Page.ClientScript.RegisterClientScriptResource(typeof(OpenIdRelyingPartyControlBase), EmbeddedJavascriptResource);
 		}
 
 		/// <summary>
@@ -540,8 +574,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Detects whether a popup window should be used to show the Provider's UI
-		/// and applies the UI extension to the request when appropriate.
+		/// Detects whether a popup window should be used to show the Provider's UI.
 		/// </summary>
 		/// <param name="request">The request.</param>
 		/// <returns>
@@ -551,7 +584,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Contract.Requires(request != null);
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
-			return this.Popup == PopupBehavior.Always || request.Provider.IsExtensionSupported<UIRequest>();
+			switch (this.Popup) {
+				case PopupBehavior.Never:
+					return false;
+				case PopupBehavior.Always:
+					return true;
+				case PopupBehavior.IfProviderSupported:
+					return request.Provider.IsExtensionSupported<UIRequest>(); ;
+				default:
+					throw ErrorUtilities.ThrowInternal("Unexpected value for Popup property.");
+			}
 		}
 
 		/// <summary>
@@ -561,8 +603,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private void ScriptPopupWindow(IAuthenticationRequest request) {
 			Contract.Requires(request != null);
 			Contract.Requires(this.RelyingParty != null);
-
-			request.AddCallbackArguments(UIPopupCallbackKey, "1");
 
 			StringBuilder startupScript = new StringBuilder();
 
@@ -587,7 +627,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			startupScript.AppendLine("window.opener.dnoa_internal.processAuthorizationResult(document.URL + '&" + UIPopupCallbackParentKey + "=1');");
 			startupScript.AppendLine("window.close();");
 
-			this.Page.ClientScript.RegisterStartupScript(this.GetType(), "loginPopupClose", startupScript.ToString(), true);
+			this.Page.ClientScript.RegisterStartupScript(typeof(OpenIdRelyingPartyControlBase), "loginPopupClose", startupScript.ToString(), true);
+
+			// TODO: alternately we should probably take over rendering this page here to avoid
+			// a lot of unnecessary work on the server and possible momentary display of the 
+			// page in the popup window.
 		}
 
 		/// <summary>
