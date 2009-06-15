@@ -14,14 +14,22 @@ using DotNetOpenAuth.OAuth.Messages;
 public class DatabaseTokenManager : IServiceProviderTokenManager {
 	#region IServiceProviderTokenManager
 
-	public string GetConsumerSecret(string consumerKey) {
+	public IConsumerDescription GetConsumer(string consumerKey) {
 		var consumerRow = Global.DataContext.OAuthConsumers.SingleOrDefault(
 			consumerCandidate => consumerCandidate.ConsumerKey == consumerKey);
 		if (consumerRow == null) {
-			throw new ArgumentException();
+			throw new KeyNotFoundException();
 		}
 
-		return consumerRow.ConsumerSecret;
+		return consumerRow;
+	}
+
+	public IServiceProviderRequestToken GetRequestToken(string token) {
+		try {
+			return Global.DataContext.OAuthTokens.First(t => t.Token == token);
+		} catch (InvalidOperationException ex) {
+			throw new KeyNotFoundException("Unrecognized token", ex);
+		}
 	}
 
 	#endregion
@@ -51,6 +59,7 @@ public class DatabaseTokenManager : IServiceProviderTokenManager {
 		};
 
 		Global.DataContext.OAuthTokens.InsertOnSubmit(newToken);
+		Global.DataContext.SubmitChanges();
 	}
 
 	/// <summary>

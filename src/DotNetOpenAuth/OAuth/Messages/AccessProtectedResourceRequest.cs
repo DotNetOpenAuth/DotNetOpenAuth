@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuth.Messages {
+	using System;
 	using System.Diagnostics.CodeAnalysis;
 	using DotNetOpenAuth.Messaging;
 
@@ -17,8 +18,9 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// Initializes a new instance of the <see cref="AccessProtectedResourceRequest"/> class.
 		/// </summary>
 		/// <param name="serviceProvider">The URI of the Service Provider endpoint to send this message to.</param>
-		protected internal AccessProtectedResourceRequest(MessageReceivingEndpoint serviceProvider)
-			: base(MessageTransport.Direct, serviceProvider) {
+		/// <param name="version">The OAuth version.</param>
+		protected internal AccessProtectedResourceRequest(MessageReceivingEndpoint serviceProvider, Version version)
+			: base(MessageTransport.Direct, serviceProvider, version) {
 		}
 
 		/// <summary>

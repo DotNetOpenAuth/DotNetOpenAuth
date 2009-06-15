@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// Requires HttpContext.Current.
 		/// </remarks>
 		public UserAuthorizationRequest PrepareRequestUserAuthorization() {
-			Uri callback = this.Channel.GetRequestFromContext().UrlBeforeRewriting.StripQueryArgumentsWithPrefix(Protocol.Default.ParameterPrefix);
+			Uri callback = this.Channel.GetRequestFromContext().UrlBeforeRewriting.StripQueryArgumentsWithPrefix(Protocol.ParameterPrefix);
 			return this.PrepareRequestUserAuthorization(callback, null, null);
 		}
 
@@ -79,7 +79,8 @@ namespace DotNetOpenAuth.OAuth {
 			UserAuthorizationResponse authorizationMessage;
 			if (this.Channel.TryReadFromRequest<UserAuthorizationResponse>(request, out authorizationMessage)) {
 				string requestToken = authorizationMessage.RequestToken;
-				return this.ProcessUserAuthorization(requestToken);
+				string verifier = authorizationMessage.VerificationCode;
+				return this.ProcessUserAuthorization(requestToken, verifier);
 			} else {
 				return null;
 			}

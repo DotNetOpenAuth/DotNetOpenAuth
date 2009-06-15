@@ -177,6 +177,11 @@
     <Compile Include="Configuration\AssociationTypeElement.cs" />
     <Compile Include="Configuration\DotNetOpenAuthSection.cs" />
     <Compile Include="Configuration\MessagingElement.cs" />
+    <Compile Include="Configuration\OAuthConsumerElement.cs" />
+    <Compile Include="Configuration\OAuthConsumerSecuritySettingsElement.cs" />
+    <Compile Include="Configuration\OAuthElement.cs" />
+    <Compile Include="Configuration\OAuthServiceProviderElement.cs" />
+    <Compile Include="Configuration\OAuthServiceProviderSecuritySettingsElement.cs" />
     <Compile Include="Configuration\OpenIdElement.cs" />
     <Compile Include="Configuration\OpenIdProviderElement.cs" />
     <Compile Include="Configuration\OpenIdProviderSecuritySettingsElement.cs" />
@@ -222,8 +227,9 @@
     <Compile Include="Messaging\NetworkDirectWebResponse.cs" />
     <Compile Include="Messaging\OutgoingWebResponseActionResult.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
+    <Compile Include="Messaging\Reflection\IMessagePartNullEncoder.cs" />
     <Compile Include="Messaging\Reflection\MessageDescriptionCollection.cs" />
-    <Compile Include="OAuth\ChannelElements\IConsumerCertificateProvider.cs" />
+    <Compile Include="OAuth\ChannelElements\IConsumerDescription.cs" />
     <Compile Include="OAuth\ChannelElements\IConsumerTokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\IServiceProviderTokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthConsumerMessageFactory.cs" />
@@ -232,11 +238,15 @@
     <Compile Include="OAuth\ChannelElements\OAuthHttpMethodBindingElement.cs" />
     <Compile Include="OAuth\ChannelElements\PlaintextSigningBindingElement.cs" />
     <Compile Include="OAuth\ChannelElements\HmacSha1SigningBindingElement.cs" />
+    <Compile Include="OAuth\ChannelElements\IServiceProviderRequestToken.cs" />
     <Compile Include="OAuth\ChannelElements\SigningBindingElementBaseContract.cs" />
     <Compile Include="OAuth\ChannelElements\SigningBindingElementChain.cs" />
     <Compile Include="OAuth\ChannelElements\StandardTokenGenerator.cs" />
     <Compile Include="OAuth\ChannelElements\TokenType.cs" />
+    <Compile Include="OAuth\ChannelElements\UriOrOobEncoding.cs" />
+    <Compile Include="OAuth\ChannelElements\TokenHandlingBindingElement.cs" />
     <Compile Include="OAuth\ConsumerBase.cs" />
+    <Compile Include="OAuth\ConsumerSecuritySettings.cs" />
     <Compile Include="OAuth\DesktopConsumer.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="OAuth\Messages\ITokenSecretContainingMessage.cs" />
@@ -247,11 +257,14 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>OAuthStrings.resx</DependentUpon>
     </Compile>
+    <Compile Include="OAuth\SecuritySettings.cs" />
     <Compile Include="OAuth\ServiceProviderDescription.cs" />
     <Compile Include="OAuth\Messages\ITokenContainingMessage.cs" />
     <Compile Include="OAuth\Messages\SignedMessageBase.cs" />
     <Compile Include="Messaging\Bindings\NonceMemoryStore.cs" />
     <Compile Include="OAuth\ChannelElements\SigningBindingElementBase.cs" />
+    <Compile Include="OAuth\ServiceProviderSecuritySettings.cs" />
+    <Compile Include="OAuth\VerificationCodeFormat.cs" />
     <Compile Include="OAuth\WebConsumer.cs" />
     <Compile Include="Messaging\IDirectWebRequestHandler.cs" />
     <Compile Include="OAuth\ChannelElements\ITamperResistantOAuthMessage.cs" />

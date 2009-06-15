@@ -4,9 +4,9 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.Test.ChannelElements
-{
+namespace DotNetOpenAuth.Test.ChannelElements {
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.Test.ChannelElements
 		public void HttpsSignatureGeneration() {
 			SigningBindingElementBase target = new PlaintextSigningBindingElement();
 			MessageReceivingEndpoint endpoint = new MessageReceivingEndpoint("https://localtest", HttpDeliveryMethods.GetRequest);
-			ITamperResistantOAuthMessage message = new UnauthorizedTokenRequest(endpoint);
+			ITamperResistantOAuthMessage message = new UnauthorizedTokenRequest(endpoint, Protocol.Default.Version);
 			message.ConsumerSecret = "cs";
 			message.TokenSecret = "ts";
 			Assert.IsNotNull(target.ProcessOutgoingMessage(message));
@@ -29,7 +29,7 @@ namespace DotNetOpenAuth.Test.ChannelElements
 		public void HttpsSignatureVerification() {
 			MessageReceivingEndpoint endpoint = new MessageReceivingEndpoint("https://localtest", HttpDeliveryMethods.GetRequest);
 			ITamperProtectionChannelBindingElement target = new PlaintextSigningBindingElement();
-			ITamperResistantOAuthMessage message = new UnauthorizedTokenRequest(endpoint);
+			ITamperResistantOAuthMessage message = new UnauthorizedTokenRequest(endpoint, Protocol.Default.Version);
 			message.ConsumerSecret = "cs";
 			message.TokenSecret = "ts";
 			message.SignatureMethod = "PLAINTEXT";
@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.Test.ChannelElements
 		public void HttpsSignatureVerificationNotApplicable() {
 			SigningBindingElementBase target = new PlaintextSigningBindingElement();
 			MessageReceivingEndpoint endpoint = new MessageReceivingEndpoint("https://localtest", HttpDeliveryMethods.GetRequest);
-			ITamperResistantOAuthMessage message = new UnauthorizedTokenRequest(endpoint);
+			ITamperResistantOAuthMessage message = new UnauthorizedTokenRequest(endpoint, Protocol.Default.Version);
 			message.ConsumerSecret = "cs";
 			message.TokenSecret = "ts";
 			message.SignatureMethod = "ANOTHERALGORITHM";
@@ -53,7 +53,7 @@ namespace DotNetOpenAuth.Test.ChannelElements
 		public void HttpSignatureGeneration() {
 			SigningBindingElementBase target = new PlaintextSigningBindingElement();
 			MessageReceivingEndpoint endpoint = new MessageReceivingEndpoint("http://localtest", HttpDeliveryMethods.GetRequest);
-			ITamperResistantOAuthMessage message = new UnauthorizedTokenRequest(endpoint);
+			ITamperResistantOAuthMessage message = new UnauthorizedTokenRequest(endpoint, Protocol.Default.Version);
 			message.ConsumerSecret = "cs";
 			message.TokenSecret = "ts";
 
@@ -67,7 +67,7 @@ namespace DotNetOpenAuth.Test.ChannelElements
 		public void HttpSignatureVerification() {
 			SigningBindingElementBase target = new PlaintextSigningBindingElement();
 			MessageReceivingEndpoint endpoint = new MessageReceivingEndpoint("http://localtest", HttpDeliveryMethods.GetRequest);
-			ITamperResistantOAuthMessage message = new UnauthorizedTokenRequest(endpoint);
+			ITamperResistantOAuthMessage message = new UnauthorizedTokenRequest(endpoint, Protocol.Default.Version);
 			message.ConsumerSecret = "cs";
 			message.TokenSecret = "ts";
 			message.SignatureMethod = "PLAINTEXT";
