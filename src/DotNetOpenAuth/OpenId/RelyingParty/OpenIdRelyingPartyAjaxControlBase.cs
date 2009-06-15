@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-[assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingPartyAjaxControlBase.EmbeddedJavascriptResource, "text/javascript")]
+[assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingPartyAjaxControlBase.EmbeddedAjaxJavascriptResource, "text/javascript")]
 
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
@@ -17,14 +17,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Linq;
 	using System.Text;
 	using System.Text.RegularExpressions;
+	using System.Web;
 	using System.Web.Security;
 	using System.Web.UI;
 	using DotNetOpenAuth.ComponentModel;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OpenId.Extensions.UI;
-	using System.Web;
 	using DotNetOpenAuth.OpenId.Extensions;
+	using DotNetOpenAuth.OpenId.Extensions.UI;
 
 	/// <summary>
 	/// A common base class for OpenID Relying Party controls.
@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// The manifest resource name of the javascript file to include on the hosting page.
 		/// </summary>
-		internal const string EmbeddedJavascriptResource = Util.DefaultNamespace + ".OpenId.RelyingParty.OpenIdRelyingPartyAjaxControlBase.js";
+		internal const string EmbeddedAjaxJavascriptResource = Util.DefaultNamespace + ".OpenId.RelyingParty.OpenIdRelyingPartyAjaxControlBase.js";
 
 		/// <summary>
 		/// The name of the javascript function that will initiate a synchronous callback.
@@ -62,6 +62,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		protected OpenIdRelyingPartyAjaxControlBase() {
 			// The AJAX login style always uses popups (or invisible iframes).
 			this.Popup = PopupBehavior.Always;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating when to use a popup window to complete the login experience.
+		/// </summary>
+		/// <value>The default value is <see cref="PopupBehavior.Never"/>.</value>
+		[Bindable(false), Browsable(false)]
+		public override PopupBehavior Popup {
+			get { return base.Popup; }
+			set { ErrorUtilities.VerifySupported(value == base.Popup, OpenIdStrings.PropertyValueNotSupported); }
 		}
 
 		#region ICallbackEventHandler Members
@@ -143,7 +153,39 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		protected override IEnumerable<IAuthenticationRequest> CreateRequests() {
 			Contract.Requires(this.Identifier != null, OpenIdStrings.NoIdentifierSet);
 			ErrorUtilities.VerifyOperation(this.Identifier != null, OpenIdStrings.NoIdentifierSet);
-			IEnumerable<IAuthenticationRequest> requests = base.CreateRequests();
+
+			// We delegate all our logic to another method, since invoking base. methods
+			// within an iterator method results in unverifiable code.
+			return this.CreateRequestsCore(base.CreateRequests());
+		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Web.UI.Control.PreRender"/> event.
+		/// </summary>
+		/// <param name="e">An <see cref="T:System.EventArgs"/> object that contains the event data.</param>
+		protected override void OnPreRender(EventArgs e) {
+			base.OnPreRender(e);
+
+			this.Page.ClientScript.RegisterClientScriptResource(typeof(OpenIdRelyingPartyAjaxControlBase), EmbeddedAjaxJavascriptResource);
+
+			StringBuilder initScript = new StringBuilder();
+
+			initScript.AppendLine(CallbackJsFunctionAsync + " = " + this.GetJsCallbackConvenienceFunction(true));
+			initScript.AppendLine(CallbackJsFunction + " = " + this.GetJsCallbackConvenienceFunction(false));
+
+			this.Page.ClientScript.RegisterClientScriptBlock(typeof(OpenIdRelyingPartyControlBase), "initializer", initScript.ToString(), true);
+		}
+
+		/// <summary>
+		/// Creates the authentication requests for a given user-supplied Identifier.
+		/// </summary>
+		/// <param name="requests">The authentication requests to prepare.</param>
+		/// <returns>
+		/// A sequence of authentication requests, any one of which may be
+		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
+		/// </returns>
+		private IEnumerable<IAuthenticationRequest> CreateRequestsCore(IEnumerable<IAuthenticationRequest> requests) {
+			Contract.Requires(requests != null);
 
 			// Configure each generated request.
 			int reqIndex = 0;
@@ -173,12 +215,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				// browser being super-speedy in closing the popup window since it doesn't try to pull a newer version
 				// of the static resource down from the server merely because of a changed URL.
 				// http://www.nabble.com/Re:-Defining-how-OpenID-should-behave-with-fragments-in-the-return_to-url-p22694227.html
-				// TODO:
+				////TODO:
 
 				yield return req;
 			}
 		}
 
+		/// <summary>
+		/// Constructs a function that will initiate an AJAX callback.
+		/// </summary>
+		/// <param name="async">if set to <c>true</c> causes the AJAX callback to be a little more asynchronous.  Note that <c>false</c> does not mean the call is absolutely synchronous.</param>
+		/// <returns>The string defining a javascript anonymous function that initiates a callback.</returns>
 		private string GetJsCallbackConvenienceFunction(bool async) {
 			string argumentParameterName = "argument";
 			string callbackResultParameterName = "resultFunction";
@@ -198,23 +245,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				callbackResultParameterName,
 				callbackErrorCallbackParameterName,
 				callback);
-		}
-
-		/// <summary>
-		/// Raises the <see cref="E:System.Web.UI.Control.PreRender"/> event.
-		/// </summary>
-		/// <param name="e">An <see cref="T:System.EventArgs"/> object that contains the event data.</param>
-		protected override void OnPreRender(EventArgs e) {
-			base.OnPreRender(e);
-
-			this.Page.ClientScript.RegisterClientScriptResource(typeof(OpenIdRelyingPartyAjaxControlBase), EmbeddedJavascriptResource);
-
-			StringBuilder initScript = new StringBuilder();
-
-			initScript.AppendLine(CallbackJsFunctionAsync + " = " + GetJsCallbackConvenienceFunction(true));
-			initScript.AppendLine(CallbackJsFunction + " = " + GetJsCallbackConvenienceFunction(false));
-
-			this.Page.ClientScript.RegisterClientScriptBlock(typeof(OpenIdRelyingPartyControlBase), "initializer", initScript.ToString(), true);
 		}
 
 		/// <summary>

@@ -488,6 +488,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This property value is not supported by this control..
+        /// </summary>
+        internal static string PropertyValueNotSupported {
+            get {
+                return ResourceManager.GetString("PropertyValueNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to determine the version of the OpenID protocol implemented by the Provider at endpoint &apos;{0}&apos;..
         /// </summary>
         internal static string ProviderVersionUnrecognized {

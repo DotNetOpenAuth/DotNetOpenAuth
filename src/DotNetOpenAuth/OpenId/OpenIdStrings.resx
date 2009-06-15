@@ -328,4 +328,7 @@ Discovered endpoint info:
   <data name="NoIdentifierSet" xml:space="preserve">
     <value>No identifier has been set.</value>
   </data>
+  <data name="PropertyValueNotSupported" xml:space="preserve">
+    <value>This property value is not supported by this control.</value>
+  </data>
 </root>

@@ -35,6 +35,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Throws an internal error exception.
 		/// </summary>
 		/// <param name="errorMessage">The error message.</param>
+		/// <returns>Nothing.  But included here so callers can "throw" this method for C# safety.</returns>
 		/// <exception cref="InternalErrorException">Always thrown.</exception>
 		[Pure]
 		internal static Exception ThrowInternal(string errorMessage) {

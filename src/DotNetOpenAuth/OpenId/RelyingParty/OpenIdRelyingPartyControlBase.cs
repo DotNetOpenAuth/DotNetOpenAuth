@@ -17,14 +17,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Linq;
 	using System.Text;
 	using System.Text.RegularExpressions;
+	using System.Web;
 	using System.Web.Security;
 	using System.Web.UI;
 	using DotNetOpenAuth.ComponentModel;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OpenId.Extensions.UI;
-	using System.Web;
 	using DotNetOpenAuth.OpenId.Extensions;
+	using DotNetOpenAuth.OpenId.Extensions.UI;
 
 	/// <summary>
 	/// A common base class for OpenID Relying Party controls.
@@ -140,8 +140,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		private const string UIPopupCallbackParentKey = OpenIdUtilities.CustomParameterPrefix + "uipopupParent";
 
+		/// <summary>
+		/// The callback parameter name to use to store which control initiated the auth request.
+		/// </summary>
 		private const string ReturnToReceivingControlId = OpenIdUtilities.CustomParameterPrefix + "receiver";
 
+		/// <summary>
+		/// The parameter name to include in the formulated auth request so that javascript can know whether
+		/// the OP advertises support for the UI extension.
+		/// </summary>
 		private const string PopupUISupportedJsHint = "dotnetopenid.popupUISupported";
 
 		#endregion
@@ -305,7 +312,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <value>The default value is <see cref="PopupBehavior.Never"/>.</value>
 		[Bindable(true), DefaultValue(PopupDefault), Category(BehaviorCategory)]
 		[Description("When to use a popup window to complete the login experience.")]
-		protected PopupBehavior Popup {
+		public virtual PopupBehavior Popup {
 			get { return (PopupBehavior)(ViewState[PopupViewStateKey] ?? PopupDefault); }
 			set { ViewState[PopupViewStateKey] = value; }
 		}
@@ -476,6 +483,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 		}
 
+		/// <summary>
+		/// Raises the <see cref="E:System.Web.UI.Control.PreRender"/> event.
+		/// </summary>
+		/// <param name="e">An <see cref="T:System.EventArgs"/> object that contains the event data.</param>
 		protected override void OnPreRender(EventArgs e) {
 			base.OnPreRender(e);
 
@@ -590,7 +601,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				case PopupBehavior.Always:
 					return true;
 				case PopupBehavior.IfProviderSupported:
-					return request.Provider.IsExtensionSupported<UIRequest>(); ;
+					return request.Provider.IsExtensionSupported<UIRequest>();
 				default:
 					throw ErrorUtilities.ThrowInternal("Unexpected value for Popup property.");
 			}
@@ -598,7 +609,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 		/// <summary>
 		/// Adds attributes to an HTML &lt;A&gt; tag that will be written by the caller using 
-		/// <see cref="HtmlTextWriter.RenderBeginTag"/> after this method.
+		/// <see cref="HtmlTextWriter.RenderBeginTag(HtmlTextWriterTag)"/> after this method.
 		/// </summary>
 		/// <param name="writer">The HTML writer.</param>
 		/// <param name="request">The outgoing authentication request.</param>
@@ -680,12 +691,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			/// <summary>
 			/// The singleton instance of this comparer.
 			/// </summary>
-			internal static IEqualityComparer<IAuthenticationRequest> Instance = new DuplicateRequestedHostsComparer();
+			private static IEqualityComparer<IAuthenticationRequest> instance = new DuplicateRequestedHostsComparer();
 
 			/// <summary>
-			/// Initializes a new instance of the <see cref="DuplicateRequestedHostsComparer"/> class.
+			/// Prevents a default instance of the <see cref="DuplicateRequestedHostsComparer"/> class from being created.
 			/// </summary>
 			private DuplicateRequestedHostsComparer() {
+			}
+
+			/// <summary>
+			/// Gets the singleton instance of this comparer.
+			/// </summary>
+			internal static IEqualityComparer<IAuthenticationRequest> Instance {
+				get { return instance; }
 			}
 
 			#region IEqualityComparer<IAuthenticationRequest> Members
