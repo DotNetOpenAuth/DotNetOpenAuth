@@ -49,6 +49,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// </summary>
 		/// <param name="requestToken">The request token that the user has authorized.</param>
 		/// <returns>The access token assigned by the Service Provider.</returns>
+		[Obsolete("Use the ProcessUserAuthorization method that takes a verifier parameter instead.")]
 		public AuthorizedTokenResponse ProcessUserAuthorization(string requestToken) {
 			return this.ProcessUserAuthorization(requestToken, null);
 		}
