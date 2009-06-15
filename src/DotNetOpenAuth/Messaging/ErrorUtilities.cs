@@ -37,8 +37,15 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="errorMessage">The error message.</param>
 		/// <exception cref="InternalErrorException">Always thrown.</exception>
 		[Pure]
-		internal static void ThrowInternal(string errorMessage) {
-			VerifyInternal(false, errorMessage);
+		internal static Exception ThrowInternal(string errorMessage) {
+			// Since internal errors are really bad, take this chance to
+			// help the developer find the cause by breaking into the
+			// debugger if one is attached.
+			if (Debugger.IsAttached) {
+				Debugger.Break();
+			}
+
+			throw new InternalErrorException(errorMessage);
 		}
 
 		/// <summary>
@@ -52,14 +59,7 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Ensures(condition);
 			Contract.EnsuresOnThrow<InternalErrorException>(!condition);
 			if (!condition) {
-				// Since internal errors are really bad, take this chance to
-				// help the developer find the cause by breaking into the
-				// debugger if one is attached.
-				if (Debugger.IsAttached) {
-					Debugger.Break();
-				}
-
-				throw new InternalErrorException(errorMessage);
+				ThrowInternal(errorMessage);
 			}
 		}
 
