@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// An ASP.NET control that renders a button that initiates an
 	/// authentication when clicked.
 	/// </summary>
-	public class OpenIdButton : OpenIdRelyingPartyAjaxControlBase {
+	public class OpenIdButton : OpenIdRelyingPartyControlBase {
 		#region Property defaults
 
 		/// <summary>
@@ -98,7 +98,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			if (string.IsNullOrEmpty(this.Identifier)) {
 				writer.WriteEncodedText(string.Format(CultureInfo.CurrentCulture, "[{0}]", OpenIdStrings.NoIdentifierSet));
 			} else {
-				writer.AddAttribute(HtmlTextWriterAttribute.Href, "javascript:new window.OpenId(" + MessagingUtilities.GetSafeJavascriptValue(this.Identifier) +").login()");
+				string tooltip = this.Text;
+				IAuthenticationRequest request = this.CreateRequests().FirstOrDefault();
+				if (request != null) {
+					writer.AddAttribute(HtmlTextWriterAttribute.Href, request.RedirectingResponse.GetDirectUriRequest(this.RelyingParty.Channel).AbsoluteUri);
+				} else {
+					tooltip = OpenIdStrings.OpenIdEndpointNotFound;
+					writer.AddAttribute(HtmlTextWriterAttribute.Title, tooltip);
+				}
 				writer.RenderBeginTag(HtmlTextWriterTag.A);
 
 				if (!string.IsNullOrEmpty(this.ImageUrl)) {

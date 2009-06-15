@@ -127,7 +127,7 @@ window.OpenId = function(identifier) {
 		}
 
 		trace('starting discovery on ' + identifier);
-		window.dnoa_internal.callback(identifier, successCallback, failureCallback);
+		window.dnoa_internal.callbackAsync(identifier, successCallback, failureCallback);
 	};
 
 	/// <summary>Performs discovery and immediately begins checkid_setup to authenticate the user using a given identifier.</summary>
