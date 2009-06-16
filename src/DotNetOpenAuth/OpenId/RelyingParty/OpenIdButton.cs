@@ -79,6 +79,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating when to use a popup window to complete the login experience.
+		/// </summary>
+		/// <value>The default value is <see cref="PopupBehavior.Never"/>.</value>
+		[Bindable(false), Browsable(false)]
+		public override PopupBehavior Popup {
+			get { return base.Popup; }
+			set { ErrorUtilities.VerifySupported(value == base.Popup, OpenIdStrings.PropertyValueNotSupported); }
+		}
+
+		/// <summary>
 		/// Raises the <see cref="E:System.Web.UI.Control.PreRender"/> event.
 		/// </summary>
 		/// <param name="e">An <see cref="T:System.EventArgs"/> object that contains the event data.</param>

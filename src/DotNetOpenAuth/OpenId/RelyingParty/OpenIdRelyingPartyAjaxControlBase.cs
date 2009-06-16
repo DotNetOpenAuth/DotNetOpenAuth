@@ -29,7 +29,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// <summary>
 	/// A common base class for OpenID Relying Party controls.
 	/// </summary>
-	public abstract class OpenIdRelyingPartyAjaxControlBase : OpenIdRelyingPartyControlBase, ICallbackEventHandler {
+	internal abstract class OpenIdRelyingPartyAjaxControlBase : OpenIdRelyingPartyControlBase, ICallbackEventHandler {
 		/// <summary>
 		/// The manifest resource name of the javascript file to include on the hosting page.
 		/// </summary>
