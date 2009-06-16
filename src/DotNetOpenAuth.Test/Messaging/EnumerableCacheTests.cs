@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
+	using DotNetOpenAuth.Messaging;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	/// <summary>
