@@ -128,6 +128,7 @@
     <Compile Include="Hosting\HttpHost.cs" />
     <Compile Include="Hosting\TestingWorkerRequest.cs" />
     <Compile Include="Messaging\CollectionAssert.cs" />
+    <Compile Include="Messaging\EnumerableCacheTests.cs" />
     <Compile Include="Messaging\ErrorUtilitiesTests.cs" />
     <Compile Include="Messaging\MessageSerializerTests.cs" />
     <Compile Include="Messaging\Reflection\MessageDescriptionTests.cs" />
