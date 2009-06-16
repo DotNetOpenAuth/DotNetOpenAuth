@@ -5,6 +5,8 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuth {
+	using System;
+
 	/// <summary>
 	/// Security settings that are applicable to service providers.
 	/// </summary>

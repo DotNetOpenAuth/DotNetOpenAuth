@@ -126,7 +126,13 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		private class TokenInfo : IServiceProviderRequestToken {
+			internal TokenInfo() {
+				this.CreatedOn = DateTime.Now;
+			}
+
 			public string ConsumerKey { get; set; }
+
+			public DateTime CreatedOn { get; set; }
 
 			public string Token { get; set; }
 

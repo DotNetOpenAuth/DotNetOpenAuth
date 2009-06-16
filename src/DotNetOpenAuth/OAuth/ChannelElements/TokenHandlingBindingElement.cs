@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth.Messages;
 
@@ -111,15 +112,52 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
 			var authorizedTokenRequest = message as AuthorizedTokenRequest;
-			if (authorizedTokenRequest != null && authorizedTokenRequest.Version >= Protocol.V10a.Version) {
-				string expectedVerifier = this.tokenManager.GetRequestToken(authorizedTokenRequest.RequestToken).VerificationCode;
-				ErrorUtilities.VerifyProtocol(string.Equals(authorizedTokenRequest.VerificationCode, expectedVerifier, StringComparison.Ordinal), OAuthStrings.IncorrectVerifier);
-				return MessageProtections.None;
+			if (authorizedTokenRequest != null) {
+				if (authorizedTokenRequest.Version >= Protocol.V10a.Version) {
+					string expectedVerifier = this.tokenManager.GetRequestToken(authorizedTokenRequest.RequestToken).VerificationCode;
+					ErrorUtilities.VerifyProtocol(string.Equals(authorizedTokenRequest.VerificationCode, expectedVerifier, StringComparison.Ordinal), OAuthStrings.IncorrectVerifier);
+					return MessageProtections.None;
+				}
+
+				this.VerifyThrowTokenTimeToLive(authorizedTokenRequest);
+			}
+
+			var userAuthorizationRequest = message as UserAuthorizationRequest;
+			if (userAuthorizationRequest != null) {
+				this.VerifyThrowTokenTimeToLive(userAuthorizationRequest);
 			}
 
 			return null;
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Ensures that short-lived request tokens included in incoming messages have not expired.
+		/// </summary>
+		/// <param name="message">The incoming message.</param>
+		/// <exception cref="ProtocolException">Thrown when the token in the message has expired.</exception>
+		private void VerifyThrowTokenTimeToLive(ITokenContainingMessage message) {
+			ErrorUtilities.VerifyInternal(!(message is AccessProtectedResourceRequest), "We shouldn't be verifying TTL on access tokens.");
+			if (message == null) {
+				return;
+			}
+
+			try {
+				IServiceProviderRequestToken token = this.tokenManager.GetRequestToken(message.Token);
+				TimeSpan ttl = DotNetOpenAuthSection.Configuration.OAuth.ServiceProvider.SecuritySettings.MaximumRequestTokenTimeToLive;
+				if (DateTime.Now >= token.CreatedOn.ToLocalTime() + ttl) {
+					Logger.OAuth.ErrorFormat(
+						"OAuth token {0} rejected because it was originally issued at {1}, expired at {2}, and it is now {3}.",
+						token.Token,
+						token.CreatedOn,
+						token.CreatedOn + ttl,
+						DateTime.Now);
+					ErrorUtilities.ThrowProtocol(OAuthStrings.TokenNotFound);
+				}
+			} catch (KeyNotFoundException ex) {
+				throw ErrorUtilities.Wrap(ex, OAuthStrings.TokenNotFound);
+			}
+		}
 	}
 }

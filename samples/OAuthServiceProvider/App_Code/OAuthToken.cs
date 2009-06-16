@@ -21,6 +21,10 @@ public partial class OAuthToken : IServiceProviderRequestToken {
 		get { return this.OAuthConsumer.ConsumerKey; }
 	}
 
+	DateTime IServiceProviderRequestToken.CreatedOn {
+		get { return this.IssueDate; }
+	}
+
 	Uri IServiceProviderRequestToken.Callback {
 		get { return new Uri(this.RequestTokenCallback); }
 		set { this.RequestTokenCallback = value.AbsoluteUri; }

@@ -22,6 +22,11 @@ namespace DotNetOpenAuth.Configuration {
 		private const string MinimumRequiredOAuthVersionConfigName = "minimumRequiredOAuthVersion";
 
 		/// <summary>
+		/// Gets the name of the @maxAuthorizationTime attribute.
+		/// </summary>
+		private const string MaximumRequestTokenTimeToLiveConfigName = "maxAuthorizationTime";
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuthServiceProviderSecuritySettingsElement"/> class.
 		/// </summary>
 		internal OAuthServiceProviderSecuritySettingsElement() {
@@ -38,6 +43,22 @@ namespace DotNetOpenAuth.Configuration {
 		public ProtocolVersion MinimumRequiredOAuthVersion {
 			get { return (ProtocolVersion)this[MinimumRequiredOAuthVersionConfigName]; }
 			set { this[MinimumRequiredOAuthVersionConfigName] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the maximum time a user can take to complete authorization.
+		/// </summary>
+		/// <remarks>
+		/// This time limit serves as a security mitigation against brute force attacks to
+		/// compromise (unauthorized or authorized) request tokens.
+		/// Longer time limits is more friendly to slow users or consumers, while shorter
+		/// time limits provide better security.
+		/// </remarks>
+		[ConfigurationProperty(MaximumRequestTokenTimeToLiveConfigName, DefaultValue = "0:05")] // 5 minutes
+		[PositiveTimeSpanValidator]
+		public TimeSpan MaximumRequestTokenTimeToLive {
+			get { return (TimeSpan)this[MaximumRequestTokenTimeToLiveConfigName]; }
+			set { this[MaximumRequestTokenTimeToLiveConfigName] = value; }
 		}
 
 		/// <summary>

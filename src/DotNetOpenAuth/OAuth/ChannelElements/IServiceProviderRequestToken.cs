@@ -23,6 +23,11 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		string ConsumerKey { get; }
 
 		/// <summary>
+		/// Gets the (local) date that this request token was first created on.
+		/// </summary>
+		DateTime CreatedOn { get; }
+
+		/// <summary>
 		/// Gets or sets the callback associated specifically with this token, if any.
 		/// </summary>
 		/// <value>The callback URI; or <c>null</c> if no callback was specifically assigned to this token.</value>
