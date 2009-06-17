@@ -177,6 +177,7 @@
     <Compile Include="ComponentModel\ClaimTypeSuggestions.cs" />
     <Compile Include="ComponentModel\ConverterBase.cs" />
     <Compile Include="ComponentModel\IssuersSuggestions.cs" />
+    <Compile Include="ComponentModel\IdentifierConverter.cs" />
     <Compile Include="ComponentModel\SuggestedStringsConverter.cs" />
     <Compile Include="ComponentModel\UriConverter.cs" />
     <Compile Include="Configuration\AssociationTypeCollection.cs" />
@@ -213,6 +214,7 @@
     <Compile Include="Messaging\CachedDirectWebResponse.cs" />
     <Compile Include="Messaging\ChannelContract.cs" />
     <Compile Include="Messaging\DirectWebRequestOptions.cs" />
+    <Compile Include="Messaging\EnumerableCache.cs" />
     <Compile Include="Messaging\HostErrorException.cs" />
     <Compile Include="Messaging\IHttpDirectResponse.cs" />
     <Compile Include="Messaging\IExtensionMessage.cs" />
@@ -434,11 +436,14 @@
     <Compile Include="OpenId\RelyingParty\AuthenticationRequest.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationRequestMode.cs" />
     <Compile Include="OpenId\RelyingParty\IRelyingPartyBehavior.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.cs" />
     <Compile Include="OpenId\RelyingParty\NegativeAuthenticationResponse.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdAjaxTextBox.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdButton.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdEventArgs.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdLogin.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdMobileTextBox.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyControlBase.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdTextBox.cs" />
     <Compile Include="OpenId\RelyingParty\PopupBehavior.cs" />
     <Compile Include="OpenId\RelyingParty\PositiveAnonymousResponse.cs" />
@@ -472,6 +477,7 @@
       <DependentUpon>BehaviorStrings.resx</DependentUpon>
     </Compile>
     <Compile Include="OpenId\Behaviors\USGovernmentLevel1.cs" />
+    <Compile Include="OpenId\RelyingParty\WellKnownProviders.cs" />
     <Compile Include="OpenId\SecuritySettings.cs" />
     <Compile Include="Messaging\UntrustedWebRequestHandler.cs" />
     <Compile Include="OpenId\UriIdentifier.cs" />
@@ -570,6 +576,12 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>BehaviorStrings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdRelyingPartyControlBase.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\tools\DotNetOpenAuth.Versioning.targets" />

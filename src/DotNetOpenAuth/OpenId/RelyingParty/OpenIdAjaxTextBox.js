@@ -528,13 +528,9 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 				height = 500;
 			}
 
-			if (window.showModalDialog) {
-				self.popup = window.showModalDialog(self.setup, 'opLogin', 'status:0;resizable:1;scroll:1;center:1;dialogWidth:' + width + 'px; dialogHeight:' + height + 'px');
-			} else {
-				var left = (screen.width - width) / 2;
-				var top = (screen.height - height) / 2;
-				self.popup = window.open(self.setup, 'opLogin', 'status=0,toolbar=0,location=1,resizable=1,scrollbars=1,left=' + left + ',top=' + top + ',width=' + width + ',height=' + height);
-			}
+			var left = (screen.width - width) / 2;
+			var top = (screen.height - height) / 2;
+			self.popup = window.open(self.setup, 'opLogin', 'status=0,toolbar=0,location=1,resizable=1,scrollbars=1,left=' + left + ',top=' + top + ',width=' + width + ',height=' + height);
 
 			// If the OP supports the UI extension it MAY close its own window
 			// for a negative assertion.  We must be able to recover from that scenario.
@@ -747,8 +743,10 @@ function Uri(url) {
 		var queryStringPairs = this.queryString.split('&');
 
 		for (var i = 0; i < queryStringPairs.length; i++) {
-			var pair = queryStringPairs[i].split('=');
-			this.Pairs.push(new KeyValuePair(unescape(pair[0]), unescape(pair[1])))
+			var equalsAt = queryStringPairs[i].indexOf('=');
+			left = (equalsAt >= 0) ? queryStringPairs[i].substring(0, equalsAt) : null;
+			right = (equalsAt >= 0) ? queryStringPairs[i].substring(equalsAt + 1) : queryStringPairs[i];
+			this.Pairs.push(new KeyValuePair(unescape(left), unescape(right)));
 		}
 	};
 

@@ -416,7 +416,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			NameValueCollection queryParams = this.Channel.GetRequestFromContext().QueryStringBeforeRewriting;
 			var returnToParams = new Dictionary<string, string>(queryParams.Count);
 			foreach (string key in queryParams) {
-				if (!IsOpenIdSupportingParameter(key)) {
+				if (!IsOpenIdSupportingParameter(key) && key != null) {
 					returnToParams.Add(key, queryParams[key]);
 				}
 			}
@@ -532,6 +532,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// 	<c>true</c> if the named parameter is a library- or protocol-specific parameter; otherwise, <c>false</c>.
 		/// </returns>
 		internal static bool IsOpenIdSupportingParameter(string parameterName) {
+			// Yes, it is possible with some query strings to have a null or empty parameter name
+			if (string.IsNullOrEmpty(parameterName)) {
+				return false;
+			}
+
 			Protocol protocol = Protocol.Default;
 			return parameterName.StartsWith(protocol.openid.Prefix, StringComparison.OrdinalIgnoreCase)
 				|| parameterName.StartsWith(OpenIdUtilities.CustomParameterPrefix, StringComparison.Ordinal);

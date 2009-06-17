@@ -36,7 +36,21 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.IsNull(response.ClaimedIdentifier);
 			Assert.IsNull(response.FriendlyIdentifierForDisplay);
 			Assert.IsNull(response.Exception);
+			Assert.IsNull(response.Provider);
 			Assert.AreSame(ext, response.GetUntrustedExtension<ClaimsResponse>());
+		}
+
+		/// <summary>
+		/// Verifies the Provider property.
+		/// </summary>
+		[TestMethod]
+		public void ProviderTest() {
+			var responseMessage = new IndirectSignedResponse(Protocol.V20.Version, this.returnTo);
+			responseMessage.ProviderEndpoint = OPUri;
+			var response = new PositiveAnonymousResponse(responseMessage);
+			Assert.IsNotNull(response.Provider);
+			Assert.AreEqual(OPUri, response.Provider.Uri);
+			Assert.AreEqual(responseMessage.Version, response.Provider.Version);
 		}
 	}
 }

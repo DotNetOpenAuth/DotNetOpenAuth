@@ -30,6 +30,19 @@ namespace DotNetOpenAuth.ComponentModel {
 		protected abstract Type WellKnownValuesType { get; }
 
 		/// <summary>
+		/// Gets the values of public static fields and properties on a given type.
+		/// </summary>
+		/// <param name="type">The type to reflect over.</param>
+		/// <returns>A collection of values.</returns>
+		internal static ICollection GetStandardValuesForCacheShared(Type type) {
+			var fields = from field in type.GetFields(BindingFlags.Static | BindingFlags.Public)
+						 select field.GetValue(null);
+			var properties = from prop in type.GetProperties(BindingFlags.Static | BindingFlags.Public)
+							 select prop.GetValue(null, null);
+			return (fields.Concat(properties)).ToArray();
+		}
+
+		/// <summary>
 		/// Converts a value from its string representation to its strongly-typed object.
 		/// </summary>
 		/// <param name="value">The value.</param>
@@ -68,11 +81,7 @@ namespace DotNetOpenAuth.ComponentModel {
 		/// <returns>A collection of the standard values.</returns>
 		[Pure]
 		protected override ICollection GetStandardValuesForCache() {
-			var fields = from field in this.WellKnownValuesType.GetFields(BindingFlags.Static | BindingFlags.Public)
-						 select field.GetValue(null);
-			var properties = from prop in this.WellKnownValuesType.GetProperties(BindingFlags.Static | BindingFlags.Public)
-							 select prop.GetValue(null, null);
-			return (fields.Concat(properties)).ToArray();
+			return GetStandardValuesForCacheShared(this.WellKnownValuesType);
 		}
 	}
 }

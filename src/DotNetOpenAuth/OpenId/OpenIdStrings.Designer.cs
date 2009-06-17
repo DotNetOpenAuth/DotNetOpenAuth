@@ -416,6 +416,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No identifier has been set..
+        /// </summary>
+        internal static string NoIdentifierSet {
+            get {
+                return ResourceManager.GetString("NoIdentifierSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No XRDS document containing OpenID relying party endpoint information could be found at {0}..
         /// </summary>
         internal static string NoRelyingPartyEndpointDiscovered {
@@ -475,6 +484,15 @@ namespace DotNetOpenAuth.OpenId {
         internal static string PrivateRPSecretNotFound {
             get {
                 return ResourceManager.GetString("PrivateRPSecretNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This property value is not supported by this control..
+        /// </summary>
+        internal static string PropertyValueNotSupported {
+            get {
+                return ResourceManager.GetString("PropertyValueNotSupported", resourceCulture);
             }
         }
         
