@@ -20,6 +20,7 @@
 			<asp:ListItem Text="Request physical multi-factor authentication" Value="http://schemas.openid.net/pape/policies/2007/06/multi-factor-physical" />
 			<asp:ListItem Text="Request PPID identifier" Value="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier" />
 		</asp:CheckBoxList>
+		<p>Try the PPID identifier functionality against the OpenIDProviderMvc sample.</p>
 	</fieldset>
 	<br />
 	<asp:Label ID="setupRequiredLabel" runat="server" EnableViewState="False" Text="You must log into your Provider first to use Immediate mode."

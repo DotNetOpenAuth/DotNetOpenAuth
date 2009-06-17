@@ -70,6 +70,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This is already a PPID Identifier..
+        /// </summary>
+        internal static string ArgumentIsPpidIdentifier {
+            get {
+                return ResourceManager.GetString("ArgumentIsPpidIdentifier", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The requested association type &apos;{0}&apos; with session type &apos;{1}&apos; is unrecognized or not supported by this Provider due to security requirements..
         /// </summary>
         internal static string AssociationOrSessionTypeUnrecognizedOrNotSupported {

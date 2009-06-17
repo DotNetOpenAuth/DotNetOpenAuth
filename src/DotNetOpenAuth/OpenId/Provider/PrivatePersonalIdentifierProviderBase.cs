@@ -122,6 +122,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		public Uri GetIdentifier(Identifier localIdentifier, Realm relyingPartyRealm) {
 			ErrorUtilities.VerifyArgumentNotNull(localIdentifier, "localIdentifier");
 			ErrorUtilities.VerifyArgumentNotNull(relyingPartyRealm, "relyingPartyRealm");
+			ErrorUtilities.VerifyArgumentNamed(this.IsUserLocalIdentifier(localIdentifier), "localIdentifier", OpenIdStrings.ArgumentIsPpidIdentifier);
 
 			if (localIdentifier.ToString().StartsWith(this.BaseIdentifier.AbsoluteUri, StringComparison.Ordinal)) {
 				Logger.OpenId.Warn("Trying to generate a PPID from a PPID.  Returning original PPID.");
@@ -156,6 +157,18 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			string base64Hash = Convert.ToBase64String(hash);
 			Uri anonymousIdentifier = this.AppendIdentifiers(base64Hash);
 			return anonymousIdentifier;
+		}
+
+		/// <summary>
+		/// Determines whether a given identifier is the primary (non-PPID) local identifier for some user.
+		/// </summary>
+		/// <param name="identifier">The identifier in question.</param>
+		/// <returns>
+		/// 	<c>true</c> if the given identifier is the valid, unique identifier for some uesr (and NOT a PPID); otherwise, <c>false</c>.
+		/// </returns>
+		public virtual bool IsUserLocalIdentifier(Identifier identifier)
+		{
+			return !identifier.ToString().StartsWith(this.BaseIdentifier.AbsoluteUri, StringComparison.Ordinal);
 		}
 
 		#endregion

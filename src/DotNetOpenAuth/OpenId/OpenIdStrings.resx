@@ -331,4 +331,7 @@ Discovered endpoint info:
   <data name="PropertyValueNotSupported" xml:space="preserve">
     <value>This property value is not supported by this control.</value>
   </data>
+  <data name="ArgumentIsPpidIdentifier" xml:space="preserve">
+    <value>This is already a PPID Identifier.</value>
+  </data>
 </root>
