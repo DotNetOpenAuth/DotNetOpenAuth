@@ -397,7 +397,7 @@
     <Compile Include="OpenId\Provider\HostProcessedRequest.cs" />
     <Compile Include="OpenId\Provider\IAnonymousRequest.cs" />
     <Compile Include="OpenId\Provider\IAuthenticationRequest.cs" />
-    <Compile Include="OpenId\Provider\IDirectedIdentityCustomIdentifier.cs" />
+    <Compile Include="OpenId\Provider\IDirectedIdentityIdentifierProvider.cs" />
     <Compile Include="OpenId\Provider\IHostProcessedRequest.cs" />
     <Compile Include="OpenId\Provider\IdentityEndpoint.cs" />
     <Compile Include="OpenId\Provider\IdentityEndpointNormalizationEventArgs.cs" />

@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 	/// the <see cref="AuthenticationPolicies.PrivatePersonalIdentifier"/> authentication policy.</para>
 	/// <para>The static member <see cref="PpidGeneration.PpidIdentifierProvider"/> MUST
 	/// be set prior to any PPID requests come in.  Typically this should be set in the
-	/// <see cref="HttpApplication.Start"/> event handler in the global.asax.cs file.</para>
+	/// <c>Application_Start</c> method in the global.asax.cs file.</para>
 	/// </remarks>
 	[Serializable]
 	public sealed class PpidGeneration : IProviderBehavior {
@@ -57,13 +57,11 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 		/// from handling it; <c>false</c> to allow other behaviors to process this request.
 		/// </returns>
 		bool IProviderBehavior.OnOutgoingResponse(IAuthenticationRequest request) {
-						ErrorUtilities.VerifyArgumentNotNull(request, "request");
-
-			bool result = false;
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			// Nothing to do for negative assertions.
 			if (!request.IsAuthenticated.Value) {
-				return result;
+				return false;
 			}
 
 			var requestInternal = (Provider.AuthenticationRequest)request;
@@ -72,26 +70,33 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 			// Only apply our special policies if the RP requested it.
 			var papeRequest = request.GetExtension<PolicyRequest>();
 			if (papeRequest != null) {
-				var papeResponse = responseMessage.Extensions.OfType<PolicyResponse>().SingleOrDefault();
-				if (papeResponse == null) {
-					request.AddResponseExtension(papeResponse = new PolicyResponse());
-				}
-
 				if (papeRequest.PreferredPolicies.Contains(AuthenticationPolicies.PrivatePersonalIdentifier)) {
 					ErrorUtilities.VerifyProtocol(request.ClaimedIdentifier == request.LocalIdentifier, OpenIdStrings.DelegatingIdentifiersNotAllowed);
 
+					if (PpidIdentifierProvider == null) {
+						Logger.OpenId.Error(BehaviorStrings.PpidProviderNotGiven);
+						return false;
+					}
+
 					// Mask the user's identity with a PPID.
-					ErrorUtilities.VerifyHost(PpidIdentifierProvider != null, BehaviorStrings.PpidProviderNotGiven);
-					Identifier ppidIdentifier = PpidIdentifierProvider.GetIdentifier(request.LocalIdentifier, request.Realm);
-					requestInternal.ResetClaimedAndLocalIdentifiers(ppidIdentifier);
+					if (PpidIdentifierProvider.IsUserLocalIdentifier(request.LocalIdentifier)) {
+						Identifier ppidIdentifier = PpidIdentifierProvider.GetIdentifier(request.LocalIdentifier, request.Realm);
+						requestInternal.ResetClaimedAndLocalIdentifiers(ppidIdentifier);
+					}
 
 					// Indicate that the RP is receiving a PPID claimed_id
+					var papeResponse = responseMessage.Extensions.OfType<PolicyResponse>().SingleOrDefault();
+					if (papeResponse == null) {
+						request.AddResponseExtension(papeResponse = new PolicyResponse());
+					}
+
 					if (!papeResponse.ActualPolicies.Contains(AuthenticationPolicies.PrivatePersonalIdentifier)) {
 						papeResponse.ActualPolicies.Add(AuthenticationPolicies.PrivatePersonalIdentifier);
 					}
 				}
 			}
-			return result;
+
+			return false;
 		}
 
 		#endregion

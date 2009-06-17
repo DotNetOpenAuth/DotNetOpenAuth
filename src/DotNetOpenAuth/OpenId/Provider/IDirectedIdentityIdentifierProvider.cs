@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="IDirectedIdentityCustomIdentifier.cs" company="Andrew Arnott">
+// <copyright file="IDirectedIdentityIdentifierProvider.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -29,6 +29,15 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// openid.claimed_id and openid.local_id parameters.  Must not be null.
 		/// </returns>
 		Uri GetIdentifier(Identifier localIdentifier, Realm relyingPartyRealm);
+
+		/// <summary>
+		/// Determines whether a given identifier is the primary (non-PPID) local identifier for some user.
+		/// </summary>
+		/// <param name="identifier">The identifier in question.</param>
+		/// <returns>
+		/// 	<c>true</c> if the given identifier is the valid, unique identifier for some uesr (and NOT a PPID); otherwise, <c>false</c>.
+		/// </returns>
+		bool IsUserLocalIdentifier(Identifier identifier);
 	}
 
 	/// <summary>
@@ -51,6 +60,19 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		Uri IDirectedIdentityIdentifierProvider.GetIdentifier(Identifier localIdentifier, Realm relyingPartyRealm) {
 			Contract.Requires(localIdentifier != null);
 			Contract.Requires(relyingPartyRealm != null);
+
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Determines whether a given identifier is the primary (non-PPID) local identifier for some user.
+		/// </summary>
+		/// <param name="identifier">The identifier in question.</param>
+		/// <returns>
+		/// 	<c>true</c> if the given identifier is the valid, unique identifier for some uesr (and NOT a PPID); otherwise, <c>false</c>.
+		/// </returns>
+		public bool IsUserLocalIdentifier(Identifier identifier) {
+			Contract.Requires(identifier != null);
 
 			throw new NotImplementedException();
 		}
