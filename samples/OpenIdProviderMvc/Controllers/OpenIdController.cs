@@ -15,8 +15,6 @@ namespace OpenIdProviderMvc.Controllers {
 	public class OpenIdController : Controller {
 		internal static OpenIdProvider OpenIdProvider = new OpenIdProvider();
 
-		private static AnonymousIdentifierProvider anonProvider = new AnonymousIdentifierProvider();
-
 		internal static IAuthenticationRequest PendingAuthenticationRequest {
 			get { return ProviderEndpoint.PendingAuthenticationRequest; }
 			set { ProviderEndpoint.PendingAuthenticationRequest = value; }
@@ -56,7 +54,6 @@ namespace OpenIdProviderMvc.Controllers {
 				throw new InvalidOperationException("There's no pending authentication request!");
 			}
 
-				authReq.LocalIdentifier = anonymousIdentifier;
 			if (authReq.IsDirectedIdentity) {
 				authReq.LocalIdentifier = Models.User.GetClaimedIdentifierForUser(User.Identity.Name);
 			}

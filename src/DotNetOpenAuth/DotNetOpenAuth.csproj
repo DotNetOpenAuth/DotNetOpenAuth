@@ -477,11 +477,6 @@
     <Compile Include="OpenId\RelyingParty\ServiceEndpoint.cs" />
     <Compile Include="OpenId\OpenIdXrdsHelper.cs" />
     <Compile Include="OpenId\RelyingParty\StandardRelyingPartyApplicationStore.cs" />
-    <Compile Include="OpenId\Behaviors\BehaviorStrings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>BehaviorStrings.resx</DependentUpon>
-    </Compile>
     <Compile Include="OpenId\Behaviors\USGovernmentLevel1.cs" />
     <Compile Include="OpenId\RelyingParty\WellKnownProviders.cs" />
     <Compile Include="OpenId\SecuritySettings.cs" />
@@ -578,10 +573,6 @@
     <EmbeddedResource Include="InfoCard\infocard_81x57.png" />
     <EmbeddedResource Include="InfoCard\infocard_92x64.png" />
     <EmbeddedResource Include="InfoCard\SupportingScript.js" />
-    <EmbeddedResource Include="OpenId\Behaviors\BehaviorStrings.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>BehaviorStrings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="OpenId\RelyingParty\OpenIdRelyingPartyControlBase.js" />
