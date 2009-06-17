@@ -200,6 +200,7 @@ namespace DotNetOpenAuth.Configuration {
 			settings.RejectUnsolicitedAssertions = this.RejectUnsolicitedAssertions;
 			settings.RejectDelegatingIdentifiers = this.RejectDelegatingIdentifiers;
 			settings.IgnoreUnsignedExtensions = this.IgnoreUnsignedExtensions;
+
 			return settings;
 		}
 	}

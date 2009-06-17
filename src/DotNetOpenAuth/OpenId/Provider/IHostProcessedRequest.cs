@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId.Provider {
+	using System;
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 
@@ -78,6 +79,17 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		#endregion
 
 		#region IRequest Members
+
+		/// <summary>
+		/// Gets or sets the security settings that apply to this request.
+		/// </summary>
+		/// <value>
+		/// Defaults to the <see cref="OpenIdProvider.SecuritySettings"/> on the <see cref="OpenIdProvider"/>.
+		/// </value>
+		ProviderSecuritySettings IRequest.SecuritySettings {
+			get { throw new NotImplementedException(); }
+			set { throw new NotImplementedException(); }
+		}
 
 		/// <summary>
 		/// Gets a value indicating whether the response is ready to be sent to the user agent.

@@ -169,6 +169,9 @@
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComponentModel\ClaimTypeSuggestions.cs" />
@@ -314,6 +317,12 @@
     <Compile Include="OpenId\Association.cs" />
     <Compile Include="OpenId\AssociationMemoryStore.cs" />
     <Compile Include="OpenId\Associations.cs" />
+    <Compile Include="OpenId\Behaviors\BehaviorStrings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BehaviorStrings.resx</DependentUpon>
+    </Compile>
+    <Compile Include="OpenId\Behaviors\PpidGeneration.cs" />
     <Compile Include="OpenId\ChannelElements\BackwardCompatibilityBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\ExtensionsBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\IOpenIdExtensionFactory.cs" />
@@ -394,6 +403,7 @@
     <Compile Include="OpenId\Provider\IdentityEndpointNormalizationEventArgs.cs" />
     <Compile Include="OpenId\Provider\IErrorReporting.cs" />
     <Compile Include="OpenId\Provider\IProviderApplicationStore.cs" />
+    <Compile Include="OpenId\Provider\IProviderBehavior.cs" />
     <Compile Include="OpenId\Provider\IRequest.cs" />
     <Compile Include="OpenId\Provider\ProviderEndpoint.cs" />
     <Compile Include="OpenId\Provider\RelyingPartyDiscoveryResult.cs" />
@@ -431,6 +441,7 @@
     <Compile Include="OpenId\RelyingParty\AssociationPreference.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationRequest.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationRequestMode.cs" />
+    <Compile Include="OpenId\RelyingParty\IRelyingPartyBehavior.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.cs" />
     <Compile Include="OpenId\RelyingParty\NegativeAuthenticationResponse.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdAjaxTextBox.cs" />
@@ -566,6 +577,10 @@
     <EmbeddedResource Include="OpenId\RelyingParty\OpenIdRelyingPartyControlBase.js" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="OpenId\Behaviors\BehaviorStrings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>BehaviorStrings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

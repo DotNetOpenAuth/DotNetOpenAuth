@@ -5,12 +5,16 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId {
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.Specialized;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
 	/// Security settings that may be applicable to both relying parties and providers.
 	/// </summary>
-	public class SecuritySettings {
+	[Serializable]
+	public abstract class SecuritySettings {
 		/// <summary>
 		/// Gets the default minimum hash bit length.
 		/// </summary>

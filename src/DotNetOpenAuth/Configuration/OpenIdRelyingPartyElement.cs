@@ -25,6 +25,11 @@ namespace DotNetOpenAuth.Configuration {
 		private const string SecuritySettingsConfigName = "security";
 
 		/// <summary>
+		/// Gets the name of the &lt;behaviors&gt; sub-element.
+		/// </summary>
+		private const string BehaviorsElementName = "behaviors";
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingPartyElement"/> class.
 		/// </summary>
 		public OpenIdRelyingPartyElement() {
@@ -37,6 +42,16 @@ namespace DotNetOpenAuth.Configuration {
 		public OpenIdRelyingPartySecuritySettingsElement SecuritySettings {
 			get { return (OpenIdRelyingPartySecuritySettingsElement)this[SecuritySettingsConfigName] ?? new OpenIdRelyingPartySecuritySettingsElement(); }
 			set { this[SecuritySettingsConfigName] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the special behaviors to apply.
+		/// </summary>
+		[ConfigurationProperty(BehaviorsElementName, IsDefaultCollection = false)]
+		[ConfigurationCollection(typeof(TypeConfigurationCollection<IRelyingPartyBehavior>))]
+		public TypeConfigurationCollection<IRelyingPartyBehavior> Behaviors {
+			get { return (TypeConfigurationCollection<IRelyingPartyBehavior>)this[BehaviorsElementName] ?? new TypeConfigurationCollection<IRelyingPartyBehavior>(); }
+			set { this[BehaviorsElementName] = value; }
 		}
 
 		/// <summary>

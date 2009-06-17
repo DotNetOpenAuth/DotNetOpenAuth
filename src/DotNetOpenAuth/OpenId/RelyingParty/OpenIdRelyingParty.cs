@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Collections.Specialized;
 	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
@@ -41,6 +42,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// instance of <see cref="StandardRelyingPartyApplicationStore"/> to use.
 		/// </summary>
 		private const string ApplicationStoreKey = "DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingParty.ApplicationStore";
+
+		/// <summary>
+		/// Backing store for the <see cref="Behaviors"/> property.
+		/// </summary>
+		private readonly ObservableCollection<IRelyingPartyBehavior> behaviors = new ObservableCollection<IRelyingPartyBehavior>();
 
 		/// <summary>
 		/// Backing field for the <see cref="SecuritySettings"/> property.
@@ -85,6 +91,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			ErrorUtilities.VerifyArgument(associationStore == null || nonceStore != null, OpenIdStrings.AssociationStoreRequiresNonceStore);
 
 			this.securitySettings = DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.SecuritySettings.CreateSecuritySettings();
+			this.behaviors.CollectionChanged += this.OnBehaviorsChanged;
+			foreach (var behavior in DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.Behaviors.CreateInstances(false)) {
+				this.behaviors.Add(behavior);
+			}
 
 			// Without a nonce store, we must rely on the Provider to protect against
 			// replay attacks.  But only 2.0+ Providers can be expected to provide 
@@ -207,6 +217,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		public IList<IOpenIdExtensionFactory> ExtensionFactories {
 			get { return this.Channel.GetExtensionFactories(); }
+		}
+
+		/// <summary>
+		/// Gets a list of custom behaviors to apply to OpenID actions.
+		/// </summary>
+		internal ICollection<IRelyingPartyBehavior> Behaviors {
+			get { return this.behaviors; }
 		}
 
 		/// <summary>
@@ -474,7 +491,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				NegativeAssertionResponse negativeAssertion;
 				IndirectSignedResponse positiveExtensionOnly;
 				if ((positiveAssertion = message as PositiveAssertionResponse) != null) {
-					return new PositiveAuthenticationResponse(positiveAssertion, this);
+					var response = new PositiveAuthenticationResponse(positiveAssertion, this);
+					foreach (var behavior in this.Behaviors) {
+						behavior.OnIncomingPositiveAssertion(response);
+					}
+
+					return response;
 				} else if ((positiveExtensionOnly = message as IndirectSignedResponse) != null) {
 					return new PositiveAnonymousResponse(positiveExtensionOnly);
 				} else if ((negativeAssertion = message as NegativeAssertionResponse) != null) {
@@ -558,6 +580,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				if (disposableChannel != null) {
 					disposableChannel.Dispose();
 				}
+			}
+		}
+
+		/// <summary>
+		/// Called by derived classes when behaviors are added or removed.
+		/// </summary>
+		/// <param name="sender">The collection being modified.</param>
+		/// <param name="e">The <see cref="System.Collections.Specialized.NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
+		private void OnBehaviorsChanged(object sender, NotifyCollectionChangedEventArgs e) {
+			foreach (IRelyingPartyBehavior profile in e.NewItems) {
+				profile.ApplySecuritySettings(this.SecuritySettings);
 			}
 		}
 	}
