@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.Xrds {
 				// We should enumerate them in priority order
 				List<ServiceElement> services = new List<ServiceElement>();
 				foreach (XPathNavigator node in Node.Select("xrd:Service", XmlNamespaceResolver)) {
-					services.Add(new ServiceElement(node, this));
+					services.Add(new ServiceElement(node.Clone(), this)); // .Clone() to workaround XPathNavigator mono bug
 				}
 				services.Sort();
 				return services;
@@ -142,7 +142,7 @@ namespace DotNetOpenAuth.Xrds {
 			xpath.Append("]");
 			var services = new List<ServiceElement>();
 			foreach (XPathNavigator service in Node.Select(xpath.ToString(), XmlNamespaceResolver)) {
-				services.Add(new ServiceElement(service, this));
+				services.Add(new ServiceElement(service.Clone(), this)); // .Clone() to workaround XPathNavigator mono bug
 			}
 
 			// Put the services in their own defined priority order

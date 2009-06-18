@@ -311,14 +311,18 @@ namespace DotNetOpenAuth.Messaging {
 			newRequest.AllowAutoRedirect = request.AllowAutoRedirect;
 			newRequest.AllowWriteStreamBuffering = request.AllowWriteStreamBuffering;
 			newRequest.AuthenticationLevel = request.AuthenticationLevel;
+#if !Mono
 			newRequest.AutomaticDecompression = request.AutomaticDecompression;
 			newRequest.CachePolicy = request.CachePolicy;
 			newRequest.ClientCertificates = request.ClientCertificates;
+#endif
 			newRequest.ConnectionGroupName = request.ConnectionGroupName;
 			newRequest.ContinueDelegate = request.ContinueDelegate;
 			newRequest.CookieContainer = request.CookieContainer;
 			newRequest.Credentials = request.Credentials;
+#if !Mono
 			newRequest.ImpersonationLevel = request.ImpersonationLevel;
+#endif
 			newRequest.MaximumAutomaticRedirections = request.MaximumAutomaticRedirections;
 			newRequest.MaximumResponseHeadersLength = request.MaximumResponseHeadersLength;
 			newRequest.MediaType = request.MediaType;
