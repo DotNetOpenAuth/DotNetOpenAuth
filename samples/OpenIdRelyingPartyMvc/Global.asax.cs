@@ -18,13 +18,16 @@
 				"{controller}/{action}/{id}",                           // URL with parameters
 				new { controller = "Home", action = "Index", id = string.Empty });  // Parameter defaults
 
+#if !Mono
 			routes.MapRoute(
 				"Root",
 				string.Empty,
 				new { controller = "Home", action = "Index", id = string.Empty });
+#endif
 		}
 
 		protected void Application_Start(object sender, EventArgs e) {
+			log4net.Config.XmlConfigurator.Configure();
 			RegisterRoutes(RouteTable.Routes);
 		}
 	}

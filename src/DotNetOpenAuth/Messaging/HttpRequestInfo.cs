@@ -57,6 +57,7 @@ namespace DotNetOpenAuth.Messaging {
 			this.Url = request.Url;
 			this.UrlBeforeRewriting = GetPublicFacingUrl(request);
 			this.RawUrl = request.RawUrl;
+			Logger.Messaging.InfoFormat("Url: {0}, RawUrl: {1}", this.Url, this.RawUrl);
 			this.Headers = GetHeaderCollection(request.Headers);
 			this.InputStream = request.InputStream;
 
@@ -323,6 +324,7 @@ namespace DotNetOpenAuth.Messaging {
 			// HttpRequest.Url gives us the internal URL in a cloud environment,
 			// So we use a variable that (at least from what I can tell) gives us
 			// the public URL:
+#if !Mono // In ASP.NET MVC, Mono adds UrlRouting.axd to the URL here, which breaks OpenID return_to verification.
 			if (request.ServerVariables["HTTP_HOST"] != null) {
 				ErrorUtilities.VerifySupported(request.Url.Scheme == Uri.UriSchemeHttps || request.Url.Scheme == Uri.UriSchemeHttp, "Only HTTP and HTTPS are supported protocols.");
 				UriBuilder publicRequestUri = new UriBuilder(request.Url);
@@ -335,6 +337,7 @@ namespace DotNetOpenAuth.Messaging {
 				}
 				return publicRequestUri.Uri;
 			} else {
+#endif
 				// Failover to the method that works for non-web farm enviroments.
 				// We use Request.Url for the full path to the server, and modify it
 				// with Request.RawUrl to capture both the cookieless session "directory" if it exists
@@ -344,7 +347,9 @@ namespace DotNetOpenAuth.Messaging {
 				// Response.ApplyAppPathModifier(builder.Path) would have worked for the cookieless
 				// session, but not the URL rewriting problem.
 				return new Uri(request.Url, request.RawUrl);
+#if !Mono
 			}
+#endif
 		}
 
 		/// <summary>
