@@ -157,7 +157,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			// Add receiving HTTP transport information required for signature generation.
 			var signedMessage = message as ITamperResistantOAuthMessage;
 			if (signedMessage != null) {
-				signedMessage.Recipient = request.Url;
+				signedMessage.Recipient = request.UrlBeforeRewriting;
 				signedMessage.HttpMethod = request.HttpMethod;
 			}
 

@@ -156,7 +156,7 @@ namespace DotNetOpenAuth.OpenId.Interop {
 		/// <returns>The Provider's response to a previous authentication request, or null if no response is present.</returns>
 		public AuthenticationResponseShim ProcessAuthentication(string url, string form) {
 			OpenIdRelyingParty rp = new OpenIdRelyingParty(null);
-			HttpRequestInfo requestInfo = new HttpRequestInfo { Url = new Uri(url) };
+			HttpRequestInfo requestInfo = new HttpRequestInfo { UrlBeforeRewriting = new Uri(url) };
 			if (!string.IsNullOrEmpty(form)) {
 				requestInfo.HttpMethod = "POST";
 				requestInfo.InputStream = new MemoryStream(Encoding.Unicode.GetBytes(form));

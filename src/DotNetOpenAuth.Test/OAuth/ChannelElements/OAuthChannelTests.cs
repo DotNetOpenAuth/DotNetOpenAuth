@@ -83,9 +83,9 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			HttpRequestInfo requestInfo = CreateHttpRequestInfo(HttpDeliveryMethods.PostRequest, fields);
 
 			// Now add another field to the request URL
-			UriBuilder builder = new UriBuilder(requestInfo.Url);
+			UriBuilder builder = new UriBuilder(requestInfo.UrlBeforeRewriting);
 			builder.Query = "Name=Andrew";
-			requestInfo.Url = builder.Uri;
+			requestInfo.UrlBeforeRewriting = builder.Uri;
 			requestInfo.RawUrl = builder.Path + builder.Query + builder.Fragment;
 
 			// Finally, add an Authorization header
@@ -288,7 +288,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			}
 			HttpRequestInfo request = new HttpRequestInfo {
 				HttpMethod = method,
-				Url = requestUri.Uri,
+				UrlBeforeRewriting = requestUri.Uri,
 				RawUrl = requestUri.Path + requestUri.Query + requestUri.Fragment,
 				Headers = headers,
 				InputStream = ms,
@@ -300,7 +300,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 		private static HttpRequestInfo ConvertToRequestInfo(HttpWebRequest request, Stream postEntity) {
 			HttpRequestInfo info = new HttpRequestInfo {
 				HttpMethod = request.Method,
-				Url = request.RequestUri,
+				UrlBeforeRewriting = request.RequestUri,
 				RawUrl = request.RequestUri.AbsolutePath + request.RequestUri.Query + request.RequestUri.Fragment,
 				Headers = request.Headers,
 				InputStream = postEntity,
