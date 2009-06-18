@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		internal CoordinatingHttpRequestInfo(MessageReceivingEndpoint recipient) {
 			this.recipient = recipient;
 			if (recipient != null) {
-				this.Url = recipient.Location;
+				this.UrlBeforeRewriting = recipient.Location;
 			}
 
 			if (recipient == null || (recipient.AllowedMethods & HttpDeliveryMethods.GetRequest) != 0) {

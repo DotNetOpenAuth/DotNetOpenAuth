@@ -363,7 +363,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 						Uri authUri = new Uri(formAuthData);
 						HttpRequestInfo clientResponseInfo = new HttpRequestInfo {
-							Url = authUri,
+							UrlBeforeRewriting = authUri,
 						};
 
 						this.authenticationResponse = this.RelyingParty.GetResponse(clientResponseInfo);

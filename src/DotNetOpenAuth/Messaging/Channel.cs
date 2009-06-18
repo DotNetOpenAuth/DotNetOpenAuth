@@ -559,13 +559,13 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires(request != null);
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
-			Logger.Channel.DebugFormat("Incoming HTTP request: {0}", request.Url.AbsoluteUri);
+			Logger.Channel.DebugFormat("Incoming HTTP request: {0} {1}", request.HttpMethod, request.UrlBeforeRewriting.AbsoluteUri);
 
 			// Search Form data first, and if nothing is there search the QueryString
-			Contract.Assume(request.Form != null && request.QueryString != null);
+			Contract.Assume(request.Form != null && request.QueryStringBeforeRewriting != null);
 			var fields = request.Form.ToDictionary();
 			if (fields.Count == 0 && request.HttpMethod != "POST") { // OpenID 2.0 section 4.1.2
-				fields = request.QueryString.ToDictionary();
+				fields = request.QueryStringBeforeRewriting.ToDictionary();
 			}
 
 			return (IDirectedProtocolMessage)this.Receive(fields, request.GetRecipient());
