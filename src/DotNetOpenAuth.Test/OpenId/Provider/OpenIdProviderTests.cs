@@ -90,7 +90,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		[TestMethod]
 		public void GetRequest() {
 			HttpRequestInfo httpInfo = new HttpRequestInfo();
-			httpInfo.Url = new Uri("http://someUri");
+			httpInfo.UrlBeforeRewriting = new Uri("http://someUri");
 			Assert.IsNull(this.provider.GetRequest(httpInfo), "An irrelevant request should return null.");
 			var providerDescription = new ProviderEndpointDescription(OpenIdTestBase.OPUri, Protocol.Default.Version);
 

@@ -8,12 +8,15 @@ namespace DotNetOpenAuth.ApplicationBlock.CustomExtensions {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-	using System.Text;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
 
 	[Serializable]
 	public class AcmeResponse : IOpenIdMessageExtension {
 		private IDictionary<string, string> extraData = new Dictionary<string, string>();
+
+		[MessagePart]
+		public string FavoriteIceCream { get; set; }
 
 		#region IOpenIdMessageExtension Members
 

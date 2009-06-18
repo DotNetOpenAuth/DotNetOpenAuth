@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 	using System.Xml;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
+	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.Test.Mocks;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -67,6 +68,41 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 		[TestMethod]
 		public void ReadFromRequestAuthorization() {
 			this.ParameterizedReceiveTest(HttpDeliveryMethods.AuthorizationHeaderRequest);
+		}
+
+		/// <summary>
+		/// Verifies that the OAuth ReadFromRequest method gathers parameters
+		/// from the Authorization header, the query string and the entity form data.
+		/// </summary>
+		[TestMethod]
+		public void ReadFromRequestAuthorizationScattered() {
+			// Start by creating a standard POST HTTP request.
+			var fields = new Dictionary<string, string> {
+				{ "age", "15" },
+			};
+			HttpRequestInfo requestInfo = CreateHttpRequestInfo(HttpDeliveryMethods.PostRequest, fields);
+
+			// Now add another field to the request URL
+			UriBuilder builder = new UriBuilder(requestInfo.UrlBeforeRewriting);
+			builder.Query = "Name=Andrew";
+			requestInfo.UrlBeforeRewriting = builder.Uri;
+			requestInfo.RawUrl = builder.Path + builder.Query + builder.Fragment;
+
+			// Finally, add an Authorization header
+			fields = new Dictionary<string, string> {
+				{ "Location", "http://hostb/pathB" },
+				{ "Timestamp", XmlConvert.ToString(DateTime.UtcNow, XmlDateTimeSerializationMode.Utc) },
+			};
+			requestInfo.Headers.Add(HttpRequestHeader.Authorization, CreateAuthorizationHeader(fields));
+
+			IDirectedProtocolMessage requestMessage = this.channel.ReadFromRequest(requestInfo);
+
+			Assert.IsNotNull(requestMessage);
+			Assert.IsInstanceOfType(requestMessage, typeof(TestMessage));
+			TestMessage testMessage = (TestMessage)requestMessage;
+			Assert.AreEqual(15, testMessage.Age);
+			Assert.AreEqual("Andrew", testMessage.Name);
+			Assert.AreEqual("http://hostb/pathB", testMessage.Location.AbsoluteUri);
 		}
 
 		[TestMethod]
@@ -144,6 +180,42 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			this.ParameterizedRequestTest(HttpDeliveryMethods.AuthorizationHeaderRequest);
 		}
 
+		/// <summary>
+		/// Verifies that message parts can be distributed to the query, form, and Authorization header.
+		/// </summary>
+		[TestMethod]
+		public void RequestUsingAuthorizationHeaderScattered() {
+			TestDirectedMessage request = new TestDirectedMessage(MessageTransport.Direct) {
+				Age = 15,
+				Name = "Andrew",
+				Location = new Uri("http://hostb/pathB"),
+				Recipient = new Uri("http://localtest"),
+				Timestamp = DateTime.UtcNow,
+				HttpMethods = HttpDeliveryMethods.AuthorizationHeaderRequest,
+			};
+
+			// ExtraData should appear in the form since this is a POST request,
+			// and only official message parts get a place in the Authorization header.
+			((IProtocolMessage)request).ExtraData["appearinform"] = "formish";
+			request.Recipient = new Uri("http://localhost/?appearinquery=queryish");
+			request.HttpMethods = HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.PostRequest;
+
+			HttpWebRequest webRequest = this.channel.InitializeRequest(request);
+			Assert.IsNotNull(webRequest);
+			Assert.AreEqual("POST", webRequest.Method);
+			Assert.AreEqual(request.Recipient, webRequest.RequestUri);
+
+			var declaredParts = new Dictionary<string, string> {
+					{ "age", request.Age.ToString() },
+					{ "Name", request.Name },
+					{ "Location", request.Location.AbsoluteUri },
+					{ "Timestamp", XmlConvert.ToString(request.Timestamp, XmlDateTimeSerializationMode.Utc) },
+				};
+
+			Assert.AreEqual(CreateAuthorizationHeader(declaredParts), webRequest.Headers[HttpRequestHeader.Authorization]);
+			Assert.AreEqual("appearinform=formish", this.webRequestHandler.RequestEntityAsString);
+		}
+
 		[TestMethod]
 		public void RequestUsingGet() {
 			this.ParameterizedRequestTest(HttpDeliveryMethods.GetRequest);
@@ -171,9 +243,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 		}
 
 		private static string CreateAuthorizationHeader(IDictionary<string, string> fields) {
-			if (fields == null) {
-				throw new ArgumentNullException("fields");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
 
 			StringBuilder authorization = new StringBuilder();
 			authorization.Append("OAuth ");
@@ -218,7 +288,8 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			}
 			HttpRequestInfo request = new HttpRequestInfo {
 				HttpMethod = method,
-				Url = requestUri.Uri,
+				UrlBeforeRewriting = requestUri.Uri,
+				RawUrl = requestUri.Path + requestUri.Query + requestUri.Fragment,
 				Headers = headers,
 				InputStream = ms,
 			};
@@ -229,7 +300,8 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 		private static HttpRequestInfo ConvertToRequestInfo(HttpWebRequest request, Stream postEntity) {
 			HttpRequestInfo info = new HttpRequestInfo {
 				HttpMethod = request.Method,
-				Url = request.RequestUri,
+				UrlBeforeRewriting = request.RequestUri,
+				RawUrl = request.RequestUri.AbsolutePath + request.RequestUri.Query + request.RequestUri.Fragment,
 				Headers = request.Headers,
 				InputStream = postEntity,
 			};

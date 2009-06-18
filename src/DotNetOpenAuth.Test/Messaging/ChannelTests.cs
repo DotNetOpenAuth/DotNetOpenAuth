@@ -79,8 +79,8 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.AreEqual(HttpStatusCode.Redirect, response.Status);
 			StringAssert.StartsWith(response.Headers[HttpResponseHeader.Location], "http://provider/path");
 			foreach (var pair in expected) {
-				string key = HttpUtility.UrlEncode(pair.Key);
-				string value = HttpUtility.UrlEncode(pair.Value);
+				string key = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Key);
+				string value = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Value);
 				string substring = string.Format("{0}={1}", key, value);
 				StringAssert.Contains(response.Headers[HttpResponseHeader.Location], substring);
 			}

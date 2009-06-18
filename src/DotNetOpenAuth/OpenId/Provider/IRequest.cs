@@ -33,6 +33,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		bool IsResponseReady { get; }
 
 		/// <summary>
+		/// Gets or sets the security settings that apply to this request.
+		/// </summary>
+		/// <value>Defaults to the <see cref="OpenIdProvider.SecuritySettings"/> on the <see cref="OpenIdProvider"/>.</value>
+		ProviderSecuritySettings SecuritySettings { get; set; }
+
+		/// <summary>
 		/// Adds an extension to the response to send to the relying party.
 		/// </summary>
 		/// <param name="extension">The extension to add to the response message.</param>
@@ -66,6 +72,17 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		#region IRequest Members
+
+		/// <summary>
+		/// Gets or sets the security settings that apply to this request.
+		/// </summary>
+		/// <value>
+		/// Defaults to the <see cref="OpenIdProvider.SecuritySettings"/> on the <see cref="OpenIdProvider"/>.
+		/// </value>
+		ProviderSecuritySettings IRequest.SecuritySettings {
+			get { throw new NotImplementedException(); }
+			set { throw new NotImplementedException(); }
+		}
 
 		/// <summary>
 		/// Gets a value indicating whether the response is ready to be sent to the user agent.

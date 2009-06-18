@@ -16,9 +16,9 @@ namespace DotNetOpenAuth.Test {
 			Contract.ContractFailed += (sender, e) => {
 				if (e.FailureKind == ContractFailureKind.Precondition) {
 					// Currently we ignore these so that the regular ErrorUtilities can kick in.
-					e.Handled = true;
+					e.SetHandled();
 				} else {
-					e.Handled = true;
+					e.SetHandled();
 					Assert.Fail(e.FailureKind.ToString() + ": " + e.Message);
 				}
 			};

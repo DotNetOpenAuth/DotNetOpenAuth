@@ -17,6 +17,11 @@
 				"Default",                                              // Route name
 				"{controller}/{action}/{id}",                           // URL with parameters
 				new { controller = "Home", action = "Index", id = string.Empty });  // Parameter defaults
+
+			routes.MapRoute(
+				"Root",
+				string.Empty,
+				new { controller = "Home", action = "Index", id = string.Empty });
 		}
 
 		protected void Application_Start(object sender, EventArgs e) {

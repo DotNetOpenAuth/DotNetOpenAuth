@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 	using DotNetOpenAuth.OpenId.Extensions.OAuth;
 	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
+	using DotNetOpenAuth.OpenId.Extensions.UI;
 	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
@@ -39,6 +40,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 			this.RegisterExtension(AuthorizationRequest.Factory);
 			this.RegisterExtension(AuthorizationApprovedResponse.Factory);
 			this.RegisterExtension(AuthorizationDeclinedResponse.Factory);
+			this.RegisterExtension(UIRequest.Factory);
 		}
 
 		/// <summary>

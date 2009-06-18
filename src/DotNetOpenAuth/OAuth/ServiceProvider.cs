@@ -201,7 +201,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// Gets the OAuth authorization request included with an OpenID authentication
 		/// request.
 		/// </summary>
-		/// <param name="openIdAuthenticationRequest">The OpenID authentication request.</param>
+		/// <param name="openIdRequest">The OpenID authentication request.</param>
 		/// <returns>
 		/// The scope of access the relying party is requesting.
 		/// </returns>
@@ -210,14 +210,14 @@ namespace DotNetOpenAuth.OAuth {
 		/// out from the authentication request directly to ensure that the additional
 		/// security measures that are required are taken.</para>
 		/// </remarks>
-		public AuthorizationRequest ReadAuthorizationRequest(IAuthenticationRequest openIdAuthenticationRequest) {
-			Contract.Requires(openIdAuthenticationRequest != null);
+		public AuthorizationRequest ReadAuthorizationRequest(IHostProcessedRequest openIdRequest) {
+			Contract.Requires(openIdRequest != null);
 			Contract.Requires(this.TokenManager is ICombinedOpenIdProviderTokenManager);
-			ErrorUtilities.VerifyArgumentNotNull(openIdAuthenticationRequest, "openIdAuthenticationRequest");
+			ErrorUtilities.VerifyArgumentNotNull(openIdRequest, "openIdAuthenticationRequest");
 			var openidTokenManager = this.TokenManager as ICombinedOpenIdProviderTokenManager;
 			ErrorUtilities.VerifyOperation(openidTokenManager != null, OAuthStrings.OpenIdOAuthExtensionRequiresSpecialTokenManagerInterface, typeof(IOpenIdOAuthTokenManager).FullName);
 
-			var authzRequest = openIdAuthenticationRequest.GetExtension<AuthorizationRequest>();
+			var authzRequest = openIdRequest.GetExtension<AuthorizationRequest>();
 			if (authzRequest == null) {
 				return null;
 			}
@@ -225,7 +225,7 @@ namespace DotNetOpenAuth.OAuth {
 			// OpenID+OAuth spec section 9:
 			// The Combined Provider SHOULD verify that the consumer key passed in the
 			// request is authorized to be used for the realm passed in the request.
-			string expectedConsumerKey = openidTokenManager.GetConsumerKey(openIdAuthenticationRequest.Realm);
+			string expectedConsumerKey = openidTokenManager.GetConsumerKey(openIdRequest.Realm);
 			ErrorUtilities.VerifyProtocol(
 				string.Equals(expectedConsumerKey, authzRequest.Consumer, StringComparison.Ordinal),
 				OAuthStrings.OpenIdOAuthRealmConsumerKeyDoNotMatch);
@@ -271,20 +271,41 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="request">The Consumer's original authorization request.</param>
 		/// <returns>
 		/// The message to send to the Consumer using <see cref="Channel"/> if one is necessary.
-		/// Null if the Consumer did not request a callback.
+		/// Null if the Consumer did not request a callback as part of the authorization request.
 		/// </returns>
 		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Consistent user experience with instance.")]
 		public UserAuthorizationResponse PrepareAuthorizationResponse(UserAuthorizationRequest request) {
+			Contract.Requires(request != null);
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			if (request.Callback != null) {
-				var authorization = new UserAuthorizationResponse(request.Callback) {
-					RequestToken = request.RequestToken,
-				};
-				return authorization;
+				return this.PrepareAuthorizationResponse(request, request.Callback);
 			} else {
 				return null;
 			}
+		}
+
+		/// <summary>
+		/// Prepares the message to send back to the consumer following proper authorization of
+		/// a token by an interactive user at the Service Provider's web site.
+		/// </summary>
+		/// <param name="request">The Consumer's original authorization request.</param>
+		/// <param name="callback">The callback URI the consumer has previously registered
+		/// with this service provider.</param>
+		/// <returns>
+		/// The message to send to the Consumer using <see cref="Channel"/>.
+		/// </returns>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Consistent user experience with instance.")]
+		public UserAuthorizationResponse PrepareAuthorizationResponse(UserAuthorizationRequest request, Uri callback) {
+			Contract.Requires(request != null);
+			Contract.Requires(callback != null);
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			ErrorUtilities.VerifyArgumentNotNull(callback, "callback");
+
+			var authorization = new UserAuthorizationResponse(request.Callback) {
+				RequestToken = request.RequestToken,
+			};
+			return authorization;
 		}
 
 		/// <summary>

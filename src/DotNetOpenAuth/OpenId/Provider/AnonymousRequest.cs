@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId.Provider {
+	using System;
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -13,6 +14,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// Provides access to a host Provider to read an incoming extension-only checkid request message,
 	/// and supply extension responses or a cancellation message to the RP.
 	/// </summary>
+	[Serializable]
 	internal class AnonymousRequest : HostProcessedRequest, IAnonymousRequest {
 		/// <summary>
 		/// The extension-response message to send, if the host site chooses to send it.

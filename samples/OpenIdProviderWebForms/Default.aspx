@@ -21,6 +21,8 @@
 			}
 
 			var bookmarkUrl = document.location + "?rp=" + encodeURIComponent(rpRealm);
+			var bookmarkParagraph = document.getElementById('bookmarkParagraph');
+			var bookmark = document.getElementById('bookmark');
 			bookmarkParagraph.style.display = '';
 			bookmark.href = bookmarkUrl;
 			bookmark.innerHTML = bookmarkUrl;

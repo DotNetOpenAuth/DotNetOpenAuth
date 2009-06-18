@@ -17,6 +17,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// <summary>
 	/// A base class from which identity and non-identity RP requests can derive.
 	/// </summary>
+	[Serializable]
 	internal abstract class HostProcessedRequest : Request, IHostProcessedRequest {
 		/// <summary>
 		/// The negative assertion to send, if the host site chooses to send it.
@@ -24,12 +25,17 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		private readonly NegativeAssertionResponse negativeResponse;
 
 		/// <summary>
+		/// A cache of the result from discovery of the Realm URL.
+		/// </summary>
+		private RelyingPartyDiscoveryResult? realmDiscoveryResult;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="HostProcessedRequest"/> class.
 		/// </summary>
 		/// <param name="provider">The provider that received the request.</param>
 		/// <param name="request">The incoming request message.</param>
 		protected HostProcessedRequest(OpenIdProvider provider, SignedResponseRequest request)
-			: base(request) {
+			: base(request, provider.SecuritySettings) {
 			Contract.Requires(provider != null);
 
 			this.negativeResponse = new NegativeAssertionResponse(request, provider.Channel);
@@ -63,6 +69,13 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		#endregion
 
 		/// <summary>
+		/// Gets a value indicating whether realm discovery been performed.
+		/// </summary>
+		internal bool HasRealmDiscoveryBeenPerformed {
+			get { return this.realmDiscoveryResult.HasValue; }
+		}
+
+		/// <summary>
 		/// Gets the negative response.
 		/// </summary>
 		protected NegativeAssertionResponse NegativeResponse {
@@ -84,9 +97,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// succeeded.
 		/// </summary>
 		/// <param name="provider">The OpenIdProvider that is performing the RP discovery.</param>
-		/// <returns>
-		/// 	<c>true</c> if the Relying Party passed discovery verification; <c>false</c> otherwise.
-		/// </returns>
+		/// <returns>Result of realm discovery.</returns>
 		/// <remarks>
 		/// Return URL verification is only attempted if this property is queried.
 		/// The result of the verification is cached per request so calling this
@@ -97,9 +108,25 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			Contract.Requires(provider != null);
 			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
 
+			if (!this.realmDiscoveryResult.HasValue) {
+				this.realmDiscoveryResult = this.IsReturnUrlDiscoverableCore(provider);
+			}
+
+			return this.realmDiscoveryResult.Value;
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether verification of the return URL claimed by the Relying Party
+		/// succeeded.
+		/// </summary>
+		/// <param name="provider">The OpenIdProvider that is performing the RP discovery.</param>
+		/// <returns>Result of realm discovery.</returns>
+		private RelyingPartyDiscoveryResult IsReturnUrlDiscoverableCore(OpenIdProvider provider) {
+			Contract.Requires(provider != null);
+
 			ErrorUtilities.VerifyInternal(this.Realm != null, "Realm should have been read or derived by now.");
 			try {
-				if (provider.SecuritySettings.RequireSsl && this.Realm.Scheme != Uri.UriSchemeHttps) {
+				if (this.SecuritySettings.RequireSsl && this.Realm.Scheme != Uri.UriSchemeHttps) {
 					Logger.OpenId.WarnFormat("RP discovery failed because RequireSsl is true and RP discovery would begin at insecure URL {0}.", this.Realm);
 					return RelyingPartyDiscoveryResult.NoServiceDocument;
 				}

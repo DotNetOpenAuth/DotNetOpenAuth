@@ -23,39 +23,27 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// </summary>
 	internal class ExtensionsBindingElement : IChannelBindingElement {
 		/// <summary>
-		/// The security settings on the Relying Party that is hosting this binding element.
+		/// The security settings that apply to this binding element.
 		/// </summary>
-		private RelyingPartySecuritySettings rpSecuritySettings;
+		private readonly SecuritySettings securitySettings;
 
 		/// <summary>
-		/// The security settings on the Provider that is hosting this binding element.
+		/// The security settings that apply to this relying party, if it is a relying party.
 		/// </summary>
-		private ProviderSecuritySettings opSecuritySettings;
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ExtensionsBindingElement"/> class.
-		/// </summary>
-		/// <param name="extensionFactory">The extension factory.</param>
-		/// <param name="securitySettings">The security settings to apply.</param>
-		internal ExtensionsBindingElement(IOpenIdExtensionFactory extensionFactory, RelyingPartySecuritySettings securitySettings) {
-			ErrorUtilities.VerifyArgumentNotNull(extensionFactory, "extensionFactory");
-			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
-
-			this.ExtensionFactory = extensionFactory;
-			this.rpSecuritySettings = securitySettings;
-		}
+		private readonly RelyingPartySecuritySettings relyingPartySecuritySettings;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ExtensionsBindingElement"/> class.
 		/// </summary>
 		/// <param name="extensionFactory">The extension factory.</param>
-		/// <param name="securitySettings">The security settings to apply.</param>
-		internal ExtensionsBindingElement(IOpenIdExtensionFactory extensionFactory, ProviderSecuritySettings securitySettings) {
+		/// <param name="securitySettings">The security settings.</param>
+		internal ExtensionsBindingElement(IOpenIdExtensionFactory extensionFactory, SecuritySettings securitySettings) {
 			ErrorUtilities.VerifyArgumentNotNull(extensionFactory, "extensionFactory");
 			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
 
 			this.ExtensionFactory = extensionFactory;
-			this.opSecuritySettings = securitySettings;
+			this.securitySettings = securitySettings;
+			this.relyingPartySecuritySettings = securitySettings as RelyingPartySecuritySettings;
 		}
 
 		#region IChannelBindingElement Members
@@ -167,10 +155,12 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 				// Now search again, considering ALL extensions whether they are signed or not,
 				// skipping the signed ones and adding the new ones as unsigned extensions.
-				Func<string, bool> isNotSigned = typeUri => !extendableMessage.Extensions.Cast<IOpenIdMessageExtension>().Any(ext => ext.TypeUri == typeUri);
-				foreach (IOpenIdMessageExtension unsignedExtension in this.GetExtensions(extendableMessage, false, isNotSigned)) {
-					unsignedExtension.IsSignedByRemoteParty = false;
-					extendableMessage.Extensions.Add(unsignedExtension);
+				if (this.relyingPartySecuritySettings == null || !this.relyingPartySecuritySettings.IgnoreUnsignedExtensions) {
+					Func<string, bool> isNotSigned = typeUri => !extendableMessage.Extensions.Cast<IOpenIdMessageExtension>().Any(ext => ext.TypeUri == typeUri);
+					foreach (IOpenIdMessageExtension unsignedExtension in this.GetExtensions(extendableMessage, false, isNotSigned)) {
+						unsignedExtension.IsSignedByRemoteParty = false;
+						extendableMessage.Extensions.Add(unsignedExtension);
+					}
 				}
 
 				return MessageProtections.None;

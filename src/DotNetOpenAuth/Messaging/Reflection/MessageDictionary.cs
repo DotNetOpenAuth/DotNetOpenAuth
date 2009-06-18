@@ -95,7 +95,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		}
 
 		/// <summary>
-		/// Gets the set of official OAuth keys that have non-null values associated with them.
+		/// Gets the set of official message part names that have non-null values associated with them.
 		/// </summary>
 		public ICollection<string> DeclaredKeys {
 			get {

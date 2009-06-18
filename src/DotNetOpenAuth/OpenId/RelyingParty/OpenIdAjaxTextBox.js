@@ -273,7 +273,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			box.dnoi_internal.claimedIdentifier = null;
 			window.status = authenticationFailedToolTip;
 			box.title = authenticationFailedToolTip;
-		} else if (state = '' || state == null) {
+		} else if (state == '' || state == null) {
 			box.dnoi_internal.openid_logo.style.visibility = 'visible';
 			box.title = '';
 			box.dnoi_internal.claimedIdentifier = null;
@@ -521,7 +521,31 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		this.trySetup = function() {
 			self.abort(); // ensure no concurrent attempts
 			window.waiting_openidBox = box;
-			self.popup = window.open(self.setup, 'opLogin', 'status=0,toolbar=0,location=1,resizable=1,scrollbars=1,width=800,height=600');
+			var width = 800;
+			var height = 600;
+			if (self.setup.getQueryArgValue("openid.return_to").indexOf("dotnetopenid.popupUISupported") >= 0) {
+				width = 450;
+				height = 500;
+			}
+
+			var left = (screen.width - width) / 2;
+			var top = (screen.height - height) / 2;
+			self.popup = window.open(self.setup, 'opLogin', 'status=0,toolbar=0,location=1,resizable=1,scrollbars=1,left=' + left + ',top=' + top + ',width=' + width + ',height=' + height);
+
+			// If the OP supports the UI extension it MAY close its own window
+			// for a negative assertion.  We must be able to recover from that scenario.
+			var localSelf = self;
+			self.popupCloseChecker = window.setInterval(function() {
+				if (localSelf.popup && localSelf.popup.closed) {
+					// So the user canceled and the window closed.
+					// It turns out we hae nothing special to do.
+					// If we were graying out the entire page while the child window was up,
+					// we would probably revert that here.
+					trace('User or OP canceled by closing the window.');
+					window.clearInterval(localSelf.popupCloseChecker);
+					localSelf.popup = null;
+				}
+			}, 250);
 		};
 	};
 
@@ -719,8 +743,10 @@ function Uri(url) {
 		var queryStringPairs = this.queryString.split('&');
 
 		for (var i = 0; i < queryStringPairs.length; i++) {
-			var pair = queryStringPairs[i].split('=');
-			this.Pairs.push(new KeyValuePair(unescape(pair[0]), unescape(pair[1])))
+			var equalsAt = queryStringPairs[i].indexOf('=');
+			left = (equalsAt >= 0) ? queryStringPairs[i].substring(0, equalsAt) : null;
+			right = (equalsAt >= 0) ? queryStringPairs[i].substring(equalsAt + 1) : queryStringPairs[i];
+			this.Pairs.push(new KeyValuePair(unescape(left), unescape(right)));
 		}
 	};
 

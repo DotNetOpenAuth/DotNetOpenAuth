@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.Test.Messaging
 			var args = new Dictionary<string, string>();
 			args.Add("a", "b");
 			args.Add("c/d", "e/f");
-			Assert.AreEqual("a=b&c%2fd=e%2ff", MessagingUtilities.CreateQueryString(args));
+			Assert.AreEqual("a=b&c%2Fd=e%2Ff", MessagingUtilities.CreateQueryString(args));
 		}
 
 		[TestMethod]
@@ -42,11 +42,11 @@ namespace DotNetOpenAuth.Test.Messaging
 			args.Add("a", "b");
 			args.Add("c/d", "e/f");
 			MessagingUtilities.AppendQueryArgs(uri, args);
-			Assert.AreEqual("http://baseline.org/page?a=b&c%2fd=e%2ff", uri.Uri.AbsoluteUri);
+			Assert.AreEqual("http://baseline.org/page?a=b&c%2Fd=e%2Ff", uri.Uri.AbsoluteUri);
 			args.Clear();
 			args.Add("g", "h");
 			MessagingUtilities.AppendQueryArgs(uri, args);
-			Assert.AreEqual("http://baseline.org/page?a=b&c%2fd=e%2ff&g=h", uri.Uri.AbsoluteUri);
+			Assert.AreEqual("http://baseline.org/page?a=b&c%2Fd=e%2Ff&g=h", uri.Uri.AbsoluteUri);
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
@@ -118,6 +118,26 @@ namespace DotNetOpenAuth.Test.Messaging
 			MessagingUtilities.ApplyHeadersToResponse(headers, response);
 
 			Assert.AreEqual(headers[HttpResponseHeader.ContentType], response.ContentType);
+		}
+
+		/// <summary>
+		/// Verifies RFC 3986 compliant URI escaping, as required by the OpenID and OAuth specifications.
+		/// </summary>
+		/// <remarks>
+		/// The tests in this method come from http://wiki.oauth.net/TestCases
+		/// </remarks>
+		[TestMethod]
+		public void EscapeUriDataStringRfc3986Tests() {
+			Assert.AreEqual("abcABC123", MessagingUtilities.EscapeUriDataStringRfc3986("abcABC123"));
+			Assert.AreEqual("-._~", MessagingUtilities.EscapeUriDataStringRfc3986("-._~"));
+			Assert.AreEqual("%25", MessagingUtilities.EscapeUriDataStringRfc3986("%"));
+			Assert.AreEqual("%2B", MessagingUtilities.EscapeUriDataStringRfc3986("+"));
+			Assert.AreEqual("%26%3D%2A", MessagingUtilities.EscapeUriDataStringRfc3986("&=*"));
+			Assert.AreEqual("%0A", MessagingUtilities.EscapeUriDataStringRfc3986("\n"));
+			Assert.AreEqual("%20", MessagingUtilities.EscapeUriDataStringRfc3986(" "));
+			Assert.AreEqual("%7F", MessagingUtilities.EscapeUriDataStringRfc3986("\u007f"));
+			Assert.AreEqual("%C2%80", MessagingUtilities.EscapeUriDataStringRfc3986("\u0080"));
+			Assert.AreEqual("%E3%80%81", MessagingUtilities.EscapeUriDataStringRfc3986("\u3001"));
 		}
 	}
 }

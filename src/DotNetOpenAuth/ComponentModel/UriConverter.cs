@@ -76,7 +76,7 @@ namespace DotNetOpenAuth.ComponentModel {
 			}
 
 			MemberInfo uriCtor = typeof(Uri).GetConstructor(new Type[] { typeof(string) });
-			return new InstanceDescriptor(uriCtor, new object[] { value.AbsoluteUri });
+			return CreateInstanceDescriptor(uriCtor, new object[] { value.AbsoluteUri });
 		}
 
 		/// <summary>

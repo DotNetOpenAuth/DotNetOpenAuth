@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
@@ -29,6 +30,11 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// instance of <see cref="StandardProviderApplicationStore"/> to use.
 		/// </summary>
 		private const string ApplicationStoreKey = "DotNetOpenAuth.OpenId.Provider.OpenIdProvider.ApplicationStore";
+
+		/// <summary>
+		/// Backing store for the <see cref="Behaviors"/> property.
+		/// </summary>
+		private readonly Collection<IProviderBehavior> behaviors = new Collection<IProviderBehavior>();
 
 		/// <summary>
 		/// Backing field for the <see cref="SecuritySettings"/> property.
@@ -73,6 +79,10 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 			this.AssociationStore = associationStore;
 			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OpenId.Provider.SecuritySettings.CreateSecuritySettings();
+			foreach (var behavior in DotNetOpenAuthSection.Configuration.OpenId.Provider.Behaviors.CreateInstances(false)) {
+				this.behaviors.Add(behavior);
+			}
+
 			this.Channel = new OpenIdChannel(this.AssociationStore, nonceStore, this.SecuritySettings);
 		}
 
@@ -138,6 +148,13 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		public IErrorReporting ErrorReporting { get; set; }
 
 		/// <summary>
+		/// Gets a list of custom behaviors to apply to OpenID actions.
+		/// </summary>
+		internal ICollection<IProviderBehavior> Behaviors {
+			get { return this.behaviors; }
+		}
+
+		/// <summary>
 		/// Gets the association store.
 		/// </summary>
 		internal IAssociationStore<AssociationRelyingPartyType> AssociationStore { get; private set; }
@@ -192,31 +209,50 @@ namespace DotNetOpenAuth.OpenId.Provider {
 					// If the incoming request does not resemble an OpenID message at all,
 					// it's probably a user who just navigated to this URL, and we should
 					// just return null so the host can display a message to the user.
-					if (httpRequestInfo.HttpMethod == "GET" && !httpRequestInfo.Url.QueryStringContainPrefixedParameters(Protocol.Default.openid.Prefix)) {
+					if (httpRequestInfo.HttpMethod == "GET" && !httpRequestInfo.UrlBeforeRewriting.QueryStringContainPrefixedParameters(Protocol.Default.openid.Prefix)) {
 						return null;
 					}
 
 					ErrorUtilities.ThrowProtocol(MessagingStrings.UnexpectedMessageReceivedOfMany);
 				}
 
+				IRequest result = null;
+
 				var checkIdMessage = incomingMessage as CheckIdRequest;
 				if (checkIdMessage != null) {
-					return new AuthenticationRequest(this, checkIdMessage);
+					result = new AuthenticationRequest(this, checkIdMessage);
 				}
 
-				var extensionOnlyRequest = incomingMessage as SignedResponseRequest;
-				if (extensionOnlyRequest != null) {
-					return new AnonymousRequest(this, extensionOnlyRequest);
+				if (result == null) {
+					var extensionOnlyRequest = incomingMessage as SignedResponseRequest;
+					if (extensionOnlyRequest != null) {
+						result = new AnonymousRequest(this, extensionOnlyRequest);
+					}
 				}
 
-				var checkAuthMessage = incomingMessage as CheckAuthenticationRequest;
-				if (checkAuthMessage != null) {
-					return new AutoResponsiveRequest(incomingMessage, new CheckAuthenticationResponse(checkAuthMessage, this));
+				if (result == null) {
+					var checkAuthMessage = incomingMessage as CheckAuthenticationRequest;
+					if (checkAuthMessage != null) {
+						result = new AutoResponsiveRequest(incomingMessage, new CheckAuthenticationResponse(checkAuthMessage, this), this.SecuritySettings);
+					}
 				}
 
-				var associateMessage = incomingMessage as AssociateRequest;
-				if (associateMessage != null) {
-					return new AutoResponsiveRequest(incomingMessage, associateMessage.CreateResponse(this.AssociationStore, this.SecuritySettings));
+				if (result == null) {
+					var associateMessage = incomingMessage as AssociateRequest;
+					if (associateMessage != null) {
+						result = new AutoResponsiveRequest(incomingMessage, associateMessage.CreateResponse(this.AssociationStore, this.SecuritySettings), this.SecuritySettings);
+					}
+				}
+
+				if (result != null) {
+					foreach (var behavior in this.Behaviors) {
+						if (behavior.OnIncomingRequest(result)) {
+							// This behavior matched this request.
+							break;
+						}
+					}
+
+					return result;
 				}
 
 				throw ErrorUtilities.ThrowProtocol(MessagingStrings.UnexpectedMessageReceivedOfMany);
@@ -248,6 +284,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			Contract.Requires(((Request)request).IsResponseReady);
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
+			this.ApplyBehaviorsToResponse(request);
 			Request requestInternal = (Request)request;
 			this.Channel.Send(requestInternal.Response);
 		}
@@ -264,6 +301,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			Contract.Requires(((Request)request).IsResponseReady);
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
+			this.ApplyBehaviorsToResponse(request);
 			Request requestInternal = (Request)request;
 			return this.Channel.PrepareResponse(requestInternal.Response);
 		}
@@ -391,6 +429,22 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		#endregion
 
 		/// <summary>
+		/// Applies all behaviors to the response message.
+		/// </summary>
+		/// <param name="request">The request.</param>
+		private void ApplyBehaviorsToResponse(IRequest request) {
+			var authRequest = request as IAuthenticationRequest;
+			if (authRequest != null) {
+				foreach (var behavior in this.Behaviors) {
+					if (behavior.OnOutgoingResponse(authRequest)) {
+						// This behavior matched this request.
+						break;
+					}
+				}
+			}
+		}
+
+		/// <summary>
 		/// Prepares the return value for the GetRequest method in the event of an exception.
 		/// </summary>
 		/// <param name="ex">The exception that forms the basis of the error response.  Must not be null.</param>
@@ -445,9 +499,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 
 			if (incomingMessage != null) {
-				return new AutoResponsiveRequest(incomingMessage, errorMessage);
+				return new AutoResponsiveRequest(incomingMessage, errorMessage, this.SecuritySettings);
 			} else {
-				return new AutoResponsiveRequest(errorMessage);
+				return new AutoResponsiveRequest(errorMessage, this.SecuritySettings);
 			}
 		}
 	}

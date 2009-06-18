@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
+	using System.Globalization;
 	using System.IO;
 	using System.Net;
 	using System.ServiceModel.Channels;
@@ -53,7 +54,8 @@ namespace DotNetOpenAuth.Messaging {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			this.HttpMethod = request.HttpMethod;
-			this.Url = GetPublicFacingUrl(request);
+			this.Url = request.Url;
+			this.UrlBeforeRewriting = GetPublicFacingUrl(request);
 			this.RawUrl = request.RawUrl;
 			this.Headers = GetHeaderCollection(request.Headers);
 			this.InputStream = request.InputStream;
@@ -87,6 +89,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			this.HttpMethod = httpMethod;
 			this.Url = requestUrl;
+			this.UrlBeforeRewriting = requestUrl;
 			this.RawUrl = rawUrl;
 			this.Headers = headers;
 			this.InputStream = inputStream;
@@ -102,6 +105,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			this.HttpMethod = listenerRequest.HttpMethod;
 			this.Url = listenerRequest.Url;
+			this.UrlBeforeRewriting = listenerRequest.Url;
 			this.RawUrl = listenerRequest.RawUrl;
 			this.Headers = new WebHeaderCollection();
 			foreach (string key in listenerRequest.Headers) {
@@ -125,6 +129,7 @@ namespace DotNetOpenAuth.Messaging {
 			this.HttpMethod = request.Method;
 			this.Headers = request.Headers;
 			this.Url = requestUri;
+			this.UrlBeforeRewriting = requestUri;
 			this.RawUrl = MakeUpRawUrlFromUrl(requestUri);
 		}
 
@@ -146,6 +151,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			this.HttpMethod = request.Method;
 			this.Url = request.RequestUri;
+			this.UrlBeforeRewriting = request.RequestUri;
 			this.RawUrl = MakeUpRawUrlFromUrl(request.RequestUri);
 			this.Headers = GetHeaderCollection(request.Headers);
 			this.InputStream = null;
@@ -190,27 +196,13 @@ namespace DotNetOpenAuth.Messaging {
 		internal string RawUrl { get; set; }
 
 		/// <summary>
-		/// Gets the full URL of a request before rewriting.
+		/// Gets or sets the full public URL used by the remote client to initiate this request,
+		/// before any URL rewriting and before any changes made by web farm load distributors.
 		/// </summary>
-		internal Uri UrlBeforeRewriting {
-			get {
-				if (this.Url == null || this.RawUrl == null) {
-					return null;
-				}
-
-				// We use Request.Url for the full path to the server, and modify it
-				// with Request.RawUrl to capture both the cookieless session "directory" if it exists
-				// and the original path in case URL rewriting is going on.  We don't want to be
-				// fooled by URL rewriting because we're comparing the actual URL with what's in
-				// the return_to parameter in some cases.
-				// Response.ApplyAppPathModifier(builder.Path) would have worked for the cookieless
-				// session, but not the URL rewriting problem.
-				return new Uri(this.Url, this.RawUrl);
-			}
-		}
+		internal Uri UrlBeforeRewriting { get; set; }
 
 		/// <summary>
-		/// Gets the query part of the URL (The ? and everything after it).
+		/// Gets the query part of the URL (The ? and everything after it), after URL rewriting.
 		/// </summary>
 		internal string Query {
 			get { return this.Url != null ? this.Url.Query : null; }
@@ -280,6 +272,7 @@ namespace DotNetOpenAuth.Messaging {
 						this.queryStringBeforeRewriting = this.QueryString;
 					} else {
 						// Rewriting detected!  Recover the original request URI.
+						ErrorUtilities.VerifyInternal(this.UrlBeforeRewriting != null, "UrlBeforeRewriting is null, so the query string cannot be determined.");
 						this.queryStringBeforeRewriting = HttpUtility.ParseQueryString(this.UrlBeforeRewriting.Query);
 					}
 				}
@@ -296,7 +289,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// 	<c>true</c> if this request's URL was rewritten; otherwise, <c>false</c>.
 		/// </value>
 		internal bool IsUrlRewritten {
-			get { return this.Url.PathAndQuery != this.RawUrl; }
+			get { return this.Url != this.UrlBeforeRewriting; }
 		}
 
 		/// <summary>
@@ -336,14 +329,21 @@ namespace DotNetOpenAuth.Messaging {
 				string[] hostAndPort = request.ServerVariables["HTTP_HOST"].Split(new[] { ':' }, 2);
 				publicRequestUri.Host = hostAndPort[0];
 				if (hostAndPort.Length > 1) {
-					publicRequestUri.Port = Convert.ToInt32(hostAndPort[1]);
+					publicRequestUri.Port = Convert.ToInt32(hostAndPort[1], CultureInfo.InvariantCulture);
 				} else {
 					publicRequestUri.Port = publicRequestUri.Scheme == Uri.UriSchemeHttps ? 443 : 80;
 				}
 				return publicRequestUri.Uri;
 			} else {
 				// Failover to the method that works for non-web farm enviroments.
-				return request.Url;
+				// We use Request.Url for the full path to the server, and modify it
+				// with Request.RawUrl to capture both the cookieless session "directory" if it exists
+				// and the original path in case URL rewriting is going on.  We don't want to be
+				// fooled by URL rewriting because we're comparing the actual URL with what's in
+				// the return_to parameter in some cases.
+				// Response.ApplyAppPathModifier(builder.Path) would have worked for the cookieless
+				// session, but not the URL rewriting problem.
+				return new Uri(request.Url, request.RawUrl);
 			}
 		}
 

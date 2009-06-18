@@ -307,4 +307,31 @@ Discovered endpoint info:
   <data name="ReturnToRequiredForOperation" xml:space="preserve">
     <value>The ReturnTo property must not be null to support this operation.</value>
   </data>
+  <data name="UnsolicitedAssertionRejectionRequiresNonceStore" xml:space="preserve">
+    <value>Rejecting unsolicited assertions requires a nonce store and an association store.</value>
+  </data>
+  <data name="UnsolicitedAssertionsNotAllowed" xml:space="preserve">
+    <value>Unsolicited assertions are not allowed at this relying party.</value>
+  </data>
+  <data name="DelegatingIdentifiersNotAllowed" xml:space="preserve">
+    <value>Only OpenIDs issued directly by their OpenID Provider are allowed here.</value>
+  </data>
+  <data name="XriResolutionDisabled" xml:space="preserve">
+    <value>XRI support has been disabled at this site.</value>
+  </data>
+  <data name="AssociationStoreRequired" xml:space="preserve">
+    <value>No association store has been given but is required for the current configuration.</value>
+  </data>
+  <data name="UnexpectedEnumPropertyValue" xml:space="preserve">
+    <value>The property {0} had unexpected value {1}.</value>
+  </data>
+  <data name="NoIdentifierSet" xml:space="preserve">
+    <value>No identifier has been set.</value>
+  </data>
+  <data name="PropertyValueNotSupported" xml:space="preserve">
+    <value>This property value is not supported by this control.</value>
+  </data>
+  <data name="ArgumentIsPpidIdentifier" xml:space="preserve">
+    <value>This is already a PPID Identifier.</value>
+  </data>
 </root>

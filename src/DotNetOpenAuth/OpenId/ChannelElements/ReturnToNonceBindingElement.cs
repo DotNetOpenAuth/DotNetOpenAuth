@@ -13,11 +13,13 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// This binding element adds a nonce to a Relying Party's outgoing 
 	/// authentication request when working against an OpenID 1.0 Provider
-	/// in order to protect against replay attacks.
+	/// in order to protect against replay attacks or on all authentication
+	/// requests to distinguish solicited from unsolicited assertions.
 	/// </summary>
 	/// <remarks>
 	/// <para>This nonce goes beyond the OpenID 1.x spec, but adds to security.
@@ -32,19 +34,23 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// <para>
 	/// This binding element deactivates itself for OpenID 2.0 (or later) messages 
 	/// since they are automatically protected in the protocol by the Provider's
-	/// openid.response_nonce parameter.
+	/// openid.response_nonce parameter.  The exception to this is when
+	/// <see cref="RelyingPartySecuritySettings.RejectUnsolicitedAssertions"/> is
+	/// set to <c>true</c>, which will not only add a request nonce to every outgoing
+	/// authentication request but also require that it be present in positive
+	/// assertions, effectively disabling unsolicited assertions.
 	/// </para>
 	/// <para>In the messaging stack, this binding element looks like an ordinary
 	/// transform-type of binding element rather than a protection element,
 	/// due to its required order in the channel stack and that it exists
-	/// only on the RP side and only on 1.0 messages.</para>
+	/// only on the RP side and only on some messages.</para>
 	/// </remarks>
 	internal class ReturnToNonceBindingElement : IChannelBindingElement {
 		/// <summary>
 		/// The parameter of the callback parameter we tack onto the return_to URL
 		/// to store the replay-detection nonce.
 		/// </summary>
-		internal const string NonceParameter = "dnoi.request_nonce";
+		internal const string NonceParameter = OpenIdUtilities.CustomParameterPrefix + "request_nonce";
 
 		/// <summary>
 		/// The length of the generated nonce's random part.
@@ -57,6 +63,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		private INonceStore nonceStore;
 
 		/// <summary>
+		/// The security settings at the RP.
+		/// </summary>
+		private RelyingPartySecuritySettings securitySettings;
+
+		/// <summary>
 		/// Backing field for the <see cref="Channel"/> property.
 		/// </summary>
 		private Channel channel;
@@ -65,10 +76,15 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Initializes a new instance of the <see cref="ReturnToNonceBindingElement"/> class.
 		/// </summary>
 		/// <param name="nonceStore">The nonce store to use.</param>
-		internal ReturnToNonceBindingElement(INonceStore nonceStore) {
+		/// <param name="securitySettings">The security settings of the RP.</param>
+		internal ReturnToNonceBindingElement(INonceStore nonceStore, RelyingPartySecuritySettings securitySettings) {
+			Contract.Requires(nonceStore != null);
+			Contract.Requires(securitySettings != null);
 			ErrorUtilities.VerifyArgumentNotNull(nonceStore, "nonceStore");
+			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
 
 			this.nonceStore = nonceStore;
+			this.securitySettings = securitySettings;
 		}
 
 		#region IChannelBindingElement Properties
@@ -124,9 +140,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
-			// We only add a nonce to 1.x auth requests.
+			// We only add a nonce to some auth requests.
 			SignedResponseRequest request = message as SignedResponseRequest;
-			if (request != null && request.Version.Major < 2) {
+			if (this.UseRequestNonce(request)) {
 				request.AddReturnToArguments(NonceParameter, CustomNonce.NewNonce().Serialize());
 
 				return MessageProtections.ReplayProtection;
@@ -154,9 +170,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// </remarks>
 		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
 			IndirectSignedResponse response = message as IndirectSignedResponse;
-			if (response != null && response.Version.Major < 2) {
+			if (this.UseRequestNonce(response)) {
 				string nonceValue = response.GetReturnToArgument(NonceParameter);
-				ErrorUtilities.VerifyProtocol(nonceValue != null, OpenIdStrings.UnsolicitedAssertionsNotAllowedFrom1xOPs);
+				ErrorUtilities.VerifyProtocol(
+					nonceValue != null,
+					this.securitySettings.RejectUnsolicitedAssertions ? OpenIdStrings.UnsolicitedAssertionsNotAllowed : OpenIdStrings.UnsolicitedAssertionsNotAllowedFrom1xOPs);
 
 				CustomNonce nonce = CustomNonce.Deserialize(nonceValue);
 				DateTime expirationDate = nonce.CreationDateUtc + MaximumMessageAge;
@@ -176,6 +194,19 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Determines whether a request nonce should be applied the request
+		/// or should be expected in the response.
+		/// </summary>
+		/// <param name="message">The authentication request or the positive assertion response.</param>
+		/// <returns>
+		/// <c>true</c> if the message exchanged with an OpenID 1.x provider
+		/// or if unsolicited assertions should be rejected at the RP; otherwise <c>false</c>.
+		/// </returns>
+		private bool UseRequestNonce(IMessage message) {
+			return message != null && (message.Version.Major < 2 || this.securitySettings.RejectUnsolicitedAssertions);
+		}
 
 		/// <summary>
 		/// A special DotNetOpenId-only nonce used by the RP when talking to 1.0 OPs in order

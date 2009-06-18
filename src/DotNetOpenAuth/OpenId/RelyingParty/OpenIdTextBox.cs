@@ -15,9 +15,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.ComponentModel;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Drawing.Design;
 	using System.Globalization;
 	using System.Net;
+	using System.Text;
 	using System.Text.RegularExpressions;
 	using System.Web;
 	using System.Web.Security;
@@ -26,6 +28,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
+	using DotNetOpenAuth.OpenId.Extensions.UI;
 
 	/// <summary>
 	/// An ASP.NET control that provides a minimal text box that is OpenID-aware.
@@ -74,6 +77,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#endregion
 
 		#region Property viewstate keys
+
+		/// <summary>
+		/// The viewstate key to use for the <see cref="Popup"/> property.
+		/// </summary>
+		private const string PopupViewStateKey = "Popup";
 
 		/// <summary>
 		/// The viewstate key to use for the <see cref="RequestEmail"/> property.
@@ -156,11 +164,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string StatelessViewStateKey = "Stateless";
 
 		/// <summary>
-		/// The viewstate key to use for the <see cref="ImmediateMode"/> property.
-		/// </summary>
-		private const string ImmediateModeViewStateKey = "ImmediateMode";
-
-		/// <summary>
 		/// The viewstate key to use for the <see cref="RequestBirthDate"/> property.
 		/// </summary>
 		private const string RequestBirthDateViewStateKey = "RequestBirthDate";
@@ -173,6 +176,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#endregion
 
 		#region Property defaults
+
+		/// <summary>
+		/// The default value for the <see cref="Popup"/> property.
+		/// </summary>
+		private const PopupBehavior PopupDefault = PopupBehavior.Never;
 
 		/// <summary>
 		/// The default value for the <see cref="Columns"/> property.
@@ -193,11 +201,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The default value for the <see cref="RequireSsl"/> property.
 		/// </summary>
 		private const bool RequireSslDefault = false;
-
-		/// <summary>
-		/// The default value for the <see cref="ImmediateMode"/> property.
-		/// </summary>
-		private const bool ImmediateModeDefault = false;
 
 		/// <summary>
 		/// The default value for the <see cref="Stateless"/> property.
@@ -287,6 +290,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#endregion
 
 		/// <summary>
+		/// The callback parameter to use for recognizing when the callback is in a popup window.
+		/// </summary>
+		private const string UIPopupCallbackKey = OpenIdUtilities.CustomParameterPrefix + "uipopup";
+
+		/// <summary>
+		/// The callback parameter to use for recognizing when the callback is in the parent window.
+		/// </summary>
+		private const string UIPopupCallbackParentKey = OpenIdUtilities.CustomParameterPrefix + "uipopupParent";
+
+		/// <summary>
 		/// The callback parameter for use with persisting the <see cref="UsePersistentCookie"/> property.
 		/// </summary>
 		private const string UsePersistentCookieCallbackKey = "OpenIdTextBox_UsePersistentCookie";
@@ -340,6 +353,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public event EventHandler<OpenIdEventArgs> SetupRequired;
 
 		#endregion
+
 		#region IEditableTextControl Members
 
 		/// <summary>
@@ -438,25 +452,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to use immediate mode in the 
-		/// OpenID protocol.
+		/// Gets or sets a value indicating when to use a popup window to complete the login experience.
 		/// </summary>
-		/// <value>
-		/// True if a Provider should reply immediately to the authentication request
-		/// without interacting with the user.  False if the Provider can take time
-		/// to authenticate the user in order to complete an authentication attempt.
-		/// </value>
-		/// <remarks>
-		/// Setting this to true is sometimes useful in AJAX scenarios.  Setting this to
-		/// true can cause failed authentications when the user truly controls an
-		/// Identifier, but must complete an authentication step with the Provider before
-		/// the Provider will approve the login from this relying party.
-		/// </remarks>
-		[Bindable(true), DefaultValue(ImmediateModeDefault), Category(BehaviorCategory)]
-		[Description("Whether the Provider should respond immediately to an authentication attempt without interacting with the user.")]
-		public bool ImmediateMode {
-			get { return (bool)(ViewState[ImmediateModeViewStateKey] ?? ImmediateModeDefault); }
-			set { ViewState[ImmediateModeViewStateKey] = value; }
+		/// <value>The default value is <see cref="PopupBehavior.Never"/>.</value>
+		[Bindable(true), DefaultValue(PopupDefault), Category(BehaviorCategory)]
+		[Description("When to use a popup window to complete the login experience.")]
+		public PopupBehavior Popup {
+			get { return (PopupBehavior)(ViewState[PopupViewStateKey] ?? PopupDefault); }
+			set { ViewState[PopupViewStateKey] = value; }
 		}
 
 		/// <summary>
@@ -933,9 +936,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 						// the "approximation" is exactly what we want.
 						this.Request = this.RelyingParty.CreateRequest(userSuppliedIdentifier, typedRealm, returnToApproximation);
 					}
-					this.Request.Mode = this.ImmediateMode ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;
+
 					if (this.EnableRequestProfile) {
 						this.AddProfileArgs(this.Request);
+					}
+
+					if (this.IsPopupAppropriate()) {
+						// Inform the OP that it will appear in a popup window.
+						this.Request.AddExtension(new UIRequest());
 					}
 
 					// Add state that needs to survive across the redirect.
@@ -963,14 +971,18 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			if (this.Request != null) {
-				this.Request.RedirectToProvider();
+				if (this.IsPopupAppropriate()) {
+					this.ScriptPopupWindow();
+				} else {
+					this.Request.RedirectToProvider();
+				}
 			}
 		}
 
 		/// <summary>
 		/// Enables a server control to perform final clean up before it is released from memory.
 		/// </summary>
-		[SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "Poor base class implementation mandates that we call its Dispose() method.")]
+		[SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "Base class doesn't implement virtual Dispose(bool), so we must call its Dispose() method.")]
 		public sealed override void Dispose() {
 			this.Dispose(true);
 			base.Dispose();
@@ -1010,6 +1022,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			if (!Enabled || Page.IsPostBack) {
 				return;
+			}
+
+			// Take an unreliable sneek peek to see if we're in a popup and an OpenID
+			// assertion is coming in.  We shouldn't process assertions in a popup window.
+			if (this.Page.Request.QueryString[UIPopupCallbackKey] == "1" && this.Page.Request.QueryString[UIPopupCallbackParentKey] == null) {
+				// We're in a popup window.  We need to close it and pass the
+				// message back to the parent window for processing.
+				this.ScriptClosingPopup();
+				return; // don't do any more processing on it now
 			}
 
 			var response = this.RelyingParty.GetResponse();
@@ -1188,6 +1209,54 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				rp.SecuritySettings.RequireSsl = true;
 			}
 			return rp;
+		}
+
+		/// <summary>
+		/// Detects whether a popup window should be used to show the Provider's UI
+		/// and applies the UI extension to the request when appropriate.
+		/// </summary>
+		/// <returns><c>true</c> if a popup should be used; <c>false</c> otherwise.</returns>
+		private bool IsPopupAppropriate() {
+			Contract.Requires(this.Request != null);
+
+			return this.Popup == PopupBehavior.Always || this.Request.Provider.IsExtensionSupported<UIRequest>();
+		}
+
+		/// <summary>
+		/// Wires the return page to immediately display a popup window with the Provider in it.
+		/// </summary>
+		private void ScriptPopupWindow() {
+			Contract.Requires(this.Request != null);
+			Contract.Requires(this.RelyingParty != null);
+
+			this.Request.AddCallbackArguments(UIPopupCallbackKey, "1");
+
+			StringBuilder startupScript = new StringBuilder();
+
+			// Add a callback function that the popup window can call on this, the
+			// parent window, to pass back the authentication result.
+			startupScript.AppendLine("window.dnoa_internal = new Object();");
+			startupScript.AppendLine("window.dnoa_internal.processAuthorizationResult = function(uri) { window.location = uri; };");
+
+			// Open the popup window.
+			startupScript.AppendFormat(
+				@"var openidPopup = {0}",
+				UIUtilities.GetWindowPopupScript(this.RelyingParty, this.Request, "openidPopup"));
+
+			this.Page.ClientScript.RegisterStartupScript(this.GetType(), "loginPopup", startupScript.ToString(), true);
+		}
+
+		/// <summary>
+		/// Wires the popup window to close itself and pass the authentication result to the parent window.
+		/// </summary>
+		private void ScriptClosingPopup() {
+			StringBuilder startupScript = new StringBuilder();
+			startupScript.AppendLine("window.opener.dnoa_internal.processAuthorizationResult(document.URL + '&" + UIPopupCallbackParentKey + "=1');");
+			startupScript.AppendLine("window.close();");
+
+			// We're referencing the OpenIdRelyingPartyControlBase type here to avoid double-registering this script
+			// if the other control exists on the page.
+			this.Page.ClientScript.RegisterStartupScript(typeof(OpenIdRelyingPartyControlBase), "loginPopupClose", startupScript.ToString(), true);
 		}
 	}
 }

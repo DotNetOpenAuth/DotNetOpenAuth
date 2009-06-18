@@ -109,13 +109,19 @@ namespace DotNetOpenAuth.Test.OpenId {
 		}
 
 		internal static ServiceEndpoint GetServiceEndpoint(int user, ProtocolVersion providerVersion, int servicePriority, bool useSsl) {
+			return GetServiceEndpoint(user, providerVersion, servicePriority, useSsl, false);
+		}
+
+		internal static ServiceEndpoint GetServiceEndpoint(int user, ProtocolVersion providerVersion, int servicePriority, bool useSsl, bool delegating) {
 			var providerEndpoint = new ProviderEndpointDescription(
 				useSsl ? OpenIdTestBase.OPUriSsl : OpenIdTestBase.OPUri,
 				new string[] { Protocol.Lookup(providerVersion).ClaimedIdentifierServiceTypeURI });
+			var local_id = useSsl ? OPLocalIdentifiersSsl[user] : OPLocalIdentifiers[user];
+			var claimed_id = delegating ? (useSsl ? VanityUriSsl : VanityUri) : local_id;
 			return ServiceEndpoint.CreateForClaimedIdentifier(
-				useSsl ? OPLocalIdentifiersSsl[user] : OPLocalIdentifiers[user],
-				useSsl ? OPLocalIdentifiersSsl[user] : OPLocalIdentifiers[user],
-				useSsl ? OPLocalIdentifiersSsl[user] : OPLocalIdentifiers[user],
+				claimed_id,
+				claimed_id,
+				local_id,
 				providerEndpoint,
 				servicePriority,
 				10);
@@ -167,8 +173,12 @@ namespace DotNetOpenAuth.Test.OpenId {
 		}
 
 		protected Identifier GetMockIdentifier(ProtocolVersion providerVersion, bool useSsl) {
-			ServiceEndpoint se = GetServiceEndpoint(0, providerVersion, 10, useSsl);
-			UriIdentifier identityUri = useSsl ? OpenIdTestBase.OPLocalIdentifiersSsl[0] : OpenIdTestBase.OPLocalIdentifiers[0];
+			return this.GetMockIdentifier(providerVersion, useSsl, false);
+		}
+
+		protected Identifier GetMockIdentifier(ProtocolVersion providerVersion, bool useSsl, bool delegating) {
+			ServiceEndpoint se = GetServiceEndpoint(0, providerVersion, 10, useSsl, delegating);
+			UriIdentifier identityUri = (UriIdentifier)se.ClaimedIdentifier;
 			return new MockIdentifier(identityUri, this.MockResponder, new ServiceEndpoint[] { se });
 		}
 

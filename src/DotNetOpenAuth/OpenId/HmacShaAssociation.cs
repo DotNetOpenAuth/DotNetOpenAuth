@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Globalization;
 	using System.Linq;
 	using System.Security.Cryptography;
 	using DotNetOpenAuth.Messaging;
@@ -148,13 +149,19 @@ namespace DotNetOpenAuth.OpenId {
 			ErrorUtilities.VerifyNonZeroLength(associationType, "associationType");
 			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
 
+			int secretLength = GetSecretLength(protocol, associationType);
+
 			// Generate the handle.  It must be unique, and preferably unpredictable,
 			// so we use a time element and a random data element to generate it.
 			string uniq = MessagingUtilities.GetCryptoRandomDataAsBase64(4);
-			string handle = "{" + associationType + "}{" + DateTime.UtcNow.Ticks + "}{" + uniq + "}";
+			string handle = string.Format(
+				CultureInfo.InvariantCulture,
+				"{{{0}}}{{{1}}}{{{2}}}",
+				DateTime.UtcNow.Ticks,
+				uniq,
+				secretLength);
 
 			// Generate the secret that will be used for signing
-			int secretLength = GetSecretLength(protocol, associationType);
 			byte[] secret = MessagingUtilities.GetCryptoRandomData(secretLength);
 
 			TimeSpan lifetime;
