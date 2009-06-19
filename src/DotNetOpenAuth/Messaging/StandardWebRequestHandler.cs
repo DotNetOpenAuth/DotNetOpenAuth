@@ -140,6 +140,7 @@ namespace DotNetOpenAuth.Messaging {
 					// We don't want to blindly set all ServicePoints to not use the Expect header
 					// as that would be a security hole allowing any visitor to a web site change
 					// the web site's global behavior when calling that host.
+					Logger.Http.InfoFormat("HTTP POST to {0} resulted in 417 Expectation Failed.  Changing ServicePoint to not use Expect: Continue next time.", request.RequestUri);
 					request.ServicePoint.Expect100Continue = false; // TODO: investigate that CAS may throw here
 
 					// An alternative to ServicePoint if we don't have permission to set that,

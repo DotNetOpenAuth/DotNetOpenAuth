@@ -39,16 +39,6 @@ namespace OpenIdRelyingPartyWebForms {
 			this.setupRequiredLabel.Visible = true;
 		}
 
-		protected void yahooLoginButton_Click(object sender, ImageClickEventArgs e) {
-			OpenIdRelyingParty openid = new OpenIdRelyingParty();
-			var req = openid.CreateRequest("yahoo.com");
-			this.prepareRequest(req);
-			req.RedirectToProvider();
-
-			// We don't listen for the response from the provider explicitly
-			// because the OpenIdLogin control is already doing that for us.
-		}
-
 		private void prepareRequest(IAuthenticationRequest request) {
 			// Collect the PAPE policies requested by the user.
 			List<string> policies = new List<string>();

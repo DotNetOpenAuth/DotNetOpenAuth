@@ -94,25 +94,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets the URL that the OpenID Provider receives authentication requests at.
 		/// </summary>
-		Uri IProviderEndpoint.Uri { get { return this.ProviderEndpoint; } }
-
-		/// <summary>
-		/// Gets the URL which accepts OpenID Authentication protocol messages.
-		/// </summary>
-		/// <remarks>
-		/// Obtained by performing discovery on the User-Supplied Identifier. 
-		/// This value MUST be an absolute HTTP or HTTPS URL.
-		/// </remarks>
-		public Uri ProviderEndpoint {
+		Uri IProviderEndpoint.Uri {
 			get { return this.ProviderDescription.Endpoint; }
 		}
-
-		/*
-		/// <summary>
-		/// An Identifier for an OpenID Provider.
-		/// </summary>
-		public Identifier ProviderIdentifier { get; private set; }
-		*/
 
 		/// <summary>
 		/// Gets the Identifier that was presented by the end user to the Relying Party, 
@@ -224,7 +208,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets the detected version of OpenID implemented by the Provider.
 		/// </summary>
-		public Version Version { get { return Protocol.Version; } }
+		public Version Version {
+			get { return this.ProviderDescription.ProtocolVersion; }
+		}
 
 		/// <summary>
 		/// Gets an XRDS sorting routine that uses the XRDS Service/@Priority 
@@ -279,6 +265,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Gets the URL which accepts OpenID Authentication protocol messages.
+		/// </summary>
+		/// <remarks>
+		/// Obtained by performing discovery on the User-Supplied Identifier. 
+		/// This value MUST be an absolute HTTP or HTTPS URL.
+		/// </remarks>
+		internal Uri ProviderEndpoint {
+			get { return this.ProviderDescription.Endpoint; }
+		}
+
+		/// <summary>
 		/// Gets a value indicating whether the <see cref="ProviderEndpoint"/> is using an encrypted channel.
 		/// </summary>
 		internal bool IsSecure {
@@ -318,46 +315,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// 	<c>true</c> if the service type uri is present; <c>false</c> otherwise.
 		/// </returns>
 		public bool IsTypeUriPresent(string typeUri) {
-			return this.IsExtensionSupported(typeUri);
-		}
-
-		/// <summary>
-		/// Determines whether some extension is supported by the Provider.
-		/// </summary>
-		/// <param name="extensionUri">The extension URI.</param>
-		/// <returns>
-		/// 	<c>true</c> if the extension is supported; otherwise, <c>false</c>.
-		/// </returns>
-		public bool IsExtensionSupported(string extensionUri) {
-			ErrorUtilities.VerifyNonZeroLength(extensionUri, "extensionUri");
-
-			ErrorUtilities.VerifyOperation(this.ProviderSupportedServiceTypeUris != null, OpenIdStrings.ExtensionLookupSupportUnavailable);
-			return this.ProviderSupportedServiceTypeUris.Contains(extensionUri);
-		}
-
-		/// <summary>
-		/// Determines whether a given extension is supported by this endpoint.
-		/// </summary>
-		/// <param name="extension">An instance of the extension to check support for.</param>
-		/// <returns>
-		/// 	<c>true</c> if the extension is supported by this endpoint; otherwise, <c>false</c>.
-		/// </returns>
-		public bool IsExtensionSupported(IOpenIdMessageExtension extension) {
-			ErrorUtilities.VerifyArgumentNotNull(extension, "extension");
-
-			// Consider the primary case.
-			if (this.IsExtensionSupported(extension.TypeUri)) {
-				return true;
-			}
-
-			// Consider the secondary cases.
-			if (extension.AdditionalSupportedTypeUris != null) {
-				if (extension.AdditionalSupportedTypeUris.Any(typeUri => this.IsExtensionSupported(typeUri))) {
-					return true;
-				}
-			}
-
-			return false;
+			return this.ProviderDescription.IsExtensionSupported(typeUri);
 		}
 
 		/// <summary>
@@ -368,8 +326,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// 	<c>true</c> if the extension is supported by this endpoint; otherwise, <c>false</c>.
 		/// </returns>
 		public bool IsExtensionSupported<T>() where T : IOpenIdMessageExtension, new() {
-			T extension = new T();
-			return this.IsExtensionSupported(extension);
+			return this.ProviderDescription.IsExtensionSupported<T>();
 		}
 
 		/// <summary>
@@ -380,10 +337,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// 	<c>true</c> if the extension is supported by this endpoint; otherwise, <c>false</c>.
 		/// </returns>
 		public bool IsExtensionSupported(Type extensionType) {
-			ErrorUtilities.VerifyArgumentNotNull(extensionType, "extensionType");
-			ErrorUtilities.VerifyArgument(typeof(IOpenIdMessageExtension).IsAssignableFrom(extensionType), OpenIdStrings.TypeMustImplementX, typeof(IOpenIdMessageExtension).FullName);
-			var extension = (IOpenIdMessageExtension)Activator.CreateInstance(extensionType);
-			return this.IsExtensionSupported(extension);
+			return this.ProviderDescription.IsExtensionSupported(extensionType);
 		}
 
 		/// <summary>

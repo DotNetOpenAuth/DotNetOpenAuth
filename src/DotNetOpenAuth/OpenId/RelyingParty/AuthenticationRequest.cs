@@ -89,7 +89,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <value></value>
 		public OutgoingWebResponse RedirectingResponse {
-			get { return this.RelyingParty.Channel.PrepareResponse(this.CreateRequestMessage()); }
+			get {
+				foreach (var behavior in this.RelyingParty.Behaviors) {
+					behavior.OnOutgoingAuthenticationRequest(this);
+				}
+
+				return this.RelyingParty.Channel.PrepareResponse(this.CreateRequestMessage());
+			}
 		}
 
 		/// <summary>
@@ -160,6 +166,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		internal AssociationPreference AssociationPreference {
 			get { return this.associationPreference; }
 			set { this.associationPreference = value; }
+		}
+
+		/// <summary>
+		/// Gets the extensions that have been added to th request.
+		/// </summary>
+		internal IEnumerable<IOpenIdMessageExtension> AppliedExtensions {
+			get { return this.extensions; }
 		}
 
 		#region IAuthenticationRequest methods
@@ -271,7 +284,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			if (relyingParty.SecuritySettings.RequireSsl) {
 				// Rather than check for successful SSL conversion at this stage,
 				// We'll wait for secure discovery to fail on the new identifier.
-				userSuppliedIdentifier.TryRequireSsl(out userSuppliedIdentifier);
+				if (!userSuppliedIdentifier.TryRequireSsl(out userSuppliedIdentifier)) {
+					// But at least log the failure.
+					Logger.OpenId.WarnFormat("RequireSsl mode is on, so discovery on insecure identifier {0} will yield no results.", userSuppliedIdentifier);
+				}
 			}
 
 			if (Logger.OpenId.IsWarnEnabled && returnToUrl.Query != null) {
@@ -298,9 +314,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			// Filter disallowed endpoints.
-			if (relyingParty.SecuritySettings.RejectDelegatingIdentifiers) {
-				serviceEndpoints = serviceEndpoints.Where(se => se.ClaimedIdentifier == se.ProviderLocalIdentifier);
-			}
+			serviceEndpoints = relyingParty.SecuritySettings.FilterEndpoints(serviceEndpoints);
 
 			// Call another method that defers request generation.
 			return CreateInternal(userSuppliedIdentifier, relyingParty, realm, returnToUrl, serviceEndpoints, createNewAssociationsAsNeeded);
@@ -329,6 +343,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Contract.Requires(realm != null);
 			Contract.Requires(serviceEndpoints != null);
 			Contract.Ensures(Contract.Result<IEnumerable<AuthenticationRequest>>() != null);
+
+			// If shared associations are required, then we had better have an association store.
+			ErrorUtilities.VerifyOperation(!relyingParty.SecuritySettings.RequireAssociation || relyingParty.AssociationManager.HasAssociationStore, OpenIdStrings.AssociationStoreRequired);
 
 			Logger.Yadis.InfoFormat("Performing discovery on user-supplied identifier: {0}", userSuppliedIdentifier);
 			IEnumerable<ServiceEndpoint> endpoints = FilterAndSortEndpoints(serviceEndpoints, relyingParty);
@@ -363,18 +380,23 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			// Now that we've run out of endpoints that respond to association requests,
 			// since we apparently are still running, the caller must want another request.
-			// We'll go ahead and generate the requests to OPs that may be down.
+			// We'll go ahead and generate the requests to OPs that may be down -- 
+			// unless associations are set as required in our security settings.
 			if (failedAssociationEndpoints.Count > 0) {
-				Logger.OpenId.WarnFormat("Now generating requests for Provider endpoints that failed initial association attempts.");
+				if (relyingParty.SecuritySettings.RequireAssociation) {
+					Logger.OpenId.Warn("Associations could not be formed with some Providers.  Security settings require shared associations for authentication requests so these will be skipped.");
+				} else {
+					Logger.OpenId.WarnFormat("Now generating requests for Provider endpoints that failed initial association attempts.");
 
-				foreach (var endpoint in failedAssociationEndpoints) {
-					Logger.OpenId.WarnFormat("Creating authentication request for user supplied Identifier: {0}", userSuppliedIdentifier);
+					foreach (var endpoint in failedAssociationEndpoints) {
+						Logger.OpenId.WarnFormat("Creating authentication request for user supplied Identifier: {0}", userSuppliedIdentifier);
 
-					// Create the auth request, but prevent it from attempting to create an association
-					// because we've already tried.  Let's not have it waste time trying again.
-					var authRequest = new AuthenticationRequest(endpoint, realm, returnToUrl, relyingParty);
-					authRequest.associationPreference = AssociationPreference.IfAlreadyEstablished;
-					yield return authRequest;
+						// Create the auth request, but prevent it from attempting to create an association
+						// because we've already tried.  Let's not have it waste time trying again.
+						var authRequest = new AuthenticationRequest(endpoint, realm, returnToUrl, relyingParty);
+						authRequest.associationPreference = AssociationPreference.IfAlreadyEstablished;
+						yield return authRequest;
+					}
 				}
 			}
 		}

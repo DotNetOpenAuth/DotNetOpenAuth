@@ -7,11 +7,15 @@
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Collections.Specialized;
+	using System.Linq;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
 	/// Security settings that are applicable to providers.
 	/// </summary>
+	[Serializable]
 	public sealed class ProviderSecuritySettings : SecuritySettings {
 		/// <summary>
 		/// The default value for the <see cref="ProtectDownlevelReplayAttacks"/> property.
@@ -81,5 +85,24 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// needed for testing the RP's rejection of unsigned extensions.
 		/// </remarks>
 		internal bool SignOutgoingExtensions { get; set; }
+
+		/// <summary>
+		/// Creates a deep clone of this instance.
+		/// </summary>
+		/// <returns>A new instance that is a deep clone of this instance.</returns>
+		internal ProviderSecuritySettings Clone() {
+			var securitySettings = new ProviderSecuritySettings();
+			foreach (var pair in this.AssociationLifetimes) {
+				securitySettings.AssociationLifetimes.Add(pair);
+			}
+
+			securitySettings.MaximumHashBitLength = this.MaximumHashBitLength;
+			securitySettings.MinimumHashBitLength = this.MinimumHashBitLength;
+			securitySettings.ProtectDownlevelReplayAttacks = this.ProtectDownlevelReplayAttacks;
+			securitySettings.RequireSsl = this.RequireSsl;
+			securitySettings.SignOutgoingExtensions = this.SignOutgoingExtensions;
+
+			return securitySettings;
+		}
 	}
 }

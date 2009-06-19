@@ -120,4 +120,7 @@
   <data name="ConfigurationTypeMustBePublic" xml:space="preserve">
     <value>The configuration-specified type {0} must be public, and is not.</value>
   </data>
+  <data name="ConfigurationXamlReferenceRequiresHttpContext" xml:space="preserve">
+    <value>The configuration XAML reference to {0} requires a current HttpContext to resolve.</value>
+  </data>
 </root>

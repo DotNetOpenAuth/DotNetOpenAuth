@@ -62,8 +62,6 @@
     <Compile Include="OAuthIdentity.cs" />
     <Compile Include="OAuthPrincipal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Provider\AnonymousIdentifierProviderBase.cs" />
-    <Compile Include="Provider\AuthenticationRequestExtensions.cs" />
     <Compile Include="TwitterConsumer.cs" />
     <Compile Include="Util.cs" />
   </ItemGroup>

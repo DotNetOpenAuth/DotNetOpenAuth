@@ -31,6 +31,11 @@ namespace DotNetOpenAuth.Messaging {
 		internal static readonly RandomNumberGenerator CryptoRandomDataGenerator = new RNGCryptoServiceProvider();
 
 		/// <summary>
+		/// A pseudo-random data generator (NOT cryptographically strong random data)
+		/// </summary>
+		internal static readonly Random NonCryptoRandomDataGenerator = new Random();
+
+		/// <summary>
 		/// The set of characters that are unreserved in RFC 2396 but are NOT unreserved in RFC 3986.
 		/// </summary>
 		private static readonly string[] UriRfc3986CharsToEscape = new[] { "!", "*", "'", "(", ")" };
@@ -137,6 +142,17 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			return message.ToString();
+		}
+
+		/// <summary>
+		/// Gets a buffer of random data (not cryptographically strong).
+		/// </summary>
+		/// <param name="length">The length of the sequence to generate.</param>
+		/// <returns>The generated values, which may contain zeros.</returns>
+		internal static byte[] GetNonCryptoRandomData(int length) {
+			byte[] buffer = new byte[length];
+			NonCryptoRandomDataGenerator.NextBytes(buffer);
+			return buffer;
 		}
 
 		/// <summary>

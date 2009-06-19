@@ -26,10 +26,6 @@
 				"anon",
 				new { controller = "User", action = "PpidIdentity", id = string.Empty });
 			routes.MapRoute(
-				"PpidXrds",
-				"PpidXrds",
-				new { controller = "Home", action = "PpidXrds" }); // Parameter defaults
-			routes.MapRoute(
 				"Default",                                              // Route name
 				"{controller}/{action}/{id}",                           // URL with parameters
 				new { controller = "Home", action = "Index", id = string.Empty }); // Parameter defaults
@@ -37,6 +33,8 @@
 
 		protected void Application_Start() {
 			RegisterRoutes(RouteTable.Routes);
+			DotNetOpenAuth.OpenId.Behaviors.PpidGeneration.PpidIdentifierProvider = new Code.AnonymousIdentifierProvider();
+			DotNetOpenAuth.OpenId.Behaviors.USGovernmentLevel1.PpidIdentifierProvider = new Code.AnonymousIdentifierProvider();
 		}
 	}
 }

@@ -20,6 +20,11 @@ namespace DotNetOpenAuth.Configuration {
 		private const string SecuritySettingsConfigName = "security";
 
 		/// <summary>
+		/// Gets the name of the &lt;behaviors&gt; sub-element.
+		/// </summary>
+		private const string BehaviorsElementName = "behaviors";
+
+		/// <summary>
 		/// The name of the custom store sub-element.
 		/// </summary>
 		private const string StoreConfigName = "store";
@@ -37,6 +42,16 @@ namespace DotNetOpenAuth.Configuration {
 		public OpenIdProviderSecuritySettingsElement SecuritySettings {
 			get { return (OpenIdProviderSecuritySettingsElement)this[SecuritySettingsConfigName] ?? new OpenIdProviderSecuritySettingsElement(); }
 			set { this[SecuritySettingsConfigName] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the special behaviors to apply.
+		/// </summary>
+		[ConfigurationProperty(BehaviorsElementName, IsDefaultCollection = false)]
+		[ConfigurationCollection(typeof(TypeConfigurationCollection<IProviderBehavior>))]
+		public TypeConfigurationCollection<IProviderBehavior> Behaviors {
+			get { return (TypeConfigurationCollection<IProviderBehavior>)this[BehaviorsElementName] ?? new TypeConfigurationCollection<IProviderBehavior>(); }
+			set { this[BehaviorsElementName] = value; }
 		}
 
 		/// <summary>
