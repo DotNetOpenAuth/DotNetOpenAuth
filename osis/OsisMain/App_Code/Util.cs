@@ -6,6 +6,16 @@ using System.Text;
 using System.Web;
 
 public static class Util {
+	public static void EnsureHttpsByRedirection() {
+		if (HttpContext.Current.Request.Url.Scheme == Uri.UriSchemeHttp) {
+			UriBuilder requestUri = new UriBuilder(HttpContext.Current.Request.Url);
+			requestUri.Scheme = Uri.UriSchemeHttps;
+			requestUri.Host = "test-id.org";
+			requestUri.Port = 443;
+			HttpContext.Current.Response.Redirect(requestUri.Uri.AbsoluteUri);
+		}
+	}
+
 	public static string BuildErrorMessage(Exception ex) {
 		StringBuilder sb = new StringBuilder();
 		while (ex != null) {

@@ -15,6 +15,7 @@
 		<siteMapNode url="~/OP/DirectMessageErrors.aspx" title="OP sends properly formatted error responses to invalid direct request messages" />
 		<siteMapNode url="~/OP/IndirectMessageErrors.aspx" title="OP sends properly formatted error responses via redirect to the RP to invalid indirect request messages" />
 		<siteMapNode url="~/OP/IdentitylessCheckId.aspx" title="OP properly responds to identity-less checkid messages" />
+		<siteMapNode url="~/OP/GSALevel1.aspx" title="OP properly responds to GSA level 1 authentication requests" />
 		<siteMapNode url="~/RP/HMACSHA256.aspx" title="RP supports HMAC-SHA256 associations" />
 		<siteMapNode url="~/RP/UnsolicitedAssertions.aspx" title="RP accepts unsolicited assertions" />
 		<siteMapNode url="~/RP/VerifyReturnTo.aspx" title="RP verifies return_to URL" />
@@ -32,6 +33,7 @@
 		<siteMapNode url="~/RP/AssociationPoisoning.aspx" title="RP protects against association poisoning" />
 		<siteMapNode url="~/RP/DiscoverableReturnTo.aspx" title="RP has discoverable return_to" />
 		<siteMapNode url="~/RP/POSTAssertion.aspx" title="RP accepts POST assertion" />
+		<siteMapNode url="~/RP/GSALevel1.aspx" title="RP complies with GSA level 1 profile" />
 		<siteMapNode url="~/RP/InfoCardPpid.aspx" title="InfoCard RP receives Ppid" />
 	</siteMapNode>
 </siteMap>
