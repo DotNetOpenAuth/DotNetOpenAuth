@@ -32,7 +32,7 @@ namespace DotNetOpenAuth.Xrds {
 			ErrorUtilities.VerifyArgumentNotNull(node, "node");
 			ErrorUtilities.VerifyArgumentNotNull(parentNode, "parentNode");
 
-			this.Node = node;
+			this.Node = node.Clone();
 			this.ParentNode = parentNode;
 			this.XmlNamespaceResolver = this.ParentNode.XmlNamespaceResolver;
 		}
@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.Xrds {
 		protected XrdsNode(XPathNavigator document) {
 			ErrorUtilities.VerifyArgumentNotNull(document, "document");
 
-			this.Node = document;
+			this.Node = document.Clone();
 			this.XmlNamespaceResolver = new XmlNamespaceManager(document.NameTable);
 		}
 
