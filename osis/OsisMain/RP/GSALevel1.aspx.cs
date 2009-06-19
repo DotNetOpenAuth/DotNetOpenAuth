@@ -14,19 +14,21 @@ public partial class RP_GSALevel1 : System.Web.UI.Page {
 		if (!IsPostBack) {
 			Util.EnsureHttpsByRedirection();
 			IRequest request = provider.GetRequest();
-			if (!request.IsResponseReady) {
-				var authRequest = (IAuthenticationRequest)request;
-				var pape = authRequest.GetExtension<PolicyRequest>();
-				if (pape != null && pape.PreferredPolicies.Contains(AuthenticationPolicies.USGovernmentTrustLevel1)) {
-					MultiView1.SetActiveView(RequestGsa);
-					ProviderEndpoint.PendingAuthenticationRequest = authRequest;
-				} else {
-					MultiView1.SetActiveView(RequestNotGsa);
+			if (request != null) {
+				if (!request.IsResponseReady) {
+					var authRequest = (IAuthenticationRequest)request;
+					var pape = authRequest.GetExtension<PolicyRequest>();
+					if (pape != null && pape.PreferredPolicies.Contains(AuthenticationPolicies.USGovernmentTrustLevel1)) {
+						MultiView1.SetActiveView(RequestGsa);
+						ProviderEndpoint.PendingAuthenticationRequest = authRequest;
+					} else {
+						MultiView1.SetActiveView(RequestNotGsa);
+					}
 				}
-			}
 
-			if (request.IsResponseReady) {
-				provider.SendResponse(request);
+				if (request.IsResponseReady) {
+					provider.SendResponse(request);
+				}
 			}
 		}
 	}
