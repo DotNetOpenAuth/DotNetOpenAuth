@@ -8,6 +8,9 @@ using DotNetOpenAuth.OpenId.Provider;
 using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
 
 public partial class RP_GSALevel1 : System.Web.UI.Page {
+	/// <summary>
+	/// An OpenID Provider that will include the GSA behavior (due to an entry in the web.config file).
+	/// </summary>
 	private static OpenIdProvider provider = new OpenIdProvider();
 
 	protected void Page_Load(object sender, EventArgs e) {

@@ -23,6 +23,7 @@ public class Global : HttpApplication {
 	protected void Application_Start(object sender, EventArgs e) {
 		log4net.Config.XmlConfigurator.Configure();
 		Logger.Info("OSIS test site starting...");
+		DotNetOpenAuth.OpenId.Behaviors.USGovernmentLevel1.PpidIdentifierProvider = new PpidProvider();
 	}
 
 	protected void Application_End(object sender, EventArgs e) {

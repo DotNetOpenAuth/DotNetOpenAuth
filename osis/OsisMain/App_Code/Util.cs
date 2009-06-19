@@ -40,6 +40,15 @@ public static class Util {
 		}
 	}
 
+	public static Uri GetAppPathRootedUri(string value) {
+		string appPath = HttpContext.Current.Request.ApplicationPath.ToLowerInvariant();
+		if (!appPath.EndsWith("/")) {
+			appPath += "/";
+		}
+
+		return new Uri(HttpContext.Current.Request.Url, appPath + value);
+	}
+
 	private static string GetProperDirectoryCapitalization(DirectoryInfo dirInfo) {
 		DirectoryInfo parentDirInfo = dirInfo.Parent;
 		if (null == parentDirInfo)
