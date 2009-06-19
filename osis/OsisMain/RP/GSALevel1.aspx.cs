@@ -37,6 +37,8 @@ public partial class RP_GSALevel1 : System.Web.UI.Page {
 		var authRequest = ProviderEndpoint.PendingAuthenticationRequest;
 		ProviderEndpoint.PendingAuthenticationRequest = null;
 		authRequest.IsAuthenticated = true;
+		authRequest.ClaimedIdentifier = new Uri(Request.Url, Page.ResolveUrl("~/RP/GSALevel1Identity.aspx"));
+		authRequest.LocalIdentifier = authRequest.ClaimedIdentifier;
 		provider.SendResponse(authRequest);
 	}
 }

@@ -1,10 +1,12 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/TestMaster.master" AutoEventWireup="true"
 	CodeFile="GSALevel1.aspx.cs" Inherits="RP_GSALevel1" %>
 
+<%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth" TagPrefix="dnoa" %>
 <%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.OpenId.Provider"
 	TagPrefix="op" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="TestHead" runat="Server">
 	<!-- This identity page doubles as the OP endpoint -->
+	<dnoa:XrdsPublisher ID="XrdsPublisher1" runat="server" XrdsUrl="~/RP/GSALevel1XrdsOP.aspx" />
 	<op:IdentityEndpoint ID="IdentityEndpoint1" runat="server" ProviderEndpointUrl="~/RP/GSALevel1.aspx"
 		ProviderVersion="V20" />
 </asp:Content>
@@ -15,14 +17,13 @@
 			</p>
 		</asp:View>
 		<asp:View ID="RequestNotGsa" runat="server">
-			<p>An OpenID authentication request was received, but was not marked as a GSA 
-				Level 1 request.&nbsp; This is a failure.</p>
+			<p>An OpenID authentication request was received, but was not marked as a GSA Level
+				1 request.&nbsp; This is a failure.</p>
 		</asp:View>
 		<asp:View ID="RequestGsa" runat="server">
 			<p>A GSA Level 1 OpenID authentication request was received. You should complete the
 				test by continuing and verify that the RP logs you in. </p>
-			<asp:Button runat='server' ID='continueButton' onclick="continueButton_Click" 
-				Text="Continue" />
+			<asp:Button runat='server' ID='continueButton' OnClick="continueButton_Click" Text="Continue" />
 		</asp:View>
 	</asp:MultiView>
 	<h3>Instructions</h3>
