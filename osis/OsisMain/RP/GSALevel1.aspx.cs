@@ -21,6 +21,7 @@ public partial class RP_GSALevel1 : System.Web.UI.Page {
 					if (pape != null && pape.PreferredPolicies.Contains(AuthenticationPolicies.USGovernmentTrustLevel1)) {
 						MultiView1.SetActiveView(RequestGsa);
 						ProviderEndpoint.PendingAuthenticationRequest = authRequest;
+						rpDiscoveryResult.Text = authRequest.IsReturnUrlDiscoverable(provider) == RelyingPartyDiscoveryResult.Success ? "succeeded" : "failed";
 					} else {
 						MultiView1.SetActiveView(RequestNotGsa);
 					}

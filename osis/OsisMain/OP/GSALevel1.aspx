@@ -8,7 +8,7 @@
 		<asp:View ID="View1" runat="server">
 			<rp:OpenIdLogin ID="OpenIdBox" runat="server" OnLoggedIn="OpenIdBox_LoggedIn" OnLoggingIn="OpenIdBox_LoggingIn"
 				ButtonText="Begin" ExamplePrefix="" ExampleUrl="" LabelText="OpenID Identifier:"
-				RegisterVisible="False" TabIndex="1" />
+				RegisterVisible="False" TabIndex="1" EnableRequestProfile="False" />
 		</asp:View>
 		<asp:View ID="View2" runat="server">
 			<osis:TestResultDisplay runat="server" ID="testResultDisplay" />

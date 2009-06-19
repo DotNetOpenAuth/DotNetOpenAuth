@@ -23,6 +23,7 @@
 		<asp:View ID="RequestGsa" runat="server">
 			<p>A GSA Level 1 OpenID authentication request was received. You should complete the
 				test by continuing and verify that the RP logs you in. </p>
+			<p>RP discovery <asp:Label runat="server" ID="rpDiscoveryResult" EnableViewState="false" /></p>
 			<asp:Button runat='server' ID='continueButton' OnClick="continueButton_Click" Text="Continue" />
 		</asp:View>
 	</asp:MultiView>
@@ -34,6 +35,6 @@
 	</ol>
 	<h3>Passing criteria</h3>
 	<p>At the conclusion of the steps in the instructions, the RP must recognize that
-		<%= new Uri(Request.Url, Request.Url.AbsolutePath)%>
+		<%= new Uri(Request.Url, Page.ResolveUrl("~/RP/GSALevel1Identity.aspx"))%>
 		has logged in. </p>
 </asp:Content>
