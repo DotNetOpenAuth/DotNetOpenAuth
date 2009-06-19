@@ -52,13 +52,13 @@ public partial class OP_DelegatedIdentifierSelect : System.Web.UI.Page {
 			return;
 		}
 
-		CheckIdRequest req = new CheckIdRequestNoCheck(opEndpoint.Version, opEndpoint.ProviderEndpoint, AuthenticationRequestMode.Setup);
+		CheckIdRequest req = new CheckIdRequestNoCheck(opEndpoint.Version, opEndpoint.ProviderDescription.Endpoint, AuthenticationRequestMode.Setup);
 		req.LocalIdentifier = Protocol.V20.ClaimedIdentifierForOPIdentifier;
 		req.ReturnTo = new Uri(Request.Url, Request.Url.AbsolutePath);
 		req.Realm = req.ReturnTo;
 
 		// Force the claimed_id to be something that would simulate delegation.
-		req.ClaimedIdentifier = GetVanityUrl(opEndpoint.ProviderEndpoint);
+		req.ClaimedIdentifier = GetVanityUrl(opEndpoint.ProviderDescription.Endpoint);
 
 		rp.Channel.Send(req);
 	}

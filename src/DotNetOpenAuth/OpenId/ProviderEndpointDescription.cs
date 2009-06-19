@@ -78,7 +78,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Gets the URL that the OpenID Provider listens for incoming OpenID messages on.
 		/// </summary>
-		internal Uri Endpoint { get; private set; }
+		public Uri Endpoint { get; private set; }
 
 		/// <summary>
 		/// Gets the OpenID protocol version this endpoint supports.

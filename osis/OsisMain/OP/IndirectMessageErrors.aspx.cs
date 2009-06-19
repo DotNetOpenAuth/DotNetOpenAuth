@@ -45,10 +45,10 @@ public partial class OP_IndirectMessageErrors : System.Web.UI.Page {
 			returnTo.Query = string.Format(
 				CultureInfo.InvariantCulture,
 				"op_endpoint={0}&version={1}",
-				Uri.EscapeDataString(endpoint.ProviderEndpoint.AbsoluteUri),
+				Uri.EscapeDataString(endpoint.ProviderDescription.Endpoint.AbsoluteUri),
 				Uri.EscapeDataString(endpoint.Version.ToString()));
 			IDirectedProtocolMessage badMessage = new BadRequest(
-				endpoint.ProviderEndpoint,
+				endpoint.ProviderDescription.Endpoint,
 				returnTo.Uri);
 			rp.Channel.Send(badMessage);
 		} catch (ProtocolException ex) {

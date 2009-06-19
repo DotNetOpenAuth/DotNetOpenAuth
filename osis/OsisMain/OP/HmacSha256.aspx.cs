@@ -30,7 +30,7 @@ public partial class OP_HmacSha256 : System.Web.UI.Page {
 			}
 			Association association = rp.AssociationManager.CreateNewAssociation(endpoint.ProviderDescription);
 			MultiView1.ActiveViewIndex = 1;
-			testResultDisplay.ProviderEndpoint = endpoint.ProviderEndpoint;
+			testResultDisplay.ProviderEndpoint = endpoint.ProviderDescription.Endpoint;
 			testResultDisplay.ProtocolVersion = endpoint.Version;
 			if (association != null && association.HashBitLength == 256) {
 				testResultDisplay.Pass = true;

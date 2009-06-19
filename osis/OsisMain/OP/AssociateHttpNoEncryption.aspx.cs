@@ -70,15 +70,15 @@ public partial class OP_AssociateHttpNoEncryption : System.Web.UI.Page {
 
 		List<ServiceEndpoint> endpoints = identifier.Discover(rp.Channel.WebRequestHandler).ToList();
 		foreach (ServiceEndpoint endpoint in endpoints) {
-			if (endpoint.ProviderEndpoint.Scheme == "http") {
-				providerEndpoint = endpoint.ProviderEndpoint;
+			if (endpoint.ProviderDescription.Endpoint.Scheme == "http") {
+				providerEndpoint = endpoint.ProviderDescription.Endpoint;
 				version = ((IXrdsProviderEndpoint)endpoint).Version;
 				return;
 			}
 		}
 		if (endpoints.Count > 0) {
 			// No HTTP endpoint.  Make one up by changing an HTTPS one to HTTP.
-			UriBuilder endpoint = new UriBuilder(endpoints[0].ProviderEndpoint);
+			UriBuilder endpoint = new UriBuilder(endpoints[0].ProviderDescription.Endpoint);
 			endpoint.Scheme = "http";
 			endpoint.Port = 80;
 			providerEndpoint = endpoint.Uri;

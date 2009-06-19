@@ -27,11 +27,11 @@ public partial class OP_DirectMessageErrors : System.Web.UI.Page {
 		}
 
 		MultiView1.ActiveViewIndex = 1;
-		testResultDisplay.ProviderEndpoint = endpoint.ProviderEndpoint;
+		testResultDisplay.ProviderEndpoint = endpoint.ProviderDescription.Endpoint;
 		testResultDisplay.ProtocolVersion = endpoint.Version;
 
 		try {
-			var response = rp.Channel.Request<DirectErrorResponse>(new BadRequest(endpoint.ProviderEndpoint));
+			var response = rp.Channel.Request<DirectErrorResponse>(new BadRequest(endpoint.ProviderDescription.Endpoint));
 			testResultDisplay.Pass = true;
 			testResultDisplay.Details = "OP returned error: " + response.ErrorMessage;
 		} catch (ProtocolException ex) {
