@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
+	using System.Diagnostics.Contracts;
 	using System.Security.Cryptography;
 	using System.Security.Cryptography.X509Certificates;
 	using System.Text;
@@ -16,15 +17,24 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	/// </summary>
 	public class RsaSha1SigningBindingElement : SigningBindingElementBase {
 		/// <summary>
+		/// The name of the hash algorithm to use.
+		/// </summary>
+		private const string HashAlgorithmName = "RSA-SHA1";
+
+		/// <summary>
+		/// The token manager for the service provider.
+		/// </summary>
+		private IServiceProviderTokenManager tokenManager;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="RsaSha1SigningBindingElement"/> class
 		/// for use by Consumers.
 		/// </summary>
 		/// <param name="signingCertificate">The certificate used to sign outgoing messages.</param>
 		public RsaSha1SigningBindingElement(X509Certificate2 signingCertificate)
-			: this() {
-			if (signingCertificate == null) {
-				throw new ArgumentNullException("signingCertificate");
-			}
+			: base(HashAlgorithmName) {
+			Contract.Requires(signingCertificate != null);
+			ErrorUtilities.VerifyArgumentNotNull(signingCertificate, "signingCertificate");
 
 			this.SigningCertificate = signingCertificate;
 		}
@@ -33,19 +43,19 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Initializes a new instance of the <see cref="RsaSha1SigningBindingElement"/> class
 		/// for use by Service Providers.
 		/// </summary>
-		public RsaSha1SigningBindingElement()
-			: base("RSA-SHA1") {
+		/// <param name="tokenManager">The token manager.</param>
+		public RsaSha1SigningBindingElement(IServiceProviderTokenManager tokenManager)
+			: base(HashAlgorithmName) {
+			Contract.Requires(tokenManager != null);
+			ErrorUtilities.VerifyArgumentNotNull(tokenManager, "tokenManager");
+
+			this.tokenManager = tokenManager;
 		}
 
 		/// <summary>
-		/// Gets or sets the certificate used to sign outgoing messages.
+		/// Gets or sets the certificate used to sign outgoing messages.  Used only by Consumers.
 		/// </summary>
 		public X509Certificate2 SigningCertificate { get; set; }
-
-		/// <summary>
-		/// Gets or sets the consumer certificate provider.
-		/// </summary>
-		public IConsumerCertificateProvider ConsumerCertificateProvider { get; set; }
 
 		/// <summary>
 		/// Calculates a signature for a given message.
@@ -56,13 +66,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// This method signs the message per OAuth 1.0 section 9.3.
 		/// </remarks>
 		protected override string GetSignature(ITamperResistantOAuthMessage message) {
-			if (message == null) {
-				throw new ArgumentNullException("message");
-			}
-
-			if (this.SigningCertificate == null) {
-				throw new InvalidOperationException(OAuthStrings.X509CertificateNotProvidedForSigning);
-			}
+			ErrorUtilities.VerifyArgumentNotNull(message, "message");
+			ErrorUtilities.VerifyOperation(this.SigningCertificate != null, OAuthStrings.X509CertificateNotProvidedForSigning);
 
 			string signatureBaseString = ConstructSignatureBaseString(message, this.Channel.MessageDescriptions.GetAccessor(message));
 			byte[] data = Encoding.ASCII.GetBytes(signatureBaseString);
@@ -80,16 +85,14 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// 	<c>true</c> if the signature on the message is valid; otherwise, <c>false</c>.
 		/// </returns>
 		protected override bool IsSignatureValid(ITamperResistantOAuthMessage message) {
-			if (this.ConsumerCertificateProvider == null) {
-				throw new InvalidOperationException(OAuthStrings.ConsumerCertificateProviderNotAvailable);
-			}
+			ErrorUtilities.VerifyInternal(this.tokenManager != null, "No token manager available for fetching Consumer public certificates.");
 
 			string signatureBaseString = ConstructSignatureBaseString(message, this.Channel.MessageDescriptions.GetAccessor(message));
 			byte[] data = Encoding.ASCII.GetBytes(signatureBaseString);
 
 			byte[] carriedSignature = Convert.FromBase64String(message.Signature);
 
-			X509Certificate2 cert = this.ConsumerCertificateProvider.GetCertificate(message);
+			X509Certificate2 cert = this.tokenManager.GetConsumer(message.ConsumerKey).Certificate;
 			if (cert == null) {
 				Logger.Signatures.WarnFormat("Incoming message from consumer '{0}' could not be matched with an appropriate X.509 certificate for signature verification.", message.ConsumerKey);
 				return false;
@@ -105,10 +108,11 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <returns>A new instance of the binding element.</returns>
 		protected override ITamperProtectionChannelBindingElement Clone() {
-			return new RsaSha1SigningBindingElement() {
-				ConsumerCertificateProvider = this.ConsumerCertificateProvider,
-				SigningCertificate = this.SigningCertificate,
-			};
+			if (this.tokenManager != null) {
+				return new RsaSha1SigningBindingElement(this.tokenManager);
+			} else {
+				return new RsaSha1SigningBindingElement(this.SigningCertificate);
+			}
 		}
 	}
 }

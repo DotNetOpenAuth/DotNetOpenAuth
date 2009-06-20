@@ -180,6 +180,31 @@ namespace DotNetOpenAuth.Messaging {
 		#endregion
 
 		/// <summary>
+		/// Determines whether an exception was thrown because of the remote HTTP server returning HTTP 417 Expectation Failed.
+		/// </summary>
+		/// <param name="ex">The caught exception.</param>
+		/// <returns>
+		/// 	<c>true</c> if the failure was originally caused by a 417 Exceptation Failed error; otherwise, <c>false</c>.
+		/// </returns>
+		internal static bool IsExceptionFrom417ExpectationFailed(Exception ex) {
+			while (ex != null) {
+				WebException webEx = ex as WebException;
+				if (webEx != null) {
+					HttpWebResponse response = webEx.Response as HttpWebResponse;
+					if (response != null) {
+						if (response.StatusCode == HttpStatusCode.ExpectationFailed) {
+							return true;
+						}
+					}
+				}
+
+				ex = ex.InnerException;
+			}
+
+			return false;
+		}
+
+		/// <summary>
 		/// Initiates a POST request and prepares for sending data.
 		/// </summary>
 		/// <param name="request">The HTTP request with information about the remote party to contact.</param>

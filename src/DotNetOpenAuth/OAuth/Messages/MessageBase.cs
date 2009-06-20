@@ -62,12 +62,15 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// </summary>
 		/// <param name="protectionRequired">The level of protection the message requires.</param>
 		/// <param name="originatingRequest">The request that asked for this direct response.</param>
-		protected MessageBase(MessageProtections protectionRequired, IDirectedProtocolMessage originatingRequest) {
+		/// <param name="version">The OAuth version.</param>
+		protected MessageBase(MessageProtections protectionRequired, IDirectedProtocolMessage originatingRequest, Version version) {
 			ErrorUtilities.VerifyArgumentNotNull(originatingRequest, "originatingRequest");
+			ErrorUtilities.VerifyArgumentNotNull(version, "version");
 
 			this.protectionRequired = protectionRequired;
 			this.transport = MessageTransport.Direct;
 			this.originatingRequest = originatingRequest;
+			this.Version = version;
 		}
 
 		/// <summary>
@@ -76,14 +79,15 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// <param name="protectionRequired">The level of protection the message requires.</param>
 		/// <param name="transport">A value indicating whether this message requires a direct or indirect transport.</param>
 		/// <param name="recipient">The URI that a directed message will be delivered to.</param>
-		protected MessageBase(MessageProtections protectionRequired, MessageTransport transport, MessageReceivingEndpoint recipient) {
-			if (recipient == null) {
-				throw new ArgumentNullException("recipient");
-			}
+		/// <param name="version">The OAuth version.</param>
+		protected MessageBase(MessageProtections protectionRequired, MessageTransport transport, MessageReceivingEndpoint recipient, Version version) {
+			ErrorUtilities.VerifyArgumentNotNull(recipient, "recipient");
+			ErrorUtilities.VerifyArgumentNotNull(version, "version");
 
 			this.protectionRequired = protectionRequired;
 			this.transport = transport;
 			this.recipient = recipient;
+			this.Version = version;
 		}
 
 		#region IProtocolMessage Properties
@@ -163,9 +167,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// <summary>
 		/// Gets the version of the protocol this message is prepared to implement.
 		/// </summary>
-		protected virtual Version Version {
-			get { return new Version(1, 0); }
-		}
+		protected internal Version Version { get; private set; }
 
 		/// <summary>
 		/// Gets the level of protection this message requires.

@@ -9,12 +9,13 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Linq;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
 
 	internal class InMemoryTokenManager : IConsumerTokenManager, IServiceProviderTokenManager {
-		private Dictionary<string, string> consumersAndSecrets = new Dictionary<string, string>();
-		private Dictionary<string, string> tokensAndSecrets = new Dictionary<string, string>();
+		private KeyedCollectionDelegate<string, ConsumerInfo> consumers = new KeyedCollectionDelegate<string, ConsumerInfo>(c => c.Key);
+		private KeyedCollectionDelegate<string, TokenInfo> tokens = new KeyedCollectionDelegate<string, TokenInfo>(t => t.Token);
 
 		/// <summary>
 		/// Request tokens that have been issued, and whether they have been authorized yet.
@@ -29,11 +30,11 @@ namespace DotNetOpenAuth.Test.Mocks {
 		#region IConsumerTokenManager Members
 
 		public string ConsumerKey {
-			get { return this.consumersAndSecrets.Keys.Single(); }
+			get { return this.consumers.Single().Key; }
 		}
 
 		public string ConsumerSecret {
-			get { return this.consumersAndSecrets.Values.Single(); }
+			get { return this.consumers.Single().Secret; }
 		}
 
 		#endregion
@@ -41,11 +42,11 @@ namespace DotNetOpenAuth.Test.Mocks {
 		#region ITokenManager Members
 
 		public string GetTokenSecret(string token) {
-			return this.tokensAndSecrets[token];
+			return this.tokens[token].Secret;
 		}
 
 		public void StoreNewRequestToken(UnauthorizedTokenRequest request, ITokenSecretContainingMessage response) {
-			this.tokensAndSecrets[response.Token] = response.TokenSecret;
+			this.tokens.Add(new TokenInfo { ConsumerKey = request.ConsumerKey, Token = response.Token, Secret = response.TokenSecret });
 			this.requestTokens.Add(response.Token, false);
 		}
 
@@ -70,8 +71,8 @@ namespace DotNetOpenAuth.Test.Mocks {
 			////Debug.Assert(this.requestTokens[requestToken], "Unauthorized token should not be exchanged for access token.");
 			this.requestTokens.Remove(requestToken);
 			this.accessTokens.Add(accessToken);
-			this.tokensAndSecrets.Remove(requestToken);
-			this.tokensAndSecrets[accessToken] = accessTokenSecret;
+			this.tokens.Remove(requestToken);
+			this.tokens.Add(new TokenInfo { Token = accessToken, Secret = accessTokenSecret });
 		}
 
 		/// <summary>
@@ -93,8 +94,12 @@ namespace DotNetOpenAuth.Test.Mocks {
 
 		#region IServiceProviderTokenManager Members
 
-		public string GetConsumerSecret(string consumerKey) {
-			return this.consumersAndSecrets[consumerKey];
+		public IConsumerDescription GetConsumer(string consumerKey) {
+			return this.consumers[consumerKey];
+		}
+
+		public IServiceProviderRequestToken GetRequestToken(string token) {
+			return this.tokens[token];
 		}
 
 		#endregion
@@ -105,7 +110,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// </summary>
 		/// <param name="consumerDescription">The consumer description.</param>
 		internal void AddConsumer(ConsumerDescription consumerDescription) {
-			this.consumersAndSecrets.Add(consumerDescription.ConsumerKey, consumerDescription.ConsumerSecret);
+			this.consumers.Add(new ConsumerInfo { Key = consumerDescription.ConsumerKey, Secret = consumerDescription.ConsumerSecret });
 		}
 
 		/// <summary>
@@ -118,6 +123,44 @@ namespace DotNetOpenAuth.Test.Mocks {
 			}
 
 			this.requestTokens[requestToken] = true;
+		}
+
+		private class TokenInfo : IServiceProviderRequestToken {
+			internal TokenInfo() {
+				this.CreatedOn = DateTime.Now;
+			}
+
+			public string ConsumerKey { get; set; }
+
+			public DateTime CreatedOn { get; set; }
+
+			public string Token { get; set; }
+
+			public string VerificationCode { get; set; }
+
+			public Uri Callback { get; set; }
+
+			public Version ConsumerVersion { get; set; }
+
+			internal string Secret { get; set; }
+		}
+
+		private class ConsumerInfo : IConsumerDescription {
+			#region IConsumerDescription Members
+
+			public string Key { get; set; }
+
+			public string Secret { get; set; }
+
+			public System.Security.Cryptography.X509Certificates.X509Certificate2 Certificate { get; set; }
+
+			public Uri Callback { get; set; }
+
+			public DotNetOpenAuth.OAuth.VerificationCodeFormat VerificationCodeFormat { get; set; }
+
+			public int VerificationCodeLength { get; set; }
+
+			#endregion
 		}
 	}
 }
