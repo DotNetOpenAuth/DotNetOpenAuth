@@ -324,7 +324,7 @@ namespace DotNetOpenAuth.OpenId {
 			foreach (var protocol in Protocol.AllPracticalVersions) {
 				// rel attributes are supposed to be interpreted with case INsensitivity, 
 				// and is a space-delimited list of values. (http://www.htmlhelp.com/reference/html40/values.html#linktypes)
-				var serverLinkTag = linkTags.FirstOrDefault(tag => Regex.IsMatch(tag.Attributes["rel"], @"\b" + Regex.Escape(protocol.HtmlDiscoveryProviderKey) + @"\b", RegexOptions.IgnoreCase));
+				var serverLinkTag = linkTags.WithAttribute("rel").FirstOrDefault(tag => Regex.IsMatch(tag.Attributes["rel"], @"\b" + Regex.Escape(protocol.HtmlDiscoveryProviderKey) + @"\b", RegexOptions.IgnoreCase));
 				if (serverLinkTag == null) {
 					continue;
 				}
@@ -333,7 +333,7 @@ namespace DotNetOpenAuth.OpenId {
 				if (Uri.TryCreate(serverLinkTag.Href, UriKind.Absolute, out providerEndpoint)) {
 					// See if a LocalId tag of the discovered version exists
 					Identifier providerLocalIdentifier = null;
-					var delegateLinkTag = linkTags.FirstOrDefault(tag => Regex.IsMatch(tag.Attributes["rel"], @"\b" + Regex.Escape(protocol.HtmlDiscoveryLocalIdKey) + @"\b", RegexOptions.IgnoreCase));
+					var delegateLinkTag = linkTags.WithAttribute("rel").FirstOrDefault(tag => Regex.IsMatch(tag.Attributes["rel"], @"\b" + Regex.Escape(protocol.HtmlDiscoveryLocalIdKey) + @"\b", RegexOptions.IgnoreCase));
 					if (delegateLinkTag != null) {
 						if (Identifier.IsValid(delegateLinkTag.Href)) {
 							providerLocalIdentifier = delegateLinkTag.Href;

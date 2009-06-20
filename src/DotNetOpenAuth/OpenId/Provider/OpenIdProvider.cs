@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.Collections.Specialized;
 	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
@@ -34,7 +35,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Backing store for the <see cref="Behaviors"/> property.
 		/// </summary>
-		private readonly Collection<IProviderBehavior> behaviors = new Collection<IProviderBehavior>();
+		private readonly ObservableCollection<IProviderBehavior> behaviors = new ObservableCollection<IProviderBehavior>();
 
 		/// <summary>
 		/// Backing field for the <see cref="SecuritySettings"/> property.
@@ -79,6 +80,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 			this.AssociationStore = associationStore;
 			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OpenId.Provider.SecuritySettings.CreateSecuritySettings();
+			this.behaviors.CollectionChanged += this.OnBehaviorsChanged;
 			foreach (var behavior in DotNetOpenAuthSection.Configuration.OpenId.Provider.Behaviors.CreateInstances(false)) {
 				this.behaviors.Add(behavior);
 			}
@@ -209,7 +211,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 					// If the incoming request does not resemble an OpenID message at all,
 					// it's probably a user who just navigated to this URL, and we should
 					// just return null so the host can display a message to the user.
-					if (httpRequestInfo.HttpMethod == "GET" && !httpRequestInfo.Url.QueryStringContainPrefixedParameters(Protocol.Default.openid.Prefix)) {
+					if (httpRequestInfo.HttpMethod == "GET" && !httpRequestInfo.UrlBeforeRewriting.QueryStringContainPrefixedParameters(Protocol.Default.openid.Prefix)) {
 						return null;
 					}
 
@@ -502,6 +504,17 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				return new AutoResponsiveRequest(incomingMessage, errorMessage, this.SecuritySettings);
 			} else {
 				return new AutoResponsiveRequest(errorMessage, this.SecuritySettings);
+			}
+		}
+
+		/// <summary>
+		/// Called by derived classes when behaviors are added or removed.
+		/// </summary>
+		/// <param name="sender">The collection being modified.</param>
+		/// <param name="e">The <see cref="System.Collections.Specialized.NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
+		private void OnBehaviorsChanged(object sender, NotifyCollectionChangedEventArgs e) {
+			foreach (IProviderBehavior profile in e.NewItems) {
+				profile.ApplySecuritySettings(this.SecuritySettings);
 			}
 		}
 	}

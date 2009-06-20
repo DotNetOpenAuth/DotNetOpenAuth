@@ -63,7 +63,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <see cref="OAuthConsumerMessageFactory"/> or <see cref="OAuthServiceProviderMessageFactory"/>.
 		/// </param>
 		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, IMessageFactory messageTypeProvider)
-			: base(messageTypeProvider, new OAuthHttpMethodBindingElement(), signingBindingElement, new StandardExpirationBindingElement(), new StandardReplayProtectionBindingElement(store)) {
+			: base(messageTypeProvider, InitializeBindingElements(signingBindingElement, store, tokenManager)) {
 			ErrorUtilities.VerifyArgumentNotNull(tokenManager, "tokenManager");
 
 			this.TokenManager = tokenManager;
@@ -122,7 +122,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			string authorization = request.Headers[HttpRequestHeader.Authorization];
 			if (authorization != null) {
 				string[] authorizationSections = authorization.Split(';'); // TODO: is this the right delimiter?
-				string oauthPrefix = Protocol.Default.AuthorizationHeaderScheme + " ";
+				string oauthPrefix = Protocol.AuthorizationHeaderScheme + " ";
 
 				// The Authorization header may have multiple uses, and OAuth may be just one of them.
 				// Go through each one looking for an OAuth one.
@@ -142,8 +142,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			}
 
 			// Scrape the entity
-			foreach (string key in request.Form) {
-				fields.Add(key, request.Form[key]);
+			if (string.Equals(request.Headers[HttpRequestHeader.ContentType], HttpFormUrlEncoded, StringComparison.Ordinal)) {
+				foreach (string key in request.Form) {
+					fields.Add(key, request.Form[key]);
+				}
 			}
 
 			// Scrape the query string
@@ -157,7 +159,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			// Add receiving HTTP transport information required for signature generation.
 			var signedMessage = message as ITamperResistantOAuthMessage;
 			if (signedMessage != null) {
-				signedMessage.Recipient = request.Url;
+				signedMessage.Recipient = request.UrlBeforeRewriting;
 				signedMessage.HttpMethod = request.HttpMethod;
 			}
 
@@ -239,6 +241,29 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		}
 
 		/// <summary>
+		/// Initializes the binding elements for the OAuth channel.
+		/// </summary>
+		/// <param name="signingBindingElement">The signing binding element.</param>
+		/// <param name="store">The nonce store.</param>
+		/// <param name="tokenManager">The token manager.</param>
+		/// <returns>An array of binding elements used to initialize the channel.</returns>
+		private static IChannelBindingElement[] InitializeBindingElements(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager) {
+			var bindingElements = new List<IChannelBindingElement> {
+				new OAuthHttpMethodBindingElement(),
+				signingBindingElement,
+				new StandardExpirationBindingElement(),
+				new StandardReplayProtectionBindingElement(store),
+			};
+
+			var spTokenManager = tokenManager as IServiceProviderTokenManager;
+			if (spTokenManager != null) {
+				bindingElements.Insert(0, new TokenHandlingBindingElement(spTokenManager));
+			}
+
+			return bindingElements.ToArray();
+		}
+
+		/// <summary>
 		/// Uri-escapes the names and values in a dictionary per OAuth 1.0 section 5.1.
 		/// </summary>
 		/// <param name="source">The dictionary with names and values to encode.</param>
@@ -305,7 +330,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			httpRequest.Method = GetHttpMethod(requestMessage);
 
 			StringBuilder authorization = new StringBuilder();
-			authorization.Append(protocol.AuthorizationHeaderScheme);
+			authorization.Append(Protocol.AuthorizationHeaderScheme);
 			authorization.Append(" ");
 			foreach (var pair in fields) {
 				string key = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Key);
@@ -364,7 +389,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				ErrorUtilities.VerifyInternal(consumerKey == consumerTokenManager.ConsumerKey, "The token manager consumer key and the consumer key set earlier do not match!");
 				return consumerTokenManager.ConsumerSecret;
 			} else {
-				return ((IServiceProviderTokenManager)this.TokenManager).GetConsumerSecret(consumerKey);
+				return ((IServiceProviderTokenManager)this.TokenManager).GetConsumer(consumerKey).Secret;
 			}
 		}
 	}

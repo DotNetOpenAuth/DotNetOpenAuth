@@ -20,13 +20,18 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// An ASP.NET control that renders a button that initiates an
 	/// authentication when clicked.
 	/// </summary>
-	public class OpenIdButton : OpenIdRelyingPartyControlBase {
+	public class OpenIdButton : OpenIdRelyingPartyControlBase, IPostBackEventHandler {
 		#region Property defaults
 
 		/// <summary>
 		/// The default value for the <see cref="Text"/> property.
 		/// </summary>
 		private const string TextDefault = "Log in with [Provider]!";
+
+		/// <summary>
+		/// The default value for the <see cref="PrecreateRequest"/> property.
+		/// </summary>
+		private const bool PrecreateRequestDefault = false;
 
 		#endregion
 
@@ -41,6 +46,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The key under which the value for the <see cref="ImageUrl"/> property will be stored.
 		/// </summary>
 		private const string ImageUrlViewStateKey = "ImageUrl";
+
+		/// <summary>
+		/// The key under which the value for the <see cref="PrecreateRequest"/> property will be stored.
+		/// </summary>
+		private const string PrecreateRequestViewStateKey = "PrecreateRequest";
 
 		#endregion
 
@@ -79,6 +89,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether to pre-discover the identifier so
+		/// the user agent has an immediate redirect.
+		/// </summary>
+		[Bindable(true), Category(OpenIdCategory), DefaultValue(PrecreateRequestDefault)]
+		[Description("Whether to pre-discover the identifier so the user agent has an immediate redirect.")]
+		public bool PrecreateRequest {
+			get { return (bool)(ViewState[PrecreateRequestViewStateKey] ?? PrecreateRequestDefault); }
+			set { ViewState[PrecreateRequestViewStateKey] = value; }
+		}
+
+		/// <summary>
 		/// Gets or sets a value indicating when to use a popup window to complete the login experience.
 		/// </summary>
 		/// <value>The default value is <see cref="PopupBehavior.Never"/>.</value>
@@ -87,6 +108,21 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			get { return base.Popup; }
 			set { ErrorUtilities.VerifySupported(value == base.Popup, OpenIdStrings.PropertyValueNotSupported); }
 		}
+
+		#region IPostBackEventHandler Members
+
+		/// <summary>
+		/// When implemented by a class, enables a server control to process an event raised when a form is posted to the server.
+		/// </summary>
+		/// <param name="eventArgument">A <see cref="T:System.String"/> that represents an optional event argument to be passed to the event handler.</param>
+		public void RaisePostBackEvent(string eventArgument) {
+			if (!this.PrecreateRequest) {
+				IAuthenticationRequest request = this.CreateRequests().FirstOrDefault();
+				request.RedirectToProvider();
+			}
+		}
+
+		#endregion
 
 		/// <summary>
 		/// Raises the <see cref="E:System.Web.UI.Control.PreRender"/> event.
@@ -109,11 +145,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				writer.WriteEncodedText(string.Format(CultureInfo.CurrentCulture, "[{0}]", OpenIdStrings.NoIdentifierSet));
 			} else {
 				string tooltip = this.Text;
-				IAuthenticationRequest request = this.CreateRequests().FirstOrDefault();
-				if (request != null) {
-					RenderOpenIdMessageTransmissionAsAnchorAttributes(writer, request, tooltip);
+				if (this.PrecreateRequest && !this.DesignMode) {
+					IAuthenticationRequest request = this.CreateRequests().FirstOrDefault();
+					if (request != null) {
+						RenderOpenIdMessageTransmissionAsAnchorAttributes(writer, request, tooltip);
+					} else {
+						tooltip = OpenIdStrings.OpenIdEndpointNotFound;
+					}
 				} else {
-					tooltip = OpenIdStrings.OpenIdEndpointNotFound;
+					writer.AddAttribute(HtmlTextWriterAttribute.Href, this.Page.ClientScript.GetPostBackClientHyperlink(this, null));
 				}
 
 				writer.AddAttribute(HtmlTextWriterAttribute.Title, tooltip);

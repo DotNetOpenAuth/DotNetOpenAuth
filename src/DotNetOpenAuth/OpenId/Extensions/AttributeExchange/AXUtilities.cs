@@ -88,8 +88,8 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 				bool countSent = false;
 				string countString;
 				if (fields.TryGetValue("count." + alias, out countString)) {
-					if (!int.TryParse(countString, out count) || count <= 0) {
-						Logger.OpenId.ErrorFormat("Failed to parse count.{0} value to a positive integer.", alias);
+					if (!int.TryParse(countString, out count) || count < 0) {
+						Logger.OpenId.ErrorFormat("Failed to parse count.{0} value to a non-negative integer.", alias);
 						continue;
 					}
 					countSent = true;

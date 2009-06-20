@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			Assert.IsNotNull(userSetupUrl);
 
 			// Now construct a new request as if it had just come in.
-			HttpRequestInfo httpRequest = new HttpRequestInfo { Url = userSetupUrl };
+			HttpRequestInfo httpRequest = new HttpRequestInfo { UrlBeforeRewriting = userSetupUrl };
 			var setupRequest = AuthenticationRequest_Accessor.AttachShadow(provider.GetRequest(httpRequest));
 			CheckIdRequest setupRequestMessage = setupRequest.RequestMessage;
 
