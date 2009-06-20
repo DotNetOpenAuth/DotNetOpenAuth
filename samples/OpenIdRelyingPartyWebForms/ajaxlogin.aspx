@@ -8,7 +8,7 @@
 {
 	width: 200px;
 }
-.openidtextbox
+input.openidtextbox
 {
 	width: 185px;
 }

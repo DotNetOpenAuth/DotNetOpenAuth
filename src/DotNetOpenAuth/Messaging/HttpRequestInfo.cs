@@ -225,7 +225,7 @@ namespace DotNetOpenAuth.Messaging {
 			get {
 				Contract.Ensures(Contract.Result<NameValueCollection>() != null);
 				if (this.form == null) {
-					if (this.HttpMethod == "POST" && this.Headers[HttpRequestHeader.ContentType] == "application/x-www-form-urlencoded") {
+					if (this.HttpMethod == "POST" && this.Headers[HttpRequestHeader.ContentType] == Channel.HttpFormUrlEncoded) {
 						StreamReader reader = new StreamReader(this.InputStream);
 						long originalPosition = 0;
 						if (this.InputStream.CanSeek) {

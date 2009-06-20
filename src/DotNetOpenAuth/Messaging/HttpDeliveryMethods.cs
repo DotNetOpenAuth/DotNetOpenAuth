@@ -26,7 +26,7 @@ namespace DotNetOpenAuth.Messaging {
 		AuthorizationHeaderRequest = 0x1,
 
 		/// <summary>
-		/// As the HTTP POST request body with a  content-type  of application/x-www-form-urlencoded.
+		/// As the HTTP POST request body with a content-type of application/x-www-form-urlencoded.
 		/// </summary>
 		PostRequest = 0x2,
 

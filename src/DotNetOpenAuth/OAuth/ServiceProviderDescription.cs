@@ -26,7 +26,13 @@ namespace DotNetOpenAuth.OAuth {
 		/// Initializes a new instance of the <see cref="ServiceProviderDescription"/> class.
 		/// </summary>
 		public ServiceProviderDescription() {
+			this.ProtocolVersion = Protocol.Default.ProtocolVersion;
 		}
+
+		/// <summary>
+		/// Gets or sets the OAuth version supported by the Service Provider.
+		/// </summary>
+		public ProtocolVersion ProtocolVersion { get; set; }
 
 		/// <summary>
 		/// Gets or sets the URL used to obtain an unauthorized Request Token,
@@ -43,7 +49,7 @@ namespace DotNetOpenAuth.OAuth {
 			}
 
 			set {
-				if (value != null && UriUtil.QueryStringContainPrefixedParameters(value.Location, OAuth.Protocol.V10.ParameterPrefix)) {
+				if (value != null && UriUtil.QueryStringContainPrefixedParameters(value.Location, OAuth.Protocol.ParameterPrefix)) {
 					throw new ArgumentException(OAuthStrings.RequestUrlMustNotHaveOAuthParameters);
 				}
 
@@ -75,6 +81,13 @@ namespace DotNetOpenAuth.OAuth {
 		/// </summary>
 		[SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Justification = "Type initializers require this format.")]
 		public ITamperProtectionChannelBindingElement[] TamperProtectionElements { get; set; }
+
+		/// <summary>
+		/// Gets the OAuth version supported by the Service Provider.
+		/// </summary>
+		internal Version Version {
+			get { return Protocol.Lookup(this.ProtocolVersion).Version; }
+		}
 
 		/// <summary>
 		/// Creates a signing element that includes all the signing elements this service provider supports.
