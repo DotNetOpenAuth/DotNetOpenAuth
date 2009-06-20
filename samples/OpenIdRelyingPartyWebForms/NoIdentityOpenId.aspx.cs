@@ -49,7 +49,7 @@
 			}
 			try {
 				using (OpenIdRelyingParty rp = new OpenIdRelyingParty()) {
-					var request = rp.CreateRequest(openIdBox.Text);
+					var request = rp.CreateRequest(this.openIdBox.Text);
 					request.IsExtensionOnly = true;
 
 					// This is where you would add any OpenID extensions you wanted

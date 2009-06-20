@@ -70,7 +70,7 @@ namespace DotNetOpenAuth.Test {
 			}
 			HttpRequestInfo request = new HttpRequestInfo {
 				HttpMethod = method,
-				Url = requestUri.Uri,
+				UrlBeforeRewriting = requestUri.Uri,
 				Headers = headers,
 				InputStream = ms,
 			};

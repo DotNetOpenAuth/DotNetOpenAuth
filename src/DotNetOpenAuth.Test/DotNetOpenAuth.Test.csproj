@@ -98,6 +98,10 @@
       <HintPath>..\..\lib\Microsoft.Contracts.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Moq, Version=3.1.416.3, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
@@ -168,9 +172,11 @@
     <Compile Include="OAuth\ChannelElements\OAuthChannelTests.cs" />
     <Compile Include="OAuth\ChannelElements\PlaintextSigningBindingElementTest.cs" />
     <Compile Include="OAuth\ChannelElements\SigningBindingElementBaseTests.cs" />
+    <Compile Include="OAuth\ChannelElements\UriOrOobEncodingTests.cs" />
     <Compile Include="OAuth\ConsumerDescription.cs" />
     <Compile Include="OAuth\ProtocolTests.cs" />
     <Compile Include="OAuth\ServiceProviderDescriptionTests.cs" />
+    <Compile Include="OAuth\ServiceProviderTests.cs" />
     <Compile Include="OpenId\AssociationsTests.cs" />
     <Compile Include="OpenId\AssociationTests.cs" />
     <Compile Include="OpenId\AuthenticationTests.cs" />
@@ -186,6 +192,8 @@
     <Compile Include="OpenId\Extensions\AttributeExchange\AttributeValuesTests.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\StoreRequestTests.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\StoreResponseTests.cs" />
+    <Compile Include="OpenId\Extensions\ExtensionsInteropHelperOPTests.cs" />
+    <Compile Include="OpenId\Extensions\ExtensionsInteropHelperRPResponseTests.cs" />
     <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\PapeRoundTripTests.cs" />
     <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\PolicyRequestTests.cs" />
     <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\PolicyResponseTests.cs" />
@@ -194,6 +202,7 @@
     <Compile Include="OpenId\Extensions\SimpleRegistration\ClaimsRequestTests.cs" />
     <Compile Include="OpenId\Extensions\UI\UIRequestTests.cs" />
     <Compile Include="OpenId\IdentifierTests.cs" />
+    <Compile Include="OpenId\Extensions\ExtensionsInteropHelperRPRequestTests.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanRequestTests.cs" />
     <Compile Include="OpenId\Messages\AssociateRequestTests.cs" />
     <Compile Include="OpenId\Messages\AssociateUnsuccessfulResponseTests.cs" />

@@ -5,7 +5,7 @@
 <asp:Content runat="server" ContentPlaceHolderID="Main">
 	<h2>Login Page </h2>
 	<rp:OpenIdLogin ID="OpenIdLogin1" runat="server" CssClass="openid_login" RequestCountry="Request"
-		RequestEmail="Request" RequestGender="Require" RequestPostalCode="Require" RequestTimeZone="Require"
+		RequestEmail="Require" RequestGender="Require" RequestPostalCode="Require" RequestTimeZone="Require"
 		RememberMeVisible="True" PolicyUrl="~/PrivacyPolicy.aspx" TabIndex="1"
 		OnLoggedIn="OpenIdLogin1_LoggedIn" OnLoggingIn="OpenIdLogin1_LoggingIn"
 		OnSetupRequired="OpenIdLogin1_SetupRequired" />

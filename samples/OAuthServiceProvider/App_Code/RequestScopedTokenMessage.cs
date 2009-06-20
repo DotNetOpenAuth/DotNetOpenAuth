@@ -1,4 +1,5 @@
-﻿using DotNetOpenAuth.Messaging;
+﻿using System;
+using DotNetOpenAuth.Messaging;
 using DotNetOpenAuth.OAuth.Messages;
 
 /// <summary>
@@ -9,7 +10,8 @@ public class RequestScopedTokenMessage : UnauthorizedTokenRequest {
 	/// Initializes a new instance of the <see cref="RequestScopedTokenMessage"/> class.
 	/// </summary>
 	/// <param name="endpoint">The endpoint that will receive the message.</param>
-	public RequestScopedTokenMessage(MessageReceivingEndpoint endpoint) : base(endpoint) {
+	/// <param name="version">The OAuth version.</param>
+	public RequestScopedTokenMessage(MessageReceivingEndpoint endpoint, Version version) : base(endpoint, version) {
 	}
 
 	/// <summary>

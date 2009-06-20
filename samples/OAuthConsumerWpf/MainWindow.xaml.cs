@@ -30,7 +30,6 @@
 	public partial class MainWindow : Window {
 		private InMemoryTokenManager tokenManager = new InMemoryTokenManager();
 		private DesktopConsumer google;
-		private string requestToken;
 		private string accessToken;
 
 		public MainWindow() {
@@ -56,40 +55,26 @@
 				return;
 			}
 
-			Cursor original = this.Cursor;
-			this.Cursor = Cursors.Wait;
-			beginAuthorizationButton.IsEnabled = false;
-			ThreadPool.QueueUserWorkItem(delegate(object state) {
-				Uri browserAuthorizationLocation = GoogleConsumer.RequestAuthorization(
-					this.google,
-					GoogleConsumer.Applications.Contacts | GoogleConsumer.Applications.Blogger,
-					out this.requestToken);
-				System.Diagnostics.Process.Start(browserAuthorizationLocation.AbsoluteUri);
-				this.Dispatcher.BeginInvoke(new Action(() => {
-					this.Cursor = original;
-					beginAuthorizationButton.IsEnabled = true;
-					completeAuthorizationButton.IsEnabled = true;
-					postButton.IsEnabled = true;
-				}));
-			});
-		}
+			Authorize auth = new Authorize(this.google);
+			bool? result = auth.ShowDialog();
+			if (result.HasValue && result.Value) {
+				this.accessToken = auth.AccessToken;
+				postButton.IsEnabled = true;
 
-		private void completeAuthorizationButton_Click(object sender, RoutedEventArgs e) {
-			var grantedAccess = this.google.ProcessUserAuthorization(this.requestToken);
-			this.accessToken = grantedAccess.AccessToken;
-			XDocument contactsDocument = GoogleConsumer.GetContacts(this.google, grantedAccess.AccessToken);
-			var contacts = from entry in contactsDocument.Root.Elements(XName.Get("entry", "http://www.w3.org/2005/Atom"))
-			               select new { Name = entry.Element(XName.Get("title", "http://www.w3.org/2005/Atom")).Value, Email = entry.Element(XName.Get("email", "http://schemas.google.com/g/2005")).Attribute("address").Value };
-			contactsGrid.Children.Clear();
-			foreach (var contact in contacts) {
-				contactsGrid.RowDefinitions.Add(new RowDefinition());
-				TextBlock name = new TextBlock { Text = contact.Name };
-				TextBlock email = new TextBlock { Text = contact.Email };
-				Grid.SetRow(name, contactsGrid.RowDefinitions.Count - 1);
-				Grid.SetRow(email, contactsGrid.RowDefinitions.Count - 1);
-				Grid.SetColumn(email, 1);
-				contactsGrid.Children.Add(name);
-				contactsGrid.Children.Add(email);
+				XDocument contactsDocument = GoogleConsumer.GetContacts(this.google, this.accessToken);
+				var contacts = from entry in contactsDocument.Root.Elements(XName.Get("entry", "http://www.w3.org/2005/Atom"))
+							   select new { Name = entry.Element(XName.Get("title", "http://www.w3.org/2005/Atom")).Value, Email = entry.Element(XName.Get("email", "http://schemas.google.com/g/2005")).Attribute("address").Value };
+				contactsGrid.Children.Clear();
+				foreach (var contact in contacts) {
+					contactsGrid.RowDefinitions.Add(new RowDefinition());
+					TextBlock name = new TextBlock { Text = contact.Name };
+					TextBlock email = new TextBlock { Text = contact.Email };
+					Grid.SetRow(name, contactsGrid.RowDefinitions.Count - 1);
+					Grid.SetRow(email, contactsGrid.RowDefinitions.Count - 1);
+					Grid.SetColumn(email, 1);
+					contactsGrid.Children.Add(name);
+					contactsGrid.Children.Add(email);
+				}
 			}
 		}
 

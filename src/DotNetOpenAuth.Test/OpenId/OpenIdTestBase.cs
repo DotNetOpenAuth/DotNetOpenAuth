@@ -187,7 +187,16 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// </summary>
 		/// <returns>The new instance.</returns>
 		protected OpenIdRelyingParty CreateRelyingParty() {
-			var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore());
+			return this.CreateRelyingParty(false);
+		}
+
+		/// <summary>
+		/// Creates a standard <see cref="OpenIdRelyingParty"/> instance for general testing.
+		/// </summary>
+		/// <param name="stateless">if set to <c>true</c> a stateless RP is created.</param>
+		/// <returns>The new instance.</returns>
+		protected OpenIdRelyingParty CreateRelyingParty(bool stateless) {
+			var rp = new OpenIdRelyingParty(stateless ? null : new StandardRelyingPartyApplicationStore());
 			rp.Channel.WebRequestHandler = this.MockResponder.MockWebRequestHandler;
 			return rp;
 		}

@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuth.Messages {
+	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using DotNetOpenAuth.Messaging;
@@ -19,7 +20,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// </summary>
 		/// <param name="originatingRequest">The originating request.</param>
 		protected internal AuthorizedTokenResponse(AuthorizedTokenRequest originatingRequest)
-			: base(MessageProtections.None, originatingRequest) {
+			: base(MessageProtections.None, originatingRequest, originatingRequest.Version) {
 		}
 
 		/// <summary>

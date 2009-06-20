@@ -28,6 +28,12 @@ namespace DotNetOpenAuth.Messaging {
 	[ContractClass(typeof(ChannelContract))]
 	public abstract class Channel : IDisposable {
 		/// <summary>
+		/// The content-type used on HTTP POST requests where the POST entity is a
+		/// URL-encoded series of key=value pairs.
+		/// </summary>
+		protected internal const string HttpFormUrlEncoded = "application/x-www-form-urlencoded";
+
+		/// <summary>
 		/// The encoding to use when writing out POST entity strings.
 		/// </summary>
 		private static readonly Encoding PostEntityEncoding = new UTF8Encoding(false);
@@ -317,10 +323,10 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Gets the protocol message embedded in the given HTTP request, if present.
+		/// Gets the protocol message embedded in the current HTTP request.
 		/// </summary>
 		/// <typeparam name="TRequest">The expected type of the message to be received.</typeparam>
-		/// <returns>The deserialized message.</returns>
+		/// <returns>The deserialized message.  Never null.</returns>
 		/// <remarks>
 		/// Requires an HttpContext.Current context.
 		/// </remarks>
@@ -333,11 +339,11 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Gets the protocol message that may be embedded in the given HTTP request.
+		/// Gets the protocol message embedded in the given HTTP request.
 		/// </summary>
 		/// <typeparam name="TRequest">The expected type of the message to be received.</typeparam>
 		/// <param name="httpRequest">The request to search for an embedded message.</param>
-		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
+		/// <returns>The deserialized message.  Never null.</returns>
 		/// <exception cref="ProtocolException">Thrown if the expected message was not recognized in the response.</exception>
 		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "This returns and verifies the appropriate message type.")]
 		public TRequest ReadFromRequest<TRequest>(HttpRequestInfo httpRequest)
@@ -559,13 +565,13 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires(request != null);
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
-			Logger.Channel.DebugFormat("Incoming HTTP request: {0}", request.Url.AbsoluteUri);
+			Logger.Channel.DebugFormat("Incoming HTTP request: {0} {1}", request.HttpMethod, request.UrlBeforeRewriting.AbsoluteUri);
 
 			// Search Form data first, and if nothing is there search the QueryString
-			Contract.Assume(request.Form != null && request.QueryString != null);
+			Contract.Assume(request.Form != null && request.QueryStringBeforeRewriting != null);
 			var fields = request.Form.ToDictionary();
 			if (fields.Count == 0 && request.HttpMethod != "POST") { // OpenID 2.0 section 4.1.2
-				fields = request.QueryString.ToDictionary();
+				fields = request.QueryStringBeforeRewriting.ToDictionary();
 			}
 
 			return (IDirectedProtocolMessage)this.Receive(fields, request.GetRecipient());
@@ -848,7 +854,7 @@ namespace DotNetOpenAuth.Messaging {
 			ErrorUtilities.VerifyArgumentNotNull(httpRequest, "httpRequest");
 			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
 
-			httpRequest.ContentType = "application/x-www-form-urlencoded";
+			httpRequest.ContentType = HttpFormUrlEncoded;
 
 			// Setting the content-encoding to "utf-8" causes Google to reply
 			// with a 415 UnsupportedMediaType. But adding it doesn't buy us
