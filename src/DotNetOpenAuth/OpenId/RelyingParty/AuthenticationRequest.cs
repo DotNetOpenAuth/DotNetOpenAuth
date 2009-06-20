@@ -169,9 +169,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Gets the extensions that have been added to th request.
+		/// Gets the extensions that have been added to the request.
 		/// </summary>
 		internal IEnumerable<IOpenIdMessageExtension> AppliedExtensions {
+			get { return this.extensions; }
+		}
+
+		/// <summary>
+		/// Gets the list of extensions for this request.
+		/// </summary>
+		internal IList<IOpenIdMessageExtension> Extensions {
 			get { return this.extensions; }
 		}
 

@@ -192,6 +192,8 @@
     <Compile Include="OpenId\Extensions\AttributeExchange\AttributeValuesTests.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\StoreRequestTests.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\StoreResponseTests.cs" />
+    <Compile Include="OpenId\Extensions\ExtensionsInteropHelperOPTests.cs" />
+    <Compile Include="OpenId\Extensions\ExtensionsInteropHelperRPResponseTests.cs" />
     <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\PapeRoundTripTests.cs" />
     <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\PolicyRequestTests.cs" />
     <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\PolicyResponseTests.cs" />
@@ -200,7 +202,7 @@
     <Compile Include="OpenId\Extensions\SimpleRegistration\ClaimsRequestTests.cs" />
     <Compile Include="OpenId\Extensions\UI\UIRequestTests.cs" />
     <Compile Include="OpenId\IdentifierTests.cs" />
-    <Compile Include="OpenId\Extensions\ExtensionsInteropHelperTests.cs" />
+    <Compile Include="OpenId\Extensions\ExtensionsInteropHelperRPRequestTests.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanRequestTests.cs" />
     <Compile Include="OpenId\Messages\AssociateRequestTests.cs" />
     <Compile Include="OpenId\Messages\AssociateUnsuccessfulResponseTests.cs" />

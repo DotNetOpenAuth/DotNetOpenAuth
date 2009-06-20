@@ -1,24 +1,20 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="InteropHelperTests.cs" company="Andrew Arnott">
+// <copyright file="ExtensionsInteropHelperRPRequestTests.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Test.OpenId {
-	using System;
-	using System.Collections.Generic;
 	using System.Linq;
-	using System.Text;
 	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using Moq;
-	using DotNetOpenAuth.OpenId.Extensions;
 
 	[TestClass]
-	public class ExtensionsInteropHelperTests : OpenIdTestBase {
+	public class ExtensionsInteropHelperRPRequestTests : OpenIdTestBase {
 		private AuthenticationRequest authReq;
 		private ClaimsRequest sreg;
 

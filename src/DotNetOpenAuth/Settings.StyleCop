@@ -30,12 +30,5 @@
       </Rules>
       <AnalyzerSettings />
     </Analyzer>
-    <Analyzer AnalyzerId="Microsoft.StyleCop.CSharp.NamingRules">
-      <AnalyzerSettings>
-        <CollectionProperty Name="Hungarian">
-          <Value>ax</Value>
-        </CollectionProperty>
-      </AnalyzerSettings>
-    </Analyzer>
   </Analyzers>
 </StyleCopSettings>

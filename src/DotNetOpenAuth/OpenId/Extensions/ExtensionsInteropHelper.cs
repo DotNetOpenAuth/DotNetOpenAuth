@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="InteropHelper.cs" company="Andrew Arnott">
+// <copyright file="ExtensionsInteropHelper.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -62,7 +62,14 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 			}
 
 			// Try to use just one AX Type URI format if we can figure out which type the OP accepts.
-			attributeFormats = FocusAttributeFormat(request, attributeFormats);
+			AXAttributeFormats detectedFormat;
+			if (TryDetectOPAttributeFormat(request, out detectedFormat)) {
+				Logger.OpenId.Info("Detected OP support for AX but not for Sreg.  Removing Sreg extension request and using AX instead.");
+				attributeFormats = detectedFormat;
+				req.Extensions.Remove(sreg);
+			} else {
+				Logger.OpenId.Info("Could not determine whether OP supported Sreg or AX.  Using both extensions.");
+			}
 
 			foreach (AXAttributeFormats format in ForEachFormat(attributeFormats)) {
 				FetchAttribute(ax, format, WellKnownAttributes.BirthDate.WholeBirthDate, sreg.BirthDate);
@@ -98,19 +105,20 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 				return sreg;
 			}
 
+			AXAttributeFormats formats = AXAttributeFormats.All;
 			sreg = new ClaimsResponse();
 			var fetchResponse = allowUnsigned ? resp.GetUntrustedExtension<FetchResponse>() : resp.GetExtension<FetchResponse>();
 			if (fetchResponse != null) {
 				((IOpenIdMessageExtension)sreg).IsSignedByRemoteParty = fetchResponse.IsSignedByProvider;
-				sreg.BirthDateRaw = fetchResponse.GetAttributeValue(WellKnownAttributes.BirthDate.WholeBirthDate, AXAttributeFormats.All);
-				sreg.Country = fetchResponse.GetAttributeValue(WellKnownAttributes.Contact.HomeAddress.Country);
-				sreg.PostalCode = fetchResponse.GetAttributeValue(WellKnownAttributes.Contact.HomeAddress.PostalCode);
-				sreg.Email = fetchResponse.GetAttributeValue(WellKnownAttributes.Contact.Email);
-				sreg.FullName = fetchResponse.GetAttributeValue(WellKnownAttributes.Name.FullName);
-				sreg.Language = fetchResponse.GetAttributeValue(WellKnownAttributes.Preferences.Language);
-				sreg.Nickname = fetchResponse.GetAttributeValue(WellKnownAttributes.Name.Alias);
-				sreg.TimeZone = fetchResponse.GetAttributeValue(WellKnownAttributes.Preferences.TimeZone);
-				string gender = fetchResponse.GetAttributeValue(WellKnownAttributes.Person.Gender);
+				sreg.BirthDateRaw = fetchResponse.GetAttributeValue(WellKnownAttributes.BirthDate.WholeBirthDate, formats);
+				sreg.Country = fetchResponse.GetAttributeValue(WellKnownAttributes.Contact.HomeAddress.Country, formats);
+				sreg.PostalCode = fetchResponse.GetAttributeValue(WellKnownAttributes.Contact.HomeAddress.PostalCode, formats);
+				sreg.Email = fetchResponse.GetAttributeValue(WellKnownAttributes.Contact.Email, formats);
+				sreg.FullName = fetchResponse.GetAttributeValue(WellKnownAttributes.Name.FullName, formats);
+				sreg.Language = fetchResponse.GetAttributeValue(WellKnownAttributes.Preferences.Language, formats);
+				sreg.Nickname = fetchResponse.GetAttributeValue(WellKnownAttributes.Name.Alias, formats);
+				sreg.TimeZone = fetchResponse.GetAttributeValue(WellKnownAttributes.Preferences.TimeZone, formats);
+				string gender = fetchResponse.GetAttributeValue(WellKnownAttributes.Person.Gender, formats);
 				if (gender != null) {
 					sreg.Gender = (Gender)genderEncoder.Decode(gender);
 				}
@@ -142,6 +150,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 			if (ax != null) {
 				sreg = new ClaimsRequest();
 				sreg.Synthesized = true;
+				((IProtocolMessageWithExtensions)req.RequestMessage).Extensions.Add(sreg);
 				sreg.BirthDate = GetDemandLevelFor(ax, WellKnownAttributes.BirthDate.WholeBirthDate);
 				sreg.Country = GetDemandLevelFor(ax, WellKnownAttributes.Contact.HomeAddress.Country);
 				sreg.Email = GetDemandLevelFor(ax, WellKnownAttributes.Contact.Email);
@@ -233,7 +242,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		private static void AddAXAttributeValue(FetchResponse ax, string typeUri, AXAttributeFormats format, string value) {
 			if (!string.IsNullOrEmpty(value)) {
 				string targetTypeUri = TransformAXFormat(typeUri, format);
-				if (ax.Attributes.Contains(targetTypeUri)) {
+				if (!ax.Attributes.Contains(targetTypeUri)) {
 					ax.Attributes.Add(targetTypeUri, value);
 				}
 			}
@@ -265,11 +274,11 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <param name="request">The authentication request.</param>
 		/// <param name="attributeFormat">The attribute formats the RP will try if this discovery fails.</param>
 		/// <returns>The AX format(s) to use based on the Provider's advertised AX support.</returns>
-		private static AXAttributeFormats FocusAttributeFormat(RelyingParty.IAuthenticationRequest request, AXAttributeFormats attributeFormat) {
+		private static bool TryDetectOPAttributeFormat(RelyingParty.IAuthenticationRequest request, out AXAttributeFormats attributeFormat) {
 			Contract.Requires(request != null);
 			var provider = (RelyingParty.ServiceEndpoint)request.Provider;
-			AXAttributeFormats detected = DetectAXFormat(provider.ProviderDescription.Capabilities);
-			return detected != AXAttributeFormats.None ? detected : attributeFormat;
+			attributeFormat = DetectAXFormat(provider.ProviderDescription.Capabilities);
+			return attributeFormat != AXAttributeFormats.None;
 		}
 
 		/// <summary>
