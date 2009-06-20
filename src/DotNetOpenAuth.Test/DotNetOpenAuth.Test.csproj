@@ -98,6 +98,10 @@
       <HintPath>..\..\lib\Microsoft.Contracts.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Moq, Version=3.1.416.3, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
@@ -196,7 +200,7 @@
     <Compile Include="OpenId\Extensions\SimpleRegistration\ClaimsRequestTests.cs" />
     <Compile Include="OpenId\Extensions\UI\UIRequestTests.cs" />
     <Compile Include="OpenId\IdentifierTests.cs" />
-    <Compile Include="OpenId\InteropHelperTests.cs" />
+    <Compile Include="OpenId\Extensions\ExtensionsInteropHelperTests.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanRequestTests.cs" />
     <Compile Include="OpenId\Messages\AssociateRequestTests.cs" />
     <Compile Include="OpenId\Messages\AssociateUnsuccessfulResponseTests.cs" />
