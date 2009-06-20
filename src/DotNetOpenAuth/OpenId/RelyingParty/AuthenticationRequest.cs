@@ -153,7 +153,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// OpenId discovery documents found at the <see cref="ClaimedIdentifier"/>
 		/// location.
 		/// </summary>
-		IProviderEndpoint IAuthenticationRequest.Provider {
+		public IProviderEndpoint Provider {
 			get { return this.endpoint; }
 		}
 
