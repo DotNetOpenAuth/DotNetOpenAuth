@@ -32,6 +32,19 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 		#region IProviderBehavior Members
 
 		/// <summary>
+		/// Applies a well known set of security requirements to a default set of security settings.
+		/// </summary>
+		/// <param name="securitySettings">The security settings to enhance with the requirements of this profile.</param>
+		/// <remarks>
+		/// Care should be taken to never decrease security when applying a profile.
+		/// Profiles should only enhance security requirements to avoid being
+		/// incompatible with each other.
+		/// </remarks>
+		void IProviderBehavior.ApplySecuritySettings(ProviderSecuritySettings securitySettings) {
+			// No special security to apply here.
+		}
+
+		/// <summary>
 		/// Called when a request is received by the Provider.
 		/// </summary>
 		/// <param name="request">The incoming request.</param>

@@ -145,6 +145,19 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 		#region IProviderBehavior Members
 
 		/// <summary>
+		/// Adapts the default security settings to the requirements of this behavior.
+		/// </summary>
+		/// <param name="securitySettings">The original security settings.</param>
+		void IProviderBehavior.ApplySecuritySettings(ProviderSecuritySettings securitySettings) {
+			if (securitySettings.MaximumHashBitLength < 256) {
+				securitySettings.MaximumHashBitLength = 256;
+			}
+
+			SetMaximumAssociationLifetimeToNotExceed(Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA256, MaximumAssociationLifetime, securitySettings);
+			SetMaximumAssociationLifetimeToNotExceed(Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA1, MaximumAssociationLifetime, securitySettings);
+		}
+
+		/// <summary>
 		/// Called when a request is received by the Provider.
 		/// </summary>
 		/// <param name="request">The incoming request.</param>
@@ -170,7 +183,8 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 						ErrorUtilities.VerifyProtocol(papeRequest.PreferredPolicies.Contains(AuthenticationPolicies.PrivatePersonalIdentifier), BehaviorStrings.PapeRequestMissingRequiredPolicies);
 						ErrorUtilities.VerifyProtocol(string.Equals(hostProcessedRequest.Realm.Scheme, Uri.UriSchemeHttps, StringComparison.Ordinal) || DisableSslRequirement, BehaviorStrings.RealmMustBeHttps);
 
-						request.SecuritySettings = GetProviderSecuritySettings(request.SecuritySettings);
+						// Apply GSA-specific security to this individual request.
+						request.SecuritySettings.RequireSsl = true;
 						return true;
 					}
 				}
@@ -254,25 +268,6 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 		}
 
 		#endregion
-
-		/// <summary>
-		/// Adapts the default security settings to the requirements of this behavior.
-		/// </summary>
-		/// <param name="originalSecuritySettings">The original security settings.</param>
-		/// <returns>A new security settings instance that should be used for all qualifying incoming requests.</returns>
-		private static ProviderSecuritySettings GetProviderSecuritySettings(ProviderSecuritySettings originalSecuritySettings) {
-			var securitySettings = originalSecuritySettings.Clone();
-
-			if (securitySettings.MaximumHashBitLength < 256) {
-				securitySettings.MaximumHashBitLength = 256;
-			}
-
-			securitySettings.RequireSsl = !DisableSslRequirement;
-			SetMaximumAssociationLifetimeToNotExceed(Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA256, MaximumAssociationLifetime, securitySettings);
-			SetMaximumAssociationLifetimeToNotExceed(Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA1, MaximumAssociationLifetime, securitySettings);
-
-			return securitySettings;
-		}
 
 		/// <summary>
 		/// Ensures the maximum association lifetime does not exceed a given limit.
