@@ -132,7 +132,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Gets the original request message.
 		/// </summary>
 		/// <value>This may be null in the case of an unrecognizable message.</value>
-		protected IDirectedProtocolMessage RequestMessage {
+		protected internal IDirectedProtocolMessage RequestMessage {
 			get { return this.request; }
 		}
 

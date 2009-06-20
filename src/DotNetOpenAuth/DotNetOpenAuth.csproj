@@ -330,6 +330,7 @@
     <Compile Include="OpenId\Association.cs" />
     <Compile Include="OpenId\AssociationMemoryStore.cs" />
     <Compile Include="OpenId\Associations.cs" />
+    <Compile Include="OpenId\Behaviors\AXFetchAsSregTransform.cs" />
     <Compile Include="OpenId\Behaviors\BehaviorStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -352,6 +353,7 @@
     <Compile Include="OpenId\Extensions\AliasManager.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\AttributeRequest.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\AttributeValues.cs" />
+    <Compile Include="OpenId\Extensions\AttributeExchange\AXAttributeFormats.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\AXUtilities.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\Constants.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\FetchRequest.cs" />
@@ -386,6 +388,7 @@
     <Compile Include="OpenId\Extensions\UI\UIRequest.cs" />
     <Compile Include="OpenId\Identifier.cs" />
     <Compile Include="OpenId\IdentifierContract.cs" />
+    <Compile Include="OpenId\Extensions\ExtensionsInteropHelper.cs" />
     <Compile Include="OpenId\Interop\AuthenticationResponseShim.cs" />
     <Compile Include="OpenId\Interop\ClaimsResponseShim.cs" />
     <Compile Include="OpenId\Interop\OpenIdRelyingPartyShim.cs" />
