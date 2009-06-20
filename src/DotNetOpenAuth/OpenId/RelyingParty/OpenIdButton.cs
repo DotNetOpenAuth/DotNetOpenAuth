@@ -92,7 +92,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Gets or sets a value indicating whether to pre-discover the identifier so
 		/// the user agent has an immediate redirect.
 		/// </summary>
-		[Bindable(true), Category(BehaviorCategory), DefaultValue(PrecreateRequestDefault)]
+		[Bindable(true), Category(OpenIdCategory), DefaultValue(PrecreateRequestDefault)]
 		[Description("Whether to pre-discover the identifier so the user agent has an immediate redirect.")]
 		public bool PrecreateRequest {
 			get { return (bool)(ViewState[PrecreateRequestViewStateKey] ?? PrecreateRequestDefault); }
