@@ -125,6 +125,7 @@
 																$(OutputPath)\$(ProductName).???;
 																$(OutputPath)\$(ProductName).Contracts.???;
 																$(ProjectRoot)\Doc\README.Bin.html;
+																$(ProjectRoot)\src\$(ProductName)\Configuration\$(ProductName).xsd;
 													" />
 			<DropLibSourceFiles Include="
 																$(ProjectRoot)\Lib\log4net.*;
