@@ -33,7 +33,11 @@ namespace DotNetOpenId.Loggers {
 		/// Creates the log4net.LogManager.  Call ONLY once log4net.dll is known to be present.
 		/// </summary>
 		static ILog createLogger() {
-			return new Log4NetLogger(log4net.LogManager.GetLogger("DotNetOpenId"));
+			try {
+				return new Log4NetLogger(log4net.LogManager.GetLogger("DotNetOpenId"));
+			} catch (FileLoadException) { // wrong log4net.dll version
+				return null;
+			}
 		}
 
 		#region ILog Members
