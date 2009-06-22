@@ -675,6 +675,7 @@ namespace DotNetOpenAuth.Messaging {
 			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
 
 			WebHeaderCollection headers = new WebHeaderCollection();
+			headers.Add(HttpResponseHeader.ContentType, "text/html");
 			StringWriter bodyWriter = new StringWriter(CultureInfo.InvariantCulture);
 			StringBuilder hiddenFields = new StringBuilder();
 			foreach (var field in fields) {
