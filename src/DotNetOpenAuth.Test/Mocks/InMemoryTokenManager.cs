@@ -102,6 +102,10 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return this.tokens[token];
 		}
 
+		public IServiceProviderAccessToken GetAccessToken(string token) {
+			return this.tokens[token];
+		}
+
 		#endregion
 
 		/// <summary>
@@ -125,7 +129,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			this.requestTokens[requestToken] = true;
 		}
 
-		private class TokenInfo : IServiceProviderRequestToken {
+		private class TokenInfo : IServiceProviderRequestToken, IServiceProviderAccessToken {
 			internal TokenInfo() {
 				this.CreatedOn = DateTime.Now;
 			}
@@ -141,6 +145,12 @@ namespace DotNetOpenAuth.Test.Mocks {
 			public Uri Callback { get; set; }
 
 			public Version ConsumerVersion { get; set; }
+
+			public string Username { get; set; }
+
+			public string[] Roles { get; set; }
+
+			public DateTime? ExpirationDate { get; set; }
 
 			internal string Secret { get; set; }
 		}

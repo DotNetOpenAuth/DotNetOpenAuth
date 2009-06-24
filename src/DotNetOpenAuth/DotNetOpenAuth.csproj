@@ -243,6 +243,7 @@
     <Compile Include="OAuth\ChannelElements\IConsumerDescription.cs" />
     <Compile Include="OAuth\ChannelElements\IConsumerTokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\IOpenIdOAuthTokenManager.cs" />
+    <Compile Include="OAuth\ChannelElements\IServiceProviderAccessToken.cs" />
     <Compile Include="OAuth\ChannelElements\IServiceProviderTokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthConsumerMessageFactory.cs" />
     <Compile Include="OAuth\ChannelElements\ITokenGenerator.cs" />
