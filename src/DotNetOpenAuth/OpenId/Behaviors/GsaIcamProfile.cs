@@ -185,7 +185,7 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 						ErrorUtilities.VerifyProtocol(string.Equals(hostProcessedRequest.Realm.Scheme, Uri.UriSchemeHttps, StringComparison.Ordinal) || DisableSslRequirement, BehaviorStrings.RealmMustBeHttps);
 
 						// Apply GSA-specific security to this individual request.
-						request.SecuritySettings.RequireSsl = true;
+						request.SecuritySettings.RequireSsl = !DisableSslRequirement;
 						return true;
 					}
 				}
