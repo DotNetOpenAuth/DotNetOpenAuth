@@ -4,6 +4,7 @@
 <%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth" TagPrefix="dnoa" %>
 <%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.OpenId.Provider"
 	TagPrefix="op" %>
+<%@ Register Src="~/RP/ProfileFields.ascx" TagPrefix="cc1" TagName="ProfileFields" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="TestHead" runat="Server">
 	<!-- This identity page doubles as the OP endpoint -->
 	<dnoa:XrdsPublisher ID="XrdsPublisher1" runat="server" XrdsUrl="~/RP/GSALevel1XrdsOP.aspx" />
@@ -24,6 +25,7 @@
 			<p>A GSA Level 1 OpenID authentication request was received. You should complete the
 				test by continuing and verify that the RP logs you in. </p>
 			<p>RP discovery <asp:Label runat="server" ID="rpDiscoveryResult" EnableViewState="false" /></p>
+			<cc1:ProfileFields runat="server" ID="profileFields" />
 			<asp:Button runat='server' ID='continueButton' OnClick="continueButton_Click" Text="Continue" />
 		</asp:View>
 	</asp:MultiView>

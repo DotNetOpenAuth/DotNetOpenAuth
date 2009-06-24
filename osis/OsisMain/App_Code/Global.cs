@@ -25,6 +25,8 @@ public class Global : HttpApplication {
 		Logger.Info("OSIS test site starting...");
 		DotNetOpenAuth.OpenId.Behaviors.USGovernmentLevel1.PpidIdentifierProvider = new PpidProvider();
 		DotNetOpenAuth.OpenId.Behaviors.USGovernmentLevel1.DisableSslRequirement = HttpContext.Current.Request.Url.Host == "localhost";
+		// Always mark it as allowed, although we'll add the PAPE no-PII URI if we don't want any for this test.
+		DotNetOpenAuth.OpenId.Behaviors.USGovernmentLevel1.AllowPersonallyIdentifiableInformation = true;
 	}
 
 	protected void Application_End(object sender, EventArgs e) {
