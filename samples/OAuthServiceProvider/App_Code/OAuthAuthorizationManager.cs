@@ -43,7 +43,6 @@ public class OAuthAuthorizationManager : ServiceAuthorizationManager {
 			// Only allow this method call if the access token scope permits it.
 			string[] scopes = accessToken.Scope.Split('|');
 			if (scopes.Contains(operationContext.IncomingMessageHeaders.Action)) {
-				operationContext.IncomingMessageProperties["OAuthAccessToken"] = accessToken;
 				return true;
 			}
 		}
