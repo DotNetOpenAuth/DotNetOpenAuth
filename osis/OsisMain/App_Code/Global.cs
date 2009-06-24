@@ -24,6 +24,7 @@ public class Global : HttpApplication {
 		log4net.Config.XmlConfigurator.Configure();
 		Logger.Info("OSIS test site starting...");
 		DotNetOpenAuth.OpenId.Behaviors.USGovernmentLevel1.PpidIdentifierProvider = new PpidProvider();
+		DotNetOpenAuth.OpenId.Behaviors.USGovernmentLevel1.DisableSslRequirement = HttpContext.Current.Request.Url.Host == "localhost";
 	}
 
 	protected void Application_End(object sender, EventArgs e) {

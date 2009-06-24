@@ -3,6 +3,7 @@
 	<XRD xmlns="xri://$xrd*($v*2.0)">
 		<Service>
 			<Type>http://specs.openid.net/auth/2.0/server</Type>
+			<Type>http://openid.net/extensions/sreg/1.1</Type>
 			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/RP/GSALevel1.aspx"))%></URI>
 		</Service>
 	</XRD>

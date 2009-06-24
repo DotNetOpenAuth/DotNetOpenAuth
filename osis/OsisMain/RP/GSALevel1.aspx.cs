@@ -6,6 +6,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using DotNetOpenAuth.OpenId.Provider;
 using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
+using DotNetOpenAuth.OpenId.Behaviors;
 
 public partial class RP_GSALevel1 : System.Web.UI.Page {
 	/// <summary>
@@ -15,7 +16,9 @@ public partial class RP_GSALevel1 : System.Web.UI.Page {
 
 	protected void Page_Load(object sender, EventArgs e) {
 		if (!IsPostBack) {
-			Util.EnsureHttpsByRedirection();
+			if (!USGovernmentLevel1.DisableSslRequirement) {
+				Util.EnsureHttpsByRedirection();
+			}
 			IRequest request = provider.GetRequest();
 			if (request != null) {
 				if (!request.IsResponseReady) {
