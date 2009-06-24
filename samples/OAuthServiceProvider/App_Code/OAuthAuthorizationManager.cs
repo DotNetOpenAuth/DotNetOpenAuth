@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IdentityModel.Policy;
 using System.Linq;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
+using System.ServiceModel.Security;
 using DotNetOpenAuth;
 using DotNetOpenAuth.OAuth;
 
@@ -23,6 +26,19 @@ public class OAuthAuthorizationManager : ServiceAuthorizationManager {
 		var auth = sp.ReadProtectedResourceAuthorization(httpDetails, requestUri);
 		if (auth != null) {
 			var accessToken = Global.DataContext.OAuthTokens.Single(token => token.Token == auth.AccessToken);
+
+			var policy = new OAuthPrincipalAuthorizationPolicy(sp.CreatePrincipal(auth));
+			var policies = new List<IAuthorizationPolicy> {
+				policy,
+			};
+			var securityContext = new ServiceSecurityContext(policies.AsReadOnly());
+			if (operationContext.IncomingMessageProperties.Security != null) {
+				operationContext.IncomingMessageProperties.Security.ServiceSecurityContext = securityContext;
+			} else {
+				operationContext.IncomingMessageProperties.Security = new SecurityMessageProperty {
+					ServiceSecurityContext = securityContext,
+				};
+			}
 
 			// Only allow this method call if the access token scope permits it.
 			string[] scopes = accessToken.Scope.Split('|');
