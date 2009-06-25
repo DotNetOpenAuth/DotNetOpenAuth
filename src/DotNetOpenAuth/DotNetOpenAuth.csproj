@@ -82,9 +82,10 @@
     <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
     <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Sign)' == 'true' ">
+  <PropertyGroup>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\official-build-key.pfx</AssemblyOriginatorKeyFile>
+    <DelaySign>true</DelaySign>
+    <AssemblyOriginatorKeyFile>..\official-build-key.pub</AssemblyOriginatorKeyFile>
     <DefineConstants>$(DefineConstants);StrongNameSigned</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CodeAnalysis|AnyCPU' ">
