@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.Messaging {
 		[ContractVerification(false)] // bugs/limitations in CC static analysis
 		private MessageSerializer(Type messageType) {
 			Contract.Requires<ArgumentNullException>(messageType != null);
-			Contract.Requires(typeof(IMessage).IsAssignableFrom(messageType));
+			Contract.Requires<ArgumentException>(typeof(IMessage).IsAssignableFrom(messageType));
 			Contract.Ensures(this.messageType != null);
 
 			ErrorUtilities.VerifyArgumentNamed(

@@ -150,7 +150,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		internal static string ConstructSignatureBaseString(ITamperResistantOAuthMessage message, MessageDictionary messageDictionary) {
 			Contract.Requires<ArgumentNullException>(message != null);
 			Contract.Requires<ArgumentNullException>(messageDictionary != null);
-			Contract.Requires(messageDictionary.Message == message);
+			Contract.Requires<ArgumentException>(messageDictionary.Message == message);
 
 			if (String.IsNullOrEmpty(message.HttpMethod)) {
 				throw new ArgumentException(

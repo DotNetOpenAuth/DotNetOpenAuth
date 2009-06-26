@@ -34,7 +34,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="response">The response message.</param>
 		protected internal PositiveAnonymousResponse(IndirectSignedResponse response) {
 			Contract.Requires<ArgumentNullException>(response != null);
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
 
 			this.response = response;
 			if (response.ProviderEndpoint != null && response.Version != null) {
@@ -235,7 +234,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// have not been tampered with since the Provider sent the message.</para>
 		/// </remarks>
 		public IOpenIdMessageExtension GetExtension(Type extensionType) {
-			ErrorUtilities.VerifyArgumentNotNull(extensionType, "extensionType");
 			return this.response.SignedExtensions.OfType<IOpenIdMessageExtension>().Where(ext => extensionType.IsInstanceOfType(ext)).FirstOrDefault();
 		}
 
@@ -285,7 +283,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// have not been tampered with since the Provider sent the message.</para>
 		/// </remarks>
 		public IOpenIdMessageExtension GetUntrustedExtension(Type extensionType) {
-			ErrorUtilities.VerifyArgumentNotNull(extensionType, "extensionType");
 			return this.response.Extensions.OfType<IOpenIdMessageExtension>().Where(ext => extensionType.IsInstanceOfType(ext)).FirstOrDefault();
 		}
 

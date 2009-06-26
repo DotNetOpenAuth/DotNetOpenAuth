@@ -55,8 +55,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="securitySettings">The security settings from the channel.</param>
 		protected Request(IDirectedProtocolMessage request, ProviderSecuritySettings securitySettings) {
 			Contract.Requires<ArgumentNullException>(request != null);
-			Contract.Requires(securitySettings != null);
-			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
 
 			this.request = request;
 			this.SecuritySettings = securitySettings;
@@ -71,8 +70,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="securitySettings">The security settings.</param>
 		protected Request(Version version, ProviderSecuritySettings securitySettings) {
 			Contract.Requires<ArgumentNullException>(version != null);
-			Contract.Requires(securitySettings != null);
-			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
 
 			this.protocolVersion = version;
 			this.SecuritySettings = securitySettings;
@@ -101,7 +99,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="IsResponseReady"/> is <c>false</c>.</exception>
 		internal IProtocolMessage Response {
 			get {
-				Contract.Requires(this.IsResponseReady);
+				Contract.Requires<InvalidOperationException>(this.IsResponseReady);
 				Contract.Ensures(Contract.Result<IProtocolMessage>() != null);
 
 				ErrorUtilities.VerifyOperation(this.IsResponseReady, OpenIdStrings.ResponseNotReady);

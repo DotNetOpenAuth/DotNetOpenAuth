@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
+	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -87,7 +88,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// 	<c>true</c> if the association is permitted given the security requirements; otherwise, <c>false</c>.
 		/// </returns>
 		internal bool IsAssociationInPermittedRange(Association association) {
-			ErrorUtilities.VerifyArgumentNotNull(association, "association");
+			Contract.Requires<ArgumentNullException>(association != null);
 			return association.HashBitLength >= this.MinimumHashBitLength && association.HashBitLength <= this.MaximumHashBitLength;
 		}
 	}

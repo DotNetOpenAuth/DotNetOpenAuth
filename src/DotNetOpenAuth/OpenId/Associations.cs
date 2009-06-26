@@ -77,7 +77,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>The desired association, or null if none with the given handle could be found.</returns>
 		[Pure]
 		public Association Get(string handle) {
-			Contract.Requires(!string.IsNullOrEmpty(handle));
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(handle));
 
 			lock (this.associations) {
 				if (this.associations.Contains(handle)) {
@@ -94,7 +94,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="handle">The handle to the required association.</param>
 		/// <returns>Whether an <see cref="Association"/> with the given handle was in the collection for removal.</returns>
 		public bool Remove(string handle) {
-			Contract.Requires(!string.IsNullOrEmpty(handle));
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(handle));
 			lock (this.associations) {
 				return this.associations.Remove(handle);
 			}

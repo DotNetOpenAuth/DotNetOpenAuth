@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OAuth {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -137,10 +138,9 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="version">The OAuth version to get.</param>
 		/// <returns>A matching <see cref="Protocol"/> instance.</returns>
 		internal static Protocol Lookup(Version version) {
-			ErrorUtilities.VerifyArgumentNotNull(version, "version");
-			Protocol protocol = AllVersions.FirstOrDefault(p => p.Version == version);
-			ErrorUtilities.VerifyArgumentInRange(protocol != null, "version");
-			return protocol;
+			Contract.Requires<ArgumentNullException>(version != null);
+			Contract.Requires<ArgumentOutOfRangeException>(AllVersions.Any(p => p.Version == version));
+			return AllVersions.First(p => p.Version == version);
 		}
 	}
 }

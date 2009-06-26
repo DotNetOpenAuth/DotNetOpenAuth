@@ -225,7 +225,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// The access token assigned by the Service Provider.
 		/// </returns>
 		protected AuthorizedTokenResponse ProcessUserAuthorization(string requestToken, string verifier) {
-			Contract.Requires(!String.IsNullOrEmpty(requestToken));
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(requestToken));
 			Contract.Ensures(Contract.Result<AuthorizedTokenResponse>() != null);
 
 			var requestAccess = new AuthorizedTokenRequest(this.ServiceProvider.AccessTokenEndpoint, this.ServiceProvider.Version) {

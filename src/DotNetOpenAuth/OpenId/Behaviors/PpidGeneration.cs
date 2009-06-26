@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OpenId.Behaviors {
 	using System;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
@@ -70,8 +71,6 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 		/// from handling it; <c>false</c> to allow other behaviors to process this request.
 		/// </returns>
 		bool IProviderBehavior.OnOutgoingResponse(IAuthenticationRequest request) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
-
 			// Nothing to do for negative assertions.
 			if (!request.IsAuthenticated.Value) {
 				return false;

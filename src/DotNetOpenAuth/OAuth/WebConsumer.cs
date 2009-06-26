@@ -80,7 +80,6 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="scope">The scope of access that is requested of the service provider.</param>
 		public void AttachAuthorizationRequest(IAuthenticationRequest openIdAuthenticationRequest, string scope) {
 			Contract.Requires<ArgumentNullException>(openIdAuthenticationRequest != null);
-			ErrorUtilities.VerifyArgumentNotNull(openIdAuthenticationRequest, "openIdAuthenticationRequest");
 
 			var authorizationRequest = new AuthorizationRequest {
 				Consumer = this.ConsumerKey,
@@ -103,7 +102,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// </remarks>
 		public AuthorizedTokenResponse ProcessUserAuthorization(IAuthenticationResponse openIdAuthenticationResponse) {
 			Contract.Requires<ArgumentNullException>(openIdAuthenticationResponse != null);
-			Contract.Requires(this.TokenManager is IOpenIdOAuthTokenManager);
+			Contract.Requires<InvalidOperationException>(this.TokenManager is IOpenIdOAuthTokenManager);
 			var openidTokenManager = this.TokenManager as IOpenIdOAuthTokenManager;
 			ErrorUtilities.VerifyOperation(openidTokenManager != null, OAuthStrings.OpenIdOAuthExtensionRequiresSpecialTokenManagerInterface, typeof(IOpenIdOAuthTokenManager).FullName);
 

@@ -38,7 +38,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		internal PositiveAuthenticationResponse(PositiveAssertionResponse response, OpenIdRelyingParty relyingParty)
 			: base(response) {
 			Contract.Requires<ArgumentNullException>(relyingParty != null);
-			ErrorUtilities.VerifyArgumentNotNull(relyingParty, "relyingParty");
 
 			this.endpoint = ServiceEndpoint.CreateForClaimedIdentifier(
 				this.Response.ClaimedIdentifier,

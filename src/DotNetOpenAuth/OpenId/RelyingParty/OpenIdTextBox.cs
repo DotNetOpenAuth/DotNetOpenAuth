@@ -907,8 +907,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Uri(Uri, string) accepts second arguments that Uri(Uri, new Uri(string)) does not that we must support.")]
 		public IAuthenticationRequest CreateRequest() {
-			ErrorUtilities.VerifyOperation(this.Request == null, OpenIdStrings.CreateRequestAlreadyCalled);
-			ErrorUtilities.VerifyOperation(!string.IsNullOrEmpty(this.Text), OpenIdStrings.OpenIdTextBoxEmpty);
+			Contract.Requires<InvalidOperationException>(this.Request == null, OpenIdStrings.CreateRequestAlreadyCalled);
+			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.Text), OpenIdStrings.OpenIdTextBoxEmpty);
 
 			try {
 				// Approximate the returnTo (either based on the customize property or the page URL)
@@ -1217,7 +1217,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <returns><c>true</c> if a popup should be used; <c>false</c> otherwise.</returns>
 		private bool IsPopupAppropriate() {
-			Contract.Requires(this.Request != null);
+			Contract.Requires<InvalidOperationException>(this.Request != null);
 
 			return this.Popup == PopupBehavior.Always || this.Request.Provider.IsExtensionSupported<UIRequest>();
 		}
@@ -1226,8 +1226,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Wires the return page to immediately display a popup window with the Provider in it.
 		/// </summary>
 		private void ScriptPopupWindow() {
-			Contract.Requires(this.Request != null);
-			Contract.Requires(this.RelyingParty != null);
+			Contract.Requires<InvalidOperationException>(this.Request != null);
+			Contract.Requires<InvalidOperationException>(this.RelyingParty != null);
 
 			this.Request.AddCallbackArguments(UIPopupCallbackKey, "1");
 

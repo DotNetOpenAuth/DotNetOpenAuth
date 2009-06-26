@@ -64,8 +64,8 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// <param name="originatingRequest">The request that asked for this direct response.</param>
 		/// <param name="version">The OAuth version.</param>
 		protected MessageBase(MessageProtections protectionRequired, IDirectedProtocolMessage originatingRequest, Version version) {
-			ErrorUtilities.VerifyArgumentNotNull(originatingRequest, "originatingRequest");
-			ErrorUtilities.VerifyArgumentNotNull(version, "version");
+			Contract.Requires<ArgumentNullException>(originatingRequest != null);
+			Contract.Requires<ArgumentNullException>(version != null);
 
 			this.protectionRequired = protectionRequired;
 			this.transport = MessageTransport.Direct;
@@ -81,8 +81,8 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// <param name="recipient">The URI that a directed message will be delivered to.</param>
 		/// <param name="version">The OAuth version.</param>
 		protected MessageBase(MessageProtections protectionRequired, MessageTransport transport, MessageReceivingEndpoint recipient, Version version) {
-			ErrorUtilities.VerifyArgumentNotNull(recipient, "recipient");
-			ErrorUtilities.VerifyArgumentNotNull(version, "version");
+			Contract.Requires<ArgumentNullException>(recipient != null);
+			Contract.Requires<ArgumentNullException>(version != null);
 
 			this.protectionRequired = protectionRequired;
 			this.transport = transport;

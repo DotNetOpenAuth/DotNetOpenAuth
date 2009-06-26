@@ -75,8 +75,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			Contract.Ensures(this.AssociationStore == associationStore);
 			Contract.Ensures(this.SecuritySettings != null);
 			Contract.Ensures(this.Channel != null);
-			ErrorUtilities.VerifyArgumentNotNull(associationStore, "associationStore");
-			ErrorUtilities.VerifyArgumentNotNull(nonceStore, "nonceStore");
 
 			this.AssociationStore = associationStore;
 			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OpenId.Provider.SecuritySettings.CreateSecuritySettings();
@@ -201,7 +199,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// but deviates from the protocol specification irrecoverably.</exception>
 		public IRequest GetRequest(HttpRequestInfo httpRequestInfo) {
 			Contract.Requires<ArgumentNullException>(httpRequestInfo != null);
-			ErrorUtilities.VerifyArgumentNotNull(httpRequestInfo, "httpRequestInfo");
 			IDirectedProtocolMessage incomingMessage = null;
 
 			try {
@@ -298,7 +295,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code Contract requires that we cast early.")]
 		public OutgoingWebResponse PrepareResponse(IRequest request) {
 			Contract.Requires<ArgumentNullException>(request != null);
-			Contract.Requires(((Request)request).IsResponseReady);
+			Contract.Requires<ArgumentException>(((Request)request).IsResponseReady);
 
 			this.ApplyBehaviorsToResponse(request);
 			Request requestInternal = (Request)request;
@@ -451,8 +448,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		private IRequest GetErrorResponse(ProtocolException ex, HttpRequestInfo httpRequestInfo, IDirectedProtocolMessage incomingMessage) {
 			Contract.Requires<ArgumentNullException>(ex != null);
 			Contract.Requires<ArgumentNullException>(httpRequestInfo != null);
-			ErrorUtilities.VerifyArgumentNotNull(ex, "ex");
-			ErrorUtilities.VerifyArgumentNotNull(httpRequestInfo, "httpRequestInfo");
 
 			Logger.OpenId.Error("An exception was generated while processing an incoming OpenID request.", ex);
 			IErrorMessage errorMessage;

@@ -92,9 +92,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="eventArgument">The identifier to perform discovery on.</param>
 		void ICallbackEventHandler.RaiseCallbackEvent(string eventArgument) {
+			ErrorUtilities.VerifyNonZeroLength(eventArgument, "eventArgument");
 			string userSuppliedIdentifier = eventArgument;
 
-			ErrorUtilities.VerifyNonZeroLength(userSuppliedIdentifier, "userSuppliedIdentifier");
 			Logger.OpenId.InfoFormat("AJAX discovery on {0} requested.", userSuppliedIdentifier);
 
 			// We prepare a JSON object with this interface:
@@ -182,7 +182,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
 		/// </returns>
 		private IEnumerable<IAuthenticationRequest> CreateRequestsCore(IEnumerable<IAuthenticationRequest> requests) {
-			Contract.Requires(requests != null);
+			Contract.Requires<ArgumentNullException>(requests != null);
 
 			// Configure each generated request.
 			int reqIndex = 0;

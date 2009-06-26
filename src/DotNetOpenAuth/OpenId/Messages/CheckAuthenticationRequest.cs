@@ -42,7 +42,6 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		internal CheckAuthenticationRequest(IndirectSignedResponse message, Channel channel)
 			: base(message.Version, message.ProviderEndpoint, GetProtocolConstant(message.Version, p => p.Args.Mode.check_authentication), MessageTransport.Direct) {
 			Contract.Requires<ArgumentNullException>(channel != null);
-			ErrorUtilities.VerifyArgumentNotNull(channel, "channel");
 
 			// Copy all message parts from the id_res message into this one,
 			// except for the openid.mode parameter.

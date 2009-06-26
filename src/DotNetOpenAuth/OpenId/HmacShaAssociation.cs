@@ -69,7 +69,7 @@ namespace DotNetOpenAuth.OpenId {
 		private HmacShaAssociation(HmacSha typeIdentity, string handle, byte[] secret, TimeSpan totalLifeLength)
 			: base(handle, secret, totalLifeLength, DateTime.UtcNow) {
 			Contract.Requires<ArgumentNullException>(typeIdentity != null);
-			Contract.Requires(!String.IsNullOrEmpty(handle));
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(handle));
 			Contract.Requires<ArgumentNullException>(secret != null);
 			Contract.Requires<ArgumentOutOfRangeException>(totalLifeLength > TimeSpan.Zero);
 			Contract.Ensures(this.TotalLifeLength == totalLifeLength);
@@ -99,7 +99,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>The newly created association.</returns>
 		public static HmacShaAssociation Create(Protocol protocol, string associationType, string handle, byte[] secret, TimeSpan totalLifeLength) {
 			Contract.Requires<ArgumentNullException>(protocol != null);
-			Contract.Requires(!String.IsNullOrEmpty(associationType));
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(associationType));
 			Contract.Requires<ArgumentNullException>(secret != null);
 			Contract.Ensures(Contract.Result<HmacShaAssociation>() != null);
 
@@ -116,7 +116,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="totalLifeLength">Total lifetime.</param>
 		/// <returns>The newly created association.</returns>
 		public static HmacShaAssociation Create(string handle, byte[] secret, TimeSpan totalLifeLength) {
-			Contract.Requires(!String.IsNullOrEmpty(handle));
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(handle));
 			Contract.Requires<ArgumentNullException>(secret != null);
 			Contract.Ensures(Contract.Result<HmacShaAssociation>() != null);
 
@@ -152,7 +152,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </remarks>
 		internal static HmacShaAssociation Create(Protocol protocol, string associationType, AssociationRelyingPartyType associationUse, ProviderSecuritySettings securitySettings) {
 			Contract.Requires<ArgumentNullException>(protocol != null);
-			Contract.Requires(!String.IsNullOrEmpty(associationType));
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(associationType));
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 			Contract.Ensures(Contract.Result<HmacShaAssociation>() != null);
 
@@ -243,7 +243,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </returns>
 		internal static bool IsDHSessionCompatible(Protocol protocol, string associationType, string sessionType) {
 			Contract.Requires<ArgumentNullException>(protocol != null);
-			Contract.Requires(!String.IsNullOrEmpty(associationType));
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(associationType));
 			Contract.Requires<ArgumentNullException>(sessionType != null);
 
 			// All association types can work when no DH session is used at all.

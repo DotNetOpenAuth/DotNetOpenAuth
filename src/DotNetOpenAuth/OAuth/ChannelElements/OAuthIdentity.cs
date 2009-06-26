@@ -22,8 +22,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <param name="username">The username.</param>
 		internal OAuthIdentity(string username) {
-			Contract.Requires(!String.IsNullOrEmpty(username));
-			ErrorUtilities.VerifyNonZeroLength(username, "username");
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(username));
 			this.Name = username;
 		}
 

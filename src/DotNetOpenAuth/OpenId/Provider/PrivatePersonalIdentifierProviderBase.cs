@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="baseIdentifier">The base URI on which to append the anonymous part.</param>
 		public PrivatePersonalIdentifierProviderBase(Uri baseIdentifier) {
-			Contract.Requires(baseIdentifier != null);
+			Contract.Requires<ArgumentNullException>(baseIdentifier != null);
 			ErrorUtilities.VerifyArgumentNotNull(baseIdentifier, "baseIdentifier");
 
 			this.Hasher = HashAlgorithm.Create(HashAlgorithmName);
@@ -101,8 +101,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 
 			set {
-				Contract.Requires(value > 0);
-				ErrorUtilities.VerifyArgumentInRange(value > 0, "value");
+				Contract.Requires<ArgumentOutOfRangeException>(value > 0);
 				this.newSaltLength = value;
 			}
 		}
@@ -120,10 +119,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// openid.claimed_id and openid.local_id parameters.  Must not be null.
 		/// </returns>
 		public Uri GetIdentifier(Identifier localIdentifier, Realm relyingPartyRealm) {
-			ErrorUtilities.VerifyArgumentNotNull(localIdentifier, "localIdentifier");
-			ErrorUtilities.VerifyArgumentNotNull(relyingPartyRealm, "relyingPartyRealm");
-			ErrorUtilities.VerifyArgumentNamed(this.IsUserLocalIdentifier(localIdentifier), "localIdentifier", OpenIdStrings.ArgumentIsPpidIdentifier);
-
 			byte[] salt = this.GetHashSaltForLocalIdentifier(localIdentifier);
 			string valueToHash = localIdentifier + "#";
 			switch (this.PairwiseUnique) {
@@ -184,8 +179,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="uriHash">The unique part of the Identifier to append to the common first part.</param>
 		/// <returns>The full PPID Identifier.</returns>
 		protected virtual Uri AppendIdentifiers(string uriHash) {
-			Contract.Requires(!String.IsNullOrEmpty(uriHash));
-			ErrorUtilities.VerifyNonZeroLength(uriHash, "uriHash");
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(uriHash));
 
 			if (string.IsNullOrEmpty(this.BaseIdentifier.Query)) {
 				// The uriHash will appear on the path itself.

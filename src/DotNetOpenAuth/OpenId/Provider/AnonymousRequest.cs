@@ -29,7 +29,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		internal AnonymousRequest(OpenIdProvider provider, SignedResponseRequest request)
 			: base(provider, request) {
 			Contract.Requires<ArgumentNullException>(provider != null);
-			Contract.Requires(!(request is CheckIdRequest), "Instantiate " + typeof(AuthenticationRequest).Name + " to handle this kind of message.");
+			Contract.Requires<ArgumentException>(!(request is CheckIdRequest), "Instantiate " + typeof(AuthenticationRequest).Name + " to handle this kind of message.");
 
 			this.positiveResponse = new IndirectSignedResponse(request);
 		}

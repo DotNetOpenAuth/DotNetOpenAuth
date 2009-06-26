@@ -42,8 +42,8 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="decryptor">The decryptor to use to decrypt the token, if necessary..</param>
 		/// <exception cref="InformationCardException">Thrown for any problem decoding or decrypting the token.</exception>
 		private Token(string tokenXml, Uri audience, TokenDecryptor decryptor) {
-			Contract.Requires(!String.IsNullOrEmpty(tokenXml));
-			Contract.Requires(decryptor != null || !IsEncrypted(tokenXml));
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(tokenXml));
+			Contract.Requires<ArgumentException>(decryptor != null || !IsEncrypted(tokenXml));
 			Contract.Ensures(this.AuthorizationContext != null);
 
 			byte[] decryptedBytes;
@@ -107,7 +107,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </summary>
 		public string SiteSpecificId {
 			get {
-				Contract.Requires(this.Claims.ContainsKey(ClaimTypes.PPID) && !string.IsNullOrEmpty(this.Claims[ClaimTypes.PPID]));
+				Contract.Requires<InvalidOperationException>(this.Claims.ContainsKey(ClaimTypes.PPID) && !string.IsNullOrEmpty(this.Claims[ClaimTypes.PPID]));
 				string ppidValue;
 				ErrorUtilities.VerifyOperation(this.Claims.TryGetValue(ClaimTypes.PPID, out ppidValue) && ppidValue != null, InfoCardStrings.PpidClaimRequired);
 				return TokenUtility.CalculateSiteSpecificID(ppidValue);
@@ -133,7 +133,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="tokenXml">The token XML.</param>
 		/// <returns>The deserialized token.</returns>
 		public static Token Read(string tokenXml) {
-			Contract.Requires(!String.IsNullOrEmpty(tokenXml));
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(tokenXml));
 			return Read(tokenXml, (Uri)null);
 		}
 
@@ -144,7 +144,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="audience">The URI that this token must have been crafted to be sent to.  Use <c>null</c> to accept any intended audience.</param>
 		/// <returns>The deserialized token.</returns>
 		public static Token Read(string tokenXml, Uri audience) {
-			Contract.Requires(!String.IsNullOrEmpty(tokenXml));
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(tokenXml));
 			return Read(tokenXml, audience, Enumerable.Empty<SecurityToken>());
 		}
 
@@ -155,7 +155,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="decryptionTokens">Any X.509 certificates that may be used to decrypt the token, if necessary.</param>
 		/// <returns>The deserialized token.</returns>
 		public static Token Read(string tokenXml, IEnumerable<SecurityToken> decryptionTokens) {
-			Contract.Requires(!String.IsNullOrEmpty(tokenXml));
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(tokenXml));
 			Contract.Requires<ArgumentNullException>(decryptionTokens != null);
 			return Read(tokenXml, null, decryptionTokens);
 		}
@@ -168,7 +168,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="decryptionTokens">Any X.509 certificates that may be used to decrypt the token, if necessary.</param>
 		/// <returns>The deserialized token.</returns>
 		public static Token Read(string tokenXml, Uri audience, IEnumerable<SecurityToken> decryptionTokens) {
-			Contract.Requires(!String.IsNullOrEmpty(tokenXml));
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(tokenXml));
 			Contract.Requires<ArgumentNullException>(decryptionTokens != null);
 			Contract.Ensures(Contract.Result<Token>() != null);
 

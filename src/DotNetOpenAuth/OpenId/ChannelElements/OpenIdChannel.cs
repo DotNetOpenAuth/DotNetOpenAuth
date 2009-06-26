@@ -254,8 +254,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// This method implements spec V1.0 section 5.3.
 		/// </remarks>
 		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
-
 			var messageAccessor = this.MessageDescriptions.GetAccessor(response);
 			var fields = messageAccessor.Serialize();
 			byte[] keyValueEncoding = KeyValueFormEncoding.GetBytes(fields);

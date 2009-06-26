@@ -285,9 +285,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// the inclusion and order of message parts that will be signed.
 		/// </returns>
 		private string GetSignedParameterOrder(ITamperResistantOpenIdMessage signedMessage) {
-			Contract.Requires(this.Channel != null);
+			Contract.Requires<InvalidOperationException>(this.Channel != null);
 			Contract.Requires<ArgumentNullException>(signedMessage != null);
-			ErrorUtilities.VerifyOperation(this.Channel != null, "Channel property has not been set.");
 
 			Protocol protocol = Protocol.Lookup(signedMessage.Version);
 

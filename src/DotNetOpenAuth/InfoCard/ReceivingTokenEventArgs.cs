@@ -73,7 +73,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="certificate">The certificate.</param>
 		public void AddDecryptingToken(X509Certificate2 certificate) {
 			Contract.Requires<ArgumentNullException>(certificate != null);
-			Contract.Requires(certificate.HasPrivateKey);
+			Contract.Requires<ArgumentException>(certificate.HasPrivateKey);
 			this.AddDecryptingToken(new X509SecurityToken(certificate));
 		}
 

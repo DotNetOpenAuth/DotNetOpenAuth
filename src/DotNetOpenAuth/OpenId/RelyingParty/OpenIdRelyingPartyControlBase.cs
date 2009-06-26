@@ -502,10 +502,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="response">The response.</param>
 		protected virtual void OnLoggedIn(IAuthenticationResponse response) {
-			Contract.Requires(response != null);
-			Contract.Requires(response.Status == AuthenticationStatus.Authenticated);
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
-			ErrorUtilities.VerifyInternal(response.Status == AuthenticationStatus.Authenticated, "Firing OnLoggedIn event without an authenticated response.");
+			Contract.Requires<ArgumentNullException>(response != null);
+			Contract.Requires<ArgumentException>(response.Status == AuthenticationStatus.Authenticated);
 
 			var loggedIn = this.LoggedIn;
 			OpenIdEventArgs args = new OpenIdEventArgs(response);
@@ -526,8 +524,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Returns whether the login should proceed.  False if some event handler canceled the request.
 		/// </returns>
 		protected virtual bool OnLoggingIn(IAuthenticationRequest request) {
-			Contract.Requires(request != null);
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 
 			EventHandler<OpenIdEventArgs> loggingIn = this.LoggingIn;
 
@@ -544,10 +541,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="response">The response.</param>
 		protected virtual void OnCanceled(IAuthenticationResponse response) {
-			Contract.Requires(response != null);
-			Contract.Requires(response.Status == AuthenticationStatus.Canceled);
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
-			ErrorUtilities.VerifyInternal(response.Status == AuthenticationStatus.Canceled, "Firing Canceled event for the wrong response type.");
+			Contract.Requires<ArgumentNullException>(response != null);
+			Contract.Requires<ArgumentException>(response.Status == AuthenticationStatus.Canceled);
 
 			var canceled = this.Canceled;
 			if (canceled != null) {
@@ -560,10 +555,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="response">The response.</param>
 		protected virtual void OnFailed(IAuthenticationResponse response) {
-			Contract.Requires(response != null);
-			Contract.Requires(response.Status == AuthenticationStatus.Failed);
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
-			ErrorUtilities.VerifyInternal(response.Status == AuthenticationStatus.Failed, "Firing Failed event for the wrong response type.");
+			Contract.Requires<ArgumentNullException>(response != null);
+			Contract.Requires<ArgumentException>(response.Status == AuthenticationStatus.Failed);
 
 			var failed = this.Failed;
 			if (failed != null) {
@@ -596,8 +589,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// 	<c>true</c> if a popup should be used; <c>false</c> otherwise.
 		/// </returns>
 		protected virtual bool IsPopupAppropriate(IAuthenticationRequest request) {
-			Contract.Requires(request != null);
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 
 			switch (this.Popup) {
 				case PopupBehavior.Never:
@@ -619,10 +611,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="request">The outgoing authentication request.</param>
 		/// <param name="windowStatus">The text to try to display in the status bar on mouse hover.</param>
 		protected void RenderOpenIdMessageTransmissionAsAnchorAttributes(HtmlTextWriter writer, IAuthenticationRequest request, string windowStatus) {
-			Contract.Requires(writer != null);
-			Contract.Requires(request != null);
-			ErrorUtilities.VerifyArgumentNotNull(writer, "writer");
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(writer != null);
+			Contract.Requires<ArgumentNullException>(request != null);
 
 			// We render a standard HREF attribute for non-javascript browsers.
 			writer.AddAttribute(HtmlTextWriterAttribute.Href, request.RedirectingResponse.GetDirectUriRequest(this.RelyingParty.Channel).AbsoluteUri);
@@ -643,7 +633,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="request">The authentication request to send.</param>
 		/// <returns>The javascript that should execute.</returns>
 		private string CreateGetOrPostAHrefValue(IAuthenticationRequest request) {
-			Contract.Requires(request != null);
+			Contract.Requires<ArgumentNullException>(request != null);
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			Uri directUri = request.RedirectingResponse.GetDirectUriRequest(this.RelyingParty.Channel);
@@ -655,8 +645,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="request">The request.</param>
 		private void ScriptPopupWindow(IAuthenticationRequest request) {
-			Contract.Requires(request != null);
-			Contract.Requires(this.RelyingParty != null);
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires<InvalidOperationException>(this.RelyingParty != null);
 
 			StringBuilder startupScript = new StringBuilder();
 

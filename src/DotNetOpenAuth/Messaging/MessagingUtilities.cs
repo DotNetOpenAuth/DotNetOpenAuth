@@ -205,8 +205,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="allowableCharacters">The allowable characters.</param>
 		/// <returns>A random string.</returns>
 		internal static string GetRandomString(int length, string allowableCharacters) {
-			Contract.Requires(length >= 0);
-			Contract.Requires(allowableCharacters != null && allowableCharacters.Length >= 2);
+			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
+			Contract.Requires<ArgumentException>(allowableCharacters != null && allowableCharacters.Length >= 2);
 
 			char[] randomString = new char[length];
 			for (int i = 0; i < length; i++) {
@@ -596,7 +596,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="messageDictionary">The message to copy the extra data into.</param>
 		/// <param name="extraParameters">The extra data to copy into the message.  May be null to do nothing.</param>
 		internal static void AddExtraParameters(this MessageDictionary messageDictionary, IDictionary<string, string> extraParameters) {
-			ErrorUtilities.VerifyArgumentNotNull(messageDictionary, "messageAccessor");
+			Contract.Requires<ArgumentNullException>(messageDictionary != null);
 
 			if (extraParameters != null) {
 				foreach (var pair in extraParameters) {

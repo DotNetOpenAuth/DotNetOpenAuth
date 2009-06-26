@@ -179,7 +179,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <exception cref="HostErrorException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		[Pure]
 		internal static void VerifyHost(bool condition, string errorMessage, params object[] args) {
-			Contract.Requires(args != null);
+			Contract.Requires<ArgumentNullException>(args != null);
 			Contract.Ensures(condition);
 			Contract.EnsuresOnThrow<ProtocolException>(!condition);
 			Contract.Assume(errorMessage != null);

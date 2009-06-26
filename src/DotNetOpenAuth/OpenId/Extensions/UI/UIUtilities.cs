@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 		internal static string GetWindowPopupScript(OpenIdRelyingParty relyingParty, IAuthenticationRequest request, string windowName) {
 			Contract.Requires<ArgumentNullException>(relyingParty != null);
 			Contract.Requires<ArgumentNullException>(request != null);
-			Contract.Requires(!string.IsNullOrEmpty(windowName));
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(windowName));
 
 			Uri popupUrl = request.RedirectingResponse.GetDirectUriRequest(relyingParty.Channel);
 

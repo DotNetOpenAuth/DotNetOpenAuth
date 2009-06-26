@@ -108,7 +108,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// quite different operations in either scenario.</para>
 		/// </remarks>
 		internal Association CreateAssociation(AssociateRequest request, ProviderSecuritySettings securitySettings) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 			ErrorUtilities.VerifyInternal(!this.associationCreated, "The association has already been created.");
 
 			Association association;

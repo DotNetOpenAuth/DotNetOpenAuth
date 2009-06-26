@@ -105,7 +105,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// See OpenID Authentication 2.0 spec section 9.2.1.
 		/// </remarks>
 		public RelyingPartyDiscoveryResult IsReturnUrlDiscoverable(OpenIdProvider provider) {
-			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
 			if (!this.realmDiscoveryResult.HasValue) {
 				this.realmDiscoveryResult = this.IsReturnUrlDiscoverableCore(provider);
 			}
@@ -120,7 +119,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="provider">The OpenIdProvider that is performing the RP discovery.</param>
 		/// <returns>Result of realm discovery.</returns>
 		private RelyingPartyDiscoveryResult IsReturnUrlDiscoverableCore(OpenIdProvider provider) {
-			Contract.Requires(provider != null);
+			Contract.Requires<ArgumentNullException>(provider != null);
 
 			ErrorUtilities.VerifyInternal(this.Realm != null, "Realm should have been read or derived by now.");
 

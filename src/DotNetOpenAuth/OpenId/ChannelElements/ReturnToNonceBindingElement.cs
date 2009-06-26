@@ -80,8 +80,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		internal ReturnToNonceBindingElement(INonceStore nonceStore, RelyingPartySecuritySettings securitySettings) {
 			Contract.Requires<ArgumentNullException>(nonceStore != null);
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
-			ErrorUtilities.VerifyArgumentNotNull(nonceStore, "nonceStore");
-			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
 
 			this.nonceStore = nonceStore;
 			this.securitySettings = securitySettings;

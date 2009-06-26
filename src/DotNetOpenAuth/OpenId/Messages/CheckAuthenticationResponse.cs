@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.Messages {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -36,7 +37,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="provider">The OpenID Provider that is preparing to send this response.</param>
 		internal CheckAuthenticationResponse(CheckAuthenticationRequest request, OpenIdProvider provider)
 			: base(request.Version, request) {
-			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
+			Contract.Requires<ArgumentNullException>(provider != null);
 
 			// The channel's binding elements have already set the request's IsValid property
 			// appropriately.  We just copy it into the response message.

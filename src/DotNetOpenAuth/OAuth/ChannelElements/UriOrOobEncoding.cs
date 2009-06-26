@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -51,8 +52,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// The <paramref name="value"/> in string form, ready for message transport.
 		/// </returns>
 		public string Encode(object value) {
-			ErrorUtilities.VerifyArgumentNotNull(value, "value");
-
 			Uri uriValue = (Uri)value;
 			return uriValue.AbsoluteUri;
 		}

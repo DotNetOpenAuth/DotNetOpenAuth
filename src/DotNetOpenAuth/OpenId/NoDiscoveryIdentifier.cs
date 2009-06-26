@@ -31,7 +31,6 @@ namespace DotNetOpenAuth.OpenId {
 		internal NoDiscoveryIdentifier(Identifier wrappedIdentifier, bool claimSsl)
 			: base(claimSsl) {
 			Contract.Requires<ArgumentNullException>(wrappedIdentifier != null);
-			ErrorUtilities.VerifyArgumentNotNull(wrappedIdentifier, "wrappedIdentifier");
 
 			this.wrappedIdentifier = wrappedIdentifier;
 		}

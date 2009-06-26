@@ -111,8 +111,7 @@ namespace DotNetOpenAuth.OAuth {
 			}
 
 			set {
-				Contract.Requires(value != null);
-				ErrorUtilities.VerifyArgumentNotNull(value, "value");
+				Contract.Requires<ArgumentNullException>(value != null);
 				this.channel = value;
 			}
 		}
@@ -127,8 +126,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// length of the final string.</param>
 		/// <returns>The verification code.</returns>
 		public static string CreateVerificationCode(VerificationCodeFormat format, int length) {
-			Contract.Requires(length >= 0);
-			ErrorUtilities.VerifyArgumentInRange(length >= 0, "length");
+			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
 
 			switch (format) {
 				case VerificationCodeFormat.IncludedInCallback:
@@ -199,7 +197,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="request">The token request message the Consumer sent that the Service Provider is now responding to.</param>
 		/// <returns>The response message to send using the <see cref="Channel"/>, after optionally adding extra data to it.</returns>
 		public UnauthorizedTokenResponse PrepareUnauthorizedTokenMessage(UnauthorizedTokenRequest request) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 
 			string token = this.TokenGenerator.GenerateRequestToken(request.ConsumerKey);
 			string secret = this.TokenGenerator.GenerateSecret();
@@ -249,7 +247,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// </remarks>
 		public AuthorizationRequest ReadAuthorizationRequest(IHostProcessedRequest openIdRequest) {
 			Contract.Requires<ArgumentNullException>(openIdRequest != null);
-			Contract.Requires(this.TokenManager is ICombinedOpenIdProviderTokenManager);
+			Contract.Requires<InvalidOperationException>(this.TokenManager is ICombinedOpenIdProviderTokenManager);
 			var openidTokenManager = this.TokenManager as ICombinedOpenIdProviderTokenManager;
 			ErrorUtilities.VerifyOperation(openidTokenManager != null, OAuthStrings.OpenIdOAuthExtensionRequiresSpecialTokenManagerInterface, typeof(IOpenIdOAuthTokenManager).FullName);
 
@@ -278,8 +276,8 @@ namespace DotNetOpenAuth.OAuth {
 		[SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "We want to take IAuthenticationRequest because that's the only supported use case.")]
 		public void AttachAuthorizationResponse(IAuthenticationRequest openIdAuthenticationRequest, string consumerKey, string scope) {
 			Contract.Requires<ArgumentNullException>(openIdAuthenticationRequest != null);
-			Contract.Requires((consumerKey == null) == (scope == null));
-			Contract.Requires(this.TokenManager is IOpenIdOAuthTokenManager);
+			Contract.Requires<ArgumentException>((consumerKey == null) == (scope == null));
+			Contract.Requires<InvalidOperationException>(this.TokenManager is IOpenIdOAuthTokenManager);
 			var openidTokenManager = this.TokenManager as IOpenIdOAuthTokenManager;
 			ErrorUtilities.VerifyOperation(openidTokenManager != null, OAuthStrings.OpenIdOAuthExtensionRequiresSpecialTokenManagerInterface, typeof(IOpenIdOAuthTokenManager).FullName);
 
@@ -311,7 +309,6 @@ namespace DotNetOpenAuth.OAuth {
 		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Consistent user experience with instance.")]
 		public UserAuthorizationResponse PrepareAuthorizationResponse(UserAuthorizationRequest request) {
 			Contract.Requires<ArgumentNullException>(request != null);
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			// It is very important for us to ignore the oauth_callback argument in the
 			// UserAuthorizationRequest if the Consumer is a 1.0a consumer or else we
@@ -392,8 +389,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="request">The Consumer's message requesting an access token.</param>
 		/// <returns>The HTTP response to actually send to the Consumer.</returns>
 		public AuthorizedTokenResponse PrepareAccessTokenMessage(AuthorizedTokenRequest request) {
-			Contract.Requires(request != null);
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 
 			ErrorUtilities.VerifyProtocol(this.TokenManager.IsRequestTokenAuthorized(request.RequestToken), OAuthStrings.AccessTokenNotAuthorized, request.RequestToken);
 
@@ -472,8 +468,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="request">The request.</param>
 		/// <returns>The <see cref="IPrincipal"/> instance that can be used for access control of resources.</returns>
 		public OAuthPrincipal CreatePrincipal(AccessProtectedResourceRequest request) {
-			Contract.Requires(request != null);
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 
 			IServiceProviderAccessToken accessToken = this.TokenManager.GetAccessToken(request.AccessToken);
 			return new OAuthPrincipal(accessToken);
