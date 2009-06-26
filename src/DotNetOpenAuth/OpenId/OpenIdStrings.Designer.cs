@@ -70,6 +70,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This is already a PPID Identifier..
+        /// </summary>
+        internal static string ArgumentIsPpidIdentifier {
+            get {
+                return ResourceManager.GetString("ArgumentIsPpidIdentifier", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The requested association type &apos;{0}&apos; with session type &apos;{1}&apos; is unrecognized or not supported by this Provider due to security requirements..
         /// </summary>
         internal static string AssociationOrSessionTypeUnrecognizedOrNotSupported {
@@ -93,6 +102,15 @@ namespace DotNetOpenAuth.OpenId {
         internal static string AssociationSecretHashLengthMismatch {
             get {
                 return ResourceManager.GetString("AssociationSecretHashLengthMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No association store has been given but is required for the current configuration..
+        /// </summary>
+        internal static string AssociationStoreRequired {
+            get {
+                return ResourceManager.GetString("AssociationStoreRequired", resourceCulture);
             }
         }
         
@@ -407,6 +425,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No identifier has been set..
+        /// </summary>
+        internal static string NoIdentifierSet {
+            get {
+                return ResourceManager.GetString("NoIdentifierSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No XRDS document containing OpenID relying party endpoint information could be found at {0}..
         /// </summary>
         internal static string NoRelyingPartyEndpointDiscovered {
@@ -466,6 +493,15 @@ namespace DotNetOpenAuth.OpenId {
         internal static string PrivateRPSecretNotFound {
             get {
                 return ResourceManager.GetString("PrivateRPSecretNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This property value is not supported by this control..
+        /// </summary>
+        internal static string PropertyValueNotSupported {
+            get {
+                return ResourceManager.GetString("PropertyValueNotSupported", resourceCulture);
             }
         }
         
@@ -565,6 +601,15 @@ namespace DotNetOpenAuth.OpenId {
         internal static string TypeMustImplementX {
             get {
                 return ResourceManager.GetString("TypeMustImplementX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The property {0} had unexpected value {1}..
+        /// </summary>
+        internal static string UnexpectedEnumPropertyValue {
+            get {
+                return ResourceManager.GetString("UnexpectedEnumPropertyValue", resourceCulture);
             }
         }
         

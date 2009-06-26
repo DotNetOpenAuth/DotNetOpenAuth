@@ -3,15 +3,23 @@
 	<PropertyGroup>
 		<AutomatedBuild>true</AutomatedBuild>
 		<SolutionPath>$(ProjectRoot)\src\$(ProductName).sln</SolutionPath>
+		<ILMergeOutputAssemblyDirectory>$(OutputPath)\unified\</ILMergeOutputAssemblyDirectory>
+		<ILMergeOutputAssembly>$(ILMergeOutputAssemblyDirectory)\$(ProductName).dll</ILMergeOutputAssembly>
 	</PropertyGroup>
 
 	<Import Project="$(ProjectRoot)\tools\$(ProductName).Versioning.targets"/>
 	<Import Project="$(ProjectRoot)\tools\Documentation.targets"/>
 	<UsingTask AssemblyFile="$(ProjectRoot)\lib\MSBuild.Community.Tasks.dll" TaskName="Zip"/>
+	<UsingTask AssemblyFile="$(ProjectRoot)\lib\MSBuild.Community.Tasks.dll" TaskName="ILMerge"/>
 
 	<ItemGroup>
 		<SampleProjects Include="$(ProjectRoot)\samples\**\*.csproj" />
 		<SampleSites Include="OAuthConsumer;OAuthServiceProvider;InfoCardRelyingParty" />
+		<ILMergeInputAssemblies Include="$(OutputPath)\$(ProductName).dll;
+		                                 $(ProjectRoot)\lib\Microsoft.Contracts.dll; "/>
+		<DelaySignedAssemblies Include="$(ILMergeOutputAssembly);
+		                                $(OutputPath)\$(ProductName).dll;
+		                                $(OutputPath)\$(ProductName).Test.dll" />
 	</ItemGroup>
 
 	<Target Name="Clean" DependsOnTargets="CleanDocumentation">
@@ -21,7 +29,7 @@
 			                           $(ProjectRoot)\bin;
 			                           $(ProjectRoot)\**\obj;
 			                           $(ProjectRoot)\doc\api;
-			                           $(ProjectRoot)\drops;
+			                           $(DropsRoot);
 			                           $(ProjectRoot)\src\PrecompiledWeb;
 			                           " />
 			<DirtyDirectories Include="@(SampleDirectories->'%(FullPath)\bin')" />
@@ -36,50 +44,67 @@
 		<RemoveDir Directories="@(DirtyDirectories)" />
 	</Target>
 
-	<Target Name="BuildProduct">
+	<Target Name="SkipVerification" Condition="'$(IsElevated)' == 'true'">
+		<SignatureVerification SkipVerification="true" AssemblyName="$(ProductName)" PublicKeyToken="$(PublicKeyToken)" />
+		<SignatureVerification SkipVerification="true" AssemblyName="$(ProductName)_Accessor" PublicKeyToken="$(PublicKeyToken)" />
+		<SignatureVerification SkipVerification="true" AssemblyName="$(ProductName).Test" PublicKeyToken="$(PublicKeyToken)" />
+	</Target>
+	
+	<Target Name="BuildProduct" DependsOnTargets="SkipVerification">
 		<MSBuild Projects="$(ProjectRoot)\src\$(ProductName)\$(ProductName).csproj" />
 	</Target>
 
-	<Target Name="BuildTests">
+	<Target Name="BuildTests" DependsOnTargets="SkipVerification">
 		<MSBuild Projects="$(ProjectRoot)\src\$(ProductName).Test\$(ProductName).Test.csproj" />
 	</Target>
 
-	<Target Name="BuildSamples">
+	<Target Name="BuildSamples" DependsOnTargets="SkipVerification">
 		<MSBuild Projects="@(SampleProjects)" />
-		<MSBuild Projects="$(SolutionPath)" Targets="@(SampleSites)" Properties="Sign=$(Sign)" />
+		<MSBuild Projects="$(SolutionPath)" Targets="@(SampleSites)" />
 	</Target>
 
-	<Target Name="Build">
-		<!-- We explicitly pass the Sign property in because if properties are set
-		     inside this very .proj file instead of being passed on the command-line, their
-		     values won't propagate automatically. -->
-		<MSBuild Projects="$(SolutionPath)" Properties="Sign=$(Sign)" />
+	<Target Name="Build" DependsOnTargets="SkipVerification">
+		<MSBuild Projects="$(SolutionPath)" />
 	</Target>
 
-	<Target Name="Rebuild">
-		<!-- We explicitly pass the Sign property in because if properties are set
-		     inside this very .proj file instead of being passed on the command-line, their
-		     values won't propagate automatically. -->
-		<MSBuild Projects="$(SolutionPath)" Targets="Rebuild" Properties="Sign=$(Sign)" />
+	<Target Name="Rebuild" DependsOnTargets="SkipVerification">
+		<MSBuild Projects="$(SolutionPath)" Targets="Rebuild" />
 	</Target>
 
-	<Target Name="_EnsureCleanTools" DependsOnTargets="_SetToolsProperties" Condition="'$(NoClean)' != 'true'">
-		<!-- clean up any previous drop with the same name so we don't aggregate files. -->
-		<RemoveDir Directories="$(ToolsDirectory)" />
+	<Target Name="BuildUnifiedProduct"
+					DependsOnTargets="BuildProduct"
+					Inputs="@(ILMergeInputAssemblies)"
+					Outputs="$(ILMergeOutputAssembly)">
+		<MakeDir Directories="$(ILMergeOutputAssemblyDirectory)" />
+		<ILMerge ExcludeFile="$(ProjectRoot)\ILMergeInternalizeExceptions.txt"
+		         InputAssemblies="@(ILMergeInputAssemblies)"
+		         OutputFile="$(ILMergeOutputAssembly)"
+		         KeyFile="$(PublicKeyFile)"
+		         DelaySign="true"
+		         />
 	</Target>
 
-	<Target Name="_SetToolsProperties">
+	<Target Name="ReSignDelaySignedAssemblies">
+		<Message Text="Signing delay-signed assemblies." />
+		<ReSignDelaySignedAssemblies
+			KeyContainer="$(KeyPairContainer)"
+			Assemblies="@(DelaySignedAssemblies)" />
+	</Target>
+
+	<Target Name="ToolsLayout" DependsOnTargets="GetBuildVersion;_SetDropProperties;BuildUnifiedProduct">
 		<PropertyGroup>
-			<ToolsDirectory>$(ProjectRoot)\drops\$(ProductName)-Tools-$(BuildVersion)</ToolsDirectory>
+			<ToolsDirectory>$(DropsRoot)\$(ProductName)-Tools-$(BuildVersion)</ToolsDirectory>
 		</PropertyGroup>
-	</Target>
 
-	<Target Name="ToolsLayout" DependsOnTargets="GetBuildVersion;_SetDropProperties;_SetToolsProperties;_EnsureCleanTools">
 		<ItemGroup>
 			<ToolProjects Include="$(ProjectRoot)\Samples\OpenIdOfflineProvider\OpenIdOfflineProvider.csproj" />
 			<OfflineProvider Include="
 											 $(ProjectRoot)\Samples\OpenIdOfflineProvider\bin\$(Configuration)\**\*.dll;
-											 $(ProjectRoot)\Samples\OpenIdOfflineProvider\bin\$(Configuration)\OpenIdOfflineProvider.exe" />
+											 $(ILMergeOutputAssembly).*;
+											 $(ProjectRoot)\Samples\OpenIdOfflineProvider\bin\$(Configuration)\OpenIdOfflineProvider.exe"
+											 Exclude="
+											 $(ProjectRoot)\Samples\OpenIdOfflineProvider\bin\$(Configuration)\$(ProductName).*;
+											 "/>
 			<OfflineProviderTargets Include="
 											 @(OfflineProvider->'$(ToolsDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
 
@@ -87,8 +112,10 @@
 			<AllToolTargets Include="@(OfflineProviderTargets)" />
 		</ItemGroup>
 
-		<MSBuild Projects="@(ToolProjects)" Properties="Sign=$(Sign)" />
+		<MSBuild Projects="@(ToolProjects)" />
 
+		<!-- clean up any previous drop with the same name so we don't aggregate files. -->
+		<RemoveDir Directories="$(ToolsDirectory)" Condition="'$(NoClean)' != 'true'" />
 		<MakeDir Directories="@(ToolsDirectory)" />
 		<Copy SourceFiles="@(AllToolSources)" DestinationFiles="@(AllToolTargets)" SkipUnchangedFiles="true" />
 	</Target>
@@ -118,28 +145,13 @@
 	<Target Name="_SetDropProperties">
 		<!-- This target is necessary because PropertyGroups within the same Target as 
 		     where CallTarget is fired do NOT affect those called targets. -->
-		<PropertyGroup>
-			<Sign Condition="'$(Sign)' == ''">true</Sign>
-		</PropertyGroup>
-
 		<!-- The rest of these are here so that other DependsOn targets have access to these properties. -->
 		<PropertyGroup>
-			<DropDirectory>$(ProjectRoot)\drops\$(ProductName)-$(BuildVersion)</DropDirectory>
+			<DropDirectory>$(DropsRoot)\$(ProductName)-$(BuildVersion)</DropDirectory>
 		</PropertyGroup>
 	</Target>
 
-	<Target Name="_EnsureCleanDrop" Condition="'$(NoClean)' != 'true'">
-		<!-- This target only does a clean sufficient to guarantee that our DotNetOpenAuth.dll is rebuilt, but
-		     we don't usually want to clean our documentation because that takes forever to build froms scratch. -->
-		<MSBuild Projects="$(SolutionPath)" Targets="Clean" />
-
-		<!-- clean up any previous drop with the same name so we don't aggregate files. -->
-		<RemoveDir Directories="$(DropDirectory)" />
-	</Target>
-
-	<Target Name="DropLayout" DependsOnTargets="GetBuildVersion;_SetDropProperties;_EnsureCleanDrop;BuildProduct;BuildSamples;Documentation">
-		<Warning Condition=" '$(Configuration)' != 'release' " Text="Building $(Configuration) instead of Release!" />
-		<Warning Condition=" '$(Sign)' != 'true' " Text="Building unsigned!" />
+	<Target Name="DropLayout" DependsOnTargets="GetBuildVersion;_SetDropProperties;BuildUnifiedProduct;ReSignDelaySignedAssemblies;BuildSamples;Documentation">
 		<PropertyGroup>
 			<DropBinDirectory>$(DropDirectory)\Bin</DropBinDirectory>
 			<DropLibDirectory>$(DropDirectory)\Lib</DropLibDirectory>
@@ -163,7 +175,8 @@
 																"
 											 Exclude="$(ProjectRoot)\Doc\README.*.html;" />
 			<DropBinSourceFiles Include="
-																$(OutputPath)\$(ProductName).???;
+																$(ILMergeOutputAssemblyDirectory)\$(ProductName).???;
+																$(OutputPath)\$(ProductName).xml;
 																$(OutputPath)\$(ProductName).Contracts.???;
 																$(ProjectRoot)\Doc\README.Bin.html;
 													" />
@@ -218,6 +231,8 @@
 										" />
 		</ItemGroup>
 
+		<!-- clean up any previous drop with the same name so we don't aggregate files. -->
+		<RemoveDir Directories="$(DropDirectory)" Condition="'$(NoClean)' != 'true'" />
 		<MakeDir Directories="@(DropDirectories)" />
 		<Copy SourceFiles="@(AllDropSources)" DestinationFiles="@(AllDropTargets)" SkipUnchangedFiles="true" />
 		<!-- fix up the samples so that they will compile right out of the drop -->
@@ -233,11 +248,10 @@
 			<DropZip>$(DropDirectory).zip</DropZip>
 		</PropertyGroup>
 		<Delete Files="$(DropZip)" />
-		<Zip Files="@(AllDropTargets)" ZipFileName="$(DropZip)" WorkingDirectory="$(ProjectRoot)\drops" />
+		<Zip Files="@(AllDropTargets)" ZipFileName="$(DropZip)" WorkingDirectory="$(DropsRoot)" />
 	</Target>
 
 	<Target Name="Nightly" DependsOnTargets="Drop;Tools">
 
 	</Target>
-
 </Project>

@@ -47,8 +47,8 @@ namespace DotNetOpenAuth.Configuration {
 		internal IEnumerable<T> CreateInstances(bool allowInternals) {
 			Contract.Ensures(Contract.Result<IEnumerable<T>>() != null);
 			return from element in this.Cast<TypeConfigurationElement<T>>()
-				   where element.CustomType != null
-				   select element.CreateInstance(default(T), allowInternals);
+			       where !element.IsEmpty
+			       select element.CreateInstance(default(T), allowInternals);
 		}
 
 		/// <summary>
@@ -70,7 +70,8 @@ namespace DotNetOpenAuth.Configuration {
 		/// </returns>
 		protected override object GetElementKey(ConfigurationElement element) {
 			Contract.Assume(element != null); // this should be Contract.Requires in base class.
-			return ((TypeConfigurationElement<T>)element).TypeName ?? string.Empty;
+			TypeConfigurationElement<T> typedElement = (TypeConfigurationElement<T>)element;
+			return (!string.IsNullOrEmpty(typedElement.TypeName) ? typedElement.TypeName : typedElement.XamlSource) ?? string.Empty;
 		}
 	}
 }

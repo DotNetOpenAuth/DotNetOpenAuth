@@ -1254,7 +1254,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			startupScript.AppendLine("window.opener.dnoa_internal.processAuthorizationResult(document.URL + '&" + UIPopupCallbackParentKey + "=1');");
 			startupScript.AppendLine("window.close();");
 
-			this.Page.ClientScript.RegisterStartupScript(this.GetType(), "loginPopupClose", startupScript.ToString(), true);
+			// We're referencing the OpenIdRelyingPartyControlBase type here to avoid double-registering this script
+			// if the other control exists on the page.
+			this.Page.ClientScript.RegisterStartupScript(typeof(OpenIdRelyingPartyControlBase), "loginPopupClose", startupScript.ToString(), true);
 		}
 	}
 }

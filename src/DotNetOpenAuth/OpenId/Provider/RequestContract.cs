@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Prevents a default instance of the <see cref="RequestContract"/> class from being created.
 		/// </summary>
-		private RequestContract() : base((Version)null) {
+		private RequestContract() : base((Version)null, null) {
 		}
 
 		/// <summary>

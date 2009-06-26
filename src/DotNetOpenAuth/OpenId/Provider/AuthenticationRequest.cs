@@ -199,6 +199,18 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			this.positiveResponse.ClaimedIdentifier = builder.Uri;
 		}
 
+		/// <summary>
+		/// Sets the Claimed and Local identifiers even after they have been initially set.
+		/// </summary>
+		/// <param name="identifier">The value to set to the <see cref="ClaimedIdentifier"/> and <see cref="LocalIdentifier"/> properties.</param>
+		internal void ResetClaimedAndLocalIdentifiers(Identifier identifier) {
+			Contract.Requires(identifier != null);
+			ErrorUtilities.VerifyArgumentNotNull(identifier, "identifier");
+
+			this.positiveResponse.ClaimedIdentifier = identifier;
+			this.positiveResponse.LocalIdentifier = identifier;
+		}
+
 		#endregion
 	}
 }

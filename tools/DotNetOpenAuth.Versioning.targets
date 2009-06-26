@@ -1,13 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
-	<!-- Import this .targets file to automaticaly generate AssemblyVersion 
+	<!-- Import this .targets file to automatically generate AssemblyVersion 
 	     attribute according to DotNetOpenAuth convention. -->
 	<PropertyGroup>
 		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\..\..</ProjectRoot>
 		<VersionCsFile>$(ProjectRoot)\obj\$(Configuration)\$(AssemblyName).Version.cs</VersionCsFile>
 	</PropertyGroup>
 
-	<Import Project="$(ProjectRoot)\lib\DotNetOpenId.BuildTasks.targets" />
+	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="GetBuildVersion" />
+	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="CompareFiles" />
 	<UsingTask AssemblyFile="$(ProjectRoot)\lib\MSBuild.Community.Tasks.dll" TaskName="AssemblyInfo"/>
 
 	<Target Name="GetBuildVersion">

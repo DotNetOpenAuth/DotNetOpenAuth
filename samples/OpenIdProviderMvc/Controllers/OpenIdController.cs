@@ -5,9 +5,10 @@ namespace OpenIdProviderMvc.Controllers {
 	using System.Web;
 	using System.Web.Mvc;
 	using System.Web.Mvc.Ajax;
-	using DotNetOpenAuth.ApplicationBlock.Provider;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.Behaviors;
+	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
 	using DotNetOpenAuth.OpenId.Provider;
 	using OpenIdProviderMvc.Code;
 
@@ -20,67 +21,18 @@ namespace OpenIdProviderMvc.Controllers {
 		}
 
 		[ValidateInput(false)]
-		public ActionResult PpidProvider() {
-			return this.DoProvider(true);
-		}
-
-		[ValidateInput(false)]
 		public ActionResult Provider() {
-			return this.DoProvider(false);
-		}
-
-		[Authorize]
-		public ActionResult SendAssertion(bool pseudonymous) {
-			IAuthenticationRequest authReq = PendingAuthenticationRequest;
-			PendingAuthenticationRequest = null;
-			if (authReq == null) {
-				throw new InvalidOperationException();
-			}
-
-			Identifier localIdentifier = Models.User.GetClaimedIdentifierForUser(User.Identity.Name);
-
-			if (pseudonymous) {
-				if (!authReq.IsDirectedIdentity) {
-					throw new InvalidOperationException("Directed identity is the only supported scenario for anonymous identifiers.");
-				}
-
-				var anonProvider = new AnonymousIdentifierProvider();
-				authReq.ScrubPersonallyIdentifiableInformation(localIdentifier, anonProvider, true);
-				authReq.IsAuthenticated = true;
-			} else {
-				if (authReq.IsDirectedIdentity) {
-					authReq.LocalIdentifier = localIdentifier;
-					authReq.ClaimedIdentifier = localIdentifier;
-					authReq.IsAuthenticated = true;
-				} else {
-					if (authReq.LocalIdentifier == localIdentifier) {
-						authReq.IsAuthenticated = true;
-						if (!authReq.IsDelegatedIdentifier) {
-							authReq.ClaimedIdentifier = authReq.LocalIdentifier;
-						}
-					} else {
-						authReq.IsAuthenticated = false;
-					}
-				}
-
-				// TODO: Respond to AX/sreg extension requests here.
-				// We don't want to add these extension responses for anonymous identifiers
-				// because they could leak information about the user's identity.
-			}
-
-			return OpenIdProvider.PrepareResponse(authReq).AsActionResult();
-		}
-
-		private ActionResult DoProvider(bool pseudonymous) {
 			IRequest request = OpenIdProvider.GetRequest();
 			if (request != null) {
 				var authRequest = request as IAuthenticationRequest;
 				if (authRequest != null) {
 					PendingAuthenticationRequest = authRequest;
-					if (User.Identity.IsAuthenticated && (authRequest.IsDirectedIdentity || Models.User.GetClaimedIdentifierForUser(User.Identity.Name) == authRequest.LocalIdentifier)) {
-						return this.SendAssertion(pseudonymous);
+					if (authRequest.IsReturnUrlDiscoverable(OpenIdProvider) == RelyingPartyDiscoveryResult.Success &&
+						User.Identity.IsAuthenticated &&
+						(authRequest.IsDirectedIdentity || this.UserControlsIdentifier(authRequest))) {
+						return this.SendAssertion();
 					} else {
-						return RedirectToAction("LogOn", "Account", new { returnUrl = Url.Action("SendAssertion", new { pseudonymous = pseudonymous }) });
+						return RedirectToAction("LogOn", "Account", new { returnUrl = Url.Action("SendAssertion") });
 					}
 				}
 
@@ -92,6 +44,47 @@ namespace OpenIdProviderMvc.Controllers {
 			} else {
 				return View();
 			}
+		}
+
+		[Authorize]
+		public ActionResult SendAssertion() {
+			IAuthenticationRequest authReq = PendingAuthenticationRequest;
+			PendingAuthenticationRequest = null; // clear session static so we don't do this again
+			if (authReq == null) {
+				throw new InvalidOperationException("There's no pending authentication request!");
+			}
+
+			if (authReq.IsDirectedIdentity) {
+				authReq.LocalIdentifier = Models.User.GetClaimedIdentifierForUser(User.Identity.Name);
+			}
+			if (!authReq.IsDelegatedIdentifier) {
+				authReq.ClaimedIdentifier = authReq.LocalIdentifier;
+			}
+
+			// Respond to AX/sreg extension requests.
+			//// Real web sites would have code here
+
+			authReq.IsAuthenticated = this.UserControlsIdentifier(authReq);
+			return OpenIdProvider.PrepareResponse(authReq).AsActionResult();
+		}
+
+		/// <summary>
+		/// Checks whether the logged in user controls the OP local identifier in the given authentication request.
+		/// </summary>
+		/// <param name="authReq">The authentication request.</param>
+		/// <returns><c>true</c> if the user controls the identifier; <c>false</c> otherwise.</returns>
+		private bool UserControlsIdentifier(IAuthenticationRequest authReq) {
+			if (authReq == null) {
+				throw new ArgumentNullException("authReq");
+			}
+
+			if (User == null || User.Identity == null) {
+				return false;
+			}
+
+			Uri userLocalIdentifier = Models.User.GetClaimedIdentifierForUser(User.Identity.Name);
+			return authReq.LocalIdentifier == userLocalIdentifier ||
+				authReq.LocalIdentifier == PpidGeneration.PpidIdentifierProvider.GetIdentifier(userLocalIdentifier, authReq.Realm);
 		}
 	}
 }

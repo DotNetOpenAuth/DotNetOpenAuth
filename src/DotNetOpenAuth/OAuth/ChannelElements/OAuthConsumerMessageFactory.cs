@@ -42,7 +42,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			MessageBase message = null;
 
 			if (fields.ContainsKey("oauth_token")) {
-				message = new UserAuthorizationResponse(recipient.Location);
+				Protocol protocol = fields.ContainsKey("oauth_verifier") ? Protocol.V10a : Protocol.V10;
+				message = new UserAuthorizationResponse(recipient.Location, protocol.Version);
 			}
 
 			if (message != null) {
@@ -87,7 +88,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			var unauthorizedTokenRequest = request as UnauthorizedTokenRequest;
 			var authorizedTokenRequest = request as AuthorizedTokenRequest;
 			if (unauthorizedTokenRequest != null) {
-				message = new UnauthorizedTokenResponse(unauthorizedTokenRequest);
+				Protocol protocol = fields.ContainsKey("oauth_callback_confirmed") ? Protocol.V10a : Protocol.V10;
+				message = new UnauthorizedTokenResponse(unauthorizedTokenRequest, protocol.Version);
 			} else if (authorizedTokenRequest != null) {
 				message = new AuthorizedTokenResponse(authorizedTokenRequest);
 			} else {

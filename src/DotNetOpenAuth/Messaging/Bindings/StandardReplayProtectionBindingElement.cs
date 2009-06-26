@@ -29,11 +29,6 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		private int nonceLength = 8;
 
 		/// <summary>
-		/// A random number generator.
-		/// </summary>
-		private Random generator = new Random();
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="StandardReplayProtectionBindingElement"/> class.
 		/// </summary>
 		/// <param name="nonceStore">The store where nonces will be persisted and checked.</param>
@@ -146,11 +141,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// </summary>
 		/// <returns>The nonce string.</returns>
 		private string GenerateUniqueFragment() {
-			char[] nonce = new char[this.nonceLength];
-			for (int i = 0; i < nonce.Length; i++) {
-				nonce[i] = AllowedCharacters[this.generator.Next(AllowedCharacters.Length)];
-			}
-			return new string(nonce);
+			return MessagingUtilities.GetRandomString(this.nonceLength, AllowedCharacters);
 		}
 	}
 }

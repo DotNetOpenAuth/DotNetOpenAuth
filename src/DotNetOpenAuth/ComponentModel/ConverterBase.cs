@@ -12,6 +12,9 @@ namespace DotNetOpenAuth.ComponentModel {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
+using System.Reflection;
+	using System.Security;
+	using System.Security.Permissions;
 
 	/// <summary>
 	/// A design-time helper to allow Intellisense to aid typing
@@ -141,6 +144,10 @@ namespace DotNetOpenAuth.ComponentModel {
 		/// The conversion cannot be performed.
 		/// </exception>
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType) {
+			if (destinationType.IsInstanceOfType(value)) {
+				return value;
+			}
+
 			T typedValue = (T)value;
 			if (destinationType == typeof(string)) {
 				return this.ConvertToString(typedValue);
@@ -148,6 +155,20 @@ namespace DotNetOpenAuth.ComponentModel {
 				return this.CreateFrom(typedValue);
 			} else {
 				return base.ConvertTo(context, culture, value, destinationType);
+			}
+		}
+
+		/// <summary>
+		/// Creates an <see cref="InstanceDescriptor"/> instance, protecting against the LinkDemand.
+		/// </summary>
+		/// <param name="memberInfo">The member info.</param>
+		/// <param name="arguments">The arguments.</param>
+		/// <returns>A <see cref="InstanceDescriptor"/>, or <c>null</c> if sufficient permissions are unavailable.</returns>
+		protected static InstanceDescriptor CreateInstanceDescriptor(MemberInfo memberInfo, ICollection arguments) {
+			try {
+				return CreateInstanceDescriptorPrivate(memberInfo, arguments);
+			} catch (SecurityException) {
+				return null;
 			}
 		}
 
@@ -185,5 +206,16 @@ namespace DotNetOpenAuth.ComponentModel {
 		/// <returns>The string representation of the object.</returns>
 		[Pure]
 		protected abstract string ConvertToString(T value);
+
+		/// <summary>
+		/// Creates an <see cref="InstanceDescriptor"/> instance, protecting against the LinkDemand.
+		/// </summary>
+		/// <param name="memberInfo">The member info.</param>
+		/// <param name="arguments">The arguments.</param>
+		/// <returns>A <see cref="InstanceDescriptor"/>.</returns>
+		[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
+		private static InstanceDescriptor CreateInstanceDescriptorPrivate(MemberInfo memberInfo, ICollection arguments) {
+			return new InstanceDescriptor(memberInfo, arguments);
+		}
 	}
 }

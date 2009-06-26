@@ -85,7 +85,18 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 		#endregion
 
-		#region IRequest Properties
+		#region IRequest Members
+
+		/// <summary>
+		/// Gets or sets the security settings that apply to this request.
+		/// </summary>
+		/// <value>
+		/// Defaults to the <see cref="OpenIdProvider.SecuritySettings"/> on the <see cref="OpenIdProvider"/>.
+		/// </value>
+		ProviderSecuritySettings IRequest.SecuritySettings {
+			get { throw new NotImplementedException(); }
+			set { throw new NotImplementedException(); }
+		}
 
 		/// <summary>
 		/// Gets a value indicating whether the response is ready to be sent to the user agent.
@@ -97,30 +108,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		bool IRequest.IsResponseReady {
 			get { throw new System.NotImplementedException(); }
 		}
-
-		#endregion
-
-		#region IHostProcessedRequest Methods
-
-		/// <summary>
-		/// Attempts to perform relying party discovery of the return URL claimed by the Relying Party.
-		/// </summary>
-		/// <param name="provider">The OpenIdProvider that is performing the RP discovery.</param>
-		/// <returns>
-		/// The details of how successful the relying party discovery was.
-		/// </returns>
-		/// <remarks>
-		/// 	<para>Return URL verification is only attempted if this method is called.</para>
-		/// 	<para>See OpenID Authentication 2.0 spec section 9.2.1.</para>
-		/// </remarks>
-		RelyingPartyDiscoveryResult IHostProcessedRequest.IsReturnUrlDiscoverable(OpenIdProvider provider) {
-			Contract.Requires<ArgumentNullException>(provider != null);
-			throw new System.NotImplementedException();
-		}
-
-		#endregion
-
-		#region IRequest Methods
 
 		/// <summary>
 		/// Adds an extension to the response to send to the relying party.
@@ -148,7 +135,27 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <returns>
 		/// An instance of the extension initialized with values passed in with the request.
 		/// </returns>
-		IOpenIdMessageExtension IRequest.GetExtension(System.Type extensionType) {
+		DotNetOpenAuth.OpenId.Messages.IOpenIdMessageExtension IRequest.GetExtension(System.Type extensionType) {
+			throw new System.NotImplementedException();
+		}
+
+		#endregion
+
+		#region IHostProcessedRequest Methods
+
+		/// <summary>
+		/// Attempts to perform relying party discovery of the return URL claimed by the Relying Party.
+		/// </summary>
+		/// <param name="provider">The OpenIdProvider that is performing the RP discovery.</param>
+		/// <returns>
+		/// The details of how successful the relying party discovery was.
+		/// </returns>
+		/// <remarks>
+		/// 	<para>Return URL verification is only attempted if this method is called.</para>
+		/// 	<para>See OpenID Authentication 2.0 spec section 9.2.1.</para>
+		/// </remarks>
+		RelyingPartyDiscoveryResult IHostProcessedRequest.IsReturnUrlDiscoverable(OpenIdProvider provider) {
+			Contract.Requires(provider != null);
 			throw new System.NotImplementedException();
 		}
 

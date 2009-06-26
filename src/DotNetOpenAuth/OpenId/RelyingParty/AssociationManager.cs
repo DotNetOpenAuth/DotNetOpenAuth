@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
+	using System.Net;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;
@@ -210,6 +211,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					throw new ProtocolException(MessagingStrings.UnexpectedMessageReceivedOfMany);
 				}
 			} catch (ProtocolException ex) {
+				// If the association failed because the remote server can't handle Expect: 100 Continue headers,
+				// then our web request handler should have already accomodated for future calls.  Go ahead and
+				// immediately make one of those future calls now to try to get the association to succeed.
+				if (StandardWebRequestHandler.IsExceptionFrom417ExpectationFailed(ex)) {
+					return this.CreateNewAssociation(provider, associateRequest, retriesRemaining - 1);
+				}
+
 				// Since having associations with OPs is not totally critical, we'll log and eat
 				// the exception so that auth may continue in dumb mode.
 				Logger.OpenId.ErrorFormat("An error occurred while trying to create an association with {0}.  {1}", provider.Endpoint, ex);

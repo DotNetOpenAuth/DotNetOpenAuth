@@ -5,12 +5,16 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId {
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.Specialized;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
 	/// Security settings that may be applicable to both relying parties and providers.
 	/// </summary>
-	public class SecuritySettings {
+	[Serializable]
+	public abstract class SecuritySettings {
 		/// <summary>
 		/// Gets the default minimum hash bit length.
 		/// </summary>
@@ -30,7 +34,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// Initializes a new instance of the <see cref="SecuritySettings"/> class.
 		/// </summary>
 		/// <param name="isProvider">A value indicating whether this class is being instantiated for a Provider.</param>
-		internal SecuritySettings(bool isProvider) {
+		protected SecuritySettings(bool isProvider) {
 			this.MaximumHashBitLength = isProvider ? MaximumHashBitLengthOPDefault : MaximumHashBitLengthRPDefault;
 			this.MinimumHashBitLength = MinimumHashBitLengthDefault;
 		}

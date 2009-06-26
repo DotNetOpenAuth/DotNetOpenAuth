@@ -36,6 +36,16 @@ namespace DotNetOpenAuth.Configuration {
 		private const string RequireSslConfigName = "requireSsl";
 
 		/// <summary>
+		/// Gets the name of the @requireDirectedIdentity attribute.
+		/// </summary>
+		private const string RequireDirectedIdentityConfigName = "requireDirectedIdentity";
+
+		/// <summary>
+		/// Gets the name of the @requireAssociation attribute.
+		/// </summary>
+		private const string RequireAssociationConfigName = "requireAssociation";
+
+		/// <summary>
 		/// Gets the name of the @rejectUnsolicitedAssertions attribute.
 		/// </summary>
 		private const string RejectUnsolicitedAssertionsConfigName = "rejectUnsolicitedAssertions";
@@ -44,6 +54,11 @@ namespace DotNetOpenAuth.Configuration {
 		/// Gets the name of the @rejectDelegatedIdentifiers attribute.
 		/// </summary>
 		private const string RejectDelegatingIdentifiersConfigName = "rejectDelegatingIdentifiers";
+
+		/// <summary>
+		/// Gets the name of the @ignoreUnsignedExtensions attribute.
+		/// </summary>
+		private const string IgnoreUnsignedExtensionsConfigName = "ignoreUnsignedExtensions";
 
 		/// <summary>
 		/// Gets the name of the @privateSecretMaximumAge attribute.
@@ -63,6 +78,26 @@ namespace DotNetOpenAuth.Configuration {
 		public bool RequireSsl {
 			get { return (bool)this[RequireSslConfigName]; }
 			set { this[RequireSslConfigName] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether only OP Identifiers will be discoverable 
+		/// when creating authentication requests.
+		/// </summary>
+		[ConfigurationProperty(RequireDirectedIdentityConfigName, DefaultValue = false)]
+		public bool RequireDirectedIdentity {
+			get { return (bool)this[RequireDirectedIdentityConfigName]; }
+			set { this[RequireDirectedIdentityConfigName] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether authentication requests
+		/// will only be created where an association with the Provider can be established.
+		/// </summary>
+		[ConfigurationProperty(RequireAssociationConfigName, DefaultValue = false)]
+		public bool RequireAssociation {
+			get { return (bool)this[RequireAssociationConfigName]; }
+			set { this[RequireAssociationConfigName] = value; }
 		}
 
 		/// <summary>
@@ -134,6 +169,20 @@ namespace DotNetOpenAuth.Configuration {
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether unsigned extensions in authentication responses should be ignored.
+		/// </summary>
+		/// <value>The default value is <c>false</c>.</value>
+		/// <remarks>
+		/// When set to true, the <see cref="IAuthenticationResponse.GetUntrustedExtension"/> methods
+		/// will not return any extension that was not signed by the Provider.
+		/// </remarks>
+		[ConfigurationProperty(IgnoreUnsignedExtensionsConfigName, DefaultValue = false)]
+		public bool IgnoreUnsignedExtensions {
+			get { return (bool)this[IgnoreUnsignedExtensionsConfigName]; }
+			set { this[IgnoreUnsignedExtensionsConfigName] = value; }
+		}
+
+		/// <summary>
 		/// Initializes a programmatically manipulatable bag of these security settings with the settings from the config file.
 		/// </summary>
 		/// <returns>The newly created security settings object.</returns>
@@ -142,12 +191,16 @@ namespace DotNetOpenAuth.Configuration {
 
 			RelyingPartySecuritySettings settings = new RelyingPartySecuritySettings();
 			settings.RequireSsl = this.RequireSsl;
+			settings.RequireDirectedIdentity = this.RequireDirectedIdentity;
+			settings.RequireAssociation = this.RequireAssociation;
 			settings.MinimumRequiredOpenIdVersion = this.MinimumRequiredOpenIdVersion;
 			settings.MinimumHashBitLength = this.MinimumHashBitLength;
 			settings.MaximumHashBitLength = this.MaximumHashBitLength;
 			settings.PrivateSecretMaximumAge = this.PrivateSecretMaximumAge;
 			settings.RejectUnsolicitedAssertions = this.RejectUnsolicitedAssertions;
 			settings.RejectDelegatingIdentifiers = this.RejectDelegatingIdentifiers;
+			settings.IgnoreUnsignedExtensions = this.IgnoreUnsignedExtensions;
+
 			return settings;
 		}
 	}

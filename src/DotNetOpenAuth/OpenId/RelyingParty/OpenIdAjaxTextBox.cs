@@ -364,7 +364,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 						Uri authUri = new Uri(formAuthData);
 						HttpRequestInfo clientResponseInfo = new HttpRequestInfo {
-							Url = authUri,
+							UrlBeforeRewriting = authUri,
 						};
 
 						this.authenticationResponse = this.RelyingParty.GetResponse(clientResponseInfo);
@@ -908,12 +908,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			StringBuilder discoveryResultBuilder = new StringBuilder();
 			discoveryResultBuilder.Append("{");
 			try {
-				List<IAuthenticationRequest> requests = this.CreateRequests(userSuppliedIdentifier, true);
+				List<IAuthenticationRequest> requests = this.CreateRequests(userSuppliedIdentifier, true).Where(req => this.OnLoggingIn(req)).ToList();
 				if (requests.Count > 0) {
 					discoveryResultBuilder.AppendFormat("claimedIdentifier: {0},", MessagingUtilities.GetSafeJavascriptValue(requests[0].ClaimedIdentifier));
 					discoveryResultBuilder.Append("requests: [");
 					foreach (IAuthenticationRequest request in requests) {
-						this.OnLoggingIn(request);
 						discoveryResultBuilder.Append("{");
 						discoveryResultBuilder.AppendFormat("endpoint: {0},", MessagingUtilities.GetSafeJavascriptValue(request.Provider.Uri.AbsoluteUri));
 						request.Mode = AuthenticationRequestMode.Immediate;
@@ -996,6 +995,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			writer.WriteBeginTag("span");
 			writer.WriteAttribute("class", this.CssClass);
 			writer.Write(" style='");
+			writer.WriteStyleAttribute("display", "inline-block");
 			writer.WriteStyleAttribute("position", "relative");
 			writer.WriteStyleAttribute("font-size", "16px");
 			writer.Write("'>");
@@ -1089,11 +1089,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Fires the <see cref="LoggingIn"/> event.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		private void OnLoggingIn(IAuthenticationRequest request) {
+		/// <returns><c>true</c> if the login should proceed; <c>false</c> otherwise.</returns>
+		private bool OnLoggingIn(IAuthenticationRequest request) {
 			var loggingIn = this.LoggingIn;
 			if (loggingIn != null) {
-				loggingIn(this, new OpenIdEventArgs(request));
+				var args = new OpenIdEventArgs(request);
+				loggingIn(this, args);
+				return !args.Cancel;
 			}
+
+			return true;
 		}
 
 		/// <summary>
@@ -1233,7 +1238,7 @@ if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 		/// requests should be initialized for use in invisible iframes for background authentication.</param>
 		/// <returns>The list of authentication requests, any one of which may be 
 		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.</returns>
-		private List<IAuthenticationRequest> CreateRequests(string userSuppliedIdentifier, bool immediate) {
+		private IEnumerable<IAuthenticationRequest> CreateRequests(string userSuppliedIdentifier, bool immediate) {
 			var requests = new List<IAuthenticationRequest>();
 
 			// Approximate the returnTo (either based on the customize property or the page URL)

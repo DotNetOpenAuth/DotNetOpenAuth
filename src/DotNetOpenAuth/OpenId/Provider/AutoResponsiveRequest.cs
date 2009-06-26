@@ -29,8 +29,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="request">The request message.</param>
 		/// <param name="response">The response that is ready for transmittal.</param>
-		internal AutoResponsiveRequest(IDirectedProtocolMessage request, IProtocolMessage response)
-			: base(request) {
+		/// <param name="securitySettings">The security settings.</param>
+		internal AutoResponsiveRequest(IDirectedProtocolMessage request, IProtocolMessage response, ProviderSecuritySettings securitySettings)
+			: base(request, securitySettings) {
 			Contract.Requires<ArgumentNullException>(response != null);
 
 			this.response = response;
@@ -41,8 +42,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// for a response to an unrecognizable request.
 		/// </summary>
 		/// <param name="response">The response that is ready for transmittal.</param>
-		internal AutoResponsiveRequest(IProtocolMessage response)
-			: base(IndirectResponseBase.GetVersion(response)) {
+		/// <param name="securitySettings">The security settings.</param>
+		internal AutoResponsiveRequest(IProtocolMessage response, ProviderSecuritySettings securitySettings)
+			: base(IndirectResponseBase.GetVersion(response), securitySettings) {
 			Contract.Requires<ArgumentNullException>(response != null);
 
 			this.response = response;

@@ -16,12 +16,12 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <summary>
 		/// The mapping function that converts some custom type to a string.
 		/// </summary>
-		internal Func<object, string> ValueToString;
+		internal readonly Func<object, string> ValueToString;
 
 		/// <summary>
 		/// The mapping function that converts a string to some custom type.
 		/// </summary>
-		internal Func<string, object> StringToValue;
+		internal readonly Func<string, object> StringToValue;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ValueMapping"/> struct.
@@ -34,6 +34,19 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 
 			this.ValueToString = toString;
 			this.StringToValue = toValue;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ValueMapping"/> struct.
+		/// </summary>
+		/// <param name="encoder">The encoder.</param>
+		internal ValueMapping(IMessagePartEncoder encoder) {
+			ErrorUtilities.VerifyArgumentNotNull(encoder, "encoder");
+			var nullEncoder = encoder as IMessagePartNullEncoder;
+			string nullString = nullEncoder != null ? nullEncoder.EncodedNullValue : null;
+
+			this.ValueToString = obj => (obj != null) ? encoder.Encode(obj) : nullString;
+			this.StringToValue = str => (str != null) ? encoder.Decode(str) : null;
 		}
 	}
 }

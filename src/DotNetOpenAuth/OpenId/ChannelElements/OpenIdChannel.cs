@@ -341,7 +341,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			var extensionFactory = OpenIdExtensionFactoryAggregator.LoadFromConfiguration();
 
 			List<IChannelBindingElement> elements = new List<IChannelBindingElement>(8);
-			elements.Add(new ExtensionsBindingElement(extensionFactory));
+			elements.Add(new ExtensionsBindingElement(extensionFactory, securitySettings));
 			if (isRelyingPartyRole) {
 				elements.Add(new RelyingPartySecurityOptions(rpSecuritySettings));
 				elements.Add(new BackwardCompatibilityBindingElement());

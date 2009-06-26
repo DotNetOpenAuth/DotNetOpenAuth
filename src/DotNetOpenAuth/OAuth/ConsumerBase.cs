@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OAuth {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Net;
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth.ChannelElements;
@@ -32,6 +33,7 @@ namespace DotNetOpenAuth.OAuth {
 			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
 			this.OAuthChannel = new OAuthChannel(signingElement, store, tokenManager);
 			this.ServiceProvider = serviceDescription;
+			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OAuth.Consumer.SecuritySettings.CreateSecuritySettings();
 		}
 
 		/// <summary>
@@ -59,6 +61,11 @@ namespace DotNetOpenAuth.OAuth {
 		public Channel Channel {
 			get { return this.OAuthChannel; }
 		}
+
+		/// <summary>
+		/// Gets the security settings for this consumer.
+		/// </summary>
+		internal ConsumerSecuritySettings SecuritySettings { get; private set; }
 
 		/// <summary>
 		/// Gets or sets the channel to use for sending/receiving messages.
@@ -159,7 +166,7 @@ namespace DotNetOpenAuth.OAuth {
 			Contract.Requires<ArgumentNullException>(endpoint != null);
 			Contract.Requires<ArgumentNullException>(!String.IsNullOrEmpty(accessToken));
 
-			AccessProtectedResourceRequest message = new AccessProtectedResourceRequest(endpoint) {
+			AccessProtectedResourceRequest message = new AccessProtectedResourceRequest(endpoint, this.ServiceProvider.Version) {
 				AccessToken = accessToken,
 				ConsumerKey = this.ConsumerKey,
 			};
@@ -181,18 +188,26 @@ namespace DotNetOpenAuth.OAuth {
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
 		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "3#", Justification = "Two results")]
 		protected internal UserAuthorizationRequest PrepareRequestUserAuthorization(Uri callback, IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, out string requestToken) {
-			// Obtain an unauthorized request token.
-			var token = new UnauthorizedTokenRequest(this.ServiceProvider.RequestTokenEndpoint) {
+			// Obtain an unauthorized request token.  Assume the OAuth version given in the service description.
+			var token = new UnauthorizedTokenRequest(this.ServiceProvider.RequestTokenEndpoint, this.ServiceProvider.Version) {
 				ConsumerKey = this.ConsumerKey,
+				Callback = callback,
 			};
 			var tokenAccessor = this.Channel.MessageDescriptions.GetAccessor(token);
 			tokenAccessor.AddExtraParameters(requestParameters);
 			var requestTokenResponse = this.Channel.Request<UnauthorizedTokenResponse>(token);
 			this.TokenManager.StoreNewRequestToken(token, requestTokenResponse);
 
-			// Request user authorization.
+			// Fine-tune our understanding of the SP's supported OAuth version if it's wrong.
+			if (this.ServiceProvider.Version != requestTokenResponse.Version) {
+				Logger.OAuth.WarnFormat("Expected OAuth service provider at endpoint {0} to use OAuth {1} but {2} was detected.  Adjusting service description to new version.", this.ServiceProvider.RequestTokenEndpoint, this.ServiceProvider.Version, requestTokenResponse.Version);
+				this.ServiceProvider.ProtocolVersion = Protocol.Lookup(requestTokenResponse.Version).ProtocolVersion;
+			}
+
+			// Request user authorization.  The OAuth version will automatically include 
+			// or drop the callback that we're setting here.
 			ITokenContainingMessage assignedRequestToken = requestTokenResponse;
-			var requestAuthorization = new UserAuthorizationRequest(this.ServiceProvider.UserAuthorizationEndpoint, assignedRequestToken.Token) {
+			var requestAuthorization = new UserAuthorizationRequest(this.ServiceProvider.UserAuthorizationEndpoint, assignedRequestToken.Token, requestTokenResponse.Version) {
 				Callback = callback,
 			};
 			var requestAuthorizationAccessor = this.Channel.MessageDescriptions.GetAccessor(requestAuthorization);
@@ -205,13 +220,17 @@ namespace DotNetOpenAuth.OAuth {
 		/// Exchanges a given request token for access token.
 		/// </summary>
 		/// <param name="requestToken">The request token that the user has authorized.</param>
-		/// <returns>The access token assigned by the Service Provider.</returns>
-		protected AuthorizedTokenResponse ProcessUserAuthorization(string requestToken) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(requestToken));
+		/// <param name="verifier">The verifier code.</param>
+		/// <returns>
+		/// The access token assigned by the Service Provider.
+		/// </returns>
+		protected AuthorizedTokenResponse ProcessUserAuthorization(string requestToken, string verifier) {
+			Contract.Requires(!String.IsNullOrEmpty(requestToken));
 			Contract.Ensures(Contract.Result<AuthorizedTokenResponse>() != null);
 
-			var requestAccess = new AuthorizedTokenRequest(this.ServiceProvider.AccessTokenEndpoint) {
+			var requestAccess = new AuthorizedTokenRequest(this.ServiceProvider.AccessTokenEndpoint, this.ServiceProvider.Version) {
 				RequestToken = requestToken,
+				VerificationCode = verifier,
 				ConsumerKey = this.ConsumerKey,
 			};
 			var grantAccess = this.Channel.Request<AuthorizedTokenResponse>(requestAccess);

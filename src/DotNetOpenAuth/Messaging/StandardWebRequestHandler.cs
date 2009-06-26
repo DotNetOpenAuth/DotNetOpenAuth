@@ -136,6 +136,7 @@ namespace DotNetOpenAuth.Messaging {
 					// We don't want to blindly set all ServicePoints to not use the Expect header
 					// as that would be a security hole allowing any visitor to a web site change
 					// the web site's global behavior when calling that host.
+					Logger.Http.InfoFormat("HTTP POST to {0} resulted in 417 Expectation Failed.  Changing ServicePoint to not use Expect: Continue next time.", request.RequestUri);
 					request.ServicePoint.Expect100Continue = false; // TODO: investigate that CAS may throw here
 
 					// An alternative to ServicePoint if we don't have permission to set that,
@@ -173,6 +174,31 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Determines whether an exception was thrown because of the remote HTTP server returning HTTP 417 Expectation Failed.
+		/// </summary>
+		/// <param name="ex">The caught exception.</param>
+		/// <returns>
+		/// 	<c>true</c> if the failure was originally caused by a 417 Exceptation Failed error; otherwise, <c>false</c>.
+		/// </returns>
+		internal static bool IsExceptionFrom417ExpectationFailed(Exception ex) {
+			while (ex != null) {
+				WebException webEx = ex as WebException;
+				if (webEx != null) {
+					HttpWebResponse response = webEx.Response as HttpWebResponse;
+					if (response != null) {
+						if (response.StatusCode == HttpStatusCode.ExpectationFailed) {
+							return true;
+						}
+					}
+				}
+
+				ex = ex.InnerException;
+			}
+
+			return false;
+		}
 
 		/// <summary>
 		/// Initiates a POST request and prepares for sending data.

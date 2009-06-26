@@ -52,10 +52,14 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Initializes a new instance of the <see cref="Request"/> class.
 		/// </summary>
 		/// <param name="request">The incoming request message.</param>
-		protected Request(IDirectedProtocolMessage request) {
+		/// <param name="securitySettings">The security settings from the channel.</param>
+		protected Request(IDirectedProtocolMessage request, ProviderSecuritySettings securitySettings) {
 			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires(securitySettings != null);
+			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
 
 			this.request = request;
+			this.SecuritySettings = securitySettings;
 			this.protocolVersion = this.request.Version;
 			this.extensibleMessage = request as IProtocolMessageWithExtensions;
 		}
@@ -64,10 +68,14 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Initializes a new instance of the <see cref="Request"/> class.
 		/// </summary>
 		/// <param name="version">The version.</param>
-		protected Request(Version version) {
+		/// <param name="securitySettings">The security settings.</param>
+		protected Request(Version version, ProviderSecuritySettings securitySettings) {
 			Contract.Requires<ArgumentNullException>(version != null);
+			Contract.Requires(securitySettings != null);
+			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
 
 			this.protocolVersion = version;
+			this.SecuritySettings = securitySettings;
 		}
 
 		#region IRequest Members
@@ -75,12 +83,17 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Gets a value indicating whether the response is ready to be sent to the user agent.
 		/// </summary>
-		/// <value></value>
 		/// <remarks>
 		/// This property returns false if there are properties that must be set on this
 		/// request instance before the response can be sent.
 		/// </remarks>
 		public abstract bool IsResponseReady { get; }
+
+		/// <summary>
+		/// Gets or sets the security settings that apply to this request.
+		/// </summary>
+		/// <value>Defaults to the <see cref="OpenIdProvider.SecuritySettings"/> on the <see cref="OpenIdProvider"/>.</value>
+		public ProviderSecuritySettings SecuritySettings { get; set; }
 
 		/// <summary>
 		/// Gets the response to send to the user agent.
@@ -117,7 +130,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Gets the original request message.
 		/// </summary>
 		/// <value>This may be null in the case of an unrecognizable message.</value>
-		protected IDirectedProtocolMessage RequestMessage {
+		protected internal IDirectedProtocolMessage RequestMessage {
 			get { return this.request; }
 		}
 

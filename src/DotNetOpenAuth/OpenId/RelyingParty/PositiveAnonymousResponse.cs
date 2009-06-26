@@ -24,6 +24,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private readonly IndirectSignedResponse response;
 
 		/// <summary>
+		/// Information about the OP endpoint that issued this assertion.
+		/// </summary>
+		private readonly ProviderEndpointDescription provider;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="PositiveAnonymousResponse"/> class.
 		/// </summary>
 		/// <param name="response">The response message.</param>
@@ -32,6 +37,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			ErrorUtilities.VerifyArgumentNotNull(response, "response");
 
 			this.response = response;
+			if (response.ProviderEndpoint != null && response.Version != null) {
+				this.provider = new ProviderEndpointDescription(response.ProviderEndpoint, response.Version);
+			}
 		}
 
 		#region IAuthenticationResponse Properties
@@ -94,6 +102,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		public virtual AuthenticationStatus Status {
 			get { return AuthenticationStatus.ExtensionsOnly; }
+		}
+
+		/// <summary>
+		/// Gets information about the OpenId Provider, as advertised by the
+		/// OpenID discovery documents found at the <see cref="ClaimedIdentifier"/>
+		/// location.
+		/// </summary>
+		/// <value>
+		/// The Provider endpoint that issued the positive assertion;
+		/// or <c>null</c> if information about the Provider is unavailable.
+		/// </value>
+		public IProviderEndpoint Provider {
+			get { return this.provider; }
 		}
 
 		/// <summary>

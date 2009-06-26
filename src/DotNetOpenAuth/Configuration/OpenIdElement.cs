@@ -37,9 +37,14 @@ namespace DotNetOpenAuth.Configuration {
 		private const string XriResolverElementName = "xriResolver";
 
 		/// <summary>
-		/// Gets the name of the @maxAuthenticationTime attribute.
+		/// The name of the @maxAuthenticationTime attribute.
 		/// </summary>
 		private const string MaxAuthenticationTimePropertyName = "maxAuthenticationTime";
+
+		/// <summary>
+		/// The name of the @cacheDiscovery attribute.
+		/// </summary>
+		private const string CacheDiscoveryPropertyName = "cacheDiscovery";
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdElement"/> class.
@@ -69,6 +74,24 @@ namespace DotNetOpenAuth.Configuration {
 				Contract.Requires(value > TimeSpan.Zero);
 				this[MaxAuthenticationTimePropertyName] = value;
 			}
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the results of Identifier discovery
+		/// should be cached.
+		/// </summary>
+		/// <value>
+		/// Use <c>true</c> to allow identifier discovery to immediately return cached results when available;
+		/// otherwise, use <c>false</c>.to force fresh results every time at the cost of slightly slower logins.
+		/// The default value is <c>true</c>.
+		/// </value>
+		/// <remarks>
+		/// When enabled, caching is done according to HTTP standards.
+		/// </remarks>
+		[ConfigurationProperty(CacheDiscoveryPropertyName, DefaultValue = true)]
+		internal bool CacheDiscovery {
+			get { return (bool)this[CacheDiscoveryPropertyName]; }
+			set { this[CacheDiscoveryPropertyName] = value; }
 		}
 
 		/// <summary>

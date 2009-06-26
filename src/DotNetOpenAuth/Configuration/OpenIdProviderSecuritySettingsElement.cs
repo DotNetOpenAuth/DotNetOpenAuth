@@ -113,6 +113,7 @@ namespace DotNetOpenAuth.Configuration {
 				Contract.Assume(element != null);
 				settings.AssociationLifetimes.Add(element.AssociationType, element.MaximumLifetime);
 			}
+
 			return settings;
 		}
 	}

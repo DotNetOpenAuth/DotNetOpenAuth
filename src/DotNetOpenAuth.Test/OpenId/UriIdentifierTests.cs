@@ -391,7 +391,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			// the ServiceEndpoint.Equals method.
 			Assert.AreEqual(expectSreg ? 2 : 1, se.ProviderSupportedServiceTypeUris.Count);
 			Assert.IsTrue(se.ProviderSupportedServiceTypeUris.Contains(protocol.ClaimedIdentifierServiceTypeURI));
-			Assert.AreEqual(expectSreg, se.IsExtensionSupported(new ClaimsRequest()));
+			Assert.AreEqual(expectSreg, se.IsExtensionSupported<ClaimsRequest>());
 		}
 
 		private void DiscoverXrds(string page, ProtocolVersion version, Identifier expectedLocalId, string providerEndpoint) {

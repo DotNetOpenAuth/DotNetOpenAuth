@@ -111,7 +111,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			if (signedMessage != null) {
 				string httpMethod = this.GetHttpMethod(signedMessage.HttpMethods);
 				requestInfo.HttpMethod = httpMethod;
-				requestInfo.Url = message.Recipient;
+				requestInfo.UrlBeforeRewriting = message.Recipient;
 				signedMessage.HttpMethod = httpMethod;
 			}
 

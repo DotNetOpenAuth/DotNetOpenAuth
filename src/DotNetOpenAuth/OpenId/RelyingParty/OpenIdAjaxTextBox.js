@@ -126,9 +126,10 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	box.dnoi_internal.authenticationIFrames = new FrameManager(throttle);
 
 	box.dnoi_internal.constructButton = function(text, tooltip, onclick) {
-		var button = document.createElement('button');
+		var button = document.createElement('input');
 		button.textContent = text; // Mozilla
 		button.value = text; // IE
+		button.type = 'button';
 		button.title = tooltip != null ? tooltip : '';
 		button.onclick = onclick;
 		button.style.visibility = 'hidden';
@@ -215,6 +216,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	});
 	box.dnoi_internal.openid_logo = box.dnoi_internal.constructIcon(openid_logo_url, null, false, true);
 	box.dnoi_internal.op_logo = box.dnoi_internal.constructIcon('', authenticatedByToolTip, false, false, "16px");
+	box.dnoi_internal.op_logo.style.maxWidth = '16px';
 	box.dnoi_internal.spinner = box.dnoi_internal.constructIcon(spinner_url, busyToolTip, true);
 	box.dnoi_internal.success_icon = box.dnoi_internal.constructIcon(success_icon_url, authenticatedAsToolTip, true);
 	//box.dnoi_internal.failure_icon = box.dnoi_internal.constructIcon(failure_icon_url, authenticationFailedToolTip, true);
@@ -247,7 +249,11 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 				box.dnoi_internal.op_logo.src = opLogo;
 				box.dnoi_internal.op_logo.style.visibility = 'visible';
 				box.dnoi_internal.op_logo.title = box.dnoi_internal.op_logo.originalTitle.replace('{0}', authenticatedBy.getHost());
-			} else {
+			}
+			trace("OP icon size: " + box.dnoi_internal.op_logo.fileSize);
+			if (opLogo == null || box.dnoi_internal.op_logo.fileSize == -1 /*IE*/ || box.dnoi_internal.op_logo.fileSize === undefined /* FF */) {
+				trace('recovering from missing OP icon');
+				box.dnoi_internal.op_logo.style.visibility = 'hidden';
 				box.dnoi_internal.openid_logo.style.visibility = 'visible';
 				box.dnoi_internal.openid_logo.title = box.dnoi_internal.op_logo.originalTitle.replace('{0}', authenticatedBy.getHost());
 			}
@@ -285,8 +291,9 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	}
 
 	box.dnoi_internal.isBusy = function() {
-		return box.dnoi_internal.state == 'discovering' || 
-			box.dnoi_internal.authenticationRequests[box.lastDiscoveredIdentifier].busy();
+		var lastDiscovery = box.dnoi_internal.authenticationRequests[box.lastDiscoveredIdentifier];
+		return box.dnoi_internal.state == 'discovering' ||
+			(lastDiscovery && lastDiscovery.busy());
 	};
 
 	box.dnoi_internal.canAttemptLogin = function() {
@@ -516,7 +523,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			trace('iframe hosting ' + self.endpoint + ' now OPENING.');
 			self.iframe = iframe;
 			//trace('initiating auth attempt with: ' + self.immediate);
-			return self.immediate;
+			return self.immediate.toString();
 		};
 		this.trySetup = function() {
 			self.abort(); // ensure no concurrent attempts
@@ -528,13 +535,9 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 				height = 500;
 			}
 
-			if (window.showModalDialog) {
-				self.popup = window.showModalDialog(self.setup, 'opLogin', 'status:0;resizable:1;scroll:1;center:1;dialogWidth:' + width + 'px; dialogHeight:' + height + 'px');
-			} else {
-				var left = (screen.width - width) / 2;
-				var top = (screen.height - height) / 2;
-				self.popup = window.open(self.setup, 'opLogin', 'status=0,toolbar=0,location=1,resizable=1,scrollbars=1,left=' + left + ',top=' + top + ',width=' + width + ',height=' + height);
-			}
+			var left = (screen.width - width) / 2;
+			var top = (screen.height - height) / 2;
+			self.popup = window.open(self.setup, 'opLogin', 'status=0,toolbar=0,location=1,resizable=1,scrollbars=1,left=' + left + ',top=' + top + ',width=' + width + ',height=' + height);
 
 			// If the OP supports the UI extension it MAY close its own window
 			// for a negative assertion.  We must be able to recover from that scenario.
@@ -747,8 +750,10 @@ function Uri(url) {
 		var queryStringPairs = this.queryString.split('&');
 
 		for (var i = 0; i < queryStringPairs.length; i++) {
-			var pair = queryStringPairs[i].split('=');
-			this.Pairs.push(new KeyValuePair(unescape(pair[0]), unescape(pair[1])))
+			var equalsAt = queryStringPairs[i].indexOf('=');
+			left = (equalsAt >= 0) ? queryStringPairs[i].substring(0, equalsAt) : null;
+			right = (equalsAt >= 0) ? queryStringPairs[i].substring(equalsAt + 1) : queryStringPairs[i];
+			this.Pairs.push(new KeyValuePair(unescape(left), unescape(right)));
 		}
 	};
 

@@ -26,6 +26,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.AreEqual(request.Url.Query, info.Query);
 			Assert.AreEqual(request.QueryString["a"], info.QueryString["a"]);
 			Assert.AreEqual(request.Url, info.Url);
+			Assert.AreEqual(request.Url, info.UrlBeforeRewriting);
 			Assert.AreEqual(request.HttpMethod, info.HttpMethod);
 		}
 

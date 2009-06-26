@@ -6,6 +6,9 @@
 
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Linq;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -51,6 +54,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public bool RequireSsl { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether only OP Identifiers will be discoverable 
+		/// when creating authentication requests.
+		/// </summary>
+		public bool RequireDirectedIdentity { get; set; }
+
+		/// <summary>
 		/// Gets or sets the oldest version of OpenID the remote party is allowed to implement.
 		/// </summary>
 		/// <value>Defaults to <see cref="ProtocolVersion.V10"/></value>
@@ -80,5 +89,36 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// directly issued by the Provider that is sending the assertion.
 		/// </remarks>
 		public bool RejectDelegatingIdentifiers { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether unsigned extensions in authentication responses should be ignored.
+		/// </summary>
+		/// <value>The default value is <c>false</c>.</value>
+		/// <remarks>
+		/// When set to true, the <see cref="IAuthenticationResponse.GetUntrustedExtension"/> methods
+		/// will not return any extension that was not signed by the Provider.
+		/// </remarks>
+		public bool IgnoreUnsignedExtensions { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether authentication requests will only be
+		/// sent to Providers with whom we can create a shared association.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> to immediately fail authentication if an association with the Provider cannot be established; otherwise, <c>false</c>.
+		/// The default value is <c>false</c>.
+		/// </value>
+		public bool RequireAssociation { get; set; }
+
+		/// <summary>
+		/// Filters out any disallowed endpoints.
+		/// </summary>
+		/// <param name="endpoints">The endpoints discovered on an Identifier.</param>
+		/// <returns>A sequence of endpoints that satisfy all security requirements.</returns>
+		internal IEnumerable<ServiceEndpoint> FilterEndpoints(IEnumerable<ServiceEndpoint> endpoints) {
+			return endpoints
+				.Where(se => !this.RejectDelegatingIdentifiers || se.ClaimedIdentifier == se.ProviderLocalIdentifier)
+				.Where(se => !this.RequireDirectedIdentity || se.ClaimedIdentifier == se.Protocol.ClaimedIdentifierForOPIdentifier);
+		}
 	}
 }
