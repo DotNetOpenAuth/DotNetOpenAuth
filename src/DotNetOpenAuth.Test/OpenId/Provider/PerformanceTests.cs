@@ -29,8 +29,14 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		[TestInitialize]
 		public override void SetUp() {
 			base.SetUp();
-
+			SuspendLogging();
 			this.provider = CreateProvider();
+		}
+
+		[TestCleanup]
+		public override void Cleanup() {
+			ResumeLogging();
+			base.Cleanup();
 		}
 
 		[TestMethod]

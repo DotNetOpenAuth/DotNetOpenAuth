@@ -68,5 +68,13 @@ namespace DotNetOpenAuth.Test {
 				new HttpRequest("mock", "http://mock", "mock"),
 				new HttpResponse(new StringWriter()));
 		}
+
+		protected internal static void SuspendLogging() {
+			LogManager.GetLoggerRepository().Threshold = LogManager.GetLoggerRepository().LevelMap["OFF"];
+		}
+
+		protected internal static void ResumeLogging() {
+			LogManager.GetLoggerRepository().Threshold = LogManager.GetLoggerRepository().LevelMap["ALL"];
+		}
 	}
 }
