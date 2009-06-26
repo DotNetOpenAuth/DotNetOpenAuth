@@ -78,7 +78,6 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		[Pure]
 		internal MessageDictionary GetAccessor(IMessage message) {
 			Contract.Requires<ArgumentNullException>(message != null);
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 			return this.Get(message).GetDictionary(message);
 		}
 
