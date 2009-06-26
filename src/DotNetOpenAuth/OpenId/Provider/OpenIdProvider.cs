@@ -280,9 +280,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="IRequest.IsResponseReady"/> is <c>false</c>.</exception>
 		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code Contract requires that we cast early.")]
 		public void SendResponse(IRequest request) {
-			Contract.Requires(HttpContext.Current != null);
+			Contract.Requires<InvalidOperationException>(HttpContext.Current != null, MessagingStrings.CurrentHttpContextRequired);
 			Contract.Requires<ArgumentNullException>(request != null);
-			Contract.Requires(((Request)request).IsResponseReady);
+			Contract.Requires<ArgumentException>(((Request)request).IsResponseReady);
 
 			this.ApplyBehaviorsToResponse(request);
 			Request requestInternal = (Request)request;
@@ -321,9 +321,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// be the same as <paramref name="claimedIdentifier"/>.</param>
 		/// <param name="extensions">The extensions.</param>
 		public void SendUnsolicitedAssertion(Uri providerEndpoint, Realm relyingParty, Identifier claimedIdentifier, Identifier localIdentifier, params IExtensionMessage[] extensions) {
-			Contract.Requires(HttpContext.Current != null);
+			Contract.Requires<InvalidOperationException>(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
 			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
-			Contract.Requires(providerEndpoint.IsAbsoluteUri);
+			Contract.Requires<ArgumentException>(providerEndpoint.IsAbsoluteUri);
 			Contract.Requires<ArgumentNullException>(relyingParty != null);
 			Contract.Requires<ArgumentNullException>(claimedIdentifier != null);
 			Contract.Requires<ArgumentNullException>(localIdentifier != null);

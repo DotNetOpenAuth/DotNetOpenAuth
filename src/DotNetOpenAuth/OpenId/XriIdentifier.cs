@@ -62,7 +62,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="xri">The string value of the XRI.</param>
 		internal XriIdentifier(string xri)
 			: this(xri, false) {
-			Contract.Requires((xri != null && xri.Length > 0) || !string.IsNullOrEmpty(xri));
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(xri));
 		}
 
 		/// <summary>

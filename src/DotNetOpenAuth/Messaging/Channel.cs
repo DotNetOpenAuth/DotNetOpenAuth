@@ -224,7 +224,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Requires an HttpContext.Current context.
 		/// </remarks>
 		public void Send(IProtocolMessage message) {
-			Contract.Requires<InvalidOperationException>(HttpContext.Current != null);
+			Contract.Requires<InvalidOperationException>(HttpContext.Current != null, MessagingStrings.CurrentHttpContextRequired);
 			Contract.Requires<ArgumentNullException>(message != null);
 			this.PrepareResponse(message).Send();
 		}

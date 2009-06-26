@@ -39,6 +39,7 @@ namespace DotNetOpenAuth.Test {
 			// terminate the other thread and inform the test host that the test failed.
 			Action<Action> safeWrapper = (action) => {
 				try {
+					TestBase.SetMockHttpContext();
 					action();
 				} catch (Exception ex) {
 					// We may be the second thread in an ThreadAbortException, so check the "flag"

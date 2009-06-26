@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.Test.OpenId.Provider {
 	using System;
+	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Extensions;
@@ -73,6 +74,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		/// </summary>
 		[TestMethod, ExpectedException(typeof(InvalidOperationException))]
 		public void GetRequestNoContext() {
+			HttpContext.Current = null;
 			this.provider.GetRequest();
 		}
 

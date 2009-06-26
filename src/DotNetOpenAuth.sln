@@ -76,7 +76,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "InfoCardRelyingParty", "..\
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "4490"
+		VWDPort = "59719"
 		DefaultWebSiteLanguage = "Visual Basic"
 	EndProjectSection
 EndProject
@@ -130,7 +130,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "OAuthConsumer", "..\samples
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "10335"
+		VWDPort = "59721"
 	EndProjectSection
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "OAuthServiceProvider", "..\samples\OAuthServiceProvider", "{7ADCCD5C-AC2B-4340-9410-FE3A31A48191}"
