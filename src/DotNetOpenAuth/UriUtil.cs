@@ -30,7 +30,7 @@ namespace DotNetOpenAuth {
 		/// </returns>
 		[ContractVerification(false)] // bugs/limitations in CC static analysis
 		internal static bool QueryStringContainPrefixedParameters(this Uri uri, string prefix) {
-			Contract.Requires(!string.IsNullOrEmpty(prefix));
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(prefix));
 			if (uri == null) {
 				return false;
 			}

@@ -32,7 +32,6 @@ namespace DotNetOpenAuth.Configuration {
 		/// <param name="elements">The elements that should be added to the collection initially.</param>
 		internal TypeConfigurationCollection(IEnumerable<Type> elements) {
 			Contract.Requires<ArgumentNullException>(elements != null);
-			ErrorUtilities.VerifyArgumentNotNull(elements, "elements");
 
 			foreach (Type element in elements) {
 				this.BaseAdd(new TypeConfigurationElement<T> { TypeName = element.FullName });
