@@ -23,10 +23,6 @@ public class Global : HttpApplication {
 	protected void Application_Start(object sender, EventArgs e) {
 		log4net.Config.XmlConfigurator.Configure();
 		Logger.Info("OSIS test site starting...");
-		DotNetOpenAuth.OpenId.Behaviors.USGovernmentLevel1.PpidIdentifierProvider = new PpidProvider();
-		DotNetOpenAuth.OpenId.Behaviors.USGovernmentLevel1.DisableSslRequirement = HttpContext.Current.Request.Url.Host == "localhost";
-		// Always mark it as allowed, although we'll add the PAPE no-PII URI if we don't want any for this test.
-		DotNetOpenAuth.OpenId.Behaviors.USGovernmentLevel1.AllowPersonallyIdentifiableInformation = true;
 	}
 
 	protected void Application_End(object sender, EventArgs e) {
@@ -45,6 +41,11 @@ public class Global : HttpApplication {
 		if (Request.Form.Count > 0) {
 			Logger.DebugFormat("Posted form follows: \n{0}", ToString(Request.Form));
 		}
+
+		DotNetOpenAuth.OpenId.Behaviors.USGovernmentLevel1.PpidIdentifierProvider = new PpidProvider();
+		DotNetOpenAuth.OpenId.Behaviors.USGovernmentLevel1.DisableSslRequirement = HttpContext.Current.Request.Url.Host == "localhost";
+		// Always mark it as allowed, although we'll add the PAPE no-PII URI if we don't want any for this test.
+		DotNetOpenAuth.OpenId.Behaviors.USGovernmentLevel1.AllowPersonallyIdentifiableInformation = true;
 	}
 
 	protected void Application_AuthenticateRequest(object sender, EventArgs e) {
