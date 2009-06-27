@@ -533,6 +533,7 @@
     <Compile Include="Yadis\Yadis.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Configuration\DotNetOpenAuth.xsd" />
     <None Include="OAuth\ClassDiagram.cd" />
     <None Include="OAuth\Messages\OAuth Messages.cd" />
     <None Include="Messaging\Bindings\Bindings.cd" />
