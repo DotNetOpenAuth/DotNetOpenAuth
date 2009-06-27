@@ -185,6 +185,8 @@
 															$(ProjectRoot)\**\Settings.StyleCop;
 															$(ProjectRoot)\Samples\**\DotNetOpenAuth.???;
 															$(ProjectRoot)\Samples\**\log4net.???;
+															$(ProjectRoot)\Samples\**\PresentationCore.dll;
+															$(ProjectRoot)\Samples\**\System.Printing.dll;
 															$(ProjectRoot)\Samples\**\*.refresh_;
 															" />
 			<!-- Some .refresh files are only applicable to drop builds, so we rename them from *.refresh_ -->
