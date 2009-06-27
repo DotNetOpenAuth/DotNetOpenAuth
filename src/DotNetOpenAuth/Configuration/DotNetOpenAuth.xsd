@@ -129,6 +129,33 @@
 												<xs:attribute name="minimumHashBitLength" type="xs:int" />
 												<xs:attribute name="maximumHashBitLength" type="xs:int" />
 												<xs:attribute name="privateSecretMaximumAge" type="xs:string" />
+												<xs:attribute name="requireDirectedIdentity" type="xs:boolean" />
+												<xs:attribute name="requireAssociation" type="xs:boolean" />
+												<xs:attribute name="rejectUnsolicitedAssertions" type="xs:boolean" />
+												<xs:attribute name="rejectDelegatingIdentifiers" type="xs:boolean" />
+												<xs:attribute name="ignoreUnsignedExtensions" type="xs:boolean" />
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="behaviors">
+											<xs:complexType>
+												<xs:choice minOccurs="0" maxOccurs="unbounded">
+													<xs:element name="add">
+														<xs:complexType>
+															<xs:attribute name="type" type="xs:string" use="optional" />
+															<xs:attribute name="xaml" type="xs:string" use="optional" />
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="remove">
+														<xs:complexType>
+															<xs:attribute name="type" type="xs:string" use="required" />
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="clear">
+														<xs:complexType>
+															<!--tag is empty-->
+														</xs:complexType>
+													</xs:element>
+												</xs:choice>
 											</xs:complexType>
 										</xs:element>
 										<xs:element name="store">
@@ -168,9 +195,32 @@
 														</xs:complexType>
 													</xs:element>
 												</xs:choice>
+												<xs:attribute name="requireSsl" type="xs:boolean" default="false" />
 												<xs:attribute name="protectDownlevelReplayAttacks" type="xs:boolean" />
 												<xs:attribute name="minimumHashBitLength" type="xs:int" />
 												<xs:attribute name="maximumHashBitLength" type="xs:int" />
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="behaviors">
+											<xs:complexType>
+												<xs:choice minOccurs="0" maxOccurs="unbounded">
+													<xs:element name="add">
+														<xs:complexType>
+															<xs:attribute name="type" type="xs:string" use="optional" />
+															<xs:attribute name="xaml" type="xs:string" use="optional" />
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="remove">
+														<xs:complexType>
+															<xs:attribute name="type" type="xs:string" use="required" />
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="clear">
+														<xs:complexType>
+															<!--tag is empty-->
+														</xs:complexType>
+													</xs:element>
+												</xs:choice>
 											</xs:complexType>
 										</xs:element>
 										<xs:element name="store">
@@ -186,7 +236,8 @@
 									<xs:choice minOccurs="0" maxOccurs="unbounded">
 										<xs:element name="add">
 											<xs:complexType>
-												<xs:attribute name="type" type="xs:string" use="required" />
+												<xs:attribute name="type" type="xs:string" use="optional" />
+												<xs:attribute name="xaml" type="xs:string" use="optional" />
 											</xs:complexType>
 										</xs:element>
 										<xs:element name="remove">
@@ -200,6 +251,12 @@
 											</xs:complexType>
 										</xs:element>
 									</xs:choice>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="xriResolver">
+								<xs:complexType>
+									<xs:attribute name="enabled" type="xs:boolean" />
+									<xs:attribute name="proxy" type="xs:string" />
 								</xs:complexType>
 							</xs:element>
 						</xs:choice>
