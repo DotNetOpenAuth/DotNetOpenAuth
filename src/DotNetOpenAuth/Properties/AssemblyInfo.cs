@@ -19,7 +19,9 @@
 // We DON'T put an AssemblyVersionAttribute in here because it is generated in the build.
 
 using System;
+#if !SILVERLIGHT
 using System.Diagnostics.Contracts;
+#endif
 using System.Net;
 using System.Reflection;
 using System.Resources;
@@ -27,6 +29,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Permissions;
+#if !SILVERLIGHT
 using System.Web.UI;
 
 [assembly: TagPrefix("DotNetOpenAuth", "dnoa")]
@@ -35,6 +38,7 @@ using System.Web.UI;
 [assembly: TagPrefix("DotNetOpenAuth.OpenId", "openid")]
 [assembly: TagPrefix("DotNetOpenAuth.OpenId.Provider", "op")]
 [assembly: TagPrefix("DotNetOpenAuth.OpenId.RelyingParty", "rp")]
+#endif
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
@@ -58,7 +62,9 @@ using System.Web.UI;
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("7d73990c-47c0-4256-9f20-a893add9e289")]
 
+#if !SILVERLIGHT
 [assembly: ContractVerification(false)]
+#endif
 
 #if StrongNameSigned
 // See comment at top of this file.  We need this so that strong-naming doesn't
@@ -75,6 +81,7 @@ using System.Web.UI;
 // for security), we need at least one RequestMinimum and at least one RequestOptional.
 // These permissions were determined using PermCalc.exe
 
+#if !SILVERLIGHT
 // We need to be allowed to execute code.  Besides, it gives a good baseline RequestMinimum permission.
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, Execution = true)]
 
@@ -83,6 +90,7 @@ using System.Web.UI;
 // match the one used by hosting providers.  Listing them individually seems to be more common.
 [assembly: WebPermission(SecurityAction.RequestMinimum, ConnectPattern = @"http://.*")]
 [assembly: WebPermission(SecurityAction.RequestMinimum, ConnectPattern = @"https://.*")]
+#endif
 
 #if PARTIAL_TRUST
 // Allows hosting this assembly in an ASP.NET setting.  Not all applications
