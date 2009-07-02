@@ -59,6 +59,18 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.AreEqual(AuthenticationStatus.Failed, authResponse.Status);
 		}
 
+		/// <summary>
+		/// Verifies that the RP rejects positive assertions with HTTP Claimed
+		/// Cdentifiers when RequireSsl is set to true.
+		/// </summary>
+		[TestMethod, ExpectedException(typeof(ProtocolException))]
+		public void InsecureIdentifiersRejectedWithRequireSsl() {
+			PositiveAssertionResponse assertion = this.GetPositiveAssertion();
+			var rp = CreateRelyingParty();
+			rp.SecuritySettings.RequireSsl = true;
+			var authResponse = new PositiveAuthenticationResponse(assertion, rp);
+		}
+
 		[TestMethod]
 		public void GetCallbackArguments() {
 			PositiveAssertionResponse assertion = this.GetPositiveAssertion();
