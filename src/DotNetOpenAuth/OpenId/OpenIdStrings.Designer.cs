@@ -524,6 +524,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sorry.  This site only accepts OpenIDs that are HTTPS-secured, but {0} is not a secure Identifier..
+        /// </summary>
+        internal static string RequireSslNotSatisfiedByAssertedClaimedId {
+            get {
+                return ResourceManager.GetString("RequireSslNotSatisfiedByAssertedClaimedId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The response is not ready.  Use IsResponseReady to check whether a response is ready first..
         /// </summary>
         internal static string ResponseNotReady {
