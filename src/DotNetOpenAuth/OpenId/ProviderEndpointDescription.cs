@@ -147,8 +147,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// 	<c>true</c> if the extension is supported; otherwise, <c>false</c>.
 		/// </returns>
 		protected internal bool IsExtensionSupported(string extensionUri) {
-			ErrorUtilities.VerifyNonZeroLength(extensionUri, "extensionUri");
-			ErrorUtilities.VerifyOperation(this.Capabilities != null, OpenIdStrings.ExtensionLookupSupportUnavailable);
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(extensionUri));
+			Contract.Requires<InvalidOperationException>(this.Capabilities != null, OpenIdStrings.ExtensionLookupSupportUnavailable);
 			return this.Capabilities.Contains(extensionUri);
 		}
 
