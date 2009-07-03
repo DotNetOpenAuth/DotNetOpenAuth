@@ -408,8 +408,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// require network access are also done, such as lower-casing the hostname in the URI.
 		/// </remarks>
 		private static bool TryCanonicalize(string uri, out Uri canonicalUri, bool forceHttpsDefaultScheme, out bool schemePrepended) {
-			Contract.Requires(!string.IsNullOrEmpty(uri));
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(uri));
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(uri));
 
 			uri = uri.Trim();
 			canonicalUri = null;

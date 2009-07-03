@@ -75,7 +75,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </param>
 		internal XriIdentifier(string xri, bool requireSsl)
 			: base(requireSsl) {
-			Contract.Requires((xri != null && xri.Length > 0) || !string.IsNullOrEmpty(xri));
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(xri));
 			ErrorUtilities.VerifyFormat(IsValidXri(xri), OpenIdStrings.InvalidXri, xri);
 			Contract.Assume(xri != null); // Proven by IsValidXri
 			this.xriResolverProxy = XriResolverProxyTemplate;
